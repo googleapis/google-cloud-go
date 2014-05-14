@@ -47,6 +47,7 @@ func entityFromPbEntity(e *pb.Entity, dest interface{}) {
 			name = strings.ToLower(field.Name)
 		}
 		// TODO(jbd): Check if name is valid
+		// TODO(jbd): Handle type mismatches.
 		fieldsByDatastoreName[name] = field
 	}
 	// TODO(jbd): Cache fieldsByDatastoreName by type
