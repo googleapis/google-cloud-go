@@ -66,7 +66,7 @@ func (d *Dataset) NewKeyWithNs(namespace, kind string, ID int64) *Key {
 	return newKey(kind, strconv.FormatInt(ID, 10), ID, d.ID, namespace)
 }
 
-func (d *Dataset) Get(key *Key, dst interface{}) (err error) {
+func (d *Dataset) Get(key *Key, dest interface{}) (err error) {
 	req := &pb.LookupRequest{
 		Key: []*pb.Key{keyToPbKey(key)},
 	}
@@ -78,8 +78,7 @@ func (d *Dataset) Get(key *Key, dst interface{}) (err error) {
 	if len(resp.Found) == 0 {
 		return ErrNotFound
 	}
-	// TODO(jbd): Decode from result protobuf to entity
-	panic("not yet implemented")
+	entityFromPbEntity(resp.Found[0].Entity, dest)
 	return
 }
 
