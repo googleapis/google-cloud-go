@@ -6,8 +6,6 @@ package datastore
 
 import (
 	"bytes"
-	"errors"
-	"fmt"
 	"strconv"
 )
 
@@ -16,6 +14,7 @@ type Key struct {
 	kind     string
 	stringID string
 	intID    int64
+	name     string
 
 	datasetID string // project ID
 	namespace string
@@ -35,6 +34,11 @@ func (k *Key) StringID() string {
 // IntID returns the key's integer ID, which may be 0.
 func (k *Key) IntID() int64 {
 	return k.intID
+}
+
+// Name returns the key's name.
+func (k *Key) Name() string {
+	return k.name
 }
 
 // Parent returns the key's dataset ID.
@@ -60,6 +64,7 @@ func (k *Key) Equal(o *Key) bool {
 			return false
 		}
 	}
+	// TODO(jbd): Add name based equals
 	return true
 }
 
@@ -85,8 +90,8 @@ func (k *Key) String() string {
 	return b.String()
 }
 
-func NewIncompleteKey(kind, datasetID, namespace string) *Key {
-	return NewKey(kind, "", 0, datasetID, namespace)
+func newIncompleteKey(kind, datasetID, namespace string) *Key {
+	return newKey(kind, "", 0, datasetID, namespace)
 }
 
 // NewKey creates a new key.
@@ -94,7 +99,7 @@ func NewIncompleteKey(kind, datasetID, namespace string) *Key {
 // Either one or both of stringID and intID must be zero. If both are zero,
 // the key returned is incomplete.
 // parent must either be a complete key or nil.
-func NewKey(kind, stringID string, intID int64, datasetID, namespace string) *Key {
+func newKey(kind, stringID string, intID int64, datasetID, namespace string) *Key {
 	return &Key{
 		kind:      kind,
 		stringID:  stringID,
@@ -102,27 +107,4 @@ func NewKey(kind, stringID string, intID int64, datasetID, namespace string) *Ke
 		datasetID: datasetID,
 		namespace: namespace,
 	}
-}
-
-// AllocateIDs returns a range of n integer IDs with the given kind and parent
-// combination. kind cannot be empty; parent may be nil. The IDs in the range
-// returned will not be used by the datastore's automatic ID sequence generator
-// and may be used with NewKey without conflict.
-//
-// The range is inclusive at the low end and exclusive at the high end. In
-// other words, valid intIDs x satisfy low <= x && x < high.
-//
-// If no error is returned, low + n == high.
-func AllocateIDs(kind string, parent *Key, n int) (low, high int64, err error) {
-	if kind == "" {
-		return 0, 0, errors.New("datastore: AllocateIDs given an empty kind")
-	}
-	if n < 0 {
-		return 0, 0, fmt.Errorf("datastore: AllocateIDs given a negative count: %d", n)
-	}
-	if n == 0 {
-		return 0, 0, nil
-	}
-	// TODO(jbd): Make the request.
-	return 0, 0, nil
 }
