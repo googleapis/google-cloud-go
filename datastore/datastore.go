@@ -16,7 +16,7 @@ const (
 	endpointLookup = "https://www.googleapis.com/datastore/v1beta2/datasets/{datasetId}/lookup"
 )
 
-var reqScopes = []string{
+var requiredScopes = []string{
 	"https://www.googleapis.com/auth/datastore",
 	"https://www.googleapis.com/auth/userinfo.email",
 }
@@ -32,10 +32,13 @@ type Dataset struct {
 }
 
 func NewDataset(projectID, clientEmail, pemFilename string) (dataset *Dataset, err error) {
+	if !strings.HasPrefix(projectID, "s~") && !strings.HasPrefix(projectID, "e~") {
+		projectID = "s~" + projectID
+	}
 	conf, err := google.NewServiceAccountConfig(&oauth2.JWTOptions{
 		Email:       clientEmail,
 		PemFilename: pemFilename,
-		Scopes:      reqScopes,
+		Scopes:      requiredScopes,
 	})
 	if err != nil {
 		return
@@ -51,15 +54,15 @@ func (d *Dataset) NewIncompleteKey(kind string) *Key {
 	return newIncompleteKey(kind, d.ID, "default")
 }
 
-func (d *Dataset) NewIncompleteKeyWithNs(kind, namespace string) *Key {
+func (d *Dataset) NewIncompleteKeyWithNs(namespace, kind string) *Key {
 	return newIncompleteKey(kind, d.ID, namespace)
 }
 
 func (d *Dataset) NewKey(kind string, ID int64) *Key {
-	return d.NewKeyWithNs(kind, ID, "default")
+	return d.NewKeyWithNs("default", kind, ID)
 }
 
-func (d *Dataset) NewKeyWithNs(kind string, ID int64, namespace string) *Key {
+func (d *Dataset) NewKeyWithNs(namespace, kind string, ID int64) *Key {
 	return newKey(kind, strconv.FormatInt(ID, 10), ID, d.ID, namespace)
 }
 
