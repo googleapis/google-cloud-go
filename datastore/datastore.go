@@ -14,6 +14,7 @@ import (
 
 const (
 	endpointLookup = "https://www.googleapis.com/datastore/v1beta2/datasets/{datasetId}/lookup"
+	endpointCommit = "https://www.googleapis.com/datastore/v1beta2/datasets/{datasetId}/commit"
 )
 
 var requiredScopes = []string{
@@ -43,11 +44,6 @@ func NewDataset(projectID, clientEmail, pemFilename string) (dataset *Dataset, e
 	if err != nil {
 		return
 	}
-	tr, err := conf.NewTransport()
-	if err != nil {
-		return
-	}
-	return &Dataset{ID: projectID, transport: tr}, nil
 	return &Dataset{ID: projectID, transport: conf.NewTransport()}, nil
 }
 
@@ -87,8 +83,15 @@ func (d *Dataset) Put(key *Key, src interface{}) (*Key, error) {
 	panic("not yet implemented")
 }
 
-func (d *Dataset) Delete(key *Key) error {
-	panic("not yet implemented")
+func (d *Dataset) Delete(key *Key) (err error) {
+	mode := pb.CommitRequest_NON_TRANSACTIONAL
+	req := &pb.CommitRequest{
+		Mutation: &pb.Mutation{Delete: []*pb.Key{keyToPbKey(key)}},
+		Mode:     &mode,
+	}
+	resp := &pb.CommitResponse{}
+	client := gcloud.Client{Transport: d.transport}
+	return client.Call(d.newUrl(endpointCommit), req, resp)
 }
 
 func (d *Dataset) AllocateIDs(kind string, n int) ([]*Key, error) {
