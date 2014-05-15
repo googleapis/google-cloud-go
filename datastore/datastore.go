@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/golang/oauth2"
+	"github.com/golang/oauth2/google"
 	gcloud "github.com/googlecloudplatform/gcloud-golang"
 	"github.com/googlecloudplatform/gcloud-golang/datastore/pb"
-	"google.golang.org/oauth2"
-	"google.golang.org/oauth2/google"
 )
 
 const (
@@ -48,6 +48,7 @@ func NewDataset(projectID, clientEmail, pemFilename string) (dataset *Dataset, e
 		return
 	}
 	return &Dataset{ID: projectID, transport: tr}, nil
+	return &Dataset{ID: projectID, transport: conf.NewTransport()}, nil
 }
 
 func (d *Dataset) NewIncompleteKey(kind string) *Key {
