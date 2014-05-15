@@ -12,11 +12,6 @@ import (
 	"github.com/googlecloudplatform/gcloud-golang/datastore/pb"
 )
 
-const (
-	endpointLookup = "https://www.googleapis.com/datastore/v1beta2/datasets/{datasetId}/lookup"
-	endpointCommit = "https://www.googleapis.com/datastore/v1beta2/datasets/{datasetId}/commit"
-)
-
 var requiredScopes = []string{
 	"https://www.googleapis.com/auth/datastore",
 	"https://www.googleapis.com/auth/userinfo.email",
@@ -69,7 +64,7 @@ func (d *Dataset) Get(key *Key, dest interface{}) (err error) {
 	}
 	resp := &pb.LookupResponse{}
 	client := gcloud.Client{Transport: d.transport}
-	if err = client.Call(d.newUrl(endpointLookup), req, resp); err != nil {
+	if err = client.Call(d.newUrl("lookup"), req, resp); err != nil {
 		return
 	}
 	if len(resp.Found) == 0 {
@@ -91,17 +86,41 @@ func (d *Dataset) Delete(key *Key) (err error) {
 	}
 	resp := &pb.CommitResponse{}
 	client := gcloud.Client{Transport: d.transport}
-	return client.Call(d.newUrl(endpointCommit), req, resp)
+	return client.Call(d.newUrl("commit"), req, resp)
 }
 
-func (d *Dataset) AllocateIDs(kind string, n int) ([]*Key, error) {
-	panic("not yet implemented")
+func (d *Dataset) AllocateIDs(namespace, kind string, n int) (keys []*Key, err error) {
+	if namespace == "" {
+		namespace = "default"
+	}
+	incompleteKeys := make([]*pb.Key, n)
+	for i := 0; i < n; i++ {
+		incompleteKeys[i] = keyToPbKey(d.NewIncompleteKeyWithNs(namespace, kind))
+	}
+	req := &pb.AllocateIdsRequest{Key: incompleteKeys}
+	resp := &pb.AllocateIdsResponse{}
+	client := gcloud.Client{Transport: d.transport}
+	if err = client.Call(d.newUrl("allocateIds"), req, resp); err != nil {
+		return
+	}
+	// TODO(jbd): Return error if response doesn't include enough keys.
+	keys = make([]*Key, n)
+	for i := 0; i < n; i++ {
+		created := resp.GetKey()[i]
+		keys[i] = newKey(
+			created.GetPathElement()[0].GetKind(),
+			strconv.FormatInt(created.GetPathElement()[0].GetId(), 10),
+			created.GetPathElement()[0].GetId(),
+			d.ID,
+			created.GetPartitionId().GetNamespace())
+	}
+	return
 }
 
 func (d *Dataset) RunInTransaction(fn func() error) error {
 	panic("not yet implemented")
 }
 
-func (d *Dataset) newUrl(template string) string {
-	return strings.Replace(template, "{datasetId}", d.ID, 1)
+func (d *Dataset) newUrl(method string) string {
+	return "https://www.googleapis.com/datastore/v1beta2/datasets/" + d.ID + "/" + method
 }
