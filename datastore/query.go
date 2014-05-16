@@ -66,22 +66,20 @@ type Cursor struct {
 // An empty kind means to return all entities, including entities created and
 // managed by other App Engine features, and is called a kindless query.
 // Kindless queries cannot include filters or sort orders on property values.
-func (t *Transaction) NewQuery(kind string) *Query {
+func NewQuery(kind string) *Query {
 	return &Query{
-		transaction: t,
-		kind:        kind,
-		limit:       -1,
+		kind:  kind,
+		limit: -1,
 	}
 }
 
 // Query represents a datastore query.
 type Query struct {
-	transaction *Transaction
-	kind        string
-	ancestor    *Key
-	filter      []filter
-	order       []order
-	projection  []string
+	kind       string
+	ancestor   *Key
+	filter     []filter
+	order      []order
+	projection []string
 
 	distinct bool
 	keysOnly bool
@@ -223,24 +221,6 @@ func (q *Query) Offset(offset int) *Query {
 
 // Count returns the number of results for the query.
 func (q *Query) Count() (int, error) {
-	panic("not yet implemented")
-}
-
-// GetAll runs the query in the given context and returns all keys that match
-// that query, as well as appending the values to dst.
-//
-// dst must have type *[]S or *[]*S or *[]P, for some struct type S or some non-
-// interface, non-pointer type P such that P or *P implements PropertyLoadSaver.
-//
-// As a special case, *PropertyList is an invalid type for dst, even though a
-// PropertyList is a slice of structs. It is treated as invalid to avoid being
-// mistakenly passed when *[]PropertyList was intended.
-//
-// The keys returned by GetAll will be in a 1-1 correspondence with the entities
-// added to dst.
-//
-// If q is a ``keys-only'' query, GetAll ignores dst and only returns the keys.
-func (q *Query) GetAll(dst interface{}) ([]*Key, error) {
 	panic("not yet implemented")
 }
 
