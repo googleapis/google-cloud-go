@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/golang/oauth2"
 	"github.com/golang/oauth2/google"
@@ -31,6 +32,9 @@ type Transaction struct {
 	id        []byte
 	datasetID string
 	transport http.RoundTripper
+
+	rolledback bool
+	mu         sync.RWMutex
 }
 
 func NewDataset(projectID, clientEmail, pemFilename string) (dataset *Dataset, err error) {
@@ -111,6 +115,20 @@ func (d *Dataset) AllocateIDs(namespace, kind string, n int) (keys []*Key, err e
 	return
 }
 
+func (d *Dataset) RunInTransaction(fn func(t *Transaction)) (err error) {
+	t, err := d.NewTransaction()
+	if err != nil {
+		return
+	}
+	fn(t)
+	// if not rolled back, commit the
+	// transaction automatically
+	if !t.IsRolledBack() {
+		return t.Commit()
+	}
+	return
+}
+
 func (d *Dataset) NewTransaction() (*Transaction, error) {
 	transaction := &Transaction{
 		transport: d.defaultTransaction.transport,
@@ -131,6 +149,13 @@ func (t *Transaction) IsTransactional() bool {
 	return len(t.id) > 0
 }
 
+func (t *Transaction) IsRolledBack() bool {
+	t.mu.RLock()
+	defer t.mu.RUnlock()
+
+	return t.rolledback
+}
+
 func (t *Transaction) Commit() error {
 	if t.IsTransactional() {
 		return nil
@@ -146,6 +171,9 @@ func (t *Transaction) Commit() error {
 }
 
 func (t *Transaction) Rollback() error {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
 	if t.IsTransactional() {
 		return ErrRollbackNonTransactional
 	}
@@ -156,6 +184,7 @@ func (t *Transaction) Rollback() error {
 	if err := t.newClient().Call(t.newUrl("rollback"), req, resp); err != nil {
 		return err
 	}
+	t.rolledback = true
 	return nil
 }
 
