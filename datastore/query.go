@@ -6,8 +6,11 @@ import (
 	"math"
 	"strings"
 
+	"code.google.com/p/goprotobuf/proto"
 	"github.com/googlecloudplatform/gcloud-golang/datastore/pb"
 )
+
+// TODO(jbd): Add composite filters
 
 type operator int
 
@@ -54,13 +57,6 @@ type order struct {
 
 var zeroCC []byte
 
-// Cursor is an iterator's position. It can be converted to and from an opaque
-// string. A cursor can be used from different HTTP requests, but only with a
-// query with the same kind, ancestor, filter and order constraints.
-type Cursor struct {
-	cc []byte
-}
-
 // NewQuery creates a new Query for a specific entity kind.
 //
 // An empty kind means to return all entities, including entities created and
@@ -80,6 +76,7 @@ type Query struct {
 	filter     []filter
 	order      []order
 	projection []string
+	groupBy    []string
 
 	distinct bool
 	keysOnly bool
@@ -87,7 +84,8 @@ type Query struct {
 	limit    int32
 	offset   int32
 
-	end []byte
+	start []byte
+	next  []byte
 
 	err error
 }
@@ -174,6 +172,12 @@ func (q *Query) Project(fieldNames ...string) *Query {
 	return q
 }
 
+func (q *Query) GroupBy(fieldNames ...string) *Query {
+	q = q.clone()
+	q.groupBy = append([]string(nil), fieldNames...)
+	return q
+}
+
 // Distinct returns a derivative query that yields de-duplicated entities with
 // respect to the set of projected fields. It is only used for projection
 // queries.
@@ -219,51 +223,54 @@ func (q *Query) Offset(offset int) *Query {
 	return q
 }
 
-// Count returns the number of results for the query.
-func (q *Query) Count() (int, error) {
+func (q *Query) proto() *pb.Query {
+	p := &pb.Query{}
+
+	// kind
 	panic("not yet implemented")
-}
 
-// Get gets the query results.
-func (q *Query) Get() *Iterator {
-	panic("not yet implemented")
-}
+	// projection
+	if len(q.projection) > 0 {
+		p.Projection = make([]*pb.PropertyExpression, len(q.projection))
+		for i, fieldName := range q.projection {
+			p.Projection[i] = &pb.PropertyExpression{
+				Property: &pb.PropertyReference{Name: proto.String(fieldName)},
+			}
+		}
+	}
 
-// Iterator is the result of running a query.
-type Iterator struct {
-	err error
-	// res is the result of the most recent RunQuery or Next API call.
-	res pb.QueryResultBatch
-	// i is how many elements of res.Result we have iterated over.
-	i int
-	// limit is the limit on the number of results this iterator should return.
-	// A negative value means unlimited.
-	limit int32
-	// q is the original query which yielded this iterator.
-	q *Query
-	// prevCC is the compiled cursor that marks the end of the previous batch
-	// of results.
-	prevCC []byte
-}
+	// filters
+	if len(q.filter) > 0 {
+		filters := make([]*pb.Filter, len(q.filter))
+		for i, f := range q.filter {
+			filters[i] = &pb.Filter{
+				PropertyFilter: &pb.PropertyFilter{
+					Property: &pb.PropertyReference{Name: &f.FieldName},
+					Operator: operatorToProto[f.Op],
+					Value:    objToValue(f.Value),
+				},
+			}
+		}
+		p.Filter.CompositeFilter.Filter = filters
+		p.Filter.CompositeFilter.Operator = pb.CompositeFilter_AND.Enum()
+	}
 
-// Done is returned when a query iteration has completed.
-var Done = errors.New("datastore: query has no more results")
+	// group-by
+	if len(q.groupBy) > 0 {
+		p.GroupBy = make([]*pb.PropertyReference, len(q.groupBy))
+		for i, fieldName := range q.groupBy {
+			p.GroupBy[i] = &pb.PropertyReference{Name: &fieldName}
+		}
+	}
 
-// Next returns the key of the next result. When there are no more results,
-// Done is returned as the error.
-//
-// If the query is not keys only and dst is non-nil, it also loads the entity
-// stored for that key into the struct pointer or PropertyLoadSaver dst, with
-// the same semantics and possible errors as for the Get function.
-func (t *Iterator) Next(dst interface{}) (*Key, error) {
-	panic("not implemented")
-}
+	// pagination
+	p.StartCursor = q.start
+	if q.limit > 0 {
+		p.Limit = &q.limit
 
-func (t *Iterator) HasNext() bool {
-	panic("not implemented")
-}
-
-// Cursor returns a cursor for the iterator's current location.
-func (t *Iterator) Cursor() (Cursor, error) {
-	panic("not implementd")
+	}
+	if q.offset > 0 {
+		p.Offset = &q.offset
+	}
+	return p
 }

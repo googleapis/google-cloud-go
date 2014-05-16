@@ -3,7 +3,9 @@ package datastore
 import (
 	"reflect"
 	"strings"
+	"time"
 
+	"code.google.com/p/goprotobuf/proto"
 	"github.com/googlecloudplatform/gcloud-golang/datastore/pb"
 )
 
@@ -74,4 +76,27 @@ func entityFromPbEntity(e *pb.Entity, dest interface{}) {
 			// TODO(jbd): Handle Key, lists, time, other composites
 		}
 	}
+}
+
+func objToValue(src interface{}) *pb.Value {
+	switch src.(type) {
+	case bool:
+		return &pb.Value{BooleanValue: proto.Bool(src.(bool))}
+	case int16, int32, int64, int:
+		return &pb.Value{IntegerValue: proto.Int64(src.(int64))}
+	case float32, float64:
+		return &pb.Value{DoubleValue: proto.Float64(src.(float64))}
+	case time.Time:
+		t := src.(time.Time)
+		return &pb.Value{TimestampMicrosecondsValue: proto.Int64(t.Unix())}
+	case *Key:
+		pKey := keyToPbKey(src.(*Key))
+		return &pb.Value{KeyValue: pKey}
+	case string:
+		return &pb.Value{StringValue: proto.String(src.(string))}
+	case []byte:
+		return &pb.Value{BlobValue: src.([]byte)}
+	}
+	// TODO(jbd): Composite types and lists are not supoorted.
+	return nil
 }

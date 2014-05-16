@@ -13,16 +13,14 @@ import (
 	"github.com/googlecloudplatform/gcloud-golang/datastore/pb"
 )
 
+var (
+	ErrNotFound = errors.New("datastore: no entity with the provided key has been found")
+)
+
 var requiredScopes = []string{
 	"https://www.googleapis.com/auth/datastore",
 	"https://www.googleapis.com/auth/userinfo.email",
 }
-
-var (
-	ErrRollbackNonTransactional = errors.New("datastore: cannot rollback non-transactional operation")
-	ErrAlreadyRolledBack        = errors.New("datastore: transaction already rolled back")
-	ErrNotFound                 = errors.New("datastore: no entity with the provided key has been found")
-)
 
 type Dataset struct {
 	defaultTransaction *Transaction
@@ -62,15 +60,15 @@ func (d *Dataset) NewIncompleteKey(kind string) *Key {
 	return newIncompleteKey(kind, d.defaultTransaction.datasetID, "default")
 }
 
-func (d *Dataset) NewIncompleteKeyWithNs(namespace, kind string) *Key {
+func (d *Dataset) NewIncompleteKeyWithNS(namespace, kind string) *Key {
 	return newIncompleteKey(kind, d.defaultTransaction.datasetID, namespace)
 }
 
 func (d *Dataset) NewKey(kind string, ID int64) *Key {
-	return d.NewKeyWithNs("default", kind, ID)
+	return d.NewKeyWithNS("default", kind, ID)
 }
 
-func (d *Dataset) NewKeyWithNs(namespace, kind string, ID int64) *Key {
+func (d *Dataset) NewKeyWithNS(namespace, kind string, ID int64) *Key {
 	return newKey(kind, strconv.FormatInt(ID, 10), ID, d.defaultTransaction.datasetID, namespace)
 }
 
@@ -82,17 +80,24 @@ func (d *Dataset) Put(key *Key, src interface{}) (k *Key, err error) {
 	return d.defaultTransaction.Put(key, src)
 }
 
+// Delete deletes the object identified with the provided key.
 func (d *Dataset) Delete(key *Key) (err error) {
 	return d.defaultTransaction.Delete(key)
 }
 
+// AllocateIDs allocates n new IDs from the specified namespace and of
+// the provided kind. If no namespace provided, default is used.
 func (d *Dataset) AllocateIDs(namespace, kind string, n int) (keys []*Key, err error) {
 	if namespace == "" {
 		namespace = "default"
 	}
+	if n <= 0 {
+		err = errors.New("datastore: n should be bigger than zero")
+		return
+	}
 	incompleteKeys := make([]*pb.Key, n)
 	for i := 0; i < n; i++ {
-		incompleteKeys[i] = keyToPbKey(d.NewIncompleteKeyWithNs(namespace, kind))
+		incompleteKeys[i] = keyToPbKey(d.NewIncompleteKeyWithNS(namespace, kind))
 	}
 	req := &pb.AllocateIdsRequest{Key: incompleteKeys}
 	resp := &pb.AllocateIdsResponse{}
@@ -115,6 +120,26 @@ func (d *Dataset) AllocateIDs(namespace, kind string, n int) (keys []*Key, err e
 	return
 }
 
+// RunInTransaction starts a new transaction, runs the provided function
+// and automatically commits the transaction if created transaction
+// hasn't rolled back. The following example gets an object, modifies
+// its Name field and puts it back to datastore in the same transaction.
+// If any error occurs, the transaction is rolled back. Otherwise,
+// transaction is committed.
+//
+// 		err := ds.RunInTransaction(func(t *datastore.Transaction) {
+// 			a := &someType{}
+//			if err := t.Get(k, &a); err != nil {
+//				t.Rollback();
+//				return
+//			}
+//			a.Name = "new name"
+//			if err := t.Put(k, &a); err != nil {
+//				t.Rollback();
+//				return
+//			}
+// 		})
+//
 func (d *Dataset) RunInTransaction(fn func(t *Transaction)) (err error) {
 	t, err := d.NewTransaction()
 	if err != nil {
@@ -129,6 +154,7 @@ func (d *Dataset) RunInTransaction(fn func(t *Transaction)) (err error) {
 	return
 }
 
+// NewTransaction begins a transaction and returns a Transaction instance.
 func (d *Dataset) NewTransaction() (*Transaction, error) {
 	transaction := &Transaction{
 		transport: d.defaultTransaction.transport,
@@ -145,10 +171,13 @@ func (d *Dataset) NewTransaction() (*Transaction, error) {
 	return transaction, nil
 }
 
+// IsTransactional returns true if the transaction has a non-zero
+// transaction ID.
 func (t *Transaction) IsTransactional() bool {
 	return len(t.id) > 0
 }
 
+// IsRolledBack returns true if transaction is rolled back.
 func (t *Transaction) IsRolledBack() bool {
 	t.mu.RLock()
 	defer t.mu.RUnlock()
@@ -156,6 +185,24 @@ func (t *Transaction) IsRolledBack() bool {
 	return t.rolledback
 }
 
+func (t *Transaction) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQuery *Query, err error) {
+	req := &pb.RunQueryRequest{
+		ReadOptions: &pb.ReadOptions{
+			Transaction: t.id,
+		},
+		PartitionId: &pb.PartitionId{
+			DatasetId: &t.datasetID, // TODO(jbd): Namespace?
+		},
+		Query: q.proto(),
+	}
+	resp := &pb.RunQueryResponse{}
+	if err = t.newClient().Call(t.newUrl("runQuery"), req, resp); err != nil {
+		return
+	}
+	panic("not yet implemented")
+}
+
+// Commit commits the transaction.
 func (t *Transaction) Commit() error {
 	if t.IsTransactional() {
 		return nil
@@ -170,12 +217,13 @@ func (t *Transaction) Commit() error {
 	return nil
 }
 
+// Rollback rollbacks the transaction.
 func (t *Transaction) Rollback() error {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
 	if t.IsTransactional() {
-		return ErrRollbackNonTransactional
+		return errors.New("datastore: non-transactional operation")
 	}
 	req := &pb.RollbackRequest{
 		Transaction: t.id,
@@ -188,6 +236,8 @@ func (t *Transaction) Rollback() error {
 	return nil
 }
 
+// Get looks up for the object identified with the provided key
+// in the transaction.
 func (t *Transaction) Get(key *Key, dest interface{}) (err error) {
 	// TODO: add transactional impl
 	req := &pb.LookupRequest{
@@ -204,6 +254,8 @@ func (t *Transaction) Get(key *Key, dest interface{}) (err error) {
 	return
 }
 
+// Put upserts the object identified with key in the transaction.
+// Returns the complete key if key is incomplete.
 func (t *Transaction) Put(key *Key, src interface{}) (k *Key, err error) {
 	// TODO: add transactional impl
 	mode := pb.CommitRequest_NON_TRANSACTIONAL
@@ -220,6 +272,8 @@ func (t *Transaction) Put(key *Key, src interface{}) (k *Key, err error) {
 	panic("not yet implemented")
 }
 
+// Delete deletes the object identified with the specified key in
+// the transaction.
 func (t *Transaction) Delete(key *Key) (err error) {
 	// TODO: add transactional impl
 	mode := pb.CommitRequest_NON_TRANSACTIONAL
