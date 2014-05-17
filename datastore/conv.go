@@ -218,3 +218,7 @@ func objToValue(src interface{}) *pb.Value {
 	// Composite types and lists are not supoorted.
 	return nil
 }
+
+func isSlice(src interface{}) bool {
+	return reflect.TypeOf(src).Kind() == reflect.Slice
+}

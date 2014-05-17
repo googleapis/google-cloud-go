@@ -188,7 +188,10 @@ func (t *Transaction) IsRolledBack() bool {
 }
 
 func (t *Transaction) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQuery *Query, err error) {
-	// TODO(jbd): Check dest type is a multi type
+	if !isSlice(dest) {
+		err = errors.New("datastore: dest should be a slice")
+		return
+	}
 	req := &pb.RunQueryRequest{
 		ReadOptions: &pb.ReadOptions{
 			Transaction: t.id,
