@@ -2,10 +2,13 @@ package datastore
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
+
+	"code.google.com/p/goprotobuf/proto"
 
 	"github.com/golang/oauth2"
 	"github.com/golang/oauth2/google"
@@ -110,14 +113,13 @@ func (d *Dataset) AllocateIDs(namespace, kind string, n int) (keys []*Key, err e
 	keys = make([]*Key, n)
 	for i := 0; i < n; i++ {
 		created := resp.GetKey()[i]
-		keys[i] = newKey(
-			created.GetPathElement()[0].GetKind(),
-			strconv.FormatInt(created.GetPathElement()[0].GetId(), 10),
-			created.GetPathElement()[0].GetId(),
-			d.defaultTransaction.datasetID,
-			created.GetPartitionId().GetNamespace())
+		keys[i] = keyFromPbKey(d.defaultTransaction.datasetID, created)
 	}
 	return
+}
+
+func (d *Dataset) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQuery *Query, err error) {
+	return d.defaultTransaction.RunQuery(q, dest)
 }
 
 // RunInTransaction starts a new transaction, runs the provided function
@@ -186,18 +188,27 @@ func (t *Transaction) IsRolledBack() bool {
 }
 
 func (t *Transaction) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQuery *Query, err error) {
+	// TODO(jbd): Check dest type is a multi type
 	req := &pb.RunQueryRequest{
 		ReadOptions: &pb.ReadOptions{
 			Transaction: t.id,
 		},
 		PartitionId: &pb.PartitionId{
-			DatasetId: &t.datasetID, // TODO(jbd): Namespace?
+			DatasetId: proto.String(t.datasetID),
+			Namespace: proto.String(q.namespace),
 		},
-		Query: q.proto(),
+		Query: queryToQueryProto(q),
 	}
 	resp := &pb.RunQueryResponse{}
 	if err = t.newClient().Call(t.newUrl("runQuery"), req, resp); err != nil {
 		return
+	}
+
+	results := resp.GetBatch().GetEntityResult()
+	keys = make([]*Key, len(results))
+	for i, e := range results {
+		keys[i] = keyFromPbKey(t.datasetID, e.GetEntity().GetKey())
+		fmt.Println(e.GetEntity().GetProperty())
 	}
 	panic("not yet implemented")
 }
@@ -250,7 +261,7 @@ func (t *Transaction) Get(key *Key, dest interface{}) (err error) {
 	if len(resp.Found) == 0 {
 		return ErrNotFound
 	}
-	entityFromPbEntity(resp.Found[0].Entity, dest)
+	entityFromEntityProto(resp.Found[0].Entity, dest)
 	return
 }
 
@@ -258,11 +269,10 @@ func (t *Transaction) Get(key *Key, dest interface{}) (err error) {
 // Returns the complete key if key is incomplete.
 func (t *Transaction) Put(key *Key, src interface{}) (k *Key, err error) {
 	// TODO: add transactional impl
-	mode := pb.CommitRequest_NON_TRANSACTIONAL
 	req := &pb.CommitRequest{
-		Mode: &mode,
+		Mode: pb.CommitRequest_NON_TRANSACTIONAL.Enum(),
 		Mutation: &pb.Mutation{
-			Upsert: []*pb.Entity{entityToPbEntity(key, src)},
+			Upsert: []*pb.Entity{entityToEntityProto(key, src)},
 		},
 	}
 	resp := &pb.CommitResponse{}
@@ -276,10 +286,10 @@ func (t *Transaction) Put(key *Key, src interface{}) (k *Key, err error) {
 // the transaction.
 func (t *Transaction) Delete(key *Key) (err error) {
 	// TODO: add transactional impl
-	mode := pb.CommitRequest_NON_TRANSACTIONAL
+	mode := pb.CommitRequest_NON_TRANSACTIONAL.Enum()
 	req := &pb.CommitRequest{
 		Mutation: &pb.Mutation{Delete: []*pb.Key{keyToPbKey(key)}},
-		Mode:     &mode,
+		Mode:     mode,
 	}
 	resp := &pb.CommitResponse{}
 	return t.newClient().Call(t.newUrl("commit"), req, resp)

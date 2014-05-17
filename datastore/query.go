@@ -5,12 +5,7 @@ import (
 	"fmt"
 	"math"
 	"strings"
-
-	"code.google.com/p/goprotobuf/proto"
-	"github.com/googlecloudplatform/gcloud-golang/datastore/pb"
 )
-
-// TODO(jbd): Add composite filters
 
 type operator int
 
@@ -21,14 +16,6 @@ const (
 	greaterEq
 	greaterThan
 )
-
-var operatorToProto = map[operator]*pb.PropertyFilter_Operator{
-	lessThan:    pb.PropertyFilter_LESS_THAN.Enum(),
-	lessEq:      pb.PropertyFilter_LESS_THAN_OR_EQUAL.Enum(),
-	equal:       pb.PropertyFilter_EQUAL.Enum(),
-	greaterEq:   pb.PropertyFilter_GREATER_THAN_OR_EQUAL.Enum(),
-	greaterThan: pb.PropertyFilter_GREATER_THAN.Enum(),
-}
 
 // filter is a conditional filter on query results.
 type filter struct {
@@ -44,11 +31,6 @@ const (
 	descending
 )
 
-var sortDirectionToProto = map[sortDirection]*pb.PropertyOrder_Direction{
-	ascending:  pb.PropertyOrder_ASCENDING.Enum(),
-	descending: pb.PropertyOrder_ASCENDING.Enum(),
-}
-
 // order is a sort order on query results.
 type order struct {
 	FieldName string
@@ -62,27 +44,30 @@ var zeroCC []byte
 // An empty kind means to return all entities, including entities created and
 // managed by other App Engine features, and is called a kindless query.
 // Kindless queries cannot include filters or sort orders on property values.
-func NewQuery(kind string) *Query {
+func NewQuery(namespace, kind string) *Query {
+	if namespace == "" {
+		namespace = "default"
+	}
 	return &Query{
-		kind:  kind,
-		limit: -1,
+		namespace: namespace,
+		kind:      kind,
+		limit:     -1,
 	}
 }
 
 // Query represents a datastore query.
 type Query struct {
+	// TODO(jbd): Add ancestor
+
+	namespace  string
 	kind       string
-	ancestor   *Key
 	filter     []filter
 	order      []order
 	projection []string
 	groupBy    []string
 
-	distinct bool
-	keysOnly bool
-	eventual bool
-	limit    int32
-	offset   int32
+	limit  int32
+	offset int32
 
 	start []byte
 	next  []byte
@@ -178,23 +163,6 @@ func (q *Query) GroupBy(fieldNames ...string) *Query {
 	return q
 }
 
-// Distinct returns a derivative query that yields de-duplicated entities with
-// respect to the set of projected fields. It is only used for projection
-// queries.
-func (q *Query) Distinct() *Query {
-	q = q.clone()
-	q.distinct = true
-	return q
-}
-
-// KeysOnly returns a derivative query that yields only keys, not keys and
-// entities. It cannot be used with projection queries.
-func (q *Query) KeysOnly() *Query {
-	q = q.clone()
-	q.keysOnly = true
-	return q
-}
-
 // Limit returns a derivative query that has a limit on the number of results
 // returned. A negative value means unlimited.
 func (q *Query) Limit(limit int) *Query {
@@ -221,56 +189,4 @@ func (q *Query) Offset(offset int) *Query {
 	}
 	q.offset = int32(offset)
 	return q
-}
-
-func (q *Query) proto() *pb.Query {
-	p := &pb.Query{}
-
-	// kind
-	panic("not yet implemented")
-
-	// projection
-	if len(q.projection) > 0 {
-		p.Projection = make([]*pb.PropertyExpression, len(q.projection))
-		for i, fieldName := range q.projection {
-			p.Projection[i] = &pb.PropertyExpression{
-				Property: &pb.PropertyReference{Name: proto.String(fieldName)},
-			}
-		}
-	}
-
-	// filters
-	if len(q.filter) > 0 {
-		filters := make([]*pb.Filter, len(q.filter))
-		for i, f := range q.filter {
-			filters[i] = &pb.Filter{
-				PropertyFilter: &pb.PropertyFilter{
-					Property: &pb.PropertyReference{Name: &f.FieldName},
-					Operator: operatorToProto[f.Op],
-					Value:    objToValue(f.Value),
-				},
-			}
-		}
-		p.Filter.CompositeFilter.Filter = filters
-		p.Filter.CompositeFilter.Operator = pb.CompositeFilter_AND.Enum()
-	}
-
-	// group-by
-	if len(q.groupBy) > 0 {
-		p.GroupBy = make([]*pb.PropertyReference, len(q.groupBy))
-		for i, fieldName := range q.groupBy {
-			p.GroupBy[i] = &pb.PropertyReference{Name: &fieldName}
-		}
-	}
-
-	// pagination
-	p.StartCursor = q.start
-	if q.limit > 0 {
-		p.Limit = &q.limit
-
-	}
-	if q.offset > 0 {
-		p.Offset = &q.offset
-	}
-	return p
 }
