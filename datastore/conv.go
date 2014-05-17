@@ -215,6 +215,6 @@ func objToValue(src interface{}) *pb.Value {
 	case []byte:
 		return &pb.Value{BlobValue: src.([]byte)}
 	}
-	// TODO(jbd): Composite types and lists are not supoorted.
+	// Composite types and lists are not supoorted.
 	return nil
 }
