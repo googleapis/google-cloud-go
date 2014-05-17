@@ -27,6 +27,46 @@ var sortDirectionToProto = map[sortDirection]*pb.PropertyOrder_Direction{
 	descending: pb.PropertyOrder_ASCENDING.Enum(),
 }
 
+type fieldMeta struct {
+	field   *reflect.StructField
+	name    string
+	indexed bool
+}
+
+var entityMeta map[reflect.Type](map[string]*fieldMeta) = make(map[reflect.Type](map[string]*fieldMeta))
+
+func registerEntityMeta(src interface{}) map[string]*fieldMeta {
+	typ := reflect.TypeOf(src).Elem()
+	entityMeta[typ] = make(map[string]*fieldMeta)
+	for i := 0; i < typ.NumField(); i++ {
+		field := typ.Field(i)
+		tag := field.Tag.Get(tagKeyDatastore)
+
+		name := ""
+		indexed := true // by default
+
+		// name_of_the_field
+		// name_of_the_field,noindex
+		if strings.Contains(tag, "noindex") {
+			indexed = false
+			name = strings.Replace(tag, ",noindex", "", -1)
+		} else {
+			name = tag
+		}
+
+		if tag == "" {
+			// TODO(jbd): CamelCase to camel_case
+			name = strings.ToLower(field.Name)
+		}
+
+		// TODO(jbd): Check if name is valid
+		entityMeta[typ][name] = &fieldMeta{
+			field: &field, name: name, indexed: indexed,
+		}
+	}
+	return entityMeta[typ]
+}
+
 func keyToPbKey(k *Key) *pb.Key {
 	// TODO(jbd): Panic if dataset ID is not provided.
 	pathEl := &pb.Key_PathElement{Kind: &k.kind}
@@ -110,31 +150,23 @@ func entityToEntityProto(key *Key, src interface{}) *pb.Entity {
 }
 
 func entityFromEntityProto(e *pb.Entity, dest interface{}) {
-	fieldsByDatastoreName := make(map[string]reflect.StructField)
 	typ := reflect.TypeOf(dest).Elem()
 	val := reflect.ValueOf(dest).Elem()
-
-	for i := 0; i < typ.NumField(); i++ {
-		field := typ.Field(i)
-		name := field.Tag.Get(tagKeyDatastore)
-		if name == "" {
-			name = strings.ToLower(field.Name)
-		}
-		// TODO(jbd): Check if name is valid
-		// TODO(jbd): Handle type mismatches.
-		fieldsByDatastoreName[name] = field
+	metadata, ok := entityMeta[typ]
+	if !ok {
+		metadata = registerEntityMeta(dest)
 	}
-	// TODO(jbd): Cache fieldsByDatastoreName by type
+
 	for _, p := range e.GetProperty() {
-		f, ok := fieldsByDatastoreName[p.GetName()]
+		f, ok := metadata[p.GetName()]
 		if !ok {
 			// skip if not presented in the struct
 			continue
 		}
 		// set the value
-		fieldVal := val.FieldByName(f.Name)
+		fieldVal := val.FieldByName(f.field.Name)
 		dsVal := p.GetValue()
-		switch f.Type.String() {
+		switch f.field.Type.String() {
 		case "int":
 			fieldVal.SetInt(dsVal.GetIntegerValue())
 		case "bool":
