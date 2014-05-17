@@ -113,7 +113,7 @@ func (d *Dataset) AllocateIDs(namespace, kind string, n int) (keys []*Key, err e
 	keys = make([]*Key, n)
 	for i := 0; i < n; i++ {
 		created := resp.GetKey()[i]
-		keys[i] = keyFromPbKey(d.defaultTransaction.datasetID, created)
+		keys[i] = keyFromKeyProto(d.defaultTransaction.datasetID, created)
 	}
 	return
 }
@@ -207,7 +207,7 @@ func (t *Transaction) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQue
 	results := resp.GetBatch().GetEntityResult()
 	keys = make([]*Key, len(results))
 	for i, e := range results {
-		keys[i] = keyFromPbKey(t.datasetID, e.GetEntity().GetKey())
+		keys[i] = keyFromKeyProto(t.datasetID, e.GetEntity().GetKey())
 		fmt.Println(e.GetEntity().GetProperty())
 	}
 	panic("not yet implemented")
@@ -261,7 +261,7 @@ func (t *Transaction) Get(key *Key, dest interface{}) (err error) {
 	if len(resp.Found) == 0 {
 		return ErrNotFound
 	}
-	entityFromEntityProto(resp.Found[0].Entity, dest)
+	entityFromEntityProto(t.datasetID, resp.Found[0].Entity, dest)
 	return
 }
 

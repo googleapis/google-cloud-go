@@ -33,6 +33,12 @@ type fieldMeta struct {
 	indexed bool
 }
 
+var (
+	typeOfByteSlice = reflect.TypeOf([]byte{})
+	typeOfTime      = reflect.TypeOf(time.Time{})
+	typeOfKeyPtr    = reflect.TypeOf(&Key{})
+)
+
 var entityMeta map[reflect.Type](map[string]*fieldMeta) = make(map[reflect.Type](map[string]*fieldMeta))
 
 func registerEntityMeta(src interface{}) map[string]*fieldMeta {
@@ -84,7 +90,7 @@ func keyToPbKey(k *Key) *pb.Key {
 	}
 }
 
-func keyFromPbKey(datasetID string, p *pb.Key) *Key {
+func keyFromKeyProto(datasetID string, p *pb.Key) *Key {
 	return newKey(
 		p.GetPathElement()[0].GetKind(),
 		strconv.FormatInt(p.GetPathElement()[0].GetId(), 10),
@@ -149,7 +155,7 @@ func entityToEntityProto(key *Key, src interface{}) *pb.Entity {
 	return &pb.Entity{}
 }
 
-func entityFromEntityProto(e *pb.Entity, dest interface{}) {
+func entityFromEntityProto(datasetId string, e *pb.Entity, dest interface{}) {
 	typ := reflect.TypeOf(dest).Elem()
 	val := reflect.ValueOf(dest).Elem()
 	metadata, ok := entityMeta[typ]
@@ -163,21 +169,29 @@ func entityFromEntityProto(e *pb.Entity, dest interface{}) {
 			// skip if not presented in the struct
 			continue
 		}
-		// set the value
+
 		fieldVal := val.FieldByName(f.field.Name)
 		dsVal := p.GetValue()
-		switch f.field.Type.String() {
-		case "int":
+
+		switch f.field.Type.Kind() {
+		case reflect.Int, reflect.Int16, reflect.Int32, reflect.Int64:
 			fieldVal.SetInt(dsVal.GetIntegerValue())
-		case "bool":
+		case reflect.Bool:
 			fieldVal.SetBool(dsVal.GetBooleanValue())
-		case "float":
+		case reflect.Float32, reflect.Float64:
 			fieldVal.SetFloat(dsVal.GetDoubleValue())
-		case "string":
+		case reflect.String:
 			fieldVal.SetString(dsVal.GetStringValue())
-		case "[]byte":
+		case typeOfByteSlice.Kind():
 			fieldVal.SetBytes(dsVal.GetBlobValue())
-			// TODO(jbd): Handle Key, lists, time, other composites
+		case typeOfKeyPtr.Kind():
+			key := keyFromKeyProto(datasetId, dsVal.GetKeyValue())
+			fieldVal.Set(reflect.ValueOf(key))
+		case typeOfTime.Kind():
+			// TODO(jbd): Add more precision
+			t := time.Unix(dsVal.GetTimestampMicrosecondsValue()/1000*1000, 0)
+			fieldVal.Set(reflect.ValueOf(t))
+			// TODO(jbd): Handle lists, time, other composites
 		}
 	}
 }
