@@ -70,7 +70,7 @@ func (k *Key) Equal(o *Key) bool {
 
 // marshal marshals the key's string representation to the buffer.
 func (k *Key) marshal(b *bytes.Buffer) {
-	b.WriteString(k.datasetID)
+	b.WriteString(k.namespace)
 	b.WriteByte('/')
 	b.WriteString(k.kind)
 	b.WriteByte(',')
