@@ -222,8 +222,7 @@ func (t *Transaction) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQue
 		v.Index(i).Elem().Set(obj)                     // dest[i] = el
 	}
 	reflect.ValueOf(dest).Elem().Set(v)
-
-	// TODO(jbd): Calculate the next query
+	// TODO(jbd): Add pagination
 	return
 }
 
@@ -294,6 +293,7 @@ func (t *Transaction) Put(key *Key, src interface{}) (k *Key, err error) {
 		return
 	}
 
+	// TODO(jbd): Handle indexes.
 	entity := []*pb.Entity{entityToEntityProto(key, reflect.ValueOf(src).Elem())}
 	// TODO: add transactional impl
 	req := &pb.CommitRequest{
