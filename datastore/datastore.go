@@ -305,7 +305,12 @@ func (t *Transaction) Put(key *Key, src interface{}) (k *Key, err error) {
 	if err = t.newClient().Call(t.newUrl("commit"), req, resp); err != nil {
 		return
 	}
-	panic("not yet implemented")
+
+	autoKey := resp.GetMutationResult().GetInsertAutoIdKey()
+	if len(autoKey) > 0 {
+		k = keyFromKeyProto(t.datasetID, autoKey[0])
+	}
+	return
 }
 
 // Delete deletes the object identified with the specified key in
