@@ -41,8 +41,8 @@ var (
 
 var entityMeta map[reflect.Type](map[string]*fieldMeta) = make(map[reflect.Type](map[string]*fieldMeta))
 
-func registerEntityMeta(src interface{}) map[string]*fieldMeta {
-	typ := reflect.TypeOf(src).Elem()
+func registerEntityMeta(typ reflect.Type) map[string]*fieldMeta {
+	// TODO(jbd): Should be thread safe.
 	entityMeta[typ] = make(map[string]*fieldMeta)
 	for i := 0; i < typ.NumField(); i++ {
 		field := typ.Field(i)
@@ -155,12 +155,12 @@ func entityToEntityProto(key *Key, src interface{}) *pb.Entity {
 	return &pb.Entity{}
 }
 
-func entityFromEntityProto(datasetId string, e *pb.Entity, dest interface{}) {
-	typ := reflect.TypeOf(dest).Elem()
-	val := reflect.ValueOf(dest).Elem()
+// dest should has a *T type. T should be a struct type.
+func entityFromEntityProto(datasetId string, e *pb.Entity, val reflect.Value) {
+	typ := val.Type()
 	metadata, ok := entityMeta[typ]
 	if !ok {
-		metadata = registerEntityMeta(dest)
+		metadata = registerEntityMeta(typ)
 	}
 
 	for _, p := range e.GetProperty() {
@@ -219,6 +219,6 @@ func objToValue(src interface{}) *pb.Value {
 	return nil
 }
 
-func isSlice(src interface{}) bool {
-	return reflect.TypeOf(src).Kind() == reflect.Slice
+func isSlicePtr(src interface{}) bool {
+	return reflect.TypeOf(src).Elem().Kind() == reflect.Slice
 }

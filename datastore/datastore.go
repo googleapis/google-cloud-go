@@ -2,8 +2,8 @@ package datastore
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
+	"reflect"
 	"strconv"
 	"strings"
 	"sync"
@@ -188,8 +188,8 @@ func (t *Transaction) IsRolledBack() bool {
 }
 
 func (t *Transaction) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQuery *Query, err error) {
-	if !isSlice(dest) {
-		err = errors.New("datastore: dest should be a slice")
+	if !isSlicePtr(dest) {
+		err = errors.New("datastore: dest should be a slice pointer")
 		return
 	}
 	req := &pb.RunQueryRequest{
@@ -202,6 +202,7 @@ func (t *Transaction) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQue
 		},
 		Query: queryToQueryProto(q),
 	}
+
 	resp := &pb.RunQueryResponse{}
 	if err = t.newClient().Call(t.newUrl("runQuery"), req, resp); err != nil {
 		return
@@ -209,11 +210,21 @@ func (t *Transaction) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQue
 
 	results := resp.GetBatch().GetEntityResult()
 	keys = make([]*Key, len(results))
+
+	typ := reflect.TypeOf(dest).Elem() // type of slice
+	v := reflect.MakeSlice(typ, len(results), len(results))
 	for i, e := range results {
 		keys[i] = keyFromKeyProto(t.datasetID, e.GetEntity().GetKey())
-		fmt.Println(e.GetEntity().GetProperty())
+		obj := reflect.New(typ.Elem().Elem()).Elem()
+		entityFromEntityProto(t.datasetID, e.GetEntity(), obj)
+
+		v.Index(i).Set(reflect.New(typ.Elem().Elem())) // dest[i] = new(elType)
+		v.Index(i).Elem().Set(obj)                     // dest[i] = el
 	}
-	panic("not yet implemented")
+	reflect.ValueOf(dest).Elem().Set(v)
+
+	// TODO(jbd): Calculate the next query
+	return
 }
 
 // Commit commits the transaction.
@@ -264,7 +275,9 @@ func (t *Transaction) Get(key *Key, dest interface{}) (err error) {
 	if len(resp.Found) == 0 {
 		return ErrNotFound
 	}
-	entityFromEntityProto(t.datasetID, resp.Found[0].Entity, dest)
+
+	val := reflect.ValueOf(dest).Elem()
+	entityFromEntityProto(t.datasetID, resp.Found[0].Entity, val)
 	return
 }
 
