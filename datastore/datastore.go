@@ -294,13 +294,18 @@ func (t *Transaction) Put(key *Key, src interface{}) (k *Key, err error) {
 		return
 	}
 
+	entity := []*pb.Entity{entityToEntityProto(key, reflect.ValueOf(src).Elem())}
 	// TODO: add transactional impl
 	req := &pb.CommitRequest{
-		Mode: pb.CommitRequest_NON_TRANSACTIONAL.Enum(),
-		Mutation: &pb.Mutation{
-			Upsert: []*pb.Entity{entityToEntityProto(key, src)},
-		},
+		Mode:     pb.CommitRequest_NON_TRANSACTIONAL.Enum(),
+		Mutation: &pb.Mutation{},
 	}
+	if key.Incomplete() {
+		req.Mutation.InsertAutoId = entity
+	} else {
+		req.Mutation.Update = entity
+	}
+
 	resp := &pb.CommitResponse{}
 	if err = t.newClient().Call(t.newUrl("commit"), req, resp); err != nil {
 		return

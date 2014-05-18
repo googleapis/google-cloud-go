@@ -150,9 +150,26 @@ func queryToQueryProto(q *Query) *pb.Query {
 
 // TODO(jbd): Minimize reflect, cache conversion method for
 // known types.
-func entityToEntityProto(key *Key, src interface{}) *pb.Entity {
-	panic("not yet implemented")
-	return &pb.Entity{}
+func entityToEntityProto(key *Key, val reflect.Value) *pb.Entity {
+	// TODO(jbd): Add indexing info.
+	typ := val.Type()
+	metadata, ok := entityMeta[typ]
+	if !ok {
+		metadata = registerEntityMeta(typ)
+	}
+	entityProto := &pb.Entity{
+		Key:      keyToPbKey(key),
+		Property: make([]*pb.Property, 0),
+	}
+
+	for name, f := range metadata {
+		p := &pb.Property{}
+		v := val.FieldByName(f.field.Name)
+		p.Name = proto.String(name)
+		p.Value = objToValue(v.Interface())
+		entityProto.Property = append(entityProto.GetProperty(), p)
+	}
+	return entityProto
 }
 
 // val should has a struct type
@@ -210,6 +227,7 @@ func objToValue(src interface{}) *pb.Value {
 		return &pb.Value{DoubleValue: proto.Float64(src.(float64))}
 	case time.Time:
 		t := src.(time.Time)
+		// TODO(jbd): Unix time in ms? No.
 		return &pb.Value{TimestampMicrosecondsValue: proto.Int64(t.Unix())}
 	case *Key:
 		pKey := keyToPbKey(src.(*Key))
@@ -219,7 +237,7 @@ func objToValue(src interface{}) *pb.Value {
 	case []byte:
 		return &pb.Value{BlobValue: src.([]byte)}
 	}
-	// Composite types and lists are not supoorted.
+	// TODO(jbd): Support Composite types and lists.
 	return nil
 }
 
