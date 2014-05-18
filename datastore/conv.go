@@ -155,9 +155,13 @@ func entityToEntityProto(key *Key, src interface{}) *pb.Entity {
 	return &pb.Entity{}
 }
 
-// dest should has a *T type. T should be a struct type.
+// val should has a struct type
 func entityFromEntityProto(datasetId string, e *pb.Entity, val reflect.Value) {
 	typ := val.Type()
+	if typ.Kind() != reflect.Struct {
+		panic("datastore: val should have a struct type")
+	}
+
 	metadata, ok := entityMeta[typ]
 	if !ok {
 		metadata = registerEntityMeta(typ)
