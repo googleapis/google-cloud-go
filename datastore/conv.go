@@ -223,6 +223,10 @@ func objToValue(src interface{}) *pb.Value {
 	return nil
 }
 
+func isPtrOfStruct(src interface{}) bool {
+	return reflect.TypeOf(src).Kind() == reflect.Ptr && reflect.TypeOf(src).Elem().Kind() == reflect.Struct
+}
+
 func isSlicePtr(src interface{}) bool {
 	return reflect.TypeOf(src).Elem().Kind() == reflect.Slice
 }

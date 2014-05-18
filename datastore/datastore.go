@@ -264,6 +264,11 @@ func (t *Transaction) Rollback() error {
 // Get looks up for the object identified with the provided key
 // in the transaction.
 func (t *Transaction) Get(key *Key, dest interface{}) (err error) {
+	if !isPtrOfStruct(dest) {
+		err = errors.New("datastore: dest should be a pointer of a struct")
+		return
+	}
+
 	// TODO: add transactional impl
 	req := &pb.LookupRequest{
 		Key: []*pb.Key{keyToPbKey(key)},
@@ -284,6 +289,11 @@ func (t *Transaction) Get(key *Key, dest interface{}) (err error) {
 // Put upserts the object identified with key in the transaction.
 // Returns the complete key if key is incomplete.
 func (t *Transaction) Put(key *Key, src interface{}) (k *Key, err error) {
+	if !isPtrOfStruct(src) {
+		err = errors.New("datastore: dest should be a pointer of a struct")
+		return
+	}
+
 	// TODO: add transactional impl
 	req := &pb.CommitRequest{
 		Mode: pb.CommitRequest_NON_TRANSACTIONAL.Enum(),
