@@ -39,7 +39,6 @@ func (c *Client) Call(url string, req proto.Message, resp proto.Message) (err er
 		return
 	}
 	if r.StatusCode != http.StatusOK {
-		// TODO(jbd): Handle if there is no body
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			return errors.New("gcloud: error during call")
