@@ -281,9 +281,10 @@ func (t *Transaction) Get(key *Key, dest interface{}) (err error) {
 		err = errors.New("datastore: dest should be a pointer of a struct")
 		return
 	}
-
-	// TODO: add transactional impl
 	req := &pb.LookupRequest{
+		ReadOptions: &pb.ReadOptions{
+			Transaction: t.id,
+		},
 		Key: []*pb.Key{keyToPbKey(key)},
 	}
 	resp := &pb.LookupResponse{}
@@ -307,12 +308,19 @@ func (t *Transaction) Put(key *Key, src interface{}) (k *Key, err error) {
 		return
 	}
 
+	// Determine mod depending on if this is the default
+	// transaction or not.
+	mode := pb.CommitRequest_NON_TRANSACTIONAL.Enum()
+	if len(t.id) > 0 {
+		mode = pb.CommitRequest_TRANSACTIONAL.Enum()
+	}
+
 	// TODO(jbd): Handle indexes.
 	entity := []*pb.Entity{entityToEntityProto(key, reflect.ValueOf(src).Elem())}
-	// TODO: add transactional impl
 	req := &pb.CommitRequest{
-		Mode:     pb.CommitRequest_NON_TRANSACTIONAL.Enum(),
-		Mutation: &pb.Mutation{},
+		Transaction: t.id,
+		Mode:        mode,
+		Mutation:    &pb.Mutation{},
 	}
 	if key.Incomplete() {
 		req.Mutation.InsertAutoId = entity
@@ -335,11 +343,17 @@ func (t *Transaction) Put(key *Key, src interface{}) (k *Key, err error) {
 // Delete deletes the object identified with the specified key in
 // the transaction.
 func (t *Transaction) Delete(key *Key) (err error) {
-	// TODO: add transactional impl
+	// Determine mod depending on if this is the default
+	// transaction or not.
 	mode := pb.CommitRequest_NON_TRANSACTIONAL.Enum()
+	if len(t.id) > 0 {
+		mode = pb.CommitRequest_TRANSACTIONAL.Enum()
+	}
+
 	req := &pb.CommitRequest{
-		Mutation: &pb.Mutation{Delete: []*pb.Key{keyToPbKey(key)}},
-		Mode:     mode,
+		Transaction: t.id,
+		Mutation:    &pb.Mutation{Delete: []*pb.Key{keyToPbKey(key)}},
+		Mode:        mode,
 	}
 	resp := &pb.CommitResponse{}
 	return t.newClient().Call(t.newUrl("commit"), req, resp)
