@@ -24,10 +24,10 @@ import (
 
 	"code.google.com/p/goprotobuf/proto"
 
-	"github.com/golang/oauth2"
-	"github.com/golang/oauth2/google"
-	gcloud "github.com/googlecloudplatform/gcloud-golang"
-	"github.com/googlecloudplatform/gcloud-golang/datastore/pb"
+	"google.golang.org/cloud"
+	"google.golang.org/cloud/datastore/pb"
+	"google.golang.org/oauth2"
+	"google.golang.org/oauth2/google"
 )
 
 var (
@@ -359,8 +359,8 @@ func (t *Transaction) Delete(key *Key) (err error) {
 	return t.newClient().Call(t.newUrl("commit"), req, resp)
 }
 
-func (t *Transaction) newClient() *gcloud.Client {
-	return &gcloud.Client{Transport: t.transport}
+func (t *Transaction) newClient() *cloud.Client {
+	return &cloud.Client{Transport: t.transport}
 }
 
 func (t *Transaction) newUrl(method string) string {

@@ -21,7 +21,7 @@ import (
 	"time"
 
 	"code.google.com/p/goprotobuf/proto"
-	"github.com/googlecloudplatform/gcloud-golang/datastore/pb"
+	"google.golang.org/cloud/datastore/pb"
 )
 
 const (
