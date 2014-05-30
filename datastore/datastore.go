@@ -24,10 +24,10 @@ import (
 
 	"code.google.com/p/goprotobuf/proto"
 
+	"github.com/golang/oauth2"
+	"github.com/golang/oauth2/google"
 	"google.golang.org/cloud"
 	"google.golang.org/cloud/datastore/pb"
-	"google.golang.org/oauth2"
-	"google.golang.org/oauth2/google"
 )
 
 var (
