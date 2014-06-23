@@ -60,7 +60,7 @@ var zeroCC []byte
 // Kindless queries cannot include filters or sort orders on property values.
 func NewQuery(namespace, kind string) *Query {
 	if namespace == "" {
-		namespace = "default"
+		namespace = "Default"
 	}
 	return &Query{
 		namespace: namespace,
