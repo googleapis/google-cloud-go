@@ -74,7 +74,7 @@ func NewDataset(projectID, clientEmail, pemFilename string) (dataset *Dataset, e
 }
 
 func (d *Dataset) NewIncompleteKey(kind string) *Key {
-	return newIncompleteKey(kind, d.defaultTransaction.datasetID, "Default")
+	return newIncompleteKey(kind, d.defaultTransaction.datasetID, "")
 }
 
 func (d *Dataset) NewIncompleteKeyWithNS(namespace, kind string) *Key {
@@ -82,7 +82,7 @@ func (d *Dataset) NewIncompleteKeyWithNS(namespace, kind string) *Key {
 }
 
 func (d *Dataset) NewKey(kind string, ID int64) *Key {
-	return d.NewKeyWithNS("Default", kind, ID)
+	return d.NewKeyWithNS("", kind, ID)
 }
 
 func (d *Dataset) NewKeyWithNS(namespace, kind string, ID int64) *Key {
@@ -105,9 +105,6 @@ func (d *Dataset) Delete(key *Key) (err error) {
 // AllocateIDs allocates n new IDs from the specified namespace and of
 // the provided kind. If no namespace provided, default is used.
 func (d *Dataset) AllocateIDs(namespace, kind string, n int) (keys []*Key, err error) {
-	if namespace == "" {
-		namespace = "Default"
-	}
 	if n <= 0 {
 		err = errors.New("datastore: n should be bigger than zero")
 		return

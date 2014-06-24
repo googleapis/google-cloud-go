@@ -59,9 +59,6 @@ var zeroCC []byte
 // managed by other App Engine features, and is called a kindless query.
 // Kindless queries cannot include filters or sort orders on property values.
 func NewQuery(namespace, kind string) *Query {
-	if namespace == "" {
-		namespace = "Default"
-	}
 	return &Query{
 		namespace: namespace,
 		kind:      kind,
