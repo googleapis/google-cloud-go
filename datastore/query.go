@@ -174,6 +174,12 @@ func (q *Query) GroupBy(fieldNames ...string) *Query {
 	return q
 }
 
+func (q *Query) Start(cursor []byte) *Query {
+	q = q.clone()
+	q.start = cursor
+	return q
+}
+
 // Limit returns a derivative query that has a limit on the number of results
 // returned. A negative value means unlimited.
 func (q *Query) Limit(limit int) *Query {

@@ -235,7 +235,10 @@ func (t *Transaction) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQue
 		v.Index(i).Elem().Set(obj)                     // dest[i] = el
 	}
 	reflect.ValueOf(dest).Elem().Set(v)
-	// TODO(jbd): Add pagination
+	if string(resp.GetBatch().GetEndCursor()) != string(q.start) {
+		// next page is available
+		nextQuery = q.Start(resp.GetBatch().GetEndCursor())
+	}
 	return
 }
 
