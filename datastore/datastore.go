@@ -209,9 +209,11 @@ func (t *Transaction) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQue
 		},
 		PartitionId: &pb.PartitionId{
 			DatasetId: proto.String(t.datasetID),
-			Namespace: proto.String(q.namespace),
 		},
 		Query: queryToQueryProto(q),
+	}
+	if q.namespace != "" {
+		req.PartitionId.Namespace = proto.String(q.namespace)
 	}
 
 	resp := &pb.RunQueryResponse{}

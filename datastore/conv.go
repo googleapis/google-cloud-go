@@ -95,13 +95,16 @@ func keyToPbKey(k *Key) *pb.Key {
 	} else if k.name != "" {
 		pathEl.Name = &k.name
 	}
-	return &pb.Key{
+	key := &pb.Key{
 		PartitionId: &pb.PartitionId{
 			DatasetId: &k.datasetID,
-			Namespace: &k.namespace,
 		},
 		PathElement: []*pb.Key_PathElement{pathEl},
 	}
+	if k.namespace != "" {
+		key.PartitionId.Namespace = proto.String(k.namespace)
+	}
+	return key
 }
 
 func keyFromKeyProto(datasetID string, p *pb.Key) *Key {
