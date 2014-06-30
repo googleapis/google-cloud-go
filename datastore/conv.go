@@ -21,7 +21,8 @@ import (
 	"time"
 
 	"code.google.com/p/goprotobuf/proto"
-	"google.golang.org/cloud/datastore/pb"
+
+	pb "google.golang.org/cloud/internal/datastore"
 )
 
 const (
@@ -79,7 +80,6 @@ func registerEntityMeta(typ reflect.Type) map[string]*fieldMeta {
 			name = strings.ToLower(field.Name)
 		}
 
-		// TODO(jbd): Check if name is valid
 		entityMeta[typ][name] = &fieldMeta{
 			field: &field, name: name, indexed: indexed,
 		}
@@ -88,7 +88,6 @@ func registerEntityMeta(typ reflect.Type) map[string]*fieldMeta {
 }
 
 func keyToPbKey(k *Key) *pb.Key {
-	// TODO(jbd): Panic if dataset ID is not provided.
 	pathEl := &pb.Key_PathElement{Kind: &k.kind}
 	if k.intID > 0 {
 		pathEl.Id = &k.intID
@@ -118,9 +117,7 @@ func keyFromKeyProto(datasetID string, p *pb.Key) *Key {
 
 func queryToQueryProto(q *Query) *pb.Query {
 	p := &pb.Query{}
-	// kind
 	p.Kind = []*pb.KindExpression{&pb.KindExpression{Name: proto.String(q.kind)}}
-	// projection
 	if len(q.projection) > 0 {
 		p.Projection = make([]*pb.PropertyExpression, len(q.projection))
 		for i, fieldName := range q.projection {
@@ -165,10 +162,7 @@ func queryToQueryProto(q *Query) *pb.Query {
 	return p
 }
 
-// TODO(jbd): Minimize reflect, cache conversion method for
-// known types.
 func entityToEntityProto(key *Key, val reflect.Value) *pb.Entity {
-	// TODO(jbd): Add indexing info.
 	typ := val.Type()
 	metadata, ok := entityMeta[typ]
 	if !ok {

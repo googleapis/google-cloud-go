@@ -27,7 +27,8 @@ import (
 	"github.com/golang/oauth2"
 	"github.com/golang/oauth2/google"
 	"google.golang.org/cloud"
-	"google.golang.org/cloud/datastore/pb"
+
+	pb "google.golang.org/cloud/internal/datastore"
 )
 
 var (
