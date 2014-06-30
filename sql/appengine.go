@@ -18,8 +18,10 @@ package sql
 
 import (
 	"appengine/cloudsql"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 func init() {
-	RegisterDial("cloudsql", cloudsql.Dial)
+	mysql.RegisterDial("cloudsql", cloudsql.Dial)
 }
