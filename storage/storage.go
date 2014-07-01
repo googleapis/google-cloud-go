@@ -31,7 +31,9 @@ type ACL struct {
 }
 
 type Metadata struct {
-	ACL             []ACL  `json:"acl"`
+	ACL   []*ACL `json:"acl"`
+	Owner *Owner `json:"owner"`
+
 	CacheControl    string `json:"cacheControl"`
 	ComponentCount  int64  `json:"componentCount"`
 	ContentEncoding string `json:"contentEncoding"`
