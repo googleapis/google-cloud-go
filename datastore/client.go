@@ -9,13 +9,13 @@ import (
 	"code.google.com/p/goprotobuf/proto"
 )
 
-type Client struct {
+type client struct {
 	// An authorized transport.
-	Transport http.RoundTripper
+	transport http.RoundTripper
 }
 
-func (c *Client) Call(url string, req proto.Message, resp proto.Message) (err error) {
-	client := http.Client{Transport: c.Transport}
+func (c *client) call(url string, req proto.Message, resp proto.Message) (err error) {
+	client := http.Client{Transport: c.transport}
 	payload, err := proto.Marshal(req)
 	if err != nil {
 		return

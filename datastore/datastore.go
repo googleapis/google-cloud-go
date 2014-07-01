@@ -117,7 +117,7 @@ func (d *Dataset) AllocateIDs(namespace, kind string, n int) (keys []*Key, err e
 	resp := &pb.AllocateIdsResponse{}
 
 	url := d.defaultTransaction.newUrl("allocateIds")
-	if err = d.defaultTransaction.newClient().Call(url, req, resp); err != nil {
+	if err = d.defaultTransaction.newClient().call(url, req, resp); err != nil {
 		return
 	}
 	// TODO(jbd): Return error if response doesn't include enough keys.
@@ -177,7 +177,7 @@ func (d *Dataset) NewTransaction() (*Transaction, error) {
 	req := &pb.BeginTransactionRequest{}
 	resp := &pb.BeginTransactionResponse{}
 	url := d.defaultTransaction.newUrl("beginTransaction")
-	if err := d.defaultTransaction.newClient().Call(url, req, resp); err != nil {
+	if err := d.defaultTransaction.newClient().call(url, req, resp); err != nil {
 		return nil, err
 	}
 	transaction.id = resp.GetTransaction()
@@ -217,7 +217,7 @@ func (t *Transaction) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQue
 	}
 
 	resp := &pb.RunQueryResponse{}
-	if err = t.newClient().Call(t.newUrl("runQuery"), req, resp); err != nil {
+	if err = t.newClient().call(t.newUrl("runQuery"), req, resp); err != nil {
 		return
 	}
 
@@ -251,7 +251,7 @@ func (t *Transaction) Commit() error {
 		Transaction: t.id,
 	}
 	resp := &pb.CommitResponse{}
-	if err := t.newClient().Call(t.newUrl("commit"), req, resp); err != nil {
+	if err := t.newClient().call(t.newUrl("commit"), req, resp); err != nil {
 		return err
 	}
 	return nil
@@ -269,7 +269,7 @@ func (t *Transaction) Rollback() error {
 		Transaction: t.id,
 	}
 	resp := &pb.RollbackResponse{}
-	if err := t.newClient().Call(t.newUrl("rollback"), req, resp); err != nil {
+	if err := t.newClient().call(t.newUrl("rollback"), req, resp); err != nil {
 		return err
 	}
 	t.rolledback = true
@@ -290,7 +290,7 @@ func (t *Transaction) Get(key *Key, dest interface{}) (err error) {
 		Key: []*pb.Key{keyToPbKey(key)},
 	}
 	resp := &pb.LookupResponse{}
-	if err = t.newClient().Call(t.newUrl("lookup"), req, resp); err != nil {
+	if err = t.newClient().call(t.newUrl("lookup"), req, resp); err != nil {
 		return
 	}
 	if len(resp.Found) == 0 {
@@ -331,7 +331,7 @@ func (t *Transaction) Put(key *Key, src interface{}) (k *Key, err error) {
 	}
 
 	resp := &pb.CommitResponse{}
-	if err = t.newClient().Call(t.newUrl("commit"), req, resp); err != nil {
+	if err = t.newClient().call(t.newUrl("commit"), req, resp); err != nil {
 		return
 	}
 
@@ -358,11 +358,11 @@ func (t *Transaction) Delete(key *Key) (err error) {
 		Mode:        mode,
 	}
 	resp := &pb.CommitResponse{}
-	return t.newClient().Call(t.newUrl("commit"), req, resp)
+	return t.newClient().call(t.newUrl("commit"), req, resp)
 }
 
-func (t *Transaction) newClient() *Client {
-	return &Client{Transport: t.transport}
+func (t *Transaction) newClient() *client {
+	return &client{transport: t.transport}
 }
 
 func (t *Transaction) newUrl(method string) string {
