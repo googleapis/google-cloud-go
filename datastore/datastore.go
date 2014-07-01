@@ -26,7 +26,6 @@ import (
 
 	"github.com/golang/oauth2"
 	"github.com/golang/oauth2/google"
-	"google.golang.org/cloud"
 
 	pb "google.golang.org/cloud/internal/datastore"
 )
@@ -362,8 +361,8 @@ func (t *Transaction) Delete(key *Key) (err error) {
 	return t.newClient().Call(t.newUrl("commit"), req, resp)
 }
 
-func (t *Transaction) newClient() *cloud.Client {
-	return &cloud.Client{Transport: t.transport}
+func (t *Transaction) newClient() *Client {
+	return &Client{Transport: t.transport}
 }
 
 func (t *Transaction) newUrl(method string) string {
