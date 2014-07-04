@@ -15,7 +15,10 @@
 package storage
 
 import (
+	"errors"
 	"io"
+	"net/url"
+	"os"
 
 	"github.com/golang/oauth2"
 	"github.com/golang/oauth2/google"
@@ -57,15 +60,23 @@ func NewBucket(bucketName, email, pemFilename string) (bucket *Bucket, err error
 // if more pages are available.
 func (b *Bucket) List(query *Query) (files []*File, nextQuery *Query, err error) {
 	panic("not yet implemented")
+
 }
 
-// Copy copies the specified file to the specified destination bucket with the
-// given destination name.
-func (b *Bucket) Copy(name string, destName string, destBucketName string) error {
-	if destBucketName == "" {
-		destBucketName = b.Name
+// Copy copies the specified file with the specified file info.
+func (b *Bucket) Copy(name string, destFile *File) error {
+	if destFile.Name == "" {
+		return errors.New("storage: destination file should have a non-zero name")
 	}
-	panic("not yet implemented")
+	if destFile.BucketName == "" {
+		destFile.BucketName = b.Name
+	}
+	client := &client{transport: b.Transport}
+	u, err := url.Parse(storageBaseURL + "/b/" + b.Name + "/o/" + name + "/copyTo/b/" + destFile.BucketName + "/o/" + destFile.Name)
+	if err != nil {
+		return err
+	}
+	return client.Do("POST", u, destFile, nil)
 }
 
 // Remove removes a file.
