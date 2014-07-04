@@ -104,7 +104,16 @@ func (b *Bucket) Read(name string) (file *File, contents io.ReadCloser, err erro
 
 // Stat stats the specified file and returns metadata about it.
 func (b *Bucket) Stat(name string) (file *File, err error) {
-	panic("not yet implemented")
+	client := &client{transport: b.Transport}
+	u, err := url.Parse(storageBaseURL + "/b/" + b.Name + "/o/" + name)
+	if err != nil {
+		return nil, err
+	}
+	file = &File{}
+	if err = client.Do("GET", u, nil, file); err != nil {
+		return nil, err
+	}
+	return file, nil
 }
 
 // TODO: Support resumable uploads. DefaultWriter, ResumableWriter, etc.

@@ -29,7 +29,7 @@ type ACL struct {
 	Email      string `json:"email"`
 	Entity     string `json:"entity"`
 	EntityID   string `json:"entityId"`
-	Generation int64  `json:"generation"`
+	Generation int    `json:"generation"`
 	Role       string `json:"role"`
 }
 
@@ -50,13 +50,11 @@ type File struct {
 	ContentLanuage  string `json:"contentLanguage"`
 	CRC32c          string `json:"crc32c"`
 	MD5Hash         string `json:"md5hash"`
-	Size            int64  `json:"size"`
+	Size            string `json:"size"`
 	Etag            string `json:"etag"`
-	Generation      int64  `json:"generation"`
 
-	Metadata       map[string]string `json:"metadata"`
-	MetaGeneration int64             `json:"metageneration"`
-	MediaLink      string            `json:"mediaLink"`
+	Metadata  map[string]string `json:"metadata"`
+	MediaLink string            `json:"mediaLink"`
 
 	DeleteTime time.Time `json:"timeDeleted"`
 	UpdateTime time.Time `json:"updated"`
