@@ -22,6 +22,10 @@ type ACL struct {
 // TODO: File should implement os.FileInfo
 
 type File struct {
+	ID         string `json:"id"`
+	Name       string `json:"name"`
+	BucketName string `json:"bucket"`
+
 	ACL   []*ACL `json:"acl"`
 	Owner *Owner `json:"owner"`
 
@@ -35,10 +39,6 @@ type File struct {
 	Size            int64  `json:"size"`
 	Etag            string `json:"etag"`
 	Generation      int64  `json:"generation"`
-
-	ID         string `json:"id"`
-	Name       string `json:"name"`
-	BucketName string `json:"bucket"`
 
 	Metadata       map[string]string `json:"metadata"`
 	MetaGeneration int64             `json:"metageneration"`
