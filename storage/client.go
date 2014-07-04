@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -46,7 +47,7 @@ func (c *client) Do(method string, u *url.URL, body, response interface{}) (err 
 	}
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		// return as error
-		return errors.New("storage: error during call")
+		return errors.New(fmt.Sprintf("storage: error during call, statusCode: %d", resp.StatusCode))
 	}
 	if response == nil {
 		return
