@@ -81,7 +81,12 @@ func (b *Bucket) Copy(name string, destFile *File) error {
 
 // Remove removes a file.
 func (b *Bucket) Remove(name string) error {
-	panic("not yet implemented")
+	client := &client{transport: b.Transport}
+	u, err := url.Parse(storageBaseURL + "/b/" + b.Name + "/o/" + name)
+	if err != nil {
+		return err
+	}
+	return client.Do("DELETE", u, nil, nil)
 }
 
 // Read reads the specified file.
