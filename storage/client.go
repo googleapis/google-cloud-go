@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -60,4 +61,17 @@ func (c *client) Do(method string, u *url.URL, body, response interface{}) (err 
 		return
 	}
 	return
+}
+
+func (c *client) RespBody(method string, u *url.URL) (io.ReadCloser, error) {
+	client := http.Client{Transport: c.transport}
+	req, err := http.NewRequest(method, u.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	return resp.Body, nil
 }

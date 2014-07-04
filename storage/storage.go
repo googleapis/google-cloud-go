@@ -99,7 +99,13 @@ func (b *Bucket) Read(name string) (file *File, contents io.ReadCloser, err erro
 		return
 	}
 	// make a request to read file blob
-	panic("not yet implemented")
+	u, err := url.Parse(file.MediaLink)
+	if err != nil {
+		return nil, nil, err
+	}
+	client := &client{transport: b.Transport}
+	contents, err = client.RespBody("GET", u)
+	return
 }
 
 // Stat stats the specified file and returns metadata about it.
