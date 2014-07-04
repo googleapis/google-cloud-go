@@ -19,6 +19,8 @@ type ACL struct {
 	Role       string `json:"role"`
 }
 
+// TODO: File should implement os.FileInfo
+
 type File struct {
 	ACL   []*ACL `json:"acl"`
 	Owner *Owner `json:"owner"`
