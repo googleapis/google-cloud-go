@@ -2,67 +2,23 @@ package storage
 
 import (
 	"io"
-	"time"
 
 	"github.com/golang/oauth2"
 	"github.com/golang/oauth2/google"
 )
 
-var requiredScopes = []string{}
+const (
+	storageBaseURL       = "https://www.googleapis.com/storage/v1"
+	storageBaseUploadURL = "https://www.googleapis.com/upload/storage/v1"
+)
+
+var requiredScopes = []string{
+	"https://www.googleapis.com/auth/devstorage.full_control",
+}
 
 type Bucket struct {
 	Name      string
 	Transport oauth2.Transport
-}
-
-type Owner struct {
-	entity   string `json:"entity"`
-	entityID string `json:"entityId"`
-}
-
-type ACL struct {
-	ID         string `json:"id"`
-	Domain     string `json:"domain"`
-	Email      string `json:"email"`
-	Entity     string `json:"entity"`
-	EntityID   string `json:"entityId"`
-	Generation int64  `json:"generation"`
-	Role       string `json:"role"`
-}
-
-type Metadata struct {
-	ACL   []*ACL `json:"acl"`
-	Owner *Owner `json:"owner"`
-
-	CacheControl    string `json:"cacheControl"`
-	ComponentCount  int64  `json:"componentCount"`
-	ContentEncoding string `json:"contentEncoding"`
-	ContentType     string `json:"contentType"`
-	ContentLanuage  string `json:"contentLanguage"`
-	CRC32c          string `json:"crc32c"`
-	MD5Hash         string `json:"md5hash"`
-	Size            int64  `json:"size"`
-	Etag            string `json:"etag"`
-	Generation      int64  `json:"generation"`
-
-	ID         string `json:"id"`
-	Name       string `json:"name"`
-	BucketName string `json:"bucket"`
-
-	Metadata       map[string]string `json:"metadata"`
-	MetaGeneration int64             `json:"metageneration"`
-	MediaLink      string            `json:"mediaLink"`
-
-	DeleteTime time.Time `json:"timeDeleted"`
-	UpdateTime time.Time `json:"updated"`
-}
-
-type Query struct {
-	Delimeter  string `json:"delimeter"`
-	MaxResults uint   `json:"maxResults"`
-	Prefix     string `json:"prefix"`
-	PageToken  string `json:"pageToken"`
-	Versions   bool   `json:"versions"`
 }
 
 func NewBucket(bucketName, email, pemFilename string) (bucket *Bucket, err error) {
@@ -81,7 +37,7 @@ func NewBucket(bucketName, email, pemFilename string) (bucket *Bucket, err error
 	return
 }
 
-func (b *Bucket) List(query *Query) (objects []*Metadata, nextQuery *Query, err error) {
+func (b *Bucket) List(query *Query) (files []*File, nextQuery *Query, err error) {
 	panic("not yet implemented")
 }
 
@@ -96,14 +52,17 @@ func (b *Bucket) Delete(name string) error {
 	panic("not yet implemented")
 }
 
-func (b *Bucket) Read(name string) (metadata *Metadata, contents io.ReadCloser, err error) {
+func (b *Bucket) Read(name string) (file *File, contents io.ReadCloser, err error) {
+	if file, err = b.Stat(name); err != nil {
+		return
+	}
 	panic("not yet implemented")
 }
 
-func (b *Bucket) ReadMetadata(name string) (metadata *Metadata, err error) {
+func (b *Bucket) Stat(name string) (file *File, err error) {
 	panic("not yet implemented")
 }
 
-func (b *Bucket) Write(name string, metadata *Metadata, contents io.ReadCloser) error {
+func (b *Bucket) Write(name string, file *File, contents io.ReadCloser) error {
 	panic("not yet implemented")
 }
