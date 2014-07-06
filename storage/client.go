@@ -31,6 +31,7 @@ type client struct {
 
 func (c *client) Do(method string, u *url.URL, body, response interface{}) (err error) {
 	client := http.Client{Transport: c.transport}
+	// TODO: prettyPrint=false by default
 	req, err := http.NewRequest(method, u.String(), nil)
 	if err != nil {
 		return err

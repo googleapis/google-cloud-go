@@ -16,6 +16,7 @@ package storage
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"net/url"
 	"os"
@@ -58,15 +59,42 @@ func NewBucket(bucketName, email, pemFilename string) (bucket *Bucket, err error
 
 // List lists files from the bucket. It returns a non-nil nextQuery
 // if more pages are available.
-func (b *Bucket) List(query *Query) (files []*File, nextQuery *Query, err error) {
-	panic("not yet implemented")
-
+func (b *Bucket) List(query *Query) (files []*File, next *Query, err error) {
+	client := &client{transport: b.Transport}
+	params := url.Values{}
+	if query != nil {
+		params.Add("delimeter", query.Delimeter)
+		if query.MaxResults > 0 {
+			params.Add("maxResults", fmt.Sprintf("%d", query.MaxResults))
+		}
+		params.Add("pageToken", query.PageToken)
+		params.Add("prefix", query.Prefix)
+		params.Add("versions", fmt.Sprintf("%t", query.Versions))
+	}
+	u, err := url.Parse(storageBaseURL + "/b/" + b.Name + "/o" + "?" + params.Encode())
+	if err != nil {
+		return
+	}
+	resp := &listResponse{}
+	if err = client.Do("GET", u, nil, resp); err != nil {
+		return
+	}
+	if resp.NextPageToken != "" {
+		next = &Query{
+			Delimeter:  query.Delimeter,
+			MaxResults: query.MaxResults,
+			PageToken:  resp.NextPageToken,
+			Prefix:     query.Prefix,
+			Versions:   query.Versions,
+		}
+	}
+	return resp.Items, next, nil
 }
 
 // Copy copies the specified file with the specified file info.
 func (b *Bucket) Copy(name string, destFile *File) error {
 	if destFile.Name == "" {
-		return errors.New("storage: destination file should have a non-zero name")
+		return errors.New("storage: destination file should have a name")
 	}
 	if destFile.BucketName == "" {
 		destFile.BucketName = b.Name

@@ -29,7 +29,7 @@ type ACL struct {
 	Email      string `json:"email"`
 	Entity     string `json:"entity"`
 	EntityID   string `json:"entityId"`
-	Generation int    `json:"generation"`
+	Generation int64  `json:"generation"`
 	Role       string `json:"role"`
 }
 
@@ -50,7 +50,7 @@ type File struct {
 	ContentLanuage  string `json:"contentLanguage"`
 	CRC32c          string `json:"crc32c"`
 	MD5Hash         string `json:"md5hash"`
-	Size            string `json:"size"`
+	Size            uint64 `json:"size,string"`
 	Etag            string `json:"etag"`
 
 	Metadata  map[string]string `json:"metadata"`
@@ -62,12 +62,13 @@ type File struct {
 
 type Query struct {
 	Delimeter  string `json:"delimeter"`
-	MaxResults uint   `json:"maxResults"`
+	MaxResults uint64 `json:"maxResults"`
 	Prefix     string `json:"prefix"`
 	PageToken  string `json:"pageToken"`
 	Versions   bool   `json:"versions"`
 }
 
 type listResponse struct {
-	items []*File `json:"items"`
+	Items         []*File `json:"items"`
+	NextPageToken string  `json:"nextPageToken,omitempty"`
 }
