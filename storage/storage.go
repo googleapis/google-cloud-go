@@ -34,6 +34,9 @@ var requiredScopes = []string{
 	"https://www.googleapis.com/auth/devstorage.full_control",
 }
 
+// Bucket represents a Google Cloud Storage bucket.
+// See the guide on https://developers.google.com/storage to
+// create a bucket.
 type Bucket struct {
 	Name      string
 	Transport oauth2.Transport

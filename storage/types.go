@@ -18,11 +18,13 @@ import (
 	"time"
 )
 
+// Owner represents the owner of the file.
 type Owner struct {
 	entity   string `json:"entity"`
 	entityID string `json:"entityId"`
 }
 
+// ACL represents access controls on a file.
 type ACL struct {
 	ID         string `json:"id"`
 	Domain     string `json:"domain"`
@@ -34,7 +36,10 @@ type ACL struct {
 }
 
 // TODO: File should implement os.FileInfo
+// TODO(jbd): Switch to object terminology.
 
+// File represents an object within Google Cloud Storage.
+// Objects are pieces of data that you have uploaded to Google Cloud Storage.
 type File struct {
 	ID         string `json:"id"`
 	Name       string `json:"name"`
@@ -60,6 +65,7 @@ type File struct {
 	UpdateTime time.Time `json:"updated"`
 }
 
+// Query represents listing query options.
 type Query struct {
 	Delimeter  string `json:"delimeter"`
 	MaxResults uint64 `json:"maxResults"`
