@@ -6,3 +6,4 @@ We are planning release the initial version with support for the following Cloud
  * Google Cloud Datastore (also known as Megastore, what App Engine uses for its persistency layer.)
  * Google Cloud Storage
  * Google Cloud SQL
+ * Google Cloud Pub/Sub
