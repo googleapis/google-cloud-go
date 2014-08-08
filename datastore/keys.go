@@ -69,10 +69,11 @@ func (k *Key) Incomplete() bool {
 
 // Equal returns whether two keys are equal.
 func (k *Key) Equal(o *Key) bool {
-	for k != nil && o != nil {
-		if k.kind != o.kind || k.stringID != o.stringID || k.intID != o.intID || k.namespace != o.namespace || k.datasetID != o.datasetID {
-			return false
-		}
+	if k == nil || o == nil {
+		return k == o // if either is nil, both must be nil
+	}
+	if k.kind != o.kind || k.stringID != o.stringID || k.intID != o.intID || k.namespace != o.namespace || k.datasetID != o.datasetID {
+		return false
 	}
 	// TODO(jbd): Add name based equals
 	return true
