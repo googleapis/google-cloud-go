@@ -128,6 +128,10 @@ func queryToQueryProto(q *Query) *pb.Query {
 	}
 	// filters
 	if len(q.filter) > 0 {
+		p.Filter = &pb.Filter{
+			CompositeFilter: &pb.CompositeFilter{},
+		}
+
 		filters := make([]*pb.Filter, len(q.filter))
 		for i, f := range q.filter {
 			filters[i] = &pb.Filter{
