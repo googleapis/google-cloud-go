@@ -85,8 +85,12 @@ func (d *Dataset) NewKey(kind string, ID int64) *Key {
 	return d.NewKeyWithNS("", kind, ID)
 }
 
+func (d *Dataset) NewKeyWithName(namespace, kind, name string) *Key {
+	return newKey(kind, "", 0, d.defaultTransaction.datasetID, name, namespace)
+}
+
 func (d *Dataset) NewKeyWithNS(namespace, kind string, ID int64) *Key {
-	return newKey(kind, strconv.FormatInt(ID, 10), ID, d.defaultTransaction.datasetID, namespace)
+	return newKey(kind, strconv.FormatInt(ID, 10), ID, d.defaultTransaction.datasetID, "", namespace)
 }
 
 func (d *Dataset) Get(key *Key, dest interface{}) (err error) {
@@ -324,8 +328,11 @@ func (t *Transaction) Put(key *Key, src interface{}) (k *Key, err error) {
 		Mode:        mode,
 		Mutation:    &pb.Mutation{},
 	}
+
 	if key.Incomplete() {
 		req.Mutation.InsertAutoId = entity
+	} else if key.Named() {
+		req.Mutation.Insert = entity
 	} else {
 		req.Mutation.Update = entity
 	}
