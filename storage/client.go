@@ -23,14 +23,16 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+
+	"github.com/golang/oauth2"
 )
 
 type client struct {
-	transport http.RoundTripper
+	transport oauth2.Transport
 }
 
 func (c *client) Do(method string, u *url.URL, body, response interface{}) (err error) {
-	client := http.Client{Transport: c.transport}
+	client := http.Client{Transport: &c.transport}
 	// TODO: prettyPrint=false by default
 	req, err := http.NewRequest(method, u.String(), nil)
 	if err != nil {
@@ -64,7 +66,7 @@ func (c *client) Do(method string, u *url.URL, body, response interface{}) (err 
 }
 
 func (c *client) RespBody(method string, u *url.URL) (io.ReadCloser, error) {
-	client := http.Client{Transport: c.transport}
+	client := http.Client{Transport: &c.transport}
 	req, err := http.NewRequest(method, u.String(), nil)
 	if err != nil {
 		return nil, err
