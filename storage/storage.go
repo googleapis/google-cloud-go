@@ -47,7 +47,7 @@ type Bucket struct {
 func NewBucket(bucketName, email, pemFilename string) (bucket *Bucket, err error) {
 	conf, err := google.NewServiceAccountConfig(&oauth2.JWTOptions{
 		Email:       email,
-		PemFilename: pemFilename,
+		PEMFilename: pemFilename,
 		Scopes:      requiredScopes,
 	})
 	if err != nil {
