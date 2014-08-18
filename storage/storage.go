@@ -19,7 +19,6 @@ import (
 	"fmt"
 	"io"
 	"net/url"
-	"os"
 
 	"github.com/golang/oauth2"
 	"github.com/golang/oauth2/google"
@@ -151,21 +150,4 @@ func (b *Bucket) Stat(name string) (file *File, err error) {
 		return nil, err
 	}
 	return file, nil
-}
-
-// TODO: Support resumable uploads. DefaultWriter, ResumableWriter, etc.
-
-// Write writes the provided contents to the remote destination
-// identified with name. You can provide additional metadata
-// information if you would like to make metadata changes.
-// Write inserts the file if there is no file identified with name,
-// updates the existing if there exists a file.
-func (b *Bucket) Write(name string, file *File, contents io.Reader) error {
-	panic("not yet implemented")
-}
-
-// WriteFile writes the contents of the provided file to the remote
-// destination identified with name.
-func (b *Bucket) WriteFile(name, file *File, srcFile *os.File) error {
-	panic("not yet implemented")
 }
