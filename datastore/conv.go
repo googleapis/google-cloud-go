@@ -112,6 +112,7 @@ func keyFromKeyProto(datasetID string, p *pb.Key) *Key {
 		strconv.FormatInt(p.GetPathElement()[0].GetId(), 10),
 		p.GetPathElement()[0].GetId(),
 		datasetID,
+		p.GetPathElement()[0].GetName(),
 		p.GetPartitionId().GetNamespace())
 }
 

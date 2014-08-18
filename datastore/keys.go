@@ -51,6 +51,11 @@ func (k *Key) Name() string {
 	return k.name
 }
 
+// Name returns the key's name.
+func (k *Key) Named() bool {
+	return k.Name() != ""
+}
+
 // Parent returns the key's dataset ID.
 func (k *Key) DatasetID() string {
 	return k.datasetID
@@ -64,7 +69,7 @@ func (k *Key) Namespace() string {
 // Incomplete returns whether the key does not refer to a stored entity.
 // In particular, whether the key has a zero StringID and a zero IntID.
 func (k *Key) Incomplete() bool {
-	return k.stringID == "" && k.intID == 0
+	return k.Name() == "" && k.intID == 0
 }
 
 // Equal returns whether two keys are equal.
@@ -103,7 +108,7 @@ func (k *Key) String() string {
 }
 
 func newIncompleteKey(kind, datasetID, namespace string) *Key {
-	return newKey(kind, "", 0, datasetID, namespace)
+	return newKey(kind, "", 0, datasetID, "", namespace)
 }
 
 // NewKey creates a new key.
@@ -111,10 +116,11 @@ func newIncompleteKey(kind, datasetID, namespace string) *Key {
 // Either one or both of stringID and intID must be zero. If both are zero,
 // the key returned is incomplete.
 // parent must either be a complete key or nil.
-func newKey(kind, stringID string, intID int64, datasetID, namespace string) *Key {
+func newKey(kind, stringID string, intID int64, datasetID, name string, namespace string) *Key {
 	return &Key{
 		kind:      kind,
 		stringID:  stringID,
+		name:      name,
 		intID:     intID,
 		datasetID: datasetID,
 		namespace: namespace,
