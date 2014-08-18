@@ -58,7 +58,7 @@ func NewDataset(projectID, clientEmail, pemFilename string) (dataset *Dataset, e
 	}
 	conf, err := google.NewServiceAccountConfig(&oauth2.JWTOptions{
 		Email:       clientEmail,
-		PemFilename: pemFilename,
+		PEMFilename: pemFilename,
 		Scopes:      requiredScopes,
 	})
 	if err != nil {
