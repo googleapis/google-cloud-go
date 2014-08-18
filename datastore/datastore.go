@@ -52,14 +52,14 @@ type Transaction struct {
 	mu         sync.RWMutex
 }
 
-func NewDataset(projectID, clientEmail, pemFilename string) (dataset *Dataset, err error) {
+func NewDataset(projectID, email string, privateKey []byte) (dataset *Dataset, err error) {
 	if !strings.HasPrefix(projectID, "s~") && !strings.HasPrefix(projectID, "e~") {
 		projectID = "s~" + projectID
 	}
 	conf, err := google.NewServiceAccountConfig(&oauth2.JWTOptions{
-		Email:       clientEmail,
-		PemFilename: pemFilename,
-		Scopes:      requiredScopes,
+		Email:      email,
+		PrivateKey: privateKey,
+		Scopes:     requiredScopes,
 	})
 	if err != nil {
 		return

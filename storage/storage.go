@@ -38,16 +38,16 @@ var requiredScopes = []string{
 // create a bucket.
 type Bucket struct {
 	Name      string
-	Transport oauth2.Transport
+	Transport *oauth2.Transport
 }
 
 // NewBucket returns a new bucket whose calls will be authorized
 // with the provided email and private key.
-func NewBucket(bucketName, email, pemFilename string) (bucket *Bucket, err error) {
+func NewBucket(bucketName, email string, privateKey []byte) (bucket *Bucket, err error) {
 	conf, err := google.NewServiceAccountConfig(&oauth2.JWTOptions{
-		Email:       email,
-		PemFilename: pemFilename,
-		Scopes:      requiredScopes,
+		Email:      email,
+		PrivateKey: privateKey,
+		Scopes:     requiredScopes,
 	})
 	if err != nil {
 		return
