@@ -48,8 +48,8 @@ type Transaction struct {
 	datasetID string
 	transport http.RoundTripper
 
-	rolledback bool
-	mu         sync.RWMutex
+	mu        sync.RWMutex
+	finalized bool
 }
 
 func NewDataset(projectID, email string, privateKey []byte) (dataset *Dataset, err error) {
@@ -159,12 +159,14 @@ func (d *Dataset) RunInTransaction(fn func(t *Transaction)) (err error) {
 		return
 	}
 	fn(t)
-	// if not rolled back, commit the
+	// if not finalized, commit the
 	// transaction automatically
-	if !t.IsRolledBack() {
-		return t.Commit()
+	t.mu.RLock()
+	if !t.finalized {
+		err = t.Commit()
 	}
-	return
+	t.mu.RUnlock()
+	return err
 }
 
 // NewTransaction begins a transaction and returns a Transaction instance.
@@ -188,14 +190,6 @@ func (d *Dataset) NewTransaction() (*Transaction, error) {
 // transaction ID.
 func (t *Transaction) IsTransactional() bool {
 	return len(t.id) > 0
-}
-
-// IsRolledBack returns true if transaction is rolled back.
-func (t *Transaction) IsRolledBack() bool {
-	t.mu.RLock()
-	defer t.mu.RUnlock()
-
-	return t.rolledback
 }
 
 func (t *Transaction) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQuery *Query, err error) {
@@ -244,8 +238,11 @@ func (t *Transaction) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQue
 
 // Commit commits the transaction.
 func (t *Transaction) Commit() error {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
 	if t.IsTransactional() {
-		return nil
+		return errors.New("datastore: non-transactional operation")
 	}
 	req := &pb.CommitRequest{
 		Transaction: t.id,
@@ -254,6 +251,7 @@ func (t *Transaction) Commit() error {
 	if err := t.newClient().call(t.newUrl("commit"), req, resp); err != nil {
 		return err
 	}
+	t.finalized = true
 	return nil
 }
 
@@ -272,7 +270,7 @@ func (t *Transaction) Rollback() error {
 	if err := t.newClient().call(t.newUrl("rollback"), req, resp); err != nil {
 		return err
 	}
-	t.rolledback = true
+	t.finalized = true
 	return nil
 }
 
