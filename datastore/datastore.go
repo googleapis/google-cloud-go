@@ -18,8 +18,6 @@ import (
 	"errors"
 	"net/http"
 	"reflect"
-	"strconv"
-	"strings"
 	"sync"
 
 	"code.google.com/p/goprotobuf/proto"
@@ -40,7 +38,8 @@ var requiredScopes = []string{
 }
 
 type Dataset struct {
-	defaultTransaction *Transaction
+	transaction *Transaction
+	namespace   string
 }
 
 type Transaction struct {
@@ -52,54 +51,64 @@ type Transaction struct {
 	finalized bool
 }
 
-func NewDataset(projectID, email string, privateKey []byte) (dataset *Dataset, err error) {
-	if !strings.HasPrefix(projectID, "s~") && !strings.HasPrefix(projectID, "e~") {
-		projectID = "s~" + projectID
-	}
+func NewDataset(projectID, email string, privateKey []byte) (*Dataset, error) {
+	return NewDatasetWithNS(projectID, "", email, privateKey)
+}
+
+func NewDatasetWithNS(projectID, ns, email string, privateKey []byte) (*Dataset, error) {
 	conf, err := google.NewServiceAccountConfig(&oauth2.JWTOptions{
 		Email:      email,
 		PrivateKey: privateKey,
 		Scopes:     requiredScopes,
 	})
 	if err != nil {
-		return
+		return nil, err
 	}
-	dataset = &Dataset{
-		defaultTransaction: &Transaction{
+	return &Dataset{
+		namespace: ns,
+		transaction: &Transaction{
 			datasetID: projectID,
 			transport: conf.NewTransport(),
 		},
+	}, nil
+}
+
+func (d *Dataset) NewNamedKey(kind string, name string) *Key {
+	return &Key{
+		namespace: d.namespace,
+		fullPath: []*Path{
+			&Path{Kind: kind, Name: name},
+		},
 	}
-	return
 }
 
-func (d *Dataset) NewIncompleteKey(kind string) *Key {
-	return newIncompleteKey(kind, d.defaultTransaction.datasetID, "")
+func (d *Dataset) NewIDKey(kind string, id int64) *Key {
+	return &Key{
+		namespace: d.namespace,
+		fullPath: []*Path{
+			&Path{Kind: kind, ID: id},
+		},
+	}
 }
 
-func (d *Dataset) NewIncompleteKeyWithNS(namespace, kind string) *Key {
-	return newIncompleteKey(kind, d.defaultTransaction.datasetID, namespace)
-}
-
-func (d *Dataset) NewKey(kind string, ID int64) *Key {
-	return d.NewKeyWithNS("", kind, ID)
-}
-
-func (d *Dataset) NewKeyWithNS(namespace, kind string, ID int64) *Key {
-	return newKey(kind, strconv.FormatInt(ID, 10), ID, d.defaultTransaction.datasetID, namespace)
+func (d *Dataset) NewKey(path []*Path) *Key {
+	return &Key{
+		namespace: d.namespace,
+		fullPath:  path,
+	}
 }
 
 func (d *Dataset) Get(key *Key, dest interface{}) (err error) {
-	return d.defaultTransaction.Get(key, dest)
+	return d.transaction.Get(key, dest)
 }
 
 func (d *Dataset) Put(key *Key, src interface{}) (k *Key, err error) {
-	return d.defaultTransaction.Put(key, src)
+	return d.transaction.Put(key, src)
 }
 
 // Delete deletes the object identified with the provided key.
 func (d *Dataset) Delete(key *Key) (err error) {
-	return d.defaultTransaction.Delete(key)
+	return d.transaction.Delete(key)
 }
 
 // AllocateIDs allocates n new IDs from the specified namespace and of
@@ -109,28 +118,34 @@ func (d *Dataset) AllocateIDs(namespace, kind string, n int) (keys []*Key, err e
 		err = errors.New("datastore: n should be bigger than zero")
 		return
 	}
+	key := &Key{
+		namespace: namespace,
+		fullPath: []*Path{
+			&Path{Kind: kind},
+		},
+	}
 	incompleteKeys := make([]*pb.Key, n)
 	for i := 0; i < n; i++ {
-		incompleteKeys[i] = keyToPbKey(d.NewIncompleteKeyWithNS(namespace, kind))
+		incompleteKeys[i] = keyToPbKey(key)
 	}
 	req := &pb.AllocateIdsRequest{Key: incompleteKeys}
 	resp := &pb.AllocateIdsResponse{}
 
-	url := d.defaultTransaction.newUrl("allocateIds")
-	if err = d.defaultTransaction.newClient().call(url, req, resp); err != nil {
+	url := d.transaction.newUrl("allocateIds")
+	if err = d.transaction.newClient().call(url, req, resp); err != nil {
 		return
 	}
 	// TODO(jbd): Return error if response doesn't include enough keys.
 	keys = make([]*Key, n)
 	for i := 0; i < n; i++ {
 		created := resp.GetKey()[i]
-		keys[i] = keyFromKeyProto(d.defaultTransaction.datasetID, created)
+		keys[i] = keyFromKeyProto(created)
 	}
 	return
 }
 
 func (d *Dataset) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQuery *Query, err error) {
-	return d.defaultTransaction.RunQuery(q, dest)
+	return d.transaction.RunQuery(q, dest)
 }
 
 // RunInTransaction starts a new transaction, runs the provided function
@@ -172,14 +187,14 @@ func (d *Dataset) RunInTransaction(fn func(t *Transaction)) (err error) {
 // NewTransaction begins a transaction and returns a Transaction instance.
 func (d *Dataset) NewTransaction() (*Transaction, error) {
 	transaction := &Transaction{
-		transport: d.defaultTransaction.transport,
-		datasetID: d.defaultTransaction.datasetID,
+		transport: d.transaction.transport,
+		datasetID: d.transaction.datasetID,
 	}
 
 	req := &pb.BeginTransactionRequest{}
 	resp := &pb.BeginTransactionResponse{}
-	url := d.defaultTransaction.newUrl("beginTransaction")
-	if err := d.defaultTransaction.newClient().call(url, req, resp); err != nil {
+	url := d.transaction.newUrl("beginTransaction")
+	if err := d.transaction.newClient().call(url, req, resp); err != nil {
 		return nil, err
 	}
 	transaction.id = resp.GetTransaction()
@@ -221,7 +236,7 @@ func (t *Transaction) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQue
 	typ := reflect.TypeOf(dest).Elem() // type of slice
 	v := reflect.MakeSlice(typ, len(results), len(results))
 	for i, e := range results {
-		keys[i] = keyFromKeyProto(t.datasetID, e.GetEntity().GetKey())
+		keys[i] = keyFromKeyProto(e.GetEntity().GetKey())
 		obj := reflect.New(typ.Elem().Elem()).Elem()
 		entityFromEntityProto(t.datasetID, e.GetEntity(), obj)
 
@@ -274,6 +289,8 @@ func (t *Transaction) Rollback() error {
 	return nil
 }
 
+// TODO(jbd): Implement GetAll, PutAll and DeleteAll.
+
 // Get looks up for the object identified with the provided key
 // in the transaction.
 func (t *Transaction) Get(key *Key, dest interface{}) (err error) {
@@ -322,10 +339,11 @@ func (t *Transaction) Put(key *Key, src interface{}) (k *Key, err error) {
 		Mode:        mode,
 		Mutation:    &pb.Mutation{},
 	}
-	if key.Incomplete() {
+
+	if !key.Complete() {
 		req.Mutation.InsertAutoId = entity
 	} else {
-		req.Mutation.Update = entity
+		req.Mutation.Upsert = entity
 	}
 
 	resp := &pb.CommitResponse{}
@@ -335,7 +353,7 @@ func (t *Transaction) Put(key *Key, src interface{}) (k *Key, err error) {
 
 	autoKey := resp.GetMutationResult().GetInsertAutoIdKey()
 	if len(autoKey) > 0 {
-		k = keyFromKeyProto(t.datasetID, autoKey[0])
+		k = keyFromKeyProto(autoKey[0])
 	}
 	return
 }
@@ -362,6 +380,8 @@ func (t *Transaction) Delete(key *Key) (err error) {
 func (t *Transaction) newClient() *client {
 	return &client{transport: t.transport}
 }
+
+// TODO(jbd): Provide support for non-prod instances.
 
 func (t *Transaction) newUrl(method string) string {
 	return "https://www.googleapis.com/datastore/v1beta2/datasets/" + t.datasetID + "/" + method

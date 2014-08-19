@@ -24,18 +24,73 @@ func TestKeyEqual(t *testing.T) {
 		{nil, nil, true},
 		{&Key{}, nil, false},
 		{&Key{}, &Key{}, true},
-		{newKey("a", "b", 42, "c", "d"), newKey("a", "b", 42, "c", "d"), true},
-		{newKey("", "b", 42, "c", "d"), newKey("a", "b", 42, "c", "d"), false},
-		{newKey("a", "", 42, "c", "d"), newKey("a", "b", 42, "c", "d"), false},
-		{newKey("a", "b", 0, "c", "d"), newKey("a", "b", 42, "c", "d"), false},
-		{newKey("a", "b", 42, "", "d"), newKey("a", "b", 42, "c", "d"), false},
-		{newKey("a", "b", 42, "c", ""), newKey("a", "b", 42, "c", "d"), false},
+		{&Key{namespace: "ns1"}, &Key{namespace: "ns2"}, false},
 	}
 	for _, test := range tests {
-		if test.k0.Equal(test.k1) != test.eq {
-			t.Errorf("%#v == %#v\n\tgot: %v; want: %v\n", test.k0, test.k1, !test.eq, test.eq)
-		} else if test.k1.Equal(test.k0) != test.eq {
-			t.Errorf("%#v == %#v\n\tgot: %v; want: %v\n", test.k1, test.k0, !test.eq, test.eq)
-		}
+		assertKeyEqual(t, test.k0, test.k1, test.eq)
+	}
+
+	k := &Key{
+		fullPath: []*Path{
+			&Path{Kind: "Parent", Name: "name"},
+			&Path{Kind: "Child", ID: 123},
+		},
+	}
+	o := &Key{
+		fullPath: []*Path{
+			&Path{Kind: "Parent", Name: "name"},
+		},
+	}
+	assertKeyEqual(t, k, o, false)
+
+	k = &Key{
+		fullPath: []*Path{
+			&Path{Kind: "Parent", Name: "name"},
+			&Path{Kind: "Child", ID: 123},
+		},
+	}
+	o = &Key{
+		fullPath: []*Path{
+			&Path{Kind: "Parent", Name: "name"},
+			&Path{Kind: "Child", ID: 456},
+		},
+	}
+	assertKeyEqual(t, k, o, false)
+
+	k = &Key{
+		fullPath: []*Path{
+			&Path{Kind: "Parent", Name: "name1"},
+		},
+	}
+	o = &Key{
+		fullPath: []*Path{
+			&Path{Kind: "Parent", Name: "name2"},
+		},
+	}
+	assertKeyEqual(t, k, o, false)
+
+	k = &Key{
+		namespace: "ns1",
+		fullPath: []*Path{
+			&Path{Kind: "Parent", Name: "name"},
+			&Path{Kind: "Child", ID: 123},
+		},
+	}
+	o = &Key{
+		namespace: "ns1",
+		fullPath: []*Path{
+			&Path{Kind: "Parent", Name: "name"},
+			&Path{Kind: "Child", ID: 123},
+		},
+	}
+	assertKeyEqual(t, k, o, true)
+
+}
+
+func assertKeyEqual(t *testing.T, k, o *Key, expected bool) {
+	if k.Equal(o) != expected {
+		t.Errorf("%#v == %#v\n\tgot: %v; want: %v\n", k, o, !expected, expected)
+	} else if o.Equal(k) != expected {
+		t.Errorf("%#v == %#v\n\tgot: %v; want: %v\n", o, k, !expected, expected)
 	}
 }

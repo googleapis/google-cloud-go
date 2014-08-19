@@ -16,7 +16,6 @@ package datastore
 
 import (
 	"reflect"
-	"strconv"
 	"strings"
 	"time"
 
@@ -88,31 +87,43 @@ func registerEntityMeta(typ reflect.Type) map[string]*fieldMeta {
 }
 
 func keyToPbKey(k *Key) *pb.Key {
-	pathEl := &pb.Key_PathElement{Kind: &k.kind}
-	if k.intID > 0 {
-		pathEl.Id = &k.intID
-	} else if k.name != "" {
-		pathEl.Name = &k.name
+	path := make([]*pb.Key_PathElement, len(k.fullPath))
+	for i, p := range k.fullPath {
+		path[i] = &pb.Key_PathElement{
+			Kind: proto.String(p.Kind),
+		}
+		if p.ID != 0 {
+			path[i].Id = proto.Int64(p.ID)
+		}
+		if p.Name != "" {
+			path[i].Name = proto.String(p.Name)
+		}
 	}
 	key := &pb.Key{
-		PartitionId: &pb.PartitionId{
-			DatasetId: &k.datasetID,
-		},
-		PathElement: []*pb.Key_PathElement{pathEl},
+		PathElement: path,
 	}
 	if k.namespace != "" {
-		key.PartitionId.Namespace = proto.String(k.namespace)
+		key.PartitionId = &pb.PartitionId{
+			Namespace: proto.String(k.namespace),
+		}
 	}
 	return key
 }
 
-func keyFromKeyProto(datasetID string, p *pb.Key) *Key {
-	return newKey(
-		p.GetPathElement()[0].GetKind(),
-		strconv.FormatInt(p.GetPathElement()[0].GetId(), 10),
-		p.GetPathElement()[0].GetId(),
-		datasetID,
-		p.GetPartitionId().GetNamespace())
+func keyFromKeyProto(p *pb.Key) *Key {
+	key := &Key{
+		namespace: p.GetPartitionId().GetNamespace(),
+	}
+	elements := p.GetPathElement()
+	key.fullPath = make([]*Path, len(elements))
+	for i, el := range elements {
+		key.fullPath[i] = &Path{
+			Kind: el.GetKind(),
+			ID:   el.GetId(),
+			Name: el.GetName(),
+		}
+	}
+	return key
 }
 
 func queryToQueryProto(q *Query) *pb.Query {
@@ -221,7 +232,7 @@ func entityFromEntityProto(datasetId string, e *pb.Entity, val reflect.Value) {
 		case typeOfByteSlice.Kind():
 			fieldVal.SetBytes(dsVal.GetBlobValue())
 		case typeOfKeyPtr.Kind():
-			key := keyFromKeyProto(datasetId, dsVal.GetKeyValue())
+			key := keyFromKeyProto(dsVal.GetKeyValue())
 			fieldVal.Set(reflect.ValueOf(key))
 		case typeOfTime.Kind():
 			// TODO(jbd): Add more precision
