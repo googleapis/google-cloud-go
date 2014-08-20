@@ -242,8 +242,9 @@ func entityFromEntityProto(datasetId string, e *pb.Entity, val reflect.Value) {
 			key := keyFromKeyProto(dsVal.GetKeyValue())
 			fieldVal.Set(reflect.ValueOf(key))
 		case typeOfTime.Kind():
-			// TODO(jbd): Add more precision
-			t := time.Unix(dsVal.GetTimestampMicrosecondsValue()/1000*1000, 0)
+			sec := dsVal.GetTimestampMicrosecondsValue() / (1000 * 1000)
+			us := dsVal.GetTimestampMicrosecondsValue() % (1000 * 1000)
+			t := time.Unix(sec, us*1000)
 			fieldVal.Set(reflect.ValueOf(t))
 			// TODO(jbd): Handle lists, time, other composites
 		}
@@ -260,8 +261,8 @@ func objToValue(src interface{}) *pb.Value {
 		return &pb.Value{DoubleValue: proto.Float64(src.(float64))}
 	case time.Time:
 		t := src.(time.Time)
-		// TODO(jbd): Unix time in ms? No.
-		return &pb.Value{TimestampMicrosecondsValue: proto.Int64(t.Unix())}
+		us := t.UnixNano() / 1000
+		return &pb.Value{TimestampMicrosecondsValue: proto.Int64(us)}
 	case *Key:
 		pKey := keyToPbKey(src.(*Key))
 		return &pb.Value{KeyValue: pKey}
