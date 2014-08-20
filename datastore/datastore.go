@@ -28,7 +28,7 @@ import (
 )
 
 var (
-	ErrNotFound = errors.New("datastore: no entity with the provided key has been found")
+	ErrNotFound = errors.New("datastore: no entity with the specified key has been found")
 )
 
 var requiredScopes = []string{
@@ -37,11 +37,11 @@ var requiredScopes = []string{
 }
 
 type Dataset struct {
-	transaction *Transaction
-	namespace   string
+	tx        *Tx
+	namespace string
 }
 
-type Transaction struct {
+type Tx struct {
 	id        []byte
 	datasetID string
 	transport http.RoundTripper
@@ -65,7 +65,7 @@ func NewDatasetWithNS(projectID, ns, email string, privateKey []byte) (*Dataset,
 	}
 	return &Dataset{
 		namespace: ns,
-		transaction: &Transaction{
+		tx: &Tx{
 			datasetID: projectID,
 			transport: conf.NewTransport(),
 		},
@@ -86,17 +86,17 @@ func (d *Dataset) NewIncompleteKey(kind string) *Key {
 
 func (d *Dataset) Get(key *Key, dest interface{}) (err error) {
 	// TODO(jbd): Return error immediately if the key is incomplete.
-	return d.transaction.Get(key, dest)
+	return d.tx.Get(key, dest)
 }
 
 func (d *Dataset) Put(key *Key, src interface{}) (k *Key, err error) {
-	return d.transaction.Put(key, src)
+	return d.tx.Put(key, src)
 }
 
 // Delete deletes the object identified with the provided key.
 func (d *Dataset) Delete(key *Key) (err error) {
 	// TODO(jbd): Return error immediately if the key is incomplete.
-	return d.transaction.Delete(key)
+	return d.tx.Delete(key)
 }
 
 // AllocateIDs allocates n new IDs from the dataset's namespace and of
@@ -114,8 +114,8 @@ func (d *Dataset) AllocateIDs(kind string, n int) (keys []*Key, err error) {
 	req := &pb.AllocateIdsRequest{Key: incompleteKeys}
 	resp := &pb.AllocateIdsResponse{}
 
-	url := d.transaction.newUrl("allocateIds")
-	if err = d.transaction.newClient().call(url, req, resp); err != nil {
+	url := d.tx.newUrl("allocateIds")
+	if err = d.tx.newClient().call(url, req, resp); err != nil {
 		return
 	}
 	// TODO(jbd): Return error if response doesn't include enough keys.
@@ -128,7 +128,7 @@ func (d *Dataset) AllocateIDs(kind string, n int) (keys []*Key, err error) {
 }
 
 func (d *Dataset) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQuery *Query, err error) {
-	return d.transaction.RunQuery(q, dest)
+	return d.tx.RunQuery(q, dest)
 }
 
 // RunInTransaction starts a new transaction, runs the provided function
@@ -138,7 +138,7 @@ func (d *Dataset) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQuery *
 // If any error occurs, the transaction is rolled back. Otherwise,
 // transaction is committed.
 //
-// 		err := ds.RunInTransaction(func(t *datastore.Transaction) {
+// 		err := ds.RunInTransaction(func(t *datastore.Tx) {
 // 			a := &someType{}
 //			if err := t.Get(k, &a); err != nil {
 //				t.Rollback();
@@ -151,8 +151,8 @@ func (d *Dataset) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQuery *
 //			}
 // 		})
 //
-func (d *Dataset) RunInTransaction(fn func(t *Transaction)) (err error) {
-	t, err := d.NewTransaction()
+func (d *Dataset) RunInTransaction(fn func(t *Tx)) (err error) {
+	t, err := d.NewTx()
 	if err != nil {
 		return
 	}
@@ -167,30 +167,30 @@ func (d *Dataset) RunInTransaction(fn func(t *Transaction)) (err error) {
 	return err
 }
 
-// NewTransaction begins a transaction and returns a Transaction instance.
-func (d *Dataset) NewTransaction() (*Transaction, error) {
-	transaction := &Transaction{
-		transport: d.transaction.transport,
-		datasetID: d.transaction.datasetID,
+// NewTx begins a transaction.
+func (d *Dataset) NewTx() (*Tx, error) {
+	tx := &Tx{
+		transport: d.tx.transport,
+		datasetID: d.tx.datasetID,
 	}
 
 	req := &pb.BeginTransactionRequest{}
 	resp := &pb.BeginTransactionResponse{}
-	url := d.transaction.newUrl("beginTransaction")
-	if err := d.transaction.newClient().call(url, req, resp); err != nil {
+	url := d.tx.newUrl("beginTransaction")
+	if err := d.tx.newClient().call(url, req, resp); err != nil {
 		return nil, err
 	}
-	transaction.id = resp.GetTransaction()
-	return transaction, nil
+	tx.id = resp.GetTransaction()
+	return tx, nil
 }
 
 // IsTransactional returns true if the transaction has a non-zero
 // transaction ID.
-func (t *Transaction) IsTransactional() bool {
+func (t *Tx) IsTransactional() bool {
 	return len(t.id) > 0
 }
 
-func (t *Transaction) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQuery *Query, err error) {
+func (t *Tx) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQuery *Query, err error) {
 	if !isSlicePtr(dest) {
 		err = errors.New("datastore: dest should be a slice pointer")
 		return
@@ -235,7 +235,7 @@ func (t *Transaction) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQue
 }
 
 // Commit commits the transaction.
-func (t *Transaction) Commit() error {
+func (t *Tx) Commit() error {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
@@ -254,7 +254,7 @@ func (t *Transaction) Commit() error {
 }
 
 // Rollback rollbacks the transaction.
-func (t *Transaction) Rollback() error {
+func (t *Tx) Rollback() error {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
@@ -275,8 +275,8 @@ func (t *Transaction) Rollback() error {
 // TODO(jbd): Implement GetAll, PutAll and DeleteAll.
 
 // Get looks up for the object identified with the provided key
-// in the transaction.
-func (t *Transaction) Get(key *Key, dest interface{}) (err error) {
+// in the scope of the current transaction.
+func (t *Tx) Get(key *Key, dest interface{}) (err error) {
 	if !isPtrOfStruct(dest) {
 		err = errors.New("datastore: dest should be a pointer of a struct")
 		return
@@ -300,9 +300,10 @@ func (t *Transaction) Get(key *Key, dest interface{}) (err error) {
 	return
 }
 
-// Put upserts the object identified with key in the transaction.
-// Returns the complete key if key is incomplete.
-func (t *Transaction) Put(key *Key, src interface{}) (k *Key, err error) {
+// Put upserts the object identified with key in the scope
+// of the current transaction.
+// It returns the complete key if key is incomplete.
+func (t *Tx) Put(key *Key, src interface{}) (k *Key, err error) {
 	if !isPtrOfStruct(src) {
 		err = errors.New("datastore: dest should be a pointer of a struct")
 		return
@@ -343,7 +344,7 @@ func (t *Transaction) Put(key *Key, src interface{}) (k *Key, err error) {
 
 // Delete deletes the object identified with the specified key in
 // the transaction.
-func (t *Transaction) Delete(key *Key) (err error) {
+func (t *Tx) Delete(key *Key) (err error) {
 	// Determine mod depending on if this is the default
 	// transaction or not.
 	mode := pb.CommitRequest_NON_TRANSACTIONAL.Enum()
@@ -362,12 +363,11 @@ func (t *Transaction) Delete(key *Key) (err error) {
 	return t.newClient().call(t.newUrl("commit"), req, resp)
 }
 
-func (t *Transaction) newClient() *client {
+func (t *Tx) newClient() *client {
 	return &client{transport: t.transport}
 }
 
-// TODO(jbd): Provide support for non-prod instances.
-
-func (t *Transaction) newUrl(method string) string {
+func (t *Tx) newUrl(method string) string {
+	// TODO(jbd): Provide support for non-prod instances.
 	return "https://www.googleapis.com/datastore/v1beta2/datasets/" + t.datasetID + "/" + method
 }
