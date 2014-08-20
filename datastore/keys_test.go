@@ -25,72 +25,42 @@ func TestKeyEqual(t *testing.T) {
 		{&Key{}, nil, false},
 		{&Key{}, &Key{}, true},
 		{&Key{namespace: "ns1"}, &Key{namespace: "ns2"}, false},
+		{&Key{kind: "kind1"}, &Key{kind: "kind2"}, false},
+		{&Key{kind: "kind1", id: 123}, &Key{kind: "kind1", id: 456}, false},
+		{&Key{kind: "kind1", name: "name1"}, &Key{kind: "kind1", name: "name2"}, false},
 	}
 	for _, test := range tests {
 		assertKeyEqual(t, test.k0, test.k1, test.eq)
 	}
 
-	k := &Key{
-		fullPath: []*Path{
-			&Path{Kind: "Parent", Name: "name"},
-			&Path{Kind: "Child", ID: 123},
-		},
-	}
-	o := &Key{
-		fullPath: []*Path{
-			&Path{Kind: "Parent", Name: "name"},
-		},
-	}
+	k := &Key{kind: "Child", name: "name"}
+	k.SetParent(&Key{kind: "Parent", id: 123})
+	o := &Key{kind: "Child", name: "name"}
 	assertKeyEqual(t, k, o, false)
 
-	k = &Key{
-		fullPath: []*Path{
-			&Path{Kind: "Parent", Name: "name"},
-			&Path{Kind: "Child", ID: 123},
-		},
-	}
-	o = &Key{
-		fullPath: []*Path{
-			&Path{Kind: "Parent", Name: "name"},
-			&Path{Kind: "Child", ID: 456},
-		},
-	}
+	k = &Key{kind: "Child", name: "name"}
+	k.SetParent(&Key{kind: "Parent", id: 123})
+	o = &Key{kind: "Child", name: "name"}
+	o.SetParent(&Key{kind: "Parent", id: 456})
 	assertKeyEqual(t, k, o, false)
 
-	k = &Key{
-		fullPath: []*Path{
-			&Path{Kind: "Parent", Name: "name1"},
-		},
-	}
-	o = &Key{
-		fullPath: []*Path{
-			&Path{Kind: "Parent", Name: "name2"},
-		},
-	}
+	k = &Key{kind: "Child", name: "name"}
+	k.SetParent(&Key{kind: "Parent", name: "name1"})
+	o = &Key{kind: "Child", name: "name"}
+	o.SetParent(&Key{kind: "Parent", name: "name2"})
 	assertKeyEqual(t, k, o, false)
 
-	k = &Key{
-		namespace: "ns1",
-		fullPath: []*Path{
-			&Path{Kind: "Parent", Name: "name"},
-			&Path{Kind: "Child", ID: 123},
-		},
-	}
-	o = &Key{
-		namespace: "ns1",
-		fullPath: []*Path{
-			&Path{Kind: "Parent", Name: "name"},
-			&Path{Kind: "Child", ID: 123},
-		},
-	}
+	k = &Key{kind: "Child", name: "name", namespace: "ns1"}
+	k.SetParent(&Key{kind: "Parent", id: 123})
+	o = &Key{kind: "Child", name: "name", namespace: "ns1"}
+	o.SetParent(&Key{kind: "Parent", id: 123})
 	assertKeyEqual(t, k, o, true)
-
 }
 
 func assertKeyEqual(t *testing.T, k, o *Key, expected bool) {
-	if k.Equal(o) != expected {
+	if k.IsEqual(o) != expected {
 		t.Errorf("%#v == %#v\n\tgot: %v; want: %v\n", k, o, !expected, expected)
-	} else if o.Equal(k) != expected {
+	} else if o.IsEqual(k) != expected {
 		t.Errorf("%#v == %#v\n\tgot: %v; want: %v\n", o, k, !expected, expected)
 	}
 }

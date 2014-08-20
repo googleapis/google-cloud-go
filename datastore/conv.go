@@ -20,7 +20,6 @@ import (
 	"time"
 
 	"code.google.com/p/goprotobuf/proto"
-
 	pb "google.golang.org/cloud/internal/datastore"
 )
 
@@ -41,17 +40,17 @@ var sortDirectionToProto = map[sortDirection]*pb.PropertyOrder_Direction{
 	descending: pb.PropertyOrder_ASCENDING.Enum(),
 }
 
-type fieldMeta struct {
-	field   *reflect.StructField
-	name    string
-	indexed bool
-}
-
 var (
 	typeOfByteSlice = reflect.TypeOf([]byte{})
 	typeOfTime      = reflect.TypeOf(time.Time{})
 	typeOfKeyPtr    = reflect.TypeOf(&Key{})
 )
+
+type fieldMeta struct {
+	field   *reflect.StructField
+	name    string
+	indexed bool
+}
 
 var entityMeta map[reflect.Type](map[string]*fieldMeta) = make(map[reflect.Type](map[string]*fieldMeta))
 
@@ -87,16 +86,21 @@ func registerEntityMeta(typ reflect.Type) map[string]*fieldMeta {
 }
 
 func keyToPbKey(k *Key) *pb.Key {
-	path := make([]*pb.Key_PathElement, len(k.fullPath))
-	for i, p := range k.fullPath {
-		path[i] = &pb.Key_PathElement{
-			Kind: proto.String(p.Kind),
+	// TODO(jbd): Eliminate unrequired allocations.
+	path := make([]*pb.Key_PathElement, 0)
+	for {
+		el := &pb.Key_PathElement{
+			Kind: proto.String(k.kind),
 		}
-		if p.ID != 0 {
-			path[i].Id = proto.Int64(p.ID)
+		if k.id != 0 {
+			el.Id = proto.Int64(k.id)
 		}
-		if p.Name != "" {
-			path[i].Name = proto.String(p.Name)
+		if k.name != "" {
+			el.Name = proto.String(k.name)
+		}
+		path = append([]*pb.Key_PathElement{el}, path...)
+		if k.parent == nil {
+			break
 		}
 	}
 	key := &pb.Key{
@@ -111,19 +115,19 @@ func keyToPbKey(k *Key) *pb.Key {
 }
 
 func keyFromKeyProto(p *pb.Key) *Key {
-	key := &Key{
-		namespace: p.GetPartitionId().GetNamespace(),
-	}
-	elements := p.GetPathElement()
-	key.fullPath = make([]*Path, len(elements))
-	for i, el := range elements {
-		key.fullPath[i] = &Path{
-			Kind: el.GetKind(),
-			ID:   el.GetId(),
-			Name: el.GetName(),
+	keys := make([]*Key, len(p.GetPathElement()))
+	for i, el := range p.GetPathElement() {
+		keys[i] = &Key{
+			namespace: p.GetPartitionId().GetNamespace(),
+			kind:      el.GetKind(),
+			id:        el.GetId(),
+			name:      el.GetName(),
 		}
 	}
-	return key
+	for i := 0; i < len(keys)-1; i++ {
+		keys[i+1].parent = keys[i]
+	}
+	return keys[len(keys)-1]
 }
 
 func queryToQueryProto(q *Query) *pb.Query {

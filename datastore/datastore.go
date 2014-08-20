@@ -20,11 +20,10 @@ import (
 	"reflect"
 	"sync"
 
-	"code.google.com/p/goprotobuf/proto"
-
 	"github.com/golang/oauth2"
 	"github.com/golang/oauth2/google"
 
+	"code.google.com/p/goprotobuf/proto"
 	pb "google.golang.org/cloud/internal/datastore"
 )
 
@@ -74,31 +73,19 @@ func NewDatasetWithNS(projectID, ns, email string, privateKey []byte) (*Dataset,
 }
 
 func (d *Dataset) NewNamedKey(kind string, name string) *Key {
-	return &Key{
-		namespace: d.namespace,
-		fullPath: []*Path{
-			&Path{Kind: kind, Name: name},
-		},
-	}
+	return &Key{namespace: d.namespace, kind: kind, name: name}
 }
 
-func (d *Dataset) NewIDKey(kind string, id int64) *Key {
-	return &Key{
-		namespace: d.namespace,
-		fullPath: []*Path{
-			&Path{Kind: kind, ID: id},
-		},
-	}
+func (d *Dataset) NewKey(kind string, id int64) *Key {
+	return &Key{namespace: d.namespace, kind: kind, id: id}
 }
 
-func (d *Dataset) NewKey(path []*Path) *Key {
-	return &Key{
-		namespace: d.namespace,
-		fullPath:  path,
-	}
+func (d *Dataset) NewIncompleteKey(kind string) *Key {
+	return &Key{namespace: d.namespace, kind: kind}
 }
 
 func (d *Dataset) Get(key *Key, dest interface{}) (err error) {
+	// TODO(jbd): Return error immediately if the key is incomplete.
 	return d.transaction.Get(key, dest)
 }
 
@@ -108,25 +95,21 @@ func (d *Dataset) Put(key *Key, src interface{}) (k *Key, err error) {
 
 // Delete deletes the object identified with the provided key.
 func (d *Dataset) Delete(key *Key) (err error) {
+	// TODO(jbd): Return error immediately if the key is incomplete.
 	return d.transaction.Delete(key)
 }
 
-// AllocateIDs allocates n new IDs from the specified namespace and of
+// AllocateIDs allocates n new IDs from the dataset's namespace and of
 // the provided kind. If no namespace provided, default is used.
-func (d *Dataset) AllocateIDs(namespace, kind string, n int) (keys []*Key, err error) {
+func (d *Dataset) AllocateIDs(kind string, n int) (keys []*Key, err error) {
 	if n <= 0 {
 		err = errors.New("datastore: n should be bigger than zero")
 		return
 	}
-	key := &Key{
-		namespace: namespace,
-		fullPath: []*Path{
-			&Path{Kind: kind},
-		},
-	}
+	key := keyToPbKey(d.NewIncompleteKey(kind))
 	incompleteKeys := make([]*pb.Key, n)
 	for i := 0; i < n; i++ {
-		incompleteKeys[i] = keyToPbKey(key)
+		incompleteKeys[i] = key
 	}
 	req := &pb.AllocateIdsRequest{Key: incompleteKeys}
 	resp := &pb.AllocateIdsResponse{}
@@ -340,7 +323,7 @@ func (t *Transaction) Put(key *Key, src interface{}) (k *Key, err error) {
 		Mutation:    &pb.Mutation{},
 	}
 
-	if !key.Complete() {
+	if !key.IsComplete() {
 		req.Mutation.InsertAutoId = entity
 	} else {
 		req.Mutation.Upsert = entity
@@ -370,8 +353,10 @@ func (t *Transaction) Delete(key *Key) (err error) {
 
 	req := &pb.CommitRequest{
 		Transaction: t.id,
-		Mutation:    &pb.Mutation{Delete: []*pb.Key{keyToPbKey(key)}},
-		Mode:        mode,
+		Mutation: &pb.Mutation{
+			Delete: []*pb.Key{keyToPbKey(key)},
+		},
+		Mode: mode,
 	}
 	resp := &pb.CommitResponse{}
 	return t.newClient().call(t.newUrl("commit"), req, resp)

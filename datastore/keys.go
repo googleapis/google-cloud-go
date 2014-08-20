@@ -14,22 +14,37 @@
 
 package datastore
 
-type Path struct {
-	Kind string
-	ID   int64
-	Name string
-}
-
 // Key represents the datastore key for a stored entity, and is immutable.
 type Key struct {
-	fullPath  []*Path
+	kind   string
+	id     int64
+	name   string
+	parent *Key
+
 	namespace string
 }
 
 // TODO(jbd): Does the path needs to be immutable?
 
-func (k *Key) Path() []*Path {
-	return k.fullPath
+func (k *Key) Kind() string {
+	return k.kind
+}
+
+func (k *Key) ID() int64 {
+	return k.id
+}
+
+func (k *Key) Name() string {
+	return k.name
+}
+
+func (k *Key) Parent() *Key {
+	return k.parent
+}
+
+func (k *Key) SetParent(v *Key) {
+	// TODO(jbd): panic if v is not complete
+	k.parent = v
 }
 
 func (k *Key) Namespace() string {
@@ -37,27 +52,22 @@ func (k *Key) Namespace() string {
 }
 
 // Complete returns whether the key does not refer to a stored entity.
-func (k *Key) Complete() bool {
-	for _, p := range k.fullPath {
-		if p.Name == "" && p.ID == 0 {
-			return false
-		}
-	}
-	return true
+func (k *Key) IsComplete() bool {
+	return k.name != "" || k.id != 0
 }
 
-func (k *Key) Equal(o *Key) bool {
-	if k == nil || o == nil {
-		return k == o // if either is nil, both must be nil
-	}
-	if k.namespace != o.namespace || len(k.fullPath) != len(o.fullPath) {
-		return false
-	}
-	for i, p := range k.fullPath {
-		oPath := o.fullPath[i]
-		if p.ID != oPath.ID || p.Name != oPath.Name || p.Kind != oPath.Kind {
+func (k *Key) IsEqual(o *Key) bool {
+	for {
+		if k == nil || o == nil {
+			return k == o // if either is nil, both must be nil
+		}
+		if k.namespace != o.namespace || k.name != o.name || k.id != o.id || k.kind != o.kind {
 			return false
 		}
+		if k.parent == nil && o.parent == nil {
+			return true
+		}
+		k = k.parent
+		o = o.parent
 	}
-	return true
 }
