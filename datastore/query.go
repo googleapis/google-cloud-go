@@ -160,9 +160,9 @@ func (q *Query) Order(fieldName string) *Query {
 	return q
 }
 
-// Project returns a derivative query that yields only the given fields. It
+// Select returns a derivative query that yields only the given fields. It
 // cannot be used with KeysOnly.
-func (q *Query) Project(fieldNames ...string) *Query {
+func (q *Query) Select(fieldNames ...string) *Query {
 	q = q.clone()
 	q.projection = append([]string(nil), fieldNames...)
 	return q
