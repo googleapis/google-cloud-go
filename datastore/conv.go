@@ -171,6 +171,9 @@ func queryToQueryProto(q *Query) *pb.Query {
 	if len(q.start) > 0 {
 		p.StartCursor = q.start
 	}
+	if len(q.end) > 0 {
+		p.EndCursor = q.end
+	}
 	if q.limit > 0 {
 		p.Limit = &q.limit
 

@@ -81,7 +81,7 @@ type Query struct {
 	offset int32
 
 	start []byte
-	next  []byte
+	end   []byte
 
 	err error
 }
@@ -177,6 +177,12 @@ func (q *Query) GroupBy(fieldNames ...string) *Query {
 func (q *Query) Start(cursor []byte) *Query {
 	q = q.clone()
 	q.start = cursor
+	return q
+}
+
+func (q *Query) End(cursor []byte) *Query {
+	q = q.clone()
+	q.end = cursor
 	return q
 }
 
