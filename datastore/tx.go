@@ -200,6 +200,8 @@ func (t *Tx) Put(key *Key, src interface{}) (k *Key, err error) {
 	autoKey := resp.GetMutationResult().GetInsertAutoIdKey()
 	if len(autoKey) > 0 {
 		k = keyFromKeyProto(autoKey[0])
+	} else {
+		k = key
 	}
 	return
 }
