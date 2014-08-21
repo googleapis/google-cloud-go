@@ -62,7 +62,7 @@ func registerEntityMeta(typ reflect.Type) map[string]*fieldMeta {
 		tag := field.Tag.Get(tagKeyDatastore)
 
 		name := ""
-		indexed := true // by default
+		indexed := true // by default TODO(jbd): If list, don't set.
 
 		// name_of_the_field
 		// name_of_the_field,noindex
@@ -87,7 +87,7 @@ func registerEntityMeta(typ reflect.Type) map[string]*fieldMeta {
 
 func keyToPbKey(k *Key) *pb.Key {
 	// TODO(jbd): Eliminate unrequired allocations.
-	path := make([]*pb.Key_PathElement, 0)
+	path := []*pb.Key_PathElement(nil)
 	for {
 		el := &pb.Key_PathElement{
 			Kind: proto.String(k.kind),
@@ -223,7 +223,6 @@ func entityFromEntityProto(datasetId string, e *pb.Entity, val reflect.Value) {
 			// skip if not presented in the struct
 			continue
 		}
-
 		fieldVal := val.FieldByName(f.field.Name)
 		dsVal := p.GetValue()
 
@@ -246,7 +245,7 @@ func entityFromEntityProto(datasetId string, e *pb.Entity, val reflect.Value) {
 			us := dsVal.GetTimestampMicrosecondsValue() % (1000 * 1000)
 			t := time.Unix(sec, us*1000)
 			fieldVal.Set(reflect.ValueOf(t))
-			// TODO(jbd): Handle lists, time, other composites
+			// TODO(jbd): Handle lists and composites
 		}
 	}
 }
@@ -264,8 +263,7 @@ func objToValue(src interface{}) *pb.Value {
 		us := t.UnixNano() / 1000
 		return &pb.Value{TimestampMicrosecondsValue: proto.Int64(us)}
 	case *Key:
-		pKey := keyToPbKey(src.(*Key))
-		return &pb.Value{KeyValue: pKey}
+		return &pb.Value{KeyValue: keyToPbKey(src.(*Key))}
 	case string:
 		return &pb.Value{StringValue: proto.String(src.(string))}
 	case []byte:

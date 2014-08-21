@@ -51,8 +51,6 @@ type order struct {
 	Direction sortDirection
 }
 
-var zeroCC []byte
-
 // NewQuery creates a new Query for a specific entity kind.
 //
 // An empty kind means to return all entities, including entities created and
