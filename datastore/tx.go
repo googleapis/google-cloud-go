@@ -10,6 +10,10 @@ import (
 	pb "google.golang.org/cloud/internal/datastore"
 )
 
+var (
+	errKeyIncomplete = errors.New("datastore: key is incomplete, provide a complete key")
+)
+
 type Tx struct {
 	id        []byte
 	datasetID string
@@ -43,6 +47,9 @@ func (t *Tx) IsTransactional() bool {
 }
 
 func (t *Tx) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQuery *Query, err error) {
+	if q.err != nil {
+		return nil, nil, q.err
+	}
 	if !isSlicePtr(dest) {
 		err = errors.New("datastore: dest should be a slice pointer")
 		return
@@ -129,6 +136,9 @@ func (t *Tx) Rollback() error {
 // Get looks up for the object identified with the provided key
 // in the scope of the current transaction.
 func (t *Tx) Get(key *Key, dest interface{}) (err error) {
+	if !key.IsComplete() {
+		return errKeyIncomplete
+	}
 	if !isPtrOfStruct(dest) {
 		err = errors.New("datastore: dest should be a pointer of a struct")
 		return
@@ -197,6 +207,9 @@ func (t *Tx) Put(key *Key, src interface{}) (k *Key, err error) {
 // Delete deletes the object identified with the specified key in
 // the transaction.
 func (t *Tx) Delete(key *Key) (err error) {
+	if !key.IsComplete() {
+		return errKeyIncomplete
+	}
 	// Determine mod depending on if this is the default
 	// transaction or not.
 	mode := pb.CommitRequest_NON_TRANSACTIONAL.Enum()

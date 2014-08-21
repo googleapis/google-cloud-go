@@ -72,7 +72,6 @@ func (d *Dataset) NewIncompleteKey(kind string) *Key {
 }
 
 func (d *Dataset) Get(key *Key, dest interface{}) (err error) {
-	// TODO(jbd): Return error immediately if the key is incomplete.
 	return d.tx.Get(key, dest)
 }
 
@@ -82,7 +81,6 @@ func (d *Dataset) Put(key *Key, src interface{}) (k *Key, err error) {
 
 // Delete deletes the object identified with the provided key.
 func (d *Dataset) Delete(key *Key) (err error) {
-	// TODO(jbd): Return error immediately if the key is incomplete.
 	return d.tx.Delete(key)
 }
 
