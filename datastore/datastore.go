@@ -116,38 +116,18 @@ func (d *Dataset) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQuery *
 	return d.tx.RunQuery(q, dest)
 }
 
-// RunInTransaction starts a new transaction, runs the provided function
-// and automatically commits the transaction if created transaction
-// hasn't rolled back. The following example gets an object, modifies
-// its Name field and puts it back to datastore in the same transaction.
-// If any error occurs, the transaction is rolled back. Otherwise,
-// transaction is committed.
-//
-// 		err := ds.RunInTransaction(func(t *datastore.Tx) {
-// 			a := &someType{}
-//			if err := t.Get(k, &a); err != nil {
-//				t.Rollback();
-//				return
-//			}
-//			a.Name = "new name"
-//			if err := t.Put(k, &a); err != nil {
-//				t.Rollback();
-//				return
-//			}
-// 		})
-//
-func (d *Dataset) RunInTransaction(fn func(t *Tx)) (err error) {
-	t, err := d.NewTx()
-	if err != nil {
-		return
+// NewTx begins a transaction.
+func (d *Dataset) NewTx() (*Tx, error) {
+	req := &pb.BeginTransactionRequest{}
+	resp := &pb.BeginTransactionResponse{}
+	url := d.tx.newUrl("beginTransaction")
+	if err := d.tx.newClient().call(url, req, resp); err != nil {
+		return nil, err
 	}
-	fn(t)
-	// if not finalized, commit the
-	// transaction automatically
-	t.mu.RLock()
-	if !t.finalized {
-		err = t.Commit()
+	tx := &Tx{
+		transport: d.tx.transport,
+		datasetID: d.tx.datasetID,
+		id:        resp.GetTransaction(),
 	}
-	t.mu.RUnlock()
-	return err
+	return tx, nil
 }

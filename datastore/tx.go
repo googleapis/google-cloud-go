@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 	"reflect"
-	"sync"
 
 	"code.google.com/p/goprotobuf/proto"
 	pb "google.golang.org/cloud/internal/datastore"
@@ -18,26 +17,6 @@ type Tx struct {
 	id        []byte
 	datasetID string
 	transport http.RoundTripper
-
-	mu        sync.RWMutex
-	finalized bool
-}
-
-// NewTx begins a transaction.
-func (d *Dataset) NewTx() (*Tx, error) {
-	tx := &Tx{
-		transport: d.tx.transport,
-		datasetID: d.tx.datasetID,
-	}
-
-	req := &pb.BeginTransactionRequest{}
-	resp := &pb.BeginTransactionResponse{}
-	url := d.tx.newUrl("beginTransaction")
-	if err := d.tx.newClient().call(url, req, resp); err != nil {
-		return nil, err
-	}
-	tx.id = resp.GetTransaction()
-	return tx, nil
 }
 
 // IsTransactional returns true if the transaction has a non-zero
@@ -95,29 +74,23 @@ func (t *Tx) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQuery *Query
 
 // Commit commits the transaction.
 func (t *Tx) Commit() error {
-	t.mu.Lock()
-	defer t.mu.Unlock()
-
-	if t.IsTransactional() {
+	if !t.IsTransactional() {
 		return errors.New("datastore: non-transactional operation")
 	}
 	req := &pb.CommitRequest{
+		Mode:        pb.CommitRequest_TRANSACTIONAL.Enum(),
 		Transaction: t.id,
 	}
 	resp := &pb.CommitResponse{}
 	if err := t.newClient().call(t.newUrl("commit"), req, resp); err != nil {
 		return err
 	}
-	t.finalized = true
 	return nil
 }
 
 // Rollback rollbacks the transaction.
 func (t *Tx) Rollback() error {
-	t.mu.Lock()
-	defer t.mu.Unlock()
-
-	if t.IsTransactional() {
+	if !t.IsTransactional() {
 		return errors.New("datastore: non-transactional operation")
 	}
 	req := &pb.RollbackRequest{
@@ -127,7 +100,6 @@ func (t *Tx) Rollback() error {
 	if err := t.newClient().call(t.newUrl("rollback"), req, resp); err != nil {
 		return err
 	}
-	t.finalized = true
 	return nil
 }
 
@@ -156,7 +128,6 @@ func (t *Tx) Get(key *Key, dest interface{}) (err error) {
 	if len(resp.Found) == 0 {
 		return ErrNotFound
 	}
-
 	val := reflect.ValueOf(dest).Elem()
 	entityFromEntityProto(t.datasetID, resp.Found[0].Entity, val)
 	return
@@ -170,11 +141,10 @@ func (t *Tx) Put(key *Key, src interface{}) (k *Key, err error) {
 		err = errors.New("datastore: dest should be a pointer of a struct")
 		return
 	}
-
 	// Determine mod depending on if this is the default
 	// transaction or not.
 	mode := pb.CommitRequest_NON_TRANSACTIONAL.Enum()
-	if len(t.id) > 0 {
+	if t.IsTransactional() {
 		mode = pb.CommitRequest_TRANSACTIONAL.Enum()
 	}
 
@@ -215,7 +185,7 @@ func (t *Tx) Delete(key *Key) (err error) {
 	// Determine mod depending on if this is the default
 	// transaction or not.
 	mode := pb.CommitRequest_NON_TRANSACTIONAL.Enum()
-	if len(t.id) > 0 {
+	if t.IsTransactional() {
 		mode = pb.CommitRequest_TRANSACTIONAL.Enum()
 	}
 
