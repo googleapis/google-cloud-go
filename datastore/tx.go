@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"reflect"
 
-	"code.google.com/p/goprotobuf/proto"
 	pb "google.golang.org/cloud/internal/datastore"
 )
 
@@ -29,46 +28,46 @@ func (t *Tx) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQuery *Query
 	if q.err != nil {
 		return nil, nil, q.err
 	}
-	if !isSlicePtr(dest) {
-		err = errors.New("datastore: dest should be a slice pointer")
-		return
-	}
-	req := &pb.RunQueryRequest{
-		ReadOptions: &pb.ReadOptions{
-			Transaction: t.id,
-		},
-		PartitionId: &pb.PartitionId{
-			DatasetId: proto.String(t.datasetID),
-		},
-		Query: queryToQueryProto(q),
-	}
-	if q.namespace != "" {
-		req.PartitionId.Namespace = proto.String(q.namespace)
-	}
+	// if !isSlicePtr(dest) {
+	// 	err = errors.New("datastore: dest should be a slice pointer")
+	// 	return
+	// }
+	// req := &pb.RunQueryRequest{
+	// 	ReadOptions: &pb.ReadOptions{
+	// 		Transaction: t.id,
+	// 	},
+	// 	PartitionId: &pb.PartitionId{
+	// 		DatasetId: proto.String(t.datasetID),
+	// 	},
+	// 	Query: queryToProto(q),
+	// }
+	// if q.namespace != "" {
+	// 	req.PartitionId.Namespace = proto.String(q.namespace)
+	// }
 
-	resp := &pb.RunQueryResponse{}
-	if err = t.newClient().call(t.newUrl("runQuery"), req, resp); err != nil {
-		return
-	}
+	// resp := &pb.RunQueryResponse{}
+	// if err = t.newClient().call(t.newUrl("runQuery"), req, resp); err != nil {
+	// 	return
+	// }
 
-	results := resp.GetBatch().GetEntityResult()
-	keys = make([]*Key, len(results))
+	// results := resp.GetBatch().GetEntityResult()
+	// keys = make([]*Key, len(results))
 
-	typ := reflect.TypeOf(dest).Elem() // type of slice
-	v := reflect.MakeSlice(typ, len(results), len(results))
-	for i, e := range results {
-		keys[i] = keyFromKeyProto(e.GetEntity().GetKey())
-		obj := reflect.New(typ.Elem().Elem()).Elem()
-		entityFromEntityProto(t.datasetID, e.GetEntity(), obj)
+	// typ := reflect.TypeOf(dest).Elem() // type of slice
+	// v := reflect.MakeSlice(typ, len(results), len(results))
+	// for i, e := range results {
+	// 	keys[i] = protoToKey(e.GetEntity().GetKey())
+	// 	obj := reflect.New(typ.Elem().Elem()).Elem()
+	// 	entityFromEntityProto(e.GetEntity(), obj)
 
-		v.Index(i).Set(reflect.New(typ.Elem().Elem())) // dest[i] = new(elType)
-		v.Index(i).Elem().Set(obj)                     // dest[i] = el
-	}
-	reflect.ValueOf(dest).Elem().Set(v)
-	if string(resp.GetBatch().GetEndCursor()) != string(q.start) {
-		// next page is available
-		nextQuery = q.Start(resp.GetBatch().GetEndCursor())
-	}
+	// 	v.Index(i).Set(reflect.New(typ.Elem().Elem())) // dest[i] = new(elType)
+	// 	v.Index(i).Elem().Set(obj)                     // dest[i] = el
+	// }
+	// reflect.ValueOf(dest).Elem().Set(v)
+	// if string(resp.GetBatch().GetEndCursor()) != string(q.start) {
+	// 	// next page is available
+	// 	nextQuery = q.Start(resp.GetBatch().GetEndCursor())
+	// }
 	return
 }
 
@@ -103,34 +102,32 @@ func (t *Tx) Rollback() error {
 	return nil
 }
 
-// TODO(jbd): Implement GetAll, PutAll and DeleteAll.
-
-// Get looks up for the object identified with the provided key
-// in the scope of the current transaction.
-func (t *Tx) Get(key *Key, dest interface{}) (err error) {
-	if !key.IsComplete() {
-		return errKeyIncomplete
+func (t *Tx) Get(keys []*Key, dest interface{}) error {
+	if len(keys) == 0 {
+		return nil
 	}
-	if !isPtrOfStruct(dest) {
-		err = errors.New("datastore: dest should be a pointer of a struct")
-		return
+	converter, err := newMultiConverter(len(keys), dest)
+	if err != nil {
+		return err
+	}
+	protoKeys := make([]*pb.Key, len(keys))
+	for i, k := range keys {
+		protoKeys[i] = keyToProto(k)
 	}
 	req := &pb.LookupRequest{
 		ReadOptions: &pb.ReadOptions{
 			Transaction: t.id,
 		},
-		Key: []*pb.Key{keyToPbKey(key)},
+		Key: protoKeys,
 	}
 	resp := &pb.LookupResponse{}
-	if err = t.newClient().call(t.newUrl("lookup"), req, resp); err != nil {
-		return
+	if err := t.newClient().call(t.newUrl("lookup"), req, resp); err != nil {
+		return err
 	}
-	if len(resp.Found) == 0 {
-		return ErrNotFound
+	for i, result := range resp.Found {
+		converter.set(i, result)
 	}
-	val := reflect.ValueOf(dest).Elem()
-	entityFromEntityProto(t.datasetID, resp.Found[0].Entity, val)
-	return
+	return nil
 }
 
 // Put upserts the object identified with key in the scope
@@ -169,7 +166,7 @@ func (t *Tx) Put(key *Key, src interface{}) (k *Key, err error) {
 
 	autoKey := resp.GetMutationResult().GetInsertAutoIdKey()
 	if len(autoKey) > 0 {
-		k = keyFromKeyProto(autoKey[0])
+		k = protoToKey(autoKey[0])
 	} else {
 		k = key
 	}
@@ -178,9 +175,10 @@ func (t *Tx) Put(key *Key, src interface{}) (k *Key, err error) {
 
 // Delete deletes the object identified with the specified key in
 // the transaction.
-func (t *Tx) Delete(key *Key) (err error) {
-	if !key.IsComplete() {
-		return errKeyIncomplete
+func (t *Tx) Delete(keys ...*Key) (err error) {
+	protoKeys := make([]*pb.Key, len(keys))
+	for i, k := range keys {
+		protoKeys[i] = keyToProto(k)
 	}
 	// Determine mod depending on if this is the default
 	// transaction or not.
@@ -188,11 +186,10 @@ func (t *Tx) Delete(key *Key) (err error) {
 	if t.IsTransactional() {
 		mode = pb.CommitRequest_TRANSACTIONAL.Enum()
 	}
-
 	req := &pb.CommitRequest{
 		Transaction: t.id,
 		Mutation: &pb.Mutation{
-			Delete: []*pb.Key{keyToPbKey(key)},
+			Delete: protoKeys,
 		},
 		Mode: mode,
 	}
@@ -207,4 +204,41 @@ func (t *Tx) newClient() *client {
 func (t *Tx) newUrl(method string) string {
 	// TODO(jbd): Provide support for non-prod instances.
 	return "https://www.googleapis.com/datastore/v1beta2/datasets/" + t.datasetID + "/" + method
+}
+
+type multiConverter struct {
+	dest interface{}
+	size int
+
+	sliceTyp reflect.Type
+	elemType reflect.Type
+	sliceVal reflect.Value
+}
+
+func newMultiConverter(size int, dest interface{}) (*multiConverter, error) {
+	if reflect.TypeOf(dest).Kind() != reflect.Slice {
+		return nil, errors.New("datastore: dest should be a slice")
+	}
+	c := &multiConverter{
+		dest:     dest,
+		size:     size,
+		sliceTyp: reflect.TypeOf(dest).Elem(),
+		sliceVal: reflect.ValueOf(dest),
+	}
+	return c, nil
+}
+
+func (c *multiConverter) set(i int, proto *pb.EntityResult) {
+	if i < 0 || i >= c.size {
+		return
+	}
+	obj := protoToEntity(c.elemTypeOf(i), proto.Entity)
+	c.sliceVal.Index(i).Set(reflect.ValueOf(obj))
+}
+
+func (c *multiConverter) elemTypeOf(i int) reflect.Type {
+	if c.sliceTyp.Kind() == reflect.Interface {
+		return c.sliceVal.Index(i).Elem().Type().Elem()
+	}
+	return c.sliceVal.Index(i).Type().Elem()
 }

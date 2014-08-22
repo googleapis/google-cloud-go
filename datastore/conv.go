@@ -60,7 +60,6 @@ func registerEntityMeta(typ reflect.Type) map[string]*fieldMeta {
 	for i := 0; i < typ.NumField(); i++ {
 		field := typ.Field(i)
 		tag := field.Tag.Get(tagKeyDatastore)
-
 		name := ""
 		indexed := true // by default TODO(jbd): If list, don't set.
 
@@ -85,7 +84,7 @@ func registerEntityMeta(typ reflect.Type) map[string]*fieldMeta {
 	return entityMeta[typ]
 }
 
-func keyToPbKey(k *Key) *pb.Key {
+func keyToProto(k *Key) *pb.Key {
 	// TODO(jbd): Eliminate unrequired allocations.
 	path := []*pb.Key_PathElement(nil)
 	for {
@@ -114,7 +113,7 @@ func keyToPbKey(k *Key) *pb.Key {
 	return key
 }
 
-func keyFromKeyProto(p *pb.Key) *Key {
+func protoToKey(p *pb.Key) *Key {
 	keys := make([]*Key, len(p.GetPathElement()))
 	for i, el := range p.GetPathElement() {
 		keys[i] = &Key{
@@ -130,7 +129,7 @@ func keyFromKeyProto(p *pb.Key) *Key {
 	return keys[len(keys)-1]
 }
 
-func queryToQueryProto(q *Query) *pb.Query {
+func queryToProto(q *Query) *pb.Query {
 	p := &pb.Query{}
 	p.Kind = []*pb.KindExpression{&pb.KindExpression{Name: proto.String(q.kind)}}
 	if len(q.projection) > 0 {
@@ -191,7 +190,7 @@ func entityToEntityProto(key *Key, val reflect.Value) *pb.Entity {
 		metadata = registerEntityMeta(typ)
 	}
 	entityProto := &pb.Entity{
-		Key:      keyToPbKey(key),
+		Key:      keyToProto(key),
 		Property: make([]*pb.Property, 0),
 	}
 
@@ -205,49 +204,44 @@ func entityToEntityProto(key *Key, val reflect.Value) *pb.Entity {
 	return entityProto
 }
 
-// val should has a struct type
-func entityFromEntityProto(datasetId string, e *pb.Entity, val reflect.Value) {
-	typ := val.Type()
-	if typ.Kind() != reflect.Struct {
-		panic("datastore: val should have a struct type")
-	}
-
+func protoToEntity(typ reflect.Type, src *pb.Entity) interface{} {
+	val := reflect.New(typ).Elem()
+	// TODO(jbd): entityMeta set/get should be thread safe.
 	metadata, ok := entityMeta[typ]
 	if !ok {
 		metadata = registerEntityMeta(typ)
 	}
-
-	for _, p := range e.GetProperty() {
+	for _, p := range src.GetProperty() {
 		f, ok := metadata[p.GetName()]
 		if !ok {
 			// skip if not presented in the struct
 			continue
 		}
-		fieldVal := val.FieldByName(f.field.Name)
-		dsVal := p.GetValue()
-
+		fv := val.FieldByName(f.field.Name)
+		pv := p.GetValue()
 		switch f.field.Type.Kind() {
 		case reflect.Int, reflect.Int16, reflect.Int32, reflect.Int64:
-			fieldVal.SetInt(dsVal.GetIntegerValue())
+			fv.SetInt(pv.GetIntegerValue())
 		case reflect.Bool:
-			fieldVal.SetBool(dsVal.GetBooleanValue())
+			fv.SetBool(pv.GetBooleanValue())
 		case reflect.Float32, reflect.Float64:
-			fieldVal.SetFloat(dsVal.GetDoubleValue())
+			fv.SetFloat(pv.GetDoubleValue())
 		case reflect.String:
-			fieldVal.SetString(dsVal.GetStringValue())
+			fv.SetString(pv.GetStringValue())
 		case typeOfByteSlice.Kind():
-			fieldVal.SetBytes(dsVal.GetBlobValue())
+			fv.SetBytes(pv.GetBlobValue())
 		case typeOfKeyPtr.Kind():
-			key := keyFromKeyProto(dsVal.GetKeyValue())
-			fieldVal.Set(reflect.ValueOf(key))
+			key := protoToKey(pv.GetKeyValue())
+			fv.Set(reflect.ValueOf(key))
 		case typeOfTime.Kind():
-			sec := dsVal.GetTimestampMicrosecondsValue() / (1000 * 1000)
-			us := dsVal.GetTimestampMicrosecondsValue() % (1000 * 1000)
+			sec := pv.GetTimestampMicrosecondsValue() / (1000 * 1000)
+			us := pv.GetTimestampMicrosecondsValue() % (1000 * 1000)
 			t := time.Unix(sec, us*1000)
-			fieldVal.Set(reflect.ValueOf(t))
+			fv.Set(reflect.ValueOf(t))
 			// TODO(jbd): Handle lists and composites
 		}
 	}
+	return val.Addr().Interface()
 }
 
 func objToValue(src interface{}) *pb.Value {
@@ -263,7 +257,7 @@ func objToValue(src interface{}) *pb.Value {
 		us := t.UnixNano() / 1000
 		return &pb.Value{TimestampMicrosecondsValue: proto.Int64(us)}
 	case *Key:
-		return &pb.Value{KeyValue: keyToPbKey(src.(*Key))}
+		return &pb.Value{KeyValue: keyToProto(src.(*Key))}
 	case string:
 		return &pb.Value{StringValue: proto.String(src.(string))}
 	case []byte:

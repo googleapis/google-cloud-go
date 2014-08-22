@@ -71,8 +71,8 @@ func (d *Dataset) NewIncompleteKey(kind string) *Key {
 	return &Key{namespace: d.namespace, kind: kind}
 }
 
-func (d *Dataset) Get(key *Key, dest interface{}) (err error) {
-	return d.tx.Get(key, dest)
+func (d *Dataset) Get(keys []*Key, dest interface{}) (err error) {
+	return d.tx.Get(keys, dest)
 }
 
 func (d *Dataset) Put(key *Key, src interface{}) (k *Key, err error) {
@@ -80,8 +80,8 @@ func (d *Dataset) Put(key *Key, src interface{}) (k *Key, err error) {
 }
 
 // Delete deletes the object identified with the provided key.
-func (d *Dataset) Delete(key *Key) (err error) {
-	return d.tx.Delete(key)
+func (d *Dataset) Delete(key ...*Key) (err error) {
+	return d.tx.Delete(key...)
 }
 
 // AllocateIDs allocates n new IDs from the dataset's namespace and of
@@ -91,7 +91,7 @@ func (d *Dataset) AllocateIDs(kind string, n int) (keys []*Key, err error) {
 		err = errors.New("datastore: n should be bigger than zero")
 		return
 	}
-	key := keyToPbKey(d.NewIncompleteKey(kind))
+	key := keyToProto(d.NewIncompleteKey(kind))
 	incompleteKeys := make([]*pb.Key, n)
 	for i := 0; i < n; i++ {
 		incompleteKeys[i] = key
@@ -107,7 +107,7 @@ func (d *Dataset) AllocateIDs(kind string, n int) (keys []*Key, err error) {
 	keys = make([]*Key, n)
 	for i := 0; i < n; i++ {
 		created := resp.GetKey()[i]
-		keys[i] = keyFromKeyProto(created)
+		keys[i] = protoToKey(created)
 	}
 	return
 }
