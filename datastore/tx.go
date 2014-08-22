@@ -175,13 +175,11 @@ func (t *Tx) Put(key *Key, src interface{}) (k *Key, err error) {
 
 // Delete deletes the object identified with the specified key in
 // the transaction.
-func (t *Tx) Delete(keys ...*Key) (err error) {
+func (t *Tx) Delete(keys []*Key) (err error) {
 	protoKeys := make([]*pb.Key, len(keys))
 	for i, k := range keys {
 		protoKeys[i] = keyToProto(k)
 	}
-	// Determine mod depending on if this is the default
-	// transaction or not.
 	mode := pb.CommitRequest_NON_TRANSACTIONAL.Enum()
 	if t.IsTransactional() {
 		mode = pb.CommitRequest_TRANSACTIONAL.Enum()
@@ -225,6 +223,16 @@ func newMultiConverter(size int, dest interface{}) (*multiConverter, error) {
 		sliceTyp: reflect.TypeOf(dest).Elem(),
 		sliceVal: reflect.ValueOf(dest),
 	}
+	// pre-init the item values if nil
+	for i := 0; i < size; i++ {
+		v := c.sliceVal.Index(i)
+		if v.IsNil() && c.sliceTyp.Kind() == reflect.Interface {
+			return nil, errors.New("datastore: interface{} slice with nil items are not allowed")
+		}
+		if v.IsNil() {
+			v.Set(reflect.New(c.elemTypeOf(i)))
+		}
+	}
 	return c, nil
 }
 
@@ -232,8 +240,7 @@ func (c *multiConverter) set(i int, proto *pb.EntityResult) {
 	if i < 0 || i >= c.size {
 		return
 	}
-	obj := protoToEntity(c.elemTypeOf(i), proto.Entity)
-	c.sliceVal.Index(i).Set(reflect.ValueOf(obj))
+	protoToEntity(proto.Entity, c.sliceVal.Index(i).Interface())
 }
 
 func (c *multiConverter) elemTypeOf(i int) reflect.Type {

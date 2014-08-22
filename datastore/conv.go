@@ -204,8 +204,9 @@ func entityToEntityProto(key *Key, val reflect.Value) *pb.Entity {
 	return entityProto
 }
 
-func protoToEntity(typ reflect.Type, src *pb.Entity) interface{} {
-	val := reflect.New(typ).Elem()
+func protoToEntity(src *pb.Entity, dest interface{}) {
+	typ := reflect.TypeOf(dest).Elem()
+	val := reflect.ValueOf(dest).Elem()
 	// TODO(jbd): entityMeta set/get should be thread safe.
 	metadata, ok := entityMeta[typ]
 	if !ok {
@@ -241,7 +242,6 @@ func protoToEntity(typ reflect.Type, src *pb.Entity) interface{} {
 			// TODO(jbd): Handle lists and composites
 		}
 	}
-	return val.Addr().Interface()
 }
 
 func objToValue(src interface{}) *pb.Value {

@@ -80,8 +80,8 @@ func (d *Dataset) Put(key *Key, src interface{}) (k *Key, err error) {
 }
 
 // Delete deletes the object identified with the provided key.
-func (d *Dataset) Delete(key ...*Key) (err error) {
-	return d.tx.Delete(key...)
+func (d *Dataset) Delete(keys []*Key) (err error) {
+	return d.tx.Delete(keys)
 }
 
 // AllocateIDs allocates n new IDs from the dataset's namespace and of
