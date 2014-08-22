@@ -102,6 +102,24 @@ func (t *Tx) Rollback() error {
 	return nil
 }
 
+// Get gets multiple entities by key. Destination argument only
+// allows a slice of pointers or an interface{} slice with pointers.
+// Examples:
+// 		ptr1 := &T{} //...
+// 		items := []interface{}{ptr1, ptr1}
+// 		ds.Get([]*datastore.Key{key1, key2}, items)
+// 		fmt.Println(ptr1, ptr2)
+//
+//		// or alternatively
+//		items = make([]*T, 2)
+// 		ds.Get([]*datastore.Key{key1, key2}, items)
+// 		fmt.Println(items[0], items[1])
+//
+// 		 // or alternatively
+// 		items = []*T{ptr1, ptr2}
+// 		ds.Get([]*datastore.Key{key1, key2}, items)
+// 		fmt.Println(ptr1, ptr2)
+//
 func (t *Tx) Get(keys []*Key, dest interface{}) error {
 	if len(keys) == 0 {
 		return nil
