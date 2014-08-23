@@ -51,25 +51,13 @@ type order struct {
 	Direction sortDirection
 }
 
-// NewQuery creates a new Query for a specific entity kind.
-//
-// An empty kind means to return all entities, including entities created and
-// managed by other App Engine features, and is called a kindless query.
-// Kindless queries cannot include filters or sort orders on property values.
-func NewQuery(namespace, kind string) *Query {
-	return &Query{
-		namespace: namespace,
-		kind:      kind,
-		limit:     -1,
-	}
-}
-
 // Query represents a datastore query.
 type Query struct {
 	// TODO(jbd): Add ancestor
+	namespace string
+	kinds     []string
+	parent    *Key
 
-	namespace  string
-	kind       string
 	filter     []filter
 	order      []order
 	projection []string
@@ -84,18 +72,12 @@ type Query struct {
 	err error
 }
 
-func (q *Query) clone() *Query {
-	x := *q
-	// Copy the contents of the slice-typed fields to a new backing store.
-	if len(q.filter) > 0 {
-		x.filter = make([]filter, len(q.filter))
-		copy(x.filter, q.filter)
-	}
-	if len(q.order) > 0 {
-		x.order = make([]order, len(q.order))
-		copy(x.order, q.order)
-	}
-	return &x
+// HasParent restricts the results only to entities that has
+// the specificed key as its ancestor.
+func (q *Query) HasParent(key *Key) *Query {
+	q = q.clone()
+	q.parent = key
+	return q
 }
 
 // Filter returns a derivative query with a field-based filter.
@@ -105,6 +87,7 @@ func (q *Query) clone() *Query {
 // Multiple filters are AND'ed together.
 func (q *Query) Filter(filterStr string, value interface{}) *Query {
 	q = q.clone()
+	// TODO(jbd): Support key filtering with (__key__)
 	filterStr = strings.TrimSpace(filterStr)
 	if len(filterStr) < 1 {
 		q.err = errors.New("datastore: invalid filter: " + filterStr)
@@ -210,4 +193,18 @@ func (q *Query) Offset(offset int) *Query {
 	}
 	q.offset = int32(offset)
 	return q
+}
+
+func (q *Query) clone() *Query {
+	x := *q
+	// Copy the contents of the slice-typed fields to a new backing store.
+	if len(q.filter) > 0 {
+		x.filter = make([]filter, len(q.filter))
+		copy(x.filter, q.filter)
+	}
+	if len(q.order) > 0 {
+		x.order = make([]order, len(q.order))
+		copy(x.order, q.order)
+	}
+	return &x
 }

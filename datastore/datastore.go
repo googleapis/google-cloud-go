@@ -71,6 +71,19 @@ func (d *Dataset) NewIncompleteKey(kind string) *Key {
 	return &Key{namespace: d.namespace, kind: kind}
 }
 
+// NewQuery creates a new Query for a specific entity kind.
+//
+// An empty kind means to return all entities, including entities created and
+// managed by other App Engine features, and is called a kindless query.
+// Kindless queries cannot include filters or sort orders on property values.
+func (d *Dataset) NewQuery(kinds ...string) *Query {
+	return &Query{
+		namespace: d.namespace,
+		kinds:     kinds,
+		limit:     -1,
+	}
+}
+
 func (d *Dataset) Get(keys []*Key, dest interface{}) (err error) {
 	return d.tx.Get(keys, dest)
 }

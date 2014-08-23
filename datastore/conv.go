@@ -130,8 +130,12 @@ func protoToKey(p *pb.Key) *Key {
 }
 
 func queryToProto(q *Query) *pb.Query {
+	// TODO(jbd): Support ancestry queries.
 	p := &pb.Query{}
-	p.Kind = []*pb.KindExpression{&pb.KindExpression{Name: proto.String(q.kind)}}
+	p.Kind = make([]*pb.KindExpression, len(q.kinds))
+	for i, kind := range q.kinds {
+		p.Kind[i] = &pb.KindExpression{Name: proto.String(kind)}
+	}
 	if len(q.projection) > 0 {
 		p.Projection = make([]*pb.PropertyExpression, len(q.projection))
 		for i, fieldName := range q.projection {
@@ -145,7 +149,6 @@ func queryToProto(q *Query) *pb.Query {
 		p.Filter = &pb.Filter{
 			CompositeFilter: &pb.CompositeFilter{},
 		}
-
 		filters := make([]*pb.Filter, len(q.filter))
 		for i, f := range q.filter {
 			filters[i] = &pb.Filter{
