@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"reflect"
 
+	"code.google.com/p/goprotobuf/proto"
+
 	pb "google.golang.org/cloud/internal/datastore"
 )
 
@@ -28,46 +30,35 @@ func (t *Tx) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQuery *Query
 	if q.err != nil {
 		return nil, nil, q.err
 	}
-	// if !isSlicePtr(dest) {
-	// 	err = errors.New("datastore: dest should be a slice pointer")
-	// 	return
-	// }
-	// req := &pb.RunQueryRequest{
-	// 	ReadOptions: &pb.ReadOptions{
-	// 		Transaction: t.id,
-	// 	},
-	// 	PartitionId: &pb.PartitionId{
-	// 		DatasetId: proto.String(t.datasetID),
-	// 	},
-	// 	Query: queryToProto(q),
-	// }
-	// if q.namespace != "" {
-	// 	req.PartitionId.Namespace = proto.String(q.namespace)
-	// }
-
-	// resp := &pb.RunQueryResponse{}
-	// if err = t.newClient().call(t.newUrl("runQuery"), req, resp); err != nil {
-	// 	return
-	// }
-
-	// results := resp.GetBatch().GetEntityResult()
-	// keys = make([]*Key, len(results))
-
-	// typ := reflect.TypeOf(dest).Elem() // type of slice
-	// v := reflect.MakeSlice(typ, len(results), len(results))
-	// for i, e := range results {
-	// 	keys[i] = protoToKey(e.GetEntity().GetKey())
-	// 	obj := reflect.New(typ.Elem().Elem()).Elem()
-	// 	entityFromEntityProto(e.GetEntity(), obj)
-
-	// 	v.Index(i).Set(reflect.New(typ.Elem().Elem())) // dest[i] = new(elType)
-	// 	v.Index(i).Elem().Set(obj)                     // dest[i] = el
-	// }
-	// reflect.ValueOf(dest).Elem().Set(v)
-	// if string(resp.GetBatch().GetEndCursor()) != string(q.start) {
-	// 	// next page is available
-	// 	nextQuery = q.Start(resp.GetBatch().GetEndCursor())
-	// }
+	req := &pb.RunQueryRequest{
+		ReadOptions: &pb.ReadOptions{
+			Transaction: t.id,
+		},
+		Query: queryToProto(q),
+	}
+	if q.namespace != "" {
+		req.PartitionId = &pb.PartitionId{
+			Namespace: proto.String(q.namespace),
+		}
+	}
+	resp := &pb.RunQueryResponse{}
+	if err = t.newClient().call(t.newUrl("runQuery"), req, resp); err != nil {
+		return
+	}
+	results := resp.GetBatch().GetEntityResult()
+	keys = make([]*Key, len(results))
+	conv, err := newMultiConverter(len(keys), dest)
+	if err != nil {
+		return
+	}
+	for i, r := range results {
+		keys[i] = protoToKey(r.Entity.Key)
+		conv.set(i, r.Entity)
+	}
+	if string(resp.GetBatch().GetEndCursor()) != string(q.start) {
+		// next page is available
+		nextQuery = q.Start(resp.GetBatch().GetEndCursor())
+	}
 	return
 }
 
@@ -143,7 +134,7 @@ func (t *Tx) Get(keys []*Key, dest interface{}) error {
 		return err
 	}
 	for i, result := range resp.Found {
-		converter.set(i, result)
+		converter.set(i, result.Entity)
 	}
 	return nil
 }
@@ -241,6 +232,9 @@ func newMultiConverter(size int, dest interface{}) (*multiConverter, error) {
 		sliceTyp: reflect.TypeOf(dest).Elem(),
 		sliceVal: reflect.ValueOf(dest),
 	}
+	if c.sliceVal.Len() < size {
+		return nil, errors.New("datastore: dest length is smaller than the number of the results")
+	}
 	// pre-init the item values if nil
 	for i := 0; i < size; i++ {
 		v := c.sliceVal.Index(i)
@@ -254,11 +248,11 @@ func newMultiConverter(size int, dest interface{}) (*multiConverter, error) {
 	return c, nil
 }
 
-func (c *multiConverter) set(i int, proto *pb.EntityResult) {
+func (c *multiConverter) set(i int, proto *pb.Entity) {
 	if i < 0 || i >= c.size {
 		return
 	}
-	protoToEntity(proto.Entity, c.sliceVal.Index(i).Interface())
+	protoToEntity(proto, c.sliceVal.Index(i).Interface())
 }
 
 func (c *multiConverter) elemTypeOf(i int) reflect.Type {
