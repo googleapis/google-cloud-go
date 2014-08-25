@@ -43,7 +43,9 @@ func (k *Key) Parent() *Key {
 }
 
 func (k *Key) SetParent(v *Key) {
-	// TODO(jbd): panic if v is not complete
+	if !v.IsComplete() {
+		panic("can't set an incomplete key as parent")
+	}
 	k.parent = v
 }
 
