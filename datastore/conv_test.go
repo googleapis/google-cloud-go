@@ -152,6 +152,42 @@ func TestKeyToProto_Parent(t *testing.T) {
 	}
 }
 
+func TestKeyToProto_Namespace(t *testing.T) {
+	key := &Key{namespace: "ns", kind: "Kind1", name: "name"}
+	p := keyToProto(key)
+	if p.GetPartitionId().GetNamespace() != "ns" {
+		t.Errorf("Expected to set namespace with ns, %v is found", p.GetPartitionId().GetNamespace())
+	}
+}
+
+func TestProtoToKey(t *testing.T) {
+	p := &pb.Key{
+		PartitionId: &pb.PartitionId{
+			Namespace: proto.String("ns"),
+		},
+		PathElement: []*pb.Key_PathElement{
+			&pb.Key_PathElement{Kind: proto.String("Parent"), Id: proto.Int64(123)},
+			&pb.Key_PathElement{Kind: proto.String("Child"), Name: proto.String("item1")},
+		},
+	}
+	key := protoToKey(p)
+	if key.namespace != "ns" {
+		t.Errorf("Unexpected namespace, %v is found", key.namespace)
+	}
+	if key.kind != "Child" {
+		t.Errorf("Unexpected kind, %v is found", key.kind)
+	}
+	if key.name != "item1" {
+		t.Errorf("Unexpected name, %v is found", key.name)
+	}
+	if key.Parent().kind != "Parent" {
+		t.Errorf("Unexpected kind for parent, %v is found", key.Parent().kind)
+	}
+	if key.Parent().id != 123 {
+		t.Errorf("Unexpected id for parent, %v is found", key.Parent().id)
+	}
+}
+
 func TestEntityToProto(t *testing.T) {
 	key := &Key{kind: "Kind1", name: "entity1"}
 	now := time.Now()
