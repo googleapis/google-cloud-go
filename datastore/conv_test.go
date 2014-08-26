@@ -71,6 +71,87 @@ type someType struct {
 	CreatedAt time.Time
 }
 
+func TestKeyToProto_IDed(t *testing.T) {
+	key := &Key{kind: "Kind1", id: 123}
+	p := keyToProto(key)
+	if p.PartitionId != nil {
+		t.Errorf("Partition should not have been set")
+	}
+	if len(p.PathElement) != 1 {
+		t.Errorf("Path should have only a single item, length is found to be %v", len(p.PathElement))
+	}
+	if p.PathElement[0].GetKind() != "Kind1" {
+		t.Errorf("Unexpected kind, found %v", p.PathElement[0].GetKind())
+	}
+	if p.PathElement[0].GetId() != 123 {
+		t.Errorf("Unexpected ID, found %v", p.PathElement[0].GetId())
+	}
+	if p.PathElement[0].Name != nil {
+		t.Errorf("Name should not have been set")
+	}
+}
+
+func TestKeyToProto_Named(t *testing.T) {
+	key := &Key{kind: "Kind1", name: "name"}
+	p := keyToProto(key)
+	if p.PartitionId != nil {
+		t.Errorf("Partition should not have been set")
+	}
+	if len(p.PathElement) != 1 {
+		t.Errorf("Path should have only a single item, length is found to be %v", len(p.PathElement))
+	}
+	if p.PathElement[0].GetKind() != "Kind1" {
+		t.Errorf("Unexpected kind, found %v", p.PathElement[0].GetKind())
+	}
+	if p.PathElement[0].GetName() != "name" {
+		t.Errorf("Unexpected name, found %v", p.PathElement[0].GetName())
+	}
+	if p.PathElement[0].Id != nil {
+		t.Errorf("ID should not have been set")
+	}
+}
+
+func TestKeyToProto_Incomplete(t *testing.T) {
+	key := &Key{kind: "Kind1"}
+	p := keyToProto(key)
+	if p.PartitionId != nil {
+		t.Errorf("Partition should not have been set")
+	}
+	if len(p.PathElement) != 1 {
+		t.Errorf("Path should have only a single item, length is found to be %v", len(p.PathElement))
+	}
+	if p.PathElement[0].GetKind() != "Kind1" {
+		t.Errorf("Unexpected kind, found %v", p.PathElement[0].GetKind())
+	}
+	if p.PathElement[0].Name != nil {
+		t.Errorf("Name should not have been set")
+	}
+	if p.PathElement[0].Id != nil {
+		t.Errorf("ID should not have been set")
+	}
+}
+
+func TestKeyToProto_Parent(t *testing.T) {
+	key := &Key{kind: "Kind1", name: "name"}
+	key.SetParent(&Key{kind: "Kind2", name: "item1"})
+	p := keyToProto(key)
+	if len(p.PathElement) != 2 {
+		t.Errorf("Path length should be 2, found %v", len(p.PathElement))
+	}
+	if p.PathElement[0].GetKind() != "Kind2" {
+		t.Errorf("Unexpected kind, found %v", p.PathElement[0].GetKind())
+	}
+	if p.PathElement[0].GetName() != "item1" {
+		t.Errorf("Unexpected name, found %v", p.PathElement[0].GetName())
+	}
+	if p.PathElement[1].GetKind() != "Kind1" {
+		t.Errorf("Unexpected kind, found %v", p.PathElement[1].GetKind())
+	}
+	if p.PathElement[1].GetName() != "name" {
+		t.Errorf("Unexpected name, found %v", p.PathElement[1].GetName())
+	}
+}
+
 func TestEntityToProto(t *testing.T) {
 	key := &Key{kind: "Kind1", name: "entity1"}
 	now := time.Now()

@@ -112,6 +112,7 @@ func keyToProto(k *Key) *pb.Key {
 		if k.parent == nil {
 			break
 		}
+		k = k.parent
 	}
 	key := &pb.Key{
 		PathElement: path,
