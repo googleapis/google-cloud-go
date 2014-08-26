@@ -54,7 +54,7 @@ func NewDatasetWithNS(projectID, ns, email string, privateKey []byte) (*Dataset,
 		namespace: ns,
 		tx: &Tx{
 			datasetID: projectID,
-			transport: conf.NewTransport(),
+			client:    &client{transport: conf.NewTransport()},
 		},
 	}, nil
 }
@@ -115,7 +115,7 @@ func (d *Dataset) AllocateIDs(kind string, n int) (keys []*Key, err error) {
 	resp := &pb.AllocateIdsResponse{}
 
 	url := d.tx.newUrl("allocateIds")
-	if err = d.tx.newClient().call(url, req, resp); err != nil {
+	if err = d.tx.client.call(url, req, resp); err != nil {
 		return
 	}
 	// TODO(jbd): Return error if response doesn't include enough keys.
@@ -136,12 +136,12 @@ func (d *Dataset) NewTx() (*Tx, error) {
 	req := &pb.BeginTransactionRequest{}
 	resp := &pb.BeginTransactionResponse{}
 	url := d.tx.newUrl("beginTransaction")
-	if err := d.tx.newClient().call(url, req, resp); err != nil {
+	if err := d.tx.client.call(url, req, resp); err != nil {
 		return nil, err
 	}
 	tx := &Tx{
-		transport: d.tx.transport,
 		datasetID: d.tx.datasetID,
+		client:    d.tx.client,
 		id:        resp.GetTransaction(),
 	}
 	return tx, nil

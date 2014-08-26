@@ -2,7 +2,6 @@ package datastore
 
 import (
 	"errors"
-	"net/http"
 	"reflect"
 
 	"code.google.com/p/goprotobuf/proto"
@@ -17,7 +16,9 @@ var (
 type Tx struct {
 	id        []byte
 	datasetID string
-	transport http.RoundTripper
+
+	// TODO(jbd): Export client and provide a way to provide custom clients.
+	client *client
 }
 
 // IsTransactional returns true if the transaction has a non-zero
@@ -42,7 +43,7 @@ func (t *Tx) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQuery *Query
 		}
 	}
 	resp := &pb.RunQueryResponse{}
-	if err = t.newClient().call(t.newUrl("runQuery"), req, resp); err != nil {
+	if err = t.client.call(t.newUrl("runQuery"), req, resp); err != nil {
 		return
 	}
 	results := resp.GetBatch().GetEntityResult()
@@ -72,7 +73,7 @@ func (t *Tx) Commit() error {
 		Transaction: t.id,
 	}
 	resp := &pb.CommitResponse{}
-	if err := t.newClient().call(t.newUrl("commit"), req, resp); err != nil {
+	if err := t.client.call(t.newUrl("commit"), req, resp); err != nil {
 		return err
 	}
 	return nil
@@ -87,7 +88,7 @@ func (t *Tx) Rollback() error {
 		Transaction: t.id,
 	}
 	resp := &pb.RollbackResponse{}
-	if err := t.newClient().call(t.newUrl("rollback"), req, resp); err != nil {
+	if err := t.client.call(t.newUrl("rollback"), req, resp); err != nil {
 		return err
 	}
 	return nil
@@ -130,7 +131,7 @@ func (t *Tx) Get(keys []*Key, dest interface{}) error {
 		Key: protoKeys,
 	}
 	resp := &pb.LookupResponse{}
-	if err := t.newClient().call(t.newUrl("lookup"), req, resp); err != nil {
+	if err := t.client.call(t.newUrl("lookup"), req, resp); err != nil {
 		return err
 	}
 	for i, result := range resp.Found {
@@ -180,7 +181,7 @@ func (t *Tx) Put(keys []*Key, src interface{}) ([]*Key, error) {
 	req.Mutation.Upsert = upsert
 
 	resp := &pb.CommitResponse{}
-	if err := t.newClient().call(t.newUrl("commit"), req, resp); err != nil {
+	if err := t.client.call(t.newUrl("commit"), req, resp); err != nil {
 		return nil, err
 	}
 
@@ -211,11 +212,7 @@ func (t *Tx) Delete(keys []*Key) (err error) {
 		Mode: mode,
 	}
 	resp := &pb.CommitResponse{}
-	return t.newClient().call(t.newUrl("commit"), req, resp)
-}
-
-func (t *Tx) newClient() *client {
-	return &client{transport: t.transport}
+	return t.client.call(t.newUrl("commit"), req, resp)
 }
 
 func (t *Tx) newUrl(method string) string {
