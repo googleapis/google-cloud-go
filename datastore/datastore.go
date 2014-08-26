@@ -80,7 +80,6 @@ func (d *Dataset) NewQuery(kinds ...string) *Query {
 	return &Query{
 		namespace: d.namespace,
 		kinds:     kinds,
-		limit:     -1,
 	}
 }
 

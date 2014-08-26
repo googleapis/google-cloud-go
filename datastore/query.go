@@ -168,10 +168,14 @@ func (q *Query) End(cursor []byte) *Query {
 }
 
 // Limit returns a derivative query that has a limit on the number of results
-// returned. A negative value means API default.
+// returned. Zero value means API default.
 func (q *Query) Limit(limit int) *Query {
 	q = q.clone()
-	if limit < math.MinInt32 || limit > math.MaxInt32 {
+	if limit < 0 {
+		q.err = errors.New("datastore: query limit can't be smaller than zero")
+		return q
+	}
+	if limit > math.MaxInt32 {
 		q.err = errors.New("datastore: query limit overflow")
 		return q
 	}
