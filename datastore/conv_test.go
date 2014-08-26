@@ -325,6 +325,14 @@ func TestMultiConv_InterfaceSlice(t *testing.T) {
 	}
 }
 
+func TestMultiConv_NonSlice(t *testing.T) {
+	ent := &square{}
+	_, err := newMultiConverter(1, ent)
+	if err.Error() != "datastore: dest should be a slice" {
+		t.Errorf("Should not allow non slice types to be a destination")
+	}
+}
+
 func TestMultiConv_PtrSlice(t *testing.T) {
 	ents := make([]*square, 2)
 	m, err := newMultiConverter(2, ents)
