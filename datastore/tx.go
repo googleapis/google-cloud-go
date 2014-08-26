@@ -139,14 +139,10 @@ func (t *Tx) Get(keys []*Key, dest interface{}) error {
 	return nil
 }
 
-// Put upserts the object identified with key in the scope
-// of the current transaction.
-// It returns the complete key if key is incomplete.
-func (t *Tx) Put(key *Key, src interface{}) (k *Key, err error) {
-	if !isPtrOfStruct(src) {
-		err = errors.New("datastore: dest should be a pointer of a struct")
-		return
-	}
+// Put upserts the objects identified with provided keys. If one or
+// more keys are incomplete, backend generates unique numeric identifiers.
+func (t *Tx) Put(keys []*Key, src interface{}) ([]*Key, error) {
+	// TODO(jbd): Validate src type.
 	// Determine mod depending on if this is the default
 	// transaction or not.
 	mode := pb.CommitRequest_NON_TRANSACTIONAL.Enum()
@@ -154,32 +150,46 @@ func (t *Tx) Put(key *Key, src interface{}) (k *Key, err error) {
 		mode = pb.CommitRequest_TRANSACTIONAL.Enum()
 	}
 
-	// TODO(jbd): Handle indexes.
-	entity := []*pb.Entity{entityToEntityProto(key, reflect.ValueOf(src).Elem())}
 	req := &pb.CommitRequest{
 		Transaction: t.id,
 		Mode:        mode,
 		Mutation:    &pb.Mutation{},
 	}
 
-	if !key.IsComplete() {
-		req.Mutation.InsertAutoId = entity
-	} else {
-		req.Mutation.Upsert = entity
+	autoIdIndex := []int{}
+	autoId := []*pb.Entity(nil)
+	upsert := []*pb.Entity(nil)
+	for i, k := range keys {
+		val := reflect.ValueOf(src).Index(i)
+		// If src is an interface slice []interface{}{ent1, ent2}
+		if val.Kind() == reflect.Interface {
+			val = val.Elem()
+		}
+		// If src is a slice of ptrs []*T{ent1, ent2}
+		if val.Kind() == reflect.Ptr {
+			val = val.Elem()
+		}
+		if !k.IsComplete() {
+			autoIdIndex = append(autoIdIndex, i)
+			autoId = append(autoId, entityToProto(k, val))
+		} else {
+			upsert = append(upsert, entityToProto(k, val))
+		}
 	}
+	req.Mutation.InsertAutoId = autoId
+	req.Mutation.Upsert = upsert
 
 	resp := &pb.CommitResponse{}
-	if err = t.newClient().call(t.newUrl("commit"), req, resp); err != nil {
-		return
+	if err := t.newClient().call(t.newUrl("commit"), req, resp); err != nil {
+		return nil, err
 	}
 
-	autoKey := resp.GetMutationResult().GetInsertAutoIdKey()
-	if len(autoKey) > 0 {
-		k = protoToKey(autoKey[0])
-	} else {
-		k = key
+	// modify keys list with the newly created keys.
+	createdIDs := resp.GetMutationResult().GetInsertAutoIdKey()
+	for i, index := range autoIdIndex {
+		keys[index] = protoToKey(createdIDs[i])
 	}
-	return
+	return keys, nil
 }
 
 // Delete deletes the object identified with the specified key in

@@ -88,8 +88,10 @@ func (d *Dataset) Get(keys []*Key, dest interface{}) (err error) {
 	return d.tx.Get(keys, dest)
 }
 
-func (d *Dataset) Put(key *Key, src interface{}) (k *Key, err error) {
-	return d.tx.Put(key, src)
+// Put upserts the objects identified with provided keys. If one or
+// more keys are incomplete, backend generates unique numeric identifiers.
+func (d *Dataset) Put(keys []*Key, src interface{}) ([]*Key, error) {
+	return d.tx.Put(keys, src)
 }
 
 // Delete deletes the object identified with the provided key.

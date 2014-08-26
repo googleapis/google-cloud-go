@@ -197,7 +197,7 @@ func queryToProto(q *Query) *pb.Query {
 	return p
 }
 
-func entityToEntityProto(key *Key, val reflect.Value) *pb.Entity {
+func entityToProto(key *Key, val reflect.Value) *pb.Entity {
 	typ := val.Type()
 	metadata := registerEntityMeta(typ)
 	entityProto := &pb.Entity{
