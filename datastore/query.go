@@ -168,7 +168,7 @@ func (q *Query) End(cursor []byte) *Query {
 }
 
 // Limit returns a derivative query that has a limit on the number of results
-// returned. A negative value means unlimited.
+// returned. A negative value means API default.
 func (q *Query) Limit(limit int) *Query {
 	q = q.clone()
 	if limit < math.MinInt32 || limit > math.MaxInt32 {
