@@ -15,6 +15,7 @@
 package datastore
 
 import (
+	"errors"
 	"reflect"
 	"strings"
 	"sync"
@@ -273,10 +274,51 @@ func objToValue(src interface{}) *pb.Value {
 	return nil
 }
 
-func isPtrOfStruct(src interface{}) bool {
-	return reflect.TypeOf(src).Kind() == reflect.Ptr && reflect.TypeOf(src).Elem().Kind() == reflect.Struct
+type multiConverter struct {
+	dest interface{}
+	size int
+
+	sliceTyp reflect.Type
+	elemType reflect.Type
+	sliceVal reflect.Value
 }
 
-func isSlicePtr(src interface{}) bool {
-	return reflect.TypeOf(src).Elem().Kind() == reflect.Slice
+func newMultiConverter(size int, dest interface{}) (*multiConverter, error) {
+	if reflect.TypeOf(dest).Kind() != reflect.Slice {
+		return nil, errors.New("datastore: dest should be a slice")
+	}
+	c := &multiConverter{
+		dest:     dest,
+		size:     size,
+		sliceTyp: reflect.TypeOf(dest).Elem(),
+		sliceVal: reflect.ValueOf(dest),
+	}
+	if c.sliceVal.Len() < size {
+		return nil, errors.New("datastore: dest length is smaller than the number of the results")
+	}
+	// pre-init the item values if nil
+	for i := 0; i < size; i++ {
+		v := c.sliceVal.Index(i)
+		if v.IsNil() && c.sliceTyp.Kind() == reflect.Interface {
+			return nil, errors.New("datastore: interface{} slice with nil items are not allowed")
+		}
+		if v.IsNil() {
+			v.Set(reflect.New(c.elemTypeOf(i)))
+		}
+	}
+	return c, nil
+}
+
+func (c *multiConverter) set(i int, proto *pb.Entity) {
+	if i < 0 || i >= c.size {
+		return
+	}
+	protoToEntity(proto, c.sliceVal.Index(i).Interface())
+}
+
+func (c *multiConverter) elemTypeOf(i int) reflect.Type {
+	if c.sliceTyp.Kind() == reflect.Interface {
+		return c.sliceVal.Index(i).Elem().Type().Elem()
+	}
+	return c.sliceVal.Index(i).Type().Elem()
 }
