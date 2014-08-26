@@ -17,6 +17,7 @@ package datastore
 import (
 	"reflect"
 	"strings"
+	"sync"
 	"time"
 
 	"code.google.com/p/goprotobuf/proto"
@@ -52,10 +53,19 @@ type fieldMeta struct {
 	indexed bool
 }
 
-var entityMeta map[reflect.Type](map[string]*fieldMeta) = make(map[reflect.Type](map[string]*fieldMeta))
+var (
+	mu         sync.Mutex
+	entityMeta map[reflect.Type](map[string]*fieldMeta) = make(map[reflect.Type](map[string]*fieldMeta))
+)
 
 func registerEntityMeta(typ reflect.Type) map[string]*fieldMeta {
-	// TODO(jbd): Should be thread safe.
+	mu.Lock()
+	defer mu.Unlock()
+
+	metadata, ok := entityMeta[typ]
+	if ok {
+		return metadata
+	}
 	entityMeta[typ] = make(map[string]*fieldMeta)
 	for i := 0; i < typ.NumField(); i++ {
 		field := typ.Field(i)
@@ -188,10 +198,7 @@ func queryToProto(q *Query) *pb.Query {
 
 func entityToEntityProto(key *Key, val reflect.Value) *pb.Entity {
 	typ := val.Type()
-	metadata, ok := entityMeta[typ]
-	if !ok {
-		metadata = registerEntityMeta(typ)
-	}
+	metadata := registerEntityMeta(typ)
 	entityProto := &pb.Entity{
 		Key:      keyToProto(key),
 		Property: make([]*pb.Property, 0),
@@ -210,11 +217,7 @@ func entityToEntityProto(key *Key, val reflect.Value) *pb.Entity {
 func protoToEntity(src *pb.Entity, dest interface{}) {
 	typ := reflect.TypeOf(dest).Elem()
 	val := reflect.ValueOf(dest).Elem()
-	// TODO(jbd): entityMeta set/get should be thread safe.
-	metadata, ok := entityMeta[typ]
-	if !ok {
-		metadata = registerEntityMeta(typ)
-	}
+	metadata := registerEntityMeta(typ)
 	for _, p := range src.GetProperty() {
 		f, ok := metadata[p.GetName()]
 		if !ok {
