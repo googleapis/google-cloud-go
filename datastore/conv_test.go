@@ -62,8 +62,8 @@ type square struct {
 }
 
 type someType struct {
-	Name      string
-	Blob      []byte
+	Name      string `datastore:"the_name"`
+	Blob      []byte `datastore:,noindex`
 	Done      bool
 	Size      int64
 	Total     float64
@@ -216,7 +216,7 @@ func TestEntityToProto(t *testing.T) {
 
 	for _, prop := range proto.Property {
 		switch prop.GetName() {
-		case "name":
+		case "the_name":
 			if prop.GetValue().GetStringValue() != s.Name {
 				t.Errorf("Unexpected name property is found: %v", prop)
 			}
@@ -255,7 +255,7 @@ func TestProtoToEntity(t *testing.T) {
 	p := &pb.Entity{
 		Property: []*pb.Property{
 			&pb.Property{
-				Name:  proto.String("name"),
+				Name:  proto.String("the_name"),
 				Value: &pb.Value{StringValue: proto.String("name-value")},
 			},
 			&pb.Property{
