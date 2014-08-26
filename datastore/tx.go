@@ -48,13 +48,19 @@ func (t *Tx) RunQuery(q *Query, dest interface{}) (keys []*Key, nextQuery *Query
 	}
 	results := resp.GetBatch().GetEntityResult()
 	keys = make([]*Key, len(results))
-	conv, err := newMultiConverter(len(keys), dest)
-	if err != nil {
-		return
+
+	var conv *multiConverter
+	if dest != nil {
+		if conv, err = newMultiConverter(len(keys), dest); err != nil {
+			return
+		}
 	}
+
 	for i, r := range results {
 		keys[i] = protoToKey(r.Entity.Key)
-		conv.set(i, r.Entity)
+		if conv != nil {
+			conv.set(i, r.Entity)
+		}
 	}
 	if string(resp.GetBatch().GetEndCursor()) != string(q.start) {
 		// next page is available
