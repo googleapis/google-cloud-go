@@ -248,6 +248,10 @@ func protoToEntity(src *pb.Entity, dest interface{}) {
 			t := time.Unix(sec, us*1000)
 			fv.Set(reflect.ValueOf(t))
 			// TODO(jbd): Handle lists and composites
+		case reflect.Slice:
+			panic("not yet implemented")
+		case reflect.Struct:
+			panic("not yet implemented")
 		}
 	}
 }
