@@ -24,8 +24,6 @@ type Key struct {
 	namespace string
 }
 
-// TODO(jbd): Does the path needs to be immutable?
-
 func (k *Key) Kind() string {
 	return k.kind
 }
