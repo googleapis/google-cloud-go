@@ -100,7 +100,11 @@ func (t *Tx) Rollback() error {
 	return nil
 }
 
-// Get gets multiple entities by key. Destination argument only
+func (t *Tx) Get(key *Key, dest interface{}) error {
+	return t.GetAll([]*Key{key}, []interface{}{dest})
+}
+
+// GetAll gets multiple entities by key. Destination argument only
 // allows a slice of pointers or an interface{} slice with pointers.
 // Examples:
 // 		ptr1 := &T{} //...
@@ -118,7 +122,7 @@ func (t *Tx) Rollback() error {
 // 		ds.Get([]*datastore.Key{key1, key2}, items)
 // 		fmt.Println(ptr1, ptr2)
 //
-func (t *Tx) Get(keys []*Key, dest interface{}) error {
+func (t *Tx) GetAll(keys []*Key, dest interface{}) error {
 	if len(keys) == 0 {
 		return nil
 	}
@@ -146,9 +150,17 @@ func (t *Tx) Get(keys []*Key, dest interface{}) error {
 	return nil
 }
 
-// Put upserts the objects identified with provided keys. If one or
+func (t *Tx) Put(key *Key, src interface{}) (*Key, error) {
+	keys, err := t.PutAll([]*Key{key}, []interface{}{src})
+	if err != nil {
+		return nil, err
+	}
+	return keys[0], nil
+}
+
+// PutAll upserts the objects identified with provided keys. If one or
 // more keys are incomplete, backend generates unique numeric identifiers.
-func (t *Tx) Put(keys []*Key, src interface{}) ([]*Key, error) {
+func (t *Tx) PutAll(keys []*Key, src interface{}) ([]*Key, error) {
 	// TODO(jbd): Validate src type.
 	// Determine mod depending on if this is the default
 	// transaction or not.
@@ -199,9 +211,13 @@ func (t *Tx) Put(keys []*Key, src interface{}) ([]*Key, error) {
 	return keys, nil
 }
 
-// Delete deletes the object identified with the specified key in
-// the transaction.
-func (t *Tx) Delete(keys []*Key) (err error) {
+func (t *Tx) Delete(key *Key) (err error) {
+	return t.DeleteAll([]*Key{key})
+}
+
+// DeleteAll deletes the entities identified by the
+// provided keys.
+func (t *Tx) DeleteAll(keys []*Key) (err error) {
 	protoKeys := make([]*pb.Key, len(keys))
 	for i, k := range keys {
 		protoKeys[i] = keyToProto(k)

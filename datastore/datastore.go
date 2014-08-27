@@ -83,19 +83,32 @@ func (d *Dataset) NewQuery(kinds ...string) *Query {
 	}
 }
 
-func (d *Dataset) Get(keys []*Key, dest interface{}) (err error) {
-	return d.tx.Get(keys, dest)
+func (d *Dataset) Get(key *Key, dest interface{}) (err error) {
+	return d.tx.Get(key, dest)
 }
 
-// Put upserts the objects identified with provided keys. If one or
+func (d *Dataset) GetAll(keys []*Key, dest interface{}) (err error) {
+	return d.tx.GetAll(keys, dest)
+}
+
+func (d *Dataset) Put(key *Key, src interface{}) (*Key, error) {
+	return d.tx.Put(key, src)
+}
+
+// PutAll upserts the objects identified with provided keys. If one or
 // more keys are incomplete, backend generates unique numeric identifiers.
-func (d *Dataset) Put(keys []*Key, src interface{}) ([]*Key, error) {
-	return d.tx.Put(keys, src)
+func (d *Dataset) PutAll(keys []*Key, src interface{}) ([]*Key, error) {
+	return d.tx.PutAll(keys, src)
 }
 
 // Delete deletes the object identified with the provided key.
-func (d *Dataset) Delete(keys []*Key) (err error) {
-	return d.tx.Delete(keys)
+func (d *Dataset) Delete(key *Key) (err error) {
+	return d.tx.Delete(key)
+}
+
+// Delete deletes the object identified with the provided key.
+func (d *Dataset) DeleteAll(keys []*Key) (err error) {
+	return d.tx.DeleteAll(keys)
 }
 
 // AllocateIDs allocates n new IDs from the dataset's namespace and of
