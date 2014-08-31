@@ -308,7 +308,7 @@ func newMultiConverter(size int, dest interface{}) (*multiConverter, error) {
 			return nil, errors.New("datastore: interface{} slice with nil items are not allowed")
 		}
 		if v.IsNil() {
-			v.Set(reflect.New(c.elemTypeOf(i)))
+			v.Set(reflect.New(c.typeOfElem(i)))
 		}
 	}
 	return c, nil
@@ -321,7 +321,7 @@ func (c *multiConverter) set(i int, proto *pb.Entity) {
 	protoToEntity(proto, c.sliceVal.Index(i).Interface())
 }
 
-func (c *multiConverter) elemTypeOf(i int) reflect.Type {
+func (c *multiConverter) typeOfElem(i int) reflect.Type {
 	if c.sliceTyp.Kind() == reflect.Interface {
 		return c.sliceVal.Index(i).Elem().Type().Elem()
 	}
