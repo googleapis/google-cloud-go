@@ -10,7 +10,6 @@ import (
 )
 
 type client struct {
-	// An authorized transport.
 	transport http.RoundTripper
 }
 
@@ -27,11 +26,14 @@ func (c *client) call(url string, req proto.Message, resp proto.Message) (err er
 	if r.StatusCode != http.StatusOK {
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			return errors.New("gcloud: error during call")
+			return err
 		}
-		return errors.New("gcloud: error during call: " + string(body))
+		return errors.New("datastore: error during call: " + string(body))
 	}
-	body, _ := ioutil.ReadAll(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return err
+	}
 	if err = proto.Unmarshal(body, resp); err != nil {
 		return
 	}
