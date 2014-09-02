@@ -50,7 +50,7 @@ var sortDirectionToProto = map[sortDirection]*pb.PropertyOrder_Direction{
 var (
 	typeOfByteSlice = reflect.TypeOf([]byte{})
 	typeOfTime      = reflect.TypeOf(time.Time{})
-	typeOfKey       = reflect.TypeOf(Key{})
+	typeOfKeyPtr    = reflect.TypeOf(&Key{})
 )
 
 type fieldMeta struct {
