@@ -71,6 +71,22 @@ type someType struct {
 	CreatedAt time.Time
 }
 
+func TestCamelCaseToUnderscore(t *testing.T) {
+	tests := map[string]string{
+		"X_Y_z": "x_y_z",
+		"XX_Y":  "xx_y",
+		"_X_y":  "_x_y",
+		"X2Y2":  "x2y2",
+	}
+
+	for test, expected := range tests {
+		v := camelCaseToUnderscore(test)
+		if v != expected {
+			t.Errorf("%v is expected, %v is found", expected, v)
+		}
+	}
+}
+
 func TestKeyToProto_IDed(t *testing.T) {
 	key := &Key{kind: "Kind1", id: 123}
 	p := keyToProto(key)
@@ -236,17 +252,17 @@ func TestEntityToProto(t *testing.T) {
 			if prop.GetValue().GetDoubleValue() != s.Total {
 				t.Errorf("Unexpected total property is found: %v", prop)
 			}
-		case "otherkey":
+		case "other_key":
 			protoKey := protoToKey(prop.GetValue().GetKeyValue())
 			if !protoKey.IsEqual(s.OtherKey) {
 				t.Errorf("Unexpected otherkey property is found: %v", prop)
 			}
-		case "createdat":
+		case "created_at":
 			if prop.GetValue().GetTimestampMicrosecondsValue() != now.UnixNano()/1000 {
-				t.Errorf("Unexpected createdat property is found: %v", prop)
+				t.Errorf("Unexpected created_at property is found: %v", prop)
 			}
 		default:
-			t.Errorf("Unexpected property name")
+			t.Errorf("Unexpected property name: %v", prop.GetName())
 		}
 	}
 }
@@ -275,7 +291,7 @@ func TestProtoToEntity(t *testing.T) {
 				Value: &pb.Value{DoubleValue: proto.Float64(100.15)},
 			},
 			&pb.Property{
-				Name:  proto.String("createdat"),
+				Name:  proto.String("created_at"),
 				Value: &pb.Value{TimestampMicrosecondsValue: proto.Int64(1409090080287871)},
 			},
 		},
@@ -300,7 +316,7 @@ func TestProtoToEntity(t *testing.T) {
 		t.Errorf("Unexpected total, %v is found", s.Total)
 	}
 	if s.CreatedAt != time.Unix(1409090080, 287871000) {
-		t.Errorf("Unexpected createdat, %v is found", s.CreatedAt)
+		t.Errorf("Unexpected created_at, %v is found", s.CreatedAt)
 	}
 }
 

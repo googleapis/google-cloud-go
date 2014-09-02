@@ -17,6 +17,7 @@ package datastore
 import (
 	"errors"
 	"reflect"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -27,6 +28,10 @@ import (
 
 const (
 	tagKeyDatastore = "datastore"
+)
+
+var (
+	reCCtoUnderscore = regexp.MustCompile("(.)([A-Z][a-z]+)")
 )
 
 var operatorToProto = map[operator]*pb.PropertyFilter_Operator{
@@ -45,7 +50,7 @@ var sortDirectionToProto = map[sortDirection]*pb.PropertyOrder_Direction{
 var (
 	typeOfByteSlice = reflect.TypeOf([]byte{})
 	typeOfTime      = reflect.TypeOf(time.Time{})
-	typeOfKeyPtr    = reflect.TypeOf(&Key{})
+	typeOfKey       = reflect.TypeOf(Key{})
 )
 
 type fieldMeta struct {
@@ -58,6 +63,11 @@ var (
 	mu         sync.Mutex
 	entityMeta map[reflect.Type](map[string]*fieldMeta) = make(map[reflect.Type](map[string]*fieldMeta))
 )
+
+func camelCaseToUnderscore(name string) string {
+	v := reCCtoUnderscore.ReplaceAllLiteralString(name, "_$2")
+	return strings.ToLower(v)
+}
 
 func registerEntityMeta(typ reflect.Type) map[string]*fieldMeta {
 	mu.Lock()
@@ -82,10 +92,8 @@ func registerEntityMeta(typ reflect.Type) map[string]*fieldMeta {
 		} else {
 			name = tag
 		}
-
-		if tag == "" {
-			// TODO(jbd): CamelCase to camel_case
-			name = strings.ToLower(field.Name)
+		if name == "" {
+			name = camelCaseToUnderscore(field.Name)
 		}
 
 		entityMeta[typ][name] = &fieldMeta{
