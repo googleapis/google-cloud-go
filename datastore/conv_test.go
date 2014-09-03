@@ -73,10 +73,10 @@ type someType struct {
 
 func TestCamelCaseToUnderscore(t *testing.T) {
 	tests := map[string]string{
-		"X_Y_z": "x_y_z",
-		"XX_Y":  "xx_y",
-		"_X_y":  "_x_y",
-		"X2Y2":  "x2y2",
+		"XaYb": "xa_yb",
+		"XYz":  "x_yz",
+		"XXY":  "x_x_y",
+		"X2Y2": "x2_y2",
 	}
 
 	for test, expected := range tests {

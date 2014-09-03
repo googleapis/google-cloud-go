@@ -31,7 +31,7 @@ const (
 )
 
 var (
-	reCCtoUnderscore = regexp.MustCompile("(.)([A-Z][a-z]+)")
+	reCCtoUnderscore = regexp.MustCompile("([A-Z][a-z|0-9]*)")
 )
 
 var operatorToProto = map[operator]*pb.PropertyFilter_Operator{
@@ -65,8 +65,8 @@ var (
 )
 
 func camelCaseToUnderscore(name string) string {
-	v := reCCtoUnderscore.ReplaceAllLiteralString(name, "_$2")
-	return strings.ToLower(v)
+	v := reCCtoUnderscore.ReplaceAllString(name, "${1}_")
+	return strings.Trim(strings.ToLower(v), "_")
 }
 
 func registerEntityMeta(typ reflect.Type) map[string]*fieldMeta {
