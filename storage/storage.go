@@ -14,6 +14,13 @@
 
 package storage
 
+// TODO(jbd): Wrap google-api-go-client.
+// TODO(jbd): Allow users to set storage API host and port.
+// TODO(jbd): Make Object a ReadWriter.
+// TODO(jbd): Allow users to set an http.Client.
+// TODO(jbd): Provide bucket CRUD.
+// TODO(jbd): Improve ACL management.
+
 import (
 	"errors"
 	"fmt"
