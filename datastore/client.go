@@ -23,6 +23,7 @@ func (c *client) call(url string, req proto.Message, resp proto.Message) (err er
 	if err != nil {
 		return
 	}
+	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 	if r.StatusCode != http.StatusOK {
 		if err != nil {
