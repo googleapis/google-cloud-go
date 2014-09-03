@@ -14,6 +14,12 @@ We are planning release the initial version with support for the following Cloud
 ## Installation
 
 ``` go
+go get google.golang.org/cloud
+```
+
+## Use
+
+``` go
 import "google.golang.org/cloud"
 ```
 
