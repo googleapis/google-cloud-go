@@ -20,8 +20,8 @@ import (
 
 // Owner represents the owner of the file.
 type Owner struct {
-	entity   string `json:"entity"`
-	entityID string `json:"entityId"`
+	Entity   string `json:"entity"`
+	EntityID string `json:"entityId"`
 }
 
 // ACL represents access controls on a file.
@@ -35,12 +35,9 @@ type ACL struct {
 	Role       string `json:"role"`
 }
 
-// TODO: File should implement os.FileInfo
-// TODO(jbd): Switch to object terminology.
-
-// File represents an object within Google Cloud Storage.
-// Objects are pieces of data that you have uploaded to Google Cloud Storage.
-type File struct {
+// Object represents a blob and its meta information
+// on Google Cloud Storage.
+type Object struct {
 	ID         string `json:"id"`
 	Name       string `json:"name"`
 	BucketName string `json:"bucket"`
@@ -53,7 +50,7 @@ type File struct {
 	ContentEncoding string `json:"contentEncoding"`
 	ContentType     string `json:"contentType"`
 	ContentLanuage  string `json:"contentLanguage"`
-	CRC32c          string `json:"crc32c"`
+	CRC32C          string `json:"crc32c"`
 	MD5Hash         string `json:"md5hash"`
 	Size            uint64 `json:"size,string"`
 	Etag            string `json:"etag"`
@@ -75,6 +72,6 @@ type Query struct {
 }
 
 type listResponse struct {
-	Items         []*File `json:"items"`
-	NextPageToken string  `json:"nextPageToken,omitempty"`
+	Items         []*Object `json:"items"`
+	NextPageToken string    `json:"nextPageToken,omitempty"`
 }

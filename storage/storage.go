@@ -37,31 +37,30 @@ var requiredScopes = []string{
 // See the guide on https://developers.google.com/storage to
 // create a bucket.
 type Bucket struct {
-	Name      string
+	name      string
 	Transport *oauth2.Transport
 }
 
 // NewBucket returns a new bucket whose calls will be authorized
 // with the provided email and private key.
-func NewBucket(bucketName, email string, privateKey []byte) (bucket *Bucket, err error) {
+func NewBucket(bucketName, email string, privateKey []byte) (*Bucket, error) {
 	conf, err := google.NewServiceAccountConfig(&oauth2.JWTOptions{
 		Email:      email,
 		PrivateKey: privateKey,
 		Scopes:     requiredScopes,
 	})
 	if err != nil {
-		return
+		return nil, err
 	}
-	bucket = &Bucket{
-		Name:      bucketName,
+	return &Bucket{
+		name:      bucketName,
 		Transport: conf.NewTransport(),
-	}
-	return
+	}, nil
 }
 
 // List lists files from the bucket. It returns a non-nil nextQuery
 // if more pages are available.
-func (b *Bucket) List(query *Query) (files []*File, next *Query, err error) {
+func (b *Bucket) List(query *Query) (objects []*Object, next *Query, err error) {
 	client := &client{transport: b.Transport}
 	params := url.Values{}
 	if query != nil {
@@ -73,7 +72,7 @@ func (b *Bucket) List(query *Query) (files []*File, next *Query, err error) {
 		params.Add("prefix", query.Prefix)
 		params.Add("versions", fmt.Sprintf("%t", query.Versions))
 	}
-	u, err := url.Parse(storageBaseURL + "/b/" + b.Name + "/o" + "?" + params.Encode())
+	u, err := url.Parse(storageBaseURL + "/b/" + b.name + "/o" + "?" + params.Encode())
 	if err != nil {
 		return
 	}
@@ -93,43 +92,39 @@ func (b *Bucket) List(query *Query) (files []*File, next *Query, err error) {
 	return resp.Items, next, nil
 }
 
-// Copy copies the specified file with the specified file info.
-func (b *Bucket) Copy(name string, destFile *File) error {
-	if destFile.Name == "" {
+func (b *Bucket) Copy(objectName string, destObject *Object) error {
+	if destObject.Name == "" {
 		return errors.New("storage: destination file should have a name")
 	}
-	if destFile.BucketName == "" {
-		destFile.BucketName = b.Name
+	if destObject.BucketName == "" {
+		destObject.BucketName = b.name
 	}
 	client := &client{transport: b.Transport}
-	u, err := url.Parse(storageBaseURL + "/b/" + b.Name + "/o/" + name + "/copyTo/b/" + destFile.BucketName + "/o/" + destFile.Name)
+	u, err := url.Parse(storageBaseURL + "/b/" + b.name + "/o/" + objectName + "/copyTo/b/" + destObject.BucketName + "/o/" + destObject.Name)
 	if err != nil {
 		return err
 	}
-	return client.Do("POST", u, destFile, nil)
+	return client.Do("POST", u, destObject, nil)
 }
 
-// Remove removes a file.
-func (b *Bucket) Remove(name string) error {
+func (b *Bucket) Delete(objectName string) error {
 	client := &client{transport: b.Transport}
-	u, err := url.Parse(storageBaseURL + "/b/" + b.Name + "/o/" + name)
+	u, err := url.Parse(storageBaseURL + "/b/" + b.name + "/o/" + objectName)
 	if err != nil {
 		return err
 	}
 	return client.Do("DELETE", u, nil, nil)
 }
 
-// Read reads the specified file.
-func (b *Bucket) Read(name string) (file *File, contents io.ReadCloser, err error) {
-	if file, err = b.Stat(name); err != nil {
+func (b *Bucket) Read(objectName string) (object *Object, contents io.ReadCloser, err error) {
+	if object, err = b.Stat(objectName); err != nil {
 		return
 	}
-	if file.MediaLink == "" {
+	if object.MediaLink == "" {
 		err = errors.New("storage: file doesn't contain blob contents")
 		return
 	}
-	// make a request to read file blob
-	u, err := url.Parse(file.MediaLink)
+	u, err := url.Parse(object.MediaLink)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -139,15 +134,15 @@ func (b *Bucket) Read(name string) (file *File, contents io.ReadCloser, err erro
 }
 
 // Stat stats the specified file and returns metadata about it.
-func (b *Bucket) Stat(name string) (file *File, err error) {
-	client := &client{transport: b.Transport}
-	u, err := url.Parse(storageBaseURL + "/b/" + b.Name + "/o/" + name)
+func (b *Bucket) Stat(objectName string) (*Object, error) {
+	u, err := url.Parse(storageBaseURL + "/b/" + b.name + "/o/" + objectName)
 	if err != nil {
 		return nil, err
 	}
-	file = &File{}
-	if err = client.Do("GET", u, nil, file); err != nil {
+	o := &Object{}
+	client := &client{transport: b.Transport}
+	if err = client.Do("GET", u, nil, o); err != nil {
 		return nil, err
 	}
-	return file, nil
+	return o, nil
 }
