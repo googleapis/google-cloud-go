@@ -2,8 +2,8 @@ package storage
 
 import "io"
 
-// Object represents a Google Cloud Storage (GCS) object.
-type Object struct {
+// ObjectInfo represents a Google Cloud Storage (GCS) object.
+type ObjectInfo struct {
 	// Bucket is the name of the bucket containing this GCS object.
 	Bucket string `json:"bucket,omitempty"`
 
@@ -52,13 +52,17 @@ type Object struct {
 	// TODO(jbd): Add timeDelete and updated.
 }
 
-type Bucket struct {
+type BucketInfo struct {
 	// Name is the name of the bucket.
 	Name string `json:"name,omitempty"`
 }
 
 type Storage struct {
 	// TODO(jbd): Add connection
+}
+
+type Bucket struct {
+	name string
 }
 
 // TODO(jbd): Add storage.buckets.list.
@@ -68,44 +72,48 @@ type Storage struct {
 // TODO(jbd): Add storage.objects.list.
 // TODO(jbd): Add storage.objects.watch.
 
-// GetBucket returns the specified bucket.
-func (s *Storage) GetBucket(name string) (*Bucket, error) {
+func (s *Storage) NewBucket(name string) *Bucket {
 	panic("not yet implemented")
 }
 
-// GetObject returns the meta information of an object.
-func (s *Storage) GetObject(bucket, name string) (*Object, error) {
+// GetBucketInfo returns the specified bucket.
+func (s *Storage) GetBucketInfo(name string) (*BucketInfo, error) {
+	panic("not yet implemented")
+}
+
+// Stat returns the meta information of an object.
+func (b *Bucket) Stat(name string) (*ObjectInfo, error) {
 	panic("not yet impelemented")
 }
 
-// PutObject inserts/updates an object with the provided meta information.
-func (s *Storage) PutObject(bucket, name string, obj *Object) error {
+// Put inserts/updates an object with the provided meta information.
+func (b *Bucket) Put(name string, info *ObjectInfo) error {
 	panic("not yet impelemented")
 }
 
-// DeleteObject deletes the specified object.
-func (s *Storage) DeleteObject(bucket, name string) error {
+// Delete deletes the specified object.
+func (b *Bucket) Delete(name string) error {
 	panic("not yet impelemented")
 }
 
-// CopyObject copies the source object to the destination with the new
+// Copy copies the source object to the destination with the new
 // meta information properties provided.
 // The destination object is insterted into the source bucket
 // if the destination doesn't specify another bucket name.
-func (s *Storage) CopyObject(bucket, name string, dest *Object) error {
+func (b *Bucket) Copy(name string, dest *ObjectInfo) error {
 	panic("not yet impelemented")
 }
 
 // NewReader creates a new io.ReadCloser to read the contents
 // of the object.
-func (s *Storage) NewReader(bucket, name string) (io.ReadCloser, error) {
+func (b *Bucket) NewReader(name string) (io.ReadCloser, error) {
 	panic("not yet impelemented")
 }
 
 // NewWriter creates a new io.WriteCloser to write to the GCS object
 // identified by the specified bucket and name.
-// If such object doesn't exist, it creates one. If obj is not nil,
+// If such object doesn't exist, it creates one. If info is not nil,
 // write operation also modifies the meta information of the object.
-func (s *Storage) NewWriter(bucket, name string, obj *Object) (io.WriteCloser, error) {
+func (b *Bucket) NewWriter(name string, info *ObjectInfo) (io.WriteCloser, error) {
 	panic("not yet implemented")
 }
