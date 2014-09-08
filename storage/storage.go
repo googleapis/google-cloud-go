@@ -2,37 +2,43 @@ package storage
 
 import "io"
 
-// Blob represents a Google Cloud Storage (GCS) object.
-type Blob struct {
+// Object represents a Google Cloud Storage (GCS) object.
+type Object struct {
 	// Bucket is the name of the bucket containing this GCS object.
 	Bucket string `json:"bucket"`
 
-	// Name is the name of the blob.
+	// Name is the name of the object.
 	Name string `json:"name"`
 
-	// ContentType is the mime-type of the object's content.
+	// ContentType is the MIME type of the object's content.
 	ContentType string `json:"contentType"`
 
-	// Size is the length of the object's content. Readonly.
+	// Size is the length of the object's content.
+	// Read-only.
 	Size int64 `json:"size"`
 
-	// ContentEncoding is the encoding of the object's content. Readonly.
+	// ContentEncoding is the encoding of the object's content.
+	// Read-only.
 	ContentEncoding string `json:"contentEncoding"`
 
-	// MD5 is the MD5 hash of the data. Readonly.
+	// MD5 is the MD5 hash of the data.
+	// Read-only.
 	MD5 []byte `json:"md5Hash"`
 
-	// CRC32C is the CRC32C checksum of the object's content. Readonly.
+	// CRC32C is the CRC32C checksum of the object's content.
+	// Read-only.
 	CRC32C []byte `json:"crc32c"`
 
-	// MediaLink is an URL to the object's content. Readonly.
+	// MediaLink is an URL to the object's content.
+	// Read-only.
 	MediaLink string `json:"mediaLink,omitempty"`
 
 	// Metadata represents user-provided metadata, in key/value pairs.
+	// It can be nil if no metadata is provided.
 	Metadata map[string]string `json:"metadata"`
 
-	// Generation is the generation version of the
-	// object's content. Readonly.
+	// Generation is the generation version of the object's content.
+	// Read-only.
 	Generation int64 `json:"generation"`
 
 	// MetaGeneration is the version of the metadata for this
@@ -56,47 +62,46 @@ func NewBucket(name string) (*Bucket, error) {
 	return &Bucket{Name: name}, nil
 }
 
-func (b *Bucket) NewBlob(name string) *Blob {
-	return &Blob{Bucket: b.Name, Name: name}
+func (b *Bucket) NewObject(name string) *Object {
+	return &Object{Bucket: b.Name, Name: name}
 }
 
 // TODO(jbd): Add storage.objects.list.
 // TODO(jbd): Add storage.objects.watch.
 
-// Stat returns the meta information of a blob.
-func (b *Bucket) Stat(name string) (*Blob, error) {
+// Stat returns the meta information of an object.
+func (b *Bucket) Stat(name string) (*Object, error) {
 	panic("not yet impelemented")
 }
 
-// Put inserts/updates a blob with the provided meta
-// information.
-func (b *Bucket) Put(name string, blob *Blob) error {
+// Put inserts/updates an object with the provided meta information.
+func (b *Bucket) Put(name string, obj *Object) error {
 	panic("not yet impelemented")
 }
 
-// Delete deletes the specified blob.
+// Delete deletes the specified object.
 func (b *Bucket) Delete(name string) error {
 	panic("not yet impelemented")
 }
 
-// Copy copies the source blob to the destination with the new
+// Copy copies the source object to the destination with the new
 // meta information properties provided.
-// The destination blob is insterted into the current bucket
-// if dest doesn't specify another bucket name.
-func (b *Bucket) Copy(srcName string, dest *Blob) error {
+// The destination object is insterted into the current bucket
+// if the destination doesn't specify another bucket name.
+func (b *Bucket) Copy(srcName string, dest *Object) error {
 	panic("not yet impelemented")
 }
 
 // NewReader creates a new io.ReadCloser to read the contents
-// of the blob identified by name from the current bucket.
+// of the object identified by name from the current bucket.
 func (b *Bucket) NewReader(name string) (io.ReadCloser, error) {
 	panic("not yet impelemented")
 }
 
 // NewWriter creates a new io.WriteCloser to write to the GCS object
-// identified by name. If such object doesn't exist, it creates one.
-// If the blob is not nil, write operation also modifies the meta
-// information of the object.
-func (b *Bucket) NewWriter(name string, blob *Blob) (io.WriteCloser, error) {
+// identified by the specified name.
+// If such object doesn't exist, it creates one. If obj is not nil,
+// write operation also modifies the meta information of the object.
+func (b *Bucket) NewWriter(name string, obj *Object) (io.WriteCloser, error) {
 	panic("not yet implemented")
 }
