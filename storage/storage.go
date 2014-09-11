@@ -9,6 +9,18 @@ import (
 	raw "code.google.com/p/google-api-go-client/storage/v1"
 )
 
+// OAuth 2.0 scopes used by this API.
+const (
+	// Manage your data and permissions in Google Cloud Storage
+	ScopeFullControl = raw.DevstorageFull_controlScope
+
+	// View your data in Google Cloud Storage
+	ScopeReadOnly = raw.DevstorageRead_onlyScope
+
+	// Manage your data in Google Cloud Storage
+	ScopeReadWrite = raw.DevstorageRead_writeScope
+)
+
 // ObjectInfo represents a Google Cloud Storage (GCS) object.
 type ObjectInfo struct {
 	// Bucket is the name of the bucket containing this GCS object.
