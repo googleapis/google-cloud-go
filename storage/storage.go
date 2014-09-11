@@ -1,6 +1,13 @@
+// Package storage is a Google Cloud Storage client.
 package storage
 
-import "io"
+import (
+	"errors"
+	"io"
+	"net/http"
+
+	raw "code.google.com/p/google-api-go-client/storage/v1"
+)
 
 // ObjectInfo represents a Google Cloud Storage (GCS) object.
 type ObjectInfo struct {
@@ -15,7 +22,7 @@ type ObjectInfo struct {
 
 	// Size is the length of the object's content.
 	// Read-only.
-	Size int64 `json:"size,omitempty"`
+	Size uint64 `json:"size,omitempty"`
 
 	// ContentEncoding is the encoding of the object's content.
 	// Read-only.
@@ -52,56 +59,118 @@ type ObjectInfo struct {
 	// TODO(jbd): Add timeDelete and updated.
 }
 
+func (o *ObjectInfo) toRawObject() *raw.Object {
+	// TODO(jbd): add ACL and owner
+	return &raw.Object{
+		Bucket:      o.Bucket,
+		Name:        o.Name,
+		ContentType: o.ContentType,
+	}
+}
+
+func newObjectInfo(o *raw.Object) *ObjectInfo {
+	if o == nil {
+		return nil
+	}
+	return &ObjectInfo{
+		Bucket:          o.Bucket,
+		Name:            o.Name,
+		ContentType:     o.ContentType,
+		ContentEncoding: o.ContentEncoding,
+		Size:            o.Size,
+		MD5:             []byte(o.Md5Hash),
+		CRC32C:          []byte(o.Crc32c),
+		MediaLink:       o.MediaLink,
+		Generation:      o.Generation,
+		MetaGeneration:  o.Metageneration,
+	}
+}
+
 type BucketInfo struct {
 	// Name is the name of the bucket.
 	Name string `json:"name,omitempty"`
 }
 
-type Storage struct {
-	// TODO(jbd): Add connection
-}
-
 type Bucket struct {
 	name string
+	s    *raw.Service
+}
+
+type Client struct {
+	s *raw.Service
+}
+
+func New(tr http.RoundTripper) (*Client, error) {
+	return NewWithClient(&http.Client{Transport: tr})
+}
+
+func NewWithClient(c *http.Client) (*Client, error) {
+	s, err := raw.New(c)
+	if err != nil {
+		return nil, err
+	}
+	return &Client{s: s}, nil
 }
 
 // TODO(jbd): Add storage.buckets.list.
 // TODO(jbd): Add storage.buckets.insert.
 // TODO(jbd): Add storage.buckets.update.
 // TODO(jbd): Add storage.buckets.delete.
-// TODO(jbd): Add storage.objects.list.
-// TODO(jbd): Add storage.objects.watch.
 
-func (s *Storage) NewBucket(name string) *Bucket {
+// TODO(jbd): Add storage.objects.list.
+
+// GetBucketInfo returns the specified bucket.
+func (c *Client) GetBucketInfo(name string) (*BucketInfo, error) {
 	panic("not yet implemented")
 }
 
-// GetBucketInfo returns the specified bucket.
-func (s *Storage) GetBucketInfo(name string) (*BucketInfo, error) {
-	panic("not yet implemented")
+func (c *Client) NewBucket(name string) *Bucket {
+	return &Bucket{name: name, s: c.s}
 }
 
 // Stat returns the meta information of an object.
 func (b *Bucket) Stat(name string) (*ObjectInfo, error) {
-	panic("not yet impelemented")
+	o, err := b.s.Objects.Get(b.name, name).Do()
+	if err != nil {
+		// TODO(jbd): If 404, return ErrNotExists
+		return nil, err
+	}
+	return newObjectInfo(o), nil
 }
 
 // Put inserts/updates an object with the provided meta information.
-func (b *Bucket) Put(name string, info *ObjectInfo) error {
-	panic("not yet impelemented")
+func (b *Bucket) Put(name string, info *ObjectInfo) (*ObjectInfo, error) {
+	o, err := b.s.Objects.Insert(b.name, info.toRawObject()).Do()
+	if err != nil {
+		return nil, err
+	}
+	return newObjectInfo(o), nil
 }
 
 // Delete deletes the specified object.
 func (b *Bucket) Delete(name string) error {
-	panic("not yet impelemented")
+	return b.s.Objects.Delete(b.name, name).Do()
 }
 
 // Copy copies the source object to the destination with the new
 // meta information properties provided.
-// The destination object is insterted into the source bucket
-// if the destination doesn't specify another bucket name.
-func (b *Bucket) Copy(name string, dest *ObjectInfo) error {
-	panic("not yet impelemented")
+// The destination object is inserted into the source bucket
+// if the destination object doesn't specify another bucket name.
+func (b *Bucket) Copy(name string, dest *ObjectInfo) (*ObjectInfo, error) {
+	if dest.Name == "" {
+		return nil, errors.New("storage: missing dest name")
+	}
+	destBucket := dest.Bucket
+	if destBucket == "" {
+		destBucket = b.name
+	}
+	o, err := b.s.Objects.Copy(
+		b.name, name, destBucket, dest.Name, dest.toRawObject()).Do()
+	if err != nil {
+		// TODO(jbd): Return ErrNotExists if 404.
+		return nil, err
+	}
+	return newObjectInfo(o), nil
 }
 
 // NewReader creates a new io.ReadCloser to read the contents
