@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	raw "code.google.com/p/google-api-go-client/storage/v1"
+	raw "code.google.com/p/google-api-go-client/storage/v1beta2"
 )
 
 // OAuth 2.0 scopes used by this API.
