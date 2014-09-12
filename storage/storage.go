@@ -12,13 +12,16 @@ import (
 
 // OAuth 2.0 scopes used by this API.
 const (
-	// Manage your data and permissions in Google Cloud Storage
+	// ScopeFullControl grants permissions to manage your
+	// data and permissions in Google Cloud Storage.
 	ScopeFullControl = raw.DevstorageFull_controlScope
 
-	// View your data in Google Cloud Storage
+	// ScopeReadOnly grants permissions to
+	// view your data in Google Cloud Storage.
 	ScopeReadOnly = raw.DevstorageRead_onlyScope
 
-	// Manage your data in Google Cloud Storage
+	// ScopeReadWrite grants permissions to manage your
+	// data in Google Cloud Storage.
 	ScopeReadWrite = raw.DevstorageRead_writeScope
 )
 
@@ -64,18 +67,27 @@ func NewWithClient(c *http.Client) *Client {
 // TODO(jbd): Add storage.buckets.delete.
 
 // TODO(jbd): Add storage.objects.list.
-// TODO(jbd): Add storage.objects.patch.
+// TODO(jbd): Add storage.objects.watch.
 
 // GetBucketInfo returns the specified bucket.
 func (c *Client) GetBucketInfo(name string) (*BucketInfo, error) {
 	panic("not yet implemented")
 }
 
+// Bucket returns a named bucket to perform object operations on.
 func (c *Client) Bucket(name string) *Bucket {
 	return &Bucket{name: name, conn: c.conn}
 }
 
-// Stat returns the meta information of an object.
+// DefaultBucket returns the default bucket assigned to your
+// project if you are running on Google Compute Engine or
+// Google App Engine Managed VMs. It will return nil if your
+// code is not running on Google Compute Engine or App Engine.
+func (c *Client) DefaultBucket() *Bucket {
+	panic("not yet implemented")
+}
+
+// Stat returns meta information about the specified object.
 func (b *Bucket) Stat(name string) (*ObjectInfo, error) {
 	o, err := b.conn.s.Objects.Get(b.name, name).Do()
 	if err != nil {
@@ -99,7 +111,7 @@ func (b *Bucket) Delete(name string) error {
 }
 
 // Copy copies the source object to the destination with the new
-// meta information properties provided.
+// meta information provided.
 // The destination object is inserted into the source bucket
 // if the destination object doesn't specify another bucket name.
 func (b *Bucket) Copy(name string, dest *ObjectInfo) (*ObjectInfo, error) {
@@ -129,7 +141,7 @@ func (b *Bucket) NewReader(name string) (io.ReadCloser, error) {
 }
 
 // NewWriter creates a new io.WriteCloser to write to the GCS object
-// identified by the specified bucket and name.
+// identified by the specified object name.
 // If such object doesn't exist, it creates one. If info is not nil,
 // write operation also modifies the meta information of the object.
 func (b *Bucket) NewWriter(name string, info *ObjectInfo) io.WriteCloser {

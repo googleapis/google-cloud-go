@@ -59,8 +59,8 @@ func (w *objectWriter) Write(p []byte) (n int, err error) {
 	return w.pw.Write(p)
 }
 
-// Close closes the writer and cleans-up other resources
-// that are used by the writer.
+// Close closes the writer and cleans up other resources
+// used by the writer.
 func (w *objectWriter) Close() error {
 	if w.err != nil {
 		return w.err
