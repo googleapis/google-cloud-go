@@ -6,31 +6,67 @@ import (
 	raw "code.google.com/p/google-api-go-client/storage/v1beta2"
 )
 
+// contentTyper implements ContentTyper to enable an
+// io.Reader to specify its MIME type.
+type contentTyper struct {
+	io.ReadCloser
+	t string
+}
+
+func (c *contentTyper) ContentType() string {
+	return c.t
+}
+
+// newObjectWriter returns a new objectWriter that writes to
+// the file that is specified by info.Bucket and info.Name.
+// Metadata changes are also reflected on the remote object
+// entity, read-only fields are ignored during the write operation.
 func newObjectWriter(conn *conn, info *ObjectInfo) *objectWriter {
 	w := &objectWriter{
 		conn: conn,
 		info: info,
 	}
 	pr, pw := io.Pipe()
-	w.pr = pr
+	w.rc = &contentTyper{pr, info.ContentType}
 	w.pw = pw
+	go func() {
+		// TODO(jbd): Return the inserted/updated object entity.
+		_, w.err = conn.s.Objects.Insert(
+			info.Bucket, info.toRawObject()).Media(w.rc).Do()
+	}()
 	return w
 }
 
+// objectWriter is an io.WriteCloser that opens a connection
+// to update the metadata and file contents of a GCS object.
 type objectWriter struct {
 	conn *conn
 	info *ObjectInfo
 
-	pr *io.PipeReader
-	pw *io.PipeWriter
+	rc  io.ReadCloser
+	pw  *io.PipeWriter
+	err error
 }
 
+// Write writes len(p) bytes to the object. It returns the number
+// of the bytes written, or an error if there is a problem occured
+// during the write. It's a blocking operation, and will not return
+// until the bytes are written to the underlying socket.
 func (w *objectWriter) Write(p []byte) (n int, err error) {
-	panic("not yet implemented")
+	if w.err != nil {
+		return 0, w.err
+	}
+	return w.pw.Write(p)
 }
 
+// Close closes the writer and cleans-up other resources
+// that are used by the writer.
 func (w *objectWriter) Close() error {
-	panic("not yet implemented")
+	if w.err != nil {
+		return w.err
+	}
+	w.rc.Close()
+	return w.pw.Close()
 }
 
 // ObjectInfo represents a Google Cloud Storage (GCS) object.
@@ -87,9 +123,8 @@ type ObjectInfo struct {
 func (o *ObjectInfo) toRawObject() *raw.Object {
 	// TODO(jbd): add ACL and owner
 	return &raw.Object{
-		Bucket:      o.Bucket,
-		Name:        o.Name,
-		ContentType: o.ContentType,
+		Bucket: o.Bucket,
+		Name:   o.Name,
 	}
 }
 
