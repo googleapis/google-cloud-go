@@ -7,7 +7,7 @@ import (
 )
 
 // contentTyper implements ContentTyper to enable an
-// io.Reader to specify its MIME type.
+// io.ReadCloser to specify its MIME type.
 type contentTyper struct {
 	io.ReadCloser
 	t string

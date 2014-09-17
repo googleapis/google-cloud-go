@@ -10,7 +10,6 @@ import (
 	raw "code.google.com/p/google-api-go-client/storage/v1beta2"
 )
 
-// OAuth 2.0 scopes used by this API.
 const (
 	// ScopeFullControl grants permissions to manage your
 	// data and permissions in Google Cloud Storage.
@@ -48,14 +47,22 @@ func (b *Bucket) String() string {
 	return fmt.Sprintf("<bucket: %v>", b.name)
 }
 
+// Client represents a Google Cloud Storage client.
 type Client struct {
 	conn *conn
 }
 
+// New returns a new Google Cloud Storage client. The provided
+// RoundTripper should be authorized and authenticated to make
+// calls to Google Cloud Storage API.
 func New(tr http.RoundTripper) *Client {
 	return NewWithClient(&http.Client{Transport: tr})
 }
 
+// NewWithClient returns a new Google Cloud Storage client that
+// uses the provided http.Client. Provided http.Client is responsible
+// to authorize and authenticate the requests made to the
+// Google Cloud Storage API.
 func NewWithClient(c *http.Client) *Client {
 	s, _ := raw.New(c)
 	return &Client{conn: &conn{s: s, c: c}}
@@ -69,8 +76,8 @@ func NewWithClient(c *http.Client) *Client {
 // TODO(jbd): Add storage.objects.list.
 // TODO(jbd): Add storage.objects.watch.
 
-// GetBucketInfo returns the specified bucket.
-func (c *Client) GetBucketInfo(name string) (*BucketInfo, error) {
+// BucketInfo returns the metadata for the specified bucket.
+func (c *Client) BucketInfo(name string) (*BucketInfo, error) {
 	panic("not yet implemented")
 }
 
