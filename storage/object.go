@@ -69,6 +69,31 @@ func (w *objectWriter) Close() error {
 	return w.pw.Close()
 }
 
+// AccessControlRule represents an access control rule entry for
+// a Google Cloud Storage object.
+type AccessControlRule struct {
+	// Entity identifies the entity holding the current
+	// rule's permissions. It could be in the form of:
+	// - "user-<userId>"
+	// - "user-<email>"
+	// - "group-<groupId>"
+	// - "group-<email>"
+	// - "domain-<domain>"
+	// - "project-team-<projectId>"
+	// - "allUsers"
+	// - "allAuthenticatedUsers"
+	Entity string `json:"entity,omitempty"`
+
+	// Role is the the access permission for the entity. Can be READER or OWNER.
+	Role string `json:"role,omitempty"`
+}
+
+// Owner represents the owner of a GCS object.
+type Owner struct {
+	// Entity identifies the owner, it's always in the form of "user-<userId>".
+	Entity string `json:"entity,omitempty"`
+}
+
 // ObjectInfo represents a Google Cloud Storage (GCS) object.
 type ObjectInfo struct {
 	// Bucket is the name of the bucket containing this GCS object.
@@ -79,6 +104,14 @@ type ObjectInfo struct {
 
 	// ContentType is the MIME type of the object's content.
 	ContentType string `json:"contentType,omitempty"`
+
+	// ACL is the access control rule list for the object.
+	ACL []*AccessControlRule `json:"acl,omitempty"`
+
+	// Owner is the owner of the object. Owner is alway the original
+	// uploader of the object.
+	// Read-only.
+	Owner *Owner `json:"owner,omitempty"`
 
 	// Size is the length of the object's content.
 	// Read-only.
@@ -116,15 +149,21 @@ type ObjectInfo struct {
 	// Read-only.
 	MetaGeneration int64 `json:"metageneration,omitempty"`
 
-	// TODO(jbd): Add ACL and owner.
 	// TODO(jbd): Add timeDelete and updated.
 }
 
 func (o *ObjectInfo) toRawObject() *raw.Object {
-	// TODO(jbd): add ACL and owner
+	acl := make([]*raw.ObjectAccessControl, len(o.ACL))
+	for i, rule := range o.ACL {
+		acl[i] = &raw.ObjectAccessControl{
+			Entity: rule.Entity,
+			Role:   rule.Role,
+		}
+	}
 	return &raw.Object{
 		Bucket: o.Bucket,
 		Name:   o.Name,
+		Acl:    acl,
 	}
 }
 
@@ -132,10 +171,19 @@ func newObjectInfo(o *raw.Object) *ObjectInfo {
 	if o == nil {
 		return nil
 	}
+	acl := make([]*AccessControlRule, len(o.Acl))
+	for i, rule := range o.Acl {
+		acl[i] = &AccessControlRule{
+			Entity: rule.Entity,
+			Role:   rule.Role,
+		}
+	}
 	return &ObjectInfo{
 		Bucket:          o.Bucket,
 		Name:            o.Name,
 		ContentType:     o.ContentType,
+		ACL:             acl,
+		Owner:           &Owner{Entity: o.Owner.Entity},
 		ContentEncoding: o.ContentEncoding,
 		Size:            o.Size,
 		MD5:             []byte(o.Md5Hash),
