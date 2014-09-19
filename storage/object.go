@@ -21,7 +21,7 @@ func (c *contentTyper) ContentType() string {
 // the file that is specified by info.Bucket and info.Name.
 // Metadata changes are also reflected on the remote object
 // entity, read-only fields are ignored during the write operation.
-func newObjectWriter(conn *conn, info *ObjectInfo) *objectWriter {
+func newObjectWriter(conn *conn, info *Object) *objectWriter {
 	w := &objectWriter{
 		conn: conn,
 		info: info,
@@ -41,7 +41,7 @@ func newObjectWriter(conn *conn, info *ObjectInfo) *objectWriter {
 // to update the metadata and file contents of a GCS object.
 type objectWriter struct {
 	conn *conn
-	info *ObjectInfo
+	info *Object
 
 	rc  io.ReadCloser
 	pw  *io.PipeWriter
@@ -94,8 +94,8 @@ type Owner struct {
 	Entity string `json:"entity,omitempty"`
 }
 
-// ObjectInfo represents a Google Cloud Storage (GCS) object.
-type ObjectInfo struct {
+// Object represents a Google Cloud Storage (GCS) object.
+type Object struct {
 	// Bucket is the name of the bucket containing this GCS object.
 	Bucket string `json:"bucket,omitempty"`
 
@@ -152,7 +152,7 @@ type ObjectInfo struct {
 	// TODO(jbd): Add timeDelete and updated.
 }
 
-func (o *ObjectInfo) toRawObject() *raw.Object {
+func (o *Object) toRawObject() *raw.Object {
 	acl := make([]*raw.ObjectAccessControl, len(o.ACL))
 	for i, rule := range o.ACL {
 		acl[i] = &raw.ObjectAccessControl{
@@ -167,7 +167,7 @@ func (o *ObjectInfo) toRawObject() *raw.Object {
 	}
 }
 
-func newObjectInfo(o *raw.Object) *ObjectInfo {
+func newObject(o *raw.Object) *Object {
 	if o == nil {
 		return nil
 	}
@@ -178,7 +178,7 @@ func newObjectInfo(o *raw.Object) *ObjectInfo {
 			Role:   rule.Role,
 		}
 	}
-	return &ObjectInfo{
+	return &Object{
 		Bucket:          o.Bucket,
 		Name:            o.Name,
 		ContentType:     o.ContentType,

@@ -28,7 +28,8 @@ const (
 	templUrlMedia = "https://storage.googleapis.com/%s/%s"
 )
 
-type BucketInfo struct {
+// Bucket represents a Google Cloud Storage bucket.
+type Bucket struct {
 	// Name is the name of the bucket.
 	Name string `json:"name,omitempty"`
 }
@@ -38,12 +39,15 @@ type conn struct {
 	s *raw.Service
 }
 
-type Bucket struct {
+// BucketClient is a client to perform object operations on.
+type BucketClient struct {
 	name string
 	conn *conn
 }
 
-func (b *Bucket) String() string {
+// String returns a string representation of the bucket client.
+// E.g. <bucket: my-project-bucket>
+func (b *BucketClient) String() string {
 	return fmt.Sprintf("<bucket: %v>", b.name)
 }
 
@@ -76,44 +80,44 @@ func NewWithClient(c *http.Client) *Client {
 // TODO(jbd): Add storage.objects.list.
 // TODO(jbd): Add storage.objects.watch.
 
-// BucketInfo returns the metadata for the specified bucket.
-func (c *Client) BucketInfo(name string) (*BucketInfo, error) {
+// Bucket returns the metadata for the specified bucket.
+func (c *Client) Bucket(name string) (*Bucket, error) {
 	panic("not yet implemented")
 }
 
-// Bucket returns a named bucket to perform object operations on.
-func (c *Client) Bucket(name string) *Bucket {
-	return &Bucket{name: name, conn: c.conn}
+// BucketClient returns a bucket client to perform object operations on.
+func (c *Client) BucketClient(bucketname string) *BucketClient {
+	return &BucketClient{name: bucketname, conn: c.conn}
 }
 
-// DefaultBucket returns the default bucket assigned to your
+// DefaultBucketClient returns the default bucket client assigned to your
 // project if you are running on Google Compute Engine or
 // Google App Engine Managed VMs. It will return nil if your
 // code is not running on Google Compute Engine or App Engine.
-func (c *Client) DefaultBucket() *Bucket {
+func (c *Client) DefaultBucketClient() *BucketClient {
 	panic("not yet implemented")
 }
 
 // Stat returns meta information about the specified object.
-func (b *Bucket) Stat(name string) (*ObjectInfo, error) {
+func (b *BucketClient) Stat(name string) (*Object, error) {
 	o, err := b.conn.s.Objects.Get(b.name, name).Do()
 	if err != nil {
 		return nil, err
 	}
-	return newObjectInfo(o), nil
+	return newObject(o), nil
 }
 
 // Put inserts/updates an object with the provided meta information.
-func (b *Bucket) Put(name string, info *ObjectInfo) (*ObjectInfo, error) {
+func (b *BucketClient) Put(name string, info *Object) (*Object, error) {
 	o, err := b.conn.s.Objects.Insert(b.name, info.toRawObject()).Do()
 	if err != nil {
 		return nil, err
 	}
-	return newObjectInfo(o), nil
+	return newObject(o), nil
 }
 
 // Delete deletes the specified object.
-func (b *Bucket) Delete(name string) error {
+func (b *BucketClient) Delete(name string) error {
 	return b.conn.s.Objects.Delete(b.name, name).Do()
 }
 
@@ -121,7 +125,7 @@ func (b *Bucket) Delete(name string) error {
 // meta information provided.
 // The destination object is inserted into the source bucket
 // if the destination object doesn't specify another bucket name.
-func (b *Bucket) Copy(name string, dest *ObjectInfo) (*ObjectInfo, error) {
+func (b *BucketClient) Copy(name string, dest *Object) (*Object, error) {
 	if dest.Name == "" {
 		return nil, errors.New("storage: missing dest name")
 	}
@@ -134,12 +138,12 @@ func (b *Bucket) Copy(name string, dest *ObjectInfo) (*ObjectInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	return newObjectInfo(o), nil
+	return newObject(o), nil
 }
 
 // NewReader creates a new io.ReadCloser to read the contents
 // of the object.
-func (b *Bucket) NewReader(name string) (io.ReadCloser, error) {
+func (b *BucketClient) NewReader(name string) (io.ReadCloser, error) {
 	resp, err := b.conn.c.Get(fmt.Sprintf(templUrlMedia, b.name, name))
 	if err != nil {
 		return nil, err
@@ -151,8 +155,8 @@ func (b *Bucket) NewReader(name string) (io.ReadCloser, error) {
 // identified by the specified object name.
 // If such object doesn't exist, it creates one. If info is not nil,
 // write operation also modifies the meta information of the object.
-func (b *Bucket) NewWriter(name string, info *ObjectInfo) io.WriteCloser {
-	i := ObjectInfo{}
+func (b *BucketClient) NewWriter(name string, info *Object) io.WriteCloser {
+	i := Object{}
 	if info != nil {
 		i = *info
 	}
