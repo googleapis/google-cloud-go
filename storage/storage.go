@@ -91,7 +91,6 @@ func NewWithClient(c *http.Client) *Client {
 // TODO(jbd): Add storage.buckets.update.
 // TODO(jbd): Add storage.buckets.delete.
 
-// TODO(jbd): Add storage.objects.list.
 // TODO(jbd): Add storage.objects.watch.
 
 // Bucket returns the metadata for the specified bucket.
@@ -110,6 +109,42 @@ func (c *Client) BucketClient(bucketname string) *BucketClient {
 // code is not running on Google Compute Engine or App Engine.
 func (c *Client) DefaultBucketClient() *BucketClient {
 	panic("not yet implemented")
+}
+
+// List lists objects from the bucket. You can specify a query
+// to filter the results. If q is nil, no filtering is applied.
+func (b *BucketClient) List(q *Query) (*Objects, error) {
+	c := b.conn.s.Objects.List(b.name)
+	if q != nil {
+		c.Delimiter(q.Delimeter)
+		c.Prefix(q.Prefix)
+		c.Versions(q.Versions)
+		c.PageToken(q.Cursor)
+		if q.MaxResults > 0 {
+			c.MaxResults(int64(q.MaxResults))
+		}
+	}
+	resp, err := c.Do()
+	if err != nil {
+		return nil, err
+	}
+	objects := &Objects{
+		Results: make([]*Object, len(resp.Items)),
+	}
+	for i, item := range resp.Items {
+		objects.Results[i] = newObject(item)
+	}
+	if resp.NextPageToken != "" {
+		next := Query{}
+		if q != nil {
+			// keep the other filtering
+			// criteria if there is a query
+			next = *q
+		}
+		next.Cursor = resp.NextPageToken
+		objects.Next = &next
+	}
+	return objects, nil
 }
 
 // Stat returns meta information about the specified object.

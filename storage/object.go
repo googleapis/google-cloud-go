@@ -20,69 +20,6 @@ import (
 	raw "code.google.com/p/google-api-go-client/storage/v1beta2"
 )
 
-// contentTyper implements ContentTyper to enable an
-// io.ReadCloser to specify its MIME type.
-type contentTyper struct {
-	io.ReadCloser
-	t string
-}
-
-func (c *contentTyper) ContentType() string {
-	return c.t
-}
-
-// newObjectWriter returns a new objectWriter that writes to
-// the file that is specified by info.Bucket and info.Name.
-// Metadata changes are also reflected on the remote object
-// entity, read-only fields are ignored during the write operation.
-func newObjectWriter(conn *conn, info *Object) *objectWriter {
-	w := &objectWriter{
-		conn: conn,
-		info: info,
-	}
-	pr, pw := io.Pipe()
-	w.rc = &contentTyper{pr, info.ContentType}
-	w.pw = pw
-	go func() {
-		// TODO(jbd): Return the inserted/updated object entity.
-		_, w.err = conn.s.Objects.Insert(
-			info.Bucket, info.toRawObject()).Media(w.rc).Do()
-	}()
-	return w
-}
-
-// objectWriter is an io.WriteCloser that opens a connection
-// to update the metadata and file contents of a GCS object.
-type objectWriter struct {
-	conn *conn
-	info *Object
-
-	rc  io.ReadCloser
-	pw  *io.PipeWriter
-	err error
-}
-
-// Write writes len(p) bytes to the object. It returns the number
-// of the bytes written, or an error if there is a problem occured
-// during the write. It's a blocking operation, and will not return
-// until the bytes are written to the underlying socket.
-func (w *objectWriter) Write(p []byte) (n int, err error) {
-	if w.err != nil {
-		return 0, w.err
-	}
-	return w.pw.Write(p)
-}
-
-// Close closes the writer and cleans up other resources
-// used by the writer.
-func (w *objectWriter) Close() error {
-	if w.err != nil {
-		return w.err
-	}
-	w.rc.Close()
-	return w.pw.Close()
-}
-
 // AccessControlRule represents an access control rule entry for
 // a Google Cloud Storage object.
 type AccessControlRule struct {
@@ -206,4 +143,117 @@ func newObject(o *raw.Object) *Object {
 		Generation:      o.Generation,
 		MetaGeneration:  o.Metageneration,
 	}
+}
+
+// Query represents a query to filter objects from a bucket.
+type Query struct {
+	// Delimeter returns results in a directory-like fashion.
+	// Results will contain only objects whose names, aside from the
+	// prefix, do not contain delimiter. Objects whose names,
+	// aside from the prefix, contain delimiter will have their name,
+	// truncated after the delimiter, returned in prefixes.
+	// Duplicate prefixes are omitted.
+	// Optional.
+	Delimeter string
+
+	// Prefix is the prefix filter to query objects
+	// whose names begin with this prefix.
+	// Optional.
+	Prefix string
+
+	// Versions indicates whether multiple versions of the same
+	// object will be included in the results.
+	Versions bool
+
+	// Cursor is a previously-returned page token
+	// representing part of the larger set of results to view.
+	// Optional.
+	Cursor string
+
+	// MaxResults is the maximum number of items plus prefixes
+	// to return. As duplicate prefixes are omitted,
+	// fewer total results may be returned than requested.
+	// The default page limit is used if it is negative or zero.
+	MaxResults int
+}
+
+// Objects represents a list of objects returned from
+// a bucket look-p request and a query to retrieve more
+// objects from the next pages.
+type Objects struct {
+	// Results represent a list of object results.
+	Results []*Object
+
+	// Next is the continuation query to retrieve more
+	// results with the same filtering criteria. If there
+	// are no more results to retrieve, it is nil.
+	Next *Query
+
+	// Prefixes represents prefixes of objects
+	// matching-but-not-listed up to and including
+	// the requested delimiter.
+	Prefixes []string
+}
+
+// contentTyper implements ContentTyper to enable an
+// io.ReadCloser to specify its MIME type.
+type contentTyper struct {
+	io.ReadCloser
+	t string
+}
+
+func (c *contentTyper) ContentType() string {
+	return c.t
+}
+
+// newObjectWriter returns a new objectWriter that writes to
+// the file that is specified by info.Bucket and info.Name.
+// Metadata changes are also reflected on the remote object
+// entity, read-only fields are ignored during the write operation.
+func newObjectWriter(conn *conn, info *Object) *objectWriter {
+	w := &objectWriter{
+		conn: conn,
+		info: info,
+	}
+	pr, pw := io.Pipe()
+	w.rc = &contentTyper{pr, info.ContentType}
+	w.pw = pw
+	go func() {
+		// TODO(jbd): Return the inserted/updated object entity.
+		_, w.err = conn.s.Objects.Insert(
+			info.Bucket, info.toRawObject()).Media(w.rc).Do()
+	}()
+	return w
+}
+
+// objectWriter is an io.WriteCloser that opens a connection
+// to update the metadata and file contents of a GCS object.
+type objectWriter struct {
+	conn *conn
+	info *Object
+
+	rc  io.ReadCloser
+	pw  *io.PipeWriter
+	err error
+}
+
+// Write writes len(p) bytes to the object. It returns the number
+// of the bytes written, or an error if there is a problem occured
+// during the write. It's a blocking operation, and will not return
+// until the bytes are written to the underlying socket.
+func (w *objectWriter) Write(p []byte) (n int, err error) {
+	if w.err != nil {
+		return 0, w.err
+	}
+	return w.pw.Write(p)
+}
+
+// Close closes the writer and cleans up other resources
+// used by the writer.
+func (w *objectWriter) Close() error {
+	if w.err != nil {
+		return w.err
+	}
+	w.rc.Close()
+	return w.pw.Close()
 }
