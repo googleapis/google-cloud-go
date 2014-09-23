@@ -206,42 +206,50 @@ func (c *contentTyper) ContentType() string {
 	return c.t
 }
 
-// newObjectWriter returns a new objectWriter that writes to
+// newObjectWriter returns a new ObjectWriter that writes to
 // the file that is specified by info.Bucket and info.Name.
 // Metadata changes are also reflected on the remote object
 // entity, read-only fields are ignored during the write operation.
-func newObjectWriter(conn *conn, info *Object) *objectWriter {
-	w := &objectWriter{
+func newObjectWriter(conn *conn, info *Object) *ObjectWriter {
+	w := &ObjectWriter{
 		conn: conn,
 		info: info,
+		done: make(chan bool),
 	}
 	pr, pw := io.Pipe()
 	w.rc = &contentTyper{pr, info.ContentType}
 	w.pw = pw
 	go func() {
-		// TODO(jbd): Return the inserted/updated object entity.
-		_, w.err = conn.s.Objects.Insert(
+		resp, err := conn.s.Objects.Insert(
 			info.Bucket, info.toRawObject()).Media(w.rc).Do()
+		w.err = err
+		if err == nil {
+			w.obj = newObject(resp)
+		}
+		close(w.done)
 	}()
 	return w
 }
 
-// objectWriter is an io.WriteCloser that opens a connection
+// ObjectWriter is an io.WriteCloser that opens a connection
 // to update the metadata and file contents of a GCS object.
-type objectWriter struct {
+type ObjectWriter struct {
 	conn *conn
 	info *Object
 
-	rc  io.ReadCloser
-	pw  *io.PipeWriter
-	err error
+	rc io.ReadCloser
+	pw *io.PipeWriter
+
+	done chan bool
+	obj  *Object
+	err  error
 }
 
 // Write writes len(p) bytes to the object. It returns the number
 // of the bytes written, or an error if there is a problem occured
 // during the write. It's a blocking operation, and will not return
 // until the bytes are written to the underlying socket.
-func (w *objectWriter) Write(p []byte) (n int, err error) {
+func (w *ObjectWriter) Write(p []byte) (n int, err error) {
 	if w.err != nil {
 		return 0, w.err
 	}
@@ -250,10 +258,17 @@ func (w *objectWriter) Write(p []byte) (n int, err error) {
 
 // Close closes the writer and cleans up other resources
 // used by the writer.
-func (w *objectWriter) Close() error {
+func (w *ObjectWriter) Close() error {
 	if w.err != nil {
 		return w.err
 	}
 	w.rc.Close()
 	return w.pw.Close()
+}
+
+// Object returns the object information. It will block until
+// the write operation is complete.
+func (w *ObjectWriter) Object() (*Object, error) {
+	<-w.done
+	return w.obj, w.err
 }

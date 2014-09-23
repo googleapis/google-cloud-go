@@ -200,11 +200,12 @@ func (b *BucketClient) NewReader(name string) (io.ReadCloser, error) {
 	return resp.Body, nil
 }
 
-// NewWriter creates a new io.WriteCloser to write to the GCS object
+// NewWriter returns a new ObjectWriter to write to the GCS object
 // identified by the specified object name.
 // If such object doesn't exist, it creates one. If info is not nil,
 // write operation also modifies the meta information of the object.
-func (b *BucketClient) NewWriter(name string, info *Object) io.WriteCloser {
+// All read-only fields are ignored during metadata updates.
+func (b *BucketClient) NewWriter(name string, info *Object) *ObjectWriter {
 	i := Object{}
 	if info != nil {
 		i = *info
