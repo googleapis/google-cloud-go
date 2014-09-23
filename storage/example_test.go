@@ -30,7 +30,6 @@ import (
 // Related to https://codereview.appspot.com/107320046
 func TestA(t *testing.T) {}
 
-// Example gives
 func Example_auth() {
 	// Initialize an authorized transport with Google Developers Console
 	// JSON key. Read the google package examples to learn more about
@@ -99,6 +98,10 @@ func Example_writeObjects() {
 		log.Fatalln(err)
 	}
 
+	o, err := wc.Object()
+	if err != nil {
+		log.Fatalln(err)
+	}
 	log.Println("updated object:", o)
 
 	// or copy data from a file
@@ -117,7 +120,12 @@ func Example_writeObjects() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	log.Println("updated object:", wc.Object())
+
+	o, err = wc.Object()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Println("updated object:", o)
 }
 
 func Example_touchObjects() {
