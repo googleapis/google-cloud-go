@@ -112,9 +112,10 @@ func (o *Object) toRawObject() *raw.Object {
 		}
 	}
 	return &raw.Object{
-		Bucket: o.Bucket,
-		Name:   o.Name,
-		Acl:    acl,
+		Bucket:      o.Bucket,
+		Name:        o.Name,
+		ContentType: o.ContentType,
+		Acl:         acl,
 	}
 }
 
