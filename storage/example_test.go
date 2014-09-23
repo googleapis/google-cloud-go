@@ -15,11 +15,9 @@
 package storage_test
 
 import (
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"testing"
 
 	"github.com/golang/oauth2/google"
@@ -34,26 +32,30 @@ func Example_auth() {
 	// Initialize an authorized transport with Google Developers Console
 	// JSON key. Read the google package examples to learn more about
 	// different authorization flows you can use.
-	// https://github.com/golang/oauth2/blob/master/google/example_test.go
+	// http://godoc.org/github.com/golang/oauth2/google
 	conf, err := google.NewServiceAccountJSONConfig(
-		"/path/to/json/keyfile.json", storage.ScopeFullControl)
+		"/path/to/json/keyfile.json",
+		storage.ScopeFullControl)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	b := storage.New(conf.NewTransport()).BucketClient("your-bucket-name")
-	b.List(nil) // ...
+	_ = b // Use the bucket client (see other examples)
 }
 
 func Example_listObjects() {
-	tr := (http.RoundTripper)(nil) // replace it with an actual authorized transport
+	tr := (http.RoundTripper)(nil) // your authorized transport goes here (see the auth example)
 	b := storage.New(tr).BucketClient("your-bucket-name")
 
+	var query *storage.Query
 	for {
-		var query *storage.Query
 		objects, err := b.List(query)
 		if err != nil {
-			log.Fatalln(err)
+			log.Fatal(err)
+		}
+		for _, obj := range objects.Results {
+			log.Printf("object name: %s, size: %v", obj.Name, obj.Size)
 		}
 		// if there are more results, objects.Next
 		// will be non-nil.
@@ -67,82 +69,58 @@ func Example_listObjects() {
 }
 
 func Example_readObjects() {
-	tr := (http.RoundTripper)(nil) // replace it with an actual authorized transport
+	tr := (http.RoundTripper)(nil) // your authorized transport goes here (see the auth example)
 	b := storage.New(tr).BucketClient("your-bucket-name")
 
 	rc, err := b.NewReader("filename1")
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatal(err)
 	}
-	defer rc.Close()
 	slurp, err := ioutil.ReadAll(rc)
+	rc.Close()
 	if err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
 
 	log.Println("file contents:", slurp)
 }
 
 func Example_writeObjects() {
-	tr := (http.RoundTripper)(nil) // replace it with an actual authorized transport
+	tr := (http.RoundTripper)(nil) // your authorized transport goes here (see the auth example)
 	b := storage.New(tr).BucketClient("your-bucket-name")
 
 	wc := b.NewWriter("filename1", &storage.Object{
 		ContentType: "text/plain",
 	})
-	defer wc.Close()
 	if _, err := wc.Write([]byte("hello world")); err != nil {
-		log.Fatalln(err)
+		log.Fatal(err)
 	}
 	if err := wc.Close(); err != nil {
-		log.Fatalln(err)
+		log.Fatal(err)
 	}
 
 	o, err := wc.Object()
 	if err != nil {
-		log.Fatalln(err)
-	}
-	log.Println("updated object:", o)
-
-	// or copy data from a file
-	wc = b.NewWriter("filename1", &storage.Object{
-		ContentType: "text/plain",
-	})
-	defer wc.Close()
-
-	file, err := os.Open("/path/to/some/file")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer file.Close()
-
-	_, err = io.Copy(wc, file)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	o, err = wc.Object()
-	if err != nil {
-		log.Fatalln(err)
+		log.Fatal(err)
 	}
 	log.Println("updated object:", o)
 }
 
 func Example_touchObjects() {
-	tr := (http.RoundTripper)(nil) // replace it with an actual authorized transport
+	tr := (http.RoundTripper)(nil) // your authorized transport goes here (see the auth example)
 	b := storage.New(tr).BucketClient("your-bucket-name")
 
 	o, err := b.Put("filename", &storage.Object{
 		ContentType: "text/plain",
 	})
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatal(err)
 	}
 	log.Println("touched new file:", o)
 }
 
 func Example_copyObjects() {
-	tr := (http.RoundTripper)(nil) // replace it with an actual authorized transport
+	tr := (http.RoundTripper)(nil) // your authorized transport goes here (see the auth example)
 	b := storage.New(tr).BucketClient("your-bucket-name")
 
 	o, err := b.Copy("file1", &storage.Object{
@@ -150,7 +128,7 @@ func Example_copyObjects() {
 		Bucket: "yet-another-bucket",
 	})
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatal(err)
 	}
 	log.Println("copied file:", o)
 }
