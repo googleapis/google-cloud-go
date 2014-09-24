@@ -15,7 +15,7 @@
 // Package metadata provides access to Google Compute Engine (GCE)
 // metadata and API service accounts.
 //
-// Most of this package is a wrapper around the GCE metadata service,
+// This package is a wrapper around the GCE metadata service,
 // as documented at https://developers.google.com/compute/docs/metadata.
 package metadata
 
@@ -108,8 +108,8 @@ var onGCE struct {
 	v   bool
 }
 
-// IsOnGCE reports whether this process is running on Google Compute Engine.
-func IsOnGCE() bool {
+// OnGCE reports whether this process is running on Google Compute Engine.
+func OnGCE() bool {
 	defer onGCE.Unlock()
 	onGCE.Lock()
 	if onGCE.set {
