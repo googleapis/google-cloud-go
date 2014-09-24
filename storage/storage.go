@@ -21,7 +21,7 @@ import (
 	"io"
 	"net/http"
 
-	raw "code.google.com/p/google-api-go-client/storage/v1beta2"
+	raw "code.google.com/p/google-api-go-client/storage/v1"
 )
 
 const (
