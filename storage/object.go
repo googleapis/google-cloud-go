@@ -214,7 +214,6 @@ func (c *contentTyper) ContentType() string {
 func newObjectWriter(conn *conn, info *Object) *ObjectWriter {
 	w := &ObjectWriter{
 		conn: conn,
-		info: info,
 		done: make(chan bool),
 	}
 	pr, pw := io.Pipe()
@@ -236,7 +235,6 @@ func newObjectWriter(conn *conn, info *Object) *ObjectWriter {
 // to update the metadata and file contents of a GCS object.
 type ObjectWriter struct {
 	conn *conn
-	info *Object
 
 	rc io.ReadCloser
 	pw *io.PipeWriter
