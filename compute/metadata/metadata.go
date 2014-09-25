@@ -117,6 +117,8 @@ func OnGCE() bool {
 	}
 	onGCE.set = true
 
+	// We use the DNS name of the metadata service here instead of the IP address
+	// because we expect that to fail faster in the not-on-GCE case.
 	res, err := metaClient.Get("http://metadata.google.internal")
 	if err != nil {
 		return false
