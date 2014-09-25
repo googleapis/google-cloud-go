@@ -148,14 +148,14 @@ func newObject(o *raw.Object) *Object {
 
 // Query represents a query to filter objects from a bucket.
 type Query struct {
-	// Delimeter returns results in a directory-like fashion.
+	// Delimiter returns results in a directory-like fashion.
 	// Results will contain only objects whose names, aside from the
 	// prefix, do not contain delimiter. Objects whose names,
 	// aside from the prefix, contain delimiter will have their name,
 	// truncated after the delimiter, returned in prefixes.
 	// Duplicate prefixes are omitted.
 	// Optional.
-	Delimeter string
+	Delimiter string
 
 	// Prefix is the prefix filter to query objects
 	// whose names begin with this prefix.
