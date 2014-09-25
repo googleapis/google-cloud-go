@@ -103,14 +103,6 @@ func (c *Client) BucketClient(bucketname string) *BucketClient {
 	return &BucketClient{name: bucketname, conn: c.conn}
 }
 
-// DefaultBucketClient returns the default bucket client assigned to your
-// project if you are running on Google Compute Engine or
-// Google App Engine Managed VMs. It will return nil if your
-// code is not running on Google Compute Engine or App Engine.
-func (c *Client) DefaultBucketClient() *BucketClient {
-	panic("not yet implemented")
-}
-
 // List lists objects from the bucket. You can specify a query
 // to filter the results. If q is nil, no filtering is applied.
 func (b *BucketClient) List(q *Query) (*Objects, error) {
