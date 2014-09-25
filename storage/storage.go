@@ -108,7 +108,7 @@ func (c *Client) BucketClient(bucketname string) *BucketClient {
 func (b *BucketClient) List(q *Query) (*Objects, error) {
 	c := b.conn.s.Objects.List(b.name)
 	if q != nil {
-		c.Delimiter(q.Delimeter)
+		c.Delimiter(q.Delimiter)
 		c.Prefix(q.Prefix)
 		c.Versions(q.Versions)
 		c.PageToken(q.Cursor)
