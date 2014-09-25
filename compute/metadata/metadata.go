@@ -28,6 +28,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"google.golang.org/cloud/internal"
 )
 
 type cachedValue struct {
@@ -44,12 +46,14 @@ var (
 )
 
 var metaClient = &http.Client{
-	Transport: &http.Transport{
-		Dial: (&net.Dialer{
-			Timeout:   750 * time.Millisecond,
-			KeepAlive: 30 * time.Second,
-		}).Dial,
-		ResponseHeaderTimeout: 750 * time.Millisecond,
+	Transport: &internal.UATransport{
+		Base: &http.Transport{
+			Dial: (&net.Dialer{
+				Timeout:   750 * time.Millisecond,
+				KeepAlive: 30 * time.Second,
+			}).Dial,
+			ResponseHeaderTimeout: 750 * time.Millisecond,
+		},
 	},
 }
 
