@@ -112,10 +112,12 @@ func (o *Object) toRawObject() *raw.Object {
 		}
 	}
 	return &raw.Object{
-		Bucket:      o.Bucket,
-		Name:        o.Name,
-		ContentType: o.ContentType,
-		Acl:         acl,
+		Bucket:          o.Bucket,
+		Name:            o.Name,
+		ContentType:     o.ContentType,
+		Acl:             acl,
+		ContentEncoding: o.ContentEncoding,
+		Metadata:        o.Metadata,
 	}
 }
 
@@ -141,6 +143,7 @@ func newObject(o *raw.Object) *Object {
 		MD5:             []byte(o.Md5Hash),
 		CRC32C:          []byte(o.Crc32c),
 		MediaLink:       o.MediaLink,
+		Metadata:        o.Metadata,
 		Generation:      o.Generation,
 		MetaGeneration:  o.Metageneration,
 	}
