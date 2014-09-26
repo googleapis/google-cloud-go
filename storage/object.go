@@ -101,14 +101,14 @@ type Object struct {
 	// Read-only.
 	MetaGeneration int64 `json:"metageneration,omitempty"`
 
-	// StorageClass: Storage class of the object.
+	// StorageClass is the storage class of the object.
 	StorageClass string `json:"storageClass,omitempty"`
 
-	// TimeDeleted: The deletion time of the object.
+	// Deleted is the deletion time of the object (or the zero-value time).
 	// This will be non-zero if and only if this version of the object has been deleted.
-	TimeDeleted time.Time `json:"timeDeleted,omitempty"`
+	Deleted time.Time `json:"timeDeleted,omitempty"`
 
-	// Updated: The creation or modification time of the object.
+	// Updated is the creation or modification time of the object.
 	// For buckets with versioning enabled, changing an object's
 	// metadata does not change this property.
 	Updated time.Time `json:"updated,omitempty"`
@@ -168,7 +168,7 @@ func newObject(o *raw.Object) *Object {
 		Generation:      o.Generation,
 		MetaGeneration:  o.Metageneration,
 		StorageClass:    o.StorageClass,
-		TimeDeleted:     convertTime(o.TimeDeleted),
+		Deleted:         convertTime(o.TimeDeleted),
 		Updated:         convertTime(o.Updated),
 	}
 }
