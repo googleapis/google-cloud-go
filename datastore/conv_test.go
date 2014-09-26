@@ -67,6 +67,7 @@ type someType struct {
 	Done      bool
 	Size      int64
 	Total     float64
+	Siblings  []*Key
 	OtherKey  *Key
 	CreatedAt time.Time
 }
@@ -215,6 +216,10 @@ func TestEntityToProto(t *testing.T) {
 		Total:     120.45,
 		OtherKey:  &Key{kind: "Kind2", id: 123},
 		CreatedAt: now,
+		Siblings: []*Key{
+			&Key{kind: "someType", id: 1},
+			&Key{kind: "someType", id: 2},
+		},
 	}
 	proto := entityToProto(key, reflect.ValueOf(s))
 	if proto.Key.PartitionId != nil {
@@ -261,9 +266,24 @@ func TestEntityToProto(t *testing.T) {
 			if prop.GetValue().GetTimestampMicrosecondsValue() != now.UnixNano()/1000 {
 				t.Errorf("Unexpected created_at property is found: %v", prop)
 			}
+		case "siblings":
+			var siblings []*Key
+			for _, lv := range prop.GetValue().GetListValue() {
+				siblings = append(siblings, protoToKey(lv.GetKeyValue()))
+			}
+			if !reflect.DeepEqual(siblings, s.Siblings) {
+				t.Errorf("Unexpected siblings property is found: %v", siblings)
+			}
 		default:
 			t.Errorf("Unexpected property name: %v", prop.GetName())
 		}
+	}
+}
+
+func siblingKeyPathElement(id int64) *pb.Key_PathElement {
+	return &pb.Key_PathElement{
+		Kind: proto.String("someType"),
+		Id:   proto.Int64(id),
 	}
 }
 
@@ -294,6 +314,14 @@ func TestProtoToEntity(t *testing.T) {
 				Name:  proto.String("created_at"),
 				Value: &pb.Value{TimestampMicrosecondsValue: proto.Int64(1409090080287871)},
 			},
+			&pb.Property{
+				Name: proto.String("siblings"),
+				Value: &pb.Value{ListValue: []*pb.Value{
+					&pb.Value{KeyValue: &pb.Key{PathElement: []*pb.Key_PathElement{siblingKeyPathElement(0)}}},
+					&pb.Value{KeyValue: &pb.Key{PathElement: []*pb.Key_PathElement{siblingKeyPathElement(1)}}},
+					&pb.Value{KeyValue: &pb.Key{PathElement: []*pb.Key_PathElement{siblingKeyPathElement(2)}}},
+				}},
+			},
 		},
 	}
 
@@ -317,6 +345,14 @@ func TestProtoToEntity(t *testing.T) {
 	}
 	if s.CreatedAt != time.Unix(1409090080, 287871000) {
 		t.Errorf("Unexpected created_at, %v is found", s.CreatedAt)
+	}
+	if len(s.Siblings) != 3 {
+		t.Errorf("Unexpected number of siblings, got %d, wanted %d", len(s.Siblings), 3)
+	}
+	for k, v := range s.Siblings {
+		if int(v.ID()) != k {
+			t.Errorf("Unexpected sibling key id: got %d, wanted %d", v.ID(), k)
+		}
 	}
 }
 
