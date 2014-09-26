@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/golang/oauth2/google"
+
 	"google.golang.org/cloud/storage"
 )
 
@@ -40,6 +41,9 @@ func Example_auth() {
 		log.Fatal(err)
 	}
 
+	// If you are using this package on App Engine Managed VMs runtime,
+	// you can init a bucket client with your app's default bucket name.
+	// See http://godoc.org/google.golang.org/appengine/file#DefaultBucketName.
 	b := storage.New(conf.NewTransport()).BucketClient("your-bucket-name")
 	_ = b // Use the bucket client (see other examples)
 }
