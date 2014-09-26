@@ -16,6 +16,7 @@ package storage
 
 import (
 	"io"
+	"time"
 
 	raw "code.google.com/p/google-api-go-client/storage/v1"
 )
@@ -100,7 +101,17 @@ type Object struct {
 	// Read-only.
 	MetaGeneration int64 `json:"metageneration,omitempty"`
 
-	// TODO(jbd): Add timeDelete and updated.
+	// StorageClass: Storage class of the object.
+	StorageClass string `json:"storageClass,omitempty"`
+
+	// TimeDeleted: The deletion time of the object.
+	// This will be non-zero if and only if this version of the object has been deleted.
+	TimeDeleted time.Time `json:"timeDeleted,omitempty"`
+
+	// Updated: The creation or modification time of the object.
+	// For buckets with versioning enabled, changing an object's
+	// metadata does not change this property.
+	Updated time.Time `json:"updated,omitempty"`
 }
 
 func (o *Object) toRawObject() *raw.Object {
@@ -119,6 +130,16 @@ func (o *Object) toRawObject() *raw.Object {
 		ContentEncoding: o.ContentEncoding,
 		Metadata:        o.Metadata,
 	}
+}
+
+// convertTime converts a time in RFC3339 format to time.Time.
+// If any error occurs in parsing, the zero-value time.Time is silently returned.
+func convertTime(t string) time.Time {
+	var r time.Time
+	if t != "" {
+		r, _ = time.Parse(time.RFC3339, t)
+	}
+	return r
 }
 
 func newObject(o *raw.Object) *Object {
@@ -146,6 +167,9 @@ func newObject(o *raw.Object) *Object {
 		Metadata:        o.Metadata,
 		Generation:      o.Generation,
 		MetaGeneration:  o.Metageneration,
+		StorageClass:    o.StorageClass,
+		TimeDeleted:     convertTime(o.TimeDeleted),
+		Updated:         convertTime(o.Updated),
 	}
 }
 
