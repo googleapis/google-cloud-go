@@ -36,7 +36,7 @@ type UATransport struct {
 // RoundTrip appends a user-agent to the existing user-agent
 // header and delegates the request to the base http.RoundTripper.
 func (t *UATransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	// TODO(jbd): Is it OK to mutate request? UATransport is internal only.
+	req = cloneRequest(req)
 	ua := req.Header.Get("User-Agent")
 	if ua == "" {
 		ua = userAgent
@@ -45,4 +45,18 @@ func (t *UATransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 	req.Header.Set("User-Agent", ua)
 	return t.Base.RoundTrip(req)
+}
+
+// cloneRequest returns a clone of the provided *http.Request.
+// The clone is a shallow copy of the struct and its Header map.
+func cloneRequest(r *http.Request) *http.Request {
+	// shallow copy of the struct
+	r2 := new(http.Request)
+	*r2 = *r
+	// deep copy of the Header
+	r2.Header = make(http.Header)
+	for k, s := range r.Header {
+		r2.Header[k] = s
+	}
+	return r2
 }
