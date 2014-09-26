@@ -112,7 +112,7 @@ func (c *Client) BucketClient(bucketname string) *BucketClient {
 func (b *BucketClient) List(q *Query) (*Objects, error) {
 	c := b.conn.s.Objects.List(b.name)
 	if q != nil {
-		c.Delimiter(q.Delimeter)
+		c.Delimiter(q.Delimiter)
 		c.Prefix(q.Prefix)
 		c.Versions(q.Versions)
 		c.PageToken(q.Cursor)
@@ -125,10 +125,14 @@ func (b *BucketClient) List(q *Query) (*Objects, error) {
 		return nil, err
 	}
 	objects := &Objects{
-		Results: make([]*Object, len(resp.Items)),
+		Results:  make([]*Object, len(resp.Items)),
+		Prefixes: make([]string, len(resp.Prefixes)),
 	}
 	for i, item := range resp.Items {
 		objects.Results[i] = newObject(item)
+	}
+	for i, prefix := range resp.Prefixes {
+		objects.Prefixes[i] = prefix
 	}
 	if resp.NextPageToken != "" {
 		next := Query{}
