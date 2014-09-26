@@ -174,12 +174,14 @@ func (b *BucketClient) Copy(name string, dest *Object) (*Object, error) {
 	if dest.Name == "" {
 		return nil, errors.New("storage: missing dest name")
 	}
-	destBucket := dest.Bucket
-	if destBucket == "" {
-		destBucket = b.name
+	if dest.Bucket == "" {
+		// Make a copy of the dest object instead of mutating it.
+		dest2 := *dest
+		dest2.Bucket = b.name
+		dest = &dest2
 	}
 	o, err := b.conn.s.Objects.Copy(
-		b.name, name, destBucket, dest.Name, dest.toRawObject()).Do()
+		b.name, name, dest.Bucket, dest.Name, dest.toRawObject()).Do()
 	if err != nil {
 		return nil, err
 	}
