@@ -42,8 +42,8 @@ const (
 	templUrlMedia = "https://storage.googleapis.com/%s/%s"
 )
 
-// Bucket represents a Google Cloud Storage bucket.
-type Bucket struct {
+// BucketInfo represents a Google Cloud Storage bucket.
+type BucketInfo struct {
 	// Name is the name of the bucket.
 	Name string `json:"name,omitempty"`
 }
@@ -53,15 +53,15 @@ type conn struct {
 	s *raw.Service
 }
 
-// BucketClient is a client to perform object operations on.
-type BucketClient struct {
+// Bucket is a client to perform object operations on.
+type Bucket struct {
 	name string
 	conn *conn
 }
 
 // String returns a string representation of the bucket client.
 // E.g. <bucket: my-project-bucket>
-func (b *BucketClient) String() string {
+func (b *Bucket) String() string {
 	return fmt.Sprintf("<bucket: %v>", b.name)
 }
 
@@ -94,18 +94,18 @@ func NewWithClient(c *http.Client) *Client {
 // TODO(jbd): Add storage.objects.watch.
 
 // Bucket returns the metadata for the specified bucket.
-func (c *Client) Bucket(name string) (*Bucket, error) {
+func (c *Client) BucketInfo(name string) (*Bucket, error) {
 	panic("not yet implemented")
 }
 
 // BucketClient returns a bucket client to perform object operations on.
-func (c *Client) BucketClient(bucketname string) *BucketClient {
-	return &BucketClient{name: bucketname, conn: c.conn}
+func (c *Client) Bucket(name string) *Bucket {
+	return &Bucket{name: name, conn: c.conn}
 }
 
 // List lists objects from the bucket. You can specify a query
 // to filter the results. If q is nil, no filtering is applied.
-func (b *BucketClient) List(q *Query) (*Objects, error) {
+func (b *Bucket) List(q *Query) (*Objects, error) {
 	c := b.conn.s.Objects.List(b.name)
 	if q != nil {
 		c.Delimiter(q.Delimiter)
@@ -144,7 +144,7 @@ func (b *BucketClient) List(q *Query) (*Objects, error) {
 }
 
 // Stat returns meta information about the specified object.
-func (b *BucketClient) Stat(name string) (*Object, error) {
+func (b *Bucket) Stat(name string) (*Object, error) {
 	o, err := b.conn.s.Objects.Get(b.name, name).Do()
 	if err != nil {
 		return nil, err
@@ -153,7 +153,7 @@ func (b *BucketClient) Stat(name string) (*Object, error) {
 }
 
 // Put inserts/updates an object with the provided meta information.
-func (b *BucketClient) Put(name string, info *Object) (*Object, error) {
+func (b *Bucket) Put(name string, info *Object) (*Object, error) {
 	o, err := b.conn.s.Objects.Insert(b.name, info.toRawObject()).Do()
 	if err != nil {
 		return nil, err
@@ -162,7 +162,7 @@ func (b *BucketClient) Put(name string, info *Object) (*Object, error) {
 }
 
 // Delete deletes the specified object.
-func (b *BucketClient) Delete(name string) error {
+func (b *Bucket) Delete(name string) error {
 	return b.conn.s.Objects.Delete(b.name, name).Do()
 }
 
@@ -170,7 +170,7 @@ func (b *BucketClient) Delete(name string) error {
 // meta information provided.
 // The destination object is inserted into the source bucket
 // if the destination object doesn't specify another bucket name.
-func (b *BucketClient) Copy(name string, dest *Object) (*Object, error) {
+func (b *Bucket) Copy(name string, dest *Object) (*Object, error) {
 	if dest.Name == "" {
 		return nil, errors.New("storage: missing dest name")
 	}
@@ -190,7 +190,7 @@ func (b *BucketClient) Copy(name string, dest *Object) (*Object, error) {
 
 // NewReader creates a new io.ReadCloser to read the contents
 // of the object.
-func (b *BucketClient) NewReader(name string) (io.ReadCloser, error) {
+func (b *Bucket) NewReader(name string) (io.ReadCloser, error) {
 	resp, err := b.conn.c.Get(fmt.Sprintf(templUrlMedia, b.name, name))
 	if err != nil {
 		return nil, err
@@ -203,7 +203,7 @@ func (b *BucketClient) NewReader(name string) (io.ReadCloser, error) {
 // If such object doesn't exist, it creates one. If info is not nil,
 // write operation also modifies the meta information of the object.
 // All read-only fields are ignored during metadata updates.
-func (b *BucketClient) NewWriter(name string, info *Object) *ObjectWriter {
+func (b *Bucket) NewWriter(name string, info *Object) *ObjectWriter {
 	i := Object{}
 	if info != nil {
 		i = *info
