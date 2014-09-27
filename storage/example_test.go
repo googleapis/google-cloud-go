@@ -44,13 +44,13 @@ func Example_auth() {
 	// If you are using this package on App Engine Managed VMs runtime,
 	// you can init a bucket client with your app's default bucket name.
 	// See http://godoc.org/google.golang.org/appengine/file#DefaultBucketName.
-	b := storage.New(conf.NewTransport()).BucketClient("your-bucket-name")
+	b := storage.New(conf.NewTransport()).Bucket("your-bucket-name")
 	_ = b // Use the bucket client (see other examples)
 }
 
 func Example_listObjects() {
 	tr := (http.RoundTripper)(nil) // your authorized transport goes here (see the auth example)
-	b := storage.New(tr).BucketClient("your-bucket-name")
+	b := storage.New(tr).Bucket("your-bucket-name")
 
 	var query *storage.Query
 	for {
@@ -74,7 +74,7 @@ func Example_listObjects() {
 
 func Example_readObjects() {
 	tr := (http.RoundTripper)(nil) // your authorized transport goes here (see the auth example)
-	b := storage.New(tr).BucketClient("your-bucket-name")
+	b := storage.New(tr).Bucket("your-bucket-name")
 
 	rc, err := b.NewReader("filename1")
 	if err != nil {
@@ -91,7 +91,7 @@ func Example_readObjects() {
 
 func Example_writeObjects() {
 	tr := (http.RoundTripper)(nil) // your authorized transport goes here (see the auth example)
-	b := storage.New(tr).BucketClient("your-bucket-name")
+	b := storage.New(tr).Bucket("your-bucket-name")
 
 	wc := b.NewWriter("filename1", &storage.Object{
 		ContentType: "text/plain",
@@ -112,7 +112,7 @@ func Example_writeObjects() {
 
 func Example_touchObjects() {
 	tr := (http.RoundTripper)(nil) // your authorized transport goes here (see the auth example)
-	b := storage.New(tr).BucketClient("your-bucket-name")
+	b := storage.New(tr).Bucket("your-bucket-name")
 
 	o, err := b.Put("filename", &storage.Object{
 		ContentType: "text/plain",
@@ -125,7 +125,7 @@ func Example_touchObjects() {
 
 func Example_copyObjects() {
 	tr := (http.RoundTripper)(nil) // your authorized transport goes here (see the auth example)
-	b := storage.New(tr).BucketClient("your-bucket-name")
+	b := storage.New(tr).Bucket("your-bucket-name")
 
 	o, err := b.Copy("file1", &storage.Object{
 		Name:   "file2",
