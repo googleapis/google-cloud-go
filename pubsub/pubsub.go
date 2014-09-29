@@ -20,7 +20,6 @@ package pubsub
 
 import (
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"net/http"
 	"sync"
@@ -79,8 +78,7 @@ type Message struct {
 // New creates a new Pub/Sub client to manage topics and subscriptions
 // under the provided project. The provided RoundTripper should be
 // authorized and authenticated to make calls to Google Cloud Pub/Sub API.
-// Look at the package samples to for examples of creating authorized
-// and authenticated RoundTripeers.
+// See the package examples for how to create an authorized http.RoundTripper.
 func New(projID string, tr http.RoundTripper) *Client {
 	return NewWithClient(projID, &http.Client{Transport: tr})
 }
@@ -89,8 +87,7 @@ func New(projID string, tr http.RoundTripper) *Client {
 // subscriptions under the provided project. The client's
 // Transport should be authorized and authenticated to make
 // calls to Google Cloud Pub/Sub API.
-// Look at the package samples to for examples of creating authorized
-// and authenticated RoundTripeers.
+// See the package examples for how to create an authorized http.RoundTripper.
 func NewWithClient(projID string, c *http.Client) *Client {
 	// TODO(jbd): Add user-agent.
 	s, _ := raw.New(c)
@@ -116,7 +113,7 @@ func (c *Client) Subscription(name string) *Subscription {
 // The messages that haven't acknowledged will be pushed back to the
 // subscription again when the default acknowledgement deadline is
 // reached. You can override the default deadline by providing a
-// non-zero deadline.
+// non-zero deadline. Deadline value should be in seconds.
 //
 // As new messages are being queued on the subscription channel, you
 // may recieve push notifications regarding to the new arrivals. Provide
@@ -126,13 +123,13 @@ func (c *Client) Subscription(name string) *Subscription {
 // It will return an error if subscription already exists. In order
 // to modify acknowledgement deadline and push endpoint, use
 // ModifyAckDeadline and ModifyPushEndpoint.
-func (s *Subscription) Create(topic string, deadline time.Duration, endpoint string) error {
+func (s *Subscription) Create(topic string, deadline int, endpoint string) error {
 	sub := &raw.Subscription{
 		Topic: fullTopicName(s.proj, topic),
 		Name:  fullSubName(s.proj, s.name),
 	}
-	if int64(deadline) > 0 {
-		sub.AckDeadlineSeconds = int64(deadline) / int64(time.Second)
+	if deadline > 0 {
+		sub.AckDeadlineSeconds = int64(deadline)
 	}
 	if endpoint != "" {
 		sub.PushConfig = &raw.PushConfig{PushEndpoint: endpoint}
@@ -166,8 +163,8 @@ func (s *Subscription) ModifyPushEndpoint(endpoint string) error {
 	}).Do()
 }
 
-// IsExists returns true if current subscription exists.
-func (s *Subscription) IsExists() (bool, error) {
+// Exists returns true if current subscription exists.
+func (s *Subscription) Exists() (bool, error) {
 	panic("not yet implemented")
 }
 
@@ -179,11 +176,19 @@ func (s *Subscription) Ack(id ...string) error {
 	}).Do()
 }
 
-// Pull pulls a new message from the subscription queue. If user
-// prefers to return immediately, it will return as soon as possible
-// if there are no messages left. If return immediately is false,
-// it will block until a new message arrives or timeout occurs.
-func (s *Subscription) Pull(retImmediately bool) (*Message, error) {
+// Pull pulls a new message from the subscription queue.
+func (s *Subscription) Pull() (*Message, error) {
+	return s.pull(true)
+}
+
+// PullWait pulls a new message from the subscription queue.
+// If there are no messages left in the subscription queue, it will
+// block until a new message arrives or timeout occurs.
+func (s *Subscription) PullWait() (*Message, error) {
+	return s.pull(false)
+}
+
+func (s *Subscription) pull(retImmediately bool) (*Message, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -228,7 +233,7 @@ func (s *Subscription) Listen() (<-chan *Message, <-chan error) {
 				close(mc)
 				close(errc)
 			default:
-				m, err := s.Pull(true)
+				m, err := s.Pull()
 				// TODO(jbd): Switch to retImmediate=false when raw API
 				// returns APIError.
 				if err != nil {
@@ -271,30 +276,21 @@ func (t *Topic) Delete() error {
 	return t.s.Topics.Delete(fullTopicName(t.proj, t.name)).Do()
 }
 
-// IsExists returns true if a topic named with the current topic's name exists.
-func (t *Topic) IsExists() (bool, error) {
+// Exists returns true if a topic named with the current topic's name exists.
+func (t *Topic) Exists() (bool, error) {
 	panic("not yet implemented")
 }
 
 // Publish publishes a new message to the current topic's subscribers.
 // You don't have to label your message. Use nil if there are no labels.
 // Label values could be either int64 or string. It will return an error
-// if you provide n value of another kind.
-func (t *Topic) Publish(data []byte, labels map[string]interface{}) error {
+// if you provide a value of another kind.
+func (t *Topic) Publish(data []byte, labels map[string]string) error {
 	var rawLabels []*raw.Label
 	if labels != nil {
 		rawLabels := []*raw.Label{}
 		for k, v := range labels {
-			l := &raw.Label{Key: k}
-			switch v.(type) {
-			case int64:
-				l.NumValue = v.(int64)
-			case string:
-				l.StrValue = v.(string)
-			default:
-				return errors.New("pubsub: label value could be either an int64 or a string")
-			}
-			rawLabels = append(rawLabels, l)
+			rawLabels = append(rawLabels, &raw.Label{Key: k, StrValue: v})
 		}
 	}
 	return t.s.Topics.Publish(&raw.PublishRequest{
