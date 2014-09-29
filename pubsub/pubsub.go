@@ -22,7 +22,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
-	"sync"
 	"time"
 
 	raw "code.google.com/p/google-api-go-client/pubsub/v1beta1"
@@ -49,8 +48,6 @@ type Subscription struct {
 	proj string
 	name string
 	s    *raw.Service
-
-	mu sync.Mutex
 
 	closed chan bool
 }
@@ -189,9 +186,6 @@ func (s *Subscription) PullWait() (*Message, error) {
 }
 
 func (s *Subscription) pull(retImmediately bool) (*Message, error) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
 	resp, err := s.s.Subscriptions.Pull(&raw.PullRequest{
 		Subscription:      fullSubName(s.proj, s.name),
 		ReturnImmediately: retImmediately,
