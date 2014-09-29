@@ -19,7 +19,7 @@ import (
 	"testing"
 
 	"github.com/golang/oauth2/google"
-	"github.com/rakyll/pubsub"
+	"google.golang.org/cloud/pubsub"
 )
 
 // TODO(jbd): Remove after Go 1.4.
