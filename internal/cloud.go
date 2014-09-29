@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package internal provides support for package cloud.
+// Package internal provides support for the cloud packages.
 //
 // Users should not import this package directly.
 package internal
