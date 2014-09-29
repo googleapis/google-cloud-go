@@ -48,8 +48,6 @@ type Subscription struct {
 	proj string
 	name string
 	s    *raw.Service
-
-	closed chan bool
 }
 
 // Topic represents a Pub/Sub topic.
@@ -97,10 +95,9 @@ func NewWithClient(projID string, c *http.Client) *Client {
 // subscription identified with the specified name.
 func (c *Client) Subscription(name string) *Subscription {
 	return &Subscription{
-		proj:   c.proj,
-		name:   name,
-		s:      c.s,
-		closed: make(chan bool),
+		proj: c.proj,
+		name: name,
+		s:    c.s,
 	}
 }
 
@@ -211,40 +208,6 @@ func (s *Subscription) pull(retImmediately bool) (*Message, error) {
 		Data:   data,
 		Labels: labels,
 	}, nil
-}
-
-// Listen starts to listening the subscription for new messages.
-// If there are any errors, they are notified back through the
-// returned error channel.
-// It's thread safe to Listen and Pull concurrently.
-func (s *Subscription) Listen() (<-chan *Message, <-chan error) {
-	mc := make(chan *Message)
-	errc := make(chan error)
-	go func() {
-		for {
-			select {
-			case <-s.closed:
-				close(mc)
-				close(errc)
-			default:
-				m, err := s.Pull()
-				// TODO(jbd): Switch to retImmediate=false when raw API
-				// returns APIError.
-				if err != nil {
-					// TODO(jbd): Implement exponential backoff.
-					errc <- err
-					return
-				}
-				mc <- m
-			}
-		}
-	}()
-	return mc, errc
-}
-
-// Stop stops listening of the current subscription channel.
-func (s *Subscription) Stop() {
-	close(s.closed)
 }
 
 // Topic returns a topic client to run operations related to the Pub/Sub topics.

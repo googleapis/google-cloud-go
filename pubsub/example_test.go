@@ -57,17 +57,16 @@ func Example_publishAndSubscribe() {
 		}
 	}()
 
-	sub1 := c.Subscription("sub1")
+	sub := c.Subscription("sub1")
 	// sub1 is a subscription that is subscribed to topic1.
 	// E.g. sub1.Create("topic1", time.Duration(0), "")
-	mc, errc := sub1.Listen()
 	for {
-		select {
-		case err := <-errc:
-			log.Println("error occured while listening messages:", err)
-		case msg := <-mc:
-			log.Println("new message arrived:", msg)
-			if err := sub1.Ack(msg.AckID); err != nil {
+		m, err := sub.PullWait()
+		if err != nil {
+			log.Println(err)
+		} else {
+			log.Println("new message arrived:", m)
+			if err := sub.Ack(m.AckID); err != nil {
 				log.Println("error while acknowledging the message:", err)
 			}
 		}
