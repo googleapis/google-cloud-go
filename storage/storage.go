@@ -22,6 +22,7 @@ import (
 	"net/http"
 
 	raw "code.google.com/p/google-api-go-client/storage/v1"
+	"google.golang.org/cloud/internal"
 )
 
 const (
@@ -81,7 +82,10 @@ func New(tr http.RoundTripper) *Client {
 // uses the provided http.Client. Provided http.Client is responsible
 // to authorize and authenticate the requests made to the
 // Google Cloud Storage API.
+// It mutates the client's original Transport to append the cloud
+// package's user-agent to the outgoing requests.
 func NewWithClient(c *http.Client) *Client {
+	c.Transport = &internal.UATransport{Base: c.Transport}
 	s, _ := raw.New(c)
 	return &Client{conn: &conn{s: s, c: c}}
 }
