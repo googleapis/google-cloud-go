@@ -44,15 +44,15 @@ type Client struct {
 	s    *raw.Service
 }
 
-// Subscription represents a Pub/Sub subscription.
-type Subscription struct {
+// SubClient represents a Pub/Sub subscription client.
+type SubClient struct {
 	proj string
 	name string
 	s    *raw.Service
 }
 
-// Topic represents a Pub/Sub topic.
-type Topic struct {
+// Topic represents a Pub/Sub topic client.
+type TopicClient struct {
 	proj string
 	name string
 	s    *raw.Service
@@ -92,10 +92,10 @@ func NewWithClient(projID string, c *http.Client) *Client {
 
 // TODO(jbd): Add subscription and topic listing.
 
-// Subscription returns a client to perform operations on the
+// SubClient returns a client to perform operations on the
 // subscription identified with the specified name.
-func (c *Client) Subscription(name string) *Subscription {
-	return &Subscription{
+func (c *Client) SubClient(name string) *SubClient {
+	return &SubClient{
 		proj: c.proj,
 		name: name,
 		s:    c.s,
@@ -118,7 +118,7 @@ func (c *Client) Subscription(name string) *Subscription {
 // It will return an error if subscription already exists. In order
 // to modify acknowledgement deadline and push endpoint, use
 // ModifyAckDeadline and ModifyPushEndpoint.
-func (s *Subscription) Create(topic string, deadline int, endpoint string) error {
+func (s *SubClient) Create(topic string, deadline int, endpoint string) error {
 	sub := &raw.Subscription{
 		Topic: fullTopicName(s.proj, topic),
 		Name:  fullSubName(s.proj, s.name),
@@ -133,14 +133,14 @@ func (s *Subscription) Create(topic string, deadline int, endpoint string) error
 	return err
 }
 
-// Delete deletes a subscription.
-func (s *Subscription) Delete() error {
+// Delete deletes the subscription.
+func (s *SubClient) Delete() error {
 	return s.s.Subscriptions.Delete(fullSubName(s.proj, s.name)).Do()
 }
 
 // ModifyAckDeadline modifies the current acknowledgement deadline
 // for the messages retrieved from the current subscription.
-func (s *Subscription) ModifyAckDeadline(deadline time.Duration) error {
+func (s *SubClient) ModifyAckDeadline(deadline time.Duration) error {
 	return s.s.Subscriptions.ModifyAckDeadline(&raw.ModifyAckDeadlineRequest{
 		Subscription:       fullSubName(s.proj, s.name),
 		AckDeadlineSeconds: int64(deadline),
@@ -149,7 +149,7 @@ func (s *Subscription) ModifyAckDeadline(deadline time.Duration) error {
 
 // ModifyPushEndpoint modifies the URL endpoint to modify the resource
 // to handle push notifications coming from the Pub/Sub backend.
-func (s *Subscription) ModifyPushEndpoint(endpoint string) error {
+func (s *SubClient) ModifyPushEndpoint(endpoint string) error {
 	return s.s.Subscriptions.ModifyPushConfig(&raw.ModifyPushConfigRequest{
 		Subscription: fullSubName(s.proj, s.name),
 		PushConfig: &raw.PushConfig{
@@ -159,12 +159,12 @@ func (s *Subscription) ModifyPushEndpoint(endpoint string) error {
 }
 
 // Exists returns true if current subscription exists.
-func (s *Subscription) Exists() (bool, error) {
+func (s *SubClient) Exists() (bool, error) {
 	panic("not yet implemented")
 }
 
 // Ack acknowledges one or more Pub/Sub messages.
-func (s *Subscription) Ack(id ...string) error {
+func (s *SubClient) Ack(id ...string) error {
 	return s.s.Subscriptions.Acknowledge(&raw.AcknowledgeRequest{
 		Subscription: fullSubName(s.proj, s.name),
 		AckId:        id,
@@ -172,18 +172,18 @@ func (s *Subscription) Ack(id ...string) error {
 }
 
 // Pull pulls a new message from the subscription queue.
-func (s *Subscription) Pull() (*Message, error) {
+func (s *SubClient) Pull() (*Message, error) {
 	return s.pull(true)
 }
 
 // PullWait pulls a new message from the subscription queue.
 // If there are no messages left in the subscription queue, it will
 // block until a new message arrives or timeout occurs.
-func (s *Subscription) PullWait() (*Message, error) {
+func (s *SubClient) PullWait() (*Message, error) {
 	return s.pull(false)
 }
 
-func (s *Subscription) pull(retImmediately bool) (*Message, error) {
+func (s *SubClient) pull(retImmediately bool) (*Message, error) {
 	resp, err := s.s.Subscriptions.Pull(&raw.PullRequest{
 		Subscription:      fullSubName(s.proj, s.name),
 		ReturnImmediately: retImmediately,
@@ -211,9 +211,9 @@ func (s *Subscription) pull(retImmediately bool) (*Message, error) {
 	}, nil
 }
 
-// Topic returns a topic client to run operations related to the Pub/Sub topics.
-func (c *Client) Topic(name string) *Topic {
-	return &Topic{
+// TopicClient returns a topic client to run operations related to the Pub/Sub topics.
+func (c *Client) TopicClient(name string) *TopicClient {
+	return &TopicClient{
 		proj: c.proj,
 		name: name,
 		s:    c.s,
@@ -222,7 +222,7 @@ func (c *Client) Topic(name string) *Topic {
 
 // Create creates a new topic with the current topic's name on the backend.
 // It will return an error if topic already exists.
-func (t *Topic) Create() error {
+func (t *TopicClient) Create() error {
 	_, err := t.s.Topics.Create(&raw.Topic{
 		Name: fullTopicName(t.proj, t.name),
 	}).Do()
@@ -230,12 +230,12 @@ func (t *Topic) Create() error {
 }
 
 // Delete deletes the current topic.
-func (t *Topic) Delete() error {
+func (t *TopicClient) Delete() error {
 	return t.s.Topics.Delete(fullTopicName(t.proj, t.name)).Do()
 }
 
 // Exists returns true if a topic named with the current topic's name exists.
-func (t *Topic) Exists() (bool, error) {
+func (t *TopicClient) Exists() (bool, error) {
 	panic("not yet implemented")
 }
 
@@ -243,7 +243,7 @@ func (t *Topic) Exists() (bool, error) {
 // You don't have to label your message. Use nil if there are no labels.
 // Label values could be either int64 or string. It will return an error
 // if you provide a value of another kind.
-func (t *Topic) Publish(data []byte, labels map[string]string) error {
+func (t *TopicClient) Publish(data []byte, labels map[string]string) error {
 	var rawLabels []*raw.Label
 	if labels != nil {
 		rawLabels := []*raw.Label{}

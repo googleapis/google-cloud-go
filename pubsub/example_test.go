@@ -49,15 +49,15 @@ func Example_publishAndSubscribe() {
 	// Publish hello world on topic1.
 	go func() {
 		for {
-			topic1 := c.Topic("topic1")
-			err := topic1.Publish([]byte("hello"), nil)
+			topic := c.TopicClient("topic1")
+			err := topic.Publish([]byte("hello"), nil)
 			if err != nil {
 				log.Println(err)
 			}
 		}
 	}()
 
-	sub := c.Subscription("sub1")
+	sub := c.SubClient("sub1")
 	// sub1 is a subscription that is subscribed to topic1.
 	// E.g. sub1.Create("topic1", time.Duration(0), "")
 	for {
