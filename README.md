@@ -2,6 +2,8 @@
 
 Work in progress, watch the repo for notifications.
 
+[![Build Status](https://travis-ci.org/GoogleCloudPlatform/gcloud-golang.svg?branch=master)](https://travis-ci.org/GoogleCloudPlatform/gcloud-golang)
+
 We are planning release the initial version with support for the following Cloud APIs.
  * Google Cloud Datastore
  * Google Cloud Storage
