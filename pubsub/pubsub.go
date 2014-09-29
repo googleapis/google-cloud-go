@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"time"
 
 	raw "code.google.com/p/google-api-go-client/pubsub/v1beta1"
 )
@@ -139,8 +138,9 @@ func (s *SubClient) Delete() error {
 }
 
 // ModifyAckDeadline modifies the current acknowledgement deadline
-// for the messages retrieved from the current subscription.
-func (s *SubClient) ModifyAckDeadline(deadline time.Duration) error {
+// for the messages retrieved from the current subscription. Deadline
+// value should be in seconds.
+func (s *SubClient) ModifyAckDeadline(deadline int) error {
 	return s.s.Subscriptions.ModifyAckDeadline(&raw.ModifyAckDeadlineRequest{
 		Subscription:       fullSubName(s.proj, s.name),
 		AckDeadlineSeconds: int64(deadline),
