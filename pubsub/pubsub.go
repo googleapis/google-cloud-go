@@ -22,6 +22,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	raw "code.google.com/p/google-api-go-client/pubsub/v1beta1"
@@ -65,9 +66,9 @@ type Message struct {
 	// Data is the actual data in the message.
 	Data []byte
 
-	// Labels field is optional key-value pairs to label
-	// you message. Values could be either int64 or string.
-	Labels map[string]interface{}
+	// Labels represents the key-value pairs the current message
+	// is labelled with.
+	Labels map[string]string
 }
 
 // New creates a new Pub/Sub client to manage topics and subscriptions
@@ -195,12 +196,12 @@ func (s *Subscription) pull(retImmediately bool) (*Message, error) {
 		return nil, err
 	}
 
-	labels := make(map[string]interface{})
+	labels := make(map[string]string)
 	for _, l := range resp.PubsubEvent.Message.Label {
 		if l.StrValue != "" {
 			labels[l.Key] = l.StrValue
 		} else {
-			labels[l.Key] = l.NumValue
+			labels[l.Key] = strconv.FormatInt(l.NumValue, 10)
 		}
 	}
 	return &Message{
