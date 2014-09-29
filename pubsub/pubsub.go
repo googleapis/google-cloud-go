@@ -78,7 +78,7 @@ type Message struct {
 
 // New creates a new Pub/Sub client to manage topics and subscriptions
 // under the provided project. The provided RoundTripper should be
-// authorized and authenticated to make calls to Google Cloud Storage API.
+// authorized and authenticated to make calls to Google Cloud Pub/Sub API.
 // Look at the package samples to for examples of creating authorized
 // and authenticated RoundTripeers.
 func New(projID string, tr http.RoundTripper) *Client {
@@ -88,7 +88,7 @@ func New(projID string, tr http.RoundTripper) *Client {
 // NewWithClient creates a new Pub/Sub client to manage topics and
 // subscriptions under the provided project. The client's
 // Transport should be authorized and authenticated to make
-// calls to Google Cloud Storage API.
+// calls to Google Cloud Pub/Sub API.
 // Look at the package samples to for examples of creating authorized
 // and authenticated RoundTripeers.
 func NewWithClient(projID string, c *http.Client) *Client {
