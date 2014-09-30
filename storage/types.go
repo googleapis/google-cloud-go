@@ -61,6 +61,10 @@ type Bucket struct {
 	// Location is the location of the bucket. It defaults to "US".
 	Location string `json:"location,omitempty"`
 
+	// Metageneration is the metadata generation of the bucket.
+	// Read-only.
+	Metageneration int64 `json:metageneration,omitempty`
+
 	// StorageClass is the storage class of the bucket. This defines
 	// how objects in the bucket are stored and determines the SLA
 	// and the cost of storage. Typical values are "STANDARD" and
@@ -68,6 +72,7 @@ type Bucket struct {
 	StorageClass string `json:"storageClass,omitempty"`
 
 	// Created is the creation time of the bucket.
+	// Read-only.
 	Created time.Time `json:"timeCreated,omitempty"`
 }
 
@@ -76,10 +81,11 @@ func newBucket(b *raw.Bucket) *Bucket {
 		return nil
 	}
 	bucket := &Bucket{
-		Name:         b.Name,
-		Location:     b.Location,
-		StorageClass: b.StorageClass,
-		Created:      convertTime(b.TimeCreated),
+		Name:           b.Name,
+		Location:       b.Location,
+		Metageneration: b.Metageneration,
+		StorageClass:   b.StorageClass,
+		Created:        convertTime(b.TimeCreated),
 	}
 	acl := make([]*AccessControlRule, len(b.Acl))
 	for i, rule := range b.Acl {
