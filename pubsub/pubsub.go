@@ -30,11 +30,11 @@ import (
 const (
 	// ScopePubSub grants permissions to view and manage Pub/Sub
 	// topics and subscriptions.
-	ScopePubSub = raw.PubsubScope
+	ScopePubSub = "https://www.googleapis.com/auth/pubsub"
 
 	// ScopeCloudPlatform grants permissions to view and manage your data
 	// across Google Cloud Platform services.
-	ScopeCloudPlatform = raw.CloudPlatformScope
+	ScopeCloudPlatform = "https://www.googleapis.com/auth/cloud-platform"
 )
 
 // Client is a Google Cloud Pub/Sub (Pub/Sub) client.
@@ -101,7 +101,7 @@ func (c *Client) SubClient(name string) *SubClient {
 	}
 }
 
-// Create creates a permanent Pub/Sub subscription on the backend.
+// Create creates a Pub/Sub subscription on the backend.
 // A subscription should subscribe to an existing topic.
 //
 // The messages that haven't acknowledged will be pushed back to the
@@ -109,14 +109,14 @@ func (c *Client) SubClient(name string) *SubClient {
 // reached. You can override the default deadline by providing a
 // non-zero deadline. Deadline value should be in seconds.
 //
-// As new messages are being queued on the subscription channel, you
-// may recieve push notifications regarding to the new arrivals. Provide
-// a URL endpoint push notifications . If an empty string is provided,
-// the backend will not notify you with pushes.
+// As new messages are being queued on the subscription, you
+// may recieve push notifications regarding to the new arrivals.
+// To receive notifications of new messages in the queue,
+// specify an endpoint callback URL.
+// If endpoint is an empty string the backend will not notify the
+// client of new messages.
 //
-// It will return an error if subscription already exists. In order
-// to modify acknowledgement deadline and push endpoint, use
-// ModifyAckDeadline and ModifyPushEndpoint.
+// If the subscription already exists an error will be returned.
 func (s *SubClient) Create(topic string, deadline int, endpoint string) error {
 	sub := &raw.Subscription{
 		Topic: fullTopicName(s.proj, topic),
