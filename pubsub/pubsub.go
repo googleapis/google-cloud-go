@@ -20,9 +20,11 @@ package pubsub
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	raw "code.google.com/p/google-api-go-client/pubsub/v1beta1"
 )
@@ -107,7 +109,8 @@ func (c *Client) SubClient(name string) *SubClient {
 // The messages that haven't acknowledged will be pushed back to the
 // subscription again when the default acknowledgement deadline is
 // reached. You can override the default deadline by providing a
-// non-zero deadline. Deadline value should be in seconds.
+// non-zero deadline. Deadline must not be specified to
+// precision greater than one second.
 //
 // As new messages are being queued on the subscription, you
 // may recieve push notifications regarding to the new arrivals.
@@ -117,13 +120,16 @@ func (c *Client) SubClient(name string) *SubClient {
 // client of new messages.
 //
 // If the subscription already exists an error will be returned.
-func (s *SubClient) Create(topic string, deadline int, endpoint string) error {
+func (s *SubClient) Create(topic string, deadline time.Duration, endpoint string) error {
 	sub := &raw.Subscription{
 		Topic: fullTopicName(s.proj, topic),
 		Name:  fullSubName(s.proj, s.name),
 	}
-	if deadline > 0 {
-		sub.AckDeadlineSeconds = int64(deadline)
+	if int64(deadline) > 0 {
+		if !isSec(deadline) {
+			return errors.New("pubsub: deadline must not be specified to precision greater than one second")
+		}
+		sub.AckDeadlineSeconds = int64(deadline / time.Second)
 	}
 	if endpoint != "" {
 		sub.PushConfig = &raw.PushConfig{PushEndpoint: endpoint}
@@ -138,9 +144,12 @@ func (s *SubClient) Delete() error {
 }
 
 // ModifyAckDeadline modifies the current acknowledgement deadline
-// for the messages retrieved from the current subscription. Deadline
-// value should be in seconds.
-func (s *SubClient) ModifyAckDeadline(deadline int) error {
+// for the messages retrieved from the current subscription.
+// Deadline must not be specified to precision greater than one second.
+func (s *SubClient) ModifyAckDeadline(deadline time.Duration) error {
+	if !isSec(deadline) {
+		return errors.New("pubsub: deadline must not be specified to precision greater than one second")
+	}
 	return s.s.Subscriptions.ModifyAckDeadline(&raw.ModifyAckDeadlineRequest{
 		Subscription:       fullSubName(s.proj, s.name),
 		AckDeadlineSeconds: int64(deadline),
@@ -270,4 +279,8 @@ func fullSubName(proj, name string) string {
 // E.g. /topics/project-id/topic-name.
 func fullTopicName(proj, name string) string {
 	return fmt.Sprintf("/topics/%s/%s", proj, name)
+}
+
+func isSec(dur time.Duration) bool {
+	return dur%time.Second == 0
 }
