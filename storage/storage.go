@@ -21,8 +21,14 @@ import (
 	"io"
 	"net/http"
 
+	"code.google.com/p/google-api-go-client/googleapi"
 	raw "code.google.com/p/google-api-go-client/storage/v1"
 	"google.golang.org/cloud/internal"
+)
+
+var (
+	ErrBucketNotExists = errors.New("storage: bucket doesn't exist")
+	ErrObjectNotExists = errors.New("storage: object doesn't exist")
 )
 
 const (
@@ -42,12 +48,6 @@ const (
 const (
 	templUrlMedia = "https://storage.googleapis.com/%s/%s"
 )
-
-// Bucket represents a Google Cloud Storage bucket.
-type Bucket struct {
-	// Name is the name of the bucket.
-	Name string `json:"name,omitempty"`
-}
 
 type conn struct {
 	c *http.Client
@@ -99,7 +99,14 @@ func NewWithClient(c *http.Client) *Client {
 
 // Bucket returns the metadata for the specified bucket.
 func (c *Client) Bucket(name string) (*Bucket, error) {
-	panic("not yet implemented")
+	resp, err := c.conn.s.Buckets.Get(name).Do()
+	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
+		return nil, ErrBucketNotExists
+	}
+	if err != nil {
+		return nil, err
+	}
+	return newBucket(resp), nil
 }
 
 // BucketClient returns a bucket client to perform object operations on.
@@ -150,6 +157,9 @@ func (b *BucketClient) List(q *Query) (*Objects, error) {
 // Stat returns meta information about the specified object.
 func (b *BucketClient) Stat(name string) (*Object, error) {
 	o, err := b.conn.s.Objects.Get(b.name, name).Do()
+	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
+		return nil, ErrObjectNotExists
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -196,6 +206,9 @@ func (b *BucketClient) Copy(name string, dest *Object) (*Object, error) {
 // of the object.
 func (b *BucketClient) NewReader(name string) (io.ReadCloser, error) {
 	resp, err := b.conn.c.Get(fmt.Sprintf(templUrlMedia, b.name, name))
+	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
+		return nil, ErrObjectNotExists
+	}
 	if err != nil {
 		return nil, err
 	}

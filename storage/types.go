@@ -46,6 +46,60 @@ type Owner struct {
 	Entity string `json:"entity,omitempty"`
 }
 
+// Bucket represents a Google Cloud Storage bucket.
+type Bucket struct {
+	// Name is the name of the bucket.
+	Name string `json:"name,omitempty"`
+
+	// ACL is the list of access controls on the bucket.
+	ACL []*AccessControlRule `json:"acl,omitempty"`
+
+	// DefaultObjectACL is the list of access controls to
+	// apply to new objects when no object ACL is provided.
+	DefaultObjectACL []*AccessControlRule `json:"defaultObjectAcl,omitempty"`
+
+	// Location is the location of the bucket. It defaults to "US".
+	Location string `json:"location,omitempty"`
+
+	// StorageClass is the storage class of the bucket. This defines
+	// how objects in the bucket are stored and determines the SLA
+	// and the cost of storage. Typical values are "STANDARD" and
+	// "DURABLE_REDUCED_AVAILABILITY". Defaults to "STANDARD".
+	StorageClass string `json:"storageClass,omitempty"`
+
+	// Created is the creation time of the bucket.
+	Created time.Time `json:"timeCreated,omitempty"`
+}
+
+func newBucket(b *raw.Bucket) *Bucket {
+	if b == nil {
+		return nil
+	}
+	bucket := &Bucket{
+		Name:         b.Name,
+		Location:     b.Location,
+		StorageClass: b.StorageClass,
+		Created:      convertTime(b.TimeCreated),
+	}
+	acl := make([]*AccessControlRule, len(b.Acl))
+	for i, rule := range b.Acl {
+		acl[i] = &AccessControlRule{
+			Entity: rule.Entity,
+			Role:   rule.Role,
+		}
+	}
+	bucket.ACL = acl
+	objACL := make([]*AccessControlRule, len(b.DefaultObjectAcl))
+	for i, rule := range b.DefaultObjectAcl {
+		objACL[i] = &AccessControlRule{
+			Entity: rule.Entity,
+			Role:   rule.Role,
+		}
+	}
+	bucket.DefaultObjectACL = objACL
+	return bucket
+}
+
 // Object represents a Google Cloud Storage (GCS) object.
 type Object struct {
 	// Bucket is the name of the bucket containing this GCS object.
