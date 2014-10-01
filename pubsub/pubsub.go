@@ -45,20 +45,6 @@ type Client struct {
 	s    *raw.Service
 }
 
-// SubClient represents a Pub/Sub subscription client.
-type SubClient struct {
-	proj string
-	name string
-	s    *raw.Service
-}
-
-// Topic represents a Pub/Sub topic client.
-type TopicClient struct {
-	proj string
-	name string
-	s    *raw.Service
-}
-
 // Message represents a Pub/Sub message.
 type Message struct {
 	// AckID is the identifier to acknowledge this message.
@@ -93,17 +79,7 @@ func NewWithClient(projID string, c *http.Client) *Client {
 
 // TODO(jbd): Add subscription and topic listing.
 
-// SubClient returns a client to perform operations on the
-// subscription identified with the specified name.
-func (c *Client) SubClient(name string) *SubClient {
-	return &SubClient{
-		proj: c.proj,
-		name: name,
-		s:    c.s,
-	}
-}
-
-// Create creates a Pub/Sub subscription on the backend.
+// CreateSub creates a Pub/Sub subscription on the backend.
 // A subscription should subscribe to an existing topic.
 //
 // The messages that haven't acknowledged will be pushed back to the
@@ -120,10 +96,10 @@ func (c *Client) SubClient(name string) *SubClient {
 // client of new messages.
 //
 // If the subscription already exists an error will be returned.
-func (s *SubClient) Create(topic string, deadline time.Duration, endpoint string) error {
+func (c *Client) CreateSub(name string, topic string, deadline time.Duration, endpoint string) error {
 	sub := &raw.Subscription{
-		Topic: fullTopicName(s.proj, topic),
-		Name:  fullSubName(s.proj, s.name),
+		Topic: fullTopicName(c.proj, topic),
+		Name:  fullSubName(c.proj, name),
 	}
 	if int64(deadline) > 0 {
 		if !isSec(deadline) {
@@ -134,67 +110,69 @@ func (s *SubClient) Create(topic string, deadline time.Duration, endpoint string
 	if endpoint != "" {
 		sub.PushConfig = &raw.PushConfig{PushEndpoint: endpoint}
 	}
-	_, err := s.s.Subscriptions.Create(sub).Do()
+	_, err := c.s.Subscriptions.Create(sub).Do()
 	return err
 }
 
-// Delete deletes the subscription.
-func (s *SubClient) Delete() error {
-	return s.s.Subscriptions.Delete(fullSubName(s.proj, s.name)).Do()
+// DeleteSub deletes the subscription.
+func (s *Client) DeleteSub(name string) error {
+	return s.s.Subscriptions.Delete(fullSubName(s.proj, name)).Do()
 }
 
-// ModifyAckDeadline modifies the current acknowledgement deadline
-// for the messages retrieved from the current subscription.
+// ModifyAckDeadline modifies the acknowledgement deadline
+// for the messages retrieved from the specified subscription.
 // Deadline must not be specified to precision greater than one second.
-func (s *SubClient) ModifyAckDeadline(deadline time.Duration) error {
+func (c *Client) ModifyAckDeadline(sub string, deadline time.Duration) error {
 	if !isSec(deadline) {
 		return errors.New("pubsub: deadline must not be specified to precision greater than one second")
 	}
-	return s.s.Subscriptions.ModifyAckDeadline(&raw.ModifyAckDeadlineRequest{
-		Subscription:       fullSubName(s.proj, s.name),
+	return c.s.Subscriptions.ModifyAckDeadline(&raw.ModifyAckDeadlineRequest{
+		Subscription:       fullSubName(c.proj, sub),
 		AckDeadlineSeconds: int64(deadline),
 	}).Do()
 }
 
 // ModifyPushEndpoint modifies the URL endpoint to modify the resource
-// to handle push notifications coming from the Pub/Sub backend.
-func (s *SubClient) ModifyPushEndpoint(endpoint string) error {
-	return s.s.Subscriptions.ModifyPushConfig(&raw.ModifyPushConfigRequest{
-		Subscription: fullSubName(s.proj, s.name),
+// to handle push notifications coming from the Pub/Sub backend
+// for the specified subscription.
+func (c *Client) ModifyPushEndpoint(sub, endpoint string) error {
+	return c.s.Subscriptions.ModifyPushConfig(&raw.ModifyPushConfigRequest{
+		Subscription: fullSubName(c.proj, sub),
 		PushConfig: &raw.PushConfig{
 			PushEndpoint: endpoint,
 		},
 	}).Do()
 }
 
-// Exists returns true if current subscription exists.
-func (s *SubClient) Exists() (bool, error) {
+// SubExists returns true if subscription exists.
+func (s *Client) SubExists(name string) (bool, error) {
 	panic("not yet implemented")
 }
 
-// Ack acknowledges one or more Pub/Sub messages.
-func (s *SubClient) Ack(id ...string) error {
-	return s.s.Subscriptions.Acknowledge(&raw.AcknowledgeRequest{
-		Subscription: fullSubName(s.proj, s.name),
+// Ack acknowledges one or more Pub/Sub messages on the
+// specified subscription.
+func (c *Client) Ack(sub string, id ...string) error {
+	return c.s.Subscriptions.Acknowledge(&raw.AcknowledgeRequest{
+		Subscription: fullSubName(c.proj, sub),
 		AckId:        id,
 	}).Do()
 }
 
-// Pull pulls a new message from the subscription queue.
-func (s *SubClient) Pull() (*Message, error) {
-	return s.pull(true)
+// Pull pulls a new message from the specified subscription queue.
+func (c *Client) Pull(sub string) (*Message, error) {
+	return c.pull(sub, true)
 }
 
-// PullWait pulls a new message from the subscription queue.
+// PullWait pulls a new message from the specified subscription queue.
 // If there are no messages left in the subscription queue, it will
 // block until a new message arrives or timeout occurs.
-func (s *SubClient) PullWait() (*Message, error) {
-	return s.pull(false)
+func (c *Client) PullWait(sub string) (*Message, error) {
+	return c.pull(sub, false)
 }
 
-func (s *SubClient) pull(retImmediately bool) (*Message, error) {
-	resp, err := s.s.Subscriptions.Pull(&raw.PullRequest{
-		Subscription:      fullSubName(s.proj, s.name),
+func (c *Client) pull(sub string, retImmediately bool) (*Message, error) {
+	resp, err := c.s.Subscriptions.Pull(&raw.PullRequest{
+		Subscription:      fullSubName(c.proj, sub),
 		ReturnImmediately: retImmediately,
 	}).Do()
 	if err != nil {
@@ -220,39 +198,30 @@ func (s *SubClient) pull(retImmediately bool) (*Message, error) {
 	}, nil
 }
 
-// TopicClient returns a topic client to run operations related to the Pub/Sub topics.
-func (c *Client) TopicClient(name string) *TopicClient {
-	return &TopicClient{
-		proj: c.proj,
-		name: name,
-		s:    c.s,
-	}
-}
-
-// Create creates a new topic with the current topic's name on the backend.
+// CreateTopic creates a new topic with the specified name on the backend.
 // It will return an error if topic already exists.
-func (t *TopicClient) Create() error {
-	_, err := t.s.Topics.Create(&raw.Topic{
-		Name: fullTopicName(t.proj, t.name),
+func (c *Client) CreateTopic(name string) error {
+	_, err := c.s.Topics.Create(&raw.Topic{
+		Name: fullTopicName(c.proj, name),
 	}).Do()
 	return err
 }
 
-// Delete deletes the current topic.
-func (t *TopicClient) Delete() error {
-	return t.s.Topics.Delete(fullTopicName(t.proj, t.name)).Do()
+// DeleteTopic deletes the specified topic.
+func (c *Client) DeleteTopic(name string) error {
+	return c.s.Topics.Delete(fullTopicName(c.proj, name)).Do()
 }
 
-// Exists returns true if a topic named with the current topic's name exists.
-func (t *TopicClient) Exists() (bool, error) {
+// TopicExists returns true if a topic exists with the specified name.
+func (c *Client) TopicExists(name string) (bool, error) {
 	panic("not yet implemented")
 }
 
-// Publish publishes a new message to the current topic's subscribers.
+// Publish publishes a new message to the specified topic's subscribers.
 // You don't have to label your message. Use nil if there are no labels.
 // Label values could be either int64 or string. It will return an error
 // if you provide a value of another kind.
-func (t *TopicClient) Publish(data []byte, labels map[string]string) error {
+func (c *Client) Publish(topic string, data []byte, labels map[string]string) error {
 	var rawLabels []*raw.Label
 	if labels != nil {
 		rawLabels := []*raw.Label{}
@@ -260,8 +229,8 @@ func (t *TopicClient) Publish(data []byte, labels map[string]string) error {
 			rawLabels = append(rawLabels, &raw.Label{Key: k, StrValue: v})
 		}
 	}
-	return t.s.Topics.Publish(&raw.PublishRequest{
-		Topic: fullTopicName(t.proj, t.name),
+	return c.s.Topics.Publish(&raw.PublishRequest{
+		Topic: fullTopicName(c.proj, topic),
 		Message: &raw.PubsubMessage{
 			Data:  base64.StdEncoding.EncodeToString(data),
 			Label: rawLabels,

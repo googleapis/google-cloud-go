@@ -49,24 +49,22 @@ func Example_publishAndSubscribe() {
 	// Publish hello world on topic1.
 	go func() {
 		for {
-			topic := c.TopicClient("topic1")
-			err := topic.Publish([]byte("hello"), nil)
+			err := c.Publish("topic1", []byte("hello"), nil)
 			if err != nil {
 				log.Println(err)
 			}
 		}
 	}()
 
-	sub := c.SubClient("sub1")
 	// sub1 is a subscription that is subscribed to topic1.
-	// E.g. sub.Create("topic1", time.Duration(0), "")
+	// E.g. c.CreateSub("sub1", "topic1", time.Duration(0), "")
 	for {
-		m, err := sub.PullWait()
+		m, err := c.PullWait("sub1")
 		if err != nil {
 			log.Println(err)
 		} else {
 			log.Println("new message arrived:", m)
-			if err := sub.Ack(m.AckID); err != nil {
+			if err := c.Ack("sub1", m.AckID); err != nil {
 				log.Println("error while acknowledging the message:", err)
 			}
 		}
