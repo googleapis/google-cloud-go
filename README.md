@@ -8,6 +8,13 @@ We are planning release the initial version with support for the following Cloud
  * Google Cloud SQL
  * Google Cloud Pub/Sub
 
+``` go
+import "google.golang.org/cloud"
+```
+
+Further documentation and examples are available on
+[http://godoc.org/google.golang.org/cloud](http://godoc.org/google.golang.org/cloud)
+
 ## Contributing
 
 Fork the repo, make changes, run the tests and open a pull request.
