@@ -68,14 +68,17 @@ func (b *BucketClient) String() string {
 
 // Client represents a Google Cloud Storage client.
 type Client struct {
-	conn *conn
+	projID string
+	conn   *conn
 }
 
 // New returns a new Google Cloud Storage client. The provided
 // RoundTripper should be authorized and authenticated to make
 // calls to Google Cloud Storage API.
-func New(tr http.RoundTripper) *Client {
-	return NewWithClient(&http.Client{Transport: tr})
+// You can obtain the project ID from the Google Developers Console,
+// https://console.developers.google.com.
+func New(projID string, tr http.RoundTripper) *Client {
+	return NewWithClient(projID, &http.Client{Transport: tr})
 }
 
 // NewWithClient returns a new Google Cloud Storage client that
@@ -84,10 +87,12 @@ func New(tr http.RoundTripper) *Client {
 // Google Cloud Storage API.
 // It mutates the client's original Transport to append the cloud
 // package's user-agent to the outgoing requests.
-func NewWithClient(c *http.Client) *Client {
+// You can obtain the project ID from the Google Developers Console,
+// https://console.developers.google.com.
+func NewWithClient(projID string, c *http.Client) *Client {
 	c.Transport = &internal.UATransport{Base: c.Transport}
 	s, _ := raw.New(c)
-	return &Client{conn: &conn{s: s, c: c}}
+	return &Client{projID: projID, conn: &conn{s: s, c: c}}
 }
 
 // TODO(jbd): Add storage.buckets.list.
