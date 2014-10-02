@@ -63,7 +63,7 @@ type Bucket struct {
 
 	// Metageneration is the metadata generation of the bucket.
 	// Read-only.
-	Metageneration int64 `json:metageneration,omitempty`
+	Metageneration int64 `json:"metageneration,omitempty"`
 
 	// StorageClass is the storage class of the bucket. This defines
 	// how objects in the bucket are stored and determines the SLA
