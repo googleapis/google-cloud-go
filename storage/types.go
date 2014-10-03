@@ -21,25 +21,6 @@ import (
 	raw "code.google.com/p/google-api-go-client/storage/v1"
 )
 
-// AccessControlRule represents an access control rule entry for
-// a Google Cloud Storage object.
-type AccessControlRule struct {
-	// Entity identifies the entity holding the current
-	// rule's permissions. It could be in the form of:
-	// - "user-<userId>"
-	// - "user-<email>"
-	// - "group-<groupId>"
-	// - "group-<email>"
-	// - "domain-<domain>"
-	// - "project-team-<projectId>"
-	// - "allUsers"
-	// - "allAuthenticatedUsers"
-	Entity string `json:"entity,omitempty"`
-
-	// Role is the the access permission for the entity. Can be READER or OWNER.
-	Role string `json:"role,omitempty"`
-}
-
 // Owner represents the owner of a GCS object.
 type Owner struct {
 	// Entity identifies the owner, it's always in the form of "user-<userId>".
@@ -51,12 +32,12 @@ type Bucket struct {
 	// Name is the name of the bucket.
 	Name string `json:"name,omitempty"`
 
-	// ACL is the list of access controls on the bucket.
-	ACL []*AccessControlRule `json:"acl,omitempty"`
+	// ACL is the list of access control rules on the bucket.
+	ACL []*ACLRule `json:"acl,omitempty"`
 
 	// DefaultObjectACL is the list of access controls to
 	// apply to new objects when no object ACL is provided.
-	DefaultObjectACL []*AccessControlRule `json:"defaultObjectAcl,omitempty"`
+	DefaultObjectACL []*ACLRule `json:"defaultObjectAcl,omitempty"`
 
 	// Location is the location of the bucket. It defaults to "US".
 	Location string `json:"location,omitempty"`
@@ -87,19 +68,19 @@ func newBucket(b *raw.Bucket) *Bucket {
 		StorageClass:   b.StorageClass,
 		Created:        convertTime(b.TimeCreated),
 	}
-	acl := make([]*AccessControlRule, len(b.Acl))
+	acl := make([]*ACLRule, len(b.Acl))
 	for i, rule := range b.Acl {
-		acl[i] = &AccessControlRule{
+		acl[i] = &ACLRule{
 			Entity: rule.Entity,
-			Role:   rule.Role,
+			Role:   ACLRole(rule.Role),
 		}
 	}
 	bucket.ACL = acl
-	objACL := make([]*AccessControlRule, len(b.DefaultObjectAcl))
+	objACL := make([]*ACLRule, len(b.DefaultObjectAcl))
 	for i, rule := range b.DefaultObjectAcl {
-		objACL[i] = &AccessControlRule{
+		objACL[i] = &ACLRule{
 			Entity: rule.Entity,
-			Role:   rule.Role,
+			Role:   ACLRole(rule.Role),
 		}
 	}
 	bucket.DefaultObjectACL = objACL
@@ -117,8 +98,8 @@ type Object struct {
 	// ContentType is the MIME type of the object's content.
 	ContentType string `json:"contentType,omitempty"`
 
-	// ACL is the access control rule list for the object.
-	ACL []*AccessControlRule `json:"acl,omitempty"`
+	// ACL is the list of access control rules for the object.
+	ACL []*ACLRule `json:"acl,omitempty"`
 
 	// Owner is the owner of the object. Owner is alway the original
 	// uploader of the object.
@@ -179,7 +160,7 @@ func (o *Object) toRawObject() *raw.Object {
 	for i, rule := range o.ACL {
 		acl[i] = &raw.ObjectAccessControl{
 			Entity: rule.Entity,
-			Role:   rule.Role,
+			Role:   string(rule.Role),
 		}
 	}
 	return &raw.Object{
@@ -206,11 +187,11 @@ func newObject(o *raw.Object) *Object {
 	if o == nil {
 		return nil
 	}
-	acl := make([]*AccessControlRule, len(o.Acl))
+	acl := make([]*ACLRule, len(o.Acl))
 	for i, rule := range o.Acl {
-		acl[i] = &AccessControlRule{
+		acl[i] = &ACLRule{
 			Entity: rule.Entity,
-			Role:   rule.Role,
+			Role:   ACLRole(rule.Role),
 		}
 	}
 	return &Object{
