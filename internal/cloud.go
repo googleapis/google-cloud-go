@@ -20,11 +20,13 @@ package internal
 import (
 	"fmt"
 	"net/http"
+
+	"code.google.com/p/go.net/context"
 )
 
 // Key represents a context key. It shouldn't be used by the
 // third party packages to avoid collisions.
-type Key int
+type ContextKey string
 
 const userAgent = "gcloud-golang/0.1"
 
@@ -63,4 +65,24 @@ func cloneRequest(r *http.Request) *http.Request {
 		r2.Header[k] = s
 	}
 	return r2
+}
+
+// ProjID gets the active project id for a context
+func ProjID(ctx context.Context) string {
+	return ctx.Value(ContextKey("base")).(map[string]interface{})["project_id"].(string)
+}
+
+// Namespace gets the active namespace for a context
+// defaults to "" if no namespace was specified
+func Namespace(ctx context.Context) string {
+	v := ctx.Value(ContextKey("namespace"))
+	if v == nil {
+		return ""
+	} else {
+		return v.(string)
+	}
+}
+
+func HttpClient(ctx context.Context) *http.Client {
+	return ctx.Value(ContextKey("base")).(map[string]interface{})["http_client"].(*http.Client)
 }

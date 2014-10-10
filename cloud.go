@@ -37,6 +37,12 @@ func NewContext(projID string, c *http.Client) context.Context {
 	return WithContext(context.Background(), projID, c)
 }
 
+// WithNamespace returns a new context that wraps an existing contect
+// and uses the specified namespace
+func WithNamespace(ctx context.Context, namespace string) context.Context {
+	return context.WithValue(ctx, internal.ContextKey("namespace"), namespace)
+}
+
 // WithContext returns a new context in a similar way NewContext does,
 // but initiates the new context with the specified parent.
 func WithContext(parent context.Context, projID string, c *http.Client) context.Context {
@@ -49,5 +55,7 @@ func WithContext(parent context.Context, projID string, c *http.Client) context.
 	// TODO(jbd): Lazily initiate the service objects.
 	vals["pubsub_service"], _ = pubsub.New(c)
 	vals["storage_service"], _ = storage.New(c)
-	return context.WithValue(parent, internal.Key(0), vals)
+	// There is no datastore service as we use the proto directly without passing through google-api-go-client
+
+	return context.WithValue(parent, internal.ContextKey("base"), vals)
 }
