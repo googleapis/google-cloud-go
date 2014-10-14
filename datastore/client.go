@@ -1,4 +1,3 @@
-// Copyright 2014 Palm Stone Games, Inc. All rights reserved.
 // Copyright 2014 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,22 +42,22 @@ type Client interface {
 	// BasePath is the root path to where all API requests will go
 	// This can be changed to, for example, mocking or local test servers
 	// Such as: https://cloud.google.com/datastore/docs/tools/devserver
-	GetBasePath() string
+	BasePath() string
 
 	// A namespace is how datastore allows for multitenancy, entities in
 	// any one namespace are entirely distinct and isolated from other namespaces
 	// See: https://cloud.google.com/appengine/docs/go/multitenancy/multitenancy
-	GetNamespace() string
+	Namespace() string
 
 	// Make a raw API call to the datastore API
 	Call(method string, req proto.Message, resp proto.Message) error
 }
 
 type client struct {
-	projectId  string
-	httpClient *http.Client
-	basePath   string
-	namespace  string
+	projectId string
+	c         *http.Client
+	basePath  string
+	namespace string
 }
 
 // New creates a new Datastore client to manage datastore entities
@@ -91,10 +90,10 @@ func NewWithClient(projID string, c *http.Client) Client {
 // See the package examples for how to create an authorized http.RoundTripper.
 func NewWithClientNS(projID string, namespace string, c *http.Client) Client {
 	// TODO(jbd): Add user-agent.
-	return &client{projectId: projID, httpClient: c, namespace: namespace, basePath: "https://www.googleapis.com/datastore/v1beta2/datasets/"}
+	return &client{projectId: projID, c: c, namespace: namespace, basePath: "https://www.googleapis.com/datastore/v1beta2/datasets/"}
 }
 
-func (client *client) GetBasePath() string {
+func (client *client) BasePath() string {
 	return client.basePath
 }
 
@@ -105,7 +104,7 @@ func (client *client) SetBasePath(basePath string) {
 	client.basePath = basePath
 }
 
-func (client *client) GetNamespace() string {
+func (client *client) Namespace() string {
 	return client.namespace
 }
 
@@ -114,7 +113,7 @@ func (client *client) Call(method string, req proto.Message, resp proto.Message)
 	if err != nil {
 		return
 	}
-	r, err := client.httpClient.Post(client.basePath+client.projectId+"/"+method, "application/x-protobuf", bytes.NewBuffer(payload))
+	r, err := client.c.Post(client.basePath+client.projectId+"/"+method, "application/x-protobuf", bytes.NewBuffer(payload))
 	if err != nil {
 		return
 	}
