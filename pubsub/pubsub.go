@@ -22,10 +22,12 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"net/http"
 	"strconv"
 	"time"
 
+	"google.golang.org/cloud/internal"
+
+	"code.google.com/p/go.net/context"
 	raw "code.google.com/p/google-api-go-client/pubsub/v1beta1"
 )
 
@@ -39,12 +41,6 @@ const (
 	ScopeCloudPlatform = "https://www.googleapis.com/auth/cloud-platform"
 )
 
-// Client is a Google Cloud Pub/Sub (Pub/Sub) client.
-type Client struct {
-	proj string
-	s    *raw.Service
-}
-
 // Message represents a Pub/Sub message.
 type Message struct {
 	// AckID is the identifier to acknowledge this message.
@@ -56,25 +52,6 @@ type Message struct {
 	// Labels represents the key-value pairs the current message
 	// is labelled with.
 	Labels map[string]string
-}
-
-// New creates a new Pub/Sub client to manage topics and subscriptions
-// under the provided project. The provided RoundTripper should be
-// authorized and authenticated to make calls to Google Cloud Pub/Sub API.
-// See the package examples for how to create an authorized http.RoundTripper.
-func New(projID string, tr http.RoundTripper) *Client {
-	return NewWithClient(projID, &http.Client{Transport: tr})
-}
-
-// NewWithClient creates a new Pub/Sub client to manage topics and
-// subscriptions under the provided project. The client's
-// Transport should be authorized and authenticated to make
-// calls to Google Cloud Pub/Sub API.
-// See the package examples for how to create an authorized http.RoundTripper.
-func NewWithClient(projID string, c *http.Client) *Client {
-	// TODO(jbd): Add user-agent.
-	s, _ := raw.New(c)
-	return &Client{proj: projID, s: s}
 }
 
 // TODO(jbd): Add subscription and topic listing.
@@ -96,10 +73,10 @@ func NewWithClient(projID string, c *http.Client) *Client {
 // client of new messages.
 //
 // If the subscription already exists an error will be returned.
-func (c *Client) CreateSub(name string, topic string, deadline time.Duration, endpoint string) error {
+func CreateSub(ctx context.Context, name string, topic string, deadline time.Duration, endpoint string) error {
 	sub := &raw.Subscription{
-		Topic: fullTopicName(c.proj, topic),
-		Name:  fullSubName(c.proj, name),
+		Topic: fullTopicName(projID(ctx), topic),
+		Name:  fullSubName(projID(ctx), name),
 	}
 	if int64(deadline) > 0 {
 		if !isSec(deadline) {
@@ -110,24 +87,24 @@ func (c *Client) CreateSub(name string, topic string, deadline time.Duration, en
 	if endpoint != "" {
 		sub.PushConfig = &raw.PushConfig{PushEndpoint: endpoint}
 	}
-	_, err := c.s.Subscriptions.Create(sub).Do()
+	_, err := rawService(ctx).Subscriptions.Create(sub).Do()
 	return err
 }
 
 // DeleteSub deletes the subscription.
-func (s *Client) DeleteSub(name string) error {
-	return s.s.Subscriptions.Delete(fullSubName(s.proj, name)).Do()
+func DeleteSub(ctx context.Context, name string) error {
+	return rawService(ctx).Subscriptions.Delete(fullSubName(projID(ctx), name)).Do()
 }
 
 // ModifyAckDeadline modifies the acknowledgement deadline
 // for the messages retrieved from the specified subscription.
 // Deadline must not be specified to precision greater than one second.
-func (c *Client) ModifyAckDeadline(sub string, deadline time.Duration) error {
+func ModifyAckDeadline(ctx context.Context, sub string, deadline time.Duration) error {
 	if !isSec(deadline) {
 		return errors.New("pubsub: deadline must not be specified to precision greater than one second")
 	}
-	return c.s.Subscriptions.ModifyAckDeadline(&raw.ModifyAckDeadlineRequest{
-		Subscription:       fullSubName(c.proj, sub),
+	return rawService(ctx).Subscriptions.ModifyAckDeadline(&raw.ModifyAckDeadlineRequest{
+		Subscription:       fullSubName(projID(ctx), sub),
 		AckDeadlineSeconds: int64(deadline),
 	}).Do()
 }
@@ -135,9 +112,9 @@ func (c *Client) ModifyAckDeadline(sub string, deadline time.Duration) error {
 // ModifyPushEndpoint modifies the URL endpoint to modify the resource
 // to handle push notifications coming from the Pub/Sub backend
 // for the specified subscription.
-func (c *Client) ModifyPushEndpoint(sub, endpoint string) error {
-	return c.s.Subscriptions.ModifyPushConfig(&raw.ModifyPushConfigRequest{
-		Subscription: fullSubName(c.proj, sub),
+func ModifyPushEndpoint(ctx context.Context, sub, endpoint string) error {
+	return rawService(ctx).Subscriptions.ModifyPushConfig(&raw.ModifyPushConfigRequest{
+		Subscription: fullSubName(projID(ctx), sub),
 		PushConfig: &raw.PushConfig{
 			PushEndpoint: endpoint,
 		},
@@ -145,34 +122,34 @@ func (c *Client) ModifyPushEndpoint(sub, endpoint string) error {
 }
 
 // SubExists returns true if subscription exists.
-func (s *Client) SubExists(name string) (bool, error) {
+func SubExists(ctx context.Context, name string) (bool, error) {
 	panic("not yet implemented")
 }
 
 // Ack acknowledges one or more Pub/Sub messages on the
 // specified subscription.
-func (c *Client) Ack(sub string, id ...string) error {
-	return c.s.Subscriptions.Acknowledge(&raw.AcknowledgeRequest{
-		Subscription: fullSubName(c.proj, sub),
+func Ack(ctx context.Context, sub string, id ...string) error {
+	return rawService(ctx).Subscriptions.Acknowledge(&raw.AcknowledgeRequest{
+		Subscription: fullSubName(projID(ctx), sub),
 		AckId:        id,
 	}).Do()
 }
 
 // Pull pulls a new message from the specified subscription queue.
-func (c *Client) Pull(sub string) (*Message, error) {
-	return c.pull(sub, true)
+func Pull(ctx context.Context, sub string) (*Message, error) {
+	return pull(ctx, sub, true)
 }
 
 // PullWait pulls a new message from the specified subscription queue.
 // If there are no messages left in the subscription queue, it will
 // block until a new message arrives or timeout occurs.
-func (c *Client) PullWait(sub string) (*Message, error) {
-	return c.pull(sub, false)
+func PullWait(ctx context.Context, sub string) (*Message, error) {
+	return pull(ctx, sub, false)
 }
 
-func (c *Client) pull(sub string, retImmediately bool) (*Message, error) {
-	resp, err := c.s.Subscriptions.Pull(&raw.PullRequest{
-		Subscription:      fullSubName(c.proj, sub),
+func pull(ctx context.Context, sub string, retImmediately bool) (*Message, error) {
+	resp, err := rawService(ctx).Subscriptions.Pull(&raw.PullRequest{
+		Subscription:      fullSubName(projID(ctx), sub),
 		ReturnImmediately: retImmediately,
 	}).Do()
 	if err != nil {
@@ -200,20 +177,20 @@ func (c *Client) pull(sub string, retImmediately bool) (*Message, error) {
 
 // CreateTopic creates a new topic with the specified name on the backend.
 // It will return an error if topic already exists.
-func (c *Client) CreateTopic(name string) error {
-	_, err := c.s.Topics.Create(&raw.Topic{
-		Name: fullTopicName(c.proj, name),
+func CreateTopic(ctx context.Context, name string) error {
+	_, err := rawService(ctx).Topics.Create(&raw.Topic{
+		Name: fullTopicName(projID(ctx), name),
 	}).Do()
 	return err
 }
 
 // DeleteTopic deletes the specified topic.
-func (c *Client) DeleteTopic(name string) error {
-	return c.s.Topics.Delete(fullTopicName(c.proj, name)).Do()
+func DeleteTopic(ctx context.Context, name string) error {
+	return rawService(ctx).Topics.Delete(fullTopicName(projID(ctx), name)).Do()
 }
 
 // TopicExists returns true if a topic exists with the specified name.
-func (c *Client) TopicExists(name string) (bool, error) {
+func TopicExists(ctx context.Context, name string) (bool, error) {
 	panic("not yet implemented")
 }
 
@@ -221,7 +198,7 @@ func (c *Client) TopicExists(name string) (bool, error) {
 // You don't have to label your message. Use nil if there are no labels.
 // Label values could be either int64 or string. It will return an error
 // if you provide a value of another kind.
-func (c *Client) Publish(topic string, data []byte, labels map[string]string) error {
+func Publish(ctx context.Context, topic string, data []byte, labels map[string]string) error {
 	var rawLabels []*raw.Label
 	if labels != nil {
 		rawLabels := []*raw.Label{}
@@ -229,8 +206,8 @@ func (c *Client) Publish(topic string, data []byte, labels map[string]string) er
 			rawLabels = append(rawLabels, &raw.Label{Key: k, StrValue: v})
 		}
 	}
-	return c.s.Topics.Publish(&raw.PublishRequest{
-		Topic: fullTopicName(c.proj, topic),
+	return rawService(ctx).Topics.Publish(&raw.PublishRequest{
+		Topic: fullTopicName(projID(ctx), topic),
 		Message: &raw.PubsubMessage{
 			Data:  base64.StdEncoding.EncodeToString(data),
 			Label: rawLabels,
@@ -252,4 +229,12 @@ func fullTopicName(proj, name string) string {
 
 func isSec(dur time.Duration) bool {
 	return dur%time.Second == 0
+}
+
+func projID(ctx context.Context) string {
+	return ctx.Value(internal.Key(0)).(map[string]interface{})["project_id"].(string)
+}
+
+func rawService(ctx context.Context) *raw.Service {
+	return ctx.Value(internal.Key(0)).(map[string]interface{})["pubsub_service"].(*raw.Service)
 }

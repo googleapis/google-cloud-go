@@ -16,9 +16,11 @@ package pubsub_test
 
 import (
 	"log"
+	"net/http"
 	"testing"
 
 	"github.com/golang/oauth2/google"
+	"google.golang.org/cloud"
 	"google.golang.org/cloud/pubsub"
 )
 
@@ -39,17 +41,19 @@ func Example_auth() {
 		log.Fatal(err)
 	}
 
-	c := pubsub.New("project-id", conf.NewTransport())
-	_ = c // Use the client
+	c := &http.Client{Transport: conf.NewTransport()}
+	ctx := cloud.NewContext("project-id", c)
+	_ = ctx // See the other samples to learn how to use the context.
 }
 
 func Example_publishAndSubscribe() {
-	c := (*pubsub.Client)(nil) // initiate a pubsub client. See the auth example.
+	tr := (http.RoundTripper)(nil) // initiate a RoundTripper. See the auth example.
+	ctx := cloud.NewContext("project-id", &http.Client{Transport: tr})
 
 	// Publish hello world on topic1.
 	go func() {
 		for {
-			err := c.Publish("topic1", []byte("hello"), nil)
+			err := pubsub.Publish(ctx, "topic1", []byte("hello"), nil)
 			if err != nil {
 				log.Println(err)
 			}
@@ -59,12 +63,12 @@ func Example_publishAndSubscribe() {
 	// sub1 is a subscription that is subscribed to topic1.
 	// E.g. c.CreateSub("sub1", "topic1", time.Duration(0), "")
 	for {
-		m, err := c.PullWait("sub1")
+		m, err := pubsub.PullWait(ctx, "sub1")
 		if err != nil {
 			log.Println(err)
 		} else {
 			log.Println("new message arrived:", m)
-			if err := c.Ack("sub1", m.AckID); err != nil {
+			if err := pubsub.Ack(ctx, "sub1", m.AckID); err != nil {
 				log.Println("error while acknowledging the message:", err)
 			}
 		}

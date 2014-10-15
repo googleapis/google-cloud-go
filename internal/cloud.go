@@ -22,6 +22,10 @@ import (
 	"net/http"
 )
 
+// Key represents a context key. It shouldn't be used by the
+// third party packages to avoid collisions.
+type Key int
+
 const userAgent = "gcloud-golang/0.1"
 
 // UATransport is an http.RoundTripper that appends
