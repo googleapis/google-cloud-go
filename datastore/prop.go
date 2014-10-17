@@ -28,8 +28,6 @@ const maxIndexedProperties = 5000
 // []byte fields more than 1 megabyte long will not be loaded or saved.
 const maxBlobLen = 1 << 20
 
-type BlobKey string
-
 // Property is a name/value pair plus some metadata. A datastore entity's
 // contents are loaded and saved as a sequence of Properties. An entity can
 // have multiple Properties with the same name, provided that p.Multiple is

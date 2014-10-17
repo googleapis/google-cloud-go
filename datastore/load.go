@@ -23,7 +23,6 @@ import (
 )
 
 var (
-	typeOfBlobKey   = reflect.TypeOf(BlobKey(""))
 	typeOfByteSlice = reflect.TypeOf([]byte(nil))
 	typeOfTime      = reflect.TypeOf(time.Time{})
 )
@@ -45,8 +44,6 @@ func typeMismatchReason(p Property, v reflect.Value) string {
 		entityType = "*datastore.Key"
 	case time.Time:
 		entityType = "time.Time"
-	case BlobKey:
-		entityType = "datastore.BlobKey"
 	case []byte:
 		entityType = "[]byte"
 	}
@@ -130,16 +127,11 @@ func (l *propertyLoader) load(codec *structCodec, structValue reflect.Value, p P
 		}
 		v.SetBool(x)
 	case reflect.String:
-		switch x := pValue.(type) {
-		case BlobKey:
-			v.SetString(string(x))
-		case string:
-			v.SetString(x)
-		default:
-			if pValue != nil {
-				return typeMismatchReason(p, v)
-			}
+		x, ok := pValue.(string)
+		if !ok && pValue != nil {
+			return typeMismatchReason(p, v)
 		}
+		v.SetString(x)
 	case reflect.Float32, reflect.Float64:
 		x, ok := pValue.(float64)
 		if !ok && pValue != nil {
@@ -263,7 +255,7 @@ func propValue(v *pb.Value) interface{} {
 	case v.BlobValue != nil:
 		return []byte(v.BlobValue)
 	case v.BlobKeyValue != nil:
-		return BlobKey(*v.BlobKeyValue)
+		return *v.BlobKeyValue
 	case v.DoubleValue != nil:
 		return *v.DoubleValue
 	case v.KeyValue != nil:

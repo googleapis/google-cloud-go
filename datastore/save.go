@@ -100,7 +100,7 @@ func saveStructProperty(props *[]Property, name string, noIndex bool, v reflect.
 		NoIndex: noIndex,
 	}
 	switch x := v.Interface().(type) {
-	case *Key, time.Time, BlobKey:
+	case *Key, time.Time:
 		p.Value = x
 	default:
 		switch v.Kind() {
@@ -203,8 +203,6 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 				return nil, fmt.Errorf("datastore: time value out of range")
 			}
 			x.Value.TimestampMicrosecondsValue = proto.Int64(toUnixMicro(v))
-		case BlobKey:
-			x.Value.BlobKeyValue = proto.String(string(v))
 		case []byte:
 			x.Value.BlobValue = v
 			if !p.NoIndex {
