@@ -17,100 +17,110 @@ package gcloudtest
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"reflect"
 	"sync"
+
+	"code.google.com/p/go.net/context"
 )
 
-// Mocker interface is used by higher level testing libraries for
-// recording requests and registering another http.RoundTripper for
-// providing mocked responses.
-type Mocker interface {
-	Register(http.RoundTripper) error
-	Record(*http.Request) error
-	Len() int
-	GetRequest(int) (*http.Request, error)
+// Recorder interface adds GetRequests to http.RoundTripper
+// interface. It should intercepts the requests and record
+// them. GetRequests should return the recorded requests.
+type Recorder interface {
 	http.RoundTripper
+	GetRequests() []*http.Request
 }
 
-// MockTransport can be used in developers' unit tests as well as in
-// higher level testing libraries for specific services. This object
-// is thread-safe (or goroutine-safe).
-type MockTransport struct {
-	handler  http.RoundTripper
+// SimpleRecorder is a Recorder that always return a simple HTTP 200
+// response.
+type SimpleRecorder struct {
 	requests []*http.Request
 	mutex    sync.RWMutex
 }
 
-// creates new MockTransport.
-func NewMockTransport() *MockTransport {
-	return &MockTransport{}
-}
-
-// Register registers another RoundTripper for actually creating
-// mocked responses.
-func (m *MockTransport) Register(rt http.RoundTripper) error {
-	m.mutex.Lock()
-	defer m.mutex.Unlock()
-	m.handler = rt
-	return nil
-}
-
-// Len just returns the length of the recorded requests. You can use
-// the following code for looping through the recorded requests.
-//
-// mock := gcloudtest.NewMockTransport()
-// // your test code here
-// for mock.Len() > 0 {
-//   req := mock.GetRequest(0) // or use -1 for reverse order
-// }
-func (m *MockTransport) Len() int {
-	m.mutex.RLock()
-	defer m.mutex.RUnlock()
-	return len(m.requests)
-}
-
 // Record append a request to internal slice.
-func (m *MockTransport) Record(r *http.Request) error {
-	m.mutex.Lock()
-	defer m.mutex.Unlock()
-	m.requests = append(m.requests, r)
+func (rec *SimpleRecorder) record(r *http.Request) error {
+	rec.mutex.Lock()
+	defer rec.mutex.Unlock()
+	rec.requests = append(rec.requests, r)
 	return nil
 }
 
-// GetRequest pulls out the specified request and returns it.
-func (m *MockTransport) GetRequest(n int) (*http.Request, error) {
-	m.mutex.Lock()
-	defer m.mutex.Unlock()
-	if n >= len(m.requests) {
-		return nil, fmt.Errorf("Index out of bounds with n: %d, actual length: %d", n, len(m.requests))
-	}
-	if n == -1 {
-		// treats -1 as the last element
-		n = len(m.requests) - 1
-	}
-	ret := m.requests[n]
-	m.requests = append(m.requests[:n], m.requests[n+1:]...)
-	return ret, nil
+// Thread-safe getter.
+func (rec *SimpleRecorder) GetRequests() []*http.Request {
+	rec.mutex.RLock()
+	defer rec.mutex.RUnlock()
+	return rec.requests
 }
 
-// RoundTrip records a copy of the request, and deferes actual work to
-// the registered RoundTripper.
-func (m *MockTransport) RoundTrip(r *http.Request) (*http.Response, error) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		return nil, fmt.Errorf("ReadAll failed, %v", err)
+// RoundTrip records a copy of the request and returns a response with
+// status code 200.
+func (rec *SimpleRecorder) RoundTrip(r *http.Request) (*http.Response, error) {
+	var body []byte
+	var err error
+	if r.Body != nil {
+		body, err = ioutil.ReadAll(r.Body)
+		if err != nil {
+			return nil, fmt.Errorf("ReadAll failed, %v", err)
+		}
 	}
-	defer r.Body.Close()
-	record, _ := http.NewRequest(r.Method, r.URL.String(), bytes.NewReader(body))
+	r.Body.Close()
 	req, _ := http.NewRequest(r.Method, r.URL.String(), bytes.NewReader(body))
-	m.Record(record)
-	m.mutex.RLock()
-	defer m.mutex.RUnlock()
-	if m.handler == nil {
-		return nil, errors.New("No handler registered.")
+	rec.record(req)
+	rec.mutex.RLock()
+	defer rec.mutex.RUnlock()
+	return &http.Response{
+		Status:     "200 OK",
+		StatusCode: 200,
+		Body:       ioutil.NopCloser(bytes.NewBufferString("")),
+	}, nil
+}
+
+// FakeRequests invokes a given function with given arguments with a
+// recording http.RoundTrip and returrns the recorded requests.
+//
+// For example, if you're using pubsub.Ack as follows:
+//
+//     // this is the definition
+//     pubsub.Ack(ctx context.Context, sub string, ackID string) error
+//
+//     // use
+//     err := pubsub.Ack(ctx, sub, ackID)
+//
+// You can call FakeRequests as follows
+//
+//     rec := &SimpleRecorder{}
+//     reqs, err := FakeRequests(rec, pubsub.Ack, ctx, sub, ackID)
+//
+// then you can get the underlining request(s). These virtual requests
+// helps you implement your own http.RoundTripper for your unit tests.
+//
+// If the function call invokes multiple API calls, and expects a
+// certain responses (e.x. json response for newly created object or
+// something), you may need to write your own Recorder implementation.
+func FakeRequests(recorder Recorder, f interface{}, ctx context.Context,
+	args ...interface{},
+) ([]*http.Request, error) {
+	values := []reflect.Value{}
+	recCtx := cloud.NewContext("project-id", &http.Client{Transport: recorder})
+	// inject the ctx
+	values = append(values, reflect.ValueOf(recCtx))
+	for _, arg := range args {
+		values = append(values, reflect.ValueOf(arg))
 	}
-	return m.handler.RoundTrip(req)
+	fType := reflect.TypeOf(f)
+	if fType.Kind() != reflect.Func {
+		return nil, fmt.Errorf("The first argument for this function must be a function, actual type: %s", fType)
+	}
+	// Executes and just drops the result
+	fValue := reflect.ValueOf(f)
+	if fType.isVariadic() {
+		fValue.CallSlice(values)
+	} else {
+		reflect.ValueOf(f).Call(values)
+	}
+	return recorder.getRequests()
 }

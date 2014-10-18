@@ -13,34 +13,18 @@
 // limitations under the License.
 
 /*
-
 Package gcloudtest provides a set of primitive tools to allow you to
-write unit tests with gcloud-golang library. A typical use is
-recording HTTP requests that gcloud-golang library issues, and
-providing mocked HTTP responses for mocking remote API endpoints'
-behavior. However, to create mocked responses, you need a deep
-knowledge about the raw protocol used by the remote API that you're
-using. Therefore, MockTransport deferes this work to another
-RoundTripper that test writers need to provide via the Register
-function.
-
-Although this package will help developers write unit tests much
-easier, you may still need to match the URL and the HTTP method of the
-HTTP requests against the ones of the actual API endpoints, and you
-also need to hand craft mocked HTTP responses that emurate the API's
-behavior.
-
-Hopefully in the near future, we add some higher level testing
-libraries for eash sub packages that understands the raw API behavior
-so that you can write unit tests only with higher level knowledge of
-the API.
+write unit tests with gcloud-golang library.
 
 Example unit test
 
 Let's say you're using Cloud Pub/Sub and have the following code.
 
+    // Acknowledger just call Ack with a knowledge of the blacklist
     type Acknowledger struct {
 	    ctx         context.Context
+        // for some reason, you want to have a blacklist for
+        // subscription to supress acknowledgement.
         blacklist []string
     }
 
@@ -53,67 +37,91 @@ Let's say you're using Cloud Pub/Sub and have the following code.
         return pubsub.Ack(a.ctx, sub, ackID)
     }
 
-Then first you can create a simple RoundTripper as follows.
+In most case, you start writing tests from implementing your own RoundTripper
 
-    type intRoundTripper int
-
-    func (i intRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
-        return &http.Response{
-            Status:     fmt.Sprintf("%d OK", int(i)),
-            StatusCode: int(i),
-            Body:       ioutil.NopCloser(bytes.NewBufferString("OK")),
-        }, nil
+    type assertTpt struct {
+        exp    *http.Request
+        resp *http.Response
+        t         *testing.T
     }
 
-You can use MockTransport and intRoundTripper as follows.
-
+    func (tr *assertTpt) RoundTrip(r *http.Request) (*http.Response, error) {
+        if tr.exp == nil {
+            tr.t.Errorf("There should not be any requests.")
+        }
+        if tr.exp.Method != r.Method {
+            tr.t.Errorf("Method should be %s, but got %s.",
+                tr.exp.Method, r.Method)
+        }
+        if tr.exp.URL.String() != r.URL.String() {
+            tr.t.Errorf("URL should be %s, but got %s.", tr.exp.URL, r.URL)
+        }
+        bodyExp, err := ioutil.ReadAll(tr.exp.Body)
+        if err != nil {
+            tr.t.Errorf("ReadAll failed for expected body, %v", err)
+        }
+        body, err := ioutil.ReadAll(r.Body)
+        if err != nil {
+            tr.t.Errorf("ReadAll failed, %v", err)
+        }
+        if string(bodyExp) != string(body) {
+            tr.t.Errorf("Body should be %s, but got %s", bodyExp, body)
+        }
+        return resp, nil
+    }
 
 Then your test function.
 
     func TestAck(t *testing.T) {
         tests := []struct {
-            sub      string
-            ackID    string
-            shouldOK bool
+            sub         string
+            ackID       string
+            blacklisted bool
         }{
-            {"sub1", "ack1", true},
-            {"sub2", "ack2", true},
-            {"sub3", "ack3", false},
+            {"sub1", "ack1", false},
+            {"sub2", "ack2", false},
+            {"sub3", "ack3", true},
         }
         blacklist := []string{"sub3"}
-        numOK := 2
-
-        mock := gcloudtest.NewMockTransport()
-        mock.Register(intRoundTripper(200))
-        ctx := cloud.NewContext("project-id", &http.Client{Transport: mock})
-        a := &Acknowledger{ctx: ctx, blacklist: blacklist}
+        resp200 := &http.Response{
+            Status:     "200 OK",
+            StatusCode: 200,
+            Body:       ioutil.NopCloser(bytes.NewBufferString("")),
+        }
+        ctx := cloud.NewContext("pid", &http.Client{})
 
         for _, test := range tests {
-            req, err := a.Ack(test.sub, test.ackID)
-            if err != nil && test.shouldOK {
-                t.Errorf("The test shouldn't fail, but it failed, %v", test)
+            virtResps, err := gcloudtest.FakeRequests(
+                &gcloudtest.SimpleRecorder{}, pubsub.Ack, ctx, test.sub,
+                test.ackID,
+            )
+            if err != nil {
+                t.Errorf("FakeRequests failed, %v", err)
             }
-        }
-        if mock.Len() != numOK {
-            t.Errorf("There should be exact %d API calls, but %d", numOK, mock.Len())
-        }
-        // Optionally vet the issued requests, but it needs knowledge
-        // about raw API protocol.
-        for mock.Len() > 0 {
-            req := mock.GetRequest(0)
-            // vet the req
+            var mock *AssertTpt
+            if test.blacklisted {
+                mock = &assertTpt{exp: nil, resp: resp200, t: t}
+            } else {
+                mock := &assertTpt{exp: virtResps[0], resp: resp200, t: t}
+            }
+            mockCtx := cloud.NewContext("pid", &http.Client{Transport: mock})
+            a := &Acknowledger{ctx: mockCtx, blacklist: blacklist}
+            req, err := a.Ack(test.sub, test.ackID)
+            if err == nil && test.blacklissted {
+                t.Errorf("Ack should fail, but it succeeded, %v", test)
+            }
+            if err != nil && !test.blacklisted {
+                t.Errorf("Ack shouldn't fail, but it failed, %v", test)
+            }
         }
     }
 
 Higher level libraries
 
-As you can see, MockTransport just automates the recording part, so
-you still need to know the raw API protocol in order to 1) switch your
-mocked responses according to the URL, the HTTP method and the body of
-the requests, 2) vet the recorded requests.
+Each subpackage may provide higher level testing libraries. Here is
+such an example.
 
-Ideally gcloud-golang has higher level libraries in each sub packages
-to make the unit tests much easier.
+    virtResp, err := pubsubtest.AckRequests(test.sub, test.ackID)
 
 */
 package gcloudtest
