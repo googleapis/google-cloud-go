@@ -88,23 +88,22 @@ Then your test function.
             StatusCode: 200,
             Body:       ioutil.NopCloser(bytes.NewBufferString("")),
         }
-        ctx := cloud.NewContext("pid", &http.Client{})
+        pid := "project-id"
+
+        ctx := cloud.NewContext(pid, &http.Client{})
 
         for _, test := range tests {
-            virtResps, err := gcloudtest.FakeRequests(
-                &gcloudtest.SimpleRecorder{}, pubsub.Ack, ctx, test.sub,
-                test.ackID,
-            )
+            expectReq, err := pubsubtest.AckRequest(ctx, test.sub, test.ackID)
             if err != nil {
-                t.Errorf("FakeRequests failed, %v", err)
+                t.Errorf("AckRequests failed, %v", err)
             }
             var mock *AssertTpt
             if test.blacklisted {
                 mock = &assertTpt{exp: nil, resp: resp200, t: t}
             } else {
-                mock := &assertTpt{exp: virtResps[0], resp: resp200, t: t}
+                mock := &assertTpt{exp: expectReq, resp: resp200, t: t}
             }
-            mockCtx := cloud.NewContext("pid", &http.Client{Transport: mock})
+            mockCtx := cloud.NewContext(pid, &http.Client{Transport: mock})
             a := &Acknowledger{ctx: mockCtx, blacklist: blacklist}
             req, err := a.Ack(test.sub, test.ackID)
             if err == nil && test.blacklissted {
@@ -115,13 +114,6 @@ Then your test function.
             }
         }
     }
-
-Higher level libraries
-
-Each subpackage may provide higher level testing libraries. Here is
-such an example.
-
-    virtResp, err := pubsubtest.AckRequests(test.sub, test.ackID)
 
 */
 package gcloudtest

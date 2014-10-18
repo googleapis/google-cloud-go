@@ -29,7 +29,7 @@ func TestConcurrentAccess(t *testing.T) {
 	URL := "http://example.com/whatever"
 	num := 100
 
-	rec := &recorder{}
+	rec := &SimpleRecorder{}
 	done := make(chan struct{}, num)
 	defer close(done)
 
@@ -56,7 +56,7 @@ func TestConcurrentAccess(t *testing.T) {
 		<-done
 	}
 	// number of records should be precise
-	reqs := rec.getRequests()
+	reqs := rec.GetRequests()
 	if len(reqs) != num {
 		t.Errorf("m.Len should be %d, but %d.", num, len(reqs))
 	}

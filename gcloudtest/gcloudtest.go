@@ -20,10 +20,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"reflect"
 	"sync"
-
-	"code.google.com/p/go.net/context"
 )
 
 // Recorder interface adds GetRequests to http.RoundTripper
@@ -77,50 +74,4 @@ func (rec *SimpleRecorder) RoundTrip(r *http.Request) (*http.Response, error) {
 		StatusCode: 200,
 		Body:       ioutil.NopCloser(bytes.NewBufferString("")),
 	}, nil
-}
-
-// FakeRequests invokes a given function with given arguments with a
-// recording http.RoundTrip and returrns the recorded requests.
-//
-// For example, if you're using pubsub.Ack as follows:
-//
-//     // this is the definition
-//     pubsub.Ack(ctx context.Context, sub string, ackID string) error
-//
-//     // use
-//     err := pubsub.Ack(ctx, sub, ackID)
-//
-// You can call FakeRequests as follows
-//
-//     rec := &SimpleRecorder{}
-//     reqs, err := FakeRequests(rec, pubsub.Ack, ctx, sub, ackID)
-//
-// then you can get the underlining request(s). These virtual requests
-// helps you implement your own http.RoundTripper for your unit tests.
-//
-// If the function call invokes multiple API calls, and expects a
-// certain responses (e.x. json response for newly created object or
-// something), you may need to write your own Recorder implementation.
-func FakeRequests(recorder Recorder, f interface{}, ctx context.Context,
-	args ...interface{},
-) ([]*http.Request, error) {
-	values := []reflect.Value{}
-	recCtx := cloud.NewContext("project-id", &http.Client{Transport: recorder})
-	// inject the ctx
-	values = append(values, reflect.ValueOf(recCtx))
-	for _, arg := range args {
-		values = append(values, reflect.ValueOf(arg))
-	}
-	fType := reflect.TypeOf(f)
-	if fType.Kind() != reflect.Func {
-		return nil, fmt.Errorf("The first argument for this function must be a function, actual type: %s", fType)
-	}
-	// Executes and just drops the result
-	fValue := reflect.ValueOf(f)
-	if fType.isVariadic() {
-		fValue.CallSlice(values)
-	} else {
-		reflect.ValueOf(f).Call(values)
-	}
-	return recorder.getRequests()
 }
