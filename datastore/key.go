@@ -276,7 +276,7 @@ func AllocateIDs(c *Client, keys []*Key) ([]*Key, error) {
 
 	req := &pb.AllocateIdsRequest{Key: multiKeyToProto(keys)}
 	res := &pb.AllocateIdsResponse{}
-	if err := c.call("AllocateIds", req, res); err != nil {
+	if err := c.call("allocateIds", req, res); err != nil {
 		return nil, err
 	}
 

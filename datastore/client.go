@@ -31,8 +31,11 @@ import (
 )
 
 const (
-	// ScopeDataStore grants permissions to view and/or manage datastore entities
+	// ScopeDatastore grants permissions to view and/or manage datastore entities
 	ScopeDatastore = "https://www.googleapis.com/auth/datastore"
+
+	// ScopeUserEmail grants permission to view the user's email address.
+	// It is required to access the datastore
 	ScopeUserEmail = "https://www.googleapis.com/auth/userinfo.email"
 )
 

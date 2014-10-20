@@ -30,7 +30,7 @@ func runOnce(c *Client, f func(*Client) error) error {
 	req := &pb.BeginTransactionRequest{}
 	resp := &pb.BeginTransactionResponse{}
 
-	if err := t.call("BeginTransaction", req, resp); err != nil {
+	if err := t.call("beginTransaction", req, resp); err != nil {
 		return err
 	}
 
@@ -45,7 +45,7 @@ func runOnce(c *Client, f func(*Client) error) error {
 		t.transactionFinished = true
 		// Ignore the error return value, since we are already returning a non-nil
 		// error (or we're panicking).
-		c.call("Rollback", &pb.RollbackRequest{Transaction: t.transaction}, &pb.RollbackResponse{})
+		c.call("rollback", &pb.RollbackRequest{Transaction: t.transaction}, &pb.RollbackResponse{})
 	}()
 	if err := f(t); err != nil {
 		return err
@@ -53,7 +53,7 @@ func runOnce(c *Client, f func(*Client) error) error {
 	t.transactionFinished = true
 
 	// Commit the transaction.
-	err := c.call("Commit", &pb.CommitRequest{Transaction: t.transaction}, &pb.CommitResponse{})
+	err := c.call("commit", &pb.CommitRequest{Transaction: t.transaction}, &pb.CommitResponse{})
 	return err
 }
 

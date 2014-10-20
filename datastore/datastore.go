@@ -235,7 +235,7 @@ func GetMulti(c *Client, key []*Key, dst interface{}) error {
 	}
 
 	res := &pb.LookupResponse{}
-	if err := c.call("Lookup", req, res); err != nil {
+	if err := c.call("lookup", req, res); err != nil {
 		return err
 	}
 	if len(key) != len(res.Found) {
@@ -338,7 +338,7 @@ func PutMulti(c *Client, keys []*Key, src interface{}) ([]*Key, error) {
 	}
 
 	res := &pb.CommitResponse{}
-	if err := c.call("Commit", req, res); err != nil {
+	if err := c.call("commit", req, res); err != nil {
 		return nil, err
 	}
 	if len(autoId) != len(res.MutationResult.InsertAutoIdKey) {
@@ -384,5 +384,5 @@ func DeleteMulti(c *Client, keys []*Key) error {
 	}
 
 	resp := &pb.CommitResponse{}
-	return c.call("Commit", req, resp)
+	return c.call("commit", req, resp)
 }

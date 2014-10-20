@@ -406,7 +406,7 @@ func (q *Query) Count(c *Client) (int, error) {
 		return 0, err
 	}
 	res := &pb.RunQueryResponse{}
-	if err := c.call("RunQuery", req, res); err != nil {
+	if err := c.call("runQuery", req, res); err != nil {
 		return 0, err
 	}
 
@@ -467,7 +467,7 @@ func callNext(c *Client, req *pb.RunQueryRequest, res *pb.RunQueryResponse, offs
 	}
 
 	res.Reset()
-	return c.call("RunQuery", req, res)
+	return c.call("runQuery", req, res)
 }
 
 // GetAll runs the query in the given context and returns all keys that match
@@ -566,7 +566,7 @@ func (q *Query) Run(c *Client) *Iterator {
 		t.err = err
 		return t
 	}
-	if err := c.call("RunQuery", &t.req, &t.res); err != nil {
+	if err := c.call("runQuery", &t.req, &t.res); err != nil {
 		t.err = err
 		return t
 	}
