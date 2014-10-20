@@ -180,6 +180,8 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 	}
 
 	indexedProps := 0
+	indexingAllowed := true
+
 	for _, p := range props {
 		x := &pb.Property{
 			Name:  proto.String(p.Name),
@@ -192,6 +194,9 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 			x.Value.BooleanValue = proto.Bool(v)
 		case string:
 			x.Value.StringValue = proto.String(v)
+			if len(v) > 500 {
+				indexingAllowed = false
+			}
 		case float64:
 			x.Value.DoubleValue = proto.Float64(v)
 		case *Key:
@@ -205,8 +210,8 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 			x.Value.TimestampMicrosecondsValue = proto.Int64(toUnixMicro(v))
 		case []byte:
 			x.Value.BlobValue = v
-			if !p.NoIndex {
-				return nil, fmt.Errorf("datastore: cannot index a []byte valued Property with Name %q", p.Name)
+			if len(v) > 500 {
+				indexingAllowed = false
 			}
 		default:
 			if p.Value != nil {
@@ -223,7 +228,11 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 			}
 		}
 
-		x.Value.Indexed = proto.Bool(!p.NoIndex)
+		if indexingAllowed {
+			x.Value.Indexed = proto.Bool(!p.NoIndex)
+		} else if !p.NoIndex {
+			return nil, fmt.Errorf("datastore: cannot index a Property with Name %q", p.Name)
+		}
 
 		if indexedProps > maxIndexedProperties {
 			return nil, errors.New("datastore: too many indexed properties")
