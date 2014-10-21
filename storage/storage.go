@@ -163,11 +163,11 @@ func Copy(ctx context.Context, bucket, name string, dest *Object) (*Object, erro
 func NewReader(ctx context.Context, bucket, name string) (io.ReadCloser, error) {
 	c := ctx.Value(internal.Key(0)).(map[string]interface{})["http_client"].(*http.Client)
 	resp, err := c.Get(fmt.Sprintf(templURLMedia, bucket, name))
-	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
-		return nil, ErrObjectNotExists
-	}
 	if err != nil {
 		return nil, err
+	}
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, ErrObjectNotExists
 	}
 	return resp.Body, nil
 }
