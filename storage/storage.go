@@ -210,7 +210,7 @@ func (b *BucketClient) Copy(name string, dest *Object) (*Object, error) {
 // NewReader creates a new io.ReadCloser to read the contents
 // of the object.
 func (b *BucketClient) NewReader(name string) (io.ReadCloser, error) {
-	resp, err := b.conn.c.Get(fmt.Sprintf(templUrlMedia, b.name, name))
+	resp, err := b.conn.c.Get(fmt.Sprintf(templURLMedia, b.name, name))
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExists
 	}
