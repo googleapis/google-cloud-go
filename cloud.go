@@ -44,6 +44,7 @@ func WithContext(parent context.Context, projID string, c *http.Client) context.
 	vals := make(map[string]interface{})
 	vals["project_id"] = projID
 	vals["http_client"] = c
+	// TODO(jbd): Lazily initiate the service objects.
 	vals["pubsub_service"], _ = pubsub.New(c)
 	vals["storage_service"], _ = storage.New(c)
 	return context.WithValue(parent, internal.Key(0), vals)
