@@ -155,6 +155,9 @@ func pull(ctx context.Context, sub string, retImmediately bool) (*Message, error
 	if err != nil {
 		return nil, err
 	}
+	if resp.PubsubEvent.Message == nil {
+		return nil, errors.New("No message available")
+	}
 	data, err := base64.StdEncoding.DecodeString(resp.PubsubEvent.Message.Data)
 	if err != nil {
 		return nil, err
