@@ -46,7 +46,7 @@ const (
 )
 
 const (
-	templUrlMedia = "https://storage.googleapis.com/%s/%s"
+	templURLMedia = "https://storage.googleapis.com/%s/%s"
 )
 
 type conn struct {
