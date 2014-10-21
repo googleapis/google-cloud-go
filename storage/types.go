@@ -18,6 +18,7 @@ import (
 	"io"
 	"time"
 
+	"code.google.com/p/go.net/context"
 	raw "code.google.com/p/google-api-go-client/storage/v1"
 )
 
@@ -279,16 +280,16 @@ func (c *contentTyper) ContentType() string {
 // the file that is specified by info.Bucket and info.Name.
 // Metadata changes are also reflected on the remote object
 // entity, read-only fields are ignored during the write operation.
-func newObjectWriter(conn *conn, info *Object) *ObjectWriter {
+func newObjectWriter(ctx context.Context, info *Object) *ObjectWriter {
 	w := &ObjectWriter{
-		conn: conn,
+		ctx:  ctx,
 		done: make(chan bool),
 	}
 	pr, pw := io.Pipe()
 	w.rc = &contentTyper{pr, info.ContentType}
 	w.pw = pw
 	go func() {
-		resp, err := conn.s.Objects.Insert(
+		resp, err := rawService(ctx).Objects.Insert(
 			info.Bucket, info.toRawObject()).Media(w.rc).Do()
 		w.err = err
 		if err == nil {
@@ -302,7 +303,7 @@ func newObjectWriter(conn *conn, info *Object) *ObjectWriter {
 // ObjectWriter is an io.WriteCloser that opens a connection
 // to update the metadata and file contents of a GCS object.
 type ObjectWriter struct {
-	conn *conn
+	ctx context.Context
 
 	rc io.ReadCloser
 	pw *io.PipeWriter

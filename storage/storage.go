@@ -21,9 +21,11 @@ import (
 	"io"
 	"net/http"
 
+	"google.golang.org/cloud/internal"
+
+	"code.google.com/p/go.net/context"
 	"code.google.com/p/google-api-go-client/googleapi"
 	raw "code.google.com/p/google-api-go-client/storage/v1"
-	"google.golang.org/cloud/internal"
 )
 
 var (
@@ -49,52 +51,6 @@ const (
 	templURLMedia = "https://storage.googleapis.com/%s/%s"
 )
 
-type conn struct {
-	c *http.Client
-	s *raw.Service
-}
-
-// BucketClient is a client to perform object operations on.
-type BucketClient struct {
-	name string
-	conn *conn
-}
-
-// String returns a string representation of the bucket client.
-// E.g. <bucket: my-project-bucket>
-func (b *BucketClient) String() string {
-	return fmt.Sprintf("<bucket: %v>", b.name)
-}
-
-// Client represents a Google Cloud Storage client.
-type Client struct {
-	projID string
-	conn   *conn
-}
-
-// New returns a new Google Cloud Storage client. The provided
-// RoundTripper should be authorized and authenticated to make
-// calls to Google Cloud Storage API.
-// You can obtain the project ID from the Google Developers Console,
-// https://console.developers.google.com.
-func New(projID string, tr http.RoundTripper) *Client {
-	return NewWithClient(projID, &http.Client{Transport: tr})
-}
-
-// NewWithClient returns a new Google Cloud Storage client that
-// uses the provided http.Client. Provided http.Client is responsible
-// to authorize and authenticate the requests made to the
-// Google Cloud Storage API.
-// It mutates the client's original Transport to append the cloud
-// package's user-agent to the outgoing requests.
-// You can obtain the project ID from the Google Developers Console,
-// https://console.developers.google.com.
-func NewWithClient(projID string, c *http.Client) *Client {
-	c.Transport = &internal.UATransport{Base: c.Transport}
-	s, _ := raw.New(c)
-	return &Client{projID: projID, conn: &conn{s: s, c: c}}
-}
-
 // TODO(jbd): Add storage.buckets.list.
 // TODO(jbd): Add storage.buckets.insert.
 // TODO(jbd): Add storage.buckets.update.
@@ -102,9 +58,9 @@ func NewWithClient(projID string, c *http.Client) *Client {
 
 // TODO(jbd): Add storage.objects.watch.
 
-// Bucket returns the metadata for the specified bucket.
-func (c *Client) Bucket(name string) (*Bucket, error) {
-	resp, err := c.conn.s.Buckets.Get(name).Do()
+// BucketInfo returns the metadata for the specified bucket.
+func BucketInfo(ctx context.Context, name string) (*Bucket, error) {
+	resp, err := rawService(ctx).Buckets.Get(name).Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrBucketNotExists
 	}
@@ -114,15 +70,10 @@ func (c *Client) Bucket(name string) (*Bucket, error) {
 	return newBucket(resp), nil
 }
 
-// BucketClient returns a bucket client to perform object operations on.
-func (c *Client) BucketClient(bucketname string) *BucketClient {
-	return &BucketClient{name: bucketname, conn: c.conn}
-}
-
 // List lists objects from the bucket. You can specify a query
 // to filter the results. If q is nil, no filtering is applied.
-func (b *BucketClient) List(q *Query) (*Objects, error) {
-	c := b.conn.s.Objects.List(b.name)
+func List(ctx context.Context, bucket string, q *Query) (*Objects, error) {
+	c := rawService(ctx).Objects.List(bucket)
 	if q != nil {
 		c.Delimiter(q.Delimiter)
 		c.Prefix(q.Prefix)
@@ -160,8 +111,8 @@ func (b *BucketClient) List(q *Query) (*Objects, error) {
 }
 
 // Stat returns meta information about the specified object.
-func (b *BucketClient) Stat(name string) (*Object, error) {
-	o, err := b.conn.s.Objects.Get(b.name, name).Do()
+func Stat(ctx context.Context, bucket, name string) (*Object, error) {
+	o, err := rawService(ctx).Objects.Get(bucket, name).Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExists
 	}
@@ -172,8 +123,8 @@ func (b *BucketClient) Stat(name string) (*Object, error) {
 }
 
 // Put inserts/updates an object with the provided meta information.
-func (b *BucketClient) Put(name string, info *Object) (*Object, error) {
-	o, err := b.conn.s.Objects.Insert(b.name, info.toRawObject()).Do()
+func Put(ctx context.Context, bucket, name string, info *Object) (*Object, error) {
+	o, err := rawService(ctx).Objects.Insert(bucket, info.toRawObject()).Do()
 	if err != nil {
 		return nil, err
 	}
@@ -181,26 +132,26 @@ func (b *BucketClient) Put(name string, info *Object) (*Object, error) {
 }
 
 // Delete deletes the specified object.
-func (b *BucketClient) Delete(name string) error {
-	return b.conn.s.Objects.Delete(b.name, name).Do()
+func Delete(ctx context.Context, bucket, name string) error {
+	return rawService(ctx).Objects.Delete(bucket, name).Do()
 }
 
 // Copy copies the source object to the destination with the new
 // meta information provided.
 // The destination object is inserted into the source bucket
 // if the destination object doesn't specify another bucket name.
-func (b *BucketClient) Copy(name string, dest *Object) (*Object, error) {
+func Copy(ctx context.Context, bucket, name string, dest *Object) (*Object, error) {
 	if dest.Name == "" {
 		return nil, errors.New("storage: missing dest name")
 	}
 	if dest.Bucket == "" {
 		// Make a copy of the dest object instead of mutating it.
 		dest2 := *dest
-		dest2.Bucket = b.name
+		dest2.Bucket = bucket
 		dest = &dest2
 	}
-	o, err := b.conn.s.Objects.Copy(
-		b.name, name, dest.Bucket, dest.Name, dest.toRawObject()).Do()
+	o, err := rawService(ctx).Objects.Copy(
+		bucket, name, dest.Bucket, dest.Name, dest.toRawObject()).Do()
 	if err != nil {
 		return nil, err
 	}
@@ -209,8 +160,9 @@ func (b *BucketClient) Copy(name string, dest *Object) (*Object, error) {
 
 // NewReader creates a new io.ReadCloser to read the contents
 // of the object.
-func (b *BucketClient) NewReader(name string) (io.ReadCloser, error) {
-	resp, err := b.conn.c.Get(fmt.Sprintf(templURLMedia, b.name, name))
+func NewReader(ctx context.Context, bucket, name string) (io.ReadCloser, error) {
+	c := ctx.Value(internal.Key(0)).(map[string]interface{})["http_client"].(*http.Client)
+	resp, err := c.Get(fmt.Sprintf(templURLMedia, bucket, name))
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExists
 	}
@@ -225,12 +177,20 @@ func (b *BucketClient) NewReader(name string) (io.ReadCloser, error) {
 // If such object doesn't exist, it creates one. If info is not nil,
 // write operation also modifies the meta information of the object.
 // All read-only fields are ignored during metadata updates.
-func (b *BucketClient) NewWriter(name string, info *Object) *ObjectWriter {
+func NewWriter(ctx context.Context, bucket, name string, info *Object) *ObjectWriter {
 	i := Object{}
 	if info != nil {
 		i = *info
 	}
-	i.Bucket = b.name
+	i.Bucket = bucket
 	i.Name = name
-	return newObjectWriter(b.conn, &i)
+	return newObjectWriter(ctx, &i)
+}
+
+func projID(ctx context.Context) string {
+	return ctx.Value(internal.Key(0)).(map[string]interface{})["project_id"].(string)
+}
+
+func rawService(ctx context.Context) *raw.Service {
+	return ctx.Value(internal.Key(0)).(map[string]interface{})["storage_service"].(*raw.Service)
 }

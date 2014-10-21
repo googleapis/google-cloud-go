@@ -23,6 +23,7 @@ import (
 
 	"code.google.com/p/go.net/context"
 	pubsub "code.google.com/p/google-api-go-client/pubsub/v1beta1"
+	storage "code.google.com/p/google-api-go-client/storage/v1"
 )
 
 // NewContext returns a new context that uses the provided http.Client.
@@ -42,6 +43,8 @@ func WithContext(parent context.Context, projID string, c *http.Client) context.
 	c.Transport = &internal.UATransport{Base: c.Transport}
 	vals := make(map[string]interface{})
 	vals["project_id"] = projID
+	vals["http_client"] = c
 	vals["pubsub_service"], _ = pubsub.New(c)
+	vals["storage_service"], _ = storage.New(c)
 	return context.WithValue(parent, internal.Key(0), vals)
 }
