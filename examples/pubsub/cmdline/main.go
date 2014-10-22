@@ -44,15 +44,13 @@ var (
 
 const (
 	usage = `Available arguments are:
-    list_topics
     create_topic TOPIC
     delete_topic TOPIC
-    list_subscriptions
     create_subscription SUBSCRIPTION LINKED_TOPIC
     delete_subscription SUBSCRIPTION
     publish TOPIC MESSAGE
-    pull_messages SUBSCRIPTION workers
-    publish_messages TOPIC workers
+    pull_messages SUBSCRIPTION numworkers
+    publish_messages TOPIC numworkers
 `
 	tick               = 1 * time.Second
 	googOAuth2Endpoint = "https://accounts.google.com/o/oauth2/token"
