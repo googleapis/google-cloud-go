@@ -99,6 +99,9 @@ type Object struct {
 	// ContentType is the MIME type of the object's content.
 	ContentType string `json:"contentType,omitempty"`
 
+	// ContentLanguage is the content language of the object's content.
+	ContentLanguage string `json:"contentLanguage,omitempty"`
+
 	// ACL is the list of access control rules for the object.
 	ACL []*ACLRule `json:"acl,omitempty"`
 
@@ -144,15 +147,18 @@ type Object struct {
 	MetaGeneration int64 `json:"metageneration,omitempty"`
 
 	// StorageClass is the storage class of the object.
+	// Read-only.
 	StorageClass string `json:"storageClass,omitempty"`
 
 	// Deleted is the deletion time of the object (or the zero-value time).
 	// This will be non-zero if and only if this version of the object has been deleted.
+	// Read-only.
 	Deleted time.Time `json:"timeDeleted,omitempty"`
 
 	// Updated is the creation or modification time of the object.
 	// For buckets with versioning enabled, changing an object's
 	// metadata does not change this property.
+	// Read-only.
 	Updated time.Time `json:"updated,omitempty"`
 }
 
@@ -168,8 +174,9 @@ func (o *Object) toRawObject() *raw.Object {
 		Bucket:          o.Bucket,
 		Name:            o.Name,
 		ContentType:     o.ContentType,
-		Acl:             acl,
 		ContentEncoding: o.ContentEncoding,
+		ContentLanguage: o.ContentLanguage,
+		Acl:             acl,
 		Metadata:        o.Metadata,
 	}
 }
@@ -199,6 +206,7 @@ func newObject(o *raw.Object) *Object {
 		Bucket:          o.Bucket,
 		Name:            o.Name,
 		ContentType:     o.ContentType,
+		ContentLanguage: o.ContentLanguage,
 		ACL:             acl,
 		Owner:           &Owner{Entity: o.Owner.Entity},
 		ContentEncoding: o.ContentEncoding,
