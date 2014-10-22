@@ -226,6 +226,7 @@ func (p *puller) pullLoop() {
 		} else {
 			fmt.Printf("Got a message: %s\n", msg.Data)
 		}
+		go p.ack(msg.AckID)
 	}
 }
 
