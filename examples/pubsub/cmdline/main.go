@@ -17,40 +17,38 @@
 package main
 
 import (
-	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"code.google.com/p/go.net/context"
 
-	"github.com/golang/oauth2"
 	"github.com/golang/oauth2/google"
 	"google.golang.org/cloud"
+	"google.golang.org/cloud/compute/metadata"
 	"google.golang.org/cloud/pubsub"
 )
 
 var (
 	jsonFile  = flag.String("j", "", "Secrets json file of your service account, not needed if you run it on Compute Engine instances")
-	reportMPS = flag.Bool("report_mps", false, "Whether or not to report msgs per seconds")
+	projID    = flag.String("p", "", "ID for your cloud project.")
+	reportMPS = flag.Bool("report_mps", false, "Reports the incoming/outgoing message rate in msg/sec if set.")
 )
 
 const (
 	usage = `Available arguments are:
-    create_topic TOPIC
-    delete_topic TOPIC
-    create_subscription SUBSCRIPTION LINKED_TOPIC
-    delete_subscription SUBSCRIPTION
-    publish TOPIC MESSAGE
-    pull_messages SUBSCRIPTION numworkers
-    publish_messages TOPIC numworkers
+    create_topic <name>
+    delete_topic <name>
+    create_subscription <name> <linked_topic>
+    delete_subscription <name>
+    publish <topic> <message>
+    pull_messages <subscription> <numworkers>
+    publish_messages <topic> <numworkers>
 `
 	tick               = 1 * time.Second
 	googOAuth2Endpoint = "https://accounts.google.com/o/oauth2/token"
@@ -88,61 +86,29 @@ type jwtConfig struct {
 // with a jwt service account when jsonFile flag is specified,
 // otherwise by obtaining the GCE service account's access token and
 // project ID from the metadata server.
-func clientAndId(jsonFile string) (*http.Client, string) {
+func clientAndId(jsonFile string) (*http.Client, string, error) {
 	if jsonFile != "" {
-		file, err := ioutil.ReadFile(jsonFile)
+		conf, err := google.NewServiceAccountJSONConfig(
+			jsonFile, pubsub.ScopePubSub)
 		if err != nil {
-			log.Fatalf("Can not read file %s", jsonFile)
-		}
-		var config jwtConfig
-		if err := json.Unmarshal(file, &config); err != nil {
-			log.Fatalf("Can not parse the json file: %s, %v", jsonFile, err)
-		}
-		projectID := strings.SplitN(config.ClientId, "-", 2)[0]
-		options := &oauth2.JWTOptions{
-			Email:      config.ClientEmail,
-			PrivateKey: []byte(config.PrivateKey),
-			Scopes:     []string{pubsub.ScopePubSub},
-		}
-		conf, err := oauth2.NewJWTConfig(options, googOAuth2Endpoint)
-		if err != nil {
-			log.Fatalf("NewJWTConfig failed, %v", err)
+			return nil, "", fmt.Errorf(
+				"NewServiceAccountJSONConfig failed, %v", err)
 		}
 		client := &http.Client{Transport: conf.NewTransport()}
-		return client, projectID
-	} else {
+		return client, *projID, nil
+	} else if metadata.OnGCE() {
 		gceConfig := google.NewComputeEngineConfig("")
 		client := &http.Client{Transport: gceConfig.NewTransport()}
-		projectID, err := getProjectID()
-		if err != nil {
-			log.Fatalf("Failed to get the project id: %v", err)
+		if *projID == "" {
+			projectID, err := metadata.ProjectID()
+			if err != nil {
+				return nil, "", fmt.Errorf("ProjectID failed, %v", err)
+			}
+			return client, projectID, nil
 		}
-		return client, projectID
+		return client, *projID, nil
 	}
-}
-
-// getProjectID fetches the project id from GCE metadata server.
-func getProjectID() (string, error) {
-	projectIDURL := &url.URL{
-		Scheme: "http",
-		Host:   metadataServer,
-		Path:   projectIDPath,
-	}
-	req, err := http.NewRequest("GET", projectIDURL.String(), nil)
-	if err != nil {
-		return "", err
-	}
-	req.Header.Add("Metadata-Flavor", "Google")
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-	return string(body), nil
+	return nil, "", errors.New("Could not create an authenticated client.")
 }
 
 func listTopics(ctx context.Context, argv []string) {
@@ -208,14 +174,12 @@ func publish(ctx context.Context, argv []string) {
 type puller struct {
 	lastC  uint64
 	c      uint64
-	ctx    context.Context
-	sub    string
 	result chan struct{}
 }
 
-func (p *puller) pullLoop() {
+func (p *puller) pullLoop(ctx context.Context, sub string) {
 	for {
-		msg, err := pubsub.PullWait(p.ctx, p.sub)
+		msg, err := pubsub.PullWait(ctx, sub)
 		if err != nil {
 			log.Printf("PullWait failed, %v\n", err)
 			time.Sleep(5 * time.Second)
@@ -226,12 +190,12 @@ func (p *puller) pullLoop() {
 		} else {
 			fmt.Printf("Got a message: %s\n", msg.Data)
 		}
-		go p.ack(msg.AckID)
+		go p.ack(ctx, sub, msg.AckID)
 	}
 }
 
-func (p *puller) ack(ackID string) {
-	err := pubsub.Ack(p.ctx, p.sub, ackID)
+func (p *puller) ack(ctx context.Context, sub string, ackID string) {
+	err := pubsub.Ack(ctx, sub, ackID)
 	if err != nil {
 		log.Printf("Ack failed, %v\n", err)
 	}
@@ -262,13 +226,9 @@ func pullMessages(ctx context.Context, argv []string) {
 	if err != nil {
 		log.Fatalf("Atoi failed, %v", err)
 	}
-	p := puller{
-		ctx:    ctx,
-		sub:    sub,
-		result: make(chan struct{}, 1024),
-	}
+	p := puller{result: make(chan struct{}, 1024)}
 	for i := 0; i < int(workers); i++ {
-		go p.pullLoop()
+		go p.pullLoop(ctx, sub)
 	}
 	if *reportMPS {
 		p.report()
@@ -280,16 +240,16 @@ func pullMessages(ctx context.Context, argv []string) {
 type publisher struct {
 	lastC  uint64
 	c      uint64
-	ctx    context.Context
-	topic  string
 	result chan struct{}
 }
 
-func (p *publisher) publishLoop(workerid int) {
+func (p *publisher) publishLoop(
+	ctx context.Context, topic string, workerid int,
+) {
 	var i uint64
 	for {
 		message := fmt.Sprintf("Worker: %d, Message: %d", workerid, i)
-		err := pubsub.Publish(p.ctx, p.topic, []byte(message), nil)
+		err := pubsub.Publish(ctx, topic, []byte(message), nil)
 		if err != nil {
 			log.Printf("Publish failed, %v\n", err)
 		} else {
@@ -327,12 +287,10 @@ func publishMessages(ctx context.Context, argv []string) {
 		log.Fatalf("Atoi failed, %v", err)
 	}
 	p := publisher{
-		ctx:    ctx,
-		topic:  topic,
 		result: make(chan struct{}, 1024),
 	}
 	for i := 0; i < int(workers); i++ {
-		go p.publishLoop(i)
+		go p.publishLoop(ctx, topic, i)
 	}
 	if *reportMPS {
 		p.report()
@@ -357,15 +315,15 @@ func publishMessages(ctx context.Context, argv []string) {
 //
 // It has the following subcommands:
 //
-// create_topic TOPIC
-// delete_topic TOPIC
-// create_subscription SUBSCRIPTION LINKED_TOPIC
-// delete_subscription SUBSCRIPTION
-// publish TOPIC MESSAGE
-// pull_messages SUBSCRIPTION workers
-// publish_messages TOPIC workers
+//  create_topic <name>
+//  delete_topic <name>
+//  create_subscription <name> <linked_topic>
+//  delete_subscription <name>
+//  publish <topic> <message>
+//  pull_messages <subscription> <numworkers>
+//  publish_messages <topic> <numworkers>
 //
-// You can choose any names for TOPIC and SUBSCRIPTION as long as they
+// You can choose any names for topic and subscription as long as they
 // follow the naming rule described at:
 // https://cloud.google.com/pubsub/overview#names
 //
@@ -386,7 +344,10 @@ func main() {
 	flag.Parse()
 	argv := flag.Args()
 	checkArgs(argv, 1)
-	client, projectID := clientAndId(*jsonFile)
+	client, projectID, err := clientAndId(*jsonFile)
+	if err != nil {
+		log.Fatalf("clientAndId failed, %v", err)
+	}
 	ctx := cloud.NewContext(projectID, client)
 	m := map[string]func(ctx context.Context, argv []string){
 		"create_topic":        createTopic,
