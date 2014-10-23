@@ -111,7 +111,7 @@ func TestObjectPublicACL(t *testing.T) {
 	contents := randomContents()
 	name := objects[1]
 	wc := NewWriter(ctx, bucket, name, &Object{
-		ACL: []*ACLRule{&ACLRule{"allUsers", RoleReader}},
+		ACL: []ACLRule{ACLRule{"allUsers", RoleReader}},
 	})
 	_, err := wc.Write(contents)
 	if err != nil {
