@@ -50,10 +50,7 @@ const (
     pull_messages <subscription> <numworkers>
     publish_messages <topic> <numworkers>
 `
-	tick               = 1 * time.Second
-	googOAuth2Endpoint = "https://accounts.google.com/o/oauth2/token"
-	metadataServer     = "metadata" // host name of the GCE metadata server
-	projectIDPath      = "/computeMetadata/v1/project/project-id"
+	tick = 1 * time.Second
 )
 
 func usageAndExit(msg string) {
