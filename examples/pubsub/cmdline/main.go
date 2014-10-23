@@ -35,8 +35,8 @@ import (
 )
 
 var (
-	jsonFile  = flag.String("j", "", "A path of your JSON key file for your service account downloaded from Google Developer Console, not needed if you run it on Compute Engine instances")
-	projID    = flag.String("p", "", "ID for your cloud project.")
+	jsonFile  = flag.String("j", "", "A path to your JSON key file for your service account downloaded from Google Developer Console, not needed if you run it on Compute Engine instances.")
+	projID    = flag.String("p", "", "The ID of your Google Cloud project.")
 	reportMPS = flag.Bool("report_mps", false, "Reports the incoming/outgoing message rate in msg/sec if set.")
 )
 
@@ -68,33 +68,32 @@ func checkArgs(argv []string, min int) {
 	}
 }
 
-// authClientAndProjID creates http.Client and determines project id
-// to use, with a jwt service account when jsonFile flag is specified,
-// otherwise by obtaining the GCE service account's access token and
-// project ID from the metadata server.
-func authClientAndProjID(jsonFile string) (*http.Client, string, error) {
+// newClient creates http.Client with a jwt service account when
+// jsonFile flag is specified, otherwise by obtaining the GCE service
+// account's access token.
+func newClient(jsonFile string) (*http.Client, error) {
 	if jsonFile != "" {
 		conf, err := google.NewServiceAccountJSONConfig(
 			jsonFile, pubsub.ScopePubSub)
 		if err != nil {
-			return nil, "", fmt.Errorf(
+			return nil, fmt.Errorf(
 				"NewServiceAccountJSONConfig failed, %v", err)
 		}
 		client := &http.Client{Transport: conf.NewTransport()}
-		return client, *projID, nil
+		return client, nil
 	} else if metadata.OnGCE() {
 		gceConfig := google.NewComputeEngineConfig("")
 		client := &http.Client{Transport: gceConfig.NewTransport()}
 		if *projID == "" {
 			projectID, err := metadata.ProjectID()
 			if err != nil {
-				return nil, "", fmt.Errorf("ProjectID failed, %v", err)
+				return nil, fmt.Errorf("ProjectID failed, %v", err)
 			}
-			return client, projectID, nil
+			*projID = projectID
 		}
-		return client, *projID, nil
+		return client, nil
 	}
-	return nil, "", errors.New("Could not create an authenticated client.")
+	return nil, errors.New("Could not create an authenticated client.")
 }
 
 func listTopics(ctx context.Context, argv []string) {
@@ -307,11 +306,14 @@ func main() {
 	flag.Parse()
 	argv := flag.Args()
 	checkArgs(argv, 1)
-	client, projectID, err := authClientAndProjID(*jsonFile)
+	client, err := newClient(*jsonFile)
 	if err != nil {
 		log.Fatalf("clientAndId failed, %v", err)
 	}
-	ctx := cloud.NewContext(projectID, client)
+	if *projID == "" {
+		usageAndExit("Please specify Project ID.")
+	}
+	ctx := cloud.NewContext(*projID, client)
 	m := map[string]func(ctx context.Context, argv []string){
 		"create_topic":        createTopic,
 		"delete_topic":        deleteTopic,
