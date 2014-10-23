@@ -34,11 +34,11 @@ type Bucket struct {
 	Name string `json:"name,omitempty"`
 
 	// ACL is the list of access control rules on the bucket.
-	ACL []*ACLRule `json:"acl,omitempty"`
+	ACL []ACLRule `json:"acl,omitempty"`
 
 	// DefaultObjectACL is the list of access controls to
 	// apply to new objects when no object ACL is provided.
-	DefaultObjectACL []*ACLRule `json:"defaultObjectAcl,omitempty"`
+	DefaultObjectACL []ACLRule `json:"defaultObjectAcl,omitempty"`
 
 	// Location is the location of the bucket. It defaults to "US".
 	Location string `json:"location,omitempty"`
@@ -69,17 +69,17 @@ func newBucket(b *raw.Bucket) *Bucket {
 		StorageClass:   b.StorageClass,
 		Created:        convertTime(b.TimeCreated),
 	}
-	acl := make([]*ACLRule, len(b.Acl))
+	acl := make([]ACLRule, len(b.Acl))
 	for i, rule := range b.Acl {
-		acl[i] = &ACLRule{
+		acl[i] = ACLRule{
 			Entity: rule.Entity,
 			Role:   ACLRole(rule.Role),
 		}
 	}
 	bucket.ACL = acl
-	objACL := make([]*ACLRule, len(b.DefaultObjectAcl))
+	objACL := make([]ACLRule, len(b.DefaultObjectAcl))
 	for i, rule := range b.DefaultObjectAcl {
-		objACL[i] = &ACLRule{
+		objACL[i] = ACLRule{
 			Entity: rule.Entity,
 			Role:   ACLRole(rule.Role),
 		}
@@ -103,12 +103,12 @@ type Object struct {
 	ContentLanguage string `json:"contentLanguage,omitempty"`
 
 	// ACL is the list of access control rules for the object.
-	ACL []*ACLRule `json:"acl,omitempty"`
+	ACL []ACLRule `json:"acl,omitempty"`
 
 	// Owner is the owner of the object. Owner is alway the original
 	// uploader of the object.
 	// Read-only.
-	Owner *Owner `json:"owner,omitempty"`
+	Owner Owner `json:"owner,omitempty"`
 
 	// Size is the length of the object's content.
 	// Read-only.
@@ -195,9 +195,9 @@ func newObject(o *raw.Object) *Object {
 	if o == nil {
 		return nil
 	}
-	acl := make([]*ACLRule, len(o.Acl))
+	acl := make([]ACLRule, len(o.Acl))
 	for i, rule := range o.Acl {
-		acl[i] = &ACLRule{
+		acl[i] = ACLRule{
 			Entity: rule.Entity,
 			Role:   ACLRole(rule.Role),
 		}
@@ -208,7 +208,7 @@ func newObject(o *raw.Object) *Object {
 		ContentType:     o.ContentType,
 		ContentLanguage: o.ContentLanguage,
 		ACL:             acl,
-		Owner:           &Owner{Entity: o.Owner.Entity},
+		Owner:           Owner{Entity: o.Owner.Entity},
 		ContentEncoding: o.ContentEncoding,
 		Size:            o.Size,
 		MD5:             []byte(o.Md5Hash),
