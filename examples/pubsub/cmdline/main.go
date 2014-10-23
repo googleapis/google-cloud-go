@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// This is a simple command line tool for Cloud Pub/Sub
+// Package main contains a simple command line tool for Cloud Pub/Sub
 // Cloud Pub/Sub docs: https://cloud.google.com/pubsub/docs
 package main
 
@@ -35,7 +35,7 @@ import (
 )
 
 var (
-	jsonFile  = flag.String("j", "", "Secrets json file of your service account, not needed if you run it on Compute Engine instances")
+	jsonFile  = flag.String("j", "", "A path of your JSON key file for your service account downloaded from Google Developer Console, not needed if you run it on Compute Engine instances")
 	projID    = flag.String("p", "", "ID for your cloud project.")
 	reportMPS = flag.Bool("report_mps", false, "Reports the incoming/outgoing message rate in msg/sec if set.")
 )
@@ -71,22 +71,11 @@ func checkArgs(argv []string, min int) {
 	}
 }
 
-// jwtConfig is for JWT json file parsing.
-type jwtConfig struct {
-	Type         string `json:"type"`
-	Scope        string `json:"scope"`
-	ProjectId    string `json:"project_id"`
-	PrivateKeyId string `json:"private_key_id"`
-	PrivateKey   string `json:"private_key" binding:"required"`
-	ClientEmail  string `json:"client_email" binding:"required"`
-	ClientId     string `json:"client_id" binding:"required"`
-}
-
-// clientAndId creates http.Client and determines project id to use,
-// with a jwt service account when jsonFile flag is specified,
+// authClientAndProjID creates http.Client and determines project id
+// to use, with a jwt service account when jsonFile flag is specified,
 // otherwise by obtaining the GCE service account's access token and
 // project ID from the metadata server.
-func clientAndId(jsonFile string) (*http.Client, string, error) {
+func authClientAndProjID(jsonFile string) (*http.Client, string, error) {
 	if jsonFile != "" {
 		conf, err := google.NewServiceAccountJSONConfig(
 			jsonFile, pubsub.ScopePubSub)
@@ -171,13 +160,39 @@ func publish(ctx context.Context, argv []string) {
 	fmt.Printf("Message '%s' published to a topic %s\n", message, topic)
 }
 
-type puller struct {
-	lastC  uint64
-	c      uint64
-	result chan struct{}
+type reporter struct {
+	reportTitle string
+	lastC       uint64
+	c           uint64
+	result      <-chan struct{}
 }
 
-func (p *puller) pullLoop(ctx context.Context, sub string) {
+func (r *reporter) report() {
+	ticker := time.NewTicker(tick)
+	defer func() {
+		ticker.Stop()
+	}()
+	for {
+		select {
+		case <-ticker.C:
+			n := r.c - r.lastC
+			r.lastC = r.c
+			mps := n / uint64(tick/time.Second)
+			log.Printf("%s ~%d msgs/s, total: %d", r.reportTitle, mps, r.c)
+		case <-r.result:
+			r.c += 1
+		}
+	}
+}
+
+func ack(ctx context.Context, sub string, ackID string) {
+	err := pubsub.Ack(ctx, sub, ackID)
+	if err != nil {
+		log.Printf("Ack failed, %v\n", err)
+	}
+}
+
+func pullLoop(ctx context.Context, sub string, result chan<- struct{}) {
 	for {
 		msg, err := pubsub.PullWait(ctx, sub)
 		if err != nil {
@@ -186,36 +201,11 @@ func (p *puller) pullLoop(ctx context.Context, sub string) {
 			continue
 		}
 		if *reportMPS {
-			p.result <- struct{}{}
+			result <- struct{}{}
 		} else {
 			fmt.Printf("Got a message: %s\n", msg.Data)
 		}
-		go p.ack(ctx, sub, msg.AckID)
-	}
-}
-
-func (p *puller) ack(ctx context.Context, sub string, ackID string) {
-	err := pubsub.Ack(ctx, sub, ackID)
-	if err != nil {
-		log.Printf("Ack failed, %v\n", err)
-	}
-}
-
-func (p *puller) report() {
-	ticker := time.NewTicker(tick)
-	defer func() {
-		ticker.Stop()
-	}()
-	for {
-		select {
-		case <-ticker.C:
-			n := p.c - p.lastC
-			p.lastC = p.c
-			mps := n / uint64(tick/time.Second)
-			log.Printf("Received ~%d msgs/s, total: %d", mps, p.c)
-		case <-p.result:
-			p.c += 1
-		}
+		go ack(ctx, sub, msg.AckID)
 	}
 }
 
@@ -226,25 +216,20 @@ func pullMessages(ctx context.Context, argv []string) {
 	if err != nil {
 		log.Fatalf("Atoi failed, %v", err)
 	}
-	p := puller{result: make(chan struct{}, 1024)}
+	result := make(chan struct{}, 1024)
 	for i := 0; i < int(workers); i++ {
-		go p.pullLoop(ctx, sub)
+		go pullLoop(ctx, sub, result)
 	}
 	if *reportMPS {
-		p.report()
+		r := reporter{reportTitle: "Received", result: result}
+		r.report()
 	} else {
 		select {}
 	}
 }
 
-type publisher struct {
-	lastC  uint64
-	c      uint64
-	result chan struct{}
-}
-
-func (p *publisher) publishLoop(
-	ctx context.Context, topic string, workerid int,
+func publishLoop(
+	ctx context.Context, topic string, workerid int, result chan<- struct{},
 ) {
 	var i uint64
 	for {
@@ -255,26 +240,8 @@ func (p *publisher) publishLoop(
 		} else {
 			i++
 			if *reportMPS {
-				p.result <- struct{}{}
+				result <- struct{}{}
 			}
-		}
-	}
-}
-
-func (p *publisher) report() {
-	ticker := time.NewTicker(tick)
-	defer func() {
-		ticker.Stop()
-	}()
-	for {
-		select {
-		case <-ticker.C:
-			n := p.c - p.lastC
-			p.lastC = p.c
-			mps := n / uint64(tick/time.Second)
-			log.Printf("Sent ~%d msg/s, total: %d", mps, p.c)
-		case <-p.result:
-			p.c += 1
 		}
 	}
 }
@@ -286,14 +253,13 @@ func publishMessages(ctx context.Context, argv []string) {
 	if err != nil {
 		log.Fatalf("Atoi failed, %v", err)
 	}
-	p := publisher{
-		result: make(chan struct{}, 1024),
-	}
+	result := make(chan struct{}, 1024)
 	for i := 0; i < int(workers); i++ {
-		go p.publishLoop(ctx, topic, i)
+		go publishLoop(ctx, topic, i, result)
 	}
 	if *reportMPS {
-		p.report()
+		r := reporter{reportTitle: "Sent", result: result}
+		r.report()
 	} else {
 		select {}
 	}
@@ -310,8 +276,8 @@ func publishMessages(ctx context.Context, argv []string) {
 // https://console.developers.google.com/
 //
 // Unless you run this sample on Compute Engine instance, please
-// create a new service account and download a json file for it at the
-// developer console at: https://console.developers.google.com/
+// create a new service account and download a JSON key file for it at
+// the developer console: https://console.developers.google.com/
 //
 // It has the following subcommands:
 //
@@ -344,7 +310,7 @@ func main() {
 	flag.Parse()
 	argv := flag.Args()
 	checkArgs(argv, 1)
-	client, projectID, err := clientAndId(*jsonFile)
+	client, projectID, err := authClientAndProjID(*jsonFile)
 	if err != nil {
 		log.Fatalf("clientAndId failed, %v", err)
 	}
