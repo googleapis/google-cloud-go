@@ -22,12 +22,14 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"net/http"
 	"strconv"
 	"time"
 
 	"google.golang.org/cloud/internal"
 
 	"code.google.com/p/go.net/context"
+	"code.google.com/p/google-api-go-client/googleapi"
 	raw "code.google.com/p/google-api-go-client/pubsub/v1beta1"
 )
 
@@ -123,7 +125,14 @@ func ModifyPushEndpoint(ctx context.Context, sub, endpoint string) error {
 
 // SubExists returns true if subscription exists.
 func SubExists(ctx context.Context, name string) (bool, error) {
-	panic("not yet implemented")
+	_, err := rawService(ctx).Subscriptions.Get(fullSubName(projID(ctx), name)).Do()
+	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // Ack acknowledges one or more Pub/Sub messages on the
@@ -156,7 +165,7 @@ func pull(ctx context.Context, sub string, retImmediately bool) (*Message, error
 		return nil, err
 	}
 	if resp.PubsubEvent.Message == nil {
-		return nil, errors.New("No message available")
+		return nil, errors.New("pubsub: no message available")
 	}
 	data, err := base64.StdEncoding.DecodeString(resp.PubsubEvent.Message.Data)
 	if err != nil {
@@ -194,7 +203,14 @@ func DeleteTopic(ctx context.Context, name string) error {
 
 // TopicExists returns true if a topic exists with the specified name.
 func TopicExists(ctx context.Context, name string) (bool, error) {
-	panic("not yet implemented")
+	_, err := rawService(ctx).Topics.Get(fullTopicName(projID(ctx), name)).Do()
+	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // Publish publishes a new message to the specified topic's subscribers.
@@ -203,10 +219,12 @@ func TopicExists(ctx context.Context, name string) (bool, error) {
 // if you provide a value of another kind.
 func Publish(ctx context.Context, topic string, data []byte, labels map[string]string) error {
 	var rawLabels []*raw.Label
-	if labels != nil {
-		rawLabels := []*raw.Label{}
+	if len(labels) > 0 {
+		rawLabels = make([]*raw.Label, len(labels))
+		i := 0
 		for k, v := range labels {
-			rawLabels = append(rawLabels, &raw.Label{Key: k, StrValue: v})
+			rawLabels[i] = &raw.Label{Key: k, StrValue: v}
+			i++
 		}
 	}
 	return rawService(ctx).Topics.Publish(&raw.PublishRequest{

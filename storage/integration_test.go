@@ -17,6 +17,7 @@
 package storage
 
 import (
+	"crypto/md5"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -27,8 +28,6 @@ import (
 
 	"github.com/golang/oauth2/google"
 	"google.golang.org/cloud"
-
-	"crypto/md5"
 
 	"code.google.com/p/go.net/context"
 )
