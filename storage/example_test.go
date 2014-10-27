@@ -55,7 +55,7 @@ func Example_listObjects() {
 		// If you are using this package on App Engine Managed VMs runtime,
 		// you can init a bucket client with your app's default bucket name.
 		// See http://godoc.org/google.golang.org/appengine/file#DefaultBucketName.
-		objects, err := storage.List(ctx, "bucketname", query)
+		objects, err := storage.ListObjects(ctx, "bucketname", query)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -115,7 +115,7 @@ func Example_touchObjects() {
 	// see the auth example how to initiate a context.
 	ctx := cloud.NewContext("project-id", &http.Client{Transport: nil})
 
-	o, err := storage.Put(ctx, "bucketname", "filename", &storage.Object{
+	o, err := storage.PutObject(ctx, "bucketname", "filename", &storage.Object{
 		ContentType: "text/plain",
 	})
 	if err != nil {
@@ -128,7 +128,7 @@ func Example_copyObjects() {
 	// see the auth example how to initiate a context.
 	ctx := cloud.NewContext("project-id", &http.Client{Transport: nil})
 
-	o, err := storage.Copy(ctx, "bucketname", "file1", &storage.Object{
+	o, err := storage.CopyObject(ctx, "bucketname", "file1", &storage.Object{
 		Name:   "file2",
 		Bucket: "yet-another-bucketname",
 	})
