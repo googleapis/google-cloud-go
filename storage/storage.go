@@ -70,9 +70,9 @@ func BucketInfo(ctx context.Context, name string) (*Bucket, error) {
 	return newBucket(resp), nil
 }
 
-// List lists objects from the bucket. You can specify a query
+// ListObjects lists objects from the bucket. You can specify a query
 // to filter the results. If q is nil, no filtering is applied.
-func List(ctx context.Context, bucket string, q *Query) (*Objects, error) {
+func ListObjects(ctx context.Context, bucket string, q *Query) (*Objects, error) {
 	c := rawService(ctx).Objects.List(bucket)
 	if q != nil {
 		c.Delimiter(q.Delimiter)
@@ -110,8 +110,8 @@ func List(ctx context.Context, bucket string, q *Query) (*Objects, error) {
 	return objects, nil
 }
 
-// Stat returns meta information about the specified object.
-func Stat(ctx context.Context, bucket, name string) (*Object, error) {
+// StatObject returns meta information about the specified object.
+func StatObject(ctx context.Context, bucket, name string) (*Object, error) {
 	o, err := rawService(ctx).Objects.Get(bucket, name).Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExists
@@ -122,8 +122,8 @@ func Stat(ctx context.Context, bucket, name string) (*Object, error) {
 	return newObject(o), nil
 }
 
-// Put inserts/updates an object with the provided meta information.
-func Put(ctx context.Context, bucket, name string, info *Object) (*Object, error) {
+// PutObject inserts/updates an object with the provided meta information.
+func PutObject(ctx context.Context, bucket, name string, info *Object) (*Object, error) {
 	o, err := rawService(ctx).Objects.Insert(bucket, info.toRawObject()).Do()
 	if err != nil {
 		return nil, err
@@ -131,16 +131,16 @@ func Put(ctx context.Context, bucket, name string, info *Object) (*Object, error
 	return newObject(o), nil
 }
 
-// Delete deletes the specified object.
-func Delete(ctx context.Context, bucket, name string) error {
+// DeleteObject deletes the specified object.
+func DeleteObject(ctx context.Context, bucket, name string) error {
 	return rawService(ctx).Objects.Delete(bucket, name).Do()
 }
 
-// Copy copies the source object to the destination with the new
+// CopyObject copies the source object to the destination with the new
 // meta information provided.
 // The destination object is inserted into the source bucket
 // if the destination object doesn't specify another bucket name.
-func Copy(ctx context.Context, bucket, name string, dest *Object) (*Object, error) {
+func CopyObject(ctx context.Context, bucket, name string, dest *Object) (*Object, error) {
 	if dest.Name == "" {
 		return nil, errors.New("storage: missing dest name")
 	}

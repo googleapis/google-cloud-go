@@ -94,22 +94,22 @@ func TestObjects(t *testing.T) {
 		t.Errorf("Object should not exist, err found to be %v", err)
 	}
 
-	// Test Stat.
-	o, err := Stat(ctx, bucket, objects[0])
+	// Test StatObject.
+	o, err := StatObject(ctx, bucket, objects[0])
 	if err != nil {
 		t.Error(err)
 	}
 	if o.Name != objects[0] {
-		t.Errorf("Stat returned object info for %v unexpectedly", o.Name)
+		t.Errorf("StatObject returned object info for %v unexpectedly", o.Name)
 	}
 
 	// Test object copy.
-	copy, err := Copy(ctx, bucket, objects[0], &Object{
+	copy, err := CopyObject(ctx, bucket, objects[0], &Object{
 		Name:        copyObj,
 		ContentType: "text/html",
 	})
 	if err != nil {
-		t.Errorf("Copy failed with %v", err)
+		t.Errorf("CopyObject failed with %v", err)
 	}
 	if copy.Name != copyObj {
 		t.Errorf("Copy object's name is %v unexpectedly", copy.Name)
@@ -137,14 +137,14 @@ func TestObjects(t *testing.T) {
 		t.Errorf("Public object's content is expected to be %s, found %s", contents[publicObj], slurp)
 	}
 
-	// Delete object.
+	// DeleteObject object.
 	// The rest of the other object will be deleted during
 	// the initial cleanup. This tests exists, so we still can cover
 	// deletion if there are no objects on the bucket to clean.
-	if err := Delete(ctx, bucket, copyObj); err != nil {
+	if err := DeleteObject(ctx, bucket, copyObj); err != nil {
 		t.Errorf("Deletion of %v failed with %v", copyObj, err)
 	}
-	_, err = Stat(ctx, bucket, copyObj)
+	_, err = StatObject(ctx, bucket, copyObj)
 	if err != ErrObjectNotExists {
 		t.Errorf("Copy is expected to be deleted, stat errored with %v", err)
 	}
@@ -216,13 +216,13 @@ func cleanup(t *testing.T, prefix string) {
 		Prefix: prefix,
 	}
 	for {
-		o, err := List(ctx, bucket, q)
+		o, err := ListObjects(ctx, bucket, q)
 		if err != nil {
 			t.Fatalf("Cleanup List failed with error: %v", err)
 		}
 		for _, obj := range o.Results {
 			t.Logf("Cleanup deletion of %v", obj.Name)
-			if err = Delete(ctx, bucket, obj.Name); err != nil {
+			if err = DeleteObject(ctx, bucket, obj.Name); err != nil {
 				t.Fatalf("Cleanup Delete for object %v failed with %v", obj.Name, err)
 			}
 		}
