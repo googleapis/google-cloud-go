@@ -170,7 +170,7 @@ func NewReader(ctx context.Context, bucket, name string) (io.ReadCloser, error) 
 		return nil, ErrObjectNotExists
 	}
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return resp.Body, fmt.Errorf("storage: can't read object %v/%v, status code: %v.", bucket, name, resp.StatusCode)
+		return resp.Body, fmt.Errorf("storage: can't read object %v/%v, status code: %v", bucket, name, resp.StatusCode)
 	}
 	return resp.Body, nil
 }

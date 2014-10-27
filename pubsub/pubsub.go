@@ -165,13 +165,12 @@ func pull(ctx context.Context, sub string, retImmediately bool) (*Message, error
 		return nil, err
 	}
 	if resp.PubsubEvent.Message == nil {
-		return nil, errors.New("pubsub: no message available")
+		return &Message{AckID: resp.AckId}, nil
 	}
 	data, err := base64.StdEncoding.DecodeString(resp.PubsubEvent.Message.Data)
 	if err != nil {
 		return nil, err
 	}
-
 	labels := make(map[string]string)
 	for _, l := range resp.PubsubEvent.Message.Label {
 		if l.StrValue != "" {

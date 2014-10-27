@@ -32,9 +32,13 @@ import (
 	"code.google.com/p/go.net/context"
 )
 
-var bucket string
-
-var objects = []string{"obj1", "obj2", "obj3", "obj4", "obj5", "obj6"}
+var (
+	bucket     string
+	contents   = make(map[string][]byte)
+	objects    = []string{"obj1", "obj2"}
+	aclObjects = []string{"acl1", "acl2"}
+	copyObj    = "copy-object"
+)
 
 const (
 	envProjID     = "GCLOUD_TESTS_GOLANG_PROJECT_ID"
@@ -42,113 +46,190 @@ const (
 	envBucket     = "GCLOUD_TESTS_GOLANG_BUCKET_NAME"
 )
 
-// TODO(jbd): Create a new bucket for each test run and delete the bucket.
-
-func TestObjectReadWrite(t *testing.T) {
+func TestObjects(t *testing.T) {
 	ctx := testContext(t)
-	contents := randomContents()
-	object := objects[0]
-	wc := NewWriter(ctx, bucket, object, nil)
-	_, err := wc.Write(contents)
-	if err != nil {
-		t.Error(err)
-	}
-	err = wc.Close()
-	if err != nil {
-		t.Error(err)
-	}
-	_, err = wc.Object()
-	rc, err := NewReader(ctx, bucket, object)
-	if err != nil {
-		t.Error(err)
-	}
-	slurp, err := ioutil.ReadAll(rc)
-	if err != nil {
-		t.Error(err)
-	}
-	if string(slurp) != string(contents) {
-		t.Errorf("read file's content is found to be '%v' unexpectedly", slurp)
-	}
-}
+	bucket = os.Getenv(envBucket)
 
-func TestObjectReadNotFound(t *testing.T) {
-	ctx := testContext(t)
+	// Cleanup.
+	cleanup(t, "obj")
+
+	// Test Writer.
+	for _, obj := range objects {
+		t.Logf("Writing %v", obj)
+		wc := NewWriter(ctx, bucket, obj, &Object{})
+		c := randomContents()
+		if _, err := wc.Write(c); err != nil {
+			t.Errorf("Write for %v failed with %v", obj, err)
+		}
+		if err := wc.Close(); err != nil {
+			t.Errorf("Close for %v failed with %v", obj, err)
+		}
+		if _, err := wc.Object(); err != nil {
+			t.Errorf("Can't create object %v, error: %v", obj, err)
+		}
+		contents[obj] = c
+	}
+
+	// Test Reader.
+	for _, obj := range objects {
+		t.Logf("Creating a reader to read %v", obj)
+		r, err := NewReader(ctx, bucket, obj)
+		if err != nil {
+			t.Errorf("Can't create a reader for %v, errored with %v", obj, err)
+		}
+		slurp, err := ioutil.ReadAll(r)
+		if err != nil {
+			t.Errorf("Can't ReadAll object %v, errored with %v", obj, err)
+		}
+		actual := string(slurp)
+		expected := string(contents[obj])
+		if actual != expected {
+			t.Errorf("Expected contents for %v is '%v', found '%v'", obj, expected, actual)
+		}
+	}
+
+	// Test NotFound.
 	_, err := NewReader(ctx, bucket, "obj-not-exists")
 	if err != ErrObjectNotExists {
-		t.Errorf("expected object not to exist, err found to be %v", err)
+		t.Errorf("Object should not exist, err found to be %v", err)
 	}
-}
 
-func TestObjectStat(t *testing.T) {
-	ctx := testContext(t)
+	// Test Stat.
 	o, err := Stat(ctx, bucket, objects[0])
 	if err != nil {
 		t.Error(err)
 	}
 	if o.Name != objects[0] {
-		t.Errorf("stat returned object info for %v unexpectedly", o.Name)
+		t.Errorf("Stat returned object info for %v unexpectedly", o.Name)
 	}
-}
 
-func TestObjectCopy(t *testing.T) {
-	ctx := testContext(t)
-	o, err := Copy(ctx, bucket, objects[0], &Object{
-		Name:        "copy-object",
+	// Test object copy.
+	copy, err := Copy(ctx, bucket, objects[0], &Object{
+		Name:        copyObj,
 		ContentType: "text/html",
 	})
 	if err != nil {
-		t.Error(err)
+		t.Errorf("Copy failed with %v", err)
 	}
-	if o.Name != "copy-object" {
-		t.Errorf("copy object's name is %v unexpectedly", o.Name)
+	if copy.Name != copyObj {
+		t.Errorf("Copy object's name is %v unexpectedly", copy.Name)
 	}
-}
-
-func TestObjectPublicACL(t *testing.T) {
-	ctx := testContext(t)
-
-	contents := randomContents()
-	name := objects[1]
-	wc := NewWriter(ctx, bucket, name, &Object{
-		ACL: []ACLRule{ACLRule{"allUsers", RoleReader}},
-	})
-	_, err := wc.Write(contents)
-	if err != nil {
-		t.Error(err)
-	}
-	err = wc.Close()
-	if err != nil {
-		t.Error(err)
-	}
-	_, err = wc.Object()
-	if err != nil {
-		t.Error(err)
+	if copy.Bucket != bucket {
+		t.Errorf("Copy object's bucket is %v unexpectedly", copy.Bucket)
 	}
 
-	ctx = cloud.NewContext(
+	// Test public ACL.
+	publicObj := objects[0]
+	if err = PutACLRule(ctx, bucket, publicObj, "allUsers", RoleReader); err != nil {
+		t.Errorf("PutACLRule failed with %v", err)
+	}
+	publicCtx := cloud.NewContext(
 		os.Getenv(envProjID), &http.Client{Transport: http.DefaultTransport})
-	r, err := NewReader(ctx, bucket, name)
+	r, err := NewReader(publicCtx, bucket, publicObj)
 	if err != nil {
 		t.Error(err)
 	}
 	slurp, err := ioutil.ReadAll(r)
 	if err != nil {
-		t.Error(err)
+		t.Errorf("ReadAll failed with %v", err)
 	}
-	if string(slurp) != string(contents) {
-		t.Errorf("public file's content is expected to be %s, found %s", contents, slurp)
+	if string(slurp) != string(contents[publicObj]) {
+		t.Errorf("Public object's content is expected to be %s, found %s", contents[publicObj], slurp)
+	}
+
+	// Delete object.
+	// The rest of the other object will be deleted during
+	// the initial cleanup. This tests exists, so we still can cover
+	// deletion if there are no objects on the bucket to clean.
+	if err := Delete(ctx, bucket, copyObj); err != nil {
+		t.Errorf("Deletion of %v failed with %v", copyObj, err)
+	}
+	_, err = Stat(ctx, bucket, copyObj)
+	if err != ErrObjectNotExists {
+		t.Errorf("Copy is expected to be deleted, stat errored with %v", err)
 	}
 }
 
-func TestObjectDelete(t *testing.T) {
+func TestACL(t *testing.T) {
 	ctx := testContext(t)
-	err := Delete(ctx, bucket, "copy-object")
-	if err != nil {
-		t.Error(err)
+	cleanup(t, "acl")
+	entity := "domain-google.com"
+	if err := PutDefaultACLRule(ctx, bucket, entity, RoleReader); err != nil {
+		t.Errorf("Can't put default ACL rule for the bucket, errored with %v", err)
 	}
-	_, err = Stat(ctx, bucket, "copy-object")
-	if err != ErrObjectNotExists {
-		t.Errorf("copy-object is expected to be deleted, stat errored with %v", err)
+	for _, obj := range aclObjects {
+		t.Logf("Writing %v", obj)
+		wc := NewWriter(ctx, bucket, obj, &Object{})
+		c := randomContents()
+		if _, err := wc.Write(c); err != nil {
+			t.Errorf("Write for %v failed with %v", obj, err)
+		}
+		if err := wc.Close(); err != nil {
+			t.Errorf("Close for %v failed with %v", obj, err)
+		}
+		if _, err := wc.Object(); err != nil {
+			t.Errorf("Can't create object %v, error: %v", obj, err)
+		}
+	}
+	name := aclObjects[0]
+	acl, err := ACL(ctx, bucket, name)
+	if err != nil {
+		t.Errorf("Can't retrieve ACL of %v", name)
+	}
+	aclFound := false
+	for _, rule := range acl {
+		if rule.Entity == entity && rule.Role == RoleReader {
+			aclFound = true
+		}
+	}
+	if !aclFound {
+		t.Error("Expected to find an ACL rule for google.com domain users, but not found")
+	}
+	if err := DeleteACLRule(ctx, bucket, name, entity); err != nil {
+		t.Errorf("Can't delete the ACL rule for the entity: %v", entity)
+	}
+
+	if err := PutBucketACLRule(ctx, bucket, "user-jbd@google.com", RoleReader); err != nil {
+		t.Errorf("Error while putting bucket ACL rule: %v", err)
+	}
+	bACL, err := BucketACL(ctx, bucket)
+	if err != nil {
+		t.Errorf("Error while getting the ACL of the bucket: %v", err)
+	}
+	bACLFound := false
+	for _, rule := range bACL {
+		if rule.Entity == "user-jbd@google.com" && rule.Role == RoleReader {
+			bACLFound = true
+		}
+	}
+	if !bACLFound {
+		t.Error("Expected to find an ACL rule for jbd@google.com user, but not found")
+	}
+	if err := DeleteBucketACLRule(ctx, bucket, "user-jbd@google.com"); err != nil {
+		t.Errorf("Error while deleting bucket ACL rule: %v", err)
+	}
+}
+
+func cleanup(t *testing.T, prefix string) {
+	ctx := testContext(t)
+	var q *Query = &Query{
+		Prefix: prefix,
+	}
+	for {
+		o, err := List(ctx, bucket, q)
+		if err != nil {
+			t.Fatalf("Cleanup List failed with error: %v", err)
+		}
+		for _, obj := range o.Results {
+			t.Logf("Cleanup deletion of %v", obj.Name)
+			if err = Delete(ctx, bucket, obj.Name); err != nil {
+				t.Fatalf("Cleanup Delete for object %v failed with %v", obj.Name, err)
+			}
+		}
+		if o.Next == nil {
+			break
+		}
+		q = o.Next
 	}
 }
 
@@ -159,7 +240,6 @@ func randomContents() []byte {
 }
 
 func testContext(t *testing.T) context.Context {
-	bucket = os.Getenv(envBucket)
 	conf, err := google.NewServiceAccountJSONConfig(
 		os.Getenv(envPrivateKey),
 		ScopeFullControl)
