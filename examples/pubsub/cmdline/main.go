@@ -73,11 +73,9 @@ func checkArgs(argv []string, min int) {
 // account's access token.
 func newClient(jsonFile string) (*http.Client, error) {
 	if jsonFile != "" {
-		conf, err := google.NewServiceAccountJSONConfig(
-			jsonFile, pubsub.ScopePubSub)
+		conf, err := google.NewServiceAccountJSONConfig(jsonFile, pubsub.ScopePubSub)
 		if err != nil {
-			return nil, fmt.Errorf(
-				"NewServiceAccountJSONConfig failed, %v", err)
+			return nil, fmt.Errorf("NewServiceAccountJSONConfig failed, %v", err)
 		}
 		client := &http.Client{Transport: conf.NewTransport()}
 		return client, nil
@@ -224,9 +222,7 @@ func pullMessages(ctx context.Context, argv []string) {
 	}
 }
 
-func publishLoop(
-	ctx context.Context, topic string, workerid int, result chan<- struct{},
-) {
+func publishLoop(ctx context.Context, topic string, workerid int, result chan<- struct{}) {
 	var i uint64
 	for {
 		message := fmt.Sprintf("Worker: %d, Message: %d", workerid, i)
