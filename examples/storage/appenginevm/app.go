@@ -166,7 +166,7 @@ func (d *demo) copyFile(fileName string) {
 			"x-goog-meta-bar-copy": "bar-copy",
 		},
 	}
-	obj, err := storage.Copy(d.ctx, d.bucket, fileName, dest)
+	obj, err := storage.CopyObject(d.ctx, d.bucket, fileName, dest)
 	if err != nil {
 		d.errorf("copyFile: unable to copy /%v/%v to bucket %q, file %q: %v", d.bucket, fileName, d.bucket, copyName, err)
 		return
@@ -198,7 +198,7 @@ func (d *demo) dumpStats(obj *storage.Object) {
 func (d *demo) statFile(fileName string) {
 	io.WriteString(d.w, "\nFile stat:\n")
 
-	obj, err := storage.Stat(d.ctx, d.bucket, fileName)
+	obj, err := storage.StatObject(d.ctx, d.bucket, fileName)
 	if err != nil {
 		d.errorf("statFile: unable to stat file from bucket %q, file %q: %v", d.bucket, fileName, err)
 		return
@@ -221,7 +221,7 @@ func (d *demo) listBucket() {
 
 	query := &storage.Query{Prefix: "foo"}
 	for query != nil {
-		objs, err := storage.List(d.ctx, d.bucket, query)
+		objs, err := storage.ListObjects(d.ctx, d.bucket, query)
 		if err != nil {
 			d.errorf("listBucket: unable to list bucket %q: %v", d.bucket, err)
 			return
@@ -237,7 +237,7 @@ func (d *demo) listBucket() {
 func (d *demo) listDir(name, indent string) {
 	query := &storage.Query{Prefix: name, Delimiter: "/"}
 	for query != nil {
-		objs, err := storage.List(d.ctx, d.bucket, query)
+		objs, err := storage.ListObjects(d.ctx, d.bucket, query)
 		if err != nil {
 			d.errorf("listBucketDirMode: unable to list bucket %q: %v", d.bucket, err)
 			return
@@ -386,7 +386,7 @@ func (d *demo) deleteFiles() {
 	io.WriteString(d.w, "\nDeleting files...\n")
 	for _, v := range d.cleanUp {
 		fmt.Fprintf(d.w, "Deleting file %v\n", v)
-		if err := storage.Delete(d.ctx, d.bucket, v); err != nil {
+		if err := storage.DeleteObject(d.ctx, d.bucket, v); err != nil {
 			d.errorf("deleteFiles: unable to delete bucket %q, file %q: %v", d.bucket, v, err)
 			return
 		}
