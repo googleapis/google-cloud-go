@@ -122,9 +122,12 @@ func StatObject(ctx context.Context, bucket, name string) (*Object, error) {
 	return newObject(o), nil
 }
 
-// PutObject inserts/updates an object with the provided meta information.
+// PutObject updates an object with the provided meta information.
 func PutObject(ctx context.Context, bucket, name string, info *Object) (*Object, error) {
-	o, err := rawService(ctx).Objects.Insert(bucket, info.toRawObject()).Do()
+	o, err := rawService(ctx).Objects.Update(bucket, name, info.toRawObject()).Do()
+	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
+		return nil, ErrObjectNotExists
+	}
 	if err != nil {
 		return nil, err
 	}

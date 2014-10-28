@@ -118,6 +118,19 @@ func TestObjects(t *testing.T) {
 		t.Errorf("Copy object's bucket is %v unexpectedly", copy.Bucket)
 	}
 
+	// Test put.
+	updated, err := PutObject(ctx, bucket, objects[0], &Object{
+		Name:        objects[0],
+		ContentType: "text/html",
+		ACL:         []ACLRule{{Entity: "domain-google.com", Role: RoleReader}},
+	})
+	if err != nil {
+		t.Errorf("PutObject failed with %v", err)
+	}
+	if want := "text/html"; updated.ContentType != want {
+		t.Errorf("updated.ContentType == %q, want %q", updated.ContentType, want)
+	}
+
 	// Test public ACL.
 	publicObj := objects[0]
 	if err = PutACLRule(ctx, bucket, publicObj, "allUsers", RoleReader); err != nil {
