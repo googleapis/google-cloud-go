@@ -84,6 +84,9 @@ func TestAll(t *testing.T) {
 	if msg.Labels["foo"] != "bar" {
 		t.Errorf("message label foo is expected to be '%s', found '%s'", labels["foo"], msg.Labels["foo"])
 	}
+	if err := Ack(ctx, subscription, msg.AckID); err != nil {
+		t.Errorf("Can't acknowledge the message (1)", err)
+	}
 	// TODO(jbd): Test PullWait with timeout case.
 
 	// Allow user to publish and pull messages with nil data.
@@ -99,6 +102,9 @@ func TestAll(t *testing.T) {
 	}
 	if msg.Data != nil {
 		t.Errorf("Message should have been nil for message, found %v", msg.Data)
+	}
+	if err := Ack(ctx, subscription, msg.AckID); err != nil {
+		t.Errorf("Can't acknowledge the message (2)", err)
 	}
 
 	err = DeleteSub(ctx, subscription)

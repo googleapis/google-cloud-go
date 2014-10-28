@@ -33,6 +33,12 @@ import (
 	raw "code.google.com/p/google-api-go-client/pubsub/v1beta1"
 )
 
+var (
+	// ErrPullTimeout is returned from PullWait if there are no messages
+	// to pull from a subscription in a reasaonable amount of time.
+	ErrPullTimeout = errors.New("pubsub: no messages, request timed out")
+)
+
 const (
 	// ScopePubSub grants permissions to view and manage Pub/Sub
 	// topics and subscriptions.
@@ -161,6 +167,9 @@ func pull(ctx context.Context, sub string, retImmediately bool) (*Message, error
 		Subscription:      fullSubName(projID(ctx), sub),
 		ReturnImmediately: retImmediately,
 	}).Do()
+	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusBadRequest {
+		return nil, ErrPullTimeout
+	}
 	if err != nil {
 		return nil, err
 	}
