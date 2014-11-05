@@ -40,7 +40,9 @@ func NewContext(projID string, c *http.Client) context.Context {
 // WithContext returns a new context in a similar way NewContext does,
 // but initiates the new context with the specified parent.
 func WithContext(parent context.Context, projID string, c *http.Client) context.Context {
-	c.Transport = &internal.UATransport{Base: c.Transport}
+	if _, ok := c.Transport.(*internal.Transport); !ok {
+		c.Transport = &internal.Transport{Base: c.Transport}
+	}
 	vals := make(map[string]interface{})
 	vals["project_id"] = projID
 	vals["http_client"] = c

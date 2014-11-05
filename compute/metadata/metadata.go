@@ -46,7 +46,7 @@ var (
 )
 
 var metaClient = &http.Client{
-	Transport: &internal.UATransport{
+	Transport: &internal.Transport{
 		Base: &http.Transport{
 			Dial: (&net.Dialer{
 				Timeout:   750 * time.Millisecond,

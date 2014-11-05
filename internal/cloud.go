@@ -28,10 +28,10 @@ type Key int
 
 const userAgent = "gcloud-golang/0.1"
 
-// UATransport is an http.RoundTripper that appends
+// Transport is an http.RoundTripper that appends
 // Google Cloud client's user-agent to the original
 // request's user-agent header.
-type UATransport struct {
+type Transport struct {
 	// Base represents the actual http.RoundTripper
 	// the requests will be delegated to.
 	Base http.RoundTripper
@@ -39,7 +39,7 @@ type UATransport struct {
 
 // RoundTrip appends a user-agent to the existing user-agent
 // header and delegates the request to the base http.RoundTripper.
-func (t *UATransport) RoundTrip(req *http.Request) (*http.Response, error) {
+func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	req = cloneRequest(req)
 	ua := req.Header.Get("User-Agent")
 	if ua == "" {
