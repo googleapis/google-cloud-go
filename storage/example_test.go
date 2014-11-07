@@ -96,6 +96,7 @@ func Example_writeObjects() {
 
 	wc := storage.NewWriter(ctx, "bucketname", "filename1", &storage.Object{
 		ContentType: "text/plain",
+		ACL:         []storage.ACLRule{storage.ACLRule{"allUsers", storage.RoleReader}}, // Shared Publicly
 	})
 	if _, err := wc.Write([]byte("hello world")); err != nil {
 		log.Fatal(err)
