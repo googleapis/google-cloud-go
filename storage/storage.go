@@ -164,7 +164,7 @@ func CopyObject(ctx context.Context, bucket, name string, dest *Object) (*Object
 // NewReader creates a new io.ReadCloser to read the contents
 // of the object.
 func NewReader(ctx context.Context, bucket, name string) (io.ReadCloser, error) {
-	c := ctx.Value(internal.Key(0)).(map[string]interface{})["http_client"].(*http.Client)
+	c := ctx.Value(internal.ContextKey("base")).(map[string]interface{})["http_client"].(*http.Client)
 	resp, err := c.Get(fmt.Sprintf(templURLMedia, bucket, name))
 	if err != nil {
 		return nil, err
@@ -193,10 +193,6 @@ func NewWriter(ctx context.Context, bucket, name string, info *Object) *ObjectWr
 	return newObjectWriter(ctx, &i)
 }
 
-func projID(ctx context.Context) string {
-	return ctx.Value(internal.Key(0)).(map[string]interface{})["project_id"].(string)
-}
-
 func rawService(ctx context.Context) *raw.Service {
-	return ctx.Value(internal.Key(0)).(map[string]interface{})["storage_service"].(*raw.Service)
+	return ctx.Value(internal.ContextKey("base")).(map[string]interface{})["storage_service"].(*raw.Service)
 }

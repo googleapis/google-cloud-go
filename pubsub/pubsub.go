@@ -83,8 +83,8 @@ type Message struct {
 // If the subscription already exists an error will be returned.
 func CreateSub(ctx context.Context, name string, topic string, deadline time.Duration, endpoint string) error {
 	sub := &raw.Subscription{
-		Topic: fullTopicName(projID(ctx), topic),
-		Name:  fullSubName(projID(ctx), name),
+		Topic: fullTopicName(internal.ProjID(ctx), topic),
+		Name:  fullSubName(internal.ProjID(ctx), name),
 	}
 	if int64(deadline) > 0 {
 		if !isSec(deadline) {
@@ -101,7 +101,7 @@ func CreateSub(ctx context.Context, name string, topic string, deadline time.Dur
 
 // DeleteSub deletes the subscription.
 func DeleteSub(ctx context.Context, name string) error {
-	return rawService(ctx).Subscriptions.Delete(fullSubName(projID(ctx), name)).Do()
+	return rawService(ctx).Subscriptions.Delete(fullSubName(internal.ProjID(ctx), name)).Do()
 }
 
 // ModifyAckDeadline modifies the acknowledgement deadline
@@ -112,7 +112,7 @@ func ModifyAckDeadline(ctx context.Context, sub string, deadline time.Duration) 
 		return errors.New("pubsub: deadline must not be specified to precision greater than one second")
 	}
 	return rawService(ctx).Subscriptions.ModifyAckDeadline(&raw.ModifyAckDeadlineRequest{
-		Subscription:       fullSubName(projID(ctx), sub),
+		Subscription:       fullSubName(internal.ProjID(ctx), sub),
 		AckDeadlineSeconds: int64(deadline),
 	}).Do()
 }
@@ -122,7 +122,7 @@ func ModifyAckDeadline(ctx context.Context, sub string, deadline time.Duration) 
 // for the specified subscription.
 func ModifyPushEndpoint(ctx context.Context, sub, endpoint string) error {
 	return rawService(ctx).Subscriptions.ModifyPushConfig(&raw.ModifyPushConfigRequest{
-		Subscription: fullSubName(projID(ctx), sub),
+		Subscription: fullSubName(internal.ProjID(ctx), sub),
 		PushConfig: &raw.PushConfig{
 			PushEndpoint: endpoint,
 		},
@@ -131,7 +131,7 @@ func ModifyPushEndpoint(ctx context.Context, sub, endpoint string) error {
 
 // SubExists returns true if subscription exists.
 func SubExists(ctx context.Context, name string) (bool, error) {
-	_, err := rawService(ctx).Subscriptions.Get(fullSubName(projID(ctx), name)).Do()
+	_, err := rawService(ctx).Subscriptions.Get(fullSubName(internal.ProjID(ctx), name)).Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return false, nil
 	}
@@ -145,7 +145,7 @@ func SubExists(ctx context.Context, name string) (bool, error) {
 // specified subscription.
 func Ack(ctx context.Context, sub string, id ...string) error {
 	return rawService(ctx).Subscriptions.Acknowledge(&raw.AcknowledgeRequest{
-		Subscription: fullSubName(projID(ctx), sub),
+		Subscription: fullSubName(internal.ProjID(ctx), sub),
 		AckId:        id,
 	}).Do()
 }
@@ -164,7 +164,7 @@ func PullWait(ctx context.Context, sub string) (*Message, error) {
 
 func pull(ctx context.Context, sub string, retImmediately bool) (*Message, error) {
 	resp, err := rawService(ctx).Subscriptions.Pull(&raw.PullRequest{
-		Subscription:      fullSubName(projID(ctx), sub),
+		Subscription:      fullSubName(internal.ProjID(ctx), sub),
 		ReturnImmediately: retImmediately,
 	}).Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusBadRequest {
@@ -199,19 +199,19 @@ func pull(ctx context.Context, sub string, retImmediately bool) (*Message, error
 // It will return an error if topic already exists.
 func CreateTopic(ctx context.Context, name string) error {
 	_, err := rawService(ctx).Topics.Create(&raw.Topic{
-		Name: fullTopicName(projID(ctx), name),
+		Name: fullTopicName(internal.ProjID(ctx), name),
 	}).Do()
 	return err
 }
 
 // DeleteTopic deletes the specified topic.
 func DeleteTopic(ctx context.Context, name string) error {
-	return rawService(ctx).Topics.Delete(fullTopicName(projID(ctx), name)).Do()
+	return rawService(ctx).Topics.Delete(fullTopicName(internal.ProjID(ctx), name)).Do()
 }
 
 // TopicExists returns true if a topic exists with the specified name.
 func TopicExists(ctx context.Context, name string) (bool, error) {
-	_, err := rawService(ctx).Topics.Get(fullTopicName(projID(ctx), name)).Do()
+	_, err := rawService(ctx).Topics.Get(fullTopicName(internal.ProjID(ctx), name)).Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return false, nil
 	}
@@ -236,7 +236,7 @@ func Publish(ctx context.Context, topic string, data []byte, labels map[string]s
 		}
 	}
 	return rawService(ctx).Topics.Publish(&raw.PublishRequest{
-		Topic: fullTopicName(projID(ctx), topic),
+		Topic: fullTopicName(internal.ProjID(ctx), topic),
 		Message: &raw.PubsubMessage{
 			Data:  base64.StdEncoding.EncodeToString(data),
 			Label: rawLabels,
@@ -260,10 +260,6 @@ func isSec(dur time.Duration) bool {
 	return dur%time.Second == 0
 }
 
-func projID(ctx context.Context) string {
-	return ctx.Value(internal.Key(0)).(map[string]interface{})["project_id"].(string)
-}
-
 func rawService(ctx context.Context) *raw.Service {
-	return ctx.Value(internal.Key(0)).(map[string]interface{})["pubsub_service"].(*raw.Service)
+	return ctx.Value(internal.ContextKey("base")).(map[string]interface{})["pubsub_service"].(*raw.Service)
 }
