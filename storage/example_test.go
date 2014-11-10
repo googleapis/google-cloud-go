@@ -20,8 +20,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/golang/oauth2"
 	"github.com/golang/oauth2/google"
-
 	"google.golang.org/cloud"
 	"google.golang.org/cloud/storage"
 )
@@ -35,14 +35,15 @@ func Example_auth() {
 	// JSON key. Read the google package examples to learn more about
 	// different authorization flows you can use.
 	// http://godoc.org/github.com/golang/oauth2/google
-	conf, err := google.NewServiceAccountJSONConfig(
-		"/path/to/json/keyfile.json",
-		storage.ScopeFullControl)
+	f, err := oauth2.New(
+		google.ServiceAccountJSONKey("/path/to/json/keyfile.json"),
+		oauth2.Scope(storage.ScopeFullControl),
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	ctx := cloud.NewContext("project-id", &http.Client{Transport: conf.NewTransport()})
+	ctx := cloud.NewContext("project-id", &http.Client{Transport: f.NewTransport()})
 	_ = ctx // Use the context (see other examples)
 }
 

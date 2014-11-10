@@ -28,6 +28,7 @@ import (
 
 	"code.google.com/p/go.net/context"
 
+	"github.com/golang/oauth2"
 	"github.com/golang/oauth2/google"
 	"google.golang.org/cloud"
 	"google.golang.org/cloud/compute/metadata"
@@ -73,15 +74,23 @@ func checkArgs(argv []string, min int) {
 // account's access token.
 func newClient(jsonFile string) (*http.Client, error) {
 	if jsonFile != "" {
-		conf, err := google.NewServiceAccountJSONConfig(jsonFile, pubsub.ScopePubSub)
+		f, err := oauth2.New(
+			google.ServiceAccountJSONKey(jsonFile),
+			oauth2.Scope(pubsub.ScopePubSub),
+		)
 		if err != nil {
-			return nil, fmt.Errorf("NewServiceAccountJSONConfig failed, %v", err)
+			return nil, err
 		}
-		client := &http.Client{Transport: conf.NewTransport()}
-		return client, nil
-	} else if metadata.OnGCE() {
-		gceConfig := google.NewComputeEngineConfig("")
-		client := &http.Client{Transport: gceConfig.NewTransport()}
+		return &http.Client{Transport: f.NewTransport()}, nil
+	}
+	if metadata.OnGCE() {
+		f, err := oauth2.New(
+			google.ComputeEngineAccount(""),
+		)
+		if err != nil {
+			return nil, err
+		}
+		client := &http.Client{Transport: f.NewTransport()}
 		if *projID == "" {
 			projectID, err := metadata.ProjectID()
 			if err != nil {
