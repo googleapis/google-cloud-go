@@ -71,6 +71,20 @@ type ErrFieldMismatch struct {
 	Reason     string
 }
 
+// ErrHTTP is returned when responds is a non-200 HTTP response.
+type ErrHTTP struct {
+	StatusCode int
+	Body       string
+	err        error
+}
+
+func (e *ErrHTTP) Error() string {
+	if e.err == nil {
+		return fmt.Sprintf("error during call, http status code: %v", e.StatusCode)
+	}
+	return e.err.Error()
+}
+
 func (e *ErrFieldMismatch) Error() string {
 	return fmt.Sprintf("datastore: cannot load field %q into a %q: %s",
 		e.FieldName, e.StructType, e.Reason)
@@ -96,32 +110,36 @@ func transaction(ctx context.Context) []byte {
 	}
 }
 
-func call(ctx context.Context, method string, req proto.Message, resp proto.Message) (err error) {
+func call(ctx context.Context, method string, req proto.Message, resp proto.Message) error {
 	payload, err := proto.Marshal(req)
 	if err != nil {
-		return
+		return err
 	}
-
-	r, err := internal.HttpClient(ctx).Post(baseUrl(ctx)+internal.ProjID(ctx)+"/"+method, "application/x-protobuf", bytes.NewBuffer(payload))
+	url := baseUrl(ctx) + internal.ProjID(ctx) + "/" + method
+	r, err := internal.HttpClient(ctx).Post(url, "application/x-protobuf", bytes.NewBuffer(payload))
 	if err != nil {
-		return
+		return err
 	}
-
 	defer r.Body.Close()
-	body, err := ioutil.ReadAll(r.Body)
+	all, err := ioutil.ReadAll(r.Body)
 	if r.StatusCode != http.StatusOK {
-		if err != nil {
-			return err
+		e := &ErrHTTP{
+			StatusCode: r.StatusCode,
 		}
-		return errors.New("datastore: error during call: " + string(body))
+		if err != nil {
+			e.err = err
+		} else {
+			e.Body = string(all)
+		}
+		return e
 	}
 	if err != nil {
 		return err
 	}
-	if err = proto.Unmarshal(body, resp); err != nil {
-		return
+	if err = proto.Unmarshal(all, resp); err != nil {
+		return err
 	}
-	return
+	return nil
 }
 
 func keyToProto(k *Key) *pb.Key {

@@ -16,6 +16,7 @@ package datastore
 
 import (
 	"errors"
+	"net/http"
 
 	"code.google.com/p/go.net/context"
 
@@ -27,26 +28,20 @@ import (
 var ErrConcurrentTransaction = errors.New("datastore: concurrent transaction")
 
 func runOnce(ctx context.Context, f func(context.Context) error) error {
-	// Begin the transaction.
 	req := &pb.BeginTransactionRequest{}
 	resp := &pb.BeginTransactionResponse{}
-
 	if err := call(ctx, "beginTransaction", req, resp); err != nil {
 		return err
 	}
-
 	subCtx := context.WithValue(ctx, ContextKey("transaction"), resp.Transaction)
 	finished := false
-
 	// Call f, rolling back the transaction if f returns a non-nil error, or panics.
 	// The panic is not recovered.
 	defer func() {
 		if finished {
 			return
 		}
-
 		finished = true
-
 		// Ignore the error return value, since we are already returning a non-nil
 		// error (or we're panicking).
 		call(subCtx, "rollback", &pb.RollbackRequest{Transaction: resp.Transaction}, &pb.RollbackResponse{})
@@ -54,10 +49,14 @@ func runOnce(ctx context.Context, f func(context.Context) error) error {
 	if err := f(subCtx); err != nil {
 		return err
 	}
-
-	// Commit the transaction.
 	finished = true
 	err := call(subCtx, "commit", &pb.CommitRequest{Transaction: resp.Transaction}, &pb.CommitResponse{})
+	if e, ok := err.(*ErrHTTP); ok && e.StatusCode == http.StatusConflict {
+		// TODO(jbd): Make sure that we explicitly handle the case where response
+		// has an HTTP 409 and the error message indicates that it's an concurrent
+		// transaction error.
+		return ErrConcurrentTransaction
+	}
 	return err
 }
 
