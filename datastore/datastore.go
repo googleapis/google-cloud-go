@@ -125,10 +125,9 @@ func call(ctx context.Context, method string, req proto.Message, resp proto.Mess
 	if r.StatusCode != http.StatusOK {
 		e := &ErrHTTP{
 			StatusCode: r.StatusCode,
+			err:        err,
 		}
-		if err != nil {
-			e.err = err
-		} else {
+		if err == nil {
 			e.Body = string(all)
 		}
 		return e
