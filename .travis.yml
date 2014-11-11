@@ -4,4 +4,7 @@ go:
   - 1.3
   - tip
 
-install: export GOPATH=$HOME/gopath && mkdir -p $HOME/gopath/src/google.golang.org && ln -s -T $HOME/gopath/src/github.com/GoogleCloudPlatform/gcloud-golang $HOME/gopath/src/google.golang.org/cloud && go get -v -t ./...
+install:
+  - export GOPATH=$HOME/gopath
+  - mkdir -p $HOME/gopath/src/google.golang.org
+  - ln -s -T $HOME/gopath/src/github.com/GoogleCloudPlatform/gcloud-golang $HOME/gopath/src/google.golang.org/cloud && go get -v -t ./...
