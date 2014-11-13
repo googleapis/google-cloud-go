@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package datastore
+package datastore // import "google.golang.org/cloud/datastore"
 
 import (
 	"bytes"
@@ -22,8 +22,8 @@ import (
 	"net/http"
 	"reflect"
 
-	"code.google.com/p/go.net/context"
 	"code.google.com/p/goprotobuf/proto"
+	"golang.org/x/net/context"
 	"google.golang.org/cloud/internal"
 	pb "google.golang.org/cloud/internal/datastore"
 )

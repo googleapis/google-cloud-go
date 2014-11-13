@@ -17,8 +17,8 @@ package storage
 import (
 	"fmt"
 
-	"code.google.com/p/go.net/context"
 	raw "code.google.com/p/google-api-go-client/storage/v1"
+	"golang.org/x/net/context"
 )
 
 // ACLRole is the the access permission for the entity.

@@ -18,8 +18,8 @@ import (
 	"io"
 	"time"
 
-	"code.google.com/p/go.net/context"
 	raw "code.google.com/p/google-api-go-client/storage/v1"
+	"golang.org/x/net/context"
 )
 
 // Owner represents the owner of a GCS object.

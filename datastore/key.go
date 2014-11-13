@@ -22,8 +22,8 @@ import (
 	"strconv"
 	"strings"
 
-	"code.google.com/p/go.net/context"
 	"code.google.com/p/goprotobuf/proto"
+	"golang.org/x/net/context"
 	"google.golang.org/cloud/internal"
 	pb "google.golang.org/cloud/internal/datastore"
 )

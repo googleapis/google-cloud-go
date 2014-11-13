@@ -23,8 +23,8 @@ import (
 	"testing"
 	"time"
 
-	"code.google.com/p/go.net/context"
 	"github.com/golang/oauth2/google"
+	"golang.org/x/net/context"
 	"google.golang.org/cloud"
 )
 

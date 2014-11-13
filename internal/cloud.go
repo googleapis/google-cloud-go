@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"code.google.com/p/go.net/context"
+	"golang.org/x/net/context"
 )
 
 // Key represents a context key. It shouldn't be used by the

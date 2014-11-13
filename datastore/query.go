@@ -22,8 +22,8 @@ import (
 	"reflect"
 	"strings"
 
-	"code.google.com/p/go.net/context"
 	"code.google.com/p/goprotobuf/proto"
+	"golang.org/x/net/context"
 	pb "google.golang.org/cloud/internal/datastore"
 )
 

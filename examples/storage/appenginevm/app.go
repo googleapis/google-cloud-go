@@ -25,7 +25,7 @@ import (
 	"net/http"
 	"strings"
 
-	"code.google.com/p/go.net/context"
+	"golang.org/x/net/context"
 
 	"github.com/golang/oauth2"
 	"github.com/golang/oauth2/google"

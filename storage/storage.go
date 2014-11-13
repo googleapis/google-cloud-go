@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // Package storage is a Google Cloud Storage client.
-package storage
+package storage // import "google.golang.org/cloud/storage"
 
 import (
 	"errors"
@@ -23,9 +23,9 @@ import (
 
 	"google.golang.org/cloud/internal"
 
-	"code.google.com/p/go.net/context"
 	"code.google.com/p/google-api-go-client/googleapi"
 	raw "code.google.com/p/google-api-go-client/storage/v1"
+	"golang.org/x/net/context"
 )
 
 var (

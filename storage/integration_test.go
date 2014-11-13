@@ -29,7 +29,7 @@ import (
 	"github.com/golang/oauth2/google"
 	"google.golang.org/cloud"
 
-	"code.google.com/p/go.net/context"
+	"golang.org/x/net/context"
 )
 
 var (

@@ -18,7 +18,7 @@ import (
 	"errors"
 	"net/http"
 
-	"code.google.com/p/go.net/context"
+	"golang.org/x/net/context"
 
 	pb "google.golang.org/cloud/internal/datastore"
 )
