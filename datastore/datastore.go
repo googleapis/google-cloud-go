@@ -414,12 +414,10 @@ func PutMulti(ctx context.Context, keys []*Key, src interface{}) ([]*Key, error)
 		if val.Kind() == reflect.Ptr && val.Elem().Kind() == reflect.Slice {
 			val = val.Elem()
 		}
-
 		p, err := saveEntity(k, val.Interface())
 		if err != nil {
 			return nil, fmt.Errorf("datastore: Error while saving %v: %v", k.String(), err)
 		}
-
 		if k.Incomplete() {
 			autoIdIndex = append(autoIdIndex, i)
 			autoId = append(autoId, p)
@@ -427,13 +425,11 @@ func PutMulti(ctx context.Context, keys []*Key, src interface{}) ([]*Key, error)
 			upsert = append(upsert, p)
 		}
 	}
-
 	req := &pb.CommitRequest{
 		Mutation: &pb.Mutation{
 			InsertAutoId: autoId,
 			Upsert:       upsert,
 		}}
-
 	t := transaction(ctx)
 	if t != nil {
 		req.Transaction = t
@@ -480,15 +476,16 @@ func Delete(ctx context.Context, key *Key) error {
 func DeleteMulti(ctx context.Context, keys []*Key) error {
 	protoKeys := make([]*pb.Key, len(keys))
 	for i, k := range keys {
+		if k.Incomplete() {
+			return fmt.Errorf("datastore: can't delete the incomplete key: %v", k)
+		}
 		protoKeys[i] = keyToProto(k)
 	}
-
 	req := &pb.CommitRequest{
 		Mutation: &pb.Mutation{
 			Delete: protoKeys,
 		},
 	}
-
 	t := transaction(ctx)
 	if t != nil {
 		req.Transaction = t
@@ -496,7 +493,6 @@ func DeleteMulti(ctx context.Context, keys []*Key) error {
 	} else {
 		req.Mode = pb.CommitRequest_NON_TRANSACTIONAL.Enum()
 	}
-
 	resp := &pb.CommitResponse{}
 	return call(ctx, "commit", req, resp)
 }

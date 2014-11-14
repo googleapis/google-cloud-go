@@ -274,7 +274,6 @@ func (q *Query) End(c Cursor) *Query {
 // toProto converts the query to a protocol buffer.
 func (q *Query) toProto(req *pb.RunQueryRequest) error {
 	dst := pb.Query{}
-
 	if q.kind == "" {
 		if len(q.filter) != 0 {
 			return errors.New("datastore: kindless query cannot have filters")
@@ -290,7 +289,6 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 	if q.kind != "" {
 		dst.Kind = []*pb.KindExpression{&pb.KindExpression{Name: proto.String(q.kind)}}
 	}
-
 	if q.projection != nil {
 		for _, propertyName := range q.projection {
 			dst.Projection = append(dst.Projection, &pb.PropertyExpression{Property: &pb.PropertyReference{Name: proto.String(propertyName)}})
@@ -311,22 +309,18 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 		if qf.FieldName == "" {
 			return errors.New("datastore: empty query filter field name")
 		}
-
-		v, errStr := interfaceToProto(reflect.ValueOf(qf.Value))
+		v, errStr := interfaceToProto(reflect.ValueOf(qf.Value).Interface())
 		if errStr != "" {
 			return errors.New("datastore: bad query filter value type: " + errStr)
 		}
-
 		xf := &pb.PropertyFilter{
 			Operator: operatorToProto[qf.Op],
 			Property: &pb.PropertyReference{Name: proto.String(qf.FieldName)},
 			Value:    v,
 		}
-
 		if xf.Operator == nil {
 			return errors.New("datastore: unknown query filter operator")
 		}
-
 		filters = append(filters, &pb.Filter{PropertyFilter: xf})
 	}
 

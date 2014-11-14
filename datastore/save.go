@@ -126,20 +126,13 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 	e := &pb.Entity{
 		Key: keyToProto(key),
 	}
-
 	indexedProps := 0
 	prevMultiple := make(map[string]*pb.Property)
-
 	for _, p := range props {
-		if !p.Multiple {
-
-		}
-
 		val, err := interfaceToProto(p.Value)
-		if len(err) > 0 {
+		if err != "" {
 			return nil, fmt.Errorf("datastore: %s for a Property with Name %q", err, p.Name)
 		}
-
 		if !p.NoIndex {
 			rVal := reflect.ValueOf(p.Value)
 			if rVal.Kind() == reflect.Slice {
@@ -148,7 +141,6 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 				indexedProps++
 			}
 		}
-
 		indexingAllowed := true
 		switch v := p.Value.(type) {
 		case string:
@@ -160,13 +152,11 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 				indexingAllowed = false
 			}
 		}
-
 		if indexingAllowed {
 			val.Indexed = proto.Bool(!p.NoIndex)
 		} else if !p.NoIndex {
 			return nil, fmt.Errorf("datastore: cannot index a Property with Name %q", p.Name)
 		}
-
 		if !p.NoIndex {
 			rVal := reflect.ValueOf(p.Value)
 			if rVal.Kind() == reflect.Slice {
@@ -175,11 +165,9 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 				indexedProps++
 			}
 		}
-
 		if indexedProps > maxIndexedProperties {
 			return nil, errors.New("datastore: too many indexed properties")
 		}
-
 		if p.Multiple {
 			x, ok := prevMultiple[p.Name]
 			if !ok {
@@ -206,14 +194,19 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 
 func interfaceToProto(iv interface{}) (p *pb.Value, errStr string) {
 	val := new(pb.Value)
-
 	switch v := iv.(type) {
+	case int:
+		val.IntegerValue = proto.Int64(int64(v))
+	case int32:
+		val.IntegerValue = proto.Int64(int64(v))
 	case int64:
 		val.IntegerValue = proto.Int64(v)
 	case bool:
 		val.BooleanValue = proto.Bool(v)
 	case string:
 		val.StringValue = proto.String(v)
+	case float32:
+		val.DoubleValue = proto.Float64(float64(v))
 	case float64:
 		val.DoubleValue = proto.Float64(v)
 	case *Key:
@@ -232,6 +225,7 @@ func interfaceToProto(iv interface{}) (p *pb.Value, errStr string) {
 			return nil, fmt.Sprintf("invalid Value type %t", iv)
 		}
 	}
-
+	// TODO(jbd): Support ListValue and EntityValue.
+	// TODO(jbd): Support types whose underlying type is one of the types above.
 	return val, ""
 }
