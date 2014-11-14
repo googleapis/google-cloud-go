@@ -5,6 +5,7 @@ go:
   - tip
 
 install:
-  - export GOPATH=$HOME/gopath
-  - mkdir -p $HOME/gopath/src/google.golang.org
-  - ln -s -T $HOME/gopath/src/github.com/GoogleCloudPlatform/gcloud-golang $HOME/gopath/src/google.golang.org/cloud && go get -v -t ./...
+  - go get -v google.golang.org/cloud/...
+
+script:
+  - go test -v google.golang.org/cloud/...
