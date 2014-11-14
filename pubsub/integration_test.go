@@ -23,6 +23,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/golang/oauth2"
 	"github.com/golang/oauth2/google"
 	"golang.org/x/net/context"
 	"google.golang.org/cloud"
@@ -119,13 +120,13 @@ func TestAll(t *testing.T) {
 }
 
 func testContext(t *testing.T) context.Context {
-	conf, err := google.NewServiceAccountJSONConfig(
-		os.Getenv(envPrivateKey),
-		ScopePubSub,
-		ScopeCloudPlatform)
+	f, err := oauth2.New(
+		google.ServiceAccountJSONKey(os.Getenv(envPrivateKey)),
+		oauth2.Scope(ScopePubSub, ScopeCloudPlatform),
+	)
 	if err != nil {
 		t.Fatal(err)
 	}
 	return cloud.NewContext(
-		os.Getenv(envProjID), &http.Client{Transport: conf.NewTransport()})
+		os.Getenv(envProjID), &http.Client{Transport: f.NewTransport()})
 }

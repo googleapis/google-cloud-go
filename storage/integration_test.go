@@ -26,6 +26,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/golang/oauth2"
 	"github.com/golang/oauth2/google"
 	"google.golang.org/cloud"
 
@@ -253,12 +254,13 @@ func randomContents() []byte {
 }
 
 func testContext(t *testing.T) context.Context {
-	conf, err := google.NewServiceAccountJSONConfig(
-		os.Getenv(envPrivateKey),
-		ScopeFullControl)
+	f, err := oauth2.New(
+		google.ServiceAccountJSONKey(os.Getenv(envPrivateKey)),
+		oauth2.Scope(ScopeFullControl),
+	)
 	if err != nil {
 		t.Fatal(err)
 	}
 	return cloud.NewContext(
-		os.Getenv(envProjID), &http.Client{Transport: conf.NewTransport()})
+		os.Getenv(envProjID), &http.Client{Transport: f.NewTransport()})
 }
