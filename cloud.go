@@ -21,6 +21,7 @@ import (
 
 	"google.golang.org/cloud/internal"
 
+	container "code.google.com/p/google-api-go-client/container/v1beta1"
 	pubsub "code.google.com/p/google-api-go-client/pubsub/v1beta1"
 	storage "code.google.com/p/google-api-go-client/storage/v1"
 	"golang.org/x/net/context"
@@ -53,9 +54,10 @@ func WithContext(parent context.Context, projID string, c *http.Client) context.
 	vals["project_id"] = projID
 	vals["http_client"] = c
 	// TODO(jbd): Lazily initiate the service objects.
+	// There is no datastore service as we use the proto directly
+	// without passing through google-api-go-client.
 	vals["pubsub_service"], _ = pubsub.New(c)
 	vals["storage_service"], _ = storage.New(c)
-	// There is no datastore service as we use the proto directly without passing through google-api-go-client
-
+	vals["container_service"], _ = container.New(c)
 	return context.WithValue(parent, internal.ContextKey("base"), vals)
 }
