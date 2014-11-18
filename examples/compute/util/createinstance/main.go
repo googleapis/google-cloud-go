@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"time"
 
+	computeutil "github.com/GoogleCloudPlatform/gcloud-golang/compute/util"
 	"github.com/golang/oauth2"
 	"github.com/golang/oauth2/google"
 	"google.golang.org/cloud"
-	"google.golang.org/cloud/compute"
 )
 
 var (
@@ -30,7 +30,7 @@ func main() {
 	}
 	flow, err := oauth2.New(
 		google.ServiceAccountJSONKey(*jsonFile),
-		oauth2.Scope(compute.ScopeCompute),
+		oauth2.Scope(computeutil.ScopeCompute),
 	)
 	if err != nil {
 		log.Fatalf("clientAndId failed, %v", err)
@@ -40,7 +40,7 @@ func main() {
 		*name = fmt.Sprintf("gcloud-compute-cli-%d", time.Now().Unix())
 	}
 	ctx := cloud.WithZone(cloud.NewContext(*projID, client), *zone)
-	instance, err := compute.NewInstance(ctx, &compute.Instance{
+	instance, err := computeutil.NewInstance(ctx, &computeutil.Instance{
 		Name:        *name,
 		Image:       *image,
 		MachineType: *machineType,
