@@ -21,6 +21,7 @@ import (
 
 	"google.golang.org/cloud/internal"
 
+	compute "code.google.com/p/google-api-go-client/compute/v1"
 	pubsub "code.google.com/p/google-api-go-client/pubsub/v1beta1"
 	storage "code.google.com/p/google-api-go-client/storage/v1"
 	"golang.org/x/net/context"
@@ -43,6 +44,12 @@ func WithNamespace(ctx context.Context, namespace string) context.Context {
 	return context.WithValue(ctx, internal.ContextKey("namespace"), namespace)
 }
 
+// WithZone returns a new context that wraps an existing contect
+// and uses the specified zone
+func WithZone(ctx context.Context, zone string) context.Context {
+	return context.WithValue(ctx, internal.ContextKey("zone"), zone)
+}
+
 // WithContext returns a new context in a similar way NewContext does,
 // but initiates the new context with the specified parent.
 func WithContext(parent context.Context, projID string, c *http.Client) context.Context {
@@ -55,6 +62,7 @@ func WithContext(parent context.Context, projID string, c *http.Client) context.
 	// TODO(jbd): Lazily initiate the service objects.
 	vals["pubsub_service"], _ = pubsub.New(c)
 	vals["storage_service"], _ = storage.New(c)
+	vals["compute_service"], _ = compute.New(c)
 	// There is no datastore service as we use the proto directly without passing through google-api-go-client
 
 	return context.WithValue(parent, internal.ContextKey("base"), vals)
