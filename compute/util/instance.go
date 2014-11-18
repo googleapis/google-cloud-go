@@ -19,6 +19,7 @@ type Instance struct {
 	MachineType string
 	Image       string
 	Zone        string
+	Metadata    map[string]string
 	*raw.Instance
 }
 
@@ -60,6 +61,11 @@ func NewInstance(ctx context.Context, instance *Instance) (*Instance, error) {
 				},
 				Network: globalResource(project, "networks/default"),
 			},
+		}
+	}
+	if instance.Metadata != nil {
+		for k, v := range instance.Metadata {
+			instance.Instance.Metadata.Items = append(instance.Instance.Metadata.Items, &raw.MetadataItems{Key: k, Value: v})
 		}
 	}
 	op, err := service.Instances.Insert(project, instance.Zone, instance.Instance).Do()

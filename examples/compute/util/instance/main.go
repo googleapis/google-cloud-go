@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -14,12 +15,13 @@ import (
 )
 
 var (
-	jsonFile    = flag.String("j", "", "A path to your JSON key file for your service account downloaded from Google Developer Console, not needed if you run it on Compute Engine instances.")
-	projID      = flag.String("p", "", "The ID of your Google Cloud project.")
-	name        = flag.String("n", "gcloud-computeutil-instance", "The name of the instance to create.")
-	image       = flag.String("i", "projects/google-containers/global/images/container-vm-v20140929", "The image to use for the instance.")
-	zone        = flag.String("z", "us-central1-f", "The compute zone for the instance.")
-	machineType = flag.String("m", "f1-micro", "The compute zone for the instance.")
+	jsonFile          = flag.String("j", "", "A path to your JSON key file for your service account downloaded from Google Developer Console, not needed if you run it on Compute Engine instances.")
+	projID            = flag.String("p", "", "The ID of your Google Cloud project.")
+	name              = flag.String("n", "gcloud-computeutil-instance", "The name of the instance to create.")
+	image             = flag.String("i", "projects/google-containers/global/images/container-vm-v20140929", "The image to use for the instance.")
+	zone              = flag.String("z", "us-central1-f", "The zone for the instance.")
+	machineType       = flag.String("m", "f1-micro", "The machine type for the instance.")
+	startupScriptPath = flag.String("s", "", "The path to the startup script for the instance")
 )
 
 func main() {
@@ -28,12 +30,22 @@ func main() {
 		flag.PrintDefaults()
 		log.Fatalf("Please specify JSON file and Project ID.")
 	}
+	var metadata map[string]string
+	if *startupScriptPath != "" {
+		startupScript, err := ioutil.ReadFile(*startupScriptPath)
+		if err != nil {
+			log.Fatalf("Error reading startup script %q: %v", startupScriptPath, err)
+		}
+		metadata = map[string]string{
+			"startup-script": string(startupScript),
+		}
+	}
 	flow, err := oauth2.New(
 		google.ServiceAccountJSONKey(*jsonFile),
 		oauth2.Scope(computeutil.ScopeCompute),
 	)
 	if err != nil {
-		log.Fatalf("clientAndId failed, %v", err)
+		log.Fatalf("oauth2 flow creation failed, %v", err)
 	}
 	client := &http.Client{Transport: flow.NewTransport()}
 	ctx := cloud.WithZone(cloud.NewContext(*projID, client), *zone)
@@ -44,6 +56,7 @@ func main() {
 			Name:        *name,
 			Image:       *image,
 			MachineType: *machineType,
+			Metadata:    metadata,
 		})
 		if err != nil {
 			log.Fatalf("failed to create instance %q: %v", *name, err)
