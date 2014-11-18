@@ -16,8 +16,8 @@ var (
 	projID      = flag.String("p", "", "The ID of your Google Cloud project.")
 	name        = flag.String("n", "gcloud-computeutil-instance", "The name of the instance to create.")
 	image       = flag.String("i", "projects/google-containers/global/images/container-vm-v20140929", "The image to use for the instance.")
-	zone        = flag.String("z", "us-central1-f", "The compute zone for the intsance.")
-	machineType = flag.String("m", "f1-micro", "The compute zone for the intsance.")
+	zone        = flag.String("z", "us-central1-f", "The compute zone for the instance.")
+	machineType = flag.String("m", "f1-micro", "The compute zone for the instance.")
 )
 
 func main() {
