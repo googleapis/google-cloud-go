@@ -2,6 +2,7 @@ package computeutil
 
 import (
 	"fmt"
+	"io"
 	"time"
 
 	raw "code.google.com/p/google-api-go-client/compute/v1"
@@ -88,4 +89,31 @@ func GetInstance(ctx context.Context, name string) (*Instance, error) {
 		Zone:        resourceName(instance.Zone),
 		Instance:    instance,
 	}, nil
+}
+
+// GetInstanceOutput returns the serial port output of a given instance.
+func GetInstanceOutput(ctx context.Context, name string) (io.Reader, error) {
+	service, project, zone := rawService(ctx)
+	if name == "" {
+		return nil, fmt.Errorf("GetInstanceOutput: instance name is required")
+	}
+	if _, err := GetInstance(ctx, name); err != nil {
+		return nil, fmt.Errorf("GetInstanceOutput: error getting instance %q", name)
+	}
+	r, w := io.Pipe()
+	go func() {
+		lastOutput := ""
+		for {
+			serialPort, err := service.Instances.GetSerialPortOutput(project, zone, name).Do()
+			if err != nil {
+				w.Close()
+				break
+			}
+			if len(serialPort.Contents) > len(lastOutput) { // prevent empty write
+				fmt.Fprint(w, serialPort.Contents[len(lastOutput):])
+				lastOutput = serialPort.Contents
+			}
+		}
+	}()
+	return r, nil
 }

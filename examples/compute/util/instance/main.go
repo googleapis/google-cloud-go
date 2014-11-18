@@ -2,8 +2,10 @@ package main
 
 import (
 	"flag"
+	"io"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/golang/oauth2"
 	"github.com/golang/oauth2/google"
@@ -48,4 +50,9 @@ func main() {
 		}
 	}
 	log.Printf("instance %q ready: %#v", *name, instance)
+	output, err := computeutil.GetInstanceOutput(ctx, *name)
+	if err != nil {
+		log.Fatalf("failed to get instance %q output: %v", *name, err)
+	}
+	io.Copy(os.Stdout, output)
 }
