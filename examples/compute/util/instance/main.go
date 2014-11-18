@@ -39,6 +39,7 @@ func main() {
 		metadata = map[string]string{
 			"startup-script": string(startupScript),
 		}
+		log.Println(metadata)
 	}
 	flow, err := oauth2.New(
 		google.ServiceAccountJSONKey(*jsonFile),

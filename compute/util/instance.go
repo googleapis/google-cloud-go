@@ -64,6 +64,7 @@ func NewInstance(ctx context.Context, instance *Instance) (*Instance, error) {
 		}
 	}
 	if instance.Metadata != nil {
+		instance.Instance.Metadata = &raw.Metadata{}
 		for k, v := range instance.Metadata {
 			instance.Instance.Metadata.Items = append(instance.Instance.Metadata.Items, &raw.MetadataItems{Key: k, Value: v})
 		}
