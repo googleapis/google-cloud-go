@@ -73,7 +73,7 @@ func NewInstance(ctx context.Context, instance *Instance) (*Instance, error) {
 	return instance, nil
 }
 
-// GetInstance gets an existing instance resource.
+// GetInstance retrieves an existing instance resource by name.
 func GetInstance(ctx context.Context, name string) (*Instance, error) {
 	service, project, zone := rawService(ctx)
 	if name == "" {
@@ -91,20 +91,14 @@ func GetInstance(ctx context.Context, name string) (*Instance, error) {
 	}, nil
 }
 
-// GetInstanceOutput returns the serial port output of a given instance.
-func GetInstanceOutput(ctx context.Context, name string) (io.Reader, error) {
-	service, project, zone := rawService(ctx)
-	if name == "" {
-		return nil, fmt.Errorf("GetInstanceOutput: instance name is required")
-	}
-	if _, err := GetInstance(ctx, name); err != nil {
-		return nil, fmt.Errorf("GetInstanceOutput: error getting instance %q", name)
-	}
+// SerialPortOutput returns a Reader on the serial port output of a given instance name.
+func (i *Instance) SerialPortOutput(ctx context.Context) io.Reader {
+	service, project, _ := rawService(ctx)
 	r, w := io.Pipe()
 	go func() {
 		lastOutput := ""
 		for {
-			serialPort, err := service.Instances.GetSerialPortOutput(project, zone, name).Do()
+			serialPort, err := service.Instances.GetSerialPortOutput(project, i.Zone, i.Name).Do()
 			if err != nil {
 				w.Close()
 				break
@@ -115,5 +109,5 @@ func GetInstanceOutput(ctx context.Context, name string) (io.Reader, error) {
 			}
 		}
 	}()
-	return r, nil
+	return r
 }

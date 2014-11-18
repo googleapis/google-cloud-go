@@ -39,7 +39,7 @@ func main() {
 	ctx := cloud.WithZone(cloud.NewContext(*projID, client), *zone)
 	var instance *computeutil.Instance
 	instance, err = computeutil.GetInstance(ctx, *name)
-	if err != nil {
+	if err != nil { // not found
 		instance, err = computeutil.NewInstance(ctx, &computeutil.Instance{
 			Name:        *name,
 			Image:       *image,
@@ -50,9 +50,5 @@ func main() {
 		}
 	}
 	log.Printf("instance %q ready: %#v", *name, instance)
-	output, err := computeutil.GetInstanceOutput(ctx, *name)
-	if err != nil {
-		log.Fatalf("failed to get instance %q output: %v", *name, err)
-	}
-	io.Copy(os.Stdout, output)
+	io.Copy(os.Stdout, instance.SerialPortOutput(ctx))
 }
