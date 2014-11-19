@@ -80,7 +80,7 @@ type ErrHTTP struct {
 
 func (e *ErrHTTP) Error() string {
 	if e.err == nil {
-		return fmt.Sprintf("error during call, http status code: %v", e.StatusCode)
+		return fmt.Sprintf("error during call, http status code: %v %s", e.StatusCode, e.Body)
 	}
 	return e.err.Error()
 }
@@ -396,11 +396,9 @@ func PutMulti(ctx context.Context, keys []*Key, src interface{}) ([]*Key, error)
 	if len(keys) == 0 {
 		return nil, nil
 	}
-
 	if err := multiValid(keys); err != nil {
 		return nil, err
 	}
-
 	autoIdIndex := []int{}
 	autoId := []*pb.Entity(nil)
 	upsert := []*pb.Entity(nil)
@@ -429,7 +427,8 @@ func PutMulti(ctx context.Context, keys []*Key, src interface{}) ([]*Key, error)
 		Mutation: &pb.Mutation{
 			InsertAutoId: autoId,
 			Upsert:       upsert,
-		}}
+		},
+	}
 	t := transaction(ctx)
 	if t != nil {
 		req.Transaction = t

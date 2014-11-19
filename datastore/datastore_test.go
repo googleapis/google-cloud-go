@@ -24,8 +24,6 @@ import (
 	"time"
 )
 
-const testAppID = "testApp"
-
 type (
 	myBlob   []byte
 	myByte   byte
