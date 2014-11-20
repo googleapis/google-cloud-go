@@ -1,4 +1,5 @@
 # UUID                                  	Group Name
 #
 global:Anonymous-Users                  	Anonymous Users
+global:Registered-Users                 	Registered Users
 google:AI2Pq9qX2bzOWypJcZ6YmM9wRTnhz_oepqG2GBD_P1_QNmBsumbqWjk	google/go-cloud@google.com
