@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package datastore contains a Google Cloud Datastore client.
 package datastore // import "google.golang.org/cloud/datastore"
 
 import (

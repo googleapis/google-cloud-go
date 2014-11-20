@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package storage is a Google Cloud Storage client.
+// Package storage contains a Google Cloud Storage client.
 package storage // import "google.golang.org/cloud/storage"
 
 import (

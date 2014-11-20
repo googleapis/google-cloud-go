@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package pubsub is a Google Cloud Pub/Sub client.
+// Package pubsub contains a Google Cloud Pub/Sub client.
 //
 // More information about Google Cloud Pub/Sub is available on
 // https://cloud.google.com/pubsub/docs
