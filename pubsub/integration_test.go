@@ -36,8 +36,9 @@ const (
 
 func TestAll(t *testing.T) {
 	ctx := testContext(t)
-	topic := fmt.Sprintf("topic-%d", time.Now().Unix())
-	subscription := fmt.Sprintf("subscription-%d", time.Now().Unix())
+	now := time.Now()
+	topic := fmt.Sprintf("topic-%d", now.Unix())
+	subscription := fmt.Sprintf("subscription-%d", now.Unix())
 
 	if err := CreateTopic(ctx, topic); err != nil {
 		t.Errorf("CreateTopic error: %v", err)
@@ -90,22 +91,9 @@ func TestAll(t *testing.T) {
 	}
 	// TODO(jbd): Test PullWait with timeout case.
 
-	// Allow user to publish and pull messages with nil data.
+	// Allow user to publish messages with nil data.
 	if err := Publish(ctx, topic, nil, nil); err != nil {
 		t.Errorf("Publish with nil data failed with %v", err)
-	}
-	msg, err = Pull(ctx, subscription)
-	if err != nil {
-		t.Errorf("Pulling message with nil data failed with %v", err)
-	}
-	if msg.AckID == "" {
-		t.Error("Missing acknowledgement ID for the nil-data message")
-	}
-	if msg.Data != nil {
-		t.Errorf("Message should have been nil for message, found %v", msg.Data)
-	}
-	if err := Ack(ctx, subscription, msg.AckID); err != nil {
-		t.Errorf("Can't acknowledge the message (2)", err)
 	}
 
 	err = DeleteSub(ctx, subscription)
