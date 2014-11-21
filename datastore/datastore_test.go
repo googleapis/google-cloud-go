@@ -72,7 +72,7 @@ var (
 )
 
 type B0 struct {
-	B []byte
+	B []byte `datastore:",noindex"`
 }
 
 type B1 struct {
@@ -80,11 +80,11 @@ type B1 struct {
 }
 
 type B2 struct {
-	B myBlob
+	B myBlob `datastore:",noindex"`
 }
 
 type B3 struct {
-	B []myByte
+	B []myByte `datastore:",noindex"`
 }
 
 type B4 struct {
@@ -1165,7 +1165,7 @@ var testCases = []testCase{
 			J: json.RawMessage("rawr"),
 		},
 		&PropertyList{
-			Property{Name: "J", Value: []byte("rawr"), NoIndex: true},
+			Property{Name: "J", Value: []byte("rawr"), NoIndex: false},
 		},
 		"",
 		"",

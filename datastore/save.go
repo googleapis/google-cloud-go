@@ -62,7 +62,6 @@ func saveStructProperty(props *[]Property, name string, noIndex, multiple bool, 
 			p.Value = v.Float()
 		case reflect.Slice:
 			if v.Type().Elem().Kind() == reflect.Uint8 {
-				p.NoIndex = true
 				p.Value = v.Bytes()
 			}
 		case reflect.Struct:

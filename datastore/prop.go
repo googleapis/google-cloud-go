@@ -40,7 +40,6 @@ type Property struct {
 	//	- bool
 	//	- string
 	//	- float64
-	//	- ByteString
 	//	- *Key
 	//	- time.Time
 	//	- []byte (up to 1 megabyte in length)
@@ -63,6 +62,8 @@ type Property struct {
 	// value.
 	Value interface{}
 	// NoIndex is whether the datastore cannot index this property.
+	// If NoIndex is set to false, []byte values are limited to 500 bytes and
+	// string values are limited to 500 characters.
 	NoIndex bool
 	// Multiple is whether the entity can have multiple properties with
 	// the same name. Even if a particular instance only has one property with
@@ -70,9 +71,6 @@ type Property struct {
 	// it as a field of type []T instead of type T.
 	Multiple bool
 }
-
-// ByteString is a short byte slice (up to 500 bytes) that can be indexed.
-type ByteString []byte
 
 // PropertyLoadSaver can be converted from and to a slice of Properties.
 type PropertyLoadSaver interface {
