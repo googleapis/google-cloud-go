@@ -141,33 +141,17 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 				indexedProps++
 			}
 		}
-		indexingAllowed := true
-		switch v := p.Value.(type) {
-		case string:
-			if len(v) > 500 {
-				indexingAllowed = false
-			}
-		case []byte:
-			if len(v) > 500 {
-				indexingAllowed = false
-			}
-		}
-		if indexingAllowed {
-			val.Indexed = proto.Bool(!p.NoIndex)
-		} else if !p.NoIndex {
-			return nil, fmt.Errorf("datastore: cannot index a Property with Name %q", p.Name)
-		}
-		if !p.NoIndex {
-			rVal := reflect.ValueOf(p.Value)
-			if rVal.Kind() == reflect.Slice {
-				indexedProps += rVal.Len()
-			} else {
-				indexedProps++
-			}
-		}
 		if indexedProps > maxIndexedProperties {
 			return nil, errors.New("datastore: too many indexed properties")
 		}
+		switch v := p.Value.(type) {
+		case string:
+		case []byte:
+			if len(v) > 500 && !p.NoIndex {
+				return nil, fmt.Errorf("datastore: cannot index a Property with Name %q", p.Name)
+			}
+		}
+		val.Indexed = proto.Bool(!p.NoIndex)
 		if p.Multiple {
 			x, ok := prevMultiple[p.Name]
 			if !ok {
@@ -175,11 +159,9 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 					Name:  proto.String(p.Name),
 					Value: &pb.Value{},
 				}
-
 				prevMultiple[p.Name] = x
 				e.Property = append(e.Property, x)
 			}
-
 			x.Value.ListValue = append(x.Value.ListValue, val)
 		} else {
 			e.Property = append(e.Property, &pb.Property{
@@ -188,7 +170,6 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 			})
 		}
 	}
-
 	return e, nil
 }
 

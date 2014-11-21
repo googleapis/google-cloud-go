@@ -35,6 +35,8 @@ const (
 	equal
 	greaterEq
 	greaterThan
+
+	keyFieldName = "__key__"
 )
 
 var operatorToProto = map[operator]*pb.PropertyFilter_Operator{
@@ -274,14 +276,6 @@ func (q *Query) End(c Cursor) *Query {
 // toProto converts the query to a protocol buffer.
 func (q *Query) toProto(req *pb.RunQueryRequest) error {
 	dst := pb.Query{}
-	if q.kind == "" {
-		if len(q.filter) != 0 {
-			return errors.New("datastore: kindless query cannot have filters")
-		}
-		if len(q.order) != 0 {
-			return errors.New("datastore: kindless query cannot have sort orders")
-		}
-	}
 	if len(q.projection) != 0 && q.keysOnly {
 		return errors.New("datastore: query cannot both project and be keys-only")
 	}
@@ -301,7 +295,7 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 		}
 	}
 	if q.keysOnly {
-		dst.Projection = []*pb.PropertyExpression{&pb.PropertyExpression{Property: &pb.PropertyReference{Name: proto.String("__key__")}}}
+		dst.Projection = []*pb.PropertyExpression{&pb.PropertyExpression{Property: &pb.PropertyReference{Name: proto.String(keyFieldName)}}}
 	}
 
 	var filters []*pb.Filter
@@ -376,22 +370,9 @@ func (q *Query) Count(ctx context.Context) (int, error) {
 	}
 
 	// Run a copy of the query, with keysOnly true (if we're not a projection,
-	// since the two are incompatible), and an adjusted offset. We also set the
-	// limit to zero, as we don't want any actual entity data, just the number
-	// of skipped results.
+	// since the two are incompatible).
 	newQ := q.clone()
 	newQ.keysOnly = len(newQ.projection) == 0
-	newQ.limit = 0
-	if q.limit < 0 {
-		// If the original query was unlimited, set the new query's offset to maximum.
-		newQ.offset = math.MaxInt32
-	} else {
-		newQ.offset = q.offset + q.limit
-		if newQ.offset < 0 {
-			// Do the best we can, in the presence of overflow.
-			newQ.offset = math.MaxInt32
-		}
-	}
 	req := &pb.RunQueryRequest{}
 	t := transaction(ctx)
 	if t != nil {
@@ -405,63 +386,33 @@ func (q *Query) Count(ctx context.Context) (int, error) {
 	if err := call(ctx, "runQuery", req, res); err != nil {
 		return 0, err
 	}
-
-	// n is the count we will return. For example, suppose that our original
-	// query had an offset of 4 and a limit of 2008: the count will be 2008,
-	// provided that there are at least 2012 matching entities. However, the
-	// RPCs will only skip 1000 results at a time. The RPC sequence is:
-	//   call RunQuery with (offset, limit) = (2012, 0)  // 2012 == newQ.offset
-	//   response has (skippedResults, moreResults) = (1000, true)
-	//   n += 1000  // n == 1000
-	//   call Next     with (offset, limit) = (1012, 0)  // 1012 == newQ.offset - n
-	//   response has (skippedResults, moreResults) = (1000, true)
-	//   n += 1000  // n == 2000
-	//   call Next     with (offset, limit) = (12, 0)    // 12 == newQ.offset - n
-	//   response has (skippedResults, moreResults) = (12, false)
-	//   n += 12    // n == 2012
-	//   // exit the loop
-	//   n -= 4     // n == 2008
-	var n int32
+	var n int
 	b := res.Batch
 	for {
-		// The QueryResult should have no actual entity data, just skipped results.
-		if len(b.EntityResult) != 0 {
-			return 0, errors.New("datastore: internal error: Count request returned too much data")
-		}
-		n += b.GetSkippedResults()
+		n += len(b.GetEntityResult())
 		if b.GetMoreResults() != pb.QueryResultBatch_NOT_FINISHED {
 			break
 		}
 		var err error
-		if err = callNext(ctx, req, res, newQ.offset-n, 0); err != nil {
+		// TODO(jbd): Support count queries that have a limit and an offset.
+		if err = callNext(ctx, req, res, 0, 0); err != nil {
 			return 0, err
 		}
-	}
-	n -= q.offset
-	if n < 0 {
-		// If the offset was greater than the number of matching entities,
-		// return 0 instead of negative.
-		n = 0
 	}
 	return int(n), nil
 }
 
-// callNext issues a datastore_v3/Next RPC to advance a cursor, such as that
-// returned by a query with more results.
 func callNext(ctx context.Context, req *pb.RunQueryRequest, res *pb.RunQueryResponse, offset, limit int32) error {
 	if res.GetBatch().EndCursor == nil {
 		return errors.New("datastore: internal error: server did not return a cursor")
 	}
-
 	req.Query.StartCursor = res.GetBatch().GetEndCursor()
-
 	if limit >= 0 {
 		req.Query.Limit = proto.Int32(limit)
 	}
 	if offset != 0 {
 		req.Query.Offset = proto.Int32(offset)
 	}
-
 	res.Reset()
 	return call(ctx, "runQuery", req, res)
 }
