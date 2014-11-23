@@ -16,10 +16,19 @@
 package storage // import "google.golang.org/cloud/storage"
 
 import (
+	"crypto"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/sha256"
+	"crypto/x509"
+	"encoding/base64"
+	"encoding/pem"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
+	"time"
 
 	"google.golang.org/cloud/internal"
 
@@ -110,6 +119,84 @@ func ListObjects(ctx context.Context, bucket string, q *Query) (*Objects, error)
 	return objects, nil
 }
 
+// SignedURLOptions allows you to restrict the access to the signed URL.
+type SignedURLOptions struct {
+	// ClientID represents the authorizer of the signed URL generation.
+	// It is the Google service account client ID from the Google
+	// Developers Console.
+	// Required.
+	ClientID string
+
+	// PrivateKey is the Google service account private key. It is obtainable
+	// from the Google Developers Console.
+	PrivateKey []byte
+
+	// Method is the HTTP method to be used with the signed URL.
+	// Signed URLs can be used with GET, HEAD, PUT, and DELETE requests.
+	// Required.
+	Method string
+
+	// Expires is the expiration time on the signed URL. It must be
+	// a datetime in the future.
+	// Required.
+	Expires time.Time
+
+	// ContentType is the content type header the client must provide
+	// to use the generated signed URL.
+	// Optional.
+	ContentType string
+
+	// Headers is a list of extention headers the client must provide
+	// in order to use the generated signed URL.
+	// Optional.
+	Headers []string
+
+	// MD5 is the base64 encoded MD5 checksum of the file.
+	// If provided, the client should provide the exact value on the request
+	// header in order to use the signed URL.
+	// Optional.
+	MD5 []byte
+}
+
+// SignedURL returns a URL for the specified object. Signed URLs allow
+// the users access to a restricted resource for a limited time without having a
+// Google account or signing in. For more information about the signed
+// URLs, see https://cloud.google.com/storage/docs/accesscontrol#Signed-URLs.
+func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
+	if opts.ClientID == "" || opts.PrivateKey == nil {
+		return "", errors.New("storage: missing required credentials to generate a signed URL")
+	}
+	if opts.Method == "" {
+		return "", errors.New("storage: missing required method option")
+	}
+	if opts.Expires.IsZero() {
+		return "", errors.New("storage: missing required expires option")
+	}
+	key, err := parseKey(opts.PrivateKey)
+	if err != nil {
+		return "", err
+	}
+	h := sha256.New()
+	fmt.Fprintf(h, "%s\n", opts.Method)
+	fmt.Fprintf(h, "%s\n", opts.MD5)
+	fmt.Fprintf(h, "%s\n", opts.ContentType)
+	fmt.Fprintf(h, "%d\n", opts.Expires.Unix())
+	fmt.Fprintf(h, "%s", strings.Join(opts.Headers, "\n"))
+	fmt.Fprintf(h, "/%s/%s", bucket, name)
+	b, err := rsa.SignPKCS1v15(
+		rand.Reader,
+		key,
+		crypto.SHA256,
+		h.Sum(nil),
+	)
+	if err != nil {
+		return "", err
+	}
+	encoded := base64.StdEncoding.EncodeToString(b)
+	return fmt.Sprintf("http://storage.googleapis.com/%s/%s?GoogleAccessId=%s&Expires=%d&Signature=%s",
+		bucket, name, opts.ClientID, opts.Expires.Unix(), encoded), nil
+}
+
 // StatObject returns meta information about the specified object.
 func StatObject(ctx context.Context, bucket, name string) (*Object, error) {
 	o, err := rawService(ctx).Objects.Get(bucket, name).Do()
@@ -195,4 +282,27 @@ func NewWriter(ctx context.Context, bucket, name string, info *Object) *ObjectWr
 
 func rawService(ctx context.Context) *raw.Service {
 	return ctx.Value(internal.ContextKey("base")).(map[string]interface{})["storage_service"].(*raw.Service)
+}
+
+// parseKey converts the binary contents of a private key file
+// to an *rsa.PrivateKey. It detects whether the private key is in a
+// PEM container or not. If so, it extracts the the private key
+// from PEM container before conversion. It only supports PEM
+// containers with no passphrase.
+func parseKey(key []byte) (*rsa.PrivateKey, error) {
+	if block, _ := pem.Decode(key); block != nil {
+		key = block.Bytes
+	}
+	parsedKey, err := x509.ParsePKCS8PrivateKey(key)
+	if err != nil {
+		parsedKey, err = x509.ParsePKCS1PrivateKey(key)
+		if err != nil {
+			return nil, err
+		}
+	}
+	parsed, ok := parsedKey.(*rsa.PrivateKey)
+	if !ok {
+		return nil, errors.New("oauth2: private key is invalid")
+	}
+	return parsed, nil
 }
