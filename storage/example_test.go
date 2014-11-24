@@ -113,19 +113,6 @@ func Example_writeObjects() {
 	log.Println("updated object:", o)
 }
 
-func Example_touchObjects() {
-	// see the auth example how to initiate a context.
-	ctx := cloud.NewContext("project-id", &http.Client{Transport: nil})
-
-	o, err := storage.PutObject(ctx, "bucketname", "filename", &storage.Object{
-		ContentType: "text/plain",
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println("touched new file:", o)
-}
-
 func Example_copyObjects() {
 	// see the auth example how to initiate a context.
 	ctx := cloud.NewContext("project-id", &http.Client{Transport: nil})
