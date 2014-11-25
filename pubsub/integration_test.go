@@ -108,7 +108,7 @@ func TestAll(t *testing.T) {
 }
 
 func testContext(t *testing.T) context.Context {
-	f, err := oauth2.New(
+	opts, err := oauth2.New(
 		google.ServiceAccountJSONKey(os.Getenv(envPrivateKey)),
 		oauth2.Scope(ScopePubSub, ScopeCloudPlatform),
 	)
@@ -116,5 +116,5 @@ func testContext(t *testing.T) context.Context {
 		t.Fatal(err)
 	}
 	return cloud.NewContext(
-		os.Getenv(envProjID), &http.Client{Transport: f.NewTransport()})
+		os.Getenv(envProjID), &http.Client{Transport: opts.NewTransport()})
 }

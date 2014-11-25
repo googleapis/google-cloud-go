@@ -74,23 +74,23 @@ func checkArgs(argv []string, min int) {
 // account's access token.
 func newClient(jsonFile string) (*http.Client, error) {
 	if jsonFile != "" {
-		f, err := oauth2.New(
+		opts, err := oauth2.New(
 			google.ServiceAccountJSONKey(jsonFile),
 			oauth2.Scope(pubsub.ScopePubSub),
 		)
 		if err != nil {
 			return nil, err
 		}
-		return &http.Client{Transport: f.NewTransport()}, nil
+		return &http.Client{Transport: opts.NewTransport()}, nil
 	}
 	if metadata.OnGCE() {
-		f, err := oauth2.New(
+		opts, err := oauth2.New(
 			google.ComputeEngineAccount(""),
 		)
 		if err != nil {
 			return nil, err
 		}
-		client := &http.Client{Transport: f.NewTransport()}
+		client := &http.Client{Transport: opts.NewTransport()}
 		if *projID == "" {
 			projectID, err := metadata.ProjectID()
 			if err != nil {

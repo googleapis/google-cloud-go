@@ -74,7 +74,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	f, err := oauth2.New(
+	opts, err := oauth2.New(
 		google.AppEngineContext(c),
 		oauth2.Scope(storage.ScopeFullControl),
 	)
@@ -82,7 +82,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		c.Errorf("failed to initiate an App Engine OAuth 2.0 flow: %v", err)
 		return
 	}
-	ctx := cloud.NewContext(appengine.AppID(c), &http.Client{Transport: f.NewTransport()})
+	ctx := cloud.NewContext(appengine.AppID(c), &http.Client{Transport: opts.NewTransport()})
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	fmt.Fprintf(w, "Demo GCS Application running from Version: %v\n", appengine.VersionID(c))
 	fmt.Fprintf(w, "Using bucket name: %v\n\n", bucket)

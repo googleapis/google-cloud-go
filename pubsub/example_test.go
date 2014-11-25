@@ -34,7 +34,7 @@ func Example_auth() {
 	// JSON key. Read the google package examples to learn more about
 	// different authorization flows you can use.
 	// http://godoc.org/github.com/golang/oauth2/google
-	f, err := oauth2.New(
+	opts, err := oauth2.New(
 		google.ServiceAccountJSONKey("/path/to/json/keyfile.json"),
 		oauth2.Scope(
 			pubsub.ScopeCloudPlatform,
@@ -45,7 +45,7 @@ func Example_auth() {
 		log.Fatal(err)
 	}
 
-	c := &http.Client{Transport: f.NewTransport()}
+	c := &http.Client{Transport: opts.NewTransport()}
 	ctx := cloud.NewContext("project-id", c)
 	_ = ctx // See the other samples to learn how to use the context.
 }
