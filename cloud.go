@@ -38,12 +38,6 @@ func NewContext(projID string, c *http.Client) context.Context {
 	return WithContext(context.Background(), projID, c)
 }
 
-// WithNamespace returns a new context that wraps an existing contect
-// and uses the specified namespace
-func WithNamespace(ctx context.Context, namespace string) context.Context {
-	return context.WithValue(ctx, internal.ContextKey("namespace"), namespace)
-}
-
 // WithContext returns a new context in a similar way NewContext does,
 // but initiates the new context with the specified parent.
 func WithContext(parent context.Context, projID string, c *http.Client) context.Context {

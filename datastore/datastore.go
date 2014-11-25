@@ -61,6 +61,12 @@ const (
 	multiArgTypeInterface
 )
 
+// WithNamespace returns a new context that limits the scope its parent
+// context with a Datastore namespace.
+func WithNamespace(parent context.Context, namespace string) context.Context {
+	return context.WithValue(parent, internal.ContextKey("namespace"), namespace)
+}
+
 // ErrFieldMismatch is returned when a field is to be loaded into a different
 // type than the one it was stored from, or when a field is missing or
 // unexported in the destination struct.
