@@ -110,14 +110,6 @@ func (k *Key) Equal(o *Key) bool {
 	}
 }
 
-// root returns the furthest ancestor of a key, which may be itself.
-func (k *Key) root() *Key {
-	for k.parent != nil {
-		k = k.parent
-	}
-	return k
-}
-
 // marshal marshals the key's string representation to the buffer.
 func (k *Key) marshal(b *bytes.Buffer) {
 	if k.parent != nil {
