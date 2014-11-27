@@ -3,10 +3,10 @@
 Work in progress, watch the repo for notifications.
 
 We are planning release the initial version with support for the following Cloud APIs.
- * Google Cloud Datastore
- * Google Cloud Storage
- * Google Cloud SQL
- * Google Cloud Pub/Sub
+ * [Google Cloud Datastore](https://cloud.google.com/datastore/)
+ * [Google Cloud Storage](https://cloud.google.com/storage/)
+ * [Google Cloud SQL](https://cloud.google.com/bigquery/)
+ * [Google Cloud Pub/Sub](https://cloud.google.com/pubsub/)
 
 ``` go
 import "google.golang.org/cloud"
