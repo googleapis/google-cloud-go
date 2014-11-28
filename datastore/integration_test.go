@@ -94,7 +94,7 @@ func TestUnindexableValues(t *testing.T) {
 		{in: Z{T: x500}, wantErr: false},
 		{in: Z{T: x501}, wantErr: false},
 		{in: Z{P: []byte(x500)}, wantErr: false},
-		{in: Z{P: []byte(x501)}, wantErr: false},
+		{in: Z{P: []byte(x501)}, wantErr: true},
 		{in: Z{K: []byte(x500)}, wantErr: false},
 		{in: Z{K: []byte(x501)}, wantErr: false},
 	}
