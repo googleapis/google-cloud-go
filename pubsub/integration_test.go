@@ -23,9 +23,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/oauth2"
-	"github.com/golang/oauth2/google"
 	"golang.org/x/net/context"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/cloud"
 )
 
@@ -34,7 +34,7 @@ const (
 	envPrivateKey = "GCLOUD_TESTS_GOLANG_KEY"
 )
 
-func TestAll(t *testing.T) {
+func TestAllExceptBatch(t *testing.T) {
 	ctx := testContext(t)
 	now := time.Now()
 	topic := fmt.Sprintf("topic-%d", now.Unix())
@@ -104,6 +104,86 @@ func TestAll(t *testing.T) {
 	err = DeleteTopic(ctx, topic)
 	if err != nil {
 		t.Errorf("DeleteTopic error: %v", err)
+	}
+}
+
+func TestBatches(t *testing.T) {
+	ctx := testContext(t)
+	now := time.Now()
+	topic := fmt.Sprintf("topic-%d", now.Unix())
+	subscription := fmt.Sprintf("subscription-%d", now.Unix())
+
+	if err := CreateTopic(ctx, topic); err != nil {
+		t.Errorf("CreateTopic error: %v", err)
+	}
+	defer DeleteTopic(ctx, topic)
+
+	if err := CreateSub(ctx, subscription, topic, 60*time.Second, ""); err != nil {
+		t.Errorf("CreateSub error: %v", err)
+	}
+	defer DeleteSub(ctx, subscription)
+
+	batchSize := 10
+	messages := make([]*Message, batchSize)
+	hasReceived := make(map[string]bool, batchSize)
+
+	for i := 0; i < batchSize; i++ {
+		text := fmt.Sprintf("a message with an index %d", i)
+		labels := make(map[string]string)
+		labels["foo"] = fmt.Sprintf("bar")
+		messages[i] = &Message{
+			Data:   []byte(text),
+			Labels: labels,
+		}
+		hasReceived[text] = false
+	}
+	messageIDs, err := PublishBatch(ctx, topic, messages)
+
+	if err != nil {
+		t.Errorf("Publish (1) error: %v", err)
+	}
+
+	if len(messageIDs) != batchSize {
+		t.Errorf("There should be %d of message IDs, got %d", batchSize, len(messageIDs))
+	}
+
+	expectedMessageIDs := make(map[string]bool, batchSize)
+	for _, messageID := range messageIDs {
+		expectedMessageIDs[messageID] = false
+	}
+
+	var receivedMessages []*Message
+	for i := 0; i < 10 && len(receivedMessages) < batchSize; i++ {
+		messagesInABatch, err := PullBatch(ctx, subscription, batchSize)
+		if err != nil {
+			t.Errorf("Pull error: %v", err)
+			return
+		}
+		receivedMessages = append(receivedMessages, messagesInABatch...)
+	}
+
+	if len(receivedMessages) != batchSize {
+		t.Errorf("The response size should be %d, got %d", batchSize, len(receivedMessages))
+	}
+
+	for _, message := range receivedMessages {
+		hasReceived[string(message.Data)] = true
+		expectedMessageIDs[message.MessageID] = true
+		if message.Labels["foo"] != "bar" {
+			t.Errorf("message label foo is expected to be 'bar', found '%s'", message.Labels["foo"])
+		}
+	}
+
+	for k, v := range hasReceived {
+		if !v {
+			t.Errorf("Message '%s' should be received.", k)
+		}
+	}
+
+	for k, v := range expectedMessageIDs {
+		if !v {
+			t.Errorf("Message with the message id '%s' should be received.", k)
+		}
 	}
 }
 

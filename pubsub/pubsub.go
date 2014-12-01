@@ -60,6 +60,9 @@ type Message struct {
 	// Labels represents the key-value pairs the current message
 	// is labelled with.
 	Labels map[string]string
+
+	// MessageID is the identifier of this message.
+	MessageID string
 }
 
 // TODO(jbd): Add subscription and topic listing.
@@ -162,6 +165,30 @@ func PullWait(ctx context.Context, sub string) (*Message, error) {
 	return pull(ctx, sub, false)
 }
 
+func toMessage(resp *raw.PullResponse) (*Message, error) {
+	if resp.PubsubEvent.Message == nil {
+		return &Message{AckID: resp.AckId}, nil
+	}
+	data, err := base64.StdEncoding.DecodeString(resp.PubsubEvent.Message.Data)
+	if err != nil {
+		return nil, err
+	}
+	labels := make(map[string]string, len(resp.PubsubEvent.Message.Label))
+	for _, l := range resp.PubsubEvent.Message.Label {
+		if l.StrValue != "" {
+			labels[l.Key] = l.StrValue
+		} else {
+			labels[l.Key] = strconv.FormatInt(l.NumValue, 10)
+		}
+	}
+	return &Message{
+		AckID:     resp.AckId,
+		Data:      data,
+		Labels:    labels,
+		MessageID: resp.PubsubEvent.Message.MessageId,
+	}, nil
+}
+
 func pull(ctx context.Context, sub string, retImmediately bool) (*Message, error) {
 	resp, err := rawService(ctx).Subscriptions.Pull(&raw.PullRequest{
 		Subscription:      fullSubName(internal.ProjID(ctx), sub),
@@ -173,26 +200,42 @@ func pull(ctx context.Context, sub string, retImmediately bool) (*Message, error
 	if err != nil {
 		return nil, err
 	}
-	if resp.PubsubEvent.Message == nil {
-		return &Message{AckID: resp.AckId}, nil
-	}
-	data, err := base64.StdEncoding.DecodeString(resp.PubsubEvent.Message.Data)
+	return toMessage(resp)
+}
+
+// Pull pulls new messages up to the specified batch size from the
+// specified subscription queue.
+func PullBatch(ctx context.Context, sub string, batchSize int) ([]*Message, error) {
+	return pullBatch(ctx, sub, batchSize, true)
+}
+
+// PullWait pulls new messages up to the specified batch size from the
+// specified subscription queue. If there are not enough messages left
+// in the subscription queue, it will block until new messages
+// arrive up to the batch size, or timeout occurs.
+func PullBatchWait(ctx context.Context, sub string, batchSize int) ([]*Message, error) {
+	return pullBatch(ctx, sub, batchSize, false)
+}
+
+func pullBatch(ctx context.Context, sub string, batchSize int, retImmediately bool) ([]*Message, error) {
+	resp, err := rawService(ctx).Subscriptions.PullBatch(
+		&raw.PullBatchRequest{
+			Subscription:      fullSubName(internal.ProjID(ctx), sub),
+			ReturnImmediately: retImmediately,
+			MaxEvents:         int64(batchSize),
+		}).Do()
 	if err != nil {
 		return nil, err
 	}
-	labels := make(map[string]string)
-	for _, l := range resp.PubsubEvent.Message.Label {
-		if l.StrValue != "" {
-			labels[l.Key] = l.StrValue
-		} else {
-			labels[l.Key] = strconv.FormatInt(l.NumValue, 10)
+	messages := make([]*Message, len(resp.PullResponses))
+	for i := 0; i < len(resp.PullResponses); i++ {
+		message, err := toMessage(resp.PullResponses[i])
+		if err != nil {
+			return nil, err
 		}
+		messages[i] = message
 	}
-	return &Message{
-		AckID:  resp.AckId,
-		Data:   data,
-		Labels: labels,
-	}, nil
+	return messages, nil
 }
 
 // CreateTopic creates a new topic with the specified name on the backend.
@@ -242,6 +285,39 @@ func Publish(ctx context.Context, topic string, data []byte, labels map[string]s
 			Label: rawLabels,
 		},
 	}).Do()
+}
+
+// PublishBatch publishes multiple messages to the specified topic's
+// subscribers. It returns message IDs when succeeded, and returns an
+// error upon any failures.
+func PublishBatch(ctx context.Context, topic string, messages []*Message) ([]string, error) {
+	var rawMessages []*raw.PubsubMessage
+	if len(messages) > 0 {
+		rawMessages = make([]*raw.PubsubMessage, len(messages))
+		for i := 0; i < len(messages); i++ {
+			var rawLabels []*raw.Label
+			if len(messages[i].Labels) > 0 {
+				rawLabels = make([]*raw.Label, len(messages[i].Labels))
+				j := 0
+				for k, v := range messages[i].Labels {
+					rawLabels[j] = &raw.Label{Key: k, StrValue: v}
+					j++
+				}
+			}
+			rawMessages[i] = &raw.PubsubMessage{
+				Data:  base64.StdEncoding.EncodeToString(messages[i].Data),
+				Label: rawLabels,
+			}
+		}
+	}
+	resp, err := rawService(ctx).Topics.PublishBatch(&raw.PublishBatchRequest{
+		Topic:    fullTopicName(internal.ProjID(ctx), topic),
+		Messages: rawMessages,
+	}).Do()
+	if err != nil {
+		return nil, err
+	}
+	return resp.MessageIds, nil
 }
 
 // fullSubName returns the fully qualified name for a subscription.
