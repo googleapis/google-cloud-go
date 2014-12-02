@@ -26,8 +26,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/golang/oauth2"
-	"github.com/golang/oauth2/google"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/cloud"
 
 	"golang.org/x/net/context"

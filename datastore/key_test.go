@@ -21,7 +21,6 @@ import (
 	"testing"
 
 	"golang.org/x/net/context"
-	"google.golang.org/cloud"
 )
 
 func TestNamespace(t *testing.T) {
@@ -31,7 +30,7 @@ func TestNamespace(t *testing.T) {
 		t.Errorf("No namespace, k.Namespace() = %q, want %q", got, want)
 	}
 
-	c = cloud.WithNamespace(c, "gopherspace")
+	c = WithNamespace(c, "gopherspace")
 	k = NewIncompleteKey(c, "foo", nil)
 	if got, want := k.Namespace(), "gopherspace"; got != want {
 		t.Errorf("No namespace, k.Namespace() = %q, want %q", got, want)
@@ -50,7 +49,7 @@ func TestParent(t *testing.T) {
 
 func TestEqual(t *testing.T) {
 	c := context.Background()
-	cN := cloud.WithNamespace(c, "gopherspace")
+	cN := WithNamespace(c, "gopherspace")
 
 	testCases := []struct {
 		x, y  *Key
@@ -125,7 +124,7 @@ func TestEqual(t *testing.T) {
 
 func TestEncoding(t *testing.T) {
 	c := context.Background()
-	cN := cloud.WithNamespace(c, "gopherspace")
+	cN := WithNamespace(c, "gopherspace")
 
 	testCases := []struct {
 		k     *Key
