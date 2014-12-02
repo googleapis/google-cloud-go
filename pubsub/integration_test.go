@@ -64,36 +64,55 @@ func TestAll(t *testing.T) {
 		t.Errorf("subscription %s should exist, but it doesn't", subscription)
 	}
 
-	text := fmt.Sprintf("a message from %s", time.Now())
-	labels := make(map[string]string)
-	labels["foo"] = "bar"
-	if err := Publish(ctx, topic, []byte(text), labels); err != nil {
+	max := 10
+	msgs := make([]*Message, max)
+	expectedMsgs := make(map[string]bool, max)
+	for i := 0; i < max; i++ {
+		text := fmt.Sprintf("a message with an index %d", i)
+		labels := make(map[string]string)
+		labels["foo"] = "bar"
+		msgs[i] = &Message{
+			Data:   []byte(text),
+			Labels: labels,
+		}
+		expectedMsgs[text] = false
+	}
+
+	ids, err := Publish(ctx, topic, msgs...)
+	if err != nil {
 		t.Errorf("Publish (1) error: %v", err)
 	}
-	// TODO(jbd): Stop publishing twice when the API fixes its latency
-	// issues with the initial message on a topic.
-	if err := Publish(ctx, topic, []byte(text), labels); err != nil {
-		t.Errorf("Publish (2) error: %v", err)
+	if len(ids) != max {
+		t.Errorf("unexpected number of message IDs received; %d, want %d", len(ids), max)
 	}
-	msg, err := Pull(ctx, subscription)
-	if err != nil {
-		t.Errorf("Pull error: %v", err)
-		return
+	expectedIDs := make(map[string]bool, max)
+	for _, id := range ids {
+		expectedIDs[id] = false
 	}
-	if string(msg.Data) != text {
-		t.Errorf("message data is expected to be '%s', found '%s'.", text, msg.Data)
-	}
-	if msg.Labels["foo"] != "bar" {
-		t.Errorf("message label foo is expected to be '%s', found '%s'", labels["foo"], msg.Labels["foo"])
-	}
-	if err := Ack(ctx, subscription, msg.AckID); err != nil {
-		t.Errorf("Can't acknowledge the message (1)", err)
-	}
-	// TODO(jbd): Test PullWait with timeout case.
 
-	// Allow user to publish messages with nil data.
-	if err := Publish(ctx, topic, nil, nil); err != nil {
-		t.Errorf("Publish with nil data failed with %v", err)
+	received, err := PullWait(ctx, subscription, max)
+	if err != nil {
+		t.Errorf("PullWait error: %v", err)
+	}
+	if len(received) != max {
+		t.Errorf("unexpected number of messages received; %d, want %d", len(received), max)
+	}
+	for _, msg := range received {
+		expectedMsgs[string(msg.Data)] = true
+		expectedIDs[msg.ID] = true
+		if msg.Labels["foo"] != "bar" {
+			t.Errorf("message label foo is expected to be 'bar', found '%s'", msg.Labels["foo"])
+		}
+	}
+	for msg, found := range expectedMsgs {
+		if !found {
+			t.Errorf("message '%s' should be received", msg)
+		}
+	}
+	for id, found := range expectedIDs {
+		if !found {
+			t.Errorf("message with the message id '%s' should be received", id)
+		}
 	}
 
 	err = DeleteSub(ctx, subscription)

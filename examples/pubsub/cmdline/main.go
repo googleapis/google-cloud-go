@@ -38,7 +38,8 @@ import (
 var (
 	jsonFile  = flag.String("j", "", "A path to your JSON key file for your service account downloaded from Google Developer Console, not needed if you run it on Compute Engine instances.")
 	projID    = flag.String("p", "", "The ID of your Google Cloud project.")
-	reportMPS = flag.Bool("report_mps", false, "Reports the incoming/outgoing message rate in msg/sec if set.")
+	reportMPS = flag.Bool("report", false, "Reports the incoming/outgoing message rate in msg/sec if set.")
+	size      = flag.Int("size", 10, "Batch size for pull_messages and publish_messages subcommands.")
 )
 
 const (
@@ -156,18 +157,20 @@ func publish(ctx context.Context, argv []string) {
 	checkArgs(argv, 3)
 	topic := argv[1]
 	message := argv[2]
-	err := pubsub.Publish(ctx, topic, []byte(message), nil)
+	msgIDs, err := pubsub.Publish(ctx, topic, &pubsub.Message{
+		Data: []byte(message),
+	})
 	if err != nil {
 		log.Fatalf("Publish failed, %v", err)
 	}
-	fmt.Printf("Message '%s' published to a topic %s\n", message, topic)
+	fmt.Printf("Message '%s' published to a topic %s and the message id is %s\n", message, topic, msgIDs[0])
 }
 
 type reporter struct {
 	reportTitle string
 	lastC       uint64
 	c           uint64
-	result      <-chan struct{}
+	result      <-chan int
 }
 
 func (r *reporter) report() {
@@ -182,33 +185,42 @@ func (r *reporter) report() {
 			r.lastC = r.c
 			mps := n / uint64(tick/time.Second)
 			log.Printf("%s ~%d msgs/s, total: %d", r.reportTitle, mps, r.c)
-		case <-r.result:
-			r.c += 1
+		case n := <-r.result:
+			r.c += uint64(n)
 		}
 	}
 }
 
-func ack(ctx context.Context, sub string, ackID string) {
-	err := pubsub.Ack(ctx, sub, ackID)
+func ack(ctx context.Context, sub string, ackID ...string) {
+	err := pubsub.Ack(ctx, sub, ackID...)
 	if err != nil {
 		log.Printf("Ack failed, %v\n", err)
 	}
 }
 
-func pullLoop(ctx context.Context, sub string, result chan<- struct{}) {
+func pullLoop(ctx context.Context, sub string, result chan<- int) {
 	for {
-		msg, err := pubsub.PullWait(ctx, sub)
+		msgs, err := pubsub.PullWait(ctx, sub, *size)
 		if err != nil {
 			log.Printf("PullWait failed, %v\n", err)
 			time.Sleep(5 * time.Second)
 			continue
 		}
-		if *reportMPS {
-			result <- struct{}{}
-		} else {
-			fmt.Printf("Got a message: %s\n", msg.Data)
+		if len(msgs) == 0 {
+			log.Println("Received no messages")
+			continue
 		}
-		go ack(ctx, sub, msg.AckID)
+		if *reportMPS {
+			result <- len(msgs)
+		}
+		ackIDs := make([]string, len(msgs))
+		for i, msg := range msgs {
+			if !*reportMPS {
+				fmt.Printf("Got a message: %s\n", msg.Data)
+			}
+			ackIDs[i] = msg.AckID
+		}
+		go ack(ctx, sub, ackIDs...)
 	}
 }
 
@@ -219,7 +231,7 @@ func pullMessages(ctx context.Context, argv []string) {
 	if err != nil {
 		log.Fatalf("Atoi failed, %v", err)
 	}
-	result := make(chan struct{}, 1024)
+	result := make(chan int, 1024)
 	for i := 0; i < int(workers); i++ {
 		go pullLoop(ctx, sub, result)
 	}
@@ -231,18 +243,23 @@ func pullMessages(ctx context.Context, argv []string) {
 	}
 }
 
-func publishLoop(ctx context.Context, topic string, workerid int, result chan<- struct{}) {
-	var i uint64
+func publishLoop(ctx context.Context, topic string, workerid int, result chan<- int) {
+	var r uint64
 	for {
-		message := fmt.Sprintf("Worker: %d, Message: %d", workerid, i)
-		err := pubsub.Publish(ctx, topic, []byte(message), nil)
+		msgs := make([]*pubsub.Message, *size)
+		for i := 0; i < *size; i++ {
+			msgs[i] = &pubsub.Message{
+				Data: []byte(fmt.Sprintf("Worker: %d, Round: %d, Message: %d", workerid, r, i)),
+			}
+		}
+		_, err := pubsub.Publish(ctx, topic, msgs...)
 		if err != nil {
 			log.Printf("Publish failed, %v\n", err)
-		} else {
-			i++
-			if *reportMPS {
-				result <- struct{}{}
-			}
+			return
+		}
+		r++
+		if *reportMPS {
+			result <- *size
 		}
 	}
 }
@@ -254,7 +271,7 @@ func publishMessages(ctx context.Context, argv []string) {
 	if err != nil {
 		log.Fatalf("Atoi failed, %v", err)
 	}
-	result := make(chan struct{}, 1024)
+	result := make(chan int, 1024)
 	for i := 0; i < int(workers); i++ {
 		go publishLoop(ctx, topic, i, result)
 	}

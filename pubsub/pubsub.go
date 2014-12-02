@@ -33,12 +33,6 @@ import (
 	"golang.org/x/net/context"
 )
 
-var (
-	// ErrPullTimeout is returned from PullWait if there are no messages
-	// to pull from a subscription in a reasaonable amount of time.
-	ErrPullTimeout = errors.New("pubsub: no messages, request timed out")
-)
-
 const (
 	// ScopePubSub grants permissions to view and manage Pub/Sub
 	// topics and subscriptions.
@@ -49,8 +43,14 @@ const (
 	ScopeCloudPlatform = "https://www.googleapis.com/auth/cloud-platform"
 )
 
+// batchLimit is maximun size of a single batch.
+const batchLimit = 100
+
 // Message represents a Pub/Sub message.
 type Message struct {
+	// ID identifies this message.
+	ID string
+
 	// AckID is the identifier to acknowledge this message.
 	AckID string
 
@@ -150,29 +150,7 @@ func Ack(ctx context.Context, sub string, id ...string) error {
 	}).Do()
 }
 
-// Pull pulls a new message from the specified subscription queue.
-func Pull(ctx context.Context, sub string) (*Message, error) {
-	return pull(ctx, sub, true)
-}
-
-// PullWait pulls a new message from the specified subscription queue.
-// If there are no messages left in the subscription queue, it will
-// block until a new message arrives or timeout occurs.
-func PullWait(ctx context.Context, sub string) (*Message, error) {
-	return pull(ctx, sub, false)
-}
-
-func pull(ctx context.Context, sub string, retImmediately bool) (*Message, error) {
-	resp, err := rawService(ctx).Subscriptions.Pull(&raw.PullRequest{
-		Subscription:      fullSubName(internal.ProjID(ctx), sub),
-		ReturnImmediately: retImmediately,
-	}).Do()
-	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusBadRequest {
-		return nil, ErrPullTimeout
-	}
-	if err != nil {
-		return nil, err
-	}
+func toMessage(resp *raw.PullResponse) (*Message, error) {
 	if resp.PubsubEvent.Message == nil {
 		return &Message{AckID: resp.AckId}, nil
 	}
@@ -180,7 +158,7 @@ func pull(ctx context.Context, sub string, retImmediately bool) (*Message, error
 	if err != nil {
 		return nil, err
 	}
-	labels := make(map[string]string)
+	labels := make(map[string]string, len(resp.PubsubEvent.Message.Label))
 	for _, l := range resp.PubsubEvent.Message.Label {
 		if l.StrValue != "" {
 			labels[l.Key] = l.StrValue
@@ -192,7 +170,45 @@ func pull(ctx context.Context, sub string, retImmediately bool) (*Message, error
 		AckID:  resp.AckId,
 		Data:   data,
 		Labels: labels,
+		ID:     resp.PubsubEvent.Message.MessageId,
 	}, nil
+}
+
+// Pull pulls messages from the subscription. It returns up to n
+// number of messages, and n could not be larger than 100.
+func Pull(ctx context.Context, sub string, n int) ([]*Message, error) {
+	return pull(ctx, sub, n, true)
+}
+
+// PullWait pulls messages from the subscription. If there are not
+// enough messages left in the subscription queue, it will block until
+// at least n number of messages arrive or timeout occurs, and n could
+// not be larger than 100.
+func PullWait(ctx context.Context, sub string, n int) ([]*Message, error) {
+	return pull(ctx, sub, n, false)
+}
+
+func pull(ctx context.Context, sub string, n int, retImmediately bool) ([]*Message, error) {
+	if n < 1 || n > batchLimit {
+		return nil, fmt.Errorf("pubsub: cannot pull less than one, more than %d messages, but %d was given", batchLimit, n)
+	}
+	resp, err := rawService(ctx).Subscriptions.PullBatch(&raw.PullBatchRequest{
+		Subscription:      fullSubName(internal.ProjID(ctx), sub),
+		ReturnImmediately: retImmediately,
+		MaxEvents:         int64(n),
+	}).Do()
+	if err != nil {
+		return nil, err
+	}
+	msgs := make([]*Message, len(resp.PullResponses))
+	for i := 0; i < len(resp.PullResponses); i++ {
+		msg, err := toMessage(resp.PullResponses[i])
+		if err != nil {
+			return nil, fmt.Errorf("pubsub: cannot decode the retrieved message at index: %d, PullResponse: %+v", i, resp.PullResponses[i])
+		}
+		msgs[i] = msg
+	}
+	return msgs, nil
 }
 
 // CreateTopic creates a new topic with the specified name on the backend.
@@ -221,27 +237,43 @@ func TopicExists(ctx context.Context, name string) (bool, error) {
 	return true, nil
 }
 
-// Publish publishes a new message to the specified topic's subscribers.
-// You don't have to label your message. Use nil if there are no labels.
-// Label values could be either int64 or string. It will return an error
-// if you provide a value of another kind.
-func Publish(ctx context.Context, topic string, data []byte, labels map[string]string) error {
-	var rawLabels []*raw.Label
-	if len(labels) > 0 {
-		rawLabels = make([]*raw.Label, len(labels))
-		i := 0
-		for k, v := range labels {
-			rawLabels[i] = &raw.Label{Key: k, StrValue: v}
-			i++
+// Publish publish messages to the topic's subscribers. It returns
+// message IDs upon success.
+func Publish(ctx context.Context, topic string, msgs ...*Message) ([]string, error) {
+	var rawMsgs []*raw.PubsubMessage
+	if len(msgs) == 0 {
+		return nil, errors.New("pubsub: no messages to publish")
+	}
+	if len(msgs) > batchLimit {
+		return nil, fmt.Errorf("pubsub: %d messages given, but maximum batch size is %d", len(msgs), batchLimit)
+	}
+	rawMsgs = make([]*raw.PubsubMessage, len(msgs))
+	for i, msg := range msgs {
+		var rawLabels []*raw.Label
+		if len(msg.Labels) > 0 {
+			rawLabels = make([]*raw.Label, len(msg.Labels))
+			j := 0
+			for k, v := range msg.Labels {
+				rawLabels[j] = &raw.Label{
+					Key:      k,
+					StrValue: v,
+				}
+				j++
+			}
+		}
+		rawMsgs[i] = &raw.PubsubMessage{
+			Data:  base64.StdEncoding.EncodeToString(msg.Data),
+			Label: rawLabels,
 		}
 	}
-	return rawService(ctx).Topics.Publish(&raw.PublishRequest{
-		Topic: fullTopicName(internal.ProjID(ctx), topic),
-		Message: &raw.PubsubMessage{
-			Data:  base64.StdEncoding.EncodeToString(data),
-			Label: rawLabels,
-		},
+	resp, err := rawService(ctx).Topics.PublishBatch(&raw.PublishBatchRequest{
+		Topic:    fullTopicName(internal.ProjID(ctx), topic),
+		Messages: rawMsgs,
 	}).Do()
+	if err != nil {
+		return nil, err
+	}
+	return resp.MessageIds, nil
 }
 
 // fullSubName returns the fully qualified name for a subscription.

@@ -57,22 +57,25 @@ func Example_publishAndSubscribe() {
 	// Publish hello world on topic1.
 	go func() {
 		for {
-			err := pubsub.Publish(ctx, "topic1", []byte("hello"), nil)
+			msgIDs, err := pubsub.Publish(ctx, "topic1", &pubsub.Message{
+				Data: []byte("hello world"),
+			})
 			if err != nil {
 				log.Println(err)
 			}
+			log.Println("Published a message with a message id: %s", msgIDs[0])
 		}
 	}()
 
 	// sub1 is a subscription that is subscribed to topic1.
 	// E.g. c.CreateSub("sub1", "topic1", time.Duration(0), "")
 	for {
-		m, err := pubsub.PullWait(ctx, "sub1")
+		msgs, err := pubsub.PullWait(ctx, "sub1", 1)
 		if err != nil {
 			log.Println(err)
 		} else {
-			log.Println("new message arrived:", m)
-			if err := pubsub.Ack(ctx, "sub1", m.AckID); err != nil {
+			log.Println("new message arrived:", msgs[0])
+			if err := pubsub.Ack(ctx, "sub1", msgs[0].AckID); err != nil {
 				log.Println("error while acknowledging the message:", err)
 			}
 		}
