@@ -55,6 +55,29 @@ func TestBasics(t *testing.T) {
 	}
 }
 
+func TestListValues(t *testing.T) {
+	p0 := PropertyList{
+		{Name: "L", Value: int64(12), Multiple: true},
+		{Name: "L", Value: "string", Multiple: true},
+		{Name: "L", Value: true, Multiple: true},
+	}
+	c := testContext(t)
+	k, err := Put(c, NewIncompleteKey(c, "ListValue", nil), &p0)
+	if err != nil {
+		t.Fatalf("Put: %v", err)
+	}
+	var p1 PropertyList
+	if err := Get(c, k, &p1); err != nil {
+		t.Errorf("Get: %v", err)
+	}
+	if !reflect.DeepEqual(p0, p1) {
+		t.Errorf("compare:\np0=%v\np1=%#v", p0, p1)
+	}
+	if err = Delete(c, k); err != nil {
+		t.Errorf("Delete: %v", err)
+	}
+}
+
 type Z struct {
 	S string
 	T string `datastore:",noindex"`

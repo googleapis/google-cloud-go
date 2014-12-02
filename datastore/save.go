@@ -133,7 +133,7 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 		}
 		if !p.NoIndex {
 			rVal := reflect.ValueOf(p.Value)
-			if rVal.Kind() == reflect.Slice {
+			if rVal.Kind() == reflect.Slice && rVal.Type().Elem().Kind() != reflect.Uint8 {
 				indexedProps += rVal.Len()
 			} else {
 				indexedProps++
