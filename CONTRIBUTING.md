@@ -1,7 +1,7 @@
 # Contributing
 
 1. Sign one of the contributor license agreements below.
-1. `go get golang.org/x/review` to install the code reviewing tool.
+1. `go get golang.org/x/review/git-review` to install the code reviewing tool.
 1. Get the cloud package by running `go get -d google.golang.org/cloud`.
 If you've already got the package, make sure that the remote git origin
 is https://code.googlesource.com/gocloud.
