@@ -22,15 +22,10 @@ import (
 	"io"
 	"io/ioutil"
 	"math/rand"
-	"net/http"
 	"os"
 	"testing"
 
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
-	"google.golang.org/cloud"
-
-	"golang.org/x/net/context"
+	"google.golang.org/cloud/internal/testutil"
 )
 
 var (
@@ -41,14 +36,10 @@ var (
 	copyObj    = "copy-object"
 )
 
-const (
-	envProjID     = "GCLOUD_TESTS_GOLANG_PROJECT_ID"
-	envPrivateKey = "GCLOUD_TESTS_GOLANG_KEY"
-	envBucket     = "GCLOUD_TESTS_GOLANG_BUCKET_NAME"
-)
+const envBucket = "GCLOUD_TESTS_GOLANG_BUCKET_NAME"
 
 func TestObjects(t *testing.T) {
-	ctx := testContext(t)
+	ctx := testutil.Context(ScopeFullControl)
 	bucket = os.Getenv(envBucket)
 
 	// Cleanup.
@@ -137,8 +128,7 @@ func TestObjects(t *testing.T) {
 	if err = PutACLRule(ctx, bucket, publicObj, "allUsers", RoleReader); err != nil {
 		t.Errorf("PutACLRule failed with %v", err)
 	}
-	publicCtx := cloud.NewContext(
-		os.Getenv(envProjID), &http.Client{Transport: http.DefaultTransport})
+	publicCtx := testutil.NoAuthContext()
 	r, err := NewReader(publicCtx, bucket, publicObj)
 	if err != nil {
 		t.Error(err)
@@ -165,7 +155,7 @@ func TestObjects(t *testing.T) {
 }
 
 func TestACL(t *testing.T) {
-	ctx := testContext(t)
+	ctx := testutil.Context(ScopeFullControl)
 	cleanup(t, "acl")
 	entity := "domain-google.com"
 	if err := PutDefaultACLRule(ctx, bucket, entity, RoleReader); err != nil {
@@ -225,7 +215,7 @@ func TestACL(t *testing.T) {
 }
 
 func cleanup(t *testing.T, prefix string) {
-	ctx := testContext(t)
+	ctx := testutil.Context(ScopeFullControl)
 	var q *Query = &Query{
 		Prefix: prefix,
 	}
@@ -251,16 +241,4 @@ func randomContents() []byte {
 	h := md5.New()
 	io.WriteString(h, fmt.Sprintf("hello world%d", rand.Intn(100000)))
 	return h.Sum(nil)
-}
-
-func testContext(t *testing.T) context.Context {
-	opts, err := oauth2.New(
-		google.ServiceAccountJSONKey(os.Getenv(envPrivateKey)),
-		oauth2.Scope(ScopeFullControl),
-	)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return cloud.NewContext(
-		os.Getenv(envProjID), &http.Client{Transport: opts.NewTransport()})
 }

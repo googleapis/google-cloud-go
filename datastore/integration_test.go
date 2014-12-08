@@ -18,8 +18,6 @@ package datastore
 
 import (
 	"fmt"
-	"net/http"
-	"os"
 
 	"reflect"
 	"sort"
@@ -28,14 +26,7 @@ import (
 	"time"
 
 	"golang.org/x/net/context"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
-	"google.golang.org/cloud"
-)
-
-const (
-	envProjID     = "GCLOUD_TESTS_GOLANG_PROJECT_ID"
-	envPrivateKey = "GCLOUD_TESTS_GOLANG_KEY"
+	"google.golang.org/cloud/internal/testutil"
 )
 
 func TestBasics(t *testing.T) {
@@ -44,7 +35,7 @@ func TestBasics(t *testing.T) {
 		S string
 		T time.Time
 	}
-	c := testContext(t)
+	c := testutil.Context(ScopeDatastore, ScopeUserEmail)
 	x0 := X{66, "99", time.Now().Truncate(time.Millisecond)}
 	k, err := Put(c, NewIncompleteKey(c, "BasicsX", nil), &x0)
 	if err != nil {
@@ -98,7 +89,7 @@ func TestUnindexableValues(t *testing.T) {
 		{in: Z{K: []byte(x500)}, wantErr: false},
 		{in: Z{K: []byte(x501)}, wantErr: false},
 	}
-	c := testContext(t)
+	c := testutil.Context(ScopeDatastore, ScopeUserEmail)
 	for _, tt := range testCases {
 		_, err := Put(c, NewIncompleteKey(c, "BasicsZ", nil), &tt.in)
 		if (err != nil) != tt.wantErr {
@@ -170,7 +161,7 @@ func testSmallQueries(t *testing.T, c context.Context, parent *Key, children []*
 }
 
 func TestFilters(t *testing.T) {
-	c := testContext(t)
+	c := testutil.Context(ScopeDatastore, ScopeUserEmail)
 	parent := NewKey(c, "SQParent", "TestFilters", 0, nil)
 	now := time.Now().Truncate(time.Millisecond).Unix()
 	children := []*SQChild{
@@ -251,7 +242,7 @@ func TestFilters(t *testing.T) {
 }
 
 func TestEventualConsistency(t *testing.T) {
-	c := testContext(t)
+	c := testutil.Context(ScopeDatastore, ScopeUserEmail)
 	parent := NewKey(c, "SQParent", "TestEventualConsistency", 0, nil)
 	now := time.Now().Truncate(time.Millisecond).Unix()
 	children := []*SQChild{
@@ -272,7 +263,7 @@ func TestEventualConsistency(t *testing.T) {
 }
 
 func TestProjection(t *testing.T) {
-	c := testContext(t)
+	c := testutil.Context(ScopeDatastore, ScopeUserEmail)
 	parent := NewKey(c, "SQParent", "TestProjection", 0, nil)
 	now := time.Now().Truncate(time.Millisecond).Unix()
 	children := []*SQChild{
@@ -306,7 +297,7 @@ func TestProjection(t *testing.T) {
 }
 
 func TestAllocateIDs(t *testing.T) {
-	c := testContext(t)
+	c := testutil.Context(ScopeDatastore, ScopeUserEmail)
 	keys := make([]*Key, 5)
 	for i := range keys {
 		keys[i] = NewIncompleteKey(c, "AllocID", nil)
@@ -333,7 +324,7 @@ func TestGetAllWithFieldMismatch(t *testing.T) {
 		X int
 	}
 
-	c := testContext(t)
+	c := testutil.Context(ScopeDatastore, ScopeUserEmail)
 	putKeys := make([]*Key, 3)
 	for i := range putKeys {
 		putKeys[i] = NewKey(c, "GetAllThing", "", int64(10+i), nil)
@@ -371,7 +362,7 @@ func TestKindlessQueries(t *testing.T) {
 		Pling string
 	}
 
-	c := testContext(t)
+	c := testutil.Context(ScopeDatastore, ScopeUserEmail)
 	parent := NewKey(c, "Tweedle", "tweedle", 0, nil)
 
 	keys := []*Key{
@@ -477,16 +468,4 @@ loop:
 			continue
 		}
 	}
-}
-
-func testContext(t *testing.T) context.Context {
-	opts, err := oauth2.New(
-		google.ServiceAccountJSONKey(os.Getenv(envPrivateKey)),
-		oauth2.Scope(ScopeDatastore, ScopeUserEmail),
-	)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return cloud.NewContext(
-		os.Getenv(envProjID), &http.Client{Transport: opts.NewTransport()})
 }

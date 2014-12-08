@@ -18,24 +18,14 @@ package pubsub
 
 import (
 	"fmt"
-	"net/http"
-	"os"
 	"testing"
 	"time"
 
-	"golang.org/x/net/context"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
-	"google.golang.org/cloud"
-)
-
-const (
-	envProjID     = "GCLOUD_TESTS_GOLANG_PROJECT_ID"
-	envPrivateKey = "GCLOUD_TESTS_GOLANG_KEY"
+	"google.golang.org/cloud/internal/testutil"
 )
 
 func TestAll(t *testing.T) {
-	ctx := testContext(t)
+	ctx := testutil.Context(ScopePubSub, ScopeCloudPlatform)
 	now := time.Now()
 	topic := fmt.Sprintf("topic-%d", now.Unix())
 	subscription := fmt.Sprintf("subscription-%d", now.Unix())
@@ -124,16 +114,4 @@ func TestAll(t *testing.T) {
 	if err != nil {
 		t.Errorf("DeleteTopic error: %v", err)
 	}
-}
-
-func testContext(t *testing.T) context.Context {
-	opts, err := oauth2.New(
-		google.ServiceAccountJSONKey(os.Getenv(envPrivateKey)),
-		oauth2.Scope(ScopePubSub, ScopeCloudPlatform),
-	)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return cloud.NewContext(
-		os.Getenv(envProjID), &http.Client{Transport: opts.NewTransport()})
 }
