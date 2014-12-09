@@ -36,7 +36,7 @@ var (
 	copyObj    = "copy-object"
 )
 
-const envBucket = "GCLOUD_TESTS_GOLANG_BUCKET_NAME"
+const envBucket = "GCLOUD_TESTS_GOLANG_PROJECT_ID"
 
 func TestObjects(t *testing.T) {
 	ctx := testutil.Context(ScopeFullControl)
@@ -222,7 +222,7 @@ func cleanup(t *testing.T, prefix string) {
 	for {
 		o, err := ListObjects(ctx, bucket, q)
 		if err != nil {
-			t.Fatalf("Cleanup List failed with error: %v", err)
+			t.Fatalf("Cleanup List for bucket %v failed with error: %v", bucket, err)
 		}
 		for _, obj := range o.Results {
 			t.Logf("Cleanup deletion of %v", obj.Name)
