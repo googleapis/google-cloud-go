@@ -20,6 +20,7 @@ import (
 	"net/http"
 	"testing"
 
+	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/cloud"
@@ -30,7 +31,7 @@ import (
 // Related to https://codereview.appspot.com/107320046
 func TestA(t *testing.T) {}
 
-func Example_auth() {
+func Example_auth() context.Context {
 	// Initialize an authorized transport with Google Developers Console
 	// JSON key. Read the google package examples to learn more about
 	// different authorization flows you can use.
@@ -44,12 +45,12 @@ func Example_auth() {
 	}
 
 	ctx := cloud.NewContext("project-id", &http.Client{Transport: opts.NewTransport()})
-	_ = ctx // Use the context (see other examples)
+	// Use the context (see other examples)
+	return ctx
 }
 
-func Example_listObjects() {
-	// see the auth example how to initiate a context.
-	ctx := cloud.NewContext("project-id", &http.Client{Transport: nil})
+func ExampleListObjects() {
+	ctx := Example_auth()
 
 	var query *storage.Query
 	for {
@@ -74,9 +75,8 @@ func Example_listObjects() {
 	log.Println("paginated through all object items in the bucket you specified.")
 }
 
-func Example_readObjects() {
-	// see the auth example how to initiate a context.
-	ctx := cloud.NewContext("project-id", &http.Client{Transport: nil})
+func ExampleNewReader() {
+	ctx := Example_auth()
 
 	rc, err := storage.NewReader(ctx, "bucketname", "filename1")
 	if err != nil {
@@ -91,9 +91,8 @@ func Example_readObjects() {
 	log.Println("file contents:", slurp)
 }
 
-func Example_writeObjects() {
-	// see the auth example how to initiate a context.
-	ctx := cloud.NewContext("project-id", &http.Client{Transport: nil})
+func ExampleNewWriter() {
+	ctx := Example_auth()
 
 	wc := storage.NewWriter(ctx, "bucketname", "filename1", &storage.Object{
 		ContentType: "text/plain",
@@ -113,9 +112,8 @@ func Example_writeObjects() {
 	log.Println("updated object:", o)
 }
 
-func Example_copyObjects() {
-	// see the auth example how to initiate a context.
-	ctx := cloud.NewContext("project-id", &http.Client{Transport: nil})
+func ExampleCopyObject() {
+	ctx := Example_auth()
 
 	o, err := storage.CopyObject(ctx, "bucketname", "file1", &storage.Object{
 		Name:   "file2",

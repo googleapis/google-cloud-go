@@ -20,6 +20,7 @@ import (
 	"testing"
 	"time"
 
+	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/cloud"
@@ -30,7 +31,7 @@ import (
 // Related to https://codereview.appspot.com/107320046
 func TestA(t *testing.T) {}
 
-func Example_auth() {
+func Example_auth() context.Context {
 	// Initialize an authorized transport with Google Developers Console
 	// JSON key. Read the google package examples to learn more about
 	// different authorization flows you can use.
@@ -44,12 +45,12 @@ func Example_auth() {
 	}
 
 	ctx := cloud.NewContext("project-id", &http.Client{Transport: opts.NewTransport()})
-	_ = ctx // Use the context (see other examples)
+	// Use the context (see other examples)
+	return ctx
 }
 
-func Example_getPutDelete() {
-	// see the auth example how to initiate a context.
-	ctx := cloud.NewContext("project-id", &http.Client{Transport: nil})
+func ExampleGet() {
+	ctx := Example_auth()
 
 	type Article struct {
 		Title       string
@@ -58,10 +59,25 @@ func Example_getPutDelete() {
 		Author      *datastore.Key
 		PublishedAt time.Time
 	}
+	key := datastore.NewKey(ctx, "Article", "articled1", 0, nil)
+	article := &Article{}
+	if err := datastore.Get(ctx, key, article); err != nil {
+		log.Fatal(err)
+	}
+}
 
-	// Create a new article entity.
+func ExamplePut() {
+	ctx := Example_auth()
+
+	type Article struct {
+		Title       string
+		Description string
+		Body        string `datastore:",noindex"`
+		Author      *datastore.Key
+		PublishedAt time.Time
+	}
 	newKey := datastore.NewIncompleteKey(ctx, "Article", nil)
-	key, err := datastore.Put(ctx, newKey, &Article{
+	_, err := datastore.Put(ctx, newKey, &Article{
 		Title:       "The title of the article",
 		Description: "The description of the article...",
 		Body:        "...",
@@ -69,17 +85,16 @@ func Example_getPutDelete() {
 		PublishedAt: time.Now(),
 	})
 	if err != nil {
-		log.Println(err)
-		return
+		log.Fatal(err)
 	}
-	// Retrieve the newly created entiy.
-	article := &Article{}
-	if err := datastore.Get(ctx, key, article); err != nil {
-		log.Println(err)
-	}
-	// Delete the entity.
+}
+
+func ExampleDelete() {
+	ctx := Example_auth()
+
+	key := datastore.NewKey(ctx, "Article", "articled1", 0, nil)
 	if err := datastore.Delete(ctx, key); err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
 }
 
@@ -89,9 +104,8 @@ type Post struct {
 	Comments    int
 }
 
-func Example_getMulti() {
-	// see the auth example how to initiate a context.
-	ctx := cloud.NewContext("project-id", &http.Client{Transport: nil})
+func ExampleGetMulti() {
+	ctx := Example_auth()
 
 	keys := []*datastore.Key{
 		datastore.NewKey(ctx, "Post", "post1", 0, nil),
@@ -104,9 +118,8 @@ func Example_getMulti() {
 	}
 }
 
-func Example_putMulti() {
-	// see the auth example how to initiate a context.
-	ctx := cloud.NewContext("project-id", &http.Client{Transport: nil})
+func ExamplePutMulti_slice() {
+	ctx := Example_auth()
 
 	keys := []*datastore.Key{
 		datastore.NewKey(ctx, "Post", "post1", 0, nil),
@@ -119,22 +132,30 @@ func Example_putMulti() {
 		{Title: "Post 2", PublishedAt: time.Now()},
 	}
 	if _, err := datastore.PutMulti(ctx, keys, posts); err != nil {
-		log.Println(err)
-	}
-
-	// PutMulti with an empty interface slice.
-	morePosts := []interface{}{
-		&Post{Title: "Post 1", PublishedAt: time.Now()},
-		&Post{Title: "Post 2", PublishedAt: time.Now()},
-	}
-	if _, err := datastore.PutMulti(ctx, keys, morePosts); err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
 }
 
-func Example_basicQueries() {
-	// see the auth example how to initiate a context.
-	ctx := cloud.NewContext("project-id", &http.Client{Transport: nil})
+func ExamplePutMulti_interfaceSlice() {
+	ctx := Example_auth()
+
+	keys := []*datastore.Key{
+		datastore.NewKey(ctx, "Post", "post1", 0, nil),
+		datastore.NewKey(ctx, "Post", "post2", 0, nil),
+	}
+
+	// PutMulti with an empty interface slice.
+	posts := []interface{}{
+		&Post{Title: "Post 1", PublishedAt: time.Now()},
+		&Post{Title: "Post 2", PublishedAt: time.Now()},
+	}
+	if _, err := datastore.PutMulti(ctx, keys, posts); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func ExampleQuery() {
+	ctx := Example_auth()
 
 	// Count the number of the post entities.
 	n, err := datastore.NewQuery("Post").Count(ctx)

@@ -19,6 +19,7 @@ import (
 	"net/http"
 	"testing"
 
+	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/cloud"
@@ -29,7 +30,7 @@ import (
 // Related to https://codereview.appspot.com/107320046
 func TestA(t *testing.T) {}
 
-func Example_auth() {
+func Example_auth() context.Context {
 	// Initialize an authorized transport with Google Developers Console
 	// JSON key. Read the google package examples to learn more about
 	// different authorization flows you can use.
@@ -47,37 +48,33 @@ func Example_auth() {
 
 	c := &http.Client{Transport: opts.NewTransport()}
 	ctx := cloud.NewContext("project-id", c)
-	_ = ctx // See the other samples to learn how to use the context.
+	// See the other samples to learn how to use the context.
+	return ctx
 }
 
-func Example_publishAndSubscribe() {
-	tr := (http.RoundTripper)(nil) // initiate a RoundTripper. See the auth example.
-	ctx := cloud.NewContext("project-id", &http.Client{Transport: tr})
+func ExamplePublish() {
+	ctx := Example_auth()
 
-	// Publish hello world on topic1.
-	go func() {
-		for {
-			msgIDs, err := pubsub.Publish(ctx, "topic1", &pubsub.Message{
-				Data: []byte("hello world"),
-			})
-			if err != nil {
-				log.Println(err)
-			}
-			log.Println("Published a message with a message id: %s", msgIDs[0])
-		}
-	}()
-
-	// sub1 is a subscription that is subscribed to topic1.
-	// E.g. c.CreateSub("sub1", "topic1", time.Duration(0), "")
-	for {
-		msgs, err := pubsub.PullWait(ctx, "sub1", 1)
-		if err != nil {
-			log.Println(err)
-		} else {
-			log.Println("new message arrived:", msgs[0])
-			if err := pubsub.Ack(ctx, "sub1", msgs[0].AckID); err != nil {
-				log.Println("error while acknowledging the message:", err)
-			}
-		}
+	msgIDs, err := pubsub.Publish(ctx, "topic1", &pubsub.Message{
+		Data: []byte("hello world"),
+	})
+	if err != nil {
+		log.Fatal(err)
 	}
+	log.Printf("Published a message with a message id: %s\n", msgIDs[0])
+}
+
+func ExamplePull() {
+	ctx := Example_auth()
+
+	// E.g. c.CreateSub("sub1", "topic1", time.Duration(0), "")
+	msgs, err := pubsub.Pull(ctx, "sub1", 1)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("New message arrived: %v\n", msgs[0])
+	if err := pubsub.Ack(ctx, "sub1", msgs[0].AckID); err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Acknowledged message")
 }
