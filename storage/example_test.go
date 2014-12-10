@@ -104,12 +104,7 @@ func ExampleNewWriter() {
 	if err := wc.Close(); err != nil {
 		log.Fatal(err)
 	}
-
-	o, err := wc.Object()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println("updated object:", o)
+	log.Println("updated object:", wc.Object())
 }
 
 func ExampleCopyObject() {

@@ -143,12 +143,6 @@ func (d *demo) createFile(fileName string) {
 		d.errorf("createFile: unable to close bucket %q, file %q: %v", bucket, fileName, err)
 		return
 	}
-	// Wait for the file to be fully written.
-	_, err := wc.Object()
-	if err != nil {
-		d.errorf("createFile: unable to finalize file from bucket %q, file %q: %v", bucket, fileName, err)
-		return
-	}
 }
 
 // readFile reads the named file in Google Cloud Storage.

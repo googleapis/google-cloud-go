@@ -56,9 +56,6 @@ func TestObjects(t *testing.T) {
 		if err := wc.Close(); err != nil {
 			t.Errorf("Close for %v failed with %v", obj, err)
 		}
-		if _, err := wc.Object(); err != nil {
-			t.Errorf("Can't create object %v, error: %v", obj, err)
-		}
 		contents[obj] = c
 	}
 
@@ -141,6 +138,15 @@ func TestObjects(t *testing.T) {
 		t.Errorf("Public object's content is expected to be %s, found %s", contents[publicObj], slurp)
 	}
 
+	// Test writer error handling.
+	wc := NewWriter(publicCtx, bucket, publicObj, nil)
+	if _, err := wc.Write([]byte("hello")); err != nil {
+		t.Errorf("Write unexpectedly failed with %v", err)
+	}
+	if err = wc.Close(); err == nil {
+		t.Error("Close expected an error, found none")
+	}
+
 	// DeleteObject object.
 	// The rest of the other object will be deleted during
 	// the initial cleanup. This tests exists, so we still can cover
@@ -170,9 +176,6 @@ func TestACL(t *testing.T) {
 		}
 		if err := wc.Close(); err != nil {
 			t.Errorf("Close for %v failed with %v", obj, err)
-		}
-		if _, err := wc.Object(); err != nil {
-			t.Errorf("Can't create object %v, error: %v", obj, err)
 		}
 	}
 	name := aclObjects[0]

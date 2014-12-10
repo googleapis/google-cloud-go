@@ -276,7 +276,7 @@ type Objects struct {
 // contentTyper implements ContentTyper to enable an
 // io.ReadCloser to specify its MIME type.
 type contentTyper struct {
-	io.ReadCloser
+	io.Reader
 	t string
 }
 
@@ -284,67 +284,61 @@ func (c *contentTyper) ContentType() string {
 	return c.t
 }
 
-// newObjectWriter returns a new ObjectWriter that writes to
+// newWriter returns a new io.Writer that writes to
 // the file that is specified by info.Bucket and info.Name.
 // Metadata changes are also reflected on the remote object
 // entity, read-only fields are ignored during the write operation.
-func newObjectWriter(ctx context.Context, info *Object) *ObjectWriter {
-	w := &ObjectWriter{
-		ctx:  ctx,
-		done: make(chan bool),
+func newWriter(ctx context.Context, info *Object) *Writer {
+	w := &Writer{
+		ctx:   ctx,
+		donec: make(chan struct{}),
 	}
 	pr, pw := io.Pipe()
-	w.rc = &contentTyper{pr, info.ContentType}
+	w.r = &contentTyper{pr, info.ContentType}
 	w.pw = pw
 	go func() {
 		resp, err := rawService(ctx).Objects.Insert(
-			info.Bucket, info.toRawObject()).Media(w.rc).Do()
+			info.Bucket, info.toRawObject()).Media(w.r).Do()
 		w.err = err
 		if err == nil {
 			w.obj = newObject(resp)
 		}
-		close(w.done)
+		close(w.donec)
 	}()
 	return w
 }
 
-// ObjectWriter is an io.WriteCloser that opens a connection
+// Writer is an io.WriteCloser that opens a connection
 // to update the metadata and file contents of a GCS object.
-type ObjectWriter struct {
+type Writer struct {
 	ctx context.Context
 
-	rc io.ReadCloser
+	r  io.Reader
 	pw *io.PipeWriter
 
-	done chan bool
-	obj  *Object
-	err  error
+	donec chan struct{} // closed after err and obj are set.
+	err   error
+	obj   *Object
 }
 
-// Write writes len(p) bytes to the object. It returns the number
-// of the bytes written, or an error if there is a problem occured
-// during the write. It's a blocking operation, and will not return
-// until the bytes are written to the underlying socket.
-func (w *ObjectWriter) Write(p []byte) (n int, err error) {
-	if w.err != nil {
-		return 0, w.err
-	}
+// Write appends to w.
+func (w *Writer) Write(p []byte) (n int, err error) {
 	return w.pw.Write(p)
 }
 
-// Close closes the writer and cleans up other resources
-// used by the writer.
-func (w *ObjectWriter) Close() error {
-	if w.err != nil {
-		return w.err
+// Close completes the write operation and flushes any buffered data.
+// If Close doesn't return an error, metadata about the written object
+// can be retrieved by calling Object.
+func (w *Writer) Close() error {
+	if err := w.pw.Close(); err != nil {
+		return err
 	}
-	w.rc.Close()
-	return w.pw.Close()
+	<-w.donec
+	return w.err
 }
 
-// Object returns the object information. It will block until
-// the write operation is complete.
-func (w *ObjectWriter) Object() (*Object, error) {
-	<-w.done
-	return w.obj, w.err
+// Object returns metadata about a successfully-written object.
+// It's only valid to call it after Close returns nil.
+func (w *Writer) Object() *Object {
+	return w.obj
 }

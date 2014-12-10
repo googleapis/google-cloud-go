@@ -265,19 +265,24 @@ func NewReader(ctx context.Context, bucket, name string) (io.ReadCloser, error) 
 	return resp.Body, nil
 }
 
-// NewWriter returns a new ObjectWriter to write to the GCS object
-// identified by the specified object name.
+// NewWriter returns a storage Writer that writes to the GCS object
+// identified by the specified name.
 // If such object doesn't exist, it creates one. If info is not nil,
 // write operation also modifies the meta information of the object.
 // All read-only fields are ignored during metadata updates.
-func NewWriter(ctx context.Context, bucket, name string, info *Object) *ObjectWriter {
+//
+// It is the caller's responsibility to call Close when writing is done.
+//
+// The object is not available and any previous object with the same
+// name is not replaced on Cloud Storage until Close is called.
+func NewWriter(ctx context.Context, bucket, name string, info *Object) *Writer {
 	i := Object{}
 	if info != nil {
 		i = *info
 	}
 	i.Bucket = bucket
 	i.Name = name
-	return newObjectWriter(ctx, &i)
+	return newWriter(ctx, &i)
 }
 
 func rawService(ctx context.Context) *raw.Service {
