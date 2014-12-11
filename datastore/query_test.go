@@ -459,6 +459,14 @@ func TestFilterParser(t *testing.T) {
 		{"x !", false, "", 0},
 		{"x ", false, "", 0},
 		{"x", false, "", 0},
+		// Quoted and interesting field names.
+		{"x > y =", true, "x > y", equal},
+		{"` x ` =", true, " x ", equal},
+		{`" x " =`, true, " x ", equal},
+		{`" \"x " =`, true, ` "x `, equal},
+		{`" x =`, false, "", 0},
+		{`" x ="`, false, "", 0},
+		{"` x \" =", false, "", 0},
 	}
 	for _, tc := range testCases {
 		q := NewQuery("foo").Filter(tc.filterStr, 42)

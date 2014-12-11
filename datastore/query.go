@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"math"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/golang/protobuf/proto"
@@ -143,11 +144,14 @@ func (q *Query) EventualConsistency() *Query {
 // followed by an operator, one of ">", "<", ">=", "<=", or "=".
 // Fields are compared against the provided value using the operator.
 // Multiple filters are AND'ed together.
+// Field names which contain spaces, quote marks, or operator characters
+// should be passed as quoted Go string literals as returned by strconv.Quote
+// or the fmt package's %q verb.
 func (q *Query) Filter(filterStr string, value interface{}) *Query {
 	q = q.clone()
 	filterStr = strings.TrimSpace(filterStr)
-	if len(filterStr) < 1 {
-		q.err = errors.New("datastore: invalid filter: " + filterStr)
+	if filterStr == "" {
+		q.err = fmt.Errorf("datastore: invalid filter %q", filterStr)
 		return q
 	}
 	f := filter{
@@ -169,6 +173,12 @@ func (q *Query) Filter(filterStr string, value interface{}) *Query {
 		q.err = fmt.Errorf("datastore: invalid operator %q in filter %q", op, filterStr)
 		return q
 	}
+	var err error
+	f.FieldName, err = unquote(f.FieldName)
+	if err != nil {
+		q.err = fmt.Errorf("datastore: invalid syntax for quoted field name %q", f.FieldName)
+		return q
+	}
 	q.filter = append(q.filter, f)
 	return q
 }
@@ -176,26 +186,41 @@ func (q *Query) Filter(filterStr string, value interface{}) *Query {
 // Order returns a derivative query with a field-based sort order. Orders are
 // applied in the order they are added. The default order is ascending; to sort
 // in descending order prefix the fieldName with a minus sign (-).
+// Field names which contain spaces, quote marks, or the minus sign
+// should be passed as quoted Go string literals as returned by strconv.Quote
+// or the fmt package's %q verb.
 func (q *Query) Order(fieldName string) *Query {
 	q = q.clone()
-	fieldName = strings.TrimSpace(fieldName)
-	o := order{
-		Direction: ascending,
-		FieldName: fieldName,
-	}
+	fieldName, dir := strings.TrimSpace(fieldName), ascending
 	if strings.HasPrefix(fieldName, "-") {
-		o.Direction = descending
-		o.FieldName = strings.TrimSpace(fieldName[1:])
+		fieldName, dir = strings.TrimSpace(fieldName[1:]), descending
 	} else if strings.HasPrefix(fieldName, "+") {
 		q.err = fmt.Errorf("datastore: invalid order: %q", fieldName)
 		return q
 	}
-	if len(o.FieldName) == 0 {
+	fieldName, err := unquote(fieldName)
+	if err != nil {
+		q.err = fmt.Errorf("datastore: invalid syntax for quoted field name %q", fieldName)
+		return q
+	}
+	if fieldName == "" {
 		q.err = errors.New("datastore: empty order")
 		return q
 	}
-	q.order = append(q.order, o)
+	q.order = append(q.order, order{
+		Direction: dir,
+		FieldName: fieldName,
+	})
 	return q
+}
+
+// unquote optionally interprets s as a double-quoted or backquoted Go
+// string literal if it begins with the relevant character.
+func unquote(s string) (string, error) {
+	if s == "" || (s[0] != '`' && s[0] != '"') {
+		return s, nil
+	}
+	return strconv.Unquote(s)
 }
 
 // Project returns a derivative query that yields only the given fields. It
