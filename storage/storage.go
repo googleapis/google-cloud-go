@@ -32,9 +32,9 @@ import (
 
 	"google.golang.org/cloud/internal"
 
-	"code.google.com/p/google-api-go-client/googleapi"
-	raw "code.google.com/p/google-api-go-client/storage/v1"
 	"golang.org/x/net/context"
+	"google.golang.org/api/googleapi"
+	raw "google.golang.org/api/storage/v1"
 )
 
 var (

@@ -22,8 +22,8 @@ import (
 	"errors"
 	"time"
 
-	raw "code.google.com/p/google-api-go-client/container/v1beta1"
 	"golang.org/x/net/context"
+	raw "google.golang.org/api/container/v1beta1"
 	"google.golang.org/cloud/internal"
 )
 

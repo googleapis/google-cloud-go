@@ -21,10 +21,10 @@ import (
 
 	"google.golang.org/cloud/internal"
 
-	container "code.google.com/p/google-api-go-client/container/v1beta1"
-	pubsub "code.google.com/p/google-api-go-client/pubsub/v1beta1"
-	storage "code.google.com/p/google-api-go-client/storage/v1"
 	"golang.org/x/net/context"
+	container "google.golang.org/api/container/v1beta1"
+	pubsub "google.golang.org/api/pubsub/v1beta1"
+	storage "google.golang.org/api/storage/v1"
 )
 
 // NewContext returns a new context that uses the provided http.Client.

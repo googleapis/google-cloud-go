@@ -28,9 +28,9 @@ import (
 
 	"google.golang.org/cloud/internal"
 
-	"code.google.com/p/google-api-go-client/googleapi"
-	raw "code.google.com/p/google-api-go-client/pubsub/v1beta1"
 	"golang.org/x/net/context"
+	"google.golang.org/api/googleapi"
+	raw "google.golang.org/api/pubsub/v1beta1"
 )
 
 const (
