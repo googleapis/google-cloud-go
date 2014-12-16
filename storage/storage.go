@@ -129,6 +129,16 @@ type SignedURLOptions struct {
 
 	// PrivateKey is the Google service account private key. It is obtainable
 	// from the Google Developers Console.
+	// At https://console.developers.google.com/project/<your-project-id>/apiui/credential,
+	// create a service account client ID or reuse one of your existing service account
+	// credentials. Click on the "Generate new P12 key" to generate and download
+	// a new private key. Once you download the P12 file, use the following command
+	// to convert it into a PEM file.
+	//
+	//    $ openssl pkcs12 -in key.p12 -passin pass:notasecret -out key.pem -nodes
+	//
+	// Provide the contents of the PEM file as a byte slice.
+	// Required.
 	PrivateKey []byte
 
 	// Method is the HTTP method to be used with the signed URL.
