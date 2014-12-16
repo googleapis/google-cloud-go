@@ -16,6 +16,7 @@
 package testutil
 
 import (
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -36,14 +37,15 @@ func Context(scopes ...string) context.Context {
 	if key == "" || projID == "" {
 		log.Fatal("GCLOUD_TESTS_GOLANG_KEY and GCLOUD_TESTS_GOLANG_PROJECT_ID must be set. See CONTRIBUTING.md for details.")
 	}
-	opts, err := oauth2.New(
-		google.ServiceAccountJSONKey(key),
-		oauth2.Scope(scopes...),
-	)
+	jsonKey, err := ioutil.ReadFile(key)
+	if err != nil {
+		log.Fatalf("Cannot read the JSON key file, err: %v", err)
+	}
+	conf, err := google.JWTConfigFromJSON(oauth2.NoContext, jsonKey, scopes...)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return cloud.NewContext(projID, &http.Client{Transport: opts.NewTransport()})
+	return cloud.NewContext(projID, conf.Client(oauth2.NoContext, nil))
 }
 
 func NoAuthContext() context.Context {

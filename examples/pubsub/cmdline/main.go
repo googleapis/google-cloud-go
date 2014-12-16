@@ -20,6 +20,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -75,23 +76,22 @@ func checkArgs(argv []string, min int) {
 // account's access token.
 func newClient(jsonFile string) (*http.Client, error) {
 	if jsonFile != "" {
-		opts, err := oauth2.New(
-			google.ServiceAccountJSONKey(jsonFile),
-			oauth2.Scope(pubsub.ScopePubSub),
-		)
+		jsonKey, err := ioutil.ReadFile(jsonFile)
 		if err != nil {
 			return nil, err
 		}
-		return &http.Client{Transport: opts.NewTransport()}, nil
+		conf, err := google.JWTConfigFromJSON(oauth2.NoContext, jsonKey, pubsub.ScopePubSub)
+		if err != nil {
+			return nil, err
+		}
+		return conf.Client(oauth2.NoContext, nil), nil
 	}
 	if metadata.OnGCE() {
-		opts, err := oauth2.New(
-			google.ComputeEngineAccount(""),
-		)
-		if err != nil {
-			return nil, err
+		c := &http.Client{
+			Transport: &oauth2.Transport{
+				Source: google.ComputeTokenSource(""),
+			},
 		}
-		client := &http.Client{Transport: opts.NewTransport()}
 		if *projID == "" {
 			projectID, err := metadata.ProjectID()
 			if err != nil {
@@ -99,7 +99,7 @@ func newClient(jsonFile string) (*http.Client, error) {
 			}
 			*projID = projectID
 		}
-		return client, nil
+		return c, nil
 	}
 	return nil, errors.New("Could not create an authenticated client.")
 }

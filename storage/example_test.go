@@ -17,7 +17,6 @@ package storage_test
 import (
 	"io/ioutil"
 	"log"
-	"net/http"
 	"testing"
 
 	"golang.org/x/net/context"
@@ -32,19 +31,23 @@ import (
 func TestA(t *testing.T) {}
 
 func Example_auth() context.Context {
-	// Initialize an authorized transport with Google Developers Console
+	// Initialize an authorized context with Google Developers Console
 	// JSON key. Read the google package examples to learn more about
 	// different authorization flows you can use.
 	// http://godoc.org/golang.org/x/oauth2/google
-	opts, err := oauth2.New(
-		google.ServiceAccountJSONKey("/path/to/json/keyfile.json"),
-		oauth2.Scope(storage.ScopeFullControl),
+	jsonKey, err := ioutil.ReadFile("/path/to/json/keyfile.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	conf, err := google.JWTConfigFromJSON(
+		oauth2.NoContext,
+		jsonKey,
+		storage.ScopeFullControl,
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	ctx := cloud.NewContext("project-id", &http.Client{Transport: opts.NewTransport()})
+	ctx := cloud.NewContext("project-id", conf.Client(oauth2.NoContext, nil))
 	// Use the context (see other examples)
 	return ctx
 }
