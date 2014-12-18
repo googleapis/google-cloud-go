@@ -27,6 +27,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -203,8 +204,16 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 		return "", err
 	}
 	encoded := base64.StdEncoding.EncodeToString(b)
-	return fmt.Sprintf("http://storage.googleapis.com/%s/%s?GoogleAccessId=%s&Expires=%d&Signature=%s",
-		bucket, name, opts.ClientID, opts.Expires.Unix(), encoded), nil
+	u, err := url.Parse(fmt.Sprintf("https://storage.googleapis.com/%s/%s", bucket, name))
+	if err != nil {
+		return "", err
+	}
+	q := u.Query()
+	q.Set("GoogleAccessId", opts.ClientID)
+	q.Set("Expires", fmt.Sprintf("%d", opts.Expires.Unix()))
+	q.Set("Signature", string(encoded))
+	u.RawQuery = q.Encode()
+	return u.String(), nil
 }
 
 // StatObject returns meta information about the specified object.

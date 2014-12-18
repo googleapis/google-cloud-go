@@ -37,14 +37,15 @@ func TestSignedURL(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	want := "http://storage.googleapis.com/bucket-name/object-name?" +
-		"GoogleAccessId=xxx@clientid&Expires=1033570800&Signature=" +
-		"ITqNWQHr7ayIj+0Ds5/zUT2cWMQQouuFmu6L11Zd3kfNKvm3sjyGIzOgZ" +
-		"sSUoter1SxP7BcrCzgqIZ9fQmgQnuIpqqLL4kcGmTbKsQS6hTknpJM/2l" +
-		"S4NY6UH1VXBgm2Tce28kz8rnmqG6svcGvtWuOgJsETeSIl1R9nAEIDCEq" +
-		"ZJzoOiru+ODkHHkpoFjHWAwHugFHX+9EX4SxaytiN3oEy48HpYGWV0Ih8" +
-		"NvU1hmeWzcLr41GnTADeCn7Eg/b5H2GCNO70Cz+w2fn+ofLCUeRYQd/hE" +
-		"S8oocv5kpHZkstc8s8uz3aKMsMauzZ9MOmGy/6VULBgIVvi6aAwEBIYOw=="
+	want := "https://storage.googleapis.com/bucket-name/object-name?" +
+		"Expires=1033570800&GoogleAccessId=xxx%40clientid&Signature=" +
+		"ITqNWQHr7ayIj%2B0Ds5%2FzUT2cWMQQouuFmu6L11Zd3kfNKvm3sjyGIzO" +
+		"gZsSUoter1SxP7BcrCzgqIZ9fQmgQnuIpqqLL4kcGmTbKsQS6hTknpJM%2F" +
+		"2lS4NY6UH1VXBgm2Tce28kz8rnmqG6svcGvtWuOgJsETeSIl1R9nAEIDCEq" +
+		"ZJzoOiru%2BODkHHkpoFjHWAwHugFHX%2B9EX4SxaytiN3oEy48HpYGWV0I" +
+		"h8NvU1hmeWzcLr41GnTADeCn7Eg%2Fb5H2GCNO70Cz%2Bw2fn%2BofLCUeR" +
+		"YQd%2FhES8oocv5kpHZkstc8s8uz3aKMsMauzZ9MOmGy%2F6VULBgIVvi6a" +
+		"AwEBIYOw%3D%3D"
 	if url != want {
 		t.Fatalf("Unexpected signed URL; found %v", url)
 	}
@@ -64,11 +65,12 @@ func TestSignedURL_PEMPrivateKey(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	want := "http://storage.googleapis.com/bucket-name/object-name?" +
-		"GoogleAccessId=xxx@clientid&Expires=1033570800&Signature=" +
-		"B7XkS4dfmVDoe/oDeXZkWlYmg8u2kI0SizTrzL5+9RmKnb5j7Kf34DZJL" +
-		"8Hcjr1MdPFLNg2QV4lEH86Gqgqt/v3jFOTRl4wlzcRU/vV5c5HU8MqW0F" +
-		"Z0IDbqod2RdsMONLEO6yQWV2HWFrMLKl2yMFlWCJ47et+FaHe6v4ZEBc0="
+	want := "https://storage.googleapis.com/bucket-name/object-name?" +
+		"Expires=1033570800&GoogleAccessId=xxx%40clientid&Signature=" +
+		"B7XkS4dfmVDoe%2FoDeXZkWlYmg8u2kI0SizTrzL5%2B9RmKnb5j7Kf34DZ" +
+		"JL8Hcjr1MdPFLNg2QV4lEH86Gqgqt%2Fv3jFOTRl4wlzcRU%2FvV5c5HU8M" +
+		"qW0FZ0IDbqod2RdsMONLEO6yQWV2HWFrMLKl2yMFlWCJ47et%2BFaHe6v4Z" +
+		"EBc0%3D"
 	if url != want {
 		t.Fatalf("Unexpected signed URL; found %v", url)
 	}
