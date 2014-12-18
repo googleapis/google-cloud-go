@@ -51,7 +51,7 @@ func runOnce(ctx context.Context, f func(context.Context) error) error {
 	}
 	finished = true
 	err := call(subCtx, "commit", &pb.CommitRequest{Transaction: resp.Transaction}, &pb.CommitResponse{})
-	if e, ok := err.(*ErrHTTP); ok && e.StatusCode == http.StatusConflict {
+	if e, ok := err.(*errHTTP); ok && e.StatusCode == http.StatusConflict {
 		// TODO(jbd): Make sure that we explicitly handle the case where response
 		// has an HTTP 409 and the error message indicates that it's an concurrent
 		// transaction error.

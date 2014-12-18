@@ -78,14 +78,14 @@ type ErrFieldMismatch struct {
 	Reason     string
 }
 
-// ErrHTTP is returned when responds is a non-200 HTTP response.
-type ErrHTTP struct {
+// errHTTP is returned when responds is a non-200 HTTP response.
+type errHTTP struct {
 	StatusCode int
 	Body       string
 	err        error
 }
 
-func (e *ErrHTTP) Error() string {
+func (e *errHTTP) Error() string {
 	if e.err == nil {
 		return fmt.Sprintf("error during call, http status code: %v %s", e.StatusCode, e.Body)
 	}
@@ -130,7 +130,7 @@ func call(ctx context.Context, method string, req proto.Message, resp proto.Mess
 	defer r.Body.Close()
 	all, err := ioutil.ReadAll(r.Body)
 	if r.StatusCode != http.StatusOK {
-		e := &ErrHTTP{
+		e := &errHTTP{
 			StatusCode: r.StatusCode,
 			err:        err,
 		}
