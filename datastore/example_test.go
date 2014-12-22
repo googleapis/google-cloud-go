@@ -44,6 +44,7 @@ func Example_auth() context.Context {
 		oauth2.NoContext,
 		jsonKey,
 		datastore.ScopeDatastore,
+		datastore.ScopeUserEmail,
 	)
 	if err != nil {
 		log.Fatal(err)
