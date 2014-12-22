@@ -154,7 +154,7 @@ func toMessage(resp *raw.PullResponse) (*Message, error) {
 	if resp.PubsubEvent.Message == nil {
 		return &Message{AckID: resp.AckId}, nil
 	}
-	data, err := base64.StdEncoding.DecodeString(resp.PubsubEvent.Message.Data)
+	data, err := base64.URLEncoding.DecodeString(resp.PubsubEvent.Message.Data)
 	if err != nil {
 		return nil, err
 	}
@@ -262,7 +262,7 @@ func Publish(ctx context.Context, topic string, msgs ...*Message) ([]string, err
 			}
 		}
 		rawMsgs[i] = &raw.PubsubMessage{
-			Data:  base64.StdEncoding.EncodeToString(msg.Data),
+			Data:  base64.URLEncoding.EncodeToString(msg.Data),
 			Label: rawLabels,
 		}
 	}
