@@ -17,6 +17,7 @@
 package storage
 
 import (
+	"bytes"
 	"crypto/md5"
 	"fmt"
 	"io"
@@ -45,10 +46,13 @@ func TestObjects(t *testing.T) {
 	// Cleanup.
 	cleanup(t, "obj")
 
+	const defaultType = "text/plain"
+
 	// Test Writer.
 	for _, obj := range objects {
 		t.Logf("Writing %v", obj)
-		wc := NewWriter(ctx, bucket, obj, &Object{})
+		wc := NewWriter(ctx, bucket, obj)
+		wc.ContentType = defaultType
 		c := randomContents()
 		if _, err := wc.Write(c); err != nil {
 			t.Errorf("Write for %v failed with %v", obj, err)
@@ -70,10 +74,8 @@ func TestObjects(t *testing.T) {
 		if err != nil {
 			t.Errorf("Can't ReadAll object %v, errored with %v", obj, err)
 		}
-		actual := string(slurp)
-		expected := string(contents[obj])
-		if actual != expected {
-			t.Errorf("Expected contents for %v is '%v', found '%v'", obj, expected, actual)
+		if got, want := slurp, contents[obj]; !bytes.Equal(got, want) {
+			t.Errorf("Contents (%v) = %q; want %q", obj, got, want)
 		}
 	}
 
@@ -83,17 +85,22 @@ func TestObjects(t *testing.T) {
 		t.Errorf("Object should not exist, err found to be %v", err)
 	}
 
+	name := objects[0]
+
 	// Test StatObject.
-	o, err := StatObject(ctx, bucket, objects[0])
+	o, err := StatObject(ctx, bucket, name)
 	if err != nil {
 		t.Error(err)
 	}
-	if o.Name != objects[0] {
-		t.Errorf("StatObject returned object info for %v unexpectedly", o.Name)
+	if got, want := o.Name, name; got != want {
+		t.Errorf("Name (%v) = %q; want %q", name, got, want)
+	}
+	if got, want := o.ContentType, defaultType; got != want {
+		t.Errorf("ContentType (%v) = %q; want %q", name, got, want)
 	}
 
 	// Test object copy.
-	copy, err := CopyObject(ctx, bucket, objects[0], &Object{
+	copy, err := CopyObject(ctx, bucket, name, bucket, ObjectAttrs{
 		Name:        copyObj,
 		ContentType: "text/html",
 	})
@@ -101,23 +108,38 @@ func TestObjects(t *testing.T) {
 		t.Errorf("CopyObject failed with %v", err)
 	}
 	if copy.Name != copyObj {
-		t.Errorf("Copy object's name is %v unexpectedly", copy.Name)
+		t.Errorf("Copy object's name = %q; want %q", copy.Name, copyObj)
 	}
 	if copy.Bucket != bucket {
-		t.Errorf("Copy object's bucket is %v unexpectedly", copy.Bucket)
+		t.Errorf("Copy object's bucket = %q; want %q", copy.Bucket, bucket)
 	}
 
-	// Test put.
-	updated, err := PutObject(ctx, bucket, objects[0], &Object{
-		Name:        objects[0],
+	// Test UpdateAttrs.
+	updated, err := UpdateAttrs(ctx, bucket, name, ObjectAttrs{
 		ContentType: "text/html",
 		ACL:         []ACLRule{{Entity: "domain-google.com", Role: RoleReader}},
 	})
 	if err != nil {
-		t.Errorf("PutObject failed with %v", err)
+		t.Errorf("UpdateAttrs failed with %v", err)
 	}
 	if want := "text/html"; updated.ContentType != want {
-		t.Errorf("updated.ContentType == %q, want %q", updated.ContentType, want)
+		t.Errorf("updated.ContentType == %q; want %q", updated.ContentType, want)
+	}
+
+	// Test checksums.
+	wc := NewWriter(ctx, bucket, "checksum-file")
+	if _, err := wc.Write([]byte("hello")); err != nil {
+		t.Errorf("Write failed with %q", err)
+	}
+	if err = wc.Close(); err != nil {
+		t.Errorf("Close failed with %q", err)
+	}
+	obj := wc.Object()
+	if got, want := fmt.Sprintf("%x", obj.MD5), "5d41402abc4b2a76b9719d911017c592"; got != want {
+		t.Errorf("Object MD5 = %q; want %q", got, want)
+	}
+	if got, want := obj.CRC32C, uint32(2591144780); got != want {
+		t.Errorf("Object CRC32C = %q; want %q", got, want)
 	}
 
 	// Test public ACL.
@@ -139,7 +161,7 @@ func TestObjects(t *testing.T) {
 	}
 
 	// Test writer error handling.
-	wc := NewWriter(publicCtx, bucket, publicObj, nil)
+	wc = NewWriter(publicCtx, bucket, publicObj)
 	if _, err := wc.Write([]byte("hello")); err != nil {
 		t.Errorf("Write unexpectedly failed with %v", err)
 	}
@@ -163,13 +185,13 @@ func TestObjects(t *testing.T) {
 func TestACL(t *testing.T) {
 	ctx := testutil.Context(ScopeFullControl)
 	cleanup(t, "acl")
-	entity := "domain-google.com"
+	entity := ACLEntity("domain-google.com")
 	if err := PutDefaultACLRule(ctx, bucket, entity, RoleReader); err != nil {
 		t.Errorf("Can't put default ACL rule for the bucket, errored with %v", err)
 	}
 	for _, obj := range aclObjects {
 		t.Logf("Writing %v", obj)
-		wc := NewWriter(ctx, bucket, obj, &Object{})
+		wc := NewWriter(ctx, bucket, obj)
 		c := randomContents()
 		if _, err := wc.Write(c); err != nil {
 			t.Errorf("Write for %v failed with %v", obj, err)
@@ -195,7 +217,6 @@ func TestACL(t *testing.T) {
 	if err := DeleteACLRule(ctx, bucket, name, entity); err != nil {
 		t.Errorf("Can't delete the ACL rule for the entity: %v", entity)
 	}
-
 	if err := PutBucketACLRule(ctx, bucket, "user-jbd@google.com", RoleReader); err != nil {
 		t.Errorf("Error while putting bucket ACL rule: %v", err)
 	}

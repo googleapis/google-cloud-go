@@ -97,10 +97,9 @@ func ExampleNewReader() {
 func ExampleNewWriter() {
 	ctx := Example_auth()
 
-	wc := storage.NewWriter(ctx, "bucketname", "filename1", &storage.Object{
-		ContentType: "text/plain",
-		ACL:         []storage.ACLRule{storage.ACLRule{"allUsers", storage.RoleReader}}, // Shared Publicly
-	})
+	wc := storage.NewWriter(ctx, "bucketname", "filename1")
+	wc.ContentType = "text/plain"
+	wc.ACL = []storage.ACLRule{{storage.AllUsers, storage.RoleReader}}
 	if _, err := wc.Write([]byte("hello world")); err != nil {
 		log.Fatal(err)
 	}
@@ -113,10 +112,7 @@ func ExampleNewWriter() {
 func ExampleCopyObject() {
 	ctx := Example_auth()
 
-	o, err := storage.CopyObject(ctx, "bucketname", "file1", &storage.Object{
-		Name:   "file2",
-		Bucket: "yet-another-bucketname",
-	})
+	o, err := storage.CopyObject(ctx, "bucketname", "file1", "another-bucketname", storage.ObjectAttrs{Name: "file2"})
 	if err != nil {
 		log.Fatal(err)
 	}

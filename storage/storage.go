@@ -224,9 +224,10 @@ func StatObject(ctx context.Context, bucket, name string) (*Object, error) {
 	return newObject(o), nil
 }
 
-// PutObject updates an object with the provided meta information.
-func PutObject(ctx context.Context, bucket, name string, info *Object) (*Object, error) {
-	o, err := rawService(ctx).Objects.Update(bucket, name, info.toRawObject()).Do()
+// UpdateAttrs updates an object with the provided attributes.
+// All zero-value attributes are ignored.
+func UpdateAttrs(ctx context.Context, bucket, name string, attrs ObjectAttrs) (*Object, error) {
+	o, err := rawService(ctx).Objects.Patch(bucket, name, attrs.toRawObject(bucket)).Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExists
 	}
@@ -241,22 +242,15 @@ func DeleteObject(ctx context.Context, bucket, name string) error {
 	return rawService(ctx).Objects.Delete(bucket, name).Do()
 }
 
-// CopyObject copies the source object to the destination with the new
-// meta information provided.
-// The destination object is inserted into the source bucket
-// if the destination object doesn't specify another bucket name.
-func CopyObject(ctx context.Context, bucket, name string, dest *Object) (*Object, error) {
-	if dest.Name == "" {
-		return nil, errors.New("storage: missing dest name")
-	}
-	if dest.Bucket == "" {
-		// Make a copy of the dest object instead of mutating it.
-		dest2 := *dest
-		dest2.Bucket = bucket
-		dest = &dest2
+// CopyObject copies the source object to the destination.
+// The copied object's attributes are overwritten by those given.
+func CopyObject(ctx context.Context, bucket, name string, destBucket string, attrs ObjectAttrs) (*Object, error) {
+	destName := name
+	if attrs.Name != "" {
+		destName = attrs.Name
 	}
 	o, err := rawService(ctx).Objects.Copy(
-		bucket, name, dest.Bucket, dest.Name, dest.toRawObject()).Do()
+		bucket, name, destBucket, destName, attrs.toRawObject(destBucket)).Do()
 	if err != nil {
 		return nil, err
 	}
@@ -284,22 +278,21 @@ func NewReader(ctx context.Context, bucket, name string) (io.ReadCloser, error) 
 
 // NewWriter returns a storage Writer that writes to the GCS object
 // identified by the specified name.
-// If such object doesn't exist, it creates one. If info is not nil,
-// write operation also modifies the meta information of the object.
-// All read-only fields are ignored during metadata updates.
+// If such object doesn't exist, it creates one.
+// The object is created or modified with the Writer.Attrs.
+// Nil or zero-value attributes are ignored.
 //
 // It is the caller's responsibility to call Close when writing is done.
 //
 // The object is not available and any previous object with the same
 // name is not replaced on Cloud Storage until Close is called.
-func NewWriter(ctx context.Context, bucket, name string, info *Object) *Writer {
-	i := Object{}
-	if info != nil {
-		i = *info
+func NewWriter(ctx context.Context, bucket, name string) *Writer {
+	return &Writer{
+		ctx:    ctx,
+		bucket: bucket,
+		name:   name,
+		donec:  make(chan struct{}),
 	}
-	i.Bucket = bucket
-	i.Name = name
-	return newWriter(ctx, &i)
 }
 
 func rawService(ctx context.Context) *raw.Service {

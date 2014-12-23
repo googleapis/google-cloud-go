@@ -121,13 +121,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func (d *demo) createFile(fileName string) {
 	fmt.Fprintf(d.w, "Creating file /%v/%v\n", bucket, fileName)
 
-	wc := storage.NewWriter(d.ctx, bucket, fileName, &storage.Object{
-		ContentType: "text/plain",
-		Metadata: map[string]string{
-			"x-goog-meta-foo": "foo",
-			"x-goog-meta-bar": "bar",
-		},
-	})
+	wc := storage.NewWriter(d.ctx, bucket, fileName)
+	wc.ContentType = "text/plain"
+	wc.Metadata = map[string]string{
+		"x-goog-meta-foo": "foo",
+		"x-goog-meta-bar": "bar",
+	}
 	d.cleanUp = append(d.cleanUp, fileName)
 
 	if _, err := wc.Write([]byte("abcde\n")); err != nil {
@@ -173,7 +172,7 @@ func (d *demo) copyFile(fileName string) {
 	copyName := fileName + "-copy"
 	fmt.Fprintf(d.w, "Copying file /%v/%v to /%v/%v:\n", bucket, fileName, bucket, copyName)
 
-	dest := &storage.Object{
+	attrs := storage.ObjectAttrs{
 		Name:        copyName,
 		ContentType: "text/plain",
 		Metadata: map[string]string{
@@ -181,7 +180,7 @@ func (d *demo) copyFile(fileName string) {
 			"x-goog-meta-bar-copy": "bar-copy",
 		},
 	}
-	obj, err := storage.CopyObject(d.ctx, bucket, fileName, dest)
+	obj, err := storage.CopyObject(d.ctx, bucket, fileName, bucket, attrs)
 	if err != nil {
 		d.errorf("copyFile: unable to copy /%v/%v to bucket %q, file %q: %v", bucket, fileName, bucket, copyName, err)
 		return
