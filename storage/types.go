@@ -202,13 +202,17 @@ func newObject(o *raw.Object) *Object {
 			Role:   ACLRole(rule.Role),
 		}
 	}
+	owner := Owner{}
+	if o.Owner != nil {
+		owner.Entity = o.Owner.Entity
+	}
 	return &Object{
 		Bucket:          o.Bucket,
 		Name:            o.Name,
 		ContentType:     o.ContentType,
 		ContentLanguage: o.ContentLanguage,
 		ACL:             acl,
-		Owner:           Owner{Entity: o.Owner.Entity},
+		Owner:           owner,
 		ContentEncoding: o.ContentEncoding,
 		Size:            o.Size,
 		MD5:             []byte(o.Md5Hash),
