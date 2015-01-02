@@ -22,7 +22,7 @@ import (
 	"reflect"
 	"strings"
 
-	"code.google.com/p/goprotobuf/proto"
+	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
 	pb "google.golang.org/cloud/internal/datastore"
 )

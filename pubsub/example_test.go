@@ -48,7 +48,7 @@ func Example_auth() context.Context {
 	if err != nil {
 		log.Fatal(err)
 	}
-	ctx := cloud.NewContext("project-id", conf.Client(oauth2.NoContext, nil))
+	ctx := cloud.NewContext("project-id", conf.Client(oauth2.NoContext))
 	// See the other samples to learn how to use the context.
 	return ctx
 }

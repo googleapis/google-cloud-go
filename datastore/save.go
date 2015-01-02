@@ -20,8 +20,7 @@ import (
 	"reflect"
 	"time"
 
-	"code.google.com/p/goprotobuf/proto"
-
+	"github.com/golang/protobuf/proto"
 	pb "google.golang.org/cloud/internal/datastore"
 )
 

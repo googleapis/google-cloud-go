@@ -45,7 +45,7 @@ func Context(scopes ...string) context.Context {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return cloud.NewContext(projID, conf.Client(oauth2.NoContext, nil))
+	return cloud.NewContext(projID, conf.Client(oauth2.NoContext))
 }
 
 func NoAuthContext() context.Context {

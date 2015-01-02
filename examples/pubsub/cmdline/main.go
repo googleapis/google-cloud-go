@@ -84,7 +84,7 @@ func newClient(jsonFile string) (*http.Client, error) {
 		if err != nil {
 			return nil, err
 		}
-		return conf.Client(oauth2.NoContext, nil), nil
+		return conf.Client(oauth2.NoContext), nil
 	}
 	if metadata.OnGCE() {
 		c := &http.Client{

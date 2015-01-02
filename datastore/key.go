@@ -22,7 +22,7 @@ import (
 	"strconv"
 	"strings"
 
-	"code.google.com/p/goprotobuf/proto"
+	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/cloud/internal"
 	pb "google.golang.org/cloud/internal/datastore"
