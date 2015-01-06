@@ -293,5 +293,8 @@ func isSec(dur time.Duration) bool {
 }
 
 func rawService(ctx context.Context) *raw.Service {
-	return ctx.Value(internal.ContextKey("base")).(map[string]interface{})["pubsub_service"].(*raw.Service)
+	return internal.Service(ctx, "pubsub", func(hc *http.Client) interface{} {
+		svc, _ := raw.New(hc)
+		return svc
+	}).(*raw.Service)
 }

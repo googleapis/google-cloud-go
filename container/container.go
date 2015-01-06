@@ -20,6 +20,7 @@ package container // import "google.golang.org/cloud/container"
 
 import (
 	"errors"
+	"net/http"
 	"time"
 
 	"golang.org/x/net/context"
@@ -247,5 +248,8 @@ func Operation(ctx context.Context, zone, name string) (*Op, error) {
 }
 
 func rawService(ctx context.Context) *raw.Service {
-	return ctx.Value(internal.ContextKey("base")).(map[string]interface{})["container_service"].(*raw.Service)
+	return internal.Service(ctx, "container", func(hc *http.Client) interface{} {
+		svc, _ := raw.New(hc)
+		return svc
+	}).(*raw.Service)
 }

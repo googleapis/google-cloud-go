@@ -57,10 +57,6 @@ const (
 	ScopeReadWrite = raw.DevstorageRead_writeScope
 )
 
-const (
-	templURLMedia = "https://storage.googleapis.com/%s/%s"
-)
-
 // TODO(jbd): Add storage.buckets.list.
 // TODO(jbd): Add storage.buckets.insert.
 // TODO(jbd): Add storage.buckets.update.
@@ -270,18 +266,20 @@ func CopyObject(ctx context.Context, bucket, name string, dest *Object) (*Object
 // NewReader creates a new io.ReadCloser to read the contents
 // of the object.
 func NewReader(ctx context.Context, bucket, name string) (io.ReadCloser, error) {
-	c := ctx.Value(internal.ContextKey("base")).(map[string]interface{})["http_client"].(*http.Client)
-	resp, err := c.Get(fmt.Sprintf(templURLMedia, bucket, name))
+	hc := internal.HTTPClient(ctx)
+	res, err := hc.Get(fmt.Sprintf("https://storage.googleapis.com/%s/%s", bucket, name))
 	if err != nil {
 		return nil, err
 	}
-	if resp.StatusCode == http.StatusNotFound {
+	if res.StatusCode == http.StatusNotFound {
+		res.Body.Close()
 		return nil, ErrObjectNotExists
 	}
-	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return resp.Body, fmt.Errorf("storage: can't read object %v/%v, status code: %v", bucket, name, resp.StatusCode)
+	if res.StatusCode < 200 || res.StatusCode > 299 {
+		res.Body.Close()
+		return res.Body, fmt.Errorf("storage: can't read object %v/%v, status code: %v", bucket, name, res.Status)
 	}
-	return resp.Body, nil
+	return res.Body, nil
 }
 
 // NewWriter returns a storage Writer that writes to the GCS object
@@ -305,7 +303,10 @@ func NewWriter(ctx context.Context, bucket, name string, info *Object) *Writer {
 }
 
 func rawService(ctx context.Context) *raw.Service {
-	return ctx.Value(internal.ContextKey("base")).(map[string]interface{})["storage_service"].(*raw.Service)
+	return internal.Service(ctx, "storage", func(hc *http.Client) interface{} {
+		svc, _ := raw.New(hc)
+		return svc
+	}).(*raw.Service)
 }
 
 // parseKey converts the binary contents of a private key file

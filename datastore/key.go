@@ -24,7 +24,6 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud/internal"
 	pb "google.golang.org/cloud/internal/datastore"
 )
 
@@ -257,7 +256,7 @@ func NewKey(ctx context.Context, kind, name string, id int64, parent *Key) *Key 
 		name:      name,
 		id:        id,
 		parent:    parent,
-		namespace: internal.Namespace(ctx),
+		namespace: ctxNamespace(ctx),
 	}
 }
 

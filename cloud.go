@@ -19,12 +19,8 @@ package cloud // import "google.golang.org/cloud"
 import (
 	"net/http"
 
-	"google.golang.org/cloud/internal"
-
 	"golang.org/x/net/context"
-	container "google.golang.org/api/container/v1beta1"
-	pubsub "google.golang.org/api/pubsub/v1beta1"
-	storage "google.golang.org/api/storage/v1"
+	"google.golang.org/cloud/internal"
 )
 
 // NewContext returns a new context that uses the provided http.Client.
@@ -35,23 +31,19 @@ import (
 // You can obtain the project ID from the Google Developers Console,
 // https://console.developers.google.com.
 func NewContext(projID string, c *http.Client) context.Context {
+	if c == nil {
+		panic("invalid nil *http.Client passed to NewContext")
+	}
 	return WithContext(context.Background(), projID, c)
 }
 
 // WithContext returns a new context in a similar way NewContext does,
 // but initiates the new context with the specified parent.
 func WithContext(parent context.Context, projID string, c *http.Client) context.Context {
+	// TODO(bradfitz): delete internal.Transport. It's too wrappy for what it does.
+	// Do User-Agent some other way.
 	if _, ok := c.Transport.(*internal.Transport); !ok {
 		c.Transport = &internal.Transport{Base: c.Transport}
 	}
-	vals := make(map[string]interface{})
-	vals["project_id"] = projID
-	vals["http_client"] = c
-	// TODO(jbd): Lazily initiate the service objects.
-	// There is no datastore service as we use the proto directly
-	// without passing through google-api-go-client.
-	vals["pubsub_service"], _ = pubsub.New(c)
-	vals["storage_service"], _ = storage.New(c)
-	vals["container_service"], _ = container.New(c)
-	return context.WithValue(parent, internal.ContextKey("base"), vals)
+	return internal.WithContext(parent, projID, c)
 }

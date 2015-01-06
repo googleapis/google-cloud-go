@@ -61,10 +61,21 @@ const (
 	multiArgTypeInterface
 )
 
+// nsKey is the type of the context.Context key to store the datastore
+// namespace.
+type nsKey struct{}
+
 // WithNamespace returns a new context that limits the scope its parent
 // context with a Datastore namespace.
 func WithNamespace(parent context.Context, namespace string) context.Context {
-	return context.WithValue(parent, internal.ContextKey("namespace"), namespace)
+	return context.WithValue(parent, nsKey{}, namespace)
+}
+
+// ctxNamespace returns the active namespace for a context.
+// It defaults to "" if no namespace was specified.
+func ctxNamespace(ctx context.Context) string {
+	v, _ := ctx.Value(nsKey{}).(string)
+	return v
 }
 
 // ErrFieldMismatch is returned when a field is to be loaded into a different
@@ -123,7 +134,7 @@ func call(ctx context.Context, method string, req proto.Message, resp proto.Mess
 		return err
 	}
 	url := baseUrl(ctx) + internal.ProjID(ctx) + "/" + method
-	r, err := internal.HttpClient(ctx).Post(url, "application/x-protobuf", bytes.NewBuffer(payload))
+	r, err := internal.HTTPClient(ctx).Post(url, "application/x-protobuf", bytes.NewReader(payload))
 	if err != nil {
 		return err
 	}
