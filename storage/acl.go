@@ -30,16 +30,12 @@ const (
 )
 
 // ACLEntity is an entity holding an ACL permission.
+//
 // It could be in the form of:
-// - "user-<userId>"
-// - "user-<email>"
-// - "group-<groupId>"
-// - "group-<email>"
-// - "domain-<domain>"
-// - "project-team-<projectId>"
-// Or one of the following predefined constants:
-// - AllUsers
-// - AllAuthenticatedUsers
+// "user-<userId>", "user-<email>","group-<groupId>", "group-<email>",
+// "domain-<domain>" and "project-team-<projectId>".
+//
+// Or one of the predefined constants: AllUsers, AllAuthenticatedUsers.
 type ACLEntity string
 
 const (
