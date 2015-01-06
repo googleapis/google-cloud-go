@@ -23,7 +23,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net"
 	"net/http"
 	"strings"
 	"sync"
@@ -48,10 +47,7 @@ var (
 var metaClient = &http.Client{
 	Transport: &internal.Transport{
 		Base: &http.Transport{
-			Dial: (&net.Dialer{
-				Timeout:   750 * time.Millisecond,
-				KeepAlive: 30 * time.Second,
-			}).Dial,
+			Dial: metaClientDialer().Dial,
 			ResponseHeaderTimeout: 750 * time.Millisecond,
 		},
 	},
