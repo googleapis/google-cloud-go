@@ -118,11 +118,11 @@ func ListObjects(ctx context.Context, bucket string, q *Query) (*Objects, error)
 
 // SignedURLOptions allows you to restrict the access to the signed URL.
 type SignedURLOptions struct {
-	// ClientID represents the authorizer of the signed URL generation.
-	// It is the Google service account client ID from the Google
-	// Developers Console.
+	// GoogleAccessID represents the authorizer of the signed URL generation.
+	// It is typically the Google service account client email address from
+	// the Google Developers Console in the form of "xxx@developer.gserviceaccount.com".
 	// Required.
-	ClientID string
+	GoogleAccessID string
 
 	// PrivateKey is the Google service account private key. It is obtainable
 	// from the Google Developers Console.
@@ -170,7 +170,7 @@ type SignedURLOptions struct {
 // Google account or signing in. For more information about the signed
 // URLs, see https://cloud.google.com/storage/docs/accesscontrol#Signed-URLs.
 func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
-	if opts.ClientID == "" || opts.PrivateKey == nil {
+	if opts.GoogleAccessID == "" || opts.PrivateKey == nil {
 		return "", errors.New("storage: missing required credentials to generate a signed URL")
 	}
 	if opts.Method == "" {
@@ -205,7 +205,7 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 		return "", err
 	}
 	q := u.Query()
-	q.Set("GoogleAccessId", opts.ClientID)
+	q.Set("GoogleAccessId", opts.GoogleAccessID)
 	q.Set("Expires", fmt.Sprintf("%d", opts.Expires.Unix()))
 	q.Set("Signature", string(encoded))
 	u.RawQuery = q.Encode()

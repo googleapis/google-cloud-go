@@ -26,13 +26,13 @@ import (
 func TestSignedURL(t *testing.T) {
 	expires, _ := time.Parse(time.RFC3339, "2002-10-02T10:00:00-05:00")
 	url, err := SignedURL("bucket-name", "object-name", &SignedURLOptions{
-		ClientID:    "xxx@clientid",
-		PrivateKey:  dummyKey("rsa"),
-		Method:      "GET",
-		MD5:         []byte("202cb962ac59075b964b07152d234b70"),
-		Expires:     expires,
-		ContentType: "application/json",
-		Headers:     []string{"x-header1", "x-header2"},
+		GoogleAccessID: "xxx@clientid",
+		PrivateKey:     dummyKey("rsa"),
+		Method:         "GET",
+		MD5:            []byte("202cb962ac59075b964b07152d234b70"),
+		Expires:        expires,
+		ContentType:    "application/json",
+		Headers:        []string{"x-header1", "x-header2"},
 	})
 	if err != nil {
 		t.Error(err)
@@ -54,13 +54,13 @@ func TestSignedURL(t *testing.T) {
 func TestSignedURL_PEMPrivateKey(t *testing.T) {
 	expires, _ := time.Parse(time.RFC3339, "2002-10-02T10:00:00-05:00")
 	url, err := SignedURL("bucket-name", "object-name", &SignedURLOptions{
-		ClientID:    "xxx@clientid",
-		PrivateKey:  dummyKey("pem"),
-		Method:      "GET",
-		MD5:         []byte("202cb962ac59075b964b07152d234b70"),
-		Expires:     expires,
-		ContentType: "application/json",
-		Headers:     []string{"x-header1", "x-header2"},
+		GoogleAccessID: "xxx@clientid",
+		PrivateKey:     dummyKey("pem"),
+		Method:         "GET",
+		MD5:            []byte("202cb962ac59075b964b07152d234b70"),
+		Expires:        expires,
+		ContentType:    "application/json",
+		Headers:        []string{"x-header1", "x-header2"},
 	})
 	if err != nil {
 		t.Error(err)
@@ -87,21 +87,21 @@ func TestSignedURL_MissingOptions(t *testing.T) {
 			"missing required credentials",
 		},
 		{
-			&SignedURLOptions{ClientID: "client_id"},
+			&SignedURLOptions{GoogleAccessID: "access_id"},
 			"missing required credentials",
 		},
 		{
 			&SignedURLOptions{
-				ClientID:   "client_id",
-				PrivateKey: pk,
+				GoogleAccessID: "access_id",
+				PrivateKey:     pk,
 			},
 			"missing required method",
 		},
 		{
 			&SignedURLOptions{
-				ClientID:   "client_id",
-				PrivateKey: pk,
-				Method:     "PUT",
+				GoogleAccessID: "access_id",
+				PrivateKey:     pk,
+				Method:         "PUT",
 			},
 			"missing required expires",
 		},
