@@ -61,7 +61,7 @@ func TestListValues(t *testing.T) {
 		{Name: "L", Value: "string", Multiple: true},
 		{Name: "L", Value: true, Multiple: true},
 	}
-	c := testContext(t)
+	c := testutil.Context(ScopeDatastore, ScopeUserEmail)
 	k, err := Put(c, NewIncompleteKey(c, "ListValue", nil), &p0)
 	if err != nil {
 		t.Fatalf("Put: %v", err)
