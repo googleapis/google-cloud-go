@@ -66,17 +66,18 @@ func TestObjects(t *testing.T) {
 	// Test Reader.
 	for _, obj := range objects {
 		t.Logf("Creating a reader to read %v", obj)
-		r, err := NewReader(ctx, bucket, obj)
+		rc, err := NewReader(ctx, bucket, obj)
 		if err != nil {
 			t.Errorf("Can't create a reader for %v, errored with %v", obj, err)
 		}
-		slurp, err := ioutil.ReadAll(r)
+		slurp, err := ioutil.ReadAll(rc)
 		if err != nil {
 			t.Errorf("Can't ReadAll object %v, errored with %v", obj, err)
 		}
 		if got, want := slurp, contents[obj]; !bytes.Equal(got, want) {
 			t.Errorf("Contents (%v) = %q; want %q", obj, got, want)
 		}
+		rc.Close()
 	}
 
 	// Test NotFound.
@@ -177,17 +178,18 @@ func TestObjects(t *testing.T) {
 		t.Errorf("PutACLRule failed with %v", err)
 	}
 	publicCtx := testutil.NoAuthContext()
-	r, err := NewReader(publicCtx, bucket, publicObj)
+	rc, err := NewReader(publicCtx, bucket, publicObj)
 	if err != nil {
 		t.Error(err)
 	}
-	slurp, err := ioutil.ReadAll(r)
+	slurp, err := ioutil.ReadAll(rc)
 	if err != nil {
 		t.Errorf("ReadAll failed with %v", err)
 	}
 	if string(slurp) != string(contents[publicObj]) {
 		t.Errorf("Public object's content is expected to be %s, found %s", contents[publicObj], slurp)
 	}
+	rc.Close()
 
 	// Test writer error handling.
 	wc := NewWriter(publicCtx, bucket, publicObj)
