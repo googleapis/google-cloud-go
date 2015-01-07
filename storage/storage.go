@@ -39,8 +39,8 @@ import (
 )
 
 var (
-	ErrBucketNotExists = errors.New("storage: bucket doesn't exist")
-	ErrObjectNotExists = errors.New("storage: object doesn't exist")
+	ErrBucketNotExist = errors.New("storage: bucket doesn't exist")
+	ErrObjectNotExist = errors.New("storage: object doesn't exist")
 )
 
 const (
@@ -68,7 +68,7 @@ const (
 func BucketInfo(ctx context.Context, name string) (*Bucket, error) {
 	resp, err := rawService(ctx).Buckets.Get(name).Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
-		return nil, ErrBucketNotExists
+		return nil, ErrBucketNotExist
 	}
 	if err != nil {
 		return nil, err
@@ -216,7 +216,7 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 func StatObject(ctx context.Context, bucket, name string) (*Object, error) {
 	o, err := rawService(ctx).Objects.Get(bucket, name).Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
-		return nil, ErrObjectNotExists
+		return nil, ErrObjectNotExist
 	}
 	if err != nil {
 		return nil, err
@@ -229,7 +229,7 @@ func StatObject(ctx context.Context, bucket, name string) (*Object, error) {
 func UpdateAttrs(ctx context.Context, bucket, name string, attrs ObjectAttrs) (*Object, error) {
 	o, err := rawService(ctx).Objects.Patch(bucket, name, attrs.toRawObject(bucket)).Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
-		return nil, ErrObjectNotExists
+		return nil, ErrObjectNotExist
 	}
 	if err != nil {
 		return nil, err
@@ -267,7 +267,7 @@ func NewReader(ctx context.Context, bucket, name string) (io.ReadCloser, error) 
 	}
 	if res.StatusCode == http.StatusNotFound {
 		res.Body.Close()
-		return nil, ErrObjectNotExists
+		return nil, ErrObjectNotExist
 	}
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		res.Body.Close()

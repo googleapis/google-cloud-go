@@ -81,7 +81,7 @@ func TestObjects(t *testing.T) {
 
 	// Test NotFound.
 	_, err := NewReader(ctx, bucket, "obj-not-exists")
-	if err != ErrObjectNotExists {
+	if err != ErrObjectNotExist {
 		t.Errorf("Object should not exist, err found to be %v", err)
 	}
 
@@ -177,7 +177,7 @@ func TestObjects(t *testing.T) {
 		t.Errorf("Deletion of %v failed with %v", copyObj, err)
 	}
 	_, err = StatObject(ctx, bucket, copyObj)
-	if err != ErrObjectNotExists {
+	if err != ErrObjectNotExist {
 		t.Errorf("Copy is expected to be deleted, stat errored with %v", err)
 	}
 }
