@@ -340,43 +340,44 @@ func GetMulti(ctx context.Context, key []*Key, dst interface{}) error {
 			pbKeys[i] = keyToProto(k)
 		}
 	}
-
 	if any {
 		return multiErr
 	}
-
 	req := &pb.LookupRequest{
 		Key: pbKeys,
 	}
-
 	t := transaction(ctx)
 	if t != nil {
 		req.ReadOptions = &pb.ReadOptions{Transaction: t}
 	}
-
 	res := &pb.LookupResponse{}
 	if err := call(ctx, "lookup", req, res); err != nil {
 		return err
 	}
+	if len(res.Deferred) > 0 {
+		// TODO(jbd): Assess whether we should retry the deferred keys.
+		return errors.New("datastore: some entities temporarily unavailable")
+	}
 	if len(key) != len(res.Found)+len(res.Missing) {
 		return errors.New("datastore: internal error: server returned the wrong number of entities")
 	}
-
-	for i, e := range res.Found {
-		if e.Entity == nil {
-			multiErr[i] = ErrNoSuchEntity
-		} else {
-			k := protoToKey(e.Entity.Key)
-			elem := v.Index(keyMap[k.String()])
-
-			if multiArgType == multiArgTypePropertyLoadSaver || multiArgType == multiArgTypeStruct {
-				elem = elem.Addr()
-			}
-			multiErr[i] = loadEntity(elem.Interface(), e.Entity)
+	for _, e := range res.Found {
+		k := protoToKey(e.Entity.Key)
+		index := keyMap[k.String()]
+		elem := v.Index(index)
+		if multiArgType == multiArgTypePropertyLoadSaver || multiArgType == multiArgTypeStruct {
+			elem = elem.Addr()
 		}
-		if multiErr[i] != nil {
+		err := loadEntity(elem.Interface(), e.Entity)
+		if err != nil {
+			multiErr[index] = err
 			any = true
 		}
+	}
+	for _, e := range res.Missing {
+		k := protoToKey(e.Entity.Key)
+		multiErr[keyMap[k.String()]] = ErrNoSuchEntity
+		any = true
 	}
 	if any {
 		return multiErr

@@ -78,6 +78,55 @@ func TestListValues(t *testing.T) {
 	}
 }
 
+func TestGetMulti(t *testing.T) {
+	type X struct {
+		I int
+	}
+	c := testutil.Context(ScopeDatastore, ScopeUserEmail)
+	p := NewKey(c, "X", "", time.Now().Unix(), nil)
+
+	cases := []struct {
+		key *Key
+		put bool
+	}{
+		{key: NewKey(c, "X", "item1", 0, p), put: true},
+		{key: NewKey(c, "X", "item2", 0, p), put: false},
+		{key: NewKey(c, "X", "item3", 0, p), put: false},
+		{key: NewKey(c, "X", "item4", 0, p), put: true},
+	}
+
+	var src, dst []*X
+	var srcKeys, dstKeys []*Key
+	for _, c := range cases {
+		dst = append(dst, nil)
+		dstKeys = append(dstKeys, c.key)
+		if c.put {
+			src = append(src, &X{})
+			srcKeys = append(srcKeys, c.key)
+		}
+	}
+	if _, err := PutMulti(c, srcKeys, src); err != nil {
+		t.Error(err)
+	}
+	err := GetMulti(c, dstKeys, dst)
+	if err == nil {
+		t.Errorf("GetMulti got %q, expected error", err)
+	}
+	e, ok := err.(MultiError)
+	if !ok {
+		t.Errorf("GetMulti got %t, expected MultiError", err)
+	}
+	for i, err := range e {
+		got, want := err, (error)(nil)
+		if !cases[i].put {
+			got, want = err, ErrNoSuchEntity
+		}
+		if got != want {
+			t.Errorf("MultiError (%d) = %q; want %q", i, got, want)
+		}
+	}
+}
+
 type Z struct {
 	S string
 	T string `datastore:",noindex"`
