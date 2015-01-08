@@ -127,19 +127,48 @@ func TestObjects(t *testing.T) {
 	}
 
 	// Test checksums.
-	wc := NewWriter(ctx, bucket, "checksum-file")
-	if _, err := wc.Write([]byte("hello")); err != nil {
-		t.Errorf("Write failed with %q", err)
+	checksumCases := []struct {
+		name     string
+		contents [][]byte
+		size     int64
+		md5      string
+		crc32c   uint32
+	}{
+		{
+			name:     "checksum-object",
+			contents: [][]byte{[]byte("hello"), []byte("world")},
+			size:     10,
+			md5:      "fc5e038d38a57032085441e7fe7010b0",
+			crc32c:   1456190592,
+		},
+		{
+			name:     "zero-object",
+			contents: [][]byte{},
+			size:     0,
+			md5:      "d41d8cd98f00b204e9800998ecf8427e",
+			crc32c:   0,
+		},
 	}
-	if err = wc.Close(); err != nil {
-		t.Errorf("Close failed with %q", err)
-	}
-	obj := wc.Object()
-	if got, want := fmt.Sprintf("%x", obj.MD5), "5d41402abc4b2a76b9719d911017c592"; got != want {
-		t.Errorf("Object MD5 = %q; want %q", got, want)
-	}
-	if got, want := obj.CRC32C, uint32(2591144780); got != want {
-		t.Errorf("Object CRC32C = %q; want %q", got, want)
+	for _, c := range checksumCases {
+		wc := NewWriter(ctx, bucket, c.name)
+		for _, data := range c.contents {
+			if _, err := wc.Write(data); err != nil {
+				t.Errorf("Write(%q) failed with %q", data, err)
+			}
+		}
+		if err = wc.Close(); err != nil {
+			t.Errorf("%q: close failed with %q", c.name, err)
+		}
+		obj := wc.Object()
+		if got, want := obj.Size, c.size; got != want {
+			t.Errorf("Object (%q) Size = %v; want %v", c.name, got, want)
+		}
+		if got, want := fmt.Sprintf("%x", obj.MD5), c.md5; got != want {
+			t.Errorf("Object (%q) MD5 = %q; want %q", c.name, got, want)
+		}
+		if got, want := obj.CRC32C, c.crc32c; got != want {
+			t.Errorf("Object (%q) CRC32C = %v; want %v", c.name, got, want)
+		}
 	}
 
 	// Test public ACL.
@@ -161,7 +190,7 @@ func TestObjects(t *testing.T) {
 	}
 
 	// Test writer error handling.
-	wc = NewWriter(publicCtx, bucket, publicObj)
+	wc := NewWriter(publicCtx, bucket, publicObj)
 	if _, err := wc.Write([]byte("hello")); err != nil {
 		t.Errorf("Write unexpectedly failed with %v", err)
 	}
