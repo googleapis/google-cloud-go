@@ -24,12 +24,6 @@ import (
 	raw "google.golang.org/api/storage/v1"
 )
 
-// Owner represents the owner of a GCS object.
-type Owner struct {
-	// Entity identifies the owner, it's always in the form of "user-<userId>".
-	Entity string `json:"entity,omitempty"`
-}
-
 // Bucket represents a Google Cloud Storage bucket.
 type Bucket struct {
 	// Name is the name of the bucket.
@@ -156,9 +150,10 @@ type Object struct {
 	// ACL is the list of access control rules for the object.
 	ACL []ACLRule
 
-	// Owner is the owner of the object. Owner is alway the original
-	// uploader of the object.
-	Owner Owner
+	// Owner is the owner of the object.
+	//
+	// If non-zero, it is in the form of "user-<userId>".
+	Owner string
 
 	// Size is the length of the object's content.
 	Size int64
@@ -228,9 +223,9 @@ func newObject(o *raw.Object) *Object {
 			Role:   ACLRole(rule.Role),
 		}
 	}
-	owner := Owner{}
+	owner := ""
 	if o.Owner != nil {
-		owner.Entity = o.Owner.Entity
+		owner = o.Owner.Entity
 	}
 	md5, _ := base64.StdEncoding.DecodeString(o.Md5Hash)
 	var crc32c uint32
