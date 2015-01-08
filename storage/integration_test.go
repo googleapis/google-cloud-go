@@ -144,7 +144,7 @@ func TestObjects(t *testing.T) {
 
 	// Test public ACL.
 	publicObj := objects[0]
-	if err = PutACLRule(ctx, bucket, publicObj, "allUsers", RoleReader); err != nil {
+	if err = PutACLRule(ctx, bucket, publicObj, AllUsers, RoleReader); err != nil {
 		t.Errorf("PutACLRule failed with %v", err)
 	}
 	publicCtx := testutil.NoAuthContext()

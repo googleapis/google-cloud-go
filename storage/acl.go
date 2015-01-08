@@ -111,13 +111,13 @@ func BucketACL(ctx context.Context, bucket string) ([]ACLRule, error) {
 }
 
 // PutBucketACLRule saves the named ACL entity with the provided role for the named bucket.
-func PutBucketACLRule(ctx context.Context, bucket, entity string, role ACLRole) error {
+func PutBucketACLRule(ctx context.Context, bucket string, entity ACLEntity, role ACLRole) error {
 	acl := &raw.BucketAccessControl{
 		Bucket: bucket,
 		Entity: string(entity),
 		Role:   string(role),
 	}
-	_, err := rawService(ctx).BucketAccessControls.Update(bucket, entity, acl).Do()
+	_, err := rawService(ctx).BucketAccessControls.Update(bucket, string(entity), acl).Do()
 	if err != nil {
 		return fmt.Errorf("storage: error updating bucket ACL rule for bucket %q, entity %q: %v", bucket, entity, err)
 	}
@@ -153,13 +153,13 @@ func ACL(ctx context.Context, bucket, object string) ([]ACLRule, error) {
 }
 
 // PutACLRule saves the named ACL entity with the provided role for the named object.
-func PutACLRule(ctx context.Context, bucket, object, entity string, role ACLRole) error {
+func PutACLRule(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole) error {
 	acl := &raw.ObjectAccessControl{
 		Bucket: bucket,
-		Entity: entity,
+		Entity: string(entity),
 		Role:   string(role),
 	}
-	_, err := rawService(ctx).ObjectAccessControls.Update(bucket, object, entity, acl).Do()
+	_, err := rawService(ctx).ObjectAccessControls.Update(bucket, object, string(entity), acl).Do()
 	if err != nil {
 		return fmt.Errorf("storage: error updating object ACL rule for bucket %q, file %q, entity %q: %v", bucket, object, entity, err)
 	}
