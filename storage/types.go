@@ -351,6 +351,8 @@ func (w *Writer) open() {
 	pr, pw := io.Pipe()
 	w.r = &contentTyper{pr, attrs.ContentType}
 	w.pw = pw
+	w.opened = true
+
 	go func() {
 		resp, err := rawService(w.ctx).Objects.Insert(
 			w.bucket, attrs.toRawObject(w.bucket)).Media(w.r).Do()
@@ -377,6 +379,9 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 // If Close doesn't return an error, metadata about the written object
 // can be retrieved by calling Object.
 func (w *Writer) Close() error {
+	if !w.opened {
+		w.open()
+	}
 	if err := w.pw.Close(); err != nil {
 		return err
 	}
