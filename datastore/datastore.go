@@ -119,15 +119,6 @@ func baseUrl(ctx context.Context) string {
 	}
 }
 
-func transaction(ctx context.Context) []byte {
-	v := ctx.Value(ContextKey("transaction"))
-	if v == nil {
-		return nil
-	} else {
-		return v.([]byte)
-	}
-}
-
 func call(ctx context.Context, method string, req proto.Message, resp proto.Message) error {
 	payload, err := proto.Marshal(req)
 	if err != nil {
@@ -295,7 +286,7 @@ func checkMultiArg(v reflect.Value) (m multiArgType, elemType reflect.Type) {
 // unexported in the destination struct. ErrFieldMismatch is only returned if
 // dst is a struct pointer.
 func Get(ctx context.Context, key *Key, dst interface{}) error {
-	err := GetMulti(ctx, []*Key{key}, []interface{}{dst})
+	err := get(ctx, []*Key{key}, []interface{}{dst}, nil)
 	if me, ok := err.(MultiError); ok {
 		return me[0]
 	}
@@ -312,7 +303,11 @@ func Get(ctx context.Context, key *Key, dst interface{}) error {
 // As a special case, PropertyList is an invalid type for dst, even though a
 // PropertyList is a slice of structs. It is treated as invalid to avoid being
 // mistakenly passed when []PropertyList was intended.
-func GetMulti(ctx context.Context, key []*Key, dst interface{}) error {
+func GetMulti(ctx context.Context, keys []*Key, dst interface{}) error {
+	return get(ctx, keys, dst, nil)
+}
+
+func get(ctx context.Context, keys []*Key, dst interface{}, opts *pb.ReadOptions) error {
 	v := reflect.ValueOf(dst)
 	multiArgType, _ := checkMultiArg(v)
 
@@ -320,18 +315,18 @@ func GetMulti(ctx context.Context, key []*Key, dst interface{}) error {
 	if multiArgType == multiArgTypeInvalid {
 		return errors.New("datastore: dst has invalid type")
 	}
-	if len(key) != v.Len() {
-		return errors.New("datastore: key and dst slices have different length")
+	if len(keys) != v.Len() {
+		return errors.New("datastore: keys and dst slices have different length")
 	}
-	if len(key) == 0 {
+	if len(keys) == 0 {
 		return nil
 	}
 
 	// Go through keys, validate them, serialize then, and create a dict mapping them to their index
-	multiErr, any := make(MultiError, len(key)), false
+	multiErr, any := make(MultiError, len(keys)), false
 	keyMap := make(map[string]int)
-	pbKeys := make([]*pb.Key, len(key))
-	for i, k := range key {
+	pbKeys := make([]*pb.Key, len(keys))
+	for i, k := range keys {
 		if !k.valid() {
 			multiErr[i] = ErrInvalidKey
 			any = true
@@ -344,24 +339,21 @@ func GetMulti(ctx context.Context, key []*Key, dst interface{}) error {
 		return multiErr
 	}
 	req := &pb.LookupRequest{
-		Key: pbKeys,
+		Key:         pbKeys,
+		ReadOptions: opts,
 	}
-	t := transaction(ctx)
-	if t != nil {
-		req.ReadOptions = &pb.ReadOptions{Transaction: t}
-	}
-	res := &pb.LookupResponse{}
-	if err := call(ctx, "lookup", req, res); err != nil {
+	resp := &pb.LookupResponse{}
+	if err := call(ctx, "lookup", req, resp); err != nil {
 		return err
 	}
-	if len(res.Deferred) > 0 {
+	if len(resp.Deferred) > 0 {
 		// TODO(jbd): Assess whether we should retry the deferred keys.
 		return errors.New("datastore: some entities temporarily unavailable")
 	}
-	if len(key) != len(res.Found)+len(res.Missing) {
+	if len(keys) != len(resp.Found)+len(resp.Missing) {
 		return errors.New("datastore: internal error: server returned the wrong number of entities")
 	}
-	for _, e := range res.Found {
+	for _, e := range resp.Found {
 		k := protoToKey(e.Entity.Key)
 		index := keyMap[k.String()]
 		elem := v.Index(index)
@@ -374,7 +366,7 @@ func GetMulti(ctx context.Context, key []*Key, dst interface{}) error {
 			any = true
 		}
 	}
-	for _, e := range res.Missing {
+	for _, e := range resp.Missing {
 		k := protoToKey(e.Entity.Key)
 		multiErr[keyMap[k.String()]] = ErrNoSuchEntity
 		any = true
@@ -404,6 +396,44 @@ func Put(ctx context.Context, key *Key, src interface{}) (*Key, error) {
 //
 // src must satisfy the same conditions as the dst argument to GetMulti.
 func PutMulti(ctx context.Context, keys []*Key, src interface{}) ([]*Key, error) {
+	mutation, err := putMutation(keys, src)
+	if err != nil {
+		return nil, err
+	}
+
+	// Make the request.
+	req := &pb.CommitRequest{
+		Mutation: mutation,
+		Mode:     pb.CommitRequest_NON_TRANSACTIONAL.Enum(),
+	}
+	resp := &pb.CommitResponse{}
+	if err := call(ctx, "commit", req, resp); err != nil {
+		return nil, err
+	}
+
+	// Copy any newly minted keys into the returned keys.
+	newKeys := make(map[int]int) // Map of index in returned slice to index in response.
+	ret := make([]*Key, len(keys))
+	var idx int
+	for i, key := range keys {
+		if key.Incomplete() {
+			// This key will be in the mutation result.
+			newKeys[i] = idx
+			idx++
+		} else {
+			ret[i] = key
+		}
+	}
+	if len(newKeys) != len(resp.MutationResult.InsertAutoIdKey) {
+		return nil, errors.New("datastore: internal error: server returned the wrong number of keys")
+	}
+	for retI, respI := range newKeys {
+		ret[retI] = protoToKey(resp.MutationResult.InsertAutoIdKey[respI])
+	}
+	return ret, nil
+}
+
+func putMutation(keys []*Key, src interface{}) (*pb.Mutation, error) {
 	v := reflect.ValueOf(src)
 	multiArgType, _ := checkMultiArg(v)
 	if multiArgType == multiArgTypeInvalid {
@@ -418,9 +448,7 @@ func PutMulti(ctx context.Context, keys []*Key, src interface{}) ([]*Key, error)
 	if err := multiValid(keys); err != nil {
 		return nil, err
 	}
-	autoIdIndex := []int{}
-	autoId := []*pb.Entity(nil)
-	upsert := []*pb.Entity(nil)
+	var upsert, insert []*pb.Entity
 	for i, k := range keys {
 		val := reflect.ValueOf(src).Index(i)
 		// If src is an interface slice []interface{}{ent1, ent2}
@@ -436,49 +464,16 @@ func PutMulti(ctx context.Context, keys []*Key, src interface{}) ([]*Key, error)
 			return nil, fmt.Errorf("datastore: Error while saving %v: %v", k.String(), err)
 		}
 		if k.Incomplete() {
-			autoIdIndex = append(autoIdIndex, i)
-			autoId = append(autoId, p)
+			insert = append(insert, p)
 		} else {
 			upsert = append(upsert, p)
 		}
 	}
-	req := &pb.CommitRequest{
-		Mutation: &pb.Mutation{
-			InsertAutoId: autoId,
-			Upsert:       upsert,
-		},
-	}
-	t := transaction(ctx)
-	if t != nil {
-		req.Transaction = t
-		req.Mode = pb.CommitRequest_TRANSACTIONAL.Enum()
-	} else {
-		req.Mode = pb.CommitRequest_NON_TRANSACTIONAL.Enum()
-	}
 
-	res := &pb.CommitResponse{}
-	if err := call(ctx, "commit", req, res); err != nil {
-		return nil, err
-	}
-	if len(autoId) != len(res.MutationResult.InsertAutoIdKey) {
-		return nil, errors.New("datastore: internal error: server returned the wrong number of keys")
-	}
-
-	ret := make([]*Key, len(keys))
-	autoIndex := 0
-	for i := range ret {
-		if keys[i].Incomplete() {
-			ret[i] = protoToKey(res.MutationResult.InsertAutoIdKey[autoIndex])
-			autoIndex++
-		} else {
-			ret[i] = keys[i]
-		}
-
-		if ret[i].Incomplete() {
-			return nil, errors.New("datastore: internal error: server returned an invalid key")
-		}
-	}
-	return ret, nil
+	return &pb.Mutation{
+		InsertAutoId: insert,
+		Upsert:       upsert,
+	}, nil
 }
 
 // Delete deletes the entity for the given key.
@@ -492,25 +487,29 @@ func Delete(ctx context.Context, key *Key) error {
 
 // DeleteMulti is a batch version of Delete.
 func DeleteMulti(ctx context.Context, keys []*Key) error {
-	protoKeys := make([]*pb.Key, len(keys))
-	for i, k := range keys {
-		if k.Incomplete() {
-			return fmt.Errorf("datastore: can't delete the incomplete key: %v", k)
-		}
-		protoKeys[i] = keyToProto(k)
+	mutation, err := deleteMutation(keys)
+	if err != nil {
+		return err
 	}
+
 	req := &pb.CommitRequest{
-		Mutation: &pb.Mutation{
-			Delete: protoKeys,
-		},
-	}
-	t := transaction(ctx)
-	if t != nil {
-		req.Transaction = t
-		req.Mode = pb.CommitRequest_TRANSACTIONAL.Enum()
-	} else {
-		req.Mode = pb.CommitRequest_NON_TRANSACTIONAL.Enum()
+		Mutation: mutation,
+		Mode:     pb.CommitRequest_NON_TRANSACTIONAL.Enum(),
 	}
 	resp := &pb.CommitResponse{}
 	return call(ctx, "commit", req, resp)
+}
+
+func deleteMutation(keys []*Key) (*pb.Mutation, error) {
+	protoKeys := make([]*pb.Key, len(keys))
+	for i, k := range keys {
+		if k.Incomplete() {
+			return nil, fmt.Errorf("datastore: can't delete the incomplete key: %v", k)
+		}
+		protoKeys[i] = keyToProto(k)
+	}
+
+	return &pb.Mutation{
+		Delete: protoKeys,
+	}, nil
 }

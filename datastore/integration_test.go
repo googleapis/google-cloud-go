@@ -122,7 +122,7 @@ func TestGetMulti(t *testing.T) {
 			got, want = err, ErrNoSuchEntity
 		}
 		if got != want {
-			t.Errorf("MultiError[%d] == %v, want %v", i, err, want)
+			t.Errorf("MultiError[%d] == %v, want %v", i, got, want)
 		}
 	}
 }

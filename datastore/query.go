@@ -100,6 +100,7 @@ type Query struct {
 	offset   int32
 	start    []byte
 	end      []byte
+	trans    *Transaction
 
 	err error
 }
@@ -136,6 +137,19 @@ func (q *Query) Ancestor(ancestor *Key) *Query {
 func (q *Query) EventualConsistency() *Query {
 	q = q.clone()
 	q.eventual = true
+	return q
+}
+
+// Transaction returns a derivative query that is associated with the given
+// transaction.
+//
+// All reads performed as part of the transaction will come from a single
+// consistent snapshot. Furthermore, if the transaction is set to a
+// serializable isolation level, another transaction cannot concurrently modify
+// the data that is read or modified by this transaction.
+func (q *Query) Transaction(t *Transaction) *Query {
+	q = q.clone()
+	q.trans = t
 	return q
 }
 
@@ -383,6 +397,13 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 	dst.StartCursor = q.start
 	dst.EndCursor = q.end
 
+	if t := q.trans; t != nil {
+		if t.id == nil {
+			return errExpiredTransaction
+		}
+		req.ReadOptions = &pb.ReadOptions{Transaction: t.id}
+	}
+
 	req.Query = &dst
 	return nil
 }
@@ -399,10 +420,6 @@ func (q *Query) Count(ctx context.Context) (int, error) {
 	newQ := q.clone()
 	newQ.keysOnly = len(newQ.projection) == 0
 	req := &pb.RunQueryRequest{}
-	t := transaction(ctx)
-	if t != nil {
-		req.ReadOptions = &pb.ReadOptions{Transaction: t}
-	}
 
 	if err := newQ.toProto(req); err != nil {
 		return 0, err

@@ -180,3 +180,39 @@ func ExampleQuery() {
 	// Start listing from an offset and limit the results.
 	datastore.NewQuery("Post").Offset(20).Limit(10)
 }
+
+func ExampleTransaction() {
+	ctx := Example_auth()
+	const retries = 3
+
+	// Increment a counter.
+	// See https://cloud.google.com/appengine/articles/sharding_counters for
+	// a more scalable solution.
+	type Counter struct {
+		Count int
+	}
+
+	key := datastore.NewKey(ctx, "counter", "CounterA", 0, nil)
+
+	for i := 0; i < retries; i++ {
+		tx, err := datastore.NewTransaction(ctx)
+		if err != nil {
+			break
+		}
+
+		var c Counter
+		if err := tx.Get(key, &c); err != nil && err != datastore.ErrNoSuchEntity {
+			break
+		}
+		c.Count++
+		if _, err := tx.Put(key, &c); err != nil {
+			break
+		}
+
+		// Attempt to commit the transaction. If there's a conflict, try again.
+		if _, err := tx.Commit(); err != datastore.ErrConcurrentTransaction {
+			break
+		}
+	}
+
+}
