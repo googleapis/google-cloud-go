@@ -98,7 +98,7 @@ func TestGetMulti(t *testing.T) {
 	var src, dst []*X
 	var srcKeys, dstKeys []*Key
 	for _, c := range cases {
-		dst = append(dst, nil)
+		dst = append(dst, &X{})
 		dstKeys = append(dstKeys, c.key)
 		if c.put {
 			src = append(src, &X{})
@@ -110,7 +110,7 @@ func TestGetMulti(t *testing.T) {
 	}
 	err := GetMulti(c, dstKeys, dst)
 	if err == nil {
-		t.Errorf("GetMulti got %q, expected error", err)
+		t.Errorf("GetMulti got %v, expected error", err)
 	}
 	e, ok := err.(MultiError)
 	if !ok {
@@ -122,7 +122,7 @@ func TestGetMulti(t *testing.T) {
 			got, want = err, ErrNoSuchEntity
 		}
 		if got != want {
-			t.Errorf("MultiError (%d) = %q; want %q", i, got, want)
+			t.Errorf("MultiError[%] == %v, want %v", i, err, want)
 		}
 	}
 }
