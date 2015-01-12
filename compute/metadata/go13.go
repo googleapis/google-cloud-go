@@ -27,9 +27,11 @@ import (
 //
 // TODO(bradfitz,jbd,adg): remove this once App Engine supports Go
 // 1.3+.
-func metaClientDialer() *net.Dialer {
-	return &net.Dialer{
-		Timeout:   750 * time.Millisecond,
-		KeepAlive: 30 * time.Second,
+func init() {
+	go13Dialer = func() *net.Dialer {
+		return &net.Dialer{
+			Timeout:   750 * time.Millisecond,
+			KeepAlive: 30 * time.Second,
+		}
 	}
 }
