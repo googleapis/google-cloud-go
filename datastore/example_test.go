@@ -41,7 +41,6 @@ func Example_auth() context.Context {
 		log.Fatal(err)
 	}
 	conf, err := google.JWTConfigFromJSON(
-		oauth2.NoContext,
 		jsonKey,
 		datastore.ScopeDatastore,
 		datastore.ScopeUserEmail,

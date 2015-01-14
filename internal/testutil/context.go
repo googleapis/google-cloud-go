@@ -41,7 +41,7 @@ func Context(scopes ...string) context.Context {
 	if err != nil {
 		log.Fatalf("Cannot read the JSON key file, err: %v", err)
 	}
-	conf, err := google.JWTConfigFromJSON(oauth2.NoContext, jsonKey, scopes...)
+	conf, err := google.JWTConfigFromJSON(jsonKey, scopes...)
 	if err != nil {
 		log.Fatal(err)
 	}

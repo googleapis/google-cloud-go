@@ -80,7 +80,7 @@ func newClient(jsonFile string) (*http.Client, error) {
 		if err != nil {
 			return nil, err
 		}
-		conf, err := google.JWTConfigFromJSON(oauth2.NoContext, jsonKey, pubsub.ScopePubSub)
+		conf, err := google.JWTConfigFromJSON(jsonKey, pubsub.ScopePubSub)
 		if err != nil {
 			return nil, err
 		}

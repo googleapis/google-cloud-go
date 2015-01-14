@@ -40,7 +40,6 @@ func Example_auth() context.Context {
 		log.Fatal(err)
 	}
 	conf, err := google.JWTConfigFromJSON(
-		oauth2.NoContext,
 		jsonKey,
 		pubsub.ScopeCloudPlatform,
 		pubsub.ScopePubSub,
