@@ -102,6 +102,10 @@ type ObjectAttrs struct {
 	// sent it the response headers.
 	ContentEncoding string
 
+	// CacheControl is the optional Cache-Control header of the object
+	// sent in the response headers.
+	CacheControl string
+
 	// ACL is the list of access control rules for the object.
 	// Optional. If nil or empty, existing ACL rules are preserved.
 	ACL []ACLRule
@@ -128,6 +132,7 @@ func (o ObjectAttrs) toRawObject(bucket string) *raw.Object {
 		ContentType:     o.ContentType,
 		ContentEncoding: o.ContentEncoding,
 		ContentLanguage: o.ContentLanguage,
+		CacheControl:    o.CacheControl,
 		Acl:             acl,
 		Metadata:        o.Metadata,
 	}
@@ -146,6 +151,10 @@ type Object struct {
 
 	// ContentLanguage is the content language of the object's content.
 	ContentLanguage string
+
+	// CacheControl is the Cache-Control header to be sent in the response
+	// headers when serving the object data.
+	CacheControl string
 
 	// ACL is the list of access control rules for the object.
 	ACL []ACLRule
@@ -238,6 +247,7 @@ func newObject(o *raw.Object) *Object {
 		Name:            o.Name,
 		ContentType:     o.ContentType,
 		ContentLanguage: o.ContentLanguage,
+		CacheControl:    o.CacheControl,
 		ACL:             acl,
 		Owner:           owner,
 		ContentEncoding: o.ContentEncoding,
