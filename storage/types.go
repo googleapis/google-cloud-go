@@ -327,8 +327,9 @@ func (c *contentTyper) ContentType() string {
 
 // A Writer writes a Cloud Storage object.
 type Writer struct {
-	// ObjectAttrs are optional attributes to set on the object.
-	// Any attributes must be initialized before the first Write call.
+	// ObjectAttrs are optional attributes to set on the object. Any attributes
+	// must be initialized before the first Write call. Nil or zero-valued
+	// attributes are ignored.
 	ObjectAttrs
 
 	ctx    context.Context
