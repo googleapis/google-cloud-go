@@ -4,7 +4,7 @@
 
 syntax = "proto2";
 
-package pb;
+package datastore;
 option java_package = "com.google.api.services.datastore";
 
 
