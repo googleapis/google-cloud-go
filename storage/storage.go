@@ -279,9 +279,11 @@ func NewReader(ctx context.Context, bucket, name string) (io.ReadCloser, error) 
 
 // NewWriter returns a storage Writer that writes to the GCS object
 // identified by the specified name.
-// If such object doesn't exist, it creates one.
+// If such an object doesn't exist, it creates one.
 // Attributes can be set on the object by modifying the returned Writer's
-// ObjectAttrs field before the first call to Write.
+// ObjectAttrs field before the first call to Write. The name parameter to this
+// function is ignored if the Name field of the ObjectAttrs field is set to a
+// non-empty string.
 //
 // It is the caller's responsibility to call Close when writing is done.
 //
