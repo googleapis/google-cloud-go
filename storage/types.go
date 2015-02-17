@@ -87,7 +87,6 @@ func newBucket(b *raw.Bucket) *Bucket {
 // ObjectAttrs is the user-editable object attributes.
 type ObjectAttrs struct {
 	// Name is the name of the object.
-	// Optional. If not provided, object is not renamed.
 	Name string
 
 	// ContentType is the MIME type of the object's content.
