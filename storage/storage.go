@@ -80,8 +80,8 @@ func BucketInfo(ctx context.Context, name string) (*Bucket, error) {
 // to filter the results. If q is nil, no filtering is applied.
 func ListObjects(ctx context.Context, bucket string, q *Query) (*Objects, error) {
 	c := rawService(ctx).Objects.List(bucket)
+	c.Projection("full")
 	if q != nil {
-		c.Projection("full")
 		c.Delimiter(q.Delimiter)
 		c.Prefix(q.Prefix)
 		c.Versions(q.Versions)
