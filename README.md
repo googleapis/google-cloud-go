@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/GoogleCloudPlatform/gcloud-golang.svg?branch=master)](https://travis-ci.org/GoogleCloudPlatform/gcloud-golang)
 
+**NOTE:** Github repo is a mirror of [https://code.googlesource.com/gocloud](https://code.googlesource.com/gocloud).
+
 Go packages for Google Cloud Platform services. Supported APIs include:
 
  * Google Cloud Datastore
