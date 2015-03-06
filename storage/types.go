@@ -364,6 +364,8 @@ func (w *Writer) open() {
 		w.err = err
 		if err == nil {
 			w.obj = newObject(resp)
+		} else {
+			pr.CloseWithError(w.err)
 		}
 		close(w.donec)
 	}()
