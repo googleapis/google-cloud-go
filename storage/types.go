@@ -88,6 +88,9 @@ func newBucket(b *raw.Bucket) *Bucket {
 type ObjectAttrs struct {
 	// Name is the name of the object.
 	Name string
+	
+	// CacheControl: Cache-Control directive for the object data.
+	CacheControl string
 
 	// ContentType is the MIME type of the object's content.
 	// Optional.
@@ -128,6 +131,7 @@ func (o ObjectAttrs) toRawObject(bucket string) *raw.Object {
 	return &raw.Object{
 		Bucket:          bucket,
 		Name:            o.Name,
+		CacheControl:	 o.CacheControl,
 		ContentType:     o.ContentType,
 		ContentEncoding: o.ContentEncoding,
 		ContentLanguage: o.ContentLanguage,
@@ -144,6 +148,9 @@ type Object struct {
 
 	// Name is the name of the object within the bucket.
 	Name string
+	
+	// CacheControl: Cache-Control directive for the object data.
+	CacheControl string
 
 	// ContentType is the MIME type of the object's content.
 	ContentType string
@@ -244,6 +251,7 @@ func newObject(o *raw.Object) *Object {
 	return &Object{
 		Bucket:          o.Bucket,
 		Name:            o.Name,
+		CacheControl:	 o.CacheControl,
 		ContentType:     o.ContentType,
 		ContentLanguage: o.ContentLanguage,
 		CacheControl:    o.CacheControl,
