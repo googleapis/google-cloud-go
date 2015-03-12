@@ -25,14 +25,16 @@ import (
 	"math/rand"
 	"os"
 	"testing"
+	"time"
 
+	"google.golang.org/cloud/internal"
 	"google.golang.org/cloud/internal/testutil"
 )
 
 var (
 	bucket     string
 	contents   = make(map[string][]byte)
-	objects    = []string{"obj1", "obj2"}
+	objects    = []string{"obj1", "obj2", "obj/with/slashes"}
 	aclObjects = []string{"acl1", "acl2"}
 	copyObj    = "copy-object"
 )
@@ -78,6 +80,34 @@ func TestObjects(t *testing.T) {
 			t.Errorf("Contents (%v) = %q; want %q", obj, got, want)
 		}
 		rc.Close()
+
+		// Test SignedURL
+		opts := &SignedURLOptions{
+			GoogleAccessID: "xxx@clientid",
+			PrivateKey:     dummyKey("rsa"),
+			Method:         "GET",
+			MD5:            []byte("202cb962ac59075b964b07152d234b70"),
+			Expires:        time.Date(2020, time.October, 2, 10, 0, 0, 0, time.UTC),
+			ContentType:    "application/json",
+			Headers:        []string{"x-header1", "x-header2"},
+		}
+		u, err := SignedURL(bucket, obj, opts)
+		if err != nil {
+			t.Fatalf("SignedURL(%q, %q) errored with %v", bucket, obj, err)
+		}
+		hc := internal.HTTPClient(ctx)
+		res, err := hc.Get(u)
+		if err != nil {
+			t.Fatalf("Can't get URL %q: %v", u, err)
+		}
+		slurp, err = ioutil.ReadAll(res.Body)
+		if err != nil {
+			t.Fatalf("Can't ReadAll signed object %v, errored with %v", obj, err)
+		}
+		if got, want := slurp, contents[obj]; !bytes.Equal(got, want) {
+			t.Errorf("Contents (%v) = %q; want %q", obj, got, want)
+		}
+		res.Body.Close()
 	}
 
 	// Test NotFound.

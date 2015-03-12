@@ -173,6 +173,9 @@ type SignedURLOptions struct {
 // Google account or signing in. For more information about the signed
 // URLs, see https://cloud.google.com/storage/docs/accesscontrol#Signed-URLs.
 func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
+	if opts == nil {
+		return "", errors.New("storage: missing required SignedURLOptions")
+	}
 	if opts.GoogleAccessID == "" || opts.PrivateKey == nil {
 		return "", errors.New("storage: missing required credentials to generate a signed URL")
 	}
@@ -203,9 +206,10 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 		return "", err
 	}
 	encoded := base64.StdEncoding.EncodeToString(b)
-	u, err := url.Parse(fmt.Sprintf("https://storage.googleapis.com/%s/%s", bucket, name))
-	if err != nil {
-		return "", err
+	u := &url.URL{
+		Scheme: "https",
+		Host:   "storage.googleapis.com",
+		Path:   fmt.Sprintf("/%s/%s", bucket, name),
 	}
 	q := u.Query()
 	q.Set("GoogleAccessId", opts.GoogleAccessID)
@@ -274,7 +278,12 @@ func CopyObject(ctx context.Context, srcBucket, srcName string, destBucket, dest
 // of the object.
 func NewReader(ctx context.Context, bucket, name string) (io.ReadCloser, error) {
 	hc := internal.HTTPClient(ctx)
-	res, err := hc.Get(fmt.Sprintf("https://storage.googleapis.com/%s/%s", bucket, name))
+	u := &url.URL{
+		Scheme: "https",
+		Host:   "storage.googleapis.com",
+		Path:   fmt.Sprintf("/%s/%s", bucket, name),
+	}
+	res, err := hc.Get(u.String())
 	if err != nil {
 		return nil, err
 	}
