@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// +build appenginevm !appengine
-
-// Package gcsdemo is an example Managed VM app using the Google Cloud Storage API.
+// Package gcsdemo is an example App Engine or Mananged VM app using the Google Cloud Storage API.
 package gcsdemo
 
 import (
@@ -26,7 +24,6 @@ import (
 	"strings"
 
 	"golang.org/x/net/context"
-
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/appengine"
