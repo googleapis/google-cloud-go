@@ -245,10 +245,18 @@ func DeleteObject(ctx context.Context, bucket, name string) error {
 
 // CopyObject copies the source object to the destination.
 // The copied object's attributes are overwritten by those given.
+// To change the name of the destination object, set attrs.Name.
 func CopyObject(ctx context.Context, bucket, name string, destBucket string, attrs ObjectAttrs) (*Object, error) {
-	destName := name
-	if attrs.Name != "" {
-		destName = attrs.Name
+	if bucket == "" || destBucket == "" {
+		return nil, errors.New("storage: bucket and destBucket must both be non-empty")
+	}
+	if name == "" {
+		return nil, errors.New("storage: name must be non-empty")
+	}
+	destName := attrs.Name
+	if destName == "" {
+		destName = name
+		attrs.Name = name
 	}
 	o, err := rawService(ctx).Objects.Copy(
 		bucket, name, destBucket, destName, attrs.toRawObject(destBucket)).Projection("full").Do()

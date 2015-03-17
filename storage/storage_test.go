@@ -21,6 +21,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"golang.org/x/net/context"
 )
 
 func TestSignedURL(t *testing.T) {
@@ -120,4 +122,31 @@ func dummyKey(kind string) []byte {
 		log.Fatal(err)
 	}
 	return slurp
+}
+
+func TestCopyObjectMissingFields(t *testing.T) {
+	var tests = []struct {
+		bucket, name, destBucket string
+		errMsg                   string
+	}{
+		{
+			"mybucket", "", "mybucket",
+			"name must be non-empty",
+		},
+		{
+			"", "srcfile", "mybucket",
+			"bucket and destBucket must both be non-empty",
+		},
+		{
+			"mybucket", "srcfile", "",
+			"bucket and destBucket must both be non-empty",
+		},
+	}
+	attrs := ObjectAttrs{}
+	for i, test := range tests {
+		_, err := CopyObject(context.TODO(), test.bucket, test.name, test.destBucket, attrs)
+		if !strings.Contains(err.Error(), test.errMsg) {
+			t.Errorf("CopyObject test #%v: err = %v, want %v", i, err, test.errMsg)
+		}
+	}
 }
