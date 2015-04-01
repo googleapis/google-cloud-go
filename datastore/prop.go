@@ -62,8 +62,8 @@ type Property struct {
 	// value.
 	Value interface{}
 	// NoIndex is whether the datastore cannot index this property.
-	// If NoIndex is set to false, []byte values are limited to 500 bytes and
-	// string values are limited to 500 characters.
+	// If NoIndex is set to false, []byte values are limited to 1500 bytes and
+	// string values are limited to 1500 bytes.
 	NoIndex bool
 	// Multiple is whether the entity can have multiple properties with
 	// the same name. Even if a particular instance only has one property with

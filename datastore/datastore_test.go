@@ -641,7 +641,7 @@ var testCases = []testCase{
 	{
 		"[]byte must be noindex",
 		&PropertyList{
-			Property{Name: "B", Value: makeUint8Slice(501), NoIndex: false},
+			Property{Name: "B", Value: makeUint8Slice(1501), NoIndex: false},
 		},
 		nil,
 		"cannot index a Property",

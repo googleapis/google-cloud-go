@@ -146,20 +146,20 @@ func (z Z) String() string {
 }
 
 func TestUnindexableValues(t *testing.T) {
-	x500 := strings.Repeat("x", 500)
-	x501 := strings.Repeat("x", 501)
+	x1500 := strings.Repeat("x", 1500)
+	x1501 := strings.Repeat("x", 1501)
 	testCases := []struct {
 		in      Z
 		wantErr bool
 	}{
-		{in: Z{S: x500}, wantErr: false},
-		{in: Z{S: x501}, wantErr: true},
-		{in: Z{T: x500}, wantErr: false},
-		{in: Z{T: x501}, wantErr: false},
-		{in: Z{P: []byte(x500)}, wantErr: false},
-		{in: Z{P: []byte(x501)}, wantErr: true},
-		{in: Z{K: []byte(x500)}, wantErr: false},
-		{in: Z{K: []byte(x501)}, wantErr: false},
+		{in: Z{S: x1500}, wantErr: false},
+		{in: Z{S: x1501}, wantErr: true},
+		{in: Z{T: x1500}, wantErr: false},
+		{in: Z{T: x1501}, wantErr: false},
+		{in: Z{P: []byte(x1500)}, wantErr: false},
+		{in: Z{P: []byte(x1501)}, wantErr: true},
+		{in: Z{K: []byte(x1500)}, wantErr: false},
+		{in: Z{K: []byte(x1501)}, wantErr: false},
 	}
 	c := testutil.Context(ScopeDatastore, ScopeUserEmail)
 	for _, tt := range testCases {

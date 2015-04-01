@@ -145,7 +145,7 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 		switch v := p.Value.(type) {
 		case string:
 		case []byte:
-			if len(v) > 500 && !p.NoIndex {
+			if len(v) > 1500 && !p.NoIndex {
 				return nil, fmt.Errorf("datastore: cannot index a Property with Name %q", p.Name)
 			}
 		}
