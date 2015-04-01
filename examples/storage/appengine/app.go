@@ -27,9 +27,9 @@ import (
 
 	"golang.org/x/net/context"
 
-	"appengine"
-	"appengine/file"
-	"appengine/urlfetch"
+	"google.golang.org/appengine"
+	"google.golang.org/appengine/file"
+	"google.golang.org/appengine/urlfetch"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -46,7 +46,7 @@ func init() {
 
 // demo struct holds information needed to run the various demo functions.
 type demo struct {
-	c   appengine.Context
+	c   context.Context
 	w   http.ResponseWriter
 	ctx context.Context
 	// cleanUp is a list of filenames that need cleaning up at the end of the demo.
@@ -57,7 +57,7 @@ type demo struct {
 
 func (d *demo) errorf(format string, args ...interface{}) {
 	d.failed = true
-	d.c.Errorf(format, args...)
+	log.Errorf(d.c, format, args...)
 }
 
 // handler is the main demo entry point that calls the GCS operations.
@@ -70,7 +70,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if bucket == "" {
 		var err error
 		if bucket, err = file.DefaultBucketName(c); err != nil {
-			c.Errorf("failed to get default GCS bucket name: %v", err)
+			log.Errorf(c, "failed to get default GCS bucket name: %v", err)
 			return
 		}
 	}
