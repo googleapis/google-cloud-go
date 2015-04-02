@@ -14,7 +14,9 @@
 
 // Package pubsub contains a Google Cloud Pub/Sub client.
 //
-// More information about Google Cloud Pub/Sub is available on
+// This package is experimental and may make backwards-incompatible changes.
+//
+// More information about Google Cloud Pub/Sub is available at
 // https://cloud.google.com/pubsub/docs
 package pubsub // import "google.golang.org/cloud/pubsub"
 

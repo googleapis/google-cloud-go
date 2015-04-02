@@ -2,6 +2,9 @@
 
 [![Build Status](https://travis-ci.org/GoogleCloudPlatform/gcloud-golang.svg?branch=master)](https://travis-ci.org/GoogleCloudPlatform/gcloud-golang)
 
+**NOTE:** These packages are experimental, and may occasionally make
+backwards-incompatible changes.
+
 **NOTE:** Github repo is a mirror of [https://code.googlesource.com/gocloud](https://code.googlesource.com/gocloud).
 
 Go packages for Google Cloud Platform services. Supported APIs include:
@@ -14,9 +17,6 @@ Go packages for Google Cloud Platform services. Supported APIs include:
 ``` go
 import "google.golang.org/cloud"
 ```
-
-> Note: This package is a work-in-progress, and may occasionally
-> make backwards-incompatible changes.
 
 Documentation and examples are available at
 [https://godoc.org/google.golang.org/cloud](https://godoc.org/google.golang.org/cloud).
