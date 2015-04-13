@@ -59,11 +59,11 @@ func TestAll(t *testing.T) {
 	expectedMsgs := make(map[string]bool, max)
 	for i := 0; i < max; i++ {
 		text := fmt.Sprintf("a message with an index %d", i)
-		labels := make(map[string]string)
-		labels["foo"] = "bar"
+		attrs := make(map[string]string)
+		attrs["foo"] = "bar"
 		msgs[i] = &Message{
-			Data:   []byte(text),
-			Labels: labels,
+			Data:       []byte(text),
+			Attributes: attrs,
 		}
 		expectedMsgs[text] = false
 	}
@@ -90,8 +90,8 @@ func TestAll(t *testing.T) {
 	for _, msg := range received {
 		expectedMsgs[string(msg.Data)] = true
 		expectedIDs[msg.ID] = true
-		if msg.Labels["foo"] != "bar" {
-			t.Errorf("message label foo is expected to be 'bar', found '%s'", msg.Labels["foo"])
+		if msg.Attributes["foo"] != "bar" {
+			t.Errorf("message attribute foo is expected to be 'bar', found '%s'", msg.Attributes["foo"])
 		}
 	}
 	for msg, found := range expectedMsgs {
