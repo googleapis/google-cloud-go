@@ -169,15 +169,7 @@ func (d *demo) copyFile(fileName string) {
 	copyName := fileName + "-copy"
 	fmt.Fprintf(d.w, "Copying file /%v/%v to /%v/%v:\n", bucket, fileName, bucket, copyName)
 
-	attrs := storage.ObjectAttrs{
-		Name:        copyName,
-		ContentType: "text/plain",
-		Metadata: map[string]string{
-			"x-goog-meta-foo-copy": "foo-copy",
-			"x-goog-meta-bar-copy": "bar-copy",
-		},
-	}
-	obj, err := storage.CopyObject(d.ctx, bucket, fileName, bucket, attrs)
+	obj, err := storage.CopyObject(d.ctx, bucket, fileName, bucket, copyName, nil)
 	if err != nil {
 		d.errorf("copyFile: unable to copy /%v/%v to bucket %q, file %q: %v", bucket, fileName, bucket, copyName, err)
 		return

@@ -101,10 +101,7 @@ func TestObjects(t *testing.T) {
 	}
 
 	// Test object copy.
-	copy, err := CopyObject(ctx, bucket, name, bucket, ObjectAttrs{
-		Name:        copyObj,
-		ContentType: "text/html",
-	})
+	copy, err := CopyObject(ctx, bucket, name, bucket, copyObj, nil)
 	if err != nil {
 		t.Errorf("CopyObject failed with %v", err)
 	}

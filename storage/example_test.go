@@ -111,7 +111,7 @@ func ExampleNewWriter() {
 func ExampleCopyObject() {
 	ctx := Example_auth()
 
-	o, err := storage.CopyObject(ctx, "bucketname", "file1", "another-bucketname", storage.ObjectAttrs{Name: "file2"})
+	o, err := storage.CopyObject(ctx, "bucketname", "file1", "another-bucketname", "file2", nil)
 	if err != nil {
 		log.Fatal(err)
 	}

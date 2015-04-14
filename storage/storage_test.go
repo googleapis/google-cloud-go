@@ -126,25 +126,28 @@ func dummyKey(kind string) []byte {
 
 func TestCopyObjectMissingFields(t *testing.T) {
 	var tests = []struct {
-		bucket, name, destBucket string
-		errMsg                   string
+		srcBucket, srcName, destBucket, destName string
+		errMsg                                   string
 	}{
 		{
-			"mybucket", "", "mybucket",
-			"name must be non-empty",
+			"mybucket", "", "mybucket", "destname",
+			"srcName and destName must be non-empty",
 		},
 		{
-			"", "srcfile", "mybucket",
-			"bucket and destBucket must both be non-empty",
+			"mybucket", "srcname", "mybucket", "",
+			"srcName and destName must be non-empty",
 		},
 		{
-			"mybucket", "srcfile", "",
-			"bucket and destBucket must both be non-empty",
+			"", "srcfile", "mybucket", "destname",
+			"srcBucket and destBucket must both be non-empty",
+		},
+		{
+			"mybucket", "srcfile", "", "destname",
+			"srcBucket and destBucket must both be non-empty",
 		},
 	}
-	attrs := ObjectAttrs{}
 	for i, test := range tests {
-		_, err := CopyObject(context.TODO(), test.bucket, test.name, test.destBucket, attrs)
+		_, err := CopyObject(context.TODO(), test.srcBucket, test.srcName, test.destBucket, test.destName, nil)
 		if !strings.Contains(err.Error(), test.errMsg) {
 			t.Errorf("CopyObject test #%v: err = %v, want %v", i, err, test.errMsg)
 		}
