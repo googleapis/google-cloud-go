@@ -146,6 +146,11 @@ func SubExists(ctx context.Context, name string) (bool, error) {
 // Ack acknowledges one or more Pub/Sub messages on the
 // specified subscription.
 func Ack(ctx context.Context, sub string, id ...string) error {
+	for idx, ackID := range id {
+		if ackID == "" {
+			return fmt.Errorf("pubsub: empty ackID detected at index %d", idx)
+		}
+	}
 	_, err := rawService(ctx).Projects.Subscriptions.Acknowledge(fullSubName(internal.ProjID(ctx), sub), &raw.AcknowledgeRequest{
 		AckIds: id,
 	}).Do()
