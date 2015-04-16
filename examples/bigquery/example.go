@@ -68,7 +68,11 @@ func main() {
 	gcs.SkipLeadingRows = *skiprows
 
 	// Load data from Google Cloud Storage into a BigQuery table.
-	job, err := client.Copy(context.Background(), table, gcs, bigquery.MaxBadRecords(1))
+	job, err := client.Copy(
+		context.Background(), table, gcs,
+		bigquery.MaxBadRecords(1),
+		bigquery.AllowQuotedNewlines())
+
 	if err != nil {
 		log.Fatalf("Loading data: %v", err)
 	}

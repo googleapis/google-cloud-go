@@ -32,16 +32,51 @@ type loadOption interface {
 	customizeLoad(conf *bq.JobConfigurationLoad)
 }
 
-// MaxBadRecords returns an Option that sets the maximum number of bad records that will be ignored in data being loaded into a table.
+// MaxBadRecords returns an Option that sets the maximum number of bad records that will be ignored.
 // If this maximum is exceeded, the operation will be unsuccessful.
 func MaxBadRecords(n int64) Option { return maxBadRecords(n) }
 
 type maxBadRecords int64
 
+func (opt maxBadRecords) implementsOption() {}
+
 func (opt maxBadRecords) customizeLoad(conf *bq.JobConfigurationLoad) {
 	conf.MaxBadRecords = int64(opt)
 }
-func (opt maxBadRecords) implementsOption() {
+
+// AllowJaggedRows returns an Option that sets whether missing trailing optional columns are tolerated in CSV data.
+func AllowJaggedRows() Option { return allowJaggedRows{} }
+
+type allowJaggedRows struct{}
+
+func (opt allowJaggedRows) implementsOption() {}
+
+func (opt allowJaggedRows) customizeLoad(conf *bq.JobConfigurationLoad) {
+	conf.AllowJaggedRows = true
+}
+
+// AllowQuotedNewlines returns an Option that sets whether quoted data sections containing newlines are allowed in CSV data.
+func AllowQuotedNewlines() Option { return allowQuotedNewlines{} }
+
+type allowQuotedNewlines struct{}
+
+func (opt allowQuotedNewlines) implementsOption() {}
+
+func (opt allowQuotedNewlines) customizeLoad(conf *bq.JobConfigurationLoad) {
+	conf.AllowQuotedNewlines = true
+}
+
+// IgnoreUnknownValues returns an Option that sets whether values not matching the schema are tolerated.
+// Unknown values are ignored. For CSV this ignores extra values at the end of a line.
+// For JSON this ignores named values that do not match any column name.
+func IgnoreUnknownValues() Option { return ignoreUnknownValues{} }
+
+type ignoreUnknownValues struct{}
+
+func (opt ignoreUnknownValues) implementsOption() {}
+
+func (opt ignoreUnknownValues) customizeLoad(conf *bq.JobConfigurationLoad) {
+	conf.IgnoreUnknownValues = true
 }
 
 func load(c jobInserter, dst Destination, src Source, options ...Option) (*Job, error) {

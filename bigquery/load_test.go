@@ -68,12 +68,20 @@ func TestLoad(t *testing.T) {
 			want: defaultJob(),
 		},
 		{
-			dst:     defaultTable,
-			src:     defaultGCS,
-			options: []Option{MaxBadRecords(1)},
+			dst: defaultTable,
+			src: defaultGCS,
+			options: []Option{
+				MaxBadRecords(1),
+				AllowJaggedRows(),
+				AllowQuotedNewlines(),
+				IgnoreUnknownValues(),
+			},
 			want: func() *bq.Job {
 				j := defaultJob()
 				j.Configuration.Load.MaxBadRecords = 1
+				j.Configuration.Load.AllowJaggedRows = true
+				j.Configuration.Load.AllowQuotedNewlines = true
+				j.Configuration.Load.IgnoreUnknownValues = true
 				return j
 			}(),
 		},
