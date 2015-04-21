@@ -275,7 +275,7 @@ func checkMultiArg(v reflect.Value) (m multiArgType, elemType reflect.Type) {
 	return multiArgTypeInvalid, nil
 }
 
-// Get loads the entity stored for k into dst, which must be a struct pointer
+// Get loads the entity stored for key into dst, which must be a struct pointer
 // or implement PropertyLoadSaver. If there is no such entity for the key, Get
 // returns ErrNoSuchEntity.
 //

@@ -93,7 +93,7 @@ func (l *PropertyList) Load(p []Property) error {
 	return nil
 }
 
-// Save saves all of l's properties as a slice or Properties.
+// Save saves all of l's properties as a slice of Properties.
 func (l *PropertyList) Save() ([]Property, error) {
 	return *l, nil
 }
