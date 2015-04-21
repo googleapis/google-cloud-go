@@ -40,7 +40,7 @@ const (
 type JobStatus struct {
 	State State
 
-	err *Error
+	err error
 
 	// All errors encountered during the running of the job.
 	// Not all Errors are fatal, so errors here do not necessarily mean that the job has completed or was unsuccessful.
