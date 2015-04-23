@@ -161,7 +161,7 @@ func toMessage(resp *raw.ReceivedMessage) (*Message, error) {
 	if resp.Message == nil {
 		return &Message{AckID: resp.AckId}, nil
 	}
-	data, err := base64.URLEncoding.DecodeString(resp.Message.Data)
+	data, err := base64.StdEncoding.DecodeString(resp.Message.Data)
 	if err != nil {
 		return nil, err
 	}
@@ -247,7 +247,7 @@ func Publish(ctx context.Context, topic string, msgs ...*Message) ([]string, err
 	rawMsgs = make([]*raw.PubsubMessage, len(msgs))
 	for i, msg := range msgs {
 		rawMsgs[i] = &raw.PubsubMessage{
-			Data:       base64.URLEncoding.EncodeToString(msg.Data),
+			Data:       base64.StdEncoding.EncodeToString(msg.Data),
 			Attributes: msg.Attributes,
 		}
 	}
