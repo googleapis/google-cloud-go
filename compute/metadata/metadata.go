@@ -25,6 +25,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -86,17 +87,29 @@ func (suffix NotDefinedError) Error() string {
 }
 
 // Get returns a value from the metadata service.
-// The suffix is appended to "http://metadata/computeMetadata/v1/".
+// The suffix is appended to "http://${GCE_METADATA_HOST}/computeMetadata/v1/".
+//
+// If the GCE_METADATA_HOST environment variable is not defined, a default of
+// 169.254.169.254 will be used instead.
 //
 // If the requested metadata is not defined, the returned error will
 // be of type NotDefinedError.
 func Get(suffix string) (string, error) {
-	// Using 169.254.169.254 instead of "metadata" here because Go
-	// binaries built with the "netgo" tag and without cgo won't
-	// know the search suffix for "metadata" is
-	// ".google.internal", and this IP address is documented as
-	// being stable anyway.
-	url := "http://169.254.169.254/computeMetadata/v1/" + suffix
+	// Using a fixed IP makes it very difficult to spoof the metadata service in
+	// a container, which is an important use-case for local testing of cloud
+	// deployments. To enable spoofing of the metadata service, the environment
+	// variable GCE_METADATA_HOST is first inspected to decide where metadata
+	// requests shall go.
+	host := os.Getenv("GCE_METADATA_HOST")
+	if host == "" {
+		// Using 169.254.169.254 instead of "metadata" here because Go
+		// binaries built with the "netgo" tag and without cgo won't
+		// know the search suffix for "metadata" is
+		// ".google.internal", and this IP address is documented as
+		// being stable anyway.
+		host = "169.254.169.254"
+	}
+	url := "http://" + host + "/computeMetadata/v1/" + suffix
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set("Metadata-Flavor", "Google")
 	res, err := metaClient.Do(req)
