@@ -85,6 +85,40 @@ func TestLoad(t *testing.T) {
 				return j
 			}(),
 		},
+		{
+			dst: defaultTable,
+			src: &GCSReference{
+				uri:             "uri",
+				SkipLeadingRows: 1,
+				SourceFormat:    JSON,
+				Encoding:        UTF_8,
+				FieldDelimiter:  "\t",
+				Quote:           "-",
+			},
+			want: func() *bq.Job {
+				j := defaultJob()
+				j.Configuration.Load.SkipLeadingRows = 1
+				j.Configuration.Load.SourceFormat = "NEWLINE_DELIMITED_JSON"
+				j.Configuration.Load.Encoding = "UTF-8"
+				j.Configuration.Load.FieldDelimiter = "\t"
+				j.Configuration.Load.Quote = "-"
+				return j
+			}(),
+		},
+		{
+			dst: defaultTable,
+			src: &GCSReference{
+				uri: "uri",
+				// TODO(mcgreevy): Once the underlying API supports it, test that
+				// a distinction is made between setting an empty Quote and not setting it at all.
+				Quote: "",
+			},
+			want: func() *bq.Job {
+				j := defaultJob()
+				j.Configuration.Load.Quote = ""
+				return j
+			}(),
+		},
 	}
 
 	for _, tc := range testCases {

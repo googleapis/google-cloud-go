@@ -25,6 +25,15 @@ type GCSReference struct {
 	// TODO(mcgreevy): support multiple source URIs
 	uri             string
 	SkipLeadingRows int64
+	SourceFormat    SourceFormat
+	Encoding        Encoding
+	FieldDelimiter  string
+
+	// Quote is the value used to quote data sections in a CSV file.
+	// The default quotation character is the double quote ("), which is used if both Quote and ForceZeroQuote are unset.
+	// To specify that no character should be interpreted as a quotation character, set ForceZeroQuote to true.
+	Quote          string
+	ForceZeroQuote bool
 }
 
 func (gcs *GCSReference) implementsSource() {
@@ -37,7 +46,28 @@ func (c *Client) NewGCSReference(bucket, name string) *GCSReference {
 	}
 }
 
+type SourceFormat string
+
+const (
+	CSV             SourceFormat = "CSV"
+	JSON            SourceFormat = "NEWLINE_DELIMITED_JSON"
+	DatastoreBackup SourceFormat = "DATASTORE_BACKUP"
+)
+
+type Encoding string
+
+const (
+	UTF_8      Encoding = "UTF-8"
+	ISO_8859_1 Encoding = "ISO-8859-1"
+)
+
 func (gcs *GCSReference) customizeLoadSrc(conf *bq.JobConfigurationLoad) {
 	conf.SourceUris = []string{gcs.uri}
 	conf.SkipLeadingRows = gcs.SkipLeadingRows
+	conf.SourceFormat = string(gcs.SourceFormat)
+	conf.Encoding = string(gcs.Encoding)
+	conf.FieldDelimiter = gcs.FieldDelimiter
+
+	// TODO(mcgreevy): take into account gcs.Unquoted once the underlying library supports it.
+	conf.Quote = gcs.Quote
 }
