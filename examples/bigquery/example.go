@@ -64,7 +64,7 @@ func main() {
 
 	table := client.OpenTable(*dataset, *table)
 
-	gcs := client.NewGCSReference(*bucket, *object)
+	gcs := client.NewGCSReference(fmt.Sprintf("gs://%s/%s", *bucket, *object))
 	gcs.SkipLeadingRows = *skiprows
 
 	// Load data from Google Cloud Storage into a BigQuery table.

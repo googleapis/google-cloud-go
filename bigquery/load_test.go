@@ -28,7 +28,7 @@ var defaultTable = &Table{
 }
 
 var defaultGCS = &GCSReference{
-	uri: "uri",
+	uris: []string{"uri"},
 }
 
 func defaultJob() *bq.Job {
@@ -88,7 +88,7 @@ func TestLoad(t *testing.T) {
 		{
 			dst: defaultTable,
 			src: &GCSReference{
-				uri:             "uri",
+				uris:            []string{"uri"},
 				SkipLeadingRows: 1,
 				SourceFormat:    JSON,
 				Encoding:        UTF_8,
@@ -108,7 +108,7 @@ func TestLoad(t *testing.T) {
 		{
 			dst: defaultTable,
 			src: &GCSReference{
-				uri: "uri",
+				uris: []string{"uri"},
 				// TODO(mcgreevy): Once the underlying API supports it, test that
 				// a distinction is made between setting an empty Quote and not setting it at all.
 				Quote: "",

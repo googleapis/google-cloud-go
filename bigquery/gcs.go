@@ -14,16 +14,12 @@
 
 package bigquery
 
-import (
-	"fmt"
+import bq "google.golang.org/api/bigquery/v2"
 
-	bq "google.golang.org/api/bigquery/v2"
-)
-
-// GCSReference is a reference to a Google Cloud Storage object.
+// GCSReference is a reference to one or more Google Cloud Storage objects, which together constitute
+// an input or output to a BigQuery operation.
 type GCSReference struct {
-	// TODO(mcgreevy): support multiple source URIs
-	uri string
+	uris []string
 
 	// The number of rows at the top of a CSV file that BigQuery will skip when loading the data.
 	SkipLeadingRows int64
@@ -45,11 +41,14 @@ type GCSReference struct {
 func (gcs *GCSReference) implementsSource() {
 }
 
-// NewGCSReference constructs a reference to a Google Cloud Storage object.
-func (c *Client) NewGCSReference(bucket, name string) *GCSReference {
-	return &GCSReference{
-		uri: fmt.Sprintf("gs://%s/%s", bucket, name),
-	}
+// NewGCSReference constructs a reference to one or more Google Cloud Storage objects, which together constitute a data source or destination.
+// In the simple case, a single URI in the form gs://bucket/object may refer to a single GCS object.
+// Data may also be split into mutiple files, if multiple URIs or URIs containing wildcards are provided.
+// Each URI may contain one '*' wildcard character, which (if present) must come after the bucket name.
+// For more information about the treatment of wildcards and multiple URIs,
+// see https://cloud.google.com/bigquery/exporting-data-from-bigquery#exportingmultiple
+func (c *Client) NewGCSReference(uri ...string) *GCSReference {
+	return &GCSReference{uris: uri}
 }
 
 // SourceFormat is the format of a data file to be loaded into BigQuery.
@@ -72,7 +71,7 @@ const (
 )
 
 func (gcs *GCSReference) customizeLoadSrc(conf *bq.JobConfigurationLoad) {
-	conf.SourceUris = []string{gcs.uri}
+	conf.SourceUris = gcs.uris
 	conf.SkipLeadingRows = gcs.SkipLeadingRows
 	conf.SourceFormat = string(gcs.SourceFormat)
 	conf.Encoding = string(gcs.Encoding)
