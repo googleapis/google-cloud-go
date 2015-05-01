@@ -23,11 +23,17 @@ import (
 // GCSReference is a reference to a Google Cloud Storage object.
 type GCSReference struct {
 	// TODO(mcgreevy): support multiple source URIs
-	uri             string
+	uri string
+
+	// The number of rows at the top of a CSV file that BigQuery will skip when loading the data.
 	SkipLeadingRows int64
-	SourceFormat    SourceFormat
-	Encoding        Encoding
-	FieldDelimiter  string
+
+	SourceFormat SourceFormat
+	Encoding     Encoding
+
+	// FieldDelimiter is the separator for fields in a CSV file, used when loading or exporting data.
+	// The default is ",".
+	FieldDelimiter string
 
 	// Quote is the value used to quote data sections in a CSV file.
 	// The default quotation character is the double quote ("), which is used if both Quote and ForceZeroQuote are unset.
@@ -46,6 +52,7 @@ func (c *Client) NewGCSReference(bucket, name string) *GCSReference {
 	}
 }
 
+// SourceFormat is the format of a data file to be loaded into BigQuery.
 type SourceFormat string
 
 const (
@@ -54,6 +61,9 @@ const (
 	DatastoreBackup SourceFormat = "DATASTORE_BACKUP"
 )
 
+// Encoding specifies the character encoding of data to be loaded into BigQuery.
+// See https://cloud.google.com/bigquery/docs/reference/v2/jobs#configuration.load.encoding
+// for more details about how this is used.
 type Encoding string
 
 const (

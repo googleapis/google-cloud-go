@@ -44,7 +44,7 @@ func (opt maxBadRecords) customizeLoad(conf *bq.JobConfigurationLoad) {
 	conf.MaxBadRecords = int64(opt)
 }
 
-// AllowJaggedRows returns an Option that sets whether missing trailing optional columns are tolerated in CSV data.
+// AllowJaggedRows returns an Option that causes missing trailing optional columns to be tolerated in CSV data.  Missing values are treated as nulls.
 func AllowJaggedRows() Option { return allowJaggedRows{} }
 
 type allowJaggedRows struct{}
@@ -55,7 +55,7 @@ func (opt allowJaggedRows) customizeLoad(conf *bq.JobConfigurationLoad) {
 	conf.AllowJaggedRows = true
 }
 
-// AllowQuotedNewlines returns an Option that sets whether quoted data sections containing newlines are allowed in CSV data.
+// AllowQuotedNewlines returns an Option that allows quoted data sections containing newlines in CSV data.
 func AllowQuotedNewlines() Option { return allowQuotedNewlines{} }
 
 type allowQuotedNewlines struct{}
@@ -66,9 +66,11 @@ func (opt allowQuotedNewlines) customizeLoad(conf *bq.JobConfigurationLoad) {
 	conf.AllowQuotedNewlines = true
 }
 
-// IgnoreUnknownValues returns an Option that sets whether values not matching the schema are tolerated.
+// IgnoreUnknownValues returns an Option that causes values not matching the schema to be tolerated.
 // Unknown values are ignored. For CSV this ignores extra values at the end of a line.
 // For JSON this ignores named values that do not match any column name.
+// If this Option is not used, records containing unknown values are treated as bad records.
+// The MaxBadRecords Option can be used to customize how bad records are handled.
 func IgnoreUnknownValues() Option { return ignoreUnknownValues{} }
 
 type ignoreUnknownValues struct{}
