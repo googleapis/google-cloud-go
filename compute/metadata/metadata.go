@@ -194,14 +194,10 @@ func ExternalIP() (string, error) {
 	return getTrimmed("instance/network-interfaces/0/access-configs/0/external-ip")
 }
 
-// Hostname returns the instance's hostname. This will probably be of
-// the form "INSTANCENAME.c.PROJECT.internal" but that isn't
-// guaranteed.
-//
-// TODO: what is this defined to be? Docs say "The host name of the
-// instance."
+// Hostname returns the instance's hostname. This will be of the form
+// "<instanceID>.c.<projID>.internal".
 func Hostname() (string, error) {
-	return getTrimmed("network-interfaces/0/ip")
+	return getTrimmed("instance/hostname")
 }
 
 // InstanceTags returns the list of user-defined instance tags,
@@ -221,6 +217,25 @@ func InstanceTags() ([]string, error) {
 // InstanceID returns the current VM's numeric instance ID.
 func InstanceID() (string, error) {
 	return instID.get()
+}
+
+// InstanceName returns the current VM's instance ID string.
+func InstanceName() (string, error) {
+	host, err := Hostname()
+	if err != nil {
+		return "", err
+	}
+	return strings.Split(host, ".")[0], nil
+}
+
+// Zone returns the current VM's zone, such as "us-central1-b".
+func Zone() (string, error) {
+	zone, err := getTrimmed("instance/zone")
+	// zone is of the form "projects/<projNum>/zones/<zoneName>".
+	if err != nil {
+		return "", err
+	}
+	return zone[strings.LastIndex(zone, "/")+1:], nil
 }
 
 // InstanceAttributes returns the list of user-defined attributes,
