@@ -1,5 +1,6 @@
 // DO NOT EDIT. THIS IS AUTOMATICALLY GENERATED.
-// Run "cbt doc > cbtdoc.go" to regenerate.
+// Run "go generate" to regenerate.
+//go:generate go run cbt.go -o cbtdoc.go doc
 
 /*
 Cbt is a tool for doing basic interactions with Cloud Bigtable.

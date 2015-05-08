@@ -47,6 +47,8 @@ var (
 	cluster = flag.String("cluster", "", "CBT cluster")
 	creds   = flag.String("creds", "", "if set, use application credentials in this file")
 
+	oFlag = flag.String("o", "", "if set, redirect stdout to this file")
+
 	client      *bigtable.Client
 	adminClient *bigtable.AdminClient
 )
@@ -131,6 +133,20 @@ func main() {
 		usage()
 		os.Exit(1)
 	}
+
+	if *oFlag != "" {
+		f, err := os.Create(*oFlag)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer func() {
+			if err := f.Close(); err != nil {
+				log.Fatal(err)
+			}
+		}()
+		os.Stdout = f
+	}
+
 	ctx := context.Background()
 	for _, cmd := range commands {
 		if cmd.Name == flag.Arg(0) {
@@ -367,7 +383,8 @@ var docTemplate = template.Must(template.New("doc").Funcs(template.FuncMap{
 }).
 	Parse(`
 // DO NOT EDIT. THIS IS AUTOMATICALLY GENERATED.
-// Run "cbt doc > cbtdoc.go" to regenerate.
+// Run "go generate" to regenerate.
+//go:generate go run cbt.go -o cbtdoc.go doc
 
 /*
 Cbt is a tool for doing basic interactions with Cloud Bigtable.
