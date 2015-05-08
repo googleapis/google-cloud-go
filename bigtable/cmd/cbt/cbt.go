@@ -176,6 +176,12 @@ var commands = []struct {
 	Usage      string
 }{
 	{
+		Name:  "count",
+		Desc:  "Count rows in a table",
+		do:    doCount,
+		Usage: "cbt count <table>",
+	},
+	{
 		Name:  "createfamily",
 		Desc:  "Create a column family",
 		do:    doCreateFamily,
@@ -250,6 +256,23 @@ var commands = []struct {
 			"  If it cannot be parsed, the `@ts` part will be\n" +
 			"  interpreted as part of the value.",
 	},
+}
+
+func doCount(ctx context.Context, args ...string) {
+	if len(args) != 1 {
+		log.Fatal("usage: cbt count <table>")
+	}
+	tbl := getClient().Open(args[0])
+
+	n := 0
+	err := tbl.ReadRows(ctx, bigtable.InfiniteRange(""), func(_ bigtable.Row) bool {
+		n++
+		return true
+	}, bigtable.RowFilter(bigtable.StripValueFilter()))
+	if err != nil {
+		log.Fatalf("Reading rows: %v", err)
+	}
+	fmt.Println(n)
 }
 
 func doCreateFamily(ctx context.Context, args ...string) {
