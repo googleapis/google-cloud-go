@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All Rights Reserved.
+// Copyright (c) 2015, Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,9 +20,11 @@ import "google.golang.org/cloud/bigtable/internal/table_data_proto/bigtable_tabl
 import "google.golang.org/cloud/bigtable/internal/table_service_proto/bigtable_table_service_messages.proto";
 import "google.golang.org/cloud/bigtable/internal/empty/empty.proto";
 
+option java_generic_services = true;
 option java_multiple_files = true;
-option java_package = "com.google.bigtable.admin.table.v1";
 option java_outer_classname = "BigtableTableServicesProto";
+option java_package = "com.google.bigtable.admin.table.v1";
+
 
 // Service for creating, configuring, and deleting Cloud Bigtable tables.
 // Provides access to the table schemas only, not the data stored within the tables.

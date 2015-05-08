@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All Rights Reserved.
+// Copyright (c) 2015, Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,23 +19,32 @@ package google.bigtable.v1;
 import "google.golang.org/cloud/bigtable/internal/data_proto/bigtable_data.proto";
 
 option java_multiple_files = true;
-option java_package = "com.google.bigtable.v1";
 option java_outer_classname = "BigtableServiceMessagesProto";
+option java_package = "com.google.bigtable.v1";
+
 
 // Request message for BigtableServer.ReadRows.
 message ReadRowsRequest {
   // The unique name of the table from which to read.
   string table_name = 1;
-  // If neither row_key nor row_range is set, reads from all rows.
+
   oneof target {
     // The key of a single row from which to read.
-    bytes row_key = 2 [ctype=CORD];
+    bytes row_key = 2;
+
     // A range of rows from which to read.
     RowRange row_range = 3;
   }
+
+  // The filter to apply to the contents of the specified row(s), in the
+  // deprecated string format. If unset, reads the most recent value from all
+  // readable columns.
+  string DEPRECATED_string_filter = 4;
+
   // The filter to apply to the contents of the specified row(s). If unset,
-  // reads the entire table.
+  // reads the most recent value from all readable columns.
   RowFilter filter = 5;
+
   // By default, rows are read sequentially, producing results which are
   // guaranteed to arrive in increasing row order. Setting
   // "allow_row_interleaving" to true allows multiple rows to be interleaved in
@@ -43,6 +52,7 @@ message ReadRowsRequest {
   // and may force the client to use more memory to buffer partially-received
   // rows.
   bool allow_row_interleaving = 6;
+
   // The read will terminate after committing to N rows' worth of results. The
   // default (zero) is to return all results.
   // Note that if "allow_row_interleaving" is set to true, partial results may
@@ -53,10 +63,6 @@ message ReadRowsRequest {
 
 // Response message for BigtableService.ReadRows.
 message ReadRowsResponse {
-  // The key of the row for which we're receiving data.
-  // Results will be received in increasing row key order, unless
-  // "allow_row_interleaving" was specified in the request.
-  bytes row_key = 1 [ctype=CORD];
   // Specifies a piece of a row's contents returned as part of the read
   // response stream.
   message Chunk {
@@ -66,14 +72,22 @@ message ReadRowsResponse {
       // from the same atomic view of that row, and will be received in the
       // expected family/column/timestamp order.
       Family row_contents = 1;
+
       // Indicates that the client should drop all previous chunks for
       // "row_key", as it will be re-read from the beginning.
       bool reset_row = 2;
+
       // Indicates that the client can safely process all previous chunks for
       // "row_key", as its data has been fully read.
       bool commit_row = 3;
     }
   }
+
+  // The key of the row for which we're receiving data.
+  // Results will be received in increasing row key order, unless
+  // "allow_row_interleaving" was specified in the request.
+  bytes row_key = 1;
+
   // One or more chunks of the row specified by "row_key".
   repeated Chunk chunks = 2;
 }
@@ -93,7 +107,8 @@ message SampleRowKeysResponse {
   // Note that row keys in this list may not have ever been written to or read
   // from, and users should therefore not make any assumptions about the row key
   // structure that are specific to their use case.
-  bytes row_key = 1 [ctype=CORD];
+  bytes row_key = 1;
+
   // Approximate total storage space used by all rows in the table which precede
   // "row_key". Buffering the contents of all rows between two subsequent
   // samples would require space roughly equal to the difference in their
@@ -105,8 +120,10 @@ message SampleRowKeysResponse {
 message MutateRowRequest {
   // The unique name of the table to which the mutation should be applied.
   string table_name = 1;
+
   // The key of the row to which the mutation should be applied.
-  bytes row_key = 2 [ctype=CORD];
+  bytes row_key = 2;
+
   // Changes to be atomically applied to the specified row. Entries are applied
   // in order, meaning that earlier mutations can be masked by later ones.
   repeated Mutation mutations = 3;
@@ -117,23 +134,33 @@ message CheckAndMutateRowRequest {
   // The unique name of the table to which the conditional mutation should be
   // applied.
   string table_name = 1;
+
   // The key of the row to which the conditional mutation should be applied.
-  bytes row_key = 2 [ctype=CORD];
-  // The filter to be applied to the contents of the specified row. Depending
-  // on whether or not any results are yielded, either "true_mutations" or
-  // "false_mutations" will be executed. If unset, checks that the row contains
-  // any values at all.
-  RowFilter predicate_filter = 6;
+  bytes row_key = 2;
+
   // Changes to be atomically applied to the specified row if "predicate_filter"
   // yields at least one cell when applied to "row_key". Entries are applied in
   // order, meaning that earlier mutations can be masked by later ones.
   // Must contain at least one entry if "false_mutations" is empty.
   repeated Mutation true_mutations = 4;
+
   // Changes to be atomically applied to the specified row if "predicate_filter"
   // does not yield any cells when applied to "row_key". Entries are applied in
   // order, meaning that earlier mutations can be masked by later ones.
   // Must contain at least one entry if "true_mutations" is empty.
   repeated Mutation false_mutations = 5;
+
+  // The filter to be applied to the contents of the specified row, in the
+  // deprecated string format. Depending on whether or not any results are
+  // yielded, either "true_mutations" or "false_mutations" will be executed. If
+  // unset, checks that the row contains any values at all.
+  string DEPRECATED_field_3 = 3;
+
+  // The filter to be applied to the contents of the specified row. Depending
+  // on whether or not any results are yielded, either "true_mutations" or
+  // "false_mutations" will be executed. If unset, checks that the row contains
+  // any values at all.
+  RowFilter predicate_filter = 6;
 }
 
 // Response message for BigtableService.CheckAndMutateRowRequest.
@@ -148,8 +175,10 @@ message ReadModifyWriteRowRequest {
   // The unique name of the table to which the read/modify/write rules should be
   // applied.
   string table_name = 1;
+
   // The key of the row to which the read/modify/write rules should be applied.
-  bytes row_key = 2 [ctype=CORD];
+  bytes row_key = 2;
+
   // Rules specifying how the specified row's contents are to be transformed
   // into writes. Entries are applied in order, meaning that earlier rules will
   // affect the results of later ones.

@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All Rights Reserved.
+// Copyright (c) 2015, Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,23 +19,26 @@ package google.bigtable.admin.table.v1;
 import "google.golang.org/cloud/bigtable/internal/table_data_proto/bigtable_table_data.proto";
 
 option java_multiple_files = true;
-option java_package = "com.google.bigtable.admin.table.v1";
 option java_outer_classname = "BigtableTableServiceMessagesProto";
+option java_package = "com.google.bigtable.admin.table.v1";
+
 
 message CreateTableRequest {
   // The unique name of the cluster in which to create the new table.
-  optional string name = 1;
+  string name = 1;
+
   // The name by which the new table should be referred to within the cluster,
   // e.g. "foobar" rather than "<cluster_name>/tables/foobar".
-  optional string table_id = 2;
+  string table_id = 2;
+
   // The Table to create. The `name` field of the Table and all of its
   // ColumnFamilies must be left blank, and will be populated in the response.
-  optional Table table = 3;
+  Table table = 3;
 }
 
 message ListTablesRequest {
   // The unique name of the cluster for which tables should be listed.
-  optional string name = 1;
+  string name = 1;
 }
 
 message ListTablesResponse {
@@ -46,33 +49,36 @@ message ListTablesResponse {
 
 message GetTableRequest {
   // The unique name of the requested table.
-  optional string name = 1;
+  string name = 1;
 }
 
 message DeleteTableRequest {
   // The unique name of the table to be deleted.
-  optional string name = 1;
+  string name = 1;
 }
 
 message RenameTableRequest {
   // The current unique name of the table.
-  optional string name = 1;
+  string name = 1;
+
   // The new name by which the table should be referred to within its containing
   // cluster, e.g. "foobar" rather than "<cluster_name>/tables/foobar".
-  optional string new_id = 2;
+  string new_id = 2;
 }
 
 message CreateColumnFamilyRequest {
   // The unique name of the table in which to create the new column family.
-  optional string name = 1;
+  string name = 1;
+
   // The name by which the new column family should be referred to within the
   // table, e.g. "foobar" rather than "<table_name>/columnFamilies/foobar".
-  optional string column_family_id = 2;
+  string column_family_id = 2;
+
   // The column family to create. The `name` field must be left blank.
-  optional ColumnFamily column_family = 3;
+  ColumnFamily column_family = 3;
 }
 
 message DeleteColumnFamilyRequest {
   // The unique name of the column family to be deleted.
-  optional string name = 1;
+  string name = 1;
 }

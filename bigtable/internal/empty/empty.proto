@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All Rights Reserved.
+// Copyright (c) 2015, Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// (== page proto_types ==)
 syntax = "proto3";
 
 package google.protobuf;
 
-option java_package = "com.google.protobuf";
-option java_outer_classname = "EmptyProto";
 option java_multiple_files = true;
+option java_outer_classname = "EmptyProto";
+option java_package = "com.google.protobuf";
+
 
 // A generic empty message that you can re-use to avoid defining duplicated
 // empty messages in your APIs. A typical example is to use it as the request
@@ -29,4 +29,6 @@ option java_multiple_files = true;
 //       rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);
 //     }
 //
-message Empty {}
+message Empty {
+
+}

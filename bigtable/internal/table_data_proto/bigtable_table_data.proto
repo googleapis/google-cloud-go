@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All Rights Reserved.
+// Copyright (c) 2015, Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,24 +18,28 @@ package google.bigtable.admin.table.v1;
 
 
 option java_multiple_files = true;
-option java_package = "com.google.bigtable.admin.table.v1";
 option java_outer_classname = "BigtableTableDataProto";
+option java_package = "com.google.bigtable.admin.table.v1";
+
 
 // A collection of user data indexed by row, column, and timestamp.
 // Each table is served using the resources of its parent cluster.
 message Table {
-  // A unique identifier of the form
-  // <cluster_name>/tables/[_a-zA-Z0-9][-_.a-zA-Z0-9]*
-  optional string name = 1;
-  // If this Table is in the process of being created, the Operation used to
-  // track its progress. As long as this operation is present, the Table will
-  // not accept any Table Admin or Read/Write requests.
-  // The column families configured for this table, mapped by column family id.
-  map<string, ColumnFamily> column_families = 3;
-
   enum TimestampGranularity {
     MILLIS = 0;
   }
+
+  // A unique identifier of the form
+  // <cluster_name>/tables/[_a-zA-Z0-9][-_.a-zA-Z0-9]*
+  string name = 1;
+
+  // If this Table is in the process of being created, the Operation used to
+  // track its progress. As long as this operation is present, the Table will
+  // not accept any Table Admin or Read/Write requests.
+
+  // The column families configured for this table, mapped by column family id.
+  map<string, ColumnFamily> column_families = 3;
+
   // The granularity (e.g. MILLIS, MICROS) at which timestamps are stored in
   // this table. Timestamps not matching the granularity will be rejected.
   // Cannot be changed once the table is created.
@@ -47,7 +51,7 @@ message ColumnFamily {
   // A unique identifier of the form <table_name>/families/[-_.a-zA-Z0-9]+
   // The last segment is the same as the "name" field in
   // google.bigtable.v1.Family.
-  optional string name = 1;
+  string name = 1;
 
   // Garbage collection expression specified by the following grammar:
   //   GC = EXPR
@@ -74,6 +78,5 @@ message ColumnFamily {
   // Garbage collection executes opportunistically in the background, and so
   // it's possible for reads to return a cell even if it matches the active GC
   // expression for its family.
-  optional string gc_expression = 2;
-
+  string gc_expression = 2;
 }

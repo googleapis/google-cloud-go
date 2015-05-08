@@ -35,8 +35,12 @@ type ReadRowsRequest struct {
 	RowKey []byte `protobuf:"bytes,2,opt,name=row_key,proto3" json:"row_key,omitempty"`
 	// A range of rows from which to read.
 	RowRange *google_bigtable_v11.RowRange `protobuf:"bytes,3,opt,name=row_range" json:"row_range,omitempty"`
+	// The filter to apply to the contents of the specified row(s), in the
+	// deprecated string format. If unset, reads the most recent value from all
+	// readable columns.
+	DEPRECATEDStringFilter string `protobuf:"bytes,4,opt,name=DEPRECATED_string_filter" json:"DEPRECATED_string_filter,omitempty"`
 	// The filter to apply to the contents of the specified row(s). If unset,
-	// reads the entire table.
+	// reads the most recent value from all readable columns.
 	Filter *google_bigtable_v11.RowFilter `protobuf:"bytes,5,opt,name=filter" json:"filter,omitempty"`
 	// By default, rows are read sequentially, producing results which are
 	// guaranteed to arrive in increasing row order. Setting
@@ -179,11 +183,6 @@ type CheckAndMutateRowRequest struct {
 	TableName string `protobuf:"bytes,1,opt,name=table_name" json:"table_name,omitempty"`
 	// The key of the row to which the conditional mutation should be applied.
 	RowKey []byte `protobuf:"bytes,2,opt,name=row_key,proto3" json:"row_key,omitempty"`
-	// The filter to be applied to the contents of the specified row. Depending
-	// on whether or not any results are yielded, either "true_mutations" or
-	// "false_mutations" will be executed. If unset, checks that the row contains
-	// any values at all.
-	PredicateFilter *google_bigtable_v11.RowFilter `protobuf:"bytes,6,opt,name=predicate_filter" json:"predicate_filter,omitempty"`
 	// Changes to be atomically applied to the specified row if "predicate_filter"
 	// yields at least one cell when applied to "row_key". Entries are applied in
 	// order, meaning that earlier mutations can be masked by later ones.
@@ -194,18 +193,21 @@ type CheckAndMutateRowRequest struct {
 	// order, meaning that earlier mutations can be masked by later ones.
 	// Must contain at least one entry if "true_mutations" is empty.
 	FalseMutations []*google_bigtable_v11.Mutation `protobuf:"bytes,5,rep,name=false_mutations" json:"false_mutations,omitempty"`
+	// The filter to be applied to the contents of the specified row, in the
+	// deprecated string format. Depending on whether or not any results are
+	// yielded, either "true_mutations" or "false_mutations" will be executed. If
+	// unset, checks that the row contains any values at all.
+	DEPRECATEDField_3 string `protobuf:"bytes,3,opt,name=DEPRECATED_field_3" json:"DEPRECATED_field_3,omitempty"`
+	// The filter to be applied to the contents of the specified row. Depending
+	// on whether or not any results are yielded, either "true_mutations" or
+	// "false_mutations" will be executed. If unset, checks that the row contains
+	// any values at all.
+	PredicateFilter *google_bigtable_v11.RowFilter `protobuf:"bytes,6,opt,name=predicate_filter" json:"predicate_filter,omitempty"`
 }
 
 func (m *CheckAndMutateRowRequest) Reset()         { *m = CheckAndMutateRowRequest{} }
 func (m *CheckAndMutateRowRequest) String() string { return proto.CompactTextString(m) }
 func (*CheckAndMutateRowRequest) ProtoMessage()    {}
-
-func (m *CheckAndMutateRowRequest) GetPredicateFilter() *google_bigtable_v11.RowFilter {
-	if m != nil {
-		return m.PredicateFilter
-	}
-	return nil
-}
 
 func (m *CheckAndMutateRowRequest) GetTrueMutations() []*google_bigtable_v11.Mutation {
 	if m != nil {
@@ -217,6 +219,13 @@ func (m *CheckAndMutateRowRequest) GetTrueMutations() []*google_bigtable_v11.Mut
 func (m *CheckAndMutateRowRequest) GetFalseMutations() []*google_bigtable_v11.Mutation {
 	if m != nil {
 		return m.FalseMutations
+	}
+	return nil
+}
+
+func (m *CheckAndMutateRowRequest) GetPredicateFilter() *google_bigtable_v11.RowFilter {
+	if m != nil {
+		return m.PredicateFilter
 	}
 	return nil
 }

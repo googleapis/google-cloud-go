@@ -42,9 +42,6 @@ type Table struct {
 	// A unique identifier of the form
 	// <cluster_name>/tables/[_a-zA-Z0-9][-_.a-zA-Z0-9]*
 	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	// If this Table is in the process of being created, the Operation used to
-	// track its progress. As long as this operation is present, the Table will
-	// not accept any Table Admin or Read/Write requests.
 	// The column families configured for this table, mapped by column family id.
 	ColumnFamilies map[string]*ColumnFamily `protobuf:"bytes,3,rep,name=column_families" json:"column_families,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// The granularity (e.g. MILLIS, MICROS) at which timestamps are stored in

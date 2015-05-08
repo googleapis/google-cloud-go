@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All Rights Reserved.
+// Copyright (c) 2015, Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,13 +20,11 @@ import "google.golang.org/cloud/bigtable/internal/data_proto/bigtable_data.proto
 import "google.golang.org/cloud/bigtable/internal/service_proto/bigtable_service_messages.proto";
 import "google.golang.org/cloud/bigtable/internal/empty/empty.proto";
 
-option java_multiple_files = true;
-option java_package = "com.google.bigtable.v1";
-option java_outer_classname = "BigtableServicesProto";
-
-// Needed so that client-side stubs can connect to the service using
-// the non-Stubby ProtoRest*Client RPC implementations
 option java_generic_services = true;
+option java_multiple_files = true;
+option java_outer_classname = "BigtableServicesProto";
+option java_package = "com.google.bigtable.v1";
+
 
 // Service for reading from and writing to existing Bigtables.
 service BigtableService {
@@ -41,8 +39,7 @@ service BigtableService {
   // delimit contiguous sections of the table of approximately equal size,
   // which can be used to break up the data for distributed tasks like
   // mapreduces.
-  rpc SampleRowKeys(SampleRowKeysRequest)
-    returns (stream SampleRowKeysResponse) {
+  rpc SampleRowKeys(SampleRowKeysRequest) returns (stream SampleRowKeysResponse) {
   }
 
   // Mutates a row atomically. Cells already present in the row are left
@@ -51,8 +48,7 @@ service BigtableService {
   }
 
   // Mutates a row atomically based on the output of a predicate Reader filter.
-  rpc CheckAndMutateRow(CheckAndMutateRowRequest)
-    returns (CheckAndMutateRowResponse) {
+  rpc CheckAndMutateRow(CheckAndMutateRowRequest) returns (CheckAndMutateRowResponse) {
   }
 
   // Modifies a row atomically, reading the latest existing timestamp/value from
