@@ -94,6 +94,7 @@ func (t *Table) ReadRows(ctx context.Context, arg RowRange, f func(Row) bool, op
 	for _, opt := range opts {
 		opt.set(req)
 	}
+	ctx, cancel := context.WithCancel(ctx) // for aborting the stream
 	stream, err := t.c.client.ReadRows(ctx, req)
 	if err != nil {
 		return err
@@ -109,8 +110,13 @@ func (t *Table) ReadRows(ctx context.Context, arg RowRange, f func(Row) bool, op
 		}
 		if row := cr.process(res); row != nil {
 			if !f(row) {
-				// TODO(dsymonds): How do we abort a gRPC client stream?
-				break
+				// Cancel and drain stream.
+				cancel()
+				for {
+					if _, err := stream.Recv(); err != nil {
+						return nil
+					}
+				}
 			}
 		}
 	}
