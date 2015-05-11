@@ -272,6 +272,12 @@ var commands = []struct {
 			"  If it cannot be parsed, the `@ts` part will be\n" +
 			"  interpreted as part of the value.",
 	},
+	{
+		Name:  "setclustersize",
+		Desc:  "Set size of a cluster",
+		do:    doSetClusterSize,
+		Usage: "cbt setclustersize <num_nodes>",
+	},
 }
 
 func doCount(ctx context.Context, args ...string) {
@@ -563,5 +569,18 @@ func doSet(ctx context.Context, args ...string) {
 	}
 	if err := tbl.Apply(ctx, row, mut); err != nil {
 		log.Fatalf("Applying mutation: %v", err)
+	}
+}
+
+func doSetClusterSize(ctx context.Context, args ...string) {
+	if len(args) != 1 {
+		log.Fatalf("usage: cbt setclustersize <num_nodes>")
+	}
+	n, err := strconv.ParseInt(args[0], 0, 32)
+	if err != nil {
+		log.Fatalf("Bad num_nodes value %q: %v", args[0], err)
+	}
+	if err := getAdminClient().SetClusterSize(ctx, int(n)); err != nil {
+		log.Fatalf("Setting cluster size: %v", err)
 	}
 }
