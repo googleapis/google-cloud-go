@@ -63,6 +63,7 @@ func main() {
 	}
 
 	table := client.OpenTable(*dataset, *table)
+	table.WriteDisposition = bigquery.WriteTruncate
 
 	gcs := client.NewGCSReference(fmt.Sprintf("gs://%s/%s", *bucket, *object))
 	gcs.SkipLeadingRows = *skiprows

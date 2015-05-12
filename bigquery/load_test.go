@@ -86,6 +86,22 @@ func TestLoad(t *testing.T) {
 			}(),
 		},
 		{
+			dst: &Table{
+				projectID:         "project-id",
+				datasetID:         "dataset-id",
+				tableID:           "table-id",
+				CreateDisposition: "CREATE_NEVER",
+				WriteDisposition:  "WRITE_TRUNCATE",
+			},
+			src: defaultGCS,
+			want: func() *bq.Job {
+				j := defaultJob()
+				j.Configuration.Load.CreateDisposition = "CREATE_NEVER"
+				j.Configuration.Load.WriteDisposition = "WRITE_TRUNCATE"
+				return j
+			}(),
+		},
+		{
 			dst: defaultTable,
 			src: &GCSReference{
 				uris:            []string{"uri"},
