@@ -49,29 +49,13 @@ var (
 var metaClient = &http.Client{
 	Transport: &internal.Transport{
 		Base: &http.Transport{
-			Dial: dialer().Dial,
+			Dial: (&net.Dialer{
+				Timeout:   750 * time.Millisecond,
+				KeepAlive: 30 * time.Second,
+			}).Dial,
 			ResponseHeaderTimeout: 750 * time.Millisecond,
 		},
 	},
-}
-
-// go13Dialer is nil until we're using Go 1.3+.
-// This is a workaround for https://github.com/golang/oauth2/issues/70, where
-// net.Dialer.KeepAlive is unavailable on Go 1.2 (which App Engine as of
-// Jan 2015 still runs).
-//
-// TODO(bradfitz,jbd,adg,dsymonds): remove this once App Engine supports Go
-// 1.3+ and go-app-builder also supports 1.3+, or when Go 1.2 is no longer an
-// option on App Engine.
-var go13Dialer func() *net.Dialer
-
-func dialer() *net.Dialer {
-	if fn := go13Dialer; fn != nil {
-		return fn()
-	}
-	return &net.Dialer{
-		Timeout: 750 * time.Millisecond,
-	}
 }
 
 // NotDefinedError is returned when requested metadata is not defined.
