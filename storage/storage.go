@@ -48,15 +48,15 @@ var (
 const (
 	// ScopeFullControl grants permissions to manage your
 	// data and permissions in Google Cloud Storage.
-	ScopeFullControl = raw.DevstorageFull_controlScope
+	ScopeFullControl = raw.DevstorageFullControlScope
 
 	// ScopeReadOnly grants permissions to
 	// view your data in Google Cloud Storage.
-	ScopeReadOnly = raw.DevstorageRead_onlyScope
+	ScopeReadOnly = raw.DevstorageReadOnlyScope
 
 	// ScopeReadWrite grants permissions to manage your
 	// data in Google Cloud Storage.
-	ScopeReadWrite = raw.DevstorageRead_writeScope
+	ScopeReadWrite = raw.DevstorageReadWriteScope
 )
 
 // TODO(jbd): Add storage.buckets.list.
