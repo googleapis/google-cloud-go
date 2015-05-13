@@ -65,8 +65,6 @@ for up in "${!filename_map[@]}"; do
     sed '/google\.protobuf\.Timestamp/d' |
     sed '/"google\/api\/annotations.proto"/d' |
     sed '/option.*google\.api\.http.*{.*};$/d' |
-    # Fix some upstream errors; ReadRows and SampleRowKeys are streaming methods.
-    sed '/rpc \(ReadRows\|SampleRowKeys\).*returns/s/(\(ReadRowsResponse\|SampleRowKeysResponse\))/(stream \1)/' |
     cat > $PKG/$f
 done
 

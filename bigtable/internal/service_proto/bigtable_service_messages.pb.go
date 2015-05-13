@@ -40,7 +40,7 @@ type ReadRowsRequest struct {
 	// readable columns.
 	DEPRECATEDStringFilter string `protobuf:"bytes,4,opt,name=DEPRECATED_string_filter" json:"DEPRECATED_string_filter,omitempty"`
 	// The filter to apply to the contents of the specified row(s). If unset,
-	// reads the most recent value from all readable columns.
+	// reads the entire table.
 	Filter *google_bigtable_v11.RowFilter `protobuf:"bytes,5,opt,name=filter" json:"filter,omitempty"`
 	// By default, rows are read sequentially, producing results which are
 	// guaranteed to arrive in increasing row order. Setting

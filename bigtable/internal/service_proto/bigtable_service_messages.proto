@@ -42,7 +42,7 @@ message ReadRowsRequest {
   string DEPRECATED_string_filter = 4;
 
   // The filter to apply to the contents of the specified row(s). If unset,
-  // reads the most recent value from all readable columns.
+  // reads the entire table.
   RowFilter filter = 5;
 
   // By default, rows are read sequentially, producing results which are
