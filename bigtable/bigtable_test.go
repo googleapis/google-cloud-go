@@ -187,7 +187,7 @@ func TestClientIntegration(t *testing.T) {
 	initialData := map[string][]string{
 		"wmckinley":   []string{"tjefferson"},
 		"gwashington": []string{"jadams"},
-		"tjefferson":  []string{"gwashington", "jadams", "wmckinley"},
+		"tjefferson":  []string{"gwashington", "jadams"}, // wmckinley set conditionally below
 		"jadams":      []string{"gwashington", "tjefferson"},
 	}
 	for row, ss := range initialData {
@@ -198,6 +198,24 @@ func TestClientIntegration(t *testing.T) {
 		if err := tbl.Apply(ctx, row, mut); err != nil {
 			t.Errorf("Mutating row %q: %v", row, err)
 		}
+	}
+
+	// Do a conditional mutation with a complex filter.
+	mutTrue := NewMutation()
+	mutTrue.Set("follows", "wmckinley", 0, []byte("1"))
+	filter := ChainFilters(ColumnFilter("gwash[iz].*"), ValueFilter("."))
+	mut := NewCondMutation(filter, mutTrue, nil)
+	if err := tbl.Apply(ctx, "tjefferson", mut); err != nil {
+		t.Errorf("Conditionally mutating row: %v", err)
+	}
+	// Do a second condition mutation with a filter that does not match,
+	// and thus no changes should be made.
+	mutTrue = NewMutation()
+	mutTrue.DeleteRow()
+	filter = ColumnFilter("snoop.dogg")
+	mut = NewCondMutation(filter, mutTrue, nil)
+	if err := tbl.Apply(ctx, "tjefferson", mut); err != nil {
+		t.Errorf("Conditionally mutating row: %v", err)
 	}
 
 	// Fetch a row.

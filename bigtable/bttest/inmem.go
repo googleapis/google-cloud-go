@@ -241,6 +241,13 @@ func includeCell(f *btdpb.RowFilter, r *row, fam, col string, cell cell) bool {
 	default:
 		log.Printf("WARNING: don't know how to handle filter (ignoring it): %v", f)
 		return true
+	case f.Chain != nil:
+		for _, sub := range f.Chain.Filters {
+			if !includeCell(sub, r, fam, col, cell) {
+				return false
+			}
+		}
+		return true
 	case len(f.ColumnQualifierRegexFilter) > 0:
 		pat := string(f.ColumnQualifierRegexFilter)
 		rx, err := regexp.Compile(pat)
@@ -249,6 +256,14 @@ func includeCell(f *btdpb.RowFilter, r *row, fam, col string, cell cell) bool {
 			return false
 		}
 		return rx.MatchString(col)
+	case len(f.ValueRegexFilter) > 0:
+		pat := string(f.ValueRegexFilter)
+		rx, err := regexp.Compile(pat)
+		if err != nil {
+			log.Printf("Bad value_regex_filter pattern %q: %v", pat, err)
+			return false
+		}
+		return rx.Match(cell.value)
 	}
 }
 
@@ -263,24 +278,77 @@ func (s *server) MutateRow(ctx context.Context, req *btspb.MutateRowRequest) (*e
 	r := tbl.mutableRow(string(req.RowKey))
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	for _, mut := range req.Mutations {
+
+	if err := applyMutations(tbl, r, req.Mutations); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
+}
+
+func (s *server) CheckAndMutateRow(ctx context.Context, req *btspb.CheckAndMutateRowRequest) (*btspb.CheckAndMutateRowResponse, error) {
+	s.mu.Lock()
+	tbl, ok := s.tables[req.TableName]
+	s.mu.Unlock()
+	if !ok {
+		return nil, fmt.Errorf("no such table %q", req.TableName)
+	}
+
+	res := &btspb.CheckAndMutateRowResponse{}
+
+	r := tbl.mutableRow(string(req.RowKey))
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	// Figure out which mutation to apply.
+	whichMut := false
+	if req.PredicateFilter == nil {
+		// Use true_mutations iff row contains any cells.
+		whichMut = len(r.cells) > 0
+	} else {
+		// Use true_mutations iff any cells in the row match the filter.
+		for col, cell := range r.cells {
+			i := strings.Index(col, ":") // guaranteed to exist
+			fam, col := col[:i], col[i+1:]
+			if includeCell(req.PredicateFilter, r, fam, col, cell) {
+				whichMut = true
+				break
+			}
+		}
+		// TODO(dsymonds): Figure out if this is supposed to be set
+		// even when there's no predicate filter.
+		res.PredicateMatched = whichMut
+	}
+	muts := req.FalseMutations
+	if whichMut {
+		muts = req.TrueMutations
+	}
+
+	if err := applyMutations(tbl, r, muts); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// applyMutations applies a sequence of mutations to a row.
+// It assumes r.mu is locked.
+func applyMutations(tbl *table, r *row, muts []*btdpb.Mutation) error {
+	for _, mut := range muts {
 		switch {
 		default:
-			return nil, fmt.Errorf("can't handle mutation %v", mut)
+			return fmt.Errorf("can't handle mutation %v", mut)
 		case mut.SetCell != nil:
 			set := mut.SetCell
 			tbl.mu.RLock()
 			famOK := tbl.families[set.FamilyName]
 			tbl.mu.RUnlock()
 			if !famOK {
-				return nil, fmt.Errorf("unknown family %q", set.FamilyName)
+				return fmt.Errorf("unknown family %q", set.FamilyName)
 			}
 			col := fmt.Sprintf("%s:%s", set.FamilyName, set.ColumnQualifier)
 			r.cells[col] = cell{value: set.Value}
 		}
 	}
-
-	return &emptypb.Empty{}, nil
+	return nil
 }
 
 func (s *server) ReadModifyWriteRow(ctx context.Context, req *btspb.ReadModifyWriteRowRequest) (*btdpb.Row, error) {
