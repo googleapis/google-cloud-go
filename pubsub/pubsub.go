@@ -113,7 +113,7 @@ func ModifyAckDeadline(ctx context.Context, sub string, id string, deadline time
 		return errors.New("pubsub: deadline must not be specified to precision greater than one second")
 	}
 	_, err := rawService(ctx).Projects.Subscriptions.ModifyAckDeadline(fullSubName(internal.ProjID(ctx), sub), &raw.ModifyAckDeadlineRequest{
-		AckDeadlineSeconds: int64(deadline),
+		AckDeadlineSeconds: int64(deadline / time.Second),
 		AckId:              id,
 	}).Do()
 	return err
