@@ -305,6 +305,24 @@ func TestClientIntegration(t *testing.T) {
 		}
 	}
 
+	// Do a scan and stop part way through.
+	// Verify that the ReadRows callback doesn't keep running.
+	stopped := false
+	err = tbl.ReadRows(ctx, InfiniteRange(""), func(r Row) bool {
+		if r.Key() < "h" {
+			return true
+		}
+		if !stopped {
+			stopped = true
+			return false
+		}
+		t.Errorf("ReadRows kept scanning to row %q after being told to stop", r.Key())
+		return false
+	})
+	if err != nil {
+		t.Errorf("Partial ReadRows: %v", err)
+	}
+
 	// Check ReadModifyWrite.
 
 	if err := adminClient.CreateColumnFamily(ctx, table, "counter"); err != nil {
