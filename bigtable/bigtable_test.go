@@ -27,8 +27,10 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
+	"google.golang.org/cloud"
 	"google.golang.org/cloud/bigtable/bttest"
 	btspb "google.golang.org/cloud/bigtable/internal/service_proto"
+	"google.golang.org/grpc"
 )
 
 func dataChunk(fam, col string, ts int64, data string) string {
@@ -138,7 +140,7 @@ var useProd = flag.String("use_prod", "", `if set to "proj,zone,cluster,table", 
 
 func TestClientIntegration(t *testing.T) {
 	proj, zone, cluster, table := "proj", "zone", "cluster", "mytable"
-	var clientOpts []ClientOption
+	var clientOpts []cloud.ClientOption
 	timeout := 10 * time.Second
 	if *useProd == "" {
 		srv, err := bttest.NewServer()
@@ -147,7 +149,11 @@ func TestClientIntegration(t *testing.T) {
 		}
 		defer srv.Close()
 		t.Logf("bttest.Server running on %s", srv.Addr)
-		clientOpts = []ClientOption{WithCredentials(nil), WithInsecureAddr(srv.Addr)}
+		conn, err := grpc.Dial(srv.Addr)
+		if err != nil {
+			t.Fatalf("grpc.Dial: %v", err)
+		}
+		clientOpts = []cloud.ClientOption{cloud.WithBaseGRPC(conn)}
 	} else {
 		t.Logf("Running test against production")
 		a := strings.Split(*useProd, ",")

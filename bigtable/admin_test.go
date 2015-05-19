@@ -7,7 +7,9 @@ import (
 	"time"
 
 	"golang.org/x/net/context"
+	"google.golang.org/cloud"
 	"google.golang.org/cloud/bigtable/bttest"
+	"google.golang.org/grpc"
 )
 
 func TestAdminIntegration(t *testing.T) {
@@ -20,8 +22,12 @@ func TestAdminIntegration(t *testing.T) {
 
 	ctx, _ := context.WithTimeout(context.Background(), 2*time.Second)
 
-	adminClient, err := NewAdminClient(ctx, "proj", "zone", "cluster",
-		WithCredentials(nil), WithInsecureAddr(srv.Addr))
+	conn, err := grpc.Dial(srv.Addr)
+	if err != nil {
+		t.Fatalf("grpc.Dial: %v", err)
+	}
+
+	adminClient, err := NewAdminClient(ctx, "proj", "zone", "cluster", cloud.WithBaseGRPC(conn))
 	if err != nil {
 		t.Fatalf("NewAdminClient: %v", err)
 	}

@@ -21,6 +21,7 @@ import (
 	"strings"
 
 	"golang.org/x/net/context"
+	"google.golang.org/cloud"
 	btcspb "google.golang.org/cloud/bigtable/internal/cluster_service_proto"
 	bttspb "google.golang.org/cloud/bigtable/internal/table_service_proto"
 	"google.golang.org/grpc"
@@ -38,8 +39,13 @@ type AdminClient struct {
 }
 
 // NewAdminClient creates a new AdminClient for a given project, zone and cluster.
-func NewAdminClient(ctx context.Context, project, zone, cluster string, opts ...ClientOption) (*AdminClient, error) {
-	conn, err := dialWithOptions(ctx, adminAddr, AdminScope, opts...)
+func NewAdminClient(ctx context.Context, project, zone, cluster string, opts ...cloud.ClientOption) (*AdminClient, error) {
+	o := []cloud.ClientOption{
+		cloud.WithEndpoint(adminAddr),
+		cloud.WithScopes(AdminScope),
+	}
+	o = append(o, opts...)
+	conn, err := cloud.DialGRPC(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}

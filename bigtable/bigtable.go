@@ -24,6 +24,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
+	"google.golang.org/cloud"
 	btdpb "google.golang.org/cloud/bigtable/internal/data_proto"
 	btspb "google.golang.org/cloud/bigtable/internal/service_proto"
 	"google.golang.org/grpc"
@@ -40,8 +41,13 @@ type Client struct {
 }
 
 // NewClient creates a new Client for a given project, zone and cluster.
-func NewClient(ctx context.Context, project, zone, cluster string, opts ...ClientOption) (*Client, error) {
-	conn, err := dialWithOptions(ctx, prodAddr, Scope, opts...)
+func NewClient(ctx context.Context, project, zone, cluster string, opts ...cloud.ClientOption) (*Client, error) {
+	o := []cloud.ClientOption{
+		cloud.WithEndpoint(prodAddr),
+		cloud.WithScopes(Scope),
+	}
+	o = append(o, opts...)
+	conn, err := cloud.DialGRPC(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}

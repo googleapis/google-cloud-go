@@ -29,15 +29,18 @@ If your program is run on Google App Engine or Google Compute Engine, using the 
 (https://developers.google.com/accounts/docs/application-default-credentials)
 is the simplest option. Those credentials will be used by default when NewClient or NewAdminClient are called.
 
-To use alternate credentials, pass them to NewClient or NewAdminClient using WithCredentials.
+To use alternate credentials, pass them to NewClient or NewAdminClient using cloud.WithTokenSource.
 For instance, you can use service account credentials by visiting
 https://cloud.google.com/console/project/MYPROJECT/apiui/credential,
 creating a new OAuth "Client ID", storing the JSON key somewhere accessible, and writing
-	creds, err := credentials.NewServiceAccountFromFile(pathToKeyFile, bigtable.Scope) // or bigtable.AdminScope, etc.
+	jsonKey, err := ioutil.ReadFile(pathToKeyFile)
 	...
-	client, err := bigtable.NewClient(ctx, project, zone, cluster, bigtable.WithCredentials(creds))
+	config, err := google.JWTConfigFromJSON(jsonKey, bigtable.Scope) // or bigtable.AdminScope, etc.
 	...
-In this API, `credentials` means the google.golang.org/grpc/credentials package.
+	client, err := bigtable.NewClient(ctx, project, zone, cluster, cloud.WithTokenSource(config.TokenSource()))
+	...
+Here, `google` means the golang.org/x/oauth2/google package
+and `cloud` means the google.golang.org/cloud package.
 
 Reading
 
