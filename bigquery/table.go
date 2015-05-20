@@ -55,6 +55,9 @@ const (
 	WriteEmpty WriteDisposition = "WRITE_EMPTY"
 )
 
+func (t *Table) implementsSource() {
+}
+
 func (t *Table) implementsDestination() {
 }
 
@@ -75,4 +78,12 @@ func (t *Table) customizeLoadDst(conf *bq.JobConfigurationLoad) {
 	}
 	conf.CreateDisposition = string(t.CreateDisposition)
 	conf.WriteDisposition = string(t.WriteDisposition)
+}
+
+func (t *Table) customizeExtractSrc(conf *bq.JobConfigurationExtract) {
+	conf.SourceTable = &bq.TableReference{
+		ProjectId: t.projectID,
+		DatasetId: t.datasetID,
+		TableId:   t.tableID,
+	}
 }

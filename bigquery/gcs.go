@@ -21,24 +21,38 @@ import bq "google.golang.org/api/bigquery/v2"
 type GCSReference struct {
 	uris []string
 
-	// The number of rows at the top of a CSV file that BigQuery will skip when loading the data.
-	SkipLeadingRows int64
-
-	SourceFormat SourceFormat
-	Encoding     Encoding
-
 	// FieldDelimiter is the separator for fields in a CSV file, used when loading or exporting data.
 	// The default is ",".
 	FieldDelimiter string
 
+	// The number of rows at the top of a CSV file that BigQuery will skip when loading the data.
+	SkipLeadingRows int64
+
+	// SourceFormat is the format of the GCS data to be loaded into BigQuery.
+	// Allowed values are: CSV, JSON, DatastoreBackup.  The default is CSV.
+	SourceFormat DataFormat
+	// Only used when loading data.
+	Encoding Encoding
+
 	// Quote is the value used to quote data sections in a CSV file.
 	// The default quotation character is the double quote ("), which is used if both Quote and ForceZeroQuote are unset.
 	// To specify that no character should be interpreted as a quotation character, set ForceZeroQuote to true.
+	// Only used when loading data.
 	Quote          string
 	ForceZeroQuote bool
+
+	// DestinationFormat is the format to use when writing exported files.
+	// Allowed values are: CSV, Avro, JSON.  The default is CSV.
+	// CSV is not supported for tables with nested or repeated fields.
+	DestinationFormat DataFormat
+	// Only used when writing data.  Default is None.
+	Compression Compression
 }
 
 func (gcs *GCSReference) implementsSource() {
+}
+
+func (gcs *GCSReference) implementsDestination() {
 }
 
 // NewGCSReference constructs a reference to one or more Google Cloud Storage objects, which together constitute a data source or destination.
@@ -51,13 +65,13 @@ func (c *Client) NewGCSReference(uri ...string) *GCSReference {
 	return &GCSReference{uris: uri}
 }
 
-// SourceFormat is the format of a data file to be loaded into BigQuery.
-type SourceFormat string
+type DataFormat string
 
 const (
-	CSV             SourceFormat = "CSV"
-	JSON            SourceFormat = "NEWLINE_DELIMITED_JSON"
-	DatastoreBackup SourceFormat = "DATASTORE_BACKUP"
+	CSV             DataFormat = "CSV"
+	Avro            DataFormat = "AVRO"
+	JSON            DataFormat = "NEWLINE_DELIMITED_JSON"
+	DatastoreBackup DataFormat = "DATASTORE_BACKUP"
 )
 
 // Encoding specifies the character encoding of data to be loaded into BigQuery.
@@ -70,6 +84,14 @@ const (
 	ISO_8859_1 Encoding = "ISO-8859-1"
 )
 
+// Compression is the type of compression to apply when writing data to Google Cloud Storage.
+type Compression string
+
+const (
+	None Compression = "NONE"
+	Gzip Compression = "GZIP"
+)
+
 func (gcs *GCSReference) customizeLoadSrc(conf *bq.JobConfigurationLoad) {
 	conf.SourceUris = gcs.uris
 	conf.SkipLeadingRows = gcs.SkipLeadingRows
@@ -77,6 +99,13 @@ func (gcs *GCSReference) customizeLoadSrc(conf *bq.JobConfigurationLoad) {
 	conf.Encoding = string(gcs.Encoding)
 	conf.FieldDelimiter = gcs.FieldDelimiter
 
-	// TODO(mcgreevy): take into account gcs.Unquoted once the underlying library supports it.
+	// TODO(mcgreevy): take into account gcs.ForceZeroQuote once the underlying library supports it.
 	conf.Quote = gcs.Quote
+}
+
+func (gcs *GCSReference) customizeExtractDst(conf *bq.JobConfigurationExtract) {
+	conf.DestinationUris = gcs.uris
+	conf.Compression = string(gcs.Compression)
+	conf.DestinationFormat = string(gcs.DestinationFormat)
+	conf.FieldDelimiter = gcs.FieldDelimiter
 }

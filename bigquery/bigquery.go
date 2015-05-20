@@ -14,6 +14,8 @@
 
 package bigquery
 
+// TODO(mcgreevy): support dry-run mode when creating jobs.
+
 import (
 	"fmt"
 	"net/http"
@@ -52,7 +54,7 @@ type Client struct {
 func NewClient(client *http.Client, projectID string) (*Client, error) {
 	service, err := bq.New(client)
 	if err != nil {
-		return nil, fmt.Errorf("Constructing bigquery client: %v", err)
+		return nil, fmt.Errorf("constructing bigquery client: %v", err)
 	}
 
 	c := &Client{
@@ -75,10 +77,10 @@ func newDstSrc(dst Destination, src Source) dstSrc {
 
 type operation func(jobInserter, Destination, Source, ...Option) (*Job, error)
 
-// For the moment, the only operation we support is loading data from GCS into BigQuery.
 // TODO(mcgreevy): support more operations.
 var ops = map[dstSrc]operation{
 	newDstSrc((*Table)(nil), (*GCSReference)(nil)): load,
+	newDstSrc((*GCSReference)(nil), (*Table)(nil)): extract,
 }
 
 // Copy starts a BigQuery operation to copy data from a Source to a Destination.
@@ -86,7 +88,7 @@ func (c *Client) Copy(ctx context.Context, dst Destination, src Source, options 
 	// TODO(mcgreevy): use ctx
 	op, ok := ops[newDstSrc(dst, src)]
 	if !ok {
-		return nil, fmt.Errorf("No operation matches dst/src pair")
+		return nil, fmt.Errorf("no operation matches dst/src pair")
 	}
 	return op(c, dst, src, options...)
 }

@@ -63,7 +63,7 @@ var stateMap = map[string]State{"PENDING": Pending, "RUNNING": Running, "DONE": 
 func jobStatusFromProto(status *bq.JobStatus) (*JobStatus, error) {
 	state, ok := stateMap[status.State]
 	if !ok {
-		return nil, fmt.Errorf("Unexpected job state: %v", status.State)
+		return nil, fmt.Errorf("unexpected job state: %v", status.State)
 	}
 
 	newStatus := &JobStatus{

@@ -21,17 +21,7 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
-var defaultTable = &Table{
-	projectID: "project-id",
-	datasetID: "dataset-id",
-	tableID:   "table-id",
-}
-
-var defaultGCS = &GCSReference{
-	uris: []string{"uri"},
-}
-
-func defaultJob() *bq.Job {
+func defaultLoadJob() *bq.Job {
 	return &bq.Job{
 		Configuration: &bq.JobConfiguration{
 			Load: &bq.JobConfigurationLoad{
@@ -73,15 +63,6 @@ func bqNestedFieldSchema() *bq.TableFieldSchema {
 	}
 }
 
-type jobRecorder struct {
-	*bq.Job
-}
-
-func (jr *jobRecorder) insertJob(job *bq.Job) (*Job, error) {
-	jr.Job = job
-	return &Job{}, nil
-}
-
 func TestLoad(t *testing.T) {
 	testCases := []struct {
 		dst     Destination
@@ -92,7 +73,7 @@ func TestLoad(t *testing.T) {
 		{
 			dst:  defaultTable,
 			src:  defaultGCS,
-			want: defaultJob(),
+			want: defaultLoadJob(),
 		},
 		{
 			dst: defaultTable,
@@ -104,7 +85,7 @@ func TestLoad(t *testing.T) {
 				IgnoreUnknownValues(),
 			},
 			want: func() *bq.Job {
-				j := defaultJob()
+				j := defaultLoadJob()
 				j.Configuration.Load.MaxBadRecords = 1
 				j.Configuration.Load.AllowJaggedRows = true
 				j.Configuration.Load.AllowQuotedNewlines = true
@@ -122,7 +103,7 @@ func TestLoad(t *testing.T) {
 			},
 			src: defaultGCS,
 			want: func() *bq.Job {
-				j := defaultJob()
+				j := defaultLoadJob()
 				j.Configuration.Load.CreateDisposition = "CREATE_NEVER"
 				j.Configuration.Load.WriteDisposition = "WRITE_TRUNCATE"
 				return j
@@ -142,7 +123,7 @@ func TestLoad(t *testing.T) {
 				}),
 			},
 			want: func() *bq.Job {
-				j := defaultJob()
+				j := defaultLoadJob()
 				j.Configuration.Load.Schema = &bq.TableSchema{
 					Fields: []*bq.TableFieldSchema{
 						bqStringFieldSchema(),
@@ -162,7 +143,7 @@ func TestLoad(t *testing.T) {
 				Quote:           "-",
 			},
 			want: func() *bq.Job {
-				j := defaultJob()
+				j := defaultLoadJob()
 				j.Configuration.Load.SkipLeadingRows = 1
 				j.Configuration.Load.SourceFormat = "NEWLINE_DELIMITED_JSON"
 				j.Configuration.Load.Encoding = "UTF-8"
@@ -180,7 +161,7 @@ func TestLoad(t *testing.T) {
 				Quote: "",
 			},
 			want: func() *bq.Job {
-				j := defaultJob()
+				j := defaultLoadJob()
 				j.Configuration.Load.Quote = ""
 				return j
 			}(),
