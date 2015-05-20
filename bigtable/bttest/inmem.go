@@ -208,28 +208,53 @@ func streamRow(stream btspb.BigtableService_ReadRowsServer, r *row, f *btdpb.Row
 	rrr := &btspb.ReadRowsResponse{
 		RowKey: []byte(r.key),
 	}
-	for col, cell := range r.cells {
+	for col, cs := range r.cells {
 		i := strings.Index(col, ":") // guaranteed to exist
 		fam, col := col[:i], col[i+1:]
-		if !includeCell(f, r, fam, col, cell) {
+		cells := filterCells(f, r, fam, col, cs)
+		if len(cells) == 0 {
 			continue
 		}
 		// TODO(dsymonds): Apply transformers.
-		rrr.Chunks = append(rrr.Chunks, &btspb.ReadRowsResponse_Chunk{
+		chunk := &btspb.ReadRowsResponse_Chunk{
 			RowContents: &btdpb.Family{
 				Name: fam,
 				Columns: []*btdpb.Column{{
 					Qualifier: []byte(col),
-					Cells: []*btdpb.Cell{{
-						// TODO: timestamp
-						Value: cell.value,
-					}},
+					// Cells is populated below.
 				}},
 			},
-		})
+		}
+		colm := chunk.RowContents.Columns[0]
+		for _, cell := range cells {
+			colm.Cells = append(colm.Cells, &btdpb.Cell{
+				TimestampMicros: cell.ts,
+				Value:           cell.value,
+			})
+		}
+		rrr.Chunks = append(rrr.Chunks, chunk)
 	}
 	rrr.Chunks = append(rrr.Chunks, &btspb.ReadRowsResponse_Chunk{CommitRow: true})
 	return stream.Send(rrr)
+}
+
+func filterCells(f *btdpb.RowFilter, r *row, fam, col string, cs []cell) []cell {
+	// Special handling for cells_per_column_limit_filter.
+	if f != nil && f.CellsPerColumnLimitFilter > 0 {
+		n := int(f.CellsPerColumnLimitFilter)
+		if n > len(cs) {
+			n = len(cs)
+		}
+		return cs[:n]
+	}
+
+	var ret []cell
+	for _, cell := range cs {
+		if includeCell(f, r, fam, col, cell) {
+			ret = append(ret, cell)
+		}
+	}
+	return ret
 }
 
 func includeCell(f *btdpb.RowFilter, r *row, fam, col string, cell cell) bool {
@@ -306,11 +331,16 @@ func (s *server) CheckAndMutateRow(ctx context.Context, req *btspb.CheckAndMutat
 		whichMut = len(r.cells) > 0
 	} else {
 		// Use true_mutations iff any cells in the row match the filter.
-		for col, cell := range r.cells {
+		for col, cs := range r.cells {
 			i := strings.Index(col, ":") // guaranteed to exist
 			fam, col := col[:i], col[i+1:]
-			if includeCell(req.PredicateFilter, r, fam, col, cell) {
-				whichMut = true
+			for _, cell := range cs {
+				if includeCell(req.PredicateFilter, r, fam, col, cell) {
+					whichMut = true
+					break
+				}
+			}
+			if whichMut {
 				break
 			}
 		}
@@ -345,7 +375,23 @@ func applyMutations(tbl *table, r *row, muts []*btdpb.Mutation) error {
 				return fmt.Errorf("unknown family %q", set.FamilyName)
 			}
 			col := fmt.Sprintf("%s:%s", set.FamilyName, set.ColumnQualifier)
-			r.cells[col] = cell{value: set.Value}
+
+			cs := r.cells[col]
+			newCell := cell{ts: set.TimestampMicros, value: set.Value}
+			replaced := false
+			for i, cell := range cs {
+				// TODO(dsymonds): Enforce timestamp granularity.
+				if cell.ts == newCell.ts {
+					cs[i] = newCell
+					replaced = true
+					break
+				}
+			}
+			if !replaced {
+				cs = append(cs, newCell)
+			}
+			sort.Sort(byDescTS(cs))
+			r.cells[col] = cs
 		}
 	}
 	return nil
@@ -364,29 +410,37 @@ func (s *server) ReadModifyWriteRow(ctx context.Context, req *btspb.ReadModifyWr
 	r := tbl.mutableRow(string(req.RowKey))
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	// Assume all mutations apply to the most recent version of the cell.
+	// TODO(dsymonds): Verify this assumption and document it in the proto.
 	for _, rule := range req.Rules {
 		key := fmt.Sprintf("%s:%s", rule.FamilyName, rule.ColumnQualifier)
+
+		newCell := false
+		if len(r.cells[key]) == 0 {
+			r.cells[key] = []cell{{
+			// TODO(dsymonds): should this set a timestamp?
+			}}
+			newCell = true
+		}
+		cell := &r.cells[key][0]
+
 		if len(rule.AppendValue) > 0 {
-			r.cells[key] = cell{
-				value: append(r.cells[key].value, rule.AppendValue...),
-			}
+			cell.value = append(cell.value, rule.AppendValue...)
 		}
 		if rule.IncrementAmount != 0 {
 			var v int64
-			if val := r.cells[key].value; len(val) > 0 {
-				if len(val) != 8 {
+			if !newCell {
+				if len(cell.value) != 8 {
 					return nil, fmt.Errorf("increment on non-64-bit value")
 				}
-				v = int64(binary.BigEndian.Uint64(val))
+				v = int64(binary.BigEndian.Uint64(cell.value))
 			}
 			v += rule.IncrementAmount
 			var val [8]byte
 			binary.BigEndian.PutUint64(val[:], uint64(v))
-			r.cells[key] = cell{
-				value: val[:],
-			}
+			cell.value = val[:]
 		}
-		updates[key] = r.cells[key]
+		updates[key] = *cell
 	}
 
 	res := &btdpb.Row{
@@ -462,17 +516,23 @@ type row struct {
 	key string
 
 	mu    sync.Mutex
-	cells map[string]cell // keyed by full column name
+	cells map[string][]cell // keyed by full column name; cells are in descending timestamp order
 }
 
 func newRow(key string) *row {
 	return &row{
 		key:   key,
-		cells: make(map[string]cell),
+		cells: make(map[string][]cell),
 	}
 }
 
 type cell struct {
+	ts    int64
 	value []byte
-	// TODO: timestamp, multiple values
 }
+
+type byDescTS []cell
+
+func (b byDescTS) Len() int           { return len(b) }
+func (b byDescTS) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
+func (b byDescTS) Less(i, j int) bool { return b[i].ts > b[j].ts }
