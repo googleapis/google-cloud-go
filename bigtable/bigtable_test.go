@@ -139,6 +139,14 @@ func TestPrefix(t *testing.T) {
 var useProd = flag.String("use_prod", "", `if set to "proj,zone,cluster,table", run integration test against production`)
 
 func TestClientIntegration(t *testing.T) {
+	start := time.Now()
+	lastCheckpoint := start
+	checkpoint := func(s string) {
+		n := time.Now()
+		t.Logf("[%s] %v since start, %v since last checkpoint", s, n.Sub(start), n.Sub(lastCheckpoint))
+		lastCheckpoint = n
+	}
+
 	proj, zone, cluster, table := "proj", "zone", "cluster", "mytable"
 	var clientOpts []cloud.ClientOption
 	timeout := 10 * time.Second
@@ -168,12 +176,14 @@ func TestClientIntegration(t *testing.T) {
 		t.Fatalf("NewClient: %v", err)
 	}
 	defer client.Close()
+	checkpoint("dialed Client")
 
 	adminClient, err := NewAdminClient(ctx, proj, zone, cluster, clientOpts...)
 	if err != nil {
 		t.Fatalf("NewAdminClient: %v", err)
 	}
 	defer adminClient.Close()
+	checkpoint("dialed AdminClient")
 
 	// Delete the table at the end of the test.
 	// Do this even before creating the table so that if this is running
@@ -183,9 +193,11 @@ func TestClientIntegration(t *testing.T) {
 	if err := adminClient.CreateTable(ctx, table); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
+	checkpoint("created table")
 	if err := adminClient.CreateColumnFamily(ctx, table, "follows"); err != nil {
 		t.Fatalf("Creating column family: %v", err)
 	}
+	checkpoint(`created "follows" column family`)
 
 	tbl := client.Open(table)
 
@@ -205,6 +217,7 @@ func TestClientIntegration(t *testing.T) {
 			t.Errorf("Mutating row %q: %v", row, err)
 		}
 	}
+	checkpoint("inserted initial data")
 
 	// Do a conditional mutation with a complex filter.
 	mutTrue := NewMutation()
@@ -223,6 +236,7 @@ func TestClientIntegration(t *testing.T) {
 	if err := tbl.Apply(ctx, "tjefferson", mut); err != nil {
 		t.Errorf("Conditionally mutating row: %v", err)
 	}
+	checkpoint("did two conditional mutations")
 
 	// Fetch a row.
 	row, err := tbl.ReadRow(ctx, "jadams")
@@ -241,6 +255,7 @@ func TestClientIntegration(t *testing.T) {
 	if !reflect.DeepEqual(row, wantRow) {
 		t.Errorf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
 	}
+	checkpoint("tested ReadRow")
 
 	// Do a bunch of reads with filters.
 	readTests := []struct {
@@ -310,6 +325,7 @@ func TestClientIntegration(t *testing.T) {
 			t.Errorf("%s: wrong reads.\n got %q\nwant %q", tc.desc, got, tc.want)
 		}
 	}
+	checkpoint("tested ReadRows in a few ways")
 
 	// Do a scan and stop part way through.
 	// Verify that the ReadRows callback doesn't keep running.
@@ -328,6 +344,7 @@ func TestClientIntegration(t *testing.T) {
 	if err != nil {
 		t.Errorf("Partial ReadRows: %v", err)
 	}
+	checkpoint("did partial ReadRows test")
 
 	// Check ReadModifyWrite.
 
@@ -377,6 +394,7 @@ func TestClientIntegration(t *testing.T) {
 			t.Fatalf("After %s,\n got %v\nwant %v", step.desc, row, wantRow)
 		}
 	}
+	checkpoint("tested ReadModifyWrite")
 }
 
 type byColumn []ReadItem
