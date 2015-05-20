@@ -46,6 +46,33 @@ func defaultJob() *bq.Job {
 	}
 }
 
+func stringFieldSchema() *FieldSchema {
+	return &FieldSchema{Name: "fieldname", Type: StringFieldType}
+}
+
+func nestedFieldSchema() *FieldSchema {
+	return &FieldSchema{
+		Name:   "nested",
+		Type:   RecordFieldType,
+		Schema: Schema{stringFieldSchema()},
+	}
+}
+
+func bqStringFieldSchema() *bq.TableFieldSchema {
+	return &bq.TableFieldSchema{
+		Name: "fieldname",
+		Type: "STRING",
+	}
+}
+
+func bqNestedFieldSchema() *bq.TableFieldSchema {
+	return &bq.TableFieldSchema{
+		Name:   "nested",
+		Type:   "RECORD",
+		Fields: []*bq.TableFieldSchema{bqStringFieldSchema()},
+	}
+}
+
 type jobRecorder struct {
 	*bq.Job
 }
@@ -98,6 +125,29 @@ func TestLoad(t *testing.T) {
 				j := defaultJob()
 				j.Configuration.Load.CreateDisposition = "CREATE_NEVER"
 				j.Configuration.Load.WriteDisposition = "WRITE_TRUNCATE"
+				return j
+			}(),
+		},
+		{
+			dst: &Table{
+				projectID: "project-id",
+				datasetID: "dataset-id",
+				tableID:   "table-id",
+			},
+			src: defaultGCS,
+			options: []Option{
+				DestinationSchema(Schema{
+					stringFieldSchema(),
+					nestedFieldSchema(),
+				}),
+			},
+			want: func() *bq.Job {
+				j := defaultJob()
+				j.Configuration.Load.Schema = &bq.TableSchema{
+					Fields: []*bq.TableFieldSchema{
+						bqStringFieldSchema(),
+						bqNestedFieldSchema(),
+					}}
 				return j
 			}(),
 		},
