@@ -166,7 +166,7 @@ func TestClientIntegration(t *testing.T) {
 		t.Logf("Running test against production")
 		a := strings.Split(*useProd, ",")
 		proj, zone, cluster, table = a[0], a[1], a[2], a[3]
-		timeout = 1 * time.Minute
+		timeout = 2 * time.Minute
 	}
 
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
@@ -395,6 +395,50 @@ func TestClientIntegration(t *testing.T) {
 		}
 	}
 	checkpoint("tested ReadModifyWrite")
+
+	// Test arbitrary timestamps more thoroughly.
+	if err := adminClient.CreateColumnFamily(ctx, table, "ts"); err != nil {
+		t.Fatalf("Creating column family: %v", err)
+	}
+	const numVersions = 4
+	mut = NewMutation()
+	for i := 0; i < numVersions; i++ {
+		// Timestamps are used in thousands because the server
+		// only permits that granularity.
+		mut.Set("ts", "col", Timestamp(i*1000), []byte(fmt.Sprintf("val-%d", i)))
+	}
+	if err := tbl.Apply(ctx, "testrow", mut); err != nil {
+		t.Fatalf("Mutating row: %v", err)
+	}
+	r, err := tbl.ReadRow(ctx, "testrow")
+	if err != nil {
+		t.Fatalf("Reading row: %v", err)
+	}
+	wantRow = Row{"ts": []ReadItem{
+		// These should be returned in descending timestamp order.
+		{Row: "testrow", Column: "ts:col", Timestamp: 3000, Value: []byte("val-3")},
+		{Row: "testrow", Column: "ts:col", Timestamp: 2000, Value: []byte("val-2")},
+		{Row: "testrow", Column: "ts:col", Timestamp: 1000, Value: []byte("val-1")},
+		{Row: "testrow", Column: "ts:col", Timestamp: 0, Value: []byte("val-0")},
+	}}
+	if !reflect.DeepEqual(r, wantRow) {
+		t.Errorf("Cell with multiple versions,\n got %v\nwant %v", r, wantRow)
+	}
+	// Do the same read, but filter to the latest two versions.
+	r, err = tbl.ReadRow(ctx, "testrow", RowFilter(LatestNFilter(2)))
+	if err != nil {
+		t.Fatalf("Reading row: %v", err)
+	}
+	wantRow = Row{"ts": []ReadItem{
+		{Row: "testrow", Column: "ts:col", Timestamp: 3000, Value: []byte("val-3")},
+		{Row: "testrow", Column: "ts:col", Timestamp: 2000, Value: []byte("val-2")},
+	}}
+	if !reflect.DeepEqual(r, wantRow) {
+		t.Errorf("Cell with multiple versions and LatestNFilter(2),\n got %v\nwant %v", r, wantRow)
+	}
+	// TODO(dsymonds): Try deleting the cell with timestamp 2000 and read again,
+	// checking that we get ts 3000 and ts 1000.
+	checkpoint("tested multiple versions in a cell")
 }
 
 type byColumn []ReadItem
