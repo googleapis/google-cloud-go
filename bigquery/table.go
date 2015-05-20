@@ -87,3 +87,22 @@ func (t *Table) customizeExtractSrc(conf *bq.JobConfigurationExtract) {
 		TableId:   t.tableID,
 	}
 }
+
+func (t *Table) customizeCopySrc(conf *bq.JobConfigurationTableCopy) {
+	// TODO: support copying multiple tables.
+	conf.SourceTable = &bq.TableReference{
+		ProjectId: t.projectID,
+		DatasetId: t.datasetID,
+		TableId:   t.tableID,
+	}
+}
+
+func (t *Table) customizeCopyDst(conf *bq.JobConfigurationTableCopy) {
+	conf.DestinationTable = &bq.TableReference{
+		ProjectId: t.projectID,
+		DatasetId: t.datasetID,
+		TableId:   t.tableID,
+	}
+	conf.CreateDisposition = string(t.CreateDisposition)
+	conf.WriteDisposition = string(t.WriteDisposition)
+}
