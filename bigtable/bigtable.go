@@ -417,10 +417,23 @@ func (m *Mutation) Set(family, column string, ts Timestamp, value []byte) {
 
 // DeleteCellsInColumn will delete all the cells whose columns are family:column.
 func (m *Mutation) DeleteCellsInColumn(family, column string) {
-	// TODO(dsymonds): This mutation also permits a timestamp range.
 	m.ops = append(m.ops, &btdpb.Mutation{DeleteFromColumn: &btdpb.Mutation_DeleteFromColumn{
 		FamilyName:      family,
 		ColumnQualifier: []byte(column),
+	}})
+}
+
+// DeleteTimestampRange deletes all cells whose columns are family:column
+// and whose timestamps are in the half-open interval [start, end).
+// If end is zero, it will be interpreted as infinity.
+func (m *Mutation) DeleteTimestampRange(family, column string, start, end Timestamp) {
+	m.ops = append(m.ops, &btdpb.Mutation{DeleteFromColumn: &btdpb.Mutation_DeleteFromColumn{
+		FamilyName:      family,
+		ColumnQualifier: []byte(column),
+		TimeRange: &btdpb.TimestampRange{
+			StartTimestampMicros: int64(start),
+			EndTimestampMicros:   int64(end),
+		},
 	}})
 }
 

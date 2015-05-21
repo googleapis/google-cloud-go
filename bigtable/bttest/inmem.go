@@ -392,6 +392,30 @@ func applyMutations(tbl *table, r *row, muts []*btdpb.Mutation) error {
 			}
 			sort.Sort(byDescTS(cs))
 			r.cells[col] = cs
+		case mut.DeleteFromColumn != nil:
+			del := mut.DeleteFromColumn
+			col := fmt.Sprintf("%s:%s", del.FamilyName, del.ColumnQualifier)
+
+			cs := r.cells[col]
+			if del.TimeRange != nil {
+				tsr := del.TimeRange
+				// TODO(dsymonds): Enforce timestamp granularity.
+				// TODO(dsymonds): This could be quicker with a couple of binary searches.
+				for i := len(cs) - 1; i >= 0; i-- {
+					if tsr.StartTimestampMicros <= cs[i].ts &&
+						(tsr.EndTimestampMicros == 0 || cs[i].ts < tsr.EndTimestampMicros) {
+						copy(cs[i:], cs[i+1:])
+						cs = cs[:len(cs)-1]
+					}
+				}
+			} else {
+				cs = nil
+			}
+			if len(cs) == 0 {
+				delete(r.cells, col)
+			} else {
+				r.cells[col] = cs
+			}
 		}
 	}
 	return nil

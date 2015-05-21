@@ -436,8 +436,24 @@ func TestClientIntegration(t *testing.T) {
 	if !reflect.DeepEqual(r, wantRow) {
 		t.Errorf("Cell with multiple versions and LatestNFilter(2),\n got %v\nwant %v", r, wantRow)
 	}
-	// TODO(dsymonds): Try deleting the cell with timestamp 2000 and read again,
+	// Delete the cell with timestamp 2000 and repeat the last read,
 	// checking that we get ts 3000 and ts 1000.
+	mut = NewMutation()
+	mut.DeleteTimestampRange("ts", "col", 2000, 3000) // half-open interval
+	if err := tbl.Apply(ctx, "testrow", mut); err != nil {
+		t.Fatalf("Mutating row: %v", err)
+	}
+	r, err = tbl.ReadRow(ctx, "testrow", RowFilter(LatestNFilter(2)))
+	if err != nil {
+		t.Fatalf("Reading row: %v", err)
+	}
+	wantRow = Row{"ts": []ReadItem{
+		{Row: "testrow", Column: "ts:col", Timestamp: 3000, Value: []byte("val-3")},
+		{Row: "testrow", Column: "ts:col", Timestamp: 1000, Value: []byte("val-1")},
+	}}
+	if !reflect.DeepEqual(r, wantRow) {
+		t.Errorf("Cell with multiple versions and LatestNFilter(2), after deleting timestamp 2000,\n got %v\nwant %v", r, wantRow)
+	}
 	checkpoint("tested multiple versions in a cell")
 }
 
