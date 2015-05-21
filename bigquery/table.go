@@ -29,6 +29,9 @@ type Table struct {
 	WriteDisposition WriteDisposition // default is WriteAppend.
 }
 
+// Tables is a group of tables. The tables may belong to differing projects or datasets.
+type Tables []*Table
+
 // CreateDisposition specifies the circumstances under which destination table will be created.
 type CreateDisposition string
 
@@ -56,45 +59,40 @@ const (
 	WriteEmpty WriteDisposition = "WRITE_EMPTY"
 )
 
-func (t *Table) implementsSource() {
-}
+func (t *Table) implementsSource()      {}
+func (t *Table) implementsDestination() {}
+func (ts Tables) implementsSource()     {}
 
-func (t *Table) implementsDestination() {
-}
-
-func (t *Table) customizeLoadDst(conf *bq.JobConfigurationLoad) {
-	conf.DestinationTable = &bq.TableReference{
+func (t *Table) tableRefProto() *bq.TableReference {
+	return &bq.TableReference{
 		ProjectId: t.ProjectID,
 		DatasetId: t.DatasetID,
 		TableId:   t.TableID,
 	}
+}
+
+func (t *Table) customizeLoadDst(conf *bq.JobConfigurationLoad) {
+	conf.DestinationTable = t.tableRefProto()
 	conf.CreateDisposition = string(t.CreateDisposition)
 	conf.WriteDisposition = string(t.WriteDisposition)
 }
 
 func (t *Table) customizeExtractSrc(conf *bq.JobConfigurationExtract) {
-	conf.SourceTable = &bq.TableReference{
-		ProjectId: t.ProjectID,
-		DatasetId: t.DatasetID,
-		TableId:   t.TableID,
-	}
+	conf.SourceTable = t.tableRefProto()
 }
 
 func (t *Table) customizeCopySrc(conf *bq.JobConfigurationTableCopy) {
-	// TODO: support copying multiple tables.
-	conf.SourceTable = &bq.TableReference{
-		ProjectId: t.ProjectID,
-		DatasetId: t.DatasetID,
-		TableId:   t.TableID,
-	}
+	conf.SourceTable = t.tableRefProto()
 }
 
 func (t *Table) customizeCopyDst(conf *bq.JobConfigurationTableCopy) {
-	conf.DestinationTable = &bq.TableReference{
-		ProjectId: t.ProjectID,
-		DatasetId: t.DatasetID,
-		TableId:   t.TableID,
-	}
+	conf.DestinationTable = t.tableRefProto()
 	conf.CreateDisposition = string(t.CreateDisposition)
 	conf.WriteDisposition = string(t.WriteDisposition)
+}
+
+func (ts Tables) customizeCopySrc(conf *bq.JobConfigurationTableCopy) {
+	for _, t := range ts {
+		conf.SourceTables = append(conf.SourceTables, t.tableRefProto())
+	}
 }

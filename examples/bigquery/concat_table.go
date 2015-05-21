@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// example is an example client of the bigquery client library.
-// It loads a file from Google Cloud Storage into a BigQuery table.
+// concat_table is an example client of the bigquery client library.
+// It concatenates two BigQuery tables and writes the result to another table.
 package main
 
 import (
@@ -29,20 +29,19 @@ import (
 )
 
 var (
-	project  = flag.String("project", "", "The ID of a Google Cloud Platform project")
-	dataset  = flag.String("dataset", "", "The ID of a BigQuery dataset")
-	table    = flag.String("table", "", "The ID of a BigQuery table to load data into")
-	bucket   = flag.String("bucket", "", "The name of a Google Cloud Storage bucket to load data from")
-	object   = flag.String("object", "", "The name of a Google Cloud Storage object to load data from. Must exist within the bucket specified by --bucket")
-	skiprows = flag.Int64("skiprows", 0, "The number of rows of the source data to skip when loading")
-	pollint  = flag.Duration("pollint", 10*time.Second, "Polling interval for checking job status")
+	project = flag.String("project", "", "The ID of a Google Cloud Platform project")
+	dataset = flag.String("dataset", "", "The ID of a BigQuery dataset")
+	src1    = flag.String("src1", "", "The ID of the first BigQuery table to concatenate")
+	src2    = flag.String("src2", "", "The ID of the second BigQuery table to concatenate")
+	dest    = flag.String("dest", "", "The ID of the BigQuery table to write the result to")
+	pollint = flag.Duration("pollint", 10*time.Second, "Polling interval for checking job status")
 )
 
 func main() {
 	flag.Parse()
 
 	flagsOk := true
-	for _, f := range []string{"project", "dataset", "table", "bucket", "object"} {
+	for _, f := range []string{"project", "dataset", "src1", "src2", "dest"} {
 		if flag.Lookup(f).Value.String() == "" {
 			fmt.Fprintf(os.Stderr, "Flag --%s is required\n", f)
 			flagsOk = false
@@ -50,6 +49,9 @@ func main() {
 	}
 	if !flagsOk {
 		os.Exit(1)
+	}
+	if *src1 == *src2 || *src1 == *dest || *src2 == *dest {
+		log.Fatalf("Different values must be supplied for each of --src1, --src2 and --dest")
 	}
 
 	httpClient, err := google.DefaultClient(context.Background(), bigquery.Scope)
@@ -62,28 +64,34 @@ func main() {
 		log.Fatalf("Creating bigquery client: %v", err)
 	}
 
-	table := &bigquery.Table{
+	s1 := &bigquery.Table{
+		ProjectID: *project,
+		DatasetID: *dataset,
+		TableID:   *src1,
+	}
+
+	s2 := &bigquery.Table{
+		ProjectID: *project,
+		DatasetID: *dataset,
+		TableID:   *src2,
+	}
+
+	d := &bigquery.Table{
 		ProjectID:        *project,
 		DatasetID:        *dataset,
-		TableID:          *table,
+		TableID:          *dest,
 		WriteDisposition: bigquery.WriteTruncate,
 	}
 
-	gcs := client.NewGCSReference(fmt.Sprintf("gs://%s/%s", *bucket, *object))
-	gcs.SkipLeadingRows = *skiprows
-
-	// Load data from Google Cloud Storage into a BigQuery table.
-	job, err := client.Copy(
-		context.Background(), table, gcs,
-		bigquery.MaxBadRecords(1),
-		bigquery.AllowQuotedNewlines())
+	// Concatenate data.
+	job, err := client.Copy(context.Background(), d, bigquery.Tables{s1, s2})
 
 	if err != nil {
-		log.Fatalf("Loading data: %v", err)
+		log.Fatalf("Concatenating: %v", err)
 	}
 
-	fmt.Printf("Job for data load operation: %+v\n", job)
-	fmt.Printf("Waiting for data load to complete.\n")
+	fmt.Printf("Job for concatenation operation: %+v\n", job)
+	fmt.Printf("Waiting for job to complete.\n")
 
 	for range time.Tick(*pollint) {
 		status, err := job.Status(context.Background())
@@ -97,7 +105,7 @@ func main() {
 		if err := status.Err(); err == nil {
 			fmt.Printf("Success\n")
 		} else {
-			fmt.Printf("Failure loading data: %+v\n", err)
+			fmt.Printf("Failure: %+v\n", err)
 		}
 		break
 	}
