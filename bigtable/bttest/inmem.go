@@ -374,13 +374,15 @@ func applyMutations(tbl *table, r *row, muts []*btdpb.Mutation) error {
 			if !famOK {
 				return fmt.Errorf("unknown family %q", set.FamilyName)
 			}
+			if !tbl.validTimestamp(set.TimestampMicros) {
+				return fmt.Errorf("invalid timestamp %d", set.TimestampMicros)
+			}
 			col := fmt.Sprintf("%s:%s", set.FamilyName, set.ColumnQualifier)
 
 			cs := r.cells[col]
 			newCell := cell{ts: set.TimestampMicros, value: set.Value}
 			replaced := false
 			for i, cell := range cs {
-				// TODO(dsymonds): Enforce timestamp granularity.
 				if cell.ts == newCell.ts {
 					cs[i] = newCell
 					replaced = true
@@ -399,7 +401,12 @@ func applyMutations(tbl *table, r *row, muts []*btdpb.Mutation) error {
 			cs := r.cells[col]
 			if del.TimeRange != nil {
 				tsr := del.TimeRange
-				// TODO(dsymonds): Enforce timestamp granularity.
+				if !tbl.validTimestamp(tsr.StartTimestampMicros) {
+					return fmt.Errorf("invalid timestamp %d", tsr.StartTimestampMicros)
+				}
+				if !tbl.validTimestamp(tsr.EndTimestampMicros) {
+					return fmt.Errorf("invalid timestamp %d", tsr.EndTimestampMicros)
+				}
 				// Find half-open interval to remove.
 				// Cells are in descending timestamp order,
 				// so the predicates to sort.Search are inverted.
@@ -512,6 +519,11 @@ func newTable() *table {
 		families: make(map[string]bool),
 		rowIndex: make(map[string]*row),
 	}
+}
+
+func (t *table) validTimestamp(ts int64) bool {
+	// Assume millisecond granularity is required.
+	return ts%1000 == 0
 }
 
 func (t *table) mutableRow(row string) *row {
