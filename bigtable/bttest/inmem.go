@@ -400,13 +400,19 @@ func applyMutations(tbl *table, r *row, muts []*btdpb.Mutation) error {
 			if del.TimeRange != nil {
 				tsr := del.TimeRange
 				// TODO(dsymonds): Enforce timestamp granularity.
-				// TODO(dsymonds): This could be quicker with a couple of binary searches.
-				for i := len(cs) - 1; i >= 0; i-- {
-					if tsr.StartTimestampMicros <= cs[i].ts &&
-						(tsr.EndTimestampMicros == 0 || cs[i].ts < tsr.EndTimestampMicros) {
-						copy(cs[i:], cs[i+1:])
-						cs = cs[:len(cs)-1]
-					}
+				// Find half-open interval to remove.
+				// Cells are in descending timestamp order,
+				// so the predicates to sort.Search are inverted.
+				si, ei := 0, len(cs)
+				if tsr.StartTimestampMicros > 0 {
+					ei = sort.Search(len(cs), func(i int) bool { return cs[i].ts < tsr.StartTimestampMicros })
+				}
+				if tsr.EndTimestampMicros > 0 {
+					si = sort.Search(len(cs), func(i int) bool { return cs[i].ts < tsr.EndTimestampMicros })
+				}
+				if si < ei {
+					copy(cs[si:], cs[ei:])
+					cs = cs[:len(cs)-(ei-si)]
 				}
 			} else {
 				cs = nil
