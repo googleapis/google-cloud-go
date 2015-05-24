@@ -20,7 +20,9 @@ following environment variables to be able to run the against the actual APIs.
 
 - **GCLOUD_TESTS_GOLANG_PROJECT_ID**: Developers Console project's ID (e.g. bamboo-shift-455)
 - **GCLOUD_TESTS_GOLANG_KEY**: The path to the JSON key file.
-- **GCLOUD_TESTS_GOLANG_BUCKET_NAME**: The test bucket name.
+
+Create a storage bucket with the same name as the project id set in **GCLOUD_TESTS_GOLANG_PROJECT_ID**.
+The storage integration test will create and delete some objects in this bucket.
 
 Install the [gcloud command-line tool][gcloudcli] to your machine and use it
 to create the indexes used in the datastore integration tests with indexes
@@ -40,6 +42,7 @@ $ gcloud auth login
 
 # Create the indexes
 $ gcloud preview datastore create-indexes datastore/testdata
+
 ```
 
 You can run the integration tests by running:
