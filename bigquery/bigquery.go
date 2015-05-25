@@ -42,13 +42,14 @@ type Option interface {
 
 const Scope = "https://www.googleapis.com/auth/bigquery"
 
-// Client may be used to perform BigQuery operations within a GCP project.
+// Client may be used to perform BigQuery operations.
 type Client struct {
 	service   *bq.Service
 	projectID string
 }
 
-// NewClient constructs a new Client which can perform BigQuery operations within a GCP project.
+// NewClient constructs a new Client which can perform BigQuery operations.
+// Operations performed via the client are billed to the specified GCP project.
 // The supplied http.Client is used for making requests to the BigQuery server and must be capable of
 // authenticating requests with Scope.
 func NewClient(client *http.Client, projectID string) (*Client, error) {

@@ -95,9 +95,9 @@ func TestLoad(t *testing.T) {
 		},
 		{
 			dst: &Table{
-				projectID:         "project-id",
-				datasetID:         "dataset-id",
-				tableID:           "table-id",
+				ProjectID:         "project-id",
+				DatasetID:         "dataset-id",
+				TableID:           "table-id",
 				CreateDisposition: "CREATE_NEVER",
 				WriteDisposition:  "WRITE_TRUNCATE",
 			},
@@ -111,9 +111,9 @@ func TestLoad(t *testing.T) {
 		},
 		{
 			dst: &Table{
-				projectID: "project-id",
-				datasetID: "dataset-id",
-				tableID:   "table-id",
+				ProjectID: "project-id",
+				DatasetID: "dataset-id",
+				TableID:   "table-id",
 			},
 			src: defaultGCS,
 			options: []Option{

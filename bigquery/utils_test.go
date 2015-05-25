@@ -17,9 +17,9 @@ package bigquery
 import bq "google.golang.org/api/bigquery/v2"
 
 var defaultTable = &Table{
-	projectID: "project-id",
-	datasetID: "dataset-id",
-	tableID:   "table-id",
+	ProjectID: "project-id",
+	DatasetID: "dataset-id",
+	TableID:   "table-id",
 }
 
 var defaultGCS = &GCSReference{

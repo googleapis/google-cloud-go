@@ -18,16 +18,18 @@ import bq "google.golang.org/api/bigquery/v2"
 
 // A Table is a reference to a BigQuery table.
 type Table struct {
-	projectID string
-	datasetID string
-	tableID   string
+	// ProjectID, DatasetID and TableID must be set.
+	// All other fields are optional.
+	ProjectID string
+	DatasetID string
+	TableID   string
 
-	CreateDisposition CreateDisposition
-	WriteDisposition  WriteDisposition
+	CreateDisposition CreateDisposition // default is CreateIfNeeded.
+
+	WriteDisposition WriteDisposition // default is WriteAppend.
 }
 
 // CreateDisposition specifies the circumstances under which destination table will be created.
-// The default is CreateIfNeeded.
 type CreateDisposition string
 
 const (
@@ -39,7 +41,6 @@ const (
 )
 
 // WriteDisposition specifies how existing data in a destination table is treated.
-// The default is WriteAppend.
 type WriteDisposition string
 
 const (
@@ -61,20 +62,11 @@ func (t *Table) implementsSource() {
 func (t *Table) implementsDestination() {
 }
 
-// OpenTable constructs a reference to a BigQuery table.
-func (c *Client) OpenTable(datasetID, tableID string) *Table {
-	return &Table{
-		projectID: c.projectID,
-		datasetID: datasetID,
-		tableID:   tableID,
-	}
-}
-
 func (t *Table) customizeLoadDst(conf *bq.JobConfigurationLoad) {
 	conf.DestinationTable = &bq.TableReference{
-		ProjectId: t.projectID,
-		DatasetId: t.datasetID,
-		TableId:   t.tableID,
+		ProjectId: t.ProjectID,
+		DatasetId: t.DatasetID,
+		TableId:   t.TableID,
 	}
 	conf.CreateDisposition = string(t.CreateDisposition)
 	conf.WriteDisposition = string(t.WriteDisposition)
@@ -82,26 +74,26 @@ func (t *Table) customizeLoadDst(conf *bq.JobConfigurationLoad) {
 
 func (t *Table) customizeExtractSrc(conf *bq.JobConfigurationExtract) {
 	conf.SourceTable = &bq.TableReference{
-		ProjectId: t.projectID,
-		DatasetId: t.datasetID,
-		TableId:   t.tableID,
+		ProjectId: t.ProjectID,
+		DatasetId: t.DatasetID,
+		TableId:   t.TableID,
 	}
 }
 
 func (t *Table) customizeCopySrc(conf *bq.JobConfigurationTableCopy) {
 	// TODO: support copying multiple tables.
 	conf.SourceTable = &bq.TableReference{
-		ProjectId: t.projectID,
-		DatasetId: t.datasetID,
-		TableId:   t.tableID,
+		ProjectId: t.ProjectID,
+		DatasetId: t.DatasetID,
+		TableId:   t.TableID,
 	}
 }
 
 func (t *Table) customizeCopyDst(conf *bq.JobConfigurationTableCopy) {
 	conf.DestinationTable = &bq.TableReference{
-		ProjectId: t.projectID,
-		DatasetId: t.datasetID,
-		TableId:   t.tableID,
+		ProjectId: t.ProjectID,
+		DatasetId: t.DatasetID,
+		TableId:   t.TableID,
 	}
 	conf.CreateDisposition = string(t.CreateDisposition)
 	conf.WriteDisposition = string(t.WriteDisposition)

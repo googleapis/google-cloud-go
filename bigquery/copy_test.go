@@ -49,29 +49,29 @@ func TestCopy(t *testing.T) {
 	}{
 		{
 			dst: &Table{
-				projectID: "d-project-id",
-				datasetID: "d-dataset-id",
-				tableID:   "d-table-id",
+				ProjectID: "d-project-id",
+				DatasetID: "d-dataset-id",
+				TableID:   "d-table-id",
 			},
 			src: &Table{
-				projectID: "s-project-id",
-				datasetID: "s-dataset-id",
-				tableID:   "s-table-id",
+				ProjectID: "s-project-id",
+				DatasetID: "s-dataset-id",
+				TableID:   "s-table-id",
 			},
 			want: defaultCopyJob(),
 		},
 		{
 			dst: &Table{
-				projectID:         "d-project-id",
-				datasetID:         "d-dataset-id",
-				tableID:           "d-table-id",
+				ProjectID:         "d-project-id",
+				DatasetID:         "d-dataset-id",
+				TableID:           "d-table-id",
 				CreateDisposition: "CREATE_NEVER",
 				WriteDisposition:  "WRITE_TRUNCATE",
 			},
 			src: &Table{
-				projectID: "s-project-id",
-				datasetID: "s-dataset-id",
-				tableID:   "s-table-id",
+				ProjectID: "s-project-id",
+				DatasetID: "s-dataset-id",
+				TableID:   "s-table-id",
 			},
 			want: func() *bq.Job {
 				j := defaultCopyJob()
