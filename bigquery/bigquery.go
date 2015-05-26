@@ -76,7 +76,8 @@ func newDstSrc(dst Destination, src Source) dstSrc {
 	}
 }
 
-type operation func(jobInserter, Destination, Source, ...Option) (*Job, error)
+// operation fills out a bigquery API job proto with the configuration for a single operation.
+type operation func(*bq.Job, Destination, Source, string, ...Option) error
 
 // TODO(mcgreevy): support more operations.
 var ops = map[dstSrc]operation{
@@ -93,11 +94,22 @@ func (c *Client) Copy(ctx context.Context, dst Destination, src Source, options 
 	if !ok {
 		return nil, fmt.Errorf("no operation matches dst/src pair")
 	}
-	return op(c, dst, src, options...)
-}
+	job := &bq.Job{}
 
-type jobInserter interface {
-	insertJob(job *bq.Job) (*Job, error)
+	var opOptions []Option
+	for _, opt := range options {
+		if o, ok := opt.(jobOption); ok {
+			o.customizeJob(job, c.projectID)
+		} else {
+			opOptions = append(opOptions, opt)
+		}
+	}
+
+	if err := op(job, dst, src, c.projectID, opOptions...); err != nil {
+		return nil, err
+	}
+
+	return c.insertJob(job)
 }
 
 func (c *Client) insertJob(job *bq.Job) (*Job, error) {

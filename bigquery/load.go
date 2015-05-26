@@ -21,15 +21,15 @@ import (
 )
 
 type loadDestination interface {
-	customizeLoadDst(conf *bq.JobConfigurationLoad)
+	customizeLoadDst(conf *bq.JobConfigurationLoad, projectID string)
 }
 
 type loadSource interface {
-	customizeLoadSrc(conf *bq.JobConfigurationLoad)
+	customizeLoadSrc(conf *bq.JobConfigurationLoad, projectID string)
 }
 
 type loadOption interface {
-	customizeLoad(conf *bq.JobConfigurationLoad)
+	customizeLoad(conf *bq.JobConfigurationLoad, projectID string)
 }
 
 // A DestinationSchema must be supplied when loading data from Google Cloud Storage into a non-existent table.
@@ -40,7 +40,7 @@ type destSchema Schema
 
 func (opt destSchema) implementsOption() {}
 
-func (opt destSchema) customizeLoad(conf *bq.JobConfigurationLoad) {
+func (opt destSchema) customizeLoad(conf *bq.JobConfigurationLoad, projectID string) {
 	var fields []*bq.TableFieldSchema
 	for _, f := range opt {
 		fields = append(fields, f.proto())
@@ -58,7 +58,7 @@ type maxBadRecords int64
 
 func (opt maxBadRecords) implementsOption() {}
 
-func (opt maxBadRecords) customizeLoad(conf *bq.JobConfigurationLoad) {
+func (opt maxBadRecords) customizeLoad(conf *bq.JobConfigurationLoad, projectID string) {
 	conf.MaxBadRecords = int64(opt)
 }
 
@@ -69,7 +69,7 @@ type allowJaggedRows struct{}
 
 func (opt allowJaggedRows) implementsOption() {}
 
-func (opt allowJaggedRows) customizeLoad(conf *bq.JobConfigurationLoad) {
+func (opt allowJaggedRows) customizeLoad(conf *bq.JobConfigurationLoad, projectID string) {
 	conf.AllowJaggedRows = true
 }
 
@@ -80,7 +80,7 @@ type allowQuotedNewlines struct{}
 
 func (opt allowQuotedNewlines) implementsOption() {}
 
-func (opt allowQuotedNewlines) customizeLoad(conf *bq.JobConfigurationLoad) {
+func (opt allowQuotedNewlines) customizeLoad(conf *bq.JobConfigurationLoad, projectID string) {
 	conf.AllowQuotedNewlines = true
 }
 
@@ -95,30 +95,29 @@ type ignoreUnknownValues struct{}
 
 func (opt ignoreUnknownValues) implementsOption() {}
 
-func (opt ignoreUnknownValues) customizeLoad(conf *bq.JobConfigurationLoad) {
+func (opt ignoreUnknownValues) customizeLoad(conf *bq.JobConfigurationLoad, projectID string) {
 	conf.IgnoreUnknownValues = true
 }
 
-func load(c jobInserter, dst Destination, src Source, options ...Option) (*Job, error) {
+func load(job *bq.Job, dst Destination, src Source, projectID string, options ...Option) error {
 	payload := &bq.JobConfigurationLoad{}
 
 	d := dst.(loadDestination)
 	s := src.(loadSource)
 
-	d.customizeLoadDst(payload)
-	s.customizeLoadSrc(payload)
+	d.customizeLoadDst(payload, projectID)
+	s.customizeLoadSrc(payload, projectID)
 
 	for _, opt := range options {
 		o, ok := opt.(loadOption)
 		if !ok {
-			return nil, fmt.Errorf("Option not applicable to dst/src pair: %#v", opt)
+			return fmt.Errorf("Option not applicable to dst/src pair: %#v", opt)
 		}
-		o.customizeLoad(payload)
+		o.customizeLoad(payload, projectID)
 	}
 
-	return c.insertJob(&bq.Job{
-		Configuration: &bq.JobConfiguration{
-			Load: payload,
-		},
-	})
+	job.Configuration = &bq.JobConfiguration{
+		Load: payload,
+	}
+	return nil
 }

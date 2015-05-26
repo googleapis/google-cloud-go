@@ -21,15 +21,15 @@ import (
 )
 
 type extractDestination interface {
-	customizeExtractDst(conf *bq.JobConfigurationExtract)
+	customizeExtractDst(conf *bq.JobConfigurationExtract, projectID string)
 }
 
 type extractSource interface {
-	customizeExtractSrc(conf *bq.JobConfigurationExtract)
+	customizeExtractSrc(conf *bq.JobConfigurationExtract, projectID string)
 }
 
 type extractOption interface {
-	customizeExtract(conf *bq.JobConfigurationExtract)
+	customizeExtract(conf *bq.JobConfigurationExtract, projectID string)
 }
 
 // DisableHeader returns an Option that disables the printing of a header row in exported data.
@@ -39,30 +39,29 @@ type disableHeader struct{}
 
 func (opt disableHeader) implementsOption() {}
 
-func (opt disableHeader) customizeExtract(conf *bq.JobConfigurationExtract) {
+func (opt disableHeader) customizeExtract(conf *bq.JobConfigurationExtract, projectID string) {
 	conf.PrintHeader = false
 }
 
-func extract(c jobInserter, dst Destination, src Source, options ...Option) (*Job, error) {
+func extract(job *bq.Job, dst Destination, src Source, projectID string, options ...Option) error {
 	payload := &bq.JobConfigurationExtract{}
 
 	d := dst.(extractDestination)
 	s := src.(extractSource)
 
-	d.customizeExtractDst(payload)
-	s.customizeExtractSrc(payload)
+	d.customizeExtractDst(payload, projectID)
+	s.customizeExtractSrc(payload, projectID)
 
 	for _, opt := range options {
 		o, ok := opt.(extractOption)
 		if !ok {
-			return nil, fmt.Errorf("option not applicable to dst/src pair: %#v", opt)
+			return fmt.Errorf("option not applicable to dst/src pair: %#v", opt)
 		}
-		o.customizeExtract(payload)
+		o.customizeExtract(payload, projectID)
 	}
 
-	return c.insertJob(&bq.Job{
-		Configuration: &bq.JobConfiguration{
-			Extract: payload,
-		},
-	})
+	job.Configuration = &bq.JobConfiguration{
+		Extract: payload,
+	}
+	return nil
 }

@@ -71,27 +71,27 @@ func (t *Table) tableRefProto() *bq.TableReference {
 	}
 }
 
-func (t *Table) customizeLoadDst(conf *bq.JobConfigurationLoad) {
+func (t *Table) customizeLoadDst(conf *bq.JobConfigurationLoad, projectID string) {
 	conf.DestinationTable = t.tableRefProto()
 	conf.CreateDisposition = string(t.CreateDisposition)
 	conf.WriteDisposition = string(t.WriteDisposition)
 }
 
-func (t *Table) customizeExtractSrc(conf *bq.JobConfigurationExtract) {
+func (t *Table) customizeExtractSrc(conf *bq.JobConfigurationExtract, projectID string) {
 	conf.SourceTable = t.tableRefProto()
 }
 
-func (t *Table) customizeCopySrc(conf *bq.JobConfigurationTableCopy) {
+func (t *Table) customizeCopySrc(conf *bq.JobConfigurationTableCopy, projectID string) {
 	conf.SourceTable = t.tableRefProto()
 }
 
-func (t *Table) customizeCopyDst(conf *bq.JobConfigurationTableCopy) {
+func (t *Table) customizeCopyDst(conf *bq.JobConfigurationTableCopy, projectID string) {
 	conf.DestinationTable = t.tableRefProto()
 	conf.CreateDisposition = string(t.CreateDisposition)
 	conf.WriteDisposition = string(t.WriteDisposition)
 }
 
-func (ts Tables) customizeCopySrc(conf *bq.JobConfigurationTableCopy) {
+func (ts Tables) customizeCopySrc(conf *bq.JobConfigurationTableCopy, projectID string) {
 	for _, t := range ts {
 		conf.SourceTables = append(conf.SourceTables, t.tableRefProto())
 	}

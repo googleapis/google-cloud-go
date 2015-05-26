@@ -169,13 +169,13 @@ func TestLoad(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		jr := jobRecorder{}
-		if _, err := load(&jr, tc.dst, tc.src, tc.options...); err != nil {
+		job := &bq.Job{}
+		if err := load(job, tc.dst, tc.src, "proj-id", tc.options...); err != nil {
 			t.Errorf("err calling load: %v", err)
 			continue
 		}
-		if !reflect.DeepEqual(jr.Job, tc.want) {
-			t.Errorf("insertJob got:\n%v\nwant:\n%v", jr.Job, tc.want)
+		if !reflect.DeepEqual(job, tc.want) {
+			t.Errorf("insertJob got:\n%v\nwant:\n%v", job, tc.want)
 		}
 	}
 }

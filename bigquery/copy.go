@@ -21,37 +21,36 @@ import (
 )
 
 type copyDestination interface {
-	customizeCopyDst(conf *bq.JobConfigurationTableCopy)
+	customizeCopyDst(conf *bq.JobConfigurationTableCopy, projectID string)
 }
 
 type copySource interface {
-	customizeCopySrc(conf *bq.JobConfigurationTableCopy)
+	customizeCopySrc(conf *bq.JobConfigurationTableCopy, projectID string)
 }
 
 type copyOption interface {
-	customizeCopy(conf *bq.JobConfigurationTableCopy)
+	customizeCopy(conf *bq.JobConfigurationTableCopy, projectID string)
 }
 
-func cp(c jobInserter, dst Destination, src Source, options ...Option) (*Job, error) {
+func cp(job *bq.Job, dst Destination, src Source, projectID string, options ...Option) error {
 	payload := &bq.JobConfigurationTableCopy{}
 
 	d := dst.(copyDestination)
 	s := src.(copySource)
 
-	d.customizeCopyDst(payload)
-	s.customizeCopySrc(payload)
+	d.customizeCopyDst(payload, projectID)
+	s.customizeCopySrc(payload, projectID)
 
 	for _, opt := range options {
 		o, ok := opt.(copyOption)
 		if !ok {
-			return nil, fmt.Errorf("option not applicable to dst/src pair: %#v", opt)
+			return fmt.Errorf("option not applicable to dst/src pair: %#v", opt)
 		}
-		o.customizeCopy(payload)
+		o.customizeCopy(payload, projectID)
 	}
 
-	return c.insertJob(&bq.Job{
-		Configuration: &bq.JobConfiguration{
-			Copy: payload,
-		},
-	})
+	job.Configuration = &bq.JobConfiguration{
+		Copy: payload,
+	}
+	return nil
 }

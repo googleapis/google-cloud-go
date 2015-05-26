@@ -47,6 +47,29 @@ type JobStatus struct {
 	Errors []*Error
 }
 
+// jobOption is an Option which modifies a bq.Job proto.
+// This is used for configuring values that apply to all operations, such as setting a jobReference.
+type jobOption interface {
+	customizeJob(job *bq.Job, projectID string)
+}
+
+type jobID string
+
+// JobID returns an Option that sets the job ID of a BigQuery job.
+// If this Option is not used, a job ID is generated automatically.
+func JobID(ID string) Option {
+	return jobID(ID)
+}
+
+func (opt jobID) implementsOption() {}
+
+func (opt jobID) customizeJob(job *bq.Job, projectID string) {
+	job.JobReference = &bq.JobReference{
+		JobId:     string(opt),
+		ProjectId: projectID,
+	}
+}
+
 // Done reports whether the job has completed.
 // After Done returns true, the Err method will return an error if the job completed unsuccesfully.
 func (s *JobStatus) Done() bool {
