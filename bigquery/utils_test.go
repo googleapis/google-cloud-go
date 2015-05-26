@@ -14,8 +14,6 @@
 
 package bigquery
 
-import bq "google.golang.org/api/bigquery/v2"
-
 var defaultTable = &Table{
 	ProjectID: "project-id",
 	DatasetID: "dataset-id",
@@ -24,13 +22,4 @@ var defaultTable = &Table{
 
 var defaultGCS = &GCSReference{
 	uris: []string{"uri"},
-}
-
-type jobRecorder struct {
-	*bq.Job
-}
-
-func (jr *jobRecorder) insertJob(job *bq.Job) (*Job, error) {
-	jr.Job = job
-	return &Job{}, nil
 }
