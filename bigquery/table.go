@@ -18,15 +18,17 @@ import bq "google.golang.org/api/bigquery/v2"
 
 // A Table is a reference to a BigQuery table.
 type Table struct {
-	// ProjectID, DatasetID and TableID must be set.
-	// All other fields are optional.
+	// ProjectID, DatasetID and TableID may be omitted if the Table is the destination for a query.
+	// In this case the result will be stored in an ephemeral table.
 	ProjectID string
 	DatasetID string
-	TableID   string
+	// TableID must contain only letters (a-z, A-Z), numbers (0-9), or underscores (_).
+	// The maximum length is 1,024 characters.
+	TableID string
 
+	// All following fields are optional.
 	CreateDisposition CreateDisposition // default is CreateIfNeeded.
-
-	WriteDisposition WriteDisposition // default is WriteAppend.
+	WriteDisposition  WriteDisposition  // default is WriteAppend.
 }
 
 // Tables is a group of tables. The tables may belong to differing projects or datasets.
@@ -71,6 +73,11 @@ func (t *Table) tableRefProto() *bq.TableReference {
 	}
 }
 
+// implicitTable reports whether Table is an empty placeholder, which signifies that a new table should be created with an auto-generated Table ID.
+func (t *Table) implicitTable() bool {
+	return t.ProjectID == "" && t.DatasetID == "" && t.TableID == ""
+}
+
 func (t *Table) customizeLoadDst(conf *bq.JobConfigurationLoad, projectID string) {
 	conf.DestinationTable = t.tableRefProto()
 	conf.CreateDisposition = string(t.CreateDisposition)
@@ -95,4 +102,12 @@ func (ts Tables) customizeCopySrc(conf *bq.JobConfigurationTableCopy, projectID 
 	for _, t := range ts {
 		conf.SourceTables = append(conf.SourceTables, t.tableRefProto())
 	}
+}
+
+func (t *Table) customizeQueryDst(conf *bq.JobConfigurationQuery, projectID string) {
+	if !t.implicitTable() {
+		conf.DestinationTable = t.tableRefProto()
+	}
+	conf.CreateDisposition = string(t.CreateDisposition)
+	conf.WriteDisposition = string(t.WriteDisposition)
 }

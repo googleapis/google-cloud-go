@@ -85,6 +85,7 @@ var ops = map[dstSrc]operation{
 	newDstSrc((*GCSReference)(nil), (*Table)(nil)): extract,
 	newDstSrc((*Table)(nil), (*Table)(nil)):        cp,
 	newDstSrc((*Table)(nil), (Tables)(nil)):        cp,
+	newDstSrc((*Table)(nil), (*Query)(nil)):        query,
 }
 
 // Copy starts a BigQuery operation to copy data from a Source to a Destination.

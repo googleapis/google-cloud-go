@@ -23,3 +23,9 @@ var defaultTable = &Table{
 var defaultGCS = &GCSReference{
 	uris: []string{"uri"},
 }
+
+var defaultQuery = &Query{
+	Q:                "query string",
+	DefaultProjectID: "def-project-id",
+	DefaultDatasetID: "def-dataset-id",
+}

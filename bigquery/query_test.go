@@ -21,26 +21,26 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
-func defaultCopyJob() *bq.Job {
+func defaultQueryJob() *bq.Job {
 	return &bq.Job{
 		Configuration: &bq.JobConfiguration{
-			Copy: &bq.JobConfigurationTableCopy{
+			Query: &bq.JobConfigurationQuery{
 				DestinationTable: &bq.TableReference{
-					ProjectId: "d-project-id",
-					DatasetId: "d-dataset-id",
-					TableId:   "d-table-id",
+					ProjectId: "project-id",
+					DatasetId: "dataset-id",
+					TableId:   "table-id",
 				},
-				SourceTable: &bq.TableReference{
-					ProjectId: "s-project-id",
-					DatasetId: "s-dataset-id",
-					TableId:   "s-table-id",
+				Query: "query string",
+				DefaultDataset: &bq.DatasetReference{
+					ProjectId: "def-project-id",
+					DatasetId: "def-dataset-id",
 				},
 			},
 		},
 	}
 }
 
-func TestCopy(t *testing.T) {
+func TestQuery(t *testing.T) {
 	testCases := []struct {
 		dst     Destination
 		src     Source
@@ -48,35 +48,43 @@ func TestCopy(t *testing.T) {
 		want    *bq.Job
 	}{
 		{
-			dst: &Table{
-				ProjectID: "d-project-id",
-				DatasetID: "d-dataset-id",
-				TableID:   "d-table-id",
+			dst:  defaultTable,
+			src:  defaultQuery,
+			want: defaultQueryJob(),
+		},
+		{
+			dst: defaultTable,
+			src: &Query{
+				Q: "query string",
 			},
-			src: &Table{
-				ProjectID: "s-project-id",
-				DatasetID: "s-dataset-id",
-				TableID:   "s-table-id",
-			},
-			want: defaultCopyJob(),
+			want: func() *bq.Job {
+				j := defaultQueryJob()
+				j.Configuration.Query.DefaultDataset = nil
+				return j
+			}(),
+		},
+		{
+			dst: &Table{},
+			src: defaultQuery,
+			want: func() *bq.Job {
+				j := defaultQueryJob()
+				j.Configuration.Query.DestinationTable = nil
+				return j
+			}(),
 		},
 		{
 			dst: &Table{
-				ProjectID:         "d-project-id",
-				DatasetID:         "d-dataset-id",
-				TableID:           "d-table-id",
+				ProjectID:         "project-id",
+				DatasetID:         "dataset-id",
+				TableID:           "table-id",
 				CreateDisposition: "CREATE_NEVER",
 				WriteDisposition:  "WRITE_TRUNCATE",
 			},
-			src: &Table{
-				ProjectID: "s-project-id",
-				DatasetID: "s-dataset-id",
-				TableID:   "s-table-id",
-			},
+			src: defaultQuery,
 			want: func() *bq.Job {
-				j := defaultCopyJob()
-				j.Configuration.Copy.CreateDisposition = "CREATE_NEVER"
-				j.Configuration.Copy.WriteDisposition = "WRITE_TRUNCATE"
+				j := defaultQueryJob()
+				j.Configuration.Query.WriteDisposition = "WRITE_TRUNCATE"
+				j.Configuration.Query.CreateDisposition = "CREATE_NEVER"
 				return j
 			}(),
 		},
@@ -84,8 +92,8 @@ func TestCopy(t *testing.T) {
 
 	for _, tc := range testCases {
 		job := &bq.Job{}
-		if err := cp(job, tc.dst, tc.src, "proj-id", tc.options...); err != nil {
-			t.Errorf("err calling cp: %v", err)
+		if err := query(job, tc.dst, tc.src, "proj-id", tc.options...); err != nil {
+			t.Errorf("err calling query: %v", err)
 			continue
 		}
 		if !reflect.DeepEqual(job, tc.want) {
