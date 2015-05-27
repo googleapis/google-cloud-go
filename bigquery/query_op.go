@@ -35,7 +35,7 @@ type queryOption interface {
 // UseQueryCache returns an Option that causes results to be fetched from the query cache if they are available.
 // The query cache is a best-effort cache that is flushed whenever tables in the query are modified.
 // Cached results are only available when TableID is unspecified in the query's destination Table.
-// For more information, see https://cloud.google.com/bigquery/querying-data?#querycaching
+// For more information, see https://cloud.google.com/bigquery/querying-data#querycaching
 func UseQueryCache() Option { return useQueryCache{} }
 
 type useQueryCache struct{}
@@ -45,6 +45,27 @@ func (opt useQueryCache) implementsOption() {}
 func (opt useQueryCache) customizeQuery(conf *bq.JobConfigurationQuery, projectID string) {
 	conf.UseQueryCache = true
 }
+
+// JobPriority returns an Option that causes a query to be scheduled with the specified priority.
+// The default priority is InteractivePriority.
+// For more information, see https://cloud.google.com/bigquery/querying-data#batchqueries
+func JobPriority(priority string) Option { return jobPriority(priority) }
+
+type jobPriority string
+
+func (opt jobPriority) implementsOption() {}
+
+func (opt jobPriority) customizeQuery(conf *bq.JobConfigurationQuery, projectID string) {
+	conf.Priority = string(opt)
+}
+
+const (
+	BatchPriority       = "BATCH"
+	InteractivePriority = "INTERACTIVE"
+)
+
+// TODO(mcgreevy): support large results.
+// TODO(mcgreevy): support non-flattened results.
 
 func query(job *bq.Job, dst Destination, src Source, projectID string, options ...Option) error {
 	payload := &bq.JobConfigurationQuery{}
