@@ -43,25 +43,26 @@ func (opt disableHeader) customizeExtract(conf *bq.JobConfigurationExtract, proj
 	conf.PrintHeader = false
 }
 
-func extract(job *bq.Job, dst Destination, src Source, projectID string, options ...Option) error {
+func extract(dst Destination, src Source, c client, options []Option) (*Job, error) {
+	job, options := initJobProto(c.projectID(), options)
 	payload := &bq.JobConfigurationExtract{}
 
 	d := dst.(extractDestination)
 	s := src.(extractSource)
 
-	d.customizeExtractDst(payload, projectID)
-	s.customizeExtractSrc(payload, projectID)
+	d.customizeExtractDst(payload, c.projectID())
+	s.customizeExtractSrc(payload, c.projectID())
 
 	for _, opt := range options {
 		o, ok := opt.(extractOption)
 		if !ok {
-			return fmt.Errorf("option not applicable to dst/src pair: %#v", opt)
+			return nil, fmt.Errorf("option not applicable to dst/src pair: %#v", opt)
 		}
-		o.customizeExtract(payload, projectID)
+		o.customizeExtract(payload, c.projectID())
 	}
 
 	job.Configuration = &bq.JobConfiguration{
 		Extract: payload,
 	}
-	return nil
+	return c.insertJob(job)
 }

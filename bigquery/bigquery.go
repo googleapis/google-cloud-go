@@ -44,8 +44,17 @@ const Scope = "https://www.googleapis.com/auth/bigquery"
 
 // Client may be used to perform BigQuery operations.
 type Client struct {
-	service   *bq.Service
-	projectID string
+	service *bq.Service
+	projID  string
+}
+
+// client provides an internal abstraction to isolate the generated
+// BigQuery API; most of this package uses this interface instead.
+// The single implementation, *Client, contains all the knowledge
+// of the generated BigQuery API.
+type client interface {
+	insertJob(job *bq.Job) (*Job, error)
+	projectID() string
 }
 
 // NewClient constructs a new Client which can perform BigQuery operations.
@@ -59,8 +68,8 @@ func NewClient(client *http.Client, projectID string) (*Client, error) {
 	}
 
 	c := &Client{
-		service:   service,
-		projectID: projectID,
+		service: service,
+		projID:  projectID,
 	}
 	return c, nil
 }
@@ -76,16 +85,32 @@ func newDstSrc(dst Destination, src Source) dstSrc {
 	}
 }
 
-// operation fills out a bigquery API job proto with the configuration for a single operation.
-type operation func(*bq.Job, Destination, Source, string, ...Option) error
+type operation func(Destination, Source, client, []Option) (*Job, error)
 
-// TODO(mcgreevy): support more operations.
+// TODO(mcgreevy): remove this map.
 var ops = map[dstSrc]operation{
 	newDstSrc((*Table)(nil), (*GCSReference)(nil)): load,
 	newDstSrc((*GCSReference)(nil), (*Table)(nil)): extract,
 	newDstSrc((*Table)(nil), (*Table)(nil)):        cp,
 	newDstSrc((*Table)(nil), (Tables)(nil)):        cp,
 	newDstSrc((*Table)(nil), (*Query)(nil)):        query,
+}
+
+// initJobProto creates and returns a bigquery Job proto.
+// The proto is customized using any jobOptions in options.
+// The list of Options is returned with the jobOptions removed.
+func initJobProto(projectID string, options []Option) (*bq.Job, []Option) {
+	job := &bq.Job{}
+
+	var other []Option
+	for _, opt := range options {
+		if o, ok := opt.(jobOption); ok {
+			o.customizeJob(job, projectID)
+		} else {
+			other = append(other, opt)
+		}
+	}
+	return job, other
 }
 
 // Copy starts a BigQuery operation to copy data from a Source to a Destination.
@@ -95,28 +120,17 @@ func (c *Client) Copy(ctx context.Context, dst Destination, src Source, options 
 	if !ok {
 		return nil, fmt.Errorf("no operation matches dst/src pair")
 	}
-	job := &bq.Job{}
-
-	var opOptions []Option
-	for _, opt := range options {
-		if o, ok := opt.(jobOption); ok {
-			o.customizeJob(job, c.projectID)
-		} else {
-			opOptions = append(opOptions, opt)
-		}
-	}
-
-	if err := op(job, dst, src, c.projectID, opOptions...); err != nil {
-		return nil, err
-	}
-
-	return c.insertJob(job)
+	return op(dst, src, c, options)
 }
 
 func (c *Client) insertJob(job *bq.Job) (*Job, error) {
-	res, err := c.service.Jobs.Insert(c.projectID, job).Do()
+	res, err := c.service.Jobs.Insert(c.projID, job).Do()
 	if err != nil {
 		return nil, err
 	}
 	return &Job{client: c, jobID: res.JobReference.JobId}, nil
+}
+
+func (c *Client) projectID() string {
+	return c.projID
 }

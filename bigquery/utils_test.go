@@ -14,6 +14,8 @@
 
 package bigquery
 
+import bq "google.golang.org/api/bigquery/v2"
+
 var defaultTable = &Table{
 	ProjectID: "project-id",
 	DatasetID: "dataset-id",
@@ -28,4 +30,17 @@ var defaultQuery = &Query{
 	Q:                "query string",
 	DefaultProjectID: "def-project-id",
 	DefaultDatasetID: "def-dataset-id",
+}
+
+type testClient struct {
+	*bq.Job
+}
+
+func (c *testClient) insertJob(job *bq.Job) (*Job, error) {
+	c.Job = job
+	return &Job{}, nil
+}
+
+func (c *testClient) projectID() string {
+	return "projectid"
 }

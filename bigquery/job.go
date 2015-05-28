@@ -106,7 +106,7 @@ func jobStatusFromProto(status *bq.JobStatus) (*JobStatus, error) {
 // Status returns the current status of the job.  It fails if the Status could not be determined.
 func (j *Job) Status(ctx context.Context) (*JobStatus, error) {
 	// TODO(mcgreevy): use ctx
-	res, err := j.client.service.Jobs.Get(j.client.projectID, j.jobID).Do()
+	res, err := j.client.service.Jobs.Get(j.client.projectID(), j.jobID).Do()
 	if err != nil {
 		return nil, err
 	}

@@ -67,25 +67,26 @@ const (
 // TODO(mcgreevy): support large results.
 // TODO(mcgreevy): support non-flattened results.
 
-func query(job *bq.Job, dst Destination, src Source, projectID string, options ...Option) error {
+func query(dst Destination, src Source, c client, options []Option) (*Job, error) {
+	job, options := initJobProto(c.projectID(), options)
 	payload := &bq.JobConfigurationQuery{}
 
 	d := dst.(queryDestination)
 	s := src.(querySource)
 
-	d.customizeQueryDst(payload, projectID)
-	s.customizeQuerySrc(payload, projectID)
+	d.customizeQueryDst(payload, c.projectID())
+	s.customizeQuerySrc(payload, c.projectID())
 
 	for _, opt := range options {
 		o, ok := opt.(queryOption)
 		if !ok {
-			return fmt.Errorf("option not applicable to dst/src pair: %#v", opt)
+			return nil, fmt.Errorf("option not applicable to dst/src pair: %#v", opt)
 		}
-		o.customizeQuery(payload, projectID)
+		o.customizeQuery(payload, c.projectID())
 	}
 
 	job.Configuration = &bq.JobConfiguration{
 		Query: payload,
 	}
-	return nil
+	return c.insertJob(job)
 }

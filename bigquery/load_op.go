@@ -99,25 +99,26 @@ func (opt ignoreUnknownValues) customizeLoad(conf *bq.JobConfigurationLoad, proj
 	conf.IgnoreUnknownValues = true
 }
 
-func load(job *bq.Job, dst Destination, src Source, projectID string, options ...Option) error {
+func load(dst Destination, src Source, c client, options []Option) (*Job, error) {
+	job, options := initJobProto(c.projectID(), options)
 	payload := &bq.JobConfigurationLoad{}
 
 	d := dst.(loadDestination)
 	s := src.(loadSource)
 
-	d.customizeLoadDst(payload, projectID)
-	s.customizeLoadSrc(payload, projectID)
+	d.customizeLoadDst(payload, c.projectID())
+	s.customizeLoadSrc(payload, c.projectID())
 
 	for _, opt := range options {
 		o, ok := opt.(loadOption)
 		if !ok {
-			return fmt.Errorf("Option not applicable to dst/src pair: %#v", opt)
+			return nil, fmt.Errorf("Option not applicable to dst/src pair: %#v", opt)
 		}
-		o.customizeLoad(payload, projectID)
+		o.customizeLoad(payload, c.projectID())
 	}
 
 	job.Configuration = &bq.JobConfiguration{
 		Load: payload,
 	}
-	return nil
+	return c.insertJob(job)
 }
