@@ -65,8 +65,8 @@ func bqNestedFieldSchema() *bq.TableFieldSchema {
 
 func TestLoad(t *testing.T) {
 	testCases := []struct {
-		dst     Destination
-		src     Source
+		dst     *Table
+		src     *GCSReference
 		options []Option
 		want    *bq.Job
 	}{

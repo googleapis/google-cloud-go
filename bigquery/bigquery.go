@@ -19,7 +19,6 @@ package bigquery
 import (
 	"fmt"
 	"net/http"
-	"reflect"
 
 	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
@@ -74,28 +73,6 @@ func NewClient(client *http.Client, projectID string) (*Client, error) {
 	return c, nil
 }
 
-type dstSrc struct {
-	dst, src reflect.Type
-}
-
-func newDstSrc(dst Destination, src Source) dstSrc {
-	return dstSrc{
-		dst: reflect.TypeOf(dst),
-		src: reflect.TypeOf(src),
-	}
-}
-
-type operation func(Destination, Source, client, []Option) (*Job, error)
-
-// TODO(mcgreevy): remove this map.
-var ops = map[dstSrc]operation{
-	newDstSrc((*Table)(nil), (*GCSReference)(nil)): load,
-	newDstSrc((*GCSReference)(nil), (*Table)(nil)): extract,
-	newDstSrc((*Table)(nil), (*Table)(nil)):        cp,
-	newDstSrc((*Table)(nil), (Tables)(nil)):        cp,
-	newDstSrc((*Table)(nil), (*Query)(nil)):        query,
-}
-
 // initJobProto creates and returns a bigquery Job proto.
 // The proto is customized using any jobOptions in options.
 // The list of Options is returned with the jobOptions removed.
@@ -116,11 +93,26 @@ func initJobProto(projectID string, options []Option) (*bq.Job, []Option) {
 // Copy starts a BigQuery operation to copy data from a Source to a Destination.
 func (c *Client) Copy(ctx context.Context, dst Destination, src Source, options ...Option) (*Job, error) {
 	// TODO(mcgreevy): use ctx
-	op, ok := ops[newDstSrc(dst, src)]
-	if !ok {
-		return nil, fmt.Errorf("no operation matches dst/src pair")
+	// TODO(mcgreevy): consider turning load(), cp(), etc. into methods on c.
+
+	switch dst := dst.(type) {
+	case *Table:
+		switch src := src.(type) {
+		case *GCSReference:
+			return load(dst, src, c, options)
+		case *Table:
+			return cp(dst, Tables{src}, c, options)
+		case Tables:
+			return cp(dst, src, c, options)
+		case *Query:
+			return query(dst, src, c, options)
+		}
+	case *GCSReference:
+		if src, ok := src.(*Table); ok {
+			return extract(dst, src, c, options)
+		}
 	}
-	return op(dst, src, c, options)
+	return nil, fmt.Errorf("no operation matches dst/src pair: dst: %T ; src: %T", dst, src)
 }
 
 func (c *Client) insertJob(job *bq.Job) (*Job, error) {

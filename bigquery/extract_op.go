@@ -20,14 +20,6 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
-type extractDestination interface {
-	customizeExtractDst(conf *bq.JobConfigurationExtract, projectID string)
-}
-
-type extractSource interface {
-	customizeExtractSrc(conf *bq.JobConfigurationExtract, projectID string)
-}
-
 type extractOption interface {
 	customizeExtract(conf *bq.JobConfigurationExtract, projectID string)
 }
@@ -43,20 +35,17 @@ func (opt disableHeader) customizeExtract(conf *bq.JobConfigurationExtract, proj
 	conf.PrintHeader = false
 }
 
-func extract(dst Destination, src Source, c client, options []Option) (*Job, error) {
+func extract(dst *GCSReference, src *Table, c client, options []Option) (*Job, error) {
 	job, options := initJobProto(c.projectID(), options)
 	payload := &bq.JobConfigurationExtract{}
 
-	d := dst.(extractDestination)
-	s := src.(extractSource)
-
-	d.customizeExtractDst(payload, c.projectID())
-	s.customizeExtractSrc(payload, c.projectID())
+	dst.customizeExtractDst(payload, c.projectID())
+	src.customizeExtractSrc(payload, c.projectID())
 
 	for _, opt := range options {
 		o, ok := opt.(extractOption)
 		if !ok {
-			return nil, fmt.Errorf("option not applicable to dst/src pair: %#v", opt)
+			return nil, fmt.Errorf("option (%#v) not applicable to dst/src pair: dst: %T ; src: %T", opt, dst, src)
 		}
 		o.customizeExtract(payload, c.projectID())
 	}

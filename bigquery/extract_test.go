@@ -38,8 +38,8 @@ func defaultExtractJob() *bq.Job {
 
 func TestExtract(t *testing.T) {
 	testCases := []struct {
-		dst     Destination
-		src     Source
+		dst     *GCSReference
+		src     *Table
 		options []Option
 		want    *bq.Job
 	}{

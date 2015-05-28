@@ -42,8 +42,8 @@ func defaultQueryJob() *bq.Job {
 
 func TestQuery(t *testing.T) {
 	testCases := []struct {
-		dst     Destination
-		src     Source
+		dst     *Table
+		src     *Query
 		options []Option
 		want    *bq.Job
 	}{

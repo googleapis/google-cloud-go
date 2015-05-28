@@ -30,10 +30,12 @@ func defaultCopyJob() *bq.Job {
 					DatasetId: "d-dataset-id",
 					TableId:   "d-table-id",
 				},
-				SourceTable: &bq.TableReference{
-					ProjectId: "s-project-id",
-					DatasetId: "s-dataset-id",
-					TableId:   "s-table-id",
+				SourceTables: []*bq.TableReference{
+					{
+						ProjectId: "s-project-id",
+						DatasetId: "s-dataset-id",
+						TableId:   "s-table-id",
+					},
 				},
 			},
 		},
@@ -42,8 +44,8 @@ func defaultCopyJob() *bq.Job {
 
 func TestCopy(t *testing.T) {
 	testCases := []struct {
-		dst     Destination
-		src     Source
+		dst     *Table
+		src     Tables
 		options []Option
 		want    *bq.Job
 	}{
@@ -53,10 +55,12 @@ func TestCopy(t *testing.T) {
 				DatasetID: "d-dataset-id",
 				TableID:   "d-table-id",
 			},
-			src: &Table{
-				ProjectID: "s-project-id",
-				DatasetID: "s-dataset-id",
-				TableID:   "s-table-id",
+			src: Tables{
+				{
+					ProjectID: "s-project-id",
+					DatasetID: "s-dataset-id",
+					TableID:   "s-table-id",
+				},
 			},
 			want: defaultCopyJob(),
 		},
@@ -68,10 +72,12 @@ func TestCopy(t *testing.T) {
 				CreateDisposition: "CREATE_NEVER",
 				WriteDisposition:  "WRITE_TRUNCATE",
 			},
-			src: &Table{
-				ProjectID: "s-project-id",
-				DatasetID: "s-dataset-id",
-				TableID:   "s-table-id",
+			src: Tables{
+				{
+					ProjectID: "s-project-id",
+					DatasetID: "s-dataset-id",
+					TableID:   "s-table-id",
+				},
 			},
 			want: func() *bq.Job {
 				j := defaultCopyJob()

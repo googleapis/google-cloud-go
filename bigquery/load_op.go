@@ -20,14 +20,6 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
-type loadDestination interface {
-	customizeLoadDst(conf *bq.JobConfigurationLoad, projectID string)
-}
-
-type loadSource interface {
-	customizeLoadSrc(conf *bq.JobConfigurationLoad, projectID string)
-}
-
 type loadOption interface {
 	customizeLoad(conf *bq.JobConfigurationLoad, projectID string)
 }
@@ -99,20 +91,17 @@ func (opt ignoreUnknownValues) customizeLoad(conf *bq.JobConfigurationLoad, proj
 	conf.IgnoreUnknownValues = true
 }
 
-func load(dst Destination, src Source, c client, options []Option) (*Job, error) {
+func load(dst *Table, src *GCSReference, c client, options []Option) (*Job, error) {
 	job, options := initJobProto(c.projectID(), options)
 	payload := &bq.JobConfigurationLoad{}
 
-	d := dst.(loadDestination)
-	s := src.(loadSource)
-
-	d.customizeLoadDst(payload, c.projectID())
-	s.customizeLoadSrc(payload, c.projectID())
+	dst.customizeLoadDst(payload, c.projectID())
+	src.customizeLoadSrc(payload, c.projectID())
 
 	for _, opt := range options {
 		o, ok := opt.(loadOption)
 		if !ok {
-			return nil, fmt.Errorf("Option not applicable to dst/src pair: %#v", opt)
+			return nil, fmt.Errorf("option (%#v) not applicable to dst/src pair: dst: %T ; src: %T", opt, dst, src)
 		}
 		o.customizeLoad(payload, c.projectID())
 	}

@@ -20,32 +20,21 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
-type copyDestination interface {
-	customizeCopyDst(conf *bq.JobConfigurationTableCopy, projectID string)
-}
-
-type copySource interface {
-	customizeCopySrc(conf *bq.JobConfigurationTableCopy, projectID string)
-}
-
 type copyOption interface {
 	customizeCopy(conf *bq.JobConfigurationTableCopy, projectID string)
 }
 
-func cp(dst Destination, src Source, c client, options []Option) (*Job, error) {
+func cp(dst *Table, src Tables, c client, options []Option) (*Job, error) {
 	job, options := initJobProto(c.projectID(), options)
 	payload := &bq.JobConfigurationTableCopy{}
 
-	d := dst.(copyDestination)
-	s := src.(copySource)
-
-	d.customizeCopyDst(payload, c.projectID())
-	s.customizeCopySrc(payload, c.projectID())
+	dst.customizeCopyDst(payload, c.projectID())
+	src.customizeCopySrc(payload, c.projectID())
 
 	for _, opt := range options {
 		o, ok := opt.(copyOption)
 		if !ok {
-			return nil, fmt.Errorf("option not applicable to dst/src pair: %#v", opt)
+			return nil, fmt.Errorf("option (%#v) not applicable to dst/src pair: dst: %T ; src: %T", opt, dst, src)
 		}
 		o.customizeCopy(payload, c.projectID())
 	}

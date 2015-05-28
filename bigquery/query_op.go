@@ -20,14 +20,6 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
-type queryDestination interface {
-	customizeQueryDst(conf *bq.JobConfigurationQuery, projectID string)
-}
-
-type querySource interface {
-	customizeQuerySrc(conf *bq.JobConfigurationQuery, projectID string)
-}
-
 type queryOption interface {
 	customizeQuery(conf *bq.JobConfigurationQuery, projectID string)
 }
@@ -67,20 +59,17 @@ const (
 // TODO(mcgreevy): support large results.
 // TODO(mcgreevy): support non-flattened results.
 
-func query(dst Destination, src Source, c client, options []Option) (*Job, error) {
+func query(dst *Table, src *Query, c client, options []Option) (*Job, error) {
 	job, options := initJobProto(c.projectID(), options)
 	payload := &bq.JobConfigurationQuery{}
 
-	d := dst.(queryDestination)
-	s := src.(querySource)
-
-	d.customizeQueryDst(payload, c.projectID())
-	s.customizeQuerySrc(payload, c.projectID())
+	dst.customizeQueryDst(payload, c.projectID())
+	src.customizeQuerySrc(payload, c.projectID())
 
 	for _, opt := range options {
 		o, ok := opt.(queryOption)
 		if !ok {
-			return nil, fmt.Errorf("option not applicable to dst/src pair: %#v", opt)
+			return nil, fmt.Errorf("option (%#v) not applicable to dst/src pair: dst: %T ; src: %T", opt, dst, src)
 		}
 		o.customizeQuery(payload, c.projectID())
 	}

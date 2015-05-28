@@ -88,10 +88,6 @@ func (t *Table) customizeExtractSrc(conf *bq.JobConfigurationExtract, projectID 
 	conf.SourceTable = t.tableRefProto()
 }
 
-func (t *Table) customizeCopySrc(conf *bq.JobConfigurationTableCopy, projectID string) {
-	conf.SourceTable = t.tableRefProto()
-}
-
 func (t *Table) customizeCopyDst(conf *bq.JobConfigurationTableCopy, projectID string) {
 	conf.DestinationTable = t.tableRefProto()
 	conf.CreateDisposition = string(t.CreateDisposition)
