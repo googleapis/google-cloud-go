@@ -168,7 +168,7 @@ func TestClientIntegration(t *testing.T) {
 		t.Logf("Running test against production")
 		a := strings.Split(*useProd, ",")
 		proj, zone, cluster, table = a[0], a[1], a[2], a[3]
-		timeout = 2 * time.Minute
+		timeout = 5 * time.Minute
 	}
 
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
@@ -508,13 +508,22 @@ func TestClientIntegration(t *testing.T) {
 	// Now write 1000 rows, each with 82 KB values, then scan them all.
 	medBytes := make([]byte, 82<<10)
 	fill(medBytes, nonsense)
+	sem := make(chan int, 50) // do up to 50 mutations at a time.
 	for i := 0; i < 1000; i++ {
 		mut := NewMutation()
 		mut.Set("ts", "big-scan", 0, medBytes)
-		if err := tbl.Apply(ctx, fmt.Sprintf("row-%d", i), mut); err != nil {
-			t.Errorf("Preparing large scan: %v", err)
-		}
+		row := fmt.Sprintf("row-%d", i)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			defer func() { <-sem }()
+			sem <- 1
+			if err := tbl.Apply(ctx, row, mut); err != nil {
+				t.Errorf("Preparing large scan: %v", err)
+			}
+		}()
 	}
+	wg.Wait()
 	n := 0
 	err = tbl.ReadRows(ctx, PrefixRange("row-"), func(r Row) bool {
 		for _, ris := range r {
