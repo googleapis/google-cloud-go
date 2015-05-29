@@ -25,7 +25,7 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	"google.golang.org/cloud"
+	"golang.org/x/net/context"
 	pb "google.golang.org/cloud/internal/datastore"
 )
 
@@ -330,11 +330,15 @@ func TestSimpleQuery(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		nCall := 0
-		ctx := cloud.NewContext("queryTest", &http.Client{
-			Transport: &fakeTransport{Handler: func(in, out proto.Message) error {
-				nCall++
-				return fakeRunQuery(in.(*pb.RunQueryRequest), out.(*pb.RunQueryResponse))
-			}}})
+		client := &Client{
+			client: &http.Client{
+				Transport: &fakeTransport{Handler: func(in, out proto.Message) error {
+					nCall++
+					return fakeRunQuery(in.(*pb.RunQueryRequest), out.(*pb.RunQueryResponse))
+				}},
+			},
+		}
+		ctx := context.Background()
 
 		var (
 			expectedErr   error
@@ -345,7 +349,7 @@ func TestSimpleQuery(t *testing.T) {
 		} else {
 			expectedNCall = 1
 		}
-		keys, err := NewQuery("Gopher").GetAll(ctx, tc.dst)
+		keys, err := client.GetAll(ctx, NewQuery("Gopher"), tc.dst)
 		if err != expectedErr {
 			t.Errorf("dst type %T: got error %v, want %v", tc.dst, err, expectedErr)
 			continue
@@ -496,20 +500,23 @@ func TestFilterParser(t *testing.T) {
 
 func TestNamespaceQuery(t *testing.T) {
 	gotNamespace := make(chan string, 1)
-	ctx := cloud.NewContext("nsQueryTest", &http.Client{Transport: &fakeTransport{
-		Handler: func(req, resp proto.Message) error {
-			gotNamespace <- req.(*pb.RunQueryRequest).GetPartitionId().GetNamespace()
-			return errors.New("not implemented")
-		},
-	}})
+	ctx := context.Background()
+	client := &Client{
+		client: &http.Client{Transport: &fakeTransport{
+			Handler: func(req, resp proto.Message) error {
+				gotNamespace <- req.(*pb.RunQueryRequest).GetPartitionId().GetNamespace()
+				return errors.New("not implemented")
+			},
+		}},
+	}
 
 	var gs []Gopher
 
-	NewQuery("Gopher").GetAll(ctx, &gs)
+	client.GetAll(ctx, NewQuery("gopher"), &gs)
 	if got, want := <-gotNamespace, ""; got != want {
 		t.Errorf("GetAll: got namespace %q, want %q", got, want)
 	}
-	NewQuery("Gopher").Count(ctx)
+	client.Count(ctx, NewQuery("gopher"))
 	if got, want := <-gotNamespace, ""; got != want {
 		t.Errorf("Count: got namespace %q, want %q", got, want)
 	}
@@ -517,11 +524,11 @@ func TestNamespaceQuery(t *testing.T) {
 	const ns = "not_default"
 	ctx = WithNamespace(ctx, ns)
 
-	NewQuery("Gopher").GetAll(ctx, &gs)
+	client.GetAll(ctx, NewQuery("gopher"), &gs)
 	if got, want := <-gotNamespace, ns; got != want {
 		t.Errorf("GetAll: got namespace %q, want %q", got, want)
 	}
-	NewQuery("Gopher").Count(ctx)
+	client.Count(ctx, NewQuery("gopher"))
 	if got, want := <-gotNamespace, ns; got != want {
 		t.Errorf("Count: got namespace %q, want %q", got, want)
 	}

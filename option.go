@@ -117,30 +117,31 @@ func (w withBaseGRPC) resolve(o *dialOpt) {
 }
 
 // DialHTTP returns an HTTP client for use communicating with a Google cloud
-// service, configured with the given ClientOptions. Most developers should
-// call the relevant NewClient method for the target service rather than
-// invoking DialHTTP directly.
-func DialHTTP(ctx context.Context, opt ...ClientOption) (*http.Client, error) {
+// service, configured with the given ClientOptions. It also returns the endpoint
+// for the service as specified in the options.
+// Most developers should call the relevant NewClient method for the target
+// service rather than invoking DialHTTP directly.
+func DialHTTP(ctx context.Context, opt ...ClientOption) (*http.Client, string, error) {
 	var o dialOpt
 	for _, opt := range opt {
 		opt.resolve(&o)
 	}
 	if o.grpcClient != nil {
-		return nil, errors.New("unsupported GRPC base transport specified")
+		return nil, "", errors.New("unsupported GRPC base transport specified")
 	}
-	// TODO(djd): Wrap all http.Client's with appropriate internal version to add
+	// TODO(djd): Wrap all http.Clients with appropriate internal version to add
 	// UserAgent header and prepend correct endpoint.
 	if o.httpClient != nil {
-		return o.httpClient, nil
+		return o.httpClient, o.endpoint, nil
 	}
 	if o.tokenSource == nil {
 		var err error
 		o.tokenSource, err = google.DefaultTokenSource(ctx, o.scopes...)
 		if err != nil {
-			return nil, fmt.Errorf("google.DefaultTokenSource: %v", err)
+			return nil, "", fmt.Errorf("google.DefaultTokenSource: %v", err)
 		}
 	}
-	return oauth2.NewClient(ctx, o.tokenSource), nil
+	return oauth2.NewClient(ctx, o.tokenSource), o.endpoint, nil
 }
 
 // DialGRPC returns a GRPC connection for use communicating with a Google cloud
