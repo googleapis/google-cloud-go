@@ -489,10 +489,7 @@ func TestClientIntegration(t *testing.T) {
 	// Large reads, writes and scans.
 	bigBytes := make([]byte, 15<<20) // 15 MB is large
 	nonsense := []byte("lorem ipsum dolor sit amet, ")
-	for p := bigBytes; len(p) > len(nonsense); { // fill bigBytes with nonsense
-		n := copy(p, nonsense)
-		p = p[n:]
-	}
+	fill(bigBytes, nonsense)
 	mut = NewMutation()
 	mut.Set("ts", "col", 0, bigBytes)
 	if err := tbl.Apply(ctx, "bigrow", mut); err != nil {
@@ -508,7 +505,39 @@ func TestClientIntegration(t *testing.T) {
 	if !reflect.DeepEqual(r, wantRow) {
 		t.Errorf("Big read returned incorrect bytes: %v", r)
 	}
-	checkpoint("tested big read/write")
+	// Now write 1000 rows, each with 82 KB values, then scan them all.
+	medBytes := make([]byte, 82<<10)
+	fill(medBytes, nonsense)
+	for i := 0; i < 1000; i++ {
+		mut := NewMutation()
+		mut.Set("ts", "big-scan", 0, medBytes)
+		if err := tbl.Apply(ctx, fmt.Sprintf("row-%d", i), mut); err != nil {
+			t.Errorf("Preparing large scan: %v", err)
+		}
+	}
+	n := 0
+	err = tbl.ReadRows(ctx, PrefixRange("row-"), func(r Row) bool {
+		for _, ris := range r {
+			for _, ri := range ris {
+				n += len(ri.Value)
+			}
+		}
+		return true
+	}, RowFilter(ColumnFilter("big-scan")))
+	if err != nil {
+		t.Errorf("Doing large scan: %v", err)
+	}
+	if want := 1000 * len(medBytes); n != want {
+		t.Errorf("Large scan returned %d bytes, want %d", n, want)
+	}
+	checkpoint("tested big read/write/scan")
+}
+
+func fill(b, sub []byte) {
+	for len(b) > len(sub) {
+		n := copy(b, sub)
+		b = b[n:]
+	}
 }
 
 type byColumn []ReadItem
