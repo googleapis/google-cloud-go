@@ -19,9 +19,11 @@ package bigtable
 import (
 	"flag"
 	"fmt"
+	"math/rand"
 	"reflect"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -455,6 +457,34 @@ func TestClientIntegration(t *testing.T) {
 		t.Errorf("Cell with multiple versions and LatestNFilter(2), after deleting timestamp 2000,\n got %v\nwant %v", r, wantRow)
 	}
 	checkpoint("tested multiple versions in a cell")
+
+	// Do highly concurrent reads/writes.
+	// TODO(dsymonds): Raise this to 1000 when https://github.com/grpc/grpc-go/issues/205 is resolved.
+	const maxConcurrency = 100
+	var wg sync.WaitGroup
+	for i := 0; i < maxConcurrency; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			switch r := rand.Intn(100); { // r ∈ [0,100)
+			case 0 <= r && r < 30:
+				// Do a read.
+				_, err := tbl.ReadRow(ctx, "testrow", RowFilter(LatestNFilter(1)))
+				if err != nil {
+					t.Errorf("Concurrent read: %v", err)
+				}
+			case 30 <= r && r < 100:
+				// Do a write.
+				mut := NewMutation()
+				mut.Set("ts", "col", 0, []byte("data"))
+				if err := tbl.Apply(ctx, "testrow", mut); err != nil {
+					t.Errorf("Concurrent write: %v", err)
+				}
+			}
+		}()
+	}
+	wg.Wait()
+	checkpoint("tested high concurrency")
 }
 
 type byColumn []ReadItem
