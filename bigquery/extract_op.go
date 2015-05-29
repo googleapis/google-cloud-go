@@ -17,6 +17,7 @@ package bigquery
 import (
 	"fmt"
 
+	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -35,23 +36,23 @@ func (opt disableHeader) customizeExtract(conf *bq.JobConfigurationExtract, proj
 	conf.PrintHeader = false
 }
 
-func extract(dst *GCSReference, src *Table, c client, options []Option) (*Job, error) {
-	job, options := initJobProto(c.projectID(), options)
+func (c *Client) extract(ctx context.Context, dst *GCSReference, src *Table, options []Option) (*Job, error) {
+	job, options := initJobProto(c.projectID, options)
 	payload := &bq.JobConfigurationExtract{}
 
-	dst.customizeExtractDst(payload, c.projectID())
-	src.customizeExtractSrc(payload, c.projectID())
+	dst.customizeExtractDst(payload, c.projectID)
+	src.customizeExtractSrc(payload, c.projectID)
 
 	for _, opt := range options {
 		o, ok := opt.(extractOption)
 		if !ok {
 			return nil, fmt.Errorf("option (%#v) not applicable to dst/src pair: dst: %T ; src: %T", opt, dst, src)
 		}
-		o.customizeExtract(payload, c.projectID())
+		o.customizeExtract(payload, c.projectID)
 	}
 
 	job.Configuration = &bq.JobConfiguration{
 		Extract: payload,
 	}
-	return c.insertJob(job)
+	return c.service.insertJob(ctx, job, c.projectID)
 }

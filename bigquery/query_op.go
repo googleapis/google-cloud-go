@@ -17,6 +17,7 @@ package bigquery
 import (
 	"fmt"
 
+	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -59,23 +60,23 @@ const (
 // TODO(mcgreevy): support large results.
 // TODO(mcgreevy): support non-flattened results.
 
-func query(dst *Table, src *Query, c client, options []Option) (*Job, error) {
-	job, options := initJobProto(c.projectID(), options)
+func (c *Client) query(ctx context.Context, dst *Table, src *Query, options []Option) (*Job, error) {
+	job, options := initJobProto(c.projectID, options)
 	payload := &bq.JobConfigurationQuery{}
 
-	dst.customizeQueryDst(payload, c.projectID())
-	src.customizeQuerySrc(payload, c.projectID())
+	dst.customizeQueryDst(payload, c.projectID)
+	src.customizeQuerySrc(payload, c.projectID)
 
 	for _, opt := range options {
 		o, ok := opt.(queryOption)
 		if !ok {
 			return nil, fmt.Errorf("option (%#v) not applicable to dst/src pair: dst: %T ; src: %T", opt, dst, src)
 		}
-		o.customizeQuery(payload, c.projectID())
+		o.customizeQuery(payload, c.projectID)
 	}
 
 	job.Configuration = &bq.JobConfiguration{
 		Query: payload,
 	}
-	return c.insertJob(job)
+	return c.service.insertJob(ctx, job, c.projectID)
 }

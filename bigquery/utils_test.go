@@ -14,7 +14,10 @@
 
 package bigquery
 
-import bq "google.golang.org/api/bigquery/v2"
+import (
+	"golang.org/x/net/context"
+	bq "google.golang.org/api/bigquery/v2"
+)
 
 var defaultTable = &Table{
 	ProjectID: "project-id",
@@ -32,15 +35,15 @@ var defaultQuery = &Query{
 	DefaultDatasetID: "def-dataset-id",
 }
 
-type testClient struct {
+type testService struct {
 	*bq.Job
 }
 
-func (c *testClient) insertJob(job *bq.Job) (*Job, error) {
-	c.Job = job
+func (s *testService) insertJob(ctx context.Context, job *bq.Job, projectID string) (*Job, error) {
+	s.Job = job
 	return &Job{}, nil
 }
 
-func (c *testClient) projectID() string {
-	return "projectid"
+func (s *testService) jobStatus(ctx context.Context, projectID, jobID string) (*JobStatus, error) {
+	return &JobStatus{State: Done}, nil
 }

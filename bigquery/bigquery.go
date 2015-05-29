@@ -43,32 +43,25 @@ const Scope = "https://www.googleapis.com/auth/bigquery"
 
 // Client may be used to perform BigQuery operations.
 type Client struct {
-	service *bq.Service
-	projID  string
+	service   service
+	projectID string
 }
 
-// client provides an internal abstraction to isolate the generated
-// BigQuery API; most of this package uses this interface instead.
-// The single implementation, *Client, contains all the knowledge
-// of the generated BigQuery API.
-type client interface {
-	insertJob(job *bq.Job) (*Job, error)
-	projectID() string
-}
+// Note: many of the methods on *Client appear in the various *_op.go source files.
 
 // NewClient constructs a new Client which can perform BigQuery operations.
 // Operations performed via the client are billed to the specified GCP project.
 // The supplied http.Client is used for making requests to the BigQuery server and must be capable of
 // authenticating requests with Scope.
 func NewClient(client *http.Client, projectID string) (*Client, error) {
-	service, err := bq.New(client)
+	bqService, err := newBigqueryService(client)
 	if err != nil {
 		return nil, fmt.Errorf("constructing bigquery client: %v", err)
 	}
 
 	c := &Client{
-		service: service,
-		projID:  projectID,
+		service:   bqService,
+		projectID: projectID,
 	}
 	return c, nil
 }
@@ -92,37 +85,22 @@ func initJobProto(projectID string, options []Option) (*bq.Job, []Option) {
 
 // Copy starts a BigQuery operation to copy data from a Source to a Destination.
 func (c *Client) Copy(ctx context.Context, dst Destination, src Source, options ...Option) (*Job, error) {
-	// TODO(mcgreevy): use ctx
-	// TODO(mcgreevy): consider turning load(), cp(), etc. into methods on c.
-
 	switch dst := dst.(type) {
 	case *Table:
 		switch src := src.(type) {
 		case *GCSReference:
-			return load(dst, src, c, options)
+			return c.load(ctx, dst, src, options)
 		case *Table:
-			return cp(dst, Tables{src}, c, options)
+			return c.cp(ctx, dst, Tables{src}, options)
 		case Tables:
-			return cp(dst, src, c, options)
+			return c.cp(ctx, dst, src, options)
 		case *Query:
-			return query(dst, src, c, options)
+			return c.query(ctx, dst, src, options)
 		}
 	case *GCSReference:
 		if src, ok := src.(*Table); ok {
-			return extract(dst, src, c, options)
+			return c.extract(ctx, dst, src, options)
 		}
 	}
 	return nil, fmt.Errorf("no operation matches dst/src pair: dst: %T ; src: %T", dst, src)
-}
-
-func (c *Client) insertJob(job *bq.Job) (*Job, error) {
-	res, err := c.service.Jobs.Insert(c.projID, job).Do()
-	if err != nil {
-		return nil, err
-	}
-	return &Job{client: c, jobID: res.JobReference.JobId}, nil
-}
-
-func (c *Client) projectID() string {
-	return c.projID
 }

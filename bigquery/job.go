@@ -15,16 +15,15 @@
 package bigquery
 
 import (
-	"fmt"
-
 	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
 // A Job represents an operation which has been submitted to BigQuery for processing.
 type Job struct {
-	client *Client
-	jobID  string
+	service   service
+	projectID string
+	jobID     string
 }
 
 // State is one of a sequence of states that a Job progresses through as it is processed.
@@ -81,34 +80,7 @@ func (s *JobStatus) Err() error {
 	return s.err
 }
 
-var stateMap = map[string]State{"PENDING": Pending, "RUNNING": Running, "DONE": Done}
-
-func jobStatusFromProto(status *bq.JobStatus) (*JobStatus, error) {
-	state, ok := stateMap[status.State]
-	if !ok {
-		return nil, fmt.Errorf("unexpected job state: %v", status.State)
-	}
-
-	newStatus := &JobStatus{
-		State: state,
-		err:   nil,
-	}
-	if err := errorFromErrorProto(status.ErrorResult); state == Done && err != nil {
-		newStatus.err = err
-	}
-
-	for _, ep := range status.Errors {
-		newStatus.Errors = append(newStatus.Errors, errorFromErrorProto(ep))
-	}
-	return newStatus, nil
-}
-
 // Status returns the current status of the job.  It fails if the Status could not be determined.
 func (j *Job) Status(ctx context.Context) (*JobStatus, error) {
-	// TODO(mcgreevy): use ctx
-	res, err := j.client.service.Jobs.Get(j.client.projectID(), j.jobID).Do()
-	if err != nil {
-		return nil, err
-	}
-	return jobStatusFromProto(res.Status)
+	return j.service.jobStatus(ctx, j.projectID, j.jobID)
 }

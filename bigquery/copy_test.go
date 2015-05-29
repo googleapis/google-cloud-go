@@ -18,6 +18,7 @@ import (
 	"reflect"
 	"testing"
 
+	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -89,13 +90,16 @@ func TestCopy(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		c := &testClient{}
-		if _, err := cp(tc.dst, tc.src, c, tc.options); err != nil {
+		s := &testService{}
+		c := &Client{
+			service: s,
+		}
+		if _, err := c.Copy(context.Background(), tc.dst, tc.src, tc.options...); err != nil {
 			t.Errorf("err calling cp: %v", err)
 			continue
 		}
-		if !reflect.DeepEqual(c.Job, tc.want) {
-			t.Errorf("insertJob got:\n%v\nwant:\n%v", c.Job, tc.want)
+		if !reflect.DeepEqual(s.Job, tc.want) {
+			t.Errorf("copying: got:\n%v\nwant:\n%v", s.Job, tc.want)
 		}
 	}
 }

@@ -17,6 +17,7 @@ package bigquery
 import (
 	"fmt"
 
+	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -91,23 +92,23 @@ func (opt ignoreUnknownValues) customizeLoad(conf *bq.JobConfigurationLoad, proj
 	conf.IgnoreUnknownValues = true
 }
 
-func load(dst *Table, src *GCSReference, c client, options []Option) (*Job, error) {
-	job, options := initJobProto(c.projectID(), options)
+func (c *Client) load(ctx context.Context, dst *Table, src *GCSReference, options []Option) (*Job, error) {
+	job, options := initJobProto(c.projectID, options)
 	payload := &bq.JobConfigurationLoad{}
 
-	dst.customizeLoadDst(payload, c.projectID())
-	src.customizeLoadSrc(payload, c.projectID())
+	dst.customizeLoadDst(payload, c.projectID)
+	src.customizeLoadSrc(payload, c.projectID)
 
 	for _, opt := range options {
 		o, ok := opt.(loadOption)
 		if !ok {
 			return nil, fmt.Errorf("option (%#v) not applicable to dst/src pair: dst: %T ; src: %T", opt, dst, src)
 		}
-		o.customizeLoad(payload, c.projectID())
+		o.customizeLoad(payload, c.projectID)
 	}
 
 	job.Configuration = &bq.JobConfiguration{
 		Load: payload,
 	}
-	return c.insertJob(job)
+	return c.service.insertJob(ctx, job, c.projectID)
 }
