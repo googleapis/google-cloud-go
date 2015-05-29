@@ -485,6 +485,30 @@ func TestClientIntegration(t *testing.T) {
 	}
 	wg.Wait()
 	checkpoint("tested high concurrency")
+
+	// Large reads, writes and scans.
+	bigBytes := make([]byte, 15<<20) // 15 MB is large
+	nonsense := []byte("lorem ipsum dolor sit amet, ")
+	for p := bigBytes; len(p) > len(nonsense); { // fill bigBytes with nonsense
+		n := copy(p, nonsense)
+		p = p[n:]
+	}
+	mut = NewMutation()
+	mut.Set("ts", "col", 0, bigBytes)
+	if err := tbl.Apply(ctx, "bigrow", mut); err != nil {
+		t.Errorf("Big write: %v", err)
+	}
+	r, err = tbl.ReadRow(ctx, "bigrow")
+	if err != nil {
+		t.Errorf("Big read: %v", err)
+	}
+	wantRow = Row{"ts": []ReadItem{
+		{Row: "bigrow", Column: "ts:col", Value: bigBytes},
+	}}
+	if !reflect.DeepEqual(r, wantRow) {
+		t.Errorf("Big read returned incorrect bytes: %v", r)
+	}
+	checkpoint("tested big read/write")
 }
 
 type byColumn []ReadItem
