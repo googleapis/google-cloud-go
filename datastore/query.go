@@ -421,6 +421,11 @@ func (q *Query) Count(ctx context.Context) (int, error) {
 	newQ.keysOnly = len(newQ.projection) == 0
 	req := &pb.RunQueryRequest{}
 
+	if ns := ctxNamespace(ctx); ns != "" {
+		req.PartitionId = &pb.PartitionId{
+			Namespace: proto.String(ns),
+		}
+	}
 	if err := newQ.toProto(req); err != nil {
 		return 0, err
 	}
@@ -551,6 +556,11 @@ func (q *Query) Run(ctx context.Context) *Iterator {
 		prevCC: q.start,
 	}
 	t.req.Reset()
+	if ns := ctxNamespace(ctx); ns != "" {
+		t.req.PartitionId = &pb.PartitionId{
+			Namespace: proto.String(ns),
+		}
+	}
 	if err := q.toProto(&t.req); err != nil {
 		t.err = err
 		return t

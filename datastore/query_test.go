@@ -16,10 +16,12 @@ package datastore
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/golang/protobuf/proto"
@@ -51,7 +53,7 @@ var (
 )
 
 type fakeTransport struct {
-	Handler func(req proto.Message, resp proto.Message) (err error)
+	Handler func(req, resp proto.Message) (err error)
 }
 
 func (t *fakeTransport) RoundTrip(req *http.Request) (*http.Response, error) {
@@ -94,6 +96,9 @@ func (t *fakeTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	resp.Proto = "HTTP/1.0"
 	resp.ProtoMajor = 1
 	resp.ProtoMinor = 1
+	if resp.Body == nil {
+		resp.Body = ioutil.NopCloser(strings.NewReader(""))
+	}
 
 	return &resp, nil
 }
@@ -326,7 +331,7 @@ func TestSimpleQuery(t *testing.T) {
 	for _, tc := range testCases {
 		nCall := 0
 		ctx := cloud.NewContext("queryTest", &http.Client{
-			Transport: &fakeTransport{Handler: func(in proto.Message, out proto.Message) error {
+			Transport: &fakeTransport{Handler: func(in, out proto.Message) error {
 				nCall++
 				return fakeRunQuery(in.(*pb.RunQueryRequest), out.(*pb.RunQueryResponse))
 			}}})
@@ -486,5 +491,38 @@ func TestFilterParser(t *testing.T) {
 			t.Errorf("%q: got %v, want %v", tc.filterStr, got, want)
 			continue
 		}
+	}
+}
+
+func TestNamespaceQuery(t *testing.T) {
+	gotNamespace := make(chan string, 1)
+	ctx := cloud.NewContext("nsQueryTest", &http.Client{Transport: &fakeTransport{
+		Handler: func(req, resp proto.Message) error {
+			gotNamespace <- req.(*pb.RunQueryRequest).GetPartitionId().GetNamespace()
+			return errors.New("not implemented")
+		},
+	}})
+
+	var gs []Gopher
+
+	NewQuery("Gopher").GetAll(ctx, &gs)
+	if got, want := <-gotNamespace, ""; got != want {
+		t.Errorf("GetAll: got namespace %q, want %q", got, want)
+	}
+	NewQuery("Gopher").Count(ctx)
+	if got, want := <-gotNamespace, ""; got != want {
+		t.Errorf("Count: got namespace %q, want %q", got, want)
+	}
+
+	const ns = "not_default"
+	ctx = WithNamespace(ctx, ns)
+
+	NewQuery("Gopher").GetAll(ctx, &gs)
+	if got, want := <-gotNamespace, ns; got != want {
+		t.Errorf("GetAll: got namespace %q, want %q", got, want)
+	}
+	NewQuery("Gopher").Count(ctx)
+	if got, want := <-gotNamespace, ns; got != want {
+		t.Errorf("Count: got namespace %q, want %q", got, want)
 	}
 }
