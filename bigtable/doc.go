@@ -92,10 +92,10 @@ package bigtable // import "google.golang.org/cloud/bigtable"
 // These should be used when using credential creation functions such as credentials.NewServiceAccountFromFile.
 const (
 	// Scope is the OAuth scope for Cloud Bigtable data operations.
-	Scope = "https://www.googleapis.com/auth/cloud-bigtable.data"
+	Scope = "https://www.googleapis.com/auth/bigtable.data"
 	// ReadonlyScope is the OAuth scope for Cloud Bigtable read-only data operations.
-	ReadonlyScope = "https://www.googleapis.com/auth/cloud-bigtable.readonly"
+	ReadonlyScope = "https://www.googleapis.com/auth/bigtable.readonly"
 
 	// AdminScope is the OAuth scope for Cloud Bigtable admin operations.
-	AdminScope = "https://www.googleapis.com/auth/cloud-bigtable.admin"
+	AdminScope = "https://www.googleapis.com/auth/bigtable.admin"
 )
