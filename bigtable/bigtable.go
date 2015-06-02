@@ -466,7 +466,7 @@ func Now() Timestamp { return Time(time.Now()) }
 func (ts Timestamp) Time() time.Time { return time.Unix(0, int64(ts)*1e3) }
 
 // ApplyReadModifyWrite applies a ReadModifyWrite to a specific row.
-// It returns the subset of the row that was modified.
+// It returns the newly written cells.
 func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
 	req := &btspb.ReadModifyWriteRowRequest{
 		TableName: t.c.fullTableName(t.table),
@@ -484,8 +484,14 @@ func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadMod
 	return r, nil
 }
 
-// ReadModifyWrite represents a set of atomic operations to a single row of a table.
+// ReadModifyWrite represents a set of operations on a single row of a table.
 // It is like Mutation but for non-idempotent changes.
+// When applied, these operations operate on the latest values of the row's cells,
+// and result in a new value being written to the relevant cell with a timestamp
+// that is max(existing timestamp, current server time).
+//
+// The application of a ReadModifyWrite is atomic; concurrent ReadModifyWrites will
+// be executed serially by the server.
 type ReadModifyWrite struct {
 	ops []*btdpb.ReadModifyWriteRule
 }
@@ -493,7 +499,7 @@ type ReadModifyWrite struct {
 // NewReadModifyWrite returns a new ReadModifyWrite.
 func NewReadModifyWrite() *ReadModifyWrite { return new(ReadModifyWrite) }
 
-// AppendValue appends a value to a specific cell.
+// AppendValue appends a value to a specific cell's value.
 // If the cell is unset, it will be treated as an empty value.
 func (m *ReadModifyWrite) AppendValue(family, column string, v []byte) {
 	m.ops = append(m.ops, &btdpb.ReadModifyWriteRule{
