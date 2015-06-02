@@ -244,7 +244,7 @@ func UpdateAttrs(ctx context.Context, bucket, name string, attrs ObjectAttrs) (*
 	return newObject(o), nil
 }
 
-// DeleteObject deletes the specified object.
+// DeleteObject deletes the single specified object.
 func DeleteObject(ctx context.Context, bucket, name string) error {
 	return rawService(ctx).Objects.Delete(bucket, name).Do()
 }

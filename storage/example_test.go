@@ -117,3 +117,34 @@ func ExampleCopyObject() {
 	}
 	log.Println("copied file:", o)
 }
+
+func ExampleDeleteObject() {
+	// To delete multiple objects in a bucket, first ListObjects then delete them.
+	ctx := Example_auth()
+
+	// If you are using this package on App Engine Managed VMs runtime,
+	// you can init a bucket client with your app's default bucket name.
+	// See http://godoc.org/google.golang.org/appengine/file#DefaultBucketName.
+	const bucket = "bucketname"
+
+	var query *storage.Query // Set up query as desired.
+	for {
+		objects, err := storage.ListObjects(ctx, bucket, query)
+		if err != nil {
+			log.Fatal(err)
+		}
+		for _, obj := range objects.Results {
+			log.Printf("deleting object name: %q, size: %v", obj.Name, obj.Size)
+			if err := DeleteObject(ctx, bucket, obj.Name); err != nil {
+				log.Fatalf("unable to delete %q: %v", obj.Name, err)
+			}
+		}
+		// if there are more results, objects.Next will be non-nil.
+		query = objects.Next
+		if query == nil {
+			break
+		}
+	}
+
+	log.Println("deleted all object items in the bucket you specified.")
+}
