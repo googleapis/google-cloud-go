@@ -62,6 +62,7 @@ const (
 )
 
 func (t *Table) implementsSource()      {}
+func (t *Table) implementsReadSource()  {}
 func (t *Table) implementsDestination() {}
 func (ts Tables) implementsSource()     {}
 
@@ -106,4 +107,10 @@ func (t *Table) customizeQueryDst(conf *bq.JobConfigurationQuery, projectID stri
 	}
 	conf.CreateDisposition = string(t.CreateDisposition)
 	conf.WriteDisposition = string(t.WriteDisposition)
+}
+
+func (t *Table) customizeReadSrc(conf *readTabledataConf) {
+	conf.projectID = t.ProjectID
+	conf.datasetID = t.DatasetID
+	conf.tableID = t.TableID
 }

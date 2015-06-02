@@ -29,6 +29,7 @@ import (
 type service interface {
 	insertJob(ctx context.Context, job *bq.Job, projectId string) (*Job, error)
 	jobStatus(ctx context.Context, projectId, jobID string) (*JobStatus, error)
+	readTabledata(ctx context.Context, conf *readTabledataConf) (*readTabledataResult, error)
 }
 
 type bigqueryService struct {
@@ -51,6 +52,58 @@ func (s *bigqueryService) insertJob(ctx context.Context, job *bq.Job, projectID 
 		return nil, err
 	}
 	return &Job{service: s, projectID: projectID, jobID: res.JobReference.JobId}, nil
+}
+
+type pagingConf struct {
+	pageToken string
+
+	recordsPerRequest    int64
+	setRecordsPerRequest bool
+}
+
+type readTabledataConf struct {
+	projectID, datasetID, tableID string
+	paging                        pagingConf
+}
+
+type readTabledataResult struct {
+	pageToken string
+	rows      [][]Value
+	totalRows int64
+}
+
+func (s *bigqueryService) readTabledata(ctx context.Context, conf *readTabledataConf) (*readTabledataResult, error) {
+	list := s.s.Tabledata.List(conf.projectID, conf.datasetID, conf.tableID).
+		PageToken(conf.paging.pageToken)
+
+	if conf.paging.setRecordsPerRequest {
+		list = list.MaxResults(conf.paging.recordsPerRequest)
+	}
+
+	res, err := list.Do()
+	if err != nil {
+		return nil, err
+	}
+
+	var rs [][]Value
+	for _, r := range res.Rows {
+		rs = append(rs, convertRow(r))
+	}
+
+	result := &readTabledataResult{
+		pageToken: res.PageToken,
+		rows:      rs,
+		totalRows: res.TotalRows,
+	}
+	return result, nil
+}
+
+func convertRow(r *bq.TableRow) []Value {
+	var values []Value
+	for _, cell := range r.F {
+		values = append(values, cell.V)
+	}
+	return values
 }
 
 func (s *bigqueryService) jobStatus(ctx context.Context, projectID, jobID string) (*JobStatus, error) {

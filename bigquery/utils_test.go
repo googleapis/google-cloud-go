@@ -37,6 +37,8 @@ var defaultQuery = &Query{
 
 type testService struct {
 	*bq.Job
+
+	service
 }
 
 func (s *testService) insertJob(ctx context.Context, job *bq.Job, projectID string) (*Job, error) {

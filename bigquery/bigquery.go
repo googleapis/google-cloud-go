@@ -39,6 +39,16 @@ type Option interface {
 	implementsOption()
 }
 
+// A ReadSource is a source of data for the Read function.
+type ReadSource interface {
+	implementsReadSource()
+}
+
+// A ReadOption is an optional argument to Read.
+type ReadOption interface {
+	customizeRead(conf *pagingConf)
+}
+
 const Scope = "https://www.googleapis.com/auth/bigquery"
 
 // Client may be used to perform BigQuery operations.
@@ -102,5 +112,16 @@ func (c *Client) Copy(ctx context.Context, dst Destination, src Source, options 
 			return c.extract(ctx, dst, src, options)
 		}
 	}
-	return nil, fmt.Errorf("no operation matches dst/src pair: dst: %T ; src: %T", dst, src)
+	return nil, fmt.Errorf("no Copy operation matches dst/src pair: dst: %T ; src: %T", dst, src)
+}
+
+// Read fetches data from a Source and returns the data via an Iterator.
+func (c *Client) Read(ctx context.Context, src ReadSource, options ...ReadOption) (*Iterator, error) {
+	// TODO(mcgreevy): support Query as a ReadSource.
+	// TODO(mcgreevy): use ctx.
+	switch src := src.(type) {
+	case *Table:
+		return c.readTable(src, options)
+	}
+	return nil, fmt.Errorf("src (%T) does not support the Read operation", src)
 }
