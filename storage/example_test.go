@@ -135,7 +135,7 @@ func ExampleDeleteObject() {
 		}
 		for _, obj := range objects.Results {
 			log.Printf("deleting object name: %q, size: %v", obj.Name, obj.Size)
-			if err := DeleteObject(ctx, bucket, obj.Name); err != nil {
+			if err := storage.DeleteObject(ctx, bucket, obj.Name); err != nil {
 				log.Fatalf("unable to delete %q: %v", obj.Name, err)
 			}
 		}
