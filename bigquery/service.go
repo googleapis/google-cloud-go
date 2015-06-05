@@ -51,11 +51,11 @@ func newBigqueryService(client *http.Client) (*bigqueryService, error) {
 func getPages(token string, getPage func(token string) (nextToken string, err error)) error {
 	for {
 		var err error
-		pageToken, err = getPage(pageToken)
+		token, err = getPage(token)
 		if err != nil {
 			return err
 		}
-		if pageToken == "" {
+		if token == "" {
 			return nil
 		}
 	}
