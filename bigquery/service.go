@@ -30,6 +30,7 @@ type service interface {
 	insertJob(ctx context.Context, job *bq.Job, projectId string) (*Job, error)
 	jobStatus(ctx context.Context, projectId, jobID string) (*JobStatus, error)
 	readTabledata(ctx context.Context, conf *readTabledataConf) (*readTabledataResult, error)
+	listTables(ctx context.Context, projectID, datasetID, pageToken string) ([]*Table, string, error)
 }
 
 type bigqueryService struct {
@@ -43,6 +44,21 @@ func newBigqueryService(client *http.Client) (*bigqueryService, error) {
 	}
 
 	return &bigqueryService{s: s}, nil
+}
+
+// getPages calls the supplied getPage function repeatedly until there are no pages left to get.
+// token is the token of the initial page to start from.  Use an empty string to start from the beginning.
+func getPages(token string, getPage func(token string) (nextToken string, err error)) error {
+	for {
+		var err error
+		pageToken, err = getPage(pageToken)
+		if err != nil {
+			return err
+		}
+		if pageToken == "" {
+			return nil
+		}
+	}
 }
 
 func (s *bigqueryService) insertJob(ctx context.Context, job *bq.Job, projectID string) (*Job, error) {
@@ -135,4 +151,31 @@ func jobStatusFromProto(status *bq.JobStatus) (*JobStatus, error) {
 		newStatus.Errors = append(newStatus.Errors, errorFromErrorProto(ep))
 	}
 	return newStatus, nil
+}
+
+// listTables returns a subset of tables that belong to a dataset, and a token for fetching the next subset.
+func (s *bigqueryService) listTables(ctx context.Context, projectID, datasetID, pageToken string) ([]*Table, string, error) {
+	// TODO(mcgreevy): use ctx
+	var tables []*Table
+	res, err := s.s.Tables.List(projectID, datasetID).
+		PageToken(pageToken).
+		Do()
+	if err != nil {
+		return nil, "", err
+	}
+	for _, t := range res.Tables {
+		tables = append(tables, convertTable(t))
+	}
+	return tables, res.NextPageToken, nil
+}
+
+func convertTable(t *bq.TableListTables) *Table {
+	return &Table{
+		ProjectID: t.TableReference.ProjectId,
+		DatasetID: t.TableReference.DatasetId,
+		TableID:   t.TableReference.TableId,
+
+		Name: t.FriendlyName,
+		Type: TableType(t.Type),
+	}
 }

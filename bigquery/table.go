@@ -14,7 +14,11 @@
 
 package bigquery
 
-import bq "google.golang.org/api/bigquery/v2"
+import (
+	"fmt"
+
+	bq "google.golang.org/api/bigquery/v2"
+)
 
 // A Table is a reference to a BigQuery table.
 type Table struct {
@@ -29,6 +33,10 @@ type Table struct {
 	// All following fields are optional.
 	CreateDisposition CreateDisposition // default is CreateIfNeeded.
 	WriteDisposition  WriteDisposition  // default is WriteAppend.
+
+	// Name is the user-friendly name for this table.
+	Name string
+	Type TableType
 }
 
 // Tables is a group of tables. The tables may belong to differing projects or datasets.
@@ -61,6 +69,14 @@ const (
 	WriteEmpty WriteDisposition = "WRITE_EMPTY"
 )
 
+// TableType is the type of table.
+type TableType string
+
+const (
+	RegularTable TableType = "TABLE"
+	ViewTable    TableType = "VIEW"
+)
+
 func (t *Table) implementsSource()      {}
 func (t *Table) implementsReadSource()  {}
 func (t *Table) implementsDestination() {}
@@ -72,6 +88,11 @@ func (t *Table) tableRefProto() *bq.TableReference {
 		DatasetId: t.DatasetID,
 		TableId:   t.TableID,
 	}
+}
+
+// FullyQualifiedName returns the ID of the table in projectID:datasetID.tableID format.
+func (t *Table) FullyQualifiedName() string {
+	return fmt.Sprintf("%s:%s.%s", t.ProjectID, t.DatasetID, t.TableID)
 }
 
 // implicitTable reports whether Table is an empty placeholder, which signifies that a new table should be created with an auto-generated Table ID.

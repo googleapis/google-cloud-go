@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
+	"strings"
 	"text/tabwriter"
 
 	"golang.org/x/net/context"
@@ -31,42 +33,18 @@ import (
 var (
 	project = flag.String("project", "", "The ID of a Google Cloud Platform project")
 	dataset = flag.String("dataset", "", "The ID of a BigQuery dataset")
-	table   = flag.String("table", "", "The ID of a BigQuery table.")
+	table   = flag.String("table", ".*", "A regular expression to match the IDs of tables to read.")
 )
 
-func main() {
-	flag.Parse()
-
-	flagsOk := true
-	for _, f := range []string{"project", "dataset", "table"} {
-		if flag.Lookup(f).Value.String() == "" {
-			fmt.Fprintf(os.Stderr, "Flag --%s is required\n", f)
-			flagsOk = false
-		}
-	}
-	if !flagsOk {
-		os.Exit(1)
-	}
-
-	httpClient, err := google.DefaultClient(context.Background(), bigquery.Scope)
-	if err != nil {
-		log.Fatalf("Creating http client: %v", err)
-	}
-
-	client, err := bigquery.NewClient(httpClient, *project)
-	if err != nil {
-		log.Fatalf("Creating bigquery client: %v", err)
-	}
-
-	it, err := client.Read(&bigquery.Table{
-		ProjectID: *project,
-		DatasetID: *dataset,
-		TableID:   *table,
-	})
+func printTable(client *bigquery.Client, t *bigquery.Table) {
+	it, err := client.Read(context.Background(), t)
 
 	if err != nil {
 		log.Fatalf("Reading: %v", err)
 	}
+
+	id := t.FullyQualifiedName()
+	fmt.Printf("%s\n%s\n", id, strings.Repeat("-", len(id)))
 
 	// one-space padding.
 	tw := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
@@ -86,7 +64,51 @@ func main() {
 	}
 	tw.Flush()
 
+	fmt.Printf("\n")
 	if err := it.Err(); err != nil {
 		fmt.Printf("err reading: %v\n")
+	}
+}
+
+func main() {
+	flag.Parse()
+
+	flagsOk := true
+	for _, f := range []string{"project", "dataset"} {
+		if flag.Lookup(f).Value.String() == "" {
+			fmt.Fprintf(os.Stderr, "Flag --%s is required\n", f)
+			flagsOk = false
+		}
+	}
+	if !flagsOk {
+		os.Exit(1)
+	}
+
+	tableRE, err := regexp.Compile(*table)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "--table is not a valid regular expression: %q\n", *table)
+		os.Exit(1)
+	}
+
+	httpClient, err := google.DefaultClient(context.Background(), bigquery.Scope)
+	if err != nil {
+		log.Fatalf("Creating http client: %v", err)
+	}
+
+	client, err := bigquery.NewClient(httpClient, *project)
+	if err != nil {
+		log.Fatalf("Creating bigquery client: %v", err)
+	}
+
+	ds := client.Dataset(*dataset)
+	var tables []*bigquery.Table
+	tables, err = ds.ListTables(context.Background())
+	if err != nil {
+		log.Fatalf("Listing tables: %v", err)
+	}
+	for _, t := range tables {
+		if tableRE.MatchString(t.TableID) {
+			printTable(client, t)
+		}
 	}
 }

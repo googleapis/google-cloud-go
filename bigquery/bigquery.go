@@ -125,3 +125,10 @@ func (c *Client) Read(ctx context.Context, src ReadSource, options ...ReadOption
 	}
 	return nil, fmt.Errorf("src (%T) does not support the Read operation", src)
 }
+
+func (c *Client) Dataset(id string) *Dataset {
+	return &Dataset{
+		id:     id,
+		client: c,
+	}
+}
