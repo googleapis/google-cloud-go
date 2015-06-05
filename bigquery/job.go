@@ -26,6 +26,17 @@ type Job struct {
 	jobID     string
 }
 
+// JobFromID creates a Job which refers to an existing BigQuery job. The job
+// need not have been created by this package. For example, the job may have
+// been created in the BigQuery console.
+func (c *Client) JobFromID(id string) *Job {
+	return &Job{
+		service:   c.service,
+		projectID: c.projectID,
+		jobID:     id,
+	}
+}
+
 // State is one of a sequence of states that a Job progresses through as it is processed.
 type State int
 
