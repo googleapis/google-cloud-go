@@ -29,7 +29,7 @@ import (
 type service interface {
 	insertJob(ctx context.Context, job *bq.Job, projectId string) (*Job, error)
 	jobStatus(ctx context.Context, projectId, jobID string) (*JobStatus, error)
-	readTabledata(ctx context.Context, conf *readTabledataConf) (*readTabledataResult, error)
+	readTabledata(ctx context.Context, conf *readTabledataConf) (*readDataResult, error)
 	listTables(ctx context.Context, projectID, datasetID, pageToken string) ([]*Table, string, error)
 }
 
@@ -84,13 +84,13 @@ type readTabledataConf struct {
 	paging                        pagingConf
 }
 
-type readTabledataResult struct {
+type readDataResult struct {
 	pageToken string
 	rows      [][]Value
 	totalRows int64
 }
 
-func (s *bigqueryService) readTabledata(ctx context.Context, conf *readTabledataConf) (*readTabledataResult, error) {
+func (s *bigqueryService) readTabledata(ctx context.Context, conf *readTabledataConf) (*readDataResult, error) {
 	list := s.s.Tabledata.List(conf.projectID, conf.datasetID, conf.tableID).
 		PageToken(conf.paging.pageToken).
 		StartIndex(conf.paging.startIndex)
@@ -109,7 +109,7 @@ func (s *bigqueryService) readTabledata(ctx context.Context, conf *readTabledata
 		rs = append(rs, convertRow(r))
 	}
 
-	result := &readTabledataResult{
+	result := &readDataResult{
 		pageToken: res.PageToken,
 		rows:      rs,
 		totalRows: res.TotalRows,

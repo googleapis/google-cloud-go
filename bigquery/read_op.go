@@ -14,6 +14,8 @@
 
 package bigquery
 
+import "golang.org/x/net/context"
+
 // RecordsPerRequest returns a ReadOption that sets the number of records to fetch per request when streaming data from BigQuery.
 func RecordsPerRequest(n int64) ReadOption { return recordsPerRequest(n) }
 
@@ -41,10 +43,13 @@ func (c *Client) readTable(src *Table, options []ReadOption) (*Iterator, error) 
 		o.customizeRead(&conf.paging)
 	}
 
-	// The iterator takes care of actually fetching the data.
+	pageFetcher := func(ctx context.Context, token string) (*readDataResult, error) {
+		conf.paging.pageToken = token
+		return c.service.readTabledata(ctx, conf)
+	}
+
 	it := &Iterator{
-		conf: conf,
-		s:    c.service,
+		pf: pageFetcher,
 	}
 	return it, nil
 }

@@ -31,10 +31,10 @@ type readServiceStub struct {
 	service
 }
 
-func (s *readServiceStub) readTabledata(ctx context.Context, conf *readTabledataConf) (*readTabledataResult, error) {
+func (s *readServiceStub) readTabledata(ctx context.Context, conf *readTabledataConf) (*readDataResult, error) {
 	s.arguments = append(s.arguments, conf)
 
-	result := &readTabledataResult{
+	result := &readDataResult{
 		pageToken: s.pageTokens[conf.paging.pageToken],
 		rows:      s.values[0],
 	}
@@ -124,7 +124,7 @@ type errorReadService struct {
 	service
 }
 
-func (s *errorReadService) readTabledata(ctx context.Context, conf *readTabledataConf) (*readTabledataResult, error) {
+func (s *errorReadService) readTabledata(ctx context.Context, conf *readTabledataConf) (*readDataResult, error) {
 	return nil, fmt.Errorf("bang!")
 }
 

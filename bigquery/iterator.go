@@ -20,16 +20,19 @@ import (
 	"golang.org/x/net/context"
 )
 
+// A pageFetcher returns the next page of rows.
+type pageFetcher func(ctx context.Context, token string) (*readDataResult, error)
+
 // Iterator provides access to the result of a BigQuery lookup.
 // Next must be called before the first call to Get.
 type Iterator struct {
-	s service
+	// pf fetches a page of data.
+	pf        pageFetcher
+	nextToken string
+	done      bool // Set to true when there is no  more data to be fetched from the server.
 
-	// conf contains the information necessary to make the next readTabledata call.
-	// conf is set to nil when there is no more data to be fetched from the server.
-	conf *readTabledataConf
-	rs   [][]Value // contains prefetched rows. The first element is returned by Get.
-	err  error     // contains any error encountered during calls to Next.
+	rs  [][]Value // contains prefetched rows. The first element is returned by Get.
+	err error     // contains any error encountered during calls to Next.
 }
 
 // Next advances the Iterator to the next row, making that row available
@@ -58,24 +61,20 @@ func (it *Iterator) hasCurrentRow() bool {
 	return it.err == nil && len(it.rs) != 0
 }
 
-// fetchRows fetches a series of rows from the BigQuery service.
+// fetchRows fetches a list of rows from the BigQuery service.
 // The fetched rows will be returned via subsequent calls to Get.
 func (it *Iterator) fetchRows(ctx context.Context) {
-	if it.conf == nil {
+	if it.done {
 		return
 	}
-	// TODO(mcgreevy): refactor to support reads of query results.
-	res, err := it.s.readTabledata(ctx, it.conf)
+	res, err := it.pf(ctx, it.nextToken)
+
 	if err != nil {
 		it.err = err
 		return
 	}
-	if res.pageToken == "" {
-		// No more data.
-		it.conf = nil
-	} else {
-		it.conf.paging.pageToken = res.pageToken
-	}
+	it.done = (res.pageToken == "")
+	it.nextToken = res.pageToken
 	it.rs = res.rows
 }
 
