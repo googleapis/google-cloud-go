@@ -24,7 +24,15 @@ func (opt recordsPerRequest) customizeRead(conf *pagingConf) {
 	conf.setRecordsPerRequest = true
 }
 
-// TODO(mcgreevy): support configurable startIndex and pageToken.
+// StartIndex returns a ReadOption that sets the zero-based index of the row to start reading from.
+func StartIndex(i uint64) ReadOption { return startIndex(i) }
+
+type startIndex uint64
+
+func (opt startIndex) customizeRead(conf *pagingConf) {
+	conf.startIndex = uint64(opt)
+}
+
 func (c *Client) readTable(src *Table, options []ReadOption) (*Iterator, error) {
 	conf := &readTabledataConf{}
 	src.customizeReadSrc(conf)

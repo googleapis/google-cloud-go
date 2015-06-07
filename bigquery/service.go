@@ -75,6 +75,8 @@ type pagingConf struct {
 
 	recordsPerRequest    int64
 	setRecordsPerRequest bool
+
+	startIndex uint64
 }
 
 type readTabledataConf struct {
@@ -90,7 +92,8 @@ type readTabledataResult struct {
 
 func (s *bigqueryService) readTabledata(ctx context.Context, conf *readTabledataConf) (*readTabledataResult, error) {
 	list := s.s.Tabledata.List(conf.projectID, conf.datasetID, conf.tableID).
-		PageToken(conf.paging.pageToken)
+		PageToken(conf.paging.pageToken).
+		StartIndex(conf.paging.startIndex)
 
 	if conf.paging.setRecordsPerRequest {
 		list = list.MaxResults(conf.paging.recordsPerRequest)
