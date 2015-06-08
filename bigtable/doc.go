@@ -96,6 +96,6 @@ const (
 	// ReadonlyScope is the OAuth scope for Cloud Bigtable read-only data operations.
 	ReadonlyScope = "https://www.googleapis.com/auth/bigtable.readonly"
 
-	// AdminScope is the OAuth scope for Cloud Bigtable admin operations.
-	AdminScope = "https://www.googleapis.com/auth/bigtable.admin"
+	// AdminScope is the OAuth scope for Cloud Bigtable table admin operations.
+	AdminScope = "https://www.googleapis.com/auth/bigtable.admin.table"
 )
