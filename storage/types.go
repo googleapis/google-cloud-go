@@ -105,6 +105,10 @@ type ObjectAttrs struct {
 	// sent in the response headers.
 	CacheControl string
 
+	// ContentDisposition is the optional Cache-Disposition header of the object
+	// sent in the response headers.
+	ContentDisposition string
+
 	// ACL is the list of access control rules for the object.
 	// Optional. If nil or empty, existing ACL rules are preserved.
 	ACL []ACLRule
@@ -126,14 +130,15 @@ func (o ObjectAttrs) toRawObject(bucket string) *raw.Object {
 		}
 	}
 	return &raw.Object{
-		Bucket:          bucket,
-		Name:            o.Name,
-		ContentType:     o.ContentType,
-		ContentEncoding: o.ContentEncoding,
-		ContentLanguage: o.ContentLanguage,
-		CacheControl:    o.CacheControl,
-		Acl:             acl,
-		Metadata:        o.Metadata,
+		Bucket:             bucket,
+		Name:               o.Name,
+		ContentType:        o.ContentType,
+		ContentEncoding:    o.ContentEncoding,
+		ContentLanguage:    o.ContentLanguage,
+		CacheControl:       o.CacheControl,
+		ContentDisposition: o.ContentDisposition,
+		Acl:                acl,
+		Metadata:           o.Metadata,
 	}
 }
 
