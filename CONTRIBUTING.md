@@ -3,11 +3,12 @@
 1. Sign one of the contributor license agreements below.
 1. `go get golang.org/x/review/git-review` to install the code reviewing tool.
 1. Get the cloud package by running `go get -d google.golang.org/cloud`.
-If you've already got the package, make sure that the remote git origin
-is https://code.googlesource.com/gocloud.
-`git remote set-url origin https://code.googlesource.com/gocloud`
-1. Make changes and create a change by running `review change <name>`,
-provide a command message, and use `review mail` to create a Gerrit CL.
+    1. If you have already checked out the source, make sure that the remote git
+       origin is https://code.googlesource.com/gocloud:
+
+            git remote set-url origin https://code.googlesource.com/gocloud
+1. Make changes and create a change by running `git codereview change <name>`,
+provide a command message, and use `git codereview mail` to create a Gerrit CL.
 1. Keep amending to the change and mail as your recieve feedback.
 
 ## Integration Tests
