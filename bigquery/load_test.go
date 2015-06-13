@@ -119,7 +119,7 @@ func TestLoad(t *testing.T) {
 			},
 			src: defaultGCS,
 			options: []Option{
-				DestinationSchema(Schema{
+				DestinationSchema(&Schema{
 					stringFieldSchema(),
 					nestedFieldSchema(),
 				}),

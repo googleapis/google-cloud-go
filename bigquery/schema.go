@@ -63,6 +63,14 @@ func (fs *FieldSchema) proto() *bq.TableFieldSchema {
 	return tfs
 }
 
+func (s Schema) proto() *bq.TableSchema {
+	var fields []*bq.TableFieldSchema
+	for _, f := range s {
+		fields = append(fields, f.proto())
+	}
+	return &bq.TableSchema{Fields: fields}
+}
+
 type FieldType string
 
 const (

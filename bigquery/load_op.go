@@ -27,20 +27,16 @@ type loadOption interface {
 
 // A DestinationSchema must be supplied when loading data from Google Cloud Storage into a non-existent table.
 // Caveat: DestinationSchema is not required if the data being loaded is a datastore backup.
-func DestinationSchema(schema Schema) Option { return destSchema(schema) }
+func DestinationSchema(schema *Schema) Option { return destSchema{Schema: schema} }
 
-type destSchema Schema
+type destSchema struct {
+	*Schema
+}
 
 func (opt destSchema) implementsOption() {}
 
 func (opt destSchema) customizeLoad(conf *bq.JobConfigurationLoad, projectID string) {
-	var fields []*bq.TableFieldSchema
-	for _, f := range opt {
-		fields = append(fields, f.proto())
-	}
-	if len(fields) > 0 {
-		conf.Schema = &bq.TableSchema{Fields: fields}
-	}
+	conf.Schema = opt.proto()
 }
 
 // MaxBadRecords returns an Option that sets the maximum number of bad records that will be ignored.
