@@ -36,7 +36,7 @@ type destSchema struct {
 func (opt destSchema) implementsOption() {}
 
 func (opt destSchema) customizeLoad(conf *bq.JobConfigurationLoad, projectID string) {
-	conf.Schema = opt.proto()
+	conf.Schema = opt.asTableSchema()
 }
 
 // MaxBadRecords returns an Option that sets the maximum number of bad records that will be ignored.

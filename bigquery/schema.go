@@ -43,7 +43,7 @@ type FieldSchema struct {
 	Schema Schema
 }
 
-func (fs *FieldSchema) proto() *bq.TableFieldSchema {
+func (fs *FieldSchema) asTableFieldSchema() *bq.TableFieldSchema {
 	tfs := &bq.TableFieldSchema{
 		Description: fs.Description,
 		Name:        fs.Name,
@@ -57,18 +57,41 @@ func (fs *FieldSchema) proto() *bq.TableFieldSchema {
 	} // else leave as default, which is interpreted as NULLABLE.
 
 	for _, f := range fs.Schema {
-		tfs.Fields = append(tfs.Fields, f.proto())
+		tfs.Fields = append(tfs.Fields, f.asTableFieldSchema())
 	}
 
 	return tfs
 }
 
-func (s Schema) proto() *bq.TableSchema {
+func (s *Schema) asTableSchema() *bq.TableSchema {
 	var fields []*bq.TableFieldSchema
-	for _, f := range s {
-		fields = append(fields, f.proto())
+	for _, f := range *s {
+		fields = append(fields, f.asTableFieldSchema())
 	}
 	return &bq.TableSchema{Fields: fields}
+}
+
+func convertTableFieldSchema(tfs *bq.TableFieldSchema) *FieldSchema {
+	fs := &FieldSchema{
+		Description: tfs.Description,
+		Name:        tfs.Name,
+		Repeated:    tfs.Mode == "REPEATED",
+		Required:    tfs.Mode == "REQUIRED",
+		Type:        FieldType(tfs.Type),
+	}
+
+	for _, f := range tfs.Fields {
+		fs.Schema = append(fs.Schema, convertTableFieldSchema(f))
+	}
+	return fs
+}
+
+func convertTableSchema(ts *bq.TableSchema) *Schema {
+	s := &Schema{}
+	for _, f := range ts.Fields {
+		*s = append(*s, convertTableFieldSchema(f))
+	}
+	return s
 }
 
 type FieldType string
