@@ -40,7 +40,7 @@ func TestAll(t *testing.T) {
 
 	exists, err := TopicExists(ctx, topic)
 	if err != nil {
-		t.Errorf("TopicExists error: %v", err)
+		t.Fatalf("TopicExists error: %v", err)
 	}
 	if !exists {
 		t.Errorf("topic %s should exist, but it doesn't", topic)
@@ -48,7 +48,7 @@ func TestAll(t *testing.T) {
 
 	exists, err = SubExists(ctx, subscription)
 	if err != nil {
-		t.Errorf("SubExists error: %v", err)
+		t.Fatalf("SubExists error: %v", err)
 	}
 	if !exists {
 		t.Errorf("subscription %s should exist, but it doesn't", subscription)
@@ -70,7 +70,7 @@ func TestAll(t *testing.T) {
 
 	ids, err := Publish(ctx, topic, msgs...)
 	if err != nil {
-		t.Errorf("Publish (1) error: %v", err)
+		t.Fatalf("Publish (1) error: %v", err)
 	}
 
 	if len(ids) != max {
@@ -84,7 +84,7 @@ func TestAll(t *testing.T) {
 
 	received, err := PullWait(ctx, subscription, max)
 	if err != nil {
-		t.Errorf("PullWait error: %v", err)
+		t.Fatalf("PullWait error: %v", err)
 	}
 
 	if len(received) != max {
@@ -118,15 +118,15 @@ func TestAll(t *testing.T) {
 	}
 	_, err = Publish(ctx, topic, msg)
 	if err != nil {
-		t.Errorf("Publish (2) error: %v", err)
+		t.Fatalf("Publish (2) error: %v", err)
 	}
 
 	received, err = PullWait(ctx, subscription, 1)
 	if err != nil {
-		t.Errorf("PullWait error: %v", err)
+		t.Fatalf("PullWait error: %v", err)
 	}
 	if len(received) != 1 {
-		t.Errorf("unexpected number of messages received; %d, want %d", len(received), 1)
+		t.Fatalf("unexpected number of messages received; %d, want %d", len(received), 1)
 	}
 	if string(received[0].Data) != data {
 		t.Errorf("unexpexted message received; %s, want %s", string(received[0].Data), data)
