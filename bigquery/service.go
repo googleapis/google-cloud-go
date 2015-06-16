@@ -29,8 +29,9 @@ import (
 type service interface {
 	insertJob(ctx context.Context, job *bq.Job, projectId string) (*Job, error)
 	jobStatus(ctx context.Context, projectId, jobID string) (*JobStatus, error)
-	readTabledata(ctx context.Context, conf *readTabledataConf) (*readDataResult, error)
 	listTables(ctx context.Context, projectID, datasetID, pageToken string) ([]*Table, string, error)
+	readQuery(ctx context.Context, conf *readQueryConf) (*readDataResult, error)
+	readTabledata(ctx context.Context, conf *readTabledataConf) (*readDataResult, error)
 }
 
 type bigqueryService struct {
@@ -87,42 +88,75 @@ type readTabledataConf struct {
 type readDataResult struct {
 	pageToken string
 	rows      [][]Value
-	totalRows int64
+	totalRows uint64
+	schema    *Schema
+}
+
+type readQueryConf struct {
+	projectID, jobID string
+	paging           pagingConf
 }
 
 func (s *bigqueryService) readTabledata(ctx context.Context, conf *readTabledataConf) (*readDataResult, error) {
-	list := s.s.Tabledata.List(conf.projectID, conf.datasetID, conf.tableID).
+	req := s.s.Tabledata.List(conf.projectID, conf.datasetID, conf.tableID).
 		PageToken(conf.paging.pageToken).
 		StartIndex(conf.paging.startIndex)
 
 	if conf.paging.setRecordsPerRequest {
-		list = list.MaxResults(conf.paging.recordsPerRequest)
+		req = req.MaxResults(conf.paging.recordsPerRequest)
 	}
 
-	res, err := list.Do()
+	res, err := req.Do()
 	if err != nil {
 		return nil, err
 	}
 
-	var rs [][]Value
-	for _, r := range res.Rows {
-		rs = append(rs, convertRow(r))
-	}
-
 	result := &readDataResult{
 		pageToken: res.PageToken,
-		rows:      rs,
-		totalRows: res.TotalRows,
+		rows:      convertRows(res.Rows),
+		totalRows: uint64(res.TotalRows),
 	}
 	return result, nil
 }
 
-func convertRow(r *bq.TableRow) []Value {
-	var values []Value
-	for _, cell := range r.F {
-		values = append(values, cell.V)
+func (s *bigqueryService) readQuery(ctx context.Context, conf *readQueryConf) (*readDataResult, error) {
+	req := s.s.Jobs.GetQueryResults(conf.projectID, conf.jobID).
+		PageToken(conf.paging.pageToken).
+		StartIndex(conf.paging.startIndex)
+	// TODO(mcgreevy): support timeout.
+
+	if conf.paging.setRecordsPerRequest {
+		req = req.MaxResults(conf.paging.recordsPerRequest)
 	}
-	return values
+
+	res, err := req.Do()
+	if err != nil {
+		return nil, err
+	}
+
+	result := &readDataResult{
+		pageToken: res.PageToken,
+		rows:      convertRows(res.Rows),
+		totalRows: res.TotalRows,
+		schema:    convertTableSchema(res.Schema),
+	}
+	return result, nil
+}
+
+func convertRows(rows []*bq.TableRow) [][]Value {
+	convertRow := func(r *bq.TableRow) []Value {
+		var values []Value
+		for _, cell := range r.F {
+			values = append(values, cell.V)
+		}
+		return values
+	}
+
+	var rs [][]Value
+	for _, r := range rows {
+		rs = append(rs, convertRow(r))
+	}
+	return rs
 }
 
 func (s *bigqueryService) jobStatus(ctx context.Context, projectID, jobID string) (*JobStatus, error) {
