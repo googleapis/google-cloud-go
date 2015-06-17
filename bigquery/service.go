@@ -161,7 +161,9 @@ func convertRows(rows []*bq.TableRow) [][]Value {
 
 func (s *bigqueryService) jobStatus(ctx context.Context, projectID, jobID string) (*JobStatus, error) {
 	// TODO(mcgreevy): use ctx
-	res, err := s.s.Jobs.Get(projectID, jobID).Do()
+	res, err := s.s.Jobs.Get(projectID, jobID).
+		Fields("status"). // Only fetch what we need.
+		Do()
 	if err != nil {
 		return nil, err
 	}
