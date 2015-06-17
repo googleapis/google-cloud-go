@@ -150,21 +150,34 @@ func TestLoad(t *testing.T) {
 				j.Configuration.Load.SourceFormat = "NEWLINE_DELIMITED_JSON"
 				j.Configuration.Load.Encoding = "UTF-8"
 				j.Configuration.Load.FieldDelimiter = "\t"
-				j.Configuration.Load.Quote = "-"
+				hyphen := "-"
+				j.Configuration.Load.Quote = &hyphen
 				return j
 			}(),
 		},
 		{
 			dst: defaultTable,
 			src: &GCSReference{
-				uris: []string{"uri"},
-				// TODO(mcgreevy): Once the underlying API supports it, test that
-				// a distinction is made between setting an empty Quote and not setting it at all.
+				uris:  []string{"uri"},
 				Quote: "",
 			},
 			want: func() *bq.Job {
 				j := defaultLoadJob()
-				j.Configuration.Load.Quote = ""
+				j.Configuration.Load.Quote = nil
+				return j
+			}(),
+		},
+		{
+			dst: defaultTable,
+			src: &GCSReference{
+				uris:           []string{"uri"},
+				Quote:          "",
+				ForceZeroQuote: true,
+			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				empty := ""
+				j.Configuration.Load.Quote = &empty
 				return j
 			}(),
 		},

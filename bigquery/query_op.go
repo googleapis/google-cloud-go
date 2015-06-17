@@ -25,18 +25,20 @@ type queryOption interface {
 	customizeQuery(conf *bq.JobConfigurationQuery, projectID string)
 }
 
-// UseQueryCache returns an Option that causes results to be fetched from the query cache if they are available.
+// DisableQueryCache returns an Option that prevents results being fetched from the query cache.
+// If this Option is not used, results are fetched from the cache if they are available.
 // The query cache is a best-effort cache that is flushed whenever tables in the query are modified.
 // Cached results are only available when TableID is unspecified in the query's destination Table.
 // For more information, see https://cloud.google.com/bigquery/querying-data#querycaching
-func UseQueryCache() Option { return useQueryCache{} }
+func DisableQueryCache() Option { return disableQueryCache{} }
 
-type useQueryCache struct{}
+type disableQueryCache struct{}
 
-func (opt useQueryCache) implementsOption() {}
+func (opt disableQueryCache) implementsOption() {}
 
-func (opt useQueryCache) customizeQuery(conf *bq.JobConfigurationQuery, projectID string) {
-	conf.UseQueryCache = true
+func (opt disableQueryCache) customizeQuery(conf *bq.JobConfigurationQuery, projectID string) {
+	f := false
+	conf.UseQueryCache = &f
 }
 
 // JobPriority returns an Option that causes a query to be scheduled with the specified priority.
