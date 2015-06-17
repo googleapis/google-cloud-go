@@ -15,6 +15,8 @@
 package bigquery
 
 import (
+	"errors"
+
 	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 )
@@ -35,6 +37,10 @@ func (c *Client) JobFromID(id string) *Job {
 		projectID: c.projectID,
 		jobID:     id,
 	}
+}
+
+func (j *Job) ID() string {
+	return j.jobID
 }
 
 // State is one of a sequence of states that a Job progresses through as it is processed.
@@ -94,4 +100,21 @@ func (s *JobStatus) Err() error {
 // Status returns the current status of the job.  It fails if the Status could not be determined.
 func (j *Job) Status(ctx context.Context) (*JobStatus, error) {
 	return j.service.jobStatus(ctx, j.projectID, j.jobID)
+}
+
+func (j *Job) implementsReadSource() {}
+
+func (j *Job) customizeReadQuery(conf *readQueryConf) error {
+	// There are mulitple kinds of jobs, but only a query job is suitable for reading.
+	if !j.IsQuery() {
+		return errors.New("Cannot read from a non-query job")
+	}
+
+	conf.projectID = j.projectID
+	conf.jobID = j.jobID
+	return nil
+}
+
+func (j *Job) IsQuery() bool {
+	return true // TODO(mcgreevy): implement.
 }

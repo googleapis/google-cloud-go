@@ -120,6 +120,8 @@ func (c *Client) Read(ctx context.Context, src ReadSource, options ...ReadOption
 	// TODO(mcgreevy): support Query as a ReadSource.
 	// TODO(mcgreevy): use ctx.
 	switch src := src.(type) {
+	case *Job:
+		return c.readQueryResults(src, options)
 	case *Table:
 		return c.readTable(src, options)
 	}

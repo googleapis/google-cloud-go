@@ -15,7 +15,7 @@
 package bigquery
 
 import (
-	"fmt"
+	"errors"
 	"reflect"
 	"testing"
 
@@ -33,10 +33,10 @@ type listTablesServiceStub struct {
 
 func (s *listTablesServiceStub) listTables(ctx context.Context, projectID, datasetID, pageToken string) ([]*Table, string, error) {
 	if projectID != s.expectedProject {
-		return nil, "", fmt.Errorf("wrong project id")
+		return nil, "", errors.New("wrong project id")
 	}
 	if datasetID != s.expectedDataset {
-		return nil, "", fmt.Errorf("wrong dataset id")
+		return nil, "", errors.New("wrong dataset id")
 	}
 
 	tables := s.values[0]

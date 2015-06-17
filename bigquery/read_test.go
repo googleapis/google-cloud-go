@@ -15,7 +15,7 @@
 package bigquery
 
 import (
-	"fmt"
+	"errors"
 	"reflect"
 	"testing"
 
@@ -24,71 +24,98 @@ import (
 
 // readServiceStub services read requests by returning data from an in-memory list of values.
 type readServiceStub struct {
-	values     [][][]Value          // contains pages / rows / columns.
-	pageTokens map[string]string    // maps incoming page token to returned page token.
-	arguments  []*readTabledataConf // arguments are recorded for later inspection.
+	// values and pageTokens are used as sources of data to return in response to calls to readTabledata or readQuery.
+	values     [][][]Value       // contains pages / rows / columns.
+	pageTokens map[string]string // maps incoming page token to returned page token.
+
+	// arguments are recorded for later inspection.
+	readTabledataArgs    []*readTabledataConf
+	readQueryResultsArgs []*readQueryConf
 
 	service
 }
 
-func (s *readServiceStub) readTabledata(ctx context.Context, conf *readTabledataConf) (*readDataResult, error) {
-	s.arguments = append(s.arguments, conf)
-
+func (s *readServiceStub) readValues(tok string) *readDataResult {
 	result := &readDataResult{
-		pageToken: s.pageTokens[conf.paging.pageToken],
+		pageToken: s.pageTokens[tok],
 		rows:      s.values[0],
 	}
 	s.values = s.values[1:]
 
-	return result, nil
+	return result
+}
+func (s *readServiceStub) readTabledata(ctx context.Context, conf *readTabledataConf) (*readDataResult, error) {
+	s.readTabledataArgs = append(s.readTabledataArgs, conf)
+	return s.readValues(conf.paging.pageToken), nil
 }
 
-func TestReadTable(t *testing.T) {
-	testCases := []struct {
-		data       [][][]Value
-		pageTokens map[string]string
-		want       []ValueList
-	}{
-		{
-			data:       [][][]Value{{{1, 2}, {11, 12}}, {{30, 40}, {31, 41}}},
-			pageTokens: map[string]string{"": "a", "a": ""},
-			want:       []ValueList{{1, 2}, {11, 12}, {30, 40}, {31, 41}},
-		},
-		{
-			data:       [][][]Value{{{1, 2}, {11, 12}}, {{30, 40}, {31, 41}}},
-			pageTokens: map[string]string{"": ""}, // no more pages after first one.
-			want:       []ValueList{{1, 2}, {11, 12}},
-		},
+func (s *readServiceStub) readQuery(ctx context.Context, conf *readQueryConf) (*readDataResult, error) {
+	s.readQueryResultsArgs = append(s.readQueryResultsArgs, conf)
+	return s.readValues(conf.paging.pageToken), nil
+}
+
+func TestRead(t *testing.T) {
+	// The data for the service stub to return is populated for each test case in the testCases for loop.
+	service := &readServiceStub{}
+	c := &Client{
+		service: service,
 	}
 
-Cases:
-	for _, tc := range testCases {
-		c := &Client{
-			service: &readServiceStub{
-				values:     tc.data,
-				pageTokens: tc.pageTokens,
+	queryJob := &Job{
+		projectID: "project-id",
+		jobID:     "job-id",
+		service:   service,
+	}
+
+	for _, src := range []ReadSource{defaultTable, queryJob} {
+		testCases := []struct {
+			data       [][][]Value
+			pageTokens map[string]string
+			want       []ValueList
+		}{
+			{
+				data:       [][][]Value{{{1, 2}, {11, 12}}, {{30, 40}, {31, 41}}},
+				pageTokens: map[string]string{"": "a", "a": ""},
+				want:       []ValueList{{1, 2}, {11, 12}, {30, 40}, {31, 41}},
+			},
+			{
+				data:       [][][]Value{{{1, 2}, {11, 12}}, {{30, 40}, {31, 41}}},
+				pageTokens: map[string]string{"": ""}, // no more pages after first one.
+				want:       []ValueList{{1, 2}, {11, 12}},
 			},
 		}
-		it, err := c.Read(context.Background(), defaultTable)
-		if err != nil {
-			t.Errorf("err calling Read: %v", err)
-			continue
-		}
-		var got []ValueList
-		for it.Next(context.Background()) {
-			var vals ValueList
-			if err := it.Get(&vals); err != nil {
-				t.Errorf("err calling Get: %v", err)
-				continue Cases
-			} else {
-				got = append(got, vals)
+
+		for _, tc := range testCases {
+			service.values = tc.data
+			service.pageTokens = tc.pageTokens
+			if got, ok := doRead(t, c, src); ok {
+				if !reflect.DeepEqual(got, tc.want) {
+					t.Errorf("reading: got:\n%v\nwant:\n%v", got, tc.want)
+				}
 			}
 		}
+	}
+}
 
-		if !reflect.DeepEqual(got, tc.want) {
-			t.Errorf("reading: got:\n%v\nwant:\n%v", got, tc.want)
+// doRead calls Read with a ReadSource. Get is repeatedly called on the Iterator returned by Read and the results are returned.
+func doRead(t *testing.T, c *Client, src ReadSource) ([]ValueList, bool) {
+	it, err := c.Read(context.Background(), src)
+	if err != nil {
+		t.Errorf("err calling Read: %v", err)
+		return nil, false
+	}
+	var got []ValueList
+	for it.Next(context.Background()) {
+		var vals ValueList
+		if err := it.Get(&vals); err != nil {
+			t.Errorf("err calling Get: %v", err)
+			return nil, false
+		} else {
+			got = append(got, vals)
 		}
 	}
+
+	return got, true
 }
 
 func TestNoMoreValues(t *testing.T) {
@@ -125,7 +152,7 @@ type errorReadService struct {
 }
 
 func (s *errorReadService) readTabledata(ctx context.Context, conf *readTabledataConf) (*readDataResult, error) {
-	return nil, fmt.Errorf("bang!")
+	return nil, errors.New("bang!")
 }
 
 func TestReadError(t *testing.T) {
@@ -144,7 +171,7 @@ func TestReadError(t *testing.T) {
 	}
 }
 
-func TestReadOptions(t *testing.T) {
+func TestReadTabledataOptions(t *testing.T) {
 	// test that read options are propagated.
 	s := &readServiceStub{
 		values: [][][]Value{{{1, 2}}},
@@ -169,7 +196,42 @@ func TestReadOptions(t *testing.T) {
 		},
 	}}
 
-	if !reflect.DeepEqual(s.arguments, want) {
-		t.Errorf("reading: got:\n%v\nwant:\n%v", s.arguments, want)
+	if !reflect.DeepEqual(s.readTabledataArgs, want) {
+		t.Errorf("reading: got:\n%v\nwant:\n%v", s.readTabledataArgs, want)
+	}
+}
+
+func TestReadQueryOptions(t *testing.T) {
+	// test that read options are propagated.
+	s := &readServiceStub{
+		values: [][][]Value{{{1, 2}}},
+	}
+	c := &Client{service: s}
+
+	queryJob := &Job{
+		projectID: "project-id",
+		jobID:     "job-id",
+		service:   s,
+	}
+	it, err := c.Read(context.Background(), queryJob, RecordsPerRequest(5))
+
+	if err != nil {
+		t.Fatalf("err calling Read: %v", err)
+	}
+	if !it.Next(context.Background()) {
+		t.Fatalf("Next: got: false: want: true")
+	}
+
+	want := []*readQueryConf{&readQueryConf{
+		projectID: "project-id",
+		jobID:     "job-id",
+		paging: pagingConf{pageToken: "",
+			recordsPerRequest:    5,
+			setRecordsPerRequest: true,
+		},
+	}}
+
+	if !reflect.DeepEqual(s.readQueryResultsArgs, want) {
+		t.Errorf("reading: got:\n%v\nwant:\n%v", s.readQueryResultsArgs, want)
 	}
 }

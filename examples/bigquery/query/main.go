@@ -34,6 +34,7 @@ var (
 	q       = flag.String("q", "", "The query string")
 	dest    = flag.String("dest", "", "The ID of the BigQuery table to write the result to.  If unset, an ephemeral table ID will be generated.")
 	pollint = flag.Duration("pollint", 10*time.Second, "Polling interval for checking job status")
+	wait    = flag.Bool("wait", false, "Whether to wait for the query job to complete.")
 )
 
 func main() {
@@ -83,7 +84,11 @@ func main() {
 		log.Fatalf("Querying: %v", err)
 	}
 
-	fmt.Printf("Job for query operation: %+v\n", job)
+	fmt.Printf("Submitted query. Job ID: %s\n", job.ID())
+	if !*wait {
+		return
+	}
+
 	fmt.Printf("Waiting for job to complete.\n")
 
 	for range time.Tick(*pollint) {

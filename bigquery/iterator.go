@@ -15,7 +15,7 @@
 package bigquery
 
 import (
-	"fmt"
+	"errors"
 
 	"golang.org/x/net/context"
 )
@@ -86,11 +86,13 @@ func (it *Iterator) Err() error {
 // Get loads the current row into dst, which must implement ValueLoader.
 func (it *Iterator) Get(dst interface{}) error {
 	if !it.hasCurrentRow() {
-		return fmt.Errorf("Get called on iterator with no remaining values")
+		return errors.New("Get called on iterator with no remaining values")
 	}
 
 	if dst, ok := dst.(ValueLoader); ok {
 		return dst.Load(it.rs[0])
 	}
-	return fmt.Errorf("Get called with unsupported argument type")
+	return errors.New("Get called with unsupported argument type")
 }
+
+// TODO(mcgreevy): Add a method to *Iterator that returns a schema which describes the data.
