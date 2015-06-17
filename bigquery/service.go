@@ -15,6 +15,7 @@
 package bigquery
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -28,6 +29,7 @@ import (
 // of the generated BigQuery API.
 type service interface {
 	insertJob(ctx context.Context, job *bq.Job, projectId string) (*Job, error)
+	getJobType(ctx context.Context, projectId, jobID string) (jobType, error)
 	jobStatus(ctx context.Context, projectId, jobID string) (*JobStatus, error)
 	listTables(ctx context.Context, projectID, datasetID, pageToken string) ([]*Table, string, error)
 	readQuery(ctx context.Context, conf *readQueryConf) (*readDataResult, error)
@@ -157,6 +159,39 @@ func convertRows(rows []*bq.TableRow) [][]Value {
 		rs = append(rs, convertRow(r))
 	}
 	return rs
+}
+
+type jobType int
+
+const (
+	copyJobType jobType = iota
+	extractJobType
+	loadJobType
+	queryJobType
+)
+
+func (s *bigqueryService) getJobType(ctx context.Context, projectID, jobID string) (jobType, error) {
+	// TODO(mcgreevy): use ctx
+	res, err := s.s.Jobs.Get(projectID, jobID).
+		Fields("configuration").
+		Do()
+
+	if err != nil {
+		return 0, err
+	}
+
+	switch {
+	case res.Configuration.Copy != nil:
+		return copyJobType, nil
+	case res.Configuration.Extract != nil:
+		return extractJobType, nil
+	case res.Configuration.Load != nil:
+		return loadJobType, nil
+	case res.Configuration.Query != nil:
+		return queryJobType, nil
+	default:
+		return 0, errors.New("unknown job type")
+	}
 }
 
 func (s *bigqueryService) jobStatus(ctx context.Context, projectID, jobID string) (*JobStatus, error) {

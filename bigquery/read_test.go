@@ -65,6 +65,7 @@ func TestRead(t *testing.T) {
 		projectID: "project-id",
 		jobID:     "job-id",
 		service:   service,
+		isQuery:   true,
 	}
 
 	for _, src := range []ReadSource{defaultTable, queryJob} {
@@ -212,6 +213,7 @@ func TestReadQueryOptions(t *testing.T) {
 		projectID: "project-id",
 		jobID:     "job-id",
 		service:   s,
+		isQuery:   true,
 	}
 	it, err := c.Read(context.Background(), queryJob, RecordsPerRequest(5))
 

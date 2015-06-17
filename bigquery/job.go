@@ -26,17 +26,25 @@ type Job struct {
 	service   service
 	projectID string
 	jobID     string
+
+	isQuery bool
 }
 
 // JobFromID creates a Job which refers to an existing BigQuery job. The job
 // need not have been created by this package. For example, the job may have
 // been created in the BigQuery console.
-func (c *Client) JobFromID(id string) *Job {
+func (c *Client) JobFromID(ctx context.Context, id string) (*Job, error) {
+	jobType, err := c.service.getJobType(ctx, c.projectID, id)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Job{
 		service:   c.service,
 		projectID: c.projectID,
 		jobID:     id,
-	}
+		isQuery:   jobType == queryJobType,
+	}, nil
 }
 
 func (j *Job) ID() string {
@@ -106,15 +114,11 @@ func (j *Job) implementsReadSource() {}
 
 func (j *Job) customizeReadQuery(conf *readQueryConf) error {
 	// There are mulitple kinds of jobs, but only a query job is suitable for reading.
-	if !j.IsQuery() {
+	if !j.isQuery {
 		return errors.New("Cannot read from a non-query job")
 	}
 
 	conf.projectID = j.projectID
 	conf.jobID = j.jobID
 	return nil
-}
-
-func (j *Job) IsQuery() bool {
-	return true // TODO(mcgreevy): implement.
 }

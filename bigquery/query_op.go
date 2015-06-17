@@ -80,5 +80,9 @@ func (c *Client) query(ctx context.Context, dst *Table, src *Query, options []Op
 	job.Configuration = &bq.JobConfiguration{
 		Query: payload,
 	}
-	return c.service.insertJob(ctx, job, c.projectID)
+	j, err := c.service.insertJob(ctx, job, c.projectID)
+	if err != nil {
+		j.isQuery = true
+	}
+	return j, err
 }

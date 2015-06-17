@@ -75,7 +75,11 @@ func printTable(client *bigquery.Client, t *bigquery.Table) {
 }
 
 func printQueryResults(client *bigquery.Client, queryJobID string) {
-	job := client.JobFromID(queryJobID)
+	job, err := client.JobFromID(context.Background(), queryJobID)
+	if err != nil {
+		log.Fatalf("Loading job: %v", err)
+	}
+
 	it, err := client.Read(context.Background(), job)
 	if err != nil {
 		log.Fatalf("Reading: %v", err)
