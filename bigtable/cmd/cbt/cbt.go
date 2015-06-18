@@ -227,12 +227,14 @@ var commands = []struct {
 			"  If it cannot be parsed, the `@ts` part will be\n" +
 			"  interpreted as part of the value.",
 	},
+	/* TODO(dsymonds): Re-enable when there's a ClusterAdmin API.
 	{
 		Name:  "setclustersize",
 		Desc:  "Set size of a cluster",
 		do:    doSetClusterSize,
 		Usage: "cbt setclustersize <num_nodes>",
 	},
+	*/
 }
 
 func doCount(ctx context.Context, args ...string) {
@@ -527,6 +529,7 @@ func doSet(ctx context.Context, args ...string) {
 	}
 }
 
+/* TODO(dsymonds): Re-enable when there's a ClusterAdmin API.
 func doSetClusterSize(ctx context.Context, args ...string) {
 	if len(args) != 1 {
 		log.Fatalf("usage: cbt setclustersize <num_nodes>")
@@ -539,3 +542,4 @@ func doSetClusterSize(ctx context.Context, args ...string) {
 		log.Fatalf("Setting cluster size: %v", err)
 	}
 }
+*/

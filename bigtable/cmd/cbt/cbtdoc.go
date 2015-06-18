@@ -23,7 +23,6 @@ The commands are:
 	ls                        List tables and column families
 	read                      Read rows
 	set                       Set value of a cell
-	setclustersize            Set size of a cluster
 
 Use "cbt help <command>" for more information about a command.
 
@@ -130,14 +129,6 @@ Usage:
 	  ts is an optional integer timestamp.
 	  If it cannot be parsed, the `@ts` part will be
 	  interpreted as part of the value.
-
-
-
-
-Set size of a cluster
-
-Usage:
-	cbt setclustersize <num_nodes>
 
 
 

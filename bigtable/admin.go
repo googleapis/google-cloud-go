@@ -22,7 +22,6 @@ import (
 
 	"golang.org/x/net/context"
 	"google.golang.org/cloud"
-	btcspb "google.golang.org/cloud/bigtable/internal/cluster_service_proto"
 	bttspb "google.golang.org/cloud/bigtable/internal/table_service_proto"
 	"google.golang.org/grpc"
 )
@@ -33,7 +32,6 @@ const adminAddr = "bigtabletableadmin.googleapis.com:443"
 type AdminClient struct {
 	conn    *grpc.ClientConn
 	tClient bttspb.BigtableTableServiceClient
-	cClient btcspb.BigtableClusterServiceClient
 
 	project, zone, cluster string
 }
@@ -52,7 +50,6 @@ func NewAdminClient(ctx context.Context, project, zone, cluster string, opts ...
 	return &AdminClient{
 		conn:    conn,
 		tClient: bttspb.NewBigtableTableServiceClient(conn),
-		cClient: btcspb.NewBigtableClusterServiceClient(conn),
 
 		project: project,
 		zone:    zone,
@@ -155,6 +152,8 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 	return ti, nil
 }
 
+/* TODO(dsymonds): Re-enable when there's a ClusterAdmin API.
+
 // SetClusterSize sets the number of server nodes for this cluster.
 func (ac *AdminClient) SetClusterSize(ctx context.Context, nodes int) error {
 	req := &btcspb.GetClusterRequest{
@@ -168,3 +167,5 @@ func (ac *AdminClient) SetClusterSize(ctx context.Context, nodes int) error {
 	_, err = ac.cClient.UpdateCluster(ctx, clu)
 	return err
 }
+
+*/
