@@ -82,7 +82,8 @@ func (c *Client) query(ctx context.Context, dst *Table, src *Query, options []Op
 	}
 	j, err := c.service.insertJob(ctx, job, c.projectID)
 	if err != nil {
-		j.isQuery = true
+		return nil, err
 	}
-	return j, err
+	j.isQuery = true
+	return j, nil
 }
