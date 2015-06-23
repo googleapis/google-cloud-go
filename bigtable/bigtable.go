@@ -172,7 +172,7 @@ func decodeFamilyProto(r Row, row string, f *btpb.Family) {
 		for _, cell := range col.Cells {
 			ri := ReadItem{
 				Row:       row,
-				Column:    fmt.Sprintf("%s:%s", fam, col.Qualifier),
+				Column:    fam + ":" + string(col.Qualifier),
 				Timestamp: Timestamp(cell.TimestampMicros),
 				Value:     cell.Value,
 			}
