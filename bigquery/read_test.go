@@ -148,6 +148,59 @@ func TestNoMoreValues(t *testing.T) {
 	}
 }
 
+// delayedReadStub simulates reading results from a query that has not yet
+// completed. Its readQuery method initially reports that the query job is not
+// yet complete. Subsequently, it proxies the request through to another
+// service stub.
+type delayedReadStub struct {
+	numDelays int
+
+	readServiceStub
+}
+
+func (s *delayedReadStub) readQuery(ctx context.Context, conf *readQueryConf) (*readDataResult, error) {
+	if s.numDelays > 0 {
+		s.numDelays--
+		return nil, incompleteJobError
+	}
+	return s.readServiceStub.readQuery(ctx, conf)
+}
+
+// TestIncompleteJob tests that an Iterator which reads from a query job will block until the job is complete.
+func TestIncompleteJob(t *testing.T) {
+	service := &delayedReadStub{
+		numDelays: 2,
+		readServiceStub: readServiceStub{
+			values: [][][]Value{{{1, 2}}},
+		},
+	}
+	c := &Client{service: service}
+	queryJob := &Job{
+		projectID: "project-id",
+		jobID:     "job-id",
+		service:   service,
+		isQuery:   true,
+	}
+	it, err := c.Read(context.Background(), queryJob)
+	if err != nil {
+		t.Fatalf("err calling Read: %v", err)
+	}
+	var got ValueList
+	want := ValueList{1, 2}
+	if !it.Next(context.Background()) {
+		t.Fatalf("Next: got: false: want: true")
+	}
+	if err := it.Get(&got); err != nil {
+		t.Fatalf("Error calling Get: %v", err)
+	}
+	if service.numDelays != 0 {
+		t.Errorf("remaining numDelays : got: %v want:0", service.numDelays)
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("reading: got:\n%v\nwant:\n%v", got, want)
+	}
+}
+
 type errorReadService struct {
 	service
 }

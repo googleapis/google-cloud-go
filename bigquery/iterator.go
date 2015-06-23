@@ -37,7 +37,7 @@ type Iterator struct {
 
 // Next advances the Iterator to the next row, making that row available
 // via the Get method.
-// Next must be called before the first call to Get.
+// Next must be called before the first call to Get, and blocks until data is available.
 // Next returns false when there are no more rows available, either because
 // the end of the output was reached, or because there was an error (consult
 // the Err method to determine which).
@@ -67,12 +67,16 @@ func (it *Iterator) fetchRows(ctx context.Context) {
 	if it.done {
 		return
 	}
-	res, err := it.pf(ctx, it.nextToken)
 
+	res, err := it.pf(ctx, it.nextToken)
+	for err == incompleteJobError {
+		res, err = it.pf(ctx, it.nextToken)
+	}
 	if err != nil {
 		it.err = err
 		return
 	}
+
 	it.done = (res.pageToken == "")
 	it.nextToken = res.pageToken
 	it.rs = res.rows

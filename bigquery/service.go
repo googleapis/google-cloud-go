@@ -18,6 +18,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
@@ -32,7 +33,12 @@ type service interface {
 	getJobType(ctx context.Context, projectId, jobID string) (jobType, error)
 	jobStatus(ctx context.Context, projectId, jobID string) (*JobStatus, error)
 	listTables(ctx context.Context, projectID, datasetID, pageToken string) ([]*Table, string, error)
+
+	// readQuery reads data resulting from a query job. If the job is not
+	// yet complete, an incompleteJobError is returned. readQuery may be
+	// called repeatedly to wait for results indefinitely.
 	readQuery(ctx context.Context, conf *readQueryConf) (*readDataResult, error)
+
 	readTabledata(ctx context.Context, conf *readTabledataConf) (*readDataResult, error)
 }
 
@@ -121,11 +127,19 @@ func (s *bigqueryService) readTabledata(ctx context.Context, conf *readTabledata
 	return result, nil
 }
 
+var incompleteJobError = errors.New("internal error: query results not available because job is not complete")
+
+// getQueryResultsTimeout controls the maximum duration of a request to the
+// BigQuery GetQueryResults endpoint.  Setting a long timeout here does not
+// cause increased overall latency, as results are returned as soon as they are
+// available.
+const getQueryResultsTimeout = time.Minute
+
 func (s *bigqueryService) readQuery(ctx context.Context, conf *readQueryConf) (*readDataResult, error) {
 	req := s.s.Jobs.GetQueryResults(conf.projectID, conf.jobID).
 		PageToken(conf.paging.pageToken).
-		StartIndex(conf.paging.startIndex)
-	// TODO(mcgreevy): support timeout.
+		StartIndex(conf.paging.startIndex).
+		TimeoutMs(getQueryResultsTimeout.Nanoseconds() / 1000)
 
 	if conf.paging.setRecordsPerRequest {
 		req = req.MaxResults(conf.paging.recordsPerRequest)
@@ -134,6 +148,10 @@ func (s *bigqueryService) readQuery(ctx context.Context, conf *readQueryConf) (*
 	res, err := req.Do()
 	if err != nil {
 		return nil, err
+	}
+
+	if !res.JobComplete {
+		return nil, incompleteJobError
 	}
 
 	result := &readDataResult{
