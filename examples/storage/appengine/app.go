@@ -43,9 +43,9 @@ func init() {
 
 // demo struct holds information needed to run the various demo functions.
 type demo struct {
-	c   context.Context
-	w   http.ResponseWriter
-	ctx context.Context
+	w      http.ResponseWriter
+	ctx    context.Context
+	client *storage.Client
 	// cleanUp is a list of filenames that need cleaning up at the end of the demo.
 	cleanUp []string
 	// failed indicates that one or more of the demo steps failed.
@@ -54,7 +54,7 @@ type demo struct {
 
 func (d *demo) errorf(format string, args ...interface{}) {
 	d.failed = true
-	log.Errorf(d.c, format, args...)
+	log.Errorf(d.ctx, format, args...)
 }
 
 // handler is the main demo entry point that calls the GCS operations.
@@ -63,33 +63,41 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	c := appengine.NewContext(r)
+
+	ctx := appengine.NewContext(r)
 	if bucket == "" {
 		var err error
-		if bucket, err = file.DefaultBucketName(c); err != nil {
-			log.Errorf(c, "failed to get default GCS bucket name: %v", err)
+		if bucket, err = file.DefaultBucketName(ctx); err != nil {
+			log.Errorf(ctx, "failed to get default GCS bucket name: %v", err)
 			return
 		}
 	}
+
 	hc := &http.Client{
 		Transport: &oauth2.Transport{
-			Source: google.AppEngineTokenSource(c, storage.ScopeFullControl),
+			Source: google.AppEngineTokenSource(ctx, storage.ScopeFullControl),
 			// Note that the App Engine urlfetch service has a limit of 10MB uploads and
 			// 32MB downloads.
 			// See https://cloud.google.com/appengine/docs/go/urlfetch/#Go_Quotas_and_limits
 			// for more information.
-			Base: &urlfetch.Transport{Context: c},
+			Base: &urlfetch.Transport{Context: ctx},
 		},
 	}
-	ctx := cloud.NewContext(appengine.AppID(c), hc)
+
+	client, err := storage.NewClient(ctx, appengine.AppID(ctx), cloud.WithBaseHTTP(hc))
+	if err != nil {
+		log.Errorf(ctx, "could not create storage client: %v", err)
+		return
+	}
+
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	fmt.Fprintf(w, "Demo GCS Application running from Version: %v\n", appengine.VersionID(c))
+	fmt.Fprintf(w, "Demo GCS Application running from Version: %v\n", appengine.VersionID(ctx))
 	fmt.Fprintf(w, "Using bucket name: %v\n\n", bucket)
 
 	d := &demo{
-		c:   c,
-		w:   w,
-		ctx: ctx,
+		w:      w,
+		ctx:    ctx,
+		client: client,
 	}
 
 	n := "demo-testfile-go"
@@ -122,7 +130,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func (d *demo) createFile(fileName string) {
 	fmt.Fprintf(d.w, "Creating file /%v/%v\n", bucket, fileName)
 
-	wc := storage.NewWriter(d.ctx, bucket, fileName)
+	wc := d.client.NewWriter(d.ctx, bucket, fileName)
 	wc.ContentType = "text/plain"
 	wc.Metadata = map[string]string{
 		"x-goog-meta-foo": "foo",
@@ -148,7 +156,7 @@ func (d *demo) createFile(fileName string) {
 func (d *demo) readFile(fileName string) {
 	io.WriteString(d.w, "\nAbbreviated file content (first line and last 1K):\n")
 
-	rc, err := storage.NewReader(d.ctx, bucket, fileName)
+	rc, err := d.client.NewReader(d.ctx, bucket, fileName)
 	if err != nil {
 		d.errorf("readFile: unable to open file from bucket %q, file %q: %v", bucket, fileName, err)
 		return
@@ -173,7 +181,7 @@ func (d *demo) copyFile(fileName string) {
 	copyName := fileName + "-copy"
 	fmt.Fprintf(d.w, "Copying file /%v/%v to /%v/%v:\n", bucket, fileName, bucket, copyName)
 
-	obj, err := storage.CopyObject(d.ctx, bucket, fileName, bucket, copyName, nil)
+	obj, err := d.client.CopyObject(d.ctx, bucket, fileName, bucket, copyName, nil)
 	if err != nil {
 		d.errorf("copyFile: unable to copy /%v/%v to bucket %q, file %q: %v", bucket, fileName, bucket, copyName, err)
 		return
@@ -205,7 +213,7 @@ func (d *demo) dumpStats(obj *storage.Object) {
 func (d *demo) statFile(fileName string) {
 	io.WriteString(d.w, "\nFile stat:\n")
 
-	obj, err := storage.StatObject(d.ctx, bucket, fileName)
+	obj, err := d.client.StatObject(d.ctx, bucket, fileName)
 	if err != nil {
 		d.errorf("statFile: unable to stat file from bucket %q, file %q: %v", bucket, fileName, err)
 		return
@@ -228,7 +236,7 @@ func (d *demo) listBucket() {
 
 	query := &storage.Query{Prefix: "foo"}
 	for query != nil {
-		objs, err := storage.ListObjects(d.ctx, bucket, query)
+		objs, err := d.client.ListObjects(d.ctx, bucket, query)
 		if err != nil {
 			d.errorf("listBucket: unable to list bucket %q: %v", bucket, err)
 			return
@@ -244,7 +252,7 @@ func (d *demo) listBucket() {
 func (d *demo) listDir(name, indent string) {
 	query := &storage.Query{Prefix: name, Delimiter: "/"}
 	for query != nil {
-		objs, err := storage.ListObjects(d.ctx, bucket, query)
+		objs, err := d.client.ListObjects(d.ctx, bucket, query)
 		if err != nil {
 			d.errorf("listBucketDirMode: unable to list bucket %q: %v", bucket, err)
 			return
@@ -270,7 +278,7 @@ func (d *demo) listBucketDirMode() {
 
 // dumpDefaultACL prints out the default object ACL for this bucket.
 func (d *demo) dumpDefaultACL() {
-	acl, err := storage.DefaultACL(d.ctx, bucket)
+	acl, err := d.client.DefaultACL(d.ctx, bucket)
 	if err != nil {
 		d.errorf("defaultACL: unable to list default object ACL for bucket %q: %v", bucket, err)
 		return
@@ -289,7 +297,7 @@ func (d *demo) defaultACL() {
 // putDefaultACLRule adds the "allUsers" default object ACL rule for this bucket.
 func (d *demo) putDefaultACLRule() {
 	io.WriteString(d.w, "\nPut Default object ACL Rule:\n")
-	err := storage.PutDefaultACLRule(d.ctx, bucket, "allUsers", storage.RoleReader)
+	err := d.client.PutDefaultACLRule(d.ctx, bucket, "allUsers", storage.RoleReader)
 	if err != nil {
 		d.errorf("putDefaultACLRule: unable to save default object ACL rule for bucket %q: %v", bucket, err)
 		return
@@ -300,7 +308,7 @@ func (d *demo) putDefaultACLRule() {
 // deleteDefaultACLRule deleted the "allUsers" default object ACL rule for this bucket.
 func (d *demo) deleteDefaultACLRule() {
 	io.WriteString(d.w, "\nDelete Default object ACL Rule:\n")
-	err := storage.DeleteDefaultACLRule(d.ctx, bucket, "allUsers")
+	err := d.client.DeleteDefaultACLRule(d.ctx, bucket, "allUsers")
 	if err != nil {
 		d.errorf("deleteDefaultACLRule: unable to delete default object ACL rule for bucket %q: %v", bucket, err)
 		return
@@ -310,7 +318,7 @@ func (d *demo) deleteDefaultACLRule() {
 
 // dumpBucketACL prints out the bucket ACL.
 func (d *demo) dumpBucketACL() {
-	acl, err := storage.BucketACL(d.ctx, bucket)
+	acl, err := d.client.BucketACL(d.ctx, bucket)
 	if err != nil {
 		d.errorf("dumpBucketACL: unable to list bucket ACL for bucket %q: %v", bucket, err)
 		return
@@ -329,7 +337,7 @@ func (d *demo) bucketACL() {
 // putBucketACLRule adds the "allUsers" bucket ACL rule for this bucket.
 func (d *demo) putBucketACLRule() {
 	io.WriteString(d.w, "\nPut Bucket ACL Rule:\n")
-	err := storage.PutBucketACLRule(d.ctx, bucket, "allUsers", storage.RoleReader)
+	err := d.client.PutBucketACLRule(d.ctx, bucket, "allUsers", storage.RoleReader)
 	if err != nil {
 		d.errorf("putBucketACLRule: unable to save bucket ACL rule for bucket %q: %v", bucket, err)
 		return
@@ -340,7 +348,7 @@ func (d *demo) putBucketACLRule() {
 // deleteBucketACLRule deleted the "allUsers" bucket ACL rule for this bucket.
 func (d *demo) deleteBucketACLRule() {
 	io.WriteString(d.w, "\nDelete Bucket ACL Rule:\n")
-	err := storage.DeleteBucketACLRule(d.ctx, bucket, "allUsers")
+	err := d.client.DeleteBucketACLRule(d.ctx, bucket, "allUsers")
 	if err != nil {
 		d.errorf("deleteBucketACLRule: unable to delete bucket ACL rule for bucket %q: %v", bucket, err)
 		return
@@ -350,7 +358,7 @@ func (d *demo) deleteBucketACLRule() {
 
 // dumpACL prints out the ACL of the named file.
 func (d *demo) dumpACL(fileName string) {
-	acl, err := storage.ACL(d.ctx, bucket, fileName)
+	acl, err := d.client.ACL(d.ctx, bucket, fileName)
 	if err != nil {
 		d.errorf("dumpACL: unable to list file ACL for bucket %q, file %q: %v", bucket, fileName, err)
 		return
@@ -369,7 +377,7 @@ func (d *demo) acl(fileName string) {
 // putACLRule adds the "allUsers" ACL rule for the named file.
 func (d *demo) putACLRule(fileName string) {
 	fmt.Fprintf(d.w, "\nPut ACL rule for file %v:\n", fileName)
-	err := storage.PutACLRule(d.ctx, bucket, fileName, "allUsers", storage.RoleReader)
+	err := d.client.PutACLRule(d.ctx, bucket, fileName, "allUsers", storage.RoleReader)
 	if err != nil {
 		d.errorf("putACLRule: unable to save ACL rule for bucket %q, file %q: %v", bucket, fileName, err)
 		return
@@ -380,7 +388,7 @@ func (d *demo) putACLRule(fileName string) {
 // deleteACLRule deleted the "allUsers" ACL rule for the named file.
 func (d *demo) deleteACLRule(fileName string) {
 	fmt.Fprintf(d.w, "\nDelete ACL rule for file %v:\n", fileName)
-	err := storage.DeleteACLRule(d.ctx, bucket, fileName, "allUsers")
+	err := d.client.DeleteACLRule(d.ctx, bucket, fileName, "allUsers")
 	if err != nil {
 		d.errorf("deleteACLRule: unable to delete ACL rule for bucket %q, file %q: %v", bucket, fileName, err)
 		return
@@ -393,7 +401,7 @@ func (d *demo) deleteFiles() {
 	io.WriteString(d.w, "\nDeleting files...\n")
 	for _, v := range d.cleanUp {
 		fmt.Fprintf(d.w, "Deleting file %v\n", v)
-		if err := storage.DeleteObject(d.ctx, bucket, v); err != nil {
+		if err := d.client.DeleteObject(d.ctx, bucket, v); err != nil {
 			d.errorf("deleteFiles: unable to delete bucket %q, file %q: %v", bucket, v, err)
 			return
 		}

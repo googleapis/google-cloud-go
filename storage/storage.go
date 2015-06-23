@@ -33,7 +33,8 @@ import (
 	"strings"
 	"time"
 
-	"google.golang.org/cloud/internal"
+	"google.golang.org/cloud"
+	"google.golang.org/cloud/internal/transport"
 
 	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
@@ -59,6 +60,37 @@ const (
 	ScopeReadWrite = raw.DevstorageReadWriteScope
 )
 
+// Client is a client for interacting with Google Cloud Storage.
+type Client struct {
+	conn *http.Client
+	raw  *raw.Service
+
+	project string
+}
+
+// NewClient creates a new Client for a given project.
+func NewClient(ctx context.Context, project string, opts ...cloud.ClientOption) (*Client, error) {
+	conn, _, err := transport.NewHTTPClient(ctx, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("dialing: %v", err)
+	}
+	rawService, err := raw.New(conn)
+	if err != nil {
+		return nil, fmt.Errorf("storage client: %v", err)
+	}
+	return &Client{
+		conn: conn,
+		raw:  rawService,
+
+		project: project,
+	}, nil
+}
+
+// Close closes the Client.
+func (c *Client) Close() {
+	// NOTE(cbro): no-op until we migrate the transport to gRPC.
+}
+
 // TODO(jbd): Add storage.buckets.list.
 // TODO(jbd): Add storage.buckets.insert.
 // TODO(jbd): Add storage.buckets.update.
@@ -67,8 +99,8 @@ const (
 // TODO(jbd): Add storage.objects.watch.
 
 // BucketInfo returns the metadata for the specified bucket.
-func BucketInfo(ctx context.Context, name string) (*Bucket, error) {
-	resp, err := rawService(ctx).Buckets.Get(name).Projection("full").Do()
+func (c *Client) BucketInfo(ctx context.Context, name string) (*Bucket, error) {
+	resp, err := c.raw.Buckets.Get(name).Projection("full").Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrBucketNotExist
 	}
@@ -80,19 +112,19 @@ func BucketInfo(ctx context.Context, name string) (*Bucket, error) {
 
 // ListObjects lists objects from the bucket. You can specify a query
 // to filter the results. If q is nil, no filtering is applied.
-func ListObjects(ctx context.Context, bucket string, q *Query) (*Objects, error) {
-	c := rawService(ctx).Objects.List(bucket)
-	c.Projection("full")
+func (c *Client) ListObjects(ctx context.Context, bucket string, q *Query) (*Objects, error) {
+	req := c.raw.Objects.List(bucket)
+	req.Projection("full")
 	if q != nil {
-		c.Delimiter(q.Delimiter)
-		c.Prefix(q.Prefix)
-		c.Versions(q.Versions)
-		c.PageToken(q.Cursor)
+		req.Delimiter(q.Delimiter)
+		req.Prefix(q.Prefix)
+		req.Versions(q.Versions)
+		req.PageToken(q.Cursor)
 		if q.MaxResults > 0 {
-			c.MaxResults(int64(q.MaxResults))
+			req.MaxResults(int64(q.MaxResults))
 		}
 	}
-	resp, err := c.Do()
+	resp, err := req.Do()
 	if err != nil {
 		return nil, err
 	}
@@ -220,8 +252,8 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 }
 
 // StatObject returns meta information about the specified object.
-func StatObject(ctx context.Context, bucket, name string) (*Object, error) {
-	o, err := rawService(ctx).Objects.Get(bucket, name).Projection("full").Do()
+func (c *Client) StatObject(ctx context.Context, bucket, name string) (*Object, error) {
+	o, err := c.raw.Objects.Get(bucket, name).Projection("full").Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
 	}
@@ -233,8 +265,8 @@ func StatObject(ctx context.Context, bucket, name string) (*Object, error) {
 
 // UpdateAttrs updates an object with the provided attributes.
 // All zero-value attributes are ignored.
-func UpdateAttrs(ctx context.Context, bucket, name string, attrs ObjectAttrs) (*Object, error) {
-	o, err := rawService(ctx).Objects.Patch(bucket, name, attrs.toRawObject(bucket)).Projection("full").Do()
+func (c *Client) UpdateAttrs(ctx context.Context, bucket, name string, attrs ObjectAttrs) (*Object, error) {
+	o, err := c.raw.Objects.Patch(bucket, name, attrs.toRawObject(bucket)).Projection("full").Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
 	}
@@ -245,13 +277,13 @@ func UpdateAttrs(ctx context.Context, bucket, name string, attrs ObjectAttrs) (*
 }
 
 // DeleteObject deletes the single specified object.
-func DeleteObject(ctx context.Context, bucket, name string) error {
-	return rawService(ctx).Objects.Delete(bucket, name).Do()
+func (c *Client) DeleteObject(ctx context.Context, bucket, name string) error {
+	return c.raw.Objects.Delete(bucket, name).Do()
 }
 
 // CopyObject copies the source object to the destination.
 // The copied object's attributes are overwritten by attrs if non-nil.
-func CopyObject(ctx context.Context, srcBucket, srcName string, destBucket, destName string, attrs *ObjectAttrs) (*Object, error) {
+func (c *Client) CopyObject(ctx context.Context, srcBucket, srcName string, destBucket, destName string, attrs *ObjectAttrs) (*Object, error) {
 	if srcBucket == "" || destBucket == "" {
 		return nil, errors.New("storage: srcBucket and destBucket must both be non-empty")
 	}
@@ -266,7 +298,7 @@ func CopyObject(ctx context.Context, srcBucket, srcName string, destBucket, dest
 		}
 		rawObject = attrs.toRawObject(destBucket)
 	}
-	o, err := rawService(ctx).Objects.Copy(
+	o, err := c.raw.Objects.Copy(
 		srcBucket, srcName, destBucket, destName, rawObject).Projection("full").Do()
 	if err != nil {
 		return nil, err
@@ -276,14 +308,13 @@ func CopyObject(ctx context.Context, srcBucket, srcName string, destBucket, dest
 
 // NewReader creates a new io.ReadCloser to read the contents
 // of the object.
-func NewReader(ctx context.Context, bucket, name string) (io.ReadCloser, error) {
-	hc := internal.HTTPClient(ctx)
+func (c *Client) NewReader(ctx context.Context, bucket, name string) (io.ReadCloser, error) {
 	u := &url.URL{
 		Scheme: "https",
 		Host:   "storage.googleapis.com",
 		Path:   fmt.Sprintf("/%s/%s", bucket, name),
 	}
-	res, err := hc.Get(u.String())
+	res, err := c.conn.Get(u.String())
 	if err != nil {
 		return nil, err
 	}
@@ -310,20 +341,13 @@ func NewReader(ctx context.Context, bucket, name string) (io.ReadCloser, error) 
 //
 // The object is not available and any previous object with the same
 // name is not replaced on Cloud Storage until Close is called.
-func NewWriter(ctx context.Context, bucket, name string) *Writer {
+func (c *Client) NewWriter(ctx context.Context, bucket, name string) *Writer {
 	return &Writer{
-		ctx:    ctx,
+		client: c,
 		bucket: bucket,
 		name:   name,
 		donec:  make(chan struct{}),
 	}
-}
-
-func rawService(ctx context.Context) *raw.Service {
-	return internal.Service(ctx, "storage", func(hc *http.Client) interface{} {
-		svc, _ := raw.New(hc)
-		return svc
-	}).(*raw.Service)
 }
 
 // parseKey converts the binary contents of a private key file

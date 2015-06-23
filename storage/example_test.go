@@ -20,7 +20,6 @@ import (
 	"testing"
 
 	"golang.org/x/net/context"
-	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/cloud"
 	"google.golang.org/cloud/storage"
@@ -30,7 +29,7 @@ import (
 // Related to https://codereview.appspot.com/107320046
 func TestA(t *testing.T) {}
 
-func Example_auth() context.Context {
+func Example_auth() {
 	// Initialize an authorized context with Google Developers Console
 	// JSON key. Read the google package examples to learn more about
 	// different authorization flows you can use.
@@ -46,20 +45,26 @@ func Example_auth() context.Context {
 	if err != nil {
 		log.Fatal(err)
 	}
-	ctx := cloud.NewContext("project-id", conf.Client(oauth2.NoContext))
-	// Use the context (see other examples)
-	return ctx
+	ctx := context.TODO()
+	client, err := storage.NewClient(ctx, "project-id", cloud.WithTokenSource(conf.TokenSource(ctx)))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Use the client (see other examples)
+	_ = client
 }
 
 func ExampleListObjects() {
-	ctx := Example_auth()
+	ctx := context.TODO()
+	var client *storage.Client // See Example (Auth)
 
 	var query *storage.Query
 	for {
 		// If you are using this package on App Engine Managed VMs runtime,
 		// you can init a bucket client with your app's default bucket name.
 		// See http://godoc.org/google.golang.org/appengine/file#DefaultBucketName.
-		objects, err := storage.ListObjects(ctx, "bucketname", query)
+		objects, err := client.ListObjects(ctx, "bucketname", query)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -78,9 +83,10 @@ func ExampleListObjects() {
 }
 
 func ExampleNewReader() {
-	ctx := Example_auth()
+	ctx := context.TODO()
+	var client *storage.Client // See Example (Auth)
 
-	rc, err := storage.NewReader(ctx, "bucketname", "filename1")
+	rc, err := client.NewReader(ctx, "bucketname", "filename1")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -94,9 +100,10 @@ func ExampleNewReader() {
 }
 
 func ExampleNewWriter() {
-	ctx := Example_auth()
+	ctx := context.TODO()
+	var client *storage.Client // See Example (Auth)
 
-	wc := storage.NewWriter(ctx, "bucketname", "filename1")
+	wc := client.NewWriter(ctx, "bucketname", "filename1")
 	wc.ContentType = "text/plain"
 	wc.ACL = []storage.ACLRule{{storage.AllUsers, storage.RoleReader}}
 	if _, err := wc.Write([]byte("hello world")); err != nil {
@@ -109,9 +116,10 @@ func ExampleNewWriter() {
 }
 
 func ExampleCopyObject() {
-	ctx := Example_auth()
+	ctx := context.TODO()
+	var client *storage.Client // See Example (Auth)
 
-	o, err := storage.CopyObject(ctx, "bucketname", "file1", "another-bucketname", "file2", nil)
+	o, err := client.CopyObject(ctx, "bucketname", "file1", "another-bucketname", "file2", nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -119,8 +127,10 @@ func ExampleCopyObject() {
 }
 
 func ExampleDeleteObject() {
+	ctx := context.TODO()
+	var client *storage.Client // See Example (Auth)
+
 	// To delete multiple objects in a bucket, first ListObjects then delete them.
-	ctx := Example_auth()
 
 	// If you are using this package on App Engine Managed VMs runtime,
 	// you can init a bucket client with your app's default bucket name.
@@ -129,13 +139,13 @@ func ExampleDeleteObject() {
 
 	var query *storage.Query // Set up query as desired.
 	for {
-		objects, err := storage.ListObjects(ctx, bucket, query)
+		objects, err := client.ListObjects(ctx, bucket, query)
 		if err != nil {
 			log.Fatal(err)
 		}
 		for _, obj := range objects.Results {
 			log.Printf("deleting object name: %q, size: %v", obj.Name, obj.Size)
-			if err := storage.DeleteObject(ctx, bucket, obj.Name); err != nil {
+			if err := client.DeleteObject(ctx, bucket, obj.Name); err != nil {
 				log.Fatalf("unable to delete %q: %v", obj.Name, err)
 			}
 		}

@@ -20,7 +20,6 @@ import (
 	"sync"
 	"time"
 
-	"golang.org/x/net/context"
 	raw "google.golang.org/api/storage/v1"
 )
 
@@ -336,7 +335,7 @@ type Writer struct {
 	// attributes are ignored.
 	ObjectAttrs
 
-	ctx    context.Context
+	client *Client
 	bucket string
 	name   string
 
@@ -364,7 +363,7 @@ func (w *Writer) open() {
 	w.opened = true
 
 	go func() {
-		resp, err := rawService(w.ctx).Objects.Insert(
+		resp, err := w.client.raw.Objects.Insert(
 			w.bucket, attrs.toRawObject(w.bucket)).Media(w.r).Projection("full").Do()
 		w.err = err
 		if err == nil {
