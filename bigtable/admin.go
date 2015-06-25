@@ -154,6 +154,23 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 	return ti, nil
 }
 
+func (ac *AdminClient) SetGCPolicy(ctx context.Context, table, family string, policy GCPolicy) error {
+	prefix := ac.clusterPrefix()
+	tbl, err := ac.tClient.GetTable(ctx, &bttspb.GetTableRequest{
+		Name: prefix + "/tables/" + table,
+	})
+	if err != nil {
+		return err
+	}
+	fam, ok := tbl.ColumnFamilies[family]
+	if !ok {
+		return fmt.Errorf("unknown column family %q", family)
+	}
+	fam.GcRule = policy.proto()
+	_, err = ac.tClient.UpdateColumnFamily(ctx, fam)
+	return err
+}
+
 const clusterAdminAddr = "bigtableclusteradmin.googleapis.com:443"
 
 // ClusterAdminClient is a client type for performing admin operations on clusters.
