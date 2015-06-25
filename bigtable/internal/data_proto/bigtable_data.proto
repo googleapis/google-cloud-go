@@ -94,6 +94,8 @@ message ColumnRange {
   // The name of the column family within which this range falls.
   string family_name = 1;
 
+  // The column qualifier at which to start the range (within 'column_family').
+  // If neither field is set, interpreted as the empty string, inclusive.
   oneof start_qualifier {
     // Used when giving an inclusive lower bound for the range.
     bytes start_qualifier_inclusive = 2;
@@ -102,6 +104,8 @@ message ColumnRange {
     bytes start_qualifier_exclusive = 3;
   }
 
+  // The column qualifier at which to end the range (within 'column_family').
+  // If neither field is set, interpreted as the infinite string, exclusive.
   oneof end_qualifier {
     // Used when giving an inclusive upper bound for the range.
     bytes end_qualifier_inclusive = 4;
@@ -122,6 +126,8 @@ message TimestampRange {
 
 // Specifies a contiguous range of raw byte values.
 message ValueRange {
+  // The value at which to start the range.
+  // If neither field is set, interpreted as the empty string, inclusive.
   oneof start_value {
     // Used when giving an inclusive lower bound for the range.
     bytes start_value_inclusive = 1;
@@ -130,6 +136,8 @@ message ValueRange {
     bytes start_value_exclusive = 2;
   }
 
+  // The value at which to end the range.
+  // If neither field is set, interpreted as the infinite string, exclusive.
   oneof end_value {
     // Used when giving an inclusive upper bound for the range.
     bytes end_value_inclusive = 3;
@@ -233,6 +241,8 @@ message RowFilter {
     RowFilter false_filter = 3;
   }
 
+  // Which of the possible RowFilter types to apply. If none are set, this
+  // RowFilter returns all cells in the input row.
   oneof filter {
     // Applies several RowFilters to the data in sequence, progressively
     // narrowing the results.
@@ -358,6 +368,7 @@ message Mutation {
 
   }
 
+  // Which of the possible Mutation types to apply.
   oneof mutation {
     // Set a cell's value.
     SetCell set_cell = 1;
@@ -385,6 +396,8 @@ message ReadModifyWriteRule {
   // Can be any byte string, including the empty string.
   bytes column_qualifier = 2;
 
+  // The rule used to determine the column's new latest value from its current
+  // latest value.
   oneof rule {
     // Rule specifying that "append_value" be appended to the existing value.
     // If the targeted cell is unset, it will be treated as containing the

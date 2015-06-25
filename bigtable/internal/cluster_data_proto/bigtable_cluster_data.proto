@@ -80,4 +80,20 @@ message Cluster {
 
   // The maximum SSD storage usage allowed in this cluster, in bytes.
   int64 ssd_bytes = 7;
+
+  // What storage type to use for tables in this cluster. Only configurable at
+  // cluster creation time. If unspecified, STORAGE_SSD will be used.
+  StorageType default_storage_type = 8;
+}
+
+enum StorageType {
+  // The storage type used is unspecified.
+  STORAGE_UNSPECIFIED = 0;
+
+  // Data will be stored in SSD, providing low and consistent latencies.
+  STORAGE_SSD = 1;
+
+  // Data will be stored in HDD, providing high and less predictable
+  // latencies.
+  STORAGE_HDD = 2;
 }

@@ -19,6 +19,33 @@ import proto "github.com/golang/protobuf/proto"
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 
+type StorageType int32
+
+const (
+	// The storage type used is unspecified.
+	StorageType_STORAGE_UNSPECIFIED StorageType = 0
+	// Data will be stored in SSD, providing low and consistent latencies.
+	StorageType_STORAGE_SSD StorageType = 1
+	// Data will be stored in HDD, providing high and less predictable
+	// latencies.
+	StorageType_STORAGE_HDD StorageType = 2
+)
+
+var StorageType_name = map[int32]string{
+	0: "STORAGE_UNSPECIFIED",
+	1: "STORAGE_SSD",
+	2: "STORAGE_HDD",
+}
+var StorageType_value = map[string]int32{
+	"STORAGE_UNSPECIFIED": 0,
+	"STORAGE_SSD":         1,
+	"STORAGE_HDD":         2,
+}
+
+func (x StorageType) String() string {
+	return proto.EnumName(StorageType_name, int32(x))
+}
+
 // Possible states of a zone.
 type Zone_Status int32
 
@@ -82,6 +109,9 @@ type Cluster struct {
 	HddBytes int64 `protobuf:"varint,6,opt,name=hdd_bytes" json:"hdd_bytes,omitempty"`
 	// The maximum SSD storage usage allowed in this cluster, in bytes.
 	SsdBytes int64 `protobuf:"varint,7,opt,name=ssd_bytes" json:"ssd_bytes,omitempty"`
+	// What storage type to use for tables in this cluster. Only configurable at
+	// cluster creation time. If unspecified, STORAGE_SSD will be used.
+	DefaultStorageType StorageType `protobuf:"varint,8,opt,name=default_storage_type,enum=google.bigtable.admin.cluster.v1.StorageType" json:"default_storage_type,omitempty"`
 }
 
 func (m *Cluster) Reset()         { *m = Cluster{} }
@@ -89,5 +119,6 @@ func (m *Cluster) String() string { return proto.CompactTextString(m) }
 func (*Cluster) ProtoMessage()    {}
 
 func init() {
+	proto.RegisterEnum("google.bigtable.admin.cluster.v1.StorageType", StorageType_name, StorageType_value)
 	proto.RegisterEnum("google.bigtable.admin.cluster.v1.Zone_Status", Zone_Status_name, Zone_Status_value)
 }

@@ -16,6 +16,7 @@ syntax = "proto3";
 
 package google.bigtable.admin.table.v1;
 
+import "google.golang.org/cloud/bigtable/internal/duration_proto/duration.proto";
 
 option java_multiple_files = true;
 option java_outer_classname = "BigtableTableDataProto";
@@ -79,4 +80,40 @@ message ColumnFamily {
   // it's possible for reads to return a cell even if it matches the active GC
   // expression for its family.
   string gc_expression = 2;
+
+  // Garbage collection rule specified as a protobuf.
+  // Supercedes `gc_expression`.
+  // Garbage collection executes opportunistically in the background, and so
+  // it's possible for reads to return a cell even if it matches the active GC
+  // expression for its family.
+  GcRule gc_rule = 3;
+}
+
+// Rule for determining which cells to delete during garbage collection.
+message GcRule {
+  // A GcRule which deletes cells matching all of the given rules.
+  message Intersection {
+    // Only delete cells which would be deleted by every element of `rules`.
+    repeated GcRule rules = 1;
+  }
+
+  // A GcRule which deletes cells matching any of the given rules.
+  message Union {
+    // Delete cells which would be deleted by any element of `rules`.
+    repeated GcRule rules = 1;
+  }
+
+  oneof rule {
+    // Delete all cells in a column except the most recent N.
+    int32 max_num_versions = 1;
+
+    // Delete cells in a column older than the given age.
+    google.protobuf.Duration max_age = 2;
+
+    // Delete cells that would be deleted by every nested rule.
+    Intersection intersection = 3;
+
+    // Delete cells that would be deleted by any nested rule.
+    Union union = 4;
+  }
 }

@@ -28,6 +28,7 @@ message ReadRowsRequest {
   // The unique name of the table from which to read.
   string table_name = 1;
 
+  // If neither row_key nor row_range is set, reads from all rows.
   oneof target {
     // The key of a single row from which to read.
     bytes row_key = 2;
@@ -35,11 +36,6 @@ message ReadRowsRequest {
     // A range of rows from which to read.
     RowRange row_range = 3;
   }
-
-  // The filter to apply to the contents of the specified row(s), in the
-  // deprecated string format. If unset, reads the most recent value from all
-  // readable columns.
-  string DEPRECATED_string_filter = 4;
 
   // The filter to apply to the contents of the specified row(s). If unset,
   // reads the entire table.
@@ -126,6 +122,7 @@ message MutateRowRequest {
 
   // Changes to be atomically applied to the specified row. Entries are applied
   // in order, meaning that earlier mutations can be masked by later ones.
+  // Must contain at least one entry and at most 100000.
   repeated Mutation mutations = 3;
 }
 
@@ -138,29 +135,25 @@ message CheckAndMutateRowRequest {
   // The key of the row to which the conditional mutation should be applied.
   bytes row_key = 2;
 
-  // Changes to be atomically applied to the specified row if "predicate_filter"
-  // yields at least one cell when applied to "row_key". Entries are applied in
-  // order, meaning that earlier mutations can be masked by later ones.
-  // Must contain at least one entry if "false_mutations" is empty.
-  repeated Mutation true_mutations = 4;
-
-  // Changes to be atomically applied to the specified row if "predicate_filter"
-  // does not yield any cells when applied to "row_key". Entries are applied in
-  // order, meaning that earlier mutations can be masked by later ones.
-  // Must contain at least one entry if "true_mutations" is empty.
-  repeated Mutation false_mutations = 5;
-
-  // The filter to be applied to the contents of the specified row, in the
-  // deprecated string format. Depending on whether or not any results are
-  // yielded, either "true_mutations" or "false_mutations" will be executed. If
-  // unset, checks that the row contains any values at all.
-  string DEPRECATED_field_3 = 3;
-
   // The filter to be applied to the contents of the specified row. Depending
   // on whether or not any results are yielded, either "true_mutations" or
   // "false_mutations" will be executed. If unset, checks that the row contains
   // any values at all.
   RowFilter predicate_filter = 6;
+
+  // Changes to be atomically applied to the specified row if "predicate_filter"
+  // yields at least one cell when applied to "row_key". Entries are applied in
+  // order, meaning that earlier mutations can be masked by later ones.
+  // Must contain at least one entry if "false_mutations" is empty, and at most
+  // 100000.
+  repeated Mutation true_mutations = 4;
+
+  // Changes to be atomically applied to the specified row if "predicate_filter"
+  // does not yield any cells when applied to "row_key". Entries are applied in
+  // order, meaning that earlier mutations can be masked by later ones.
+  // Must contain at least one entry if "true_mutations" is empty, and at most
+  // 100000.
+  repeated Mutation false_mutations = 5;
 }
 
 // Response message for BigtableService.CheckAndMutateRowRequest.

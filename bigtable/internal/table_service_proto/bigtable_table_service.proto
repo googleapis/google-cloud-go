@@ -20,7 +20,6 @@ import "google.golang.org/cloud/bigtable/internal/table_data_proto/bigtable_tabl
 import "google.golang.org/cloud/bigtable/internal/table_service_proto/bigtable_table_service_messages.proto";
 import "google.golang.org/cloud/bigtable/internal/empty/empty.proto";
 
-option java_generic_services = true;
 option java_multiple_files = true;
 option java_outer_classname = "BigtableTableServicesProto";
 option java_package = "com.google.bigtable.admin.table.v1";
