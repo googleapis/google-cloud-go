@@ -41,9 +41,10 @@ import (
 var (
 	oFlag = flag.String("o", "", "if set, redirect stdout to this file")
 
-	config      *cbtrc.Config
-	client      *bigtable.Client
-	adminClient *bigtable.AdminClient
+	config             *cbtrc.Config
+	client             *bigtable.Client
+	adminClient        *bigtable.AdminClient
+	clusterAdminClient *bigtable.ClusterAdminClient
 )
 
 func getClient() *bigtable.Client {
@@ -66,6 +67,17 @@ func getAdminClient() *bigtable.AdminClient {
 		}
 	}
 	return adminClient
+}
+
+func getClusterAdminClient() *bigtable.ClusterAdminClient {
+	if clusterAdminClient == nil {
+		var err error
+		clusterAdminClient, err = bigtable.NewClusterAdminClient(context.Background(), config.Project)
+		if err != nil {
+			log.Fatalf("Making bigtable.ClusterAdminClient: %v", err)
+		}
+	}
+	return clusterAdminClient
 }
 
 func main() {
@@ -193,6 +205,12 @@ var commands = []struct {
 		Desc:  "Print help text",
 		do:    doHelp,
 		Usage: "cbt help [command]",
+	},
+	{
+		Name:  "listclusters",
+		Desc:  "List clusters in a project",
+		do:    doListClusters,
+		Usage: "cbt listclusters",
 	},
 	{
 		Name:  "lookup",
@@ -387,6 +405,23 @@ func doHelpReal(ctx context.Context, args ...string) {
 		}
 	}
 	log.Fatalf("Don't know command %q", args[0])
+}
+
+func doListClusters(ctx context.Context, args ...string) {
+	if len(args) != 0 {
+		log.Fatalf("usage: cbt listclusters")
+	}
+	cis, err := getClusterAdminClient().Clusters(ctx)
+	if err != nil {
+		log.Fatalf("Getting list of clusters: %v", err)
+	}
+	tw := tabwriter.NewWriter(os.Stdout, 10, 8, 4, '\t', 0)
+	fmt.Fprintf(tw, "Cluster Name\tZone\tInfo\n")
+	fmt.Fprintf(tw, "------------\t----\t----\n")
+	for _, ci := range cis {
+		fmt.Fprintf(tw, "%s\t%s\t%s (%d serve nodes)\n", ci.Name, ci.Zone, ci.DisplayName, ci.ServeNodes)
+	}
+	tw.Flush()
 }
 
 func doLookup(ctx context.Context, args ...string) {

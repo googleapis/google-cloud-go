@@ -19,6 +19,7 @@ The commands are:
 	deletetable               Delete a table
 	doc                       Print documentation for cbt
 	help                      Print help text
+	listclusters              List clusters in a project
 	lookup                    Read from a single row
 	ls                        List tables and column families
 	read                      Read rows
@@ -87,6 +88,14 @@ Print help text
 
 Usage:
 	cbt help [command]
+
+
+
+
+List clusters in a project
+
+Usage:
+	cbt listclusters
 
 
 
