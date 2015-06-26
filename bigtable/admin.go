@@ -18,17 +18,19 @@ package bigtable
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"golang.org/x/net/context"
 	"google.golang.org/cloud"
+	btcspb "google.golang.org/cloud/bigtable/internal/cluster_service_proto"
 	bttspb "google.golang.org/cloud/bigtable/internal/table_service_proto"
 	"google.golang.org/grpc"
 )
 
 const adminAddr = "bigtabletableadmin.googleapis.com:443"
 
-// AdminClient is a client type for performing admin operations on a specific cluster.
+// AdminClient is a client type for performing admin operations within a specific cluster.
 type AdminClient struct {
 	conn    *grpc.ClientConn
 	tClient bttspb.BigtableTableServiceClient
@@ -150,6 +152,77 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 		ti.Families = append(ti.Families, fam)
 	}
 	return ti, nil
+}
+
+const clusterAdminAddr = "bigtableclusteradmin.googleapis.com:443"
+
+// ClusterAdminClient is a client type for performing admin operations on clusters.
+// These operations can be substantially more dangerous than those provided by AdminClient.
+type ClusterAdminClient struct {
+	conn    *grpc.ClientConn
+	cClient btcspb.BigtableClusterServiceClient
+
+	project string
+}
+
+// NewClusterAdminClient creates a new ClusterAdminClient for a given project.
+func NewClusterAdminClient(ctx context.Context, project string, opts ...cloud.ClientOption) (*ClusterAdminClient, error) {
+	o := []cloud.ClientOption{
+		cloud.WithEndpoint(clusterAdminAddr),
+		cloud.WithScopes(ClusterAdminScope),
+	}
+	o = append(o, opts...)
+	conn, err := cloud.DialGRPC(ctx, o...)
+	if err != nil {
+		return nil, fmt.Errorf("dialing: %v", err)
+	}
+	return &ClusterAdminClient{
+		conn:    conn,
+		cClient: btcspb.NewBigtableClusterServiceClient(conn),
+
+		project: project,
+	}, nil
+}
+
+// Close closes the ClusterAdminClient.
+func (cac *ClusterAdminClient) Close() {
+	cac.conn.Close()
+}
+
+// ClusterInfo represents information about a cluster.
+type ClusterInfo struct {
+	Name        string // name of the cluster
+	Zone        string // GCP zone of the cluster (e.g. "us-central1-a")
+	DisplayName string // display name for UIs
+	ServeNodes  int    // number of allocated serve nodes
+}
+
+var clusterNameRegexp = regexp.MustCompile(`^projects/([^/]+)/zones/([^/]+)/clusters/([a-z][-a-z0-9]*)$`)
+
+// Clusters returns a list of clusters in the project.
+func (cac *ClusterAdminClient) Clusters(ctx context.Context) ([]*ClusterInfo, error) {
+	req := &btcspb.ListClustersRequest{
+		Name: "projects/" + cac.project,
+	}
+	res, err := cac.cClient.ListClusters(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	// TODO(dsymonds): Deal with failed_zones.
+	var cis []*ClusterInfo
+	for _, c := range res.Clusters {
+		m := clusterNameRegexp.FindStringSubmatch(c.Name)
+		if m == nil {
+			return nil, fmt.Errorf("malformed cluster name %q", c.Name)
+		}
+		cis = append(cis, &ClusterInfo{
+			Name:        m[3],
+			Zone:        m[2],
+			DisplayName: c.DisplayName,
+			ServeNodes:  int(c.ServeNodes),
+		})
+	}
+	return cis, nil
 }
 
 /* TODO(dsymonds): Re-enable when there's a ClusterAdmin API.

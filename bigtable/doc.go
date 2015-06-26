@@ -98,4 +98,7 @@ const (
 
 	// AdminScope is the OAuth scope for Cloud Bigtable table admin operations.
 	AdminScope = "https://www.googleapis.com/auth/bigtable.admin.table"
+
+	// ClusterAdminScope is the OAuth scope for Cloud Bigtable cluster admin operations.
+	ClusterAdminScope = "https://www.googleapis.com/auth/bigtable.admin.cluster"
 )
