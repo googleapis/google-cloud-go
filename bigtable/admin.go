@@ -154,6 +154,8 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 	return ti, nil
 }
 
+// SetGCPolicy specifies which cells in a column family should be garbage collected.
+// GC executes opportunistically in the background.
 func (ac *AdminClient) SetGCPolicy(ctx context.Context, table, family string, policy GCPolicy) error {
 	prefix := ac.clusterPrefix()
 	tbl, err := ac.tClient.GetTable(ctx, &bttspb.GetTableRequest{
