@@ -397,9 +397,14 @@ func TestGetAllWithFieldMismatch(t *testing.T) {
 	}
 
 	c := testutil.Context(ScopeDatastore, ScopeUserEmail)
+	// Ancestor queries (those within an entity group) are strongly consistent
+	// by default, which prevents a test from being flaky.
+	// See https://cloud.google.com/appengine/docs/go/datastore/queries#Go_Data_consistency
+	// for more information.
+	parent := NewKey(c, "SQParent", "TestGetAllWithFieldMismatch", 0, nil)
 	putKeys := make([]*Key, 3)
 	for i := range putKeys {
-		putKeys[i] = NewKey(c, "GetAllThing", "", int64(10+i), nil)
+		putKeys[i] = NewKey(c, "GetAllThing", "", int64(10+i), parent)
 		_, err := Put(c, putKeys[i], &Fat{X: 20 + i, Y: 30 + i})
 		if err != nil {
 			t.Fatalf("Put: %v", err)
@@ -412,7 +417,7 @@ func TestGetAllWithFieldMismatch(t *testing.T) {
 		{X: 21},
 		{X: 22},
 	}
-	getKeys, err := NewQuery("GetAllThing").GetAll(c, &got)
+	getKeys, err := NewQuery("GetAllThing").Ancestor(parent).GetAll(c, &got)
 	if len(getKeys) != 3 && !reflect.DeepEqual(getKeys, putKeys) {
 		t.Errorf("GetAll: keys differ\ngetKeys=%v\nputKeys=%v", getKeys, putKeys)
 	}
