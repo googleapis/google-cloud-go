@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package gcsdemo is an example App Engine or Mananged VM app using the Google Cloud Storage API.
-package gcsdemo
+// Package main is an example Mananged VM app using the Google Cloud Storage API.
+package main
 
 import (
 	"bytes"
@@ -37,8 +37,9 @@ import (
 // bucket is a local cache of the app's default bucket name.
 var bucket string // or: var bucket = "<your-app-id>.appspot.com"
 
-func init() {
+func main() {
 	http.HandleFunc("/", handler)
+	appengine.Main()
 }
 
 // demo struct holds information needed to run the various demo functions.

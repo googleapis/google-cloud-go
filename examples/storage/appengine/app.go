@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package gcsdemo is an example App Engine or Mananged VM app using the Google Cloud Storage API.
+// Package gcsdemo is an example App Engine app using the Google Cloud Storage API.
 package gcsdemo
 
 import (
