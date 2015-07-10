@@ -29,7 +29,6 @@ import (
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/file"
 	"google.golang.org/appengine/log"
-	"google.golang.org/appengine/urlfetch"
 	"google.golang.org/cloud"
 	"google.golang.org/cloud/storage"
 )
@@ -75,7 +74,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	hc := &http.Client{
 		Transport: &oauth2.Transport{
 			Source: google.AppEngineTokenSource(c, storage.ScopeFullControl),
-			Base:   &urlfetch.Transport{Context: c},
 		},
 	}
 	ctx := cloud.NewContext(appengine.AppID(c), hc)

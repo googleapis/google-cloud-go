@@ -74,7 +74,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	hc := &http.Client{
 		Transport: &oauth2.Transport{
 			Source: google.AppEngineTokenSource(c, storage.ScopeFullControl),
-			Base:   &urlfetch.Transport{Context: c},
+			// Note that the App Engine urlfetch service has a limit of 10MB uploads and
+			// 32MB downloads.
+			// See https://cloud.google.com/appengine/docs/go/urlfetch/#Go_Quotas_and_limits
+			// for more information.
+			Base: &urlfetch.Transport{Context: c},
 		},
 	}
 	ctx := cloud.NewContext(appengine.AppID(c), hc)
