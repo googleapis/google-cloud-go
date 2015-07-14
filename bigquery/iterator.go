@@ -21,7 +21,9 @@ import (
 )
 
 // A pageFetcher returns the next page of rows.
-type pageFetcher func(ctx context.Context, token string) (*readDataResult, error)
+type pageFetcher interface {
+	fetch(ctx context.Context, token string) (*readDataResult, error)
+}
 
 // Iterator provides access to the result of a BigQuery lookup.
 // Next must be called before the first call to Get.
@@ -68,9 +70,9 @@ func (it *Iterator) fetchRows(ctx context.Context) {
 		return
 	}
 
-	res, err := it.pf(ctx, it.nextToken)
+	res, err := it.pf.fetch(ctx, it.nextToken)
 	for err == incompleteJobError {
-		res, err = it.pf(ctx, it.nextToken)
+		res, err = it.pf.fetch(ctx, it.nextToken)
 	}
 	if err != nil {
 		it.err = err

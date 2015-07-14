@@ -130,8 +130,8 @@ func (t *Table) customizeQueryDst(conf *bq.JobConfigurationQuery, projectID stri
 	conf.WriteDisposition = string(t.WriteDisposition)
 }
 
-func (t *Table) customizeReadSrc(conf *readTabledataConf) {
-	conf.projectID = t.ProjectID
-	conf.datasetID = t.DatasetID
-	conf.tableID = t.TableID
+func (t *Table) customizeReadSrc(cursor *readTableCursor) {
+	cursor.projectID = t.ProjectID
+	cursor.datasetID = t.DatasetID
+	cursor.tableID = t.TableID
 }

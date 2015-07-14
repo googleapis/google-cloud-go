@@ -29,8 +29,8 @@ type readServiceStub struct {
 	pageTokens map[string]string // maps incoming page token to returned page token.
 
 	// arguments are recorded for later inspection.
-	readTabledataArgs    []*readTabledataConf
-	readQueryResultsArgs []*readQueryConf
+	readTabledataArgs    []*readTableCursor
+	readQueryResultsArgs []*readQueryCursor
 
 	service
 }
@@ -44,14 +44,14 @@ func (s *readServiceStub) readValues(tok string) *readDataResult {
 
 	return result
 }
-func (s *readServiceStub) readTabledata(ctx context.Context, conf *readTabledataConf) (*readDataResult, error) {
-	s.readTabledataArgs = append(s.readTabledataArgs, conf)
-	return s.readValues(conf.paging.pageToken), nil
+func (s *readServiceStub) readTabledata(ctx context.Context, cursor *readTableCursor) (*readDataResult, error) {
+	s.readTabledataArgs = append(s.readTabledataArgs, cursor)
+	return s.readValues(cursor.paging.pageToken), nil
 }
 
-func (s *readServiceStub) readQuery(ctx context.Context, conf *readQueryConf) (*readDataResult, error) {
-	s.readQueryResultsArgs = append(s.readQueryResultsArgs, conf)
-	return s.readValues(conf.paging.pageToken), nil
+func (s *readServiceStub) readQuery(ctx context.Context, cursor *readQueryCursor) (*readDataResult, error) {
+	s.readQueryResultsArgs = append(s.readQueryResultsArgs, cursor)
+	return s.readValues(cursor.paging.pageToken), nil
 }
 
 func TestRead(t *testing.T) {
@@ -158,12 +158,12 @@ type delayedReadStub struct {
 	readServiceStub
 }
 
-func (s *delayedReadStub) readQuery(ctx context.Context, conf *readQueryConf) (*readDataResult, error) {
+func (s *delayedReadStub) readQuery(ctx context.Context, cursor *readQueryCursor) (*readDataResult, error) {
 	if s.numDelays > 0 {
 		s.numDelays--
 		return nil, incompleteJobError
 	}
-	return s.readServiceStub.readQuery(ctx, conf)
+	return s.readServiceStub.readQuery(ctx, cursor)
 }
 
 // TestIncompleteJob tests that an Iterator which reads from a query job will block until the job is complete.
@@ -205,7 +205,7 @@ type errorReadService struct {
 	service
 }
 
-func (s *errorReadService) readTabledata(ctx context.Context, conf *readTabledataConf) (*readDataResult, error) {
+func (s *errorReadService) readTabledata(ctx context.Context, cursor *readTableCursor) (*readDataResult, error) {
 	return nil, errors.New("bang!")
 }
 
@@ -240,7 +240,7 @@ func TestReadTabledataOptions(t *testing.T) {
 		t.Fatalf("Next: got: false: want: true")
 	}
 
-	want := []*readTabledataConf{&readTabledataConf{
+	want := []*readTableCursor{&readTableCursor{
 		projectID: "project-id",
 		datasetID: "dataset-id",
 		tableID:   "table-id",
@@ -277,7 +277,7 @@ func TestReadQueryOptions(t *testing.T) {
 		t.Fatalf("Next: got: false: want: true")
 	}
 
-	want := []*readQueryConf{&readQueryConf{
+	want := []*readQueryCursor{&readQueryCursor{
 		projectID: "project-id",
 		jobID:     "job-id",
 		paging: pagingConf{pageToken: "",

@@ -37,9 +37,9 @@ type service interface {
 	// readQuery reads data resulting from a query job. If the job is not
 	// yet complete, an incompleteJobError is returned. readQuery may be
 	// called repeatedly to wait for results indefinitely.
-	readQuery(ctx context.Context, conf *readQueryConf) (*readDataResult, error)
+	readQuery(ctx context.Context, cursor *readQueryCursor) (*readDataResult, error)
 
-	readTabledata(ctx context.Context, conf *readTabledataConf) (*readDataResult, error)
+	readTabledata(ctx context.Context, cursor *readTableCursor) (*readDataResult, error)
 }
 
 type bigqueryService struct {
@@ -88,7 +88,7 @@ type pagingConf struct {
 	startIndex uint64
 }
 
-type readTabledataConf struct {
+type readTableCursor struct {
 	projectID, datasetID, tableID string
 	paging                        pagingConf
 }
@@ -100,18 +100,18 @@ type readDataResult struct {
 	schema    *Schema
 }
 
-type readQueryConf struct {
+type readQueryCursor struct {
 	projectID, jobID string
 	paging           pagingConf
 }
 
-func (s *bigqueryService) readTabledata(ctx context.Context, conf *readTabledataConf) (*readDataResult, error) {
-	req := s.s.Tabledata.List(conf.projectID, conf.datasetID, conf.tableID).
-		PageToken(conf.paging.pageToken).
-		StartIndex(conf.paging.startIndex)
+func (s *bigqueryService) readTabledata(ctx context.Context, cursor *readTableCursor) (*readDataResult, error) {
+	req := s.s.Tabledata.List(cursor.projectID, cursor.datasetID, cursor.tableID).
+		PageToken(cursor.paging.pageToken).
+		StartIndex(cursor.paging.startIndex)
 
-	if conf.paging.setRecordsPerRequest {
-		req = req.MaxResults(conf.paging.recordsPerRequest)
+	if cursor.paging.setRecordsPerRequest {
+		req = req.MaxResults(cursor.paging.recordsPerRequest)
 	}
 
 	res, err := req.Do()
@@ -135,14 +135,14 @@ var incompleteJobError = errors.New("internal error: query results not available
 // available.
 const getQueryResultsTimeout = time.Minute
 
-func (s *bigqueryService) readQuery(ctx context.Context, conf *readQueryConf) (*readDataResult, error) {
-	req := s.s.Jobs.GetQueryResults(conf.projectID, conf.jobID).
-		PageToken(conf.paging.pageToken).
-		StartIndex(conf.paging.startIndex).
+func (s *bigqueryService) readQuery(ctx context.Context, cursor *readQueryCursor) (*readDataResult, error) {
+	req := s.s.Jobs.GetQueryResults(cursor.projectID, cursor.jobID).
+		PageToken(cursor.paging.pageToken).
+		StartIndex(cursor.paging.startIndex).
 		TimeoutMs(getQueryResultsTimeout.Nanoseconds() / 1000)
 
-	if conf.paging.setRecordsPerRequest {
-		req = req.MaxResults(conf.paging.recordsPerRequest)
+	if cursor.paging.setRecordsPerRequest {
+		req = req.MaxResults(cursor.paging.recordsPerRequest)
 	}
 
 	res, err := req.Do()
