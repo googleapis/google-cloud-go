@@ -115,17 +115,29 @@ func (c *Client) Copy(ctx context.Context, dst Destination, src Source, options 
 	return nil, fmt.Errorf("no Copy operation matches dst/src pair: dst: %T ; src: %T", dst, src)
 }
 
-// Read fetches data from a Source and returns the data via an Iterator.
+// Read fetches data from a ReadSource and returns the data via an Iterator.
 func (c *Client) Read(ctx context.Context, src ReadSource, options ...ReadOption) (*Iterator, error) {
-	// TODO(mcgreevy): support Query as a ReadSource.
 	// TODO(mcgreevy): use ctx.
 	switch src := src.(type) {
 	case *Job:
 		return c.readQueryResults(src, options)
+	case *Query:
+		return c.executeQuery(ctx, src, options...)
 	case *Table:
 		return c.readTable(src, options)
 	}
 	return nil, fmt.Errorf("src (%T) does not support the Read operation", src)
+}
+
+// executeQuery submits a query for execution and returns the results via an Iterator.
+func (c *Client) executeQuery(ctx context.Context, q *Query, options ...ReadOption) (*Iterator, error) {
+	dest := &Table{WriteDisposition: WriteTruncate}
+	job, err := c.Copy(ctx, dest, q)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.Read(ctx, job, options...)
 }
 
 func (c *Client) Dataset(id string) *Dataset {
