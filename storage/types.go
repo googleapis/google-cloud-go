@@ -105,7 +105,7 @@ type ObjectAttrs struct {
 	// sent in the response headers.
 	CacheControl string
 
-	// ContentDisposition is the optional Cache-Disposition header of the object
+	// ContentDisposition is the optional Content-Disposition header of the object
 	// sent in the response headers.
 	ContentDisposition string
 
