@@ -36,6 +36,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"time"
 
 	"golang.org/x/net/context"
 	btdpb "google.golang.org/cloud/bigtable/internal/data_proto"
@@ -374,13 +375,18 @@ func applyMutations(tbl *table, r *row, muts []*btdpb.Mutation) error {
 			if !famOK {
 				return fmt.Errorf("unknown family %q", set.FamilyName)
 			}
-			if !tbl.validTimestamp(set.TimestampMicros) {
-				return fmt.Errorf("invalid timestamp %d", set.TimestampMicros)
+			ts := set.TimestampMicros
+			if ts == -1 { // bigtable.ServerTime
+				ts = time.Now().UnixNano() / 1e3
+				ts -= ts % 1000 // round to millisecond granularity
+			}
+			if !tbl.validTimestamp(ts) {
+				return fmt.Errorf("invalid timestamp %d", ts)
 			}
 			col := fmt.Sprintf("%s:%s", set.FamilyName, set.ColumnQualifier)
 
 			cs := r.cells[col]
-			newCell := cell{ts: set.TimestampMicros, value: set.Value}
+			newCell := cell{ts: ts, value: set.Value}
 			replaced := false
 			for i, cell := range cs {
 				if cell.ts == newCell.ts {
