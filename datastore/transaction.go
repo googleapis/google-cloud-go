@@ -180,7 +180,7 @@ func (t *Transaction) PutMulti(keys []*Key, src interface{}) ([]*PendingKey, err
 
 	// Prepare the returned handles, pre-populating where possible.
 	ret := make([]*PendingKey, len(keys))
-	for _, key := range keys {
+	for i, key := range keys {
 		h := &PendingKey{}
 		if key.Incomplete() {
 			// This key will be in the final commit result.
@@ -188,8 +188,10 @@ func (t *Transaction) PutMulti(keys []*Key, src interface{}) ([]*PendingKey, err
 		} else {
 			h.key = key
 		}
-		ret = append(ret, h)
+
+		ret[i] = h
 	}
+
 	return ret, nil
 }
 
