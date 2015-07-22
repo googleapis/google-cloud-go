@@ -5,8 +5,10 @@
 package google_bigtable_v1
 
 import proto "github.com/golang/protobuf/proto"
+
+// discarding unused import google_api1 "google.golang.org/cloud/bigtable/internal/google_api"
 import google_bigtable_v11 "google.golang.org/cloud/bigtable/internal/data_proto"
-import google_protobuf "google.golang.org/cloud/bigtable/internal/empty"
+import google_protobuf1 "google.golang.org/cloud/bigtable/internal/google_protobuf"
 
 import (
 	context "golang.org/x/net/context"
@@ -19,9 +21,6 @@ var _ grpc.ClientConn
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
-
-func init() {
-}
 
 // Client API for BigtableService service
 
@@ -38,7 +37,7 @@ type BigtableServiceClient interface {
 	SampleRowKeys(ctx context.Context, in *SampleRowKeysRequest, opts ...grpc.CallOption) (BigtableService_SampleRowKeysClient, error)
 	// Mutates a row atomically. Cells already present in the row are left
 	// unchanged unless explicitly changed by 'mutation'.
-	MutateRow(ctx context.Context, in *MutateRowRequest, opts ...grpc.CallOption) (*google_protobuf.Empty, error)
+	MutateRow(ctx context.Context, in *MutateRowRequest, opts ...grpc.CallOption) (*google_protobuf1.Empty, error)
 	// Mutates a row atomically based on the output of a predicate Reader filter.
 	CheckAndMutateRow(ctx context.Context, in *CheckAndMutateRowRequest, opts ...grpc.CallOption) (*CheckAndMutateRowResponse, error)
 	// Modifies a row atomically, reading the latest existing timestamp/value from
@@ -120,8 +119,8 @@ func (x *bigtableServiceSampleRowKeysClient) Recv() (*SampleRowKeysResponse, err
 	return m, nil
 }
 
-func (c *bigtableServiceClient) MutateRow(ctx context.Context, in *MutateRowRequest, opts ...grpc.CallOption) (*google_protobuf.Empty, error) {
-	out := new(google_protobuf.Empty)
+func (c *bigtableServiceClient) MutateRow(ctx context.Context, in *MutateRowRequest, opts ...grpc.CallOption) (*google_protobuf1.Empty, error) {
+	out := new(google_protobuf1.Empty)
 	err := grpc.Invoke(ctx, "/google.bigtable.v1.BigtableService/MutateRow", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
@@ -162,7 +161,7 @@ type BigtableServiceServer interface {
 	SampleRowKeys(*SampleRowKeysRequest, BigtableService_SampleRowKeysServer) error
 	// Mutates a row atomically. Cells already present in the row are left
 	// unchanged unless explicitly changed by 'mutation'.
-	MutateRow(context.Context, *MutateRowRequest) (*google_protobuf.Empty, error)
+	MutateRow(context.Context, *MutateRowRequest) (*google_protobuf1.Empty, error)
 	// Mutates a row atomically based on the output of a predicate Reader filter.
 	CheckAndMutateRow(context.Context, *CheckAndMutateRowRequest) (*CheckAndMutateRowResponse, error)
 	// Modifies a row atomically, reading the latest existing timestamp/value from

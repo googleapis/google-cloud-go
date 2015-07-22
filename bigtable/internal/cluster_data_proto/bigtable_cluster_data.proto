@@ -16,8 +16,8 @@ syntax = "proto3";
 
 package google.bigtable.admin.cluster.v1;
 
-import "google/longrunning/operations.proto";
-import "google/protobuf/timestamp.proto";
+import "google.golang.org/cloud/bigtable/internal/operations_proto/operations.proto";
+import "google.golang.org/cloud/bigtable/internal/google_protobuf/timestamp.proto";
 
 option java_multiple_files = true;
 option java_outer_classname = "BigtableClusterDataProto";

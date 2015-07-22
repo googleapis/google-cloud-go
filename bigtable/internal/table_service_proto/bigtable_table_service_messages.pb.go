@@ -150,6 +150,3 @@ type DeleteColumnFamilyRequest struct {
 func (m *DeleteColumnFamilyRequest) Reset()         { *m = DeleteColumnFamilyRequest{} }
 func (m *DeleteColumnFamilyRequest) String() string { return proto.CompactTextString(m) }
 func (*DeleteColumnFamilyRequest) ProtoMessage()    {}
-
-func init() {
-}

@@ -16,10 +16,10 @@ syntax = "proto3";
 
 package google.bigtable.v1;
 
-import "google/api/annotations.proto";
-import "google/bigtable/v1/bigtable_data.proto";
-import "google/bigtable/v1/bigtable_service_messages.proto";
-import "google/protobuf/empty.proto";
+import "google.golang.org/cloud/bigtable/internal/google_api/annotations.proto";
+import "google.golang.org/cloud/bigtable/internal/data_proto/bigtable_data.proto";
+import "google.golang.org/cloud/bigtable/internal/service_proto/bigtable_service_messages.proto";
+import "google.golang.org/cloud/bigtable/internal/google_protobuf/empty.proto";
 
 option java_generic_services = true;
 option java_multiple_files = true;

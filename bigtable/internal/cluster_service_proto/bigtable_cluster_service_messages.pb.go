@@ -26,6 +26,7 @@ package google_bigtable_admin_cluster_v1
 
 import proto "github.com/golang/protobuf/proto"
 import google_bigtable_admin_cluster_v11 "google.golang.org/cloud/bigtable/internal/cluster_data_proto"
+import google_protobuf3 "google.golang.org/cloud/bigtable/internal/google_protobuf"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -138,6 +139,10 @@ func (m *CreateClusterRequest) GetCluster() *google_bigtable_admin_cluster_v11.C
 type CreateClusterMetadata struct {
 	// The request which prompted the creation of this operation.
 	OriginalRequest *CreateClusterRequest `protobuf:"bytes,1,opt,name=original_request" json:"original_request,omitempty"`
+	// The time at which original_request was received.
+	RequestTime *google_protobuf3.Timestamp `protobuf:"bytes,2,opt,name=request_time" json:"request_time,omitempty"`
+	// The time at which this operation failed or was completed successfully.
+	FinishTime *google_protobuf3.Timestamp `protobuf:"bytes,3,opt,name=finish_time" json:"finish_time,omitempty"`
 }
 
 func (m *CreateClusterMetadata) Reset()         { *m = CreateClusterMetadata{} }
@@ -151,11 +156,33 @@ func (m *CreateClusterMetadata) GetOriginalRequest() *CreateClusterRequest {
 	return nil
 }
 
+func (m *CreateClusterMetadata) GetRequestTime() *google_protobuf3.Timestamp {
+	if m != nil {
+		return m.RequestTime
+	}
+	return nil
+}
+
+func (m *CreateClusterMetadata) GetFinishTime() *google_protobuf3.Timestamp {
+	if m != nil {
+		return m.FinishTime
+	}
+	return nil
+}
+
 // Metadata type for the operation returned by
 // BigtableClusterService.UpdateCluster.
 type UpdateClusterMetadata struct {
 	// The request which prompted the creation of this operation.
 	OriginalRequest *google_bigtable_admin_cluster_v11.Cluster `protobuf:"bytes,1,opt,name=original_request" json:"original_request,omitempty"`
+	// The time at which original_request was received.
+	RequestTime *google_protobuf3.Timestamp `protobuf:"bytes,2,opt,name=request_time" json:"request_time,omitempty"`
+	// The time at which this operation was cancelled. If set, this operation is
+	// in the process of undoing itself (which is guaranteed to succeed) and
+	// cannot be cancelled again.
+	CancelTime *google_protobuf3.Timestamp `protobuf:"bytes,3,opt,name=cancel_time" json:"cancel_time,omitempty"`
+	// The time at which this operation failed or was completed successfully.
+	FinishTime *google_protobuf3.Timestamp `protobuf:"bytes,4,opt,name=finish_time" json:"finish_time,omitempty"`
 }
 
 func (m *UpdateClusterMetadata) Reset()         { *m = UpdateClusterMetadata{} }
@@ -165,6 +192,27 @@ func (*UpdateClusterMetadata) ProtoMessage()    {}
 func (m *UpdateClusterMetadata) GetOriginalRequest() *google_bigtable_admin_cluster_v11.Cluster {
 	if m != nil {
 		return m.OriginalRequest
+	}
+	return nil
+}
+
+func (m *UpdateClusterMetadata) GetRequestTime() *google_protobuf3.Timestamp {
+	if m != nil {
+		return m.RequestTime
+	}
+	return nil
+}
+
+func (m *UpdateClusterMetadata) GetCancelTime() *google_protobuf3.Timestamp {
+	if m != nil {
+		return m.CancelTime
+	}
+	return nil
+}
+
+func (m *UpdateClusterMetadata) GetFinishTime() *google_protobuf3.Timestamp {
+	if m != nil {
+		return m.FinishTime
 	}
 	return nil
 }
@@ -194,11 +242,26 @@ func (*UndeleteClusterRequest) ProtoMessage()    {}
 // Metadata type for the operation returned by
 // BigtableClusterService.UndeleteCluster.
 type UndeleteClusterMetadata struct {
+	// The time at which the original request was received.
+	RequestTime *google_protobuf3.Timestamp `protobuf:"bytes,1,opt,name=request_time" json:"request_time,omitempty"`
+	// The time at which this operation failed or was completed successfully.
+	FinishTime *google_protobuf3.Timestamp `protobuf:"bytes,2,opt,name=finish_time" json:"finish_time,omitempty"`
 }
 
 func (m *UndeleteClusterMetadata) Reset()         { *m = UndeleteClusterMetadata{} }
 func (m *UndeleteClusterMetadata) String() string { return proto.CompactTextString(m) }
 func (*UndeleteClusterMetadata) ProtoMessage()    {}
 
-func init() {
+func (m *UndeleteClusterMetadata) GetRequestTime() *google_protobuf3.Timestamp {
+	if m != nil {
+		return m.RequestTime
+	}
+	return nil
+}
+
+func (m *UndeleteClusterMetadata) GetFinishTime() *google_protobuf3.Timestamp {
+	if m != nil {
+		return m.FinishTime
+	}
+	return nil
 }

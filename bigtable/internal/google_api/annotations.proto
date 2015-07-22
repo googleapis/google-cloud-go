@@ -16,7 +16,7 @@ syntax = "proto3";
 
 package google.api;
 
-import "google/api/http.proto";
+import "google.golang.org/cloud/bigtable/internal/google_api/http.proto";
 import "google/protobuf/descriptor.proto";
 
 option java_multiple_files = true;

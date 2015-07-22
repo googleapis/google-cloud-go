@@ -16,11 +16,11 @@ syntax = "proto3";
 
 package google.bigtable.admin.cluster.v1;
 
-import "google/api/annotations.proto";
-import "google/bigtable/admin/cluster/v1/bigtable_cluster_data.proto";
-import "google/bigtable/admin/cluster/v1/bigtable_cluster_service_messages.proto";
-import "google/longrunning/operations.proto";
-import "google/protobuf/empty.proto";
+import "google.golang.org/cloud/bigtable/internal/google_api/annotations.proto";
+import "google.golang.org/cloud/bigtable/internal/cluster_data_proto/bigtable_cluster_data.proto";
+import "google.golang.org/cloud/bigtable/internal/cluster_service_proto/bigtable_cluster_service_messages.proto";
+import "google.golang.org/cloud/bigtable/internal/operations_proto/operations.proto";
+import "google.golang.org/cloud/bigtable/internal/google_protobuf/empty.proto";
 
 option java_multiple_files = true;
 option java_outer_classname = "BigtableClusterServicesProto";

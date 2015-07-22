@@ -555,6 +555,3 @@ type ReadModifyWriteRule struct {
 func (m *ReadModifyWriteRule) Reset()         { *m = ReadModifyWriteRule{} }
 func (m *ReadModifyWriteRule) String() string { return proto.CompactTextString(m) }
 func (*ReadModifyWriteRule) ProtoMessage()    {}
-
-func init() {
-}

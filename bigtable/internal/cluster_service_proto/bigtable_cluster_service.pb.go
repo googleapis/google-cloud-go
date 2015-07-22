@@ -5,8 +5,11 @@
 package google_bigtable_admin_cluster_v1
 
 import proto "github.com/golang/protobuf/proto"
+
+// discarding unused import google_api1 "google.golang.org/cloud/bigtable/internal/google_api"
 import google_bigtable_admin_cluster_v11 "google.golang.org/cloud/bigtable/internal/cluster_data_proto"
-import google_protobuf "google.golang.org/cloud/bigtable/internal/empty"
+import google_longrunning "google.golang.org/cloud/bigtable/internal/operations_proto"
+import google_protobuf2 "google.golang.org/cloud/bigtable/internal/google_protobuf"
 
 import (
 	context "golang.org/x/net/context"
@@ -19,9 +22,6 @@ var _ grpc.ClientConn
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
-
-func init() {
-}
 
 // Client API for BigtableClusterService service
 
@@ -88,7 +88,21 @@ type BigtableClusterServiceClient interface {
 	// At the cluster's "delete_time":
 	//  * The cluster and *all of its tables* will immediately and irrevocably
 	//    disappear from the API, and their data will be permanently deleted.
-	DeleteCluster(ctx context.Context, in *DeleteClusterRequest, opts ...grpc.CallOption) (*google_protobuf.Empty, error)
+	DeleteCluster(ctx context.Context, in *DeleteClusterRequest, opts ...grpc.CallOption) (*google_protobuf2.Empty, error)
+	// Cancels the scheduled deletion of an cluster and begins preparing it to
+	// resume serving. The returned operation will also be embedded as the
+	// cluster's "current_operation".
+	// Immediately upon completion of this request:
+	//  * The cluster's "delete_time" field will be unset, protecting it from
+	//    automatic deletion.
+	// Until completion of the returned operation:
+	//  * The operation cannot be cancelled.
+	// Upon completion of the returned operation:
+	//  * Billing for the cluster's resources will resume.
+	//  * All tables within the cluster will be available.
+	// [UndeleteClusterMetadata][google.bigtable.admin.cluster.v1.UndeleteClusterMetadata] The embedded operation's "response" field type is
+	// [Cluster][google.bigtable.admin.cluster.v1.Cluster], if successful.
+	UndeleteCluster(ctx context.Context, in *UndeleteClusterRequest, opts ...grpc.CallOption) (*google_longrunning.Operation, error)
 }
 
 type bigtableClusterServiceClient struct {
@@ -144,9 +158,18 @@ func (c *bigtableClusterServiceClient) UpdateCluster(ctx context.Context, in *go
 	return out, nil
 }
 
-func (c *bigtableClusterServiceClient) DeleteCluster(ctx context.Context, in *DeleteClusterRequest, opts ...grpc.CallOption) (*google_protobuf.Empty, error) {
-	out := new(google_protobuf.Empty)
+func (c *bigtableClusterServiceClient) DeleteCluster(ctx context.Context, in *DeleteClusterRequest, opts ...grpc.CallOption) (*google_protobuf2.Empty, error) {
+	out := new(google_protobuf2.Empty)
 	err := grpc.Invoke(ctx, "/google.bigtable.admin.cluster.v1.BigtableClusterService/DeleteCluster", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bigtableClusterServiceClient) UndeleteCluster(ctx context.Context, in *UndeleteClusterRequest, opts ...grpc.CallOption) (*google_longrunning.Operation, error) {
+	out := new(google_longrunning.Operation)
+	err := grpc.Invoke(ctx, "/google.bigtable.admin.cluster.v1.BigtableClusterService/UndeleteCluster", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -218,7 +241,21 @@ type BigtableClusterServiceServer interface {
 	// At the cluster's "delete_time":
 	//  * The cluster and *all of its tables* will immediately and irrevocably
 	//    disappear from the API, and their data will be permanently deleted.
-	DeleteCluster(context.Context, *DeleteClusterRequest) (*google_protobuf.Empty, error)
+	DeleteCluster(context.Context, *DeleteClusterRequest) (*google_protobuf2.Empty, error)
+	// Cancels the scheduled deletion of an cluster and begins preparing it to
+	// resume serving. The returned operation will also be embedded as the
+	// cluster's "current_operation".
+	// Immediately upon completion of this request:
+	//  * The cluster's "delete_time" field will be unset, protecting it from
+	//    automatic deletion.
+	// Until completion of the returned operation:
+	//  * The operation cannot be cancelled.
+	// Upon completion of the returned operation:
+	//  * Billing for the cluster's resources will resume.
+	//  * All tables within the cluster will be available.
+	// [UndeleteClusterMetadata][google.bigtable.admin.cluster.v1.UndeleteClusterMetadata] The embedded operation's "response" field type is
+	// [Cluster][google.bigtable.admin.cluster.v1.Cluster], if successful.
+	UndeleteCluster(context.Context, *UndeleteClusterRequest) (*google_longrunning.Operation, error)
 }
 
 func RegisterBigtableClusterServiceServer(s *grpc.Server, srv BigtableClusterServiceServer) {
@@ -297,6 +334,18 @@ func _BigtableClusterService_DeleteCluster_Handler(srv interface{}, ctx context.
 	return out, nil
 }
 
+func _BigtableClusterService_UndeleteCluster_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+	in := new(UndeleteClusterRequest)
+	if err := codec.Unmarshal(buf, in); err != nil {
+		return nil, err
+	}
+	out, err := srv.(BigtableClusterServiceServer).UndeleteCluster(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 var _BigtableClusterService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "google.bigtable.admin.cluster.v1.BigtableClusterService",
 	HandlerType: (*BigtableClusterServiceServer)(nil),
@@ -324,6 +373,10 @@ var _BigtableClusterService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteCluster",
 			Handler:    _BigtableClusterService_DeleteCluster_Handler,
+		},
+		{
+			MethodName: "UndeleteCluster",
+			Handler:    _BigtableClusterService_UndeleteCluster_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{},
