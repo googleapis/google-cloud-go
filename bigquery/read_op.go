@@ -35,54 +35,34 @@ func (opt startIndex) customizeRead(conf *pagingConf) {
 	conf.startIndex = uint64(opt)
 }
 
-type tableFetcher struct {
-	c      *Client
-	cursor *readTableCursor
-}
-
-func (tf *tableFetcher) fetch(ctx context.Context, token string) (*readDataResult, error) {
-	tf.cursor.paging.pageToken = token
-	return tf.c.service.readTabledata(ctx, tf.cursor)
+func (conf *readTableConf) fetch(ctx context.Context, c *Client, token string) (*readDataResult, error) {
+	return c.service.readTabledata(ctx, conf, token)
 }
 
 func (c *Client) readTable(t *Table, options []ReadOption) (*Iterator, error) {
-	cursor := &readTableCursor{}
-	t.customizeReadSrc(cursor)
+	conf := &readTableConf{}
+	t.customizeReadSrc(conf)
 
 	for _, o := range options {
-		o.customizeRead(&cursor.paging)
+		o.customizeRead(&conf.paging)
 	}
 
-	tf := &tableFetcher{
-		c:      c,
-		cursor: cursor,
-	}
-	return &Iterator{pf: tf}, nil
+	return newIterator(c, conf), nil
 }
 
-type queryFetcher struct {
-	c      *Client
-	cursor *readQueryCursor
-}
-
-func (qf *queryFetcher) fetch(ctx context.Context, token string) (*readDataResult, error) {
-	qf.cursor.paging.pageToken = token
-	return qf.c.service.readQuery(ctx, qf.cursor)
+func (conf *readQueryConf) fetch(ctx context.Context, c *Client, token string) (*readDataResult, error) {
+	return c.service.readQuery(ctx, conf, token)
 }
 
 func (c *Client) readQueryResults(job *Job, options []ReadOption) (*Iterator, error) {
-	cursor := &readQueryCursor{}
-	if err := job.customizeReadQuery(cursor); err != nil {
+	conf := &readQueryConf{}
+	if err := job.customizeReadQuery(conf); err != nil {
 		return nil, err
 	}
 
 	for _, o := range options {
-		o.customizeRead(&cursor.paging)
+		o.customizeRead(&conf.paging)
 	}
 
-	qf := &queryFetcher{
-		c:      c,
-		cursor: cursor,
-	}
-	return &Iterator{pf: qf}, nil
+	return newIterator(c, conf), nil
 }

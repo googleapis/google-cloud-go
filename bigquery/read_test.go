@@ -22,6 +22,16 @@ import (
 	"golang.org/x/net/context"
 )
 
+type readTabledataArgs struct {
+	conf *readTableConf
+	tok  string
+}
+
+type readQueryArgs struct {
+	conf *readQueryConf
+	tok  string
+}
+
 // readServiceStub services read requests by returning data from an in-memory list of values.
 type readServiceStub struct {
 	// values and pageTokens are used as sources of data to return in response to calls to readTabledata or readQuery.
@@ -29,8 +39,8 @@ type readServiceStub struct {
 	pageTokens map[string]string // maps incoming page token to returned page token.
 
 	// arguments are recorded for later inspection.
-	readTabledataArgs    []*readTableCursor
-	readQueryResultsArgs []*readQueryCursor
+	readTabledataCalls []readTabledataArgs
+	readQueryCalls     []readQueryArgs
 
 	service
 }
@@ -44,14 +54,14 @@ func (s *readServiceStub) readValues(tok string) *readDataResult {
 
 	return result
 }
-func (s *readServiceStub) readTabledata(ctx context.Context, cursor *readTableCursor) (*readDataResult, error) {
-	s.readTabledataArgs = append(s.readTabledataArgs, cursor)
-	return s.readValues(cursor.paging.pageToken), nil
+func (s *readServiceStub) readTabledata(ctx context.Context, conf *readTableConf, token string) (*readDataResult, error) {
+	s.readTabledataCalls = append(s.readTabledataCalls, readTabledataArgs{conf, token})
+	return s.readValues(token), nil
 }
 
-func (s *readServiceStub) readQuery(ctx context.Context, cursor *readQueryCursor) (*readDataResult, error) {
-	s.readQueryResultsArgs = append(s.readQueryResultsArgs, cursor)
-	return s.readValues(cursor.paging.pageToken), nil
+func (s *readServiceStub) readQuery(ctx context.Context, conf *readQueryConf, token string) (*readDataResult, error) {
+	s.readQueryCalls = append(s.readQueryCalls, readQueryArgs{conf, token})
+	return s.readValues(token), nil
 }
 
 func TestRead(t *testing.T) {
@@ -158,12 +168,12 @@ type delayedReadStub struct {
 	readServiceStub
 }
 
-func (s *delayedReadStub) readQuery(ctx context.Context, cursor *readQueryCursor) (*readDataResult, error) {
+func (s *delayedReadStub) readQuery(ctx context.Context, conf *readQueryConf, token string) (*readDataResult, error) {
 	if s.numDelays > 0 {
 		s.numDelays--
-		return nil, incompleteJobError
+		return nil, errIncompleteJob
 	}
-	return s.readServiceStub.readQuery(ctx, cursor)
+	return s.readServiceStub.readQuery(ctx, conf, token)
 }
 
 // TestIncompleteJob tests that an Iterator which reads from a query job will block until the job is complete.
@@ -205,7 +215,7 @@ type errorReadService struct {
 	service
 }
 
-func (s *errorReadService) readTabledata(ctx context.Context, cursor *readTableCursor) (*readDataResult, error) {
+func (s *errorReadService) readTabledata(ctx context.Context, conf *readTableConf, token string) (*readDataResult, error) {
 	return nil, errors.New("bang!")
 }
 
@@ -240,18 +250,21 @@ func TestReadTabledataOptions(t *testing.T) {
 		t.Fatalf("Next: got: false: want: true")
 	}
 
-	want := []*readTableCursor{&readTableCursor{
-		projectID: "project-id",
-		datasetID: "dataset-id",
-		tableID:   "table-id",
-		paging: pagingConf{pageToken: "",
-			recordsPerRequest:    5,
-			setRecordsPerRequest: true,
+	want := []readTabledataArgs{{
+		conf: &readTableConf{
+			projectID: "project-id",
+			datasetID: "dataset-id",
+			tableID:   "table-id",
+			paging: pagingConf{
+				recordsPerRequest:    5,
+				setRecordsPerRequest: true,
+			},
 		},
+		tok: "",
 	}}
 
-	if !reflect.DeepEqual(s.readTabledataArgs, want) {
-		t.Errorf("reading: got:\n%v\nwant:\n%v", s.readTabledataArgs, want)
+	if !reflect.DeepEqual(s.readTabledataCalls, want) {
+		t.Errorf("reading: got:\n%v\nwant:\n%v", s.readTabledataCalls, want)
 	}
 }
 
@@ -277,16 +290,19 @@ func TestReadQueryOptions(t *testing.T) {
 		t.Fatalf("Next: got: false: want: true")
 	}
 
-	want := []*readQueryCursor{&readQueryCursor{
-		projectID: "project-id",
-		jobID:     "job-id",
-		paging: pagingConf{pageToken: "",
-			recordsPerRequest:    5,
-			setRecordsPerRequest: true,
+	want := []readQueryArgs{{
+		conf: &readQueryConf{
+			projectID: "project-id",
+			jobID:     "job-id",
+			paging: pagingConf{
+				recordsPerRequest:    5,
+				setRecordsPerRequest: true,
+			},
 		},
+		tok: "",
 	}}
 
-	if !reflect.DeepEqual(s.readQueryResultsArgs, want) {
-		t.Errorf("reading: got:\n%v\nwant:\n%v", s.readQueryResultsArgs, want)
+	if !reflect.DeepEqual(s.readQueryCalls, want) {
+		t.Errorf("reading: got:\n%v\nwant:\n%v", s.readQueryCalls, want)
 	}
 }
