@@ -16,7 +16,8 @@ syntax = "proto3";
 
 package google.bigtable.admin.table.v1;
 
-import "google.golang.org/cloud/bigtable/internal/duration_proto/duration.proto";
+import "google/longrunning/operations.proto";
+import "google/protobuf/duration.proto";
 
 option java_multiple_files = true;
 option java_outer_classname = "BigtableTableDataProto";
@@ -37,6 +38,7 @@ message Table {
   // If this Table is in the process of being created, the Operation used to
   // track its progress. As long as this operation is present, the Table will
   // not accept any Table Admin or Read/Write requests.
+  google.longrunning.Operation current_operation = 2;
 
   // The column families configured for this table, mapped by column family id.
   map<string, ColumnFamily> column_families = 3;

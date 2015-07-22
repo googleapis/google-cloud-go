@@ -16,7 +16,7 @@ syntax = "proto3";
 
 package google.bigtable.v1;
 
-import "google.golang.org/cloud/bigtable/internal/data_proto/bigtable_data.proto";
+import "google/bigtable/v1/bigtable_data.proto";
 
 option java_multiple_files = true;
 option java_outer_classname = "BigtableServiceMessagesProto";

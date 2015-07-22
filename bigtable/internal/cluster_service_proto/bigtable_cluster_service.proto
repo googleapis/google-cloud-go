@@ -16,9 +16,11 @@ syntax = "proto3";
 
 package google.bigtable.admin.cluster.v1;
 
-import "google.golang.org/cloud/bigtable/internal/cluster_data_proto/bigtable_cluster_data.proto";
-import "google.golang.org/cloud/bigtable/internal/cluster_service_proto/bigtable_cluster_service_messages.proto";
-import "google.golang.org/cloud/bigtable/internal/empty/empty.proto";
+import "google/api/annotations.proto";
+import "google/bigtable/admin/cluster/v1/bigtable_cluster_data.proto";
+import "google/bigtable/admin/cluster/v1/bigtable_cluster_service_messages.proto";
+import "google/longrunning/operations.proto";
+import "google/protobuf/empty.proto";
 
 option java_multiple_files = true;
 option java_outer_classname = "BigtableClusterServicesProto";
@@ -29,15 +31,18 @@ option java_package = "com.google.bigtable.admin.cluster.v1";
 service BigtableClusterService {
   // Lists the supported zones for the given project.
   rpc ListZones(ListZonesRequest) returns (ListZonesResponse) {
+    option (google.api.http) = { get: "/v1/{name=projects/*}/zones" };
   }
 
   // Gets information about a particular cluster.
   rpc GetCluster(GetClusterRequest) returns (Cluster) {
+    option (google.api.http) = { get: "/v1/{name=projects/*/zones/*/clusters/*}" };
   }
 
   // Lists all clusters in the given project, along with any zones for which
   // cluster information could not be retrieved.
   rpc ListClusters(ListClustersRequest) returns (ListClustersResponse) {
+    option (google.api.http) = { get: "/v1/{name=projects/*}/aggregated/clusters" };
   }
 
   // Creates a cluster and begins preparing it to begin serving. The returned
@@ -59,6 +64,7 @@ service BigtableClusterService {
   // [CreateClusterMetadata][google.bigtable.admin.cluster.v1.CreateClusterMetadata] The embedded operation's "response" field type is
   // [Cluster][google.bigtable.admin.cluster.v1.Cluster], if successful.
   rpc CreateCluster(CreateClusterRequest) returns (Cluster) {
+    option (google.api.http) = { post: "/v1/{name=projects/*/zones/*}/clusters" body: "*" };
   }
 
   // Updates a cluster, and begins allocating or releasing resources as
@@ -85,6 +91,7 @@ service BigtableClusterService {
   // [UpdateClusterMetadata][google.bigtable.admin.cluster.v1.UpdateClusterMetadata] The embedded operation's "response" field type is
   // [Cluster][google.bigtable.admin.cluster.v1.Cluster], if successful.
   rpc UpdateCluster(Cluster) returns (Cluster) {
+    option (google.api.http) = { put: "/v1/{name=projects/*/zones/*/clusters/*}" body: "*" };
   }
 
   // Marks a cluster and all of its tables for permanent deletion in 7 days.
@@ -100,6 +107,7 @@ service BigtableClusterService {
   //  * The cluster and *all of its tables* will immediately and irrevocably
   //    disappear from the API, and their data will be permanently deleted.
   rpc DeleteCluster(DeleteClusterRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = { delete: "/v1/{name=projects/*/zones/*/clusters/*}" };
   }
 
   // Cancels the scheduled deletion of an cluster and begins preparing it to
@@ -115,4 +123,7 @@ service BigtableClusterService {
   //  * All tables within the cluster will be available.
   // [UndeleteClusterMetadata][google.bigtable.admin.cluster.v1.UndeleteClusterMetadata] The embedded operation's "response" field type is
   // [Cluster][google.bigtable.admin.cluster.v1.Cluster], if successful.
+  rpc UndeleteCluster(UndeleteClusterRequest) returns (google.longrunning.Operation) {
+    option (google.api.http) = { post: "/v1/{name=projects/*/zones/*/clusters/*}:undelete" body: "null" };
+  }
 }
