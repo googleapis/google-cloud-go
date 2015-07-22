@@ -23,6 +23,7 @@ import (
 
 	"golang.org/x/net/context"
 	"google.golang.org/cloud"
+	btcdpb "google.golang.org/cloud/bigtable/internal/cluster_data_proto"
 	btcspb "google.golang.org/cloud/bigtable/internal/cluster_service_proto"
 	bttspb "google.golang.org/cloud/bigtable/internal/table_service_proto"
 	"google.golang.org/grpc"
@@ -242,6 +243,18 @@ func (cac *ClusterAdminClient) Clusters(ctx context.Context) ([]*ClusterInfo, er
 		})
 	}
 	return cis, nil
+}
+
+func (cac *ClusterAdminClient) ListZones(ctx context.Context) ([]*btcdpb.Zone, error) {
+	req := &btcspb.ListZonesRequest{
+		Name: "projects/" + cac.project,
+	}
+	res, err := cac.cClient.ListZones(ctx, req)
+	if err != nil {
+		return nil, err
+	} else {
+		return res.Zones, nil
+	}
 }
 
 /* TODO(dsymonds): Re-enable when there's a ClusterAdmin API.
