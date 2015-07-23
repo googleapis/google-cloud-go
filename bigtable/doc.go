@@ -89,7 +89,7 @@ To increment an encoded value in one cell,
 package bigtable // import "google.golang.org/cloud/bigtable"
 
 // Scope constants for authentication credentials.
-// These should be used when using credential creation functions such as credentials.NewServiceAccountFromFile.
+// These should be used when using credential creation functions such as oauth.NewServiceAccountFromFile.
 const (
 	// Scope is the OAuth scope for Cloud Bigtable data operations.
 	Scope = "https://www.googleapis.com/auth/bigtable.data"
