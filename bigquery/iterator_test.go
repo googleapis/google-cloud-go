@@ -23,26 +23,22 @@ import (
 	"golang.org/x/net/context"
 )
 
-type fetchCall struct {
-	tok    string          // The expected value of the pageToken.
+type fetchResponse struct {
 	result *readDataResult // The result to return.
 	err    error           // The error to return.
 }
 
 // pageFetcherStub services fetch requests by returning data from an in-memory list of values.
 type pageFetcherStub struct {
-	token string
-
-	fetchCalls []fetchCall
+	fetchResponses map[string]fetchResponse
 
 	err error
 }
 
-func (cur *pageFetcherStub) fetch(ctx context.Context, c *Client, token string) (*readDataResult, error) {
-	call := cur.fetchCalls[0]
-	cur.fetchCalls = cur.fetchCalls[1:]
-	if call.tok != token {
-		cur.err = fmt.Errorf("Unexpected pagetoken: got:\n%v\nwant:\n%v", token, call.tok)
+func (pf *pageFetcherStub) fetch(ctx context.Context, c *Client, token string) (*readDataResult, error) {
+	call, ok := pf.fetchResponses[token]
+	if !ok {
+		pf.err = fmt.Errorf("Unexpected page token: %q", token)
 	}
 	return call.result, call.err
 }
@@ -53,15 +49,14 @@ func TestIterator(t *testing.T) {
 	testCases := []struct {
 		desc            string
 		alreadyConsumed int64 // amount to advance offset before commencing reading.
-		fetchCalls      []fetchCall
+		fetchResponses  map[string]fetchResponse
 		want            []ValueList
 		wantErr         error
 	}{
 		{
 			desc: "Iteration over single empty page",
-			fetchCalls: []fetchCall{
-				{
-					tok: "",
+			fetchResponses: map[string]fetchResponse{
+				"": {
 					result: &readDataResult{
 						pageToken: "",
 						rows:      [][]Value{},
@@ -72,9 +67,8 @@ func TestIterator(t *testing.T) {
 		},
 		{
 			desc: "Iteration over single page",
-			fetchCalls: []fetchCall{
-				{
-					tok: "",
+			fetchResponses: map[string]fetchResponse{
+				"": {
 					result: &readDataResult{
 						pageToken: "",
 						rows:      [][]Value{{1, 2}, {11, 12}},
@@ -85,16 +79,14 @@ func TestIterator(t *testing.T) {
 		},
 		{
 			desc: "Iteration over two pages",
-			fetchCalls: []fetchCall{
-				{
-					tok: "",
+			fetchResponses: map[string]fetchResponse{
+				"": {
 					result: &readDataResult{
 						pageToken: "a",
 						rows:      [][]Value{{1, 2}, {11, 12}},
 					},
 				},
-				{
-					tok: "a",
+				"a": {
 					result: &readDataResult{
 						pageToken: "",
 						rows:      [][]Value{{101, 102}, {111, 112}},
@@ -105,23 +97,20 @@ func TestIterator(t *testing.T) {
 		},
 		{
 			desc: "Server response includes empty page",
-			fetchCalls: []fetchCall{
-				{
-					tok: "",
+			fetchResponses: map[string]fetchResponse{
+				"": {
 					result: &readDataResult{
 						pageToken: "a",
 						rows:      [][]Value{{1, 2}, {11, 12}},
 					},
 				},
-				{
-					tok: "a",
+				"a": {
 					result: &readDataResult{
 						pageToken: "b",
 						rows:      [][]Value{},
 					},
 				},
-				{
-					tok: "b",
+				"b": {
 					result: &readDataResult{
 						pageToken: "",
 						rows:      [][]Value{{101, 102}, {111, 112}},
@@ -132,16 +121,14 @@ func TestIterator(t *testing.T) {
 		},
 		{
 			desc: "Fetch error",
-			fetchCalls: []fetchCall{
-				{
-					tok: "",
+			fetchResponses: map[string]fetchResponse{
+				"": {
 					result: &readDataResult{
 						pageToken: "a",
 						rows:      [][]Value{{1, 2}, {11, 12}},
 					},
 				},
-				{
-					tok: "a",
+				"a": {
 					// We returns some data from this fetch, but also an error.
 					// So the end result should include only data from the previous fetch.
 					err: fetchFailure,
@@ -155,42 +142,16 @@ func TestIterator(t *testing.T) {
 			wantErr: fetchFailure,
 		},
 		{
-			desc: "Fetch of incomplete job",
-			fetchCalls: []fetchCall{
-				{
-					tok: "",
-					result: &readDataResult{
-						pageToken: "a",
-						rows:      [][]Value{{1, 2}, {11, 12}},
-					},
-				},
-				{
-					tok: "a",
-					err: errIncompleteJob,
-				},
-				{
-					tok: "a",
-					result: &readDataResult{
-						pageToken: "",
-						rows:      [][]Value{{101, 102}, {111, 112}},
-					},
-				},
-			},
-			want: []ValueList{{1, 2}, {11, 12}, {101, 102}, {111, 112}},
-		},
-		{
 			desc:            "Skip over a single element",
 			alreadyConsumed: 1,
-			fetchCalls: []fetchCall{
-				{
-					tok: "",
+			fetchResponses: map[string]fetchResponse{
+				"": {
 					result: &readDataResult{
 						pageToken: "a",
 						rows:      [][]Value{{1, 2}, {11, 12}},
 					},
 				},
-				{
-					tok: "a",
+				"a": {
 					result: &readDataResult{
 						pageToken: "",
 						rows:      [][]Value{{101, 102}, {111, 112}},
@@ -202,16 +163,14 @@ func TestIterator(t *testing.T) {
 		{
 			desc:            "Skip over an entire page",
 			alreadyConsumed: 2,
-			fetchCalls: []fetchCall{
-				{
-					tok: "",
+			fetchResponses: map[string]fetchResponse{
+				"": {
 					result: &readDataResult{
 						pageToken: "a",
 						rows:      [][]Value{{1, 2}, {11, 12}},
 					},
 				},
-				{
-					tok: "a",
+				"a": {
 					result: &readDataResult{
 						pageToken: "",
 						rows:      [][]Value{{101, 102}, {111, 112}},
@@ -223,16 +182,14 @@ func TestIterator(t *testing.T) {
 		{
 			desc:            "Skip beyond start of second page",
 			alreadyConsumed: 3,
-			fetchCalls: []fetchCall{
-				{
-					tok: "",
+			fetchResponses: map[string]fetchResponse{
+				"": {
 					result: &readDataResult{
 						pageToken: "a",
 						rows:      [][]Value{{1, 2}, {11, 12}},
 					},
 				},
-				{
-					tok: "a",
+				"a": {
 					result: &readDataResult{
 						pageToken: "",
 						rows:      [][]Value{{101, 102}, {111, 112}},
@@ -244,16 +201,14 @@ func TestIterator(t *testing.T) {
 		{
 			desc:            "Skip beyond all data",
 			alreadyConsumed: 4,
-			fetchCalls: []fetchCall{
-				{
-					tok: "",
+			fetchResponses: map[string]fetchResponse{
+				"": {
 					result: &readDataResult{
 						pageToken: "a",
 						rows:      [][]Value{{1, 2}, {11, 12}},
 					},
 				},
-				{
-					tok: "a",
+				"a": {
 					result: &readDataResult{
 						pageToken: "",
 						rows:      [][]Value{{101, 102}, {111, 112}},
@@ -268,7 +223,7 @@ func TestIterator(t *testing.T) {
 
 	for _, tc := range testCases {
 		pf := &pageFetcherStub{
-			fetchCalls: tc.fetchCalls,
+			fetchResponses: tc.fetchResponses,
 		}
 		it := newIterator(nil, pf)
 		it.offset += tc.alreadyConsumed
@@ -278,20 +233,11 @@ func TestIterator(t *testing.T) {
 			t.Fatalf("%s: %v", tc.desc, err)
 		}
 
-		if !(len(values) == 0 && len(tc.want) == 0) && !reflect.DeepEqual(values, tc.want) {
+		if (len(values) != 0 || len(tc.want) != 0) && !reflect.DeepEqual(values, tc.want) {
 			t.Errorf("%s: values:\ngot: %v\nwant:%v", tc.desc, values, tc.want)
 		}
 		if it.Err() != tc.wantErr {
 			t.Errorf("%s: iterator.Err:\ngot: %v\nwant: %v", tc.desc, it.Err(), tc.wantErr)
-		}
-
-		// Check whether there was an unexpected call to fetch.
-		if pf.err != nil {
-			t.Errorf("%s: %v", tc.desc, pf.err)
-		}
-		// Check whether any expected calls to fetch were not made.
-		if len(pf.fetchCalls) != 0 {
-			t.Errorf("%s: outstanding fetchCalls: %v", tc.desc, pf.fetchCalls)
 		}
 	}
 }
@@ -314,9 +260,8 @@ func consumeIterator(it *Iterator) ([]ValueList, error) {
 func TestGetBeforeNext(t *testing.T) {
 	// TODO: once mashalling/unmarshalling of iterators is implemented, do a similar test for unmarshalled iterators.
 	pf := &pageFetcherStub{
-		fetchCalls: []fetchCall{
-			{
-				tok: "",
+		fetchResponses: map[string]fetchResponse{
+			"": {
 				result: &readDataResult{
 					pageToken: "",
 					rows:      [][]Value{{1, 2}, {11, 12}},
@@ -331,10 +276,63 @@ func TestGetBeforeNext(t *testing.T) {
 	}
 }
 
+type delayedPageFetcher struct {
+	pageFetcherStub
+	delayCount int
+}
+
+func (pf *delayedPageFetcher) fetch(ctx context.Context, c *Client, token string) (*readDataResult, error) {
+	if pf.delayCount > 0 {
+		pf.delayCount--
+		return nil, errIncompleteJob
+	}
+	return pf.pageFetcherStub.fetch(ctx, c, token)
+}
+
+func TestIterateIncompleteJob(t *testing.T) {
+	want := []ValueList{{1, 2}, {11, 12}, {101, 102}, {111, 112}}
+	pf := pageFetcherStub{
+		fetchResponses: map[string]fetchResponse{
+			"": {
+				result: &readDataResult{
+					pageToken: "a",
+					rows:      [][]Value{{1, 2}, {11, 12}},
+				},
+			},
+			"a": {
+				result: &readDataResult{
+					pageToken: "",
+					rows:      [][]Value{{101, 102}, {111, 112}},
+				},
+			},
+		},
+	}
+	dpf := &delayedPageFetcher{
+		pageFetcherStub: pf,
+		delayCount:      1,
+	}
+	it := newIterator(nil, dpf)
+
+	values, err := consumeIterator(it)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if (len(values) != 0 || len(want) != 0) && !reflect.DeepEqual(values, want) {
+		t.Errorf("values: got:\n%v\nwant:\n%v", values, want)
+	}
+	if it.Err() != nil {
+		t.Fatalf("iterator.Err: got:\n%v", it.Err())
+	}
+	if dpf.delayCount != 0 {
+		t.Errorf("delayCount: got: %v, want: 0", dpf.delayCount)
+	}
+}
+
 func TestGetDuringErrorState(t *testing.T) {
 	pf := &pageFetcherStub{
-		fetchCalls: []fetchCall{
-			{err: errors.New("bang")},
+		fetchResponses: map[string]fetchResponse{
+			"": {err: errors.New("bang")},
 		},
 	}
 	it := newIterator(nil, pf)
@@ -351,13 +349,12 @@ func TestGetDuringErrorState(t *testing.T) {
 func TestGetAfterFinished(t *testing.T) {
 	testCases := []struct {
 		alreadyConsumed int64 // amount to advance offset before commencing reading.
-		fetchCalls      []fetchCall
+		fetchResponses  map[string]fetchResponse
 		want            []ValueList
 	}{
 		{
-			fetchCalls: []fetchCall{
-				{
-					tok: "",
+			fetchResponses: map[string]fetchResponse{
+				"": {
 					result: &readDataResult{
 						pageToken: "",
 						rows:      [][]Value{{1, 2}, {11, 12}},
@@ -367,9 +364,8 @@ func TestGetAfterFinished(t *testing.T) {
 			want: []ValueList{{1, 2}, {11, 12}},
 		},
 		{
-			fetchCalls: []fetchCall{
-				{
-					tok: "",
+			fetchResponses: map[string]fetchResponse{
+				"": {
 					result: &readDataResult{
 						pageToken: "",
 						rows:      [][]Value{},
@@ -380,9 +376,8 @@ func TestGetAfterFinished(t *testing.T) {
 		},
 		{
 			alreadyConsumed: 100,
-			fetchCalls: []fetchCall{
-				{
-					tok: "",
+			fetchResponses: map[string]fetchResponse{
+				"": {
 					result: &readDataResult{
 						pageToken: "",
 						rows:      [][]Value{{1, 2}, {11, 12}},
@@ -395,17 +390,17 @@ func TestGetAfterFinished(t *testing.T) {
 
 	for _, tc := range testCases {
 		pf := &pageFetcherStub{
-			fetchCalls: tc.fetchCalls,
+			fetchResponses: tc.fetchResponses,
 		}
 		it := newIterator(nil, pf)
 		it.offset += tc.alreadyConsumed
 
 		values, err := consumeIterator(it)
 		if err != nil {
-			t.Fatalf("%s", err)
+			t.Fatal(err)
 		}
 
-		if !(len(values) == 0 && len(tc.want) == 0) && !reflect.DeepEqual(values, tc.want) {
+		if (len(values) != 0 || len(tc.want) != 0) && !reflect.DeepEqual(values, tc.want) {
 			t.Errorf("values: got:\n%v\nwant:\n%v", values, tc.want)
 		}
 		if it.Err() != nil {
