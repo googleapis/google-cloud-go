@@ -29,8 +29,8 @@ type fetchCall struct {
 	err    error           // The error to return.
 }
 
-// cursorStub services fetch requests by returning data from an in-memory list of values.
-type cursorStub struct {
+// pageFetcherStub services fetch requests by returning data from an in-memory list of values.
+type pageFetcherStub struct {
 	token string
 
 	fetchCalls []fetchCall
@@ -38,7 +38,7 @@ type cursorStub struct {
 	err error
 }
 
-func (cur *cursorStub) fetch(ctx context.Context, c *Client, token string) (*readDataResult, error) {
+func (cur *pageFetcherStub) fetch(ctx context.Context, c *Client, token string) (*readDataResult, error) {
 	call := cur.fetchCalls[0]
 	cur.fetchCalls = cur.fetchCalls[1:]
 	if call.tok != token {
@@ -267,10 +267,10 @@ func TestIterator(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		cursor := &cursorStub{
+		pf := &pageFetcherStub{
 			fetchCalls: tc.fetchCalls,
 		}
-		it := newIterator(nil, cursor)
+		it := newIterator(nil, pf)
 		it.offset += tc.alreadyConsumed
 
 		values, err := consumeIterator(it)
@@ -286,12 +286,12 @@ func TestIterator(t *testing.T) {
 		}
 
 		// Check whether there was an unexpected call to fetch.
-		if cursor.err != nil {
-			t.Errorf("%s: %v", tc.desc, cursor.err)
+		if pf.err != nil {
+			t.Errorf("%s: %v", tc.desc, pf.err)
 		}
 		// Check whether any expected calls to fetch were not made.
-		if len(cursor.fetchCalls) != 0 {
-			t.Errorf("%s: outstanding fetchCalls: %v", tc.desc, cursor.fetchCalls)
+		if len(pf.fetchCalls) != 0 {
+			t.Errorf("%s: outstanding fetchCalls: %v", tc.desc, pf.fetchCalls)
 		}
 	}
 }
@@ -313,7 +313,7 @@ func consumeIterator(it *Iterator) ([]ValueList, error) {
 
 func TestGetBeforeNext(t *testing.T) {
 	// TODO: once mashalling/unmarshalling of iterators is implemented, do a similar test for unmarshalled iterators.
-	cursor := &cursorStub{
+	pf := &pageFetcherStub{
 		fetchCalls: []fetchCall{
 			{
 				tok: "",
@@ -324,7 +324,7 @@ func TestGetBeforeNext(t *testing.T) {
 			},
 		},
 	}
-	it := newIterator(nil, cursor)
+	it := newIterator(nil, pf)
 	var vals ValueList
 	if err := it.Get(&vals); err == nil {
 		t.Errorf("Expected error calling Get before Next")
@@ -332,12 +332,12 @@ func TestGetBeforeNext(t *testing.T) {
 }
 
 func TestGetDuringErrorState(t *testing.T) {
-	cursor := &cursorStub{
+	pf := &pageFetcherStub{
 		fetchCalls: []fetchCall{
 			{err: errors.New("bang")},
 		},
 	}
-	it := newIterator(nil, cursor)
+	it := newIterator(nil, pf)
 	var vals ValueList
 	it.Next(context.Background())
 	if it.Err() == nil {
@@ -394,10 +394,10 @@ func TestGetAfterFinished(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		cursor := &cursorStub{
+		pf := &pageFetcherStub{
 			fetchCalls: tc.fetchCalls,
 		}
-		it := newIterator(nil, cursor)
+		it := newIterator(nil, pf)
 		it.offset += tc.alreadyConsumed
 
 		values, err := consumeIterator(it)
