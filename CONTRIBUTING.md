@@ -42,7 +42,7 @@ $ gcloud config set project $GCLOUD_TESTS_GOLANG_PROJECT_ID
 $ gcloud auth login
 
 # Create the indexes
-$ gcloud preview datastore create-indexes datastore/testdata
+$ gcloud preview datastore create-indexes datastore/testdata/index.yaml
 
 ```
 
