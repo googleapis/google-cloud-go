@@ -43,6 +43,7 @@ func NewAdminClient(ctx context.Context, project, zone, cluster string, opts ...
 	o := []cloud.ClientOption{
 		cloud.WithEndpoint(adminAddr),
 		cloud.WithScopes(AdminScope),
+		cloud.WithUserAgent(clientUserAgent),
 	}
 	o = append(o, opts...)
 	conn, err := cloud.DialGRPC(ctx, o...)
@@ -189,6 +190,7 @@ func NewClusterAdminClient(ctx context.Context, project string, opts ...cloud.Cl
 	o := []cloud.ClientOption{
 		cloud.WithEndpoint(clusterAdminAddr),
 		cloud.WithScopes(ClusterAdminScope),
+		cloud.WithUserAgent(clientUserAgent),
 	}
 	o = append(o, opts...)
 	conn, err := cloud.DialGRPC(ctx, o...)

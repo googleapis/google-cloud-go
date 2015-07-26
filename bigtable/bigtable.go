@@ -45,6 +45,7 @@ func NewClient(ctx context.Context, project, zone, cluster string, opts ...cloud
 	o := []cloud.ClientOption{
 		cloud.WithEndpoint(prodAddr),
 		cloud.WithScopes(Scope),
+		cloud.WithUserAgent(clientUserAgent),
 	}
 	o = append(o, opts...)
 	conn, err := cloud.DialGRPC(ctx, o...)

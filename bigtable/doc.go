@@ -102,3 +102,7 @@ const (
 	// ClusterAdminScope is the OAuth scope for Cloud Bigtable cluster admin operations.
 	ClusterAdminScope = "https://www.googleapis.com/auth/bigtable.admin.cluster"
 )
+
+// clientUserAgent identifies the version of this package.
+// It should be bumped upon significant changes only.
+const clientUserAgent = "cbt-go/20150727"

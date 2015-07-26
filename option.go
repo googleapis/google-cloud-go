@@ -30,8 +30,9 @@ import (
 )
 
 type dialOpt struct {
-	endpoint string
-	scopes   []string
+	endpoint  string
+	scopes    []string
+	userAgent string
 
 	tokenSource oauth2.TokenSource
 
@@ -79,6 +80,15 @@ type withScopes []string
 func (w withScopes) resolve(o *dialOpt) {
 	o.scopes = []string(w)
 }
+
+// WithUserAgent returns a ClientOption that sets the User-Agent.
+func WithUserAgent(ua string) ClientOption {
+	return withUA(ua)
+}
+
+type withUA string
+
+func (w withUA) resolve(o *dialOpt) { o.userAgent = string(w) }
 
 // WithBaseHTTP returns a ClientOption that specifies the HTTP client to
 // use as the basis of communications. This option may only be used with
@@ -158,6 +168,9 @@ func DialGRPC(ctx context.Context, opt ...ClientOption) (*grpc.ClientConn, error
 	grpcOpts := []grpc.DialOption{
 		grpc.WithPerRPCCredentials(oauth.TokenSource{o.tokenSource}),
 		grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")),
+	}
+	if o.userAgent != "" {
+		grpcOpts = append(grpcOpts, grpc.WithUserAgent(o.userAgent))
 	}
 	return grpc.Dial(o.endpoint, grpcOpts...)
 }
