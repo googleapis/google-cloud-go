@@ -18,11 +18,8 @@
 package datastore // import "google.golang.org/cloud/datastore"
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"reflect"
 
 	"github.com/golang/protobuf/proto"
@@ -34,6 +31,8 @@ import (
 
 const prodAddr = "https://www.googleapis.com/datastore/v1beta2/datasets/"
 
+const userAgent = "gcloud-golang-datastore/20150727"
+
 const (
 	// ScopeDatastore grants permissions to view and/or manage datastore entities
 	ScopeDatastore = "https://www.googleapis.com/auth/datastore"
@@ -43,9 +42,15 @@ const (
 	ScopeUserEmail = "https://www.googleapis.com/auth/userinfo.email"
 )
 
+// protoClient is an interface for *transport.ProtoClient to support injecting
+// fake clients in tests.
+type protoClient interface {
+	Call(context.Context, string, proto.Message, proto.Message) error
+}
+
 // Client is a client for reading and writing data in a datastore dataset.
 type Client struct {
-	client   *http.Client
+	client   protoClient
 	endpoint string
 	dataset  string // Called dataset by the datastore API, synonym for project ID.
 }
@@ -55,16 +60,16 @@ func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption
 	o := []cloud.ClientOption{
 		cloud.WithEndpoint(prodAddr),
 		cloud.WithScopes(ScopeDatastore, ScopeUserEmail),
+		cloud.WithUserAgent(userAgent),
 	}
 	o = append(o, opts...)
-	client, endpoint, err := transport.DialHTTP(ctx, o...)
+	client, err := transport.NewProtoClient(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
 	return &Client{
-		endpoint: endpoint,
-		client:   client,
-		dataset:  projectID,
+		client:  client,
+		dataset: projectID,
 	}, nil
 
 }
@@ -117,56 +122,13 @@ type ErrFieldMismatch struct {
 	Reason     string
 }
 
-// errHTTP is returned when responds is a non-200 HTTP response.
-type errHTTP struct {
-	StatusCode int
-	Body       string
-	err        error
-}
-
-func (e *errHTTP) Error() string {
-	if e.err == nil {
-		return fmt.Sprintf("error during call, http status code: %v %s", e.StatusCode, e.Body)
-	}
-	return e.err.Error()
-}
-
 func (e *ErrFieldMismatch) Error() string {
 	return fmt.Sprintf("datastore: cannot load field %q into a %q: %s",
 		e.FieldName, e.StructType, e.Reason)
 }
 
-func (c *Client) call(ctx context.Context, method string, req proto.Message, resp proto.Message) error {
-	payload, err := proto.Marshal(req)
-	if err != nil {
-		return err
-	}
-	// TODO(djd): Figure out setting the default user agent.
-	// TODO(djd): Figure out context plumbing (eg. timeouts)
-	url := c.endpoint + c.dataset + "/" + method
-	r, err := c.client.Post(url, "application/x-protobuf", bytes.NewReader(payload))
-	if err != nil {
-		return err
-	}
-	defer r.Body.Close()
-	all, err := ioutil.ReadAll(r.Body)
-	if r.StatusCode != http.StatusOK {
-		e := &errHTTP{
-			StatusCode: r.StatusCode,
-			err:        err,
-		}
-		if err == nil {
-			e.Body = string(all)
-		}
-		return e
-	}
-	if err != nil {
-		return err
-	}
-	if err = proto.Unmarshal(all, resp); err != nil {
-		return err
-	}
-	return nil
+func (c *Client) call(ctx context.Context, method string, req, resp proto.Message) error {
+	return c.client.Call(ctx, c.dataset+"/"+method, req, resp)
 }
 
 func keyToProto(k *Key) *pb.Key {

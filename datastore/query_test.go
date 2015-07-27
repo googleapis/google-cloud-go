@@ -15,13 +15,9 @@
 package datastore
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"reflect"
-	"strings"
 	"testing"
 
 	"github.com/golang/protobuf/proto"
@@ -52,55 +48,10 @@ var (
 	}
 )
 
-type fakeTransport struct {
-	Handler func(req, resp proto.Message) (err error)
-}
+type fakeClient func(req, resp proto.Message) (err error)
 
-func (t *fakeTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-
-	body, err := ioutil.ReadAll(req.Body)
-
-	var in pb.RunQueryRequest
-	var resp http.Response
-	if err = proto.Unmarshal(body, &in); err != nil {
-		// Get back an error
-		resp = http.Response{
-			StatusCode: http.StatusBadRequest,
-		}
-	} else {
-		// Run our fake query and serialize the response
-		var out pb.RunQueryResponse
-		err := t.Handler(&in, &out)
-		if err != nil {
-
-			resp = http.Response{
-				StatusCode: http.StatusBadRequest,
-			}
-		} else {
-			payload, err := proto.Marshal(&out)
-			if err != nil {
-				resp = http.Response{
-					StatusCode: http.StatusBadRequest,
-				}
-			} else {
-				resp = http.Response{
-					StatusCode: http.StatusOK,
-					Body:       ioutil.NopCloser(bytes.NewBuffer(payload)),
-				}
-			}
-
-		}
-	}
-
-	// Set common response fields
-	resp.Proto = "HTTP/1.0"
-	resp.ProtoMajor = 1
-	resp.ProtoMinor = 1
-	if resp.Body == nil {
-		resp.Body = ioutil.NopCloser(strings.NewReader(""))
-	}
-
-	return &resp, nil
+func (c fakeClient) Call(ctx context.Context, method string, req, resp proto.Message) error {
+	return c(req, resp)
 }
 
 func fakeRunQuery(in *pb.RunQueryRequest, out *pb.RunQueryResponse) error {
@@ -331,12 +282,10 @@ func TestSimpleQuery(t *testing.T) {
 	for _, tc := range testCases {
 		nCall := 0
 		client := &Client{
-			client: &http.Client{
-				Transport: &fakeTransport{Handler: func(in, out proto.Message) error {
-					nCall++
-					return fakeRunQuery(in.(*pb.RunQueryRequest), out.(*pb.RunQueryResponse))
-				}},
-			},
+			client: fakeClient(func(in, out proto.Message) error {
+				nCall++
+				return fakeRunQuery(in.(*pb.RunQueryRequest), out.(*pb.RunQueryResponse))
+			}),
 		}
 		ctx := context.Background()
 
@@ -502,12 +451,10 @@ func TestNamespaceQuery(t *testing.T) {
 	gotNamespace := make(chan string, 1)
 	ctx := context.Background()
 	client := &Client{
-		client: &http.Client{Transport: &fakeTransport{
-			Handler: func(req, resp proto.Message) error {
-				gotNamespace <- req.(*pb.RunQueryRequest).GetPartitionId().GetNamespace()
-				return errors.New("not implemented")
-			},
-		}},
+		client: fakeClient(func(req, resp proto.Message) error {
+			gotNamespace <- req.(*pb.RunQueryRequest).GetPartitionId().GetNamespace()
+			return errors.New("not implemented")
+		}),
 	}
 
 	var gs []Gopher

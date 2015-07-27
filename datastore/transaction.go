@@ -22,6 +22,7 @@ import (
 	"golang.org/x/net/context"
 
 	pb "google.golang.org/cloud/internal/datastore"
+	"google.golang.org/cloud/internal/transport"
 )
 
 // ErrConcurrentTransaction is returned when a transaction is rolled back due
@@ -98,7 +99,7 @@ func (t *Transaction) Commit() (*Commit, error) {
 	t.id = nil
 	resp := &pb.CommitResponse{}
 	if err := t.client.call(t.ctx, "commit", req, resp); err != nil {
-		if e, ok := err.(*errHTTP); ok && e.StatusCode == http.StatusConflict {
+		if e, ok := err.(*transport.ErrHTTP); ok && e.StatusCode == http.StatusConflict {
 			// TODO(jbd): Make sure that we explicitly handle the case where response
 			// has an HTTP 409 and the error message indicates that it's an concurrent
 			// transaction error.
