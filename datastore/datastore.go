@@ -29,6 +29,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/cloud"
 	pb "google.golang.org/cloud/internal/datastore"
+	"google.golang.org/cloud/internal/transport"
 )
 
 const prodAddr = "https://www.googleapis.com/datastore/v1beta2/datasets/"
@@ -56,7 +57,7 @@ func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption
 		cloud.WithScopes(ScopeDatastore, ScopeUserEmail),
 	}
 	o = append(o, opts...)
-	client, endpoint, err := cloud.DialHTTP(ctx, o...)
+	client, endpoint, err := transport.DialHTTP(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}

@@ -17,32 +17,17 @@ limitations under the License.
 package cloud
 
 import (
-	"errors"
-	"fmt"
 	"net/http"
 
-	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
+	"google.golang.org/cloud/internal/opts"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/credentials/oauth"
 )
-
-type dialOpt struct {
-	endpoint  string
-	scopes    []string
-	userAgent string
-
-	tokenSource oauth2.TokenSource
-
-	httpClient *http.Client
-	grpcClient *grpc.ClientConn
-}
 
 // ClientOption is used when construct clients for each cloud service.
 type ClientOption interface {
-	resolve(*dialOpt)
+	// Resolve configures the given DialOpts for this option.
+	Resolve(*opts.DialOpt)
 }
 
 // WithTokenSource returns a ClientOption that specifies an OAuth2 token
@@ -53,8 +38,8 @@ func WithTokenSource(s oauth2.TokenSource) ClientOption {
 
 type withTokenSource struct{ ts oauth2.TokenSource }
 
-func (w withTokenSource) resolve(o *dialOpt) {
-	o.tokenSource = w.ts
+func (w withTokenSource) Resolve(o *opts.DialOpt) {
+	o.TokenSource = w.ts
 }
 
 // WithEndpoint returns a ClientOption that overrides the default endpoint
@@ -65,8 +50,8 @@ func WithEndpoint(url string) ClientOption {
 
 type withEndpoint string
 
-func (w withEndpoint) resolve(o *dialOpt) {
-	o.endpoint = string(w)
+func (w withEndpoint) Resolve(o *opts.DialOpt) {
+	o.Endpoint = string(w)
 }
 
 // WithScopes returns a ClientOption that overrides the default OAuth2 scopes
@@ -77,8 +62,8 @@ func WithScopes(scope ...string) ClientOption {
 
 type withScopes []string
 
-func (w withScopes) resolve(o *dialOpt) {
-	o.scopes = []string(w)
+func (w withScopes) Resolve(o *opts.DialOpt) {
+	o.Scopes = []string(w)
 }
 
 // WithUserAgent returns a ClientOption that sets the User-Agent.
@@ -88,7 +73,7 @@ func WithUserAgent(ua string) ClientOption {
 
 type withUA string
 
-func (w withUA) resolve(o *dialOpt) { o.userAgent = string(w) }
+func (w withUA) Resolve(o *opts.DialOpt) { o.UserAgent = string(w) }
 
 // WithBaseHTTP returns a ClientOption that specifies the HTTP client to
 // use as the basis of communications. This option may only be used with
@@ -99,8 +84,8 @@ func WithBaseHTTP(client *http.Client) ClientOption {
 
 type withBaseHTTP struct{ client *http.Client }
 
-func (w withBaseHTTP) resolve(o *dialOpt) {
-	o.httpClient = w.client
+func (w withBaseHTTP) Resolve(o *opts.DialOpt) {
+	o.HTTPClient = w.client
 }
 
 // WithBaseGRPC returns a ClientOption that specifies the GRPC client
@@ -112,66 +97,6 @@ func WithBaseGRPC(client *grpc.ClientConn) ClientOption {
 
 type withBaseGRPC struct{ client *grpc.ClientConn }
 
-func (w withBaseGRPC) resolve(o *dialOpt) {
-	o.grpcClient = w.client
-}
-
-// DialHTTP returns an HTTP client for use communicating with a Google cloud
-// service, configured with the given ClientOptions. It also returns the endpoint
-// for the service as specified in the options.
-// Most developers should call the relevant NewClient method for the target
-// service rather than invoking DialHTTP directly.
-func DialHTTP(ctx context.Context, opt ...ClientOption) (*http.Client, string, error) {
-	var o dialOpt
-	for _, opt := range opt {
-		opt.resolve(&o)
-	}
-	if o.grpcClient != nil {
-		return nil, "", errors.New("unsupported GRPC base transport specified")
-	}
-	// TODO(djd): Wrap all http.Clients with appropriate internal version to add
-	// UserAgent header and prepend correct endpoint.
-	if o.httpClient != nil {
-		return o.httpClient, o.endpoint, nil
-	}
-	if o.tokenSource == nil {
-		var err error
-		o.tokenSource, err = google.DefaultTokenSource(ctx, o.scopes...)
-		if err != nil {
-			return nil, "", fmt.Errorf("google.DefaultTokenSource: %v", err)
-		}
-	}
-	return oauth2.NewClient(ctx, o.tokenSource), o.endpoint, nil
-}
-
-// DialGRPC returns a GRPC connection for use communicating with a Google cloud
-// service, configured with the given ClientOptions. Most developers should
-// call the relevant NewClient method for the target service rather than
-// invoking DialGRPC directly.
-func DialGRPC(ctx context.Context, opt ...ClientOption) (*grpc.ClientConn, error) {
-	var o dialOpt
-	for _, opt := range opt {
-		opt.resolve(&o)
-	}
-	if o.httpClient != nil {
-		return nil, errors.New("unsupported HTTP base transport specified")
-	}
-	if o.grpcClient != nil {
-		return o.grpcClient, nil
-	}
-	if o.tokenSource == nil {
-		var err error
-		o.tokenSource, err = google.DefaultTokenSource(ctx, o.scopes...)
-		if err != nil {
-			return nil, fmt.Errorf("google.DefaultTokenSource: %v", err)
-		}
-	}
-	grpcOpts := []grpc.DialOption{
-		grpc.WithPerRPCCredentials(oauth.TokenSource{o.tokenSource}),
-		grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")),
-	}
-	if o.userAgent != "" {
-		grpcOpts = append(grpcOpts, grpc.WithUserAgent(o.userAgent))
-	}
-	return grpc.Dial(o.endpoint, grpcOpts...)
+func (w withBaseGRPC) Resolve(o *opts.DialOpt) {
+	o.GRPCClient = w.client
 }
