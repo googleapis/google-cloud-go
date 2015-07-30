@@ -437,6 +437,8 @@ func applyMutations(tbl *table, r *row, muts []*btdpb.Mutation) error {
 			} else {
 				r.cells[col] = cs
 			}
+		case mut.DeleteFromRow != nil:
+			r.cells = make(map[string][]cell)
 		}
 	}
 	return nil

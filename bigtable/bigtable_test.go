@@ -348,6 +348,21 @@ func TestClientIntegration(t *testing.T) {
 	}
 	checkpoint("did partial ReadRows test")
 
+	// Delete a row and check it goes away.
+	mut = NewMutation()
+	mut.DeleteRow()
+	if err := tbl.Apply(ctx, "wmckinley", mut); err != nil {
+		t.Errorf("Apply DeleteRow: %v", err)
+	}
+	row, err = tbl.ReadRow(ctx, "wmckinley")
+	if err != nil {
+		t.Fatalf("Reading a row after DeleteRow: %v", err)
+	}
+	if len(row) != 0 {
+		t.Fatalf("Read non-zero row after DeleteRow: %v", row)
+	}
+	checkpoint("exercised DeleteRow")
+
 	// Check ReadModifyWrite.
 
 	if err := adminClient.CreateColumnFamily(ctx, table, "counter"); err != nil {
