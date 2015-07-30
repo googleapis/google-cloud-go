@@ -21,8 +21,10 @@ To use a Server, create it, and then connect to it with no security:
 (The project/zone/cluster values are ignored.)
 	srv, err := bttest.NewServer()
 	...
+	conn, err := grpc.Dial(srv.Addr)
+	...
 	client, err := bigtable.NewClient(ctx, proj, zone, cluster,
-		bigtable.WithCredentials(nil), bigtable.WithInsecureAddr(srv.Addr))
+		bigtable.WithBaseGRPC(conn))
 	...
 */
 package bttest // import "google.golang.org/cloud/bigtable/bttest"
