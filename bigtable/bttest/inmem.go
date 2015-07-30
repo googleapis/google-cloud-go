@@ -155,7 +155,7 @@ func (s *server) CreateColumnFamily(ctx context.Context, req *bttspb.CreateColum
 	}
 	tbl.families[fam] = true
 	return &bttdpb.ColumnFamily{
-		Name: req.Name + "/families/" + fam,
+		Name: req.Name + "/columnFamilies/" + fam,
 	}, nil
 }
 
