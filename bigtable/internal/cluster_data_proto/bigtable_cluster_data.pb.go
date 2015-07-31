@@ -15,6 +15,8 @@ It has these top-level messages:
 package google_bigtable_admin_cluster_v1
 
 import proto "github.com/golang/protobuf/proto"
+import google_longrunning "google.golang.org/cloud/bigtable/internal/operations_proto"
+import google_protobuf3 "google.golang.org/cloud/bigtable/internal/google_protobuf"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -100,6 +102,15 @@ type Cluster struct {
 	// Values are of the form
 	// projects/<project>/zones/<zone>/clusters/[a-z][-a-z0-9]*
 	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	// If this cluster has been deleted, the time at which its backup will
+	// be irrevocably destroyed. Omitted otherwise.
+	// This cannot be set directly, only through DeleteCluster.
+	DeleteTime *google_protobuf3.Timestamp `protobuf:"bytes,2,opt,name=delete_time" json:"delete_time,omitempty"`
+	// The operation currently running on the cluster, if any.
+	// This cannot be set directly, only through CreateCluster, UpdateCluster,
+	// or UndeleteCluster. Calls to these methods will be rejected if
+	// "current_operation" is already set.
+	CurrentOperation *google_longrunning.Operation `protobuf:"bytes,3,opt,name=current_operation" json:"current_operation,omitempty"`
 	// The descriptive name for this cluster as it appears in UIs.
 	// Must be unique per zone.
 	DisplayName string `protobuf:"bytes,4,opt,name=display_name" json:"display_name,omitempty"`
@@ -117,6 +128,20 @@ type Cluster struct {
 func (m *Cluster) Reset()         { *m = Cluster{} }
 func (m *Cluster) String() string { return proto.CompactTextString(m) }
 func (*Cluster) ProtoMessage()    {}
+
+func (m *Cluster) GetDeleteTime() *google_protobuf3.Timestamp {
+	if m != nil {
+		return m.DeleteTime
+	}
+	return nil
+}
+
+func (m *Cluster) GetCurrentOperation() *google_longrunning.Operation {
+	if m != nil {
+		return m.CurrentOperation
+	}
+	return nil
+}
 
 func init() {
 	proto.RegisterEnum("google.bigtable.admin.cluster.v1.StorageType", StorageType_name, StorageType_value)

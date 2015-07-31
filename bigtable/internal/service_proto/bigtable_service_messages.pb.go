@@ -258,6 +258,3 @@ func (m *ReadModifyWriteRowRequest) GetRules() []*google_bigtable_v11.ReadModify
 	}
 	return nil
 }
-
-func init() {
-}

@@ -5,8 +5,10 @@
 package google_bigtable_admin_table_v1
 
 import proto "github.com/golang/protobuf/proto"
+
+// discarding unused import google_api1 "google.golang.org/cloud/bigtable/internal/google_api"
 import google_bigtable_admin_table_v11 "google.golang.org/cloud/bigtable/internal/table_data_proto"
-import google_protobuf1 "google.golang.org/cloud/bigtable/internal/empty"
+import google_protobuf2 "google.golang.org/cloud/bigtable/internal/google_protobuf"
 
 import (
 	context "golang.org/x/net/context"
@@ -20,9 +22,6 @@ var _ grpc.ClientConn
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 
-func init() {
-}
-
 // Client API for BigtableTableService service
 
 type BigtableTableServiceClient interface {
@@ -35,16 +34,16 @@ type BigtableTableServiceClient interface {
 	// Gets the schema of the specified table, including its column families.
 	GetTable(ctx context.Context, in *GetTableRequest, opts ...grpc.CallOption) (*google_bigtable_admin_table_v11.Table, error)
 	// Permanently deletes a specified table and all of its data.
-	DeleteTable(ctx context.Context, in *DeleteTableRequest, opts ...grpc.CallOption) (*google_protobuf1.Empty, error)
+	DeleteTable(ctx context.Context, in *DeleteTableRequest, opts ...grpc.CallOption) (*google_protobuf2.Empty, error)
 	// Changes the name of a specified table.
 	// Cannot be used to move tables between clusters, zones, or projects.
-	RenameTable(ctx context.Context, in *RenameTableRequest, opts ...grpc.CallOption) (*google_protobuf1.Empty, error)
+	RenameTable(ctx context.Context, in *RenameTableRequest, opts ...grpc.CallOption) (*google_protobuf2.Empty, error)
 	// Creates a new column family within a specified table.
 	CreateColumnFamily(ctx context.Context, in *CreateColumnFamilyRequest, opts ...grpc.CallOption) (*google_bigtable_admin_table_v11.ColumnFamily, error)
 	// Changes the configuration of a specified column family.
 	UpdateColumnFamily(ctx context.Context, in *google_bigtable_admin_table_v11.ColumnFamily, opts ...grpc.CallOption) (*google_bigtable_admin_table_v11.ColumnFamily, error)
 	// Permanently deletes a specified column family and all of its data.
-	DeleteColumnFamily(ctx context.Context, in *DeleteColumnFamilyRequest, opts ...grpc.CallOption) (*google_protobuf1.Empty, error)
+	DeleteColumnFamily(ctx context.Context, in *DeleteColumnFamilyRequest, opts ...grpc.CallOption) (*google_protobuf2.Empty, error)
 }
 
 type bigtableTableServiceClient struct {
@@ -82,8 +81,8 @@ func (c *bigtableTableServiceClient) GetTable(ctx context.Context, in *GetTableR
 	return out, nil
 }
 
-func (c *bigtableTableServiceClient) DeleteTable(ctx context.Context, in *DeleteTableRequest, opts ...grpc.CallOption) (*google_protobuf1.Empty, error) {
-	out := new(google_protobuf1.Empty)
+func (c *bigtableTableServiceClient) DeleteTable(ctx context.Context, in *DeleteTableRequest, opts ...grpc.CallOption) (*google_protobuf2.Empty, error) {
+	out := new(google_protobuf2.Empty)
 	err := grpc.Invoke(ctx, "/google.bigtable.admin.table.v1.BigtableTableService/DeleteTable", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
@@ -91,8 +90,8 @@ func (c *bigtableTableServiceClient) DeleteTable(ctx context.Context, in *Delete
 	return out, nil
 }
 
-func (c *bigtableTableServiceClient) RenameTable(ctx context.Context, in *RenameTableRequest, opts ...grpc.CallOption) (*google_protobuf1.Empty, error) {
-	out := new(google_protobuf1.Empty)
+func (c *bigtableTableServiceClient) RenameTable(ctx context.Context, in *RenameTableRequest, opts ...grpc.CallOption) (*google_protobuf2.Empty, error) {
+	out := new(google_protobuf2.Empty)
 	err := grpc.Invoke(ctx, "/google.bigtable.admin.table.v1.BigtableTableService/RenameTable", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
@@ -118,8 +117,8 @@ func (c *bigtableTableServiceClient) UpdateColumnFamily(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *bigtableTableServiceClient) DeleteColumnFamily(ctx context.Context, in *DeleteColumnFamilyRequest, opts ...grpc.CallOption) (*google_protobuf1.Empty, error) {
-	out := new(google_protobuf1.Empty)
+func (c *bigtableTableServiceClient) DeleteColumnFamily(ctx context.Context, in *DeleteColumnFamilyRequest, opts ...grpc.CallOption) (*google_protobuf2.Empty, error) {
+	out := new(google_protobuf2.Empty)
 	err := grpc.Invoke(ctx, "/google.bigtable.admin.table.v1.BigtableTableService/DeleteColumnFamily", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
@@ -139,16 +138,16 @@ type BigtableTableServiceServer interface {
 	// Gets the schema of the specified table, including its column families.
 	GetTable(context.Context, *GetTableRequest) (*google_bigtable_admin_table_v11.Table, error)
 	// Permanently deletes a specified table and all of its data.
-	DeleteTable(context.Context, *DeleteTableRequest) (*google_protobuf1.Empty, error)
+	DeleteTable(context.Context, *DeleteTableRequest) (*google_protobuf2.Empty, error)
 	// Changes the name of a specified table.
 	// Cannot be used to move tables between clusters, zones, or projects.
-	RenameTable(context.Context, *RenameTableRequest) (*google_protobuf1.Empty, error)
+	RenameTable(context.Context, *RenameTableRequest) (*google_protobuf2.Empty, error)
 	// Creates a new column family within a specified table.
 	CreateColumnFamily(context.Context, *CreateColumnFamilyRequest) (*google_bigtable_admin_table_v11.ColumnFamily, error)
 	// Changes the configuration of a specified column family.
 	UpdateColumnFamily(context.Context, *google_bigtable_admin_table_v11.ColumnFamily) (*google_bigtable_admin_table_v11.ColumnFamily, error)
 	// Permanently deletes a specified column family and all of its data.
-	DeleteColumnFamily(context.Context, *DeleteColumnFamilyRequest) (*google_protobuf1.Empty, error)
+	DeleteColumnFamily(context.Context, *DeleteColumnFamilyRequest) (*google_protobuf2.Empty, error)
 }
 
 func RegisterBigtableTableServiceServer(s *grpc.Server, srv BigtableTableServiceServer) {

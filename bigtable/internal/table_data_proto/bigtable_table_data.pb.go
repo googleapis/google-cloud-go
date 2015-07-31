@@ -16,7 +16,8 @@ It has these top-level messages:
 package google_bigtable_admin_table_v1
 
 import proto "github.com/golang/protobuf/proto"
-import google_protobuf "google.golang.org/cloud/bigtable/internal/duration_proto"
+import google_longrunning "google.golang.org/cloud/bigtable/internal/operations_proto"
+import google_protobuf3 "google.golang.org/cloud/bigtable/internal/google_protobuf"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -44,6 +45,10 @@ type Table struct {
 	// A unique identifier of the form
 	// <cluster_name>/tables/[_a-zA-Z0-9][-_.a-zA-Z0-9]*
 	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	// If this Table is in the process of being created, the Operation used to
+	// track its progress. As long as this operation is present, the Table will
+	// not accept any Table Admin or Read/Write requests.
+	CurrentOperation *google_longrunning.Operation `protobuf:"bytes,2,opt,name=current_operation" json:"current_operation,omitempty"`
 	// The column families configured for this table, mapped by column family id.
 	ColumnFamilies map[string]*ColumnFamily `protobuf:"bytes,3,rep,name=column_families" json:"column_families,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// The granularity (e.g. MILLIS, MICROS) at which timestamps are stored in
@@ -55,6 +60,13 @@ type Table struct {
 func (m *Table) Reset()         { *m = Table{} }
 func (m *Table) String() string { return proto.CompactTextString(m) }
 func (*Table) ProtoMessage()    {}
+
+func (m *Table) GetCurrentOperation() *google_longrunning.Operation {
+	if m != nil {
+		return m.CurrentOperation
+	}
+	return nil
+}
 
 func (m *Table) GetColumnFamilies() map[string]*ColumnFamily {
 	if m != nil {
@@ -119,7 +131,7 @@ type GcRule struct {
 	// Delete all cells in a column except the most recent N.
 	MaxNumVersions int32 `protobuf:"varint,1,opt,name=max_num_versions" json:"max_num_versions,omitempty"`
 	// Delete cells in a column older than the given age.
-	MaxAge *google_protobuf.Duration `protobuf:"bytes,2,opt,name=max_age" json:"max_age,omitempty"`
+	MaxAge *google_protobuf3.Duration `protobuf:"bytes,2,opt,name=max_age" json:"max_age,omitempty"`
 	// Delete cells that would be deleted by every nested rule.
 	Intersection *GcRule_Intersection `protobuf:"bytes,3,opt,name=intersection" json:"intersection,omitempty"`
 	// Delete cells that would be deleted by any nested rule.
@@ -130,7 +142,7 @@ func (m *GcRule) Reset()         { *m = GcRule{} }
 func (m *GcRule) String() string { return proto.CompactTextString(m) }
 func (*GcRule) ProtoMessage()    {}
 
-func (m *GcRule) GetMaxAge() *google_protobuf.Duration {
+func (m *GcRule) GetMaxAge() *google_protobuf3.Duration {
 	if m != nil {
 		return m.MaxAge
 	}

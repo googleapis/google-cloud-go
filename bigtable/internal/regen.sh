@@ -56,15 +56,6 @@ for up in "${!filename_map[@]}"; do
   cat $tmpdir/$UPSTREAM_SUBDIR/$up |
     # Adjust proto imports.
     sed -f $import_fixes |
-    # Drop the UndeleteCluster RPC method. It returns a google.longrunning.Operation.
-    sed '/^  rpc UndeleteCluster(/,/^  }$/d' |
-    # Drop annotations, long-running operations and timestamps. They aren't supported (yet).
-    sed '/"google\/longrunning\/operations.proto"/d' |
-    sed '/google.longrunning.Operation/d' |
-    sed '/"google\/protobuf\/timestamp.proto"/d' |
-    sed '/google\.protobuf\.Timestamp/d' |
-    sed '/"google\/api\/annotations.proto"/d' |
-    sed '/option.*google\.api\.http.*{.*};$/d' |
     cat > $PKG/$f
 done
 

@@ -16,6 +16,8 @@ syntax = "proto3";
 
 package google.bigtable.admin.cluster.v1;
 
+import "google.golang.org/cloud/bigtable/internal/operations_proto/operations.proto";
+import "google.golang.org/cloud/bigtable/internal/google_protobuf/timestamp.proto";
 
 option java_multiple_files = true;
 option java_outer_classname = "BigtableClusterDataProto";
@@ -62,11 +64,13 @@ message Cluster {
   // If this cluster has been deleted, the time at which its backup will
   // be irrevocably destroyed. Omitted otherwise.
   // This cannot be set directly, only through DeleteCluster.
+  google.protobuf.Timestamp delete_time = 2;
 
   // The operation currently running on the cluster, if any.
   // This cannot be set directly, only through CreateCluster, UpdateCluster,
   // or UndeleteCluster. Calls to these methods will be rejected if
   // "current_operation" is already set.
+  google.longrunning.Operation current_operation = 3;
 
   // The descriptive name for this cluster as it appears in UIs.
   // Must be unique per zone.
