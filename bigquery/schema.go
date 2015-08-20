@@ -63,9 +63,9 @@ func (fs *FieldSchema) asTableFieldSchema() *bq.TableFieldSchema {
 	return tfs
 }
 
-func (s *Schema) asTableSchema() *bq.TableSchema {
+func (s Schema) asTableSchema() *bq.TableSchema {
 	var fields []*bq.TableFieldSchema
-	for _, f := range *s {
+	for _, f := range s {
 		fields = append(fields, f.asTableFieldSchema())
 	}
 	return &bq.TableSchema{Fields: fields}
@@ -86,10 +86,10 @@ func convertTableFieldSchema(tfs *bq.TableFieldSchema) *FieldSchema {
 	return fs
 }
 
-func convertTableSchema(ts *bq.TableSchema) *Schema {
-	s := &Schema{}
+func convertTableSchema(ts *bq.TableSchema) Schema {
+	var s Schema
 	for _, f := range ts.Fields {
-		*s = append(*s, convertTableFieldSchema(f))
+		s = append(s, convertTableFieldSchema(f))
 	}
 	return s
 }

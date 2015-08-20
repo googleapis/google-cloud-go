@@ -42,7 +42,7 @@ func fieldSchema(desc, name, typ string, repeated, required bool) *FieldSchema {
 
 func TestSchemaConversion(t *testing.T) {
 	testCases := []struct {
-		schema   *Schema
+		schema   Schema
 		bqSchema *bq.TableSchema
 	}{
 		{
@@ -52,7 +52,7 @@ func TestSchemaConversion(t *testing.T) {
 					bqTableFieldSchema("desc", "name", "STRING", "REQUIRED"),
 				},
 			},
-			schema: &Schema{
+			schema: Schema{
 				fieldSchema("desc", "name", "STRING", false, true),
 			},
 		},
@@ -63,7 +63,7 @@ func TestSchemaConversion(t *testing.T) {
 					bqTableFieldSchema("desc", "name", "STRING", "REPEATED"),
 				},
 			},
-			schema: &Schema{
+			schema: Schema{
 				fieldSchema("desc", "name", "STRING", true, false),
 			},
 		},
@@ -74,7 +74,7 @@ func TestSchemaConversion(t *testing.T) {
 					bqTableFieldSchema("desc", "name", "STRING", ""),
 				},
 			},
-			schema: &Schema{
+			schema: Schema{
 				fieldSchema("desc", "name", "STRING", false, false),
 			},
 		},
@@ -85,7 +85,7 @@ func TestSchemaConversion(t *testing.T) {
 					bqTableFieldSchema("desc", "name", "INTEGER", ""),
 				},
 			},
-			schema: &Schema{
+			schema: Schema{
 				fieldSchema("desc", "name", "INTEGER", false, false),
 			},
 		},
@@ -96,7 +96,7 @@ func TestSchemaConversion(t *testing.T) {
 					bqTableFieldSchema("desc", "name", "FLOAT", ""),
 				},
 			},
-			schema: &Schema{
+			schema: Schema{
 				fieldSchema("desc", "name", "FLOAT", false, false),
 			},
 		},
@@ -107,7 +107,7 @@ func TestSchemaConversion(t *testing.T) {
 					bqTableFieldSchema("desc", "name", "BOOLEAN", ""),
 				},
 			},
-			schema: &Schema{
+			schema: Schema{
 				fieldSchema("desc", "name", "BOOLEAN", false, false),
 			},
 		},
@@ -118,7 +118,7 @@ func TestSchemaConversion(t *testing.T) {
 					bqTableFieldSchema("desc", "name", "TIMESTAMP", ""),
 				},
 			},
-			schema: &Schema{
+			schema: Schema{
 				fieldSchema("desc", "name", "TIMESTAMP", false, false),
 			},
 		},
@@ -137,7 +137,7 @@ func TestSchemaConversion(t *testing.T) {
 					},
 				},
 			},
-			schema: &Schema{
+			schema: Schema{
 				&FieldSchema{
 					Description: "An outer schema wrapping a nested schema",
 					Name:        "outer",

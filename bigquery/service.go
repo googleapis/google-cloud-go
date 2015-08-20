@@ -95,7 +95,7 @@ type readDataResult struct {
 	pageToken string
 	rows      [][]Value
 	totalRows uint64
-	schema    *Schema
+	schema    Schema
 }
 
 type readQueryConf struct {

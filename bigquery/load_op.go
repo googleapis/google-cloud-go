@@ -27,10 +27,10 @@ type loadOption interface {
 
 // A DestinationSchema must be supplied when loading data from Google Cloud Storage into a non-existent table.
 // Caveat: DestinationSchema is not required if the data being loaded is a datastore backup.
-func DestinationSchema(schema *Schema) Option { return destSchema{Schema: schema} }
+func DestinationSchema(schema Schema) Option { return destSchema{Schema: schema} }
 
 type destSchema struct {
-	*Schema
+	Schema
 }
 
 func (opt destSchema) implementsOption() {}
