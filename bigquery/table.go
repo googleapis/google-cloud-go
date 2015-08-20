@@ -31,8 +31,6 @@ type Table struct {
 	TableID string
 
 	// All following fields are optional.
-	CreateDisposition CreateDisposition // default is CreateIfNeeded.
-	WriteDisposition  WriteDisposition  // default is WriteAppend.
 
 	// Name is the user-friendly name for this table.
 	Name string
@@ -43,31 +41,65 @@ type Table struct {
 type Tables []*Table
 
 // CreateDisposition specifies the circumstances under which destination table will be created.
-type CreateDisposition string
+// Default is CreateIfNeeded.
+type TableCreateDisposition string
 
 const (
 	// The table will be created if it does not already exist.  Tables are created atomically on successful completion of a job.
-	CreateIfNeeded CreateDisposition = "CREATE_IF_NEEDED"
+	CreateIfNeeded TableCreateDisposition = "CREATE_IF_NEEDED"
 
 	// The table must already exist and will not be automatically created.
-	CreateNever CreateDisposition = "CREATE_NEVER"
+	CreateNever TableCreateDisposition = "CREATE_NEVER"
 )
 
-// WriteDisposition specifies how existing data in a destination table is treated.
-type WriteDisposition string
+func CreateDisposition(disp TableCreateDisposition) Option { return disp }
+
+func (opt TableCreateDisposition) implementsOption() {}
+
+func (opt TableCreateDisposition) customizeLoad(conf *bq.JobConfigurationLoad, projectID string) {
+	conf.CreateDisposition = string(opt)
+}
+
+func (opt TableCreateDisposition) customizeCopy(conf *bq.JobConfigurationTableCopy, projectID string) {
+	conf.CreateDisposition = string(opt)
+}
+
+func (opt TableCreateDisposition) customizeQuery(conf *bq.JobConfigurationQuery, projectID string) {
+	conf.CreateDisposition = string(opt)
+}
+
+// TableWriteDisposition specifies how existing data in a destination table is treated.
+// Default is WriteAppend.
+type TableWriteDisposition string
 
 const (
 	// Data will be appended to any existing data in the destination table.
 	// Data is appended atomically on successful completion of a job.
-	WriteAppend WriteDisposition = "WRITE_APPEND"
+	WriteAppend TableWriteDisposition = "WRITE_APPEND"
 
 	// Existing data in the destination table will be overwritten.
 	// Data is overwritten atomically on successful completion of a job.
-	WriteTruncate WriteDisposition = "WRITE_TRUNCATE"
+	WriteTruncate TableWriteDisposition = "WRITE_TRUNCATE"
 
 	// Writes will fail if the destination table already contains data.
-	WriteEmpty WriteDisposition = "WRITE_EMPTY"
+	WriteEmpty TableWriteDisposition = "WRITE_EMPTY"
 )
+
+func WriteDisposition(disp TableWriteDisposition) Option { return disp }
+
+func (opt TableWriteDisposition) implementsOption() {}
+
+func (opt TableWriteDisposition) customizeLoad(conf *bq.JobConfigurationLoad, projectID string) {
+	conf.WriteDisposition = string(opt)
+}
+
+func (opt TableWriteDisposition) customizeCopy(conf *bq.JobConfigurationTableCopy, projectID string) {
+	conf.WriteDisposition = string(opt)
+}
+
+func (opt TableWriteDisposition) customizeQuery(conf *bq.JobConfigurationQuery, projectID string) {
+	conf.WriteDisposition = string(opt)
+}
 
 // TableType is the type of table.
 type TableType string
@@ -102,8 +134,6 @@ func (t *Table) implicitTable() bool {
 
 func (t *Table) customizeLoadDst(conf *bq.JobConfigurationLoad, projectID string) {
 	conf.DestinationTable = t.tableRefProto()
-	conf.CreateDisposition = string(t.CreateDisposition)
-	conf.WriteDisposition = string(t.WriteDisposition)
 }
 
 func (t *Table) customizeExtractSrc(conf *bq.JobConfigurationExtract, projectID string) {
@@ -112,8 +142,6 @@ func (t *Table) customizeExtractSrc(conf *bq.JobConfigurationExtract, projectID 
 
 func (t *Table) customizeCopyDst(conf *bq.JobConfigurationTableCopy, projectID string) {
 	conf.DestinationTable = t.tableRefProto()
-	conf.CreateDisposition = string(t.CreateDisposition)
-	conf.WriteDisposition = string(t.WriteDisposition)
 }
 
 func (ts Tables) customizeCopySrc(conf *bq.JobConfigurationTableCopy, projectID string) {
@@ -126,8 +154,6 @@ func (t *Table) customizeQueryDst(conf *bq.JobConfigurationQuery, projectID stri
 	if !t.implicitTable() {
 		conf.DestinationTable = t.tableRefProto()
 	}
-	conf.CreateDisposition = string(t.CreateDisposition)
-	conf.WriteDisposition = string(t.WriteDisposition)
 }
 
 func (t *Table) customizeReadSrc(cursor *readTableConf) {

@@ -131,8 +131,8 @@ func (c *Client) Read(ctx context.Context, src ReadSource, options ...ReadOption
 
 // executeQuery submits a query for execution and returns the results via an Iterator.
 func (c *Client) executeQuery(ctx context.Context, q *Query, options ...ReadOption) (*Iterator, error) {
-	dest := &Table{WriteDisposition: WriteTruncate}
-	job, err := c.Copy(ctx, dest, q)
+	dest := &Table{}
+	job, err := c.Copy(ctx, dest, q, WriteTruncate)
 	if err != nil {
 		return nil, err
 	}

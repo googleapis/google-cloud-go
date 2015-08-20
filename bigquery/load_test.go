@@ -97,13 +97,12 @@ func TestLoad(t *testing.T) {
 		},
 		{
 			dst: &Table{
-				ProjectID:         "project-id",
-				DatasetID:         "dataset-id",
-				TableID:           "table-id",
-				CreateDisposition: "CREATE_NEVER",
-				WriteDisposition:  "WRITE_TRUNCATE",
+				ProjectID: "project-id",
+				DatasetID: "dataset-id",
+				TableID:   "table-id",
 			},
-			src: defaultGCS,
+			options: []Option{CreateNever, WriteTruncate},
+			src:     defaultGCS,
 			want: func() *bq.Job {
 				j := defaultLoadJob()
 				j.Configuration.Load.CreateDisposition = "CREATE_NEVER"

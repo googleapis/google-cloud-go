@@ -61,9 +61,7 @@ func main() {
 		log.Fatalf("Creating bigquery client: %v", err)
 	}
 
-	d := &bigquery.Table{
-		WriteDisposition: bigquery.WriteTruncate,
-	}
+	d := &bigquery.Table{}
 
 	if *dest != "" {
 		d.ProjectID = *project
@@ -78,7 +76,7 @@ func main() {
 	}
 
 	// Query data.
-	job, err := client.Copy(context.Background(), d, query)
+	job, err := client.Copy(context.Background(), d, query, bigquery.WriteTruncate)
 
 	if err != nil {
 		log.Fatalf("Querying: %v", err)
