@@ -45,13 +45,13 @@ func (cf chainFilter) String() string {
 }
 
 func (cf chainFilter) proto() *btdpb.RowFilter {
-	f := &btdpb.RowFilter{
-		Chain: &btdpb.RowFilter_Chain{},
-	}
+	chain := &btdpb.RowFilter_Chain{}
 	for _, sf := range cf.sub {
-		f.Chain.Filters = append(f.Chain.Filters, sf.proto())
+		chain.Filters = append(chain.Filters, sf.proto())
 	}
-	return f
+	return &btdpb.RowFilter{
+		Filter: &btdpb.RowFilter_Chain_{chain},
+	}
 }
 
 // InterleaveFilters returns a filter that applies a set of filters in parallel
@@ -71,13 +71,13 @@ func (ilf interleaveFilter) String() string {
 }
 
 func (ilf interleaveFilter) proto() *btdpb.RowFilter {
-	f := &btdpb.RowFilter{
-		Interleave: &btdpb.RowFilter_Interleave{},
-	}
+	inter := &btdpb.RowFilter_Interleave{}
 	for _, sf := range ilf.sub {
-		f.Interleave.Filters = append(f.Interleave.Filters, sf.proto())
+		inter.Filters = append(inter.Filters, sf.proto())
 	}
-	return f
+	return &btdpb.RowFilter{
+		Filter: &btdpb.RowFilter_Interleave_{inter},
+	}
 }
 
 // RowKeyFilter returns a filter that matches cells from rows whose
@@ -90,7 +90,7 @@ type rowKeyFilter string
 func (rkf rowKeyFilter) String() string { return fmt.Sprintf("row(%s)", string(rkf)) }
 
 func (rkf rowKeyFilter) proto() *btdpb.RowFilter {
-	return &btdpb.RowFilter{RowKeyRegexFilter: []byte(rkf)}
+	return &btdpb.RowFilter{Filter: &btdpb.RowFilter_RowKeyRegexFilter{[]byte(rkf)}}
 }
 
 // FamilyFilter returns a filter that matches cells whose family name
@@ -103,7 +103,7 @@ type familyFilter string
 func (ff familyFilter) String() string { return fmt.Sprintf("col(%s:)", string(ff)) }
 
 func (ff familyFilter) proto() *btdpb.RowFilter {
-	return &btdpb.RowFilter{FamilyNameRegexFilter: string(ff)}
+	return &btdpb.RowFilter{Filter: &btdpb.RowFilter_FamilyNameRegexFilter{string(ff)}}
 }
 
 // ColumnFilter returns a filter that matches cells whose column name
@@ -116,7 +116,7 @@ type columnFilter string
 func (cf columnFilter) String() string { return fmt.Sprintf("col(.*:%s)", string(cf)) }
 
 func (cf columnFilter) proto() *btdpb.RowFilter {
-	return &btdpb.RowFilter{ColumnQualifierRegexFilter: []byte(cf)}
+	return &btdpb.RowFilter{Filter: &btdpb.RowFilter_ColumnQualifierRegexFilter{[]byte(cf)}}
 }
 
 // ValueFilter returns a filter that matches cells whose value
@@ -129,7 +129,7 @@ type valueFilter string
 func (vf valueFilter) String() string { return fmt.Sprintf("value_match(%s)", string(vf)) }
 
 func (vf valueFilter) proto() *btdpb.RowFilter {
-	return &btdpb.RowFilter{ValueRegexFilter: []byte(vf)}
+	return &btdpb.RowFilter{Filter: &btdpb.RowFilter_ValueRegexFilter{[]byte(vf)}}
 }
 
 // LatestNFilter returns a filter that matches the most recent N cells in each column.
@@ -140,7 +140,7 @@ type latestNFilter int32
 func (lnf latestNFilter) String() string { return fmt.Sprintf("col(*,%d)", lnf) }
 
 func (lnf latestNFilter) proto() *btdpb.RowFilter {
-	return &btdpb.RowFilter{CellsPerColumnLimitFilter: int32(lnf)}
+	return &btdpb.RowFilter{Filter: &btdpb.RowFilter_CellsPerColumnLimitFilter{int32(lnf)}}
 }
 
 // StripValueFilter returns a filter that replaces each value with the empty string.
@@ -148,7 +148,9 @@ func StripValueFilter() Filter { return stripValueFilter{} }
 
 type stripValueFilter struct{}
 
-func (stripValueFilter) String() string          { return "strip_value()" }
-func (stripValueFilter) proto() *btdpb.RowFilter { return &btdpb.RowFilter{StripValueTransformer: true} }
+func (stripValueFilter) String() string { return "strip_value()" }
+func (stripValueFilter) proto() *btdpb.RowFilter {
+	return &btdpb.RowFilter{Filter: &btdpb.RowFilter_StripValueTransformer{true}}
+}
 
 // TODO(dsymonds): More filters: cond, col/ts/value range, sampling

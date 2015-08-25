@@ -22,19 +22,25 @@ It has these top-level messages:
 package google_bigtable_v1
 
 import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
+import math "math"
 import google_bigtable_v11 "google.golang.org/cloud/bigtable/internal/data_proto"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
+var _ = fmt.Errorf
+var _ = math.Inf
 
 // Request message for BigtableServer.ReadRows.
 type ReadRowsRequest struct {
 	// The unique name of the table from which to read.
 	TableName string `protobuf:"bytes,1,opt,name=table_name" json:"table_name,omitempty"`
-	// The key of a single row from which to read.
-	RowKey []byte `protobuf:"bytes,2,opt,name=row_key,proto3" json:"row_key,omitempty"`
-	// A range of rows from which to read.
-	RowRange *google_bigtable_v11.RowRange `protobuf:"bytes,3,opt,name=row_range" json:"row_range,omitempty"`
+	// If neither row_key nor row_range is set, reads from all rows.
+	//
+	// Types that are valid to be assigned to Target:
+	//	*ReadRowsRequest_RowKey
+	//	*ReadRowsRequest_RowRange
+	Target isReadRowsRequest_Target `protobuf_oneof:"target"`
 	// The filter to apply to the contents of the specified row(s). If unset,
 	// reads the entire table.
 	Filter *google_bigtable_v11.RowFilter `protobuf:"bytes,5,opt,name=filter" json:"filter,omitempty"`
@@ -43,13 +49,11 @@ type ReadRowsRequest struct {
 	// "allow_row_interleaving" to true allows multiple rows to be interleaved in
 	// the response stream, which increases throughput but breaks this guarantee,
 	// and may force the client to use more memory to buffer partially-received
-	// rows.
+	// rows. Cannot be set to true when specifying "num_rows_limit".
 	AllowRowInterleaving bool `protobuf:"varint,6,opt,name=allow_row_interleaving" json:"allow_row_interleaving,omitempty"`
 	// The read will terminate after committing to N rows' worth of results. The
 	// default (zero) is to return all results.
-	// Note that if "allow_row_interleaving" is set to true, partial results may
-	// be returned for more than N rows. However, only N "commit_row" chunks will
-	// be sent.
+	// Note that "allow_row_interleaving" cannot be set to true when this is set.
 	NumRowsLimit int64 `protobuf:"varint,7,opt,name=num_rows_limit" json:"num_rows_limit,omitempty"`
 }
 
@@ -57,9 +61,37 @@ func (m *ReadRowsRequest) Reset()         { *m = ReadRowsRequest{} }
 func (m *ReadRowsRequest) String() string { return proto.CompactTextString(m) }
 func (*ReadRowsRequest) ProtoMessage()    {}
 
-func (m *ReadRowsRequest) GetRowRange() *google_bigtable_v11.RowRange {
+type isReadRowsRequest_Target interface {
+	isReadRowsRequest_Target()
+}
+
+type ReadRowsRequest_RowKey struct {
+	RowKey []byte `protobuf:"bytes,2,opt,name=row_key,proto3"`
+}
+type ReadRowsRequest_RowRange struct {
+	RowRange *google_bigtable_v11.RowRange `protobuf:"bytes,3,opt,name=row_range"`
+}
+
+func (*ReadRowsRequest_RowKey) isReadRowsRequest_Target()   {}
+func (*ReadRowsRequest_RowRange) isReadRowsRequest_Target() {}
+
+func (m *ReadRowsRequest) GetTarget() isReadRowsRequest_Target {
 	if m != nil {
-		return m.RowRange
+		return m.Target
+	}
+	return nil
+}
+
+func (m *ReadRowsRequest) GetRowKey() []byte {
+	if x, ok := m.GetTarget().(*ReadRowsRequest_RowKey); ok {
+		return x.RowKey
+	}
+	return nil
+}
+
+func (m *ReadRowsRequest) GetRowRange() *google_bigtable_v11.RowRange {
+	if x, ok := m.GetTarget().(*ReadRowsRequest_RowRange); ok {
+		return x.RowRange
 	}
 	return nil
 }
@@ -69,6 +101,56 @@ func (m *ReadRowsRequest) GetFilter() *google_bigtable_v11.RowFilter {
 		return m.Filter
 	}
 	return nil
+}
+
+// XXX_OneofFuncs is for the internal use of the proto package.
+func (*ReadRowsRequest) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
+	return _ReadRowsRequest_OneofMarshaler, _ReadRowsRequest_OneofUnmarshaler, []interface{}{
+		(*ReadRowsRequest_RowKey)(nil),
+		(*ReadRowsRequest_RowRange)(nil),
+	}
+}
+
+func _ReadRowsRequest_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
+	m := msg.(*ReadRowsRequest)
+	// target
+	switch x := m.Target.(type) {
+	case *ReadRowsRequest_RowKey:
+		b.EncodeVarint(2<<3 | proto.WireBytes)
+		b.EncodeRawBytes(x.RowKey)
+	case *ReadRowsRequest_RowRange:
+		b.EncodeVarint(3<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.RowRange); err != nil {
+			return err
+		}
+	case nil:
+	default:
+		return fmt.Errorf("ReadRowsRequest.Target has unexpected type %T", x)
+	}
+	return nil
+}
+
+func _ReadRowsRequest_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
+	m := msg.(*ReadRowsRequest)
+	switch tag {
+	case 2: // target.row_key
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeRawBytes(true)
+		m.Target = &ReadRowsRequest_RowKey{x}
+		return true, err
+	case 3: // target.row_range
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(google_bigtable_v11.RowRange)
+		err := b.DecodeMessage(msg)
+		m.Target = &ReadRowsRequest_RowRange{msg}
+		return true, err
+	default:
+		return false, nil
+	}
 }
 
 // Response message for BigtableService.ReadRows.
@@ -95,28 +177,130 @@ func (m *ReadRowsResponse) GetChunks() []*ReadRowsResponse_Chunk {
 // Specifies a piece of a row's contents returned as part of the read
 // response stream.
 type ReadRowsResponse_Chunk struct {
-	// A subset of the data from a particular row. As long as no "reset_row"
-	// is received in between, multiple "row_contents" from the same row are
-	// from the same atomic view of that row, and will be received in the
-	// expected family/column/timestamp order.
-	RowContents *google_bigtable_v11.Family `protobuf:"bytes,1,opt,name=row_contents" json:"row_contents,omitempty"`
-	// Indicates that the client should drop all previous chunks for
-	// "row_key", as it will be re-read from the beginning.
-	ResetRow bool `protobuf:"varint,2,opt,name=reset_row" json:"reset_row,omitempty"`
-	// Indicates that the client can safely process all previous chunks for
-	// "row_key", as its data has been fully read.
-	CommitRow bool `protobuf:"varint,3,opt,name=commit_row" json:"commit_row,omitempty"`
+	// Types that are valid to be assigned to Chunk:
+	//	*ReadRowsResponse_Chunk_RowContents
+	//	*ReadRowsResponse_Chunk_ResetRow
+	//	*ReadRowsResponse_Chunk_CommitRow
+	Chunk isReadRowsResponse_Chunk_Chunk `protobuf_oneof:"chunk"`
 }
 
 func (m *ReadRowsResponse_Chunk) Reset()         { *m = ReadRowsResponse_Chunk{} }
 func (m *ReadRowsResponse_Chunk) String() string { return proto.CompactTextString(m) }
 func (*ReadRowsResponse_Chunk) ProtoMessage()    {}
 
-func (m *ReadRowsResponse_Chunk) GetRowContents() *google_bigtable_v11.Family {
+type isReadRowsResponse_Chunk_Chunk interface {
+	isReadRowsResponse_Chunk_Chunk()
+}
+
+type ReadRowsResponse_Chunk_RowContents struct {
+	RowContents *google_bigtable_v11.Family `protobuf:"bytes,1,opt,name=row_contents"`
+}
+type ReadRowsResponse_Chunk_ResetRow struct {
+	ResetRow bool `protobuf:"varint,2,opt,name=reset_row"`
+}
+type ReadRowsResponse_Chunk_CommitRow struct {
+	CommitRow bool `protobuf:"varint,3,opt,name=commit_row"`
+}
+
+func (*ReadRowsResponse_Chunk_RowContents) isReadRowsResponse_Chunk_Chunk() {}
+func (*ReadRowsResponse_Chunk_ResetRow) isReadRowsResponse_Chunk_Chunk()    {}
+func (*ReadRowsResponse_Chunk_CommitRow) isReadRowsResponse_Chunk_Chunk()   {}
+
+func (m *ReadRowsResponse_Chunk) GetChunk() isReadRowsResponse_Chunk_Chunk {
 	if m != nil {
-		return m.RowContents
+		return m.Chunk
 	}
 	return nil
+}
+
+func (m *ReadRowsResponse_Chunk) GetRowContents() *google_bigtable_v11.Family {
+	if x, ok := m.GetChunk().(*ReadRowsResponse_Chunk_RowContents); ok {
+		return x.RowContents
+	}
+	return nil
+}
+
+func (m *ReadRowsResponse_Chunk) GetResetRow() bool {
+	if x, ok := m.GetChunk().(*ReadRowsResponse_Chunk_ResetRow); ok {
+		return x.ResetRow
+	}
+	return false
+}
+
+func (m *ReadRowsResponse_Chunk) GetCommitRow() bool {
+	if x, ok := m.GetChunk().(*ReadRowsResponse_Chunk_CommitRow); ok {
+		return x.CommitRow
+	}
+	return false
+}
+
+// XXX_OneofFuncs is for the internal use of the proto package.
+func (*ReadRowsResponse_Chunk) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
+	return _ReadRowsResponse_Chunk_OneofMarshaler, _ReadRowsResponse_Chunk_OneofUnmarshaler, []interface{}{
+		(*ReadRowsResponse_Chunk_RowContents)(nil),
+		(*ReadRowsResponse_Chunk_ResetRow)(nil),
+		(*ReadRowsResponse_Chunk_CommitRow)(nil),
+	}
+}
+
+func _ReadRowsResponse_Chunk_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
+	m := msg.(*ReadRowsResponse_Chunk)
+	// chunk
+	switch x := m.Chunk.(type) {
+	case *ReadRowsResponse_Chunk_RowContents:
+		b.EncodeVarint(1<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.RowContents); err != nil {
+			return err
+		}
+	case *ReadRowsResponse_Chunk_ResetRow:
+		t := uint64(0)
+		if x.ResetRow {
+			t = 1
+		}
+		b.EncodeVarint(2<<3 | proto.WireVarint)
+		b.EncodeVarint(t)
+	case *ReadRowsResponse_Chunk_CommitRow:
+		t := uint64(0)
+		if x.CommitRow {
+			t = 1
+		}
+		b.EncodeVarint(3<<3 | proto.WireVarint)
+		b.EncodeVarint(t)
+	case nil:
+	default:
+		return fmt.Errorf("ReadRowsResponse_Chunk.Chunk has unexpected type %T", x)
+	}
+	return nil
+}
+
+func _ReadRowsResponse_Chunk_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
+	m := msg.(*ReadRowsResponse_Chunk)
+	switch tag {
+	case 1: // chunk.row_contents
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(google_bigtable_v11.Family)
+		err := b.DecodeMessage(msg)
+		m.Chunk = &ReadRowsResponse_Chunk_RowContents{msg}
+		return true, err
+	case 2: // chunk.reset_row
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Chunk = &ReadRowsResponse_Chunk_ResetRow{x != 0}
+		return true, err
+	case 3: // chunk.commit_row
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Chunk = &ReadRowsResponse_Chunk_CommitRow{x != 0}
+		return true, err
+	default:
+		return false, nil
+	}
 }
 
 // Request message for BigtableService.SampleRowKeys.
@@ -257,7 +441,4 @@ func (m *ReadModifyWriteRowRequest) GetRules() []*google_bigtable_v11.ReadModify
 		return m.Rules
 	}
 	return nil
-}
-
-func init() {
 }

@@ -15,9 +15,13 @@ It has these top-level messages:
 package google_bigtable_admin_cluster_v1
 
 import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
+import math "math"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
+var _ = fmt.Errorf
+var _ = math.Inf
 
 type StorageType int32
 
@@ -26,20 +30,15 @@ const (
 	StorageType_STORAGE_UNSPECIFIED StorageType = 0
 	// Data will be stored in SSD, providing low and consistent latencies.
 	StorageType_STORAGE_SSD StorageType = 1
-	// Data will be stored in HDD, providing high and less predictable
-	// latencies.
-	StorageType_STORAGE_HDD StorageType = 2
 )
 
 var StorageType_name = map[int32]string{
 	0: "STORAGE_UNSPECIFIED",
 	1: "STORAGE_SSD",
-	2: "STORAGE_HDD",
 }
 var StorageType_value = map[string]int32{
 	"STORAGE_UNSPECIFIED": 0,
 	"STORAGE_SSD":         1,
-	"STORAGE_HDD":         2,
 }
 
 func (x StorageType) String() string {
@@ -105,10 +104,6 @@ type Cluster struct {
 	DisplayName string `protobuf:"bytes,4,opt,name=display_name" json:"display_name,omitempty"`
 	// The number of serve nodes allocated to this cluster.
 	ServeNodes int32 `protobuf:"varint,5,opt,name=serve_nodes" json:"serve_nodes,omitempty"`
-	// The maximum HDD storage usage allowed in this cluster, in bytes.
-	HddBytes int64 `protobuf:"varint,6,opt,name=hdd_bytes" json:"hdd_bytes,omitempty"`
-	// The maximum SSD storage usage allowed in this cluster, in bytes.
-	SsdBytes int64 `protobuf:"varint,7,opt,name=ssd_bytes" json:"ssd_bytes,omitempty"`
 	// What storage type to use for tables in this cluster. Only configurable at
 	// cluster creation time. If unspecified, STORAGE_SSD will be used.
 	DefaultStorageType StorageType `protobuf:"varint,8,opt,name=default_storage_type,enum=google.bigtable.admin.cluster.v1.StorageType" json:"default_storage_type,omitempty"`

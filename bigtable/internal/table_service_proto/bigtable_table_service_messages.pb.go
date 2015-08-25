@@ -22,10 +22,14 @@ It has these top-level messages:
 package google_bigtable_admin_table_v1
 
 import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
+import math "math"
 import google_bigtable_admin_table_v11 "google.golang.org/cloud/bigtable/internal/table_data_proto"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
+var _ = fmt.Errorf
+var _ = math.Inf
 
 type CreateTableRequest struct {
 	// The unique name of the cluster in which to create the new table.
@@ -150,6 +154,3 @@ type DeleteColumnFamilyRequest struct {
 func (m *DeleteColumnFamilyRequest) Reset()         { *m = DeleteColumnFamilyRequest{} }
 func (m *DeleteColumnFamilyRequest) String() string { return proto.CompactTextString(m) }
 func (*DeleteColumnFamilyRequest) ProtoMessage()    {}
-
-func init() {
-}

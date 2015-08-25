@@ -5,6 +5,8 @@
 package google_bigtable_v1
 
 import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
+import math "math"
 import google_bigtable_v11 "google.golang.org/cloud/bigtable/internal/data_proto"
 import google_protobuf "google.golang.org/cloud/bigtable/internal/empty"
 
@@ -14,14 +16,13 @@ import (
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConn
+var _ = proto.Marshal
+var _ = fmt.Errorf
+var _ = math.Inf
 
 // Reference imports to suppress errors if they are not otherwise used.
-var _ = proto.Marshal
-
-func init() {
-}
+var _ context.Context
+var _ grpc.ClientConn
 
 // Client API for BigtableService service
 

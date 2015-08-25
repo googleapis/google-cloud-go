@@ -14,9 +14,13 @@ It has these top-level messages:
 package google_protobuf
 
 import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
+import math "math"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
+var _ = fmt.Errorf
+var _ = math.Inf
 
 // A Duration represents a signed, fixed-length span of time represented
 // as a count of seconds and fractions of seconds at nanosecond
@@ -75,6 +79,3 @@ type Duration struct {
 func (m *Duration) Reset()         { *m = Duration{} }
 func (m *Duration) String() string { return proto.CompactTextString(m) }
 func (*Duration) ProtoMessage()    {}
-
-func init() {
-}

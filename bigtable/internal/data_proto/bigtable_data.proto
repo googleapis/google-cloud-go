@@ -26,7 +26,7 @@ option java_package = "com.google.bigtable.v1";
 message Row {
   // The unique key which identifies this row within its table. This is the same
   // key that's used to identify the row in, for example, a MutateRowRequest.
-  // May contain any non-empty byte string up to 16KiB in length.
+  // May contain any non-empty byte string up to 4KiB in length.
   bytes key = 1;
 
   // May be empty, but only if the entire row is empty.
@@ -75,6 +75,9 @@ message Cell {
   // May contain any byte string, including the empty string, up to 100MiB in
   // length.
   bytes value = 2;
+
+  // Labels applied to the cell by a [RowFilter][google.bigtable.v1.RowFilter].
+  repeated string labels = 3;
 }
 
 // Specifies a contiguous range of rows.
@@ -256,6 +259,75 @@ message RowFilter {
     // a predicate RowFilter.
     Condition condition = 3;
 
+    // ADVANCED USE ONLY.
+    // Hook for introspection into the RowFilter. Outputs all cells directly to
+    // the output of the read rather than to any parent filter. Consider the
+    // following example:
+    //
+    // Chain(
+    //   FamilyRegex("A"),
+    //   Interleave(
+    //     All(),
+    //     Chain(Label("foo"), Sink())
+    //   ),
+    //   QualifierRegex("B")
+    // )
+    //
+    //                         A,A,1,w
+    //                         A,B,2,x
+    //                         B,B,4,z
+    //                            |
+    //                     FamilyRegex("A")
+    //                            |
+    //                         A,A,1,w
+    //                         A,B,2,x
+    //                            |
+    //               +------------+-------------+
+    //               |                          |
+    //             All()                    Label(foo)
+    //               |                          |
+    //            A,A,1,w              A,A,1,w,labels:[foo]
+    //            A,B,2,x              A,B,2,x,labels:[foo]
+    //               |                          |
+    //               |                        Sink() --------------+
+    //               |                          |                  |
+    //               +------------+      x------+          A,A,1,w,labels:[foo]
+    //                            |                        A,B,2,x,labels:[foo]
+    //                         A,A,1,w                             |
+    //                         A,B,2,x                             |
+    //                            |                                |
+    //                    QualifierRegex("B")                      |
+    //                            |                                |
+    //                         A,B,2,x                             |
+    //                            |                                |
+    //                            +--------------------------------+
+    //                            |
+    //                         A,A,1,w,labels:[foo]
+    //                         A,B,2,x,labels:[foo]  // could be switched
+    //                         A,B,2,x               // could be switched
+    //
+    // Despite being excluded by the qualifier filter, a copy of every cell
+    // that reaches the sink is present in the final result.
+    //
+    // As with an [Interleave][google.bigtable.v1.RowFilter.Interleave],
+    // duplicate cells are possible, and appear in an unspecified mutual order.
+    // In this case we have a duplicate with column "A:B" and timestamp 2,
+    // because one copy passed through the all filter while the other was
+    // passed through the label and sink. Note that one copy has label "foo",
+    // while the other does not.
+    //
+    // Cannot be used within the `predicate_filter`, `true_filter`, or
+    // `false_filter` of a [Condition][google.bigtable.v1.RowFilter.Condition].
+    bool sink = 16;
+
+    // Matches all cells, regardless of input. Functionally equivalent to
+    // leaving `filter` unset, but included for completeness.
+    bool pass_all_filter = 17;
+
+    // Does not match any cells, regardless of input. Useful for temporarily
+    // disabling just part of a filter.
+    bool block_all_filter = 18;
+
     // Matches only cells from rows whose keys satisfy the given RE2 regex. In
     // other words, passes through the entire row when the key matches, and
     // otherwise produces an empty row.
@@ -315,6 +387,21 @@ message RowFilter {
 
     // Replaces each cell's value with the empty string.
     bool strip_value_transformer = 13;
+
+    // Applies the given label to all cells in the output row. This allows
+    // the client to determine which results were produced from which part of
+    // the filter.
+    //
+    // Values must be at most 15 characters in length, and match the RE2
+    // pattern [a-z0-9\\-]+
+    //
+    // Due to a technical limitation, it is not currently possible to apply
+    // multiple labels to a cell. As a result, a Chain may have no more than
+    // one sub-filter which contains a apply_label_transformer. It is okay for
+    // an Interleave to contain multiple apply_label_transformers, as they will
+    // be applied to separate copies of the input. This may be relaxed in the
+    // future.
+    string apply_label_transformer = 19;
   }
 }
 

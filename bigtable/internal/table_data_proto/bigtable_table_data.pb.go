@@ -16,10 +16,14 @@ It has these top-level messages:
 package google_bigtable_admin_table_v1
 
 import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
+import math "math"
 import google_protobuf "google.golang.org/cloud/bigtable/internal/duration_proto"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
+var _ = fmt.Errorf
+var _ = math.Inf
 
 type Table_TimestampGranularity int32
 
@@ -65,7 +69,7 @@ func (m *Table) GetColumnFamilies() map[string]*ColumnFamily {
 
 // A set of columns within a table which share a common configuration.
 type ColumnFamily struct {
-	// A unique identifier of the form <table_name>/families/[-_.a-zA-Z0-9]+
+	// A unique identifier of the form <table_name>/columnFamilies/[-_.a-zA-Z0-9]+
 	// The last segment is the same as the "name" field in
 	// google.bigtable.v1.Family.
 	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
@@ -96,10 +100,12 @@ type ColumnFamily struct {
 	// expression for its family.
 	GcExpression string `protobuf:"bytes,2,opt,name=gc_expression" json:"gc_expression,omitempty"`
 	// Garbage collection rule specified as a protobuf.
-	// Supercedes `gc_expression`.
-	// Garbage collection executes opportunistically in the background, and so
-	// it's possible for reads to return a cell even if it matches the active GC
-	// expression for its family.
+	// Supersedes `gc_expression`.
+	// Must serialize to at most 500 bytes.
+	//
+	// NOTE: Garbage collection executes opportunistically in the background, and
+	// so it's possible for reads to return a cell even if it matches the active
+	// GC expression for its family.
 	GcRule *GcRule `protobuf:"bytes,3,opt,name=gc_rule" json:"gc_rule,omitempty"`
 }
 
@@ -116,39 +122,151 @@ func (m *ColumnFamily) GetGcRule() *GcRule {
 
 // Rule for determining which cells to delete during garbage collection.
 type GcRule struct {
-	// Delete all cells in a column except the most recent N.
-	MaxNumVersions int32 `protobuf:"varint,1,opt,name=max_num_versions" json:"max_num_versions,omitempty"`
-	// Delete cells in a column older than the given age.
-	MaxAge *google_protobuf.Duration `protobuf:"bytes,2,opt,name=max_age" json:"max_age,omitempty"`
-	// Delete cells that would be deleted by every nested rule.
-	Intersection *GcRule_Intersection `protobuf:"bytes,3,opt,name=intersection" json:"intersection,omitempty"`
-	// Delete cells that would be deleted by any nested rule.
-	Union *GcRule_Union `protobuf:"bytes,4,opt,name=union" json:"union,omitempty"`
+	// Types that are valid to be assigned to Rule:
+	//	*GcRule_MaxNumVersions
+	//	*GcRule_MaxAge
+	//	*GcRule_Intersection_
+	//	*GcRule_Union_
+	Rule isGcRule_Rule `protobuf_oneof:"rule"`
 }
 
 func (m *GcRule) Reset()         { *m = GcRule{} }
 func (m *GcRule) String() string { return proto.CompactTextString(m) }
 func (*GcRule) ProtoMessage()    {}
 
-func (m *GcRule) GetMaxAge() *google_protobuf.Duration {
+type isGcRule_Rule interface {
+	isGcRule_Rule()
+}
+
+type GcRule_MaxNumVersions struct {
+	MaxNumVersions int32 `protobuf:"varint,1,opt,name=max_num_versions"`
+}
+type GcRule_MaxAge struct {
+	MaxAge *google_protobuf.Duration `protobuf:"bytes,2,opt,name=max_age"`
+}
+type GcRule_Intersection_ struct {
+	Intersection *GcRule_Intersection `protobuf:"bytes,3,opt,name=intersection"`
+}
+type GcRule_Union_ struct {
+	Union *GcRule_Union `protobuf:"bytes,4,opt,name=union"`
+}
+
+func (*GcRule_MaxNumVersions) isGcRule_Rule() {}
+func (*GcRule_MaxAge) isGcRule_Rule()         {}
+func (*GcRule_Intersection_) isGcRule_Rule()  {}
+func (*GcRule_Union_) isGcRule_Rule()         {}
+
+func (m *GcRule) GetRule() isGcRule_Rule {
 	if m != nil {
-		return m.MaxAge
+		return m.Rule
+	}
+	return nil
+}
+
+func (m *GcRule) GetMaxNumVersions() int32 {
+	if x, ok := m.GetRule().(*GcRule_MaxNumVersions); ok {
+		return x.MaxNumVersions
+	}
+	return 0
+}
+
+func (m *GcRule) GetMaxAge() *google_protobuf.Duration {
+	if x, ok := m.GetRule().(*GcRule_MaxAge); ok {
+		return x.MaxAge
 	}
 	return nil
 }
 
 func (m *GcRule) GetIntersection() *GcRule_Intersection {
-	if m != nil {
-		return m.Intersection
+	if x, ok := m.GetRule().(*GcRule_Intersection_); ok {
+		return x.Intersection
 	}
 	return nil
 }
 
 func (m *GcRule) GetUnion() *GcRule_Union {
-	if m != nil {
-		return m.Union
+	if x, ok := m.GetRule().(*GcRule_Union_); ok {
+		return x.Union
 	}
 	return nil
+}
+
+// XXX_OneofFuncs is for the internal use of the proto package.
+func (*GcRule) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
+	return _GcRule_OneofMarshaler, _GcRule_OneofUnmarshaler, []interface{}{
+		(*GcRule_MaxNumVersions)(nil),
+		(*GcRule_MaxAge)(nil),
+		(*GcRule_Intersection_)(nil),
+		(*GcRule_Union_)(nil),
+	}
+}
+
+func _GcRule_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
+	m := msg.(*GcRule)
+	// rule
+	switch x := m.Rule.(type) {
+	case *GcRule_MaxNumVersions:
+		b.EncodeVarint(1<<3 | proto.WireVarint)
+		b.EncodeVarint(uint64(x.MaxNumVersions))
+	case *GcRule_MaxAge:
+		b.EncodeVarint(2<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.MaxAge); err != nil {
+			return err
+		}
+	case *GcRule_Intersection_:
+		b.EncodeVarint(3<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Intersection); err != nil {
+			return err
+		}
+	case *GcRule_Union_:
+		b.EncodeVarint(4<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Union); err != nil {
+			return err
+		}
+	case nil:
+	default:
+		return fmt.Errorf("GcRule.Rule has unexpected type %T", x)
+	}
+	return nil
+}
+
+func _GcRule_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
+	m := msg.(*GcRule)
+	switch tag {
+	case 1: // rule.max_num_versions
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Rule = &GcRule_MaxNumVersions{int32(x)}
+		return true, err
+	case 2: // rule.max_age
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(google_protobuf.Duration)
+		err := b.DecodeMessage(msg)
+		m.Rule = &GcRule_MaxAge{msg}
+		return true, err
+	case 3: // rule.intersection
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(GcRule_Intersection)
+		err := b.DecodeMessage(msg)
+		m.Rule = &GcRule_Intersection_{msg}
+		return true, err
+	case 4: // rule.union
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(GcRule_Union)
+		err := b.DecodeMessage(msg)
+		m.Rule = &GcRule_Union_{msg}
+		return true, err
+	default:
+		return false, nil
+	}
 }
 
 // A GcRule which deletes cells matching all of the given rules.

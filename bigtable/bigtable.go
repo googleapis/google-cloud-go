@@ -97,7 +97,7 @@ func (c *Client) Open(table string) *Table {
 func (t *Table) ReadRows(ctx context.Context, arg RowRange, f func(Row) bool, opts ...ReadOption) error {
 	req := &btspb.ReadRowsRequest{
 		TableName: t.c.fullTableName(t.table),
-		RowRange:  arg.proto(),
+		Target:    &btspb.ReadRowsRequest_RowRange{arg.proto()},
 	}
 	for _, opt := range opts {
 		opt.set(req)
@@ -159,16 +159,17 @@ func (cr *chunkReader) process(rrr *btspb.ReadRowsResponse) Row {
 		cr.partial[row] = r
 	}
 	for _, chunk := range rrr.Chunks {
-		if chunk.ResetRow {
+		switch c := chunk.Chunk.(type) {
+		case *btspb.ReadRowsResponse_Chunk_ResetRow:
 			r = make(Row)
 			cr.partial[row] = r
 			continue
-		}
-		if chunk.CommitRow {
+		case *btspb.ReadRowsResponse_Chunk_CommitRow:
 			delete(cr.partial, row)
 			return r // assume that this is the last chunk
+		case *btspb.ReadRowsResponse_Chunk_RowContents:
+			decodeFamilyProto(r, row, c.RowContents)
 		}
-		decodeFamilyProto(r, row, chunk.RowContents)
 	}
 	return nil
 }
@@ -409,46 +410,46 @@ func (m *Mutation) Set(family, column string, ts Timestamp, value []byte) {
 		// TODO(dsymonds): Provide a way to override this behaviour.
 		ts -= ts % 1000
 	}
-	m.ops = append(m.ops, &btdpb.Mutation{SetCell: &btdpb.Mutation_SetCell{
+	m.ops = append(m.ops, &btdpb.Mutation{Mutation: &btdpb.Mutation_SetCell_{&btdpb.Mutation_SetCell{
 		FamilyName:      family,
 		ColumnQualifier: []byte(column),
 		TimestampMicros: int64(ts),
 		Value:           value,
-	}})
+	}}})
 }
 
 // DeleteCellsInColumn will delete all the cells whose columns are family:column.
 func (m *Mutation) DeleteCellsInColumn(family, column string) {
-	m.ops = append(m.ops, &btdpb.Mutation{DeleteFromColumn: &btdpb.Mutation_DeleteFromColumn{
+	m.ops = append(m.ops, &btdpb.Mutation{Mutation: &btdpb.Mutation_DeleteFromColumn_{&btdpb.Mutation_DeleteFromColumn{
 		FamilyName:      family,
 		ColumnQualifier: []byte(column),
-	}})
+	}}})
 }
 
 // DeleteTimestampRange deletes all cells whose columns are family:column
 // and whose timestamps are in the half-open interval [start, end).
 // If end is zero, it will be interpreted as infinity.
 func (m *Mutation) DeleteTimestampRange(family, column string, start, end Timestamp) {
-	m.ops = append(m.ops, &btdpb.Mutation{DeleteFromColumn: &btdpb.Mutation_DeleteFromColumn{
+	m.ops = append(m.ops, &btdpb.Mutation{Mutation: &btdpb.Mutation_DeleteFromColumn_{&btdpb.Mutation_DeleteFromColumn{
 		FamilyName:      family,
 		ColumnQualifier: []byte(column),
 		TimeRange: &btdpb.TimestampRange{
 			StartTimestampMicros: int64(start),
 			EndTimestampMicros:   int64(end),
 		},
-	}})
+	}}})
 }
 
 // DeleteCellsInFamily will delete all the cells whose columns are family:*.
 func (m *Mutation) DeleteCellsInFamily(family string) {
-	m.ops = append(m.ops, &btdpb.Mutation{DeleteFromFamily: &btdpb.Mutation_DeleteFromFamily{
+	m.ops = append(m.ops, &btdpb.Mutation{Mutation: &btdpb.Mutation_DeleteFromFamily_{&btdpb.Mutation_DeleteFromFamily{
 		FamilyName: family,
-	}})
+	}}})
 }
 
 // DeleteRow deletes the entire row.
 func (m *Mutation) DeleteRow() {
-	m.ops = append(m.ops, &btdpb.Mutation{DeleteFromRow: &btdpb.Mutation_DeleteFromRow{}})
+	m.ops = append(m.ops, &btdpb.Mutation{Mutation: &btdpb.Mutation_DeleteFromRow_{&btdpb.Mutation_DeleteFromRow{}}})
 }
 
 // Timestamp is in units of microseconds since 1 January 1970.
@@ -507,7 +508,7 @@ func (m *ReadModifyWrite) AppendValue(family, column string, v []byte) {
 	m.ops = append(m.ops, &btdpb.ReadModifyWriteRule{
 		FamilyName:      family,
 		ColumnQualifier: []byte(column),
-		AppendValue:     v,
+		Rule:            &btdpb.ReadModifyWriteRule_AppendValue{v},
 	})
 }
 
@@ -519,6 +520,6 @@ func (m *ReadModifyWrite) Increment(family, column string, delta int64) {
 	m.ops = append(m.ops, &btdpb.ReadModifyWriteRule{
 		FamilyName:      family,
 		ColumnQualifier: []byte(column),
-		IncrementAmount: delta,
+		Rule:            &btdpb.ReadModifyWriteRule_IncrementAmount{delta},
 	})
 }

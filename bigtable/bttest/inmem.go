@@ -170,12 +170,15 @@ func (s *server) ReadRows(req *btspb.ReadRowsRequest, stream btspb.BigtableServi
 	}
 
 	var start, end string // half-open interval
-	if rr := req.RowRange; rr != nil {
-		start, end = string(rr.StartKey), string(rr.EndKey)
-	} else {
+	switch targ := req.Target.(type) {
+	case *btspb.ReadRowsRequest_RowRange:
+		start, end = string(targ.RowRange.StartKey), string(targ.RowRange.EndKey)
+	case *btspb.ReadRowsRequest_RowKey:
 		// A single row read is simply an edge case.
-		start = string(req.RowKey)
+		start = string(targ.RowKey)
 		end = start + "\x00"
+	default:
+		return fmt.Errorf("unknown ReadRowsRequest.Target oneof %T", targ)
 	}
 
 	// Get rows to stream back.
@@ -219,32 +222,31 @@ func streamRow(stream btspb.BigtableService_ReadRowsServer, r *row, f *btdpb.Row
 			continue
 		}
 		// TODO(dsymonds): Apply transformers.
-		chunk := &btspb.ReadRowsResponse_Chunk{
-			RowContents: &btdpb.Family{
-				Name: fam,
-				Columns: []*btdpb.Column{{
-					Qualifier: []byte(col),
-					// Cells is populated below.
-				}},
-			},
+		colm := &btdpb.Column{
+			Qualifier: []byte(col),
+			// Cells is populated below.
 		}
-		colm := chunk.RowContents.Columns[0]
 		for _, cell := range cells {
 			colm.Cells = append(colm.Cells, &btdpb.Cell{
 				TimestampMicros: cell.ts,
 				Value:           cell.value,
 			})
 		}
-		rrr.Chunks = append(rrr.Chunks, chunk)
+		rrr.Chunks = append(rrr.Chunks, &btspb.ReadRowsResponse_Chunk{
+			Chunk: &btspb.ReadRowsResponse_Chunk_RowContents{&btdpb.Family{
+				Name:    fam,
+				Columns: []*btdpb.Column{colm},
+			}},
+		})
 	}
-	rrr.Chunks = append(rrr.Chunks, &btspb.ReadRowsResponse_Chunk{CommitRow: true})
+	rrr.Chunks = append(rrr.Chunks, &btspb.ReadRowsResponse_Chunk{Chunk: &btspb.ReadRowsResponse_Chunk_CommitRow{true}})
 	return stream.Send(rrr)
 }
 
 func filterCells(f *btdpb.RowFilter, r *row, fam, col string, cs []cell) []cell {
 	// Special handling for cells_per_column_limit_filter.
-	if f != nil && f.CellsPerColumnLimitFilter > 0 {
-		n := int(f.CellsPerColumnLimitFilter)
+	if cf, ok := f.GetFilter().(*btdpb.RowFilter_CellsPerColumnLimitFilter); ok {
+		n := int(cf.CellsPerColumnLimitFilter)
 		if n > len(cs) {
 			n = len(cs)
 		}
@@ -265,18 +267,18 @@ func includeCell(f *btdpb.RowFilter, r *row, fam, col string, cell cell) bool {
 		return true
 	}
 	// TODO(dsymonds): Implement many more filters.
-	switch {
+	switch f := f.Filter.(type) {
 	default:
 		log.Printf("WARNING: don't know how to handle filter (ignoring it): %v", f)
 		return true
-	case f.Chain != nil:
+	case *btdpb.RowFilter_Chain_:
 		for _, sub := range f.Chain.Filters {
 			if !includeCell(sub, r, fam, col, cell) {
 				return false
 			}
 		}
 		return true
-	case len(f.ColumnQualifierRegexFilter) > 0:
+	case *btdpb.RowFilter_ColumnQualifierRegexFilter:
 		pat := string(f.ColumnQualifierRegexFilter)
 		rx, err := regexp.Compile(pat)
 		if err != nil {
@@ -284,7 +286,7 @@ func includeCell(f *btdpb.RowFilter, r *row, fam, col string, cell cell) bool {
 			return false
 		}
 		return rx.MatchString(col)
-	case len(f.ValueRegexFilter) > 0:
+	case *btdpb.RowFilter_ValueRegexFilter:
 		pat := string(f.ValueRegexFilter)
 		rx, err := regexp.Compile(pat)
 		if err != nil {
@@ -366,10 +368,10 @@ func (s *server) CheckAndMutateRow(ctx context.Context, req *btspb.CheckAndMutat
 // It assumes r.mu is locked.
 func applyMutations(tbl *table, r *row, muts []*btdpb.Mutation) error {
 	for _, mut := range muts {
-		switch {
+		switch mut := mut.Mutation.(type) {
 		default:
-			return fmt.Errorf("can't handle mutation %v", mut)
-		case mut.SetCell != nil:
+			return fmt.Errorf("can't handle mutation type %T", mut)
+		case *btdpb.Mutation_SetCell_:
 			set := mut.SetCell
 			tbl.mu.RLock()
 			famOK := tbl.families[set.FamilyName]
@@ -402,7 +404,7 @@ func applyMutations(tbl *table, r *row, muts []*btdpb.Mutation) error {
 			}
 			sort.Sort(byDescTS(cs))
 			r.cells[col] = cs
-		case mut.DeleteFromColumn != nil:
+		case *btdpb.Mutation_DeleteFromColumn_:
 			del := mut.DeleteFromColumn
 			col := fmt.Sprintf("%s:%s", del.FamilyName, del.ColumnQualifier)
 
@@ -437,7 +439,7 @@ func applyMutations(tbl *table, r *row, muts []*btdpb.Mutation) error {
 			} else {
 				r.cells[col] = cs
 			}
-		case mut.DeleteFromRow != nil:
+		case *btdpb.Mutation_DeleteFromRow_:
 			r.cells = make(map[string][]cell)
 		}
 	}
@@ -471,10 +473,12 @@ func (s *server) ReadModifyWriteRow(ctx context.Context, req *btspb.ReadModifyWr
 		}
 		cell := &r.cells[key][0]
 
-		if len(rule.AppendValue) > 0 {
+		switch rule := rule.Rule.(type) {
+		default:
+			return nil, fmt.Errorf("unknown RMW rule oneof %T", rule)
+		case *btdpb.ReadModifyWriteRule_AppendValue:
 			cell.value = append(cell.value, rule.AppendValue...)
-		}
-		if rule.IncrementAmount != 0 {
+		case *btdpb.ReadModifyWriteRule_IncrementAmount:
 			var v int64
 			if !newCell {
 				if len(cell.value) != 8 {

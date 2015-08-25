@@ -25,10 +25,14 @@ It has these top-level messages:
 package google_bigtable_admin_cluster_v1
 
 import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
+import math "math"
 import google_bigtable_admin_cluster_v11 "google.golang.org/cloud/bigtable/internal/cluster_data_proto"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
+var _ = fmt.Errorf
+var _ = math.Inf
 
 // Request message for BigtableClusterService.ListZones.
 type ListZonesRequest struct {
@@ -199,6 +203,3 @@ type UndeleteClusterMetadata struct {
 func (m *UndeleteClusterMetadata) Reset()         { *m = UndeleteClusterMetadata{} }
 func (m *UndeleteClusterMetadata) String() string { return proto.CompactTextString(m) }
 func (*UndeleteClusterMetadata) ProtoMessage()    {}
-
-func init() {
-}

@@ -24,16 +24,20 @@ It has these top-level messages:
 package google_bigtable_v1
 
 import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
+import math "math"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
+var _ = fmt.Errorf
+var _ = math.Inf
 
 // Specifies the complete (requested) contents of a single row of a table.
 // Rows which exceed 256MiB in size cannot be read in full.
 type Row struct {
 	// The unique key which identifies this row within its table. This is the same
 	// key that's used to identify the row in, for example, a MutateRowRequest.
-	// May contain any non-empty byte string up to 16KiB in length.
+	// May contain any non-empty byte string up to 4KiB in length.
 	Key []byte `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
 	// May be empty, but only if the entire row is empty.
 	// The mutual ordering of column families is not specified.
@@ -111,6 +115,8 @@ type Cell struct {
 	// May contain any byte string, including the empty string, up to 100MiB in
 	// length.
 	Value []byte `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	// Labels applied to the cell by a [RowFilter][google.bigtable.v1.RowFilter].
+	Labels []string `protobuf:"bytes,3,rep,name=labels" json:"labels,omitempty"`
 }
 
 func (m *Cell) Reset()         { *m = Cell{} }
@@ -136,19 +142,166 @@ func (*RowRange) ProtoMessage()    {}
 type ColumnRange struct {
 	// The name of the column family within which this range falls.
 	FamilyName string `protobuf:"bytes,1,opt,name=family_name" json:"family_name,omitempty"`
-	// Used when giving an inclusive lower bound for the range.
-	StartQualifierInclusive []byte `protobuf:"bytes,2,opt,name=start_qualifier_inclusive,proto3" json:"start_qualifier_inclusive,omitempty"`
-	// Used when giving an exclusive lower bound for the range.
-	StartQualifierExclusive []byte `protobuf:"bytes,3,opt,name=start_qualifier_exclusive,proto3" json:"start_qualifier_exclusive,omitempty"`
-	// Used when giving an inclusive upper bound for the range.
-	EndQualifierInclusive []byte `protobuf:"bytes,4,opt,name=end_qualifier_inclusive,proto3" json:"end_qualifier_inclusive,omitempty"`
-	// Used when giving an exclusive upper bound for the range.
-	EndQualifierExclusive []byte `protobuf:"bytes,5,opt,name=end_qualifier_exclusive,proto3" json:"end_qualifier_exclusive,omitempty"`
+	// The column qualifier at which to start the range (within 'column_family').
+	// If neither field is set, interpreted as the empty string, inclusive.
+	//
+	// Types that are valid to be assigned to StartQualifier:
+	//	*ColumnRange_StartQualifierInclusive
+	//	*ColumnRange_StartQualifierExclusive
+	StartQualifier isColumnRange_StartQualifier `protobuf_oneof:"start_qualifier"`
+	// The column qualifier at which to end the range (within 'column_family').
+	// If neither field is set, interpreted as the infinite string, exclusive.
+	//
+	// Types that are valid to be assigned to EndQualifier:
+	//	*ColumnRange_EndQualifierInclusive
+	//	*ColumnRange_EndQualifierExclusive
+	EndQualifier isColumnRange_EndQualifier `protobuf_oneof:"end_qualifier"`
 }
 
 func (m *ColumnRange) Reset()         { *m = ColumnRange{} }
 func (m *ColumnRange) String() string { return proto.CompactTextString(m) }
 func (*ColumnRange) ProtoMessage()    {}
+
+type isColumnRange_StartQualifier interface {
+	isColumnRange_StartQualifier()
+}
+type isColumnRange_EndQualifier interface {
+	isColumnRange_EndQualifier()
+}
+
+type ColumnRange_StartQualifierInclusive struct {
+	StartQualifierInclusive []byte `protobuf:"bytes,2,opt,name=start_qualifier_inclusive,proto3"`
+}
+type ColumnRange_StartQualifierExclusive struct {
+	StartQualifierExclusive []byte `protobuf:"bytes,3,opt,name=start_qualifier_exclusive,proto3"`
+}
+type ColumnRange_EndQualifierInclusive struct {
+	EndQualifierInclusive []byte `protobuf:"bytes,4,opt,name=end_qualifier_inclusive,proto3"`
+}
+type ColumnRange_EndQualifierExclusive struct {
+	EndQualifierExclusive []byte `protobuf:"bytes,5,opt,name=end_qualifier_exclusive,proto3"`
+}
+
+func (*ColumnRange_StartQualifierInclusive) isColumnRange_StartQualifier() {}
+func (*ColumnRange_StartQualifierExclusive) isColumnRange_StartQualifier() {}
+func (*ColumnRange_EndQualifierInclusive) isColumnRange_EndQualifier()     {}
+func (*ColumnRange_EndQualifierExclusive) isColumnRange_EndQualifier()     {}
+
+func (m *ColumnRange) GetStartQualifier() isColumnRange_StartQualifier {
+	if m != nil {
+		return m.StartQualifier
+	}
+	return nil
+}
+func (m *ColumnRange) GetEndQualifier() isColumnRange_EndQualifier {
+	if m != nil {
+		return m.EndQualifier
+	}
+	return nil
+}
+
+func (m *ColumnRange) GetStartQualifierInclusive() []byte {
+	if x, ok := m.GetStartQualifier().(*ColumnRange_StartQualifierInclusive); ok {
+		return x.StartQualifierInclusive
+	}
+	return nil
+}
+
+func (m *ColumnRange) GetStartQualifierExclusive() []byte {
+	if x, ok := m.GetStartQualifier().(*ColumnRange_StartQualifierExclusive); ok {
+		return x.StartQualifierExclusive
+	}
+	return nil
+}
+
+func (m *ColumnRange) GetEndQualifierInclusive() []byte {
+	if x, ok := m.GetEndQualifier().(*ColumnRange_EndQualifierInclusive); ok {
+		return x.EndQualifierInclusive
+	}
+	return nil
+}
+
+func (m *ColumnRange) GetEndQualifierExclusive() []byte {
+	if x, ok := m.GetEndQualifier().(*ColumnRange_EndQualifierExclusive); ok {
+		return x.EndQualifierExclusive
+	}
+	return nil
+}
+
+// XXX_OneofFuncs is for the internal use of the proto package.
+func (*ColumnRange) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
+	return _ColumnRange_OneofMarshaler, _ColumnRange_OneofUnmarshaler, []interface{}{
+		(*ColumnRange_StartQualifierInclusive)(nil),
+		(*ColumnRange_StartQualifierExclusive)(nil),
+		(*ColumnRange_EndQualifierInclusive)(nil),
+		(*ColumnRange_EndQualifierExclusive)(nil),
+	}
+}
+
+func _ColumnRange_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
+	m := msg.(*ColumnRange)
+	// start_qualifier
+	switch x := m.StartQualifier.(type) {
+	case *ColumnRange_StartQualifierInclusive:
+		b.EncodeVarint(2<<3 | proto.WireBytes)
+		b.EncodeRawBytes(x.StartQualifierInclusive)
+	case *ColumnRange_StartQualifierExclusive:
+		b.EncodeVarint(3<<3 | proto.WireBytes)
+		b.EncodeRawBytes(x.StartQualifierExclusive)
+	case nil:
+	default:
+		return fmt.Errorf("ColumnRange.StartQualifier has unexpected type %T", x)
+	}
+	// end_qualifier
+	switch x := m.EndQualifier.(type) {
+	case *ColumnRange_EndQualifierInclusive:
+		b.EncodeVarint(4<<3 | proto.WireBytes)
+		b.EncodeRawBytes(x.EndQualifierInclusive)
+	case *ColumnRange_EndQualifierExclusive:
+		b.EncodeVarint(5<<3 | proto.WireBytes)
+		b.EncodeRawBytes(x.EndQualifierExclusive)
+	case nil:
+	default:
+		return fmt.Errorf("ColumnRange.EndQualifier has unexpected type %T", x)
+	}
+	return nil
+}
+
+func _ColumnRange_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
+	m := msg.(*ColumnRange)
+	switch tag {
+	case 2: // start_qualifier.start_qualifier_inclusive
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeRawBytes(true)
+		m.StartQualifier = &ColumnRange_StartQualifierInclusive{x}
+		return true, err
+	case 3: // start_qualifier.start_qualifier_exclusive
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeRawBytes(true)
+		m.StartQualifier = &ColumnRange_StartQualifierExclusive{x}
+		return true, err
+	case 4: // end_qualifier.end_qualifier_inclusive
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeRawBytes(true)
+		m.EndQualifier = &ColumnRange_EndQualifierInclusive{x}
+		return true, err
+	case 5: // end_qualifier.end_qualifier_exclusive
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeRawBytes(true)
+		m.EndQualifier = &ColumnRange_EndQualifierExclusive{x}
+		return true, err
+	default:
+		return false, nil
+	}
+}
 
 // Specified a contiguous range of microsecond timestamps.
 type TimestampRange struct {
@@ -164,19 +317,166 @@ func (*TimestampRange) ProtoMessage()    {}
 
 // Specifies a contiguous range of raw byte values.
 type ValueRange struct {
-	// Used when giving an inclusive lower bound for the range.
-	StartValueInclusive []byte `protobuf:"bytes,1,opt,name=start_value_inclusive,proto3" json:"start_value_inclusive,omitempty"`
-	// Used when giving an exclusive lower bound for the range.
-	StartValueExclusive []byte `protobuf:"bytes,2,opt,name=start_value_exclusive,proto3" json:"start_value_exclusive,omitempty"`
-	// Used when giving an inclusive upper bound for the range.
-	EndValueInclusive []byte `protobuf:"bytes,3,opt,name=end_value_inclusive,proto3" json:"end_value_inclusive,omitempty"`
-	// Used when giving an exclusive upper bound for the range.
-	EndValueExclusive []byte `protobuf:"bytes,4,opt,name=end_value_exclusive,proto3" json:"end_value_exclusive,omitempty"`
+	// The value at which to start the range.
+	// If neither field is set, interpreted as the empty string, inclusive.
+	//
+	// Types that are valid to be assigned to StartValue:
+	//	*ValueRange_StartValueInclusive
+	//	*ValueRange_StartValueExclusive
+	StartValue isValueRange_StartValue `protobuf_oneof:"start_value"`
+	// The value at which to end the range.
+	// If neither field is set, interpreted as the infinite string, exclusive.
+	//
+	// Types that are valid to be assigned to EndValue:
+	//	*ValueRange_EndValueInclusive
+	//	*ValueRange_EndValueExclusive
+	EndValue isValueRange_EndValue `protobuf_oneof:"end_value"`
 }
 
 func (m *ValueRange) Reset()         { *m = ValueRange{} }
 func (m *ValueRange) String() string { return proto.CompactTextString(m) }
 func (*ValueRange) ProtoMessage()    {}
+
+type isValueRange_StartValue interface {
+	isValueRange_StartValue()
+}
+type isValueRange_EndValue interface {
+	isValueRange_EndValue()
+}
+
+type ValueRange_StartValueInclusive struct {
+	StartValueInclusive []byte `protobuf:"bytes,1,opt,name=start_value_inclusive,proto3"`
+}
+type ValueRange_StartValueExclusive struct {
+	StartValueExclusive []byte `protobuf:"bytes,2,opt,name=start_value_exclusive,proto3"`
+}
+type ValueRange_EndValueInclusive struct {
+	EndValueInclusive []byte `protobuf:"bytes,3,opt,name=end_value_inclusive,proto3"`
+}
+type ValueRange_EndValueExclusive struct {
+	EndValueExclusive []byte `protobuf:"bytes,4,opt,name=end_value_exclusive,proto3"`
+}
+
+func (*ValueRange_StartValueInclusive) isValueRange_StartValue() {}
+func (*ValueRange_StartValueExclusive) isValueRange_StartValue() {}
+func (*ValueRange_EndValueInclusive) isValueRange_EndValue()     {}
+func (*ValueRange_EndValueExclusive) isValueRange_EndValue()     {}
+
+func (m *ValueRange) GetStartValue() isValueRange_StartValue {
+	if m != nil {
+		return m.StartValue
+	}
+	return nil
+}
+func (m *ValueRange) GetEndValue() isValueRange_EndValue {
+	if m != nil {
+		return m.EndValue
+	}
+	return nil
+}
+
+func (m *ValueRange) GetStartValueInclusive() []byte {
+	if x, ok := m.GetStartValue().(*ValueRange_StartValueInclusive); ok {
+		return x.StartValueInclusive
+	}
+	return nil
+}
+
+func (m *ValueRange) GetStartValueExclusive() []byte {
+	if x, ok := m.GetStartValue().(*ValueRange_StartValueExclusive); ok {
+		return x.StartValueExclusive
+	}
+	return nil
+}
+
+func (m *ValueRange) GetEndValueInclusive() []byte {
+	if x, ok := m.GetEndValue().(*ValueRange_EndValueInclusive); ok {
+		return x.EndValueInclusive
+	}
+	return nil
+}
+
+func (m *ValueRange) GetEndValueExclusive() []byte {
+	if x, ok := m.GetEndValue().(*ValueRange_EndValueExclusive); ok {
+		return x.EndValueExclusive
+	}
+	return nil
+}
+
+// XXX_OneofFuncs is for the internal use of the proto package.
+func (*ValueRange) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
+	return _ValueRange_OneofMarshaler, _ValueRange_OneofUnmarshaler, []interface{}{
+		(*ValueRange_StartValueInclusive)(nil),
+		(*ValueRange_StartValueExclusive)(nil),
+		(*ValueRange_EndValueInclusive)(nil),
+		(*ValueRange_EndValueExclusive)(nil),
+	}
+}
+
+func _ValueRange_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
+	m := msg.(*ValueRange)
+	// start_value
+	switch x := m.StartValue.(type) {
+	case *ValueRange_StartValueInclusive:
+		b.EncodeVarint(1<<3 | proto.WireBytes)
+		b.EncodeRawBytes(x.StartValueInclusive)
+	case *ValueRange_StartValueExclusive:
+		b.EncodeVarint(2<<3 | proto.WireBytes)
+		b.EncodeRawBytes(x.StartValueExclusive)
+	case nil:
+	default:
+		return fmt.Errorf("ValueRange.StartValue has unexpected type %T", x)
+	}
+	// end_value
+	switch x := m.EndValue.(type) {
+	case *ValueRange_EndValueInclusive:
+		b.EncodeVarint(3<<3 | proto.WireBytes)
+		b.EncodeRawBytes(x.EndValueInclusive)
+	case *ValueRange_EndValueExclusive:
+		b.EncodeVarint(4<<3 | proto.WireBytes)
+		b.EncodeRawBytes(x.EndValueExclusive)
+	case nil:
+	default:
+		return fmt.Errorf("ValueRange.EndValue has unexpected type %T", x)
+	}
+	return nil
+}
+
+func _ValueRange_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
+	m := msg.(*ValueRange)
+	switch tag {
+	case 1: // start_value.start_value_inclusive
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeRawBytes(true)
+		m.StartValue = &ValueRange_StartValueInclusive{x}
+		return true, err
+	case 2: // start_value.start_value_exclusive
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeRawBytes(true)
+		m.StartValue = &ValueRange_StartValueExclusive{x}
+		return true, err
+	case 3: // end_value.end_value_inclusive
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeRawBytes(true)
+		m.EndValue = &ValueRange_EndValueInclusive{x}
+		return true, err
+	case 4: // end_value.end_value_exclusive
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeRawBytes(true)
+		m.EndValue = &ValueRange_EndValueExclusive{x}
+		return true, err
+	default:
+		return false, nil
+	}
+}
 
 // Takes a row as input and produces an alternate view of the row based on
 // specified rules. For example, a RowFilter might trim down a row to include
@@ -212,109 +512,524 @@ func (*ValueRange) ProtoMessage()    {}
 // exceed 4096 bytes, and RowFilters may not be nested within each other
 // (in Chains or Interleaves) to a depth of more than 20.
 type RowFilter struct {
-	// Applies several RowFilters to the data in sequence, progressively
-	// narrowing the results.
-	Chain *RowFilter_Chain `protobuf:"bytes,1,opt,name=chain" json:"chain,omitempty"`
-	// Applies several RowFilters to the data in parallel and combines the
-	// results.
-	Interleave *RowFilter_Interleave `protobuf:"bytes,2,opt,name=interleave" json:"interleave,omitempty"`
-	// Applies one of two possible RowFilters to the data based on the output of
-	// a predicate RowFilter.
-	Condition *RowFilter_Condition `protobuf:"bytes,3,opt,name=condition" json:"condition,omitempty"`
-	// Matches only cells from rows whose keys satisfy the given RE2 regex. In
-	// other words, passes through the entire row when the key matches, and
-	// otherwise produces an empty row.
-	// Note that, since row keys can contain arbitrary bytes, the '\C' escape
-	// sequence must be used if a true wildcard is desired. The '.' character
-	// will not match the new line character '\n', which may be present in a
-	// binary key.
-	RowKeyRegexFilter []byte `protobuf:"bytes,4,opt,name=row_key_regex_filter,proto3" json:"row_key_regex_filter,omitempty"`
-	// Matches all cells from a row with probability p, and matches no cells
-	// from the row with probability 1-p.
-	RowSampleFilter float64 `protobuf:"fixed64,14,opt,name=row_sample_filter" json:"row_sample_filter,omitempty"`
-	// Matches only cells from columns whose families satisfy the given RE2
-	// regex. For technical reasons, the regex must not contain the ':'
-	// character, even if it is not being used as a literal.
-	// Note that, since column families cannot contain the new line character
-	// '\n', it is sufficient to use '.' as a full wildcard when matching
-	// column family names.
-	FamilyNameRegexFilter string `protobuf:"bytes,5,opt,name=family_name_regex_filter" json:"family_name_regex_filter,omitempty"`
-	// Matches only cells from columns whose qualifiers satisfy the given RE2
-	// regex.
-	// Note that, since column qualifiers can contain arbitrary bytes, the '\C'
-	// escape sequence must be used if a true wildcard is desired. The '.'
-	// character will not match the new line character '\n', which may be
-	// present in a binary qualifier.
-	ColumnQualifierRegexFilter []byte `protobuf:"bytes,6,opt,name=column_qualifier_regex_filter,proto3" json:"column_qualifier_regex_filter,omitempty"`
-	// Matches only cells from columns within the given range.
-	ColumnRangeFilter *ColumnRange `protobuf:"bytes,7,opt,name=column_range_filter" json:"column_range_filter,omitempty"`
-	// Matches only cells with timestamps within the given range.
-	TimestampRangeFilter *TimestampRange `protobuf:"bytes,8,opt,name=timestamp_range_filter" json:"timestamp_range_filter,omitempty"`
-	// Matches only cells with values that satisfy the given regular expression.
-	// Note that, since cell values can contain arbitrary bytes, the '\C' escape
-	// sequence must be used if a true wildcard is desired. The '.' character
-	// will not match the new line character '\n', which may be present in a
-	// binary value.
-	ValueRegexFilter []byte `protobuf:"bytes,9,opt,name=value_regex_filter,proto3" json:"value_regex_filter,omitempty"`
-	// Matches only cells with values that fall within the given range.
-	ValueRangeFilter *ValueRange `protobuf:"bytes,15,opt,name=value_range_filter" json:"value_range_filter,omitempty"`
-	// Skips the first N cells of each row, matching all subsequent cells.
-	CellsPerRowOffsetFilter int32 `protobuf:"varint,10,opt,name=cells_per_row_offset_filter" json:"cells_per_row_offset_filter,omitempty"`
-	// Matches only the first N cells of each row.
-	CellsPerRowLimitFilter int32 `protobuf:"varint,11,opt,name=cells_per_row_limit_filter" json:"cells_per_row_limit_filter,omitempty"`
-	// Matches only the most recent N cells within each column. For example,
-	// if N=2, this filter would match column "foo:bar" at timestamps 10 and 9,
-	// skip all earlier cells in "foo:bar", and then begin matching again in
-	// column "foo:bar2".
-	CellsPerColumnLimitFilter int32 `protobuf:"varint,12,opt,name=cells_per_column_limit_filter" json:"cells_per_column_limit_filter,omitempty"`
-	// Replaces each cell's value with the empty string.
-	StripValueTransformer bool `protobuf:"varint,13,opt,name=strip_value_transformer" json:"strip_value_transformer,omitempty"`
+	// Which of the possible RowFilter types to apply. If none are set, this
+	// RowFilter returns all cells in the input row.
+	//
+	// Types that are valid to be assigned to Filter:
+	//	*RowFilter_Chain_
+	//	*RowFilter_Interleave_
+	//	*RowFilter_Condition_
+	//	*RowFilter_Sink
+	//	*RowFilter_PassAllFilter
+	//	*RowFilter_BlockAllFilter
+	//	*RowFilter_RowKeyRegexFilter
+	//	*RowFilter_RowSampleFilter
+	//	*RowFilter_FamilyNameRegexFilter
+	//	*RowFilter_ColumnQualifierRegexFilter
+	//	*RowFilter_ColumnRangeFilter
+	//	*RowFilter_TimestampRangeFilter
+	//	*RowFilter_ValueRegexFilter
+	//	*RowFilter_ValueRangeFilter
+	//	*RowFilter_CellsPerRowOffsetFilter
+	//	*RowFilter_CellsPerRowLimitFilter
+	//	*RowFilter_CellsPerColumnLimitFilter
+	//	*RowFilter_StripValueTransformer
+	//	*RowFilter_ApplyLabelTransformer
+	Filter isRowFilter_Filter `protobuf_oneof:"filter"`
 }
 
 func (m *RowFilter) Reset()         { *m = RowFilter{} }
 func (m *RowFilter) String() string { return proto.CompactTextString(m) }
 func (*RowFilter) ProtoMessage()    {}
 
-func (m *RowFilter) GetChain() *RowFilter_Chain {
+type isRowFilter_Filter interface {
+	isRowFilter_Filter()
+}
+
+type RowFilter_Chain_ struct {
+	Chain *RowFilter_Chain `protobuf:"bytes,1,opt,name=chain"`
+}
+type RowFilter_Interleave_ struct {
+	Interleave *RowFilter_Interleave `protobuf:"bytes,2,opt,name=interleave"`
+}
+type RowFilter_Condition_ struct {
+	Condition *RowFilter_Condition `protobuf:"bytes,3,opt,name=condition"`
+}
+type RowFilter_Sink struct {
+	Sink bool `protobuf:"varint,16,opt,name=sink"`
+}
+type RowFilter_PassAllFilter struct {
+	PassAllFilter bool `protobuf:"varint,17,opt,name=pass_all_filter"`
+}
+type RowFilter_BlockAllFilter struct {
+	BlockAllFilter bool `protobuf:"varint,18,opt,name=block_all_filter"`
+}
+type RowFilter_RowKeyRegexFilter struct {
+	RowKeyRegexFilter []byte `protobuf:"bytes,4,opt,name=row_key_regex_filter,proto3"`
+}
+type RowFilter_RowSampleFilter struct {
+	RowSampleFilter float64 `protobuf:"fixed64,14,opt,name=row_sample_filter"`
+}
+type RowFilter_FamilyNameRegexFilter struct {
+	FamilyNameRegexFilter string `protobuf:"bytes,5,opt,name=family_name_regex_filter"`
+}
+type RowFilter_ColumnQualifierRegexFilter struct {
+	ColumnQualifierRegexFilter []byte `protobuf:"bytes,6,opt,name=column_qualifier_regex_filter,proto3"`
+}
+type RowFilter_ColumnRangeFilter struct {
+	ColumnRangeFilter *ColumnRange `protobuf:"bytes,7,opt,name=column_range_filter"`
+}
+type RowFilter_TimestampRangeFilter struct {
+	TimestampRangeFilter *TimestampRange `protobuf:"bytes,8,opt,name=timestamp_range_filter"`
+}
+type RowFilter_ValueRegexFilter struct {
+	ValueRegexFilter []byte `protobuf:"bytes,9,opt,name=value_regex_filter,proto3"`
+}
+type RowFilter_ValueRangeFilter struct {
+	ValueRangeFilter *ValueRange `protobuf:"bytes,15,opt,name=value_range_filter"`
+}
+type RowFilter_CellsPerRowOffsetFilter struct {
+	CellsPerRowOffsetFilter int32 `protobuf:"varint,10,opt,name=cells_per_row_offset_filter"`
+}
+type RowFilter_CellsPerRowLimitFilter struct {
+	CellsPerRowLimitFilter int32 `protobuf:"varint,11,opt,name=cells_per_row_limit_filter"`
+}
+type RowFilter_CellsPerColumnLimitFilter struct {
+	CellsPerColumnLimitFilter int32 `protobuf:"varint,12,opt,name=cells_per_column_limit_filter"`
+}
+type RowFilter_StripValueTransformer struct {
+	StripValueTransformer bool `protobuf:"varint,13,opt,name=strip_value_transformer"`
+}
+type RowFilter_ApplyLabelTransformer struct {
+	ApplyLabelTransformer string `protobuf:"bytes,19,opt,name=apply_label_transformer"`
+}
+
+func (*RowFilter_Chain_) isRowFilter_Filter()                     {}
+func (*RowFilter_Interleave_) isRowFilter_Filter()                {}
+func (*RowFilter_Condition_) isRowFilter_Filter()                 {}
+func (*RowFilter_Sink) isRowFilter_Filter()                       {}
+func (*RowFilter_PassAllFilter) isRowFilter_Filter()              {}
+func (*RowFilter_BlockAllFilter) isRowFilter_Filter()             {}
+func (*RowFilter_RowKeyRegexFilter) isRowFilter_Filter()          {}
+func (*RowFilter_RowSampleFilter) isRowFilter_Filter()            {}
+func (*RowFilter_FamilyNameRegexFilter) isRowFilter_Filter()      {}
+func (*RowFilter_ColumnQualifierRegexFilter) isRowFilter_Filter() {}
+func (*RowFilter_ColumnRangeFilter) isRowFilter_Filter()          {}
+func (*RowFilter_TimestampRangeFilter) isRowFilter_Filter()       {}
+func (*RowFilter_ValueRegexFilter) isRowFilter_Filter()           {}
+func (*RowFilter_ValueRangeFilter) isRowFilter_Filter()           {}
+func (*RowFilter_CellsPerRowOffsetFilter) isRowFilter_Filter()    {}
+func (*RowFilter_CellsPerRowLimitFilter) isRowFilter_Filter()     {}
+func (*RowFilter_CellsPerColumnLimitFilter) isRowFilter_Filter()  {}
+func (*RowFilter_StripValueTransformer) isRowFilter_Filter()      {}
+func (*RowFilter_ApplyLabelTransformer) isRowFilter_Filter()      {}
+
+func (m *RowFilter) GetFilter() isRowFilter_Filter {
 	if m != nil {
-		return m.Chain
+		return m.Filter
+	}
+	return nil
+}
+
+func (m *RowFilter) GetChain() *RowFilter_Chain {
+	if x, ok := m.GetFilter().(*RowFilter_Chain_); ok {
+		return x.Chain
 	}
 	return nil
 }
 
 func (m *RowFilter) GetInterleave() *RowFilter_Interleave {
-	if m != nil {
-		return m.Interleave
+	if x, ok := m.GetFilter().(*RowFilter_Interleave_); ok {
+		return x.Interleave
 	}
 	return nil
 }
 
 func (m *RowFilter) GetCondition() *RowFilter_Condition {
-	if m != nil {
-		return m.Condition
+	if x, ok := m.GetFilter().(*RowFilter_Condition_); ok {
+		return x.Condition
+	}
+	return nil
+}
+
+func (m *RowFilter) GetSink() bool {
+	if x, ok := m.GetFilter().(*RowFilter_Sink); ok {
+		return x.Sink
+	}
+	return false
+}
+
+func (m *RowFilter) GetPassAllFilter() bool {
+	if x, ok := m.GetFilter().(*RowFilter_PassAllFilter); ok {
+		return x.PassAllFilter
+	}
+	return false
+}
+
+func (m *RowFilter) GetBlockAllFilter() bool {
+	if x, ok := m.GetFilter().(*RowFilter_BlockAllFilter); ok {
+		return x.BlockAllFilter
+	}
+	return false
+}
+
+func (m *RowFilter) GetRowKeyRegexFilter() []byte {
+	if x, ok := m.GetFilter().(*RowFilter_RowKeyRegexFilter); ok {
+		return x.RowKeyRegexFilter
+	}
+	return nil
+}
+
+func (m *RowFilter) GetRowSampleFilter() float64 {
+	if x, ok := m.GetFilter().(*RowFilter_RowSampleFilter); ok {
+		return x.RowSampleFilter
+	}
+	return 0
+}
+
+func (m *RowFilter) GetFamilyNameRegexFilter() string {
+	if x, ok := m.GetFilter().(*RowFilter_FamilyNameRegexFilter); ok {
+		return x.FamilyNameRegexFilter
+	}
+	return ""
+}
+
+func (m *RowFilter) GetColumnQualifierRegexFilter() []byte {
+	if x, ok := m.GetFilter().(*RowFilter_ColumnQualifierRegexFilter); ok {
+		return x.ColumnQualifierRegexFilter
 	}
 	return nil
 }
 
 func (m *RowFilter) GetColumnRangeFilter() *ColumnRange {
-	if m != nil {
-		return m.ColumnRangeFilter
+	if x, ok := m.GetFilter().(*RowFilter_ColumnRangeFilter); ok {
+		return x.ColumnRangeFilter
 	}
 	return nil
 }
 
 func (m *RowFilter) GetTimestampRangeFilter() *TimestampRange {
-	if m != nil {
-		return m.TimestampRangeFilter
+	if x, ok := m.GetFilter().(*RowFilter_TimestampRangeFilter); ok {
+		return x.TimestampRangeFilter
+	}
+	return nil
+}
+
+func (m *RowFilter) GetValueRegexFilter() []byte {
+	if x, ok := m.GetFilter().(*RowFilter_ValueRegexFilter); ok {
+		return x.ValueRegexFilter
 	}
 	return nil
 }
 
 func (m *RowFilter) GetValueRangeFilter() *ValueRange {
-	if m != nil {
-		return m.ValueRangeFilter
+	if x, ok := m.GetFilter().(*RowFilter_ValueRangeFilter); ok {
+		return x.ValueRangeFilter
 	}
 	return nil
+}
+
+func (m *RowFilter) GetCellsPerRowOffsetFilter() int32 {
+	if x, ok := m.GetFilter().(*RowFilter_CellsPerRowOffsetFilter); ok {
+		return x.CellsPerRowOffsetFilter
+	}
+	return 0
+}
+
+func (m *RowFilter) GetCellsPerRowLimitFilter() int32 {
+	if x, ok := m.GetFilter().(*RowFilter_CellsPerRowLimitFilter); ok {
+		return x.CellsPerRowLimitFilter
+	}
+	return 0
+}
+
+func (m *RowFilter) GetCellsPerColumnLimitFilter() int32 {
+	if x, ok := m.GetFilter().(*RowFilter_CellsPerColumnLimitFilter); ok {
+		return x.CellsPerColumnLimitFilter
+	}
+	return 0
+}
+
+func (m *RowFilter) GetStripValueTransformer() bool {
+	if x, ok := m.GetFilter().(*RowFilter_StripValueTransformer); ok {
+		return x.StripValueTransformer
+	}
+	return false
+}
+
+func (m *RowFilter) GetApplyLabelTransformer() string {
+	if x, ok := m.GetFilter().(*RowFilter_ApplyLabelTransformer); ok {
+		return x.ApplyLabelTransformer
+	}
+	return ""
+}
+
+// XXX_OneofFuncs is for the internal use of the proto package.
+func (*RowFilter) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
+	return _RowFilter_OneofMarshaler, _RowFilter_OneofUnmarshaler, []interface{}{
+		(*RowFilter_Chain_)(nil),
+		(*RowFilter_Interleave_)(nil),
+		(*RowFilter_Condition_)(nil),
+		(*RowFilter_Sink)(nil),
+		(*RowFilter_PassAllFilter)(nil),
+		(*RowFilter_BlockAllFilter)(nil),
+		(*RowFilter_RowKeyRegexFilter)(nil),
+		(*RowFilter_RowSampleFilter)(nil),
+		(*RowFilter_FamilyNameRegexFilter)(nil),
+		(*RowFilter_ColumnQualifierRegexFilter)(nil),
+		(*RowFilter_ColumnRangeFilter)(nil),
+		(*RowFilter_TimestampRangeFilter)(nil),
+		(*RowFilter_ValueRegexFilter)(nil),
+		(*RowFilter_ValueRangeFilter)(nil),
+		(*RowFilter_CellsPerRowOffsetFilter)(nil),
+		(*RowFilter_CellsPerRowLimitFilter)(nil),
+		(*RowFilter_CellsPerColumnLimitFilter)(nil),
+		(*RowFilter_StripValueTransformer)(nil),
+		(*RowFilter_ApplyLabelTransformer)(nil),
+	}
+}
+
+func _RowFilter_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
+	m := msg.(*RowFilter)
+	// filter
+	switch x := m.Filter.(type) {
+	case *RowFilter_Chain_:
+		b.EncodeVarint(1<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Chain); err != nil {
+			return err
+		}
+	case *RowFilter_Interleave_:
+		b.EncodeVarint(2<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Interleave); err != nil {
+			return err
+		}
+	case *RowFilter_Condition_:
+		b.EncodeVarint(3<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Condition); err != nil {
+			return err
+		}
+	case *RowFilter_Sink:
+		t := uint64(0)
+		if x.Sink {
+			t = 1
+		}
+		b.EncodeVarint(16<<3 | proto.WireVarint)
+		b.EncodeVarint(t)
+	case *RowFilter_PassAllFilter:
+		t := uint64(0)
+		if x.PassAllFilter {
+			t = 1
+		}
+		b.EncodeVarint(17<<3 | proto.WireVarint)
+		b.EncodeVarint(t)
+	case *RowFilter_BlockAllFilter:
+		t := uint64(0)
+		if x.BlockAllFilter {
+			t = 1
+		}
+		b.EncodeVarint(18<<3 | proto.WireVarint)
+		b.EncodeVarint(t)
+	case *RowFilter_RowKeyRegexFilter:
+		b.EncodeVarint(4<<3 | proto.WireBytes)
+		b.EncodeRawBytes(x.RowKeyRegexFilter)
+	case *RowFilter_RowSampleFilter:
+		b.EncodeVarint(14<<3 | proto.WireFixed64)
+		b.EncodeFixed64(math.Float64bits(x.RowSampleFilter))
+	case *RowFilter_FamilyNameRegexFilter:
+		b.EncodeVarint(5<<3 | proto.WireBytes)
+		b.EncodeStringBytes(x.FamilyNameRegexFilter)
+	case *RowFilter_ColumnQualifierRegexFilter:
+		b.EncodeVarint(6<<3 | proto.WireBytes)
+		b.EncodeRawBytes(x.ColumnQualifierRegexFilter)
+	case *RowFilter_ColumnRangeFilter:
+		b.EncodeVarint(7<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.ColumnRangeFilter); err != nil {
+			return err
+		}
+	case *RowFilter_TimestampRangeFilter:
+		b.EncodeVarint(8<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.TimestampRangeFilter); err != nil {
+			return err
+		}
+	case *RowFilter_ValueRegexFilter:
+		b.EncodeVarint(9<<3 | proto.WireBytes)
+		b.EncodeRawBytes(x.ValueRegexFilter)
+	case *RowFilter_ValueRangeFilter:
+		b.EncodeVarint(15<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.ValueRangeFilter); err != nil {
+			return err
+		}
+	case *RowFilter_CellsPerRowOffsetFilter:
+		b.EncodeVarint(10<<3 | proto.WireVarint)
+		b.EncodeVarint(uint64(x.CellsPerRowOffsetFilter))
+	case *RowFilter_CellsPerRowLimitFilter:
+		b.EncodeVarint(11<<3 | proto.WireVarint)
+		b.EncodeVarint(uint64(x.CellsPerRowLimitFilter))
+	case *RowFilter_CellsPerColumnLimitFilter:
+		b.EncodeVarint(12<<3 | proto.WireVarint)
+		b.EncodeVarint(uint64(x.CellsPerColumnLimitFilter))
+	case *RowFilter_StripValueTransformer:
+		t := uint64(0)
+		if x.StripValueTransformer {
+			t = 1
+		}
+		b.EncodeVarint(13<<3 | proto.WireVarint)
+		b.EncodeVarint(t)
+	case *RowFilter_ApplyLabelTransformer:
+		b.EncodeVarint(19<<3 | proto.WireBytes)
+		b.EncodeStringBytes(x.ApplyLabelTransformer)
+	case nil:
+	default:
+		return fmt.Errorf("RowFilter.Filter has unexpected type %T", x)
+	}
+	return nil
+}
+
+func _RowFilter_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
+	m := msg.(*RowFilter)
+	switch tag {
+	case 1: // filter.chain
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(RowFilter_Chain)
+		err := b.DecodeMessage(msg)
+		m.Filter = &RowFilter_Chain_{msg}
+		return true, err
+	case 2: // filter.interleave
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(RowFilter_Interleave)
+		err := b.DecodeMessage(msg)
+		m.Filter = &RowFilter_Interleave_{msg}
+		return true, err
+	case 3: // filter.condition
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(RowFilter_Condition)
+		err := b.DecodeMessage(msg)
+		m.Filter = &RowFilter_Condition_{msg}
+		return true, err
+	case 16: // filter.sink
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Filter = &RowFilter_Sink{x != 0}
+		return true, err
+	case 17: // filter.pass_all_filter
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Filter = &RowFilter_PassAllFilter{x != 0}
+		return true, err
+	case 18: // filter.block_all_filter
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Filter = &RowFilter_BlockAllFilter{x != 0}
+		return true, err
+	case 4: // filter.row_key_regex_filter
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeRawBytes(true)
+		m.Filter = &RowFilter_RowKeyRegexFilter{x}
+		return true, err
+	case 14: // filter.row_sample_filter
+		if wire != proto.WireFixed64 {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeFixed64()
+		m.Filter = &RowFilter_RowSampleFilter{math.Float64frombits(x)}
+		return true, err
+	case 5: // filter.family_name_regex_filter
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeStringBytes()
+		m.Filter = &RowFilter_FamilyNameRegexFilter{x}
+		return true, err
+	case 6: // filter.column_qualifier_regex_filter
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeRawBytes(true)
+		m.Filter = &RowFilter_ColumnQualifierRegexFilter{x}
+		return true, err
+	case 7: // filter.column_range_filter
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(ColumnRange)
+		err := b.DecodeMessage(msg)
+		m.Filter = &RowFilter_ColumnRangeFilter{msg}
+		return true, err
+	case 8: // filter.timestamp_range_filter
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(TimestampRange)
+		err := b.DecodeMessage(msg)
+		m.Filter = &RowFilter_TimestampRangeFilter{msg}
+		return true, err
+	case 9: // filter.value_regex_filter
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeRawBytes(true)
+		m.Filter = &RowFilter_ValueRegexFilter{x}
+		return true, err
+	case 15: // filter.value_range_filter
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(ValueRange)
+		err := b.DecodeMessage(msg)
+		m.Filter = &RowFilter_ValueRangeFilter{msg}
+		return true, err
+	case 10: // filter.cells_per_row_offset_filter
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Filter = &RowFilter_CellsPerRowOffsetFilter{int32(x)}
+		return true, err
+	case 11: // filter.cells_per_row_limit_filter
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Filter = &RowFilter_CellsPerRowLimitFilter{int32(x)}
+		return true, err
+	case 12: // filter.cells_per_column_limit_filter
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Filter = &RowFilter_CellsPerColumnLimitFilter{int32(x)}
+		return true, err
+	case 13: // filter.strip_value_transformer
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Filter = &RowFilter_StripValueTransformer{x != 0}
+		return true, err
+	case 19: // filter.apply_label_transformer
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeStringBytes()
+		m.Filter = &RowFilter_ApplyLabelTransformer{x}
+		return true, err
+	default:
+		return false, nil
+	}
 }
 
 // A RowFilter which sends rows through several RowFilters in sequence.
@@ -424,46 +1139,156 @@ func (m *RowFilter_Condition) GetFalseFilter() *RowFilter {
 
 // Specifies a particular change to be made to the contents of a row.
 type Mutation struct {
-	// Set a cell's value.
-	SetCell *Mutation_SetCell `protobuf:"bytes,1,opt,name=set_cell" json:"set_cell,omitempty"`
-	// Deletes cells from a column.
-	DeleteFromColumn *Mutation_DeleteFromColumn `protobuf:"bytes,2,opt,name=delete_from_column" json:"delete_from_column,omitempty"`
-	// Deletes cells from a column family.
-	DeleteFromFamily *Mutation_DeleteFromFamily `protobuf:"bytes,3,opt,name=delete_from_family" json:"delete_from_family,omitempty"`
-	// Deletes cells from the entire row.
-	DeleteFromRow *Mutation_DeleteFromRow `protobuf:"bytes,4,opt,name=delete_from_row" json:"delete_from_row,omitempty"`
+	// Which of the possible Mutation types to apply.
+	//
+	// Types that are valid to be assigned to Mutation:
+	//	*Mutation_SetCell_
+	//	*Mutation_DeleteFromColumn_
+	//	*Mutation_DeleteFromFamily_
+	//	*Mutation_DeleteFromRow_
+	Mutation isMutation_Mutation `protobuf_oneof:"mutation"`
 }
 
 func (m *Mutation) Reset()         { *m = Mutation{} }
 func (m *Mutation) String() string { return proto.CompactTextString(m) }
 func (*Mutation) ProtoMessage()    {}
 
-func (m *Mutation) GetSetCell() *Mutation_SetCell {
+type isMutation_Mutation interface {
+	isMutation_Mutation()
+}
+
+type Mutation_SetCell_ struct {
+	SetCell *Mutation_SetCell `protobuf:"bytes,1,opt,name=set_cell"`
+}
+type Mutation_DeleteFromColumn_ struct {
+	DeleteFromColumn *Mutation_DeleteFromColumn `protobuf:"bytes,2,opt,name=delete_from_column"`
+}
+type Mutation_DeleteFromFamily_ struct {
+	DeleteFromFamily *Mutation_DeleteFromFamily `protobuf:"bytes,3,opt,name=delete_from_family"`
+}
+type Mutation_DeleteFromRow_ struct {
+	DeleteFromRow *Mutation_DeleteFromRow `protobuf:"bytes,4,opt,name=delete_from_row"`
+}
+
+func (*Mutation_SetCell_) isMutation_Mutation()          {}
+func (*Mutation_DeleteFromColumn_) isMutation_Mutation() {}
+func (*Mutation_DeleteFromFamily_) isMutation_Mutation() {}
+func (*Mutation_DeleteFromRow_) isMutation_Mutation()    {}
+
+func (m *Mutation) GetMutation() isMutation_Mutation {
 	if m != nil {
-		return m.SetCell
+		return m.Mutation
+	}
+	return nil
+}
+
+func (m *Mutation) GetSetCell() *Mutation_SetCell {
+	if x, ok := m.GetMutation().(*Mutation_SetCell_); ok {
+		return x.SetCell
 	}
 	return nil
 }
 
 func (m *Mutation) GetDeleteFromColumn() *Mutation_DeleteFromColumn {
-	if m != nil {
-		return m.DeleteFromColumn
+	if x, ok := m.GetMutation().(*Mutation_DeleteFromColumn_); ok {
+		return x.DeleteFromColumn
 	}
 	return nil
 }
 
 func (m *Mutation) GetDeleteFromFamily() *Mutation_DeleteFromFamily {
-	if m != nil {
-		return m.DeleteFromFamily
+	if x, ok := m.GetMutation().(*Mutation_DeleteFromFamily_); ok {
+		return x.DeleteFromFamily
 	}
 	return nil
 }
 
 func (m *Mutation) GetDeleteFromRow() *Mutation_DeleteFromRow {
-	if m != nil {
-		return m.DeleteFromRow
+	if x, ok := m.GetMutation().(*Mutation_DeleteFromRow_); ok {
+		return x.DeleteFromRow
 	}
 	return nil
+}
+
+// XXX_OneofFuncs is for the internal use of the proto package.
+func (*Mutation) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
+	return _Mutation_OneofMarshaler, _Mutation_OneofUnmarshaler, []interface{}{
+		(*Mutation_SetCell_)(nil),
+		(*Mutation_DeleteFromColumn_)(nil),
+		(*Mutation_DeleteFromFamily_)(nil),
+		(*Mutation_DeleteFromRow_)(nil),
+	}
+}
+
+func _Mutation_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
+	m := msg.(*Mutation)
+	// mutation
+	switch x := m.Mutation.(type) {
+	case *Mutation_SetCell_:
+		b.EncodeVarint(1<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.SetCell); err != nil {
+			return err
+		}
+	case *Mutation_DeleteFromColumn_:
+		b.EncodeVarint(2<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.DeleteFromColumn); err != nil {
+			return err
+		}
+	case *Mutation_DeleteFromFamily_:
+		b.EncodeVarint(3<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.DeleteFromFamily); err != nil {
+			return err
+		}
+	case *Mutation_DeleteFromRow_:
+		b.EncodeVarint(4<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.DeleteFromRow); err != nil {
+			return err
+		}
+	case nil:
+	default:
+		return fmt.Errorf("Mutation.Mutation has unexpected type %T", x)
+	}
+	return nil
+}
+
+func _Mutation_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
+	m := msg.(*Mutation)
+	switch tag {
+	case 1: // mutation.set_cell
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(Mutation_SetCell)
+		err := b.DecodeMessage(msg)
+		m.Mutation = &Mutation_SetCell_{msg}
+		return true, err
+	case 2: // mutation.delete_from_column
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(Mutation_DeleteFromColumn)
+		err := b.DecodeMessage(msg)
+		m.Mutation = &Mutation_DeleteFromColumn_{msg}
+		return true, err
+	case 3: // mutation.delete_from_family
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(Mutation_DeleteFromFamily)
+		err := b.DecodeMessage(msg)
+		m.Mutation = &Mutation_DeleteFromFamily_{msg}
+		return true, err
+	case 4: // mutation.delete_from_row
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(Mutation_DeleteFromRow)
+		err := b.DecodeMessage(msg)
+		m.Mutation = &Mutation_DeleteFromRow_{msg}
+		return true, err
+	default:
+		return false, nil
+	}
 }
 
 // A Mutation which sets the value of the specified cell.
@@ -541,20 +1366,97 @@ type ReadModifyWriteRule struct {
 	// applied.
 	// Can be any byte string, including the empty string.
 	ColumnQualifier []byte `protobuf:"bytes,2,opt,name=column_qualifier,proto3" json:"column_qualifier,omitempty"`
-	// Rule specifying that "append_value" be appended to the existing value.
-	// If the targeted cell is unset, it will be treated as containing the
-	// empty string.
-	AppendValue []byte `protobuf:"bytes,3,opt,name=append_value,proto3" json:"append_value,omitempty"`
-	// Rule specifying that "increment_amount" be added to the existing value.
-	// If the targeted cell is unset, it will be treated as containing a zero.
-	// Otherwise, the targeted cell must contain an 8-byte value (interpreted
-	// as a 64-bit big-endian signed integer), or the entire request will fail.
-	IncrementAmount int64 `protobuf:"varint,4,opt,name=increment_amount" json:"increment_amount,omitempty"`
+	// The rule used to determine the column's new latest value from its current
+	// latest value.
+	//
+	// Types that are valid to be assigned to Rule:
+	//	*ReadModifyWriteRule_AppendValue
+	//	*ReadModifyWriteRule_IncrementAmount
+	Rule isReadModifyWriteRule_Rule `protobuf_oneof:"rule"`
 }
 
 func (m *ReadModifyWriteRule) Reset()         { *m = ReadModifyWriteRule{} }
 func (m *ReadModifyWriteRule) String() string { return proto.CompactTextString(m) }
 func (*ReadModifyWriteRule) ProtoMessage()    {}
 
-func init() {
+type isReadModifyWriteRule_Rule interface {
+	isReadModifyWriteRule_Rule()
+}
+
+type ReadModifyWriteRule_AppendValue struct {
+	AppendValue []byte `protobuf:"bytes,3,opt,name=append_value,proto3"`
+}
+type ReadModifyWriteRule_IncrementAmount struct {
+	IncrementAmount int64 `protobuf:"varint,4,opt,name=increment_amount"`
+}
+
+func (*ReadModifyWriteRule_AppendValue) isReadModifyWriteRule_Rule()     {}
+func (*ReadModifyWriteRule_IncrementAmount) isReadModifyWriteRule_Rule() {}
+
+func (m *ReadModifyWriteRule) GetRule() isReadModifyWriteRule_Rule {
+	if m != nil {
+		return m.Rule
+	}
+	return nil
+}
+
+func (m *ReadModifyWriteRule) GetAppendValue() []byte {
+	if x, ok := m.GetRule().(*ReadModifyWriteRule_AppendValue); ok {
+		return x.AppendValue
+	}
+	return nil
+}
+
+func (m *ReadModifyWriteRule) GetIncrementAmount() int64 {
+	if x, ok := m.GetRule().(*ReadModifyWriteRule_IncrementAmount); ok {
+		return x.IncrementAmount
+	}
+	return 0
+}
+
+// XXX_OneofFuncs is for the internal use of the proto package.
+func (*ReadModifyWriteRule) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
+	return _ReadModifyWriteRule_OneofMarshaler, _ReadModifyWriteRule_OneofUnmarshaler, []interface{}{
+		(*ReadModifyWriteRule_AppendValue)(nil),
+		(*ReadModifyWriteRule_IncrementAmount)(nil),
+	}
+}
+
+func _ReadModifyWriteRule_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
+	m := msg.(*ReadModifyWriteRule)
+	// rule
+	switch x := m.Rule.(type) {
+	case *ReadModifyWriteRule_AppendValue:
+		b.EncodeVarint(3<<3 | proto.WireBytes)
+		b.EncodeRawBytes(x.AppendValue)
+	case *ReadModifyWriteRule_IncrementAmount:
+		b.EncodeVarint(4<<3 | proto.WireVarint)
+		b.EncodeVarint(uint64(x.IncrementAmount))
+	case nil:
+	default:
+		return fmt.Errorf("ReadModifyWriteRule.Rule has unexpected type %T", x)
+	}
+	return nil
+}
+
+func _ReadModifyWriteRule_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
+	m := msg.(*ReadModifyWriteRule)
+	switch tag {
+	case 3: // rule.append_value
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeRawBytes(true)
+		m.Rule = &ReadModifyWriteRule_AppendValue{x}
+		return true, err
+	case 4: // rule.increment_amount
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Rule = &ReadModifyWriteRule_IncrementAmount{int64(x)}
+		return true, err
+	default:
+		return false, nil
+	}
 }
