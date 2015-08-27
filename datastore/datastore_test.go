@@ -672,9 +672,7 @@ var testCases = []testCase{
 			Property{Name: "E", Value: int64(5), NoIndex: false},
 			Property{Name: "J", Value: int64(7), NoIndex: true},
 			Property{Name: "a", Value: int64(1), NoIndex: true},
-			Property{Name: "b", Value: int64(21), NoIndex: false, Multiple: true},
-			Property{Name: "b", Value: int64(22), NoIndex: false, Multiple: true},
-			Property{Name: "b", Value: int64(23), NoIndex: false, Multiple: true},
+			Property{Name: "b", Value: []interface{}{int64(21), int64(22), int64(23)}, NoIndex: false},
 		},
 		"",
 		"",
@@ -746,9 +744,7 @@ var testCases = []testCase{
 			Property{Name: "F", Value: nil, NoIndex: false},
 			Property{Name: "K", Value: nil, NoIndex: false},
 			Property{Name: "T", Value: nil, NoIndex: false},
-			Property{Name: "J", Value: nil, NoIndex: false, Multiple: true},
-			Property{Name: "J", Value: int64(7), NoIndex: false, Multiple: true},
-			Property{Name: "J", Value: nil, NoIndex: false, Multiple: true},
+			Property{Name: "J", Value: []interface{}{nil, int64(7), nil}, NoIndex: false},
 		},
 		&struct {
 			I int64
@@ -782,12 +778,8 @@ var testCases = []testCase{
 		},
 		&PropertyList{
 			Property{Name: "A", Value: int64(1), NoIndex: false},
-			Property{Name: "I.W", Value: int64(10), NoIndex: false, Multiple: true},
-			Property{Name: "I.W", Value: int64(20), NoIndex: false, Multiple: true},
-			Property{Name: "I.W", Value: int64(30), NoIndex: false, Multiple: true},
-			Property{Name: "I.X", Value: "ten", NoIndex: false, Multiple: true},
-			Property{Name: "I.X", Value: "twenty", NoIndex: false, Multiple: true},
-			Property{Name: "I.X", Value: "thirty", NoIndex: false, Multiple: true},
+			Property{Name: "I.W", Value: []interface{}{int64(10), int64(20), int64(30)}, NoIndex: false},
+			Property{Name: "I.X", Value: []interface{}{"ten", "twenty", "thirty"}, NoIndex: false},
 			Property{Name: "J.Y", Value: float64(3.14), NoIndex: false},
 			Property{Name: "Z", Value: true, NoIndex: false},
 		},
@@ -798,12 +790,8 @@ var testCases = []testCase{
 		"save props load outer-equivalent",
 		&PropertyList{
 			Property{Name: "A", Value: int64(1), NoIndex: false},
-			Property{Name: "I.W", Value: int64(10), NoIndex: false, Multiple: true},
-			Property{Name: "I.X", Value: "ten", NoIndex: false, Multiple: true},
-			Property{Name: "I.W", Value: int64(20), NoIndex: false, Multiple: true},
-			Property{Name: "I.X", Value: "twenty", NoIndex: false, Multiple: true},
-			Property{Name: "I.W", Value: int64(30), NoIndex: false, Multiple: true},
-			Property{Name: "I.X", Value: "thirty", NoIndex: false, Multiple: true},
+			Property{Name: "I.W", Value: []interface{}{int64(10), int64(20), int64(30)}, NoIndex: false},
+			Property{Name: "I.X", Value: []interface{}{"ten", "twenty", "thirty"}, NoIndex: false},
 			Property{Name: "J.Y", Value: float64(3.14), NoIndex: false},
 			Property{Name: "Z", Value: true, NoIndex: false},
 		},
@@ -1039,30 +1027,18 @@ var testCases = []testCase{
 		},
 		&PropertyList{
 			Property{Name: "Blue.I", Value: int64(0), NoIndex: false},
-			Property{Name: "Blue.Nonymous.I", Value: int64(0), NoIndex: false, Multiple: true},
-			Property{Name: "Blue.Nonymous.I", Value: int64(0), NoIndex: false, Multiple: true},
-			Property{Name: "Blue.Nonymous.I", Value: int64(0), NoIndex: false, Multiple: true},
-			Property{Name: "Blue.Nonymous.I", Value: int64(0), NoIndex: false, Multiple: true},
-			Property{Name: "Blue.Nonymous.S", Value: "blu0", NoIndex: false, Multiple: true},
-			Property{Name: "Blue.Nonymous.S", Value: "blu1", NoIndex: false, Multiple: true},
-			Property{Name: "Blue.Nonymous.S", Value: "blu2", NoIndex: false, Multiple: true},
-			Property{Name: "Blue.Nonymous.S", Value: "blu3", NoIndex: false, Multiple: true},
+			Property{Name: "Blue.Nonymous.I", Value: []interface{}{int64(0), int64(0), int64(0), int64(0)}, NoIndex: false},
+			Property{Name: "Blue.Nonymous.S", Value: []interface{}{"blu0", "blu1", "blu2", "blu3"}, NoIndex: false},
 			Property{Name: "Blue.Other", Value: "", NoIndex: false},
 			Property{Name: "Blue.S", Value: "bleu", NoIndex: false},
 			Property{Name: "green.I", Value: int64(0), NoIndex: false},
-			Property{Name: "green.Nonymous.I", Value: int64(0), NoIndex: false, Multiple: true},
-			Property{Name: "green.Nonymous.I", Value: int64(0), NoIndex: false, Multiple: true},
-			Property{Name: "green.Nonymous.I", Value: int64(0), NoIndex: false, Multiple: true},
-			Property{Name: "green.Nonymous.S", Value: "verde0", NoIndex: false, Multiple: true},
-			Property{Name: "green.Nonymous.S", Value: "verde1", NoIndex: false, Multiple: true},
-			Property{Name: "green.Nonymous.S", Value: "verde2", NoIndex: false, Multiple: true},
+			Property{Name: "green.Nonymous.I", Value: []interface{}{int64(0), int64(0), int64(0)}, NoIndex: false},
+			Property{Name: "green.Nonymous.S", Value: []interface{}{"verde0", "verde1", "verde2"}, NoIndex: false},
 			Property{Name: "green.Other", Value: "", NoIndex: false},
 			Property{Name: "green.S", Value: "vert", NoIndex: false},
 			Property{Name: "red.I", Value: int64(0), NoIndex: false},
-			Property{Name: "red.Nonymous.I", Value: int64(0), NoIndex: false, Multiple: true},
-			Property{Name: "red.Nonymous.I", Value: int64(0), NoIndex: false, Multiple: true},
-			Property{Name: "red.Nonymous.S", Value: "rosso0", NoIndex: false, Multiple: true},
-			Property{Name: "red.Nonymous.S", Value: "rosso1", NoIndex: false, Multiple: true},
+			Property{Name: "red.Nonymous.I", Value: []interface{}{int64(0), int64(0)}, NoIndex: false},
+			Property{Name: "red.Nonymous.S", Value: []interface{}{"rosso0", "rosso1"}, NoIndex: false},
 			Property{Name: "red.Other", Value: "", NoIndex: false},
 			Property{Name: "red.S", Value: "rouge", NoIndex: false},
 		},
@@ -1073,15 +1049,9 @@ var testCases = []testCase{
 		"save props load structs with ragged fields",
 		&PropertyList{
 			Property{Name: "red.S", Value: "rot", NoIndex: false},
-			Property{Name: "green.Nonymous.I", Value: int64(10), NoIndex: false, Multiple: true},
-			Property{Name: "green.Nonymous.I", Value: int64(11), NoIndex: false, Multiple: true},
-			Property{Name: "green.Nonymous.I", Value: int64(12), NoIndex: false, Multiple: true},
-			Property{Name: "green.Nonymous.I", Value: int64(13), NoIndex: false, Multiple: true},
-			Property{Name: "Blue.Nonymous.S", Value: "blau0", NoIndex: false, Multiple: true},
-			Property{Name: "Blue.Nonymous.I", Value: int64(20), NoIndex: false, Multiple: true},
-			Property{Name: "Blue.Nonymous.S", Value: "blau1", NoIndex: false, Multiple: true},
-			Property{Name: "Blue.Nonymous.I", Value: int64(21), NoIndex: false, Multiple: true},
-			Property{Name: "Blue.Nonymous.S", Value: "blau2", NoIndex: false, Multiple: true},
+			Property{Name: "green.Nonymous.I", Value: []interface{}{int64(10), int64(11), int64(12), int64(13)}, NoIndex: false},
+			Property{Name: "Blue.Nonymous.I", Value: []interface{}{int64(20), int64(21)}, NoIndex: false},
+			Property{Name: "Blue.Nonymous.S", Value: []interface{}{"blau0", "blau1", "blau2"}, NoIndex: false},
 		},
 		&N2{
 			N1: N1{
@@ -1195,6 +1165,16 @@ var testCases = []testCase{
 		"",
 		"",
 	},
+	{
+		"repeated property names",
+		&PropertyList{
+			Property{Name: "A", Value: ""},
+			Property{Name: "A", Value: ""},
+		},
+		nil,
+		"duplicate Property",
+		"",
+	},
 }
 
 // checkErr returns the empty string if either both want and err are zero,
@@ -1245,7 +1225,8 @@ func TestRoundTrip(t *testing.T) {
 			equal = reflect.DeepEqual(got, tc.want)
 		}
 		if !equal {
-			t.Errorf("%s: compare:\ngot:  %v\nwant: %v", tc.desc, got, tc.want)
+			t.Errorf("%s: compare:\ngot:  %#v\nwant: %#v", tc.desc, got, tc.want)
+			t.Logf("intermediate proto (%s):\n%s", tc.desc, proto.MarshalTextString(p))
 			continue
 		}
 	}

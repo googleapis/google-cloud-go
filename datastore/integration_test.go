@@ -90,9 +90,7 @@ func TestListValues(t *testing.T) {
 	defer client.Close()
 
 	p0 := PropertyList{
-		{Name: "L", Value: int64(12), Multiple: true},
-		{Name: "L", Value: "string", Multiple: true},
-		{Name: "L", Value: true, Multiple: true},
+		{Name: "L", Value: []interface{}{int64(12), "string", true}},
 	}
 	k, err := client.Put(ctx, NewIncompleteKey(ctx, "ListValue", nil), &p0)
 	if err != nil {
