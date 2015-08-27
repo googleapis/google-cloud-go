@@ -118,6 +118,11 @@ Contributions are welcome. Please, see the
 document for details. We're using Gerrit for our code reviews. Please don't open pull
 requests against this repo, new pull requests will be automatically closed.
 
+Please note that this project is released with a Contributor Code of Conduct.
+By participating in this project you agree to abide by its terms.
+See [Contributor Code of Conduct](https://github.com/GoogleCloudPlatform/gcloud-golang/blob/master/CONTRIBUTING.md#contributor-code-of-conduct)
+for more information.
+
 [cloud-datastore]: https://cloud.google.com/datastore/
 [cloud-datastore-docs]: https://cloud.google.com/datastore/docs
 [cloud-datastore-activation]: https://cloud.google.com/datastore/docs/activate
