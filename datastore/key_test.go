@@ -188,6 +188,7 @@ func TestEncoding(t *testing.T) {
 			continue
 		}
 		if !tt.k.Equal(dec) {
+			t.Logf("Proto: %s", keyToProto(tt.k))
 			t.Errorf("Decoded key %v not equal to %v", dec, tt.k)
 		}
 

@@ -20,8 +20,8 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/golang/protobuf/proto"
-	pb "google.golang.org/cloud/internal/datastore"
+	timepb "github.com/golang/protobuf/types/timestamp"
+	pb "google.golang.org/cloud/datastore/internal/proto"
 )
 
 // saveEntity saves an EntityProto into a PropertyLoadSaver or struct pointer.
@@ -122,14 +122,15 @@ func (s structPLS) save(props *[]Property, prefix string, noIndex, multiple bool
 
 func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 	e := &pb.Entity{
-		Key: keyToProto(key),
+		Key:        keyToProto(key),
+		Properties: map[string]*pb.Value{},
 	}
 	indexedProps := 0
-	prevMultiple := make(map[string]*pb.Property)
+	prevMultiple := make(map[string]*pb.Value)
 	for _, p := range props {
 		val, err := interfaceToProto(p.Value)
-		if err != "" {
-			return nil, fmt.Errorf("datastore: %s for a Property with Name %q", err, p.Name)
+		if err != nil {
+			return nil, fmt.Errorf("datastore: %v for a Property with Name %q", err, p.Name)
 		}
 		if !p.NoIndex {
 			rVal := reflect.ValueOf(p.Value)
@@ -152,62 +153,66 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 				return nil, fmt.Errorf("datastore: Property with Name %q is too long to index", p.Name)
 			}
 		}
-		val.Indexed = proto.Bool(!p.NoIndex)
+		val.ExcludeFromIndexes = p.NoIndex
 		if p.Multiple {
-			x, ok := prevMultiple[p.Name]
-			if !ok {
-				x = &pb.Property{
-					Name:  proto.String(p.Name),
-					Value: &pb.Value{},
-				}
-				prevMultiple[p.Name] = x
-				e.Property = append(e.Property, x)
+			if varr, ok := prevMultiple[p.Name]; ok {
+				arr := varr.ValueType.(*pb.Value_ArrayValue).ArrayValue
+				arr.Values = append(arr.Values, val)
+				continue
 			}
-			x.Value.ListValue = append(x.Value.ListValue, val)
-		} else {
-			e.Property = append(e.Property, &pb.Property{
-				Name:  proto.String(p.Name),
-				Value: val,
-			})
+			val = &pb.Value{
+				ValueType: &pb.Value_ArrayValue{&pb.ArrayValue{
+					Values: []*pb.Value{val},
+				}},
+			}
+			prevMultiple[p.Name] = val
 		}
+
+		if _, ok := e.Properties[p.Name]; ok {
+			return nil, fmt.Errorf("datastore: duplicate Property with Name %q", p.Name)
+		}
+		e.Properties[p.Name] = val
 	}
 	return e, nil
 }
 
-func interfaceToProto(iv interface{}) (p *pb.Value, errStr string) {
+func interfaceToProto(iv interface{}) (*pb.Value, error) {
 	val := new(pb.Value)
 	switch v := iv.(type) {
 	case int:
-		val.IntegerValue = proto.Int64(int64(v))
+		val.ValueType = &pb.Value_IntegerValue{int64(v)}
 	case int32:
-		val.IntegerValue = proto.Int64(int64(v))
+		val.ValueType = &pb.Value_IntegerValue{int64(v)}
 	case int64:
-		val.IntegerValue = proto.Int64(v)
+		val.ValueType = &pb.Value_IntegerValue{v}
 	case bool:
-		val.BooleanValue = proto.Bool(v)
+		val.ValueType = &pb.Value_BooleanValue{v}
 	case string:
-		val.StringValue = proto.String(v)
+		val.ValueType = &pb.Value_StringValue{v}
 	case float32:
-		val.DoubleValue = proto.Float64(float64(v))
+		val.ValueType = &pb.Value_DoubleValue{float64(v)}
 	case float64:
-		val.DoubleValue = proto.Float64(v)
+		val.ValueType = &pb.Value_DoubleValue{v}
 	case *Key:
 		if v != nil {
-			val.KeyValue = keyToProto(v)
+			val.ValueType = &pb.Value_KeyValue{keyToProto(v)}
 		}
 	case time.Time:
 		if v.Before(minTime) || v.After(maxTime) {
-			return nil, fmt.Sprintf("time value out of range")
+			return nil, errors.New("time value out of range")
 		}
-		val.TimestampMicrosecondsValue = proto.Int64(toUnixMicro(v))
+		val.ValueType = &pb.Value_TimestampValue{&timepb.Timestamp{
+			Seconds: v.Unix(),
+			Nanos:   int32(v.Nanosecond()),
+		}}
 	case []byte:
-		val.BlobValue = v
+		val.ValueType = &pb.Value_BlobValue{v}
 	default:
 		if iv != nil {
-			return nil, fmt.Sprintf("invalid Value type %t", iv)
+			return nil, fmt.Errorf("invalid Value type %t", iv)
 		}
 	}
 	// TODO(jbd): Support ListValue and EntityValue.
 	// TODO(jbd): Support types whose underlying type is one of the types above.
-	return val, ""
+	return val, nil
 }

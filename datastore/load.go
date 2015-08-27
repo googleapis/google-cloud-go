@@ -19,7 +19,7 @@ import (
 	"reflect"
 	"time"
 
-	pb "google.golang.org/cloud/internal/datastore"
+	pb "google.golang.org/cloud/datastore/internal/proto"
 )
 
 var (
@@ -213,65 +213,62 @@ func (s structPLS) Load(props []Property) error {
 }
 
 func protoToProperties(src *pb.Entity) []Property {
-	props := src.Property
+	props := src.Properties
 	out := make([]Property, 0, len(props))
-	for {
-		var (
-			x       *pb.Property
-			noIndex bool
-		)
-		if len(props) > 0 {
-			x, props = props[0], props[1:]
-			noIndex = !x.GetValue().GetIndexed()
-		} else {
-			break
-		}
-
-		if x.Value.ListValue == nil {
-			out = append(out, Property{
-				Name:     x.GetName(),
-				Value:    propValue(x.Value),
-				NoIndex:  noIndex,
-				Multiple: false,
-			})
-		} else {
-			for _, v := range x.Value.ListValue {
+	for name, val := range props {
+		noIndex := val.ExcludeFromIndexes
+		if arr, ok := val.ValueType.(*pb.Value_ArrayValue); ok {
+			for _, v := range arr.ArrayValue.Values {
 				out = append(out, Property{
-					Name:     x.GetName(),
+					Name:     name,
 					Value:    propValue(v),
 					NoIndex:  noIndex,
 					Multiple: true,
 				})
 			}
+		} else {
+			out = append(out, Property{
+				Name:     name,
+				Value:    propValue(val),
+				NoIndex:  noIndex,
+				Multiple: false,
+			})
 		}
 	}
 	return out
 }
 
-// propValue returns a Go value that combines the raw PropertyValue with a
-// meaning. For example, an Int64Value with GD_WHEN becomes a time.Time.
+// propValue returns a Go value that represents the PropertyValue. For
+// example, a TimestampValue becomes a time.Time.
 func propValue(v *pb.Value) interface{} {
-	//TODO(PSG-Luna): Support EntityValue
-	//TODO(PSG-Luna): GeoPoint seems gone from the v1 proto, reimplement it once it's readded
-	switch {
-	case v.IntegerValue != nil:
-		return *v.IntegerValue
-	case v.TimestampMicrosecondsValue != nil:
-		return fromUnixMicro(*v.TimestampMicrosecondsValue)
-	case v.BooleanValue != nil:
-		return *v.BooleanValue
-	case v.StringValue != nil:
-		return *v.StringValue
-	case v.BlobValue != nil:
-		return []byte(v.BlobValue)
-	case v.BlobKeyValue != nil:
-		return *v.BlobKeyValue
-	case v.DoubleValue != nil:
-		return *v.DoubleValue
-	case v.KeyValue != nil:
+	switch v := v.ValueType.(type) {
+	case *pb.Value_NullValue:
+		return nil
+	case *pb.Value_BooleanValue:
+		return v.BooleanValue
+	case *pb.Value_IntegerValue:
+		return v.IntegerValue
+	case *pb.Value_DoubleValue:
+		return v.DoubleValue
+	case *pb.Value_TimestampValue:
+		return time.Unix(v.TimestampValue.Seconds, int64(v.TimestampValue.Nanos))
+	case *pb.Value_KeyValue:
 		// TODO(djd): Don't drop this error.
 		key, _ := protoToKey(v.KeyValue)
 		return key
+	case *pb.Value_StringValue:
+		return v.StringValue
+	case *pb.Value_BlobValue:
+		return []byte(v.BlobValue)
+	case *pb.Value_GeoPointValue:
+		// TODO(djd): Support GeoPointValue.
+		return nil
+	case *pb.Value_EntityValue:
+		// TODO(djd): Support EntityValue.
+		return nil
+	case *pb.Value_ArrayValue:
+		panic("propValue should not encounter ArrayValue")
+	default:
+		return nil
 	}
-	return nil
 }

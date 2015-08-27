@@ -20,21 +20,21 @@ package datastore // import "google.golang.org/cloud/datastore"
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"reflect"
 
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/cloud"
-	pb "google.golang.org/cloud/internal/datastore"
+	pb "google.golang.org/cloud/datastore/internal/proto"
 	"google.golang.org/cloud/internal/transport"
+	"google.golang.org/grpc"
 )
 
 const (
-	prodHost = "https://www.googleapis.com"
-	baseURL  = "/datastore/v1beta2/datasets/"
-
-	userAgent = "gcloud-golang-datastore/20150727"
+	prodAddr  = "datastore.googleapis.com:443"
+	userAgent = "gcloud-golang-datastore/20160401"
 )
 
 const (
@@ -54,20 +54,38 @@ type protoClient interface {
 
 // Client is a client for reading and writing data in a datastore dataset.
 type Client struct {
-	client   protoClient
+	conn     *grpc.ClientConn
+	client   pb.DatastoreClient
 	endpoint string
 	dataset  string // Called dataset by the datastore API, synonym for project ID.
 }
 
 // NewClient creates a new Client for a given dataset.
 // If the project ID is empty, it is derived from the DATASTORE_DATASET environment variable.
+// If the DATASTORE_EMULATOR_HOST environment variable is set, client will use its value
+// to connect to a locally-running datastore emulator.
 func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption) (*Client, error) {
-	// Environment variables for gcd and gcloud emulator:
-	// https://cloud.google.com/datastore/docs/tools/
-	// https://cloud.google.com/sdk/gcloud/reference/beta/emulators/datastore/
-	host := os.Getenv("DATASTORE_HOST")
-	if host == "" {
-		host = prodHost
+	var o []cloud.ClientOption
+	// Environment variables for gcd emulator:
+	// https://cloud.google.com/datastore/docs/tools/datastore-emulator
+	// If the emulator is available, dial it directly (and don't pass any credentials).
+	addr := os.Getenv("DATASTORE_EMULATOR_HOST")
+	if addr != "" {
+		conn, err := grpc.Dial(addr, grpc.WithInsecure())
+		if err != nil {
+			return nil, fmt.Errorf("grpc.Dial: %v", err)
+		}
+		o = []cloud.ClientOption{cloud.WithBaseGRPC(conn)}
+	} else {
+		o = []cloud.ClientOption{
+			cloud.WithEndpoint(prodAddr),
+			cloud.WithScopes(ScopeDatastore, ScopeUserEmail),
+			cloud.WithUserAgent(userAgent),
+		}
+	}
+	// Warn if we see the legacy emulator environment variable.
+	if host := os.Getenv("DATASTORE_HOST"); host != "" {
+		log.Print("WARNING: legacy environment variable DATASTORE_HOST is ignored. Use DATASTORE_EMULATOR_HOST instead.")
 	}
 	if projectID == "" {
 		projectID = os.Getenv("DATASTORE_DATASET")
@@ -75,18 +93,14 @@ func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption
 	if projectID == "" {
 		return nil, errors.New("datastore: missing project/dataset id")
 	}
-	o := []cloud.ClientOption{
-		cloud.WithEndpoint(host + baseURL),
-		cloud.WithScopes(ScopeDatastore, ScopeUserEmail),
-		cloud.WithUserAgent(userAgent),
-	}
 	o = append(o, opts...)
-	client, err := transport.NewProtoClient(ctx, o...)
+	conn, err := transport.DialGRPC(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
 	return &Client{
-		client:  client,
+		conn:    conn,
+		client:  pb.NewDatastoreClient(conn),
 		dataset: projectID,
 	}, nil
 
@@ -145,26 +159,19 @@ func (e *ErrFieldMismatch) Error() string {
 		e.FieldName, e.StructType, e.Reason)
 }
 
-func (c *Client) call(ctx context.Context, method string, req, resp proto.Message) error {
-	return c.client.Call(ctx, c.dataset+"/"+method, req, resp)
-}
-
 func keyToProto(k *Key) *pb.Key {
 	if k == nil {
 		return nil
 	}
 
 	// TODO(jbd): Eliminate unrequired allocations.
-	path := []*pb.Key_PathElement(nil)
+	var path []*pb.Key_PathElement
 	for {
-		el := &pb.Key_PathElement{
-			Kind: proto.String(k.kind),
-		}
+		el := &pb.Key_PathElement{Kind: k.kind}
 		if k.id != 0 {
-			el.Id = proto.Int64(k.id)
-		}
-		if k.name != "" {
-			el.Name = proto.String(k.name)
+			el.IdType = &pb.Key_PathElement_Id{k.id}
+		} else if k.name != "" {
+			el.IdType = &pb.Key_PathElement_Name{k.name}
 		}
 		path = append([]*pb.Key_PathElement{el}, path...)
 		if k.parent == nil {
@@ -172,12 +179,10 @@ func keyToProto(k *Key) *pb.Key {
 		}
 		k = k.parent
 	}
-	key := &pb.Key{
-		PathElement: path,
-	}
+	key := &pb.Key{Path: path}
 	if k.namespace != "" {
 		key.PartitionId = &pb.PartitionId{
-			Namespace: proto.String(k.namespace),
+			NamespaceId: k.namespace,
 		}
 	}
 	return key
@@ -187,10 +192,14 @@ func keyToProto(k *Key) *pb.Key {
 // equivalent *Key object.
 func protoToKey(p *pb.Key) (*Key, error) {
 	var key *Key
-	for _, el := range p.GetPathElement() {
+	var namespace string
+	if partition := p.PartitionId; partition != nil {
+		namespace = partition.NamespaceId
+	}
+	for _, el := range p.Path {
 		key = &Key{
-			namespace: p.GetPartitionId().GetNamespace(),
-			kind:      el.GetKind(),
+			namespace: namespace,
+			kind:      el.Kind,
 			id:        el.GetId(),
 			name:      el.GetName(),
 			parent:    key,
@@ -286,6 +295,11 @@ func checkMultiArg(v reflect.Value) (m multiArgType, elemType reflect.Type) {
 	return multiArgTypeInvalid, nil
 }
 
+// Close closes the Client.
+func (c *Client) Close() {
+	c.conn.Close()
+}
+
 // Get loads the entity stored for key into dst, which must be a struct pointer
 // or implement PropertyLoadSaver. If there is no such entity for the key, Get
 // returns ErrNoSuchEntity.
@@ -355,11 +369,12 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		return multiErr
 	}
 	req := &pb.LookupRequest{
-		Key:         pbKeys,
+		ProjectId:   c.dataset,
+		Keys:        pbKeys,
 		ReadOptions: opts,
 	}
-	resp := &pb.LookupResponse{}
-	if err := c.call(ctx, "lookup", req, resp); err != nil {
+	resp, err := c.client.Lookup(ctx, req)
+	if err != nil {
 		return err
 	}
 	if len(resp.Deferred) > 0 {
@@ -420,47 +435,39 @@ func (c *Client) Put(ctx context.Context, key *Key, src interface{}) (*Key, erro
 //
 // src must satisfy the same conditions as the dst argument to GetMulti.
 func (c *Client) PutMulti(ctx context.Context, keys []*Key, src interface{}) ([]*Key, error) {
-	mutation, err := putMutation(keys, src)
+	mutations, err := putMutations(keys, src)
 	if err != nil {
 		return nil, err
 	}
 
 	// Make the request.
 	req := &pb.CommitRequest{
-		Mutation: mutation,
-		Mode:     pb.CommitRequest_NON_TRANSACTIONAL.Enum(),
+		ProjectId: c.dataset,
+		Mutations: mutations,
+		Mode:      pb.CommitRequest_NON_TRANSACTIONAL,
 	}
-	resp := &pb.CommitResponse{}
-	if err := c.call(ctx, "commit", req, resp); err != nil {
+	resp, err := c.client.Commit(ctx, req)
+	if err != nil {
 		return nil, err
 	}
 
 	// Copy any newly minted keys into the returned keys.
-	newKeys := make(map[int]int) // Map of index in returned slice to index in response.
 	ret := make([]*Key, len(keys))
-	var idx int
 	for i, key := range keys {
 		if key.Incomplete() {
-			// This key will be in the mutation result.
-			newKeys[i] = idx
-			idx++
+			// This key is in the mutation results.
+			ret[i], err = protoToKey(resp.MutationResults[i].Key)
+			if err != nil {
+				return nil, errors.New("datastore: internal error: server returned an invalid key")
+			}
 		} else {
 			ret[i] = key
-		}
-	}
-	if len(newKeys) != len(resp.MutationResult.InsertAutoIdKey) {
-		return nil, errors.New("datastore: internal error: server returned the wrong number of keys")
-	}
-	for retI, respI := range newKeys {
-		ret[retI], err = protoToKey(resp.MutationResult.InsertAutoIdKey[respI])
-		if err != nil {
-			return nil, errors.New("datastore: internal error: server returned an invalid key")
 		}
 	}
 	return ret, nil
 }
 
-func putMutation(keys []*Key, src interface{}) (*pb.Mutation, error) {
+func putMutations(keys []*Key, src interface{}) ([]*pb.Mutation, error) {
 	v := reflect.ValueOf(src)
 	multiArgType, _ := checkMultiArg(v)
 	if multiArgType == multiArgTypeInvalid {
@@ -475,7 +482,7 @@ func putMutation(keys []*Key, src interface{}) (*pb.Mutation, error) {
 	if err := multiValid(keys); err != nil {
 		return nil, err
 	}
-	var upsert, insert []*pb.Entity
+	mutations := make([]*pb.Mutation, 0, len(keys))
 	for i, k := range keys {
 		elem := v.Index(i)
 		// Two cases where we need to take the address:
@@ -488,17 +495,15 @@ func putMutation(keys []*Key, src interface{}) (*pb.Mutation, error) {
 		if err != nil {
 			return nil, fmt.Errorf("datastore: Error while saving %v: %v", k.String(), err)
 		}
+		var mut *pb.Mutation
 		if k.Incomplete() {
-			insert = append(insert, p)
+			mut = &pb.Mutation{Operation: &pb.Mutation_Insert{p}}
 		} else {
-			upsert = append(upsert, p)
+			mut = &pb.Mutation{Operation: &pb.Mutation_Upsert{p}}
 		}
+		mutations = append(mutations, mut)
 	}
-
-	return &pb.Mutation{
-		InsertAutoId: insert,
-		Upsert:       upsert,
-	}, nil
+	return mutations, nil
 }
 
 // Delete deletes the entity for the given key.
@@ -512,29 +517,29 @@ func (c *Client) Delete(ctx context.Context, key *Key) error {
 
 // DeleteMulti is a batch version of Delete.
 func (c *Client) DeleteMulti(ctx context.Context, keys []*Key) error {
-	mutation, err := deleteMutation(keys)
+	mutations, err := deleteMutations(keys)
 	if err != nil {
 		return err
 	}
 
 	req := &pb.CommitRequest{
-		Mutation: mutation,
-		Mode:     pb.CommitRequest_NON_TRANSACTIONAL.Enum(),
+		ProjectId: c.dataset,
+		Mutations: mutations,
+		Mode:      pb.CommitRequest_NON_TRANSACTIONAL,
 	}
-	resp := &pb.CommitResponse{}
-	return c.call(ctx, "commit", req, resp)
+	_, err = c.client.Commit(ctx, req)
+	return err
 }
 
-func deleteMutation(keys []*Key) (*pb.Mutation, error) {
-	protoKeys := make([]*pb.Key, len(keys))
-	for i, k := range keys {
+func deleteMutations(keys []*Key) ([]*pb.Mutation, error) {
+	mutations := make([]*pb.Mutation, 0, len(keys))
+	for _, k := range keys {
 		if k.Incomplete() {
 			return nil, fmt.Errorf("datastore: can't delete the incomplete key: %v", k)
 		}
-		protoKeys[i] = keyToProto(k)
+		mutations = append(mutations, &pb.Mutation{
+			Operation: &pb.Mutation_Delete{keyToProto(k)},
+		})
 	}
-
-	return &pb.Mutation{
-		Delete: protoKeys,
-	}, nil
+	return mutations, nil
 }

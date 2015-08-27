@@ -17,7 +17,6 @@ package datastore
 import (
 	"errors"
 	"fmt"
-
 	"reflect"
 	"sort"
 	"strings"
@@ -53,14 +52,16 @@ func TestBasics(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
-	ctx := context.Background()
+	ctx, _ := context.WithTimeout(context.Background(), time.Second*20)
 	client := newClient(ctx, t)
+	defer client.Close()
 
 	type X struct {
 		I int
 		S string
 		T time.Time
 	}
+
 	x0 := X{66, "99", time.Now().Truncate(time.Millisecond)}
 	k, err := client.Put(ctx, NewIncompleteKey(ctx, "BasicsX", nil), &x0)
 	if err != nil {
@@ -86,6 +87,7 @@ func TestListValues(t *testing.T) {
 	}
 	ctx := context.Background()
 	client := newClient(ctx, t)
+	defer client.Close()
 
 	p0 := PropertyList{
 		{Name: "L", Value: int64(12), Multiple: true},
@@ -114,6 +116,7 @@ func TestGetMulti(t *testing.T) {
 	}
 	ctx := context.Background()
 	client := newClient(ctx, t)
+	defer client.Close()
 
 	type X struct {
 		I int
@@ -186,6 +189,7 @@ func TestUnindexableValues(t *testing.T) {
 	}
 	ctx := context.Background()
 	client := newClient(ctx, t)
+	defer client.Close()
 
 	x1500 := strings.Repeat("x", 1500)
 	x1501 := strings.Repeat("x", 1501)
@@ -278,6 +282,7 @@ func TestFilters(t *testing.T) {
 	}
 	ctx := context.Background()
 	client := newClient(ctx, t)
+	defer client.Close()
 
 	parent := NewKey(ctx, "SQParent", "TestFilters"+suffix, 0, nil)
 	now := time.Now().Truncate(time.Millisecond).Unix()
@@ -364,6 +369,7 @@ func TestEventualConsistency(t *testing.T) {
 	}
 	ctx := context.Background()
 	client := newClient(ctx, t)
+	defer client.Close()
 
 	parent := NewKey(ctx, "SQParent", "TestEventualConsistency"+suffix, 0, nil)
 	now := time.Now().Truncate(time.Millisecond).Unix()
@@ -390,6 +396,7 @@ func TestProjection(t *testing.T) {
 	}
 	ctx := context.Background()
 	client := newClient(ctx, t)
+	defer client.Close()
 
 	parent := NewKey(ctx, "SQParent", "TestProjection"+suffix, 0, nil)
 	now := time.Now().Truncate(time.Millisecond).Unix()
@@ -429,6 +436,7 @@ func TestAllocateIDs(t *testing.T) {
 	}
 	ctx := context.Background()
 	client := newClient(ctx, t)
+	defer client.Close()
 
 	keys := make([]*Key, 5)
 	for i := range keys {
@@ -454,6 +462,7 @@ func TestGetAllWithFieldMismatch(t *testing.T) {
 	}
 	ctx := context.Background()
 	client := newClient(ctx, t)
+	defer client.Close()
 
 	type Fat struct {
 		X, Y int
@@ -500,6 +509,7 @@ func TestKindlessQueries(t *testing.T) {
 	}
 	ctx := context.Background()
 	client := newClient(ctx, t)
+	defer client.Close()
 
 	type Dee struct {
 		I   int
@@ -623,6 +633,7 @@ func TestTransaction(t *testing.T) {
 	}
 	ctx := context.Background()
 	client := newClient(ctx, t)
+	defer client.Close()
 
 	type Counter struct {
 		N int
@@ -728,6 +739,7 @@ func TestNilPointers(t *testing.T) {
 	}
 	ctx := context.Background()
 	client := newClient(ctx, t)
+	defer client.Close()
 
 	type X struct {
 		S string
