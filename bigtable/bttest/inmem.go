@@ -21,7 +21,7 @@ To use a Server, create it, and then connect to it with no security:
 (The project/zone/cluster values are ignored.)
 	srv, err := bttest.NewServer()
 	...
-	conn, err := grpc.Dial(srv.Addr)
+	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
 	...
 	client, err := bigtable.NewClient(ctx, proj, zone, cluster,
 		bigtable.WithBaseGRPC(conn))

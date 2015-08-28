@@ -22,7 +22,7 @@ func TestAdminIntegration(t *testing.T) {
 
 	ctx, _ := context.WithTimeout(context.Background(), 2*time.Second)
 
-	conn, err := grpc.Dial(srv.Addr)
+	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
 	if err != nil {
 		t.Fatalf("grpc.Dial: %v", err)
 	}

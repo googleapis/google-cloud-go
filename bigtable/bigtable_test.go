@@ -159,7 +159,7 @@ func TestClientIntegration(t *testing.T) {
 		}
 		defer srv.Close()
 		t.Logf("bttest.Server running on %s", srv.Addr)
-		conn, err := grpc.Dial(srv.Addr)
+		conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
 		if err != nil {
 			t.Fatalf("grpc.Dial: %v", err)
 		}
