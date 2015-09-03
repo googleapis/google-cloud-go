@@ -267,6 +267,8 @@ func includeCell(f *btdpb.RowFilter, r *row, fam, col string, cell cell) bool {
 		return true
 	}
 	// TODO(dsymonds): Implement many more filters.
+	// Note that chain/interleave will be tricky when we implement
+	// filters that *produce* different values, not just include/exclude cells.
 	switch f := f.Filter.(type) {
 	default:
 		log.Printf("WARNING: don't know how to handle filter (ignoring it): %v", f)
@@ -278,6 +280,13 @@ func includeCell(f *btdpb.RowFilter, r *row, fam, col string, cell cell) bool {
 			}
 		}
 		return true
+	case *btdpb.RowFilter_Interleave_:
+		for _, sub := range f.Interleave.Filters {
+			if includeCell(sub, r, fam, col, cell) {
+				return true
+			}
+		}
+		return false
 	case *btdpb.RowFilter_ColumnQualifierRegexFilter:
 		pat := string(f.ColumnQualifierRegexFilter)
 		rx, err := regexp.Compile(pat)
