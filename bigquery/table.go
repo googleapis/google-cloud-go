@@ -29,12 +29,6 @@ type Table struct {
 	// TableID must contain only letters (a-z, A-Z), numbers (0-9), or underscores (_).
 	// The maximum length is 1,024 characters.
 	TableID string
-
-	// All following fields are optional.
-
-	// Name is the user-friendly name for this table.
-	Name string
-	Type TableType
 }
 
 // Tables is a group of tables. The tables may belong to differing projects or datasets.

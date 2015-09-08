@@ -264,8 +264,5 @@ func convertTable(t *bq.TableListTables) *Table {
 		ProjectID: t.TableReference.ProjectId,
 		DatasetID: t.TableReference.DatasetId,
 		TableID:   t.TableReference.TableId,
-
-		Name: t.FriendlyName,
-		Type: TableType(t.Type),
 	}
 }

@@ -46,8 +46,8 @@ func (s *listTablesServiceStub) listTables(ctx context.Context, projectID, datas
 
 func TestListTables(t *testing.T) {
 	t1 := &Table{ProjectID: "p1", DatasetID: "d1", TableID: "t1"}
-	t2 := &Table{ProjectID: "p1", DatasetID: "d1", TableID: "t1"}
-	t3 := &Table{ProjectID: "p1", DatasetID: "d1", TableID: "t1"}
+	t2 := &Table{ProjectID: "p1", DatasetID: "d1", TableID: "t2"}
+	t3 := &Table{ProjectID: "p1", DatasetID: "d1", TableID: "t3"}
 	testCases := []struct {
 		data       [][]*Table
 		pageTokens map[string]string
