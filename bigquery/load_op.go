@@ -25,8 +25,10 @@ type loadOption interface {
 	customizeLoad(conf *bq.JobConfigurationLoad, projectID string)
 }
 
-// A DestinationSchema must be supplied when loading data from Google Cloud Storage into a non-existent table.
+// DestinationSchema returns an Option that specifies the schema to use when loading data into a new table.
+// A DestinationSchema Option must be supplied when loading data from Google Cloud Storage into a non-existent table.
 // Caveat: DestinationSchema is not required if the data being loaded is a datastore backup.
+// schema must not be nil.
 func DestinationSchema(schema Schema) Option { return destSchema{Schema: schema} }
 
 type destSchema struct {
