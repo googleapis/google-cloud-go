@@ -16,6 +16,9 @@ package bigquery
 
 import (
 	"fmt"
+	"time"
+
+	"golang.org/x/net/context"
 
 	bq "google.golang.org/api/bigquery/v2"
 )
@@ -29,6 +32,34 @@ type Table struct {
 	// TableID must contain only letters (a-z, A-Z), numbers (0-9), or underscores (_).
 	// The maximum length is 1,024 characters.
 	TableID string
+
+	service service
+}
+
+// TableMetadata contains information about a BigQuery table.
+type TableMetadata struct {
+	Description string // The user-friendly description of this table.
+	Name        string // The user-friendly name for this table.
+	Schema      Schema
+	View        string
+
+	ID   string // An opaque ID uniquely identifying the table.
+	Type TableType
+
+	// The time when this table expires. If not set, the table will persist
+	// indefinitely. Expired tables will be deleted and their storage reclaimed.
+	ExpirationTime time.Time
+
+	CreationTime     time.Time
+	LastModifiedTime time.Time
+
+	// The size of the table in bytes.
+	// This does not include data that is being buffered during a streaming insert.
+	NumBytes int64
+
+	// The number of rows of data in this table.
+	// This does not include data that is being buffered during a streaming insert.
+	NumRows uint64
 }
 
 // Tables is a group of tables. The tables may belong to differing projects or datasets.
@@ -154,4 +185,59 @@ func (t *Table) customizeReadSrc(cursor *readTableConf) {
 	cursor.projectID = t.ProjectID
 	cursor.datasetID = t.DatasetID
 	cursor.tableID = t.TableID
+}
+
+// OpenTable creates a handle to an existing BigQuery table.  If the table does not already exist, subsequent uses of the *Table will fail.
+func (c *Client) OpenTable(projectID, datasetID, tableID string) *Table {
+	return &Table{ProjectID: projectID, DatasetID: datasetID, TableID: tableID, service: c.service}
+}
+
+// CreateTable creates a table in the BigQuery service and returns a handle to it.
+func (c *Client) CreateTable(ctx context.Context, projectID, datasetID, tableID string, options ...CreateTableOption) (*Table, error) {
+	conf := &createTableConf{
+		projectID: projectID,
+		datasetID: datasetID,
+		tableID:   tableID,
+	}
+	for _, o := range options {
+		o.customizeCreateTable(conf)
+	}
+	if err := c.service.createTable(ctx, conf); err != nil {
+		return nil, err
+	}
+	return &Table{ProjectID: projectID, DatasetID: datasetID, TableID: tableID, service: c.service}, nil
+}
+
+// Metadata fetches the metadata for the table.
+func (t *Table) Metadata(ctx context.Context) (*TableMetadata, error) {
+	return t.service.getTableMetadata(ctx, t.ProjectID, t.DatasetID, t.TableID)
+}
+
+// Delete deletes the table.
+func (t *Table) Delete(ctx context.Context) error {
+	return t.service.deleteTable(ctx, t.ProjectID, t.DatasetID, t.TableID)
+}
+
+// A CreateTableOption is an optional argument to CreateTable.
+type CreateTableOption interface {
+	customizeCreateTable(*createTableConf)
+}
+
+type tableExpiration time.Time
+
+// TableExpiration returns a CreateTableOption which will cause the created table to be deleted after the expiration time.
+func TableExpiration(exp time.Time) CreateTableOption { return tableExpiration(exp) }
+
+func (opt tableExpiration) customizeCreateTable(conf *createTableConf) {
+	conf.expiration = time.Time(opt)
+}
+
+type viewQuery string
+
+// ViewQuery returns a CreateTableOption that causes the created table to be a virtual table defined by the supplied query.
+// For more information see: https://cloud.google.com/bigquery/querying-data#views
+func ViewQuery(query string) CreateTableOption { return viewQuery(query) }
+
+func (opt viewQuery) customizeCreateTable(conf *createTableConf) {
+	conf.viewQuery = string(opt)
 }

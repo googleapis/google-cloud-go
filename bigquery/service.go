@@ -29,10 +29,12 @@ import (
 // The single implementation, *bigqueryService, contains all the knowledge
 // of the generated BigQuery API.
 type service interface {
+	// Jobs
 	insertJob(ctx context.Context, job *bq.Job, projectId string) (*Job, error)
 	getJobType(ctx context.Context, projectId, jobID string) (jobType, error)
 	jobStatus(ctx context.Context, projectId, jobID string) (*JobStatus, error)
-	listTables(ctx context.Context, projectID, datasetID, pageToken string) ([]*Table, string, error)
+
+	// Queries
 
 	// readQuery reads data resulting from a query job. If the job is not
 	// yet complete, an errIncompleteJob is returned. readQuery may be
@@ -40,6 +42,12 @@ type service interface {
 	readQuery(ctx context.Context, conf *readQueryConf, pageToken string) (*readDataResult, error)
 
 	readTabledata(ctx context.Context, conf *readTableConf, pageToken string) (*readDataResult, error)
+
+	// Tables
+	createTable(ctx context.Context, conf *createTableConf) error
+	getTableMetadata(ctx context.Context, projectID, datasetID, tableID string) (*TableMetadata, error)
+	deleteTable(ctx context.Context, projectID, datasetID, tableID string) error
+	listTables(ctx context.Context, projectID, datasetID, pageToken string) ([]*Table, string, error)
 }
 
 type bigqueryService struct {
@@ -262,12 +270,85 @@ func (s *bigqueryService) listTables(ctx context.Context, projectID, datasetID, 
 		return nil, "", err
 	}
 	for _, t := range res.Tables {
-		tables = append(tables, convertTable(t))
+		tables = append(tables, convertListedTable(t))
 	}
 	return tables, res.NextPageToken, nil
 }
 
-func convertTable(t *bq.TableListTables) *Table {
+type createTableConf struct {
+	projectID, datasetID, tableID string
+	expiration                    time.Time
+	viewQuery                     string
+}
+
+// createTable creates a table in the BigQuery service.
+// expiration is an optional time after which the table will be deleted and its storage reclaimed.
+// If viewQuery is non-empty, the created table will be of type VIEW.
+// Note: expiration can only be set during table creation.
+// Note: after table creation, a view can be modified only if its table was initially created with a view.
+func (s *bigqueryService) createTable(ctx context.Context, conf *createTableConf) error {
+	// TODO(mcgreevy): use ctx
+	table := &bq.Table{
+		TableReference: &bq.TableReference{
+			ProjectId: conf.projectID,
+			DatasetId: conf.datasetID,
+			TableId:   conf.tableID,
+		},
+	}
+	if !conf.expiration.IsZero() {
+		table.ExpirationTime = conf.expiration.UnixNano() / 1000
+	}
+	if conf.viewQuery != "" {
+		table.View = &bq.ViewDefinition{
+			Query: conf.viewQuery,
+		}
+	}
+
+	_, err := s.s.Tables.Insert(conf.projectID, conf.datasetID, table).Do()
+	return err
+}
+
+func (s *bigqueryService) getTableMetadata(ctx context.Context, projectID, datasetID, tableID string) (*TableMetadata, error) {
+	// TODO(mcgreevy): use ctx
+	table, err := s.s.Tables.Get(projectID, datasetID, tableID).Do()
+	if err != nil {
+		return nil, err
+	}
+	return bqTableToMetadata(table), nil
+}
+
+func (s *bigqueryService) deleteTable(ctx context.Context, projectID, datasetID, tableID string) error {
+	// TODO(mcgreevy): use ctx
+	return s.s.Tables.Delete(projectID, datasetID, tableID).Do()
+}
+
+func bqTableToMetadata(t *bq.Table) *TableMetadata {
+	md := &TableMetadata{
+		Description: t.Description,
+		Name:        t.FriendlyName,
+		Schema:      convertTableSchema(t.Schema),
+		Type:        TableType(t.Type),
+		ID:          t.Id,
+		NumBytes:    t.NumBytes,
+		NumRows:     t.NumRows,
+	}
+	if t.ExpirationTime != 0 {
+		md.ExpirationTime = time.Unix(0, t.ExpirationTime*1e6)
+	}
+	if t.CreationTime != 0 {
+		md.CreationTime = time.Unix(0, t.CreationTime*1e6)
+	}
+	if t.LastModifiedTime != 0 {
+		md.LastModifiedTime = time.Unix(0, int64(t.LastModifiedTime*1e6))
+	}
+	if t.View != nil {
+		md.View = t.View.Query
+	}
+
+	return md
+}
+
+func convertListedTable(t *bq.TableListTables) *Table {
 	return &Table{
 		ProjectID: t.TableReference.ProjectId,
 		DatasetID: t.TableReference.DatasetId,
