@@ -35,7 +35,7 @@ const (
 func ProjID() string {
 	projID := os.Getenv(envProjID)
 	if projID == "" {
-		log.Fatal("CLOUD_TESTS_GOLANG_PROJECT_ID must be set. See CONTRIBUTING.md for details.")
+		log.Fatal(envProjID + " must be set. See CONTRIBUTING.md for details.")
 	}
 	return projID
 }
@@ -43,7 +43,7 @@ func ProjID() string {
 func TokenSource(ctx context.Context, scopes ...string) oauth2.TokenSource {
 	key := os.Getenv(envPrivateKey)
 	if key == "" {
-		log.Fatal("GCLOUD_TESTS_GOLANG_KEY must be set. See CONTRIBUTING.md for details.")
+		log.Fatal(envPrivateKey + " must be set. See CONTRIBUTING.md for details.")
 	}
 	jsonKey, err := ioutil.ReadFile(key)
 	if err != nil {

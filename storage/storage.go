@@ -91,6 +91,63 @@ func (c *Client) Close() {
 	// NOTE(cbro): no-op until we migrate the transport to gRPC.
 }
 
+// Bucket provides operations on a Google Cloud Storage bucket.
+// Use Client.Bucket() to initialize the bucket.
+type Bucket struct {
+	// ACL provides access to the bucket's access control list.
+	// This controls who can list, create or overwrite the objects in a bucket.
+	ACL *ACL
+
+	// DefaultObjectACL provides access to the bucket's default object ACLs.
+	// These ACLs are applied to newly created objects in this bucket that do not
+	// have a defined ACL.
+	DefaultObjectACL *ACL
+
+	c    *Client
+	name string
+}
+
+// Bucket creates a Bucket for the named bucket.
+func (c *Client) Bucket(name string) *Bucket {
+	return &Bucket{
+		c:    c,
+		name: name,
+		ACL: &ACL{
+			c:      c,
+			bucket: name,
+		},
+		DefaultObjectACL: &ACL{
+			c:         c,
+			bucket:    name,
+			isDefault: true,
+		},
+	}
+}
+
+// Object provides operations on an object in a Google Cloud Storage bucket.
+// Use Client.Bucket().Object() to initialize the object.
+type Object struct {
+	c      *Client
+	bucket string
+	object string
+
+	ACL *ACL
+}
+
+// Object creates an Object for the named object in the bucket.
+func (b *Bucket) Object(name string) *Object {
+	return &Object{
+		c:      b.c,
+		bucket: b.name,
+		object: name,
+		ACL: &ACL{
+			c:      b.c,
+			bucket: b.name,
+			object: name,
+		},
+	}
+}
+
 // TODO(jbd): Add storage.buckets.list.
 // TODO(jbd): Add storage.buckets.insert.
 // TODO(jbd): Add storage.buckets.update.
@@ -98,9 +155,9 @@ func (c *Client) Close() {
 
 // TODO(jbd): Add storage.objects.watch.
 
-// BucketInfo returns the metadata for the specified bucket.
-func (c *Client) BucketInfo(ctx context.Context, name string) (*Bucket, error) {
-	resp, err := c.raw.Buckets.Get(name).Projection("full").Do()
+// Attrs returns the metadata for the bucket.
+func (b *Bucket) Attrs(ctx context.Context) (*BucketAttrs, error) {
+	resp, err := b.c.raw.Buckets.Get(b.name).Projection("full").Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrBucketNotExist
 	}
@@ -110,10 +167,10 @@ func (c *Client) BucketInfo(ctx context.Context, name string) (*Bucket, error) {
 	return newBucket(resp), nil
 }
 
-// ListObjects lists objects from the bucket. You can specify a query
+// List lists objects from the bucket. You can specify a query
 // to filter the results. If q is nil, no filtering is applied.
-func (c *Client) ListObjects(ctx context.Context, bucket string, q *Query) (*Objects, error) {
-	req := c.raw.Objects.List(bucket)
+func (b *Bucket) List(ctx context.Context, q *Query) (list *ObjectList, next *Query, err error) {
+	req := b.c.raw.Objects.List(b.name)
 	req.Projection("full")
 	if q != nil {
 		req.Delimiter(q.Delimiter)
@@ -126,10 +183,10 @@ func (c *Client) ListObjects(ctx context.Context, bucket string, q *Query) (*Obj
 	}
 	resp, err := req.Do()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	objects := &Objects{
-		Results:  make([]*Object, len(resp.Items)),
+	objects := &ObjectList{
+		Results:  make([]*ObjectAttrs, len(resp.Items)),
 		Prefixes: make([]string, len(resp.Prefixes)),
 	}
 	for i, item := range resp.Items {
@@ -146,9 +203,9 @@ func (c *Client) ListObjects(ctx context.Context, bucket string, q *Query) (*Obj
 			next = *q
 		}
 		next.Cursor = resp.NextPageToken
-		objects.Next = &next
+		return objects, &next, nil
 	}
-	return objects, nil
+	return objects, nil, nil
 }
 
 // SignedURLOptions allows you to restrict the access to the signed URL.
@@ -251,39 +308,39 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 	return u.String(), nil
 }
 
-// StatObject returns meta information about the specified object.
-func (c *Client) StatObject(ctx context.Context, bucket, name string) (*Object, error) {
-	o, err := c.raw.Objects.Get(bucket, name).Projection("full").Do()
+// Attrs returns meta information about the specified object.
+func (o *Object) Attrs(ctx context.Context) (*ObjectAttrs, error) {
+	obj, err := o.c.raw.Objects.Get(o.bucket, o.object).Projection("full").Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
 	}
 	if err != nil {
 		return nil, err
 	}
-	return newObject(o), nil
+	return newObject(obj), nil
 }
 
-// UpdateAttrs updates an object with the provided attributes.
+// Update updates an object with the provided attributes.
 // All zero-value attributes are ignored.
-func (c *Client) UpdateAttrs(ctx context.Context, bucket, name string, attrs ObjectAttrs) (*Object, error) {
-	o, err := c.raw.Objects.Patch(bucket, name, attrs.toRawObject(bucket)).Projection("full").Do()
+func (o *Object) Update(ctx context.Context, attrs ObjectAttrs) (*ObjectAttrs, error) {
+	obj, err := o.c.raw.Objects.Patch(o.bucket, o.object, attrs.toRawObject(o.bucket)).Projection("full").Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
 	}
 	if err != nil {
 		return nil, err
 	}
-	return newObject(o), nil
+	return newObject(obj), nil
 }
 
-// DeleteObject deletes the single specified object.
-func (c *Client) DeleteObject(ctx context.Context, bucket, name string) error {
-	return c.raw.Objects.Delete(bucket, name).Do()
+// Delete deletes the single specified object.
+func (o *Object) Delete(ctx context.Context) error {
+	return o.c.raw.Objects.Delete(o.bucket, o.object).Do()
 }
 
 // CopyObject copies the source object to the destination.
 // The copied object's attributes are overwritten by attrs if non-nil.
-func (c *Client) CopyObject(ctx context.Context, srcBucket, srcName string, destBucket, destName string, attrs *ObjectAttrs) (*Object, error) {
+func (c *Client) CopyObject(ctx context.Context, srcBucket, srcName string, destBucket, destName string, attrs *ObjectAttrs) (*ObjectAttrs, error) {
 	if srcBucket == "" || destBucket == "" {
 		return nil, errors.New("storage: srcBucket and destBucket must both be non-empty")
 	}
@@ -308,13 +365,13 @@ func (c *Client) CopyObject(ctx context.Context, srcBucket, srcName string, dest
 
 // NewReader creates a new io.ReadCloser to read the contents
 // of the object.
-func (c *Client) NewReader(ctx context.Context, bucket, name string) (io.ReadCloser, error) {
+func (o *Object) NewReader(ctx context.Context) (io.ReadCloser, error) {
 	u := &url.URL{
 		Scheme: "https",
 		Host:   "storage.googleapis.com",
-		Path:   fmt.Sprintf("/%s/%s", bucket, name),
+		Path:   fmt.Sprintf("/%s/%s", o.bucket, o.object),
 	}
-	res, err := c.conn.Get(u.String())
+	res, err := o.c.conn.Get(u.String())
 	if err != nil {
 		return nil, err
 	}
@@ -324,7 +381,7 @@ func (c *Client) NewReader(ctx context.Context, bucket, name string) (io.ReadClo
 	}
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		res.Body.Close()
-		return res.Body, fmt.Errorf("storage: can't read object %v/%v, status code: %v", bucket, name, res.Status)
+		return res.Body, fmt.Errorf("storage: can't read object %v/%v, status code: %v", o.bucket, o.object, res.Status)
 	}
 	return res.Body, nil
 }
@@ -341,11 +398,11 @@ func (c *Client) NewReader(ctx context.Context, bucket, name string) (io.ReadClo
 //
 // The object is not available and any previous object with the same
 // name is not replaced on Cloud Storage until Close is called.
-func (c *Client) NewWriter(ctx context.Context, bucket, name string) *Writer {
+func (o *Object) NewWriter(ctx context.Context) *Writer {
 	return &Writer{
-		client: c,
-		bucket: bucket,
-		name:   name,
+		client: o.c,
+		bucket: o.bucket,
+		name:   o.object,
 		donec:  make(chan struct{}),
 	}
 }

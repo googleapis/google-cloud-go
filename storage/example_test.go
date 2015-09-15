@@ -64,7 +64,7 @@ func ExampleListObjects() {
 		// If you are using this package on App Engine Managed VMs runtime,
 		// you can init a bucket client with your app's default bucket name.
 		// See http://godoc.org/google.golang.org/appengine/file#DefaultBucketName.
-		objects, err := client.ListObjects(ctx, "bucketname", query)
+		objects, next, err := client.Bucket("bucketname").List(ctx, query)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -73,7 +73,7 @@ func ExampleListObjects() {
 		}
 		// if there are more results, objects.Next
 		// will be non-nil.
-		query = objects.Next
+		query = next
 		if query == nil {
 			break
 		}
@@ -86,7 +86,7 @@ func ExampleNewReader() {
 	ctx := context.TODO()
 	var client *storage.Client // See Example (Auth)
 
-	rc, err := client.NewReader(ctx, "bucketname", "filename1")
+	rc, err := client.Bucket("bucketname").Object("filename1").NewReader(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -103,16 +103,16 @@ func ExampleNewWriter() {
 	ctx := context.TODO()
 	var client *storage.Client // See Example (Auth)
 
-	wc := client.NewWriter(ctx, "bucketname", "filename1")
+	wc := client.Bucket("bucketname").Object("filename1").NewWriter(ctx)
 	wc.ContentType = "text/plain"
-	wc.ACL = []storage.ACLRule{{storage.AllUsers, storage.RoleReader}}
+	wc.ACL = []storage.ACLEntry{{storage.AllUsers, storage.RoleReader}}
 	if _, err := wc.Write([]byte("hello world")); err != nil {
 		log.Fatal(err)
 	}
 	if err := wc.Close(); err != nil {
 		log.Fatal(err)
 	}
-	log.Println("updated object:", wc.Object())
+	log.Println("updated object:", wc.Attrs())
 }
 
 func ExampleCopyObject() {
@@ -130,27 +130,27 @@ func ExampleDeleteObject() {
 	ctx := context.TODO()
 	var client *storage.Client // See Example (Auth)
 
-	// To delete multiple objects in a bucket, first ListObjects then delete them.
+	// To delete multiple objects in a bucket, first List then Delete them.
 
 	// If you are using this package on App Engine Managed VMs runtime,
 	// you can init a bucket client with your app's default bucket name.
 	// See http://godoc.org/google.golang.org/appengine/file#DefaultBucketName.
-	const bucket = "bucketname"
+	bucket := client.Bucket("bucketname")
 
 	var query *storage.Query // Set up query as desired.
 	for {
-		objects, err := client.ListObjects(ctx, bucket, query)
+		objects, next, err := bucket.List(ctx, query)
 		if err != nil {
 			log.Fatal(err)
 		}
 		for _, obj := range objects.Results {
 			log.Printf("deleting object name: %q, size: %v", obj.Name, obj.Size)
-			if err := client.DeleteObject(ctx, bucket, obj.Name); err != nil {
+			if err := bucket.Object(obj.Name).Delete(ctx); err != nil {
 				log.Fatalf("unable to delete %q: %v", obj.Name, err)
 			}
 		}
 		// if there are more results, objects.Next will be non-nil.
-		query = objects.Next
+		query = next
 		if query == nil {
 			break
 		}

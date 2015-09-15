@@ -37,7 +37,7 @@ func TestErrorOnObjectsInsertCall(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	wc := client.NewWriter(ctx, "bucketname", "filename1")
+	wc := client.Bucket("bucketname").Object("filename1").NewWriter(ctx)
 	wc.ContentType = "text/plain"
 	if _, err := wc.Write([]byte("hello world")); err == nil {
 		t.Errorf("expected error on write, got nil")
