@@ -209,15 +209,18 @@ func (s *server) ReadRows(req *btspb.ReadRowsRequest, stream btspb.BigtableServi
 
 func streamRow(stream btspb.BigtableService_ReadRowsServer, r *row, f *btdpb.RowFilter) error {
 	r.mu.Lock()
-	defer r.mu.Unlock()
+	nr := r.copy()
+	r.mu.Unlock()
+	r = nr
+
+	filterRow(f, r)
 
 	rrr := &btspb.ReadRowsResponse{
 		RowKey: []byte(r.key),
 	}
-	for col, cs := range r.cells {
+	for col, cells := range r.cells {
 		i := strings.Index(col, ":") // guaranteed to exist
 		fam, col := col[:i], col[i+1:]
-		cells := filterCells(f, r, fam, col, cs)
 		if len(cells) == 0 {
 			continue
 		}
@@ -243,50 +246,74 @@ func streamRow(stream btspb.BigtableService_ReadRowsServer, r *row, f *btdpb.Row
 	return stream.Send(rrr)
 }
 
-func filterCells(f *btdpb.RowFilter, r *row, fam, col string, cs []cell) []cell {
-	// Special handling for cells_per_column_limit_filter.
-	if cf, ok := f.GetFilter().(*btdpb.RowFilter_CellsPerColumnLimitFilter); ok {
-		n := int(cf.CellsPerColumnLimitFilter)
-		if n > len(cs) {
-			n = len(cs)
+// filterRow modifies a row with the given filter.
+func filterRow(f *btdpb.RowFilter, r *row) {
+	if f == nil {
+		return
+	}
+	// Handle filters that apply beyond just including/excluding cells.
+	switch f := f.Filter.(type) {
+	case *btdpb.RowFilter_Chain_:
+		for _, sub := range f.Chain.Filters {
+			filterRow(sub, r)
 		}
-		return cs[:n]
+		return
+	case *btdpb.RowFilter_Interleave_:
+		srs := make([]*row, 0, len(f.Interleave.Filters))
+		for _, sub := range f.Interleave.Filters {
+			sr := r.copy()
+			filterRow(sub, sr)
+			srs = append(srs, sr)
+		}
+		// merge
+		// TODO(dsymonds): is this correct?
+		r.cells = make(map[string][]cell)
+		for _, sr := range srs {
+			for col, cs := range sr.cells {
+				r.cells[col] = append(r.cells[col], cs...)
+			}
+		}
+		for _, cs := range r.cells {
+			sort.Sort(byDescTS(cs))
+		}
+		return
+	case *btdpb.RowFilter_CellsPerColumnLimitFilter:
+		lim := int(f.CellsPerColumnLimitFilter)
+		for col, cs := range r.cells {
+			if len(cs) > lim {
+				r.cells[col] = cs[:lim]
+			}
+		}
+		return
 	}
 
+	// Any other case, operate on a per-cell basis.
+	for key, cs := range r.cells {
+		i := strings.Index(key, ":") // guaranteed to exist
+		fam, col := key[:i], key[i+1:]
+		r.cells[key] = filterCells(f, fam, col, cs)
+	}
+}
+
+func filterCells(f *btdpb.RowFilter, fam, col string, cs []cell) []cell {
 	var ret []cell
 	for _, cell := range cs {
-		if includeCell(f, r, fam, col, cell) {
+		if includeCell(f, fam, col, cell) {
 			ret = append(ret, cell)
 		}
 	}
 	return ret
 }
 
-func includeCell(f *btdpb.RowFilter, r *row, fam, col string, cell cell) bool {
+func includeCell(f *btdpb.RowFilter, fam, col string, cell cell) bool {
 	if f == nil {
 		return true
 	}
 	// TODO(dsymonds): Implement many more filters.
-	// Note that chain/interleave will be tricky when we implement
-	// filters that *produce* different values, not just include/exclude cells.
 	switch f := f.Filter.(type) {
 	default:
-		log.Printf("WARNING: don't know how to handle filter (ignoring it): %v", f)
+		log.Printf("WARNING: don't know how to handle filter of type %T (ignoring it)", f)
 		return true
-	case *btdpb.RowFilter_Chain_:
-		for _, sub := range f.Chain.Filters {
-			if !includeCell(sub, r, fam, col, cell) {
-				return false
-			}
-		}
-		return true
-	case *btdpb.RowFilter_Interleave_:
-		for _, sub := range f.Interleave.Filters {
-			if includeCell(sub, r, fam, col, cell) {
-				return true
-			}
-		}
-		return false
 	case *btdpb.RowFilter_ColumnQualifierRegexFilter:
 		pat := string(f.ColumnQualifierRegexFilter)
 		rx, err := regexp.Compile(pat)
@@ -345,16 +372,12 @@ func (s *server) CheckAndMutateRow(ctx context.Context, req *btspb.CheckAndMutat
 		whichMut = len(r.cells) > 0
 	} else {
 		// Use true_mutations iff any cells in the row match the filter.
-		for col, cs := range r.cells {
-			i := strings.Index(col, ":") // guaranteed to exist
-			fam, col := col[:i], col[i+1:]
-			for _, cell := range cs {
-				if includeCell(req.PredicateFilter, r, fam, col, cell) {
-					whichMut = true
-					break
-				}
-			}
-			if whichMut {
+		// TODO(dsymonds): This could be cheaper.
+		nr := r.copy()
+		filterRow(req.PredicateFilter, nr)
+		for _, cs := range nr.cells {
+			if len(cs) > 0 {
+				whichMut = true
 				break
 			}
 		}
@@ -589,6 +612,21 @@ func newRow(key string) *row {
 		key:   key,
 		cells: make(map[string][]cell),
 	}
+}
+
+// copy returns a copy of the row.
+// Cell values are aliased.
+// r.mu should be held.
+func (r *row) copy() *row {
+	nr := &row{
+		key:   r.key,
+		cells: make(map[string][]cell, len(r.cells)),
+	}
+	for col, cs := range r.cells {
+		// Copy the []cell slice, but not the []byte inside each cell.
+		nr.cells[col] = append([]cell(nil), cs...)
+	}
+	return nr
 }
 
 type cell struct {
