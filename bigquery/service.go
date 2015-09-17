@@ -18,6 +18,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"sync"
 	"time"
 
 	"golang.org/x/net/context"
@@ -97,6 +98,7 @@ type pagingConf struct {
 type readTableConf struct {
 	projectID, datasetID, tableID string
 	paging                        pagingConf
+	schema                        Schema // lazily initialized when the first page of data is fetched.
 }
 
 type readDataResult struct {
@@ -112,6 +114,7 @@ type readQueryConf struct {
 }
 
 func (s *bigqueryService) readTabledata(ctx context.Context, conf *readTableConf, pageToken string) (*readDataResult, error) {
+	// Prepare request to fetch one page of table data.
 	req := s.s.Tabledata.List(conf.projectID, conf.datasetID, conf.tableID)
 
 	if pageToken != "" {
@@ -124,15 +127,41 @@ func (s *bigqueryService) readTabledata(ctx context.Context, conf *readTableConf
 		req.MaxResults(conf.paging.recordsPerRequest)
 	}
 
+	// Fetch the table schema in the background, if necessary.
+	var schemaErr error
+	var schemaFetch sync.WaitGroup
+	if conf.schema == nil {
+		schemaFetch.Add(1)
+		go func() {
+			defer schemaFetch.Done()
+			var t *bq.Table
+			t, schemaErr = s.s.Tables.Get(conf.projectID, conf.datasetID, conf.tableID).
+				Fields("schema").
+				Do()
+			if schemaErr == nil && t.Schema != nil {
+				conf.schema = convertTableSchema(t.Schema)
+			}
+		}()
+	}
+
 	res, err := req.Do()
 	if err != nil {
 		return nil, err
 	}
 
+	schemaFetch.Wait()
+	if schemaErr != nil {
+		return nil, schemaErr
+	}
+
 	result := &readDataResult{
 		pageToken: res.PageToken,
-		rows:      convertRows(res.Rows),
 		totalRows: uint64(res.TotalRows),
+		schema:    conf.schema,
+	}
+	result.rows, err = convertRows(res.Rows, conf.schema)
+	if err != nil {
+		return nil, err
 	}
 	return result, nil
 }
@@ -167,30 +196,17 @@ func (s *bigqueryService) readQuery(ctx context.Context, conf *readQueryConf, pa
 	if !res.JobComplete {
 		return nil, errIncompleteJob
 	}
-
+	schema := convertTableSchema(res.Schema)
 	result := &readDataResult{
 		pageToken: res.PageToken,
-		rows:      convertRows(res.Rows),
 		totalRows: res.TotalRows,
-		schema:    convertTableSchema(res.Schema),
+		schema:    schema,
+	}
+	result.rows, err = convertRows(res.Rows, schema)
+	if err != nil {
+		return nil, err
 	}
 	return result, nil
-}
-
-func convertRows(rows []*bq.TableRow) [][]Value {
-	convertRow := func(r *bq.TableRow) []Value {
-		var values []Value
-		for _, cell := range r.F {
-			values = append(values, cell.V)
-		}
-		return values
-	}
-
-	var rs [][]Value
-	for _, r := range rows {
-		rs = append(rs, convertRow(r))
-	}
-	return rs
 }
 
 type jobType int
