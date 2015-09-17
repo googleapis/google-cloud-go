@@ -23,14 +23,11 @@ import (
 	"io"
 	"io/ioutil"
 	"math/rand"
-	"net/http"
 	"os"
 	"testing"
 	"time"
 
-	"golang.org/x/net/context"
-
-	"google.golang.org/cloud"
+	"google.golang.org/cloud/internal"
 	"google.golang.org/cloud/internal/testutil"
 )
 
@@ -45,17 +42,8 @@ var (
 const envBucket = "GCLOUD_TESTS_GOLANG_PROJECT_ID"
 
 func TestObjects(t *testing.T) {
-	ctx := context.Background()
-	client, err := NewClient(ctx, testutil.ProjID(),
-		cloud.WithTokenSource(testutil.TokenSource(ctx, ScopeFullControl)))
-
-	if err != nil {
-		t.Errorf("Could not create client: %v", err)
-	}
-
+	ctx := testutil.Context(ScopeFullControl)
 	bucket = os.Getenv(envBucket)
-
-	bkt := client.Bucket(bucket)
 
 	// Cleanup.
 	cleanup(t, "obj")
@@ -65,7 +53,7 @@ func TestObjects(t *testing.T) {
 	// Test Writer.
 	for _, obj := range objects {
 		t.Logf("Writing %v", obj)
-		wc := bkt.Object(obj).NewWriter(ctx)
+		wc := NewWriter(ctx, bucket, obj)
 		wc.ContentType = defaultType
 		c := randomContents()
 		if _, err := wc.Write(c); err != nil {
@@ -80,7 +68,7 @@ func TestObjects(t *testing.T) {
 	// Test Reader.
 	for _, obj := range objects {
 		t.Logf("Creating a reader to read %v", obj)
-		rc, err := bkt.Object(obj).NewReader(ctx)
+		rc, err := NewReader(ctx, bucket, obj)
 		if err != nil {
 			t.Errorf("Can't create a reader for %v, errored with %v", obj, err)
 		}
@@ -107,7 +95,8 @@ func TestObjects(t *testing.T) {
 		if err != nil {
 			t.Fatalf("SignedURL(%q, %q) errored with %v", bucket, obj, err)
 		}
-		res, err := client.conn.Get(u)
+		hc := internal.HTTPClient(ctx)
+		res, err := hc.Get(u)
 		if err != nil {
 			t.Fatalf("Can't get URL %q: %v", u, err)
 		}
@@ -122,7 +111,7 @@ func TestObjects(t *testing.T) {
 	}
 
 	// Test NotFound.
-	_, err = bkt.Object("obj-not-exists").NewReader(ctx)
+	_, err := NewReader(ctx, bucket, "obj-not-exists")
 	if err != ErrObjectNotExist {
 		t.Errorf("Object should not exist, err found to be %v", err)
 	}
@@ -130,7 +119,7 @@ func TestObjects(t *testing.T) {
 	name := objects[0]
 
 	// Test StatObject.
-	o, err := bkt.Object(name).Attrs(ctx)
+	o, err := StatObject(ctx, bucket, name)
 	if err != nil {
 		t.Error(err)
 	}
@@ -142,7 +131,7 @@ func TestObjects(t *testing.T) {
 	}
 
 	// Test object copy.
-	copy, err := client.CopyObject(ctx, bucket, name, bucket, copyObj, nil)
+	copy, err := CopyObject(ctx, bucket, name, bucket, copyObj, nil)
 	if err != nil {
 		t.Errorf("CopyObject failed with %v", err)
 	}
@@ -154,9 +143,9 @@ func TestObjects(t *testing.T) {
 	}
 
 	// Test UpdateAttrs.
-	updated, err := bkt.Object(name).Update(ctx, ObjectAttrs{
+	updated, err := UpdateAttrs(ctx, bucket, name, ObjectAttrs{
 		ContentType: "text/html",
-		ACL:         []ACLEntry{{Scope: "domain-google.com", Permission: RoleReader}},
+		ACL:         []ACLRule{{Entity: "domain-google.com", Role: RoleReader}},
 	})
 	if err != nil {
 		t.Errorf("UpdateAttrs failed with %v", err)
@@ -189,7 +178,7 @@ func TestObjects(t *testing.T) {
 		},
 	}
 	for _, c := range checksumCases {
-		wc := bkt.Object(c.name).NewWriter(ctx)
+		wc := NewWriter(ctx, bucket, c.name)
 		for _, data := range c.contents {
 			if _, err := wc.Write(data); err != nil {
 				t.Errorf("Write(%q) failed with %q", data, err)
@@ -198,7 +187,7 @@ func TestObjects(t *testing.T) {
 		if err = wc.Close(); err != nil {
 			t.Errorf("%q: close failed with %q", c.name, err)
 		}
-		obj := wc.Attrs()
+		obj := wc.Object()
 		if got, want := obj.Size, c.size; got != want {
 			t.Errorf("Object (%q) Size = %v; want %v", c.name, got, want)
 		}
@@ -212,14 +201,11 @@ func TestObjects(t *testing.T) {
 
 	// Test public ACL.
 	publicObj := objects[0]
-	if err = bkt.Object(publicObj).ACL.Set(ctx, AllUsers, RoleReader); err != nil {
-		t.Errorf("PutACLEntry failed with %v", err)
+	if err = PutACLRule(ctx, bucket, publicObj, AllUsers, RoleReader); err != nil {
+		t.Errorf("PutACLRule failed with %v", err)
 	}
-	publicClient, err := NewClient(ctx, testutil.ProjID(), cloud.WithBaseHTTP(http.DefaultClient))
-	if err != nil {
-		t.Error(err)
-	}
-	rc, err := publicClient.Bucket(bucket).Object(publicObj).NewReader(ctx)
+	publicCtx := testutil.NoAuthContext()
+	rc, err := NewReader(publicCtx, bucket, publicObj)
 	if err != nil {
 		t.Error(err)
 	}
@@ -233,7 +219,7 @@ func TestObjects(t *testing.T) {
 	rc.Close()
 
 	// Test writer error handling.
-	wc := publicClient.Bucket(bucket).Object(publicObj).NewWriter(ctx)
+	wc := NewWriter(publicCtx, bucket, publicObj)
 	if _, err := wc.Write([]byte("hello")); err != nil {
 		t.Errorf("Write unexpectedly failed with %v", err)
 	}
@@ -245,34 +231,25 @@ func TestObjects(t *testing.T) {
 	// The rest of the other object will be deleted during
 	// the initial cleanup. This tests exists, so we still can cover
 	// deletion if there are no objects on the bucket to clean.
-	if err := bkt.Object(copyObj).Delete(ctx); err != nil {
+	if err := DeleteObject(ctx, bucket, copyObj); err != nil {
 		t.Errorf("Deletion of %v failed with %v", copyObj, err)
 	}
-	_, err = bkt.Object(copyObj).Attrs(ctx)
+	_, err = StatObject(ctx, bucket, copyObj)
 	if err != ErrObjectNotExist {
 		t.Errorf("Copy is expected to be deleted, stat errored with %v", err)
 	}
 }
 
 func TestACL(t *testing.T) {
-	ctx := context.Background()
-	client, err := NewClient(ctx, testutil.ProjID(),
-		cloud.WithTokenSource(testutil.TokenSource(ctx, ScopeFullControl)))
-
-	if err != nil {
-		t.Errorf("Could not create client: %v", err)
-	}
-
-	bkt := client.Bucket(bucket)
-
+	ctx := testutil.Context(ScopeFullControl)
 	cleanup(t, "acl")
-	entity := ACLScope("domain-google.com")
-	if err := client.Bucket(bucket).DefaultObjectACL.Set(ctx, entity, RoleReader); err != nil {
+	entity := ACLEntity("domain-google.com")
+	if err := PutDefaultACLRule(ctx, bucket, entity, RoleReader); err != nil {
 		t.Errorf("Can't put default ACL rule for the bucket, errored with %v", err)
 	}
 	for _, obj := range aclObjects {
 		t.Logf("Writing %v", obj)
-		wc := bkt.Object(obj).NewWriter(ctx)
+		wc := NewWriter(ctx, bucket, obj)
 		c := randomContents()
 		if _, err := wc.Write(c); err != nil {
 			t.Errorf("Write for %v failed with %v", obj, err)
@@ -282,72 +259,64 @@ func TestACL(t *testing.T) {
 		}
 	}
 	name := aclObjects[0]
-	o := bkt.Object(name)
-	acl, err := o.ACL.List(ctx)
+	acl, err := ACL(ctx, bucket, name)
 	if err != nil {
 		t.Errorf("Can't retrieve ACL of %v", name)
 	}
 	aclFound := false
 	for _, rule := range acl {
-		if rule.Scope == entity && rule.Permission == RoleReader {
+		if rule.Entity == entity && rule.Role == RoleReader {
 			aclFound = true
 		}
 	}
 	if !aclFound {
 		t.Error("Expected to find an ACL rule for google.com domain users, but not found")
 	}
-	if err := o.ACL.Delete(ctx, entity); err != nil {
+	if err := DeleteACLRule(ctx, bucket, name, entity); err != nil {
 		t.Errorf("Can't delete the ACL rule for the entity: %v", entity)
 	}
 
-	if err := bkt.ACL.Set(ctx, "user-jbd@google.com", RoleReader); err != nil {
+	if err := PutBucketACLRule(ctx, bucket, "user-jbd@google.com", RoleReader); err != nil {
 		t.Errorf("Error while putting bucket ACL rule: %v", err)
 	}
-	bACL, err := bkt.ACL.List(ctx)
+	bACL, err := BucketACL(ctx, bucket)
 	if err != nil {
 		t.Errorf("Error while getting the ACL of the bucket: %v", err)
 	}
 	bACLFound := false
 	for _, rule := range bACL {
-		if rule.Scope == "user-jbd@google.com" && rule.Permission == RoleReader {
+		if rule.Entity == "user-jbd@google.com" && rule.Role == RoleReader {
 			bACLFound = true
 		}
 	}
 	if !bACLFound {
 		t.Error("Expected to find an ACL rule for jbd@google.com user, but not found")
 	}
-	if err := bkt.ACL.Delete(ctx, "user-jbd@google.com"); err != nil {
+	if err := DeleteBucketACLRule(ctx, bucket, "user-jbd@google.com"); err != nil {
 		t.Errorf("Error while deleting bucket ACL rule: %v", err)
 	}
 }
 
 func cleanup(t *testing.T, prefix string) {
-	ctx := context.Background()
-	client, err := NewClient(ctx, testutil.ProjID(),
-		cloud.WithTokenSource(testutil.TokenSource(ctx, ScopeFullControl)))
-
-	if err != nil {
-		t.Errorf("Could not create client: %v", err)
-	}
-
+	ctx := testutil.Context(ScopeFullControl)
 	var q *Query = &Query{
 		Prefix: prefix,
 	}
 	for {
-		o, next, err := client.Bucket(bucket).List(ctx, q)
+		o, err := ListObjects(ctx, bucket, q)
 		if err != nil {
 			t.Fatalf("Cleanup List for bucket %v failed with error: %v", bucket, err)
 		}
 		for _, obj := range o.Results {
 			t.Logf("Cleanup deletion of %v", obj.Name)
-			if err = client.Bucket(bucket).Object(obj.Name).Delete(ctx); err != nil {
+			if err = DeleteObject(ctx, bucket, obj.Name); err != nil {
 				t.Fatalf("Cleanup Delete for object %v failed with %v", obj.Name, err)
 			}
 		}
-		if next == nil {
+		if o.Next == nil {
 			break
 		}
-		q = next
+		q = o.Next
 	}
 }
 

@@ -20,25 +20,27 @@ import (
 	"sync"
 	"time"
 
+	"golang.org/x/net/context"
 	raw "google.golang.org/api/storage/v1"
 )
 
-// BucketAttrs represents the metadata for a Google Cloud Storage bucket.
-type BucketAttrs struct {
+// Bucket represents a Google Cloud Storage bucket.
+type Bucket struct {
 	// Name is the name of the bucket.
 	Name string
 
 	// ACL is the list of access control rules on the bucket.
-	ACL []ACLEntry
+	ACL []ACLRule
 
 	// DefaultObjectACL is the list of access controls to
 	// apply to new objects when no object ACL is provided.
-	DefaultObjectACL []ACLEntry
+	DefaultObjectACL []ACLRule
 
 	// Location is the location of the bucket. It defaults to "US".
 	Location string
 
 	// Metageneration is the metadata generation of the bucket.
+	// Read-only.
 	Metageneration int64
 
 	// StorageClass is the storage class of the bucket. This defines
@@ -48,48 +50,82 @@ type BucketAttrs struct {
 	StorageClass string
 
 	// Created is the creation time of the bucket.
+	// Read-only.
 	Created time.Time
 }
 
-func newBucket(b *raw.Bucket) *BucketAttrs {
+func newBucket(b *raw.Bucket) *Bucket {
 	if b == nil {
 		return nil
 	}
-	bucket := &BucketAttrs{
+	bucket := &Bucket{
 		Name:           b.Name,
 		Location:       b.Location,
 		Metageneration: b.Metageneration,
 		StorageClass:   b.StorageClass,
 		Created:        convertTime(b.TimeCreated),
 	}
-	acl := make([]ACLEntry, len(b.Acl))
+	acl := make([]ACLRule, len(b.Acl))
 	for i, rule := range b.Acl {
-		acl[i] = ACLEntry{
-			Scope:      ACLScope(rule.Entity),
-			Permission: ACLPermission(rule.Role),
+		acl[i] = ACLRule{
+			Entity: ACLEntity(rule.Entity),
+			Role:   ACLRole(rule.Role),
 		}
 	}
 	bucket.ACL = acl
-	objACL := make([]ACLEntry, len(b.DefaultObjectAcl))
+	objACL := make([]ACLRule, len(b.DefaultObjectAcl))
 	for i, rule := range b.DefaultObjectAcl {
-		objACL[i] = ACLEntry{
-			Scope:      ACLScope(rule.Entity),
-			Permission: ACLPermission(rule.Role),
+		objACL[i] = ACLRule{
+			Entity: ACLEntity(rule.Entity),
+			Role:   ACLRole(rule.Role),
 		}
 	}
 	bucket.DefaultObjectACL = objACL
 	return bucket
 }
 
-// toRawObject copies the editable attributes from o to the raw library's Object type.
+// ObjectAttrs is the user-editable object attributes.
+type ObjectAttrs struct {
+	// Name is the name of the object.
+	Name string
+
+	// ContentType is the MIME type of the object's content.
+	// Optional.
+	ContentType string
+
+	// ContentLanguage is the optional RFC 1766 Content-Language of
+	// the object's content sent in response headers.
+	ContentLanguage string
+
+	// ContentEncoding is the optional Content-Encoding of the object
+	// sent it the response headers.
+	ContentEncoding string
+
+	// CacheControl is the optional Cache-Control header of the object
+	// sent in the response headers.
+	CacheControl string
+
+	// ContentDisposition is the optional Content-Disposition header of the object
+	// sent in the response headers.
+	ContentDisposition string
+
+	// ACL is the list of access control rules for the object.
+	// Optional. If nil or empty, existing ACL rules are preserved.
+	ACL []ACLRule
+
+	// Metadata represents user-provided metadata, in key/value pairs.
+	// It can be nil if the current metadata values needs to preserved.
+	Metadata map[string]string
+}
+
 func (o ObjectAttrs) toRawObject(bucket string) *raw.Object {
 	var acl []*raw.ObjectAccessControl
 	if len(o.ACL) > 0 {
 		acl = make([]*raw.ObjectAccessControl, len(o.ACL))
 		for i, rule := range o.ACL {
 			acl[i] = &raw.ObjectAccessControl{
-				Entity: string(rule.Scope),
-				Role:   string(rule.Permission),
+				Entity: string(rule.Entity),
+				Role:   string(rule.Role),
 			}
 		}
 	}
@@ -106,10 +142,9 @@ func (o ObjectAttrs) toRawObject(bucket string) *raw.Object {
 	}
 }
 
-// ObjectAttrs represent the metadata for a Google Cloud Storage (GCS) object.
-type ObjectAttrs struct {
+// Object represents a Google Cloud Storage (GCS) object.
+type Object struct {
 	// Bucket is the name of the bucket containing this GCS object.
-	// This field is read-only.
 	Bucket string
 
 	// Name is the name of the object within the bucket.
@@ -126,31 +161,27 @@ type ObjectAttrs struct {
 	CacheControl string
 
 	// ACL is the list of access control rules for the object.
-	ACL []ACLEntry
+	ACL []ACLRule
 
-	// Owner is the owner of the object. This field is read-only.
+	// Owner is the owner of the object.
 	//
 	// If non-zero, it is in the form of "user-<userId>".
 	Owner string
 
-	// Size is the length of the object's content. This field is read-only.
+	// Size is the length of the object's content.
 	Size int64
 
 	// ContentEncoding is the encoding of the object's content.
 	ContentEncoding string
 
-	// ContentDisposition is the optional Content-Disposition header of the object
-	// sent in the response headers.
-	ContentDisposition string
-
-	// MD5 is the MD5 hash of the object's content. This field is read-only.
+	// MD5 is the MD5 hash of the object's content.
 	MD5 []byte
 
 	// CRC32C is the CRC32 checksum of the object's content using
-	// the Castagnoli93 polynomial. This field is read-only.
+	// the Castagnoli93 polynomial.
 	CRC32C uint32
 
-	// MediaLink is an URL to the object's content. This field is read-only.
+	// MediaLink is an URL to the object's content.
 	MediaLink string
 
 	// Metadata represents user-provided metadata, in key/value pairs.
@@ -158,30 +189,29 @@ type ObjectAttrs struct {
 	Metadata map[string]string
 
 	// Generation is the generation number of the object's content.
-	// This field is read-only.
 	Generation int64
 
 	// MetaGeneration is the version of the metadata for this
 	// object at this generation. This field is used for preconditions
 	// and for detecting changes in metadata. A metageneration number
 	// is only meaningful in the context of a particular generation
-	// of a particular object. This field is read-only.
+	// of a particular object.
 	MetaGeneration int64
 
 	// StorageClass is the storage class of the bucket.
 	// This value defines how objects in the bucket are stored and
 	// determines the SLA and the cost of storage. Typical values are
 	// "STANDARD" and "DURABLE_REDUCED_AVAILABILITY".
-	// It defaults to "STANDARD". This field is read-only.
+	// It defaults to "STANDARD".
 	StorageClass string
 
 	// Deleted is the time the object was deleted.
-	// If not deleted, it is the zero value. This field is read-only.
+	// If not deleted, it is the zero value.
 	Deleted time.Time
 
 	// Updated is the creation or modification time of the object.
 	// For buckets with versioning enabled, changing an object's
-	// metadata does not change this property. This field is read-only.
+	// metadata does not change this property.
 	Updated time.Time
 }
 
@@ -195,15 +225,15 @@ func convertTime(t string) time.Time {
 	return r
 }
 
-func newObject(o *raw.Object) *ObjectAttrs {
+func newObject(o *raw.Object) *Object {
 	if o == nil {
 		return nil
 	}
-	acl := make([]ACLEntry, len(o.Acl))
+	acl := make([]ACLRule, len(o.Acl))
 	for i, rule := range o.Acl {
-		acl[i] = ACLEntry{
-			Scope:      ACLScope(rule.Entity),
-			Permission: ACLPermission(rule.Role),
+		acl[i] = ACLRule{
+			Entity: ACLEntity(rule.Entity),
+			Role:   ACLRole(rule.Role),
 		}
 	}
 	owner := ""
@@ -216,7 +246,7 @@ func newObject(o *raw.Object) *ObjectAttrs {
 	if err == nil && len(d) == 4 {
 		crc32c = uint32(d[0])<<24 + uint32(d[1])<<16 + uint32(d[2])<<8 + uint32(d[3])
 	}
-	return &ObjectAttrs{
+	return &Object{
 		Bucket:          o.Bucket,
 		Name:            o.Name,
 		ContentType:     o.ContentType,
@@ -270,10 +300,17 @@ type Query struct {
 	MaxResults int
 }
 
-// ObjectList represents a list of objects returned from a bucket List call.
-type ObjectList struct {
+// Objects represents a list of objects returned from
+// a bucket look-p request and a query to retrieve more
+// objects from the next pages.
+type Objects struct {
 	// Results represent a list of object results.
-	Results []*ObjectAttrs
+	Results []*Object
+
+	// Next is the continuation query to retrieve more
+	// results with the same filtering criteria. If there
+	// are no more results to retrieve, it is nil.
+	Next *Query
 
 	// Prefixes represents prefixes of objects
 	// matching-but-not-listed up to and including
@@ -299,7 +336,7 @@ type Writer struct {
 	// attributes are ignored.
 	ObjectAttrs
 
-	client *Client
+	ctx    context.Context
 	bucket string
 	name   string
 
@@ -311,7 +348,7 @@ type Writer struct {
 
 	donec chan struct{} // closed after err and obj are set.
 	err   error
-	obj   *ObjectAttrs
+	obj   *Object
 }
 
 func (w *Writer) open() {
@@ -327,7 +364,7 @@ func (w *Writer) open() {
 	w.opened = true
 
 	go func() {
-		resp, err := w.client.raw.Objects.Insert(
+		resp, err := rawService(w.ctx).Objects.Insert(
 			w.bucket, attrs.toRawObject(w.bucket)).Media(w.r).Projection("full").Do()
 		w.err = err
 		if err == nil {
@@ -364,8 +401,8 @@ func (w *Writer) Close() error {
 	return w.err
 }
 
-// Attrs returns metadata about a successfully-written object.
+// Object returns metadata about a successfully-written object.
 // It's only valid to call it after Close returns nil.
-func (w *Writer) Attrs() *ObjectAttrs {
+func (w *Writer) Object() *Object {
 	return w.obj
 }
