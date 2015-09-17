@@ -104,12 +104,16 @@ type readQueryConf struct {
 }
 
 func (s *bigqueryService) readTabledata(ctx context.Context, conf *readTableConf, pageToken string) (*readDataResult, error) {
-	req := s.s.Tabledata.List(conf.projectID, conf.datasetID, conf.tableID).
-		PageToken(pageToken).
-		StartIndex(conf.paging.startIndex)
+	req := s.s.Tabledata.List(conf.projectID, conf.datasetID, conf.tableID)
+
+	if pageToken != "" {
+		req.PageToken(pageToken)
+	} else {
+		req.StartIndex(conf.paging.startIndex)
+	}
 
 	if conf.paging.setRecordsPerRequest {
-		req = req.MaxResults(conf.paging.recordsPerRequest)
+		req.MaxResults(conf.paging.recordsPerRequest)
 	}
 
 	res, err := req.Do()
@@ -135,12 +139,16 @@ const getQueryResultsTimeout = time.Minute
 
 func (s *bigqueryService) readQuery(ctx context.Context, conf *readQueryConf, pageToken string) (*readDataResult, error) {
 	req := s.s.Jobs.GetQueryResults(conf.projectID, conf.jobID).
-		PageToken(pageToken).
-		StartIndex(conf.paging.startIndex).
-		TimeoutMs(getQueryResultsTimeout.Nanoseconds() / 1000)
+		TimeoutMs(getQueryResultsTimeout.Nanoseconds() / 1e6)
+
+	if pageToken != "" {
+		req.PageToken(pageToken)
+	} else {
+		req.StartIndex(conf.paging.startIndex)
+	}
 
 	if conf.paging.setRecordsPerRequest {
-		req = req.MaxResults(conf.paging.recordsPerRequest)
+		req.MaxResults(conf.paging.recordsPerRequest)
 	}
 
 	res, err := req.Do()
