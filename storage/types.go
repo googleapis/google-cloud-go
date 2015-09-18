@@ -401,6 +401,15 @@ func (w *Writer) Close() error {
 	return w.err
 }
 
+// CloseWithError aborts the write operation with the provided error.
+// CloseWithError always returns nil.
+func (w *Writer) CloseWithError(err error) error {
+	if !w.opened {
+		return nil
+	}
+	return w.pw.CloseWithError(err)
+}
+
 // Object returns metadata about a successfully-written object.
 // It's only valid to call it after Close returns nil.
 func (w *Writer) Object() *Object {
