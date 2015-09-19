@@ -130,6 +130,22 @@ func (s *server) ListTables(ctx context.Context, req *bttspb.ListTablesRequest) 
 	return res, nil
 }
 
+func (s *server) GetTable(ctx context.Context, req *bttspb.GetTableRequest) (*bttdpb.Table, error) {
+	tbl := req.Name
+
+	s.mu.Lock()
+	tblIns, ok := s.tables[tbl]
+	s.mu.Unlock()
+	if !ok {
+		return nil, fmt.Errorf("table %q not found", tbl)
+	}
+
+	return &bttdpb.Table{
+		Name:           tbl,
+		ColumnFamilies: toColumnFamilies(tblIns.families),
+	}, nil
+}
+
 func (s *server) DeleteTable(ctx context.Context, req *bttspb.DeleteTableRequest) (*emptypb.Empty, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -155,10 +171,44 @@ func (s *server) CreateColumnFamily(ctx context.Context, req *bttspb.CreateColum
 	if _, ok := tbl.families[fam]; ok {
 		return nil, fmt.Errorf("family %q already exists", fam)
 	}
-	tbl.families[fam] = true
-	return &bttdpb.ColumnFamily{
-		Name: req.Name + "/columnFamilies/" + fam,
-	}, nil
+	newcf := &columnFamily{
+		name: req.Name + "/columnFamilies/" + fam,
+	}
+	tbl.families[fam] = newcf
+	return newcf.proto(), nil
+}
+
+func (s *server) UpdateColumnFamily(ctx context.Context, req *bttdpb.ColumnFamily) (*bttdpb.ColumnFamily, error) {
+	index := strings.Index(req.Name, "/columnFamilies/")
+	if index == -1 {
+		return nil, fmt.Errorf("bad family name %q", req.Name)
+	}
+	tblName := req.Name[:index]
+	fam := req.Name[index+len("/columnFamilies/"):]
+
+	s.mu.Lock()
+	tbl, ok := s.tables[tblName]
+	s.mu.Unlock()
+	if !ok {
+		return nil, fmt.Errorf("no such table %q", req.Name)
+	}
+
+	tbl.mu.Lock()
+	defer tbl.mu.Unlock()
+
+	// Check it is unique and record it.
+	if _, ok := tbl.families[fam]; !ok {
+		return nil, fmt.Errorf("no such family %q", fam)
+	}
+
+	newcf := &columnFamily{
+		name:   req.Name,
+		gcRule: req.GcRule,
+	}
+	// assume that we ALWAYS want to replace by the new setting
+	// we may need partial update through
+	tbl.families[fam] = newcf
+	return newcf.proto(), nil
 }
 
 func (s *server) ReadRows(req *btspb.ReadRowsRequest, stream btspb.BigtableService_ReadRowsServer) error {
@@ -406,7 +456,7 @@ func applyMutations(tbl *table, r *row, muts []*btdpb.Mutation) error {
 		case *btdpb.Mutation_SetCell_:
 			set := mut.SetCell
 			tbl.mu.RLock()
-			famOK := tbl.families[set.FamilyName]
+			_, famOK := tbl.families[set.FamilyName]
 			tbl.mu.RUnlock()
 			if !famOK {
 				return fmt.Errorf("unknown family %q", set.FamilyName)
@@ -555,14 +605,14 @@ func (s *server) ReadModifyWriteRow(ctx context.Context, req *btspb.ReadModifyWr
 
 type table struct {
 	mu       sync.RWMutex
-	families map[string]bool // keyed by plain family name
-	rows     []*row          // sorted by row key
-	rowIndex map[string]*row // indexed by row key
+	families map[string]*columnFamily // keyed by plain family name
+	rows     []*row                   // sorted by row key
+	rowIndex map[string]*row          // indexed by row key
 }
 
 func newTable() *table {
 	return &table{
-		families: make(map[string]bool),
+		families: make(map[string]*columnFamily),
 		rowIndex: make(map[string]*row),
 	}
 }
@@ -639,3 +689,23 @@ type byDescTS []cell
 func (b byDescTS) Len() int           { return len(b) }
 func (b byDescTS) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
 func (b byDescTS) Less(i, j int) bool { return b[i].ts > b[j].ts }
+
+type columnFamily struct {
+	name   string
+	gcRule *bttdpb.GcRule
+}
+
+func (c *columnFamily) proto() *bttdpb.ColumnFamily {
+	return &bttdpb.ColumnFamily{
+		Name:   c.name,
+		GcRule: c.gcRule,
+	}
+}
+
+func toColumnFamilies(families map[string]*columnFamily) map[string]*bttdpb.ColumnFamily {
+	f := make(map[string]*bttdpb.ColumnFamily)
+	for k, v := range families {
+		f[k] = v.proto()
+	}
+	return f
+}
