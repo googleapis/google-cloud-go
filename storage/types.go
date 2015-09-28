@@ -365,7 +365,7 @@ func (w *Writer) open() {
 
 	go func() {
 		resp, err := rawService(w.ctx).Objects.Insert(
-			w.bucket, attrs.toRawObject(w.bucket)).Media(w.r).Projection("full").Do()
+			w.bucket, attrs.toRawObject(w.bucket)).Media(w.r).Projection("full").Context(w.ctx).Do()
 		w.err = err
 		if err == nil {
 			w.obj = newObject(resp)

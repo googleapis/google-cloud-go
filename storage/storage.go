@@ -68,7 +68,7 @@ const (
 
 // BucketInfo returns the metadata for the specified bucket.
 func BucketInfo(ctx context.Context, name string) (*Bucket, error) {
-	resp, err := rawService(ctx).Buckets.Get(name).Projection("full").Do()
+	resp, err := rawService(ctx).Buckets.Get(name).Projection("full").Context(ctx).Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrBucketNotExist
 	}
@@ -92,7 +92,7 @@ func ListObjects(ctx context.Context, bucket string, q *Query) (*Objects, error)
 			c.MaxResults(int64(q.MaxResults))
 		}
 	}
-	resp, err := c.Do()
+	resp, err := c.Context(ctx).Do()
 	if err != nil {
 		return nil, err
 	}
@@ -221,7 +221,7 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 
 // StatObject returns meta information about the specified object.
 func StatObject(ctx context.Context, bucket, name string) (*Object, error) {
-	o, err := rawService(ctx).Objects.Get(bucket, name).Projection("full").Do()
+	o, err := rawService(ctx).Objects.Get(bucket, name).Projection("full").Context(ctx).Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
 	}
@@ -234,7 +234,7 @@ func StatObject(ctx context.Context, bucket, name string) (*Object, error) {
 // UpdateAttrs updates an object with the provided attributes.
 // All zero-value attributes are ignored.
 func UpdateAttrs(ctx context.Context, bucket, name string, attrs ObjectAttrs) (*Object, error) {
-	o, err := rawService(ctx).Objects.Patch(bucket, name, attrs.toRawObject(bucket)).Projection("full").Do()
+	o, err := rawService(ctx).Objects.Patch(bucket, name, attrs.toRawObject(bucket)).Projection("full").Context(ctx).Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
 	}
@@ -246,7 +246,7 @@ func UpdateAttrs(ctx context.Context, bucket, name string, attrs ObjectAttrs) (*
 
 // DeleteObject deletes the single specified object.
 func DeleteObject(ctx context.Context, bucket, name string) error {
-	return rawService(ctx).Objects.Delete(bucket, name).Do()
+	return rawService(ctx).Objects.Delete(bucket, name).Context(ctx).Do()
 }
 
 // CopyObject copies the source object to the destination.
@@ -267,7 +267,7 @@ func CopyObject(ctx context.Context, srcBucket, srcName string, destBucket, dest
 		rawObject = attrs.toRawObject(destBucket)
 	}
 	o, err := rawService(ctx).Objects.Copy(
-		srcBucket, srcName, destBucket, destName, rawObject).Projection("full").Do()
+		srcBucket, srcName, destBucket, destName, rawObject).Projection("full").Context(ctx).Do()
 	if err != nil {
 		return nil, err
 	}

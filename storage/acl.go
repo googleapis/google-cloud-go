@@ -56,7 +56,7 @@ type ACLRule struct {
 
 // DefaultACL returns the default object ACL entries for the named bucket.
 func DefaultACL(ctx context.Context, bucket string) ([]ACLRule, error) {
-	acls, err := rawService(ctx).DefaultObjectAccessControls.List(bucket).Do()
+	acls, err := rawService(ctx).DefaultObjectAccessControls.List(bucket).Context(ctx).Do()
 	if err != nil {
 		return nil, fmt.Errorf("storage: error listing default object ACL for bucket %q: %v", bucket, err)
 	}
@@ -80,7 +80,7 @@ func PutDefaultACLRule(ctx context.Context, bucket string, entity ACLEntity, rol
 		Entity: string(entity),
 		Role:   string(role),
 	}
-	_, err := rawService(ctx).DefaultObjectAccessControls.Update(bucket, string(entity), acl).Do()
+	_, err := rawService(ctx).DefaultObjectAccessControls.Update(bucket, string(entity), acl).Context(ctx).Do()
 	if err != nil {
 		return fmt.Errorf("storage: error updating default ACL rule for bucket %q, entity %q: %v", bucket, entity, err)
 	}
@@ -89,7 +89,7 @@ func PutDefaultACLRule(ctx context.Context, bucket string, entity ACLEntity, rol
 
 // DeleteDefaultACLRule deletes the named default ACL entity for the named bucket.
 func DeleteDefaultACLRule(ctx context.Context, bucket string, entity ACLEntity) error {
-	err := rawService(ctx).DefaultObjectAccessControls.Delete(bucket, string(entity)).Do()
+	err := rawService(ctx).DefaultObjectAccessControls.Delete(bucket, string(entity)).Context(ctx).Do()
 	if err != nil {
 		return fmt.Errorf("storage: error deleting default ACL rule for bucket %q, entity %q: %v", bucket, entity, err)
 	}
@@ -98,7 +98,7 @@ func DeleteDefaultACLRule(ctx context.Context, bucket string, entity ACLEntity) 
 
 // BucketACL returns the ACL entries for the named bucket.
 func BucketACL(ctx context.Context, bucket string) ([]ACLRule, error) {
-	acls, err := rawService(ctx).BucketAccessControls.List(bucket).Do()
+	acls, err := rawService(ctx).BucketAccessControls.List(bucket).Context(ctx).Do()
 	if err != nil {
 		return nil, fmt.Errorf("storage: error listing bucket ACL for bucket %q: %v", bucket, err)
 	}
@@ -117,7 +117,7 @@ func PutBucketACLRule(ctx context.Context, bucket string, entity ACLEntity, role
 		Entity: string(entity),
 		Role:   string(role),
 	}
-	_, err := rawService(ctx).BucketAccessControls.Update(bucket, string(entity), acl).Do()
+	_, err := rawService(ctx).BucketAccessControls.Update(bucket, string(entity), acl).Context(ctx).Do()
 	if err != nil {
 		return fmt.Errorf("storage: error updating bucket ACL rule for bucket %q, entity %q: %v", bucket, entity, err)
 	}
@@ -126,7 +126,7 @@ func PutBucketACLRule(ctx context.Context, bucket string, entity ACLEntity, role
 
 // DeleteBucketACLRule deletes the named ACL entity for the named bucket.
 func DeleteBucketACLRule(ctx context.Context, bucket string, entity ACLEntity) error {
-	err := rawService(ctx).BucketAccessControls.Delete(bucket, string(entity)).Do()
+	err := rawService(ctx).BucketAccessControls.Delete(bucket, string(entity)).Context(ctx).Do()
 	if err != nil {
 		return fmt.Errorf("storage: error deleting bucket ACL rule for bucket %q, entity %q: %v", bucket, entity, err)
 	}
@@ -135,7 +135,7 @@ func DeleteBucketACLRule(ctx context.Context, bucket string, entity ACLEntity) e
 
 // ACL returns the ACL entries for the named object.
 func ACL(ctx context.Context, bucket, object string) ([]ACLRule, error) {
-	acls, err := rawService(ctx).ObjectAccessControls.List(bucket, object).Do()
+	acls, err := rawService(ctx).ObjectAccessControls.List(bucket, object).Context(ctx).Do()
 	if err != nil {
 		return nil, fmt.Errorf("storage: error listing object ACL for bucket %q, file %q: %v", bucket, object, err)
 	}
@@ -159,7 +159,7 @@ func PutACLRule(ctx context.Context, bucket, object string, entity ACLEntity, ro
 		Entity: string(entity),
 		Role:   string(role),
 	}
-	_, err := rawService(ctx).ObjectAccessControls.Update(bucket, object, string(entity), acl).Do()
+	_, err := rawService(ctx).ObjectAccessControls.Update(bucket, object, string(entity), acl).Context(ctx).Do()
 	if err != nil {
 		return fmt.Errorf("storage: error updating object ACL rule for bucket %q, file %q, entity %q: %v", bucket, object, entity, err)
 	}
@@ -168,7 +168,7 @@ func PutACLRule(ctx context.Context, bucket, object string, entity ACLEntity, ro
 
 // DeleteACLRule deletes the named ACL entity for the named object.
 func DeleteACLRule(ctx context.Context, bucket, object string, entity ACLEntity) error {
-	err := rawService(ctx).ObjectAccessControls.Delete(bucket, object, string(entity)).Do()
+	err := rawService(ctx).ObjectAccessControls.Delete(bucket, object, string(entity)).Context(ctx).Do()
 	if err != nil {
 		return fmt.Errorf("storage: error deleting object ACL rule for bucket %q, file %q, entity %q: %v", bucket, object, entity, err)
 	}
