@@ -33,6 +33,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"log"
+	"math/rand"
 	"net"
 	"regexp"
 	"sort"
@@ -65,6 +66,7 @@ type Server struct {
 type server struct {
 	mu     sync.Mutex
 	tables map[string]*table // keyed by fully qualified name
+	gcc    chan int          // set when gcloop starts, closed when server shuts down
 
 	// Any unimplemented methods will cause a panic.
 	bttspb.BigtableTableServiceServer
@@ -97,6 +99,12 @@ func NewServer() (*Server, error) {
 
 // Close shuts down the server.
 func (s *Server) Close() {
+	s.s.mu.Lock()
+	if s.s.gcc != nil {
+		close(s.s.gcc)
+	}
+	s.s.mu.Unlock()
+
 	s.srv.Stop()
 	s.l.Close()
 }
@@ -208,6 +216,7 @@ func (s *server) UpdateColumnFamily(ctx context.Context, req *bttdpb.ColumnFamil
 	// assume that we ALWAYS want to replace by the new setting
 	// we may need partial update through
 	tbl.families[fam] = newcf
+	s.needGC()
 	return newcf.proto(), nil
 }
 
@@ -603,6 +612,44 @@ func (s *server) ReadModifyWriteRow(ctx context.Context, req *btspb.ReadModifyWr
 	return res, nil
 }
 
+// needGC is invoked whenever the server needs gcloop running.
+func (s *server) needGC() {
+	s.mu.Lock()
+	if s.gcc == nil {
+		s.gcc = make(chan int)
+		go s.gcloop(s.gcc)
+	}
+	s.mu.Unlock()
+}
+
+func (s *server) gcloop(done <-chan int) {
+	const (
+		minWait = 500  // ms
+		maxWait = 1500 // ms
+	)
+
+	for {
+		// Wait for a random time interval.
+		d := time.Duration(minWait+rand.Intn(maxWait-minWait)) * time.Millisecond
+		select {
+		case <-time.After(d):
+		case <-done:
+			return // server has been closed
+		}
+
+		// Do a GC pass over all tables.
+		var tables []*table
+		s.mu.Lock()
+		for _, tbl := range s.tables {
+			tables = append(tables, tbl)
+		}
+		s.mu.Unlock()
+		for _, tbl := range tables {
+			tbl.gc()
+		}
+	}
+}
+
 type table struct {
 	mu       sync.RWMutex
 	families map[string]*columnFamily // keyed by plain family name
@@ -644,6 +691,29 @@ func (t *table) mutableRow(row string) *row {
 	return r
 }
 
+func (t *table) gc() {
+	// This method doesn't add or remove rows, so we only need a read lock for the table.
+	t.mu.RLock()
+	defer t.mu.RUnlock()
+
+	// Gather GC rules we'll apply.
+	rules := make(map[string]*bttdpb.GcRule) // keyed by "fam"
+	for fam, cf := range t.families {
+		if cf.gcRule != nil {
+			rules[fam] = cf.gcRule
+		}
+	}
+	if len(rules) == 0 {
+		return
+	}
+
+	for _, r := range t.rows {
+		r.mu.Lock()
+		r.gc(rules)
+		r.mu.Unlock()
+	}
+}
+
 type byRowKey []*row
 
 func (b byRowKey) Len() int           { return len(b) }
@@ -677,6 +747,57 @@ func (r *row) copy() *row {
 		nr.cells[col] = append([]cell(nil), cs...)
 	}
 	return nr
+}
+
+// gc applies the given GC rules to the row.
+// r.mu should be held.
+func (r *row) gc(rules map[string]*bttdpb.GcRule) {
+	for col, cs := range r.cells {
+		fam := col[:strings.Index(col, ":")]
+		rule, ok := rules[fam]
+		if !ok {
+			continue
+		}
+		r.cells[col] = applyGC(cs, rule)
+	}
+}
+
+var gcTypeWarn sync.Once
+
+// applyGC applies the given GC rule to the cells.
+func applyGC(cells []cell, rule *bttdpb.GcRule) []cell {
+	switch rule := rule.Rule.(type) {
+	default:
+		// TODO(dsymonds): Support GcRule_Intersection_
+		gcTypeWarn.Do(func() {
+			log.Printf("Unsupported GC rule type %T", rule)
+		})
+	case *bttdpb.GcRule_Union_:
+		for _, sub := range rule.Union.Rules {
+			cells = applyGC(cells, sub)
+		}
+		return cells
+	case *bttdpb.GcRule_MaxAge:
+		// Timestamps are in microseconds.
+		cutoff := time.Now().UnixNano() / 1e3
+		cutoff -= rule.MaxAge.Seconds * 1e6
+		cutoff -= int64(rule.MaxAge.Nanos) / 1e3
+		// The slice of cells in in descending timestamp order.
+		// This sort.Search will return the index of the first cell whose timestamp is chronologically before the cutoff.
+		si := sort.Search(len(cells), func(i int) bool { return cells[i].ts < cutoff })
+		if si < len(cells) {
+			log.Printf("bttest: GC MaxAge(%v) deleted %d cells.", rule.MaxAge, len(cells)-si)
+		}
+		return cells[:si]
+	case *bttdpb.GcRule_MaxNumVersions:
+		n := int(rule.MaxNumVersions)
+		if len(cells) > n {
+			log.Printf("bttest: GC MaxNumVersions(%d) deleted %d cells.", n, len(cells)-n)
+			cells = cells[:n]
+		}
+		return cells
+	}
+	return cells
 }
 
 type cell struct {
