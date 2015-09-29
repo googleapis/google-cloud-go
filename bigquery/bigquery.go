@@ -117,7 +117,6 @@ func (c *Client) Copy(ctx context.Context, dst Destination, src Source, options 
 
 // Read fetches data from a ReadSource and returns the data via an Iterator.
 func (c *Client) Read(ctx context.Context, src ReadSource, options ...ReadOption) (*Iterator, error) {
-	// TODO(mcgreevy): use ctx.
 	switch src := src.(type) {
 	case *Job:
 		return c.readQueryResults(src, options)

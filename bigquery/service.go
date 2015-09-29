@@ -80,8 +80,7 @@ func getPages(token string, getPage func(token string) (nextToken string, err er
 }
 
 func (s *bigqueryService) insertJob(ctx context.Context, job *bq.Job, projectID string) (*Job, error) {
-	// TODO(mcgreevy): use ctx
-	res, err := s.s.Jobs.Insert(projectID, job).Do()
+	res, err := s.s.Jobs.Insert(projectID, job).Context(ctx).Do()
 	if err != nil {
 		return nil, err
 	}
@@ -137,6 +136,7 @@ func (s *bigqueryService) readTabledata(ctx context.Context, conf *readTableConf
 			var t *bq.Table
 			t, schemaErr = s.s.Tables.Get(conf.projectID, conf.datasetID, conf.tableID).
 				Fields("schema").
+				Context(ctx).
 				Do()
 			if schemaErr == nil && t.Schema != nil {
 				conf.schema = convertTableSchema(t.Schema)
@@ -144,7 +144,7 @@ func (s *bigqueryService) readTabledata(ctx context.Context, conf *readTableConf
 		}()
 	}
 
-	res, err := req.Do()
+	res, err := req.Context(ctx).Do()
 	if err != nil {
 		return nil, err
 	}
@@ -188,7 +188,7 @@ func (s *bigqueryService) readQuery(ctx context.Context, conf *readQueryConf, pa
 		req.MaxResults(conf.paging.recordsPerRequest)
 	}
 
-	res, err := req.Do()
+	res, err := req.Context(ctx).Do()
 	if err != nil {
 		return nil, err
 	}
@@ -219,9 +219,9 @@ const (
 )
 
 func (s *bigqueryService) getJobType(ctx context.Context, projectID, jobID string) (jobType, error) {
-	// TODO(mcgreevy): use ctx
 	res, err := s.s.Jobs.Get(projectID, jobID).
 		Fields("configuration").
+		Context(ctx).
 		Do()
 
 	if err != nil {
@@ -243,9 +243,9 @@ func (s *bigqueryService) getJobType(ctx context.Context, projectID, jobID strin
 }
 
 func (s *bigqueryService) jobStatus(ctx context.Context, projectID, jobID string) (*JobStatus, error) {
-	// TODO(mcgreevy): use ctx
 	res, err := s.s.Jobs.Get(projectID, jobID).
 		Fields("status"). // Only fetch what we need.
+		Context(ctx).
 		Do()
 	if err != nil {
 		return nil, err
@@ -277,10 +277,10 @@ func jobStatusFromProto(status *bq.JobStatus) (*JobStatus, error) {
 
 // listTables returns a subset of tables that belong to a dataset, and a token for fetching the next subset.
 func (s *bigqueryService) listTables(ctx context.Context, projectID, datasetID, pageToken string) ([]*Table, string, error) {
-	// TODO(mcgreevy): use ctx
 	var tables []*Table
 	res, err := s.s.Tables.List(projectID, datasetID).
 		PageToken(pageToken).
+		Context(ctx).
 		Do()
 	if err != nil {
 		return nil, "", err
@@ -303,7 +303,6 @@ type createTableConf struct {
 // Note: expiration can only be set during table creation.
 // Note: after table creation, a view can be modified only if its table was initially created with a view.
 func (s *bigqueryService) createTable(ctx context.Context, conf *createTableConf) error {
-	// TODO(mcgreevy): use ctx
 	table := &bq.Table{
 		TableReference: &bq.TableReference{
 			ProjectId: conf.projectID,
@@ -320,13 +319,12 @@ func (s *bigqueryService) createTable(ctx context.Context, conf *createTableConf
 		}
 	}
 
-	_, err := s.s.Tables.Insert(conf.projectID, conf.datasetID, table).Do()
+	_, err := s.s.Tables.Insert(conf.projectID, conf.datasetID, table).Context(ctx).Do()
 	return err
 }
 
 func (s *bigqueryService) getTableMetadata(ctx context.Context, projectID, datasetID, tableID string) (*TableMetadata, error) {
-	// TODO(mcgreevy): use ctx
-	table, err := s.s.Tables.Get(projectID, datasetID, tableID).Do()
+	table, err := s.s.Tables.Get(projectID, datasetID, tableID).Context(ctx).Do()
 	if err != nil {
 		return nil, err
 	}
@@ -334,8 +332,7 @@ func (s *bigqueryService) getTableMetadata(ctx context.Context, projectID, datas
 }
 
 func (s *bigqueryService) deleteTable(ctx context.Context, projectID, datasetID, tableID string) error {
-	// TODO(mcgreevy): use ctx
-	return s.s.Tables.Delete(projectID, datasetID, tableID).Do()
+	return s.s.Tables.Delete(projectID, datasetID, tableID).Context(ctx).Do()
 }
 
 func bqTableToMetadata(t *bq.Table) *TableMetadata {
