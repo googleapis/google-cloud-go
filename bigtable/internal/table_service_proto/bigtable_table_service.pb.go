@@ -156,9 +156,9 @@ func RegisterBigtableTableServiceServer(s *grpc.Server, srv BigtableTableService
 	s.RegisterService(&_BigtableTableService_serviceDesc, srv)
 }
 
-func _BigtableTableService_CreateTable_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _BigtableTableService_CreateTable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(CreateTableRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(BigtableTableServiceServer).CreateTable(ctx, in)
@@ -168,9 +168,9 @@ func _BigtableTableService_CreateTable_Handler(srv interface{}, ctx context.Cont
 	return out, nil
 }
 
-func _BigtableTableService_ListTables_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _BigtableTableService_ListTables_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(ListTablesRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(BigtableTableServiceServer).ListTables(ctx, in)
@@ -180,9 +180,9 @@ func _BigtableTableService_ListTables_Handler(srv interface{}, ctx context.Conte
 	return out, nil
 }
 
-func _BigtableTableService_GetTable_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _BigtableTableService_GetTable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(GetTableRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(BigtableTableServiceServer).GetTable(ctx, in)
@@ -192,9 +192,9 @@ func _BigtableTableService_GetTable_Handler(srv interface{}, ctx context.Context
 	return out, nil
 }
 
-func _BigtableTableService_DeleteTable_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _BigtableTableService_DeleteTable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(DeleteTableRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(BigtableTableServiceServer).DeleteTable(ctx, in)
@@ -204,9 +204,9 @@ func _BigtableTableService_DeleteTable_Handler(srv interface{}, ctx context.Cont
 	return out, nil
 }
 
-func _BigtableTableService_RenameTable_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _BigtableTableService_RenameTable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(RenameTableRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(BigtableTableServiceServer).RenameTable(ctx, in)
@@ -216,9 +216,9 @@ func _BigtableTableService_RenameTable_Handler(srv interface{}, ctx context.Cont
 	return out, nil
 }
 
-func _BigtableTableService_CreateColumnFamily_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _BigtableTableService_CreateColumnFamily_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(CreateColumnFamilyRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(BigtableTableServiceServer).CreateColumnFamily(ctx, in)
@@ -228,9 +228,9 @@ func _BigtableTableService_CreateColumnFamily_Handler(srv interface{}, ctx conte
 	return out, nil
 }
 
-func _BigtableTableService_UpdateColumnFamily_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _BigtableTableService_UpdateColumnFamily_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(google_bigtable_admin_table_v11.ColumnFamily)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(BigtableTableServiceServer).UpdateColumnFamily(ctx, in)
@@ -240,9 +240,9 @@ func _BigtableTableService_UpdateColumnFamily_Handler(srv interface{}, ctx conte
 	return out, nil
 }
 
-func _BigtableTableService_DeleteColumnFamily_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _BigtableTableService_DeleteColumnFamily_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(DeleteColumnFamilyRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(BigtableTableServiceServer).DeleteColumnFamily(ctx, in)

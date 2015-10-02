@@ -139,16 +139,16 @@ type isGcRule_Rule interface {
 }
 
 type GcRule_MaxNumVersions struct {
-	MaxNumVersions int32 `protobuf:"varint,1,opt,name=max_num_versions"`
+	MaxNumVersions int32 `protobuf:"varint,1,opt,name=max_num_versions,oneof"`
 }
 type GcRule_MaxAge struct {
-	MaxAge *google_protobuf.Duration `protobuf:"bytes,2,opt,name=max_age"`
+	MaxAge *google_protobuf.Duration `protobuf:"bytes,2,opt,name=max_age,oneof"`
 }
 type GcRule_Intersection_ struct {
-	Intersection *GcRule_Intersection `protobuf:"bytes,3,opt,name=intersection"`
+	Intersection *GcRule_Intersection `protobuf:"bytes,3,opt,name=intersection,oneof"`
 }
 type GcRule_Union_ struct {
-	Union *GcRule_Union `protobuf:"bytes,4,opt,name=union"`
+	Union *GcRule_Union `protobuf:"bytes,4,opt,name=union,oneof"`
 }
 
 func (*GcRule_MaxNumVersions) isGcRule_Rule() {}

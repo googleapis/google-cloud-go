@@ -219,9 +219,9 @@ func (x *bigtableServiceSampleRowKeysServer) Send(m *SampleRowKeysResponse) erro
 	return x.ServerStream.SendMsg(m)
 }
 
-func _BigtableService_MutateRow_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _BigtableService_MutateRow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(MutateRowRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(BigtableServiceServer).MutateRow(ctx, in)
@@ -231,9 +231,9 @@ func _BigtableService_MutateRow_Handler(srv interface{}, ctx context.Context, co
 	return out, nil
 }
 
-func _BigtableService_CheckAndMutateRow_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _BigtableService_CheckAndMutateRow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(CheckAndMutateRowRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(BigtableServiceServer).CheckAndMutateRow(ctx, in)
@@ -243,9 +243,9 @@ func _BigtableService_CheckAndMutateRow_Handler(srv interface{}, ctx context.Con
 	return out, nil
 }
 
-func _BigtableService_ReadModifyWriteRow_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _BigtableService_ReadModifyWriteRow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(ReadModifyWriteRowRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(BigtableServiceServer).ReadModifyWriteRow(ctx, in)

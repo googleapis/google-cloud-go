@@ -66,10 +66,10 @@ type isReadRowsRequest_Target interface {
 }
 
 type ReadRowsRequest_RowKey struct {
-	RowKey []byte `protobuf:"bytes,2,opt,name=row_key,proto3"`
+	RowKey []byte `protobuf:"bytes,2,opt,name=row_key,proto3,oneof"`
 }
 type ReadRowsRequest_RowRange struct {
-	RowRange *google_bigtable_v11.RowRange `protobuf:"bytes,3,opt,name=row_range"`
+	RowRange *google_bigtable_v11.RowRange `protobuf:"bytes,3,opt,name=row_range,oneof"`
 }
 
 func (*ReadRowsRequest_RowKey) isReadRowsRequest_Target()   {}
@@ -193,13 +193,13 @@ type isReadRowsResponse_Chunk_Chunk interface {
 }
 
 type ReadRowsResponse_Chunk_RowContents struct {
-	RowContents *google_bigtable_v11.Family `protobuf:"bytes,1,opt,name=row_contents"`
+	RowContents *google_bigtable_v11.Family `protobuf:"bytes,1,opt,name=row_contents,oneof"`
 }
 type ReadRowsResponse_Chunk_ResetRow struct {
-	ResetRow bool `protobuf:"varint,2,opt,name=reset_row"`
+	ResetRow bool `protobuf:"varint,2,opt,name=reset_row,oneof"`
 }
 type ReadRowsResponse_Chunk_CommitRow struct {
-	CommitRow bool `protobuf:"varint,3,opt,name=commit_row"`
+	CommitRow bool `protobuf:"varint,3,opt,name=commit_row,oneof"`
 }
 
 func (*ReadRowsResponse_Chunk_RowContents) isReadRowsResponse_Chunk_Chunk() {}

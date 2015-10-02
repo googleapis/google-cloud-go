@@ -170,16 +170,16 @@ type isColumnRange_EndQualifier interface {
 }
 
 type ColumnRange_StartQualifierInclusive struct {
-	StartQualifierInclusive []byte `protobuf:"bytes,2,opt,name=start_qualifier_inclusive,proto3"`
+	StartQualifierInclusive []byte `protobuf:"bytes,2,opt,name=start_qualifier_inclusive,proto3,oneof"`
 }
 type ColumnRange_StartQualifierExclusive struct {
-	StartQualifierExclusive []byte `protobuf:"bytes,3,opt,name=start_qualifier_exclusive,proto3"`
+	StartQualifierExclusive []byte `protobuf:"bytes,3,opt,name=start_qualifier_exclusive,proto3,oneof"`
 }
 type ColumnRange_EndQualifierInclusive struct {
-	EndQualifierInclusive []byte `protobuf:"bytes,4,opt,name=end_qualifier_inclusive,proto3"`
+	EndQualifierInclusive []byte `protobuf:"bytes,4,opt,name=end_qualifier_inclusive,proto3,oneof"`
 }
 type ColumnRange_EndQualifierExclusive struct {
-	EndQualifierExclusive []byte `protobuf:"bytes,5,opt,name=end_qualifier_exclusive,proto3"`
+	EndQualifierExclusive []byte `protobuf:"bytes,5,opt,name=end_qualifier_exclusive,proto3,oneof"`
 }
 
 func (*ColumnRange_StartQualifierInclusive) isColumnRange_StartQualifier() {}
@@ -345,16 +345,16 @@ type isValueRange_EndValue interface {
 }
 
 type ValueRange_StartValueInclusive struct {
-	StartValueInclusive []byte `protobuf:"bytes,1,opt,name=start_value_inclusive,proto3"`
+	StartValueInclusive []byte `protobuf:"bytes,1,opt,name=start_value_inclusive,proto3,oneof"`
 }
 type ValueRange_StartValueExclusive struct {
-	StartValueExclusive []byte `protobuf:"bytes,2,opt,name=start_value_exclusive,proto3"`
+	StartValueExclusive []byte `protobuf:"bytes,2,opt,name=start_value_exclusive,proto3,oneof"`
 }
 type ValueRange_EndValueInclusive struct {
-	EndValueInclusive []byte `protobuf:"bytes,3,opt,name=end_value_inclusive,proto3"`
+	EndValueInclusive []byte `protobuf:"bytes,3,opt,name=end_value_inclusive,proto3,oneof"`
 }
 type ValueRange_EndValueExclusive struct {
-	EndValueExclusive []byte `protobuf:"bytes,4,opt,name=end_value_exclusive,proto3"`
+	EndValueExclusive []byte `protobuf:"bytes,4,opt,name=end_value_exclusive,proto3,oneof"`
 }
 
 func (*ValueRange_StartValueInclusive) isValueRange_StartValue() {}
@@ -547,61 +547,61 @@ type isRowFilter_Filter interface {
 }
 
 type RowFilter_Chain_ struct {
-	Chain *RowFilter_Chain `protobuf:"bytes,1,opt,name=chain"`
+	Chain *RowFilter_Chain `protobuf:"bytes,1,opt,name=chain,oneof"`
 }
 type RowFilter_Interleave_ struct {
-	Interleave *RowFilter_Interleave `protobuf:"bytes,2,opt,name=interleave"`
+	Interleave *RowFilter_Interleave `protobuf:"bytes,2,opt,name=interleave,oneof"`
 }
 type RowFilter_Condition_ struct {
-	Condition *RowFilter_Condition `protobuf:"bytes,3,opt,name=condition"`
+	Condition *RowFilter_Condition `protobuf:"bytes,3,opt,name=condition,oneof"`
 }
 type RowFilter_Sink struct {
-	Sink bool `protobuf:"varint,16,opt,name=sink"`
+	Sink bool `protobuf:"varint,16,opt,name=sink,oneof"`
 }
 type RowFilter_PassAllFilter struct {
-	PassAllFilter bool `protobuf:"varint,17,opt,name=pass_all_filter"`
+	PassAllFilter bool `protobuf:"varint,17,opt,name=pass_all_filter,oneof"`
 }
 type RowFilter_BlockAllFilter struct {
-	BlockAllFilter bool `protobuf:"varint,18,opt,name=block_all_filter"`
+	BlockAllFilter bool `protobuf:"varint,18,opt,name=block_all_filter,oneof"`
 }
 type RowFilter_RowKeyRegexFilter struct {
-	RowKeyRegexFilter []byte `protobuf:"bytes,4,opt,name=row_key_regex_filter,proto3"`
+	RowKeyRegexFilter []byte `protobuf:"bytes,4,opt,name=row_key_regex_filter,proto3,oneof"`
 }
 type RowFilter_RowSampleFilter struct {
-	RowSampleFilter float64 `protobuf:"fixed64,14,opt,name=row_sample_filter"`
+	RowSampleFilter float64 `protobuf:"fixed64,14,opt,name=row_sample_filter,oneof"`
 }
 type RowFilter_FamilyNameRegexFilter struct {
-	FamilyNameRegexFilter string `protobuf:"bytes,5,opt,name=family_name_regex_filter"`
+	FamilyNameRegexFilter string `protobuf:"bytes,5,opt,name=family_name_regex_filter,oneof"`
 }
 type RowFilter_ColumnQualifierRegexFilter struct {
-	ColumnQualifierRegexFilter []byte `protobuf:"bytes,6,opt,name=column_qualifier_regex_filter,proto3"`
+	ColumnQualifierRegexFilter []byte `protobuf:"bytes,6,opt,name=column_qualifier_regex_filter,proto3,oneof"`
 }
 type RowFilter_ColumnRangeFilter struct {
-	ColumnRangeFilter *ColumnRange `protobuf:"bytes,7,opt,name=column_range_filter"`
+	ColumnRangeFilter *ColumnRange `protobuf:"bytes,7,opt,name=column_range_filter,oneof"`
 }
 type RowFilter_TimestampRangeFilter struct {
-	TimestampRangeFilter *TimestampRange `protobuf:"bytes,8,opt,name=timestamp_range_filter"`
+	TimestampRangeFilter *TimestampRange `protobuf:"bytes,8,opt,name=timestamp_range_filter,oneof"`
 }
 type RowFilter_ValueRegexFilter struct {
-	ValueRegexFilter []byte `protobuf:"bytes,9,opt,name=value_regex_filter,proto3"`
+	ValueRegexFilter []byte `protobuf:"bytes,9,opt,name=value_regex_filter,proto3,oneof"`
 }
 type RowFilter_ValueRangeFilter struct {
-	ValueRangeFilter *ValueRange `protobuf:"bytes,15,opt,name=value_range_filter"`
+	ValueRangeFilter *ValueRange `protobuf:"bytes,15,opt,name=value_range_filter,oneof"`
 }
 type RowFilter_CellsPerRowOffsetFilter struct {
-	CellsPerRowOffsetFilter int32 `protobuf:"varint,10,opt,name=cells_per_row_offset_filter"`
+	CellsPerRowOffsetFilter int32 `protobuf:"varint,10,opt,name=cells_per_row_offset_filter,oneof"`
 }
 type RowFilter_CellsPerRowLimitFilter struct {
-	CellsPerRowLimitFilter int32 `protobuf:"varint,11,opt,name=cells_per_row_limit_filter"`
+	CellsPerRowLimitFilter int32 `protobuf:"varint,11,opt,name=cells_per_row_limit_filter,oneof"`
 }
 type RowFilter_CellsPerColumnLimitFilter struct {
-	CellsPerColumnLimitFilter int32 `protobuf:"varint,12,opt,name=cells_per_column_limit_filter"`
+	CellsPerColumnLimitFilter int32 `protobuf:"varint,12,opt,name=cells_per_column_limit_filter,oneof"`
 }
 type RowFilter_StripValueTransformer struct {
-	StripValueTransformer bool `protobuf:"varint,13,opt,name=strip_value_transformer"`
+	StripValueTransformer bool `protobuf:"varint,13,opt,name=strip_value_transformer,oneof"`
 }
 type RowFilter_ApplyLabelTransformer struct {
-	ApplyLabelTransformer string `protobuf:"bytes,19,opt,name=apply_label_transformer"`
+	ApplyLabelTransformer string `protobuf:"bytes,19,opt,name=apply_label_transformer,oneof"`
 }
 
 func (*RowFilter_Chain_) isRowFilter_Filter()                     {}
@@ -1158,16 +1158,16 @@ type isMutation_Mutation interface {
 }
 
 type Mutation_SetCell_ struct {
-	SetCell *Mutation_SetCell `protobuf:"bytes,1,opt,name=set_cell"`
+	SetCell *Mutation_SetCell `protobuf:"bytes,1,opt,name=set_cell,oneof"`
 }
 type Mutation_DeleteFromColumn_ struct {
-	DeleteFromColumn *Mutation_DeleteFromColumn `protobuf:"bytes,2,opt,name=delete_from_column"`
+	DeleteFromColumn *Mutation_DeleteFromColumn `protobuf:"bytes,2,opt,name=delete_from_column,oneof"`
 }
 type Mutation_DeleteFromFamily_ struct {
-	DeleteFromFamily *Mutation_DeleteFromFamily `protobuf:"bytes,3,opt,name=delete_from_family"`
+	DeleteFromFamily *Mutation_DeleteFromFamily `protobuf:"bytes,3,opt,name=delete_from_family,oneof"`
 }
 type Mutation_DeleteFromRow_ struct {
-	DeleteFromRow *Mutation_DeleteFromRow `protobuf:"bytes,4,opt,name=delete_from_row"`
+	DeleteFromRow *Mutation_DeleteFromRow `protobuf:"bytes,4,opt,name=delete_from_row,oneof"`
 }
 
 func (*Mutation_SetCell_) isMutation_Mutation()          {}
@@ -1384,10 +1384,10 @@ type isReadModifyWriteRule_Rule interface {
 }
 
 type ReadModifyWriteRule_AppendValue struct {
-	AppendValue []byte `protobuf:"bytes,3,opt,name=append_value,proto3"`
+	AppendValue []byte `protobuf:"bytes,3,opt,name=append_value,proto3,oneof"`
 }
 type ReadModifyWriteRule_IncrementAmount struct {
-	IncrementAmount int64 `protobuf:"varint,4,opt,name=increment_amount"`
+	IncrementAmount int64 `protobuf:"varint,4,opt,name=increment_amount,oneof"`
 }
 
 func (*ReadModifyWriteRule_AppendValue) isReadModifyWriteRule_Rule()     {}

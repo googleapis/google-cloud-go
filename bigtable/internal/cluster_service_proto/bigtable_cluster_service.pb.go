@@ -226,9 +226,9 @@ func RegisterBigtableClusterServiceServer(s *grpc.Server, srv BigtableClusterSer
 	s.RegisterService(&_BigtableClusterService_serviceDesc, srv)
 }
 
-func _BigtableClusterService_ListZones_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _BigtableClusterService_ListZones_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(ListZonesRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(BigtableClusterServiceServer).ListZones(ctx, in)
@@ -238,9 +238,9 @@ func _BigtableClusterService_ListZones_Handler(srv interface{}, ctx context.Cont
 	return out, nil
 }
 
-func _BigtableClusterService_GetCluster_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _BigtableClusterService_GetCluster_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(GetClusterRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(BigtableClusterServiceServer).GetCluster(ctx, in)
@@ -250,9 +250,9 @@ func _BigtableClusterService_GetCluster_Handler(srv interface{}, ctx context.Con
 	return out, nil
 }
 
-func _BigtableClusterService_ListClusters_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _BigtableClusterService_ListClusters_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(ListClustersRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(BigtableClusterServiceServer).ListClusters(ctx, in)
@@ -262,9 +262,9 @@ func _BigtableClusterService_ListClusters_Handler(srv interface{}, ctx context.C
 	return out, nil
 }
 
-func _BigtableClusterService_CreateCluster_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _BigtableClusterService_CreateCluster_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(CreateClusterRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(BigtableClusterServiceServer).CreateCluster(ctx, in)
@@ -274,9 +274,9 @@ func _BigtableClusterService_CreateCluster_Handler(srv interface{}, ctx context.
 	return out, nil
 }
 
-func _BigtableClusterService_UpdateCluster_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _BigtableClusterService_UpdateCluster_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(google_bigtable_admin_cluster_v11.Cluster)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(BigtableClusterServiceServer).UpdateCluster(ctx, in)
@@ -286,9 +286,9 @@ func _BigtableClusterService_UpdateCluster_Handler(srv interface{}, ctx context.
 	return out, nil
 }
 
-func _BigtableClusterService_DeleteCluster_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _BigtableClusterService_DeleteCluster_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(DeleteClusterRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(BigtableClusterServiceServer).DeleteCluster(ctx, in)
