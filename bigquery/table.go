@@ -241,3 +241,38 @@ func ViewQuery(query string) CreateTableOption { return viewQuery(query) }
 func (opt viewQuery) customizeCreateTable(conf *createTableConf) {
 	conf.viewQuery = string(opt)
 }
+
+// TableMetadataPatch represents a set of changes to a table's metadata.
+type TableMetadataPatch struct {
+	s                             service
+	projectID, datasetID, tableID string
+	conf                          patchTableConf
+}
+
+// Patch returns a *TableMetadataPatch, which can be used to modify specific Table metadata fields.
+// In order to apply the changes, the TableMetadataPatch's Apply method must be called.
+func (t *Table) Patch() *TableMetadataPatch {
+	return &TableMetadataPatch{
+		s:         t.service,
+		projectID: t.ProjectID,
+		datasetID: t.DatasetID,
+		tableID:   t.TableID,
+	}
+}
+
+// Description sets the table description.
+func (p *TableMetadataPatch) Description(desc string) {
+	p.conf.Description = &desc
+}
+
+// Name sets the table name.
+func (p *TableMetadataPatch) Name(name string) {
+	p.conf.Name = &name
+}
+
+// TODO(mcgreevy): support patching the schema.
+
+// Apply applies the patch operation.
+func (p *TableMetadataPatch) Apply(ctx context.Context) (*TableMetadata, error) {
+	return p.s.patchTable(ctx, p.projectID, p.datasetID, p.tableID, &p.conf)
+}

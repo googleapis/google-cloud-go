@@ -49,6 +49,7 @@ type service interface {
 	getTableMetadata(ctx context.Context, projectID, datasetID, tableID string) (*TableMetadata, error)
 	deleteTable(ctx context.Context, projectID, datasetID, tableID string) error
 	listTables(ctx context.Context, projectID, datasetID, pageToken string) ([]*Table, string, error)
+	patchTable(ctx context.Context, projectID, datasetID, tableID string, conf *patchTableConf) (*TableMetadata, error)
 }
 
 type bigqueryService struct {
@@ -339,7 +340,6 @@ func bqTableToMetadata(t *bq.Table) *TableMetadata {
 	md := &TableMetadata{
 		Description: t.Description,
 		Name:        t.FriendlyName,
-		Schema:      convertTableSchema(t.Schema),
 		Type:        TableType(t.Type),
 		ID:          t.Id,
 		NumBytes:    t.NumBytes,
@@ -354,6 +354,9 @@ func bqTableToMetadata(t *bq.Table) *TableMetadata {
 	if t.LastModifiedTime != 0 {
 		md.LastModifiedTime = time.Unix(0, int64(t.LastModifiedTime*1e6))
 	}
+	if t.Schema != nil {
+		md.Schema = convertTableSchema(t.Schema)
+	}
 	if t.View != nil {
 		md.View = t.View.Query
 	}
@@ -367,4 +370,34 @@ func convertListedTable(t *bq.TableListTables) *Table {
 		DatasetID: t.TableReference.DatasetId,
 		TableID:   t.TableReference.TableId,
 	}
+}
+
+// patchTableConf contains fields to be patched.
+type patchTableConf struct {
+	// These fields are omitted from the patch operation if nil.
+	Description *string
+	Name        *string
+}
+
+func (s *bigqueryService) patchTable(ctx context.Context, projectID, datasetID, tableID string, conf *patchTableConf) (*TableMetadata, error) {
+	t := &bq.Table{}
+	forceSend := func(field string) {
+		t.ForceSendFields = append(t.ForceSendFields, field)
+	}
+
+	if conf.Description != nil {
+		t.Description = *conf.Description
+		forceSend("Description")
+	}
+	if conf.Name != nil {
+		t.FriendlyName = *conf.Name
+		forceSend("FriendlyName")
+	}
+	table, err := s.s.Tables.Patch(projectID, datasetID, tableID, t).
+		Context(ctx).
+		Do()
+	if err != nil {
+		return nil, err
+	}
+	return bqTableToMetadata(table), nil
 }
