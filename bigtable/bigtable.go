@@ -166,6 +166,10 @@ func (cr *chunkReader) process(rrr *btspb.ReadRowsResponse) Row {
 			continue
 		case *btspb.ReadRowsResponse_Chunk_CommitRow:
 			delete(cr.partial, row)
+			if len(r) == 0 {
+				// Treat zero-content commits as absent.
+				continue
+			}
 			return r // assume that this is the last chunk
 		case *btspb.ReadRowsResponse_Chunk_RowContents:
 			decodeFamilyProto(r, row, c.RowContents)

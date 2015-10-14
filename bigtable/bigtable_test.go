@@ -40,6 +40,7 @@ func dataChunk(fam, col string, ts int64, data string) string {
 }
 
 func commit() string { return "chunks:<commit_row:true>" }
+func reset() string  { return "chunks:<reset_row:true>" }
 
 var chunkTests = []struct {
 	desc   string
@@ -88,9 +89,35 @@ var chunkTests = []struct {
 			},
 		},
 	},
+	{
+		desc: "chunk, reset, chunk, commit",
+		chunks: []string{
+			`row_key: "row1" ` + dataChunk("fam", "col1", 1428382701000000, "data"),
+			`row_key: "row1" ` + reset(),
+			`row_key: "row1" ` + dataChunk("fam", "col1", 1428382702000000, "data") + commit(),
+		},
+		want: map[string]Row{
+			"row1": Row{
+				"fam": []ReadItem{{
+					Row:       "row1",
+					Column:    "fam:col1",
+					Timestamp: 1428382702000000,
+					Value:     []byte("data"),
+				}},
+			},
+		},
+	},
+	{
+		desc: "chunk, reset, commit",
+		chunks: []string{
+			`row_key: "row1" ` + dataChunk("fam", "col1", 1428382701000000, "data"),
+			`row_key: "row1" ` + reset(),
+			`row_key: "row1" ` + commit(),
+		},
+		want: map[string]Row{},
+	},
 	// TODO(dsymonds): More test cases, including
 	//	- multiple rows
-	//	- reset_row
 }
 
 func TestChunkReader(t *testing.T) {
