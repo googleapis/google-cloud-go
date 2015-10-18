@@ -247,7 +247,7 @@ func NewIncompleteKey(ctx context.Context, kind string, parent *Key) *Key {
 
 // NewKey creates a new key.
 // kind cannot be empty.
-// Either one or both of stringID and intID must be zero. If both are zero,
+// Either one or both of name and id must be zero. If both are zero,
 // the key returned is incomplete.
 // parent must either be a complete key or nil.
 func NewKey(ctx context.Context, kind, name string, id int64, parent *Key) *Key {
