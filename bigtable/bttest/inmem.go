@@ -553,6 +553,13 @@ func (s *server) ReadModifyWriteRow(ctx context.Context, req *btspb.ReadModifyWr
 	// Assume all mutations apply to the most recent version of the cell.
 	// TODO(dsymonds): Verify this assumption and document it in the proto.
 	for _, rule := range req.Rules {
+		tbl.mu.RLock()
+		_, famOK := tbl.families[rule.FamilyName]
+		tbl.mu.RUnlock()
+		if !famOK {
+			return nil, fmt.Errorf("unknown family %q", rule.FamilyName)
+		}
+
 		key := fmt.Sprintf("%s:%s", rule.FamilyName, rule.ColumnQualifier)
 
 		newCell := false
