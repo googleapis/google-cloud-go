@@ -103,6 +103,7 @@ func (t *Table) ReadRows(ctx context.Context, arg RowRange, f func(Row) bool, op
 		opt.set(req)
 	}
 	ctx, cancel := context.WithCancel(ctx) // for aborting the stream
+	defer cancel()
 	stream, err := t.c.client.ReadRows(ctx, req)
 	if err != nil {
 		return err
