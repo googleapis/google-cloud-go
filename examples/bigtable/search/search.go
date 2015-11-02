@@ -308,9 +308,10 @@ func handleAddDoc(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var (
-		writeErr error          // Set if any write fails.
-		mu       sync.Mutex     // Protects writeErr
-		wg       sync.WaitGroup // Used to wait for all writes to finish.
+		writeErr error                // Set if any write fails.
+		mu       sync.Mutex           // Protects writeErr
+		wg       sync.WaitGroup       // Used to wait for all writes to finish.
+		sem      = make(chan int, 10) // Bounded parallelism
 	)
 
 	// writeOneColumn writes one column in one row, updates err if there is an error,
@@ -345,9 +346,10 @@ func handleAddDoc(w http.ResponseWriter, r *http.Request) {
 		)
 		wg.Add(1)
 		go func() {
-			// TODO: should use a semaphore to limit the number of concurrent writes.
+			sem <- 1
 			writeOneColumn(row, family, column, value, ts)
 			wg.Done()
+			<-sem
 		}()
 	}
 	wg.Wait()
@@ -382,10 +384,12 @@ func rebuildTable() error {
 	prototypeTable := client.Open(prototypeTableName)
 
 	var (
-		writeErr error          // Set if any write fails.
-		mu       sync.Mutex     // Protects writeErr
-		wg       sync.WaitGroup // Used to wait for all writes to finish.
+		writeErr error                // Set if any write fails.
+		mu       sync.Mutex           // Protects writeErr
+		wg       sync.WaitGroup       // Used to wait for all writes to finish.
+		sem      = make(chan int, 10) // Bounded parallelism
 	)
+
 	copyRowToTable := func(row bigtable.Row) bool {
 		mu.Lock()
 		failed := writeErr != nil
@@ -403,13 +407,16 @@ func rebuildTable() error {
 		}
 		wg.Add(1)
 		go func() {
-			// TODO: should use a semaphore to limit the number of concurrent writes.
+			sem <- 1 // Block until there's capacity to process a request.
+
 			if err := table.Apply(ctx, row.Key(), mut); err != nil {
 				mu.Lock()
 				writeErr = err
 				mu.Unlock()
 			}
 			wg.Done()
+
+			<-sem // Done; enable next request to run.
 		}()
 		return true
 	}
