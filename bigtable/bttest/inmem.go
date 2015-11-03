@@ -373,6 +373,14 @@ func includeCell(f *btdpb.RowFilter, fam, col string, cell cell) bool {
 	default:
 		log.Printf("WARNING: don't know how to handle filter of type %T (ignoring it)", f)
 		return true
+	case *btdpb.RowFilter_FamilyNameRegexFilter:
+		pat := string(f.FamilyNameRegexFilter)
+		rx, err := regexp.Compile(pat)
+		if err != nil {
+			log.Printf("Bad family_name_regex_filter pattern %q: %v", pat, err)
+			return false
+		}
+		return rx.MatchString(fam)
 	case *btdpb.RowFilter_ColumnQualifierRegexFilter:
 		pat := string(f.ColumnQualifierRegexFilter)
 		rx, err := regexp.Compile(pat)
