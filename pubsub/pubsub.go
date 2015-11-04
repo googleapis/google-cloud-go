@@ -220,8 +220,8 @@ func Pull(ctx context.Context, sub string, n int) ([]*Message, error) {
 
 // PullWait pulls messages from the subscription. If there are not
 // enough messages left in the subscription queue, it will block until
-// at least n number of messages arrive or timeout occurs, and n could
-// not be larger than 100.
+// at least 1--but not more than n--messages arrive or timeout occurs.
+// The value of n cannot be larger than 100.
 func PullWait(ctx context.Context, sub string, n int) ([]*Message, error) {
 	return pull(ctx, sub, n, false)
 }
