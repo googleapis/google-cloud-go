@@ -24,7 +24,7 @@ To use a Server, create it, and then connect to it with no security:
 	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
 	...
 	client, err := bigtable.NewClient(ctx, proj, zone, cluster,
-		bigtable.WithBaseGRPC(conn))
+		cloud.WithBaseGRPC(conn))
 	...
 */
 package bttest // import "google.golang.org/cloud/bigtable/bttest"
