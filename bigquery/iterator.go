@@ -33,9 +33,10 @@ type Iterator struct {
 
 	err error // contains any error encountered during calls to Next.
 
-	// Once Next has been called at least once, rs contains the current
-	// page of data and nextToken contains the token for fetching the next
+	// Once Next has been called at least once, schema has the result schema, rs contains the current
+	// page of data, and nextToken contains the token for fetching the next
 	// page (empty if there is no more data to be fetched).
+	schema    Schema
 	rs        [][]Value
 	nextToken string
 
@@ -77,6 +78,7 @@ func (it *Iterator) fetchPage(ctx context.Context) bool {
 		return false
 	}
 
+	it.schema = res.schema
 	it.rs = res.rows
 	it.nextToken = res.pageToken
 	return true
@@ -121,7 +123,7 @@ func (it *Iterator) getEnoughData(ctx context.Context) bool {
 
 // Next advances the Iterator to the next row, making that row available
 // via the Get method.
-// Next must be called before the first call to Get, and blocks until data is available.
+// Next must be called before the first call to Get or Schema, and blocks until data is available.
 // Next returns false when there are no more rows available, either because
 // the end of the output was reached, or because there was an error (consult
 // the Err method to determine which).
@@ -147,16 +149,25 @@ func (it *Iterator) Err() error {
 	return it.err
 }
 
-// Get loads the current row into dst, which must implement ValueLoader.
-func (it *Iterator) Get(dst interface{}) error {
+// verifyState checks that the iterator is pointing to a valid row.
+func (it *Iterator) verifyState() error {
 	if it.err != nil {
-		return fmt.Errorf("Get called on iterator in error state: %v", it.err)
+		return fmt.Errorf("called on iterator in error state: %v", it.err)
 	}
 
 	// If Next has been called, then offset should always index into a
 	// valid row in rs, as long as there is still data available.
 	if it.offset >= int64(len(it.rs)) || it.offset < 0 {
-		return errors.New("Get called without preceding successful call to Next")
+		return errors.New("called without preceding successful call to Next")
+	}
+
+	return nil
+}
+
+// Get loads the current row into dst, which must implement ValueLoader.
+func (it *Iterator) Get(dst interface{}) error {
+	if err := it.verifyState(); err != nil {
+		return fmt.Errorf("Get %v", err)
 	}
 
 	if dst, ok := dst.(ValueLoader); ok {
@@ -165,4 +176,11 @@ func (it *Iterator) Get(dst interface{}) error {
 	return errors.New("Get called with unsupported argument type")
 }
 
-// TODO(mcgreevy): Add a method to *Iterator that returns a schema which describes the data.
+// Schema returns the schema of the result rows.
+func (it *Iterator) Schema() (Schema, error) {
+	if err := it.verifyState(); err != nil {
+		return nil, fmt.Errorf("Schema %v", err)
+	}
+
+	return it.schema, nil
+}

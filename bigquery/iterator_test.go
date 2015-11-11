@@ -52,6 +52,7 @@ func TestIterator(t *testing.T) {
 		fetchResponses  map[string]fetchResponse
 		want            []ValueList
 		wantErr         error
+		wantSchema      Schema
 	}{
 		{
 			desc: "Iteration over single empty page",
@@ -60,10 +61,12 @@ func TestIterator(t *testing.T) {
 					result: &readDataResult{
 						pageToken: "",
 						rows:      [][]Value{},
+						schema:    Schema{},
 					},
 				},
 			},
-			want: []ValueList{},
+			want:       []ValueList{},
+			wantSchema: Schema{},
 		},
 		{
 			desc: "Iteration over single page",
@@ -72,10 +75,38 @@ func TestIterator(t *testing.T) {
 					result: &readDataResult{
 						pageToken: "",
 						rows:      [][]Value{{1, 2}, {11, 12}},
+						schema: Schema{
+							{Type: IntegerFieldType},
+							{Type: IntegerFieldType},
+						},
 					},
 				},
 			},
 			want: []ValueList{{1, 2}, {11, 12}},
+			wantSchema: Schema{
+				{Type: IntegerFieldType},
+				{Type: IntegerFieldType},
+			},
+		},
+		{
+			desc: "Iteration over single page with different schema",
+			fetchResponses: map[string]fetchResponse{
+				"": {
+					result: &readDataResult{
+						pageToken: "",
+						rows:      [][]Value{{"1", 2}, {"11", 12}},
+						schema: Schema{
+							{Type: StringFieldType},
+							{Type: IntegerFieldType},
+						},
+					},
+				},
+			},
+			want: []ValueList{{"1", 2}, {"11", 12}},
+			wantSchema: Schema{
+				{Type: StringFieldType},
+				{Type: IntegerFieldType},
+			},
 		},
 		{
 			desc: "Iteration over two pages",
@@ -84,16 +115,28 @@ func TestIterator(t *testing.T) {
 					result: &readDataResult{
 						pageToken: "a",
 						rows:      [][]Value{{1, 2}, {11, 12}},
+						schema: Schema{
+							{Type: IntegerFieldType},
+							{Type: IntegerFieldType},
+						},
 					},
 				},
 				"a": {
 					result: &readDataResult{
 						pageToken: "",
 						rows:      [][]Value{{101, 102}, {111, 112}},
+						schema: Schema{
+							{Type: IntegerFieldType},
+							{Type: IntegerFieldType},
+						},
 					},
 				},
 			},
 			want: []ValueList{{1, 2}, {11, 12}, {101, 102}, {111, 112}},
+			wantSchema: Schema{
+				{Type: IntegerFieldType},
+				{Type: IntegerFieldType},
+			},
 		},
 		{
 			desc: "Server response includes empty page",
@@ -102,22 +145,38 @@ func TestIterator(t *testing.T) {
 					result: &readDataResult{
 						pageToken: "a",
 						rows:      [][]Value{{1, 2}, {11, 12}},
+						schema: Schema{
+							{Type: IntegerFieldType},
+							{Type: IntegerFieldType},
+						},
 					},
 				},
 				"a": {
 					result: &readDataResult{
 						pageToken: "b",
 						rows:      [][]Value{},
+						schema: Schema{
+							{Type: IntegerFieldType},
+							{Type: IntegerFieldType},
+						},
 					},
 				},
 				"b": {
 					result: &readDataResult{
 						pageToken: "",
 						rows:      [][]Value{{101, 102}, {111, 112}},
+						schema: Schema{
+							{Type: IntegerFieldType},
+							{Type: IntegerFieldType},
+						},
 					},
 				},
 			},
 			want: []ValueList{{1, 2}, {11, 12}, {101, 102}, {111, 112}},
+			wantSchema: Schema{
+				{Type: IntegerFieldType},
+				{Type: IntegerFieldType},
+			},
 		},
 		{
 			desc: "Fetch error",
@@ -126,6 +185,10 @@ func TestIterator(t *testing.T) {
 					result: &readDataResult{
 						pageToken: "a",
 						rows:      [][]Value{{1, 2}, {11, 12}},
+						schema: Schema{
+							{Type: IntegerFieldType},
+							{Type: IntegerFieldType},
+						},
 					},
 				},
 				"a": {
@@ -135,11 +198,19 @@ func TestIterator(t *testing.T) {
 					result: &readDataResult{
 						pageToken: "b",
 						rows:      [][]Value{{101, 102}, {111, 112}},
+						schema: Schema{
+							{Type: IntegerFieldType},
+							{Type: IntegerFieldType},
+						},
 					},
 				},
 			},
 			want:    []ValueList{{1, 2}, {11, 12}},
 			wantErr: fetchFailure,
+			wantSchema: Schema{
+				{Type: IntegerFieldType},
+				{Type: IntegerFieldType},
+			},
 		},
 		{
 			desc:            "Skip over a single element",
@@ -149,16 +220,28 @@ func TestIterator(t *testing.T) {
 					result: &readDataResult{
 						pageToken: "a",
 						rows:      [][]Value{{1, 2}, {11, 12}},
+						schema: Schema{
+							{Type: IntegerFieldType},
+							{Type: IntegerFieldType},
+						},
 					},
 				},
 				"a": {
 					result: &readDataResult{
 						pageToken: "",
 						rows:      [][]Value{{101, 102}, {111, 112}},
+						schema: Schema{
+							{Type: IntegerFieldType},
+							{Type: IntegerFieldType},
+						},
 					},
 				},
 			},
 			want: []ValueList{{11, 12}, {101, 102}, {111, 112}},
+			wantSchema: Schema{
+				{Type: IntegerFieldType},
+				{Type: IntegerFieldType},
+			},
 		},
 		{
 			desc:            "Skip over an entire page",
@@ -168,16 +251,28 @@ func TestIterator(t *testing.T) {
 					result: &readDataResult{
 						pageToken: "a",
 						rows:      [][]Value{{1, 2}, {11, 12}},
+						schema: Schema{
+							{Type: IntegerFieldType},
+							{Type: IntegerFieldType},
+						},
 					},
 				},
 				"a": {
 					result: &readDataResult{
 						pageToken: "",
 						rows:      [][]Value{{101, 102}, {111, 112}},
+						schema: Schema{
+							{Type: IntegerFieldType},
+							{Type: IntegerFieldType},
+						},
 					},
 				},
 			},
 			want: []ValueList{{101, 102}, {111, 112}},
+			wantSchema: Schema{
+				{Type: IntegerFieldType},
+				{Type: IntegerFieldType},
+			},
 		},
 		{
 			desc:            "Skip beyond start of second page",
@@ -187,16 +282,28 @@ func TestIterator(t *testing.T) {
 					result: &readDataResult{
 						pageToken: "a",
 						rows:      [][]Value{{1, 2}, {11, 12}},
+						schema: Schema{
+							{Type: IntegerFieldType},
+							{Type: IntegerFieldType},
+						},
 					},
 				},
 				"a": {
 					result: &readDataResult{
 						pageToken: "",
 						rows:      [][]Value{{101, 102}, {111, 112}},
+						schema: Schema{
+							{Type: IntegerFieldType},
+							{Type: IntegerFieldType},
+						},
 					},
 				},
 			},
 			want: []ValueList{{111, 112}},
+			wantSchema: Schema{
+				{Type: IntegerFieldType},
+				{Type: IntegerFieldType},
+			},
 		},
 		{
 			desc:            "Skip beyond all data",
@@ -206,18 +313,27 @@ func TestIterator(t *testing.T) {
 					result: &readDataResult{
 						pageToken: "a",
 						rows:      [][]Value{{1, 2}, {11, 12}},
+						schema: Schema{
+							{Type: IntegerFieldType},
+							{Type: IntegerFieldType},
+						},
 					},
 				},
 				"a": {
 					result: &readDataResult{
 						pageToken: "",
 						rows:      [][]Value{{101, 102}, {111, 112}},
+						schema: Schema{
+							{Type: IntegerFieldType},
+							{Type: IntegerFieldType},
+						},
 					},
 				},
 			},
 			// In this test case, Next will return false on its first call,
 			// so we won't even attempt to call Get.
-			want: []ValueList{},
+			want:       []ValueList{},
+			wantSchema: Schema{},
 		},
 	}
 
@@ -228,7 +344,7 @@ func TestIterator(t *testing.T) {
 		it := newIterator(nil, pf)
 		it.offset += tc.alreadyConsumed
 
-		values, err := consumeIterator(it)
+		values, schema, err := consumeIterator(it)
 		if err != nil {
 			t.Fatalf("%s: %v", tc.desc, err)
 		}
@@ -239,22 +355,29 @@ func TestIterator(t *testing.T) {
 		if it.Err() != tc.wantErr {
 			t.Errorf("%s: iterator.Err:\ngot: %v\nwant: %v", tc.desc, it.Err(), tc.wantErr)
 		}
+		if (len(schema) != 0 || len(tc.wantSchema) != 0) && !reflect.DeepEqual(schema, tc.wantSchema) {
+			t.Errorf("%s: iterator.Schema:\ngot: %v\nwant: %v", tc.desc, schema, tc.wantSchema)
+		}
 	}
 }
 
-// consumeIterator reads all values from an iterator and returns them.
-func consumeIterator(it *Iterator) ([]ValueList, error) {
+// consumeIterator reads the schema and all values from an iterator and returns them.
+func consumeIterator(it *Iterator) ([]ValueList, Schema, error) {
 	var got []ValueList
+	var schema Schema
 	for it.Next(context.Background()) {
 		var vals ValueList
-		if err := it.Get(&vals); err != nil {
-			return nil, fmt.Errorf("err calling Get: %v", err)
-		} else {
-			got = append(got, vals)
+		var err error
+		if err = it.Get(&vals); err != nil {
+			return nil, Schema{}, fmt.Errorf("err calling Get: %v", err)
+		}
+		got = append(got, vals)
+		if schema, err = it.Schema(); err != nil {
+			return nil, Schema{}, fmt.Errorf("err calling Schema: %v", err)
 		}
 	}
 
-	return got, nil
+	return got, schema, nil
 }
 
 func TestGetBeforeNext(t *testing.T) {
@@ -313,7 +436,7 @@ func TestIterateIncompleteJob(t *testing.T) {
 	}
 	it := newIterator(nil, dpf)
 
-	values, err := consumeIterator(it)
+	values, _, err := consumeIterator(it)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -395,7 +518,7 @@ func TestGetAfterFinished(t *testing.T) {
 		it := newIterator(nil, pf)
 		it.offset += tc.alreadyConsumed
 
-		values, err := consumeIterator(it)
+		values, _, err := consumeIterator(it)
 		if err != nil {
 			t.Fatal(err)
 		}
