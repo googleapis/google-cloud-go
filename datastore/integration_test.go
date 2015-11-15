@@ -17,6 +17,7 @@
 package datastore
 
 import (
+	"errors"
 	"fmt"
 	"log"
 
@@ -30,6 +31,9 @@ import (
 	"google.golang.org/cloud"
 	"google.golang.org/cloud/internal/testutil"
 )
+
+// TODO(djd): Make test entity clean up more robust: some test entities may
+// be left behind if tests are aborted, the transport fails, etc.
 
 func newClient(ctx context.Context) *Client {
 	ts := testutil.TokenSource(ctx, ScopeDatastore, ScopeUserEmail)
@@ -564,6 +568,108 @@ loop:
 		if !reflect.DeepEqual(got, tc.want) {
 			t.Errorf("elems %q: got %+v want %+v", tc.desc, got, tc.want)
 			continue
+		}
+	}
+}
+
+func TestTransaction(t *testing.T) {
+	ctx := context.Background()
+	client := newClient(ctx)
+
+	type Counter struct {
+		N int
+		T time.Time
+	}
+
+	bangErr := errors.New("bang")
+	tests := []struct {
+		desc          string
+		causeConflict []bool
+		retErr        []error
+		want          int
+		wantErr       error
+	}{
+		{
+			desc:          "no conflicts",
+			causeConflict: []bool{false},
+			retErr:        []error{nil},
+			want:          11,
+		},
+		{
+			desc:          "user error",
+			causeConflict: []bool{false},
+			retErr:        []error{bangErr},
+			wantErr:       bangErr,
+		},
+		{
+			desc:          "2 conflicts",
+			causeConflict: []bool{true, true, false},
+			retErr:        []error{nil, nil, nil},
+			want:          15, // Each conflict increments by 2.
+		},
+		{
+			desc:          "3 conflicts",
+			causeConflict: []bool{true, true, true},
+			retErr:        []error{nil, nil, nil},
+			wantErr:       ErrConcurrentTransaction,
+		},
+	}
+
+	for _, tt := range tests {
+		// Put a new counter.
+		c := &Counter{N: 10, T: time.Now()}
+		key, err := client.Put(ctx, NewIncompleteKey(ctx, "TransCounter", nil), c)
+		if err != nil {
+			log.Errorf("%s: client.Put: %v", tt.desc, err)
+			continue
+		}
+		defer client.Delete(ctx, key)
+
+		// Increment the counter in a transaction.
+		// The test case can manually cause a conflict or return an
+		// error at each attempt.
+		var attempts int
+		_, err = client.RunInTransaction(ctx, func(tx *Transaction) error {
+			attempts++
+			if attempts > len(tt.causeConflict) {
+				return fmt.Errorf("too many attempts. Got %d, max %d", attempts, len(tt.causeConflict))
+			}
+
+			var c Counter
+			if err := tx.Get(key, &c); err != nil {
+				return err
+			}
+			c.N++
+			if _, err := tx.Put(key, &c); err != nil {
+				return err
+			}
+
+			if tt.causeConflict[attempts-1] {
+				c.N += 1
+				if _, err := client.Put(ctx, key, &c); err != nil {
+					return err
+				}
+			}
+
+			return tt.retErr[attempts-1]
+		})
+
+		// Check the error returned by RunInTransaction.
+		if err != tt.wantErr {
+			t.Errorf("%s: got err %v, want %v", tt.desc, err, tt.wantErr)
+			continue
+		}
+		if err != nil {
+			continue
+		}
+
+		// Check the final value of the counter.
+		if err := client.Get(ctx, key, c); err != nil {
+			t.Errorf("%s: client.Get: %v", err)
+			continue
+		}
+		if c.N != tt.want {
+			t.Errorf("%s: counter N=%d, want N=%d", c.N, tt.want)
 		}
 	}
 }

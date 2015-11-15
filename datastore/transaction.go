@@ -86,6 +86,45 @@ func (c *Client) NewTransaction(ctx context.Context, opts ...TransactionOption) 
 	}, nil
 }
 
+// RunInTransaction runs f in a transaction. f is invoked with a Transaction
+// that f should use for all the transaction's datastore operations.
+//
+// f must not call Commit or Rollback on the provided Transaction.
+//
+// If f returns nil, RunInTransaction commits the transaction,
+// returning the Commit and a nil error if it succeeds. If the commit fails due
+// to a conflicting transaction, RunInTransaction retries f with a new
+// Transaction. It gives up and returns ErrConcurrentTransaction after three
+// failed attempts.
+//
+// If f returns non-nil, then the transaction will be rolled back and
+// RunInTransaction will return the same error. The function f is not retried.
+//
+// Note that when f returns, the transaction is not committed. Calling code
+// must not assume that any of f's changes have been committed until
+// RunInTransaction returns nil.
+//
+// Since f may be called multiple times, f should usually be idempotent.
+// Note that Transaction.Get is not idempotent when unmarshaling slice fields.
+func (c *Client) RunInTransaction(ctx context.Context, f func(tx *Transaction) error, opts ...TransactionOption) (*Commit, error) {
+	// TODO(djd): Allow configuring of attempts.
+	const attempts = 3
+	for n := 0; n < attempts; n++ {
+		tx, err := c.NewTransaction(ctx, opts...)
+		if err != nil {
+			return nil, err
+		}
+		if err := f(tx); err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+		if cmt, err := tx.Commit(); err != ErrConcurrentTransaction {
+			return cmt, err
+		}
+	}
+	return nil, ErrConcurrentTransaction
+}
+
 // Commit applies the enqueued operations atomically.
 func (t *Transaction) Commit() (*Commit, error) {
 	if t.id == nil {
