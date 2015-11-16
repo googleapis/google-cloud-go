@@ -620,7 +620,7 @@ func TestTransaction(t *testing.T) {
 		c := &Counter{N: 10, T: time.Now()}
 		key, err := client.Put(ctx, NewIncompleteKey(ctx, "TransCounter", nil), c)
 		if err != nil {
-			log.Errorf("%s: client.Put: %v", tt.desc, err)
+			t.Errorf("%s: client.Put: %v", tt.desc, err)
 			continue
 		}
 		defer client.Delete(ctx, key)
