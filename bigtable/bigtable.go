@@ -123,6 +123,8 @@ func (t *Table) ReadRows(ctx context.Context, arg RowRange, f func(Row) bool, op
 				cancel()
 				for {
 					if _, err := stream.Recv(); err != nil {
+						// The stream has ended. We don't return an error
+						// because the caller has intentionally interrupted the scan.
 						return nil
 					}
 				}
