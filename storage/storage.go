@@ -46,6 +46,8 @@ var (
 	ErrObjectNotExist = errors.New("storage: object doesn't exist")
 )
 
+const userAgent = "gcloud-golang-storage/20151204"
+
 const (
 	// ScopeFullControl grants permissions to manage your
 	// data and permissions in Google Cloud Storage.
@@ -67,7 +69,13 @@ type Client struct {
 }
 
 // NewClient creates a new Google Cloud Storage client.
+// The default scope is ScopeFullControl. To use a different scope, like ScopeReadOnly, use cloud.WithScopes.
 func NewClient(ctx context.Context, opts ...cloud.ClientOption) (*Client, error) {
+	o := []cloud.ClientOption{
+		cloud.WithScopes(ScopeFullControl),
+		cloud.WithUserAgent(userAgent),
+	}
+	opts = append(o, opts...)
 	hc, _, err := transport.NewHTTPClient(ctx, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
