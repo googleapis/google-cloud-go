@@ -105,8 +105,8 @@ func (m *ReadRowsRequest) GetFilter() *google_bigtable_v11.RowFilter {
 }
 
 // XXX_OneofFuncs is for the internal use of the proto package.
-func (*ReadRowsRequest) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
-	return _ReadRowsRequest_OneofMarshaler, _ReadRowsRequest_OneofUnmarshaler, []interface{}{
+func (*ReadRowsRequest) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
+	return _ReadRowsRequest_OneofMarshaler, _ReadRowsRequest_OneofUnmarshaler, _ReadRowsRequest_OneofSizer, []interface{}{
 		(*ReadRowsRequest_RowKey)(nil),
 		(*ReadRowsRequest_RowRange)(nil),
 	}
@@ -152,6 +152,26 @@ func _ReadRowsRequest_OneofUnmarshaler(msg proto.Message, tag, wire int, b *prot
 	default:
 		return false, nil
 	}
+}
+
+func _ReadRowsRequest_OneofSizer(msg proto.Message) (n int) {
+	m := msg.(*ReadRowsRequest)
+	// target
+	switch x := m.Target.(type) {
+	case *ReadRowsRequest_RowKey:
+		n += proto.SizeVarint(2<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.RowKey)))
+		n += len(x.RowKey)
+	case *ReadRowsRequest_RowRange:
+		s := proto.Size(x.RowRange)
+		n += proto.SizeVarint(3<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	return n
 }
 
 // Response message for BigtableService.ReadRows.
@@ -238,8 +258,8 @@ func (m *ReadRowsResponse_Chunk) GetCommitRow() bool {
 }
 
 // XXX_OneofFuncs is for the internal use of the proto package.
-func (*ReadRowsResponse_Chunk) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
-	return _ReadRowsResponse_Chunk_OneofMarshaler, _ReadRowsResponse_Chunk_OneofUnmarshaler, []interface{}{
+func (*ReadRowsResponse_Chunk) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
+	return _ReadRowsResponse_Chunk_OneofMarshaler, _ReadRowsResponse_Chunk_OneofUnmarshaler, _ReadRowsResponse_Chunk_OneofSizer, []interface{}{
 		(*ReadRowsResponse_Chunk_RowContents)(nil),
 		(*ReadRowsResponse_Chunk_ResetRow)(nil),
 		(*ReadRowsResponse_Chunk_CommitRow)(nil),
@@ -304,6 +324,28 @@ func _ReadRowsResponse_Chunk_OneofUnmarshaler(msg proto.Message, tag, wire int, 
 	default:
 		return false, nil
 	}
+}
+
+func _ReadRowsResponse_Chunk_OneofSizer(msg proto.Message) (n int) {
+	m := msg.(*ReadRowsResponse_Chunk)
+	// chunk
+	switch x := m.Chunk.(type) {
+	case *ReadRowsResponse_Chunk_RowContents:
+		s := proto.Size(x.RowContents)
+		n += proto.SizeVarint(1<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *ReadRowsResponse_Chunk_ResetRow:
+		n += proto.SizeVarint(2<<3 | proto.WireVarint)
+		n += 1
+	case *ReadRowsResponse_Chunk_CommitRow:
+		n += proto.SizeVarint(3<<3 | proto.WireVarint)
+		n += 1
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	return n
 }
 
 // Request message for BigtableService.SampleRowKeys.

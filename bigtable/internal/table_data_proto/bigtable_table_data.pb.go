@@ -198,8 +198,8 @@ func (m *GcRule) GetUnion() *GcRule_Union {
 }
 
 // XXX_OneofFuncs is for the internal use of the proto package.
-func (*GcRule) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
-	return _GcRule_OneofMarshaler, _GcRule_OneofUnmarshaler, []interface{}{
+func (*GcRule) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
+	return _GcRule_OneofMarshaler, _GcRule_OneofUnmarshaler, _GcRule_OneofSizer, []interface{}{
 		(*GcRule_MaxNumVersions)(nil),
 		(*GcRule_MaxAge)(nil),
 		(*GcRule_Intersection_)(nil),
@@ -273,6 +273,35 @@ func _GcRule_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer)
 	default:
 		return false, nil
 	}
+}
+
+func _GcRule_OneofSizer(msg proto.Message) (n int) {
+	m := msg.(*GcRule)
+	// rule
+	switch x := m.Rule.(type) {
+	case *GcRule_MaxNumVersions:
+		n += proto.SizeVarint(1<<3 | proto.WireVarint)
+		n += proto.SizeVarint(uint64(x.MaxNumVersions))
+	case *GcRule_MaxAge:
+		s := proto.Size(x.MaxAge)
+		n += proto.SizeVarint(2<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *GcRule_Intersection_:
+		s := proto.Size(x.Intersection)
+		n += proto.SizeVarint(3<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *GcRule_Union_:
+		s := proto.Size(x.Union)
+		n += proto.SizeVarint(4<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	return n
 }
 
 // A GcRule which deletes cells matching all of the given rules.

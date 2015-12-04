@@ -235,8 +235,8 @@ func (m *ColumnRange) GetEndQualifierExclusive() []byte {
 }
 
 // XXX_OneofFuncs is for the internal use of the proto package.
-func (*ColumnRange) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
-	return _ColumnRange_OneofMarshaler, _ColumnRange_OneofUnmarshaler, []interface{}{
+func (*ColumnRange) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
+	return _ColumnRange_OneofMarshaler, _ColumnRange_OneofUnmarshaler, _ColumnRange_OneofSizer, []interface{}{
 		(*ColumnRange_StartQualifierInclusive)(nil),
 		(*ColumnRange_StartQualifierExclusive)(nil),
 		(*ColumnRange_EndQualifierInclusive)(nil),
@@ -307,6 +307,39 @@ func _ColumnRange_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Bu
 	default:
 		return false, nil
 	}
+}
+
+func _ColumnRange_OneofSizer(msg proto.Message) (n int) {
+	m := msg.(*ColumnRange)
+	// start_qualifier
+	switch x := m.StartQualifier.(type) {
+	case *ColumnRange_StartQualifierInclusive:
+		n += proto.SizeVarint(2<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.StartQualifierInclusive)))
+		n += len(x.StartQualifierInclusive)
+	case *ColumnRange_StartQualifierExclusive:
+		n += proto.SizeVarint(3<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.StartQualifierExclusive)))
+		n += len(x.StartQualifierExclusive)
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	// end_qualifier
+	switch x := m.EndQualifier.(type) {
+	case *ColumnRange_EndQualifierInclusive:
+		n += proto.SizeVarint(4<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.EndQualifierInclusive)))
+		n += len(x.EndQualifierInclusive)
+	case *ColumnRange_EndQualifierExclusive:
+		n += proto.SizeVarint(5<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.EndQualifierExclusive)))
+		n += len(x.EndQualifierExclusive)
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	return n
 }
 
 // Specified a contiguous range of microsecond timestamps.
@@ -412,8 +445,8 @@ func (m *ValueRange) GetEndValueExclusive() []byte {
 }
 
 // XXX_OneofFuncs is for the internal use of the proto package.
-func (*ValueRange) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
-	return _ValueRange_OneofMarshaler, _ValueRange_OneofUnmarshaler, []interface{}{
+func (*ValueRange) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
+	return _ValueRange_OneofMarshaler, _ValueRange_OneofUnmarshaler, _ValueRange_OneofSizer, []interface{}{
 		(*ValueRange_StartValueInclusive)(nil),
 		(*ValueRange_StartValueExclusive)(nil),
 		(*ValueRange_EndValueInclusive)(nil),
@@ -484,6 +517,39 @@ func _ValueRange_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buf
 	default:
 		return false, nil
 	}
+}
+
+func _ValueRange_OneofSizer(msg proto.Message) (n int) {
+	m := msg.(*ValueRange)
+	// start_value
+	switch x := m.StartValue.(type) {
+	case *ValueRange_StartValueInclusive:
+		n += proto.SizeVarint(1<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.StartValueInclusive)))
+		n += len(x.StartValueInclusive)
+	case *ValueRange_StartValueExclusive:
+		n += proto.SizeVarint(2<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.StartValueExclusive)))
+		n += len(x.StartValueExclusive)
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	// end_value
+	switch x := m.EndValue.(type) {
+	case *ValueRange_EndValueInclusive:
+		n += proto.SizeVarint(3<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.EndValueInclusive)))
+		n += len(x.EndValueInclusive)
+	case *ValueRange_EndValueExclusive:
+		n += proto.SizeVarint(4<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.EndValueExclusive)))
+		n += len(x.EndValueExclusive)
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	return n
 }
 
 // Takes a row as input and produces an alternate view of the row based on
@@ -774,8 +840,8 @@ func (m *RowFilter) GetApplyLabelTransformer() string {
 }
 
 // XXX_OneofFuncs is for the internal use of the proto package.
-func (*RowFilter) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
-	return _RowFilter_OneofMarshaler, _RowFilter_OneofUnmarshaler, []interface{}{
+func (*RowFilter) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
+	return _RowFilter_OneofMarshaler, _RowFilter_OneofUnmarshaler, _RowFilter_OneofSizer, []interface{}{
 		(*RowFilter_Chain_)(nil),
 		(*RowFilter_Interleave_)(nil),
 		(*RowFilter_Condition_)(nil),
@@ -1041,6 +1107,91 @@ func _RowFilter_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buff
 	}
 }
 
+func _RowFilter_OneofSizer(msg proto.Message) (n int) {
+	m := msg.(*RowFilter)
+	// filter
+	switch x := m.Filter.(type) {
+	case *RowFilter_Chain_:
+		s := proto.Size(x.Chain)
+		n += proto.SizeVarint(1<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *RowFilter_Interleave_:
+		s := proto.Size(x.Interleave)
+		n += proto.SizeVarint(2<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *RowFilter_Condition_:
+		s := proto.Size(x.Condition)
+		n += proto.SizeVarint(3<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *RowFilter_Sink:
+		n += proto.SizeVarint(16<<3 | proto.WireVarint)
+		n += 1
+	case *RowFilter_PassAllFilter:
+		n += proto.SizeVarint(17<<3 | proto.WireVarint)
+		n += 1
+	case *RowFilter_BlockAllFilter:
+		n += proto.SizeVarint(18<<3 | proto.WireVarint)
+		n += 1
+	case *RowFilter_RowKeyRegexFilter:
+		n += proto.SizeVarint(4<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.RowKeyRegexFilter)))
+		n += len(x.RowKeyRegexFilter)
+	case *RowFilter_RowSampleFilter:
+		n += proto.SizeVarint(14<<3 | proto.WireFixed64)
+		n += 8
+	case *RowFilter_FamilyNameRegexFilter:
+		n += proto.SizeVarint(5<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.FamilyNameRegexFilter)))
+		n += len(x.FamilyNameRegexFilter)
+	case *RowFilter_ColumnQualifierRegexFilter:
+		n += proto.SizeVarint(6<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.ColumnQualifierRegexFilter)))
+		n += len(x.ColumnQualifierRegexFilter)
+	case *RowFilter_ColumnRangeFilter:
+		s := proto.Size(x.ColumnRangeFilter)
+		n += proto.SizeVarint(7<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *RowFilter_TimestampRangeFilter:
+		s := proto.Size(x.TimestampRangeFilter)
+		n += proto.SizeVarint(8<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *RowFilter_ValueRegexFilter:
+		n += proto.SizeVarint(9<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.ValueRegexFilter)))
+		n += len(x.ValueRegexFilter)
+	case *RowFilter_ValueRangeFilter:
+		s := proto.Size(x.ValueRangeFilter)
+		n += proto.SizeVarint(15<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *RowFilter_CellsPerRowOffsetFilter:
+		n += proto.SizeVarint(10<<3 | proto.WireVarint)
+		n += proto.SizeVarint(uint64(x.CellsPerRowOffsetFilter))
+	case *RowFilter_CellsPerRowLimitFilter:
+		n += proto.SizeVarint(11<<3 | proto.WireVarint)
+		n += proto.SizeVarint(uint64(x.CellsPerRowLimitFilter))
+	case *RowFilter_CellsPerColumnLimitFilter:
+		n += proto.SizeVarint(12<<3 | proto.WireVarint)
+		n += proto.SizeVarint(uint64(x.CellsPerColumnLimitFilter))
+	case *RowFilter_StripValueTransformer:
+		n += proto.SizeVarint(13<<3 | proto.WireVarint)
+		n += 1
+	case *RowFilter_ApplyLabelTransformer:
+		n += proto.SizeVarint(19<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.ApplyLabelTransformer)))
+		n += len(x.ApplyLabelTransformer)
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	return n
+}
+
 // A RowFilter which sends rows through several RowFilters in sequence.
 type RowFilter_Chain struct {
 	// The elements of "filters" are chained together to process the input row:
@@ -1224,8 +1375,8 @@ func (m *Mutation) GetDeleteFromRow() *Mutation_DeleteFromRow {
 }
 
 // XXX_OneofFuncs is for the internal use of the proto package.
-func (*Mutation) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
-	return _Mutation_OneofMarshaler, _Mutation_OneofUnmarshaler, []interface{}{
+func (*Mutation) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
+	return _Mutation_OneofMarshaler, _Mutation_OneofUnmarshaler, _Mutation_OneofSizer, []interface{}{
 		(*Mutation_SetCell_)(nil),
 		(*Mutation_DeleteFromColumn_)(nil),
 		(*Mutation_DeleteFromFamily_)(nil),
@@ -1302,6 +1453,37 @@ func _Mutation_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffe
 	default:
 		return false, nil
 	}
+}
+
+func _Mutation_OneofSizer(msg proto.Message) (n int) {
+	m := msg.(*Mutation)
+	// mutation
+	switch x := m.Mutation.(type) {
+	case *Mutation_SetCell_:
+		s := proto.Size(x.SetCell)
+		n += proto.SizeVarint(1<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *Mutation_DeleteFromColumn_:
+		s := proto.Size(x.DeleteFromColumn)
+		n += proto.SizeVarint(2<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *Mutation_DeleteFromFamily_:
+		s := proto.Size(x.DeleteFromFamily)
+		n += proto.SizeVarint(3<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *Mutation_DeleteFromRow_:
+		s := proto.Size(x.DeleteFromRow)
+		n += proto.SizeVarint(4<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	return n
 }
 
 // A Mutation which sets the value of the specified cell.
@@ -1433,8 +1615,8 @@ func (m *ReadModifyWriteRule) GetIncrementAmount() int64 {
 }
 
 // XXX_OneofFuncs is for the internal use of the proto package.
-func (*ReadModifyWriteRule) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
-	return _ReadModifyWriteRule_OneofMarshaler, _ReadModifyWriteRule_OneofUnmarshaler, []interface{}{
+func (*ReadModifyWriteRule) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
+	return _ReadModifyWriteRule_OneofMarshaler, _ReadModifyWriteRule_OneofUnmarshaler, _ReadModifyWriteRule_OneofSizer, []interface{}{
 		(*ReadModifyWriteRule_AppendValue)(nil),
 		(*ReadModifyWriteRule_IncrementAmount)(nil),
 	}
@@ -1477,6 +1659,24 @@ func _ReadModifyWriteRule_OneofUnmarshaler(msg proto.Message, tag, wire int, b *
 	default:
 		return false, nil
 	}
+}
+
+func _ReadModifyWriteRule_OneofSizer(msg proto.Message) (n int) {
+	m := msg.(*ReadModifyWriteRule)
+	// rule
+	switch x := m.Rule.(type) {
+	case *ReadModifyWriteRule_AppendValue:
+		n += proto.SizeVarint(3<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.AppendValue)))
+		n += len(x.AppendValue)
+	case *ReadModifyWriteRule_IncrementAmount:
+		n += proto.SizeVarint(4<<3 | proto.WireVarint)
+		n += proto.SizeVarint(uint64(x.IncrementAmount))
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	return n
 }
 
 func init() {
