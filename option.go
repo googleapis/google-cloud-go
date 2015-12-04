@@ -61,7 +61,9 @@ func WithScopes(scope ...string) ClientOption {
 type withScopes []string
 
 func (w withScopes) Resolve(o *opts.DialOpt) {
-	o.Scopes = []string(w)
+	s := make([]string, len(w))
+	copy(s, w)
+	o.Scopes = s
 }
 
 // WithUserAgent returns a ClientOption that sets the User-Agent.
