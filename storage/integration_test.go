@@ -232,8 +232,8 @@ func TestObjects(t *testing.T) {
 	if err != nil {
 		t.Errorf("ReadAll failed with %v", err)
 	}
-	if string(slurp) != string(contents[publicObj]) {
-		t.Errorf("Public object's content is expected to be %s, found %s", contents[publicObj], slurp)
+	if !bytes.Equal(slurp, contents[publicObj]) {
+		t.Errorf("Public object's content: got %q, want %q", slurp, contents[publicObj])
 	}
 	rc.Close()
 
