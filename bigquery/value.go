@@ -41,6 +41,56 @@ func (vs *ValueList) Load(v []Value) error {
 	return nil
 }
 
+// A ValueSaver returns a row of data to be inserted into a table.
+type ValueSaver interface {
+	// Save returns a row to be inserted into a BigQuery table, represented
+	// as a map from field name to Value.
+	// If insertID is non-empty, BigQuery will use it to de-duplicate
+	// insertions of this row on a best-effort basis.
+	Save() (row map[string]Value, insertID string, err error)
+}
+
+// ValuesSaver implements ValueSaver for a slice of Values.
+type ValuesSaver struct {
+	Schema Schema
+
+	// If non-empty, BigQuery will use InsertID to de-duplicate insertions
+	// of this row on a best-effort basis.
+	InsertID string
+
+	Row []Value
+}
+
+// Save implements ValueSaver
+func (vls *ValuesSaver) Save() (map[string]Value, string, error) {
+	m, err := valuesToMap(vls.Row, vls.Schema)
+	return m, vls.InsertID, err
+}
+
+func valuesToMap(vs []Value, schema Schema) (map[string]Value, error) {
+	if len(vs) != len(schema) {
+		return nil, errors.New("Schema does not match length of row to be inserted")
+	}
+
+	m := make(map[string]Value)
+	for i, fieldSchema := range schema {
+		if fieldSchema.Type == RecordFieldType {
+			nested, ok := vs[i].([]Value)
+			if !ok {
+				return nil, errors.New("Nested record is not a []Value")
+			}
+			value, err := valuesToMap(nested, fieldSchema.Schema)
+			if err != nil {
+				return nil, err
+			}
+			m[fieldSchema.Name] = value
+		} else {
+			m[fieldSchema.Name] = vs[i]
+		}
+	}
+	return m, nil
+}
+
 // convertRows converts a series of TableRows into a series of Value slices.
 // schema is used to interpret the data from rows; its length must match the
 // length of each row.

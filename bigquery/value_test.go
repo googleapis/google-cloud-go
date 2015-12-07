@@ -323,3 +323,60 @@ func TestRepeatedRecordContainingRecord(t *testing.T) {
 		t.Errorf("converting repeated records containing record : got:\n%v\nwant:\n%v", got, want)
 	}
 }
+
+func TestValuesSaverConvertsToMap(t *testing.T) {
+	testCases := []struct {
+		vs   ValuesSaver
+		want *insertionRow
+	}{
+		{
+			vs: ValuesSaver{
+				Schema: []*FieldSchema{
+					{Name: "intField", Type: IntegerFieldType},
+					{Name: "strField", Type: StringFieldType},
+				},
+				InsertID: "iid",
+				Row:      []Value{1, "a"},
+			},
+			want: &insertionRow{
+				InsertID: "iid",
+				Row:      map[string]Value{"intField": 1, "strField": "a"},
+			},
+		},
+		{
+			vs: ValuesSaver{
+				Schema: []*FieldSchema{
+					{Name: "intField", Type: IntegerFieldType},
+					{
+						Name: "recordField",
+						Type: RecordFieldType,
+						Schema: []*FieldSchema{
+							{Name: "nestedInt", Type: IntegerFieldType, Repeated: true},
+						},
+					},
+				},
+				InsertID: "iid",
+				Row:      []Value{1, []Value{[]Value{2, 3}}},
+			},
+			want: &insertionRow{
+				InsertID: "iid",
+				Row: map[string]Value{
+					"intField": 1,
+					"recordField": map[string]Value{
+						"nestedInt": []Value{2, 3},
+					},
+				},
+			},
+		},
+	}
+	for _, tc := range testCases {
+		data, insertID, err := tc.vs.Save()
+		if err != nil {
+			t.Errorf("Expected successful save; got: %v", err)
+		}
+		got := &insertionRow{insertID, data}
+		if !reflect.DeepEqual(got, tc.want) {
+			t.Errorf("saving ValuesSaver: got:\n%v\nwant:\n%v", got, tc.want)
+		}
+	}
+}

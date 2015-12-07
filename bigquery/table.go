@@ -225,7 +225,7 @@ type CreateTableOption interface {
 
 type tableExpiration time.Time
 
-// TableExpiration returns a CreateTableOption which will cause the created table to be deleted after the expiration time.
+// TableExpiration returns a CreateTableOption that will cause the created table to be deleted after the expiration time.
 func TableExpiration(exp time.Time) CreateTableOption { return tableExpiration(exp) }
 
 func (opt tableExpiration) customizeCreateTable(conf *createTableConf) {
@@ -275,4 +275,9 @@ func (p *TableMetadataPatch) Name(name string) {
 // Apply applies the patch operation.
 func (p *TableMetadataPatch) Apply(ctx context.Context) (*TableMetadata, error) {
 	return p.s.patchTable(ctx, p.projectID, p.datasetID, p.tableID, &p.conf)
+}
+
+// NewUploader returns an *Uploader that can be used to append rows to t.
+func (t *Table) NewUploader() *Uploader {
+	return &Uploader{t: t}
 }
