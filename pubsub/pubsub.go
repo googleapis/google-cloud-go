@@ -28,7 +28,7 @@ import (
 	"time"
 
 	"google.golang.org/api/googleapi"
-	raw "google.golang.org/api/pubsub/v1beta2"
+	raw "google.golang.org/api/pubsub/v1"
 	"google.golang.org/cloud"
 	"google.golang.org/cloud/internal"
 	"google.golang.org/cloud/internal/transport"
@@ -153,7 +153,7 @@ func ModifyAckDeadline(ctx context.Context, sub string, id string, deadline time
 	}
 	_, err := rawService(ctx).Projects.Subscriptions.ModifyAckDeadline(fullSubName(internal.ProjID(ctx), sub), &raw.ModifyAckDeadlineRequest{
 		AckDeadlineSeconds: int64(deadline / time.Second),
-		AckId:              id,
+		AckIds:             []string{id},
 	}).Do()
 	return err
 }
