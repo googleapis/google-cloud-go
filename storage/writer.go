@@ -16,7 +16,6 @@ package storage
 
 import (
 	"io"
-	"sync"
 
 	"golang.org/x/net/context"
 )
@@ -33,10 +32,7 @@ type Writer struct {
 	bucket string
 	name   string
 
-	once sync.Once
-
 	opened bool
-	r      io.Reader
 	pw     *io.PipeWriter
 
 	donec chan struct{} // closed after err and obj are set.
@@ -52,13 +48,13 @@ func (w *Writer) open() {
 		attrs.Name = w.name
 	}
 	pr, pw := io.Pipe()
-	w.r = &contentTyper{pr, attrs.ContentType}
+	r := &contentTyper{pr, attrs.ContentType}
 	w.pw = pw
 	w.opened = true
 
 	go func() {
 		resp, err := w.client.raw.Objects.Insert(
-			w.bucket, attrs.toRawObject(w.bucket)).Media(w.r).Projection("full").Context(w.ctx).Do()
+			w.bucket, attrs.toRawObject(w.bucket)).Media(r).Projection("full").Context(w.ctx).Do()
 		w.err = err
 		if err == nil {
 			w.obj = newObject(resp)
