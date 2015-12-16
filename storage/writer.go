@@ -15,7 +15,9 @@
 package storage
 
 import (
+	"fmt"
 	"io"
+	"unicode/utf8"
 
 	"golang.org/x/net/context"
 )
@@ -40,12 +42,15 @@ type Writer struct {
 	obj   *ObjectAttrs
 }
 
-func (w *Writer) open() {
+func (w *Writer) open() error {
 	attrs := w.ObjectAttrs
 	// Always set the name, otherwise the backend
 	// rejects the request and responds with an HTTP 400.
 	if attrs.Name == "" {
 		attrs.Name = w.name
+	}
+	if !utf8.ValidString(attrs.Name) {
+		return fmt.Errorf("storage: object name %q is not valid UTF-8", attrs.Name)
 	}
 	pr, pw := io.Pipe()
 	r := &contentTyper{pr, attrs.ContentType}
@@ -63,6 +68,7 @@ func (w *Writer) open() {
 		}
 		close(w.donec)
 	}()
+	return nil
 }
 
 // Write appends to w.
@@ -71,7 +77,9 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 		return 0, w.err
 	}
 	if !w.opened {
-		w.open()
+		if err := w.open(); err != nil {
+			return 0, err
+		}
 	}
 	return w.pw.Write(p)
 }
@@ -81,7 +89,9 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 // can be retrieved by calling Object.
 func (w *Writer) Close() error {
 	if !w.opened {
-		w.open()
+		if err := w.open(); err != nil {
+			return err
+		}
 	}
 	if err := w.pw.Close(); err != nil {
 		return err

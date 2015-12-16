@@ -26,6 +26,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -322,6 +323,55 @@ func TestACL(t *testing.T) {
 	}
 	if err := bkt.ACL().Delete(ctx, "user-jbd@google.com"); err != nil {
 		t.Errorf("Error while deleting bucket ACL rule: %v", err)
+	}
+}
+
+func TestValidObjectNames(t *testing.T) {
+	ctx := context.Background()
+	client, err := NewClient(ctx, cloud.WithTokenSource(testutil.TokenSource(ctx, ScopeFullControl)))
+	if err != nil {
+		t.Errorf("Could not create client: %v", err)
+	}
+	defer client.Close()
+
+	bkt := client.Bucket(bucket)
+
+	validNames := []string{
+		"gopher",
+		"Гоферови",
+		"a",
+		strings.Repeat("a", 1024),
+	}
+	for _, name := range validNames {
+		w := bkt.Object(name).NewWriter(ctx)
+		if _, err := w.Write([]byte("data")); err != nil {
+			t.Errorf("Object %q write failed: %v. Want success", name, err)
+			continue
+		}
+		if err := w.Close(); err != nil {
+			t.Errorf("Object %q close failed: %v. Want success", name, err)
+			continue
+		}
+		defer bkt.Object(name).Delete(ctx)
+	}
+
+	invalidNames := []string{
+		"", // Too short.
+		strings.Repeat("a", 1025), // Too long.
+		"new\nlines",
+		"bad\xffunicode",
+	}
+	for _, name := range invalidNames {
+		w := bkt.Object(name).NewWriter(ctx)
+		// Invalid object names will either cause failure during Write or Close.
+		if _, err := w.Write([]byte("data")); err != nil {
+			continue
+		}
+		if err := w.Close(); err != nil {
+			continue
+		}
+		defer bkt.Object(name).Delete(ctx)
+		t.Errorf("%q should have failed. Didn't", name)
 	}
 }
 

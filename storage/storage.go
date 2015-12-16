@@ -32,6 +32,7 @@ import (
 	"net/url"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"google.golang.org/cloud"
 	"google.golang.org/cloud/internal/transport"
@@ -108,6 +109,10 @@ type BucketHandle struct {
 
 // Bucket returns a BucketHandle, which provides operations on the named bucket.
 // This call does not perform any network operations.
+//
+// name must contain only lowercase letters, numbers, dashes, underscores, and
+// dots. The full specification for valid bucket names can be found at:
+//   https://cloud.google.com/storage/docs/bucket-naming
 func (c *Client) Bucket(name string) *BucketHandle {
 	return &BucketHandle{
 		c:    c,
@@ -150,6 +155,10 @@ type ObjectHandle struct {
 
 // Object returns an ObjectHandle, which provides operations on the named object.
 // This call does not perform any network operations.
+//
+// name must consist entirely of valid UTF-8-encoded runes. The full specification
+// for valid object names can be found at:
+//   https://cloud.google.com/storage/docs/bucket-naming
 func (b *BucketHandle) Object(name string) *ObjectHandle {
 	return &ObjectHandle{
 		c:      b.c,
@@ -333,6 +342,9 @@ func (o *ObjectHandle) ACL() *ACLHandle {
 // Attrs returns meta information about the object.
 // ErrObjectNotExist will be returned if the object is not found.
 func (o *ObjectHandle) Attrs(ctx context.Context) (*ObjectAttrs, error) {
+	if !utf8.ValidString(o.object) {
+		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
+	}
 	obj, err := o.c.raw.Objects.Get(o.bucket, o.object).Projection("full").Context(ctx).Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
@@ -347,6 +359,9 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (*ObjectAttrs, error) {
 // All zero-value attributes are ignored.
 // ErrObjectNotExist will be returned if the object is not found.
 func (o *ObjectHandle) Update(ctx context.Context, attrs ObjectAttrs) (*ObjectAttrs, error) {
+	if !utf8.ValidString(o.object) {
+		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
+	}
 	obj, err := o.c.raw.Objects.Patch(o.bucket, o.object, attrs.toRawObject(o.bucket)).Projection("full").Context(ctx).Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
@@ -359,6 +374,9 @@ func (o *ObjectHandle) Update(ctx context.Context, attrs ObjectAttrs) (*ObjectAt
 
 // Delete deletes the single specified object.
 func (o *ObjectHandle) Delete(ctx context.Context) error {
+	if !utf8.ValidString(o.object) {
+		return fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
+	}
 	return o.c.raw.Objects.Delete(o.bucket, o.object).Context(ctx).Do()
 }
 
@@ -370,6 +388,12 @@ func (c *Client) CopyObject(ctx context.Context, srcBucket, srcName string, dest
 	}
 	if srcName == "" || destName == "" {
 		return nil, errors.New("storage: srcName and destName must be non-empty")
+	}
+	if !utf8.ValidString(srcName) {
+		return nil, fmt.Errorf("storage: srcName %q is not valid UTF-8", srcName)
+	}
+	if !utf8.ValidString(destName) {
+		return nil, fmt.Errorf("storage: destName %q is not valid UTF-8", destName)
 	}
 	var rawObject *raw.Object
 	if attrs != nil {
@@ -391,6 +415,9 @@ func (c *Client) CopyObject(ctx context.Context, srcBucket, srcName string, dest
 // of the object.
 // ErrObjectNotExist will be returned if the object is not found.
 func (o *ObjectHandle) NewReader(ctx context.Context) (io.ReadCloser, error) {
+	if !utf8.ValidString(o.object) {
+		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
+	}
 	u := &url.URL{
 		Scheme: "https",
 		Host:   "storage.googleapis.com",
