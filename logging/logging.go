@@ -31,7 +31,7 @@ import (
 )
 
 // Scope is the OAuth2 scope necessary to use Google Cloud Logging.
-const Scope = api.CloudPlatformScope
+const Scope = api.LoggingWriteScope
 
 // Level is the log level.
 type Level int
