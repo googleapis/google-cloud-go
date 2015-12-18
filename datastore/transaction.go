@@ -153,7 +153,11 @@ func (t *Transaction) Commit() (*Commit, error) {
 	}
 	commit := &Commit{}
 	for i, p := range t.pending {
-		p.key = protoToKey(resp.MutationResult.InsertAutoIdKey[i])
+		key, err := protoToKey(resp.MutationResult.InsertAutoIdKey[i])
+		if err != nil {
+			return nil, errors.New("datastore: internal error: server returned an invalid key")
+		}
+		p.key = key
 		p.commit = commit
 	}
 

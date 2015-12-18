@@ -671,8 +671,8 @@ func (t *Iterator) next() (*Key, *pb.Entity, error) {
 	if e.Entity.Key == nil {
 		return nil, nil, errors.New("datastore: internal error: server did not return a key")
 	}
-	k := protoToKey(e.Entity.Key)
-	if k.Incomplete() {
+	k, err := protoToKey(e.Entity.Key)
+	if err != nil || k.Incomplete() {
 		return nil, nil, errors.New("datastore: internal error: server returned an invalid key")
 	}
 	return k, e.Entity, nil

@@ -221,3 +221,21 @@ func TestEncoding(t *testing.T) {
 		}
 	}
 }
+
+func TestInvalidKeyDecode(t *testing.T) {
+	// Check that decoding an invalid key returns an err and doesn't panic.
+	enc := NewKey(context.Background(), "Kind", "Foo", 0, nil).Encode()
+
+	invalid := []string{
+		"",
+		"Laboratorio",
+		enc + "Junk",
+		enc[:len(enc)-4],
+	}
+	for _, enc := range invalid {
+		key, err := DecodeKey(enc)
+		if err == nil || key != nil {
+			t.Errorf("DecodeKey(%q) = %v, %v; want nil, error", key, err)
+		}
+	}
+}

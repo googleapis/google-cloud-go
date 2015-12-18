@@ -165,20 +165,23 @@ func keyToProto(k *Key) *pb.Key {
 	return key
 }
 
-func protoToKey(p *pb.Key) *Key {
-	keys := make([]*Key, len(p.GetPathElement()))
-	for i, el := range p.GetPathElement() {
-		keys[i] = &Key{
+// protoToKey decodes a protocol buffer representation of a key into an
+// equivalent *Key object.
+func protoToKey(p *pb.Key) (*Key, error) {
+	var key *Key
+	for _, el := range p.GetPathElement() {
+		key = &Key{
 			namespace: p.GetPartitionId().GetNamespace(),
 			kind:      el.GetKind(),
 			id:        el.GetId(),
 			name:      el.GetName(),
+			parent:    key,
 		}
 	}
-	for i := 0; i < len(keys)-1; i++ {
-		keys[i+1].parent = keys[i]
+	if !key.valid() { // Also detects key == nil.
+		return nil, ErrInvalidKey
 	}
-	return keys[len(keys)-1]
+	return key, nil
 }
 
 // multiKeyToProto is a batch version of keyToProto.
@@ -191,12 +194,20 @@ func multiKeyToProto(keys []*Key) []*pb.Key {
 }
 
 // multiKeyToProto is a batch version of keyToProto.
-func multiProtoToKey(keys []*pb.Key) []*Key {
+func multiProtoToKey(keys []*pb.Key) ([]*Key, error) {
+	hasErr := false
 	ret := make([]*Key, len(keys))
+	err := make(MultiError, len(keys))
 	for i, k := range keys {
-		ret[i] = protoToKey(k)
+		ret[i], err[i] = protoToKey(k)
+		if err[i] != nil {
+			hasErr = true
+		}
 	}
-	return ret
+	if hasErr {
+		return nil, err
+	}
+	return ret, nil
 }
 
 // multiValid is a batch version of Key.valid. It returns an error, not a
@@ -335,20 +346,25 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		return errors.New("datastore: internal error: server returned the wrong number of entities")
 	}
 	for _, e := range resp.Found {
-		k := protoToKey(e.Entity.Key)
+		k, err := protoToKey(e.Entity.Key)
+		if err != nil {
+			return errors.New("datastore: internal error: server returned an invalid key")
+		}
 		index := keyMap[k.String()]
 		elem := v.Index(index)
 		if multiArgType == multiArgTypePropertyLoadSaver || multiArgType == multiArgTypeStruct {
 			elem = elem.Addr()
 		}
-		err := loadEntity(elem.Interface(), e.Entity)
-		if err != nil {
+		if err := loadEntity(elem.Interface(), e.Entity); err != nil {
 			multiErr[index] = err
 			any = true
 		}
 	}
 	for _, e := range resp.Missing {
-		k := protoToKey(e.Entity.Key)
+		k, err := protoToKey(e.Entity.Key)
+		if err != nil {
+			return errors.New("datastore: internal error: server returned an invalid key")
+		}
 		multiErr[keyMap[k.String()]] = ErrNoSuchEntity
 		any = true
 	}
@@ -409,7 +425,10 @@ func (c *Client) PutMulti(ctx context.Context, keys []*Key, src interface{}) ([]
 		return nil, errors.New("datastore: internal error: server returned the wrong number of keys")
 	}
 	for retI, respI := range newKeys {
-		ret[retI] = protoToKey(resp.MutationResult.InsertAutoIdKey[respI])
+		ret[retI], err = protoToKey(resp.MutationResult.InsertAutoIdKey[respI])
+		if err != nil {
+			return nil, errors.New("datastore: internal error: server returned an invalid key")
+		}
 	}
 	return ret, nil
 }

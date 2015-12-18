@@ -269,7 +269,9 @@ func propValue(v *pb.Value) interface{} {
 	case v.DoubleValue != nil:
 		return *v.DoubleValue
 	case v.KeyValue != nil:
-		return protoToKey(v.KeyValue)
+		// TODO(djd): Don't drop this error.
+		key, _ := protoToKey(v.KeyValue)
+		return key
 	}
 	return nil
 }
