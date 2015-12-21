@@ -673,3 +673,36 @@ func TestTransaction(t *testing.T) {
 		}
 	}
 }
+
+func TestNilPointers(t *testing.T) {
+	type X struct {
+		S string
+	}
+	ctx := context.Background()
+	client := newClient(ctx)
+
+	src := []*X{{"zero"}, {"one"}}
+	keys := []*Key{NewIncompleteKey(ctx, "NilX", nil), NewIncompleteKey(ctx, "NilX", nil)}
+	keys, err := client.PutMulti(ctx, keys, src)
+	if err != nil {
+		t.Fatalf("PutMulti: %v", err)
+	}
+
+	// It's okay to store into a slice of nil *X.
+	xs := make([]*X, 2)
+	if err := client.GetMulti(ctx, keys, xs); err != nil {
+		t.Errorf("GetMulti: %v", err)
+	} else if !reflect.DeepEqual(xs, src) {
+		t.Errorf("GetMulti fetched %v, want %v", xs, src)
+	}
+
+	// It isn't okay to store into a single nil *X.
+	var x0 *X
+	if err, want := client.Get(ctx, keys[0], x0), ErrInvalidEntityType; err != want {
+		t.Errorf("Get: err %v; want %v", err, want)
+	}
+
+	if err := client.DeleteMulti(ctx, keys); err != nil {
+		t.Errorf("Delete: %v", err)
+	}
+}
