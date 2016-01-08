@@ -95,7 +95,13 @@ func TestObjects(t *testing.T) {
 			t.Errorf("Can't ReadAll object %v, errored with %v", obj, err)
 		}
 		if got, want := slurp, contents[obj]; !bytes.Equal(got, want) {
-			t.Errorf("Contents (%v) = %q; want %q", obj, got, want)
+			t.Errorf("Contents (%q) = %q; want %q", obj, got, want)
+		}
+		if got, want := rc.Size(), len(contents[obj]); got != int64(want) {
+			t.Errorf("Size (%q) = %d; want %d", obj, got, want)
+		}
+		if got, want := rc.ContentType(), "text/plain"; got != want {
+			t.Errorf("ContentType (%q) = %q; want %q", obj, got, want)
 		}
 		rc.Close()
 

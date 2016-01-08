@@ -27,7 +27,6 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -411,10 +410,10 @@ func (c *Client) CopyObject(ctx context.Context, srcBucket, srcName string, dest
 	return newObject(o), nil
 }
 
-// NewReader creates a new io.ReadCloser to read the contents
-// of the object.
+// NewReader creates a new Reader to read the contents of the
+// object.
 // ErrObjectNotExist will be returned if the object is not found.
-func (o *ObjectHandle) NewReader(ctx context.Context) (io.ReadCloser, error) {
+func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
 	if !utf8.ValidString(o.object) {
 		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
 	}
@@ -433,9 +432,13 @@ func (o *ObjectHandle) NewReader(ctx context.Context) (io.ReadCloser, error) {
 	}
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		res.Body.Close()
-		return res.Body, fmt.Errorf("storage: can't read object %v/%v, status code: %v", o.bucket, o.object, res.Status)
+		return nil, fmt.Errorf("storage: can't read object %v/%v, status code: %v", o.bucket, o.object, res.Status)
 	}
-	return res.Body, nil
+	return &Reader{
+		body:        res.Body,
+		size:        res.ContentLength,
+		contentType: res.Header.Get("Content-Type"),
+	}, nil
 }
 
 // NewWriter returns a storage Writer that writes to the GCS object
