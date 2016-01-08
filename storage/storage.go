@@ -62,6 +62,54 @@ const (
 	ScopeReadWrite = raw.DevstorageReadWriteScope
 )
 
+// AdminClient is a client type for performing admin operations on a project's
+// buckets.
+type AdminClient struct {
+	hc        *http.Client
+	raw       *raw.Service
+	projectID string
+}
+
+// NewAdminClient creates a new AdminClient for a given project.
+func NewAdminClient(ctx context.Context, projectID string, opts ...cloud.ClientOption) (*AdminClient, error) {
+	c, err := NewClient(ctx, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &AdminClient{
+		hc:        c.hc,
+		raw:       c.raw,
+		projectID: projectID,
+	}, nil
+}
+
+// Close closes the AdminClient.
+func (c *AdminClient) Close() error {
+	c.hc = nil
+	return nil
+}
+
+// Create creates a Bucket in the project.
+// If attrs is nil the API defaults will be used.
+func (c *AdminClient) CreateBucket(ctx context.Context, bucketName string, attrs *BucketAttrs) error {
+	var bkt *raw.Bucket
+	if attrs != nil {
+		bkt = attrs.toRawBucket()
+	} else {
+		bkt = &raw.Bucket{}
+	}
+	bkt.Name = bucketName
+	req := c.raw.Buckets.Insert(c.projectID, bkt)
+	_, err := req.Context(ctx).Do()
+	return err
+}
+
+// Delete deletes a Bucket in the project.
+func (c *AdminClient) DeleteBucket(ctx context.Context, bucketName string) error {
+	req := c.raw.Buckets.Delete(bucketName)
+	return req.Context(ctx).Do()
+}
+
 // Client is a client for interacting with Google Cloud Storage.
 type Client struct {
 	hc  *http.Client
@@ -172,9 +220,7 @@ func (b *BucketHandle) Object(name string) *ObjectHandle {
 }
 
 // TODO(jbd): Add storage.buckets.list.
-// TODO(jbd): Add storage.buckets.insert.
 // TODO(jbd): Add storage.buckets.update.
-// TODO(jbd): Add storage.buckets.delete.
 
 // TODO(jbd): Add storage.objects.watch.
 

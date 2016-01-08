@@ -80,18 +80,45 @@ func newBucket(b *raw.Bucket) *BucketAttrs {
 	return bucket
 }
 
-// toRawObject copies the editable attributes from o to the raw library's Object type.
-func (o ObjectAttrs) toRawObject(bucket string) *raw.Object {
+func toRawObjectACL(oldACL []ACLRule) []*raw.ObjectAccessControl {
 	var acl []*raw.ObjectAccessControl
-	if len(o.ACL) > 0 {
-		acl = make([]*raw.ObjectAccessControl, len(o.ACL))
-		for i, rule := range o.ACL {
+	if len(oldACL) > 0 {
+		acl = make([]*raw.ObjectAccessControl, len(oldACL))
+		for i, rule := range oldACL {
 			acl[i] = &raw.ObjectAccessControl{
 				Entity: string(rule.Entity),
 				Role:   string(rule.Role),
 			}
 		}
 	}
+	return acl
+}
+
+// toRawBucket copies the editable attribute from b to the raw library's Bucket type.
+func (b *BucketAttrs) toRawBucket() *raw.Bucket {
+	var acl []*raw.BucketAccessControl
+	if len(b.ACL) > 0 {
+		acl = make([]*raw.BucketAccessControl, len(b.ACL))
+		for i, rule := range b.ACL {
+			acl[i] = &raw.BucketAccessControl{
+				Entity: string(rule.Entity),
+				Role:   string(rule.Role),
+			}
+		}
+	}
+	dACL := toRawObjectACL(b.DefaultObjectACL)
+	return &raw.Bucket{
+		Name:             b.Name,
+		DefaultObjectAcl: dACL,
+		Location:         b.Location,
+		StorageClass:     b.StorageClass,
+		Acl:              acl,
+	}
+}
+
+// toRawObject copies the editable attributes from o to the raw library's Object type.
+func (o ObjectAttrs) toRawObject(bucket string) *raw.Object {
+	acl := toRawObjectACL(o.ACL)
 	return &raw.Object{
 		Bucket:             bucket,
 		Name:               o.Name,
