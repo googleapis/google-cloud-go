@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// +build integration
-
 package storage
 
 import (
@@ -25,7 +23,6 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -37,7 +34,6 @@ import (
 )
 
 var (
-	bucket     string
 	contents   = make(map[string][]byte)
 	objects    = []string{"obj1", "obj2", "obj/with/slashes"}
 	aclObjects = []string{"acl1", "acl2"}
@@ -46,19 +42,30 @@ var (
 
 const envBucket = "GCLOUD_TESTS_GOLANG_PROJECT_ID"
 
-func init() {
-	bucket = os.Getenv(envBucket)
-	if bucket == "" {
-		log.Fatal(envBucket + " must be set. See CONTRIBUTING.md for details.")
+// testConfig returns the Client used to access GCS and the default bucket
+// name to use.
+func testConfig(ctx context.Context, t *testing.T) (*Client, string) {
+	ts := cloud.WithTokenSource(testutil.TokenSource(ctx, ScopeFullControl))
+	if ts == nil {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
+	p := testutil.ProjID()
+	if p == "" {
+		log.Fatal("The project ID must be set. See CONTRIBUTING.md for details")
+	}
+	client, err := NewClient(ctx, ts)
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	return client, p
 }
 
 func TestObjects(t *testing.T) {
-	ctx := context.Background()
-	client, err := NewClient(ctx, cloud.WithTokenSource(testutil.TokenSource(ctx, ScopeFullControl)))
-	if err != nil {
-		t.Errorf("Could not create client: %v", err)
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
 	}
+	ctx := context.Background()
+	client, bucket := testConfig(ctx, t)
 	defer client.Close()
 
 	bkt := client.Bucket(bucket)
@@ -134,7 +141,7 @@ func TestObjects(t *testing.T) {
 	}
 
 	// Test NotFound.
-	_, err = bkt.Object("obj-not-exists").NewReader(ctx)
+	_, err := bkt.Object("obj-not-exists").NewReader(ctx)
 	if err != ErrObjectNotExist {
 		t.Errorf("Object should not exist, err found to be %v", err)
 	}
@@ -229,7 +236,7 @@ func TestObjects(t *testing.T) {
 	}
 	publicClient, err := NewClient(ctx, cloud.WithBaseHTTP(http.DefaultClient))
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	rc, err := publicClient.Bucket(bucket).Object(publicObj).NewReader(ctx)
 	if err != nil {
@@ -267,11 +274,11 @@ func TestObjects(t *testing.T) {
 }
 
 func TestACL(t *testing.T) {
-	ctx := context.Background()
-	client, err := NewClient(ctx, cloud.WithTokenSource(testutil.TokenSource(ctx, ScopeFullControl)))
-	if err != nil {
-		t.Errorf("Could not create client: %v", err)
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
 	}
+	ctx := context.Background()
+	client, bucket := testConfig(ctx, t)
 	defer client.Close()
 
 	bkt := client.Bucket(bucket)
@@ -333,11 +340,11 @@ func TestACL(t *testing.T) {
 }
 
 func TestValidObjectNames(t *testing.T) {
-	ctx := context.Background()
-	client, err := NewClient(ctx, cloud.WithTokenSource(testutil.TokenSource(ctx, ScopeFullControl)))
-	if err != nil {
-		t.Errorf("Could not create client: %v", err)
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
 	}
+	ctx := context.Background()
+	client, bucket := testConfig(ctx, t)
 	defer client.Close()
 
 	bkt := client.Bucket(bucket)
@@ -382,11 +389,11 @@ func TestValidObjectNames(t *testing.T) {
 }
 
 func cleanup(t *testing.T, prefix string) {
-	ctx := context.Background()
-	client, err := NewClient(ctx, cloud.WithTokenSource(testutil.TokenSource(ctx, ScopeFullControl)))
-	if err != nil {
-		t.Errorf("Could not create client: %v", err)
+	if testing.Short() {
+		t.Skip("Integration tests cleanup skipped in short mode")
 	}
+	ctx := context.Background()
+	client, bucket := testConfig(ctx, t)
 	defer client.Close()
 
 	var q *Query = &Query{

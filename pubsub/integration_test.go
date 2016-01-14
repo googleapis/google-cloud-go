@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// +build integration
-
 package pubsub
 
 import (
@@ -25,7 +23,14 @@ import (
 )
 
 func TestAll(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
 	ctx := testutil.Context(ScopePubSub, ScopeCloudPlatform)
+	if ctx == nil {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
+
 	now := time.Now()
 	topic := fmt.Sprintf("topic-%d", now.Unix())
 	subscription := fmt.Sprintf("subscription-%d", now.Unix())
