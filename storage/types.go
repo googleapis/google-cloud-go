@@ -37,8 +37,8 @@ type BucketAttrs struct {
 	// Location is the location of the bucket. It defaults to "US".
 	Location string
 
-	// Metageneration is the metadata generation of the bucket.
-	Metageneration int64
+	// MetaGeneration is the metadata generation of the bucket.
+	MetaGeneration int64
 
 	// StorageClass is the storage class of the bucket. This defines
 	// how objects in the bucket are stored and determines the SLA
@@ -57,7 +57,7 @@ func newBucket(b *raw.Bucket) *BucketAttrs {
 	bucket := &BucketAttrs{
 		Name:           b.Name,
 		Location:       b.Location,
-		Metageneration: b.Metageneration,
+		MetaGeneration: b.Metageneration,
 		StorageClass:   b.StorageClass,
 		Created:        convertTime(b.TimeCreated),
 	}
