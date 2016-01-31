@@ -644,7 +644,16 @@ var testCases = []testCase{
 			Property{Name: "B", Value: makeUint8Slice(1501), NoIndex: false},
 		},
 		nil,
-		"cannot index a Property",
+		"is too long to index",
+		"",
+	},
+	{
+		"string must be noindex",
+		&PropertyList{
+			Property{Name: "B", Value: strings.Repeat("x", 1501), NoIndex: false},
+		},
+		nil,
+		"is too long to index",
 		"",
 	},
 	{

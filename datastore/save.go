@@ -144,9 +144,12 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 		}
 		switch v := p.Value.(type) {
 		case string:
+			if len(v) > 1500 && !p.NoIndex {
+				return nil, fmt.Errorf("datastore: Property with Name %q is too long to index", p.Name)
+			}
 		case []byte:
 			if len(v) > 1500 && !p.NoIndex {
-				return nil, fmt.Errorf("datastore: cannot index a Property with Name %q", p.Name)
+				return nil, fmt.Errorf("datastore: Property with Name %q is too long to index", p.Name)
 			}
 		}
 		val.Indexed = proto.Bool(!p.NoIndex)
