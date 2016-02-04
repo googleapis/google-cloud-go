@@ -106,7 +106,7 @@ func (c *Client) fullyQualifiedProjectName() string {
 	return fmt.Sprintf("projects/%s", c.projectID)
 }
 
-// TODO(jbd): Add subscription listing.
+// TODO(jbd): Add project subscription listing.
 
 // CreateSub creates a Pub/Sub subscription on the backend.
 // A subscription should subscribe to an existing topic.

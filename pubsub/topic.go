@@ -50,8 +50,8 @@ func (c *Client) Topic(name string) *TopicHandle {
 	return &TopicHandle{c: c, name: fmt.Sprintf("projects/%s/topics/%s", c.projectID, name)}
 }
 
-// ListTopics lists all of the topics for the client's project.
-func (c *Client) ListTopics(ctx context.Context) ([]*TopicHandle, error) {
+// Topics lists all of the topics for the client's project.
+func (c *Client) Topics(ctx context.Context) ([]*TopicHandle, error) {
 	topics := []*TopicHandle{}
 	err := c.s.Projects.Topics.List(c.fullyQualifiedProjectName()).
 		Pages(ctx, func(res *raw.ListTopicsResponse) error {
@@ -87,4 +87,20 @@ func (t *TopicHandle) Exists(ctx context.Context) (bool, error) {
 		return false, nil
 	}
 	return false, err
+}
+
+// Subscriptions lists the subscriptions for this topic.
+func (t *TopicHandle) Subscriptions(ctx context.Context) ([]*SubscriptionHandle, error) {
+	subs := []*SubscriptionHandle{}
+	err := t.c.s.Projects.Topics.Subscriptions.List(t.name).
+		Pages(ctx, func(res *raw.ListTopicSubscriptionsResponse) error {
+			for _, s := range res.Subscriptions {
+				subs = append(subs, &SubscriptionHandle{c: t.c, name: s})
+			}
+			return nil
+		})
+	if err != nil {
+		return nil, err
+	}
+	return subs, nil
 }

@@ -48,6 +48,7 @@ const (
     create_topic <name>
     topic_exists <name>
     delete_topic <name>
+    list_topic_subscriptions <name>
     list_topics
     create_subscription <name> <linked_topic>
     delete_subscription <name>
@@ -118,12 +119,24 @@ func createTopic(client *pubsub.Client, argv []string) {
 
 func listTopics(client *pubsub.Client, argv []string) {
 	checkArgs(argv, 1)
-	topics, err := client.ListTopics(context.Background())
+	topics, err := client.Topics(context.Background())
 	if err != nil {
 		log.Fatalf("Listing topics failed: %v", err)
 	}
 	for _, t := range topics {
 		fmt.Println(t.Name())
+	}
+}
+
+func listTopicSubscriptions(client *pubsub.Client, argv []string) {
+	checkArgs(argv, 2)
+	topic := argv[1]
+	subs, err := client.Topic(topic).Subscriptions(context.Background())
+	if err != nil {
+		log.Fatalf("Listing subscriptions failed: %v", err)
+	}
+	for _, s := range subs {
+		fmt.Println(s.Name())
 	}
 }
 
@@ -358,10 +371,11 @@ func main() {
 	}
 
 	newStyle := map[string]func(client *pubsub.Client, argv []string){
-		"create_topic": createTopic,
-		"delete_topic": deleteTopic,
-		"list_topics":  listTopics,
-		"topic_exists": checkTopicExists,
+		"create_topic":             createTopic,
+		"delete_topic":             deleteTopic,
+		"list_topics":              listTopics,
+		"list_topic_subscriptions": listTopicSubscriptions,
+		"topic_exists":             checkTopicExists,
 	}
 	subcommand := argv[0]
 	if f, ok := oldStyle[subcommand]; ok {
