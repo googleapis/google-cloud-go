@@ -15,7 +15,10 @@
 package pubsub
 
 import (
+	"net/http"
+
 	"golang.org/x/net/context"
+	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/pubsub/v1"
 	"google.golang.org/cloud/internal"
 )
@@ -28,4 +31,26 @@ import (
 func CreateTopic(ctx context.Context, name string) error {
 	_, err := rawService(ctx).Projects.Topics.Create(fullTopicName(internal.ProjID(ctx), name), &raw.Topic{}).Do()
 	return err
+}
+
+// DeleteTopic deletes the specified topic.
+//
+// Deprecated: Use TopicHandle.Delete instead.
+func DeleteTopic(ctx context.Context, name string) error {
+	_, err := rawService(ctx).Projects.Topics.Delete(fullTopicName(internal.ProjID(ctx), name)).Do()
+	return err
+}
+
+// TopicExists returns true if a topic exists with the specified name.
+//
+// Deprecated: Use TopicHandle.Exists instead.
+func TopicExists(ctx context.Context, name string) (bool, error) {
+	_, err := rawService(ctx).Projects.Topics.Get(fullTopicName(internal.ProjID(ctx), name)).Do()
+	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }

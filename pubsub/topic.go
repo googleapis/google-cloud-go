@@ -16,8 +16,10 @@ package pubsub
 
 import (
 	"fmt"
+	"net/http"
 
 	"golang.org/x/net/context"
+	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/pubsub/v1"
 )
 
@@ -67,4 +69,22 @@ func (c *Client) ListTopics(ctx context.Context) ([]*TopicHandle, error) {
 // Name returns the globally unique name for the topic.
 func (t *TopicHandle) Name() string {
 	return t.name
+}
+
+// Delete deletes the topic.
+func (t *TopicHandle) Delete(ctx context.Context) error {
+	_, err := t.c.s.Projects.Topics.Delete(t.name).Context(ctx).Do()
+	return err
+}
+
+// Exists reports whether the topic exists on the server.
+func (t *TopicHandle) Exists(ctx context.Context) (bool, error) {
+	_, err := t.c.s.Projects.Topics.Get(t.name).Context(ctx).Do()
+	if err == nil {
+		return true, nil
+	}
+	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
+		return false, nil
+	}
+	return false, err
 }

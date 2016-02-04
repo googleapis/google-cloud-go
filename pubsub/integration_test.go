@@ -51,7 +51,7 @@ func TestAll(t *testing.T) {
 		t.Errorf("CreateSub error: %v", err)
 	}
 
-	exists, err := TopicExists(ctx, topicName)
+	exists, err := topic.Exists(ctx)
 	if err != nil {
 		t.Fatalf("TopicExists error: %v", err)
 	}
@@ -150,7 +150,7 @@ func TestAll(t *testing.T) {
 		t.Errorf("DeleteSub error: %v", err)
 	}
 
-	err = DeleteTopic(ctx, topicName)
+	err = topic.Delete(ctx)
 	if err != nil {
 		t.Errorf("DeleteTopic error: %v", err)
 	}

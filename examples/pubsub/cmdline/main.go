@@ -46,6 +46,7 @@ var (
 const (
 	usage = `Available arguments are:
     create_topic <name>
+    topic_exists <name>
     delete_topic <name>
     list_topics
     create_subscription <name> <linked_topic>
@@ -110,7 +111,7 @@ func createTopic(client *pubsub.Client, argv []string) {
 	topic := argv[1]
 	_, err := client.NewTopic(context.Background(), topic)
 	if err != nil {
-		log.Fatalf("CreateTopic failed, %v", err)
+		log.Fatalf("Creating topic failed: %v", err)
 	}
 	fmt.Printf("Topic %s was created.\n", topic)
 }
@@ -119,25 +120,35 @@ func listTopics(client *pubsub.Client, argv []string) {
 	checkArgs(argv, 1)
 	topics, err := client.ListTopics(context.Background())
 	if err != nil {
-		log.Fatalf("listTopics failed, %v", err)
+		log.Fatalf("Listing topics failed: %v", err)
 	}
 	for _, t := range topics {
 		fmt.Println(t.Name())
 	}
 }
 
-// NOTE: the following operations (which take a Context rather than a Client)
-// use the old API which is being progressively deprecated.
+func checkTopicExists(client *pubsub.Client, argv []string) {
+	checkArgs(argv, 1)
+	topic := argv[1]
+	exists, err := client.Topic(topic).Exists(context.Background())
+	if err != nil {
+		log.Fatalf("Checking topic exists failed: %v", err)
+	}
+	fmt.Println(exists)
+}
 
-func deleteTopic(ctx context.Context, argv []string) {
+func deleteTopic(client *pubsub.Client, argv []string) {
 	checkArgs(argv, 2)
 	topic := argv[1]
-	err := pubsub.DeleteTopic(ctx, topic)
+	err := client.Topic(topic).Delete(context.Background())
 	if err != nil {
-		log.Fatalf("DeleteTopic failed, %v", err)
+		log.Fatalf("Deleting topic failed: %v", err)
 	}
 	fmt.Printf("Topic %s was deleted.\n", topic)
 }
+
+// NOTE: the following operations (which take a Context rather than a Client)
+// use the old API which is being progressively deprecated.
 
 func listSubscriptions(ctx context.Context, argv []string) {
 	panic("listSubscriptions not implemented yet")
@@ -339,7 +350,6 @@ func main() {
 		usageAndExit("Please specify Project ID.")
 	}
 	oldStyle := map[string]func(ctx context.Context, argv []string){
-		"delete_topic":        deleteTopic,
 		"create_subscription": createSubscription,
 		"delete_subscription": deleteSubscription,
 		"publish":             publish,
@@ -349,7 +359,9 @@ func main() {
 
 	newStyle := map[string]func(client *pubsub.Client, argv []string){
 		"create_topic": createTopic,
+		"delete_topic": deleteTopic,
 		"list_topics":  listTopics,
+		"topic_exists": checkTopicExists,
 	}
 	subcommand := argv[0]
 	if f, ok := oldStyle[subcommand]; ok {
