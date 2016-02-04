@@ -246,13 +246,6 @@ func pull(ctx context.Context, sub string, n int, retImmediately bool) ([]*Messa
 	return msgs, nil
 }
 
-// CreateTopic creates a new topic with the specified name on the backend.
-// It will return an error if topic already exists.
-func CreateTopic(ctx context.Context, name string) error {
-	_, err := rawService(ctx).Projects.Topics.Create(fullTopicName(internal.ProjID(ctx), name), &raw.Topic{}).Do()
-	return err
-}
-
 // DeleteTopic deletes the specified topic.
 func DeleteTopic(ctx context.Context, name string) error {
 	_, err := rawService(ctx).Projects.Topics.Delete(fullTopicName(internal.ProjID(ctx), name)).Do()
@@ -306,6 +299,7 @@ func fullSubName(proj, name string) string {
 // fullTopicName returns the fully qualified name for a topic.
 // E.g. /topics/project-id/topic-name.
 func fullTopicName(proj, name string) string {
+	// TODO(mcgreevy): remove this in favour of Topic.fullyQualifiedName.
 	return fmt.Sprintf("projects/%s/topics/%s", proj, name)
 }
 

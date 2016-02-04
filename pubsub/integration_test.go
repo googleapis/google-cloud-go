@@ -19,6 +19,8 @@ import (
 	"testing"
 	"time"
 
+	"golang.org/x/net/context"
+
 	"google.golang.org/cloud/internal/testutil"
 )
 
@@ -32,18 +34,24 @@ func TestAll(t *testing.T) {
 	}
 
 	now := time.Now()
-	topic := fmt.Sprintf("topic-%d", now.Unix())
+	topicName := fmt.Sprintf("topic-%d", now.Unix())
 	subscription := fmt.Sprintf("subscription-%d", now.Unix())
 
-	if err := CreateTopic(ctx, topic); err != nil {
+	client, err := NewClient(context.Background(), testutil.ProjID())
+	if err != nil {
+		t.Fatalf("Creating client error: %v", err)
+	}
+
+	var topic *TopicHandle
+	if topic, err = client.NewTopic(context.Background(), topicName); err != nil {
 		t.Errorf("CreateTopic error: %v", err)
 	}
 
-	if err := CreateSub(ctx, subscription, topic, time.Duration(0), ""); err != nil {
+	if err := CreateSub(ctx, subscription, topic.Name(), time.Duration(0), ""); err != nil {
 		t.Errorf("CreateSub error: %v", err)
 	}
 
-	exists, err := TopicExists(ctx, topic)
+	exists, err := TopicExists(ctx, topic.Name())
 	if err != nil {
 		t.Fatalf("TopicExists error: %v", err)
 	}
@@ -73,7 +81,7 @@ func TestAll(t *testing.T) {
 		expectedMsgs[text] = false
 	}
 
-	ids, err := Publish(ctx, topic, msgs...)
+	ids, err := Publish(ctx, topic.Name(), msgs...)
 	if err != nil {
 		t.Fatalf("Publish (1) error: %v", err)
 	}
@@ -121,7 +129,7 @@ func TestAll(t *testing.T) {
 	msg := &Message{
 		Data: []byte(data),
 	}
-	_, err = Publish(ctx, topic, msg)
+	_, err = Publish(ctx, topic.Name(), msg)
 	if err != nil {
 		t.Fatalf("Publish (2) error: %v", err)
 	}
@@ -142,7 +150,7 @@ func TestAll(t *testing.T) {
 		t.Errorf("DeleteSub error: %v", err)
 	}
 
-	err = DeleteTopic(ctx, topic)
+	err = DeleteTopic(ctx, topic.Name())
 	if err != nil {
 		t.Errorf("DeleteTopic error: %v", err)
 	}

@@ -104,18 +104,21 @@ func newClient(jsonFile string) (*http.Client, error) {
 	return nil, errors.New("Could not create an authenticated client.")
 }
 
-func listTopics(ctx context.Context, argv []string) {
-	panic("listTopics not implemented yet")
-}
-
-func createTopic(ctx context.Context, argv []string) {
+func createTopic(client *pubsub.Client, argv []string) {
 	checkArgs(argv, 2)
 	topic := argv[1]
-	err := pubsub.CreateTopic(ctx, topic)
+	_, err := client.NewTopic(context.Background(), topic)
 	if err != nil {
 		log.Fatalf("CreateTopic failed, %v", err)
 	}
 	fmt.Printf("Topic %s was created.\n", topic)
+}
+
+// NOTE: the following operations (which take a Context rather than a Client)
+// use the old API which is being progressively deprecated.
+
+func listTopics(ctx context.Context, argv []string) {
+	panic("listTopics not implemented yet")
 }
 
 func deleteTopic(ctx context.Context, argv []string) {
@@ -283,13 +286,9 @@ func publishMessages(ctx context.Context, argv []string) {
 	}
 }
 
-// This example demonstrates calling the Cloud Pub/Sub API. As of 22
-// Oct 2014, the Cloud Pub/Sub API is only available if you're
-// whitelisted. If you're interested in using it, please apply for the
-// Limited Preview program at the following form:
-// http://goo.gl/Wql9HL
+// This example demonstrates calling the Cloud Pub/Sub API.
 //
-// Also, before running this example, be sure to enable Cloud Pub/Sub
+// Before running this example, be sure to enable Cloud Pub/Sub
 // service on your project in Developer Console at:
 // https://console.developers.google.com/
 //
@@ -328,16 +327,10 @@ func main() {
 	flag.Parse()
 	argv := flag.Args()
 	checkArgs(argv, 1)
-	client, err := newClient(*jsonFile)
-	if err != nil {
-		log.Fatalf("clientAndId failed, %v", err)
-	}
 	if *projID == "" {
 		usageAndExit("Please specify Project ID.")
 	}
-	ctx := cloud.NewContext(*projID, client)
-	m := map[string]func(ctx context.Context, argv []string){
-		"create_topic":        createTopic,
+	oldStyle := map[string]func(ctx context.Context, argv []string){
 		"delete_topic":        deleteTopic,
 		"create_subscription": createSubscription,
 		"delete_subscription": deleteSubscription,
@@ -345,10 +338,25 @@ func main() {
 		"pull_messages":       pullMessages,
 		"publish_messages":    publishMessages,
 	}
+
+	newStyle := map[string]func(client *pubsub.Client, argv []string){
+		"create_topic": createTopic,
+	}
 	subcommand := argv[0]
-	f, ok := m[subcommand]
-	if !ok {
+	if f, ok := oldStyle[subcommand]; ok {
+		httpClient, err := newClient(*jsonFile)
+		if err != nil {
+			log.Fatalf("clientAndId failed, %v", err)
+		}
+		ctx := cloud.NewContext(*projID, httpClient)
+		f(ctx, argv)
+	} else if f, ok := newStyle[subcommand]; ok {
+		client, err := pubsub.NewClient(context.Background(), *projID)
+		if err != nil {
+			log.Fatalf("creating pubsub client: %v", err)
+		}
+		f(client, argv)
+	} else {
 		usageAndExit(fmt.Sprintf("Function not found for %s", subcommand))
 	}
-	f(ctx, argv)
 }
