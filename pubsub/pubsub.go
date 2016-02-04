@@ -102,7 +102,11 @@ func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption
 	return c, nil
 }
 
-// TODO(jbd): Add subscription and topic listing.
+func (c *Client) fullyQualifiedProjectName() string {
+	return fmt.Sprintf("projects/%s", c.projectID)
+}
+
+// TODO(jbd): Add subscription listing.
 
 // CreateSub creates a Pub/Sub subscription on the backend.
 // A subscription should subscribe to an existing topic.

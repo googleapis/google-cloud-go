@@ -23,16 +23,21 @@ import (
 
 // TopicHandle is a reference to a PubSub topic.
 type TopicHandle struct {
-	c    *Client
+	c *Client
+
+	// The fully qualified identifier for the topic, in the format "projects/<projid>/topics/<name>"
 	name string
 }
 
 // NewTopic creates a new topic with the specified name.
 // It returns an error if a topic already exists with that name.
+// The name must start with a letter, and contain only letters ([A-Za-z]),
+// numbers ([0-9]), dashes (-), underscores (_), periods (.), tildes (~), plus
+// (+) or percent signs (%).
 func (c *Client) NewTopic(ctx context.Context, name string) (*TopicHandle, error) {
 	t := c.Topic(name)
 	// Note: The raw API expects a Topic body, but ignores it.
-	_, err := c.s.Projects.Topics.Create(t.fullyQualifiedName(), &raw.Topic{}).
+	_, err := c.s.Projects.Topics.Create(t.Name(), &raw.Topic{}).
 		Context(ctx).
 		Do()
 	return t, err
@@ -40,14 +45,26 @@ func (c *Client) NewTopic(ctx context.Context, name string) (*TopicHandle, error
 
 // Topic creates a reference to a topic.
 func (c *Client) Topic(name string) *TopicHandle {
-	return &TopicHandle{c: c, name: name}
+	return &TopicHandle{c: c, name: fmt.Sprintf("projects/%s/topics/%s", c.projectID, name)}
 }
 
-// Name returns the name which uniquely identifies this topic within a project.
+// ListTopics lists all of the topics for the client's project.
+func (c *Client) ListTopics(ctx context.Context) ([]*TopicHandle, error) {
+	topics := []*TopicHandle{}
+	err := c.s.Projects.Topics.List(c.fullyQualifiedProjectName()).
+		Pages(ctx, func(res *raw.ListTopicsResponse) error {
+			for _, t := range res.Topics {
+				topics = append(topics, &TopicHandle{c: c, name: t.Name})
+			}
+			return nil
+		})
+	if err != nil {
+		return nil, err
+	}
+	return topics, nil
+}
+
+// Name returns the globally unique name for the topic.
 func (t *TopicHandle) Name() string {
 	return t.name
-}
-
-func (t *TopicHandle) fullyQualifiedName() string {
-	return fmt.Sprintf("projects/%s/topics/%s", t.c.projectID, t.name)
 }

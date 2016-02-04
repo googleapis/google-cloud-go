@@ -47,6 +47,7 @@ const (
 	usage = `Available arguments are:
     create_topic <name>
     delete_topic <name>
+    list_topics
     create_subscription <name> <linked_topic>
     delete_subscription <name>
     publish <topic> <message>
@@ -114,12 +115,19 @@ func createTopic(client *pubsub.Client, argv []string) {
 	fmt.Printf("Topic %s was created.\n", topic)
 }
 
+func listTopics(client *pubsub.Client, argv []string) {
+	checkArgs(argv, 1)
+	topics, err := client.ListTopics(context.Background())
+	if err != nil {
+		log.Fatalf("listTopics failed, %v", err)
+	}
+	for _, t := range topics {
+		fmt.Println(t.Name())
+	}
+}
+
 // NOTE: the following operations (which take a Context rather than a Client)
 // use the old API which is being progressively deprecated.
-
-func listTopics(ctx context.Context, argv []string) {
-	panic("listTopics not implemented yet")
-}
 
 func deleteTopic(ctx context.Context, argv []string) {
 	checkArgs(argv, 2)
@@ -341,6 +349,7 @@ func main() {
 
 	newStyle := map[string]func(client *pubsub.Client, argv []string){
 		"create_topic": createTopic,
+		"list_topics":  listTopics,
 	}
 	subcommand := argv[0]
 	if f, ok := oldStyle[subcommand]; ok {

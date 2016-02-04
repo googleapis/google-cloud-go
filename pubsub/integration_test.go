@@ -47,11 +47,11 @@ func TestAll(t *testing.T) {
 		t.Errorf("CreateTopic error: %v", err)
 	}
 
-	if err := CreateSub(ctx, subscription, topic.Name(), time.Duration(0), ""); err != nil {
+	if err := CreateSub(ctx, subscription, topicName, time.Duration(0), ""); err != nil {
 		t.Errorf("CreateSub error: %v", err)
 	}
 
-	exists, err := TopicExists(ctx, topic.Name())
+	exists, err := TopicExists(ctx, topicName)
 	if err != nil {
 		t.Fatalf("TopicExists error: %v", err)
 	}
@@ -81,7 +81,7 @@ func TestAll(t *testing.T) {
 		expectedMsgs[text] = false
 	}
 
-	ids, err := Publish(ctx, topic.Name(), msgs...)
+	ids, err := Publish(ctx, topicName, msgs...)
 	if err != nil {
 		t.Fatalf("Publish (1) error: %v", err)
 	}
@@ -129,7 +129,7 @@ func TestAll(t *testing.T) {
 	msg := &Message{
 		Data: []byte(data),
 	}
-	_, err = Publish(ctx, topic.Name(), msg)
+	_, err = Publish(ctx, topicName, msg)
 	if err != nil {
 		t.Fatalf("Publish (2) error: %v", err)
 	}
@@ -150,7 +150,7 @@ func TestAll(t *testing.T) {
 		t.Errorf("DeleteSub error: %v", err)
 	}
 
-	err = DeleteTopic(ctx, topic.Name())
+	err = DeleteTopic(ctx, topicName)
 	if err != nil {
 		t.Errorf("DeleteTopic error: %v", err)
 	}
