@@ -35,7 +35,7 @@ func TestAll(t *testing.T) {
 
 	now := time.Now()
 	topicName := fmt.Sprintf("topic-%d", now.Unix())
-	subscription := fmt.Sprintf("subscription-%d", now.Unix())
+	subName := fmt.Sprintf("subscription-%d", now.Unix())
 
 	client, err := NewClient(context.Background(), testutil.ProjID())
 	if err != nil {
@@ -47,7 +47,7 @@ func TestAll(t *testing.T) {
 		t.Errorf("CreateTopic error: %v", err)
 	}
 
-	if err := CreateSub(ctx, subscription, topicName, time.Duration(0), ""); err != nil {
+	if _, err := topic.Subscribe(ctx, subName, nil); err != nil {
 		t.Errorf("CreateSub error: %v", err)
 	}
 
@@ -59,12 +59,12 @@ func TestAll(t *testing.T) {
 		t.Errorf("topic %s should exist, but it doesn't", topic)
 	}
 
-	exists, err = SubExists(ctx, subscription)
+	exists, err = SubExists(ctx, subName)
 	if err != nil {
 		t.Fatalf("SubExists error: %v", err)
 	}
 	if !exists {
-		t.Errorf("subscription %s should exist, but it doesn't", subscription)
+		t.Errorf("subscription %s should exist, but it doesn't", subName)
 	}
 
 	max := 10
@@ -95,7 +95,7 @@ func TestAll(t *testing.T) {
 		expectedIDs[id] = false
 	}
 
-	received, err := PullWait(ctx, subscription, max)
+	received, err := PullWait(ctx, subName, max)
 	if err != nil {
 		t.Fatalf("PullWait error: %v", err)
 	}
@@ -134,7 +134,7 @@ func TestAll(t *testing.T) {
 		t.Fatalf("Publish (2) error: %v", err)
 	}
 
-	received, err = PullWait(ctx, subscription, 1)
+	received, err = PullWait(ctx, subName, 1)
 	if err != nil {
 		t.Fatalf("PullWait error: %v", err)
 	}
@@ -145,7 +145,7 @@ func TestAll(t *testing.T) {
 		t.Errorf("unexpexted message received; %s, want %s", string(received[0].Data), data)
 	}
 
-	err = DeleteSub(ctx, subscription)
+	err = DeleteSub(ctx, subName)
 	if err != nil {
 		t.Errorf("DeleteSub error: %v", err)
 	}

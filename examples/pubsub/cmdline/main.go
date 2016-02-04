@@ -160,22 +160,22 @@ func deleteTopic(client *pubsub.Client, argv []string) {
 	fmt.Printf("Topic %s was deleted.\n", topic)
 }
 
+func createSubscription(client *pubsub.Client, argv []string) {
+	checkArgs(argv, 3)
+	sub := argv[1]
+	topic := argv[2]
+	_, err := client.Topic(topic).Subscribe(context.Background(), sub, nil)
+	if err != nil {
+		log.Fatalf("Creating Subscription failed, %v", err)
+	}
+	fmt.Printf("Subscription %s was created.\n", sub)
+}
+
 // NOTE: the following operations (which take a Context rather than a Client)
 // use the old API which is being progressively deprecated.
 
 func listSubscriptions(ctx context.Context, argv []string) {
 	panic("listSubscriptions not implemented yet")
-}
-
-func createSubscription(ctx context.Context, argv []string) {
-	checkArgs(argv, 3)
-	sub := argv[1]
-	topic := argv[2]
-	err := pubsub.CreateSub(ctx, sub, topic, 60*time.Second, "")
-	if err != nil {
-		log.Fatalf("CreateSub failed, %v", err)
-	}
-	fmt.Printf("Subscription %s was created.\n", sub)
 }
 
 func deleteSubscription(ctx context.Context, argv []string) {
@@ -363,7 +363,6 @@ func main() {
 		usageAndExit("Please specify Project ID.")
 	}
 	oldStyle := map[string]func(ctx context.Context, argv []string){
-		"create_subscription": createSubscription,
 		"delete_subscription": deleteSubscription,
 		"publish":             publish,
 		"pull_messages":       pullMessages,
@@ -376,6 +375,7 @@ func main() {
 		"list_topics":              listTopics,
 		"list_topic_subscriptions": listTopicSubscriptions,
 		"topic_exists":             checkTopicExists,
+		"create_subscription":      createSubscription,
 	}
 	subcommand := argv[0]
 	if f, ok := oldStyle[subcommand]; ok {

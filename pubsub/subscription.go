@@ -36,3 +36,7 @@ func (c *Client) Subscription(name string) *SubscriptionHandle {
 func (s *SubscriptionHandle) Name() string {
 	return s.name
 }
+
+// TODO(mcgreevy): Allow configuring a PushConfig (endpoint and attributes) and default ack deadline.
+type SubscriptionConfig struct {
+}

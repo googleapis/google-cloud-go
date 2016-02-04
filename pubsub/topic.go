@@ -31,11 +31,12 @@ type TopicHandle struct {
 	name string
 }
 
-// NewTopic creates a new topic with the specified name.
-// It returns an error if a topic already exists with that name.
-// The name must start with a letter, and contain only letters ([A-Za-z]),
-// numbers ([0-9]), dashes (-), underscores (_), periods (.), tildes (~), plus
-// (+) or percent signs (%).
+// NewTopic creates a new topic.
+// The specified topic name must start with a letter, and contain only letters
+// ([A-Za-z]), numbers ([0-9]), dashes (-), underscores (_), periods (.),
+// tildes (~), plus (+) or percent signs (%).  It must be between 3 and 255
+// characters in length, and must not start with "goog".
+// If the topic already exists an error will be returned.
 func (c *Client) NewTopic(ctx context.Context, name string) (*TopicHandle, error) {
 	t := c.Topic(name)
 	// Note: The raw API expects a Topic body, but ignores it.
@@ -103,4 +104,19 @@ func (t *TopicHandle) Subscriptions(ctx context.Context) ([]*SubscriptionHandle,
 		return nil, err
 	}
 	return subs, nil
+}
+
+// Subscribe creates a new subscription to the topic.
+// The specified subscription name must start with a letter, and contain only
+// letters ([A-Za-z]), numbers ([0-9]), dashes (-), underscores (_), periods
+// (.), tildes (~), plus (+) or percent signs (%). It must be between 3 and 255
+// characters in length, and must not start with "goog".
+// If the subscription already exists an error will be returned.
+func (t *TopicHandle) Subscribe(ctx context.Context, name string, config *SubscriptionConfig) (*SubscriptionHandle, error) {
+	rawSub := &raw.Subscription{
+		Topic: t.name,
+	}
+	sub := t.c.Subscription(name)
+	_, err := t.c.s.Projects.Subscriptions.Create(sub.Name(), rawSub).Context(ctx).Do()
+	return sub, err
 }

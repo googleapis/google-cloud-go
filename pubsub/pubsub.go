@@ -108,7 +108,10 @@ func (c *Client) fullyQualifiedProjectName() string {
 
 // TODO(jbd): Add project subscription listing.
 
+// TODO: support setting ack deadline and push endpoint in TopicHandle.Subscribe, then mark CreateSub as deprecated.
+
 // CreateSub creates a Pub/Sub subscription on the backend.
+//
 // A subscription should subscribe to an existing topic.
 //
 // The messages that haven't acknowledged will be pushed back to the
