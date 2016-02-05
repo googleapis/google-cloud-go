@@ -53,6 +53,7 @@ const (
     create_subscription <name> <linked_topic>
     subscription_exists <name>
     delete_subscription <name>
+    list_subscriptions
     publish <topic> <message>
     pull_messages <subscription> <numworkers>
     publish_messages <topic> <numworkers>
@@ -192,12 +193,19 @@ func deleteSubscription(client *pubsub.Client, argv []string) {
 	fmt.Printf("Subscription %s was deleted.\n", sub)
 }
 
+func listSubscriptions(client *pubsub.Client, argv []string) {
+	checkArgs(argv, 1)
+	subs, err := client.Subscriptions(context.Background())
+	if err != nil {
+		log.Fatalf("Listing subscriptions failed: %v", err)
+	}
+	for _, s := range subs {
+		fmt.Println(s.Name())
+	}
+}
+
 // NOTE: the following operations (which take a Context rather than a Client)
 // use the old API which is being progressively deprecated.
-
-func listSubscriptions(ctx context.Context, argv []string) {
-	panic("listSubscriptions not implemented yet")
-}
 
 func publish(ctx context.Context, argv []string) {
 	checkArgs(argv, 3)
@@ -388,6 +396,7 @@ func main() {
 		"create_subscription":      createSubscription,
 		"delete_subscription":      deleteSubscription,
 		"subscription_exists":      checkSubscriptionExists,
+		"list_subscriptions":       listSubscriptions,
 	}
 	subcommand := argv[0]
 	if f, ok := oldStyle[subcommand]; ok {
