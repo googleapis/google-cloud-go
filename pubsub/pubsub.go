@@ -27,7 +27,6 @@ import (
 	"net/http"
 	"time"
 
-	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/pubsub/v1"
 	"google.golang.org/cloud"
 	"google.golang.org/cloud/internal"
@@ -145,12 +144,6 @@ func CreateSub(ctx context.Context, name string, topic string, deadline time.Dur
 	return err
 }
 
-// DeleteSub deletes the subscription.
-func DeleteSub(ctx context.Context, name string) error {
-	_, err := rawService(ctx).Projects.Subscriptions.Delete(fullSubName(internal.ProjID(ctx), name)).Do()
-	return err
-}
-
 // ModifyAckDeadline modifies the acknowledgement deadline
 // for the messages retrieved from the specified subscription.
 // Deadline must not be specified to precision greater than one second.
@@ -175,18 +168,6 @@ func ModifyPushEndpoint(ctx context.Context, sub, endpoint string) error {
 		},
 	}).Do()
 	return err
-}
-
-// SubExists returns true if subscription exists.
-func SubExists(ctx context.Context, name string) (bool, error) {
-	_, err := rawService(ctx).Projects.Subscriptions.Get(fullSubName(internal.ProjID(ctx), name)).Do()
-	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
-		return false, nil
-	}
-	if err != nil {
-		return false, err
-	}
-	return true, nil
 }
 
 // Ack acknowledges one or more Pub/Sub messages on the

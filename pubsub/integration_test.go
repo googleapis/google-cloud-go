@@ -47,7 +47,8 @@ func TestAll(t *testing.T) {
 		t.Errorf("CreateTopic error: %v", err)
 	}
 
-	if _, err := topic.Subscribe(ctx, subName, nil); err != nil {
+	var sub *SubscriptionHandle
+	if sub, err = topic.Subscribe(ctx, subName, nil); err != nil {
 		t.Errorf("CreateSub error: %v", err)
 	}
 
@@ -59,7 +60,7 @@ func TestAll(t *testing.T) {
 		t.Errorf("topic %s should exist, but it doesn't", topic)
 	}
 
-	exists, err = SubExists(ctx, subName)
+	exists, err = sub.Exists(ctx)
 	if err != nil {
 		t.Fatalf("SubExists error: %v", err)
 	}
@@ -145,7 +146,7 @@ func TestAll(t *testing.T) {
 		t.Errorf("unexpexted message received; %s, want %s", string(received[0].Data), data)
 	}
 
-	err = DeleteSub(ctx, subName)
+	err = sub.Delete(ctx)
 	if err != nil {
 		t.Errorf("DeleteSub error: %v", err)
 	}

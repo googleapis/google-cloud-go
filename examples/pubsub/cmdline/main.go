@@ -51,6 +51,7 @@ const (
     list_topic_subscriptions <name>
     list_topics
     create_subscription <name> <linked_topic>
+    subscription_exists <name>
     delete_subscription <name>
     publish <topic> <message>
     pull_messages <subscription> <numworkers>
@@ -166,9 +167,29 @@ func createSubscription(client *pubsub.Client, argv []string) {
 	topic := argv[2]
 	_, err := client.Topic(topic).Subscribe(context.Background(), sub, nil)
 	if err != nil {
-		log.Fatalf("Creating Subscription failed, %v", err)
+		log.Fatalf("Creating Subscription failed: %v", err)
 	}
 	fmt.Printf("Subscription %s was created.\n", sub)
+}
+
+func checkSubscriptionExists(client *pubsub.Client, argv []string) {
+	checkArgs(argv, 1)
+	sub := argv[1]
+	exists, err := client.Subscription(sub).Exists(context.Background())
+	if err != nil {
+		log.Fatalf("Checking subscription exists failed: %v", err)
+	}
+	fmt.Println(exists)
+}
+
+func deleteSubscription(client *pubsub.Client, argv []string) {
+	checkArgs(argv, 2)
+	sub := argv[1]
+	err := client.Subscription(sub).Delete(context.Background())
+	if err != nil {
+		log.Fatalf("Deleting Subscription failed: %v", err)
+	}
+	fmt.Printf("Subscription %s was deleted.\n", sub)
 }
 
 // NOTE: the following operations (which take a Context rather than a Client)
@@ -176,16 +197,6 @@ func createSubscription(client *pubsub.Client, argv []string) {
 
 func listSubscriptions(ctx context.Context, argv []string) {
 	panic("listSubscriptions not implemented yet")
-}
-
-func deleteSubscription(ctx context.Context, argv []string) {
-	checkArgs(argv, 2)
-	sub := argv[1]
-	err := pubsub.DeleteSub(ctx, sub)
-	if err != nil {
-		log.Fatalf("DeleteSub failed, %v", err)
-	}
-	fmt.Printf("Subscription %s was deleted.\n", sub)
 }
 
 func publish(ctx context.Context, argv []string) {
@@ -363,10 +374,9 @@ func main() {
 		usageAndExit("Please specify Project ID.")
 	}
 	oldStyle := map[string]func(ctx context.Context, argv []string){
-		"delete_subscription": deleteSubscription,
-		"publish":             publish,
-		"pull_messages":       pullMessages,
-		"publish_messages":    publishMessages,
+		"publish":          publish,
+		"pull_messages":    pullMessages,
+		"publish_messages": publishMessages,
 	}
 
 	newStyle := map[string]func(client *pubsub.Client, argv []string){
@@ -376,6 +386,8 @@ func main() {
 		"list_topic_subscriptions": listTopicSubscriptions,
 		"topic_exists":             checkTopicExists,
 		"create_subscription":      createSubscription,
+		"delete_subscription":      deleteSubscription,
+		"subscription_exists":      checkSubscriptionExists,
 	}
 	subcommand := argv[0]
 	if f, ok := oldStyle[subcommand]; ok {

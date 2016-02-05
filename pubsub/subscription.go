@@ -14,7 +14,14 @@
 
 package pubsub
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+
+	"google.golang.org/api/googleapi"
+
+	"golang.org/x/net/context"
+)
 
 // SubscriptionHandle is a reference to a PubSub subscription.
 type SubscriptionHandle struct {
@@ -39,4 +46,22 @@ func (s *SubscriptionHandle) Name() string {
 
 // TODO(mcgreevy): Allow configuring a PushConfig (endpoint and attributes) and default ack deadline.
 type SubscriptionConfig struct {
+}
+
+// Delete deletes the subscription.
+func (s *SubscriptionHandle) Delete(ctx context.Context) error {
+	_, err := s.c.s.Projects.Subscriptions.Delete(s.name).Context(ctx).Do()
+	return err
+}
+
+// Exists reports whether the subscription exists on the server.
+func (s *SubscriptionHandle) Exists(ctx context.Context) (bool, error) {
+	_, err := s.c.s.Projects.Subscriptions.Get(s.name).Context(ctx).Do()
+	if err == nil {
+		return true, nil
+	}
+	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
+		return false, nil
+	}
+	return false, err
 }

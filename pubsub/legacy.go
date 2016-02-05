@@ -54,3 +54,25 @@ func TopicExists(ctx context.Context, name string) (bool, error) {
 	}
 	return true, nil
 }
+
+// DeleteSub deletes the subscription.
+//
+// Deprecated: Use SubscriptionHandle.Delete instead.
+func DeleteSub(ctx context.Context, name string) error {
+	_, err := rawService(ctx).Projects.Subscriptions.Delete(fullSubName(internal.ProjID(ctx), name)).Do()
+	return err
+}
+
+// SubExists returns true if subscription exists.
+//
+// Deprecated: Use SubscriptionHandle.Exists instead.
+func SubExists(ctx context.Context, name string) (bool, error) {
+	_, err := rawService(ctx).Projects.Subscriptions.Get(fullSubName(internal.ProjID(ctx), name)).Do()
+	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
