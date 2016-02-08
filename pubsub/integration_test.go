@@ -19,8 +19,7 @@ import (
 	"testing"
 	"time"
 
-	"golang.org/x/net/context"
-
+	"google.golang.org/cloud"
 	"google.golang.org/cloud/internal/testutil"
 )
 
@@ -28,8 +27,13 @@ func TestAll(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
+	// TODO(djd): Replace this ctx with context.Background() when the new API is complete.
 	ctx := testutil.Context(ScopePubSub, ScopeCloudPlatform)
 	if ctx == nil {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
+	ts := testutil.TokenSource(ctx, ScopePubSub, ScopeCloudPlatform)
+	if ts == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
 
@@ -37,13 +41,13 @@ func TestAll(t *testing.T) {
 	topicName := fmt.Sprintf("topic-%d", now.Unix())
 	subName := fmt.Sprintf("subscription-%d", now.Unix())
 
-	client, err := NewClient(context.Background(), testutil.ProjID())
+	client, err := NewClient(ctx, testutil.ProjID(), cloud.WithTokenSource(ts))
 	if err != nil {
 		t.Fatalf("Creating client error: %v", err)
 	}
 
 	var topic *TopicHandle
-	if topic, err = client.NewTopic(context.Background(), topicName); err != nil {
+	if topic, err = client.NewTopic(ctx, topicName); err != nil {
 		t.Errorf("CreateTopic error: %v", err)
 	}
 
