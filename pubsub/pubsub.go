@@ -72,7 +72,7 @@ type Message struct {
 // It must be constructed via NewClient.
 type Client struct {
 	projectID string
-	s         *raw.Service
+	s         service
 }
 
 // NewClient create a new PubSub client.
@@ -87,12 +87,9 @@ func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
-	s, err := raw.New(httpClient)
-	if err != nil {
-		return nil, err
-	}
 
-	s.BasePath = endpoint
+	s, err := newPubSubService(httpClient, endpoint)
+
 	c := &Client{
 		projectID: projectID,
 		s:         s,

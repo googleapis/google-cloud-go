@@ -16,11 +16,8 @@ package pubsub
 
 import (
 	"fmt"
-	"net/http"
 
 	"golang.org/x/net/context"
-	"google.golang.org/api/googleapi"
-	raw "google.golang.org/api/pubsub/v1"
 )
 
 // TopicHandle is a reference to a PubSub topic.
@@ -39,10 +36,7 @@ type TopicHandle struct {
 // If the topic already exists an error will be returned.
 func (c *Client) NewTopic(ctx context.Context, name string) (*TopicHandle, error) {
 	t := c.Topic(name)
-	// Note: The raw API expects a Topic body, but ignores it.
-	_, err := c.s.Projects.Topics.Create(t.Name(), &raw.Topic{}).
-		Context(ctx).
-		Do()
+	err := c.s.createTopic(ctx, t.Name())
 	return t, err
 }
 
@@ -53,16 +47,14 @@ func (c *Client) Topic(name string) *TopicHandle {
 
 // Topics lists all of the topics for the client's project.
 func (c *Client) Topics(ctx context.Context) ([]*TopicHandle, error) {
-	topics := []*TopicHandle{}
-	err := c.s.Projects.Topics.List(c.fullyQualifiedProjectName()).
-		Pages(ctx, func(res *raw.ListTopicsResponse) error {
-			for _, t := range res.Topics {
-				topics = append(topics, &TopicHandle{c: c, name: t.Name})
-			}
-			return nil
-		})
+	topicNames, err := c.s.listProjectTopics(ctx, c.fullyQualifiedProjectName())
 	if err != nil {
 		return nil, err
+	}
+
+	topics := []*TopicHandle{}
+	for _, t := range topicNames {
+		topics = append(topics, &TopicHandle{c: c, name: t})
 	}
 	return topics, nil
 }
@@ -74,34 +66,24 @@ func (t *TopicHandle) Name() string {
 
 // Delete deletes the topic.
 func (t *TopicHandle) Delete(ctx context.Context) error {
-	_, err := t.c.s.Projects.Topics.Delete(t.name).Context(ctx).Do()
-	return err
+	return t.c.s.deleteTopic(ctx, t.name)
 }
 
 // Exists reports whether the topic exists on the server.
 func (t *TopicHandle) Exists(ctx context.Context) (bool, error) {
-	_, err := t.c.s.Projects.Topics.Get(t.name).Context(ctx).Do()
-	if err == nil {
-		return true, nil
-	}
-	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
-		return false, nil
-	}
-	return false, err
+	return t.c.s.topicExists(ctx, t.name)
 }
 
 // Subscriptions lists the subscriptions for this topic.
 func (t *TopicHandle) Subscriptions(ctx context.Context) ([]*SubscriptionHandle, error) {
-	subs := []*SubscriptionHandle{}
-	err := t.c.s.Projects.Topics.Subscriptions.List(t.name).
-		Pages(ctx, func(res *raw.ListTopicSubscriptionsResponse) error {
-			for _, s := range res.Subscriptions {
-				subs = append(subs, &SubscriptionHandle{c: t.c, name: s})
-			}
-			return nil
-		})
+	subNames, err := t.c.s.listTopicSubscriptions(ctx, t.name)
 	if err != nil {
 		return nil, err
+	}
+
+	subs := []*SubscriptionHandle{}
+	for _, s := range subNames {
+		subs = append(subs, &SubscriptionHandle{c: t.c, name: s})
 	}
 	return subs, nil
 }
@@ -113,10 +95,7 @@ func (t *TopicHandle) Subscriptions(ctx context.Context) ([]*SubscriptionHandle,
 // characters in length, and must not start with "goog".
 // If the subscription already exists an error will be returned.
 func (t *TopicHandle) Subscribe(ctx context.Context, name string, config *SubscriptionConfig) (*SubscriptionHandle, error) {
-	rawSub := &raw.Subscription{
-		Topic: t.name,
-	}
 	sub := t.c.Subscription(name)
-	_, err := t.c.s.Projects.Subscriptions.Create(sub.Name(), rawSub).Context(ctx).Do()
+	err := t.c.s.createSubscription(ctx, t.name, sub.Name())
 	return sub, err
 }

@@ -16,12 +16,8 @@ package pubsub
 
 import (
 	"fmt"
-	"net/http"
-
-	"google.golang.org/api/googleapi"
 
 	"golang.org/x/net/context"
-	raw "google.golang.org/api/pubsub/v1"
 )
 
 // SubscriptionHandle is a reference to a PubSub subscription.
@@ -47,16 +43,14 @@ func (s *SubscriptionHandle) Name() string {
 
 // Subscriptions lists all of the subscriptions for the client's project.
 func (c *Client) Subscriptions(ctx context.Context) ([]*SubscriptionHandle, error) {
-	subs := []*SubscriptionHandle{}
-	err := c.s.Projects.Subscriptions.List(c.fullyQualifiedProjectName()).
-		Pages(ctx, func(res *raw.ListSubscriptionsResponse) error {
-			for _, s := range res.Subscriptions {
-				subs = append(subs, &SubscriptionHandle{c: c, name: s.Name})
-			}
-			return nil
-		})
+	subNames, err := c.s.listProjectSubscriptions(ctx, c.fullyQualifiedProjectName())
 	if err != nil {
 		return nil, err
+	}
+
+	subs := []*SubscriptionHandle{}
+	for _, s := range subNames {
+		subs = append(subs, &SubscriptionHandle{c: c, name: s})
 	}
 	return subs, nil
 }
@@ -67,18 +61,10 @@ type SubscriptionConfig struct {
 
 // Delete deletes the subscription.
 func (s *SubscriptionHandle) Delete(ctx context.Context) error {
-	_, err := s.c.s.Projects.Subscriptions.Delete(s.name).Context(ctx).Do()
-	return err
+	return s.c.s.deleteSubscription(ctx, s.name)
 }
 
 // Exists reports whether the subscription exists on the server.
 func (s *SubscriptionHandle) Exists(ctx context.Context) (bool, error) {
-	_, err := s.c.s.Projects.Subscriptions.Get(s.name).Context(ctx).Do()
-	if err == nil {
-		return true, nil
-	}
-	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
-		return false, nil
-	}
-	return false, err
+	return s.c.s.subscriptionExists(ctx, s.name)
 }
