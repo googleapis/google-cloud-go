@@ -16,6 +16,7 @@ package pubsub
 
 import (
 	"net/http"
+	"time"
 
 	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
@@ -37,6 +38,8 @@ type service interface {
 	topicExists(ctx context.Context, name string) (bool, error)
 	listProjectTopics(ctx context.Context, projName string) ([]string, error)
 	listTopicSubscriptions(ctx context.Context, topicName string) ([]string, error)
+
+	modifyAckDeadline(ctx context.Context, subName string, deadline time.Duration, ackIDs []string) error
 }
 
 type apiService struct {
@@ -144,4 +147,15 @@ func (s *apiService) listTopicSubscriptions(ctx context.Context, topicName strin
 		return nil, err
 	}
 	return subs, nil
+}
+
+func (s *apiService) modifyAckDeadline(ctx context.Context, subName string, deadline time.Duration, ackIDs []string) error {
+	req := &raw.ModifyAckDeadlineRequest{
+		AckDeadlineSeconds: int64(deadline.Seconds()),
+		AckIds:             ackIDs,
+	}
+	_, err := s.s.Projects.Subscriptions.ModifyAckDeadline(subName, req).
+		Context(ctx).
+		Do()
+	return err
 }
