@@ -217,6 +217,15 @@ func TestObjects(t *testing.T) {
 	if got, want := o.ContentType, defaultType; got != want {
 		t.Errorf("ContentType (%v) = %q; want %q", objName, got, want)
 	}
+	created := o.Created
+	// Check that the object is newer than its containing bucket.
+	bAttrs, err := bkt.Attrs(ctx)
+	if err != nil {
+		t.Error(err)
+	}
+	if o.Created.Before(bAttrs.Created) {
+		t.Errorf("Object %v is older than its containing bucket, %v", o, bAttrs)
+	}
 
 	// Test object copy.
 	copyName := "copy-" + objName
@@ -241,6 +250,12 @@ func TestObjects(t *testing.T) {
 	}
 	if want := "text/html"; updated.ContentType != want {
 		t.Errorf("updated.ContentType == %q; want %q", updated.ContentType, want)
+	}
+	if want := created; updated.Created != want {
+		t.Errorf("updated.Created == %q; want %q", updated.Created, want)
+	}
+	if !updated.Created.Before(updated.Updated) {
+		t.Errorf("updated.Updated should be newer than update.Created")
 	}
 
 	// Test checksums.

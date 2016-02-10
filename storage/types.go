@@ -202,6 +202,9 @@ type ObjectAttrs struct {
 	// It defaults to "STANDARD". This field is read-only.
 	StorageClass string
 
+	// Created is the time the object was created. This field is read-only.
+	Created time.Time
+
 	// Deleted is the time the object was deleted.
 	// If not deleted, it is the zero value. This field is read-only.
 	Deleted time.Time
@@ -260,6 +263,7 @@ func newObject(o *raw.Object) *ObjectAttrs {
 		Generation:      o.Generation,
 		MetaGeneration:  o.Metageneration,
 		StorageClass:    o.StorageClass,
+		Created:         convertTime(o.TimeCreated),
 		Deleted:         convertTime(o.TimeDeleted),
 		Updated:         convertTime(o.Updated),
 	}
