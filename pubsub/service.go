@@ -28,7 +28,8 @@ import (
 // The single implementation, *apiService, contains all the knowledge
 // of the generated PubSub API (except for that present in legacy code).
 type service interface {
-	createSubscription(ctx context.Context, topicName, subName string) error
+	createSubscription(ctx context.Context, topicName, subName string, ackDeadline time.Duration, pushConfig *PushConfig) error
+	getSubscriptionConfig(ctx context.Context, subName string) (*SubscriptionConfig, string, error)
 	listProjectSubscriptions(ctx context.Context, projName string) ([]string, error)
 	deleteSubscription(ctx context.Context, name string) error
 	subscriptionExists(ctx context.Context, name string) (bool, error)
@@ -56,12 +57,36 @@ func newPubSubService(client *http.Client, endpoint string) (*apiService, error)
 	return &apiService{s: s}, nil
 }
 
-func (s *apiService) createSubscription(ctx context.Context, topicName, subName string) error {
+func (s *apiService) createSubscription(ctx context.Context, topicName, subName string, ackDeadline time.Duration, pushConfig *PushConfig) error {
+	var rawPushConfig *raw.PushConfig
+	if pushConfig != nil {
+		rawPushConfig = &raw.PushConfig{
+			Attributes:   pushConfig.Attributes,
+			PushEndpoint: pushConfig.Endpoint,
+		}
+	}
 	rawSub := &raw.Subscription{
-		Topic: topicName,
+		AckDeadlineSeconds: int64(ackDeadline.Seconds()),
+		PushConfig:         rawPushConfig,
+		Topic:              topicName,
 	}
 	_, err := s.s.Projects.Subscriptions.Create(subName, rawSub).Context(ctx).Do()
 	return err
+}
+
+func (s *apiService) getSubscriptionConfig(ctx context.Context, subName string) (*SubscriptionConfig, string, error) {
+	rawSub, err := s.s.Projects.Subscriptions.Get(subName).Context(ctx).Do()
+	if err != nil {
+		return nil, "", err
+	}
+	sub := &SubscriptionConfig{
+		AckDeadline: time.Second * time.Duration(rawSub.AckDeadlineSeconds),
+		PushConfig: PushConfig{
+			Endpoint:   rawSub.PushConfig.PushEndpoint,
+			Attributes: rawSub.PushConfig.Attributes,
+		},
+	}
+	return sub, rawSub.Topic, err
 }
 
 func (s *apiService) listProjectSubscriptions(ctx context.Context, projName string) ([]string, error) {

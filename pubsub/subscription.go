@@ -16,6 +16,7 @@ package pubsub
 
 import (
 	"fmt"
+	"time"
 
 	"golang.org/x/net/context"
 )
@@ -55,8 +56,26 @@ func (c *Client) Subscriptions(ctx context.Context) ([]*SubscriptionHandle, erro
 	return subs, nil
 }
 
-// TODO(mcgreevy): Allow configuring a PushConfig (endpoint and attributes) and default ack deadline.
+// PushConfig contains configuration for subscriptions that operate in push mode.
+type PushConfig struct {
+	// A URL locating the endpoint to which messages should be pushed.
+	Endpoint string
+
+	// Endpoint configuration attributes. See https://cloud.google.com/pubsub/reference/rest/v1/projects.subscriptions#PushConfig.FIELDS.attributes for more details.
+	Attributes map[string]string
+}
+
+// Subscription config contains the configuration of a subscription.
 type SubscriptionConfig struct {
+	Topic      *TopicHandle
+	PushConfig PushConfig
+
+	// The default maximum time after a subscriber receives a message
+	// before the subscriber should acknowledge the message.  Note:
+	// messages which are obtained via an Iterator need not be acknowledged
+	// within this deadline, as the deadline will be automatically
+	// extended.
+	AckDeadline time.Duration
 }
 
 // Delete deletes the subscription.
@@ -67,4 +86,17 @@ func (s *SubscriptionHandle) Delete(ctx context.Context) error {
 // Exists reports whether the subscription exists on the server.
 func (s *SubscriptionHandle) Exists(ctx context.Context) (bool, error) {
 	return s.c.s.subscriptionExists(ctx, s.name)
+}
+
+// Config fetches the current configuration for the subscription.
+func (s *SubscriptionHandle) Config(ctx context.Context) (*SubscriptionConfig, error) {
+	sub, topicName, err := s.c.s.getSubscriptionConfig(ctx, s.name)
+	if err != nil {
+		return nil, err
+	}
+	sub.Topic = &TopicHandle{
+		c:    s.c,
+		name: topicName,
+	}
+	return sub, nil
 }

@@ -15,7 +15,9 @@
 package pubsub
 
 import (
+	"errors"
 	"net/http"
+	"time"
 
 	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
@@ -75,4 +77,41 @@ func SubExists(ctx context.Context, name string) (bool, error) {
 		return false, err
 	}
 	return true, nil
+}
+
+// CreateSub creates a Pub/Sub subscription on the backend.
+//
+// Deprecated: Use TopicHandle.Subscribe instead.
+//
+// A subscription should subscribe to an existing topic.
+//
+// The messages that haven't acknowledged will be pushed back to the
+// subscription again when the default acknowledgement deadline is
+// reached. You can override the default deadline by providing a
+// non-zero deadline. Deadline must not be specified to
+// precision greater than one second.
+//
+// As new messages are being queued on the subscription, you
+// may recieve push notifications regarding to the new arrivals.
+// To receive notifications of new messages in the queue,
+// specify an endpoint callback URL.
+// If endpoint is an empty string the backend will not notify the
+// client of new messages.
+//
+// If the subscription already exists an error will be returned.
+func CreateSub(ctx context.Context, name string, topic string, deadline time.Duration, endpoint string) error {
+	sub := &raw.Subscription{
+		Topic: fullTopicName(internal.ProjID(ctx), topic),
+	}
+	if int64(deadline) > 0 {
+		if !isSec(deadline) {
+			return errors.New("pubsub: deadline must not be specified to precision greater than one second")
+		}
+		sub.AckDeadlineSeconds = int64(deadline / time.Second)
+	}
+	if endpoint != "" {
+		sub.PushConfig = &raw.PushConfig{PushEndpoint: endpoint}
+	}
+	_, err := rawService(ctx).Projects.Subscriptions.Create(fullSubName(internal.ProjID(ctx), name), sub).Do()
+	return err
 }

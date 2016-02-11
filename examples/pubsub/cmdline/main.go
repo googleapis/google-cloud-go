@@ -51,6 +51,7 @@ const (
     list_topic_subscriptions <name>
     list_topics
     create_subscription <name> <linked_topic>
+    show_subscription <name>
     subscription_exists <name>
     delete_subscription <name>
     list_subscriptions
@@ -166,11 +167,28 @@ func createSubscription(client *pubsub.Client, argv []string) {
 	checkArgs(argv, 3)
 	sub := argv[1]
 	topic := argv[2]
-	_, err := client.Topic(topic).Subscribe(context.Background(), sub, nil)
+	_, err := client.Topic(topic).Subscribe(context.Background(), sub, 0, nil)
 	if err != nil {
 		log.Fatalf("Creating Subscription failed: %v", err)
 	}
 	fmt.Printf("Subscription %s was created.\n", sub)
+}
+
+func showSubscription(client *pubsub.Client, argv []string) {
+	checkArgs(argv, 2)
+	sub := argv[1]
+	conf, err := client.Subscription(sub).Config(context.Background())
+	if err != nil {
+		log.Fatalf("Getting Subscription failed: %v", err)
+	}
+	fmt.Printf("%+v\n", conf)
+	exists, err := conf.Topic.Exists(context.Background())
+	if err != nil {
+		log.Fatalf("Checking whether topic exists: %v", err)
+	}
+	if !exists {
+		fmt.Println("The topic for this subscription has been deleted.\n")
+	}
 }
 
 func checkSubscriptionExists(client *pubsub.Client, argv []string) {
@@ -394,6 +412,7 @@ func main() {
 		"list_topic_subscriptions": listTopicSubscriptions,
 		"topic_exists":             checkTopicExists,
 		"create_subscription":      createSubscription,
+		"show_subscription":        showSubscription,
 		"delete_subscription":      deleteSubscription,
 		"subscription_exists":      checkSubscriptionExists,
 		"list_subscriptions":       listSubscriptions,
