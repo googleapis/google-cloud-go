@@ -16,6 +16,7 @@ package pubsub
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -114,4 +115,38 @@ func CreateSub(ctx context.Context, name string, topic string, deadline time.Dur
 	}
 	_, err := rawService(ctx).Projects.Subscriptions.Create(fullSubName(internal.ProjID(ctx), name), sub).Do()
 	return err
+}
+
+// Pull pulls up to n messages from the subscription. n must not be larger than 100.
+func Pull(ctx context.Context, sub string, n int) ([]*Message, error) {
+	return pull(ctx, sub, n, true)
+}
+
+// PullWait pulls up to n messages from the subscription. If there are no
+// messages in the queue, it will wait until at least one message is
+// available or a timeout occurs. n must not be larger than 100.
+func PullWait(ctx context.Context, sub string, n int) ([]*Message, error) {
+	return pull(ctx, sub, n, false)
+}
+
+func pull(ctx context.Context, sub string, n int, retImmediately bool) ([]*Message, error) {
+	if n < 1 || n > batchLimit {
+		return nil, fmt.Errorf("pubsub: cannot pull less than one, more than %d messages, but %d was given", batchLimit, n)
+	}
+	resp, err := rawService(ctx).Projects.Subscriptions.Pull(fullSubName(internal.ProjID(ctx), sub), &raw.PullRequest{
+		ReturnImmediately: retImmediately,
+		MaxMessages:       int64(n),
+	}).Do()
+	if err != nil {
+		return nil, err
+	}
+	msgs := make([]*Message, len(resp.ReceivedMessages))
+	for i := 0; i < len(resp.ReceivedMessages); i++ {
+		msg, err := toMessage(resp.ReceivedMessages[i])
+		if err != nil {
+			return nil, fmt.Errorf("pubsub: cannot decode the retrieved message at index: %d, PullResponse: %+v", i, resp.ReceivedMessages[i])
+		}
+		msgs[i] = msg
+	}
+	return msgs, nil
 }

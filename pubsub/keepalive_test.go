@@ -28,7 +28,7 @@ func TestKeepAlive(t *testing.T) {
 	tick := make(chan time.Time)
 	deadline := time.Nanosecond * 15
 	s := &testService{modDeadlineCalled: make(chan modDeadlineCall)}
-	c := Client{projectID: "projid", s: s}
+	c := &Client{projectID: "projid", s: s}
 
 	checkModDeadlineCall := func(ackIDs []string) {
 		got := <-s.modDeadlineCalled
@@ -45,8 +45,6 @@ func TestKeepAlive(t *testing.T) {
 		}
 	}
 
-	add := make(chan string)
-	remove := make(chan string)
 	ka := &keepAlive{
 		Client:        c,
 		Ctx:           context.Background(),
@@ -54,25 +52,25 @@ func TestKeepAlive(t *testing.T) {
 		ExtensionTick: tick,
 		Deadline:      deadline,
 	}
-	ka.Start(add, remove)
+	ka.Start()
 
-	add <- "a"
-	add <- "b"
+	ka.Add("a")
+	ka.Add("b")
 	tick <- time.Time{}
 	checkModDeadlineCall([]string{"a", "b"})
-	add <- "c"
-	remove <- "b"
+	ka.Add("c")
+	ka.Remove("b")
 	tick <- time.Time{}
 	checkModDeadlineCall([]string{"a", "c"})
-	remove <- "a"
-	remove <- "c"
+	ka.Remove("a")
+	ka.Remove("c")
 	// modifyAckDeadline should not be called now because there are no ackIDs left.
 	tick <- time.Time{}
-	add <- "d"
+	ka.Add("d")
 	tick <- time.Time{}
 	checkModDeadlineCall([]string{"d"})
 
-	remove <- "d"
+	ka.Remove("d")
 	ka.Stop()
 }
 
@@ -80,17 +78,15 @@ func TestKeepAlive(t *testing.T) {
 func TestKeepAliveStop(t *testing.T) {
 	tick := make(chan time.Time)
 
-	add := make(chan string)
-	remove := make(chan string)
 	ka := &keepAlive{
 		ExtensionTick: tick,
 	}
-	ka.Start(add, remove)
+	ka.Start()
 
 	events := make(chan string, 10)
 
 	// Add an ackID so that ka.Stop will not return immediately.
-	add <- "a"
+	ka.Add("a")
 
 	var wg sync.WaitGroup
 	wg.Add(1)
@@ -98,7 +94,7 @@ func TestKeepAliveStop(t *testing.T) {
 		defer wg.Done()
 		time.Sleep(time.Nanosecond * 1000)
 		events <- "pre-remove"
-		remove <- "a"
+		ka.Remove("a")
 		time.Sleep(time.Nanosecond * 1000)
 		events <- "post-second-sleep"
 	}()

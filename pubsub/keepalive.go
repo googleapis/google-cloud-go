@@ -25,31 +25,34 @@ import (
 // periodically extends them.
 // Messages are tracked by Ack ID.
 type keepAlive struct {
-	Client        Client
-	Ctx           context.Context // The context to use when extending deadlines.
-	Sub           string          // The full name of the subscription.
-	ExtensionTick chan time.Time  // ExtenstionTick supplies the frequency with which to make extension requests.
-	Deadline      time.Duration   // How long to extend messages for. Should be greater than ExtensionTick frequency.
+	Client        *Client
+	Ctx           context.Context  // The context to use when extending deadlines.
+	Sub           string           // The full name of the subscription.
+	ExtensionTick <-chan time.Time // ExtenstionTick supplies the frequency with which to make extension requests.
+	Deadline      time.Duration    // How long to extend messages for. Should be greater than ExtensionTick frequency.
 
 	ackIDs map[string]struct{}
 	done   chan struct{}
 	wg     sync.WaitGroup
+
+	add, remove chan string
 }
 
 // Start initiates the deadline extension loop.  Stop must be called once keepAlive is no longer needed.
-// add and remove may be used to add and remove messages to be kept alive.
-func (ka *keepAlive) Start(add, remove <-chan string) {
+func (ka *keepAlive) Start() {
 	ka.ackIDs = make(map[string]struct{})
 	ka.done = make(chan struct{})
+	ka.add = make(chan string)
+	ka.remove = make(chan string)
 	ka.wg.Add(1)
 	go func() {
 		defer ka.wg.Done()
 		done := false
 		for {
 			select {
-			case ackID := <-add:
+			case ackID := <-ka.add:
 				ka.ackIDs[ackID] = struct{}{}
-			case ackID := <-remove:
+			case ackID := <-ka.remove:
 				delete(ka.ackIDs, ackID)
 			case <-ka.done:
 				done = true
@@ -68,9 +71,19 @@ func (ka *keepAlive) Start(add, remove <-chan string) {
 	}()
 }
 
+// Add adds an ack id to be kept alive.
+func (ka *keepAlive) Add(ackID string) {
+	ka.add <- ackID
+}
+
+// Remove removes ackID from the list to be kept alive.
+func (ka *keepAlive) Remove(ackID string) {
+	ka.remove <- ackID
+}
+
 // Stop waits until all added ackIDs have been removed, and cleans up resources.
 func (ka *keepAlive) Stop() {
-	ka.done <- struct{}{}
+	close(ka.done)
 	ka.wg.Wait()
 }
 

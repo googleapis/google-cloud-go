@@ -51,22 +51,6 @@ const userAgent = "gcloud-golang-pubsub/20151008"
 // batchLimit is maximun size of a single batch.
 const batchLimit = 1000
 
-// Message represents a Pub/Sub message.
-type Message struct {
-	// ID identifies this message.
-	ID string
-
-	// AckID is the identifier to acknowledge this message.
-	AckID string
-
-	// Data is the actual data in the message.
-	Data []byte
-
-	// Attributes represents the key-value pairs the current message
-	// is labelled with.
-	Attributes map[string]string
-}
-
 // Client is a Google Pub/Sub client, which may be used to perform Pub/Sub operations with a project.
 // Note: Some operations are not yet available via Client, and must be performed via the legacy standalone functions.
 // It must be constructed via NewClient.
@@ -140,56 +124,6 @@ func Ack(ctx context.Context, sub string, id ...string) error {
 		AckIds: id,
 	}).Do()
 	return err
-}
-
-func toMessage(resp *raw.ReceivedMessage) (*Message, error) {
-	if resp.Message == nil {
-		return &Message{AckID: resp.AckId}, nil
-	}
-	data, err := base64.StdEncoding.DecodeString(resp.Message.Data)
-	if err != nil {
-		return nil, err
-	}
-	return &Message{
-		AckID:      resp.AckId,
-		Data:       data,
-		Attributes: resp.Message.Attributes,
-		ID:         resp.Message.MessageId,
-	}, nil
-}
-
-// Pull pulls up to n messages from the subscription. n must not be larger than 100.
-func Pull(ctx context.Context, sub string, n int) ([]*Message, error) {
-	return pull(ctx, sub, n, true)
-}
-
-// PullWait pulls up to n messages from the subscription. If there are no
-// messages in the queue, it will wait until at least one message is
-// available or a timeout occurs. n must not be larger than 100.
-func PullWait(ctx context.Context, sub string, n int) ([]*Message, error) {
-	return pull(ctx, sub, n, false)
-}
-
-func pull(ctx context.Context, sub string, n int, retImmediately bool) ([]*Message, error) {
-	if n < 1 || n > batchLimit {
-		return nil, fmt.Errorf("pubsub: cannot pull less than one, more than %d messages, but %d was given", batchLimit, n)
-	}
-	resp, err := rawService(ctx).Projects.Subscriptions.Pull(fullSubName(internal.ProjID(ctx), sub), &raw.PullRequest{
-		ReturnImmediately: retImmediately,
-		MaxMessages:       int64(n),
-	}).Do()
-	if err != nil {
-		return nil, err
-	}
-	msgs := make([]*Message, len(resp.ReceivedMessages))
-	for i := 0; i < len(resp.ReceivedMessages); i++ {
-		msg, err := toMessage(resp.ReceivedMessages[i])
-		if err != nil {
-			return nil, fmt.Errorf("pubsub: cannot decode the retrieved message at index: %d, PullResponse: %+v", i, resp.ReceivedMessages[i])
-		}
-		msgs[i] = msg
-	}
-	return msgs, nil
 }
 
 // Publish publish messages to the topic's subscribers. It returns

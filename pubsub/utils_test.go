@@ -26,11 +26,19 @@ type modDeadlineCall struct {
 	ackIDs   []string
 }
 
+type acknowledgeCall struct {
+	subName string
+	ackIDs  []string
+}
+
 type testService struct {
 	service
 
 	// The arguments of each call to modifyAckDealine are written to this channel.
 	modDeadlineCalled chan modDeadlineCall
+
+	// The arguments of each call to acknowledge are written to this channel.
+	acknowledgeCalled chan acknowledgeCall
 }
 
 func (s *testService) modifyAckDeadline(ctx context.Context, subName string, deadline time.Duration, ackIDs []string) error {
@@ -38,6 +46,14 @@ func (s *testService) modifyAckDeadline(ctx context.Context, subName string, dea
 		subName:  subName,
 		deadline: deadline,
 		ackIDs:   ackIDs,
+	}
+	return nil
+}
+
+func (s *testService) acknowledge(ctx context.Context, subName string, ackIDs []string) error {
+	s.acknowledgeCalled <- acknowledgeCall{
+		subName: subName,
+		ackIDs:  ackIDs,
 	}
 	return nil
 }

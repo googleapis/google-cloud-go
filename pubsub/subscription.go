@@ -100,3 +100,14 @@ func (s *SubscriptionHandle) Config(ctx context.Context) (*SubscriptionConfig, e
 	}
 	return sub, nil
 }
+
+// Pull returns an Iterator that can be used to fetch Messages.
+// The caller must call Close on the Iterator once finished with it.
+func (s *SubscriptionHandle) Pull(ctx context.Context) (*Iterator, error) {
+	// TODO(mcgreevy): accept pulloptions.
+	config, err := s.Config(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return s.c.newIterator(ctx, s.name, config.AckDeadline), nil
+}

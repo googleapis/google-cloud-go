@@ -15,6 +15,7 @@
 package pubsub
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -41,6 +42,8 @@ type service interface {
 	listTopicSubscriptions(ctx context.Context, topicName string) ([]string, error)
 
 	modifyAckDeadline(ctx context.Context, subName string, deadline time.Duration, ackIDs []string) error
+	acknowledge(ctx context.Context, subName string, ackIDs []string) error
+	fetchMessages(ctx context.Context, subName string, maxMessages int64) ([]*Message, error)
 }
 
 type apiService struct {
@@ -183,4 +186,38 @@ func (s *apiService) modifyAckDeadline(ctx context.Context, subName string, dead
 		Context(ctx).
 		Do()
 	return err
+}
+
+func (s *apiService) acknowledge(ctx context.Context, subName string, ackIDs []string) error {
+	req := &raw.AcknowledgeRequest{
+		AckIds: ackIDs,
+	}
+	_, err := s.s.Projects.Subscriptions.Acknowledge(subName, req).
+		Context(ctx).
+		Do()
+	return err
+}
+
+func (s *apiService) fetchMessages(ctx context.Context, subName string, maxMessages int64) ([]*Message, error) {
+	req := &raw.PullRequest{
+		MaxMessages: maxMessages,
+	}
+	resp, err := s.s.Projects.Subscriptions.Pull(subName, req).
+		Context(ctx).
+		Do()
+
+	if err != nil {
+		return nil, err
+	}
+
+	msgs := make([]*Message, 0, len(resp.ReceivedMessages))
+	for i, m := range resp.ReceivedMessages {
+		msg, err := toMessage(m)
+		if err != nil {
+			return nil, fmt.Errorf("pubsub: cannot decode the retrieved message at index: %d, message: %+v", i, m)
+		}
+		msgs = append(msgs, msg)
+	}
+
+	return msgs, nil
 }
