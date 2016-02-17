@@ -21,6 +21,8 @@ import (
 	"golang.org/x/net/context"
 )
 
+const MaxPublishBatchSize = 1000
+
 // TopicHandle is a reference to a PubSub topic.
 type TopicHandle struct {
 	c *Client
@@ -120,4 +122,17 @@ func (t *TopicHandle) Subscribe(ctx context.Context, name string, ackDeadline ti
 	sub := t.c.Subscription(name)
 	err := t.c.s.createSubscription(ctx, t.name, sub.Name(), ackDeadline, pushConfig)
 	return sub, err
+}
+
+// Publish publishes the supplied Messages to the topic.
+// If successful, the server-assigned message IDs are returned in the same order as the supplied Messages.
+// At most MaxPublishBatchSize messages may be supplied.
+func (t *TopicHandle) Publish(ctx context.Context, msgs ...*Message) ([]string, error) {
+	if len(msgs) == 0 {
+		return nil, nil
+	}
+	if len(msgs) > MaxPublishBatchSize {
+		return nil, fmt.Errorf("pubsub: got %d messages, but maximum batch size is %d", len(msgs), MaxPublishBatchSize)
+	}
+	return t.c.s.publishMessages(ctx, t.name, msgs)
 }

@@ -222,20 +222,17 @@ func listSubscriptions(client *pubsub.Client, argv []string) {
 	}
 }
 
-// NOTE: the following operations (which take a Context rather than a Client)
-// use the old API which is being progressively deprecated.
-
-func publish(ctx context.Context, argv []string) {
+func publish(client *pubsub.Client, argv []string) {
 	checkArgs(argv, 3)
 	topic := argv[1]
 	message := argv[2]
-	msgIDs, err := pubsub.Publish(ctx, topic, &pubsub.Message{
+	msgIDs, err := client.Topic(topic).Publish(context.Background(), &pubsub.Message{
 		Data: []byte(message),
 	})
 	if err != nil {
 		log.Fatalf("Publish failed, %v", err)
 	}
-	fmt.Printf("Message '%s' published to a topic %s and the message id is %s\n", message, topic, msgIDs[0])
+	fmt.Printf("Message '%s' published to topic %s and the message id is %s\n", message, topic, msgIDs[0])
 }
 
 type reporter struct {
@@ -262,6 +259,49 @@ func (r *reporter) report() {
 		}
 	}
 }
+
+func publishLoop(client *pubsub.Client, topic string, workerid int, result chan<- int) {
+	var r uint64
+	for {
+		msgs := make([]*pubsub.Message, *size)
+		for i := 0; i < *size; i++ {
+			msgs[i] = &pubsub.Message{
+				Data: []byte(fmt.Sprintf("Worker: %d, Round: %d, Message: %d", workerid, r, i)),
+			}
+		}
+		_, err := client.Topic(topic).Publish(context.Background(), msgs...)
+		if err != nil {
+			log.Printf("Publish failed, %v\n", err)
+			return
+		}
+		r++
+		if *reportMPS {
+			result <- *size
+		}
+	}
+}
+
+func publishMessages(client *pubsub.Client, argv []string) {
+	checkArgs(argv, 3)
+	topic := argv[1]
+	workers, err := strconv.Atoi(argv[2])
+	if err != nil {
+		log.Fatalf("Atoi failed, %v", err)
+	}
+	result := make(chan int, 1024)
+	for i := 0; i < int(workers); i++ {
+		go publishLoop(client, topic, i, result)
+	}
+	if *reportMPS {
+		r := reporter{reportTitle: "Sent", result: result}
+		r.report()
+	} else {
+		select {}
+	}
+}
+
+// NOTE: the following operations (which take a Context rather than a Client)
+// use the old API which is being progressively deprecated.
 
 func ack(ctx context.Context, sub string, ackID ...string) {
 	err := pubsub.Ack(ctx, sub, ackID...)
@@ -315,46 +355,6 @@ func pullMessages(ctx context.Context, argv []string) {
 	}
 }
 
-func publishLoop(ctx context.Context, topic string, workerid int, result chan<- int) {
-	var r uint64
-	for {
-		msgs := make([]*pubsub.Message, *size)
-		for i := 0; i < *size; i++ {
-			msgs[i] = &pubsub.Message{
-				Data: []byte(fmt.Sprintf("Worker: %d, Round: %d, Message: %d", workerid, r, i)),
-			}
-		}
-		_, err := pubsub.Publish(ctx, topic, msgs...)
-		if err != nil {
-			log.Printf("Publish failed, %v\n", err)
-			return
-		}
-		r++
-		if *reportMPS {
-			result <- *size
-		}
-	}
-}
-
-func publishMessages(ctx context.Context, argv []string) {
-	checkArgs(argv, 3)
-	topic := argv[1]
-	workers, err := strconv.Atoi(argv[2])
-	if err != nil {
-		log.Fatalf("Atoi failed, %v", err)
-	}
-	result := make(chan int, 1024)
-	for i := 0; i < int(workers); i++ {
-		go publishLoop(ctx, topic, i, result)
-	}
-	if *reportMPS {
-		r := reporter{reportTitle: "Sent", result: result}
-		r.report()
-	} else {
-		select {}
-	}
-}
-
 // This example demonstrates calling the Cloud Pub/Sub API.
 //
 // Before running this example, be sure to enable Cloud Pub/Sub
@@ -400,9 +400,7 @@ func main() {
 		usageAndExit("Please specify Project ID.")
 	}
 	oldStyle := map[string]func(ctx context.Context, argv []string){
-		"publish":          publish,
-		"pull_messages":    pullMessages,
-		"publish_messages": publishMessages,
+		"pull_messages": pullMessages,
 	}
 
 	newStyle := map[string]func(client *pubsub.Client, argv []string){
@@ -416,6 +414,8 @@ func main() {
 		"delete_subscription":      deleteSubscription,
 		"subscription_exists":      checkSubscriptionExists,
 		"list_subscriptions":       listSubscriptions,
+		"publish":                  publish,
+		"publish_messages":         publishMessages,
 	}
 	subcommand := argv[0]
 	if f, ok := oldStyle[subcommand]; ok {

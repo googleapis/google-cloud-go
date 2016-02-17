@@ -15,6 +15,7 @@
 package pubsub
 
 import (
+	"encoding/base64"
 	"fmt"
 	"net/http"
 	"time"
@@ -44,6 +45,7 @@ type service interface {
 	modifyAckDeadline(ctx context.Context, subName string, deadline time.Duration, ackIDs []string) error
 	acknowledge(ctx context.Context, subName string, ackIDs []string) error
 	fetchMessages(ctx context.Context, subName string, maxMessages int64) ([]*Message, error)
+	publishMessages(ctx context.Context, topicName string, msgs []*Message) ([]string, error)
 }
 
 type apiService struct {
@@ -220,4 +222,24 @@ func (s *apiService) fetchMessages(ctx context.Context, subName string, maxMessa
 	}
 
 	return msgs, nil
+}
+
+func (s *apiService) publishMessages(ctx context.Context, topicName string, msgs []*Message) ([]string, error) {
+	rawMsgs := make([]*raw.PubsubMessage, len(msgs))
+	for i, msg := range msgs {
+		rawMsgs[i] = &raw.PubsubMessage{
+			Data:       base64.StdEncoding.EncodeToString(msg.Data),
+			Attributes: msg.Attributes,
+		}
+	}
+
+	req := &raw.PublishRequest{Messages: rawMsgs}
+	resp, err := s.s.Projects.Topics.Publish(topicName, req).
+		Context(ctx).
+		Do()
+
+	if err != nil {
+		return nil, err
+	}
+	return resp.MessageIds, nil
 }

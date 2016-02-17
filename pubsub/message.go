@@ -23,6 +23,8 @@ import (
 // Message represents a Pub/Sub message.
 type Message struct {
 	// ID identifies this message.
+	// This ID is assigned by the server and is populated for Messages obtained from a subscription.
+	// It is otherwise ignored.
 	ID string
 
 	// Data is the actual data in the message.
@@ -63,6 +65,7 @@ func toMessage(resp *raw.ReceivedMessage) (*Message, error) {
 // Done completes the processing of a Message that was returned from an Iterator.
 // ack indicates whether the message should be acknowledged.
 // Client code must call Done when finished for each Message returned by an iterator.
+// Done may only be called on Messages returned by an iterator.
 // If message acknowledgement fails, the Message will be redelivered.
 // Calls to Done have no effect after the first call.
 func (m *Message) Done(ack bool) {

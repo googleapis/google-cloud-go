@@ -21,8 +21,6 @@
 package pubsub // import "google.golang.org/cloud/pubsub"
 
 import (
-	"encoding/base64"
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -46,9 +44,6 @@ const (
 
 const prodAddr = "https://pubsub.googleapis.com/"
 const userAgent = "gcloud-golang-pubsub/20151008"
-
-// batchLimit is maximun size of a single batch.
-const batchLimit = 1000
 
 // Client is a Google Pub/Sub client, which may be used to perform Pub/Sub operations with a project.
 // Note: Some operations are not yet available via Client, and must be performed via the legacy standalone functions.
@@ -97,43 +92,10 @@ func ModifyPushEndpoint(ctx context.Context, sub, endpoint string) error {
 	return err
 }
 
-// Publish publish messages to the topic's subscribers. It returns
-// message IDs upon success.
-func Publish(ctx context.Context, topic string, msgs ...*Message) ([]string, error) {
-	var rawMsgs []*raw.PubsubMessage
-	if len(msgs) == 0 {
-		return nil, errors.New("pubsub: no messages to publish")
-	}
-	if len(msgs) > batchLimit {
-		return nil, fmt.Errorf("pubsub: %d messages given, but maximum batch size is %d", len(msgs), batchLimit)
-	}
-	rawMsgs = make([]*raw.PubsubMessage, len(msgs))
-	for i, msg := range msgs {
-		rawMsgs[i] = &raw.PubsubMessage{
-			Data:       base64.StdEncoding.EncodeToString(msg.Data),
-			Attributes: msg.Attributes,
-		}
-	}
-	resp, err := rawService(ctx).Projects.Topics.Publish(fullTopicName(internal.ProjID(ctx), topic), &raw.PublishRequest{
-		Messages: rawMsgs,
-	}).Do()
-	if err != nil {
-		return nil, err
-	}
-	return resp.MessageIds, nil
-}
-
 // fullSubName returns the fully qualified name for a subscription.
 // E.g. /subscriptions/project-id/subscription-name.
 func fullSubName(proj, name string) string {
 	return fmt.Sprintf("projects/%s/subscriptions/%s", proj, name)
-}
-
-// fullTopicName returns the fully qualified name for a topic.
-// E.g. /topics/project-id/topic-name.
-func fullTopicName(proj, name string) string {
-	// TODO(mcgreevy): remove this in favour of Topic.fullyQualifiedName.
-	return fmt.Sprintf("projects/%s/topics/%s", proj, name)
 }
 
 func rawService(ctx context.Context) *raw.Service {

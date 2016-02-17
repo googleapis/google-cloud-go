@@ -15,6 +15,7 @@
 package pubsub
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"net/http"
@@ -25,6 +26,9 @@ import (
 	raw "google.golang.org/api/pubsub/v1"
 	"google.golang.org/cloud/internal"
 )
+
+// batchLimit is maximun size of a single batch.
+const batchLimit = 1000
 
 // CreateTopic creates a new topic with the specified name on the backend.
 //
@@ -189,4 +193,39 @@ func Ack(ctx context.Context, sub string, id ...string) error {
 
 func isSec(dur time.Duration) bool {
 	return dur%time.Second == 0
+}
+
+// Publish publishes messages to the topic's subscribers. It returns
+// message IDs upon success.
+//
+// Deprecated: Use TopicHandle.Publish instead.
+func Publish(ctx context.Context, topic string, msgs ...*Message) ([]string, error) {
+	var rawMsgs []*raw.PubsubMessage
+	if len(msgs) == 0 {
+		return nil, errors.New("pubsub: no messages to publish")
+	}
+	if len(msgs) > batchLimit {
+		return nil, fmt.Errorf("pubsub: %d messages given, but maximum batch size is %d", len(msgs), batchLimit)
+	}
+	rawMsgs = make([]*raw.PubsubMessage, len(msgs))
+	for i, msg := range msgs {
+		rawMsgs[i] = &raw.PubsubMessage{
+			Data:       base64.StdEncoding.EncodeToString(msg.Data),
+			Attributes: msg.Attributes,
+		}
+	}
+	resp, err := rawService(ctx).Projects.Topics.Publish(fullTopicName(internal.ProjID(ctx), topic), &raw.PublishRequest{
+		Messages: rawMsgs,
+	}).Do()
+	if err != nil {
+		return nil, err
+	}
+	return resp.MessageIds, nil
+}
+
+// fullTopicName returns the fully qualified name for a topic.
+// E.g. /topics/project-id/topic-name.
+func fullTopicName(proj, name string) string {
+	// TODO(mcgreevy): remove this in favour of Topic.fullyQualifiedName.
+	return fmt.Sprintf("projects/%s/topics/%s", proj, name)
 }
