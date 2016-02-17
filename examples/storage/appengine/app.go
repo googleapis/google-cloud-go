@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//[START sample]
 // Package gcsdemo is an example App Engine app using the Google Cloud Storage API.
 package gcsdemo
 
+//[START imports]
 import (
 	"bytes"
 	"fmt"
@@ -29,6 +31,8 @@ import (
 	"google.golang.org/appengine/log"
 	"google.golang.org/cloud/storage"
 )
+
+//[END imports]
 
 // bucket is a local cache of the app's default bucket name.
 var bucket string // or: var bucket = "<your-app-id>.appspot.com"
@@ -114,6 +118,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//[START write]
 // createFile creates a file in Google Cloud Storage.
 func (d *demo) createFile(fileName string) {
 	fmt.Fprintf(d.w, "Creating file /%v/%v\n", bucket, fileName)
@@ -140,6 +145,9 @@ func (d *demo) createFile(fileName string) {
 	}
 }
 
+//[END write]
+
+//[START read]
 // readFile reads the named file in Google Cloud Storage.
 func (d *demo) readFile(fileName string) {
 	io.WriteString(d.w, "\nAbbreviated file content (first line and last 1K):\n")
@@ -163,6 +171,8 @@ func (d *demo) readFile(fileName string) {
 		fmt.Fprintf(d.w, "%s\n", slurp)
 	}
 }
+
+//[END read]
 
 // copyFile copies a file in Google Cloud Storage.
 func (d *demo) copyFile(fileName string) {
@@ -395,3 +405,5 @@ func (d *demo) deleteFiles() {
 		}
 	}
 }
+
+//[END sample]
