@@ -118,6 +118,8 @@ func CreateSub(ctx context.Context, name string, topic string, deadline time.Dur
 }
 
 // Pull pulls up to n messages from the subscription. n must not be larger than 100.
+//
+// Deprecated: Use Subscription.Pull instead
 func Pull(ctx context.Context, sub string, n int) ([]*Message, error) {
 	return pull(ctx, sub, n, true)
 }
@@ -125,6 +127,8 @@ func Pull(ctx context.Context, sub string, n int) ([]*Message, error) {
 // PullWait pulls up to n messages from the subscription. If there are no
 // messages in the queue, it will wait until at least one message is
 // available or a timeout occurs. n must not be larger than 100.
+//
+// Deprecated: Use Subscription.Pull instead
 func PullWait(ctx context.Context, sub string, n int) ([]*Message, error) {
 	return pull(ctx, sub, n, false)
 }
@@ -149,4 +153,40 @@ func pull(ctx context.Context, sub string, n int, retImmediately bool) ([]*Messa
 		msgs[i] = msg
 	}
 	return msgs, nil
+}
+
+// ModifyAckDeadline modifies the acknowledgement deadline
+// for the messages retrieved from the specified subscription.
+// Deadline must not be specified to precision greater than one second.
+//
+// Deprecated: Use Subscription.Pull instead, which automatically extends ack deadlines.
+func ModifyAckDeadline(ctx context.Context, sub string, id string, deadline time.Duration) error {
+	if !isSec(deadline) {
+		return errors.New("pubsub: deadline must not be specified to precision greater than one second")
+	}
+	_, err := rawService(ctx).Projects.Subscriptions.ModifyAckDeadline(fullSubName(internal.ProjID(ctx), sub), &raw.ModifyAckDeadlineRequest{
+		AckDeadlineSeconds: int64(deadline / time.Second),
+		AckIds:             []string{id},
+	}).Do()
+	return err
+}
+
+// Ack acknowledges one or more Pub/Sub messages on the
+// specified subscription.
+//
+// Deprecated: Call Message.Done on a Message returned by Iterator.Next instead.
+func Ack(ctx context.Context, sub string, id ...string) error {
+	for idx, ackID := range id {
+		if ackID == "" {
+			return fmt.Errorf("pubsub: empty ackID detected at index %d", idx)
+		}
+	}
+	_, err := rawService(ctx).Projects.Subscriptions.Acknowledge(fullSubName(internal.ProjID(ctx), sub), &raw.AcknowledgeRequest{
+		AckIds: id,
+	}).Do()
+	return err
+}
+
+func isSec(dur time.Duration) bool {
+	return dur%time.Second == 0
 }

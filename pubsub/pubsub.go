@@ -25,7 +25,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"time"
 
 	raw "google.golang.org/api/pubsub/v1"
 	"google.golang.org/cloud"
@@ -86,20 +85,6 @@ func (c *Client) fullyQualifiedProjectName() string {
 	return fmt.Sprintf("projects/%s", c.projectID)
 }
 
-// ModifyAckDeadline modifies the acknowledgement deadline
-// for the messages retrieved from the specified subscription.
-// Deadline must not be specified to precision greater than one second.
-func ModifyAckDeadline(ctx context.Context, sub string, id string, deadline time.Duration) error {
-	if !isSec(deadline) {
-		return errors.New("pubsub: deadline must not be specified to precision greater than one second")
-	}
-	_, err := rawService(ctx).Projects.Subscriptions.ModifyAckDeadline(fullSubName(internal.ProjID(ctx), sub), &raw.ModifyAckDeadlineRequest{
-		AckDeadlineSeconds: int64(deadline / time.Second),
-		AckIds:             []string{id},
-	}).Do()
-	return err
-}
-
 // ModifyPushEndpoint modifies the URL endpoint to modify the resource
 // to handle push notifications coming from the Pub/Sub backend
 // for the specified subscription.
@@ -108,20 +93,6 @@ func ModifyPushEndpoint(ctx context.Context, sub, endpoint string) error {
 		PushConfig: &raw.PushConfig{
 			PushEndpoint: endpoint,
 		},
-	}).Do()
-	return err
-}
-
-// Ack acknowledges one or more Pub/Sub messages on the
-// specified subscription.
-func Ack(ctx context.Context, sub string, id ...string) error {
-	for idx, ackID := range id {
-		if ackID == "" {
-			return fmt.Errorf("pubsub: empty ackID detected at index %d", idx)
-		}
-	}
-	_, err := rawService(ctx).Projects.Subscriptions.Acknowledge(fullSubName(internal.ProjID(ctx), sub), &raw.AcknowledgeRequest{
-		AckIds: id,
 	}).Do()
 	return err
 }
@@ -163,10 +134,6 @@ func fullSubName(proj, name string) string {
 func fullTopicName(proj, name string) string {
 	// TODO(mcgreevy): remove this in favour of Topic.fullyQualifiedName.
 	return fmt.Sprintf("projects/%s/topics/%s", proj, name)
-}
-
-func isSec(dur time.Duration) bool {
-	return dur%time.Second == 0
 }
 
 func rawService(ctx context.Context) *raw.Service {
