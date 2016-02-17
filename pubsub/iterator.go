@@ -15,7 +15,7 @@
 package pubsub
 
 import (
-	"errors"
+	"io"
 	"sync"
 	"time"
 
@@ -98,12 +98,13 @@ func (c *Client) newIterator(ctx context.Context, subName string, ackDeadline, m
 
 // Next returns the next Message to be processed.  The caller must call Done on
 // the returned Message once it is finished with it.
+// Once Close has been called, subsequent calls to Next will return io.EOF.
 func (it *Iterator) Next(ctx context.Context) (*Message, error) {
 	// TODO: decide whether to use it.ctx instead of ctx.
 	it.mu.Lock()
 	defer it.mu.Unlock()
 	if it.closed {
-		return nil, errors.New("attempt to call Next after Close")
+		return nil, io.EOF
 	}
 
 	// Note: this is the only place where messages are added to keepAlive,
