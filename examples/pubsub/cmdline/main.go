@@ -281,11 +281,11 @@ func genMessages(prefix string) []*pubsub.Message {
 }
 
 // publish publishes a series of messages to the named topic.
-func publishMessageBatches(client *pubsub.Client, topicName string, workerid int, rep *reporter) {
+func publishMessageBatches(client *pubsub.Client, topicName string, workerID int, rep *reporter) {
 	var r uint64
 	topic := client.Topic(topicName)
 	for !shouldQuit() {
-		msgPrefix := fmt.Sprintf("Worker: %d, Round: %d,", workerid, r)
+		msgPrefix := fmt.Sprintf("Worker: %d, Round: %d,", workerID, r)
 		if _, err := topic.Publish(context.Background(), genMessages(msgPrefix)...); err != nil {
 			log.Printf("Publish failed, %v\n", err)
 			return
