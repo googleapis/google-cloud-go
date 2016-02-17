@@ -50,7 +50,9 @@ type Iterator struct {
 // when it is no longer needed.
 // subName is the full name of the subscription to pull messages from.
 // ackDeadline is the default ack deadline for the subscription
-func (c *Client) newIterator(ctx context.Context, subName string, ackDeadline time.Duration) *Iterator {
+// maxExtension is the maximum period for which the iterator should automatically extend
+// the ack deadline for each message.
+func (c *Client) newIterator(ctx context.Context, subName string, ackDeadline, maxExtension time.Duration) *Iterator {
 	it := &Iterator{
 		sub: subName,
 		ctx: ctx,
@@ -67,6 +69,7 @@ func (c *Client) newIterator(ctx context.Context, subName string, ackDeadline ti
 		Sub:           it.sub,
 		ExtensionTick: it.kaTicker.C,
 		Deadline:      ackDeadline,
+		MaxExtension:  maxExtension,
 	}
 
 	// TODO: make ackTicker more configurable.  Something less than

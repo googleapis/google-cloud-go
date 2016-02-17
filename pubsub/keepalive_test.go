@@ -51,6 +51,7 @@ func TestKeepAlive(t *testing.T) {
 		Sub:           "subname",
 		ExtensionTick: tick,
 		Deadline:      deadline,
+		MaxExtension:  time.Hour,
 	}
 	ka.Start()
 
@@ -76,10 +77,16 @@ func TestKeepAlive(t *testing.T) {
 
 // TestKeepAliveStop checks that Stop blocks until all ackIDs have been removed.
 func TestKeepAliveStop(t *testing.T) {
-	tick := make(chan time.Time)
+	ticker := time.NewTicker(100 * time.Microsecond)
+	defer ticker.Stop()
+
+	s := &testService{modDeadlineCalled: make(chan modDeadlineCall, 100)}
+	c := &Client{projectID: "projid", s: s}
 
 	ka := &keepAlive{
-		ExtensionTick: tick,
+		Client:        c,
+		ExtensionTick: ticker.C,
+		MaxExtension:  time.Hour,
 	}
 	ka.Start()
 
@@ -118,5 +125,36 @@ func TestKeepAliveStop(t *testing.T) {
 	want := []string{"pre-stop", "pre-remove", "stopped", "post-second-sleep"}
 	if !reflect.DeepEqual(eventSequence, want) {
 		t.Errorf("keepalive eventsequence: got:\n%v\nwant:\n%v", eventSequence, want)
+	}
+}
+
+// TestMaxExtensionDeadline checks we stop extending after the configured duration.
+func TestMaxExtensionDeadline(t *testing.T) {
+	ticker := time.NewTicker(100 * time.Microsecond)
+	defer ticker.Stop()
+
+	s := &testService{modDeadlineCalled: make(chan modDeadlineCall, 100)}
+	c := &Client{projectID: "projid", s: s}
+
+	maxExtension := time.Millisecond
+	ka := &keepAlive{
+		Client:        c,
+		ExtensionTick: ticker.C,
+		MaxExtension:  maxExtension,
+	}
+	ka.Start()
+
+	ka.Add("a")
+	stopped := make(chan struct{})
+
+	go func() {
+		ka.Stop()
+		stopped <- struct{}{}
+	}()
+
+	select {
+	case <-stopped:
+	case <-time.After(2 * maxExtension):
+		t.Fatalf("keepalive failed to stop after maxExtension deadline")
 	}
 }

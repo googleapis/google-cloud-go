@@ -102,12 +102,16 @@ func (s *SubscriptionHandle) Config(ctx context.Context) (*SubscriptionConfig, e
 }
 
 // Pull returns an Iterator that can be used to fetch Messages.
+// The Iterator will automatically extend the ack deadline of all fetched
+// Messages, for the period specified maxExtension. Automatic deadline
+// extension may be disabled by specifying a maxExtension of 0.
+//
 // The caller must call Close on the Iterator once finished with it.
-func (s *SubscriptionHandle) Pull(ctx context.Context) (*Iterator, error) {
+func (s *SubscriptionHandle) Pull(ctx context.Context, maxExtension time.Duration) (*Iterator, error) {
 	// TODO(mcgreevy): accept pulloptions.
 	config, err := s.Config(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return s.c.newIterator(ctx, s.name, config.AckDeadline), nil
+	return s.c.newIterator(ctx, s.name, config.AckDeadline, maxExtension), nil
 }

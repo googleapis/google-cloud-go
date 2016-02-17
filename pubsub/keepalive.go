@@ -29,18 +29,20 @@ type keepAlive struct {
 	Ctx           context.Context  // The context to use when extending deadlines.
 	Sub           string           // The full name of the subscription.
 	ExtensionTick <-chan time.Time // ExtenstionTick supplies the frequency with which to make extension requests.
-	Deadline      time.Duration    // How long to extend messages for. Should be greater than ExtensionTick frequency.
+	Deadline      time.Duration    // How long to extend messages for each time they are extended. Should be greater than ExtensionTick frequency.
+	MaxExtension  time.Duration    // How long to keep extending each message's ack deadline before automatically removing it.
 
-	ackIDs map[string]struct{}
-	done   chan struct{}
-	wg     sync.WaitGroup
+	// key: ackID; value: time at which ack deadline extension should cease.
+	items map[string]time.Time
+	done  chan struct{}
+	wg    sync.WaitGroup
 
 	add, remove chan string
 }
 
 // Start initiates the deadline extension loop.  Stop must be called once keepAlive is no longer needed.
 func (ka *keepAlive) Start() {
-	ka.ackIDs = make(map[string]struct{})
+	ka.items = make(map[string]time.Time)
 	ka.done = make(chan struct{})
 	ka.add = make(chan string)
 	ka.remove = make(chan string)
@@ -51,20 +53,24 @@ func (ka *keepAlive) Start() {
 		for {
 			select {
 			case ackID := <-ka.add:
-				ka.ackIDs[ackID] = struct{}{}
+				ka.addItem(ackID)
 			case ackID := <-ka.remove:
-				delete(ka.ackIDs, ackID)
+				ka.removeItem(ackID)
 			case <-ka.done:
 				done = true
 			case <-ka.ExtensionTick:
-				ackIDs := ka.getAckIds()
+				live, expired := ka.getAckIDs()
 				ka.wg.Add(1)
 				go func() {
 					defer ka.wg.Done()
-					ka.extendDeadlines(ackIDs)
+					ka.extendDeadlines(live)
 				}()
+
+				for _, id := range expired {
+					ka.removeItem(id)
+				}
 			}
-			if done && len(ka.ackIDs) == 0 {
+			if done && len(ka.items) == 0 {
 				return
 			}
 		}
@@ -76,9 +82,19 @@ func (ka *keepAlive) Add(ackID string) {
 	ka.add <- ackID
 }
 
+// add adds ackID to the items map.
+func (ka *keepAlive) addItem(ackID string) {
+	ka.items[ackID] = time.Now().Add(ka.MaxExtension)
+}
+
 // Remove removes ackID from the list to be kept alive.
 func (ka *keepAlive) Remove(ackID string) {
 	ka.remove <- ackID
+}
+
+// remove removes ackID from the items map.
+func (ka *keepAlive) removeItem(ackID string) {
+	delete(ka.items, ackID)
 }
 
 // Stop waits until all added ackIDs have been removed, and cleans up resources.
@@ -87,12 +103,19 @@ func (ka *keepAlive) Stop() {
 	ka.wg.Wait()
 }
 
-func (ka *keepAlive) getAckIds() []string {
-	ids := []string{}
-	for id, _ := range ka.ackIDs {
-		ids = append(ids, id)
+// getAckIDs returns the set of ackIDs that are being kept alive.
+// The set is divided into two lists: one with IDs that should continue to be kept alive,
+// and the other with IDs that should be dropped.
+func (ka *keepAlive) getAckIDs() (live, expired []string) {
+	now := time.Now()
+	for id, expiry := range ka.items {
+		if expiry.Before(now) {
+			expired = append(expired, id)
+		} else {
+			live = append(live, id)
+		}
 	}
-	return ids
+	return live, expired
 }
 
 func (ka *keepAlive) extendDeadlines(ackIDs []string) {
@@ -101,5 +124,4 @@ func (ka *keepAlive) extendDeadlines(ackIDs []string) {
 		_ = ka.Client.s.modifyAckDeadline(ka.Ctx, ka.Sub, ka.Deadline, ackIDs)
 	}
 	// TODO: retry on error.  NOTE: if we ultimately fail to extend deadlines here, the messages will be redelivered, which is OK.
-	// TODO: ensure that messages are not kept alive forever, via a max extension duration. That can be managed outside of keepAlive.
 }
