@@ -154,7 +154,7 @@ func TestMaxExtensionDeadline(t *testing.T) {
 
 	select {
 	case <-stopped:
-	case <-time.After(2 * maxExtension):
+	case <-time.After(maxExtension + 2*time.Second):
 		t.Fatalf("keepalive failed to stop after maxExtension deadline")
 	}
 }
