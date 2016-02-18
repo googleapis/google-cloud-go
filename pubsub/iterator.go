@@ -107,6 +107,12 @@ func (it *Iterator) Next(ctx context.Context) (*Message, error) {
 		return nil, io.EOF
 	}
 
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	default:
+	}
+
 	// Note: this is the only place where messages are added to keepAlive,
 	// and this code is protected by mu. This means once an iterator starts
 	// being closed down, no more messages will be added to keepalive.
