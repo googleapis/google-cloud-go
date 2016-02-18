@@ -19,6 +19,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"time"
 
 	"golang.org/x/net/context"
 
@@ -50,7 +51,7 @@ func main() {
 
 	sub := client.Subscription(*subName)
 
-	it, err := sub.Pull(ctx)
+	it, err := sub.Pull(ctx, time.Hour)
 	if err != nil {
 		fmt.Printf("error constructing iterator: %v", err)
 		return
