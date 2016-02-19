@@ -1,8 +1,8 @@
 sudo: false
 language: go
 go:
-- 1.4
 - 1.5
+- 1.6
 install:
 - go get -v google.golang.org/cloud/...
 script:
