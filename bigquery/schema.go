@@ -14,12 +14,15 @@
 
 package bigquery
 
-import bq "google.golang.org/api/bigquery/v2"
+import (
+	"errors"
+	"reflect"
+
+	bq "google.golang.org/api/bigquery/v2"
+)
 
 // Schema describes the fields in a table or query result.
 type Schema []*FieldSchema
-
-// TODO(mcgreevy): add a function to generate a schema from a struct.
 
 type FieldSchema struct {
 	// The field name.
@@ -104,3 +107,122 @@ const (
 	TimestampFieldType FieldType = "TIMESTAMP"
 	RecordFieldType    FieldType = "RECORD"
 )
+
+var errNoStruct = errors.New("bigquery: can only infer schema from struct or pointer to struct")
+var errUnsupportedFieldType = errors.New("bigquery: unsupported type of field in struct")
+
+// InferSchema tries to derive a BigQuery schema from the supplied struct value.
+// NOTE: All fields in the returned Schema are configured to be required,
+// unless the corresponding field in the supplied struct is a slice or array.
+// It is considered an error if the struct (including nested structs) contains
+// any exported fields that are pointers or one of the following types:
+// map, interface, complex64, complex128, func, chan.
+// In these cases, an error will be returned.
+// Future versions may handle these cases without error.
+func InferSchema(st interface{}) (Schema, error) {
+	return inferStruct(reflect.TypeOf(st))
+}
+
+func inferStruct(rt reflect.Type) (Schema, error) {
+	switch rt.Kind() {
+	case reflect.Struct:
+		return inferFields(rt)
+	default:
+		return nil, errNoStruct
+	}
+
+}
+
+// inferFieldSchema infers the FieldSchema for a Go type
+func inferFieldSchema(rt reflect.Type) (*FieldSchema, error) {
+	switch {
+	case isByteSlice(rt):
+		return &FieldSchema{Required: true, Type: StringFieldType}, nil
+	case isTimeTime(rt):
+		return &FieldSchema{Required: true, Type: TimestampFieldType}, nil
+	case isRepeated(rt):
+		et := rt.Elem()
+
+		if isRepeated(et) && !isByteSlice(et) {
+			// Multi dimensional slices/arrays are not supported by BigQuery
+			return nil, errUnsupportedFieldType
+		}
+
+		f, err := inferFieldSchema(et)
+		if err != nil {
+			return nil, err
+		}
+		f.Repeated = true
+		f.Required = false
+		return f, nil
+	case isStruct(rt):
+		nested, err := inferFields(rt)
+		if err != nil {
+			return nil, err
+		}
+		return &FieldSchema{Required: true, Type: RecordFieldType, Schema: nested}, nil
+	}
+
+	switch rt.Kind() {
+	case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int,
+		reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uint, reflect.Uintptr:
+		return &FieldSchema{Required: true, Type: IntegerFieldType}, nil
+	case reflect.String:
+		return &FieldSchema{Required: true, Type: StringFieldType}, nil
+	case reflect.Bool:
+		return &FieldSchema{Required: true, Type: BooleanFieldType}, nil
+	case reflect.Float32, reflect.Float64:
+		return &FieldSchema{Required: true, Type: FloatFieldType}, nil
+	default:
+		return nil, errUnsupportedFieldType
+	}
+}
+
+// inferFields extracts all exported field types from struct type.
+func inferFields(rt reflect.Type) (Schema, error) {
+	var s Schema
+
+	for i := 0; i < rt.NumField(); i++ {
+		field := rt.Field(i)
+		if field.PkgPath != "" {
+			// field is unexported.
+			continue
+		}
+
+		if field.Anonymous {
+			// TODO(nightlyone) support embedded (see https://github.com/GoogleCloudPlatform/gcloud-golang/issues/238)
+			return nil, errUnsupportedFieldType
+		}
+
+		f, err := inferFieldSchema(field.Type)
+		if err != nil {
+			return nil, err
+		}
+		f.Name = field.Name
+
+		s = append(s, f)
+	}
+
+	return s, nil
+}
+
+func isByteSlice(rt reflect.Type) bool {
+	return rt.Kind() == reflect.Slice && rt.Elem().Kind() == reflect.Uint8
+}
+
+func isTimeTime(rt reflect.Type) bool {
+	return rt.PkgPath() == "time" && rt.Name() == "Time"
+}
+
+func isStruct(rt reflect.Type) bool {
+	return rt.Kind() == reflect.Struct
+}
+
+func isRepeated(rt reflect.Type) bool {
+	switch rt.Kind() {
+	case reflect.Slice, reflect.Array:
+		return true
+	default:
+		return false
+	}
+}
