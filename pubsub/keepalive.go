@@ -50,6 +50,9 @@ func (ka *keepAlive) Start() {
 		done := false
 		for {
 			select {
+			case <-ka.Ctx.Done():
+				// Don't bother waiting for items to be removed: we can't extend them any more.
+				return
 			case <-ka.done:
 				done = true
 			case <-ka.ExtensionTick:

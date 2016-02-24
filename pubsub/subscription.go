@@ -106,6 +106,10 @@ func (s *SubscriptionHandle) Config(ctx context.Context) (*SubscriptionConfig, e
 // Messages, for the period specified maxExtension. Automatic deadline
 // extension may be disabled by specifying a maxExtension of 0.
 //
+// If ctx is cancelled or exceeds its deadline, outstanding acks or deadline
+// extensions will fail, and the Iterator's Close method will return a non-nil
+// error.
+//
 // The caller must call Close on the Iterator once finished with it.
 func (s *SubscriptionHandle) Pull(ctx context.Context, maxExtension time.Duration) (*Iterator, error) {
 	// TODO(mcgreevy): accept pulloptions.

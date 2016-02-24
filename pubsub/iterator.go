@@ -97,10 +97,9 @@ func (c *Client) newIterator(ctx context.Context, subName string, ackDeadline, m
 }
 
 // Next returns the next Message to be processed.  The caller must call Done on
-// the returned Message once it is finished with it.
+// the returned Message when finished with it.
 // Once Close has been called, subsequent calls to Next will return io.EOF.
-func (it *Iterator) Next(ctx context.Context) (*Message, error) {
-	// TODO: decide whether to use it.ctx instead of ctx.
+func (it *Iterator) Next() (*Message, error) {
 	it.mu.Lock()
 	defer it.mu.Unlock()
 	if it.closed {
@@ -108,15 +107,15 @@ func (it *Iterator) Next(ctx context.Context) (*Message, error) {
 	}
 
 	select {
-	case <-ctx.Done():
-		return nil, ctx.Err()
+	case <-it.ctx.Done():
+		return nil, it.ctx.Err()
 	default:
 	}
 
 	// Note: this is the only place where messages are added to keepAlive,
 	// and this code is protected by mu. This means once an iterator starts
 	// being closed down, no more messages will be added to keepalive.
-	m, err := it.puller.Next(ctx)
+	m, err := it.puller.Next(it.ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -126,8 +125,10 @@ func (it *Iterator) Next(ctx context.Context) (*Message, error) {
 
 // Client code must call Close on an Iterator when finished with it.
 // Close will block until Done has been called on all Messages that have been
-// returned by Next.
-// Close need only be called once, but may be called multiple times from multiple goroutines.
+// returned by Next, or until the context with which the Iterator was created
+// is cancelled or exceeds its deadline.
+// Close need only be called once, but may be called multiple times from
+// multiple goroutines.
 func (it *Iterator) Close() error {
 	// TODO: test calling from multiple goroutines.
 	it.mu.Lock()
@@ -145,15 +146,23 @@ func (it *Iterator) Close() error {
 		it.ka.Remove(m.AckID)
 	}
 
-	// This will block until all messages have been removed from keepAlive.
-	// This will happen once all outstanding messages have been either
-	// ACKed or NACKed.
+	// This will block until
+	//   (a) it.Ctx is done, or
+	//   (b) all messages have been removed from keepAlive.
+	// (b) will happen once all outstanding messages have been either ACKed or NACKed.
 	it.ka.Stop()
 
 	it.acker.Stop()
 
 	it.kaTicker.Stop()
 	it.ackTicker.Stop()
+
+	select {
+	case <-it.ctx.Done():
+		return it.ctx.Err()
+	default:
+		return nil
+	}
 	return nil
 }
 
