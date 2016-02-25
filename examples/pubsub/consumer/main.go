@@ -58,16 +58,16 @@ func main() {
 	}
 
 	for i := 0; i < *numConsume; i++ {
-		m, err := it.Next(ctx)
+		m, err := it.Next()
 		if err != nil {
+			fmt.Printf("advancing iterator: %v", err)
 			break
 		}
 		fmt.Printf("got message: %v\n", string(m.Data))
 		m.Done(true)
 	}
 
-	it.Close()
-	if err != nil {
-		fmt.Printf("%v", err)
+	if err := it.Close(); err != nil {
+		fmt.Printf("closing iterator: %v", err)
 	}
 }
