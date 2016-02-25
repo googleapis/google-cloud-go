@@ -241,7 +241,7 @@ func (r *reporter) start() {
 	}()
 }
 
-// Inc increments the message count by n. If r is nil, this is a no-op.
+// Inc increments the message count by n.
 func (r *reporter) Inc(n int) {
 	r.count <- n
 }
