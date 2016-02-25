@@ -67,7 +67,8 @@ func (ka *keepAlive) Start() {
 					ka.Remove(id)
 				}
 			}
-			if done && len(ka.items) == 0 {
+			live, _ := ka.getAckIDs()
+			if done && len(live) == 0 {
 				return
 			}
 		}

@@ -84,6 +84,7 @@ func TestKeepAliveStop(t *testing.T) {
 
 	ka := &keepAlive{
 		Client:        c,
+		Ctx:           context.Background(),
 		ExtensionTick: ticker.C,
 		MaxExtension:  time.Hour,
 	}
@@ -138,6 +139,7 @@ func TestMaxExtensionDeadline(t *testing.T) {
 	maxExtension := time.Millisecond
 	ka := &keepAlive{
 		Client:        c,
+		Ctx:           context.Background(),
 		ExtensionTick: ticker.C,
 		MaxExtension:  maxExtension,
 	}
@@ -168,6 +170,7 @@ func TestKeepAliveStopsImmediatelyForNoAckIDs(t *testing.T) {
 	maxExtension := time.Millisecond
 	ka := &keepAlive{
 		Client:        c,
+		Ctx:           context.Background(),
 		ExtensionTick: ticker.C,
 		MaxExtension:  maxExtension,
 	}
