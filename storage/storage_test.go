@@ -80,6 +80,31 @@ func TestSignedURL_PEMPrivateKey(t *testing.T) {
 	}
 }
 
+func TestSignedURL_URLUnsafeObjectName(t *testing.T) {
+	expires, _ := time.Parse(time.RFC3339, "2002-10-02T10:00:00-05:00")
+	url, err := SignedURL("bucket-name", "object name界", &SignedURLOptions{
+		GoogleAccessID: "xxx@clientid",
+		PrivateKey:     dummyKey("pem"),
+		Method:         "GET",
+		MD5:            []byte("202cb962ac59075b964b07152d234b70"),
+		Expires:        expires,
+		ContentType:    "application/json",
+		Headers:        []string{"x-header1", "x-header2"},
+	})
+	if err != nil {
+		t.Error(err)
+	}
+	want := "https://storage.googleapis.com/bucket-name/object%20nam" +
+		"e%E7%95%8C?Expires=1033570800&GoogleAccessId=xxx%40clientid" +
+		"&Signature=bxORkrAm73INEMHktrE7VoUZQzVPvL5NFZ7noAI5zK%2BGSm" +
+		"%2BWFvsK%2FVnRGtYK9BK89jz%2BX4ZQd87nkMEJw1OsqmGNiepyzB%2B3o" +
+		"sUYrHyV7UnKs9bkQpBkqPFlfgK1o7oX4NJjA1oKjuHP%2Fj5%2FC15OPa3c" +
+		"vHV619BEb7vf30nAwQM%3D"
+	if url != want {
+		t.Fatalf("Unexpected signed URL; found %v", url)
+	}
+}
+
 func TestSignedURL_MissingOptions(t *testing.T) {
 	pk := dummyKey("rsa")
 	var tests = []struct {

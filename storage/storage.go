@@ -348,13 +348,16 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	u := &url.URL{
+		Path: fmt.Sprintf("/%s/%s", bucket, name),
+	}
 	h := sha256.New()
 	fmt.Fprintf(h, "%s\n", opts.Method)
 	fmt.Fprintf(h, "%s\n", opts.MD5)
 	fmt.Fprintf(h, "%s\n", opts.ContentType)
 	fmt.Fprintf(h, "%d\n", opts.Expires.Unix())
 	fmt.Fprintf(h, "%s", strings.Join(opts.Headers, "\n"))
-	fmt.Fprintf(h, "/%s/%s", bucket, name)
+	fmt.Fprintf(h, "%s", u.String())
 	b, err := rsa.SignPKCS1v15(
 		rand.Reader,
 		key,
@@ -365,11 +368,8 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 		return "", err
 	}
 	encoded := base64.StdEncoding.EncodeToString(b)
-	u := &url.URL{
-		Scheme: "https",
-		Host:   "storage.googleapis.com",
-		Path:   fmt.Sprintf("/%s/%s", bucket, name),
-	}
+	u.Scheme = "https"
+	u.Host = "storage.googleapis.com"
 	q := u.Query()
 	q.Set("GoogleAccessId", opts.GoogleAccessID)
 	q.Set("Expires", fmt.Sprintf("%d", opts.Expires.Unix()))
