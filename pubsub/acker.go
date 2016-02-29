@@ -100,13 +100,22 @@ func (a *acker) Stop() {
 	a.wg.Wait()
 }
 
+const maxAckRetries = 1
+
 // ack acknowledges the supplied ackIDs.
 func (a *acker) ack(ids []string) {
-	// TODO: split into separate requests if there are too many ackIDs.
-	if len(ids) > 0 {
-		a.Client.s.acknowledge(a.Ctx, a.Sub, ids)
+	var retries int
+	head, tail := a.Client.s.splitAckIDs(ids)
+	for len(head) > 0 {
+		err := a.Client.s.acknowledge(a.Ctx, a.Sub, head)
+		if err != nil && retries < maxAckRetries {
+			// TODO(mcgreevy): more sophisticated retry on failure.
+			// NOTE: it is not incorrect to drop acks if we decide not to retry; the messages
+			//  will be redelievered, but this is a documented behaviour of the API.
+			retries += 1
+			continue
+		}
+		retries = 0
+		head, tail = a.Client.s.splitAckIDs(tail)
 	}
-	// TODO: retry on failure. NOTE: it is not incorrect to drop acks.  The
-	// messages will be redelievered, but this is a documented behaviour of
-	// the API.
 }

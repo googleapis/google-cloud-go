@@ -43,9 +43,16 @@ type service interface {
 	listTopicSubscriptions(ctx context.Context, topicName string) ([]string, error)
 
 	modifyAckDeadline(ctx context.Context, subName string, deadline time.Duration, ackIDs []string) error
-	acknowledge(ctx context.Context, subName string, ackIDs []string) error
 	fetchMessages(ctx context.Context, subName string, maxMessages int64) ([]*Message, error)
 	publishMessages(ctx context.Context, topicName string, msgs []*Message) ([]string, error)
+
+	// splitAckIDs divides ackIDs into
+	//  * a batch of a size which is suitable for passing to acknowledge, and
+	//  * the rest.
+	splitAckIDs(ackIDs []string) ([]string, []string)
+
+	// acknowledge ACKs the IDs in ackIDs.
+	acknowledge(ctx context.Context, subName string, ackIDs []string) error
 }
 
 type apiService struct {
@@ -188,6 +195,24 @@ func (s *apiService) modifyAckDeadline(ctx context.Context, subName string, dead
 		Context(ctx).
 		Do()
 	return err
+}
+
+// maxPayload is the maximum number of bytes to devote to actual ids in
+// acknowledgement requests.  Note that there is ~1K of constant overhead, plus
+// 3 bytes per ID (two quotes and a comma).  The total payload size may not exceed 512K.
+const maxPayload = 500 * 1024
+const overheadPerID = 3 // 3 bytes of JSON
+
+// splitAckIDs splits ids into two slices, the first of which contains at most maxPayload bytes of ackID data.
+func (s *apiService) splitAckIDs(ids []string) ([]string, []string) {
+	total := 0
+	for i, id := range ids {
+		total += len(id) + overheadPerID
+		if total > maxPayload {
+			return ids[:i], ids[i:]
+		}
+	}
+	return ids, nil
 }
 
 func (s *apiService) acknowledge(ctx context.Context, subName string, ackIDs []string) error {
