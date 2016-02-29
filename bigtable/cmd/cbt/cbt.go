@@ -229,10 +229,11 @@ var commands = []struct {
 		Name: "read",
 		Desc: "Read rows",
 		do:   doRead,
-		Usage: "cbt read <table> [start=<row>] [limit=<row>] [prefix=<prefix>]\n" +
+		Usage: "cbt read <table> [start=<row>] [end=<row>] [prefix=<prefix>] [count=<n>]\n" +
 			"  start=<row>		Start reading at this row\n" +
-			"  limit=<row>		Stop reading before this row\n" +
-			"  prefix=<prefix>	Read rows with this prefix\n",
+			"  end=<row>		Stop reading before this row\n" +
+			"  prefix=<prefix>	Read rows with this prefix\n" +
+			"  count=<n>		Read only this many rows\n",
 	},
 	{
 		Name: "set",
@@ -505,17 +506,20 @@ func doRead(ctx context.Context, args ...string) {
 		switch key {
 		default:
 			log.Fatalf("Unknown arg key %q", key)
-		case "start", "limit", "prefix":
+		case "limit":
+			// Be nicer; we used to support this, but renamed it to "end".
+			log.Fatalf("Unknown arg key %q; did you mean %q?", key, "end")
+		case "start", "end", "prefix", "count":
 			parsed[key] = val
 		}
 	}
-	if (parsed["start"] != "" || parsed["limit"] != "") && parsed["prefix"] != "" {
-		log.Fatal(`"start"/"limit" may not be mixed with "prefix"`)
+	if (parsed["start"] != "" || parsed["end"] != "") && parsed["prefix"] != "" {
+		log.Fatal(`"start"/"end" may not be mixed with "prefix"`)
 	}
 
 	var rr bigtable.RowRange
-	if start, limit := parsed["start"], parsed["limit"]; limit != "" {
-		rr = bigtable.NewRange(start, limit)
+	if start, end := parsed["start"], parsed["end"]; end != "" {
+		rr = bigtable.NewRange(start, end)
 	} else if start != "" {
 		rr = bigtable.InfiniteRange(start)
 	}
@@ -523,11 +527,20 @@ func doRead(ctx context.Context, args ...string) {
 		rr = bigtable.PrefixRange(prefix)
 	}
 
+	var opts []bigtable.ReadOption
+	if count := parsed["count"]; count != "" {
+		n, err := strconv.ParseInt(count, 0, 64)
+		if err != nil {
+			log.Fatalf("Bad count %q: %v", count, err)
+		}
+		opts = append(opts, bigtable.LimitRows(n))
+	}
+
 	// TODO(dsymonds): Support filters.
 	err := tbl.ReadRows(ctx, rr, func(r bigtable.Row) bool {
 		printRow(r)
 		return true
-	})
+	}, opts...)
 	if err != nil {
 		log.Fatalf("Reading rows: %v", err)
 	}

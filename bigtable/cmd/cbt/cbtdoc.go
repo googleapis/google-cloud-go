@@ -120,10 +120,11 @@ Usage:
 Read rows
 
 Usage:
-	cbt read <table> [start=<row>] [limit=<row>] [prefix=<prefix>]
+	cbt read <table> [start=<row>] [end=<row>] [prefix=<prefix>] [count=<n>]
 	  start=<row>		Start reading at this row
-	  limit=<row>		Stop reading before this row
+	  end=<row>		Stop reading before this row
 	  prefix=<prefix>	Read rows with this prefix
+	  count=<n>		Read only this many rows
 
 
 
