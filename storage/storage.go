@@ -489,7 +489,12 @@ func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
 
 // NewWriter returns a storage Writer that writes to the GCS object
 // associated with this ObjectHandle.
+//
 // If such an object doesn't exist, it creates one.
+// If it does exist, it'll will truncate the file when Close is called
+// even if you don't write anything into it. This makes impossible
+// opening a file for both reading and writing.
+//
 // Attributes can be set on the object by modifying the returned Writer's
 // ObjectAttrs field before the first call to Write.
 //
