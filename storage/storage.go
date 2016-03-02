@@ -29,6 +29,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -460,15 +461,38 @@ func (c *Client) CopyObject(ctx context.Context, srcBucket, srcName string, dest
 // object.
 // ErrObjectNotExist will be returned if the object is not found.
 func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
+	return o.NewRangeReader(ctx, 0, -1)
+}
+
+// NewRangeReader reads part of an object, reading at most length bytes
+// starting at the given offset.  If length is negative, the object is read
+// until the end.
+func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64) (*Reader, error) {
 	if !utf8.ValidString(o.object) {
 		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
+	}
+	if offset < 0 {
+		return nil, fmt.Errorf("storage: invalid offset %d < 0", offset)
 	}
 	u := &url.URL{
 		Scheme: "https",
 		Host:   "storage.googleapis.com",
 		Path:   fmt.Sprintf("/%s/%s", o.bucket, o.object),
 	}
-	res, err := o.c.hc.Get(u.String())
+	verb := "GET"
+	if length == 0 {
+		verb = "HEAD"
+	}
+	req, err := http.NewRequest(verb, u.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	if length < 0 {
+		req.Header.Set("Range", fmt.Sprintf("bytes=%d-", offset))
+	} else if length > 0 {
+		req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", offset, offset+length-1))
+	}
+	res, err := o.c.hc.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -480,9 +504,26 @@ func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
 		res.Body.Close()
 		return nil, fmt.Errorf("storage: can't read object %v/%v, status code: %v", o.bucket, o.object, res.Status)
 	}
+	if offset > 0 && length != 0 && res.StatusCode != http.StatusPartialContent {
+		res.Body.Close()
+		return nil, errors.New("storage: partial request not satisfied")
+	}
+	clHeader := res.Header.Get("X-Goog-Stored-Content-Length")
+	cl, err := strconv.ParseInt(clHeader, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("storage: can't parse content length %q: %v", clHeader, err)
+	}
+	remain := res.ContentLength
+	if remain < 0 {
+		return nil, errors.New("storage: unknown content length")
+	}
+	if length == 0 {
+		remain = 0
+	}
 	return &Reader{
 		body:        res.Body,
-		size:        res.ContentLength,
+		size:        cl,
+		remain:      remain,
 		contentType: res.Header.Get("Content-Type"),
 	}, nil
 }

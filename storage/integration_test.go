@@ -198,6 +198,47 @@ func TestObjects(t *testing.T) {
 		res.Body.Close()
 	}
 
+	obj := objects[0]
+	objlen := int64(len(contents[obj]))
+	// Test Range Reader.
+	for i, r := range []struct {
+		offset, length, want int64
+	}{
+		{0, objlen, objlen},
+		{0, objlen / 2, objlen / 2},
+		{objlen / 2, objlen, objlen / 2},
+		{0, 0, 0},
+		{objlen / 2, 0, 0},
+		{objlen / 2, -1, objlen / 2},
+		{0, objlen * 2, objlen},
+	} {
+		t.Logf("%d: bkt.Object(%v).NewRangeReader(ctx, %d, %d)", i, obj, r.offset, r.length)
+		rc, err := bkt.Object(obj).NewRangeReader(ctx, r.offset, r.length)
+		if err != nil {
+			t.Errorf("%d: Can't create a range reader for %v, errored with %v", i, obj, err)
+			continue
+		}
+		if rc.Size() != objlen {
+			t.Errorf("%d: Reader has a content-size of %d, want %d", i, rc.Size(), objlen)
+		}
+		if rc.Remain() != r.want {
+			t.Errorf("%d: Reader's available bytes reported as %d, want %d", i, rc.Remain(), r.want)
+		}
+		slurp, err := ioutil.ReadAll(rc)
+		if err != nil {
+			t.Errorf("%d:Can't ReadAll object %v, errored with %v", i, obj, err)
+			continue
+		}
+		if len(slurp) != int(r.want) {
+			t.Errorf("%d:RangeReader (%d, %d): Read %d bytes, wanted %d bytes", i, r.offset, r.length, len(slurp), r.want)
+			continue
+		}
+		if got, want := slurp, contents[obj][r.offset:r.offset+r.want]; !bytes.Equal(got, want) {
+			t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+		}
+		rc.Close()
+	}
+
 	// Test NotFound.
 	_, err := bkt.Object("obj-not-exists").NewReader(ctx)
 	if err != ErrObjectNotExist {
