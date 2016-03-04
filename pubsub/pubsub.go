@@ -51,7 +51,7 @@ type Client struct {
 	s         service
 }
 
-// NewClient create a new PubSub client.
+// NewClient creates a new PubSub client.
 func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption) (*Client, error) {
 	o := []cloud.ClientOption{
 		cloud.WithEndpoint(baseAddr()),

@@ -124,7 +124,7 @@ func (s *SubscriptionHandle) Pull(ctx context.Context, maxExtension time.Duratio
 // ModifyPushConfig updates the endpoint URL and other attributes of a push subscription.
 func (s *SubscriptionHandle) ModifyPushConfig(ctx context.Context, conf *PushConfig) error {
 	if conf == nil {
-		return errors.New("ModifyPushConfig: must supply non-nil PushConfig")
+		return errors.New("must supply non-nil PushConfig")
 	}
 
 	return s.c.s.modifyPushConfig(ctx, s.name, conf)
