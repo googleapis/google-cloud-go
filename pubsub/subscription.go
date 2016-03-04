@@ -15,6 +15,7 @@
 package pubsub
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -118,4 +119,13 @@ func (s *SubscriptionHandle) Pull(ctx context.Context, maxExtension time.Duratio
 		return nil, err
 	}
 	return s.c.newIterator(ctx, s.name, config.AckDeadline, maxExtension), nil
+}
+
+// ModifyPushConfig updates the endpoint URL and other attributes of a push subscription.
+func (s *SubscriptionHandle) ModifyPushConfig(ctx context.Context, conf *PushConfig) error {
+	if conf == nil {
+		return errors.New("ModifyPushConfig: must supply non-nil PushConfig")
+	}
+
+	return s.c.s.modifyPushConfig(ctx, s.name, conf)
 }

@@ -35,6 +35,7 @@ type service interface {
 	listProjectSubscriptions(ctx context.Context, projName string) ([]string, error)
 	deleteSubscription(ctx context.Context, name string) error
 	subscriptionExists(ctx context.Context, name string) (bool, error)
+	modifyPushConfig(ctx context.Context, subName string, conf *PushConfig) error
 
 	createTopic(ctx context.Context, name string) error
 	deleteTopic(ctx context.Context, name string) error
@@ -267,4 +268,17 @@ func (s *apiService) publishMessages(ctx context.Context, topicName string, msgs
 		return nil, err
 	}
 	return resp.MessageIds, nil
+}
+
+func (s *apiService) modifyPushConfig(ctx context.Context, subName string, conf *PushConfig) error {
+	req := &raw.ModifyPushConfigRequest{
+		PushConfig: &raw.PushConfig{
+			Attributes:   conf.Attributes,
+			PushEndpoint: conf.Endpoint,
+		},
+	}
+	_, err := s.s.Projects.Subscriptions.ModifyPushConfig(subName, req).
+		Context(ctx).
+		Do()
+	return err
 }
