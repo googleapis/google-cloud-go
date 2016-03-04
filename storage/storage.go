@@ -489,14 +489,18 @@ func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
 
 // NewWriter returns a storage Writer that writes to the GCS object
 // associated with this ObjectHandle.
-// If such an object doesn't exist, it creates one.
+//
+// A new object will be created if an object with this name already exists.
+// Otherwise any previous object with the same name will be replaced.
+// The object will not be available (and any previous object will remain)
+// until Close has been called.
+//
 // Attributes can be set on the object by modifying the returned Writer's
-// ObjectAttrs field before the first call to Write.
+// ObjectAttrs field before the first call to Write. If no ContentType
+// attribute is specified, the content type will be automatically sniffed
+// using net/http.DetectContentType.
 //
 // It is the caller's responsibility to call Close when writing is done.
-//
-// The object is not available and any previous object with the same
-// name is not replaced on Cloud Storage until Close is called.
 func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer {
 	return &Writer{
 		ctx:         ctx,

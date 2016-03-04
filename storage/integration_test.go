@@ -441,6 +441,55 @@ func TestValidObjectNames(t *testing.T) {
 	}
 }
 
+func TestWriterContentType(t *testing.T) {
+	ctx := context.Background()
+	client, bucket := testConfig(ctx, t)
+	defer client.Close()
+
+	obj := client.Bucket(bucket).Object("content" + suffix)
+	testCases := []struct {
+		content           string
+		setType, wantType string
+	}{
+		{
+			content:  "It was the best of times, it was the worst of times.",
+			wantType: "text/plain; charset=utf-8",
+		},
+		{
+			content:  "<html><head><title>My first page</title></head></html>",
+			wantType: "text/html; charset=utf-8",
+		},
+		{
+			content:  "<html><head><title>My first page</title></head></html>",
+			setType:  "text/html",
+			wantType: "text/html",
+		},
+		{
+			content:  "<html><head><title>My first page</title></head></html>",
+			setType:  "image/jpeg",
+			wantType: "image/jpeg",
+		},
+	}
+	for _, tt := range testCases {
+		w := obj.NewWriter(ctx)
+		w.ContentType = tt.setType
+		if _, err := w.Write([]byte(tt.content)); err != nil {
+			t.Errorf("w.Write: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Errorf("w.Close: %v", err)
+		}
+		attrs, err := obj.Attrs(ctx)
+		if err != nil {
+			t.Errorf("obj.Attrs: %v", err)
+			continue
+		}
+		if got := attrs.ContentType; got != tt.wantType {
+			t.Errorf("Content-Type = %q; want %q\nContent: %q\nSet Content-Type: %q", got, tt.wantType, tt.content, tt.setType)
+		}
+	}
+}
+
 // cleanup deletes any objects in the default bucket which were created
 // during this test run (those with the designated suffix), and any
 // objects whose suffix indicates they were created over an hour ago.
