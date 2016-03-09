@@ -24,6 +24,7 @@ The commands are:
 	ls                        List tables and column families
 	read                      Read rows
 	set                       Set value of a cell
+	setgcpolicy               Set the GC policy for a column family
 
 Use "cbt help <command>" for more information about a command.
 
@@ -139,6 +140,17 @@ Usage:
 	  ts is an optional integer timestamp.
 	  If it cannot be parsed, the `@ts` part will be
 	  interpreted as part of the value.
+
+
+
+
+Set the GC policy for a column family
+
+Usage:
+	cbt setgcpolicy <table> <family> ( maxage=<d> | maxversions=<n> )
+
+	  maxage=<d>		Maximum timestamp age to preserve (e.g. "1h", "4d")
+	  maxversions=<n>	Maximum number of versions to preserve
 
 
 

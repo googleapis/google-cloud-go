@@ -254,6 +254,15 @@ var commands = []struct {
 		Usage: "cbt setclustersize <num_nodes>",
 	},
 	*/
+	{
+		Name: "setgcpolicy",
+		Desc: "Set the GC policy for a column family",
+		do:   doSetGCPolicy,
+		Usage: "cbt setgcpolicy <table> <family> ( maxage=<d> | maxversions=<n> )\n" +
+			"\n" +
+			`  maxage=<d>		Maximum timestamp age to preserve (e.g. "1h", "4d")` + "\n" +
+			"  maxversions=<n>	Maximum number of versions to preserve",
+	},
 }
 
 func doCount(ctx context.Context, args ...string) {
@@ -591,3 +600,74 @@ func doSetClusterSize(ctx context.Context, args ...string) {
 	}
 }
 */
+
+func doSetGCPolicy(ctx context.Context, args ...string) {
+	if len(args) < 3 {
+		log.Fatalf("usage: cbt setgcpolicy <table> <family> ( maxage=<d> | maxversions=<n> )")
+	}
+	table := args[0]
+	fam := args[1]
+
+	var pol bigtable.GCPolicy
+	switch p := args[2]; {
+	case strings.HasPrefix(p, "maxage="):
+		d, err := parseDuration(p[7:])
+		if err != nil {
+			log.Fatal(err)
+		}
+		pol = bigtable.MaxAgePolicy(d)
+	case strings.HasPrefix(p, "maxversions="):
+		n, err := strconv.ParseUint(p[12:], 10, 16)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pol = bigtable.MaxVersionsPolicy(int(n))
+	default:
+		log.Fatalf("Bad GC policy %q", p)
+	}
+	if err := getAdminClient().SetGCPolicy(ctx, table, fam, pol); err != nil {
+		log.Fatalf("Setting GC policy: %v", err)
+	}
+}
+
+// parseDuration parses a duration string.
+// It is similar to Go's time.ParseDuration, except with a different set of supported units,
+// and only simple formats supported.
+func parseDuration(s string) (time.Duration, error) {
+	// [0-9]+[a-z]+
+
+	// Split [0-9]+ from [a-z]+.
+	i := 0
+	for ; i < len(s); i++ {
+		c := s[i]
+		if c < '0' || c > '9' {
+			break
+		}
+	}
+	ds, u := s[:i], s[i:]
+	if ds == "" || u == "" {
+		return 0, fmt.Errorf("invalid duration %q", s)
+	}
+	// Parse them.
+	d, err := strconv.ParseUint(ds, 10, 32)
+	if err != nil {
+		return 0, fmt.Errorf("invalid duration %q: %v", s, err)
+	}
+	unit, ok := unitMap[u]
+	if !ok {
+		return 0, fmt.Errorf("unknown unit %q in duration %q", u, s)
+	}
+	if d > uint64((1<<63-1)/unit) {
+		// overflow
+		return 0, fmt.Errorf("invalid duration %q overflows", s)
+	}
+	return time.Duration(d) * unit, nil
+}
+
+var unitMap = map[string]time.Duration{
+	"ms": time.Millisecond,
+	"s":  time.Second,
+	"m":  time.Minute,
+	"h":  time.Hour,
+	"d":  24 * time.Hour,
+}
