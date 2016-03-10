@@ -258,6 +258,9 @@ func multiValid(key []*Key) error {
 // that represents S, I or P.
 //
 // As a special case, PropertyList is an invalid type for v.
+//
+// TODO(djd): multiArg is very confusing. Fold this logic into the
+// relevant Put/Get methods to make the logic less opaque.
 func checkMultiArg(v reflect.Value) (m multiArgType, elemType reflect.Type) {
 	if v.Kind() != reflect.Slice {
 		return multiArgTypeInvalid, nil
@@ -474,16 +477,14 @@ func putMutation(keys []*Key, src interface{}) (*pb.Mutation, error) {
 	}
 	var upsert, insert []*pb.Entity
 	for i, k := range keys {
-		val := reflect.ValueOf(src).Index(i)
-		// If src is an interface slice []interface{}{ent1, ent2}
-		if val.Kind() == reflect.Interface && val.Elem().Kind() == reflect.Slice {
-			val = val.Elem()
+		elem := v.Index(i)
+		// Two cases where we need to take the address:
+		// 1) multiArgTypePropertyLoadSaver => &elem implements PLS
+		// 2) multiArgTypeStruct => saveEntity needs *struct
+		if multiArgType == multiArgTypePropertyLoadSaver || multiArgType == multiArgTypeStruct {
+			elem = elem.Addr()
 		}
-		// If src is a slice of ptrs []*T{ent1, ent2}
-		if val.Kind() == reflect.Ptr && val.Elem().Kind() == reflect.Slice {
-			val = val.Elem()
-		}
-		p, err := saveEntity(k, val.Interface())
+		p, err := saveEntity(k, elem.Interface())
 		if err != nil {
 			return nil, fmt.Errorf("datastore: Error while saving %v: %v", k.String(), err)
 		}
