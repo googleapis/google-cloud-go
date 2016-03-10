@@ -149,7 +149,7 @@ func TestGetMulti(t *testing.T) {
 	}
 	e, ok := err.(MultiError)
 	if !ok {
-		t.Errorf("client.GetMulti got %t, expected MultiError", err)
+		t.Errorf("client.GetMulti got %T, expected MultiError", err)
 	}
 	for i, err := range e {
 		got, want := err, (error)(nil)
@@ -713,11 +713,11 @@ func TestTransaction(t *testing.T) {
 
 		// Check the final value of the counter.
 		if err := client.Get(ctx, key, c); err != nil {
-			t.Errorf("%s: client.Get: %v", err)
+			t.Errorf("%s: client.Get: %v", tt.desc, err)
 			continue
 		}
 		if c.N != tt.want {
-			t.Errorf("%s: counter N=%d, want N=%d", c.N, tt.want)
+			t.Errorf("%s: counter N=%d, want N=%d", tt.desc, c.N, tt.want)
 		}
 	}
 }
