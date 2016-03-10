@@ -27,7 +27,7 @@ type Task struct {
 	Type            string
 	Done            bool
 	Priority        int
-	Description     string `datastore:,noindex`
+	Description     string `datastore:",noindex"`
 	PercentComplete float64
 	Created         time.Time
 	Tags            []string
@@ -96,7 +96,7 @@ func Example_properties() {
 		Type            string
 		Done            bool
 		Priority        int
-		Description     string `datastore:,noindex`
+		Description     string `datastore:",noindex"`
 		PercentComplete float64
 		Created         time.Time
 	}
@@ -132,7 +132,7 @@ func Example_basicEntity() {
 		Type            string
 		Done            bool
 		Priority        float64
-		Description     string `datastore:,noindex`
+		Description     string `datastore:",noindex"`
 		PercentComplete float64
 		Created         time.Time
 	}
@@ -297,7 +297,7 @@ func ExampleQuery_basic() {
 		if err != nil {
 			log.Fatalf("Error fetching next task: %v", err)
 		}
-		fmt.Println("Task %q, Priority %d", task.Description, task.Priority)
+		fmt.Printf("Task %q, Priority %d\n", task.Description, task.Priority)
 	}
 	// [END run_query]
 }
