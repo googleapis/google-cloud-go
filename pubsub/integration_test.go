@@ -120,6 +120,7 @@ func TestAll(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error constructing iterator: %v", err)
 	}
+	defer it.Close()
 	got := make(map[string]*messageData)
 	for i := 0; i < len(want); i++ {
 		m, err := it.Next()
@@ -151,9 +152,6 @@ func TestAll(t *testing.T) {
 		t.Errorf("unexpected message received; %s, want %s", string(m.Data), data)
 	}
 	m.Done(true)
-	if err := it.Close(); err != nil {
-		t.Errorf("error closing iterator: %v", err)
-	}
 
 	err = sub.Delete(ctx)
 	if err != nil {

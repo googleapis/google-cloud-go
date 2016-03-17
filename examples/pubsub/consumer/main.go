@@ -56,6 +56,7 @@ func main() {
 		fmt.Printf("error constructing iterator: %v", err)
 		return
 	}
+	defer it.Close()
 
 	for i := 0; i < *numConsume; i++ {
 		m, err := it.Next()
@@ -65,9 +66,5 @@ func main() {
 		}
 		fmt.Printf("got message: %v\n", string(m.Data))
 		m.Done(true)
-	}
-
-	if err := it.Close(); err != nil {
-		fmt.Printf("closing iterator: %v", err)
 	}
 }
