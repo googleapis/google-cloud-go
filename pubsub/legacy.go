@@ -246,6 +246,7 @@ func fullSubName(proj, name string) string {
 func rawService(ctx context.Context) *raw.Service {
 	return internal.Service(ctx, "pubsub", func(hc *http.Client) interface{} {
 		svc, _ := raw.New(hc)
+		svc.BasePath = baseAddr()
 		return svc
 	}).(*raw.Service)
 }

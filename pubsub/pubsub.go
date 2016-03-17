@@ -22,6 +22,7 @@ package pubsub // import "google.golang.org/cloud/pubsub"
 
 import (
 	"fmt"
+	"os"
 
 	raw "google.golang.org/api/pubsub/v1"
 	"google.golang.org/cloud"
@@ -53,7 +54,7 @@ type Client struct {
 // NewClient create a new PubSub client.
 func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption) (*Client, error) {
 	o := []cloud.ClientOption{
-		cloud.WithEndpoint(prodAddr),
+		cloud.WithEndpoint(baseAddr()),
 		cloud.WithScopes(raw.PubsubScope, raw.CloudPlatformScope),
 		cloud.WithUserAgent(userAgent),
 	}
@@ -75,4 +76,13 @@ func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption
 
 func (c *Client) fullyQualifiedProjectName() string {
 	return fmt.Sprintf("projects/%s", c.projectID)
+}
+
+func baseAddr() string {
+	// Environment variables for gcloud emulator:
+	// https://cloud.google.com/sdk/gcloud/reference/beta/emulators/pubsub/
+	if host := os.Getenv("PUBSUB_EMULATOR_HOST"); host != "" {
+		return "http://" + host + "/"
+	}
+	return prodAddr
 }
