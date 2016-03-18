@@ -234,7 +234,7 @@ func TestIntegration(t *testing.T) {
 
 	projID := testutil.ProjID()
 
-	c, err := NewClient(ctx, projID, "logging-integration-test")
+	c, err := NewClient(ctx, projID, "logging-integration-test", cloud.WithTokenSource(ts))
 	if err != nil {
 		t.Fatalf("error creating client: %v", err)
 	}
