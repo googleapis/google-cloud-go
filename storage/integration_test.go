@@ -87,11 +87,16 @@ func TestAdminClient(t *testing.T) {
 		t.Skip("Integration tests skipped in short mode")
 	}
 	ctx := context.Background()
+	ts := testutil.TokenSource(ctx, ScopeFullControl)
+	if ts == nil {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
 	projectID := testutil.ProjID()
+
 	newBucket := projectID + suffix
 	t.Logf("Testing admin with Bucket %q", newBucket)
 
-	client, err := NewAdminClient(ctx, projectID, cloud.WithTokenSource(testutil.TokenSource(ctx, ScopeFullControl)))
+	client, err := NewAdminClient(ctx, projectID, cloud.WithTokenSource(ts))
 	if err != nil {
 		t.Fatalf("Could not create client: %v", err)
 	}

@@ -226,8 +226,9 @@ func TestIntegration(t *testing.T) {
 		t.Skip("Integration tests skipped in short mode")
 	}
 
-	ctx := testutil.Context()
-	if ctx == nil {
+	ctx := context.Background()
+	ts := testutil.TokenSource(ctx, Scope)
+	if ts == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
 

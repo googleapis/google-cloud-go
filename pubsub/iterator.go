@@ -129,12 +129,12 @@ func (it *Iterator) Next() (*Message, error) {
 // is cancelled or exceeds its deadline.
 // Close need only be called once, but may be called multiple times from
 // multiple goroutines.
-func (it *Iterator) Close() {
+func (it *Iterator) Close() error {
 	// TODO: test calling from multiple goroutines.
 	it.mu.Lock()
 	defer it.mu.Unlock()
 	if it.closed {
-		return
+		return nil
 	}
 	it.closed = true
 
@@ -156,6 +156,8 @@ func (it *Iterator) Close() {
 
 	it.kaTicker.Stop()
 	it.ackTicker.Stop()
+
+	return nil
 }
 
 func (it *Iterator) done(ackID string, ack bool) {
