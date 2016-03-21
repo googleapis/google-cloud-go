@@ -347,7 +347,7 @@ func pullMessages(client *pubsub.Client, argv []string) {
 		go processMessages(msgs, rep, !*reportMPS)
 	}
 
-	it, err := sub.Pull(context.Background(), time.Hour)
+	it, err := sub.Pull(context.Background(), pubsub.MaxExtension(time.Minute))
 	if err != nil {
 		log.Fatalf("failed to construct iterator: %v", err)
 	}

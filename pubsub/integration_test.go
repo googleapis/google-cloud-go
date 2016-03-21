@@ -116,7 +116,7 @@ func TestAll(t *testing.T) {
 
 	// Use a timeout to ensure that Pull does not block indefinitely if there are unexpectedly few messages available.
 	timeoutCtx, _ := context.WithTimeout(ctx, time.Minute)
-	it, err := sub.Pull(timeoutCtx, time.Hour)
+	it, err := sub.Pull(timeoutCtx)
 	if err != nil {
 		t.Fatalf("error constructing iterator: %v", err)
 	}

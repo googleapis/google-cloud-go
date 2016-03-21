@@ -51,7 +51,7 @@ func main() {
 
 	sub := client.Subscription(*subName)
 
-	it, err := sub.Pull(ctx, time.Hour)
+	it, err := sub.Pull(ctx, pubsub.MaxExtension(time.Minute))
 	if err != nil {
 		fmt.Printf("error constructing iterator: %v", err)
 		return
