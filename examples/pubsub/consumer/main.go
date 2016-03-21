@@ -56,7 +56,7 @@ func main() {
 		fmt.Printf("error constructing iterator: %v", err)
 		return
 	}
-	defer it.Close()
+	defer it.Stop()
 
 	for i := 0; i < *numConsume; i++ {
 		m, err := it.Next()

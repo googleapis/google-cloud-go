@@ -351,6 +351,7 @@ func pullMessages(client *pubsub.Client, argv []string) {
 	if err != nil {
 		log.Fatalf("failed to construct iterator: %v", err)
 	}
+	defer it.Stop()
 
 	for !shouldQuit() {
 		m, err := it.Next()
@@ -362,10 +363,9 @@ func pullMessages(client *pubsub.Client, argv []string) {
 
 	// Shut down all processMessages goroutines.
 	close(msgs)
-	// This will block until each m.Done has been called on each message.
-	if err = it.Close(); err != nil {
-		log.Fatalf("error closing iterator: %v\n", err)
-	}
+
+	// The deferred call to it.Stop will block until each m.Done has been
+	// called on each message.
 }
 
 // This example demonstrates calling the Cloud Pub/Sub API.

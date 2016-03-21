@@ -114,10 +114,9 @@ func (s *SubscriptionHandle) Config(ctx context.Context) (*SubscriptionConfig, e
 // a MaxExtension pull option.
 //
 // If ctx is cancelled or exceeds its deadline, outstanding acks or deadline
-// extensions will fail, and the Iterator's Close method will return a non-nil
-// error.
+// extensions will fail.
 //
-// The caller must call Close on the Iterator once finished with it.
+// The caller must call Stop on the Iterator once finished with it.
 func (s *SubscriptionHandle) Pull(ctx context.Context, opts ...PullOption) (*Iterator, error) {
 	config, err := s.Config(ctx)
 	if err != nil {

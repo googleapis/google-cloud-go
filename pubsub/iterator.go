@@ -43,7 +43,7 @@ type Iterator struct {
 	closed bool
 }
 
-// newIterator starts a new Iterator.  Close must be called on the Iterator
+// newIterator starts a new Iterator.  Stop must be called on the Iterator
 // when it is no longer needed.
 // subName is the full name of the subscription to pull messages from.
 func (c *Client) newIterator(ctx context.Context, subName string, po *pullOptions) *Iterator {
@@ -56,7 +56,7 @@ func (c *Client) newIterator(ctx context.Context, subName string, po *pullOption
 	// TODO: make kaTicker frequency more configurable.
 	// (ackDeadline - 5s) is a reasonable default for now, because the minimum ack period is 10s.  This gives us 5s grace.
 	keepAlivePeriod := po.ackDeadline - 5*time.Second
-	it.kaTicker = time.NewTicker(keepAlivePeriod) // Stopped in it.Close
+	it.kaTicker = time.NewTicker(keepAlivePeriod) // Stopped in it.Stop
 	it.ka = keepAlive{
 		Client:        it.c,
 		Ctx:           it.ctx,
@@ -69,7 +69,7 @@ func (c *Client) newIterator(ctx context.Context, subName string, po *pullOption
 	// TODO: make ackTicker more configurable.  Something less than
 	// kaTicker is a reasonable default (there's no point extending
 	// messages when they could be acked instead).
-	it.ackTicker = time.NewTicker(keepAlivePeriod / 2) // Stopped in it.Close
+	it.ackTicker = time.NewTicker(keepAlivePeriod / 2) // Stopped in it.Stop
 	it.acker = acker{
 		Client:  it.c,
 		Ctx:     it.ctx,
@@ -92,7 +92,7 @@ func (c *Client) newIterator(ctx context.Context, subName string, po *pullOption
 
 // Next returns the next Message to be processed.  The caller must call Done on
 // the returned Message when finished with it.
-// Once Close has been called, subsequent calls to Next will return io.EOF.
+// Once Stop has been called, subsequent calls to Next will return io.EOF.
 func (it *Iterator) Next() (*Message, error) {
 	it.mu.Lock()
 	defer it.mu.Unlock()
@@ -117,18 +117,18 @@ func (it *Iterator) Next() (*Message, error) {
 	return m, nil
 }
 
-// Client code must call Close on an Iterator when finished with it.
-// Close will block until Done has been called on all Messages that have been
+// Client code must call Stop on an Iterator when finished with it.
+// Stop will block until Done has been called on all Messages that have been
 // returned by Next, or until the context with which the Iterator was created
 // is cancelled or exceeds its deadline.
-// Close need only be called once, but may be called multiple times from
+// Stop need only be called once, but may be called multiple times from
 // multiple goroutines.
-func (it *Iterator) Close() error {
+func (it *Iterator) Stop() {
 	// TODO: test calling from multiple goroutines.
 	it.mu.Lock()
 	defer it.mu.Unlock()
 	if it.closed {
-		return nil
+		return
 	}
 	it.closed = true
 
@@ -150,8 +150,6 @@ func (it *Iterator) Close() error {
 
 	it.kaTicker.Stop()
 	it.ackTicker.Stop()
-
-	return nil
 }
 
 func (it *Iterator) done(ackID string, ack bool) {

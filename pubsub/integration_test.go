@@ -120,7 +120,7 @@ func TestAll(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error constructing iterator: %v", err)
 	}
-	defer it.Close()
+	defer it.Stop()
 	got := make(map[string]*messageData)
 	for i := 0; i < len(want); i++ {
 		m, err := it.Next()
