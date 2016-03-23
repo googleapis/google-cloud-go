@@ -126,6 +126,39 @@ func TestAdminClient(t *testing.T) {
 	}
 }
 
+func TestIntegration_ConditionalDelete(t *testing.T) {
+	ctx := context.Background()
+	client, bucket := testConfig(ctx, t)
+	defer client.Close()
+
+	o := client.Bucket(bucket).Object("conddel")
+
+	wc := o.NewWriter(ctx)
+	wc.ContentType = "text/plain"
+	if _, err := wc.Write([]byte("foo")); err != nil {
+		t.Fatal(err)
+	}
+	if err := wc.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	gen := wc.Attrs().Generation
+	metaGen := wc.Attrs().MetaGeneration
+
+	if err := o.WithConditions(Generation(gen - 1)).Delete(ctx); err == nil {
+		t.Fatalf("Unexpected successful delete with Generation")
+	}
+	if err := o.WithConditions(IfMetaGenerationMatch(metaGen + 1)).Delete(ctx); err == nil {
+		t.Fatalf("Unexpected successful delete with IfMetaGenerationMatch")
+	}
+	if err := o.WithConditions(IfMetaGenerationNotMatch(metaGen)).Delete(ctx); err == nil {
+		t.Fatalf("Unexpected successful delete with IfMetaGenerationNotMatch")
+	}
+	if err := o.WithConditions(Generation(gen)).Delete(ctx); err != nil {
+		t.Fatalf("final delete failed: %v", err)
+	}
+}
+
 func TestObjects(t *testing.T) {
 	ctx := context.Background()
 	client, bucket := testConfig(ctx, t)

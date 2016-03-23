@@ -31,6 +31,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -377,7 +378,19 @@ type ObjectHandle struct {
 	bucket string
 	object string
 
-	acl *ACLHandle
+	acl   *ACLHandle
+	conds []Condition
+}
+
+// applyConds modifies the provided call using the conditions in o.conds.
+// call is something that quacks like a *raw.WhateverCall.
+func (o *ObjectHandle) applyConds(method string, call interface{}) error {
+	for _, cond := range o.conds {
+		if err := cond.modifyCall(method, call); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // ACL provides access to the object's access control list.
@@ -387,13 +400,24 @@ func (o *ObjectHandle) ACL() *ACLHandle {
 	return o.acl
 }
 
+// WithConditions returns a copy of o using the provided conditions.
+func (o *ObjectHandle) WithConditions(conds ...Condition) *ObjectHandle {
+	o2 := *o
+	o2.conds = conds
+	return &o2
+}
+
 // Attrs returns meta information about the object.
 // ErrObjectNotExist will be returned if the object is not found.
 func (o *ObjectHandle) Attrs(ctx context.Context) (*ObjectAttrs, error) {
 	if !utf8.ValidString(o.object) {
 		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
 	}
-	obj, err := o.c.raw.Objects.Get(o.bucket, o.object).Projection("full").Context(ctx).Do()
+	call := o.c.raw.Objects.Get(o.bucket, o.object).Projection("full").Context(ctx)
+	if err := o.applyConds("Attrs", call); err != nil {
+		return nil, err
+	}
+	obj, err := call.Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
 	}
@@ -410,7 +434,11 @@ func (o *ObjectHandle) Update(ctx context.Context, attrs ObjectAttrs) (*ObjectAt
 	if !utf8.ValidString(o.object) {
 		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
 	}
-	obj, err := o.c.raw.Objects.Patch(o.bucket, o.object, attrs.toRawObject(o.bucket)).Projection("full").Context(ctx).Do()
+	call := o.c.raw.Objects.Patch(o.bucket, o.object, attrs.toRawObject(o.bucket)).Projection("full").Context(ctx)
+	if err := o.applyConds("Update", call); err != nil {
+		return nil, err
+	}
+	obj, err := call.Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
 	}
@@ -425,12 +453,20 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 	if !utf8.ValidString(o.object) {
 		return fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
 	}
-	return o.c.raw.Objects.Delete(o.bucket, o.object).Context(ctx).Do()
+	call := o.c.raw.Objects.Delete(o.bucket, o.object).Context(ctx)
+	if err := o.applyConds("Delete", call); err != nil {
+		return err
+	}
+	return call.Do()
 }
 
 // CopyTo copies the object to the given dst.
 // The copied object's attributes are overwritten by attrs if non-nil.
 func (o *ObjectHandle) CopyTo(ctx context.Context, dst *ObjectHandle, attrs *ObjectAttrs) (*ObjectAttrs, error) {
+	if len(o.conds) > 0 || len(dst.conds) > 0 {
+		// TODO(djd): implement
+		return nil, errors.New("storage: conditions are not yet supported with CopyTo")
+	}
 	// TODO(djd): move bucket/object name validation to a single helper func.
 	if o.bucket == "" || dst.bucket == "" {
 		return nil, errors.New("storage: the source and destination bucket names must both be non-empty")
@@ -488,6 +524,9 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	}
 	req, err := http.NewRequest(verb, u.String(), nil)
 	if err != nil {
+		return nil, err
+	}
+	if err := o.applyConds("NewReader", objectsGetCall{req}); err != nil {
 		return nil, err
 	}
 	if length < 0 {
@@ -553,9 +592,7 @@ var emptyBody = ioutil.NopCloser(strings.NewReader(""))
 func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer {
 	return &Writer{
 		ctx:         ctx,
-		client:      o.c,
-		bucket:      o.bucket,
-		name:        o.object,
+		o:           o,
 		donec:       make(chan struct{}),
 		ObjectAttrs: ObjectAttrs{Name: o.object},
 	}
@@ -888,4 +925,64 @@ type contentTyper struct {
 
 func (c *contentTyper) ContentType() string {
 	return c.t
+}
+
+// A Condition constrains methods to act on specific generations of
+// resources.
+//
+// Not all conditions or combinations of conditions are applicable to
+// all methods.
+type Condition interface {
+	// method is the high-level ObjectHandle method name, for
+	// error messages.  call is the call object to modify.
+	modifyCall(method string, call interface{}) error
+}
+
+func Generation(gen int64) Condition               { return genCond{"Generation", gen} }
+func IfGenerationMatch(gen int64) Condition        { return genCond{"IfGenerationMatch", gen} }
+func IfGenerationNotMatch(gen int64) Condition     { return genCond{"IfGenerationNotMatch", gen} }
+func IfMetaGenerationMatch(gen int64) Condition    { return genCond{"IfMetagenerationMatch", gen} }
+func IfMetaGenerationNotMatch(gen int64) Condition { return genCond{"IfMetagenerationNotMatch", gen} }
+
+type genCond struct {
+	method string
+	val    int64
+}
+
+func (g genCond) modifyCall(srcMethod string, call interface{}) error {
+	rv := reflect.ValueOf(call)
+	meth := rv.MethodByName(g.method)
+	if !meth.IsValid() {
+		return fmt.Errorf("%s: condition %s not supported", srcMethod, g.method)
+	}
+	meth.Call([]reflect.Value{reflect.ValueOf(g.val)})
+	return nil
+}
+
+func appendParam(req *http.Request, k, v string) {
+	sep := ""
+	if req.URL.RawQuery != "" {
+		sep = "&"
+	}
+	req.URL.RawQuery += sep + url.QueryEscape(k) + "=" + url.QueryEscape(v)
+}
+
+// objectsGetCall wraps an *http.Request for an object fetch call, but adds the methods
+// that modifyCall searches for by name. (the same names as the raw, auto-generated API)
+type objectsGetCall struct{ req *http.Request }
+
+func (c objectsGetCall) Generation(gen int64) {
+	appendParam(c.req, "generation", fmt.Sprint(gen))
+}
+func (c objectsGetCall) IfGenerationMatch(gen int64) {
+	appendParam(c.req, "ifGenerationMatch", fmt.Sprint(gen))
+}
+func (c objectsGetCall) IfGenerationNotMatch(gen int64) {
+	appendParam(c.req, "ifGenerationNotMatch", fmt.Sprint(gen))
+}
+func (c objectsGetCall) IfMetagenerationMatch(gen int64) {
+	appendParam(c.req, "ifMetagenerationMatch", fmt.Sprint(gen))
+}
+func (c objectsGetCall) IfMetagenerationNotMatch(gen int64) {
+	appendParam(c.req, "ifMetagenerationNotMatch", fmt.Sprint(gen))
 }

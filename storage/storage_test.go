@@ -15,10 +15,14 @@
 package storage
 
 import (
+	"crypto/tls"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
@@ -268,5 +272,104 @@ func TestObjectNames(t *testing.T) {
 		if w := "/bucket-name/" + test.want; !strings.Contains(g, w) {
 			t.Errorf("SignedURL(%q)=%q, want substring %q", test.name, g, w)
 		}
+	}
+}
+
+func TestCondition(t *testing.T) {
+	gotReq := make(chan *http.Request, 1)
+	ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		io.Copy(ioutil.Discard, r.Body)
+		gotReq <- r
+		if r.Method == "POST" {
+			w.WriteHeader(200)
+		} else {
+			w.WriteHeader(500)
+		}
+	}))
+	defer ts.Close()
+
+	tlsConf := &tls.Config{InsecureSkipVerify: true}
+	tr := &http.Transport{
+		TLSClientConfig: tlsConf,
+		DialTLS: func(netw, addr string) (net.Conn, error) {
+			return tls.Dial("tcp", ts.Listener.Addr().String(), tlsConf)
+		},
+	}
+	defer tr.CloseIdleConnections()
+	hc := &http.Client{Transport: tr}
+
+	ctx := context.Background()
+	c, err := NewClient(ctx, cloud.WithBaseHTTP(hc))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	obj := c.Bucket("buck").Object("obj")
+	tests := []struct {
+		fn   func()
+		want string
+	}{
+		{
+			func() { obj.WithConditions(Generation(1234)).NewReader(ctx) },
+			"GET /buck/obj?generation=1234",
+		},
+		{
+			func() { obj.WithConditions(IfGenerationMatch(1234)).NewReader(ctx) },
+			"GET /buck/obj?ifGenerationMatch=1234",
+		},
+		{
+			func() { obj.WithConditions(IfGenerationNotMatch(1234)).NewReader(ctx) },
+			"GET /buck/obj?ifGenerationNotMatch=1234",
+		},
+		{
+			func() { obj.WithConditions(IfMetaGenerationMatch(1234)).NewReader(ctx) },
+			"GET /buck/obj?ifMetagenerationMatch=1234",
+		},
+		{
+			func() { obj.WithConditions(IfMetaGenerationNotMatch(1234)).NewReader(ctx) },
+			"GET /buck/obj?ifMetagenerationNotMatch=1234",
+		},
+		{
+			func() { obj.WithConditions(IfMetaGenerationNotMatch(1234)).Attrs(ctx) },
+			"GET https://www.googleapis.com/storage/v1/b/buck/o/obj?alt=json&ifMetagenerationNotMatch=1234&projection=full",
+		},
+		{
+			func() { obj.WithConditions(IfMetaGenerationMatch(1234)).Update(ctx, ObjectAttrs{}) },
+			"PATCH https://www.googleapis.com/storage/v1/b/buck/o/obj?alt=json&ifMetagenerationMatch=1234&projection=full",
+		},
+		{
+			func() { obj.WithConditions(Generation(1234)).Delete(ctx) },
+			"DELETE https://www.googleapis.com/storage/v1/b/buck/o/obj?alt=json&generation=1234",
+		},
+		{
+			func() {
+				w := obj.WithConditions(IfGenerationMatch(1234)).NewWriter(ctx)
+				w.ContentType = "text/plain"
+				w.Close()
+			},
+			"POST https://www.googleapis.com/upload/storage/v1/b/buck/o?alt=json&ifGenerationMatch=1234&projection=full&uploadType=multipart",
+		},
+	}
+
+	for i, tt := range tests {
+		tt.fn()
+		select {
+		case r := <-gotReq:
+			got := r.Method + " " + r.RequestURI
+			if got != tt.want {
+				t.Errorf("%d. RequestURI = %q; want %q", i, got, tt.want)
+			}
+		case <-time.After(5 * time.Second):
+			t.Fatal("timeout")
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	// Test an error, too:
+	err = obj.WithConditions(Generation(1234)).NewWriter(ctx).Close()
+	if err == nil || !strings.Contains(err.Error(), "NewWriter: condition Generation not supported") {
+		t.Errorf("want error about unsupported condition; got %v", err)
 	}
 }
