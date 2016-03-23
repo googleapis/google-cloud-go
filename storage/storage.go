@@ -518,16 +518,21 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	if remain < 0 {
 		return nil, errors.New("storage: unknown content length")
 	}
+	body := res.Body
 	if length == 0 {
 		remain = 0
+		body.Close()
+		body = emptyBody
 	}
 	return &Reader{
-		body:        res.Body,
+		body:        body,
 		size:        cl,
 		remain:      remain,
 		contentType: res.Header.Get("Content-Type"),
 	}, nil
 }
+
+var emptyBody = ioutil.NopCloser(strings.NewReader(""))
 
 // NewWriter returns a storage Writer that writes to the GCS object
 // associated with this ObjectHandle.
