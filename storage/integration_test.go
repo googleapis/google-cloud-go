@@ -42,11 +42,15 @@ import (
 // tests fail.
 var suffix = fmt.Sprintf("-t%d", time.Now().UnixNano())
 
+var ranIntegrationTest bool
+
 func TestMain(m *testing.M) {
 	// Run the tests, then follow by running any cleanup required.
 	exit := m.Run()
-	if err := cleanup(); err != nil {
-		log.Fatalf("Post-test cleanup failed: %v", err)
+	if ranIntegrationTest {
+		if err := cleanup(); err != nil {
+			log.Fatalf("Post-test cleanup failed: %v", err)
+		}
 	}
 	os.Exit(exit)
 }
@@ -62,6 +66,7 @@ func testConfig(ctx context.Context, t *testing.T) (*Client, string) {
 	if client == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
+	ranIntegrationTest = true
 	return client, bucket
 }
 
