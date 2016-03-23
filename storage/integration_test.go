@@ -72,7 +72,7 @@ func testConfig(ctx context.Context, t *testing.T) (*Client, string) {
 
 // config is like testConfig, but it doesn't need a *testing.T.
 func config(ctx context.Context) (*Client, string) {
-	ts := cloud.WithTokenSource(testutil.TokenSource(ctx, ScopeFullControl))
+	ts := testutil.TokenSource(ctx, ScopeFullControl)
 	if ts == nil {
 		return nil, ""
 	}
@@ -80,7 +80,7 @@ func config(ctx context.Context) (*Client, string) {
 	if p == "" {
 		log.Fatal("The project ID must be set. See CONTRIBUTING.md for details")
 	}
-	client, err := NewClient(ctx, ts)
+	client, err := NewClient(ctx, cloud.WithTokenSource(ts))
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)
 	}
