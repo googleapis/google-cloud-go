@@ -131,7 +131,7 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 	client, bucket := testConfig(ctx, t)
 	defer client.Close()
 
-	o := client.Bucket(bucket).Object("conddel")
+	o := client.Bucket(bucket).Object("conddel" + suffix)
 
 	wc := o.NewWriter(ctx)
 	wc.ContentType = "text/plain"
