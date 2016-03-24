@@ -34,6 +34,9 @@ import (
 	"google.golang.org/cloud/internal"
 )
 
+// metadataIP is the documented metadata server IP address.
+const metadataIP = "169.254.169.254"
+
 type cachedValue struct {
 	k    string
 	trim bool
@@ -52,10 +55,10 @@ var (
 		Transport: &internal.Transport{
 			Base: &http.Transport{
 				Dial: (&net.Dialer{
-					Timeout:   750 * time.Millisecond,
+					Timeout:   2 * time.Second,
 					KeepAlive: 30 * time.Second,
 				}).Dial,
-				ResponseHeaderTimeout: 750 * time.Millisecond,
+				ResponseHeaderTimeout: 2 * time.Second,
 			},
 		},
 	}
@@ -63,7 +66,7 @@ var (
 		Transport: &internal.Transport{
 			Base: &http.Transport{
 				Dial: (&net.Dialer{
-					Timeout:   750 * time.Millisecond,
+					Timeout:   2 * time.Millisecond,
 					KeepAlive: 30 * time.Second,
 				}).Dial,
 			},
@@ -111,7 +114,7 @@ func getETag(client *http.Client, suffix string) (value, etag string, err error)
 		// know the search suffix for "metadata" is
 		// ".google.internal", and this IP address is documented as
 		// being stable anyway.
-		host = "169.254.169.254"
+		host = metadataIP
 	}
 	url := "http://" + host + "/computeMetadata/v1/" + suffix
 	req, _ := http.NewRequest("GET", url, nil)
@@ -171,15 +174,40 @@ func OnGCE() bool {
 		return onGCE.v
 	}
 	onGCE.set = true
-
-	// We use the DNS name of the metadata service here instead of the IP address
-	// because we expect that to fail faster in the not-on-GCE case.
-	res, err := metaClient.Get("http://metadata.google.internal")
-	if err != nil {
-		return false
-	}
-	onGCE.v = res.Header.Get("Metadata-Flavor") == "Google"
+	onGCE.v = testOnGCE()
 	return onGCE.v
+}
+
+func testOnGCE() bool {
+	cancel := make(chan struct{})
+	defer close(cancel)
+
+	resc := make(chan bool, 2)
+
+	// Try two strategies in parallel.
+	// See https://github.com/GoogleCloudPlatform/gcloud-golang/issues/194
+	go func() {
+		req, _ := http.NewRequest("GET", "http://"+metadataIP, nil)
+		req.Cancel = cancel
+		res, err := metaClient.Do(req)
+		if err != nil {
+			resc <- false
+			return
+		}
+		defer res.Body.Close()
+		resc <- res.Header.Get("Metadata-Flavor") == "Google"
+	}()
+
+	go func() {
+		addrs, err := net.LookupHost("metadata.google.internal")
+		if err != nil || len(addrs) == 0 {
+			resc <- false
+			return
+		}
+		resc <- strsContains(addrs, metadataIP)
+	}()
+
+	return <-resc
 }
 
 // Subscribe subscribes to a value from the metadata service.
@@ -341,4 +369,13 @@ func Scopes(serviceAccount string) ([]string, error) {
 		serviceAccount = "default"
 	}
 	return lines("instance/service-accounts/" + serviceAccount + "/scopes")
+}
+
+func strsContains(ss []string, s string) bool {
+	for _, v := range ss {
+		if v == s {
+			return true
+		}
+	}
+	return false
 }
