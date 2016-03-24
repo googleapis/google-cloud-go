@@ -31,6 +31,9 @@ import (
 	"sync"
 	"time"
 
+	"golang.org/x/net/context"
+	"golang.org/x/net/context/ctxhttp"
+
 	"google.golang.org/cloud/internal"
 )
 
@@ -179,17 +182,15 @@ func OnGCE() bool {
 }
 
 func testOnGCE() bool {
-	cancel := make(chan struct{})
-	defer close(cancel)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	resc := make(chan bool, 2)
 
 	// Try two strategies in parallel.
 	// See https://github.com/GoogleCloudPlatform/gcloud-golang/issues/194
 	go func() {
-		req, _ := http.NewRequest("GET", "http://"+metadataIP, nil)
-		req.Cancel = cancel
-		res, err := metaClient.Do(req)
+		res, err := ctxhttp.Get(ctx, metaClient, "http://"+metadataIP)
 		if err != nil {
 			resc <- false
 			return
