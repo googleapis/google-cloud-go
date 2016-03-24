@@ -66,7 +66,7 @@ var (
 		Transport: &internal.Transport{
 			Base: &http.Transport{
 				Dial: (&net.Dialer{
-					Timeout:   2 * time.Millisecond,
+					Timeout:   2 * time.Second,
 					KeepAlive: 30 * time.Second,
 				}).Dial,
 			},
