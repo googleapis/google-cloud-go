@@ -151,26 +151,26 @@ func dummyKey(kind string) []byte {
 	return slurp
 }
 
-func TestCopyObjectMissingFields(t *testing.T) {
+func TestCopyToMissingFields(t *testing.T) {
 	var tests = []struct {
 		srcBucket, srcName, destBucket, destName string
 		errMsg                                   string
 	}{
 		{
 			"mybucket", "", "mybucket", "destname",
-			"srcName and destName must be non-empty",
+			"the source and destination object names must both be non-empty",
 		},
 		{
 			"mybucket", "srcname", "mybucket", "",
-			"srcName and destName must be non-empty",
+			"the source and destination object names must both be non-empty",
 		},
 		{
 			"", "srcfile", "mybucket", "destname",
-			"srcBucket and destBucket must both be non-empty",
+			"the source and destination bucket names must both be non-empty",
 		},
 		{
 			"mybucket", "srcfile", "", "destname",
-			"srcBucket and destBucket must both be non-empty",
+			"the source and destination bucket names must both be non-empty",
 		},
 	}
 	ctx := context.Background()
@@ -179,9 +179,11 @@ func TestCopyObjectMissingFields(t *testing.T) {
 		panic(err)
 	}
 	for i, test := range tests {
-		_, err := client.CopyObject(ctx, test.srcBucket, test.srcName, test.destBucket, test.destName, nil)
+		src := client.Bucket(test.srcBucket).Object(test.srcName)
+		dst := client.Bucket(test.destBucket).Object(test.destName)
+		_, err := src.CopyTo(ctx, dst, nil)
 		if !strings.Contains(err.Error(), test.errMsg) {
-			t.Errorf("CopyObject test #%v: err = %v, want %v", i, err, test.errMsg)
+			t.Errorf("CopyTo test #%v:\ngot err  %q\nwant err %q", i, err, test.errMsg)
 		}
 	}
 }

@@ -280,9 +280,9 @@ func TestObjects(t *testing.T) {
 
 	// Test object copy.
 	copyName := "copy-" + objName
-	copyObj, err := client.CopyObject(ctx, bucket, objName, bucket, copyName, nil)
+	copyObj, err := bkt.Object(objName).CopyTo(ctx, bkt.Object(copyName), nil)
 	if err != nil {
-		t.Errorf("CopyObject failed with %v", err)
+		t.Errorf("CopyTo failed with %v", err)
 	}
 	if copyObj.Name != copyName {
 		t.Errorf("Copy object's name = %q; want %q", copyObj.Name, copyName)

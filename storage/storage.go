@@ -193,16 +193,6 @@ func (c *BucketHandle) DefaultObjectACL() *ACLHandle {
 	return c.defaultObjectACL
 }
 
-// ObjectHandle provides operations on an object in a Google Cloud Storage bucket.
-// Use BucketHandle.Object to get a handle.
-type ObjectHandle struct {
-	c      *Client
-	bucket string
-	object string
-
-	acl *ACLHandle
-}
-
 // Object returns an ObjectHandle, which provides operations on the named object.
 // This call does not perform any network operations.
 //
@@ -380,6 +370,16 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 	return u.String(), nil
 }
 
+// ObjectHandle provides operations on an object in a Google Cloud Storage bucket.
+// Use BucketHandle.Object to get a handle.
+type ObjectHandle struct {
+	c      *Client
+	bucket string
+	object string
+
+	acl *ACLHandle
+}
+
 // ACL provides access to the object's access control list.
 // This controls who can read and write this object.
 // This call does not perform any network operations.
@@ -428,35 +428,36 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 	return o.c.raw.Objects.Delete(o.bucket, o.object).Context(ctx).Do()
 }
 
-// CopyObject copies the source object to the destination.
+// CopyTo copies the object to the given dst.
 // The copied object's attributes are overwritten by attrs if non-nil.
-func (c *Client) CopyObject(ctx context.Context, srcBucket, srcName string, destBucket, destName string, attrs *ObjectAttrs) (*ObjectAttrs, error) {
-	if srcBucket == "" || destBucket == "" {
-		return nil, errors.New("storage: srcBucket and destBucket must both be non-empty")
+func (o *ObjectHandle) CopyTo(ctx context.Context, dst *ObjectHandle, attrs *ObjectAttrs) (*ObjectAttrs, error) {
+	// TODO(djd): move bucket/object name validation to a single helper func.
+	if o.bucket == "" || dst.bucket == "" {
+		return nil, errors.New("storage: the source and destination bucket names must both be non-empty")
 	}
-	if srcName == "" || destName == "" {
-		return nil, errors.New("storage: srcName and destName must be non-empty")
+	if o.object == "" || dst.object == "" {
+		return nil, errors.New("storage: the source and destination object names must both be non-empty")
 	}
-	if !utf8.ValidString(srcName) {
-		return nil, fmt.Errorf("storage: srcName %q is not valid UTF-8", srcName)
+	if !utf8.ValidString(o.object) {
+		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
 	}
-	if !utf8.ValidString(destName) {
-		return nil, fmt.Errorf("storage: destName %q is not valid UTF-8", destName)
+	if !utf8.ValidString(dst.object) {
+		return nil, fmt.Errorf("storage: dst name %q is not valid UTF-8", dst.object)
 	}
 	var rawObject *raw.Object
 	if attrs != nil {
-		attrs.Name = destName
+		attrs.Name = dst.object
 		if attrs.ContentType == "" {
 			return nil, errors.New("storage: attrs.ContentType must be non-empty")
 		}
-		rawObject = attrs.toRawObject(destBucket)
+		rawObject = attrs.toRawObject(dst.bucket)
 	}
-	o, err := c.raw.Objects.Copy(
-		srcBucket, srcName, destBucket, destName, rawObject).Projection("full").Context(ctx).Do()
+	obj, err := o.c.raw.Objects.Copy(
+		o.bucket, o.object, dst.bucket, dst.object, rawObject).Projection("full").Context(ctx).Do()
 	if err != nil {
 		return nil, err
 	}
-	return newObject(o), nil
+	return newObject(obj), nil
 }
 
 // NewReader creates a new Reader to read the contents of the
