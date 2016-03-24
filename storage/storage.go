@@ -382,17 +382,6 @@ type ObjectHandle struct {
 	conds []Condition
 }
 
-// applyConds modifies the provided call using the conditions in o.conds.
-// call is something that quacks like a *raw.WhateverCall.
-func (o *ObjectHandle) applyConds(method string, call interface{}) error {
-	for _, cond := range o.conds {
-		if err := cond.modifyCall(method, call); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 // ACL provides access to the object's access control list.
 // This controls who can read and write this object.
 // This call does not perform any network operations.
@@ -414,7 +403,7 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (*ObjectAttrs, error) {
 		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
 	}
 	call := o.c.raw.Objects.Get(o.bucket, o.object).Projection("full").Context(ctx)
-	if err := o.applyConds("Attrs", call); err != nil {
+	if err := applyConds("Attrs", o.conds, call); err != nil {
 		return nil, err
 	}
 	obj, err := call.Do()
@@ -435,7 +424,7 @@ func (o *ObjectHandle) Update(ctx context.Context, attrs ObjectAttrs) (*ObjectAt
 		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
 	}
 	call := o.c.raw.Objects.Patch(o.bucket, o.object, attrs.toRawObject(o.bucket)).Projection("full").Context(ctx)
-	if err := o.applyConds("Update", call); err != nil {
+	if err := applyConds("Update", o.conds, call); err != nil {
 		return nil, err
 	}
 	obj, err := call.Do()
@@ -454,7 +443,7 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 		return fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
 	}
 	call := o.c.raw.Objects.Delete(o.bucket, o.object).Context(ctx)
-	if err := o.applyConds("Delete", call); err != nil {
+	if err := applyConds("Delete", o.conds, call); err != nil {
 		return err
 	}
 	return call.Do()
@@ -463,10 +452,6 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 // CopyTo copies the object to the given dst.
 // The copied object's attributes are overwritten by attrs if non-nil.
 func (o *ObjectHandle) CopyTo(ctx context.Context, dst *ObjectHandle, attrs *ObjectAttrs) (*ObjectAttrs, error) {
-	if len(o.conds) > 0 || len(dst.conds) > 0 {
-		// TODO(djd): implement
-		return nil, errors.New("storage: conditions are not yet supported with CopyTo")
-	}
 	// TODO(djd): move bucket/object name validation to a single helper func.
 	if o.bucket == "" || dst.bucket == "" {
 		return nil, errors.New("storage: the source and destination bucket names must both be non-empty")
@@ -488,8 +473,14 @@ func (o *ObjectHandle) CopyTo(ctx context.Context, dst *ObjectHandle, attrs *Obj
 		}
 		rawObject = attrs.toRawObject(dst.bucket)
 	}
-	obj, err := o.c.raw.Objects.Copy(
-		o.bucket, o.object, dst.bucket, dst.object, rawObject).Projection("full").Context(ctx).Do()
+	call := o.c.raw.Objects.Copy(o.bucket, o.object, dst.bucket, dst.object, rawObject).Projection("full").Context(ctx)
+	if err := applyConds("CopyTo destination", dst.conds, call); err != nil {
+		return nil, err
+	}
+	if err := applyConds("CopyTo source", toSourceConds(o.conds), call); err != nil {
+		return nil, err
+	}
+	obj, err := call.Do()
 	if err != nil {
 		return nil, err
 	}
@@ -526,7 +517,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	if err != nil {
 		return nil, err
 	}
-	if err := o.applyConds("NewReader", objectsGetCall{req}); err != nil {
+	if err := applyConds("NewReader", o.conds, objectsGetCall{req}); err != nil {
 		return nil, err
 	}
 	if length < 0 {
@@ -938,6 +929,41 @@ type Condition interface {
 	modifyCall(method string, call interface{}) error
 }
 
+// applyConds modifies the provided call using the conditions in conds.
+// call is something that quacks like a *raw.WhateverCall.
+func applyConds(method string, conds []Condition, call interface{}) error {
+	for _, cond := range conds {
+		if err := cond.modifyCall(method, call); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// toSourceConds returns a slice of Conditions derived from Conds that instead
+// function on the equivalent Source methods of a call.
+func toSourceConds(conds []Condition) []Condition {
+	out := make([]Condition, 0, len(conds))
+	for _, c := range conds {
+		switch c := c.(type) {
+		case genCond:
+			var m string
+			if strings.HasPrefix(c.method, "If") {
+				m = "IfSource" + c.method[2:]
+			} else {
+				m = "Source" + c.method
+			}
+			out = append(out, genCond{method: m, val: c.val})
+		default:
+			// NOTE(djd): If the message from unsupportedCond becomes
+			// confusing, we'll need to find a way for Conditions to
+			// identify themselves.
+			out = append(out, unsupportedCond{})
+		}
+	}
+	return out
+}
+
 func Generation(gen int64) Condition               { return genCond{"Generation", gen} }
 func IfGenerationMatch(gen int64) Condition        { return genCond{"IfGenerationMatch", gen} }
 func IfGenerationNotMatch(gen int64) Condition     { return genCond{"IfGenerationNotMatch", gen} }
@@ -957,6 +983,12 @@ func (g genCond) modifyCall(srcMethod string, call interface{}) error {
 	}
 	meth.Call([]reflect.Value{reflect.ValueOf(g.val)})
 	return nil
+}
+
+type unsupportedCond struct{}
+
+func (unsupportedCond) modifyCall(srcMethod string, call interface{}) error {
+	return fmt.Errorf("%s: condition not supported", srcMethod)
 }
 
 func appendParam(req *http.Request, k, v string) {

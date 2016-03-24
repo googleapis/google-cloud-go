@@ -21,7 +21,7 @@ import (
 
 	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
-	"google.golang.org/api/storage/v1"
+	raw "google.golang.org/api/storage/v1"
 )
 
 // A Writer writes a Cloud Storage object.
@@ -69,8 +69,8 @@ func (w *Writer) open() error {
 			Projection("full").
 			Context(w.ctx)
 
-		var resp *storage.Object
-		err := w.o.applyConds("NewWriter", call)
+		var resp *raw.Object
+		err := applyConds("NewWriter", w.o.conds, call)
 		if err == nil {
 			resp, err = call.Do()
 		}

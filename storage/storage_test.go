@@ -305,6 +305,7 @@ func TestCondition(t *testing.T) {
 	}
 
 	obj := c.Bucket("buck").Object("obj")
+	dst := c.Bucket("dstbuck").Object("dst")
 	tests := []struct {
 		fn   func()
 		want string
@@ -349,6 +350,12 @@ func TestCondition(t *testing.T) {
 			},
 			"POST https://www.googleapis.com/upload/storage/v1/b/buck/o?alt=json&ifGenerationMatch=1234&projection=full&uploadType=multipart",
 		},
+		{
+			func() {
+				obj.WithConditions(IfGenerationMatch(1234)).CopyTo(ctx, dst.WithConditions(IfMetaGenerationMatch(5678)), nil)
+			},
+			"POST https://www.googleapis.com/storage/v1/b/buck/o/obj/copyTo/b/dstbuck/o/dst?alt=json&ifMetagenerationMatch=5678&ifSourceGenerationMatch=1234&projection=full",
+		},
 	}
 
 	for i, tt := range tests {
@@ -360,7 +367,7 @@ func TestCondition(t *testing.T) {
 				t.Errorf("%d. RequestURI = %q; want %q", i, got, tt.want)
 			}
 		case <-time.After(5 * time.Second):
-			t.Fatal("timeout")
+			t.Fatalf("%d. timeout", i)
 		}
 		if err != nil {
 			t.Fatal(err)
