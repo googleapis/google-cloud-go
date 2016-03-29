@@ -55,6 +55,7 @@ func (ka *keepAlive) Start() {
 				return
 			case <-ka.done:
 				done = true
+				ka.done = nil // Don't select this channel again.
 			case <-ka.ExtensionTick:
 				live, expired := ka.getAckIDs()
 				ka.wg.Add(1)
@@ -90,6 +91,7 @@ func (ka *keepAlive) Remove(ackID string) {
 }
 
 // Stop waits until all added ackIDs have been removed, and cleans up resources.
+// Stop may only be called once.
 func (ka *keepAlive) Stop() {
 	close(ka.done)
 	ka.wg.Wait()

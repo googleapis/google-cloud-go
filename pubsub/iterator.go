@@ -128,6 +128,7 @@ func (it *Iterator) Stop() {
 	it.mu.Lock()
 	defer it.mu.Unlock()
 	if it.closed {
+		// early return ensures that it.ka.Stop is only called once.
 		return
 	}
 	it.closed = true
