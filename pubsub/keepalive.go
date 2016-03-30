@@ -35,27 +35,25 @@ type keepAlive struct {
 	mu sync.Mutex
 	// key: ackID; value: time at which ack deadline extension should cease.
 	items map[string]time.Time
+	dr    drain
 
-	wg   sync.WaitGroup
-	done chan struct{}
+	wg sync.WaitGroup
 }
 
 // Start initiates the deadline extension loop.  Stop must be called once keepAlive is no longer needed.
 func (ka *keepAlive) Start() {
 	ka.items = make(map[string]time.Time)
-	ka.done = make(chan struct{})
+	ka.dr = drain{Drained: make(chan struct{})}
 	ka.wg.Add(1)
 	go func() {
 		defer ka.wg.Done()
-		done := false
 		for {
 			select {
 			case <-ka.Ctx.Done():
 				// Don't bother waiting for items to be removed: we can't extend them any more.
 				return
-			case <-ka.done:
-				done = true
-				ka.done = nil // Don't select this channel again.
+			case <-ka.dr.Drained:
+				return
 			case <-ka.ExtensionTick:
 				live, expired := ka.getAckIDs()
 				ka.wg.Add(1)
@@ -68,10 +66,6 @@ func (ka *keepAlive) Start() {
 					ka.Remove(id)
 				}
 			}
-			live, _ := ka.getAckIDs()
-			if done && len(live) == 0 {
-				return
-			}
 		}
 	}()
 }
@@ -81,6 +75,7 @@ func (ka *keepAlive) Add(ackID string) {
 	ka.mu.Lock()
 	defer ka.mu.Unlock()
 	ka.items[ackID] = time.Now().Add(ka.MaxExtension)
+	ka.dr.SetPending(true)
 }
 
 // Remove removes ackID from the list to be kept alive.
@@ -88,12 +83,16 @@ func (ka *keepAlive) Remove(ackID string) {
 	ka.mu.Lock()
 	defer ka.mu.Unlock()
 	delete(ka.items, ackID)
+	ka.dr.SetPending(len(ka.items) != 0)
 }
 
 // Stop waits until all added ackIDs have been removed, and cleans up resources.
 // Stop may only be called once.
 func (ka *keepAlive) Stop() {
-	close(ka.done)
+	ka.mu.Lock()
+	ka.dr.Drain()
+	ka.mu.Unlock()
+
 	ka.wg.Wait()
 }
 
@@ -121,4 +120,31 @@ func (ka *keepAlive) extendDeadlines(ackIDs []string) {
 		_ = ka.Client.s.modifyAckDeadline(ka.Ctx, ka.Sub, ka.Deadline, ackIDs)
 	}
 	// TODO: retry on error.  NOTE: if we ultimately fail to extend deadlines here, the messages will be redelivered, which is OK.
+}
+
+// A drain (once started) indicates via a channel when there is no work pending.
+type drain struct {
+	started bool
+	pending bool
+
+	// Drained is closed once there are no items outstanding if Drain has been called.
+	Drained chan struct{}
+}
+
+// Drain starts the drain process. This cannot be undone.
+func (d *drain) Drain() {
+	d.started = true
+	d.closeIfDrained()
+}
+
+// SetPending sets whether there is work pending or not. It may be called multiple times before or after Drain.
+func (d *drain) SetPending(pending bool) {
+	d.pending = pending
+	d.closeIfDrained()
+}
+
+func (d *drain) closeIfDrained() {
+	if !d.pending && d.started {
+		close(d.Drained)
+	}
 }

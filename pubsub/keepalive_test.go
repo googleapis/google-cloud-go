@@ -160,6 +160,38 @@ func TestMaxExtensionDeadline(t *testing.T) {
 	}
 }
 
+func TestKeepAliveStopsWhenAllAckIDsRemoved(t *testing.T) {
+	s := &testService{}
+	c := &Client{projectID: "projid", s: s}
+
+	maxExtension := time.Millisecond
+	ka := &keepAlive{
+		Client:        c,
+		Ctx:           context.Background(),
+		ExtensionTick: make(chan time.Time),
+		MaxExtension:  maxExtension,
+	}
+	ka.Start()
+	ka.Add("a")
+
+	stopped := make(chan struct{})
+
+	go func() {
+		ka.Stop()
+		stopped <- struct{}{}
+	}()
+
+	time.Sleep(time.Microsecond)
+	// No extension tick is ever sent, but this should be enough to get ka to stop.
+	ka.Remove("a")
+
+	select {
+	case <-stopped:
+	case <-time.After(maxExtension / 2):
+		t.Fatalf("keepalive failed to stop before maxExtension deadline")
+	}
+}
+
 func TestKeepAliveStopsImmediatelyForNoAckIDs(t *testing.T) {
 	ticker := time.NewTicker(100 * time.Microsecond)
 	defer ticker.Stop()
