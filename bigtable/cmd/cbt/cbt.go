@@ -23,6 +23,7 @@ import (
 	"flag"
 	"fmt"
 	"go/format"
+	"io"
 	"log"
 	"os"
 	"regexp"
@@ -88,7 +89,7 @@ func main() {
 	}
 	config.RegisterFlags()
 
-	flag.Usage = usage
+	flag.Usage = func() { usage(os.Stderr) }
 	flag.Parse()
 	if err := config.CheckFlags(); err != nil {
 		log.Fatal(err)
@@ -97,7 +98,7 @@ func main() {
 		os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", config.Creds)
 	}
 	if flag.NArg() == 0 {
-		usage()
+		usage(os.Stderr)
 		os.Exit(1)
 	}
 
@@ -124,10 +125,11 @@ func main() {
 	log.Fatalf("Unknown command %q", flag.Arg(0))
 }
 
-func usage() {
-	fmt.Fprintf(os.Stderr, "Usage: %s [flags] <command> ...\n", os.Args[0])
-	flag.PrintDefaults()
-	fmt.Fprintf(os.Stderr, "\n%s", cmdSummary)
+func usage(w io.Writer) {
+	fmt.Fprintf(w, "Usage: %s [flags] <command> ...\n", os.Args[0])
+	flag.CommandLine.SetOutput(w)
+	flag.CommandLine.PrintDefaults()
+	fmt.Fprintf(w, "\n%s", cmdSummary)
 }
 
 var cmdSummary string // generated in init, below
@@ -405,7 +407,7 @@ package main
 
 func doHelpReal(ctx context.Context, args ...string) {
 	if len(args) == 0 {
-		fmt.Print(cmdSummary)
+		usage(os.Stdout)
 		return
 	}
 	for _, cmd := range commands {
