@@ -21,6 +21,61 @@ import (
 	"golang.org/x/net/context"
 )
 
+// ackBuffer stores the pending ack IDs and notifies the Dirty channel when it becomes non-empty.
+type ackBuffer struct {
+	Dirty chan struct{}
+	// Close done when ackBuffer is no longer needed.
+	Done chan struct{}
+
+	mu      sync.Mutex
+	pending []string
+	send    bool
+}
+
+// Add adds ackID to the buffer.
+func (buf *ackBuffer) Add(ackID string) {
+	buf.mu.Lock()
+	defer buf.mu.Unlock()
+	buf.pending = append(buf.pending, ackID)
+
+	// If we are transitioning into a non-empty notification state.
+	if buf.send && len(buf.pending) == 1 {
+		buf.notify()
+	}
+}
+
+// RemoveAll removes all ackIDs from the buffer and returns them.
+func (buf *ackBuffer) RemoveAll() []string {
+	buf.mu.Lock()
+	defer buf.mu.Unlock()
+
+	ret := buf.pending
+	buf.pending = nil
+	return ret
+}
+
+// SendNotifications enables sending dirty notification on empty -> non-empty transitions.
+// If the buffer is already non-empty, a notification will be sent immediately.
+func (buf *ackBuffer) SendNotifications() {
+	buf.mu.Lock()
+	defer buf.mu.Unlock()
+
+	buf.send = true
+	// If we are transitioning into a non-empty notification state.
+	if len(buf.pending) > 0 {
+		buf.notify()
+	}
+}
+
+func (buf *ackBuffer) notify() {
+	go func() {
+		select {
+		case buf.Dirty <- struct{}{}:
+		case <-buf.Done:
+		}
+	}()
+}
+
 // acker acks messages in batches.
 type acker struct {
 	Client  *Client
@@ -33,8 +88,7 @@ type acker struct {
 	// if at least one attempt has been made to acknowledge it.
 	Notify func(string)
 
-	mu      sync.Mutex
-	pending []string
+	ackBuffer
 
 	wg   sync.WaitGroup
 	done chan struct{}
@@ -44,18 +98,19 @@ type acker struct {
 // Notify is called with each ackID once it has been processed.
 func (a *acker) Start() {
 	a.done = make(chan struct{})
+	a.ackBuffer.Dirty = make(chan struct{})
+	a.ackBuffer.Done = a.done
 
 	a.wg.Add(1)
 	go func() {
 		defer a.wg.Done()
 		for {
 			select {
+			case <-a.ackBuffer.Dirty:
+				a.ack(a.ackBuffer.RemoveAll())
 			case <-a.AckTick:
-				// Launch Ack requests in a separate goroutine so that we don't
-				// block the in channel while waiting for the ack request to run.
-				a.launchAckRequest(a.batch())
+				a.ack(a.ackBuffer.RemoveAll())
 			case <-a.done:
-				a.launchAckRequest(a.batch())
 				return
 			}
 		}
@@ -65,36 +120,16 @@ func (a *acker) Start() {
 
 // Ack adds an ack id to be acked in the next batch.
 func (a *acker) Ack(ackID string) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	a.pending = append(a.pending, ackID)
+	a.ackBuffer.Add(ackID)
 }
 
-// batch removes a batch of ackIDs from the pending list and returns them.
-func (a *acker) batch() []string {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	ret := a.pending
-	a.pending = nil
-	return ret
+// FastMode switches acker into a mode which acks messages as they arrive, rather than waiting
+// for a.AckTick.
+func (a *acker) FastMode() {
+	a.ackBuffer.SendNotifications()
 }
 
-// launchAckRequest initiates an acknowledgement request in a separate goroutine.
-// After the acknowledgement request has completed (regardless of its success
-// or failure), ids will be passed to a.Notify.
-// Calls to Wait on a.wg will block until this goroutine is done.
-func (a *acker) launchAckRequest(ids []string) {
-	a.wg.Add(1)
-	go func() {
-		defer a.wg.Done()
-		a.ack(ids)
-		for _, id := range ids {
-			a.Notify(id)
-		}
-	}()
-}
-
-// Stop processes all pending messages, and releases resources before returning.
+// Stop drops all pending messages, and releases resources before returning.
 func (a *acker) Stop() {
 	close(a.done)
 	a.wg.Wait()
@@ -103,6 +138,8 @@ func (a *acker) Stop() {
 const maxAckRetries = 1
 
 // ack acknowledges the supplied ackIDs.
+// After the acknowledgement request has completed (regardless of its success
+// or failure), ids will be passed to a.Notify.
 func (a *acker) ack(ids []string) {
 	var retries int
 	head, tail := a.Client.s.splitAckIDs(ids)
@@ -117,5 +154,8 @@ func (a *acker) ack(ids []string) {
 		}
 		retries = 0
 		head, tail = a.Client.s.splitAckIDs(tail)
+	}
+	for _, id := range ids {
+		a.Notify(id)
 	}
 }

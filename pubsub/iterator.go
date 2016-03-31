@@ -141,12 +141,17 @@ func (it *Iterator) Stop() {
 		it.ka.Remove(m.AckID)
 	}
 
+	// Start acking messages as they arrive, ignoring ackTicker.  This will
+	// result in it.ka.Stop, below, returning as soon as possible.
+	it.acker.FastMode()
+
 	// This will block until
 	//   (a) it.Ctx is done, or
 	//   (b) all messages have been removed from keepAlive.
 	// (b) will happen once all outstanding messages have been either ACKed or NACKed.
 	it.ka.Stop()
 
+	// There are no more live messages that we care about, so kill off the acker.
 	it.acker.Stop()
 
 	it.kaTicker.Stop()

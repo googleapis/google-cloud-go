@@ -75,7 +75,57 @@ func TestAcker(t *testing.T) {
 	}
 }
 
-// TestAckerStop checks that Stop blocks until all ackIDs have been acked.
+func TestAckerFastMode(t *testing.T) {
+	tick := make(chan time.Time)
+	s := &testService{acknowledgeCalled: make(chan acknowledgeCall)}
+	c := &Client{projectID: "projid", s: s}
+
+	processed := make(chan string, 10)
+	acker := &acker{
+		Client:  c,
+		Ctx:     context.Background(),
+		Sub:     "subname",
+		AckTick: tick,
+		Notify:  func(ackID string) { processed <- ackID },
+	}
+	acker.Start()
+
+	checkAckProcessed := func(ackIDs []string) {
+		got := <-s.acknowledgeCalled
+		sort.Strings(got.ackIDs)
+
+		want := acknowledgeCall{
+			subName: "subname",
+			ackIDs:  ackIDs,
+		}
+
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("acknowledge: got:\n%v\nwant:\n%v", got, want)
+		}
+	}
+	// No ticks are sent; fast mode doesn't need them.
+	acker.Ack("a")
+	acker.Ack("b")
+	acker.FastMode()
+	checkAckProcessed([]string{"a", "b"})
+	acker.Ack("c")
+	checkAckProcessed([]string{"c"})
+	acker.Stop()
+
+	// all IDS should have been sent to processed.
+	close(processed)
+	processedIDs := []string{}
+	for id := range processed {
+		processedIDs = append(processedIDs, id)
+	}
+	sort.Strings(processedIDs)
+	want := []string{"a", "b", "c"}
+	if !reflect.DeepEqual(processedIDs, want) {
+		t.Errorf("acker processed: got:\n%v\nwant:\n%v", processedIDs, want)
+	}
+}
+
+// TestAckerStop checks that Stop returns immediately.
 func TestAckerStop(t *testing.T) {
 	tick := make(chan time.Time)
 	s := &testService{acknowledgeCalled: make(chan acknowledgeCall, 10)}
@@ -94,7 +144,6 @@ func TestAckerStop(t *testing.T) {
 
 	stopped := make(chan struct{})
 
-	// Add an ackID so that acker.Stop will not return immediately.
 	acker.Ack("a")
 
 	go func() {
@@ -102,22 +151,16 @@ func TestAckerStop(t *testing.T) {
 		stopped <- struct{}{}
 	}()
 
-	// If acker,Stop fails to block, stopped should have been written to by the time
-	// this sleep completes.
+	// Stopped should have been written to by the time this sleep completes.
 	time.Sleep(time.Millisecond)
 
 	// Receiving from processed should cause Stop to subsequently return,
 	// so it should never be possible to read from stopped before
 	// processed.
 	select {
+	case <-stopped:
 	case <-processed:
-	case <-stopped:
-		t.Errorf("acker.Stop returned before cleanup was complete")
-	case <-time.After(time.Millisecond):
-		t.Errorf("send to processed never arrived")
-	}
-	select {
-	case <-stopped:
+		t.Errorf("acker.Stop processed an ack id before returning")
 	case <-time.After(time.Millisecond):
 		t.Errorf("acker.Stop never returned")
 	}
@@ -211,6 +254,7 @@ func TestAckerSplitsBatches(t *testing.T) {
 			Client: c,
 			Ctx:    context.Background(),
 			Sub:    "subname",
+			Notify: func(string) {},
 		}
 
 		acker.ack([]string{"a", "b", "c", "d", "e", "f"})
