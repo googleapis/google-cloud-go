@@ -67,7 +67,7 @@ func TestAll(t *testing.T) {
 	}
 
 	var sub *SubscriptionHandle
-	if sub, err = topic.Subscribe(ctx, subName, 0, nil); err != nil {
+	if sub, err = client.NewSubscription(ctx, subName, topic, 0, nil); err != nil {
 		t.Errorf("CreateSub error: %v", err)
 	}
 

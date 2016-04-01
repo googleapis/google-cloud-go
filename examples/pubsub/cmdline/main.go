@@ -128,7 +128,7 @@ func createSubscription(client *pubsub.Client, argv []string) {
 	checkArgs(argv, 3)
 	sub := argv[1]
 	topic := argv[2]
-	_, err := client.Topic(topic).Subscribe(context.Background(), sub, 0, nil)
+	_, err := client.NewSubscription(context.Background(), sub, client.Topic(topic), 0, nil)
 	if err != nil {
 		log.Fatalf("Creating Subscription failed: %v", err)
 	}

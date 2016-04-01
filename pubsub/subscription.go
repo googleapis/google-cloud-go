@@ -204,3 +204,37 @@ func (max maxExtension) setOptions(o *pullOptions) {
 func MaxExtension(duration time.Duration) PullOption {
 	return maxExtension(duration)
 }
+
+// NewSubscription creates a new subscription to a topic.
+//
+// name is the name of the subscription to create. It must start with a letter,
+// and contain only letters ([A-Za-z]), numbers ([0-9]), dashes (-),
+// underscores (_), periods (.), tildes (~), plus (+) or percent signs (%). It
+// must be between 3 and 255 characters in length, and must not start with
+// "goog".
+//
+// topic is the topic from which the subscription should receive messages. It
+// need not belong to the same project as the subscription.
+//
+// ackDeadline is the maximum time after a subscriber receives a message before
+// the subscriber should acknowledge the message. It must be between 10 and 600
+// seconds (inclusive), and is rounded down to the nearest second. If the
+// provided ackDeadline is 0, then the default value of 10 seconds is used.
+// Note: messages which are obtained via an Iterator need not be acknowledged
+// within this deadline, as the deadline will be automatically extended.
+//
+// pushConfig may be set to configure this subscription for push delivery.
+//
+// If the subscription already exists an error will be returned.
+func (c *Client) NewSubscription(ctx context.Context, name string, topic *TopicHandle, ackDeadline time.Duration, pushConfig *PushConfig) (*SubscriptionHandle, error) {
+	if ackDeadline == 0 {
+		ackDeadline = 10 * time.Second
+	}
+	if d := ackDeadline.Seconds(); d < 10 || d > 600 {
+		return nil, fmt.Errorf("ack deadline must be between 10 and 600 seconds; got: %v", d)
+	}
+
+	sub := c.Subscription(name)
+	err := c.s.createSubscription(ctx, topic.Name(), sub.Name(), ackDeadline, pushConfig)
+	return sub, err
+}

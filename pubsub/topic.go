@@ -16,7 +16,6 @@ package pubsub
 
 import (
 	"fmt"
-	"time"
 
 	"golang.org/x/net/context"
 )
@@ -93,35 +92,6 @@ func (t *TopicHandle) Subscriptions(ctx context.Context) ([]*SubscriptionHandle,
 		subs = append(subs, &SubscriptionHandle{c: t.c, name: s})
 	}
 	return subs, nil
-}
-
-// Subscribe creates a new subscription to the topic.
-// The specified subscription name must start with a letter, and contain only
-// letters ([A-Za-z]), numbers ([0-9]), dashes (-), underscores (_), periods
-// (.), tildes (~), plus (+) or percent signs (%). It must be between 3 and 255
-// characters in length, and must not start with "goog".
-//
-// ackDeadline is the maximum time after a subscriber receives a message before
-// the subscriber should acknowledge the message. It must be between 10 and 600
-// seconds (inclusive), and is rounded down to the nearest second.  If the
-// provided ackDeadline is 0, then the default value of 10 seconds is used.
-// Note: messages which are obtained via an Iterator need not be acknowledged
-// within this deadline, as the deadline will be automatically extended.
-//
-// pushConfig may be set to configure this subscription for push delivery.
-//
-// If the subscription already exists an error will be returned.
-func (t *TopicHandle) Subscribe(ctx context.Context, name string, ackDeadline time.Duration, pushConfig *PushConfig) (*SubscriptionHandle, error) {
-	if ackDeadline == 0 {
-		ackDeadline = 10 * time.Second
-	}
-	if d := ackDeadline.Seconds(); d < 10 || d > 600 {
-		return nil, fmt.Errorf("ack deadline must be between 10 and 600 seconds; got: %v", d)
-	}
-
-	sub := t.c.Subscription(name)
-	err := t.c.s.createSubscription(ctx, t.name, sub.Name(), ackDeadline, pushConfig)
-	return sub, err
 }
 
 // Publish publishes the supplied Messages to the topic.
