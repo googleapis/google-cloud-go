@@ -18,6 +18,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"sort"
 	"testing"
 
 	"github.com/golang/protobuf/proto"
@@ -210,12 +211,12 @@ func TestSimpleQuery(t *testing.T) {
 	struct2 := Gopher{Name: "Rufus"}
 	pList1 := PropertyList{
 		{
-			Name:  "Name",
-			Value: "George",
-		},
-		{
 			Name:  "Height",
 			Value: int64(32),
+		},
+		{
+			Name:  "Name",
+			Value: "George",
 		},
 	}
 	pList2 := PropertyList{
@@ -326,8 +327,15 @@ func TestSimpleQuery(t *testing.T) {
 			}
 		}
 
+		// Make sure we sort any PropertyList items (the order is not deterministic).
+		if pLists, ok := tc.dst.(*[]PropertyList); ok {
+			for _, p := range *pLists {
+				sort.Sort(byName(p))
+			}
+		}
+
 		if !reflect.DeepEqual(tc.dst, tc.want) {
-			t.Errorf("dst type %T: Entities got %+v, want %+v", tc.dst, tc.dst, tc.want)
+			t.Errorf("dst type %T: Entities\ngot  %+v\nwant %+v", tc.dst, tc.dst, tc.want)
 			continue
 		}
 	}
