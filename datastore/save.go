@@ -20,7 +20,7 @@ import (
 	"reflect"
 	"time"
 
-	timepb "github.com/golang/protobuf/types/timestamp"
+	timepb "github.com/golang/protobuf/ptypes/timestamp"
 	pb "google.golang.org/cloud/datastore/internal/proto"
 )
 

@@ -23,7 +23,7 @@ import (
 	"strconv"
 	"strings"
 
-	wrapperspb "github.com/golang/protobuf/types/wrappers"
+	wrapperspb "github.com/golang/protobuf/ptypes/wrappers"
 	"golang.org/x/net/context"
 	pb "google.golang.org/cloud/datastore/internal/proto"
 )

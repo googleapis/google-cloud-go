@@ -7,8 +7,8 @@ package google_datastore_v1beta3
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
-import google_protobuf "github.com/golang/protobuf/types/struct"
-import google_protobuf1 "github.com/golang/protobuf/types/timestamp"
+import google_protobuf "github.com/golang/protobuf/ptypes/struct"
+import google_protobuf1 "github.com/golang/protobuf/ptypes/timestamp"
 import google_type "google.golang.org/cloud/datastore/internal/type_proto"
 
 // Reference imports to suppress errors if they are not otherwise used.

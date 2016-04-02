@@ -72,9 +72,9 @@ done
 
 # Mappings of well-known proto types.
 declare -A known_types
-known_types[google/protobuf/struct.proto]=github.com/golang/protobuf/types/struct
-known_types[google/protobuf/timestamp.proto]=github.com/golang/protobuf/types/timestamp
-known_types[google/protobuf/wrappers.proto]=github.com/golang/protobuf/types/wrappers
+known_types[google/protobuf/struct.proto]=github.com/golang/protobuf/ptypes/struct
+known_types[google/protobuf/timestamp.proto]=github.com/golang/protobuf/ptypes/timestamp
+known_types[google/protobuf/wrappers.proto]=github.com/golang/protobuf/ptypes/wrappers
 types_map=""
 for f in "${!known_types[@]}"; do
   pkg=${known_types[$f]}

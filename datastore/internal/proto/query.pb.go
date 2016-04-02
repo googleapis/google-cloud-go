@@ -7,7 +7,7 @@ package google_datastore_v1beta3
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
-import google_protobuf2 "github.com/golang/protobuf/types/wrappers"
+import google_protobuf2 "github.com/golang/protobuf/ptypes/wrappers"
 import _ "google.golang.org/cloud/datastore/internal/type_proto"
 
 // Reference imports to suppress errors if they are not otherwise used.
