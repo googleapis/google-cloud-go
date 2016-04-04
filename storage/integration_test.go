@@ -16,6 +16,7 @@ package storage
 
 import (
 	"bytes"
+	"compress/gzip"
 	"crypto/md5"
 	"fmt"
 	"io"
@@ -282,8 +283,34 @@ func TestObjects(t *testing.T) {
 		rc.Close()
 	}
 
+	// Test content encoding
+	const zeroCount = 20 << 20
+	w := bkt.Object("gzip-test" + suffix).NewWriter(ctx)
+	w.ContentEncoding = "gzip"
+	gw := gzip.NewWriter(w)
+	if _, err := io.Copy(gw, io.LimitReader(zeros{}, zeroCount)); err != nil {
+		t.Fatalf("io.Copy, upload: %v", err)
+	}
+	if err := gw.Close(); err != nil {
+		t.Errorf("gzip.Close(): %v", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Errorf("w.Close(): %v", err)
+	}
+	r, err := bkt.Object("gzip-test" + suffix).NewReader(ctx)
+	if err != nil {
+		t.Fatalf("NewReader(gzip-test): %v", err)
+	}
+	n, err := io.Copy(ioutil.Discard, r)
+	if err != nil {
+		t.Errorf("io.Copy, download: %v", err)
+	}
+	if n != zeroCount {
+		t.Errorf("downloaded bad data: got %d bytes, want %d", n, zeroCount)
+	}
+
 	// Test NotFound.
-	_, err := bkt.Object("obj-not-exists").NewReader(ctx)
+	_, err = bkt.Object("obj-not-exists").NewReader(ctx)
 	if err != ErrObjectNotExist {
 		t.Errorf("Object should not exist, err found to be %v", err)
 	}
@@ -646,3 +673,7 @@ func randomContents() []byte {
 	io.WriteString(h, fmt.Sprintf("hello world%d", rand.Intn(100000)))
 	return h.Sum(nil)
 }
+
+type zeros struct{}
+
+func (zeros) Read(p []byte) (int, error) { return len(p), nil }

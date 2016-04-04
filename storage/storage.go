@@ -547,9 +547,6 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		return nil, fmt.Errorf("storage: can't parse content length %q: %v", clHeader, err)
 	}
 	remain := res.ContentLength
-	if remain < 0 {
-		return nil, errors.New("storage: unknown content length")
-	}
 	body := res.Body
 	if length == 0 {
 		remain = 0
