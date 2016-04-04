@@ -86,7 +86,7 @@ func SubExists(ctx context.Context, name string) (bool, error) {
 
 // CreateSub creates a Pub/Sub subscription on the backend.
 //
-// Deprecated: Use TopicHandle.Subscribe instead.
+// Deprecated: Use Client.NewSubscription instead.
 //
 // A subscription should subscribe to an existing topic.
 //
