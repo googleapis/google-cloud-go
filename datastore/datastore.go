@@ -61,7 +61,7 @@ type Client struct {
 }
 
 // NewClient creates a new Client for a given dataset.
-// If the project ID is empty, it is derived from the DATASTORE_DATASET environment variable.
+// If the project ID is empty, it is derived from the DATASTORE_PROJECT_ID environment variable.
 // If the DATASTORE_EMULATOR_HOST environment variable is set, client will use its value
 // to connect to a locally-running datastore emulator.
 func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption) (*Client, error) {
@@ -69,8 +69,7 @@ func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption
 	// Environment variables for gcd emulator:
 	// https://cloud.google.com/datastore/docs/tools/datastore-emulator
 	// If the emulator is available, dial it directly (and don't pass any credentials).
-	addr := os.Getenv("DATASTORE_EMULATOR_HOST")
-	if addr != "" {
+	if addr := os.Getenv("DATASTORE_EMULATOR_HOST"); addr != "" {
 		conn, err := grpc.Dial(addr, grpc.WithInsecure())
 		if err != nil {
 			return nil, fmt.Errorf("grpc.Dial: %v", err)
@@ -83,12 +82,15 @@ func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption
 			cloud.WithUserAgent(userAgent),
 		}
 	}
-	// Warn if we see the legacy emulator environment variable.
-	if host := os.Getenv("DATASTORE_HOST"); host != "" {
+	// Warn if we see the legacy emulator environment variables.
+	if os.Getenv("DATASTORE_HOST") != "" && os.Getenv("DATASTORE_EMULATOR_HOST") == "" {
 		log.Print("WARNING: legacy environment variable DATASTORE_HOST is ignored. Use DATASTORE_EMULATOR_HOST instead.")
 	}
+	if os.Getenv("DATASTORE_DATASET") != "" && os.Getenv("DATASTORE_PROJECT_ID") == "" {
+		log.Print("WARNING: legacy environment variable DATASTORE_DATASET is ignored. Use DATASTORE_PROJECT_ID instead.")
+	}
 	if projectID == "" {
-		projectID = os.Getenv("DATASTORE_DATASET")
+		projectID = os.Getenv("DATASTORE_PROJECT_ID")
 	}
 	if projectID == "" {
 		return nil, errors.New("datastore: missing project/dataset id")
