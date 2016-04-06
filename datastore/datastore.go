@@ -37,14 +37,8 @@ const (
 	userAgent = "gcloud-golang-datastore/20160401"
 )
 
-const (
-	// ScopeDatastore grants permissions to view and/or manage datastore entities
-	ScopeDatastore = "https://www.googleapis.com/auth/datastore"
-
-	// ScopeUserEmail grants permission to view the user's email address.
-	// It is required to access the datastore.
-	ScopeUserEmail = "https://www.googleapis.com/auth/userinfo.email"
-)
+// ScopeDatastore grants permissions to view and/or manage datastore entities
+const ScopeDatastore = "https://www.googleapis.com/auth/datastore"
 
 // protoClient is an interface for *transport.ProtoClient to support injecting
 // fake clients in tests.
@@ -78,7 +72,7 @@ func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption
 	} else {
 		o = []cloud.ClientOption{
 			cloud.WithEndpoint(prodAddr),
-			cloud.WithScopes(ScopeDatastore, ScopeUserEmail),
+			cloud.WithScopes(ScopeDatastore),
 			cloud.WithUserAgent(userAgent),
 		}
 	}
