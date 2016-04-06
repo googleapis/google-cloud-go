@@ -37,7 +37,7 @@ import (
 var suffix = fmt.Sprintf("-t%d", time.Now().UnixNano())
 
 func newClient(ctx context.Context, t *testing.T) *Client {
-	ts := testutil.TokenSource(ctx, ScopeDatastore, ScopeUserEmail)
+	ts := testutil.TokenSource(ctx, ScopeDatastore)
 	if ts == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
