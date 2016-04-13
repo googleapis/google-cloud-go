@@ -15,6 +15,7 @@
 // Package main is an example Mananged VM app using the Google Cloud Storage API.
 package main
 
+//[START imports]
 import (
 	"bytes"
 	"fmt"
@@ -29,6 +30,7 @@ import (
 	"google.golang.org/appengine/log"
 	"google.golang.org/cloud/storage"
 )
+//[END imports]
 
 // bucket is a local cache of the app's default bucket name.
 var bucket string // or: var bucket = "<your-app-id>.appspot.com"
@@ -38,6 +40,7 @@ func main() {
 	appengine.Main()
 }
 
+//[START bucket_struct]
 // demo struct holds information needed to run the various demo functions.
 type demo struct {
 	bucket *storage.BucketHandle
@@ -50,6 +53,7 @@ type demo struct {
 	// failed indicates that one or more of the demo steps failed.
 	failed bool
 }
+//[END bucket_struct]
 
 func (d *demo) errorf(format string, args ...interface{}) {
 	d.failed = true
@@ -115,6 +119,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//[START write]
 // createFile creates a file in Google Cloud Storage.
 func (d *demo) createFile(fileName string) {
 	fmt.Fprintf(d.w, "Creating file /%v/%v\n", bucket, fileName)
@@ -140,7 +145,9 @@ func (d *demo) createFile(fileName string) {
 		return
 	}
 }
+//[END write]
 
+//[START read]
 // readFile reads the named file in Google Cloud Storage.
 func (d *demo) readFile(fileName string) {
 	io.WriteString(d.w, "\nAbbreviated file content (first line and last 1K):\n")
@@ -164,7 +171,9 @@ func (d *demo) readFile(fileName string) {
 		fmt.Fprintf(d.w, "%s\n", slurp)
 	}
 }
+//[END read]
 
+//[START copy]
 // copyFile copies a file in Google Cloud Storage.
 func (d *demo) copyFile(fileName string) {
 	copyName := fileName + "-copy"
@@ -179,6 +188,7 @@ func (d *demo) copyFile(fileName string) {
 
 	d.dumpStats(obj)
 }
+//[END copy]
 
 func (d *demo) dumpStats(obj *storage.ObjectAttrs) {
 	fmt.Fprintf(d.w, "(filename: /%v/%v, ", obj.Bucket, obj.Name)
@@ -198,6 +208,7 @@ func (d *demo) dumpStats(obj *storage.ObjectAttrs) {
 	fmt.Fprintf(d.w, "Updated: %v)\n", obj.Updated)
 }
 
+//[START file_metadata]
 // statFile reads the stats of the named file in Google Cloud Storage.
 func (d *demo) statFile(fileName string) {
 	io.WriteString(d.w, "\nFile stat:\n")
@@ -210,6 +221,7 @@ func (d *demo) statFile(fileName string) {
 
 	d.dumpStats(obj)
 }
+//[END file_metadata]
 
 // createListFiles creates files that will be used by listBucket.
 func (d *demo) createListFiles() {
@@ -219,6 +231,7 @@ func (d *demo) createListFiles() {
 	}
 }
 
+//[START list_bucket]
 // listBucket lists the contents of a bucket in Google Cloud Storage.
 func (d *demo) listBucket() {
 	io.WriteString(d.w, "\nListbucket result:\n")
@@ -237,6 +250,7 @@ func (d *demo) listBucket() {
 		}
 	}
 }
+//[END list_bucket]
 
 func (d *demo) listDir(name, indent string) {
 	query := &storage.Query{Prefix: name, Delimiter: "/"}
@@ -385,6 +399,7 @@ func (d *demo) deleteACLRule(fileName string) {
 	d.dumpACL(fileName)
 }
 
+//[START delete]
 // deleteFiles deletes all the temporary files from a bucket created by this demo.
 func (d *demo) deleteFiles() {
 	io.WriteString(d.w, "\nDeleting files...\n")
@@ -396,3 +411,4 @@ func (d *demo) deleteFiles() {
 		}
 	}
 }
+//[END delete]
