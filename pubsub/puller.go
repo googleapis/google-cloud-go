@@ -23,7 +23,7 @@ import (
 // puller fetches messages from the server in a batch.
 type puller struct {
 	Client *Client
-	Sub    string
+	Sub    string // The full name of the subscription.
 
 	// The maximum number of messages to fetch at once.
 	// No more than BatchSize messages will be outstanding at any time.

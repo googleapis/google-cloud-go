@@ -23,21 +23,17 @@ import (
 )
 
 type Iterator struct {
-	// The name of the subscription that the Iterator is pulling messages from.
-	sub string
 	// The context to use for acking messages and extending message deadlines.
 	ctx context.Context
 
-	c *Client
-
-	// Controls how often we send an ack deadline extension request.
+	// kaTicker controls how often we send an ack deadline extension request.
 	kaTicker *time.Ticker
-	// Controls how often we acknowledge a batch of messages.
+	// ackTicker controls how often we acknowledge a batch of messages.
 	ackTicker *time.Ticker
 
-	ka     keepAlive
-	acker  acker
-	puller puller
+	ka     *keepAlive
+	acker  *acker
+	puller *puller
 
 	mu     sync.Mutex
 	closed bool
@@ -46,48 +42,52 @@ type Iterator struct {
 // newIterator starts a new Iterator.  Stop must be called on the Iterator
 // when it is no longer needed.
 // subName is the full name of the subscription to pull messages from.
+// ctx is the context to use for acking messages and extending message deadlines.
 func (c *Client) newIterator(ctx context.Context, subName string, po *pullOptions) *Iterator {
-	it := &Iterator{
-		sub: subName,
-		ctx: ctx,
-		c:   c,
-	}
-
 	// TODO: make kaTicker frequency more configurable.
 	// (ackDeadline - 5s) is a reasonable default for now, because the minimum ack period is 10s.  This gives us 5s grace.
 	keepAlivePeriod := po.ackDeadline - 5*time.Second
-	it.kaTicker = time.NewTicker(keepAlivePeriod) // Stopped in it.Stop
-	it.ka = keepAlive{
-		Client:        it.c,
-		Ctx:           it.ctx,
-		Sub:           it.sub,
-		ExtensionTick: it.kaTicker.C,
-		Deadline:      po.ackDeadline,
-		MaxExtension:  po.maxExtension,
-	}
+	kaTicker := time.NewTicker(keepAlivePeriod) // Stopped in it.Stop
 
 	// TODO: make ackTicker more configurable.  Something less than
 	// kaTicker is a reasonable default (there's no point extending
 	// messages when they could be acked instead).
-	it.ackTicker = time.NewTicker(keepAlivePeriod / 2) // Stopped in it.Stop
-	it.acker = acker{
-		Client:  it.c,
-		Ctx:     it.ctx,
-		Sub:     it.sub,
-		AckTick: it.ackTicker.C,
-		Notify:  it.ka.Remove,
+	ackTicker := time.NewTicker(keepAlivePeriod / 2) // Stopped in it.Stop
+
+	ka := &keepAlive{
+		Client:        c,
+		Ctx:           ctx,
+		Sub:           subName,
+		ExtensionTick: kaTicker.C,
+		Deadline:      po.ackDeadline,
+		MaxExtension:  po.maxExtension,
 	}
 
-	it.puller = puller{
-		Client:    it.c,
-		Sub:       it.sub,
+	ack := &acker{
+		Client:  c,
+		Ctx:     ctx,
+		Sub:     subName,
+		AckTick: ackTicker.C,
+		Notify:  ka.Remove,
+	}
+
+	pull := &puller{
+		Client:    c,
+		Sub:       subName,
 		BatchSize: int64(po.maxPrefetch),
-		Notify:    it.ka.Add,
+		Notify:    ka.Add,
 	}
 
-	it.ka.Start()
-	it.acker.Start()
-	return it
+	ka.Start()
+	ack.Start()
+	return &Iterator{
+		ctx:       ctx,
+		kaTicker:  kaTicker,
+		ackTicker: ackTicker,
+		ka:        ka,
+		acker:     ack,
+		puller:    pull,
+	}
 }
 
 // Next returns the next Message to be processed.  The caller must call Done on
