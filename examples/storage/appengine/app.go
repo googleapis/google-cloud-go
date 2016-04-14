@@ -174,6 +174,7 @@ func (d *demo) readFile(fileName string) {
 
 //[END read]
 
+//[START copy]
 // copyFile copies a file in Google Cloud Storage.
 func (d *demo) copyFile(fileName string) {
 	copyName := fileName + "-copy"
@@ -188,6 +189,8 @@ func (d *demo) copyFile(fileName string) {
 
 	d.dumpStats(obj)
 }
+
+//[END copy]
 
 func (d *demo) dumpStats(obj *storage.ObjectAttrs) {
 	fmt.Fprintf(d.w, "(filename: /%v/%v, ", obj.Bucket, obj.Name)
@@ -207,6 +210,7 @@ func (d *demo) dumpStats(obj *storage.ObjectAttrs) {
 	fmt.Fprintf(d.w, "Updated: %v)\n", obj.Updated)
 }
 
+//[START file_metadata]
 // statFile reads the stats of the named file in Google Cloud Storage.
 func (d *demo) statFile(fileName string) {
 	io.WriteString(d.w, "\nFile stat:\n")
@@ -220,6 +224,8 @@ func (d *demo) statFile(fileName string) {
 	d.dumpStats(obj)
 }
 
+//[END file_metadata]
+
 // createListFiles creates files that will be used by listBucket.
 func (d *demo) createListFiles() {
 	io.WriteString(d.w, "\nCreating more files for listbucket...\n")
@@ -228,6 +234,7 @@ func (d *demo) createListFiles() {
 	}
 }
 
+//[START list_bucket]
 // listBucket lists the contents of a bucket in Google Cloud Storage.
 func (d *demo) listBucket() {
 	io.WriteString(d.w, "\nListbucket result:\n")
@@ -246,6 +253,8 @@ func (d *demo) listBucket() {
 		}
 	}
 }
+
+//[END list_bucket]
 
 func (d *demo) listDir(name, indent string) {
 	query := &storage.Query{Prefix: name, Delimiter: "/"}
