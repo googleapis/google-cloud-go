@@ -23,9 +23,6 @@ import (
 )
 
 type Iterator struct {
-	// The context to use for acking messages and extending message deadlines.
-	ctx context.Context
-
 	// kaTicker controls how often we send an ack deadline extension request.
 	kaTicker *time.Ticker
 	// ackTicker controls how often we acknowledge a batch of messages.
@@ -35,8 +32,12 @@ type Iterator struct {
 	acker  *acker
 	puller *puller
 
-	mu     sync.Mutex
-	closed bool
+	// mu ensures that cleanup only happens once, and concurrent Stop
+	// invocations block until cleanup completes.
+	mu sync.Mutex
+
+	// closed is used to signal that Stop has been called.
+	closed chan struct{}
 }
 
 // newIterator starts a new Iterator.  Stop must be called on the Iterator
@@ -71,50 +72,38 @@ func (c *Client) newIterator(ctx context.Context, subName string, po *pullOption
 		Notify:  ka.Remove,
 	}
 
-	pull := &puller{
-		Client:    c,
-		Sub:       subName,
-		BatchSize: int64(po.maxPrefetch),
-		Notify:    ka.Add,
-	}
+	pull := newPuller(c, subName, ctx, int64(po.maxPrefetch), ka.Add, ka.Remove)
 
 	ka.Start()
 	ack.Start()
 	return &Iterator{
-		ctx:       ctx,
 		kaTicker:  kaTicker,
 		ackTicker: ackTicker,
 		ka:        ka,
 		acker:     ack,
 		puller:    pull,
+		closed:    make(chan struct{}),
 	}
 }
 
 // Next returns the next Message to be processed.  The caller must call Done on
 // the returned Message when finished with it.
-// Once Stop has been called, subsequent calls to Next will return io.EOF.
+// Once Stop has been called, calls to Next will return io.EOF.
 func (it *Iterator) Next() (*Message, error) {
-	it.mu.Lock()
-	defer it.mu.Unlock()
-	if it.closed {
-		return nil, io.EOF
+	m, err := it.puller.Next()
+
+	if err == nil {
+		m.it = it
+		return m, nil
 	}
 
 	select {
-	case <-it.ctx.Done():
-		return nil, it.ctx.Err()
+	// If Stop has been called, we return EOF regardless the value of err.
+	case <-it.closed:
+		return nil, io.EOF
 	default:
-	}
-
-	// Note: this is the only place where messages are added to keepAlive,
-	// and this code is protected by mu. This means once an iterator starts
-	// being closed down, no more messages will be added to keepalive.
-	m, err := it.puller.Next(it.ctx)
-	if err != nil {
 		return nil, err
 	}
-	m.it = it
-	return m, nil
 }
 
 // Client code must call Stop on an Iterator when finished with it.
@@ -124,34 +113,35 @@ func (it *Iterator) Next() (*Message, error) {
 // Stop need only be called once, but may be called multiple times from
 // multiple goroutines.
 func (it *Iterator) Stop() {
-	// TODO: test calling from multiple goroutines.
 	it.mu.Lock()
 	defer it.mu.Unlock()
-	if it.closed {
-		// early return ensures that it.ka.Stop is only called once.
-		return
-	}
-	it.closed = true
 
-	// Remove messages that are being kept alive, but have not been
-	// supplied to the caller yet.  Then the only messages being kept alive
-	// will be those that have been supplied to the caller but have not yet
-	// had their Done method called.
-	for _, m := range it.puller.Pending() {
-		it.ka.Remove(m.AckID)
+	select {
+	case <-it.closed:
+		// Cleanup has already been performed.
+		return
+	default:
 	}
+
+	// We close this channel before calling it.puller.Stop to ensure that we
+	// reliably return EOF from Next.
+	close(it.closed)
+
+	// Stop the puller. Once this completes, no more messages will be added
+	// to it.ka.
+	it.puller.Stop()
 
 	// Start acking messages as they arrive, ignoring ackTicker.  This will
 	// result in it.ka.Stop, below, returning as soon as possible.
 	it.acker.FastMode()
 
 	// This will block until
-	//   (a) it.Ctx is done, or
+	//   (a) it.ka.Ctx is done, or
 	//   (b) all messages have been removed from keepAlive.
 	// (b) will happen once all outstanding messages have been either ACKed or NACKed.
 	it.ka.Stop()
 
-	// There are no more live messages that we care about, so kill off the acker.
+	// There are no more live messages, so kill off the acker.
 	it.acker.Stop()
 
 	it.kaTicker.Stop()
@@ -159,9 +149,6 @@ func (it *Iterator) Stop() {
 }
 
 func (it *Iterator) done(ackID string, ack bool) {
-	// NOTE: this method does not lock mu, because it's fine for done to be
-	// called while the iterator is in the process of being closed.  In
-	// fact, this is the only way to drain oustanding messages.
 	if ack {
 		it.acker.Ack(ackID)
 		// There's no need to call it.ka.Remove here, as acker will

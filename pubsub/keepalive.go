@@ -71,9 +71,11 @@ func (ka *keepAlive) Start() {
 }
 
 // Add adds an ack id to be kept alive.
+// It should not be called after Stop.
 func (ka *keepAlive) Add(ackID string) {
 	ka.mu.Lock()
 	defer ka.mu.Unlock()
+
 	ka.items[ackID] = time.Now().Add(ka.MaxExtension)
 	ka.dr.SetPending(true)
 }
@@ -82,6 +84,9 @@ func (ka *keepAlive) Add(ackID string) {
 func (ka *keepAlive) Remove(ackID string) {
 	ka.mu.Lock()
 	defer ka.mu.Unlock()
+
+	// Note: If users NACKs a message after it has been removed due to
+	// expiring, Remove will be called twice with same ack id.  This is OK.
 	delete(ka.items, ackID)
 	ka.dr.SetPending(len(ka.items) != 0)
 }
@@ -145,6 +150,12 @@ func (d *drain) SetPending(pending bool) {
 
 func (d *drain) closeIfDrained() {
 	if !d.pending && d.started {
-		close(d.Drained)
+		// Check to see if d.Drained is closed before closing it.
+		// This allows SetPending(false) to be safely called multiple times.
+		select {
+		case <-d.Drained:
+		default:
+			close(d.Drained)
+		}
 	}
 }

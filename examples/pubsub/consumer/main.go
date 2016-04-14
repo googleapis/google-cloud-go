@@ -18,7 +18,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"log"
+	"os"
+	"os/signal"
 	"time"
 
 	"golang.org/x/net/context"
@@ -42,6 +45,9 @@ func main() {
 		log.Fatal("-s is required")
 	}
 
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+
 	ctx := context.Background()
 
 	client, err := pubsub.NewClient(ctx, *projID)
@@ -58,8 +64,16 @@ func main() {
 	}
 	defer it.Stop()
 
+	go func() {
+		<-quit
+		it.Stop()
+	}()
+
 	for i := 0; i < *numConsume; i++ {
 		m, err := it.Next()
+		if err == io.EOF {
+			break
+		}
 		if err != nil {
 			fmt.Printf("advancing iterator: %v", err)
 			break

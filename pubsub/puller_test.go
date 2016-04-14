@@ -48,22 +48,18 @@ func TestPuller(t *testing.T) {
 	c := &Client{projectID: "projid", s: s}
 
 	pulled := make(chan string, 10)
-	pull := &puller{
-		Client:    c,
-		Sub:       "subname",
-		BatchSize: 2,
-		Notify:    func(ackID string) { pulled <- ackID },
-	}
+
+	pull := newPuller(c, "subname", context.Background(), 2, func(ackID string) { pulled <- ackID }, func(string) {})
 
 	got := []string{}
 	for i := 0; i < 5; i++ {
-		m, err := pull.Next(context.Background())
+		m, err := pull.Next()
 		got = append(got, m.AckID)
 		if err != nil {
 			t.Errorf("unexpected err from pull.Next: %v", err)
 		}
 	}
-	_, err := pull.Next(context.Background())
+	_, err := pull.Next()
 	if err == nil {
 		t.Errorf("unexpected err from pull.Next: %v", err)
 	}
@@ -74,7 +70,7 @@ func TestPuller(t *testing.T) {
 	}
 }
 
-func TestPullerNotification(t *testing.T) {
+func TestPullerAddsToKeepAlive(t *testing.T) {
 	s := &fetcherService{
 		msgs: [][]*Message{
 			{{AckID: "a"}, {AckID: "b"}},
@@ -84,16 +80,12 @@ func TestPullerNotification(t *testing.T) {
 	c := &Client{projectID: "projid", s: s}
 
 	pulled := make(chan string, 10)
-	pull := &puller{
-		Client:    c,
-		Sub:       "subname",
-		BatchSize: 2,
-		Notify:    func(ackID string) { pulled <- ackID },
-	}
+
+	pull := newPuller(c, "subname", context.Background(), 2, func(ackID string) { pulled <- ackID }, func(string) {})
 
 	got := []string{}
 	for i := 0; i < 3; i++ {
-		m, err := pull.Next(context.Background())
+		m, err := pull.Next()
 		got = append(got, m.AckID)
 		if err != nil {
 			t.Errorf("unexpected err from pull.Next: %v", err)
