@@ -577,7 +577,7 @@ func TestKindlessQueries(t *testing.T) {
 		{
 			desc:    "Kindless bad filter",
 			query:   NewQuery("").Filter("I =", 4),
-			wantErr: "kind is required for filter: I",
+			wantErr: "kind is required",
 		},
 		{
 			desc:    "Kindless bad order",
