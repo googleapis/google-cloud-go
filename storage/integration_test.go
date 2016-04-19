@@ -616,6 +616,35 @@ func TestWriterContentType(t *testing.T) {
 	}
 }
 
+func TestZeroSizedObject(t *testing.T) {
+	ctx := context.Background()
+	client, bucket := testConfig(ctx, t)
+	defer client.Close()
+
+	obj := client.Bucket(bucket).Object("zero" + suffix)
+
+	// Check writing it works as expected.
+	w := obj.NewWriter(ctx)
+	if err := w.Close(); err != nil {
+		t.Fatalf("Writer.Close: %v", err)
+	}
+	defer obj.Delete(ctx)
+
+	// Check we can read it too.
+	r, err := obj.NewReader(ctx)
+	if err != nil {
+		t.Fatalf("NewReader: %v", err)
+	}
+	defer r.Close()
+	body, err := ioutil.ReadAll(r)
+	if err != nil {
+		t.Fatalf("ioutil.ReadAll: %v", err)
+	}
+	if len(body) != 0 {
+		t.Errorf("Body is %v, want empty []byte{}", body)
+	}
+}
+
 // cleanup deletes any objects in the default bucket which were created
 // during this test run (those with the designated suffix), and any
 // objects whose suffix indicates they were created over an hour ago.
