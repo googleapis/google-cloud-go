@@ -44,10 +44,12 @@ import (
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"golang.org/x/net/context"
 	btdpb "google.golang.org/cloud/bigtable/internal/data_proto"
+	rpcpb "google.golang.org/cloud/bigtable/internal/rpc_status_proto"
 	btspb "google.golang.org/cloud/bigtable/internal/service_proto"
 	bttdpb "google.golang.org/cloud/bigtable/internal/table_data_proto"
 	bttspb "google.golang.org/cloud/bigtable/internal/table_service_proto"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 )
 
 // Server is an in-memory Cloud Bigtable fake.
@@ -416,6 +418,31 @@ func (s *server) MutateRow(ctx context.Context, req *btspb.MutateRowRequest) (*e
 		return nil, err
 	}
 	return &emptypb.Empty{}, nil
+}
+
+func (s *server) MutateRows(ctx context.Context, req *btspb.MutateRowsRequest) (*btspb.MutateRowsResponse, error) {
+	s.mu.Lock()
+	tbl, ok := s.tables[req.TableName]
+	s.mu.Unlock()
+	if !ok {
+		return nil, fmt.Errorf("no such table %q", req.TableName)
+	}
+
+	res := &btspb.MutateRowsResponse{Statuses: make([]*rpcpb.Status, len(req.Entries))}
+
+	for i, entry := range req.Entries {
+		r := tbl.mutableRow(string(entry.RowKey))
+		r.mu.Lock()
+		if err := applyMutations(tbl, r, entry.Mutations); err != nil {
+			// We can't easily reconstruct the proper code after an error
+			res.Statuses[i] = &rpcpb.Status{Code: int32(codes.Internal), Message: err.Error()}
+		} else {
+			res.Statuses[i] = &rpcpb.Status{Code: int32(codes.OK)}
+		}
+		r.mu.Unlock()
+	}
+
+	return res, nil
 }
 
 func (s *server) CheckAndMutateRow(ctx context.Context, req *btspb.CheckAndMutateRowRequest) (*btspb.CheckAndMutateRowResponse, error) {

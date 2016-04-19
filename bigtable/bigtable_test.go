@@ -582,6 +582,70 @@ func TestClientIntegration(t *testing.T) {
 		t.Errorf("Large scan returned %d bytes, want %d", n, want)
 	}
 	checkpoint("tested big read/write/scan")
+
+	// Test bulk mutations
+	if err := adminClient.CreateColumnFamily(ctx, table, "bulk"); err != nil {
+		t.Fatalf("Creating column family: %v", err)
+	}
+	bulkData := map[string][]string{
+		"red sox":  []string{"2004", "2007", "2013"},
+		"patriots": []string{"2001", "2003", "2004", "2014"},
+		"celtics":  []string{"1981", "1984", "1986", "2008"},
+	}
+	var rowKeys []string
+	var muts []*Mutation
+	for row, ss := range bulkData {
+		mut := NewMutation()
+		for _, name := range ss {
+			mut.Set("bulk", name, 0, []byte("1"))
+		}
+		rowKeys = append(rowKeys, row)
+		muts = append(muts, mut)
+	}
+	status, err := tbl.ApplyBulk(ctx, rowKeys, muts)
+	if err != nil {
+		t.Fatalf("Bulk mutating rows %q: %v", rowKeys, err)
+	}
+	if status != nil {
+		t.Errorf("non-nil errors: %v", err)
+	}
+	checkpoint("inserted bulk data")
+
+	// Read each row back
+	for rowKey, ss := range bulkData {
+		row, err := tbl.ReadRow(ctx, rowKey)
+		if err != nil {
+			t.Fatalf("Reading a bulk row: %v", err)
+		}
+		for _, ris := range row {
+			sort.Sort(byColumn(ris))
+		}
+		var wantItems []ReadItem
+		for _, val := range ss {
+			wantItems = append(wantItems, ReadItem{Row: rowKey, Column: "bulk:" + val, Value: []byte("1")})
+		}
+		wantRow := Row{"bulk": wantItems}
+		if !reflect.DeepEqual(row, wantRow) {
+			t.Errorf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
+		}
+	}
+	checkpoint("tested reading from bulk insert")
+
+	// Test bulk write errors
+	badMut := NewMutation()
+	badMut.Set("badfamily", "col", -1, nil)
+	badMut2 := NewMutation()
+	badMut2.Set("badfamily2", "goodcol", -1, []byte("1"))
+	status, err = tbl.ApplyBulk(ctx, []string{"badrow", "badrow2"}, []*Mutation{badMut, badMut2})
+	if err != nil {
+		t.Fatalf("Bulk mutating rows %q: %v", rowKeys, err)
+	}
+	if status == nil {
+		t.Errorf("No errors for bad bulk mutation")
+	}
+	if status[0] == nil || status[1] == nil {
+		t.Errorf("No error for bad bulk mutation")
+	}
 }
 
 func fill(b, sub []byte) {

@@ -29,6 +29,7 @@ import (
 	btspb "google.golang.org/cloud/bigtable/internal/service_proto"
 	"google.golang.org/cloud/internal/transport"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 )
 
 const prodAddr = "bigtable.googleapis.com:443"
@@ -461,6 +462,59 @@ func (m *Mutation) DeleteCellsInFamily(family string) {
 // DeleteRow deletes the entire row.
 func (m *Mutation) DeleteRow() {
 	m.ops = append(m.ops, &btdpb.Mutation{Mutation: &btdpb.Mutation_DeleteFromRow_{&btdpb.Mutation_DeleteFromRow{}}})
+}
+
+// ApplyBulk applies multiple Mutations.
+// Each mutation is individually applied atomically,
+// but the set of mutations may be applied in any order.
+//
+// Two types of failures may occur. If the entire process
+// fails, (nil, err) will be returned. If specific mutations
+// fail to apply, ([]err, nil) will be returned, and the errors
+// will correspond to the relevant rowKeys/muts arguments.
+//
+// Depending on how the mutations are batched at the server one mutation may fail due to a problem
+// with another mutation. In this case the same error will be reported for both mutations.
+//
+// Conditional mutations cannot be applied in bulk and providing one will result in an error.
+func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutation, opts ...ApplyOption) ([]error, error) {
+	if len(rowKeys) != len(muts) {
+		return nil, fmt.Errorf("mismatched rowKeys and mutation array lengths: %d, %d", len(rowKeys), len(muts))
+	}
+
+	after := func(res proto.Message) {
+		for _, o := range opts {
+			o.after(res)
+		}
+	}
+
+	req := &btspb.MutateRowsRequest{
+		TableName: t.c.fullTableName(t.table),
+		Entries:   make([]*btspb.MutateRowsRequest_Entry, len(rowKeys)),
+	}
+	for i, key := range rowKeys {
+		mut := muts[i]
+		if mut.cond != nil {
+			return nil, fmt.Errorf("conditional mutations cannot be applied in bulk")
+		}
+		req.Entries[i] = &btspb.MutateRowsRequest_Entry{RowKey: []byte(key), Mutations: mut.ops}
+	}
+	res, err := t.c.client.MutateRows(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	var errors []error // kept as nil if everything is OK
+	for i, status := range res.Statuses {
+		if status.Code == int32(codes.OK) {
+			continue
+		}
+		if errors == nil {
+			errors = make([]error, len(res.Statuses))
+		}
+		errors[i] = grpc.Errorf(codes.Code(status.Code), status.Message)
+	}
+	after(res)
+	return errors, nil
 }
 
 // Timestamp is in units of microseconds since 1 January 1970.
