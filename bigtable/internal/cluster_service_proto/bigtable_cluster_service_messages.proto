@@ -17,6 +17,7 @@ syntax = "proto3";
 package google.bigtable.admin.cluster.v1;
 
 import "google.golang.org/cloud/bigtable/internal/cluster_data_proto/bigtable_cluster_data.proto";
+import "google/protobuf/timestamp.proto";
 
 option java_multiple_files = true;
 option java_outer_classname = "BigtableClusterServiceMessagesProto";
@@ -84,8 +85,10 @@ message CreateClusterMetadata {
   CreateClusterRequest original_request = 1;
 
   // The time at which original_request was received.
+  google.protobuf.Timestamp request_time = 2;
 
   // The time at which this operation failed or was completed successfully.
+  google.protobuf.Timestamp finish_time = 3;
 }
 
 // Metadata type for the operation returned by
@@ -95,12 +98,15 @@ message UpdateClusterMetadata {
   Cluster original_request = 1;
 
   // The time at which original_request was received.
+  google.protobuf.Timestamp request_time = 2;
 
   // The time at which this operation was cancelled. If set, this operation is
   // in the process of undoing itself (which is guaranteed to succeed) and
   // cannot be cancelled again.
+  google.protobuf.Timestamp cancel_time = 3;
 
   // The time at which this operation failed or was completed successfully.
+  google.protobuf.Timestamp finish_time = 4;
 }
 
 // Request message for BigtableClusterService.DeleteCluster.
@@ -121,6 +127,8 @@ message UndeleteClusterRequest {
 // BigtableClusterService.UndeleteCluster.
 message UndeleteClusterMetadata {
   // The time at which the original request was received.
+  google.protobuf.Timestamp request_time = 1;
 
   // The time at which this operation failed or was completed successfully.
+  google.protobuf.Timestamp finish_time = 2;
 }

@@ -18,7 +18,7 @@ package google.bigtable.admin.table.v1;
 
 import "google.golang.org/cloud/bigtable/internal/table_data_proto/bigtable_table_data.proto";
 import "google.golang.org/cloud/bigtable/internal/table_service_proto/bigtable_table_service_messages.proto";
-import "google.golang.org/cloud/bigtable/internal/empty/empty.proto";
+import "google/protobuf/empty.proto";
 
 option java_multiple_files = true;
 option java_outer_classname = "BigtableTableServicesProto";
@@ -61,5 +61,9 @@ service BigtableTableService {
 
   // Permanently deletes a specified column family and all of its data.
   rpc DeleteColumnFamily(DeleteColumnFamilyRequest) returns (google.protobuf.Empty) {
+  }
+
+  // Delete all rows in a table corresponding to a particular prefix
+  rpc BulkDeleteRows(BulkDeleteRowsRequest) returns (google.protobuf.Empty) {
   }
 }

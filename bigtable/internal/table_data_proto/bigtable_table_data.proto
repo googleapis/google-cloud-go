@@ -16,7 +16,7 @@ syntax = "proto3";
 
 package google.bigtable.admin.table.v1;
 
-import "google.golang.org/cloud/bigtable/internal/duration_proto/duration.proto";
+import "google/protobuf/duration.proto";
 
 option java_multiple_files = true;
 option java_outer_classname = "BigtableTableDataProto";

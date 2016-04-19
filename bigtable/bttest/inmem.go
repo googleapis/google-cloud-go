@@ -41,9 +41,9 @@ import (
 	"sync"
 	"time"
 
+	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"golang.org/x/net/context"
 	btdpb "google.golang.org/cloud/bigtable/internal/data_proto"
-	emptypb "google.golang.org/cloud/bigtable/internal/empty"
 	btspb "google.golang.org/cloud/bigtable/internal/service_proto"
 	bttdpb "google.golang.org/cloud/bigtable/internal/table_data_proto"
 	bttspb "google.golang.org/cloud/bigtable/internal/table_service_proto"

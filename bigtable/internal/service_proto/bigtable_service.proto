@@ -18,7 +18,7 @@ package google.bigtable.v1;
 
 import "google.golang.org/cloud/bigtable/internal/data_proto/bigtable_data.proto";
 import "google.golang.org/cloud/bigtable/internal/service_proto/bigtable_service_messages.proto";
-import "google.golang.org/cloud/bigtable/internal/empty/empty.proto";
+import "google/protobuf/empty.proto";
 
 option java_generic_services = true;
 option java_multiple_files = true;
@@ -45,6 +45,12 @@ service BigtableService {
   // Mutates a row atomically. Cells already present in the row are left
   // unchanged unless explicitly changed by 'mutation'.
   rpc MutateRow(MutateRowRequest) returns (google.protobuf.Empty) {
+  }
+
+  // Mutates multiple rows in a batch. Each individual row is mutated
+  // atomically as in MutateRow, but the entire batch is not executed
+  // atomically.
+  rpc MutateRows(MutateRowsRequest) returns (MutateRowsResponse) {
   }
 
   // Mutates a row atomically based on the output of a predicate Reader filter.

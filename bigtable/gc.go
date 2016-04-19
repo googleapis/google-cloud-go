@@ -21,7 +21,7 @@ import (
 	"strings"
 	"time"
 
-	durpb "google.golang.org/cloud/bigtable/internal/duration_proto"
+	durpb "github.com/golang/protobuf/ptypes/duration"
 	bttdpb "google.golang.org/cloud/bigtable/internal/table_data_proto"
 )
 
