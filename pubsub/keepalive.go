@@ -119,12 +119,30 @@ func (ka *keepAlive) getAckIDs() (live, expired []string) {
 	return live, expired
 }
 
+const maxExtensionAttempts = 2
+
 func (ka *keepAlive) extendDeadlines(ackIDs []string) {
-	// TODO: split into separate requests if there are too many ackIDs.
-	if len(ackIDs) > 0 {
-		_ = ka.Client.s.modifyAckDeadline(ka.Ctx, ka.Sub, ka.Deadline, ackIDs)
+	head, tail := ka.Client.s.splitAckIDs(ackIDs)
+	for len(head) > 0 {
+		for i := 0; i < maxExtensionAttempts; i++ {
+			if ka.Client.s.modifyAckDeadline(ka.Ctx, ka.Sub, ka.Deadline, head) == nil {
+				break
+			}
+		}
+		// NOTE: Messages whose deadlines we fail to extend will
+		// eventually be redelivered and this is a documented behaviour
+		// of the API.
+		//
+		// NOTE: If we fail to extend deadlines here, this
+		// implementation will continue to attempt extending the
+		// deadlines for those ack IDs the next time the extension
+		// ticker ticks.  By then the deadline will have expired.
+		// Re-extending them is harmless, however.
+		//
+		// TODO: call Remove for ids which fail to be extended.
+
+		head, tail = ka.Client.s.splitAckIDs(tail)
 	}
-	// TODO: retry on error.  NOTE: if we ultimately fail to extend deadlines here, the messages will be redelivered, which is OK.
 }
 
 // A drain (once started) indicates via a channel when there is no work pending.

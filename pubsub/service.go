@@ -48,7 +48,8 @@ type service interface {
 	publishMessages(ctx context.Context, topicName string, msgs []*Message) ([]string, error)
 
 	// splitAckIDs divides ackIDs into
-	//  * a batch of a size which is suitable for passing to acknowledge, and
+	//  * a batch of a size which is suitable for passing to acknowledge or
+	//    modifyAckDeadline, and
 	//  * the rest.
 	splitAckIDs(ackIDs []string) ([]string, []string)
 
@@ -199,8 +200,9 @@ func (s *apiService) modifyAckDeadline(ctx context.Context, subName string, dead
 }
 
 // maxPayload is the maximum number of bytes to devote to actual ids in
-// acknowledgement requests.  Note that there is ~1K of constant overhead, plus
-// 3 bytes per ID (two quotes and a comma).  The total payload size may not exceed 512K.
+// acknowledgement or modifyAckDeadline requests.  Note that there is ~1K of
+// constant overhead, plus 3 bytes per ID (two quotes and a comma).  The total
+// payload size may not exceed 512K.
 const maxPayload = 500 * 1024
 const overheadPerID = 3 // 3 bytes of JSON
 

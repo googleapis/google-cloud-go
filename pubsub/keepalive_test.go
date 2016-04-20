@@ -15,6 +15,7 @@
 package pubsub
 
 import (
+	"errors"
 	"reflect"
 	"sort"
 	"sync"
@@ -220,5 +221,105 @@ func TestKeepAliveStopsImmediatelyForNoAckIDs(t *testing.T) {
 	case <-stopped:
 	case <-time.After(maxExtension / 2):
 		t.Fatalf("keepalive failed to stop before maxExtension deadline")
+	}
+}
+
+// extendCallResult contains a list of ackIDs which are expected in an ackID
+// extension request, along with the result that should be returned.
+type extendCallResult struct {
+	ackIDs []string
+	err    error
+}
+
+// extendService implements modifyAckDeadline using a hard-coded list of extendCallResults.
+type extendService struct {
+	service
+
+	calls []extendCallResult
+
+	t *testing.T // used for error logging.
+}
+
+func (es *extendService) modifyAckDeadline(ctx context.Context, subName string, deadline time.Duration, ackIDs []string) error {
+	if len(es.calls) == 0 {
+		es.t.Fatalf("unexpected call to modifyAckDeadline: ackIDs: %v", ackIDs)
+	}
+	call := es.calls[0]
+	es.calls = es.calls[1:]
+
+	if got, want := ackIDs, call.ackIDs; !reflect.DeepEqual(got, want) {
+		es.t.Errorf("unexpected arguments to modifyAckDeadline: got: %v ; want: %v", got, want)
+	}
+	return call.err
+}
+
+// Test implementation returns the first 2 elements as head, and the rest as tail.
+func (es *extendService) splitAckIDs(ids []string) ([]string, []string) {
+	if len(ids) < 2 {
+		return ids, nil
+	}
+	return ids[:2], ids[2:]
+}
+func TestKeepAliveSplitsBatches(t *testing.T) {
+	type testCase struct {
+		calls []extendCallResult
+	}
+	for _, tc := range []testCase{
+		{
+			calls: []extendCallResult{
+				{
+					ackIDs: []string{"a", "b"},
+				},
+				{
+					ackIDs: []string{"c", "d"},
+				},
+				{
+					ackIDs: []string{"e", "f"},
+				},
+			},
+		},
+		{
+			calls: []extendCallResult{
+				{
+					ackIDs: []string{"a", "b"},
+					err:    errors.New("bang"),
+				},
+				// On error we retry once.
+				{
+					ackIDs: []string{"a", "b"},
+					err:    errors.New("bang"),
+				},
+				// We give up after failing twice, so we move on to the next set, "c" and "d"
+				{
+					ackIDs: []string{"c", "d"},
+					err:    errors.New("bang"),
+				},
+				// Again, we retry once.
+				{
+					ackIDs: []string{"c", "d"},
+				},
+				{
+					ackIDs: []string{"e", "f"},
+				},
+			},
+		},
+	} {
+		s := &extendService{
+			t:     t,
+			calls: tc.calls,
+		}
+
+		c := &Client{projectID: "projid", s: s}
+		ka := &keepAlive{
+			Client: c,
+			Ctx:    context.Background(),
+			Sub:    "subname",
+		}
+
+		ka.extendDeadlines([]string{"a", "b", "c", "d", "e", "f"})
+
+		if len(s.calls) != 0 {
+			t.Errorf("expected extend calls did not occur: %v", s.calls)
+		}
 	}
 }
