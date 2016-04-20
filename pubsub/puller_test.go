@@ -22,27 +22,40 @@ import (
 	"golang.org/x/net/context"
 )
 
+type fetchResult struct {
+	msgs []*Message
+	err  error
+}
+
 type fetcherService struct {
 	service
-	msgs [][]*Message
+	results        []fetchResult
+	unexpectedCall bool
 }
 
 func (s *fetcherService) fetchMessages(ctx context.Context, subName string, maxMessages int64) ([]*Message, error) {
-	if len(s.msgs) == 0 {
+	if len(s.results) == 0 {
+		s.unexpectedCall = true
 		return nil, errors.New("bang")
 	}
-	ret := s.msgs[0]
-	s.msgs = s.msgs[1:]
-	return ret, nil
+	ret := s.results[0]
+	s.results = s.results[1:]
+	return ret.msgs, ret.err
 }
 
 func TestPuller(t *testing.T) {
 	s := &fetcherService{
-		msgs: [][]*Message{
-			{{AckID: "a"}, {AckID: "b"}},
+		results: []fetchResult{
+			{
+				msgs: []*Message{{AckID: "a"}, {AckID: "b"}},
+			},
 			{},
-			{{AckID: "c"}, {AckID: "d"}},
-			{{AckID: "e"}},
+			{
+				msgs: []*Message{{AckID: "c"}, {AckID: "d"}},
+			},
+			{
+				msgs: []*Message{{AckID: "e"}},
+			},
 		},
 	}
 	c := &Client{projectID: "projid", s: s}
@@ -72,9 +85,13 @@ func TestPuller(t *testing.T) {
 
 func TestPullerAddsToKeepAlive(t *testing.T) {
 	s := &fetcherService{
-		msgs: [][]*Message{
-			{{AckID: "a"}, {AckID: "b"}},
-			{{AckID: "c"}, {AckID: "d"}},
+		results: []fetchResult{
+			{
+				msgs: []*Message{{AckID: "a"}, {AckID: "b"}},
+			},
+			{
+				msgs: []*Message{{AckID: "c"}, {AckID: "d"}},
+			},
 		},
 	}
 	c := &Client{projectID: "projid", s: s}
@@ -107,5 +124,34 @@ func TestPullerAddsToKeepAlive(t *testing.T) {
 	want = append(want, "d")
 	if !reflect.DeepEqual(pulledIDs, want) {
 		t.Errorf("pulled ack ids: got: %v ; want: %v", pulledIDs, want)
+	}
+}
+
+func TestPullerRetriesOnce(t *testing.T) {
+	bang := errors.New("bang")
+	s := &fetcherService{
+		results: []fetchResult{
+			{
+				err: bang,
+			},
+			{
+				err: bang,
+			},
+		},
+	}
+	c := &Client{projectID: "projid", s: s}
+
+	pull := newPuller(c, "subname", context.Background(), 2, func(string) {}, func(string) {})
+
+	_, err := pull.Next()
+	if err != bang {
+		t.Errorf("pull.Next err got: %v, want: %v", err, bang)
+	}
+
+	if s.unexpectedCall {
+		t.Errorf("unexpected retry")
+	}
+	if len(s.results) != 0 {
+		t.Errorf("outstanding calls: got: %v, want: 0", len(s.results))
 	}
 }

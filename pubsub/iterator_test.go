@@ -206,8 +206,10 @@ func TestAfterAbortReturnsNoMoreThanOneMessage(t *testing.T) {
 
 func TestMultipleStopCallsBlockUntilMessageDone(t *testing.T) {
 	s := &fetcherService{
-		msgs: [][]*Message{
-			{{AckID: "a"}, {AckID: "b"}},
+		results: []fetchResult{
+			{
+				msgs: []*Message{{AckID: "a"}, {AckID: "b"}},
+			},
 		},
 	}
 	c := &Client{projectID: "projid", s: s}

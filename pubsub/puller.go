@@ -56,6 +56,8 @@ func newPuller(c *Client, subName string, ctx context.Context, batchSize int64, 
 	}
 }
 
+const maxPullAttempts = 2
+
 // Next returns the next message from the server, fetching a new batch if necessary.
 // keepAlive is called with the ackIDs of newly fetched messages.
 // If p.Ctx has already been cancelled before Next is called, no new messages
@@ -72,12 +74,20 @@ func (p *puller) Next() (*Message, error) {
 	}
 
 	for len(p.buf) == 0 {
-		// Once Stop has completed, all future calls to Next will immediately fail at this point.
-		buf, err := p.fetch()
+		var buf []*Message
+		var err error
+
+		for i := 0; i < maxPullAttempts; i++ {
+			// Once Stop has completed, all future calls to Next will immediately fail at this point.
+			buf, err = p.fetch()
+			if err == nil || err == context.Canceled || err == context.DeadlineExceeded {
+				break
+			}
+		}
 		if err != nil {
-			// TODO: retry before giving up, but not if the context was cancelled.
 			return nil, err
 		}
+
 		for _, m := range buf {
 			p.keepAlive(m.AckID)
 		}
