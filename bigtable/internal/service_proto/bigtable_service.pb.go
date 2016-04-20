@@ -8,7 +8,7 @@ import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
 import google_bigtable_v11 "google.golang.org/cloud/bigtable/internal/data_proto"
-import google_protobuf "github.com/golang/protobuf/ptypes/empty"
+import google_protobuf1 "github.com/golang/protobuf/ptypes/empty"
 
 import (
 	context "golang.org/x/net/context"
@@ -43,7 +43,7 @@ type BigtableServiceClient interface {
 	SampleRowKeys(ctx context.Context, in *SampleRowKeysRequest, opts ...grpc.CallOption) (BigtableService_SampleRowKeysClient, error)
 	// Mutates a row atomically. Cells already present in the row are left
 	// unchanged unless explicitly changed by 'mutation'.
-	MutateRow(ctx context.Context, in *MutateRowRequest, opts ...grpc.CallOption) (*google_protobuf.Empty, error)
+	MutateRow(ctx context.Context, in *MutateRowRequest, opts ...grpc.CallOption) (*google_protobuf1.Empty, error)
 	// Mutates multiple rows in a batch. Each individual row is mutated
 	// atomically as in MutateRow, but the entire batch is not executed
 	// atomically.
@@ -129,8 +129,8 @@ func (x *bigtableServiceSampleRowKeysClient) Recv() (*SampleRowKeysResponse, err
 	return m, nil
 }
 
-func (c *bigtableServiceClient) MutateRow(ctx context.Context, in *MutateRowRequest, opts ...grpc.CallOption) (*google_protobuf.Empty, error) {
-	out := new(google_protobuf.Empty)
+func (c *bigtableServiceClient) MutateRow(ctx context.Context, in *MutateRowRequest, opts ...grpc.CallOption) (*google_protobuf1.Empty, error) {
+	out := new(google_protobuf1.Empty)
 	err := grpc.Invoke(ctx, "/google.bigtable.v1.BigtableService/MutateRow", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
@@ -180,7 +180,7 @@ type BigtableServiceServer interface {
 	SampleRowKeys(*SampleRowKeysRequest, BigtableService_SampleRowKeysServer) error
 	// Mutates a row atomically. Cells already present in the row are left
 	// unchanged unless explicitly changed by 'mutation'.
-	MutateRow(context.Context, *MutateRowRequest) (*google_protobuf.Empty, error)
+	MutateRow(context.Context, *MutateRowRequest) (*google_protobuf1.Empty, error)
 	// Mutates multiple rows in a batch. Each individual row is mutated
 	// atomically as in MutateRow, but the entire batch is not executed
 	// atomically.

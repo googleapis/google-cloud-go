@@ -58,11 +58,9 @@ for up in "${!filename_map[@]}"; do
     sed -f $import_fixes |
     # Drop the UndeleteCluster RPC method. It returns a google.longrunning.Operation.
     sed '/^  rpc UndeleteCluster(/,/^  }$/d' |
-    # Drop annotations, long-running operations and status. They aren't supported (yet).
+    # Drop annotations and long-running operations. They aren't supported (yet).
     sed '/"google\/longrunning\/operations.proto"/d' |
     sed '/google.longrunning.Operation/d' |
-    sed '/"google\/rpc\/status.proto"/d' |
-    sed '/google\.rpc\.Status/d' |
     sed '/"google\/api\/annotations.proto"/d' |
     sed '/option.*google\.api\.http.*{.*};$/d' |
     cat > $PKG/$f
@@ -71,6 +69,6 @@ done
 # Run protoc once per package.
 for dir in $(find $PKG/internal -name '*.proto' | xargs dirname | sort | uniq); do
   echo 1>&2 "* $dir"
-  protoc --go_out=plugins=grpc,Mgoogle/protobuf/duration.proto=github.com/golang/protobuf/ptypes/duration,Mgoogle/protobuf/timestamp.proto=github.com/golang/protobuf/ptypes/timestamp,Mgoogle/protobuf/empty.proto=github.com/golang/protobuf/ptypes/empty:. $dir/*.proto
+  protoc --go_out=plugins=grpc,Mgoogle/protobuf/any.proto=github.com/golang/protobuf/ptypes/any,Mgoogle/protobuf/duration.proto=github.com/golang/protobuf/ptypes/duration,Mgoogle/protobuf/timestamp.proto=github.com/golang/protobuf/ptypes/timestamp,Mgoogle/protobuf/empty.proto=github.com/golang/protobuf/ptypes/empty:. $dir/*.proto
 done
 echo 1>&2 "All OK"

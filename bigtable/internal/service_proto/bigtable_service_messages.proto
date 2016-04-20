@@ -17,6 +17,7 @@ syntax = "proto3";
 package google.bigtable.v1;
 
 import "google.golang.org/cloud/bigtable/internal/data_proto/bigtable_data.proto";
+import "google.golang.org/cloud/bigtable/internal/rpc_status_proto/status.proto";
 
 option java_multiple_files = true;
 option java_outer_classname = "BigtableServiceMessagesProto";
@@ -160,6 +161,7 @@ message MutateRowsResponse {
   // Depending on how requests are batched during execution, it is possible
   // for one Entry to fail due to an error with another Entry. In the event
   // that this occurs, the same error will be reported for both entries.
+  repeated google.rpc.Status statuses = 1;
 }
 
 // Request message for BigtableService.CheckAndMutateRowRequest
