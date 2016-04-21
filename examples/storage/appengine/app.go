@@ -65,6 +65,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
+//[START get_default_bucket]	
 	ctx := appengine.NewContext(r)
 	if bucket == "" {
 		var err error
@@ -74,6 +75,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+//[END get_default_bucket]
 	client, err := storage.NewClient(ctx)
 	if err != nil {
 		log.Errorf(ctx, "failed to get default GCS bucket name: %v", err)
