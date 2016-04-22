@@ -78,7 +78,7 @@ func (buf *ackBuffer) notify() {
 
 // acker acks messages in batches.
 type acker struct {
-	Client  *Client
+	s       service
 	Ctx     context.Context  // The context to use when acknowledging messages.
 	Sub     string           // The full name of the subscription.
 	AckTick <-chan time.Time // AckTick supplies the frequency with which to make ack requests.
@@ -141,17 +141,17 @@ const maxAckAttempts = 2
 // After the acknowledgement request has completed (regardless of its success
 // or failure), ids will be passed to a.Notify.
 func (a *acker) ack(ids []string) {
-	head, tail := a.Client.s.splitAckIDs(ids)
+	head, tail := a.s.splitAckIDs(ids)
 	for len(head) > 0 {
 		for i := 0; i < maxAckAttempts; i++ {
-			if a.Client.s.acknowledge(a.Ctx, a.Sub, head) == nil {
+			if a.s.acknowledge(a.Ctx, a.Sub, head) == nil {
 				break
 			}
 		}
 		// NOTE: if retry gives up and returns an error, we simply drop
 		// those ack IDs. The messages will be redelivered and this is
 		// a documented behaviour of the API.
-		head, tail = a.Client.s.splitAckIDs(tail)
+		head, tail = a.s.splitAckIDs(tail)
 	}
 	for _, id := range ids {
 		a.Notify(id)

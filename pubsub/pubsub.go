@@ -110,7 +110,6 @@ func (pt *pageToken) more() bool {
 
 // stringsIterator provides an iterator API for a sequence of API page fetche that return lists of strings.
 type stringsIterator struct {
-	c       *Client
 	strings []string
 	token   pageToken
 	fetch   func(ctx context.Context, tok string) (*stringsPage, error)

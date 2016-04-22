@@ -25,7 +25,7 @@ const MaxPublishBatchSize = 1000
 
 // TopicHandle is a reference to a PubSub topic.
 type TopicHandle struct {
-	c *Client
+	s service
 
 	// The fully qualified identifier for the topic, in the format "projects/<projid>/topics/<name>"
 	name string
@@ -45,29 +45,34 @@ func (c *Client) NewTopic(ctx context.Context, name string) (*TopicHandle, error
 
 // Topic creates a reference to a topic.
 func (c *Client) Topic(name string) *TopicHandle {
-	return &TopicHandle{c: c, name: fmt.Sprintf("projects/%s/topics/%s", c.projectID, name)}
+	return &TopicHandle{s: c.s, name: fmt.Sprintf("projects/%s/topics/%s", c.projectID, name)}
 }
 
 // Topics returns an iterator which returns all of the topics for the client's project.
 func (c *Client) Topics() *Topics {
 	return &Topics{
-		c: c,
-		fetch: func(ctx context.Context, tok string) (*stringsPage, error) {
-			return c.s.listProjectTopics(ctx, c.fullyQualifiedProjectName(), tok)
+		s: c.s,
+		stringsIterator: stringsIterator{
+			fetch: func(ctx context.Context, tok string) (*stringsPage, error) {
+				return c.s.listProjectTopics(ctx, c.fullyQualifiedProjectName(), tok)
+			},
 		},
 	}
 }
 
 // Topics is an iterator that returns a series of topics.
-type Topics stringsIterator
+type Topics struct {
+	s service
+	stringsIterator
+}
 
 // Next returns the next topic. If there are no more topics, io.EOF will be returned.
 func (tps *Topics) Next(ctx context.Context) (*TopicHandle, error) {
-	topicName, err := (*stringsIterator)(tps).Next(ctx)
+	topicName, err := tps.stringsIterator.Next(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return &TopicHandle{c: tps.c, name: topicName}, nil
+	return &TopicHandle{s: tps.s, name: topicName}, nil
 }
 
 // All returns the remaining topics from this iterator.
@@ -92,7 +97,7 @@ func (t *TopicHandle) Name() string {
 
 // Delete deletes the topic.
 func (t *TopicHandle) Delete(ctx context.Context) error {
-	return t.c.s.deleteTopic(ctx, t.name)
+	return t.s.deleteTopic(ctx, t.name)
 }
 
 // Exists reports whether the topic exists on the server.
@@ -101,16 +106,20 @@ func (t *TopicHandle) Exists(ctx context.Context) (bool, error) {
 		return false, nil
 	}
 
-	return t.c.s.topicExists(ctx, t.name)
+	return t.s.topicExists(ctx, t.name)
 }
 
 // Subscriptions returns an iterator which returns the subscriptions for this topic.
 func (t *TopicHandle) Subscriptions() *Subscriptions {
+	// NOTE: zero or more SubscriptionHandles that are ultimately returned by this
+	// Subscriptions iterator may belong to a different project to t.
 	return &Subscriptions{
-		c: t.c,
-		fetch: func(ctx context.Context, tok string) (*stringsPage, error) {
+		s: t.s,
+		stringsIterator: stringsIterator{
+			fetch: func(ctx context.Context, tok string) (*stringsPage, error) {
 
-			return t.c.s.listTopicSubscriptions(ctx, t.name, tok)
+				return t.s.listTopicSubscriptions(ctx, t.name, tok)
+			},
 		},
 	}
 }
@@ -125,5 +134,5 @@ func (t *TopicHandle) Publish(ctx context.Context, msgs ...*Message) ([]string, 
 	if len(msgs) > MaxPublishBatchSize {
 		return nil, fmt.Errorf("pubsub: got %d messages, but maximum batch size is %d", len(msgs), MaxPublishBatchSize)
 	}
-	return t.c.s.publishMessages(ctx, t.name, msgs)
+	return t.s.publishMessages(ctx, t.name, msgs)
 }

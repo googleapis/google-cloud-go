@@ -44,7 +44,7 @@ type Iterator struct {
 // when it is no longer needed.
 // subName is the full name of the subscription to pull messages from.
 // ctx is the context to use for acking messages and extending message deadlines.
-func (c *Client) newIterator(ctx context.Context, subName string, po *pullOptions) *Iterator {
+func newIterator(ctx context.Context, s service, subName string, po *pullOptions) *Iterator {
 	// TODO: make kaTicker frequency more configurable.
 	// (ackDeadline - 5s) is a reasonable default for now, because the minimum ack period is 10s.  This gives us 5s grace.
 	keepAlivePeriod := po.ackDeadline - 5*time.Second
@@ -56,7 +56,7 @@ func (c *Client) newIterator(ctx context.Context, subName string, po *pullOption
 	ackTicker := time.NewTicker(keepAlivePeriod / 2) // Stopped in it.Stop
 
 	ka := &keepAlive{
-		Client:        c,
+		s:             s,
 		Ctx:           ctx,
 		Sub:           subName,
 		ExtensionTick: kaTicker.C,
@@ -65,14 +65,14 @@ func (c *Client) newIterator(ctx context.Context, subName string, po *pullOption
 	}
 
 	ack := &acker{
-		Client:  c,
+		s:       s,
 		Ctx:     ctx,
 		Sub:     subName,
 		AckTick: ackTicker.C,
 		Notify:  ka.Remove,
 	}
 
-	pull := newPuller(c, subName, ctx, int64(po.maxPrefetch), ka.Add, ka.Remove)
+	pull := newPuller(s, subName, ctx, int64(po.maxPrefetch), ka.Add, ka.Remove)
 
 	ka.Start()
 	ack.Start()

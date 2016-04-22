@@ -29,7 +29,6 @@ func TestKeepAlive(t *testing.T) {
 	tick := make(chan time.Time)
 	deadline := time.Nanosecond * 15
 	s := &testService{modDeadlineCalled: make(chan modDeadlineCall)}
-	c := &Client{projectID: "projid", s: s}
 
 	checkModDeadlineCall := func(ackIDs []string) {
 		got := <-s.modDeadlineCalled
@@ -47,7 +46,7 @@ func TestKeepAlive(t *testing.T) {
 	}
 
 	ka := &keepAlive{
-		Client:        c,
+		s:             s,
 		Ctx:           context.Background(),
 		Sub:           "subname",
 		ExtensionTick: tick,
@@ -81,10 +80,9 @@ func TestKeepAliveStop(t *testing.T) {
 	defer ticker.Stop()
 
 	s := &testService{modDeadlineCalled: make(chan modDeadlineCall, 100)}
-	c := &Client{projectID: "projid", s: s}
 
 	ka := &keepAlive{
-		Client:        c,
+		s:             s,
 		Ctx:           context.Background(),
 		ExtensionTick: ticker.C,
 		MaxExtension:  time.Hour,
@@ -135,11 +133,10 @@ func TestMaxExtensionDeadline(t *testing.T) {
 	defer ticker.Stop()
 
 	s := &testService{modDeadlineCalled: make(chan modDeadlineCall, 100)}
-	c := &Client{projectID: "projid", s: s}
 
 	maxExtension := time.Millisecond
 	ka := &keepAlive{
-		Client:        c,
+		s:             s,
 		Ctx:           context.Background(),
 		ExtensionTick: ticker.C,
 		MaxExtension:  maxExtension,
@@ -163,11 +160,10 @@ func TestMaxExtensionDeadline(t *testing.T) {
 
 func TestKeepAliveStopsWhenAllAckIDsRemoved(t *testing.T) {
 	s := &testService{}
-	c := &Client{projectID: "projid", s: s}
 
 	maxExtension := time.Millisecond
 	ka := &keepAlive{
-		Client:        c,
+		s:             s,
 		Ctx:           context.Background(),
 		ExtensionTick: make(chan time.Time),
 		MaxExtension:  maxExtension,
@@ -198,11 +194,10 @@ func TestKeepAliveStopsImmediatelyForNoAckIDs(t *testing.T) {
 	defer ticker.Stop()
 
 	s := &testService{modDeadlineCalled: make(chan modDeadlineCall, 100)}
-	c := &Client{projectID: "projid", s: s}
 
 	maxExtension := time.Millisecond
 	ka := &keepAlive{
-		Client:        c,
+		s:             s,
 		Ctx:           context.Background(),
 		ExtensionTick: ticker.C,
 		MaxExtension:  maxExtension,
@@ -309,11 +304,10 @@ func TestKeepAliveSplitsBatches(t *testing.T) {
 			calls: tc.calls,
 		}
 
-		c := &Client{projectID: "projid", s: s}
 		ka := &keepAlive{
-			Client: c,
-			Ctx:    context.Background(),
-			Sub:    "subname",
+			s:   s,
+			Ctx: context.Background(),
+			Sub: "subname",
 		}
 
 		ka.extendDeadlines([]string{"a", "b", "c", "d", "e", "f"})

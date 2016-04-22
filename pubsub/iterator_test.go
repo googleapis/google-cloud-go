@@ -59,9 +59,8 @@ func TestReturnsEOFOnStop(t *testing.T) {
 		},
 	} {
 		s := &blockingFetch{}
-		c := &Client{projectID: "projid", s: s}
 		ctx, cancel := context.WithCancel(context.Background())
-		it := c.newIterator(ctx, "subname", &pullOptions{ackDeadline: time.Second * 10, maxExtension: time.Hour})
+		it := newIterator(ctx, s, "subname", &pullOptions{ackDeadline: time.Second * 10, maxExtension: time.Hour})
 		defer it.Stop()
 		tc.abort(it, cancel)
 
@@ -147,7 +146,6 @@ func TestAfterAbortReturnsNoMoreThanOneMessage(t *testing.T) {
 			},
 		} {
 			s := &justInTimeFetch{}
-			c := &Client{projectID: "projid", s: s}
 			ctx, cancel := context.WithCancel(context.Background())
 
 			// if maxPrefetch == 1, there will be no messages in the puller buffer when Next is invoked the second time.
@@ -157,7 +155,7 @@ func TestAfterAbortReturnsNoMoreThanOneMessage(t *testing.T) {
 				maxExtension: time.Hour,
 				maxPrefetch:  n,
 			}
-			it := c.newIterator(ctx, "subname", po)
+			it := newIterator(ctx, s, "subname", po)
 			defer it.Stop()
 
 			type result struct {
@@ -212,10 +210,9 @@ func TestMultipleStopCallsBlockUntilMessageDone(t *testing.T) {
 			},
 		},
 	}
-	c := &Client{projectID: "projid", s: s}
 
 	ctx := context.Background()
-	it := c.newIterator(ctx, "subname", &pullOptions{ackDeadline: time.Second * 10, maxExtension: 0})
+	it := newIterator(ctx, s, "subname", &pullOptions{ackDeadline: time.Second * 10, maxExtension: 0})
 
 	m, err := it.Next()
 	if err != nil {

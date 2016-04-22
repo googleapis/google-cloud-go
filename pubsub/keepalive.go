@@ -25,7 +25,7 @@ import (
 // periodically extends them.
 // Messages are tracked by Ack ID.
 type keepAlive struct {
-	Client        *Client
+	s             service
 	Ctx           context.Context  // The context to use when extending deadlines.
 	Sub           string           // The full name of the subscription.
 	ExtensionTick <-chan time.Time // ExtenstionTick supplies the frequency with which to make extension requests.
@@ -122,10 +122,10 @@ func (ka *keepAlive) getAckIDs() (live, expired []string) {
 const maxExtensionAttempts = 2
 
 func (ka *keepAlive) extendDeadlines(ackIDs []string) {
-	head, tail := ka.Client.s.splitAckIDs(ackIDs)
+	head, tail := ka.s.splitAckIDs(ackIDs)
 	for len(head) > 0 {
 		for i := 0; i < maxExtensionAttempts; i++ {
-			if ka.Client.s.modifyAckDeadline(ka.Ctx, ka.Sub, ka.Deadline, head) == nil {
+			if ka.s.modifyAckDeadline(ka.Ctx, ka.Sub, ka.Deadline, head) == nil {
 				break
 			}
 		}
@@ -141,7 +141,7 @@ func (ka *keepAlive) extendDeadlines(ackIDs []string) {
 		//
 		// TODO: call Remove for ids which fail to be extended.
 
-		head, tail = ka.Client.s.splitAckIDs(tail)
+		head, tail = ka.s.splitAckIDs(tail)
 	}
 }
 

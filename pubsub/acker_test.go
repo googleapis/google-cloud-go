@@ -27,11 +27,10 @@ import (
 func TestAcker(t *testing.T) {
 	tick := make(chan time.Time)
 	s := &testService{acknowledgeCalled: make(chan acknowledgeCall)}
-	c := &Client{projectID: "projid", s: s}
 
 	processed := make(chan string, 10)
 	acker := &acker{
-		Client:  c,
+		s:       s,
 		Ctx:     context.Background(),
 		Sub:     "subname",
 		AckTick: tick,
@@ -78,11 +77,10 @@ func TestAcker(t *testing.T) {
 func TestAckerFastMode(t *testing.T) {
 	tick := make(chan time.Time)
 	s := &testService{acknowledgeCalled: make(chan acknowledgeCall)}
-	c := &Client{projectID: "projid", s: s}
 
 	processed := make(chan string, 10)
 	acker := &acker{
-		Client:  c,
+		s:       s,
 		Ctx:     context.Background(),
 		Sub:     "subname",
 		AckTick: tick,
@@ -129,11 +127,10 @@ func TestAckerFastMode(t *testing.T) {
 func TestAckerStop(t *testing.T) {
 	tick := make(chan time.Time)
 	s := &testService{acknowledgeCalled: make(chan acknowledgeCall, 10)}
-	c := &Client{projectID: "projid", s: s}
 
 	processed := make(chan string)
 	acker := &acker{
-		Client:  c,
+		s:       s,
 		Ctx:     context.Background(),
 		Sub:     "subname",
 		AckTick: tick,
@@ -249,9 +246,8 @@ func TestAckerSplitsBatches(t *testing.T) {
 			calls: tc.calls,
 		}
 
-		c := &Client{projectID: "projid", s: s}
 		acker := &acker{
-			Client: c,
+			s:      s,
 			Ctx:    context.Background(),
 			Sub:    "subname",
 			Notify: func(string) {},

@@ -58,11 +58,10 @@ func TestPuller(t *testing.T) {
 			},
 		},
 	}
-	c := &Client{projectID: "projid", s: s}
 
 	pulled := make(chan string, 10)
 
-	pull := newPuller(c, "subname", context.Background(), 2, func(ackID string) { pulled <- ackID }, func(string) {})
+	pull := newPuller(s, "subname", context.Background(), 2, func(ackID string) { pulled <- ackID }, func(string) {})
 
 	got := []string{}
 	for i := 0; i < 5; i++ {
@@ -94,11 +93,10 @@ func TestPullerAddsToKeepAlive(t *testing.T) {
 			},
 		},
 	}
-	c := &Client{projectID: "projid", s: s}
 
 	pulled := make(chan string, 10)
 
-	pull := newPuller(c, "subname", context.Background(), 2, func(ackID string) { pulled <- ackID }, func(string) {})
+	pull := newPuller(s, "subname", context.Background(), 2, func(ackID string) { pulled <- ackID }, func(string) {})
 
 	got := []string{}
 	for i := 0; i < 3; i++ {
@@ -139,9 +137,8 @@ func TestPullerRetriesOnce(t *testing.T) {
 			},
 		},
 	}
-	c := &Client{projectID: "projid", s: s}
 
-	pull := newPuller(c, "subname", context.Background(), 2, func(string) {}, func(string) {})
+	pull := newPuller(s, "subname", context.Background(), 2, func(string) {}, func(string) {})
 
 	_, err := pull.Next()
 	if err != bang {

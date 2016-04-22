@@ -31,7 +31,7 @@ const DefaultMaxPrefetch = 100
 
 // SubscriptionHandle is a reference to a PubSub subscription.
 type SubscriptionHandle struct {
-	c *Client
+	s service
 
 	// The fully qualified identifier for the subscription, in the format "projects/<projid>/subscriptions/<name>"
 	name string
@@ -40,37 +40,42 @@ type SubscriptionHandle struct {
 // Subscription creates a reference to a subscription.
 func (c *Client) Subscription(name string) *SubscriptionHandle {
 	return &SubscriptionHandle{
-		c:    c,
+		s:    c.s,
 		name: fmt.Sprintf("projects/%s/subscriptions/%s", c.projectID, name),
 	}
 }
 
 // Name returns the globally unique name for the subscription.
-func (s *SubscriptionHandle) Name() string {
-	return s.name
+func (sh *SubscriptionHandle) Name() string {
+	return sh.name
 }
 
 // Subscriptions returns an iterator which returns all of the subscriptions for the client's project.
 func (c *Client) Subscriptions() *Subscriptions {
 	return &Subscriptions{
-		c: c,
-		fetch: func(ctx context.Context, tok string) (*stringsPage, error) {
-			return c.s.listProjectSubscriptions(ctx, c.fullyQualifiedProjectName(), tok)
+		s: c.s,
+		stringsIterator: stringsIterator{
+			fetch: func(ctx context.Context, tok string) (*stringsPage, error) {
+				return c.s.listProjectSubscriptions(ctx, c.fullyQualifiedProjectName(), tok)
+			},
 		},
 	}
 }
 
 // Subscriptions is an iterator that returns a series of subscriptions.
-type Subscriptions stringsIterator
+type Subscriptions struct {
+	s service
+	stringsIterator
+}
 
 // Next returns the next subscription. If there are no more subscriptions, io.EOF will be returned.
 func (subs *Subscriptions) Next(ctx context.Context) (*SubscriptionHandle, error) {
-	subName, err := (*stringsIterator)(subs).Next(ctx)
+	subName, err := subs.stringsIterator.Next(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return &SubscriptionHandle{c: subs.c, name: subName}, nil
+	return &SubscriptionHandle{s: subs.s, name: subName}, nil
 }
 
 // All returns the remaining subscriptions from this iterator.
@@ -111,23 +116,23 @@ type SubscriptionConfig struct {
 }
 
 // Delete deletes the subscription.
-func (s *SubscriptionHandle) Delete(ctx context.Context) error {
-	return s.c.s.deleteSubscription(ctx, s.name)
+func (sh *SubscriptionHandle) Delete(ctx context.Context) error {
+	return sh.s.deleteSubscription(ctx, sh.name)
 }
 
 // Exists reports whether the subscription exists on the server.
-func (s *SubscriptionHandle) Exists(ctx context.Context) (bool, error) {
-	return s.c.s.subscriptionExists(ctx, s.name)
+func (sh *SubscriptionHandle) Exists(ctx context.Context) (bool, error) {
+	return sh.s.subscriptionExists(ctx, sh.name)
 }
 
 // Config fetches the current configuration for the subscription.
-func (s *SubscriptionHandle) Config(ctx context.Context) (*SubscriptionConfig, error) {
-	sub, topicName, err := s.c.s.getSubscriptionConfig(ctx, s.name)
+func (sh *SubscriptionHandle) Config(ctx context.Context) (*SubscriptionConfig, error) {
+	sub, topicName, err := sh.s.getSubscriptionConfig(ctx, sh.name)
 	if err != nil {
 		return nil, err
 	}
 	sub.Topic = &TopicHandle{
-		c:    s.c,
+		s:    sh.s,
 		name: topicName,
 	}
 	return sub, nil
@@ -142,23 +147,23 @@ func (s *SubscriptionHandle) Config(ctx context.Context) (*SubscriptionConfig, e
 // extensions will fail.
 //
 // The caller must call Stop on the Iterator once finished with it.
-func (s *SubscriptionHandle) Pull(ctx context.Context, opts ...PullOption) (*Iterator, error) {
-	config, err := s.Config(ctx)
+func (sh *SubscriptionHandle) Pull(ctx context.Context, opts ...PullOption) (*Iterator, error) {
+	config, err := sh.Config(ctx)
 	if err != nil {
 		return nil, err
 	}
 	po := processPullOptions(opts)
 	po.ackDeadline = config.AckDeadline
-	return s.c.newIterator(ctx, s.name, po), nil
+	return newIterator(ctx, sh.s, sh.name, po), nil
 }
 
 // ModifyPushConfig updates the endpoint URL and other attributes of a push subscription.
-func (s *SubscriptionHandle) ModifyPushConfig(ctx context.Context, conf *PushConfig) error {
+func (sh *SubscriptionHandle) ModifyPushConfig(ctx context.Context, conf *PushConfig) error {
 	if conf == nil {
 		return errors.New("must supply non-nil PushConfig")
 	}
 
-	return s.c.s.modifyPushConfig(ctx, s.name, conf)
+	return sh.s.modifyPushConfig(ctx, sh.name, conf)
 }
 
 // A PullOption is an optional argument to SubscriptionHandle.Pull.
