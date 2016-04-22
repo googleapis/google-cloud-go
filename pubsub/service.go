@@ -32,7 +32,7 @@ import (
 type service interface {
 	createSubscription(ctx context.Context, topicName, subName string, ackDeadline time.Duration, pushConfig *PushConfig) error
 	getSubscriptionConfig(ctx context.Context, subName string) (*SubscriptionConfig, string, error)
-	listProjectSubscriptions(ctx context.Context, projName string) ([]string, error)
+	listProjectSubscriptions(ctx context.Context, projName, pageTok string) (*stringsPage, error)
 	deleteSubscription(ctx context.Context, name string) error
 	subscriptionExists(ctx context.Context, name string) (bool, error)
 	modifyPushConfig(ctx context.Context, subName string, conf *PushConfig) error
@@ -40,8 +40,8 @@ type service interface {
 	createTopic(ctx context.Context, name string) error
 	deleteTopic(ctx context.Context, name string) error
 	topicExists(ctx context.Context, name string) (bool, error)
-	listProjectTopics(ctx context.Context, projName string) ([]string, error)
-	listTopicSubscriptions(ctx context.Context, topicName string) ([]string, error)
+	listProjectTopics(ctx context.Context, projName, pageTok string) (*stringsPage, error)
+	listTopicSubscriptions(ctx context.Context, topicName, pageTok string) (*stringsPage, error)
 
 	modifyAckDeadline(ctx context.Context, subName string, deadline time.Duration, ackIDs []string) error
 	fetchMessages(ctx context.Context, subName string, maxMessages int64) ([]*Message, error)
@@ -103,19 +103,22 @@ func (s *apiService) getSubscriptionConfig(ctx context.Context, subName string) 
 	return sub, rawSub.Topic, err
 }
 
-func (s *apiService) listProjectSubscriptions(ctx context.Context, projName string) ([]string, error) {
-	subs := []string{}
-	err := s.s.Projects.Subscriptions.List(projName).
-		Pages(ctx, func(res *raw.ListSubscriptionsResponse) error {
-			for _, s := range res.Subscriptions {
-				subs = append(subs, s.Name)
-			}
-			return nil
-		})
+// stringsPage contains a list of strings and a token for fetching the next page.
+type stringsPage struct {
+	strings []string
+	tok     string
+}
+
+func (s *apiService) listProjectSubscriptions(ctx context.Context, projName, pageTok string) (*stringsPage, error) {
+	resp, err := s.s.Projects.Subscriptions.List(projName).PageToken(pageTok).Context(ctx).Do()
 	if err != nil {
 		return nil, err
 	}
-	return subs, nil
+	subs := []string{}
+	for _, sub := range resp.Subscriptions {
+		subs = append(subs, sub.Name)
+	}
+	return &stringsPage{subs, resp.NextPageToken}, nil
 }
 
 func (s *apiService) deleteSubscription(ctx context.Context, name string) error {
@@ -142,19 +145,16 @@ func (s *apiService) createTopic(ctx context.Context, name string) error {
 	return err
 }
 
-func (s *apiService) listProjectTopics(ctx context.Context, projName string) ([]string, error) {
-	topics := []string{}
-	err := s.s.Projects.Topics.List(projName).
-		Pages(ctx, func(res *raw.ListTopicsResponse) error {
-			for _, topic := range res.Topics {
-				topics = append(topics, topic.Name)
-			}
-			return nil
-		})
+func (s *apiService) listProjectTopics(ctx context.Context, projName, pageTok string) (*stringsPage, error) {
+	resp, err := s.s.Projects.Topics.List(projName).PageToken(pageTok).Context(ctx).Do()
 	if err != nil {
 		return nil, err
 	}
-	return topics, nil
+	topics := []string{}
+	for _, topic := range resp.Topics {
+		topics = append(topics, topic.Name)
+	}
+	return &stringsPage{topics, resp.NextPageToken}, nil
 }
 
 func (s *apiService) deleteTopic(ctx context.Context, name string) error {
@@ -173,19 +173,16 @@ func (s *apiService) topicExists(ctx context.Context, name string) (bool, error)
 	return false, err
 }
 
-func (s *apiService) listTopicSubscriptions(ctx context.Context, topicName string) ([]string, error) {
-	subs := []string{}
-	err := s.s.Projects.Topics.Subscriptions.List(topicName).
-		Pages(ctx, func(res *raw.ListTopicSubscriptionsResponse) error {
-			for _, s := range res.Subscriptions {
-				subs = append(subs, s)
-			}
-			return nil
-		})
+func (s *apiService) listTopicSubscriptions(ctx context.Context, topicName, pageTok string) (*stringsPage, error) {
+	resp, err := s.s.Projects.Topics.Subscriptions.List(topicName).PageToken(pageTok).Context(ctx).Do()
 	if err != nil {
 		return nil, err
 	}
-	return subs, nil
+	subs := []string{}
+	for _, sub := range resp.Subscriptions {
+		subs = append(subs, sub)
+	}
+	return &stringsPage{subs, resp.NextPageToken}, nil
 }
 
 func (s *apiService) modifyAckDeadline(ctx context.Context, subName string, deadline time.Duration, ackIDs []string) error {

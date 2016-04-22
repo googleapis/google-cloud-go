@@ -22,6 +22,7 @@ package pubsub // import "google.golang.org/cloud/pubsub"
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	raw "google.golang.org/api/pubsub/v1"
@@ -85,4 +86,53 @@ func baseAddr() string {
 		return "http://" + host + "/"
 	}
 	return prodAddr
+}
+
+// pageToken stores the next page token for a server response which is split over multiple pages.
+type pageToken struct {
+	tok      string
+	explicit bool
+}
+
+func (pt *pageToken) set(tok string) {
+	pt.tok = tok
+	pt.explicit = true
+}
+
+func (pt *pageToken) get() string {
+	return pt.tok
+}
+
+// more returns whether further pages should be fetched from the server.
+func (pt *pageToken) more() bool {
+	return pt.tok != "" || !pt.explicit
+}
+
+// stringsIterator provides an iterator API for a sequence of API page fetche that return lists of strings.
+type stringsIterator struct {
+	c       *Client
+	strings []string
+	token   pageToken
+	fetch   func(ctx context.Context, tok string) (*stringsPage, error)
+}
+
+// Next returns the next string. If there are no more strings, io.EOF will be returned.
+func (si *stringsIterator) Next(ctx context.Context) (string, error) {
+	for len(si.strings) == 0 && si.token.more() {
+		page, err := si.fetch(ctx, si.token.get())
+		if err != nil {
+			return "", err
+		}
+		si.token.set(page.tok)
+		si.strings = page.strings
+	}
+
+	if len(si.strings) == 0 {
+		return "", io.EOF
+	}
+
+	s := si.strings[0]
+	si.strings = si.strings[1:]
+
+	return s, nil
 }

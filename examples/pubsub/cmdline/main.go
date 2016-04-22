@@ -83,7 +83,7 @@ func createTopic(client *pubsub.Client, argv []string) {
 
 func listTopics(client *pubsub.Client, argv []string) {
 	checkArgs(argv, 1)
-	topics, err := client.Topics(context.Background())
+	topics, err := client.Topics().All(context.Background())
 	if err != nil {
 		log.Fatalf("Listing topics failed: %v", err)
 	}
@@ -95,7 +95,7 @@ func listTopics(client *pubsub.Client, argv []string) {
 func listTopicSubscriptions(client *pubsub.Client, argv []string) {
 	checkArgs(argv, 2)
 	topic := argv[1]
-	subs, err := client.Topic(topic).Subscriptions(context.Background())
+	subs, err := client.Topic(topic).Subscriptions().All(context.Background())
 	if err != nil {
 		log.Fatalf("Listing subscriptions failed: %v", err)
 	}
@@ -174,7 +174,7 @@ func deleteSubscription(client *pubsub.Client, argv []string) {
 
 func listSubscriptions(client *pubsub.Client, argv []string) {
 	checkArgs(argv, 1)
-	subs, err := client.Subscriptions(context.Background())
+	subs, err := client.Subscriptions().All(context.Background())
 	if err != nil {
 		log.Fatalf("Listing subscriptions failed: %v", err)
 	}

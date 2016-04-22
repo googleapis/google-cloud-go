@@ -16,6 +16,7 @@ package pubsub
 
 import (
 	"fmt"
+	"io"
 
 	"golang.org/x/net/context"
 )
@@ -47,18 +48,41 @@ func (c *Client) Topic(name string) *TopicHandle {
 	return &TopicHandle{c: c, name: fmt.Sprintf("projects/%s/topics/%s", c.projectID, name)}
 }
 
-// Topics lists all of the topics for the client's project.
-func (c *Client) Topics(ctx context.Context) ([]*TopicHandle, error) {
-	topicNames, err := c.s.listProjectTopics(ctx, c.fullyQualifiedProjectName())
+// Topics returns an iterator which returns all of the topics for the client's project.
+func (c *Client) Topics() *Topics {
+	return &Topics{
+		c: c,
+		fetch: func(ctx context.Context, tok string) (*stringsPage, error) {
+			return c.s.listProjectTopics(ctx, c.fullyQualifiedProjectName(), tok)
+		},
+	}
+}
+
+// Topics is an iterator that returns a series of topics.
+type Topics stringsIterator
+
+// Next returns the next topic. If there are no more topics, io.EOF will be returned.
+func (tps *Topics) Next(ctx context.Context) (*TopicHandle, error) {
+	topicName, err := (*stringsIterator)(tps).Next(ctx)
 	if err != nil {
 		return nil, err
 	}
+	return &TopicHandle{c: tps.c, name: topicName}, nil
+}
 
-	topics := []*TopicHandle{}
-	for _, t := range topicNames {
-		topics = append(topics, &TopicHandle{c: c, name: t})
+// All returns the remaining topics from this iterator.
+func (tps *Topics) All(ctx context.Context) ([]*TopicHandle, error) {
+	var ths []*TopicHandle
+	for {
+		switch th, err := tps.Next(ctx); err {
+		case nil:
+			ths = append(ths, th)
+		case io.EOF:
+			return ths, nil
+		default:
+			return nil, err
+		}
 	}
-	return topics, nil
 }
 
 // Name returns the globally unique name for the topic.
@@ -80,18 +104,15 @@ func (t *TopicHandle) Exists(ctx context.Context) (bool, error) {
 	return t.c.s.topicExists(ctx, t.name)
 }
 
-// Subscriptions lists the subscriptions for this topic.
-func (t *TopicHandle) Subscriptions(ctx context.Context) ([]*SubscriptionHandle, error) {
-	subNames, err := t.c.s.listTopicSubscriptions(ctx, t.name)
-	if err != nil {
-		return nil, err
-	}
+// Subscriptions returns an iterator which returns the subscriptions for this topic.
+func (t *TopicHandle) Subscriptions() *Subscriptions {
+	return &Subscriptions{
+		c: t.c,
+		fetch: func(ctx context.Context, tok string) (*stringsPage, error) {
 
-	subs := []*SubscriptionHandle{}
-	for _, s := range subNames {
-		subs = append(subs, &SubscriptionHandle{c: t.c, name: s})
+			return t.c.s.listTopicSubscriptions(ctx, t.name, tok)
+		},
 	}
-	return subs, nil
 }
 
 // Publish publishes the supplied Messages to the topic.

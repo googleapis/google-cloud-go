@@ -17,6 +17,7 @@ package pubsub
 import (
 	"errors"
 	"fmt"
+	"io"
 	"time"
 
 	"golang.org/x/net/context"
@@ -49,18 +50,42 @@ func (s *SubscriptionHandle) Name() string {
 	return s.name
 }
 
-// Subscriptions lists all of the subscriptions for the client's project.
-func (c *Client) Subscriptions(ctx context.Context) ([]*SubscriptionHandle, error) {
-	subNames, err := c.s.listProjectSubscriptions(ctx, c.fullyQualifiedProjectName())
+// Subscriptions returns an iterator which returns all of the subscriptions for the client's project.
+func (c *Client) Subscriptions() *Subscriptions {
+	return &Subscriptions{
+		c: c,
+		fetch: func(ctx context.Context, tok string) (*stringsPage, error) {
+			return c.s.listProjectSubscriptions(ctx, c.fullyQualifiedProjectName(), tok)
+		},
+	}
+}
+
+// Subscriptions is an iterator that returns a series of subscriptions.
+type Subscriptions stringsIterator
+
+// Next returns the next subscription. If there are no more subscriptions, io.EOF will be returned.
+func (subs *Subscriptions) Next(ctx context.Context) (*SubscriptionHandle, error) {
+	subName, err := (*stringsIterator)(subs).Next(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	subs := []*SubscriptionHandle{}
-	for _, s := range subNames {
-		subs = append(subs, &SubscriptionHandle{c: c, name: s})
+	return &SubscriptionHandle{c: subs.c, name: subName}, nil
+}
+
+// All returns the remaining subscriptions from this iterator.
+func (subs *Subscriptions) All(ctx context.Context) ([]*SubscriptionHandle, error) {
+	var shs []*SubscriptionHandle
+	for {
+		switch sh, err := subs.Next(ctx); err {
+		case nil:
+			shs = append(shs, sh)
+		case io.EOF:
+			return shs, nil
+		default:
+			return nil, err
+		}
 	}
-	return subs, nil
 }
 
 // PushConfig contains configuration for subscriptions that operate in push mode.
