@@ -15,61 +15,63 @@
 package pubsub_test
 
 import (
-	"io/ioutil"
 	"log"
 
 	"golang.org/x/net/context"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
-	"google.golang.org/cloud"
 	"google.golang.org/cloud/pubsub"
 )
 
-func Example_auth() context.Context {
-	// Initialize an authorized context with Google Developers Console
-	// JSON key. Read the google package examples to learn more about
-	// different authorization flows you can use.
-	// http://godoc.org/golang.org/x/oauth2/google
-	jsonKey, err := ioutil.ReadFile("/path/to/json/keyfile.json")
+func Example_createClient(ctx context.Context) *pubsub.Client {
+	client, err := pubsub.NewClient(ctx, "project-id")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("new client:", err)
 	}
-	conf, err := google.JWTConfigFromJSON(
-		jsonKey,
-		pubsub.ScopeCloudPlatform,
-		pubsub.ScopePubSub,
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	ctx := cloud.NewContext("project-id", conf.Client(oauth2.NoContext))
-	// See the other samples to learn how to use the context.
-	return ctx
+
+	// See the other examples to learn how to use the Client.
+	return client
 }
 
-func ExamplePublish() {
-	ctx := Example_auth()
+func ExampleTopicHandle_Publish() {
+	ctx := context.Background()
+	client := Example_createClient(ctx)
 
-	msgIDs, err := pubsub.Publish(ctx, "topic1", &pubsub.Message{
+	topic := client.Topic("topicName")
+	msgIDs, err := topic.Publish(ctx, &pubsub.Message{
 		Data: []byte("hello world"),
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("Published a message with a message id: %s\n", msgIDs[0])
+	log.Printf("Published a message with a message ID: %s\n", msgIDs[0])
 }
 
-func ExamplePull() {
-	ctx := Example_auth()
+func ExampleSubscriptionHandle_Pull() {
+	ctx := context.Background()
+	client := Example_createClient(ctx)
 
-	// E.g. c.CreateSub("sub1", "topic1", time.Duration(0), "")
-	msgs, err := pubsub.Pull(ctx, "sub1", 1)
+	sub := client.Subscription("subName")
+	it, err := sub.Pull(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("New message arrived: %v\n", msgs[0])
-	if err := pubsub.Ack(ctx, "sub1", msgs[0].AckID); err != nil {
-		log.Fatal(err)
+
+	// Ensure that the iterator is closed down cleanly.
+	defer it.Stop()
+
+	// Consume 10 messages.
+	for i := 0; i < 10; i++ {
+		m, err := it.Next()
+		if err == pubsub.Done {
+			// There are no more messages.  This will happen if it.Stop is called.
+			break
+		}
+		if err != nil {
+			log.Fatalf("advancing iterator: %v", err)
+			break
+		}
+		log.Printf("message %d: %s\n", i, m.Data)
+
+		// Acknowledge the message.
+		m.Done(true)
 	}
-	log.Println("Acknowledged message")
 }
