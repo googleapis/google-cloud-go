@@ -446,7 +446,16 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 	if err := applyConds("Delete", o.conds, call); err != nil {
 		return err
 	}
-	return call.Do()
+	err := call.Do()
+	switch e := err.(type) {
+	case nil:
+		return nil
+	case *googleapi.Error:
+		if e.Code == http.StatusNotFound {
+			return ErrObjectNotExist
+		}
+	}
+	return err
 }
 
 // CopyTo copies the object to the given dst.

@@ -449,6 +449,10 @@ func TestObjects(t *testing.T) {
 	if err := bkt.Object(copyName).Delete(ctx); err != nil {
 		t.Errorf("Deletion of %v failed with %v", copyName, err)
 	}
+	// Deleting it a second time should return ErrObjectNotExist.
+	if err := bkt.Object(copyName).Delete(ctx); err != ErrObjectNotExist {
+		t.Errorf("second deletion of %v = %v; want ErrObjectNotExist", copyName, err)
+	}
 	_, err = bkt.Object(copyName).Attrs(ctx)
 	if err != ErrObjectNotExist {
 		t.Errorf("Copy is expected to be deleted, stat errored with %v", err)
