@@ -18,7 +18,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"os/signal"
@@ -71,7 +70,7 @@ func main() {
 
 	for i := 0; i < *numConsume; i++ {
 		m, err := it.Next()
-		if err == io.EOF {
+		if err == pubsub.Done {
 			break
 		}
 		if err != nil {

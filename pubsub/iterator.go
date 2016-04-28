@@ -15,12 +15,15 @@
 package pubsub
 
 import (
-	"io"
+	"errors"
 	"sync"
 	"time"
 
 	"golang.org/x/net/context"
 )
+
+// Done is returned when an iteration is complete.
+var Done = errors.New("no more messages")
 
 type Iterator struct {
 	// kaTicker controls how often we send an ack deadline extension request.
@@ -86,9 +89,9 @@ func newIterator(ctx context.Context, s service, subName string, po *pullOptions
 	}
 }
 
-// Next returns the next Message to be processed.  The caller must call Done on
-// the returned Message when finished with it.
-// Once Stop has been called, calls to Next will return io.EOF.
+// Next returns the next Message to be processed.  The caller must call
+// Message.Done when finished with it.
+// Once Stop has been called, calls to Next will return Done.
 func (it *Iterator) Next() (*Message, error) {
 	m, err := it.puller.Next()
 
@@ -98,9 +101,9 @@ func (it *Iterator) Next() (*Message, error) {
 	}
 
 	select {
-	// If Stop has been called, we return EOF regardless the value of err.
+	// If Stop has been called, we return Done regardless the value of err.
 	case <-it.closed:
-		return nil, io.EOF
+		return nil, Done
 	default:
 		return nil, err
 	}
@@ -124,7 +127,7 @@ func (it *Iterator) Stop() {
 	}
 
 	// We close this channel before calling it.puller.Stop to ensure that we
-	// reliably return EOF from Next.
+	// reliably return Done from Next.
 	close(it.closed)
 
 	// Stop the puller. Once this completes, no more messages will be added

@@ -16,7 +16,6 @@ package pubsub
 
 import (
 	"fmt"
-	"io"
 
 	"golang.org/x/net/context"
 )
@@ -66,7 +65,7 @@ type Topics struct {
 	stringsIterator
 }
 
-// Next returns the next topic. If there are no more topics, io.EOF will be returned.
+// Next returns the next topic. If there are no more topics, Done will be returned.
 func (tps *Topics) Next(ctx context.Context) (*TopicHandle, error) {
 	topicName, err := tps.stringsIterator.Next(ctx)
 	if err != nil {
@@ -82,7 +81,7 @@ func (tps *Topics) All(ctx context.Context) ([]*TopicHandle, error) {
 		switch th, err := tps.Next(ctx); err {
 		case nil:
 			ths = append(ths, th)
-		case io.EOF:
+		case Done:
 			return ths, nil
 		default:
 			return nil, err

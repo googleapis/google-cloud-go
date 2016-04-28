@@ -16,7 +16,6 @@ package pubsub
 
 import (
 	"fmt"
-	"io"
 	"reflect"
 	"testing"
 	"time"
@@ -24,7 +23,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-func TestReturnsEOFOnStop(t *testing.T) {
+func TestReturnsDoneOnStop(t *testing.T) {
 	type testCase struct {
 		abort func(*Iterator, context.CancelFunc)
 		want  error
@@ -35,7 +34,7 @@ func TestReturnsEOFOnStop(t *testing.T) {
 			abort: func(it *Iterator, cancel context.CancelFunc) {
 				it.Stop()
 			},
-			want: io.EOF,
+			want: Done,
 		},
 		{
 			abort: func(it *Iterator, cancel context.CancelFunc) {
@@ -48,14 +47,14 @@ func TestReturnsEOFOnStop(t *testing.T) {
 				it.Stop()
 				cancel()
 			},
-			want: io.EOF,
+			want: Done,
 		},
 		{
 			abort: func(it *Iterator, cancel context.CancelFunc) {
 				cancel()
 				it.Stop()
 			},
-			want: io.EOF,
+			want: Done,
 		},
 	} {
 		s := &blockingFetch{}
@@ -122,7 +121,7 @@ func TestAfterAbortReturnsNoMoreThanOneMessage(t *testing.T) {
 				abort: func(it *Iterator, cancel context.CancelFunc) {
 					it.Stop()
 				},
-				want: io.EOF,
+				want: Done,
 			},
 			{
 				abort: func(it *Iterator, cancel context.CancelFunc) {
@@ -135,14 +134,14 @@ func TestAfterAbortReturnsNoMoreThanOneMessage(t *testing.T) {
 					it.Stop()
 					cancel()
 				},
-				want: io.EOF,
+				want: Done,
 			},
 			{
 				abort: func(it *Iterator, cancel context.CancelFunc) {
 					cancel()
 					it.Stop()
 				},
-				want: io.EOF,
+				want: Done,
 			},
 		} {
 			s := &justInTimeFetch{}
@@ -242,7 +241,7 @@ func TestMultipleStopCallsBlockUntilMessageDone(t *testing.T) {
 	if m != nil {
 		t.Errorf("message got: %v ; want: nil", m)
 	}
-	if err != io.EOF {
-		t.Errorf("err got: %v ; want: io.EOF", err)
+	if err != Done {
+		t.Errorf("err got: %v ; want: %v", err, Done)
 	}
 }

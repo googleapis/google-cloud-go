@@ -17,7 +17,6 @@ package pubsub
 import (
 	"errors"
 	"fmt"
-	"io"
 	"time"
 
 	"golang.org/x/net/context"
@@ -68,7 +67,7 @@ type Subscriptions struct {
 	stringsIterator
 }
 
-// Next returns the next subscription. If there are no more subscriptions, io.EOF will be returned.
+// Next returns the next subscription. If there are no more subscriptions, Done will be returned.
 func (subs *Subscriptions) Next(ctx context.Context) (*SubscriptionHandle, error) {
 	subName, err := subs.stringsIterator.Next(ctx)
 	if err != nil {
@@ -85,7 +84,7 @@ func (subs *Subscriptions) All(ctx context.Context) ([]*SubscriptionHandle, erro
 		switch sh, err := subs.Next(ctx); err {
 		case nil:
 			shs = append(shs, sh)
-		case io.EOF:
+		case Done:
 			return shs, nil
 		default:
 			return nil, err

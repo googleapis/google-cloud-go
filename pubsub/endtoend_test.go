@@ -16,7 +16,6 @@ package pubsub
 
 import (
 	"fmt"
-	"io"
 	"math/rand"
 	"reflect"
 	"sync"
@@ -54,7 +53,7 @@ func (mc *messageCounter) Inc(msgID string) {
 func process(t *testing.T, it *Iterator, mc *messageCounter) {
 	for {
 		m, err := it.Next()
-		if err == io.EOF {
+		if err == Done {
 			return
 		}
 

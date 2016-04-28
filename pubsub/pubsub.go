@@ -22,7 +22,6 @@ package pubsub // import "google.golang.org/cloud/pubsub"
 
 import (
 	"fmt"
-	"io"
 	"os"
 
 	raw "google.golang.org/api/pubsub/v1"
@@ -115,7 +114,7 @@ type stringsIterator struct {
 	fetch   func(ctx context.Context, tok string) (*stringsPage, error)
 }
 
-// Next returns the next string. If there are no more strings, io.EOF will be returned.
+// Next returns the next string. If there are no more strings, Done will be returned.
 func (si *stringsIterator) Next(ctx context.Context) (string, error) {
 	for len(si.strings) == 0 && si.token.more() {
 		page, err := si.fetch(ctx, si.token.get())
@@ -127,7 +126,7 @@ func (si *stringsIterator) Next(ctx context.Context) (string, error) {
 	}
 
 	if len(si.strings) == 0 {
-		return "", io.EOF
+		return "", Done
 	}
 
 	s := si.strings[0]
