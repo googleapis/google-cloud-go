@@ -17,11 +17,12 @@ The commands are:
 	deletefamily              Delete a column family
 	deleterow                 Delete a row
 	deletetable               Delete a table
-	doc                       Print documentation for cbt
+	doc                       Print godoc-suitable documentation for cbt
 	help                      Print help text
 	listclusters              List clusters in a project
 	lookup                    Read from a single row
 	ls                        List tables and column families
+	mddoc                     Print documentation for cbt in Markdown format
 	read                      Read rows
 	set                       Set value of a cell
 	setgcpolicy               Set the GC policy for a column family
@@ -77,7 +78,7 @@ Usage:
 
 
 
-Print documentation for cbt
+Print godoc-suitable documentation for cbt
 
 Usage:
 	cbt doc
@@ -114,6 +115,14 @@ List tables and column families
 Usage:
 	cbt ls			List tables
 	cbt ls <table>		List column families in <table>
+
+
+
+
+Print documentation for cbt in Markdown format
+
+Usage:
+	cbt mddoc
 
 
 

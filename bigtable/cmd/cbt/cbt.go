@@ -198,7 +198,7 @@ var commands = []struct {
 	},
 	{
 		Name:  "doc",
-		Desc:  "Print documentation for cbt",
+		Desc:  "Print godoc-suitable documentation for cbt",
 		do:    doDoc,
 		Usage: "cbt doc",
 	},
@@ -226,6 +226,12 @@ var commands = []struct {
 		do:   doLS,
 		Usage: "cbt ls			List tables\n" +
 			"cbt ls <table>		List column families in <table>",
+	},
+	{
+		Name:  "mddoc",
+		Desc:  "Print documentation for cbt in Markdown format",
+		do:    doMDDoc,
+		Usage: "cbt mddoc",
 	},
 	{
 		Name: "read",
@@ -338,17 +344,20 @@ func doDeleteTable(ctx context.Context, args ...string) {
 
 // to break circular dependencies
 var (
-	doDocFn  func(ctx context.Context, args ...string)
-	doHelpFn func(ctx context.Context, args ...string)
+	doDocFn   func(ctx context.Context, args ...string)
+	doHelpFn  func(ctx context.Context, args ...string)
+	doMDDocFn func(ctx context.Context, args ...string)
 )
 
 func init() {
 	doDocFn = doDocReal
 	doHelpFn = doHelpReal
+	doMDDocFn = doMDDocReal
 }
 
-func doDoc(ctx context.Context, args ...string)  { doDocFn(ctx, args...) }
-func doHelp(ctx context.Context, args ...string) { doHelpFn(ctx, args...) }
+func doDoc(ctx context.Context, args ...string)   { doDocFn(ctx, args...) }
+func doHelp(ctx context.Context, args ...string)  { doHelpFn(ctx, args...) }
+func doMDDoc(ctx context.Context, args ...string) { doMDDocFn(ctx, args...) }
 
 func doDocReal(ctx context.Context, args ...string) {
 	data := map[string]interface{}{
@@ -365,14 +374,16 @@ func doDocReal(ctx context.Context, args ...string) {
 	os.Stdout.Write(out)
 }
 
+func indentLines(s, ind string) string {
+	ss := strings.Split(s, "\n")
+	for i, p := range ss {
+		ss[i] = ind + p
+	}
+	return strings.Join(ss, "\n")
+}
+
 var docTemplate = template.Must(template.New("doc").Funcs(template.FuncMap{
-	"indent": func(s, ind string) string {
-		ss := strings.Split(s, "\n")
-		for i, p := range ss {
-			ss[i] = ind + p
-		}
-		return strings.Join(ss, "\n")
-	},
+	"indent": indentLines,
 }).
 	Parse(`
 // DO NOT EDIT. THIS IS AUTOMATICALLY GENERATED.
@@ -500,6 +511,43 @@ func doLS(ctx context.Context, args ...string) {
 		}
 	}
 }
+
+func doMDDocReal(ctx context.Context, args ...string) {
+	data := map[string]interface{}{
+		"Commands": commands,
+	}
+	var buf bytes.Buffer
+	if err := mddocTemplate.Execute(&buf, data); err != nil {
+		log.Fatalf("Bad mddoc template: %v", err)
+	}
+	io.Copy(os.Stdout, &buf)
+}
+
+var mddocTemplate = template.Must(template.New("mddoc").Funcs(template.FuncMap{
+	"indent": indentLines,
+}).
+	Parse(`
+Cbt is a tool for doing basic interactions with Cloud Bigtable.
+
+Usage:
+
+	cbt [options] command [arguments]
+
+The commands are:
+{{range .Commands}}
+	{{printf "%-25s %s" .Name .Desc}}{{end}}
+
+Use "cbt help <command>" for more information about a command.
+
+{{range .Commands}}
+## {{.Desc}}
+
+{{indent .Usage "\t"}}
+
+
+
+{{end}}
+`))
 
 func doRead(ctx context.Context, args ...string) {
 	if len(args) < 1 {
