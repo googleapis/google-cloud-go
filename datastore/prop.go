@@ -29,9 +29,8 @@ const maxIndexedProperties = 5000
 const maxBlobLen = 1 << 20
 
 // Property is a name/value pair plus some metadata. A datastore entity's
-// contents are loaded and saved as a sequence of Properties. An entity can
-// have multiple Properties with the same name, provided that p.Multiple is
-// true on all of that entity's Properties with that name.
+// contents are loaded and saved as a sequence of Properties. Each property
+// name must be unique within an entity.
 type Property struct {
 	// Name is the property name.
 	Name string
