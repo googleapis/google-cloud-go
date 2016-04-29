@@ -65,6 +65,9 @@ func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption
 	}
 
 	s, err := newPubSubService(httpClient, endpoint)
+	if err != nil {
+		return nil, fmt.Errorf("constructing pubsub client: %v", err)
+	}
 
 	c := &Client{
 		projectID: projectID,

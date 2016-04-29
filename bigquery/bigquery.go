@@ -18,11 +18,15 @@ package bigquery
 
 import (
 	"fmt"
-	"net/http"
+
+	"google.golang.org/cloud"
+	"google.golang.org/cloud/internal/transport"
 
 	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 )
+
+const prodAddr = "https://www.googleapis.com/bigquery/v2/"
 
 // A Source is a source of data for the Copy function.
 type Source interface {
@@ -50,6 +54,7 @@ type ReadOption interface {
 }
 
 const Scope = "https://www.googleapis.com/auth/bigquery"
+const userAgent = "gcloud-golang-bigquery/20160429"
 
 // Client may be used to perform BigQuery operations.
 type Client struct {
@@ -57,20 +62,27 @@ type Client struct {
 	projectID string
 }
 
-// Note: many of the methods on *Client appear in the various *_op.go source files.
-
 // NewClient constructs a new Client which can perform BigQuery operations.
 // Operations performed via the client are billed to the specified GCP project.
-// The supplied http.Client is used for making requests to the BigQuery server and must be capable of
-// authenticating requests with Scope.
-func NewClient(client *http.Client, projectID string) (*Client, error) {
-	bqService, err := newBigqueryService(client)
+func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption) (*Client, error) {
+	o := []cloud.ClientOption{
+		cloud.WithEndpoint(prodAddr),
+		cloud.WithScopes(Scope),
+		cloud.WithUserAgent(userAgent),
+	}
+	o = append(o, opts...)
+	httpClient, endpoint, err := transport.NewHTTPClient(ctx, o...)
+	if err != nil {
+		return nil, fmt.Errorf("dialing: %v", err)
+	}
+
+	s, err := newBigqueryService(httpClient, endpoint)
 	if err != nil {
 		return nil, fmt.Errorf("constructing bigquery client: %v", err)
 	}
 
 	c := &Client{
-		service:   bqService,
+		service:   s,
 		projectID: projectID,
 	}
 	return c, nil

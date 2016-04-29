@@ -26,7 +26,6 @@ import (
 	"text/tabwriter"
 
 	"golang.org/x/net/context"
-	"golang.org/x/oauth2/google"
 	"google.golang.org/cloud/bigquery"
 )
 
@@ -38,11 +37,11 @@ var (
 		" If set, --dataset, --table will be ignored, and results will be read from the specified job.")
 )
 
-func printValues(it *bigquery.Iterator) {
+func printValues(ctx context.Context, it *bigquery.Iterator) {
 	// one-space padding.
 	tw := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
 
-	for it.Next(context.Background()) {
+	for it.Next(ctx) {
 		var vals bigquery.ValueList
 		if err := it.Get(&vals); err != nil {
 			fmt.Printf("err calling get: %v\n", err)
@@ -63,30 +62,30 @@ func printValues(it *bigquery.Iterator) {
 	}
 }
 
-func printTable(client *bigquery.Client, t *bigquery.Table) {
-	it, err := client.Read(context.Background(), t)
+func printTable(ctx context.Context, client *bigquery.Client, t *bigquery.Table) {
+	it, err := client.Read(ctx, t)
 	if err != nil {
 		log.Fatalf("Reading: %v", err)
 	}
 
 	id := t.FullyQualifiedName()
 	fmt.Printf("%s\n%s\n", id, strings.Repeat("-", len(id)))
-	printValues(it)
+	printValues(ctx, it)
 }
 
-func printQueryResults(client *bigquery.Client, queryJobID string) {
-	job, err := client.JobFromID(context.Background(), queryJobID)
+func printQueryResults(ctx context.Context, client *bigquery.Client, queryJobID string) {
+	job, err := client.JobFromID(ctx, queryJobID)
 	if err != nil {
 		log.Fatalf("Loading job: %v", err)
 	}
 
-	it, err := client.Read(context.Background(), job)
+	it, err := client.Read(ctx, job)
 	if err != nil {
 		log.Fatalf("Reading: %v", err)
 	}
 
 	// TODO: print schema.
-	printValues(it)
+	printValues(ctx, it)
 }
 
 func main() {
@@ -114,24 +113,20 @@ func main() {
 		os.Exit(1)
 	}
 
+	ctx := context.Background()
 	tableRE, err := regexp.Compile(*table)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "--table is not a valid regular expression: %q\n", *table)
 		os.Exit(1)
 	}
 
-	httpClient, err := google.DefaultClient(context.Background(), bigquery.Scope)
-	if err != nil {
-		log.Fatalf("Creating http client: %v", err)
-	}
-
-	client, err := bigquery.NewClient(httpClient, *project)
+	client, err := bigquery.NewClient(ctx, *project)
 	if err != nil {
 		log.Fatalf("Creating bigquery client: %v", err)
 	}
 
 	if *jobID != "" {
-		printQueryResults(client, *jobID)
+		printQueryResults(ctx, client, *jobID)
 		return
 	}
 	ds := client.Dataset(*dataset)
@@ -142,7 +137,7 @@ func main() {
 	}
 	for _, t := range tables {
 		if tableRE.MatchString(t.TableID) {
-			printTable(client, t)
+			printTable(ctx, client, t)
 		}
 	}
 }

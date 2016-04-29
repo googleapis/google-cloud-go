@@ -58,11 +58,12 @@ type bigqueryService struct {
 	s *bq.Service
 }
 
-func newBigqueryService(client *http.Client) (*bigqueryService, error) {
+func newBigqueryService(client *http.Client, endpoint string) (*bigqueryService, error) {
 	s, err := bq.New(client)
 	if err != nil {
 		return nil, fmt.Errorf("constructing bigquery client: %v", err)
 	}
+	s.BasePath = endpoint
 
 	return &bigqueryService{s: s}, nil
 }

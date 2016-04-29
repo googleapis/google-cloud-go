@@ -24,7 +24,6 @@ import (
 	"time"
 
 	"golang.org/x/net/context"
-	"golang.org/x/oauth2/google"
 	"google.golang.org/cloud/bigquery"
 )
 
@@ -52,12 +51,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	httpClient, err := google.DefaultClient(context.Background(), bigquery.Scope)
-	if err != nil {
-		log.Fatalf("Creating http client: %v", err)
-	}
-
-	client, err := bigquery.NewClient(httpClient, *project)
+	ctx := context.Background()
+	client, err := bigquery.NewClient(ctx, *project)
 	if err != nil {
 		log.Fatalf("Creating bigquery client: %v", err)
 	}
@@ -73,7 +68,7 @@ func main() {
 
 	// Load data from Google Cloud Storage into a BigQuery table.
 	job, err := client.Copy(
-		context.Background(), table, gcs,
+		ctx, table, gcs,
 		bigquery.MaxBadRecords(1),
 		bigquery.AllowQuotedNewlines(),
 		bigquery.WriteTruncate)
@@ -86,7 +81,7 @@ func main() {
 	fmt.Printf("Waiting for job to complete.\n")
 
 	for range time.Tick(*pollint) {
-		status, err := job.Status(context.Background())
+		status, err := job.Status(ctx)
 		if err != nil {
 			fmt.Printf("Failure determining status: %v", err)
 			break

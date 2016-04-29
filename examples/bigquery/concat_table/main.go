@@ -24,7 +24,6 @@ import (
 	"time"
 
 	"golang.org/x/net/context"
-	"golang.org/x/oauth2/google"
 	"google.golang.org/cloud/bigquery"
 )
 
@@ -54,12 +53,8 @@ func main() {
 		log.Fatalf("Different values must be supplied for each of --src1, --src2 and --dest")
 	}
 
-	httpClient, err := google.DefaultClient(context.Background(), bigquery.Scope)
-	if err != nil {
-		log.Fatalf("Creating http client: %v", err)
-	}
-
-	client, err := bigquery.NewClient(httpClient, *project)
+	ctx := context.Background()
+	client, err := bigquery.NewClient(ctx, *project)
 	if err != nil {
 		log.Fatalf("Creating bigquery client: %v", err)
 	}
@@ -83,7 +78,7 @@ func main() {
 	}
 
 	// Concatenate data.
-	job, err := client.Copy(context.Background(), d, bigquery.Tables{s1, s2}, bigquery.WriteTruncate)
+	job, err := client.Copy(ctx, d, bigquery.Tables{s1, s2}, bigquery.WriteTruncate)
 
 	if err != nil {
 		log.Fatalf("Concatenating: %v", err)
@@ -93,7 +88,7 @@ func main() {
 	fmt.Printf("Waiting for job to complete.\n")
 
 	for range time.Tick(*pollint) {
-		status, err := job.Status(context.Background())
+		status, err := job.Status(ctx)
 		if err != nil {
 			fmt.Printf("Failure determining status: %v", err)
 			break
