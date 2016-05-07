@@ -302,5 +302,4 @@ Example code:
 		fmt.Printf("Count=%d\n", count)
 	}
 */
-
 package datastore // import "google.golang.org/cloud/datastore"
