@@ -7,9 +7,12 @@
        origin is https://code.googlesource.com/gocloud:
 
             git remote set-url origin https://code.googlesource.com/gocloud
+1. Make sure your auth is configured correctly by visiting
+   https://code.googlesource.com, clicking "Generate Password", and following
+   the directions.
 1. Make changes and create a change by running `git codereview change <name>`,
-provide a command message, and use `git codereview mail` to create a Gerrit CL.
-1. Keep amending to the change and mail as your recieve feedback.
+provide a commit message, and use `git codereview mail` to create a Gerrit CL.
+1. Keep amending to the change and mail as your receive feedback.
 
 ## Integration Tests
 
