@@ -139,7 +139,7 @@ func (sh *SubscriptionHandle) Config(ctx context.Context) (*SubscriptionConfig, 
 
 // Pull returns an Iterator that can be used to fetch Messages. The Iterator
 // will automatically extend the ack deadline of all fetched Messages, for the
-// period specified by DefaultMaxExtension. This may be overriden by supplying
+// period specified by DefaultMaxExtension. This may be overridden by supplying
 // a MaxExtension pull option.
 //
 // If ctx is cancelled or exceeds its deadline, outstanding acks or deadline

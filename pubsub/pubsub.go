@@ -110,7 +110,7 @@ func (pt *pageToken) more() bool {
 	return pt.tok != "" || !pt.explicit
 }
 
-// stringsIterator provides an iterator API for a sequence of API page fetche that return lists of strings.
+// stringsIterator provides an iterator API for a sequence of API page fetches that return lists of strings.
 type stringsIterator struct {
 	strings []string
 	token   pageToken
