@@ -35,9 +35,6 @@ found in `datastore/testdata/index.yaml`:
 From the project's root directory:
 
 ``` sh
-# Install the app component
-$ gcloud components update app
-
 # Set the default project in your env
 $ gcloud config set project $GCLOUD_TESTS_GOLANG_PROJECT_ID
 
