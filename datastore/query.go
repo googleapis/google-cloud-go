@@ -658,6 +658,7 @@ func (t *Iterator) next() (*Key, *pb.Entity, error) {
 			return nil, nil, t.err
 		}
 		t.res = *resp
+		b = t.res.GetBatch()
 		if b.SkippedResults != 0 {
 			t.err = errors.New("datastore: internal error: iterator has skipped results")
 			return nil, nil, t.err

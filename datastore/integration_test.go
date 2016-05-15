@@ -361,6 +361,71 @@ func TestFilters(t *testing.T) {
 	})
 }
 
+func TestLargeQuery(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	ctx := context.Background()
+	client := newClient(ctx, t)
+	defer client.Close()
+
+	parent := NewKey(ctx, "LQParent", "TestFilters"+suffix, 0, nil)
+	now := time.Now().Truncate(time.Millisecond).Unix()
+
+	// Make a large number of children entities.
+	const n = 800
+	children := make([]*SQChild, 0, n)
+	keys := make([]*Key, 0, n)
+	for i := 0; i < n; i++ {
+		children = append(children, &SQChild{I: i, T: now, U: now})
+		keys = append(keys, NewIncompleteKey(ctx, "LQChild", parent))
+	}
+
+	// Store using PutMulti in batches.
+	const batchSize = 500
+	for i := 0; i < n; i = i + 500 {
+		j := i + batchSize
+		if j > n {
+			j = n
+		}
+		fullKeys, err := client.PutMulti(ctx, keys[i:j], children[i:j])
+		if err != nil {
+			t.Fatalf("PutMulti(%d, %d): %v", i, j, err)
+		}
+		defer func() {
+			err := client.DeleteMulti(ctx, fullKeys)
+			if err != nil {
+				t.Errorf("client.DeleteMulti: %v", err)
+			}
+		}()
+	}
+
+	// Load all the entities.
+	q := NewQuery("LQChild").Ancestor(parent).Filter("T=", now)
+	var got []SQChild
+	_, err := client.GetAll(ctx, q, &got)
+	if err != nil {
+		t.Fatalf("client.GetAll: %v", err)
+	}
+
+	if len(got) != n {
+		t.Errorf("GetAll returned %d entities, want %d", len(got), n)
+	}
+	sort.Sort(byI(got))
+	for i, child := range got {
+		if child.I != i {
+			// Only print first mismatch.
+			t.Fatalf("got[%d].I = %d; want %d", i, child.I, i)
+		}
+	}
+}
+
+type byI []SQChild
+
+func (b byI) Len() int           { return len(b) }
+func (b byI) Less(x, y int) bool { return b[x].I < b[y].I }
+func (b byI) Swap(x, y int)      { b[x], b[y] = b[y], b[x] }
+
 func TestEventualConsistency(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
