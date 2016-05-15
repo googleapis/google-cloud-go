@@ -543,8 +543,13 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		return nil, ErrObjectNotExist
 	}
 	if res.StatusCode < 200 || res.StatusCode > 299 {
+		body, _ := ioutil.ReadAll(res.Body)
 		res.Body.Close()
-		return nil, fmt.Errorf("storage: can't read object %v/%v, status code: %v", o.bucket, o.object, res.Status)
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+			Body:   string(body),
+		}
 	}
 	if offset > 0 && length != 0 && res.StatusCode != http.StatusPartialContent {
 		res.Body.Close()

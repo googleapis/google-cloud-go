@@ -33,6 +33,7 @@ import (
 
 	"golang.org/x/net/context"
 
+	"google.golang.org/api/googleapi"
 	"google.golang.org/cloud"
 	"google.golang.org/cloud/internal/testutil"
 )
@@ -316,6 +317,24 @@ func TestObjects(t *testing.T) {
 	}
 
 	objName := objects[0]
+
+	// Test NewReader googleapi.Error.
+	// Since a 429 or 5xx is hard to cause, we trigger a 416.
+	realLen := len(contents[objName])
+	_, err = bkt.Object(objName).NewRangeReader(ctx, int64(realLen*2), 10)
+	if err, ok := err.(*googleapi.Error); !ok {
+		t.Error("NewRangeReader did not return a googleapi.Error")
+	} else {
+		if err.Code != 416 {
+			t.Errorf("Code = %d; want %d", err.Code, 416)
+		}
+		if len(err.Header) == 0 {
+			t.Error("Missing googleapi.Error.Header")
+		}
+		if len(err.Body) == 0 {
+			t.Error("Missing googleapi.Error.Body")
+		}
+	}
 
 	// Test StatObject.
 	o, err := bkt.Object(objName).Attrs(ctx)
