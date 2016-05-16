@@ -19,7 +19,7 @@ Package bttest contains test helpers for working with the bigtable package.
 
 To use a Server, create it, and then connect to it with no security:
 (The project/zone/cluster values are ignored.)
-	srv, err := bttest.NewServer()
+	srv, err := bttest.NewServer("127.0.0.1:0")
 	...
 	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
 	...
@@ -75,10 +75,11 @@ type server struct {
 	btspb.BigtableServiceServer
 }
 
-// NewServer creates a new Server. The Server will be listening for gRPC connections
-// at the address named by the Addr field, without TLS.
-func NewServer() (*Server, error) {
-	l, err := net.Listen("tcp", "127.0.0.1:0")
+// NewServer creates a new Server.
+// The Server will be listening for gRPC connections, without TLS,
+// on the provided address. The resolved address is named by the Addr field.
+func NewServer(laddr string) (*Server, error) {
+	l, err := net.Listen("tcp", laddr)
 	if err != nil {
 		return nil, err
 	}

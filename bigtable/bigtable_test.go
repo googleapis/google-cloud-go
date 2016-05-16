@@ -180,7 +180,7 @@ func TestClientIntegration(t *testing.T) {
 	var clientOpts []cloud.ClientOption
 	timeout := 10 * time.Second
 	if *useProd == "" {
-		srv, err := bttest.NewServer()
+		srv, err := bttest.NewServer("127.0.0.1:0")
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -13,7 +13,7 @@ import (
 )
 
 func TestAdminIntegration(t *testing.T) {
-	srv, err := bttest.NewServer()
+	srv, err := bttest.NewServer("127.0.0.1:0")
 	if err != nil {
 		t.Fatal(err)
 	}
