@@ -47,7 +47,7 @@ type demo struct {
 	bucket *storage.BucketHandle
 	client *storage.Client
 
-	w   http.ResponseWriter
+	w   io.Writer
 	ctx context.Context
 	// cleanUp is a list of filenames that need cleaning up at the end of the demo.
 	cleanUp []string
@@ -59,6 +59,7 @@ type demo struct {
 
 func (d *demo) errorf(format string, args ...interface{}) {
 	d.failed = true
+	fmt.Fprintln(d.w, fmt.Sprintf(format, args...))
 	log.Errorf(d.ctx, format, args...)
 }
 
@@ -68,6 +69,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
+
 	//[START get_default_bucket]
 	ctx := appengine.NewContext(r)
 	if bucket == "" {
@@ -81,7 +83,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	client, err := storage.NewClient(ctx)
 	if err != nil {
-		log.Errorf(ctx, "failed to get default GCS bucket name: %v", err)
+		log.Errorf(ctx, "failed to create client: %v", err)
 		return
 	}
 	defer client.Close()
@@ -117,9 +119,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	d.deleteFiles()
 
 	if d.failed {
-		io.WriteString(w, "\nDemo failed.\n")
+		w.WriteHeader(http.StatusInternalServerError)
+		buf.WriteTo(w)
+		fmt.Fprintf(w, "\nDemo failed.\n")
 	} else {
-		io.WriteString(w, "\nDemo succeeded.\n")
+		w.WriteHeader(http.StatusOK)
+		buf.WriteTo(w)
+		fmt.Fprintf(w, "\nDemo succeeded.\n")
 	}
 }
 
