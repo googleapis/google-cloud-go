@@ -92,8 +92,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Demo GCS Application running from Version: %v\n", appengine.VersionID(ctx))
 	fmt.Fprintf(w, "Using bucket name: %v\n\n", bucket)
 
+	buf := bytes.NewBuffer(nil)
 	d := &demo{
-		w:      w,
+		w:      buf,
 		ctx:    ctx,
 		client: client,
 		bucket: client.Bucket(bucket),
