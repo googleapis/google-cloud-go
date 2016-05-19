@@ -50,8 +50,8 @@ func (sh *SubscriptionHandle) Name() string {
 }
 
 // Subscriptions returns an iterator which returns all of the subscriptions for the client's project.
-func (c *Client) Subscriptions() *Subscriptions {
-	return &Subscriptions{
+func (c *Client) Subscriptions() *SubscriptionIterator {
+	return &SubscriptionIterator{
 		s: c.s,
 		stringsIterator: stringsIterator{
 			fetch: func(ctx context.Context, tok string) (*stringsPage, error) {
@@ -61,14 +61,14 @@ func (c *Client) Subscriptions() *Subscriptions {
 	}
 }
 
-// Subscriptions is an iterator that returns a series of subscriptions.
-type Subscriptions struct {
+// SubscriptionIterator is an iterator that returns a series of subscriptions.
+type SubscriptionIterator struct {
 	s service
 	stringsIterator
 }
 
 // Next returns the next subscription. If there are no more subscriptions, Done will be returned.
-func (subs *Subscriptions) Next(ctx context.Context) (*SubscriptionHandle, error) {
+func (subs *SubscriptionIterator) Next(ctx context.Context) (*SubscriptionHandle, error) {
 	subName, err := subs.stringsIterator.Next(ctx)
 	if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ func (subs *Subscriptions) Next(ctx context.Context) (*SubscriptionHandle, error
 }
 
 // All returns the remaining subscriptions from this iterator.
-func (subs *Subscriptions) All(ctx context.Context) ([]*SubscriptionHandle, error) {
+func (subs *SubscriptionIterator) All(ctx context.Context) ([]*SubscriptionHandle, error) {
 	var shs []*SubscriptionHandle
 	for {
 		switch sh, err := subs.Next(ctx); err {
