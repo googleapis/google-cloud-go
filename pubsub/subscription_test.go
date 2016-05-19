@@ -65,6 +65,21 @@ func (s *subListService) listTopicSubscriptions(ctx context.Context, topicName, 
 	return s.listSubs(pageTok)
 }
 
+// All returns the remaining subscriptions from this iterator.
+func slurpSubs(ctx context.Context, subs *SubscriptionIterator) ([]*SubscriptionHandle, error) {
+	var shs []*SubscriptionHandle
+	for {
+		switch sh, err := subs.Next(ctx); err {
+		case nil:
+			shs = append(shs, sh)
+		case Done:
+			return shs, nil
+		default:
+			return nil, err
+		}
+	}
+}
+
 func TestListProjectSubscriptions(t *testing.T) {
 	calls := []subListCall{
 		{
@@ -79,7 +94,7 @@ func TestListProjectSubscriptions(t *testing.T) {
 	}
 	s := &subListService{calls: calls, t: t}
 	c := &Client{projectID: "projid", s: s}
-	subs, err := c.Subscriptions().All(context.Background())
+	subs, err := slurpSubs(context.Background(), c.Subscriptions())
 	if err != nil {
 		t.Errorf("error listing subscriptions: %v", err)
 	}
@@ -107,7 +122,7 @@ func TestListTopicSubscriptions(t *testing.T) {
 	}
 	s := &subListService{calls: calls, t: t}
 	c := &Client{projectID: "projid", s: s}
-	subs, err := c.Topic("topic").Subscriptions().All(context.Background())
+	subs, err := slurpSubs(context.Background(), c.Topic("topic").Subscriptions())
 	if err != nil {
 		t.Errorf("error listing subscriptions: %v", err)
 	}

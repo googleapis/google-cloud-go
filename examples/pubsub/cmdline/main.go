@@ -82,25 +82,35 @@ func createTopic(client *pubsub.Client, argv []string) {
 }
 
 func listTopics(client *pubsub.Client, argv []string) {
+	ctx := context.Background()
 	checkArgs(argv, 1)
-	topics, err := client.Topics().All(context.Background())
-	if err != nil {
-		log.Fatalf("Listing topics failed: %v", err)
-	}
-	for _, t := range topics {
-		fmt.Println(t.Name())
+	topics := client.Topics()
+	for {
+		switch topic, err := topics.Next(ctx); err {
+		case nil:
+			fmt.Println(topic.Name())
+		case pubsub.Done:
+			return
+		default:
+			log.Fatalf("Listing topics failed: %v", err)
+		}
 	}
 }
 
 func listTopicSubscriptions(client *pubsub.Client, argv []string) {
+	ctx := context.Background()
 	checkArgs(argv, 2)
 	topic := argv[1]
-	subs, err := client.Topic(topic).Subscriptions().All(context.Background())
-	if err != nil {
-		log.Fatalf("Listing subscriptions failed: %v", err)
-	}
-	for _, s := range subs {
-		fmt.Println(s.Name())
+	subs := client.Topic(topic).Subscriptions()
+	for {
+		switch sub, err := subs.Next(ctx); err {
+		case nil:
+			fmt.Println(sub.Name())
+		case pubsub.Done:
+			return
+		default:
+			log.Fatalf("Listing subscriptions failed: %v", err)
+		}
 	}
 }
 
@@ -173,13 +183,18 @@ func deleteSubscription(client *pubsub.Client, argv []string) {
 }
 
 func listSubscriptions(client *pubsub.Client, argv []string) {
+	ctx := context.Background()
 	checkArgs(argv, 1)
-	subs, err := client.Subscriptions().All(context.Background())
-	if err != nil {
-		log.Fatalf("Listing subscriptions failed: %v", err)
-	}
-	for _, s := range subs {
-		fmt.Println(s.Name())
+	subs := client.Subscriptions()
+	for {
+		switch sub, err := subs.Next(ctx); err {
+		case nil:
+			fmt.Println(sub.Name())
+		case pubsub.Done:
+			return
+		default:
+			log.Fatalf("Listing subscriptions failed: %v", err)
+		}
 	}
 }
 

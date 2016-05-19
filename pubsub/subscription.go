@@ -77,21 +77,6 @@ func (subs *SubscriptionIterator) Next(ctx context.Context) (*SubscriptionHandle
 	return &SubscriptionHandle{s: subs.s, name: subName}, nil
 }
 
-// All returns the remaining subscriptions from this iterator.
-func (subs *SubscriptionIterator) All(ctx context.Context) ([]*SubscriptionHandle, error) {
-	var shs []*SubscriptionHandle
-	for {
-		switch sh, err := subs.Next(ctx); err {
-		case nil:
-			shs = append(shs, sh)
-		case Done:
-			return shs, nil
-		default:
-			return nil, err
-		}
-	}
-}
-
 // PushConfig contains configuration for subscriptions that operate in push mode.
 type PushConfig struct {
 	// A URL locating the endpoint to which messages should be pushed.

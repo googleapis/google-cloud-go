@@ -74,21 +74,6 @@ func (tps *TopicIterator) Next(ctx context.Context) (*TopicHandle, error) {
 	return &TopicHandle{s: tps.s, name: topicName}, nil
 }
 
-// All returns the remaining topics from this iterator.
-func (tps *TopicIterator) All(ctx context.Context) ([]*TopicHandle, error) {
-	var ths []*TopicHandle
-	for {
-		switch th, err := tps.Next(ctx); err {
-		case nil:
-			ths = append(ths, th)
-		case Done:
-			return ths, nil
-		default:
-			return nil, err
-		}
-	}
-}
-
 // Name returns the globally unique name for the topic.
 func (t *TopicHandle) Name() string {
 	return t.name
