@@ -112,15 +112,16 @@ func (pt *pageToken) more() bool {
 
 // stringsIterator provides an iterator API for a sequence of API page fetches that return lists of strings.
 type stringsIterator struct {
+	ctx     context.Context
 	strings []string
 	token   pageToken
 	fetch   func(ctx context.Context, tok string) (*stringsPage, error)
 }
 
 // Next returns the next string. If there are no more strings, Done will be returned.
-func (si *stringsIterator) Next(ctx context.Context) (string, error) {
+func (si *stringsIterator) Next() (string, error) {
 	for len(si.strings) == 0 && si.token.more() {
-		page, err := si.fetch(ctx, si.token.get())
+		page, err := si.fetch(si.ctx, si.token.get())
 		if err != nil {
 			return "", err
 		}

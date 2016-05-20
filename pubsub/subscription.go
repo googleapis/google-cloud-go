@@ -50,10 +50,11 @@ func (sh *SubscriptionHandle) Name() string {
 }
 
 // Subscriptions returns an iterator which returns all of the subscriptions for the client's project.
-func (c *Client) Subscriptions() *SubscriptionIterator {
+func (c *Client) Subscriptions(ctx context.Context) *SubscriptionIterator {
 	return &SubscriptionIterator{
 		s: c.s,
 		stringsIterator: stringsIterator{
+			ctx: ctx,
 			fetch: func(ctx context.Context, tok string) (*stringsPage, error) {
 				return c.s.listProjectSubscriptions(ctx, c.fullyQualifiedProjectName(), tok)
 			},
@@ -68,8 +69,8 @@ type SubscriptionIterator struct {
 }
 
 // Next returns the next subscription. If there are no more subscriptions, Done will be returned.
-func (subs *SubscriptionIterator) Next(ctx context.Context) (*SubscriptionHandle, error) {
-	subName, err := subs.stringsIterator.Next(ctx)
+func (subs *SubscriptionIterator) Next() (*SubscriptionHandle, error) {
+	subName, err := subs.stringsIterator.Next()
 	if err != nil {
 		return nil, err
 	}

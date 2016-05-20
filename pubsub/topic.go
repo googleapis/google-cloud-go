@@ -48,10 +48,11 @@ func (c *Client) Topic(name string) *TopicHandle {
 }
 
 // Topics returns an iterator which returns all of the topics for the client's project.
-func (c *Client) Topics() *TopicIterator {
+func (c *Client) Topics(ctx context.Context) *TopicIterator {
 	return &TopicIterator{
 		s: c.s,
 		stringsIterator: stringsIterator{
+			ctx: ctx,
 			fetch: func(ctx context.Context, tok string) (*stringsPage, error) {
 				return c.s.listProjectTopics(ctx, c.fullyQualifiedProjectName(), tok)
 			},
@@ -66,8 +67,8 @@ type TopicIterator struct {
 }
 
 // Next returns the next topic. If there are no more topics, Done will be returned.
-func (tps *TopicIterator) Next(ctx context.Context) (*TopicHandle, error) {
-	topicName, err := tps.stringsIterator.Next(ctx)
+func (tps *TopicIterator) Next() (*TopicHandle, error) {
+	topicName, err := tps.stringsIterator.Next()
 	if err != nil {
 		return nil, err
 	}
@@ -94,12 +95,13 @@ func (t *TopicHandle) Exists(ctx context.Context) (bool, error) {
 }
 
 // Subscriptions returns an iterator which returns the subscriptions for this topic.
-func (t *TopicHandle) Subscriptions() *SubscriptionIterator {
+func (t *TopicHandle) Subscriptions(ctx context.Context) *SubscriptionIterator {
 	// NOTE: zero or more SubscriptionHandles that are ultimately returned by this
 	// Subscriptions iterator may belong to a different project to t.
 	return &SubscriptionIterator{
 		s: t.s,
 		stringsIterator: stringsIterator{
+			ctx: ctx,
 			fetch: func(ctx context.Context, tok string) (*stringsPage, error) {
 
 				return t.s.listTopicSubscriptions(ctx, t.name, tok)

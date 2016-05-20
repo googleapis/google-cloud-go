@@ -84,9 +84,9 @@ func createTopic(client *pubsub.Client, argv []string) {
 func listTopics(client *pubsub.Client, argv []string) {
 	ctx := context.Background()
 	checkArgs(argv, 1)
-	topics := client.Topics()
+	topics := client.Topics(ctx)
 	for {
-		switch topic, err := topics.Next(ctx); err {
+		switch topic, err := topics.Next(); err {
 		case nil:
 			fmt.Println(topic.Name())
 		case pubsub.Done:
@@ -101,9 +101,9 @@ func listTopicSubscriptions(client *pubsub.Client, argv []string) {
 	ctx := context.Background()
 	checkArgs(argv, 2)
 	topic := argv[1]
-	subs := client.Topic(topic).Subscriptions()
+	subs := client.Topic(topic).Subscriptions(ctx)
 	for {
-		switch sub, err := subs.Next(ctx); err {
+		switch sub, err := subs.Next(); err {
 		case nil:
 			fmt.Println(sub.Name())
 		case pubsub.Done:
@@ -185,9 +185,9 @@ func deleteSubscription(client *pubsub.Client, argv []string) {
 func listSubscriptions(client *pubsub.Client, argv []string) {
 	ctx := context.Background()
 	checkArgs(argv, 1)
-	subs := client.Subscriptions()
+	subs := client.Subscriptions(ctx)
 	for {
-		switch sub, err := subs.Next(ctx); err {
+		switch sub, err := subs.Next(); err {
 		case nil:
 			fmt.Println(sub.Name())
 		case pubsub.Done:

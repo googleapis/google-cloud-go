@@ -52,7 +52,7 @@ func (s *topicListService) listProjectTopics(ctx context.Context, projName, page
 func checkTopicListing(t *testing.T, calls []topicListCall, want []string) {
 	s := &topicListService{calls: calls, t: t}
 	c := &Client{projectID: "projid", s: s}
-	topics, err := slurpTopics(context.Background(), c.Topics())
+	topics, err := slurpTopics(c.Topics(context.Background()))
 	if err != nil {
 		t.Errorf("error listing topics: %v", err)
 	}
@@ -66,10 +66,10 @@ func checkTopicListing(t *testing.T, calls []topicListCall, want []string) {
 }
 
 // All returns the remaining topics from this iterator.
-func slurpTopics(ctx context.Context, tps *TopicIterator) ([]*TopicHandle, error) {
+func slurpTopics(tps *TopicIterator) ([]*TopicHandle, error) {
 	var ths []*TopicHandle
 	for {
-		switch th, err := tps.Next(ctx); err {
+		switch th, err := tps.Next(); err {
 		case nil:
 			ths = append(ths, th)
 		case Done:
