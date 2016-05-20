@@ -508,29 +508,15 @@ func applyMutations(tbl *table, r *row, muts []*btdpb.Mutation) error {
 			}
 			ts := set.TimestampMicros
 			if ts == -1 { // bigtable.ServerTime
-				ts = time.Now().UnixNano() / 1e3
-				ts -= ts % 1000 // round to millisecond granularity
+				ts = newTimestamp()
 			}
 			if !tbl.validTimestamp(ts) {
 				return fmt.Errorf("invalid timestamp %d", ts)
 			}
 			col := fmt.Sprintf("%s:%s", set.FamilyName, set.ColumnQualifier)
 
-			cs := r.cells[col]
 			newCell := cell{ts: ts, value: set.Value}
-			replaced := false
-			for i, cell := range cs {
-				if cell.ts == newCell.ts {
-					cs[i] = newCell
-					replaced = true
-					break
-				}
-			}
-			if !replaced {
-				cs = append(cs, newCell)
-			}
-			sort.Sort(byDescTS(cs))
-			r.cells[col] = cs
+			r.cells[col] = appendOrReplaceCell(r.cells[col], newCell)
 		case *btdpb.Mutation_DeleteFromColumn_:
 			del := mut.DeleteFromColumn
 			col := fmt.Sprintf("%s:%s", del.FamilyName, del.ColumnQualifier)
@@ -573,6 +559,35 @@ func applyMutations(tbl *table, r *row, muts []*btdpb.Mutation) error {
 	return nil
 }
 
+func maxTimestamp(x, y int64) int64 {
+	if x > y {
+		return x
+	}
+	return y
+}
+
+func newTimestamp() int64 {
+	ts := time.Now().UnixNano() / 1e3
+	ts -= ts % 1000 // round to millisecond granularity
+	return ts
+}
+
+func appendOrReplaceCell(cs []cell, newCell cell) []cell {
+	replaced := false
+	for i, cell := range cs {
+		if cell.ts == newCell.ts {
+			cs[i] = newCell
+			replaced = true
+			break
+		}
+	}
+	if !replaced {
+		cs = append(cs, newCell)
+	}
+	sort.Sort(byDescTS(cs))
+	return cs
+}
+
 func (s *server) ReadModifyWriteRow(ctx context.Context, req *btspb.ReadModifyWriteRowRequest) (*btdpb.Row, error) {
 	s.mu.Lock()
 	tbl, ok := s.tables[req.TableName]
@@ -598,34 +613,40 @@ func (s *server) ReadModifyWriteRow(ctx context.Context, req *btspb.ReadModifyWr
 
 		key := fmt.Sprintf("%s:%s", rule.FamilyName, rule.ColumnQualifier)
 
-		newCell := false
-		if len(r.cells[key]) == 0 {
-			r.cells[key] = []cell{{
-			// TODO(dsymonds): should this set a timestamp?
-			}}
-			newCell = true
+		cells := r.cells[key]
+		ts := newTimestamp()
+		var newCell, prevCell cell
+		isEmpty := len(cells) == 0
+		if !isEmpty {
+			prevCell = cells[0]
+
+			// ts is the max of now or the prev cell's timestamp in case the
+			// prev cell is in the future
+			ts = maxTimestamp(ts, prevCell.ts)
 		}
-		cell := &r.cells[key][0]
 
 		switch rule := rule.Rule.(type) {
 		default:
 			return nil, fmt.Errorf("unknown RMW rule oneof %T", rule)
 		case *btdpb.ReadModifyWriteRule_AppendValue:
-			cell.value = append(cell.value, rule.AppendValue...)
+			newCell = cell{ts: ts, value: append(prevCell.value, rule.AppendValue...)}
 		case *btdpb.ReadModifyWriteRule_IncrementAmount:
 			var v int64
-			if !newCell {
-				if len(cell.value) != 8 {
+			if !isEmpty {
+				prevVal := prevCell.value
+				if len(prevVal) != 8 {
 					return nil, fmt.Errorf("increment on non-64-bit value")
 				}
-				v = int64(binary.BigEndian.Uint64(cell.value))
+				v = int64(binary.BigEndian.Uint64(prevVal))
 			}
+
 			v += rule.IncrementAmount
 			var val [8]byte
 			binary.BigEndian.PutUint64(val[:], uint64(v))
-			cell.value = val[:]
+			newCell = cell{ts: ts, value: val[:]}
 		}
-		updates[key] = *cell
+		updates[key] = newCell
+		r.cells[key] = appendOrReplaceCell(r.cells[key], newCell)
 	}
 
 	res := &btdpb.Row{
