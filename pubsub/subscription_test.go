@@ -66,14 +66,14 @@ func (s *subListService) listTopicSubscriptions(ctx context.Context, topicName, 
 }
 
 // All returns the remaining subscriptions from this iterator.
-func slurpSubs(subs *SubscriptionIterator) ([]*SubscriptionHandle, error) {
-	var shs []*SubscriptionHandle
+func slurpSubs(it *SubscriptionIterator) ([]*Subscription, error) {
+	var subs []*Subscription
 	for {
-		switch sh, err := subs.Next(); err {
+		switch sub, err := it.Next(); err {
 		case nil:
-			shs = append(shs, sh)
+			subs = append(subs, sub)
 		case Done:
-			return shs, nil
+			return subs, nil
 		default:
 			return nil, err
 		}
@@ -136,11 +136,11 @@ func TestListTopicSubscriptions(t *testing.T) {
 	}
 }
 
-func subNames(shs []*SubscriptionHandle) []string {
+func subNames(subs []*Subscription) []string {
 	var names []string
 
-	for _, sh := range shs {
-		names = append(names, sh.name)
+	for _, sub := range subs {
+		names = append(names, sub.name)
 
 	}
 	return names
