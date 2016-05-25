@@ -42,7 +42,7 @@ func CreateTopic(ctx context.Context, name string) error {
 
 // DeleteTopic deletes the specified topic.
 //
-// Deprecated: Use Topic.Delete instead.
+// Deprecated: Use TopicHandle.Delete instead.
 func DeleteTopic(ctx context.Context, name string) error {
 	_, err := rawService(ctx).Projects.Topics.Delete(fullTopicName(internal.ProjID(ctx), name)).Do()
 	return err
@@ -50,7 +50,7 @@ func DeleteTopic(ctx context.Context, name string) error {
 
 // TopicExists returns true if a topic exists with the specified name.
 //
-// Deprecated: Use Topic.Exists instead.
+// Deprecated: Use TopicHandle.Exists instead.
 func TopicExists(ctx context.Context, name string) (bool, error) {
 	_, err := rawService(ctx).Projects.Topics.Get(fullTopicName(internal.ProjID(ctx), name)).Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
@@ -64,7 +64,7 @@ func TopicExists(ctx context.Context, name string) (bool, error) {
 
 // DeleteSub deletes the subscription.
 //
-// Deprecated: Use Subscription.Delete instead.
+// Deprecated: Use SubscriptionHandle.Delete instead.
 func DeleteSub(ctx context.Context, name string) error {
 	_, err := rawService(ctx).Projects.Subscriptions.Delete(fullSubName(internal.ProjID(ctx), name)).Do()
 	return err
@@ -72,7 +72,7 @@ func DeleteSub(ctx context.Context, name string) error {
 
 // SubExists returns true if subscription exists.
 //
-// Deprecated: Use Subscription.Exists instead.
+// Deprecated: Use SubscriptionHandle.Exists instead.
 func SubExists(ctx context.Context, name string) (bool, error) {
 	_, err := rawService(ctx).Projects.Subscriptions.Get(fullSubName(internal.ProjID(ctx), name)).Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
@@ -198,7 +198,7 @@ func isSec(dur time.Duration) bool {
 // Publish publishes messages to the topic's subscribers. It returns
 // message IDs upon success.
 //
-// Deprecated: Use Topic.Publish instead.
+// Deprecated: Use TopicHandle.Publish instead.
 func Publish(ctx context.Context, topic string, msgs ...*Message) ([]string, error) {
 	var rawMsgs []*raw.PubsubMessage
 	if len(msgs) == 0 {
@@ -227,7 +227,7 @@ func Publish(ctx context.Context, topic string, msgs ...*Message) ([]string, err
 // to handle push notifications coming from the Pub/Sub backend
 // for the specified subscription.
 //
-// Deprecated: Use Subscription.ModifyPushConfig instead.
+// Deprecated: Use SubscriptionHandle.ModifyPushConfig instead.
 func ModifyPushEndpoint(ctx context.Context, sub, endpoint string) error {
 	_, err := rawService(ctx).Projects.Subscriptions.ModifyPushConfig(fullSubName(internal.ProjID(ctx), sub), &raw.ModifyPushConfigRequest{
 		PushConfig: &raw.PushConfig{

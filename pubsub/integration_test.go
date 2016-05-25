@@ -61,12 +61,12 @@ func TestAll(t *testing.T) {
 		t.Fatalf("Creating client error: %v", err)
 	}
 
-	var topic *Topic
+	var topic *TopicHandle
 	if topic, err = client.NewTopic(ctx, topicName); err != nil {
 		t.Errorf("CreateTopic error: %v", err)
 	}
 
-	var sub *Subscription
+	var sub *SubscriptionHandle
 	if sub, err = client.NewSubscription(ctx, subName, topic, 0, nil); err != nil {
 		t.Errorf("CreateSub error: %v", err)
 	}

@@ -22,8 +22,8 @@ import (
 
 const MaxPublishBatchSize = 1000
 
-// Topic is a reference to a PubSub topic.
-type Topic struct {
+// TopicHandle is a reference to a PubSub topic.
+type TopicHandle struct {
 	s service
 
 	// The fully qualified identifier for the topic, in the format "projects/<projid>/topics/<name>"
@@ -36,15 +36,15 @@ type Topic struct {
 // tildes (~), plus (+) or percent signs (%). It must be between 3 and 255
 // characters in length, and must not start with "goog".
 // If the topic already exists an error will be returned.
-func (c *Client) NewTopic(ctx context.Context, name string) (*Topic, error) {
+func (c *Client) NewTopic(ctx context.Context, name string) (*TopicHandle, error) {
 	t := c.Topic(name)
 	err := c.s.createTopic(ctx, t.Name())
 	return t, err
 }
 
 // Topic creates a reference to a topic.
-func (c *Client) Topic(name string) *Topic {
-	return &Topic{s: c.s, name: fmt.Sprintf("projects/%s/topics/%s", c.projectID, name)}
+func (c *Client) Topic(name string) *TopicHandle {
+	return &TopicHandle{s: c.s, name: fmt.Sprintf("projects/%s/topics/%s", c.projectID, name)}
 }
 
 // Topics returns an iterator which returns all of the topics for the client's project.
@@ -67,26 +67,26 @@ type TopicIterator struct {
 }
 
 // Next returns the next topic. If there are no more topics, Done will be returned.
-func (tps *TopicIterator) Next() (*Topic, error) {
+func (tps *TopicIterator) Next() (*TopicHandle, error) {
 	topicName, err := tps.stringsIterator.Next()
 	if err != nil {
 		return nil, err
 	}
-	return &Topic{s: tps.s, name: topicName}, nil
+	return &TopicHandle{s: tps.s, name: topicName}, nil
 }
 
 // Name returns the globally unique name for the topic.
-func (t *Topic) Name() string {
+func (t *TopicHandle) Name() string {
 	return t.name
 }
 
 // Delete deletes the topic.
-func (t *Topic) Delete(ctx context.Context) error {
+func (t *TopicHandle) Delete(ctx context.Context) error {
 	return t.s.deleteTopic(ctx, t.name)
 }
 
 // Exists reports whether the topic exists on the server.
-func (t *Topic) Exists(ctx context.Context) (bool, error) {
+func (t *TopicHandle) Exists(ctx context.Context) (bool, error) {
 	if t.name == "_deleted-topic_" {
 		return false, nil
 	}
@@ -95,8 +95,8 @@ func (t *Topic) Exists(ctx context.Context) (bool, error) {
 }
 
 // Subscriptions returns an iterator which returns the subscriptions for this topic.
-func (t *Topic) Subscriptions(ctx context.Context) *SubscriptionIterator {
-	// NOTE: zero or more Subscriptions that are ultimately returned by this
+func (t *TopicHandle) Subscriptions(ctx context.Context) *SubscriptionIterator {
+	// NOTE: zero or more SubscriptionHandles that are ultimately returned by this
 	// Subscriptions iterator may belong to a different project to t.
 	return &SubscriptionIterator{
 		s: t.s,
@@ -113,7 +113,7 @@ func (t *Topic) Subscriptions(ctx context.Context) *SubscriptionIterator {
 // Publish publishes the supplied Messages to the topic.
 // If successful, the server-assigned message IDs are returned in the same order as the supplied Messages.
 // At most MaxPublishBatchSize messages may be supplied.
-func (t *Topic) Publish(ctx context.Context, msgs ...*Message) ([]string, error) {
+func (t *TopicHandle) Publish(ctx context.Context, msgs ...*Message) ([]string, error) {
 	if len(msgs) == 0 {
 		return nil, nil
 	}
