@@ -153,7 +153,7 @@ func (s *server) GetTable(ctx context.Context, req *bttspb.GetTableRequest) (*bt
 
 	return &bttdpb.Table{
 		Name:           tbl,
-		ColumnFamilies: toColumnFamilies(tblIns.families),
+		ColumnFamilies: toColumnFamilies(tblIns.columnFamilies()),
 	}, nil
 }
 
@@ -411,11 +411,12 @@ func (s *server) MutateRow(ctx context.Context, req *btspb.MutateRowRequest) (*e
 		return nil, fmt.Errorf("no such table %q", req.TableName)
 	}
 
+	f := tbl.columnFamiliesSet()
 	r := tbl.mutableRow(string(req.RowKey))
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	if err := applyMutations(tbl, r, req.Mutations); err != nil {
+	if err := applyMutations(tbl, r, req.Mutations, f); err != nil {
 		return nil, err
 	}
 	return &emptypb.Empty{}, nil
@@ -431,10 +432,12 @@ func (s *server) MutateRows(ctx context.Context, req *btspb.MutateRowsRequest) (
 
 	res := &btspb.MutateRowsResponse{Statuses: make([]*rpcpb.Status, len(req.Entries))}
 
+	f := tbl.columnFamiliesSet()
+
 	for i, entry := range req.Entries {
 		r := tbl.mutableRow(string(entry.RowKey))
 		r.mu.Lock()
-		if err := applyMutations(tbl, r, entry.Mutations); err != nil {
+		if err := applyMutations(tbl, r, entry.Mutations, f); err != nil {
 			// We can't easily reconstruct the proper code after an error
 			res.Statuses[i] = &rpcpb.Status{Code: int32(codes.Internal), Message: err.Error()}
 		} else {
@@ -455,6 +458,8 @@ func (s *server) CheckAndMutateRow(ctx context.Context, req *btspb.CheckAndMutat
 	}
 
 	res := &btspb.CheckAndMutateRowResponse{}
+
+	f := tbl.columnFamiliesSet()
 
 	r := tbl.mutableRow(string(req.RowKey))
 	r.mu.Lock()
@@ -485,25 +490,23 @@ func (s *server) CheckAndMutateRow(ctx context.Context, req *btspb.CheckAndMutat
 		muts = req.TrueMutations
 	}
 
-	if err := applyMutations(tbl, r, muts); err != nil {
+	if err := applyMutations(tbl, r, muts, f); err != nil {
 		return nil, err
 	}
 	return res, nil
 }
 
 // applyMutations applies a sequence of mutations to a row.
+// fam should be a snapshot of the keys of tbl.families.
 // It assumes r.mu is locked.
-func applyMutations(tbl *table, r *row, muts []*btdpb.Mutation) error {
+func applyMutations(tbl *table, r *row, muts []*btdpb.Mutation, fam map[string]bool) error {
 	for _, mut := range muts {
 		switch mut := mut.Mutation.(type) {
 		default:
 			return fmt.Errorf("can't handle mutation type %T", mut)
 		case *btdpb.Mutation_SetCell_:
 			set := mut.SetCell
-			tbl.mu.RLock()
-			_, famOK := tbl.families[set.FamilyName]
-			tbl.mu.RUnlock()
-			if !famOK {
+			if !fam[set.FamilyName] {
 				return fmt.Errorf("unknown family %q", set.FamilyName)
 			}
 			ts := set.TimestampMicros
@@ -731,6 +734,24 @@ func newTable() *table {
 func (t *table) validTimestamp(ts int64) bool {
 	// Assume millisecond granularity is required.
 	return ts%1000 == 0
+}
+
+func (t *table) columnFamilies() map[string]*columnFamily {
+	cp := make(map[string]*columnFamily)
+	t.mu.RLock()
+	for fam, cf := range t.families {
+		cp[fam] = cf
+	}
+	t.mu.RUnlock()
+	return cp
+}
+
+func (t *table) columnFamiliesSet() map[string]bool {
+	f := make(map[string]bool)
+	for fam := range t.columnFamilies() {
+		f[fam] = true
+	}
+	return f
 }
 
 func (t *table) mutableRow(row string) *row {
