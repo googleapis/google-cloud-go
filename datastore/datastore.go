@@ -152,6 +152,16 @@ func (e *ErrFieldMismatch) Error() string {
 		e.FieldName, e.StructType, e.Reason)
 }
 
+// GeoPoint represents a location as latitude/longitude in degrees.
+type GeoPoint struct {
+	Lat, Lng float64
+}
+
+// Valid returns whether a GeoPoint is within [-90, 90] latitude and [-180, 180] longitude.
+func (g GeoPoint) Valid() bool {
+	return -90 <= g.Lat && g.Lat <= 90 && -180 <= g.Lng && g.Lng <= 180
+}
+
 func keyToProto(k *Key) *pb.Key {
 	if k == nil {
 		return nil

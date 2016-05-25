@@ -41,6 +41,7 @@ type Property struct {
 	//	- float64
 	//	- *Key
 	//	- time.Time
+	//	- GeoPoint
 	//	- []byte (up to 1 megabyte in length)
 	// Value can also be:
 	//	- []interface{} where each element is one of the above types
@@ -214,7 +215,7 @@ func getStructCodecLocked(t reflect.Type) (ret *structCodec, retErr error) {
 			c.hasSlice = c.hasSlice || fIsSlice
 		}
 
-		if substructType != nil && substructType != typeOfTime {
+		if substructType != nil && substructType != typeOfTime && substructType != typeOfGeoPoint {
 			if name != "" {
 				name = name + "."
 			}

@@ -25,6 +25,7 @@ import (
 var (
 	typeOfByteSlice = reflect.TypeOf([]byte(nil))
 	typeOfTime      = reflect.TypeOf(time.Time{})
+	typeOfGeoPoint  = reflect.TypeOf(GeoPoint{})
 )
 
 // typeMismatchReason returns a string explaining why the property p could not
@@ -42,6 +43,8 @@ func typeMismatchReason(p Property, v reflect.Value) string {
 		entityType = "float"
 	case *Key:
 		entityType = "*datastore.Key"
+	case GeoPoint:
+		entityType = "GeoPoint"
 	case time.Time:
 		entityType = "time.Time"
 	case []byte:
@@ -174,6 +177,12 @@ func (l *propertyLoader) loadOneElement(codec *structCodec, structValue reflect.
 				return typeMismatchReason(p, v)
 			}
 			v.Set(reflect.ValueOf(x))
+		case typeOfGeoPoint:
+			x, ok := pValue.(GeoPoint)
+			if !ok && pValue != nil {
+				return typeMismatchReason(p, v)
+			}
+			v.Set(reflect.ValueOf(x))
 		default:
 			return typeMismatchReason(p, v)
 		}
@@ -263,8 +272,7 @@ func propToValue(v *pb.Value) interface{} {
 	case *pb.Value_BlobValue:
 		return []byte(v.BlobValue)
 	case *pb.Value_GeoPointValue:
-		// TODO(djd): Support GeoPointValue.
-		return nil
+		return GeoPoint{Lat: v.GeoPointValue.Latitude, Lng: v.GeoPointValue.Longitude}
 	case *pb.Value_EntityValue:
 		// TODO(djd): Support EntityValue.
 		return nil

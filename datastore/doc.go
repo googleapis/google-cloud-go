@@ -27,6 +27,7 @@ Valid value types are:
   - []byte (up to 1 megabyte in length),
   - any type whose underlying type is one of the above predeclared types,
   - *Key,
+  - GeoPoint,
   - time.Time (stored with microsecond precision),
   - structs whose fields are all valid value types,
   - slices of any of the above.

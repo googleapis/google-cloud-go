@@ -22,6 +22,7 @@ import (
 
 	timepb "github.com/golang/protobuf/ptypes/timestamp"
 	pb "google.golang.org/cloud/datastore/internal/proto"
+	tpb "google.golang.org/cloud/datastore/internal/type_proto"
 )
 
 // saveEntity saves an EntityProto into a PropertyLoadSaver or struct pointer.
@@ -47,7 +48,7 @@ func saveStructProperty(props *[]Property, name string, noIndex bool, v reflect.
 	}
 
 	switch x := v.Interface().(type) {
-	case *Key, time.Time:
+	case *Key, time.Time, GeoPoint:
 		p.Value = x
 	default:
 		switch v.Kind() {
@@ -217,6 +218,14 @@ func interfaceToProto(iv interface{}) (*pb.Value, error) {
 		if v != nil {
 			val.ValueType = &pb.Value_KeyValue{keyToProto(v)}
 		}
+	case GeoPoint:
+		if !v.Valid() {
+			return nil, errors.New("invalid GeoPoint value")
+		}
+		val.ValueType = &pb.Value_GeoPointValue{&tpb.LatLng{
+			Latitude:  v.Lat,
+			Longitude: v.Lng,
+		}}
 	case time.Time:
 		if v.Before(minTime) || v.After(maxTime) {
 			return nil, errors.New("time value out of range")

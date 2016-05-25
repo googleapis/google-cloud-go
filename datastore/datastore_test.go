@@ -69,11 +69,14 @@ func newKey(stringID string, parent *Key) *Key {
 }
 
 var (
-	testKey0  = newKey("name0", nil)
-	testKey1a = newKey("name1", nil)
-	testKey1b = newKey("name1", nil)
-	testKey2a = newKey("name2", testKey0)
-	testKey2b = newKey("name2", testKey0)
+	testKey0     = newKey("name0", nil)
+	testKey1a    = newKey("name1", nil)
+	testKey1b    = newKey("name1", nil)
+	testKey2a    = newKey("name2", testKey0)
+	testKey2b    = newKey("name2", testKey0)
+	testGeoPt0   = GeoPoint{Lat: 1.2, Lng: 3.4}
+	testGeoPt1   = GeoPoint{Lat: 5, Lng: 10}
+	testBadGeoPt = GeoPoint{Lat: 1000, Lng: 34}
 )
 
 type B0 struct {
@@ -116,6 +119,14 @@ type C3 struct {
 }
 
 type E struct{}
+
+type G0 struct {
+	G GeoPoint
+}
+
+type G1 struct {
+	G []GeoPoint
+}
 
 type K0 struct {
 	K *Key
@@ -427,6 +438,36 @@ var testCases = []testCase{
 		"empty struct",
 		&E{},
 		&E{},
+		"",
+		"",
+	},
+	{
+		"geopoint",
+		&G0{G: testGeoPt0},
+		&G0{G: testGeoPt0},
+		"",
+		"",
+	},
+	{
+		"geopoint invalid",
+		&G0{G: testBadGeoPt},
+		&G0{},
+		"invalid GeoPoint value",
+		"",
+	},
+	{
+		"geopoint as props",
+		&G0{G: testGeoPt0},
+		&PropertyList{
+			Property{Name: "G", Value: testGeoPt0, NoIndex: false},
+		},
+		"",
+		"",
+	},
+	{
+		"geopoint slice",
+		&G1{G: []GeoPoint{testGeoPt0, testGeoPt1}},
+		&G1{G: []GeoPoint{testGeoPt0, testGeoPt1}},
 		"",
 		"",
 	},
@@ -1500,3 +1541,43 @@ type byName PropertyList
 func (s byName) Len() int           { return len(s) }
 func (s byName) Less(i, j int) bool { return s[i].Name < s[j].Name }
 func (s byName) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+
+func TestValidGeoPoint(t *testing.T) {
+	testCases := []struct {
+		desc string
+		pt   GeoPoint
+		want bool
+	}{
+		{
+			"valid",
+			GeoPoint{67.21, 13.37},
+			true,
+		},
+		{
+			"high lat",
+			GeoPoint{-90.01, 13.37},
+			false,
+		},
+		{
+			"low lat",
+			GeoPoint{90.01, 13.37},
+			false,
+		},
+		{
+			"high lng",
+			GeoPoint{67.21, 182},
+			false,
+		},
+		{
+			"low lng",
+			GeoPoint{67.21, -181},
+			false,
+		},
+	}
+
+	for _, tc := range testCases {
+		if got := tc.pt.Valid(); got != tc.want {
+			t.Errorf("%s: got %v, want %v", tc.desc, got, tc.want)
+		}
+	}
+}
