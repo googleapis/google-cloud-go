@@ -833,3 +833,34 @@ func TestNilPointers(t *testing.T) {
 		t.Errorf("Delete: %v", err)
 	}
 }
+
+func TestNestedRepeatedElementNoIndex(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	ctx := context.Background()
+	client := newClient(ctx, t)
+	defer client.Close()
+
+	type Inner struct {
+		Name  string
+		Value string `datastore:",noindex"`
+	}
+	type Outer struct {
+		Config []Inner
+	}
+	m := &Outer{
+		Config: []Inner{
+			{Name: "short", Value: "a"},
+			{Name: "long", Value: strings.Repeat("a", 2000)},
+		},
+	}
+
+	key := NewKey(ctx, "Nested", "Nested"+suffix, 0, nil)
+	if _, err := client.Put(ctx, key, m); err != nil {
+		t.Fatalf("client.Put: %v", err)
+	}
+	if err := client.Delete(ctx, key); err != nil {
+		t.Fatalf("client.Delete: %v", err)
+	}
+}

@@ -690,7 +690,7 @@ var testCases = []testCase{
 			Property{Name: "B", Value: makeUint8Slice(1501), NoIndex: false},
 		},
 		nil,
-		"is too long to index",
+		"[]byte property too long to index",
 		"",
 	},
 	{
@@ -699,7 +699,31 @@ var testCases = []testCase{
 			Property{Name: "B", Value: strings.Repeat("x", 1501), NoIndex: false},
 		},
 		nil,
-		"is too long to index",
+		"string property too long to index",
+		"",
+	},
+	{
+		"slice of []byte must be noindex",
+		&PropertyList{
+			Property{Name: "B", Value: []interface{}{
+				[]byte("short"),
+				makeUint8Slice(1501),
+			}, NoIndex: false},
+		},
+		nil,
+		"[]byte property too long to index",
+		"",
+	},
+	{
+		"slice of string must be noindex",
+		&PropertyList{
+			Property{Name: "B", Value: []interface{}{
+				"short",
+				strings.Repeat("x", 1501),
+			}, NoIndex: false},
+		},
+		nil,
+		"string property too long to index",
 		"",
 	},
 	{
@@ -1533,6 +1557,42 @@ func TestPutMultiTypes(t *testing.T) {
 				t.Logf("%s: entity %d doesn't match\ngot:  %v\nwant: %v", tt.desc, i, e, want[i])
 			}
 		}
+	}
+}
+
+func TestNoIndexOnSliceProperties(t *testing.T) {
+	// Check that ExcludeFromIndexes is set on the inner elements,
+	// rather than the top-level ArrayValue value.
+	ctx := context.Background()
+	pl := PropertyList{
+		Property{
+			Name: "repeated",
+			Value: []interface{}{
+				123,
+				false,
+				"short",
+				strings.Repeat("a", 1503),
+			},
+			NoIndex: true,
+		},
+	}
+	key := NewKey(ctx, "dummy", "dummy", 0, nil)
+
+	entity, err := saveEntity(key, &pl)
+	if err != nil {
+		t.Fatalf("saveEntity: %v", err)
+	}
+
+	want := &pb.Value{
+		ValueType: &pb.Value_ArrayValue{&pb.ArrayValue{[]*pb.Value{
+			{ValueType: &pb.Value_IntegerValue{123}, ExcludeFromIndexes: true},
+			{ValueType: &pb.Value_BooleanValue{false}, ExcludeFromIndexes: true},
+			{ValueType: &pb.Value_StringValue{"short"}, ExcludeFromIndexes: true},
+			{ValueType: &pb.Value_StringValue{strings.Repeat("a", 1503)}, ExcludeFromIndexes: true},
+		}}},
+	}
+	if got := entity.Properties["repeated"]; !proto.Equal(got, want) {
+		t.Errorf("Entity proto differs\ngot:  %v\nwant: %v", got, want)
 	}
 }
 

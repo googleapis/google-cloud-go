@@ -342,7 +342,7 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 		if qf.FieldName == "" {
 			return errors.New("datastore: empty query filter field name")
 		}
-		v, err := interfaceToProto(reflect.ValueOf(qf.Value).Interface())
+		v, err := interfaceToProto(reflect.ValueOf(qf.Value).Interface(), false)
 		if err != nil {
 			return fmt.Errorf("datastore: bad query filter value type: %v", err)
 		}

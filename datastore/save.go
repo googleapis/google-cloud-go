@@ -162,7 +162,7 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 	}
 	indexedProps := 0
 	for _, p := range props {
-		val, err := interfaceToProto(p.Value)
+		val, err := interfaceToProto(p.Value, p.NoIndex)
 		if err != nil {
 			return nil, fmt.Errorf("datastore: %v for a Property with Name %q", err, p.Name)
 		}
@@ -177,17 +177,6 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 		if indexedProps > maxIndexedProperties {
 			return nil, errors.New("datastore: too many indexed properties")
 		}
-		switch v := p.Value.(type) {
-		case string:
-			if len(v) > 1500 && !p.NoIndex {
-				return nil, fmt.Errorf("datastore: Property with Name %q is too long to index", p.Name)
-			}
-		case []byte:
-			if len(v) > 1500 && !p.NoIndex {
-				return nil, fmt.Errorf("datastore: Property with Name %q is too long to index", p.Name)
-			}
-		}
-		val.ExcludeFromIndexes = p.NoIndex
 
 		if _, ok := e.Properties[p.Name]; ok {
 			return nil, fmt.Errorf("datastore: duplicate Property with Name %q", p.Name)
@@ -197,8 +186,8 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 	return e, nil
 }
 
-func interfaceToProto(iv interface{}) (*pb.Value, error) {
-	val := &pb.Value{}
+func interfaceToProto(iv interface{}, noIndex bool) (*pb.Value, error) {
+	val := &pb.Value{ExcludeFromIndexes: noIndex}
 	switch v := iv.(type) {
 	case int:
 		val.ValueType = &pb.Value_IntegerValue{int64(v)}
@@ -209,6 +198,9 @@ func interfaceToProto(iv interface{}) (*pb.Value, error) {
 	case bool:
 		val.ValueType = &pb.Value_BooleanValue{v}
 	case string:
+		if len(v) > 1500 && !noIndex {
+			return nil, errors.New("string property too long to index")
+		}
 		val.ValueType = &pb.Value_StringValue{v}
 	case float32:
 		val.ValueType = &pb.Value_DoubleValue{float64(v)}
@@ -235,17 +227,23 @@ func interfaceToProto(iv interface{}) (*pb.Value, error) {
 			Nanos:   int32(v.Nanosecond()),
 		}}
 	case []byte:
+		if len(v) > 1500 && !noIndex {
+			return nil, errors.New("[]byte property too long to index")
+		}
 		val.ValueType = &pb.Value_BlobValue{v}
 	case []interface{}:
 		arr := make([]*pb.Value, 0, len(v))
 		for i, v := range v {
-			elem, err := interfaceToProto(v)
+			elem, err := interfaceToProto(v, noIndex)
 			if err != nil {
 				return nil, fmt.Errorf("%v at index %d", err, i)
 			}
 			arr = append(arr, elem)
 		}
 		val.ValueType = &pb.Value_ArrayValue{&pb.ArrayValue{arr}}
+		// ArrayValues have ExcludeFromIndexes set on the individual items, rather
+		// than the top-level value.
+		val.ExcludeFromIndexes = false
 	default:
 		if iv != nil {
 			return nil, fmt.Errorf("invalid Value type %t", iv)
