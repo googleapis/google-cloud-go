@@ -73,7 +73,7 @@ func process(t *testing.T, it *Iterator, mc *messageCounter) {
 }
 
 // newIter constructs a new Iterator.
-func newIter(t *testing.T, ctx context.Context, sub *SubscriptionHandle) *Iterator {
+func newIter(t *testing.T, ctx context.Context, sub *Subscription) *Iterator {
 	it, err := sub.Pull(ctx)
 	if err != nil {
 		t.Fatalf("error constructing iterator: %v", err)
@@ -131,7 +131,7 @@ type consumer struct {
 
 // consume reads messages from a subscription, and keeps track of what it receives in mc.
 // After consume returns, the caller should wait on wg to ensure that no more updates to mc will be made.
-func (c *consumer) consume(t *testing.T, ctx context.Context, sub *SubscriptionHandle, mc *messageCounter, wg *sync.WaitGroup, stop <-chan struct{}) {
+func (c *consumer) consume(t *testing.T, ctx context.Context, sub *Subscription, mc *messageCounter, wg *sync.WaitGroup, stop <-chan struct{}) {
 	for i := 0; i < c.iteratorsInFlight; i++ {
 		wg.Add(1)
 		go func() {
@@ -154,7 +154,7 @@ func (c *consumer) consume(t *testing.T, ctx context.Context, sub *SubscriptionH
 }
 
 // publish publishes many messages to topic, and returns the published message ids.
-func publish(t *testing.T, ctx context.Context, topic *TopicHandle) []string {
+func publish(t *testing.T, ctx context.Context, topic *Topic) []string {
 	var published []string
 	msgs := make([]*Message, batchSize)
 	for i := 0; i < batches; i++ {
@@ -213,14 +213,14 @@ func TestEndToEnd(t *testing.T) {
 		t.Fatalf("Creating client error: %v", err)
 	}
 
-	var topic *TopicHandle
+	var topic *Topic
 	if topic, err = client.NewTopic(ctx, topicName); err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
 	defer topic.Delete(ctx)
 
 	// Three subscriptions to the same topic.
-	var subA, subB, subC *SubscriptionHandle
+	var subA, subB, subC *Subscription
 	if subA, err = client.NewSubscription(ctx, subPrefix+"-a", topic, ackDeadline, nil); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}

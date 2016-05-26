@@ -66,14 +66,14 @@ func checkTopicListing(t *testing.T, calls []topicListCall, want []string) {
 }
 
 // All returns the remaining topics from this iterator.
-func slurpTopics(tps *TopicIterator) ([]*TopicHandle, error) {
-	var ths []*TopicHandle
+func slurpTopics(it *TopicIterator) ([]*Topic, error) {
+	var topics []*Topic
 	for {
-		switch th, err := tps.Next(); err {
+		switch topic, err := it.Next(); err {
 		case nil:
-			ths = append(ths, th)
+			topics = append(topics, topic)
 		case Done:
-			return ths, nil
+			return topics, nil
 		default:
 			return nil, err
 		}
@@ -130,14 +130,12 @@ func TestListFinalEmptyPage(t *testing.T) {
 	checkTopicListing(t, calls, []string{"t1", "t2"})
 }
 
-func topicNames(ths []*TopicHandle) []string {
+func topicNames(topics []*Topic) []string {
 	var names []string
 
-	for _, th := range ths {
-		names = append(names, th.name)
+	for _, topic := range topics {
+		names = append(names, topic.name)
 
 	}
 	return names
 }
-
-// TODO: add equivalent subscription tests, and verify that it actually works when there are multiple pages.

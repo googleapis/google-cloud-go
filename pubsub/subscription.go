@@ -28,8 +28,8 @@ const DefaultMaxExtension = 10 * time.Minute
 // The default maximum number of messages that are prefetched from the server.
 const DefaultMaxPrefetch = 100
 
-// SubscriptionHandle is a reference to a PubSub subscription.
-type SubscriptionHandle struct {
+// Subscription is a reference to a PubSub subscription.
+type Subscription struct {
 	s service
 
 	// The fully qualified identifier for the subscription, in the format "projects/<projid>/subscriptions/<name>"
@@ -37,16 +37,16 @@ type SubscriptionHandle struct {
 }
 
 // Subscription creates a reference to a subscription.
-func (c *Client) Subscription(name string) *SubscriptionHandle {
-	return &SubscriptionHandle{
+func (c *Client) Subscription(name string) *Subscription {
+	return &Subscription{
 		s:    c.s,
 		name: fmt.Sprintf("projects/%s/subscriptions/%s", c.projectID, name),
 	}
 }
 
 // Name returns the globally unique name for the subscription.
-func (sh *SubscriptionHandle) Name() string {
-	return sh.name
+func (s *Subscription) Name() string {
+	return s.name
 }
 
 // Subscriptions returns an iterator which returns all of the subscriptions for the client's project.
@@ -69,13 +69,13 @@ type SubscriptionIterator struct {
 }
 
 // Next returns the next subscription. If there are no more subscriptions, Done will be returned.
-func (subs *SubscriptionIterator) Next() (*SubscriptionHandle, error) {
+func (subs *SubscriptionIterator) Next() (*Subscription, error) {
 	subName, err := subs.stringsIterator.Next()
 	if err != nil {
 		return nil, err
 	}
 
-	return &SubscriptionHandle{s: subs.s, name: subName}, nil
+	return &Subscription{s: subs.s, name: subName}, nil
 }
 
 // PushConfig contains configuration for subscriptions that operate in push mode.
@@ -89,7 +89,7 @@ type PushConfig struct {
 
 // Subscription config contains the configuration of a subscription.
 type SubscriptionConfig struct {
-	Topic      *TopicHandle
+	Topic      *Topic
 	PushConfig PushConfig
 
 	// The default maximum time after a subscriber receives a message
@@ -101,26 +101,26 @@ type SubscriptionConfig struct {
 }
 
 // Delete deletes the subscription.
-func (sh *SubscriptionHandle) Delete(ctx context.Context) error {
-	return sh.s.deleteSubscription(ctx, sh.name)
+func (s *Subscription) Delete(ctx context.Context) error {
+	return s.s.deleteSubscription(ctx, s.name)
 }
 
 // Exists reports whether the subscription exists on the server.
-func (sh *SubscriptionHandle) Exists(ctx context.Context) (bool, error) {
-	return sh.s.subscriptionExists(ctx, sh.name)
+func (s *Subscription) Exists(ctx context.Context) (bool, error) {
+	return s.s.subscriptionExists(ctx, s.name)
 }
 
 // Config fetches the current configuration for the subscription.
-func (sh *SubscriptionHandle) Config(ctx context.Context) (*SubscriptionConfig, error) {
-	sub, topicName, err := sh.s.getSubscriptionConfig(ctx, sh.name)
+func (s *Subscription) Config(ctx context.Context) (*SubscriptionConfig, error) {
+	conf, topicName, err := s.s.getSubscriptionConfig(ctx, s.name)
 	if err != nil {
 		return nil, err
 	}
-	sub.Topic = &TopicHandle{
-		s:    sh.s,
+	conf.Topic = &Topic{
+		s:    s.s,
 		name: topicName,
 	}
-	return sub, nil
+	return conf, nil
 }
 
 // Pull returns an Iterator that can be used to fetch Messages. The Iterator
@@ -132,26 +132,26 @@ func (sh *SubscriptionHandle) Config(ctx context.Context) (*SubscriptionConfig, 
 // extensions will fail.
 //
 // The caller must call Stop on the Iterator once finished with it.
-func (sh *SubscriptionHandle) Pull(ctx context.Context, opts ...PullOption) (*Iterator, error) {
-	config, err := sh.Config(ctx)
+func (s *Subscription) Pull(ctx context.Context, opts ...PullOption) (*Iterator, error) {
+	config, err := s.Config(ctx)
 	if err != nil {
 		return nil, err
 	}
 	po := processPullOptions(opts)
 	po.ackDeadline = config.AckDeadline
-	return newIterator(ctx, sh.s, sh.name, po), nil
+	return newIterator(ctx, s.s, s.name, po), nil
 }
 
 // ModifyPushConfig updates the endpoint URL and other attributes of a push subscription.
-func (sh *SubscriptionHandle) ModifyPushConfig(ctx context.Context, conf *PushConfig) error {
+func (s *Subscription) ModifyPushConfig(ctx context.Context, conf *PushConfig) error {
 	if conf == nil {
 		return errors.New("must supply non-nil PushConfig")
 	}
 
-	return sh.s.modifyPushConfig(ctx, sh.name, conf)
+	return s.s.modifyPushConfig(ctx, s.name, conf)
 }
 
-// A PullOption is an optional argument to SubscriptionHandle.Pull.
+// A PullOption is an optional argument to Subscription.Pull.
 type PullOption interface {
 	setOptions(o *pullOptions)
 }
@@ -241,7 +241,7 @@ func MaxExtension(duration time.Duration) PullOption {
 // pushConfig may be set to configure this subscription for push delivery.
 //
 // If the subscription already exists an error will be returned.
-func (c *Client) NewSubscription(ctx context.Context, name string, topic *TopicHandle, ackDeadline time.Duration, pushConfig *PushConfig) (*SubscriptionHandle, error) {
+func (c *Client) NewSubscription(ctx context.Context, name string, topic *Topic, ackDeadline time.Duration, pushConfig *PushConfig) (*Subscription, error) {
 	if ackDeadline == 0 {
 		ackDeadline = 10 * time.Second
 	}
