@@ -74,6 +74,11 @@ func (s Schema) asTableSchema() *bq.TableSchema {
 	return &bq.TableSchema{Fields: fields}
 }
 
+// customizeCreateTable allows a Schema to be used directly as an option to CreateTable.
+func (s Schema) customizeCreateTable(conf *createTableConf) {
+	conf.schema = s.asTableSchema()
+}
+
 func convertTableFieldSchema(tfs *bq.TableFieldSchema) *FieldSchema {
 	fs := &FieldSchema{
 		Description: tfs.Description,

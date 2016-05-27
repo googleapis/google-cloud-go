@@ -336,6 +336,7 @@ type createTableConf struct {
 	projectID, datasetID, tableID string
 	expiration                    time.Time
 	viewQuery                     string
+	schema                        *bq.TableSchema
 }
 
 // createTable creates a table in the BigQuery service.
@@ -354,10 +355,14 @@ func (s *bigqueryService) createTable(ctx context.Context, conf *createTableConf
 	if !conf.expiration.IsZero() {
 		table.ExpirationTime = conf.expiration.UnixNano() / 1000
 	}
+	// TODO(jba): make it impossible to provide both a view query and a schema.
 	if conf.viewQuery != "" {
 		table.View = &bq.ViewDefinition{
 			Query: conf.viewQuery,
 		}
+	}
+	if conf.schema != nil {
+		table.Schema = conf.schema
 	}
 
 	_, err := s.s.Tables.Insert(conf.projectID, conf.datasetID, table).Context(ctx).Do()

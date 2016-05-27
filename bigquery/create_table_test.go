@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"golang.org/x/net/context"
+	bq "google.golang.org/api/bigquery/v2"
 )
 
 type createTableRecorder struct {
@@ -39,7 +40,8 @@ func TestCreateTableOptions(t *testing.T) {
 	}
 	exp := time.Now()
 	q := "query"
-	if _, err := c.CreateTable(context.Background(), "p", "d", "t", TableExpiration(exp), ViewQuery(q)); err != nil {
+	if _, err := c.CreateTable(context.Background(), "p", "d", "t",
+		TableExpiration(exp), ViewQuery(q)); err != nil {
 		t.Fatalf("err calling CreateTable: %v", err)
 	}
 	want := createTableConf{
@@ -48,6 +50,27 @@ func TestCreateTableOptions(t *testing.T) {
 		tableID:    "t",
 		expiration: exp,
 		viewQuery:  q,
+	}
+	if !reflect.DeepEqual(*s.conf, want) {
+		t.Errorf("createTableConf: got:\n%v\nwant:\n%v", *s.conf, want)
+	}
+
+	sc := Schema{fieldSchema("desc", "name", "STRING", false, true)}
+	if _, err := c.CreateTable(context.Background(), "p", "d", "t",
+		TableExpiration(exp), sc); err != nil {
+		t.Fatalf("err calling CreateTable: %v", err)
+	}
+	want = createTableConf{
+		projectID:  "p",
+		datasetID:  "d",
+		tableID:    "t",
+		expiration: exp,
+		// No need for an elaborate schema, that is tested in schema_test.go.
+		schema: &bq.TableSchema{
+			Fields: []*bq.TableFieldSchema{
+				bqTableFieldSchema("desc", "name", "STRING", "REQUIRED"),
+			},
+		},
 	}
 	if !reflect.DeepEqual(*s.conf, want) {
 		t.Errorf("createTableConf: got:\n%v\nwant:\n%v", *s.conf, want)
