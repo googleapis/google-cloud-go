@@ -409,6 +409,11 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 }
 
 // Count returns the number of results for the given query.
+//
+// The running time and number of API calls made by Count scale linearly with
+// with the sum of the query's offset and limit. Unless the result count is
+// expected to be small, it is best to specify a limit; otherwise Count will
+// continue until it finishes counting or the provided context expires.
 func (c *Client) Count(ctx context.Context, q *Query) (int, error) {
 	// Check that the query is well-formed.
 	if q.err != nil {
@@ -480,6 +485,12 @@ func callNext(ctx context.Context, client *Client, req *pb.RunQueryRequest, resp
 // added to dst.
 //
 // If q is a ``keys-only'' query, GetAll ignores dst and only returns the keys.
+//
+// The running time and number of API calls made by GetAll scale linearly with
+// with the sum of the query's offset and limit. Unless the result count is
+// expected to be small, it is best to specify a limit; otherwise GetAll will
+// continue until it finishes collecting results or the provided context
+// expires.
 func (c *Client) GetAll(ctx context.Context, q *Query, dst interface{}) ([]*Key, error) {
 	var (
 		dv               reflect.Value
