@@ -420,55 +420,25 @@ func (c *Client) Count(ctx context.Context, q *Query) (int, error) {
 		return 0, q.err
 	}
 
-	// Run a copy of the query, with keysOnly true (if we're not a projection,
+	// Create a copy of the query, with keysOnly true (if we're not a projection,
 	// since the two are incompatible).
 	newQ := q.clone()
 	newQ.keysOnly = len(newQ.projection) == 0
-	req := &pb.RunQueryRequest{
-		ProjectId: c.dataset,
-	}
 
-	if ns := ctxNamespace(ctx); ns != "" {
-		req.PartitionId = &pb.PartitionId{
-			NamespaceId: ns,
-		}
-	}
-	if err := newQ.toProto(req); err != nil {
-		return 0, err
-	}
-	resp, err := c.client.RunQuery(ctx, req)
-	if err != nil {
-		return 0, err
-	}
-	var n int
-	b := resp.Batch
+	// Create an iterator and use it to walk through the batches of results
+	// directly.
+	it := c.Run(ctx, newQ)
+	n := 0
 	for {
-		n += len(b.EntityResults)
-		if b.MoreResults != pb.QueryResultBatch_NOT_FINISHED {
-			break
+		err := it.nextBatch()
+		if err == Done {
+			return n, nil
 		}
-		var err error
-		// TODO(jbd): Support count queries that have a limit and an offset.
-		resp, err = callNext(ctx, c, req, resp, 0, 0)
 		if err != nil {
 			return 0, err
 		}
+		n += len(it.resp.Batch.EntityResults)
 	}
-	return int(n), nil
-}
-
-// TODO(djd): This function is ugly in its current context. Refactor.
-func callNext(ctx context.Context, client *Client, req *pb.RunQueryRequest, resp *pb.RunQueryResponse, offset, limit int32) (*pb.RunQueryResponse, error) {
-	if resp.GetBatch().EndCursor == nil {
-		return nil, errors.New("datastore: internal error: server did not return a cursor")
-	}
-	q := req.GetQuery()
-	q.StartCursor = resp.Batch.EndCursor
-	q.Offset = offset
-	if limit >= 0 {
-		q.Limit = &wrapperspb.Int32Value{limit}
-	}
-	return client.client.RunQuery(ctx, req)
 }
 
 // GetAll runs the provided query in the given context and returns all keys
@@ -566,45 +536,20 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 		ctx:    ctx,
 		client: c,
 		limit:  q.limit,
+		offset: q.offset,
 		q:      q,
 		prevCC: q.start,
+		req: &pb.RunQueryRequest{
+			ProjectId: c.dataset,
+		},
 	}
-	t.req.Reset()
-	t.req.ProjectId = c.dataset
 	if ns := ctxNamespace(ctx); ns != "" {
 		t.req.PartitionId = &pb.PartitionId{
 			NamespaceId: ns,
 		}
 	}
-	if err := q.toProto(&t.req); err != nil {
+	if err := q.toProto(t.req); err != nil {
 		t.err = err
-		return t
-	}
-	resp, err := c.client.RunQuery(ctx, &t.req)
-	if err != nil {
-		t.err = err
-		return t
-	}
-	t.res = *resp
-	b := t.res.GetBatch()
-	offset := q.offset - b.SkippedResults
-	for offset > 0 && b.MoreResults == pb.QueryResultBatch_NOT_FINISHED {
-		t.prevCC = b.EndCursor
-		resp, err := callNext(t.ctx, c, &t.req, &t.res, offset, t.limit)
-		if err != nil {
-			t.err = err
-			break
-		}
-		t.res = *resp
-		skip := b.SkippedResults
-		if skip < 0 {
-			t.err = errors.New("datastore: internal error: negative number of skipped_results")
-			break
-		}
-		offset -= skip
-	}
-	if offset < 0 {
-		t.err = errors.New("datastore: internal error: query offset was overshot")
 	}
 	return t
 }
@@ -614,15 +559,22 @@ type Iterator struct {
 	ctx    context.Context
 	client *Client
 	err    error
-	// req is the request we sent previously, we need to keep track of it to resend it
-	req pb.RunQueryRequest
-	// res is the result of the most recent RunQuery or Next API call.
-	res pb.RunQueryResponse
-	// i is how many elements of res.Result we have iterated over.
+
+	// TODO(djd): see if we can reduce the state held by the iterator: resp, i,
+	// and q might be redundant.
+
+	// req is the request to send. It may be modified and used multiple times.
+	req *pb.RunQueryRequest
+	// resp is the result of the most recent API call.
+	// It will be nil if no request has yet been issued.
+	resp *pb.RunQueryResponse
+	// i is the number of result entities from resp that have been iterated over.
 	i int
 	// limit is the limit on the number of results this iterator should return.
 	// A negative value means unlimited.
 	limit int32
+	// offset is the number of results that still need to be skipped.
+	offset int32
 	// q is the original query which yielded this iterator.
 	q *Query
 	// prevCC is the compiled cursor that marks the end of the previous batch
@@ -655,37 +607,16 @@ func (t *Iterator) next() (*Key, *pb.Entity, error) {
 		return nil, nil, t.err
 	}
 
-	// Issue datastore_v3/Next RPCs as necessary.
-	b := t.res.GetBatch()
-	for t.i == len(b.EntityResults) {
-		if b.MoreResults != pb.QueryResultBatch_NOT_FINISHED {
-			t.err = Done
-			return nil, nil, t.err
-		}
-		t.prevCC = b.EndCursor
-		resp, err := callNext(t.ctx, t.client, &t.req, &t.res, 0, t.limit)
-		if err != nil {
+	// Issue more API calls if there are no results.
+	for t.resp == nil || t.i == len(t.resp.Batch.EntityResults) {
+		if err := t.nextBatch(); err != nil {
 			t.err = err
-			return nil, nil, t.err
-		}
-		t.res = *resp
-		b = t.res.GetBatch()
-		if b.SkippedResults != 0 {
-			t.err = errors.New("datastore: internal error: iterator has skipped results")
-			return nil, nil, t.err
-		}
-		t.i = 0
-		if t.limit >= 0 {
-			t.limit -= int32(len(b.EntityResults))
-			if t.limit < 0 {
-				t.err = errors.New("datastore: internal error: query returned more results than the limit")
-				return nil, nil, t.err
-			}
+			return nil, nil, err
 		}
 	}
 
-	// Extract the key from the t.i'th element of t.res.Result.
-	e := b.EntityResults[t.i]
+	// Extract the next result, and sanity check it.
+	e := t.resp.Batch.EntityResults[t.i]
 	t.i++
 	if e.Entity.Key == nil {
 		return nil, nil, errors.New("datastore: internal error: server did not return a key")
@@ -697,14 +628,81 @@ func (t *Iterator) next() (*Key, *pb.Entity, error) {
 	return k, e.Entity, nil
 }
 
+// nextBatch makes a single call to the server for a batch of results.
+func (t *Iterator) nextBatch() error {
+	q := t.req.GetQuery()
+
+	if t.limit == 0 {
+		return Done // Short-circuits the zero-item response.
+	}
+
+	// Check the previous response to see where to start or if we're done.
+	if t.resp != nil {
+		b := t.resp.Batch
+		if b.MoreResults != pb.QueryResultBatch_NOT_FINISHED {
+			return Done
+		}
+		if b.EndCursor == nil {
+			return errors.New("datastore: internal error: server did not return a cursor")
+		}
+		t.prevCC = b.EndCursor
+		q.StartCursor = b.EndCursor
+	}
+
+	// Adjust the query with the latest limit and offset.
+	q.Offset = t.offset
+	if t.limit >= 0 {
+		q.Limit = &wrapperspb.Int32Value{t.limit}
+	} else {
+		q.Limit = nil
+	}
+
+	// Run the query.
+	var err error
+	t.i = 0
+	t.resp, err = t.client.client.RunQuery(t.ctx, t.req)
+	if err != nil {
+		return err
+	}
+
+	// Adjust any offset from skipped results.
+	skip := t.resp.Batch.SkippedResults
+	if skip < 0 {
+		return errors.New("datastore: internal error: negative number of skipped_results")
+	}
+	t.offset -= skip
+	if t.offset < 0 {
+		return errors.New("datastore: internal error: query skipped too many results")
+	}
+	if t.offset > 0 && len(t.resp.Batch.EntityResults) > 0 {
+		return errors.New("datastore: internal error: query returned results before requested offset")
+	}
+
+	// Adjust the limit.
+	if t.limit >= 0 {
+		t.limit -= int32(len(t.resp.Batch.EntityResults))
+		if t.limit < 0 {
+			return errors.New("datastore: internal error: query returned more results than the limit")
+		}
+	}
+
+	return nil
+}
+
 // Cursor returns a cursor for the iterator's current location.
 func (t *Iterator) Cursor() (Cursor, error) {
+	// If there is still an offset, we need to the skip those results first.
+	for t.err == nil && t.offset > 0 {
+		t.err = t.nextBatch()
+	}
+
 	if t.err != nil && t.err != Done {
 		return Cursor{}, t.err
 	}
+
 	// If we are at either end of the current batch of results,
 	// return the compiled cursor at that end.
-	b := t.res.Batch
+	b := t.resp.Batch
 	if t.i == 0 {
 		if b.SkippedResults > 0 {
 			return Cursor{b.SkippedCursor}, nil
@@ -717,6 +715,10 @@ func (t *Iterator) Cursor() (Cursor, error) {
 			// passing it as the end cursor of a new query means 0 results.
 			// If prevCC was nil, then the original query had no start cursor, but
 			// Iterator.Cursor should return "the start" instead of unlimited.
+			//
+			// TODO(djd): This empty Cursor is invalid and cannot be used to
+			// construct a query. In appengine/datastore there is an explicit zeroCC
+			// that is used for this case.
 			return Cursor{}, nil
 		}
 		return Cursor{t.prevCC}, nil
