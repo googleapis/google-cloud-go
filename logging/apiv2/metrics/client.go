@@ -4,33 +4,15 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//      http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-// EDITING INSTRUCTIONS
-// This file was generated from the file
-// https://github.com/googleapis/blob/master/google/logging/v2/logging_metrics.proto
-// and updates to that file get reflected here through a refresh process.
-// For the short term, the refresh process will only be runnable by Google engineers.
-// Manual additions are allowed because the refresh process performs
-// a 3-way merge in order to preserve those manual additions. In order to not
-// break the refresh process, only certain types of modifications are
-// allowed.
-//
-// Only additional documentation of the doc comment is allowed.
-// Please put the additional comment at the end.
-//
-// Additional new methods or new features can be added in additional files
-// in the same directory.
-//
-// Happy editing!
 
-// AUTO-GENERATED DOCUMENTATION AND SERVICE -- see instructions at the top of the file for editing.
+// AUTO-GENERATED DOCUMENTATION AND SERVICE
 
 package metrics
 
