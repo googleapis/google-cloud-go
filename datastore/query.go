@@ -294,10 +294,6 @@ func (q *Query) Offset(offset int) *Query {
 // Start returns a derivative query with the given start point.
 func (q *Query) Start(c Cursor) *Query {
 	q = q.clone()
-	if c.cc == nil {
-		q.err = errors.New("datastore: invalid cursor")
-		return q
-	}
 	q.start = c.cc
 	return q
 }
@@ -305,10 +301,6 @@ func (q *Query) Start(c Cursor) *Query {
 // End returns a derivative query with the given end point.
 func (q *Query) End(c Cursor) *Query {
 	q = q.clone()
-	if c.cc == nil {
-		q.err = errors.New("datastore: invalid cursor")
-		return q
-	}
 	q.end = c.cc
 	return q
 }
@@ -706,16 +698,15 @@ func (t *Iterator) Cursor() (Cursor, error) {
 		return Cursor{}, t.err
 	}
 
-	// TODO(djd): This is currently broken when called before the first call to
-	// Next (if the originating query had no Start set) since the empty Cursor is
-	// invalid and cannot be used to construct a query. In appengine/datastore
-	// there is an explicit zeroCC that is used for this case.
 	return Cursor{t.entityCursor}, nil
 }
 
 // Cursor is an iterator's position. It can be converted to and from an opaque
 // string. A cursor can be used from different HTTP requests, but only with a
 // query with the same kind, ancestor, filter and order constraints.
+//
+// The zero Cursor can be used to indicate that there is no start and/or end
+// constraint for a query.
 type Cursor struct {
 	cc []byte
 }

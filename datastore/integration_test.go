@@ -467,6 +467,7 @@ func TestLargeQuery(t *testing.T) {
 		want          int // The I value of the desired element, -1 for "Done".
 	}{
 		// No limits.
+		{count: 0, limit: -1, want: 0},
 		{count: 5, limit: -1, want: 5},
 		{count: 500, limit: -1, want: 500},
 		{count: 1000, limit: -1, want: -1}, // No more results.
