@@ -44,7 +44,7 @@ type service interface {
 
 	// Table data
 	readTabledata(ctx context.Context, conf *readTableConf, pageToken string) (*readDataResult, error)
-	insertRows(ctx context.Context, projectID, datasetID, tableID string, rows []*insertionRow) error
+	insertRows(ctx context.Context, projectID, datasetID, tableID string, rows []*insertionRow, conf *insertRowsConf) error
 
 	// Misc
 
@@ -213,19 +213,29 @@ func (s *bigqueryService) readQuery(ctx context.Context, conf *readQueryConf, pa
 	return result, nil
 }
 
-func (s *bigqueryService) insertRows(ctx context.Context, projectID, datasetID, tableID string, rows []*insertionRow) error {
-	conf := &bq.TableDataInsertAllRequest{}
+type insertRowsConf struct {
+	templateSuffix      string
+	ignoreUnknownValues bool
+	skipInvalidRows     bool
+}
+
+func (s *bigqueryService) insertRows(ctx context.Context, projectID, datasetID, tableID string, rows []*insertionRow, conf *insertRowsConf) error {
+	req := &bq.TableDataInsertAllRequest{
+		TemplateSuffix:      conf.templateSuffix,
+		IgnoreUnknownValues: conf.ignoreUnknownValues,
+		SkipInvalidRows:     conf.skipInvalidRows,
+	}
 	for _, row := range rows {
 		m := make(map[string]bq.JsonValue)
 		for k, v := range row.Row {
 			m[k] = bq.JsonValue(v)
 		}
-		conf.Rows = append(conf.Rows, &bq.TableDataInsertAllRequestRows{
+		req.Rows = append(req.Rows, &bq.TableDataInsertAllRequestRows{
 			InsertId: row.InsertID,
 			Json:     m,
 		})
 	}
-	res, err := s.s.Tabledata.InsertAll(projectID, datasetID, tableID, conf).Context(ctx).Do()
+	res, err := s.s.Tabledata.InsertAll(projectID, datasetID, tableID, req).Context(ctx).Do()
 	if err != nil {
 		return err
 	}

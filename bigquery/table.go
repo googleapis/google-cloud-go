@@ -278,6 +278,12 @@ func (p *TableMetadataPatch) Apply(ctx context.Context) (*TableMetadata, error) 
 }
 
 // NewUploader returns an *Uploader that can be used to append rows to t.
-func (t *Table) NewUploader() *Uploader {
-	return &Uploader{t: t}
+func (t *Table) NewUploader(opts ...UploadOption) *Uploader {
+	uploader := &Uploader{t: t}
+
+	for _, o := range opts {
+		o.customizeInsertRows(&uploader.conf)
+	}
+
+	return uploader
 }
