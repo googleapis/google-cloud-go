@@ -6,8 +6,10 @@
 # You also need Go and Git installed.
 
 PKG=google.golang.org/cloud/datastore
-UPSTREAM=https://github.com/google/googleapis
+UPSTREAM=https://github.com/googleapis/googleapis
 UPSTREAM_SUBDIR=google
+PB_UPSTREAM=https://github.com/google/protobuf
+PB_UPSTREAM_SUBDIR=src
 
 function die() {
   echo 1>&2 $*
@@ -34,6 +36,9 @@ cd $base
 
 echo 1>&2 "fetching latest datastore protos... "
 git clone -q $UPSTREAM $tmpdir
+
+echo 1>&2 "fetching latest core protos..."
+git clone -q $PB_UPSTREAM $tmpproto
 
 # Pass 1: build mapping from upstream filename to our filename.
 declare -A filename_map
@@ -84,6 +89,6 @@ done
 # Run protoc once per package.
 for dir in $(find $PKG/internal -name '*.proto' | xargs dirname | sort | uniq); do
   echo 1>&2 "* $dir"
-  protoc --go_out=plugins=grpc$types_map:. $dir/*.proto
+  protoc -I "$tmpproto/$PB_UPSTREAM_SUBDIR" -I . --go_out=plugins=grpc$types_map:. $dir/*.proto
 done
 echo 1>&2 "All OK"

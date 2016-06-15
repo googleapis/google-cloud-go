@@ -8,6 +8,8 @@
 PKG=google.golang.org/cloud/bigtable
 UPSTREAM=https://github.com/GoogleCloudPlatform/cloud-bigtable-client
 UPSTREAM_SUBDIR=bigtable-protos/src/main/proto
+PB_UPSTREAM=https://github.com/google/protobuf
+PB_UPSTREAM_SUBDIR=src
 
 function die() {
   echo 1>&2 $*
@@ -22,6 +24,8 @@ done
 
 tmpdir=$(mktemp -d -t regen-cbt.XXXXXX)
 trap 'rm -rf $tmpdir' EXIT
+tmpproto=$(mktemp -d -t regen-cds.XXXXXX)
+trap 'rm -rf $tmpproto' EXIT
 
 echo -n 1>&2 "finding package dir... "
 pkgdir=$(go list -f '{{.Dir}}' $PKG)
@@ -32,6 +36,10 @@ cd $base
 
 echo 1>&2 "fetching latest protos... "
 git clone -q $UPSTREAM $tmpdir
+
+echo 1>&2 "fetching latest core protos..."
+git clone -q $PB_UPSTREAM $tmpproto
+
 # Pass 1: build mapping from upstream filename to our filename.
 declare -A filename_map
 for f in $(cd $PKG && find internal -name '*.proto'); do
@@ -66,9 +74,21 @@ for up in "${!filename_map[@]}"; do
     cat > $PKG/$f
 done
 
+# Mappings of well-known proto types.
+declare -A known_types
+known_types[google/protobuf/any.proto]=github.com/golang/protobuf/ptypes/any
+known_types[google/protobuf/duration.proto]=github.com/golang/protobuf/ptypes/duration
+known_types[google/protobuf/timestamp.proto]=github.com/golang/protobuf/ptypes/timestamp
+known_types[google/protobuf/empty.proto]=github.com/golang/protobuf/ptypes/empty
+types_map=""
+for f in "${!known_types[@]}"; do
+  pkg=${known_types[$f]}
+  types_map="$types_map,M$f=$pkg"
+done
+
 # Run protoc once per package.
 for dir in $(find $PKG/internal -name '*.proto' | xargs dirname | sort | uniq); do
   echo 1>&2 "* $dir"
-  protoc --go_out=plugins=grpc,Mgoogle/protobuf/any.proto=github.com/golang/protobuf/ptypes/any,Mgoogle/protobuf/duration.proto=github.com/golang/protobuf/ptypes/duration,Mgoogle/protobuf/timestamp.proto=github.com/golang/protobuf/ptypes/timestamp,Mgoogle/protobuf/empty.proto=github.com/golang/protobuf/ptypes/empty:. $dir/*.proto
+  protoc -I "$tmpproto/$PB_UPSTREAM_SUBDIR" -I . --go_out=plugins=grpc$types_map:. $dir/*.proto
 done
 echo 1>&2 "All OK"
