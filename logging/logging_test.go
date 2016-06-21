@@ -262,6 +262,31 @@ func TestIntegration(t *testing.T) {
 	}
 }
 
+func TestIntegrationPingBadProject(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	ctx := context.Background()
+	ts := testutil.TokenSource(ctx, Scope)
+	if ts == nil {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
+
+	for _, projID := range []string{
+		testutil.ProjID() + "-BAD", // nonexistent project
+		"amazing-height-519",       // exists, but wrong creds
+	} {
+		c, err := NewClient(ctx, projID, "logging-integration-test", cloud.WithTokenSource(ts))
+		if err != nil {
+			t.Fatalf("project %s: error creating client: %v", projID, err)
+		}
+		if err := c.Ping(); err == nil {
+			t.Errorf("project %s: want error pinging logging api, got nil", projID)
+		}
+	}
+}
+
 func (c *Client) stats() (queued, inFlight int) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
