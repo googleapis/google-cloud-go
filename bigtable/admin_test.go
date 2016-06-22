@@ -27,7 +27,7 @@ func TestAdminIntegration(t *testing.T) {
 		t.Fatalf("grpc.Dial: %v", err)
 	}
 
-	adminClient, err := NewAdminClient(ctx, "proj", "zone", "cluster", cloud.WithBaseGRPC(conn))
+	adminClient, err := NewAdminClient(ctx, "proj", "instance", cloud.WithBaseGRPC(conn))
 	if err != nil {
 		t.Fatalf("NewAdminClient: %v", err)
 	}

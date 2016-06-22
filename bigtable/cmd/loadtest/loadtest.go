@@ -65,12 +65,12 @@ func main() {
 	}
 
 	log.Printf("Dialing connections...")
-	client, err = bigtable.NewClient(context.Background(), config.Project, config.Zone, config.Cluster)
+	client, err = bigtable.NewClient(context.Background(), config.Project, config.Instance)
 	if err != nil {
 		log.Fatalf("Making bigtable.Client: %v", err)
 	}
 	defer client.Close()
-	adminClient, err = bigtable.NewAdminClient(context.Background(), config.Project, config.Zone, config.Cluster)
+	adminClient, err = bigtable.NewAdminClient(context.Background(), config.Project, config.Instance)
 	if err != nil {
 		log.Fatalf("Making bigtable.AdminClient: %v", err)
 	}

@@ -27,118 +27,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/cloud"
 	"google.golang.org/cloud/bigtable/bttest"
-	btspb "google.golang.org/cloud/bigtable/internal/service_proto"
 	"google.golang.org/grpc"
 )
-
-func dataChunk(fam, col string, ts int64, data string) string {
-	return fmt.Sprintf("chunks:<row_contents:<name:%q columns:<qualifier:%q cells:<timestamp_micros:%d value:%q>>>>", fam, col, ts, data)
-}
-
-func commit() string { return "chunks:<commit_row:true>" }
-func reset() string  { return "chunks:<reset_row:true>" }
-
-var chunkTests = []struct {
-	desc   string
-	chunks []string // sequence of ReadRowsResponse protos in text format
-	want   map[string]Row
-}{
-	{
-		desc: "single row single chunk",
-		chunks: []string{
-			`row_key: "row1" ` + dataChunk("fam", "col1", 1428382701000000, "data") + commit(),
-		},
-		want: map[string]Row{
-			"row1": Row{
-				"fam": []ReadItem{{
-					Row:       "row1",
-					Column:    "fam:col1",
-					Timestamp: 1428382701000000,
-					Value:     []byte("data"),
-				}},
-			},
-		},
-	},
-	{
-		desc: "single row multiple chunks",
-		chunks: []string{
-			`row_key: "row1" ` + dataChunk("fam", "col1", 1428382701000000, "data"),
-			`row_key: "row1" ` + dataChunk("fam", "col2", 1428382702000000, "more data"),
-			`row_key: "row1" ` + commit(),
-		},
-		want: map[string]Row{
-			"row1": Row{
-				"fam": []ReadItem{
-					{
-						Row:       "row1",
-						Column:    "fam:col1",
-						Timestamp: 1428382701000000,
-						Value:     []byte("data"),
-					},
-					{
-						Row:       "row1",
-						Column:    "fam:col2",
-						Timestamp: 1428382702000000,
-						Value:     []byte("more data"),
-					},
-				},
-			},
-		},
-	},
-	{
-		desc: "chunk, reset, chunk, commit",
-		chunks: []string{
-			`row_key: "row1" ` + dataChunk("fam", "col1", 1428382701000000, "data"),
-			`row_key: "row1" ` + reset(),
-			`row_key: "row1" ` + dataChunk("fam", "col1", 1428382702000000, "data") + commit(),
-		},
-		want: map[string]Row{
-			"row1": Row{
-				"fam": []ReadItem{{
-					Row:       "row1",
-					Column:    "fam:col1",
-					Timestamp: 1428382702000000,
-					Value:     []byte("data"),
-				}},
-			},
-		},
-	},
-	{
-		desc: "chunk, reset, commit",
-		chunks: []string{
-			`row_key: "row1" ` + dataChunk("fam", "col1", 1428382701000000, "data"),
-			`row_key: "row1" ` + reset(),
-			`row_key: "row1" ` + commit(),
-		},
-		want: map[string]Row{},
-	},
-	// TODO(dsymonds): More test cases, including
-	//	- multiple rows
-}
-
-func TestChunkReader(t *testing.T) {
-	for _, tc := range chunkTests {
-		cr := new(chunkReader)
-		got := make(map[string]Row)
-		for i, txt := range tc.chunks {
-			rrr := new(btspb.ReadRowsResponse)
-			if err := proto.UnmarshalText(txt, rrr); err != nil {
-				t.Fatalf("%s: internal error: bad #%d test text: %v", tc.desc, i, err)
-			}
-			if row := cr.process(rrr); row != nil {
-				got[row.Key()] = row
-			}
-		}
-		// TODO(dsymonds): check for partial rows?
-		if !reflect.DeepEqual(got, tc.want) {
-			t.Errorf("%s: processed response mismatch.\n got %+v\nwant %+v", tc.desc, got, tc.want)
-		}
-	}
-}
 
 func TestPrefix(t *testing.T) {
 	tests := []struct {
@@ -165,7 +58,7 @@ func TestPrefix(t *testing.T) {
 	}
 }
 
-var useProd = flag.String("use_prod", "", `if set to "proj,zone,cluster,table", run integration test against production`)
+var useProd = flag.String("use_prod", "", `if set to "proj,instance,table", run integration test against production`)
 
 func TestClientIntegration(t *testing.T) {
 	start := time.Now()
@@ -176,7 +69,7 @@ func TestClientIntegration(t *testing.T) {
 		lastCheckpoint = n
 	}
 
-	proj, zone, cluster, table := "proj", "zone", "cluster", "mytable"
+	proj, instance, table := "proj", "instance", "mytable"
 	var clientOpts []cloud.ClientOption
 	timeout := 10 * time.Second
 	if *useProd == "" {
@@ -193,21 +86,21 @@ func TestClientIntegration(t *testing.T) {
 		clientOpts = []cloud.ClientOption{cloud.WithBaseGRPC(conn)}
 	} else {
 		t.Logf("Running test against production")
-		a := strings.Split(*useProd, ",")
-		proj, zone, cluster, table = a[0], a[1], a[2], a[3]
+		a := strings.SplitN(*useProd, ",", 3)
+		proj, instance, table = a[0], a[1], a[2]
 		timeout = 5 * time.Minute
 	}
 
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
 
-	client, err := NewClient(ctx, proj, zone, cluster, clientOpts...)
+	client, err := NewClient(ctx, proj, instance, clientOpts...)
 	if err != nil {
 		t.Fatalf("NewClient: %v", err)
 	}
 	defer client.Close()
 	checkpoint("dialed Client")
 
-	adminClient, err := NewAdminClient(ctx, proj, zone, cluster, clientOpts...)
+	adminClient, err := NewAdminClient(ctx, proj, instance, clientOpts...)
 	if err != nil {
 		t.Fatalf("NewAdminClient: %v", err)
 	}
@@ -337,10 +230,7 @@ func TestClientIntegration(t *testing.T) {
 		err := tbl.ReadRows(context.Background(), tc.rr, func(r Row) bool {
 			for _, ris := range r {
 				for _, ri := range ris {
-					// Use the column qualifier only to make the test data briefer.
-					col := ri.Column[strings.Index(ri.Column, ":")+1:]
-					x := fmt.Sprintf("%s-%s-%s", ri.Row, col, ri.Value)
-					elt = append(elt, x)
+					elt = append(elt, formatReadItem(ri))
 				}
 			}
 			return true
@@ -353,6 +243,26 @@ func TestClientIntegration(t *testing.T) {
 		if got := strings.Join(elt, ","); got != tc.want {
 			t.Errorf("%s: wrong reads.\n got %q\nwant %q", tc.desc, got, tc.want)
 		}
+	}
+	// Read a RowList
+	var elt []string
+	keys := RowList{"wmckinley", "gwashington", "jadams"}
+	want := "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1,wmckinley-tjefferson-1"
+	err = tbl.ReadRows(ctx, keys, func(r Row) bool {
+		for _, ris := range r {
+			for _, ri := range ris {
+				elt = append(elt, formatReadItem(ri))
+			}
+		}
+		return true
+	})
+	if err != nil {
+		t.Errorf("read RowList: %v", err)
+	}
+
+	sort.Strings(elt)
+	if got := strings.Join(elt, ","); got != want {
+		t.Errorf("bulk read: wrong reads.\n got %q\nwant %q", got, want)
 	}
 	checkpoint("tested ReadRows in a few ways")
 
@@ -646,6 +556,12 @@ func TestClientIntegration(t *testing.T) {
 	if status[0] == nil || status[1] == nil {
 		t.Errorf("No error for bad bulk mutation")
 	}
+}
+
+func formatReadItem(ri ReadItem) string {
+	// Use the column qualifier only to make the test data briefer.
+	col := ri.Column[strings.Index(ri.Column, ":")+1:]
+	return fmt.Sprintf("%s-%s-%s", ri.Row, col, ri.Value)
 }
 
 func fill(b, sub []byte) {

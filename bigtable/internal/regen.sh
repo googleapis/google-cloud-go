@@ -64,8 +64,11 @@ for up in "${!filename_map[@]}"; do
   cat $tmpdir/$UPSTREAM_SUBDIR/$up |
     # Adjust proto imports.
     sed -f $import_fixes |
-    # Drop the UndeleteCluster RPC method. It returns a google.longrunning.Operation.
+    # Drop long-running cluster and instance RPC methods. They return a google.longrunning.Operation.
     sed '/^  rpc UndeleteCluster(/,/^  }$/d' |
+    sed '/^  rpc CreateInstance(/,/^  }$/d' |
+    sed '/^  rpc CreateCluster(/,/^  }$/d' |
+    sed '/^  rpc UpdateCluster(/,/^  }$/d' |
     # Drop annotations and long-running operations. They aren't supported (yet).
     sed '/"google\/longrunning\/operations.proto"/d' |
     sed '/google.longrunning.Operation/d' |

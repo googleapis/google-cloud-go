@@ -30,16 +30,15 @@ import (
 
 // Config represents a configuration.
 type Config struct {
-	Project, Zone, Cluster string // required
-	Creds                  string // optional
+	Project, Instance string // required
+	Creds             string // optional
 }
 
 // RegisterFlags registers a set of standard flags for this config.
 // It should be called before flag.Parse.
 func (c *Config) RegisterFlags() {
 	flag.StringVar(&c.Project, "project", c.Project, "project ID")
-	flag.StringVar(&c.Zone, "zone", c.Zone, "CBT zone")
-	flag.StringVar(&c.Cluster, "cluster", c.Cluster, "CBT cluster")
+	flag.StringVar(&c.Instance, "instance", c.Instance, "Cloud Bigtable instance")
 	flag.StringVar(&c.Creds, "creds", c.Creds, "if set, use application credentials in this file")
 }
 
@@ -49,11 +48,8 @@ func (c *Config) CheckFlags() error {
 	if c.Project == "" {
 		missing = append(missing, "-project")
 	}
-	if c.Zone == "" {
-		missing = append(missing, "-zone")
-	}
-	if c.Cluster == "" {
-		missing = append(missing, "-cluster")
+	if c.Instance == "" {
+		missing = append(missing, "-instance")
 	}
 	if len(missing) > 0 {
 		return fmt.Errorf("Missing %s", strings.Join(missing, " and "))
@@ -93,10 +89,8 @@ func Load() (*Config, error) {
 			return nil, fmt.Errorf("Unknown key in %s: %q", filename, key)
 		case "project":
 			c.Project = val
-		case "zone":
-			c.Zone = val
-		case "cluster":
-			c.Cluster = val
+		case "instance":
+			c.Instance = val
 		case "creds":
 			c.Creds = val
 		}

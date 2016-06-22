@@ -28,13 +28,30 @@ func TestConcurrentMutationsAndGC(t *testing.T) {
 	}
 	const name = `cluster/tables/t`
 	tbl := s.tables[name]
-	req := &bttspb.CreateColumnFamilyRequest{Name: name, ColumnFamilyId: "cf"}
-	fam, err := s.CreateColumnFamily(ctx, req)
+	req := &bttspb.ModifyColumnFamiliesRequest{
+		Name: name,
+		Modifications: []*bttspb.ModifyColumnFamiliesRequest_Modification{
+			{
+				Id:  "cf",
+				Mod: &bttspb.ModifyColumnFamiliesRequest_Modification_Create{Create: &bttdpb.ColumnFamily{}},
+			},
+		},
+	}
+	_, err := s.ModifyColumnFamilies(ctx, req)
 	if err != nil {
 		t.Fatal(err)
 	}
-	fam.GcRule = &bttdpb.GcRule{Rule: &bttdpb.GcRule_MaxNumVersions{MaxNumVersions: 1}}
-	if _, err := s.UpdateColumnFamily(ctx, fam); err != nil {
+	req = &bttspb.ModifyColumnFamiliesRequest{
+		Name: name,
+		Modifications: []*bttspb.ModifyColumnFamiliesRequest_Modification{
+			{
+				Id: "cf",
+				Mod: &bttspb.ModifyColumnFamiliesRequest_Modification_Update{
+					Update: &bttdpb.ColumnFamily{GcRule: &bttdpb.GcRule{Rule: &bttdpb.GcRule_MaxNumVersions{MaxNumVersions: 1}}}},
+			},
+		},
+	}
+	if _, err := s.ModifyColumnFamilies(ctx, req); err != nil {
 		t.Fatal(err)
 	}
 

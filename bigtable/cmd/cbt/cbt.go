@@ -42,16 +42,16 @@ import (
 var (
 	oFlag = flag.String("o", "", "if set, redirect stdout to this file")
 
-	config             *cbtrc.Config
-	client             *bigtable.Client
-	adminClient        *bigtable.AdminClient
-	clusterAdminClient *bigtable.ClusterAdminClient
+	config              *cbtrc.Config
+	client              *bigtable.Client
+	adminClient         *bigtable.AdminClient
+	instanceAdminClient *bigtable.InstanceAdminClient
 )
 
 func getClient() *bigtable.Client {
 	if client == nil {
 		var err error
-		client, err = bigtable.NewClient(context.Background(), config.Project, config.Zone, config.Cluster)
+		client, err = bigtable.NewClient(context.Background(), config.Project, config.Instance)
 		if err != nil {
 			log.Fatalf("Making bigtable.Client: %v", err)
 		}
@@ -62,7 +62,7 @@ func getClient() *bigtable.Client {
 func getAdminClient() *bigtable.AdminClient {
 	if adminClient == nil {
 		var err error
-		adminClient, err = bigtable.NewAdminClient(context.Background(), config.Project, config.Zone, config.Cluster)
+		adminClient, err = bigtable.NewAdminClient(context.Background(), config.Project, config.Instance)
 		if err != nil {
 			log.Fatalf("Making bigtable.AdminClient: %v", err)
 		}
@@ -70,15 +70,15 @@ func getAdminClient() *bigtable.AdminClient {
 	return adminClient
 }
 
-func getClusterAdminClient() *bigtable.ClusterAdminClient {
-	if clusterAdminClient == nil {
+func getInstanceAdminClient() *bigtable.InstanceAdminClient {
+	if instanceAdminClient == nil {
 		var err error
-		clusterAdminClient, err = bigtable.NewClusterAdminClient(context.Background(), config.Project)
+		instanceAdminClient, err = bigtable.NewInstanceAdminClient(context.Background(), config.Project)
 		if err != nil {
-			log.Fatalf("Making bigtable.ClusterAdminClient: %v", err)
+			log.Fatalf("Making bigtable.InstanceAdminClient: %v", err)
 		}
 	}
-	return clusterAdminClient
+	return instanceAdminClient
 }
 
 func main() {
@@ -146,11 +146,10 @@ func init() {
 }
 
 var configHelp = `
-For convenience, values of the -project, -zone, -cluster and -creds flags
+For convenience, values of the -project, -instance and -creds flags
 may be specified in ` + cbtrc.Filename() + ` in this format:
 	project = my-project-123
-	zone = us-central1-b
-	cluster = my-cluster
+	instance = my-instance
 	creds = path-to-account-key.json
 All values are optional, and all will be overridden by flags.
 `
@@ -209,10 +208,10 @@ var commands = []struct {
 		Usage: "cbt help [command]",
 	},
 	{
-		Name:  "listclusters",
-		Desc:  "List clusters in a project",
-		do:    doListClusters,
-		Usage: "cbt listclusters",
+		Name:  "listinstances",
+		Desc:  "List instances in a project",
+		do:    doListInstances,
+		Usage: "cbt listinstances",
 	},
 	{
 		Name:  "lookup",
@@ -254,14 +253,6 @@ var commands = []struct {
 			"  If it cannot be parsed, the `@ts` part will be\n" +
 			"  interpreted as part of the value.",
 	},
-	/* TODO(dsymonds): Re-enable when there's a ClusterAdmin API.
-	{
-		Name:  "setclustersize",
-		Desc:  "Set size of a cluster",
-		do:    doSetClusterSize,
-		Usage: "cbt setclustersize <num_nodes>",
-	},
-	*/
 	{
 		Name: "setgcpolicy",
 		Desc: "Set the GC policy for a column family",
@@ -430,19 +421,19 @@ func doHelpReal(ctx context.Context, args ...string) {
 	log.Fatalf("Don't know command %q", args[0])
 }
 
-func doListClusters(ctx context.Context, args ...string) {
+func doListInstances(ctx context.Context, args ...string) {
 	if len(args) != 0 {
-		log.Fatalf("usage: cbt listclusters")
+		log.Fatalf("usage: cbt listinstances")
 	}
-	cis, err := getClusterAdminClient().Clusters(ctx)
+	is, err := getInstanceAdminClient().Instances(ctx)
 	if err != nil {
-		log.Fatalf("Getting list of clusters: %v", err)
+		log.Fatalf("Getting list of instances: %v", err)
 	}
 	tw := tabwriter.NewWriter(os.Stdout, 10, 8, 4, '\t', 0)
-	fmt.Fprintf(tw, "Cluster Name\tZone\tInfo\n")
-	fmt.Fprintf(tw, "------------\t----\t----\n")
-	for _, ci := range cis {
-		fmt.Fprintf(tw, "%s\t%s\t%s (%d serve nodes)\n", ci.Name, ci.Zone, ci.DisplayName, ci.ServeNodes)
+	fmt.Fprintf(tw, "Instance Name\tInfo\n")
+	fmt.Fprintf(tw, "-------------\t----\n")
+	for _, i := range is {
+		fmt.Fprintf(tw, "%s\t%s\n", i.Name, i.DisplayName)
 	}
 	tw.Flush()
 }
@@ -635,21 +626,6 @@ func doSet(ctx context.Context, args ...string) {
 		log.Fatalf("Applying mutation: %v", err)
 	}
 }
-
-/* TODO(dsymonds): Re-enable when there's a ClusterAdmin API.
-func doSetClusterSize(ctx context.Context, args ...string) {
-	if len(args) != 1 {
-		log.Fatalf("usage: cbt setclustersize <num_nodes>")
-	}
-	n, err := strconv.ParseInt(args[0], 0, 32)
-	if err != nil {
-		log.Fatalf("Bad num_nodes value %q: %v", args[0], err)
-	}
-	if err := getAdminClient().SetClusterSize(ctx, int(n)); err != nil {
-		log.Fatalf("Setting cluster size: %v", err)
-	}
-}
-*/
 
 func doSetGCPolicy(ctx context.Context, args ...string) {
 	if len(args) < 3 {

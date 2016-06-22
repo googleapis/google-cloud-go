@@ -37,7 +37,7 @@ creating a new OAuth "Client ID", storing the JSON key somewhere accessible, and
 	...
 	config, err := google.JWTConfigFromJSON(jsonKey, bigtable.Scope) // or bigtable.AdminScope, etc.
 	...
-	client, err := bigtable.NewClient(ctx, project, zone, cluster, cloud.WithTokenSource(config.TokenSource(ctx)))
+	client, err := bigtable.NewClient(ctx, project, instance, cloud.WithTokenSource(config.TokenSource(ctx)))
 	...
 Here, `google` means the golang.org/x/oauth2/google package
 and `cloud` means the google.golang.org/cloud package.
@@ -99,10 +99,10 @@ const (
 	// AdminScope is the OAuth scope for Cloud Bigtable table admin operations.
 	AdminScope = "https://www.googleapis.com/auth/bigtable.admin.table"
 
-	// ClusterAdminScope is the OAuth scope for Cloud Bigtable cluster admin operations.
-	ClusterAdminScope = "https://www.googleapis.com/auth/bigtable.admin.cluster"
+	// InstanceAdminScope is the OAuth scope for Cloud Bigtable instance (and cluster) admin operations.
+	InstanceAdminScope = "https://www.googleapis.com/auth/bigtable.admin.cluster"
 )
 
 // clientUserAgent identifies the version of this package.
 // It should be bumped upon significant changes only.
-const clientUserAgent = "cbt-go/20150727"
+const clientUserAgent = "cbt-go/20160628"

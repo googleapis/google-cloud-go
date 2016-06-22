@@ -19,7 +19,7 @@ The commands are:
 	deletetable               Delete a table
 	doc                       Print godoc-suitable documentation for cbt
 	help                      Print help text
-	listclusters              List clusters in a project
+	listinstances             List instances in a project
 	lookup                    Read from a single row
 	ls                        List tables and column families
 	mddoc                     Print documentation for cbt in Markdown format
@@ -94,10 +94,10 @@ Usage:
 
 
 
-List clusters in a project
+List instances in a project
 
 Usage:
-	cbt listclusters
+	cbt listinstances
 
 
 

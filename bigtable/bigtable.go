@@ -34,18 +34,18 @@ import (
 
 const prodAddr = "bigtable.googleapis.com:443"
 
-// Client is a client for reading and writing data to tables in a cluster.
+// Client is a client for reading and writing data to tables in an instance.
 //
 // A Client is safe to use concurrently, except for its Close method.
 type Client struct {
 	conn   *grpc.ClientConn
-	client btspb.BigtableServiceClient
+	client btspb.BigtableClient
 
-	project, zone, cluster string
+	project, instance string
 }
 
-// NewClient creates a new Client for a given project, zone and cluster.
-func NewClient(ctx context.Context, project, zone, cluster string, opts ...cloud.ClientOption) (*Client, error) {
+// NewClient creates a new Client for a given project and instance.
+func NewClient(ctx context.Context, project, instance string, opts ...cloud.ClientOption) (*Client, error) {
 	o := []cloud.ClientOption{
 		cloud.WithEndpoint(prodAddr),
 		cloud.WithScopes(Scope),
@@ -58,21 +58,20 @@ func NewClient(ctx context.Context, project, zone, cluster string, opts ...cloud
 	}
 	return &Client{
 		conn:   conn,
-		client: btspb.NewBigtableServiceClient(conn),
+		client: btspb.NewBigtableClient(conn),
 
-		project: project,
-		zone:    zone,
-		cluster: cluster,
+		project:  project,
+		instance: instance,
 	}, nil
 }
 
 // Close closes the Client.
-func (c *Client) Close() {
-	c.conn.Close()
+func (c *Client) Close() error {
+	return c.conn.Close()
 }
 
 func (c *Client) fullTableName(table string) string {
-	return fmt.Sprintf("projects/%s/zones/%s/clusters/%s/tables/%s", c.project, c.zone, c.cluster, table)
+	return fmt.Sprintf("projects/%s/instances/%s/tables/%s", c.project, c.instance, table)
 }
 
 // A Table refers to a table.
@@ -95,25 +94,26 @@ func (c *Client) Open(table string) *Table {
 
 // ReadRows reads rows from a table. f is called for each row.
 // If f returns false, the stream is shut down and ReadRows returns.
-// f owns its argument, and f is called serially.
+// f owns its argument, and f is called serially in order by row key.
 //
 // By default, the yielded rows will contain all values in all cells.
 // Use RowFilter to limit the cells returned.
-func (t *Table) ReadRows(ctx context.Context, arg RowRange, f func(Row) bool, opts ...ReadOption) error {
+func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
 	req := &btspb.ReadRowsRequest{
 		TableName: t.c.fullTableName(t.table),
-		Target:    &btspb.ReadRowsRequest_RowRange{arg.proto()},
+		Rows:      arg.proto(),
 	}
 	for _, opt := range opts {
 		opt.set(req)
 	}
 	ctx, cancel := context.WithCancel(ctx) // for aborting the stream
 	defer cancel()
+
 	stream, err := t.c.client.ReadRows(ctx, req)
 	if err != nil {
 		return err
 	}
-	cr := new(chunkReader)
+	cr := newChunkReader()
 	for {
 		res, err := stream.Recv()
 		if err == io.EOF {
@@ -122,7 +122,14 @@ func (t *Table) ReadRows(ctx context.Context, arg RowRange, f func(Row) bool, op
 		if err != nil {
 			return err
 		}
-		if row := cr.process(res); row != nil {
+		for _, cc := range res.Chunks {
+			row, err := cr.Process(cc)
+			if err != nil {
+				return err
+			}
+			if row == nil {
+				continue
+			}
 			if !f(row) {
 				// Cancel and drain stream.
 				cancel()
@@ -134,6 +141,9 @@ func (t *Table) ReadRows(ctx context.Context, arg RowRange, f func(Row) bool, op
 					}
 				}
 			}
+		}
+		if err := cr.Close(); err != nil {
+			return err
 		}
 	}
 	return nil
@@ -148,42 +158,6 @@ func (t *Table) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Ro
 		return true
 	}, opts...)
 	return r, err
-}
-
-type chunkReader struct {
-	partial map[string]Row // incomplete rows
-}
-
-// process handles a single btspb.ReadRowsResponse.
-// If it completes a row, that row is returned.
-func (cr *chunkReader) process(rrr *btspb.ReadRowsResponse) Row {
-	if cr.partial == nil {
-		cr.partial = make(map[string]Row)
-	}
-	row := string(rrr.RowKey)
-	r := cr.partial[row]
-	if r == nil {
-		r = make(Row)
-		cr.partial[row] = r
-	}
-	for _, chunk := range rrr.Chunks {
-		switch c := chunk.Chunk.(type) {
-		case *btspb.ReadRowsResponse_Chunk_ResetRow:
-			r = make(Row)
-			cr.partial[row] = r
-			continue
-		case *btspb.ReadRowsResponse_Chunk_CommitRow:
-			delete(cr.partial, row)
-			if len(r) == 0 {
-				// Treat zero-content commits as absent.
-				continue
-			}
-			return r // assume that this is the last chunk
-		case *btspb.ReadRowsResponse_Chunk_RowContents:
-			decodeFamilyProto(r, row, c.RowContents)
-		}
-	}
-	return nil
 }
 
 // decodeFamilyProto adds the cell data from f to the given row.
@@ -202,7 +176,22 @@ func decodeFamilyProto(r Row, row string, f *btdpb.Family) {
 	}
 }
 
-// A RowRange is used to describe the rows to be read.
+// RowSet is a set of rows to be read. It is satisfied by RowList and RowRange.
+type RowSet interface {
+	proto() *btdpb.RowSet
+}
+
+// RowList is a sequence of row keys.
+type RowList []string
+
+func (r RowList) proto() *btdpb.RowSet {
+	keys := make([][]byte, len(r))
+	for i, row := range r {
+		keys[i] = []byte(row)
+	}
+	return &btdpb.RowSet{RowKeys: keys}
+}
+
 // A RowRange is a half-open interval [Start, Limit) encompassing
 // all the rows with keys at least as large as Start, and less than Limit.
 // (Bigtable string comparison is the same as Go's.)
@@ -239,14 +228,13 @@ func (r RowRange) String() string {
 	return fmt.Sprintf("[%s,%q)", a, r.limit)
 }
 
-func (r RowRange) proto() *btdpb.RowRange {
-	if r.Unbounded() {
-		return &btdpb.RowRange{StartKey: []byte(r.start)}
+func (r RowRange) proto() *btdpb.RowSet {
+	var rr *btdpb.RowRange
+	rr = &btdpb.RowRange{StartKey: &btdpb.RowRange_StartKeyClosed{StartKeyClosed: []byte(r.start)}}
+	if !r.Unbounded() {
+		rr.EndKey = &btdpb.RowRange_EndKeyOpen{EndKeyOpen: []byte(r.limit)}
 	}
-	return &btdpb.RowRange{
-		StartKey: []byte(r.start),
-		EndKey:   []byte(r.limit),
-	}
+	return &btdpb.RowSet{RowRanges: []*btdpb.RowRange{rr}}
 }
 
 // SingleRow returns a RowRange for reading a single row.
@@ -309,29 +297,7 @@ func LimitRows(limit int64) ReadOption { return limitRows{limit} }
 
 type limitRows struct{ limit int64 }
 
-func (lr limitRows) set(req *btspb.ReadRowsRequest) { req.NumRowsLimit = lr.limit }
-
-// A Row is returned by ReadRow. The map is keyed by column family (the prefix
-// of the column name before the colon). The values are the returned ReadItems
-// for that column family in the order returned by Read.
-type Row map[string][]ReadItem
-
-// Key returns the row's key, or "" if the row is empty.
-func (r Row) Key() string {
-	for _, items := range r {
-		if len(items) > 0 {
-			return items[0].Row
-		}
-	}
-	return ""
-}
-
-// A ReadItem is returned by Read. A ReadItem contains data from a specific row and column.
-type ReadItem struct {
-	Row, Column string
-	Timestamp   Timestamp
-	Value       []byte
-}
+func (lr limitRows) set(req *btspb.ReadRowsRequest) { req.RowsLimit = lr.limit }
 
 // Apply applies a Mutation to a specific row.
 func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error {
@@ -499,21 +465,34 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 		}
 		req.Entries[i] = &btspb.MutateRowsRequest_Entry{RowKey: []byte(key), Mutations: mut.ops}
 	}
-	res, err := t.c.client.MutateRows(ctx, req)
+	stream, err := t.c.client.MutateRows(ctx, req)
 	if err != nil {
 		return nil, err
 	}
+
 	var errors []error // kept as nil if everything is OK
-	for i, status := range res.Statuses {
-		if status.Code == int32(codes.OK) {
-			continue
+	for {
+		res, err := stream.Recv()
+		if err == io.EOF {
+			break
 		}
-		if errors == nil {
-			errors = make([]error, len(res.Statuses))
+		if err != nil {
+			return nil, err
 		}
-		errors[i] = grpc.Errorf(codes.Code(status.Code), status.Message)
+
+		for i, entry := range res.Entries {
+			status := entry.Status
+			if status.Code == int32(codes.OK) {
+				continue
+			}
+			if errors == nil {
+				errors = make([]error, len(rowKeys))
+			}
+			errors[i] = grpc.Errorf(codes.Code(status.Code), status.Message)
+		}
+		after(res)
 	}
-	after(res)
+
 	return errors, nil
 }
 
@@ -546,7 +525,7 @@ func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadMod
 		return nil, err
 	}
 	r := make(Row)
-	for _, fam := range res.Families { // res is *btdpb.Row, fam is *btdpb.Family
+	for _, fam := range res.Row.Families { // res is *btdpb.Row, fam is *btdpb.Family
 		decodeFamilyProto(r, row, fam)
 	}
 	return r, nil
