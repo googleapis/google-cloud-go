@@ -37,6 +37,13 @@ Google API                     | Status       | Package
 Documentation and examples are available at
 https://godoc.org/google.golang.org/cloud
 
+## Go Versions Supported
+
+We support the two most recent major versions of Go. If Google App Engine uses
+an older version, we support that as well. You can see which versions are
+currently supported by looking at the lines following `go:` in
+[`.travis.yml`](.travis.yml).
+
 ## Authorization
 
 By default, each API will use [Google Application Default Credentials][default-creds]
