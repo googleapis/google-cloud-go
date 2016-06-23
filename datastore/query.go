@@ -391,9 +391,16 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 		if t.id == nil {
 			return errExpiredTransaction
 		}
+		if q.eventual {
+			return errors.New("datastore: cannot use EventualConsistency query in a transaction")
+		}
 		req.ReadOptions = &pb.ReadOptions{
 			ConsistencyType: &pb.ReadOptions_Transaction{t.id},
 		}
+	}
+
+	if q.eventual {
+		req.ReadOptions = &pb.ReadOptions{&pb.ReadOptions_ReadConsistency_{pb.ReadOptions_EVENTUAL}}
 	}
 
 	req.QueryType = &pb.RunQueryRequest_Query{dst}

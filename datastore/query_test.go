@@ -493,3 +493,46 @@ func TestNamespaceQuery(t *testing.T) {
 		t.Errorf("Count: got namespace %q, want %q", got, want)
 	}
 }
+
+func TestReadOptions(t *testing.T) {
+	tid := []byte{1}
+	for _, test := range []struct {
+		q    *Query
+		want *pb.ReadOptions
+	}{
+		{
+			q:    NewQuery(""),
+			want: nil,
+		},
+		{
+			q:    NewQuery("").Transaction(nil),
+			want: nil,
+		},
+		{
+			q:    NewQuery("").Transaction(&Transaction{id: tid}),
+			want: &pb.ReadOptions{&pb.ReadOptions_Transaction{tid}},
+		},
+		{
+			q:    NewQuery("").EventualConsistency(),
+			want: &pb.ReadOptions{&pb.ReadOptions_ReadConsistency_{pb.ReadOptions_EVENTUAL}},
+		},
+	} {
+		req := &pb.RunQueryRequest{}
+		if err := test.q.toProto(req); err != nil {
+			t.Fatalf("%+v: got %v, want no error", test.q, err)
+		}
+		if got := req.ReadOptions; !proto.Equal(got, test.want) {
+			t.Errorf("%+v:\ngot  %+v\nwant %+v", test.q, got, test.want)
+		}
+	}
+	// Test errors.
+	for _, q := range []*Query{
+		NewQuery("").Transaction(&Transaction{id: nil}),
+		NewQuery("").Transaction(&Transaction{id: tid}).EventualConsistency(),
+	} {
+		req := &pb.RunQueryRequest{}
+		if err := q.toProto(req); err == nil {
+			t.Errorf("%+v: got nil, wanted error", q)
+		}
+	}
+}

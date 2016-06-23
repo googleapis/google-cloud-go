@@ -528,6 +528,9 @@ func TestLargeQuery(t *testing.T) {
 }
 
 func TestEventualConsistency(t *testing.T) {
+	// TODO(jba): either make this actually test eventual consistency, or
+	// delete it. Currently it behaves the same with or without the
+	// EventualConsistency call.
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
