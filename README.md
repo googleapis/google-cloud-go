@@ -19,7 +19,7 @@ Google API                     | Status       | Package
 [Datastore][cloud-datastore]   | beta         | [`google.golang.org/cloud/datastore`][cloud-datastore-ref]
 [Storage][cloud-storage]       | beta         | [`google.golang.org/cloud/storage`][cloud-storage-ref]
 [Pub/Sub][cloud-pubsub]        | experimental | [`google.golang.org/cloud/pubsub`][cloud-pubsub-ref]
-[BigTable][cloud-bigtable]     | stable       | [`google.golang.org/cloud/bigtable`][cloud-bigtable-ref]
+[Bigtable][cloud-bigtable]     | stable       | [`google.golang.org/cloud/bigtable`][cloud-bigtable-ref]
 [BigQuery][cloud-bigquery]     | experimental | [`google.golang.org/cloud/bigquery`][cloud-bigquery-ref]
 [Logging][cloud-logging]       | experimental | [`google.golang.org/cloud/logging`][cloud-logging-ref]
 
