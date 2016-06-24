@@ -69,6 +69,9 @@ func NewHTTPClient(ctx context.Context, opt ...cloud.ClientOption) (*http.Client
 	return oauth2.NewClient(ctx, o.TokenSource), o.Endpoint, nil
 }
 
+// Set at init time by dial_appengine.go. If nil, we're not on App Engine.
+var appengineDialerHook func(context.Context) grpc.DialOption
+
 // DialGRPC returns a GRPC connection for use communicating with a Google cloud
 // service, configured with the given ClientOptions.
 func DialGRPC(ctx context.Context, opt ...cloud.ClientOption) (*grpc.ClientConn, error) {
@@ -92,6 +95,10 @@ func DialGRPC(ctx context.Context, opt ...cloud.ClientOption) (*grpc.ClientConn,
 	grpcOpts := []grpc.DialOption{
 		grpc.WithPerRPCCredentials(oauth.TokenSource{o.TokenSource}),
 		grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")),
+	}
+	if appengineDialerHook != nil {
+		// Use the Socket API on App Engine.
+		grpcOpts = append(grpcOpts, appengineDialerHook(ctx))
 	}
 	grpcOpts = append(grpcOpts, o.GRPCDialOpts...)
 	if o.UserAgent != "" {
