@@ -242,6 +242,10 @@ func TestIntegration(t *testing.T) {
 	if err := c.Ping(); err != nil {
 		t.Fatalf("error pinging logging api: %v", err)
 	}
+	// Ping twice, to verify that deduping doesn't change the result.
+	if err := c.Ping(); err != nil {
+		t.Fatalf("error pinging logging api: %v", err)
+	}
 
 	if err := c.LogSync(Entry{Payload: customJSONObject{}}); err != nil {
 		t.Fatalf("error writing log: %v", err)
@@ -281,6 +285,10 @@ func TestIntegrationPingBadProject(t *testing.T) {
 		if err != nil {
 			t.Fatalf("project %s: error creating client: %v", projID, err)
 		}
+		if err := c.Ping(); err == nil {
+			t.Errorf("project %s: want error pinging logging api, got nil", projID)
+		}
+		// Ping twice, just to make sure the deduping doesn't mess with the result.
 		if err := c.Ping(); err == nil {
 			t.Errorf("project %s: want error pinging logging api, got nil", projID)
 		}

@@ -31,7 +31,7 @@ import (
 )
 
 // Scope is the OAuth2 scope necessary to use Google Cloud Logging.
-const Scope = api.LoggingAdminScope
+const Scope = api.LoggingWriteScope
 
 // Level is the log level.
 type Level int
@@ -335,10 +335,20 @@ func (c *Client) timeoutFlush() {
 	}
 }
 
-// Ping reports whether the client's connection to Google Cloud
-// Logging and the authentication configuration are valid.
+// Ping reports whether the client's connection to Google Cloud Logging and the
+// authentication configuration are valid. To accomplish this, Ping writes a
+// log entry "ping" to a log named "ping".
 func (c *Client) Ping() error {
-	_, err := api.NewProjectsMetricsService(c.svc).List(c.projID).Do()
+	ent := &api.LogEntry{
+		Metadata: &api.LogEntryMetadata{
+			ServiceName: c.serviceName(),
+		},
+		InsertId:    "ping", // dedup, so there is only ever one entry
+		TextPayload: "ping",
+	}
+	_, err := c.logs.Write(c.projID, "ping", &api.WriteLogEntriesRequest{
+		Entries: []*api.LogEntry{ent},
+	}).Do()
 	return err
 }
 
