@@ -37,6 +37,10 @@ Google API                     | Status       | Package
 Documentation and examples are available at
 https://godoc.org/google.golang.org/cloud
 
+Visit or join the
+[google-api-go-announce group](https://groups.google.com/forum/#!forum/google-api-go-announce)
+for updates on these packages.
+
 ## Go Versions Supported
 
 We support the two most recent major versions of Go. If Google App Engine uses
