@@ -29,6 +29,15 @@ The commands are:
 
 Use "cbt help <command>" for more information about a command.
 
+The options are:
+
+	-project string
+		project ID
+	-instance string
+		Cloud Bigtable instance
+	-creds string
+		if set, use application credentials in this file
+
 
 Count rows in a table
 

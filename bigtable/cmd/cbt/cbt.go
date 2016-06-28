@@ -350,9 +350,23 @@ func doDoc(ctx context.Context, args ...string)   { doDocFn(ctx, args...) }
 func doHelp(ctx context.Context, args ...string)  { doHelpFn(ctx, args...) }
 func doMDDoc(ctx context.Context, args ...string) { doMDDocFn(ctx, args...) }
 
+func docFlags() []*flag.Flag {
+	// Only include specific flags, in a specific order.
+	var flags []*flag.Flag
+	for _, name := range []string{"project", "instance", "creds"} {
+		f := flag.Lookup(name)
+		if f == nil {
+			log.Fatalf("Flag not linked: -%s", name)
+		}
+		flags = append(flags, f)
+	}
+	return flags
+}
+
 func doDocReal(ctx context.Context, args ...string) {
 	data := map[string]interface{}{
 		"Commands": commands,
+		"Flags":    docFlags(),
 	}
 	var buf bytes.Buffer
 	if err := docTemplate.Execute(&buf, data); err != nil {
@@ -393,6 +407,11 @@ The commands are:
 	{{printf "%-25s %s" .Name .Desc}}{{end}}
 
 Use "cbt help <command>" for more information about a command.
+
+The options are:
+{{range .Flags}}
+	-{{.Name}} string
+		{{.Usage}}{{end}}
 
 {{range .Commands}}
 {{.Desc}}
@@ -506,6 +525,7 @@ func doLS(ctx context.Context, args ...string) {
 func doMDDocReal(ctx context.Context, args ...string) {
 	data := map[string]interface{}{
 		"Commands": commands,
+		"Flags":    docFlags(),
 	}
 	var buf bytes.Buffer
 	if err := mddocTemplate.Execute(&buf, data); err != nil {
@@ -529,6 +549,11 @@ The commands are:
 	{{printf "%-25s %s" .Name .Desc}}{{end}}
 
 Use "cbt help <command>" for more information about a command.
+
+The options are:
+{{range .Flags}}
+	-{{.Name}} string
+		{{.Usage}}{{end}}
 
 {{range .Commands}}
 ## {{.Desc}}
