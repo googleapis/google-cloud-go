@@ -341,6 +341,8 @@ func (c *Client) timeoutFlush() {
 func (c *Client) Ping() error {
 	ent := &api.LogEntry{
 		Metadata: &api.LogEntryMetadata{
+			// Identical timestamps required for deduping in addition to identical insert IDs.
+			Timestamp:   time.Unix(0, 0).UTC().Format(time.RFC3339Nano),
 			ServiceName: c.serviceName(),
 		},
 		InsertId:    "ping", // dedup, so there is only ever one entry
