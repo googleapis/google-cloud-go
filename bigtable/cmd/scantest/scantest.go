@@ -35,6 +35,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/cloud/bigtable"
 	"google.golang.org/cloud/bigtable/internal/cbtrc"
+	"google.golang.org/cloud/bigtable/internal/stat"
 )
 
 var (
@@ -112,21 +113,21 @@ func main() {
 	}
 	wg.Wait()
 
-	agg := newAggregate(scans.ds)
+	agg := stat.NewAggregate(scans.ds)
 	log.Printf("Scans (%d ok / %d tries):\nscan times:\n%v\nthroughput (rows/second):\n%v",
 		scans.ok, scans.tries, agg, throughputString(agg))
 }
 
-func throughputString(agg *aggregate) string {
+func throughputString(agg *stat.Aggregate) string {
 	var buf bytes.Buffer
 	tw := tabwriter.NewWriter(&buf, 0, 0, 1, ' ', 0) // one-space padding
 	rowLimitF := float64(*rowLimit)
 	fmt.Fprintf(
 		tw,
 		"min:\t%.2f\nmedian:\t%.2f\nmax:\t%.2f\n",
-		rowLimitF/agg.max.Seconds(),
-		rowLimitF/agg.median.Seconds(),
-		rowLimitF/agg.min.Seconds())
+		rowLimitF/agg.Max.Seconds(),
+		rowLimitF/agg.Median.Seconds(),
+		rowLimitF/agg.Min.Seconds())
 	tw.Flush()
 	return buf.String()
 }

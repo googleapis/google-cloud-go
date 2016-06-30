@@ -107,21 +107,20 @@ const (
 func main() {
 	var (
 		project   = flag.String("project", "", "The name of the project.")
-		cluster   = flag.String("cluster", "", "The name of the Cloud Bigtable cluster.")
-		zone      = flag.String("zone", "", "The zone of the Cloud Bigtable cluster.")
+		instance  = flag.String("instance", "", "The name of the Cloud Bigtable instance.")
 		tableName = flag.String("table", "docindex", "The name of the table containing the documents and index.")
 		port      = flag.Int("port", 8080, "TCP port for server.")
 	)
 	flag.Parse()
 
 	// Make an admin client.
-	adminClient, err := bigtable.NewAdminClient(context.Background(), *project, *zone, *cluster)
+	adminClient, err := bigtable.NewAdminClient(context.Background(), *project, *instance)
 	if err != nil {
 		log.Fatal("Bigtable NewAdminClient:", err)
 	}
 
 	// Make a regular client.
-	client, err := bigtable.NewClient(context.Background(), *project, *zone, *cluster)
+	client, err := bigtable.NewClient(context.Background(), *project, *instance)
 	if err != nil {
 		log.Fatal("Bigtable NewClient:", err)
 	}

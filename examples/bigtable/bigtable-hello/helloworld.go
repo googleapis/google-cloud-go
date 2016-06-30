@@ -26,9 +26,8 @@ import (
 
 // User-provided constants.
 const (
-	project = "PROJECT_ID"
-	zone    = "CLUSTER_ZONE"
-	cluster = "CLUSTER_NAME"
+	project  = "PROJECT_ID"
+	instance = "INSTANCE"
 )
 
 var (
@@ -44,7 +43,7 @@ func main() {
 
 	// Set up admin client, tables, and column families.
 	// NewAdminClient uses Application Default Credentials to authenticate.
-	adminClient, err := bigtable.NewAdminClient(ctx, project, zone, cluster)
+	adminClient, err := bigtable.NewAdminClient(ctx, project, instance)
 	if err != nil {
 		log.Fatalf("Unable to create a table admin client. %v", err)
 	}
@@ -70,7 +69,7 @@ func main() {
 
 	// Set up Bigtable data operations client.
 	// NewClient uses Application Default Credentials to authenticate.
-	client, err = bigtable.NewClient(ctx, project, zone, cluster)
+	client, err = bigtable.NewClient(ctx, project, instance)
 	if err != nil {
 		log.Fatalf("Unable to create data operations client. %v", err)
 	}

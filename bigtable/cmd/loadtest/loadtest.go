@@ -33,6 +33,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/cloud/bigtable"
 	"google.golang.org/cloud/bigtable/internal/cbtrc"
+	"google.golang.org/cloud/bigtable/internal/stat"
 )
 
 var (
@@ -132,8 +133,8 @@ func main() {
 	}
 	wg.Wait()
 
-	log.Printf("Reads (%d ok / %d tries):\n%v", reads.ok, reads.tries, newAggregate(reads.ds))
-	log.Printf("Writes (%d ok / %d tries):\n%v", writes.ok, writes.tries, newAggregate(writes.ds))
+	log.Printf("Reads (%d ok / %d tries):\n%v", reads.ok, reads.tries, stat.NewAggregate(reads.ds))
+	log.Printf("Writes (%d ok / %d tries):\n%v", writes.ok, writes.tries, stat.NewAggregate(writes.ds))
 }
 
 var allStats int64 // atomic

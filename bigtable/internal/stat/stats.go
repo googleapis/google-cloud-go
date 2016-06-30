@@ -1,4 +1,4 @@
-package main
+package stat
 
 import (
 	"bytes"
@@ -53,45 +53,45 @@ func quantile(data []time.Duration, k, q int) (quantile time.Duration, ok bool) 
 	return time.Duration(weightLower*float64(data[lower]) + weightUpper*float64(data[upper])), true
 }
 
-type aggregate struct {
-	min, median, max time.Duration
-	p95, p99         time.Duration // percentiles
+type Aggregate struct {
+	Min, Median, Max time.Duration
+	P95, P99         time.Duration // percentiles
 }
 
-// newAggregate constructs an aggregate from latencies. Returns nil if latencies does not contain aggregateable data.
-func newAggregate(latencies []time.Duration) *aggregate {
-	var agg aggregate
+// NewAggregate constructs an aggregate from latencies. Returns nil if latencies does not contain aggregateable data.
+func NewAggregate(latencies []time.Duration) *Aggregate {
+	var agg Aggregate
 
 	if len(latencies) == 0 {
 		return nil
 	}
 	var ok bool
-	if agg.min, ok = quantile(latencies, 0, 2); !ok {
+	if agg.Min, ok = quantile(latencies, 0, 2); !ok {
 		return nil
 	}
-	if agg.median, ok = quantile(latencies, 1, 2); !ok {
+	if agg.Median, ok = quantile(latencies, 1, 2); !ok {
 		return nil
 	}
-	if agg.max, ok = quantile(latencies, 2, 2); !ok {
+	if agg.Max, ok = quantile(latencies, 2, 2); !ok {
 		return nil
 	}
-	if agg.p95, ok = quantile(latencies, 95, 100); !ok {
+	if agg.P95, ok = quantile(latencies, 95, 100); !ok {
 		return nil
 	}
-	if agg.p99, ok = quantile(latencies, 99, 100); !ok {
+	if agg.P99, ok = quantile(latencies, 99, 100); !ok {
 		return nil
 	}
 	return &agg
 }
 
-func (agg *aggregate) String() string {
+func (agg *Aggregate) String() string {
 	if agg == nil {
 		return "no data"
 	}
 	var buf bytes.Buffer
 	tw := tabwriter.NewWriter(&buf, 0, 0, 1, ' ', 0) // one-space padding
 	fmt.Fprintf(tw, "min:\t%v\nmedian:\t%v\nmax:\t%v\n95th percentile:\t%v\n99th percentile:\t%v\n",
-		agg.min, agg.median, agg.max, agg.p95, agg.p99)
+		agg.Min, agg.Median, agg.Max, agg.P95, agg.P99)
 	tw.Flush()
 	return buf.String()
 }
