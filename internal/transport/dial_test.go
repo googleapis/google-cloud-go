@@ -51,7 +51,7 @@ func TestGRPCHook(t *testing.T) {
 		cloud.WithGRPCDialOption(expectedDialer),
 		cloud.WithEndpoint("example.google.com:443"))
 	if err != nil {
-		t.Errorf("DialGRPC: got %q, want nil")
+		t.Errorf("DialGRPC: error %v, want nil", err)
 	}
 
 	// gRPC doesn't connect before the first call.
