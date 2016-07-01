@@ -28,7 +28,7 @@ import (
 // Check that user optioned grpc.WithDialer option overrides the App Engine hook.
 func TestGRPCHook(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
-	var expected, notExpected bool
+	expected := false
 
 	appengineDialerHook = (func(ctx context.Context) grpc.DialOption {
 		return grpc.WithDialer(func(addr string, timeout time.Duration) (net.Conn, error) {
