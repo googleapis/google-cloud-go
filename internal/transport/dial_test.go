@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"golang.org/x/net/context"
+	"golang.org/x/oauth2"
 	"google.golang.org/cloud"
 	"google.golang.org/grpc"
 )
@@ -48,6 +49,7 @@ func TestGRPCHook(t *testing.T) {
 	})
 
 	conn, err := DialGRPC(ctx,
+		cloud.WithTokenSource(oauth2.StaticTokenSource(nil)), // No creds.
 		cloud.WithGRPCDialOption(expectedDialer),
 		cloud.WithEndpoint("example.google.com:443"))
 	if err != nil {
