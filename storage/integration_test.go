@@ -193,6 +193,30 @@ func TestObjects(t *testing.T) {
 		contents[obj] = c
 	}
 
+	// Test bucket.List.
+	q := &Query{Prefix: "obj"}
+	missing := map[string]bool{}
+	for _, o := range objects {
+		missing[o] = true
+	}
+	for {
+		objs, err := bkt.List(ctx, q)
+		if err != nil {
+			t.Errorf("List: %v", err)
+			break
+		}
+		for _, oa := range objs.Results {
+			delete(missing, oa.Name)
+		}
+		if objs.Next == nil {
+			break
+		}
+		q = objs.Next
+	}
+	if len(missing) > 0 {
+		t.Errorf("bucket.List: missing %v", missing)
+	}
+
 	// Test Reader.
 	for _, obj := range objects {
 		t.Logf("Creating a reader to read %v", obj)
