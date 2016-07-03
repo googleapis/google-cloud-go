@@ -486,8 +486,15 @@ func TestACL(t *testing.T) {
 	bkt := client.Bucket(bucket)
 
 	entity := ACLEntity("domain-google.com")
-	if err := client.Bucket(bucket).DefaultObjectACL().Set(ctx, entity, RoleReader); err != nil {
+	rule := ACLRule{Entity: entity, Role: RoleReader}
+	if err := bkt.DefaultObjectACL().Set(ctx, entity, RoleReader); err != nil {
 		t.Errorf("Can't put default ACL rule for the bucket, errored with %v", err)
+	}
+	acl, err := bkt.DefaultObjectACL().List(ctx)
+	if err != nil {
+		t.Errorf("DefaultObjectACL.List for bucket %q: %v", bucket, err)
+	} else if !hasRule(acl, rule) {
+		t.Errorf("default ACL missing %#v", rule)
 	}
 	aclObjects := []string{"acl1" + suffix, "acl2" + suffix}
 	for _, obj := range aclObjects {
@@ -503,42 +510,46 @@ func TestACL(t *testing.T) {
 	}
 	name := aclObjects[0]
 	o := bkt.Object(name)
-	acl, err := o.ACL().List(ctx)
+	acl, err = o.ACL().List(ctx)
 	if err != nil {
 		t.Errorf("Can't retrieve ACL of %v", name)
-	}
-	aclFound := false
-	for _, rule := range acl {
-		if rule.Entity == entity && rule.Role == RoleReader {
-			aclFound = true
-		}
-	}
-	if !aclFound {
-		t.Error("Expected to find an ACL rule for google.com domain users, but not found")
+	} else if !hasRule(acl, rule) {
+		t.Errorf("object ACL missing %+v", rule)
 	}
 	if err := o.ACL().Delete(ctx, entity); err != nil {
-		t.Errorf("Can't delete the ACL rule for the entity: %v", entity)
+		t.Errorf("object ACL: could not delete entity %s", entity)
+	}
+	// Delete the default ACL rule. We can't move this code earlier in the
+	// test, because the test depends on the fact that the object ACL inherits
+	// it.
+	if err := bkt.DefaultObjectACL().Delete(ctx, entity); err != nil {
+		t.Errorf("default ACL: could not delete entity %s", entity)
 	}
 
-	if err := bkt.ACL().Set(ctx, "user-jbd@google.com", RoleReader); err != nil {
+	entity2 := ACLEntity("user-jbd@google.com")
+	rule2 := ACLRule{Entity: entity2, Role: RoleReader}
+	if err := bkt.ACL().Set(ctx, entity2, RoleReader); err != nil {
 		t.Errorf("Error while putting bucket ACL rule: %v", err)
 	}
 	bACL, err := bkt.ACL().List(ctx)
 	if err != nil {
 		t.Errorf("Error while getting the ACL of the bucket: %v", err)
+	} else if !hasRule(bACL, rule2) {
+		t.Error("bucket ACL missing %+v", rule2)
 	}
-	bACLFound := false
-	for _, rule := range bACL {
-		if rule.Entity == "user-jbd@google.com" && rule.Role == RoleReader {
-			bACLFound = true
-		}
-	}
-	if !bACLFound {
-		t.Error("Expected to find an ACL rule for jbd@google.com user, but not found")
-	}
-	if err := bkt.ACL().Delete(ctx, "user-jbd@google.com"); err != nil {
+	if err := bkt.ACL().Delete(ctx, entity2); err != nil {
 		t.Errorf("Error while deleting bucket ACL rule: %v", err)
 	}
+
+}
+
+func hasRule(acl []ACLRule, rule ACLRule) bool {
+	for _, r := range acl {
+		if r == rule {
+			return true
+		}
+	}
+	return false
 }
 
 func TestValidObjectNames(t *testing.T) {
