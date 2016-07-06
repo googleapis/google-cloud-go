@@ -26,6 +26,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -193,29 +194,8 @@ func TestObjects(t *testing.T) {
 		contents[obj] = c
 	}
 
-	// Test bucket.List.
-	q := &Query{Prefix: "obj"}
-	missing := map[string]bool{}
-	for _, o := range objects {
-		missing[o] = true
-	}
-	for {
-		objs, err := bkt.List(ctx, q)
-		if err != nil {
-			t.Errorf("List: %v", err)
-			break
-		}
-		for _, oa := range objs.Results {
-			delete(missing, oa.Name)
-		}
-		if objs.Next == nil {
-			break
-		}
-		q = objs.Next
-	}
-	if len(missing) > 0 {
-		t.Errorf("bucket.List: missing %v", missing)
-	}
+	testBucketList(t, bkt, objects)
+	testObjectIterator(t, bkt, objects)
 
 	// Test Reader.
 	for _, obj := range objects {
@@ -500,6 +480,67 @@ func TestObjects(t *testing.T) {
 	if err != ErrObjectNotExist {
 		t.Errorf("Copy is expected to be deleted, stat errored with %v", err)
 	}
+}
+
+func testBucketList(t *testing.T, bkt *BucketHandle, objects []string) {
+	ctx := context.Background()
+	q := &Query{Prefix: "obj"}
+	missing := map[string]bool{}
+	for _, o := range objects {
+		missing[o] = true
+	}
+	for {
+		objs, err := bkt.List(ctx, q)
+		if err != nil {
+			t.Errorf("List: unexpected error: %v", err)
+			break
+		}
+		for _, oa := range objs.Results {
+			delete(missing, oa.Name)
+		}
+		if objs.Next == nil {
+			break
+		}
+		q = objs.Next
+	}
+	if len(missing) > 0 {
+		t.Errorf("bucket.List: missing %v", missing)
+	}
+}
+
+func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
+	ctx := context.Background()
+	// Collect the list of items we expect: ObjectAttrs in lexical order by name.
+	names := make([]string, len(objects))
+	copy(names, objects)
+	sort.Strings(names)
+	var attrs []*ObjectAttrs
+	for _, name := range names {
+		attr, err := bkt.Object(name).Attrs(ctx)
+		if err != nil {
+			t.Errorf("Object(%q).Attrs: %v", name, err)
+			return
+		}
+		attrs = append(attrs, attr)
+	}
+
+	it := bkt.Objects(ctx, &Query{Prefix: "obj"})
+	msg, ok := testutil.TestIteratorNext(attrs, Done, func() (interface{}, error) { return it.Next() })
+	if !ok {
+		t.Errorf("ObjectIterator.Next: %s", msg)
+	}
+
+	msg, ok = testutil.TestIteratorNextPageExact(attrs, Done, DefaultPageSize,
+		func() testutil.PagingIterator { return bkt.Objects(ctx, &Query{Prefix: "obj"}) },
+		func(i testutil.PagingIterator) (interface{}, error) {
+			as, _, err := i.(*ObjectIterator).NextPage()
+			return as, err
+		})
+	if !ok {
+		t.Errorf("ObjectIterator.NextPage: %s", msg)
+	}
+
+	// TODO(jba): test query.Delimiter != ""
 }
 
 func TestACL(t *testing.T) {

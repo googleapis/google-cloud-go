@@ -49,6 +49,9 @@ import (
 var (
 	ErrBucketNotExist = errors.New("storage: bucket doesn't exist")
 	ErrObjectNotExist = errors.New("storage: object doesn't exist")
+
+	// Done is returned by iterators in this package when they have no more items.
+	Done = errors.New("storage: no more results")
 )
 
 const userAgent = "gcloud-golang-storage/20151204"
@@ -249,43 +252,163 @@ func (b *BucketHandle) Attrs(ctx context.Context) (*BucketAttrs, error) {
 
 // List lists objects from the bucket. You can specify a query
 // to filter the results. If q is nil, no filtering is applied.
+//
+// Deprecated. Use BucketHandle.Objects instead.
 func (b *BucketHandle) List(ctx context.Context, q *Query) (*ObjectList, error) {
-	req := b.c.raw.Objects.List(b.name)
-	req.Projection("full")
-	if q != nil {
-		req.Delimiter(q.Delimiter)
-		req.Prefix(q.Prefix)
-		req.Versions(q.Versions)
-		req.PageToken(q.Cursor)
-		if q.MaxResults > 0 {
-			req.MaxResults(int64(q.MaxResults))
-		}
-	}
-	resp, err := req.Context(ctx).Do()
-	if err != nil {
+	it := b.Objects(ctx, q)
+	attrs, pres, err := it.NextPage()
+	if err != nil && err != Done {
 		return nil, err
 	}
 	objects := &ObjectList{
-		Results:  make([]*ObjectAttrs, len(resp.Items)),
-		Prefixes: make([]string, len(resp.Prefixes)),
+		Results:  attrs,
+		Prefixes: pres,
 	}
-	for i, item := range resp.Items {
-		objects.Results[i] = newObject(item)
-	}
-	for i, prefix := range resp.Prefixes {
-		objects.Prefixes[i] = prefix
-	}
-	if resp.NextPageToken != "" {
-		next := Query{}
-		if q != nil {
-			// keep the other filtering
-			// criteria if there is a query
-			next = *q
-		}
-		next.Cursor = resp.NextPageToken
-		objects.Next = &next
+	if it.NextPageToken() != "" {
+		objects.Next = &it.query
 	}
 	return objects, nil
+}
+
+func (b *BucketHandle) Objects(ctx context.Context, q *Query) *ObjectIterator {
+	it := &ObjectIterator{
+		ctx:    ctx,
+		bucket: b,
+	}
+	if q != nil {
+		it.query = *q
+	}
+	return it
+}
+
+type ObjectIterator struct {
+	ctx      context.Context
+	bucket   *BucketHandle
+	query    Query
+	pageSize int32
+	objs     []*ObjectAttrs
+	prefixes []string
+	err      error
+}
+
+// Next returns the next result. Its second return value is Done if there are
+// no more results. Once Next returns Done, all subsequent calls will return
+// Done.
+//
+// Internally, Next retrieves results in bulk. You can call SetPageSize as a
+// performance hint to affect how many results are retrieved in a single RPC.
+//
+// SetPageToken should not be called when using Next.
+//
+// Next and NextPage should not be used with the same iterator.
+//
+// If Query.Delimiter is non-empty, Next returns an error. Use NextPage when using delimiters.
+func (it *ObjectIterator) Next() (*ObjectAttrs, error) {
+	if it.query.Delimiter != "" {
+		return nil, errors.New("cannot use ObjectIterator.Next with a delimiter")
+	}
+	if it.err != nil {
+		return nil, it.err
+	}
+	for len(it.objs) == 0 { // "for", not "if", to handle empty pages
+		if it.objs != nil && it.query.Cursor == "" {
+			// We already retrieved the last page.
+			it.err = Done
+			return nil, Done
+		}
+		it.nextPage()
+		if it.err != nil {
+			return nil, it.err
+		}
+	}
+	o := it.objs[0]
+	it.objs = it.objs[1:]
+	return o, nil
+}
+
+const DefaultPageSize = 1000
+
+// NextPage returns the next page of results, both objects (as *ObjectAttrs)
+// and prefixes. Prefixes will be nil if query.Delimiter is empty.
+//
+// NextPage will return exactly the number of results (the total of objects and
+// prefixes) specified by the last call to SetPageSize, unless there are not
+// enough results available. If no page size was specified, it uses
+// DefaultPageSize.
+//
+// NextPage may return a second return value of Done along with the last page
+// of results.
+//
+// After NextPage returns Done, all subsequent calls to NextPage will return
+// (nil, Done).
+//
+// Next and NextPage should not be used with the same iterator.
+func (it *ObjectIterator) NextPage() (objs []*ObjectAttrs, prefixes []string, err error) {
+	defer it.SetPageSize(it.pageSize) // restore value at entry
+	if it.pageSize <= 0 {
+		it.pageSize = DefaultPageSize
+	}
+	for len(objs)+len(prefixes) < int(it.pageSize) {
+		it.pageSize -= int32(len(objs) + len(prefixes))
+		it.nextPage()
+		if it.err != nil {
+			return nil, nil, it.err
+		}
+		objs = append(objs, it.objs...)
+		prefixes = append(prefixes, it.prefixes...)
+		if it.query.Cursor == "" {
+			it.err = Done
+			return objs, prefixes, it.err
+		}
+	}
+	return objs, prefixes, it.err
+}
+
+// nextPage gets the next page of results by making a single call to the underlying method.
+// It sets it.objs, it.prefixes, it.query.Cursor, and it.err. It never sets it.err to Done.
+func (it *ObjectIterator) nextPage() {
+	if it.err != nil {
+		return
+	}
+	req := it.bucket.c.raw.Objects.List(it.bucket.name)
+	req.Projection("full")
+	req.Delimiter(it.query.Delimiter)
+	req.Prefix(it.query.Prefix)
+	req.Versions(it.query.Versions)
+	req.PageToken(it.query.Cursor)
+	if it.pageSize > 0 {
+		req.MaxResults(int64(it.pageSize))
+	}
+	resp, err := req.Context(it.ctx).Do()
+	if err != nil {
+		it.err = err
+		return
+	}
+	it.query.Cursor = resp.NextPageToken
+	it.objs = nil
+	for _, item := range resp.Items {
+		it.objs = append(it.objs, newObject(item))
+	}
+	it.prefixes = resp.Prefixes
+}
+
+// SetPageSize sets the page size for all subsequent calls to NextPage.
+// NextPage will return exactly this many items if they are present.
+func (it *ObjectIterator) SetPageSize(pageSize int32) {
+	it.pageSize = pageSize
+}
+
+// SetPageToken sets the page token for the next call to NextPage, to resume
+// the iteration from a previous point.
+func (it *ObjectIterator) SetPageToken(t string) {
+	it.query.Cursor = t
+}
+
+// NextPageToken returns a page token that can be used with SetPageToken to
+// resume iteration from the next page. It returns the empty string if there
+// are no more pages.
+func (it *ObjectIterator) NextPageToken() string {
+	return it.query.Cursor
 }
 
 // SignedURLOptions allows you to restrict the access to the signed URL.
@@ -948,6 +1071,8 @@ type Query struct {
 	// to return. As duplicate prefixes are omitted,
 	// fewer total results may be returned than requested.
 	// The default page limit is used if it is negative or zero.
+	//
+	// Deprecated. Use ObjectIterator.SetPageSize.
 	MaxResults int
 }
 
