@@ -89,7 +89,7 @@ func config(ctx context.Context) (*Client, string) {
 	return client, p
 }
 
-func TestAdminClient(t *testing.T) {
+func TestBucketMethods(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -101,29 +101,29 @@ func TestAdminClient(t *testing.T) {
 	projectID := testutil.ProjID()
 
 	newBucket := projectID + suffix
-	t.Logf("Testing admin with Bucket %q", newBucket)
+	t.Logf("Testing with Bucket %q", newBucket)
 
-	client, err := NewAdminClient(ctx, projectID, cloud.WithTokenSource(ts))
+	client, err := NewClient(ctx, cloud.WithTokenSource(ts))
 	if err != nil {
 		t.Fatalf("Could not create client: %v", err)
 	}
 	defer client.Close()
 
-	if err := client.CreateBucket(ctx, newBucket, nil); err != nil {
-		t.Errorf("CreateBucket(%v, %v) failed %v", newBucket, nil, err)
+	if err := client.Bucket(newBucket).Create(ctx, projectID, nil); err != nil {
+		t.Errorf("Bucket(%v).Create(%v, %v) failed: %v", newBucket, projectID, nil, err)
 	}
-	if err := client.DeleteBucket(ctx, newBucket); err != nil {
-		t.Errorf("DeleteBucket(%v) failed %v", newBucket, err)
+	if err := client.Bucket(newBucket).Delete(ctx); err != nil {
+		t.Errorf("Bucket(%v).Delete failed: %v", newBucket, err)
 		t.Logf("TODO: Warning this test left a new bucket in the cloud project, it must be deleted manually")
 	}
 	attrs := BucketAttrs{
 		DefaultObjectACL: []ACLRule{{Entity: "domain-google.com", Role: RoleReader}},
 	}
-	if err := client.CreateBucket(ctx, newBucket, &attrs); err != nil {
-		t.Errorf("CreateBucket(%v, %v) failed %v", newBucket, attrs, err)
+	if err := client.Bucket(newBucket).Create(ctx, projectID, &attrs); err != nil {
+		t.Errorf("Bucket(%v).Create(%v, %v) failed: %v", newBucket, projectID, attrs, err)
 	}
-	if err := client.DeleteBucket(ctx, newBucket); err != nil {
-		t.Errorf("DeleteBucket(%v) failed %v", newBucket, err)
+	if err := client.Bucket(newBucket).Delete(ctx); err != nil {
+		t.Errorf("Bucket(%v).Delete failed: %v", newBucket, err)
 		t.Logf("TODO: Warning this test left a new bucket in the cloud project, it must be deleted manually")
 	}
 }
