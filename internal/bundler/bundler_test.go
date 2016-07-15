@@ -60,7 +60,7 @@ func TestBundlerCount3(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	time.Sleep(2 * b.DelayThreshold)
+	time.Sleep(5 * b.DelayThreshold)
 	// We should not need to close the bundler.
 
 	bgot := handler.bundles
