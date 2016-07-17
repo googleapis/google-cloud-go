@@ -18,6 +18,7 @@
 package storage // import "google.golang.org/cloud/storage"
 
 import (
+	"bytes"
 	"crypto"
 	"crypto/rand"
 	"crypto/rsa"
@@ -306,8 +307,24 @@ type SignedURLOptions struct {
 	//    $ openssl pkcs12 -in key.p12 -passin pass:notasecret -out key.pem -nodes
 	//
 	// Provide the contents of the PEM file as a byte slice.
-	// Required.
+	// Exactly one of PrivateKey or SignBytes must be non-nil.
 	PrivateKey []byte
+
+	// SignBytes is a function for implementing custom signing.
+	// If your application is running on Google App Engine, you can use appengine's internal signing function:
+	//     ctx := appengine.NewContext(request)
+	//     acc, _ := appengine.ServiceAccount(ctx)
+	//     url, err := SignedURL("bucket", "object", &SignedURLOptions{
+	//     	GoogleAccessID: acc,
+	//     	SignBytes: func(b []byte) ([]byte, error) {
+	//     		_, signedBytes, err := appengine.SignBytes(ctx, b)
+	//     		return signedBytes, err
+	//     	},
+	//     	// etc.
+	//     })
+	//
+	// Exactly one of PrivateKey or SignBytes must be non-nil.
+	SignBytes func([]byte) ([]byte, error)
 
 	// Method is the HTTP method to be used with the signed URL.
 	// Signed URLs can be used with GET, HEAD, PUT, and DELETE requests.
@@ -344,8 +361,11 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 	if opts == nil {
 		return "", errors.New("storage: missing required SignedURLOptions")
 	}
-	if opts.GoogleAccessID == "" || opts.PrivateKey == nil {
-		return "", errors.New("storage: missing required credentials to generate a signed URL")
+	if opts.GoogleAccessID == "" {
+		return "", errors.New("storage: missing required GoogleAccessID")
+	}
+	if (opts.PrivateKey == nil) == (opts.SignBytes == nil) {
+		return "", errors.New("storage: exactly one of PrivateKey or SignedBytes must be set")
 	}
 	if opts.Method == "" {
 		return "", errors.New("storage: missing required method option")
@@ -353,26 +373,39 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 	if opts.Expires.IsZero() {
 		return "", errors.New("storage: missing required expires option")
 	}
-	key, err := parseKey(opts.PrivateKey)
-	if err != nil {
-		return "", err
+
+	signBytes := opts.SignBytes
+	if opts.PrivateKey != nil {
+		key, err := parseKey(opts.PrivateKey)
+		if err != nil {
+			return "", err
+		}
+		signBytes = func(b []byte) ([]byte, error) {
+			sum := sha256.Sum256(b)
+			return rsa.SignPKCS1v15(
+				rand.Reader,
+				key,
+				crypto.SHA256,
+				sum[:],
+			)
+		}
+	} else {
+		signBytes = opts.SignBytes
 	}
+
 	u := &url.URL{
 		Path: fmt.Sprintf("/%s/%s", bucket, name),
 	}
-	h := sha256.New()
-	fmt.Fprintf(h, "%s\n", opts.Method)
-	fmt.Fprintf(h, "%s\n", opts.MD5)
-	fmt.Fprintf(h, "%s\n", opts.ContentType)
-	fmt.Fprintf(h, "%d\n", opts.Expires.Unix())
-	fmt.Fprintf(h, "%s", strings.Join(opts.Headers, "\n"))
-	fmt.Fprintf(h, "%s", u.String())
-	b, err := rsa.SignPKCS1v15(
-		rand.Reader,
-		key,
-		crypto.SHA256,
-		h.Sum(nil),
-	)
+
+	buf := &bytes.Buffer{}
+	fmt.Fprintf(buf, "%s\n", opts.Method)
+	fmt.Fprintf(buf, "%s\n", opts.MD5)
+	fmt.Fprintf(buf, "%s\n", opts.ContentType)
+	fmt.Fprintf(buf, "%d\n", opts.Expires.Unix())
+	fmt.Fprintf(buf, "%s", strings.Join(opts.Headers, "\n"))
+	fmt.Fprintf(buf, "%s", u.String())
+
+	b, err := signBytes(buf.Bytes())
 	if err != nil {
 		return "", err
 	}
