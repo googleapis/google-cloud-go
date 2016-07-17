@@ -84,6 +84,30 @@ func TestSignedURL_PEMPrivateKey(t *testing.T) {
 	}
 }
 
+func TestSignedURL_SignBytes(t *testing.T) {
+	expires, _ := time.Parse(time.RFC3339, "2002-10-02T10:00:00-05:00")
+	url, err := SignedURL("bucket-name", "object-name", &SignedURLOptions{
+		GoogleAccessID: "xxx@clientid",
+		SignBytes: func(b []byte) ([]byte, error) {
+			return []byte("signed"), nil
+		},
+		Method:      "GET",
+		MD5:         []byte("202cb962ac59075b964b07152d234b70"),
+		Expires:     expires,
+		ContentType: "application/json",
+		Headers:     []string{"x-header1", "x-header2"},
+	})
+	if err != nil {
+		t.Error(err)
+	}
+	want := "https://storage.googleapis.com/bucket-name/object-name?" +
+		"Expires=1033570800&GoogleAccessId=xxx%40clientid&Signature=" +
+		"c2lnbmVk" // base64('signed') == 'c2lnbmVk'
+	if url != want {
+		t.Fatalf("Unexpected signed URL\ngot:  %q\nwant: %q", url, want)
+	}
+}
+
 func TestSignedURL_URLUnsafeObjectName(t *testing.T) {
 	expires, _ := time.Parse(time.RFC3339, "2002-10-02T10:00:00-05:00")
 	url, err := SignedURL("bucket-name", "object name界", &SignedURLOptions{
@@ -117,16 +141,31 @@ func TestSignedURL_MissingOptions(t *testing.T) {
 	}{
 		{
 			&SignedURLOptions{},
-			"missing required credentials",
+			"missing required GoogleAccessID",
 		},
 		{
 			&SignedURLOptions{GoogleAccessID: "access_id"},
-			"missing required credentials",
+			"exactly one of PrivateKey or SignedBytes must be set",
+		},
+		{
+			&SignedURLOptions{
+				GoogleAccessID: "access_id",
+				SignBytes:      func(b []byte) ([]byte, error) { return b, nil },
+				PrivateKey:     pk,
+			},
+			"exactly one of PrivateKey or SignedBytes must be set",
 		},
 		{
 			&SignedURLOptions{
 				GoogleAccessID: "access_id",
 				PrivateKey:     pk,
+			},
+			"missing required method",
+		},
+		{
+			&SignedURLOptions{
+				GoogleAccessID: "access_id",
+				SignBytes:      func(b []byte) ([]byte, error) { return b, nil },
 			},
 			"missing required method",
 		},
