@@ -26,6 +26,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/cloud"
 	btdpb "google.golang.org/cloud/bigtable/internal/data_proto"
+	"google.golang.org/cloud/bigtable/internal/option"
 	btspb "google.golang.org/cloud/bigtable/internal/service_proto"
 	"google.golang.org/cloud/internal/transport"
 	"google.golang.org/grpc"
@@ -46,10 +47,9 @@ type Client struct {
 
 // NewClient creates a new Client for a given project and instance.
 func NewClient(ctx context.Context, project, instance string, opts ...cloud.ClientOption) (*Client, error) {
-	o := []cloud.ClientOption{
-		cloud.WithEndpoint(prodAddr),
-		cloud.WithScopes(Scope),
-		cloud.WithUserAgent(clientUserAgent),
+	o, err := option.DefaultClientOptions(prodAddr, Scope, clientUserAgent)
+	if err != nil {
+		return nil, err
 	}
 	o = append(o, opts...)
 	conn, err := transport.DialGRPC(ctx, o...)
