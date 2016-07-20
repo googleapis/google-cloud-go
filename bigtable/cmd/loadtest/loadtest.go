@@ -145,8 +145,8 @@ func main() {
 	}
 	wg.Wait()
 
-	readsAgg := stat.NewAggregate("reads", reads.ds)
-	writesAgg := stat.NewAggregate("writes", writes.ds)
+	readsAgg := stat.NewAggregate("reads", reads.ds, reads.tries-reads.ok)
+	writesAgg := stat.NewAggregate("writes", writes.ds, writes.tries-writes.ok)
 	log.Printf("Reads (%d ok / %d tries):\n%v", reads.ok, reads.tries, readsAgg)
 	log.Printf("Writes (%d ok / %d tries):\n%v", writes.ok, writes.tries, writesAgg)
 
