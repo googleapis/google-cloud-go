@@ -31,6 +31,7 @@ import (
 	"time"
 
 	"golang.org/x/net/context"
+	"google.golang.org/cloud"
 	"google.golang.org/cloud/bigtable"
 	"google.golang.org/cloud/bigtable/internal/cbtrc"
 	"google.golang.org/cloud/bigtable/internal/stat"
@@ -41,6 +42,8 @@ var (
 	scratchTable = flag.String("scratch_table", "loadtest-scratch", "name of table to use; should not already exist")
 	csvOutput    = flag.String("csv_output", "",
 		"output path for statistics in .csv format. If this file already exists it will be overwritten.")
+	poolSize = flag.Int("pool_size", 1, "size of the gRPC connection pool to use for the data client")
+	reqCount = flag.Int("req_count", 100, "number of concurrent requests")
 
 	config      *cbtrc.Config
 	client      *bigtable.Client
@@ -67,6 +70,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	var options []cloud.ClientOption
+	if *poolSize > 1 {
+		options = append(options, cloud.WithGRPCConnectionPool(*poolSize))
+	}
+
 	var csvFile *os.File
 	if *csvOutput != "" {
 		csvFile, err = os.Create(*csvOutput)
@@ -78,7 +86,7 @@ func main() {
 	}
 
 	log.Printf("Dialing connections...")
-	client, err = bigtable.NewClient(context.Background(), config.Project, config.Instance)
+	client, err = bigtable.NewClient(context.Background(), config.Project, config.Instance, options...)
 	if err != nil {
 		log.Fatalf("Making bigtable.Client: %v", err)
 	}
@@ -102,7 +110,7 @@ func main() {
 
 	log.Printf("Starting load test... (run for %v)", *runFor)
 	tbl := client.Open(*scratchTable)
-	sem := make(chan int, 100) // limit the number of requests happening at once
+	sem := make(chan int, *reqCount) // limit the number of requests happening at once
 	var reads, writes stats
 	stopTime := time.Now().Add(*runFor)
 	var wg sync.WaitGroup
