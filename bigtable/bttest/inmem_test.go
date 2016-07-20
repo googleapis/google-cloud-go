@@ -29,7 +29,7 @@ import (
 	bttspb "google.golang.org/cloud/bigtable/internal/table_service_proto"
 )
 
-func TestConcurrentMutationsAndGC(t *testing.T) {
+func TestConcurrentMutationsReadModifyAndGC(t *testing.T) {
 	s := &server{
 		tables: make(map[string]*table),
 	}
@@ -84,6 +84,20 @@ func TestConcurrentMutationsAndGC(t *testing.T) {
 			},
 		}
 	}
+
+	rmw := func() *btspb.ReadModifyWriteRowRequest {
+		return &btspb.ReadModifyWriteRowRequest{
+			TableName: name,
+			RowKey:    []byte(fmt.Sprint(rand.Intn(100))),
+			Rules: []*btdpb.ReadModifyWriteRule{
+				{
+					FamilyName:      "cf",
+					ColumnQualifier: []byte("col"),
+					Rule:            &btdpb.ReadModifyWriteRule_IncrementAmount{IncrementAmount: 1},
+				},
+			},
+		}
+	}
 	for i := 0; i < 100; i++ {
 		wg.Add(1)
 		go func() {
@@ -97,6 +111,14 @@ func TestConcurrentMutationsAndGC(t *testing.T) {
 				s.MutateRow(ctx, req)
 			}
 		}()
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for ctx.Err() == nil {
+				_, _ = s.ReadModifyWriteRow(ctx, rmw())
+			}
+		}()
+
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
