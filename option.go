@@ -79,3 +79,10 @@ func WithBaseGRPC(conn *grpc.ClientConn) ClientOption {
 func WithGRPCDialOption(o grpc.DialOption) ClientOption {
 	return wrapOpt{option.WithGRPCDialOption(o)}
 }
+
+// WithGRPCConnectionPool returns a ClientOption that creates a pool of gRPC
+// connections that requests will be balanced between.
+// This is an EXPERIMENTAL API and may be changed or removed in the future.
+func WithGRPCConnectionPool(size int) ClientOption {
+	return wrapOpt{option.WithGRPCConnectionPool(size)}
+}
