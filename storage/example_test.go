@@ -15,8 +15,10 @@
 package storage_test
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
+	"time"
 
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2/google"
@@ -24,7 +26,21 @@ import (
 	"google.golang.org/cloud/storage"
 )
 
-func Example_auth() {
+func ExampleNewClient() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// Use the client.
+
+	// Close the client when finished.
+	if err := client.Close(); err != nil {
+		// TODO: handle error.
+	}
+}
+
+func ExampleNewClient_auth() {
 	// Initialize an authorized context with Google Developers Console
 	// JSON key. Read the google package examples to learn more about
 	// different authorization flows you can use.
@@ -46,14 +62,167 @@ func Example_auth() {
 		log.Fatal(err)
 	}
 
-	// Use the client (see other examples)
-	doSomething(client)
+	// Use the client.
 
-	// After using the client, free any resources (e.g. network connections).
-	client.Close()
+	// Close the client when finished.
+	if err := client.Close(); err != nil {
+		// TODO: handle error.
+	}
 }
 
-func ExampleListObjects() {
+func ExampleBucketHandle_Create() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	if err := client.Bucket("my-bucket").Create(ctx, "my-project", nil); err != nil {
+		// TODO: handle error.
+	}
+}
+
+func ExampleBucketHandle_Delete() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	if err := client.Bucket("my-bucket").Delete(ctx); err != nil {
+		// TODO: handle error.
+	}
+}
+
+func ExampleBucketHandle_Attrs() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	attrs, err := client.Bucket("my-bucket").Attrs(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Println(attrs)
+}
+
+func ExampleBucketHandle_Objects() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	it := client.Bucket("my-bucket").Objects(ctx, nil)
+	_ = it // TODO: iterate using Next or NextPage.
+}
+
+func ExampleObjectIterator_Next() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	it := client.Bucket("my-bucket").Objects(ctx, nil)
+	for {
+		objAttrs, err := it.Next()
+		if err != nil && err != storage.Done {
+			// TODO: Handle error.
+		}
+		if err == storage.Done {
+			break
+		}
+		fmt.Println(objAttrs)
+	}
+}
+
+func ExampleObjectIterator_NextPage() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	it := client.Bucket("my-bucket").Objects(ctx, nil)
+	it.SetPageSize(50)
+	for {
+		objAttrs, prefixes, err := it.NextPage()
+		if err != nil && err != storage.Done {
+			// TODO: Handle error.
+		}
+		fmt.Println(objAttrs, prefixes)
+		if err == storage.Done {
+			break
+		}
+	}
+}
+
+func ExampleSignedURL() {
+	pkey, err := ioutil.ReadFile("my-private-key.pem")
+	if err != nil {
+		// TODO: handle error.
+	}
+	url, err := storage.SignedURL("my-bucket", "my-object", &storage.SignedURLOptions{
+		GoogleAccessID: "xxx@developer.gserviceaccount.com",
+		PrivateKey:     pkey,
+		Method:         "GET",
+		Expires:        time.Now().Add(48 * time.Hour),
+	})
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Println(url)
+}
+
+func ExampleObjectHandle_Attrs() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	objAttrs, err := client.Bucket("my-bucket").Object("my-object").Attrs(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Println(objAttrs)
+}
+
+func ExampleObjectHandle_Attrs_withConditions() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	obj := client.Bucket("my-bucket").Object("my-object")
+	// Read the object.
+	objAttrs1, err := obj.Attrs(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// Do something else for a while.
+	time.Sleep(5 * time.Minute)
+	// Now read the same contents, even if the object has been written since the last read.
+	objAttrs2, err := obj.WithConditions(storage.Generation(objAttrs1.Generation)).Attrs(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Println(objAttrs1, objAttrs2)
+}
+
+func ExampleObjectHandle_Update() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// Change only the content type of the object.
+	objAttrs, err := client.Bucket("my-bucket").Object("my-object").Update(ctx, storage.ObjectAttrs{
+		ContentType: "text/html",
+	})
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Println(objAttrs)
+}
+
+func ExampleBucketHandle_List() {
 	ctx := context.Background()
 	var client *storage.Client // See Example (Auth)
 
@@ -79,84 +248,141 @@ func ExampleListObjects() {
 	log.Println("paginated through all object items in the bucket you specified.")
 }
 
-func ExampleNewReader() {
+func ExampleObjectHandle_NewReader() {
 	ctx := context.Background()
-	var client *storage.Client // See Example (Auth)
-
-	rc, err := client.Bucket("bucketname").Object("filename1").NewReader(ctx)
+	client, err := storage.NewClient(ctx)
 	if err != nil {
-		log.Fatal(err)
+		// TODO: handle error.
+	}
+	rc, err := client.Bucket("my-bucket").Object("my-object").NewReader(ctx)
+	if err != nil {
+		// TODO: handle error.
 	}
 	slurp, err := ioutil.ReadAll(rc)
 	rc.Close()
 	if err != nil {
-		log.Fatal(err)
+		// TODO: handle error.
 	}
-
-	log.Println("file contents:", slurp)
+	fmt.Println("file contents:", slurp)
 }
 
-func ExampleNewWriter() {
+func ExampleObjectHandle_NewRangeReader() {
 	ctx := context.Background()
-	var client *storage.Client // See Example (Auth)
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// Read only the first 64K.
+	rc, err := client.Bucket("bucketname").Object("filename1").NewRangeReader(ctx, 0, 64*1024)
+	if err != nil {
+		// TODO: handle error.
+	}
+	slurp, err := ioutil.ReadAll(rc)
+	rc.Close()
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Println("first 64K of file contents:", slurp)
+}
 
+func ExampleObjectHandle_NewWriter() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
 	wc := client.Bucket("bucketname").Object("filename1").NewWriter(ctx)
 	wc.ContentType = "text/plain"
 	wc.ACL = []storage.ACLRule{{storage.AllUsers, storage.RoleReader}}
 	if _, err := wc.Write([]byte("hello world")); err != nil {
-		log.Fatal(err)
+		// TODO: handle error.
 	}
 	if err := wc.Close(); err != nil {
-		log.Fatal(err)
+		// TODO: handle error.
 	}
-	log.Println("updated object:", wc.Attrs())
+	fmt.Println("updated object:", wc.Attrs())
 }
 
 func ExampleObjectHandle_CopyTo() {
 	ctx := context.Background()
-	var client *storage.Client // See Example (Auth)
-
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
 	src := client.Bucket("bucketname").Object("file1")
 	dst := client.Bucket("another-bucketname").Object("file2")
 
 	o, err := src.CopyTo(ctx, dst, nil)
 	if err != nil {
-		log.Fatal(err)
+		// TODO: handle error.
 	}
-	log.Println("copied file:", o)
+	fmt.Println("copied file:", o)
 }
 
-func ExampleDeleteObject() {
+func ExampleObjectHandle_Delete() {
 	ctx := context.Background()
-	var client *storage.Client // See Example (Auth)
-
-	// To delete multiple objects in a bucket, first List then Delete them.
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// To delete multiple objects in a bucket, list them with an
+	// ObjectIterator, then Delete them.
 
 	// If you are using this package on App Engine Managed VMs runtime,
 	// you can init a bucket client with your app's default bucket name.
 	// See http://godoc.org/google.golang.org/appengine/file#DefaultBucketName.
-	bucket := client.Bucket("bucketname")
-
-	var query *storage.Query // Set up query as desired.
+	bucket := client.Bucket("my-bucket")
+	it := bucket.Objects(ctx, nil)
 	for {
-		objects, err := bucket.List(ctx, query)
-		if err != nil {
-			log.Fatal(err)
+		objAttrs, err := it.Next()
+		if err != nil && err != storage.Done {
+			// TODO: Handle error.
 		}
-		for _, obj := range objects.Results {
-			log.Printf("deleting object name: %q, size: %v", obj.Name, obj.Size)
-			if err := bucket.Object(obj.Name).Delete(ctx); err != nil {
-				log.Fatalf("unable to delete %q: %v", obj.Name, err)
-			}
-		}
-		// If there are more results, objects.Next will be non-nil.
-		if objects.Next == nil {
+		if err == storage.Done {
 			break
 		}
-		query = objects.Next
+		if err := bucket.Object(objAttrs.Name).Delete(ctx); err != nil {
+			// TODO: Handle error.
+		}
 	}
-
-	log.Println("deleted all object items in the bucket specified.")
+	fmt.Println("deleted all object items in the bucket specified.")
 }
 
-func doSomething(c *storage.Client) {}
+func ExampleACLHandle_Delete() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// No longer grant access to the bucket to everyone on the Internet.
+	if err := client.Bucket("my-bucket").ACL().Delete(ctx, storage.AllUsers); err != nil {
+		// TODO: handle error.
+	}
+}
+
+func ExampleACLHandle_Set() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// Let any authenticated user read my-bucket/my-object.
+	obj := client.Bucket("my-bucket").Object("my-object")
+	if err := obj.ACL().Set(ctx, storage.AllAuthenticatedUsers, storage.RoleReader); err != nil {
+		// TODO: handle error.
+	}
+}
+
+func ExampleACLHandle_List() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// List the default object ACLs for my-bucket.
+	aclRules, err := client.Bucket("my-bucket").DefaultObjectACL().List(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Println(aclRules)
+}

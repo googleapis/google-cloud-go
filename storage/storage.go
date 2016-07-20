@@ -406,7 +406,7 @@ func (it *ObjectIterator) SetPageToken(t string) {
 
 // NextPageToken returns a page token that can be used with SetPageToken to
 // resume iteration from the next page. It returns the empty string if there
-// are no more pages.
+// are no more pages. For an example, see SetPageToken.
 func (it *ObjectIterator) NextPageToken() string {
 	return it.query.Cursor
 }
