@@ -423,12 +423,12 @@ func (s *server) MutateRow(ctx context.Context, req *btspb.MutateRowRequest) (*b
 		return nil, fmt.Errorf("no such table %q", req.TableName)
 	}
 
-	f := tbl.columnFamiliesSet()
+	fs := tbl.columnFamiliesSet()
 	r := tbl.mutableRow(string(req.RowKey))
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	if err := applyMutations(tbl, r, req.Mutations, f); err != nil {
+	if err := applyMutations(tbl, r, req.Mutations, fs); err != nil {
 		return nil, err
 	}
 	return &btspb.MutateRowResponse{}, nil
@@ -444,13 +444,13 @@ func (s *server) MutateRows(req *btspb.MutateRowsRequest, stream btspb.Bigtable_
 
 	res := &btspb.MutateRowsResponse{Entries: make([]*btspb.MutateRowsResponse_Entry, len(req.Entries))}
 
-	f := tbl.columnFamiliesSet()
+	fs := tbl.columnFamiliesSet()
 
 	for i, entry := range req.Entries {
 		r := tbl.mutableRow(string(entry.RowKey))
 		r.mu.Lock()
 		code, msg := int32(codes.OK), ""
-		if err := applyMutations(tbl, r, entry.Mutations, f); err != nil {
+		if err := applyMutations(tbl, r, entry.Mutations, fs); err != nil {
 			code = int32(codes.Internal)
 			msg = err.Error()
 		}
@@ -474,7 +474,7 @@ func (s *server) CheckAndMutateRow(ctx context.Context, req *btspb.CheckAndMutat
 
 	res := &btspb.CheckAndMutateRowResponse{}
 
-	f := tbl.columnFamiliesSet()
+	fs := tbl.columnFamiliesSet()
 
 	r := tbl.mutableRow(string(req.RowKey))
 	r.mu.Lock()
@@ -505,7 +505,7 @@ func (s *server) CheckAndMutateRow(ctx context.Context, req *btspb.CheckAndMutat
 		muts = req.TrueMutations
 	}
 
-	if err := applyMutations(tbl, r, muts, f); err != nil {
+	if err := applyMutations(tbl, r, muts, fs); err != nil {
 		return nil, err
 	}
 	return res, nil
@@ -514,14 +514,14 @@ func (s *server) CheckAndMutateRow(ctx context.Context, req *btspb.CheckAndMutat
 // applyMutations applies a sequence of mutations to a row.
 // fam should be a snapshot of the keys of tbl.families.
 // It assumes r.mu is locked.
-func applyMutations(tbl *table, r *row, muts []*btdpb.Mutation, fam map[string]bool) error {
+func applyMutations(tbl *table, r *row, muts []*btdpb.Mutation, fs map[string]bool) error {
 	for _, mut := range muts {
 		switch mut := mut.Mutation.(type) {
 		default:
 			return fmt.Errorf("can't handle mutation type %T", mut)
 		case *btdpb.Mutation_SetCell_:
 			set := mut.SetCell
-			if !fam[set.FamilyName] {
+			if !fs[set.FamilyName] {
 				return fmt.Errorf("unknown family %q", set.FamilyName)
 			}
 			ts := set.TimestampMicros
@@ -616,16 +616,15 @@ func (s *server) ReadModifyWriteRow(ctx context.Context, req *btspb.ReadModifyWr
 
 	updates := make(map[string]cell) // copy of updated cells; keyed by full column name
 
+	fs := tbl.columnFamiliesSet()
+
 	r := tbl.mutableRow(string(req.RowKey))
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	// Assume all mutations apply to the most recent version of the cell.
 	// TODO(dsymonds): Verify this assumption and document it in the proto.
 	for _, rule := range req.Rules {
-		tbl.mu.RLock()
-		_, famOK := tbl.families[rule.FamilyName]
-		tbl.mu.RUnlock()
-		if !famOK {
+		if !fs[rule.FamilyName] {
 			return nil, fmt.Errorf("unknown family %q", rule.FamilyName)
 		}
 
@@ -761,11 +760,11 @@ func (t *table) columnFamilies() map[string]*columnFamily {
 }
 
 func (t *table) columnFamiliesSet() map[string]bool {
-	f := make(map[string]bool)
+	fs := make(map[string]bool)
 	for fam := range t.columnFamilies() {
-		f[fam] = true
+		fs[fam] = true
 	}
-	return f
+	return fs
 }
 
 func (t *table) mutableRow(row string) *row {
@@ -921,9 +920,9 @@ func (c *columnFamily) proto() *bttdpb.ColumnFamily {
 }
 
 func toColumnFamilies(families map[string]*columnFamily) map[string]*bttdpb.ColumnFamily {
-	f := make(map[string]*bttdpb.ColumnFamily)
+	fs := make(map[string]*bttdpb.ColumnFamily)
 	for k, v := range families {
-		f[k] = v.proto()
+		fs[k] = v.proto()
 	}
-	return f
+	return fs
 }
