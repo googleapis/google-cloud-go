@@ -21,6 +21,7 @@ import (
 	"io"
 	"math"
 	"sort"
+	"strconv"
 	"text/tabwriter"
 	"time"
 )
@@ -71,13 +72,14 @@ func quantile(data []time.Duration, k, q int) (quantile time.Duration, ok bool) 
 
 type Aggregate struct {
 	Name               string
+	Count, Errors      int
 	Min, Median, Max   time.Duration
 	P75, P90, P95, P99 time.Duration // percentiles
 }
 
 // NewAggregate constructs an aggregate from latencies. Returns nil if latencies does not contain aggregateable data.
-func NewAggregate(name string, latencies []time.Duration) *Aggregate {
-	agg := Aggregate{Name: name}
+func NewAggregate(name string, latencies []time.Duration, errorCount int) *Aggregate {
+	agg := Aggregate{Name: name, Count: len(latencies), Errors: errorCount}
 
 	if len(latencies) == 0 {
 		return nil
@@ -124,13 +126,14 @@ func (agg *Aggregate) String() string {
 func WriteCSV(aggs []*Aggregate, iow io.Writer) error {
 	w := csv.NewWriter(iow)
 	defer w.Flush()
-	err := w.Write([]string{"name", "min", "median", "max", "p75", "p90", "p95", "p99"})
+	err := w.Write([]string{"name", "count", "errors", "min", "median", "max", "p75", "p90", "p95", "p99"})
 	if err != nil {
 		return err
 	}
 	for _, agg := range aggs {
 		err = w.Write([]string{
-			agg.Name, agg.Min.String(), agg.Median.String(), agg.Max.String(),
+			agg.Name, strconv.Itoa(agg.Count), strconv.Itoa(agg.Errors),
+			agg.Min.String(), agg.Median.String(), agg.Max.String(),
 			agg.P75.String(), agg.P90.String(), agg.P95.String(), agg.P99.String(),
 		})
 		if err != nil {
