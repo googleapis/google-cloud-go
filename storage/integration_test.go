@@ -559,7 +559,7 @@ func TestACL(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error while getting the ACL of the bucket: %v", err)
 	} else if !hasRule(bACL, rule2) {
-		t.Error("bucket ACL missing %+v", rule2)
+		t.Errorf("bucket ACL missing %+v", rule2)
 	}
 	if err := bkt.ACL().Delete(ctx, entity2); err != nil {
 		t.Errorf("Error while deleting bucket ACL rule: %v", err)

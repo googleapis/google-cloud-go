@@ -177,7 +177,6 @@ func TestCatchNilPanic(t *testing.T) {
 	b := true
 	defer c.Catch(ctx, errors.WithMessage("hello, error"), errors.PanicFlag(&b))
 	panic(nil)
-	b = false
 }
 
 func TestNotCatchNilPanic(t *testing.T) {
