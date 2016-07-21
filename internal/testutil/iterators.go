@@ -148,7 +148,7 @@ func TestIteratorNextPageExact(want interface{}, done error, defaultPageSize int
 				// If the last page is partial, NextPage must return done.
 				if reflect.ValueOf(gotPage).Len() < adjustedPageSize && err != done {
 					return fmt.Sprintf("usePageToken %v, pageSize %d, #%d: expected done on partial page, got %v",
-						usePageToken, pageSize, err), false
+						usePageToken, pageSize, i, err), false
 				}
 				if usePageToken {
 					// Pretend that we are displaying a paginated listing on the web, and the next
