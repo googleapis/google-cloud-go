@@ -12,17 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Google Stackdriver Trace library.
+// Package trace is a Google Stackdriver Trace library.
 //
 // This package is still experimental and subject to change.
-//
-// This library allows simple integration with Google Stackdriver Trace.
 //
 // See https://cloud.google.com/trace/api/#data_model for a discussion of traces
 // and spans.
 //
 // To initialize a client that connects to the Stackdriver Trace server, use the
-// NewClient function.  Generally you will want to do this on program
+// NewClient function. Generally you will want to do this on program
 // initialization.
 //
 //   import "google.golang.org/cloud/trace"
