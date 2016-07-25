@@ -61,21 +61,21 @@ Example code:
 
 		// Create a datastore client. In a typical application, you would create
 		// a single client which is reused for every datastore operation.
-		client, err := datastore.NewClient(ctx, "my-project")
+		dsClient, err := datastore.NewClient(ctx, "my-project")
 		if err != nil {
 			// Handle error.
 		}
 
 		k := datastore.NewKey(ctx, "Entity", "stringID", 0, nil)
 		e := new(Entity)
-		if err := client.Get(ctx, k, e); err != nil {
+		if err := dsClient.Get(ctx, k, e); err != nil {
 			// Handle error.
 		}
 
 		old := e.Value
 		e.Value = "Hello World!"
 
-		if _, err := client.Put(ctx, k, e); err != nil {
+		if _, err := dsClient.Put(ctx, k, e); err != nil {
 			// Handle error.
 		}
 
@@ -267,7 +267,7 @@ Example code:
 		q := datastore.NewQuery("Widget").
 			Filter("Price <", 1000).
 			Order("-Price")
-		for t := client.Run(ctx, q); ; {
+		for t := dsClient.Run(ctx, q); ; {
 			var x Widget
 			key, err := t.Next(&x)
 			if err == datastore.Done {
@@ -294,7 +294,7 @@ Example code:
 	func incCount(ctx context.Context, client *datastore.Client) {
 		var count int
 		key := datastore.NewKey(ctx, "Counter", "singleton", 0, nil)
-		err := client.RunInTransaction(ctx, func(tx *datastore.Transaction) error {
+		err := dsClient.RunInTransaction(ctx, func(tx *datastore.Transaction) error {
 			var x Counter
 			if err := tx.Get(key, &x); err != nil && err != datastore.ErrNoSuchEntity {
 				return err

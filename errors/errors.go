@@ -12,12 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Google Stackdriver Error Reporting library.
+// Package errors is a Google Stackdriver Error Reporting library.
 //
 // This package is still experimental and subject to change.
-//
-// This package allows simple integration with Google Stackdriver Error
-// Reporting.
 //
 // See https://cloud.google.com/error-reporting/ for more information.
 //
