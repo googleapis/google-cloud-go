@@ -61,7 +61,7 @@ function for the relevant API using a
 [`cloud.WithTokenSource`](https://godoc.org/google.golang.org/cloud#WithTokenSource)
 option.
 
-## Google Cloud Datastore
+## Google Cloud Datastore [![GoDoc](https://godoc.org/google.golang.org/cloud/datastore?status.svg)](https://godoc.org/google.golang.org/cloud/datastore)
 
 [Google Cloud Datastore][cloud-datastore] ([docs][cloud-datastore-docs]) is a fully-
 managed, schemaless database for storing non-relational data. Cloud Datastore
@@ -71,8 +71,6 @@ consistency for all other queries.
 
 Follow the [activation instructions][cloud-datastore-activation] to use the Google
 Cloud Datastore API with your project.
-
-https://godoc.org/google.golang.org/cloud/datastore
 
 First create a `datastore.Client` to use throughout your application:
 
@@ -104,7 +102,7 @@ if _, err := client.PutMulti(ctx, keys, posts); err != nil {
 }
 ```
 
-## Google Cloud Storage
+## Google Cloud Storage [![GoDoc](https://godoc.org/google.golang.org/cloud/storage?status.svg)](https://godoc.org/google.golang.org/cloud/storage)
 
 [Google Cloud Storage][cloud-storage] ([docs][cloud-storage-docs]) allows you to store
 data on Google infrastructure with very high reliability, performance and availability,
@@ -134,15 +132,12 @@ if err != nil {
 }
 ```
 
-## Google Cloud Pub/Sub
+## Google Cloud Pub/Sub [![GoDoc](https://godoc.org/google.golang.org/cloud/pubsub?status.svg)](https://godoc.org/google.golang.org/cloud/pubsub)
 
 [Google Cloud Pub/Sub][cloud-pubsub] ([docs][cloud-pubsub-docs]) allows you to connect
 your services with reliable, many-to-many, asynchronous messaging hosted on Google's
 infrastructure. Cloud Pub/Sub automatically scales as you need it and provides a foundation
 for building your own robust, global services.
-
-https://godoc.org/google.golang.org/cloud/pubsub
-
 
 ```go
 // Publish "hello world" on topic1.
