@@ -76,7 +76,7 @@
 // If you try to write an error report with a nil client, or if the logging
 // client fails to write the report to the Stackdriver Logging server, the error
 // report is logged using log.Println.
-package errors
+package errors // import "google.golang.org/cloud/errors"
 
 import (
 	"bytes"

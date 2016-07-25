@@ -111,7 +111,7 @@
 //
 // SpanFromRequest also returns nil if the *Client is nil, so you can disable
 // tracing by not initializing your *Client variable.
-package trace
+package trace // import "google.golang.org/cloud/trace"
 
 import (
 	"crypto/rand"
