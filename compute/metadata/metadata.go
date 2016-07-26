@@ -263,7 +263,8 @@ func systemInfoSuggestsGCE() bool {
 		return false
 	}
 	slurp, _ := ioutil.ReadFile("/sys/class/dmi/id/product_name")
-	return strings.TrimSpace(string(slurp)) == "Google"
+	name := strings.TrimSpace(string(slurp))
+	return name == "Google" || name == "Google Compute Engine"
 }
 
 // Subscribe subscribes to a value from the metadata service.
