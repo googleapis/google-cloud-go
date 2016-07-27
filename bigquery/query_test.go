@@ -100,6 +100,38 @@ func TestQuery(t *testing.T) {
 				return j
 			}(),
 		},
+		{
+			dst:     defaultTable,
+			src:     defaultQuery,
+			options: []Option{AllowLargeResults()},
+			want: func() *bq.Job {
+				j := defaultQueryJob()
+				j.Configuration.Query.AllowLargeResults = true
+				return j
+			}(),
+		},
+		{
+			dst:     defaultTable,
+			src:     defaultQuery,
+			options: []Option{DisableFlattenedResults()},
+			want: func() *bq.Job {
+				j := defaultQueryJob()
+				f := false
+				j.Configuration.Query.FlattenResults = &f
+				j.Configuration.Query.AllowLargeResults = true
+				return j
+			}(),
+		},
+		{
+			dst:     defaultTable,
+			src:     defaultQuery,
+			options: []Option{JobPriority("low")},
+			want: func() *bq.Job {
+				j := defaultQueryJob()
+				j.Configuration.Query.Priority = "low"
+				return j
+			}(),
+		},
 	}
 
 	for _, tc := range testCases {
