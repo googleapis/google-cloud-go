@@ -12,8 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package config is an experimental, auto-generated package for the logging
-// API.
-//
-// The Google Cloud Logging API lets you write log entries and manage your logs, log sinks and logs-based metrics.
-package config
+// AUTO-GENERATED CODE. DO NOT EDIT.
+
+package logging
+
+import "errors"
+
+const (
+	gapicNameVersion = "gapic/0.1.0"
+)
+
+var (
+	// Done is returned by iterators on successful completion.
+	Done = errors.New("iterator done")
+)

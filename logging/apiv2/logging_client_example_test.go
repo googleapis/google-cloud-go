@@ -12,76 +12,100 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// AUTO-GENERATED DOCUMENTATION AND SERVICE
+// AUTO-GENERATED CODE. DO NOT EDIT.
 
 package logging_test
 
 import (
-	"cloud.google.com/go/logging/apiv2/logging"
-	gax "github.com/googleapis/gax-go"
-	google_api "github.com/googleapis/proto-client-go/api"
-	google_logging_v2 "github.com/googleapis/proto-client-go/logging/v2"
+	"cloud.google.com/go/logging/apiv2"
 	"golang.org/x/net/context"
+	googleapis_logging_v2 "google.golang.org/genproto/googleapis/logging/v2"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
-	opts := []gax.ClientOption{ /* Optional client parameters. */ }
-	c, err := logging.NewClient(ctx, opts...)
-	_, _ = c, err // Handle error.
+	c, err := logging.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use client.
+	_ = c
 }
 
 func ExampleClient_DeleteLog() {
 	ctx := context.Background()
 	c, err := logging.NewClient(ctx)
-	_ = err // Handle error.
+	if err != nil {
+		// TODO: Handle error.
+	}
 
-	req := &google_logging_v2.DeleteLogRequest{ /* Data... */ }
+	req := &googleapis_logging_v2.DeleteLogRequest{
+	// TODO: Fill request struct fields.
+	}
 	err = c.DeleteLog(ctx, req)
-	_ = err // Handle error.
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleClient_WriteLogEntries() {
 	ctx := context.Background()
 	c, err := logging.NewClient(ctx)
-	_ = err // Handle error.
+	if err != nil {
+		// TODO: Handle error.
+	}
 
-	req := &google_logging_v2.WriteLogEntriesRequest{ /* Data... */ }
-	var resp *google_logging_v2.WriteLogEntriesResponse
-	resp, err = c.WriteLogEntries(ctx, req)
-	_, _ = resp, err // Handle error.
+	req := &googleapis_logging_v2.WriteLogEntriesRequest{
+	// TODO: Fill request struct fields.
+	}
+	resp, err := c.WriteLogEntries(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleClient_ListLogEntries() {
 	ctx := context.Background()
 	c, err := logging.NewClient(ctx)
-	_ = err // Handle error.
+	if err != nil {
+		// TODO: Handle error.
+	}
 
-	req := &google_logging_v2.ListLogEntriesRequest{ /* Data... */ }
+	req := &googleapis_logging_v2.ListLogEntriesRequest{
+	// TODO: Fill request struct fields.
+	}
 	it := c.ListLogEntries(ctx, req)
-	var resp *google_logging_v2.LogEntry
 	for {
-		resp, err = it.Next()
+		resp, err := it.Next()
 		if err != nil {
+			// TODO: Handle error.
 			break
 		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	_ = resp
 }
 
 func ExampleClient_ListMonitoredResourceDescriptors() {
 	ctx := context.Background()
 	c, err := logging.NewClient(ctx)
-	_ = err // Handle error.
+	if err != nil {
+		// TODO: Handle error.
+	}
 
-	req := &google_logging_v2.ListMonitoredResourceDescriptorsRequest{ /* Data... */ }
+	req := &googleapis_logging_v2.ListMonitoredResourceDescriptorsRequest{
+	// TODO: Fill request struct fields.
+	}
 	it := c.ListMonitoredResourceDescriptors(ctx, req)
-	var resp *google_api.MonitoredResourceDescriptor
 	for {
-		resp, err = it.Next()
+		resp, err := it.Next()
 		if err != nil {
+			// TODO: Handle error.
 			break
 		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	_ = resp
 }

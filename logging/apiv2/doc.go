@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package metrics is an experimental, auto-generated package for the logging
-// API.
+// AUTO-GENERATED CODE. DO NOT EDIT.
+
+// Package logging is an experimental, auto-generated package for the
+// logging API.
 //
 // The Google Cloud Logging API lets you write log entries and manage your logs, log sinks and logs-based metrics.
-package metrics
+package logging // import "cloud.google.com/go/logging/apiv2"
