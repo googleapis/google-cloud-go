@@ -40,3 +40,7 @@ func (d *Dataset) ListTables(ctx context.Context) ([]*Table, error) {
 	}
 	return tables, nil
 }
+
+func (d *Dataset) Create(ctx context.Context) error {
+	return d.service.insertDataset(ctx, d.id, d.projectID)
+}

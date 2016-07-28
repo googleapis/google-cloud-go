@@ -46,6 +46,9 @@ type service interface {
 	readTabledata(ctx context.Context, conf *readTableConf, pageToken string) (*readDataResult, error)
 	insertRows(ctx context.Context, projectID, datasetID, tableID string, rows []*insertionRow, conf *insertRowsConf) error
 
+	// Datasets
+	insertDataset(ctx context.Context, datasetID, projectID string) error
+
 	// Misc
 
 	// readQuery reads data resulting from a query job. If the job is
@@ -337,7 +340,7 @@ func (s *bigqueryService) listTables(ctx context.Context, projectID, datasetID, 
 		return nil, "", err
 	}
 	for _, t := range res.Tables {
-		tables = append(tables, convertListedTable(t))
+		tables = append(tables, s.convertListedTable(t))
 	}
 	return tables, res.NextPageToken, nil
 }
@@ -419,11 +422,12 @@ func bqTableToMetadata(t *bq.Table) *TableMetadata {
 	return md
 }
 
-func convertListedTable(t *bq.TableListTables) *Table {
+func (s *bigqueryService) convertListedTable(t *bq.TableListTables) *Table {
 	return &Table{
 		ProjectID: t.TableReference.ProjectId,
 		DatasetID: t.TableReference.DatasetId,
 		TableID:   t.TableReference.TableId,
+		service:   s,
 	}
 }
 
@@ -455,4 +459,12 @@ func (s *bigqueryService) patchTable(ctx context.Context, projectID, datasetID, 
 		return nil, err
 	}
 	return bqTableToMetadata(table), nil
+}
+
+func (s *bigqueryService) insertDataset(ctx context.Context, datasetID, projectID string) error {
+	ds := &bq.Dataset{
+		DatasetReference: &bq.DatasetReference{DatasetId: datasetID},
+	}
+	_, err := s.s.Datasets.Insert(projectID, ds).Context(ctx).Do()
+	return err
 }
