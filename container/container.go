@@ -20,24 +20,25 @@ package container // import "google.golang.org/cloud/container"
 
 import (
 	"errors"
-	"net/http"
+	"fmt"
 	"time"
 
 	"golang.org/x/net/context"
 	raw "google.golang.org/api/container/v1"
-	"google.golang.org/cloud/internal"
+	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
 )
 
 type Type string
 
-var (
-	TypeCreate Type = Type("createCluster")
-	TypeDelete Type = Type("deleteCluster")
+const (
+	TypeCreate = Type("createCluster")
+	TypeDelete = Type("deleteCluster")
 )
 
 type Status string
 
-var (
+const (
 	Done         = Status("done")
 	Pending      = Status("pending")
 	Running      = Status("running")
@@ -45,6 +46,43 @@ var (
 	Provisioning = Status("provisioning")
 	Stopping     = Status("stopping")
 )
+
+const prodAddr = "https://container.googleapis.com/"
+const userAgent = "gcloud-golang-container/20151008"
+
+// Client is a Google Container Engine client, which may be used to manage
+// clusters with a project.  It must be constructed via NewClient.
+type Client struct {
+	projectID string
+	svc       *raw.Service
+}
+
+// NewClient creates a new Google Container Engine client.
+func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
+	o := []option.ClientOption{
+		option.WithEndpoint(prodAddr),
+		option.WithScopes(raw.CloudPlatformScope),
+		option.WithUserAgent(userAgent),
+	}
+	o = append(o, opts...)
+	httpClient, endpoint, err := transport.NewHTTPClient(ctx, o...)
+	if err != nil {
+		return nil, fmt.Errorf("dialing: %v", err)
+	}
+
+	svc, err := raw.New(httpClient)
+	if err != nil {
+		return nil, fmt.Errorf("constructing container client: %v", err)
+	}
+	svc.BasePath = endpoint
+
+	c := &Client{
+		projectID: projectID,
+		svc:       svc,
+	}
+
+	return c, nil
+}
 
 // Resource is a Google Container Engine cluster resource.
 type Resource struct {
@@ -172,16 +210,15 @@ func opsFromRaw(o []*raw.Operation) []*Op {
 
 // Clusters returns a list of cluster resources from the specified zone.
 // If no zone is specified, it returns all clusters under the user project.
-func Clusters(ctx context.Context, zone string) ([]*Resource, error) {
-	s := rawService(ctx)
+func (c *Client) Clusters(ctx context.Context, zone string) ([]*Resource, error) {
 	if zone == "" {
-		resp, err := s.Projects.Zones.Clusters.List(internal.ProjID(ctx), "-").Do()
+		resp, err := c.svc.Projects.Zones.Clusters.List(c.projectID, "-").Do()
 		if err != nil {
 			return nil, err
 		}
 		return resourcesFromRaw(resp.Clusters), nil
 	}
-	resp, err := s.Projects.Zones.Clusters.List(internal.ProjID(ctx), zone).Do()
+	resp, err := c.svc.Projects.Zones.Clusters.List(c.projectID, zone).Do()
 	if err != nil {
 		return nil, err
 	}
@@ -189,9 +226,8 @@ func Clusters(ctx context.Context, zone string) ([]*Resource, error) {
 }
 
 // Cluster returns metadata about the specified cluster.
-func Cluster(ctx context.Context, zone, name string) (*Resource, error) {
-	s := rawService(ctx)
-	resp, err := s.Projects.Zones.Clusters.Get(internal.ProjID(ctx), zone, name).Do()
+func (c *Client) Cluster(ctx context.Context, zone, name string) (*Resource, error) {
+	resp, err := c.svc.Projects.Zones.Clusters.Get(c.projectID, zone, name).Do()
 	if err != nil {
 		return nil, err
 	}
@@ -200,30 +236,28 @@ func Cluster(ctx context.Context, zone, name string) (*Resource, error) {
 
 // CreateCluster creates a new cluster with the provided metadata
 // in the specified zone.
-func CreateCluster(ctx context.Context, zone string, resource *Resource) (*Resource, error) {
+func (c *Client) CreateCluster(ctx context.Context, zone string, resource *Resource) (*Resource, error) {
 	panic("not implemented")
 }
 
 // DeleteCluster deletes a cluster.
-func DeleteCluster(ctx context.Context, zone, name string) error {
-	s := rawService(ctx)
-	_, err := s.Projects.Zones.Clusters.Delete(internal.ProjID(ctx), zone, name).Do()
+func (c *Client) DeleteCluster(ctx context.Context, zone, name string) error {
+	_, err := c.svc.Projects.Zones.Clusters.Delete(c.projectID, zone, name).Do()
 	return err
 }
 
 // Operations returns a list of operations from the specified zone.
 // If no zone is specified, it looks up for all of the operations
 // that are running under the user's project.
-func Operations(ctx context.Context, zone string) ([]*Op, error) {
-	s := rawService(ctx)
+func (c *Client) Operations(ctx context.Context, zone string) ([]*Op, error) {
 	if zone == "" {
-		resp, err := s.Projects.Zones.Operations.List(internal.ProjID(ctx), "-").Do()
+		resp, err := c.svc.Projects.Zones.Operations.List(c.projectID, "-").Do()
 		if err != nil {
 			return nil, err
 		}
 		return opsFromRaw(resp.Operations), nil
 	}
-	resp, err := s.Projects.Zones.Operations.List(internal.ProjID(ctx), zone).Do()
+	resp, err := c.svc.Projects.Zones.Operations.List(c.projectID, zone).Do()
 	if err != nil {
 		return nil, err
 	}
@@ -231,9 +265,8 @@ func Operations(ctx context.Context, zone string) ([]*Op, error) {
 }
 
 // Operation returns an operation.
-func Operation(ctx context.Context, zone, name string) (*Op, error) {
-	s := rawService(ctx)
-	resp, err := s.Projects.Zones.Operations.Get(internal.ProjID(ctx), zone, name).Do()
+func (c *Client) Operation(ctx context.Context, zone, name string) (*Op, error) {
+	resp, err := c.svc.Projects.Zones.Operations.Get(c.projectID, zone, name).Do()
 	if err != nil {
 		return nil, err
 	}
@@ -241,11 +274,4 @@ func Operation(ctx context.Context, zone, name string) (*Op, error) {
 		return nil, errors.New(resp.StatusMessage)
 	}
 	return opFromRaw(resp), nil
-}
-
-func rawService(ctx context.Context) *raw.Service {
-	return internal.Service(ctx, "container", func(hc *http.Client) interface{} {
-		svc, _ := raw.New(hc)
-		return svc
-	}).(*raw.Service)
 }
