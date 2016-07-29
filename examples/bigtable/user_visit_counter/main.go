@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /*
-helloworld tracks how often a user has visited the index page.
+Tracks how often a user has visited the index page.
 
 This program demonstrates usage of the Cloud Bigtable API for App Engine flexible environment and Go.
 Instructions for running this program are in the README.md.
@@ -41,7 +41,7 @@ const (
 )
 
 var (
-	tableName  = "bigtable-hello"
+	tableName  = "user-visit-counter"
 	familyName = "emails"
 
 	// Client is initialized by main.
@@ -110,7 +110,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) *appError {
 		return &appError{err, "Error finding logout URL", http.StatusInternalServerError}
 	}
 
-	// Display hello page.
+	// Increment visit count for user.
 	tbl := client.Open(tableName)
 	rmw := bigtable.NewReadModifyWrite()
 	rmw.Increment(familyName, u.Email, 1)
@@ -127,6 +127,8 @@ func mainHandler(w http.ResponseWriter, r *http.Request) *appError {
 		Visits: binary.BigEndian.Uint64(row[familyName][0].Value),
 		Logout: logoutURL,
 	}
+
+	// Display hello page.
 	var buf bytes.Buffer
 	if err := tmpl.Execute(&buf, data); err != nil {
 		return &appError{err, "Error writing template", http.StatusInternalServerError}
