@@ -119,7 +119,7 @@ func (s *server) CreateTable(ctx context.Context, req *btapb.CreateTableRequest)
 		s.mu.Unlock()
 		return nil, fmt.Errorf("table %q already exists", tbl)
 	}
-	s.tables[tbl] = newTable()
+	s.tables[tbl] = newTable(req)
 	s.mu.Unlock()
 
 	return &btapb.Table{Name: tbl}, nil
@@ -735,9 +735,18 @@ type table struct {
 	rowIndex map[string]*row          // indexed by row key
 }
 
-func newTable() *table {
+func newTable(ctr *bttspb.CreateTableRequest) *table {
+	fams := make(map[string]*columnFamily)
+	if ctr.Table != nil {
+		for id, cf := range ctr.Table.ColumnFamilies {
+			fams[id] = &columnFamily{
+				name:   ctr.Name + "/columnFamilies/" + id,
+				gcRule: cf.GcRule,
+			}
+		}
+	}
 	return &table{
-		families: make(map[string]*columnFamily),
+		families: fams,
 		rowIndex: make(map[string]*row),
 	}
 }
