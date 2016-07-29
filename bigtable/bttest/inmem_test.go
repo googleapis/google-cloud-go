@@ -23,10 +23,8 @@ import (
 	"time"
 
 	"golang.org/x/net/context"
-	btdpb "google.golang.org/cloud/bigtable/internal/data_proto"
-	btspb "google.golang.org/cloud/bigtable/internal/service_proto"
-	bttdpb "google.golang.org/cloud/bigtable/internal/table_data_proto"
-	bttspb "google.golang.org/cloud/bigtable/internal/table_service_proto"
+	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
+	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 )
 
 func TestConcurrentMutationsReadModifyAndGC(t *testing.T) {
@@ -37,17 +35,17 @@ func TestConcurrentMutationsReadModifyAndGC(t *testing.T) {
 	defer cancel()
 	if _, err := s.CreateTable(
 		ctx,
-		&bttspb.CreateTableRequest{Name: "cluster", TableId: "t"}); err != nil {
+		&btapb.CreateTableRequest{Parent: "cluster", TableId: "t"}); err != nil {
 		t.Fatal(err)
 	}
 	const name = `cluster/tables/t`
 	tbl := s.tables[name]
-	req := &bttspb.ModifyColumnFamiliesRequest{
+	req := &btapb.ModifyColumnFamiliesRequest{
 		Name: name,
-		Modifications: []*bttspb.ModifyColumnFamiliesRequest_Modification{
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{
 			{
 				Id:  "cf",
-				Mod: &bttspb.ModifyColumnFamiliesRequest_Modification_Create{Create: &bttdpb.ColumnFamily{}},
+				Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{Create: &btapb.ColumnFamily{}},
 			},
 		},
 	}
@@ -55,13 +53,13 @@ func TestConcurrentMutationsReadModifyAndGC(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	req = &bttspb.ModifyColumnFamiliesRequest{
+	req = &btapb.ModifyColumnFamiliesRequest{
 		Name: name,
-		Modifications: []*bttspb.ModifyColumnFamiliesRequest_Modification{
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{
 			{
 				Id: "cf",
-				Mod: &bttspb.ModifyColumnFamiliesRequest_Modification_Update{
-					Update: &bttdpb.ColumnFamily{GcRule: &bttdpb.GcRule{Rule: &bttdpb.GcRule_MaxNumVersions{MaxNumVersions: 1}}}},
+				Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Update{
+					Update: &btapb.ColumnFamily{GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 1}}}},
 			},
 		},
 	}
@@ -71,11 +69,11 @@ func TestConcurrentMutationsReadModifyAndGC(t *testing.T) {
 
 	var wg sync.WaitGroup
 	var ts int64
-	ms := func() []*btdpb.Mutation {
-		return []*btdpb.Mutation{
+	ms := func() []*btpb.Mutation {
+		return []*btpb.Mutation{
 			{
-				Mutation: &btdpb.Mutation_SetCell_{
-					SetCell: &btdpb.Mutation_SetCell{
+				Mutation: &btpb.Mutation_SetCell_{
+					SetCell: &btpb.Mutation_SetCell{
 						FamilyName:      "cf",
 						ColumnQualifier: []byte(`col`),
 						TimestampMicros: atomic.AddInt64(&ts, 1000),
@@ -85,15 +83,15 @@ func TestConcurrentMutationsReadModifyAndGC(t *testing.T) {
 		}
 	}
 
-	rmw := func() *btspb.ReadModifyWriteRowRequest {
-		return &btspb.ReadModifyWriteRowRequest{
+	rmw := func() *btpb.ReadModifyWriteRowRequest {
+		return &btpb.ReadModifyWriteRowRequest{
 			TableName: name,
 			RowKey:    []byte(fmt.Sprint(rand.Intn(100))),
-			Rules: []*btdpb.ReadModifyWriteRule{
+			Rules: []*btpb.ReadModifyWriteRule{
 				{
 					FamilyName:      "cf",
 					ColumnQualifier: []byte("col"),
-					Rule:            &btdpb.ReadModifyWriteRule_IncrementAmount{IncrementAmount: 1},
+					Rule:            &btpb.ReadModifyWriteRule_IncrementAmount{IncrementAmount: 1},
 				},
 			},
 		}
@@ -103,7 +101,7 @@ func TestConcurrentMutationsReadModifyAndGC(t *testing.T) {
 		go func() {
 			defer wg.Done()
 			for ctx.Err() == nil {
-				req := &btspb.MutateRowRequest{
+				req := &btpb.MutateRowRequest{
 					TableName: name,
 					RowKey:    []byte(fmt.Sprint(rand.Intn(100))),
 					Mutations: ms(),

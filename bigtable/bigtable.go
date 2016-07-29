@@ -25,10 +25,9 @@ import (
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/cloud"
-	btdpb "google.golang.org/cloud/bigtable/internal/data_proto"
 	"google.golang.org/cloud/bigtable/internal/option"
-	btspb "google.golang.org/cloud/bigtable/internal/service_proto"
 	"google.golang.org/cloud/internal/transport"
+	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -41,7 +40,7 @@ const prodAddr = "bigtable.googleapis.com:443"
 // A Client is safe to use concurrently, except for its Close method.
 type Client struct {
 	conn   *grpc.ClientConn
-	client btspb.BigtableClient
+	client btpb.BigtableClient
 
 	project, instance string
 }
@@ -59,7 +58,7 @@ func NewClient(ctx context.Context, project, instance string, opts ...cloud.Clie
 	}
 	return &Client{
 		conn:   conn,
-		client: btspb.NewBigtableClient(conn),
+		client: btpb.NewBigtableClient(conn),
 
 		project:  project,
 		instance: instance,
@@ -105,7 +104,7 @@ func (c *Client) Open(table string) *Table {
 // Use RowFilter to limit the cells returned.
 func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
 	ctx = metadata.NewContext(ctx, t.md)
-	req := &btspb.ReadRowsRequest{
+	req := &btpb.ReadRowsRequest{
 		TableName: t.c.fullTableName(t.table),
 		Rows:      arg.proto(),
 	}
@@ -167,7 +166,7 @@ func (t *Table) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Ro
 }
 
 // decodeFamilyProto adds the cell data from f to the given row.
-func decodeFamilyProto(r Row, row string, f *btdpb.Family) {
+func decodeFamilyProto(r Row, row string, f *btpb.Family) {
 	fam := f.Name // does not have colon
 	for _, col := range f.Columns {
 		for _, cell := range col.Cells {
@@ -184,18 +183,18 @@ func decodeFamilyProto(r Row, row string, f *btdpb.Family) {
 
 // RowSet is a set of rows to be read. It is satisfied by RowList and RowRange.
 type RowSet interface {
-	proto() *btdpb.RowSet
+	proto() *btpb.RowSet
 }
 
 // RowList is a sequence of row keys.
 type RowList []string
 
-func (r RowList) proto() *btdpb.RowSet {
+func (r RowList) proto() *btpb.RowSet {
 	keys := make([][]byte, len(r))
 	for i, row := range r {
 		keys[i] = []byte(row)
 	}
-	return &btdpb.RowSet{RowKeys: keys}
+	return &btpb.RowSet{RowKeys: keys}
 }
 
 // A RowRange is a half-open interval [Start, Limit) encompassing
@@ -234,13 +233,13 @@ func (r RowRange) String() string {
 	return fmt.Sprintf("[%s,%q)", a, r.limit)
 }
 
-func (r RowRange) proto() *btdpb.RowSet {
-	var rr *btdpb.RowRange
-	rr = &btdpb.RowRange{StartKey: &btdpb.RowRange_StartKeyClosed{StartKeyClosed: []byte(r.start)}}
+func (r RowRange) proto() *btpb.RowSet {
+	var rr *btpb.RowRange
+	rr = &btpb.RowRange{StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte(r.start)}}
 	if !r.Unbounded() {
-		rr.EndKey = &btdpb.RowRange_EndKeyOpen{EndKeyOpen: []byte(r.limit)}
+		rr.EndKey = &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte(r.limit)}
 	}
-	return &btdpb.RowSet{RowRanges: []*btdpb.RowRange{rr}}
+	return &btpb.RowSet{RowRanges: []*btpb.RowRange{rr}}
 }
 
 // SingleRow returns a RowRange for reading a single row.
@@ -288,7 +287,7 @@ func prefixSuccessor(prefix string) string {
 
 // A ReadOption is an optional argument to ReadRows.
 type ReadOption interface {
-	set(req *btspb.ReadRowsRequest)
+	set(req *btpb.ReadRowsRequest)
 }
 
 // RowFilter returns a ReadOption that applies f to the contents of read rows.
@@ -296,14 +295,14 @@ func RowFilter(f Filter) ReadOption { return rowFilter{f} }
 
 type rowFilter struct{ f Filter }
 
-func (rf rowFilter) set(req *btspb.ReadRowsRequest) { req.Filter = rf.f.proto() }
+func (rf rowFilter) set(req *btpb.ReadRowsRequest) { req.Filter = rf.f.proto() }
 
 // LimitRows returns a ReadOption that will limit the number of rows to be read.
 func LimitRows(limit int64) ReadOption { return limitRows{limit} }
 
 type limitRows struct{ limit int64 }
 
-func (lr limitRows) set(req *btspb.ReadRowsRequest) { req.RowsLimit = lr.limit }
+func (lr limitRows) set(req *btpb.ReadRowsRequest) { req.RowsLimit = lr.limit }
 
 // Apply applies a Mutation to a specific row.
 func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error {
@@ -315,7 +314,7 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 	}
 
 	if m.cond == nil {
-		req := &btspb.MutateRowRequest{
+		req := &btpb.MutateRowRequest{
 			TableName: t.c.fullTableName(t.table),
 			RowKey:    []byte(row),
 			Mutations: m.ops,
@@ -326,7 +325,7 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 		}
 		return err
 	}
-	req := &btspb.CheckAndMutateRowRequest{
+	req := &btpb.CheckAndMutateRowRequest{
 		TableName:       t.c.fullTableName(t.table),
 		RowKey:          []byte(row),
 		PredicateFilter: m.cond.proto(),
@@ -357,7 +356,7 @@ func (a applyAfterFunc) after(res proto.Message) { a(res) }
 // mutation's condition matched.
 func GetCondMutationResult(matched *bool) ApplyOption {
 	return applyAfterFunc(func(res proto.Message) {
-		if res, ok := res.(*btspb.CheckAndMutateRowResponse); ok {
+		if res, ok := res.(*btpb.CheckAndMutateRowResponse); ok {
 			*matched = res.PredicateMatched
 		}
 	})
@@ -365,7 +364,7 @@ func GetCondMutationResult(matched *bool) ApplyOption {
 
 // Mutation represents a set of changes for a single row of a table.
 type Mutation struct {
-	ops []*btdpb.Mutation
+	ops []*btpb.Mutation
 
 	// for conditional mutations
 	cond          Filter
@@ -395,7 +394,7 @@ func (m *Mutation) Set(family, column string, ts Timestamp, value []byte) {
 		// TODO(dsymonds): Provide a way to override this behaviour.
 		ts -= ts % 1000
 	}
-	m.ops = append(m.ops, &btdpb.Mutation{Mutation: &btdpb.Mutation_SetCell_{&btdpb.Mutation_SetCell{
+	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_SetCell_{&btpb.Mutation_SetCell{
 		FamilyName:      family,
 		ColumnQualifier: []byte(column),
 		TimestampMicros: int64(ts),
@@ -405,7 +404,7 @@ func (m *Mutation) Set(family, column string, ts Timestamp, value []byte) {
 
 // DeleteCellsInColumn will delete all the cells whose columns are family:column.
 func (m *Mutation) DeleteCellsInColumn(family, column string) {
-	m.ops = append(m.ops, &btdpb.Mutation{Mutation: &btdpb.Mutation_DeleteFromColumn_{&btdpb.Mutation_DeleteFromColumn{
+	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_DeleteFromColumn_{&btpb.Mutation_DeleteFromColumn{
 		FamilyName:      family,
 		ColumnQualifier: []byte(column),
 	}}})
@@ -415,10 +414,10 @@ func (m *Mutation) DeleteCellsInColumn(family, column string) {
 // and whose timestamps are in the half-open interval [start, end).
 // If end is zero, it will be interpreted as infinity.
 func (m *Mutation) DeleteTimestampRange(family, column string, start, end Timestamp) {
-	m.ops = append(m.ops, &btdpb.Mutation{Mutation: &btdpb.Mutation_DeleteFromColumn_{&btdpb.Mutation_DeleteFromColumn{
+	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_DeleteFromColumn_{&btpb.Mutation_DeleteFromColumn{
 		FamilyName:      family,
 		ColumnQualifier: []byte(column),
-		TimeRange: &btdpb.TimestampRange{
+		TimeRange: &btpb.TimestampRange{
 			StartTimestampMicros: int64(start),
 			EndTimestampMicros:   int64(end),
 		},
@@ -427,14 +426,14 @@ func (m *Mutation) DeleteTimestampRange(family, column string, start, end Timest
 
 // DeleteCellsInFamily will delete all the cells whose columns are family:*.
 func (m *Mutation) DeleteCellsInFamily(family string) {
-	m.ops = append(m.ops, &btdpb.Mutation{Mutation: &btdpb.Mutation_DeleteFromFamily_{&btdpb.Mutation_DeleteFromFamily{
+	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_DeleteFromFamily_{&btpb.Mutation_DeleteFromFamily{
 		FamilyName: family,
 	}}})
 }
 
 // DeleteRow deletes the entire row.
 func (m *Mutation) DeleteRow() {
-	m.ops = append(m.ops, &btdpb.Mutation{Mutation: &btdpb.Mutation_DeleteFromRow_{&btdpb.Mutation_DeleteFromRow{}}})
+	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_DeleteFromRow_{&btpb.Mutation_DeleteFromRow{}}})
 }
 
 // ApplyBulk applies multiple Mutations.
@@ -462,16 +461,16 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 		}
 	}
 
-	req := &btspb.MutateRowsRequest{
+	req := &btpb.MutateRowsRequest{
 		TableName: t.c.fullTableName(t.table),
-		Entries:   make([]*btspb.MutateRowsRequest_Entry, len(rowKeys)),
+		Entries:   make([]*btpb.MutateRowsRequest_Entry, len(rowKeys)),
 	}
 	for i, key := range rowKeys {
 		mut := muts[i]
 		if mut.cond != nil {
 			return nil, fmt.Errorf("conditional mutations cannot be applied in bulk")
 		}
-		req.Entries[i] = &btspb.MutateRowsRequest_Entry{RowKey: []byte(key), Mutations: mut.ops}
+		req.Entries[i] = &btpb.MutateRowsRequest_Entry{RowKey: []byte(key), Mutations: mut.ops}
 	}
 	stream, err := t.c.client.MutateRows(ctx, req)
 	if err != nil {
@@ -524,7 +523,7 @@ func (ts Timestamp) Time() time.Time { return time.Unix(0, int64(ts)*1e3) }
 // It returns the newly written cells.
 func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
 	ctx = metadata.NewContext(ctx, t.md)
-	req := &btspb.ReadModifyWriteRowRequest{
+	req := &btpb.ReadModifyWriteRowRequest{
 		TableName: t.c.fullTableName(t.table),
 		RowKey:    []byte(row),
 		Rules:     m.ops,
@@ -534,7 +533,7 @@ func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadMod
 		return nil, err
 	}
 	r := make(Row)
-	for _, fam := range res.Row.Families { // res is *btdpb.Row, fam is *btdpb.Family
+	for _, fam := range res.Row.Families { // res is *btpb.Row, fam is *btpb.Family
 		decodeFamilyProto(r, row, fam)
 	}
 	return r, nil
@@ -549,7 +548,7 @@ func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadMod
 // The application of a ReadModifyWrite is atomic; concurrent ReadModifyWrites will
 // be executed serially by the server.
 type ReadModifyWrite struct {
-	ops []*btdpb.ReadModifyWriteRule
+	ops []*btpb.ReadModifyWriteRule
 }
 
 // NewReadModifyWrite returns a new ReadModifyWrite.
@@ -558,10 +557,10 @@ func NewReadModifyWrite() *ReadModifyWrite { return new(ReadModifyWrite) }
 // AppendValue appends a value to a specific cell's value.
 // If the cell is unset, it will be treated as an empty value.
 func (m *ReadModifyWrite) AppendValue(family, column string, v []byte) {
-	m.ops = append(m.ops, &btdpb.ReadModifyWriteRule{
+	m.ops = append(m.ops, &btpb.ReadModifyWriteRule{
 		FamilyName:      family,
 		ColumnQualifier: []byte(column),
-		Rule:            &btdpb.ReadModifyWriteRule_AppendValue{v},
+		Rule:            &btpb.ReadModifyWriteRule_AppendValue{v},
 	})
 }
 
@@ -570,9 +569,9 @@ func (m *ReadModifyWrite) AppendValue(family, column string, v []byte) {
 // If the cell is set and is not an 8-byte value, the entire ApplyReadModifyWrite
 // operation will fail.
 func (m *ReadModifyWrite) Increment(family, column string, delta int64) {
-	m.ops = append(m.ops, &btdpb.ReadModifyWriteRule{
+	m.ops = append(m.ops, &btpb.ReadModifyWriteRule{
 		FamilyName:      family,
 		ColumnQualifier: []byte(column),
-		Rule:            &btdpb.ReadModifyWriteRule_IncrementAmount{delta},
+		Rule:            &btpb.ReadModifyWriteRule_IncrementAmount{delta},
 	})
 }

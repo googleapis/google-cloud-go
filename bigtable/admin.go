@@ -23,11 +23,9 @@ import (
 
 	"golang.org/x/net/context"
 	"google.golang.org/cloud"
-	btispb "google.golang.org/cloud/bigtable/internal/instance_service_proto"
 	"google.golang.org/cloud/bigtable/internal/option"
-	bttdpb "google.golang.org/cloud/bigtable/internal/table_data_proto"
-	bttspb "google.golang.org/cloud/bigtable/internal/table_service_proto"
 	"google.golang.org/cloud/internal/transport"
+	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -37,7 +35,7 @@ const adminAddr = "bigtableadmin.googleapis.com:443"
 // AdminClient is a client type for performing admin operations within a specific instance.
 type AdminClient struct {
 	conn    *grpc.ClientConn
-	tClient bttspb.BigtableTableAdminClient
+	tClient btapb.BigtableTableAdminClient
 
 	project, instance string
 
@@ -58,7 +56,7 @@ func NewAdminClient(ctx context.Context, project, instance string, opts ...cloud
 	}
 	return &AdminClient{
 		conn:     conn,
-		tClient:  bttspb.NewBigtableTableAdminClient(conn),
+		tClient:  btapb.NewBigtableTableAdminClient(conn),
 		project:  project,
 		instance: instance,
 		md:       metadata.Pairs(resourcePrefixHeader, fmt.Sprintf("projects/%s/instances/%s", project, instance)),
@@ -78,8 +76,8 @@ func (ac *AdminClient) instancePrefix() string {
 func (ac *AdminClient) Tables(ctx context.Context) ([]string, error) {
 	ctx = metadata.NewContext(ctx, ac.md)
 	prefix := ac.instancePrefix()
-	req := &bttspb.ListTablesRequest{
-		Name: prefix,
+	req := &btapb.ListTablesRequest{
+		Parent: prefix,
 	}
 	res, err := ac.tClient.ListTables(ctx, req)
 	if err != nil {
@@ -97,8 +95,8 @@ func (ac *AdminClient) Tables(ctx context.Context) ([]string, error) {
 func (ac *AdminClient) CreateTable(ctx context.Context, table string) error {
 	ctx = metadata.NewContext(ctx, ac.md)
 	prefix := ac.instancePrefix()
-	req := &bttspb.CreateTableRequest{
-		Name:    prefix,
+	req := &btapb.CreateTableRequest{
+		Parent:  prefix,
 		TableId: table,
 	}
 	_, err := ac.tClient.CreateTable(ctx, req)
@@ -113,12 +111,12 @@ func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family str
 	// TODO(dsymonds): Permit specifying gcexpr and any other family settings.
 	ctx = metadata.NewContext(ctx, ac.md)
 	prefix := ac.instancePrefix()
-	req := &bttspb.ModifyColumnFamiliesRequest{
+	req := &btapb.ModifyColumnFamiliesRequest{
 		Name: prefix + "/tables/" + table,
-		Modifications: []*bttspb.ModifyColumnFamiliesRequest_Modification{
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{
 			{
 				Id:  family,
-				Mod: &bttspb.ModifyColumnFamiliesRequest_Modification_Create{Create: &bttdpb.ColumnFamily{}},
+				Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{Create: &btapb.ColumnFamily{}},
 			},
 		},
 	}
@@ -130,7 +128,7 @@ func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family str
 func (ac *AdminClient) DeleteTable(ctx context.Context, table string) error {
 	ctx = metadata.NewContext(ctx, ac.md)
 	prefix := ac.instancePrefix()
-	req := &bttspb.DeleteTableRequest{
+	req := &btapb.DeleteTableRequest{
 		Name: prefix + "/tables/" + table,
 	}
 	_, err := ac.tClient.DeleteTable(ctx, req)
@@ -141,12 +139,12 @@ func (ac *AdminClient) DeleteTable(ctx context.Context, table string) error {
 func (ac *AdminClient) DeleteColumnFamily(ctx context.Context, table, family string) error {
 	ctx = metadata.NewContext(ctx, ac.md)
 	prefix := ac.instancePrefix()
-	req := &bttspb.ModifyColumnFamiliesRequest{
+	req := &btapb.ModifyColumnFamiliesRequest{
 		Name: prefix + "/tables/" + table,
-		Modifications: []*bttspb.ModifyColumnFamiliesRequest_Modification{
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{
 			{
 				Id:  family,
-				Mod: &bttspb.ModifyColumnFamiliesRequest_Modification_Drop{Drop: true},
+				Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Drop{Drop: true},
 			},
 		},
 	}
@@ -163,7 +161,7 @@ type TableInfo struct {
 func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo, error) {
 	ctx = metadata.NewContext(ctx, ac.md)
 	prefix := ac.instancePrefix()
-	req := &bttspb.GetTableRequest{
+	req := &btapb.GetTableRequest{
 		Name: prefix + "/tables/" + table,
 	}
 	res, err := ac.tClient.GetTable(ctx, req)
@@ -183,12 +181,12 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 func (ac *AdminClient) SetGCPolicy(ctx context.Context, table, family string, policy GCPolicy) error {
 	ctx = metadata.NewContext(ctx, ac.md)
 	prefix := ac.instancePrefix()
-	req := &bttspb.ModifyColumnFamiliesRequest{
+	req := &btapb.ModifyColumnFamiliesRequest{
 		Name: prefix + "/tables/" + table,
-		Modifications: []*bttspb.ModifyColumnFamiliesRequest_Modification{
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{
 			{
 				Id:  family,
-				Mod: &bttspb.ModifyColumnFamiliesRequest_Modification_Update{Update: &bttdpb.ColumnFamily{GcRule: policy.proto()}},
+				Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Update{Update: &btapb.ColumnFamily{GcRule: policy.proto()}},
 			},
 		},
 	}
@@ -202,7 +200,7 @@ const instanceAdminAddr = "bigtableadmin.googleapis.com:443"
 // These operations can be substantially more dangerous than those provided by AdminClient.
 type InstanceAdminClient struct {
 	conn    *grpc.ClientConn
-	iClient btispb.BigtableInstanceAdminClient
+	iClient btapb.BigtableInstanceAdminClient
 
 	project string
 
@@ -223,7 +221,7 @@ func NewInstanceAdminClient(ctx context.Context, project string, opts ...cloud.C
 	}
 	return &InstanceAdminClient{
 		conn:    conn,
-		iClient: btispb.NewBigtableInstanceAdminClient(conn),
+		iClient: btapb.NewBigtableInstanceAdminClient(conn),
 
 		project: project,
 		md:      metadata.Pairs(resourcePrefixHeader, "projects/"+project),
@@ -246,8 +244,8 @@ var instanceNameRegexp = regexp.MustCompile(`^projects/([^/]+)/instances/([a-z][
 // Instances returns a list of instances in the project.
 func (cac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo, error) {
 	ctx = metadata.NewContext(ctx, cac.md)
-	req := &btispb.ListInstancesRequest{
-		Name: "projects/" + cac.project,
+	req := &btapb.ListInstancesRequest{
+		Parent: "projects/" + cac.project,
 	}
 	res, err := cac.iClient.ListInstances(ctx, req)
 	if err != nil {
