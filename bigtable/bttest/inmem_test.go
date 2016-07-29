@@ -134,3 +134,42 @@ func TestConcurrentMutationsReadModifyAndGC(t *testing.T) {
 		t.Error("Concurrent mutations and GCs haven't completed after 100ms")
 	}
 }
+
+func TestCreateTableWithFamily(t *testing.T) {
+	// The Go client currently doesn't support creating a table with column families
+	// in one operation but it is allowed by the API. This must still be supported by the
+	// fake server so this test lives here instead of in the main bigtable
+	// integration test.
+	s := &server{
+		tables: make(map[string]*table),
+	}
+	ctx := context.Background()
+	newTbl := bttdpb.Table{
+		ColumnFamilies: map[string]*bttdpb.ColumnFamily{
+			"cf1": &bttdpb.ColumnFamily{GcRule: &bttdpb.GcRule{Rule: &bttdpb.GcRule_MaxNumVersions{MaxNumVersions: 123}}},
+			"cf2": &bttdpb.ColumnFamily{GcRule: &bttdpb.GcRule{Rule: &bttdpb.GcRule_MaxNumVersions{MaxNumVersions: 456}}},
+		},
+	}
+	cTbl, err := s.CreateTable(ctx, &bttspb.CreateTableRequest{Name: "cluster", TableId: "t", Table: &newTbl})
+	if err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+	tbl, err := s.GetTable(ctx, &bttspb.GetTableRequest{Name: cTbl.Name})
+	if err != nil {
+		t.Fatalf("Getting table: %v", err)
+	}
+	cf := tbl.ColumnFamilies["cf1"]
+	if cf == nil {
+		t.Fatalf("Missing col family cf1")
+	}
+	if got, want := cf.GcRule.GetMaxNumVersions(), int32(123); got != want {
+		t.Errorf("Invalid MaxNumVersions: wanted:%d, got:%d", want, got)
+	}
+	cf = tbl.ColumnFamilies["cf2"]
+	if cf == nil {
+		t.Fatalf("Missing col family cf2")
+	}
+	if got, want := cf.GcRule.GetMaxNumVersions(), int32(456); got != want {
+		t.Errorf("Invalid MaxNumVersions: wanted:%d, got:%d", want, got)
+	}
+}
