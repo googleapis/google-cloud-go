@@ -24,8 +24,8 @@ import (
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/cloud"
-	pb "google.golang.org/cloud/datastore/internal/proto"
 	"google.golang.org/cloud/internal/transport"
+	pb "google.golang.org/genproto/googleapis/datastore/v1beta3"
 	"google.golang.org/grpc"
 )
 

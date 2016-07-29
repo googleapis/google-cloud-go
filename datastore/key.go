@@ -24,7 +24,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
-	pb "google.golang.org/cloud/datastore/internal/proto"
+	pb "google.golang.org/genproto/googleapis/datastore/v1beta3"
 )
 
 // Key represents the datastore key for a stored entity, and is immutable.

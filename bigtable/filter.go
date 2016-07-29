@@ -20,13 +20,13 @@ import (
 	"fmt"
 	"strings"
 
-	btdpb "google.golang.org/cloud/bigtable/internal/data_proto"
+	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 )
 
 // A Filter represents a row filter.
 type Filter interface {
 	String() string
-	proto() *btdpb.RowFilter
+	proto() *btpb.RowFilter
 }
 
 // ChainFilters returns a filter that applies a sequence of filters.
@@ -44,13 +44,13 @@ func (cf chainFilter) String() string {
 	return "(" + strings.Join(ss, " | ") + ")"
 }
 
-func (cf chainFilter) proto() *btdpb.RowFilter {
-	chain := &btdpb.RowFilter_Chain{}
+func (cf chainFilter) proto() *btpb.RowFilter {
+	chain := &btpb.RowFilter_Chain{}
 	for _, sf := range cf.sub {
 		chain.Filters = append(chain.Filters, sf.proto())
 	}
-	return &btdpb.RowFilter{
-		Filter: &btdpb.RowFilter_Chain_{chain},
+	return &btpb.RowFilter{
+		Filter: &btpb.RowFilter_Chain_{chain},
 	}
 }
 
@@ -70,13 +70,13 @@ func (ilf interleaveFilter) String() string {
 	return "(" + strings.Join(ss, " + ") + ")"
 }
 
-func (ilf interleaveFilter) proto() *btdpb.RowFilter {
-	inter := &btdpb.RowFilter_Interleave{}
+func (ilf interleaveFilter) proto() *btpb.RowFilter {
+	inter := &btpb.RowFilter_Interleave{}
 	for _, sf := range ilf.sub {
 		inter.Filters = append(inter.Filters, sf.proto())
 	}
-	return &btdpb.RowFilter{
-		Filter: &btdpb.RowFilter_Interleave_{inter},
+	return &btpb.RowFilter{
+		Filter: &btpb.RowFilter_Interleave_{inter},
 	}
 }
 
@@ -89,8 +89,8 @@ type rowKeyFilter string
 
 func (rkf rowKeyFilter) String() string { return fmt.Sprintf("row(%s)", string(rkf)) }
 
-func (rkf rowKeyFilter) proto() *btdpb.RowFilter {
-	return &btdpb.RowFilter{Filter: &btdpb.RowFilter_RowKeyRegexFilter{[]byte(rkf)}}
+func (rkf rowKeyFilter) proto() *btpb.RowFilter {
+	return &btpb.RowFilter{Filter: &btpb.RowFilter_RowKeyRegexFilter{[]byte(rkf)}}
 }
 
 // FamilyFilter returns a filter that matches cells whose family name
@@ -102,8 +102,8 @@ type familyFilter string
 
 func (ff familyFilter) String() string { return fmt.Sprintf("col(%s:)", string(ff)) }
 
-func (ff familyFilter) proto() *btdpb.RowFilter {
-	return &btdpb.RowFilter{Filter: &btdpb.RowFilter_FamilyNameRegexFilter{string(ff)}}
+func (ff familyFilter) proto() *btpb.RowFilter {
+	return &btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{string(ff)}}
 }
 
 // ColumnFilter returns a filter that matches cells whose column name
@@ -115,8 +115,8 @@ type columnFilter string
 
 func (cf columnFilter) String() string { return fmt.Sprintf("col(.*:%s)", string(cf)) }
 
-func (cf columnFilter) proto() *btdpb.RowFilter {
-	return &btdpb.RowFilter{Filter: &btdpb.RowFilter_ColumnQualifierRegexFilter{[]byte(cf)}}
+func (cf columnFilter) proto() *btpb.RowFilter {
+	return &btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{[]byte(cf)}}
 }
 
 // ValueFilter returns a filter that matches cells whose value
@@ -128,8 +128,8 @@ type valueFilter string
 
 func (vf valueFilter) String() string { return fmt.Sprintf("value_match(%s)", string(vf)) }
 
-func (vf valueFilter) proto() *btdpb.RowFilter {
-	return &btdpb.RowFilter{Filter: &btdpb.RowFilter_ValueRegexFilter{[]byte(vf)}}
+func (vf valueFilter) proto() *btpb.RowFilter {
+	return &btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte(vf)}}
 }
 
 // LatestNFilter returns a filter that matches the most recent N cells in each column.
@@ -139,8 +139,8 @@ type latestNFilter int32
 
 func (lnf latestNFilter) String() string { return fmt.Sprintf("col(*,%d)", lnf) }
 
-func (lnf latestNFilter) proto() *btdpb.RowFilter {
-	return &btdpb.RowFilter{Filter: &btdpb.RowFilter_CellsPerColumnLimitFilter{int32(lnf)}}
+func (lnf latestNFilter) proto() *btpb.RowFilter {
+	return &btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerColumnLimitFilter{int32(lnf)}}
 }
 
 // StripValueFilter returns a filter that replaces each value with the empty string.
@@ -149,8 +149,8 @@ func StripValueFilter() Filter { return stripValueFilter{} }
 type stripValueFilter struct{}
 
 func (stripValueFilter) String() string { return "strip_value()" }
-func (stripValueFilter) proto() *btdpb.RowFilter {
-	return &btdpb.RowFilter{Filter: &btdpb.RowFilter_StripValueTransformer{true}}
+func (stripValueFilter) proto() *btpb.RowFilter {
+	return &btpb.RowFilter{Filter: &btpb.RowFilter_StripValueTransformer{true}}
 }
 
 // TODO(dsymonds): More filters: cond, col/ts/value range, sampling

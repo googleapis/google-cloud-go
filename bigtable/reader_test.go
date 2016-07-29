@@ -26,7 +26,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/wrappers"
-	btspb "google.golang.org/cloud/bigtable/internal/service_proto"
+	btspb "google.golang.org/genproto/googleapis/bigtable/v2"
 )
 
 // Indicates that a field in the proto should be omitted, rather than included
