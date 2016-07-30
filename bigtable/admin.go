@@ -21,10 +21,10 @@ import (
 	"regexp"
 	"strings"
 
+	btopt "cloud.google.com/go/bigtable/internal/option"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/bigtable/internal/option"
-	"google.golang.org/cloud/internal/transport"
+	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -44,8 +44,8 @@ type AdminClient struct {
 }
 
 // NewAdminClient creates a new AdminClient for a given project and instance.
-func NewAdminClient(ctx context.Context, project, instance string, opts ...cloud.ClientOption) (*AdminClient, error) {
-	o, err := option.DefaultClientOptions(adminAddr, AdminScope, clientUserAgent)
+func NewAdminClient(ctx context.Context, project, instance string, opts ...option.ClientOption) (*AdminClient, error) {
+	o, err := btopt.DefaultClientOptions(adminAddr, AdminScope, clientUserAgent)
 	if err != nil {
 		return nil, err
 	}
@@ -209,8 +209,8 @@ type InstanceAdminClient struct {
 }
 
 // NewInstanceAdminClient creates a new InstanceAdminClient for a given project.
-func NewInstanceAdminClient(ctx context.Context, project string, opts ...cloud.ClientOption) (*InstanceAdminClient, error) {
-	o, err := option.DefaultClientOptions(instanceAdminAddr, InstanceAdminScope, clientUserAgent)
+func NewInstanceAdminClient(ctx context.Context, project string, opts ...option.ClientOption) (*InstanceAdminClient, error) {
+	o, err := btopt.DefaultClientOptions(instanceAdminAddr, InstanceAdminScope, clientUserAgent)
 	if err != nil {
 		return nil, err
 	}

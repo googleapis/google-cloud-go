@@ -24,11 +24,11 @@ import (
 	"net/http"
 	"strings"
 
+	"cloud.google.com/go/storage"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/file"
 	"google.golang.org/appengine/log"
-	"google.golang.org/cloud/storage"
 )
 
 //[END imports]

@@ -24,9 +24,9 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/internal/testutil"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/internal/testutil"
+	"google.golang.org/api/option"
 )
 
 // TODO(djd): Make test entity clean up more robust: some test entities may
@@ -42,7 +42,7 @@ func newClient(ctx context.Context, t *testing.T) *Client {
 	if ts == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
-	client, err := NewClient(ctx, testutil.ProjID(), cloud.WithTokenSource(ts))
+	client, err := NewClient(ctx, testutil.ProjID(), option.WithTokenSource(ts))
 	if err != nil {
 		t.Fatalf("NewClient: %v", err)
 	}

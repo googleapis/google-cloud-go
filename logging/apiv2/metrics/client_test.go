@@ -17,10 +17,10 @@
 package metrics_test
 
 import (
+	"cloud.google.com/go/logging/apiv2/metrics"
 	gax "github.com/googleapis/gax-go"
 	google_logging_v2 "github.com/googleapis/proto-client-go/logging/v2"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud/logging/apiv2/metrics"
 )
 
 func ExampleNewClient() {

@@ -20,10 +20,10 @@ import (
 	"log"
 	"time"
 
+	"cloud.google.com/go/storage"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2/google"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/storage"
+	"google.golang.org/api/option"
 )
 
 func ExampleNewClient() {
@@ -57,7 +57,7 @@ func ExampleNewClient_auth() {
 		log.Fatal(err)
 	}
 	ctx := context.Background()
-	client, err := storage.NewClient(ctx, cloud.WithTokenSource(conf.TokenSource(ctx)))
+	client, err := storage.NewClient(ctx, option.WithTokenSource(conf.TokenSource(ctx)))
 	if err != nil {
 		log.Fatal(err)
 	}

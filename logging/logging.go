@@ -15,7 +15,7 @@
 // Package logging contains a Google Cloud Logging client.
 //
 // This package is experimental and subject to API changes.
-package logging // import "google.golang.org/cloud/logging"
+package logging // import "cloud.google.com/go/logging"
 
 import (
 	"errors"
@@ -26,8 +26,8 @@ import (
 
 	"golang.org/x/net/context"
 	api "google.golang.org/api/logging/v1beta3"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/internal/transport"
+	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
 )
 
 // Scope is the OAuth2 scope necessary to use Google Cloud Logging.
@@ -443,11 +443,11 @@ const userAgent = "gcloud-golang-logging/20150922"
 // The exported fields on the returned client may be modified before
 // the client is used for logging. Once log entries are in flight,
 // the fields must not be modified.
-func NewClient(ctx context.Context, projectID, logName string, opts ...cloud.ClientOption) (*Client, error) {
-	httpClient, endpoint, err := transport.NewHTTPClient(ctx, append([]cloud.ClientOption{
-		cloud.WithEndpoint(prodAddr),
-		cloud.WithScopes(Scope),
-		cloud.WithUserAgent(userAgent),
+func NewClient(ctx context.Context, projectID, logName string, opts ...option.ClientOption) (*Client, error) {
+	httpClient, endpoint, err := transport.NewHTTPClient(ctx, append([]option.ClientOption{
+		option.WithEndpoint(prodAddr),
+		option.WithScopes(Scope),
+		option.WithUserAgent(userAgent),
 	}, opts...)...)
 	if err != nil {
 		return nil, err

@@ -19,15 +19,16 @@ package option
 
 import (
 	"fmt"
-	"google.golang.org/cloud"
-	"google.golang.org/grpc"
 	"os"
+
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
 )
 
 // DefaultClientOptions returns the default client options to use for the
 // client's gRPC connection.
-func DefaultClientOptions(endpoint, scope, userAgent string) ([]cloud.ClientOption, error) {
-	var o []cloud.ClientOption
+func DefaultClientOptions(endpoint, scope, userAgent string) ([]option.ClientOption, error) {
+	var o []option.ClientOption
 	// Check the environment variables for the bigtable emulator.
 	// Dial it directly and don't pass any credentials.
 	if addr := os.Getenv("BIGTABLE_EMULATOR_HOST"); addr != "" {
@@ -35,12 +36,12 @@ func DefaultClientOptions(endpoint, scope, userAgent string) ([]cloud.ClientOpti
 		if err != nil {
 			return nil, fmt.Errorf("emulator grpc.Dial: %v", err)
 		}
-		o = []cloud.ClientOption{cloud.WithBaseGRPC(conn)}
+		o = []option.ClientOption{option.WithGRPCConn(conn)}
 	} else {
-		o = []cloud.ClientOption{
-			cloud.WithEndpoint(endpoint),
-			cloud.WithScopes(scope),
-			cloud.WithUserAgent(userAgent),
+		o = []option.ClientOption{
+			option.WithEndpoint(endpoint),
+			option.WithScopes(scope),
+			option.WithUserAgent(userAgent),
 		}
 	}
 	return o, nil

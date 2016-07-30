@@ -17,8 +17,8 @@ package pubsub_test
 import (
 	"log"
 
+	"cloud.google.com/go/pubsub"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud/pubsub"
 )
 
 func Example_createClient(ctx context.Context) *pubsub.Client {

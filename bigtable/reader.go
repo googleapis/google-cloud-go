@@ -19,6 +19,7 @@ package bigtable
 import (
 	"bytes"
 	"fmt"
+
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 )
 

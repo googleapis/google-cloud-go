@@ -15,4 +15,4 @@
 // Package bigquery provides a client for the BigQuery service.
 //
 // Note: This package is a work-in-progress.  Backwards-incompatible changes should be expected.
-package bigquery // import "google.golang.org/cloud/bigquery"
+package bigquery // import "cloud.google.com/go/bigquery"

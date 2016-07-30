@@ -32,10 +32,10 @@ import (
 	"text/tabwriter"
 	"time"
 
+	"cloud.google.com/go/bigtable"
+	"cloud.google.com/go/bigtable/internal/cbtrc"
+	"cloud.google.com/go/bigtable/internal/stat"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud/bigtable"
-	"google.golang.org/cloud/bigtable/internal/cbtrc"
-	"google.golang.org/cloud/bigtable/internal/stat"
 )
 
 var (

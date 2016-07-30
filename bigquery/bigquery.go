@@ -19,8 +19,8 @@ package bigquery
 import (
 	"fmt"
 
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/internal/transport"
+	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
 
 	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
@@ -64,11 +64,11 @@ type Client struct {
 
 // NewClient constructs a new Client which can perform BigQuery operations.
 // Operations performed via the client are billed to the specified GCP project.
-func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption) (*Client, error) {
-	o := []cloud.ClientOption{
-		cloud.WithEndpoint(prodAddr),
-		cloud.WithScopes(Scope),
-		cloud.WithUserAgent(userAgent),
+func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
+	o := []option.ClientOption{
+		option.WithEndpoint(prodAddr),
+		option.WithScopes(Scope),
+		option.WithUserAgent(userAgent),
 	}
 	o = append(o, opts...)
 	httpClient, endpoint, err := transport.NewHTTPClient(ctx, o...)

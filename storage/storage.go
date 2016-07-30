@@ -15,7 +15,7 @@
 // Package storage contains a Google Cloud Storage client.
 //
 // This package is experimental and may make backwards-incompatible changes.
-package storage // import "google.golang.org/cloud/storage"
+package storage // import "cloud.google.com/go/storage"
 
 import (
 	"bytes"
@@ -38,8 +38,8 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/internal/transport"
+	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
 
 	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
@@ -82,7 +82,7 @@ type AdminClient struct {
 // NewAdminClient creates a new AdminClient for a given project.
 //
 // Deprecated: use NewClient instead.
-func NewAdminClient(ctx context.Context, projectID string, opts ...cloud.ClientOption) (*AdminClient, error) {
+func NewAdminClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*AdminClient, error) {
 	c, err := NewClient(ctx, opts...)
 	if err != nil {
 		return nil, err
@@ -120,11 +120,11 @@ type Client struct {
 }
 
 // NewClient creates a new Google Cloud Storage client.
-// The default scope is ScopeFullControl. To use a different scope, like ScopeReadOnly, use cloud.WithScopes.
-func NewClient(ctx context.Context, opts ...cloud.ClientOption) (*Client, error) {
-	o := []cloud.ClientOption{
-		cloud.WithScopes(ScopeFullControl),
-		cloud.WithUserAgent(userAgent),
+// The default scope is ScopeFullControl. To use a different scope, like ScopeReadOnly, use option.WithScopes.
+func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+	o := []option.ClientOption{
+		option.WithScopes(ScopeFullControl),
+		option.WithUserAgent(userAgent),
 	}
 	opts = append(o, opts...)
 	hc, _, err := transport.NewHTTPClient(ctx, opts...)

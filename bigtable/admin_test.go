@@ -20,9 +20,9 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/bigtable/bttest"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/bigtable/bttest"
+	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 )
 
@@ -41,7 +41,7 @@ func TestAdminIntegration(t *testing.T) {
 		t.Fatalf("grpc.Dial: %v", err)
 	}
 
-	adminClient, err := NewAdminClient(ctx, "proj", "instance", cloud.WithBaseGRPC(conn))
+	adminClient, err := NewAdminClient(ctx, "proj", "instance", option.WithGRPCConn(conn))
 	if err != nil {
 		t.Fatalf("NewAdminClient: %v", err)
 	}

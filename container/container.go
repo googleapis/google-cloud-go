@@ -16,7 +16,7 @@
 //
 // For more information about the API,
 // see https://cloud.google.com/container-engine/docs
-package container // import "google.golang.org/cloud/container"
+package container // import "cloud.google.com/go/container"
 
 import (
 	"errors"

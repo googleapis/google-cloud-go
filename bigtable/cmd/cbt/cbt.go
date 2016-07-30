@@ -34,9 +34,9 @@ import (
 	"text/template"
 	"time"
 
+	"cloud.google.com/go/bigtable"
+	"cloud.google.com/go/bigtable/internal/cbtrc"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud/bigtable"
-	"google.golang.org/cloud/bigtable/internal/cbtrc"
 )
 
 var (

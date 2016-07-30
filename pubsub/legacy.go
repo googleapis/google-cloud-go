@@ -22,10 +22,10 @@ import (
 	"os"
 	"time"
 
+	"cloud.google.com/go/internal"
 	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/pubsub/v1"
-	"google.golang.org/cloud/internal"
 )
 
 // batchLimit is maximun size of a single batch.

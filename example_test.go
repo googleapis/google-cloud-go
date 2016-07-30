@@ -18,10 +18,10 @@ import (
 	"io/ioutil"
 	"log"
 
+	"cloud.google.com/go/pubsub"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2/google"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/pubsub"
+	"google.golang.org/api/option"
 )
 
 func Example_createClientWithApplicationDefaultCredentials(ctx context.Context) *pubsub.Client {
@@ -69,7 +69,7 @@ func Example_createClientWithTokenSource(ctx context.Context) *pubsub.Client {
 	// Create a pubsub Client to demonstrate using an OAuth2 token source
 	// for authentication.  The same approach may be used to construct
 	// Clients from other packages, e.g. bigtable, datastore.
-	client, err := pubsub.NewClient(ctx, "project-id", cloud.WithTokenSource(ts))
+	client, err := pubsub.NewClient(ctx, "project-id", option.WithTokenSource(ts))
 	if err != nil {
 		log.Fatal("new client:", err)
 	}
