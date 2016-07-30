@@ -23,7 +23,7 @@
 // NewClient function. Generally you will want to do this on program
 // initialization.
 //
-//   import "google.golang.org/cloud/trace"
+//   import "cloud.google.com/go/trace"
 //   ...
 //   traceClient, err = trace.NewClient(ctx, projectID)
 //
@@ -109,7 +109,7 @@
 //
 // SpanFromRequest also returns nil if the *Client is nil, so you can disable
 // tracing by not initializing your *Client variable.
-package trace // import "google.golang.org/cloud/trace"
+package trace // import "cloud.google.com/go/trace"
 
 import (
 	"crypto/rand"
@@ -127,8 +127,8 @@ import (
 
 	"golang.org/x/net/context"
 	api "google.golang.org/api/cloudtrace/v1"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/internal/transport"
+	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
 )
 
 const (
@@ -189,10 +189,10 @@ type Client struct {
 }
 
 // NewClient creates a new Google Stackdriver Trace client.
-func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption) (*Client, error) {
-	o := []cloud.ClientOption{
-		cloud.WithScopes(cloudPlatformScope),
-		cloud.WithUserAgent(userAgent),
+func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
+	o := []option.ClientOption{
+		option.WithScopes(cloudPlatformScope),
+		option.WithUserAgent(userAgent),
 	}
 	o = append(o, opts...)
 	hc, basePath, err := transport.NewHTTPClient(ctx, o...)
@@ -521,7 +521,7 @@ func (s *Span) setStackLabel() {
 		// stack frame.  For the second form, we set the Method field to "Foo" and
 		// the Class field to "path/to/package.(Type)".
 		name := fn.Name()
-		if inTraceLibrary && !strings.HasPrefix(name, "google.golang.org/cloud/trace.") {
+		if inTraceLibrary && !strings.HasPrefix(name, "cloud.google.com/go/trace.") {
 			inTraceLibrary = false
 		}
 		var class string

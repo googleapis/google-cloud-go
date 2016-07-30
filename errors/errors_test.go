@@ -22,9 +22,9 @@ import (
 	"strings"
 	"testing"
 
+	"cloud.google.com/go/errors"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/errors"
+	"google.golang.org/api/option"
 )
 
 const testProjectID = "testproject"
@@ -61,7 +61,7 @@ func (rt *fakeRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
 }
 
 func newTestClient(rt http.RoundTripper) *errors.Client {
-	t, err := errors.NewClient(context.Background(), testProjectID, "myservice", "v1.000", cloud.WithBaseHTTP(&http.Client{Transport: rt}))
+	t, err := errors.NewClient(context.Background(), testProjectID, "myservice", "v1.000", option.WithHTTPClient(&http.Client{Transport: rt}))
 	if err != nil {
 		panic(err)
 	}

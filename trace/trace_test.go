@@ -23,10 +23,10 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/trace"
 	"golang.org/x/net/context"
 	api "google.golang.org/api/cloudtrace/v1"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/trace"
+	"google.golang.org/api/option"
 )
 
 const testProjectID = "testproject"
@@ -50,7 +50,7 @@ func (rt *fakeRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
 }
 
 func newTestClient(rt http.RoundTripper) *trace.Client {
-	t, err := trace.NewClient(context.Background(), testProjectID, cloud.WithBaseHTTP(&http.Client{Transport: rt}))
+	t, err := trace.NewClient(context.Background(), testProjectID, option.WithHTTPClient(&http.Client{Transport: rt}))
 	if err != nil {
 		panic(err)
 	}

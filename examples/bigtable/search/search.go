@@ -41,8 +41,8 @@ import (
 	"time"
 	"unicode"
 
+	"cloud.google.com/go/bigtable"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud/bigtable"
 )
 
 var (

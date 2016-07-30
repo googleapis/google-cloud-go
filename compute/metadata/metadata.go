@@ -17,7 +17,7 @@
 //
 // This package is a wrapper around the GCE metadata service,
 // as documented at https://developers.google.com/compute/docs/metadata.
-package metadata // import "google.golang.org/cloud/compute/metadata"
+package metadata // import "cloud.google.com/go/compute/metadata"
 
 import (
 	"encoding/json"
@@ -35,7 +35,7 @@ import (
 	"golang.org/x/net/context"
 	"golang.org/x/net/context/ctxhttp"
 
-	"google.golang.org/cloud/internal"
+	"cloud.google.com/go/internal"
 )
 
 const (

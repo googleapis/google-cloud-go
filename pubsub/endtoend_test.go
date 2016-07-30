@@ -24,8 +24,8 @@ import (
 
 	"golang.org/x/net/context"
 
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/internal/testutil"
+	"cloud.google.com/go/internal/testutil"
+	"google.golang.org/api/option"
 )
 
 const timeout = time.Minute * 10
@@ -208,7 +208,7 @@ func TestEndToEnd(t *testing.T) {
 	topicName := fmt.Sprintf("endtoend-%d", now.Unix())
 	subPrefix := fmt.Sprintf("endtoend-%d", now.Unix())
 
-	client, err := NewClient(ctx, testutil.ProjID(), cloud.WithTokenSource(ts))
+	client, err := NewClient(ctx, testutil.ProjID(), option.WithTokenSource(ts))
 	if err != nil {
 		t.Fatalf("Creating client error: %v", err)
 	}

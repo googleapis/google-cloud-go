@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package bigtable // import "google.golang.org/cloud/bigtable"
+package bigtable // import "cloud.google.com/go/bigtable"
 
 import (
 	"fmt"
@@ -22,11 +22,11 @@ import (
 	"strconv"
 	"time"
 
+	btopt "cloud.google.com/go/bigtable/internal/option"
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/bigtable/internal/option"
-	"google.golang.org/cloud/internal/transport"
+	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -46,8 +46,8 @@ type Client struct {
 }
 
 // NewClient creates a new Client for a given project and instance.
-func NewClient(ctx context.Context, project, instance string, opts ...cloud.ClientOption) (*Client, error) {
-	o, err := option.DefaultClientOptions(prodAddr, Scope, clientUserAgent)
+func NewClient(ctx context.Context, project, instance string, opts ...option.ClientOption) (*Client, error) {
+	o, err := btopt.DefaultClientOptions(prodAddr, Scope, clientUserAgent)
 	if err != nil {
 		return nil, err
 	}

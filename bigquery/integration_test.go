@@ -21,10 +21,10 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/internal/testutil"
 	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/internal/testutil"
+	"google.golang.org/api/option"
 )
 
 func TestIntegration(t *testing.T) {
@@ -39,7 +39,7 @@ func TestIntegration(t *testing.T) {
 	}
 
 	projID := testutil.ProjID()
-	c, err := NewClient(ctx, projID, cloud.WithTokenSource(ts))
+	c, err := NewClient(ctx, projID, option.WithTokenSource(ts))
 	if err != nil {
 		t.Fatal(err)
 	}

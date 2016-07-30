@@ -2,7 +2,7 @@
 
 1. Sign one of the contributor license agreements below.
 1. `go get golang.org/x/review/git-codereview` to install the code reviewing tool.
-1. Get the cloud package by running `go get -d google.golang.org/cloud`.
+1. Get the cloud package by running `go get -d cloud.google.com/go`.
     1. If you have already checked out the source, make sure that the remote git
        origin is https://code.googlesource.com/gocloud:
 
@@ -50,7 +50,7 @@ Once you've set the environment variables, you can run the integration tests by
 running:
 
 ``` sh
-$ go test -v google.golang.org/cloud/...
+$ go test -v cloud.google.com/go/...
 ```
 
 ## Contributor License Agreements

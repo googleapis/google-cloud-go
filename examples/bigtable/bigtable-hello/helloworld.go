@@ -27,11 +27,11 @@ import (
 	"log"
 	"net/http"
 
+	"cloud.google.com/go/bigtable"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine"
 	aelog "google.golang.org/appengine/log"
 	"google.golang.org/appengine/user"
-	"google.golang.org/cloud/bigtable"
 )
 
 // User-provided constants.

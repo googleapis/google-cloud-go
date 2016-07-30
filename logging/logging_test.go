@@ -28,8 +28,8 @@ import (
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/internal/testutil"
+	"cloud.google.com/go/internal/testutil"
+	"google.golang.org/api/option"
 )
 
 func TestLogPayload(t *testing.T) {
@@ -234,7 +234,7 @@ func TestIntegration(t *testing.T) {
 
 	projID := testutil.ProjID()
 
-	c, err := NewClient(ctx, projID, "logging-integration-test", cloud.WithTokenSource(ts))
+	c, err := NewClient(ctx, projID, "logging-integration-test", option.WithTokenSource(ts))
 	if err != nil {
 		t.Fatalf("error creating client: %v", err)
 	}
@@ -281,7 +281,7 @@ func TestIntegrationPingBadProject(t *testing.T) {
 		testutil.ProjID() + "-BAD", // nonexistent project
 		"amazing-height-519",       // exists, but wrong creds
 	} {
-		c, err := NewClient(ctx, projID, "logging-integration-test", cloud.WithTokenSource(ts))
+		c, err := NewClient(ctx, projID, "logging-integration-test", option.WithTokenSource(ts))
 		if err != nil {
 			t.Fatalf("project %s: error creating client: %v", projID, err)
 		}
@@ -330,8 +330,8 @@ func newLogTest(t *testing.T) *logTest {
 		}
 	}))
 	c, err := NewClient(context.Background(), "PROJ-ID", "LOG-NAME",
-		cloud.WithEndpoint(ts.URL),
-		cloud.WithTokenSource(dummyTokenSource{}), // prevent DefaultTokenSource
+		option.WithEndpoint(ts.URL),
+		option.WithTokenSource(dummyTokenSource{}), // prevent DefaultTokenSource
 	)
 	if err != nil {
 		t.Fatal(err)

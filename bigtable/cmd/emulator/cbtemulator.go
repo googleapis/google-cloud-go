@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"log"
 
-	"google.golang.org/cloud/bigtable/bttest"
+	"cloud.google.com/go/bigtable/bttest"
 )
 
 var (

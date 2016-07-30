@@ -24,7 +24,7 @@
 // The service name and version string identify the running program, and are
 // included in error reports.  The version string can be left empty.
 //
-//   import "google.golang.org/cloud/errors"
+//   import "cloud.google.com/go/errors"
 //   ...
 //   errorsClient, err = errors.NewClient(ctx, projectID, "myservice", "v1.0")
 //
@@ -73,7 +73,7 @@
 // If you try to write an error report with a nil client, or if the logging
 // client fails to write the report to the Stackdriver Logging server, the error
 // report is logged using log.Println.
-package errors // import "google.golang.org/cloud/errors"
+package errors // import "cloud.google.com/go/errors"
 
 import (
 	"bytes"
@@ -84,9 +84,9 @@ import (
 	"strings"
 	"time"
 
+	"cloud.google.com/go/logging"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/logging"
+	"google.golang.org/api/option"
 )
 
 const (
@@ -104,7 +104,7 @@ type Client struct {
 	RepanicDefault bool
 }
 
-func NewClient(ctx context.Context, projectID, serviceName, serviceVersion string, opts ...cloud.ClientOption) (*Client, error) {
+func NewClient(ctx context.Context, projectID, serviceName, serviceVersion string, opts ...option.ClientOption) (*Client, error) {
 	l, err := logging.NewClient(ctx, projectID, "errorreports", opts...)
 	if err != nil {
 		return nil, fmt.Errorf("creating Logging client: %v", err)
@@ -291,7 +291,7 @@ func chopStack(s []byte, isPanic bool) string {
 	if isPanic {
 		f = []byte("panic(")
 	} else {
-		f = []byte("google.golang.org/cloud/errors.(*Client).Report")
+		f = []byte("cloud.google.com/go/errors.(*Client).Report")
 	}
 
 	lfFirst := bytes.IndexByte(s, '\n')

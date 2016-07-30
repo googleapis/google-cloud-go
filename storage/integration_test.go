@@ -34,9 +34,9 @@ import (
 
 	"golang.org/x/net/context"
 
+	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/googleapi"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/internal/testutil"
+	"google.golang.org/api/option"
 )
 
 // suffix is a timestamp-based suffix which is added, where possible, to all
@@ -83,7 +83,7 @@ func config(ctx context.Context) (*Client, string) {
 	if p == "" {
 		log.Fatal("The project ID must be set. See CONTRIBUTING.md for details")
 	}
-	client, err := NewClient(ctx, cloud.WithTokenSource(ts))
+	client, err := NewClient(ctx, option.WithTokenSource(ts))
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)
 	}
@@ -104,7 +104,7 @@ func TestBucketMethods(t *testing.T) {
 	newBucket := projectID + suffix
 	t.Logf("Testing with Bucket %q", newBucket)
 
-	client, err := NewClient(ctx, cloud.WithTokenSource(ts))
+	client, err := NewClient(ctx, option.WithTokenSource(ts))
 	if err != nil {
 		t.Fatalf("Could not create client: %v", err)
 	}
@@ -447,7 +447,7 @@ func TestObjects(t *testing.T) {
 	if err = bkt.Object(publicObj).ACL().Set(ctx, AllUsers, RoleReader); err != nil {
 		t.Errorf("PutACLEntry failed with %v", err)
 	}
-	publicClient, err := NewClient(ctx, cloud.WithBaseHTTP(http.DefaultClient))
+	publicClient, err := NewClient(ctx, option.WithHTTPClient(http.DefaultClient))
 	if err != nil {
 		t.Fatal(err)
 	}

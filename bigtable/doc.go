@@ -29,7 +29,7 @@ If your program is run on Google App Engine or Google Compute Engine, using the 
 (https://developers.google.com/accounts/docs/application-default-credentials)
 is the simplest option. Those credentials will be used by default when NewClient or NewAdminClient are called.
 
-To use alternate credentials, pass them to NewClient or NewAdminClient using cloud.WithTokenSource.
+To use alternate credentials, pass them to NewClient or NewAdminClient using option.WithTokenSource.
 For instance, you can use service account credentials by visiting
 https://cloud.google.com/console/project/MYPROJECT/apiui/credential,
 creating a new OAuth "Client ID", storing the JSON key somewhere accessible, and writing
@@ -37,10 +37,10 @@ creating a new OAuth "Client ID", storing the JSON key somewhere accessible, and
 	...
 	config, err := google.JWTConfigFromJSON(jsonKey, bigtable.Scope) // or bigtable.AdminScope, etc.
 	...
-	client, err := bigtable.NewClient(ctx, project, instance, cloud.WithTokenSource(config.TokenSource(ctx)))
+	client, err := bigtable.NewClient(ctx, project, instance, option.WithTokenSource(config.TokenSource(ctx)))
 	...
 Here, `google` means the golang.org/x/oauth2/google package
-and `cloud` means the google.golang.org/cloud package.
+and `option` means the google.golang.org/api/option package.
 
 Reading
 
@@ -86,7 +86,7 @@ To increment an encoded value in one cell,
 	r, err := tbl.ApplyReadModifyWrite(ctx, "com.google.cloud", rmw)
 	...
 */
-package bigtable // import "google.golang.org/cloud/bigtable"
+package bigtable // import "cloud.google.com/go/bigtable"
 
 // Scope constants for authentication credentials.
 // These should be used when using credential creation functions such as oauth.NewServiceAccountFromFile.

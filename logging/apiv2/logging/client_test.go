@@ -17,11 +17,11 @@
 package logging_test
 
 import (
+	"cloud.google.com/go/logging/apiv2/logging"
 	gax "github.com/googleapis/gax-go"
 	google_api "github.com/googleapis/proto-client-go/api"
 	google_logging_v2 "github.com/googleapis/proto-client-go/logging/v2"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud/logging/apiv2/logging"
 )
 
 func ExampleNewClient() {

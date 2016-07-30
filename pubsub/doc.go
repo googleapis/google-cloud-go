@@ -112,4 +112,4 @@ increases the available time for client code to process messages.  However, if
 the client code neglects to call Message.Done, a large MaxExtension will
 increase the delay before the message is redelivered.
 */
-package pubsub // import "google.golang.org/cloud/pubsub"
+package pubsub // import "cloud.google.com/go/pubsub"

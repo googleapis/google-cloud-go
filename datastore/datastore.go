@@ -23,8 +23,8 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/internal/transport"
+	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
 	pb "google.golang.org/genproto/googleapis/datastore/v1beta3"
 	"google.golang.org/grpc"
 )
@@ -55,8 +55,8 @@ type Client struct {
 // If the project ID is empty, it is derived from the DATASTORE_PROJECT_ID environment variable.
 // If the DATASTORE_EMULATOR_HOST environment variable is set, client will use its value
 // to connect to a locally-running datastore emulator.
-func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption) (*Client, error) {
-	var o []cloud.ClientOption
+func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
+	var o []option.ClientOption
 	// Environment variables for gcd emulator:
 	// https://cloud.google.com/datastore/docs/tools/datastore-emulator
 	// If the emulator is available, dial it directly (and don't pass any credentials).
@@ -65,12 +65,12 @@ func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption
 		if err != nil {
 			return nil, fmt.Errorf("grpc.Dial: %v", err)
 		}
-		o = []cloud.ClientOption{cloud.WithBaseGRPC(conn)}
+		o = []option.ClientOption{option.WithGRPCConn(conn)}
 	} else {
-		o = []cloud.ClientOption{
-			cloud.WithEndpoint(prodAddr),
-			cloud.WithScopes(ScopeDatastore),
-			cloud.WithUserAgent(userAgent),
+		o = []option.ClientOption{
+			option.WithEndpoint(prodAddr),
+			option.WithScopes(ScopeDatastore),
+			option.WithUserAgent(userAgent),
 		}
 	}
 	// Warn if we see the legacy emulator environment variables.

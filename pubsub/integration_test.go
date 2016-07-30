@@ -22,8 +22,8 @@ import (
 
 	"golang.org/x/net/context"
 
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/internal/testutil"
+	"cloud.google.com/go/internal/testutil"
+	"google.golang.org/api/option"
 )
 
 // messageData is used to hold the contents of a message so that it can be compared againts the contents
@@ -56,7 +56,7 @@ func TestAll(t *testing.T) {
 	topicName := fmt.Sprintf("topic-%d", now.Unix())
 	subName := fmt.Sprintf("subscription-%d", now.Unix())
 
-	client, err := NewClient(ctx, testutil.ProjID(), cloud.WithTokenSource(ts))
+	client, err := NewClient(ctx, testutil.ProjID(), option.WithTokenSource(ts))
 	if err != nil {
 		t.Fatalf("Creating client error: %v", err)
 	}

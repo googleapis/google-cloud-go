@@ -27,9 +27,9 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/bigtable/bttest"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/bigtable/bttest"
+	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 )
 
@@ -70,7 +70,7 @@ func TestClientIntegration(t *testing.T) {
 	}
 
 	proj, instance, table := "proj", "instance", "mytable"
-	var clientOpts []cloud.ClientOption
+	var clientOpts []option.ClientOption
 	timeout := 10 * time.Second
 	if *useProd == "" {
 		srv, err := bttest.NewServer("127.0.0.1:0")
@@ -83,7 +83,7 @@ func TestClientIntegration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("grpc.Dial: %v", err)
 		}
-		clientOpts = []cloud.ClientOption{cloud.WithBaseGRPC(conn)}
+		clientOpts = []option.ClientOption{option.WithGRPCConn(conn)}
 	} else {
 		t.Logf("Running test against production")
 		a := strings.SplitN(*useProd, ",", 3)

@@ -28,22 +28,22 @@ func TestChopStack(t *testing.T) {
 			in: []byte(`goroutine 20 [running]:
 runtime/debug.Stack()
 	/gopath/src/runtime/debug/stack.go:24 +0x79
-google.golang.org/cloud/errors.(*Client).logInternal()
-	/gopath/src/google.golang.org/cloud/errors/errors.go:259 +0x18b
-google.golang.org/cloud/errors.(*Client).Catch()
-	/gopath/src/google.golang.org/cloud/errors/errors.go:219 +0x6ed
+cloud.google.com/go/errors.(*Client).logInternal()
+	/gopath/src/cloud.google.com/go/errors/errors.go:259 +0x18b
+cloud.google.com/go/errors.(*Client).Catch()
+	/gopath/src/cloud.google.com/go/errors/errors.go:219 +0x6ed
 panic()
 	/gopath/src/runtime/panic.go:458 +0x243
-google.golang.org/cloud/errors_test.TestCatchPanic()
-	/gopath/src/google.golang.org/cloud/errors/errors_test.go:93 +0x171
+cloud.google.com/go/errors_test.TestCatchPanic()
+	/gopath/src/cloud.google.com/go/errors/errors_test.go:93 +0x171
 testing.tRunner()
 	/gopath/src/testing/testing.go:610 +0x81
 created by testing.(*T).Run
 	/gopath/src/testing/testing.go:646 +0x2ec
 `),
 			expected: `goroutine 20 [running]:
-google.golang.org/cloud/errors_test.TestCatchPanic()
-	/gopath/src/google.golang.org/cloud/errors/errors_test.go:93 +0x171
+cloud.google.com/go/errors_test.TestCatchPanic()
+	/gopath/src/cloud.google.com/go/errors/errors_test.go:93 +0x171
 testing.tRunner()
 	/gopath/src/testing/testing.go:610 +0x81
 created by testing.(*T).Run
@@ -56,12 +56,12 @@ created by testing.(*T).Run
 			in: []byte(`goroutine 20 [running]:
 runtime/debug.Stack()
 	/gopath/src/runtime/debug/stack.go:24 +0x79
-google.golang.org/cloud/errors.(*Client).logInternal()
-	/gopath/src/google.golang.org/cloud/errors/errors.go:259 +0x18b
-google.golang.org/cloud/errors.(*Client).Catch()
-	/gopath/src/google.golang.org/cloud/errors/errors.go:219 +0x6ed
-google.golang.org/cloud/errors_test.TestCatchPanic()
-	/gopath/src/google.golang.org/cloud/errors/errors_test.go:93 +0x171
+cloud.google.com/go/errors.(*Client).logInternal()
+	/gopath/src/cloud.google.com/go/errors/errors.go:259 +0x18b
+cloud.google.com/go/errors.(*Client).Catch()
+	/gopath/src/cloud.google.com/go/errors/errors.go:219 +0x6ed
+cloud.google.com/go/errors_test.TestCatchPanic()
+	/gopath/src/cloud.google.com/go/errors/errors_test.go:93 +0x171
 testing.tRunner()
 	/gopath/src/testing/testing.go:610 +0x81
 created by testing.(*T).Run
@@ -70,12 +70,12 @@ created by testing.(*T).Run
 			expected: `goroutine 20 [running]:
 runtime/debug.Stack()
 	/gopath/src/runtime/debug/stack.go:24 +0x79
-google.golang.org/cloud/errors.(*Client).logInternal()
-	/gopath/src/google.golang.org/cloud/errors/errors.go:259 +0x18b
-google.golang.org/cloud/errors.(*Client).Catch()
-	/gopath/src/google.golang.org/cloud/errors/errors.go:219 +0x6ed
-google.golang.org/cloud/errors_test.TestCatchPanic()
-	/gopath/src/google.golang.org/cloud/errors/errors_test.go:93 +0x171
+cloud.google.com/go/errors.(*Client).logInternal()
+	/gopath/src/cloud.google.com/go/errors/errors.go:259 +0x18b
+cloud.google.com/go/errors.(*Client).Catch()
+	/gopath/src/cloud.google.com/go/errors/errors.go:219 +0x6ed
+cloud.google.com/go/errors_test.TestCatchPanic()
+	/gopath/src/cloud.google.com/go/errors/errors_test.go:93 +0x171
 testing.tRunner()
 	/gopath/src/testing/testing.go:610 +0x81
 created by testing.(*T).Run
@@ -88,20 +88,20 @@ created by testing.(*T).Run
 			in: []byte(` goroutine 39 [running]:
 runtime/debug.Stack()
 	/gopath/runtime/debug/stack.go:24 +0x79
-google.golang.org/cloud/errors.(*Client).logInternal()
-	/gopath/google.golang.org/cloud/errors/errors.go:259 +0x18b
-google.golang.org/cloud/errors.(*Client).Report()
-	/gopath/google.golang.org/cloud/errors/errors.go:248 +0x4ed
-google.golang.org/cloud/errors_test.TestReport()
-	/gopath/google.golang.org/cloud/errors/errors_test.go:137 +0x2a1
+cloud.google.com/go/errors.(*Client).logInternal()
+	/gopath/cloud.google.com/go/errors/errors.go:259 +0x18b
+cloud.google.com/go/errors.(*Client).Report()
+	/gopath/cloud.google.com/go/errors/errors.go:248 +0x4ed
+cloud.google.com/go/errors_test.TestReport()
+	/gopath/cloud.google.com/go/errors/errors_test.go:137 +0x2a1
 testing.tRunner()
 	/gopath/testing/testing.go:610 +0x81
 created by testing.(*T).Run
 	/gopath/testing/testing.go:646 +0x2ec
 `),
 			expected: ` goroutine 39 [running]:
-google.golang.org/cloud/errors_test.TestReport()
-	/gopath/google.golang.org/cloud/errors/errors_test.go:137 +0x2a1
+cloud.google.com/go/errors_test.TestReport()
+	/gopath/cloud.google.com/go/errors/errors_test.go:137 +0x2a1
 testing.tRunner()
 	/gopath/testing/testing.go:610 +0x81
 created by testing.(*T).Run

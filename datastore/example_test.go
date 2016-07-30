@@ -19,10 +19,10 @@ import (
 	"log"
 	"time"
 
+	"cloud.google.com/go/datastore"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2/google"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/datastore"
+	"google.golang.org/api/option"
 )
 
 // TODO(djd): reevaluate this example given new Client config.
@@ -43,7 +43,7 @@ func Example_auth() *datastore.Client {
 		log.Fatal(err)
 	}
 	ctx := context.Background()
-	client, err := datastore.NewClient(ctx, "project-id", cloud.WithTokenSource(conf.TokenSource(ctx)))
+	client, err := datastore.NewClient(ctx, "project-id", option.WithTokenSource(conf.TokenSource(ctx)))
 	if err != nil {
 		log.Fatal(err)
 	}

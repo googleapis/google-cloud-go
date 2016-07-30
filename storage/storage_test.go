@@ -28,7 +28,7 @@ import (
 	"time"
 
 	"golang.org/x/net/context"
-	"google.golang.org/cloud"
+	"google.golang.org/api/option"
 )
 
 func TestSignedURL(t *testing.T) {
@@ -217,7 +217,7 @@ func TestCopyToMissingFields(t *testing.T) {
 		},
 	}
 	ctx := context.Background()
-	client, err := NewClient(ctx, cloud.WithBaseHTTP(&http.Client{Transport: &fakeTransport{}}))
+	client, err := NewClient(ctx, option.WithHTTPClient(&http.Client{Transport: &fakeTransport{}}))
 	if err != nil {
 		panic(err)
 	}
@@ -338,7 +338,7 @@ func TestCondition(t *testing.T) {
 	hc := &http.Client{Transport: tr}
 
 	ctx := context.Background()
-	c, err := NewClient(ctx, cloud.WithBaseHTTP(hc))
+	c, err := NewClient(ctx, option.WithHTTPClient(hc))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -436,7 +436,7 @@ func TestEmptyIterator(t *testing.T) {
 		},
 	}
 	ctx := context.Background()
-	client, err := NewClient(ctx, cloud.WithBaseHTTP(&http.Client{Transport: tr}))
+	client, err := NewClient(ctx, option.WithHTTPClient(&http.Client{Transport: tr}))
 	if err != nil {
 		t.Fatal(err)
 	}
