@@ -85,6 +85,20 @@ func (opt jobPriority) customizeQuery(conf *bq.JobConfigurationQuery, projectID 
 	conf.Priority = string(opt)
 }
 
+// DisableLegacySql return an Option that causes a query to use standard SQL rather than legacy SQL
+// Setting this option will ignore AllowLargeResults and DisableFlattenResults.
+// The query will be run as if both options are set.
+func DisableLegacySql() Option { return disableLegacySql{} }
+
+type disableLegacySql struct{}
+
+func (opt disableLegacySql) implementsOption() {}
+
+func (opt disableLegacySql) customizeQuery(conf *bq.JobConfigurationQuery, projectID string) {
+	conf.UseLegacySql = false
+	conf.ForceSendFields = append(conf.ForceSendFields, "UseLegacySql")
+}
+
 const (
 	BatchPriority       = "BATCH"
 	InteractivePriority = "INTERACTIVE"
