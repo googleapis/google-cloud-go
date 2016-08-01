@@ -419,3 +419,42 @@ func TestCondition(t *testing.T) {
 		t.Errorf("want error about unsupported condition; got %v", err)
 	}
 }
+
+// Test that ObjectIterator's Next and NextPage methods correctly terminate
+// if there is nothing to iterate over.
+func TestEmptyIterator(t *testing.T) {
+	ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		io.Copy(ioutil.Discard, r.Body)
+		fmt.Fprintf(w, "{}")
+	}))
+	defer ts.Close()
+	tlsConf := &tls.Config{InsecureSkipVerify: true}
+	tr := &http.Transport{
+		TLSClientConfig: tlsConf,
+		DialTLS: func(netw, addr string) (net.Conn, error) {
+			return tls.Dial("tcp", ts.Listener.Addr().String(), tlsConf)
+		},
+	}
+	ctx := context.Background()
+	client, err := NewClient(ctx, cloud.WithBaseHTTP(&http.Client{Transport: tr}))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for i, f := range []func(*ObjectIterator) error{
+		func(it *ObjectIterator) error { _, err := it.Next(); return err },
+		func(it *ObjectIterator) error { _, _, err := it.NextPage(); return err },
+	} {
+		it := client.Bucket("b").Objects(ctx, nil)
+		c := make(chan error, 1)
+		go func() { c <- f(it) }()
+		select {
+		case err := <-c:
+			if err != Done {
+				t.Errorf("got %v, want Done", err)
+			}
+		case <-time.After(50 * time.Millisecond):
+			t.Errorf("%d: timed out", i)
+		}
+	}
+}
