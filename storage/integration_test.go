@@ -171,6 +171,11 @@ func TestObjects(t *testing.T) {
 
 	const defaultType = "text/plain"
 
+	// Clear out old objects that might have been left in the bucket.
+	if err := clearObjects(ctx, bkt); err != nil {
+		t.Fatalf("clearing objects: %v", err)
+	}
+
 	// Populate object names and make a map for their contents.
 	objects := []string{
 		"obj1" + suffix,
@@ -479,6 +484,23 @@ func TestObjects(t *testing.T) {
 	_, err = bkt.Object(copyName).Attrs(ctx)
 	if err != ErrObjectNotExist {
 		t.Errorf("Copy is expected to be deleted, stat errored with %v", err)
+	}
+}
+
+func clearObjects(ctx context.Context, bkt *BucketHandle) error {
+	it := bkt.Objects(ctx, &Query{Prefix: "obj"})
+	for {
+		attrs, err := it.Next()
+		switch err {
+		case nil:
+			if err := bkt.Object(attrs.Name).Delete(ctx); err != nil {
+				return fmt.Errorf("deleting %q: %v", attrs.Name, err)
+			}
+		case Done:
+			return nil
+		default:
+			return err
+		}
 	}
 }
 

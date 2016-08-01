@@ -307,18 +307,17 @@ func (it *ObjectIterator) Next() (*ObjectAttrs, error) {
 	if it.query.Delimiter != "" {
 		return nil, errors.New("cannot use ObjectIterator.Next with a delimiter")
 	}
-	if it.err != nil {
-		return nil, it.err
-	}
 	for len(it.objs) == 0 { // "for", not "if", to handle empty pages
-		if it.objs != nil && it.query.Cursor == "" {
-			// We already retrieved the last page.
-			it.err = Done
-			return nil, Done
+		if it.err != nil {
+			return nil, it.err
 		}
 		it.nextPage()
 		if it.err != nil {
+			it.objs = nil
 			return nil, it.err
+		}
+		if it.query.Cursor == "" {
+			it.err = Done
 		}
 	}
 	o := it.objs[0]
