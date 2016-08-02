@@ -735,12 +735,12 @@ type table struct {
 	rowIndex map[string]*row          // indexed by row key
 }
 
-func newTable(ctr *bttspb.CreateTableRequest) *table {
+func newTable(ctr *btapb.CreateTableRequest) *table {
 	fams := make(map[string]*columnFamily)
 	if ctr.Table != nil {
 		for id, cf := range ctr.Table.ColumnFamilies {
 			fams[id] = &columnFamily{
-				name:   ctr.Name + "/columnFamilies/" + id,
+				name:   ctr.Parent + "/columnFamilies/" + id,
 				gcRule: cf.GcRule,
 			}
 		}
