@@ -15,12 +15,8 @@
 package pubsub
 
 import (
-	"net/http"
-	"strings"
 	"testing"
 	"time"
-
-	"google.golang.org/cloud"
 )
 
 func TestIsSec(t *testing.T) {
@@ -31,19 +27,9 @@ func TestIsSec(t *testing.T) {
 		time.Millisecond:               false,
 		time.Second + time.Microsecond: false,
 	}
-	for dur, expected := range tests {
-		if isSec(dur) != expected {
-			t.Errorf("%v is more precise than a second", dur)
+	for dur, want := range tests {
+		if got := isSec(dur); got != want {
+			t.Errorf("isSec(%v) = %t; want %t", dur, got, want)
 		}
-	}
-}
-
-func TestEmptyAckID(t *testing.T) {
-	ctx := cloud.NewContext("project-id", &http.Client{})
-	id := []string{"test", ""}
-	err := Ack(ctx, "sub", id...)
-
-	if err == nil || !strings.Contains(err.Error(), "index 1") {
-		t.Errorf("Ack should report an error indicating the id is empty. Got: %v", err)
 	}
 }
