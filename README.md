@@ -139,18 +139,44 @@ your services with reliable, many-to-many, asynchronous messaging hosted on Goog
 infrastructure. Cloud Pub/Sub automatically scales as you need it and provides a foundation
 for building your own robust, global services.
 
+First create a `pubsub.Client` to use throughout your application:
+
+```go
+client, err := pubsub.NewClient(ctx, "project-id")
+if err != nil {
+	log.Fatal(err)
+}
+```
+
 ```go
 // Publish "hello world" on topic1.
-msgIDs, err := pubsub.Publish(ctx, "topic1", &pubsub.Message{
+topic := client.Topic("topic1")
+msgIDs, err := topic.Publish(ctx, &pubsub.Message{
 	Data: []byte("hello world"),
 })
 if err != nil {
-	log.Println(err)
+	log.Fatal(err)
 }
-// Pull messages via subscription1.
-msgs, err := pubsub.Pull(ctx, "subscription1", 1)
+
+// Create an iterator to pull messages via subscription1.
+it, err := client.Subscription("subscription1").Pull(ctx)
 if err != nil {
 	log.Println(err)
+}
+defer it.Stop()
+
+// Consume N messages from the iterator.
+for i := 0; i < N; i++ {
+	msg, err := it.Next()
+	if err == pubsub.Done {
+		break
+	}
+	if err != nil {
+		log.Fatalf("Failed to retrieve message: %v", err)
+	}
+
+	fmt.Printf("Message %d: %s\n", i, msg.Data)
+	msg.Done(true) // Acknowledge that we've consumed the message.
 }
 ```
 
