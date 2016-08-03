@@ -1,4 +1,4 @@
-# Cloud Bigtable on Managed VMs using Go
+# Cloud Bigtable on App Engine Flex using Go
 # (Hello World for Cloud Bigtable)
 
 This app counts how often each user visits.
@@ -24,7 +24,7 @@ This app counts how often each user visits.
 
 1. From the sample project folder, `gcloud preview app run app.yaml`
 
-## Deploying on Google App Engine Managed VM
+## Deploying on Google App Engine Flex
 
 1. Install and start [Docker](https://cloud.google.com/appengine/docs/managed-vms/getting-started#install_docker).
 1. From the sample project folder, `aedeploy gcloud preview app deploy app.yaml`
