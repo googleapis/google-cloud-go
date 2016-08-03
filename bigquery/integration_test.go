@@ -23,6 +23,7 @@ import (
 
 	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/cloud"
 	"google.golang.org/cloud/internal/testutil"
 )
 
@@ -38,7 +39,7 @@ func TestIntegration(t *testing.T) {
 	}
 
 	projID := testutil.ProjID()
-	c, err := NewClient(ctx, projID)
+	c, err := NewClient(ctx, projID, cloud.WithTokenSource(ts))
 	if err != nil {
 		t.Fatal(err)
 	}
