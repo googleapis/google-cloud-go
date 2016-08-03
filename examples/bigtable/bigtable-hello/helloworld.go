@@ -15,7 +15,7 @@
 /*
 helloworld tracks how often a user has visited the index page.
 
-This program demonstrates usage of the Cloud Bigtable API for Managed VMs and Go.
+This program demonstrates usage of the Cloud Bigtable API for the App Engine Flex environment and Go.
 Instructions for running this program are in the README.md.
 */
 package main
