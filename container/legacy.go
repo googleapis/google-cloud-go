@@ -18,9 +18,9 @@ import (
 	"errors"
 	"net/http"
 
+	"cloud.google.com/go/internal"
 	"golang.org/x/net/context"
 	raw "google.golang.org/api/container/v1"
-	"google.golang.org/cloud/internal"
 )
 
 // Cluster returns metadata about the specified cluster.
