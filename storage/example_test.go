@@ -228,7 +228,7 @@ func ExampleBucketHandle_List() {
 
 	var query *storage.Query
 	for {
-		// If you are using this package on App Engine Managed VMs runtime,
+		// If you are using this package on App Engine Flexible runtime,
 		// you can init a bucket client with your app's default bucket name.
 		// See http://godoc.org/google.golang.org/appengine/file#DefaultBucketName.
 		objects, err := client.Bucket("bucketname").List(ctx, query)
@@ -328,7 +328,7 @@ func ExampleObjectHandle_Delete() {
 	// To delete multiple objects in a bucket, list them with an
 	// ObjectIterator, then Delete them.
 
-	// If you are using this package on App Engine Managed VMs runtime,
+	// If you are using this package on App Engine Flexible runtime,
 	// you can init a bucket client with your app's default bucket name.
 	// See http://godoc.org/google.golang.org/appengine/file#DefaultBucketName.
 	bucket := client.Bucket("my-bucket")

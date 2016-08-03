@@ -1,4 +1,4 @@
-# Cloud Bigtable on Managed VMs using Go
+# Cloud Bigtable on App Engine Flexible using Go
 # (Hello World for Cloud Bigtable)
 
 This app counts how often each user visits.
@@ -13,18 +13,15 @@ This app counts how often each user visits.
   1. Enable the **Cloud Bigtable API** and the **Cloud Bigtable Admin API**.
   (You may need to search for the API).
 1. Set up gcloud.
-  1. `gcloud components update`
-  1. `gcloud auth login`
-  1. `gcloud config set project PROJECT_ID`
+  1. `gcloud init`
 1. Download App Engine SDK for Go.
   1. `go get -u google.golang.org/appengine/...`
 1. In helloworld.go, change the constants `project`, `zone` and `cluster`
 
 ## Running locally
 
-1. From the sample project folder, `gcloud preview app run app.yaml`
+1. From the sample project folder, `go run *.go`
 
-## Deploying on Google App Engine Managed VM
+## Deploying on Google App Engine Flexible
 
-1. Install and start [Docker](https://cloud.google.com/appengine/docs/managed-vms/getting-started#install_docker).
-1. From the sample project folder, `aedeploy gcloud preview app deploy app.yaml`
+1. From the sample project folder, `aedeploy gcloud app deploy`
