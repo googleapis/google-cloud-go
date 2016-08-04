@@ -41,6 +41,17 @@ func (d *Dataset) ListTables(ctx context.Context) ([]*Table, error) {
 	return tables, nil
 }
 
+// Create creates a dataset in the BigQuery service. An error will be returned
+// if the dataset already exists.
 func (d *Dataset) Create(ctx context.Context) error {
 	return d.service.insertDataset(ctx, d.id, d.projectID)
+}
+
+// Table creates a handle to a BigQuery table in the dataset.
+// To determine if a table exists, call Table.Metadata.
+// If the table does not already exist, use Table.Create to create it.
+//
+// To access a table in a different project, use Client.Table.
+func (d *Dataset) Table(tableID string) *Table {
+	return &Table{ProjectID: d.projectID, DatasetID: d.id, TableID: tableID, service: d.service}
 }

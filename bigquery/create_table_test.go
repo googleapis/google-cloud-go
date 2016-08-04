@@ -36,13 +36,15 @@ func (rec *createTableRecorder) createTable(ctx context.Context, conf *createTab
 func TestCreateTableOptions(t *testing.T) {
 	s := &createTableRecorder{}
 	c := &Client{
-		service: s,
+		projectID: "p",
+		service:   s,
 	}
+	ds := c.Dataset("d")
+	table := ds.Table("t")
 	exp := time.Now()
 	q := "query"
-	if _, err := c.CreateTable(context.Background(), "p", "d", "t",
-		TableExpiration(exp), ViewQuery(q)); err != nil {
-		t.Fatalf("err calling CreateTable: %v", err)
+	if err := table.Create(context.Background(), TableExpiration(exp), ViewQuery(q)); err != nil {
+		t.Fatalf("err calling Table.Create: %v", err)
 	}
 	want := createTableConf{
 		projectID:  "p",
@@ -56,9 +58,8 @@ func TestCreateTableOptions(t *testing.T) {
 	}
 
 	sc := Schema{fieldSchema("desc", "name", "STRING", false, true)}
-	if _, err := c.CreateTable(context.Background(), "p", "d", "t",
-		TableExpiration(exp), sc); err != nil {
-		t.Fatalf("err calling CreateTable: %v", err)
+	if err := table.Create(context.Background(), TableExpiration(exp), sc); err != nil {
+		t.Fatalf("err calling Table.Create: %v", err)
 	}
 	want = createTableConf{
 		projectID:  "p",

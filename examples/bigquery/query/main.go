@@ -57,11 +57,8 @@ func main() {
 	}
 
 	d := &bigquery.Table{}
-
 	if *dest != "" {
-		d.ProjectID = *project
-		d.DatasetID = *dataset
-		d.TableID = *dest
+		d = client.Dataset(*dataset).Table(*dest)
 	}
 
 	query := &bigquery.Query{

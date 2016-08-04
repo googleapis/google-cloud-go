@@ -51,12 +51,11 @@ func TestIntegration(t *testing.T) {
 		{Name: "name", Type: StringFieldType},
 		{Name: "num", Type: IntegerFieldType},
 	})
-	table := c.OpenTable(projID, ds.id, "t1")
+	table := ds.Table("t1")
 	// Delete the table in case it already exists. (Ignore errors.)
 	table.Delete(ctx)
 	// Create the table.
-	table, err = c.CreateTable(ctx, projID, ds.id, "t1", schema,
-		TableExpiration(time.Now().Add(5*time.Minute)))
+	err = table.Create(ctx, schema, TableExpiration(time.Now().Add(5*time.Minute)))
 	if err != nil {
 		t.Fatal(err)
 	}
