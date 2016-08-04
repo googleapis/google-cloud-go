@@ -187,25 +187,17 @@ func (t *Table) customizeReadSrc(cursor *readTableConf) {
 	cursor.tableID = t.TableID
 }
 
-// OpenTable creates a handle to an existing BigQuery table.  If the table does not already exist, subsequent uses of the *Table will fail.
-func (c *Client) OpenTable(projectID, datasetID, tableID string) *Table {
-	return &Table{ProjectID: projectID, DatasetID: datasetID, TableID: tableID, service: c.service}
-}
-
-// CreateTable creates a table in the BigQuery service and returns a handle to it.
-func (c *Client) CreateTable(ctx context.Context, projectID, datasetID, tableID string, options ...CreateTableOption) (*Table, error) {
+// Create creates a table in the BigQuery service.
+func (t *Table) Create(ctx context.Context, options ...CreateTableOption) error {
 	conf := &createTableConf{
-		projectID: projectID,
-		datasetID: datasetID,
-		tableID:   tableID,
+		projectID: t.ProjectID,
+		datasetID: t.DatasetID,
+		tableID:   t.TableID,
 	}
 	for _, o := range options {
 		o.customizeCreateTable(conf)
 	}
-	if err := c.service.createTable(ctx, conf); err != nil {
-		return nil, err
-	}
-	return &Table{ProjectID: projectID, DatasetID: datasetID, TableID: tableID, service: c.service}, nil
+	return t.service.createTable(ctx, conf)
 }
 
 // Metadata fetches the metadata for the table.

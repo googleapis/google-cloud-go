@@ -57,11 +57,7 @@ func main() {
 		log.Fatalf("Creating bigquery client: %v", err)
 	}
 
-	table := &bigquery.Table{
-		ProjectID: *project,
-		DatasetID: *dataset,
-		TableID:   *table,
-	}
+	table := client.Dataset(*dataset).Table(*table)
 
 	gcs := client.NewGCSReference(fmt.Sprintf("gs://%s/%s", *bucket, *object))
 	gcs.SkipLeadingRows = *skiprows

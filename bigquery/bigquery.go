@@ -158,3 +158,11 @@ func (c *Client) Dataset(id string) *Dataset {
 		service:   c.service,
 	}
 }
+
+// Table creates a handle to a BigQuery table.
+//
+// Use this method to reference a table in a project other than that of the
+// Client.
+func (c *Client) Table(projectID, datasetID, tableID string) *Table {
+	return &Table{ProjectID: projectID, DatasetID: datasetID, TableID: tableID, service: c.service}
+}
