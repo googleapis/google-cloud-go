@@ -31,7 +31,7 @@ func (ts testSaver) Save() (map[string]Value, string, error) {
 }
 
 func TestRejectsNonValueSavers(t *testing.T) {
-	u := Uploader{t: defaultTable}
+	u := Uploader{t: defaultTable(nil)}
 
 	testCases := []struct {
 		src interface{}

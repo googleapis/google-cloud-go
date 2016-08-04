@@ -127,17 +127,26 @@ func (c *Client) Copy(ctx context.Context, dst Destination, src Source, options 
 	return nil, fmt.Errorf("no Copy operation matches dst/src pair: dst: %T ; src: %T", dst, src)
 }
 
-// Read fetches data from a ReadSource and returns the data via an Iterator.
-func (c *Client) Read(ctx context.Context, src ReadSource, options ...ReadOption) (*Iterator, error) {
-	switch src := src.(type) {
-	case *Job:
-		return c.readQueryResults(src, options)
-	case *Query:
-		return c.executeQuery(ctx, src, options...)
-	case *Table:
-		return c.readTable(src, options)
+// Query creates a query with string q. You may optionally set
+// DefaultProjectID and DefaultDatasetID on the returned query before using it.
+func (c *Client) Query(q string) *Query {
+	return &Query{Q: q, client: c}
+}
+
+// Read submits a query for execution and returns the results via an Iterator.
+//
+// Read uses a temporary table to hold the results of the query job.
+//
+// For more control over how a query is performed, don't use this method but
+// instead pass the Query as a Source to Client.Copy, and call Read on the
+// resulting Job.
+func (q *Query) Read(ctx context.Context, options ...ReadOption) (*Iterator, error) {
+	dest := &Table{}
+	job, err := q.client.Copy(ctx, dest, q, WriteTruncate)
+	if err != nil {
+		return nil, err
 	}
-	return nil, fmt.Errorf("src (%T) does not support the Read operation", src)
+	return job.Read(ctx, options...)
 }
 
 // executeQuery submits a query for execution and returns the results via an Iterator.

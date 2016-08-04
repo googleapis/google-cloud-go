@@ -14,7 +14,11 @@
 
 package bigquery
 
-import "golang.org/x/net/context"
+import (
+	"fmt"
+
+	"golang.org/x/net/context"
+)
 
 // OpenTable creates a handle to an existing BigQuery table. If the table does
 // not already exist, subsequent uses of the *Table will fail.
@@ -33,4 +37,24 @@ func (c *Client) CreateTable(ctx context.Context, projectID, datasetID, tableID 
 		return nil, err
 	}
 	return t, nil
+}
+
+// Read fetches data from a ReadSource and returns the data via an Iterator.
+//
+// Deprecated: use Query.Read, Job.Read or Table.Read instead.
+func (c *Client) Read(ctx context.Context, src ReadSource, options ...ReadOption) (*Iterator, error) {
+	switch src := src.(type) {
+	case *Job:
+		return src.Read(ctx, options...)
+	case *Query:
+		// For compatibility, support Query values created by literal, rather
+		// than Client.Query.
+		if src.client == nil {
+			src.client = c
+		}
+		return src.Read(ctx, options...)
+	case *Table:
+		return src.Read(ctx, options...)
+	}
+	return nil, fmt.Errorf("src (%T) does not support the Read operation", src)
 }
