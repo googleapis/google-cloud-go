@@ -50,12 +50,12 @@ func TestQuery(t *testing.T) {
 		want    *bq.Job
 	}{
 		{
-			dst:  defaultTable,
+			dst:  defaultTable(nil),
 			src:  defaultQuery,
 			want: defaultQueryJob(),
 		},
 		{
-			dst: defaultTable,
+			dst: defaultTable(nil),
 			src: &Query{
 				Q: "query string",
 			},
@@ -90,7 +90,7 @@ func TestQuery(t *testing.T) {
 			}(),
 		},
 		{
-			dst:     defaultTable,
+			dst:     defaultTable(nil),
 			src:     defaultQuery,
 			options: []Option{DisableQueryCache()},
 			want: func() *bq.Job {
@@ -101,7 +101,7 @@ func TestQuery(t *testing.T) {
 			}(),
 		},
 		{
-			dst:     defaultTable,
+			dst:     defaultTable(nil),
 			src:     defaultQuery,
 			options: []Option{AllowLargeResults()},
 			want: func() *bq.Job {
@@ -111,7 +111,7 @@ func TestQuery(t *testing.T) {
 			}(),
 		},
 		{
-			dst:     defaultTable,
+			dst:     defaultTable(nil),
 			src:     defaultQuery,
 			options: []Option{DisableFlattenedResults()},
 			want: func() *bq.Job {
@@ -123,7 +123,7 @@ func TestQuery(t *testing.T) {
 			}(),
 		},
 		{
-			dst:     defaultTable,
+			dst:     defaultTable(nil),
 			src:     defaultQuery,
 			options: []Option{JobPriority("low")},
 			want: func() *bq.Job {

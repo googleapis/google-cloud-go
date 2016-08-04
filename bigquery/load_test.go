@@ -73,12 +73,12 @@ func TestLoad(t *testing.T) {
 		want    *bq.Job
 	}{
 		{
-			dst:  defaultTable,
+			dst:  defaultTable(nil),
 			src:  defaultGCS,
 			want: defaultLoadJob(),
 		},
 		{
-			dst: defaultTable,
+			dst: defaultTable(nil),
 			src: defaultGCS,
 			options: []Option{
 				MaxBadRecords(1),
@@ -134,7 +134,7 @@ func TestLoad(t *testing.T) {
 			}(),
 		},
 		{
-			dst: defaultTable,
+			dst: defaultTable(nil),
 			src: &GCSReference{
 				uris:            []string{"uri"},
 				SkipLeadingRows: 1,
@@ -155,7 +155,7 @@ func TestLoad(t *testing.T) {
 			}(),
 		},
 		{
-			dst: defaultTable,
+			dst: defaultTable(nil),
 			src: &GCSReference{
 				uris:  []string{"uri"},
 				Quote: "",
@@ -167,7 +167,7 @@ func TestLoad(t *testing.T) {
 			}(),
 		},
 		{
-			dst: defaultTable,
+			dst: defaultTable(nil),
 			src: &GCSReference{
 				uris:           []string{"uri"},
 				Quote:          "",

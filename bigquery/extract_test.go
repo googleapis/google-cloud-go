@@ -47,12 +47,12 @@ func TestExtract(t *testing.T) {
 	}{
 		{
 			dst:  defaultGCS,
-			src:  defaultTable,
+			src:  defaultTable(nil),
 			want: defaultExtractJob(),
 		},
 		{
 			dst: defaultGCS,
-			src: defaultTable,
+			src: defaultTable(nil),
 			options: []Option{
 				DisableHeader(),
 			},
@@ -70,7 +70,7 @@ func TestExtract(t *testing.T) {
 				DestinationFormat: JSON,
 				FieldDelimiter:    "\t",
 			},
-			src: defaultTable,
+			src: defaultTable(nil),
 			want: func() *bq.Job {
 				j := defaultExtractJob()
 				j.Configuration.Extract.Compression = "GZIP"

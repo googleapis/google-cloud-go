@@ -39,7 +39,8 @@ func (conf *readTableConf) fetch(ctx context.Context, s service, token string) (
 	return s.readTabledata(ctx, conf, token)
 }
 
-func (c *Client) readTable(t *Table, options []ReadOption) (*Iterator, error) {
+// Read fetches the contents of the table.
+func (t *Table) Read(_ context.Context, options ...ReadOption) (*Iterator, error) {
 	conf := &readTableConf{}
 	t.customizeReadSrc(conf)
 
@@ -47,16 +48,17 @@ func (c *Client) readTable(t *Table, options []ReadOption) (*Iterator, error) {
 		o.customizeRead(&conf.paging)
 	}
 
-	return newIterator(c.service, conf), nil
+	return newIterator(t.service, conf), nil
 }
 
 func (conf *readQueryConf) fetch(ctx context.Context, s service, token string) (*readDataResult, error) {
 	return s.readQuery(ctx, conf, token)
 }
 
-func (c *Client) readQueryResults(job *Job, options []ReadOption) (*Iterator, error) {
+// Read fetches the results of a query job.
+func (j *Job) Read(_ context.Context, options ...ReadOption) (*Iterator, error) {
 	conf := &readQueryConf{}
-	if err := job.customizeReadQuery(conf); err != nil {
+	if err := j.customizeReadQuery(conf); err != nil {
 		return nil, err
 	}
 
@@ -64,5 +66,5 @@ func (c *Client) readQueryResults(job *Job, options []ReadOption) (*Iterator, er
 		o.customizeRead(&conf.paging)
 	}
 
-	return newIterator(c.service, conf), nil
+	return newIterator(j.service, conf), nil
 }

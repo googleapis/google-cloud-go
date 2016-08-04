@@ -16,7 +16,7 @@ package bigquery
 
 import bq "google.golang.org/api/bigquery/v2"
 
-// Query represents a query to be executed.
+// Query represents a query to be executed. Use Client.Query to create a query.
 type Query struct {
 	// The query to execute. See https://cloud.google.com/bigquery/query-reference for details.
 	Q string
@@ -25,6 +25,8 @@ type Query struct {
 	// If DefaultProjectID is set, DefaultDatasetID must also be set.
 	DefaultProjectID string
 	DefaultDatasetID string
+
+	client *Client
 }
 
 func (q *Query) implementsSource() {}

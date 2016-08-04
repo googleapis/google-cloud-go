@@ -78,7 +78,7 @@ func TestRead(t *testing.T) {
 		isQuery:   true,
 	}
 
-	for _, src := range []ReadSource{defaultTable, queryJob} {
+	for _, src := range []ReadSource{defaultTable(service), queryJob} {
 		testCases := []struct {
 			data       [][][]Value
 			pageTokens map[string]string
@@ -135,7 +135,7 @@ func TestNoMoreValues(t *testing.T) {
 			values: [][][]Value{{{1, 2}, {11, 12}}},
 		},
 	}
-	it, err := c.Read(context.Background(), defaultTable)
+	it, err := c.Read(context.Background(), defaultTable(c.service))
 	if err != nil {
 		t.Fatalf("err calling Read: %v", err)
 	}
@@ -222,7 +222,7 @@ func (s *errorReadService) readTabledata(ctx context.Context, conf *readTableCon
 func TestReadError(t *testing.T) {
 	// test that service read errors are propagated back to the caller.
 	c := &Client{service: &errorReadService{}}
-	it, err := c.Read(context.Background(), defaultTable)
+	it, err := c.Read(context.Background(), defaultTable(c.service))
 	if err != nil {
 		// Read should not return an error; only Err should.
 		t.Fatalf("err calling Read: %v", err)
@@ -241,7 +241,7 @@ func TestReadTabledataOptions(t *testing.T) {
 		values: [][][]Value{{{1, 2}}},
 	}
 	c := &Client{service: s}
-	it, err := c.Read(context.Background(), defaultTable, RecordsPerRequest(5))
+	it, err := c.Read(context.Background(), defaultTable(s), RecordsPerRequest(5))
 
 	if err != nil {
 		t.Fatalf("err calling Read: %v", err)
