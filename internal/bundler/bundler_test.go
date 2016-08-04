@@ -51,7 +51,7 @@ func TestBundlerCount3(t *testing.T) {
 	handler := &testHandler{}
 	b := NewBundler(int(0), handler.handle)
 	b.BundleCountThreshold = 3
-	b.DelayThreshold = 1 * time.Millisecond
+	b.DelayThreshold = 10 * time.Millisecond
 	// Add 8 items.
 	// The first two bundles of 3 should both be handled quickly.
 	// The third bundle of 2 should not be handled for about 1 ms.
