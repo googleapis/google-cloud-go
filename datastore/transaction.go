@@ -30,9 +30,36 @@ var ErrConcurrentTransaction = errors.New("datastore: concurrent transaction")
 
 var errExpiredTransaction = errors.New("datastore: transaction expired")
 
-// A TransactionOption configures the Transaction returned by NewTransaction.
+type transactionSettings struct {
+	attempts int
+}
+
+// newTransactionSettings creates a transactionSettings with a given TransactionOption slice.
+// Unconfigured options will be set to default values.
+func newTransactionSettings(opts []TransactionOption) *transactionSettings {
+	s := &transactionSettings{attempts: 3}
+	for _, o := range opts {
+		o.apply(s)
+	}
+	return s
+}
+
+// TransactionOption configures the way a transaction is executed.
 type TransactionOption interface {
-	apply(*pb.BeginTransactionRequest)
+	apply(*transactionSettings)
+}
+
+// MaxAttempts returns a TransactionOption that overrides the default 3 attempt times.
+func MaxAttempts(attempts int) TransactionOption {
+	return maxAttempts(attempts)
+}
+
+type maxAttempts int
+
+func (w maxAttempts) apply(s *transactionSettings) {
+	if w > 0 {
+		s.attempts = int(w)
+	}
 }
 
 // Transaction represents a set of datastore operations to be committed atomically.
@@ -54,11 +81,13 @@ type Transaction struct {
 
 // NewTransaction starts a new transaction.
 func (c *Client) NewTransaction(ctx context.Context, opts ...TransactionOption) (*Transaction, error) {
+	for _, o := range opts {
+		if _, ok := o.(maxAttempts); ok {
+			return nil, errors.New("datastore: NewTransaction does not accept MaxAttempts option")
+		}
+	}
 	req := &pb.BeginTransactionRequest{
 		ProjectId: c.dataset,
-	}
-	for _, o := range opts {
-		o.apply(req)
 	}
 	resp, err := c.client.BeginTransaction(ctx, req)
 	if err != nil {
@@ -83,7 +112,7 @@ func (c *Client) NewTransaction(ctx context.Context, opts ...TransactionOption) 
 // returning the Commit and a nil error if it succeeds. If the commit fails due
 // to a conflicting transaction, RunInTransaction retries f with a new
 // Transaction. It gives up and returns ErrConcurrentTransaction after three
-// failed attempts.
+// failed attempts (or as configured with MaxAttempts).
 //
 // If f returns non-nil, then the transaction will be rolled back and
 // RunInTransaction will return the same error. The function f is not retried.
@@ -95,10 +124,9 @@ func (c *Client) NewTransaction(ctx context.Context, opts ...TransactionOption) 
 // Since f may be called multiple times, f should usually be idempotent.
 // Note that Transaction.Get is not idempotent when unmarshaling slice fields.
 func (c *Client) RunInTransaction(ctx context.Context, f func(tx *Transaction) error, opts ...TransactionOption) (*Commit, error) {
-	// TODO(djd): Allow configuring of attempts.
-	const attempts = 3
-	for n := 0; n < attempts; n++ {
-		tx, err := c.NewTransaction(ctx, opts...)
+	settings := newTransactionSettings(opts)
+	for n := 0; n < settings.attempts; n++ {
+		tx, err := c.NewTransaction(ctx)
 		if err != nil {
 			return nil, err
 		}
