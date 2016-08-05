@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"crypto/md5"
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -25,9 +26,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
-	"regexp"
 	"sort"
-	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -39,23 +38,40 @@ import (
 	"google.golang.org/api/option"
 )
 
-// suffix is a timestamp-based suffix which is added, where possible, to all
-// buckets and objects created by tests. This reduces flakiness when the tests
-// are run in parallel and allows automatic cleaning up of artifacts left when
-// tests fail.
-var suffix = fmt.Sprintf("-t%d", time.Now().UnixNano())
+const testPrefix = "-go-cloud-storage-test"
 
-var ranIntegrationTest bool
+// suffix is a timestamp-based suffix which is added to all buckets created by
+// tests. This reduces flakiness when the tests are run in parallel and allows
+// automatic cleaning up of artifacts left when tests fail.
+var suffix = fmt.Sprintf("%s-%d", testPrefix, time.Now().UnixNano())
 
 func TestMain(m *testing.M) {
-	// Run the tests, then follow by running any cleanup required.
+	integrationTest := initIntegrationTest()
 	exit := m.Run()
-	if ranIntegrationTest {
+	if integrationTest {
 		if err := cleanup(); err != nil {
 			log.Fatalf("Post-test cleanup failed: %v", err)
 		}
 	}
 	os.Exit(exit)
+}
+
+// If integration tests will be run, create a unique bucket for them.
+func initIntegrationTest() bool {
+	flag.Parse() // needed for testing.Short()
+	ctx := context.Background()
+	if testing.Short() {
+		return false
+	}
+	client, bucket := config(ctx)
+	if client == nil {
+		return false
+	}
+	defer client.Close()
+	if err := client.Bucket(bucket).Create(ctx, testutil.ProjID(), nil); err != nil {
+		log.Fatalf("creating bucket %q: %v", bucket, err)
+	}
+	return true
 }
 
 // testConfig returns the Client used to access GCS and the default bucket
@@ -69,7 +85,6 @@ func testConfig(ctx context.Context, t *testing.T) (*Client, string) {
 	if client == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
-	ranIntegrationTest = true
 	return client, bucket
 }
 
@@ -87,36 +102,25 @@ func config(ctx context.Context) (*Client, string) {
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)
 	}
-	return client, p
+	return client, p + suffix
 }
 
 func TestBucketMethods(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Integration tests skipped in short mode")
-	}
 	ctx := context.Background()
-	ts := testutil.TokenSource(ctx, ScopeFullControl)
-	if ts == nil {
-		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
-	}
-	projectID := testutil.ProjID()
-
-	newBucket := projectID + suffix
-	t.Logf("Testing with Bucket %q", newBucket)
-
-	client, err := NewClient(ctx, option.WithTokenSource(ts))
-	if err != nil {
-		t.Fatalf("Could not create client: %v", err)
-	}
+	client, bucket := testConfig(ctx, t)
 	defer client.Close()
 
+	projectID := testutil.ProjID()
+	newBucket := bucket + "-new"
+	// Test Create and Delete.
 	if err := client.Bucket(newBucket).Create(ctx, projectID, nil); err != nil {
 		t.Errorf("Bucket(%v).Create(%v, %v) failed: %v", newBucket, projectID, nil, err)
 	}
 	if err := client.Bucket(newBucket).Delete(ctx); err != nil {
 		t.Errorf("Bucket(%v).Delete failed: %v", newBucket, err)
-		t.Logf("TODO: Warning this test left a new bucket in the cloud project, it must be deleted manually")
 	}
+
+	// Test Create and Delete with attributes.
 	attrs := BucketAttrs{
 		DefaultObjectACL: []ACLRule{{Entity: "domain-google.com", Role: RoleReader}},
 	}
@@ -125,7 +129,6 @@ func TestBucketMethods(t *testing.T) {
 	}
 	if err := client.Bucket(newBucket).Delete(ctx); err != nil {
 		t.Errorf("Bucket(%v).Delete failed: %v", newBucket, err)
-		t.Logf("TODO: Warning this test left a new bucket in the cloud project, it must be deleted manually")
 	}
 }
 
@@ -134,7 +137,7 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 	client, bucket := testConfig(ctx, t)
 	defer client.Close()
 
-	o := client.Bucket(bucket).Object("conddel" + suffix)
+	o := client.Bucket(bucket).Object("conddel")
 
 	wc := o.NewWriter(ctx)
 	wc.ContentType = "text/plain"
@@ -171,16 +174,11 @@ func TestObjects(t *testing.T) {
 
 	const defaultType = "text/plain"
 
-	// Clear out old objects that might have been left in the bucket.
-	if err := clearObjects(ctx, bkt); err != nil {
-		t.Fatalf("clearing objects: %v", err)
-	}
-
 	// Populate object names and make a map for their contents.
 	objects := []string{
-		"obj1" + suffix,
-		"obj2" + suffix,
-		"obj/with/slashes" + suffix,
+		"obj1",
+		"obj2",
+		"obj/with/slashes",
 	}
 	contents := make(map[string][]byte)
 
@@ -295,7 +293,7 @@ func TestObjects(t *testing.T) {
 
 	// Test content encoding
 	const zeroCount = 20 << 20
-	w := bkt.Object("gzip-test" + suffix).NewWriter(ctx)
+	w := bkt.Object("gzip-test").NewWriter(ctx)
 	w.ContentEncoding = "gzip"
 	gw := gzip.NewWriter(w)
 	if _, err := io.Copy(gw, io.LimitReader(zeros{}, zeroCount)); err != nil {
@@ -307,7 +305,7 @@ func TestObjects(t *testing.T) {
 	if err := w.Close(); err != nil {
 		t.Errorf("w.Close(): %v", err)
 	}
-	r, err := bkt.Object("gzip-test" + suffix).NewReader(ctx)
+	r, err := bkt.Object("gzip-test").NewReader(ctx)
 	if err != nil {
 		t.Fatalf("NewReader(gzip-test): %v", err)
 	}
@@ -487,23 +485,6 @@ func TestObjects(t *testing.T) {
 	}
 }
 
-func clearObjects(ctx context.Context, bkt *BucketHandle) error {
-	it := bkt.Objects(ctx, &Query{Prefix: "obj"})
-	for {
-		attrs, err := it.Next()
-		switch err {
-		case nil:
-			if err := bkt.Object(attrs.Name).Delete(ctx); err != nil {
-				return fmt.Errorf("deleting %q: %v", attrs.Name, err)
-			}
-		case Done:
-			return nil
-		default:
-			return err
-		}
-	}
-}
-
 func testBucketList(t *testing.T, bkt *BucketHandle, objects []string) {
 	ctx := context.Background()
 	q := &Query{Prefix: "obj"}
@@ -583,7 +564,7 @@ func TestACL(t *testing.T) {
 	} else if !hasRule(acl, rule) {
 		t.Errorf("default ACL missing %#v", rule)
 	}
-	aclObjects := []string{"acl1" + suffix, "acl2" + suffix}
+	aclObjects := []string{"acl1", "acl2"}
 	for _, obj := range aclObjects {
 		t.Logf("Writing %v", obj)
 		wc := bkt.Object(obj).NewWriter(ctx)
@@ -646,9 +627,6 @@ func TestValidObjectNames(t *testing.T) {
 
 	bkt := client.Bucket(bucket)
 
-	// NOTE(djd): This test can't append suffix to each name, since we're checking the validity
-	// of these exact names. This test will still pass if the objects are not deleted between
-	// test runs, but we attempt deletion to keep the bucket clean.
 	validNames := []string{
 		"gopher",
 		"Гоферови",
@@ -693,7 +671,7 @@ func TestWriterContentType(t *testing.T) {
 	client, bucket := testConfig(ctx, t)
 	defer client.Close()
 
-	obj := client.Bucket(bucket).Object("content" + suffix)
+	obj := client.Bucket(bucket).Object("content")
 	testCases := []struct {
 		content           string
 		setType, wantType string
@@ -742,7 +720,7 @@ func TestZeroSizedObject(t *testing.T) {
 	client, bucket := testConfig(ctx, t)
 	defer client.Close()
 
-	obj := client.Bucket(bucket).Object("zero" + suffix)
+	obj := client.Bucket(bucket).Object("zero")
 
 	// Check writing it works as expected.
 	w := obj.NewWriter(ctx)
@@ -766,9 +744,8 @@ func TestZeroSizedObject(t *testing.T) {
 	}
 }
 
-// cleanup deletes any objects in the default bucket which were created
-// during this test run (those with the designated suffix), and any
-// objects whose suffix indicates they were created over an hour ago.
+// cleanup deletes the bucket used for testing, as well as old
+// testing buckets that weren't cleaned previously.
 func cleanup() error {
 	if testing.Short() {
 		return nil // Don't clean up in short mode.
@@ -779,42 +756,58 @@ func cleanup() error {
 		return nil // Don't cleanup if we're not configured correctly.
 	}
 	defer client.Close()
-
-	suffixRE := regexp.MustCompile(`-t(\d+)$`)
-	deadline := time.Now().Add(-1 * time.Hour)
-
-	var q *Query
-	for {
-		o, err := client.Bucket(bucket).List(ctx, q)
-		if err != nil {
-			return fmt.Errorf("cleanup list failed: %v", err)
-		}
-
-		for _, obj := range o.Results {
-			// Delete the object if it matches the suffix exactly,
-			// or has a suffix marked before the deadline.
-			del := strings.HasSuffix(obj.Name, suffix)
-			if m := suffixRE.FindStringSubmatch(obj.Name); m != nil {
-				if ns, err := strconv.ParseInt(m[1], 10, 64); err == nil && time.Unix(0, ns).Before(deadline) {
-					del = true
-				}
-			}
-			if !del {
-				continue
-			}
-			log.Printf("Cleanup deletion of %q", obj.Name)
-			if err := client.Bucket(bucket).Object(obj.Name).Delete(ctx); err != nil {
-				// Print the error out, but keep going.
-				log.Printf("Cleanup deletion of %q failed: %v", obj.Name, err)
-			}
-		}
-		if o.Next == nil {
-			break
-		}
-		q = o.Next
+	if err := killBucket(ctx, client, bucket); err != nil {
+		return err
 	}
 
-	// TODO(djd): Similarly list and clean up buckets.
+	// Delete buckets whose name begins with our test prefix, and which were
+	// created a while ago. (Unfortunately GCS doesn't provide last-modified
+	// time, which would be a better way to check for staleness.)
+	const expireAge = 24 * time.Hour
+	projectID := testutil.ProjID()
+	it := client.Buckets(ctx, projectID)
+	it.Prefix = projectID + testPrefix
+	for {
+		bktAttrs, err := it.Next()
+		if err == Done {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		if time.Since(bktAttrs.Created) > expireAge {
+			log.Printf("deleting bucket %q, which more than %s old", bktAttrs.Name, expireAge)
+			if err := killBucket(ctx, client, bktAttrs.Name); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+// killBucket deletes a bucket and all its objects.
+func killBucket(ctx context.Context, client *Client, bucketName string) error {
+	bkt := client.Bucket(bucketName)
+	// Bucket must be empty to delete.
+	it := bkt.Objects(ctx, nil)
+	for {
+		objAttrs, err := it.Next()
+		if err == Done {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		if err := bkt.Object(objAttrs.Name).Delete(ctx); err != nil {
+			return fmt.Errorf("deleting %q: %v", bucketName+"/"+objAttrs.Name, err)
+		}
+	}
+	// GCS is eventually consistent, so this delete may fail because the
+	// replica still sees an object in the bucket. We log the error and expect
+	// a later test run to delete the bucket.
+	if err := bkt.Delete(ctx); err != nil {
+		log.Printf("deleting %q: %v", bucketName, err)
+	}
 	return nil
 }
 
