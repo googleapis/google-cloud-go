@@ -839,32 +839,32 @@ func TestTransaction(t *testing.T) {
 		wantErr       error
 	}{
 		{
-			desc:          "no conflicts",
+			desc:          "3 attempts, no conflicts",
 			causeConflict: []bool{false},
 			retErr:        []error{nil},
 			want:          11,
 		},
 		{
-			desc:          "user error",
+			desc:          "1 attempt, user error",
 			causeConflict: []bool{false},
 			retErr:        []error{bangErr},
 			wantErr:       bangErr,
 		},
 		{
-			desc:          "2 conflicts",
-			causeConflict: []bool{true, true, false},
-			retErr:        []error{nil, nil, nil},
-			want:          15, // Each conflict increments by 2.
+			desc:          "2 attempts, 1 conflict",
+			causeConflict: []bool{true, false},
+			retErr:        []error{nil, nil},
+			want:          13, // Each conflict increments by 2.
 		},
 		{
-			desc:          "3 conflicts",
+			desc:          "3 attempts, 3 conflicts",
 			causeConflict: []bool{true, true, true},
 			retErr:        []error{nil, nil, nil},
 			wantErr:       ErrConcurrentTransaction,
 		},
 	}
 
-	for _, tt := range tests {
+	for i, tt := range tests {
 		// Put a new counter.
 		c := &Counter{N: 10, T: time.Now()}
 		key, err := client.Put(ctx, NewIncompleteKey(ctx, "TransCounter", nil), c)
@@ -901,7 +901,7 @@ func TestTransaction(t *testing.T) {
 			}
 
 			return tt.retErr[attempts-1]
-		})
+		}, MaxAttempts(i))
 
 		// Check the error returned by RunInTransaction.
 		if err != tt.wantErr {
