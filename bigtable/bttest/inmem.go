@@ -77,7 +77,7 @@ type server struct {
 // NewServer creates a new Server.
 // The Server will be listening for gRPC connections, without TLS,
 // on the provided address. The resolved address is named by the Addr field.
-func NewServer(laddr string) (*Server, error) {
+func NewServer(laddr string, opt ...grpc.ServerOption) (*Server, error) {
 	l, err := net.Listen("tcp", laddr)
 	if err != nil {
 		return nil, err
@@ -86,7 +86,7 @@ func NewServer(laddr string) (*Server, error) {
 	s := &Server{
 		Addr: l.Addr().String(),
 		l:    l,
-		srv:  grpc.NewServer(),
+		srv:  grpc.NewServer(opt...),
 		s: &server{
 			tables: make(map[string]*table),
 		},
@@ -277,6 +277,9 @@ func addRows(start, end string, tbl *table, rowSet map[string]*row) {
 	if start != "" {
 		si = sort.Search(len(tbl.rows), func(i int) bool { return tbl.rows[i].key >= start })
 	}
+	// Types that are valid to be assigned to StartKey:
+	//	*RowRange_StartKeyClosed
+	//	*RowRange_StartKeyOpen
 	if end != "" {
 		ei = sort.Search(len(tbl.rows), func(i int) bool { return tbl.rows[i].key >= end })
 	}

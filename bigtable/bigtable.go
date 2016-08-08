@@ -17,11 +17,13 @@ limitations under the License.
 package bigtable // import "cloud.google.com/go/bigtable"
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"strconv"
 	"time"
 
+	"cloud.google.com/go/bigtable/internal/gax"
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
@@ -39,9 +41,8 @@ const prodAddr = "bigtable.googleapis.com:443"
 //
 // A Client is safe to use concurrently, except for its Close method.
 type Client struct {
-	conn   *grpc.ClientConn
-	client btpb.BigtableClient
-
+	conn              *grpc.ClientConn
+	client            btpb.BigtableClient
 	project, instance string
 }
 
@@ -57,9 +58,8 @@ func NewClient(ctx context.Context, project, instance string, opts ...option.Cli
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
 	return &Client{
-		conn:   conn,
-		client: btpb.NewBigtableClient(conn),
-
+		conn:     conn,
+		client:   btpb.NewBigtableClient(conn),
 		project:  project,
 		instance: instance,
 	}, nil
@@ -68,6 +68,21 @@ func NewClient(ctx context.Context, project, instance string, opts ...option.Cli
 // Close closes the Client.
 func (c *Client) Close() error {
 	return c.conn.Close()
+}
+
+var (
+	idempotentRetryCodes  = []codes.Code{codes.DeadlineExceeded, codes.Unavailable, codes.Aborted}
+	isIdempotentRetryCode = make(map[codes.Code]bool)
+	retryOptions          = []gax.CallOption{
+		gax.WithDelayTimeoutSettings(100*time.Millisecond, 2000*time.Millisecond, 1.2),
+		gax.WithRetryCodes(idempotentRetryCodes),
+	}
+)
+
+func init() {
+	for _, code := range idempotentRetryCodes {
+		isIdempotentRetryCode[code] = true
+	}
 }
 
 func (c *Client) fullTableName(table string) string {
@@ -104,54 +119,66 @@ func (c *Client) Open(table string) *Table {
 // Use RowFilter to limit the cells returned.
 func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
 	ctx = metadata.NewContext(ctx, t.md)
-	req := &btpb.ReadRowsRequest{
-		TableName: t.c.fullTableName(t.table),
-		Rows:      arg.proto(),
-	}
-	for _, opt := range opts {
-		opt.set(req)
-	}
-	ctx, cancel := context.WithCancel(ctx) // for aborting the stream
-	defer cancel()
 
-	stream, err := t.c.client.ReadRows(ctx, req)
-	if err != nil {
-		return err
-	}
-	cr := newChunkReader()
-	for {
-		res, err := stream.Recv()
-		if err == io.EOF {
-			break
+	var prevRowKey string
+	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		req := &btpb.ReadRowsRequest{
+			TableName: t.c.fullTableName(t.table),
+			Rows:      arg.proto(),
 		}
+		for _, opt := range opts {
+			opt.set(req)
+		}
+		ctx, cancel := context.WithCancel(ctx) // for aborting the stream
+		defer cancel()
+
+		stream, err := t.c.client.ReadRows(ctx, req)
 		if err != nil {
 			return err
 		}
-		for _, cc := range res.Chunks {
-			row, err := cr.Process(cc)
+		cr := newChunkReader()
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				break
+			}
 			if err != nil {
+				// Reset arg for next Invoke call.
+				arg = arg.retainRowsAfter(prevRowKey)
 				return err
 			}
-			if row == nil {
-				continue
-			}
-			if !f(row) {
-				// Cancel and drain stream.
-				cancel()
-				for {
-					if _, err := stream.Recv(); err != nil {
-						// The stream has ended. We don't return an error
-						// because the caller has intentionally interrupted the scan.
-						return nil
+
+			for _, cc := range res.Chunks {
+				row, err := cr.Process(cc)
+				if err != nil {
+					// No need to prepare for a retry, this is an unretryable error.
+					return err
+				}
+				if row == nil {
+					continue
+				}
+				prevRowKey = row.Key()
+				if !f(row) {
+					// Cancel and drain stream.
+					cancel()
+					for {
+						if _, err := stream.Recv(); err != nil {
+							// The stream has ended. We don't return an error
+							// because the caller has intentionally interrupted the scan.
+							return nil
+						}
 					}
 				}
 			}
+			if err := cr.Close(); err != nil {
+				// No need to prepare for a retry, this is an unretryable error.
+				return err
+			}
 		}
-		if err := cr.Close(); err != nil {
-			return err
-		}
-	}
-	return nil
+		return err
+	}, retryOptions...)
+
+	return err
 }
 
 // ReadRow is a convenience implementation of a single-row reader.
@@ -184,6 +211,10 @@ func decodeFamilyProto(r Row, row string, f *btpb.Family) {
 // RowSet is a set of rows to be read. It is satisfied by RowList and RowRange.
 type RowSet interface {
 	proto() *btpb.RowSet
+
+	// retainRowsAfter returns a new RowSet that does not include the
+	// given row key or any row key lexicographically less than it.
+	retainRowsAfter(lastRowKey string) RowSet
 }
 
 // RowList is a sequence of row keys.
@@ -195,6 +226,16 @@ func (r RowList) proto() *btpb.RowSet {
 		keys[i] = []byte(row)
 	}
 	return &btpb.RowSet{RowKeys: keys}
+}
+
+func (r RowList) retainRowsAfter(lastRowKey string) RowSet {
+	var retryKeys RowList
+	for _, key := range r {
+		if key > lastRowKey {
+			retryKeys = append(retryKeys, key)
+		}
+	}
+	return retryKeys
 }
 
 // A RowRange is a half-open interval [Start, Limit) encompassing
@@ -240,6 +281,15 @@ func (r RowRange) proto() *btpb.RowSet {
 		rr.EndKey = &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte(r.limit)}
 	}
 	return &btpb.RowSet{RowRanges: []*btpb.RowRange{rr}}
+}
+
+func (r RowRange) retainRowsAfter(lastRowKey string) RowSet {
+	// Set the beginning of the range to the row after the last scanned.
+	start := lastRowKey + "\x00"
+	if r.Unbounded() {
+		return InfiniteRange(start)
+	}
+	return NewRange(start, r.limit)
 }
 
 // SingleRow returns a RowRange for reading a single row.
@@ -304,6 +354,20 @@ type limitRows struct{ limit int64 }
 
 func (lr limitRows) set(req *btpb.ReadRowsRequest) { req.RowsLimit = lr.limit }
 
+// mutationsAreRetryable returns true if all mutations are idempotent
+// and therefore retryable. A mutation is idempotent iff all cell timestamps
+// have an explicit timestamp set and do not rely on the timestamp being set on the server.
+func mutationsAreRetryable(muts []*btpb.Mutation) bool {
+	serverTime := int64(ServerTime)
+	for _, mut := range muts {
+		setCell := mut.GetSetCell()
+		if setCell != nil && setCell.TimestampMicros == serverTime {
+			return false
+		}
+	}
+	return true
+}
+
 // Apply applies a Mutation to a specific row.
 func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error {
 	ctx = metadata.NewContext(ctx, t.md)
@@ -313,18 +377,28 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 		}
 	}
 
+	var callOptions []gax.CallOption
 	if m.cond == nil {
 		req := &btpb.MutateRowRequest{
 			TableName: t.c.fullTableName(t.table),
 			RowKey:    []byte(row),
 			Mutations: m.ops,
 		}
-		res, err := t.c.client.MutateRow(ctx, req)
+		if mutationsAreRetryable(m.ops) {
+			callOptions = retryOptions
+		}
+		var res *btpb.MutateRowResponse
+		err := gax.Invoke(ctx, func(ctx context.Context) error {
+			var err error
+			res, err = t.c.client.MutateRow(ctx, req)
+			return err
+		}, callOptions...)
 		if err == nil {
 			after(res)
 		}
 		return err
 	}
+
 	req := &btpb.CheckAndMutateRowRequest{
 		TableName:       t.c.fullTableName(t.table),
 		RowKey:          []byte(row),
@@ -336,9 +410,17 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 	if m.mfalse != nil {
 		req.FalseMutations = m.mfalse.ops
 	}
-	res, err := t.c.client.CheckAndMutateRow(ctx, req)
+	if mutationsAreRetryable(req.TrueMutations) && mutationsAreRetryable(req.FalseMutations) {
+		callOptions = retryOptions
+	}
+	var cmRes *btpb.CheckAndMutateRowResponse
+	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		var err error
+		cmRes, err = t.c.client.CheckAndMutateRow(ctx, req)
+		return err
+	}, callOptions...)
 	if err == nil {
-		after(res)
+		after(cmRes)
 	}
 	return err
 }
@@ -436,6 +518,13 @@ func (m *Mutation) DeleteRow() {
 	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_DeleteFromRow_{&btpb.Mutation_DeleteFromRow{}}})
 }
 
+// entryErr is a container that combines an entry with the error that was returned for it.
+// Err may be nil if no error was returned for the Entry, or if the Entry has not yet been processed.
+type entryErr struct {
+	Entry *btpb.MutateRowsRequest_Entry
+	Err   error
+}
+
 // ApplyBulk applies multiple Mutations.
 // Each mutation is individually applied atomically,
 // but the set of mutations may be applied in any order.
@@ -445,9 +534,6 @@ func (m *Mutation) DeleteRow() {
 // fail to apply, ([]err, nil) will be returned, and the errors
 // will correspond to the relevant rowKeys/muts arguments.
 //
-// Depending on how the mutations are batched at the server one mutation may fail due to a problem
-// with another mutation. In this case the same error will be reported for both mutations.
-//
 // Conditional mutations cannot be applied in bulk and providing one will result in an error.
 func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutation, opts ...ApplyOption) ([]error, error) {
 	ctx = metadata.NewContext(ctx, t.md)
@@ -455,52 +541,106 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 		return nil, fmt.Errorf("mismatched rowKeys and mutation array lengths: %d, %d", len(rowKeys), len(muts))
 	}
 
+	origEntries := make([]*entryErr, len(rowKeys))
+	for i, key := range rowKeys {
+		mut := muts[i]
+		if mut.cond != nil {
+			return nil, errors.New("conditional mutations cannot be applied in bulk")
+		}
+		origEntries[i] = &entryErr{Entry: &btpb.MutateRowsRequest_Entry{RowKey: []byte(key), Mutations: mut.ops}}
+	}
+
+	// entries will be reduced after each invocation to just what needs to be retried.
+	entries := make([]*entryErr, len(rowKeys))
+	copy(entries, origEntries)
+	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := t.doApplyBulk(ctx, entries, opts...)
+		if err != nil {
+			// We want to retry the entire request with the current entries
+			return err
+		}
+		entries = t.getApplyBulkRetries(entries)
+		if len(entries) > 0 && len(idempotentRetryCodes) > 0 {
+			// We have at least one mutation that needs to be retried.
+			// Return an arbitrary error that is retryable according to callOptions.
+			return grpc.Errorf(idempotentRetryCodes[0], "Synthetic error: partial failure of ApplyBulk")
+		}
+		return nil
+	}, retryOptions...)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Accumulate all of the errors into an array to return, interspersed with nils for successful
+	// entries. The absence of any errors means we should return nil.
+	var errs []error
+	var foundErr bool
+	for _, entry := range origEntries {
+		if entry.Err != nil {
+			foundErr = true
+		}
+		errs = append(errs, entry.Err)
+	}
+	if foundErr {
+		return errs, nil
+	}
+	return nil, nil
+}
+
+// getApplyBulkRetries returns the entries that need to be retried
+func (t *Table) getApplyBulkRetries(entries []*entryErr) []*entryErr {
+	var retryEntries []*entryErr
+	for _, entry := range entries {
+		err := entry.Err
+		if err != nil && isIdempotentRetryCode[grpc.Code(err)] && mutationsAreRetryable(entry.Entry.Mutations) {
+			// There was an error and the entry is retryable.
+			retryEntries = append(retryEntries, entry)
+		}
+	}
+	return retryEntries
+}
+
+// doApplyBulk does the work of a single ApplyBulk invocation
+func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, opts ...ApplyOption) error {
 	after := func(res proto.Message) {
 		for _, o := range opts {
 			o.after(res)
 		}
 	}
 
+	entries := make([]*btpb.MutateRowsRequest_Entry, len(entryErrs))
+	for i, entryErr := range entryErrs {
+		entries[i] = entryErr.Entry
+	}
 	req := &btpb.MutateRowsRequest{
 		TableName: t.c.fullTableName(t.table),
-		Entries:   make([]*btpb.MutateRowsRequest_Entry, len(rowKeys)),
-	}
-	for i, key := range rowKeys {
-		mut := muts[i]
-		if mut.cond != nil {
-			return nil, fmt.Errorf("conditional mutations cannot be applied in bulk")
-		}
-		req.Entries[i] = &btpb.MutateRowsRequest_Entry{RowKey: []byte(key), Mutations: mut.ops}
+		Entries:   entries,
 	}
 	stream, err := t.c.client.MutateRows(ctx, req)
 	if err != nil {
-		return nil, err
+		return err
 	}
-
-	var errors []error // kept as nil if everything is OK
 	for {
 		res, err := stream.Recv()
 		if err == io.EOF {
 			break
 		}
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		for i, entry := range res.Entries {
 			status := entry.Status
 			if status.Code == int32(codes.OK) {
-				continue
+				entryErrs[i].Err = nil
+			} else {
+				entryErrs[i].Err = grpc.Errorf(codes.Code(status.Code), status.Message)
 			}
-			if errors == nil {
-				errors = make([]error, len(rowKeys))
-			}
-			errors[i] = grpc.Errorf(codes.Code(status.Code), status.Message)
 		}
 		after(res)
 	}
-
-	return errors, nil
+	return nil
 }
 
 // Timestamp is in units of microseconds since 1 January 1970.
