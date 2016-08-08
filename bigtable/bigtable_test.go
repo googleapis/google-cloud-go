@@ -551,19 +551,19 @@ func TestClientIntegration(t *testing.T) {
 	}
 	checkpoint("tested reading from bulk insert")
 
-	// Test bulk write errors
+	// Test bulk write errors.
+	// Note: Setting timestamps as ServerTime makes sure the mutations are not retried on error.
 	badMut := NewMutation()
-	badMut.Set("badfamily", "col", -1, nil)
+	badMut.Set("badfamily", "col", ServerTime, nil)
 	badMut2 := NewMutation()
-	badMut2.Set("badfamily2", "goodcol", -1, []byte("1"))
+	badMut2.Set("badfamily2", "goodcol", ServerTime, []byte("1"))
 	status, err = tbl.ApplyBulk(ctx, []string{"badrow", "badrow2"}, []*Mutation{badMut, badMut2})
 	if err != nil {
 		t.Fatalf("Bulk mutating rows %q: %v", rowKeys, err)
 	}
 	if status == nil {
 		t.Errorf("No errors for bad bulk mutation")
-	}
-	if status[0] == nil || status[1] == nil {
+	} else if status[0] == nil || status[1] == nil {
 		t.Errorf("No error for bad bulk mutation")
 	}
 }

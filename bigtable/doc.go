@@ -85,6 +85,13 @@ To increment an encoded value in one cell,
 	rmw.Increment("links", "golang.org", 12) // add 12 to the cell in column "links:golang.org"
 	r, err := tbl.ApplyReadModifyWrite(ctx, "com.google.cloud", rmw)
 	...
+
+Retries
+
+If a read or write operation encounters a transient error it will be retried until a successful
+response, an unretryable error or the context deadline is reached. Non-idempotent writes (where
+the timestamp is set to ServerTime) will not be retried. In the case of ReadRows, retried calls
+will not re-scan rows that have already been processed.
 */
 package bigtable // import "cloud.google.com/go/bigtable"
 
