@@ -51,10 +51,10 @@ func TestBundlerCount3(t *testing.T) {
 	handler := &testHandler{}
 	b := NewBundler(int(0), handler.handle)
 	b.BundleCountThreshold = 3
-	b.DelayThreshold = 10 * time.Millisecond
+	b.DelayThreshold = 100 * time.Millisecond
 	// Add 8 items.
 	// The first two bundles of 3 should both be handled quickly.
-	// The third bundle of 2 should not be handled for about 1 ms.
+	// The third bundle of 2 should not be handled for about DelayThreshold ms.
 	for i := 0; i < 8; i++ {
 		if err := b.Add(i, 1); err != nil {
 			t.Fatal(err)
@@ -70,9 +70,8 @@ func TestBundlerCount3(t *testing.T) {
 	}
 
 	tgot := quantizeTimes(handler.times, b.DelayThreshold)
-	twant := []int{0, 0, 1}
-	if !reflect.DeepEqual(tgot, twant) {
-		t.Errorf("times: got %v, want %v", tgot, twant)
+	if len(tgot) != 3 || tgot[0] != 0 || tgot[1] != 0 || tgot[2] == 0 {
+		t.Errorf("times: got %v, want [0, 0, non-zero]", tgot)
 	}
 }
 
