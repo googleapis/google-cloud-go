@@ -316,7 +316,7 @@ func TestObjectNames(t *testing.T) {
 
 func TestCondition(t *testing.T) {
 	gotReq := make(chan *http.Request, 1)
-	ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	hc, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
 		io.Copy(ioutil.Discard, r.Body)
 		gotReq <- r
 		if r.Method == "POST" {
@@ -324,19 +324,8 @@ func TestCondition(t *testing.T) {
 		} else {
 			w.WriteHeader(500)
 		}
-	}))
-	defer ts.Close()
-
-	tlsConf := &tls.Config{InsecureSkipVerify: true}
-	tr := &http.Transport{
-		TLSClientConfig: tlsConf,
-		DialTLS: func(netw, addr string) (net.Conn, error) {
-			return tls.Dial("tcp", ts.Listener.Addr().String(), tlsConf)
-		},
-	}
-	defer tr.CloseIdleConnections()
-	hc := &http.Client{Transport: tr}
-
+	})
+	defer close()
 	ctx := context.Background()
 	c, err := NewClient(ctx, option.WithHTTPClient(hc))
 	if err != nil {
@@ -422,25 +411,17 @@ func TestCondition(t *testing.T) {
 
 // Test that ObjectIterator's Next and NextPage methods correctly terminate
 // if there is nothing to iterate over.
-func TestEmptyIterator(t *testing.T) {
-	ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func TestEmptyObjectIterator(t *testing.T) {
+	hClient, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
 		io.Copy(ioutil.Discard, r.Body)
 		fmt.Fprintf(w, "{}")
-	}))
-	defer ts.Close()
-	tlsConf := &tls.Config{InsecureSkipVerify: true}
-	tr := &http.Transport{
-		TLSClientConfig: tlsConf,
-		DialTLS: func(netw, addr string) (net.Conn, error) {
-			return tls.Dial("tcp", ts.Listener.Addr().String(), tlsConf)
-		},
-	}
+	})
+	defer close()
 	ctx := context.Background()
-	client, err := NewClient(ctx, option.WithHTTPClient(&http.Client{Transport: tr}))
+	client, err := NewClient(ctx, option.WithHTTPClient(hClient))
 	if err != nil {
 		t.Fatal(err)
 	}
-
 	for i, f := range []func(*ObjectIterator) error{
 		func(it *ObjectIterator) error { _, err := it.Next(); return err },
 		func(it *ObjectIterator) error { _, _, err := it.NextPage(); return err },
@@ -456,5 +437,51 @@ func TestEmptyIterator(t *testing.T) {
 		case <-time.After(50 * time.Millisecond):
 			t.Errorf("%d: timed out", i)
 		}
+	}
+}
+
+// Test that ObjectIterator's Next and NextPage methods correctly terminate
+// if there is nothing to iterate over.
+func TestEmptyBucketIterator(t *testing.T) {
+	hClient, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
+		io.Copy(ioutil.Discard, r.Body)
+		fmt.Fprintf(w, "{}")
+	})
+	defer close()
+	ctx := context.Background()
+	client, err := NewClient(ctx, option.WithHTTPClient(hClient))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i, f := range []func(*BucketIterator) error{
+		func(it *BucketIterator) error { _, err := it.Next(); return err },
+		func(it *BucketIterator) error { _, err := it.NextPage(); return err },
+	} {
+		it := client.Buckets(ctx, "project")
+		c := make(chan error, 1)
+		go func() { c <- f(it) }()
+		select {
+		case err := <-c:
+			if err != Done {
+				t.Errorf("got %v, want Done", err)
+			}
+		case <-time.After(50 * time.Millisecond):
+			t.Errorf("%d: timed out", i)
+		}
+	}
+}
+
+func newTestServer(handler func(w http.ResponseWriter, r *http.Request)) (*http.Client, func()) {
+	ts := httptest.NewTLSServer(http.HandlerFunc(handler))
+	tlsConf := &tls.Config{InsecureSkipVerify: true}
+	tr := &http.Transport{
+		TLSClientConfig: tlsConf,
+		DialTLS: func(netw, addr string) (net.Conn, error) {
+			return tls.Dial("tcp", ts.Listener.Addr().String(), tlsConf)
+		},
+	}
+	return &http.Client{Transport: tr}, func() {
+		tr.CloseIdleConnections()
+		ts.Close()
 	}
 }
