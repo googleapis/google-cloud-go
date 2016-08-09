@@ -41,23 +41,11 @@ func ExampleNewClient() {
 }
 
 func ExampleNewClient_auth() {
-	// Initialize an authorized context with Google Developers Console
-	// JSON key. Read the google package examples to learn more about
-	// different authorization flows you can use.
-	// http://godoc.org/golang.org/x/oauth2/google
-	jsonKey, err := ioutil.ReadFile("/path/to/json/keyfile.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	conf, err := google.JWTConfigFromJSON(
-		jsonKey,
-		storage.ScopeFullControl,
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
 	ctx := context.Background()
-	client, err := storage.NewClient(ctx, option.WithTokenSource(conf.TokenSource(ctx)))
+	// Use Google Application Default Credentials to authorize and authenticate the client.
+	// More information about Application Default Credentials and how to enable is at
+	// https://developers.google.com/identity/protocols/application-default-credentials.
+	client, err := storage.NewClient(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -66,7 +54,7 @@ func ExampleNewClient_auth() {
 
 	// Close the client when finished.
 	if err := client.Close(); err != nil {
-		// TODO: handle error.
+		log.Fatal(err)
 	}
 }
 
