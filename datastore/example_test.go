@@ -15,7 +15,6 @@
 package datastore_test
 
 import (
-	"io/ioutil"
 	"log"
 	"time"
 
@@ -25,25 +24,13 @@ import (
 	"google.golang.org/api/option"
 )
 
-// TODO(djd): reevaluate this example given new Client config.
+// TODO(jbd): Document other authorization methods and refer to them here.
 func Example_auth() *datastore.Client {
-	// Initialize an authorized context with Google Developers Console
-	// JSON key. Read the google package examples to learn more about
-	// different authorization flows you can use.
-	// http://godoc.org/golang.org/x/oauth2/google
-	jsonKey, err := ioutil.ReadFile("/path/to/json/keyfile.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	conf, err := google.JWTConfigFromJSON(
-		jsonKey,
-		datastore.ScopeDatastore,
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
 	ctx := context.Background()
-	client, err := datastore.NewClient(ctx, "project-id", option.WithTokenSource(conf.TokenSource(ctx)))
+	// Use Google Application Default Credentials to authorize and authenticate the client.
+	// More information about Application Default Credentials and how to enable is at
+	// https://developers.google.com/identity/protocols/application-default-credentials.
+	client, err := datastore.NewClient(ctx, "project-id")
 	if err != nil {
 		log.Fatal(err)
 	}
