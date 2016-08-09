@@ -46,7 +46,7 @@ import (
 	"golang.org/x/net/context"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
-	rpcpb "google.golang.org/genproto/googleapis/rpc"
+	statpb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )
@@ -454,7 +454,7 @@ func (s *server) MutateRows(req *btpb.MutateRowsRequest, stream btpb.Bigtable_Mu
 		}
 		res.Entries[i] = &btpb.MutateRowsResponse_Entry{
 			Index:  int64(i),
-			Status: &rpcpb.Status{Code: code, Message: msg},
+			Status: &statpb.Status{Code: code, Message: msg},
 		}
 		r.mu.Unlock()
 	}
