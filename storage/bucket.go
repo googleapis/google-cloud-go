@@ -17,6 +17,7 @@ package storage
 import (
 	"errors"
 	"net/http"
+	"time"
 
 	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
@@ -77,11 +78,6 @@ func (b *BucketHandle) Object(name string) *ObjectHandle {
 	}
 }
 
-// TODO(jba): Add storage.buckets.list.
-// TODO(jbd): Add storage.buckets.update.
-
-// TODO(jbd): Add storage.objects.watch.
-
 // Attrs returns the metadata for the bucket.
 func (b *BucketHandle) Attrs(ctx context.Context) (*BucketAttrs, error) {
 	resp, err := b.c.raw.Buckets.Get(b.name).Projection("full").Context(ctx).Do()
@@ -92,6 +88,86 @@ func (b *BucketHandle) Attrs(ctx context.Context) (*BucketAttrs, error) {
 		return nil, err
 	}
 	return newBucket(resp), nil
+}
+
+// BucketAttrs represents the metadata for a Google Cloud Storage bucket.
+type BucketAttrs struct {
+	// Name is the name of the bucket.
+	Name string
+
+	// ACL is the list of access control rules on the bucket.
+	ACL []ACLRule
+
+	// DefaultObjectACL is the list of access controls to
+	// apply to new objects when no object ACL is provided.
+	DefaultObjectACL []ACLRule
+
+	// Location is the location of the bucket. It defaults to "US".
+	Location string
+
+	// MetaGeneration is the metadata generation of the bucket.
+	MetaGeneration int64
+
+	// StorageClass is the storage class of the bucket. This defines
+	// how objects in the bucket are stored and determines the SLA
+	// and the cost of storage. Typical values are "STANDARD" and
+	// "DURABLE_REDUCED_AVAILABILITY". Defaults to "STANDARD".
+	StorageClass string
+
+	// Created is the creation time of the bucket.
+	Created time.Time
+}
+
+func newBucket(b *raw.Bucket) *BucketAttrs {
+	if b == nil {
+		return nil
+	}
+	bucket := &BucketAttrs{
+		Name:           b.Name,
+		Location:       b.Location,
+		MetaGeneration: b.Metageneration,
+		StorageClass:   b.StorageClass,
+		Created:        convertTime(b.TimeCreated),
+	}
+	acl := make([]ACLRule, len(b.Acl))
+	for i, rule := range b.Acl {
+		acl[i] = ACLRule{
+			Entity: ACLEntity(rule.Entity),
+			Role:   ACLRole(rule.Role),
+		}
+	}
+	bucket.ACL = acl
+	objACL := make([]ACLRule, len(b.DefaultObjectAcl))
+	for i, rule := range b.DefaultObjectAcl {
+		objACL[i] = ACLRule{
+			Entity: ACLEntity(rule.Entity),
+			Role:   ACLRole(rule.Role),
+		}
+	}
+	bucket.DefaultObjectACL = objACL
+	return bucket
+}
+
+// toRawBucket copies the editable attribute from b to the raw library's Bucket type.
+func (b *BucketAttrs) toRawBucket() *raw.Bucket {
+	var acl []*raw.BucketAccessControl
+	if len(b.ACL) > 0 {
+		acl = make([]*raw.BucketAccessControl, len(b.ACL))
+		for i, rule := range b.ACL {
+			acl[i] = &raw.BucketAccessControl{
+				Entity: string(rule.Entity),
+				Role:   string(rule.Role),
+			}
+		}
+	}
+	dACL := toRawObjectACL(b.DefaultObjectACL)
+	return &raw.Bucket{
+		Name:             b.Name,
+		DefaultObjectAcl: dACL,
+		Location:         b.Location,
+		StorageClass:     b.StorageClass,
+		Acl:              acl,
+	}
 }
 
 // ObjectList represents a list of objects returned from a bucket List call.
@@ -269,3 +345,6 @@ func (it *ObjectIterator) SetPageToken(t string) {
 func (it *ObjectIterator) NextPageToken() string {
 	return it.query.Cursor
 }
+
+// TODO(jba): Add storage.buckets.list.
+// TODO(jbd): Add storage.buckets.update.

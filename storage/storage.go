@@ -563,64 +563,6 @@ func parseKey(key []byte) (*rsa.PrivateKey, error) {
 	return parsed, nil
 }
 
-// BucketAttrs represents the metadata for a Google Cloud Storage bucket.
-type BucketAttrs struct {
-	// Name is the name of the bucket.
-	Name string
-
-	// ACL is the list of access control rules on the bucket.
-	ACL []ACLRule
-
-	// DefaultObjectACL is the list of access controls to
-	// apply to new objects when no object ACL is provided.
-	DefaultObjectACL []ACLRule
-
-	// Location is the location of the bucket. It defaults to "US".
-	Location string
-
-	// MetaGeneration is the metadata generation of the bucket.
-	MetaGeneration int64
-
-	// StorageClass is the storage class of the bucket. This defines
-	// how objects in the bucket are stored and determines the SLA
-	// and the cost of storage. Typical values are "STANDARD" and
-	// "DURABLE_REDUCED_AVAILABILITY". Defaults to "STANDARD".
-	StorageClass string
-
-	// Created is the creation time of the bucket.
-	Created time.Time
-}
-
-func newBucket(b *raw.Bucket) *BucketAttrs {
-	if b == nil {
-		return nil
-	}
-	bucket := &BucketAttrs{
-		Name:           b.Name,
-		Location:       b.Location,
-		MetaGeneration: b.Metageneration,
-		StorageClass:   b.StorageClass,
-		Created:        convertTime(b.TimeCreated),
-	}
-	acl := make([]ACLRule, len(b.Acl))
-	for i, rule := range b.Acl {
-		acl[i] = ACLRule{
-			Entity: ACLEntity(rule.Entity),
-			Role:   ACLRole(rule.Role),
-		}
-	}
-	bucket.ACL = acl
-	objACL := make([]ACLRule, len(b.DefaultObjectAcl))
-	for i, rule := range b.DefaultObjectAcl {
-		objACL[i] = ACLRule{
-			Entity: ACLEntity(rule.Entity),
-			Role:   ACLRole(rule.Role),
-		}
-	}
-	bucket.DefaultObjectACL = objACL
-	return bucket
-}
-
 func toRawObjectACL(oldACL []ACLRule) []*raw.ObjectAccessControl {
 	var acl []*raw.ObjectAccessControl
 	if len(oldACL) > 0 {
@@ -633,28 +575,6 @@ func toRawObjectACL(oldACL []ACLRule) []*raw.ObjectAccessControl {
 		}
 	}
 	return acl
-}
-
-// toRawBucket copies the editable attribute from b to the raw library's Bucket type.
-func (b *BucketAttrs) toRawBucket() *raw.Bucket {
-	var acl []*raw.BucketAccessControl
-	if len(b.ACL) > 0 {
-		acl = make([]*raw.BucketAccessControl, len(b.ACL))
-		for i, rule := range b.ACL {
-			acl[i] = &raw.BucketAccessControl{
-				Entity: string(rule.Entity),
-				Role:   string(rule.Role),
-			}
-		}
-	}
-	dACL := toRawObjectACL(b.DefaultObjectACL)
-	return &raw.Bucket{
-		Name:             b.Name,
-		DefaultObjectAcl: dACL,
-		Location:         b.Location,
-		StorageClass:     b.StorageClass,
-		Acl:              acl,
-	}
 }
 
 // toRawObject copies the editable attributes from o to the raw library's Object type.
@@ -955,3 +875,5 @@ func (c objectsGetCall) IfMetagenerationMatch(gen int64) {
 func (c objectsGetCall) IfMetagenerationNotMatch(gen int64) {
 	appendParam(c.req, "ifMetagenerationNotMatch", fmt.Sprint(gen))
 }
+
+// TODO(jbd): Add storage.objects.watch.
