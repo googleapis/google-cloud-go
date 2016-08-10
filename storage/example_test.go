@@ -22,8 +22,6 @@ import (
 
 	"cloud.google.com/go/storage"
 	"golang.org/x/net/context"
-	"golang.org/x/oauth2/google"
-	"google.golang.org/api/option"
 )
 
 func ExampleNewClient() {
