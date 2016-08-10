@@ -75,7 +75,7 @@ func TestIteratorNext(want interface{}, done error, next func() (interface{}, er
 // PagingIterator describes the standard client iterator pattern with paging as best as possible in Go.
 // See https://github.com/GoogleCloudPlatform/gcloud-golang/wiki/Iterator-Guidelines.
 type PagingIterator interface {
-	SetPageSize(int32)
+	SetPageSize(int)
 	SetPageToken(string)
 	NextPageToken() string
 	// NextPage() ([]T, error)
@@ -108,7 +108,7 @@ type PagingIterator interface {
 //
 // On success, TestIteratorNextPageExact returns ("", true). On failure, it returns a
 // suitable error message and false.
-func TestIteratorNextPageExact(want interface{}, done error, defaultPageSize int32, newIter func() PagingIterator, nextPage func(PagingIterator) (interface{}, error)) (string, bool) {
+func TestIteratorNextPageExact(want interface{}, done error, defaultPageSize int, newIter func() PagingIterator, nextPage func(PagingIterator) (interface{}, error)) (string, bool) {
 	wVal := reflect.ValueOf(want)
 	if wVal.Kind() != reflect.Slice {
 		return "'want' must be a slice", false
@@ -117,7 +117,7 @@ func TestIteratorNextPageExact(want interface{}, done error, defaultPageSize int
 		return "need at least 3 values for 'want' to effectively test paging", false
 	}
 	const doNotSetPageSize = -999
-	for _, pageSize := range []int32{doNotSetPageSize, -7, 0, 1, 2, int32(wVal.Len()), int32(wVal.Len()) + 10} {
+	for _, pageSize := range []int{doNotSetPageSize, -7, 0, 1, 2, wVal.Len(), wVal.Len() + 10} {
 		adjustedPageSize := int(pageSize)
 		if pageSize <= 0 {
 			adjustedPageSize = int(defaultPageSize)

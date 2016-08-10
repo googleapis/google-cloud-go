@@ -221,7 +221,7 @@ type ObjectIterator struct {
 	ctx      context.Context
 	bucket   *BucketHandle
 	query    Query
-	pageSize int32
+	pageSize int
 	objs     []*ObjectAttrs
 	prefixes []string
 	err      error
@@ -284,7 +284,7 @@ func (it *ObjectIterator) NextPage() (objs []*ObjectAttrs, prefixes []string, er
 		it.pageSize = DefaultPageSize
 	}
 	for len(objs)+len(prefixes) < int(it.pageSize) {
-		it.pageSize -= int32(len(objs) + len(prefixes))
+		it.pageSize -= len(objs) + len(prefixes)
 		it.nextPage()
 		if it.err != nil {
 			return nil, nil, it.err
@@ -329,7 +329,7 @@ func (it *ObjectIterator) nextPage() {
 
 // SetPageSize sets the page size for all subsequent calls to NextPage.
 // NextPage will return exactly this many items if they are present.
-func (it *ObjectIterator) SetPageSize(pageSize int32) {
+func (it *ObjectIterator) SetPageSize(pageSize int) {
 	it.pageSize = pageSize
 }
 
