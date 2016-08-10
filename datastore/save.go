@@ -207,7 +207,9 @@ func interfaceToProto(iv interface{}, noIndex bool) (*pb.Value, error) {
 	case float64:
 		val.ValueType = &pb.Value_DoubleValue{v}
 	case *Key:
-		if v != nil {
+		if v == nil {
+			val.ValueType = &pb.Value_NullValue{}
+		} else {
 			val.ValueType = &pb.Value_KeyValue{keyToProto(v)}
 		}
 	case GeoPoint:
