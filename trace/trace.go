@@ -448,6 +448,14 @@ func startNewChild(name string, trace *trace, parentSpanId uint64) *Span {
 	return newSpan
 }
 
+// TraceID returns the ID of the trace to which s belongs.
+func (s *Span) TraceID() string {
+	if s == nil {
+		return ""
+	}
+	return s.trace.traceID
+}
+
 // SetLabel sets the label for the given key to the given value.
 // If the value is empty, the label for that key is deleted.
 // If a label is given a value automatically and by SetLabel, the
