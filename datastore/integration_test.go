@@ -213,6 +213,29 @@ func TestUnindexableValues(t *testing.T) {
 	}
 }
 
+func TestNilKey(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	ctx := context.Background()
+	client := newClient(ctx, t)
+	defer client.Close()
+
+	testCases := []struct {
+		in      K0
+		wantErr bool
+	}{
+		{in: K0{K: testKey0}, wantErr: false},
+		{in: K0{}, wantErr: false},
+	}
+	for _, tt := range testCases {
+		_, err := client.Put(ctx, NewIncompleteKey(ctx, "NilKey", nil), &tt.in)
+		if (err != nil) != tt.wantErr {
+			t.Errorf("client.Put %s got err %v, want err %t", tt.in, err, tt.wantErr)
+		}
+	}
+}
+
 type SQChild struct {
 	I, J int
 	T, U int64
