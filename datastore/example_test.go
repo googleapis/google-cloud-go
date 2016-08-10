@@ -20,8 +20,6 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"golang.org/x/net/context"
-	"golang.org/x/oauth2/google"
-	"google.golang.org/api/option"
 )
 
 // TODO(jbd): Document other authorization methods and refer to them here.
