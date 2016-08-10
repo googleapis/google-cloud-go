@@ -22,7 +22,7 @@ import (
 
 	timepb "github.com/golang/protobuf/ptypes/timestamp"
 	pb "google.golang.org/genproto/googleapis/datastore/v1beta3"
-	tpb "google.golang.org/genproto/googleapis/type"
+	llpb "google.golang.org/genproto/googleapis/type/latlng"
 )
 
 // saveEntity saves an EntityProto into a PropertyLoadSaver or struct pointer.
@@ -214,7 +214,7 @@ func interfaceToProto(iv interface{}, noIndex bool) (*pb.Value, error) {
 		if !v.Valid() {
 			return nil, errors.New("invalid GeoPoint value")
 		}
-		val.ValueType = &pb.Value_GeoPointValue{&tpb.LatLng{
+		val.ValueType = &pb.Value_GeoPointValue{&llpb.LatLng{
 			Latitude:  v.Lat,
 			Longitude: v.Lng,
 		}}
