@@ -19,7 +19,7 @@ package logging_test
 import (
 	"cloud.google.com/go/logging/apiv2"
 	"golang.org/x/net/context"
-	googleapis_logging_v2 "google.golang.org/genproto/googleapis/logging/v2"
+	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
 )
 
 func ExampleNewConfigClient() {
@@ -39,7 +39,7 @@ func ExampleConfigClient_ListSinks() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_logging_v2.ListSinksRequest{
+	req := &loggingpb.ListSinksRequest{
 	// TODO: Fill request struct fields.
 	}
 	it := c.ListSinks(ctx, req)
@@ -61,7 +61,7 @@ func ExampleConfigClient_GetSink() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_logging_v2.GetSinkRequest{
+	req := &loggingpb.GetSinkRequest{
 	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetSink(ctx, req)
@@ -79,7 +79,7 @@ func ExampleConfigClient_CreateSink() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_logging_v2.CreateSinkRequest{
+	req := &loggingpb.CreateSinkRequest{
 	// TODO: Fill request struct fields.
 	}
 	resp, err := c.CreateSink(ctx, req)
@@ -97,7 +97,7 @@ func ExampleConfigClient_UpdateSink() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_logging_v2.UpdateSinkRequest{
+	req := &loggingpb.UpdateSinkRequest{
 	// TODO: Fill request struct fields.
 	}
 	resp, err := c.UpdateSink(ctx, req)
@@ -115,7 +115,7 @@ func ExampleConfigClient_DeleteSink() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_logging_v2.DeleteSinkRequest{
+	req := &loggingpb.DeleteSinkRequest{
 	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteSink(ctx, req)

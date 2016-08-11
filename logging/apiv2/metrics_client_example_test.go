@@ -19,7 +19,7 @@ package logging_test
 import (
 	"cloud.google.com/go/logging/apiv2"
 	"golang.org/x/net/context"
-	googleapis_logging_v2 "google.golang.org/genproto/googleapis/logging/v2"
+	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
 )
 
 func ExampleNewMetricsClient() {
@@ -39,7 +39,7 @@ func ExampleMetricsClient_ListLogMetrics() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_logging_v2.ListLogMetricsRequest{
+	req := &loggingpb.ListLogMetricsRequest{
 	// TODO: Fill request struct fields.
 	}
 	it := c.ListLogMetrics(ctx, req)
@@ -61,7 +61,7 @@ func ExampleMetricsClient_GetLogMetric() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_logging_v2.GetLogMetricRequest{
+	req := &loggingpb.GetLogMetricRequest{
 	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetLogMetric(ctx, req)
@@ -79,7 +79,7 @@ func ExampleMetricsClient_CreateLogMetric() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_logging_v2.CreateLogMetricRequest{
+	req := &loggingpb.CreateLogMetricRequest{
 	// TODO: Fill request struct fields.
 	}
 	resp, err := c.CreateLogMetric(ctx, req)
@@ -97,7 +97,7 @@ func ExampleMetricsClient_UpdateLogMetric() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_logging_v2.UpdateLogMetricRequest{
+	req := &loggingpb.UpdateLogMetricRequest{
 	// TODO: Fill request struct fields.
 	}
 	resp, err := c.UpdateLogMetric(ctx, req)
@@ -115,7 +115,7 @@ func ExampleMetricsClient_DeleteLogMetric() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_logging_v2.DeleteLogMetricRequest{
+	req := &loggingpb.DeleteLogMetricRequest{
 	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteLogMetric(ctx, req)

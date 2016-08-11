@@ -18,6 +18,7 @@ package logging
 
 import (
 	"fmt"
+	"math"
 	"runtime"
 	"time"
 
@@ -25,8 +26,8 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
-	googleapis_api_monitoredres "google.golang.org/genproto/googleapis/api/monitoredres"
-	googleapis_logging_v2 "google.golang.org/genproto/googleapis/logging/v2"
+	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
+	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -77,8 +78,7 @@ func defaultCallOptions() *CallOptions {
 	withIdempotentRetryCodes := gax.WithRetryCodes([]codes.Code{
 		codes.DeadlineExceeded,
 		codes.Unavailable,
-	},
-	)
+	})
 	return &CallOptions{
 		DeleteLog:                        append(defaultRetryOptions(), withIdempotentRetryCodes),
 		WriteLogEntries:                  defaultRetryOptions(),
@@ -93,7 +93,7 @@ type Client struct {
 	conn *grpc.ClientConn
 
 	// The gRPC API client.
-	client googleapis_logging_v2.LoggingServiceV2Client
+	client loggingpb.LoggingServiceV2Client
 
 	// The call options for this service.
 	CallOptions *CallOptions
@@ -112,7 +112,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	}
 	c := &Client{
 		conn:        conn,
-		client:      googleapis_logging_v2.NewLoggingServiceV2Client(conn),
+		client:      loggingpb.NewLoggingServiceV2Client(conn),
 		CallOptions: defaultCallOptions(),
 	}
 	c.SetGoogleClientInfo("gax", gax.Version)
@@ -139,8 +139,6 @@ func (c *Client) SetGoogleClientInfo(name, version string) {
 	}
 }
 
-// Path templates.
-
 // ProjectPath returns the path for the project resource.
 func LoggingProjectPath(project string) string {
 	path, err := loggingProjectPathTemplate.Render(map[string]string{
@@ -166,7 +164,7 @@ func LoggingLogPath(project string, log string) string {
 
 // DeleteLog deletes a log and all its log entries.
 // The log will reappear if it receives new entries.
-func (c *Client) DeleteLog(ctx context.Context, req *googleapis_logging_v2.DeleteLogRequest) error {
+func (c *Client) DeleteLog(ctx context.Context, req *loggingpb.DeleteLogRequest) error {
 	ctx = metadata.NewContext(ctx, c.metadata)
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -178,9 +176,9 @@ func (c *Client) DeleteLog(ctx context.Context, req *googleapis_logging_v2.Delet
 
 // WriteLogEntries writes log entries to Stackdriver Logging.  All log entries are
 // written by this method.
-func (c *Client) WriteLogEntries(ctx context.Context, req *googleapis_logging_v2.WriteLogEntriesRequest) (*googleapis_logging_v2.WriteLogEntriesResponse, error) {
+func (c *Client) WriteLogEntries(ctx context.Context, req *loggingpb.WriteLogEntriesRequest) (*loggingpb.WriteLogEntriesResponse, error) {
 	ctx = metadata.NewContext(ctx, c.metadata)
-	var resp *googleapis_logging_v2.WriteLogEntriesResponse
+	var resp *loggingpb.WriteLogEntriesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
 		resp, err = c.client.WriteLogEntries(ctx, req)
@@ -195,11 +193,11 @@ func (c *Client) WriteLogEntries(ctx context.Context, req *googleapis_logging_v2
 // ListLogEntries lists log entries.  Use this method to retrieve log entries from Cloud
 // Logging.  For ways to export log entries, see
 // [Exporting Logs](/logging/docs/export).
-func (c *Client) ListLogEntries(ctx context.Context, req *googleapis_logging_v2.ListLogEntriesRequest) *LogEntryIterator {
+func (c *Client) ListLogEntries(ctx context.Context, req *loggingpb.ListLogEntriesRequest) *LogEntryIterator {
 	ctx = metadata.NewContext(ctx, c.metadata)
 	it := &LogEntryIterator{}
 	it.apiCall = func() error {
-		var resp *googleapis_logging_v2.ListLogEntriesResponse
+		var resp *loggingpb.ListLogEntriesResponse
 		err := gax.Invoke(ctx, func(ctx context.Context) error {
 			var err error
 			req.PageToken = it.nextPageToken
@@ -221,11 +219,11 @@ func (c *Client) ListLogEntries(ctx context.Context, req *googleapis_logging_v2.
 }
 
 // ListMonitoredResourceDescriptors lists the monitored resource descriptors used by Stackdriver Logging.
-func (c *Client) ListMonitoredResourceDescriptors(ctx context.Context, req *googleapis_logging_v2.ListMonitoredResourceDescriptorsRequest) *MonitoredResourceDescriptorIterator {
+func (c *Client) ListMonitoredResourceDescriptors(ctx context.Context, req *loggingpb.ListMonitoredResourceDescriptorsRequest) *MonitoredResourceDescriptorIterator {
 	ctx = metadata.NewContext(ctx, c.metadata)
 	it := &MonitoredResourceDescriptorIterator{}
 	it.apiCall = func() error {
-		var resp *googleapis_logging_v2.ListMonitoredResourceDescriptorsResponse
+		var resp *loggingpb.ListMonitoredResourceDescriptorsResponse
 		err := gax.Invoke(ctx, func(ctx context.Context) error {
 			var err error
 			req.PageToken = it.nextPageToken
@@ -246,13 +244,10 @@ func (c *Client) ListMonitoredResourceDescriptors(ctx context.Context, req *goog
 	return it
 }
 
-// Iterators.
-//
-
-// LogEntryIterator manages a stream of *googleapis_logging_v2.LogEntry.
+// LogEntryIterator manages a stream of *loggingpb.LogEntry.
 type LogEntryIterator struct {
 	// The current page data.
-	items         []*googleapis_logging_v2.LogEntry
+	items         []*loggingpb.LogEntry
 	atLastPage    bool
 	currentIndex  int
 	pageSize      int32
@@ -269,7 +264,7 @@ type LogEntryIterator struct {
 // NextPage returns Done, all subsequent calls to NextPage will return (nil, Done).
 //
 // Next and NextPage should not be used with the same iterator.
-func (it *LogEntryIterator) NextPage() ([]*googleapis_logging_v2.LogEntry, error) {
+func (it *LogEntryIterator) NextPage() ([]*loggingpb.LogEntry, error) {
 	if it.atLastPage {
 		// We already returned Done with the last page of items. Continue to
 		// return Done, but with no items.
@@ -293,7 +288,7 @@ func (it *LogEntryIterator) NextPage() ([]*googleapis_logging_v2.LogEntry, error
 // SetPageToken should not be called when using Next.
 //
 // Next and NextPage should not be used with the same iterator.
-func (it *LogEntryIterator) Next() (*googleapis_logging_v2.LogEntry, error) {
+func (it *LogEntryIterator) Next() (*loggingpb.LogEntry, error) {
 	for it.currentIndex >= len(it.items) {
 		if it.atLastPage {
 			return nil, Done
@@ -309,13 +304,16 @@ func (it *LogEntryIterator) Next() (*googleapis_logging_v2.LogEntry, error) {
 }
 
 // PageSize returns the page size for all subsequent calls to NextPage.
-func (it *LogEntryIterator) PageSize() int32 {
-	return it.pageSize
+func (it *LogEntryIterator) PageSize() int {
+	return int(it.pageSize)
 }
 
 // SetPageSize sets the page size for all subsequent calls to NextPage.
-func (it *LogEntryIterator) SetPageSize(pageSize int32) {
-	it.pageSize = pageSize
+func (it *LogEntryIterator) SetPageSize(pageSize int) {
+	if pageSize > math.MaxInt32 {
+		pageSize = math.MaxInt32
+	}
+	it.pageSize = int32(pageSize)
 }
 
 // SetPageToken sets the page token for the next call to NextPage, to resume the iteration from
@@ -330,10 +328,10 @@ func (it *LogEntryIterator) NextPageToken() string {
 	return it.nextPageToken
 }
 
-// MonitoredResourceDescriptorIterator manages a stream of *googleapis_api_monitoredres.MonitoredResourceDescriptor.
+// MonitoredResourceDescriptorIterator manages a stream of *monitoredrespb.MonitoredResourceDescriptor.
 type MonitoredResourceDescriptorIterator struct {
 	// The current page data.
-	items         []*googleapis_api_monitoredres.MonitoredResourceDescriptor
+	items         []*monitoredrespb.MonitoredResourceDescriptor
 	atLastPage    bool
 	currentIndex  int
 	pageSize      int32
@@ -350,7 +348,7 @@ type MonitoredResourceDescriptorIterator struct {
 // NextPage returns Done, all subsequent calls to NextPage will return (nil, Done).
 //
 // Next and NextPage should not be used with the same iterator.
-func (it *MonitoredResourceDescriptorIterator) NextPage() ([]*googleapis_api_monitoredres.MonitoredResourceDescriptor, error) {
+func (it *MonitoredResourceDescriptorIterator) NextPage() ([]*monitoredrespb.MonitoredResourceDescriptor, error) {
 	if it.atLastPage {
 		// We already returned Done with the last page of items. Continue to
 		// return Done, but with no items.
@@ -374,7 +372,7 @@ func (it *MonitoredResourceDescriptorIterator) NextPage() ([]*googleapis_api_mon
 // SetPageToken should not be called when using Next.
 //
 // Next and NextPage should not be used with the same iterator.
-func (it *MonitoredResourceDescriptorIterator) Next() (*googleapis_api_monitoredres.MonitoredResourceDescriptor, error) {
+func (it *MonitoredResourceDescriptorIterator) Next() (*monitoredrespb.MonitoredResourceDescriptor, error) {
 	for it.currentIndex >= len(it.items) {
 		if it.atLastPage {
 			return nil, Done
@@ -390,13 +388,16 @@ func (it *MonitoredResourceDescriptorIterator) Next() (*googleapis_api_monitored
 }
 
 // PageSize returns the page size for all subsequent calls to NextPage.
-func (it *MonitoredResourceDescriptorIterator) PageSize() int32 {
-	return it.pageSize
+func (it *MonitoredResourceDescriptorIterator) PageSize() int {
+	return int(it.pageSize)
 }
 
 // SetPageSize sets the page size for all subsequent calls to NextPage.
-func (it *MonitoredResourceDescriptorIterator) SetPageSize(pageSize int32) {
-	it.pageSize = pageSize
+func (it *MonitoredResourceDescriptorIterator) SetPageSize(pageSize int) {
+	if pageSize > math.MaxInt32 {
+		pageSize = math.MaxInt32
+	}
+	it.pageSize = int32(pageSize)
 }
 
 // SetPageToken sets the page token for the next call to NextPage, to resume the iteration from

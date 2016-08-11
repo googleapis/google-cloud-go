@@ -19,7 +19,7 @@ package logging_test
 import (
 	"cloud.google.com/go/logging/apiv2"
 	"golang.org/x/net/context"
-	googleapis_logging_v2 "google.golang.org/genproto/googleapis/logging/v2"
+	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
 )
 
 func ExampleNewClient() {
@@ -39,7 +39,7 @@ func ExampleClient_DeleteLog() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_logging_v2.DeleteLogRequest{
+	req := &loggingpb.DeleteLogRequest{
 	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteLog(ctx, req)
@@ -55,7 +55,7 @@ func ExampleClient_WriteLogEntries() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_logging_v2.WriteLogEntriesRequest{
+	req := &loggingpb.WriteLogEntriesRequest{
 	// TODO: Fill request struct fields.
 	}
 	resp, err := c.WriteLogEntries(ctx, req)
@@ -73,7 +73,7 @@ func ExampleClient_ListLogEntries() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_logging_v2.ListLogEntriesRequest{
+	req := &loggingpb.ListLogEntriesRequest{
 	// TODO: Fill request struct fields.
 	}
 	it := c.ListLogEntries(ctx, req)
@@ -95,7 +95,7 @@ func ExampleClient_ListMonitoredResourceDescriptors() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_logging_v2.ListMonitoredResourceDescriptorsRequest{
+	req := &loggingpb.ListMonitoredResourceDescriptorsRequest{
 	// TODO: Fill request struct fields.
 	}
 	it := c.ListMonitoredResourceDescriptors(ctx, req)
