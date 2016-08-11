@@ -18,6 +18,7 @@ package logging
 
 import (
 	"fmt"
+	"math"
 	"runtime"
 	"time"
 
@@ -25,7 +26,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
-	googleapis_logging_v2 "google.golang.org/genproto/googleapis/logging/v2"
+	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -70,8 +71,7 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 	withIdempotentRetryCodes := gax.WithRetryCodes([]codes.Code{
 		codes.DeadlineExceeded,
 		codes.Unavailable,
-	},
-	)
+	})
 	return &ConfigCallOptions{
 		ListSinks:  append(defaultConfigRetryOptions(), withIdempotentRetryCodes),
 		GetSink:    append(defaultConfigRetryOptions(), withIdempotentRetryCodes),
@@ -87,7 +87,7 @@ type ConfigClient struct {
 	conn *grpc.ClientConn
 
 	// The gRPC API client.
-	client googleapis_logging_v2.ConfigServiceV2Client
+	client loggingpb.ConfigServiceV2Client
 
 	// The call options for this service.
 	CallOptions *ConfigCallOptions
@@ -107,7 +107,7 @@ func NewConfigClient(ctx context.Context, opts ...option.ClientOption) (*ConfigC
 	}
 	c := &ConfigClient{
 		conn:        conn,
-		client:      googleapis_logging_v2.NewConfigServiceV2Client(conn),
+		client:      loggingpb.NewConfigServiceV2Client(conn),
 		CallOptions: defaultConfigCallOptions(),
 	}
 	c.SetGoogleClientInfo("gax", gax.Version)
@@ -134,8 +134,6 @@ func (c *ConfigClient) SetGoogleClientInfo(name, version string) {
 	}
 }
 
-// Path templates.
-
 // ProjectPath returns the path for the project resource.
 func ConfigProjectPath(project string) string {
 	path, err := configProjectPathTemplate.Render(map[string]string{
@@ -160,11 +158,11 @@ func ConfigSinkPath(project string, sink string) string {
 }
 
 // ListSinks lists sinks.
-func (c *ConfigClient) ListSinks(ctx context.Context, req *googleapis_logging_v2.ListSinksRequest) *LogSinkIterator {
+func (c *ConfigClient) ListSinks(ctx context.Context, req *loggingpb.ListSinksRequest) *LogSinkIterator {
 	ctx = metadata.NewContext(ctx, c.metadata)
 	it := &LogSinkIterator{}
 	it.apiCall = func() error {
-		var resp *googleapis_logging_v2.ListSinksResponse
+		var resp *loggingpb.ListSinksResponse
 		err := gax.Invoke(ctx, func(ctx context.Context) error {
 			var err error
 			req.PageToken = it.nextPageToken
@@ -186,9 +184,9 @@ func (c *ConfigClient) ListSinks(ctx context.Context, req *googleapis_logging_v2
 }
 
 // GetSink gets a sink.
-func (c *ConfigClient) GetSink(ctx context.Context, req *googleapis_logging_v2.GetSinkRequest) (*googleapis_logging_v2.LogSink, error) {
+func (c *ConfigClient) GetSink(ctx context.Context, req *loggingpb.GetSinkRequest) (*loggingpb.LogSink, error) {
 	ctx = metadata.NewContext(ctx, c.metadata)
-	var resp *googleapis_logging_v2.LogSink
+	var resp *loggingpb.LogSink
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
 		resp, err = c.client.GetSink(ctx, req)
@@ -201,9 +199,9 @@ func (c *ConfigClient) GetSink(ctx context.Context, req *googleapis_logging_v2.G
 }
 
 // CreateSink creates a sink.
-func (c *ConfigClient) CreateSink(ctx context.Context, req *googleapis_logging_v2.CreateSinkRequest) (*googleapis_logging_v2.LogSink, error) {
+func (c *ConfigClient) CreateSink(ctx context.Context, req *loggingpb.CreateSinkRequest) (*loggingpb.LogSink, error) {
 	ctx = metadata.NewContext(ctx, c.metadata)
-	var resp *googleapis_logging_v2.LogSink
+	var resp *loggingpb.LogSink
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
 		resp, err = c.client.CreateSink(ctx, req)
@@ -216,9 +214,9 @@ func (c *ConfigClient) CreateSink(ctx context.Context, req *googleapis_logging_v
 }
 
 // UpdateSink creates or updates a sink.
-func (c *ConfigClient) UpdateSink(ctx context.Context, req *googleapis_logging_v2.UpdateSinkRequest) (*googleapis_logging_v2.LogSink, error) {
+func (c *ConfigClient) UpdateSink(ctx context.Context, req *loggingpb.UpdateSinkRequest) (*loggingpb.LogSink, error) {
 	ctx = metadata.NewContext(ctx, c.metadata)
-	var resp *googleapis_logging_v2.LogSink
+	var resp *loggingpb.LogSink
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
 		resp, err = c.client.UpdateSink(ctx, req)
@@ -231,7 +229,7 @@ func (c *ConfigClient) UpdateSink(ctx context.Context, req *googleapis_logging_v
 }
 
 // DeleteSink deletes a sink.
-func (c *ConfigClient) DeleteSink(ctx context.Context, req *googleapis_logging_v2.DeleteSinkRequest) error {
+func (c *ConfigClient) DeleteSink(ctx context.Context, req *loggingpb.DeleteSinkRequest) error {
 	ctx = metadata.NewContext(ctx, c.metadata)
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -241,13 +239,10 @@ func (c *ConfigClient) DeleteSink(ctx context.Context, req *googleapis_logging_v
 	return err
 }
 
-// Iterators.
-//
-
-// LogSinkIterator manages a stream of *googleapis_logging_v2.LogSink.
+// LogSinkIterator manages a stream of *loggingpb.LogSink.
 type LogSinkIterator struct {
 	// The current page data.
-	items         []*googleapis_logging_v2.LogSink
+	items         []*loggingpb.LogSink
 	atLastPage    bool
 	currentIndex  int
 	pageSize      int32
@@ -264,7 +259,7 @@ type LogSinkIterator struct {
 // NextPage returns Done, all subsequent calls to NextPage will return (nil, Done).
 //
 // Next and NextPage should not be used with the same iterator.
-func (it *LogSinkIterator) NextPage() ([]*googleapis_logging_v2.LogSink, error) {
+func (it *LogSinkIterator) NextPage() ([]*loggingpb.LogSink, error) {
 	if it.atLastPage {
 		// We already returned Done with the last page of items. Continue to
 		// return Done, but with no items.
@@ -288,7 +283,7 @@ func (it *LogSinkIterator) NextPage() ([]*googleapis_logging_v2.LogSink, error) 
 // SetPageToken should not be called when using Next.
 //
 // Next and NextPage should not be used with the same iterator.
-func (it *LogSinkIterator) Next() (*googleapis_logging_v2.LogSink, error) {
+func (it *LogSinkIterator) Next() (*loggingpb.LogSink, error) {
 	for it.currentIndex >= len(it.items) {
 		if it.atLastPage {
 			return nil, Done
@@ -304,13 +299,16 @@ func (it *LogSinkIterator) Next() (*googleapis_logging_v2.LogSink, error) {
 }
 
 // PageSize returns the page size for all subsequent calls to NextPage.
-func (it *LogSinkIterator) PageSize() int32 {
-	return it.pageSize
+func (it *LogSinkIterator) PageSize() int {
+	return int(it.pageSize)
 }
 
 // SetPageSize sets the page size for all subsequent calls to NextPage.
-func (it *LogSinkIterator) SetPageSize(pageSize int32) {
-	it.pageSize = pageSize
+func (it *LogSinkIterator) SetPageSize(pageSize int) {
+	if pageSize > math.MaxInt32 {
+		pageSize = math.MaxInt32
+	}
+	it.pageSize = int32(pageSize)
 }
 
 // SetPageToken sets the page token for the next call to NextPage, to resume the iteration from

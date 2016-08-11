@@ -18,6 +18,7 @@ package logging
 
 import (
 	"fmt"
+	"math"
 	"runtime"
 	"time"
 
@@ -25,7 +26,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
-	googleapis_logging_v2 "google.golang.org/genproto/googleapis/logging/v2"
+	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -70,8 +71,7 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 	withIdempotentRetryCodes := gax.WithRetryCodes([]codes.Code{
 		codes.DeadlineExceeded,
 		codes.Unavailable,
-	},
-	)
+	})
 	return &MetricsCallOptions{
 		ListLogMetrics:  append(defaultMetricsRetryOptions(), withIdempotentRetryCodes),
 		GetLogMetric:    append(defaultMetricsRetryOptions(), withIdempotentRetryCodes),
@@ -87,7 +87,7 @@ type MetricsClient struct {
 	conn *grpc.ClientConn
 
 	// The gRPC API client.
-	client googleapis_logging_v2.MetricsServiceV2Client
+	client loggingpb.MetricsServiceV2Client
 
 	// The call options for this service.
 	CallOptions *MetricsCallOptions
@@ -106,7 +106,7 @@ func NewMetricsClient(ctx context.Context, opts ...option.ClientOption) (*Metric
 	}
 	c := &MetricsClient{
 		conn:        conn,
-		client:      googleapis_logging_v2.NewMetricsServiceV2Client(conn),
+		client:      loggingpb.NewMetricsServiceV2Client(conn),
 		CallOptions: defaultMetricsCallOptions(),
 	}
 	c.SetGoogleClientInfo("gax", gax.Version)
@@ -133,8 +133,6 @@ func (c *MetricsClient) SetGoogleClientInfo(name, version string) {
 	}
 }
 
-// Path templates.
-
 // ProjectPath returns the path for the project resource.
 func MetricsProjectPath(project string) string {
 	path, err := metricsProjectPathTemplate.Render(map[string]string{
@@ -159,11 +157,11 @@ func MetricsMetricPath(project string, metric string) string {
 }
 
 // ListLogMetrics lists logs-based metrics.
-func (c *MetricsClient) ListLogMetrics(ctx context.Context, req *googleapis_logging_v2.ListLogMetricsRequest) *LogMetricIterator {
+func (c *MetricsClient) ListLogMetrics(ctx context.Context, req *loggingpb.ListLogMetricsRequest) *LogMetricIterator {
 	ctx = metadata.NewContext(ctx, c.metadata)
 	it := &LogMetricIterator{}
 	it.apiCall = func() error {
-		var resp *googleapis_logging_v2.ListLogMetricsResponse
+		var resp *loggingpb.ListLogMetricsResponse
 		err := gax.Invoke(ctx, func(ctx context.Context) error {
 			var err error
 			req.PageToken = it.nextPageToken
@@ -185,9 +183,9 @@ func (c *MetricsClient) ListLogMetrics(ctx context.Context, req *googleapis_logg
 }
 
 // GetLogMetric gets a logs-based metric.
-func (c *MetricsClient) GetLogMetric(ctx context.Context, req *googleapis_logging_v2.GetLogMetricRequest) (*googleapis_logging_v2.LogMetric, error) {
+func (c *MetricsClient) GetLogMetric(ctx context.Context, req *loggingpb.GetLogMetricRequest) (*loggingpb.LogMetric, error) {
 	ctx = metadata.NewContext(ctx, c.metadata)
-	var resp *googleapis_logging_v2.LogMetric
+	var resp *loggingpb.LogMetric
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
 		resp, err = c.client.GetLogMetric(ctx, req)
@@ -200,9 +198,9 @@ func (c *MetricsClient) GetLogMetric(ctx context.Context, req *googleapis_loggin
 }
 
 // CreateLogMetric creates a logs-based metric.
-func (c *MetricsClient) CreateLogMetric(ctx context.Context, req *googleapis_logging_v2.CreateLogMetricRequest) (*googleapis_logging_v2.LogMetric, error) {
+func (c *MetricsClient) CreateLogMetric(ctx context.Context, req *loggingpb.CreateLogMetricRequest) (*loggingpb.LogMetric, error) {
 	ctx = metadata.NewContext(ctx, c.metadata)
-	var resp *googleapis_logging_v2.LogMetric
+	var resp *loggingpb.LogMetric
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
 		resp, err = c.client.CreateLogMetric(ctx, req)
@@ -215,9 +213,9 @@ func (c *MetricsClient) CreateLogMetric(ctx context.Context, req *googleapis_log
 }
 
 // UpdateLogMetric creates or updates a logs-based metric.
-func (c *MetricsClient) UpdateLogMetric(ctx context.Context, req *googleapis_logging_v2.UpdateLogMetricRequest) (*googleapis_logging_v2.LogMetric, error) {
+func (c *MetricsClient) UpdateLogMetric(ctx context.Context, req *loggingpb.UpdateLogMetricRequest) (*loggingpb.LogMetric, error) {
 	ctx = metadata.NewContext(ctx, c.metadata)
-	var resp *googleapis_logging_v2.LogMetric
+	var resp *loggingpb.LogMetric
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
 		resp, err = c.client.UpdateLogMetric(ctx, req)
@@ -230,7 +228,7 @@ func (c *MetricsClient) UpdateLogMetric(ctx context.Context, req *googleapis_log
 }
 
 // DeleteLogMetric deletes a logs-based metric.
-func (c *MetricsClient) DeleteLogMetric(ctx context.Context, req *googleapis_logging_v2.DeleteLogMetricRequest) error {
+func (c *MetricsClient) DeleteLogMetric(ctx context.Context, req *loggingpb.DeleteLogMetricRequest) error {
 	ctx = metadata.NewContext(ctx, c.metadata)
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -240,13 +238,10 @@ func (c *MetricsClient) DeleteLogMetric(ctx context.Context, req *googleapis_log
 	return err
 }
 
-// Iterators.
-//
-
-// LogMetricIterator manages a stream of *googleapis_logging_v2.LogMetric.
+// LogMetricIterator manages a stream of *loggingpb.LogMetric.
 type LogMetricIterator struct {
 	// The current page data.
-	items         []*googleapis_logging_v2.LogMetric
+	items         []*loggingpb.LogMetric
 	atLastPage    bool
 	currentIndex  int
 	pageSize      int32
@@ -263,7 +258,7 @@ type LogMetricIterator struct {
 // NextPage returns Done, all subsequent calls to NextPage will return (nil, Done).
 //
 // Next and NextPage should not be used with the same iterator.
-func (it *LogMetricIterator) NextPage() ([]*googleapis_logging_v2.LogMetric, error) {
+func (it *LogMetricIterator) NextPage() ([]*loggingpb.LogMetric, error) {
 	if it.atLastPage {
 		// We already returned Done with the last page of items. Continue to
 		// return Done, but with no items.
@@ -287,7 +282,7 @@ func (it *LogMetricIterator) NextPage() ([]*googleapis_logging_v2.LogMetric, err
 // SetPageToken should not be called when using Next.
 //
 // Next and NextPage should not be used with the same iterator.
-func (it *LogMetricIterator) Next() (*googleapis_logging_v2.LogMetric, error) {
+func (it *LogMetricIterator) Next() (*loggingpb.LogMetric, error) {
 	for it.currentIndex >= len(it.items) {
 		if it.atLastPage {
 			return nil, Done
@@ -303,13 +298,16 @@ func (it *LogMetricIterator) Next() (*googleapis_logging_v2.LogMetric, error) {
 }
 
 // PageSize returns the page size for all subsequent calls to NextPage.
-func (it *LogMetricIterator) PageSize() int32 {
-	return it.pageSize
+func (it *LogMetricIterator) PageSize() int {
+	return int(it.pageSize)
 }
 
 // SetPageSize sets the page size for all subsequent calls to NextPage.
-func (it *LogMetricIterator) SetPageSize(pageSize int32) {
-	it.pageSize = pageSize
+func (it *LogMetricIterator) SetPageSize(pageSize int) {
+	if pageSize > math.MaxInt32 {
+		pageSize = math.MaxInt32
+	}
+	it.pageSize = int32(pageSize)
 }
 
 // SetPageToken sets the page token for the next call to NextPage, to resume the iteration from
