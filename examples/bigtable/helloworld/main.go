@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Sample demonstrating use of the Bigtable client library to perform basic CRUD operations
+// Hello world is a sample program demonstrating use of the Bigtable client
+// library to perform basic CRUD operations
 package main
 
 import (

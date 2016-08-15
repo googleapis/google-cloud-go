@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// This is a sample web server that uses Cloud Bigtable as the storage layer
+// Search is a sample web server that uses Cloud Bigtable as the storage layer
 // for a simple document-storage and full-text-search service.
 // It has four functions:
 // - Initialize and clear the table.
