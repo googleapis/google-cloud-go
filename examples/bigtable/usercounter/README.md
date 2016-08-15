@@ -1,8 +1,7 @@
-# User Visit Counter
+# User Counter
 # (Cloud Bigtable on Managed VMs using Go)
 
-This app counts how often each user visits. The app uses Cloud Bigtable to store
-the visit counts for each user.
+This app counts how often each user visits. The app uses Cloud Bigtable to store the visit counts for each user.
 
 ## Prerequisites
 

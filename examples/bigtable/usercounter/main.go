@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /*
-Tracks how often a user has visited the index page.
+User counter is a program that tracks how often a user has visited the index page.
 
 This program demonstrates usage of the Cloud Bigtable API for App Engine flexible environment and Go.
 Instructions for running this program are in the README.md.
