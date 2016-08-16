@@ -24,7 +24,7 @@ import (
 )
 
 type Task struct {
-	Type            string
+	Category        string
 	Done            bool
 	Priority        int
 	Description     string `datastore:",noindex"`
@@ -77,7 +77,7 @@ func ExampleClient_Put() {
 	key := datastore.NewIncompleteKey(ctx, "Task", parentKey)
 
 	task := Task{
-		Type:        "Personal",
+		Category:    "Personal",
 		Done:        false,
 		Priority:    4,
 		Description: "Learn Cloud Datastore",
@@ -93,7 +93,7 @@ func ExampleClient_Put() {
 func Example_properties() {
 	// [START properties]
 	type Task struct {
-		Type            string
+		Category        string
 		Done            bool
 		Priority        int
 		Description     string `datastore:",noindex"`
@@ -101,7 +101,7 @@ func Example_properties() {
 		Created         time.Time
 	}
 	task := &Task{
-		Type:            "Personal",
+		Category:        "Personal",
 		Done:            false,
 		Priority:        4,
 		Description:     "Learn Cloud Datastore",
@@ -129,7 +129,7 @@ func Example_sliceProperties() {
 func Example_basicEntity() {
 	// [START basic_entity]
 	type Task struct {
-		Type            string
+		Category        string
 		Done            bool
 		Priority        float64
 		Description     string `datastore:",noindex"`
@@ -137,7 +137,7 @@ func Example_basicEntity() {
 		Created         time.Time
 	}
 	task := &Task{
-		Type:            "Personal",
+		Category:        "Personal",
 		Done:            false,
 		Priority:        4,
 		Description:     "Learn Cloud Datastore",
@@ -233,13 +233,13 @@ func ExampleClient_PutMulti() {
 	// [START batch_upsert]
 	tasks := []*Task{
 		{
-			Type:        "Personal",
+			Category:    "Personal",
 			Done:        false,
 			Priority:    4,
 			Description: "Learn Cloud Datastore",
 		},
 		{
-			Type:        "Personal",
+			Category:    "Personal",
 			Done:        false,
 			Priority:    5,
 			Description: "Integrate Cloud Datastore",
@@ -404,7 +404,7 @@ func ExampleQuery_Distinct() {
 	query := datastore.NewQuery("Task").
 		Project("Priority", "PercentComplete").
 		Distinct().
-		Order("Type").Order("Priority")
+		Order("Category").Order("Priority")
 	// [END distinct_query]
 	_ = query // Use client.Run or client.GetAll to execute the query.
 
@@ -626,7 +626,7 @@ func ExampleTransaction_getOrCreate() {
 			return err
 		}
 		_, err := tx.Put(key, &Task{
-			Type:        "Personal",
+			Category:    "Personal",
 			Done:        false,
 			Priority:    4,
 			Description: "Learn Cloud Datastore",
