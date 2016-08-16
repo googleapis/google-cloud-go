@@ -17,7 +17,7 @@ package datastore
 import (
 	"testing"
 
-	pb "google.golang.org/genproto/googleapis/datastore/v1beta3"
+	pb "google.golang.org/genproto/googleapis/datastore/v1"
 )
 
 func TestInterfaceToProtoNilKey(t *testing.T) {
