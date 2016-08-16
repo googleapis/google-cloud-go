@@ -21,7 +21,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 
-	pb "google.golang.org/genproto/googleapis/datastore/v1beta3"
+	pb "google.golang.org/genproto/googleapis/datastore/v1"
 )
 
 // ErrConcurrentTransaction is returned when a transaction is rolled back due

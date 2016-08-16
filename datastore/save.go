@@ -21,7 +21,7 @@ import (
 	"time"
 
 	timepb "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/datastore/v1beta3"
+	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	llpb "google.golang.org/genproto/googleapis/type/latlng"
 )
 
