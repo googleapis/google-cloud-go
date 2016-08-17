@@ -18,15 +18,14 @@ import (
 	"errors"
 	"reflect"
 	"sort"
-	"sync"
 	"testing"
 	"time"
 
 	"golang.org/x/net/context"
 )
 
-func TestKeepAlive(t *testing.T) {
-	tick := make(chan time.Time)
+func TestKeepAliveExtendsDeadline(t *testing.T) {
+	ticker := make(chan time.Time)
 	deadline := time.Nanosecond * 15
 	s := &testService{modDeadlineCalled: make(chan modDeadlineCall)}
 
@@ -49,7 +48,7 @@ func TestKeepAlive(t *testing.T) {
 		s:             s,
 		Ctx:           context.Background(),
 		Sub:           "subname",
-		ExtensionTick: tick,
+		ExtensionTick: ticker,
 		Deadline:      deadline,
 		MaxExtension:  time.Hour,
 	}
@@ -57,165 +56,157 @@ func TestKeepAlive(t *testing.T) {
 
 	ka.Add("a")
 	ka.Add("b")
-	tick <- time.Time{}
+	ticker <- time.Time{}
 	checkModDeadlineCall([]string{"a", "b"})
 	ka.Add("c")
 	ka.Remove("b")
-	tick <- time.Time{}
+	ticker <- time.Time{}
 	checkModDeadlineCall([]string{"a", "c"})
 	ka.Remove("a")
 	ka.Remove("c")
 	ka.Add("d")
-	tick <- time.Time{}
+	ticker <- time.Time{}
 	checkModDeadlineCall([]string{"d"})
 
 	ka.Remove("d")
 	ka.Stop()
 }
 
-// TestKeepAliveStop checks that Stop blocks until all ackIDs have been removed.
-func TestKeepAliveStop(t *testing.T) {
-	tick := 100 * time.Microsecond
-	ticker := time.NewTicker(tick)
-	defer ticker.Stop()
-
-	s := &testService{modDeadlineCalled: make(chan modDeadlineCall, 100)}
-
+func TestKeepAliveStopsWhenNoItem(t *testing.T) {
+	ticker := make(chan time.Time)
+	stopped := make(chan bool)
+	s := &testService{modDeadlineCalled: make(chan modDeadlineCall, 3)}
 	ka := &keepAlive{
 		s:             s,
 		Ctx:           context.Background(),
-		ExtensionTick: ticker.C,
-		MaxExtension:  time.Hour,
+		ExtensionTick: ticker,
 	}
+
 	ka.Start()
 
-	events := make(chan string, 10)
+	// There should be no call to modifyAckDeadline since there is no item.
+	ticker <- time.Time{}
 
-	// Add an ackID so that ka.Stop will not return immediately.
-	ka.Add("a")
-
-	var wg sync.WaitGroup
-	wg.Add(1)
 	go func() {
-		defer wg.Done()
-		time.Sleep(tick * 10)
-		events <- "pre-remove"
+		ka.Stop() // No items; should not block
+		if len(s.modDeadlineCalled) > 0 {
+			t.Errorf("unexpected extension to non-existent items: %v", <-s.modDeadlineCalled)
+		}
+		close(stopped)
+	}()
+
+	select {
+	case <-stopped:
+	case <-time.After(time.Second):
+		t.Errorf("keepAlive timed out waiting for stop")
+	}
+}
+
+func TestKeepAliveStopsWhenItemsExpired(t *testing.T) {
+	ticker := make(chan time.Time)
+	stopped := make(chan bool)
+	s := &testService{modDeadlineCalled: make(chan modDeadlineCall, 2)}
+	ka := &keepAlive{
+		s:             s,
+		Ctx:           context.Background(),
+		ExtensionTick: ticker,
+		MaxExtension:  time.Duration(0), // Should expire items at the first tick.
+	}
+
+	ka.Start()
+	ka.Add("a")
+	ka.Add("b")
+
+	// There should be no call to modifyAckDeadline since both items are expired.
+	ticker <- time.Time{}
+
+	go func() {
+		ka.Stop() // No live items; should not block.
+		if len(s.modDeadlineCalled) > 0 {
+			t.Errorf("unexpected extension to expired items")
+		}
+		close(stopped)
+	}()
+
+	select {
+	case <-stopped:
+	case <-time.After(time.Second):
+		t.Errorf("timed out waiting for stop")
+	}
+}
+
+func TestKeepAliveBlocksUntilAllItemsRemoved(t *testing.T) {
+	ticker := make(chan time.Time)
+	eventc := make(chan string, 3)
+	s := &testService{modDeadlineCalled: make(chan modDeadlineCall)}
+	ka := &keepAlive{
+		s:             s,
+		Ctx:           context.Background(),
+		ExtensionTick: ticker,
+		MaxExtension:  time.Hour, // Should not expire.
+	}
+
+	ka.Start()
+	ka.Add("a")
+	ka.Add("b")
+
+	go func() {
+		ticker <- time.Time{}
+
+		// We expect a call since both items should be extended.
+		select {
+		case args := <-s.modDeadlineCalled:
+			sort.Strings(args.ackIDs)
+			got := args.ackIDs
+			want := []string{"a", "b"}
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("mismatching IDs:\ngot  %v\nwant %v", got, want)
+			}
+		case <-time.After(time.Second):
+			t.Errorf("timed out waiting for deadline extend call")
+		}
+
+		time.Sleep(10 * time.Millisecond)
+
+		eventc <- "pre-remove-b"
+		// Remove one item, Stop should still be waiting.
+		ka.Remove("b")
+
+		ticker <- time.Time{}
+
+		// We expect a call since the item is still alive.
+		select {
+		case args := <-s.modDeadlineCalled:
+			got := args.ackIDs
+			want := []string{"a"}
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("mismatching IDs:\ngot  %v\nwant %v", got, want)
+			}
+		case <-time.After(time.Second):
+			t.Errorf("timed out waiting for deadline extend call")
+		}
+
+		time.Sleep(10 * time.Millisecond)
+
+		eventc <- "pre-remove-a"
+		// Remove the last item so that Stop can proceed.
 		ka.Remove("a")
-		time.Sleep(tick * 10)
-		events <- "post-second-sleep"
 	}()
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		events <- "pre-stop"
-		ka.Stop()
-		events <- "stopped"
-
-	}()
-
-	wg.Wait()
-	close(events)
-	eventSequence := []string{}
-	for e := range events {
-		eventSequence = append(eventSequence, e)
-	}
-
-	want := []string{"pre-stop", "pre-remove", "stopped", "post-second-sleep"}
-	if !reflect.DeepEqual(eventSequence, want) {
-		t.Errorf("keepalive eventsequence: got:\n%v\nwant:\n%v", eventSequence, want)
-	}
-}
-
-// TestMaxExtensionDeadline checks we stop extending after the configured duration.
-func TestMaxExtensionDeadline(t *testing.T) {
-	ticker := time.NewTicker(100 * time.Microsecond)
-	defer ticker.Stop()
-
-	s := &testService{modDeadlineCalled: make(chan modDeadlineCall, 100)}
-
-	maxExtension := time.Millisecond
-	ka := &keepAlive{
-		s:             s,
-		Ctx:           context.Background(),
-		ExtensionTick: ticker.C,
-		MaxExtension:  maxExtension,
-	}
-	ka.Start()
-
-	ka.Add("a")
-	stopped := make(chan struct{})
 
 	go func() {
-		ka.Stop()
-		stopped <- struct{}{}
+		ka.Stop() // Should block all item are removed.
+		eventc <- "post-stop"
 	}()
 
-	select {
-	case <-stopped:
-	case <-time.After(maxExtension + 2*time.Second):
-		t.Fatalf("keepalive failed to stop after maxExtension deadline")
-	}
-}
-
-func TestKeepAliveStopsWhenAllAckIDsRemoved(t *testing.T) {
-	s := &testService{}
-
-	maxExtension := time.Millisecond
-	ka := &keepAlive{
-		s:             s,
-		Ctx:           context.Background(),
-		ExtensionTick: make(chan time.Time),
-		MaxExtension:  maxExtension,
-	}
-	ka.Start()
-	ka.Add("a")
-
-	stopped := make(chan struct{})
-
-	go func() {
-		ka.Stop()
-		stopped <- struct{}{}
-	}()
-
-	time.Sleep(time.Microsecond)
-	// No extension tick is ever sent, but this should be enough to get ka to stop.
-	ka.Remove("a")
-
-	select {
-	case <-stopped:
-	case <-time.After(maxExtension / 2):
-		t.Fatalf("keepalive failed to stop before maxExtension deadline")
-	}
-}
-
-func TestKeepAliveStopsImmediatelyForNoAckIDs(t *testing.T) {
-	ticker := time.NewTicker(100 * time.Microsecond)
-	defer ticker.Stop()
-
-	s := &testService{modDeadlineCalled: make(chan modDeadlineCall, 100)}
-
-	maxExtension := time.Millisecond
-	ka := &keepAlive{
-		s:             s,
-		Ctx:           context.Background(),
-		ExtensionTick: ticker.C,
-		MaxExtension:  maxExtension,
-	}
-	ka.Start()
-
-	stopped := make(chan struct{})
-
-	go func() {
-		// There are no items in ka, so this should return immediately.
-		ka.Stop()
-		stopped <- struct{}{}
-	}()
-
-	select {
-	case <-stopped:
-	case <-time.After(maxExtension / 2):
-		t.Fatalf("keepalive failed to stop before maxExtension deadline")
+	for i, want := range []string{"pre-remove-b", "pre-remove-a", "post-stop"} {
+		select {
+		case got := <-eventc:
+			if got != want {
+				t.Errorf("event #%d:\ngot  %v\nwant %v", i, got, want)
+			}
+		case <-time.After(time.Second):
+			t.Errorf("time out waiting for #%d event: want %v", i, want)
+		}
 	}
 }
 
@@ -255,6 +246,7 @@ func (es *extendService) splitAckIDs(ids []string) ([]string, []string) {
 	}
 	return ids[:2], ids[2:]
 }
+
 func TestKeepAliveSplitsBatches(t *testing.T) {
 	type testCase struct {
 		calls []extendCallResult
@@ -284,7 +276,7 @@ func TestKeepAliveSplitsBatches(t *testing.T) {
 					ackIDs: []string{"a", "b"},
 					err:    errors.New("bang"),
 				},
-				// We give up after failing twice, so we move on to the next set, "c" and "d"
+				// We give up after failing twice, so we move on to the next set, "c" and "d".
 				{
 					ackIDs: []string{"c", "d"},
 					err:    errors.New("bang"),
