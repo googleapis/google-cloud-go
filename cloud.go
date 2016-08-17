@@ -15,4 +15,6 @@
 // Package cloud is the root of the packages used to access Google Cloud
 // Services. See https://godoc.org/cloud.google.com/go for a full list
 // of sub-packages.
+//
+// This package documents how to authorize and authenticate the sub packages.
 package cloud // import "cloud.google.com/go"
