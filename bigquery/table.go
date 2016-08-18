@@ -81,15 +81,15 @@ func CreateDisposition(disp TableCreateDisposition) Option { return disp }
 
 func (opt TableCreateDisposition) implementsOption() {}
 
-func (opt TableCreateDisposition) customizeLoad(conf *bq.JobConfigurationLoad, projectID string) {
+func (opt TableCreateDisposition) customizeLoad(conf *bq.JobConfigurationLoad) {
 	conf.CreateDisposition = string(opt)
 }
 
-func (opt TableCreateDisposition) customizeCopy(conf *bq.JobConfigurationTableCopy, projectID string) {
+func (opt TableCreateDisposition) customizeCopy(conf *bq.JobConfigurationTableCopy) {
 	conf.CreateDisposition = string(opt)
 }
 
-func (opt TableCreateDisposition) customizeQuery(conf *bq.JobConfigurationQuery, projectID string) {
+func (opt TableCreateDisposition) customizeQuery(conf *bq.JobConfigurationQuery) {
 	conf.CreateDisposition = string(opt)
 }
 
@@ -114,15 +114,15 @@ func WriteDisposition(disp TableWriteDisposition) Option { return disp }
 
 func (opt TableWriteDisposition) implementsOption() {}
 
-func (opt TableWriteDisposition) customizeLoad(conf *bq.JobConfigurationLoad, projectID string) {
+func (opt TableWriteDisposition) customizeLoad(conf *bq.JobConfigurationLoad) {
 	conf.WriteDisposition = string(opt)
 }
 
-func (opt TableWriteDisposition) customizeCopy(conf *bq.JobConfigurationTableCopy, projectID string) {
+func (opt TableWriteDisposition) customizeCopy(conf *bq.JobConfigurationTableCopy) {
 	conf.WriteDisposition = string(opt)
 }
 
-func (opt TableWriteDisposition) customizeQuery(conf *bq.JobConfigurationQuery, projectID string) {
+func (opt TableWriteDisposition) customizeQuery(conf *bq.JobConfigurationQuery) {
 	conf.WriteDisposition = string(opt)
 }
 
@@ -157,25 +157,25 @@ func (t *Table) implicitTable() bool {
 	return t.ProjectID == "" && t.DatasetID == "" && t.TableID == ""
 }
 
-func (t *Table) customizeLoadDst(conf *bq.JobConfigurationLoad, projectID string) {
+func (t *Table) customizeLoadDst(conf *bq.JobConfigurationLoad) {
 	conf.DestinationTable = t.tableRefProto()
 }
 
-func (t *Table) customizeExtractSrc(conf *bq.JobConfigurationExtract, projectID string) {
+func (t *Table) customizeExtractSrc(conf *bq.JobConfigurationExtract) {
 	conf.SourceTable = t.tableRefProto()
 }
 
-func (t *Table) customizeCopyDst(conf *bq.JobConfigurationTableCopy, projectID string) {
+func (t *Table) customizeCopyDst(conf *bq.JobConfigurationTableCopy) {
 	conf.DestinationTable = t.tableRefProto()
 }
 
-func (ts Tables) customizeCopySrc(conf *bq.JobConfigurationTableCopy, projectID string) {
+func (ts Tables) customizeCopySrc(conf *bq.JobConfigurationTableCopy) {
 	for _, t := range ts {
 		conf.SourceTables = append(conf.SourceTables, t.tableRefProto())
 	}
 }
 
-func (t *Table) customizeQueryDst(conf *bq.JobConfigurationQuery, projectID string) {
+func (t *Table) customizeQueryDst(conf *bq.JobConfigurationQuery) {
 	if !t.implicitTable() {
 		conf.DestinationTable = t.tableRefProto()
 	}
