@@ -22,7 +22,7 @@ import (
 )
 
 type queryOption interface {
-	customizeQuery(conf *bq.JobConfigurationQuery, projectID string)
+	customizeQuery(conf *bq.JobConfigurationQuery)
 }
 
 // DisableQueryCache returns an Option that prevents results being fetched from the query cache.
@@ -36,7 +36,7 @@ type disableQueryCache struct{}
 
 func (opt disableQueryCache) implementsOption() {}
 
-func (opt disableQueryCache) customizeQuery(conf *bq.JobConfigurationQuery, projectID string) {
+func (opt disableQueryCache) customizeQuery(conf *bq.JobConfigurationQuery) {
 	f := false
 	conf.UseQueryCache = &f
 }
@@ -51,11 +51,11 @@ type disableFlattenedResults struct{}
 
 func (opt disableFlattenedResults) implementsOption() {}
 
-func (opt disableFlattenedResults) customizeQuery(conf *bq.JobConfigurationQuery, projectID string) {
+func (opt disableFlattenedResults) customizeQuery(conf *bq.JobConfigurationQuery) {
 	f := false
 	conf.FlattenResults = &f
 	// DisableFlattenedResults implies AllowLargeResults
-	allowLargeResults{}.customizeQuery(conf, projectID)
+	allowLargeResults{}.customizeQuery(conf)
 }
 
 // AllowLargeResults returns an Option that allows the query to produce arbitrarily large result tables.
@@ -68,7 +68,7 @@ type allowLargeResults struct{}
 
 func (opt allowLargeResults) implementsOption() {}
 
-func (opt allowLargeResults) customizeQuery(conf *bq.JobConfigurationQuery, projectID string) {
+func (opt allowLargeResults) customizeQuery(conf *bq.JobConfigurationQuery) {
 	conf.AllowLargeResults = true
 }
 
@@ -81,7 +81,7 @@ type jobPriority string
 
 func (opt jobPriority) implementsOption() {}
 
-func (opt jobPriority) customizeQuery(conf *bq.JobConfigurationQuery, projectID string) {
+func (opt jobPriority) customizeQuery(conf *bq.JobConfigurationQuery) {
 	conf.Priority = string(opt)
 }
 
@@ -94,15 +94,15 @@ func (c *Client) query(ctx context.Context, dst *Table, src *Query, options []Op
 	job, options := initJobProto(c.projectID, options)
 	payload := &bq.JobConfigurationQuery{}
 
-	dst.customizeQueryDst(payload, c.projectID)
-	src.customizeQuerySrc(payload, c.projectID)
+	dst.customizeQueryDst(payload)
+	src.customizeQuerySrc(payload)
 
 	for _, opt := range options {
 		o, ok := opt.(queryOption)
 		if !ok {
 			return nil, fmt.Errorf("option (%#v) not applicable to dst/src pair: dst: %T ; src: %T", opt, dst, src)
 		}
-		o.customizeQuery(payload, c.projectID)
+		o.customizeQuery(payload)
 	}
 
 	job.Configuration = &bq.JobConfiguration{

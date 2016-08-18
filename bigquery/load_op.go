@@ -22,7 +22,7 @@ import (
 )
 
 type loadOption interface {
-	customizeLoad(conf *bq.JobConfigurationLoad, projectID string)
+	customizeLoad(conf *bq.JobConfigurationLoad)
 }
 
 // DestinationSchema returns an Option that specifies the schema to use when loading data into a new table.
@@ -37,7 +37,7 @@ type destSchema struct {
 
 func (opt destSchema) implementsOption() {}
 
-func (opt destSchema) customizeLoad(conf *bq.JobConfigurationLoad, projectID string) {
+func (opt destSchema) customizeLoad(conf *bq.JobConfigurationLoad) {
 	conf.Schema = opt.asTableSchema()
 }
 
@@ -49,7 +49,7 @@ type maxBadRecords int64
 
 func (opt maxBadRecords) implementsOption() {}
 
-func (opt maxBadRecords) customizeLoad(conf *bq.JobConfigurationLoad, projectID string) {
+func (opt maxBadRecords) customizeLoad(conf *bq.JobConfigurationLoad) {
 	conf.MaxBadRecords = int64(opt)
 }
 
@@ -60,7 +60,7 @@ type allowJaggedRows struct{}
 
 func (opt allowJaggedRows) implementsOption() {}
 
-func (opt allowJaggedRows) customizeLoad(conf *bq.JobConfigurationLoad, projectID string) {
+func (opt allowJaggedRows) customizeLoad(conf *bq.JobConfigurationLoad) {
 	conf.AllowJaggedRows = true
 }
 
@@ -71,7 +71,7 @@ type allowQuotedNewlines struct{}
 
 func (opt allowQuotedNewlines) implementsOption() {}
 
-func (opt allowQuotedNewlines) customizeLoad(conf *bq.JobConfigurationLoad, projectID string) {
+func (opt allowQuotedNewlines) customizeLoad(conf *bq.JobConfigurationLoad) {
 	conf.AllowQuotedNewlines = true
 }
 
@@ -86,7 +86,7 @@ type ignoreUnknownValues struct{}
 
 func (opt ignoreUnknownValues) implementsOption() {}
 
-func (opt ignoreUnknownValues) customizeLoad(conf *bq.JobConfigurationLoad, projectID string) {
+func (opt ignoreUnknownValues) customizeLoad(conf *bq.JobConfigurationLoad) {
 	conf.IgnoreUnknownValues = true
 }
 
@@ -94,15 +94,15 @@ func (c *Client) load(ctx context.Context, dst *Table, src *GCSReference, option
 	job, options := initJobProto(c.projectID, options)
 	payload := &bq.JobConfigurationLoad{}
 
-	dst.customizeLoadDst(payload, c.projectID)
-	src.customizeLoadSrc(payload, c.projectID)
+	dst.customizeLoadDst(payload)
+	src.customizeLoadSrc(payload)
 
 	for _, opt := range options {
 		o, ok := opt.(loadOption)
 		if !ok {
 			return nil, fmt.Errorf("option (%#v) not applicable to dst/src pair: dst: %T ; src: %T", opt, dst, src)
 		}
-		o.customizeLoad(payload, c.projectID)
+		o.customizeLoad(payload)
 	}
 
 	job.Configuration = &bq.JobConfiguration{

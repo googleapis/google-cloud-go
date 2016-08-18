@@ -22,7 +22,7 @@ import (
 )
 
 type extractOption interface {
-	customizeExtract(conf *bq.JobConfigurationExtract, projectID string)
+	customizeExtract(conf *bq.JobConfigurationExtract)
 }
 
 // DisableHeader returns an Option that disables the printing of a header row in exported data.
@@ -32,7 +32,7 @@ type disableHeader struct{}
 
 func (opt disableHeader) implementsOption() {}
 
-func (opt disableHeader) customizeExtract(conf *bq.JobConfigurationExtract, projectID string) {
+func (opt disableHeader) customizeExtract(conf *bq.JobConfigurationExtract) {
 	f := false
 	conf.PrintHeader = &f
 }
@@ -41,15 +41,15 @@ func (c *Client) extract(ctx context.Context, dst *GCSReference, src *Table, opt
 	job, options := initJobProto(c.projectID, options)
 	payload := &bq.JobConfigurationExtract{}
 
-	dst.customizeExtractDst(payload, c.projectID)
-	src.customizeExtractSrc(payload, c.projectID)
+	dst.customizeExtractDst(payload)
+	src.customizeExtractSrc(payload)
 
 	for _, opt := range options {
 		o, ok := opt.(extractOption)
 		if !ok {
 			return nil, fmt.Errorf("option (%#v) not applicable to dst/src pair: dst: %T ; src: %T", opt, dst, src)
 		}
-		o.customizeExtract(payload, c.projectID)
+		o.customizeExtract(payload)
 	}
 
 	job.Configuration = &bq.JobConfiguration{

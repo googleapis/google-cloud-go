@@ -89,7 +89,7 @@ const (
 	Gzip Compression = "GZIP"
 )
 
-func (gcs *GCSReference) customizeLoadSrc(conf *bq.JobConfigurationLoad, projectID string) {
+func (gcs *GCSReference) customizeLoadSrc(conf *bq.JobConfigurationLoad) {
 	conf.SourceUris = gcs.uris
 	conf.SkipLeadingRows = gcs.SkipLeadingRows
 	conf.SourceFormat = string(gcs.SourceFormat)
@@ -104,7 +104,7 @@ func (gcs *GCSReference) customizeLoadSrc(conf *bq.JobConfigurationLoad, project
 	}
 }
 
-func (gcs *GCSReference) customizeExtractDst(conf *bq.JobConfigurationExtract, projectID string) {
+func (gcs *GCSReference) customizeExtractDst(conf *bq.JobConfigurationExtract) {
 	conf.DestinationUris = gcs.uris
 	conf.Compression = string(gcs.Compression)
 	conf.DestinationFormat = string(gcs.DestinationFormat)

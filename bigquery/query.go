@@ -33,7 +33,7 @@ func (q *Query) implementsSource() {}
 
 func (q *Query) implementsReadSource() {}
 
-func (q *Query) customizeQuerySrc(conf *bq.JobConfigurationQuery, projectID string) {
+func (q *Query) customizeQuerySrc(conf *bq.JobConfigurationQuery) {
 	conf.Query = q.Q
 	if q.DefaultProjectID != "" || q.DefaultDatasetID != "" {
 		conf.DefaultDataset = &bq.DatasetReference{

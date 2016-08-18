@@ -22,22 +22,22 @@ import (
 )
 
 type copyOption interface {
-	customizeCopy(conf *bq.JobConfigurationTableCopy, projectID string)
+	customizeCopy(conf *bq.JobConfigurationTableCopy)
 }
 
 func (c *Client) cp(ctx context.Context, dst *Table, src Tables, options []Option) (*Job, error) {
 	job, options := initJobProto(c.projectID, options)
 	payload := &bq.JobConfigurationTableCopy{}
 
-	dst.customizeCopyDst(payload, c.projectID)
-	src.customizeCopySrc(payload, c.projectID)
+	dst.customizeCopyDst(payload)
+	src.customizeCopySrc(payload)
 
 	for _, opt := range options {
 		o, ok := opt.(copyOption)
 		if !ok {
 			return nil, fmt.Errorf("option (%#v) not applicable to dst/src pair: dst: %T ; src: %T", opt, dst, src)
 		}
-		o.customizeCopy(payload, c.projectID)
+		o.customizeCopy(payload)
 	}
 
 	job.Configuration = &bq.JobConfiguration{
