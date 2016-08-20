@@ -104,6 +104,6 @@ func TestErrorString(t *testing.T) {
 	e := &Error{Location: "<L>", Message: "<M>", Reason: "<R>"}
 	got := e.Error()
 	if !strings.Contains(got, "<L>") || !strings.Contains(got, "<M>") || !strings.Contains(got, "<R>") {
-		t.Error(`got %q, expected to see "<L>", "<M>" and "<R>"`)
+		t.Errorf(`got %q, expected to see "<L>", "<M>" and "<R>"`, got)
 	}
 }
