@@ -67,7 +67,7 @@ func (c *fakeClient) Commit(_ context.Context, req *pb.CommitRequest, _ ...grpc.
 func fakeRunQuery(in *pb.RunQueryRequest) (*pb.RunQueryResponse, error) {
 	expectedIn := &pb.RunQueryRequest{
 		QueryType: &pb.RunQueryRequest_Query{&pb.Query{
-			Kind: []*pb.KindExpression{&pb.KindExpression{Name: "Gopher"}},
+			Kind: []*pb.KindExpression{{Name: "Gopher"}},
 		}},
 	}
 	if !proto.Equal(in, expectedIn) {
@@ -78,7 +78,7 @@ func fakeRunQuery(in *pb.RunQueryRequest) (*pb.RunQueryResponse, error) {
 			MoreResults:      pb.QueryResultBatch_NO_MORE_RESULTS,
 			EntityResultType: pb.EntityResult_FULL,
 			EntityResults: []*pb.EntityResult{
-				&pb.EntityResult{
+				{
 					Entity: &pb.Entity{
 						Key: key1,
 						Properties: map[string]*pb.Value{
@@ -87,7 +87,7 @@ func fakeRunQuery(in *pb.RunQueryRequest) (*pb.RunQueryResponse, error) {
 						},
 					},
 				},
-				&pb.EntityResult{
+				{
 					Entity: &pb.Entity{
 						Key: key2,
 						Properties: map[string]*pb.Value{

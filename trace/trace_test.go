@@ -173,10 +173,10 @@ func testTrace(t *testing.T, synchronous bool) {
 
 	expected := api.Traces{
 		Traces: []*api.Trace{
-			&api.Trace{
+			{
 				ProjectId: testProjectID,
 				Spans: []*api.TraceSpan{
-					&api.TraceSpan{
+					{
 						Kind: "RPC_CLIENT",
 						Labels: map[string]string{
 							"trace.cloud.google.com/http/host":        "example.com",
@@ -186,7 +186,7 @@ func testTrace(t *testing.T, synchronous bool) {
 						},
 						Name: "/bar",
 					},
-					&api.TraceSpan{
+					{
 						Kind: "RPC_CLIENT",
 						Labels: map[string]string{
 							"trace.cloud.google.com/http/host":        "www.googleapis.com",
@@ -196,7 +196,7 @@ func testTrace(t *testing.T, synchronous bool) {
 						},
 						Name: "/compute/v1/projects/testproject/zones",
 					},
-					&api.TraceSpan{
+					{
 						Kind: "RPC_CLIENT",
 						Labels: map[string]string{
 							"trace.cloud.google.com/http/host":        "www.googleapis.com",
@@ -206,7 +206,7 @@ func testTrace(t *testing.T, synchronous bool) {
 						},
 						Name: "/storage/v1/b/testbucket/o",
 					},
-					&api.TraceSpan{
+					{
 						Kind: "RPC_SERVER",
 						Labels: map[string]string{
 							"trace.cloud.google.com/http/host":   "example.com",
@@ -274,7 +274,7 @@ func testTrace(t *testing.T, synchronous bool) {
 				t.Errorf("Span %d Label %q: got value %q want %q", i, key, v, value)
 			}
 		}
-		for key, _ := range s.Labels {
+		for key := range s.Labels {
 			if _, ok := (*labels)[key]; key != "trace.cloud.google.com/stacktrace" && !ok {
 				t.Errorf("Span %d: unexpected label %q", i, key)
 			}

@@ -125,10 +125,10 @@ func TestClientIntegration(t *testing.T) {
 
 	// Insert some data.
 	initialData := map[string][]string{
-		"wmckinley":   []string{"tjefferson"},
-		"gwashington": []string{"jadams"},
-		"tjefferson":  []string{"gwashington", "jadams"}, // wmckinley set conditionally below
-		"jadams":      []string{"gwashington", "tjefferson"},
+		"wmckinley":   {"tjefferson"},
+		"gwashington": {"jadams"},
+		"tjefferson":  {"gwashington", "jadams"}, // wmckinley set conditionally below
+		"jadams":      {"gwashington", "tjefferson"},
 	}
 	for row, ss := range initialData {
 		mut := NewMutation()
@@ -508,9 +508,9 @@ func TestClientIntegration(t *testing.T) {
 		t.Fatalf("Creating column family: %v", err)
 	}
 	bulkData := map[string][]string{
-		"red sox":  []string{"2004", "2007", "2013"},
-		"patriots": []string{"2001", "2003", "2004", "2014"},
-		"celtics":  []string{"1981", "1984", "1986", "2008"},
+		"red sox":  {"2004", "2007", "2013"},
+		"patriots": {"2001", "2003", "2004", "2014"},
+		"celtics":  {"1981", "1984", "1986", "2008"},
 	}
 	var rowKeys []string
 	var muts []*Mutation
