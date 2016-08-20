@@ -372,7 +372,7 @@ func (t *trace) upload(spans []*Span) error {
 
 	traces := &api.Traces{
 		Traces: []*api.Trace{
-			&api.Trace{
+			{
 				ProjectId: t.client.projectID,
 				TraceId:   t.traceID,
 				Spans:     apiSpans,

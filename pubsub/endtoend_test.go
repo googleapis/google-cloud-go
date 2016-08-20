@@ -174,15 +174,15 @@ func publish(t *testing.T, ctx context.Context, topic *Topic) []string {
 // diff returns counts of the differences between got and want.
 func diff(got, want map[string]int) map[string]int {
 	ids := make(map[string]struct{})
-	for k, _ := range got {
+	for k := range got {
 		ids[k] = struct{}{}
 	}
-	for k, _ := range want {
+	for k := range want {
 		ids[k] = struct{}{}
 	}
 
 	gotWantCount := make(map[string]int)
-	for k, _ := range ids {
+	for k := range ids {
 		if got[k] == want[k] {
 			continue
 		}

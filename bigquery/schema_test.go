@@ -143,7 +143,7 @@ func TestSchemaConversion(t *testing.T) {
 			// nested
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{
-					&bq.TableFieldSchema{
+					{
 						Description: "An outer schema wrapping a nested schema",
 						Name:        "outer",
 						Mode:        "REQUIRED",
@@ -161,7 +161,7 @@ func TestSchemaConversion(t *testing.T) {
 					Required:    true,
 					Type:        "RECORD",
 					Schema: []*FieldSchema{
-						&FieldSchema{
+						{
 							Description: "inner field",
 							Name:        "inner",
 							Type:        "STRING",
@@ -315,7 +315,7 @@ func TestNestedInference(t *testing.T) {
 					Required: true,
 					Type:     "RECORD",
 					Schema: []*FieldSchema{
-						&FieldSchema{
+						{
 							Name:     "Inside",
 							Type:     "INTEGER",
 							Required: true,
@@ -333,12 +333,12 @@ func TestNestedInference(t *testing.T) {
 					Required: true,
 					Type:     "RECORD",
 					Schema: []*FieldSchema{
-						&FieldSchema{
+						{
 							Name:     "InsideNested",
 							Required: true,
 							Type:     "RECORD",
 							Schema: []*FieldSchema{
-								&FieldSchema{
+								{
 									Name:     "Inside",
 									Type:     "INTEGER",
 									Required: true,
@@ -397,7 +397,7 @@ func TestRepeatedInference(t *testing.T) {
 					Repeated: true,
 					Type:     "RECORD",
 					Schema: []*FieldSchema{
-						&FieldSchema{
+						{
 							Name:     "Inside",
 							Type:     "INTEGER",
 							Required: true,

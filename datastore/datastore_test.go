@@ -1471,8 +1471,8 @@ func TestPutMultiTypes(t *testing.T) {
 		{
 			desc: "type []P (non-pointer, *P implements PropertyLoadSaver)",
 			src: []PropertyList{
-				PropertyList{Property{Name: "A", Value: 1}, Property{Name: "B", Value: "one"}},
-				PropertyList{Property{Name: "A", Value: 2}, Property{Name: "B", Value: "two"}},
+				{Property{Name: "A", Value: 1}, Property{Name: "B", Value: "one"}},
+				{Property{Name: "A", Value: 2}, Property{Name: "B", Value: "two"}},
 			},
 		},
 		// Test some invalid cases.
