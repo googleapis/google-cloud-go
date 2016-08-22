@@ -491,6 +491,16 @@ func TestClientIntegration(t *testing.T) {
 	if want := 1000 * len(medBytes); n != want {
 		t.Errorf("Large scan returned %d bytes, want %d", n, want)
 	}
+	// Scan a subset of the 1000 rows that we just created, using a LimitRows ReadOption.
+	rc := 0
+	wantRc := 3
+	err = tbl.ReadRows(ctx, PrefixRange("row-"), func(r Row) bool {
+		rc++
+		return true
+	}, LimitRows(int64(wantRc)))
+	if rc != wantRc {
+		t.Errorf("Scan with row limit returned %d rows, want %d", rc, wantRc)
+	}
 	checkpoint("tested big read/write/scan")
 
 	// Test bulk mutations
