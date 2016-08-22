@@ -260,7 +260,11 @@ func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRo
 	}
 	sort.Sort(byRowKey(rows))
 
-	for _, r := range rows {
+	limit := int(req.RowsLimit)
+	for i, r := range rows {
+		if limit > 0 && i >= limit {
+			return nil
+		}
 		if err := streamRow(stream, r, req.Filter); err != nil {
 			return err
 		}
