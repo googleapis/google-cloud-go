@@ -118,6 +118,10 @@ type C3 struct {
 	C string
 }
 
+type c4 struct {
+	C string
+}
+
 type E struct{}
 
 type G0 struct {
@@ -155,6 +159,18 @@ type N2 struct {
 	Green N1 `datastore:"green"`
 	Blue  N1
 	White N1 `datastore:"-"`
+}
+
+type N3 struct {
+	C3 `datastore:"red"`
+}
+
+type N4 struct {
+	c4
+}
+
+type N5 struct {
+	c4 `datastore:"red"`
 }
 
 type O0 struct {
@@ -1107,6 +1123,35 @@ var testCases = []testCase{
 			Property{Name: "red.Other", Value: "", NoIndex: false},
 			Property{Name: "red.S", Value: "rouge", NoIndex: false},
 		},
+		"",
+		"",
+	},
+	{
+		"anonymous field with tag",
+		&N3{
+			C3: C3{C: "s"},
+		},
+		&PropertyList{
+			Property{Name: "red.C", Value: "s", NoIndex: false},
+		},
+		"",
+		"",
+	},
+	{
+		"unexported anonymous field",
+		&N4{
+			c4: c4{C: "s"},
+		},
+		new(PropertyList),
+		"",
+		"",
+	},
+	{
+		"unexported anonymous field with tag",
+		&N5{
+			c4: c4{C: "s"},
+		},
+		new(PropertyList),
 		"",
 		"",
 	},
