@@ -163,24 +163,21 @@ func ExampleClient_Put_upsert() {
 func ExampleTransaction_insert() {
 	ctx := context.Background()
 	client, _ := datastore.NewClient(ctx, "my-proj")
-	task := &Task{} // Populated with appropriate data.
+	task := Task{} // Populated with appropriate data.
 	taskKey := datastore.NewKey(ctx, "Task", "sampleTask", 0, nil)
 	// [START insert]
-	tx, err := client.NewTransaction(ctx)
-	if err != nil {
-		log.Fatalf("client.NewTransaction: %v", err)
-	}
-	// We first check that there is no entity stored with the given key.
-	if err := tx.Get(taskKey, nil); err != datastore.ErrNoSuchEntity {
-		log.Fatalf("tx.Get returned err %v, want ErrNoSuchEntity", err)
-	}
-	if _, err := tx.Put(taskKey, task); err != nil {
-		log.Fatalf("tx.Put: %v", err)
-	}
-	if _, err := tx.Commit(); err != nil {
-		log.Fatalf("tx.Commit: %v", err)
-	}
+	_, err := client.RunInTransaction(ctx, func(tx *datastore.Transaction) error {
+		// We first check that there is no entity stored with the given key.
+		var empty Task
+		if err := tx.Get(taskKey, &empty); err != datastore.ErrNoSuchEntity {
+			return err
+		}
+		// If there was no matching entity, store it now.
+		_, err := tx.Put(taskKey, &task)
+		return err
+	})
 	// [END insert]
+	_ = err // Make sure you check err.
 }
 
 func ExampleClient_Get() {
