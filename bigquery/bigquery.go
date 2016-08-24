@@ -160,18 +160,16 @@ func (c *Client) executeQuery(ctx context.Context, q *Query, options ...ReadOpti
 	return c.Read(ctx, job, options...)
 }
 
+// Dataset creates a handle to a BigQuery dataset in the client's project.
 func (c *Client) Dataset(id string) *Dataset {
-	return &Dataset{
-		projectID: c.projectID,
-		id:        id,
-		service:   c.service,
-	}
+	return c.DatasetInProject(c.projectID, id)
 }
 
-// Table creates a handle to a BigQuery table.
-//
-// Use this method to reference a table in a project other than that of the
-// Client.
-func (c *Client) Table(projectID, datasetID, tableID string) *Table {
-	return &Table{ProjectID: projectID, DatasetID: datasetID, TableID: tableID, service: c.service}
+// DatasetInProject creates a handle to a BigQuery dataset in the specified project.
+func (c *Client) DatasetInProject(projectID, datasetID string) *Dataset {
+	return &Dataset{
+		projectID: projectID,
+		id:        datasetID,
+		service:   c.service,
+	}
 }
