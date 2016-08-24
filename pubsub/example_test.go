@@ -21,19 +21,22 @@ import (
 	"golang.org/x/net/context"
 )
 
-func Example_createClient(ctx context.Context) *pubsub.Client {
-	client, err := pubsub.NewClient(ctx, "project-id")
+func ExampleNewClient() {
+	ctx := context.Background()
+	_, err := pubsub.NewClient(ctx, "project-id")
 	if err != nil {
 		log.Fatal("new client:", err)
 	}
 
 	// See the other examples to learn how to use the Client.
-	return client
 }
 
-func ExampleTopicHandle_Publish() {
+func ExampleTopic_Publish() {
 	ctx := context.Background()
-	client := Example_createClient(ctx)
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		log.Fatal("new client:", err)
+	}
 
 	topic := client.Topic("topicName")
 	msgIDs, err := topic.Publish(ctx, &pubsub.Message{
@@ -45,9 +48,12 @@ func ExampleTopicHandle_Publish() {
 	log.Printf("Published a message with a message ID: %s\n", msgIDs[0])
 }
 
-func ExampleSubscriptionHandle_Pull() {
+func ExampleSubscription_Pull() {
 	ctx := context.Background()
-	client := Example_createClient(ctx)
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		log.Fatal("new client:", err)
+	}
 
 	sub := client.Subscription("subName")
 	it, err := sub.Pull(ctx)
