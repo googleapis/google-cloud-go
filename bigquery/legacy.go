@@ -23,9 +23,19 @@ import (
 // OpenTable creates a handle to an existing BigQuery table. If the table does
 // not already exist, subsequent uses of the *Table will fail.
 //
-// Deprecated: use Dataset.Table instead.
+// Deprecated: use Client.DatasetInProject.Table instead.
 func (c *Client) OpenTable(projectID, datasetID, tableID string) *Table {
 	return c.Table(projectID, datasetID, tableID)
+}
+
+// Table creates a handle to a BigQuery table.
+//
+// Use this method to reference a table in a project other than that of the
+// Client.
+//
+// Deprecated: use Client.DatasetInProject.Table instead.
+func (c *Client) Table(projectID, datasetID, tableID string) *Table {
+	return &Table{ProjectID: projectID, DatasetID: datasetID, TableID: tableID, service: c.service}
 }
 
 // CreateTable creates a table in the BigQuery service and returns a handle to it.
