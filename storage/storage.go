@@ -38,6 +38,7 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
 
@@ -51,7 +52,7 @@ var (
 	ErrObjectNotExist = errors.New("storage: object doesn't exist")
 
 	// Done is returned by iterators in this package when they have no more items.
-	Done = errors.New("storage: no more results")
+	Done = iterator.Done
 )
 
 const userAgent = "gcloud-golang-storage/20151204"

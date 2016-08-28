@@ -21,6 +21,7 @@ import (
 
 	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/api/iterator"
 	raw "google.golang.org/api/storage/v1"
 )
 
@@ -357,11 +358,16 @@ func (it *ObjectIterator) NextPageToken() string {
 // whose names begin with the prefix. By default, all buckets in the project
 // are returned.
 func (c *Client) Buckets(ctx context.Context, projectID string) *BucketIterator {
-	return &BucketIterator{
+	it := &BucketIterator{
 		ctx:       ctx,
 		client:    c,
 		projectID: projectID,
 	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
+		it.fetch,
+		func() int { return len(it.buckets) },
+		func() interface{} { b := it.buckets; it.buckets = nil; return b })
+	return it
 }
 
 // A BucketIterator is an iterator over BucketAttrs.
@@ -372,118 +378,40 @@ type BucketIterator struct {
 	ctx       context.Context
 	client    *Client
 	projectID string
-	pageSize  int
-	pageToken string
 	buckets   []*BucketAttrs
-	err       error
+	pageInfo  *iterator.PageInfo
+	nextFunc  func() error
 }
 
 // Next returns the next result. Its second return value is Done if there are
 // no more results. Once Next returns Done, all subsequent calls will return
 // Done.
-//
-// Internally, Next retrieves results in bulk. You can call SetPageSize as a
-// performance hint to affect how many results are retrieved in a single RPC.
-//
-// SetPageToken should not be called when using Next.
-//
-// Next and NextPage should not be used with the same iterator.
 func (it *BucketIterator) Next() (*BucketAttrs, error) {
-	for len(it.buckets) == 0 { // "for", not "if", to handle empty pages
-		if it.err != nil {
-			return nil, it.err
-		}
-		it.nextPage()
-		if it.err != nil {
-			it.buckets = nil
-			return nil, it.err
-		}
-		if it.pageToken == "" {
-			it.err = Done
-		}
+	if err := it.nextFunc(); err != nil {
+		return nil, err
 	}
 	b := it.buckets[0]
 	it.buckets = it.buckets[1:]
 	return b, nil
 }
 
-// NextPage returns the next page of results.
-//
-// NextPage will return exactly the number of results specified by the last
-// call to SetPageSize, unless fewer results remain. If no page size was
-// specified, or was set to less than 1, it uses DefaultPageSize.
-//
-// NextPage may return a second return value of Done along with the last page
-// of results.
-//
-// After NextPage returns Done, all subsequent calls to NextPage will return
-// (nil, Done).
-//
-// Next and NextPage should not be used with the same iterator.
-func (it *BucketIterator) NextPage() (buckets []*BucketAttrs, err error) {
-	defer it.SetPageSize(it.pageSize) // restore value at entry
-	if it.pageSize <= 0 {
-		it.pageSize = DefaultPageSize
-	}
-	for len(buckets) < it.pageSize {
-		it.pageSize -= len(buckets)
-		it.nextPage()
-		if it.err != nil {
-			return nil, it.err
-		}
-		buckets = append(buckets, it.buckets...)
-		it.buckets = nil
-		if it.pageToken == "" {
-			it.err = Done
-			return buckets, it.err
-		}
-	}
-	return buckets, nil
-}
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *BucketIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 
-// nextPage gets the next page of results by making a single call to the
-// underlying method. It sets it.buckets, it.pageToken, and it.err. It never
-// sets it.err to Done.
-//
-// Note that the underlying service is free to return less than pageSize items.
-// It can even return none.
-func (it *BucketIterator) nextPage() {
-	if it.err != nil {
-		return
-	}
+func (it *BucketIterator) fetch(pageSize int, pageToken string) (string, error) {
 	req := it.client.raw.Buckets.List(it.projectID)
 	req.Projection("full")
 	req.Prefix(it.Prefix)
-	req.PageToken(it.pageToken)
-	if it.pageSize > 0 {
-		req.MaxResults(int64(it.pageSize))
+	req.PageToken(pageToken)
+	if pageSize > 0 {
+		req.MaxResults(int64(pageSize))
 	}
 	resp, err := req.Context(it.ctx).Do()
 	if err != nil {
-		it.err = err
-		return
+		return "", err
 	}
-	it.pageToken = resp.NextPageToken
 	for _, item := range resp.Items {
 		it.buckets = append(it.buckets, newBucket(item))
 	}
-}
-
-// SetPageSize sets the page size for all subsequent calls to NextPage.
-// NextPage will return exactly this many items if they are present.
-func (it *BucketIterator) SetPageSize(pageSize int) {
-	it.pageSize = pageSize
-}
-
-// SetPageToken sets the page token for the next call to NextPage, to resume
-// the iteration from a previous point.
-func (it *BucketIterator) SetPageToken(t string) {
-	it.pageToken = t
-}
-
-// NextPageToken returns a page token that can be used with SetPageToken to
-// resume iteration from the next page. It returns the empty string if there
-// are no more pages. For an example, see SetPageToken.
-func (it *BucketIterator) NextPageToken() string {
-	return it.pageToken
+	return resp.NextPageToken, nil
 }
