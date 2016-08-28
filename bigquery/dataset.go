@@ -14,7 +14,10 @@
 
 package bigquery
 
-import "golang.org/x/net/context"
+import (
+	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
+)
 
 // Dataset is a reference to a BigQuery dataset.
 type Dataset struct {
@@ -52,4 +55,62 @@ func (d *Dataset) Create(ctx context.Context) error {
 // If the table does not already exist, use Table.Create to create it.
 func (d *Dataset) Table(tableID string) *Table {
 	return &Table{ProjectID: d.projectID, DatasetID: d.id, TableID: tableID, service: d.service}
+}
+
+// Datasets returns an iterator over the datasets in the Client's project.
+func (c *Client) Datasets(ctx context.Context) *DatasetIterator {
+	return c.DatasetsInProject(ctx, c.projectID)
+}
+
+// DatasetsInProject returns an iterator over the datasets in the provided project.
+func (c *Client) DatasetsInProject(ctx context.Context, projectID string) *DatasetIterator {
+	it := &DatasetIterator{
+		ctx:       ctx,
+		service:   c.service,
+		projectID: projectID,
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
+		it.fetch,
+		func() int { return len(it.items) },
+		func() interface{} { b := it.items; it.items = nil; return b })
+	return it
+}
+
+// DatasetIterator iterates over the datasets in a project.
+type DatasetIterator struct {
+	// ListHidden causes hidden datasets to be listed when set to true.
+	ListHidden bool
+
+	// Filter restricts the datasets returned by label. The filter syntax is described in
+	// https://cloud.google.com/bigquery/docs/labeling-datasets#filtering_datasets_using_labels
+	Filter string
+
+	ctx       context.Context
+	projectID string
+	service   service
+	pageInfo  *iterator.PageInfo
+	nextFunc  func() error
+	items     []*Dataset
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *DatasetIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
+
+func (it *DatasetIterator) Next() (*Dataset, error) {
+	if err := it.nextFunc(); err != nil {
+		return nil, err
+	}
+	item := it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *DatasetIterator) fetch(pageSize int, pageToken string) (string, error) {
+	datasets, nextPageToken, err := it.service.listDatasets(it.ctx, it.projectID,
+		pageSize, pageToken, it.ListHidden, it.Filter)
+	if err != nil {
+		return "", err
+	}
+	it.items = append(it.items, datasets...)
+	return nextPageToken, nil
 }
