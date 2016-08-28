@@ -440,8 +440,8 @@ func TestEmptyObjectIterator(t *testing.T) {
 	}
 }
 
-// Test that ObjectIterator's Next and NextPage methods correctly terminate
-// if there is nothing to iterate over.
+// Test that BucketIterator's Next method correctly terminates if there is
+// nothing to iterate over.
 func TestEmptyBucketIterator(t *testing.T) {
 	hClient, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
 		io.Copy(ioutil.Discard, r.Body)
@@ -453,21 +453,19 @@ func TestEmptyBucketIterator(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for i, f := range []func(*BucketIterator) error{
-		func(it *BucketIterator) error { _, err := it.Next(); return err },
-		func(it *BucketIterator) error { _, err := it.NextPage(); return err },
-	} {
-		it := client.Buckets(ctx, "project")
-		c := make(chan error, 1)
-		go func() { c <- f(it) }()
-		select {
-		case err := <-c:
-			if err != Done {
-				t.Errorf("got %v, want Done", err)
-			}
-		case <-time.After(50 * time.Millisecond):
-			t.Errorf("%d: timed out", i)
+	it := client.Buckets(ctx, "project")
+	c := make(chan error, 1)
+	go func() {
+		_, err := it.Next()
+		c <- err
+	}()
+	select {
+	case err := <-c:
+		if err != Done {
+			t.Errorf("got %v, want Done", err)
 		}
+	case <-time.After(50 * time.Millisecond):
+		t.Error("timed out")
 	}
 }
 
