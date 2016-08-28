@@ -56,6 +56,7 @@ type service interface {
 	// incomplete, an errIncompleteJob is returned. readQuery may be called
 	// repeatedly to poll for job completion.
 	readQuery(ctx context.Context, conf *readQueryConf, pageToken string) (*readDataResult, error)
+	listDatasets(ctx context.Context, projectID string, maxResults int, pageToken string, all bool, filter string) ([]*Dataset, string, error)
 }
 
 type bigqueryService struct {
@@ -481,4 +482,34 @@ func (s *bigqueryService) insertDataset(ctx context.Context, datasetID, projectI
 	}
 	_, err := s.s.Datasets.Insert(projectID, ds).Context(ctx).Do()
 	return err
+}
+
+func (s *bigqueryService) listDatasets(ctx context.Context, projectID string, maxResults int, pageToken string, all bool, filter string) ([]*Dataset, string, error) {
+	req := s.s.Datasets.List(projectID).
+		Context(ctx).
+		PageToken(pageToken).
+		All(all)
+	if maxResults > 0 {
+		req.MaxResults(int64(maxResults))
+	}
+	if filter != "" {
+		req.Filter(filter)
+	}
+	res, err := req.Do()
+	if err != nil {
+		return nil, "", err
+	}
+	var datasets []*Dataset
+	for _, d := range res.Datasets {
+		datasets = append(datasets, s.convertListedDataset(d))
+	}
+	return datasets, res.NextPageToken, nil
+}
+
+func (s *bigqueryService) convertListedDataset(d *bq.DatasetListDatasets) *Dataset {
+	return &Dataset{
+		projectID: d.DatasetReference.ProjectId,
+		id:        d.DatasetReference.DatasetId,
+		service:   s,
+	}
 }
