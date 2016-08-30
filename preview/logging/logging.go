@@ -62,7 +62,10 @@ import (
 // For testing:
 var now = time.Now
 
-const prodAddr = "logging.googleapis.com:443"
+const (
+	prodAddr = "logging.googleapis.com:443"
+	version  = "0.2.0"
+)
 
 const (
 	// Scope for reading from the logging service.
@@ -145,6 +148,9 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	if err != nil {
 		return nil, err
 	}
+	lc.SetGoogleClientInfo("logging", version)
+	sc.SetGoogleClientInfo("logging", version)
+	mc.SetGoogleClientInfo("logging", version)
 	client := &Client{
 		lClient:   lc,
 		sClient:   sc,
