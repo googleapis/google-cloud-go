@@ -422,21 +422,19 @@ func TestEmptyObjectIterator(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for i, f := range []func(*ObjectIterator) error{
-		func(it *ObjectIterator) error { _, err := it.Next(); return err },
-		func(it *ObjectIterator) error { _, _, err := it.NextPage(); return err },
-	} {
-		it := client.Bucket("b").Objects(ctx, nil)
-		c := make(chan error, 1)
-		go func() { c <- f(it) }()
-		select {
-		case err := <-c:
-			if err != Done {
-				t.Errorf("got %v, want Done", err)
-			}
-		case <-time.After(50 * time.Millisecond):
-			t.Errorf("%d: timed out", i)
+	it := client.Bucket("b").Objects(ctx, nil)
+	c := make(chan error, 1)
+	go func() {
+		_, err := it.Next()
+		c <- err
+	}()
+	select {
+	case err := <-c:
+		if err != Done {
+			t.Errorf("got %v, want Done", err)
 		}
+	case <-time.After(50 * time.Millisecond):
+		t.Error("timed out")
 	}
 }
 

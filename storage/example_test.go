@@ -120,26 +120,6 @@ func ExampleObjectIterator_Next() {
 	}
 }
 
-func ExampleObjectIterator_NextPage() {
-	ctx := context.Background()
-	client, err := storage.NewClient(ctx)
-	if err != nil {
-		// TODO: handle error.
-	}
-	it := client.Bucket("my-bucket").Objects(ctx, nil)
-	it.SetPageSize(50)
-	for {
-		objAttrs, prefixes, err := it.NextPage()
-		if err != nil && err != storage.Done {
-			// TODO: Handle error.
-		}
-		fmt.Println(objAttrs, prefixes)
-		if err == storage.Done {
-			break
-		}
-	}
-}
-
 func ExampleSignedURL() {
 	pkey, err := ioutil.ReadFile("my-private-key.pem")
 	if err != nil {

@@ -533,16 +533,7 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 		t.Errorf("ObjectIterator.Next: %s", msg)
 	}
 
-	msg, ok = testutil.TestIteratorNextPageExact(attrs, Done, DefaultPageSize,
-		func() testutil.PagingIterator { return bkt.Objects(ctx, &Query{Prefix: "obj"}) },
-		func(i testutil.PagingIterator) (interface{}, error) {
-			as, _, err := i.(*ObjectIterator).NextPage()
-			return as, err
-		})
-	if !ok {
-		t.Errorf("ObjectIterator.NextPage: %s", msg)
-	}
-
+	// TODO(jba): test pagination.
 	// TODO(jba): test query.Delimiter != ""
 }
 
