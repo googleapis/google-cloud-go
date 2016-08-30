@@ -1,2 +1,0 @@
-I am not a meme. Don't fail if you accidently include me in your Vision API
-request, please.
