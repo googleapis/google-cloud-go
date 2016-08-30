@@ -360,15 +360,15 @@ func TestCondition(t *testing.T) {
 		},
 		{
 			func() { obj.WithConditions(IfMetaGenerationNotMatch(1234)).Attrs(ctx) },
-			"GET https://www.googleapis.com/storage/v1/b/buck/o/obj?alt=json&ifMetagenerationNotMatch=1234&projection=full",
+			"GET /storage/v1/b/buck/o/obj?alt=json&ifMetagenerationNotMatch=1234&projection=full",
 		},
 		{
 			func() { obj.WithConditions(IfMetaGenerationMatch(1234)).Update(ctx, ObjectAttrs{}) },
-			"PATCH https://www.googleapis.com/storage/v1/b/buck/o/obj?alt=json&ifMetagenerationMatch=1234&projection=full",
+			"PATCH /storage/v1/b/buck/o/obj?alt=json&ifMetagenerationMatch=1234&projection=full",
 		},
 		{
 			func() { obj.WithConditions(Generation(1234)).Delete(ctx) },
-			"DELETE https://www.googleapis.com/storage/v1/b/buck/o/obj?alt=json&generation=1234",
+			"DELETE /storage/v1/b/buck/o/obj?alt=json&generation=1234",
 		},
 		{
 			func() {
@@ -376,13 +376,13 @@ func TestCondition(t *testing.T) {
 				w.ContentType = "text/plain"
 				w.Close()
 			},
-			"POST https://www.googleapis.com/upload/storage/v1/b/buck/o?alt=json&ifGenerationMatch=1234&projection=full&uploadType=multipart",
+			"POST /upload/storage/v1/b/buck/o?alt=json&ifGenerationMatch=1234&projection=full&uploadType=multipart",
 		},
 		{
 			func() {
 				obj.WithConditions(IfGenerationMatch(1234)).CopyTo(ctx, dst.WithConditions(IfMetaGenerationMatch(5678)), nil)
 			},
-			"POST https://www.googleapis.com/storage/v1/b/buck/o/obj/copyTo/b/dstbuck/o/dst?alt=json&ifMetagenerationMatch=5678&ifSourceGenerationMatch=1234&projection=full",
+			"POST /storage/v1/b/buck/o/obj/copyTo/b/dstbuck/o/dst?alt=json&ifMetagenerationMatch=5678&ifSourceGenerationMatch=1234&projection=full",
 		},
 	}
 
