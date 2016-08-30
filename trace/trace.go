@@ -145,6 +145,8 @@ const (
 	labelStackTrace     = `trace.cloud.google.com/stacktrace`
 	labelStatusCode     = `trace.cloud.google.com/http/status_code`
 	labelURL            = `trace.cloud.google.com/http/url`
+	labelSamplingPolicy = `trace.cloud.google.com/sampling_policy`
+	labelSamplingRate   = `trace.cloud.google.com/sampling_rate`
 )
 
 type contextKey struct{}
@@ -201,10 +203,18 @@ func nextSpanID() uint64 {
 	return id
 }
 
+// nextTraceID returns a new trace ID.
+func nextTraceID() string {
+	id1 := nextSpanID()
+	id2 := nextSpanID()
+	return fmt.Sprintf("%016x%016x", id1, id2)
+}
+
 // Client is a client for uploading traces to the Google Stackdriver Trace server.
 type Client struct {
 	service   *api.Service
 	projectID string
+	Policy
 }
 
 // NewClient creates a new Google Stackdriver Trace client.
@@ -232,21 +242,53 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	}, nil
 }
 
-// SpanFromRequest returns a new trace span using an incoming HTTP request's
-// headers.
-// Returns nil if the header was not present or the client is nil.
+// SetSamplingPolicy sets the Policy that determines how often traces are
+// initiated by this client.
+func (c *Client) SetSamplingPolicy(p Policy) {
+	if c != nil {
+		c.Policy = p
+	}
+}
+
+// SpanFromRequest returns a new trace span.  If the incoming HTTP request's
+// headers don't specify that the request should be traced, and the sampling
+// policy doesn't determine the request should be traced, the returned span
+// will be nil.
+// It also returns nil if the client is nil.
 // When Finish is called on the returned span, the span and its descendants are
 // uploaded to the Google Stackdriver Trace server.
 func (client *Client) SpanFromRequest(r *http.Request) *Span {
 	if client == nil {
 		return nil
 	}
-	s := traceInfoFromRequest(r)
-	if s == nil {
+	span := traceInfoFromRequest(r)
+	var (
+		sample bool
+		policy string
+		rate   float64
+	)
+	if client.Policy != nil {
+		sample, policy, rate = client.Sample()
+	}
+	if sample {
+		if span == nil {
+			t := &trace{
+				traceID: nextTraceID(),
+				options: optionTrace,
+				client:  client,
+			}
+			span = startNewChildWithRequest(r, t, 0 /* parentSpanID */)
+			span.span.Kind = spanKindServer
+			span.rootSpan = true
+		}
+		span.SetLabel(labelSamplingPolicy, policy)
+		span.SetLabel(labelSamplingRate, fmt.Sprint(rate))
+	}
+	if span == nil {
 		return nil
 	}
-	s.trace.client = client
-	return s
+	span.trace.client = client
+	return span
 }
 
 // NewContext returns a derived context containing the span.
