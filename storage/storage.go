@@ -675,6 +675,12 @@ type ObjectAttrs struct {
 	// For buckets with versioning enabled, changing an object's
 	// metadata does not change this property. This field is read-only.
 	Updated time.Time
+
+	// Prefix is set only for ObjectAttrs which represent synthetic "directory
+	// entries" when iterating over buckets using Query.Delimiter. See
+	// ObjectIterator.Next. When set, no other fields in ObjectAttrs will be
+	// populated.
+	Prefix string
 }
 
 // convertTime converts a time in RFC3339 format to time.Time.
@@ -754,6 +760,8 @@ type Query struct {
 	// Cursor is a previously-returned page token
 	// representing part of the larger set of results to view.
 	// Optional.
+	//
+	// Deprecated: Use ObjectIterator.PageInfo().Token instead.
 	Cursor string
 
 	// MaxResults is the maximum number of items plus prefixes
@@ -761,7 +769,7 @@ type Query struct {
 	// fewer total results may be returned than requested.
 	// The default page limit is used if it is negative or zero.
 	//
-	// Deprecated. Use ObjectIterator.SetPageSize.
+	// Deprecated: Use ObjectIterator.PageInfo().MaxSize instead.
 	MaxResults int
 }
 
