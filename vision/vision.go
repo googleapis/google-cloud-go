@@ -87,8 +87,8 @@ type AnnotateRequest struct {
 	MaxTexts int
 	// SafeSearch specifies whether a safe-search detection should be run on the image.
 	SafeSearch bool
-	// ImageProperties specifies whether image properties should be obtained for the image.
-	ImageProperties bool
+	// ImageProps specifies whether image properties should be obtained for the image.
+	ImageProps bool
 }
 
 func (ar *AnnotateRequest) toProto() *pb.AnnotateImageRequest {
@@ -121,7 +121,7 @@ func (ar *AnnotateRequest) toProto() *pb.AnnotateImageRequest {
 	if ar.SafeSearch {
 		add(pb.Feature_SAFE_SEARCH_DETECTION, 0)
 	}
-	if ar.ImageProperties {
+	if ar.ImageProps {
 		add(pb.Feature_IMAGE_PROPERTIES, 0)
 	}
 	return &pb.AnnotateImageRequest{
@@ -146,7 +146,9 @@ func (c *Client) annotateOne(ctx context.Context, req *AnnotateRequest) (*Annota
 	return anns, nil
 }
 
-// Faces performs face detection on the image.
+// TODO(jba): add examples for all single-feature functions (below).
+
+// DetectFaces performs face detection on the image.
 // At most maxResults results are returned.
 func (c *Client) DetectFaces(ctx context.Context, img *Image, maxResults int) ([]*FaceAnnotation, error) {
 	anns, err := c.annotateOne(ctx, &AnnotateRequest{Image: img, MaxFaces: maxResults})
@@ -156,7 +158,63 @@ func (c *Client) DetectFaces(ctx context.Context, img *Image, maxResults int) ([
 	return anns.Faces, nil
 }
 
-// TODO(jba): implement the other detections.
+// DetectLandmarks performs landmark detection on the image.
+// At most maxResults results are returned.
+func (c *Client) DetectLandmarks(ctx context.Context, img *Image, maxResults int) ([]*EntityAnnotation, error) {
+	anns, err := c.annotateOne(ctx, &AnnotateRequest{Image: img, MaxLandmarks: maxResults})
+	if err != nil {
+		return nil, err
+	}
+	return anns.Landmarks, nil
+}
+
+// DetectLogos performs logo detection on the image.
+// At most maxResults results are returned.
+func (c *Client) DetectLogos(ctx context.Context, img *Image, maxResults int) ([]*EntityAnnotation, error) {
+	anns, err := c.annotateOne(ctx, &AnnotateRequest{Image: img, MaxLogos: maxResults})
+	if err != nil {
+		return nil, err
+	}
+	return anns.Logos, nil
+}
+
+// DetectLabels performs label detection on the image.
+// At most maxResults results are returned.
+func (c *Client) DetectLabels(ctx context.Context, img *Image, maxResults int) ([]*EntityAnnotation, error) {
+	anns, err := c.annotateOne(ctx, &AnnotateRequest{Image: img, MaxLabels: maxResults})
+	if err != nil {
+		return nil, err
+	}
+	return anns.Labels, nil
+}
+
+// DetectTexts performs text detection on the image.
+// At most maxResults results are returned.
+func (c *Client) DetectTexts(ctx context.Context, img *Image, maxResults int) ([]*EntityAnnotation, error) {
+	anns, err := c.annotateOne(ctx, &AnnotateRequest{Image: img, MaxTexts: maxResults})
+	if err != nil {
+		return nil, err
+	}
+	return anns.Texts, nil
+}
+
+// DetectSafeSearch performs safe-search detection on the image.
+func (c *Client) DetectSafeSearch(ctx context.Context, img *Image) (*SafeSearchAnnotation, error) {
+	anns, err := c.annotateOne(ctx, &AnnotateRequest{Image: img, SafeSearch: true})
+	if err != nil {
+		return nil, err
+	}
+	return anns.SafeSearch, nil
+}
+
+// DetectImageProps computes properties of the image.
+func (c *Client) DetectImageProps(ctx context.Context, img *Image) (*ImageProps, error) {
+	anns, err := c.annotateOne(ctx, &AnnotateRequest{Image: img, ImageProps: true})
+	if err != nil {
+		return nil, err
+	}
+	return anns.ImageProps, nil
+}
 
 // A Likelihood is an approximate representation of a probability.
 type Likelihood int

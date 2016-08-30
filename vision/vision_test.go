@@ -40,6 +40,8 @@ func TestAnnotate(t *testing.T) {
 		{path: "label/faulkner.jpg", labels: true},
 		{path: "text/mountain.jpg", texts: true, labels: true},
 		{path: "text/no-text.jpg", labels: true},
+		{path: "eiffel-tower.jpg", landmarks: true, labels: true},
+		{path: "google.png", logos: true, labels: true, texts: true},
 	}
 	for _, test := range tests {
 		img, err := readTestImage(test.path)
@@ -47,14 +49,14 @@ func TestAnnotate(t *testing.T) {
 			t.Fatal(err)
 		}
 		annsSlice, err := client.Annotate(ctx, &AnnotateRequest{
-			Image:           img,
-			MaxFaces:        1,
-			MaxLandmarks:    1,
-			MaxLogos:        1,
-			MaxLabels:       1,
-			MaxTexts:        1,
-			SafeSearch:      true,
-			ImageProperties: true,
+			Image:        img,
+			MaxFaces:     1,
+			MaxLandmarks: 1,
+			MaxLogos:     1,
+			MaxLabels:    1,
+			MaxTexts:     1,
+			SafeSearch:   true,
+			ImageProps:   true,
 		})
 		if err != nil {
 			t.Fatalf("annotating %s: %v", test.path, err)
@@ -65,15 +67,9 @@ func TestAnnotate(t *testing.T) {
 			t.Errorf("%s: faces %s, want %s", test.path, p[got], p[want])
 		}
 		if got, want := (anns.Landmarks != nil), test.landmarks; got != want {
-			if anns.Landmarks != nil {
-				fmt.Printf("%s: landmarks %+v\n", test.path, anns.Landmarks[0])
-			}
 			t.Errorf("%s: landmarks %s, want %s", test.path, p[got], p[want])
 		}
 		if got, want := (anns.Logos != nil), test.logos; got != want {
-			if anns.Logos != nil {
-				fmt.Printf("%s: logos %+v\n", test.path, anns.Logos[0])
-			}
 			t.Errorf("%s: logos %s, want %s", test.path, p[got], p[want])
 		}
 		if got, want := (anns.Labels != nil), test.labels; got != want {
@@ -85,7 +81,7 @@ func TestAnnotate(t *testing.T) {
 		if got, want := (anns.SafeSearch != nil), true; got != want {
 			t.Errorf("%s: safe search %s, want %s", test.path, p[got], p[want])
 		}
-		if got, want := (anns.ImageProperties != nil), true; got != want {
+		if got, want := (anns.ImageProps != nil), true; got != want {
 			t.Errorf("%s: image properties %s, want %s", test.path, p[got], p[want])
 		}
 		if anns.Error != nil {
@@ -94,13 +90,12 @@ func TestAnnotate(t *testing.T) {
 	}
 }
 
-// Test the single-image single-feature methods, like DetectFaces.
-func TestDetectionMethods(t *testing.T) {
+func TestDetectMethods(t *testing.T) {
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
-	for _, test := range []struct {
+	for i, test := range []struct {
 		path string
 		call func(*Image) (bool, error)
 	}{
@@ -110,6 +105,42 @@ func TestDetectionMethods(t *testing.T) {
 				return as != nil, err
 			},
 		},
+		{"eiffel-tower.jpg",
+			func(img *Image) (bool, error) {
+				as, err := client.DetectLandmarks(ctx, img, 1)
+				return as != nil, err
+			},
+		},
+		{"google.png",
+			func(img *Image) (bool, error) {
+				as, err := client.DetectLogos(ctx, img, 1)
+				return as != nil, err
+			},
+		},
+		{"label/faulkner.jpg",
+			func(img *Image) (bool, error) {
+				as, err := client.DetectLabels(ctx, img, 1)
+				return as != nil, err
+			},
+		},
+		{"text/mountain.jpg",
+			func(img *Image) (bool, error) {
+				as, err := client.DetectTexts(ctx, img, 1)
+				return as != nil, err
+			},
+		},
+		{"label/cat.jpg",
+			func(img *Image) (bool, error) {
+				as, err := client.DetectSafeSearch(ctx, img)
+				return as != nil, err
+			},
+		},
+		{"label/cat.jpg",
+			func(img *Image) (bool, error) {
+				ip, err := client.DetectImageProps(ctx, img)
+				return ip != nil, err
+			},
+		},
 	} {
 		img, err := readTestImage(test.path)
 		if err != nil {
@@ -117,12 +148,20 @@ func TestDetectionMethods(t *testing.T) {
 		}
 		present, err := test.call(img)
 		if err != nil {
-			t.Errorf("%s: got err %v, want nil", test.path, err)
+			t.Errorf("%s, #%d: got err %v, want nil", test.path, i, err)
 		}
 		if !present {
-			t.Errorf("%s: nil annotation, want non-nil", test.path)
+			t.Errorf("%s, #%d: nil annotation, want non-nil", test.path, i)
 		}
 	}
+}
+
+// The DetectXXX methods of client that return EntityAnnotations.
+var entityDetectionMethods = []func(*Client, context.Context, *Image, int) ([]*EntityAnnotation, error){
+	(*Client).DetectLandmarks,
+	(*Client).DetectLogos,
+	(*Client).DetectLabels,
+	(*Client).DetectTexts,
 }
 
 func TestErrors(t *testing.T) {
@@ -133,22 +172,16 @@ func TestErrors(t *testing.T) {
 	// Empty image.
 	// With Client.Annotate, the RPC succeeds, but the Error field is non-nil.
 	_, err := client.Annotate(ctx, &AnnotateRequest{
-		Image:           &Image{},
-		ImageProperties: true,
+		Image:      &Image{},
+		ImageProps: true,
 	})
 	if err != nil {
 		t.Errorf("got %v, want nil", err)
 	}
 
-	// With a Client.DetectXXX method, the Error field becomes the return value.
-	_, err = client.DetectFaces(ctx, &Image{}, 1)
-	if err == nil {
-		t.Error("got nil, want error")
-	}
-
 	// Invalid image.
 	badImg := &Image{content: []byte("ceci n'est pas une image")}
-	// If only ImageProperties is specified, the result is an annotation
+	// If only ImageProps is specified, the result is an annotation
 	// with all fields (including Error) nil. But any actual detection will fail.
 	_, err = client.Annotate(ctx, &AnnotateRequest{
 		Image:      badImg,
@@ -162,6 +195,36 @@ func TestErrors(t *testing.T) {
 	_, err = client.DetectFaces(ctx, &Image{}, 1)
 	if err == nil {
 		t.Error("got nil, want error")
+	}
+	for i, edm := range entityDetectionMethods {
+		_, err = edm(client, ctx, &Image{}, 1)
+		if err == nil {
+			t.Errorf("edm %d: got nil, want error", i)
+		}
+	}
+	_, err = client.DetectSafeSearch(ctx, &Image{})
+	if err == nil {
+		t.Error("got nil, want error")
+	}
+	_, err = client.DetectImageProps(ctx, &Image{})
+	if err == nil {
+		t.Error("got nil, want error")
+	}
+
+	// Client.DetectXXX methods fail if passed a zero maxResults.
+	img, err := readTestImage("label/cat.jpg")
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = client.DetectFaces(ctx, img, 0)
+	if err == nil {
+		t.Error("got nil, want error")
+	}
+	for i, edm := range entityDetectionMethods {
+		_, err = edm(client, ctx, img, 0)
+		if err == nil {
+			t.Errorf("edm %d: got nil, want error", i)
+		}
 	}
 }
 

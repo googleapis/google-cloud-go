@@ -38,8 +38,8 @@ type Annotations struct {
 	Texts []*EntityAnnotation
 	// SafeSearch holds the results of safe-search detection.
 	SafeSearch *SafeSearchAnnotation
-	// ImageProperties contains properties of the annotated image.
-	ImageProperties *ImageProperties
+	// ImageProps contains properties of the annotated image.
+	ImageProps *ImageProps
 
 	// If non-nil, then one or more of the attempted annotations failed.
 	// Non-nil annotations are guaranteed to be correct, even if Error is
@@ -65,7 +65,7 @@ func annotationsFromProto(res *pb.AnnotateImageResponse) *Annotations {
 		as.Texts = append(as.Texts, entityAnnotationFromProto(a))
 	}
 	as.SafeSearch = safeSearchAnnotationFromProto(res.SafeSearchAnnotation)
-	as.ImageProperties = imagePropertiesFromProto(res.ImagePropertiesAnnotation)
+	as.ImageProps = imagePropertiesFromProto(res.ImagePropertiesAnnotation)
 	if res.Error != nil {
 		// res.Error is a google.rpc.Status. Convert to a Go error. Use a gRPC
 		// error because it preserves the code as a separate field.
@@ -241,13 +241,13 @@ func safeSearchAnnotationFromProto(s *pb.SafeSearchAnnotation) *SafeSearchAnnota
 	}
 }
 
-// ImageProperties describes properties of the image itself, like the dominant colors.
-type ImageProperties struct {
+// ImageProps describes properties of the image itself, like the dominant colors.
+type ImageProps struct {
 	// DominantColors describes the dominant colors of the image.
 	DominantColors []*ColorInfo
 }
 
-func imagePropertiesFromProto(ip *pb.ImageProperties) *ImageProperties {
+func imagePropertiesFromProto(ip *pb.ImageProperties) *ImageProps {
 	if ip == nil || ip.DominantColors == nil {
 		return nil
 	}
@@ -255,5 +255,5 @@ func imagePropertiesFromProto(ip *pb.ImageProperties) *ImageProperties {
 	for _, ci := range ip.DominantColors.Colors {
 		cinfos = append(cinfos, colorInfoFromProto(ci))
 	}
-	return &ImageProperties{DominantColors: cinfos}
+	return &ImageProps{DominantColors: cinfos}
 }
