@@ -15,7 +15,7 @@
 package vision
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"testing"
 
@@ -35,21 +35,17 @@ func TestAnnotate(t *testing.T) {
 		faces, landmarks, logos, labels, texts bool
 		// We always expect safe search and image properties to be present.
 	}{
-		{path: "face_detection/face.jpg", faces: true, labels: true},
-		{path: "label/cat.jpg", labels: true},
-		{path: "label/faulkner.jpg", labels: true},
-		{path: "text/mountain.jpg", texts: true, labels: true},
-		{path: "text/no-text.jpg", labels: true},
+		{path: "face.jpg", faces: true, labels: true},
+		{path: "cat.jpg", labels: true},
+		{path: "faulkner.jpg", labels: true},
+		{path: "mountain.jpg", texts: true, labels: true},
+		{path: "no-text.jpg", labels: true},
 		{path: "eiffel-tower.jpg", landmarks: true, labels: true},
 		{path: "google.png", logos: true, labels: true, texts: true},
 	}
 	for _, test := range tests {
-		img, err := readTestImage(test.path)
-		if err != nil {
-			t.Fatal(err)
-		}
 		annsSlice, err := client.Annotate(ctx, &AnnotateRequest{
-			Image:        img,
+			Image:        testImage(test.path),
 			MaxFaces:     1,
 			MaxLandmarks: 1,
 			MaxLogos:     1,
@@ -99,7 +95,7 @@ func TestDetectMethods(t *testing.T) {
 		path string
 		call func(*Image) (bool, error)
 	}{
-		{"face_detection/face.jpg",
+		{"face.jpg",
 			func(img *Image) (bool, error) {
 				as, err := client.DetectFaces(ctx, img, 1)
 				return as != nil, err
@@ -117,36 +113,32 @@ func TestDetectMethods(t *testing.T) {
 				return as != nil, err
 			},
 		},
-		{"label/faulkner.jpg",
+		{"faulkner.jpg",
 			func(img *Image) (bool, error) {
 				as, err := client.DetectLabels(ctx, img, 1)
 				return as != nil, err
 			},
 		},
-		{"text/mountain.jpg",
+		{"mountain.jpg",
 			func(img *Image) (bool, error) {
 				as, err := client.DetectTexts(ctx, img, 1)
 				return as != nil, err
 			},
 		},
-		{"label/cat.jpg",
+		{"cat.jpg",
 			func(img *Image) (bool, error) {
 				as, err := client.DetectSafeSearch(ctx, img)
 				return as != nil, err
 			},
 		},
-		{"label/cat.jpg",
+		{"cat.jpg",
 			func(img *Image) (bool, error) {
 				ip, err := client.DetectImageProps(ctx, img)
 				return ip != nil, err
 			},
 		},
 	} {
-		img, err := readTestImage(test.path)
-		if err != nil {
-			t.Fatalf("%s: %v", test.path, err)
-		}
-		present, err := test.call(img)
+		present, err := test.call(testImage(test.path))
 		if err != nil {
 			t.Errorf("%s, #%d: got err %v, want nil", test.path, i, err)
 		}
@@ -212,10 +204,7 @@ func TestErrors(t *testing.T) {
 	}
 
 	// Client.DetectXXX methods fail if passed a zero maxResults.
-	img, err := readTestImage("label/cat.jpg")
-	if err != nil {
-		t.Fatal(err)
-	}
+	img := testImage("cat.jpg")
 	_, err = client.DetectFaces(ctx, img, 0)
 	if err == nil {
 		t.Error("got nil, want error")
@@ -243,14 +232,20 @@ func integrationTestClient(ctx context.Context, t *testing.T) *Client {
 	return client
 }
 
-func readTestImage(path string) (*Image, error) {
+var images = map[string]*Image{}
+
+func testImage(path string) *Image {
+	if img, ok := images[path]; ok {
+		return img
+	}
 	f, err := os.Open("testdata/" + path)
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 	img, err := NewImageFromReader(f)
 	if err != nil {
-		return nil, fmt.Errorf("%q: %v", path, err)
+		log.Fatalf("reading image %q: %v", path, err)
 	}
-	return img, nil
+	images[path] = img
+	return img
 }
