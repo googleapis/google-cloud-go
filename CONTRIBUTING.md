@@ -40,7 +40,14 @@ $ gcloud auth login
 
 # Create the indexes
 $ gcloud preview datastore create-indexes datastore/testdata/index.yaml
+```
 
+The Sink integration tests in preview/logging require a Google Cloud storage
+bucket with the same name as your test project, and with the Stackdriver Logging
+service account as owner:
+``` sh
+$ gsutil mb gs://$GCLOUD_TESTS_GOLANG_PROJECT_ID
+$ gsutil acl ch -u cloud-logs@system.gserviceaccount.com:O gs://$GCLOUD_TESTS_GOLANG_PROJECT_ID
 ```
 
 Once you've set the environment variables, you can run the integration tests by
