@@ -20,6 +20,7 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -325,4 +326,48 @@ func testNoTrace(t *testing.T, synchronous bool) {
 			t.Errorf("Got a trace, expected none.")
 		}
 	}
+}
+
+func TestSampling(t *testing.T) {
+	wg := sync.WaitGroup{}
+	type testCase struct {
+		rate          float64
+		maxqps        float64
+		expectedRange [2]int
+	}
+	for _, test := range []testCase{
+		{0, 5, [2]int{0, 0}},
+		{5, 0, [2]int{0, 0}},
+		{0.50, 100, [2]int{20, 60}},
+		{0.50, 1, [2]int{3, 3}},
+	} {
+		wg.Add(1)
+		go func(test testCase) {
+			rt := newFakeRoundTripper()
+			traceClient := newTestClient(rt)
+			traceClient.SetSamplingPolicy(trace.NewSampler(test.rate, test.maxqps))
+			ticker := time.NewTicker(25 * time.Millisecond)
+			sampled := 0
+			for i := 0; i < 79; i++ {
+				req, err := http.NewRequest("GET", "http://example.com/foo", nil)
+				if err != nil {
+					t.Fatal(err)
+				}
+				span := traceClient.SpanFromRequest(req)
+				span.Finish()
+				select {
+				case <-rt.reqc:
+					<-ticker.C
+					sampled++
+				case <-ticker.C:
+				}
+			}
+			ticker.Stop()
+			if test.expectedRange[0] > sampled || sampled > test.expectedRange[1] {
+				t.Errorf("rate=%f, maxqps=%f: got %d samples want ∈ %v", test.rate, test.maxqps, sampled, test.expectedRange)
+			}
+			wg.Done()
+		}(test)
+	}
+	wg.Wait()
 }
