@@ -220,7 +220,7 @@ func MaxExtension(duration time.Duration) PullOption {
 	return maxExtension(duration)
 }
 
-// NewSubscription creates a new subscription to a topic.
+// CreateSubscription creates a new subscription on a topic.
 //
 // name is the name of the subscription to create. It must start with a letter,
 // and contain only letters ([A-Za-z]), numbers ([0-9]), dashes (-),
@@ -241,7 +241,7 @@ func MaxExtension(duration time.Duration) PullOption {
 // pushConfig may be set to configure this subscription for push delivery.
 //
 // If the subscription already exists an error will be returned.
-func (c *Client) NewSubscription(ctx context.Context, name string, topic *Topic, ackDeadline time.Duration, pushConfig *PushConfig) (*Subscription, error) {
+func (c *Client) CreateSubscription(ctx context.Context, name string, topic *Topic, ackDeadline time.Duration, pushConfig *PushConfig) (*Subscription, error) {
 	if ackDeadline == 0 {
 		ackDeadline = 10 * time.Second
 	}

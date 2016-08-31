@@ -74,7 +74,7 @@ func checkArgs(argv []string, min int) {
 func createTopic(client *pubsub.Client, argv []string) {
 	checkArgs(argv, 2)
 	topic := argv[1]
-	_, err := client.NewTopic(context.Background(), topic)
+	_, err := client.CreateTopic(context.Background(), topic)
 	if err != nil {
 		log.Fatalf("Creating topic failed: %v", err)
 	}
@@ -138,7 +138,7 @@ func createSubscription(client *pubsub.Client, argv []string) {
 	checkArgs(argv, 3)
 	sub := argv[1]
 	topic := argv[2]
-	_, err := client.NewSubscription(context.Background(), sub, client.Topic(topic), 0, nil)
+	_, err := client.CreateSubscription(context.Background(), sub, client.Topic(topic), 0, nil)
 	if err != nil {
 		log.Fatalf("Creating Subscription failed: %v", err)
 	}
