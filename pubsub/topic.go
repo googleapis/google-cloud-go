@@ -30,13 +30,13 @@ type Topic struct {
 	name string
 }
 
-// NewTopic creates a new topic.
+// CreateTopic creates a new topic.
 // The specified topic name must start with a letter, and contain only letters
 // ([A-Za-z]), numbers ([0-9]), dashes (-), underscores (_), periods (.),
 // tildes (~), plus (+) or percent signs (%). It must be between 3 and 255
 // characters in length, and must not start with "goog".
 // If the topic already exists an error will be returned.
-func (c *Client) NewTopic(ctx context.Context, name string) (*Topic, error) {
+func (c *Client) CreateTopic(ctx context.Context, name string) (*Topic, error) {
 	t := c.Topic(name)
 	err := c.s.createTopic(ctx, t.Name())
 	return t, err

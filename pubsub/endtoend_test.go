@@ -214,24 +214,24 @@ func TestEndToEnd(t *testing.T) {
 	}
 
 	var topic *Topic
-	if topic, err = client.NewTopic(ctx, topicName); err != nil {
+	if topic, err = client.CreateTopic(ctx, topicName); err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
 	defer topic.Delete(ctx)
 
 	// Three subscriptions to the same topic.
 	var subA, subB, subC *Subscription
-	if subA, err = client.NewSubscription(ctx, subPrefix+"-a", topic, ackDeadline, nil); err != nil {
+	if subA, err = client.CreateSubscription(ctx, subPrefix+"-a", topic, ackDeadline, nil); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}
 	defer subA.Delete(ctx)
 
-	if subB, err = client.NewSubscription(ctx, subPrefix+"-b", topic, ackDeadline, nil); err != nil {
+	if subB, err = client.CreateSubscription(ctx, subPrefix+"-b", topic, ackDeadline, nil); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}
 	defer subB.Delete(ctx)
 
-	if subC, err = client.NewSubscription(ctx, subPrefix+"-c", topic, ackDeadline, nil); err != nil {
+	if subC, err = client.CreateSubscription(ctx, subPrefix+"-c", topic, ackDeadline, nil); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}
 	defer subC.Delete(ctx)
