@@ -19,8 +19,15 @@ provide a commit message, and use `git codereview mail` to create a Gerrit CL.
 In addition to the unit tests, you may run the integration test suite.
 
 To run the integrations tests, creating and configuration of a project in the
-Google Developers Console is required. Once you create a project, set the
-following environment variables to be able to run the against the actual APIs.
+Google Developers Console is required.
+
+After creating a project, you must [create a service account](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount).
+Ensure the project-level **Owner** [IAM role](console.cloud.google.com/iam-admin/iam/project)
+(or **Editor** and **Logs Configuration Writer** roles) are added to the
+service account.
+
+Once you create a project, set the following environment variables to be able to
+run the against the actual APIs.
 
 - **GCLOUD_TESTS_GOLANG_PROJECT_ID**: Developers Console project's ID (e.g. bamboo-shift-455)
 - **GCLOUD_TESTS_GOLANG_KEY**: The path to the JSON key file.
@@ -47,7 +54,7 @@ bucket with the same name as your test project, and with the Stackdriver Logging
 service account as owner:
 ``` sh
 $ gsutil mb gs://$GCLOUD_TESTS_GOLANG_PROJECT_ID
-$ gsutil acl ch -u cloud-logs@system.gserviceaccount.com:O gs://$GCLOUD_TESTS_GOLANG_PROJECT_ID
+$ gsutil acl ch -g cloud-logs@google.com:O gs://$GCLOUD_TESTS_GOLANG_PROJECT_ID
 ```
 
 Once you've set the environment variables, you can run the integration tests by
