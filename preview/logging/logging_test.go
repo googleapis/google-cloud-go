@@ -41,8 +41,6 @@ import (
 	logtypepb "google.golang.org/genproto/googleapis/logging/type"
 	logpb "google.golang.org/genproto/googleapis/logging/v2"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/credentials/oauth"
 )
 
 const testLogID = "GO-LOGGING-CLIENT-TEST-LOG"
@@ -126,9 +124,7 @@ func TestMain(m *testing.M) {
 		}
 		log.Printf("running integration tests with project %s", testProjectID)
 		newClient = func(ctx context.Context, projectID string) *Client {
-			c, err := NewClient(ctx, projectID,
-				option.WithGRPCDialOption(grpc.WithPerRPCCredentials(oauth.TokenSource{TokenSource: ts})),
-				option.WithGRPCDialOption(grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, ""))))
+			c, err := NewClient(ctx, projectID, option.WithTokenSource(ts))
 			if err != nil {
 				log.Fatalf("creating prod client: %v", err)
 			}
@@ -555,9 +551,7 @@ func TestPing(t *testing.T) {
 
 	// Bad creds. We cannot test this with the fake, since it doesn't do auth.
 	if integrationTest {
-		c, err := NewClient(ctx, testProjectID,
-			option.WithGRPCDialOption(grpc.WithPerRPCCredentials(oauth.TokenSource{TokenSource: badTokenSource{}})),
-			option.WithGRPCDialOption(grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, ""))))
+		c, err := NewClient(ctx, testProjectID, option.WithTokenSource(badTokenSource{}))
 		if err != nil {
 			t.Fatal(err)
 		}
