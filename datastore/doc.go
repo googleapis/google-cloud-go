@@ -314,3 +314,7 @@ Example code:
 	}
 */
 package datastore // import "cloud.google.com/go/datastore"
+
+// resourcePrefixHeader is the name of the metadata header used to indicate
+// the resource being operated on.
+const resourcePrefixHeader = "google-cloud-resource-prefix"

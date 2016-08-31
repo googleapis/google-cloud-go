@@ -27,6 +27,7 @@ import (
 	"google.golang.org/api/transport"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 const (
@@ -41,6 +42,44 @@ const ScopeDatastore = "https://www.googleapis.com/auth/datastore"
 // fake clients in tests.
 type protoClient interface {
 	Call(context.Context, string, proto.Message, proto.Message) error
+}
+
+// datastoreClient is a wrapper for the pb.DatastoreClient that includes gRPC
+// metadata to be sent in each request for server-side traffic management.
+type datastoreClient struct {
+	c  pb.DatastoreClient
+	md metadata.MD
+}
+
+func newDatastoreClient(conn *grpc.ClientConn, projectID string) pb.DatastoreClient {
+	return &datastoreClient{
+		c:  pb.NewDatastoreClient(conn),
+		md: metadata.Pairs(resourcePrefixHeader, "projects/"+projectID),
+	}
+}
+
+func (dc *datastoreClient) Lookup(ctx context.Context, in *pb.LookupRequest, opts ...grpc.CallOption) (*pb.LookupResponse, error) {
+	return dc.c.Lookup(metadata.NewContext(ctx, dc.md), in, opts...)
+}
+
+func (dc *datastoreClient) RunQuery(ctx context.Context, in *pb.RunQueryRequest, opts ...grpc.CallOption) (*pb.RunQueryResponse, error) {
+	return dc.c.RunQuery(metadata.NewContext(ctx, dc.md), in, opts...)
+}
+
+func (dc *datastoreClient) BeginTransaction(ctx context.Context, in *pb.BeginTransactionRequest, opts ...grpc.CallOption) (*pb.BeginTransactionResponse, error) {
+	return dc.c.BeginTransaction(metadata.NewContext(ctx, dc.md), in, opts...)
+}
+
+func (dc *datastoreClient) Commit(ctx context.Context, in *pb.CommitRequest, opts ...grpc.CallOption) (*pb.CommitResponse, error) {
+	return dc.c.Commit(metadata.NewContext(ctx, dc.md), in, opts...)
+}
+
+func (dc *datastoreClient) Rollback(ctx context.Context, in *pb.RollbackRequest, opts ...grpc.CallOption) (*pb.RollbackResponse, error) {
+	return dc.c.Rollback(metadata.NewContext(ctx, dc.md), in, opts...)
+}
+
+func (dc *datastoreClient) AllocateIds(ctx context.Context, in *pb.AllocateIdsRequest, opts ...grpc.CallOption) (*pb.AllocateIdsResponse, error) {
+	return dc.c.AllocateIds(metadata.NewContext(ctx, dc.md), in, opts...)
 }
 
 // Client is a client for reading and writing data in a datastore dataset.
@@ -93,7 +132,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	}
 	return &Client{
 		conn:    conn,
-		client:  pb.NewDatastoreClient(conn),
+		client:  newDatastoreClient(conn, projectID),
 		dataset: projectID,
 	}, nil
 
