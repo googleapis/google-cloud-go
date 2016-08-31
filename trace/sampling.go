@@ -17,16 +17,17 @@ package trace
 import (
 	crand "crypto/rand"
 	"encoding/binary"
+	"fmt"
 	"math/rand"
 	"sync"
+	"time"
 
 	"golang.org/x/time/rate"
 )
 
-type Policy interface {
-	// Sample determines whether to sample the next request.  If so, it
-	// also returns a string and rate describing the policy by which the
-	// request was chosen.
+type SamplingPolicy interface {
+	// Sample determines whether to sample the next request.  If so, it also
+	// returns a string and rate describing the reason the request was chosen.
 	Sample() (sample bool, policy string, rate float64)
 }
 
@@ -37,7 +38,7 @@ type sampler struct {
 	sync.Mutex
 }
 
-func (s *sampler) Sample() (sample bool, policy string, rate float64) {
+func (s *sampler) Sample() (sample bool, reason string, rate float64) {
 	s.Lock()
 	x := s.Float64()
 	s.Unlock()
@@ -50,22 +51,35 @@ func (s *sampler) Sample() (sample bool, policy string, rate float64) {
 	return true, "qps", float64(s.Limit())
 }
 
-// NewSampler returns a sampling policy that traces a given fraction of
+// NewLimitedSampler returns a sampling policy that traces a given fraction of
 // requests, and enforces a limit on the number of traces per second.
-func NewSampler(fraction, maxqps float64) Policy {
-	if !(fraction > 0) || !(maxqps > 0) {
-		return nil
+// Returns a nil SamplingPolicy if either fraction or maxqps is zero.
+func NewLimitedSampler(fraction, maxqps float64) (SamplingPolicy, error) {
+	if !(fraction >= 0) {
+		return nil, fmt.Errorf("invalid fraction %f", fraction)
 	}
+	if !(maxqps >= 0) {
+		return nil, fmt.Errorf("invalid maxqps %f", maxqps)
+	}
+	if fraction == 0 || maxqps == 0 {
+		return nil, nil
+	}
+	// Set a limit on the number of accumulated "tokens", to limit bursts of
+	// traced requests.  Use one more than a second's worth of tokens, or 100,
+	// whichever is smaller.
+	// See https://godoc.org/golang.org/x/time/rate#NewLimiter.
 	maxTokens := 100
 	if maxqps < 99.0 {
 		maxTokens = 1 + int(maxqps)
 	}
 	var seed int64
-	binary.Read(crand.Reader, binary.LittleEndian, &seed)
+	if err := binary.Read(crand.Reader, binary.LittleEndian, &seed); err != nil {
+		seed = time.Now().UnixNano()
+	}
 	s := sampler{
 		fraction: fraction,
 		Limiter:  rate.NewLimiter(rate.Limit(maxqps), maxTokens),
 		Rand:     rand.New(rand.NewSource(seed)),
 	}
-	return &s
+	return &s, nil
 }

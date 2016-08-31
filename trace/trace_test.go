@@ -345,7 +345,11 @@ func TestSampling(t *testing.T) {
 		go func(test testCase) {
 			rt := newFakeRoundTripper()
 			traceClient := newTestClient(rt)
-			traceClient.SetSamplingPolicy(trace.NewSampler(test.rate, test.maxqps))
+			p, err := trace.NewLimitedSampler(test.rate, test.maxqps)
+			if err != nil {
+				t.Fatalf("NewLimitedSampler: %v", err)
+			}
+			traceClient.SetSamplingPolicy(p)
 			ticker := time.NewTicker(25 * time.Millisecond)
 			sampled := 0
 			for i := 0; i < 79; i++ {

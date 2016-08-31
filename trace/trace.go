@@ -214,7 +214,7 @@ func nextTraceID() string {
 type Client struct {
 	service   *api.Service
 	projectID string
-	Policy
+	policy    SamplingPolicy
 }
 
 // NewClient creates a new Google Stackdriver Trace client.
@@ -242,11 +242,11 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	}, nil
 }
 
-// SetSamplingPolicy sets the Policy that determines how often traces are
-// initiated by this client.
-func (c *Client) SetSamplingPolicy(p Policy) {
+// SetSamplingPolicy sets the SamplingPolicy that determines how often traces
+// are initiated by this client.
+func (c *Client) SetSamplingPolicy(p SamplingPolicy) {
 	if c != nil {
-		c.Policy = p
+		c.policy = p
 	}
 }
 
@@ -264,11 +264,11 @@ func (client *Client) SpanFromRequest(r *http.Request) *Span {
 	span := traceInfoFromRequest(r)
 	var (
 		sample bool
-		policy string
+		reason string
 		rate   float64
 	)
-	if client.Policy != nil {
-		sample, policy, rate = client.Sample()
+	if client.policy != nil {
+		sample, reason, rate = client.policy.Sample()
 	}
 	if sample {
 		if span == nil {
@@ -281,7 +281,7 @@ func (client *Client) SpanFromRequest(r *http.Request) *Span {
 			span.span.Kind = spanKindServer
 			span.rootSpan = true
 		}
-		span.SetLabel(labelSamplingPolicy, policy)
+		span.SetLabel(labelSamplingPolicy, reason)
 		span.SetLabel(labelSamplingRate, fmt.Sprint(rate))
 	}
 	if span == nil {
