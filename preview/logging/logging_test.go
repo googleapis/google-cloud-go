@@ -91,7 +91,11 @@ func TestMain(m *testing.M) {
 		}
 		testProjectID = "PROJECT_ID"
 		wait = func() {}
-		clean = func(*Entry) {}
+		clean = func(e *Entry) {
+			// Remove the insert ID for consistency with the integration test.
+			e.InsertID = ""
+		}
+
 		addr, err := ltesting.NewServer()
 		if err != nil {
 			log.Fatalf("creating fake server: %v", err)
@@ -272,7 +276,8 @@ func TestLogAndEntries(t *testing.T) {
 	lg := client.Logger(testLogID)
 	defer deleteLog(ctx, testLogID)
 	for _, p := range payloads {
-		lg.Log(Entry{Payload: p})
+		// Use the insert ID to guarantee iteration order.
+		lg.Log(Entry{Payload: p, InsertID: p})
 	}
 	lg.Flush()
 	var want []*Entry
