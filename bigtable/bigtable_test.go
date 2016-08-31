@@ -71,7 +71,7 @@ func TestClientIntegration(t *testing.T) {
 
 	proj, instance, table := "proj", "instance", "mytable"
 	var clientOpts []option.ClientOption
-	timeout := 10 * time.Second
+	timeout := 20 * time.Second
 	if *useProd == "" {
 		srv, err := bttest.NewServer("127.0.0.1:0")
 		if err != nil {
