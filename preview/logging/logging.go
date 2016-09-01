@@ -24,7 +24,7 @@
 // These features are missing now, but will likely be added:
 // - There is no way to specify CallOptions.
 
-// Package logging contains a Google Stackdriver Logging client.
+// Package logging contains a Stackdriver Logging client.
 // The client uses Logging API v2.
 // See https://cloud.google.com/logging/docs/api/v2/ for an introduction to the API.
 //
