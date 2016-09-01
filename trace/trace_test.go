@@ -104,12 +104,18 @@ func makeRequests(t *testing.T, req *http.Request, traceClient *trace.Client, rt
 		if err != nil {
 			t.Fatal(err)
 		}
-		bucketHandle := storageClient.Bucket("testbucket")
-		objectList, err := bucketHandle.List(ctx, nil)
-		if err != nil {
-			t.Fatal(err)
+		var objAttrsList []*storage.ObjectAttrs
+		it := storageClient.Bucket("testbucket").Objects(ctx, nil)
+		for {
+			objAttrs, err := it.Next()
+			if err != nil && err != storage.Done {
+				t.Fatal(err)
+			}
+			if err == storage.Done {
+				break
+			}
+			objAttrsList = append(objAttrsList, objAttrs)
 		}
-		_ = objectList
 	}
 
 	done := make(chan struct{})
