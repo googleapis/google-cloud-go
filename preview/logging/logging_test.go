@@ -43,15 +43,14 @@ import (
 	"google.golang.org/grpc"
 )
 
-const testLogID = "GO-LOGGING-CLIENT-TEST-LOG"
+const testLogIDPrefix = "GO-LOGGING-CLIENT-TEST-LOG"
 
 var (
-	client          *Client
-	uniqueIDCounter int
-	startTime       = time.Now()
-	testProjectID   string
-	testFilter      string
-	errorc          chan error
+	client        *Client
+	testProjectID string
+	testLogID     string
+	testFilter    string
+	errorc        chan error
 
 	// Wait for a short period of time. The production service needs a short
 	// delay between writing an entry and reading it back.
@@ -65,12 +64,6 @@ var (
 	// Create a new client with the given project ID.
 	newClient func(ctx context.Context, projectID string) *Client
 )
-
-// Generate unique IDs so tests don't interfere with each other.
-func uniqueID(prefix string) string {
-	uniqueIDCounter++
-	return fmt.Sprintf("%s-%d-%04d", prefix, startTime.Unix(), uniqueIDCounter) // zero-pad for lexical sort
-}
 
 func testNow() time.Time {
 	return time.Unix(1000, 0)
@@ -137,13 +130,18 @@ func TestMain(m *testing.M) {
 	}
 	client = newClient(ctx, testProjectID)
 	client.OnError = func(e error) { errorc <- e }
-	client.DeleteLog(ctx, testLogID) // In case previous tests aborted.
+	initLogs(ctx)
 	initMetrics(ctx)
 	initSinks(ctx)
 	testFilter = fmt.Sprintf(`logName = "projects/%s/logs/%s"`, testProjectID, testLogID)
 	exit := m.Run()
 	client.Close()
 	os.Exit(exit)
+}
+
+func initLogs(ctx context.Context) {
+	testLogID = uniqueID(testLogIDPrefix)
+	// TODO(jba): Clean up from previous aborted tests by deleting old logs; requires ListLogs RPC.
 }
 
 func TestLoggerCreation(t *testing.T) {
