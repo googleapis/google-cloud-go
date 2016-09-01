@@ -17,7 +17,6 @@ package logging
 import (
 	"log"
 	"reflect"
-	"strings"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
@@ -29,17 +28,15 @@ const testMetricIDPrefix = "GO-CLIENT-TEST-METRIC"
 
 // Initializes the tests before they run.
 func initMetrics(ctx context.Context) {
-	// Clean up from failed tests.
+	// Clean up from aborted tests.
+	var IDs []string
 	it := client.Metrics(ctx)
-	var toDelete []string
 loop:
 	for {
 		m, err := it.Next()
 		switch err {
 		case nil:
-			if strings.HasPrefix(m.ID, testMetricIDPrefix) {
-				toDelete = append(toDelete, m.ID)
-			}
+			IDs = append(IDs, m.ID)
 		case iterator.Done:
 			break loop
 		default:
@@ -47,7 +44,7 @@ loop:
 			return
 		}
 	}
-	for _, mID := range toDelete {
+	for _, mID := range expiredUniqueIDs(IDs, testMetricIDPrefix) {
 		client.DeleteMetric(ctx, mID)
 	}
 }

@@ -21,7 +21,6 @@ package logging
 import (
 	"log"
 	"reflect"
-	"strings"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
@@ -36,17 +35,15 @@ var testSinkDestination string
 // Called just before TestMain calls m.Run.
 func initSinks(ctx context.Context) {
 	testSinkDestination = "storage.googleapis.com/" + testProjectID
-	// Clean up from failed tests.
+	// Clean up from aborted tests.
+	var IDs []string
 	it := client.Sinks(ctx)
-	var toDelete []string
 loop:
 	for {
 		s, err := it.Next()
 		switch err {
 		case nil:
-			if strings.HasPrefix(s.ID, testSinkIDPrefix) {
-				toDelete = append(toDelete, s.ID)
-			}
+			IDs = append(IDs, s.ID)
 		case iterator.Done:
 			break loop
 		default:
@@ -54,7 +51,7 @@ loop:
 			return
 		}
 	}
-	for _, sID := range toDelete {
+	for _, sID := range expiredUniqueIDs(IDs, testSinkIDPrefix) {
 		client.DeleteSink(ctx, sID)
 	}
 }
