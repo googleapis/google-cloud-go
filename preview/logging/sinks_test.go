@@ -59,10 +59,9 @@ loop:
 func TestCreateDeleteSink(t *testing.T) {
 	ctx := context.Background()
 	sink := &Sink{
-		ID:                  uniqueID(testSinkIDPrefix),
-		Destination:         testSinkDestination,
-		Filter:              testFilter,
-		OutputVersionFormat: V2Format,
+		ID:          uniqueID(testSinkIDPrefix),
+		Destination: testSinkDestination,
+		Filter:      testFilter,
 	}
 	got, err := client.CreateSink(ctx, sink)
 	if err != nil {
@@ -92,10 +91,9 @@ func TestCreateDeleteSink(t *testing.T) {
 func TestUpdateSink(t *testing.T) {
 	ctx := context.Background()
 	sink := &Sink{
-		ID:                  uniqueID(testSinkIDPrefix),
-		Destination:         testSinkDestination,
-		Filter:              testFilter,
-		OutputVersionFormat: V2Format,
+		ID:          uniqueID(testSinkIDPrefix),
+		Destination: testSinkDestination,
+		Filter:      testFilter,
 	}
 
 	// Updating a non-existent sink creates a new one.
@@ -116,8 +114,6 @@ func TestUpdateSink(t *testing.T) {
 	}
 
 	// Updating an existing sink changes it.
-	sink.OutputVersionFormat = V1Format
-	// testFilter is in v2 format, so change it too.
 	sink.Filter = ""
 	if _, err := client.UpdateSink(ctx, sink); err != nil {
 		t.Fatal(err)
@@ -136,10 +132,9 @@ func TestListSinks(t *testing.T) {
 	var sinks []*Sink
 	for i := 0; i < 4; i++ {
 		sinks = append(sinks, &Sink{
-			ID:                  uniqueID(testSinkIDPrefix),
-			Destination:         testSinkDestination,
-			Filter:              testFilter,
-			OutputVersionFormat: V2Format,
+			ID:          uniqueID(testSinkIDPrefix),
+			Destination: testSinkDestination,
+			Filter:      testFilter,
 		})
 	}
 	for _, s := range sinks {
@@ -155,13 +150,4 @@ func TestListSinks(t *testing.T) {
 		t.Fatal(msg)
 	}
 	// TODO(jba): test exact paging.
-}
-
-func TestVersionFormat(t *testing.T) {
-	if got, want := V1Format.String(), "V1Format"; got != want {
-		t.Errorf("got %q, want %q", got, want)
-	}
-	if got, want := V2Format.String(), "V2Format"; got != want {
-		t.Errorf("got %q, want %q", got, want)
-	}
 }

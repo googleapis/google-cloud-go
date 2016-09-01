@@ -182,10 +182,9 @@ func ExampleClient_CreateSink() {
 		// TODO: Handle error.
 	}
 	sink, err := client.CreateSink(ctx, &logging.Sink{
-		ID:                  "severe-errors-to-gcs",
-		Destination:         "storage.googleapis.com/my-bucket",
-		Filter:              "severity >= ERROR",
-		OutputVersionFormat: logging.V2Format,
+		ID:          "severe-errors-to-gcs",
+		Destination: "storage.googleapis.com/my-bucket",
+		Filter:      "severity >= ERROR",
 	})
 	if err != nil {
 		// TODO: Handle error.
@@ -224,10 +223,9 @@ func ExampleClient_UpdateSink() {
 		// TODO: Handle error.
 	}
 	sink, err := client.UpdateSink(ctx, &logging.Sink{
-		ID:                  "severe-errors-to-gcs",
-		Destination:         "storage.googleapis.com/my-other-bucket",
-		Filter:              "severity >= ERROR",
-		OutputVersionFormat: logging.V2Format,
+		ID:          "severe-errors-to-gcs",
+		Destination: "storage.googleapis.com/my-other-bucket",
+		Filter:      "severity >= ERROR",
 	})
 	if err != nil {
 		// TODO: Handle error.

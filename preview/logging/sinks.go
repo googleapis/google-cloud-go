@@ -16,7 +16,6 @@ package logging
 
 import (
 	"fmt"
-	"strconv"
 
 	vkit "cloud.google.com/go/logging/apiv2"
 	gax "github.com/googleapis/gax-go"
@@ -24,38 +23,6 @@ import (
 	"google.golang.org/api/iterator"
 	logpb "google.golang.org/genproto/googleapis/logging/v2"
 )
-
-// VersionFormat describes an available log entry format. Log entries can be
-// written to Stackdriver Logging in either the V1Format or the V2Format and can be
-// exported in either format. V2Format is the preferred format.
-// See https://cloud.google.com/logging/docs/api/v2/migration-to-v2#v2-logentry-changes
-// for more about the two formats.
-type VersionFormat int
-
-const (
-	versionFormatUnspecified = VersionFormat(logpb.LogSink_VERSION_FORMAT_UNSPECIFIED)
-
-	// V1Format is the entry version 1 format.
-	V1Format = VersionFormat(logpb.LogSink_V1)
-
-	// V2Format is the entry version 2 format.
-	V2Format = VersionFormat(logpb.LogSink_V2)
-)
-
-var versionFormatName = map[VersionFormat]string{
-	versionFormatUnspecified: "(version format unspecified)",
-	V1Format:                 "V1Format",
-	V2Format:                 "V2Format",
-}
-
-// String converts a VersionFormat to a string.
-func (v VersionFormat) String() string {
-	// same as proto.EnumName
-	if s, ok := versionFormatName[v]; ok {
-		return s
-	}
-	return strconv.Itoa(int(v))
-}
 
 // Sink describes a sink used to export log entries outside Stackdriver
 // Logging. Incoming log entries matching a filter are exported to a
@@ -80,27 +47,14 @@ type Sink struct {
 
 	// Filter optionally specifies an advanced logs filter (see
 	// https://cloud.google.com/logging/docs/view/advanced_filters) that
-	// defines the log entries to be exported. The filter must be consistent
-	// with the log entry format designated by the outputVersionFormat parameter,
-	// regardless of the format of the log entry that was originally written to
-	// Stackdriver Logging. Example: "logName:syslog AND severity>=ERROR".
-	// If omitted, all entries are returned.
+	// defines the log entries to be exported. Example: "logName:syslog AND
+	// severity>=ERROR". If omitted, all entries are returned.
 	Filter string
-
-	// OutputVersionFormat optionally specifies the log entry version used when
-	// exporting log entries to this sink. This version does not have to
-	// correspond to the version of the log entry when it was written to
-	// Stackdriver Logging.
-	// If omitted, V2Format is used.
-	OutputVersionFormat VersionFormat
 }
 
 // CreateSink creates a Sink. It returns an error if the Sink already exists.
 // Requires AdminScope.
 func (c *Client) CreateSink(ctx context.Context, sink *Sink) (*Sink, error) {
-	if sink.OutputVersionFormat == versionFormatUnspecified {
-		sink.OutputVersionFormat = V2Format
-	}
 	ls, err := c.sClient.CreateSink(ctx, &logpb.CreateSinkRequest{
 		Parent: c.parent(),
 		Sink:   toLogSink(sink),
@@ -137,9 +91,6 @@ func (c *Client) Sink(ctx context.Context, sinkID string) (*Sink, error) {
 // UpdateSink updates an existing Sink, or creates a new one if the Sink doesn't exist.
 // Requires AdminScope.
 func (c *Client) UpdateSink(ctx context.Context, sink *Sink) (*Sink, error) {
-	if sink.OutputVersionFormat == versionFormatUnspecified {
-		sink.OutputVersionFormat = V2Format
-	}
 	ls, err := c.sClient.UpdateSink(ctx, &logpb.UpdateSinkRequest{
 		SinkName: c.sinkPath(sink.ID),
 		Sink:     toLogSink(sink),
@@ -220,15 +171,14 @@ func toLogSink(s *Sink) *logpb.LogSink {
 		Name:                s.ID,
 		Destination:         s.Destination,
 		Filter:              s.Filter,
-		OutputVersionFormat: logpb.LogSink_VersionFormat(s.OutputVersionFormat),
+		OutputVersionFormat: logpb.LogSink_V2,
 	}
 }
 
 func fromLogSink(ls *logpb.LogSink) *Sink {
 	return &Sink{
-		ID:                  ls.Name,
-		Destination:         ls.Destination,
-		Filter:              ls.Filter,
-		OutputVersionFormat: VersionFormat(ls.OutputVersionFormat),
+		ID:          ls.Name,
+		Destination: ls.Destination,
+		Filter:      ls.Filter,
 	}
 }
