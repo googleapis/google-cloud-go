@@ -16,6 +16,7 @@ package storage
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -23,12 +24,14 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
 
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
+	raw "google.golang.org/api/storage/v1"
 )
 
 func TestSignedURL(t *testing.T) {
@@ -406,6 +409,174 @@ func TestCondition(t *testing.T) {
 	err = obj.WithConditions(Generation(1234)).NewWriter(ctx).Close()
 	if err == nil || !strings.Contains(err.Error(), "NewWriter: condition Generation not supported") {
 		t.Errorf("want error about unsupported condition; got %v", err)
+	}
+}
+
+// Test object compose.
+func TestObjectCompose(t *testing.T) {
+	gotURL := make(chan string, 1)
+	gotBody := make(chan []byte, 1)
+	hc, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
+		body, _ := ioutil.ReadAll(r.Body)
+		gotURL <- r.URL.String()
+		gotBody <- body
+		w.Write([]byte("{}"))
+	})
+	defer close()
+	ctx := context.Background()
+	c, err := NewClient(ctx, option.WithHTTPClient(hc))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	testCases := []struct {
+		desc    string
+		dst     *ObjectHandle
+		srcs    []*ObjectHandle
+		attrs   *ObjectAttrs
+		wantReq raw.ComposeRequest
+		wantURL string
+		wantErr bool
+	}{
+		{
+			desc: "basic case",
+			dst:  c.Bucket("foo").Object("bar"),
+			srcs: []*ObjectHandle{
+				c.Bucket("foo").Object("baz"),
+				c.Bucket("foo").Object("quux"),
+			},
+			wantURL: "/storage/v1/b/foo/o/bar/compose?alt=json",
+			wantReq: raw.ComposeRequest{
+				SourceObjects: []*raw.ComposeRequestSourceObjects{
+					{Name: "baz"},
+					{Name: "quux"},
+				},
+			},
+		},
+		{
+			desc: "with object attrs",
+			dst:  c.Bucket("foo").Object("bar"),
+			srcs: []*ObjectHandle{
+				c.Bucket("foo").Object("baz"),
+				c.Bucket("foo").Object("quux"),
+			},
+			attrs: &ObjectAttrs{
+				Name:        "not-bar",
+				ContentType: "application/json",
+			},
+			wantURL: "/storage/v1/b/foo/o/bar/compose?alt=json",
+			wantReq: raw.ComposeRequest{
+				Destination: &raw.Object{
+					Bucket:      "foo",
+					Name:        "bar",
+					ContentType: "application/json",
+				},
+				SourceObjects: []*raw.ComposeRequestSourceObjects{
+					{Name: "baz"},
+					{Name: "quux"},
+				},
+			},
+		},
+		{
+			desc: "with conditions",
+			dst:  c.Bucket("foo").Object("bar").WithConditions(IfGenerationMatch(12), IfMetaGenerationMatch(34)),
+			srcs: []*ObjectHandle{
+				c.Bucket("foo").Object("baz").WithConditions(Generation(56)),
+				c.Bucket("foo").Object("quux").WithConditions(IfGenerationMatch(78)),
+			},
+			wantURL: "/storage/v1/b/foo/o/bar/compose?alt=json&ifGenerationMatch=12&ifMetagenerationMatch=34",
+			wantReq: raw.ComposeRequest{
+				SourceObjects: []*raw.ComposeRequestSourceObjects{
+					{
+						Name:       "baz",
+						Generation: 56,
+					},
+					{
+						Name: "quux",
+						ObjectPreconditions: &raw.ComposeRequestSourceObjectsObjectPreconditions{
+							IfGenerationMatch: 78,
+						},
+					},
+				},
+			},
+		},
+		{
+			desc:    "no sources",
+			dst:     c.Bucket("foo").Object("bar"),
+			wantErr: true,
+		},
+		{
+			desc: "destination, no bucket",
+			dst:  c.Bucket("").Object("bar"),
+			srcs: []*ObjectHandle{
+				c.Bucket("foo").Object("baz"),
+			},
+			wantErr: true,
+		},
+		{
+			desc: "destination, no object",
+			dst:  c.Bucket("foo").Object(""),
+			srcs: []*ObjectHandle{
+				c.Bucket("foo").Object("baz"),
+			},
+			wantErr: true,
+		},
+		{
+			desc: "source, different bucket",
+			dst:  c.Bucket("foo").Object("bar"),
+			srcs: []*ObjectHandle{
+				c.Bucket("otherbucket").Object("baz"),
+			},
+			wantErr: true,
+		},
+		{
+			desc: "source, no object",
+			dst:  c.Bucket("foo").Object("bar"),
+			srcs: []*ObjectHandle{
+				c.Bucket("foo").Object(""),
+			},
+			wantErr: true,
+		},
+		{
+			desc: "destination, bad condition",
+			dst:  c.Bucket("foo").Object("bar").WithConditions(Generation(12)),
+			srcs: []*ObjectHandle{
+				c.Bucket("foo").Object("baz"),
+			},
+			wantErr: true,
+		},
+		{
+			desc: "source, bad condition",
+			dst:  c.Bucket("foo").Object("bar"),
+			srcs: []*ObjectHandle{
+				c.Bucket("foo").Object("baz").WithConditions(IfMetaGenerationMatch(12)),
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range testCases {
+		_, err := tt.dst.ComposeFrom(ctx, tt.srcs, tt.attrs)
+		if gotErr := err != nil; gotErr != tt.wantErr {
+			t.Errorf("%s: got error %v; want err %t", tt.desc, err, tt.wantErr)
+			continue
+		}
+		if tt.wantErr {
+			continue
+		}
+		url, body := <-gotURL, <-gotBody
+		if url != tt.wantURL {
+			t.Errorf("%s: request URL\ngot  %q\nwant %q", tt.desc, url, tt.wantURL)
+		}
+		var req raw.ComposeRequest
+		if err := json.Unmarshal(body, &req); err != nil {
+			t.Errorf("%s: json.Unmarshal %v (body %s)", tt.desc, err, body)
+		}
+		if !reflect.DeepEqual(req, tt.wantReq) {
+			// Print to JSON.
+			wantReq, _ := json.Marshal(tt.wantReq)
+			t.Errorf("%s: request body\ngot  %s\nwant %s", tt.desc, body, wantReq)
+		}
 	}
 }
 
