@@ -25,7 +25,8 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
-	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
+	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1beta1"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -33,7 +34,8 @@ import (
 
 // CallOptions contains the retry settings for each method of this client.
 type CallOptions struct {
-	NonStreamingRecognize []gax.CallOption
+	SyncRecognize  []gax.CallOption
+	AsyncRecognize []gax.CallOption
 }
 
 func defaultClientOptions() []option.ClientOption {
@@ -45,21 +47,25 @@ func defaultClientOptions() []option.ClientOption {
 	}
 }
 
-func defaultRetryOptions() []gax.CallOption {
-	return []gax.CallOption{
-		gax.WithTimeout(600000 * time.Millisecond),
-		gax.WithDelayTimeoutSettings(100*time.Millisecond, 60000*time.Millisecond, 1.3),
-		gax.WithRPCTimeoutSettings(60000*time.Millisecond, 60000*time.Millisecond, 1.0),
-	}
-}
-
 func defaultCallOptions() *CallOptions {
-	withIdempotentRetryCodes := gax.WithRetryCodes([]codes.Code{
-		codes.DeadlineExceeded,
-		codes.Unavailable,
-	})
+	retry := map[[2]string][]gax.CallOption{
+		{"default", "idempotent"}: {
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.3,
+				})
+			}),
+		},
+	}
+
 	return &CallOptions{
-		NonStreamingRecognize: append(defaultRetryOptions(), withIdempotentRetryCodes),
+		SyncRecognize:  retry[[2]string{"default", "idempotent"}],
+		AsyncRecognize: retry[[2]string{"default", "idempotent"}],
 	}
 }
 
@@ -115,16 +121,33 @@ func (c *Client) SetGoogleClientInfo(name, version string) {
 	}
 }
 
-// NonStreamingRecognize perform non-streaming speech-recognition: receive results after all audio
+// SyncRecognize perform synchronous speech-recognition: receive results after all audio
 // has been sent and processed.
-func (c *Client) NonStreamingRecognize(ctx context.Context, req *speechpb.RecognizeRequest) (*speechpb.NonStreamingRecognizeResponse, error) {
+func (c *Client) SyncRecognize(ctx context.Context, req *speechpb.SyncRecognizeRequest) (*speechpb.SyncRecognizeResponse, error) {
 	ctx = metadata.NewContext(ctx, c.metadata)
-	var resp *speechpb.NonStreamingRecognizeResponse
+	var resp *speechpb.SyncRecognizeResponse
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
-		resp, err = c.client.NonStreamingRecognize(ctx, req)
+		resp, err = c.client.SyncRecognize(ctx, req)
 		return err
-	}, c.CallOptions.NonStreamingRecognize...)
+	}, c.CallOptions.SyncRecognize...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// AsyncRecognize perform asynchronous speech-recognition: receive results via the
+// google.longrunning.Operations interface. `Operation.response` returns
+// `AsyncRecognizeResponse`.
+func (c *Client) AsyncRecognize(ctx context.Context, req *speechpb.AsyncRecognizeRequest) (*longrunningpb.Operation, error) {
+	ctx = metadata.NewContext(ctx, c.metadata)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		var err error
+		resp, err = c.client.AsyncRecognize(ctx, req)
+		return err
+	}, c.CallOptions.AsyncRecognize...)
 	if err != nil {
 		return nil, err
 	}

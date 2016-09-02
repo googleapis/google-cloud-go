@@ -17,9 +17,9 @@
 package speech_test
 
 import (
-	"cloud.google.com/go/speech/apiv1"
+	"cloud.google.com/go/speech/apiv1beta1"
 	"golang.org/x/net/context"
-	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
+	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1beta1"
 )
 
 func ExampleNewClient() {
@@ -32,17 +32,35 @@ func ExampleNewClient() {
 	_ = c
 }
 
-func ExampleClient_NonStreamingRecognize() {
+func ExampleClient_SyncRecognize() {
 	ctx := context.Background()
 	c, err := speech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &speechpb.RecognizeRequest{
+	req := &speechpb.SyncRecognizeRequest{
 	// TODO: Fill request struct fields.
 	}
-	resp, err := c.NonStreamingRecognize(ctx, req)
+	resp, err := c.SyncRecognize(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_AsyncRecognize() {
+	ctx := context.Background()
+	c, err := speech.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &speechpb.AsyncRecognizeRequest{
+	// TODO: Fill request struct fields.
+	}
+	resp, err := c.AsyncRecognize(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

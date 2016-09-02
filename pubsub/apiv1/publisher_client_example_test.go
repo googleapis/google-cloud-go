@@ -19,7 +19,7 @@ package pubsub_test
 import (
 	"cloud.google.com/go/pubsub/apiv1"
 	"golang.org/x/net/context"
-	googleapis_pubsub_v1 "google.golang.org/genproto/googleapis/pubsub/v1"
+	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
 func ExampleNewPublisherClient() {
@@ -39,7 +39,7 @@ func ExamplePublisherClient_CreateTopic() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_pubsub_v1.Topic{
+	req := &pubsubpb.Topic{
 	// TODO: Fill request struct fields.
 	}
 	resp, err := c.CreateTopic(ctx, req)
@@ -57,7 +57,7 @@ func ExamplePublisherClient_Publish() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_pubsub_v1.PublishRequest{
+	req := &pubsubpb.PublishRequest{
 	// TODO: Fill request struct fields.
 	}
 	resp, err := c.Publish(ctx, req)
@@ -75,7 +75,7 @@ func ExamplePublisherClient_GetTopic() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_pubsub_v1.GetTopicRequest{
+	req := &pubsubpb.GetTopicRequest{
 	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetTopic(ctx, req)
@@ -93,7 +93,7 @@ func ExamplePublisherClient_ListTopics() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_pubsub_v1.ListTopicsRequest{
+	req := &pubsubpb.ListTopicsRequest{
 	// TODO: Fill request struct fields.
 	}
 	it := c.ListTopics(ctx, req)
@@ -115,7 +115,7 @@ func ExamplePublisherClient_ListTopicSubscriptions() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_pubsub_v1.ListTopicSubscriptionsRequest{
+	req := &pubsubpb.ListTopicSubscriptionsRequest{
 	// TODO: Fill request struct fields.
 	}
 	it := c.ListTopicSubscriptions(ctx, req)
@@ -137,7 +137,7 @@ func ExamplePublisherClient_DeleteTopic() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_pubsub_v1.DeleteTopicRequest{
+	req := &pubsubpb.DeleteTopicRequest{
 	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteTopic(ctx, req)

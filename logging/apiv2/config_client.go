@@ -33,8 +33,8 @@ import (
 )
 
 var (
-	configProjectPathTemplate = gax.MustCompilePathTemplate("projects/{project}")
-	configSinkPathTemplate    = gax.MustCompilePathTemplate("projects/{project}/sinks/{sink}")
+	configParentPathTemplate = gax.MustCompilePathTemplate("projects/{project}")
+	configSinkPathTemplate   = gax.MustCompilePathTemplate("projects/{project}/sinks/{sink}")
 )
 
 // ConfigCallOptions contains the retry settings for each method of this client.
@@ -59,25 +59,28 @@ func defaultConfigClientOptions() []option.ClientOption {
 	}
 }
 
-func defaultConfigRetryOptions() []gax.CallOption {
-	return []gax.CallOption{
-		gax.WithTimeout(45000 * time.Millisecond),
-		gax.WithDelayTimeoutSettings(100*time.Millisecond, 1000*time.Millisecond, 1.2),
-		gax.WithRPCTimeoutSettings(2000*time.Millisecond, 30000*time.Millisecond, 1.5),
-	}
-}
-
 func defaultConfigCallOptions() *ConfigCallOptions {
-	withIdempotentRetryCodes := gax.WithRetryCodes([]codes.Code{
-		codes.DeadlineExceeded,
-		codes.Unavailable,
-	})
+	retry := map[[2]string][]gax.CallOption{
+		{"default", "idempotent"}: {
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        1000 * time.Millisecond,
+					Multiplier: 1.2,
+				})
+			}),
+		},
+	}
+
 	return &ConfigCallOptions{
-		ListSinks:  append(defaultConfigRetryOptions(), withIdempotentRetryCodes),
-		GetSink:    append(defaultConfigRetryOptions(), withIdempotentRetryCodes),
-		CreateSink: defaultConfigRetryOptions(),
-		UpdateSink: defaultConfigRetryOptions(),
-		DeleteSink: append(defaultConfigRetryOptions(), withIdempotentRetryCodes),
+		ListSinks:  retry[[2]string{"default", "idempotent"}],
+		GetSink:    retry[[2]string{"default", "idempotent"}],
+		CreateSink: retry[[2]string{"default", "non_idempotent"}],
+		UpdateSink: retry[[2]string{"default", "non_idempotent"}],
+		DeleteSink: retry[[2]string{"default", "idempotent"}],
 	}
 }
 
@@ -134,9 +137,9 @@ func (c *ConfigClient) SetGoogleClientInfo(name, version string) {
 	}
 }
 
-// ProjectPath returns the path for the project resource.
-func ConfigProjectPath(project string) string {
-	path, err := configProjectPathTemplate.Render(map[string]string{
+// ParentPath returns the path for the parent resource.
+func ConfigParentPath(project string) string {
+	path, err := configParentPathTemplate.Render(map[string]string{
 		"project": project,
 	})
 	if err != nil {

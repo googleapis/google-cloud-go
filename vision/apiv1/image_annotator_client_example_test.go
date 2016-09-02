@@ -19,7 +19,7 @@ package vision_test
 import (
 	"cloud.google.com/go/vision/apiv1"
 	"golang.org/x/net/context"
-	pb "google.golang.org/genproto/googleapis/cloud/vision/v1"
+	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
 )
 
 func ExampleNewClient() {
@@ -39,7 +39,7 @@ func ExampleClient_BatchAnnotateImages() {
 		// TODO: Handle error.
 	}
 
-	req := &pb.BatchAnnotateImagesRequest{
+	req := &visionpb.BatchAnnotateImagesRequest{
 	// TODO: Fill request struct fields.
 	}
 	resp, err := c.BatchAnnotateImages(ctx, req)

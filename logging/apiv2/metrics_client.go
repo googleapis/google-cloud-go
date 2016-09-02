@@ -33,8 +33,8 @@ import (
 )
 
 var (
-	metricsProjectPathTemplate = gax.MustCompilePathTemplate("projects/{project}")
-	metricsMetricPathTemplate  = gax.MustCompilePathTemplate("projects/{project}/metrics/{metric}")
+	metricsParentPathTemplate = gax.MustCompilePathTemplate("projects/{project}")
+	metricsMetricPathTemplate = gax.MustCompilePathTemplate("projects/{project}/metrics/{metric}")
 )
 
 // MetricsCallOptions contains the retry settings for each method of this client.
@@ -59,25 +59,28 @@ func defaultMetricsClientOptions() []option.ClientOption {
 	}
 }
 
-func defaultMetricsRetryOptions() []gax.CallOption {
-	return []gax.CallOption{
-		gax.WithTimeout(45000 * time.Millisecond),
-		gax.WithDelayTimeoutSettings(100*time.Millisecond, 1000*time.Millisecond, 1.2),
-		gax.WithRPCTimeoutSettings(2000*time.Millisecond, 30000*time.Millisecond, 1.5),
-	}
-}
-
 func defaultMetricsCallOptions() *MetricsCallOptions {
-	withIdempotentRetryCodes := gax.WithRetryCodes([]codes.Code{
-		codes.DeadlineExceeded,
-		codes.Unavailable,
-	})
+	retry := map[[2]string][]gax.CallOption{
+		{"default", "idempotent"}: {
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        1000 * time.Millisecond,
+					Multiplier: 1.2,
+				})
+			}),
+		},
+	}
+
 	return &MetricsCallOptions{
-		ListLogMetrics:  append(defaultMetricsRetryOptions(), withIdempotentRetryCodes),
-		GetLogMetric:    append(defaultMetricsRetryOptions(), withIdempotentRetryCodes),
-		CreateLogMetric: defaultMetricsRetryOptions(),
-		UpdateLogMetric: defaultMetricsRetryOptions(),
-		DeleteLogMetric: append(defaultMetricsRetryOptions(), withIdempotentRetryCodes),
+		ListLogMetrics:  retry[[2]string{"default", "idempotent"}],
+		GetLogMetric:    retry[[2]string{"default", "idempotent"}],
+		CreateLogMetric: retry[[2]string{"default", "non_idempotent"}],
+		UpdateLogMetric: retry[[2]string{"default", "non_idempotent"}],
+		DeleteLogMetric: retry[[2]string{"default", "idempotent"}],
 	}
 }
 
@@ -133,9 +136,9 @@ func (c *MetricsClient) SetGoogleClientInfo(name, version string) {
 	}
 }
 
-// ProjectPath returns the path for the project resource.
-func MetricsProjectPath(project string) string {
-	path, err := metricsProjectPathTemplate.Render(map[string]string{
+// ParentPath returns the path for the parent resource.
+func MetricsParentPath(project string) string {
+	path, err := metricsParentPathTemplate.Render(map[string]string{
 		"project": project,
 	})
 	if err != nil {

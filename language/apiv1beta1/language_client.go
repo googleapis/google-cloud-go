@@ -47,23 +47,26 @@ func defaultClientOptions() []option.ClientOption {
 	}
 }
 
-func defaultRetryOptions() []gax.CallOption {
-	return []gax.CallOption{
-		gax.WithTimeout(600000 * time.Millisecond),
-		gax.WithDelayTimeoutSettings(100*time.Millisecond, 60000*time.Millisecond, 1.3),
-		gax.WithRPCTimeoutSettings(60000*time.Millisecond, 60000*time.Millisecond, 1.0),
-	}
-}
-
 func defaultCallOptions() *CallOptions {
-	withIdempotentRetryCodes := gax.WithRetryCodes([]codes.Code{
-		codes.DeadlineExceeded,
-		codes.Unavailable,
-	})
+	retry := map[[2]string][]gax.CallOption{
+		{"default", "idempotent"}: {
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.3,
+				})
+			}),
+		},
+	}
+
 	return &CallOptions{
-		AnalyzeSentiment: append(defaultRetryOptions(), withIdempotentRetryCodes),
-		AnalyzeEntities:  append(defaultRetryOptions(), withIdempotentRetryCodes),
-		AnnotateText:     append(defaultRetryOptions(), withIdempotentRetryCodes),
+		AnalyzeSentiment: retry[[2]string{"default", "idempotent"}],
+		AnalyzeEntities:  retry[[2]string{"default", "idempotent"}],
+		AnnotateText:     retry[[2]string{"default", "idempotent"}],
 	}
 }
 

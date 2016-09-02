@@ -25,7 +25,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
-	pb "google.golang.org/genproto/googleapis/cloud/vision/v1"
+	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -45,21 +45,24 @@ func defaultClientOptions() []option.ClientOption {
 	}
 }
 
-func defaultRetryOptions() []gax.CallOption {
-	return []gax.CallOption{
-		gax.WithTimeout(600000 * time.Millisecond),
-		gax.WithDelayTimeoutSettings(100*time.Millisecond, 60000*time.Millisecond, 1.3),
-		gax.WithRPCTimeoutSettings(60000*time.Millisecond, 60000*time.Millisecond, 1.0),
-	}
-}
-
 func defaultCallOptions() *CallOptions {
-	withIdempotentRetryCodes := gax.WithRetryCodes([]codes.Code{
-		codes.DeadlineExceeded,
-		codes.Unavailable,
-	})
+	retry := map[[2]string][]gax.CallOption{
+		{"default", "idempotent"}: {
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.3,
+				})
+			}),
+		},
+	}
+
 	return &CallOptions{
-		BatchAnnotateImages: append(defaultRetryOptions(), withIdempotentRetryCodes),
+		BatchAnnotateImages: retry[[2]string{"default", "idempotent"}],
 	}
 }
 
@@ -69,7 +72,7 @@ type Client struct {
 	conn *grpc.ClientConn
 
 	// The gRPC API client.
-	client pb.ImageAnnotatorClient
+	client visionpb.ImageAnnotatorClient
 
 	// The call options for this service.
 	CallOptions *CallOptions
@@ -90,7 +93,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	}
 	c := &Client{
 		conn:        conn,
-		client:      pb.NewImageAnnotatorClient(conn),
+		client:      visionpb.NewImageAnnotatorClient(conn),
 		CallOptions: defaultCallOptions(),
 	}
 	c.SetGoogleClientInfo("gax", gax.Version)
@@ -118,9 +121,9 @@ func (c *Client) SetGoogleClientInfo(name, version string) {
 }
 
 // BatchAnnotateImages run image detection and annotation for a batch of images.
-func (c *Client) BatchAnnotateImages(ctx context.Context, req *pb.BatchAnnotateImagesRequest) (*pb.BatchAnnotateImagesResponse, error) {
+func (c *Client) BatchAnnotateImages(ctx context.Context, req *visionpb.BatchAnnotateImagesRequest) (*visionpb.BatchAnnotateImagesResponse, error) {
 	ctx = metadata.NewContext(ctx, c.metadata)
-	var resp *pb.BatchAnnotateImagesResponse
+	var resp *visionpb.BatchAnnotateImagesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
 		resp, err = c.client.BatchAnnotateImages(ctx, req)
