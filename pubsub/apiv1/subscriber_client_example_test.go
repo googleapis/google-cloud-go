@@ -19,7 +19,7 @@ package pubsub_test
 import (
 	"cloud.google.com/go/pubsub/apiv1"
 	"golang.org/x/net/context"
-	googleapis_pubsub_v1 "google.golang.org/genproto/googleapis/pubsub/v1"
+	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
 func ExampleNewSubscriberClient() {
@@ -39,7 +39,7 @@ func ExampleSubscriberClient_CreateSubscription() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_pubsub_v1.Subscription{
+	req := &pubsubpb.Subscription{
 	// TODO: Fill request struct fields.
 	}
 	resp, err := c.CreateSubscription(ctx, req)
@@ -57,7 +57,7 @@ func ExampleSubscriberClient_GetSubscription() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_pubsub_v1.GetSubscriptionRequest{
+	req := &pubsubpb.GetSubscriptionRequest{
 	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetSubscription(ctx, req)
@@ -75,7 +75,7 @@ func ExampleSubscriberClient_ListSubscriptions() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_pubsub_v1.ListSubscriptionsRequest{
+	req := &pubsubpb.ListSubscriptionsRequest{
 	// TODO: Fill request struct fields.
 	}
 	it := c.ListSubscriptions(ctx, req)
@@ -97,7 +97,7 @@ func ExampleSubscriberClient_DeleteSubscription() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_pubsub_v1.DeleteSubscriptionRequest{
+	req := &pubsubpb.DeleteSubscriptionRequest{
 	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteSubscription(ctx, req)
@@ -113,7 +113,7 @@ func ExampleSubscriberClient_ModifyAckDeadline() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_pubsub_v1.ModifyAckDeadlineRequest{
+	req := &pubsubpb.ModifyAckDeadlineRequest{
 	// TODO: Fill request struct fields.
 	}
 	err = c.ModifyAckDeadline(ctx, req)
@@ -129,7 +129,7 @@ func ExampleSubscriberClient_Acknowledge() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_pubsub_v1.AcknowledgeRequest{
+	req := &pubsubpb.AcknowledgeRequest{
 	// TODO: Fill request struct fields.
 	}
 	err = c.Acknowledge(ctx, req)
@@ -145,7 +145,7 @@ func ExampleSubscriberClient_Pull() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_pubsub_v1.PullRequest{
+	req := &pubsubpb.PullRequest{
 	// TODO: Fill request struct fields.
 	}
 	resp, err := c.Pull(ctx, req)
@@ -163,7 +163,7 @@ func ExampleSubscriberClient_ModifyPushConfig() {
 		// TODO: Handle error.
 	}
 
-	req := &googleapis_pubsub_v1.ModifyPushConfigRequest{
+	req := &pubsubpb.ModifyPushConfigRequest{
 	// TODO: Fill request struct fields.
 	}
 	err = c.ModifyPushConfig(ctx, req)

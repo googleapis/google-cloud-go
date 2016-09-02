@@ -34,8 +34,8 @@ import (
 )
 
 var (
-	loggingProjectPathTemplate = gax.MustCompilePathTemplate("projects/{project}")
-	loggingLogPathTemplate     = gax.MustCompilePathTemplate("projects/{project}/logs/{log}")
+	loggingParentPathTemplate = gax.MustCompilePathTemplate("projects/{project}")
+	loggingLogPathTemplate    = gax.MustCompilePathTemplate("projects/{project}/logs/{log}")
 )
 
 // CallOptions contains the retry settings for each method of this client.
@@ -59,31 +59,39 @@ func defaultClientOptions() []option.ClientOption {
 	}
 }
 
-func defaultRetryOptions() []gax.CallOption {
-	return []gax.CallOption{
-		gax.WithTimeout(45000 * time.Millisecond),
-		gax.WithDelayTimeoutSettings(100*time.Millisecond, 1000*time.Millisecond, 1.2),
-		gax.WithRPCTimeoutSettings(2000*time.Millisecond, 30000*time.Millisecond, 1.5),
-	}
-}
-func listRetryOptions() []gax.CallOption {
-	return []gax.CallOption{
-		gax.WithTimeout(45000 * time.Millisecond),
-		gax.WithDelayTimeoutSettings(100*time.Millisecond, 1000*time.Millisecond, 1.2),
-		gax.WithRPCTimeoutSettings(7000*time.Millisecond, 30000*time.Millisecond, 1.5),
-	}
-}
-
 func defaultCallOptions() *CallOptions {
-	withIdempotentRetryCodes := gax.WithRetryCodes([]codes.Code{
-		codes.DeadlineExceeded,
-		codes.Unavailable,
-	})
+	retry := map[[2]string][]gax.CallOption{
+		{"default", "idempotent"}: {
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        1000 * time.Millisecond,
+					Multiplier: 1.2,
+				})
+			}),
+		},
+		{"list", "idempotent"}: {
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        1000 * time.Millisecond,
+					Multiplier: 1.2,
+				})
+			}),
+		},
+	}
+
 	return &CallOptions{
-		DeleteLog:                        append(defaultRetryOptions(), withIdempotentRetryCodes),
-		WriteLogEntries:                  defaultRetryOptions(),
-		ListLogEntries:                   append(listRetryOptions(), withIdempotentRetryCodes),
-		ListMonitoredResourceDescriptors: append(defaultRetryOptions(), withIdempotentRetryCodes),
+		DeleteLog:                        retry[[2]string{"default", "idempotent"}],
+		WriteLogEntries:                  retry[[2]string{"default", "non_idempotent"}],
+		ListLogEntries:                   retry[[2]string{"list", "idempotent"}],
+		ListMonitoredResourceDescriptors: retry[[2]string{"default", "idempotent"}],
 	}
 }
 
@@ -139,9 +147,9 @@ func (c *Client) SetGoogleClientInfo(name, version string) {
 	}
 }
 
-// ProjectPath returns the path for the project resource.
-func LoggingProjectPath(project string) string {
-	path, err := loggingProjectPathTemplate.Render(map[string]string{
+// ParentPath returns the path for the parent resource.
+func LoggingParentPath(project string) string {
+	path, err := loggingParentPathTemplate.Render(map[string]string{
 		"project": project,
 	})
 	if err != nil {

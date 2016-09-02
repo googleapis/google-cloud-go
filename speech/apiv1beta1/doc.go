@@ -18,4 +18,4 @@
 // speech API.
 //
 // Google Cloud Speech API.
-package speech // import "cloud.google.com/go/speech/apiv1"
+package speech // import "cloud.google.com/go/speech/apiv1beta1"
