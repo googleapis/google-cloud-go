@@ -193,7 +193,7 @@ func testTrace(t *testing.T, synchronous bool) {
 							"trace.cloud.google.com/http/host":        "www.googleapis.com",
 							"trace.cloud.google.com/http/method":      "GET",
 							"trace.cloud.google.com/http/status_code": "200",
-							"trace.cloud.google.com/http/url":         "https://www.googleapis.com/compute/v1/projects/testproject/zones?alt=json",
+							"trace.cloud.google.com/http/url":         "https://www.googleapis.com/compute/v1/projects/testproject/zones",
 						},
 						Name: "/compute/v1/projects/testproject/zones",
 					},
@@ -203,7 +203,7 @@ func testTrace(t *testing.T, synchronous bool) {
 							"trace.cloud.google.com/http/host":        "www.googleapis.com",
 							"trace.cloud.google.com/http/method":      "GET",
 							"trace.cloud.google.com/http/status_code": "200",
-							"trace.cloud.google.com/http/url":         "https://www.googleapis.com/storage/v1/b/testbucket/o?alt=json&delimiter=&maxResults=1000&pageToken=&prefix=&projection=full&versions=false",
+							"trace.cloud.google.com/http/url":         "https://www.googleapis.com/storage/v1/b/testbucket/o",
 						},
 						Name: "/storage/v1/b/testbucket/o",
 					},
@@ -271,6 +271,10 @@ func testTrace(t *testing.T, synchronous bool) {
 		for key, value := range *labels {
 			if v, ok := s.Labels[key]; !ok {
 				t.Errorf("Span %d is missing Label %q:%q", i, key, value)
+			} else if key == "trace.cloud.google.com/http/url" {
+				if !strings.HasPrefix(v, value) {
+					t.Errorf("Span %d Label %q: got value %q want prefix %q", i, key, v, value)
+				}
 			} else if v != value {
 				t.Errorf("Span %d Label %q: got value %q want %q", i, key, v, value)
 			}
