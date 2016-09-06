@@ -93,7 +93,7 @@ func (s *justInTimeFetch) fetchMessages(ctx context.Context, subName string, max
 	var result []*Message
 	for i := 0; i < int(maxMessages); i++ {
 		val := fmt.Sprintf("msg%v", i)
-		result = append(result, &Message{Data: []byte(val), AckID: val})
+		result = append(result, &Message{Data: []byte(val), ackID: val})
 	}
 	return result, nil
 }
@@ -205,7 +205,7 @@ func TestMultipleStopCallsBlockUntilMessageDone(t *testing.T) {
 	s := &fetcherService{
 		results: []fetchResult{
 			{
-				msgs: []*Message{{AckID: "a"}, {AckID: "b"}},
+				msgs: []*Message{{ackID: "a"}, {ackID: "b"}},
 			},
 		},
 	}

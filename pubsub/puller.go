@@ -89,7 +89,7 @@ func (p *puller) Next() (*Message, error) {
 		}
 
 		for _, m := range buf {
-			p.keepAlive(m.AckID)
+			p.keepAlive(m.ackID)
 		}
 		p.buf = buf
 	}
@@ -109,7 +109,7 @@ func (p *puller) Stop() {
 	defer p.mu.Unlock()
 
 	for _, m := range p.buf {
-		p.abandon(m.AckID)
+		p.abandon(m.ackID)
 	}
 	p.buf = nil
 }
