@@ -206,6 +206,7 @@ func TestObjects(t *testing.T) {
 		rc, err := bkt.Object(obj).NewReader(ctx)
 		if err != nil {
 			t.Errorf("Can't create a reader for %v, errored with %v", obj, err)
+			continue
 		}
 		slurp, err := ioutil.ReadAll(rc)
 		if err != nil {
