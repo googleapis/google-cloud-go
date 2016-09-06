@@ -157,6 +157,9 @@ func (it *Iterator) done(ackID string, ack bool) {
 		// There's no need to call it.ka.Remove here, as acker will
 		// call it via its Notify function.
 	} else {
+		// TODO: explicitly NACK the message by sending an
+		// ModifyAckDeadline request with 0s deadline, to make the
+		// message immediately available for redelivery.
 		it.ka.Remove(ackID)
 	}
 }

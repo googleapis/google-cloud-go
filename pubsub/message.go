@@ -34,9 +34,8 @@ type Message struct {
 	// is labelled with.
 	Attributes map[string]string
 
-	// AckID is the identifier to acknowledge this message.
-	AckID string
-	// TODO(mcgreevy): unexport AckID.
+	// ackID is the identifier to acknowledge this message.
+	ackID string
 
 	// TODO(mcgreevy): add publish time.
 
@@ -48,14 +47,14 @@ type Message struct {
 
 func toMessage(resp *raw.ReceivedMessage) (*Message, error) {
 	if resp.Message == nil {
-		return &Message{AckID: resp.AckId}, nil
+		return &Message{ackID: resp.AckId}, nil
 	}
 	data, err := base64.StdEncoding.DecodeString(resp.Message.Data)
 	if err != nil {
 		return nil, err
 	}
 	return &Message{
-		AckID:      resp.AckId,
+		ackID:      resp.AckId,
 		Data:       data,
 		Attributes: resp.Message.Attributes,
 		ID:         resp.Message.MessageId,
@@ -73,5 +72,5 @@ func (m *Message) Done(ack bool) {
 		return
 	}
 	m.calledDone = true
-	m.it.done(m.AckID, ack)
+	m.it.done(m.ackID, ack)
 }

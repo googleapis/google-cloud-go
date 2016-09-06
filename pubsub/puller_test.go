@@ -47,14 +47,14 @@ func TestPuller(t *testing.T) {
 	s := &fetcherService{
 		results: []fetchResult{
 			{
-				msgs: []*Message{{AckID: "a"}, {AckID: "b"}},
+				msgs: []*Message{{ackID: "a"}, {ackID: "b"}},
 			},
 			{},
 			{
-				msgs: []*Message{{AckID: "c"}, {AckID: "d"}},
+				msgs: []*Message{{ackID: "c"}, {ackID: "d"}},
 			},
 			{
-				msgs: []*Message{{AckID: "e"}},
+				msgs: []*Message{{ackID: "e"}},
 			},
 		},
 	}
@@ -66,7 +66,7 @@ func TestPuller(t *testing.T) {
 	got := []string{}
 	for i := 0; i < 5; i++ {
 		m, err := pull.Next()
-		got = append(got, m.AckID)
+		got = append(got, m.ackID)
 		if err != nil {
 			t.Errorf("unexpected err from pull.Next: %v", err)
 		}
@@ -86,10 +86,10 @@ func TestPullerAddsToKeepAlive(t *testing.T) {
 	s := &fetcherService{
 		results: []fetchResult{
 			{
-				msgs: []*Message{{AckID: "a"}, {AckID: "b"}},
+				msgs: []*Message{{ackID: "a"}, {ackID: "b"}},
 			},
 			{
-				msgs: []*Message{{AckID: "c"}, {AckID: "d"}},
+				msgs: []*Message{{ackID: "c"}, {ackID: "d"}},
 			},
 		},
 	}
@@ -101,7 +101,7 @@ func TestPullerAddsToKeepAlive(t *testing.T) {
 	got := []string{}
 	for i := 0; i < 3; i++ {
 		m, err := pull.Next()
-		got = append(got, m.AckID)
+		got = append(got, m.ackID)
 		if err != nil {
 			t.Errorf("unexpected err from pull.Next: %v", err)
 		}
