@@ -40,7 +40,7 @@ func ExampleClient_NewTopic() {
 	}
 
 	// Create a new topic with the given name.
-	topic, err := client.NewTopic(ctx, "topicName")
+	topic, err := client.CreateTopic(ctx, "topicName")
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -67,14 +67,14 @@ func ExampleClient_NewSubscription() {
 	}
 
 	// Create a new topic with the given name.
-	topic, err := client.NewTopic(ctx, "topicName")
+	topic, err := client.CreateTopic(ctx, "topicName")
 	if err != nil {
 		// TODO: Handle error.
 	}
 
 	// Create a new subscription to the previously created topic
 	// with the given name.
-	sub, err := client.NewSubscription(ctx, "subName", topic, 10*time.Second, nil)
+	sub, err := client.CreateSubscription(ctx, "subName", topic, 10*time.Second, nil)
 	if err != nil {
 		// TODO: Handle error.
 	}

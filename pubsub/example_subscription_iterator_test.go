@@ -15,10 +15,10 @@
 package pubsub_test
 
 import (
-	"context"
 	"fmt"
 
 	"cloud.google.com/go/pubsub"
+	"golang.org/x/net/context"
 )
 
 func ExampleSubscriptionIterator() {
