@@ -105,9 +105,16 @@ func (s *JobStatus) Err() error {
 	return s.err
 }
 
-// Status returns the current status of the job.  It fails if the Status could not be determined.
+// Status returns the current status of the job. It fails if the Status could not be determined.
 func (j *Job) Status(ctx context.Context) (*JobStatus, error) {
 	return j.service.jobStatus(ctx, j.projectID, j.jobID)
+}
+
+// Cancel requests that a job be cancelled. This method returns without waiting for
+// cancellation to take effect. To check whether the job has terminated, use Job.Status.
+// Cancelled jobs may still incur costs.
+func (j *Job) Cancel(ctx context.Context) error {
+	return j.service.jobCancel(ctx, j.projectID, j.jobID)
 }
 
 func (j *Job) implementsReadSource() {}

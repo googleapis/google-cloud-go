@@ -33,6 +33,7 @@ type service interface {
 	// Jobs
 	insertJob(ctx context.Context, job *bq.Job, projectId string) (*Job, error)
 	getJobType(ctx context.Context, projectId, jobID string) (jobType, error)
+	jobCancel(ctx context.Context, projectId, jobID string) error
 	jobStatus(ctx context.Context, projectId, jobID string) (*JobStatus, error)
 
 	// Tables
@@ -294,6 +295,19 @@ func (s *bigqueryService) getJobType(ctx context.Context, projectID, jobID strin
 	default:
 		return 0, errors.New("unknown job type")
 	}
+}
+
+func (s *bigqueryService) jobCancel(ctx context.Context, projectID, jobID string) error {
+	// Jobs.Cancel returns a job entity, but the only relevant piece of
+	// data it may contain (the status of the job) is unreliable.  From the
+	// docs: "This call will return immediately, and the client will need
+	// to poll for the job status to see if the cancel completed
+	// successfully".  So it would be misleading to return a status.
+	_, err := s.s.Jobs.Cancel(projectID, jobID).
+		Fields(). // We don't need any of the response data.
+		Context(ctx).
+		Do()
+	return err
 }
 
 func (s *bigqueryService) jobStatus(ctx context.Context, projectID, jobID string) (*JobStatus, error) {
