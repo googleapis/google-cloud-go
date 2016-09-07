@@ -24,8 +24,10 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/storage"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 )
 
 const testSinkIDPrefix = "GO-CLIENT-TEST-SINK"
@@ -33,9 +35,50 @@ const testSinkIDPrefix = "GO-CLIENT-TEST-SINK"
 var testSinkDestination string
 
 // Called just before TestMain calls m.Run.
-func initSinks(ctx context.Context) {
-	testSinkDestination = "storage.googleapis.com/" + testProjectID
+// Returns a cleanup function to be called after the tests finish.
+func initSinks(ctx context.Context) func() {
+	// Create a unique GCS bucket so concurrent tests don't interfere with each other.
+	testBucketPrefix := testProjectID + "-log-sink"
+	testBucket := uniqueID(testBucketPrefix)
+	testSinkDestination = "storage.googleapis.com/" + testBucket
+	var storageClient *storage.Client
+	if integrationTest {
+		// Create a unique bucket as a sink destination, and give the cloud logging account
+		// owner right.
+		ts := testutil.TokenSource(ctx, storage.ScopeFullControl)
+		var err error
+		storageClient, err = storage.NewClient(ctx, option.WithTokenSource(ts))
+		if err != nil {
+			log.Fatalf("new storage client: %v", err)
+		}
+		bucket := storageClient.Bucket(testBucket)
+		if err := bucket.Create(ctx, testProjectID, nil); err != nil {
+			log.Fatalf("creating storage bucket %q: %v", testBucket, err)
+		}
+		if err := bucket.ACL().Set(ctx, "group-cloud-logs@google.com", storage.RoleOwner); err != nil {
+			log.Fatalf("setting owner role: %v", err)
+		}
+	}
 	// Clean up from aborted tests.
+	for _, sID := range expiredUniqueIDs(sinkIDs(ctx), testSinkIDPrefix) {
+		client.DeleteSink(ctx, sID) // ignore error
+	}
+	if integrationTest {
+		for _, bn := range expiredUniqueIDs(bucketNames(ctx, storageClient), testBucketPrefix) {
+			storageClient.Bucket(bn).Delete(ctx) // ignore error
+		}
+		return func() {
+			if err := storageClient.Bucket(testBucket).Delete(ctx); err != nil {
+				log.Printf("deleting %q: %v", testBucket, err)
+			}
+			storageClient.Close()
+		}
+	}
+	return func() {}
+}
+
+// Collect all sink IDs for the test project.
+func sinkIDs(ctx context.Context) []string {
 	var IDs []string
 	it := client.Sinks(ctx)
 loop:
@@ -47,13 +90,31 @@ loop:
 		case iterator.Done:
 			break loop
 		default:
-			log.Printf("cleanupSinks: %v", err)
-			return
+			log.Printf("listing sinks: %v", err)
+			break loop
 		}
 	}
-	for _, sID := range expiredUniqueIDs(IDs, testSinkIDPrefix) {
-		client.DeleteSink(ctx, sID)
+	return IDs
+}
+
+// Collect the name of all buckets for the test project.
+func bucketNames(ctx context.Context, client *storage.Client) []string {
+	var names []string
+	it := client.Buckets(ctx, testProjectID)
+loop:
+	for {
+		b, err := it.Next()
+		switch err {
+		case nil:
+			names = append(names, b.Name)
+		case iterator.Done:
+			break loop
+		default:
+			log.Printf("listing buckets: %v", err)
+			break loop
+		}
 	}
+	return names
 }
 
 func TestCreateDeleteSink(t *testing.T) {

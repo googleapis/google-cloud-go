@@ -108,7 +108,7 @@ func TestMain(m *testing.M) {
 	} else {
 		integrationTest = true
 		// Give the service some time to make written entries available.
-		wait = func() { time.Sleep(3 * time.Second) }
+		wait = func() { time.Sleep(4 * time.Second) }
 		clean = func(e *Entry) {
 			// We cannot compare timestamps, so set them to the test time.
 			// Also, remove the insert ID added by the service.
@@ -132,9 +132,10 @@ func TestMain(m *testing.M) {
 	client.OnError = func(e error) { errorc <- e }
 	initLogs(ctx)
 	initMetrics(ctx)
-	initSinks(ctx)
+	cleanup := initSinks(ctx)
 	testFilter = fmt.Sprintf(`logName = "projects/%s/logs/%s"`, testProjectID, testLogID)
 	exit := m.Run()
+	cleanup()
 	client.Close()
 	os.Exit(exit)
 }
