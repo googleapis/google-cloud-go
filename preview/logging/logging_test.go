@@ -507,6 +507,25 @@ func TestSeverity(t *testing.T) {
 	}
 }
 
+func TestParseSeverity(t *testing.T) {
+	for _, test := range []struct {
+		in   string
+		want Severity
+	}{
+		{"", Default},
+		{"whatever", Default},
+		{"Default", Default},
+		{"ERROR", Error},
+		{"Error", Error},
+		{"error", Error},
+	} {
+		got := ParseSeverity(test.in)
+		if got != test.want {
+			t.Errorf("%q: got %s, want %s\n", test.in, got, test.want)
+		}
+	}
+}
+
 func TestErrors(t *testing.T) {
 	// Drain errors already seen.
 loop:
