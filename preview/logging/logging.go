@@ -442,7 +442,7 @@ type Entry struct {
 	// The zero value is Default.
 	Severity Severity
 
-	// Payload must be either a string, []byte, or something that
+	// Payload must be either a string or something that
 	// marshals via the encoding/json package to a JSON object
 	// (and not any other type of JSON value).
 	Payload interface{}
@@ -836,8 +836,6 @@ func toLogEntry(e Entry) (*logpb.LogEntry, error) {
 	switch p := e.Payload.(type) {
 	case string:
 		ent.Payload = &logpb.LogEntry_TextPayload{p}
-	case []byte:
-		ent.Payload = &logpb.LogEntry_TextPayload{string(p)}
 	default:
 		s, err := toProtoStruct(p)
 		if err != nil {
