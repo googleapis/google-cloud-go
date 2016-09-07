@@ -53,9 +53,9 @@ var (
 	testFilter    string
 	errorc        chan error
 
-	// Wait for a short period of time. The production service needs a short
-	// delay between writing an entry and reading it back.
-	wait func()
+	// Wait for the function to return true. The production service
+	// sometimes takes a while to finish an action.
+	waitFor func(func() bool)
 
 	// Adjust the fields of a FullEntry received from the production service
 	// before comparing it with the expected result. We can't correctly
@@ -84,7 +84,7 @@ func TestMain(m *testing.M) {
 			log.Print("Integration tests skipped in short mode (using fake instead)")
 		}
 		testProjectID = "PROJECT_ID"
-		wait = func() {}
+		waitFor = func(func() bool) {}
 		clean = func(e *Entry) {
 			// Remove the insert ID for consistency with the integration test.
 			e.InsertID = ""
@@ -109,7 +109,7 @@ func TestMain(m *testing.M) {
 	} else {
 		integrationTest = true
 		// Give the service some time to make written entries available.
-		wait = func() { time.Sleep(4 * time.Second) }
+		waitFor = realWaitFor
 		clean = func(e *Entry) {
 			// We cannot compare timestamps, so set them to the test time.
 			// Also, remove the insert ID added by the service.
@@ -140,6 +140,23 @@ func TestMain(m *testing.M) {
 	cleanup()
 	client.Close()
 	os.Exit(exit)
+}
+
+// realWaitFor calls f periodically, blocking until it returns true.
+// It calls log.Fatal after 30 seconds.
+func realWaitFor(f func() bool) {
+	timeout := time.NewTimer(30 * time.Second)
+	for {
+		select {
+		case <-time.After(1 * time.Second):
+			if f() {
+				timeout.Stop()
+				return
+			}
+		case <-timeout.C:
+			log.Fatal("timed out")
+		}
+	}
 }
 
 func initLogs(ctx context.Context) {
@@ -224,15 +241,15 @@ func TestLogSync(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	wait()
-	got, err := allTestLogEntries(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
 	want := []*Entry{
 		entryForTesting("hello"),
 		entryForTesting("goodbye"),
 		entryForTesting("mr"),
+	}
+	waitFor(func() bool { return countLogEntries(ctx, testFilter) >= len(want) })
+	got, err := allTestLogEntries(ctx)
+	if err != nil {
+		t.Fatal(err)
 	}
 	if len(got) != len(want) {
 		t.Fatalf("got %d entries, want %d", len(got), len(want))
@@ -250,6 +267,21 @@ func entryForTesting(payload interface{}) *Entry {
 		Payload:   payload,
 		LogName:   "projects/" + testProjectID + "/logs/" + testLogID,
 		Resource:  &mrpb.MonitoredResource{Type: "global"},
+	}
+}
+
+func countLogEntries(ctx context.Context, filter string) int {
+	it := client.Entries(ctx, Filter(filter))
+	n := 0
+	for {
+		_, err := it.Next()
+		if err == iterator.Done {
+			return n
+		}
+		if err != nil {
+			log.Fatalf("counting log entries: %v", err)
+		}
+		n++
 	}
 }
 
@@ -292,7 +324,7 @@ func TestLogAndEntries(t *testing.T) {
 	for _, p := range payloads {
 		want = append(want, entryForTesting(p))
 	}
-	wait()
+	waitFor(func() bool { return countLogEntries(ctx, testFilter) >= len(want) })
 	it := client.Entries(ctx, Filter(testFilter))
 	msg, ok := testutil.TestIteratorNext(want, iterator.Done, func() (interface{}, error) { return cleanNext(it) })
 	if !ok {
@@ -316,7 +348,7 @@ func TestStandardLogger(t *testing.T) {
 
 	slg.Print("info")
 	lg.Flush()
-	wait()
+	waitFor(func() bool { return countLogEntries(ctx, testFilter) > 0 })
 	got, err := allTestLogEntries(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -642,5 +674,9 @@ func TestFromHTTPRequest(t *testing.T) {
 // deleteLog is used to clean up a log after a test that writes to it.
 func deleteLog(ctx context.Context, logID string) {
 	client.DeleteLog(ctx, logID)
-	wait() // DeleteLog can take some time to happen.
+	// DeleteLog can take some time to happen, so we wait for the log to
+	// disappear. There is no direct way to determine if a log exists, so we
+	// just wait until there are no log entries associated with the ID.
+	filter := fmt.Sprintf(`logName = "%s"`, client.logPath(logID))
+	waitFor(func() bool { return countLogEntries(ctx, filter) == 0 })
 }
