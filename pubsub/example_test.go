@@ -32,7 +32,7 @@ func ExampleNewClient() {
 	// See the other examples to learn how to use the Client.
 }
 
-func ExampleClient_NewTopic() {
+func ExampleClient_CreateTopic() {
 	ctx := context.Background()
 	client, err := pubsub.NewClient(ctx, "project-id")
 	if err != nil {
@@ -59,7 +59,7 @@ func ExampleClient_Topics() {
 	_ = it // See the TopicIterator example for its usage.
 }
 
-func ExampleClient_NewSubscription() {
+func ExampleClient_CreateSubscription() {
 	ctx := context.Background()
 	client, err := pubsub.NewClient(ctx, "project-id")
 	if err != nil {
