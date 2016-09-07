@@ -132,6 +132,24 @@ func TestQuery(t *testing.T) {
 				return j
 			}(),
 		},
+		{
+			dst:     defaultTable(nil),
+			src:     defaultQuery,
+			options: []Option{MaxBillingTier(3), MaxBytesBilled(5)},
+			want: func() *bq.Job {
+				j := defaultQueryJob()
+				tier := int64(3)
+				j.Configuration.Query.MaximumBillingTier = &tier
+				j.Configuration.Query.MaximumBytesBilled = 5
+				return j
+			}(),
+		},
+		{
+			dst:     defaultTable(nil),
+			src:     defaultQuery,
+			options: []Option{MaxBytesBilled(-1)},
+			want:    defaultQueryJob(),
+		},
 	}
 
 	for _, tc := range testCases {
