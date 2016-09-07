@@ -90,6 +90,37 @@ const (
 	InteractivePriority = "INTERACTIVE"
 )
 
+// MaxBillingTier returns an Option that sets the maximum billing tier for a Query.
+// Queries that have resource usage beyond this tier will fail (without
+// incurring a charge). If this Option is not used, the project default will be used.
+func MaxBillingTier(tier int) Option { return maxBillingTier(tier) }
+
+type maxBillingTier int
+
+func (opt maxBillingTier) implementsOption() {}
+
+func (opt maxBillingTier) customizeQuery(conf *bq.JobConfigurationQuery) {
+	tier := int64(opt)
+	conf.MaximumBillingTier = &tier
+}
+
+// MaxBytesBilled returns an Option that limits the number of bytes billed for
+// this job.  Queries that would exceed this limit will fail (without incurring
+// a charge).
+// If this Option is not used, or bytes is < 1, the project default will be
+// used.
+func MaxBytesBilled(bytes int64) Option { return maxBytesBilled(bytes) }
+
+type maxBytesBilled int64
+
+func (opt maxBytesBilled) implementsOption() {}
+
+func (opt maxBytesBilled) customizeQuery(conf *bq.JobConfigurationQuery) {
+	if opt >= 1 {
+		conf.MaximumBytesBilled = int64(opt)
+	}
+}
+
 func (c *Client) query(ctx context.Context, dst *Table, src *Query, options []Option) (*Job, error) {
 	job, options := initJobProto(c.projectID, options)
 	payload := &bq.JobConfigurationQuery{}
