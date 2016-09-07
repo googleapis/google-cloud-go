@@ -419,6 +419,18 @@ func (v Severity) String() string {
 	return strconv.Itoa(int(v))
 }
 
+// ParseSeverity returns the Severity whose name equals s, ignoring case. It
+// returns Default if no Severity matches.
+func ParseSeverity(s string) Severity {
+	sl := strings.ToLower(s)
+	for sev, name := range severityName {
+		if strings.ToLower(name) == sl {
+			return sev
+		}
+	}
+	return Default
+}
+
 // Entry is a log entry.
 // See https://cloud.google.com/logging/docs/view/logs_index for more about entries.
 type Entry struct {
