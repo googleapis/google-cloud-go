@@ -196,7 +196,7 @@ func (h *loggingHandler) filterEntries(filter string) ([]*logpb.LogEntry, error)
 	return entries, nil
 }
 
-var filterRegexp = regexp.MustCompile(`^logName\s*=\s*"?([-_/.\w]+)"?$`)
+var filterRegexp = regexp.MustCompile(`^logName\s*=\s*"?([-_/.%\w]+)"?$`)
 
 // returns the log name, or "" for the empty filter
 func parseFilter(filter string) (string, error) {
