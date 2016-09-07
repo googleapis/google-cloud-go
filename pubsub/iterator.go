@@ -15,15 +15,15 @@
 package pubsub
 
 import (
-	"errors"
 	"sync"
 	"time"
 
 	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
 )
 
 // Done is returned when an iteration is complete.
-var Done = errors.New("no more messages")
+var Done = iterator.Done
 
 type Iterator struct {
 	// kaTicker controls how often we send an ack deadline extension request.
