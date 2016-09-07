@@ -701,6 +701,14 @@ type filter string
 
 func (f filter) set(r *logpb.ListLogEntriesRequest) { r.Filter = string(f) }
 
+// NewestFirst causes log entries to be listed from most recent (newest) to
+// least recent (oldest). By default, they are listed from oldest to newest.
+func NewestFirst() EntriesOption { return newestFirst{} }
+
+type newestFirst struct{}
+
+func (newestFirst) set(r *logpb.ListLogEntriesRequest) { r.OrderBy = "timestamp desc" }
+
 // OrderBy determines how a listing of log entries should be sorted. Presently,
 // the only permitted values are "timestamp asc" (default) and "timestamp
 // desc". The first option returns entries in order of increasing values of

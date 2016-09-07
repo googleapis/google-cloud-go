@@ -474,17 +474,17 @@ func TestListLogEntriesRequest(t *testing.T) {
 		// Default is client's project ID, empty filter and orderBy.
 		{nil,
 			[]string{"PROJECT_ID"}, "", ""},
-		{[]EntriesOption{OrderBy("o"), Filter("f")},
-			[]string{"PROJECT_ID"}, "f", "o"},
+		{[]EntriesOption{NewestFirst(), Filter("f")},
+			[]string{"PROJECT_ID"}, "f", "timestamp desc"},
 		{[]EntriesOption{ProjectIDs([]string{"foo"})},
 			[]string{"foo"}, "", ""},
-		{[]EntriesOption{OrderBy("o"), Filter("f"), ProjectIDs([]string{"foo"})},
-			[]string{"foo"}, "f", "o"},
-		{[]EntriesOption{OrderBy("o"), Filter("f"), ProjectIDs([]string{"foo"})},
-			[]string{"foo"}, "f", "o"},
+		{[]EntriesOption{NewestFirst(), Filter("f"), ProjectIDs([]string{"foo"})},
+			[]string{"foo"}, "f", "timestamp desc"},
+		{[]EntriesOption{NewestFirst(), Filter("f"), ProjectIDs([]string{"foo"})},
+			[]string{"foo"}, "f", "timestamp desc"},
 		// If there are repeats, last one wins.
-		{[]EntriesOption{OrderBy("o"), Filter("no"), ProjectIDs([]string{"foo"}), Filter("f")},
-			[]string{"foo"}, "f", "o"},
+		{[]EntriesOption{NewestFirst(), Filter("no"), ProjectIDs([]string{"foo"}), Filter("f")},
+			[]string{"foo"}, "f", "timestamp desc"},
 	} {
 		got := listLogEntriesRequest("PROJECT_ID", test.opts)
 		want := &logpb.ListLogEntriesRequest{
