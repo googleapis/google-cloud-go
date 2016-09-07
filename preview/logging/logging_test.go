@@ -160,16 +160,16 @@ func TestLoggerCreation(t *testing.T) {
 		wantLogger  *Logger
 		wantBundler *bundler.Bundler
 	}{
-		{nil, &Logger{resource: defaultResource}, defaultBundler},
+		{nil, &Logger{commonResource: defaultResource}, defaultBundler},
 		{
-			[]LoggerOption{Resource(nil), CommonLabels(map[string]string{"a": "1"})},
-			&Logger{resource: nil, commonLabels: map[string]string{"a": "1"}},
+			[]LoggerOption{CommonResource(nil), CommonLabels(map[string]string{"a": "1"})},
+			&Logger{commonResource: nil, commonLabels: map[string]string{"a": "1"}},
 			defaultBundler,
 		},
 		{
 			[]LoggerOption{DelayThreshold(time.Minute), EntryCountThreshold(99),
 				EntryByteThreshold(17), EntryByteLimit(18), BufferedByteLimit(19)},
-			&Logger{resource: defaultResource},
+			&Logger{commonResource: defaultResource},
 			&bundler.Bundler{
 				DelayThreshold:       time.Minute,
 				BundleCountThreshold: 99,
@@ -180,7 +180,7 @@ func TestLoggerCreation(t *testing.T) {
 		},
 	} {
 		gotLogger := c.Logger(testLogID, test.options...)
-		if got, want := gotLogger.resource, test.wantLogger.resource; !reflect.DeepEqual(got, want) {
+		if got, want := gotLogger.commonResource, test.wantLogger.commonResource; !reflect.DeepEqual(got, want) {
 			t.Errorf("%v: resource: got %v, want %v", test.options, got, want)
 		}
 		if got, want := gotLogger.commonLabels, test.wantLogger.commonLabels; !reflect.DeepEqual(got, want) {
@@ -216,6 +216,12 @@ func TestLogSync(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// Allow overriding the MonitoredResource.
+	err = lg.LogSync(ctx, Entry{Payload: "mr", Resource: &mrpb.MonitoredResource{Type: "global"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	wait()
 	got, err := allTestLogEntries(ctx)
 	if err != nil {
@@ -224,6 +230,7 @@ func TestLogSync(t *testing.T) {
 	want := []*Entry{
 		entryForTesting("hello"),
 		entryForTesting("goodbye"),
+		entryForTesting("mr"),
 	}
 	if len(got) != len(want) {
 		t.Fatalf("got %d entries, want %d", len(got), len(want))
