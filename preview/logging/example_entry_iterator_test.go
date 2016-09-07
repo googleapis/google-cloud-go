@@ -16,6 +16,7 @@ package logging_test
 
 import (
 	"fmt"
+	"time"
 
 	"cloud.google.com/go/preview/logging"
 	"golang.org/x/net/context"
@@ -28,7 +29,20 @@ func ExampleClient_Entries() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	it := client.Entries(ctx, logging.Filter("logName = projects/my-project/logs/my-log"))
+	it := client.Entries(ctx, logging.Filter(`logName = "projects/my-project/logs/my-log"`))
+	_ = it // TODO: iterate using Next or iterator.Pager.
+}
+
+func Example_Filter_timestamp() {
+	// This example demonstrates how to list the last 24 hours of log entries.
+	ctx := context.Background()
+	client, err := logging.NewClient(ctx, "my-project")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	oneDayAgo := time.Now().Add(-24 * time.Hour)
+	t := oneDayAgo.Format(time.RFC3339) // Logging API wants timestamps in RFC 3339 format.
+	it := client.Entries(ctx, logging.Filter(fmt.Sprintf(`timestamp > "%s"`, t)))
 	_ = it // TODO: iterate using Next or iterator.Pager.
 }
 
