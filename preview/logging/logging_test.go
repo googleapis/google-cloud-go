@@ -24,6 +24,7 @@ import (
 	"net/url"
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -43,7 +44,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-const testLogIDPrefix = "GO-LOGGING-CLIENT-TEST-LOG"
+const testLogIDPrefix = "GO-LOGGING-CLIENT/TEST-LOG"
 
 var (
 	client        *Client
@@ -133,7 +134,8 @@ func TestMain(m *testing.M) {
 	initLogs(ctx)
 	initMetrics(ctx)
 	cleanup := initSinks(ctx)
-	testFilter = fmt.Sprintf(`logName = "projects/%s/logs/%s"`, testProjectID, testLogID)
+	testFilter = fmt.Sprintf(`logName = "projects/%s/logs/%s"`, testProjectID,
+		strings.Replace(testLogID, "/", "%2F", -1))
 	exit := m.Run()
 	cleanup()
 	client.Close()

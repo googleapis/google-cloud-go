@@ -295,8 +295,7 @@ func (b bufferedByteLimit) set(l *Logger) { l.bundler.BufferedByteLimit = int(b)
 // "syslog". A log ID must be less than 512 characters long and can only
 // include the following characters: upper and lower case alphanumeric
 // characters: [A-Za-z0-9]; and punctuation characters: forward-slash,
-// underscore, hyphen, and period. Forward-slash (/) characters in the log ID
-// must be URL-encoded.
+// underscore, hyphen, and period.
 func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 	l := &Logger{
 		client:         c,
@@ -330,6 +329,7 @@ func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 }
 
 func (c *Client) logPath(logID string) string {
+	logID = strings.Replace(logID, "/", "%2F", -1)
 	return fmt.Sprintf("%s/logs/%s", c.parent(), logID)
 }
 
@@ -696,6 +696,13 @@ func (p projectIDs) set(r *logpb.ListLogEntriesRequest) { r.ProjectIds = []strin
 // compared against all log entries in the projects specified by ProjectIDs.
 // Only entries that match the filter are retrieved. An empty filter (the
 // default) matches all log entries.
+//
+// In the filter string, log names must be written in their full form, as
+// "projects/PROJECT-ID/logs/LOG-ID". Forward slashes in LOG-ID must be
+// replaced by %2F before calling Filter.
+//
+// Timestamps in the filter string must be written in RFC 3339 format. See the
+// timestamp example.
 func Filter(f string) EntriesOption { return filter(f) }
 
 type filter string
@@ -841,6 +848,8 @@ func toLogEntry(e Entry) (*logpb.LogEntry, error) {
 	return ent, nil
 }
 
+var slashUnescaper = strings.NewReplacer("%2F", "/", "%2f", "/")
+
 func fromLogEntry(le *logpb.LogEntry) (*Entry, error) {
 	time, err := ptypes.Timestamp(le.Timestamp)
 	if err != nil {
@@ -878,7 +887,7 @@ func fromLogEntry(le *logpb.LogEntry) (*Entry, error) {
 		InsertID:    le.InsertId,
 		HTTPRequest: hr,
 		Operation:   le.Operation,
-		LogName:     le.LogName,
+		LogName:     slashUnescaper.Replace(le.LogName),
 		Resource:    le.Resource,
 	}, nil
 }
