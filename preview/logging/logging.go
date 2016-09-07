@@ -209,8 +209,8 @@ func (c *Client) Ping(ctx context.Context) error {
 	return err
 }
 
-// A Logger is used to write log messages to a single log. It is configured
-// with a log ID, monitored resource, and a set of common labels.
+// A Logger is used to write log messages to a single log. It can be configured
+// with a log ID, common monitored resource, and a set of common labels.
 type Logger struct {
 	client     *Client
 	logName    string // "projects/{projectID}/logs/{logID}"
@@ -218,8 +218,8 @@ type Logger struct {
 	bundler    *bundler.Bundler
 
 	// Options
-	resource     *mrpb.MonitoredResource
-	commonLabels map[string]string
+	commonResource *mrpb.MonitoredResource
+	commonLabels   map[string]string
 }
 
 // A LoggerOption is a configuration option for a Logger.
@@ -227,17 +227,18 @@ type LoggerOption interface {
 	set(*Logger)
 }
 
-// Resource sets the monitored resource associated with this log. If not
-// provided, a resource of type "global" is used.
-func Resource(r *mrpb.MonitoredResource) LoggerOption { return resource{r} }
+// CommonResource sets the monitored resource associated with all log entries
+// written from a Logger. If not provided, a resource of type "global" is used.
+// This value can be overridden by setting an Entry's Resource field.
+func CommonResource(r *mrpb.MonitoredResource) LoggerOption { return commonResource{r} }
 
-type resource struct{ *mrpb.MonitoredResource }
+type commonResource struct{ *mrpb.MonitoredResource }
 
-func (r resource) set(l *Logger) { l.resource = r.MonitoredResource }
+func (r commonResource) set(l *Logger) { l.commonResource = r.MonitoredResource }
 
-// CommonLabels are labels that apply to all log entries in this request, so
-// that you don't have to repeat them in each log entry's Labels field. If any
-// of the log entries contains a (key, value) with the same key that is in
+// CommonLabels are labels that apply to all log entries written from a Logger,
+// so that you don't have to repeat them in each log entry's Labels field. If
+// any of the log entries contains a (key, value) with the same key that is in
 // CommonLabels, then the entry's (key, value) overrides the one in
 // CommonLabels.
 func CommonLabels(m map[string]string) LoggerOption { return commonLabels(m) }
@@ -298,9 +299,9 @@ func (b bufferedByteLimit) set(l *Logger) { l.bundler.BufferedByteLimit = int(b)
 // must be URL-encoded.
 func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 	l := &Logger{
-		client:   c,
-		logName:  c.logPath(logID),
-		resource: &mrpb.MonitoredResource{Type: "global"},
+		client:         c,
+		logName:        c.logPath(logID),
+		commonResource: &mrpb.MonitoredResource{Type: "global"},
 	}
 	// TODO(jba): determine the right context for the bundle handler.
 	ctx := context.TODO()
@@ -624,7 +625,7 @@ func (l *Logger) LogSync(ctx context.Context, e Entry) error {
 	}
 	_, err = l.client.lClient.WriteLogEntries(ctx, &logpb.WriteLogEntriesRequest{
 		LogName:  l.logName,
-		Resource: l.resource,
+		Resource: l.commonResource,
 		Labels:   l.commonLabels,
 		Entries:  []*logpb.LogEntry{ent},
 	})
@@ -651,7 +652,7 @@ func (l *Logger) Flush() {
 func (l *Logger) writeLogEntries(ctx context.Context, entries []*logpb.LogEntry) {
 	req := &logpb.WriteLogEntriesRequest{
 		LogName:  l.logName,
-		Resource: l.resource,
+		Resource: l.commonResource,
 		Labels:   l.commonLabels,
 		Entries:  entries,
 	}
@@ -807,9 +808,6 @@ func trunc32(i int) int32 {
 func toLogEntry(e Entry) (*logpb.LogEntry, error) {
 	if e.LogName != "" {
 		return nil, errors.New("logging: Entry.LogName should be not be set when writing")
-	}
-	if e.Resource != nil {
-		return nil, errors.New("logging: Entry.Resource should not be set when writing")
 	}
 	t := e.Timestamp
 	if t.IsZero() {
