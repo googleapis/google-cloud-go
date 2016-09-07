@@ -195,7 +195,7 @@ func inferFields(rt reflect.Type) (Schema, error) {
 		}
 
 		if field.Anonymous {
-			// TODO(nightlyone) support embedded (see https://github.com/GoogleCloudPlatform/gcloud-golang/issues/238)
+			// TODO(nightlyone) support embedded (see https://github.com/GoogleCloudPlatform/google-cloud-go/issues/238)
 			return nil, errUnsupportedFieldType
 		}
 
