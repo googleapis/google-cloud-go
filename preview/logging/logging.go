@@ -248,7 +248,10 @@ type commonLabels map[string]string
 func (c commonLabels) set(l *Logger) { l.commonLabels = c }
 
 // DelayThreshold is the maximum amount of time that an entry should remain
-// buffered in memory before a call to the logging service is triggered.
+// buffered in memory before a call to the logging service is triggered. Larger
+// values of DelayThreshold will generally result in fewer calls to the logging
+// service, while increasing the risk that log entries will be lost if the
+// process crashes.
 // The default is DefaultDelayThreshold.
 func DelayThreshold(d time.Duration) LoggerOption { return delayThreshold(d) }
 
@@ -257,8 +260,11 @@ type delayThreshold time.Duration
 func (d delayThreshold) set(l *Logger) { l.bundler.DelayThreshold = time.Duration(d) }
 
 // EntryCountThreshold is the maximum number of entries that will be buffered
-// in memory before a call to the logging service is triggered. The default is
-// DefaultEntryCountThreshold.
+// in memory before a call to the logging service is triggered. Larger values
+// will generally result in fewer calls to the logging service, while
+// increasing both memory consumption and the risk that log entries will be
+// lost if the process crashes.
+// The default is DefaultEntryCountThreshold.
 func EntryCountThreshold(n int) LoggerOption { return entryCountThreshold(n) }
 
 type entryCountThreshold int
@@ -266,8 +272,10 @@ type entryCountThreshold int
 func (e entryCountThreshold) set(l *Logger) { l.bundler.BundleCountThreshold = int(e) }
 
 // EntryByteThreshold is the maximum number of bytes of entries that will be
-// buffered in memory before a call to the logging service is triggered. The
-// default is DefaultEntryByteThreshold.
+// buffered in memory before a call to the logging service is triggered. See
+// EntryCountThreshold for a discussion of the tradeoffs involved in setting
+// this option.
+// The default is DefaultEntryByteThreshold.
 func EntryByteThreshold(n int) LoggerOption { return entryByteThreshold(n) }
 
 type entryByteThreshold int
@@ -275,16 +283,25 @@ type entryByteThreshold int
 func (e entryByteThreshold) set(l *Logger) { l.bundler.BundleByteThreshold = int(e) }
 
 // EntryByteLimit is the maximum number of bytes of entries that will be sent
-// in a single call to the logging service. The default is zero, meaning there
-// is no limit.
+// in a single call to the logging service. This option limits the size of a
+// single RPC payload, to account for network or service issues with large
+// RPCs. If EntryByteLimit is smaller than EntryByteThreshold, the latter has
+// no effect.
+// The default is zero, meaning there is no limit.
 func EntryByteLimit(n int) LoggerOption { return entryByteLimit(n) }
 
 type entryByteLimit int
 
 func (e entryByteLimit) set(l *Logger) { l.bundler.BundleByteLimit = int(e) }
 
-// BufferedByteLimit is the maximum number of bytes that the Logger will keep in memory before
-// returning ErrOverflow. The default is DefaultBufferedByteLimit.
+// BufferedByteLimit is the maximum number of bytes that the Logger will keep
+// in memory before returning ErrOverflow. This option limits the total memory
+// consumption of the Logger (but note that each Logger has its own, separate
+// limit). It is possible to reach BufferedByteLimit even if it is larger than
+// EntryByteThreshold or EntryByteLimit, because calls triggered by the latter
+// two options may be enqueued (and hence occupying memory) while new log
+// entries are being added.
+// The default is DefaultBufferedByteLimit.
 func BufferedByteLimit(n int) LoggerOption { return bufferedByteLimit(n) }
 
 type bufferedByteLimit int
