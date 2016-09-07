@@ -1,7 +1,7 @@
 # Cloud Bigtable Hello World in Go
 
 This is a simple application that demonstrates using the [Google Cloud APIs Go
-Client Library](https://github.com/GoogleCloudPlatform/gcloud-golang) to connect
+Client Library](https://github.com/GoogleCloudPlatform/google-cloud-go) to connect
 to and interact with Cloud Bigtable.
 
 ## Prerequisites

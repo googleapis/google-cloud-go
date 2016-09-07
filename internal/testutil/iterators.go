@@ -22,7 +22,7 @@ import (
 )
 
 // TestIteratorNext tests the Next method of a standard client iterator (see
-// https://github.com/GoogleCloudPlatform/gcloud-golang/wiki/Iterator-Guidelines).
+// https://github.com/GoogleCloudPlatform/google-cloud-go/wiki/Iterator-Guidelines).
 //
 // This function assumes that an iterator has already been created, and that
 // the underlying sequence to be iterated over already exists. want should be a
@@ -73,7 +73,7 @@ func TestIteratorNext(want interface{}, done error, next func() (interface{}, er
 }
 
 // PagingIterator describes the standard client iterator pattern with paging as best as possible in Go.
-// See https://github.com/GoogleCloudPlatform/gcloud-golang/wiki/Iterator-Guidelines.
+// See https://github.com/GoogleCloudPlatform/google-cloud-go/wiki/Iterator-Guidelines.
 type PagingIterator interface {
 	SetPageSize(int)
 	SetPageToken(string)
