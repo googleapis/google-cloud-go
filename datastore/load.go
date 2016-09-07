@@ -17,6 +17,7 @@ package datastore
 import (
 	"fmt"
 	"reflect"
+	"strings"
 	"time"
 
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
@@ -76,14 +77,43 @@ func (l *propertyLoader) load(codec *structCodec, structValue reflect.Value, p P
 
 func (l *propertyLoader) loadOneElement(codec *structCodec, structValue reflect.Value, p Property, prev map[string]struct{}) string {
 	var sliceOk bool
+	var sliceIndex int
 	var v reflect.Value
-	// Traverse a struct's struct-typed fields.
-	for name := p.Name; ; {
-		decoder, ok := codec.byName[name]
-		if !ok {
-			return "no such struct field"
+
+	name := p.Name
+	for name != "" {
+		// First we try to find a field with name matching
+		// the value of 'name' exactly.
+		decoder, ok := codec.fields[name]
+		if ok {
+			name = ""
+		} else {
+			// Now try for legacy flattened nested field (named eg. "A.B.C.D").
+
+			parent := name
+			child := ""
+
+			// Cut off the last field (delimited by ".") and find its parent
+			// in the codec.
+			// eg. for name "A.B.C.D", split off "A.B.C" and try to
+			// find a field in the codec with this name.
+			// Loop again with "A.B", etc.
+			for !ok {
+				i := strings.LastIndex(parent, ".")
+				if i < 0 {
+					return "no such struct field"
+				}
+				if i == len(name)-1 {
+					return "field name cannot end with '.'"
+				}
+				parent, child = name[:i], name[i+1:]
+				decoder, ok = codec.fields[parent]
+			}
+
+			name = child
 		}
-		v = structValue.Field(decoder.index)
+
+		v = initField(structValue, decoder.path)
 		if !v.IsValid() {
 			return "no such struct field"
 		}
@@ -91,8 +121,9 @@ func (l *propertyLoader) loadOneElement(codec *structCodec, structValue reflect.
 			return "cannot set struct field"
 		}
 
-		if decoder.substructCodec == nil {
-			break
+		if decoder.structCodec != nil {
+			codec = decoder.structCodec
+			structValue = v
 		}
 
 		// If the element is a slice, we need to accommodate it.
@@ -100,19 +131,14 @@ func (l *propertyLoader) loadOneElement(codec *structCodec, structValue reflect.
 			if l.m == nil {
 				l.m = make(map[string]int)
 			}
-			index := l.m[p.Name]
-			l.m[p.Name] = index + 1
-			for v.Len() <= index {
+			sliceIndex = l.m[p.Name]
+			l.m[p.Name] = sliceIndex + 1
+			for v.Len() <= sliceIndex {
 				v.Set(reflect.Append(v, reflect.New(v.Type().Elem()).Elem()))
 			}
-			structValue = v.Index(index)
+			structValue = v.Index(sliceIndex)
 			sliceOk = true
-		} else {
-			structValue = v
 		}
-		// Strip the "I." from "I.X".
-		name = name[len(codec.byIndex[decoder.index].name):]
-		codec = decoder.substructCodec
 	}
 
 	var slice reflect.Value
@@ -128,6 +154,23 @@ func (l *propertyLoader) loadOneElement(codec *structCodec, structValue reflect.
 
 	prev[p.Name] = struct{}{}
 
+	if errReason := setVal(p, v); errReason != "" {
+		// Set the slice back to its zero value.
+		if slice.IsValid() {
+			slice.Set(reflect.Zero(slice.Type()))
+		}
+		return errReason
+	}
+
+	if slice.IsValid() {
+		slice.Index(sliceIndex).Set(v)
+	}
+
+	return ""
+}
+
+// setVal sets 'v' to the value of the Property 'p'.
+func setVal(p Property, v reflect.Value) string {
 	pValue := p.Value
 	switch v.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
@@ -198,10 +241,22 @@ func (l *propertyLoader) loadOneElement(codec *structCodec, structValue reflect.
 	default:
 		return typeMismatchReason(p, v)
 	}
-	if slice.IsValid() {
-		slice.Set(reflect.Append(slice, v))
-	}
 	return ""
+}
+
+// initField is similar to reflect's Value.FieldByIndex, but
+// initialises any nil pointers encountered when traversing the structure.
+func initField(val reflect.Value, index []int) reflect.Value {
+	for _, i := range index[:len(index)-1] {
+		val = val.Field(i)
+		if val.Kind() == reflect.Ptr {
+			if val.IsNil() {
+				val.Set(reflect.New(val.Type().Elem()))
+			}
+			val = val.Elem()
+		}
+	}
+	return val.Field(index[len(index)-1])
 }
 
 // loadEntity loads an EntityProto into PropertyLoadSaver or struct pointer.
