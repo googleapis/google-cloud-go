@@ -24,7 +24,7 @@ To use a Server, create it, and then connect to it with no security:
 	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
 	...
 	client, err := bigtable.NewClient(ctx, proj, instance,
-		cloud.WithBaseGRPC(conn))
+	        option.WithGRPCConn(conn))
 	...
 */
 package bttest // import "cloud.google.com/go/bigtable/bttest"
@@ -232,7 +232,7 @@ func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRo
 		// Add the explicitly given keys
 		for _, key := range req.Rows.RowKeys {
 			start := string(key)
-			addRows(start, start + "\x00", tbl, rowSet)
+			addRows(start, start+"\x00", tbl, rowSet)
 		}
 
 		// Add keys from row ranges
