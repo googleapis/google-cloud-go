@@ -236,10 +236,10 @@ for more information.
 [cloud-vision]: https://cloud.google.com/vision/
 [cloud-vision-ref]: https://godoc.org/cloud.google.com/go/vision
 
-[cloud-language]: https://cloud.google.com/https://cloud.google.com/natural-language
+[cloud-language]: https://cloud.google.com/natural-language
 [cloud-language-ref]: https://godoc.org/cloud.google.com/go/language/apiv1beta1
 
-[cloud-speech]: https://cloud.google.com/https://cloud.google.com/speech
+[cloud-speech]: https://cloud.google.com/speech
 [cloud-speech-ref]: https://godoc.org/cloud.google.com/go/speech/apiv1beta1
 
 [default-creds]: https://developers.google.com/identity/protocols/application-default-credentials
