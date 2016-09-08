@@ -27,6 +27,8 @@ var (
 	typeOfByteSlice = reflect.TypeOf([]byte(nil))
 	typeOfTime      = reflect.TypeOf(time.Time{})
 	typeOfGeoPoint  = reflect.TypeOf(GeoPoint{})
+	typeOfKeyPtr    = reflect.TypeOf(&Key{})
+	typeOfEntityPtr = reflect.TypeOf(&Entity{})
 )
 
 // typeMismatchReason returns a string explaining why the property p could not
@@ -75,6 +77,9 @@ func (l *propertyLoader) load(codec *structCodec, structValue reflect.Value, p P
 	return ""
 }
 
+// loadOneElement loads the value of Property p into structValue based on the provided
+// codec. codec is used to find the field in structValue into which p should be loaded.
+// prev is the set of property names already seen for structValue.
 func (l *propertyLoader) loadOneElement(codec *structCodec, structValue reflect.Value, p Property, prev map[string]struct{}) string {
 	var sliceOk bool
 	var sliceIndex int
@@ -154,7 +159,7 @@ func (l *propertyLoader) loadOneElement(codec *structCodec, structValue reflect.
 
 	prev[p.Name] = struct{}{}
 
-	if errReason := setVal(p, v); errReason != "" {
+	if errReason := setVal(v, p); errReason != "" {
 		// Set the slice back to its zero value.
 		if slice.IsValid() {
 			slice.Set(reflect.Zero(slice.Type()))
@@ -170,7 +175,7 @@ func (l *propertyLoader) loadOneElement(codec *structCodec, structValue reflect.
 }
 
 // setVal sets 'v' to the value of the Property 'p'.
-func setVal(p Property, v reflect.Value) string {
+func setVal(v reflect.Value, p Property) string {
 	pValue := p.Value
 	switch v.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
@@ -227,7 +232,27 @@ func setVal(p Property, v reflect.Value) string {
 			}
 			v.Set(reflect.ValueOf(x))
 		default:
-			return typeMismatchReason(p, v)
+			ent, ok := pValue.(*Entity)
+			if !ok {
+				return typeMismatchReason(p, v)
+			}
+
+			// Recursively load nested struct
+			pls, err := newStructPLS(v.Addr().Interface())
+			if err != nil {
+				return err.Error()
+			}
+
+			// if ent has a Key value and our struct has a Key field,
+			// load the Entity's Key value into the Key field on the struct.
+			if ent.Key != nil && pls.codec.keyField != -1 {
+				pls.v.Field(pls.codec.keyField).Set(reflect.ValueOf(ent.Key))
+			}
+
+			err = pls.Load(ent.Properties)
+			if err != nil {
+				return err.Error()
+			}
 		}
 	case reflect.Slice:
 		x, ok := pValue.([]byte)
@@ -244,7 +269,8 @@ func setVal(p Property, v reflect.Value) string {
 	return ""
 }
 
-// initField is similar to reflect's Value.FieldByIndex, but
+// initField is similar to reflect's Value.FieldByIndex, in that it
+// returns the nested struct field corresponding to index, but it
 // initialises any nil pointers encountered when traversing the structure.
 func initField(val reflect.Value, index []int) reflect.Value {
 	for _, i := range index[:len(index)-1] {
@@ -261,15 +287,18 @@ func initField(val reflect.Value, index []int) reflect.Value {
 
 // loadEntity loads an EntityProto into PropertyLoadSaver or struct pointer.
 func loadEntity(dst interface{}, src *pb.Entity) (err error) {
-	props := protoToProperties(src)
-	if e, ok := dst.(PropertyLoadSaver); ok {
-		return e.Load(props)
+	ent, err := protoToEntity(src)
+	if err != nil {
+		return err
 	}
-	return LoadStruct(dst, props)
+	if e, ok := dst.(PropertyLoadSaver); ok {
+		return e.Load(ent.Properties)
+	}
+	return LoadStruct(dst, ent.Properties)
 }
 
 func (s structPLS) Load(props []Property) error {
-	var fieldName, reason string
+	var fieldName, errReason string
 	var l propertyLoader
 
 	prev := make(map[string]struct{})
@@ -278,66 +307,77 @@ func (s structPLS) Load(props []Property) error {
 			// We don't return early, as we try to load as many properties as possible.
 			// It is valid to load an entity into a struct that cannot fully represent it.
 			// That case returns an error, but the caller is free to ignore it.
-			fieldName, reason = p.Name, errStr
+			fieldName, errReason = p.Name, errStr
 		}
 	}
-	if reason != "" {
+	if errReason != "" {
 		return &ErrFieldMismatch{
 			StructType: s.v.Type(),
 			FieldName:  fieldName,
-			Reason:     reason,
+			Reason:     errReason,
 		}
 	}
 	return nil
 }
 
-func protoToProperties(src *pb.Entity) []Property {
-	props := src.Properties
-	out := make([]Property, 0, len(props))
-	for name, val := range props {
-		out = append(out, Property{
+func protoToEntity(src *pb.Entity) (*Entity, error) {
+	props := make([]Property, 0, len(src.Properties))
+	for name, val := range src.Properties {
+		v, err := propToValue(val)
+		if err != nil {
+			return nil, err
+		}
+		props = append(props, Property{
 			Name:    name,
-			Value:   propToValue(val),
+			Value:   v,
 			NoIndex: val.ExcludeFromIndexes,
 		})
 	}
-	return out
+	var key *Key
+	if src.Key != nil {
+		// Ignore any error, since nested entity values
+		// are allowed to have an invalid key.
+		key, _ = protoToKey(src.Key)
+	}
+
+	return &Entity{key, props}, nil
 }
 
 // propToValue returns a Go value that represents the PropertyValue. For
 // example, a TimestampValue becomes a time.Time.
-func propToValue(v *pb.Value) interface{} {
+func propToValue(v *pb.Value) (interface{}, error) {
 	switch v := v.ValueType.(type) {
 	case *pb.Value_NullValue:
-		return nil
+		return nil, nil
 	case *pb.Value_BooleanValue:
-		return v.BooleanValue
+		return v.BooleanValue, nil
 	case *pb.Value_IntegerValue:
-		return v.IntegerValue
+		return v.IntegerValue, nil
 	case *pb.Value_DoubleValue:
-		return v.DoubleValue
+		return v.DoubleValue, nil
 	case *pb.Value_TimestampValue:
-		return time.Unix(v.TimestampValue.Seconds, int64(v.TimestampValue.Nanos))
+		return time.Unix(v.TimestampValue.Seconds, int64(v.TimestampValue.Nanos)), nil
 	case *pb.Value_KeyValue:
-		// TODO(djd): Don't drop this error.
-		key, _ := protoToKey(v.KeyValue)
-		return key
+		return protoToKey(v.KeyValue)
 	case *pb.Value_StringValue:
-		return v.StringValue
+		return v.StringValue, nil
 	case *pb.Value_BlobValue:
-		return []byte(v.BlobValue)
+		return []byte(v.BlobValue), nil
 	case *pb.Value_GeoPointValue:
-		return GeoPoint{Lat: v.GeoPointValue.Latitude, Lng: v.GeoPointValue.Longitude}
+		return GeoPoint{Lat: v.GeoPointValue.Latitude, Lng: v.GeoPointValue.Longitude}, nil
 	case *pb.Value_EntityValue:
-		// TODO(djd): Support EntityValue.
-		return nil
+		return protoToEntity(v.EntityValue)
 	case *pb.Value_ArrayValue:
 		arr := make([]interface{}, 0, len(v.ArrayValue.Values))
 		for _, v := range v.ArrayValue.Values {
-			arr = append(arr, propToValue(v))
+			vv, err := propToValue(v)
+			if err != nil {
+				return nil, err
+			}
+			arr = append(arr, vv)
 		}
-		return arr
+		return arr, nil
 	default:
-		return nil
+		return nil, nil
 	}
 }

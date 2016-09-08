@@ -231,7 +231,8 @@ func keyToProto(k *Key) *pb.Key {
 }
 
 // protoToKey decodes a protocol buffer representation of a key into an
-// equivalent *Key object.
+// equivalent *Key object. If the key is invalid, protoToKey will return the
+// invalid key along with ErrInvalidKey.
 func protoToKey(p *pb.Key) (*Key, error) {
 	var key *Key
 	var namespace string
@@ -248,7 +249,7 @@ func protoToKey(p *pb.Key) (*Key, error) {
 		}
 	}
 	if !key.valid() { // Also detects key == nil.
-		return nil, ErrInvalidKey
+		return key, ErrInvalidKey
 	}
 	return key, nil
 }
