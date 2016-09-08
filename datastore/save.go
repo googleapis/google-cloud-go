@@ -74,7 +74,7 @@ func saveStructProperty(props *[]Property, name string, noIndex bool, v reflect.
 			if err != nil {
 				return fmt.Errorf("datastore: unsupported struct field: %v", err)
 			}
-			return sub.(structPLS).save(props, name+".", noIndex)
+			return sub.save(props, name+".", noIndex)
 		}
 	}
 	if p.Value == nil {
