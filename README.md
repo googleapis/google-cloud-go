@@ -7,12 +7,26 @@
 import "cloud.google.com/go"
 ```
 
+Go packages for Google Cloud Platform services.
+
 **NOTE:** These packages are under development, and may occasionally make
 backwards-incompatible changes.
 
 **NOTE:** Github repo is a mirror of [https://code.googlesource.com/gocloud](https://code.googlesource.com/gocloud).
 
-Go packages for Google Cloud Platform services. Supported APIs are:
+## News
+
+_September 8, 2016_
+
+* New clients for some of Google's Machine Learning APIs: Vision, Speech, and
+Natural Language.
+
+* Preview version of a new [Stackdriver Logging][cloud-logging] client in
+[`cloud.google.com/go/preview/logging`](https://godoc.org/cloud.google.com/go/preview/logging).
+This client uses gRPC as its transport layer, and supports log reading, sinks
+and metrics. It will replace the current client at `cloud.google.com/go/logging` shortly.
+
+## Supported APIs
 
 Google API                     | Status       | Package
 -------------------------------|--------------|-----------------------------------------------------------
@@ -22,6 +36,10 @@ Google API                     | Status       | Package
 [Bigtable][cloud-bigtable]     | beta         | [`cloud.google.com/go/bigtable`][cloud-bigtable-ref]
 [BigQuery][cloud-bigquery]     | experimental | [`cloud.google.com/go/bigquery`][cloud-bigquery-ref]
 [Logging][cloud-logging]       | experimental | [`cloud.google.com/go/logging`][cloud-logging-ref]
+[Vision][cloud-vision]         | experimental | [`cloud.google.com/go/vision`][cloud-vision-ref]
+[Language][cloud-language]     | experimental | [`cloud.google.com/go/language/apiv1beta1`][cloud-language-ref]
+[Speech][cloud-speech]         | experimental | [`cloud.google.com/go/speech/apiv1beta`][cloud-speech-ref]
+
 
 > **Experimental status**: the API is still being actively developed. As a
 > result, it might change in backward-incompatible ways and is not recommended
@@ -214,5 +232,14 @@ for more information.
 
 [cloud-logging]: https://cloud.google.com/logging/
 [cloud-logging-ref]: https://godoc.org/cloud.google.com/go/logging
+
+[cloud-vision]: https://cloud.google.com/vision/
+[cloud-vision-ref]: https://godoc.org/cloud.google.com/go/vision
+
+[cloud-language]: https://cloud.google.com/https://cloud.google.com/natural-language
+[cloud-language-ref]: https://godoc.org/cloud.google.com/go/language/apiv1beta1
+
+[cloud-speech]: https://cloud.google.com/https://cloud.google.com/speech
+[cloud-speech-ref]: https://godoc.org/cloud.google.com/go/speech/apiv1beta1
 
 [default-creds]: https://developers.google.com/identity/protocols/application-default-credentials
