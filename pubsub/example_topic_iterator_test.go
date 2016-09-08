@@ -37,6 +37,6 @@ func ExampleTopicIterator() {
 		if err != nil {
 			// TODO: Handle error.
 		}
-		fmt.Println(t.Name())
+		fmt.Println(t)
 	}
 }

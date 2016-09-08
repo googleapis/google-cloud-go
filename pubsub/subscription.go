@@ -17,6 +17,7 @@ package pubsub
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"golang.org/x/net/context"
@@ -37,16 +38,26 @@ type Subscription struct {
 }
 
 // Subscription creates a reference to a subscription.
-func (c *Client) Subscription(name string) *Subscription {
+func (c *Client) Subscription(id string) *Subscription {
 	return &Subscription{
 		s:    c.s,
-		name: fmt.Sprintf("projects/%s/subscriptions/%s", c.projectID, name),
+		name: fmt.Sprintf("projects/%s/subscriptions/%s", c.projectID, id),
 	}
 }
 
-// Name returns the globally unique name for the subscription.
-func (s *Subscription) Name() string {
+// String returns the globally unique printable name of the subscription.
+func (s *Subscription) String() string {
 	return s.name
+}
+
+// ID returns the unique identifier of the subscription within its project.
+func (s *Subscription) ID() string {
+	slash := strings.LastIndex(s.name, "/")
+	if slash == -1 {
+		// name is not a fully-qualified name.
+		panic("bad subscription name")
+	}
+	return s.name[slash+1:]
 }
 
 // Subscriptions returns an iterator which returns all of the subscriptions for the client's project.
@@ -74,7 +85,6 @@ func (subs *SubscriptionIterator) Next() (*Subscription, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return &Subscription{s: subs.s, name: subName}, nil
 }
 
@@ -241,7 +251,7 @@ func MaxExtension(duration time.Duration) PullOption {
 // pushConfig may be set to configure this subscription for push delivery.
 //
 // If the subscription already exists an error will be returned.
-func (c *Client) CreateSubscription(ctx context.Context, name string, topic *Topic, ackDeadline time.Duration, pushConfig *PushConfig) (*Subscription, error) {
+func (c *Client) CreateSubscription(ctx context.Context, id string, topic *Topic, ackDeadline time.Duration, pushConfig *PushConfig) (*Subscription, error) {
 	if ackDeadline == 0 {
 		ackDeadline = 10 * time.Second
 	}
@@ -249,7 +259,7 @@ func (c *Client) CreateSubscription(ctx context.Context, name string, topic *Top
 		return nil, fmt.Errorf("ack deadline must be between 10 and 600 seconds; got: %v", d)
 	}
 
-	sub := c.Subscription(name)
-	err := c.s.createSubscription(ctx, topic.Name(), sub.Name(), ackDeadline, pushConfig)
+	sub := c.Subscription(id)
+	err := c.s.createSubscription(ctx, topic.name, sub.name, ackDeadline, pushConfig)
 	return sub, err
 }
