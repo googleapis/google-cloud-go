@@ -39,12 +39,12 @@ const (
 type Status string
 
 const (
-	Done         = Status("done")
-	Pending      = Status("pending")
-	Running      = Status("running")
-	Error        = Status("error")
-	Provisioning = Status("provisioning")
-	Stopping     = Status("stopping")
+	StatusDone         = Status("done")
+	StatusPending      = Status("pending")
+	StatusRunning      = Status("running")
+	StatusError        = Status("error")
+	StatusProvisioning = Status("provisioning")
+	StatusStopping     = Status("stopping")
 )
 
 const prodAddr = "https://container.googleapis.com/"
