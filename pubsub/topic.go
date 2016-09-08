@@ -16,6 +16,7 @@ package pubsub
 
 import (
 	"fmt"
+	"strings"
 
 	"golang.org/x/net/context"
 )
@@ -31,20 +32,23 @@ type Topic struct {
 }
 
 // CreateTopic creates a new topic.
-// The specified topic name must start with a letter, and contain only letters
+// The specified topic ID must start with a letter, and contain only letters
 // ([A-Za-z]), numbers ([0-9]), dashes (-), underscores (_), periods (.),
 // tildes (~), plus (+) or percent signs (%). It must be between 3 and 255
 // characters in length, and must not start with "goog".
 // If the topic already exists an error will be returned.
-func (c *Client) CreateTopic(ctx context.Context, name string) (*Topic, error) {
-	t := c.Topic(name)
-	err := c.s.createTopic(ctx, t.Name())
+func (c *Client) CreateTopic(ctx context.Context, id string) (*Topic, error) {
+	t := c.Topic(id)
+	err := c.s.createTopic(ctx, t.name)
 	return t, err
 }
 
 // Topic creates a reference to a topic.
-func (c *Client) Topic(name string) *Topic {
-	return &Topic{s: c.s, name: fmt.Sprintf("projects/%s/topics/%s", c.projectID, name)}
+func (c *Client) Topic(id string) *Topic {
+	return &Topic{
+		s:    c.s,
+		name: fmt.Sprintf("projects/%s/topics/%s", c.projectID, id),
+	}
 }
 
 // Topics returns an iterator which returns all of the topics for the client's project.
@@ -75,8 +79,18 @@ func (tps *TopicIterator) Next() (*Topic, error) {
 	return &Topic{s: tps.s, name: topicName}, nil
 }
 
-// Name returns the globally unique name for the topic.
-func (t *Topic) Name() string {
+// ID returns the unique idenfier of the topic within its project.
+func (t *Topic) ID() string {
+	slash := strings.LastIndex(t.name, "/")
+	if slash == -1 {
+		// name is not a fully-qualified name.
+		panic("bad topic name")
+	}
+	return t.name[slash+1:]
+}
+
+// String returns the printable globally unique name for the topic.
+func (t *Topic) String() string {
 	return t.name
 }
 
@@ -103,7 +117,6 @@ func (t *Topic) Subscriptions(ctx context.Context) *SubscriptionIterator {
 		stringsIterator: stringsIterator{
 			ctx: ctx,
 			fetch: func(ctx context.Context, tok string) (*stringsPage, error) {
-
 				return t.s.listTopicSubscriptions(ctx, t.name, tok)
 			},
 		},

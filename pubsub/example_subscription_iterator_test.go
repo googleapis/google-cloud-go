@@ -37,6 +37,6 @@ func ExampleSubscriptionIterator() {
 		if err != nil {
 			// TODO: Handle error.
 		}
-		fmt.Println(sub.Name())
+		fmt.Println(sub)
 	}
 }
