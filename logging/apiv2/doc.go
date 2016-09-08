@@ -17,6 +17,6 @@
 // Package logging is an experimental, auto-generated package for the
 // logging API.
 //
-// The Google Cloud Logging API lets you write log entries and manage your
+// The Stackdriver Logging API lets you write log entries and manage your
 // logs, log sinks and logs-based metrics.
 package logging // import "cloud.google.com/go/logging/apiv2"
