@@ -212,11 +212,7 @@ func opsFromRaw(o []*raw.Operation) []*Op {
 // If no zone is specified, it returns all clusters under the user project.
 func (c *Client) Clusters(ctx context.Context, zone string) ([]*Resource, error) {
 	if zone == "" {
-		resp, err := c.svc.Projects.Zones.Clusters.List(c.projectID, "-").Do()
-		if err != nil {
-			return nil, err
-		}
-		return resourcesFromRaw(resp.Clusters), nil
+		zone = "-"
 	}
 	resp, err := c.svc.Projects.Zones.Clusters.List(c.projectID, zone).Do()
 	if err != nil {
