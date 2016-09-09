@@ -53,10 +53,6 @@ var (
 	testFilter    string
 	errorc        chan error
 
-	// Wait for the function to return true. The production service
-	// sometimes takes a while to finish an action.
-	waitFor func(func() bool)
-
 	// Adjust the fields of a FullEntry received from the production service
 	// before comparing it with the expected result. We can't correctly
 	// compare certain fields, like times or server-generated IDs.
@@ -84,7 +80,6 @@ func TestMain(m *testing.M) {
 			log.Print("Integration tests skipped in short mode (using fake instead)")
 		}
 		testProjectID = "PROJECT_ID"
-		waitFor = func(func() bool) {}
 		clean = func(e *Entry) {
 			// Remove the insert ID for consistency with the integration test.
 			e.InsertID = ""
@@ -108,8 +103,6 @@ func TestMain(m *testing.M) {
 		}
 	} else {
 		integrationTest = true
-		// Give the service some time to make written entries available.
-		waitFor = realWaitFor
 		clean = func(e *Entry) {
 			// We cannot compare timestamps, so set them to the test time.
 			// Also, remove the insert ID added by the service.
@@ -142,10 +135,10 @@ func TestMain(m *testing.M) {
 	os.Exit(exit)
 }
 
-// realWaitFor calls f periodically, blocking until it returns true.
-// It calls log.Fatal after 30 seconds.
-func realWaitFor(f func() bool) {
-	timeout := time.NewTimer(30 * time.Second)
+// waitFor calls f periodically, blocking until it returns true.
+// It calls log.Fatal after one minute.
+func waitFor(f func() bool) {
+	timeout := time.NewTimer(1 * time.Minute)
 	for {
 		select {
 		case <-time.After(1 * time.Second):
@@ -246,11 +239,14 @@ func TestLogSync(t *testing.T) {
 		entryForTesting("goodbye"),
 		entryForTesting("mr"),
 	}
-	waitFor(func() bool { return countLogEntries(ctx, testFilter) >= len(want) })
-	got, err := allTestLogEntries(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+	var got []*Entry
+	waitFor(func() bool {
+		got, err = allTestLogEntries(ctx)
+		if err != nil {
+			return false
+		}
+		return len(got) >= len(want)
+	})
 	if len(got) != len(want) {
 		t.Fatalf("got %d entries, want %d", len(got), len(want))
 	}
