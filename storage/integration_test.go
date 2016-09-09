@@ -166,6 +166,11 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 }
 
 func TestObjects(t *testing.T) {
+	// TODO(djd): there are a lot of closely-related tests here which share
+	// a common setup. Once we can depend on Go 1.7 features, we should refactor
+	// this test to use the sub-test feature. This will increase the readability
+	// of this test, and should also reduce the time it takes to execute.
+	// https://golang.org/pkg/testing/#hdr-Subtests_and_Sub_benchmarks
 	ctx := context.Background()
 	client, bucket := testConfig(ctx, t)
 	defer client.Close()
@@ -483,6 +488,35 @@ func TestObjects(t *testing.T) {
 	_, err = bkt.Object(copyName).Attrs(ctx)
 	if err != ErrObjectNotExist {
 		t.Errorf("Copy is expected to be deleted, stat errored with %v", err)
+	}
+
+	// Test object composition.
+	compDst := bkt.Object("composed")
+	var cmpSrcs []*ObjectHandle
+	var wantContents []byte
+	for _, obj := range objects {
+		cmpSrcs = append(cmpSrcs, bkt.Object(obj))
+		wantContents = append(wantContents, contents[obj]...)
+	}
+	if _, err := compDst.ComposeFrom(ctx, compSrcs, &ObjectAttrs{
+		ContentType: "text/json",
+	}); err != nil {
+		t.Fatalf("ComposeFrom error: %v", err)
+	}
+	rc, err = compDst.NewReader(ctx)
+	if err != nil {
+		t.Fatalf("compDst.NewReader: %v", err)
+	}
+	slurp, err = ioutil.ReadAll(rc)
+	if err != nil {
+		t.Fatalf("compDst ioutil.ReadAll: %v", err)
+	}
+	defer rc.Close()
+	if !bytes.Equal(slurp, wantContents) {
+		t.Errorf("Composed object contents\ngot:  %q\nwant: %q", slurp, wantContents)
+	}
+	if got, want := rc.ContentType(), "text/json"; got != want {
+		t.Errorf("Composed object content-type = %q, want %q", got, want)
 	}
 }
 
