@@ -42,7 +42,12 @@ func (s *sampler) Sample() (sample bool, reason string, rate float64) {
 	s.Lock()
 	x := s.Float64()
 	s.Unlock()
-	if x >= s.fraction || !s.Allow() {
+	return s.sample(time.Now(), x)
+}
+
+// sample contains the a deterministic, time-independent logic of Sample.
+func (s *sampler) sample(now time.Time, x float64) (bool, string, float64) {
+	if x >= s.fraction || !s.AllowN(now, 1) {
 		return false, "", 0.0
 	}
 	if s.fraction < 1.0 {
