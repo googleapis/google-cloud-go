@@ -117,6 +117,14 @@ func TestKeepAliveStopsWhenItemsExpired(t *testing.T) {
 	ka.Add("a")
 	ka.Add("b")
 
+	// Wait until the clock advances. Without this loop, this test fails on
+	// Windows because the clock doesn't advance at all between ka.Add and the
+	// expiration check after the tick is received.
+	begin := time.Now()
+	for time.Now().Equal(begin) {
+		time.Sleep(time.Millisecond)
+	}
+
 	// There should be no call to modifyAckDeadline since both items are expired.
 	ticker <- time.Time{}
 
