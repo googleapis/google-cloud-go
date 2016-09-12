@@ -492,10 +492,10 @@ func TestObjects(t *testing.T) {
 
 	// Test object composition.
 	compDst := bkt.Object("composed")
-	var cmpSrcs []*ObjectHandle
+	var compSrcs []*ObjectHandle
 	var wantContents []byte
 	for _, obj := range objects {
-		cmpSrcs = append(cmpSrcs, bkt.Object(obj))
+		compSrcs = append(compSrcs, bkt.Object(obj))
 		wantContents = append(wantContents, contents[obj]...)
 	}
 	if _, err := compDst.ComposeFrom(ctx, compSrcs, &ObjectAttrs{
