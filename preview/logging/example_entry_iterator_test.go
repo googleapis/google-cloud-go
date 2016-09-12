@@ -55,11 +55,11 @@ func ExampleEntryIterator_Next() {
 	it := client.Entries(ctx)
 	for {
 		entry, err := it.Next()
-		if err != nil && err != iterator.Done {
-			// TODO: Handle error.
-		}
 		if err == iterator.Done {
 			break
+		}
+		if err != nil {
+			// TODO: Handle error.
 		}
 		fmt.Println(entry)
 	}

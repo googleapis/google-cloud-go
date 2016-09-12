@@ -29,7 +29,7 @@ func ExampleClient_ResourceDescriptors() {
 		// TODO: Handle error.
 	}
 	it := client.ResourceDescriptors(ctx)
-	_ = it // TODO: iterate using Next or NextPage.
+	_ = it // TODO: iterate using Next or iterator.Pager.
 }
 
 func ExampleResourceDescriptorIterator_Next() {
@@ -41,11 +41,11 @@ func ExampleResourceDescriptorIterator_Next() {
 	it := client.ResourceDescriptors(ctx)
 	for {
 		rdesc, err := it.Next()
-		if err != nil && err != iterator.Done {
-			// TODO: Handle error.
-		}
 		if err == iterator.Done {
 			break
+		}
+		if err != nil {
+			// TODO: Handle error.
 		}
 		fmt.Println(rdesc)
 	}
