@@ -19,11 +19,13 @@ import (
 	"fmt"
 
 	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
 )
 
 // A pageFetcher returns a page of rows, starting from the row specified by token.
 type pageFetcher interface {
 	fetch(ctx context.Context, s service, token string) (*readDataResult, error)
+	setPaging(*pagingConf)
 }
 
 // Iterator provides access to the result of a BigQuery lookup.
@@ -183,4 +185,100 @@ func (it *Iterator) Schema() (Schema, error) {
 	}
 
 	return it.schema, nil
+}
+
+////////////////////////////////////////////////////////////////
+// New iterator implementation: will replace the old
+
+// TODO(jba) replace Job.Read with Job.readRows.
+func (j *Job) readRows(ctx context.Context) (*RowIterator, error) {
+	conf := &readQueryConf{}
+	if err := j.customizeReadQuery(conf); err != nil {
+		return nil, err
+	}
+	return newRowIterator(ctx, j.service, conf), nil
+}
+
+// TODO(jba) replace Table.Read with Table.readRows.
+// Note: no error return.
+func (t *Table) readRows(ctx context.Context) *RowIterator {
+	conf := &readTableConf{}
+	t.customizeReadSrc(conf)
+	return newRowIterator(ctx, t.c.service, conf)
+}
+
+func newRowIterator(ctx context.Context, s service, pf pageFetcher) *RowIterator {
+	it := &RowIterator{
+		ctx:       ctx,
+		service:   s,
+		pf:        pf,
+		schemaErr: errors.New("called without preceding successful call to Next"),
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
+		it.fetch,
+		func() int { return len(it.rows) },
+		func() interface{} { r := it.rows; it.rows = nil; return r })
+	return it
+}
+
+// A RowIterator provides access to the result of a BigQuery lookup.
+type RowIterator struct {
+	ctx      context.Context
+	service  service
+	pf       pageFetcher
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// StartIndex can be set before the first call to Next. If PageInfo().PageToken
+	// is also set, StartIndex is ignored.
+	StartIndex uint64
+
+	rows [][]Value
+
+	schema    Schema // populated on first call to fech
+	schemaErr error
+}
+
+// Next loads the next row into dst. Its return value is iterator.Done if there
+// are no more results. Once Next returns iterator.Done, all subsequent calls
+// will return iterator.Done.
+func (it *RowIterator) Next(dst ValueLoader) error {
+	if err := it.nextFunc(); err != nil {
+		return err
+	}
+	row := it.rows[0]
+	it.rows = it.rows[1:]
+	return dst.Load(row)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *RowIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
+
+// Schema returns the schema of the result rows.
+func (it *RowIterator) Schema() (Schema, error) {
+	if it.schemaErr != nil {
+		return nil, fmt.Errorf("Schema %v", it.schemaErr)
+	}
+	return it.schema, nil
+}
+
+func (it *RowIterator) fetch(pageSize int, pageToken string) (string, error) {
+	pc := &pagingConf{}
+	if pageSize > 0 {
+		pc.recordsPerRequest = int64(pageSize)
+		pc.setRecordsPerRequest = true
+	}
+	if pageToken == "" {
+		pc.startIndex = it.StartIndex
+	}
+	it.pf.setPaging(pc)
+	res, err := it.pf.fetch(it.ctx, it.service, pageToken)
+	if err != nil {
+		it.schemaErr = err
+		return "", err
+	}
+	it.rows = append(it.rows, res.rows...)
+	it.schema = res.schema
+	it.schemaErr = nil
+	return res.pageToken, nil
 }
