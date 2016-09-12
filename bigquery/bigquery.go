@@ -88,6 +88,13 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	return c, nil
 }
 
+// Close closes any resources held by the client.
+// Close should be called when the client is no longer needed.
+// It need not be called at program exit.
+func (c *Client) Close() error {
+	return nil
+}
+
 // initJobProto creates and returns a bigquery Job proto.
 // The proto is customized using any jobOptions in options.
 // The list of Options is returned with the jobOptions removed.
