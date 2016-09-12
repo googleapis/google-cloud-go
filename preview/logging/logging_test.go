@@ -247,14 +247,21 @@ func TestLogSync(t *testing.T) {
 		}
 		return len(got) >= len(want)
 	})
+	if msg, ok := compareEntries(got, want); !ok {
+		t.Error(msg)
+	}
+}
+
+func compareEntries(got, want []*Entry) (string, bool) {
 	if len(got) != len(want) {
-		t.Fatalf("got %d entries, want %d", len(got), len(want))
+		return fmt.Sprintf("got %d entries, want %d", len(got), len(want)), false
 	}
 	for i := range got {
 		if !reflect.DeepEqual(got[i], want[i]) {
-			t.Errorf("#%d:\ngot  %+v\nwant %+v", i, got[i], want[i])
+			return fmt.Sprintf("#%d:\ngot  %+v\nwant %+v", i, got[i], want[i]), false
 		}
 	}
+	return "", true
 }
 
 func entryForTesting(payload interface{}) *Entry {
@@ -320,13 +327,18 @@ func TestLogAndEntries(t *testing.T) {
 	for _, p := range payloads {
 		want = append(want, entryForTesting(p))
 	}
-	waitFor(func() bool { return countLogEntries(ctx, testFilter) >= len(want) })
-	it := client.Entries(ctx, Filter(testFilter))
-	msg, ok := testutil.TestIteratorNext(want, iterator.Done, func() (interface{}, error) { return cleanNext(it) })
-	if !ok {
-		t.Fatal(msg)
+	var got []*Entry
+	waitFor(func() bool {
+		var err error
+		got, err = allTestLogEntries(ctx)
+		if err != nil {
+			return false
+		}
+		return len(got) >= len(want)
+	})
+	if msg, ok := compareEntries(got, want); !ok {
+		t.Error(msg)
 	}
-	// TODO(jba): test exact paging.
 }
 
 func TestStandardLogger(t *testing.T) {
@@ -344,11 +356,15 @@ func TestStandardLogger(t *testing.T) {
 
 	slg.Print("info")
 	lg.Flush()
-	waitFor(func() bool { return countLogEntries(ctx, testFilter) > 0 })
-	got, err := allTestLogEntries(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+	var got []*Entry
+	waitFor(func() bool {
+		var err error
+		got, err = allTestLogEntries(ctx)
+		if err != nil {
+			return false
+		}
+		return len(got) >= 1
+	})
 	if len(got) != 1 {
 		t.Fatalf("expected non-nil request with one entry; got:\n%+v", got)
 	}
