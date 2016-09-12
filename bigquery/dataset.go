@@ -26,24 +26,6 @@ type Dataset struct {
 	service   service
 }
 
-// ListTables returns a list of all the tables contained in the Dataset.
-func (d *Dataset) ListTables(ctx context.Context) ([]*Table, error) {
-	var tables []*Table
-
-	err := getPages("", func(pageToken string) (string, error) {
-		ts, tok, err := d.service.listTables(ctx, d.projectID, d.id, pageToken)
-		if err == nil {
-			tables = append(tables, ts...)
-		}
-		return tok, err
-	})
-
-	if err != nil {
-		return nil, err
-	}
-	return tables, nil
-}
-
 // Create creates a dataset in the BigQuery service. An error will be returned
 // if the dataset already exists.
 func (d *Dataset) Create(ctx context.Context) error {
@@ -55,6 +37,52 @@ func (d *Dataset) Create(ctx context.Context) error {
 // If the table does not already exist, use Table.Create to create it.
 func (d *Dataset) Table(tableID string) *Table {
 	return &Table{ProjectID: d.projectID, DatasetID: d.id, TableID: tableID, service: d.service}
+}
+
+// Tables returns an iterator over the tables in the Dataset.
+func (d *Dataset) Tables(ctx context.Context) *TableIterator {
+	it := &TableIterator{
+		ctx:     ctx,
+		dataset: d,
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
+		it.fetch,
+		func() int { return len(it.tables) },
+		func() interface{} { b := it.tables; it.tables = nil; return b })
+	return it
+}
+
+// A TableIterator is an iterator over Tables.
+type TableIterator struct {
+	ctx      context.Context
+	dataset  *Dataset
+	tables   []*Table
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+}
+
+// Next returns the next result. Its second return value is Done if there are
+// no more results. Once Next returns Done, all subsequent calls will return
+// Done.
+func (it *TableIterator) Next() (*Table, error) {
+	if err := it.nextFunc(); err != nil {
+		return nil, err
+	}
+	t := it.tables[0]
+	it.tables = it.tables[1:]
+	return t, nil
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *TableIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
+
+func (it *TableIterator) fetch(pageSize int, pageToken string) (string, error) {
+	tables, tok, err := it.dataset.service.listTables(it.ctx, it.dataset.projectID, it.dataset.id, pageSize, pageToken)
+	if err != nil {
+		return "", err
+	}
+	it.tables = append(it.tables, tables...)
+	return tok, nil
 }
 
 // Datasets returns an iterator over the datasets in the Client's project.

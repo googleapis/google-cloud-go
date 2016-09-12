@@ -27,43 +27,55 @@ import (
 // readServiceStub services read requests by returning data from an in-memory list of values.
 type listTablesServiceStub struct {
 	expectedProject, expectedDataset string
-	values                           [][]*Table        // contains pages of tables.
-	pageTokens                       map[string]string // maps incoming page token to returned page token.
-
+	tables                           []*Table
 	service
 }
 
-func (s *listTablesServiceStub) listTables(ctx context.Context, projectID, datasetID, pageToken string) ([]*Table, string, error) {
+func (s *listTablesServiceStub) listTables(ctx context.Context, projectID, datasetID string, pageSize int, pageToken string) ([]*Table, string, error) {
 	if projectID != s.expectedProject {
 		return nil, "", errors.New("wrong project id")
 	}
 	if datasetID != s.expectedDataset {
 		return nil, "", errors.New("wrong dataset id")
 	}
-
-	tables := s.values[0]
-	s.values = s.values[1:]
-	return tables, s.pageTokens[pageToken], nil
+	const maxPageSize = 2
+	if pageSize <= 0 || pageSize > maxPageSize {
+		pageSize = maxPageSize
+	}
+	start := 0
+	if pageToken != "" {
+		var err error
+		start, err = strconv.Atoi(pageToken)
+		if err != nil {
+			return nil, "", err
+		}
+	}
+	end := start + pageSize
+	if end > len(s.tables) {
+		end = len(s.tables)
+	}
+	nextPageToken := ""
+	if end < len(s.tables) {
+		nextPageToken = strconv.Itoa(end)
+	}
+	return s.tables[start:end], nextPageToken, nil
 }
 
 func TestListTables(t *testing.T) {
 	t1 := &Table{ProjectID: "p1", DatasetID: "d1", TableID: "t1"}
 	t2 := &Table{ProjectID: "p1", DatasetID: "d1", TableID: "t2"}
 	t3 := &Table{ProjectID: "p1", DatasetID: "d1", TableID: "t3"}
+	allTables := []*Table{t1, t2, t3}
 	testCases := []struct {
-		data       [][]*Table
-		pageTokens map[string]string
-		want       []*Table
+		data, want []*Table
 	}{
 		{
-			data:       [][]*Table{{t1, t2}, {t3}},
-			pageTokens: map[string]string{"": "a", "a": ""},
-			want:       []*Table{t1, t2, t3},
+			data: allTables,
+			want: allTables,
 		},
 		{
-			data:       [][]*Table{{t1, t2}, {t3}},
-			pageTokens: map[string]string{"": ""}, // no more pages after first one.
-			want:       []*Table{t1, t2},
+			data: nil,
+			want: nil,
 		},
 	}
 
@@ -72,8 +84,7 @@ func TestListTables(t *testing.T) {
 			service: &listTablesServiceStub{
 				expectedProject: "x",
 				expectedDataset: "y",
-				values:          tc.data,
-				pageTokens:      tc.pageTokens,
+				tables:          tc.data,
 			},
 			projectID: "x",
 		}
@@ -103,6 +114,27 @@ func TestListTablesError(t *testing.T) {
 	if err == nil {
 		// Read should not return an error; only Err should.
 		t.Errorf("ListTables expected: non-nil err, got: nil")
+	}
+}
+
+func TestTables(t *testing.T) {
+	t1 := &Table{ProjectID: "p1", DatasetID: "d1", TableID: "t1"}
+	t2 := &Table{ProjectID: "p1", DatasetID: "d1", TableID: "t2"}
+	t3 := &Table{ProjectID: "p1", DatasetID: "d1", TableID: "t3"}
+	allTables := []*Table{t1, t2, t3}
+	c := &Client{
+		service: &listTablesServiceStub{
+			expectedProject: "x",
+			expectedDataset: "y",
+			tables:          allTables,
+		},
+		projectID: "x",
+	}
+	msg, ok := itest.TestIterator(allTables,
+		func() interface{} { return c.Dataset("y").Tables(context.Background()) },
+		func(it interface{}) (interface{}, error) { return it.(*TableIterator).Next() })
+	if !ok {
+		t.Error(msg)
 	}
 }
 

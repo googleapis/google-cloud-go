@@ -40,7 +40,7 @@ type service interface {
 	createTable(ctx context.Context, conf *createTableConf) error
 	getTableMetadata(ctx context.Context, projectID, datasetID, tableID string) (*TableMetadata, error)
 	deleteTable(ctx context.Context, projectID, datasetID, tableID string) error
-	listTables(ctx context.Context, projectID, datasetID, pageToken string) ([]*Table, string, error)
+	listTables(ctx context.Context, projectID, datasetID string, pageSize int, pageToken string) ([]*Table, string, error)
 	patchTable(ctx context.Context, projectID, datasetID, tableID string, conf *patchTableConf) (*TableMetadata, error)
 
 	// Table data
@@ -345,12 +345,15 @@ func jobStatusFromProto(status *bq.JobStatus) (*JobStatus, error) {
 }
 
 // listTables returns a subset of tables that belong to a dataset, and a token for fetching the next subset.
-func (s *bigqueryService) listTables(ctx context.Context, projectID, datasetID, pageToken string) ([]*Table, string, error) {
+func (s *bigqueryService) listTables(ctx context.Context, projectID, datasetID string, pageSize int, pageToken string) ([]*Table, string, error) {
 	var tables []*Table
-	res, err := s.s.Tables.List(projectID, datasetID).
+	req := s.s.Tables.List(projectID, datasetID).
 		PageToken(pageToken).
-		Context(ctx).
-		Do()
+		Context(ctx)
+	if pageSize > 0 {
+		req.MaxResults(int64(pageSize))
+	}
+	res, err := req.Do()
 	if err != nil {
 		return nil, "", err
 	}
