@@ -39,6 +39,8 @@ func (conf *readTableConf) fetch(ctx context.Context, s service, token string) (
 	return s.readTabledata(ctx, conf, token)
 }
 
+func (conf *readTableConf) setPaging(pc *pagingConf) { conf.paging = *pc }
+
 // Read fetches the contents of the table.
 func (t *Table) Read(_ context.Context, options ...ReadOption) (*Iterator, error) {
 	conf := &readTableConf{}
@@ -54,6 +56,8 @@ func (t *Table) Read(_ context.Context, options ...ReadOption) (*Iterator, error
 func (conf *readQueryConf) fetch(ctx context.Context, s service, token string) (*readDataResult, error) {
 	return s.readQuery(ctx, conf, token)
 }
+
+func (conf *readQueryConf) setPaging(pc *pagingConf) { conf.paging = *pc }
 
 // Read fetches the results of a query job.
 func (j *Job) Read(_ context.Context, options ...ReadOption) (*Iterator, error) {

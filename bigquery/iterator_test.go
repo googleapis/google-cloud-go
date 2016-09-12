@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
 )
 
 type fetchResponse struct {
@@ -42,6 +43,8 @@ func (pf *pageFetcherStub) fetch(ctx context.Context, s service, token string) (
 	}
 	return call.result, call.err
 }
+
+func (pf *pageFetcherStub) setPaging(pc *pagingConf) {}
 
 func TestIterator(t *testing.T) {
 	fetchFailure := errors.New("fetch failure")
@@ -359,6 +362,26 @@ func TestIterator(t *testing.T) {
 			t.Errorf("%s: iterator.Schema:\ngot: %v\nwant: %v", tc.desc, schema, tc.wantSchema)
 		}
 	}
+
+	for _, tc := range testCases {
+		if tc.alreadyConsumed != 0 {
+			continue
+		}
+		pf := &pageFetcherStub{
+			fetchResponses: tc.fetchResponses,
+		}
+		it := newRowIterator(context.Background(), nil, pf)
+		values, schema, err := consumeRowIterator(it)
+		if err != tc.wantErr {
+			t.Fatalf("%s: got %v, want %v", tc.desc, err, tc.wantErr)
+		}
+		if (len(values) != 0 || len(tc.want) != 0) && !reflect.DeepEqual(values, tc.want) {
+			t.Errorf("%s: values:\ngot: %v\nwant:%v", tc.desc, values, tc.want)
+		}
+		if (len(schema) != 0 || len(tc.wantSchema) != 0) && !reflect.DeepEqual(schema, tc.wantSchema) {
+			t.Errorf("%s: iterator.Schema:\ngot: %v\nwant: %v", tc.desc, schema, tc.wantSchema)
+		}
+	}
 }
 
 // consumeIterator reads the schema and all values from an iterator and returns them.
@@ -376,8 +399,27 @@ func consumeIterator(it *Iterator) ([]ValueList, Schema, error) {
 			return nil, Schema{}, fmt.Errorf("err calling Schema: %v", err)
 		}
 	}
-
 	return got, schema, nil
+}
+
+// consumeRowIterator reads the schema and all values from a RowIterator and returns them.
+func consumeRowIterator(it *RowIterator) ([]ValueList, Schema, error) {
+	var got []ValueList
+	var schema Schema
+	for {
+		var vals ValueList
+		err := it.Next(&vals)
+		if err == iterator.Done {
+			return got, schema, nil
+		}
+		if err != nil {
+			return got, schema, err
+		}
+		got = append(got, vals)
+		if schema, err = it.Schema(); err != nil {
+			return nil, Schema{}, err
+		}
+	}
 }
 
 func TestGetBeforeNext(t *testing.T) {
