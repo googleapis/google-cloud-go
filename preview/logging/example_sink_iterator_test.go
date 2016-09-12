@@ -29,7 +29,7 @@ func ExampleClient_Sinks() {
 		// TODO: Handle error.
 	}
 	it := client.Sinks(ctx)
-	_ = it // TODO: iterate using Next or NextPage.
+	_ = it // TODO: iterate using Next or iterator.Pager.
 }
 
 func ExampleSinkIterator_Next() {
@@ -41,11 +41,11 @@ func ExampleSinkIterator_Next() {
 	it := client.Sinks(ctx)
 	for {
 		sink, err := it.Next()
-		if err != nil && err != iterator.Done {
-			// TODO: Handle error.
-		}
 		if err == iterator.Done {
 			break
+		}
+		if err != nil {
+			// TODO: Handle error.
 		}
 		fmt.Println(sink)
 	}

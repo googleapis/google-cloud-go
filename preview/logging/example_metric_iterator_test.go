@@ -29,7 +29,7 @@ func ExampleClient_Metrics() {
 		// TODO: Handle error.
 	}
 	it := client.Metrics(ctx)
-	_ = it // TODO: iterate using Next or NextPage.
+	_ = it // TODO: iterate using Next or iterator.Pager.
 }
 
 func ExampleMetricIterator_Next() {
@@ -41,11 +41,11 @@ func ExampleMetricIterator_Next() {
 	it := client.Metrics(ctx)
 	for {
 		metric, err := it.Next()
-		if err != nil && err != iterator.Done {
-			// TODO: Handle error.
-		}
 		if err == iterator.Done {
 			break
+		}
+		if err != nil {
+			// TODO: Handle error.
 		}
 		fmt.Println(metric)
 	}
