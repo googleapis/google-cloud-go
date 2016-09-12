@@ -42,7 +42,7 @@ type Message struct {
 	calledDone bool
 
 	// The iterator that created this Message.
-	it *Iterator
+	it *MessageIterator
 }
 
 func toMessage(resp *raw.ReceivedMessage) (*Message, error) {
@@ -61,14 +61,14 @@ func toMessage(resp *raw.ReceivedMessage) (*Message, error) {
 	}, nil
 }
 
-// Done completes the processing of a Message that was returned from an Iterator.
+// Done completes the processing of a Message that was returned from a MessageIterator.
 // ack indicates whether the message should be acknowledged.
 // Client code must call Done when finished for each Message returned by an iterator.
-// Done may only be called on Messages returned by an iterator.
+// Done may only be called on Messages returned by a MessageIterator.
 // If message acknowledgement fails, the Message will be redelivered.
 // Calls to Done have no effect after the first call.
 //
-// See Iterator.Next for an example.
+// See MessageIterator.Next for an example.
 func (m *Message) Done(ack bool) {
 	if m.calledDone {
 		return
