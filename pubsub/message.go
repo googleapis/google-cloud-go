@@ -67,6 +67,8 @@ func toMessage(resp *raw.ReceivedMessage) (*Message, error) {
 // Done may only be called on Messages returned by an iterator.
 // If message acknowledgement fails, the Message will be redelivered.
 // Calls to Done have no effect after the first call.
+//
+// See Iterator.Next for an example.
 func (m *Message) Done(ack bool) {
 	if m.calledDone {
 		return

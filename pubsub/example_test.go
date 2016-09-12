@@ -20,6 +20,7 @@ import (
 
 	"cloud.google.com/go/pubsub"
 	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
 )
 
 func ExampleNewClient() {
@@ -48,17 +49,6 @@ func ExampleClient_CreateTopic() {
 	_ = topic // TODO: use the topic.
 }
 
-func ExampleClient_Topics() {
-	ctx := context.Background()
-	client, err := pubsub.NewClient(ctx, "project-id")
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// List all topics.
-	it := client.Topics(ctx)
-	_ = it // See the TopicIterator example for its usage.
-}
-
 func ExampleClient_CreateSubscription() {
 	ctx := context.Background()
 	client, err := pubsub.NewClient(ctx, "project-id")
@@ -80,17 +70,6 @@ func ExampleClient_CreateSubscription() {
 	}
 
 	_ = sub // TODO: use the subscription.
-}
-
-func ExampleClient_Subscriptions() {
-	ctx := context.Background()
-	client, err := pubsub.NewClient(ctx, "project-id")
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// List all subscriptions of the project.
-	it := client.Subscriptions(ctx)
-	_ = it // See the SubscriptionIterator example for its usage.
 }
 
 func ExampleTopic_Delete() {
@@ -190,26 +169,62 @@ func ExampleSubscription_Exists() {
 	}
 }
 
+func ExampleSubscription_Config() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	sub := client.Subscription("subName")
+	config, err := sub.Config(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Println(config)
+}
+
 func ExampleSubscription_Pull() {
 	ctx := context.Background()
 	client, err := pubsub.NewClient(ctx, "project-id")
 	if err != nil {
 		// TODO: Handle error.
 	}
-
-	sub := client.Subscription("subName")
-	it, err := sub.Pull(ctx)
+	it, err := client.Subscription("subName").Pull(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
-
 	// Ensure that the iterator is closed down cleanly.
 	defer it.Stop()
+}
 
+func ExampleSubscription_ModifyPushConfig() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	sub := client.Subscription("subName")
+	if err := sub.ModifyPushConfig(ctx, &pubsub.PushConfig{Endpoint: "https://example.com/push"}); err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleIterator_Next() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	it, err := client.Subscription("subName").Pull(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// Ensure that the iterator is closed down cleanly.
+	defer it.Stop()
 	// Consume 10 messages.
 	for i := 0; i < 10; i++ {
 		m, err := it.Next()
-		if err == pubsub.Done {
+		if err == iterator.Done {
 			// There are no more messages.  This will happen if it.Stop is called.
 			break
 		}
@@ -222,4 +237,45 @@ func ExampleSubscription_Pull() {
 		// Acknowledge the message.
 		m.Done(true)
 	}
+}
+
+func ExampleIterator_Stop_defer() {
+	// If all uses of the iterator occur within the lifetime of a single
+	// function, stop it with defer.
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	it, err := client.Subscription("subName").Pull(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	// Ensure that the iterator is closed down cleanly.
+	defer it.Stop()
+
+	// TODO: Use the iterator (see the example for Iterator.Next).
+}
+
+func ExampleIterator_Stop_goroutine() *pubsub.Iterator {
+	// If you use the iterator outside the lifetime of a single function, you
+	// must still stop it.
+	// This (contrived) example returns an iterator that will yield messages
+	// for ten seconds, and then stop.
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	it, err := client.Subscription("subName").Pull(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// Stop the iterator after receiving messages for ten seconds.
+	go func() {
+		time.Sleep(10 * time.Second)
+		it.Stop()
+	}()
+	return it
 }
