@@ -35,6 +35,17 @@ func ExampleNewClient() {
 	}
 }
 
+func ExampleClient_Ping() {
+	ctx := context.Background()
+	client, err := logging.NewClient(ctx, "my-project")
+	if err != nil {
+		// TODO: handle error.
+	}
+	if err := client.Ping(ctx); err != nil {
+		// TODO: handle error.
+	}
+}
+
 func ExampleNewClient_errorFunc() {
 	ctx := context.Background()
 	client, err := logging.NewClient(ctx, "my-project")
@@ -231,4 +242,10 @@ func ExampleClient_UpdateSink() {
 		// TODO: Handle error.
 	}
 	fmt.Println(sink)
+}
+
+func ExampleParseSeverity() {
+	sev := logging.ParseSeverity("ALERT")
+	fmt.Println(sev)
+	// Output: Alert
 }
