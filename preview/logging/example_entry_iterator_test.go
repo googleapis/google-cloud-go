@@ -33,7 +33,7 @@ func ExampleClient_Entries() {
 	_ = it // TODO: iterate using Next or iterator.Pager.
 }
 
-func Example_Filter_timestamp() {
+func ExampleFilter_timestamp() {
 	// This example demonstrates how to list the last 24 hours of log entries.
 	ctx := context.Background()
 	client, err := logging.NewClient(ctx, "my-project")
