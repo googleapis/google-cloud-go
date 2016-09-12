@@ -209,7 +209,7 @@ func ExampleSubscription_ModifyPushConfig() {
 	}
 }
 
-func ExampleIterator_Next() {
+func ExampleMessageIterator_Next() {
 	ctx := context.Background()
 	client, err := pubsub.NewClient(ctx, "project-id")
 	if err != nil {
@@ -239,7 +239,7 @@ func ExampleIterator_Next() {
 	}
 }
 
-func ExampleIterator_Stop_defer() {
+func ExampleMessageIterator_Stop_defer() {
 	// If all uses of the iterator occur within the lifetime of a single
 	// function, stop it with defer.
 	ctx := context.Background()
@@ -255,10 +255,10 @@ func ExampleIterator_Stop_defer() {
 	// Ensure that the iterator is closed down cleanly.
 	defer it.Stop()
 
-	// TODO: Use the iterator (see the example for Iterator.Next).
+	// TODO: Use the iterator (see the example for MessageIterator.Next).
 }
 
-func ExampleIterator_Stop_goroutine() *pubsub.Iterator {
+func ExampleMessageIterator_Stop_goroutine() *pubsub.MessageIterator {
 	// If you use the iterator outside the lifetime of a single function, you
 	// must still stop it.
 	// This (contrived) example returns an iterator that will yield messages

@@ -25,7 +25,7 @@ import (
 // Done is returned when an iteration is complete.
 var Done = iterator.Done
 
-type Iterator struct {
+type MessageIterator struct {
 	// kaTicker controls how often we send an ack deadline extension request.
 	kaTicker *time.Ticker
 	// ackTicker controls how often we acknowledge a batch of messages.
@@ -43,11 +43,11 @@ type Iterator struct {
 	closed chan struct{}
 }
 
-// newIterator starts a new Iterator.  Stop must be called on the Iterator
+// newMessageIterator starts a new MessageIterator.  Stop must be called on the MessageIterator
 // when it is no longer needed.
 // subName is the full name of the subscription to pull messages from.
 // ctx is the context to use for acking messages and extending message deadlines.
-func newIterator(ctx context.Context, s service, subName string, po *pullOptions) *Iterator {
+func newMessageIterator(ctx context.Context, s service, subName string, po *pullOptions) *MessageIterator {
 	// TODO: make kaTicker frequency more configurable.
 	// (ackDeadline - 5s) is a reasonable default for now, because the minimum ack period is 10s.  This gives us 5s grace.
 	keepAlivePeriod := po.ackDeadline - 5*time.Second
@@ -79,7 +79,7 @@ func newIterator(ctx context.Context, s service, subName string, po *pullOptions
 
 	ka.Start()
 	ack.Start()
-	return &Iterator{
+	return &MessageIterator{
 		kaTicker:  kaTicker,
 		ackTicker: ackTicker,
 		ka:        ka,
@@ -92,7 +92,7 @@ func newIterator(ctx context.Context, s service, subName string, po *pullOptions
 // Next returns the next Message to be processed.  The caller must call
 // Message.Done when finished with it.
 // Once Stop has been called, calls to Next will return Done.
-func (it *Iterator) Next() (*Message, error) {
+func (it *MessageIterator) Next() (*Message, error) {
 	m, err := it.puller.Next()
 
 	if err == nil {
@@ -109,13 +109,13 @@ func (it *Iterator) Next() (*Message, error) {
 	}
 }
 
-// Client code must call Stop on an Iterator when finished with it.
+// Client code must call Stop on a MessageIterator when finished with it.
 // Stop will block until Done has been called on all Messages that have been
-// returned by Next, or until the context with which the Iterator was created
+// returned by Next, or until the context with which the MessageIterator was created
 // is cancelled or exceeds its deadline.
 // Stop need only be called once, but may be called multiple times from
 // multiple goroutines.
-func (it *Iterator) Stop() {
+func (it *MessageIterator) Stop() {
 	it.mu.Lock()
 	defer it.mu.Unlock()
 
@@ -151,7 +151,7 @@ func (it *Iterator) Stop() {
 	it.ackTicker.Stop()
 }
 
-func (it *Iterator) done(ackID string, ack bool) {
+func (it *MessageIterator) done(ackID string, ack bool) {
 	if ack {
 		it.acker.Ack(ackID)
 		// There's no need to call it.ka.Remove here, as acker will

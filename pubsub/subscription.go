@@ -102,11 +102,10 @@ type SubscriptionConfig struct {
 	Topic      *Topic
 	PushConfig PushConfig
 
-	// The default maximum time after a subscriber receives a message
-	// before the subscriber should acknowledge the message.  Note:
-	// messages which are obtained via an Iterator need not be acknowledged
-	// within this deadline, as the deadline will be automatically
-	// extended.
+	// The default maximum time after a subscriber receives a message before
+	// the subscriber should acknowledge the message. Note: messages which are
+	// obtained via a MessageIterator need not be acknowledged within this
+	// deadline, as the deadline will be automatically extended.
 	AckDeadline time.Duration
 }
 
@@ -133,7 +132,7 @@ func (s *Subscription) Config(ctx context.Context) (*SubscriptionConfig, error) 
 	return conf, nil
 }
 
-// Pull returns an Iterator that can be used to fetch Messages. The Iterator
+// Pull returns a MessageIterator that can be used to fetch Messages. The MessageIterator
 // will automatically extend the ack deadline of all fetched Messages, for the
 // period specified by DefaultMaxExtension. This may be overridden by supplying
 // a MaxExtension pull option.
@@ -141,15 +140,15 @@ func (s *Subscription) Config(ctx context.Context) (*SubscriptionConfig, error) 
 // If ctx is cancelled or exceeds its deadline, outstanding acks or deadline
 // extensions will fail.
 //
-// The caller must call Stop on the Iterator once finished with it.
-func (s *Subscription) Pull(ctx context.Context, opts ...PullOption) (*Iterator, error) {
+// The caller must call Stop on the MessageIterator once finished with it.
+func (s *Subscription) Pull(ctx context.Context, opts ...PullOption) (*MessageIterator, error) {
 	config, err := s.Config(ctx)
 	if err != nil {
 		return nil, err
 	}
 	po := processPullOptions(opts)
 	po.ackDeadline = config.AckDeadline
-	return newIterator(ctx, s.s, s.name, po), nil
+	return newMessageIterator(ctx, s.s, s.name, po), nil
 }
 
 // ModifyPushConfig updates the endpoint URL and other attributes of a push subscription.
@@ -172,7 +171,7 @@ type pullOptions struct {
 	maxExtension time.Duration
 
 	// maxPrefetch is the maximum number of Messages to have in flight, to
-	// be returned by Iterator.Next.
+	// be returned by MessageIterator.Next.
 	maxPrefetch int
 
 	// ackDeadline is the default ack deadline for the subscription.  Not
@@ -204,7 +203,7 @@ func (max maxPrefetch) setOptions(o *pullOptions) {
 // MaxPrefetch returns a PullOption that limits Message prefetching.
 //
 // For performance reasons, the pubsub library may prefetch a pool of Messages
-// to be returned serially from Iterator.Next. MaxPrefetch is used to limit the
+// to be returned serially from MessageIterator.Next. MaxPrefetch is used to limit the
 // the size of this pool.
 //
 // If num is less than 1, it will be treated as if it were 1.
@@ -223,7 +222,7 @@ func (max maxExtension) setOptions(o *pullOptions) {
 // MaxExtension returns a PullOption that limits how long acks deadlines are
 // extended for.
 //
-// An Iterator will automatically extend the ack deadline of all fetched
+// A MessageIterator will automatically extend the ack deadline of all fetched
 // Messages for the duration specified. Automatic deadline extension may be
 // disabled by specifying a duration of 0.
 func MaxExtension(duration time.Duration) PullOption {
@@ -245,8 +244,9 @@ func MaxExtension(duration time.Duration) PullOption {
 // the subscriber should acknowledge the message. It must be between 10 and 600
 // seconds (inclusive), and is rounded down to the nearest second. If the
 // provided ackDeadline is 0, then the default value of 10 seconds is used.
-// Note: messages which are obtained via an Iterator need not be acknowledged
-// within this deadline, as the deadline will be automatically extended.
+// Note: messages which are obtained via a MessageIterator need not be
+// acknowledged within this deadline, as the deadline will be automatically
+// extended.
 //
 // pushConfig may be set to configure this subscription for push delivery.
 //
