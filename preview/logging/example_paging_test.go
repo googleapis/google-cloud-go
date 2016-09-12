@@ -14,12 +14,6 @@
 
 package logging_test
 
-// This example demonstrates how to use SetPageToken and NextPageToken to
-// iterate through items a page at a time even if each successive page is
-// fetched by a different process. It is a complete web server that displays
-// pages of log entries. To run it as a standalone program, rename both the
-// package and the ExampleEntryIterator_SetPageToken function to "main".
-
 import (
 	"bytes"
 	"flag"
@@ -38,7 +32,11 @@ var (
 	projectID = flag.String("project-id", "", "ID of the project to use")
 )
 
-func ExampleEntryIterator_SetPageToken() {
+func ExampleClient_Entries_pagination() {
+	// This example demonstrates how to iterate through items a page at a time
+	// even if each successive page is fetched by a different process. It is a
+	// complete web server that displays pages of log entries. To run it as a
+	// standalone program, rename both the package and this function to "main".
 	ctx := context.Background()
 	flag.Parse()
 	if *projectID == "" {
