@@ -526,6 +526,8 @@ func putMutations(keys []*Key, src interface{}) ([]*pb.Mutation, error) {
 		return nil, err
 	}
 	mutations := make([]*pb.Mutation, 0, len(keys))
+	multiErr := make(MultiError, len(keys))
+	hasErr := false
 	for i, k := range keys {
 		elem := v.Index(i)
 		// Two cases where we need to take the address:
@@ -536,7 +538,8 @@ func putMutations(keys []*Key, src interface{}) ([]*pb.Mutation, error) {
 		}
 		p, err := saveEntity(k, elem.Interface())
 		if err != nil {
-			return nil, fmt.Errorf("datastore: Error while saving %v: %v", k.String(), err)
+			multiErr[i] = err
+			hasErr = true
 		}
 		var mut *pb.Mutation
 		if k.Incomplete() {
@@ -545,6 +548,9 @@ func putMutations(keys []*Key, src interface{}) ([]*pb.Mutation, error) {
 			mut = &pb.Mutation{Operation: &pb.Mutation_Upsert{p}}
 		}
 		mutations = append(mutations, mut)
+	}
+	if hasErr {
+		return nil, multiErr
 	}
 	return mutations, nil
 }
