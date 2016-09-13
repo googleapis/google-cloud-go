@@ -38,6 +38,10 @@ const (
 // ScopeDatastore grants permissions to view and/or manage datastore entities
 const ScopeDatastore = "https://www.googleapis.com/auth/datastore"
 
+// resourcePrefixHeader is the name of the metadata header used to indicate
+// the resource being operated on.
+const resourcePrefixHeader = "google-cloud-resource-prefix"
+
 // protoClient is an interface for *transport.ProtoClient to support injecting
 // fake clients in tests.
 type protoClient interface {
