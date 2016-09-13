@@ -312,6 +312,17 @@ Example code:
 		// (RunInTransaction has returned nil).
 		fmt.Printf("Count=%d\n", count)
 	}
+
+
+Google Cloud Datastore Emulator
+
+This package supports the Cloud Datastore emulator, which is useful for testing and
+development. Environment variables are used to indicate that datastore traffic should be
+directed to the emulator instead of the production Datastore service.
+
+To install and set up the emulator and its environment variables, see the documentation
+at https://cloud.google.com/datastore/docs/tools/datastore-emulator.
+
 */
 package datastore // import "cloud.google.com/go/datastore"
 
