@@ -138,7 +138,7 @@ func TestMain(m *testing.M) {
 // waitFor calls f periodically, blocking until it returns true.
 // It calls log.Fatal after one minute.
 func waitFor(f func() bool) {
-	timeout := time.NewTimer(1 * time.Minute)
+	timeout := time.NewTimer(2 * time.Minute)
 	for {
 		select {
 		case <-time.After(1 * time.Second):
