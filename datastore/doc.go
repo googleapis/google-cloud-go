@@ -109,17 +109,28 @@ caller whether this error is fatal, recoverable or ignorable.
 
 By default, for struct pointers, all properties are potentially indexed, and
 the property name is the same as the field name (and hence must start with an
-upper case letter). Fields may have a `datastore:"name,options"` tag. The tag
-name is the property name, which must be one or more valid Go identifiers
-joined by ".", but may start with a lower case letter. An empty tag name means
-to just use the field name. A "-" tag name means that the datastore will
-ignore that field. If options is "noindex" then the field will not be indexed.
-If the options is "" then the comma may be omitted. There are no other
-recognized options.
+upper case letter).
 
-All fields are indexed by default. Strings or byte slices longer than 1500
-bytes cannot be indexed; fields used to store long strings and byte slices must
-be tagged with "noindex" or they will cause Put operations to fail.
+Fields may have a `datastore:"name,options"` tag. The tag name is the
+property name, which must be one or more valid Go identifiers joined by ".",
+but may start with a lower case letter. An empty tag name means to just use the
+field name. A "-" tag name means that the datastore will ignore that field.
+
+The only valid options are "noindex" and "flatten".
+
+If options include "noindex" then the field will not be indexed. All fields are indexed
+by default. Strings or byte slices longer than 1500 bytes cannot be indexed;
+fields used to store long strings and byte slices must be tagged with "noindex"
+or they will cause Put operations to fail.
+
+For a nested struct field, the options may also include "flatten". This indicates
+that the immediate fields and any nested substruct fields of the nested struct should be
+flattened. See below for examples.
+
+To use both the "noindex" and "flatten" options together, separate them by a comma.
+The order does not matter.
+
+If the options is "" then the comma may be omitted.
 
 Example code:
 
@@ -142,7 +153,40 @@ Example code:
 Structured Properties
 
 If the struct pointed to contains other structs, then the nested or embedded
-structs are flattened. For example, given these definitions:
+structs are themselves saved as Entity values. For example, given these definitions:
+
+	type Inner struct {
+		W int32
+		X string
+	}
+
+	type Outer struct {
+		I Inner
+	}
+
+then an Outer would have one property, Inner, encoded as an Entity value.
+
+If an outer struct is tagged "noindex" then all of its implicit flattened
+fields are effectively "noindex".
+
+If the Inner struct contains a *Key field with the name "__key__", like so:
+
+	type Inner struct {
+		W int32
+		X string
+		K *datastore.Key `datastore:"__key__"`
+	}
+
+	type Outer struct {
+		I Inner
+	}
+
+then the value of K will be used as the Key for Inner, represented
+as an Entity value in datastore.
+
+If any nested struct fields should be flattened, instead of encoded as
+Entity values, the nested struct field should be tagged with the "flatten"
+option. For example, given the following:
 
 	type Inner1 struct {
 		W int32
@@ -157,28 +201,35 @@ structs are flattened. For example, given these definitions:
 		Z bool
 	}
 
+	type Inner4 struct {
+		WW int
+	}
+
+	type Inner5 struct {
+		X Inner4
+	}
+
 	type Outer struct {
 		A int16
-		I []Inner1
-		J Inner2
-		Inner3
+		I []Inner1 `datastore:",flatten"`
+		J Inner2   `datastore:",flatten"`
+		K Inner5   `datastore:",flatten"`
+		Inner3     `datastore:",flatten"`
 	}
 
-then an Outer's properties would be equivalent to those of:
+an Outer's properties would be equivalent to those of:
 
 	type OuterEquivalent struct {
-		A     int16
-		IDotW []int32  `datastore:"I.W"`
-		IDotX []string `datastore:"I.X"`
-		JDotY float64  `datastore:"J.Y"`
-		Z     bool
+		A          int16
+		IDotW      []int32  `datastore:"I.W"`
+		IDotX      []string `datastore:"I.X"`
+		JDotY      float64  `datastore:"J.Y"`
+		KDotXDotWW int      `datastore:"K.X.WW"`
+		Z          bool
 	}
 
-If Outer's embedded Inner3 field was tagged as `datastore:"Foo"` then the
-equivalent field would instead be: FooDotZ bool `datastore:"Foo.Z"`.
-
-If an outer struct is tagged "noindex" then all of its implicit flattened
-fields are effectively "noindex".
+Note that the "flatten" option cannot be used for Entity value fields.
+The server will reject any dotted field names for an Entity value.
 
 
 The PropertyLoadSaver Interface
@@ -314,7 +365,6 @@ Example code:
 		fmt.Printf("Count=%d\n", count)
 	}
 
-
 Google Cloud Datastore Emulator
 
 This package supports the Cloud Datastore emulator, which is useful for testing and
@@ -326,7 +376,3 @@ at https://cloud.google.com/datastore/docs/tools/datastore-emulator.
 
 */
 package datastore // import "cloud.google.com/go/datastore"
-
-// resourcePrefixHeader is the name of the metadata header used to indicate
-// the resource being operated on.
-const resourcePrefixHeader = "google-cloud-resource-prefix"
