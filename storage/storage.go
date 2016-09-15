@@ -486,6 +486,8 @@ func (o *ObjectHandle) ComposeFrom(ctx context.Context, srcs []*ObjectHandle, at
 // NewReader creates a new Reader to read the contents of the
 // object.
 // ErrObjectNotExist will be returned if the object is not found.
+//
+// The caller must call Close on the returned Reader when done reading.
 func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
 	return o.NewRangeReader(ctx, 0, -1)
 }
@@ -545,7 +547,8 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	clHeader := res.Header.Get("X-Goog-Stored-Content-Length")
 	cl, err := strconv.ParseInt(clHeader, 10, 64)
 	if err != nil {
-		return nil, fmt.Errorf("storage: can't parse content length %q: %v", clHeader, err)
+		res.Body.Close()
+		return nil, fmt.Errorf("storage: can't parse content length %q", clHeader)
 	}
 	remain := res.ContentLength
 	body := res.Body
