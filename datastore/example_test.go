@@ -23,24 +23,26 @@ import (
 )
 
 // TODO(jbd): Document other authorization methods and refer to them here.
-func Example_auth() *datastore.Client {
+func Example_auth() {
 	ctx := context.Background()
 	// Use Google Application Default Credentials to authorize and authenticate the client.
 	// More information about Application Default Credentials and how to enable is at
 	// https://developers.google.com/identity/protocols/application-default-credentials.
 	client, err := datastore.NewClient(ctx, "project-id")
 	if err != nil {
-		log.Fatal(err)
+		// TODO: Handle error.
 	}
 	// Use the client (see other examples).
-	return client
+
+	// Close the client when finished.
+	client.Close()
 }
 
 func ExampleGet() {
 	ctx := context.Background()
 	client, err := datastore.NewClient(ctx, "project-id")
 	if err != nil {
-		log.Fatal(err)
+		// TODO: Handle error.
 	}
 
 	type Article struct {
@@ -53,7 +55,7 @@ func ExampleGet() {
 	key := datastore.NewKey(ctx, "Article", "articled1", 0, nil)
 	article := &Article{}
 	if err := client.Get(ctx, key, article); err != nil {
-		log.Fatal(err)
+		// TODO: Handle error.
 	}
 }
 
@@ -61,7 +63,7 @@ func ExamplePut() {
 	ctx := context.Background()
 	client, err := datastore.NewClient(ctx, "project-id")
 	if err != nil {
-		log.Fatal(err)
+		// TODO: Handle error.
 	}
 
 	type Article struct {
@@ -80,7 +82,7 @@ func ExamplePut() {
 		PublishedAt: time.Now(),
 	})
 	if err != nil {
-		log.Fatal(err)
+		// TODO: Handle error.
 	}
 }
 
@@ -88,12 +90,12 @@ func ExampleDelete() {
 	ctx := context.Background()
 	client, err := datastore.NewClient(ctx, "project-id")
 	if err != nil {
-		log.Fatal(err)
+		// TODO: Handle error.
 	}
 
 	key := datastore.NewKey(ctx, "Article", "articled1", 0, nil)
 	if err := client.Delete(ctx, key); err != nil {
-		log.Fatal(err)
+		// TODO: Handle error.
 	}
 }
 
@@ -107,7 +109,7 @@ func ExampleGetMulti() {
 	ctx := context.Background()
 	client, err := datastore.NewClient(ctx, "project-id")
 	if err != nil {
-		log.Fatal(err)
+		// TODO: Handle error.
 	}
 
 	keys := []*datastore.Key{
@@ -117,7 +119,7 @@ func ExampleGetMulti() {
 	}
 	posts := make([]Post, 3)
 	if err := client.GetMulti(ctx, keys, posts); err != nil {
-		log.Println(err)
+		// TODO: Handle error.
 	}
 }
 
@@ -125,7 +127,7 @@ func ExamplePutMulti_slice() {
 	ctx := context.Background()
 	client, err := datastore.NewClient(ctx, "project-id")
 	if err != nil {
-		log.Fatal(err)
+		// TODO: Handle error.
 	}
 
 	keys := []*datastore.Key{
@@ -139,7 +141,7 @@ func ExamplePutMulti_slice() {
 		{Title: "Post 2", PublishedAt: time.Now()},
 	}
 	if _, err := client.PutMulti(ctx, keys, posts); err != nil {
-		log.Fatal(err)
+		// TODO: Handle error.
 	}
 }
 
@@ -147,7 +149,7 @@ func ExamplePutMulti_interfaceSlice() {
 	ctx := context.Background()
 	client, err := datastore.NewClient(ctx, "project-id")
 	if err != nil {
-		log.Fatal(err)
+		// TODO: Handle error.
 	}
 
 	keys := []*datastore.Key{
@@ -161,7 +163,7 @@ func ExamplePutMulti_interfaceSlice() {
 		&Post{Title: "Post 2", PublishedAt: time.Now()},
 	}
 	if _, err := client.PutMulti(ctx, keys, posts); err != nil {
-		log.Fatal(err)
+		// TODO: Handle error.
 	}
 }
 
@@ -169,14 +171,14 @@ func ExampleQuery() {
 	ctx := context.Background()
 	client, err := datastore.NewClient(ctx, "project-id")
 	if err != nil {
-		log.Fatal(err)
+		// TODO: Handle error.
 	}
 
 	// Count the number of the post entities.
 	q := datastore.NewQuery("Post")
 	n, err := client.Count(ctx, q)
 	if err != nil {
-		log.Fatal(err)
+		// TODO: Handle error.
 	}
 	log.Printf("There are %d posts.", n)
 
@@ -184,8 +186,7 @@ func ExampleQuery() {
 	yesterday := time.Now().Add(-24 * time.Hour)
 	q = datastore.NewQuery("Post").Filter("PublishedAt >", yesterday)
 	it := client.Run(ctx, q)
-	// Use the iterator.
-	_ = it
+	_ = it // TODO: iterate using Next.
 
 	// Order the posts by the number of comments they have recieved.
 	datastore.NewQuery("Post").Order("-Comments")
@@ -198,7 +199,7 @@ func ExampleTransaction() {
 	ctx := context.Background()
 	client, err := datastore.NewClient(ctx, "project-id")
 	if err != nil {
-		log.Fatal(err)
+		// TODO: Handle error.
 	}
 	const retries = 3
 
@@ -231,5 +232,4 @@ func ExampleTransaction() {
 			break
 		}
 	}
-
 }
