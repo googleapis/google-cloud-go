@@ -211,25 +211,28 @@ func ExampleTransaction() {
 	}
 
 	key := datastore.NewKey(ctx, "counter", "CounterA", 0, nil)
-
+	var tx *datastore.Transaction
 	for i := 0; i < retries; i++ {
-		tx, err := client.NewTransaction(ctx)
+		tx, err = client.NewTransaction(ctx)
 		if err != nil {
 			break
 		}
 
 		var c Counter
-		if err := tx.Get(key, &c); err != nil && err != datastore.ErrNoSuchEntity {
+		if err = tx.Get(key, &c); err != nil && err != datastore.ErrNoSuchEntity {
 			break
 		}
 		c.Count++
-		if _, err := tx.Put(key, &c); err != nil {
+		if _, err = tx.Put(key, &c); err != nil {
 			break
 		}
 
 		// Attempt to commit the transaction. If there's a conflict, try again.
-		if _, err := tx.Commit(); err != datastore.ErrConcurrentTransaction {
+		if _, err = tx.Commit(); err != datastore.ErrConcurrentTransaction {
 			break
 		}
+	}
+	if err != nil {
+		// TODO: Handle error.
 	}
 }
