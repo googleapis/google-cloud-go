@@ -38,7 +38,7 @@ func Example_auth() {
 	client.Close()
 }
 
-func ExampleGet() {
+func ExampleClient_Get() {
 	ctx := context.Background()
 	client, err := datastore.NewClient(ctx, "project-id")
 	if err != nil {
@@ -59,7 +59,7 @@ func ExampleGet() {
 	}
 }
 
-func ExamplePut() {
+func ExampleClient_Put() {
 	ctx := context.Background()
 	client, err := datastore.NewClient(ctx, "project-id")
 	if err != nil {
@@ -86,7 +86,7 @@ func ExamplePut() {
 	}
 }
 
-func ExampleDelete() {
+func ExampleClient_Delete() {
 	ctx := context.Background()
 	client, err := datastore.NewClient(ctx, "project-id")
 	if err != nil {
@@ -105,7 +105,7 @@ type Post struct {
 	Comments    int
 }
 
-func ExampleGetMulti() {
+func ExampleClient_GetMulti() {
 	ctx := context.Background()
 	client, err := datastore.NewClient(ctx, "project-id")
 	if err != nil {
@@ -123,7 +123,7 @@ func ExampleGetMulti() {
 	}
 }
 
-func ExamplePutMulti_slice() {
+func ExampleClient_PutMulti_slice() {
 	ctx := context.Background()
 	client, err := datastore.NewClient(ctx, "project-id")
 	if err != nil {
@@ -145,7 +145,7 @@ func ExamplePutMulti_slice() {
 	}
 }
 
-func ExamplePutMulti_interfaceSlice() {
+func ExampleClient_PutMulti_interfaceSlice() {
 	ctx := context.Background()
 	client, err := datastore.NewClient(ctx, "project-id")
 	if err != nil {
@@ -167,7 +167,7 @@ func ExamplePutMulti_interfaceSlice() {
 	}
 }
 
-func ExampleQuery() {
+func ExampleNewQuery() {
 	ctx := context.Background()
 	client, err := datastore.NewClient(ctx, "project-id")
 	if err != nil {
@@ -195,7 +195,7 @@ func ExampleQuery() {
 	datastore.NewQuery("Post").Offset(20).Limit(10)
 }
 
-func ExampleTransaction() {
+func ExampleClient_NewTransaction() {
 	ctx := context.Background()
 	client, err := datastore.NewClient(ctx, "project-id")
 	if err != nil {
