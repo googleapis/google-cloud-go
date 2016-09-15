@@ -26,12 +26,12 @@ func ExampleNewClient() {
 	ctx := context.Background()
 	client, err := logging.NewClient(ctx, "my-project")
 	if err != nil {
-		// TODO: handle error.
+		// TODO: Handle error.
 	}
 	// Use client to manage logs, metrics and sinks.
 	// Close the client when finished.
 	if err := client.Close(); err != nil {
-		// TODO: handle error.
+		// TODO: Handle error.
 	}
 }
 
@@ -39,10 +39,10 @@ func ExampleClient_Ping() {
 	ctx := context.Background()
 	client, err := logging.NewClient(ctx, "my-project")
 	if err != nil {
-		// TODO: handle error.
+		// TODO: Handle error.
 	}
 	if err := client.Ping(ctx); err != nil {
-		// TODO: handle error.
+		// TODO: Handle error.
 	}
 }
 
