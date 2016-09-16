@@ -570,7 +570,7 @@ var emptyBody = ioutil.NopCloser(strings.NewReader(""))
 // NewWriter returns a storage Writer that writes to the GCS object
 // associated with this ObjectHandle.
 //
-// A new object will be created if an object with this name already exists.
+// A new object will be created unless an object with this name already exists.
 // Otherwise any previous object with the same name will be replaced.
 // The object will not be available (and any previous object will remain)
 // until Close has been called.
