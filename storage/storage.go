@@ -166,8 +166,9 @@ type BucketHandle struct {
 // Bucket returns a BucketHandle, which provides operations on the named bucket.
 // This call does not perform any network operations.
 //
-// name must contain only lowercase letters, numbers, dashes, underscores, and
-// dots. The full specification for valid bucket names can be found at:
+// The supplied name must contain only lowercase letters, numbers, dashes,
+// underscores, and dots. The full specification for valid bucket names can be
+// found at:
 //   https://cloud.google.com/storage/docs/bucket-naming
 func (c *Client) Bucket(name string) *BucketHandle {
 	return &BucketHandle{
