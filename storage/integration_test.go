@@ -375,12 +375,76 @@ func TestObjects(t *testing.T) {
 	copyObj, err := bkt.Object(objName).CopyTo(ctx, bkt.Object(copyName), nil)
 	if err != nil {
 		t.Errorf("CopyTo failed with %v", err)
+	} else if !namesEqual(copyObj, bucket, copyName) {
+		t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
+			copyObj.Bucket, copyObj.Name, bucket, copyName)
 	}
-	if copyObj.Name != copyName {
-		t.Errorf("Copy object's name = %q; want %q", copyObj.Name, copyName)
+
+	// Test copying with Copier.
+	copyObj, err = bkt.Object(copyName).CopierFrom(bkt.Object(objName)).Run(ctx)
+	if err != nil {
+		t.Errorf("Copier.Run failed with %v", err)
+	} else if !namesEqual(copyObj, bucket, copyName) {
+		t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
+			copyObj.Bucket, copyObj.Name, bucket, copyName)
 	}
-	if copyObj.Bucket != bucket {
-		t.Errorf("Copy object's bucket = %q; want %q", copyObj.Bucket, bucket)
+
+	// Check for error setting attributes but not ContentType.
+	const (
+		contentType     = "text/html"
+		contentEncoding = "identity"
+	)
+	_, err = bkt.Object(objName).CopyTo(ctx, bkt.Object(copyName), &ObjectAttrs{
+		ContentEncoding: contentEncoding,
+	})
+	if err == nil {
+		t.Error("copy without ContentType: got nil, want error")
+	}
+
+	copier := bkt.Object(copyName).CopierFrom(bkt.Object(objName))
+	copier.ContentEncoding = contentEncoding
+	_, err = copier.Run(ctx)
+	if err == nil {
+		t.Error("copy without ContentType: got nil, want error")
+	}
+
+	// Copying with attributes.
+	copyObj, err = bkt.Object(objName).CopyTo(ctx, bkt.Object(copyName), &ObjectAttrs{
+		ContentType:     contentType,
+		ContentEncoding: contentEncoding,
+	})
+	if err != nil {
+		t.Errorf("CopyTo failed with %v", err)
+	} else {
+		if !namesEqual(copyObj, bucket, copyName) {
+			t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
+				copyObj.Bucket, copyObj.Name, bucket, copyName)
+		}
+		if copyObj.ContentType != contentType {
+			t.Errorf("Copy ContentType: got %q, want %q", copyObj.ContentType, contentType)
+		}
+		if copyObj.ContentEncoding != contentEncoding {
+			t.Errorf("Copy ContentEncoding: got %q, want %q", copyObj.ContentEncoding, contentEncoding)
+		}
+	}
+
+	copier = bkt.Object(copyName).CopierFrom(bkt.Object(objName))
+	copier.ContentType = contentType
+	copier.ContentEncoding = contentEncoding
+	copyObj, err = copier.Run(ctx)
+	if err != nil {
+		t.Errorf("Copier.Run failed with %v", err)
+	} else {
+		if !namesEqual(copyObj, bucket, copyName) {
+			t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
+				copyObj.Bucket, copyObj.Name, bucket, copyName)
+		}
+		if copyObj.ContentType != contentType {
+			t.Errorf("Copy ContentType: got %q, want %q", copyObj.ContentType, contentType)
+		}
+		if copyObj.ContentEncoding != contentEncoding {
+			t.Errorf("Copy ContentEncoding: got %q, want %q", copyObj.ContentEncoding, contentEncoding)
+		}
 	}
 
 	// Test UpdateAttrs.
@@ -498,9 +562,9 @@ func TestObjects(t *testing.T) {
 		compSrcs = append(compSrcs, bkt.Object(obj))
 		wantContents = append(wantContents, contents[obj]...)
 	}
-	if _, err := compDst.ComposeFrom(ctx, compSrcs, &ObjectAttrs{
-		ContentType: "text/json",
-	}); err != nil {
+	c := compDst.ComposerFrom(compSrcs...)
+	c.ContentType = "text/json"
+	if _, err := c.Run(ctx); err != nil {
 		t.Fatalf("ComposeFrom error: %v", err)
 	}
 	rc, err = compDst.NewReader(ctx)
@@ -518,6 +582,10 @@ func TestObjects(t *testing.T) {
 	if got, want := rc.ContentType(), "text/json"; got != want {
 		t.Errorf("Composed object content-type = %q, want %q", got, want)
 	}
+}
+
+func namesEqual(obj *ObjectAttrs, bucketName, objectName string) bool {
+	return obj.Bucket == bucketName && obj.Name == objectName
 }
 
 func testBucketList(t *testing.T, bkt *BucketHandle, objects []string) {

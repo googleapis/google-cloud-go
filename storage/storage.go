@@ -404,86 +404,28 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 
 // CopyTo copies the object to the given dst.
 // The copied object's attributes are overwritten by attrs if non-nil.
+//
+// Deprecated: use ObjectHandle.CopierFrom instead.
 func (o *ObjectHandle) CopyTo(ctx context.Context, dst *ObjectHandle, attrs *ObjectAttrs) (*ObjectAttrs, error) {
-	// TODO(djd): move bucket/object name validation to a single helper func.
-	if o.bucket == "" || dst.bucket == "" {
-		return nil, errors.New("storage: the source and destination bucket names must both be non-empty")
-	}
-	if o.object == "" || dst.object == "" {
-		return nil, errors.New("storage: the source and destination object names must both be non-empty")
-	}
-	if !utf8.ValidString(o.object) {
-		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
-	}
-	if !utf8.ValidString(dst.object) {
-		return nil, fmt.Errorf("storage: dst name %q is not valid UTF-8", dst.object)
-	}
-	var rawObject *raw.Object
+	c := dst.CopierFrom(o)
 	if attrs != nil {
-		attrs.Name = dst.object
-		if attrs.ContentType == "" {
-			return nil, errors.New("storage: attrs.ContentType must be non-empty")
-		}
-		rawObject = attrs.toRawObject(dst.bucket)
+		c.ObjectAttrs = *attrs
 	}
-	call := o.c.raw.Objects.Copy(o.bucket, o.object, dst.bucket, dst.object, rawObject).Projection("full").Context(ctx)
-	if err := applyConds("CopyTo destination", dst.conds, call); err != nil {
-		return nil, err
-	}
-	if err := applyConds("CopyTo source", toSourceConds(o.conds), call); err != nil {
-		return nil, err
-	}
-	obj, err := call.Do()
-	if err != nil {
-		return nil, err
-	}
-	return newObject(obj), nil
+	return c.Run(ctx)
 }
 
 // ComposeFrom concatenates the provided slice of source objects into a new
 // object whose destination is the receiver. The provided attrs, if not nil,
 // are used to set the attributes on the newly-created object. All source
 // objects must reside within the same bucket as the destination.
+//
+// Deprecated: use ObjectHandle.ComposerFrom instead.
 func (o *ObjectHandle) ComposeFrom(ctx context.Context, srcs []*ObjectHandle, attrs *ObjectAttrs) (*ObjectAttrs, error) {
-	if o.bucket == "" || o.object == "" {
-		return nil, errors.New("storage: the destination bucket and object names must be non-empty")
-	}
-	if len(srcs) == 0 {
-		return nil, errors.New("storage: at least one source object must be specified")
-	}
-
-	req := &raw.ComposeRequest{}
+	c := o.ComposerFrom(srcs...)
 	if attrs != nil {
-		req.Destination = attrs.toRawObject(o.bucket)
-		req.Destination.Name = o.object
+		c.ObjectAttrs = *attrs
 	}
-
-	for _, src := range srcs {
-		if src.bucket != o.bucket {
-			return nil, fmt.Errorf("storage: all source objects must be in bucket %q, found %q", o.bucket, src.bucket)
-		}
-		if src.object == "" {
-			return nil, errors.New("storage: all source object names must be non-empty")
-		}
-		srcObj := &raw.ComposeRequestSourceObjects{
-			Name: src.object,
-		}
-		if err := applyConds("ComposeFrom source", src.conds, composeSourceObj{srcObj}); err != nil {
-			return nil, err
-		}
-		req.SourceObjects = append(req.SourceObjects, srcObj)
-	}
-
-	call := o.c.raw.Objects.Compose(o.bucket, o.object, req).Context(ctx)
-	if err := applyConds("ComposeFrom destination", o.conds, call); err != nil {
-		return nil, err
-	}
-
-	obj, err := call.Do()
-	if err != nil {
-		return nil, err
-	}
-	return newObject(obj), nil
+	return c.Run(ctx)
 }
 
 // NewReader creates a new Reader to read the contents of the
