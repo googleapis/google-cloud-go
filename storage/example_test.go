@@ -393,18 +393,74 @@ func ExampleACLHandle_List() {
 	fmt.Println(aclRules)
 }
 
-func ExampleObjectHandle_ComposeFrom() {
+func ExampleCopier_Run() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	src := client.Bucket("bucketname").Object("file1")
+	dst := client.Bucket("another-bucketname").Object("file2")
+
+	// Copy content and modify metadata.
+	copier := dst.CopierFrom(src)
+	copier.ContentType = "text/plain"
+	attrs, err := copier.Run(ctx)
+	if err != nil {
+		// TODO: Handle error, possibly resuming with copier.RewriteToken.
+	}
+	fmt.Println(attrs)
+
+	// Just copy content.
+	attrs, err = dst.CopierFrom(src).Run(ctx)
+	if err != nil {
+		// TODO: Handle error. No way to resume.
+	}
+	fmt.Println(attrs)
+}
+
+func ExampleCopier_Run_progress() {
+	// Display progress across multiple rewrite RPCs.
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	src := client.Bucket("bucketname").Object("file1")
+	dst := client.Bucket("another-bucketname").Object("file2")
+
+	copier := dst.CopierFrom(src)
+	copier.ProgressFunc = func(copiedBytes, totalBytes uint64) {
+		log.Printf("copy %.1f%% done", float64(copiedBytes)/float64(totalBytes)*100)
+	}
+	if _, err := copier.Run(ctx); err != nil {
+		// TODO: handle error.
+	}
+}
+
+func ExampleComposer_Run() {
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: handle error.
 	}
 	bkt := client.Bucket("bucketname")
-	src1 := bkt.Object("file1")
-	src2 := bkt.Object("file2")
-	dst := bkt.Object("combo")
-	_, err = dst.ComposeFrom(ctx, []*storage.ObjectHandle{src1, src2}, nil)
+	src1 := bkt.Object("o1")
+	src2 := bkt.Object("o2")
+	dst := bkt.Object("o3")
+	// Compose and modify metadata.
+	c := dst.ComposerFrom(src1, src2)
+	c.ContentType = "text/plain"
+	attrs, err := c.Run(ctx)
 	if err != nil {
-		// TODO: handle error.
+		// TODO: Handle error.
 	}
+	fmt.Println(attrs)
+
+	// Just compose..
+	attrs, err = dst.ComposerFrom(src1, src2).Run(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Println(attrs)
 }
