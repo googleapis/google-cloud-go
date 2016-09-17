@@ -115,6 +115,9 @@ func (c *AdminClient) DeleteBucket(ctx context.Context, bucketName string) error
 }
 
 // Client is a client for interacting with Google Cloud Storage.
+//
+// Clients should be reused instead of created as needed.
+// The methods of Client are safe for concurrent use by multiple goroutines.
 type Client struct {
 	hc  *http.Client
 	raw *raw.Service
@@ -143,6 +146,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 }
 
 // Close closes the Client.
+//
+// Close need not be called at program exit.
 func (c *Client) Close() error {
 	c.hc = nil
 	return nil
