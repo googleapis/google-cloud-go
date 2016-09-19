@@ -294,7 +294,7 @@ Example code:
 	func incCount(ctx context.Context, client *datastore.Client) {
 		var count int
 		key := datastore.NewKey(ctx, "Counter", "singleton", 0, nil)
-		err := dsClient.RunInTransaction(ctx, func(tx *datastore.Transaction) error {
+		_, err := dsClient.RunInTransaction(ctx, func(tx *datastore.Transaction) error {
 			var x Counter
 			if err := tx.Get(key, &x); err != nil && err != datastore.ErrNoSuchEntity {
 				return err
@@ -304,6 +304,7 @@ Example code:
 				return err
 			}
 			count = x.Count
+			return nil
 		}, nil)
 		if err != nil {
 			// Handle error.
