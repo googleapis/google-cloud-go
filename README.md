@@ -213,6 +213,21 @@ for i := 0; i < N; i++ {
 }
 ```
 
+## Cloud BigQuery [![GoDoc](https://godoc.org/cloud.google.com/go/bigquery?status.svg)](https://godoc.org/cloud.google.com/go/bigquery)
+
+- [About Cloud BigQuery][cloud-bigquery]
+- [API documentation][cloud-bigquery-docs]
+- [Go client documentation][cloud-bigquery-ref]
+- [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/bigquery)
+
+## Stackdriver Logging [![GoDoc](https://godoc.org/cloud.google.com/go/bigquery?status.svg)](https://godoc.org/cloud.google.com/go/logging)
+
+- [About Stackdriver Logging][cloud-logging]
+- [API documentation][cloud-logging-docs]
+- [Go client documentation][cloud-logging-ref]
+- [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/logging)
+
+
 ## Contributing
 
 Contributions are welcome. Please, see the
@@ -236,16 +251,18 @@ for more information.
 
 [cloud-storage]: https://cloud.google.com/storage/
 [cloud-storage-ref]: https://godoc.org/cloud.google.com/go/storage
-[cloud-storage-docs]: https://cloud.google.com/storage/docs/overview
+[cloud-storage-docs]: https://cloud.google.com/storage/docs
 [cloud-storage-create-bucket]: https://cloud.google.com/storage/docs/cloud-console#_creatingbuckets
 
 [cloud-bigtable]: https://cloud.google.com/bigtable/
 [cloud-bigtable-ref]: https://godoc.org/cloud.google.com/go/bigtable
 
 [cloud-bigquery]: https://cloud.google.com/bigquery/
+[cloud-bigquery-docs]: https://cloud.google.com/bigquery/docs
 [cloud-bigquery-ref]: https://godoc.org/cloud.google.com/go/bigquery
 
 [cloud-logging]: https://cloud.google.com/logging/
+[cloud-logging-docs]: https://cloud.google.com/logging/docs
 [cloud-logging-ref]: https://godoc.org/cloud.google.com/go/logging
 
 [cloud-vision]: https://cloud.google.com/vision/
