@@ -368,6 +368,7 @@ type createTableConf struct {
 	expiration                    time.Time
 	viewQuery                     string
 	schema                        *bq.TableSchema
+	useStandardSQL                bool
 }
 
 // createTable creates a table in the BigQuery service.
@@ -390,6 +391,10 @@ func (s *bigqueryService) createTable(ctx context.Context, conf *createTableConf
 	if conf.viewQuery != "" {
 		table.View = &bq.ViewDefinition{
 			Query: conf.viewQuery,
+		}
+		if conf.useStandardSQL {
+			table.View.UseLegacySql = false
+			table.ForceSendFields = append(table.ForceSendFields, "UseLegacySql")
 		}
 	}
 	if conf.schema != nil {
