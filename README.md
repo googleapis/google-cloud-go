@@ -97,7 +97,7 @@ client, err := storage.NewClient(ctx, option.WithTokenSource(tokenSource))
 - [About Cloud Datastore][cloud-datastore]
 - [Activating the API for your project][cloud-datastore-activation]
 - [API documentation][cloud-datastore-docs]
-- [Go client's documentation](https://godoc.org/cloud.google.com/go/datastore)
+- [Go client documentation](https://godoc.org/cloud.google.com/go/datastore)
 - [Complete sample program](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/datastore/tasks)
 
 ### Preview
@@ -132,13 +132,14 @@ if _, err := client.PutMulti(ctx, keys, posts); err != nil {
 }
 ```
 
-## Google Cloud Storage [![GoDoc](https://godoc.org/cloud.google.com/go/storage?status.svg)](https://godoc.org/cloud.google.com/go/storage)
+## Cloud Storage [![GoDoc](https://godoc.org/cloud.google.com/go/storage?status.svg)](https://godoc.org/cloud.google.com/go/storage)
 
-[Google Cloud Storage][cloud-storage] ([docs][cloud-storage-docs]) allows you to store
-data on Google infrastructure with very high reliability, performance and availability,
-and can be used to distribute large data objects to users via direct download.
+- [About Cloud Storage][cloud-storage]
+- [API documentation][cloud-storage-docs]
+- [Go client documentation](https://godoc.org/cloud.google.com/go/storage)
+- [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/storage)
 
-https://godoc.org/cloud.google.com/go/storage
+### Preview
 
 First create a `storage.Client` to use throughout your application:
 
@@ -162,12 +163,14 @@ if err != nil {
 }
 ```
 
-## Google Cloud Pub/Sub [![GoDoc](https://godoc.org/cloud.google.com/go/pubsub?status.svg)](https://godoc.org/cloud.google.com/go/pubsub)
+## Cloud Pub/Sub [![GoDoc](https://godoc.org/cloud.google.com/go/pubsub?status.svg)](https://godoc.org/cloud.google.com/go/pubsub)
 
-[Google Cloud Pub/Sub][cloud-pubsub] ([docs][cloud-pubsub-docs]) allows you to connect
-your services with reliable, many-to-many, asynchronous messaging hosted on Google's
-infrastructure. Cloud Pub/Sub automatically scales as you need it and provides a foundation
-for building your own robust, global services.
+- [About Cloud Pubsub][cloud-pubsub]
+- [API documentation][cloud-pubsub-docs]
+- [Go client documentation](https://godoc.org/cloud.google.com/go/pubsub)
+- [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/pubsub)
+
+### Preview
 
 First create a `pubsub.Client` to use throughout your application:
 
