@@ -72,12 +72,25 @@ By default, each API will use [Google Application Default Credentials][default-c
 for authorization credentials used in calling the API endpoints. This will allow your
 application to run in many environments without requiring explicit configuration.
 
-Manually-configured authorization can be achieved using the
+To authorize using a
+[JSON key file](https://cloud.google.com/iam/docs/managing-service-account-keys),
+pass
+[`option.WithServiceAccountFile`](https://godoc.org/google.golang.org/api/option#WithServiceAccountFile)
+to the `NewClient` function of the desired package. For example:
+
+```go
+client, err := storage.NewClient(ctx, option.WithServiceAccountFile("path/to/keyfile.json"))
+```
+
+You can exert more control over authorization by using the
 [`golang.org/x/oauth2`](https://godoc.org/golang.org/x/oauth2) package to
-create an `oauth2.TokenSource`. This token source can be passed to the `NewClient`
-function for the relevant API using a
+create an `oauth2.TokenSource`. Then pass
 [`option.WithTokenSource`](https://godoc.org/google.golang.org/api/option#WithTokenSource)
-option.
+to the `NewClient` function:
+```go
+tokenSource := ...
+client, err := storage.NewClient(ctx, option.WithTokenSource(tokenSource))
+```
 
 ## Google Cloud Datastore [![GoDoc](https://godoc.org/cloud.google.com/go/datastore?status.svg)](https://godoc.org/cloud.google.com/go/datastore)
 
