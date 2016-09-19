@@ -126,7 +126,7 @@ type Client struct {
 // NewClient returns a new logging client associated with the provided project ID.
 //
 // By default NewClient uses WriteScope. To use a different scope, call
-// NewClient using a WithScopes option.
+// NewClient using a WithScopes option (see https://godoc.org/google.golang.org/api/option#WithScopes).
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
 	// Check for '/' in project ID to reserve the ability to support various owning resources,
 	// in the form "{Collection}/{Name}", for instance "organizations/my-org".
@@ -782,12 +782,12 @@ type EntryIterator struct {
 	items    []*Entry
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See https://godoc.org/google.golang.org/api/iterator package for details.
 func (it *EntryIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 
-// Next returns the next result. Its second return value is iterator.Done if there are
-// no more results. Once Next returns Done, all subsequent calls will return
-// Done.
+// Next returns the next result. Its second return value is iterator.Done
+// (https://godoc.org/google.golang.org/api/iterator) if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
 func (it *EntryIterator) Next() (*Entry, error) {
 	if err := it.nextFunc(); err != nil {
 		return nil, err
