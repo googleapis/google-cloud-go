@@ -269,7 +269,7 @@ func NewKey(ctx context.Context, kind, name string, id int64, parent *Key) *Key 
 }
 
 // AllocateIDs accepts a slice of incomplete keys and returns a
-// slice of complete keys that are guaranteed to be valid in the datastore
+// slice of complete keys that are guaranteed to be valid in the datastore.
 func (c *Client) AllocateIDs(ctx context.Context, keys []*Key) ([]*Key, error) {
 	if keys == nil {
 		return nil, nil
