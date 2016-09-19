@@ -92,23 +92,22 @@ tokenSource := ...
 client, err := storage.NewClient(ctx, option.WithTokenSource(tokenSource))
 ```
 
-## Google Cloud Datastore [![GoDoc](https://godoc.org/cloud.google.com/go/datastore?status.svg)](https://godoc.org/cloud.google.com/go/datastore)
+## Cloud Datastore [![GoDoc](https://godoc.org/cloud.google.com/go/datastore?status.svg)](https://godoc.org/cloud.google.com/go/datastore)
 
-[Google Cloud Datastore][cloud-datastore] ([docs][cloud-datastore-docs]) is a fully-
-managed, schemaless database for storing non-relational data. Cloud Datastore
-automatically scales with your users and supports ACID transactions, high availability
-of reads and writes, strong consistency for reads and ancestor queries, and eventual
-consistency for all other queries.
+- [About Cloud Datastore][cloud-datastore]
+- [Activating the API for your project][cloud-datastore-activation]
+- [API documentation][cloud-datastore-docs]
+- [Go client's documentation](https://godoc.org/cloud.google.com/go/datastore)
+- [Complete sample program](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/datastore/tasks)
 
-Follow the [activation instructions][cloud-datastore-activation] to use the Google
-Cloud Datastore API with your project.
+### Preview
 
 First create a `datastore.Client` to use throughout your application:
 
 ```go
 client, err := datastore.NewClient(ctx, "my-project-id")
 if err != nil {
-	log.Fatalln(err)
+	log.Fatal(err)
 }
 ```
 
