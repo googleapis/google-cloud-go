@@ -305,7 +305,7 @@ Example code:
 			}
 			count = x.Count
 			return nil
-		}, nil)
+		})
 		if err != nil {
 			// Handle error.
 		}
