@@ -302,7 +302,7 @@ func ExampleClient_RunInTransaction() {
 		}
 		count = x.Count
 		return nil
-	}, nil)
+	})
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -374,4 +374,48 @@ func ExampleWithNamespace() {
 	// Output:
 	// k1: ""
 	// k2: "other"
+}
+
+func ExampleClient_GetAll() {
+	ctx := context.Background()
+	client, err := datastore.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	var posts []*Post
+	keys, err := client.GetAll(ctx, datastore.NewQuery("Post"), &posts)
+	for i := range keys {
+		fmt.Println(keys[i])
+		fmt.Println(posts[i])
+	}
+}
+
+func ExampleCommit_Key() {
+	ctx := context.Background()
+	client, err := datastore.NewClient(ctx, "")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	var pk1, pk2 *datastore.PendingKey
+	// Create two posts in a single transaction.
+	commit, err := client.RunInTransaction(ctx, func(tx *datastore.Transaction) error {
+		var err error
+		pk1, err = tx.Put(datastore.NewIncompleteKey(ctx, "Post", nil), &Post{Title: "Post 1", PublishedAt: time.Now()})
+		if err != nil {
+			return err
+		}
+		pk2, err = tx.Put(datastore.NewIncompleteKey(ctx, "Post", nil), &Post{Title: "Post 2", PublishedAt: time.Now()})
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// Now pk1, pk2 are valid PendingKeys. Let's convert them into real keys
+	// using the Commit object.
+	k1 := commit.Key(pk1)
+	k2 := commit.Key(pk2)
+	fmt.Println(k1, k2)
 }
