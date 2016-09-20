@@ -672,6 +672,9 @@ func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadMod
 	if err != nil {
 		return nil, err
 	}
+	if res.Row == nil {
+		return nil, errors.New("unable to apply ReadModifyWrite: res.Row=nil")
+	}
 	r := make(Row)
 	for _, fam := range res.Row.Families { // res is *btpb.Row, fam is *btpb.Family
 		decodeFamilyProto(r, row, fam)
