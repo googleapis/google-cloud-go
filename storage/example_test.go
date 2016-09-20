@@ -392,3 +392,19 @@ func ExampleACLHandle_List() {
 	}
 	fmt.Println(aclRules)
 }
+
+func ExampleObjectHandle_ComposeFrom() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	bkt := client.Bucket("bucketname")
+	src1 := bkt.Object("file1")
+	src2 := bkt.Object("file2")
+	dst := bkt.Object("combo")
+	_, err = dst.ComposeFrom(ctx, []*storage.ObjectHandle{src1, src2}, nil)
+	if err != nil {
+		// TODO: handle error.
+	}
+}
