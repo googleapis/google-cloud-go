@@ -38,7 +38,7 @@
 //   }
 //
 // Catch writes an error report containing the recovered value and a stack trace
-// to the log named "errorreports" using a Stackdriver Logging client.
+// to Stackdriver Error Reporting.
 //
 // There are various options you can add to the call to Catch that modify how
 // panics are handled.
@@ -70,9 +70,9 @@
 //     errorsClient.Reportf(ctx, r, "unexpected error %v", err)
 //   }
 //
-// If you try to write an error report with a nil client, or if the logging
-// client fails to write the report to the Stackdriver Logging server, the error
-// report is logged using log.Println.
+// If you try to write an error report with a nil client, or if the client
+// fails to write the report to the Stackdriver Error Reporting server, the
+// error report is logged using log.Println.
 package errors // import "cloud.google.com/go/errors"
 
 import (
@@ -84,19 +84,30 @@ import (
 	"strings"
 	"time"
 
-	"cloud.google.com/go/logging"
+	api "cloud.google.com/go/errorreporting/apiv1beta1"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
+	erpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
 )
 
 const (
 	userAgent = `gcloud-golang-errorreporting/20160701`
 )
 
+type apiInterface interface {
+	ReportErrorEvent(ctx context.Context, req *erpb.ReportErrorEventRequest) (*erpb.ReportErrorEventResponse, error)
+}
+
+var newApiInterface = func(ctx context.Context, opts ...option.ClientOption) (apiInterface, error) {
+	client, err := api.NewReportErrorsClient(ctx, opts...)
+	return client, err
+}
+
 type Client struct {
-	loggingClient  *logging.Client
+	apiClient      apiInterface
 	projectID      string
-	serviceContext map[string]string
+	serviceContext erpb.ServiceContext
 
 	// RepanicDefault determines whether Catch will re-panic after recovering a
 	// panic.  This behavior can be overridden for an individual call to Catch using
@@ -105,20 +116,18 @@ type Client struct {
 }
 
 func NewClient(ctx context.Context, projectID, serviceName, serviceVersion string, opts ...option.ClientOption) (*Client, error) {
-	l, err := logging.NewClient(ctx, projectID, "errorreports", opts...)
+	a, err := newApiInterface(ctx, opts...)
 	if err != nil {
-		return nil, fmt.Errorf("creating Logging client: %v", err)
+		return nil, fmt.Errorf("creating Error Reporting client: %v", err)
 	}
 	c := &Client{
-		loggingClient:  l,
-		projectID:      projectID,
+		apiClient:      a,
+		projectID:      "projects/" + projectID,
 		RepanicDefault: true,
-		serviceContext: map[string]string{
-			"service": serviceName,
+		serviceContext: erpb.ServiceContext{
+			Service: serviceName,
+			Version: serviceVersion,
 		},
-	}
-	if serviceVersion != "" {
-		c.serviceContext["version"] = serviceVersion
 	}
 	return c, nil
 }
@@ -251,36 +260,42 @@ func (c *Client) Reportf(ctx context.Context, r *http.Request, format string, v 
 }
 
 func (c *Client) logInternal(ctx context.Context, r *http.Request, isPanic bool, msg string) {
-	payload := map[string]interface{}{
-		"eventTime": time.Now().In(time.UTC).Format(time.RFC3339Nano),
-	}
+	time := time.Now()
 	// limit the stack trace to 16k.
 	var buf [16384]byte
 	stack := buf[0:runtime.Stack(buf[:], false)]
-	payload["message"] = msg + "\n" + chopStack(stack, isPanic)
+	message := msg + "\n" + chopStack(stack, isPanic)
+	if c == nil {
+		log.Println("Error report used nil client:", message)
+		return
+	}
+	var errorContext *erpb.ErrorContext
 	if r != nil {
-		payload["context"] = map[string]interface{}{
-			"httpRequest": map[string]interface{}{
-				"method":    r.Method,
-				"url":       r.Host + r.RequestURI,
-				"userAgent": r.UserAgent(),
-				"referrer":  r.Referer(),
-				"remoteIp":  r.RemoteAddr,
+		errorContext = &erpb.ErrorContext{
+			HttpRequest: &erpb.HttpRequestContext{
+				Method:    r.Method,
+				Url:       r.Host + r.RequestURI,
+				UserAgent: r.UserAgent(),
+				Referrer:  r.Referer(),
+				RemoteIp:  r.RemoteAddr,
 			},
 		}
 	}
-	if c == nil {
-		log.Println("Error report used nil client:", payload)
-		return
+	req := erpb.ReportErrorEventRequest{
+		ProjectName: c.projectID,
+		Event: &erpb.ReportedErrorEvent{
+			EventTime: &timestamp.Timestamp{
+				Seconds: time.Unix(),
+				Nanos:   int32(time.Nanosecond()),
+			},
+			ServiceContext: &c.serviceContext,
+			Message:        message,
+			Context:        errorContext,
+		},
 	}
-	payload["serviceContext"] = c.serviceContext
-	e := logging.Entry{
-		Level:   logging.Error,
-		Payload: payload,
-	}
-	err := c.loggingClient.LogSync(e)
+	_, err := c.apiClient.ReportErrorEvent(ctx, &req)
 	if err != nil {
-		log.Println("Error writing error report:", err, "report:", payload)
+		log.Println("Error writing error report:", err, "report:", message)
 	}
 }
 

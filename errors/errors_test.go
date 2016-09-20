@@ -12,56 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package errors_test
+package errors
 
 import (
 	"bytes"
-	"io/ioutil"
+	"errors"
 	"log"
-	"net/http"
 	"strings"
 	"testing"
 
-	"cloud.google.com/go/errors"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
+	erpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
 )
 
 const testProjectID = "testproject"
 
-type fakeRoundTripper struct {
-	req  *http.Request
+type fakeReportErrorsClient struct {
+	req  *erpb.ReportErrorEventRequest
 	fail bool
-	body string
 }
 
-func newFakeRoundTripper() *fakeRoundTripper {
-	return &fakeRoundTripper{}
-}
-
-func (rt *fakeRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
-	rt.req = r
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		panic(err)
+func (c *fakeReportErrorsClient) ReportErrorEvent(ctx context.Context, req *erpb.ReportErrorEventRequest) (*erpb.ReportErrorEventResponse, error) {
+	if c.fail {
+		return nil, errors.New("request failed")
 	}
-	rt.body = string(body)
-	if rt.fail {
-		return &http.Response{
-			Status:     "503 Service Unavailable",
-			StatusCode: 503,
-			Body:       ioutil.NopCloser(strings.NewReader("{}")),
-		}, nil
-	}
-	return &http.Response{
-		Status:     "200 OK",
-		StatusCode: 200,
-		Body:       ioutil.NopCloser(strings.NewReader("{}")),
-	}, nil
+	c.req = req
+	return &erpb.ReportErrorEventResponse{}, nil
 }
 
-func newTestClient(rt http.RoundTripper) *errors.Client {
-	t, err := errors.NewClient(context.Background(), testProjectID, "myservice", "v1.000", option.WithHTTPClient(&http.Client{Transport: rt}))
+func newTestClient(c *fakeReportErrorsClient) *Client {
+	newApiInterface = func(ctx context.Context, opts ...option.ClientOption) (apiInterface, error) {
+		return c, nil
+	}
+	t, err := NewClient(context.Background(), testProjectID, "myservice", "v1.000")
 	if err != nil {
 		panic(err)
 	}
@@ -76,10 +60,10 @@ func init() {
 }
 
 func TestCatchNothing(t *testing.T) {
-	rt := &fakeRoundTripper{}
-	c := newTestClient(rt)
+	fc := &fakeReportErrorsClient{}
+	c := newTestClient(fc)
 	defer func() {
-		r := rt.req
+		r := fc.req
 		if r != nil {
 			t.Errorf("got error report, expected none")
 		}
@@ -87,35 +71,35 @@ func TestCatchNothing(t *testing.T) {
 	defer c.Catch(ctx)
 }
 
-func commonChecks(t *testing.T, body, panickingFunction string) {
-	if !strings.Contains(body, "myservice") {
+func commonChecks(t *testing.T, req *erpb.ReportErrorEventRequest, panickingFunction string) {
+	if req.Event.ServiceContext.Service != "myservice" {
 		t.Errorf("error report didn't contain service name")
 	}
-	if !strings.Contains(body, "v1.000") {
+	if req.Event.ServiceContext.Version != "v1.000" {
 		t.Errorf("error report didn't contain version name")
 	}
-	if !strings.Contains(body, "hello, error") {
+	if !strings.Contains(req.Event.Message, "hello, error") {
 		t.Errorf("error report didn't contain message")
 	}
-	if !strings.Contains(body, panickingFunction) {
+	if !strings.Contains(req.Event.Message, panickingFunction) {
 		t.Errorf("error report didn't contain stack trace")
 	}
 }
 
 func TestCatchPanic(t *testing.T) {
-	rt := &fakeRoundTripper{}
-	c := newTestClient(rt)
+	fc := &fakeReportErrorsClient{}
+	c := newTestClient(fc)
 	defer func() {
-		r := rt.req
+		r := fc.req
 		if r == nil {
 			t.Fatalf("got no error report, expected one")
 		}
-		commonChecks(t, rt.body, "errors_test.TestCatchPanic")
-		if !strings.Contains(rt.body, "divide by zero") {
+		commonChecks(t, r, "errors.TestCatchPanic")
+		if !strings.Contains(r.Event.Message, "divide by zero") {
 			t.Errorf("error report didn't contain recovered value")
 		}
 	}()
-	defer c.Catch(ctx, errors.WithMessage("hello, error"))
+	defer c.Catch(ctx, WithMessage("hello, error"))
 	var x int
 	x = x / x
 }
@@ -132,87 +116,91 @@ func TestCatchPanicNilClient(t *testing.T) {
 		if !strings.Contains(string(body), "hello, error") {
 			t.Errorf("error report didn't contain message")
 		}
-		if !strings.Contains(string(body), "errors_test.TestCatchPanicNilClient") {
+		if !strings.Contains(string(body), "errors.TestCatchPanicNilClient") {
 			t.Errorf("error report didn't contain recovered value")
 		}
 	}()
-	var c *errors.Client
-	defer c.Catch(ctx, errors.WithMessage("hello, error"))
+	var c *Client
+	defer c.Catch(ctx, WithMessage("hello, error"))
 	var x int
 	x = x / x
 }
 
 func TestLogFailedReports(t *testing.T) {
-	rt := &fakeRoundTripper{}
-	c := newTestClient(rt)
-	rt.fail = true
+	fc := &fakeReportErrorsClient{fail: true}
+	c := newTestClient(fc)
 	buf := new(bytes.Buffer)
 	log.SetOutput(buf)
 	defer func() {
 		recover()
-		body := buf.Bytes()
-		commonChecks(t, string(body), "errors_test.TestLogFailedReports")
-		if !strings.Contains(string(body), "divide by zero") {
+		body := buf.String()
+		if !strings.Contains(body, "hello, error") {
+			t.Errorf("error report didn't contain message")
+		}
+		if !strings.Contains(body, "errors.TestLogFailedReports") {
+			t.Errorf("error report didn't contain stack trace")
+		}
+		if !strings.Contains(body, "divide by zero") {
 			t.Errorf("error report didn't contain recovered value")
 		}
 	}()
-	defer c.Catch(ctx, errors.WithMessage("hello, error"))
+	defer c.Catch(ctx, WithMessage("hello, error"))
 	var x int
 	x = x / x
 }
 
 func TestCatchNilPanic(t *testing.T) {
-	rt := &fakeRoundTripper{}
-	c := newTestClient(rt)
+	fc := &fakeReportErrorsClient{}
+	c := newTestClient(fc)
 	defer func() {
-		r := rt.req
+		r := fc.req
 		if r == nil {
 			t.Fatalf("got no error report, expected one")
 		}
-		commonChecks(t, rt.body, "errors_test.TestCatchNilPanic")
-		if !strings.Contains(rt.body, "nil") {
+		commonChecks(t, r, "errors.TestCatchNilPanic")
+		if !strings.Contains(r.Event.Message, "nil") {
 			t.Errorf("error report didn't contain recovered value")
 		}
 	}()
 	b := true
-	defer c.Catch(ctx, errors.WithMessage("hello, error"), errors.PanicFlag(&b))
+	defer c.Catch(ctx, WithMessage("hello, error"), PanicFlag(&b))
 	panic(nil)
 }
 
 func TestNotCatchNilPanic(t *testing.T) {
-	rt := &fakeRoundTripper{}
-	c := newTestClient(rt)
+	fc := &fakeReportErrorsClient{}
+	c := newTestClient(fc)
 	defer func() {
-		r := rt.req
+		r := fc.req
 		if r != nil {
 			t.Errorf("got error report, expected none")
 		}
 	}()
-	defer c.Catch(ctx, errors.WithMessage("hello, error"))
+	defer c.Catch(ctx, WithMessage("hello, error"))
 	panic(nil)
 }
 
 func TestReport(t *testing.T) {
-	rt := &fakeRoundTripper{}
-	c := newTestClient(rt)
+	fc := &fakeReportErrorsClient{}
+	c := newTestClient(fc)
 	c.Report(ctx, nil, "hello, ", "error")
-	r := rt.req
+	r := fc.req
 	if r == nil {
 		t.Fatalf("got no error report, expected one")
 	}
-	commonChecks(t, rt.body, "errors_test.TestReport")
+	commonChecks(t, r, "errors.TestReport")
 }
 
 func TestReportf(t *testing.T) {
-	rt := &fakeRoundTripper{}
-	c := newTestClient(rt)
+	fc := &fakeReportErrorsClient{}
+	c := newTestClient(fc)
 	c.Reportf(ctx, nil, "hello, error 2+%d=%d", 2, 2+2)
-	r := rt.req
+	r := fc.req
 	if r == nil {
 		t.Fatalf("got no error report, expected one")
 	}
-	commonChecks(t, rt.body, "errors_test.TestReportf")
-	if !strings.Contains(rt.body, "2+2=4") {
+	commonChecks(t, r, "errors.TestReportf")
+	if !strings.Contains(r.Event.Message, "2+2=4") {
 		t.Errorf("error report didn't contain formatted message")
 	}
 }
