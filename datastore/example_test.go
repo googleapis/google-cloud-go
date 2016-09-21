@@ -384,8 +384,8 @@ func ExampleClient_GetAll() {
 	}
 	var posts []*Post
 	keys, err := client.GetAll(ctx, datastore.NewQuery("Post"), &posts)
-	for i := range keys {
-		fmt.Println(keys[i])
+	for i, key := range keys {
+		fmt.Println(key)
 		fmt.Println(posts[i])
 	}
 }
@@ -418,4 +418,122 @@ func ExampleCommit_Key() {
 	k1 := commit.Key(pk1)
 	k2 := commit.Key(pk2)
 	fmt.Println(k1, k2)
+}
+
+func ExampleIterator_Next() {
+	ctx := context.Background()
+	client, err := datastore.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	it := client.Run(ctx, datastore.NewQuery("Post"))
+	for {
+		var p Post
+		key, err := it.Next(&p)
+		if err == datastore.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		fmt.Println(key, p)
+	}
+}
+
+func ExampleIterator_Cursor() {
+	ctx := context.Background()
+	client, err := datastore.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	it := client.Run(ctx, datastore.NewQuery("Post"))
+	for {
+		var p Post
+		_, err := it.Next(&p)
+		if err == datastore.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		fmt.Println(p)
+		cursor, err := it.Cursor()
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// When printed, a cursor will display as a string that can be passed
+		// to datastore.NewCursor.
+		fmt.Printf("to resume with this post, use cursor %s\n", cursor)
+	}
+}
+
+func ExampleDecodeCursor() {
+	// See Query.Start for a fuller example of DecodeCursor.
+	// getCursor represents a function that returns a cursor from a previous
+	// iteration in string form.
+	cursorString := getCursor()
+	cursor, err := datastore.DecodeCursor(cursorString)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	_ = cursor // TODO: Use the cursor with Query.Start or Query.End.
+}
+
+func getCursor() string { return "" }
+
+func ExampleQuery_Start() {
+	// This example demonstrates how to use cursors and Query.Start
+	// to resume an iteration.
+	ctx := context.Background()
+	client, err := datastore.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// getCursor represents a function that returns a cursor from a previous
+	// iteration in string form.
+	cursorString := getCursor()
+	cursor, err := datastore.DecodeCursor(cursorString)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	it := client.Run(ctx, datastore.NewQuery("Post").Start(cursor))
+	_ = it // TODO: Use iterator.
+}
+
+func ExampleLoadStruct() {
+	type Player struct {
+		User  string
+		Score int
+	}
+	// Normally LoadStruct would only be used inside a custom implementation of
+	// PropertyLoadSaver; this is for illustrative purposes only.
+	props := []datastore.Property{
+		{Name: "User", Value: "Alice"},
+		{Name: "Score", Value: int64(97)},
+	}
+
+	var p Player
+	if err := datastore.LoadStruct(&p, props); err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Println(p)
+	// Output: {Alice 97}
+}
+
+func ExampleSaveStruct() {
+	type Player struct {
+		User  string
+		Score int
+	}
+
+	p := &Player{
+		User:  "Alice",
+		Score: 97,
+	}
+	props, err := datastore.SaveStruct(p)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Println(props)
+	// Output: [{User Alice false} {Score 97 false}]
 }
