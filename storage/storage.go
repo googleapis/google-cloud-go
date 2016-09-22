@@ -156,8 +156,8 @@ func (c *Client) Close() error {
 // BucketHandle provides operations on a Google Cloud Storage bucket.
 // Use Client.Bucket to get a handle.
 type BucketHandle struct {
-	acl              *ACLHandle
-	defaultObjectACL *ACLHandle
+	acl              ACLHandle
+	defaultObjectACL ACLHandle
 
 	c    *Client
 	name string
@@ -174,11 +174,11 @@ func (c *Client) Bucket(name string) *BucketHandle {
 	return &BucketHandle{
 		c:    c,
 		name: name,
-		acl: &ACLHandle{
+		acl: ACLHandle{
 			c:      c,
 			bucket: name,
 		},
-		defaultObjectACL: &ACLHandle{
+		defaultObjectACL: ACLHandle{
 			c:         c,
 			bucket:    name,
 			isDefault: true,
@@ -325,7 +325,7 @@ type ObjectHandle struct {
 	bucket string
 	object string
 
-	acl   *ACLHandle
+	acl   ACLHandle
 	conds []Condition
 }
 
@@ -333,7 +333,7 @@ type ObjectHandle struct {
 // This controls who can read and write this object.
 // This call does not perform any network operations.
 func (o *ObjectHandle) ACL() *ACLHandle {
-	return o.acl
+	return &o.acl
 }
 
 // WithConditions returns a copy of o using the provided conditions.
