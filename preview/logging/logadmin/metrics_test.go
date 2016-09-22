@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package logging
+package logadmin
 
 import (
 	"log"
@@ -20,6 +20,7 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
+	ltesting "cloud.google.com/go/preview/logging/internal/testing"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 )
@@ -44,7 +45,7 @@ loop:
 			return
 		}
 	}
-	for _, mID := range expiredUniqueIDs(IDs, testMetricIDPrefix) {
+	for _, mID := range ltesting.ExpiredUniqueIDs(IDs, testMetricIDPrefix) {
 		client.DeleteMetric(ctx, mID)
 	}
 }
@@ -52,7 +53,7 @@ loop:
 func TestCreateDeleteMetric(t *testing.T) {
 	ctx := context.Background()
 	metric := &Metric{
-		ID:          uniqueID(testMetricIDPrefix),
+		ID:          ltesting.UniqueID(testMetricIDPrefix),
 		Description: "DESC",
 		Filter:      "FILTER",
 	}
@@ -81,7 +82,7 @@ func TestCreateDeleteMetric(t *testing.T) {
 func TestUpdateMetric(t *testing.T) {
 	ctx := context.Background()
 	metric := &Metric{
-		ID:          uniqueID(testMetricIDPrefix),
+		ID:          ltesting.UniqueID(testMetricIDPrefix),
 		Description: "DESC",
 		Filter:      "FILTER",
 	}
@@ -119,7 +120,7 @@ func TestListMetrics(t *testing.T) {
 	var metrics []*Metric
 	for i := 0; i < 10; i++ {
 		metrics = append(metrics, &Metric{
-			ID:          uniqueID(testMetricIDPrefix),
+			ID:          ltesting.UniqueID(testMetricIDPrefix),
 			Description: "DESC",
 			Filter:      "FILTER",
 		})

@@ -16,7 +16,7 @@
 // TODO(jba): [cont] (1) From top left menu, go to IAM & Admin. (2) In Roles dropdown for acct, select Logging > Logs Configuration Writer. (3) Save.
 // TODO(jba): Also, cloud-logs@google.com must have Owner permission on the GCS bucket named for the test project.
 
-package logging
+package logadmin
 
 import (
 	"log"
@@ -24,6 +24,7 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
+	ltesting "cloud.google.com/go/preview/logging/internal/testing"
 	"cloud.google.com/go/storage"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
@@ -32,6 +33,8 @@ import (
 
 const testSinkIDPrefix = "GO-CLIENT-TEST-SINK"
 
+const testFilter = ""
+
 var testSinkDestination string
 
 // Called just before TestMain calls m.Run.
@@ -39,7 +42,7 @@ var testSinkDestination string
 func initSinks(ctx context.Context) func() {
 	// Create a unique GCS bucket so concurrent tests don't interfere with each other.
 	testBucketPrefix := testProjectID + "-log-sink"
-	testBucket := uniqueID(testBucketPrefix)
+	testBucket := ltesting.UniqueID(testBucketPrefix)
 	testSinkDestination = "storage.googleapis.com/" + testBucket
 	var storageClient *storage.Client
 	if integrationTest {
@@ -60,11 +63,11 @@ func initSinks(ctx context.Context) func() {
 		}
 	}
 	// Clean up from aborted tests.
-	for _, sID := range expiredUniqueIDs(sinkIDs(ctx), testSinkIDPrefix) {
+	for _, sID := range ltesting.ExpiredUniqueIDs(sinkIDs(ctx), testSinkIDPrefix) {
 		client.DeleteSink(ctx, sID) // ignore error
 	}
 	if integrationTest {
-		for _, bn := range expiredUniqueIDs(bucketNames(ctx, storageClient), testBucketPrefix) {
+		for _, bn := range ltesting.ExpiredUniqueIDs(bucketNames(ctx, storageClient), testBucketPrefix) {
 			storageClient.Bucket(bn).Delete(ctx) // ignore error
 		}
 		return func() {
@@ -120,7 +123,7 @@ loop:
 func TestCreateDeleteSink(t *testing.T) {
 	ctx := context.Background()
 	sink := &Sink{
-		ID:          uniqueID(testSinkIDPrefix),
+		ID:          ltesting.UniqueID(testSinkIDPrefix),
 		Destination: testSinkDestination,
 		Filter:      testFilter,
 	}
@@ -152,7 +155,7 @@ func TestCreateDeleteSink(t *testing.T) {
 func TestUpdateSink(t *testing.T) {
 	ctx := context.Background()
 	sink := &Sink{
-		ID:          uniqueID(testSinkIDPrefix),
+		ID:          ltesting.UniqueID(testSinkIDPrefix),
 		Destination: testSinkDestination,
 		Filter:      testFilter,
 	}
@@ -193,7 +196,7 @@ func TestListSinks(t *testing.T) {
 	var sinks []*Sink
 	for i := 0; i < 4; i++ {
 		sinks = append(sinks, &Sink{
-			ID:          uniqueID(testSinkIDPrefix),
+			ID:          ltesting.UniqueID(testSinkIDPrefix),
 			Destination: testSinkDestination,
 			Filter:      testFilter,
 		})

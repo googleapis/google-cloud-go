@@ -14,40 +14,36 @@
 
 // TODO(jba): test that OnError is getting called appropriately.
 
-package logging
+package logging_test
 
 import (
 	"flag"
 	"fmt"
 	"log"
-	"net/http"
-	"net/url"
 	"os"
 	"reflect"
 	"strings"
 	"testing"
 	"time"
 
-	"cloud.google.com/go/internal/bundler"
 	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/preview/logging"
+	"cloud.google.com/go/preview/logging/internal"
 	ltesting "cloud.google.com/go/preview/logging/internal/testing"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
-	structpb "github.com/golang/protobuf/ptypes/struct"
+	"cloud.google.com/go/preview/logging/logadmin"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
-	logtypepb "google.golang.org/genproto/googleapis/logging/type"
-	logpb "google.golang.org/genproto/googleapis/logging/v2"
 	"google.golang.org/grpc"
 )
 
 const testLogIDPrefix = "GO-LOGGING-CLIENT/TEST-LOG"
 
 var (
-	client        *Client
+	client        *logging.Client
+	aclient       *logadmin.Client
 	testProjectID string
 	testLogID     string
 	testFilter    string
@@ -56,10 +52,10 @@ var (
 	// Adjust the fields of a FullEntry received from the production service
 	// before comparing it with the expected result. We can't correctly
 	// compare certain fields, like times or server-generated IDs.
-	clean func(*Entry)
+	clean func(*logging.Entry)
 
 	// Create a new client with the given project ID.
-	newClient func(ctx context.Context, projectID string) *Client
+	newClients func(ctx context.Context, projectID string) (*logging.Client, *logadmin.Client)
 )
 
 func testNow() time.Time {
@@ -80,7 +76,7 @@ func TestMain(m *testing.M) {
 			log.Print("Integration tests skipped in short mode (using fake instead)")
 		}
 		testProjectID = "PROJECT_ID"
-		clean = func(e *Entry) {
+		clean = func(e *logging.Entry) {
 			// Remove the insert ID for consistency with the integration test.
 			e.InsertID = ""
 		}
@@ -89,157 +85,91 @@ func TestMain(m *testing.M) {
 		if err != nil {
 			log.Fatalf("creating fake server: %v", err)
 		}
-		now = testNow
-		newClient = func(ctx context.Context, projectID string) *Client {
+		logging.SetNow(testNow)
+
+		newClients = func(ctx context.Context, projectID string) (*logging.Client, *logadmin.Client) {
 			conn, err := grpc.Dial(addr, grpc.WithInsecure())
 			if err != nil {
 				log.Fatalf("dialing %q: %v", addr, err)
 			}
-			c, err := NewClient(ctx, projectID, option.WithGRPCConn(conn))
+			c, err := logging.NewClient(ctx, projectID, option.WithGRPCConn(conn))
 			if err != nil {
 				log.Fatalf("creating client for fake at %q: %v", addr, err)
 			}
-			return c
+			ac, err := logadmin.NewClient(ctx, projectID, option.WithGRPCConn(conn))
+			if err != nil {
+				log.Fatalf("creating client for fake at %q: %v", addr, err)
+			}
+			return c, ac
 		}
+
 	} else {
 		integrationTest = true
-		clean = func(e *Entry) {
+		clean = func(e *logging.Entry) {
 			// We cannot compare timestamps, so set them to the test time.
 			// Also, remove the insert ID added by the service.
 			e.Timestamp = testNow().UTC()
 			e.InsertID = ""
 		}
-		ts := testutil.TokenSource(ctx, AdminScope)
+		ts := testutil.TokenSource(ctx, logging.AdminScope)
 		if ts == nil {
 			log.Fatal("The project key must be set. See CONTRIBUTING.md for details")
 		}
 		log.Printf("running integration tests with project %s", testProjectID)
-		newClient = func(ctx context.Context, projectID string) *Client {
-			c, err := NewClient(ctx, projectID, option.WithTokenSource(ts))
+		newClients = func(ctx context.Context, projectID string) (*logging.Client, *logadmin.Client) {
+			c, err := logging.NewClient(ctx, projectID, option.WithTokenSource(ts))
 			if err != nil {
 				log.Fatalf("creating prod client: %v", err)
 			}
-			return c
+			ac, err := logadmin.NewClient(ctx, projectID, option.WithTokenSource(ts))
+			if err != nil {
+				log.Fatalf("creating prod client: %v", err)
+			}
+			return c, ac
 		}
+
 	}
-	client = newClient(ctx, testProjectID)
+	client, aclient = newClients(ctx, testProjectID)
 	client.OnError = func(e error) { errorc <- e }
 	initLogs(ctx)
-	initMetrics(ctx)
-	cleanup := initSinks(ctx)
 	testFilter = fmt.Sprintf(`logName = "projects/%s/logs/%s"`, testProjectID,
 		strings.Replace(testLogID, "/", "%2F", -1))
 	exit := m.Run()
-	cleanup()
 	client.Close()
 	os.Exit(exit)
 }
 
-// waitFor calls f periodically, blocking until it returns true.
-// It calls log.Fatal after one minute.
-func waitFor(f func() bool) {
-	timeout := time.NewTimer(2 * time.Minute)
-	for {
-		select {
-		case <-time.After(1 * time.Second):
-			if f() {
-				timeout.Stop()
-				return
-			}
-		case <-timeout.C:
-			log.Fatal("timed out")
-		}
-	}
-}
-
 func initLogs(ctx context.Context) {
-	testLogID = uniqueID(testLogIDPrefix)
+	testLogID = ltesting.UniqueID(testLogIDPrefix)
 	// TODO(jba): Clean up from previous aborted tests by deleting old logs; requires ListLogs RPC.
 }
 
-func TestLoggerCreation(t *testing.T) {
-	c := &Client{projectID: "PROJECT_ID"}
-	defaultResource := &mrpb.MonitoredResource{Type: "global"}
-	defaultBundler := &bundler.Bundler{
-		DelayThreshold:       DefaultDelayThreshold,
-		BundleCountThreshold: DefaultEntryCountThreshold,
-		BundleByteThreshold:  DefaultEntryByteThreshold,
-		BundleByteLimit:      0,
-		BufferedByteLimit:    DefaultBufferedByteLimit,
-	}
-	for _, test := range []struct {
-		options     []LoggerOption
-		wantLogger  *Logger
-		wantBundler *bundler.Bundler
-	}{
-		{nil, &Logger{commonResource: defaultResource}, defaultBundler},
-		{
-			[]LoggerOption{CommonResource(nil), CommonLabels(map[string]string{"a": "1"})},
-			&Logger{commonResource: nil, commonLabels: map[string]string{"a": "1"}},
-			defaultBundler,
-		},
-		{
-			[]LoggerOption{DelayThreshold(time.Minute), EntryCountThreshold(99),
-				EntryByteThreshold(17), EntryByteLimit(18), BufferedByteLimit(19)},
-			&Logger{commonResource: defaultResource},
-			&bundler.Bundler{
-				DelayThreshold:       time.Minute,
-				BundleCountThreshold: 99,
-				BundleByteThreshold:  17,
-				BundleByteLimit:      18,
-				BufferedByteLimit:    19,
-			},
-		},
-	} {
-		gotLogger := c.Logger(testLogID, test.options...)
-		if got, want := gotLogger.commonResource, test.wantLogger.commonResource; !reflect.DeepEqual(got, want) {
-			t.Errorf("%v: resource: got %v, want %v", test.options, got, want)
-		}
-		if got, want := gotLogger.commonLabels, test.wantLogger.commonLabels; !reflect.DeepEqual(got, want) {
-			t.Errorf("%v: commonLabels: got %v, want %v", test.options, got, want)
-		}
-		if got, want := gotLogger.bundler.DelayThreshold, test.wantBundler.DelayThreshold; got != want {
-			t.Errorf("%v: DelayThreshold: got %v, want %v", test.options, got, want)
-		}
-		if got, want := gotLogger.bundler.BundleCountThreshold, test.wantBundler.BundleCountThreshold; got != want {
-			t.Errorf("%v: BundleCountThreshold: got %v, want %v", test.options, got, want)
-		}
-		if got, want := gotLogger.bundler.BundleByteThreshold, test.wantBundler.BundleByteThreshold; got != want {
-			t.Errorf("%v: BundleByteThreshold: got %v, want %v", test.options, got, want)
-		}
-		if got, want := gotLogger.bundler.BundleByteLimit, test.wantBundler.BundleByteLimit; got != want {
-			t.Errorf("%v: BundleByteLimit: got %v, want %v", test.options, got, want)
-		}
-		if got, want := gotLogger.bundler.BufferedByteLimit, test.wantBundler.BufferedByteLimit; got != want {
-			t.Errorf("%v: BufferedByteLimit: got %v, want %v", test.options, got, want)
-		}
-	}
-}
+// Testing of Logger.Log is done in logadmin_test.go, TestEntries.
 
 func TestLogSync(t *testing.T) {
 	ctx := context.Background()
 	lg := client.Logger(testLogID)
 	defer deleteLog(ctx, testLogID)
-	err := lg.LogSync(ctx, Entry{Payload: "hello"})
+	err := lg.LogSync(ctx, logging.Entry{Payload: "hello"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = lg.LogSync(ctx, Entry{Payload: "goodbye"})
+	err = lg.LogSync(ctx, logging.Entry{Payload: "goodbye"})
 	if err != nil {
 		t.Fatal(err)
 	}
 	// Allow overriding the MonitoredResource.
-	err = lg.LogSync(ctx, Entry{Payload: "mr", Resource: &mrpb.MonitoredResource{Type: "global"}})
+	err = lg.LogSync(ctx, logging.Entry{Payload: "mr", Resource: &mrpb.MonitoredResource{Type: "global"}})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	want := []*Entry{
+	want := []*logging.Entry{
 		entryForTesting("hello"),
 		entryForTesting("goodbye"),
 		entryForTesting("mr"),
 	}
-	var got []*Entry
+	var got []*logging.Entry
 	waitFor(func() bool {
 		got, err = allTestLogEntries(ctx)
 		if err != nil {
@@ -252,67 +182,6 @@ func TestLogSync(t *testing.T) {
 	}
 }
 
-func compareEntries(got, want []*Entry) (string, bool) {
-	if len(got) != len(want) {
-		return fmt.Sprintf("got %d entries, want %d", len(got), len(want)), false
-	}
-	for i := range got {
-		if !reflect.DeepEqual(got[i], want[i]) {
-			return fmt.Sprintf("#%d:\ngot  %+v\nwant %+v", i, got[i], want[i]), false
-		}
-	}
-	return "", true
-}
-
-func entryForTesting(payload interface{}) *Entry {
-	return &Entry{
-		Timestamp: testNow().UTC(),
-		Payload:   payload,
-		LogName:   "projects/" + testProjectID + "/logs/" + testLogID,
-		Resource:  &mrpb.MonitoredResource{Type: "global"},
-	}
-}
-
-func countLogEntries(ctx context.Context, filter string) int {
-	it := client.Entries(ctx, Filter(filter))
-	n := 0
-	for {
-		_, err := it.Next()
-		if err == iterator.Done {
-			return n
-		}
-		if err != nil {
-			log.Fatalf("counting log entries: %v", err)
-		}
-		n++
-	}
-}
-
-func allTestLogEntries(ctx context.Context) ([]*Entry, error) {
-	var es []*Entry
-	it := client.Entries(ctx, Filter(testFilter))
-	for {
-		e, err := cleanNext(it)
-		switch err {
-		case nil:
-			es = append(es, e)
-		case iterator.Done:
-			return es, nil
-		default:
-			return nil, err
-		}
-	}
-}
-
-func cleanNext(it *EntryIterator) (*Entry, error) {
-	e, err := it.Next()
-	if err != nil {
-		return nil, err
-	}
-	clean(e)
-	return e, nil
-}
-
 func TestLogAndEntries(t *testing.T) {
 	ctx := context.Background()
 	payloads := []string{"p1", "p2", "p3", "p4", "p5"}
@@ -320,14 +189,14 @@ func TestLogAndEntries(t *testing.T) {
 	defer deleteLog(ctx, testLogID)
 	for _, p := range payloads {
 		// Use the insert ID to guarantee iteration order.
-		lg.Log(Entry{Payload: p, InsertID: p})
+		lg.Log(logging.Entry{Payload: p, InsertID: p})
 	}
 	lg.Flush()
-	var want []*Entry
+	var want []*logging.Entry
 	for _, p := range payloads {
 		want = append(want, entryForTesting(p))
 	}
-	var got []*Entry
+	var got []*logging.Entry
 	waitFor(func() bool {
 		var err error
 		got, err = allTestLogEntries(ctx)
@@ -341,22 +210,83 @@ func TestLogAndEntries(t *testing.T) {
 	}
 }
 
+func compareEntries(got, want []*logging.Entry) (string, bool) {
+	if len(got) != len(want) {
+		return fmt.Sprintf("got %d entries, want %d", len(got), len(want)), false
+	}
+	for i := range got {
+		if !reflect.DeepEqual(got[i], want[i]) {
+			return fmt.Sprintf("#%d:\ngot  %+v\nwant %+v", i, got[i], want[i]), false
+		}
+	}
+	return "", true
+}
+
+func entryForTesting(payload interface{}) *logging.Entry {
+	return &logging.Entry{
+		Timestamp: testNow().UTC(),
+		Payload:   payload,
+		LogName:   "projects/" + testProjectID + "/logs/" + testLogID,
+		Resource:  &mrpb.MonitoredResource{Type: "global"},
+	}
+}
+
+func countLogEntries(ctx context.Context, filter string) int {
+	it := aclient.Entries(ctx, logadmin.Filter(filter))
+	n := 0
+	for {
+		_, err := it.Next()
+		if err == iterator.Done {
+			return n
+		}
+		if err != nil {
+			log.Fatalf("counting log entries: %v", err)
+		}
+		n++
+	}
+}
+
+func allTestLogEntries(ctx context.Context) ([]*logging.Entry, error) {
+	var es []*logging.Entry
+	it := aclient.Entries(ctx, logadmin.Filter(testFilter))
+	for {
+		e, err := cleanNext(it)
+		switch err {
+		case nil:
+			es = append(es, e)
+		case iterator.Done:
+			return es, nil
+		default:
+			return nil, err
+		}
+	}
+}
+
+func cleanNext(it *logadmin.EntryIterator) (*logging.Entry, error) {
+	e, err := it.Next()
+	if err != nil {
+		return nil, err
+	}
+	clean(e)
+	return e, nil
+}
+
 func TestStandardLogger(t *testing.T) {
 	ctx := context.Background()
 	lg := client.Logger(testLogID)
 	defer deleteLog(ctx, testLogID)
-	slg := lg.StandardLogger(Info)
+	slg := lg.StandardLogger(logging.Info)
 
-	if slg != lg.StandardLogger(Info) {
+	if slg != lg.StandardLogger(logging.Info) {
 		t.Error("There should be only one standard logger at each severity.")
 	}
-	if slg == lg.StandardLogger(Debug) {
+	if slg == lg.StandardLogger(logging.Debug) {
 		t.Error("There should be a different standard logger for each severity.")
 	}
 
 	slg.Print("info")
 	lg.Flush()
-	var got []*Entry
+	var got []*logging.Entry
 	waitFor(func() bool {
 		var err error
 		got, err = allTestLogEntries(ctx)
@@ -371,191 +301,16 @@ func TestStandardLogger(t *testing.T) {
 	if got, want := got[0].Payload.(string), "info\n"; got != want {
 		t.Errorf("payload: got %q, want %q", got, want)
 	}
-	if got, want := Severity(got[0].Severity), Info; got != want {
+	if got, want := logging.Severity(got[0].Severity), logging.Info; got != want {
 		t.Errorf("severity: got %s, want %s", got, want)
 	}
 }
 
-func TestToProtoStruct(t *testing.T) {
-	v := struct {
-		Foo string                 `json:"foo"`
-		Bar int                    `json:"bar,omitempty"`
-		Baz []float64              `json:"baz"`
-		Moo map[string]interface{} `json:"moo"`
-	}{
-		Foo: "foovalue",
-		Baz: []float64{1.1},
-		Moo: map[string]interface{}{
-			"a": 1,
-			"b": "two",
-			"c": true,
-		},
-	}
-
-	got, err := toProtoStruct(v)
-	if err != nil {
-		t.Fatal(err)
-	}
-	want := &structpb.Struct{
-		Fields: map[string]*structpb.Value{
-			"foo": {Kind: &structpb.Value_StringValue{v.Foo}},
-			"baz": {Kind: &structpb.Value_ListValue{&structpb.ListValue{
-				[]*structpb.Value{{Kind: &structpb.Value_NumberValue{1.1}}}}}},
-			"moo": {Kind: &structpb.Value_StructValue{
-				&structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"a": {Kind: &structpb.Value_NumberValue{1}},
-						"b": {Kind: &structpb.Value_StringValue{"two"}},
-						"c": {Kind: &structpb.Value_BoolValue{true}},
-					},
-				},
-			}},
-		},
-	}
-	if !proto.Equal(got, want) {
-		t.Errorf("got  %+v\nwant %+v", got, want)
-	}
-
-	// Non-structs should fail to convert.
-	for v := range []interface{}{3, "foo", []int{1, 2, 3}} {
-		_, err := toProtoStruct(v)
-		if err == nil {
-			t.Errorf("%v: got nil, want error", v)
-		}
-	}
-}
-
-func textPayloads(req *logpb.WriteLogEntriesRequest) []string {
-	if req == nil {
-		return nil
-	}
-	var ps []string
-	for _, e := range req.Entries {
-		ps = append(ps, e.GetTextPayload())
-	}
-	return ps
-}
-
-func TestFromLogEntry(t *testing.T) {
-	res := &mrpb.MonitoredResource{Type: "global"}
-	ts, err := ptypes.TimestampProto(testNow())
-	if err != nil {
-		t.Fatal(err)
-	}
-	logEntry := logpb.LogEntry{
-		LogName:   "projects/PROJECT_ID/logs/LOG_ID",
-		Resource:  res,
-		Payload:   &logpb.LogEntry_TextPayload{"hello"},
-		Timestamp: ts,
-		Severity:  logtypepb.LogSeverity_INFO,
-		InsertId:  "123",
-		HttpRequest: &logtypepb.HttpRequest{
-			RequestMethod:                  "GET",
-			RequestUrl:                     "http:://example.com/path?q=1",
-			RequestSize:                    100,
-			Status:                         200,
-			ResponseSize:                   25,
-			UserAgent:                      "user-agent",
-			RemoteIp:                       "127.0.0.1",
-			Referer:                        "referer",
-			CacheHit:                       true,
-			CacheValidatedWithOriginServer: true,
-		},
-		Labels: map[string]string{
-			"a": "1",
-			"b": "two",
-			"c": "true",
-		},
-	}
-	u, err := url.Parse("http:://example.com/path?q=1")
-	if err != nil {
-		t.Fatal(err)
-	}
-	want := &Entry{
-		LogName:   "projects/PROJECT_ID/logs/LOG_ID",
-		Resource:  res,
-		Timestamp: testNow().In(time.UTC),
-		Severity:  Info,
-		Payload:   "hello",
-		Labels: map[string]string{
-			"a": "1",
-			"b": "two",
-			"c": "true",
-		},
-		InsertID: "123",
-		HTTPRequest: &HTTPRequest{
-			Request: &http.Request{
-				Method: "GET",
-				URL:    u,
-				Header: map[string][]string{
-					"User-Agent": []string{"user-agent"},
-					"Referer":    []string{"referer"},
-				},
-			},
-			RequestSize:                    100,
-			Status:                         200,
-			ResponseSize:                   25,
-			RemoteIP:                       "127.0.0.1",
-			CacheHit:                       true,
-			CacheValidatedWithOriginServer: true,
-		},
-	}
-	got, err := fromLogEntry(&logEntry)
-	if err != nil {
-		t.Fatal(err)
-	}
-	// Test sub-values separately because %+v and %#v do not follow pointers.
-	// TODO(jba): use a differ or pretty-printer.
-	if !reflect.DeepEqual(got.HTTPRequest.Request, want.HTTPRequest.Request) {
-		t.Fatalf("HTTPRequest.Request:\ngot  %+v\nwant %+v", got.HTTPRequest.Request, want.HTTPRequest.Request)
-	}
-	if !reflect.DeepEqual(got.HTTPRequest, want.HTTPRequest) {
-		t.Fatalf("HTTPRequest:\ngot  %+v\nwant %+v", got.HTTPRequest, want.HTTPRequest)
-	}
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("FullEntry:\ngot  %+v\nwant %+v", got, want)
-	}
-}
-
-func TestListLogEntriesRequest(t *testing.T) {
-	for _, test := range []struct {
-		opts       []EntriesOption
-		projectIDs []string
-		filter     string
-		orderBy    string
-	}{
-		// Default is client's project ID, empty filter and orderBy.
-		{nil,
-			[]string{"PROJECT_ID"}, "", ""},
-		{[]EntriesOption{NewestFirst(), Filter("f")},
-			[]string{"PROJECT_ID"}, "f", "timestamp desc"},
-		{[]EntriesOption{ProjectIDs([]string{"foo"})},
-			[]string{"foo"}, "", ""},
-		{[]EntriesOption{NewestFirst(), Filter("f"), ProjectIDs([]string{"foo"})},
-			[]string{"foo"}, "f", "timestamp desc"},
-		{[]EntriesOption{NewestFirst(), Filter("f"), ProjectIDs([]string{"foo"})},
-			[]string{"foo"}, "f", "timestamp desc"},
-		// If there are repeats, last one wins.
-		{[]EntriesOption{NewestFirst(), Filter("no"), ProjectIDs([]string{"foo"}), Filter("f")},
-			[]string{"foo"}, "f", "timestamp desc"},
-	} {
-		got := listLogEntriesRequest("PROJECT_ID", test.opts)
-		want := &logpb.ListLogEntriesRequest{
-			ProjectIds: test.projectIDs,
-			Filter:     test.filter,
-			OrderBy:    test.orderBy,
-		}
-		if !proto.Equal(got, want) {
-			t.Errorf("%v:\ngot  %v\nwant %v", test.opts, got, want)
-		}
-	}
-}
-
 func TestSeverity(t *testing.T) {
-	if got, want := Info.String(), "Info"; got != want {
+	if got, want := logging.Info.String(), "Info"; got != want {
 		t.Errorf("got %q, want %q", got, want)
 	}
-	if got, want := Severity(-99).String(), "-99"; got != want {
+	if got, want := logging.Severity(-99).String(), "-99"; got != want {
 		t.Errorf("got %q, want %q", got, want)
 	}
 }
@@ -563,16 +318,16 @@ func TestSeverity(t *testing.T) {
 func TestParseSeverity(t *testing.T) {
 	for _, test := range []struct {
 		in   string
-		want Severity
+		want logging.Severity
 	}{
-		{"", Default},
-		{"whatever", Default},
-		{"Default", Default},
-		{"ERROR", Error},
-		{"Error", Error},
-		{"error", Error},
+		{"", logging.Default},
+		{"whatever", logging.Default},
+		{"Default", logging.Default},
+		{"ERROR", logging.Error},
+		{"Error", logging.Error},
+		{"error", logging.Error},
 	} {
-		got := ParseSeverity(test.in)
+		got := logging.ParseSeverity(test.in)
 		if got != test.want {
 			t.Errorf("%q: got %s, want %s\n", test.in, got, test.want)
 		}
@@ -591,7 +346,7 @@ loop:
 	}
 	// Try to log something that can't be JSON-marshalled.
 	lg := client.Logger(testLogID)
-	lg.Log(Entry{Payload: func() {}})
+	lg.Log(logging.Entry{Payload: func() {}})
 	// Expect an error.
 	select {
 	case <-errorc: // pass
@@ -617,7 +372,7 @@ func TestPing(t *testing.T) {
 		t.Errorf("project %s, #2: got %v, expected nil", testProjectID, err)
 	}
 	// nonexistent project
-	c := newClient(ctx, testProjectID+"-BAD")
+	c, _ := newClients(ctx, testProjectID+"-BAD")
 	if err := c.Ping(ctx); err == nil {
 		t.Errorf("nonexistent project: want error pinging logging api, got nil")
 	}
@@ -627,7 +382,7 @@ func TestPing(t *testing.T) {
 
 	// Bad creds. We cannot test this with the fake, since it doesn't do auth.
 	if integrationTest {
-		c, err := NewClient(ctx, testProjectID, option.WithTokenSource(badTokenSource{}))
+		c, err := logging.NewClient(ctx, testProjectID, option.WithTokenSource(badTokenSource{}))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -643,52 +398,29 @@ func TestPing(t *testing.T) {
 	}
 }
 
-func TestFromHTTPRequest(t *testing.T) {
-	const testURL = "http:://example.com/path?q=1"
-	u, err := url.Parse(testURL)
-	if err != nil {
-		t.Fatal(err)
-	}
-	req := &HTTPRequest{
-		Request: &http.Request{
-			Method: "GET",
-			URL:    u,
-			Header: map[string][]string{
-				"User-Agent": []string{"user-agent"},
-				"Referer":    []string{"referer"},
-			},
-		},
-		RequestSize:                    100,
-		Status:                         200,
-		ResponseSize:                   25,
-		RemoteIP:                       "127.0.0.1",
-		CacheHit:                       true,
-		CacheValidatedWithOriginServer: true,
-	}
-	got := fromHTTPRequest(req)
-	want := &logtypepb.HttpRequest{
-		RequestMethod:                  "GET",
-		RequestUrl:                     testURL,
-		RequestSize:                    100,
-		Status:                         200,
-		ResponseSize:                   25,
-		UserAgent:                      "user-agent",
-		RemoteIp:                       "127.0.0.1",
-		Referer:                        "referer",
-		CacheHit:                       true,
-		CacheValidatedWithOriginServer: true,
-	}
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("got  %+v\nwant %+v", got, want)
-	}
-}
-
 // deleteLog is used to clean up a log after a test that writes to it.
 func deleteLog(ctx context.Context, logID string) {
-	client.DeleteLog(ctx, logID)
+	aclient.DeleteLog(ctx, logID)
 	// DeleteLog can take some time to happen, so we wait for the log to
 	// disappear. There is no direct way to determine if a log exists, so we
 	// just wait until there are no log entries associated with the ID.
-	filter := fmt.Sprintf(`logName = "%s"`, client.logPath(logID))
+	filter := fmt.Sprintf(`logName = "%s"`, internal.LogPath("projects/"+testProjectID, logID))
 	waitFor(func() bool { return countLogEntries(ctx, filter) == 0 })
+}
+
+// waitFor calls f periodically, blocking until it returns true.
+// It calls log.Fatal after one minute.
+func waitFor(f func() bool) {
+	timeout := time.NewTimer(2 * time.Minute)
+	for {
+		select {
+		case <-time.After(1 * time.Second):
+			if f() {
+				timeout.Stop()
+				return
+			}
+		case <-timeout.C:
+			log.Fatal("timed out")
+		}
+	}
 }

@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package logging_test
+package logadmin_test
 
 import (
 	"fmt"
 
-	"cloud.google.com/go/preview/logging"
+	"cloud.google.com/go/preview/logging/logadmin"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 )
 
 func ExampleClient_Sinks() {
 	ctx := context.Background()
-	client, err := logging.NewClient(ctx, "my-project")
+	client, err := logadmin.NewClient(ctx, "my-project")
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -34,7 +34,7 @@ func ExampleClient_Sinks() {
 
 func ExampleSinkIterator_Next() {
 	ctx := context.Background()
-	client, err := logging.NewClient(ctx, "my-project")
+	client, err := logadmin.NewClient(ctx, "my-project")
 	if err != nil {
 		// TODO: Handle error.
 	}

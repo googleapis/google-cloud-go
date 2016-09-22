@@ -12,41 +12,55 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package logging_test
+package logadmin_test
 
 import (
 	"fmt"
+	"time"
 
-	"cloud.google.com/go/preview/logging"
+	"cloud.google.com/go/preview/logging/logadmin"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 )
 
-func ExampleClient_ResourceDescriptors() {
+func ExampleClient_Entries() {
 	ctx := context.Background()
-	client, err := logging.NewClient(ctx, "my-project")
+	client, err := logadmin.NewClient(ctx, "my-project")
 	if err != nil {
 		// TODO: Handle error.
 	}
-	it := client.ResourceDescriptors(ctx)
+	it := client.Entries(ctx, logadmin.Filter(`logName = "projects/my-project/logs/my-log"`))
 	_ = it // TODO: iterate using Next or iterator.Pager.
 }
 
-func ExampleResourceDescriptorIterator_Next() {
+func ExampleFilter_timestamp() {
+	// This example demonstrates how to list the last 24 hours of log entries.
 	ctx := context.Background()
-	client, err := logging.NewClient(ctx, "my-project")
+	client, err := logadmin.NewClient(ctx, "my-project")
 	if err != nil {
 		// TODO: Handle error.
 	}
-	it := client.ResourceDescriptors(ctx)
+	oneDayAgo := time.Now().Add(-24 * time.Hour)
+	t := oneDayAgo.Format(time.RFC3339) // Logging API wants timestamps in RFC 3339 format.
+	it := client.Entries(ctx, logadmin.Filter(fmt.Sprintf(`timestamp > "%s"`, t)))
+	_ = it // TODO: iterate using Next or iterator.Pager.
+}
+
+func ExampleEntryIterator_Next() {
+	ctx := context.Background()
+	client, err := logadmin.NewClient(ctx, "my-project")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	it := client.Entries(ctx)
 	for {
-		rdesc, err := it.Next()
+		entry, err := it.Next()
 		if err == iterator.Done {
 			break
 		}
 		if err != nil {
 			// TODO: Handle error.
 		}
-		fmt.Println(rdesc)
+		fmt.Println(entry)
 	}
 }
