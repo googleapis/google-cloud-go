@@ -197,6 +197,24 @@ func ExampleSubscription_Pull() {
 	defer it.Stop()
 }
 
+func ExampleSubscription_Pull_options() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	sub := client.Subscription("subName")
+	// This program is expected to process and acknowledge messages
+	// in 5 seconds. If not, Pub/Sub API will assume the message is not
+	// acknowledged.
+	it, err := sub.Pull(ctx, pubsub.MaxExtension(5*time.Second))
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// Ensure that the iterator is closed down cleanly.
+	defer it.Stop()
+}
+
 func ExampleSubscription_ModifyPushConfig() {
 	ctx := context.Background()
 	client, err := pubsub.NewClient(ctx, "project-id")
