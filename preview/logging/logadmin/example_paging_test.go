@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package logging_test
+package logadmin_test
 
 import (
 	"bytes"
@@ -23,12 +23,13 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/preview/logging"
+	"cloud.google.com/go/preview/logging/logadmin"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 )
 
 var (
-	client    *logging.Client
+	client    *logadmin.Client
 	projectID = flag.String("project-id", "", "ID of the project to use")
 )
 
@@ -43,7 +44,7 @@ func ExampleClient_Entries_pagination() {
 		log.Fatal("-project-id missing")
 	}
 	var err error
-	client, err = logging.NewClient(ctx, *projectID)
+	client, err = logadmin.NewClient(ctx, *projectID)
 	if err != nil {
 		log.Fatalf("creating logging client: %v", err)
 	}
@@ -67,7 +68,7 @@ var pageTemplate = template.Must(template.New("").Parse(`
 func handleEntries(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	filter := fmt.Sprintf(`logName = "projects/%s/logs/testlog"`, *projectID)
-	it := client.Entries(ctx, logging.Filter(filter))
+	it := client.Entries(ctx, logadmin.Filter(filter))
 	var entries []*logging.Entry
 	nextTok, err := iterator.NewPager(it, 5, r.URL.Query().Get("pageToken")).NextPage(&entries)
 	if err != nil {

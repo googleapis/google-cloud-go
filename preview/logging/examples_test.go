@@ -63,18 +63,6 @@ func ExampleNewClient_errorFunc() {
 	}
 }
 
-func ExampleClient_DeleteLog() {
-	ctx := context.Background()
-	client, err := logging.NewClient(ctx, "my-project")
-	if err != nil {
-		// TODO: Handle error.
-	}
-	err = client.DeleteLog(ctx, "my-log")
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
 func ExampleClient_Logger() {
 	ctx := context.Background()
 	client, err := logging.NewClient(ctx, "my-project")
@@ -128,120 +116,6 @@ func ExampleLogger_StandardLogger() {
 	lg := client.Logger("my-log")
 	slg := lg.StandardLogger(logging.Info)
 	slg.Println("an informative message")
-}
-
-func ExampleClient_CreateMetric() {
-	ctx := context.Background()
-	client, err := logging.NewClient(ctx, "my-project")
-	if err != nil {
-		// TODO: Handle error.
-	}
-	err = client.CreateMetric(ctx, &logging.Metric{
-		ID:          "severe-errors",
-		Description: "entries at ERROR or higher severities",
-		Filter:      "severity >= ERROR",
-	})
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_DeleteMetric() {
-	ctx := context.Background()
-	client, err := logging.NewClient(ctx, "my-project")
-	if err != nil {
-		// TODO: Handle error.
-	}
-	if err := client.DeleteMetric(ctx, "severe-errors"); err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_Metric() {
-	ctx := context.Background()
-	client, err := logging.NewClient(ctx, "my-project")
-	if err != nil {
-		// TODO: Handle error.
-	}
-	m, err := client.Metric(ctx, "severe-errors")
-	if err != nil {
-		// TODO: Handle error.
-	}
-	fmt.Println(m)
-}
-
-func ExampleClient_UpdateMetric() {
-	ctx := context.Background()
-	client, err := logging.NewClient(ctx, "my-project")
-	if err != nil {
-		// TODO: Handle error.
-	}
-	err = client.UpdateMetric(ctx, &logging.Metric{
-		ID:          "severe-errors",
-		Description: "entries at high severities",
-		Filter:      "severity > ERROR",
-	})
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_CreateSink() {
-	ctx := context.Background()
-	client, err := logging.NewClient(ctx, "my-project")
-	if err != nil {
-		// TODO: Handle error.
-	}
-	sink, err := client.CreateSink(ctx, &logging.Sink{
-		ID:          "severe-errors-to-gcs",
-		Destination: "storage.googleapis.com/my-bucket",
-		Filter:      "severity >= ERROR",
-	})
-	if err != nil {
-		// TODO: Handle error.
-	}
-	fmt.Println(sink)
-}
-
-func ExampleClient_DeleteSink() {
-	ctx := context.Background()
-	client, err := logging.NewClient(ctx, "my-project")
-	if err != nil {
-		// TODO: Handle error.
-	}
-	if err := client.DeleteSink(ctx, "severe-errors-to-gcs"); err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_Sink() {
-	ctx := context.Background()
-	client, err := logging.NewClient(ctx, "my-project")
-	if err != nil {
-		// TODO: Handle error.
-	}
-	s, err := client.Sink(ctx, "severe-errors-to-gcs")
-	if err != nil {
-		// TODO: Handle error.
-	}
-	fmt.Println(s)
-}
-
-func ExampleClient_UpdateSink() {
-	ctx := context.Background()
-	client, err := logging.NewClient(ctx, "my-project")
-	if err != nil {
-		// TODO: Handle error.
-	}
-	sink, err := client.UpdateSink(ctx, &logging.Sink{
-		ID:          "severe-errors-to-gcs",
-		Destination: "storage.googleapis.com/my-other-bucket",
-		Filter:      "severity >= ERROR",
-	})
-	if err != nil {
-		// TODO: Handle error.
-	}
-	fmt.Println(sink)
 }
 
 func ExampleParseSeverity() {
