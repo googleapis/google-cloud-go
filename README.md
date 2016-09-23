@@ -100,7 +100,7 @@ client, err := storage.NewClient(ctx, option.WithTokenSource(tokenSource))
 - [Go client documentation](https://godoc.org/cloud.google.com/go/datastore)
 - [Complete sample program](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/datastore/tasks)
 
-### Preview
+### Example Usage
 
 First create a `datastore.Client` to use throughout your application:
 
@@ -139,7 +139,7 @@ if _, err := client.PutMulti(ctx, keys, posts); err != nil {
 - [Go client documentation](https://godoc.org/cloud.google.com/go/storage)
 - [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/storage)
 
-### Preview
+### Example Usage
 
 First create a `storage.Client` to use throughout your application:
 
@@ -170,7 +170,7 @@ if err != nil {
 - [Go client documentation](https://godoc.org/cloud.google.com/go/pubsub)
 - [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/pubsub)
 
-### Preview
+### Example Usage
 
 First create a `pubsub.Client` to use throughout your application:
 
@@ -219,6 +219,45 @@ for i := 0; i < N; i++ {
 - [API documentation][cloud-bigquery-docs]
 - [Go client documentation][cloud-bigquery-ref]
 - [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/bigquery)
+
+### Example Usage
+
+First create a `bigquery.Client` to use throughout your application:
+```go
+c, err := bigquery.NewClient(ctx, "my-project-ID")
+if err != nil {
+    // TODO: Handle error.
+}
+```
+Then use that client to interact with the API:
+```go
+// Construct a query.
+q := c.Query(`
+    SELECT year, SUM(number)
+    FROM [bigquery-public-data:usa_names.usa_1910_2013]
+    WHERE name = "William"
+    GROUP BY year
+    ORDER BY year
+`)
+// Execute the query.
+it, err := q.Read(ctx)
+if err != nil {
+    // TODO: Handle error.
+}
+// Iterate through the results.
+for it.Next(ctx) {
+    // Retrieve the current row into a list of values.
+    var values bigquery.ValueList
+    if err := it.Get(&values); err != nil {
+        // TODO: Handle error.
+    }
+    fmt.Println(values)
+}
+if it.Err() != nil {
+    // TODO: Handle it.Err()
+}
+```
+
 
 ## Stackdriver Logging [![GoDoc](https://godoc.org/cloud.google.com/go/bigquery?status.svg)](https://godoc.org/cloud.google.com/go/logging)
 
