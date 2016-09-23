@@ -16,6 +16,7 @@ package pubsub
 
 import (
 	"encoding/base64"
+	"time"
 
 	raw "google.golang.org/api/pubsub/v1"
 )
@@ -37,7 +38,10 @@ type Message struct {
 	// ackID is the identifier to acknowledge this message.
 	ackID string
 
-	// TODO(mcgreevy): add publish time.
+	// The time at which the message was published.
+	// This is populated by the server for Messages obtained from a subscription.
+	// This field is read-only.
+	PublishTime time.Time
 
 	calledDone bool
 
@@ -53,11 +57,16 @@ func toMessage(resp *raw.ReceivedMessage) (*Message, error) {
 	if err != nil {
 		return nil, err
 	}
+	pubTime, err := time.Parse(time.RFC3339, resp.Message.PublishTime)
+	if err != nil {
+		return nil, err
+	}
 	return &Message{
-		ackID:      resp.AckId,
-		Data:       data,
-		Attributes: resp.Message.Attributes,
-		ID:         resp.Message.MessageId,
+		ackID:       resp.AckId,
+		Data:        data,
+		Attributes:  resp.Message.Attributes,
+		ID:          resp.Message.MessageId,
+		PublishTime: pubTime,
 	}, nil
 }
 
