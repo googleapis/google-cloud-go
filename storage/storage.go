@@ -12,10 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package storage contains a Google Cloud Storage client.
-//
-// This package is experimental and may make backwards-incompatible changes.
-package storage // import "cloud.google.com/go/storage"
+package storage
 
 import (
 	"bytes"
