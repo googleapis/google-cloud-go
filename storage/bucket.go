@@ -116,6 +116,10 @@ type BucketAttrs struct {
 
 	// Created is the creation time of the bucket.
 	Created time.Time
+
+	// VersioningEnabled reports whether this bucket has versioning enabled.
+	// This field is read-only.
+	VersioningEnabled bool
 }
 
 func newBucket(b *raw.Bucket) *BucketAttrs {
@@ -123,11 +127,12 @@ func newBucket(b *raw.Bucket) *BucketAttrs {
 		return nil
 	}
 	bucket := &BucketAttrs{
-		Name:           b.Name,
-		Location:       b.Location,
-		MetaGeneration: b.Metageneration,
-		StorageClass:   b.StorageClass,
-		Created:        convertTime(b.TimeCreated),
+		Name:              b.Name,
+		Location:          b.Location,
+		MetaGeneration:    b.Metageneration,
+		StorageClass:      b.StorageClass,
+		Created:           convertTime(b.TimeCreated),
+		VersioningEnabled: b.Versioning != nil && b.Versioning.Enabled,
 	}
 	acl := make([]ACLRule, len(b.Acl))
 	for i, rule := range b.Acl {
