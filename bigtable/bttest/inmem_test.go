@@ -42,12 +42,10 @@ func TestConcurrentMutationsReadModifyAndGC(t *testing.T) {
 	tbl := s.tables[name]
 	req := &btapb.ModifyColumnFamiliesRequest{
 		Name: name,
-		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{
-			{
-				Id:  "cf",
-				Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{Create: &btapb.ColumnFamily{}},
-			},
-		},
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+			Id:  "cf",
+			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{&btapb.ColumnFamily{}},
+		}},
 	}
 	_, err := s.ModifyColumnFamilies(ctx, req)
 	if err != nil {
@@ -55,13 +53,12 @@ func TestConcurrentMutationsReadModifyAndGC(t *testing.T) {
 	}
 	req = &btapb.ModifyColumnFamiliesRequest{
 		Name: name,
-		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{
-			{
-				Id: "cf",
-				Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Update{
-					Update: &btapb.ColumnFamily{GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 1}}}},
-			},
-		},
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+			Id: "cf",
+			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Update{&btapb.ColumnFamily{
+				GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{1}},
+			}},
+		}},
 	}
 	if _, err := s.ModifyColumnFamilies(ctx, req); err != nil {
 		t.Fatal(err)
@@ -70,30 +67,24 @@ func TestConcurrentMutationsReadModifyAndGC(t *testing.T) {
 	var wg sync.WaitGroup
 	var ts int64
 	ms := func() []*btpb.Mutation {
-		return []*btpb.Mutation{
-			{
-				Mutation: &btpb.Mutation_SetCell_{
-					SetCell: &btpb.Mutation_SetCell{
-						FamilyName:      "cf",
-						ColumnQualifier: []byte(`col`),
-						TimestampMicros: atomic.AddInt64(&ts, 1000),
-					},
-				},
-			},
-		}
+		return []*btpb.Mutation{{
+			Mutation: &btpb.Mutation_SetCell_{&btpb.Mutation_SetCell{
+				FamilyName:      "cf",
+				ColumnQualifier: []byte(`col`),
+				TimestampMicros: atomic.AddInt64(&ts, 1000),
+			}},
+		}}
 	}
 
 	rmw := func() *btpb.ReadModifyWriteRowRequest {
 		return &btpb.ReadModifyWriteRowRequest{
 			TableName: name,
 			RowKey:    []byte(fmt.Sprint(rand.Intn(100))),
-			Rules: []*btpb.ReadModifyWriteRule{
-				{
-					FamilyName:      "cf",
-					ColumnQualifier: []byte("col"),
-					Rule:            &btpb.ReadModifyWriteRule_IncrementAmount{IncrementAmount: 1},
-				},
-			},
+			Rules: []*btpb.ReadModifyWriteRule{{
+				FamilyName:      "cf",
+				ColumnQualifier: []byte("col"),
+				Rule:            &btpb.ReadModifyWriteRule_IncrementAmount{1},
+			}},
 		}
 	}
 	for i := 0; i < 100; i++ {
@@ -146,8 +137,8 @@ func TestCreateTableWithFamily(t *testing.T) {
 	ctx := context.Background()
 	newTbl := btapb.Table{
 		ColumnFamilies: map[string]*btapb.ColumnFamily{
-			"cf1": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 123}}},
-			"cf2": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 456}}},
+			"cf1": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{123}}},
+			"cf2": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{456}}},
 		},
 	}
 	cTbl, err := s.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "cluster", TableId: "t", Table: &newTbl})
