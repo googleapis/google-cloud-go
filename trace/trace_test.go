@@ -192,6 +192,7 @@ func makeRequests(t *testing.T, req *http.Request, traceClient *Client, rt *fake
 }
 
 func TestTrace(t *testing.T) {
+	t.Parallel()
 	testTrace(t, false)
 }
 
@@ -419,6 +420,7 @@ func TestSample(t *testing.T) {
 }
 
 func TestSampling(t *testing.T) {
+	t.Parallel()
 	// This scope tests sampling in a larger context, with real time and randomness.
 	wg := sync.WaitGroup{}
 	type testCase struct {
@@ -436,6 +438,7 @@ func TestSampling(t *testing.T) {
 		go func(test testCase) {
 			rt := newFakeRoundTripper()
 			traceClient := newTestClient(rt)
+			traceClient.bundler.BundleByteLimit = 1
 			p, err := NewLimitedSampler(test.rate, test.maxqps)
 			if err != nil {
 				t.Fatalf("NewLimitedSampler: %v", err)
@@ -465,4 +468,48 @@ func TestSampling(t *testing.T) {
 		}(test)
 	}
 	wg.Wait()
+}
+
+func TestBundling(t *testing.T) {
+	t.Parallel()
+	rt := newFakeRoundTripper()
+	traceClient := newTestClient(rt)
+	traceClient.bundler.DelayThreshold = time.Second / 2
+	traceClient.bundler.BundleCountThreshold = 10
+	p, err := NewLimitedSampler(1, 99) // sample every request.
+	if err != nil {
+		t.Fatalf("NewLimitedSampler: %v", err)
+	}
+	traceClient.SetSamplingPolicy(p)
+
+	for i := 0; i < 35; i++ {
+		go func() {
+			req, err := http.NewRequest("GET", "http://example.com/foo", nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			span := traceClient.SpanFromRequest(req)
+			span.Finish()
+		}()
+	}
+
+	// Read the first three bundles.
+	<-rt.reqc
+	<-rt.reqc
+	<-rt.reqc
+
+	// Test that the fourth bundle isn't sent early.
+	select {
+	case <-rt.reqc:
+		t.Errorf("bundle sent too early")
+	case <-time.After(time.Second / 4):
+		<-rt.reqc
+	}
+
+	// Test that there aren't extra bundles.
+	select {
+	case <-rt.reqc:
+		t.Errorf("too many bundles sent")
+	case <-time.After(time.Second):
+	}
 }
