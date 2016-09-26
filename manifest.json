@@ -1,0 +1,95 @@
+{
+  "lang": "go",
+  "friendlyLang": "Go",
+  "moduleName": "google-cloud-go",
+  "markdown": "javascript",
+  "content": "json",
+  "home": "home.html",
+  "titleDelimiter": " » ",
+  "defaultModule": "google-cloud",
+  "modules": [
+    {
+      "id": "google-cloud",
+      "name": "google-cloud",
+      "defaultService": "google-cloud",
+      "versions": [
+        "master"
+      ]
+    },
+    {
+      "id": "bigquery",
+      "name": "@google-cloud/bigquery",
+      "defaultService": "bigquery",
+      "versions": [
+        "master"
+      ]
+    },
+    {
+      "id": "bigtable",
+      "name": "@google-cloud/bigtable",
+      "defaultService": "bigtable",
+      "versions": [
+        "0.3.0",
+        "0.2.1",
+        "0.2.0",
+        "0.1.1",
+        "master"
+      ]
+    },
+    {
+      "id": "datastore",
+      "name": "@google-cloud/datastore",
+      "defaultService": "datastore",
+      "versions": [
+        "0.3.1",
+        "0.3.0",
+        "0.2.0",
+        "0.1.1",
+        "master"
+      ]
+    },
+    {
+      "id": "logging",
+      "name": "@google-cloud/logging",
+      "defaultService": "logging",
+      "versions": [
+        "0.2.0",
+        "0.1.1",
+        "master"
+      ]
+    },
+    {
+      "id": "pubsub",
+      "name": "@google-cloud/pubsub",
+      "defaultService": "pubsub",
+      "versions": [
+        "0.2.0",
+        "0.1.1",
+        "master"
+      ]
+    },
+    {
+      "id": "storage",
+      "name": "@google-cloud/storage",
+      "defaultService": "storage",
+      "versions": [
+        "0.1.1",
+        "master"
+      ]
+    },
+    {
+      "id": "vision",
+      "name": "@google-cloud/vision",
+      "defaultService": "vision",
+      "versions": [
+        "0.2.0",
+        "0.1.1",
+        "master"
+      ]
+    }
+  ],
+  "package": {
+    "title": "npm",
+    "href": "https://www.npmjs.com/package/gcloud"
+  }
+}

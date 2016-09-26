@@ -1,0 +1,160 @@
+<section class="hero-banner">
+  <div class="container clearfix">
+    <div class="quote-box">
+      <h1>google-cloud</h1>
+      <p>Google Cloud Client Library for Go
+      - an idiomatic, intuitive, and natural way for Go developers to
+      integrate with Google Cloud Platform services, like Cloud Datastore
+      and Cloud Storage.</p>
+    </div>
+
+    <div class="quote-box--supplementary">
+      <pre class="skip-highlight"><code class="subtle--blue">$</code> npm install <code class="subtle--blue">--save</code> <strong>google-cloud</strong></pre>
+    </div>
+  </div><!-- end of .container -->
+</section><!-- end of .hero-banner -->
+
+<section class="block featuring">
+  <div class="container">
+    <ul class="featuring-links">
+      <li>
+        <a href="#/docs/{{home.module.name}}/{{home.module.version}}/{{home.module.service}}" title="google-cloud docs" class="btn btn-docs">
+          <img src="src/images/icon-lang-go-cta.svg" alt="Go icon" />
+          Read the Docs
+        </a>
+      </li>
+      <li>
+        <a href="https://github.com/GoogleCloudPlatform/google-cloud-go" title="google-cloud on GitHub" class="ext-link">
+          <img src="src/images/icon-link-github.svg" alt="GitHub icon" />
+          GitHub
+        </a>
+      </li>
+      <li>
+        <a href="https://github.com/GoogleCloudPlatform/google-cloud-go/issues" title="google-cloud issues on Github" class="ext-link">
+          <img src="src/images/icon-link-github.svg" alt="GitHub icon" />
+          Issues
+        </a>
+      </li>
+      <li>
+        <a href="http://stackoverflow.com/questions/tagged/google-cloud" title="google-cloud on StackOverflow" class="ext-link">
+          <img src="src/images/icon-link-stackoverflow.svg" alt="StackOverflow icon" />
+          StackOverflow
+        </a>
+      </li>
+    </ul>
+  </div><!-- end of .container -->
+</section><!-- end of .featuring -->
+
+<section class="block about">
+  <div class="container clearfix">
+    <div class="quote-box">
+      <h3 class="block-title">What is it?</h3>
+
+      <p><code>google-cloud</code> is a client library for accessing Google
+      Cloud Platform services that significantly reduces the boilerplate
+      code you have to write. The library provides high-level API
+      abstractions so they're easier to understand. It embraces
+      idioms of Go, works well with the standard library, and
+      integrates better with your codebase.
+      All this means you spend more time creating code that matters
+      to you.</p>
+
+      <p><code>google-cloud</code> is configured to access Google Cloud Platform
+      services and authenticate (OAuth 2.0) automatically on your behalf.
+      With a one-line install and a private key, you are up and ready
+      to go. Better yet, if you are running on a Google Compute Engine
+      instance, the one-line install is enough!</p>
+
+    </div>
+
+    <div class="quote-box--supplementary">
+      <h4>Example: Upload a file to Cloud Storage</h4>
+
+      <div class="code-sample-tabs" ng-init="selected = 'compute engine'">
+        <a ng-click="selected = 'compute engine'"
+           ng-class="{selected: selected == 'compute engine'}"
+           >Run in Compute Engine</a>
+        <a ng-click="selected = 'elsewhere'"
+           ng-class="{selected: selected == 'elsewhere'}"
+           >Run elsewhere</a>
+      </div>
+
+      <div hljs hlsj-language="js" ng-show="selected == 'compute engine'">
+// Authentication is automatic
+// inside Google Compute Engine.
+var gcloud = require('google-cloud')({
+  projectId: 'grape-spaceship-123'
+});
+
+var gcs = gcloud.storage();
+
+var backups = gcs.bucket('backups');
+backups.upload('db.zip', function(err, file) {
+  // file.createReadStream();
+  // file.getMetadata();
+  // ...
+});</div>
+
+      <div hljs hljs-language="js" ng-show="selected == 'elsewhere'">
+var gcloud = require('google-cloud')({
+  projectId: 'grape-spaceship-123',
+  // Specify a path to a keyfile.
+  keyFilename: '/path/to/keyfile.json'
+});
+
+var gcs = gcloud.storage();
+
+var backups = gcs.bucket('backups');
+backups.upload('db.zip', function(err, file) {
+  // file.createReadStream();
+  // file.getMetadata();
+  // ...
+});</div>
+
+    </div>
+  </div><!-- end of .container -->
+</section><!-- end of .featuring -->
+
+<section class="block examples">
+  <div class="container clearfix">
+    <h3 class="block-title">Examples</h3>
+
+    <ul>
+      <li>
+        <a href="https://cloud.google.com/go">Getting Started with Compute
+        Engine and Go</a> (<em><a href="https://github.com/GoogleCloudPlatform/nodejs-getting-started">source</a></em>) - A tutorial for building a web application on Google Cloud Platform.
+      </li>
+      <li>
+        <a href="http://gcloud-todos.appspot.com">TodoMVC</a> (<em><a href="https://github.com/GoogleCloudPlatform/gcloud-node-todos">source</a></em>) - TodoMVC backend using google-cloud and Express.
+      </li>
+      <li>
+        <a href="https://github.com/stephenplusplus/gcloud-kvstore">gcloud-kvstore</a> - Use a google-cloud dataset as a Key/Value store.
+      </li>
+      <li>
+        <a href="http://gitnpm.com/">gitnpm</a> (<em><a href="https://github.com/stephenplusplus/gitnpm">source</a></em>) - Easily lookup an npm package's GitHub repo using google-cloud and Google App Engine.
+      </li>
+      <li>
+        <a href="https://github.com/sebelga/gstore-node">gstore-node</a> - Google Datastore Entities Modeling library.
+      </li>
+      <li>
+        <a href="https://github.com/sebelga/gstore-api">gstore-api</a> - REST API builder for Google Datastore Entities.
+      </li>
+    </ul>
+  </div>
+</section>
+
+ <section class="block">
+    <div class="container clearfix">
+    <h3 class="block-title">FAQ</h3>
+
+    <h4>What is the relationship between the <code>google-cloud</code> package
+    and the <code>gcloud</code> command-line tool?</h4>
+    <p>Both the <code>gcloud</code> command-line tool and
+    <code>google-cloud</code> package are a part of the Google Cloud SDK: a collection
+    of tools and libraries that enable you to easily create and manage
+    resources on the Google Cloud Platform. The <code>gcloud</code> command-line
+    tool can be used to manage both your development workflow and your
+    Google Cloud Platform resources while the <code>google-cloud</code> package is the
+    Google Cloud Client Library for Go.</p>
+    </div>
+</section> <!-- end of FAQ -->
