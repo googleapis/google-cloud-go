@@ -550,12 +550,21 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		res.Body.Close()
 		return nil, errors.New("storage: partial request not satisfied")
 	}
-	clHeader := res.Header.Get("X-Goog-Stored-Content-Length")
-	cl, err := strconv.ParseInt(clHeader, 10, 64)
-	if err != nil {
-		res.Body.Close()
-		return nil, fmt.Errorf("storage: can't parse content length %q", clHeader)
+
+	var size int64 // total size of object, even if a range was requested.
+	if res.StatusCode == http.StatusPartialContent {
+		cr := strings.TrimSpace(res.Header.Get("Content-Range"))
+		if !strings.HasPrefix(cr, "bytes ") || !strings.Contains(cr, "/") {
+			return nil, fmt.Errorf("storage: invalid Content-Range %q", cr)
+		}
+		size, err = strconv.ParseInt(cr[strings.LastIndex(cr, "/")+1:], 10, 64)
+		if err != nil {
+			return nil, fmt.Errorf("storage: invalid Content-Range %q", cr)
+		}
+	} else {
+		size = res.ContentLength
 	}
+
 	remain := res.ContentLength
 	body := res.Body
 	if length == 0 {
@@ -563,9 +572,10 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		body.Close()
 		body = emptyBody
 	}
+
 	return &Reader{
 		body:        body,
-		size:        cl,
+		size:        size,
 		remain:      remain,
 		contentType: res.Header.Get("Content-Type"),
 	}, nil
