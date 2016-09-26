@@ -275,10 +275,11 @@ func (r RowRange) String() string {
 }
 
 func (r RowRange) proto() *btpb.RowSet {
-	var rr *btpb.RowRange
-	rr = &btpb.RowRange{StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte(r.start)}}
+	rr := &btpb.RowRange{
+		StartKey: &btpb.RowRange_StartKeyClosed{[]byte(r.start)},
+	}
 	if !r.Unbounded() {
-		rr.EndKey = &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte(r.limit)}
+		rr.EndKey = &btpb.RowRange_EndKeyOpen{[]byte(r.limit)}
 	}
 	return &btpb.RowSet{RowRanges: []*btpb.RowRange{rr}}
 }

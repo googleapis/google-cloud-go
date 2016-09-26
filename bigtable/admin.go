@@ -113,12 +113,10 @@ func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family str
 	prefix := ac.instancePrefix()
 	req := &btapb.ModifyColumnFamiliesRequest{
 		Name: prefix + "/tables/" + table,
-		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{
-			{
-				Id:  family,
-				Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{Create: &btapb.ColumnFamily{}},
-			},
-		},
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+			Id:  family,
+			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{&btapb.ColumnFamily{}},
+		}},
 	}
 	_, err := ac.tClient.ModifyColumnFamilies(ctx, req)
 	return err
@@ -141,12 +139,10 @@ func (ac *AdminClient) DeleteColumnFamily(ctx context.Context, table, family str
 	prefix := ac.instancePrefix()
 	req := &btapb.ModifyColumnFamiliesRequest{
 		Name: prefix + "/tables/" + table,
-		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{
-			{
-				Id:  family,
-				Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Drop{Drop: true},
-			},
-		},
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+			Id:  family,
+			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Drop{true},
+		}},
 	}
 	_, err := ac.tClient.ModifyColumnFamilies(ctx, req)
 	return err
@@ -183,12 +179,10 @@ func (ac *AdminClient) SetGCPolicy(ctx context.Context, table, family string, po
 	prefix := ac.instancePrefix()
 	req := &btapb.ModifyColumnFamiliesRequest{
 		Name: prefix + "/tables/" + table,
-		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{
-			{
-				Id:  family,
-				Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Update{Update: &btapb.ColumnFamily{GcRule: policy.proto()}},
-			},
-		},
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+			Id:  family,
+			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Update{&btapb.ColumnFamily{GcRule: policy.proto()}},
+		}},
 	}
 	_, err := ac.tClient.ModifyColumnFamilies(ctx, req)
 	return err
