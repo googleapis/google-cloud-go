@@ -18,7 +18,7 @@
   <div class="container">
     <ul class="featuring-links">
       <li>
-        <a href="#/docs/{{home.module.name}}/{{home.module.version}}/{{home.module.service}}" title="google-cloud docs" class="btn btn-docs">
+        <a href="https://godoc.org/cloud.google.com/go" title="google-cloud-go docs" class="btn btn-docs">
           <img src="src/images/godoc.ico" alt="Godoc icon" />
           Read the Docs
         </a>
@@ -61,53 +61,8 @@
       <p>The clients are configured to access Google Cloud Platform
       services and authenticate (OAuth 2.0) automatically on your behalf.
       With the standard <code>go get</code> and a private key, you are up and ready
-      to go. 
+      to go.
     </div>
 
-    <div class="quote-box--supplementary">
-      <h4>Example: Upload a file to Cloud Storage</h4>
-
-      <div class="code-sample-tabs" ng-init="selected = 'compute engine'">
-        <a ng-click="selected = 'compute engine'"
-           ng-class="{selected: selected == 'compute engine'}"
-           >Run in Compute Engine</a>
-        <a ng-click="selected = 'elsewhere'"
-           ng-class="{selected: selected == 'elsewhere'}"
-           >Run elsewhere</a>
-      </div>
-
-
-    </div>
   </div><!-- end of .container -->
 </section><!-- end of .featuring -->
-
-<section class="block examples">
-  <div class="container clearfix">
-    <h3 class="block-title">Examples</h3>
-
-    <ul>
-      <li>
-        <a href="https://cloud.google.com/go/tutorials">Go Tutorials for Google
-        Cloud Platform</a>
-        (<em><a href="https://github.com/GoogleCloudPlatform/golang-samples">source</a></em>)
-        - Tutorials for using the client libraries on Google Cloud Platform.
-      </li>
-    </ul>
-  </div>
-</section>
-
- <section class="block">
-    <div class="container clearfix">
-    <h3 class="block-title">FAQ</h3>
-
-    <h4>What is the relationship between the <code>google-cloud</code> package
-    and the <code>gcloud</code> command-line tool?</h4>
-    <p>Both the <code>gcloud</code> command-line tool and
-    <code>google-cloud</code> package are a part of the Google Cloud SDK: a collection
-    of tools and libraries that enable you to easily create and manage
-    resources on the Google Cloud Platform. The <code>gcloud</code> command-line
-    tool can be used to manage both your development workflow and your
-    Google Cloud Platform resources while the <code>google-cloud</code> package is the
-    Google Cloud Client Library for Go.</p>
-    </div>
-</section> <!-- end of FAQ -->
