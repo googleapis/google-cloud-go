@@ -25,7 +25,7 @@ import (
 type Message struct {
 	// ID identifies this message.
 	// This ID is assigned by the server and is populated for Messages obtained from a subscription.
-	// It is otherwise ignored.
+	// This field is read-only.
 	ID string
 
 	// Data is the actual data in the message.
