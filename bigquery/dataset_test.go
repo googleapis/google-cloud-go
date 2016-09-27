@@ -184,11 +184,12 @@ func (df *listDatasetsFake) listDatasets(_ context.Context, projectID string, pa
 
 func TestDatasets(t *testing.T) {
 	service := &listDatasetsFake{projectID: "p"}
+	client := &Client{service: service}
 	datasets := []*Dataset{
-		{"p", "a", service},
-		{"p", "b", service},
-		{"p", "hidden", service},
-		{"p", "c", service},
+		{"p", "a", client},
+		{"p", "b", client},
+		{"p", "hidden", client},
+		{"p", "c", client},
 	}
 	service.datasets = datasets
 	service.hidden = map[*Dataset]bool{datasets[2]: true}

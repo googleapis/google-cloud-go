@@ -43,6 +43,11 @@ func defaultQueryJob() *bq.Job {
 }
 
 func TestQuery(t *testing.T) {
+	s := &testService{}
+	c := &Client{
+		projectID: "project-id",
+		service:   s,
+	}
 	testCases := []struct {
 		dst     *Table
 		src     *Query
@@ -50,12 +55,12 @@ func TestQuery(t *testing.T) {
 		want    *bq.Job
 	}{
 		{
-			dst:  defaultTable(nil),
+			dst:  c.Dataset("dataset-id").Table("table-id"),
 			src:  defaultQuery,
 			want: defaultQueryJob(),
 		},
 		{
-			dst: defaultTable(nil),
+			dst: c.Dataset("dataset-id").Table("table-id"),
 			src: &Query{
 				Q: "query string",
 			},
@@ -90,7 +95,7 @@ func TestQuery(t *testing.T) {
 			}(),
 		},
 		{
-			dst:     defaultTable(nil),
+			dst:     c.Dataset("dataset-id").Table("table-id"),
 			src:     defaultQuery,
 			options: []Option{DisableQueryCache()},
 			want: func() *bq.Job {
@@ -101,7 +106,7 @@ func TestQuery(t *testing.T) {
 			}(),
 		},
 		{
-			dst:     defaultTable(nil),
+			dst:     c.Dataset("dataset-id").Table("table-id"),
 			src:     defaultQuery,
 			options: []Option{AllowLargeResults()},
 			want: func() *bq.Job {
@@ -111,7 +116,7 @@ func TestQuery(t *testing.T) {
 			}(),
 		},
 		{
-			dst:     defaultTable(nil),
+			dst:     c.Dataset("dataset-id").Table("table-id"),
 			src:     defaultQuery,
 			options: []Option{DisableFlattenedResults()},
 			want: func() *bq.Job {
@@ -123,7 +128,7 @@ func TestQuery(t *testing.T) {
 			}(),
 		},
 		{
-			dst:     defaultTable(nil),
+			dst:     c.Dataset("dataset-id").Table("table-id"),
 			src:     defaultQuery,
 			options: []Option{JobPriority("low")},
 			want: func() *bq.Job {
@@ -133,7 +138,7 @@ func TestQuery(t *testing.T) {
 			}(),
 		},
 		{
-			dst:     defaultTable(nil),
+			dst:     c.Dataset("dataset-id").Table("table-id"),
 			src:     defaultQuery,
 			options: []Option{MaxBillingTier(3), MaxBytesBilled(5)},
 			want: func() *bq.Job {
@@ -145,13 +150,13 @@ func TestQuery(t *testing.T) {
 			}(),
 		},
 		{
-			dst:     defaultTable(nil),
+			dst:     c.Dataset("dataset-id").Table("table-id"),
 			src:     defaultQuery,
 			options: []Option{MaxBytesBilled(-1)},
 			want:    defaultQueryJob(),
 		},
 		{
-			dst:     defaultTable(nil),
+			dst:     c.Dataset("dataset-id").Table("table-id"),
 			src:     defaultQuery,
 			options: []Option{QueryUseStandardSQL()},
 			want: func() *bq.Job {
@@ -162,7 +167,7 @@ func TestQuery(t *testing.T) {
 			}(),
 		},
 		{
-			dst: defaultTable(nil),
+			dst: c.Dataset("dataset-id").Table("table-id"),
 			src: &Query{
 				Q: "query string",
 				TableDefinitions: map[string]ExternalData{
@@ -215,10 +220,6 @@ func TestQuery(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		s := &testService{}
-		c := &Client{
-			service: s,
-		}
 		if _, err := c.Copy(context.Background(), tc.dst, tc.src, tc.options...); err != nil {
 			t.Errorf("err calling query: %v", err)
 			continue

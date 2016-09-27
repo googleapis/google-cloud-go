@@ -65,7 +65,9 @@ func bqNestedFieldSchema() *bq.TableFieldSchema {
 	}
 }
 
-func TestLoad(t *testing.T) {
+func TestLoadWithOptions(t *testing.T) {
+	c := &Client{projectID: "project-id"}
+
 	testCases := []struct {
 		dst     *Table
 		src     *GCSReference
@@ -73,13 +75,8 @@ func TestLoad(t *testing.T) {
 		want    *bq.Job
 	}{
 		{
-			dst:  defaultTable(nil),
-			src:  defaultGCS(),
-			want: defaultLoadJob(),
-		},
-		{ // old-style options relating to GCS data.
-			dst: defaultTable(nil),
-			src: defaultGCS(),
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: c.NewGCSReference("uri"),
 			options: []Option{
 				MaxBadRecords(1),
 				AllowJaggedRows(),
@@ -95,33 +92,10 @@ func TestLoad(t *testing.T) {
 				return j
 			}(),
 		},
-		{ // same as above, but with the options set in GCSReference fields.
-			dst: defaultTable(nil),
-			src: func() *GCSReference {
-				g := defaultGCS()
-				g.MaxBadRecords = 1
-				g.AllowJaggedRows = true
-				g.AllowQuotedNewlines = true
-				g.IgnoreUnknownValues = true
-				return g
-			}(),
-			want: func() *bq.Job {
-				j := defaultLoadJob()
-				j.Configuration.Load.MaxBadRecords = 1
-				j.Configuration.Load.AllowJaggedRows = true
-				j.Configuration.Load.AllowQuotedNewlines = true
-				j.Configuration.Load.IgnoreUnknownValues = true
-				return j
-			}(),
-		},
 		{
-			dst: &Table{
-				ProjectID: "project-id",
-				DatasetID: "dataset-id",
-				TableID:   "table-id",
-			},
+			dst:     c.Dataset("dataset-id").Table("table-id"),
 			options: []Option{CreateNever, WriteTruncate},
-			src:     defaultGCS(),
+			src:     c.NewGCSReference("uri"),
 			want: func() *bq.Job {
 				j := defaultLoadJob()
 				j.Configuration.Load.CreateDisposition = "CREATE_NEVER"
@@ -129,13 +103,9 @@ func TestLoad(t *testing.T) {
 				return j
 			}(),
 		},
-		{ // old-style option for schema
-			dst: &Table{
-				ProjectID: "project-id",
-				DatasetID: "dataset-id",
-				TableID:   "table-id",
-			},
-			src: defaultGCS(),
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: c.NewGCSReference("uri"),
 			options: []Option{
 				DestinationSchema(Schema{
 					stringFieldSchema(),
@@ -152,14 +122,59 @@ func TestLoad(t *testing.T) {
 				return j
 			}(),
 		},
-		{ // same as above, but with the schema set in GCSReference.
-			dst: &Table{
-				ProjectID: "project-id",
-				DatasetID: "dataset-id",
-				TableID:   "table-id",
-			},
+	}
+	for _, tc := range testCases {
+		s := &testService{}
+		c.service = s
+
+		// Only the old-style Client.Copy method can take options.
+		if _, err := c.Copy(context.Background(), tc.dst, tc.src, tc.options...); err != nil {
+			t.Errorf("err calling load: %v", err)
+			continue
+		}
+		if !reflect.DeepEqual(s.Job, tc.want) {
+			t.Errorf("loading: got:\n%v\nwant:\n%v", s.Job, tc.want)
+		}
+	}
+}
+
+func TestLoad(t *testing.T) {
+	c := &Client{projectID: "project-id"}
+
+	testCases := []struct {
+		dst     *Table
+		src     *GCSReference
+		options []Option
+		want    *bq.Job
+	}{
+		{
+			dst:  c.Dataset("dataset-id").Table("table-id"),
+			src:  c.NewGCSReference("uri"),
+			want: defaultLoadJob(),
+		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
 			src: func() *GCSReference {
-				g := defaultGCS()
+				g := c.NewGCSReference("uri")
+				g.MaxBadRecords = 1
+				g.AllowJaggedRows = true
+				g.AllowQuotedNewlines = true
+				g.IgnoreUnknownValues = true
+				return g
+			}(),
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.MaxBadRecords = 1
+				j.Configuration.Load.AllowJaggedRows = true
+				j.Configuration.Load.AllowQuotedNewlines = true
+				j.Configuration.Load.IgnoreUnknownValues = true
+				return j
+			}(),
+		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *GCSReference {
+				g := c.NewGCSReference("uri")
 				g.Schema = Schema{
 					stringFieldSchema(),
 					nestedFieldSchema(),
@@ -177,15 +192,16 @@ func TestLoad(t *testing.T) {
 			}(),
 		},
 		{
-			dst: defaultTable(nil),
-			src: &GCSReference{
-				uris:            []string{"uri"},
-				SkipLeadingRows: 1,
-				SourceFormat:    JSON,
-				Encoding:        UTF_8,
-				FieldDelimiter:  "\t",
-				Quote:           "-",
-			},
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *GCSReference {
+				g := c.NewGCSReference("uri")
+				g.SkipLeadingRows = 1
+				g.SourceFormat = JSON
+				g.Encoding = UTF_8
+				g.FieldDelimiter = "\t"
+				g.Quote = "-"
+				return g
+			}(),
 			want: func() *bq.Job {
 				j := defaultLoadJob()
 				j.Configuration.Load.SkipLeadingRows = 1
@@ -198,24 +214,22 @@ func TestLoad(t *testing.T) {
 			}(),
 		},
 		{
-			dst: defaultTable(nil),
-			src: &GCSReference{
-				uris:  []string{"uri"},
-				Quote: "",
-			},
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: c.NewGCSReference("uri"),
 			want: func() *bq.Job {
 				j := defaultLoadJob()
+				// Quote is left unset in GCSReference, so should be nil here.
 				j.Configuration.Load.Quote = nil
 				return j
 			}(),
 		},
 		{
-			dst: defaultTable(nil),
-			src: &GCSReference{
-				uris:           []string{"uri"},
-				Quote:          "",
-				ForceZeroQuote: true,
-			},
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *GCSReference {
+				g := c.NewGCSReference("uri")
+				g.ForceZeroQuote = true
+				return g
+			}(),
 			want: func() *bq.Job {
 				j := defaultLoadJob()
 				empty := ""
@@ -226,10 +240,9 @@ func TestLoad(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		// Old-style: Client.Copy.
 		s := &testService{}
-		c := &Client{
-			service: s,
-		}
+		c.service = s
 		if _, err := c.Copy(context.Background(), tc.dst, tc.src, tc.options...); err != nil {
 			t.Errorf("err calling load: %v", err)
 			continue
@@ -237,5 +250,44 @@ func TestLoad(t *testing.T) {
 		if !reflect.DeepEqual(s.Job, tc.want) {
 			t.Errorf("loading: got:\n%v\nwant:\n%v", s.Job, tc.want)
 		}
+
+		// New-style: Table.LoaderFrom.
+		s = &testService{}
+		c.service = s
+		loader := tc.dst.LoaderFrom(tc.src)
+		if _, err := loader.Run(context.Background()); err != nil {
+			t.Errorf("err calling Loader.Run: %v", err)
+			continue
+		}
+		if !reflect.DeepEqual(s.Job, tc.want) {
+			t.Errorf("loading: got:\n%v\nwant:\n%v", s.Job, tc.want)
+		}
+	}
+}
+
+func TestConfiguringLoader(t *testing.T) {
+	s := &testService{}
+	c := &Client{
+		projectID: "project-id",
+		service:   s,
+	}
+
+	dst := c.Dataset("dataset-id").Table("table-id")
+	src := c.NewGCSReference("uri")
+
+	want := defaultLoadJob()
+	want.Configuration.Load.CreateDisposition = "CREATE_NEVER"
+	want.Configuration.Load.WriteDisposition = "WRITE_TRUNCATE"
+
+	loader := dst.LoaderFrom(src)
+	loader.TableCreateDisposition = CreateNever
+	loader.TableWriteDisposition = WriteTruncate
+
+	if _, err := loader.Run(context.Background()); err != nil {
+		t.Errorf("err calling Loader.Run: %v", err)
+		return
+	}
+	if !reflect.DeepEqual(s.Job, want) {
+		t.Errorf("loading: got:\n%v\nwant:\n%v", s.Job, want)
 	}
 }

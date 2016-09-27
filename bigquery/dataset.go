@@ -23,20 +23,20 @@ import (
 type Dataset struct {
 	projectID string
 	id        string
-	service   service
+	c         *Client
 }
 
 // Create creates a dataset in the BigQuery service. An error will be returned
 // if the dataset already exists.
 func (d *Dataset) Create(ctx context.Context) error {
-	return d.service.insertDataset(ctx, d.id, d.projectID)
+	return d.c.service.insertDataset(ctx, d.id, d.projectID)
 }
 
 // Table creates a handle to a BigQuery table in the dataset.
 // To determine if a table exists, call Table.Metadata.
 // If the table does not already exist, use Table.Create to create it.
 func (d *Dataset) Table(tableID string) *Table {
-	return &Table{ProjectID: d.projectID, DatasetID: d.id, TableID: tableID, service: d.service}
+	return &Table{ProjectID: d.projectID, DatasetID: d.id, TableID: tableID, c: d.c}
 }
 
 // Tables returns an iterator over the tables in the Dataset.
@@ -77,11 +77,14 @@ func (it *TableIterator) Next() (*Table, error) {
 func (it *TableIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 
 func (it *TableIterator) fetch(pageSize int, pageToken string) (string, error) {
-	tables, tok, err := it.dataset.service.listTables(it.ctx, it.dataset.projectID, it.dataset.id, pageSize, pageToken)
+	tables, tok, err := it.dataset.c.service.listTables(it.ctx, it.dataset.projectID, it.dataset.id, pageSize, pageToken)
 	if err != nil {
 		return "", err
 	}
-	it.tables = append(it.tables, tables...)
+	for _, t := range tables {
+		t.c = it.dataset.c
+		it.tables = append(it.tables, t)
+	}
 	return tok, nil
 }
 
@@ -94,7 +97,7 @@ func (c *Client) Datasets(ctx context.Context) *DatasetIterator {
 func (c *Client) DatasetsInProject(ctx context.Context, projectID string) *DatasetIterator {
 	it := &DatasetIterator{
 		ctx:       ctx,
-		service:   c.service,
+		c:         c,
 		projectID: projectID,
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
@@ -115,7 +118,7 @@ type DatasetIterator struct {
 
 	ctx       context.Context
 	projectID string
-	service   service
+	c         *Client
 	pageInfo  *iterator.PageInfo
 	nextFunc  func() error
 	items     []*Dataset
@@ -134,11 +137,14 @@ func (it *DatasetIterator) Next() (*Dataset, error) {
 }
 
 func (it *DatasetIterator) fetch(pageSize int, pageToken string) (string, error) {
-	datasets, nextPageToken, err := it.service.listDatasets(it.ctx, it.projectID,
+	datasets, nextPageToken, err := it.c.service.listDatasets(it.ctx, it.projectID,
 		pageSize, pageToken, it.ListHidden, it.Filter)
 	if err != nil {
 		return "", err
 	}
-	it.items = append(it.items, datasets...)
+	for _, d := range datasets {
+		d.c = it.c
+		it.items = append(it.items, d)
+	}
 	return nextPageToken, nil
 }

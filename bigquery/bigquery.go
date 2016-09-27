@@ -182,6 +182,6 @@ func (c *Client) DatasetInProject(projectID, datasetID string) *Dataset {
 	return &Dataset{
 		projectID: projectID,
 		id:        datasetID,
-		service:   c.service,
+		c:         c,
 	}
 }

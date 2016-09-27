@@ -48,7 +48,7 @@ func (t *Table) Read(_ context.Context, options ...ReadOption) (*Iterator, error
 		o.customizeRead(&conf.paging)
 	}
 
-	return newIterator(t.service, conf), nil
+	return newIterator(t.c.service, conf), nil
 }
 
 func (conf *readQueryConf) fetch(ctx context.Context, s service, token string) (*readDataResult, error) {
