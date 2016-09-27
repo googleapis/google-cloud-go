@@ -46,12 +46,12 @@ func TestExtract(t *testing.T) {
 		want    *bq.Job
 	}{
 		{
-			dst:  defaultGCS,
+			dst:  defaultGCS(),
 			src:  defaultTable(nil),
 			want: defaultExtractJob(),
 		},
 		{
-			dst: defaultGCS,
+			dst: defaultGCS(),
 			src: defaultTable(nil),
 			options: []Option{
 				DisableHeader(),

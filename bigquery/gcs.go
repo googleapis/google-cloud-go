@@ -21,23 +21,40 @@ import bq "google.golang.org/api/bigquery/v2"
 type GCSReference struct {
 	uris []string
 
-	// FieldDelimiter is the separator for fields in a CSV file, used when loading or exporting data.
+	// FieldDelimiter is the separator for fields in a CSV file, used when reading or exporting data.
 	// The default is ",".
 	FieldDelimiter string
 
-	// The number of rows at the top of a CSV file that BigQuery will skip when loading the data.
+	// The number of rows at the top of a CSV file that BigQuery will skip when reading data.
 	SkipLeadingRows int64
 
-	// SourceFormat is the format of the GCS data to be loaded into BigQuery.
-	// Allowed values are: CSV, JSON, DatastoreBackup.  The default is CSV.
+	// SourceFormat is the format of the GCS data to be read.
+	// Allowed values are: CSV, Avro, JSON, DatastoreBackup.  The default is CSV.
 	SourceFormat DataFormat
-	// Only used when loading data.
+	// AllowJaggedRows causes missing trailing optional columns to be tolerated when reading CSV data.  Missing values are treated as nulls.
+	AllowJaggedRows bool
+	// AllowQuotedNewlines sets whether quoted data sections containing newlines are allowed when reading CSV data.
+	AllowQuotedNewlines bool
+
+	// Encoding is the character encoding of data to be read.
 	Encoding Encoding
+	// MaxBadRecords is the maximum number of bad records that will be ignored when reading data.
+	MaxBadRecords int64
+
+	// IgnoreUnknownValues causes values not matching the schema to be tolerated.
+	// Unknown values are ignored. For CSV this ignores extra values at the end of a line.
+	// For JSON this ignores named values that do not match any column name.
+	// If this field is not set, records containing unknown values are treated as bad records.
+	// The MaxBadRecords field can be used to customize how bad records are handled.
+	IgnoreUnknownValues bool
+
+	// Schema describes the data. It is required when loading CSV or JSON data into a table unless the table already exists.
+	Schema Schema
 
 	// Quote is the value used to quote data sections in a CSV file.
 	// The default quotation character is the double quote ("), which is used if both Quote and ForceZeroQuote are unset.
 	// To specify that no character should be interpreted as a quotation character, set ForceZeroQuote to true.
-	// Only used when loading data.
+	// Only used when reading data.
 	Quote          string
 	ForceZeroQuote bool
 
@@ -45,7 +62,9 @@ type GCSReference struct {
 	// Allowed values are: CSV, Avro, JSON.  The default is CSV.
 	// CSV is not supported for tables with nested or repeated fields.
 	DestinationFormat DataFormat
-	// Only used when writing data.  Default is None.
+
+	// Compression specifies the type of compression to apply when writing data to Google Cloud Storage.
+	// Default is None.
 	Compression Compression
 }
 
@@ -93,8 +112,15 @@ func (gcs *GCSReference) customizeLoadSrc(conf *bq.JobConfigurationLoad) {
 	conf.SourceUris = gcs.uris
 	conf.SkipLeadingRows = gcs.SkipLeadingRows
 	conf.SourceFormat = string(gcs.SourceFormat)
+	conf.AllowJaggedRows = gcs.AllowJaggedRows
+	conf.AllowQuotedNewlines = gcs.AllowQuotedNewlines
 	conf.Encoding = string(gcs.Encoding)
 	conf.FieldDelimiter = gcs.FieldDelimiter
+	conf.IgnoreUnknownValues = gcs.IgnoreUnknownValues
+	conf.MaxBadRecords = gcs.MaxBadRecords
+	if gcs.Schema != nil {
+		conf.Schema = gcs.Schema.asTableSchema()
+	}
 
 	if gcs.ForceZeroQuote {
 		quote := ""

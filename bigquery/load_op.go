@@ -29,6 +29,8 @@ type loadOption interface {
 // A DestinationSchema Option must be supplied when loading data from Google Cloud Storage into a non-existent table.
 // Caveat: DestinationSchema is not required if the data being loaded is a datastore backup.
 // schema must not be nil.
+//
+// Deprecated: use GCSReference.Schema instead.
 func DestinationSchema(schema Schema) Option { return destSchema{Schema: schema} }
 
 type destSchema struct {
@@ -43,6 +45,8 @@ func (opt destSchema) customizeLoad(conf *bq.JobConfigurationLoad) {
 
 // MaxBadRecords returns an Option that sets the maximum number of bad records that will be ignored.
 // If this maximum is exceeded, the operation will be unsuccessful.
+//
+// Deprecated: use GCSReference.MaxBadRecords instead.
 func MaxBadRecords(n int64) Option { return maxBadRecords(n) }
 
 type maxBadRecords int64
@@ -54,6 +58,8 @@ func (opt maxBadRecords) customizeLoad(conf *bq.JobConfigurationLoad) {
 }
 
 // AllowJaggedRows returns an Option that causes missing trailing optional columns to be tolerated in CSV data.  Missing values are treated as nulls.
+//
+// Deprecated: use GCSReference.AllowJaggedRows instead.
 func AllowJaggedRows() Option { return allowJaggedRows{} }
 
 type allowJaggedRows struct{}
@@ -65,6 +71,8 @@ func (opt allowJaggedRows) customizeLoad(conf *bq.JobConfigurationLoad) {
 }
 
 // AllowQuotedNewlines returns an Option that allows quoted data sections containing newlines in CSV data.
+//
+// Deprecated: use GCSReference.AllowQuotedNewlines instead.
 func AllowQuotedNewlines() Option { return allowQuotedNewlines{} }
 
 type allowQuotedNewlines struct{}
@@ -80,6 +88,8 @@ func (opt allowQuotedNewlines) customizeLoad(conf *bq.JobConfigurationLoad) {
 // For JSON this ignores named values that do not match any column name.
 // If this Option is not used, records containing unknown values are treated as bad records.
 // The MaxBadRecords Option can be used to customize how bad records are handled.
+//
+// Deprecated: use GCSReference.IgnoreUnknownValues instead.
 func IgnoreUnknownValues() Option { return ignoreUnknownValues{} }
 
 type ignoreUnknownValues struct{}
