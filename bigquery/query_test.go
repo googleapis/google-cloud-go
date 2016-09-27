@@ -161,6 +161,57 @@ func TestQuery(t *testing.T) {
 				return j
 			}(),
 		},
+		{
+			dst: defaultTable(nil),
+			src: &Query{
+				Q: "query string",
+				TableDefinitions: map[string]ExternalData{
+					"atable": &GCSReference{
+						uris:                []string{"uri"},
+						AllowJaggedRows:     true,
+						AllowQuotedNewlines: true,
+						Compression:         Gzip,
+						Encoding:            UTF_8,
+						FieldDelimiter:      ";",
+						IgnoreUnknownValues: true,
+						MaxBadRecords:       1,
+						Quote:               "'",
+						SkipLeadingRows:     2,
+						Schema: Schema([]*FieldSchema{
+							{Name: "name", Type: StringFieldType},
+						}),
+					},
+				},
+			},
+			want: func() *bq.Job {
+				j := defaultQueryJob()
+				j.Configuration.Query.DefaultDataset = nil
+				td := make(map[string]bq.ExternalDataConfiguration)
+				quote := "'"
+				td["atable"] = bq.ExternalDataConfiguration{
+					Compression:         "GZIP",
+					IgnoreUnknownValues: true,
+					MaxBadRecords:       1,
+					SourceFormat:        "CSV", // must be explicitly set.
+					SourceUris:          []string{"uri"},
+					CsvOptions: &bq.CsvOptions{
+						AllowJaggedRows:     true,
+						AllowQuotedNewlines: true,
+						Encoding:            "UTF-8",
+						FieldDelimiter:      ";",
+						SkipLeadingRows:     2,
+						Quote:               &quote,
+					},
+					Schema: &bq.TableSchema{
+						Fields: []*bq.TableFieldSchema{
+							{Name: "name", Type: "STRING"},
+						},
+					},
+				}
+				j.Configuration.Query.TableDefinitions = td
+				return j
+			}(),
+		},
 	}
 
 	for _, tc := range testCases {

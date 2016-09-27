@@ -19,6 +19,7 @@ import bq "google.golang.org/api/bigquery/v2"
 // GCSReference is a reference to one or more Google Cloud Storage objects, which together constitute
 // an input or output to a BigQuery operation.
 type GCSReference struct {
+	// TODO(jba): Export so that GCSReference can be used to hold data from a Job.get api call and expose it to the user.
 	uris []string
 
 	// FieldDelimiter is the separator for fields in a CSV file, used when reading or exporting data.
@@ -48,7 +49,7 @@ type GCSReference struct {
 	// The MaxBadRecords field can be used to customize how bad records are handled.
 	IgnoreUnknownValues bool
 
-	// Schema describes the data. It is required when loading CSV or JSON data into a table unless the table already exists.
+	// Schema describes the data. It is required when reading CSV or JSON data, unless the data is being loaded into a table that already exists.
 	Schema Schema
 
 	// Quote is the value used to quote data sections in a CSV file.
@@ -63,7 +64,8 @@ type GCSReference struct {
 	// CSV is not supported for tables with nested or repeated fields.
 	DestinationFormat DataFormat
 
-	// Compression specifies the type of compression to apply when writing data to Google Cloud Storage.
+	// Compression specifies the type of compression to apply when writing data to Google Cloud Storage,
+	// or using this GCSReference as an ExternalData source with CSV or JSON SourceFormat.
 	// Default is None.
 	Compression Compression
 }
@@ -122,17 +124,55 @@ func (gcs *GCSReference) customizeLoadSrc(conf *bq.JobConfigurationLoad) {
 		conf.Schema = gcs.Schema.asTableSchema()
 	}
 
-	if gcs.ForceZeroQuote {
-		quote := ""
-		conf.Quote = &quote
-	} else if gcs.Quote != "" {
-		conf.Quote = &gcs.Quote
+	conf.Quote = gcs.quote()
+}
+
+// quote returns the CSV quote character, or nil if unset.
+func (gcs *GCSReference) quote() *string {
+	if !gcs.ForceZeroQuote && gcs.Quote == "" {
+		return nil
 	}
+	var quote string
+	if gcs.Quote != "" {
+		quote = gcs.Quote
+	}
+	return &quote
 }
 
 func (gcs *GCSReference) customizeExtractDst(conf *bq.JobConfigurationExtract) {
-	conf.DestinationUris = gcs.uris
+	conf.DestinationUris = append([]string{}, gcs.uris...)
 	conf.Compression = string(gcs.Compression)
 	conf.DestinationFormat = string(gcs.DestinationFormat)
 	conf.FieldDelimiter = gcs.FieldDelimiter
+}
+
+func (gcs *GCSReference) externalDataConfig() bq.ExternalDataConfiguration {
+	format := gcs.SourceFormat
+	if format == "" {
+		// Format must be explicitly set for external data sources.
+		format = CSV
+	}
+
+	// TODO(jba): support AutoDetect.
+	conf := bq.ExternalDataConfiguration{
+		Compression:         string(gcs.Compression),
+		IgnoreUnknownValues: gcs.IgnoreUnknownValues,
+		MaxBadRecords:       gcs.MaxBadRecords,
+		SourceFormat:        string(format),
+		SourceUris:          append([]string{}, gcs.uris...),
+	}
+	if gcs.Schema != nil {
+		conf.Schema = gcs.Schema.asTableSchema()
+	}
+	if format == CSV {
+		conf.CsvOptions = &bq.CsvOptions{
+			AllowJaggedRows:     gcs.AllowJaggedRows,
+			AllowQuotedNewlines: gcs.AllowQuotedNewlines,
+			Encoding:            string(gcs.Encoding),
+			FieldDelimiter:      gcs.FieldDelimiter,
+			SkipLeadingRows:     gcs.SkipLeadingRows,
+			Quote:               gcs.quote(),
+		}
+	}
+	return conf
 }
