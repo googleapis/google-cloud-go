@@ -16,7 +16,6 @@
 package debuglet
 
 import (
-	"context"
 	"crypto/sha256"
 	"encoding/json"
 	"errors"
@@ -24,6 +23,7 @@ import (
 	"log"
 	"sync"
 
+	"golang.org/x/net/context"
 	cd "google.golang.org/api/clouddebugger/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
