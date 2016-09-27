@@ -19,8 +19,10 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
-var defaultGCS = &GCSReference{
-	uris: []string{"uri"},
+func defaultGCS() *GCSReference {
+	return &GCSReference{
+		uris: []string{"uri"},
+	}
 }
 
 var defaultQuery = &Query{

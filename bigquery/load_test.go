@@ -74,18 +74,37 @@ func TestLoad(t *testing.T) {
 	}{
 		{
 			dst:  defaultTable(nil),
-			src:  defaultGCS,
+			src:  defaultGCS(),
 			want: defaultLoadJob(),
 		},
-		{
+		{ // old-style options relating to GCS data.
 			dst: defaultTable(nil),
-			src: defaultGCS,
+			src: defaultGCS(),
 			options: []Option{
 				MaxBadRecords(1),
 				AllowJaggedRows(),
 				AllowQuotedNewlines(),
 				IgnoreUnknownValues(),
 			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.MaxBadRecords = 1
+				j.Configuration.Load.AllowJaggedRows = true
+				j.Configuration.Load.AllowQuotedNewlines = true
+				j.Configuration.Load.IgnoreUnknownValues = true
+				return j
+			}(),
+		},
+		{ // same as above, but with the options set in GCSReference fields.
+			dst: defaultTable(nil),
+			src: func() *GCSReference {
+				g := defaultGCS()
+				g.MaxBadRecords = 1
+				g.AllowJaggedRows = true
+				g.AllowQuotedNewlines = true
+				g.IgnoreUnknownValues = true
+				return g
+			}(),
 			want: func() *bq.Job {
 				j := defaultLoadJob()
 				j.Configuration.Load.MaxBadRecords = 1
@@ -102,7 +121,7 @@ func TestLoad(t *testing.T) {
 				TableID:   "table-id",
 			},
 			options: []Option{CreateNever, WriteTruncate},
-			src:     defaultGCS,
+			src:     defaultGCS(),
 			want: func() *bq.Job {
 				j := defaultLoadJob()
 				j.Configuration.Load.CreateDisposition = "CREATE_NEVER"
@@ -110,19 +129,43 @@ func TestLoad(t *testing.T) {
 				return j
 			}(),
 		},
-		{
+		{ // old-style option for schema
 			dst: &Table{
 				ProjectID: "project-id",
 				DatasetID: "dataset-id",
 				TableID:   "table-id",
 			},
-			src: defaultGCS,
+			src: defaultGCS(),
 			options: []Option{
 				DestinationSchema(Schema{
 					stringFieldSchema(),
 					nestedFieldSchema(),
 				}),
 			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.Schema = &bq.TableSchema{
+					Fields: []*bq.TableFieldSchema{
+						bqStringFieldSchema(),
+						bqNestedFieldSchema(),
+					}}
+				return j
+			}(),
+		},
+		{ // same as above, but with the schema set in GCSReference.
+			dst: &Table{
+				ProjectID: "project-id",
+				DatasetID: "dataset-id",
+				TableID:   "table-id",
+			},
+			src: func() *GCSReference {
+				g := defaultGCS()
+				g.Schema = Schema{
+					stringFieldSchema(),
+					nestedFieldSchema(),
+				}
+				return g
+			}(),
 			want: func() *bq.Job {
 				j := defaultLoadJob()
 				j.Configuration.Load.Schema = &bq.TableSchema{
