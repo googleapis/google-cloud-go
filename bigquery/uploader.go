@@ -108,7 +108,7 @@ func (u *Uploader) putMulti(ctx context.Context, src []ValueSaver) error {
 		}
 		rows = append(rows, &insertionRow{InsertID: insertID, Row: row})
 	}
-	return u.t.service.insertRows(ctx, u.t.ProjectID, u.t.DatasetID, u.t.TableID, rows, &u.conf)
+	return u.t.c.service.insertRows(ctx, u.t.ProjectID, u.t.DatasetID, u.t.TableID, rows, &u.conf)
 }
 
 // An insertionRow represents a row of data to be inserted into a table.

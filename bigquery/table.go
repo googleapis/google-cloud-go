@@ -33,7 +33,7 @@ type Table struct {
 	// The maximum length is 1,024 characters.
 	TableID string
 
-	service service
+	c *Client
 }
 
 // TableMetadata contains information about a BigQuery table.
@@ -81,10 +81,6 @@ func CreateDisposition(disp TableCreateDisposition) Option { return disp }
 
 func (opt TableCreateDisposition) implementsOption() {}
 
-func (opt TableCreateDisposition) customizeLoad(conf *bq.JobConfigurationLoad) {
-	conf.CreateDisposition = string(opt)
-}
-
 func (opt TableCreateDisposition) customizeCopy(conf *bq.JobConfigurationTableCopy) {
 	conf.CreateDisposition = string(opt)
 }
@@ -113,10 +109,6 @@ const (
 func WriteDisposition(disp TableWriteDisposition) Option { return disp }
 
 func (opt TableWriteDisposition) implementsOption() {}
-
-func (opt TableWriteDisposition) customizeLoad(conf *bq.JobConfigurationLoad) {
-	conf.WriteDisposition = string(opt)
-}
 
 func (opt TableWriteDisposition) customizeCopy(conf *bq.JobConfigurationTableCopy) {
 	conf.WriteDisposition = string(opt)
@@ -197,17 +189,17 @@ func (t *Table) Create(ctx context.Context, options ...CreateTableOption) error 
 	for _, o := range options {
 		o.customizeCreateTable(conf)
 	}
-	return t.service.createTable(ctx, conf)
+	return t.c.service.createTable(ctx, conf)
 }
 
 // Metadata fetches the metadata for the table.
 func (t *Table) Metadata(ctx context.Context) (*TableMetadata, error) {
-	return t.service.getTableMetadata(ctx, t.ProjectID, t.DatasetID, t.TableID)
+	return t.c.service.getTableMetadata(ctx, t.ProjectID, t.DatasetID, t.TableID)
 }
 
 // Delete deletes the table.
 func (t *Table) Delete(ctx context.Context) error {
-	return t.service.deleteTable(ctx, t.ProjectID, t.DatasetID, t.TableID)
+	return t.c.service.deleteTable(ctx, t.ProjectID, t.DatasetID, t.TableID)
 }
 
 // A CreateTableOption is an optional argument to CreateTable.
@@ -255,7 +247,7 @@ type TableMetadataPatch struct {
 // In order to apply the changes, the TableMetadataPatch's Apply method must be called.
 func (t *Table) Patch() *TableMetadataPatch {
 	return &TableMetadataPatch{
-		s:         t.service,
+		s:         t.c.service,
 		projectID: t.ProjectID,
 		datasetID: t.DatasetID,
 		tableID:   t.TableID,
@@ -288,4 +280,66 @@ func (t *Table) NewUploader(opts ...UploadOption) *Uploader {
 	}
 
 	return uploader
+}
+
+// LoadConfig holds the configuration for a load job.
+type LoadConfig struct {
+	// JobID is the ID to use for the load job. If unset, a job ID will be automatically created.
+	JobID string
+
+	// Src is the source from which data will be loaded.
+	Src *GCSReference
+
+	// Dst is the table into which the data will be loaded.
+	Dst *Table
+
+	// CreateDisposition specifies the circumstances under which the destination table will be created.
+	// The default is CreateIfNeeded.
+	TableCreateDisposition TableCreateDisposition
+
+	// TableWriteDisposition specifies how existing data in the destination table is treated.
+	// The default is WriteAppend.
+	TableWriteDisposition TableWriteDisposition
+}
+
+// A Loader loads data from Google Cloud Storage into a BigQuery table.
+type Loader struct {
+	LoadConfig
+	c *Client
+}
+
+// LoaderFrom returns a Loader which can be used to load data from Google Cloud Storage into a BigQuery table.
+// The returned Loader may optionally be further configured before its Run method is called.
+func (t *Table) LoaderFrom(src *GCSReference) *Loader {
+	return &Loader{
+		c: t.c,
+		LoadConfig: LoadConfig{
+			Src: src,
+			Dst: t,
+		},
+	}
+}
+
+// Run initiates a load job.
+func (l *Loader) Run(ctx context.Context) (*Job, error) {
+	job := &bq.Job{
+		Configuration: &bq.JobConfiguration{
+			Load: &bq.JobConfigurationLoad{
+				CreateDisposition: string(l.TableCreateDisposition),
+				WriteDisposition:  string(l.TableWriteDisposition),
+			},
+		},
+	}
+
+	if l.JobID != "" {
+		job.JobReference = &bq.JobReference{
+			JobId:     l.JobID,
+			ProjectId: l.c.projectID,
+		}
+	}
+
+	l.Src.customizeLoadSrc(job.Configuration.Load)
+	l.Dst.customizeLoadDst(job.Configuration.Load)
+
+	return l.c.service.insertJob(ctx, job, l.c.projectID)
 }

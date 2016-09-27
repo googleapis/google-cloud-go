@@ -31,7 +31,8 @@ func (ts testSaver) Save() (map[string]Value, string, error) {
 }
 
 func TestRejectsNonValueSavers(t *testing.T) {
-	u := Uploader{t: defaultTable(nil)}
+	client := &Client{projectID: "project-id"}
+	u := Uploader{t: client.Dataset("dataset-id").Table("table-id")}
 
 	testCases := []struct {
 		src interface{}
@@ -68,12 +69,6 @@ func (irr *insertRowsRecorder) insertRows(ctx context.Context, projectID, datase
 }
 
 func TestInsertsData(t *testing.T) {
-	table := &Table{
-		ProjectID: "project-id",
-		DatasetID: "dataset-id",
-		TableID:   "table-id",
-	}
-
 	testCases := []struct {
 		data [][]*insertionRow
 	}{
@@ -120,7 +115,11 @@ func TestInsertsData(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		irr := &insertRowsRecorder{}
-		table.service = irr
+		client := &Client{
+			projectID: "project-id",
+			service:   irr,
+		}
+		table := client.Dataset("dataset-id").Table("table-id")
 		u := Uploader{t: table}
 		for _, batch := range tc.data {
 			if len(batch) == 0 {
@@ -208,11 +207,12 @@ func TestUploadOptionsPropagate(t *testing.T) {
 
 	for i, tc := range tests {
 		recorder := new(uploadOptionRecorder)
+		c := &Client{service: recorder}
 		table := &Table{
 			ProjectID: "project-id",
 			DatasetID: "dataset-id",
 			TableID:   "table-id",
-			service:   recorder,
+			c:         c,
 		}
 
 		u := table.NewUploader(tc.opts...)

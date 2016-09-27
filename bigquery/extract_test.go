@@ -39,6 +39,12 @@ func defaultExtractJob() *bq.Job {
 }
 
 func TestExtract(t *testing.T) {
+	s := &testService{}
+	c := &Client{
+		service:   s,
+		projectID: "project-id",
+	}
+
 	testCases := []struct {
 		dst     *GCSReference
 		src     *Table
@@ -47,12 +53,12 @@ func TestExtract(t *testing.T) {
 	}{
 		{
 			dst:  defaultGCS(),
-			src:  defaultTable(nil),
+			src:  c.Dataset("dataset-id").Table("table-id"),
 			want: defaultExtractJob(),
 		},
 		{
 			dst: defaultGCS(),
-			src: defaultTable(nil),
+			src: c.Dataset("dataset-id").Table("table-id"),
 			options: []Option{
 				DisableHeader(),
 			},
@@ -70,7 +76,7 @@ func TestExtract(t *testing.T) {
 				DestinationFormat: JSON,
 				FieldDelimiter:    "\t",
 			},
-			src: defaultTable(nil),
+			src: c.Dataset("dataset-id").Table("table-id"),
 			want: func() *bq.Job {
 				j := defaultExtractJob()
 				j.Configuration.Extract.Compression = "GZIP"
@@ -82,10 +88,6 @@ func TestExtract(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		s := &testService{}
-		c := &Client{
-			service: s,
-		}
 		if _, err := c.Copy(context.Background(), tc.dst, tc.src, tc.options...); err != nil {
 			t.Errorf("err calling extract: %v", err)
 			continue

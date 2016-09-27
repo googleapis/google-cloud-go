@@ -31,15 +31,6 @@ var defaultQuery = &Query{
 	DefaultDatasetID: "def-dataset-id",
 }
 
-func defaultTable(s service) *Table {
-	return &Table{
-		ProjectID: "project-id",
-		DatasetID: "dataset-id",
-		TableID:   "table-id",
-		service:   s,
-	}
-}
-
 type testService struct {
 	*bq.Job
 

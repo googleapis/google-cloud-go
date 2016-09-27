@@ -40,6 +40,8 @@ type service interface {
 	createTable(ctx context.Context, conf *createTableConf) error
 	getTableMetadata(ctx context.Context, projectID, datasetID, tableID string) (*TableMetadata, error)
 	deleteTable(ctx context.Context, projectID, datasetID, tableID string) error
+
+	// listTables returns a page of Tables and a next page token. Note: the Tables do not have their c field populated.
 	listTables(ctx context.Context, projectID, datasetID string, pageSize int, pageToken string) ([]*Table, string, error)
 	patchTable(ctx context.Context, projectID, datasetID, tableID string, conf *patchTableConf) (*TableMetadata, error)
 
@@ -56,6 +58,8 @@ type service interface {
 	// incomplete, an errIncompleteJob is returned. readQuery may be called
 	// repeatedly to poll for job completion.
 	readQuery(ctx context.Context, conf *readQueryConf, pageToken string) (*readDataResult, error)
+
+	// listDatasets returns a page of Datasets and a next page token. Note: the Datasets do not have their c field populated.
 	listDatasets(ctx context.Context, projectID string, maxResults int, pageToken string, all bool, filter string) ([]*Dataset, string, error)
 }
 
@@ -450,7 +454,6 @@ func (s *bigqueryService) convertListedTable(t *bq.TableListTables) *Table {
 		ProjectID: t.TableReference.ProjectId,
 		DatasetID: t.TableReference.DatasetId,
 		TableID:   t.TableReference.TableId,
-		service:   s,
 	}
 }
 
@@ -518,6 +521,5 @@ func (s *bigqueryService) convertListedDataset(d *bq.DatasetListDatasets) *Datas
 	return &Dataset{
 		projectID: d.DatasetReference.ProjectId,
 		id:        d.DatasetReference.DatasetId,
-		service:   s,
 	}
 }

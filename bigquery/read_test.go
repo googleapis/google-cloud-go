@@ -68,7 +68,8 @@ func TestRead(t *testing.T) {
 	// The data for the service stub to return is populated for each test case in the testCases for loop.
 	service := &readServiceStub{}
 	c := &Client{
-		service: service,
+		projectID: "project-id",
+		service:   service,
 	}
 
 	queryJob := &Job{
@@ -78,7 +79,10 @@ func TestRead(t *testing.T) {
 		isQuery:   true,
 	}
 
-	for _, src := range []ReadSource{defaultTable(service), queryJob} {
+	for _, src := range []ReadSource{
+		c.Dataset("dataset-id").Table("table-id"),
+		queryJob,
+	} {
 		testCases := []struct {
 			data       [][][]Value
 			pageTokens map[string]string
@@ -131,11 +135,12 @@ func doRead(t *testing.T, c *Client, src ReadSource) ([]ValueList, bool) {
 
 func TestNoMoreValues(t *testing.T) {
 	c := &Client{
+		projectID: "project-id",
 		service: &readServiceStub{
 			values: [][][]Value{{{1, 2}, {11, 12}}},
 		},
 	}
-	it, err := c.Read(context.Background(), defaultTable(c.service))
+	it, err := c.Read(context.Background(), c.Dataset("dataset-id").Table("table-id"))
 	if err != nil {
 		t.Fatalf("err calling Read: %v", err)
 	}
@@ -221,8 +226,11 @@ func (s *errorReadService) readTabledata(ctx context.Context, conf *readTableCon
 
 func TestReadError(t *testing.T) {
 	// test that service read errors are propagated back to the caller.
-	c := &Client{service: &errorReadService{}}
-	it, err := c.Read(context.Background(), defaultTable(c.service))
+	c := &Client{
+		projectID: "project-id",
+		service:   &errorReadService{},
+	}
+	it, err := c.Read(context.Background(), c.Dataset("dataset-id").Table("table-id"))
 	if err != nil {
 		// Read should not return an error; only Err should.
 		t.Fatalf("err calling Read: %v", err)
@@ -240,8 +248,11 @@ func TestReadTabledataOptions(t *testing.T) {
 	s := &readServiceStub{
 		values: [][][]Value{{{1, 2}}},
 	}
-	c := &Client{service: s}
-	it, err := c.Read(context.Background(), defaultTable(s), RecordsPerRequest(5))
+	c := &Client{
+		projectID: "project-id",
+		service:   s,
+	}
+	it, err := c.Read(context.Background(), c.Dataset("dataset-id").Table("table-id"), RecordsPerRequest(5))
 
 	if err != nil {
 		t.Fatalf("err calling Read: %v", err)
