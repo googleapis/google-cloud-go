@@ -16,13 +16,11 @@ package pubsub // import "cloud.google.com/go/pubsub"
 
 import (
 	"fmt"
-	"net/http"
 	"os"
 
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	raw "google.golang.org/api/pubsub/v1"
-	"google.golang.org/api/transport"
+	"google.golang.org/grpc"
 
 	"golang.org/x/net/context"
 )
@@ -38,7 +36,7 @@ const (
 )
 
 const prodAddr = "https://pubsub.googleapis.com/"
-const userAgent = "gcloud-golang-pubsub/20151008"
+const userAgent = "gcloud-golang-pubsub/20160927"
 
 // Client is a Google Pub/Sub client scoped to a single project.
 //
@@ -53,26 +51,18 @@ type Client struct {
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
 	var o []option.ClientOption
 	// Environment variables for gcloud emulator:
-	// https://option.google.com/sdk/gcloud/reference/beta/emulators/pubsub/
+	// https://cloud.google.com/sdk/gcloud/reference/beta/emulators/pubsub/
 	if addr := os.Getenv("PUBSUB_EMULATOR_HOST"); addr != "" {
-		o = []option.ClientOption{
-			option.WithEndpoint("http://" + addr + "/"),
-			option.WithHTTPClient(http.DefaultClient),
+		conn, err := grpc.Dial(addr, grpc.WithInsecure())
+		if err != nil {
+			return nil, fmt.Errorf("grpc.Dial: %v", err)
 		}
+		o = []option.ClientOption{option.WithGRPCConn(conn)}
 	} else {
-		o = []option.ClientOption{
-			option.WithEndpoint(prodAddr),
-			option.WithScopes(raw.PubsubScope, raw.CloudPlatformScope),
-			option.WithUserAgent(userAgent),
-		}
+		o = []option.ClientOption{option.WithUserAgent(userAgent)}
 	}
 	o = append(o, opts...)
-	httpClient, endpoint, err := transport.NewHTTPClient(ctx, o...)
-	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
-	}
-
-	s, err := newPubSubService(httpClient, endpoint)
+	s, err := newPubSubService(ctx, o)
 	if err != nil {
 		return nil, fmt.Errorf("constructing pubsub client: %v", err)
 	}
@@ -89,9 +79,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 //
 // Close need not be called at program exit.
 func (c *Client) Close() error {
-	// Nothing now, but will close a connection when
-	// we move to gRPC.
-	return nil
+	return c.s.close()
 }
 
 func (c *Client) fullyQualifiedProjectName() string {

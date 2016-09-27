@@ -75,7 +75,7 @@ func newMessageIterator(ctx context.Context, s service, subName string, po *pull
 		Notify:  ka.Remove,
 	}
 
-	pull := newPuller(s, subName, ctx, int64(po.maxPrefetch), ka.Add, ka.Remove)
+	pull := newPuller(s, subName, ctx, po.maxPrefetch, ka.Add, ka.Remove)
 
 	ka.Start()
 	ack.Start()

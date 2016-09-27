@@ -77,7 +77,7 @@ type blockingFetch struct {
 	service
 }
 
-func (s *blockingFetch) fetchMessages(ctx context.Context, subName string, maxMessages int64) ([]*Message, error) {
+func (s *blockingFetch) fetchMessages(ctx context.Context, subName string, maxMessages int32) ([]*Message, error) {
 	<-ctx.Done()
 	return nil, ctx.Err()
 }
@@ -88,7 +88,7 @@ type justInTimeFetch struct {
 	service
 }
 
-func (s *justInTimeFetch) fetchMessages(ctx context.Context, subName string, maxMessages int64) ([]*Message, error) {
+func (s *justInTimeFetch) fetchMessages(ctx context.Context, subName string, maxMessages int32) ([]*Message, error) {
 	<-ctx.Done()
 	// The context was cancelled, but let's pretend that this happend just after our RPC returned.
 
@@ -154,7 +154,7 @@ func TestAfterAbortReturnsNoMoreThanOneMessage(t *testing.T) {
 			po := &pullOptions{
 				ackDeadline:  time.Second * 10,
 				maxExtension: time.Hour,
-				maxPrefetch:  n,
+				maxPrefetch:  int32(n),
 			}
 			it := newMessageIterator(ctx, s, "subname", po)
 			defer it.Stop()

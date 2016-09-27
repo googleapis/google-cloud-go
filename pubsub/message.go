@@ -15,10 +15,10 @@
 package pubsub
 
 import (
-	"encoding/base64"
 	"time"
 
-	raw "google.golang.org/api/pubsub/v1"
+	"github.com/golang/protobuf/ptypes"
+	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
 // Message represents a Pub/Sub message.
@@ -49,21 +49,18 @@ type Message struct {
 	it *MessageIterator
 }
 
-func toMessage(resp *raw.ReceivedMessage) (*Message, error) {
+func toMessage(resp *pb.ReceivedMessage) (*Message, error) {
 	if resp.Message == nil {
 		return &Message{ackID: resp.AckId}, nil
 	}
-	data, err := base64.StdEncoding.DecodeString(resp.Message.Data)
-	if err != nil {
-		return nil, err
-	}
-	pubTime, err := time.Parse(time.RFC3339, resp.Message.PublishTime)
+
+	pubTime, err := ptypes.Timestamp(resp.Message.PublishTime)
 	if err != nil {
 		return nil, err
 	}
 	return &Message{
 		ackID:       resp.AckId,
-		Data:        data,
+		Data:        resp.Message.Data,
 		Attributes:  resp.Message.Attributes,
 		ID:          resp.Message.MessageId,
 		PublishTime: pubTime,
