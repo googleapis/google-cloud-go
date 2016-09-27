@@ -33,7 +33,7 @@ type fetcherService struct {
 	unexpectedCall bool
 }
 
-func (s *fetcherService) fetchMessages(ctx context.Context, subName string, maxMessages int64) ([]*Message, error) {
+func (s *fetcherService) fetchMessages(ctx context.Context, subName string, maxMessages int32) ([]*Message, error) {
 	if len(s.results) == 0 {
 		s.unexpectedCall = true
 		return nil, errors.New("bang")

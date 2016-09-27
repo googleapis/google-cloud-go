@@ -15,7 +15,6 @@
 package pubsub
 
 import (
-	"errors"
 	"reflect"
 	"testing"
 
@@ -24,35 +23,34 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-type topicListCall struct {
-	inTok, outTok string
-	topics        []string
-	err           error
-}
-
 type topicListService struct {
 	service
-	calls []topicListCall
-
-	t *testing.T // for error logging.
+	topics []string
+	err    error
+	t      *testing.T // for error logging.
 }
 
-func (s *topicListService) listProjectTopics(ctx context.Context, projName, pageTok string) (*stringsPage, error) {
-	if len(s.calls) == 0 || projName != "projects/projid" {
-		s.t.Errorf("unexpected call: projName: %q, pageTok: %q", projName, pageTok)
-		return nil, errors.New("bang")
+func (s *topicListService) newNextStringFunc() nextStringFunc {
+	return func() (string, error) {
+		if len(s.topics) == 0 {
+			return "", Done
+		}
+		tn := s.topics[0]
+		s.topics = s.topics[1:]
+		return tn, s.err
 	}
-
-	call := s.calls[0]
-	s.calls = s.calls[1:]
-	if call.inTok != pageTok {
-		s.t.Errorf("page token: got: %v, want: %v", pageTok, call.inTok)
-	}
-	return &stringsPage{call.topics, call.outTok}, call.err
 }
 
-func checkTopicListing(t *testing.T, calls []topicListCall, want []string) {
-	s := &topicListService{calls: calls, t: t}
+func (s *topicListService) listProjectTopics(ctx context.Context, projName string) nextStringFunc {
+	if projName != "projects/projid" {
+		s.t.Fatalf("unexpected call: projName: %q", projName)
+		return nil
+	}
+	return s.newNextStringFunc()
+}
+
+func checkTopicListing(t *testing.T, want []string) {
+	s := &topicListService{topics: want, t: t}
 	c := &Client{projectID: "projid", s: s}
 	topics, err := slurpTopics(c.Topics(context.Background()))
 	if err != nil {
@@ -62,8 +60,8 @@ func checkTopicListing(t *testing.T, calls []topicListCall, want []string) {
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("topic list: got: %v, want: %v", got, want)
 	}
-	if len(s.calls) != 0 {
-		t.Errorf("outstanding calls: %v", s.calls)
+	if len(s.topics) != 0 {
+		t.Errorf("outstanding topics: %v", s.topics)
 	}
 }
 
@@ -84,13 +82,10 @@ func slurpTopics(it *TopicIterator) ([]*Topic, error) {
 
 func TestTopicID(t *testing.T) {
 	const id = "id"
-	calls := []topicListCall{
-		{
-			topics: []string{"projects/projid/topics/t1", "projects/projid/topics/t2"},
-			outTok: "",
-		},
+	serv := &topicListService{
+		topics: []string{"projects/projid/topics/t1", "projects/projid/topics/t2"},
+		t:      t,
 	}
-	serv := &topicListService{calls: calls, t: t}
 	c := &Client{projectID: "projid", s: serv}
 	s := c.Topic(id)
 	if got, want := s.ID(), id; got != want {
@@ -109,28 +104,7 @@ func TestTopicID(t *testing.T) {
 }
 
 func TestListTopics(t *testing.T) {
-	calls := []topicListCall{
-		{
-			topics: []string{"projects/projid/topics/t1", "projects/projid/topics/t2"},
-			outTok: "a",
-		},
-		{
-			inTok:  "a",
-			topics: []string{"projects/projid/topics/t3"},
-			outTok: "b",
-		},
-		{
-			inTok:  "b",
-			topics: []string{},
-			outTok: "c",
-		},
-		{
-			inTok:  "c",
-			topics: []string{"projects/projid/topics/t4"},
-			outTok: "",
-		},
-	}
-	checkTopicListing(t, calls, []string{
+	checkTopicListing(t, []string{
 		"projects/projid/topics/t1",
 		"projects/projid/topics/t2",
 		"projects/projid/topics/t3",
@@ -138,30 +112,8 @@ func TestListTopics(t *testing.T) {
 }
 
 func TestListCompletelyEmptyTopics(t *testing.T) {
-	calls := []topicListCall{
-		{
-			outTok: "",
-		},
-	}
 	var want []string
-	checkTopicListing(t, calls, want)
-}
-
-func TestListFinalEmptyPage(t *testing.T) {
-	calls := []topicListCall{
-		{
-			topics: []string{"projects/projid/topics/t1", "projects/projid/topics/t2"},
-			outTok: "a",
-		},
-		{
-			inTok:  "a",
-			topics: []string{},
-			outTok: "",
-		},
-	}
-	checkTopicListing(t, calls, []string{
-		"projects/projid/topics/t1",
-		"projects/projid/topics/t2"})
+	checkTopicListing(t, want)
 }
 
 func topicNames(topics []*Topic) []string {
