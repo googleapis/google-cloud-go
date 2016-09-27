@@ -191,18 +191,6 @@ type newestFirst struct{}
 
 func (newestFirst) set(r *logpb.ListLogEntriesRequest) { r.OrderBy = "timestamp desc" }
 
-// OrderBy determines how a listing of log entries should be sorted. Presently,
-// the only permitted values are "timestamp asc" (default) and "timestamp
-// desc". The first option returns entries in order of increasing values of
-// timestamp (oldest first), and the second option returns entries in order of
-// decreasing timestamps (newest first). Entries with equal timestamps are
-// returned in order of InsertID.
-func OrderBy(ob string) EntriesOption { return orderBy(ob) }
-
-type orderBy string
-
-func (o orderBy) set(r *logpb.ListLogEntriesRequest) { r.OrderBy = string(o) }
-
 // Entries returns an EntryIterator for iterating over log entries. By default,
 // the log entries will be restricted to those from the project passed to
 // NewClient. This may be overridden by passing a ProjectIDs option. Requires ReadScope or AdminScope.
