@@ -26,6 +26,10 @@ type Query struct {
 	DefaultProjectID string
 	DefaultDatasetID string
 
+	// TableDefinitions describes data sources outside of BigQuery.
+	// The map keys may be used as table names in the query string.
+	TableDefinitions map[string]ExternalData
+
 	client *Client
 }
 
@@ -35,6 +39,14 @@ func (q *Query) implementsReadSource() {}
 
 func (q *Query) customizeQuerySrc(conf *bq.JobConfigurationQuery) {
 	conf.Query = q.Q
+
+	if len(q.TableDefinitions) > 0 {
+		conf.TableDefinitions = make(map[string]bq.ExternalDataConfiguration)
+	}
+	for name, data := range q.TableDefinitions {
+		conf.TableDefinitions[name] = data.externalDataConfig()
+	}
+
 	if q.DefaultProjectID != "" || q.DefaultDatasetID != "" {
 		conf.DefaultDataset = &bq.DatasetReference{
 			DatasetId: q.DefaultDatasetID,

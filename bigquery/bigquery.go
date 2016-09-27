@@ -53,6 +53,11 @@ type ReadOption interface {
 	customizeRead(conf *pagingConf)
 }
 
+// ExternalData is a table which is stored outside of BigQuery.  It is implemented by GCSReference.
+type ExternalData interface {
+	externalDataConfig() bq.ExternalDataConfiguration
+}
+
 const Scope = "https://www.googleapis.com/auth/bigquery"
 const userAgent = "gcloud-golang-bigquery/20160429"
 
