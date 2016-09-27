@@ -51,6 +51,9 @@ type ResourceDescriptorIterator struct {
 	items    []*mrpb.MonitoredResourceDescriptor
 }
 
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ResourceDescriptorIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
+
 // Next returns the next result. Its second return value is Done if there are
 // no more results. Once Next returns Done, all subsequent calls will return
 // Done.
