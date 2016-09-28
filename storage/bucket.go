@@ -75,6 +75,7 @@ func (b *BucketHandle) Object(name string) *ObjectHandle {
 			bucket: b.name,
 			object: name,
 		},
+		gen: -1,
 	}
 }
 

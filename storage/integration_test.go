@@ -151,16 +151,16 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 	gen := wc.Attrs().Generation
 	metaGen := wc.Attrs().MetaGeneration
 
-	if err := o.WithConditions(Generation(gen - 1)).Delete(ctx); err == nil {
+	if err := o.Generation(gen - 1).Delete(ctx); err == nil {
 		t.Fatalf("Unexpected successful delete with Generation")
 	}
-	if err := o.WithConditions(IfMetaGenerationMatch(metaGen + 1)).Delete(ctx); err == nil {
+	if err := o.If(Conditions{MetagenerationMatch: metaGen + 1}).Delete(ctx); err == nil {
 		t.Fatalf("Unexpected successful delete with IfMetaGenerationMatch")
 	}
-	if err := o.WithConditions(IfMetaGenerationNotMatch(metaGen)).Delete(ctx); err == nil {
+	if err := o.If(Conditions{MetagenerationNotMatch: metaGen}).Delete(ctx); err == nil {
 		t.Fatalf("Unexpected successful delete with IfMetaGenerationNotMatch")
 	}
-	if err := o.WithConditions(Generation(gen)).Delete(ctx); err != nil {
+	if err := o.Generation(gen).Delete(ctx); err != nil {
 		t.Fatalf("final delete failed: %v", err)
 	}
 }

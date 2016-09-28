@@ -16,8 +16,10 @@ package storage_test
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
+	"os"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -195,7 +197,7 @@ func ExampleObjectHandle_Attrs_withConditions() {
 	// Do something else for a while.
 	time.Sleep(5 * time.Minute)
 	// Now read the same contents, even if the object has been written since the last read.
-	objAttrs2, err := obj.WithConditions(storage.Generation(objAttrs1.Generation)).Attrs(ctx)
+	objAttrs2, err := obj.Generation(objAttrs1.Generation).Attrs(ctx)
 	if err != nil {
 		// TODO: handle error.
 	}
@@ -463,4 +465,43 @@ func ExampleComposer_Run() {
 		// TODO: Handle error.
 	}
 	fmt.Println(attrs)
+}
+
+var gen int64
+
+func ExampleObjectHandle_Generation() {
+	// Read an object's contents from generation gen, regardless of the
+	// current generation of the object.
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	obj := client.Bucket("my-bucket").Object("my-object")
+	rc, err := obj.Generation(gen).NewReader(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	defer rc.Close()
+	if _, err := io.Copy(os.Stdout, rc); err != nil {
+		// TODO: handle error.
+	}
+}
+
+func ExampleObjectHandle_If() {
+	// Read from an object only if the current generation is gen.
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	obj := client.Bucket("my-bucket").Object("my-object")
+	rc, err := obj.If(storage.Conditions{GenerationMatch: gen}).NewReader(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	defer rc.Close()
+	if _, err := io.Copy(os.Stdout, rc); err != nil {
+		// TODO: handle error.
+	}
 }
