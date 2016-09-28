@@ -699,6 +699,36 @@ func (s *server) ReadModifyWriteRow(ctx context.Context, req *btpb.ReadModifyWri
 	return &btpb.ReadModifyWriteRowResponse{Row: res}, nil
 }
 
+func (s *server) SampleRowKeys(req *btpb.SampleRowKeysRequest, stream btpb.Bigtable_SampleRowKeysServer) error {
+	s.mu.Lock()
+	tbl, ok := s.tables[req.TableName]
+	s.mu.Unlock()
+	if !ok {
+		return fmt.Errorf("no such table %q", req.TableName)
+	}
+
+	tbl.mu.RLock()
+	defer tbl.mu.RUnlock()
+
+	// The return value of SampleRowKeys is very loosely defined. Return at least the
+	// final row key in the table and choose other row keys randomly.
+	var offset int64
+	for i, row := range tbl.rows {
+		if i == len(tbl.rows)-1 || rand.Int31n(100) == 0 {
+			resp := &btpb.SampleRowKeysResponse{
+				RowKey:      []byte(row.key),
+				OffsetBytes: offset,
+			}
+			err := stream.Send(resp)
+			if err != nil {
+				return err
+			}
+		}
+		offset += int64(row.size())
+	}
+	return nil
+}
+
 // needGC is invoked whenever the server needs gcloop running.
 func (s *server) needGC() {
 	s.mu.Lock()
@@ -874,6 +904,17 @@ func (r *row) gc(rules map[string]*btapb.GcRule) {
 		}
 		r.cells[col] = applyGC(cs, rule)
 	}
+}
+
+// size returns the total size of all cell values in the row.
+func (r *row) size() int {
+	size := 0
+	for _, cells := range r.cells {
+		for _, cell := range cells {
+			size += len(cell.value)
+		}
+	}
+	return size
 }
 
 var gcTypeWarn sync.Once
