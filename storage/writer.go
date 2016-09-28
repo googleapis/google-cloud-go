@@ -87,7 +87,7 @@ func (w *Writer) open() error {
 			Context(w.ctx)
 
 		var resp *raw.Object
-		err := applyConds("NewWriter", w.o.conds, call)
+		err := applyConds("NewWriter", w.o.gen, &w.o.conds, call)
 		if err == nil {
 			resp, err = call.Do()
 		}

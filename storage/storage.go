@@ -321,9 +321,9 @@ type ObjectHandle struct {
 	c      *Client
 	bucket string
 	object string
-
-	acl   ACLHandle
-	conds []Condition
+	acl    ACLHandle
+	gen    int64 // a negative value indicates latest
+	conds  Conditions
 }
 
 // ACL provides access to the object's access control list.
@@ -333,8 +333,23 @@ func (o *ObjectHandle) ACL() *ACLHandle {
 	return &o.acl
 }
 
-// WithConditions returns a copy of o using the provided conditions.
-func (o *ObjectHandle) WithConditions(conds ...Condition) *ObjectHandle {
+// Generation returns a new ObjectHandle that operates on a specific generation
+// of the object.
+// By default, the handle operates on the latest generation. Not
+// all operations work when given a specific generation; check the API
+// endpoints at https://cloud.google.com/storage/docs/json_api/ for details.
+func (o *ObjectHandle) Generation(gen int64) *ObjectHandle {
+	o2 := *o
+	o2.gen = gen
+	return &o2
+}
+
+// If returns a new ObjectHandle that applies a set of preconditions.
+// Preconditions already set on the ObjectHandle are ignored.
+// Operations on the new handle will only occur if the preconditions are
+// satisfied. See https://cloud.google.com/storage/docs/generations-preconditions
+// for more details.
+func (o *ObjectHandle) If(conds Conditions) *ObjectHandle {
 	o2 := *o
 	o2.conds = conds
 	return &o2
@@ -347,7 +362,7 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (*ObjectAttrs, error) {
 		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
 	}
 	call := o.c.raw.Objects.Get(o.bucket, o.object).Projection("full").Context(ctx)
-	if err := applyConds("Attrs", o.conds, call); err != nil {
+	if err := applyConds("Attrs", o.gen, &o.conds, call); err != nil {
 		return nil, err
 	}
 	obj, err := call.Do()
@@ -368,7 +383,7 @@ func (o *ObjectHandle) Update(ctx context.Context, attrs ObjectAttrs) (*ObjectAt
 		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
 	}
 	call := o.c.raw.Objects.Patch(o.bucket, o.object, attrs.toRawObject(o.bucket)).Projection("full").Context(ctx)
-	if err := applyConds("Update", o.conds, call); err != nil {
+	if err := applyConds("Update", o.gen, &o.conds, call); err != nil {
 		return nil, err
 	}
 	obj, err := call.Do()
@@ -387,7 +402,7 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 		return fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
 	}
 	call := o.c.raw.Objects.Delete(o.bucket, o.object).Context(ctx)
-	if err := applyConds("Delete", o.conds, call); err != nil {
+	if err := applyConds("Delete", o.gen, &o.conds, call); err != nil {
 		return err
 	}
 	err := call.Do()
@@ -447,10 +462,14 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	if offset < 0 {
 		return nil, fmt.Errorf("storage: invalid offset %d < 0", offset)
 	}
+	if err := o.conds.validate("NewRangeReader"); err != nil {
+		return nil, err
+	}
 	u := &url.URL{
-		Scheme: "https",
-		Host:   "storage.googleapis.com",
-		Path:   fmt.Sprintf("/%s/%s", o.bucket, o.object),
+		Scheme:   "https",
+		Host:     "storage.googleapis.com",
+		Path:     fmt.Sprintf("/%s/%s", o.bucket, o.object),
+		RawQuery: conditionsQuery(o.gen, &o.conds),
 	}
 	verb := "GET"
 	if length == 0 {
@@ -458,9 +477,6 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	}
 	req, err := http.NewRequest(verb, u.String(), nil)
 	if err != nil {
-		return nil, err
-	}
-	if err := applyConds("NewReader", o.conds, objectsGetCall{req}); err != nil {
 		return nil, err
 	}
 	if length < 0 && offset > 0 {
@@ -789,105 +805,189 @@ func (c *contentTyper) ContentType() string {
 	return c.t
 }
 
-// A Condition constrains methods to act on specific generations of
+// Conditions constrain methods to act on specific generations of
 // resources.
 //
-// Not all conditions or combinations of conditions are applicable to
-// all methods.
-type Condition interface {
-	// method is the high-level ObjectHandle method name, for
-	// error messages.  call is the call object to modify.
-	modifyCall(method string, call interface{}) error
+// The zero value is an empty set of constraints. Not all conditions or
+// combinations of conditions are applicable to all methods.
+// See https://cloud.google.com/storage/docs/generations-preconditions
+// for details on how these operate.
+type Conditions struct {
+	// Generation constraints.
+	// At most one of the following can be set to a non-zero value.
+
+	// GenerationMatch specifies that the object must have the given generation
+	// for the operation to occur.
+	// If GenerationMatch is zero, it has no effect.
+	// Use DoesNotExist to specify that the object does not exist in the bucket.
+	GenerationMatch int64
+
+	// GenerationNotMatch specifies that the object must not have the given
+	// generation for the operation to occur.
+	// If GenerationNotMatch is zero, it has no effect.
+	GenerationNotMatch int64
+
+	// DoesNotExist specifies that the object must not exist in the bucket for
+	// the operation to occur.
+	// If DoesNotExist is false, it has no effect.
+	DoesNotExist bool
+
+	// Metadata generation constraints.
+	// At most one of the following can be set to a non-zero value.
+
+	// MetagenerationMatch specifies that the object must have the given
+	// metageneration for the operation to occur.
+	// If MetagenerationMatch is zero, it has no effect.
+	MetagenerationMatch int64
+
+	// MetagenerationNotMatch specifies that the object must not have the given
+	// metageneration for the operation to occur.
+	// If MetagenerationNotMatch is zero, it has no effect.
+	MetagenerationNotMatch int64
+}
+
+func (c *Conditions) validate(method string) error {
+	if !c.isGenerationValid() {
+		return fmt.Errorf("storage: %s: multiple conditions specified for generation", method)
+	}
+	if !c.isMetagenerationValid() {
+		return fmt.Errorf("storage: %s: multiple conditions specified for metageneration", method)
+	}
+	return nil
+}
+
+func (c *Conditions) isGenerationValid() bool {
+	n := 0
+	if c.GenerationMatch != 0 {
+		n++
+	}
+	if c.GenerationNotMatch != 0 {
+		n++
+	}
+	if c.DoesNotExist {
+		n++
+	}
+	return n <= 1
+}
+
+func (c *Conditions) isMetagenerationValid() bool {
+	return c.MetagenerationMatch == 0 || c.MetagenerationNotMatch == 0
 }
 
 // applyConds modifies the provided call using the conditions in conds.
 // call is something that quacks like a *raw.WhateverCall.
-func applyConds(method string, conds []Condition, call interface{}) error {
-	for _, cond := range conds {
-		if err := cond.modifyCall(method, call); err != nil {
-			return err
+func applyConds(method string, gen int64, conds *Conditions, call interface{}) error {
+	if err := conds.validate(method); err != nil {
+		return err
+	}
+	cval := reflect.ValueOf(call)
+	if gen >= 0 {
+		if !setConditionField(cval, "Generation", gen) {
+			return fmt.Errorf("storage: %s: generation not supported", method)
+		}
+	}
+	switch {
+	case conds.GenerationMatch != 0:
+		if !setConditionField(cval, "IfGenerationMatch", conds.GenerationMatch) {
+			return fmt.Errorf("storage: %s: ifGenerationMatch not supported", method)
+		}
+	case conds.GenerationNotMatch != 0:
+		if !setConditionField(cval, "IfGenerationNotMatch", conds.GenerationNotMatch) {
+			return fmt.Errorf("storage: %s: ifGenerationNotMatch not supported", method)
+		}
+	case conds.DoesNotExist:
+		if !setConditionField(cval, "IfGenerationMatch", int64(0)) {
+			return fmt.Errorf("storage: %s: DoesNotExist not supported", method)
+		}
+	}
+	switch {
+	case conds.MetagenerationMatch != 0:
+		if !setConditionField(cval, "IfMetagenerationMatch", conds.MetagenerationMatch) {
+			return fmt.Errorf("storage: %s: ifMetagenerationMatch not supported", method)
+		}
+	case conds.MetagenerationNotMatch != 0:
+		if !setConditionField(cval, "IfMetagenerationNotMatch", conds.MetagenerationNotMatch) {
+			return fmt.Errorf("storage: %s: ifMetagenerationNotMatch not supported", method)
 		}
 	}
 	return nil
 }
 
-// toSourceConds returns a slice of Conditions derived from Conds that instead
-// function on the equivalent Source methods of a call.
-func toSourceConds(conds []Condition) []Condition {
-	out := make([]Condition, 0, len(conds))
-	for _, c := range conds {
-		switch c := c.(type) {
-		case genCond:
-			var m string
-			if strings.HasPrefix(c.method, "If") {
-				m = "IfSource" + c.method[2:]
-			} else {
-				m = "Source" + c.method
-			}
-			out = append(out, genCond{method: m, val: c.val})
-		default:
-			// NOTE(djd): If the message from unsupportedCond becomes
-			// confusing, we'll need to find a way for Conditions to
-			// identify themselves.
-			out = append(out, unsupportedCond{})
-		}
+func applySourceConds(gen int64, conds *Conditions, call *raw.ObjectsRewriteCall) error {
+	if gen >= 0 {
+		call.SourceGeneration(gen)
 	}
-	return out
-}
-
-func Generation(gen int64) Condition               { return genCond{"Generation", gen} }
-func IfGenerationMatch(gen int64) Condition        { return genCond{"IfGenerationMatch", gen} }
-func IfGenerationNotMatch(gen int64) Condition     { return genCond{"IfGenerationNotMatch", gen} }
-func IfMetaGenerationMatch(gen int64) Condition    { return genCond{"IfMetagenerationMatch", gen} }
-func IfMetaGenerationNotMatch(gen int64) Condition { return genCond{"IfMetagenerationNotMatch", gen} }
-
-type genCond struct {
-	method string
-	val    int64
-}
-
-func (g genCond) modifyCall(srcMethod string, call interface{}) error {
-	rv := reflect.ValueOf(call)
-	meth := rv.MethodByName(g.method)
-	if !meth.IsValid() {
-		return fmt.Errorf("%s: condition %s not supported", srcMethod, g.method)
+	if conds == nil {
+		return nil
 	}
-	meth.Call([]reflect.Value{reflect.ValueOf(g.val)})
+	if err := conds.validate("CopyTo source"); err != nil {
+		return err
+	}
+	if gen >= 0 {
+		call.SourceGeneration(gen)
+	}
+	switch {
+	case conds.GenerationMatch != 0:
+		call.IfSourceGenerationMatch(conds.GenerationMatch)
+	case conds.GenerationNotMatch != 0:
+		call.IfSourceGenerationNotMatch(conds.GenerationNotMatch)
+	case conds.DoesNotExist:
+		call.IfSourceGenerationMatch(0)
+	}
+	switch {
+	case conds.MetagenerationMatch != 0:
+		call.IfSourceMetagenerationMatch(conds.MetagenerationMatch)
+	case conds.MetagenerationNotMatch != 0:
+		call.IfSourceMetagenerationNotMatch(conds.MetagenerationNotMatch)
+	}
 	return nil
 }
 
-type unsupportedCond struct{}
-
-func (unsupportedCond) modifyCall(srcMethod string, call interface{}) error {
-	return fmt.Errorf("%s: condition not supported", srcMethod)
-}
-
-func appendParam(req *http.Request, k, v string) {
-	sep := ""
-	if req.URL.RawQuery != "" {
-		sep = "&"
+// setConditionField sets a field on a *raw.WhateverCall.
+// We can't use anonymous interfaces because the return type is
+// different, since the field setters are builders.
+func setConditionField(call reflect.Value, name string, value interface{}) bool {
+	m := call.MethodByName(name)
+	if !m.IsValid() {
+		return false
 	}
-	req.URL.RawQuery += sep + url.QueryEscape(k) + "=" + url.QueryEscape(v)
+	m.Call([]reflect.Value{reflect.ValueOf(value)})
+	return true
 }
 
-// objectsGetCall wraps an *http.Request for an object fetch call, but adds the methods
-// that modifyCall searches for by name. (the same names as the raw, auto-generated API)
-type objectsGetCall struct{ req *http.Request }
+// conditionsQuery returns the generation and conditions as a URL query
+// string suitable for URL.RawQuery.  It assumes that the conditions
+// have been validated.
+func conditionsQuery(gen int64, conds *Conditions) string {
+	// URL escapes are elided because integer strings are URL-safe.
+	var buf []byte
 
-func (c objectsGetCall) Generation(gen int64) {
-	appendParam(c.req, "generation", fmt.Sprint(gen))
-}
-func (c objectsGetCall) IfGenerationMatch(gen int64) {
-	appendParam(c.req, "ifGenerationMatch", fmt.Sprint(gen))
-}
-func (c objectsGetCall) IfGenerationNotMatch(gen int64) {
-	appendParam(c.req, "ifGenerationNotMatch", fmt.Sprint(gen))
-}
-func (c objectsGetCall) IfMetagenerationMatch(gen int64) {
-	appendParam(c.req, "ifMetagenerationMatch", fmt.Sprint(gen))
-}
-func (c objectsGetCall) IfMetagenerationNotMatch(gen int64) {
-	appendParam(c.req, "ifMetagenerationNotMatch", fmt.Sprint(gen))
+	appendParam := func(s string, n int64) {
+		if len(buf) > 0 {
+			buf = append(buf, '&')
+		}
+		buf = append(buf, s...)
+		buf = strconv.AppendInt(buf, n, 10)
+	}
+
+	if gen >= 0 {
+		appendParam("generation=", gen)
+	}
+	switch {
+	case conds.GenerationMatch != 0:
+		appendParam("ifGenerationMatch=", conds.GenerationMatch)
+	case conds.GenerationNotMatch != 0:
+		appendParam("ifGenerationNotMatch=", conds.GenerationNotMatch)
+	case conds.DoesNotExist:
+		appendParam("ifGenerationMatch=", 0)
+	}
+	switch {
+	case conds.MetagenerationMatch != 0:
+		appendParam("ifMetagenerationMatch=", conds.MetagenerationMatch)
+	case conds.MetagenerationNotMatch != 0:
+		appendParam("ifMetagenerationNotMatch=", conds.MetagenerationNotMatch)
+	}
+	return string(buf)
 }
 
 // composeSourceObj wraps a *raw.ComposeRequestSourceObjects, but adds the methods

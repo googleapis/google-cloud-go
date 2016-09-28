@@ -112,10 +112,10 @@ func (c *Copier) callRewrite(ctx context.Context, src *ObjectHandle, rawObj *raw
 	if c.RewriteToken != "" {
 		call.RewriteToken(c.RewriteToken)
 	}
-	if err := applyConds("Copy destination", c.dst.conds, call); err != nil {
+	if err := applyConds("Copy destination", c.dst.gen, &c.dst.conds, call); err != nil {
 		return nil, err
 	}
-	if err := applyConds("Copy source", toSourceConds(c.src.conds), call); err != nil {
+	if err := applySourceConds(c.src.gen, &c.src.conds, call); err != nil {
 		return nil, err
 	}
 	res, err := call.Do()
@@ -169,14 +169,14 @@ func (c *Composer) Run(ctx context.Context) (*ObjectAttrs, error) {
 		srcObj := &raw.ComposeRequestSourceObjects{
 			Name: src.object,
 		}
-		if err := applyConds("ComposeFrom source", src.conds, composeSourceObj{srcObj}); err != nil {
+		if err := applyConds("ComposeFrom source", src.gen, &src.conds, composeSourceObj{srcObj}); err != nil {
 			return nil, err
 		}
 		req.SourceObjects = append(req.SourceObjects, srcObj)
 	}
 
 	call := c.dst.c.raw.Objects.Compose(c.dst.bucket, c.dst.object, req).Context(ctx)
-	if err := applyConds("ComposeFrom destination", c.dst.conds, call); err != nil {
+	if err := applyConds("ComposeFrom destination", c.dst.gen, c.dst.conds, call); err != nil {
 		return nil, err
 	}
 

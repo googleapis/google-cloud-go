@@ -342,40 +342,40 @@ func TestCondition(t *testing.T) {
 		want string
 	}{
 		{
-			func() { obj.WithConditions(Generation(1234)).NewReader(ctx) },
+			func() { obj.Generation(1234).NewReader(ctx) },
 			"GET /buck/obj?generation=1234",
 		},
 		{
-			func() { obj.WithConditions(IfGenerationMatch(1234)).NewReader(ctx) },
+			func() { obj.If(Conditions{GenerationMatch: 1234}).NewReader(ctx) },
 			"GET /buck/obj?ifGenerationMatch=1234",
 		},
 		{
-			func() { obj.WithConditions(IfGenerationNotMatch(1234)).NewReader(ctx) },
+			func() { obj.If(Conditions{GenerationNotMatch: 1234}).NewReader(ctx) },
 			"GET /buck/obj?ifGenerationNotMatch=1234",
 		},
 		{
-			func() { obj.WithConditions(IfMetaGenerationMatch(1234)).NewReader(ctx) },
+			func() { obj.If(Conditions{MetagenerationMatch: 1234}).NewReader(ctx) },
 			"GET /buck/obj?ifMetagenerationMatch=1234",
 		},
 		{
-			func() { obj.WithConditions(IfMetaGenerationNotMatch(1234)).NewReader(ctx) },
+			func() { obj.If(Conditions{MetagenerationNotMatch: 1234}).NewReader(ctx) },
 			"GET /buck/obj?ifMetagenerationNotMatch=1234",
 		},
 		{
-			func() { obj.WithConditions(IfMetaGenerationNotMatch(1234)).Attrs(ctx) },
+			func() { obj.If(Conditions{MetagenerationNotMatch: 1234}).Attrs(ctx) },
 			"GET /storage/v1/b/buck/o/obj?alt=json&ifMetagenerationNotMatch=1234&projection=full",
 		},
 		{
-			func() { obj.WithConditions(IfMetaGenerationMatch(1234)).Update(ctx, ObjectAttrs{}) },
+			func() { obj.If(Conditions{MetagenerationMatch: 1234}).Update(ctx, ObjectAttrs{}) },
 			"PATCH /storage/v1/b/buck/o/obj?alt=json&ifMetagenerationMatch=1234&projection=full",
 		},
 		{
-			func() { obj.WithConditions(Generation(1234)).Delete(ctx) },
+			func() { obj.Generation(1234).Delete(ctx) },
 			"DELETE /storage/v1/b/buck/o/obj?alt=json&generation=1234",
 		},
 		{
 			func() {
-				w := obj.WithConditions(IfGenerationMatch(1234)).NewWriter(ctx)
+				w := obj.If(Conditions{GenerationMatch: 1234}).NewWriter(ctx)
 				w.ContentType = "text/plain"
 				w.Close()
 			},
@@ -383,7 +383,15 @@ func TestCondition(t *testing.T) {
 		},
 		{
 			func() {
-				obj.WithConditions(IfGenerationMatch(1234)).CopyTo(ctx, dst.WithConditions(IfMetaGenerationMatch(5678)), nil)
+				w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+				w.ContentType = "text/plain"
+				w.Close()
+			},
+			"POST /upload/storage/v1/b/buck/o?alt=json&ifGenerationMatch=0&projection=full&uploadType=multipart",
+		},
+		{
+			func() {
+				obj.If(Conditions{GenerationMatch: 1234}).CopyTo(ctx, dst.If(Conditions{MetagenerationMatch: 5678}), nil)
 			},
 			"POST /storage/v1/b/buck/o/obj/rewriteTo/b/dstbuck/o/dst?alt=json&ifMetagenerationMatch=5678&ifSourceGenerationMatch=1234&projection=full",
 		},
@@ -406,9 +414,9 @@ func TestCondition(t *testing.T) {
 	}
 
 	// Test an error, too:
-	err = obj.WithConditions(Generation(1234)).NewWriter(ctx).Close()
-	if err == nil || !strings.Contains(err.Error(), "NewWriter: condition Generation not supported") {
-		t.Errorf("want error about unsupported condition; got %v", err)
+	err = obj.Generation(1234).NewWriter(ctx).Close()
+	if err == nil || !strings.Contains(err.Error(), "NewWriter: generation not supported") {
+		t.Errorf("want error about unsupported generation; got %v", err)
 	}
 }
 
@@ -479,10 +487,13 @@ func TestObjectCompose(t *testing.T) {
 		},
 		{
 			desc: "with conditions",
-			dst:  c.Bucket("foo").Object("bar").WithConditions(IfGenerationMatch(12), IfMetaGenerationMatch(34)),
+			dst: c.Bucket("foo").Object("bar").If(Conditions{
+				GenerationMatch:     12,
+				MetagenerationMatch: 34,
+			}),
 			srcs: []*ObjectHandle{
-				c.Bucket("foo").Object("baz").WithConditions(Generation(56)),
-				c.Bucket("foo").Object("quux").WithConditions(IfGenerationMatch(78)),
+				c.Bucket("foo").Object("baz").Generation(56),
+				c.Bucket("foo").Object("quux").If(Conditions{GenerationMatch: 78}),
 			},
 			wantURL: "/storage/v1/b/foo/o/bar/compose?alt=json&ifGenerationMatch=12&ifMetagenerationMatch=34",
 			wantReq: raw.ComposeRequest{
@@ -539,7 +550,7 @@ func TestObjectCompose(t *testing.T) {
 		},
 		{
 			desc: "destination, bad condition",
-			dst:  c.Bucket("foo").Object("bar").WithConditions(Generation(12)),
+			dst:  c.Bucket("foo").Object("bar").Generation(12),
 			srcs: []*ObjectHandle{
 				c.Bucket("foo").Object("baz"),
 			},
@@ -549,7 +560,7 @@ func TestObjectCompose(t *testing.T) {
 			desc: "source, bad condition",
 			dst:  c.Bucket("foo").Object("bar"),
 			srcs: []*ObjectHandle{
-				c.Bucket("foo").Object("baz").WithConditions(IfMetaGenerationMatch(12)),
+				c.Bucket("foo").Object("baz").If(Conditions{MetagenerationMatch: 12}),
 			},
 			wantErr: true,
 		},
