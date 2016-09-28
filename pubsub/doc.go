@@ -28,7 +28,7 @@ Publishing
 Google Cloud Pub/Sub messages are published to topics. Topics may be created
 using the pubsub package like so:
 
- topic, err := pubsubClient.NewTopic(context.Background(), "topic-name")
+ topic, err := pubsubClient.CreateTopic(context.Background(), "topic-name")
 
 Messages may then be published to a topic:
 
