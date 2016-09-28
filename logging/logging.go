@@ -22,15 +22,7 @@
 // These features are missing now, but will likely be added:
 // - There is no way to specify CallOptions.
 
-// Package logging contains a Stackdriver Logging client suitable for writing logs.
-// For reading logs, and working with sinks, metrics and monitored resources,
-// see package cloud.google.com/go/logging/logadmin.
-//
-// This client uses Logging API v2.
-// See https://cloud.google.com/logging/docs/api/v2/ for an introduction to the API.
-//
-// This package is experimental and subject to API changes.
-package logging // import "cloud.google.com/go/logging"
+package logging
 
 import (
 	"encoding/json"

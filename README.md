@@ -259,13 +259,37 @@ if it.Err() != nil {
 ```
 
 
-## Stackdriver Logging [![GoDoc](https://godoc.org/cloud.google.com/go/bigquery?status.svg)](https://godoc.org/cloud.google.com/go/logging)
+## Stackdriver Logging [![GoDoc](https://godoc.org/cloud.google.com/go/logging?status.svg)](https://godoc.org/cloud.google.com/go/logging)
 
 - [About Stackdriver Logging][cloud-logging]
 - [API documentation][cloud-logging-docs]
 - [Go client documentation][cloud-logging-ref]
 - [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/logging)
 
+### Example Usage
+
+First create a `logging.Client` to use throughout your application:
+
+```go
+ctx := context.Background()
+client, err := logging.NewClient(ctx, "my-project")
+if err != nil {
+    // TODO: Handle error.
+}
+```
+Usually, you'll want to add log entries to a buffer to be periodically flushed
+(automatically and asynchronously) to the Stackdriver Logging service.
+```go
+logger := client.Logger("my-log")
+logger.Log(logging.Entry{Payload: "something happened!"})
+```
+Close your client before your program exits, to flush any buffered log entries.
+```go
+err = client.Close()
+if err != nil {
+    // TODO: Handle error.
+}
+```
 
 ## Contributing
 
