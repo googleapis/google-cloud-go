@@ -176,7 +176,7 @@ func (c *Composer) Run(ctx context.Context) (*ObjectAttrs, error) {
 	}
 
 	call := c.dst.c.raw.Objects.Compose(c.dst.bucket, c.dst.object, req).Context(ctx)
-	if err := applyConds("ComposeFrom destination", c.dst.gen, c.dst.conds, call); err != nil {
+	if err := applyConds("ComposeFrom destination", c.dst.gen, &c.dst.conds, call); err != nil {
 		return nil, err
 	}
 
