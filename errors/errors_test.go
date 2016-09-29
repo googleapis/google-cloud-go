@@ -109,14 +109,14 @@ func TestCatchPanicNilClient(t *testing.T) {
 	log.SetOutput(buf)
 	defer func() {
 		recover()
-		body := buf.Bytes()
-		if !strings.Contains(string(body), "divide by zero") {
+		body := buf.String()
+		if !strings.Contains(body, "divide by zero") {
 			t.Errorf("error report didn't contain recovered value")
 		}
-		if !strings.Contains(string(body), "hello, error") {
+		if !strings.Contains(body, "hello, error") {
 			t.Errorf("error report didn't contain message")
 		}
-		if !strings.Contains(string(body), "errors.TestCatchPanicNilClient") {
+		if !strings.Contains(body, "TestCatchPanicNilClient") {
 			t.Errorf("error report didn't contain recovered value")
 		}
 	}()
