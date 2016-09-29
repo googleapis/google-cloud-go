@@ -108,6 +108,19 @@ var newApiInterface = func(ctx context.Context, opts ...option.ClientOption) (ap
 	return client, err
 }
 
+type loggerInterface interface {
+	LogSync(ctx context.Context, e logging.Entry) error
+}
+
+var newLoggerInterface = func(ctx context.Context, projectID string, opts ...option.ClientOption) (loggerInterface, error) {
+	lc, err := logging.NewClient(ctx, projectID, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("creating Logging client: %v", err)
+	}
+	l := lc.Logger("errorreports")
+	return l, nil
+}
+
 type sender interface {
 	send(ctx context.Context, r *http.Request, message string)
 }
@@ -121,7 +134,7 @@ type errorApiSender struct {
 
 // loggingSender sends error reports using the Stackdriver Logging API.
 type loggingSender struct {
-	loggingClient  *logging.Client
+	logger         loggerInterface
 	projectID      string
 	serviceContext map[string]string
 }
@@ -136,13 +149,13 @@ type Client struct {
 
 func NewClient(ctx context.Context, projectID, serviceName, serviceVersion string, useLogging bool, opts ...option.ClientOption) (*Client, error) {
 	if useLogging {
-		l, err := logging.NewClient(ctx, projectID, "errorreports", opts...)
+		l, err := newLoggerInterface(ctx, projectID, opts...)
 		if err != nil {
 			return nil, fmt.Errorf("creating Logging client: %v", err)
 		}
 		sender := &loggingSender{
-			loggingClient: l,
-			projectID:     projectID,
+			logger:    l,
+			projectID: projectID,
 			serviceContext: map[string]string{
 				"service": serviceName,
 			},
@@ -332,10 +345,10 @@ func (s *loggingSender) send(ctx context.Context, r *http.Request, message strin
 		}
 	}
 	e := logging.Entry{
-		Level:   logging.Error,
-		Payload: payload,
+		Severity: logging.Error,
+		Payload:  payload,
 	}
-	err := s.loggingClient.LogSync(e)
+	err := s.logger.LogSync(ctx, e)
 	if err != nil {
 		log.Println("Error writing error report:", err, "report:", payload)
 	}
