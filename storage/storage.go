@@ -324,7 +324,7 @@ type ObjectHandle struct {
 	object string
 	acl    ACLHandle
 	gen    int64 // a negative value indicates latest
-	conds  Conditions
+	conds  *Conditions
 }
 
 // ACL provides access to the object's access control list.
@@ -352,7 +352,7 @@ func (o *ObjectHandle) Generation(gen int64) *ObjectHandle {
 // for more details.
 func (o *ObjectHandle) If(conds Conditions) *ObjectHandle {
 	o2 := *o
-	o2.conds = conds
+	o2.conds = &conds
 	return &o2
 }
 
@@ -363,7 +363,7 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (*ObjectAttrs, error) {
 		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
 	}
 	call := o.c.raw.Objects.Get(o.bucket, o.object).Projection("full").Context(ctx)
-	if err := applyConds("Attrs", o.gen, &o.conds, call); err != nil {
+	if err := applyConds("Attrs", o.gen, o.conds, call); err != nil {
 		return nil, err
 	}
 	obj, err := call.Do()
@@ -415,8 +415,9 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 	}
 	rawObj := attrs.toRawObject(o.bucket)
 	rawObj.ForceSendFields = fields
+
 	call := o.c.raw.Objects.Patch(o.bucket, o.object, rawObj).Projection("full").Context(ctx)
-	if err := applyConds("Update", o.gen, &o.conds, call); err != nil {
+	if err := applyConds("Update", o.gen, o.conds, call); err != nil {
 		return nil, err
 	}
 	obj, err := call.Do()
@@ -456,7 +457,7 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 		return fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
 	}
 	call := o.c.raw.Objects.Delete(o.bucket, o.object).Context(ctx)
-	if err := applyConds("Delete", o.gen, &o.conds, call); err != nil {
+	if err := applyConds("Delete", o.gen, o.conds, call); err != nil {
 		return err
 	}
 	err := call.Do()
@@ -507,7 +508,7 @@ func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
 }
 
 // NewRangeReader reads part of an object, reading at most length bytes
-// starting at the given offset.  If length is negative, the object is read
+// starting at the given offset. If length is negative, the object is read
 // until the end.
 func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64) (*Reader, error) {
 	if !utf8.ValidString(o.object) {
@@ -516,14 +517,16 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	if offset < 0 {
 		return nil, fmt.Errorf("storage: invalid offset %d < 0", offset)
 	}
-	if err := o.conds.validate("NewRangeReader"); err != nil {
-		return nil, err
+	if o.conds != nil {
+		if err := o.conds.validate("NewRangeReader"); err != nil {
+			return nil, err
+		}
 	}
 	u := &url.URL{
 		Scheme:   "https",
 		Host:     "storage.googleapis.com",
 		Path:     fmt.Sprintf("/%s/%s", o.bucket, o.object),
-		RawQuery: conditionsQuery(o.gen, &o.conds),
+		RawQuery: conditionsQuery(o.gen, o.conds),
 	}
 	verb := "GET"
 	if length == 0 {
@@ -901,6 +904,9 @@ type Conditions struct {
 }
 
 func (c *Conditions) validate(method string) error {
+	if *c == (Conditions{}) {
+		return fmt.Errorf("storage: %s: empty conditions", method)
+	}
 	if !c.isGenerationValid() {
 		return fmt.Errorf("storage: %s: multiple conditions specified for generation", method)
 	}
@@ -931,14 +937,17 @@ func (c *Conditions) isMetagenerationValid() bool {
 // applyConds modifies the provided call using the conditions in conds.
 // call is something that quacks like a *raw.WhateverCall.
 func applyConds(method string, gen int64, conds *Conditions, call interface{}) error {
-	if err := conds.validate(method); err != nil {
-		return err
-	}
 	cval := reflect.ValueOf(call)
 	if gen >= 0 {
 		if !setConditionField(cval, "Generation", gen) {
 			return fmt.Errorf("storage: %s: generation not supported", method)
 		}
+	}
+	if conds == nil {
+		return nil
+	}
+	if err := conds.validate(method); err != nil {
+		return err
 	}
 	switch {
 	case conds.GenerationMatch != 0:
@@ -976,9 +985,6 @@ func applySourceConds(gen int64, conds *Conditions, call *raw.ObjectsRewriteCall
 	}
 	if err := conds.validate("CopyTo source"); err != nil {
 		return err
-	}
-	if gen >= 0 {
-		call.SourceGeneration(gen)
 	}
 	switch {
 	case conds.GenerationMatch != 0:
@@ -1026,6 +1032,9 @@ func conditionsQuery(gen int64, conds *Conditions) string {
 
 	if gen >= 0 {
 		appendParam("generation=", gen)
+	}
+	if conds == nil {
+		return string(buf)
 	}
 	switch {
 	case conds.GenerationMatch != 0:

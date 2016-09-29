@@ -420,6 +420,20 @@ func TestCondition(t *testing.T) {
 	}
 }
 
+func TestConditionErrors(t *testing.T) {
+	for _, conds := range []Conditions{
+		{GenerationMatch: 0},
+		{DoesNotExist: false}, // same as above, actually
+		{GenerationMatch: 1, GenerationNotMatch: 2},
+		{GenerationNotMatch: 2, DoesNotExist: true},
+		{MetagenerationMatch: 1, MetagenerationNotMatch: 2},
+	} {
+		if err := conds.validate(""); err == nil {
+			t.Errorf("%+v: got nil, want error", conds)
+		}
+	}
+}
+
 // Test object compose.
 func TestObjectCompose(t *testing.T) {
 	gotURL := make(chan string, 1)
