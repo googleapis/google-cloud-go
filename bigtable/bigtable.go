@@ -118,7 +118,7 @@ func (c *Client) Open(table string) *Table {
 // By default, the yielded rows will contain all values in all cells.
 // Use RowFilter to limit the cells returned.
 func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
-	ctx = metadata.NewContext(ctx, t.md)
+	ctx = mergeMetadata(ctx, t.md)
 
 	var prevRowKey string
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
@@ -371,7 +371,7 @@ func mutationsAreRetryable(muts []*btpb.Mutation) bool {
 
 // Apply applies a Mutation to a specific row.
 func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error {
-	ctx = metadata.NewContext(ctx, t.md)
+	ctx = mergeMetadata(ctx, t.md)
 	after := func(res proto.Message) {
 		for _, o := range opts {
 			o.after(res)
@@ -537,7 +537,7 @@ type entryErr struct {
 //
 // Conditional mutations cannot be applied in bulk and providing one will result in an error.
 func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutation, opts ...ApplyOption) ([]error, error) {
-	ctx = metadata.NewContext(ctx, t.md)
+	ctx = mergeMetadata(ctx, t.md)
 	if len(rowKeys) != len(muts) {
 		return nil, fmt.Errorf("mismatched rowKeys and mutation array lengths: %d, %d", len(rowKeys), len(muts))
 	}
@@ -663,7 +663,7 @@ func (ts Timestamp) Time() time.Time { return time.Unix(0, int64(ts)*1e3) }
 // ApplyReadModifyWrite applies a ReadModifyWrite to a specific row.
 // It returns the newly written cells.
 func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
-	ctx = metadata.NewContext(ctx, t.md)
+	ctx = mergeMetadata(ctx, t.md)
 	req := &btpb.ReadModifyWriteRowRequest{
 		TableName: t.c.fullTableName(t.table),
 		RowKey:    []byte(row),
@@ -715,4 +715,11 @@ func (m *ReadModifyWrite) Increment(family, column string, delta int64) {
 		ColumnQualifier: []byte(column),
 		Rule:            &btpb.ReadModifyWriteRule_IncrementAmount{delta},
 	})
+}
+
+// mergeMetadata returns a context populated by the existing metadata, if any,
+// joined with internal metadata.
+func mergeMetadata(ctx context.Context, md metadata.MD) context.Context {
+	mdCopy, _ := metadata.FromContext(ctx)
+	return metadata.NewContext(ctx, metadata.Join(mdCopy, md))
 }
