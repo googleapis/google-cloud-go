@@ -39,6 +39,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
 
+	"cloud.google.com/go/internal/optional"
 	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/storage/v1"
@@ -378,11 +379,43 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (*ObjectAttrs, error) {
 // Update updates an object with the provided attributes.
 // All zero-value attributes are ignored.
 // ErrObjectNotExist will be returned if the object is not found.
-func (o *ObjectHandle) Update(ctx context.Context, attrs ObjectAttrs) (*ObjectAttrs, error) {
+func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (*ObjectAttrs, error) {
 	if !utf8.ValidString(o.object) {
 		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
 	}
-	call := o.c.raw.Objects.Patch(o.bucket, o.object, attrs.toRawObject(o.bucket)).Projection("full").Context(ctx)
+	var attrs ObjectAttrs
+	var fields []string
+	if uattrs.ContentType != nil {
+		attrs.ContentType = optional.ToString(uattrs.ContentType)
+		fields = append(fields, "ContentType")
+	}
+	if uattrs.ContentLanguage != nil {
+		attrs.ContentLanguage = optional.ToString(uattrs.ContentLanguage)
+		fields = append(fields, "ContentLanguage")
+	}
+	if uattrs.ContentEncoding != nil {
+		attrs.ContentEncoding = optional.ToString(uattrs.ContentEncoding)
+		fields = append(fields, "ContentType")
+	}
+	if uattrs.ContentDisposition != nil {
+		attrs.ContentDisposition = optional.ToString(uattrs.ContentDisposition)
+		fields = append(fields, "ContentDisposition")
+	}
+	if uattrs.CacheControl != nil {
+		attrs.CacheControl = optional.ToString(uattrs.CacheControl)
+		fields = append(fields, "CacheControl")
+	}
+	if uattrs.Metadata != nil {
+		attrs.Metadata = uattrs.Metadata
+		fields = append(fields, "Metadata")
+	}
+	if uattrs.ACL != nil {
+		attrs.ACL = uattrs.ACL
+		fields = append(fields, "Acl")
+	}
+	rawObj := attrs.toRawObject(o.bucket)
+	rawObj.ForceSendFields = fields
+	call := o.c.raw.Objects.Patch(o.bucket, o.object, rawObj).Projection("full").Context(ctx)
 	if err := applyConds("Update", o.gen, &o.conds, call); err != nil {
 		return nil, err
 	}
@@ -394,6 +427,27 @@ func (o *ObjectHandle) Update(ctx context.Context, attrs ObjectAttrs) (*ObjectAt
 		return nil, err
 	}
 	return newObject(obj), nil
+}
+
+// ObjectAttrsToUpdate is used to update the attributes of an object.
+// Only fields set to non-nil values will be updated.
+// Set a field to its zero value to delete it.
+//
+// For example, to change ContentType and delete ContentEncoding and
+// Metadata, use
+//    ObjectAttrsToUpdate{
+//        ContentType: "text/html",
+//        ContentEncoding: "",
+//        Metadata: map[string]string{},
+//    }
+type ObjectAttrsToUpdate struct {
+	ContentType        optional.String
+	ContentLanguage    optional.String
+	ContentEncoding    optional.String
+	ContentDisposition optional.String
+	CacheControl       optional.String
+	Metadata           map[string]string // set to map[string]string{} to delete
+	ACL                []ACLRule
 }
 
 // Delete deletes the single specified object.

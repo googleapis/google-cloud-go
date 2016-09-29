@@ -366,7 +366,7 @@ func TestCondition(t *testing.T) {
 			"GET /storage/v1/b/buck/o/obj?alt=json&ifMetagenerationNotMatch=1234&projection=full",
 		},
 		{
-			func() { obj.If(Conditions{MetagenerationMatch: 1234}).Update(ctx, ObjectAttrs{}) },
+			func() { obj.If(Conditions{MetagenerationMatch: 1234}).Update(ctx, ObjectAttrsToUpdate{}) },
 			"PATCH /storage/v1/b/buck/o/obj?alt=json&ifMetagenerationMatch=1234&projection=full",
 		},
 		{

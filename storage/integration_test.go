@@ -448,7 +448,7 @@ func TestObjects(t *testing.T) {
 	}
 
 	// Test UpdateAttrs.
-	updated, err := bkt.Object(objName).Update(ctx, ObjectAttrs{
+	updated, err := bkt.Object(objName).Update(ctx, ObjectAttrsToUpdate{
 		ContentType: "text/html",
 		ACL:         []ACLRule{{Entity: "domain-google.com", Role: RoleReader}},
 	})
@@ -456,6 +456,22 @@ func TestObjects(t *testing.T) {
 		t.Errorf("UpdateAttrs failed with %v", err)
 	}
 	if want := "text/html"; updated.ContentType != want {
+		t.Errorf("updated.ContentType == %q; want %q", updated.ContentType, want)
+	}
+	if want := created; updated.Created != want {
+		t.Errorf("updated.Created == %q; want %q", updated.Created, want)
+	}
+	if !updated.Created.Before(updated.Updated) {
+		t.Errorf("updated.Updated should be newer than update.Created")
+	}
+
+	updated, err = bkt.Object(objName).Update(ctx, ObjectAttrsToUpdate{
+		ContentType: "",
+	})
+	if err != nil {
+		t.Errorf("UpdateAttrs failed with %v", err)
+	}
+	if want := ""; updated.ContentType != want {
 		t.Errorf("updated.ContentType == %q; want %q", updated.ContentType, want)
 	}
 	if want := created; updated.Created != want {

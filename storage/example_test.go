@@ -211,8 +211,9 @@ func ExampleObjectHandle_Update() {
 		// TODO: handle error.
 	}
 	// Change only the content type of the object.
-	objAttrs, err := client.Bucket("my-bucket").Object("my-object").Update(ctx, storage.ObjectAttrs{
-		ContentType: "text/html",
+	objAttrs, err := client.Bucket("my-bucket").Object("my-object").Update(ctx, storage.ObjectAttrsToUpdate{
+		ContentType:        "text/html",
+		ContentDisposition: "", // delete ContentDisposition
 	})
 	if err != nil {
 		// TODO: handle error.
