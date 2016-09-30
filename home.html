@@ -64,5 +64,17 @@
       to go.
     </div>
 
+    <div class="quote-box--supplementary">
+      <h4>Read an object from Cloud Storage</h4>
+      <div hljs hljs-language="go">
+client, err := storage.NewClient(ctx)
+if err != nil { ... }
+rc, err := client.Bucket("bucket").Object("object").NewReader(ctx)
+if err != nil { ... }
+defer rc.Close()
+body, err := ioutil.ReadAll(rc)
+if err != nil { ... }
+    </div>
+
   </div><!-- end of .container -->
 </section><!-- end of .featuring -->
