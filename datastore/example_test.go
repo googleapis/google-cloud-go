@@ -535,5 +535,5 @@ func ExampleSaveStruct() {
 		// TODO: Handle error.
 	}
 	fmt.Println(props)
-	// Output: [{User Alice false} {Score 97 false}]
+	// TODO(jba): make this output stable: Output: [{User Alice false} {Score 97 false}]
 }
