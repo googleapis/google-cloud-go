@@ -26,6 +26,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"reflect"
 	"sort"
 	"strings"
 	"testing"
@@ -413,37 +414,56 @@ func TestObjects(t *testing.T) {
 	}
 
 	// Test UpdateAttrs.
+	metadata := map[string]string{"key": "value"}
 	updated, err := bkt.Object(objName).Update(ctx, ObjectAttrsToUpdate{
-		ContentType: "text/html",
-		ACL:         []ACLRule{{Entity: "domain-google.com", Role: RoleReader}},
+		ContentType:     "text/html",
+		ContentLanguage: "en",
+		Metadata:        metadata,
+		ACL:             []ACLRule{{Entity: "domain-google.com", Role: RoleReader}},
 	})
 	if err != nil {
 		t.Errorf("UpdateAttrs failed with %v", err)
+	} else {
+		if got, want := updated.ContentType, "text/html"; got != want {
+			t.Errorf("updated.ContentType == %q; want %q", got, want)
+		}
+		if got, want := updated.ContentLanguage, "en"; got != want {
+			t.Errorf("updated.ContentLanguage == %q; want %q", updated.ContentLanguage, want)
+		}
+		if got, want := updated.Metadata, metadata; !reflect.DeepEqual(got, want) {
+			t.Errorf("updated.Metadata == %+v; want %+v", updated.Metadata, want)
+		}
+		if got, want := updated.Created, created; got != want {
+			t.Errorf("updated.Created == %q; want %q", got, want)
+		}
+		if !updated.Created.Before(updated.Updated) {
+			t.Errorf("updated.Updated should be newer than update.Created")
+		}
 	}
-	if want := "text/html"; updated.ContentType != want {
-		t.Errorf("updated.ContentType == %q; want %q", updated.ContentType, want)
-	}
-	if want := created; updated.Created != want {
-		t.Errorf("updated.Created == %q; want %q", updated.Created, want)
-	}
-	if !updated.Created.Before(updated.Updated) {
-		t.Errorf("updated.Updated should be newer than update.Created")
-	}
-
+	// Delete ContentType and ContentLanguage.
 	updated, err = bkt.Object(objName).Update(ctx, ObjectAttrsToUpdate{
-		ContentType: "",
+		ContentType:     "",
+		ContentLanguage: "",
+		Metadata:        map[string]string{},
 	})
 	if err != nil {
 		t.Errorf("UpdateAttrs failed with %v", err)
-	}
-	if want := ""; updated.ContentType != want {
-		t.Errorf("updated.ContentType == %q; want %q", updated.ContentType, want)
-	}
-	if want := created; updated.Created != want {
-		t.Errorf("updated.Created == %q; want %q", updated.Created, want)
-	}
-	if !updated.Created.Before(updated.Updated) {
-		t.Errorf("updated.Updated should be newer than update.Created")
+	} else {
+		if got, want := updated.ContentType, ""; got != want {
+			t.Errorf("updated.ContentType == %q; want %q", got, want)
+		}
+		if got, want := updated.ContentLanguage, ""; got != want {
+			t.Errorf("updated.ContentLanguage == %q; want %q", updated.ContentLanguage, want)
+		}
+		if updated.Metadata != nil {
+			t.Errorf("updated.Metadata == %+v; want nil", updated.Metadata)
+		}
+		if got, want := updated.Created, created; got != want {
+			t.Errorf("updated.Created == %q; want %q", got, want)
+		}
+		if !updated.Created.Before(updated.Updated) {
+			t.Errorf("updated.Updated should be newer than update.Created")
+		}
 	}
 
 	// Test checksums.

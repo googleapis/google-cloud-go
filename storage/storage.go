@@ -337,38 +337,52 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 		return nil, err
 	}
 	var attrs ObjectAttrs
-	var fields []string
+	// Lists of fields to send, and set to null, in the JSON.
+	var forceSendFields, nullFields []string
 	if uattrs.ContentType != nil {
 		attrs.ContentType = optional.ToString(uattrs.ContentType)
-		fields = append(fields, "ContentType")
+		forceSendFields = append(forceSendFields, "ContentType")
 	}
 	if uattrs.ContentLanguage != nil {
 		attrs.ContentLanguage = optional.ToString(uattrs.ContentLanguage)
-		fields = append(fields, "ContentLanguage")
+		// For ContentLanguage It's an error to send the empty string.
+		// Instead we send a null.
+		if attrs.ContentLanguage == "" {
+			nullFields = append(nullFields, "ContentLanguage")
+		} else {
+			forceSendFields = append(forceSendFields, "ContentLanguage")
+		}
 	}
 	if uattrs.ContentEncoding != nil {
 		attrs.ContentEncoding = optional.ToString(uattrs.ContentEncoding)
-		fields = append(fields, "ContentType")
+		forceSendFields = append(forceSendFields, "ContentType")
 	}
 	if uattrs.ContentDisposition != nil {
 		attrs.ContentDisposition = optional.ToString(uattrs.ContentDisposition)
-		fields = append(fields, "ContentDisposition")
+		forceSendFields = append(forceSendFields, "ContentDisposition")
 	}
 	if uattrs.CacheControl != nil {
 		attrs.CacheControl = optional.ToString(uattrs.CacheControl)
-		fields = append(fields, "CacheControl")
+		forceSendFields = append(forceSendFields, "CacheControl")
 	}
 	if uattrs.Metadata != nil {
 		attrs.Metadata = uattrs.Metadata
-		fields = append(fields, "Metadata")
+		if len(attrs.Metadata) == 0 {
+			// Sending the empty map is a no-op. We send null instead.
+			nullFields = append(nullFields, "Metadata")
+		} else {
+			forceSendFields = append(forceSendFields, "Metadata")
+		}
 	}
 	if uattrs.ACL != nil {
 		attrs.ACL = uattrs.ACL
-		fields = append(fields, "Acl")
+		// It's an error to attempt to delete the ACL, so
+		// we don't append to nullFields here.
+		forceSendFields = append(forceSendFields, "Acl")
 	}
 	rawObj := attrs.toRawObject(o.bucket)
-	rawObj.ForceSendFields = fields
-
+	rawObj.ForceSendFields = forceSendFields
+	rawObj.NullFields = nullFields
 	call := o.c.raw.Objects.Patch(o.bucket, o.object, rawObj).Projection("full").Context(ctx)
 	if err := applyConds("Update", o.gen, o.conds, call); err != nil {
 		return nil, err
