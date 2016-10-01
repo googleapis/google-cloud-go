@@ -26,6 +26,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/file"
 	"google.golang.org/appengine/log"
@@ -192,7 +193,7 @@ func (d *demo) copyFile(fileName string) {
 	copyName := fileName + "-copy"
 	fmt.Fprintf(d.w, "Copying file /%v/%v to /%v/%v:\n", bucket, fileName, bucket, copyName)
 
-	obj, err := d.bucket.Object(fileName).CopyTo(d.ctx, d.bucket.Object(copyName), nil)
+	obj, err := d.bucket.Object(copyName).CopierFrom(d.bucket.Object(fileName)).Run(d.ctx)
 	if err != nil {
 		d.errorf("copyFile: unable to copy /%v/%v to bucket %q, file %q: %v", bucket, fileName, bucket, copyName, err)
 		return
@@ -252,17 +253,17 @@ func (d *demo) listBucket() {
 	io.WriteString(d.w, "\nListbucket result:\n")
 
 	query := &storage.Query{Prefix: "foo"}
-	for query != nil {
-		objs, err := d.bucket.List(d.ctx, query)
+	it := d.bucket.Objects(d.ctx, query)
+	for {
+		obj, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			d.errorf("listBucket: unable to list bucket %q: %v", bucket, err)
 			return
 		}
-		query = objs.Next
-
-		for _, obj := range objs.Results {
-			d.dumpStats(obj)
-		}
+		d.dumpStats(obj)
 	}
 }
 
@@ -270,22 +271,23 @@ func (d *demo) listBucket() {
 
 func (d *demo) listDir(name, indent string) {
 	query := &storage.Query{Prefix: name, Delimiter: "/"}
-	for query != nil {
-		objs, err := d.bucket.List(d.ctx, query)
+	it := d.bucket.Objects(d.ctx, query)
+	for {
+		obj, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			d.errorf("listBucketDirMode: unable to list bucket %q: %v", bucket, err)
 			return
 		}
-		query = objs.Next
-
-		for _, obj := range objs.Results {
+		if obj.Prefix == "" {
 			fmt.Fprint(d.w, indent)
 			d.dumpStats(obj)
+			continue
 		}
-		for _, dir := range objs.Prefixes {
-			fmt.Fprintf(d.w, "%v(directory: /%v/%v)\n", indent, bucket, dir)
-			d.listDir(dir, indent+"  ")
-		}
+		fmt.Fprintf(d.w, "%v(directory: /%v/%v)\n", indent, bucket, obj.Prefix)
+		d.listDir(obj.Prefix, indent+"  ")
 	}
 }
 
