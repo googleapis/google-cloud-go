@@ -6,5 +6,5 @@
   "content": ".",
   "home": "home.html",
   "titleDelimiter": " » ",
-  "defaultModule": "google-cloud",
+  "defaultModule": "google-cloud"
 }
