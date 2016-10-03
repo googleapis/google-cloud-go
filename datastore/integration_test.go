@@ -653,6 +653,12 @@ func TestProjection(t *testing.T) {
 			200 + 300,
 		},
 		{
+			"distinct on",
+			baseQuery.Project("J").DistinctOn("J"),
+			2,
+			200 + 300,
+		},
+		{
 			"project on meaningful (GD_WHEN) field",
 			baseQuery.Project("U"),
 			3,
