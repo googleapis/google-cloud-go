@@ -312,8 +312,8 @@ func (o *ObjectHandle) If(conds Conditions) *ObjectHandle {
 // Attrs returns meta information about the object.
 // ErrObjectNotExist will be returned if the object is not found.
 func (o *ObjectHandle) Attrs(ctx context.Context) (*ObjectAttrs, error) {
-	if !utf8.ValidString(o.object) {
-		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
+	if err := o.validate(); err != nil {
+		return nil, err
 	}
 	call := o.c.raw.Objects.Get(o.bucket, o.object).Projection("full").Context(ctx)
 	if err := applyConds("Attrs", o.gen, o.conds, call); err != nil {
@@ -333,8 +333,8 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (*ObjectAttrs, error) {
 // All zero-value attributes are ignored.
 // ErrObjectNotExist will be returned if the object is not found.
 func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (*ObjectAttrs, error) {
-	if !utf8.ValidString(o.object) {
-		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
+	if err := o.validate(); err != nil {
+		return nil, err
 	}
 	var attrs ObjectAttrs
 	var fields []string
@@ -406,8 +406,8 @@ type ObjectAttrsToUpdate struct {
 
 // Delete deletes the single specified object.
 func (o *ObjectHandle) Delete(ctx context.Context) error {
-	if !utf8.ValidString(o.object) {
-		return fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
+	if err := o.validate(); err != nil {
+		return err
 	}
 	call := o.c.raw.Objects.Delete(o.bucket, o.object).Context(ctx)
 	if err := applyConds("Delete", o.gen, o.conds, call); err != nil {
@@ -438,8 +438,8 @@ func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
 // starting at the given offset. If length is negative, the object is read
 // until the end.
 func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64) (*Reader, error) {
-	if !utf8.ValidString(o.object) {
-		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
+	if err := o.validate(); err != nil {
+		return nil, err
 	}
 	if offset < 0 {
 		return nil, fmt.Errorf("storage: invalid offset %d < 0", offset)
@@ -544,6 +544,19 @@ func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer {
 		ObjectAttrs: ObjectAttrs{Name: o.object},
 		ChunkSize:   googleapi.DefaultUploadChunkSize,
 	}
+}
+
+func (o *ObjectHandle) validate() error {
+	if o.bucket == "" {
+		return errors.New("storage: bucket name is empty")
+	}
+	if o.object == "" {
+		return errors.New("storage: object name is empty")
+	}
+	if !utf8.ValidString(o.object) {
+		return fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
+	}
+	return nil
 }
 
 // parseKey converts the binary contents of a private key file

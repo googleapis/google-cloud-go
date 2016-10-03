@@ -205,19 +205,19 @@ func TestCopyToMissingFields(t *testing.T) {
 	}{
 		{
 			"mybucket", "", "mybucket", "destname",
-			"the source and destination object names must both be non-empty",
+			"name is empty",
 		},
 		{
 			"mybucket", "srcname", "mybucket", "",
-			"the source and destination object names must both be non-empty",
+			"name is empty",
 		},
 		{
 			"", "srcfile", "mybucket", "destname",
-			"the source and destination bucket names must both be non-empty",
+			"name is empty",
 		},
 		{
 			"mybucket", "srcfile", "", "destname",
-			"the source and destination bucket names must both be non-empty",
+			"name is empty",
 		},
 	}
 	ctx := context.Background()
