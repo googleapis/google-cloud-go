@@ -21,7 +21,6 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"unicode/utf8"
 
 	"golang.org/x/net/context"
 	raw "google.golang.org/api/storage/v1"
@@ -66,18 +65,11 @@ type Copier struct {
 
 // Run performs the copy.
 func (c *Copier) Run(ctx context.Context) (*ObjectAttrs, error) {
-	// TODO(jba): add ObjectHandle.validate to do these checks.
-	if c.src.bucket == "" || c.dst.bucket == "" {
-		return nil, errors.New("storage: the source and destination bucket names must both be non-empty")
+	if err := c.src.validate(); err != nil {
+		return nil, err
 	}
-	if c.src.object == "" || c.dst.object == "" {
-		return nil, errors.New("storage: the source and destination object names must both be non-empty")
-	}
-	if !utf8.ValidString(c.src.object) {
-		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", c.src.object)
-	}
-	if !utf8.ValidString(c.dst.object) {
-		return nil, fmt.Errorf("storage: dst name %q is not valid UTF-8", c.dst.object)
+	if err := c.dst.validate(); err != nil {
+		return nil, err
 	}
 	var rawObject *raw.Object
 	// If any attribute was set, then we make sure the name matches the destination
@@ -146,8 +138,8 @@ type Composer struct {
 
 // Run performs the compose operation.
 func (c *Composer) Run(ctx context.Context) (*ObjectAttrs, error) {
-	if c.dst.bucket == "" || c.dst.object == "" {
-		return nil, errors.New("storage: the destination bucket and object names must be non-empty")
+	if err := c.dst.validate(); err != nil {
+		return nil, err
 	}
 	if len(c.srcs) == 0 {
 		return nil, errors.New("storage: at least one source object must be specified")
@@ -160,11 +152,11 @@ func (c *Composer) Run(ctx context.Context) (*ObjectAttrs, error) {
 	}
 
 	for _, src := range c.srcs {
+		if err := src.validate(); err != nil {
+			return nil, err
+		}
 		if src.bucket != c.dst.bucket {
 			return nil, fmt.Errorf("storage: all source objects must be in bucket %q, found %q", c.dst.bucket, src.bucket)
-		}
-		if src.object == "" {
-			return nil, errors.New("storage: all source object names must be non-empty")
 		}
 		srcObj := &raw.ComposeRequestSourceObjects{
 			Name: src.object,
