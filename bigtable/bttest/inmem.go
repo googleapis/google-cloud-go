@@ -215,6 +215,48 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 	}, nil
 }
 
+func (s *server) DropRowRange(ctx context.Context, req *btapb.DropRowRangeRequest) (*emptypb.Empty, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	tbl, ok := s.tables[req.Name]
+	if !ok {
+		return nil, fmt.Errorf("no such table %q", req.Name)
+	}
+
+	if req.GetDeleteAllDataFromTable() {
+		tbl.rows = nil
+	} else {
+		// Delete rows by prefix
+		prefixBytes := req.GetRowKeyPrefix()
+		if prefixBytes == nil {
+			return nil, fmt.Errorf("missing row key prefix")
+		}
+		prefix := string(prefixBytes)
+
+		start := -1
+		end := 0
+		for i, row := range tbl.rows {
+			match := strings.HasPrefix(row.key, prefix)
+			if match && start == -1 {
+				start = i
+			} else if !match && start != -1 {
+				break
+			}
+			end++
+		}
+		if start != -1 {
+			// Delete the range, using method from https://github.com/golang/go/wiki/SliceTricks
+			copy(tbl.rows[start:], tbl.rows[end:])
+			for k, n := len(tbl.rows)-end+start, len(tbl.rows); k < n; k++ {
+				tbl.rows[k] = nil
+			}
+			tbl.rows = tbl.rows[:len(tbl.rows)-end+start]
+		}
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
 func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error {
 	s.mu.Lock()
 	tbl, ok := s.tables[req.TableName]
@@ -915,6 +957,10 @@ func (r *row) size() int {
 		}
 	}
 	return size
+}
+
+func (r *row) String() string {
+	return r.key
 }
 
 var gcTypeWarn sync.Once
