@@ -227,3 +227,94 @@ func TestSampleRowKeys(t *testing.T) {
 		t.Errorf("Invalid offset: got %d, want %d", got, want)
 	}
 }
+
+func TestDropRowRange(t *testing.T) {
+	s := &server{
+		tables: make(map[string]*table),
+	}
+	ctx := context.Background()
+	newTbl := btapb.Table{
+		ColumnFamilies: map[string]*btapb.ColumnFamily{
+			"cf": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{1}}},
+		},
+	}
+	tblInfo, err := s.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "cluster", TableId: "t", Table: &newTbl})
+	if err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+
+	tbl := s.tables[tblInfo.Name]
+
+	// Populate the table
+	prefixes := []string{"AAA", "BBB", "CCC", "DDD"}
+	count := 3
+
+	for _, prefix := range prefixes {
+		for i := 0; i < count; i++ {
+			req := &btpb.MutateRowRequest{
+				TableName: tblInfo.Name,
+				RowKey:    []byte(prefix + strconv.Itoa(i)),
+				Mutations: []*btpb.Mutation{{
+					Mutation: &btpb.Mutation_SetCell_{&btpb.Mutation_SetCell{
+						FamilyName:      "cf",
+						ColumnQualifier: []byte("col"),
+						TimestampMicros: 0,
+						Value:           []byte{},
+					}},
+				}},
+			}
+			if _, err := s.MutateRow(ctx, req); err != nil {
+				t.Fatalf("Populating table: %v", err)
+			}
+		}
+	}
+
+	tblSize := len(tbl.rows)
+	req := &btapb.DropRowRangeRequest{
+		Name:tblInfo.Name,
+		Target: &btapb.DropRowRangeRequest_RowKeyPrefix{[]byte("AAA")},
+	}
+	if _, err = s.DropRowRange(ctx, req); err != nil {
+		t.Fatalf("Dropping first range: %v", err)
+	}
+	got, want := len(tbl.rows), tblSize - count
+	if got != want {
+		t.Errorf("Row count after first drop: got %d (%v), want %d", got, tbl.rows, want)
+	}
+
+	req = &btapb.DropRowRangeRequest{
+		Name:tblInfo.Name,
+		Target: &btapb.DropRowRangeRequest_RowKeyPrefix{[]byte("DDD")},
+	}
+	if _, err = s.DropRowRange(ctx, req); err != nil {
+		t.Fatalf("Dropping second range: %v", err)
+	}
+	got, want = len(tbl.rows), tblSize - (2 * count)
+	if got != want  {
+		t.Errorf("Row count after second drop: got %d (%v), want %d", got, tbl.rows, want)
+	}
+
+	req = &btapb.DropRowRangeRequest{
+		Name:tblInfo.Name,
+		Target: &btapb.DropRowRangeRequest_RowKeyPrefix{[]byte("XXX")},
+	}
+	if _, err = s.DropRowRange(ctx, req); err != nil {
+		t.Fatalf("Dropping invalid range: %v", err)
+	}
+	got, want = len(tbl.rows), tblSize - (2 * count)
+	if got != want  {
+		t.Errorf("Row count after invalid drop: got %d (%v), want %d", got, tbl.rows, want)
+	}
+
+	req = &btapb.DropRowRangeRequest{
+		Name:tblInfo.Name,
+		Target: &btapb.DropRowRangeRequest_DeleteAllDataFromTable{true},
+	}
+	if _, err = s.DropRowRange(ctx, req); err != nil {
+		t.Fatalf("Dropping all data: %v", err)
+	}
+	got, want = len(tbl.rows), 0
+	if got != want  {
+		t.Errorf("Row count after drop all: got %d, want %d", got, want)
+	}
+}
