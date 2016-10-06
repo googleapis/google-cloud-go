@@ -408,18 +408,23 @@ func deleteLog(ctx context.Context, logID string) {
 	waitFor(func() bool { return countLogEntries(ctx, filter) == 0 })
 }
 
-// waitFor calls f periodically, blocking until it returns true.
-// It calls log.Fatal after one minute.
+// waitFor calls f repeatedly with exponential backoff, blocking until it returns true.
+// It calls log.Fatal after two minutes.
 func waitFor(f func() bool) {
+	delay := time.Second
 	timeout := time.NewTimer(2 * time.Minute)
 	for {
 		select {
-		case <-time.After(1 * time.Second):
+		case <-time.After(delay):
 			if f() {
 				timeout.Stop()
 				return
 			}
+			delay = delay * 2
 		case <-timeout.C:
+			if f() {
+				return
+			}
 			log.Fatal("timed out")
 		}
 	}
