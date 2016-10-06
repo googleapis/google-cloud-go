@@ -183,16 +183,10 @@ func (a *ACLHandle) objectDelete(ctx context.Context, entity ACLEntity) error {
 	return nil
 }
 
-func toACLRules(items []interface{}) []ACLRule {
+func toACLRules(items []*raw.ObjectAccessControl) []ACLRule {
 	r := make([]ACLRule, 0, len(items))
-	for _, v := range items {
-		if m, ok := v.(map[string]interface{}); ok {
-			entity, ok1 := m["entity"].(string)
-			role, ok2 := m["role"].(string)
-			if ok1 && ok2 {
-				r = append(r, ACLRule{Entity: ACLEntity(entity), Role: ACLRole(role)})
-			}
-		}
+	for _, item := range items {
+		r = append(r, ACLRule{Entity: ACLEntity(item.Entity), Role: ACLRole(item.Role)})
 	}
 	return r
 }
