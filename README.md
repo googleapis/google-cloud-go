@@ -16,6 +16,14 @@ backwards-incompatible changes.
 
 ## News
 
+_October 6, 2016_
+
+Package preview/logging deleted. Use logging instead.
+
+_September 27, 2016_
+
+Logging client replaced with preview version (see below).
+
 _September 8, 2016_
 
 * New clients for some of Google's Machine Learning APIs: Vision, Speech, and
