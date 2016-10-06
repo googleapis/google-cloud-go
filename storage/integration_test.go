@@ -35,6 +35,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
 
@@ -202,7 +203,6 @@ func TestObjects(t *testing.T) {
 		contents[obj] = c
 	}
 
-	testBucketList(t, bkt, objects)
 	testObjectIterator(t, bkt, objects)
 
 	// Test Reader.
@@ -372,16 +372,7 @@ func TestObjects(t *testing.T) {
 
 	// Test object copy.
 	copyName := "copy-" + objName
-	copyObj, err := bkt.Object(objName).CopyTo(ctx, bkt.Object(copyName), nil)
-	if err != nil {
-		t.Errorf("CopyTo failed with %v", err)
-	} else if !namesEqual(copyObj, bucket, copyName) {
-		t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
-			copyObj.Bucket, copyObj.Name, bucket, copyName)
-	}
-
-	// Test copying with Copier.
-	copyObj, err = bkt.Object(copyName).CopierFrom(bkt.Object(objName)).Run(ctx)
+	copyObj, err := bkt.Object(copyName).CopierFrom(bkt.Object(objName)).Run(ctx)
 	if err != nil {
 		t.Errorf("Copier.Run failed with %v", err)
 	} else if !namesEqual(copyObj, bucket, copyName) {
@@ -394,13 +385,6 @@ func TestObjects(t *testing.T) {
 		contentType     = "text/html"
 		contentEncoding = "identity"
 	)
-	_, err = bkt.Object(objName).CopyTo(ctx, bkt.Object(copyName), &ObjectAttrs{
-		ContentEncoding: contentEncoding,
-	})
-	if err == nil {
-		t.Error("copy without ContentType: got nil, want error")
-	}
-
 	copier := bkt.Object(copyName).CopierFrom(bkt.Object(objName))
 	copier.ContentEncoding = contentEncoding
 	_, err = copier.Run(ctx)
@@ -409,25 +393,6 @@ func TestObjects(t *testing.T) {
 	}
 
 	// Copying with attributes.
-	copyObj, err = bkt.Object(objName).CopyTo(ctx, bkt.Object(copyName), &ObjectAttrs{
-		ContentType:     contentType,
-		ContentEncoding: contentEncoding,
-	})
-	if err != nil {
-		t.Errorf("CopyTo failed with %v", err)
-	} else {
-		if !namesEqual(copyObj, bucket, copyName) {
-			t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
-				copyObj.Bucket, copyObj.Name, bucket, copyName)
-		}
-		if copyObj.ContentType != contentType {
-			t.Errorf("Copy ContentType: got %q, want %q", copyObj.ContentType, contentType)
-		}
-		if copyObj.ContentEncoding != contentEncoding {
-			t.Errorf("Copy ContentEncoding: got %q, want %q", copyObj.ContentEncoding, contentEncoding)
-		}
-	}
-
 	copier = bkt.Object(copyName).CopierFrom(bkt.Object(objName))
 	copier.ContentType = contentType
 	copier.ContentEncoding = contentEncoding
@@ -604,32 +569,6 @@ func namesEqual(obj *ObjectAttrs, bucketName, objectName string) bool {
 	return obj.Bucket == bucketName && obj.Name == objectName
 }
 
-func testBucketList(t *testing.T, bkt *BucketHandle, objects []string) {
-	ctx := context.Background()
-	q := &Query{Prefix: "obj"}
-	missing := map[string]bool{}
-	for _, o := range objects {
-		missing[o] = true
-	}
-	for {
-		objs, err := bkt.List(ctx, q)
-		if err != nil {
-			t.Errorf("List: unexpected error: %v", err)
-			break
-		}
-		for _, oa := range objs.Results {
-			delete(missing, oa.Name)
-		}
-		if objs.Next == nil {
-			break
-		}
-		q = objs.Next
-	}
-	if len(missing) > 0 {
-		t.Errorf("bucket.List: missing %v", missing)
-	}
-}
-
 func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 	ctx := context.Background()
 	// Collect the list of items we expect: ObjectAttrs in lexical order by name.
@@ -647,7 +586,7 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 	}
 
 	it := bkt.Objects(ctx, &Query{Prefix: "obj"})
-	msg, ok := testutil.TestIteratorNext(attrs, Done, func() (interface{}, error) { return it.Next() })
+	msg, ok := testutil.TestIteratorNext(attrs, iterator.Done, func() (interface{}, error) { return it.Next() })
 	if !ok {
 		t.Errorf("ObjectIterator.Next: %s", msg)
 	}
@@ -879,7 +818,7 @@ func cleanup() error {
 	it.Prefix = projectID + testPrefix
 	for {
 		bktAttrs, err := it.Next()
-		if err == Done {
+		if err == iterator.Done {
 			break
 		}
 		if err != nil {
@@ -902,7 +841,7 @@ func killBucket(ctx context.Context, client *Client, bucketName string) error {
 	it := bkt.Objects(ctx, nil)
 	for {
 		objAttrs, err := it.Next()
-		if err == Done {
+		if err == iterator.Done {
 			break
 		}
 		if err != nil {

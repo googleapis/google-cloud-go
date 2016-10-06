@@ -35,7 +35,6 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
 
@@ -48,9 +47,6 @@ import (
 var (
 	ErrBucketNotExist = errors.New("storage: bucket doesn't exist")
 	ErrObjectNotExist = errors.New("storage: object doesn't exist")
-
-	// Done is returned by iterators in this package when they have no more items.
-	Done = iterator.Done
 )
 
 const userAgent = "gcloud-golang-storage/20151204"
@@ -68,49 +64,6 @@ const (
 	// data in Google Cloud Storage.
 	ScopeReadWrite = raw.DevstorageReadWriteScope
 )
-
-// AdminClient is a client type for performing admin operations on a project's
-// buckets.
-//
-// Deprecated: Client has all of AdminClient's methods.
-type AdminClient struct {
-	c         *Client
-	projectID string
-}
-
-// NewAdminClient creates a new AdminClient for a given project.
-//
-// Deprecated: use NewClient instead.
-func NewAdminClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*AdminClient, error) {
-	c, err := NewClient(ctx, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &AdminClient{
-		c:         c,
-		projectID: projectID,
-	}, nil
-}
-
-// Close closes the AdminClient.
-func (c *AdminClient) Close() error {
-	return c.c.Close()
-}
-
-// Create creates a Bucket in the project.
-// If attrs is nil the API defaults will be used.
-//
-// Deprecated: use BucketHandle.Create instead.
-func (c *AdminClient) CreateBucket(ctx context.Context, bucketName string, attrs *BucketAttrs) error {
-	return c.c.Bucket(bucketName).Create(ctx, c.projectID, attrs)
-}
-
-// Delete deletes a Bucket in the project.
-//
-// Deprecated: use BucketHandle.Delete instead.
-func (c *AdminClient) DeleteBucket(ctx context.Context, bucketName string) error {
-	return c.c.Bucket(bucketName).Delete(ctx)
-}
 
 // Client is a client for interacting with Google Cloud Storage.
 //
@@ -472,32 +425,6 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 	return err
 }
 
-// CopyTo copies the object to the given dst.
-// The copied object's attributes are overwritten by attrs if non-nil.
-//
-// Deprecated: use ObjectHandle.CopierFrom instead.
-func (o *ObjectHandle) CopyTo(ctx context.Context, dst *ObjectHandle, attrs *ObjectAttrs) (*ObjectAttrs, error) {
-	c := dst.CopierFrom(o)
-	if attrs != nil {
-		c.ObjectAttrs = *attrs
-	}
-	return c.Run(ctx)
-}
-
-// ComposeFrom concatenates the provided slice of source objects into a new
-// object whose destination is the receiver. The provided attrs, if not nil,
-// are used to set the attributes on the newly-created object. All source
-// objects must reside within the same bucket as the destination.
-//
-// Deprecated: use ObjectHandle.ComposerFrom instead.
-func (o *ObjectHandle) ComposeFrom(ctx context.Context, srcs []*ObjectHandle, attrs *ObjectAttrs) (*ObjectAttrs, error) {
-	c := o.ComposerFrom(srcs...)
-	if attrs != nil {
-		c.ObjectAttrs = *attrs
-	}
-	return c.Run(ctx)
-}
-
 // NewReader creates a new Reader to read the contents of the
 // object.
 // ErrObjectNotExist will be returned if the object is not found.
@@ -834,21 +761,6 @@ type Query struct {
 	// Versions indicates whether multiple versions of the same
 	// object will be included in the results.
 	Versions bool
-
-	// Cursor is a previously-returned page token
-	// representing part of the larger set of results to view.
-	// Optional.
-	//
-	// Deprecated: Use ObjectIterator.PageInfo().Token instead.
-	Cursor string
-
-	// MaxResults is the maximum number of items plus prefixes
-	// to return. As duplicate prefixes are omitted,
-	// fewer total results may be returned than requested.
-	// The default page limit is used if it is negative or zero.
-	//
-	// Deprecated: Use ObjectIterator.PageInfo().MaxSize instead.
-	MaxResults int
 }
 
 // contentTyper implements ContentTyper to enable an
