@@ -30,6 +30,7 @@ import (
 	"time"
 
 	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
 )
@@ -227,7 +228,7 @@ func TestCopyToMissingFields(t *testing.T) {
 	for i, test := range tests {
 		src := client.Bucket(test.srcBucket).Object(test.srcName)
 		dst := client.Bucket(test.destBucket).Object(test.destName)
-		_, err := src.CopyTo(ctx, dst, nil)
+		_, err := dst.CopierFrom(src).Run(ctx)
 		if !strings.Contains(err.Error(), test.errMsg) {
 			t.Errorf("CopyTo test #%v:\ngot err  %q\nwant err %q", i, err, test.errMsg)
 		}
@@ -391,7 +392,7 @@ func TestCondition(t *testing.T) {
 		},
 		{
 			func() {
-				obj.If(Conditions{GenerationMatch: 1234}).CopyTo(ctx, dst.If(Conditions{MetagenerationMatch: 5678}), nil)
+				dst.If(Conditions{MetagenerationMatch: 5678}).CopierFrom(obj.If(Conditions{GenerationMatch: 1234})).Run(ctx)
 			},
 			"POST /storage/v1/b/buck/o/obj/rewriteTo/b/dstbuck/o/dst?alt=json&ifMetagenerationMatch=5678&ifSourceGenerationMatch=1234&projection=full",
 		},
@@ -581,7 +582,11 @@ func TestObjectCompose(t *testing.T) {
 	}
 
 	for _, tt := range testCases {
-		_, err := tt.dst.ComposeFrom(ctx, tt.srcs, tt.attrs)
+		composer := tt.dst.ComposerFrom(tt.srcs...)
+		if tt.attrs != nil {
+			composer.ObjectAttrs = *tt.attrs
+		}
+		_, err := composer.Run(ctx)
 		if gotErr := err != nil; gotErr != tt.wantErr {
 			t.Errorf("%s: got error %v; want err %t", tt.desc, err, tt.wantErr)
 			continue
@@ -626,7 +631,7 @@ func TestEmptyObjectIterator(t *testing.T) {
 	}()
 	select {
 	case err := <-c:
-		if err != Done {
+		if err != iterator.Done {
 			t.Errorf("got %v, want Done", err)
 		}
 	case <-time.After(50 * time.Millisecond):
@@ -655,7 +660,7 @@ func TestEmptyBucketIterator(t *testing.T) {
 	}()
 	select {
 	case err := <-c:
-		if err != Done {
+		if err != iterator.Done {
 			t.Errorf("got %v, want Done", err)
 		}
 	case <-time.After(50 * time.Millisecond):

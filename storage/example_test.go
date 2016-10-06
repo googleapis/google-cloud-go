@@ -221,32 +221,6 @@ func ExampleObjectHandle_Update() {
 	fmt.Println(objAttrs)
 }
 
-func ExampleBucketHandle_List() {
-	ctx := context.Background()
-	var client *storage.Client // See Example (Auth)
-
-	var query *storage.Query
-	for {
-		// If you are using this package on the App Engine Flex runtime,
-		// you can init a bucket client with your app's default bucket name.
-		// See http://godoc.org/google.golang.org/appengine/file#DefaultBucketName.
-		objects, err := client.Bucket("bucketname").List(ctx, query)
-		if err != nil {
-			log.Fatal(err)
-		}
-		for _, obj := range objects.Results {
-			log.Printf("object name: %s, size: %v", obj.Name, obj.Size)
-		}
-		// If there are more results, objects.Next will be non-nil.
-		if objects.Next == nil {
-			break
-		}
-		query = objects.Next
-	}
-
-	log.Println("paginated through all object items in the bucket you specified.")
-}
-
 func ExampleObjectHandle_NewReader() {
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
@@ -312,22 +286,6 @@ func ExampleWriter_Write() {
 	fmt.Println("updated object:", wc.Attrs())
 }
 
-func ExampleObjectHandle_CopyTo() {
-	ctx := context.Background()
-	client, err := storage.NewClient(ctx)
-	if err != nil {
-		// TODO: handle error.
-	}
-	src := client.Bucket("bucketname").Object("file1")
-	dst := client.Bucket("another-bucketname").Object("file2")
-
-	o, err := src.CopyTo(ctx, dst, nil)
-	if err != nil {
-		// TODO: handle error.
-	}
-	fmt.Println("copied file:", o)
-}
-
 func ExampleObjectHandle_Delete() {
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
@@ -344,10 +302,10 @@ func ExampleObjectHandle_Delete() {
 	it := bucket.Objects(ctx, nil)
 	for {
 		objAttrs, err := it.Next()
-		if err != nil && err != storage.Done {
+		if err != nil && err != iterator.Done {
 			// TODO: Handle error.
 		}
-		if err == storage.Done {
+		if err == iterator.Done {
 			break
 		}
 		if err := bucket.Object(objAttrs.Name).Delete(ctx); err != nil {

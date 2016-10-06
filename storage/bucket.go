@@ -176,47 +176,6 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 	}
 }
 
-// ObjectList represents a list of objects returned from a bucket List call.
-type ObjectList struct {
-	// Results represent a list of object results.
-	Results []*ObjectAttrs
-
-	// Next is the continuation query to retrieve more
-	// results with the same filtering criteria. If there
-	// are no more results to retrieve, it is nil.
-	Next *Query
-
-	// Prefixes represents prefixes of objects
-	// matching-but-not-listed up to and including
-	// the requested delimiter.
-	Prefixes []string
-}
-
-// List lists objects from the bucket. You can specify a query
-// to filter the results. If q is nil, no filtering is applied.
-//
-// Deprecated. Use BucketHandle.Objects instead.
-func (b *BucketHandle) List(ctx context.Context, q *Query) (*ObjectList, error) {
-	it := b.Objects(ctx, q)
-	nextToken, err := it.fetch(it.pageInfo.MaxSize, it.pageInfo.Token)
-	if err != nil {
-		return nil, err
-	}
-	list := &ObjectList{}
-	for _, item := range it.items {
-		if item.Prefix != "" {
-			list.Prefixes = append(list.Prefixes, item.Prefix)
-		} else {
-			list.Results = append(list.Results, item)
-		}
-	}
-	if nextToken != "" {
-		it.query.Cursor = nextToken
-		list.Next = &it.query
-	}
-	return list, nil
-}
-
 // Objects returns an iterator over the objects in the bucket that match the Query q.
 // If q is nil, no filtering is done.
 func (b *BucketHandle) Objects(ctx context.Context, q *Query) *ObjectIterator {
@@ -230,8 +189,6 @@ func (b *BucketHandle) Objects(ctx context.Context, q *Query) *ObjectIterator {
 		func() interface{} { b := it.items; it.items = nil; return b })
 	if q != nil {
 		it.query = *q
-		it.pageInfo.MaxSize = q.MaxResults
-		it.pageInfo.Token = q.Cursor
 	}
 	return it
 }
