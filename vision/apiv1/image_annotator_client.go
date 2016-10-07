@@ -31,12 +31,12 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-// CallOptions contains the retry settings for each method of this client.
-type CallOptions struct {
+// ImageAnnotatorCallOptions contains the retry settings for each method of ImageAnnotatorClient.
+type ImageAnnotatorCallOptions struct {
 	BatchAnnotateImages []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultImageAnnotatorClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("vision.googleapis.com:443"),
 		option.WithScopes(
@@ -45,7 +45,7 @@ func defaultClientOptions() []option.ClientOption {
 	}
 }
 
-func defaultCallOptions() *CallOptions {
+func defaultImageAnnotatorCallOptions() *ImageAnnotatorCallOptions {
 	retry := map[[2]string][]gax.CallOption{
 		{"default", "idempotent"}: {
 			gax.WithRetry(func() gax.Retryer {
@@ -60,73 +60,74 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 	}
-
-	return &CallOptions{
+	return &ImageAnnotatorCallOptions{
 		BatchAnnotateImages: retry[[2]string{"default", "idempotent"}],
 	}
 }
 
-// Client is a client for interacting with ImageAnnotator.
-type Client struct {
+// ImageAnnotatorClient is a client for interacting with Google Cloud Vision API.
+type ImageAnnotatorClient struct {
 	// The connection to the service.
 	conn *grpc.ClientConn
 
 	// The gRPC API client.
-	client visionpb.ImageAnnotatorClient
+	imageAnnotatorClient visionpb.ImageAnnotatorClient
 
 	// The call options for this service.
-	CallOptions *CallOptions
+	CallOptions *ImageAnnotatorCallOptions
 
 	// The metadata to be sent with each request.
 	metadata map[string][]string
 }
 
-// NewClient creates a new image_annotator service client.
+// NewImageAnnotatorClient creates a new image annotator client.
 //
 // Service that performs Google Cloud Vision API detection tasks, such as face,
 // landmark, logo, label, and text detection, over client images, and returns
 // detected entities from the images.
-func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultClientOptions(), opts...)...)
+func NewImageAnnotatorClient(ctx context.Context, opts ...option.ClientOption) (*ImageAnnotatorClient, error) {
+	conn, err := transport.DialGRPC(ctx, append(defaultImageAnnotatorClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	c := &ImageAnnotatorClient{
 		conn:        conn,
-		client:      visionpb.NewImageAnnotatorClient(conn),
-		CallOptions: defaultCallOptions(),
+		CallOptions: defaultImageAnnotatorCallOptions(),
+
+		imageAnnotatorClient: visionpb.NewImageAnnotatorClient(conn),
 	}
 	c.SetGoogleClientInfo("gax", gax.Version)
 	return c, nil
 }
 
 // Connection returns the client's connection to the API service.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *ImageAnnotatorClient) Connection() *grpc.ClientConn {
 	return c.conn
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *Client) Close() error {
+func (c *ImageAnnotatorClient) Close() error {
 	return c.conn.Close()
 }
 
 // SetGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) SetGoogleClientInfo(name, version string) {
+func (c *ImageAnnotatorClient) SetGoogleClientInfo(name, version string) {
 	c.metadata = map[string][]string{
 		"x-goog-api-client": {fmt.Sprintf("%s/%s %s gax/%s go/%s", name, version, gapicNameVersion, gax.Version, runtime.Version())},
 	}
 }
 
 // BatchAnnotateImages run image detection and annotation for a batch of images.
-func (c *Client) BatchAnnotateImages(ctx context.Context, req *visionpb.BatchAnnotateImagesRequest) (*visionpb.BatchAnnotateImagesResponse, error) {
-	ctx = metadata.NewContext(ctx, c.metadata)
+func (c *ImageAnnotatorClient) BatchAnnotateImages(ctx context.Context, req *visionpb.BatchAnnotateImagesRequest) (*visionpb.BatchAnnotateImagesResponse, error) {
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	var resp *visionpb.BatchAnnotateImagesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
-		resp, err = c.client.BatchAnnotateImages(ctx, req)
+		resp, err = c.imageAnnotatorClient.BatchAnnotateImages(ctx, req)
 		return err
 	}, c.CallOptions.BatchAnnotateImages...)
 	if err != nil {

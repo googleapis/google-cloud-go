@@ -35,7 +35,7 @@ var (
 	errorGroupGroupPathTemplate = gax.MustCompilePathTemplate("projects/{project}/groups/{group}")
 )
 
-// ErrorGroupCallOptions contains the retry settings for each method of this client.
+// ErrorGroupCallOptions contains the retry settings for each method of ErrorGroupClient.
 type ErrorGroupCallOptions struct {
 	GetGroup    []gax.CallOption
 	UpdateGroup []gax.CallOption
@@ -65,20 +65,19 @@ func defaultErrorGroupCallOptions() *ErrorGroupCallOptions {
 			}),
 		},
 	}
-
 	return &ErrorGroupCallOptions{
 		GetGroup:    retry[[2]string{"default", "idempotent"}],
 		UpdateGroup: retry[[2]string{"default", "idempotent"}],
 	}
 }
 
-// ErrorGroupClient is a client for interacting with ErrorGroupService.
+// ErrorGroupClient is a client for interacting with Stackdriver Error Reporting API.
 type ErrorGroupClient struct {
 	// The connection to the service.
 	conn *grpc.ClientConn
 
 	// The gRPC API client.
-	client clouderrorreportingpb.ErrorGroupServiceClient
+	errorGroupClient clouderrorreportingpb.ErrorGroupServiceClient
 
 	// The call options for this service.
 	CallOptions *ErrorGroupCallOptions
@@ -87,7 +86,7 @@ type ErrorGroupClient struct {
 	metadata map[string][]string
 }
 
-// NewErrorGroupClient creates a new error_group service client.
+// NewErrorGroupClient creates a new error group service client.
 //
 // Service for retrieving and updating individual error groups.
 func NewErrorGroupClient(ctx context.Context, opts ...option.ClientOption) (*ErrorGroupClient, error) {
@@ -97,8 +96,9 @@ func NewErrorGroupClient(ctx context.Context, opts ...option.ClientOption) (*Err
 	}
 	c := &ErrorGroupClient{
 		conn:        conn,
-		client:      clouderrorreportingpb.NewErrorGroupServiceClient(conn),
 		CallOptions: defaultErrorGroupCallOptions(),
+
+		errorGroupClient: clouderrorreportingpb.NewErrorGroupServiceClient(conn),
 	}
 	c.SetGoogleClientInfo("gax", gax.Version)
 	return c, nil
@@ -124,8 +124,8 @@ func (c *ErrorGroupClient) SetGoogleClientInfo(name, version string) {
 	}
 }
 
-// GroupPath returns the path for the group resource.
-func ErrorGroupGroupPath(project string, group string) string {
+// ErrorGroupGroupPath returns the path for the group resource.
+func ErrorGroupGroupPath(project, group string) string {
 	path, err := errorGroupGroupPathTemplate.Render(map[string]string{
 		"project": project,
 		"group":   group,
@@ -138,11 +138,12 @@ func ErrorGroupGroupPath(project string, group string) string {
 
 // GetGroup get the specified group.
 func (c *ErrorGroupClient) GetGroup(ctx context.Context, req *clouderrorreportingpb.GetGroupRequest) (*clouderrorreportingpb.ErrorGroup, error) {
-	ctx = metadata.NewContext(ctx, c.metadata)
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	var resp *clouderrorreportingpb.ErrorGroup
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
-		resp, err = c.client.GetGroup(ctx, req)
+		resp, err = c.errorGroupClient.GetGroup(ctx, req)
 		return err
 	}, c.CallOptions.GetGroup...)
 	if err != nil {
@@ -154,11 +155,12 @@ func (c *ErrorGroupClient) GetGroup(ctx context.Context, req *clouderrorreportin
 // UpdateGroup replace the data for the specified group.
 // Fails if the group does not exist.
 func (c *ErrorGroupClient) UpdateGroup(ctx context.Context, req *clouderrorreportingpb.UpdateGroupRequest) (*clouderrorreportingpb.ErrorGroup, error) {
-	ctx = metadata.NewContext(ctx, c.metadata)
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	var resp *clouderrorreportingpb.ErrorGroup
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
-		resp, err = c.client.UpdateGroup(ctx, req)
+		resp, err = c.errorGroupClient.UpdateGroup(ctx, req)
 		return err
 	}, c.CallOptions.UpdateGroup...)
 	if err != nil {

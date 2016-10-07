@@ -22,9 +22,9 @@ import (
 	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
 )
 
-func ExampleNewClient() {
+func ExampleNewImageAnnotatorClient() {
 	ctx := context.Background()
-	c, err := vision.NewClient(ctx)
+	c, err := vision.NewImageAnnotatorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -32,9 +32,9 @@ func ExampleNewClient() {
 	_ = c
 }
 
-func ExampleClient_BatchAnnotateImages() {
+func ExampleImageAnnotatorClient_BatchAnnotateImages() {
 	ctx := context.Background()
-	c, err := vision.NewClient(ctx)
+	c, err := vision.NewImageAnnotatorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

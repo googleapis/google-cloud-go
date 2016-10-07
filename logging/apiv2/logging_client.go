@@ -24,6 +24,7 @@ import (
 
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
 	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
@@ -38,7 +39,7 @@ var (
 	loggingLogPathTemplate    = gax.MustCompilePathTemplate("projects/{project}/logs/{log}")
 )
 
-// CallOptions contains the retry settings for each method of this client.
+// CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
 	DeleteLog                        []gax.CallOption
 	WriteLogEntries                  []gax.CallOption
@@ -86,7 +87,6 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 	}
-
 	return &CallOptions{
 		DeleteLog:                        retry[[2]string{"default", "idempotent"}],
 		WriteLogEntries:                  retry[[2]string{"default", "non_idempotent"}],
@@ -95,7 +95,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// Client is a client for interacting with LoggingServiceV2.
+// Client is a client for interacting with Stackdriver Logging API.
 type Client struct {
 	// The connection to the service.
 	conn *grpc.ClientConn
@@ -110,7 +110,7 @@ type Client struct {
 	metadata map[string][]string
 }
 
-// NewClient creates a new logging service client.
+// NewClient creates a new logging service v2 client.
 //
 // Service for ingesting and querying logs.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
@@ -120,8 +120,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	}
 	c := &Client{
 		conn:        conn,
-		client:      loggingpb.NewLoggingServiceV2Client(conn),
 		CallOptions: defaultCallOptions(),
+
+		client: loggingpb.NewLoggingServiceV2Client(conn),
 	}
 	c.SetGoogleClientInfo("gax", gax.Version)
 	return c, nil
@@ -147,7 +148,7 @@ func (c *Client) SetGoogleClientInfo(name, version string) {
 	}
 }
 
-// ParentPath returns the path for the parent resource.
+// LoggingParentPath returns the path for the parent resource.
 func LoggingParentPath(project string) string {
 	path, err := loggingParentPathTemplate.Render(map[string]string{
 		"project": project,
@@ -158,8 +159,8 @@ func LoggingParentPath(project string) string {
 	return path
 }
 
-// LogPath returns the path for the log resource.
-func LoggingLogPath(project string, log string) string {
+// LoggingLogPath returns the path for the log resource.
+func LoggingLogPath(project, log string) string {
 	path, err := loggingLogPathTemplate.Render(map[string]string{
 		"project": project,
 		"log":     log,
@@ -173,7 +174,8 @@ func LoggingLogPath(project string, log string) string {
 // DeleteLog deletes a log and all its log entries.
 // The log will reappear if it receives new entries.
 func (c *Client) DeleteLog(ctx context.Context, req *loggingpb.DeleteLogRequest) error {
-	ctx = metadata.NewContext(ctx, c.metadata)
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
 		_, err = c.client.DeleteLog(ctx, req)
@@ -185,7 +187,8 @@ func (c *Client) DeleteLog(ctx context.Context, req *loggingpb.DeleteLogRequest)
 // WriteLogEntries writes log entries to Stackdriver Logging.  All log entries are
 // written by this method.
 func (c *Client) WriteLogEntries(ctx context.Context, req *loggingpb.WriteLogEntriesRequest) (*loggingpb.WriteLogEntriesResponse, error) {
-	ctx = metadata.NewContext(ctx, c.metadata)
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	var resp *loggingpb.WriteLogEntriesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -202,220 +205,118 @@ func (c *Client) WriteLogEntries(ctx context.Context, req *loggingpb.WriteLogEnt
 // Logging.  For ways to export log entries, see
 // [Exporting Logs](/logging/docs/export).
 func (c *Client) ListLogEntries(ctx context.Context, req *loggingpb.ListLogEntriesRequest) *LogEntryIterator {
-	ctx = metadata.NewContext(ctx, c.metadata)
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	it := &LogEntryIterator{}
-	it.apiCall = func() error {
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
 		var resp *loggingpb.ListLogEntriesResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
 		err := gax.Invoke(ctx, func(ctx context.Context) error {
 			var err error
-			req.PageToken = it.nextPageToken
-			req.PageSize = it.pageSize
 			resp, err = c.client.ListLogEntries(ctx, req)
 			return err
 		}, c.CallOptions.ListLogEntries...)
 		if err != nil {
-			return err
+			return "", err
 		}
-		if resp.NextPageToken == "" {
-			it.atLastPage = true
-		}
-		it.nextPageToken = resp.NextPageToken
-		it.items = resp.Entries
-		return nil
+		it.items = append(it.items, resp.Entries...)
+		return resp.NextPageToken, nil
 	}
+	bufLen := func() int { return len(it.items) }
+	takeBuf := func() interface{} {
+		b := it.items
+		it.items = nil
+		return b
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, bufLen, takeBuf)
 	return it
 }
 
 // ListMonitoredResourceDescriptors lists the monitored resource descriptors used by Stackdriver Logging.
 func (c *Client) ListMonitoredResourceDescriptors(ctx context.Context, req *loggingpb.ListMonitoredResourceDescriptorsRequest) *MonitoredResourceDescriptorIterator {
-	ctx = metadata.NewContext(ctx, c.metadata)
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	it := &MonitoredResourceDescriptorIterator{}
-	it.apiCall = func() error {
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
 		var resp *loggingpb.ListMonitoredResourceDescriptorsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
 		err := gax.Invoke(ctx, func(ctx context.Context) error {
 			var err error
-			req.PageToken = it.nextPageToken
-			req.PageSize = it.pageSize
 			resp, err = c.client.ListMonitoredResourceDescriptors(ctx, req)
 			return err
 		}, c.CallOptions.ListMonitoredResourceDescriptors...)
 		if err != nil {
-			return err
+			return "", err
 		}
-		if resp.NextPageToken == "" {
-			it.atLastPage = true
-		}
-		it.nextPageToken = resp.NextPageToken
-		it.items = resp.ResourceDescriptors
-		return nil
+		it.items = append(it.items, resp.ResourceDescriptors...)
+		return resp.NextPageToken, nil
 	}
+	bufLen := func() int { return len(it.items) }
+	takeBuf := func() interface{} {
+		b := it.items
+		it.items = nil
+		return b
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, bufLen, takeBuf)
 	return it
 }
 
 // LogEntryIterator manages a stream of *loggingpb.LogEntry.
 type LogEntryIterator struct {
-	// The current page data.
-	items         []*loggingpb.LogEntry
-	atLastPage    bool
-	currentIndex  int
-	pageSize      int32
-	nextPageToken string
-	apiCall       func() error
+	items    []*loggingpb.LogEntry
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
 }
 
-// NextPage returns the next page of results.
-// It will return at most the number of results specified by the last call to SetPageSize.
-// If SetPageSize was never called or was called with a value less than 1,
-// the page size is determined by the underlying service.
-//
-// NextPage may return a second return value of Done along with the last page of results. After
-// NextPage returns Done, all subsequent calls to NextPage will return (nil, Done).
-//
-// Next and NextPage should not be used with the same iterator.
-func (it *LogEntryIterator) NextPage() ([]*loggingpb.LogEntry, error) {
-	if it.atLastPage {
-		// We already returned Done with the last page of items. Continue to
-		// return Done, but with no items.
-		return nil, Done
-	}
-	if err := it.apiCall(); err != nil {
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *LogEntryIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *LogEntryIterator) Next() (*loggingpb.LogEntry, error) {
+	if err := it.nextFunc(); err != nil {
 		return nil, err
 	}
-	if it.atLastPage {
-		return it.items, Done
-	}
-	return it.items, nil
-}
-
-// Next returns the next result. Its second return value is Done if there are no more results.
-// Once next returns Done, all subsequent calls will return Done.
-//
-// Internally, Next retrieves results in bulk. You can call SetPageSize as a performance hint to
-// affect how many results are retrieved in a single RPC.
-//
-// SetPageToken should not be called when using Next.
-//
-// Next and NextPage should not be used with the same iterator.
-func (it *LogEntryIterator) Next() (*loggingpb.LogEntry, error) {
-	for it.currentIndex >= len(it.items) {
-		if it.atLastPage {
-			return nil, Done
-		}
-		if err := it.apiCall(); err != nil {
-			return nil, err
-		}
-		it.currentIndex = 0
-	}
-	result := it.items[it.currentIndex]
-	it.currentIndex++
-	return result, nil
-}
-
-// PageSize returns the page size for all subsequent calls to NextPage.
-func (it *LogEntryIterator) PageSize() int {
-	return int(it.pageSize)
-}
-
-// SetPageSize sets the page size for all subsequent calls to NextPage.
-func (it *LogEntryIterator) SetPageSize(pageSize int) {
-	if pageSize > math.MaxInt32 {
-		pageSize = math.MaxInt32
-	}
-	it.pageSize = int32(pageSize)
-}
-
-// SetPageToken sets the page token for the next call to NextPage, to resume the iteration from
-// a previous point.
-func (it *LogEntryIterator) SetPageToken(token string) {
-	it.nextPageToken = token
-}
-
-// NextPageToken returns a page token that can be used with SetPageToken to resume
-// iteration from the next page. It returns the empty string if there are no more pages.
-func (it *LogEntryIterator) NextPageToken() string {
-	return it.nextPageToken
+	item := it.items[0]
+	it.items = it.items[1:]
+	return item, nil
 }
 
 // MonitoredResourceDescriptorIterator manages a stream of *monitoredrespb.MonitoredResourceDescriptor.
 type MonitoredResourceDescriptorIterator struct {
-	// The current page data.
-	items         []*monitoredrespb.MonitoredResourceDescriptor
-	atLastPage    bool
-	currentIndex  int
-	pageSize      int32
-	nextPageToken string
-	apiCall       func() error
+	items    []*monitoredrespb.MonitoredResourceDescriptor
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
 }
 
-// NextPage returns the next page of results.
-// It will return at most the number of results specified by the last call to SetPageSize.
-// If SetPageSize was never called or was called with a value less than 1,
-// the page size is determined by the underlying service.
-//
-// NextPage may return a second return value of Done along with the last page of results. After
-// NextPage returns Done, all subsequent calls to NextPage will return (nil, Done).
-//
-// Next and NextPage should not be used with the same iterator.
-func (it *MonitoredResourceDescriptorIterator) NextPage() ([]*monitoredrespb.MonitoredResourceDescriptor, error) {
-	if it.atLastPage {
-		// We already returned Done with the last page of items. Continue to
-		// return Done, but with no items.
-		return nil, Done
-	}
-	if err := it.apiCall(); err != nil {
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *MonitoredResourceDescriptorIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *MonitoredResourceDescriptorIterator) Next() (*monitoredrespb.MonitoredResourceDescriptor, error) {
+	if err := it.nextFunc(); err != nil {
 		return nil, err
 	}
-	if it.atLastPage {
-		return it.items, Done
-	}
-	return it.items, nil
-}
-
-// Next returns the next result. Its second return value is Done if there are no more results.
-// Once next returns Done, all subsequent calls will return Done.
-//
-// Internally, Next retrieves results in bulk. You can call SetPageSize as a performance hint to
-// affect how many results are retrieved in a single RPC.
-//
-// SetPageToken should not be called when using Next.
-//
-// Next and NextPage should not be used with the same iterator.
-func (it *MonitoredResourceDescriptorIterator) Next() (*monitoredrespb.MonitoredResourceDescriptor, error) {
-	for it.currentIndex >= len(it.items) {
-		if it.atLastPage {
-			return nil, Done
-		}
-		if err := it.apiCall(); err != nil {
-			return nil, err
-		}
-		it.currentIndex = 0
-	}
-	result := it.items[it.currentIndex]
-	it.currentIndex++
-	return result, nil
-}
-
-// PageSize returns the page size for all subsequent calls to NextPage.
-func (it *MonitoredResourceDescriptorIterator) PageSize() int {
-	return int(it.pageSize)
-}
-
-// SetPageSize sets the page size for all subsequent calls to NextPage.
-func (it *MonitoredResourceDescriptorIterator) SetPageSize(pageSize int) {
-	if pageSize > math.MaxInt32 {
-		pageSize = math.MaxInt32
-	}
-	it.pageSize = int32(pageSize)
-}
-
-// SetPageToken sets the page token for the next call to NextPage, to resume the iteration from
-// a previous point.
-func (it *MonitoredResourceDescriptorIterator) SetPageToken(token string) {
-	it.nextPageToken = token
-}
-
-// NextPageToken returns a page token that can be used with SetPageToken to resume
-// iteration from the next page. It returns the empty string if there are no more pages.
-func (it *MonitoredResourceDescriptorIterator) NextPageToken() string {
-	return it.nextPageToken
+	item := it.items[0]
+	it.items = it.items[1:]
+	return item, nil
 }

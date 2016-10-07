@@ -22,3 +22,5 @@
 // noted on the individual method pages.
 //
 package monitoring // import "cloud.google.com/go/monitoring/apiv3"
+
+const gapicNameVersion = "gapic/0.1.0"

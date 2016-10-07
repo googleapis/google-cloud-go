@@ -19,3 +19,5 @@
 //
 // Google Cloud Speech API.
 package speech // import "cloud.google.com/go/speech/apiv1beta1"
+
+const gapicNameVersion = "gapic/0.1.0"
