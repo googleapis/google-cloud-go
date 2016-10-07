@@ -30,12 +30,12 @@ const Scope = "https://www.googleapis.com/auth/cloud-platform"
 
 // Client is a Google Cloud Vision API client.
 type Client struct {
-	client *vkit.Client
+	client *vkit.ImageAnnotatorClient
 }
 
 // NewClient creates a new vision client.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	c, err := vkit.NewClient(ctx, opts...)
+	c, err := vkit.NewImageAnnotatorClient(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
