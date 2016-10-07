@@ -21,3 +21,5 @@
 // technologies to developers. Examples include sentiment analysis, entity
 // recognition, and text annotations.
 package language // import "cloud.google.com/go/language/apiv1beta1"
+
+const gapicNameVersion = "gapic/0.1.0"

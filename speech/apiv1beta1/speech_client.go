@@ -32,7 +32,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-// CallOptions contains the retry settings for each method of this client.
+// CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
 	SyncRecognize  []gax.CallOption
 	AsyncRecognize []gax.CallOption
@@ -62,14 +62,13 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 	}
-
 	return &CallOptions{
 		SyncRecognize:  retry[[2]string{"default", "idempotent"}],
 		AsyncRecognize: retry[[2]string{"default", "idempotent"}],
 	}
 }
 
-// Client is a client for interacting with Speech.
+// Client is a client for interacting with Google Cloud Speech API.
 type Client struct {
 	// The connection to the service.
 	conn *grpc.ClientConn
@@ -84,7 +83,7 @@ type Client struct {
 	metadata map[string][]string
 }
 
-// NewClient creates a new speech service client.
+// NewClient creates a new speech client.
 //
 // Service that implements Google Cloud Speech API.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
@@ -94,8 +93,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	}
 	c := &Client{
 		conn:        conn,
-		client:      speechpb.NewSpeechClient(conn),
 		CallOptions: defaultCallOptions(),
+
+		client: speechpb.NewSpeechClient(conn),
 	}
 	c.SetGoogleClientInfo("gax", gax.Version)
 	return c, nil
@@ -124,7 +124,8 @@ func (c *Client) SetGoogleClientInfo(name, version string) {
 // SyncRecognize perform synchronous speech-recognition: receive results after all audio
 // has been sent and processed.
 func (c *Client) SyncRecognize(ctx context.Context, req *speechpb.SyncRecognizeRequest) (*speechpb.SyncRecognizeResponse, error) {
-	ctx = metadata.NewContext(ctx, c.metadata)
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	var resp *speechpb.SyncRecognizeResponse
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -138,10 +139,12 @@ func (c *Client) SyncRecognize(ctx context.Context, req *speechpb.SyncRecognizeR
 }
 
 // AsyncRecognize perform asynchronous speech-recognition: receive results via the
-// google.longrunning.Operations interface. `Operation.response` returns
-// `AsyncRecognizeResponse`.
+// google.longrunning.Operations interface. Returns either an
+// `Operation.error` or an `Operation.response` which contains
+// an `AsyncRecognizeResponse` message.
 func (c *Client) AsyncRecognize(ctx context.Context, req *speechpb.AsyncRecognizeRequest) (*longrunningpb.Operation, error) {
-	ctx = metadata.NewContext(ctx, c.metadata)
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error

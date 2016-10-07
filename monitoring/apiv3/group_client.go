@@ -24,6 +24,7 @@ import (
 
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
 	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
@@ -38,7 +39,7 @@ var (
 	groupGroupPathTemplate   = gax.MustCompilePathTemplate("projects/{project}/groups/{group}")
 )
 
-// GroupCallOptions contains the retry settings for each method of this client.
+// GroupCallOptions contains the retry settings for each method of GroupClient.
 type GroupCallOptions struct {
 	ListGroups       []gax.CallOption
 	GetGroup         []gax.CallOption
@@ -70,7 +71,6 @@ func defaultGroupCallOptions() *GroupCallOptions {
 			}),
 		},
 	}
-
 	return &GroupCallOptions{
 		ListGroups:       retry[[2]string{"default", "idempotent"}],
 		GetGroup:         retry[[2]string{"default", "idempotent"}],
@@ -81,13 +81,13 @@ func defaultGroupCallOptions() *GroupCallOptions {
 	}
 }
 
-// GroupClient is a client for interacting with GroupService.
+// GroupClient is a client for interacting with Stackdriver Monitoring API.
 type GroupClient struct {
 	// The connection to the service.
 	conn *grpc.ClientConn
 
 	// The gRPC API client.
-	client monitoringpb.GroupServiceClient
+	groupClient monitoringpb.GroupServiceClient
 
 	// The call options for this service.
 	CallOptions *GroupCallOptions
@@ -117,8 +117,9 @@ func NewGroupClient(ctx context.Context, opts ...option.ClientOption) (*GroupCli
 	}
 	c := &GroupClient{
 		conn:        conn,
-		client:      monitoringpb.NewGroupServiceClient(conn),
 		CallOptions: defaultGroupCallOptions(),
+
+		groupClient: monitoringpb.NewGroupServiceClient(conn),
 	}
 	c.SetGoogleClientInfo("gax", gax.Version)
 	return c, nil
@@ -144,7 +145,7 @@ func (c *GroupClient) SetGoogleClientInfo(name, version string) {
 	}
 }
 
-// ProjectPath returns the path for the project resource.
+// GroupProjectPath returns the path for the project resource.
 func GroupProjectPath(project string) string {
 	path, err := groupProjectPathTemplate.Render(map[string]string{
 		"project": project,
@@ -155,8 +156,8 @@ func GroupProjectPath(project string) string {
 	return path
 }
 
-// GroupPath returns the path for the group resource.
-func GroupGroupPath(project string, group string) string {
+// GroupGroupPath returns the path for the group resource.
+func GroupGroupPath(project, group string) string {
 	path, err := groupGroupPathTemplate.Render(map[string]string{
 		"project": project,
 		"group":   group,
@@ -167,41 +168,50 @@ func GroupGroupPath(project string, group string) string {
 	return path
 }
 
-// ListGroups lists the existing groups. The project ID in the URL path must refer
-// to a Stackdriver account.
+// ListGroups lists the existing groups.
 func (c *GroupClient) ListGroups(ctx context.Context, req *monitoringpb.ListGroupsRequest) *GroupIterator {
-	ctx = metadata.NewContext(ctx, c.metadata)
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	it := &GroupIterator{}
-	it.apiCall = func() error {
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
 		var resp *monitoringpb.ListGroupsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
 		err := gax.Invoke(ctx, func(ctx context.Context) error {
 			var err error
-			req.PageToken = it.nextPageToken
-			req.PageSize = it.pageSize
-			resp, err = c.client.ListGroups(ctx, req)
+			resp, err = c.groupClient.ListGroups(ctx, req)
 			return err
 		}, c.CallOptions.ListGroups...)
 		if err != nil {
-			return err
+			return "", err
 		}
-		if resp.NextPageToken == "" {
-			it.atLastPage = true
-		}
-		it.nextPageToken = resp.NextPageToken
-		it.items = resp.Group
-		return nil
+		it.items = append(it.items, resp.Group...)
+		return resp.NextPageToken, nil
 	}
+	bufLen := func() int { return len(it.items) }
+	takeBuf := func() interface{} {
+		b := it.items
+		it.items = nil
+		return b
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, bufLen, takeBuf)
 	return it
 }
 
-// GetGroup gets a single group. The project ID in the URL path must refer to a
-// Stackdriver account.
+// GetGroup gets a single group.
 func (c *GroupClient) GetGroup(ctx context.Context, req *monitoringpb.GetGroupRequest) (*monitoringpb.Group, error) {
-	ctx = metadata.NewContext(ctx, c.metadata)
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	var resp *monitoringpb.Group
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
-		resp, err = c.client.GetGroup(ctx, req)
+		resp, err = c.groupClient.GetGroup(ctx, req)
 		return err
 	}, c.CallOptions.GetGroup...)
 	if err != nil {
@@ -210,14 +220,14 @@ func (c *GroupClient) GetGroup(ctx context.Context, req *monitoringpb.GetGroupRe
 	return resp, nil
 }
 
-// CreateGroup creates a new group. The project ID in the URL path must refer to a
-// Stackdriver account.
+// CreateGroup creates a new group.
 func (c *GroupClient) CreateGroup(ctx context.Context, req *monitoringpb.CreateGroupRequest) (*monitoringpb.Group, error) {
-	ctx = metadata.NewContext(ctx, c.metadata)
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	var resp *monitoringpb.Group
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
-		resp, err = c.client.CreateGroup(ctx, req)
+		resp, err = c.groupClient.CreateGroup(ctx, req)
 		return err
 	}, c.CallOptions.CreateGroup...)
 	if err != nil {
@@ -228,13 +238,13 @@ func (c *GroupClient) CreateGroup(ctx context.Context, req *monitoringpb.CreateG
 
 // UpdateGroup updates an existing group.
 // You can change any group attributes except `name`.
-// The project ID in the URL path must refer to a Stackdriver account.
 func (c *GroupClient) UpdateGroup(ctx context.Context, req *monitoringpb.UpdateGroupRequest) (*monitoringpb.Group, error) {
-	ctx = metadata.NewContext(ctx, c.metadata)
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	var resp *monitoringpb.Group
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
-		resp, err = c.client.UpdateGroup(ctx, req)
+		resp, err = c.groupClient.UpdateGroup(ctx, req)
 		return err
 	}, c.CallOptions.UpdateGroup...)
 	if err != nil {
@@ -243,209 +253,96 @@ func (c *GroupClient) UpdateGroup(ctx context.Context, req *monitoringpb.UpdateG
 	return resp, nil
 }
 
-// DeleteGroup deletes an existing group. The project ID in the URL path must refer to a
-// Stackdriver account.
+// DeleteGroup deletes an existing group.
 func (c *GroupClient) DeleteGroup(ctx context.Context, req *monitoringpb.DeleteGroupRequest) error {
-	ctx = metadata.NewContext(ctx, c.metadata)
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
-		_, err = c.client.DeleteGroup(ctx, req)
+		_, err = c.groupClient.DeleteGroup(ctx, req)
 		return err
 	}, c.CallOptions.DeleteGroup...)
 	return err
 }
 
-// ListGroupMembers lists the monitored resources that are members of a group. The project ID
-// in the URL path must refer to a Stackdriver account.
+// ListGroupMembers lists the monitored resources that are members of a group.
 func (c *GroupClient) ListGroupMembers(ctx context.Context, req *monitoringpb.ListGroupMembersRequest) *MonitoredResourceIterator {
-	ctx = metadata.NewContext(ctx, c.metadata)
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	it := &MonitoredResourceIterator{}
-	it.apiCall = func() error {
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
 		var resp *monitoringpb.ListGroupMembersResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
 		err := gax.Invoke(ctx, func(ctx context.Context) error {
 			var err error
-			req.PageToken = it.nextPageToken
-			req.PageSize = it.pageSize
-			resp, err = c.client.ListGroupMembers(ctx, req)
+			resp, err = c.groupClient.ListGroupMembers(ctx, req)
 			return err
 		}, c.CallOptions.ListGroupMembers...)
 		if err != nil {
-			return err
+			return "", err
 		}
-		if resp.NextPageToken == "" {
-			it.atLastPage = true
-		}
-		it.nextPageToken = resp.NextPageToken
-		it.items = resp.Members
-		return nil
+		it.items = append(it.items, resp.Members...)
+		return resp.NextPageToken, nil
 	}
+	bufLen := func() int { return len(it.items) }
+	takeBuf := func() interface{} {
+		b := it.items
+		it.items = nil
+		return b
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, bufLen, takeBuf)
 	return it
 }
 
 // GroupIterator manages a stream of *monitoringpb.Group.
 type GroupIterator struct {
-	// The current page data.
-	items         []*monitoringpb.Group
-	atLastPage    bool
-	currentIndex  int
-	pageSize      int32
-	nextPageToken string
-	apiCall       func() error
+	items    []*monitoringpb.Group
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
 }
 
-// NextPage returns the next page of results.
-// It will return at most the number of results specified by the last call to SetPageSize.
-// If SetPageSize was never called or was called with a value less than 1,
-// the page size is determined by the underlying service.
-//
-// NextPage may return a second return value of Done along with the last page of results. After
-// NextPage returns Done, all subsequent calls to NextPage will return (nil, Done).
-//
-// Next and NextPage should not be used with the same iterator.
-func (it *GroupIterator) NextPage() ([]*monitoringpb.Group, error) {
-	if it.atLastPage {
-		// We already returned Done with the last page of items. Continue to
-		// return Done, but with no items.
-		return nil, Done
-	}
-	if err := it.apiCall(); err != nil {
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *GroupIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *GroupIterator) Next() (*monitoringpb.Group, error) {
+	if err := it.nextFunc(); err != nil {
 		return nil, err
 	}
-	if it.atLastPage {
-		return it.items, Done
-	}
-	return it.items, nil
-}
-
-// Next returns the next result. Its second return value is Done if there are no more results.
-// Once next returns Done, all subsequent calls will return Done.
-//
-// Internally, Next retrieves results in bulk. You can call SetPageSize as a performance hint to
-// affect how many results are retrieved in a single RPC.
-//
-// SetPageToken should not be called when using Next.
-//
-// Next and NextPage should not be used with the same iterator.
-func (it *GroupIterator) Next() (*monitoringpb.Group, error) {
-	for it.currentIndex >= len(it.items) {
-		if it.atLastPage {
-			return nil, Done
-		}
-		if err := it.apiCall(); err != nil {
-			return nil, err
-		}
-		it.currentIndex = 0
-	}
-	result := it.items[it.currentIndex]
-	it.currentIndex++
-	return result, nil
-}
-
-// PageSize returns the page size for all subsequent calls to NextPage.
-func (it *GroupIterator) PageSize() int {
-	return int(it.pageSize)
-}
-
-// SetPageSize sets the page size for all subsequent calls to NextPage.
-func (it *GroupIterator) SetPageSize(pageSize int) {
-	if pageSize > math.MaxInt32 {
-		pageSize = math.MaxInt32
-	}
-	it.pageSize = int32(pageSize)
-}
-
-// SetPageToken sets the page token for the next call to NextPage, to resume the iteration from
-// a previous point.
-func (it *GroupIterator) SetPageToken(token string) {
-	it.nextPageToken = token
-}
-
-// NextPageToken returns a page token that can be used with SetPageToken to resume
-// iteration from the next page. It returns the empty string if there are no more pages.
-func (it *GroupIterator) NextPageToken() string {
-	return it.nextPageToken
+	item := it.items[0]
+	it.items = it.items[1:]
+	return item, nil
 }
 
 // MonitoredResourceIterator manages a stream of *monitoredrespb.MonitoredResource.
 type MonitoredResourceIterator struct {
-	// The current page data.
-	items         []*monitoredrespb.MonitoredResource
-	atLastPage    bool
-	currentIndex  int
-	pageSize      int32
-	nextPageToken string
-	apiCall       func() error
+	items    []*monitoredrespb.MonitoredResource
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
 }
 
-// NextPage returns the next page of results.
-// It will return at most the number of results specified by the last call to SetPageSize.
-// If SetPageSize was never called or was called with a value less than 1,
-// the page size is determined by the underlying service.
-//
-// NextPage may return a second return value of Done along with the last page of results. After
-// NextPage returns Done, all subsequent calls to NextPage will return (nil, Done).
-//
-// Next and NextPage should not be used with the same iterator.
-func (it *MonitoredResourceIterator) NextPage() ([]*monitoredrespb.MonitoredResource, error) {
-	if it.atLastPage {
-		// We already returned Done with the last page of items. Continue to
-		// return Done, but with no items.
-		return nil, Done
-	}
-	if err := it.apiCall(); err != nil {
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *MonitoredResourceIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *MonitoredResourceIterator) Next() (*monitoredrespb.MonitoredResource, error) {
+	if err := it.nextFunc(); err != nil {
 		return nil, err
 	}
-	if it.atLastPage {
-		return it.items, Done
-	}
-	return it.items, nil
-}
-
-// Next returns the next result. Its second return value is Done if there are no more results.
-// Once next returns Done, all subsequent calls will return Done.
-//
-// Internally, Next retrieves results in bulk. You can call SetPageSize as a performance hint to
-// affect how many results are retrieved in a single RPC.
-//
-// SetPageToken should not be called when using Next.
-//
-// Next and NextPage should not be used with the same iterator.
-func (it *MonitoredResourceIterator) Next() (*monitoredrespb.MonitoredResource, error) {
-	for it.currentIndex >= len(it.items) {
-		if it.atLastPage {
-			return nil, Done
-		}
-		if err := it.apiCall(); err != nil {
-			return nil, err
-		}
-		it.currentIndex = 0
-	}
-	result := it.items[it.currentIndex]
-	it.currentIndex++
-	return result, nil
-}
-
-// PageSize returns the page size for all subsequent calls to NextPage.
-func (it *MonitoredResourceIterator) PageSize() int {
-	return int(it.pageSize)
-}
-
-// SetPageSize sets the page size for all subsequent calls to NextPage.
-func (it *MonitoredResourceIterator) SetPageSize(pageSize int) {
-	if pageSize > math.MaxInt32 {
-		pageSize = math.MaxInt32
-	}
-	it.pageSize = int32(pageSize)
-}
-
-// SetPageToken sets the page token for the next call to NextPage, to resume the iteration from
-// a previous point.
-func (it *MonitoredResourceIterator) SetPageToken(token string) {
-	it.nextPageToken = token
-}
-
-// NextPageToken returns a page token that can be used with SetPageToken to resume
-// iteration from the next page. It returns the empty string if there are no more pages.
-func (it *MonitoredResourceIterator) NextPageToken() string {
-	return it.nextPageToken
+	item := it.items[0]
+	it.items = it.items[1:]
+	return item, nil
 }

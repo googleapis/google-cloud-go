@@ -33,7 +33,7 @@ var (
 	reportErrorsProjectPathTemplate = gax.MustCompilePathTemplate("projects/{project}")
 )
 
-// ReportErrorsCallOptions contains the retry settings for each method of this client.
+// ReportErrorsCallOptions contains the retry settings for each method of ReportErrorsClient.
 type ReportErrorsCallOptions struct {
 	ReportErrorEvent []gax.CallOption
 }
@@ -49,19 +49,18 @@ func defaultReportErrorsClientOptions() []option.ClientOption {
 
 func defaultReportErrorsCallOptions() *ReportErrorsCallOptions {
 	retry := map[[2]string][]gax.CallOption{}
-
 	return &ReportErrorsCallOptions{
 		ReportErrorEvent: retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 
-// ReportErrorsClient is a client for interacting with ReportErrorsService.
+// ReportErrorsClient is a client for interacting with Stackdriver Error Reporting API.
 type ReportErrorsClient struct {
 	// The connection to the service.
 	conn *grpc.ClientConn
 
 	// The gRPC API client.
-	client clouderrorreportingpb.ReportErrorsServiceClient
+	reportErrorsClient clouderrorreportingpb.ReportErrorsServiceClient
 
 	// The call options for this service.
 	CallOptions *ReportErrorsCallOptions
@@ -70,7 +69,7 @@ type ReportErrorsClient struct {
 	metadata map[string][]string
 }
 
-// NewReportErrorsClient creates a new report_errors service client.
+// NewReportErrorsClient creates a new report errors service client.
 //
 // An API for reporting error events.
 func NewReportErrorsClient(ctx context.Context, opts ...option.ClientOption) (*ReportErrorsClient, error) {
@@ -80,8 +79,9 @@ func NewReportErrorsClient(ctx context.Context, opts ...option.ClientOption) (*R
 	}
 	c := &ReportErrorsClient{
 		conn:        conn,
-		client:      clouderrorreportingpb.NewReportErrorsServiceClient(conn),
 		CallOptions: defaultReportErrorsCallOptions(),
+
+		reportErrorsClient: clouderrorreportingpb.NewReportErrorsServiceClient(conn),
 	}
 	c.SetGoogleClientInfo("gax", gax.Version)
 	return c, nil
@@ -107,7 +107,7 @@ func (c *ReportErrorsClient) SetGoogleClientInfo(name, version string) {
 	}
 }
 
-// ProjectPath returns the path for the project resource.
+// ReportErrorsProjectPath returns the path for the project resource.
 func ReportErrorsProjectPath(project string) string {
 	path, err := reportErrorsProjectPathTemplate.Render(map[string]string{
 		"project": project,
@@ -127,11 +127,12 @@ func ReportErrorsProjectPath(project string) string {
 // a `key` parameter. For example:
 // <pre>POST https://clouderrorreporting.googleapis.com/v1beta1/projects/example-project/events:report?key=123ABC456</pre>
 func (c *ReportErrorsClient) ReportErrorEvent(ctx context.Context, req *clouderrorreportingpb.ReportErrorEventRequest) (*clouderrorreportingpb.ReportErrorEventResponse, error) {
-	ctx = metadata.NewContext(ctx, c.metadata)
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	var resp *clouderrorreportingpb.ReportErrorEventResponse
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
-		resp, err = c.client.ReportErrorEvent(ctx, req)
+		resp, err = c.reportErrorsClient.ReportErrorEvent(ctx, req)
 		return err
 	}, c.CallOptions.ReportErrorEvent...)
 	if err != nil {

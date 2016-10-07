@@ -22,3 +22,5 @@
 // services. The Stackdriver Error Reporting API provides a way to report
 // new errors and read access to error groups and their associated errors.
 package errorreporting // import "cloud.google.com/go/errorreporting/apiv1beta1"
+
+const gapicNameVersion = "gapic/0.1.0"

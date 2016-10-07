@@ -24,6 +24,7 @@ import (
 
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
 	clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
@@ -36,7 +37,7 @@ var (
 	errorStatsProjectPathTemplate = gax.MustCompilePathTemplate("projects/{project}")
 )
 
-// ErrorStatsCallOptions contains the retry settings for each method of this client.
+// ErrorStatsCallOptions contains the retry settings for each method of ErrorStatsClient.
 type ErrorStatsCallOptions struct {
 	ListGroupStats []gax.CallOption
 	ListEvents     []gax.CallOption
@@ -67,7 +68,6 @@ func defaultErrorStatsCallOptions() *ErrorStatsCallOptions {
 			}),
 		},
 	}
-
 	return &ErrorStatsCallOptions{
 		ListGroupStats: retry[[2]string{"default", "idempotent"}],
 		ListEvents:     retry[[2]string{"default", "idempotent"}],
@@ -75,13 +75,13 @@ func defaultErrorStatsCallOptions() *ErrorStatsCallOptions {
 	}
 }
 
-// ErrorStatsClient is a client for interacting with ErrorStatsService.
+// ErrorStatsClient is a client for interacting with Stackdriver Error Reporting API.
 type ErrorStatsClient struct {
 	// The connection to the service.
 	conn *grpc.ClientConn
 
 	// The gRPC API client.
-	client clouderrorreportingpb.ErrorStatsServiceClient
+	errorStatsClient clouderrorreportingpb.ErrorStatsServiceClient
 
 	// The call options for this service.
 	CallOptions *ErrorStatsCallOptions
@@ -90,7 +90,7 @@ type ErrorStatsClient struct {
 	metadata map[string][]string
 }
 
-// NewErrorStatsClient creates a new error_stats service client.
+// NewErrorStatsClient creates a new error stats service client.
 //
 // An API for retrieving and managing error statistics as well as data for
 // individual events.
@@ -101,8 +101,9 @@ func NewErrorStatsClient(ctx context.Context, opts ...option.ClientOption) (*Err
 	}
 	c := &ErrorStatsClient{
 		conn:        conn,
-		client:      clouderrorreportingpb.NewErrorStatsServiceClient(conn),
 		CallOptions: defaultErrorStatsCallOptions(),
+
+		errorStatsClient: clouderrorreportingpb.NewErrorStatsServiceClient(conn),
 	}
 	c.SetGoogleClientInfo("gax", gax.Version)
 	return c, nil
@@ -128,7 +129,7 @@ func (c *ErrorStatsClient) SetGoogleClientInfo(name, version string) {
 	}
 }
 
-// ProjectPath returns the path for the project resource.
+// ErrorStatsProjectPath returns the path for the project resource.
 func ErrorStatsProjectPath(project string) string {
 	path, err := errorStatsProjectPathTemplate.Render(map[string]string{
 		"project": project,
@@ -141,63 +142,84 @@ func ErrorStatsProjectPath(project string) string {
 
 // ListGroupStats lists the specified groups.
 func (c *ErrorStatsClient) ListGroupStats(ctx context.Context, req *clouderrorreportingpb.ListGroupStatsRequest) *ErrorGroupStatsIterator {
-	ctx = metadata.NewContext(ctx, c.metadata)
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	it := &ErrorGroupStatsIterator{}
-	it.apiCall = func() error {
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
 		var resp *clouderrorreportingpb.ListGroupStatsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
 		err := gax.Invoke(ctx, func(ctx context.Context) error {
 			var err error
-			req.PageToken = it.nextPageToken
-			req.PageSize = it.pageSize
-			resp, err = c.client.ListGroupStats(ctx, req)
+			resp, err = c.errorStatsClient.ListGroupStats(ctx, req)
 			return err
 		}, c.CallOptions.ListGroupStats...)
 		if err != nil {
-			return err
+			return "", err
 		}
-		if resp.NextPageToken == "" {
-			it.atLastPage = true
-		}
-		it.nextPageToken = resp.NextPageToken
-		it.items = resp.ErrorGroupStats
-		return nil
+		it.items = append(it.items, resp.ErrorGroupStats...)
+		return resp.NextPageToken, nil
 	}
+	bufLen := func() int { return len(it.items) }
+	takeBuf := func() interface{} {
+		b := it.items
+		it.items = nil
+		return b
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, bufLen, takeBuf)
 	return it
 }
 
 // ListEvents lists the specified events.
 func (c *ErrorStatsClient) ListEvents(ctx context.Context, req *clouderrorreportingpb.ListEventsRequest) *ErrorEventIterator {
-	ctx = metadata.NewContext(ctx, c.metadata)
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	it := &ErrorEventIterator{}
-	it.apiCall = func() error {
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
 		var resp *clouderrorreportingpb.ListEventsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
 		err := gax.Invoke(ctx, func(ctx context.Context) error {
 			var err error
-			req.PageToken = it.nextPageToken
-			req.PageSize = it.pageSize
-			resp, err = c.client.ListEvents(ctx, req)
+			resp, err = c.errorStatsClient.ListEvents(ctx, req)
 			return err
 		}, c.CallOptions.ListEvents...)
 		if err != nil {
-			return err
+			return "", err
 		}
-		if resp.NextPageToken == "" {
-			it.atLastPage = true
-		}
-		it.nextPageToken = resp.NextPageToken
-		it.items = resp.ErrorEvents
-		return nil
+		it.items = append(it.items, resp.ErrorEvents...)
+		return resp.NextPageToken, nil
 	}
+	bufLen := func() int { return len(it.items) }
+	takeBuf := func() interface{} {
+		b := it.items
+		it.items = nil
+		return b
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, bufLen, takeBuf)
 	return it
 }
 
 // DeleteEvents deletes all error events of a given project.
 func (c *ErrorStatsClient) DeleteEvents(ctx context.Context, req *clouderrorreportingpb.DeleteEventsRequest) (*clouderrorreportingpb.DeleteEventsResponse, error) {
-	ctx = metadata.NewContext(ctx, c.metadata)
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	var resp *clouderrorreportingpb.DeleteEventsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
-		resp, err = c.client.DeleteEvents(ctx, req)
+		resp, err = c.errorStatsClient.DeleteEvents(ctx, req)
 		return err
 	}, c.CallOptions.DeleteEvents...)
 	if err != nil {
@@ -206,170 +228,48 @@ func (c *ErrorStatsClient) DeleteEvents(ctx context.Context, req *clouderrorrepo
 	return resp, nil
 }
 
-// ErrorGroupStatsIterator manages a stream of *clouderrorreportingpb.ErrorGroupStats.
-type ErrorGroupStatsIterator struct {
-	// The current page data.
-	items         []*clouderrorreportingpb.ErrorGroupStats
-	atLastPage    bool
-	currentIndex  int
-	pageSize      int32
-	nextPageToken string
-	apiCall       func() error
-}
-
-// NextPage returns the next page of results.
-// It will return at most the number of results specified by the last call to SetPageSize.
-// If SetPageSize was never called or was called with a value less than 1,
-// the page size is determined by the underlying service.
-//
-// NextPage may return a second return value of Done along with the last page of results. After
-// NextPage returns Done, all subsequent calls to NextPage will return (nil, Done).
-//
-// Next and NextPage should not be used with the same iterator.
-func (it *ErrorGroupStatsIterator) NextPage() ([]*clouderrorreportingpb.ErrorGroupStats, error) {
-	if it.atLastPage {
-		// We already returned Done with the last page of items. Continue to
-		// return Done, but with no items.
-		return nil, Done
-	}
-	if err := it.apiCall(); err != nil {
-		return nil, err
-	}
-	if it.atLastPage {
-		return it.items, Done
-	}
-	return it.items, nil
-}
-
-// Next returns the next result. Its second return value is Done if there are no more results.
-// Once next returns Done, all subsequent calls will return Done.
-//
-// Internally, Next retrieves results in bulk. You can call SetPageSize as a performance hint to
-// affect how many results are retrieved in a single RPC.
-//
-// SetPageToken should not be called when using Next.
-//
-// Next and NextPage should not be used with the same iterator.
-func (it *ErrorGroupStatsIterator) Next() (*clouderrorreportingpb.ErrorGroupStats, error) {
-	for it.currentIndex >= len(it.items) {
-		if it.atLastPage {
-			return nil, Done
-		}
-		if err := it.apiCall(); err != nil {
-			return nil, err
-		}
-		it.currentIndex = 0
-	}
-	result := it.items[it.currentIndex]
-	it.currentIndex++
-	return result, nil
-}
-
-// PageSize returns the page size for all subsequent calls to NextPage.
-func (it *ErrorGroupStatsIterator) PageSize() int {
-	return int(it.pageSize)
-}
-
-// SetPageSize sets the page size for all subsequent calls to NextPage.
-func (it *ErrorGroupStatsIterator) SetPageSize(pageSize int) {
-	if pageSize > math.MaxInt32 {
-		pageSize = math.MaxInt32
-	}
-	it.pageSize = int32(pageSize)
-}
-
-// SetPageToken sets the page token for the next call to NextPage, to resume the iteration from
-// a previous point.
-func (it *ErrorGroupStatsIterator) SetPageToken(token string) {
-	it.nextPageToken = token
-}
-
-// NextPageToken returns a page token that can be used with SetPageToken to resume
-// iteration from the next page. It returns the empty string if there are no more pages.
-func (it *ErrorGroupStatsIterator) NextPageToken() string {
-	return it.nextPageToken
-}
-
 // ErrorEventIterator manages a stream of *clouderrorreportingpb.ErrorEvent.
 type ErrorEventIterator struct {
-	// The current page data.
-	items         []*clouderrorreportingpb.ErrorEvent
-	atLastPage    bool
-	currentIndex  int
-	pageSize      int32
-	nextPageToken string
-	apiCall       func() error
+	items    []*clouderrorreportingpb.ErrorEvent
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
 }
 
-// NextPage returns the next page of results.
-// It will return at most the number of results specified by the last call to SetPageSize.
-// If SetPageSize was never called or was called with a value less than 1,
-// the page size is determined by the underlying service.
-//
-// NextPage may return a second return value of Done along with the last page of results. After
-// NextPage returns Done, all subsequent calls to NextPage will return (nil, Done).
-//
-// Next and NextPage should not be used with the same iterator.
-func (it *ErrorEventIterator) NextPage() ([]*clouderrorreportingpb.ErrorEvent, error) {
-	if it.atLastPage {
-		// We already returned Done with the last page of items. Continue to
-		// return Done, but with no items.
-		return nil, Done
-	}
-	if err := it.apiCall(); err != nil {
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ErrorEventIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ErrorEventIterator) Next() (*clouderrorreportingpb.ErrorEvent, error) {
+	if err := it.nextFunc(); err != nil {
 		return nil, err
 	}
-	if it.atLastPage {
-		return it.items, Done
+	item := it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+// ErrorGroupStatsIterator manages a stream of *clouderrorreportingpb.ErrorGroupStats.
+type ErrorGroupStatsIterator struct {
+	items    []*clouderrorreportingpb.ErrorGroupStats
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ErrorGroupStatsIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ErrorGroupStatsIterator) Next() (*clouderrorreportingpb.ErrorGroupStats, error) {
+	if err := it.nextFunc(); err != nil {
+		return nil, err
 	}
-	return it.items, nil
-}
-
-// Next returns the next result. Its second return value is Done if there are no more results.
-// Once next returns Done, all subsequent calls will return Done.
-//
-// Internally, Next retrieves results in bulk. You can call SetPageSize as a performance hint to
-// affect how many results are retrieved in a single RPC.
-//
-// SetPageToken should not be called when using Next.
-//
-// Next and NextPage should not be used with the same iterator.
-func (it *ErrorEventIterator) Next() (*clouderrorreportingpb.ErrorEvent, error) {
-	for it.currentIndex >= len(it.items) {
-		if it.atLastPage {
-			return nil, Done
-		}
-		if err := it.apiCall(); err != nil {
-			return nil, err
-		}
-		it.currentIndex = 0
-	}
-	result := it.items[it.currentIndex]
-	it.currentIndex++
-	return result, nil
-}
-
-// PageSize returns the page size for all subsequent calls to NextPage.
-func (it *ErrorEventIterator) PageSize() int {
-	return int(it.pageSize)
-}
-
-// SetPageSize sets the page size for all subsequent calls to NextPage.
-func (it *ErrorEventIterator) SetPageSize(pageSize int) {
-	if pageSize > math.MaxInt32 {
-		pageSize = math.MaxInt32
-	}
-	it.pageSize = int32(pageSize)
-}
-
-// SetPageToken sets the page token for the next call to NextPage, to resume the iteration from
-// a previous point.
-func (it *ErrorEventIterator) SetPageToken(token string) {
-	it.nextPageToken = token
-}
-
-// NextPageToken returns a page token that can be used with SetPageToken to resume
-// iteration from the next page. It returns the empty string if there are no more pages.
-func (it *ErrorEventIterator) NextPageToken() string {
-	return it.nextPageToken
+	item := it.items[0]
+	it.items = it.items[1:]
+	return item, nil
 }
