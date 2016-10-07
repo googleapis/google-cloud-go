@@ -542,6 +542,7 @@ func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer {
 		o:           o,
 		donec:       make(chan struct{}),
 		ObjectAttrs: ObjectAttrs{Name: o.object},
+		ChunkSize:   googleapi.DefaultUploadChunkSize,
 	}
 }
 

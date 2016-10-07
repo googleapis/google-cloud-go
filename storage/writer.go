@@ -15,6 +15,7 @@
 package storage
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"unicode/utf8"
@@ -30,6 +31,17 @@ type Writer struct {
 	// must be initialized before the first Write call. Nil or zero-valued
 	// attributes are ignored.
 	ObjectAttrs
+
+	// ChunkSize controls the maximum number of bytes of the object that the
+	// Writer will attempt to send to the server in a single request. Objects
+	// smaller than the size will be sent in a single request, while larger
+	// objects will be split over multiple requests. The size will be rounded up
+	// to the nearest multiple of 256K. If zero, chunking will be disabled and
+	// the object will be uploaded in a single request.
+	//
+	// ChunkSize will default to a reasonable value. Any custom configuration
+	// must be done before the first Write call.
+	ChunkSize int
 
 	ctx context.Context
 	o   *ObjectHandle
@@ -56,7 +68,12 @@ func (w *Writer) open() error {
 	w.pw = pw
 	w.opened = true
 
-	var mediaOpts []googleapi.MediaOption
+	if w.ChunkSize < 0 {
+		return errors.New("storage: Writer.ChunkSize must non-negative")
+	}
+	mediaOpts := []googleapi.MediaOption{
+		googleapi.ChunkSize(w.ChunkSize),
+	}
 	if c := attrs.ContentType; c != "" {
 		mediaOpts = append(mediaOpts, googleapi.ContentType(c))
 	}
