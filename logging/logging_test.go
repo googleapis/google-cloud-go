@@ -409,10 +409,11 @@ func deleteLog(ctx context.Context, logID string) {
 }
 
 // waitFor calls f repeatedly with exponential backoff, blocking until it returns true.
-// It calls log.Fatal after two minutes.
+// It calls log.Fatal after a while.
 func waitFor(f func() bool) {
 	delay := time.Second
-	timeout := time.NewTimer(2 * time.Minute)
+	// TODO(shadams): Find a better way to deflake these tests.
+	timeout := time.NewTimer(4 * time.Minute)
 	for {
 		select {
 		case <-time.After(delay):
