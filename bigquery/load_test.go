@@ -278,14 +278,18 @@ func TestConfiguringLoader(t *testing.T) {
 	want := defaultLoadJob()
 	want.Configuration.Load.CreateDisposition = "CREATE_NEVER"
 	want.Configuration.Load.WriteDisposition = "WRITE_TRUNCATE"
+	want.JobReference = &bq.JobReference{
+		JobId:     "ajob",
+		ProjectId: "project-id",
+	}
 
 	loader := dst.LoaderFrom(src)
 	loader.CreateDisposition = CreateNever
 	loader.WriteDisposition = WriteTruncate
+	loader.JobID = "ajob"
 
 	if _, err := loader.Run(context.Background()); err != nil {
-		t.Errorf("err calling Loader.Run: %v", err)
-		return
+		t.Fatalf("err calling Loader.Run: %v", err)
 	}
 	if !reflect.DeepEqual(s.Job, want) {
 		t.Errorf("loading: got:\n%v\nwant:\n%v", s.Job, want)

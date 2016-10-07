@@ -61,12 +61,7 @@ func (e *Extractor) Run(ctx context.Context) (*Job, error) {
 		},
 	}
 
-	if e.JobID != "" {
-		job.JobReference = &bq.JobReference{
-			JobId:     e.JobID,
-			ProjectId: e.c.projectID,
-		}
-	}
+	setJobRef(job, e.JobID, e.c.projectID)
 
 	e.Dst.customizeExtractDst(job.Configuration.Extract)
 	e.Src.customizeExtractSrc(job.Configuration.Extract)

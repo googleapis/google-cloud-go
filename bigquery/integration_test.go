@@ -136,11 +136,10 @@ func TestIntegration(t *testing.T) {
 	checkRead(table)
 
 	// Query the table.
-	q := &Query{
-		Q:                "select name, num from t1",
-		DefaultProjectID: projID,
-		DefaultDatasetID: ds.id,
-	}
+	q := c.Query("select name, num from t1")
+	q.DefaultProjectID = projID
+	q.DefaultDatasetID = ds.id
+
 	checkRead(q)
 
 	// Query the long way.

@@ -56,19 +56,17 @@ func main() {
 		log.Fatalf("Creating bigquery client: %v", err)
 	}
 
-	d := &bigquery.Table{}
-	if *dest != "" {
-		d = client.Dataset(*dataset).Table(*dest)
-	}
+	query := client.Query(*q)
+	query.DefaultProjectID = *project
+	query.DefaultDatasetID = *dataset
+	query.WriteDisposition = bigquery.WriteTruncate
 
-	query := &bigquery.Query{
-		Q:                *q,
-		DefaultProjectID: *project,
-		DefaultDatasetID: *dataset,
+	if *dest != "" {
+		query.Dst = client.Dataset(*dataset).Table(*dest)
 	}
 
 	// Query data.
-	job, err := client.Copy(ctx, d, query, bigquery.WriteTruncate)
+	job, err := query.Run(ctx)
 
 	if err != nil {
 		log.Fatalf("Querying: %v", err)

@@ -42,7 +42,7 @@ func defaultQueryJob() *bq.Job {
 	}
 }
 
-func TestQuery(t *testing.T) {
+func TestQueryWithOptions(t *testing.T) {
 	s := &testService{}
 	c := &Client{
 		projectID: "project-id",
@@ -50,35 +50,10 @@ func TestQuery(t *testing.T) {
 	}
 	testCases := []struct {
 		dst     *Table
-		src     *Query
+		src     *QueryConfig
 		options []Option
 		want    *bq.Job
 	}{
-		{
-			dst:  c.Dataset("dataset-id").Table("table-id"),
-			src:  defaultQuery,
-			want: defaultQueryJob(),
-		},
-		{
-			dst: c.Dataset("dataset-id").Table("table-id"),
-			src: &Query{
-				Q: "query string",
-			},
-			want: func() *bq.Job {
-				j := defaultQueryJob()
-				j.Configuration.Query.DefaultDataset = nil
-				return j
-			}(),
-		},
-		{
-			dst: &Table{},
-			src: defaultQuery,
-			want: func() *bq.Job {
-				j := defaultQueryJob()
-				j.Configuration.Query.DestinationTable = nil
-				return j
-			}(),
-		},
 		{
 			dst: &Table{
 				ProjectID: "project-id",
@@ -166,9 +141,57 @@ func TestQuery(t *testing.T) {
 				return j
 			}(),
 		},
+	}
+
+	for _, tc := range testCases {
+		// Only the old-style Client.Copy method can take options.
+		if _, err := c.Copy(context.Background(), tc.dst, tc.src, tc.options...); err != nil {
+			t.Errorf("err calling query: %v", err)
+			continue
+		}
+		if !reflect.DeepEqual(s.Job, tc.want) {
+			t.Errorf("querying: got:\n%v\nwant:\n%v", s.Job, tc.want)
+		}
+	}
+}
+
+func TestQuery(t *testing.T) {
+	c := &Client{
+		projectID: "project-id",
+	}
+	testCases := []struct {
+		dst  *Table
+		src  *QueryConfig
+		want *bq.Job
+	}{
+		{
+			dst:  c.Dataset("dataset-id").Table("table-id"),
+			src:  defaultQuery,
+			want: defaultQueryJob(),
+		},
 		{
 			dst: c.Dataset("dataset-id").Table("table-id"),
-			src: &Query{
+			src: &QueryConfig{
+				Q: "query string",
+			},
+			want: func() *bq.Job {
+				j := defaultQueryJob()
+				j.Configuration.Query.DefaultDataset = nil
+				return j
+			}(),
+		},
+		{
+			dst: &Table{},
+			src: defaultQuery,
+			want: func() *bq.Job {
+				j := defaultQueryJob()
+				j.Configuration.Query.DestinationTable = nil
+				return j
+			}(),
+		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: &QueryConfig{
 				Q: "query string",
 				TableDefinitions: map[string]ExternalData{
 					"atable": &GCSReference{
@@ -220,7 +243,255 @@ func TestQuery(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		if _, err := c.Copy(context.Background(), tc.dst, tc.src, tc.options...); err != nil {
+		// Old-style: Client.Copy.
+		s := &testService{}
+		c.service = s
+		if _, err := c.Copy(context.Background(), tc.dst, tc.src); err != nil {
+			t.Errorf("err calling query: %v", err)
+			continue
+		}
+		if !reflect.DeepEqual(s.Job, tc.want) {
+			t.Errorf("querying: got:\n%v\nwant:\n%v", s.Job, tc.want)
+		}
+
+		// New-style: Client.Query.Run.
+		s = &testService{}
+		c.service = s
+		query := c.Query("")
+		query.QueryConfig = *tc.src
+		query.Dst = tc.dst
+		if _, err := query.Run(context.Background()); err != nil {
+			t.Errorf("err calling query: %v", err)
+			continue
+		}
+		if !reflect.DeepEqual(s.Job, tc.want) {
+			t.Errorf("querying: got:\n%v\nwant:\n%v", s.Job, tc.want)
+		}
+	}
+}
+
+func TestConfiguringQuery(t *testing.T) {
+	s := &testService{}
+	c := &Client{
+		projectID: "project-id",
+		service:   s,
+	}
+
+	query := c.Query("q")
+	query.JobID = "ajob"
+	query.DefaultProjectID = "def-project-id"
+	query.DefaultDatasetID = "def-dataset-id"
+	// Note: Other configuration fields are tested in other tests above.
+	// A lot of that can be consolidated once Client.Copy is gone.
+
+	want := &bq.Job{
+		Configuration: &bq.JobConfiguration{
+			Query: &bq.JobConfigurationQuery{
+				Query: "q",
+				DefaultDataset: &bq.DatasetReference{
+					ProjectId: "def-project-id",
+					DatasetId: "def-dataset-id",
+				},
+			},
+		},
+		JobReference: &bq.JobReference{
+			JobId:     "ajob",
+			ProjectId: "project-id",
+		},
+	}
+
+	if _, err := query.Run(context.Background()); err != nil {
+		t.Fatalf("err calling Query.Run: %v", err)
+	}
+	if !reflect.DeepEqual(s.Job, want) {
+		t.Errorf("querying: got:\n%v\nwant:\n%v", s.Job, want)
+	}
+}
+
+func TestDeprecatedFields(t *testing.T) {
+	// TODO(jba): delete this test once the deprecated top-level Query fields (e.g. "Q") have been removed.  TestConfiguringQuery will suffice then.
+	s := &testService{}
+	c := &Client{
+		projectID: "project-id",
+		service:   s,
+	}
+
+	query := c.Query("original query")
+	query.QueryConfig.DefaultProjectID = "original project id"
+	query.QueryConfig.DefaultDatasetID = "original dataset id"
+
+	// Set deprecated fields.  Should override the one in QueryConfig.
+	query.Q = "override query"
+	query.DefaultProjectID = "override project id"
+	query.DefaultDatasetID = "override dataset id"
+
+	want := &bq.Job{
+		Configuration: &bq.JobConfiguration{
+			Query: &bq.JobConfigurationQuery{
+				Query: "override query",
+				DefaultDataset: &bq.DatasetReference{
+					ProjectId: "override project id",
+					DatasetId: "override dataset id",
+				},
+			},
+		},
+	}
+
+	if _, err := query.Run(context.Background()); err != nil {
+		t.Fatalf("err calling Query.Run: %v", err)
+	}
+	if !reflect.DeepEqual(s.Job, want) {
+		t.Errorf("querying: got:\n%v\nwant:\n%v", s.Job, want)
+	}
+
+	// Clear deprecated fields.  The ones in QueryConfig should now be used.
+	query.Q = ""
+	query.DefaultProjectID = ""
+	query.DefaultDatasetID = ""
+
+	want = &bq.Job{
+		Configuration: &bq.JobConfiguration{
+			Query: &bq.JobConfigurationQuery{
+				Query: "original query",
+				DefaultDataset: &bq.DatasetReference{
+					ProjectId: "original project id",
+					DatasetId: "original dataset id",
+				},
+			},
+		},
+	}
+
+	if _, err := query.Run(context.Background()); err != nil {
+		t.Fatalf("err calling Query.Run: %v", err)
+	}
+	if !reflect.DeepEqual(s.Job, want) {
+		t.Errorf("querying: got:\n%v\nwant:\n%v", s.Job, want)
+	}
+
+}
+
+func TestBackwardsCompatabilityOfQuery(t *testing.T) {
+	// TODO(jba): delete this test once Queries can only be created via Client.Query.
+	c := &Client{
+		projectID: "project-id",
+	}
+	testCases := []struct {
+		src  interface{}
+		want *bq.Job
+	}{
+		{
+			src: &Query{
+				Q:                "query string",
+				DefaultProjectID: "def-project-id",
+				DefaultDatasetID: "def-dataset-id",
+			},
+			want: &bq.Job{
+				Configuration: &bq.JobConfiguration{
+					Query: &bq.JobConfigurationQuery{
+						Query: "query string",
+						DefaultDataset: &bq.DatasetReference{
+							ProjectId: "def-project-id",
+							DatasetId: "def-dataset-id",
+						},
+					},
+				},
+			},
+		},
+		{
+			src: &QueryConfig{
+				Q:                "query string",
+				DefaultProjectID: "def-project-id",
+				DefaultDatasetID: "def-dataset-id",
+			},
+			want: &bq.Job{
+				Configuration: &bq.JobConfiguration{
+					Query: &bq.JobConfigurationQuery{
+						Query: "query string",
+						DefaultDataset: &bq.DatasetReference{
+							ProjectId: "def-project-id",
+							DatasetId: "def-dataset-id",
+						},
+					},
+				},
+			},
+		},
+		{
+			src: &Query{
+				QueryConfig: QueryConfig{
+					Q:                "query string",
+					DefaultProjectID: "def-project-id",
+					DefaultDatasetID: "def-dataset-id",
+				},
+			},
+			want: &bq.Job{
+				Configuration: &bq.JobConfiguration{
+					Query: &bq.JobConfigurationQuery{
+						Query: "query string",
+						DefaultDataset: &bq.DatasetReference{
+							ProjectId: "def-project-id",
+							DatasetId: "def-dataset-id",
+						},
+					},
+				},
+			},
+		},
+		{
+			src: func() *Query {
+				q := c.Query("query string")
+				q.DefaultProjectID = "def-project-id"
+				q.DefaultDatasetID = "def-dataset-id"
+				return q
+			}(),
+			want: &bq.Job{
+				Configuration: &bq.JobConfiguration{
+					Query: &bq.JobConfigurationQuery{
+						Query: "query string",
+						DefaultDataset: &bq.DatasetReference{
+							ProjectId: "def-project-id",
+							DatasetId: "def-dataset-id",
+						},
+					},
+				},
+			},
+		},
+		{
+			src: func() *Query {
+				q := c.Query("query string")
+				q.QueryConfig.DefaultProjectID = "def-project-id"
+				q.QueryConfig.DefaultDatasetID = "def-dataset-id"
+				return q
+			}(),
+			want: &bq.Job{
+				Configuration: &bq.JobConfiguration{
+					Query: &bq.JobConfigurationQuery{
+						Query: "query string",
+						DefaultDataset: &bq.DatasetReference{
+							ProjectId: "def-project-id",
+							DatasetId: "def-dataset-id",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	dst := &Table{}
+	for _, tc := range testCases {
+		// Old-style: Client.Copy.
+		s := &testService{}
+		c.service = s
+		if _, err := c.Copy(context.Background(), dst, tc.src.(Source)); err != nil {
+			t.Errorf("err calling query: %v", err)
+			continue
+		}
+		if !reflect.DeepEqual(s.Job, tc.want) {
+			t.Errorf("querying: got:\n%v\nwant:\n%v", s.Job, tc.want)
+		}
+
+		// Old-style Client.Read.
+		s = &testService{}
+		c.service = s
+		if _, err := c.Read(context.Background(), tc.src.(ReadSource)); err != nil {
 			t.Errorf("err calling query: %v", err)
 			continue
 		}
