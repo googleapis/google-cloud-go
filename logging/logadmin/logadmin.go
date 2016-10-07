@@ -45,6 +45,8 @@ import (
 	"google.golang.org/api/option"
 	logtypepb "google.golang.org/genproto/googleapis/logging/type"
 	logpb "google.golang.org/genproto/googleapis/logging/v2"
+	// Import the following so EntryIterator can unmarshal log protos.
+	_ "google.golang.org/genproto/googleapis/cloud/audit"
 )
 
 // Client is a Logging client. A Client is associated with a single Cloud project.
