@@ -59,12 +59,30 @@ func (c *Client) Read(ctx context.Context, src ReadSource, options ...ReadOption
 	case *Job:
 		return src.Read(ctx, options...)
 	case *Query:
-		// For compatibility, support Query values created by literal, rather
-		// than Client.Query.
+		// Query used not to contain a QueryConfig. By moving its
+		// top-level fields down into a QueryConfig field, we break
+		// code that uses a Query literal.  If users make the minimal
+		// change to fix this (e.g. moving the "Q" field into a nested
+		// QueryConfig within the Query), they will end up with a Query
+		// that has no Client.  It's preferable to make Read continue
+		// to work in this case too, at least until we delete Read
+		// completely. So we copy QueryConfig into a Query with an
+		// actual client.
 		if src.client == nil {
-			src.client = c
+			src = &Query{
+				client:           c,
+				QueryConfig:      src.QueryConfig,
+				Q:                src.Q,
+				DefaultProjectID: src.DefaultProjectID,
+				DefaultDatasetID: src.DefaultDatasetID,
+			}
 		}
 		return src.Read(ctx, options...)
+	case *QueryConfig:
+		// For compatibility, support QueryConfig values created by literal, rather
+		// than Client.Query.
+		q := &Query{client: c, QueryConfig: *src}
+		return q.Read(ctx, options...)
 	case *Table:
 		return src.Read(ctx, options...)
 	}
@@ -194,11 +212,39 @@ func (opt ignoreUnknownValues) customizeLoad(conf *bq.JobConfigurationLoad) {
 	conf.IgnoreUnknownValues = true
 }
 
+// CreateDisposition returns an Option that specifies the TableCreateDisposition to use.
+// Deprecated: use the CreateDisposition field in Query, CopyConfig or LoadConfig instead.
+func CreateDisposition(disp TableCreateDisposition) Option { return disp }
+
+func (opt TableCreateDisposition) implementsOption() {}
+
+func (opt TableCreateDisposition) customizeCopy(conf *bq.JobConfigurationTableCopy) {
+	conf.CreateDisposition = string(opt)
+}
+
 func (opt TableCreateDisposition) customizeLoad(conf *bq.JobConfigurationLoad) {
 	conf.CreateDisposition = string(opt)
 }
 
+func (opt TableCreateDisposition) customizeQuery(conf *bq.JobConfigurationQuery) {
+	conf.CreateDisposition = string(opt)
+}
+
+// WriteDisposition returns an Option that specifies the TableWriteDisposition to use.
+// Deprecated: use the WriteDisposition field in Query, CopyConfig or LoadConfig instead.
+func WriteDisposition(disp TableWriteDisposition) Option { return disp }
+
+func (opt TableWriteDisposition) implementsOption() {}
+
+func (opt TableWriteDisposition) customizeCopy(conf *bq.JobConfigurationTableCopy) {
+	conf.WriteDisposition = string(opt)
+}
+
 func (opt TableWriteDisposition) customizeLoad(conf *bq.JobConfigurationLoad) {
+	conf.WriteDisposition = string(opt)
+}
+
+func (opt TableWriteDisposition) customizeQuery(conf *bq.JobConfigurationQuery) {
 	conf.WriteDisposition = string(opt)
 }
 
@@ -299,6 +345,9 @@ func (c *Client) Copy(ctx context.Context, dst Destination, src Source, options 
 			return c.cp(ctx, dst, src, options)
 		case *Query:
 			return c.query(ctx, dst, src, options)
+		case *QueryConfig:
+			q := &Query{QueryConfig: *src}
+			return c.query(ctx, dst, q, options)
 		}
 	case *GCSReference:
 		if src, ok := src.(*Table); ok {
@@ -321,4 +370,172 @@ type Destination interface {
 // A ReadSource is a source of data for the Read function.
 type ReadSource interface {
 	implementsReadSource()
+}
+
+type queryOption interface {
+	customizeQuery(conf *bq.JobConfigurationQuery)
+}
+
+// DisableQueryCache returns an Option that prevents results being fetched from the query cache.
+// If this Option is not used, results are fetched from the cache if they are available.
+// The query cache is a best-effort cache that is flushed whenever tables in the query are modified.
+// Cached results are only available when TableID is unspecified in the query's destination Table.
+// For more information, see https://cloud.google.com/bigquery/querying-data#querycaching
+//
+// Deprecated: use Query.DisableQueryCache instead.
+func DisableQueryCache() Option { return disableQueryCache{} }
+
+type disableQueryCache struct{}
+
+func (opt disableQueryCache) implementsOption() {}
+
+func (opt disableQueryCache) customizeQuery(conf *bq.JobConfigurationQuery) {
+	f := false
+	conf.UseQueryCache = &f
+}
+
+// DisableFlattenedResults returns an Option that prevents results being flattened.
+// If this Option is not used, results from nested and repeated fields are flattened.
+// DisableFlattenedResults implies AllowLargeResults
+// For more information, see https://cloud.google.com/bigquery/docs/data#nested
+// Deprecated: use Query.DisableFlattenedResults instead.
+func DisableFlattenedResults() Option { return disableFlattenedResults{} }
+
+type disableFlattenedResults struct{}
+
+func (opt disableFlattenedResults) implementsOption() {}
+
+func (opt disableFlattenedResults) customizeQuery(conf *bq.JobConfigurationQuery) {
+	f := false
+	conf.FlattenResults = &f
+	// DisableFlattenedResults implies AllowLargeResults
+	allowLargeResults{}.customizeQuery(conf)
+}
+
+// AllowLargeResults returns an Option that allows the query to produce arbitrarily large result tables.
+// The destination must be a table.
+// When using this option, queries will take longer to execute, even if the result set is small.
+// For additional limitations, see https://cloud.google.com/bigquery/querying-data#largequeryresults
+// Deprecated: use Query.AllowLargeResults instead.
+func AllowLargeResults() Option { return allowLargeResults{} }
+
+type allowLargeResults struct{}
+
+func (opt allowLargeResults) implementsOption() {}
+
+func (opt allowLargeResults) customizeQuery(conf *bq.JobConfigurationQuery) {
+	conf.AllowLargeResults = true
+}
+
+// JobPriority returns an Option that causes a query to be scheduled with the specified priority.
+// The default priority is InteractivePriority.
+// For more information, see https://cloud.google.com/bigquery/querying-data#batchqueries
+// Deprecated: use Query.Priority instead.
+func JobPriority(priority string) Option { return jobPriority(priority) }
+
+type jobPriority string
+
+func (opt jobPriority) implementsOption() {}
+
+func (opt jobPriority) customizeQuery(conf *bq.JobConfigurationQuery) {
+	conf.Priority = string(opt)
+}
+
+// MaxBillingTier returns an Option that sets the maximum billing tier for a Query.
+// Queries that have resource usage beyond this tier will fail (without
+// incurring a charge). If this Option is not used, the project default will be used.
+// Deprecated: use Query.MaxBillingTier instead.
+func MaxBillingTier(tier int) Option { return maxBillingTier(tier) }
+
+type maxBillingTier int
+
+func (opt maxBillingTier) implementsOption() {}
+
+func (opt maxBillingTier) customizeQuery(conf *bq.JobConfigurationQuery) {
+	tier := int64(opt)
+	conf.MaximumBillingTier = &tier
+}
+
+// MaxBytesBilled returns an Option that limits the number of bytes billed for
+// this job.  Queries that would exceed this limit will fail (without incurring
+// a charge).
+// If this Option is not used, or bytes is < 1, the project default will be
+// used.
+// Deprecated: use Query.MaxBytesBilled instead.
+func MaxBytesBilled(bytes int64) Option { return maxBytesBilled(bytes) }
+
+type maxBytesBilled int64
+
+func (opt maxBytesBilled) implementsOption() {}
+
+func (opt maxBytesBilled) customizeQuery(conf *bq.JobConfigurationQuery) {
+	if opt >= 1 {
+		conf.MaximumBytesBilled = int64(opt)
+	}
+}
+
+// QueryUseStandardSQL returns an Option that set the query to use standard SQL.
+// The default setting is false (using legacy SQL).
+// Deprecated: use Query.UseStandardSQL instead.
+func QueryUseStandardSQL() Option { return queryUseStandardSQL{} }
+
+type queryUseStandardSQL struct{}
+
+func (opt queryUseStandardSQL) implementsOption() {}
+
+func (opt queryUseStandardSQL) customizeQuery(conf *bq.JobConfigurationQuery) {
+	conf.UseLegacySql = false
+	conf.ForceSendFields = append(conf.ForceSendFields, "UseLegacySql")
+}
+
+func (c *Client) query(ctx context.Context, dst *Table, src *Query, options []Option) (*Job, error) {
+	job, options := initJobProto(c.projectID, options)
+	payload := &bq.JobConfigurationQuery{}
+
+	dst.customizeQueryDst(payload)
+
+	// QueryConfig now contains a Dst field.  If it is set, it will override dst.
+	// This should not affect existing client code which does not set QueryConfig.Dst.
+	src.QueryConfig.customizeQuerySrc(payload)
+
+	// For compatability, allow some legacy fields to be set directly on the query.
+	// TODO(jba): delete this code when deleting Client.Copy.
+	if src.Q != "" {
+		payload.Query = src.Q
+	}
+	if src.DefaultProjectID != "" || src.DefaultDatasetID != "" {
+		payload.DefaultDataset = &bq.DatasetReference{
+			DatasetId: src.DefaultDatasetID,
+			ProjectId: src.DefaultProjectID,
+		}
+	}
+	// end of compatability code.
+
+	for _, opt := range options {
+		o, ok := opt.(queryOption)
+		if !ok {
+			return nil, fmt.Errorf("option (%#v) not applicable to dst/src pair: dst: %T ; src: %T", opt, dst, src)
+		}
+		o.customizeQuery(payload)
+	}
+
+	job.Configuration = &bq.JobConfiguration{
+		Query: payload,
+	}
+	j, err := c.service.insertJob(ctx, job, c.projectID)
+	if err != nil {
+		return nil, err
+	}
+	j.isQuery = true
+	return j, nil
+}
+
+// Read submits a query for execution and returns the results via an Iterator.
+// Deprecated: Call Read on the Job returned by Query.Run instead.
+func (q *Query) Read(ctx context.Context, options ...ReadOption) (*Iterator, error) {
+	job, err := q.Run(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return job.Read(ctx, options...)
 }

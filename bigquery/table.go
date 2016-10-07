@@ -78,18 +78,6 @@ const (
 	CreateNever TableCreateDisposition = "CREATE_NEVER"
 )
 
-func CreateDisposition(disp TableCreateDisposition) Option { return disp }
-
-func (opt TableCreateDisposition) implementsOption() {}
-
-func (opt TableCreateDisposition) customizeCopy(conf *bq.JobConfigurationTableCopy) {
-	conf.CreateDisposition = string(opt)
-}
-
-func (opt TableCreateDisposition) customizeQuery(conf *bq.JobConfigurationQuery) {
-	conf.CreateDisposition = string(opt)
-}
-
 // TableWriteDisposition specifies how existing data in a destination table is treated.
 // Default is WriteAppend.
 type TableWriteDisposition string
@@ -106,18 +94,6 @@ const (
 	// Writes will fail if the destination table already contains data.
 	WriteEmpty TableWriteDisposition = "WRITE_EMPTY"
 )
-
-func WriteDisposition(disp TableWriteDisposition) Option { return disp }
-
-func (opt TableWriteDisposition) implementsOption() {}
-
-func (opt TableWriteDisposition) customizeCopy(conf *bq.JobConfigurationTableCopy) {
-	conf.WriteDisposition = string(opt)
-}
-
-func (opt TableWriteDisposition) customizeQuery(conf *bq.JobConfigurationQuery) {
-	conf.WriteDisposition = string(opt)
-}
 
 // TableType is the type of table.
 type TableType string
@@ -364,13 +340,7 @@ func (l *Loader) Run(ctx context.Context) (*Job, error) {
 			},
 		},
 	}
-
-	if l.JobID != "" {
-		job.JobReference = &bq.JobReference{
-			JobId:     l.JobID,
-			ProjectId: l.c.projectID,
-		}
-	}
+	setJobRef(job, l.JobID, l.c.projectID)
 
 	l.Src.customizeLoadSrc(job.Configuration.Load)
 	l.Dst.customizeLoadDst(job.Configuration.Load)

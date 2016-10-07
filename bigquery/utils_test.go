@@ -25,7 +25,7 @@ func defaultGCS() *GCSReference {
 	}
 }
 
-var defaultQuery = &Query{
+var defaultQuery = &QueryConfig{
 	Q:                "query string",
 	DefaultProjectID: "def-project-id",
 	DefaultDatasetID: "def-dataset-id",

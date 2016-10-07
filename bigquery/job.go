@@ -71,6 +71,21 @@ type JobStatus struct {
 	Errors []*Error
 }
 
+// setJobRef initializes job's JobReference if given a non-empty jobID.
+// projectID must be non-empty.
+func setJobRef(job *bq.Job, jobID, projectID string) {
+	if jobID == "" {
+		return
+	}
+	// We don't check whether projectID is empty; the server will return an
+	// error when it encounters the resulting JobReference.
+
+	job.JobReference = &bq.JobReference{
+		JobId:     jobID,
+		ProjectId: projectID,
+	}
+}
+
 // jobOption is an Option which modifies a bq.Job proto.
 // This is used for configuring values that apply to all operations, such as setting a jobReference.
 type jobOption interface {

@@ -70,12 +70,7 @@ func (c *Copier) Run(ctx context.Context) (*Job, error) {
 		},
 	}
 
-	if c.JobID != "" {
-		job.JobReference = &bq.JobReference{
-			JobId:     c.JobID,
-			ProjectId: c.c.projectID,
-		}
-	}
+	setJobRef(job, c.JobID, c.c.projectID)
 
 	conf.DestinationTable = c.Dst.tableRefProto()
 	for _, t := range c.Srcs {
