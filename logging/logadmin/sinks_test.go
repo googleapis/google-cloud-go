@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/storage"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
+	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
 )
 
@@ -208,10 +209,10 @@ func TestListSinks(t *testing.T) {
 		defer client.DeleteSink(ctx, s.ID)
 	}
 
-	it := client.Sinks(ctx)
-	msg, ok := testutil.TestIteratorNext(sinks, iterator.Done, func() (interface{}, error) { return it.Next() })
+	msg, ok := itesting.TestIterator(sinks,
+		func() interface{} { return client.Sinks(ctx) },
+		func(it interface{}) (interface{}, error) { return it.(*SinkIterator).Next() })
 	if !ok {
 		t.Fatal(msg)
 	}
-	// TODO(jba): test exact paging.
 }
