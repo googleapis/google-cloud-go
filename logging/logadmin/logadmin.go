@@ -40,7 +40,6 @@ import (
 	vkit "cloud.google.com/go/logging/apiv2"
 	"cloud.google.com/go/logging/internal"
 	"github.com/golang/protobuf/ptypes"
-	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -207,9 +206,7 @@ func (newestFirst) set(r *logpb.ListLogEntriesRequest) { r.OrderBy = "timestamp 
 // NewClient. This may be overridden by passing a ProjectIDs option. Requires ReadScope or AdminScope.
 func (c *Client) Entries(ctx context.Context, opts ...EntriesOption) *EntryIterator {
 	it := &EntryIterator{
-		ctx:    ctx,
-		client: c.lClient,
-		req:    listLogEntriesRequest(c.projectID, opts),
+		it: c.lClient.ListLogEntries(ctx, listLogEntriesRequest(c.projectID, opts)),
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
@@ -230,11 +227,9 @@ func listLogEntriesRequest(projectID string, opts []EntriesOption) *logpb.ListLo
 
 // An EntryIterator iterates over log entries.
 type EntryIterator struct {
-	ctx      context.Context
-	client   *vkit.Client
+	it       *vkit.LogEntryIterator
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
-	req      *logpb.ListLogEntriesRequest
 	items    []*logging.Entry
 }
 
@@ -254,28 +249,18 @@ func (it *EntryIterator) Next() (*logging.Entry, error) {
 }
 
 func (it *EntryIterator) fetch(pageSize int, pageToken string) (string, error) {
-	// TODO(jba): Do this a nicer way if the generated code supports one.
-	// TODO(jba): If the above TODO can't be done, find a way to pass metadata in the call.
-	client := logpb.NewLoggingServiceV2Client(it.client.Connection())
-	var res *logpb.ListLogEntriesResponse
-	err := gax.Invoke(it.ctx, func(ctx context.Context) error {
-		it.req.PageSize = trunc32(pageSize)
-		it.req.PageToken = pageToken
-		var err error
-		res, err = client.ListLogEntries(ctx, it.req)
-		return err
-	}, it.client.CallOptions.ListLogEntries...)
-	if err != nil {
-		return "", err
-	}
-	for _, ep := range res.Entries {
-		e, err := fromLogEntry(ep)
+	return iterFetch(pageSize, pageToken, it.it.PageInfo(), func() error {
+		item, err := it.it.Next()
 		if err != nil {
-			return "", err
+			return err
+		}
+		e, err := fromLogEntry(item)
+		if err != nil {
+			return err
 		}
 		it.items = append(it.items, e)
-	}
-	return res.NextPageToken, nil
+		return nil
+	})
 }
 
 func trunc32(i int) int32 {
@@ -327,4 +312,21 @@ func fromLogEntry(le *logpb.LogEntry) (*logging.Entry, error) {
 		LogName:     slashUnescaper.Replace(le.LogName),
 		Resource:    le.Resource,
 	}, nil
+}
+
+// Common fetch code for iterators that are backed by vkit iterators.
+func iterFetch(pageSize int, pageToken string, pi *iterator.PageInfo, next func() error) (string, error) {
+	pi.MaxSize = pageSize
+	pi.Token = pageToken
+	// Get one item, which will fill the buffer.
+	if err := next(); err != nil {
+		return "", err
+	}
+	// Collect the rest of the buffer.
+	for pi.Remaining() > 0 {
+		if err := next(); err != nil {
+			return "", err
+		}
+	}
+	return pi.Token, nil
 }
