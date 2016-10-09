@@ -19,10 +19,10 @@ import (
 	"reflect"
 	"testing"
 
-	"cloud.google.com/go/internal/testutil"
 	ltesting "cloud.google.com/go/logging/internal/testing"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
+	itesting "google.golang.org/api/iterator/testing"
 )
 
 const testMetricIDPrefix = "GO-CLIENT-TEST-METRIC"
@@ -132,10 +132,10 @@ func TestListMetrics(t *testing.T) {
 		defer client.DeleteMetric(ctx, m.ID)
 	}
 
-	it := client.Metrics(ctx)
-	msg, ok := testutil.TestIteratorNext(metrics, iterator.Done, func() (interface{}, error) { return it.Next() })
+	msg, ok := itesting.TestIterator(metrics,
+		func() interface{} { return client.Metrics(ctx) },
+		func(it interface{}) (interface{}, error) { return it.(*MetricIterator).Next() })
 	if !ok {
 		t.Fatal(msg)
 	}
-	// TODO(jba): test exact paging.
 }
