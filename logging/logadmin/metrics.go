@@ -18,7 +18,6 @@ import (
 	"fmt"
 
 	vkit "cloud.google.com/go/logging/apiv2"
-	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	logpb "google.golang.org/genproto/googleapis/logging/v2"
@@ -95,9 +94,7 @@ func (c *Client) metricPath(metricID string) string {
 // Requires ReadScope or AdminScope.
 func (c *Client) Metrics(ctx context.Context) *MetricIterator {
 	it := &MetricIterator{
-		ctx:    ctx,
-		client: c.mClient,
-		req:    &logpb.ListLogMetricsRequest{Parent: c.parent()},
+		it: c.mClient.ListLogMetrics(ctx, &logpb.ListLogMetricsRequest{Parent: c.parent()}),
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
@@ -108,11 +105,9 @@ func (c *Client) Metrics(ctx context.Context) *MetricIterator {
 
 // A MetricIterator iterates over Metrics.
 type MetricIterator struct {
-	ctx      context.Context
-	client   *vkit.MetricsClient
+	it       *vkit.LogMetricIterator
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
-	req      *logpb.ListLogMetricsRequest
 	items    []*Metric
 }
 
@@ -132,24 +127,14 @@ func (it *MetricIterator) Next() (*Metric, error) {
 }
 
 func (it *MetricIterator) fetch(pageSize int, pageToken string) (string, error) {
-	// TODO(jba): Do this a nicer way if the generated code supports one.
-	// TODO(jba): If the above TODO can't be done, find a way to pass metadata in the call.
-	client := logpb.NewMetricsServiceV2Client(it.client.Connection())
-	var res *logpb.ListLogMetricsResponse
-	err := gax.Invoke(it.ctx, func(ctx context.Context) error {
-		it.req.PageSize = trunc32(pageSize)
-		it.req.PageToken = pageToken
-		var err error
-		res, err = client.ListLogMetrics(ctx, it.req)
-		return err
-	}, it.client.CallOptions.ListLogMetrics...)
-	if err != nil {
-		return "", err
-	}
-	for _, sp := range res.Metrics {
-		it.items = append(it.items, fromLogMetric(sp))
-	}
-	return res.NextPageToken, nil
+	return iterFetch(pageSize, pageToken, it.it.PageInfo(), func() error {
+		item, err := it.it.Next()
+		if err != nil {
+			return err
+		}
+		it.items = append(it.items, fromLogMetric(item))
+		return nil
+	})
 }
 
 func toLogMetric(m *Metric) *logpb.LogMetric {

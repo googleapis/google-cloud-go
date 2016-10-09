@@ -16,7 +16,6 @@ package logadmin
 
 import (
 	vkit "cloud.google.com/go/logging/apiv2"
-	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
@@ -30,9 +29,8 @@ import (
 // See https://cloud.google.com/logging/docs/api/v2/resource-list for a list of monitored resources.
 func (c *Client) ResourceDescriptors(ctx context.Context) *ResourceDescriptorIterator {
 	it := &ResourceDescriptorIterator{
-		ctx:    ctx,
-		client: c.lClient,
-		req:    &logpb.ListMonitoredResourceDescriptorsRequest{},
+		it: c.lClient.ListMonitoredResourceDescriptors(ctx,
+			&logpb.ListMonitoredResourceDescriptorsRequest{}),
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
@@ -43,11 +41,9 @@ func (c *Client) ResourceDescriptors(ctx context.Context) *ResourceDescriptorIte
 
 // ResourceDescriptorIterator is an iterator over MonitoredResourceDescriptors.
 type ResourceDescriptorIterator struct {
-	ctx      context.Context
-	client   *vkit.Client
+	it       *vkit.MonitoredResourceDescriptorIterator
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
-	req      *logpb.ListMonitoredResourceDescriptorsRequest
 	items    []*mrpb.MonitoredResourceDescriptor
 }
 
@@ -67,20 +63,12 @@ func (it *ResourceDescriptorIterator) Next() (*mrpb.MonitoredResourceDescriptor,
 }
 
 func (it *ResourceDescriptorIterator) fetch(pageSize int, pageToken string) (string, error) {
-	// TODO(jba): Do this a nicer way if the generated code supports one.
-	// TODO(jba): If the above TODO can't be done, find a way to pass metadata in the call.
-	client := logpb.NewLoggingServiceV2Client(it.client.Connection())
-	var res *logpb.ListMonitoredResourceDescriptorsResponse
-	err := gax.Invoke(it.ctx, func(ctx context.Context) error {
-		it.req.PageSize = trunc32(pageSize)
-		it.req.PageToken = pageToken
-		var err error
-		res, err = client.ListMonitoredResourceDescriptors(ctx, it.req)
-		return err
-	}, it.client.CallOptions.ListMonitoredResourceDescriptors...)
-	if err != nil {
-		return "", err
-	}
-	it.items = append(it.items, res.ResourceDescriptors...)
-	return res.NextPageToken, nil
+	return iterFetch(pageSize, pageToken, it.it.PageInfo(), func() error {
+		item, err := it.it.Next()
+		if err != nil {
+			return err
+		}
+		it.items = append(it.items, item)
+		return nil
+	})
 }

@@ -18,7 +18,6 @@ import (
 	"fmt"
 
 	vkit "cloud.google.com/go/logging/apiv2"
-	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	logpb "google.golang.org/genproto/googleapis/logging/v2"
@@ -109,9 +108,7 @@ func (c *Client) sinkPath(sinkID string) string {
 // Requires ReadScope or AdminScope.
 func (c *Client) Sinks(ctx context.Context) *SinkIterator {
 	it := &SinkIterator{
-		ctx:    ctx,
-		client: c.sClient,
-		req:    &logpb.ListSinksRequest{Parent: c.parent()},
+		it: c.sClient.ListSinks(ctx, &logpb.ListSinksRequest{Parent: c.parent()}),
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
@@ -122,11 +119,9 @@ func (c *Client) Sinks(ctx context.Context) *SinkIterator {
 
 // A SinkIterator iterates over Sinks.
 type SinkIterator struct {
-	ctx      context.Context
-	client   *vkit.ConfigClient
+	it       *vkit.LogSinkIterator
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
-	req      *logpb.ListSinksRequest
 	items    []*Sink
 }
 
@@ -146,24 +141,14 @@ func (it *SinkIterator) Next() (*Sink, error) {
 }
 
 func (it *SinkIterator) fetch(pageSize int, pageToken string) (string, error) {
-	// TODO(jba): Do this a nicer way if the generated code supports one.
-	// TODO(jba): If the above TODO can't be done, find a way to pass metadata in the call.
-	client := logpb.NewConfigServiceV2Client(it.client.Connection())
-	var res *logpb.ListSinksResponse
-	err := gax.Invoke(it.ctx, func(ctx context.Context) error {
-		it.req.PageSize = trunc32(pageSize)
-		it.req.PageToken = pageToken
-		var err error
-		res, err = client.ListSinks(ctx, it.req)
-		return err
-	}, it.client.CallOptions.ListSinks...)
-	if err != nil {
-		return "", err
-	}
-	for _, sp := range res.Sinks {
-		it.items = append(it.items, fromLogSink(sp))
-	}
-	return res.NextPageToken, nil
+	return iterFetch(pageSize, pageToken, it.it.PageInfo(), func() error {
+		item, err := it.it.Next()
+		if err != nil {
+			return err
+		}
+		it.items = append(it.items, fromLogSink(item))
+		return nil
+	})
 }
 
 func toLogSink(s *Sink) *logpb.LogSink {
