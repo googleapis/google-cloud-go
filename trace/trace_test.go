@@ -31,6 +31,7 @@ import (
 	"golang.org/x/net/context"
 	api "google.golang.org/api/cloudtrace/v1"
 	compute "google.golang.org/api/compute/v1"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	dspb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
@@ -124,10 +125,10 @@ func makeRequests(t *testing.T, req *http.Request, traceClient *Client, rt *fake
 		it := storageClient.Bucket("testbucket").Objects(ctx, nil)
 		for {
 			objAttrs, err := it.Next()
-			if err != nil && err != storage.Done {
+			if err != nil && err != iterator.Done {
 				t.Fatal(err)
 			}
-			if err == storage.Done {
+			if err == iterator.Done {
 				break
 			}
 			objAttrsList = append(objAttrsList, objAttrs)
