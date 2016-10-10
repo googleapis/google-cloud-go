@@ -134,8 +134,7 @@ For example, say you've read an object's metadata into objAttrs. Now
 you want to write to that object, but only if its contents haven't changed
 since you read it. Here is how to express that:
 
-    cond := storage.IfGenerationMatch(objAttrs.Generation)
-    w = obj.WithConditions(cond).NewWriter(ctx)
+    w = obj.If(storage.Conditions{GenerationMatch: objAttrs.Generation}).NewWriter(ctx)
     // Proceed with writing as above.
 
 Signed URLs
