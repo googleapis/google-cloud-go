@@ -48,6 +48,7 @@ var (
 	testLogID     string
 	testFilter    string
 	errorc        chan error
+	ctx           context.Context
 
 	// Adjust the fields of a FullEntry received from the production service
 	// before comparing it with the expected result. We can't correctly
@@ -67,7 +68,7 @@ var integrationTest bool
 
 func TestMain(m *testing.M) {
 	flag.Parse() // needed for testing.Short()
-	ctx := context.Background()
+	ctx = context.Background()
 	testProjectID = testutil.ProjID()
 	errorc = make(chan error, 100)
 	if testProjectID == "" || testing.Short() {
@@ -131,9 +132,7 @@ func TestMain(m *testing.M) {
 	}
 	client, aclient = newClients(ctx, testProjectID)
 	client.OnError = func(e error) { errorc <- e }
-	initLogs(ctx)
-	testFilter = fmt.Sprintf(`logName = "projects/%s/logs/%s"`, testProjectID,
-		strings.Replace(testLogID, "/", "%2F", -1))
+
 	exit := m.Run()
 	client.Close()
 	os.Exit(exit)
@@ -141,12 +140,15 @@ func TestMain(m *testing.M) {
 
 func initLogs(ctx context.Context) {
 	testLogID = ltesting.UniqueID(testLogIDPrefix)
+	testFilter = fmt.Sprintf(`logName = "projects/%s/logs/%s"`, testProjectID,
+		strings.Replace(testLogID, "/", "%2F", -1))
 	// TODO(jba): Clean up from previous aborted tests by deleting old logs; requires ListLogs RPC.
 }
 
 // Testing of Logger.Log is done in logadmin_test.go, TestEntries.
 
 func TestLogSync(t *testing.T) {
+	initLogs(ctx) // Generate new testLogID
 	ctx := context.Background()
 	lg := client.Logger(testLogID)
 	defer func() {
@@ -190,6 +192,7 @@ func TestLogSync(t *testing.T) {
 }
 
 func TestLogAndEntries(t *testing.T) {
+	initLogs(ctx) // Generate new testLogID
 	ctx := context.Background()
 	payloads := []string{"p1", "p2", "p3", "p4", "p5"}
 	lg := client.Logger(testLogID)
@@ -286,6 +289,7 @@ func cleanNext(it *logadmin.EntryIterator) (*logging.Entry, error) {
 }
 
 func TestStandardLogger(t *testing.T) {
+	initLogs(ctx) // Generate new testLogID
 	ctx := context.Background()
 	lg := client.Logger(testLogID)
 	defer func() {
@@ -356,6 +360,7 @@ func TestParseSeverity(t *testing.T) {
 }
 
 func TestErrors(t *testing.T) {
+	initLogs(ctx) // Generate new testLogID
 	// Drain errors already seen.
 loop:
 	for {
