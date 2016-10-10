@@ -149,7 +149,11 @@ func initLogs(ctx context.Context) {
 func TestLogSync(t *testing.T) {
 	ctx := context.Background()
 	lg := client.Logger(testLogID)
-	defer deleteLog(ctx, testLogID)
+	defer func() {
+		if ok := deleteLog(ctx, testLogID); !ok {
+			t.Skip("timed out")
+		}
+	}()
 	err := lg.LogSync(ctx, logging.Entry{Payload: "hello"})
 	if err != nil {
 		t.Fatal(err)
@@ -170,13 +174,16 @@ func TestLogSync(t *testing.T) {
 		entryForTesting("mr"),
 	}
 	var got []*logging.Entry
-	waitFor(func() bool {
+	ok := waitFor(func() bool {
 		got, err = allTestLogEntries(ctx)
 		if err != nil {
 			return false
 		}
 		return len(got) >= len(want)
 	})
+	if !ok {
+		t.Skip("timed out")
+	}
 	if msg, ok := compareEntries(got, want); !ok {
 		t.Error(msg)
 	}
@@ -186,7 +193,11 @@ func TestLogAndEntries(t *testing.T) {
 	ctx := context.Background()
 	payloads := []string{"p1", "p2", "p3", "p4", "p5"}
 	lg := client.Logger(testLogID)
-	defer deleteLog(ctx, testLogID)
+	defer func() {
+		if ok := deleteLog(ctx, testLogID); !ok {
+			t.Skip("timed out")
+		}
+	}()
 	for _, p := range payloads {
 		// Use the insert ID to guarantee iteration order.
 		lg.Log(logging.Entry{Payload: p, InsertID: p})
@@ -197,7 +208,7 @@ func TestLogAndEntries(t *testing.T) {
 		want = append(want, entryForTesting(p))
 	}
 	var got []*logging.Entry
-	waitFor(func() bool {
+	ok := waitFor(func() bool {
 		var err error
 		got, err = allTestLogEntries(ctx)
 		if err != nil {
@@ -205,6 +216,9 @@ func TestLogAndEntries(t *testing.T) {
 		}
 		return len(got) >= len(want)
 	})
+	if !ok {
+		t.Skip("timed out")
+	}
 	if msg, ok := compareEntries(got, want); !ok {
 		t.Error(msg)
 	}
@@ -274,7 +288,11 @@ func cleanNext(it *logadmin.EntryIterator) (*logging.Entry, error) {
 func TestStandardLogger(t *testing.T) {
 	ctx := context.Background()
 	lg := client.Logger(testLogID)
-	defer deleteLog(ctx, testLogID)
+	defer func() {
+		if ok := deleteLog(ctx, testLogID); !ok {
+			t.Skip("timed out")
+		}
+	}()
 	slg := lg.StandardLogger(logging.Info)
 
 	if slg != lg.StandardLogger(logging.Info) {
@@ -287,7 +305,7 @@ func TestStandardLogger(t *testing.T) {
 	slg.Print("info")
 	lg.Flush()
 	var got []*logging.Entry
-	waitFor(func() bool {
+	ok := waitFor(func() bool {
 		var err error
 		got, err = allTestLogEntries(ctx)
 		if err != nil {
@@ -295,6 +313,9 @@ func TestStandardLogger(t *testing.T) {
 		}
 		return len(got) >= 1
 	})
+	if !ok {
+		t.Skip("timed out")
+	}
 	if len(got) != 1 {
 		t.Fatalf("expected non-nil request with one entry; got:\n%+v", got)
 	}
@@ -399,34 +420,35 @@ func TestPing(t *testing.T) {
 }
 
 // deleteLog is used to clean up a log after a test that writes to it.
-func deleteLog(ctx context.Context, logID string) {
+// deleteLog returns false if it times out.
+func deleteLog(ctx context.Context, logID string) bool {
 	aclient.DeleteLog(ctx, logID)
 	// DeleteLog can take some time to happen, so we wait for the log to
 	// disappear. There is no direct way to determine if a log exists, so we
 	// just wait until there are no log entries associated with the ID.
 	filter := fmt.Sprintf(`logName = "%s"`, internal.LogPath("projects/"+testProjectID, logID))
-	waitFor(func() bool { return countLogEntries(ctx, filter) == 0 })
+	return waitFor(func() bool { return countLogEntries(ctx, filter) == 0 })
 }
 
 // waitFor calls f repeatedly with exponential backoff, blocking until it returns true.
-// It calls log.Fatal after a while.
-func waitFor(f func() bool) {
+// It calls returns false after a while (if it times out).
+func waitFor(f func() bool) bool {
 	delay := time.Second
 	// TODO(shadams): Find a better way to deflake these tests.
-	timeout := time.NewTimer(4 * time.Minute)
+	timeout := time.NewTimer(2 * time.Minute)
 	for {
 		select {
 		case <-time.After(delay):
 			if f() {
 				timeout.Stop()
-				return
+				return true
 			}
 			delay = delay * 2
 		case <-timeout.C:
 			if f() {
-				return
+				return true
 			}
-			log.Fatal("timed out")
+			return false
 		}
 	}
 }
