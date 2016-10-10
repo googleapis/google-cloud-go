@@ -285,6 +285,9 @@ func (r RowRange) proto() *btpb.RowSet {
 }
 
 func (r RowRange) retainRowsAfter(lastRowKey string) RowSet {
+	if lastRowKey == "" {
+		return r
+	}
 	// Set the beginning of the range to the row after the last scanned.
 	start := lastRowKey + "\x00"
 	if r.Unbounded() {
