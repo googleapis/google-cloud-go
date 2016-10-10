@@ -206,9 +206,9 @@ type ObjectIterator struct {
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
 func (it *ObjectIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 
-// Next returns the next result. Its second return value is Done if there are
-// no more results. Once Next returns Done, all subsequent calls will return
-// Done.
+// Next returns the next result. Its second return value is iterator.Done if
+// there are no more results. Once Next returns iterator.Done, all subsequent
+// calls will return iterator.Done.
 //
 // If Query.Delimiter is non-empty, some of the ObjectAttrs returned by Next will
 // have a non-empty Prefix field, and a zero value for all other fields. These
@@ -277,9 +277,9 @@ type BucketIterator struct {
 	nextFunc  func() error
 }
 
-// Next returns the next result. Its second return value is Done if there are
-// no more results. Once Next returns Done, all subsequent calls will return
-// Done.
+// Next returns the next result. Its second return value is iterator.Done if
+// there are no more results. Once Next returns iterator.Done, all subsequent
+// calls will return iterator.Done.
 func (it *BucketIterator) Next() (*BucketAttrs, error) {
 	if err := it.nextFunc(); err != nil {
 		return nil, err
