@@ -201,3 +201,42 @@ func (opt TableCreateDisposition) customizeLoad(conf *bq.JobConfigurationLoad) {
 func (opt TableWriteDisposition) customizeLoad(conf *bq.JobConfigurationLoad) {
 	conf.WriteDisposition = string(opt)
 }
+
+type extractOption interface {
+	customizeExtract(conf *bq.JobConfigurationExtract)
+}
+
+// DisableHeader returns an Option that disables the printing of a header row in exported data.
+//
+// Deprecated: use Extractor.DisableHeader instead.
+func DisableHeader() Option { return disableHeader{} }
+
+type disableHeader struct{}
+
+func (opt disableHeader) implementsOption() {}
+
+func (opt disableHeader) customizeExtract(conf *bq.JobConfigurationExtract) {
+	f := false
+	conf.PrintHeader = &f
+}
+
+func (c *Client) extract(ctx context.Context, dst *GCSReference, src *Table, options []Option) (*Job, error) {
+	job, options := initJobProto(c.projectID, options)
+	payload := &bq.JobConfigurationExtract{}
+
+	dst.customizeExtractDst(payload)
+	src.customizeExtractSrc(payload)
+
+	for _, opt := range options {
+		o, ok := opt.(extractOption)
+		if !ok {
+			return nil, fmt.Errorf("option (%#v) not applicable to dst/src pair: dst: %T ; src: %T", opt, dst, src)
+		}
+		o.customizeExtract(payload)
+	}
+
+	job.Configuration = &bq.JobConfiguration{
+		Extract: payload,
+	}
+	return c.service.insertJob(ctx, job, c.projectID)
+}
