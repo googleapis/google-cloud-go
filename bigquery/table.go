@@ -293,7 +293,7 @@ type LoadConfig struct {
 	// Dst is the table into which the data will be loaded.
 	Dst *Table
 
-	// CreateDisposition specifies the circumstances under which the destination table will be created.
+	// TableCreateDisposition specifies the circumstances under which the destination table will be created.
 	// The default is CreateIfNeeded.
 	TableCreateDisposition TableCreateDisposition
 

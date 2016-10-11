@@ -28,24 +28,9 @@ import (
 
 const prodAddr = "https://www.googleapis.com/bigquery/v2/"
 
-// A Source is a source of data for the Copy function.
-type Source interface {
-	implementsSource()
-}
-
-// A Destination is a destination of data for the Copy function.
-type Destination interface {
-	implementsDestination()
-}
-
 // An Option is an optional argument to Copy.
 type Option interface {
 	implementsOption()
-}
-
-// A ReadSource is a source of data for the Read function.
-type ReadSource interface {
-	implementsReadSource()
 }
 
 // A ReadOption is an optional argument to Read.
@@ -98,45 +83,6 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 // It need not be called at program exit.
 func (c *Client) Close() error {
 	return nil
-}
-
-// initJobProto creates and returns a bigquery Job proto.
-// The proto is customized using any jobOptions in options.
-// The list of Options is returned with the jobOptions removed.
-func initJobProto(projectID string, options []Option) (*bq.Job, []Option) {
-	job := &bq.Job{}
-
-	var other []Option
-	for _, opt := range options {
-		if o, ok := opt.(jobOption); ok {
-			o.customizeJob(job, projectID)
-		} else {
-			other = append(other, opt)
-		}
-	}
-	return job, other
-}
-
-// Copy starts a BigQuery operation to copy data from a Source to a Destination.
-func (c *Client) Copy(ctx context.Context, dst Destination, src Source, options ...Option) (*Job, error) {
-	switch dst := dst.(type) {
-	case *Table:
-		switch src := src.(type) {
-		case *GCSReference:
-			return c.load(ctx, dst, src, options)
-		case *Table:
-			return c.cp(ctx, dst, Tables{src}, options)
-		case Tables:
-			return c.cp(ctx, dst, src, options)
-		case *Query:
-			return c.query(ctx, dst, src, options)
-		}
-	case *GCSReference:
-		if src, ok := src.(*Table); ok {
-			return c.extract(ctx, dst, src, options)
-		}
-	}
-	return nil, fmt.Errorf("no Copy operation matches dst/src pair: dst: %T ; src: %T", dst, src)
 }
 
 // Query creates a query with string q. You may optionally set
