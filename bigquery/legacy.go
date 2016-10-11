@@ -240,3 +240,85 @@ func (c *Client) extract(ctx context.Context, dst *GCSReference, src *Table, opt
 	}
 	return c.service.insertJob(ctx, job, c.projectID)
 }
+
+type copyOption interface {
+	customizeCopy(conf *bq.JobConfigurationTableCopy)
+}
+
+func (c *Client) cp(ctx context.Context, dst *Table, src Tables, options []Option) (*Job, error) {
+	job, options := initJobProto(c.projectID, options)
+	payload := &bq.JobConfigurationTableCopy{}
+
+	dst.customizeCopyDst(payload)
+	src.customizeCopySrc(payload)
+
+	for _, opt := range options {
+		o, ok := opt.(copyOption)
+		if !ok {
+			return nil, fmt.Errorf("option (%#v) not applicable to dst/src pair: dst: %T ; src: %T", opt, dst, src)
+		}
+		o.customizeCopy(payload)
+	}
+
+	job.Configuration = &bq.JobConfiguration{
+		Copy: payload,
+	}
+	return c.service.insertJob(ctx, job, c.projectID)
+}
+
+// initJobProto creates and returns a bigquery Job proto.
+// The proto is customized using any jobOptions in options.
+// The list of Options is returned with the jobOptions removed.
+func initJobProto(projectID string, options []Option) (*bq.Job, []Option) {
+	job := &bq.Job{}
+
+	var other []Option
+	for _, opt := range options {
+		if o, ok := opt.(jobOption); ok {
+			o.customizeJob(job, projectID)
+		} else {
+			other = append(other, opt)
+		}
+	}
+	return job, other
+}
+
+// Copy starts a BigQuery operation to copy data from a Source to a Destination.
+//
+// Deprecated: use one of Table.LoaderFrom, Table.CopierFrom, Table.ExtractorTo, or
+// Client.Query.
+func (c *Client) Copy(ctx context.Context, dst Destination, src Source, options ...Option) (*Job, error) {
+	switch dst := dst.(type) {
+	case *Table:
+		switch src := src.(type) {
+		case *GCSReference:
+			return c.load(ctx, dst, src, options)
+		case *Table:
+			return c.cp(ctx, dst, Tables{src}, options)
+		case Tables:
+			return c.cp(ctx, dst, src, options)
+		case *Query:
+			return c.query(ctx, dst, src, options)
+		}
+	case *GCSReference:
+		if src, ok := src.(*Table); ok {
+			return c.extract(ctx, dst, src, options)
+		}
+	}
+	return nil, fmt.Errorf("no Copy operation matches dst/src pair: dst: %T ; src: %T", dst, src)
+}
+
+// A Source is a source of data for the Copy function.
+type Source interface {
+	implementsSource()
+}
+
+// A Destination is a destination of data for the Copy function.
+type Destination interface {
+	implementsDestination()
+}
+
+// A ReadSource is a source of data for the Read function.
+type ReadSource interface {
+	implementsReadSource()
+}
