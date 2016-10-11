@@ -148,7 +148,7 @@ const (
 	labelStatusCode     = `trace.cloud.google.com/http/status_code`
 	labelURL            = `trace.cloud.google.com/http/url`
 	labelSamplingPolicy = `trace.cloud.google.com/sampling_policy`
-	labelSamplingRate   = `trace.cloud.google.com/sampling_rate`
+	labelSamplingWeight = `trace.cloud.google.com/sampling_weight`
 )
 
 type contextKey struct{}
@@ -302,27 +302,30 @@ func (client *Client) SpanFromRequest(r *http.Request) *Span {
 		return nil
 	}
 	span := traceInfoFromRequest(r)
-	var (
-		sample bool
-		reason string
-		rate   float64
-	)
 	if client.policy != nil {
-		sample, reason, rate = client.policy.Sample()
-	}
-	if sample {
-		if span == nil {
-			t := &trace{
-				traceID: nextTraceID(),
-				options: optionTrace,
-				client:  client,
-			}
-			span = startNewChildWithRequest(r, t, 0 /* parentSpanID */)
-			span.span.Kind = spanKindServer
-			span.rootSpan = true
+		d := client.policy.Sample(Parameters{HasTraceHeader: span != nil})
+		if !d.Trace {
+			return nil
 		}
-		span.SetLabel(labelSamplingPolicy, reason)
-		span.SetLabel(labelSamplingRate, fmt.Sprint(rate))
+		if d.Sample {
+			// Include this request in the random sample.
+			if span == nil {
+				// We didn't create a trace from the request's headers, so create one
+				// now.
+				t := &trace{
+					traceID: nextTraceID(),
+					options: optionTrace,
+					client:  client,
+				}
+				span = startNewChildWithRequest(r, t, 0 /* parentSpanID */)
+				span.span.Kind = spanKindServer
+				span.rootSpan = true
+			}
+			// However the trace was initiated, it's in the random sample, so set the
+			// labels.
+			span.SetLabel(labelSamplingPolicy, d.Policy)
+			span.SetLabel(labelSamplingWeight, fmt.Sprint(d.Weight))
+		}
 	}
 	if span == nil {
 		return nil

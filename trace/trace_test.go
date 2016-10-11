@@ -18,6 +18,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"reflect"
 	"strings"
@@ -409,7 +410,7 @@ func TestSample(t *testing.T) {
 		sampled := 0
 		tm := time.Now()
 		for i := 0; i < 80; i++ {
-			if ok, _, _ := s.sample(tm, float64(i%2)); ok {
+			if s.sample(Parameters{}, tm, float64(i%2)).Sample {
 				sampled++
 			}
 			tm = tm.Add(delta)
@@ -512,5 +513,60 @@ func TestBundling(t *testing.T) {
 	case <-rt.reqc:
 		t.Errorf("too many bundles sent")
 	case <-time.After(time.Second):
+	}
+}
+
+func TestWeights(t *testing.T) {
+	const (
+		expectedNumTraced   = 10100
+		numTracedEpsilon    = 100
+		expectedTotalWeight = 50000
+		totalWeightEpsilon  = 5000
+	)
+	rng := rand.New(rand.NewSource(1))
+	const delta = 2 * time.Millisecond
+	for _, headerRate := range []float64{0.0, 0.5, 1.0} {
+		// Simulate 10 seconds of requests arriving at 500qps.
+		//
+		// The sampling policy tries to sample 25% of them, but has a qps limit of
+		// 100, so it will not be able to.  The returned weight should be higher
+		// for some sampled requests to compensate.
+		//
+		// headerRate is the fraction of incoming requests that have a trace header
+		// set.  The qps limit should not be exceeded, even if headerRate is high.
+		sp, err := NewLimitedSampler(0.25, 100)
+		if err != nil {
+			t.Fatal(err)
+		}
+		s := sp.(*sampler)
+		tm := time.Now()
+		totalWeight := 0.0
+		numTraced := 0
+		seenLargeWeight := false
+		for i := 0; i < 50000; i++ {
+			d := s.sample(Parameters{HasTraceHeader: rng.Float64() < headerRate}, tm, rng.Float64())
+			if d.Trace {
+				numTraced++
+			}
+			if d.Sample {
+				totalWeight += d.Weight
+				if x := int(d.Weight) / 4; x <= 0 || x >= 100 || d.Weight != float64(x)*4.0 {
+					t.Errorf("weight: got %f, want a small positive multiple of 4", d.Weight)
+				}
+				if d.Weight > 4 {
+					seenLargeWeight = true
+				}
+			}
+			tm = tm.Add(delta)
+		}
+		if !seenLargeWeight {
+			t.Errorf("headerRate %f: never saw sample weight higher than 4.", headerRate)
+		}
+		if numTraced < expectedNumTraced-numTracedEpsilon || expectedNumTraced+numTracedEpsilon < numTraced {
+			t.Errorf("headerRate %f: got %d traced requests, want ∈ [%d, %d]", headerRate, numTraced, expectedNumTraced-numTracedEpsilon, expectedNumTraced+numTracedEpsilon)
+		}
+		if totalWeight < expectedTotalWeight-totalWeightEpsilon || expectedTotalWeight+totalWeightEpsilon < totalWeight {
+			t.Errorf("headerRate %f: got total weight %f want ∈ [%d, %d]", headerRate, totalWeight, expectedTotalWeight-totalWeightEpsilon, expectedTotalWeight+totalWeightEpsilon)
+		}
 	}
 }
