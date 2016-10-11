@@ -79,7 +79,7 @@ type SubscriptionIterator struct {
 	stringsIterator
 }
 
-// Next returns the next subscription. If there are no more subscriptions, Done will be returned.
+// Next returns the next subscription. If there are no more subscriptions, iterator.Done will be returned.
 func (subs *SubscriptionIterator) Next() (*Subscription, error) {
 	subName, err := subs.stringsIterator.Next()
 	if err != nil {

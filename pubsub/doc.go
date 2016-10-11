@@ -58,7 +58,7 @@ Messages are then consumed from a subscription via an iterator:
  // Consume N messages
  for i := 0; i < N; i++ {
  	msg, err := it.Next()
- 	if err == pubsub.Done {
+ 	if err == iterator.Done {
  		break
  	}
  	if err != nil {

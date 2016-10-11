@@ -21,6 +21,8 @@ import (
 	"time"
 
 	"golang.org/x/net/context"
+
+	"google.golang.org/api/iterator"
 )
 
 func TestReturnsDoneOnStop(t *testing.T) {
@@ -34,7 +36,7 @@ func TestReturnsDoneOnStop(t *testing.T) {
 			abort: func(it *MessageIterator, cancel context.CancelFunc) {
 				it.Stop()
 			},
-			want: Done,
+			want: iterator.Done,
 		},
 		{
 			abort: func(it *MessageIterator, cancel context.CancelFunc) {
@@ -47,14 +49,14 @@ func TestReturnsDoneOnStop(t *testing.T) {
 				it.Stop()
 				cancel()
 			},
-			want: Done,
+			want: iterator.Done,
 		},
 		{
 			abort: func(it *MessageIterator, cancel context.CancelFunc) {
 				cancel()
 				it.Stop()
 			},
-			want: Done,
+			want: iterator.Done,
 		},
 	} {
 		s := &blockingFetch{}
@@ -121,7 +123,7 @@ func TestAfterAbortReturnsNoMoreThanOneMessage(t *testing.T) {
 				abort: func(it *MessageIterator, cancel context.CancelFunc) {
 					it.Stop()
 				},
-				want: Done,
+				want: iterator.Done,
 			},
 			{
 				abort: func(it *MessageIterator, cancel context.CancelFunc) {
@@ -134,14 +136,14 @@ func TestAfterAbortReturnsNoMoreThanOneMessage(t *testing.T) {
 					it.Stop()
 					cancel()
 				},
-				want: Done,
+				want: iterator.Done,
 			},
 			{
 				abort: func(it *MessageIterator, cancel context.CancelFunc) {
 					cancel()
 					it.Stop()
 				},
-				want: Done,
+				want: iterator.Done,
 			},
 		} {
 			s := &justInTimeFetch{}
@@ -241,7 +243,7 @@ func TestMultipleStopCallsBlockUntilMessageDone(t *testing.T) {
 	if m != nil {
 		t.Errorf("message got: %v ; want: nil", m)
 	}
-	if err != Done {
-		t.Errorf("err got: %v ; want: %v", err, Done)
+	if err != iterator.Done {
+		t.Errorf("err got: %v ; want: %v", err, iterator.Done)
 	}
 }

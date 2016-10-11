@@ -20,6 +20,8 @@ import (
 	"testing"
 
 	"golang.org/x/net/context"
+
+	"google.golang.org/api/iterator"
 )
 
 type subListCall struct {
@@ -72,7 +74,7 @@ func slurpSubs(it *SubscriptionIterator) ([]*Subscription, error) {
 		switch sub, err := it.Next(); err {
 		case nil:
 			subs = append(subs, sub)
-		case Done:
+		case iterator.Done:
 			return subs, nil
 		default:
 			return nil, err
