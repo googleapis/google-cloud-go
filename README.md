@@ -317,7 +317,7 @@ defer it.Stop()
 // Consume N messages from the iterator.
 for i := 0; i < N; i++ {
 	msg, err := it.Next()
-	if err == pubsub.Done {
+	if err == iterator.Done {
 		break
 	}
 	if err != nil {

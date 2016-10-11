@@ -19,6 +19,7 @@ import (
 	"net/http"
 	"os"
 
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/pubsub/v1"
 	"google.golang.org/api/transport"
@@ -125,7 +126,7 @@ type stringsIterator struct {
 	fetch   func(ctx context.Context, tok string) (*stringsPage, error)
 }
 
-// Next returns the next string. If there are no more strings, Done will be returned.
+// Next returns the next string. If there are no more strings, iterator.Done will be returned.
 func (si *stringsIterator) Next() (string, error) {
 	for len(si.strings) == 0 && si.token.more() {
 		page, err := si.fetch(si.ctx, si.token.get())
@@ -137,7 +138,7 @@ func (si *stringsIterator) Next() (string, error) {
 	}
 
 	if len(si.strings) == 0 {
-		return "", Done
+		return "", iterator.Done
 	}
 
 	s := si.strings[0]

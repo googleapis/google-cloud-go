@@ -70,7 +70,7 @@ type TopicIterator struct {
 	stringsIterator
 }
 
-// Next returns the next topic. If there are no more topics, Done will be returned.
+// Next returns the next topic. If there are no more topics, iterator.Done will be returned.
 func (tps *TopicIterator) Next() (*Topic, error) {
 	topicName, err := tps.stringsIterator.Next()
 	if err != nil {

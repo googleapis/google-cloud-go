@@ -20,6 +20,8 @@ import (
 	"testing"
 
 	"golang.org/x/net/context"
+
+	"google.golang.org/api/iterator"
 )
 
 type topicListCall struct {
@@ -72,7 +74,7 @@ func slurpTopics(it *TopicIterator) ([]*Topic, error) {
 		switch topic, err := it.Next(); err {
 		case nil:
 			topics = append(topics, topic)
-		case Done:
+		case iterator.Done:
 			return topics, nil
 		default:
 			return nil, err

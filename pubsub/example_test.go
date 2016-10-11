@@ -129,7 +129,7 @@ func ExampleTopic_Subscriptions() {
 	// List all subscriptions of the topic (maybe of multiple projects).
 	for subs := topic.Subscriptions(ctx); ; {
 		sub, err := subs.Next()
-		if err == pubsub.Done {
+		if err == iterator.Done {
 			break
 		}
 		if err != nil {

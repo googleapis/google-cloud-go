@@ -25,6 +25,7 @@ import (
 	"golang.org/x/net/context"
 
 	"cloud.google.com/go/internal/testutil"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
 
@@ -53,7 +54,7 @@ func (mc *messageCounter) Inc(msgID string) {
 func process(t *testing.T, it *MessageIterator, mc *messageCounter) {
 	for {
 		m, err := it.Next()
-		if err == Done {
+		if err == iterator.Done {
 			return
 		}
 

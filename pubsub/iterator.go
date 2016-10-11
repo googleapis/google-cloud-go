@@ -91,7 +91,7 @@ func newMessageIterator(ctx context.Context, s service, subName string, po *pull
 
 // Next returns the next Message to be processed.  The caller must call
 // Message.Done when finished with it.
-// Once Stop has been called, calls to Next will return Done.
+// Once Stop has been called, calls to Next will return iterator.Done.
 func (it *MessageIterator) Next() (*Message, error) {
 	m, err := it.puller.Next()
 
@@ -103,7 +103,7 @@ func (it *MessageIterator) Next() (*Message, error) {
 	select {
 	// If Stop has been called, we return Done regardless the value of err.
 	case <-it.closed:
-		return nil, Done
+		return nil, iterator.Done
 	default:
 		return nil, err
 	}
@@ -127,7 +127,7 @@ func (it *MessageIterator) Stop() {
 	}
 
 	// We close this channel before calling it.puller.Stop to ensure that we
-	// reliably return Done from Next.
+	// reliably return iterator.Done from Next.
 	close(it.closed)
 
 	// Stop the puller. Once this completes, no more messages will be added
