@@ -161,7 +161,26 @@ func TestIntegration(t *testing.T) {
 
 	checkRead(job2)
 
-	// TODO(jba): patch the table
+	// Test Update.
+	tm, err := table.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantDescription := tm.Description + "more"
+	wantName := tm.Name + "more"
+	got, err := table.Update(ctx, TableMetadataToUpdate{
+		Description: wantDescription,
+		Name:        wantName,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Description != wantDescription {
+		t.Errorf("Description: got %q, want %q", got.Description, wantDescription)
+	}
+	if got.Name != wantName {
+		t.Errorf("Name: got %q, want %q", got.Name, wantName)
+	}
 }
 
 func hasStatusCode(err error, code int) bool {

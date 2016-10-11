@@ -20,6 +20,7 @@ import (
 
 	"golang.org/x/net/context"
 
+	"cloud.google.com/go/internal/optional"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -245,6 +246,8 @@ type TableMetadataPatch struct {
 
 // Patch returns a *TableMetadataPatch, which can be used to modify specific Table metadata fields.
 // In order to apply the changes, the TableMetadataPatch's Apply method must be called.
+//
+// Deprecated: use Table.Update instead.
 func (t *Table) Patch() *TableMetadataPatch {
 	return &TableMetadataPatch{
 		s:         t.c.service,
@@ -255,20 +258,51 @@ func (t *Table) Patch() *TableMetadataPatch {
 }
 
 // Description sets the table description.
+//
+// Deprecated: use Table.Update instead.
 func (p *TableMetadataPatch) Description(desc string) {
 	p.conf.Description = &desc
 }
 
 // Name sets the table name.
+//
+// Deprecated: use Table.Update instead.
 func (p *TableMetadataPatch) Name(name string) {
 	p.conf.Name = &name
 }
 
-// TODO(mcgreevy): support patching the schema.
-
 // Apply applies the patch operation.
+//
+// Deprecated: use Table.Update instead.
 func (p *TableMetadataPatch) Apply(ctx context.Context) (*TableMetadata, error) {
 	return p.s.patchTable(ctx, p.projectID, p.datasetID, p.tableID, &p.conf)
+}
+
+// Update modifies specific Table metadata fields.
+func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate) (*TableMetadata, error) {
+	var conf patchTableConf
+	if tm.Description != nil {
+		s := optional.ToString(tm.Description)
+		conf.Description = &s
+	}
+	if tm.Name != nil {
+		s := optional.ToString(tm.Name)
+		conf.Name = &s
+	}
+	return t.c.service.patchTable(ctx, t.ProjectID, t.DatasetID, t.TableID, &conf)
+}
+
+// TableMetadataToUpdate is used when updating a table's metadata.
+// Only non-nil fields will be updated.
+type TableMetadataToUpdate struct {
+	// Description is the user-friendly description of this table.
+	Description optional.String
+
+	// Name is the user-friendly name for this table.
+	Name optional.String
+
+	// TODO(jba): support updating the schema
+	// TODO(jba): support updating the view
 }
 
 // NewUploader returns an *Uploader that can be used to append rows to t.
