@@ -280,8 +280,8 @@ func TestConfiguringLoader(t *testing.T) {
 	want.Configuration.Load.WriteDisposition = "WRITE_TRUNCATE"
 
 	loader := dst.LoaderFrom(src)
-	loader.TableCreateDisposition = CreateNever
-	loader.TableWriteDisposition = WriteTruncate
+	loader.CreateDisposition = CreateNever
+	loader.WriteDisposition = WriteTruncate
 
 	if _, err := loader.Run(context.Background()); err != nil {
 		t.Errorf("err calling Loader.Run: %v", err)
