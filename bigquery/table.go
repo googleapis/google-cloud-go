@@ -327,13 +327,13 @@ type LoadConfig struct {
 	// Dst is the table into which the data will be loaded.
 	Dst *Table
 
-	// TableCreateDisposition specifies the circumstances under which the destination table will be created.
+	// CreateDisposition specifies the circumstances under which the destination table will be created.
 	// The default is CreateIfNeeded.
-	TableCreateDisposition TableCreateDisposition
+	CreateDisposition TableCreateDisposition
 
-	// TableWriteDisposition specifies how existing data in the destination table is treated.
+	// WriteDisposition specifies how existing data in the destination table is treated.
 	// The default is WriteAppend.
-	TableWriteDisposition TableWriteDisposition
+	WriteDisposition TableWriteDisposition
 }
 
 // A Loader loads data from Google Cloud Storage into a BigQuery table.
@@ -359,8 +359,8 @@ func (l *Loader) Run(ctx context.Context) (*Job, error) {
 	job := &bq.Job{
 		Configuration: &bq.JobConfiguration{
 			Load: &bq.JobConfigurationLoad{
-				CreateDisposition: string(l.TableCreateDisposition),
-				WriteDisposition:  string(l.TableWriteDisposition),
+				CreateDisposition: string(l.CreateDisposition),
+				WriteDisposition:  string(l.WriteDisposition),
 			},
 		},
 	}
