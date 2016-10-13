@@ -16,6 +16,14 @@ backwards-incompatible changes.
 
 ## News
 
+_October 21, 2016_
+
+Breaking change to pubsub: removed `pubsub.Done`.
+
+Use `iterator.Done` instead, where `iterator` is the package
+`google.golang.org/api/iterator`.
+
+
 _October 19, 2016_
 
 Breaking changes to cloud.google.com/go/bigquery:

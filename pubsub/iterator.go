@@ -22,11 +22,6 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-// Done is returned when an iteration is complete.
-//
-// Deprecated: use google.golang.org/api/iterator.Done instead.
-var Done = iterator.Done
-
 type MessageIterator struct {
 	// kaTicker controls how often we send an ack deadline extension request.
 	kaTicker *time.Ticker

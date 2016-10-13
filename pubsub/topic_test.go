@@ -33,7 +33,7 @@ type topicListService struct {
 func (s *topicListService) newNextStringFunc() nextStringFunc {
 	return func() (string, error) {
 		if len(s.topics) == 0 {
-			return "", Done
+			return "", iterator.Done
 		}
 		tn := s.topics[0]
 		s.topics = s.topics[1:]
