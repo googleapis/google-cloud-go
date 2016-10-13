@@ -132,7 +132,7 @@ func (l *propertyLoader) loadOneElement(codec *structCodec, structValue reflect.
 		}
 
 		// If the element is a slice, we need to accommodate it.
-		if v.Kind() == reflect.Slice {
+		if v.Kind() == reflect.Slice && v.Type() != typeOfByteSlice {
 			if l.m == nil {
 				l.m = make(map[string]int)
 			}
