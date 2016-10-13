@@ -66,7 +66,7 @@ func main() {
 
 	// Load data from Google Cloud Storage into a BigQuery table.
 	loader := table.LoaderFrom(gcs)
-	loader.TableWriteDisposition = bigquery.WriteTruncate
+	loader.WriteDisposition = bigquery.WriteTruncate
 	job, err := loader.Run(ctx)
 
 	if err != nil {
