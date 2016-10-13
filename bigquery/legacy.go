@@ -75,6 +75,7 @@ func (c *Client) Read(ctx context.Context, src ReadSource, options ...ReadOption
 				Q:                src.Q,
 				DefaultProjectID: src.DefaultProjectID,
 				DefaultDatasetID: src.DefaultDatasetID,
+				TableDefinitions: src.TableDefinitions,
 			}
 		}
 		return src.Read(ctx, options...)
@@ -508,6 +509,13 @@ func (c *Client) query(ctx context.Context, dst *Table, src *Query, options []Op
 			DatasetId: src.DefaultDatasetID,
 			ProjectId: src.DefaultProjectID,
 		}
+	}
+
+	if len(src.TableDefinitions) > 0 {
+		payload.TableDefinitions = make(map[string]bq.ExternalDataConfiguration)
+	}
+	for name, data := range src.TableDefinitions {
+		payload.TableDefinitions[name] = data.externalDataConfig()
 	}
 	// end of compatability code.
 

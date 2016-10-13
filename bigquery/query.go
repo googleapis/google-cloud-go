@@ -104,6 +104,7 @@ type Query struct {
 	QueryConfig
 
 	// The query to execute. See https://cloud.google.com/bigquery/query-reference for details.
+	//
 	// Deprecated: use QueryConfig.Q instead.
 	Q string
 
@@ -111,6 +112,12 @@ type Query struct {
 	// If DefaultProjectID is set, DefaultDatasetID must also be set.
 	DefaultProjectID string // Deprecated: use QueryConfig.DefaultProjectID instead.
 	DefaultDatasetID string // Deprecated: use QueryConfig.DefaultDatasetID instead.
+
+	// TableDefinitions describes data sources outside of BigQuery.
+	// The map keys may be used as table names in the query string.
+	//
+	// Deprecated: use QueryConfig.TableDefinitions instead.
+	TableDefinitions map[string]ExternalData
 }
 
 func (q *QueryConfig) implementsSource()     {}
@@ -198,6 +205,12 @@ func (q *Query) Run(ctx context.Context) (*Job, error) {
 			DatasetId: q.DefaultDatasetID,
 			ProjectId: q.DefaultProjectID,
 		}
+	}
+	if len(q.TableDefinitions) > 0 {
+		conf.TableDefinitions = make(map[string]bq.ExternalDataConfiguration)
+	}
+	for name, data := range q.TableDefinitions {
+		conf.TableDefinitions[name] = data.externalDataConfig()
 	}
 	// end of compatability code.
 
