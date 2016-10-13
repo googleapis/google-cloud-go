@@ -52,7 +52,9 @@ func TestMain(m *testing.M) {
 	exit := m.Run()
 	if integrationTest {
 		if err := cleanup(); err != nil {
-			log.Fatalf("Post-test cleanup failed: %v", err)
+			// No need to be loud if cleanup() fails; we'll get
+			// any undeleted buckets next time.
+			log.Printf("Post-test cleanup failed: %v\n", err)
 		}
 	}
 	os.Exit(exit)
