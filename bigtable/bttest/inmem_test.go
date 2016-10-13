@@ -123,8 +123,8 @@ func TestConcurrentMutationsReadModifyAndGC(t *testing.T) {
 	}()
 	select {
 	case <-done:
-	case <-time.After(100 * time.Millisecond):
-		t.Error("Concurrent mutations and GCs haven't completed after 100ms")
+	case <-time.After(1 * time.Second):
+		t.Error("Concurrent mutations and GCs haven't completed after 1s")
 	}
 }
 
