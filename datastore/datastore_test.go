@@ -323,6 +323,15 @@ type Doubler struct {
 	B bool
 }
 
+type Repeat struct {
+	Key   string
+	Value []byte
+}
+
+type Repeated struct {
+	Repeats []Repeat
+}
+
 func (d *Doubler) Load(props []Property) error {
 	return LoadStruct(d, props)
 }
@@ -635,6 +644,35 @@ var testCases = []testCase{
 		&Y0{F: make([]float64, maxIndexedProperties), B: true},
 		&Y0{},
 		"too many indexed properties",
+		"",
+	},
+	{
+		"slice of slices of bytes",
+		&Repeated{
+			Repeats: []Repeat{
+				{
+					Key:   "key 1",
+					Value: []byte("value 1"),
+				},
+				{
+					Key:   "key 2",
+					Value: []byte("value 2"),
+				},
+			},
+		},
+		&Repeated{
+			Repeats: []Repeat{
+				{
+					Key:   "key 1",
+					Value: []byte("value 1"),
+				},
+				{
+					Key:   "key 2",
+					Value: []byte("value 2"),
+				},
+			},
+		},
+		"",
 		"",
 	},
 	{
