@@ -70,9 +70,6 @@ type GCSReference struct {
 	Compression Compression
 }
 
-func (gcs *GCSReference) implementsSource()      {}
-func (gcs *GCSReference) implementsDestination() {}
-
 // NewGCSReference constructs a reference to one or more Google Cloud Storage objects, which together constitute a data source or destination.
 // In the simple case, a single URI in the form gs://bucket/object may refer to a single GCS object.
 // Data may also be split into mutiple files, if multiple URIs or URIs containing wildcards are provided.

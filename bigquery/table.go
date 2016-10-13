@@ -103,11 +103,6 @@ const (
 	ViewTable    TableType = "VIEW"
 )
 
-func (t *Table) implementsSource()      {}
-func (t *Table) implementsReadSource()  {}
-func (t *Table) implementsDestination() {}
-func (ts Tables) implementsSource()     {}
-
 func (t *Table) tableRefProto() *bq.TableReference {
 	return &bq.TableReference{
 		ProjectId: t.ProjectID,
@@ -211,47 +206,6 @@ func UseStandardSQL() CreateTableOption { return useStandardSQL{} }
 
 func (opt useStandardSQL) customizeCreateTable(conf *createTableConf) {
 	conf.useStandardSQL = true
-}
-
-// TableMetadataPatch represents a set of changes to a table's metadata.
-type TableMetadataPatch struct {
-	s                             service
-	projectID, datasetID, tableID string
-	conf                          patchTableConf
-}
-
-// Patch returns a *TableMetadataPatch, which can be used to modify specific Table metadata fields.
-// In order to apply the changes, the TableMetadataPatch's Apply method must be called.
-//
-// Deprecated: use Table.Update instead.
-func (t *Table) Patch() *TableMetadataPatch {
-	return &TableMetadataPatch{
-		s:         t.c.service,
-		projectID: t.ProjectID,
-		datasetID: t.DatasetID,
-		tableID:   t.TableID,
-	}
-}
-
-// Description sets the table description.
-//
-// Deprecated: use Table.Update instead.
-func (p *TableMetadataPatch) Description(desc string) {
-	p.conf.Description = &desc
-}
-
-// Name sets the table name.
-//
-// Deprecated: use Table.Update instead.
-func (p *TableMetadataPatch) Name(name string) {
-	p.conf.Name = &name
-}
-
-// Apply applies the patch operation.
-//
-// Deprecated: use Table.Update instead.
-func (p *TableMetadataPatch) Apply(ctx context.Context) (*TableMetadata, error) {
-	return p.s.patchTable(ctx, p.projectID, p.datasetID, p.tableID, &p.conf)
 }
 
 // Update modifies specific Table metadata fields.

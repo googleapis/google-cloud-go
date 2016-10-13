@@ -16,7 +16,6 @@ package bigquery
 
 import (
 	"errors"
-	"reflect"
 	"strconv"
 	"testing"
 
@@ -59,62 +58,6 @@ func (s *listTablesServiceStub) listTables(ctx context.Context, projectID, datas
 		nextPageToken = strconv.Itoa(end)
 	}
 	return s.tables[start:end], nextPageToken, nil
-}
-
-func TestListTables(t *testing.T) {
-	t1 := &Table{ProjectID: "p1", DatasetID: "d1", TableID: "t1"}
-	t2 := &Table{ProjectID: "p1", DatasetID: "d1", TableID: "t2"}
-	t3 := &Table{ProjectID: "p1", DatasetID: "d1", TableID: "t3"}
-	allTables := []*Table{t1, t2, t3}
-	testCases := []struct {
-		data, want []*Table
-	}{
-		{
-			data: allTables,
-			want: allTables,
-		},
-		{
-			data: nil,
-			want: nil,
-		},
-	}
-
-	for _, tc := range testCases {
-		c := &Client{
-			service: &listTablesServiceStub{
-				expectedProject: "x",
-				expectedDataset: "y",
-				tables:          tc.data,
-			},
-			projectID: "x",
-		}
-		got, err := c.Dataset("y").ListTables(context.Background())
-		if err != nil {
-			t.Errorf("err calling ListTables: %v", err)
-			continue
-		}
-
-		if !reflect.DeepEqual(got, tc.want) {
-			t.Errorf("reading: got:\n%v\nwant:\n%v", got, tc.want)
-		}
-	}
-}
-
-func TestListTablesError(t *testing.T) {
-	c := &Client{
-		service: &listTablesServiceStub{
-			expectedProject: "x",
-			expectedDataset: "y",
-		},
-		projectID: "x",
-	}
-	// Test that service read errors are propagated back to the caller.
-	// Passing "not y" as the dataset id will cause the service to return an error.
-	_, err := c.Dataset("not y").ListTables(context.Background())
-	if err == nil {
-		// Read should not return an error; only Err should.
-		t.Errorf("ListTables expected: non-nil err, got: nil")
-	}
 }
 
 func TestTables(t *testing.T) {

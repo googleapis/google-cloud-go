@@ -27,6 +27,7 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
 )
 
 var (
@@ -37,37 +38,32 @@ var (
 		" If set, --dataset, --table will be ignored, and results will be read from the specified job.")
 )
 
-func printValues(ctx context.Context, it *bigquery.Iterator) {
+func printValues(ctx context.Context, it *bigquery.RowIterator) {
 	// one-space padding.
 	tw := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
 
-	for it.Next(ctx) {
+	for {
 		var vals bigquery.ValueList
-		if err := it.Get(&vals); err != nil {
-			fmt.Printf("err calling get: %v\n", err)
-		} else {
-			sep := ""
-			for _, v := range vals {
-				fmt.Fprintf(tw, "%s%v", sep, v)
-				sep = "\t"
-			}
-			fmt.Fprintf(tw, "\n")
+		err := it.Next(&vals)
+		if err == iterator.Done {
+			break
 		}
+		if err != nil {
+			fmt.Printf("err calling get: %v\n", err)
+		}
+		sep := ""
+		for _, v := range vals {
+			fmt.Fprintf(tw, "%s%v", sep, v)
+			sep = "\t"
+		}
+		fmt.Fprintf(tw, "\n")
 	}
 	tw.Flush()
-
-	fmt.Printf("\n")
-	if err := it.Err(); err != nil {
-		fmt.Printf("err reading: %v\n", err)
-	}
+	fmt.Println()
 }
 
 func printTable(ctx context.Context, client *bigquery.Client, t *bigquery.Table) {
-	it, err := client.Read(ctx, t)
-	if err != nil {
-		log.Fatalf("Reading: %v", err)
-	}
-
+	it := t.Read(ctx)
 	id := t.FullyQualifiedName()
 	fmt.Printf("%s\n%s\n", id, strings.Repeat("-", len(id)))
 	printValues(ctx, it)
@@ -79,7 +75,7 @@ func printQueryResults(ctx context.Context, client *bigquery.Client, queryJobID 
 		log.Fatalf("Loading job: %v", err)
 	}
 
-	it, err := client.Read(ctx, job)
+	it, err := job.Read(ctx)
 	if err != nil {
 		log.Fatalf("Reading: %v", err)
 	}
@@ -130,12 +126,15 @@ func main() {
 		return
 	}
 	ds := client.Dataset(*dataset)
-	var tables []*bigquery.Table
-	tables, err = ds.ListTables(context.Background())
-	if err != nil {
-		log.Fatalf("Listing tables: %v", err)
-	}
-	for _, t := range tables {
+	tableIter := ds.Tables(context.Background())
+	for {
+		t, err := tableIter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Listing tables: %v", err)
+		}
 		if tableRE.MatchString(t.TableID) {
 			printTable(ctx, client, t)
 		}
