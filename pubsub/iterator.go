@@ -23,6 +23,8 @@ import (
 )
 
 // Done is returned when an iteration is complete.
+//
+// Deprecated: use google.golang.org/api/iterator.Done instead.
 var Done = iterator.Done
 
 type MessageIterator struct {
