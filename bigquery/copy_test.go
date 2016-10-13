@@ -43,66 +43,6 @@ func defaultCopyJob() *bq.Job {
 	}
 }
 
-func TestLegacyCopy(t *testing.T) {
-	testCases := []struct {
-		dst     *Table
-		src     Tables
-		options []Option
-		want    *bq.Job
-	}{
-		{
-			dst: &Table{
-				ProjectID: "d-project-id",
-				DatasetID: "d-dataset-id",
-				TableID:   "d-table-id",
-			},
-			src: Tables{
-				{
-					ProjectID: "s-project-id",
-					DatasetID: "s-dataset-id",
-					TableID:   "s-table-id",
-				},
-			},
-			want: defaultCopyJob(),
-		},
-		{
-			dst: &Table{
-				ProjectID: "d-project-id",
-				DatasetID: "d-dataset-id",
-				TableID:   "d-table-id",
-			},
-			src: Tables{
-				{
-					ProjectID: "s-project-id",
-					DatasetID: "s-dataset-id",
-					TableID:   "s-table-id",
-				},
-			},
-			options: []Option{CreateNever, WriteTruncate},
-			want: func() *bq.Job {
-				j := defaultCopyJob()
-				j.Configuration.Copy.CreateDisposition = "CREATE_NEVER"
-				j.Configuration.Copy.WriteDisposition = "WRITE_TRUNCATE"
-				return j
-			}(),
-		},
-	}
-
-	for _, tc := range testCases {
-		s := &testService{}
-		c := &Client{
-			service: s,
-		}
-		if _, err := c.Copy(context.Background(), tc.dst, tc.src, tc.options...); err != nil {
-			t.Errorf("err calling cp: %v", err)
-			continue
-		}
-		if !reflect.DeepEqual(s.Job, tc.want) {
-			t.Errorf("copying: got:\n%v\nwant:\n%v", s.Job, tc.want)
-		}
-	}
-}
-
 func TestCopy(t *testing.T) {
 	testCases := []struct {
 		dst    *Table

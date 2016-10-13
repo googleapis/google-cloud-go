@@ -64,8 +64,9 @@ func main() {
 	d := client.Dataset(*dataset).Table(*dest)
 
 	// Concatenate data.
-	job, err := client.Copy(ctx, d, bigquery.Tables{s1, s2}, bigquery.WriteTruncate)
-
+	copier := d.CopierFrom(s1, s2)
+	copier.WriteDisposition = bigquery.WriteTruncate
+	job, err := copier.Run(ctx)
 	if err != nil {
 		log.Fatalf("Concatenating: %v", err)
 	}

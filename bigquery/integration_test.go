@@ -74,9 +74,17 @@ func TestIntegration(t *testing.T) {
 	}
 
 	// List tables in the dataset.
-	tables, err := ds.ListTables(ctx)
-	if err != nil {
-		t.Fatal(err)
+	tableIter := ds.Tables(ctx)
+	var tables []*Table
+	for {
+		table, err := tableIter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		tables = append(tables, table)
 	}
 	if got, want := len(tables), 1; got != want {
 		t.Fatalf("ListTables: got %d, want %d", got, want)
@@ -117,14 +125,14 @@ func TestIntegration(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	checkRead := func(src ReadSource) {
-		it, err := c.Read(ctx, src)
-		if err != nil {
-			t.Fatal(err)
-		}
-		for i := 0; it.Next(ctx); i++ {
+	checkRead := func(it *RowIterator) {
+		for i := 0; true; i++ {
 			var vals ValueList
-			if err := it.Get(&vals); err != nil {
+			err := it.Next(&vals)
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
 				t.Fatal(err)
 			}
 			if got, want := vals, rows[i].Row; !reflect.DeepEqual([]Value(got), want) {
@@ -133,18 +141,21 @@ func TestIntegration(t *testing.T) {
 		}
 	}
 	// Read the table.
-	checkRead(table)
+	checkRead(table.Read(ctx))
 
 	// Query the table.
 	q := c.Query("select name, num from t1")
 	q.DefaultProjectID = projID
 	q.DefaultDatasetID = ds.id
 
-	checkRead(q)
+	rit, err := q.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	checkRead(rit)
 
 	// Query the long way.
-	dest := &Table{}
-	job1, err := c.Copy(ctx, dest, q, WriteTruncate)
+	job1, err := q.Run(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -158,7 +169,11 @@ func TestIntegration(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	checkRead(job2)
+	rit, err = job2.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	checkRead(rit)
 
 	// Test Update.
 	tm, err := table.Metadata(ctx)

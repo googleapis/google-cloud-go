@@ -16,25 +16,6 @@ package bigquery
 
 import "golang.org/x/net/context"
 
-// RecordsPerRequest returns a ReadOption that sets the number of records to fetch per request when streaming data from BigQuery.
-func RecordsPerRequest(n int64) ReadOption { return recordsPerRequest(n) }
-
-type recordsPerRequest int64
-
-func (opt recordsPerRequest) customizeRead(conf *pagingConf) {
-	conf.recordsPerRequest = int64(opt)
-	conf.setRecordsPerRequest = true
-}
-
-// StartIndex returns a ReadOption that sets the zero-based index of the row to start reading from.
-func StartIndex(i uint64) ReadOption { return startIndex(i) }
-
-type startIndex uint64
-
-func (opt startIndex) customizeRead(conf *pagingConf) {
-	conf.startIndex = uint64(opt)
-}
-
 func (conf *readTableConf) fetch(ctx context.Context, s service, token string) (*readDataResult, error) {
 	return s.readTabledata(ctx, conf, token)
 }
@@ -42,15 +23,10 @@ func (conf *readTableConf) fetch(ctx context.Context, s service, token string) (
 func (conf *readTableConf) setPaging(pc *pagingConf) { conf.paging = *pc }
 
 // Read fetches the contents of the table.
-func (t *Table) Read(_ context.Context, options ...ReadOption) (*Iterator, error) {
+func (t *Table) Read(ctx context.Context) *RowIterator {
 	conf := &readTableConf{}
 	t.customizeReadSrc(conf)
-
-	for _, o := range options {
-		o.customizeRead(&conf.paging)
-	}
-
-	return newIterator(t.c.service, conf), nil
+	return newRowIterator(ctx, t.c.service, conf)
 }
 
 func (conf *readQueryConf) fetch(ctx context.Context, s service, token string) (*readDataResult, error) {
@@ -60,15 +36,11 @@ func (conf *readQueryConf) fetch(ctx context.Context, s service, token string) (
 func (conf *readQueryConf) setPaging(pc *pagingConf) { conf.paging = *pc }
 
 // Read fetches the results of a query job.
-func (j *Job) Read(_ context.Context, options ...ReadOption) (*Iterator, error) {
+// If j is not a query job, Read returns an error.
+func (j *Job) Read(ctx context.Context) (*RowIterator, error) {
 	conf := &readQueryConf{}
 	if err := j.customizeReadQuery(conf); err != nil {
 		return nil, err
 	}
-
-	for _, o := range options {
-		o.customizeRead(&conf.paging)
-	}
-
-	return newIterator(j.service, conf), nil
+	return newRowIterator(ctx, j.service, conf), nil
 }

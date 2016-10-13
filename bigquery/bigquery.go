@@ -28,16 +28,6 @@ import (
 
 const prodAddr = "https://www.googleapis.com/bigquery/v2/"
 
-// An Option is an optional argument to Copy.
-type Option interface {
-	implementsOption()
-}
-
-// A ReadOption is an optional argument to Read.
-type ReadOption interface {
-	customizeRead(conf *pagingConf)
-}
-
 // ExternalData is a table which is stored outside of BigQuery.  It is implemented by GCSReference.
 type ExternalData interface {
 	externalDataConfig() bq.ExternalDataConfiguration
