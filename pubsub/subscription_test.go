@@ -34,7 +34,7 @@ type subListService struct {
 func (s *subListService) newNextStringFunc() nextStringFunc {
 	return func() (string, error) {
 		if len(s.subs) == 0 {
-			return "", Done
+			return "", iterator.Done
 		}
 		sn := s.subs[0]
 		s.subs = s.subs[1:]
