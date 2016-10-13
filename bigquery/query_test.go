@@ -384,6 +384,7 @@ func TestBackwardsCompatabilityOfQuery(t *testing.T) {
 				Q:                "query string",
 				DefaultProjectID: "def-project-id",
 				DefaultDatasetID: "def-dataset-id",
+				TableDefinitions: map[string]ExternalData{"a": c.NewGCSReference("uri")},
 			},
 			want: &bq.Job{
 				Configuration: &bq.JobConfiguration{
@@ -392,6 +393,13 @@ func TestBackwardsCompatabilityOfQuery(t *testing.T) {
 						DefaultDataset: &bq.DatasetReference{
 							ProjectId: "def-project-id",
 							DatasetId: "def-dataset-id",
+						},
+						TableDefinitions: map[string]bq.ExternalDataConfiguration{
+							"a": bq.ExternalDataConfiguration{
+								CsvOptions:   &bq.CsvOptions{},
+								SourceFormat: "CSV",
+								SourceUris:   []string{"uri"},
+							},
 						},
 					},
 				},
@@ -402,6 +410,7 @@ func TestBackwardsCompatabilityOfQuery(t *testing.T) {
 				Q:                "query string",
 				DefaultProjectID: "def-project-id",
 				DefaultDatasetID: "def-dataset-id",
+				TableDefinitions: map[string]ExternalData{"a": c.NewGCSReference("uri")},
 			},
 			want: &bq.Job{
 				Configuration: &bq.JobConfiguration{
@@ -410,6 +419,13 @@ func TestBackwardsCompatabilityOfQuery(t *testing.T) {
 						DefaultDataset: &bq.DatasetReference{
 							ProjectId: "def-project-id",
 							DatasetId: "def-dataset-id",
+						},
+						TableDefinitions: map[string]bq.ExternalDataConfiguration{
+							"a": bq.ExternalDataConfiguration{
+								CsvOptions:   &bq.CsvOptions{},
+								SourceFormat: "CSV",
+								SourceUris:   []string{"uri"},
+							},
 						},
 					},
 				},
@@ -421,6 +437,7 @@ func TestBackwardsCompatabilityOfQuery(t *testing.T) {
 					Q:                "query string",
 					DefaultProjectID: "def-project-id",
 					DefaultDatasetID: "def-dataset-id",
+					TableDefinitions: map[string]ExternalData{"a": c.NewGCSReference("uri")},
 				},
 			},
 			want: &bq.Job{
@@ -430,6 +447,13 @@ func TestBackwardsCompatabilityOfQuery(t *testing.T) {
 						DefaultDataset: &bq.DatasetReference{
 							ProjectId: "def-project-id",
 							DatasetId: "def-dataset-id",
+						},
+						TableDefinitions: map[string]bq.ExternalDataConfiguration{
+							"a": bq.ExternalDataConfiguration{
+								CsvOptions:   &bq.CsvOptions{},
+								SourceFormat: "CSV",
+								SourceUris:   []string{"uri"},
+							},
 						},
 					},
 				},
@@ -440,6 +464,7 @@ func TestBackwardsCompatabilityOfQuery(t *testing.T) {
 				q := c.Query("query string")
 				q.DefaultProjectID = "def-project-id"
 				q.DefaultDatasetID = "def-dataset-id"
+				q.TableDefinitions = map[string]ExternalData{"a": c.NewGCSReference("uri")}
 				return q
 			}(),
 			want: &bq.Job{
@@ -450,6 +475,13 @@ func TestBackwardsCompatabilityOfQuery(t *testing.T) {
 							ProjectId: "def-project-id",
 							DatasetId: "def-dataset-id",
 						},
+						TableDefinitions: map[string]bq.ExternalDataConfiguration{
+							"a": bq.ExternalDataConfiguration{
+								CsvOptions:   &bq.CsvOptions{},
+								SourceFormat: "CSV",
+								SourceUris:   []string{"uri"},
+							},
+						},
 					},
 				},
 			},
@@ -459,6 +491,7 @@ func TestBackwardsCompatabilityOfQuery(t *testing.T) {
 				q := c.Query("query string")
 				q.QueryConfig.DefaultProjectID = "def-project-id"
 				q.QueryConfig.DefaultDatasetID = "def-dataset-id"
+				q.QueryConfig.TableDefinitions = map[string]ExternalData{"a": c.NewGCSReference("uri")}
 				return q
 			}(),
 			want: &bq.Job{
@@ -468,6 +501,13 @@ func TestBackwardsCompatabilityOfQuery(t *testing.T) {
 						DefaultDataset: &bq.DatasetReference{
 							ProjectId: "def-project-id",
 							DatasetId: "def-dataset-id",
+						},
+						TableDefinitions: map[string]bq.ExternalDataConfiguration{
+							"a": bq.ExternalDataConfiguration{
+								CsvOptions:   &bq.CsvOptions{},
+								SourceFormat: "CSV",
+								SourceUris:   []string{"uri"},
+							},
 						},
 					},
 				},
