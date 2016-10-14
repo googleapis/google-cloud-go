@@ -110,7 +110,9 @@ func (c *Copier) callRewrite(ctx context.Context, src *ObjectHandle, rawObj *raw
 	if err := applySourceConds(c.src.gen, c.src.conds, call); err != nil {
 		return nil, err
 	}
-	res, err := call.Do()
+	var res *raw.RewriteResponse
+	var err error
+	err = runWithRetry(ctx, func() error { res, err = call.Do(); return err })
 	if err != nil {
 		return nil, err
 	}
@@ -171,8 +173,9 @@ func (c *Composer) Run(ctx context.Context) (*ObjectAttrs, error) {
 	if err := applyConds("ComposeFrom destination", c.dst.gen, c.dst.conds, call); err != nil {
 		return nil, err
 	}
-
-	obj, err := call.Do()
+	var obj *raw.Object
+	var err error
+	err = runWithRetry(ctx, func() error { obj, err = call.Do(); return err })
 	if err != nil {
 		return nil, err
 	}
