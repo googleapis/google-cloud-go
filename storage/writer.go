@@ -89,7 +89,7 @@ func (w *Writer) open() error {
 		var resp *raw.Object
 		err := applyConds("NewWriter", w.o.gen, w.o.conds, call)
 		if err == nil {
-			resp, err = call.Do()
+			err = runWithRetry(w.ctx, func() error { resp, err = call.Do(); return err })
 		}
 		if err != nil {
 			w.err = err

@@ -319,7 +319,9 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (*ObjectAttrs, error) {
 	if err := applyConds("Attrs", o.gen, o.conds, call); err != nil {
 		return nil, err
 	}
-	obj, err := call.Do()
+	var obj *raw.Object
+	var err error
+	err = runWithRetry(ctx, func() error { obj, err = call.Do(); return err })
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
 	}
@@ -387,7 +389,9 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 	if err := applyConds("Update", o.gen, o.conds, call); err != nil {
 		return nil, err
 	}
-	obj, err := call.Do()
+	var obj *raw.Object
+	var err error
+	err = runWithRetry(ctx, func() error { obj, err = call.Do(); return err })
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
 	}
@@ -427,7 +431,7 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 	if err := applyConds("Delete", o.gen, o.conds, call); err != nil {
 		return err
 	}
-	err := call.Do()
+	err := runWithRetry(ctx, func() error { return call.Do() })
 	switch e := err.(type) {
 	case nil:
 		return nil
@@ -482,7 +486,8 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	} else if length > 0 {
 		req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", offset, offset+length-1))
 	}
-	res, err := o.c.hc.Do(req)
+	var res *http.Response
+	err = runWithRetry(ctx, func() error { res, err = o.c.hc.Do(req); return err })
 	if err != nil {
 		return nil, err
 	}
