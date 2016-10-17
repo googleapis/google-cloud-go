@@ -20,6 +20,8 @@
 // Examines the call stack and variables of a running application
 // without stopping or slowing it down.
 //
+//
+// Use the client at cloud.google.com/go/cmd/go-cloud-debug-agent in preference to this.
 package debugger // import "cloud.google.com/go/debugger/apiv2"
 
 const gapicNameVersion = "gapic/0.1.0"

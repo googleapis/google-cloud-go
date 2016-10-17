@@ -19,6 +19,8 @@
 //
 // Provides reliable, many-to-many, asynchronous messaging between applications.
 //
+//
+// Use the client at cloud.google.com/go/pubsub in preference to this.
 package pubsub // import "cloud.google.com/go/pubsub/apiv1"
 
 const gapicNameVersion = "gapic/0.1.0"

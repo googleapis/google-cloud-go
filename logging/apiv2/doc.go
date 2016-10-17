@@ -19,6 +19,8 @@
 //
 // The Google Cloud Logging API lets you write log entries and manage your
 // logs, log sinks and logs-based metrics.
+//
+// Use the client at cloud.google.com/go/logging in preference to this.
 package logging // import "cloud.google.com/go/logging/apiv2"
 
 const gapicNameVersion = "gapic/0.1.0"

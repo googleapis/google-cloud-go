@@ -34,8 +34,9 @@ import (
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	SyncRecognize  []gax.CallOption
-	AsyncRecognize []gax.CallOption
+	SyncRecognize      []gax.CallOption
+	AsyncRecognize     []gax.CallOption
+	StreamingRecognize []gax.CallOption
 }
 
 func defaultClientOptions() []option.ClientOption {
@@ -63,8 +64,9 @@ func defaultCallOptions() *CallOptions {
 		},
 	}
 	return &CallOptions{
-		SyncRecognize:  retry[[2]string{"default", "idempotent"}],
-		AsyncRecognize: retry[[2]string{"default", "idempotent"}],
+		SyncRecognize:      retry[[2]string{"default", "idempotent"}],
+		AsyncRecognize:     retry[[2]string{"default", "idempotent"}],
+		StreamingRecognize: retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 
@@ -80,7 +82,7 @@ type Client struct {
 	CallOptions *CallOptions
 
 	// The metadata to be sent with each request.
-	metadata map[string][]string
+	metadata metadata.MD
 }
 
 // NewClient creates a new speech client.
@@ -116,9 +118,8 @@ func (c *Client) Close() error {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *Client) SetGoogleClientInfo(name, version string) {
-	c.metadata = map[string][]string{
-		"x-goog-api-client": {fmt.Sprintf("%s/%s %s gax/%s go/%s", name, version, gapicNameVersion, gax.Version, runtime.Version())},
-	}
+	v := fmt.Sprintf("%s/%s %s gax/%s go/%s", name, version, gapicNameVersion, gax.Version, runtime.Version())
+	c.metadata = metadata.Pairs("x-goog-api-client", v)
 }
 
 // SyncRecognize perform synchronous speech-recognition: receive results after all audio
@@ -151,6 +152,23 @@ func (c *Client) AsyncRecognize(ctx context.Context, req *speechpb.AsyncRecogniz
 		resp, err = c.client.AsyncRecognize(ctx, req)
 		return err
 	}, c.CallOptions.AsyncRecognize...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// StreamingRecognize perform bidirectional streaming speech-recognition: receive results while
+// sending audio. This method is only available via the gRPC API (not REST).
+func (c *Client) StreamingRecognize(ctx context.Context) (speechpb.Speech_StreamingRecognizeClient, error) {
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	var resp speechpb.Speech_StreamingRecognizeClient
+	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		var err error
+		resp, err = c.client.StreamingRecognize(ctx)
+		return err
+	}, c.CallOptions.StreamingRecognize...)
 	if err != nil {
 		return nil, err
 	}

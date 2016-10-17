@@ -20,6 +20,8 @@
 // Integrates Google Vision features, including image labeling, face, logo,
 // and landmark detection, optical character recognition (OCR), and detection
 // of explicit content, into applications.
+//
+// Use the client at cloud.google.com/go/vision in preference to this.
 package vision // import "cloud.google.com/go/vision/apiv1"
 
 const gapicNameVersion = "gapic/0.1.0"
