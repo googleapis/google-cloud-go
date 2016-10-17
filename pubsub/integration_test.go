@@ -22,6 +22,7 @@ import (
 
 	"golang.org/x/net/context"
 
+	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/option"
 )
@@ -60,6 +61,7 @@ func TestAll(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Creating client error: %v", err)
 	}
+	defer client.Close()
 
 	var topic *Topic
 	if topic, err = client.CreateTopic(ctx, topicName); err != nil {
@@ -153,6 +155,13 @@ func TestAll(t *testing.T) {
 	}
 	m.Done(true)
 
+	if msg, ok := testIAM(ctx, topic.IAM(), "pubsub.topics.get"); !ok {
+		t.Errorf("topic IAM: %s", msg)
+	}
+	if msg, ok := testIAM(ctx, sub.IAM(), "pubsub.subscriptions.get"); !ok {
+		t.Errorf("sub IAM: %s", msg)
+	}
+
 	err = sub.Delete(ctx)
 	if err != nil {
 		t.Errorf("DeleteSub error: %v", err)
@@ -162,4 +171,62 @@ func TestAll(t *testing.T) {
 	if err != nil {
 		t.Errorf("DeleteTopic error: %v", err)
 	}
+}
+
+// IAM tests.
+// NOTE: for these to succeed, the test runner identity must have the Pub/Sub Admin or Owner roles.
+// To set, visit https://console.developers.google.com, select "IAM & Admin" from the top-left
+// menu, choose the account, click the Roles dropdown, and select "Pub/Sub > Pub/Sub Admin".
+// TODO(jba): move this to a testing package within cloud.google.com/iam, so we can re-use it.
+func testIAM(ctx context.Context, h *iam.Handle, permission string) (msg string, ok bool) {
+	// Attempting to add an non-existent identity  (e.g. "alice@example.com") causes the service
+	// to return an internal error, so use a real identity.
+	const member = "domain:google.com"
+
+	var policy *iam.Policy
+	var err error
+
+	if policy, err = h.Policy(ctx); err != nil {
+		return fmt.Sprintf("Policy: %v", err), false
+	}
+	// The resource is new, so the policy should be empty.
+	if got := policy.Roles(); len(got) > 0 {
+		return fmt.Sprintf("initially: got roles %v, want none", got), false
+	}
+	// Add a member, set the policy, then check that the member is present.
+	policy.Add(member, iam.Viewer)
+	if err := h.SetPolicy(ctx, policy); err != nil {
+		return fmt.Sprintf("SetPolicy: %v", err), false
+	}
+	if policy, err = h.Policy(ctx); err != nil {
+		return fmt.Sprintf("Policy: %v", err), false
+	}
+	if got, want := policy.Members(iam.Viewer), []string{member}; !reflect.DeepEqual(got, want) {
+		return fmt.Sprintf("after Add: got %v, want %v", got, want), false
+	}
+	// Now remove that member, set the policy, and check that it's empty again.
+	policy.Remove(member, iam.Viewer)
+	if err := h.SetPolicy(ctx, policy); err != nil {
+		return fmt.Sprintf("SetPolicy: %v", err), false
+	}
+	if policy, err = h.Policy(ctx); err != nil {
+		return fmt.Sprintf("Policy: %v", err), false
+	}
+	if got := policy.Roles(); len(got) > 0 {
+		return fmt.Sprintf("after Remove: got roles %v, want none", got), false
+	}
+	// Call TestPermissions.
+	// Because this user is an admin, it has all the permissions on the
+	// resource type. Note: the service fails if we ask for inapplicable
+	// permissions (e.g. a subscription permission on a topic, or a topic
+	// create permission on a topic rather than its parent).
+	wantPerms := []string{permission}
+	gotPerms, err := h.TestPermissions(ctx, wantPerms)
+	if err != nil {
+		return fmt.Sprintf("TestPermissions: %v", err), false
+	}
+	if !reflect.DeepEqual(gotPerms, wantPerms) {
+		return fmt.Sprintf("TestPermissions: got %v, want %v", gotPerms, wantPerms), false
+	}
+	return "", true
 }

@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"strings"
 
+	"cloud.google.com/go/iam"
 	"golang.org/x/net/context"
 )
 
@@ -124,4 +125,8 @@ func (t *Topic) Publish(ctx context.Context, msgs ...*Message) ([]string, error)
 		return nil, fmt.Errorf("pubsub: got %d messages, but maximum batch size is %d", len(msgs), MaxPublishBatchSize)
 	}
 	return t.s.publishMessages(ctx, t.name, msgs)
+}
+
+func (t *Topic) IAM() *iam.Handle {
+	return t.s.iamHandle(t.name)
 }
