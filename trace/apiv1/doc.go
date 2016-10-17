@@ -22,6 +22,8 @@
 // applications can be written to Stackdriver Trace for display, reporting,
 // and analysis.
 //
+//
+// Use the client at cloud.google.com/go/trace in preference to this.
 package trace // import "cloud.google.com/go/trace/apiv1"
 
 const gapicNameVersion = "gapic/0.1.0"

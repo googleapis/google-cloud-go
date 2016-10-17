@@ -99,7 +99,7 @@ type MetricClient struct {
 	CallOptions *MetricCallOptions
 
 	// The metadata to be sent with each request.
-	metadata map[string][]string
+	metadata metadata.MD
 }
 
 // NewMetricClient creates a new metric service client.
@@ -136,9 +136,8 @@ func (c *MetricClient) Close() error {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *MetricClient) SetGoogleClientInfo(name, version string) {
-	c.metadata = map[string][]string{
-		"x-goog-api-client": {fmt.Sprintf("%s/%s %s gax/%s go/%s", name, version, gapicNameVersion, gax.Version, runtime.Version())},
-	}
+	v := fmt.Sprintf("%s/%s %s gax/%s go/%s", name, version, gapicNameVersion, gax.Version, runtime.Version())
+	c.metadata = metadata.Pairs("x-goog-api-client", v)
 }
 
 // MetricProjectPath returns the path for the project resource.

@@ -28,7 +28,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
 	adminpb "google.golang.org/genproto/googleapis/iam/admin/v1"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -52,9 +51,6 @@ type IamCallOptions struct {
 	CreateServiceAccountKey []gax.CallOption
 	DeleteServiceAccountKey []gax.CallOption
 	SignBlob                []gax.CallOption
-	GetIamPolicy            []gax.CallOption
-	SetIamPolicy            []gax.CallOption
-	TestIamPermissions      []gax.CallOption
 	QueryGrantableRoles     []gax.CallOption
 }
 
@@ -94,9 +90,6 @@ func defaultIamCallOptions() *IamCallOptions {
 		CreateServiceAccountKey: retry[[2]string{"default", "non_idempotent"}],
 		DeleteServiceAccountKey: retry[[2]string{"default", "idempotent"}],
 		SignBlob:                retry[[2]string{"default", "non_idempotent"}],
-		GetIamPolicy:            retry[[2]string{"default", "non_idempotent"}],
-		SetIamPolicy:            retry[[2]string{"default", "non_idempotent"}],
-		TestIamPermissions:      retry[[2]string{"default", "non_idempotent"}],
 		QueryGrantableRoles:     retry[[2]string{"default", "non_idempotent"}],
 	}
 }
@@ -113,7 +106,7 @@ type IamClient struct {
 	CallOptions *IamCallOptions
 
 	// The metadata to be sent with each request.
-	metadata map[string][]string
+	metadata metadata.MD
 }
 
 // NewIamClient creates a new iam client.
@@ -164,9 +157,8 @@ func (c *IamClient) Close() error {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *IamClient) SetGoogleClientInfo(name, version string) {
-	c.metadata = map[string][]string{
-		"x-goog-api-client": {fmt.Sprintf("%s/%s %s gax/%s go/%s", name, version, gapicNameVersion, gax.Version, runtime.Version())},
-	}
+	v := fmt.Sprintf("%s/%s %s gax/%s go/%s", name, version, gapicNameVersion, gax.Version, runtime.Version())
+	c.metadata = metadata.Pairs("x-goog-api-client", v)
 }
 
 // IamProjectPath returns the path for the project resource.
@@ -378,57 +370,6 @@ func (c *IamClient) SignBlob(ctx context.Context, req *adminpb.SignBlobRequest) 
 		resp, err = c.iamClient.SignBlob(ctx, req)
 		return err
 	}, c.CallOptions.SignBlob...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// GetIamPolicy returns the IAM access control policy for a
-// [ServiceAccount][google.iam.admin.v1.ServiceAccount].
-func (c *IamClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
-	var resp *iampb.Policy
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
-		var err error
-		resp, err = c.iamClient.GetIamPolicy(ctx, req)
-		return err
-	}, c.CallOptions.GetIamPolicy...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// SetIamPolicy sets the IAM access control policy for a
-// [ServiceAccount][google.iam.admin.v1.ServiceAccount].
-func (c *IamClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
-	var resp *iampb.Policy
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
-		var err error
-		resp, err = c.iamClient.SetIamPolicy(ctx, req)
-		return err
-	}, c.CallOptions.SetIamPolicy...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// TestIamPermissions tests the specified permissions against the IAM access control policy
-// for a [ServiceAccount][google.iam.admin.v1.ServiceAccount].
-func (c *IamClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
-	var resp *iampb.TestIamPermissionsResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
-		var err error
-		resp, err = c.iamClient.TestIamPermissions(ctx, req)
-		return err
-	}, c.CallOptions.TestIamPermissions...)
 	if err != nil {
 		return nil, err
 	}
