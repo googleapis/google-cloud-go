@@ -160,43 +160,61 @@ func (u *uploadOptionRecorder) insertRows(ctx context.Context, projectID, datase
 func TestUploadOptionsPropagate(t *testing.T) {
 	// we don't care for the data in this testcase.
 	dummyData := testSaver{ir: &insertionRow{}}
+	recorder := new(uploadOptionRecorder)
+	c := &Client{service: recorder}
+	table := &Table{
+		ProjectID: "project-id",
+		DatasetID: "dataset-id",
+		TableID:   "table-id",
+		c:         c,
+	}
 
 	tests := [...]struct {
-		opts []UploadOption
+		ul   *Uploader
 		conf insertRowsConf
 	}{
-		{ // test zero options lead to zero value for insertRowsConf
+		{
+			// test zero options lead to zero value for insertRowsConf
+			ul: table.Uploader(),
 		},
 		{
-			opts: []UploadOption{
-				TableTemplateSuffix("suffix"),
-			},
+			ul: func() *Uploader {
+				u := table.Uploader()
+				u.TableTemplateSuffix = "suffix"
+				return u
+			}(),
 			conf: insertRowsConf{
 				templateSuffix: "suffix",
 			},
 		},
 		{
-			opts: []UploadOption{
-				UploadIgnoreUnknownValues(),
-			},
+			ul: func() *Uploader {
+				u := table.Uploader()
+				u.IgnoreUnknownValues = true
+				return u
+			}(),
 			conf: insertRowsConf{
 				ignoreUnknownValues: true,
 			},
 		},
 		{
-			opts: []UploadOption{
-				SkipInvalidRows(),
-			},
+			ul: func() *Uploader {
+				u := table.Uploader()
+				u.SkipInvalidRows = true
+				return u
+			}(),
 			conf: insertRowsConf{
 				skipInvalidRows: true,
 			},
 		},
 		{ // multiple upload options combine
-			opts: []UploadOption{
-				TableTemplateSuffix("suffix"),
-				SkipInvalidRows(),
-				UploadIgnoreUnknownValues(),
-			},
+			ul: func() *Uploader {
+				u := table.Uploader()
+				u.TableTemplateSuffix = "suffix"
+				u.IgnoreUnknownValues = true
+				u.SkipInvalidRows = true
+				return u
+			}(),
 			conf: insertRowsConf{
 				templateSuffix:      "suffix",
 				skipInvalidRows:     true,
@@ -206,17 +224,7 @@ func TestUploadOptionsPropagate(t *testing.T) {
 	}
 
 	for i, tc := range tests {
-		recorder := new(uploadOptionRecorder)
-		c := &Client{service: recorder}
-		table := &Table{
-			ProjectID: "project-id",
-			DatasetID: "dataset-id",
-			TableID:   "table-id",
-			c:         c,
-		}
-
-		u := table.NewUploader(tc.opts...)
-		err := u.Put(context.Background(), dummyData)
+		err := tc.ul.Put(context.Background(), dummyData)
 		if err != nil {
 			t.Fatalf("%d: expected successful Put of ValueSaver; got: %v", i, err)
 		}
@@ -228,7 +236,7 @@ func TestUploadOptionsPropagate(t *testing.T) {
 		want := tc.conf
 		got := *recorder.received
 		if got != want {
-			t.Errorf("%d: got %#v, want %#v, opts=%#v", i, got, want, tc.opts)
+			t.Errorf("%d: got %#v, want %#v, ul=%#v", i, got, want, tc.ul)
 		}
 	}
 }

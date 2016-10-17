@@ -21,55 +21,33 @@ import (
 	"golang.org/x/net/context"
 )
 
-// An UploadOption is an optional argument to NewUploader.
-type UploadOption interface {
-	customizeInsertRows(conf *insertRowsConf)
-}
-
 // An Uploader does streaming inserts into a BigQuery table.
 // It is safe for concurrent use.
 type Uploader struct {
-	conf insertRowsConf
-	t    *Table
-}
+	t *Table
 
-// SkipInvalidRows returns an UploadOption that causes rows containing invalid data to be silently ignored.
-// The default value is false, which causes the entire request to fail, if there is an attempt to insert an invalid row.
-func SkipInvalidRows() UploadOption { return skipInvalidRows{} }
+	// SkipInvalidRows causes rows containing invalid data to be silently
+	// ignored. The default value is false, which causes the entire request to
+	// fail if there is an attempt to insert an invalid row.
+	SkipInvalidRows bool
 
-type skipInvalidRows struct{}
+	// IgnoreUnknownValues causes values not matching the schema to be ignored.
+	// The default value is false, which causes records containing such values
+	// to be treated as invalid records.
+	IgnoreUnknownValues bool
 
-func (opt skipInvalidRows) customizeInsertRows(conf *insertRowsConf) {
-	conf.skipInvalidRows = true
-}
-
-// UploadIgnoreUnknownValues returns an UploadOption that causes values not matching the schema to be ignored.
-// If this option is not used, records containing such values are treated as invalid records.
-func UploadIgnoreUnknownValues() UploadOption { return uploadIgnoreUnknownValues{} }
-
-type uploadIgnoreUnknownValues struct{}
-
-func (opt uploadIgnoreUnknownValues) customizeInsertRows(conf *insertRowsConf) {
-	conf.ignoreUnknownValues = true
-}
-
-// A TableTemplateSuffix allows Uploaders to create tables automatically.
-//
-// Experimental: this option is experimental and may be modified or removed in future versions,
-// regardless of any other documented package stability guarantees.
-//
-// When you specify a suffix, the table you upload data to
-// will be used as a template for creating a new table, with the same schema,
-// called <table> + <suffix>.
-//
-// More information is available at
-// https://cloud.google.com/bigquery/streaming-data-into-bigquery#template-tables
-func TableTemplateSuffix(suffix string) UploadOption { return tableTemplateSuffix(suffix) }
-
-type tableTemplateSuffix string
-
-func (opt tableTemplateSuffix) customizeInsertRows(conf *insertRowsConf) {
-	conf.templateSuffix = string(opt)
+	// A TableTemplateSuffix allows Uploaders to create tables automatically.
+	//
+	// Experimental: this option is experimental and may be modified or removed in future versions,
+	// regardless of any other documented package stability guarantees.
+	//
+	// When you specify a suffix, the table you upload data to
+	// will be used as a template for creating a new table, with the same schema,
+	// called <table> + <suffix>.
+	//
+	// More information is available at
+	// https://cloud.google.com/bigquery/streaming-data-into-bigquery#template-tables
+	TableTemplateSuffix string
 }
 
 // Put uploads one or more rows to the BigQuery service.  src must implement ValueSaver or be a slice of ValueSavers.
@@ -108,7 +86,12 @@ func (u *Uploader) putMulti(ctx context.Context, src []ValueSaver) error {
 		}
 		rows = append(rows, &insertionRow{InsertID: insertID, Row: row})
 	}
-	return u.t.c.service.insertRows(ctx, u.t.ProjectID, u.t.DatasetID, u.t.TableID, rows, &u.conf)
+
+	return u.t.c.service.insertRows(ctx, u.t.ProjectID, u.t.DatasetID, u.t.TableID, rows, &insertRowsConf{
+		skipInvalidRows:     u.SkipInvalidRows,
+		ignoreUnknownValues: u.IgnoreUnknownValues,
+		templateSuffix:      u.TableTemplateSuffix,
+	})
 }
 
 // An insertionRow represents a row of data to be inserted into a table.

@@ -112,7 +112,7 @@ func TestIntegration(t *testing.T) {
 	}
 
 	// Populate the table.
-	upl := table.NewUploader()
+	upl := table.Uploader()
 	var rows []*ValuesSaver
 	for i, name := range []string{"a", "b", "c"} {
 		rows = append(rows, &ValuesSaver{
