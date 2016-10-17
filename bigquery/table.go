@@ -235,15 +235,10 @@ type TableMetadataToUpdate struct {
 	// TODO(jba): support updating the view
 }
 
-// NewUploader returns an *Uploader that can be used to append rows to t.
-func (t *Table) NewUploader(opts ...UploadOption) *Uploader {
-	uploader := &Uploader{t: t}
-
-	for _, o := range opts {
-		o.customizeInsertRows(&uploader.conf)
-	}
-
-	return uploader
+// Uploader returns an Uploader that can be used to append rows to t.
+// The returned Uploader may optionally be further configured before its Put method is called.
+func (t *Table) Uploader() *Uploader {
+	return &Uploader{t: t}
 }
 
 // LoadConfig holds the configuration for a load job.

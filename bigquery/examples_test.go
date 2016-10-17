@@ -195,13 +195,25 @@ func ExampleTable_Metadata() {
 	fmt.Println(md)
 }
 
-func ExampleTable_NewUploader() {
+func ExampleTable_Uploader() {
 	ctx := context.Background()
 	client, err := bigquery.NewClient(ctx, "project-id")
 	if err != nil {
 		// TODO: Handle error.
 	}
-	u := client.Dataset("my-dataset").Table("my-table").NewUploader()
+	u := client.Dataset("my-dataset").Table("my-table").Uploader()
+	_ = u // TODO: Use u.
+}
+
+func ExampleTable_Uploader_options() {
+	ctx := context.Background()
+	client, err := bigquery.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	u := client.Dataset("my-dataset").Table("my-table").Uploader()
+	u.SkipInvalidRows = true
+	u.IgnoreUnknownValues = true
 	_ = u // TODO: Use u.
 }
 
@@ -245,7 +257,7 @@ func ExampleUploader_Put() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	u := client.Dataset("my-dataset").Table("my-table").NewUploader()
+	u := client.Dataset("my-dataset").Table("my-table").Uploader()
 	// Item implements the ValueSaver interface.
 	items := []*Item{
 		{Name: "n1", Size: 32.6, Count: 7},
