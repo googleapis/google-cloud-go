@@ -20,6 +20,7 @@ import (
 	"strings"
 	"time"
 
+	"cloud.google.com/go/iam"
 	"golang.org/x/net/context"
 )
 
@@ -153,6 +154,10 @@ func (s *Subscription) ModifyPushConfig(ctx context.Context, conf *PushConfig) e
 	}
 
 	return s.s.modifyPushConfig(ctx, s.name, conf)
+}
+
+func (s *Subscription) IAM() *iam.Handle {
+	return s.s.iamHandle(s.name)
 }
 
 // A PullOption is an optional argument to Subscription.Pull.

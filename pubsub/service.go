@@ -19,6 +19,7 @@ import (
 	"math"
 	"time"
 
+	"cloud.google.com/go/iam"
 	vkit "cloud.google.com/go/pubsub/apiv1"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
@@ -61,6 +62,8 @@ type service interface {
 
 	// acknowledge ACKs the IDs in ackIDs.
 	acknowledge(ctx context.Context, subName string, ackIDs []string) error
+
+	iamHandle(resourceName string) *iam.Handle
 
 	close() error
 }
@@ -286,6 +289,10 @@ func (s *apiService) modifyPushConfig(ctx context.Context, subName string, conf 
 			PushEndpoint: conf.Endpoint,
 		},
 	})
+}
+
+func (s *apiService) iamHandle(resourceName string) *iam.Handle {
+	return iam.InternalNewHandle(s.pubc.Connection(), resourceName)
 }
 
 func trunc32(i int64) int32 {
