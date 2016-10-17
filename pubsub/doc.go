@@ -44,7 +44,7 @@ that is published to the topic will be delivered to all of its subscriptions.
 
 Subsciptions may be created like so:
 
- sub, err := pubsubClient.NewSubscription(context.Background(), "sub-name", topic, 0, nil)
+ sub, err := pubsubClient.CreateSubscription(context.Background(), "sub-name", topic, 0, nil)
 
 Messages are then consumed from a subscription via an iterator:
 
