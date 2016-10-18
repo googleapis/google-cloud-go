@@ -50,7 +50,7 @@ func (h *Handle) Policy(ctx context.Context) (*Policy, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Policy{proto: proto}, nil
+	return &Policy{InternalProto: proto}, nil
 }
 
 // SetPolicy replaces the resource's current policy with the supplied Policy.
@@ -60,7 +60,7 @@ func (h *Handle) Policy(ctx context.Context) (*Policy, error) {
 func (h *Handle) SetPolicy(ctx context.Context, policy *Policy) error {
 	_, err := h.c.SetIamPolicy(ctx, &pb.SetIamPolicyRequest{
 		Resource: h.resource,
-		Policy:   policy.proto,
+		Policy:   policy.InternalProto,
 	})
 	return err
 }
@@ -100,7 +100,12 @@ const (
 //
 // The zero Policy is a valid policy with no bindings.
 type Policy struct {
-	proto *pb.Policy
+	// TODO(jba): when type aliases are available, put Policy into an internal package
+	// and provide an exported alias here.
+
+	// This field is exported for use by the Google Cloud Libraries only.
+	// It may become unexported in a future release.
+	InternalProto *pb.Policy
 }
 
 // Members returns the list of members with the supplied role.
@@ -124,10 +129,10 @@ func (p *Policy) HasRole(member string, r RoleName) bool {
 func (p *Policy) Add(member string, r RoleName) {
 	b := p.binding(r)
 	if b == nil {
-		if p.proto == nil {
-			p.proto = &pb.Policy{}
+		if p.InternalProto == nil {
+			p.InternalProto = &pb.Policy{}
 		}
-		p.proto.Bindings = append(p.proto.Bindings, &pb.Binding{
+		p.InternalProto.Bindings = append(p.InternalProto.Bindings, &pb.Binding{
 			Role:    string(r),
 			Members: []string{member},
 		})
@@ -157,11 +162,11 @@ func (p *Policy) Remove(member string, r RoleName) {
 
 // Roles returns the names of all the roles that appear in the Policy.
 func (p *Policy) Roles() []RoleName {
-	if p.proto == nil {
+	if p.InternalProto == nil {
 		return nil
 	}
 	var rns []RoleName
-	for _, b := range p.proto.Bindings {
+	for _, b := range p.InternalProto.Bindings {
 		rns = append(rns, RoleName(b.Role))
 	}
 	return rns
@@ -169,10 +174,10 @@ func (p *Policy) Roles() []RoleName {
 
 // binding returns the Binding for the suppied role, or nil if there isn't one.
 func (p *Policy) binding(r RoleName) *pb.Binding {
-	if p.proto == nil {
+	if p.InternalProto == nil {
 		return nil
 	}
-	for _, b := range p.proto.Bindings {
+	for _, b := range p.InternalProto.Bindings {
 		if b.Role == string(r) {
 			return b
 		}
