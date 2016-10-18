@@ -193,7 +193,6 @@ func TestObjects(t *testing.T) {
 
 	// Test Writer.
 	for _, obj := range objects {
-		t.Logf("Writing %q", obj)
 		wc := bkt.Object(obj).NewWriter(ctx)
 		wc.ContentType = defaultType
 		c := randomContents()
@@ -210,7 +209,6 @@ func TestObjects(t *testing.T) {
 
 	// Test Reader.
 	for _, obj := range objects {
-		t.Logf("Creating a reader to read %v", obj)
 		rc, err := bkt.Object(obj).NewReader(ctx)
 		if err != nil {
 			t.Errorf("Can't create a reader for %v, errored with %v", obj, err)
@@ -273,7 +271,6 @@ func TestObjects(t *testing.T) {
 		{objlen / 2, -1, objlen / 2},
 		{0, objlen * 2, objlen},
 	} {
-		t.Logf("%d: bkt.Object(%v).NewRangeReader(ctx, %d, %d)", i, obj, r.offset, r.length)
 		rc, err := bkt.Object(obj).NewRangeReader(ctx, r.offset, r.length)
 		if err != nil {
 			t.Errorf("%d: Can't create a range reader for %v, errored with %v", i, obj, err)
@@ -637,7 +634,6 @@ func TestACL(t *testing.T) {
 	}
 	aclObjects := []string{"acl1", "acl2"}
 	for _, obj := range aclObjects {
-		t.Logf("Writing %v", obj)
 		wc := bkt.Object(obj).NewWriter(ctx)
 		c := randomContents()
 		if _, err := wc.Write(c); err != nil {

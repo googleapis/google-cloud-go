@@ -26,11 +26,9 @@ func TestPolicy(t *testing.T) {
 
 	add := func(member string, role RoleName) {
 		p.Add(member, role)
-		t.Logf("Add(%q, %s)", member, role)
 	}
 	remove := func(member string, role RoleName) {
 		p.Remove(member, role)
-		t.Logf("Remove(%q, %s)", member, role)
 	}
 
 	if msg, ok := checkMembers(p, Owner, nil); !ok {
