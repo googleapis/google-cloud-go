@@ -15,9 +15,6 @@
 package bigquery
 
 import (
-	"errors"
-	"fmt"
-
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 )
@@ -30,10 +27,9 @@ type pageFetcher interface {
 
 func newRowIterator(ctx context.Context, s service, pf pageFetcher) *RowIterator {
 	it := &RowIterator{
-		ctx:       ctx,
-		service:   s,
-		pf:        pf,
-		schemaErr: errors.New("called without preceding successful call to Next"),
+		ctx:     ctx,
+		service: s,
+		pf:      pf,
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
@@ -56,8 +52,7 @@ type RowIterator struct {
 
 	rows [][]Value
 
-	schema    Schema // populated on first call to fech
-	schemaErr error
+	schema Schema // populated on first call to fetch
 }
 
 // Next loads the next row into dst. Its return value is iterator.Done if there
@@ -69,19 +64,11 @@ func (it *RowIterator) Next(dst ValueLoader) error {
 	}
 	row := it.rows[0]
 	it.rows = it.rows[1:]
-	return dst.Load(row)
+	return dst.Load(row, it.schema)
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
 func (it *RowIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
-
-// Schema returns the schema of the result rows.
-func (it *RowIterator) Schema() (Schema, error) {
-	if it.schemaErr != nil {
-		return nil, fmt.Errorf("Schema %v", it.schemaErr)
-	}
-	return it.schema, nil
-}
 
 func (it *RowIterator) fetch(pageSize int, pageToken string) (string, error) {
 	pc := &pagingConf{}
@@ -102,11 +89,9 @@ func (it *RowIterator) fetch(pageSize int, pageToken string) (string, error) {
 		}
 	}
 	if err != nil {
-		it.schemaErr = err
 		return "", err
 	}
 	it.rows = append(it.rows, res.rows...)
 	it.schema = res.schema
-	it.schemaErr = nil
 	return res.pageToken, nil
 }

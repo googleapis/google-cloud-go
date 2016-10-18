@@ -16,7 +16,7 @@ backwards-incompatible changes.
 
 ## News
 
-_October 20, 2016_
+_October 19, 2016_
 
 Breaking changes to cloud.google.com/go/bigquery:
 
@@ -70,9 +70,10 @@ Breaking changes to cloud.google.com/go/bigquery:
     it, err := job.Read(ctx)
     ```
   and similarly for reading from tables or queries.
-  
+
 * The iterator returned from the Read methods is now named RowIterator. Its
-  behavior is closer to the other iterators in these libraries.
+  behavior is closer to the other iterators in these libraries. It no longer
+  supports the Schema method; see the next item.
     Replace
     ```go
     for it.Next(ctx) {
@@ -108,6 +109,17 @@ Breaking changes to cloud.google.com/go/bigquery:
     ```go
     it.StartIndex = i
     ```
+
+* ValueLoader.Load now takes a Schema in addition to a slice of Values.
+    Replace
+    ```go
+    func (vl *myValueLoader) Load(v []bigquery.Value)
+    ```
+    with
+    ```go
+    func (vl *myValueLoader) Load(v []bigquery.Value, s bigquery.Schema)
+    ```
+
 
 * Table.Patch is replace by Table.Update.
     Replace
@@ -179,67 +191,17 @@ Breaking changes to cloud.google.com/go/bigquery:
     query.Run(ctx)
     ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+* Table.NewUploader has been renamed to Table.Uploader. Instead of options,
+  configure an Uploader by setting its fields.
+    Replace
+    ```go
+    u := table.NewUploader(bigquery.UploadIgnoreUnknownValues())
+    ```
+    with
+    ```go
+    u := table.NewUploader(bigquery.UploadIgnoreUnknownValues())
+    u.IgnoreUnknownValues = true
+    ```
 
 
 _October 10, 2016_
