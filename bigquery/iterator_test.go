@@ -255,23 +255,32 @@ func TestIterator(t *testing.T) {
 	}
 }
 
+type valueListWithSchema struct {
+	vals   ValueList
+	schema Schema
+}
+
+func (v *valueListWithSchema) Load(vs []Value, s Schema) error {
+	v.vals.Load(vs, s)
+	v.schema = s
+	return nil
+}
+
 // consumeRowIterator reads the schema and all values from a RowIterator and returns them.
 func consumeRowIterator(it *RowIterator) ([]ValueList, Schema, error) {
 	var got []ValueList
 	var schema Schema
 	for {
-		var vals ValueList
-		err := it.Next(&vals)
+		var vls valueListWithSchema
+		err := it.Next(&vls)
 		if err == iterator.Done {
 			return got, schema, nil
 		}
 		if err != nil {
 			return got, schema, err
 		}
-		got = append(got, vals)
-		if schema, err = it.Schema(); err != nil {
-			return nil, Schema{}, err
-		}
+		got = append(got, vls.vals)
+		schema = vls.schema
 	}
 }
 
