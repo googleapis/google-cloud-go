@@ -115,8 +115,11 @@ type BucketAttrs struct {
 
 	// StorageClass is the storage class of the bucket. This defines
 	// how objects in the bucket are stored and determines the SLA
-	// and the cost of storage. Typical values are "STANDARD" and
-	// "DURABLE_REDUCED_AVAILABILITY". Defaults to "STANDARD".
+	// and the cost of storage. Typical values are "MULTI_REGIONAL",
+	// "REGIONAL", "NEARLINE", "COLDLINE", "STANDARD" and
+	// "DURABLE_REDUCED_AVAILABILITY". Defaults to "STANDARD", which 
+	// is equivalent to "MULTI_REGIONAL" or "REGIONAL" depending on 
+	// the bucket's location settings.
 	StorageClass string
 
 	// Created is the creation time of the bucket.
