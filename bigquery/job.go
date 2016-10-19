@@ -15,8 +15,6 @@
 package bigquery
 
 import (
-	"errors"
-
 	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 )
@@ -107,15 +105,4 @@ func (j *Job) Status(ctx context.Context) (*JobStatus, error) {
 // Cancelled jobs may still incur costs.
 func (j *Job) Cancel(ctx context.Context) error {
 	return j.service.jobCancel(ctx, j.projectID, j.jobID)
-}
-
-func (j *Job) customizeReadQuery(cursor *readQueryConf) error {
-	// There are mulitple kinds of jobs, but only a query job is suitable for reading.
-	if !j.isQuery {
-		return errors.New("Cannot read from a non-query job")
-	}
-
-	cursor.projectID = j.projectID
-	cursor.jobID = j.jobID
-	return nil
 }

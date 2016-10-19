@@ -63,19 +63,12 @@ func (c *Copier) Run(ctx context.Context) (*Job, error) {
 	conf := &bq.JobConfigurationTableCopy{
 		CreateDisposition: string(c.CreateDisposition),
 		WriteDisposition:  string(c.WriteDisposition),
+		DestinationTable:  c.Dst.tableRefProto(),
 	}
-	job := &bq.Job{
-		Configuration: &bq.JobConfiguration{
-			Copy: conf,
-		},
-	}
-
-	setJobRef(job, c.JobID, c.c.projectID)
-
-	conf.DestinationTable = c.Dst.tableRefProto()
 	for _, t := range c.Srcs {
 		conf.SourceTables = append(conf.SourceTables, t.tableRefProto())
 	}
-
+	job := &bq.Job{Configuration: &bq.JobConfiguration{Copy: conf}}
+	setJobRef(job, c.JobID, c.c.projectID)
 	return c.c.service.insertJob(ctx, job, c.c.projectID)
 }

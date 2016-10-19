@@ -104,7 +104,34 @@ type Query struct {
 	QueryConfig
 }
 
-func (q *QueryConfig) customizeQuerySrc(conf *bq.JobConfigurationQuery) {
+// Query creates a query with string q.
+// The returned Query may optionally be further configured before its Run method is called.
+func (c *Client) Query(q string) *Query {
+	return &Query{
+		client:      c,
+		QueryConfig: QueryConfig{Q: q},
+	}
+}
+
+// Run initiates a query job.
+func (q *Query) Run(ctx context.Context) (*Job, error) {
+	job := &bq.Job{
+		Configuration: &bq.JobConfiguration{
+			Query: &bq.JobConfigurationQuery{},
+		},
+	}
+	setJobRef(job, q.JobID, q.client.projectID)
+
+	q.QueryConfig.populateJobConfig(job.Configuration.Query)
+	j, err := q.client.service.insertJob(ctx, job, q.client.projectID)
+	if err != nil {
+		return nil, err
+	}
+	j.isQuery = true
+	return j, nil
+}
+
+func (q *QueryConfig) populateJobConfig(conf *bq.JobConfigurationQuery) {
 	conf.Query = q.Q
 
 	if len(q.TableDefinitions) > 0 {
@@ -146,34 +173,7 @@ func (q *QueryConfig) customizeQuerySrc(conf *bq.JobConfigurationQuery) {
 		conf.ForceSendFields = append(conf.ForceSendFields, "UseLegacySql")
 	}
 
-	if q.Dst != nil {
-		q.Dst.customizeQueryDst(conf)
+	if q.Dst != nil && !q.Dst.implicitTable() {
+		conf.DestinationTable = q.Dst.tableRefProto()
 	}
-}
-
-// Query creates a query with string q.
-// The returned Query may optionally be further configured before its Run method is called.
-func (c *Client) Query(q string) *Query {
-	return &Query{
-		client:      c,
-		QueryConfig: QueryConfig{Q: q},
-	}
-}
-
-// Run initiates a query job.
-func (q *Query) Run(ctx context.Context) (*Job, error) {
-	job := &bq.Job{
-		Configuration: &bq.JobConfiguration{
-			Query: &bq.JobConfigurationQuery{},
-		},
-	}
-	setJobRef(job, q.JobID, q.client.projectID)
-
-	q.QueryConfig.customizeQuerySrc(job.Configuration.Query)
-	j, err := q.client.service.insertJob(ctx, job, q.client.projectID)
-	if err != nil {
-		return nil, err
-	}
-	j.isQuery = true
-	return j, nil
 }
