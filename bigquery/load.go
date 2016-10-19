@@ -59,18 +59,32 @@ func (t *Table) LoaderFrom(src *GCSReference) *Loader {
 
 // Run initiates a load job.
 func (l *Loader) Run(ctx context.Context) (*Job, error) {
+	conf := &bq.JobConfigurationLoad{
+		CreateDisposition: string(l.CreateDisposition),
+		WriteDisposition:  string(l.WriteDisposition),
+	}
 	job := &bq.Job{
 		Configuration: &bq.JobConfiguration{
-			Load: &bq.JobConfigurationLoad{
-				CreateDisposition: string(l.CreateDisposition),
-				WriteDisposition:  string(l.WriteDisposition),
-			},
+			Load: conf,
 		},
 	}
 	setJobRef(job, l.JobID, l.c.projectID)
 
-	l.Src.customizeLoadSrc(job.Configuration.Load)
-	l.Dst.customizeLoadDst(job.Configuration.Load)
+	conf.SourceUris = l.Src.uris
+	conf.SkipLeadingRows = l.Src.SkipLeadingRows
+	conf.SourceFormat = string(l.Src.SourceFormat)
+	conf.AllowJaggedRows = l.Src.AllowJaggedRows
+	conf.AllowQuotedNewlines = l.Src.AllowQuotedNewlines
+	conf.Encoding = string(l.Src.Encoding)
+	conf.FieldDelimiter = l.Src.FieldDelimiter
+	conf.IgnoreUnknownValues = l.Src.IgnoreUnknownValues
+	conf.MaxBadRecords = l.Src.MaxBadRecords
+	if l.Src.Schema != nil {
+		conf.Schema = l.Src.Schema.asTableSchema()
+	}
+	conf.Quote = l.Src.quote()
+
+	conf.DestinationTable = l.Dst.tableRefProto()
 
 	return l.c.service.insertJob(ctx, job, l.c.projectID)
 }

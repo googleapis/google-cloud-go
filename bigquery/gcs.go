@@ -107,23 +107,6 @@ const (
 	Gzip Compression = "GZIP"
 )
 
-func (gcs *GCSReference) customizeLoadSrc(conf *bq.JobConfigurationLoad) {
-	conf.SourceUris = gcs.uris
-	conf.SkipLeadingRows = gcs.SkipLeadingRows
-	conf.SourceFormat = string(gcs.SourceFormat)
-	conf.AllowJaggedRows = gcs.AllowJaggedRows
-	conf.AllowQuotedNewlines = gcs.AllowQuotedNewlines
-	conf.Encoding = string(gcs.Encoding)
-	conf.FieldDelimiter = gcs.FieldDelimiter
-	conf.IgnoreUnknownValues = gcs.IgnoreUnknownValues
-	conf.MaxBadRecords = gcs.MaxBadRecords
-	if gcs.Schema != nil {
-		conf.Schema = gcs.Schema.asTableSchema()
-	}
-
-	conf.Quote = gcs.quote()
-}
-
 // quote returns the CSV quote character, or nil if unset.
 func (gcs *GCSReference) quote() *string {
 	if !gcs.ForceZeroQuote && gcs.Quote == "" {
@@ -134,13 +117,6 @@ func (gcs *GCSReference) quote() *string {
 		quote = gcs.Quote
 	}
 	return &quote
-}
-
-func (gcs *GCSReference) customizeExtractDst(conf *bq.JobConfigurationExtract) {
-	conf.DestinationUris = append([]string{}, gcs.uris...)
-	conf.Compression = string(gcs.Compression)
-	conf.DestinationFormat = string(gcs.DestinationFormat)
-	conf.FieldDelimiter = gcs.FieldDelimiter
 }
 
 func (gcs *GCSReference) externalDataConfig() bq.ExternalDataConfiguration {

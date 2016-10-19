@@ -55,20 +55,21 @@ func (t *Table) ExtractorTo(dst *GCSReference) *Extractor {
 
 // Run initiates an extract job.
 func (e *Extractor) Run(ctx context.Context) (*Job, error) {
-	job := &bq.Job{
-		Configuration: &bq.JobConfiguration{
-			Extract: &bq.JobConfigurationExtract{},
-		},
-	}
+	conf := &bq.JobConfigurationExtract{}
+	job := &bq.Job{Configuration: &bq.JobConfiguration{Extract: conf}}
 
 	setJobRef(job, e.JobID, e.c.projectID)
 
-	e.Dst.customizeExtractDst(job.Configuration.Extract)
-	e.Src.customizeExtractSrc(job.Configuration.Extract)
+	conf.DestinationUris = append([]string{}, e.Dst.uris...)
+	conf.Compression = string(e.Dst.Compression)
+	conf.DestinationFormat = string(e.Dst.DestinationFormat)
+	conf.FieldDelimiter = e.Dst.FieldDelimiter
+
+	conf.SourceTable = e.Src.tableRefProto()
 
 	if e.DisableHeader {
 		f := false
-		job.Configuration.Extract.PrintHeader = &f
+		conf.PrintHeader = &f
 	}
 
 	return e.c.service.insertJob(ctx, job, e.c.projectID)

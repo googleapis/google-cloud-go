@@ -118,30 +118,6 @@ func (t *Table) implicitTable() bool {
 	return t.ProjectID == "" && t.DatasetID == "" && t.TableID == ""
 }
 
-func (t *Table) customizeLoadDst(conf *bq.JobConfigurationLoad) {
-	conf.DestinationTable = t.tableRefProto()
-}
-
-func (t *Table) customizeExtractSrc(conf *bq.JobConfigurationExtract) {
-	conf.SourceTable = t.tableRefProto()
-}
-
-func (t *Table) customizeCopyDst(conf *bq.JobConfigurationTableCopy) {
-	conf.DestinationTable = t.tableRefProto()
-}
-
-func (t *Table) customizeQueryDst(conf *bq.JobConfigurationQuery) {
-	if !t.implicitTable() {
-		conf.DestinationTable = t.tableRefProto()
-	}
-}
-
-func (t *Table) customizeReadSrc(cursor *readTableConf) {
-	cursor.projectID = t.ProjectID
-	cursor.datasetID = t.DatasetID
-	cursor.tableID = t.TableID
-}
-
 // Create creates a table in the BigQuery service.
 func (t *Table) Create(ctx context.Context, options ...CreateTableOption) error {
 	conf := &createTableConf{

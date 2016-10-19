@@ -14,7 +14,11 @@
 
 package bigquery
 
-import "golang.org/x/net/context"
+import (
+	"errors"
+
+	"golang.org/x/net/context"
+)
 
 func (conf *readTableConf) fetch(ctx context.Context, s service, token string) (*readDataResult, error) {
 	return s.readTabledata(ctx, conf, token)
@@ -24,9 +28,11 @@ func (conf *readTableConf) setPaging(pc *pagingConf) { conf.paging = *pc }
 
 // Read fetches the contents of the table.
 func (t *Table) Read(ctx context.Context) *RowIterator {
-	conf := &readTableConf{}
-	t.customizeReadSrc(conf)
-	return newRowIterator(ctx, t.c.service, conf)
+	return newRowIterator(ctx, t.c.service, &readTableConf{
+		projectID: t.ProjectID,
+		datasetID: t.DatasetID,
+		tableID:   t.TableID,
+	})
 }
 
 func (conf *readQueryConf) fetch(ctx context.Context, s service, token string) (*readDataResult, error) {
@@ -38,11 +44,13 @@ func (conf *readQueryConf) setPaging(pc *pagingConf) { conf.paging = *pc }
 // Read fetches the results of a query job.
 // If j is not a query job, Read returns an error.
 func (j *Job) Read(ctx context.Context) (*RowIterator, error) {
-	conf := &readQueryConf{}
-	if err := j.customizeReadQuery(conf); err != nil {
-		return nil, err
+	if !j.isQuery {
+		return nil, errors.New("Cannot read from a non-query job")
 	}
-	return newRowIterator(ctx, j.service, conf), nil
+	return newRowIterator(ctx, j.service, &readQueryConf{
+		projectID: j.projectID,
+		jobID:     j.jobID,
+	}), nil
 }
 
 // Read submits a query for execution and returns the results via a RowIterator.
