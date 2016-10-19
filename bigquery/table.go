@@ -63,9 +63,6 @@ type TableMetadata struct {
 	NumRows uint64
 }
 
-// Tables is a group of tables. The tables may belong to differing projects or datasets.
-type Tables []*Table
-
 // CreateDisposition specifies the circumstances under which destination table will be created.
 // Default is CreateIfNeeded.
 type TableCreateDisposition string
@@ -131,12 +128,6 @@ func (t *Table) customizeExtractSrc(conf *bq.JobConfigurationExtract) {
 
 func (t *Table) customizeCopyDst(conf *bq.JobConfigurationTableCopy) {
 	conf.DestinationTable = t.tableRefProto()
-}
-
-func (ts Tables) customizeCopySrc(conf *bq.JobConfigurationTableCopy) {
-	for _, t := range ts {
-		conf.SourceTables = append(conf.SourceTables, t.tableRefProto())
-	}
 }
 
 func (t *Table) customizeQueryDst(conf *bq.JobConfigurationQuery) {
