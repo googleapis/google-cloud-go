@@ -26,6 +26,20 @@ type Dataset struct {
 	c         *Client
 }
 
+// Dataset creates a handle to a BigQuery dataset in the client's project.
+func (c *Client) Dataset(id string) *Dataset {
+	return c.DatasetInProject(c.projectID, id)
+}
+
+// DatasetInProject creates a handle to a BigQuery dataset in the specified project.
+func (c *Client) DatasetInProject(projectID, datasetID string) *Dataset {
+	return &Dataset{
+		projectID: projectID,
+		id:        datasetID,
+		c:         c,
+	}
+}
+
 // Create creates a dataset in the BigQuery service. An error will be returned
 // if the dataset already exists.
 func (d *Dataset) Create(ctx context.Context) error {

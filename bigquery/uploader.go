@@ -50,6 +50,12 @@ type Uploader struct {
 	TableTemplateSuffix string
 }
 
+// Uploader returns an Uploader that can be used to append rows to t.
+// The returned Uploader may optionally be further configured before its Put method is called.
+func (t *Table) Uploader() *Uploader {
+	return &Uploader{t: t}
+}
+
 // Put uploads one or more rows to the BigQuery service.  src must implement ValueSaver or be a slice of ValueSavers.
 // Put returns a PutMultiError if one or more rows failed to be uploaded.
 // The PutMultiError contains a RowInsertionError for each failed row.
