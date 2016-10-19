@@ -74,17 +74,3 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 func (c *Client) Close() error {
 	return nil
 }
-
-// Dataset creates a handle to a BigQuery dataset in the client's project.
-func (c *Client) Dataset(id string) *Dataset {
-	return c.DatasetInProject(c.projectID, id)
-}
-
-// DatasetInProject creates a handle to a BigQuery dataset in the specified project.
-func (c *Client) DatasetInProject(projectID, datasetID string) *Dataset {
-	return &Dataset{
-		projectID: projectID,
-		id:        datasetID,
-		c:         c,
-	}
-}

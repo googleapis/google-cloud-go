@@ -177,13 +177,3 @@ func (q *Query) Run(ctx context.Context) (*Job, error) {
 	j.isQuery = true
 	return j, nil
 }
-
-// Read submits a query for execution and returns the results via a RowIterator.
-// It is a shorthand for Query.Run followed by Job.Read.
-func (q *Query) Read(ctx context.Context) (*RowIterator, error) {
-	job, err := q.Run(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return job.Read(ctx)
-}
