@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// +build linux
+
 package main
 
 import (
@@ -26,7 +28,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/cmd/go-cloud-debug-agent/internal/breakpoints"
-	"cloud.google.com/go/cmd/go-cloud-debug-agent/internal/controller"
+	debuglet "cloud.google.com/go/cmd/go-cloud-debug-agent/internal/controller"
 	"cloud.google.com/go/cmd/go-cloud-debug-agent/internal/valuecollector"
 	"cloud.google.com/go/compute/metadata"
 	"golang.org/x/debug"
