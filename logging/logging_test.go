@@ -153,7 +153,7 @@ func TestLogSync(t *testing.T) {
 	lg := client.Logger(testLogID)
 	defer func() {
 		if ok := deleteLog(ctx, testLogID); !ok {
-			t.Skip("timed out")
+			t.Fatal("timed out")
 		}
 	}()
 	err := lg.LogSync(ctx, logging.Entry{Payload: "hello"})
@@ -179,12 +179,12 @@ func TestLogSync(t *testing.T) {
 	ok := waitFor(func() bool {
 		got, err = allTestLogEntries(ctx)
 		if err != nil {
-			return false
+			t.Fatalf("fetching log entries: %v", err)
 		}
 		return len(got) >= len(want)
 	})
 	if !ok {
-		t.Skip("timed out")
+		t.Fatal("timed out")
 	}
 	if msg, ok := compareEntries(got, want); !ok {
 		t.Error(msg)
@@ -198,7 +198,7 @@ func TestLogAndEntries(t *testing.T) {
 	lg := client.Logger(testLogID)
 	defer func() {
 		if ok := deleteLog(ctx, testLogID); !ok {
-			t.Skip("timed out")
+			t.Fatal("timed out")
 		}
 	}()
 	for _, p := range payloads {
@@ -215,12 +215,12 @@ func TestLogAndEntries(t *testing.T) {
 		var err error
 		got, err = allTestLogEntries(ctx)
 		if err != nil {
-			return false
+			t.Fatalf("fetching log entries: %v", err)
 		}
 		return len(got) >= len(want)
 	})
 	if !ok {
-		t.Skip("timed out")
+		t.Fatal("timed out")
 	}
 	if msg, ok := compareEntries(got, want); !ok {
 		t.Error(msg)
@@ -294,7 +294,7 @@ func TestStandardLogger(t *testing.T) {
 	lg := client.Logger(testLogID)
 	defer func() {
 		if ok := deleteLog(ctx, testLogID); !ok {
-			t.Skip("timed out")
+			t.Fatal("timed out")
 		}
 	}()
 	slg := lg.StandardLogger(logging.Info)
@@ -313,12 +313,12 @@ func TestStandardLogger(t *testing.T) {
 		var err error
 		got, err = allTestLogEntries(ctx)
 		if err != nil {
-			return false
+			t.Fatalf("fetching log entries: %v", err)
 		}
 		return len(got) >= 1
 	})
 	if !ok {
-		t.Skip("timed out")
+		t.Fatal("timed out")
 	}
 	if len(got) != 1 {
 		t.Fatalf("expected non-nil request with one entry; got:\n%+v", got)
@@ -427,7 +427,11 @@ func TestPing(t *testing.T) {
 // deleteLog is used to clean up a log after a test that writes to it.
 // deleteLog returns false if it times out.
 func deleteLog(ctx context.Context, logID string) bool {
-	aclient.DeleteLog(ctx, logID)
+	err := aclient.DeleteLog(ctx, logID)
+	if err != nil {
+		log.Fatalf("error deleting log: %v", err)
+	}
+
 	// DeleteLog can take some time to happen, so we wait for the log to
 	// disappear. There is no direct way to determine if a log exists, so we
 	// just wait until there are no log entries associated with the ID.
