@@ -19,17 +19,13 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
-var defaultTable = &Table{
-	ProjectID: "project-id",
-	DatasetID: "dataset-id",
-	TableID:   "table-id",
+func defaultGCS() *GCSReference {
+	return &GCSReference{
+		uris: []string{"uri"},
+	}
 }
 
-var defaultGCS = &GCSReference{
-	uris: []string{"uri"},
-}
-
-var defaultQuery = &Query{
+var defaultQuery = &QueryConfig{
 	Q:                "query string",
 	DefaultProjectID: "def-project-id",
 	DefaultDatasetID: "def-dataset-id",

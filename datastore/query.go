@@ -25,7 +25,8 @@ import (
 
 	wrapperspb "github.com/golang/protobuf/ptypes/wrappers"
 	"golang.org/x/net/context"
-	pb "google.golang.org/cloud/datastore/internal/proto"
+	"google.golang.org/api/iterator"
+	pb "google.golang.org/genproto/googleapis/datastore/v1"
 )
 
 type operator int
@@ -391,9 +392,16 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 		if t.id == nil {
 			return errExpiredTransaction
 		}
+		if q.eventual {
+			return errors.New("datastore: cannot use EventualConsistency query in a transaction")
+		}
 		req.ReadOptions = &pb.ReadOptions{
 			ConsistencyType: &pb.ReadOptions_Transaction{t.id},
 		}
+	}
+
+	if q.eventual {
+		req.ReadOptions = &pb.ReadOptions{&pb.ReadOptions_ReadConsistency_{pb.ReadOptions_EVENTUAL}}
 	}
 
 	req.QueryType = &pb.RunQueryRequest_Query{dst}
@@ -577,7 +585,7 @@ type Iterator struct {
 }
 
 // Done is returned when a query iteration has completed.
-var Done = errors.New("datastore: query has no more results")
+var Done = iterator.Done
 
 // Next returns the key of the next result. When there are no more results,
 // Done is returned as the error.

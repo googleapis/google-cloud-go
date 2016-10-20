@@ -30,14 +30,20 @@ import (
 	"sync/atomic"
 	"time"
 
+	"cloud.google.com/go/bigtable"
+	"cloud.google.com/go/bigtable/internal/cbtrc"
+	"cloud.google.com/go/bigtable/internal/stat"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud/bigtable"
-	"google.golang.org/cloud/bigtable/internal/cbtrc"
+	"google.golang.org/api/option"
 )
 
 var (
 	runFor       = flag.Duration("run_for", 5*time.Second, "how long to run the load test for")
 	scratchTable = flag.String("scratch_table", "loadtest-scratch", "name of table to use; should not already exist")
+	csvOutput    = flag.String("csv_output", "",
+		"output path for statistics in .csv format. If this file already exists it will be overwritten.")
+	poolSize = flag.Int("pool_size", 1, "size of the gRPC connection pool to use for the data client")
+	reqCount = flag.Int("req_count", 100, "number of concurrent requests")
 
 	config      *cbtrc.Config
 	client      *bigtable.Client
@@ -64,13 +70,28 @@ func main() {
 		os.Exit(1)
 	}
 
+	var options []option.ClientOption
+	if *poolSize > 1 {
+		options = append(options, option.WithGRPCConnectionPool(*poolSize))
+	}
+
+	var csvFile *os.File
+	if *csvOutput != "" {
+		csvFile, err = os.Create(*csvOutput)
+		if err != nil {
+			log.Fatalf("creating csv output file: %v", err)
+		}
+		defer csvFile.Close()
+		log.Printf("Writing statistics to %q ...", *csvOutput)
+	}
+
 	log.Printf("Dialing connections...")
-	client, err = bigtable.NewClient(context.Background(), config.Project, config.Zone, config.Cluster)
+	client, err = bigtable.NewClient(context.Background(), config.Project, config.Instance, options...)
 	if err != nil {
 		log.Fatalf("Making bigtable.Client: %v", err)
 	}
 	defer client.Close()
-	adminClient, err = bigtable.NewAdminClient(context.Background(), config.Project, config.Zone, config.Cluster)
+	adminClient, err = bigtable.NewAdminClient(context.Background(), config.Project, config.Instance)
 	if err != nil {
 		log.Fatalf("Making bigtable.AdminClient: %v", err)
 	}
@@ -89,7 +110,7 @@ func main() {
 
 	log.Printf("Starting load test... (run for %v)", *runFor)
 	tbl := client.Open(*scratchTable)
-	sem := make(chan int, 100) // limit the number of requests happening at once
+	sem := make(chan int, *reqCount) // limit the number of requests happening at once
 	var reads, writes stats
 	stopTime := time.Now().Add(*runFor)
 	var wg sync.WaitGroup
@@ -132,8 +153,14 @@ func main() {
 	}
 	wg.Wait()
 
-	log.Printf("Reads (%d ok / %d tries):\n%v", reads.ok, reads.tries, newAggregate(reads.ds))
-	log.Printf("Writes (%d ok / %d tries):\n%v", writes.ok, writes.tries, newAggregate(writes.ds))
+	readsAgg := stat.NewAggregate("reads", reads.ds, reads.tries-reads.ok)
+	writesAgg := stat.NewAggregate("writes", writes.ds, writes.tries-writes.ok)
+	log.Printf("Reads (%d ok / %d tries):\n%v", reads.ok, reads.tries, readsAgg)
+	log.Printf("Writes (%d ok / %d tries):\n%v", writes.ok, writes.tries, writesAgg)
+
+	if csvFile != nil {
+		stat.WriteCSV([]*stat.Aggregate{readsAgg, writesAgg}, csvFile)
+	}
 }
 
 var allStats int64 // atomic

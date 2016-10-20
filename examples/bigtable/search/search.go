@@ -14,15 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// This is a sample web server that uses Cloud Bigtable as the storage layer
+// Search is a sample web server that uses Cloud Bigtable as the storage layer
 // for a simple document-storage and full-text-search service.
-// It has three functions:
+// It has four functions:
+// - Initialize and clear the table.
 // - Add a document.  This adds the content of a user-supplied document to the
 //   Bigtable, and adds references to the document to an index in the Bigtable.
 //   The document is indexed under each unique word in the document.
 // - Search the index.  This returns documents containing each word in a user
 //   query, with snippets and links to view the whole document.
-// - Clear the table.  This deletes and recreates the Bigtable,
+// - Copy table.  This copies the documents and index from another table and
+//   adds them to the current one.
 package main
 
 import (
@@ -33,28 +35,17 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 	"unicode"
 
+	"cloud.google.com/go/bigtable"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud/bigtable"
 )
 
 var (
-	project   = flag.String("project", "", "The name of the project.")
-	zone      = flag.String("zone", "", "The zone of the project.")
-	cluster   = flag.String("cluster", "", "The name of the Cloud Bigtable cluster.")
-	tableName = flag.String("table", "docindex", "The name of the table containing the documents and index.")
-	credFile  = flag.String("creds", "", "File containing credentials")
-	rebuild   = flag.Bool("rebuild", false, "Rebuild the table from scratch on startup.")
-
-	client      *bigtable.Client
-	adminClient *bigtable.AdminClient
-	table       *bigtable.Table
-
 	addTemplate = template.Must(template.New("").Parse(`<html><body>
 Added {{.Title}}
 </body></html>`))
@@ -74,9 +65,6 @@ Results for <b>{{.Query}}</b>:<br><br>
 )
 
 const (
-	// prototypeTableName is an existing table containing some documents.
-	// Rebuilding a table will populate it with the data from this table.
-	prototypeTableName  = "shakespearetemplate"
 	indexColumnFamily   = "i"
 	contentColumnFamily = "c"
 	mainPage            = `
@@ -85,6 +73,11 @@ const (
 			<title>Document Search</title>
 		</head>
 		<body>
+			Initialize and clear table:
+			<form action="/reset" method="post">
+				<div><input type="submit" value="Init"></div>
+			</form>
+
 			Search for documents:
 			<form action="/search" method="post">
 				<div><input type="text" name="q" size=80></div>
@@ -100,9 +93,11 @@ const (
 				<div><input type="submit" value="Submit"></div>
 			</form>
 
-			Rebuild table:
-			<form action="/clearindex" method="post">
-				<div><input type="submit" value="Rebuild"></div>
+			Copy data from another table:
+			<form action="/copy" method="post">
+				Source table name:
+				<div><input type="text" name="name" size=80></div>
+				<div><input type="submit" value="Copy"></div>
 			</form>
 		</body>
 	</html>
@@ -110,47 +105,40 @@ const (
 )
 
 func main() {
+	var (
+		project   = flag.String("project", "", "The name of the project.")
+		instance  = flag.String("instance", "", "The name of the Cloud Bigtable instance.")
+		tableName = flag.String("table", "docindex", "The name of the table containing the documents and index.")
+		port      = flag.Int("port", 8080, "TCP port for server.")
+	)
 	flag.Parse()
 
-	if *tableName == prototypeTableName {
-		log.Fatal("Can't use " + prototypeTableName + " as your table.")
-	}
-
-	// Let the library get credentials from file.
-	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", *credFile)
-
 	// Make an admin client.
-	var err error
-	if adminClient, err = bigtable.NewAdminClient(context.Background(), *project, *zone, *cluster); err != nil {
+	adminClient, err := bigtable.NewAdminClient(context.Background(), *project, *instance)
+	if err != nil {
 		log.Fatal("Bigtable NewAdminClient:", err)
 	}
 
 	// Make a regular client.
-	client, err = bigtable.NewClient(context.Background(), *project, *zone, *cluster)
+	client, err := bigtable.NewClient(context.Background(), *project, *instance)
 	if err != nil {
 		log.Fatal("Bigtable NewClient:", err)
 	}
 
 	// Open the table.
-	table = client.Open(*tableName)
-
-	// Rebuild the table if the command-line flag is set.
-	if *rebuild {
-		if err := rebuildTable(); err != nil {
-			log.Fatal(err)
-		}
-	}
+	table := client.Open(*tableName)
 
 	// Set up HTML handlers, and start the web server.
-	http.HandleFunc("/search", handleSearch)
-	http.HandleFunc("/content", handleContent)
-	http.HandleFunc("/add", handleAddDoc)
-	http.HandleFunc("/clearindex", handleClear)
+	http.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) { handleSearch(w, r, table) })
+	http.HandleFunc("/content", func(w http.ResponseWriter, r *http.Request) { handleContent(w, r, table) })
+	http.HandleFunc("/add", func(w http.ResponseWriter, r *http.Request) { handleAddDoc(w, r, table) })
+	http.HandleFunc("/reset", func(w http.ResponseWriter, r *http.Request) { handleReset(w, r, *tableName, adminClient) })
+	http.HandleFunc("/copy", func(w http.ResponseWriter, r *http.Request) { handleCopy(w, r, *tableName, client, adminClient) })
 	http.HandleFunc("/", handleMain)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(*port), nil))
 }
 
-// handleMain outputs the home page, containing a search box, an "add document" box, and "clear table" button.
+// handleMain outputs the home page.
 func handleMain(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, mainPage)
 }
@@ -172,7 +160,7 @@ func tokenize(s string) []string {
 }
 
 // handleContent fetches the content of a document from the Bigtable and returns it.
-func handleContent(w http.ResponseWriter, r *http.Request) {
+func handleContent(w http.ResponseWriter, r *http.Request, table *bigtable.Table) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	name := r.FormValue("name")
 	if len(name) == 0 {
@@ -199,7 +187,7 @@ func handleContent(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleSearch responds to search queries, returning links and snippets for matching documents.
-func handleSearch(w http.ResponseWriter, r *http.Request) {
+func handleSearch(w http.ResponseWriter, r *http.Request, table *bigtable.Table) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	query := r.FormValue("q")
 	// Split the query into words.
@@ -218,7 +206,7 @@ func handleSearch(w http.ResponseWriter, r *http.Request) {
 			wg.Add(1)
 			go func(i int, row string) {
 				defer wg.Done()
-				results[i], errors[i] = table.ReadRow(ctx, row)
+				results[i], errors[i] = table.ReadRow(ctx, row, bigtable.RowFilter(bigtable.LatestNFilter(1)))
 			}(i, row)
 		}
 		wg.Wait()
@@ -287,7 +275,7 @@ func handleSearch(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleAddDoc adds a document to the index.
-func handleAddDoc(w http.ResponseWriter, r *http.Request) {
+func handleAddDoc(w http.ResponseWriter, r *http.Request, table *bigtable.Table) {
 	if r.Method != "POST" {
 		http.Error(w, "POST requests only", http.StatusMethodNotAllowed)
 		return
@@ -363,23 +351,44 @@ func handleAddDoc(w http.ResponseWriter, r *http.Request) {
 	io.Copy(w, &buf)
 }
 
-// rebuildTable deletes the table if it exists, then creates the table, with the index column family.
-func rebuildTable() error {
+// handleReset deletes the table if it exists, creates it again, and creates its column families.
+func handleReset(w http.ResponseWriter, r *http.Request, table string, adminClient *bigtable.AdminClient) {
+	if r.Method != "POST" {
+		http.Error(w, "POST requests only", http.StatusMethodNotAllowed)
+		return
+	}
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Minute)
-	adminClient.DeleteTable(ctx, *tableName)
-	if err := adminClient.CreateTable(ctx, *tableName); err != nil {
-		return fmt.Errorf("CreateTable: %v", err)
+	adminClient.DeleteTable(ctx, table)
+	if err := adminClient.CreateTable(ctx, table); err != nil {
+		http.Error(w, "Error creating Bigtable: "+err.Error(), http.StatusInternalServerError)
+		return
 	}
 	time.Sleep(20 * time.Second)
-	if err := adminClient.CreateColumnFamily(ctx, *tableName, indexColumnFamily); err != nil {
-		return fmt.Errorf("CreateColumnFamily: %v", err)
+	// Create two column families, and set the GC policy for each one to keep one version.
+	for _, family := range []string{indexColumnFamily, contentColumnFamily} {
+		if err := adminClient.CreateColumnFamily(ctx, table, family); err != nil {
+			http.Error(w, "Error creating column family: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if err := adminClient.SetGCPolicy(ctx, table, family, bigtable.MaxVersionsPolicy(1)); err != nil {
+			http.Error(w, "Error setting GC policy: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
-	if err := adminClient.CreateColumnFamily(ctx, *tableName, contentColumnFamily); err != nil {
-		return fmt.Errorf("CreateColumnFamily: %v", err)
-	}
+	w.Write([]byte("<html><body>Done.</body></html>"))
+	return
+}
 
-	// Open the prototype table.  It contains a number of documents to get started with.
-	prototypeTable := client.Open(prototypeTableName)
+// copyTable copies data from one table to another.
+func copyTable(src, dst string, client *bigtable.Client, adminClient *bigtable.AdminClient) error {
+	if src == "" || src == dst {
+		return nil
+	}
+	ctx, _ := context.WithTimeout(context.Background(), time.Minute)
+
+	// Open the source and destination tables.
+	srcTable := client.Open(src)
+	dstTable := client.Open(dst)
 
 	var (
 		writeErr error          // Set if any write fails.
@@ -404,7 +413,7 @@ func rebuildTable() error {
 		wg.Add(1)
 		go func() {
 			// TODO: should use a semaphore to limit the number of concurrent writes.
-			if err := table.Apply(ctx, row.Key(), mut); err != nil {
+			if err := dstTable.Apply(ctx, row.Key(), mut); err != nil {
 				mu.Lock()
 				writeErr = err
 				mu.Unlock()
@@ -416,8 +425,8 @@ func rebuildTable() error {
 
 	// Create a filter that only accepts the column families we're interested in.
 	filter := bigtable.FamilyFilter(indexColumnFamily + "|" + contentColumnFamily)
-	// Read every row from prototypeTable, and call copyRowToTable to copy it to our table.
-	err := prototypeTable.ReadRows(ctx, bigtable.InfiniteRange(""), copyRowToTable, bigtable.RowFilter(filter))
+	// Read every row from srcTable, and call copyRowToTable to copy it to our table.
+	err := srcTable.ReadRows(ctx, bigtable.InfiniteRange(""), copyRowToTable, bigtable.RowFilter(filter))
 	wg.Wait()
 	if err != nil {
 		return err
@@ -425,15 +434,20 @@ func rebuildTable() error {
 	return writeErr
 }
 
-// handleClear calls rebuildTable
-func handleClear(w http.ResponseWriter, r *http.Request) {
+// handleCopy copies data from one table to another.
+func handleCopy(w http.ResponseWriter, r *http.Request, dst string, client *bigtable.Client, adminClient *bigtable.AdminClient) {
 	if r.Method != "POST" {
 		http.Error(w, "POST requests only", http.StatusMethodNotAllowed)
 		return
 	}
-	if err := rebuildTable(); err != nil {
+	src := r.FormValue("name")
+	if src == "" {
+		http.Error(w, "No source table specified.", http.StatusBadRequest)
+		return
+	}
+	if err := copyTable(src, dst, client, adminClient); err != nil {
 		http.Error(w, "Failed to rebuild index: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Fprint(w, "Rebuilt index.\n")
+	fmt.Fprint(w, "Copied table.\n")
 }

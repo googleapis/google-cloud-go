@@ -24,8 +24,9 @@ import (
 
 	"golang.org/x/net/context"
 
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/internal/testutil"
+	"cloud.google.com/go/internal/testutil"
+	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 )
 
 const timeout = time.Minute * 10
@@ -50,10 +51,10 @@ func (mc *messageCounter) Inc(msgID string) {
 }
 
 // process pulls messages from an iterator and records them in mc.
-func process(t *testing.T, it *Iterator, mc *messageCounter) {
+func process(t *testing.T, it *MessageIterator, mc *messageCounter) {
 	for {
 		m, err := it.Next()
-		if err == Done {
+		if err == iterator.Done {
 			return
 		}
 
@@ -72,8 +73,8 @@ func process(t *testing.T, it *Iterator, mc *messageCounter) {
 	}
 }
 
-// newIter constructs a new Iterator.
-func newIter(t *testing.T, ctx context.Context, sub *Subscription) *Iterator {
+// newIter constructs a new MessageIterator.
+func newIter(t *testing.T, ctx context.Context, sub *Subscription) *MessageIterator {
 	it, err := sub.Pull(ctx)
 	if err != nil {
 		t.Fatalf("error constructing iterator: %v", err)
@@ -81,8 +82,8 @@ func newIter(t *testing.T, ctx context.Context, sub *Subscription) *Iterator {
 	return it
 }
 
-// launchIter launches a number of goroutines to pull from the supplied Iterator.
-func launchIter(t *testing.T, ctx context.Context, it *Iterator, mc *messageCounter, n int, wg *sync.WaitGroup) {
+// launchIter launches a number of goroutines to pull from the supplied MessageIterator.
+func launchIter(t *testing.T, ctx context.Context, it *MessageIterator, mc *messageCounter, n int, wg *sync.WaitGroup) {
 	for j := 0; j < n; j++ {
 		wg.Add(1)
 		go func() {
@@ -174,15 +175,15 @@ func publish(t *testing.T, ctx context.Context, topic *Topic) []string {
 // diff returns counts of the differences between got and want.
 func diff(got, want map[string]int) map[string]int {
 	ids := make(map[string]struct{})
-	for k, _ := range got {
+	for k := range got {
 		ids[k] = struct{}{}
 	}
-	for k, _ := range want {
+	for k := range want {
 		ids[k] = struct{}{}
 	}
 
 	gotWantCount := make(map[string]int)
-	for k, _ := range ids {
+	for k := range ids {
 		if got[k] == want[k] {
 			continue
 		}
@@ -208,30 +209,30 @@ func TestEndToEnd(t *testing.T) {
 	topicName := fmt.Sprintf("endtoend-%d", now.Unix())
 	subPrefix := fmt.Sprintf("endtoend-%d", now.Unix())
 
-	client, err := NewClient(ctx, testutil.ProjID(), cloud.WithTokenSource(ts))
+	client, err := NewClient(ctx, testutil.ProjID(), option.WithTokenSource(ts))
 	if err != nil {
 		t.Fatalf("Creating client error: %v", err)
 	}
 
 	var topic *Topic
-	if topic, err = client.NewTopic(ctx, topicName); err != nil {
+	if topic, err = client.CreateTopic(ctx, topicName); err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
 	defer topic.Delete(ctx)
 
 	// Three subscriptions to the same topic.
 	var subA, subB, subC *Subscription
-	if subA, err = client.NewSubscription(ctx, subPrefix+"-a", topic, ackDeadline, nil); err != nil {
+	if subA, err = client.CreateSubscription(ctx, subPrefix+"-a", topic, ackDeadline, nil); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}
 	defer subA.Delete(ctx)
 
-	if subB, err = client.NewSubscription(ctx, subPrefix+"-b", topic, ackDeadline, nil); err != nil {
+	if subB, err = client.CreateSubscription(ctx, subPrefix+"-b", topic, ackDeadline, nil); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}
 	defer subB.Delete(ctx)
 
-	if subC, err = client.NewSubscription(ctx, subPrefix+"-c", topic, ackDeadline, nil); err != nil {
+	if subC, err = client.CreateSubscription(ctx, subPrefix+"-c", topic, ackDeadline, nil); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}
 	defer subC.Delete(ctx)

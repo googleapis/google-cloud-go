@@ -23,8 +23,8 @@ import (
 	"os"
 	"time"
 
+	"cloud.google.com/go/bigquery"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud/bigquery"
 )
 
 var (
@@ -56,22 +56,17 @@ func main() {
 		log.Fatalf("Creating bigquery client: %v", err)
 	}
 
-	d := &bigquery.Table{}
+	query := client.Query(*q)
+	query.DefaultProjectID = *project
+	query.DefaultDatasetID = *dataset
+	query.WriteDisposition = bigquery.WriteTruncate
 
 	if *dest != "" {
-		d.ProjectID = *project
-		d.DatasetID = *dataset
-		d.TableID = *dest
-	}
-
-	query := &bigquery.Query{
-		Q:                *q,
-		DefaultProjectID: *project,
-		DefaultDatasetID: *dataset,
+		query.Dst = client.Dataset(*dataset).Table(*dest)
 	}
 
 	// Query data.
-	job, err := client.Copy(ctx, d, query, bigquery.WriteTruncate)
+	job, err := query.Run(ctx)
 
 	if err != nil {
 		log.Fatalf("Querying: %v", err)

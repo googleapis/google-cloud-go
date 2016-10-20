@@ -23,10 +23,11 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud"
-	pb "google.golang.org/cloud/datastore/internal/proto"
-	"google.golang.org/cloud/internal/transport"
+	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
+	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 const (
@@ -43,6 +44,44 @@ type protoClient interface {
 	Call(context.Context, string, proto.Message, proto.Message) error
 }
 
+// datastoreClient is a wrapper for the pb.DatastoreClient that includes gRPC
+// metadata to be sent in each request for server-side traffic management.
+type datastoreClient struct {
+	c  pb.DatastoreClient
+	md metadata.MD
+}
+
+func newDatastoreClient(conn *grpc.ClientConn, projectID string) pb.DatastoreClient {
+	return &datastoreClient{
+		c:  pb.NewDatastoreClient(conn),
+		md: metadata.Pairs(resourcePrefixHeader, "projects/"+projectID),
+	}
+}
+
+func (dc *datastoreClient) Lookup(ctx context.Context, in *pb.LookupRequest, opts ...grpc.CallOption) (*pb.LookupResponse, error) {
+	return dc.c.Lookup(metadata.NewContext(ctx, dc.md), in, opts...)
+}
+
+func (dc *datastoreClient) RunQuery(ctx context.Context, in *pb.RunQueryRequest, opts ...grpc.CallOption) (*pb.RunQueryResponse, error) {
+	return dc.c.RunQuery(metadata.NewContext(ctx, dc.md), in, opts...)
+}
+
+func (dc *datastoreClient) BeginTransaction(ctx context.Context, in *pb.BeginTransactionRequest, opts ...grpc.CallOption) (*pb.BeginTransactionResponse, error) {
+	return dc.c.BeginTransaction(metadata.NewContext(ctx, dc.md), in, opts...)
+}
+
+func (dc *datastoreClient) Commit(ctx context.Context, in *pb.CommitRequest, opts ...grpc.CallOption) (*pb.CommitResponse, error) {
+	return dc.c.Commit(metadata.NewContext(ctx, dc.md), in, opts...)
+}
+
+func (dc *datastoreClient) Rollback(ctx context.Context, in *pb.RollbackRequest, opts ...grpc.CallOption) (*pb.RollbackResponse, error) {
+	return dc.c.Rollback(metadata.NewContext(ctx, dc.md), in, opts...)
+}
+
+func (dc *datastoreClient) AllocateIds(ctx context.Context, in *pb.AllocateIdsRequest, opts ...grpc.CallOption) (*pb.AllocateIdsResponse, error) {
+	return dc.c.AllocateIds(metadata.NewContext(ctx, dc.md), in, opts...)
+}
+
 // Client is a client for reading and writing data in a datastore dataset.
 type Client struct {
 	conn     *grpc.ClientConn
@@ -55,8 +94,8 @@ type Client struct {
 // If the project ID is empty, it is derived from the DATASTORE_PROJECT_ID environment variable.
 // If the DATASTORE_EMULATOR_HOST environment variable is set, client will use its value
 // to connect to a locally-running datastore emulator.
-func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption) (*Client, error) {
-	var o []cloud.ClientOption
+func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
+	var o []option.ClientOption
 	// Environment variables for gcd emulator:
 	// https://cloud.google.com/datastore/docs/tools/datastore-emulator
 	// If the emulator is available, dial it directly (and don't pass any credentials).
@@ -65,12 +104,12 @@ func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption
 		if err != nil {
 			return nil, fmt.Errorf("grpc.Dial: %v", err)
 		}
-		o = []cloud.ClientOption{cloud.WithBaseGRPC(conn)}
+		o = []option.ClientOption{option.WithGRPCConn(conn)}
 	} else {
-		o = []cloud.ClientOption{
-			cloud.WithEndpoint(prodAddr),
-			cloud.WithScopes(ScopeDatastore),
-			cloud.WithUserAgent(userAgent),
+		o = []option.ClientOption{
+			option.WithEndpoint(prodAddr),
+			option.WithScopes(ScopeDatastore),
+			option.WithUserAgent(userAgent),
 		}
 	}
 	// Warn if we see the legacy emulator environment variables.
@@ -93,7 +132,7 @@ func NewClient(ctx context.Context, projectID string, opts ...cloud.ClientOption
 	}
 	return &Client{
 		conn:    conn,
-		client:  pb.NewDatastoreClient(conn),
+		client:  newDatastoreClient(conn, projectID),
 		dataset: projectID,
 	}, nil
 
@@ -192,7 +231,8 @@ func keyToProto(k *Key) *pb.Key {
 }
 
 // protoToKey decodes a protocol buffer representation of a key into an
-// equivalent *Key object.
+// equivalent *Key object. If the key is invalid, protoToKey will return the
+// invalid key along with ErrInvalidKey.
 func protoToKey(p *pb.Key) (*Key, error) {
 	var key *Key
 	var namespace string
@@ -209,7 +249,7 @@ func protoToKey(p *pb.Key) (*Key, error) {
 		}
 	}
 	if !key.valid() { // Also detects key == nil.
-		return nil, ErrInvalidKey
+		return key, ErrInvalidKey
 	}
 	return key, nil
 }
@@ -486,6 +526,8 @@ func putMutations(keys []*Key, src interface{}) ([]*pb.Mutation, error) {
 		return nil, err
 	}
 	mutations := make([]*pb.Mutation, 0, len(keys))
+	multiErr := make(MultiError, len(keys))
+	hasErr := false
 	for i, k := range keys {
 		elem := v.Index(i)
 		// Two cases where we need to take the address:
@@ -496,7 +538,8 @@ func putMutations(keys []*Key, src interface{}) ([]*pb.Mutation, error) {
 		}
 		p, err := saveEntity(k, elem.Interface())
 		if err != nil {
-			return nil, fmt.Errorf("datastore: Error while saving %v: %v", k.String(), err)
+			multiErr[i] = err
+			hasErr = true
 		}
 		var mut *pb.Mutation
 		if k.Incomplete() {
@@ -505,6 +548,9 @@ func putMutations(keys []*Key, src interface{}) ([]*pb.Mutation, error) {
 			mut = &pb.Mutation{Operation: &pb.Mutation_Upsert{p}}
 		}
 		mutations = append(mutations, mut)
+	}
+	if hasErr {
+		return nil, multiErr
 	}
 	return mutations, nil
 }

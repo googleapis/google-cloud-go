@@ -21,30 +21,33 @@ import (
 	"regexp"
 	"strings"
 
+	btopt "cloud.google.com/go/bigtable/internal/option"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud"
-	btcspb "google.golang.org/cloud/bigtable/internal/cluster_service_proto"
-	bttspb "google.golang.org/cloud/bigtable/internal/table_service_proto"
-	"google.golang.org/cloud/internal/transport"
+	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
+	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
-const adminAddr = "bigtabletableadmin.googleapis.com:443"
+const adminAddr = "bigtableadmin.googleapis.com:443"
 
-// AdminClient is a client type for performing admin operations within a specific cluster.
+// AdminClient is a client type for performing admin operations within a specific instance.
 type AdminClient struct {
 	conn    *grpc.ClientConn
-	tClient bttspb.BigtableTableServiceClient
+	tClient btapb.BigtableTableAdminClient
 
-	project, zone, cluster string
+	project, instance string
+
+	// Metadata to be sent with each request.
+	md metadata.MD
 }
 
-// NewAdminClient creates a new AdminClient for a given project, zone and cluster.
-func NewAdminClient(ctx context.Context, project, zone, cluster string, opts ...cloud.ClientOption) (*AdminClient, error) {
-	o := []cloud.ClientOption{
-		cloud.WithEndpoint(adminAddr),
-		cloud.WithScopes(AdminScope),
-		cloud.WithUserAgent(clientUserAgent),
+// NewAdminClient creates a new AdminClient for a given project and instance.
+func NewAdminClient(ctx context.Context, project, instance string, opts ...option.ClientOption) (*AdminClient, error) {
+	o, err := btopt.DefaultClientOptions(adminAddr, AdminScope, clientUserAgent)
+	if err != nil {
+		return nil, err
 	}
 	o = append(o, opts...)
 	conn, err := transport.DialGRPC(ctx, o...)
@@ -52,29 +55,29 @@ func NewAdminClient(ctx context.Context, project, zone, cluster string, opts ...
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
 	return &AdminClient{
-		conn:    conn,
-		tClient: bttspb.NewBigtableTableServiceClient(conn),
-
-		project: project,
-		zone:    zone,
-		cluster: cluster,
+		conn:     conn,
+		tClient:  btapb.NewBigtableTableAdminClient(conn),
+		project:  project,
+		instance: instance,
+		md:       metadata.Pairs(resourcePrefixHeader, fmt.Sprintf("projects/%s/instances/%s", project, instance)),
 	}, nil
 }
 
 // Close closes the AdminClient.
-func (ac *AdminClient) Close() {
-	ac.conn.Close()
+func (ac *AdminClient) Close() error {
+	return ac.conn.Close()
 }
 
-func (ac *AdminClient) clusterPrefix() string {
-	return fmt.Sprintf("projects/%s/zones/%s/clusters/%s", ac.project, ac.zone, ac.cluster)
+func (ac *AdminClient) instancePrefix() string {
+	return fmt.Sprintf("projects/%s/instances/%s", ac.project, ac.instance)
 }
 
-// Tables returns a list of the tables in the cluster.
+// Tables returns a list of the tables in the instance.
 func (ac *AdminClient) Tables(ctx context.Context) ([]string, error) {
-	prefix := ac.clusterPrefix()
-	req := &bttspb.ListTablesRequest{
-		Name: prefix,
+	ctx = mergeMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	req := &btapb.ListTablesRequest{
+		Parent: prefix,
 	}
 	res, err := ac.tClient.ListTables(ctx, req)
 	if err != nil {
@@ -87,12 +90,13 @@ func (ac *AdminClient) Tables(ctx context.Context) ([]string, error) {
 	return names, nil
 }
 
-// CreateTable creates a new table in the cluster.
+// CreateTable creates a new table in the instance.
 // This method may return before the table's creation is complete.
 func (ac *AdminClient) CreateTable(ctx context.Context, table string) error {
-	prefix := ac.clusterPrefix()
-	req := &bttspb.CreateTableRequest{
-		Name:    prefix,
+	ctx = mergeMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	req := &btapb.CreateTableRequest{
+		Parent:  prefix,
 		TableId: table,
 	}
 	_, err := ac.tClient.CreateTable(ctx, req)
@@ -105,19 +109,24 @@ func (ac *AdminClient) CreateTable(ctx context.Context, table string) error {
 // CreateColumnFamily creates a new column family in a table.
 func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family string) error {
 	// TODO(dsymonds): Permit specifying gcexpr and any other family settings.
-	prefix := ac.clusterPrefix()
-	req := &bttspb.CreateColumnFamilyRequest{
-		Name:           prefix + "/tables/" + table,
-		ColumnFamilyId: family,
+	ctx = mergeMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	req := &btapb.ModifyColumnFamiliesRequest{
+		Name: prefix + "/tables/" + table,
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+			Id:  family,
+			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{&btapb.ColumnFamily{}},
+		}},
 	}
-	_, err := ac.tClient.CreateColumnFamily(ctx, req)
+	_, err := ac.tClient.ModifyColumnFamilies(ctx, req)
 	return err
 }
 
 // DeleteTable deletes a table and all of its data.
 func (ac *AdminClient) DeleteTable(ctx context.Context, table string) error {
-	prefix := ac.clusterPrefix()
-	req := &bttspb.DeleteTableRequest{
+	ctx = mergeMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	req := &btapb.DeleteTableRequest{
 		Name: prefix + "/tables/" + table,
 	}
 	_, err := ac.tClient.DeleteTable(ctx, req)
@@ -126,11 +135,16 @@ func (ac *AdminClient) DeleteTable(ctx context.Context, table string) error {
 
 // DeleteColumnFamily deletes a column family in a table and all of its data.
 func (ac *AdminClient) DeleteColumnFamily(ctx context.Context, table, family string) error {
-	prefix := ac.clusterPrefix()
-	req := &bttspb.DeleteColumnFamilyRequest{
-		Name: prefix + "/tables/" + table + "/columnFamilies/" + family,
+	ctx = mergeMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	req := &btapb.ModifyColumnFamiliesRequest{
+		Name: prefix + "/tables/" + table,
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+			Id:  family,
+			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Drop{true},
+		}},
 	}
-	_, err := ac.tClient.DeleteColumnFamily(ctx, req)
+	_, err := ac.tClient.ModifyColumnFamilies(ctx, req)
 	return err
 }
 
@@ -141,8 +155,9 @@ type TableInfo struct {
 
 // TableInfo retrieves information about a table.
 func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo, error) {
-	prefix := ac.clusterPrefix()
-	req := &bttspb.GetTableRequest{
+	ctx = mergeMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	req := &btapb.GetTableRequest{
 		Name: prefix + "/tables/" + table,
 	}
 	res, err := ac.tClient.GetTable(ctx, req)
@@ -160,108 +175,87 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 // GC executes opportunistically in the background; table reads may return data
 // matching the GC policy.
 func (ac *AdminClient) SetGCPolicy(ctx context.Context, table, family string, policy GCPolicy) error {
-	prefix := ac.clusterPrefix()
-	tbl, err := ac.tClient.GetTable(ctx, &bttspb.GetTableRequest{
+	ctx = mergeMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	req := &btapb.ModifyColumnFamiliesRequest{
 		Name: prefix + "/tables/" + table,
-	})
-	if err != nil {
-		return err
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+			Id:  family,
+			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Update{&btapb.ColumnFamily{GcRule: policy.proto()}},
+		}},
 	}
-	fam, ok := tbl.ColumnFamilies[family]
-	if !ok {
-		return fmt.Errorf("unknown column family %q", family)
-	}
-	fam.GcRule = policy.proto()
-	_, err = ac.tClient.UpdateColumnFamily(ctx, fam)
+	_, err := ac.tClient.ModifyColumnFamilies(ctx, req)
 	return err
 }
 
-const clusterAdminAddr = "bigtableclusteradmin.googleapis.com:443"
+const instanceAdminAddr = "bigtableadmin.googleapis.com:443"
 
-// ClusterAdminClient is a client type for performing admin operations on clusters.
+// InstanceAdminClient is a client type for performing admin operations on instances.
 // These operations can be substantially more dangerous than those provided by AdminClient.
-type ClusterAdminClient struct {
+type InstanceAdminClient struct {
 	conn    *grpc.ClientConn
-	cClient btcspb.BigtableClusterServiceClient
+	iClient btapb.BigtableInstanceAdminClient
 
 	project string
+
+	// Metadata to be sent with each request.
+	md metadata.MD
 }
 
-// NewClusterAdminClient creates a new ClusterAdminClient for a given project.
-func NewClusterAdminClient(ctx context.Context, project string, opts ...cloud.ClientOption) (*ClusterAdminClient, error) {
-	o := []cloud.ClientOption{
-		cloud.WithEndpoint(clusterAdminAddr),
-		cloud.WithScopes(ClusterAdminScope),
-		cloud.WithUserAgent(clientUserAgent),
+// NewInstanceAdminClient creates a new InstanceAdminClient for a given project.
+func NewInstanceAdminClient(ctx context.Context, project string, opts ...option.ClientOption) (*InstanceAdminClient, error) {
+	o, err := btopt.DefaultClientOptions(instanceAdminAddr, InstanceAdminScope, clientUserAgent)
+	if err != nil {
+		return nil, err
 	}
 	o = append(o, opts...)
 	conn, err := transport.DialGRPC(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
-	return &ClusterAdminClient{
+	return &InstanceAdminClient{
 		conn:    conn,
-		cClient: btcspb.NewBigtableClusterServiceClient(conn),
+		iClient: btapb.NewBigtableInstanceAdminClient(conn),
 
 		project: project,
+		md:      metadata.Pairs(resourcePrefixHeader, "projects/"+project),
 	}, nil
 }
 
-// Close closes the ClusterAdminClient.
-func (cac *ClusterAdminClient) Close() {
-	cac.conn.Close()
+// Close closes the InstanceAdminClient.
+func (iac *InstanceAdminClient) Close() error {
+	return iac.conn.Close()
 }
 
-// ClusterInfo represents information about a cluster.
-type ClusterInfo struct {
-	Name        string // name of the cluster
-	Zone        string // GCP zone of the cluster (e.g. "us-central1-a")
+// InstanceInfo represents information about an instance
+type InstanceInfo struct {
+	Name        string // name of the instance
 	DisplayName string // display name for UIs
-	ServeNodes  int    // number of allocated serve nodes
 }
 
-var clusterNameRegexp = regexp.MustCompile(`^projects/([^/]+)/zones/([^/]+)/clusters/([a-z][-a-z0-9]*)$`)
+var instanceNameRegexp = regexp.MustCompile(`^projects/([^/]+)/instances/([a-z][-a-z0-9]*)$`)
 
-// Clusters returns a list of clusters in the project.
-func (cac *ClusterAdminClient) Clusters(ctx context.Context) ([]*ClusterInfo, error) {
-	req := &btcspb.ListClustersRequest{
-		Name: "projects/" + cac.project,
+// Instances returns a list of instances in the project.
+func (cac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo, error) {
+	ctx = mergeMetadata(ctx, cac.md)
+	req := &btapb.ListInstancesRequest{
+		Parent: "projects/" + cac.project,
 	}
-	res, err := cac.cClient.ListClusters(ctx, req)
+	res, err := cac.iClient.ListInstances(ctx, req)
 	if err != nil {
 		return nil, err
 	}
-	// TODO(dsymonds): Deal with failed_zones.
-	var cis []*ClusterInfo
-	for _, c := range res.Clusters {
-		m := clusterNameRegexp.FindStringSubmatch(c.Name)
+
+	var is []*InstanceInfo
+	for _, i := range res.Instances {
+		m := instanceNameRegexp.FindStringSubmatch(i.Name)
 		if m == nil {
-			return nil, fmt.Errorf("malformed cluster name %q", c.Name)
+			return nil, fmt.Errorf("malformed instance name %q", i.Name)
 		}
-		cis = append(cis, &ClusterInfo{
-			Name:        m[3],
-			Zone:        m[2],
-			DisplayName: c.DisplayName,
-			ServeNodes:  int(c.ServeNodes),
+		is = append(is, &InstanceInfo{
+			Name:        m[2],
+			DisplayName: i.DisplayName,
 		})
 	}
-	return cis, nil
+	return is, nil
 }
-
-/* TODO(dsymonds): Re-enable when there's a ClusterAdmin API.
-
-// SetClusterSize sets the number of server nodes for this cluster.
-func (ac *AdminClient) SetClusterSize(ctx context.Context, nodes int) error {
-	req := &btcspb.GetClusterRequest{
-		Name: ac.clusterPrefix(),
-	}
-	clu, err := ac.cClient.GetCluster(ctx, req)
-	if err != nil {
-		return err
-	}
-	clu.ServeNodes = int32(nodes)
-	_, err = ac.cClient.UpdateCluster(ctx, clu)
-	return err
-}
-
-*/

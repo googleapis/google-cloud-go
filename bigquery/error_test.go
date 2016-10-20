@@ -16,7 +16,11 @@ package bigquery
 
 import (
 	"errors"
+	"reflect"
+	"strings"
 	"testing"
+
+	bq "google.golang.org/api/bigquery/v2"
 )
 
 func rowInsertionError(msg string) RowInsertionError {
@@ -76,5 +80,30 @@ func TestMultiErrorString(t *testing.T) {
 		if tc.errs.Error() != tc.want {
 			t.Errorf("PutMultiError string: got:\n%v\nwant:\n%v", tc.errs.Error(), tc.want)
 		}
+	}
+}
+
+func TestErrorFromErrorProto(t *testing.T) {
+	for _, test := range []struct {
+		in   *bq.ErrorProto
+		want *Error
+	}{
+		{nil, nil},
+		{
+			in:   &bq.ErrorProto{Location: "L", Message: "M", Reason: "R"},
+			want: &Error{Location: "L", Message: "M", Reason: "R"},
+		},
+	} {
+		if got := errorFromErrorProto(test.in); !reflect.DeepEqual(got, test.want) {
+			t.Errorf("%v: got %v, want %v", test.in, got, test.want)
+		}
+	}
+}
+
+func TestErrorString(t *testing.T) {
+	e := &Error{Location: "<L>", Message: "<M>", Reason: "<R>"}
+	got := e.Error()
+	if !strings.Contains(got, "<L>") || !strings.Contains(got, "<M>") || !strings.Contains(got, "<R>") {
+		t.Errorf(`got %q, expected to see "<L>", "<M>" and "<R>"`, got)
 	}
 }

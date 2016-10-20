@@ -1,3 +1,17 @@
+// Copyright 2016 Google Inc. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 // DO NOT EDIT. THIS IS AUTOMATICALLY GENERATED.
 // Run "go generate" to regenerate.
 //go:generate go run cbt.go -o cbtdoc.go doc
@@ -19,7 +33,7 @@ The commands are:
 	deletetable               Delete a table
 	doc                       Print godoc-suitable documentation for cbt
 	help                      Print help text
-	listclusters              List clusters in a project
+	listinstances             List instances in a project
 	lookup                    Read from a single row
 	ls                        List tables and column families
 	mddoc                     Print documentation for cbt in Markdown format
@@ -28,6 +42,15 @@ The commands are:
 	setgcpolicy               Set the GC policy for a column family
 
 Use "cbt help <command>" for more information about a command.
+
+The options are:
+
+	-project string
+		project ID
+	-instance string
+		Cloud Bigtable instance
+	-creds string
+		if set, use application credentials in this file
 
 
 Count rows in a table
@@ -94,10 +117,10 @@ Usage:
 
 
 
-List clusters in a project
+List instances in a project
 
 Usage:
-	cbt listclusters
+	cbt listinstances
 
 
 

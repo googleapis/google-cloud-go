@@ -31,7 +31,8 @@ func (ts testSaver) Save() (map[string]Value, string, error) {
 }
 
 func TestRejectsNonValueSavers(t *testing.T) {
-	u := Uploader{defaultTable}
+	client := &Client{projectID: "project-id"}
+	u := Uploader{t: client.Dataset("dataset-id").Table("table-id")}
 
 	testCases := []struct {
 		src interface{}
@@ -62,18 +63,12 @@ type insertRowsRecorder struct {
 	service
 }
 
-func (irr *insertRowsRecorder) insertRows(ctx context.Context, projectID, datasetID, tableID string, rows []*insertionRow) error {
+func (irr *insertRowsRecorder) insertRows(ctx context.Context, projectID, datasetID, tableID string, rows []*insertionRow, conf *insertRowsConf) error {
 	irr.rowBatches = append(irr.rowBatches, rows)
 	return nil
 }
 
 func TestInsertsData(t *testing.T) {
-	table := &Table{
-		ProjectID: "project-id",
-		DatasetID: "dataset-id",
-		TableID:   "table-id",
-	}
-
 	testCases := []struct {
 		data [][]*insertionRow
 	}{
@@ -120,8 +115,12 @@ func TestInsertsData(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		irr := &insertRowsRecorder{}
-		table.service = irr
-		u := Uploader{table}
+		client := &Client{
+			projectID: "project-id",
+			service:   irr,
+		}
+		table := client.Dataset("dataset-id").Table("table-id")
+		u := Uploader{t: table}
 		for _, batch := range tc.data {
 			if len(batch) == 0 {
 				continue
@@ -139,11 +138,105 @@ func TestInsertsData(t *testing.T) {
 
 			err := u.Put(context.Background(), toUpload)
 			if err != nil {
-				t.Errorf("expected successful Put of ValueSaver; got: %v")
+				t.Errorf("expected successful Put of ValueSaver; got: %v", err)
 			}
 		}
 		if got, want := irr.rowBatches, tc.data; !reflect.DeepEqual(got, want) {
 			t.Errorf("got: %v, want: %v", got, want)
+		}
+	}
+}
+
+type uploadOptionRecorder struct {
+	received *insertRowsConf
+	service
+}
+
+func (u *uploadOptionRecorder) insertRows(ctx context.Context, projectID, datasetID, tableID string, rows []*insertionRow, conf *insertRowsConf) error {
+	u.received = conf
+	return nil
+}
+
+func TestUploadOptionsPropagate(t *testing.T) {
+	// we don't care for the data in this testcase.
+	dummyData := testSaver{ir: &insertionRow{}}
+	recorder := new(uploadOptionRecorder)
+	c := &Client{service: recorder}
+	table := &Table{
+		ProjectID: "project-id",
+		DatasetID: "dataset-id",
+		TableID:   "table-id",
+		c:         c,
+	}
+
+	tests := [...]struct {
+		ul   *Uploader
+		conf insertRowsConf
+	}{
+		{
+			// test zero options lead to zero value for insertRowsConf
+			ul: table.Uploader(),
+		},
+		{
+			ul: func() *Uploader {
+				u := table.Uploader()
+				u.TableTemplateSuffix = "suffix"
+				return u
+			}(),
+			conf: insertRowsConf{
+				templateSuffix: "suffix",
+			},
+		},
+		{
+			ul: func() *Uploader {
+				u := table.Uploader()
+				u.IgnoreUnknownValues = true
+				return u
+			}(),
+			conf: insertRowsConf{
+				ignoreUnknownValues: true,
+			},
+		},
+		{
+			ul: func() *Uploader {
+				u := table.Uploader()
+				u.SkipInvalidRows = true
+				return u
+			}(),
+			conf: insertRowsConf{
+				skipInvalidRows: true,
+			},
+		},
+		{ // multiple upload options combine
+			ul: func() *Uploader {
+				u := table.Uploader()
+				u.TableTemplateSuffix = "suffix"
+				u.IgnoreUnknownValues = true
+				u.SkipInvalidRows = true
+				return u
+			}(),
+			conf: insertRowsConf{
+				templateSuffix:      "suffix",
+				skipInvalidRows:     true,
+				ignoreUnknownValues: true,
+			},
+		},
+	}
+
+	for i, tc := range tests {
+		err := tc.ul.Put(context.Background(), dummyData)
+		if err != nil {
+			t.Fatalf("%d: expected successful Put of ValueSaver; got: %v", i, err)
+		}
+
+		if recorder.received == nil {
+			t.Fatalf("%d: received no options at all!", i)
+		}
+
+		want := tc.conf
+		got := *recorder.received
+		if got != want {
+			t.Errorf("%d: got %#v, want %#v, ul=%#v", i, got, want, tc.ul)
 		}
 	}
 }

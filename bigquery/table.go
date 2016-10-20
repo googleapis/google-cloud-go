@@ -20,6 +20,7 @@ import (
 
 	"golang.org/x/net/context"
 
+	"cloud.google.com/go/internal/optional"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -33,7 +34,7 @@ type Table struct {
 	// The maximum length is 1,024 characters.
 	TableID string
 
-	service service
+	c *Client
 }
 
 // TableMetadata contains information about a BigQuery table.
@@ -62,9 +63,6 @@ type TableMetadata struct {
 	NumRows uint64
 }
 
-// Tables is a group of tables. The tables may belong to differing projects or datasets.
-type Tables []*Table
-
 // CreateDisposition specifies the circumstances under which destination table will be created.
 // Default is CreateIfNeeded.
 type TableCreateDisposition string
@@ -76,22 +74,6 @@ const (
 	// The table must already exist and will not be automatically created.
 	CreateNever TableCreateDisposition = "CREATE_NEVER"
 )
-
-func CreateDisposition(disp TableCreateDisposition) Option { return disp }
-
-func (opt TableCreateDisposition) implementsOption() {}
-
-func (opt TableCreateDisposition) customizeLoad(conf *bq.JobConfigurationLoad, projectID string) {
-	conf.CreateDisposition = string(opt)
-}
-
-func (opt TableCreateDisposition) customizeCopy(conf *bq.JobConfigurationTableCopy, projectID string) {
-	conf.CreateDisposition = string(opt)
-}
-
-func (opt TableCreateDisposition) customizeQuery(conf *bq.JobConfigurationQuery, projectID string) {
-	conf.CreateDisposition = string(opt)
-}
 
 // TableWriteDisposition specifies how existing data in a destination table is treated.
 // Default is WriteAppend.
@@ -110,22 +92,6 @@ const (
 	WriteEmpty TableWriteDisposition = "WRITE_EMPTY"
 )
 
-func WriteDisposition(disp TableWriteDisposition) Option { return disp }
-
-func (opt TableWriteDisposition) implementsOption() {}
-
-func (opt TableWriteDisposition) customizeLoad(conf *bq.JobConfigurationLoad, projectID string) {
-	conf.WriteDisposition = string(opt)
-}
-
-func (opt TableWriteDisposition) customizeCopy(conf *bq.JobConfigurationTableCopy, projectID string) {
-	conf.WriteDisposition = string(opt)
-}
-
-func (opt TableWriteDisposition) customizeQuery(conf *bq.JobConfigurationQuery, projectID string) {
-	conf.WriteDisposition = string(opt)
-}
-
 // TableType is the type of table.
 type TableType string
 
@@ -133,11 +99,6 @@ const (
 	RegularTable TableType = "TABLE"
 	ViewTable    TableType = "VIEW"
 )
-
-func (t *Table) implementsSource()      {}
-func (t *Table) implementsReadSource()  {}
-func (t *Table) implementsDestination() {}
-func (ts Tables) implementsSource()     {}
 
 func (t *Table) tableRefProto() *bq.TableReference {
 	return &bq.TableReference{
@@ -157,65 +118,27 @@ func (t *Table) implicitTable() bool {
 	return t.ProjectID == "" && t.DatasetID == "" && t.TableID == ""
 }
 
-func (t *Table) customizeLoadDst(conf *bq.JobConfigurationLoad, projectID string) {
-	conf.DestinationTable = t.tableRefProto()
-}
-
-func (t *Table) customizeExtractSrc(conf *bq.JobConfigurationExtract, projectID string) {
-	conf.SourceTable = t.tableRefProto()
-}
-
-func (t *Table) customizeCopyDst(conf *bq.JobConfigurationTableCopy, projectID string) {
-	conf.DestinationTable = t.tableRefProto()
-}
-
-func (ts Tables) customizeCopySrc(conf *bq.JobConfigurationTableCopy, projectID string) {
-	for _, t := range ts {
-		conf.SourceTables = append(conf.SourceTables, t.tableRefProto())
-	}
-}
-
-func (t *Table) customizeQueryDst(conf *bq.JobConfigurationQuery, projectID string) {
-	if !t.implicitTable() {
-		conf.DestinationTable = t.tableRefProto()
-	}
-}
-
-func (t *Table) customizeReadSrc(cursor *readTableConf) {
-	cursor.projectID = t.ProjectID
-	cursor.datasetID = t.DatasetID
-	cursor.tableID = t.TableID
-}
-
-// OpenTable creates a handle to an existing BigQuery table.  If the table does not already exist, subsequent uses of the *Table will fail.
-func (c *Client) OpenTable(projectID, datasetID, tableID string) *Table {
-	return &Table{ProjectID: projectID, DatasetID: datasetID, TableID: tableID, service: c.service}
-}
-
-// CreateTable creates a table in the BigQuery service and returns a handle to it.
-func (c *Client) CreateTable(ctx context.Context, projectID, datasetID, tableID string, options ...CreateTableOption) (*Table, error) {
+// Create creates a table in the BigQuery service.
+func (t *Table) Create(ctx context.Context, options ...CreateTableOption) error {
 	conf := &createTableConf{
-		projectID: projectID,
-		datasetID: datasetID,
-		tableID:   tableID,
+		projectID: t.ProjectID,
+		datasetID: t.DatasetID,
+		tableID:   t.TableID,
 	}
 	for _, o := range options {
 		o.customizeCreateTable(conf)
 	}
-	if err := c.service.createTable(ctx, conf); err != nil {
-		return nil, err
-	}
-	return &Table{ProjectID: projectID, DatasetID: datasetID, TableID: tableID, service: c.service}, nil
+	return t.c.service.createTable(ctx, conf)
 }
 
 // Metadata fetches the metadata for the table.
 func (t *Table) Metadata(ctx context.Context) (*TableMetadata, error) {
-	return t.service.getTableMetadata(ctx, t.ProjectID, t.DatasetID, t.TableID)
+	return t.c.service.getTableMetadata(ctx, t.ProjectID, t.DatasetID, t.TableID)
 }
 
 // Delete deletes the table.
 func (t *Table) Delete(ctx context.Context) error {
-	return t.service.deleteTable(ctx, t.ProjectID, t.DatasetID, t.TableID)
+	return t.c.service.deleteTable(ctx, t.ProjectID, t.DatasetID, t.TableID)
 }
 
 // A CreateTableOption is an optional argument to CreateTable.
@@ -242,42 +165,39 @@ func (opt viewQuery) customizeCreateTable(conf *createTableConf) {
 	conf.viewQuery = string(opt)
 }
 
-// TableMetadataPatch represents a set of changes to a table's metadata.
-type TableMetadataPatch struct {
-	s                             service
-	projectID, datasetID, tableID string
-	conf                          patchTableConf
+type useStandardSQL struct{}
+
+// UseStandardSQL returns a CreateTableOption to set the table to use standard SQL.
+// The default setting is false (using legacy SQL).
+func UseStandardSQL() CreateTableOption { return useStandardSQL{} }
+
+func (opt useStandardSQL) customizeCreateTable(conf *createTableConf) {
+	conf.useStandardSQL = true
 }
 
-// Patch returns a *TableMetadataPatch, which can be used to modify specific Table metadata fields.
-// In order to apply the changes, the TableMetadataPatch's Apply method must be called.
-func (t *Table) Patch() *TableMetadataPatch {
-	return &TableMetadataPatch{
-		s:         t.service,
-		projectID: t.ProjectID,
-		datasetID: t.DatasetID,
-		tableID:   t.TableID,
+// Update modifies specific Table metadata fields.
+func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate) (*TableMetadata, error) {
+	var conf patchTableConf
+	if tm.Description != nil {
+		s := optional.ToString(tm.Description)
+		conf.Description = &s
 	}
+	if tm.Name != nil {
+		s := optional.ToString(tm.Name)
+		conf.Name = &s
+	}
+	return t.c.service.patchTable(ctx, t.ProjectID, t.DatasetID, t.TableID, &conf)
 }
 
-// Description sets the table description.
-func (p *TableMetadataPatch) Description(desc string) {
-	p.conf.Description = &desc
-}
+// TableMetadataToUpdate is used when updating a table's metadata.
+// Only non-nil fields will be updated.
+type TableMetadataToUpdate struct {
+	// Description is the user-friendly description of this table.
+	Description optional.String
 
-// Name sets the table name.
-func (p *TableMetadataPatch) Name(name string) {
-	p.conf.Name = &name
-}
+	// Name is the user-friendly name for this table.
+	Name optional.String
 
-// TODO(mcgreevy): support patching the schema.
-
-// Apply applies the patch operation.
-func (p *TableMetadataPatch) Apply(ctx context.Context) (*TableMetadata, error) {
-	return p.s.patchTable(ctx, p.projectID, p.datasetID, p.tableID, &p.conf)
-}
-
-// NewUploader returns an *Uploader that can be used to append rows to t.
-func (t *Table) NewUploader() *Uploader {
-	return &Uploader{t: t}
+	// TODO(jba): support updating the schema
+	// TODO(jba): support updating the view
 }

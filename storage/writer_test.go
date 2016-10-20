@@ -21,7 +21,7 @@ import (
 
 	"golang.org/x/net/context"
 
-	"google.golang.org/cloud"
+	"google.golang.org/api/option"
 )
 
 type fakeTransport struct{}
@@ -33,7 +33,7 @@ func (t *fakeTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 func TestErrorOnObjectsInsertCall(t *testing.T) {
 	ctx := context.Background()
 	hc := &http.Client{Transport: &fakeTransport{}}
-	client, err := NewClient(ctx, cloud.WithBaseHTTP(hc))
+	client, err := NewClient(ctx, option.WithHTTPClient(hc))
 	if err != nil {
 		t.Errorf("error when creating client: %v", err)
 	}

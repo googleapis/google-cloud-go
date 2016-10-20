@@ -23,7 +23,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
-	pb "google.golang.org/cloud/datastore/internal/proto"
+	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
 )
 
@@ -67,7 +67,7 @@ func (c *fakeClient) Commit(_ context.Context, req *pb.CommitRequest, _ ...grpc.
 func fakeRunQuery(in *pb.RunQueryRequest) (*pb.RunQueryResponse, error) {
 	expectedIn := &pb.RunQueryRequest{
 		QueryType: &pb.RunQueryRequest_Query{&pb.Query{
-			Kind: []*pb.KindExpression{&pb.KindExpression{Name: "Gopher"}},
+			Kind: []*pb.KindExpression{{Name: "Gopher"}},
 		}},
 	}
 	if !proto.Equal(in, expectedIn) {
@@ -78,7 +78,7 @@ func fakeRunQuery(in *pb.RunQueryRequest) (*pb.RunQueryResponse, error) {
 			MoreResults:      pb.QueryResultBatch_NO_MORE_RESULTS,
 			EntityResultType: pb.EntityResult_FULL,
 			EntityResults: []*pb.EntityResult{
-				&pb.EntityResult{
+				{
 					Entity: &pb.Entity{
 						Key: key1,
 						Properties: map[string]*pb.Value{
@@ -87,7 +87,7 @@ func fakeRunQuery(in *pb.RunQueryRequest) (*pb.RunQueryResponse, error) {
 						},
 					},
 				},
-				&pb.EntityResult{
+				{
 					Entity: &pb.Entity{
 						Key: key2,
 						Properties: map[string]*pb.Value{
@@ -491,5 +491,48 @@ func TestNamespaceQuery(t *testing.T) {
 	client.Count(ctx, NewQuery("gopher"))
 	if got, want := <-gotNamespace, ns; got != want {
 		t.Errorf("Count: got namespace %q, want %q", got, want)
+	}
+}
+
+func TestReadOptions(t *testing.T) {
+	tid := []byte{1}
+	for _, test := range []struct {
+		q    *Query
+		want *pb.ReadOptions
+	}{
+		{
+			q:    NewQuery(""),
+			want: nil,
+		},
+		{
+			q:    NewQuery("").Transaction(nil),
+			want: nil,
+		},
+		{
+			q:    NewQuery("").Transaction(&Transaction{id: tid}),
+			want: &pb.ReadOptions{&pb.ReadOptions_Transaction{tid}},
+		},
+		{
+			q:    NewQuery("").EventualConsistency(),
+			want: &pb.ReadOptions{&pb.ReadOptions_ReadConsistency_{pb.ReadOptions_EVENTUAL}},
+		},
+	} {
+		req := &pb.RunQueryRequest{}
+		if err := test.q.toProto(req); err != nil {
+			t.Fatalf("%+v: got %v, want no error", test.q, err)
+		}
+		if got := req.ReadOptions; !proto.Equal(got, test.want) {
+			t.Errorf("%+v:\ngot  %+v\nwant %+v", test.q, got, test.want)
+		}
+	}
+	// Test errors.
+	for _, q := range []*Query{
+		NewQuery("").Transaction(&Transaction{id: nil}),
+		NewQuery("").Transaction(&Transaction{id: tid}).EventualConsistency(),
+	} {
+		req := &pb.RunQueryRequest{}
+		if err := q.toProto(req); err == nil {
+			t.Errorf("%+v: got nil, wanted error", q)
+		}
 	}
 }

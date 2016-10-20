@@ -380,3 +380,37 @@ func TestValuesSaverConvertsToMap(t *testing.T) {
 		}
 	}
 }
+
+func TestConvertRows(t *testing.T) {
+	schema := []*FieldSchema{
+		{Type: StringFieldType},
+		{Type: IntegerFieldType},
+		{Type: FloatFieldType},
+		{Type: BooleanFieldType},
+	}
+	rows := []*bq.TableRow{
+		{F: []*bq.TableCell{
+			{V: "a"},
+			{V: "1"},
+			{V: "1.2"},
+			{V: "true"},
+		}},
+		{F: []*bq.TableCell{
+			{V: "b"},
+			{V: "2"},
+			{V: "2.2"},
+			{V: "false"},
+		}},
+	}
+	want := [][]Value{
+		{"a", 1, 1.2, true},
+		{"b", 2, 2.2, false},
+	}
+	got, err := convertRows(rows, schema)
+	if err != nil {
+		t.Fatalf("got %v, want nil", err)
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("\ngot  %v\nwant %v", got, want)
+	}
+}

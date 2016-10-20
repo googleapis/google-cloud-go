@@ -25,6 +25,35 @@ import (
 // It is safe for concurrent use.
 type Uploader struct {
 	t *Table
+
+	// SkipInvalidRows causes rows containing invalid data to be silently
+	// ignored. The default value is false, which causes the entire request to
+	// fail if there is an attempt to insert an invalid row.
+	SkipInvalidRows bool
+
+	// IgnoreUnknownValues causes values not matching the schema to be ignored.
+	// The default value is false, which causes records containing such values
+	// to be treated as invalid records.
+	IgnoreUnknownValues bool
+
+	// A TableTemplateSuffix allows Uploaders to create tables automatically.
+	//
+	// Experimental: this option is experimental and may be modified or removed in future versions,
+	// regardless of any other documented package stability guarantees.
+	//
+	// When you specify a suffix, the table you upload data to
+	// will be used as a template for creating a new table, with the same schema,
+	// called <table> + <suffix>.
+	//
+	// More information is available at
+	// https://cloud.google.com/bigquery/streaming-data-into-bigquery#template-tables
+	TableTemplateSuffix string
+}
+
+// Uploader returns an Uploader that can be used to append rows to t.
+// The returned Uploader may optionally be further configured before its Put method is called.
+func (t *Table) Uploader() *Uploader {
+	return &Uploader{t: t}
 }
 
 // Put uploads one or more rows to the BigQuery service.  src must implement ValueSaver or be a slice of ValueSavers.
@@ -32,7 +61,6 @@ type Uploader struct {
 // The PutMultiError contains a RowInsertionError for each failed row.
 func (u *Uploader) Put(ctx context.Context, src interface{}) error {
 	// TODO(mcgreevy): Support structs which do not implement ValueSaver as src, a la Datastore.
-	// TODO(mcgreevy): Support options [SkipInvalidRows,IgnoreUnknownValues]
 
 	if saver, ok := src.(ValueSaver); ok {
 		return u.putMulti(ctx, []ValueSaver{saver})
@@ -64,7 +92,12 @@ func (u *Uploader) putMulti(ctx context.Context, src []ValueSaver) error {
 		}
 		rows = append(rows, &insertionRow{InsertID: insertID, Row: row})
 	}
-	return u.t.service.insertRows(ctx, u.t.ProjectID, u.t.DatasetID, u.t.TableID, rows)
+
+	return u.t.c.service.insertRows(ctx, u.t.ProjectID, u.t.DatasetID, u.t.TableID, rows, &insertRowsConf{
+		skipInvalidRows:     u.SkipInvalidRows,
+		ignoreUnknownValues: u.IgnoreUnknownValues,
+		templateSuffix:      u.TableTemplateSuffix,
+	})
 }
 
 // An insertionRow represents a row of data to be inserted into a table.

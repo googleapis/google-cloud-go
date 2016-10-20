@@ -23,8 +23,8 @@ import (
 	"os"
 	"time"
 
+	"cloud.google.com/go/bigquery"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud/bigquery"
 )
 
 var (
@@ -59,27 +59,14 @@ func main() {
 		log.Fatalf("Creating bigquery client: %v", err)
 	}
 
-	s1 := &bigquery.Table{
-		ProjectID: *project,
-		DatasetID: *dataset,
-		TableID:   *src1,
-	}
-
-	s2 := &bigquery.Table{
-		ProjectID: *project,
-		DatasetID: *dataset,
-		TableID:   *src2,
-	}
-
-	d := &bigquery.Table{
-		ProjectID: *project,
-		DatasetID: *dataset,
-		TableID:   *dest,
-	}
+	s1 := client.Dataset(*dataset).Table(*src1)
+	s2 := client.Dataset(*dataset).Table(*src2)
+	d := client.Dataset(*dataset).Table(*dest)
 
 	// Concatenate data.
-	job, err := client.Copy(ctx, d, bigquery.Tables{s1, s2}, bigquery.WriteTruncate)
-
+	copier := d.CopierFrom(s1, s2)
+	copier.WriteDisposition = bigquery.WriteTruncate
+	job, err := copier.Run(ctx)
 	if err != nil {
 		log.Fatalf("Concatenating: %v", err)
 	}

@@ -15,61 +15,285 @@
 package pubsub_test
 
 import (
-	"io/ioutil"
-	"log"
+	"fmt"
+	"time"
 
+	"cloud.google.com/go/pubsub"
 	"golang.org/x/net/context"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/pubsub"
+	"google.golang.org/api/iterator"
 )
 
-func Example_auth() context.Context {
-	// Initialize an authorized context with Google Developers Console
-	// JSON key. Read the google package examples to learn more about
-	// different authorization flows you can use.
-	// http://godoc.org/golang.org/x/oauth2/google
-	jsonKey, err := ioutil.ReadFile("/path/to/json/keyfile.json")
+func ExampleNewClient() {
+	ctx := context.Background()
+	_, err := pubsub.NewClient(ctx, "project-id")
 	if err != nil {
-		log.Fatal(err)
+		// TODO: Handle error.
 	}
-	conf, err := google.JWTConfigFromJSON(
-		jsonKey,
-		pubsub.ScopeCloudPlatform,
-		pubsub.ScopePubSub,
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	ctx := cloud.NewContext("project-id", conf.Client(oauth2.NoContext))
-	// See the other samples to learn how to use the context.
-	return ctx
+
+	// See the other examples to learn how to use the Client.
 }
 
-func ExamplePublish() {
-	ctx := Example_auth()
+func ExampleClient_CreateTopic() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
 
-	msgIDs, err := pubsub.Publish(ctx, "topic1", &pubsub.Message{
+	// Create a new topic with the given name.
+	topic, err := client.CreateTopic(ctx, "topicName")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	_ = topic // TODO: use the topic.
+}
+
+func ExampleClient_CreateSubscription() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	// Create a new topic with the given name.
+	topic, err := client.CreateTopic(ctx, "topicName")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	// Create a new subscription to the previously created topic
+	// with the given name.
+	sub, err := client.CreateSubscription(ctx, "subName", topic, 10*time.Second, nil)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	_ = sub // TODO: use the subscription.
+}
+
+func ExampleTopic_Delete() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	topic := client.Topic("topicName")
+	if err := topic.Delete(ctx); err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleTopic_Exists() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	topic := client.Topic("topicName")
+	ok, err := topic.Exists(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	if !ok {
+		// Topic doesn't exist.
+	}
+}
+
+func ExampleTopic_Publish() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	topic := client.Topic("topicName")
+	msgIDs, err := topic.Publish(ctx, &pubsub.Message{
 		Data: []byte("hello world"),
 	})
 	if err != nil {
-		log.Fatal(err)
+		// TODO: Handle error.
 	}
-	log.Printf("Published a message with a message id: %s\n", msgIDs[0])
+	fmt.Printf("Published a message with a message ID: %s\n", msgIDs[0])
 }
 
-func ExamplePull() {
-	ctx := Example_auth()
-
-	// E.g. c.CreateSub("sub1", "topic1", time.Duration(0), "")
-	msgs, err := pubsub.Pull(ctx, "sub1", 1)
+func ExampleTopic_Subscriptions() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
 	if err != nil {
-		log.Fatal(err)
+		// TODO: Handle error.
 	}
-	log.Printf("New message arrived: %v\n", msgs[0])
-	if err := pubsub.Ack(ctx, "sub1", msgs[0].AckID); err != nil {
-		log.Fatal(err)
+	topic := client.Topic("topic-name")
+	// List all subscriptions of the topic (maybe of multiple projects).
+	for subs := topic.Subscriptions(ctx); ; {
+		sub, err := subs.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		_ = sub // TODO: use the subscription.
 	}
-	log.Println("Acknowledged message")
+}
+
+func ExampleSubscription_Delete() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	sub := client.Subscription("subName")
+	if err := sub.Delete(ctx); err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleSubscription_Exists() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	sub := client.Subscription("subName")
+	ok, err := sub.Exists(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	if !ok {
+		// Subscription doesn't exist.
+	}
+}
+
+func ExampleSubscription_Config() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	sub := client.Subscription("subName")
+	config, err := sub.Config(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Println(config)
+}
+
+func ExampleSubscription_Pull() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	it, err := client.Subscription("subName").Pull(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// Ensure that the iterator is closed down cleanly.
+	defer it.Stop()
+}
+
+func ExampleSubscription_Pull_options() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	sub := client.Subscription("subName")
+	// This program is expected to process and acknowledge messages
+	// in 5 seconds. If not, Pub/Sub API will assume the message is not
+	// acknowledged.
+	it, err := sub.Pull(ctx, pubsub.MaxExtension(5*time.Second))
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// Ensure that the iterator is closed down cleanly.
+	defer it.Stop()
+}
+
+func ExampleSubscription_ModifyPushConfig() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	sub := client.Subscription("subName")
+	if err := sub.ModifyPushConfig(ctx, &pubsub.PushConfig{Endpoint: "https://example.com/push"}); err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleMessageIterator_Next() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	it, err := client.Subscription("subName").Pull(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// Ensure that the iterator is closed down cleanly.
+	defer it.Stop()
+	// Consume 10 messages.
+	for i := 0; i < 10; i++ {
+		m, err := it.Next()
+		if err == iterator.Done {
+			// There are no more messages.  This will happen if it.Stop is called.
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+			break
+		}
+		fmt.Printf("message %d: %s\n", i, m.Data)
+
+		// Acknowledge the message.
+		m.Done(true)
+	}
+}
+
+func ExampleMessageIterator_Stop_defer() {
+	// If all uses of the iterator occur within the lifetime of a single
+	// function, stop it with defer.
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	it, err := client.Subscription("subName").Pull(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	// Ensure that the iterator is closed down cleanly.
+	defer it.Stop()
+
+	// TODO: Use the iterator (see the example for MessageIterator.Next).
+}
+
+func ExampleMessageIterator_Stop_goroutine() *pubsub.MessageIterator {
+	// If you use the iterator outside the lifetime of a single function, you
+	// must still stop it.
+	// This (contrived) example returns an iterator that will yield messages
+	// for ten seconds, and then stop.
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	it, err := client.Subscription("subName").Pull(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// Stop the iterator after receiving messages for ten seconds.
+	go func() {
+		time.Sleep(10 * time.Second)
+		it.Stop()
+	}()
+	return it
 }

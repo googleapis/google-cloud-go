@@ -24,9 +24,9 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/internal/testutil"
 	"golang.org/x/net/context"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/internal/testutil"
+	"google.golang.org/api/option"
 )
 
 // TODO(djd): Make test entity clean up more robust: some test entities may
@@ -42,7 +42,7 @@ func newClient(ctx context.Context, t *testing.T) *Client {
 	if ts == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
-	client, err := NewClient(ctx, testutil.ProjID(), cloud.WithTokenSource(ts))
+	client, err := NewClient(ctx, testutil.ProjID(), option.WithTokenSource(ts))
 	if err != nil {
 		t.Fatalf("NewClient: %v", err)
 	}
@@ -207,6 +207,29 @@ func TestUnindexableValues(t *testing.T) {
 	}
 	for _, tt := range testCases {
 		_, err := client.Put(ctx, NewIncompleteKey(ctx, "BasicsZ", nil), &tt.in)
+		if (err != nil) != tt.wantErr {
+			t.Errorf("client.Put %s got err %v, want err %t", tt.in, err, tt.wantErr)
+		}
+	}
+}
+
+func TestNilKey(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	ctx := context.Background()
+	client := newClient(ctx, t)
+	defer client.Close()
+
+	testCases := []struct {
+		in      K0
+		wantErr bool
+	}{
+		{in: K0{K: testKey0}, wantErr: false},
+		{in: K0{}, wantErr: false},
+	}
+	for _, tt := range testCases {
+		_, err := client.Put(ctx, NewIncompleteKey(ctx, "NilKey", nil), &tt.in)
 		if (err != nil) != tt.wantErr {
 			t.Errorf("client.Put %s got err %v, want err %t", tt.in, err, tt.wantErr)
 		}
@@ -453,7 +476,7 @@ func TestLargeQuery(t *testing.T) {
 			}
 			for i, child := range got {
 				if got, want := child.I, i+offset; got != want {
-					t.Errorf("GetAll(limit=%d offset=%d) got[%d].I == %d; want %d", limit, got, want)
+					t.Errorf("GetAll(limit=%d offset=%d) got[%d].I == %d; want %d", limit, offset, i, got, want)
 					break
 				}
 			}
@@ -528,6 +551,9 @@ func TestLargeQuery(t *testing.T) {
 }
 
 func TestEventualConsistency(t *testing.T) {
+	// TODO(jba): either make this actually test eventual consistency, or
+	// delete it. Currently it behaves the same with or without the
+	// EventualConsistency call.
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -813,32 +839,32 @@ func TestTransaction(t *testing.T) {
 		wantErr       error
 	}{
 		{
-			desc:          "no conflicts",
+			desc:          "3 attempts, no conflicts",
 			causeConflict: []bool{false},
 			retErr:        []error{nil},
 			want:          11,
 		},
 		{
-			desc:          "user error",
+			desc:          "1 attempt, user error",
 			causeConflict: []bool{false},
 			retErr:        []error{bangErr},
 			wantErr:       bangErr,
 		},
 		{
-			desc:          "2 conflicts",
-			causeConflict: []bool{true, true, false},
-			retErr:        []error{nil, nil, nil},
-			want:          15, // Each conflict increments by 2.
+			desc:          "2 attempts, 1 conflict",
+			causeConflict: []bool{true, false},
+			retErr:        []error{nil, nil},
+			want:          13, // Each conflict increments by 2.
 		},
 		{
-			desc:          "3 conflicts",
+			desc:          "3 attempts, 3 conflicts",
 			causeConflict: []bool{true, true, true},
 			retErr:        []error{nil, nil, nil},
 			wantErr:       ErrConcurrentTransaction,
 		},
 	}
 
-	for _, tt := range tests {
+	for i, tt := range tests {
 		// Put a new counter.
 		c := &Counter{N: 10, T: time.Now()}
 		key, err := client.Put(ctx, NewIncompleteKey(ctx, "TransCounter", nil), c)
@@ -875,7 +901,7 @@ func TestTransaction(t *testing.T) {
 			}
 
 			return tt.retErr[attempts-1]
-		})
+		}, MaxAttempts(i))
 
 		// Check the error returned by RunInTransaction.
 		if err != tt.wantErr {

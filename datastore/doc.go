@@ -1,6 +1,16 @@
-// Copyright 2016 Google Inc. All rights reserved.
-// Use of this source code is governed by the Apache 2.0
-// license that can be found in the LICENSE file.
+// Copyright 2016 Google Inc. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 /*
 Package datastore provides a client for Google Cloud Datastore.
@@ -51,21 +61,21 @@ Example code:
 
 		// Create a datastore client. In a typical application, you would create
 		// a single client which is reused for every datastore operation.
-		client, err := datastore.NewClient(ctx, "my-project")
+		dsClient, err := datastore.NewClient(ctx, "my-project")
 		if err != nil {
 			// Handle error.
 		}
 
 		k := datastore.NewKey(ctx, "Entity", "stringID", 0, nil)
 		e := new(Entity)
-		if err := client.Get(ctx, k, e); err != nil {
+		if err := dsClient.Get(ctx, k, e); err != nil {
 			// Handle error.
 		}
 
 		old := e.Value
 		e.Value = "Hello World!"
 
-		if _, err := client.Put(ctx, k, e); err != nil {
+		if _, err := dsClient.Put(ctx, k, e); err != nil {
 			// Handle error.
 		}
 
@@ -257,7 +267,7 @@ Example code:
 		q := datastore.NewQuery("Widget").
 			Filter("Price <", 1000).
 			Order("-Price")
-		for t := client.Run(ctx, q); ; {
+		for t := dsClient.Run(ctx, q); ; {
 			var x Widget
 			key, err := t.Next(&x)
 			if err == datastore.Done {
@@ -284,7 +294,7 @@ Example code:
 	func incCount(ctx context.Context, client *datastore.Client) {
 		var count int
 		key := datastore.NewKey(ctx, "Counter", "singleton", 0, nil)
-		err := client.RunInTransaction(ctx, func(tx *datastore.Transaction) error {
+		_, err := dsClient.RunInTransaction(ctx, func(tx *datastore.Transaction) error {
 			var x Counter
 			if err := tx.Get(key, &x); err != nil && err != datastore.ErrNoSuchEntity {
 				return err
@@ -294,7 +304,8 @@ Example code:
 				return err
 			}
 			count = x.Count
-		}, nil)
+			return nil
+		})
 		if err != nil {
 			// Handle error.
 		}
@@ -302,5 +313,20 @@ Example code:
 		// (RunInTransaction has returned nil).
 		fmt.Printf("Count=%d\n", count)
 	}
+
+
+Google Cloud Datastore Emulator
+
+This package supports the Cloud Datastore emulator, which is useful for testing and
+development. Environment variables are used to indicate that datastore traffic should be
+directed to the emulator instead of the production Datastore service.
+
+To install and set up the emulator and its environment variables, see the documentation
+at https://cloud.google.com/datastore/docs/tools/datastore-emulator.
+
 */
-package datastore // import "google.golang.org/cloud/datastore"
+package datastore // import "cloud.google.com/go/datastore"
+
+// resourcePrefixHeader is the name of the metadata header used to indicate
+// the resource being operated on.
+const resourcePrefixHeader = "google-cloud-resource-prefix"

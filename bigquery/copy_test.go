@@ -45,10 +45,10 @@ func defaultCopyJob() *bq.Job {
 
 func TestCopy(t *testing.T) {
 	testCases := []struct {
-		dst     *Table
-		src     Tables
-		options []Option
-		want    *bq.Job
+		dst    *Table
+		srcs   []*Table
+		config CopyConfig
+		want   *bq.Job
 	}{
 		{
 			dst: &Table{
@@ -56,7 +56,7 @@ func TestCopy(t *testing.T) {
 				DatasetID: "d-dataset-id",
 				TableID:   "d-table-id",
 			},
-			src: Tables{
+			srcs: []*Table{
 				{
 					ProjectID: "s-project-id",
 					DatasetID: "s-dataset-id",
@@ -71,18 +71,44 @@ func TestCopy(t *testing.T) {
 				DatasetID: "d-dataset-id",
 				TableID:   "d-table-id",
 			},
-			src: Tables{
+			srcs: []*Table{
 				{
 					ProjectID: "s-project-id",
 					DatasetID: "s-dataset-id",
 					TableID:   "s-table-id",
 				},
 			},
-			options: []Option{CreateNever, WriteTruncate},
+			config: CopyConfig{
+				CreateDisposition: CreateNever,
+				WriteDisposition:  WriteTruncate,
+			},
 			want: func() *bq.Job {
 				j := defaultCopyJob()
 				j.Configuration.Copy.CreateDisposition = "CREATE_NEVER"
 				j.Configuration.Copy.WriteDisposition = "WRITE_TRUNCATE"
+				return j
+			}(),
+		},
+		{
+			dst: &Table{
+				ProjectID: "d-project-id",
+				DatasetID: "d-dataset-id",
+				TableID:   "d-table-id",
+			},
+			srcs: []*Table{
+				{
+					ProjectID: "s-project-id",
+					DatasetID: "s-dataset-id",
+					TableID:   "s-table-id",
+				},
+			},
+			config: CopyConfig{JobID: "job-id"},
+			want: func() *bq.Job {
+				j := defaultCopyJob()
+				j.JobReference = &bq.JobReference{
+					JobId:     "job-id",
+					ProjectId: "client-project-id",
+				}
 				return j
 			}(),
 		},
@@ -91,10 +117,16 @@ func TestCopy(t *testing.T) {
 	for _, tc := range testCases {
 		s := &testService{}
 		c := &Client{
-			service: s,
+			service:   s,
+			projectID: "client-project-id",
 		}
-		if _, err := c.Copy(context.Background(), tc.dst, tc.src, tc.options...); err != nil {
-			t.Errorf("err calling cp: %v", err)
+		tc.dst.c = c
+		copier := tc.dst.CopierFrom(tc.srcs...)
+		tc.config.Srcs = tc.srcs
+		tc.config.Dst = tc.dst
+		copier.CopyConfig = tc.config
+		if _, err := copier.Run(context.Background()); err != nil {
+			t.Errorf("err calling Run: %v", err)
 			continue
 		}
 		if !reflect.DeepEqual(s.Job, tc.want) {

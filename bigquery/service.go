@@ -33,18 +33,24 @@ type service interface {
 	// Jobs
 	insertJob(ctx context.Context, job *bq.Job, projectId string) (*Job, error)
 	getJobType(ctx context.Context, projectId, jobID string) (jobType, error)
+	jobCancel(ctx context.Context, projectId, jobID string) error
 	jobStatus(ctx context.Context, projectId, jobID string) (*JobStatus, error)
 
 	// Tables
 	createTable(ctx context.Context, conf *createTableConf) error
 	getTableMetadata(ctx context.Context, projectID, datasetID, tableID string) (*TableMetadata, error)
 	deleteTable(ctx context.Context, projectID, datasetID, tableID string) error
-	listTables(ctx context.Context, projectID, datasetID, pageToken string) ([]*Table, string, error)
+
+	// listTables returns a page of Tables and a next page token. Note: the Tables do not have their c field populated.
+	listTables(ctx context.Context, projectID, datasetID string, pageSize int, pageToken string) ([]*Table, string, error)
 	patchTable(ctx context.Context, projectID, datasetID, tableID string, conf *patchTableConf) (*TableMetadata, error)
 
 	// Table data
 	readTabledata(ctx context.Context, conf *readTableConf, pageToken string) (*readDataResult, error)
-	insertRows(ctx context.Context, projectID, datasetID, tableID string, rows []*insertionRow) error
+	insertRows(ctx context.Context, projectID, datasetID, tableID string, rows []*insertionRow, conf *insertRowsConf) error
+
+	// Datasets
+	insertDataset(ctx context.Context, datasetID, projectID string) error
 
 	// Misc
 
@@ -52,6 +58,9 @@ type service interface {
 	// incomplete, an errIncompleteJob is returned. readQuery may be called
 	// repeatedly to poll for job completion.
 	readQuery(ctx context.Context, conf *readQueryConf, pageToken string) (*readDataResult, error)
+
+	// listDatasets returns a page of Datasets and a next page token. Note: the Datasets do not have their c field populated.
+	listDatasets(ctx context.Context, projectID string, maxResults int, pageToken string, all bool, filter string) ([]*Dataset, string, error)
 }
 
 type bigqueryService struct {
@@ -213,19 +222,29 @@ func (s *bigqueryService) readQuery(ctx context.Context, conf *readQueryConf, pa
 	return result, nil
 }
 
-func (s *bigqueryService) insertRows(ctx context.Context, projectID, datasetID, tableID string, rows []*insertionRow) error {
-	conf := &bq.TableDataInsertAllRequest{}
+type insertRowsConf struct {
+	templateSuffix      string
+	ignoreUnknownValues bool
+	skipInvalidRows     bool
+}
+
+func (s *bigqueryService) insertRows(ctx context.Context, projectID, datasetID, tableID string, rows []*insertionRow, conf *insertRowsConf) error {
+	req := &bq.TableDataInsertAllRequest{
+		TemplateSuffix:      conf.templateSuffix,
+		IgnoreUnknownValues: conf.ignoreUnknownValues,
+		SkipInvalidRows:     conf.skipInvalidRows,
+	}
 	for _, row := range rows {
 		m := make(map[string]bq.JsonValue)
 		for k, v := range row.Row {
 			m[k] = bq.JsonValue(v)
 		}
-		conf.Rows = append(conf.Rows, &bq.TableDataInsertAllRequestRows{
+		req.Rows = append(req.Rows, &bq.TableDataInsertAllRequestRows{
 			InsertId: row.InsertID,
 			Json:     m,
 		})
 	}
-	res, err := s.s.Tabledata.InsertAll(projectID, datasetID, tableID, conf).Context(ctx).Do()
+	res, err := s.s.Tabledata.InsertAll(projectID, datasetID, tableID, req).Context(ctx).Do()
 	if err != nil {
 		return err
 	}
@@ -283,6 +302,19 @@ func (s *bigqueryService) getJobType(ctx context.Context, projectID, jobID strin
 	}
 }
 
+func (s *bigqueryService) jobCancel(ctx context.Context, projectID, jobID string) error {
+	// Jobs.Cancel returns a job entity, but the only relevant piece of
+	// data it may contain (the status of the job) is unreliable.  From the
+	// docs: "This call will return immediately, and the client will need
+	// to poll for the job status to see if the cancel completed
+	// successfully".  So it would be misleading to return a status.
+	_, err := s.s.Jobs.Cancel(projectID, jobID).
+		Fields(). // We don't need any of the response data.
+		Context(ctx).
+		Do()
+	return err
+}
+
 func (s *bigqueryService) jobStatus(ctx context.Context, projectID, jobID string) (*JobStatus, error) {
 	res, err := s.s.Jobs.Get(projectID, jobID).
 		Fields("status"). // Only fetch what we need.
@@ -317,17 +349,20 @@ func jobStatusFromProto(status *bq.JobStatus) (*JobStatus, error) {
 }
 
 // listTables returns a subset of tables that belong to a dataset, and a token for fetching the next subset.
-func (s *bigqueryService) listTables(ctx context.Context, projectID, datasetID, pageToken string) ([]*Table, string, error) {
+func (s *bigqueryService) listTables(ctx context.Context, projectID, datasetID string, pageSize int, pageToken string) ([]*Table, string, error) {
 	var tables []*Table
-	res, err := s.s.Tables.List(projectID, datasetID).
+	req := s.s.Tables.List(projectID, datasetID).
 		PageToken(pageToken).
-		Context(ctx).
-		Do()
+		Context(ctx)
+	if pageSize > 0 {
+		req.MaxResults(int64(pageSize))
+	}
+	res, err := req.Do()
 	if err != nil {
 		return nil, "", err
 	}
 	for _, t := range res.Tables {
-		tables = append(tables, convertListedTable(t))
+		tables = append(tables, s.convertListedTable(t))
 	}
 	return tables, res.NextPageToken, nil
 }
@@ -337,6 +372,7 @@ type createTableConf struct {
 	expiration                    time.Time
 	viewQuery                     string
 	schema                        *bq.TableSchema
+	useStandardSQL                bool
 }
 
 // createTable creates a table in the BigQuery service.
@@ -359,6 +395,10 @@ func (s *bigqueryService) createTable(ctx context.Context, conf *createTableConf
 	if conf.viewQuery != "" {
 		table.View = &bq.ViewDefinition{
 			Query: conf.viewQuery,
+		}
+		if conf.useStandardSQL {
+			table.View.UseLegacySql = false
+			table.ForceSendFields = append(table.ForceSendFields, "UseLegacySql")
 		}
 	}
 	if conf.schema != nil {
@@ -409,7 +449,7 @@ func bqTableToMetadata(t *bq.Table) *TableMetadata {
 	return md
 }
 
-func convertListedTable(t *bq.TableListTables) *Table {
+func (s *bigqueryService) convertListedTable(t *bq.TableListTables) *Table {
 	return &Table{
 		ProjectID: t.TableReference.ProjectId,
 		DatasetID: t.TableReference.DatasetId,
@@ -445,4 +485,41 @@ func (s *bigqueryService) patchTable(ctx context.Context, projectID, datasetID, 
 		return nil, err
 	}
 	return bqTableToMetadata(table), nil
+}
+
+func (s *bigqueryService) insertDataset(ctx context.Context, datasetID, projectID string) error {
+	ds := &bq.Dataset{
+		DatasetReference: &bq.DatasetReference{DatasetId: datasetID},
+	}
+	_, err := s.s.Datasets.Insert(projectID, ds).Context(ctx).Do()
+	return err
+}
+
+func (s *bigqueryService) listDatasets(ctx context.Context, projectID string, maxResults int, pageToken string, all bool, filter string) ([]*Dataset, string, error) {
+	req := s.s.Datasets.List(projectID).
+		Context(ctx).
+		PageToken(pageToken).
+		All(all)
+	if maxResults > 0 {
+		req.MaxResults(int64(maxResults))
+	}
+	if filter != "" {
+		req.Filter(filter)
+	}
+	res, err := req.Do()
+	if err != nil {
+		return nil, "", err
+	}
+	var datasets []*Dataset
+	for _, d := range res.Datasets {
+		datasets = append(datasets, s.convertListedDataset(d))
+	}
+	return datasets, res.NextPageToken, nil
+}
+
+func (s *bigqueryService) convertListedDataset(d *bq.DatasetListDatasets) *Dataset {
+	return &Dataset{
+		projectID: d.DatasetReference.ProjectId,
+		id:        d.DatasetReference.DatasetId,
+	}
 }

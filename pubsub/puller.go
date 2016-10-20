@@ -45,7 +45,7 @@ type puller struct {
 // newPuller constructs a new puller.
 // batchSize is the maximum number of messages to fetch at once.
 // No more than batchSize messages will be outstanding at any time.
-func newPuller(s service, subName string, ctx context.Context, batchSize int64, keepAlive, abandon func(ackID string)) *puller {
+func newPuller(s service, subName string, ctx context.Context, batchSize int32, keepAlive, abandon func(ackID string)) *puller {
 	ctx, cancel := context.WithCancel(ctx)
 	return &puller{
 		cancel:    cancel,
@@ -89,7 +89,7 @@ func (p *puller) Next() (*Message, error) {
 		}
 
 		for _, m := range buf {
-			p.keepAlive(m.AckID)
+			p.keepAlive(m.ackID)
 		}
 		p.buf = buf
 	}
@@ -109,7 +109,7 @@ func (p *puller) Stop() {
 	defer p.mu.Unlock()
 
 	for _, m := range p.buf {
-		p.abandon(m.AckID)
+		p.abandon(m.ackID)
 	}
 	p.buf = nil
 }

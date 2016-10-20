@@ -21,8 +21,8 @@ import (
 	"time"
 
 	timepb "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/cloud/datastore/internal/proto"
-	tpb "google.golang.org/cloud/datastore/internal/type_proto"
+	pb "google.golang.org/genproto/googleapis/datastore/v1"
+	llpb "google.golang.org/genproto/googleapis/type/latlng"
 )
 
 // saveEntity saves an EntityProto into a PropertyLoadSaver or struct pointer.
@@ -74,7 +74,7 @@ func saveStructProperty(props *[]Property, name string, noIndex bool, v reflect.
 			if err != nil {
 				return fmt.Errorf("datastore: unsupported struct field: %v", err)
 			}
-			return sub.(structPLS).save(props, name, noIndex)
+			return sub.save(props, name+".", noIndex)
 		}
 	}
 	if p.Value == nil {
@@ -135,19 +135,13 @@ func (s structPLS) Save() ([]Property, error) {
 }
 
 func (s structPLS) save(props *[]Property, prefix string, noIndex bool) error {
-	for i, t := range s.codec.byIndex {
-		if t.name == "-" {
-			continue
-		}
-		name := t.name
-		if prefix != "" {
-			name = prefix + name
-		}
-		v := s.v.Field(i)
+	for name, f := range s.codec.fields {
+		name = prefix + name
+		v := s.v.FieldByIndex(f.path)
 		if !v.IsValid() || !v.CanSet() {
 			continue
 		}
-		noIndex1 := noIndex || t.noIndex
+		noIndex1 := noIndex || f.noIndex
 		if err := saveStructProperty(props, name, noIndex1, v); err != nil {
 			return err
 		}
@@ -207,14 +201,16 @@ func interfaceToProto(iv interface{}, noIndex bool) (*pb.Value, error) {
 	case float64:
 		val.ValueType = &pb.Value_DoubleValue{v}
 	case *Key:
-		if v != nil {
+		if v == nil {
+			val.ValueType = &pb.Value_NullValue{}
+		} else {
 			val.ValueType = &pb.Value_KeyValue{keyToProto(v)}
 		}
 	case GeoPoint:
 		if !v.Valid() {
 			return nil, errors.New("invalid GeoPoint value")
 		}
-		val.ValueType = &pb.Value_GeoPointValue{&tpb.LatLng{
+		val.ValueType = &pb.Value_GeoPointValue{&llpb.LatLng{
 			Latitude:  v.Lat,
 			Longitude: v.Lng,
 		}}

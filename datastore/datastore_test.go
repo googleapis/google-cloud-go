@@ -26,7 +26,8 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
-	pb "google.golang.org/cloud/datastore/internal/proto"
+	pb "google.golang.org/genproto/googleapis/datastore/v1"
+	"google.golang.org/grpc"
 )
 
 type (
@@ -118,6 +119,10 @@ type C3 struct {
 	C string
 }
 
+type c4 struct {
+	C string
+}
+
 type E struct{}
 
 type G0 struct {
@@ -155,6 +160,18 @@ type N2 struct {
 	Green N1 `datastore:"green"`
 	Blue  N1
 	White N1 `datastore:"-"`
+}
+
+type N3 struct {
+	C3 `datastore:"red"`
+}
+
+type N4 struct {
+	c4
+}
+
+type N5 struct {
+	c4 `datastore:"red"`
 }
 
 type O0 struct {
@@ -304,6 +321,15 @@ type Doubler struct {
 	S string
 	I int64
 	B bool
+}
+
+type Repeat struct {
+	Key   string
+	Value []byte
+}
+
+type Repeated struct {
+	Repeats []Repeat
 }
 
 func (d *Doubler) Load(props []Property) error {
@@ -618,6 +644,35 @@ var testCases = []testCase{
 		&Y0{F: make([]float64, maxIndexedProperties), B: true},
 		&Y0{},
 		"too many indexed properties",
+		"",
+	},
+	{
+		"slice of slices of bytes",
+		&Repeated{
+			Repeats: []Repeat{
+				{
+					Key:   "key 1",
+					Value: []byte("value 1"),
+				},
+				{
+					Key:   "key 2",
+					Value: []byte("value 2"),
+				},
+			},
+		},
+		&Repeated{
+			Repeats: []Repeat{
+				{
+					Key:   "key 1",
+					Value: []byte("value 1"),
+				},
+				{
+					Key:   "key 2",
+					Value: []byte("value 2"),
+				},
+			},
+		},
+		"",
 		"",
 	},
 	{
@@ -1111,6 +1166,35 @@ var testCases = []testCase{
 		"",
 	},
 	{
+		"anonymous field with tag",
+		&N3{
+			C3: C3{C: "s"},
+		},
+		&PropertyList{
+			Property{Name: "red.C", Value: "s", NoIndex: false},
+		},
+		"",
+		"",
+	},
+	{
+		"unexported anonymous field",
+		&N4{
+			c4: c4{C: "s"},
+		},
+		new(PropertyList),
+		"",
+		"",
+	},
+	{
+		"unexported anonymous field with tag",
+		&N5{
+			c4: c4{C: "s"},
+		},
+		new(PropertyList),
+		"",
+		"",
+	},
+	{
 		"save props load structs with ragged fields",
 		&PropertyList{
 			Property{Name: "red.S", Value: "rot", NoIndex: false},
@@ -1471,8 +1555,8 @@ func TestPutMultiTypes(t *testing.T) {
 		{
 			desc: "type []P (non-pointer, *P implements PropertyLoadSaver)",
 			src: []PropertyList{
-				PropertyList{Property{Name: "A", Value: 1}, Property{Name: "B", Value: "one"}},
-				PropertyList{Property{Name: "A", Value: 2}, Property{Name: "B", Value: "two"}},
+				{Property{Name: "A", Value: 1}, Property{Name: "B", Value: "one"}},
+				{Property{Name: "A", Value: 2}, Property{Name: "B", Value: "two"}},
 			},
 		},
 		// Test some invalid cases.
@@ -1549,7 +1633,7 @@ func TestPutMultiTypes(t *testing.T) {
 			continue
 		}
 		if len(got) != len(want) {
-			t.Errorf("%s: got %d entities, want %d", len(got), len(want))
+			t.Errorf("%s: got %d entities, want %d", tt.desc, len(got), len(want))
 			continue
 		}
 		for i, e := range got {
@@ -1640,4 +1724,100 @@ func TestValidGeoPoint(t *testing.T) {
 			t.Errorf("%s: got %v, want %v", tc.desc, got, tc.want)
 		}
 	}
+}
+
+func TestPutInvalidEntity(t *testing.T) {
+	// Test that trying to put an invalid entity always returns the correct error
+	// type.
+
+	// Fake client that can pretend to start a transaction.
+	fakeClient := &fakeDatastoreClient{
+		beginTransaction: func(*pb.BeginTransactionRequest) (*pb.BeginTransactionResponse, error) {
+			return &pb.BeginTransactionResponse{
+				Transaction: []byte("deadbeef"),
+			}, nil
+		},
+	}
+	client := &Client{
+		client: fakeClient,
+	}
+
+	ctx := context.Background()
+	key := NewIncompleteKey(ctx, "kind", nil)
+
+	_, err := client.Put(ctx, key, "invalid entity")
+	if err != ErrInvalidEntityType {
+		t.Errorf("client.Put returned err %v, want %v", err, ErrInvalidEntityType)
+	}
+
+	_, err = client.PutMulti(ctx, []*Key{key}, []interface{}{"invalid entity"})
+	if me, ok := err.(MultiError); !ok {
+		t.Errorf("client.PutMulti returned err %v, want MultiError type", err)
+	} else if len(me) != 1 || me[0] != ErrInvalidEntityType {
+		t.Errorf("client.PutMulti returned err %v, want MulitError{ErrInvalidEntityType}", err)
+	}
+
+	client.RunInTransaction(ctx, func(tx *Transaction) error {
+		_, err := tx.Put(key, "invalid entity")
+		if err != ErrInvalidEntityType {
+			t.Errorf("tx.Put returned err %v, want %v", err, ErrInvalidEntityType)
+		}
+
+		_, err = tx.PutMulti([]*Key{key}, []interface{}{"invalid entity"})
+		if me, ok := err.(MultiError); !ok {
+			t.Errorf("tx.PutMulti returned err %v, want MultiError type", err)
+		} else if len(me) != 1 || me[0] != ErrInvalidEntityType {
+			t.Errorf("tx.PutMulti returned err %v, want MulitError{ErrInvalidEntityType}", err)
+		}
+
+		return errors.New("bang!") // Return error: we don't actually want to commit.
+	})
+}
+
+type fakeDatastoreClient struct {
+	// Optional handlers for the datastore methods.
+	// Any handlers left undefined will return an error.
+	lookup           func(*pb.LookupRequest) (*pb.LookupResponse, error)
+	runQuery         func(*pb.RunQueryRequest) (*pb.RunQueryResponse, error)
+	beginTransaction func(*pb.BeginTransactionRequest) (*pb.BeginTransactionResponse, error)
+	commit           func(*pb.CommitRequest) (*pb.CommitResponse, error)
+	rollback         func(*pb.RollbackRequest) (*pb.RollbackResponse, error)
+	allocateIds      func(*pb.AllocateIdsRequest) (*pb.AllocateIdsResponse, error)
+}
+
+func (c *fakeDatastoreClient) Lookup(ctx context.Context, in *pb.LookupRequest, opts ...grpc.CallOption) (*pb.LookupResponse, error) {
+	if c.lookup == nil {
+		return nil, errors.New("no lookup handler defined")
+	}
+	return c.lookup(in)
+}
+func (c *fakeDatastoreClient) RunQuery(ctx context.Context, in *pb.RunQueryRequest, opts ...grpc.CallOption) (*pb.RunQueryResponse, error) {
+	if c.runQuery == nil {
+		return nil, errors.New("no runQuery handler defined")
+	}
+	return c.runQuery(in)
+}
+func (c *fakeDatastoreClient) BeginTransaction(ctx context.Context, in *pb.BeginTransactionRequest, opts ...grpc.CallOption) (*pb.BeginTransactionResponse, error) {
+	if c.beginTransaction == nil {
+		return nil, errors.New("no beginTransaction handler defined")
+	}
+	return c.beginTransaction(in)
+}
+func (c *fakeDatastoreClient) Commit(ctx context.Context, in *pb.CommitRequest, opts ...grpc.CallOption) (*pb.CommitResponse, error) {
+	if c.commit == nil {
+		return nil, errors.New("no commit handler defined")
+	}
+	return c.commit(in)
+}
+func (c *fakeDatastoreClient) Rollback(ctx context.Context, in *pb.RollbackRequest, opts ...grpc.CallOption) (*pb.RollbackResponse, error) {
+	if c.rollback == nil {
+		return nil, errors.New("no rollback handler defined")
+	}
+	return c.rollback(in)
+}
+func (c *fakeDatastoreClient) AllocateIds(ctx context.Context, in *pb.AllocateIdsRequest, opts ...grpc.CallOption) (*pb.AllocateIdsResponse, error) {
+	if c.allocateIds == nil {
+		return nil, errors.New("no allocateIds handler defined")
+	}
+	return c.allocateIds(in)
 }

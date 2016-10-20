@@ -29,7 +29,7 @@ If your program is run on Google App Engine or Google Compute Engine, using the 
 (https://developers.google.com/accounts/docs/application-default-credentials)
 is the simplest option. Those credentials will be used by default when NewClient or NewAdminClient are called.
 
-To use alternate credentials, pass them to NewClient or NewAdminClient using cloud.WithTokenSource.
+To use alternate credentials, pass them to NewClient or NewAdminClient using option.WithTokenSource.
 For instance, you can use service account credentials by visiting
 https://cloud.google.com/console/project/MYPROJECT/apiui/credential,
 creating a new OAuth "Client ID", storing the JSON key somewhere accessible, and writing
@@ -37,10 +37,10 @@ creating a new OAuth "Client ID", storing the JSON key somewhere accessible, and
 	...
 	config, err := google.JWTConfigFromJSON(jsonKey, bigtable.Scope) // or bigtable.AdminScope, etc.
 	...
-	client, err := bigtable.NewClient(ctx, project, zone, cluster, cloud.WithTokenSource(config.TokenSource(ctx)))
+	client, err := bigtable.NewClient(ctx, project, instance, option.WithTokenSource(config.TokenSource(ctx)))
 	...
 Here, `google` means the golang.org/x/oauth2/google package
-and `cloud` means the google.golang.org/cloud package.
+and `option` means the google.golang.org/api/option package.
 
 Reading
 
@@ -85,8 +85,15 @@ To increment an encoded value in one cell,
 	rmw.Increment("links", "golang.org", 12) // add 12 to the cell in column "links:golang.org"
 	r, err := tbl.ApplyReadModifyWrite(ctx, "com.google.cloud", rmw)
 	...
+
+Retries
+
+If a read or write operation encounters a transient error it will be retried until a successful
+response, an unretryable error or the context deadline is reached. Non-idempotent writes (where
+the timestamp is set to ServerTime) will not be retried. In the case of ReadRows, retried calls
+will not re-scan rows that have already been processed.
 */
-package bigtable // import "google.golang.org/cloud/bigtable"
+package bigtable // import "cloud.google.com/go/bigtable"
 
 // Scope constants for authentication credentials.
 // These should be used when using credential creation functions such as oauth.NewServiceAccountFromFile.
@@ -99,10 +106,14 @@ const (
 	// AdminScope is the OAuth scope for Cloud Bigtable table admin operations.
 	AdminScope = "https://www.googleapis.com/auth/bigtable.admin.table"
 
-	// ClusterAdminScope is the OAuth scope for Cloud Bigtable cluster admin operations.
-	ClusterAdminScope = "https://www.googleapis.com/auth/bigtable.admin.cluster"
+	// InstanceAdminScope is the OAuth scope for Cloud Bigtable instance (and cluster) admin operations.
+	InstanceAdminScope = "https://www.googleapis.com/auth/bigtable.admin.cluster"
 )
 
 // clientUserAgent identifies the version of this package.
 // It should be bumped upon significant changes only.
-const clientUserAgent = "cbt-go/20150727"
+const clientUserAgent = "cbt-go/20160628"
+
+// resourcePrefixHeader is the name of the metadata header used to indicate
+// the resource being operated on.
+const resourcePrefixHeader = "google-cloud-resource-prefix"

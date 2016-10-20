@@ -14,28 +14,151 @@
 
 package bigquery
 
-import "golang.org/x/net/context"
+import (
+	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
+)
 
 // Dataset is a reference to a BigQuery dataset.
 type Dataset struct {
-	id     string
-	client *Client
+	projectID string
+	id        string
+	c         *Client
 }
 
-// ListTables returns a list of all the tables contained in the Dataset.
-func (d *Dataset) ListTables(ctx context.Context) ([]*Table, error) {
-	var tables []*Table
+// Dataset creates a handle to a BigQuery dataset in the client's project.
+func (c *Client) Dataset(id string) *Dataset {
+	return c.DatasetInProject(c.projectID, id)
+}
 
-	err := getPages("", func(pageToken string) (string, error) {
-		ts, tok, err := d.client.service.listTables(ctx, d.client.projectID, d.id, pageToken)
-		if err == nil {
-			tables = append(tables, ts...)
-		}
-		return tok, err
-	})
+// DatasetInProject creates a handle to a BigQuery dataset in the specified project.
+func (c *Client) DatasetInProject(projectID, datasetID string) *Dataset {
+	return &Dataset{
+		projectID: projectID,
+		id:        datasetID,
+		c:         c,
+	}
+}
 
-	if err != nil {
+// Create creates a dataset in the BigQuery service. An error will be returned
+// if the dataset already exists.
+func (d *Dataset) Create(ctx context.Context) error {
+	return d.c.service.insertDataset(ctx, d.id, d.projectID)
+}
+
+// Table creates a handle to a BigQuery table in the dataset.
+// To determine if a table exists, call Table.Metadata.
+// If the table does not already exist, use Table.Create to create it.
+func (d *Dataset) Table(tableID string) *Table {
+	return &Table{ProjectID: d.projectID, DatasetID: d.id, TableID: tableID, c: d.c}
+}
+
+// Tables returns an iterator over the tables in the Dataset.
+func (d *Dataset) Tables(ctx context.Context) *TableIterator {
+	it := &TableIterator{
+		ctx:     ctx,
+		dataset: d,
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
+		it.fetch,
+		func() int { return len(it.tables) },
+		func() interface{} { b := it.tables; it.tables = nil; return b })
+	return it
+}
+
+// A TableIterator is an iterator over Tables.
+type TableIterator struct {
+	ctx      context.Context
+	dataset  *Dataset
+	tables   []*Table
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+}
+
+// Next returns the next result. Its second return value is Done if there are
+// no more results. Once Next returns Done, all subsequent calls will return
+// Done.
+func (it *TableIterator) Next() (*Table, error) {
+	if err := it.nextFunc(); err != nil {
 		return nil, err
 	}
-	return tables, nil
+	t := it.tables[0]
+	it.tables = it.tables[1:]
+	return t, nil
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *TableIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
+
+func (it *TableIterator) fetch(pageSize int, pageToken string) (string, error) {
+	tables, tok, err := it.dataset.c.service.listTables(it.ctx, it.dataset.projectID, it.dataset.id, pageSize, pageToken)
+	if err != nil {
+		return "", err
+	}
+	for _, t := range tables {
+		t.c = it.dataset.c
+		it.tables = append(it.tables, t)
+	}
+	return tok, nil
+}
+
+// Datasets returns an iterator over the datasets in the Client's project.
+func (c *Client) Datasets(ctx context.Context) *DatasetIterator {
+	return c.DatasetsInProject(ctx, c.projectID)
+}
+
+// DatasetsInProject returns an iterator over the datasets in the provided project.
+func (c *Client) DatasetsInProject(ctx context.Context, projectID string) *DatasetIterator {
+	it := &DatasetIterator{
+		ctx:       ctx,
+		c:         c,
+		projectID: projectID,
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
+		it.fetch,
+		func() int { return len(it.items) },
+		func() interface{} { b := it.items; it.items = nil; return b })
+	return it
+}
+
+// DatasetIterator iterates over the datasets in a project.
+type DatasetIterator struct {
+	// ListHidden causes hidden datasets to be listed when set to true.
+	ListHidden bool
+
+	// Filter restricts the datasets returned by label. The filter syntax is described in
+	// https://cloud.google.com/bigquery/docs/labeling-datasets#filtering_datasets_using_labels
+	Filter string
+
+	ctx       context.Context
+	projectID string
+	c         *Client
+	pageInfo  *iterator.PageInfo
+	nextFunc  func() error
+	items     []*Dataset
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *DatasetIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
+
+func (it *DatasetIterator) Next() (*Dataset, error) {
+	if err := it.nextFunc(); err != nil {
+		return nil, err
+	}
+	item := it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *DatasetIterator) fetch(pageSize int, pageToken string) (string, error) {
+	datasets, nextPageToken, err := it.c.service.listDatasets(it.ctx, it.projectID,
+		pageSize, pageToken, it.ListHidden, it.Filter)
+	if err != nil {
+		return "", err
+	}
+	for _, d := range datasets {
+		d.c = it.c
+		it.items = append(it.items, d)
+	}
+	return nextPageToken, nil
 }

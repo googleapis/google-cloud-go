@@ -15,8 +15,6 @@
 package bigquery
 
 import (
-	"errors"
-
 	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 )
@@ -71,25 +69,17 @@ type JobStatus struct {
 	Errors []*Error
 }
 
-// jobOption is an Option which modifies a bq.Job proto.
-// This is used for configuring values that apply to all operations, such as setting a jobReference.
-type jobOption interface {
-	customizeJob(job *bq.Job, projectID string)
-}
+// setJobRef initializes job's JobReference if given a non-empty jobID.
+// projectID must be non-empty.
+func setJobRef(job *bq.Job, jobID, projectID string) {
+	if jobID == "" {
+		return
+	}
+	// We don't check whether projectID is empty; the server will return an
+	// error when it encounters the resulting JobReference.
 
-type jobID string
-
-// JobID returns an Option that sets the job ID of a BigQuery job.
-// If this Option is not used, a job ID is generated automatically.
-func JobID(ID string) Option {
-	return jobID(ID)
-}
-
-func (opt jobID) implementsOption() {}
-
-func (opt jobID) customizeJob(job *bq.Job, projectID string) {
 	job.JobReference = &bq.JobReference{
-		JobId:     string(opt),
+		JobId:     jobID,
 		ProjectId: projectID,
 	}
 }
@@ -105,20 +95,14 @@ func (s *JobStatus) Err() error {
 	return s.err
 }
 
-// Status returns the current status of the job.  It fails if the Status could not be determined.
+// Status returns the current status of the job. It fails if the Status could not be determined.
 func (j *Job) Status(ctx context.Context) (*JobStatus, error) {
 	return j.service.jobStatus(ctx, j.projectID, j.jobID)
 }
 
-func (j *Job) implementsReadSource() {}
-
-func (j *Job) customizeReadQuery(cursor *readQueryConf) error {
-	// There are mulitple kinds of jobs, but only a query job is suitable for reading.
-	if !j.isQuery {
-		return errors.New("Cannot read from a non-query job")
-	}
-
-	cursor.projectID = j.projectID
-	cursor.jobID = j.jobID
-	return nil
+// Cancel requests that a job be cancelled. This method returns without waiting for
+// cancellation to take effect. To check whether the job has terminated, use Job.Status.
+// Cancelled jobs may still incur costs.
+func (j *Job) Cancel(ctx context.Context) error {
+	return j.service.jobCancel(ctx, j.projectID, j.jobID)
 }

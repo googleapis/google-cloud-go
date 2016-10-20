@@ -15,148 +15,452 @@
 package storage_test
 
 import (
+	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
+	"os"
+	"time"
 
+	"cloud.google.com/go/storage"
 	"golang.org/x/net/context"
-	"golang.org/x/oauth2/google"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/storage"
+	"google.golang.org/api/iterator"
 )
 
-func Example_auth() {
-	// Initialize an authorized context with Google Developers Console
-	// JSON key. Read the google package examples to learn more about
-	// different authorization flows you can use.
-	// http://godoc.org/golang.org/x/oauth2/google
-	jsonKey, err := ioutil.ReadFile("/path/to/json/keyfile.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	conf, err := google.JWTConfigFromJSON(
-		jsonKey,
-		storage.ScopeFullControl,
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
+func ExampleNewClient() {
 	ctx := context.Background()
-	client, err := storage.NewClient(ctx, cloud.WithTokenSource(conf.TokenSource(ctx)))
+	client, err := storage.NewClient(ctx)
 	if err != nil {
-		log.Fatal(err)
+		// TODO: handle error.
 	}
+	// Use the client.
 
-	// Use the client (see other examples)
-	doSomething(client)
-
-	// After using the client, free any resources (e.g. network connections).
-	client.Close()
+	// Close the client when finished.
+	if err := client.Close(); err != nil {
+		// TODO: handle error.
+	}
 }
 
-func ExampleListObjects() {
+func ExampleNewClient_auth() {
 	ctx := context.Background()
-	var client *storage.Client // See Example (Auth)
+	// Use Google Application Default Credentials to authorize and authenticate the client.
+	// More information about Application Default Credentials and how to enable is at
+	// https://developers.google.com/identity/protocols/application-default-credentials.
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	var query *storage.Query
+	// Use the client.
+
+	// Close the client when finished.
+	if err := client.Close(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func ExampleBucketHandle_Create() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	if err := client.Bucket("my-bucket").Create(ctx, "my-project", nil); err != nil {
+		// TODO: handle error.
+	}
+}
+
+func ExampleBucketHandle_Delete() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	if err := client.Bucket("my-bucket").Delete(ctx); err != nil {
+		// TODO: handle error.
+	}
+}
+
+func ExampleBucketHandle_Attrs() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	attrs, err := client.Bucket("my-bucket").Attrs(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Println(attrs)
+}
+
+func ExampleClient_Buckets() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	it := client.Bucket("my-bucket")
+	_ = it // TODO: iterate using Next or iterator.Pager.
+}
+
+func ExampleBucketIterator_Next() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	it := client.Buckets(ctx, "my-project")
 	for {
-		// If you are using this package on App Engine Managed VMs runtime,
-		// you can init a bucket client with your app's default bucket name.
-		// See http://godoc.org/google.golang.org/appengine/file#DefaultBucketName.
-		objects, err := client.Bucket("bucketname").List(ctx, query)
-		if err != nil {
-			log.Fatal(err)
-		}
-		for _, obj := range objects.Results {
-			log.Printf("object name: %s, size: %v", obj.Name, obj.Size)
-		}
-		// If there are more results, objects.Next will be non-nil.
-		if objects.Next == nil {
+		bucketAttrs, err := it.Next()
+		if err == iterator.Done {
 			break
 		}
-		query = objects.Next
+		if err != nil {
+			// TODO: Handle error.
+		}
+		fmt.Println(bucketAttrs)
 	}
-
-	log.Println("paginated through all object items in the bucket you specified.")
 }
 
-func ExampleNewReader() {
+func ExampleBucketHandle_Objects() {
 	ctx := context.Background()
-	var client *storage.Client // See Example (Auth)
-
-	rc, err := client.Bucket("bucketname").Object("filename1").NewReader(ctx)
+	client, err := storage.NewClient(ctx)
 	if err != nil {
-		log.Fatal(err)
+		// TODO: handle error.
+	}
+	it := client.Bucket("my-bucket").Objects(ctx, nil)
+	_ = it // TODO: iterate using Next or iterator.Pager.
+}
+
+func ExampleObjectIterator_Next() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	it := client.Bucket("my-bucket").Objects(ctx, nil)
+	for {
+		objAttrs, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		fmt.Println(objAttrs)
+	}
+}
+
+func ExampleSignedURL() {
+	pkey, err := ioutil.ReadFile("my-private-key.pem")
+	if err != nil {
+		// TODO: handle error.
+	}
+	url, err := storage.SignedURL("my-bucket", "my-object", &storage.SignedURLOptions{
+		GoogleAccessID: "xxx@developer.gserviceaccount.com",
+		PrivateKey:     pkey,
+		Method:         "GET",
+		Expires:        time.Now().Add(48 * time.Hour),
+	})
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Println(url)
+}
+
+func ExampleObjectHandle_Attrs() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	objAttrs, err := client.Bucket("my-bucket").Object("my-object").Attrs(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Println(objAttrs)
+}
+
+func ExampleObjectHandle_Attrs_withConditions() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	obj := client.Bucket("my-bucket").Object("my-object")
+	// Read the object.
+	objAttrs1, err := obj.Attrs(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// Do something else for a while.
+	time.Sleep(5 * time.Minute)
+	// Now read the same contents, even if the object has been written since the last read.
+	objAttrs2, err := obj.Generation(objAttrs1.Generation).Attrs(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Println(objAttrs1, objAttrs2)
+}
+
+func ExampleObjectHandle_Update() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// Change only the content type of the object.
+	objAttrs, err := client.Bucket("my-bucket").Object("my-object").Update(ctx, storage.ObjectAttrsToUpdate{
+		ContentType:        "text/html",
+		ContentDisposition: "", // delete ContentDisposition
+	})
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Println(objAttrs)
+}
+
+func ExampleObjectHandle_NewReader() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	rc, err := client.Bucket("my-bucket").Object("my-object").NewReader(ctx)
+	if err != nil {
+		// TODO: handle error.
 	}
 	slurp, err := ioutil.ReadAll(rc)
 	rc.Close()
 	if err != nil {
-		log.Fatal(err)
+		// TODO: handle error.
 	}
-
-	log.Println("file contents:", slurp)
+	fmt.Println("file contents:", slurp)
 }
 
-func ExampleNewWriter() {
+func ExampleObjectHandle_NewRangeReader() {
 	ctx := context.Background()
-	var client *storage.Client // See Example (Auth)
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// Read only the first 64K.
+	rc, err := client.Bucket("bucketname").Object("filename1").NewRangeReader(ctx, 0, 64*1024)
+	if err != nil {
+		// TODO: handle error.
+	}
+	slurp, err := ioutil.ReadAll(rc)
+	rc.Close()
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Println("first 64K of file contents:", slurp)
+}
 
+func ExampleObjectHandle_NewWriter() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	wc := client.Bucket("bucketname").Object("filename1").NewWriter(ctx)
+	_ = wc // TODO: Use the Writer.
+}
+
+func ExampleWriter_Write() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
 	wc := client.Bucket("bucketname").Object("filename1").NewWriter(ctx)
 	wc.ContentType = "text/plain"
 	wc.ACL = []storage.ACLRule{{storage.AllUsers, storage.RoleReader}}
 	if _, err := wc.Write([]byte("hello world")); err != nil {
-		log.Fatal(err)
+		// TODO: handle error.
 	}
 	if err := wc.Close(); err != nil {
-		log.Fatal(err)
+		// TODO: handle error.
 	}
-	log.Println("updated object:", wc.Attrs())
+	fmt.Println("updated object:", wc.Attrs())
 }
 
-func ExampleObjectHandle_CopyTo() {
+func ExampleObjectHandle_Delete() {
 	ctx := context.Background()
-	var client *storage.Client // See Example (Auth)
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// To delete multiple objects in a bucket, list them with an
+	// ObjectIterator, then Delete them.
 
+	// If you are using this package on the App Engine Flex runtime,
+	// you can init a bucket client with your app's default bucket name.
+	// See http://godoc.org/google.golang.org/appengine/file#DefaultBucketName.
+	bucket := client.Bucket("my-bucket")
+	it := bucket.Objects(ctx, nil)
+	for {
+		objAttrs, err := it.Next()
+		if err != nil && err != iterator.Done {
+			// TODO: Handle error.
+		}
+		if err == iterator.Done {
+			break
+		}
+		if err := bucket.Object(objAttrs.Name).Delete(ctx); err != nil {
+			// TODO: Handle error.
+		}
+	}
+	fmt.Println("deleted all object items in the bucket specified.")
+}
+
+func ExampleACLHandle_Delete() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// No longer grant access to the bucket to everyone on the Internet.
+	if err := client.Bucket("my-bucket").ACL().Delete(ctx, storage.AllUsers); err != nil {
+		// TODO: handle error.
+	}
+}
+
+func ExampleACLHandle_Set() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// Let any authenticated user read my-bucket/my-object.
+	obj := client.Bucket("my-bucket").Object("my-object")
+	if err := obj.ACL().Set(ctx, storage.AllAuthenticatedUsers, storage.RoleReader); err != nil {
+		// TODO: handle error.
+	}
+}
+
+func ExampleACLHandle_List() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// List the default object ACLs for my-bucket.
+	aclRules, err := client.Bucket("my-bucket").DefaultObjectACL().List(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Println(aclRules)
+}
+
+func ExampleCopier_Run() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
 	src := client.Bucket("bucketname").Object("file1")
 	dst := client.Bucket("another-bucketname").Object("file2")
 
-	o, err := src.CopyTo(ctx, dst, nil)
+	// Copy content and modify metadata.
+	copier := dst.CopierFrom(src)
+	copier.ContentType = "text/plain"
+	attrs, err := copier.Run(ctx)
 	if err != nil {
-		log.Fatal(err)
+		// TODO: Handle error, possibly resuming with copier.RewriteToken.
 	}
-	log.Println("copied file:", o)
+	fmt.Println(attrs)
+
+	// Just copy content.
+	attrs, err = dst.CopierFrom(src).Run(ctx)
+	if err != nil {
+		// TODO: Handle error. No way to resume.
+	}
+	fmt.Println(attrs)
 }
 
-func ExampleDeleteObject() {
+func ExampleCopier_Run_progress() {
+	// Display progress across multiple rewrite RPCs.
 	ctx := context.Background()
-	var client *storage.Client // See Example (Auth)
-
-	// To delete multiple objects in a bucket, first List then Delete them.
-
-	// If you are using this package on App Engine Managed VMs runtime,
-	// you can init a bucket client with your app's default bucket name.
-	// See http://godoc.org/google.golang.org/appengine/file#DefaultBucketName.
-	bucket := client.Bucket("bucketname")
-
-	var query *storage.Query // Set up query as desired.
-	for {
-		objects, err := bucket.List(ctx, query)
-		if err != nil {
-			log.Fatal(err)
-		}
-		for _, obj := range objects.Results {
-			log.Printf("deleting object name: %q, size: %v", obj.Name, obj.Size)
-			if err := bucket.Object(obj.Name).Delete(ctx); err != nil {
-				log.Fatalf("unable to delete %q: %v", obj.Name, err)
-			}
-		}
-		// If there are more results, objects.Next will be non-nil.
-		if objects.Next == nil {
-			break
-		}
-		query = objects.Next
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
 	}
+	src := client.Bucket("bucketname").Object("file1")
+	dst := client.Bucket("another-bucketname").Object("file2")
 
-	log.Println("deleted all object items in the bucket specified.")
+	copier := dst.CopierFrom(src)
+	copier.ProgressFunc = func(copiedBytes, totalBytes uint64) {
+		log.Printf("copy %.1f%% done", float64(copiedBytes)/float64(totalBytes)*100)
+	}
+	if _, err := copier.Run(ctx); err != nil {
+		// TODO: handle error.
+	}
 }
 
-func doSomething(c *storage.Client) {}
+func ExampleComposer_Run() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	bkt := client.Bucket("bucketname")
+	src1 := bkt.Object("o1")
+	src2 := bkt.Object("o2")
+	dst := bkt.Object("o3")
+	// Compose and modify metadata.
+	c := dst.ComposerFrom(src1, src2)
+	c.ContentType = "text/plain"
+	attrs, err := c.Run(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Println(attrs)
+
+	// Just compose..
+	attrs, err = dst.ComposerFrom(src1, src2).Run(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Println(attrs)
+}
+
+var gen int64
+
+func ExampleObjectHandle_Generation() {
+	// Read an object's contents from generation gen, regardless of the
+	// current generation of the object.
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	obj := client.Bucket("my-bucket").Object("my-object")
+	rc, err := obj.Generation(gen).NewReader(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	defer rc.Close()
+	if _, err := io.Copy(os.Stdout, rc); err != nil {
+		// TODO: handle error.
+	}
+}
+
+func ExampleObjectHandle_If() {
+	// Read from an object only if the current generation is gen.
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	obj := client.Bucket("my-bucket").Object("my-object")
+	rc, err := obj.If(storage.Conditions{GenerationMatch: gen}).NewReader(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	defer rc.Close()
+	if _, err := io.Copy(os.Stdout, rc); err != nil {
+		// TODO: handle error.
+	}
+}
