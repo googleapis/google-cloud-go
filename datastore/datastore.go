@@ -47,8 +47,9 @@ type protoClient interface {
 // datastoreClient is a wrapper for the pb.DatastoreClient that includes gRPC
 // metadata to be sent in each request for server-side traffic management.
 type datastoreClient struct {
-	c  pb.DatastoreClient
-	md metadata.MD
+	c                  pb.DatastoreClient
+	md                 metadata.MD
+	defaultCallOptions []grpc.CallOption
 }
 
 func newDatastoreClient(conn *grpc.ClientConn, projectID string) pb.DatastoreClient {
@@ -58,28 +59,35 @@ func newDatastoreClient(conn *grpc.ClientConn, projectID string) pb.DatastoreCli
 	}
 }
 
+func (dc *datastoreClient) callOpts(opts []grpc.CallOption) []grpc.CallOption {
+	// Copy default options.
+	defaults := append([]grpc.CallOption(nil), dc.defaultCallOptions...)
+	// Prepend defaults to arg options.
+	return append(defaults, opts...)
+}
+
 func (dc *datastoreClient) Lookup(ctx context.Context, in *pb.LookupRequest, opts ...grpc.CallOption) (*pb.LookupResponse, error) {
-	return dc.c.Lookup(metadata.NewContext(ctx, dc.md), in, opts...)
+	return dc.c.Lookup(metadata.NewContext(ctx, dc.md), in, dc.callOpts(opts)...)
 }
 
 func (dc *datastoreClient) RunQuery(ctx context.Context, in *pb.RunQueryRequest, opts ...grpc.CallOption) (*pb.RunQueryResponse, error) {
-	return dc.c.RunQuery(metadata.NewContext(ctx, dc.md), in, opts...)
+	return dc.c.RunQuery(metadata.NewContext(ctx, dc.md), in, dc.callOpts(opts)...)
 }
 
 func (dc *datastoreClient) BeginTransaction(ctx context.Context, in *pb.BeginTransactionRequest, opts ...grpc.CallOption) (*pb.BeginTransactionResponse, error) {
-	return dc.c.BeginTransaction(metadata.NewContext(ctx, dc.md), in, opts...)
+	return dc.c.BeginTransaction(metadata.NewContext(ctx, dc.md), in, dc.callOpts(opts)...)
 }
 
 func (dc *datastoreClient) Commit(ctx context.Context, in *pb.CommitRequest, opts ...grpc.CallOption) (*pb.CommitResponse, error) {
-	return dc.c.Commit(metadata.NewContext(ctx, dc.md), in, opts...)
+	return dc.c.Commit(metadata.NewContext(ctx, dc.md), in, dc.callOpts(opts)...)
 }
 
 func (dc *datastoreClient) Rollback(ctx context.Context, in *pb.RollbackRequest, opts ...grpc.CallOption) (*pb.RollbackResponse, error) {
-	return dc.c.Rollback(metadata.NewContext(ctx, dc.md), in, opts...)
+	return dc.c.Rollback(metadata.NewContext(ctx, dc.md), in, dc.callOpts(opts)...)
 }
 
 func (dc *datastoreClient) AllocateIds(ctx context.Context, in *pb.AllocateIdsRequest, opts ...grpc.CallOption) (*pb.AllocateIdsResponse, error) {
-	return dc.c.AllocateIds(metadata.NewContext(ctx, dc.md), in, opts...)
+	return dc.c.AllocateIds(metadata.NewContext(ctx, dc.md), in, dc.callOpts(opts)...)
 }
 
 // Client is a client for reading and writing data in a datastore dataset.
@@ -88,6 +96,12 @@ type Client struct {
 	client   pb.DatastoreClient
 	endpoint string
 	dataset  string // Called dataset by the datastore API, synonym for project ID.
+
+	// DefaultCallOptions are options to pass to every gRPC call.
+	// Set this field before using the Client.
+	//
+	// This field is experimental and may change or be removed without notice.
+	defaultCallOptions []grpc.CallOption
 }
 
 // NewClient creates a new Client for a given dataset.
@@ -136,6 +150,17 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		dataset: projectID,
 	}, nil
 
+}
+
+// SetDefaultCallOptions sets gRPC call options that will be used
+// for every subsequent call.
+//
+// SetDefaultCallOptions should be called before using the Client for any
+// RPCs. It is not safe for use with multiple goroutines.
+//
+// This method is experimental and may be removed or changed without notice.
+func (c *Client) SetDefaultCallOptions(opts []grpc.CallOption) {
+	c.client.(*datastoreClient).defaultCallOptions = opts
 }
 
 var (
