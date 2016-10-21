@@ -153,7 +153,7 @@ func TestLogSync(t *testing.T) {
 	lg := client.Logger(testLogID)
 	defer func() {
 		if ok := deleteLog(ctx, testLogID); !ok {
-			t.Fatal("timed out")
+			t.Fatal("timed out: deleteLog")
 		}
 	}()
 	err := lg.LogSync(ctx, logging.Entry{Payload: "hello"})
@@ -179,12 +179,13 @@ func TestLogSync(t *testing.T) {
 	ok := waitFor(func() bool {
 		got, err = allTestLogEntries(ctx)
 		if err != nil {
-			t.Fatalf("fetching log entries: %v", err)
+			t.Log("fetching log entries: ", err)
+			return false
 		}
 		return len(got) >= len(want)
 	})
 	if !ok {
-		t.Fatal("timed out")
+		t.Fatalf("timed out; got: %d, want: %d\n", len(got), len(want))
 	}
 	if msg, ok := compareEntries(got, want); !ok {
 		t.Error(msg)
@@ -198,7 +199,7 @@ func TestLogAndEntries(t *testing.T) {
 	lg := client.Logger(testLogID)
 	defer func() {
 		if ok := deleteLog(ctx, testLogID); !ok {
-			t.Fatal("timed out")
+			t.Fatal("timed out: deleteLog")
 		}
 	}()
 	for _, p := range payloads {
@@ -215,12 +216,13 @@ func TestLogAndEntries(t *testing.T) {
 		var err error
 		got, err = allTestLogEntries(ctx)
 		if err != nil {
-			t.Fatalf("fetching log entries: %v", err)
+			t.Log("fetching log entries: ", err)
+			return false
 		}
 		return len(got) >= len(want)
 	})
 	if !ok {
-		t.Fatal("timed out")
+		t.Fatalf("timed out; got: %d, want: %d\n", len(got), len(want))
 	}
 	if msg, ok := compareEntries(got, want); !ok {
 		t.Error(msg)
@@ -294,7 +296,7 @@ func TestStandardLogger(t *testing.T) {
 	lg := client.Logger(testLogID)
 	defer func() {
 		if ok := deleteLog(ctx, testLogID); !ok {
-			t.Fatal("timed out")
+			t.Fatal("timed out: deleteLog")
 		}
 	}()
 	slg := lg.StandardLogger(logging.Info)
@@ -313,12 +315,13 @@ func TestStandardLogger(t *testing.T) {
 		var err error
 		got, err = allTestLogEntries(ctx)
 		if err != nil {
-			t.Fatalf("fetching log entries: %v", err)
+			t.Log("fetching log entries: ", err)
+			return false
 		}
 		return len(got) >= 1
 	})
 	if !ok {
-		t.Fatal("timed out")
+		t.Fatalf("timed out; got: %d, want: %d\n", len(got), 1)
 	}
 	if len(got) != 1 {
 		t.Fatalf("expected non-nil request with one entry; got:\n%+v", got)
