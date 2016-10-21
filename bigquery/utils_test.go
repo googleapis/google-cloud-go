@@ -15,6 +15,8 @@
 package bigquery
 
 import (
+	"io"
+
 	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 )
@@ -37,7 +39,7 @@ type testService struct {
 	service
 }
 
-func (s *testService) insertJob(ctx context.Context, job *bq.Job, projectID string) (*Job, error) {
+func (s *testService) insertJob(ctx context.Context, job *bq.Job, projectID string, r io.Reader) (*Job, error) {
 	s.Job = job
 	return &Job{}, nil
 }

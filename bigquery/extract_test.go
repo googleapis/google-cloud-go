@@ -68,12 +68,13 @@ func TestExtract(t *testing.T) {
 			}(),
 		},
 		{
-			dst: &GCSReference{
-				uris:              []string{"uri"},
-				Compression:       Gzip,
-				DestinationFormat: JSON,
-				FieldDelimiter:    "\t",
-			},
+			dst: func() *GCSReference {
+				g := c.NewGCSReference("uri")
+				g.Compression = Gzip
+				g.DestinationFormat = JSON
+				g.FieldDelimiter = "\t"
+				return g
+			}(),
 			src: c.Dataset("dataset-id").Table("table-id"),
 			want: func() *bq.Job {
 				j := defaultExtractJob()

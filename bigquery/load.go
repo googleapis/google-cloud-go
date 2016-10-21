@@ -15,6 +15,8 @@
 package bigquery
 
 import (
+	"io"
+
 	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 )
@@ -25,7 +27,7 @@ type LoadConfig struct {
 	JobID string
 
 	// Src is the source from which data will be loaded.
-	Src *GCSReference
+	Src LoadSource
 
 	// Dst is the table into which the data will be loaded.
 	Dst *Table
@@ -45,9 +47,19 @@ type Loader struct {
 	c *Client
 }
 
-// LoaderFrom returns a Loader which can be used to load data from Google Cloud Storage into a BigQuery table.
+// A LoadSource represents a source of data that can be loaded into
+// a BigQuery table.
+//
+// This package defines two LoadSources: GCSReference, for Google Cloud Storage
+// objects, and ReaderLoadSource, for data read from an io.Reader.
+type LoadSource interface {
+	populateLoadConfig(*bq.JobConfigurationLoad)
+	reader() io.Reader
+}
+
+// LoaderFrom returns a Loader which can be used to load data into a BigQuery table.
 // The returned Loader may optionally be further configured before its Run method is called.
-func (t *Table) LoaderFrom(src *GCSReference) *Loader {
+func (t *Table) LoaderFrom(src LoadSource) *Loader {
 	return &Loader{
 		c: t.c,
 		LoadConfig: LoadConfig{
@@ -63,6 +75,7 @@ func (l *Loader) Run(ctx context.Context) (*Job, error) {
 		CreateDisposition: string(l.CreateDisposition),
 		WriteDisposition:  string(l.WriteDisposition),
 	}
+	l.Src.populateLoadConfig(conf)
 	job := &bq.Job{
 		Configuration: &bq.JobConfiguration{
 			Load: conf,
@@ -70,21 +83,7 @@ func (l *Loader) Run(ctx context.Context) (*Job, error) {
 	}
 	setJobRef(job, l.JobID, l.c.projectID)
 
-	conf.SourceUris = l.Src.uris
-	conf.SkipLeadingRows = l.Src.SkipLeadingRows
-	conf.SourceFormat = string(l.Src.SourceFormat)
-	conf.AllowJaggedRows = l.Src.AllowJaggedRows
-	conf.AllowQuotedNewlines = l.Src.AllowQuotedNewlines
-	conf.Encoding = string(l.Src.Encoding)
-	conf.FieldDelimiter = l.Src.FieldDelimiter
-	conf.IgnoreUnknownValues = l.Src.IgnoreUnknownValues
-	conf.MaxBadRecords = l.Src.MaxBadRecords
-	if l.Src.Schema != nil {
-		conf.Schema = l.Src.Schema.asTableSchema()
-	}
-	conf.Quote = l.Src.quote()
-
 	conf.DestinationTable = l.Dst.tableRefProto()
 
-	return l.c.service.insertJob(ctx, job, l.c.projectID)
+	return l.c.service.insertJob(ctx, job, l.c.projectID, l.Src.reader())
 }

@@ -16,10 +16,12 @@ package bigquery
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 
 	"golang.org/x/net/context"
 
+	"cloud.google.com/go/internal/pretty"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -70,7 +72,7 @@ func TestLoad(t *testing.T) {
 
 	testCases := []struct {
 		dst    *Table
-		src    *GCSReference
+		src    LoadSource
 		config LoadConfig
 		want   *bq.Job
 	}{
@@ -183,9 +185,32 @@ func TestLoad(t *testing.T) {
 				return j
 			}(),
 		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *ReaderSource {
+				r := NewReaderSource(strings.NewReader("foo"))
+				r.SkipLeadingRows = 1
+				r.SourceFormat = JSON
+				r.Encoding = UTF_8
+				r.FieldDelimiter = "\t"
+				r.Quote = "-"
+				return r
+			}(),
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.SourceUris = nil
+				j.Configuration.Load.SkipLeadingRows = 1
+				j.Configuration.Load.SourceFormat = "NEWLINE_DELIMITED_JSON"
+				j.Configuration.Load.Encoding = "UTF-8"
+				j.Configuration.Load.FieldDelimiter = "\t"
+				hyphen := "-"
+				j.Configuration.Load.Quote = &hyphen
+				return j
+			}(),
+		},
 	}
 
-	for _, tc := range testCases {
+	for i, tc := range testCases {
 		s := &testService{}
 		c.service = s
 		loader := tc.dst.LoaderFrom(tc.src)
@@ -193,11 +218,12 @@ func TestLoad(t *testing.T) {
 		tc.config.Dst = tc.dst
 		loader.LoadConfig = tc.config
 		if _, err := loader.Run(context.Background()); err != nil {
-			t.Errorf("err calling Loader.Run: %v", err)
+			t.Errorf("%d: err calling Loader.Run: %v", i, err)
 			continue
 		}
 		if !reflect.DeepEqual(s.Job, tc.want) {
-			t.Errorf("loading: got:\n%+v\nwant:\n%+v", s.Job, tc.want)
+			t.Errorf("loading %d: got:\n%v\nwant:\n%v",
+				i, pretty.Value(s.Job), pretty.Value(tc.want))
 		}
 	}
 }

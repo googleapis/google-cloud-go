@@ -17,6 +17,7 @@ package bigquery
 import (
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"sync"
 	"time"
@@ -31,7 +32,7 @@ import (
 // of the generated BigQuery API.
 type service interface {
 	// Jobs
-	insertJob(ctx context.Context, job *bq.Job, projectId string) (*Job, error)
+	insertJob(ctx context.Context, job *bq.Job, projectId string, r io.Reader) (*Job, error)
 	getJobType(ctx context.Context, projectId, jobID string) (jobType, error)
 	jobCancel(ctx context.Context, projectId, jobID string) error
 	jobStatus(ctx context.Context, projectId, jobID string) (*JobStatus, error)
@@ -92,8 +93,12 @@ func getPages(token string, getPage func(token string) (nextToken string, err er
 	}
 }
 
-func (s *bigqueryService) insertJob(ctx context.Context, job *bq.Job, projectID string) (*Job, error) {
-	res, err := s.s.Jobs.Insert(projectID, job).Context(ctx).Do()
+func (s *bigqueryService) insertJob(ctx context.Context, job *bq.Job, projectID string, r io.Reader) (*Job, error) {
+	call := s.s.Jobs.Insert(projectID, job).Context(ctx)
+	if r != nil {
+		call.Media(r)
+	}
+	res, err := call.Do()
 	if err != nil {
 		return nil, err
 	}
