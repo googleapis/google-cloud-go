@@ -81,21 +81,22 @@ func TestQuery(t *testing.T) {
 			src: &QueryConfig{
 				Q: "query string",
 				TableDefinitions: map[string]ExternalData{
-					"atable": &GCSReference{
-						uris:                []string{"uri"},
-						AllowJaggedRows:     true,
-						AllowQuotedNewlines: true,
-						Compression:         Gzip,
-						Encoding:            UTF_8,
-						FieldDelimiter:      ";",
-						IgnoreUnknownValues: true,
-						MaxBadRecords:       1,
-						Quote:               "'",
-						SkipLeadingRows:     2,
-						Schema: Schema([]*FieldSchema{
+					"atable": func() *GCSReference {
+						g := c.NewGCSReference("uri")
+						g.AllowJaggedRows = true
+						g.AllowQuotedNewlines = true
+						g.Compression = Gzip
+						g.Encoding = UTF_8
+						g.FieldDelimiter = ";"
+						g.IgnoreUnknownValues = true
+						g.MaxBadRecords = 1
+						g.Quote = "'"
+						g.SkipLeadingRows = 2
+						g.Schema = Schema([]*FieldSchema{
 							{Name: "name", Type: StringFieldType},
-						}),
-					},
+						})
+						return g
+					}(),
 				},
 			},
 			want: func() *bq.Job {

@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -195,6 +196,20 @@ func TestIntegration(t *testing.T) {
 	if got.Name != wantName {
 		t.Errorf("Name: got %q, want %q", got.Name, wantName)
 	}
+
+	// Load the table from a reader.
+	r := strings.NewReader("a,0\nb,1\nc,2\n")
+	rs := NewReaderSource(r)
+	loader := table.LoaderFrom(rs)
+	loader.WriteDisposition = WriteTruncate
+	job, err := loader.Run(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := wait(ctx, job); err != nil {
+		t.Fatal(err)
+	}
+	checkRead(table.Read(ctx))
 }
 
 func hasStatusCode(err error, code int) bool {
@@ -202,4 +217,21 @@ func hasStatusCode(err error, code int) bool {
 		return true
 	}
 	return false
+}
+
+// wait polls the job until it is complete or an error is returned.
+func wait(ctx context.Context, job *Job) error {
+	for {
+		status, err := job.Status(ctx)
+		if err != nil {
+			return fmt.Errorf("getting job status: %v", err)
+		}
+		if status.Done() {
+			if status.Err() != nil {
+				return fmt.Errorf("job status: %#v", status.Err())
+			}
+			return nil
+		}
+		time.Sleep(1 * time.Second)
+	}
 }

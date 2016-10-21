@@ -14,7 +14,11 @@
 
 package bigquery
 
-import bq "google.golang.org/api/bigquery/v2"
+import (
+	"io"
+
+	bq "google.golang.org/api/bigquery/v2"
+)
 
 // GCSReference is a reference to one or more Google Cloud Storage objects, which together constitute
 // an input or output to a BigQuery operation.
@@ -22,51 +26,16 @@ type GCSReference struct {
 	// TODO(jba): Export so that GCSReference can be used to hold data from a Job.get api call and expose it to the user.
 	uris []string
 
-	// FieldDelimiter is the separator for fields in a CSV file, used when reading or exporting data.
-	// The default is ",".
-	FieldDelimiter string
-
-	// The number of rows at the top of a CSV file that BigQuery will skip when reading data.
-	SkipLeadingRows int64
-
-	// SourceFormat is the format of the GCS data to be read.
-	// Allowed values are: CSV, Avro, JSON, DatastoreBackup.  The default is CSV.
-	SourceFormat DataFormat
-	// AllowJaggedRows causes missing trailing optional columns to be tolerated when reading CSV data.  Missing values are treated as nulls.
-	AllowJaggedRows bool
-	// AllowQuotedNewlines sets whether quoted data sections containing newlines are allowed when reading CSV data.
-	AllowQuotedNewlines bool
-
-	// Encoding is the character encoding of data to be read.
-	Encoding Encoding
-	// MaxBadRecords is the maximum number of bad records that will be ignored when reading data.
-	MaxBadRecords int64
-
-	// IgnoreUnknownValues causes values not matching the schema to be tolerated.
-	// Unknown values are ignored. For CSV this ignores extra values at the end of a line.
-	// For JSON this ignores named values that do not match any column name.
-	// If this field is not set, records containing unknown values are treated as bad records.
-	// The MaxBadRecords field can be used to customize how bad records are handled.
-	IgnoreUnknownValues bool
-
-	// Schema describes the data. It is required when reading CSV or JSON data, unless the data is being loaded into a table that already exists.
-	Schema Schema
-
-	// Quote is the value used to quote data sections in a CSV file.
-	// The default quotation character is the double quote ("), which is used if both Quote and ForceZeroQuote are unset.
-	// To specify that no character should be interpreted as a quotation character, set ForceZeroQuote to true.
-	// Only used when reading data.
-	Quote          string
-	ForceZeroQuote bool
+	FileConfig
 
 	// DestinationFormat is the format to use when writing exported files.
 	// Allowed values are: CSV, Avro, JSON.  The default is CSV.
 	// CSV is not supported for tables with nested or repeated fields.
 	DestinationFormat DataFormat
 
-	// Compression specifies the type of compression to apply when writing data to Google Cloud Storage,
-	// or using this GCSReference as an ExternalData source with CSV or JSON SourceFormat.
-	// Default is None.
+	// Compression specifies the type of compression to apply when writing data
+	// to Google Cloud Storage, or using this GCSReference as an ExternalData
+	// source with CSV or JSON SourceFormat. Default is None.
 	Compression Compression
 }
 
@@ -80,25 +49,6 @@ func (c *Client) NewGCSReference(uri ...string) *GCSReference {
 	return &GCSReference{uris: uri}
 }
 
-type DataFormat string
-
-const (
-	CSV             DataFormat = "CSV"
-	Avro            DataFormat = "AVRO"
-	JSON            DataFormat = "NEWLINE_DELIMITED_JSON"
-	DatastoreBackup DataFormat = "DATASTORE_BACKUP"
-)
-
-// Encoding specifies the character encoding of data to be loaded into BigQuery.
-// See https://cloud.google.com/bigquery/docs/reference/v2/jobs#configuration.load.encoding
-// for more details about how this is used.
-type Encoding string
-
-const (
-	UTF_8      Encoding = "UTF-8"
-	ISO_8859_1 Encoding = "ISO-8859-1"
-)
-
 // Compression is the type of compression to apply when writing data to Google Cloud Storage.
 type Compression string
 
@@ -107,45 +57,18 @@ const (
 	Gzip Compression = "GZIP"
 )
 
-// quote returns the CSV quote character, or nil if unset.
-func (gcs *GCSReference) quote() *string {
-	if !gcs.ForceZeroQuote && gcs.Quote == "" {
-		return nil
-	}
-	var quote string
-	if gcs.Quote != "" {
-		quote = gcs.Quote
-	}
-	return &quote
+func (gcs *GCSReference) populateLoadConfig(conf *bq.JobConfigurationLoad) {
+	conf.SourceUris = gcs.uris
+	gcs.FileConfig.populateLoadConfig(conf)
 }
 
-func (gcs *GCSReference) externalDataConfig() bq.ExternalDataConfiguration {
-	format := gcs.SourceFormat
-	if format == "" {
-		// Format must be explicitly set for external data sources.
-		format = CSV
-	}
+func (gcs *GCSReference) reader() io.Reader { return nil }
 
-	// TODO(jba): support AutoDetect.
+func (gcs *GCSReference) externalDataConfig() bq.ExternalDataConfiguration {
 	conf := bq.ExternalDataConfiguration{
-		Compression:         string(gcs.Compression),
-		IgnoreUnknownValues: gcs.IgnoreUnknownValues,
-		MaxBadRecords:       gcs.MaxBadRecords,
-		SourceFormat:        string(format),
-		SourceUris:          append([]string{}, gcs.uris...),
+		Compression: string(gcs.Compression),
+		SourceUris:  append([]string{}, gcs.uris...),
 	}
-	if gcs.Schema != nil {
-		conf.Schema = gcs.Schema.asTableSchema()
-	}
-	if format == CSV {
-		conf.CsvOptions = &bq.CsvOptions{
-			AllowJaggedRows:     gcs.AllowJaggedRows,
-			AllowQuotedNewlines: gcs.AllowQuotedNewlines,
-			Encoding:            string(gcs.Encoding),
-			FieldDelimiter:      gcs.FieldDelimiter,
-			SkipLeadingRows:     gcs.SkipLeadingRows,
-			Quote:               gcs.quote(),
-		}
-	}
+	gcs.FileConfig.populateExternalDataConfig(&conf)
 	return conf
 }

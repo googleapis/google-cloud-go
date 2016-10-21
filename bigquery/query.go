@@ -122,8 +122,8 @@ func (q *Query) Run(ctx context.Context) (*Job, error) {
 	}
 	setJobRef(job, q.JobID, q.client.projectID)
 
-	q.QueryConfig.populateJobConfig(job.Configuration.Query)
-	j, err := q.client.service.insertJob(ctx, job, q.client.projectID)
+	q.QueryConfig.populateJobQueryConfig(job.Configuration.Query)
+	j, err := q.client.service.insertJob(ctx, job, q.client.projectID, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +131,7 @@ func (q *Query) Run(ctx context.Context) (*Job, error) {
 	return j, nil
 }
 
-func (q *QueryConfig) populateJobConfig(conf *bq.JobConfigurationQuery) {
+func (q *QueryConfig) populateJobQueryConfig(conf *bq.JobConfigurationQuery) {
 	conf.Query = q.Q
 
 	if len(q.TableDefinitions) > 0 {
