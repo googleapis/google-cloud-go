@@ -147,7 +147,7 @@ func (s *server) GetTable(ctx context.Context, req *btapb.GetTableRequest) (*bta
 	tblIns, ok := s.tables[tbl]
 	s.mu.Unlock()
 	if !ok {
-		return nil, fmt.Errorf("table %q not found", tbl)
+		return nil, grpc.Errorf(codes.NotFound, "table %q not found", tbl)
 	}
 
 	return &btapb.Table{
@@ -160,7 +160,7 @@ func (s *server) DeleteTable(ctx context.Context, req *btapb.DeleteTableRequest)
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if _, ok := s.tables[req.Name]; !ok {
-		return nil, fmt.Errorf("no such table %q", req.Name)
+		return nil, grpc.Errorf(codes.NotFound, "table %q not found", req.Name)
 	}
 	delete(s.tables, req.Name)
 	return &emptypb.Empty{}, nil
@@ -173,7 +173,7 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 	tbl, ok := s.tables[req.Name]
 	s.mu.Unlock()
 	if !ok {
-		return nil, fmt.Errorf("no such table %q", req.Name)
+		return nil, grpc.Errorf(codes.NotFound, "table %q not found", req.Name)
 	}
 
 	tbl.mu.Lock()
@@ -220,7 +220,7 @@ func (s *server) DropRowRange(ctx context.Context, req *btapb.DropRowRangeReques
 	defer s.mu.Unlock()
 	tbl, ok := s.tables[req.Name]
 	if !ok {
-		return nil, fmt.Errorf("no such table %q", req.Name)
+		return nil, grpc.Errorf(codes.NotFound, "table %q not found", req.Name)
 	}
 
 	if req.GetDeleteAllDataFromTable() {
@@ -262,7 +262,7 @@ func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRo
 	tbl, ok := s.tables[req.TableName]
 	s.mu.Unlock()
 	if !ok {
-		return fmt.Errorf("no such table %q", req.TableName)
+		return grpc.Errorf(codes.NotFound, "table %q not found", req.TableName)
 	}
 
 	// Rows to read can be specified by a set of row keys and/or a set of row ranges.
@@ -469,7 +469,7 @@ func (s *server) MutateRow(ctx context.Context, req *btpb.MutateRowRequest) (*bt
 	tbl, ok := s.tables[req.TableName]
 	s.mu.Unlock()
 	if !ok {
-		return nil, fmt.Errorf("no such table %q", req.TableName)
+		return nil, grpc.Errorf(codes.NotFound, "table %q not found", req.TableName)
 	}
 
 	fs := tbl.columnFamiliesSet()
@@ -488,7 +488,7 @@ func (s *server) MutateRows(req *btpb.MutateRowsRequest, stream btpb.Bigtable_Mu
 	tbl, ok := s.tables[req.TableName]
 	s.mu.Unlock()
 	if !ok {
-		return fmt.Errorf("no such table %q", req.TableName)
+		return grpc.Errorf(codes.NotFound, "table %q not found", req.TableName)
 	}
 
 	res := &btpb.MutateRowsResponse{Entries: make([]*btpb.MutateRowsResponse_Entry, len(req.Entries))}
@@ -518,7 +518,7 @@ func (s *server) CheckAndMutateRow(ctx context.Context, req *btpb.CheckAndMutate
 	tbl, ok := s.tables[req.TableName]
 	s.mu.Unlock()
 	if !ok {
-		return nil, fmt.Errorf("no such table %q", req.TableName)
+		return nil, grpc.Errorf(codes.NotFound, "table %q not found", req.TableName)
 	}
 
 	res := &btpb.CheckAndMutateRowResponse{}
@@ -660,7 +660,7 @@ func (s *server) ReadModifyWriteRow(ctx context.Context, req *btpb.ReadModifyWri
 	tbl, ok := s.tables[req.TableName]
 	s.mu.Unlock()
 	if !ok {
-		return nil, fmt.Errorf("no such table %q", req.TableName)
+		return nil, grpc.Errorf(codes.NotFound, "table %q not found", req.TableName)
 	}
 
 	updates := make(map[string]cell) // copy of updated cells; keyed by full column name
@@ -746,7 +746,7 @@ func (s *server) SampleRowKeys(req *btpb.SampleRowKeysRequest, stream btpb.Bigta
 	tbl, ok := s.tables[req.TableName]
 	s.mu.Unlock()
 	if !ok {
-		return fmt.Errorf("no such table %q", req.TableName)
+		return grpc.Errorf(codes.NotFound, "table %q not found", req.TableName)
 	}
 
 	tbl.mu.RLock()
