@@ -25,6 +25,7 @@ import (
 
 	"cloud.google.com/go/internal/bundler"
 	"github.com/golang/protobuf/proto"
+	durpb "github.com/golang/protobuf/ptypes/duration"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
 	logtypepb "google.golang.org/genproto/googleapis/logging/type"
@@ -157,6 +158,7 @@ func TestFromHTTPRequest(t *testing.T) {
 		RequestSize:                    100,
 		Status:                         200,
 		ResponseSize:                   25,
+		Latency:                        100 * time.Second,
 		RemoteIP:                       "127.0.0.1",
 		CacheHit:                       true,
 		CacheValidatedWithOriginServer: true,
@@ -168,6 +170,7 @@ func TestFromHTTPRequest(t *testing.T) {
 		RequestSize:                    100,
 		Status:                         200,
 		ResponseSize:                   25,
+		Latency:                        &durpb.Duration{Seconds: 100},
 		UserAgent:                      "user-agent",
 		RemoteIp:                       "127.0.0.1",
 		Referer:                        "referer",

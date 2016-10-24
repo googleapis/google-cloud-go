@@ -472,6 +472,10 @@ type HTTPRequest struct {
 	// including the response headers and the response body.
 	ResponseSize int64
 
+	// Latency is the request processing latency on the server, from the time the request was
+	// received until the response was sent.
+	Latency time.Duration
+
 	// RemoteIP is the IP address (IPv4 or IPv6) of the client that issued the
 	// HTTP request. Examples: "192.168.1.1", "FE80::0202:B3FF:FE1E:8329".
 	RemoteIP string
@@ -501,6 +505,7 @@ func fromHTTPRequest(r *HTTPRequest) *logtypepb.HttpRequest {
 		RequestSize:                    r.RequestSize,
 		Status:                         int32(r.Status),
 		ResponseSize:                   r.ResponseSize,
+		Latency:                        ptypes.DurationProto(r.Latency),
 		UserAgent:                      r.Request.UserAgent(),
 		RemoteIp:                       r.RemoteIP, // TODO(jba): attempt to parse http.Request.RemoteAddr?
 		Referer:                        r.Request.Referer(),

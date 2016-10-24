@@ -34,6 +34,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/logging"
 	vkit "cloud.google.com/go/logging/apiv2"
@@ -132,6 +133,13 @@ func toHTTPRequest(p *logtypepb.HttpRequest) (*logging.HTTPRequest, error) {
 	if err != nil {
 		return nil, err
 	}
+	var dur time.Duration
+	if p.Latency != nil {
+		dur, err = ptypes.Duration(p.Latency)
+		if err != nil {
+			return nil, err
+		}
+	}
 	hr := &http.Request{
 		Method: p.RequestMethod,
 		URL:    u,
@@ -148,6 +156,7 @@ func toHTTPRequest(p *logtypepb.HttpRequest) (*logging.HTTPRequest, error) {
 		RequestSize:                    p.RequestSize,
 		Status:                         int(p.Status),
 		ResponseSize:                   p.ResponseSize,
+		Latency:                        dur,
 		RemoteIP:                       p.RemoteIp,
 		CacheHit:                       p.CacheHit,
 		CacheValidatedWithOriginServer: p.CacheValidatedWithOriginServer,
