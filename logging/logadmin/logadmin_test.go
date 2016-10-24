@@ -31,6 +31,7 @@ import (
 	ltesting "cloud.google.com/go/logging/internal/testing"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	durpb "github.com/golang/protobuf/ptypes/duration"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
@@ -119,6 +120,7 @@ func TestFromLogEntry(t *testing.T) {
 			RequestSize:                    100,
 			Status:                         200,
 			ResponseSize:                   25,
+			Latency:                        &durpb.Duration{Seconds: 100},
 			UserAgent:                      "user-agent",
 			RemoteIp:                       "127.0.0.1",
 			Referer:                        "referer",
@@ -159,6 +161,7 @@ func TestFromLogEntry(t *testing.T) {
 			RequestSize:                    100,
 			Status:                         200,
 			ResponseSize:                   25,
+			Latency:                        100 * time.Second,
 			RemoteIP:                       "127.0.0.1",
 			CacheHit:                       true,
 			CacheValidatedWithOriginServer: true,
