@@ -51,7 +51,7 @@ type Loader struct {
 // a BigQuery table.
 //
 // This package defines two LoadSources: GCSReference, for Google Cloud Storage
-// objects, and ReaderLoadSource, for data read from an io.Reader.
+// objects, and ReaderSource, for data read from an io.Reader.
 type LoadSource interface {
 	populateLoadConfig(*bq.JobConfigurationLoad)
 	reader() io.Reader
