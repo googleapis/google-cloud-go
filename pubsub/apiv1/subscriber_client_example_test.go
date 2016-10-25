@@ -19,7 +19,6 @@ package pubsub_test
 import (
 	"cloud.google.com/go/pubsub/apiv1"
 	"golang.org/x/net/context"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
@@ -31,6 +30,40 @@ func ExampleNewSubscriberClient() {
 	}
 	// TODO: Use client.
 	_ = c
+}
+
+func ExampleSubscriberClient_SubscriptionIAM() {
+	ctx := context.Background()
+	c, err := pubsub.NewSubscriberClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	subscription := &pubsubpb.Subscription{}
+	h := c.SubscriptionIAM(subscription)
+	policy, err := h.Policy(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	//TODO: Use the IAM policy
+	_ = policy
+}
+
+func ExampleSubscriberClient_TopicIAM() {
+	ctx := context.Background()
+	c, err := pubsub.NewSubscriberClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	topic := &pubsubpb.Topic{}
+	h := c.TopicIAM(topic)
+	policy, err := h.Policy(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	//TODO: Use the IAM policy
+	_ = policy
 }
 
 func ExampleSubscriberClient_CreateSubscription() {
@@ -171,58 +204,4 @@ func ExampleSubscriberClient_ModifyPushConfig() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-}
-
-func ExampleSubscriberClient_SetIamPolicy() {
-	ctx := context.Background()
-	c, err := pubsub.NewSubscriberClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &iampb.SetIamPolicyRequest{
-	// TODO: Fill request struct fields.
-	}
-	resp, err := c.SetIamPolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleSubscriberClient_GetIamPolicy() {
-	ctx := context.Background()
-	c, err := pubsub.NewSubscriberClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &iampb.GetIamPolicyRequest{
-	// TODO: Fill request struct fields.
-	}
-	resp, err := c.GetIamPolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleSubscriberClient_TestIamPermissions() {
-	ctx := context.Background()
-	c, err := pubsub.NewSubscriberClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &iampb.TestIamPermissionsRequest{
-	// TODO: Fill request struct fields.
-	}
-	resp, err := c.TestIamPermissions(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
