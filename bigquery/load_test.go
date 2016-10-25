@@ -78,7 +78,7 @@ func TestLoad(t *testing.T) {
 	}{
 		{
 			dst:  c.Dataset("dataset-id").Table("table-id"),
-			src:  c.NewGCSReference("uri"),
+			src:  NewGCSReference("uri"),
 			want: defaultLoadJob(),
 		},
 		{
@@ -88,7 +88,7 @@ func TestLoad(t *testing.T) {
 				WriteDisposition:  WriteTruncate,
 				JobID:             "ajob",
 			},
-			src: c.NewGCSReference("uri"),
+			src: NewGCSReference("uri"),
 			want: func() *bq.Job {
 				j := defaultLoadJob()
 				j.Configuration.Load.CreateDisposition = "CREATE_NEVER"
@@ -103,7 +103,7 @@ func TestLoad(t *testing.T) {
 		{
 			dst: c.Dataset("dataset-id").Table("table-id"),
 			src: func() *GCSReference {
-				g := c.NewGCSReference("uri")
+				g := NewGCSReference("uri")
 				g.MaxBadRecords = 1
 				g.AllowJaggedRows = true
 				g.AllowQuotedNewlines = true
@@ -122,7 +122,7 @@ func TestLoad(t *testing.T) {
 		{
 			dst: c.Dataset("dataset-id").Table("table-id"),
 			src: func() *GCSReference {
-				g := c.NewGCSReference("uri")
+				g := NewGCSReference("uri")
 				g.Schema = Schema{
 					stringFieldSchema(),
 					nestedFieldSchema(),
@@ -142,7 +142,7 @@ func TestLoad(t *testing.T) {
 		{
 			dst: c.Dataset("dataset-id").Table("table-id"),
 			src: func() *GCSReference {
-				g := c.NewGCSReference("uri")
+				g := NewGCSReference("uri")
 				g.SkipLeadingRows = 1
 				g.SourceFormat = JSON
 				g.Encoding = UTF_8
@@ -163,7 +163,7 @@ func TestLoad(t *testing.T) {
 		},
 		{
 			dst: c.Dataset("dataset-id").Table("table-id"),
-			src: c.NewGCSReference("uri"),
+			src: NewGCSReference("uri"),
 			want: func() *bq.Job {
 				j := defaultLoadJob()
 				// Quote is left unset in GCSReference, so should be nil here.
@@ -174,7 +174,7 @@ func TestLoad(t *testing.T) {
 		{
 			dst: c.Dataset("dataset-id").Table("table-id"),
 			src: func() *GCSReference {
-				g := c.NewGCSReference("uri")
+				g := NewGCSReference("uri")
 				g.ForceZeroQuote = true
 				return g
 			}(),

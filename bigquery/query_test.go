@@ -82,7 +82,7 @@ func TestQuery(t *testing.T) {
 				Q: "query string",
 				TableDefinitions: map[string]ExternalData{
 					"atable": func() *GCSReference {
-						g := c.NewGCSReference("uri")
+						g := NewGCSReference("uri")
 						g.AllowJaggedRows = true
 						g.AllowQuotedNewlines = true
 						g.Compression = Gzip

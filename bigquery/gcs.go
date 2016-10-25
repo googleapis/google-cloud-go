@@ -45,7 +45,7 @@ type GCSReference struct {
 // Each URI may contain one '*' wildcard character, which (if present) must come after the bucket name.
 // For more information about the treatment of wildcards and multiple URIs,
 // see https://cloud.google.com/bigquery/exporting-data-from-bigquery#exportingmultiple
-func (c *Client) NewGCSReference(uri ...string) *GCSReference {
+func NewGCSReference(uri ...string) *GCSReference {
 	return &GCSReference{uris: uri}
 }
 

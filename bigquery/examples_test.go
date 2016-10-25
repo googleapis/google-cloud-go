@@ -90,12 +90,7 @@ func ExampleClient_JobFromID() {
 }
 
 func ExampleClient_NewGCSReference() {
-	ctx := context.Background()
-	client, err := bigquery.NewClient(ctx, "project-id")
-	if err != nil {
-		// TODO: Handle error.
-	}
-	gcsRef := client.NewGCSReference("gs://my-bucket/my-object")
+	gcsRef := bigquery.NewGCSReference("gs://my-bucket/my-object")
 	fmt.Println(gcsRef)
 }
 
@@ -337,7 +332,7 @@ func ExampleTable_ExtractorTo() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	gcsRef := client.NewGCSReference("gs://my-bucket/my-object")
+	gcsRef := bigquery.NewGCSReference("gs://my-bucket/my-object")
 	gcsRef.FieldDelimiter = ":"
 	// TODO: set other options on the GCSReference.
 	ds := client.Dataset("my_dataset")
@@ -370,7 +365,7 @@ func ExampleTable_LoaderFrom() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	gcsRef := client.NewGCSReference("gs://my-bucket/my-object")
+	gcsRef := bigquery.NewGCSReference("gs://my-bucket/my-object")
 	gcsRef.AllowJaggedRows = true
 	// TODO: set other options on the GCSReference.
 	ds := client.Dataset("my_dataset")

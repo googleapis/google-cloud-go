@@ -69,7 +69,7 @@ func TestExtract(t *testing.T) {
 		},
 		{
 			dst: func() *GCSReference {
-				g := c.NewGCSReference("uri")
+				g := NewGCSReference("uri")
 				g.Compression = Gzip
 				g.DestinationFormat = JSON
 				g.FieldDelimiter = "\t"
