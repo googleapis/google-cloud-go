@@ -74,30 +74,9 @@ func TestIntegration(t *testing.T) {
 		t.Errorf("metadata.Type: got %v, want %v", got, want)
 	}
 
-	// List tables in the dataset.
-	tableIter := ds.Tables(ctx)
-	var tables []*Table
-	for {
-		table, err := tableIter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatal(err)
-		}
-		tables = append(tables, table)
-	}
-	if got, want := len(tables), 1; got != want {
-		t.Fatalf("ListTables: got %d, want %d", got, want)
-	}
-	want := *table
-	if got := tables[0]; !reflect.DeepEqual(got, &want) {
-		t.Errorf("ListTables: got %v, want %v", got, &want)
-	}
-
 	// Iterate over tables in the dataset.
 	it := ds.Tables(ctx)
-	tables = nil
+	var tables []*Table
 	for {
 		tbl, err := it.Next()
 		if err == iterator.Done {
