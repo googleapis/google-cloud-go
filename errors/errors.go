@@ -29,7 +29,7 @@
 //
 //   import "cloud.google.com/go/errors"
 //   ...
-//   errorsClient, err = errors.NewClient(ctx, projectID, "myservice", "v1.0")
+//   errorsClient, err = errors.NewClient(ctx, projectID, "myservice", "v1.0", true)
 //
 // The client can recover panics in your program and report them as errors.
 // To use this functionality, defer its Catch method, as you would any other
