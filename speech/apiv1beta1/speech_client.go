@@ -21,6 +21,7 @@ import (
 	"runtime"
 	"time"
 
+	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
@@ -143,7 +144,7 @@ func (c *Client) SyncRecognize(ctx context.Context, req *speechpb.SyncRecognizeR
 // google.longrunning.Operations interface. Returns either an
 // `Operation.error` or an `Operation.response` which contains
 // an `AsyncRecognizeResponse` message.
-func (c *Client) AsyncRecognize(ctx context.Context, req *speechpb.AsyncRecognizeRequest) (*longrunningpb.Operation, error) {
+func (c *Client) AsyncRecognize(ctx context.Context, req *speechpb.AsyncRecognizeRequest) (*longrunning.Operation, error) {
 	md, _ := metadata.FromContext(ctx)
 	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	var resp *longrunningpb.Operation
@@ -155,7 +156,7 @@ func (c *Client) AsyncRecognize(ctx context.Context, req *speechpb.AsyncRecogniz
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	return longrunning.InternalNewOperation(c.Connection(), resp), nil
 }
 
 // StreamingRecognize perform bidirectional streaming speech-recognition: receive results while

@@ -22,12 +22,12 @@ import (
 	"runtime"
 	"time"
 
+	"cloud.google.com/go/iam"
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -50,9 +50,6 @@ type SubscriberCallOptions struct {
 	Acknowledge        []gax.CallOption
 	Pull               []gax.CallOption
 	ModifyPushConfig   []gax.CallOption
-	SetIamPolicy       []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
 }
 
 func defaultSubscriberClientOptions() []option.ClientOption {
@@ -89,9 +86,6 @@ func defaultSubscriberCallOptions() *SubscriberCallOptions {
 		Acknowledge:        retry[[2]string{"messaging", "non_idempotent"}],
 		Pull:               retry[[2]string{"messaging", "non_idempotent"}],
 		ModifyPushConfig:   retry[[2]string{"default", "non_idempotent"}],
-		SetIamPolicy:       retry[[2]string{"default", "non_idempotent"}],
-		GetIamPolicy:       retry[[2]string{"default", "idempotent"}],
-		TestIamPermissions: retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 
@@ -101,7 +95,6 @@ type SubscriberClient struct {
 	conn *grpc.ClientConn
 
 	// The gRPC API client.
-	iamPolicyClient  iampb.IAMPolicyClient
 	subscriberClient pubsubpb.SubscriberClient
 
 	// The call options for this service.
@@ -124,7 +117,6 @@ func NewSubscriberClient(ctx context.Context, opts ...option.ClientOption) (*Sub
 		conn:        conn,
 		CallOptions: defaultSubscriberCallOptions(),
 
-		iamPolicyClient:  iampb.NewIAMPolicyClient(conn),
 		subscriberClient: pubsubpb.NewSubscriberClient(conn),
 	}
 	c.SetGoogleClientInfo("gax", gax.Version)
@@ -183,6 +175,14 @@ func SubscriberTopicPath(project, topic string) string {
 		panic(err)
 	}
 	return path
+}
+
+func (c *SubscriberClient) SubscriptionIAM(subscription *pubsubpb.Subscription) *iam.Handle {
+	return iam.InternalNewHandle(c.Connection(), subscription.Name)
+}
+
+func (c *SubscriberClient) TopicIAM(topic *pubsubpb.Topic) *iam.Handle {
+	return iam.InternalNewHandle(c.Connection(), topic.Name)
 }
 
 // CreateSubscription creates a subscription to a given topic.
@@ -343,57 +343,6 @@ func (c *SubscriberClient) ModifyPushConfig(ctx context.Context, req *pubsubpb.M
 		return err
 	}, c.CallOptions.ModifyPushConfig...)
 	return err
-}
-
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any
-// existing policy.
-func (c *SubscriberClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
-	var resp *iampb.Policy
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
-		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req)
-		return err
-	}, c.CallOptions.SetIamPolicy...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// GetIamPolicy gets the access control policy for a resource.
-// Returns an empty policy if the resource exists and does not have a policy
-// set.
-func (c *SubscriberClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
-	var resp *iampb.Policy
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
-		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req)
-		return err
-	}, c.CallOptions.GetIamPolicy...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// TestIamPermissions returns permissions that a caller has on the specified resource.
-func (c *SubscriberClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
-	var resp *iampb.TestIamPermissionsResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
-		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req)
-		return err
-	}, c.CallOptions.TestIamPermissions...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
 }
 
 // SubscriptionIterator manages a stream of *pubsubpb.Subscription.
