@@ -163,6 +163,9 @@ func isDefault(v reflect.Value) bool {
 	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Ptr, reflect.Slice:
 		return v.IsNil()
 	default:
+		if !v.CanInterface() {
+			return false
+		}
 		return t.Comparable() && v.Interface() == reflect.Zero(t).Interface()
 	}
 }
