@@ -19,6 +19,7 @@ package bigtable
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 )
@@ -151,6 +152,32 @@ type stripValueFilter struct{}
 func (stripValueFilter) String() string { return "strip_value()" }
 func (stripValueFilter) proto() *btpb.RowFilter {
 	return &btpb.RowFilter{Filter: &btpb.RowFilter_StripValueTransformer{true}}
+}
+
+// TimestampRangeFilter returns a filter that matches any rows whose timestamp is within the given time bounds.  A zero
+// time means no bound.
+func TimestampRangeFilter(startTime time.Time, endTime time.Time) Filter {
+	return timestampRangeFilter{startTime: startTime, endTime: endTime}
+}
+
+type timestampRangeFilter struct {
+	startTime time.Time
+	endTime   time.Time
+}
+
+func (trf timestampRangeFilter) String() string {
+	return fmt.Sprintf("timestamp_range(%s,%s)", trf.startTime, trf.endTime)
+}
+
+func (trf timestampRangeFilter) proto() *btpb.RowFilter {
+	r := &btpb.TimestampRange{}
+	if !trf.startTime.IsZero() {
+		r.StartTimestampMicros = trf.startTime.UnixNano() / 1e3
+	}
+	if !trf.endTime.IsZero() {
+		r.EndTimestampMicros = trf.endTime.UnixNano() / 1e3
+	}
+	return &btpb.RowFilter{Filter: &btpb.RowFilter_TimestampRangeFilter{r}}
 }
 
 // TODO(dsymonds): More filters: cond, col/ts/value range, sampling
