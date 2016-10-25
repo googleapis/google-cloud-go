@@ -16,6 +16,7 @@ package bigquery_test
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"cloud.google.com/go/bigquery"
@@ -374,6 +375,43 @@ func ExampleTable_LoaderFrom() {
 	// TODO: set other options on the GCSReference.
 	ds := client.Dataset("my_dataset")
 	loader := ds.Table("my_table").LoaderFrom(gcsRef)
+	loader.CreateDisposition = bigquery.CreateNever
+	// TODO: set other options on the Loader.
+	job, err := loader.Run(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// Poll for job completion.
+	for {
+		status, err := job.Status(ctx)
+		if err != nil {
+			// TODO: Handle error.
+		}
+		if status.Done() {
+			if status.Err() != nil {
+				// TODO: Handle error.
+			}
+			break
+		}
+		time.Sleep(pollInterval)
+	}
+}
+
+func ExampleTable_LoaderFrom_reader() {
+	ctx := context.Background()
+	client, err := bigquery.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	f, err := os.Open("data.csv")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	rs := bigquery.NewReaderSource(f)
+	rs.AllowJaggedRows = true
+	// TODO: set other options on the GCSReference.
+	ds := client.Dataset("my_dataset")
+	loader := ds.Table("my_table").LoaderFrom(rs)
 	loader.CreateDisposition = bigquery.CreateNever
 	// TODO: set other options on the Loader.
 	job, err := loader.Run(ctx)
