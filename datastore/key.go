@@ -239,11 +239,10 @@ func NewIncompleteKey(ctx context.Context, kind string, parent *Key) *Key {
 // The supplied parent must either be a complete key or nil.
 func NewKey(ctx context.Context, kind, name string, id int64, parent *Key) *Key {
 	return &Key{
-		Kind:      kind,
-		Name:      name,
-		ID:        id,
-		Parent:    parent,
-		Namespace: ctxNamespace(ctx),
+		Kind:   kind,
+		Name:   name,
+		ID:     id,
+		Parent: parent,
 	}
 }
 

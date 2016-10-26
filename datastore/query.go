@@ -102,9 +102,9 @@ type Query struct {
 	start    []byte
 	end      []byte
 
-	trans *Transaction
-
 	namespace string
+
+	trans *Transaction
 
 	err error
 }
@@ -560,10 +560,6 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 	if q.namespace != "" {
 		t.req.PartitionId = &pb.PartitionId{
 			NamespaceId: q.namespace,
-		}
-	} else if ns := ctxNamespace(ctx); ns != "" {
-		t.req.PartitionId = &pb.PartitionId{
-			NamespaceId: ns,
 		}
 	}
 

@@ -396,21 +396,6 @@ func ExampleNewIncompleteKey() {
 	_ = k // TODO: Use incomplete key.
 }
 
-func ExampleWithNamespace() {
-	ctx := context.Background()
-	// k1 is in the default namespace.
-	k1 := datastore.NewKey(ctx, "Article", "", 1, nil)
-	// k2 is in the "other" namespace.
-	ctx2 := datastore.WithNamespace(ctx, "other")
-	k2 := datastore.NewKey(ctx2, "Article", "", 1, nil)
-	// k1 and k2 can refer to different entities, despite the same kind and ID.
-	fmt.Printf("k1: %q\n", k1.Namespace)
-	fmt.Printf("k2: %q\n", k2.Namespace)
-	// Output:
-	// k1: ""
-	// k2: "other"
-}
-
 func ExampleClient_GetAll() {
 	ctx := context.Background()
 	client, err := datastore.NewClient(ctx, "project-id")
