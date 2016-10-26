@@ -21,6 +21,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
 )
 
 // TODO(jbd): Document other authorization methods and refer to them here.
@@ -447,7 +448,7 @@ func ExampleIterator_Next() {
 	for {
 		var p Post
 		key, err := it.Next(&p)
-		if err == datastore.Done {
+		if err == iterator.Done {
 			break
 		}
 		if err != nil {
@@ -467,7 +468,7 @@ func ExampleIterator_Cursor() {
 	for {
 		var p Post
 		_, err := it.Next(&p)
-		if err == datastore.Done {
+		if err == iterator.Done {
 			break
 		}
 		if err != nil {

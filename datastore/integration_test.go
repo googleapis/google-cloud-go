@@ -26,6 +26,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
 
@@ -514,7 +515,7 @@ func TestLargeQuery(t *testing.T) {
 			it := client.Run(ctx, q.Limit(limit).Offset(offset).KeysOnly())
 			for i := 0; i < count; i++ {
 				_, err := it.Next(nil)
-				if err == Done {
+				if err == iterator.Done {
 					break
 				}
 				if err != nil {
@@ -536,7 +537,7 @@ func TestLargeQuery(t *testing.T) {
 			_, err = it.Next(&entity)
 			switch {
 			case want == -1:
-				if err != Done {
+				if err != iterator.Done {
 					t.Errorf("count=%d, limit=%d, offset=%d: it.Next from cursor %v, want Done", count, limit, offset, err)
 				}
 			case err != nil:
@@ -800,7 +801,7 @@ loop:
 				Why, Pling string
 			}
 			_, err := iter.Next(&dst)
-			if err == Done {
+			if err == iterator.Done {
 				break
 			}
 			if err != nil {
