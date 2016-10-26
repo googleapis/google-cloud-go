@@ -272,12 +272,13 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 // ObjectHandle provides operations on an object in a Google Cloud Storage bucket.
 // Use BucketHandle.Object to get a handle.
 type ObjectHandle struct {
-	c      *Client
-	bucket string
-	object string
-	acl    ACLHandle
-	gen    int64 // a negative value indicates latest
-	conds  *Conditions
+	c             *Client
+	bucket        string
+	object        string
+	acl           ACLHandle
+	gen           int64 // a negative value indicates latest
+	conds         *Conditions
+	encryptionKey []byte // AES-256 key
 }
 
 // ACL provides access to the object's access control list.
@@ -309,6 +310,15 @@ func (o *ObjectHandle) If(conds Conditions) *ObjectHandle {
 	return &o2
 }
 
+// Key returns a new ObjectHandle that uses the supplied encryption
+// key to encrypt and decrypt the object's contents.
+// See https://cloud.google.com/storage/docs/encryption for details.
+func (o *ObjectHandle) Key(encryptionKey []byte) *ObjectHandle {
+	o2 := *o
+	o2.encryptionKey = encryptionKey
+	return &o2
+}
+
 // Attrs returns meta information about the object.
 // ErrObjectNotExist will be returned if the object is not found.
 func (o *ObjectHandle) Attrs(ctx context.Context) (*ObjectAttrs, error) {
@@ -319,6 +329,7 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (*ObjectAttrs, error) {
 	if err := applyConds("Attrs", o.gen, o.conds, call); err != nil {
 		return nil, err
 	}
+	setEncryptionHeaders(call.Header(), o.encryptionKey, false)
 	var obj *raw.Object
 	var err error
 	err = runWithRetry(ctx, func() error { obj, err = call.Do(); return err })
@@ -389,6 +400,7 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 	if err := applyConds("Update", o.gen, o.conds, call); err != nil {
 		return nil, err
 	}
+	setEncryptionHeaders(call.Header(), o.encryptionKey, false)
 	var obj *raw.Object
 	var err error
 	err = runWithRetry(ctx, func() error { obj, err = call.Do(); return err })
@@ -486,6 +498,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	} else if length > 0 {
 		req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", offset, offset+length-1))
 	}
+	setEncryptionHeaders(req.Header, o.encryptionKey, false)
 	var res *http.Response
 	err = runWithRetry(ctx, func() error { res, err = o.c.hc.Do(req); return err })
 	if err != nil {
@@ -716,6 +729,13 @@ type ObjectAttrs struct {
 	// metadata does not change this property. This field is read-only.
 	Updated time.Time
 
+	// CustomerKeySHA256 is the base64-encoded SHA-256 hash of the
+	// customer-supplied encryption key for the object. It is empty if there is
+	// no customer-supplied encryption key.
+	// See // https://cloud.google.com/storage/docs/encryption for more about
+	// encryption in Google Cloud Storage.
+	CustomerKeySHA256 string
+
 	// Prefix is set only for ObjectAttrs which represent synthetic "directory
 	// entries" when iterating over buckets using Query.Delimiter. See
 	// ObjectIterator.Next. When set, no other fields in ObjectAttrs will be
@@ -754,26 +774,31 @@ func newObject(o *raw.Object) *ObjectAttrs {
 	if err == nil && len(d) == 4 {
 		crc32c = uint32(d[0])<<24 + uint32(d[1])<<16 + uint32(d[2])<<8 + uint32(d[3])
 	}
+	var sha256 string
+	if o.CustomerEncryption != nil {
+		sha256 = o.CustomerEncryption.KeySha256
+	}
 	return &ObjectAttrs{
-		Bucket:          o.Bucket,
-		Name:            o.Name,
-		ContentType:     o.ContentType,
-		ContentLanguage: o.ContentLanguage,
-		CacheControl:    o.CacheControl,
-		ACL:             acl,
-		Owner:           owner,
-		ContentEncoding: o.ContentEncoding,
-		Size:            int64(o.Size),
-		MD5:             md5,
-		CRC32C:          crc32c,
-		MediaLink:       o.MediaLink,
-		Metadata:        o.Metadata,
-		Generation:      o.Generation,
-		MetaGeneration:  o.Metageneration,
-		StorageClass:    o.StorageClass,
-		Created:         convertTime(o.TimeCreated),
-		Deleted:         convertTime(o.TimeDeleted),
-		Updated:         convertTime(o.Updated),
+		Bucket:            o.Bucket,
+		Name:              o.Name,
+		ContentType:       o.ContentType,
+		ContentLanguage:   o.ContentLanguage,
+		CacheControl:      o.CacheControl,
+		ACL:               acl,
+		Owner:             owner,
+		ContentEncoding:   o.ContentEncoding,
+		Size:              int64(o.Size),
+		MD5:               md5,
+		CRC32C:            crc32c,
+		MediaLink:         o.MediaLink,
+		Metadata:          o.Metadata,
+		Generation:        o.Generation,
+		MetaGeneration:    o.Metageneration,
+		StorageClass:      o.StorageClass,
+		CustomerKeySHA256: sha256,
+		Created:           convertTime(o.TimeCreated),
+		Deleted:           convertTime(o.TimeDeleted),
+		Updated:           convertTime(o.Updated),
 	}
 }
 
@@ -1016,6 +1041,20 @@ func (c composeSourceObj) IfGenerationMatch(gen int64) {
 	c.src.ObjectPreconditions = &raw.ComposeRequestSourceObjectsObjectPreconditions{
 		IfGenerationMatch: gen,
 	}
+}
+
+func setEncryptionHeaders(headers http.Header, key []byte, copySource bool) {
+	if key == nil {
+		return
+	}
+	var cs string
+	if copySource {
+		cs = "copy-source-"
+	}
+	headers.Set("x-goog-"+cs+"encryption-algorithm", "AES256")
+	headers.Set("x-goog-"+cs+"encryption-key", base64.StdEncoding.EncodeToString(key))
+	keyHash := sha256.Sum256(key)
+	headers.Set("x-goog-"+cs+"encryption-key-sha256", base64.StdEncoding.EncodeToString(keyHash[:]))
 }
 
 // TODO(jbd): Add storage.objects.watch.

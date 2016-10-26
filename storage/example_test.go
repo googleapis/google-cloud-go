@@ -399,6 +399,23 @@ func ExampleCopier_Run_progress() {
 	}
 }
 
+var key1, key2 []byte
+
+func ExampleObjectHandle_CopierFrom_rotateEncryptionKeys() {
+	// To rotate the encryption key on an object, copy it onto itself.
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	obj := client.Bucket("bucketname").Object("obj")
+	// Assume obj is encrypted with key1, and we want to change to key2.
+	_, err = obj.Key(key2).CopierFrom(obj.Key(key1)).Run(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+}
+
 func ExampleComposer_Run() {
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
@@ -417,8 +434,7 @@ func ExampleComposer_Run() {
 		// TODO: Handle error.
 	}
 	fmt.Println(attrs)
-
-	// Just compose..
+	// Just compose.
 	attrs, err = dst.ComposerFrom(src1, src2).Run(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -461,6 +477,25 @@ func ExampleObjectHandle_If() {
 	}
 	defer rc.Close()
 	if _, err := io.Copy(os.Stdout, rc); err != nil {
+		// TODO: handle error.
+	}
+}
+
+var secretKey []byte
+
+func ExampleObjectHandle_Key() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	obj := client.Bucket("my-bucket").Object("my-object")
+	// Encrypt the object's contents.
+	w := obj.Key(secretKey).NewWriter(ctx)
+	if _, err := w.Write([]byte("top secret")); err != nil {
+		// TODO: handle error.
+	}
+	if err := w.Close(); err != nil {
 		// TODO: handle error.
 	}
 }
