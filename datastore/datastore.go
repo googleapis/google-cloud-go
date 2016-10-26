@@ -326,8 +326,8 @@ func checkMultiArg(v reflect.Value) (m multiArgType, elemType reflect.Type) {
 }
 
 // Close closes the Client.
-func (c *Client) Close() {
-	c.conn.Close()
+func (c *Client) Close() error {
+	return c.conn.Close()
 }
 
 // Get loads the entity stored for key into dst, which must be a struct pointer
