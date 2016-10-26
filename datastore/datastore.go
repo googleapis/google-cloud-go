@@ -162,23 +162,6 @@ const (
 	multiArgTypeInterface
 )
 
-// nsKey is the type of the context.Context key to store the datastore
-// namespace.
-type nsKey struct{}
-
-// WithNamespace returns a new context that limits the scope its parent
-// context with a Datastore namespace.
-func WithNamespace(parent context.Context, namespace string) context.Context {
-	return context.WithValue(parent, nsKey{}, namespace)
-}
-
-// ctxNamespace returns the active namespace for a context.
-// It defaults to "" if no namespace was specified.
-func ctxNamespace(ctx context.Context) string {
-	v, _ := ctx.Value(nsKey{}).(string)
-	return v
-}
-
 // ErrFieldMismatch is returned when a field is to be loaded into a different
 // type than the one it was stored from, or when a field is missing or
 // unexported in the destination struct.
