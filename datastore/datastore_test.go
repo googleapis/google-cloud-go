@@ -62,10 +62,10 @@ func makeUint8Slice(n int) []uint8 {
 
 func newKey(stringID string, parent *Key) *Key {
 	return &Key{
-		kind:   "kind",
-		name:   stringID,
-		id:     0,
-		parent: parent,
+		Kind:   "kind",
+		Name:   stringID,
+		ID:     0,
+		Parent: parent,
 	}
 }
 

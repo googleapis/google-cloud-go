@@ -344,10 +344,10 @@ func TestSimpleQuery(t *testing.T) {
 // keysEqual is like (*Key).Equal, but ignores the App ID.
 func keysEqual(a, b *Key) bool {
 	for a != nil && b != nil {
-		if a.Kind() != b.Kind() || a.Name() != b.Name() || a.ID() != b.ID() {
+		if a.Kind != b.Kind || a.Name != b.Name || a.ID != b.ID {
 			return false
 		}
-		a, b = a.Parent(), b.Parent()
+		a, b = a.Parent, b.Parent
 	}
 	return a == b
 }

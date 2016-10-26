@@ -26,24 +26,14 @@ import (
 func TestNamespace(t *testing.T) {
 	c := context.Background()
 	k := NewIncompleteKey(c, "foo", nil)
-	if got, want := k.Namespace(), ""; got != want {
-		t.Errorf("No namespace, k.Namespace() = %q, want %q", got, want)
+	if got, want := k.Namespace, ""; got != want {
+		t.Errorf("No namespace, k.Namespace = %q, want %q", got, want)
 	}
 
 	c = WithNamespace(c, "gopherspace")
 	k = NewIncompleteKey(c, "foo", nil)
-	if got, want := k.Namespace(), "gopherspace"; got != want {
-		t.Errorf("No namespace, k.Namespace() = %q, want %q", got, want)
-	}
-}
-
-func TestParent(t *testing.T) {
-	c := context.Background()
-	k := NewIncompleteKey(c, "foo", nil)
-	par := NewKey(c, "foomum", "", 1248, nil)
-	k.SetParent(par)
-	if got := k.Parent(); got != par {
-		t.Errorf("k.Parent() = %v; want %v", got, par)
+	if got, want := k.Namespace, "gopherspace"; got != want {
+		t.Errorf("No namespace, k.Namespace = %q, want %q", got, want)
 	}
 }
 
