@@ -18,6 +18,8 @@ import (
 	"bytes"
 	"compress/gzip"
 	"crypto/md5"
+	"crypto/sha256"
+	"encoding/base64"
 	"flag"
 	"fmt"
 	"io"
@@ -811,6 +813,162 @@ func TestZeroSizedObject(t *testing.T) {
 	}
 	if len(body) != 0 {
 		t.Errorf("Body is %v, want empty []byte{}", body)
+	}
+}
+
+func TestIntegration_Encryption(t *testing.T) {
+	// This function tests customer-supplied encryption keys for all operations
+	// involving objects. Bucket and ACL operations aren't tested because they
+	// aren't affected customer encryption.
+	ctx := context.Background()
+	client, bucket := testConfig(ctx, t)
+	defer client.Close()
+
+	obj := client.Bucket(bucket).Object("customer-encryption")
+	key := []byte("my-secret-AES-256-encryption-key")
+	keyHash := sha256.Sum256(key)
+	keyHashB64 := base64.StdEncoding.EncodeToString(keyHash[:])
+	key2 := []byte("My-Secret-AES-256-Encryption-Key")
+	contents := "top secret."
+
+	checkMetadataCall := func(msg string, f func(o *ObjectHandle) (*ObjectAttrs, error)) {
+		// Performing a metadata operation without the key should succeed.
+		attrs, err := f(obj)
+		if err != nil {
+			t.Fatalf("%s: %v", msg, err)
+		}
+		// The key hash should match...
+		if got, want := attrs.CustomerKeySHA256, keyHashB64; got != want {
+			t.Errorf("%s: key hash: got %q, want %q", msg, got, want)
+		}
+		// ...but CRC and MD5 should not be present.
+		if attrs.CRC32C != 0 {
+			t.Errorf("%s: CRC: got %v, want 0", msg, attrs.CRC32C)
+		}
+		if len(attrs.MD5) > 0 {
+			t.Errorf("%s: MD5: got %v, want len == 0", msg, attrs.MD5)
+		}
+
+		// Performing a metadata operation with the key should succeed.
+		attrs, err = f(obj.Key(key))
+		if err != nil {
+			t.Fatalf("%s: %v", msg, err)
+		}
+		// Check the key and content hashes.
+		if got, want := attrs.CustomerKeySHA256, keyHashB64; got != want {
+			t.Errorf("%s: key hash: got %q, want %q", msg, got, want)
+		}
+		if attrs.CRC32C == 0 {
+			t.Errorf("%s: CRC: got 0, want non-zero", msg)
+		}
+		if len(attrs.MD5) == 0 {
+			t.Errorf("%s: MD5: got len == 0, want len > 0", msg)
+		}
+	}
+
+	checkRead := func(msg string, o *ObjectHandle, k []byte, wantContents string) {
+		// Reading the object without the key should fail.
+		if _, err := readObject(ctx, o); err == nil {
+			t.Errorf("%s: reading without key: want error, got nil", msg)
+		}
+		// Reading the object with the key should succeed.
+		got, err := readObject(ctx, o.Key(k))
+		if err != nil {
+			t.Fatalf("%s: %v", msg, err)
+		}
+		gotContents := string(got)
+		// And the contents should match what we wrote.
+		if gotContents != wantContents {
+			t.Errorf("%s: contents: got %q, want %q", msg, gotContents, wantContents)
+		}
+	}
+
+	checkReadUnencrypted := func(msg string, obj *ObjectHandle, wantContents string) {
+		got, err := readObject(ctx, obj)
+		if err != nil {
+			t.Fatalf("%s: %v", msg, err)
+		}
+		gotContents := string(got)
+		if gotContents != wantContents {
+			t.Errorf("%s: got %q, want %q", gotContents, wantContents)
+		}
+	}
+
+	// Write to obj using our own encryption key, which is a valid 32-byte
+	// AES-256 key.
+	w := obj.Key(key).NewWriter(ctx)
+	w.Write([]byte(contents))
+	if err := w.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	checkMetadataCall("Attrs", func(o *ObjectHandle) (*ObjectAttrs, error) {
+		return o.Attrs(ctx)
+	})
+
+	checkMetadataCall("Update", func(o *ObjectHandle) (*ObjectAttrs, error) {
+		return o.Update(ctx, ObjectAttrsToUpdate{ContentLanguage: "en"})
+	})
+
+	checkRead("first object", obj, key, contents)
+
+	obj2 := client.Bucket(bucket).Object("customer-encryption-2")
+	// Copying an object without the key should fail.
+	if _, err := obj2.CopierFrom(obj).Run(ctx); err == nil {
+		t.Fatal("want error, got nil")
+	}
+	// Copying an object with the key should succeed.
+	if _, err := obj2.CopierFrom(obj.Key(key)).Run(ctx); err != nil {
+		t.Fatal(err)
+	}
+	// The destination object is not encrypted; we can read it without a key.
+	checkReadUnencrypted("copy dest", obj2, contents)
+
+	// Providing a key on the destination but not the source should fail,
+	// since the source is encrypted.
+	if _, err := obj2.Key(key2).CopierFrom(obj).Run(ctx); err == nil {
+		t.Fatal("want error, got nil")
+	}
+
+	// But copying with keys for both source and destination should succeed.
+	if _, err := obj2.Key(key2).CopierFrom(obj.Key(key)).Run(ctx); err != nil {
+		t.Fatal(err)
+	}
+	// And the destination should be encrypted, meaning we can only read it
+	// with a key.
+	checkRead("copy destination", obj2, key2, contents)
+
+	// Change obj2's key to prepare for compose, where all objects must have
+	// the same key. Also illustrates key rotation: copy an object to itself
+	// with a different key.
+	if _, err := obj2.Key(key).CopierFrom(obj2.Key(key2)).Run(ctx); err != nil {
+		t.Fatal(err)
+	}
+	obj3 := client.Bucket(bucket).Object("customer-encryption-3")
+	// Composing without keys should fail.
+	if _, err := obj3.ComposerFrom(obj, obj2).Run(ctx); err == nil {
+		t.Fatal("want error, got nil")
+	}
+	// Keys on the source objects result in an error.
+	if _, err := obj3.ComposerFrom(obj.Key(key), obj2).Run(ctx); err == nil {
+		t.Fatal("want error, got nil")
+	}
+	// A key on the destination object both decrypts the source objects
+	// and encrypts the destination.
+	if _, err := obj3.Key(key).ComposerFrom(obj, obj2).Run(ctx); err != nil {
+		t.Fatalf("got %v, want nil", err)
+	}
+	// Check that the destination in encrypted.
+	checkRead("compose destination", obj3, key, contents+contents)
+
+	// You can't compose one or more unencrypted source objects into an
+	// encrypted destination object.
+	_, err := obj2.CopierFrom(obj2.Key(key)).Run(ctx) // unencrypt obj2
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := obj3.Key(key).ComposerFrom(obj2).Run(ctx); err == nil {
+		t.Fatal("got nil, want error")
 	}
 }
 

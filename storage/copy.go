@@ -110,6 +110,8 @@ func (c *Copier) callRewrite(ctx context.Context, src *ObjectHandle, rawObj *raw
 	if err := applySourceConds(c.src.gen, c.src.conds, call); err != nil {
 		return nil, err
 	}
+	setEncryptionHeaders(call.Header(), c.dst.encryptionKey, false)
+	setEncryptionHeaders(call.Header(), c.src.encryptionKey, true)
 	var res *raw.RewriteResponse
 	var err error
 	err = runWithRetry(ctx, func() error { res, err = call.Do(); return err })
@@ -123,6 +125,10 @@ func (c *Copier) callRewrite(ctx context.Context, src *ObjectHandle, rawObj *raw
 // ComposerFrom creates a Composer that can compose srcs into dst.
 // You can immediately call Run on the returned Composer, or you can
 // configure it first.
+//
+// The encryption key for the destination object will be used to decrypt all
+// source objects and encrypt the destination object. It is an error
+// to specify an encryption key for any of the source objects.
 func (dst *ObjectHandle) ComposerFrom(srcs ...*ObjectHandle) *Composer {
 	return &Composer{dst: dst, srcs: srcs}
 }
@@ -158,6 +164,9 @@ func (c *Composer) Run(ctx context.Context) (*ObjectAttrs, error) {
 		if src.bucket != c.dst.bucket {
 			return nil, fmt.Errorf("storage: all source objects must be in bucket %q, found %q", c.dst.bucket, src.bucket)
 		}
+		if src.encryptionKey != nil {
+			return nil, fmt.Errorf("storage: compose source %s.%s must not have encryption key", src.bucket, src.object)
+		}
 		srcObj := &raw.ComposeRequestSourceObjects{
 			Name: src.object,
 		}
@@ -171,6 +180,7 @@ func (c *Composer) Run(ctx context.Context) (*ObjectAttrs, error) {
 	if err := applyConds("ComposeFrom destination", c.dst.gen, c.dst.conds, call); err != nil {
 		return nil, err
 	}
+	setEncryptionHeaders(call.Header(), c.dst.encryptionKey, false)
 	var obj *raw.Object
 	var err error
 	err = runWithRetry(ctx, func() error { obj, err = call.Do(); return err })
