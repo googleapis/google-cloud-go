@@ -321,7 +321,7 @@ Example code:
 		for t := dsClient.Run(ctx, q); ; {
 			var x Widget
 			key, err := t.Next(&x)
-			if err == datastore.Done {
+			if err == iterator.Done {
 				break
 			}
 			if err != nil {
