@@ -213,22 +213,22 @@ func keyToProto(k *Key) *pb.Key {
 	// TODO(jbd): Eliminate unrequired allocations.
 	var path []*pb.Key_PathElement
 	for {
-		el := &pb.Key_PathElement{Kind: k.kind}
-		if k.id != 0 {
-			el.IdType = &pb.Key_PathElement_Id{k.id}
-		} else if k.name != "" {
-			el.IdType = &pb.Key_PathElement_Name{k.name}
+		el := &pb.Key_PathElement{Kind: k.Kind}
+		if k.ID != 0 {
+			el.IdType = &pb.Key_PathElement_Id{k.ID}
+		} else if k.Name != "" {
+			el.IdType = &pb.Key_PathElement_Name{k.Name}
 		}
 		path = append([]*pb.Key_PathElement{el}, path...)
-		if k.parent == nil {
+		if k.Parent == nil {
 			break
 		}
-		k = k.parent
+		k = k.Parent
 	}
 	key := &pb.Key{Path: path}
-	if k.namespace != "" {
+	if k.Namespace != "" {
 		key.PartitionId = &pb.PartitionId{
-			NamespaceId: k.namespace,
+			NamespaceId: k.Namespace,
 		}
 	}
 	return key
@@ -245,11 +245,11 @@ func protoToKey(p *pb.Key) (*Key, error) {
 	}
 	for _, el := range p.Path {
 		key = &Key{
-			namespace: namespace,
-			kind:      el.Kind,
-			id:        el.GetId(),
-			name:      el.GetName(),
-			parent:    key,
+			Namespace: namespace,
+			Kind:      el.Kind,
+			ID:        el.GetId(),
+			Name:      el.GetName(),
+			Parent:    key,
 		}
 	}
 	if !key.valid() { // Also detects key == nil.

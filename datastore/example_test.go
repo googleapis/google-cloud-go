@@ -404,8 +404,8 @@ func ExampleWithNamespace() {
 	ctx2 := datastore.WithNamespace(ctx, "other")
 	k2 := datastore.NewKey(ctx2, "Article", "", 1, nil)
 	// k1 and k2 can refer to different entities, despite the same kind and ID.
-	fmt.Printf("k1: %q\n", k1.Namespace())
-	fmt.Printf("k2: %q\n", k2.Namespace())
+	fmt.Printf("k1: %q\n", k1.Namespace)
+	fmt.Printf("k2: %q\n", k2.Namespace)
 	// Output:
 	// k1: ""
 	// k2: "other"
