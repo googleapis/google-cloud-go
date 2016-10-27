@@ -16,6 +16,14 @@ backwards-incompatible changes.
 
 ## News
 
+_October 27, 2016_
+
+Breaking change to bigquery: `NewGCSReference` is now a function,
+not a method on `Client`.
+
+New bigquery feature: `Table.LoaderFrom` now accepts a `ReaderSource`, enabling
+loading data into a table from a file or any `io.Reader`.
+
 _October 21, 2016_
 
 Breaking change to pubsub: removed `pubsub.Done`.
