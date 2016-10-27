@@ -125,11 +125,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"cloud.google.com/go/internal/bundler"
 	"golang.org/x/net/context"
 	api "google.golang.org/api/cloudtrace/v1"
 	"google.golang.org/api/gensupport"
 	"google.golang.org/api/option"
+	"google.golang.org/api/support/bundler"
 	"google.golang.org/api/transport"
 	"google.golang.org/grpc"
 )
