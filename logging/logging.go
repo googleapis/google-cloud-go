@@ -36,7 +36,6 @@ import (
 	"sync"
 	"time"
 
-	"cloud.google.com/go/internal/bundler"
 	vkit "cloud.google.com/go/logging/apiv2"
 	"cloud.google.com/go/logging/internal"
 	"github.com/golang/protobuf/proto"
@@ -45,6 +44,7 @@ import (
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
+	"google.golang.org/api/support/bundler"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
 	logtypepb "google.golang.org/genproto/googleapis/logging/type"
 	logpb "google.golang.org/genproto/googleapis/logging/v2"
