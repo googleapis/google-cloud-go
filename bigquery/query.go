@@ -123,7 +123,7 @@ func (q *Query) Run(ctx context.Context) (*Job, error) {
 	setJobRef(job, q.JobID, q.client.projectID)
 
 	q.QueryConfig.populateJobQueryConfig(job.Configuration.Query)
-	j, err := q.client.service.insertJob(ctx, job, q.client.projectID, nil)
+	j, err := q.client.service.insertJob(ctx, q.client.projectID, &insertJobConf{job: job})
 	if err != nil {
 		return nil, err
 	}
