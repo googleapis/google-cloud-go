@@ -52,6 +52,8 @@ func NewClient(ctx context.Context, project, instance string, opts ...option.Cli
 	if err != nil {
 		return nil, err
 	}
+	// Default to a small connection pool that can be overridden.
+	o = append(o, option.WithGRPCConnectionPool(4))
 	o = append(o, opts...)
 	conn, err := transport.DialGRPC(ctx, o...)
 	if err != nil {
