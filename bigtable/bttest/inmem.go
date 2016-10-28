@@ -621,6 +621,13 @@ func applyMutations(tbl *table, r *row, muts []*btpb.Mutation, fs map[string]boo
 			}
 		case *btpb.Mutation_DeleteFromRow_:
 			r.cells = make(map[string][]cell)
+		case *btpb.Mutation_DeleteFromFamily_:
+			fampre := mut.DeleteFromFamily.FamilyName + ":"
+			for col, _ := range r.cells {
+				if strings.HasPrefix(col, fampre) {
+					delete(r.cells, col)
+				}
+			}
 		}
 	}
 	return nil
