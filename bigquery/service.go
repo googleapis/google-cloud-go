@@ -32,7 +32,7 @@ import (
 // of the generated BigQuery API.
 type service interface {
 	// Jobs
-	insertJob(ctx context.Context, job *bq.Job, projectId string, r io.Reader) (*Job, error)
+	insertJob(ctx context.Context, projectId string, conf *insertJobConf) (*Job, error)
 	getJobType(ctx context.Context, projectId, jobID string) (jobType, error)
 	jobCancel(ctx context.Context, projectId, jobID string) error
 	jobStatus(ctx context.Context, projectId, jobID string) (*JobStatus, error)
@@ -93,10 +93,15 @@ func getPages(token string, getPage func(token string) (nextToken string, err er
 	}
 }
 
-func (s *bigqueryService) insertJob(ctx context.Context, job *bq.Job, projectID string, r io.Reader) (*Job, error) {
-	call := s.s.Jobs.Insert(projectID, job).Context(ctx)
-	if r != nil {
-		call.Media(r)
+type insertJobConf struct {
+	job   *bq.Job
+	media io.Reader
+}
+
+func (s *bigqueryService) insertJob(ctx context.Context, projectID string, conf *insertJobConf) (*Job, error) {
+	call := s.s.Jobs.Insert(projectID, conf.job).Context(ctx)
+	if conf.media != nil {
+		call.Media(conf.media)
 	}
 	res, err := call.Do()
 	if err != nil {

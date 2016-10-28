@@ -34,11 +34,10 @@ func NewReaderSource(r io.Reader) *ReaderSource {
 	return &ReaderSource{r: r}
 }
 
-func (r *ReaderSource) populateLoadConfig(conf *bq.JobConfigurationLoad) {
-	r.FileConfig.populateLoadConfig(conf)
+func (r *ReaderSource) populateInsertJobConfForLoad(conf *insertJobConf) {
+	conf.media = r.r
+	r.FileConfig.populateLoadConfig(conf.job.Configuration.Load)
 }
-
-func (r *ReaderSource) reader() io.Reader { return r.r }
 
 // FileConfig contains configuration options that pertain to files, typically
 // text files that require interpretation to be used as a BigQuery table. A
