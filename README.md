@@ -16,6 +16,22 @@ backwards-incompatible changes.
 
 ## News
 
+_November 8, 2016_
+
+New datastore feature: datastore now encodes your nested Go structs as Entity values,
+instead of a flattened list of the embedded struct's fields.
+This means that you may now have twice-nested slices, eg.
+```
+type State struct {
+  Cities  []struct{
+    Populations []int
+  }
+}
+```
+
+See [the announcement](https://groups.google.com/forum/#!topic/google-api-go-announce/79jtrdeuJAg) for
+more details.
+
 _October 27, 2016_
 
 Breaking change to bigquery: `NewGCSReference` is now a function,
