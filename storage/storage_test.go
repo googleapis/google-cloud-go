@@ -467,6 +467,7 @@ func TestObjectCompose(t *testing.T) {
 			},
 			wantURL: "/storage/v1/b/foo/o/bar/compose?alt=json",
 			wantReq: raw.ComposeRequest{
+				Destination: &raw.Object{Bucket: "foo"},
 				SourceObjects: []*raw.ComposeRequestSourceObjects{
 					{Name: "baz"},
 					{Name: "quux"},
@@ -488,7 +489,7 @@ func TestObjectCompose(t *testing.T) {
 			wantReq: raw.ComposeRequest{
 				Destination: &raw.Object{
 					Bucket:      "foo",
-					Name:        "bar",
+					Name:        "not-bar",
 					ContentType: "application/json",
 				},
 				SourceObjects: []*raw.ComposeRequestSourceObjects{
@@ -509,6 +510,7 @@ func TestObjectCompose(t *testing.T) {
 			},
 			wantURL: "/storage/v1/b/foo/o/bar/compose?alt=json&ifGenerationMatch=12&ifMetagenerationMatch=34",
 			wantReq: raw.ComposeRequest{
+				Destination: &raw.Object{Bucket: "foo"},
 				SourceObjects: []*raw.ComposeRequestSourceObjects{
 					{
 						Name:       "baz",

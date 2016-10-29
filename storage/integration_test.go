@@ -550,33 +550,46 @@ func TestObjects(t *testing.T) {
 	}
 
 	// Test object composition.
-	compDst := bkt.Object("composed")
 	var compSrcs []*ObjectHandle
 	var wantContents []byte
 	for _, obj := range objects {
 		compSrcs = append(compSrcs, bkt.Object(obj))
 		wantContents = append(wantContents, contents[obj]...)
 	}
+	checkCompose := func(obj *ObjectHandle, wantContentType string) {
+		rc, err := obj.NewReader(ctx)
+		if err != nil {
+			t.Fatalf("NewReader: %v", err)
+		}
+		slurp, err = ioutil.ReadAll(rc)
+		if err != nil {
+			t.Fatalf("ioutil.ReadAll: %v", err)
+		}
+		defer rc.Close()
+		if !bytes.Equal(slurp, wantContents) {
+			t.Errorf("Composed object contents\ngot:  %q\nwant: %q", slurp, wantContents)
+		}
+		if got := rc.ContentType(); got != wantContentType {
+			t.Errorf("Composed object content-type = %q, want %q", got, wantContentType)
+		}
+	}
+
+	// Compose should work even if the user sets no destination attributes.
+	compDst := bkt.Object("composed1")
 	c := compDst.ComposerFrom(compSrcs...)
+	if _, err := c.Run(ctx); err != nil {
+		t.Fatalf("ComposeFrom error: %v", err)
+	}
+	checkCompose(compDst, "application/octet-stream")
+
+	// It should also work if we do.
+	compDst = bkt.Object("composed2")
+	c = compDst.ComposerFrom(compSrcs...)
 	c.ContentType = "text/json"
 	if _, err := c.Run(ctx); err != nil {
 		t.Fatalf("ComposeFrom error: %v", err)
 	}
-	rc, err := compDst.NewReader(ctx)
-	if err != nil {
-		t.Fatalf("compDst.NewReader: %v", err)
-	}
-	slurp, err = ioutil.ReadAll(rc)
-	if err != nil {
-		t.Fatalf("compDst ioutil.ReadAll: %v", err)
-	}
-	defer rc.Close()
-	if !bytes.Equal(slurp, wantContents) {
-		t.Errorf("Composed object contents\ngot:  %q\nwant: %q", slurp, wantContents)
-	}
-	if got, want := rc.ContentType(), "text/json"; got != want {
-		t.Errorf("Composed object content-type = %q, want %q", got, want)
-	}
+	checkCompose(compDst, "text/json")
 }
 
 func namesEqual(obj *ObjectAttrs, bucketName, objectName string) bool {
