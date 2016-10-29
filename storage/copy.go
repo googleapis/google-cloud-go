@@ -148,11 +148,9 @@ func (c *Composer) Run(ctx context.Context) (*ObjectAttrs, error) {
 	}
 
 	req := &raw.ComposeRequest{}
-	if !reflect.DeepEqual(c.ObjectAttrs, ObjectAttrs{}) {
-		req.Destination = c.ObjectAttrs.toRawObject(c.dst.bucket)
-		req.Destination.Name = c.dst.object
-	}
-
+	// Compose requires a non-empty Destination, so we always set it,
+	// even if the caller-provided ObjectAttrs is the zero value.
+	req.Destination = c.ObjectAttrs.toRawObject(c.dst.bucket)
 	for _, src := range c.srcs {
 		if err := src.validate(); err != nil {
 			return nil, err
