@@ -1821,3 +1821,26 @@ func (c *fakeDatastoreClient) AllocateIds(ctx context.Context, in *pb.AllocateId
 	}
 	return c.allocateIds(in)
 }
+
+func TestNewKeyFunctions(t *testing.T) {
+	ctx := context.Background()
+	parent := NewKey(ctx, "k", "", 17, nil)
+
+	want := NewIncompleteKey(ctx, "k", parent)
+	got := IncompleteKey("k", parent)
+	if *got != *want {
+		t.Errorf("got %v, want %v", got, want)
+	}
+
+	want = NewKey(ctx, "k", "name", 0, parent)
+	got = NameKey("k", "name", parent)
+	if *got != *want {
+		t.Errorf("got %v, want %v", got, want)
+	}
+
+	want = NewKey(ctx, "k", "", 22, parent)
+	got = IDKey("k", 22, parent)
+	if *got != *want {
+		t.Errorf("got %v, want %v", got, want)
+	}
+}
