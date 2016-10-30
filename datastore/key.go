@@ -286,3 +286,37 @@ func (c *Client) AllocateIDs(ctx context.Context, keys []*Key) ([]*Key, error) {
 
 	return multiProtoToKey(resp.Keys)
 }
+
+// IncompleteKey creates a new incomplete key.
+// The supplied kind cannot be empty.
+// The namespace of the new key is empty.
+func IncompleteKey(kind string, parent *Key) *Key {
+	return &Key{
+		kind:   kind,
+		parent: parent,
+	}
+}
+
+// NameKey creates a new key with a name.
+// The supplied kind cannot be empty.
+// The supplied parent must either be a complete key or nil.
+// The namespace of the new key is empty.
+func NameKey(kind, name string, parent *Key) *Key {
+	return &Key{
+		kind:   kind,
+		name:   name,
+		parent: parent,
+	}
+}
+
+// IDKey creates a new key with an ID.
+// The supplied kind cannot be empty.
+// The supplied parent must either be a complete key or nil.
+// The namespace of the new key is empty.
+func IDKey(kind string, id int64, parent *Key) *Key {
+	return &Key{
+		kind:   kind,
+		id:     id,
+		parent: parent,
+	}
+}
