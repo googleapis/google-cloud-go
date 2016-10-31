@@ -151,11 +151,6 @@ func TestLogSync(t *testing.T) {
 	initLogs(ctx) // Generate new testLogID
 	ctx := context.Background()
 	lg := client.Logger(testLogID)
-	defer func() {
-		if ok := deleteLog(ctx, testLogID); !ok {
-			t.Fatal("timed out: deleteLog")
-		}
-	}()
 	err := lg.LogSync(ctx, logging.Entry{Payload: "hello"})
 	if err != nil {
 		t.Fatal(err)
@@ -197,11 +192,6 @@ func TestLogAndEntries(t *testing.T) {
 	ctx := context.Background()
 	payloads := []string{"p1", "p2", "p3", "p4", "p5"}
 	lg := client.Logger(testLogID)
-	defer func() {
-		if ok := deleteLog(ctx, testLogID); !ok {
-			t.Fatal("timed out: deleteLog")
-		}
-	}()
 	for _, p := range payloads {
 		// Use the insert ID to guarantee iteration order.
 		lg.Log(logging.Entry{Payload: p, InsertID: p})
@@ -294,11 +284,6 @@ func TestStandardLogger(t *testing.T) {
 	initLogs(ctx) // Generate new testLogID
 	ctx := context.Background()
 	lg := client.Logger(testLogID)
-	defer func() {
-		if ok := deleteLog(ctx, testLogID); !ok {
-			t.Fatal("timed out: deleteLog")
-		}
-	}()
 	slg := lg.StandardLogger(logging.Info)
 
 	if slg != lg.StandardLogger(logging.Info) {
@@ -427,10 +412,41 @@ func TestPing(t *testing.T) {
 	}
 }
 
-// deleteLog is used to clean up a log after a test that writes to it.
-// deleteLog returns false if it times out.
-func deleteLog(ctx context.Context, logID string) bool {
-	err := aclient.DeleteLog(ctx, logID)
+func TestDeleteLog(t *testing.T) {
+	initLogs(ctx) // Generate new testLogID
+	// Write some log entries.
+	ctx := context.Background()
+	payloads := []string{"p1", "p2"}
+	lg := client.Logger(testLogID)
+	for _, p := range payloads {
+		// Use the insert ID to guarantee iteration order.
+		lg.Log(logging.Entry{Payload: p, InsertID: p})
+	}
+	lg.Flush()
+
+	var got []*logging.Entry
+	ok := waitFor(func() bool {
+		var err error
+		got, err = allTestLogEntries(ctx)
+		if err != nil {
+			t.Log("fetching log entries: ", err)
+			return false
+		}
+		return len(got) == 2
+	})
+	if !ok {
+		t.Fatalf("timed out; got: %d, want: %d\n", len(got), 2)
+	}
+
+	// Sleep.
+	// Write timestamp uses client-provided timestamp, delete uses server
+	// timestamp. We sleep to reduce the possibility that the logs are never
+	// "deleted" because of clock skew.
+	// This is the recommended approach by Stackdriver team.
+	time.Sleep(3 * time.Second)
+
+	// Delete the log
+	err := aclient.DeleteLog(ctx, testLogID)
 	if err != nil {
 		log.Fatalf("error deleting log: %v", err)
 	}
@@ -438,8 +454,11 @@ func deleteLog(ctx context.Context, logID string) bool {
 	// DeleteLog can take some time to happen, so we wait for the log to
 	// disappear. There is no direct way to determine if a log exists, so we
 	// just wait until there are no log entries associated with the ID.
-	filter := fmt.Sprintf(`logName = "%s"`, internal.LogPath("projects/"+testProjectID, logID))
-	return waitFor(func() bool { return countLogEntries(ctx, filter) == 0 })
+	filter := fmt.Sprintf(`logName = "%s"`, internal.LogPath("projects/"+testProjectID, testLogID))
+	ok = waitFor(func() bool { return countLogEntries(ctx, filter) == 0 })
+	if !ok {
+		t.Fatalf("timed out waiting for log entries to be deleted")
+	}
 }
 
 // waitFor calls f repeatedly with exponential backoff, blocking until it returns true.
