@@ -62,7 +62,7 @@ func ExampleClient_Get() {
 		Author      *datastore.Key
 		PublishedAt time.Time
 	}
-	key := datastore.NewKey(ctx, "Article", "articled1", 0, nil)
+	key := datastore.NameKey("Article", "articled1", nil)
 	article := &Article{}
 	if err := client.Get(ctx, key, article); err != nil {
 		// TODO: Handle error.
@@ -83,12 +83,12 @@ func ExampleClient_Put() {
 		Author      *datastore.Key
 		PublishedAt time.Time
 	}
-	newKey := datastore.NewIncompleteKey(ctx, "Article", nil)
+	newKey := datastore.IncompleteKey("Article", nil)
 	_, err = client.Put(ctx, newKey, &Article{
 		Title:       "The title of the article",
 		Description: "The description of the article...",
 		Body:        "...",
-		Author:      datastore.NewKey(ctx, "Author", "jbd", 0, nil),
+		Author:      datastore.NameKey("Author", "jbd", nil),
 		PublishedAt: time.Now(),
 	})
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleClient_Delete() {
 		// TODO: Handle error.
 	}
 
-	key := datastore.NewKey(ctx, "Article", "articled1", 0, nil)
+	key := datastore.NameKey("Article", "articled1", nil)
 	if err := client.Delete(ctx, key); err != nil {
 		// TODO: Handle error.
 	}
@@ -151,7 +151,7 @@ func ExampleClient_DeleteMulti() {
 	}
 	var keys []*datastore.Key
 	for i := 1; i <= 10; i++ {
-		keys = append(keys, datastore.NewKey(ctx, "Article", "", int64(i), nil))
+		keys = append(keys, datastore.IDKey("Article", int64(i), nil))
 	}
 	if err := client.DeleteMulti(ctx, keys); err != nil {
 		// TODO: Handle error.
@@ -172,9 +172,9 @@ func ExampleClient_GetMulti() {
 	}
 
 	keys := []*datastore.Key{
-		datastore.NewKey(ctx, "Post", "post1", 0, nil),
-		datastore.NewKey(ctx, "Post", "post2", 0, nil),
-		datastore.NewKey(ctx, "Post", "post3", 0, nil),
+		datastore.NameKey("Post", "post1", nil),
+		datastore.NameKey("Post", "post2", nil),
+		datastore.NameKey("Post", "post3", nil),
 	}
 	posts := make([]Post, 3)
 	if err := client.GetMulti(ctx, keys, posts); err != nil {
@@ -190,8 +190,8 @@ func ExampleClient_PutMulti_slice() {
 	}
 
 	keys := []*datastore.Key{
-		datastore.NewKey(ctx, "Post", "post1", 0, nil),
-		datastore.NewKey(ctx, "Post", "post2", 0, nil),
+		datastore.NameKey("Post", "post1", nil),
+		datastore.NameKey("Post", "post2", nil),
 	}
 
 	// PutMulti with a Post slice.
@@ -212,8 +212,8 @@ func ExampleClient_PutMulti_interfaceSlice() {
 	}
 
 	keys := []*datastore.Key{
-		datastore.NewKey(ctx, "Post", "post1", 0, nil),
-		datastore.NewKey(ctx, "Post", "post2", 0, nil),
+		datastore.NameKey("Post", "post1", nil),
+		datastore.NameKey("Post", "post2", nil),
 	}
 
 	// PutMulti with an empty interface slice.
@@ -283,7 +283,7 @@ func ExampleClient_NewTransaction() {
 		Count int
 	}
 
-	key := datastore.NewKey(ctx, "counter", "CounterA", 0, nil)
+	key := datastore.NameKey("counter", "CounterA", nil)
 	var tx *datastore.Transaction
 	for i := 0; i < retries; i++ {
 		tx, err = client.NewTransaction(ctx)
@@ -325,7 +325,7 @@ func ExampleClient_RunInTransaction() {
 	}
 
 	var count int
-	key := datastore.NewKey(ctx, "Counter", "singleton", 0, nil)
+	key := datastore.NameKey("Counter", "singleton", nil)
 	_, err = client.RunInTransaction(ctx, func(tx *datastore.Transaction) error {
 		var x Counter
 		if err := tx.Get(key, &x); err != nil && err != datastore.ErrNoSuchEntity {
@@ -354,7 +354,7 @@ func ExampleClient_AllocateIDs() {
 	}
 	var keys []*datastore.Key
 	for i := 0; i < 10; i++ {
-		keys = append(keys, datastore.NewIncompleteKey(ctx, "Article", nil))
+		keys = append(keys, datastore.IncompleteKey("Article", nil))
 	}
 	keys, err = client.AllocateIDs(ctx, keys)
 	if err != nil {
@@ -364,8 +364,7 @@ func ExampleClient_AllocateIDs() {
 }
 
 func ExampleKey_Encode() {
-	ctx := context.Background()
-	key := datastore.NewKey(ctx, "Article", "", 1, nil)
+	key := datastore.IDKey("Article", 1, nil)
 	encoded := key.Encode()
 	fmt.Println(encoded)
 	// Output: EgsKB0FydGljbGUQAQ
@@ -382,17 +381,15 @@ func ExampleDecodeKey() {
 }
 
 func ExampleNewKey() {
-	ctx := context.Background()
 	// Key with numeric ID.
-	k1 := datastore.NewKey(ctx, "Article", "", 1, nil)
+	k1 := datastore.IDKey("Article", 1, nil)
 	// Key with string ID.
-	k2 := datastore.NewKey(ctx, "Article", "article8", 0, nil)
+	k2 := datastore.NameKey("Article", "article8", nil)
 	_, _ = k1, k2 // TODO: Use keys.
 }
 
-func ExampleNewIncompleteKey() {
-	ctx := context.Background()
-	k := datastore.NewIncompleteKey(ctx, "Article", nil)
+func ExampleIncompleteKey() {
+	k := datastore.IncompleteKey("Article", nil)
 	_ = k // TODO: Use incomplete key.
 }
 
@@ -420,11 +417,11 @@ func ExampleCommit_Key() {
 	// Create two posts in a single transaction.
 	commit, err := client.RunInTransaction(ctx, func(tx *datastore.Transaction) error {
 		var err error
-		pk1, err = tx.Put(datastore.NewIncompleteKey(ctx, "Post", nil), &Post{Title: "Post 1", PublishedAt: time.Now()})
+		pk1, err = tx.Put(datastore.IncompleteKey("Post", nil), &Post{Title: "Post 1", PublishedAt: time.Now()})
 		if err != nil {
 			return err
 		}
-		pk2, err = tx.Put(datastore.NewIncompleteKey(ctx, "Post", nil), &Post{Title: "Post 2", PublishedAt: time.Now()})
+		pk2, err = tx.Put(datastore.IncompleteKey("Post", nil), &Post{Title: "Post 2", PublishedAt: time.Now()})
 		if err != nil {
 			return err
 		}

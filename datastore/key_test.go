@@ -19,8 +19,6 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"testing"
-
-	"golang.org/x/net/context"
 )
 
 func TestEqual(t *testing.T) {
@@ -195,7 +193,7 @@ func TestEncoding(t *testing.T) {
 
 func TestInvalidKeyDecode(t *testing.T) {
 	// Check that decoding an invalid key returns an err and doesn't panic.
-	enc := NewKey(context.Background(), "Kind", "Foo", 0, nil).Encode()
+	enc := NameKey("Kind", "Foo", nil).Encode()
 
 	invalid := []string{
 		"",
