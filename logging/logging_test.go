@@ -182,7 +182,7 @@ func TestLogSync(t *testing.T) {
 			t.Log("fetching log entries: ", err)
 			return false
 		}
-		return len(got) >= len(want)
+		return len(got) == len(want)
 	})
 	if !ok {
 		t.Fatalf("timed out; got: %d, want: %d\n", len(got), len(want))
@@ -219,7 +219,7 @@ func TestLogAndEntries(t *testing.T) {
 			t.Log("fetching log entries: ", err)
 			return false
 		}
-		return len(got) >= len(want)
+		return len(got) == len(want)
 	})
 	if !ok {
 		t.Fatalf("timed out; got: %d, want: %d\n", len(got), len(want))
@@ -318,7 +318,7 @@ func TestStandardLogger(t *testing.T) {
 			t.Log("fetching log entries: ", err)
 			return false
 		}
-		return len(got) >= 1
+		return len(got) == 1
 	})
 	if !ok {
 		t.Fatalf("timed out; got: %d, want: %d\n", len(got), 1)
