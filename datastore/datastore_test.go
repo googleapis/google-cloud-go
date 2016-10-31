@@ -61,12 +61,7 @@ func makeUint8Slice(n int) []uint8 {
 }
 
 func newKey(stringID string, parent *Key) *Key {
-	return &Key{
-		Kind:   "kind",
-		Name:   stringID,
-		ID:     0,
-		Parent: parent,
-	}
+	return NameKey("kind", stringID, parent)
 }
 
 var (
@@ -1872,8 +1867,8 @@ func TestPutMultiTypes(t *testing.T) {
 
 	// Use the same keys and expected entities for all tests.
 	keys := []*Key{
-		NewKey(ctx, "testKind", "first", 0, nil),
-		NewKey(ctx, "testKind", "second", 0, nil),
+		NameKey("testKind", "first", nil),
+		NameKey("testKind", "second", nil),
 	}
 	want := []*pb.Mutation{
 		{Operation: &pb.Mutation_Upsert{&pb.Entity{
@@ -1930,7 +1925,6 @@ func TestPutMultiTypes(t *testing.T) {
 func TestNoIndexOnSliceProperties(t *testing.T) {
 	// Check that ExcludeFromIndexes is set on the inner elements,
 	// rather than the top-level ArrayValue value.
-	ctx := context.Background()
 	pl := PropertyList{
 		Property{
 			Name: "repeated",
@@ -1943,7 +1937,7 @@ func TestNoIndexOnSliceProperties(t *testing.T) {
 			NoIndex: true,
 		},
 	}
-	key := NewKey(ctx, "dummy", "dummy", 0, nil)
+	key := NameKey("dummy", "dummy", nil)
 
 	entity, err := saveEntity(key, &pl)
 	if err != nil {
@@ -2045,7 +2039,7 @@ func TestPutInvalidEntity(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	key := NewIncompleteKey(ctx, "kind", nil)
+	key := IncompleteKey("kind", nil)
 
 	_, err := client.Put(ctx, key, "invalid entity")
 	if err != ErrInvalidEntityType {
@@ -2122,27 +2116,4 @@ func (c *fakeDatastoreClient) AllocateIds(ctx context.Context, in *pb.AllocateId
 		return nil, errors.New("no allocateIds handler defined")
 	}
 	return c.allocateIds(in)
-}
-
-func TestNewKeyFunctions(t *testing.T) {
-	ctx := context.Background()
-	parent := NewKey(ctx, "k", "", 17, nil)
-
-	want := NewIncompleteKey(ctx, "k", parent)
-	got := IncompleteKey("k", parent)
-	if *got != *want {
-		t.Errorf("got %v, want %v", got, want)
-	}
-
-	want = NewKey(ctx, "k", "name", 0, parent)
-	got = NameKey("k", "name", parent)
-	if *got != *want {
-		t.Errorf("got %v, want %v", got, want)
-	}
-
-	want = NewKey(ctx, "k", "", 22, parent)
-	got = IDKey("k", 22, parent)
-	if *got != *want {
-		t.Errorf("got %v, want %v", got, want)
-	}
 }

@@ -226,26 +226,6 @@ func DecodeKey(encoded string) (*Key, error) {
 	return protoToKey(pKey)
 }
 
-// NewIncompleteKey creates a new incomplete key.
-// The supplied kind cannot be empty.
-func NewIncompleteKey(ctx context.Context, kind string, parent *Key) *Key {
-	return NewKey(ctx, kind, "", 0, parent)
-}
-
-// NewKey creates a new key.
-// The supplied kind cannot be empty.
-// At least one of name and id must be zero. If both are zero, the key returned
-// is incomplete.
-// The supplied parent must either be a complete key or nil.
-func NewKey(ctx context.Context, kind, name string, id int64, parent *Key) *Key {
-	return &Key{
-		Kind:   kind,
-		Name:   name,
-		ID:     id,
-		Parent: parent,
-	}
-}
-
 // AllocateIDs accepts a slice of incomplete keys and returns a
 // slice of complete keys that are guaranteed to be valid in the datastore.
 func (c *Client) AllocateIDs(ctx context.Context, keys []*Key) ([]*Key, error) {

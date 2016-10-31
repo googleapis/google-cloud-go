@@ -311,10 +311,10 @@ func TestSimpleQuery(t *testing.T) {
 			continue
 		}
 
-		key1 := NewKey(ctx, "Gopher", "", 6, nil)
+		key1 := IDKey("Gopher", 6, nil)
 		expectedKeys := []*Key{
 			key1,
-			NewKey(ctx, "Gopher", "", 8, key1),
+			IDKey("Gopher", 8, key1),
 		}
 		if l1, l2 := len(keys), len(expectedKeys); l1 != l2 {
 			t.Errorf("dst type %T: got %d keys, want %d keys", tc.dst, l1, l2)
