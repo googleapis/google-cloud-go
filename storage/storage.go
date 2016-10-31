@@ -616,7 +616,7 @@ func toRawObjectACL(oldACL []ACLRule) []*raw.ObjectAccessControl {
 }
 
 // toRawObject copies the editable attributes from o to the raw library's Object type.
-func (o ObjectAttrs) toRawObject(bucket string) *raw.Object {
+func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
 	acl := toRawObjectACL(o.ACL)
 	return &raw.Object{
 		Bucket:             bucket,
