@@ -87,7 +87,7 @@ type FileConfig struct {
 	// default quotation character is the double quote ("), which is used if
 	// both Quote and ForceZeroQuote are unset.
 	// To specify that no character should be interpreted as a quotation
-	// character, set ForceZeroQuote to true and leave Quote unset.
+	// character, set ForceZeroQuote to true.
 	// Only used when reading data.
 	Quote          string
 	ForceZeroQuote bool
@@ -95,7 +95,11 @@ type FileConfig struct {
 
 // quote returns the CSV quote character, or nil if unset.
 func (fc *FileConfig) quote() *string {
-	if !fc.ForceZeroQuote && fc.Quote == "" {
+	if fc.ForceZeroQuote {
+		quote := ""
+		return &quote
+	}
+	if fc.Quote == "" {
 		return nil
 	}
 	return &fc.Quote

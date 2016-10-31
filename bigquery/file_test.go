@@ -33,7 +33,7 @@ func TestQuote(t *testing.T) {
 		{"", false, nil},
 		{"", true, ptr("")},
 		{"-", false, ptr("-")},
-		{"-", true, ptr("-")}, // force ignored if quote is non-nil
+		{"-", true, ptr("")},
 	} {
 		fc := FileConfig{
 			Quote:          test.quote,
@@ -44,7 +44,7 @@ func TestQuote(t *testing.T) {
 			t.Errorf("%+v\ngot %v\nwant %v", test, pretty.Value(got), pretty.Value(test.want))
 		}
 		if got != nil && test.want != nil && *got != *test.want {
-			t.Errorf("%+v: got %q, want %q", test, got, test.want)
+			t.Errorf("%+v: got %q, want %q", test, *got, *test.want)
 		}
 	}
 }
