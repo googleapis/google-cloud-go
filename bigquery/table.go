@@ -186,6 +186,7 @@ func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate) (*TableMet
 		s := optional.ToString(tm.Name)
 		conf.Name = &s
 	}
+	conf.Schema = tm.Schema
 	return t.c.service.patchTable(ctx, t.ProjectID, t.DatasetID, t.TableID, &conf)
 }
 
@@ -198,6 +199,8 @@ type TableMetadataToUpdate struct {
 	// Name is the user-friendly name for this table.
 	Name optional.String
 
-	// TODO(jba): support updating the schema
+	// Schema is the table's schema.
+	// When updating a schema, you can add columns but not remove them.
+	Schema Schema
 	// TODO(jba): support updating the view
 }

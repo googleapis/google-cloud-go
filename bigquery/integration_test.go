@@ -37,10 +37,10 @@ import (
 var (
 	client  *Client
 	dataset *Dataset
-	schema  = Schema([]*FieldSchema{
+	schema  = Schema{
 		{Name: "name", Type: StringFieldType},
 		{Name: "num", Type: IntegerFieldType},
-	})
+	}
 )
 
 func TestMain(m *testing.M) {
@@ -69,6 +69,21 @@ func initIntegrationTest() {
 	dataset = client.Dataset("bigquery_integration_test")
 	if err := dataset.Create(ctx); err != nil && !hasStatusCode(err, http.StatusConflict) { // AlreadyExists is 409
 		log.Fatalf("creating dataset: %v", err)
+	}
+}
+
+func TestIntegration_Create(t *testing.T) {
+	// Check that
+	table := dataset.Table("t_bad")
+	schema := Schema{
+		{Name: "rec", Type: RecordFieldType, Schema: Schema{}},
+	}
+	err := table.Create(context.Background(), schema, TableExpiration(time.Now().Add(5*time.Minute)))
+	if err == nil {
+		t.Fatal("want error, got nil")
+	}
+	if !hasStatusCode(err, http.StatusBadRequest) {
+		t.Fatalf("want a 400 error, got %v", err)
 	}
 }
 
@@ -168,6 +183,7 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 	q := client.Query(fmt.Sprintf("select name, num from %s", table.TableID))
 	q.DefaultProjectID = dataset.ProjectID
 	q.DefaultDatasetID = dataset.DatasetID
+
 	rit, err := q.Read(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -204,7 +220,7 @@ func TestIntegration_Update(t *testing.T) {
 	table := newTable(t, schema)
 	defer table.Delete(ctx)
 
-	// Test Update.
+	// Test Update of non-schema fields.
 	tm, err := table.Metadata(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -223,6 +239,82 @@ func TestIntegration_Update(t *testing.T) {
 	}
 	if got.Name != wantName {
 		t.Errorf("Name: got %q, want %q", got.Name, wantName)
+	}
+	if !reflect.DeepEqual(got.Schema, schema) {
+		t.Errorf("Schema: got %v, want %v", pretty.Value(got.Schema), pretty.Value(schema))
+	}
+
+	// Test schema update.
+	// Columns can be added. schema2 is the same as schema, except for the
+	// added column in the middle.
+	nested := Schema{
+		{Name: "nested", Type: BooleanFieldType},
+		{Name: "other", Type: StringFieldType},
+	}
+	schema2 := Schema{
+		schema[0],
+		{Name: "rec", Type: RecordFieldType, Schema: nested},
+		schema[1],
+	}
+
+	got, err = table.Update(ctx, TableMetadataToUpdate{Schema: schema2})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Wherever you add the column, it appears at the end.
+	schema3 := Schema{schema2[0], schema2[2], schema2[1]}
+	if !reflect.DeepEqual(got.Schema, schema3) {
+		t.Errorf("add field:\ngot  %v\nwant %v",
+			pretty.Value(got.Schema), pretty.Value(schema3))
+	}
+
+	// Updating with the empty schema succeeds, but is a no-op.
+	got, err = table.Update(ctx, TableMetadataToUpdate{Schema: Schema{}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(got.Schema, schema3) {
+		t.Errorf("empty schema:\ngot  %v\nwant %v",
+			pretty.Value(got.Schema), pretty.Value(schema3))
+	}
+
+	// Error cases.
+	for _, test := range []struct {
+		desc   string
+		fields []*FieldSchema
+	}{
+		{"change from optional to required", []*FieldSchema{
+			schema3[0],
+			{Name: "num", Type: IntegerFieldType, Required: true},
+			schema3[2],
+		}},
+		{"add a required field", []*FieldSchema{
+			schema3[0], schema3[1], schema3[2],
+			{Name: "req", Type: StringFieldType, Required: true},
+		}},
+		{"remove a field", []*FieldSchema{schema3[0], schema3[1]}},
+		{"remove a nested field", []*FieldSchema{
+			schema3[0], schema3[1],
+			{Name: "rec", Type: RecordFieldType, Schema: Schema{nested[0]}}}},
+		{"remove all nested fields", []*FieldSchema{
+			schema3[0], schema3[1],
+			{Name: "rec", Type: RecordFieldType, Schema: Schema{}}}},
+	} {
+		for {
+			_, err = table.Update(ctx, TableMetadataToUpdate{Schema: Schema(test.fields)})
+			if !hasStatusCode(err, 403) {
+				break
+			}
+			// We've hit the rate limit for updates. Wait a bit and retry.
+			t.Logf("%s: retrying after getting %v", test.desc, err)
+			time.Sleep(4 * time.Second)
+		}
+		if err == nil {
+			t.Errorf("%s: want error, got nil", test.desc)
+		} else if !hasStatusCode(err, 400) {
+			t.Errorf("%s: want 400, got %v", test.desc, err)
+		}
 	}
 }
 

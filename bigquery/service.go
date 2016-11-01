@@ -472,6 +472,7 @@ type patchTableConf struct {
 	// These fields are omitted from the patch operation if nil.
 	Description *string
 	Name        *string
+	Schema      Schema
 }
 
 func (s *bigqueryService) patchTable(ctx context.Context, projectID, datasetID, tableID string, conf *patchTableConf) (*TableMetadata, error) {
@@ -487,6 +488,10 @@ func (s *bigqueryService) patchTable(ctx context.Context, projectID, datasetID, 
 	if conf.Name != nil {
 		t.FriendlyName = *conf.Name
 		forceSend("FriendlyName")
+	}
+	if conf.Schema != nil {
+		t.Schema = conf.Schema.asTableSchema()
+		forceSend("Schema")
 	}
 	table, err := s.s.Tables.Patch(projectID, datasetID, tableID, t).
 		Context(ctx).
