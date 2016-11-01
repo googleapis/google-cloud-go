@@ -482,14 +482,37 @@ func TestNamespaceQuery(t *testing.T) {
 	}
 
 	const ns = "not_default"
-	ctx = WithNamespace(ctx, ns)
 
+	// query namespace
+	ctx = context.Background()
+	client.GetAll(ctx, NewQuery("gopher").Namespace(ns), &gs)
+	if got, want := <-gotNamespace, ns; got != want {
+		t.Errorf("GetAll: got namespace %q, want %q", got, want)
+	}
+	client.Count(ctx, NewQuery("gopher").Namespace(ns))
+	if got, want := <-gotNamespace, ns; got != want {
+		t.Errorf("Count: got namespace %q, want %q", got, want)
+	}
+
+	// ctx namespace
+	ctx = WithNamespace(ctx, ns)
 	client.GetAll(ctx, NewQuery("gopher"), &gs)
 	if got, want := <-gotNamespace, ns; got != want {
 		t.Errorf("GetAll: got namespace %q, want %q", got, want)
 	}
 	client.Count(ctx, NewQuery("gopher"))
 	if got, want := <-gotNamespace, ns; got != want {
+		t.Errorf("Count: got namespace %q, want %q", got, want)
+	}
+
+	// query & ctx namespace (query namespace wins)
+	const ns2 = "not_default2"
+	client.GetAll(ctx, NewQuery("gopher").Namespace(ns2), &gs)
+	if got, want := <-gotNamespace, ns2; got != want {
+		t.Errorf("GetAll: got namespace %q, want %q", got, want)
+	}
+	client.Count(ctx, NewQuery("gopher").Namespace(ns2))
+	if got, want := <-gotNamespace, ns2; got != want {
 		t.Errorf("Count: got namespace %q, want %q", got, want)
 	}
 }
