@@ -73,7 +73,10 @@ func initIntegrationTest() {
 }
 
 func TestIntegration_Create(t *testing.T) {
-	// Check that
+	// Check that creating a record field with an empty schema is an error.
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
 	table := dataset.Table("t_bad")
 	schema := Schema{
 		{Name: "rec", Type: RecordFieldType, Schema: Schema{}},
@@ -220,6 +223,32 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 		t.Fatal(err)
 	}
 	checkRead(t, "job.Read", rit, wantRows)
+
+	// Test MapLoader
+	valueLists, err := readAll(table.Read(ctx))
+	if err != nil {
+		t.Fatal(err)
+	}
+	it := table.Read(ctx)
+	for _, vl := range valueLists {
+		var vm ValueMap
+		err := it.Next(&vm)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got, want := len(vm), len(vl); got != want {
+			t.Fatalf("ValueMap len: got %d, want %d", got, want)
+		}
+		for i, v := range vl {
+			if got, want := vm[schema[i].Name], v; got != want {
+				t.Errorf("%d, name=%s: got %v, want %v",
+					i, schema[i].Name, got, want)
+			}
+		}
+	}
 }
 
 func TestIntegration_Update(t *testing.T) {

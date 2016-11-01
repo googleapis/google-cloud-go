@@ -414,3 +414,25 @@ func TestConvertRows(t *testing.T) {
 		t.Errorf("\ngot  %v\nwant %v", got, want)
 	}
 }
+
+func TestValueMap(t *testing.T) {
+	schema := Schema{
+		{Name: "s", Type: StringFieldType},
+		{Name: "i", Type: IntegerFieldType},
+		{Name: "f", Type: FloatFieldType},
+		{Name: "b", Type: BooleanFieldType},
+	}
+	var vm ValueMap
+	if err := vm.Load([]Value{"x", 7, 3.14, true}, schema); err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]Value{
+		"s": "x",
+		"i": 7,
+		"f": 3.14,
+		"b": true,
+	}
+	if !reflect.DeepEqual(vm, ValueMap(want)) {
+		t.Errorf("got %+v, want %+v", vm, want)
+	}
+}
