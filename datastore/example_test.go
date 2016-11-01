@@ -16,6 +16,7 @@ package datastore_test
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"cloud.google.com/go/datastore"
@@ -92,6 +93,40 @@ func ExampleClient_Put() {
 	})
 	if err != nil {
 		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_PutFlatten() {
+	ctx := context.Background()
+	client, err := datastore.NewClient(ctx, "project-id")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	type Animal struct {
+		Name  string
+		Type  string
+		Breed string
+	}
+
+	type Human struct {
+		Name   string
+		Height int
+		Pet    Animal `datastore:",flatten"`
+	}
+
+	newKey := datastore.IncompleteKey("Human", nil)
+	_, err = client.Put(ctx, newKey, &Human{
+		Name:   "Susan",
+		Height: 67,
+		Pet: Animal{
+			Name:  "Fluffy",
+			Type:  "Cat",
+			Breed: "Sphynx",
+		},
+	})
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
