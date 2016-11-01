@@ -138,6 +138,15 @@ func TestToProtoStruct(t *testing.T) {
 			t.Errorf("%v: got nil, want error", v)
 		}
 	}
+
+	// Test fast path.
+	got, err = toProtoStruct(want)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got != want {
+		t.Error("got and want should be identical, but are not")
+	}
 }
 
 func TestFromHTTPRequest(t *testing.T) {
