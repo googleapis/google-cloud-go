@@ -69,7 +69,7 @@ func TestIntegration(t *testing.T) {
 		t.Fatal(err)
 	}
 	// TODO(jba): check md more thorougly.
-	if got, want := md.ID, fmt.Sprintf("%s:%s.%s", projID, ds.id, table.TableID); got != want {
+	if got, want := md.ID, fmt.Sprintf("%s:%s.%s", projID, ds.DatasetID, table.TableID); got != want {
 		t.Errorf("metadata.ID: got %q, want %q", got, want)
 	}
 	if got, want := md.Type, RegularTable; got != want {
@@ -146,7 +146,7 @@ func TestIntegration(t *testing.T) {
 	// Query the table.
 	q := c.Query("select name, num from t1")
 	q.DefaultProjectID = projID
-	q.DefaultDatasetID = ds.id
+	q.DefaultDatasetID = ds.DatasetID
 
 	rit, err := q.Read(ctx)
 	if err != nil {

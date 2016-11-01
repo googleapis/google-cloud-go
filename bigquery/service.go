@@ -529,7 +529,7 @@ func (s *bigqueryService) listDatasets(ctx context.Context, projectID string, ma
 
 func (s *bigqueryService) convertListedDataset(d *bq.DatasetListDatasets) *Dataset {
 	return &Dataset{
-		projectID: d.DatasetReference.ProjectId,
-		id:        d.DatasetReference.DatasetId,
+		ProjectID: d.DatasetReference.ProjectId,
+		DatasetID: d.DatasetReference.DatasetId,
 	}
 }
