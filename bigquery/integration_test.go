@@ -15,8 +15,11 @@
 package bigquery
 
 import (
+	"flag"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 	"reflect"
 	"sort"
 	"strings"
@@ -31,53 +34,75 @@ import (
 	"google.golang.org/api/option"
 )
 
-func TestIntegration(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Integration tests skipped in short mode")
-	}
-
-	ctx := context.Background()
-	ts := testutil.TokenSource(ctx, Scope)
-	if ts == nil {
-		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
-	}
-
-	projID := testutil.ProjID()
-	c, err := NewClient(ctx, projID, option.WithTokenSource(ts))
-	if err != nil {
-		t.Fatal(err)
-	}
-	ds := c.Dataset("bigquery_integration_test")
-	if err := ds.Create(ctx); err != nil && !hasStatusCode(err, http.StatusConflict) { // AlreadyExists is 409
-		t.Fatal(err)
-	}
-	schema := Schema([]*FieldSchema{
+var (
+	client  *Client
+	dataset *Dataset
+	schema  = Schema([]*FieldSchema{
 		{Name: "name", Type: StringFieldType},
 		{Name: "num", Type: IntegerFieldType},
 	})
-	table := ds.Table("t1")
-	// Delete the table in case it already exists. (Ignore errors.)
-	table.Delete(ctx)
-	// Create the table.
-	err = table.Create(ctx, schema, TableExpiration(time.Now().Add(5*time.Minute)))
-	if err != nil {
-		t.Fatal(err)
+)
+
+func TestMain(m *testing.M) {
+	initIntegrationTest()
+	os.Exit(m.Run())
+}
+
+// If integration tests will be run, create a unique bucket for them.
+func initIntegrationTest() {
+	flag.Parse() // needed for testing.Short()
+	if testing.Short() {
+		return
 	}
+	ctx := context.Background()
+	ts := testutil.TokenSource(ctx, Scope)
+	if ts == nil {
+		log.Println("Integration tests skipped. See CONTRIBUTING.md for details")
+		return
+	}
+	projID := testutil.ProjID()
+	var err error
+	client, err = NewClient(ctx, projID, option.WithTokenSource(ts))
+	if err != nil {
+		log.Fatalf("NewClient: %v", err)
+	}
+	dataset = client.Dataset("bigquery_integration_test")
+	if err := dataset.Create(ctx); err != nil && !hasStatusCode(err, http.StatusConflict) { // AlreadyExists is 409
+		log.Fatalf("creating dataset: %v", err)
+	}
+}
+
+func TestIntegration_TableMetadata(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
 	// Check table metadata.
 	md, err := table.Metadata(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
 	// TODO(jba): check md more thorougly.
-	if got, want := md.ID, fmt.Sprintf("%s:%s.%s", projID, ds.DatasetID, table.TableID); got != want {
+	if got, want := md.ID, fmt.Sprintf("%s:%s.%s", dataset.ProjectID, dataset.DatasetID, table.TableID); got != want {
 		t.Errorf("metadata.ID: got %q, want %q", got, want)
 	}
 	if got, want := md.Type, RegularTable; got != want {
 		t.Errorf("metadata.Type: got %v, want %v", got, want)
 	}
+}
+
+func TestIntegration_Tables(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
 
 	// Iterate over tables in the dataset.
-	it := ds.Tables(ctx)
+	it := dataset.Tables(ctx)
 	var tables []*Table
 	for {
 		tbl, err := it.Next()
@@ -92,37 +117,33 @@ func TestIntegration(t *testing.T) {
 	if got, want := tables, []*Table{table}; !reflect.DeepEqual(got, want) {
 		t.Errorf("Tables: got %v, want %v", pretty.Value(got), pretty.Value(want))
 	}
+}
+
+func TestIntegration_UploadAndRead(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
 
 	// Populate the table.
 	upl := table.Uploader()
-	var rows []*ValuesSaver
+	var (
+		wantRows  [][]Value
+		saverRows []*ValuesSaver
+	)
 	for i, name := range []string{"a", "b", "c"} {
-		rows = append(rows, &ValuesSaver{
+		row := []Value{name, i}
+		wantRows = append(wantRows, row)
+		saverRows = append(saverRows, &ValuesSaver{
 			Schema:   schema,
 			InsertID: name,
-			Row:      []Value{name, i},
+			Row:      row,
 		})
 	}
-	if err := upl.Put(ctx, rows); err != nil {
+	if err := upl.Put(ctx, saverRows); err != nil {
 		t.Fatal(err)
-	}
-
-	checkRead := func(msg string, it *RowIterator) {
-		gotRows, err := readAll(it)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if len(gotRows) != len(rows) {
-			t.Errorf("%s: got %d rows, want %d", msg, len(gotRows), len(rows))
-		}
-		sort.Sort(byCol0(gotRows))
-		for i, got := range gotRows {
-			got := []Value(got)
-			want := rows[i].Row
-			if !reflect.DeepEqual(got, want) {
-				t.Errorf("%s #%d: got %v, want %v", msg, i, got, want)
-			}
-		}
 	}
 
 	// Wait until the data has been uploaded. This can take a few seconds, according
@@ -141,25 +162,24 @@ func TestIntegration(t *testing.T) {
 	}
 
 	// Read the table.
-	checkRead("upload", table.Read(ctx))
+	checkRead(t, "upload", table.Read(ctx), wantRows)
 
 	// Query the table.
-	q := c.Query("select name, num from t1")
-	q.DefaultProjectID = projID
-	q.DefaultDatasetID = ds.DatasetID
-
+	q := client.Query(fmt.Sprintf("select name, num from %s", table.TableID))
+	q.DefaultProjectID = dataset.ProjectID
+	q.DefaultDatasetID = dataset.DatasetID
 	rit, err := q.Read(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
-	checkRead("query", rit)
+	checkRead(t, "query", rit, wantRows)
 
 	// Query the long way.
 	job1, err := q.Run(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
-	job2, err := c.JobFromID(ctx, job1.ID())
+	job2, err := client.JobFromID(ctx, job1.ID())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -173,7 +193,16 @@ func TestIntegration(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	checkRead("job.Read", rit)
+	checkRead(t, "job.Read", rit, wantRows)
+}
+
+func TestIntegration_Update(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
 
 	// Test Update.
 	tm, err := table.Metadata(ctx)
@@ -195,9 +224,23 @@ func TestIntegration(t *testing.T) {
 	if got.Name != wantName {
 		t.Errorf("Name: got %q, want %q", got.Name, wantName)
 	}
+}
+
+func TestIntegration_Load(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
 
 	// Load the table from a reader.
 	r := strings.NewReader("a,0\nb,1\nc,2\n")
+	wantRows := [][]Value{
+		[]Value{"a", 0},
+		[]Value{"b", 1},
+		[]Value{"c", 2},
+	}
 	rs := NewReaderSource(r)
 	loader := table.LoaderFrom(rs)
 	loader.WriteDisposition = WriteTruncate
@@ -208,28 +251,87 @@ func TestIntegration(t *testing.T) {
 	if err := wait(ctx, job); err != nil {
 		t.Fatal(err)
 	}
-	checkRead("reader load", table.Read(ctx))
+	checkRead(t, "reader load", table.Read(ctx), wantRows)
+}
+
+func TestIntegration_DML(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
 
 	// Use DML to insert.
-	// We can't use WriteDisposition to truncate, and CreateIfNeeded doesn't work.
-	// So delete and re-create the table.
-	if err := table.Delete(ctx); err != nil {
-		t.Fatal(err)
+	wantRows := [][]Value{
+		[]Value{"a", 0},
+		[]Value{"b", 1},
+		[]Value{"c", 2},
 	}
-	if err := table.Create(ctx, schema, TableExpiration(time.Now().Add(5*time.Minute))); err != nil {
-		t.Fatal(err)
-	}
-	q = c.Query("INSERT bigquery_integration_test.t1 (name, num) VALUES ('a', 0), ('b', 1), ('c', 2)")
+	query := fmt.Sprintf("INSERT bigquery_integration_test.%s (name, num) "+
+		"VALUES ('a', 0), ('b', 1), ('c', 2)",
+		table.TableID)
+	q := client.Query(query)
 	q.UseStandardSQL = true // necessary for DML
-	job, err = q.Run(ctx)
+	job, err := q.Run(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if err := wait(ctx, job); err != nil {
 		t.Fatal(err)
 	}
-	checkRead("INSERT", table.Read(ctx))
+	checkRead(t, "INSERT", table.Read(ctx), wantRows)
 }
+
+// Creates a new, temporary table with a unique name and the given schema.
+func newTable(t *testing.T, s Schema) *Table {
+	name := fmt.Sprintf("t%d", time.Now().UnixNano())
+	table := dataset.Table(name)
+	err := table.Create(context.Background(), s, TableExpiration(time.Now().Add(5*time.Minute)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return table
+}
+
+func checkRead(t *testing.T, msg string, it *RowIterator, want [][]Value) {
+	got, err := readAll(it)
+	if err != nil {
+		t.Fatalf("%s: %v", msg, err)
+	}
+	if len(got) != len(want) {
+		t.Errorf("%s: got %d rows, want %d", msg, len(got), len(want))
+	}
+	sort.Sort(byCol0(got))
+	for i, r := range got {
+		gotRow := []Value(r)
+		wantRow := want[i]
+		if !reflect.DeepEqual(gotRow, wantRow) {
+			t.Errorf("%s #%d: got %v, want %v", msg, i, gotRow, wantRow)
+		}
+	}
+}
+
+func readAll(it *RowIterator) ([]ValueList, error) {
+	var rows []ValueList
+	for {
+		var vals ValueList
+		err := it.Next(&vals)
+		if err == iterator.Done {
+			return rows, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+		rows = append(rows, vals)
+	}
+}
+
+type byCol0 []ValueList
+
+func (b byCol0) Len() int           { return len(b) }
+func (b byCol0) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
+func (b byCol0) Less(i, j int) bool { return b[i][0].(string) < b[j][0].(string) }
 
 func hasStatusCode(err error, code int) bool {
 	if e, ok := err.(*googleapi.Error); ok && e.Code == code {
@@ -254,24 +356,3 @@ func wait(ctx context.Context, job *Job) error {
 		time.Sleep(1 * time.Second)
 	}
 }
-
-func readAll(it *RowIterator) ([]ValueList, error) {
-	var rows []ValueList
-	for {
-		var vals ValueList
-		err := it.Next(&vals)
-		if err == iterator.Done {
-			return rows, nil
-		}
-		if err != nil {
-			return nil, err
-		}
-		rows = append(rows, vals)
-	}
-}
-
-type byCol0 []ValueList
-
-func (b byCol0) Len() int           { return len(b) }
-func (b byCol0) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
-func (b byCol0) Less(i, j int) bool { return b[i][0].(string) < b[j][0].(string) }
