@@ -89,7 +89,7 @@ func ExampleClient_JobFromID() {
 	fmt.Println(job)
 }
 
-func ExampleClient_NewGCSReference() {
+func Example_NewGCSReference() {
 	gcsRef := bigquery.NewGCSReference("gs://my-bucket/my-object")
 	fmt.Println(gcsRef)
 }
