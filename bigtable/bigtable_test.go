@@ -182,7 +182,7 @@ func TestClientIntegration(t *testing.T) {
 	// Do a bunch of reads with filters.
 	readTests := []struct {
 		desc   string
-		rr     RowRange
+		rr     RowSet
 		filter Filter // may be nil
 
 		// We do the read, grab all the cells, turn them into "<row>-<col>-<val>",

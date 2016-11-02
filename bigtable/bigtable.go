@@ -298,12 +298,9 @@ func (r RowRange) retainRowsAfter(lastRowKey string) RowSet {
 	return NewRange(start, r.limit)
 }
 
-// SingleRow returns a RowRange for reading a single row.
-func SingleRow(row string) RowRange {
-	return RowRange{
-		start: row,
-		limit: row + "\x00",
-	}
+// SingleRow returns a RowSet for reading a single row.
+func SingleRow(row string) RowSet {
+	return RowList{row}
 }
 
 // PrefixRange returns a RowRange consisting of all keys starting with the prefix.
