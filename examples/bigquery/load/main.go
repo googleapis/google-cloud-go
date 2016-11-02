@@ -59,7 +59,7 @@ func main() {
 
 	table := client.Dataset(*dataset).Table(*table)
 
-	gcs := client.NewGCSReference(fmt.Sprintf("gs://%s/%s", *bucket, *object))
+	gcs := bigquery.NewGCSReference(fmt.Sprintf("gs://%s/%s", *bucket, *object))
 	gcs.SkipLeadingRows = *skiprows
 	gcs.MaxBadRecords = 1
 	gcs.AllowQuotedNewlines = true
