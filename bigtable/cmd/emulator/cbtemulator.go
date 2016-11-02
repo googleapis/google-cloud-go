@@ -23,6 +23,7 @@ import (
 	"log"
 
 	"cloud.google.com/go/bigtable/bttest"
+	"google.golang.org/grpc"
 )
 
 var (
@@ -31,6 +32,7 @@ var (
 )
 
 func main() {
+	grpc.EnableTracing = false
 	flag.Parse()
 	srv, err := bttest.NewServer(fmt.Sprintf("%s:%d", *host, *port))
 	if err != nil {
