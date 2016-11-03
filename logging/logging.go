@@ -70,7 +70,7 @@ const (
 	DefaultDelayThreshold = time.Second
 
 	// DefaultEntryCountThreshold is the default value for the EntryCountThreshold LoggerOption.
-	DefaultEntryCountThreshold = 10
+	DefaultEntryCountThreshold = 1000
 
 	// DefaultEntryByteThreshold is the default value for the EntryByteThreshold LoggerOption.
 	DefaultEntryByteThreshold = 1 << 20 // 1MiB
