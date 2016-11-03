@@ -79,8 +79,8 @@ type AnnotateRequest struct {
 	// MaxLogos is the maximum number of logos to detect in the image.
 	// Specifying a number greater than zero enables logo detection.
 	MaxLogos int
-	// MaxLabels is the maximum number of logos to detect in the image.
-	// Specifying a number greater than zero enables logo detection.
+	// MaxLabels is the maximum number of labels to detect in the image.
+	// Specifying a number greater than zero enables labels detection.
 	MaxLabels int
 	// MaxTexts is the maximum number of separate pieces of text to detect in the
 	// image. Specifying a number greater than zero enables text detection.
