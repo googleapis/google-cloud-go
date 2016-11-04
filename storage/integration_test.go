@@ -39,6 +39,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
+	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
 )
 
@@ -614,13 +615,12 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 		attrs = append(attrs, attr)
 	}
 
-	it := bkt.Objects(ctx, &Query{Prefix: "obj"})
-	msg, ok := testutil.TestIteratorNext(attrs, iterator.Done, func() (interface{}, error) { return it.Next() })
+	msg, ok := itesting.TestIterator(attrs,
+		func() interface{} { return bkt.Objects(ctx, &Query{Prefix: "obj"}) },
+		func(it interface{}) (interface{}, error) { return it.(*ObjectIterator).Next() })
 	if !ok {
 		t.Errorf("ObjectIterator.Next: %s", msg)
 	}
-
-	// TODO(jba): test pagination.
 	// TODO(jba): test query.Delimiter != ""
 }
 
