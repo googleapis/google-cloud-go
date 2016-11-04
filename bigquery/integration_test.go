@@ -129,8 +129,18 @@ func TestIntegration_Tables(t *testing.T) {
 		}
 		tables = append(tables, tbl)
 	}
-	if got, want := tables, []*Table{table}; !reflect.DeepEqual(got, want) {
-		t.Errorf("Tables: got %v, want %v", pretty.Value(got), pretty.Value(want))
+	// Other tests may be running with this dataset, so there might be more
+	// than just our table in the list. So don't try for an exact match; just
+	// make sure that our table is there somewhere.
+	found := false
+	for _, tbl := range tables {
+		if reflect.DeepEqual(tbl, table) {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Errorf("Tables: got %v\nshould see %v in the list", pretty.Value(tables), pretty.Value(table))
 	}
 }
 
