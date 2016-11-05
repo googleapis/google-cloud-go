@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package pretty implements a simple pretty-printer.
-//
-// The output is intended for debugging, so it generally looks
-// like the output of %+v.
 package pretty
 
 import (

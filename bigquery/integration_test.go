@@ -279,11 +279,7 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 	it = table.Read(ctx)
 	for _, vl := range valueLists {
 		var vm map[string]Value
-		err := it.Next(&vm)
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
+		if err := it.Next(&vm); err != nil {
 			t.Fatal(err)
 		}
 		if got, want := len(vm), len(vl); got != want {
@@ -294,6 +290,23 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 				t.Errorf("%d, name=%s: got %v, want %v",
 					i, schema[i].Name, got, want)
 			}
+		}
+	}
+
+	// Test iteration with structs.
+	type score struct {
+		Name string
+		Num  int
+	}
+	it = table.Read(ctx)
+	for i, vl := range valueLists {
+		var got score
+		if err := it.Next(&got); err != nil {
+			t.Fatal(err)
+		}
+		want := score{Name: vl[0].(string), Num: vl[1].(int)}
+		if got != want {
+			t.Errorf("%d: got %+v, want %+v", i, got, want)
 		}
 	}
 }
