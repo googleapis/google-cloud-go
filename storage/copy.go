@@ -110,8 +110,12 @@ func (c *Copier) callRewrite(ctx context.Context, src *ObjectHandle, rawObj *raw
 	if err := applySourceConds(c.src.gen, c.src.conds, call); err != nil {
 		return nil, err
 	}
-	setEncryptionHeaders(call.Header(), c.dst.encryptionKey, false)
-	setEncryptionHeaders(call.Header(), c.src.encryptionKey, true)
+	if err := setEncryptionHeaders(call.Header(), c.dst.encryptionKey, false); err != nil {
+		return nil, err
+	}
+	if err := setEncryptionHeaders(call.Header(), c.src.encryptionKey, true); err != nil {
+		return nil, err
+	}
 	var res *raw.RewriteResponse
 	var err error
 	err = runWithRetry(ctx, func() error { res, err = call.Do(); return err })
@@ -180,7 +184,9 @@ func (c *Composer) Run(ctx context.Context) (*ObjectAttrs, error) {
 	if err := applyConds("ComposeFrom destination", c.dst.gen, c.dst.conds, call); err != nil {
 		return nil, err
 	}
-	setEncryptionHeaders(call.Header(), c.dst.encryptionKey, false)
+	if err := setEncryptionHeaders(call.Header(), c.dst.encryptionKey, false); err != nil {
+		return nil, err
+	}
 	var obj *raw.Object
 	var err error
 	err = runWithRetry(ctx, func() error { obj, err = call.Do(); return err })

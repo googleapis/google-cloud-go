@@ -312,6 +312,8 @@ func (o *ObjectHandle) If(conds Conditions) *ObjectHandle {
 
 // Key returns a new ObjectHandle that uses the supplied encryption
 // key to encrypt and decrypt the object's contents.
+//
+// Encryption key must be a 32-byte AES-256 key.
 // See https://cloud.google.com/storage/docs/encryption for details.
 func (o *ObjectHandle) Key(encryptionKey []byte) *ObjectHandle {
 	o2 := *o
@@ -329,7 +331,9 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (*ObjectAttrs, error) {
 	if err := applyConds("Attrs", o.gen, o.conds, call); err != nil {
 		return nil, err
 	}
-	setEncryptionHeaders(call.Header(), o.encryptionKey, false)
+	if err := setEncryptionHeaders(call.Header(), o.encryptionKey, false); err != nil {
+		return nil, err
+	}
 	var obj *raw.Object
 	var err error
 	err = runWithRetry(ctx, func() error { obj, err = call.Do(); return err })
@@ -400,7 +404,9 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 	if err := applyConds("Update", o.gen, o.conds, call); err != nil {
 		return nil, err
 	}
-	setEncryptionHeaders(call.Header(), o.encryptionKey, false)
+	if err := setEncryptionHeaders(call.Header(), o.encryptionKey, false); err != nil {
+		return nil, err
+	}
 	var obj *raw.Object
 	var err error
 	err = runWithRetry(ctx, func() error { obj, err = call.Do(); return err })
@@ -498,7 +504,9 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	} else if length > 0 {
 		req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", offset, offset+length-1))
 	}
-	setEncryptionHeaders(req.Header, o.encryptionKey, false)
+	if err := setEncryptionHeaders(req.Header, o.encryptionKey, false); err != nil {
+		return nil, err
+	}
 	var res *http.Response
 	err = runWithRetry(ctx, func() error { res, err = o.c.hc.Do(req); return err })
 	if err != nil {
@@ -1043,9 +1051,14 @@ func (c composeSourceObj) IfGenerationMatch(gen int64) {
 	}
 }
 
-func setEncryptionHeaders(headers http.Header, key []byte, copySource bool) {
+func setEncryptionHeaders(headers http.Header, key []byte, copySource bool) error {
 	if key == nil {
-		return
+		return nil
+	}
+	// TODO(jbd): Ask the API team to return a more user-friendly error
+	// and avoid doing this check at the client level.
+	if len(key) != 32 {
+		return errors.New("storage: not a 32-byte AES-256 key")
 	}
 	var cs string
 	if copySource {
@@ -1055,6 +1068,7 @@ func setEncryptionHeaders(headers http.Header, key []byte, copySource bool) {
 	headers.Set("x-goog-"+cs+"encryption-key", base64.StdEncoding.EncodeToString(key))
 	keyHash := sha256.Sum256(key)
 	headers.Set("x-goog-"+cs+"encryption-key-sha256", base64.StdEncoding.EncodeToString(keyHash[:]))
+	return nil
 }
 
 // TODO(jbd): Add storage.objects.watch.

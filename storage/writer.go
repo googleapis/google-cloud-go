@@ -85,7 +85,11 @@ func (w *Writer) open() error {
 			Media(pr, mediaOpts...).
 			Projection("full").
 			Context(w.ctx)
-		setEncryptionHeaders(call.Header(), w.o.encryptionKey, false)
+		if err := setEncryptionHeaders(call.Header(), w.o.encryptionKey, false); err != nil {
+			w.err = err
+			pr.CloseWithError(w.err)
+			return
+		}
 		var resp *raw.Object
 		err := applyConds("NewWriter", w.o.gen, w.o.conds, call)
 		if err == nil {
