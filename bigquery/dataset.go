@@ -15,6 +15,8 @@
 package bigquery
 
 import (
+	"time"
+
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 )
@@ -24,6 +26,18 @@ type Dataset struct {
 	ProjectID string
 	DatasetID string
 	c         *Client
+}
+
+type DatasetMetadata struct {
+	CreationTime           time.Time
+	LastModifiedTime       time.Time // When the dataset or any of its tables were modified.
+	DefaultTableExpiration time.Duration
+	Description            string // The user-friendly description of this table.
+	Name                   string // The user-friendly name for this table.
+	ID                     string
+	Location               string            // The geo location of the dataset.
+	Labels                 map[string]string // User-provided labels.
+	// TODO(jba): access rules
 }
 
 // Dataset creates a handle to a BigQuery dataset in the client's project.
@@ -44,6 +58,11 @@ func (c *Client) DatasetInProject(projectID, datasetID string) *Dataset {
 // if the dataset already exists.
 func (d *Dataset) Create(ctx context.Context) error {
 	return d.c.service.insertDataset(ctx, d.DatasetID, d.ProjectID)
+}
+
+// Metadata fetches the metadata for the dataset.
+func (d *Dataset) Metadata(ctx context.Context) (*DatasetMetadata, error) {
+	return d.c.service.getDatasetMetadata(ctx, d.ProjectID, d.DatasetID)
 }
 
 // Table creates a handle to a BigQuery table in the dataset.
