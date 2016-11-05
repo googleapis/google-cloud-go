@@ -52,6 +52,7 @@ type service interface {
 
 	// Datasets
 	insertDataset(ctx context.Context, datasetID, projectID string) error
+	getDatasetMetadata(ctx context.Context, projectID, datasetID string) (*DatasetMetadata, error)
 
 	// Misc
 
@@ -433,21 +434,15 @@ func (s *bigqueryService) deleteTable(ctx context.Context, projectID, datasetID,
 
 func bqTableToMetadata(t *bq.Table) *TableMetadata {
 	md := &TableMetadata{
-		Description: t.Description,
-		Name:        t.FriendlyName,
-		Type:        TableType(t.Type),
-		ID:          t.Id,
-		NumBytes:    t.NumBytes,
-		NumRows:     t.NumRows,
-	}
-	if t.ExpirationTime != 0 {
-		md.ExpirationTime = time.Unix(0, t.ExpirationTime*1e6)
-	}
-	if t.CreationTime != 0 {
-		md.CreationTime = time.Unix(0, t.CreationTime*1e6)
-	}
-	if t.LastModifiedTime != 0 {
-		md.LastModifiedTime = time.Unix(0, int64(t.LastModifiedTime*1e6))
+		Description:      t.Description,
+		Name:             t.FriendlyName,
+		Type:             TableType(t.Type),
+		ID:               t.Id,
+		NumBytes:         t.NumBytes,
+		NumRows:          t.NumRows,
+		ExpirationTime:   unixMillisToTime(t.ExpirationTime),
+		CreationTime:     unixMillisToTime(t.CreationTime),
+		LastModifiedTime: unixMillisToTime(int64(t.LastModifiedTime)),
 	}
 	if t.Schema != nil {
 		md.Schema = convertTableSchema(t.Schema)
@@ -457,6 +452,30 @@ func bqTableToMetadata(t *bq.Table) *TableMetadata {
 	}
 
 	return md
+}
+
+func bqDatasetToMetadata(d *bq.Dataset) *DatasetMetadata {
+	/// TODO(jba): access
+	return &DatasetMetadata{
+		CreationTime:           unixMillisToTime(d.CreationTime),
+		LastModifiedTime:       unixMillisToTime(d.LastModifiedTime),
+		DefaultTableExpiration: time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
+		Description:            d.Description,
+		Name:                   d.FriendlyName,
+		ID:                     d.Id,
+		Location:               d.Location,
+		Labels:                 d.Labels,
+	}
+}
+
+// Convert a number of milliseconds since the Unix epoch to a time.Time.
+// Treat an input of zero specially: convert it to the zero time,
+// rather than the start of the epoch.
+func unixMillisToTime(m int64) time.Time {
+	if m == 0 {
+		return time.Time{}
+	}
+	return time.Unix(0, m*1e6)
 }
 
 func (s *bigqueryService) convertListedTable(t *bq.TableListTables) *Table {
@@ -508,6 +527,14 @@ func (s *bigqueryService) insertDataset(ctx context.Context, datasetID, projectI
 	}
 	_, err := s.s.Datasets.Insert(projectID, ds).Context(ctx).Do()
 	return err
+}
+
+func (s *bigqueryService) getDatasetMetadata(ctx context.Context, projectID, datasetID string) (*DatasetMetadata, error) {
+	table, err := s.s.Datasets.Get(projectID, datasetID).Context(ctx).Do()
+	if err != nil {
+		return nil, err
+	}
+	return bqDatasetToMetadata(table), nil
 }
 
 func (s *bigqueryService) listDatasets(ctx context.Context, projectID string, maxResults int, pageToken string, all bool, filter string) ([]*Dataset, string, error) {
