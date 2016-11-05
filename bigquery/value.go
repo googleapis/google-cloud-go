@@ -41,11 +41,11 @@ func (vs *ValueList) Load(v []Value, _ Schema) error {
 	return nil
 }
 
-// ValueMap converts a map[string]Value to implement ValueLoader.
-type ValueMap map[string]Value
+// valueMap converts a map[string]Value to implement ValueLoader.
+type valueMap map[string]Value
 
-// Load stores a sequence of values in a ValueMap.
-func (vm *ValueMap) Load(v []Value, s Schema) error {
+// Load stores a sequence of values in a valueMap.
+func (vm *valueMap) Load(v []Value, s Schema) error {
 	if *vm == nil {
 		*vm = map[string]Value{}
 	}

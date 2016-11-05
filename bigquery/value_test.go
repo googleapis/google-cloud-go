@@ -422,7 +422,7 @@ func TestValueMap(t *testing.T) {
 		{Name: "f", Type: FloatFieldType},
 		{Name: "b", Type: BooleanFieldType},
 	}
-	var vm ValueMap
+	var vm valueMap
 	if err := vm.Load([]Value{"x", 7, 3.14, true}, schema); err != nil {
 		t.Fatal(err)
 	}
@@ -432,7 +432,7 @@ func TestValueMap(t *testing.T) {
 		"f": 3.14,
 		"b": true,
 	}
-	if !reflect.DeepEqual(vm, ValueMap(want)) {
+	if !reflect.DeepEqual(vm, valueMap(want)) {
 		t.Errorf("got %+v, want %+v", vm, want)
 	}
 }

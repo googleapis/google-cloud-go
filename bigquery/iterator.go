@@ -15,6 +15,8 @@
 package bigquery
 
 import (
+	"fmt"
+
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 )
@@ -58,13 +60,27 @@ type RowIterator struct {
 // Next loads the next row into dst. Its return value is iterator.Done if there
 // are no more results. Once Next returns iterator.Done, all subsequent calls
 // will return iterator.Done.
-func (it *RowIterator) Next(dst ValueLoader) error {
+//
+// dst may implement ValueLoader, or may be of type *[]Value
+// or *map[string]Value.
+func (it *RowIterator) Next(dst interface{}) error {
+	vl, ok := dst.(ValueLoader)
+	if !ok {
+		switch dst := dst.(type) {
+		case *[]Value:
+			vl = (*ValueList)(dst)
+		case *map[string]Value:
+			vl = (*valueMap)(dst)
+		default:
+			return fmt.Errorf("bigquery: cannot convert %T to ValueLoader", dst)
+		}
+	}
 	if err := it.nextFunc(); err != nil {
 		return err
 	}
 	row := it.rows[0]
 	it.rows = it.rows[1:]
-	return dst.Load(row, it.schema)
+	return vl.Load(row, it.schema)
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
