@@ -399,3 +399,14 @@ func TestNextAfterFinished(t *testing.T) {
 		}
 	}
 }
+
+func TestIteratorNextTypes(t *testing.T) {
+	it := newRowIterator(context.Background(), nil, nil)
+	for _, v := range []interface{}{3, "s", []int{}, &[]int{},
+		map[string]Value{}, &map[string]interface{}{},
+	} {
+		if err := it.Next(v); err == nil {
+			t.Error("%v: want error, got nil", v)
+		}
+	}
+}

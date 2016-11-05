@@ -251,14 +251,27 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 	}
 	checkRead(t, "job.Read", rit, wantRows)
 
-	// Test MapLoader
+	// Test reading directly into a []Value.
 	valueLists, err := readAll(table.Read(ctx))
 	if err != nil {
 		t.Fatal(err)
 	}
 	it := table.Read(ctx)
+	for i, vl := range valueLists {
+		var got []Value
+		if err := it.Next(&got); err != nil {
+			t.Fatal(err)
+		}
+		want := []Value(vl)
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("%d: got %v, want %v", i, got, want)
+		}
+	}
+
+	// Test reading into a map.
+	it = table.Read(ctx)
 	for _, vl := range valueLists {
-		var vm ValueMap
+		var vm map[string]Value
 		err := it.Next(&vm)
 		if err == iterator.Done {
 			break
@@ -267,7 +280,7 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 			t.Fatal(err)
 		}
 		if got, want := len(vm), len(vl); got != want {
-			t.Fatalf("ValueMap len: got %d, want %d", got, want)
+			t.Fatalf("valueMap len: got %d, want %d", got, want)
 		}
 		for i, v := range vl {
 			if got, want := vm[schema[i].Name], v; got != want {
