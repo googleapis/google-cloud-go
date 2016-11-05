@@ -321,6 +321,10 @@ type containsDoubleNested struct {
 	}
 }
 
+type ptrNested struct {
+	Ptr *struct{ Inside int }
+}
+
 func TestNestedInference(t *testing.T) {
 	testCases := []struct {
 		in   interface{}
@@ -369,6 +373,18 @@ func TestNestedInference(t *testing.T) {
 				},
 			},
 		},
+		// TODO(jba): consider supporting pointers to structs, like encoding/json.
+		// {
+		// 	in: ptrNested{},
+		// 	want: Schema{
+		// 		&FieldSchema{
+		// 			Name:     "Ptr",
+		// 			Required: true,
+		// 			Type:     "RECORD",
+		// 			Schema:   Schema{fieldSchema("", "Inside", "INTEGER", false, true)},
+		// 		},
+		// 	},
+		// },
 	}
 
 	for i, tc := range testCases {
@@ -393,6 +409,12 @@ type simpleNestedRepeated struct {
 	Repeated    []struct {
 		Inside int
 	}
+}
+
+type moreRepeated struct {
+	Array    [5]int
+	PtrArray *[5]int
+	PtrSlice *[]int
 }
 
 func TestRepeatedInference(t *testing.T) {
@@ -426,6 +448,15 @@ func TestRepeatedInference(t *testing.T) {
 				},
 			},
 		},
+		// TODO(jba): consider supporting pointers to arrays and slices, like encoding/json.
+		// {
+		// 	in: moreRepeated{},
+		// 	want: Schema{
+		// 		fieldSchema("", "Array", "INTEGER", true, false),
+		// 		fieldSchema("", "PtrArray", "INTEGER", true, false),
+		// 		fieldSchema("", "PtrSlice", "INTEGER", true, false),
+		// 	},
+		// },
 	}
 
 	for i, tc := range testCases {

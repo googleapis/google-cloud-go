@@ -17,9 +17,13 @@ package bigquery
 import (
 	"encoding/base64"
 	"fmt"
+	"math"
 	"reflect"
 	"testing"
 	"time"
+
+	"cloud.google.com/go/civil"
+	"cloud.google.com/go/internal/pretty"
 
 	bq "google.golang.org/api/bigquery/v2"
 )
@@ -466,5 +470,269 @@ func TestValueMap(t *testing.T) {
 	}
 	if !reflect.DeepEqual(vm, valueMap(want)) {
 		t.Errorf("got %+v, want %+v", vm, want)
+	}
+}
+
+var (
+	// For testing StructLoader
+	schema2 = Schema{
+		{Name: "s", Type: StringFieldType},
+		{Name: "s2", Type: StringFieldType},
+		{Name: "by", Type: BytesFieldType},
+		{Name: "I", Type: IntegerFieldType},
+		{Name: "F", Type: FloatFieldType},
+		{Name: "B", Type: BooleanFieldType},
+		{Name: "TS", Type: TimestampFieldType},
+		{Name: "D", Type: DateFieldType},
+		{Name: "T", Type: TimeFieldType},
+		{Name: "DT", Type: DateTimeFieldType},
+		{Name: "nested", Type: RecordFieldType, Schema: Schema{
+			{Name: "nestS", Type: StringFieldType},
+			{Name: "nestI", Type: IntegerFieldType},
+		}},
+	}
+
+	testTimestamp = time.Date(2016, 11, 5, 7, 50, 22, 8, time.UTC)
+	testDate      = civil.Date{2016, 11, 5}
+	testTime      = civil.Time{7, 50, 22, 8}
+	testDateTime  = civil.DateTime{testDate, testTime}
+
+	testValues = []Value{"x", "y", []byte{1, 2, 3}, int64(7), 3.14, true,
+		testTimestamp, testDate, testTime, testDateTime,
+		[]Value{"nested", int64(17)}}
+)
+
+type testStruct1 struct {
+	B bool
+	I int
+	times
+	S      string
+	S2     String
+	By     []byte
+	s      string
+	F      float64
+	Nested nested
+}
+
+type String string
+
+type nested struct {
+	NestS string
+	NestI int
+}
+
+type times struct {
+	TS time.Time
+	T  civil.Time
+	D  civil.Date
+	DT civil.DateTime
+}
+
+func TestStructLoader(t *testing.T) {
+	var ts1 testStruct1
+	if err := load(&ts1, schema2, testValues); err != nil {
+		t.Fatal(err)
+	}
+	// Note: the schema field named "s" gets matched to the exported struct
+	// field "S", not the unexported "s".
+	want := &testStruct1{
+		B:      true,
+		I:      7,
+		F:      3.14,
+		times:  times{TS: testTimestamp, T: testTime, D: testDate, DT: testDateTime},
+		S:      "x",
+		S2:     "y",
+		By:     []byte{1, 2, 3},
+		Nested: nested{NestS: "nested", NestI: 17},
+	}
+	if !reflect.DeepEqual(&ts1, want) {
+		t.Errorf("got %+v, want %+v", pretty.Value(ts1), pretty.Value(*want))
+		d, _, err := pretty.Diff(*want, ts1)
+		if err == nil {
+			t.Logf("diff:\n%s", d)
+		}
+	}
+
+	// Test pointers to nested structs.
+	type nestedPtr struct{ Nested *nested }
+	var np nestedPtr
+	if err := load(&np, schema2, testValues); err != nil {
+		t.Fatal(err)
+	}
+	want2 := &nestedPtr{Nested: &nested{NestS: "nested", NestI: 17}}
+	if !reflect.DeepEqual(&np, want2) {
+		t.Errorf("got %+v, want %+v", pretty.Value(np), pretty.Value(*want2))
+	}
+}
+
+type repStruct struct {
+	Nums      []int
+	ShortNums [2]int // to test truncation
+	LongNums  [5]int // to test padding with zeroes
+}
+
+var (
+	repSchema = Schema{
+		{Name: "nums", Type: IntegerFieldType, Repeated: true},
+		{Name: "shortNums", Type: IntegerFieldType, Repeated: true},
+		{Name: "longNums", Type: IntegerFieldType, Repeated: true},
+	}
+
+	v123      = []Value{int64(1), int64(2), int64(3)}
+	repValues = []Value{v123, v123, v123}
+)
+
+func TestStructLoaderRepeated(t *testing.T) {
+	var r1 repStruct
+	if err := load(&r1, repSchema, repValues); err != nil {
+		t.Fatal(err)
+	}
+	want := repStruct{
+		Nums:      []int{1, 2, 3},
+		ShortNums: [...]int{1, 2}, // extra values discarded
+		LongNums:  [...]int{1, 2, 3, 0, 0},
+	}
+	if !reflect.DeepEqual(r1, want) {
+		t.Errorf("got %+v, want %+v", pretty.Value(r1), pretty.Value(want))
+	}
+
+	r2 := repStruct{
+		Nums:     []int{-1, -2, -3, -4, -5},    // truncated to zero and appended to
+		LongNums: [...]int{-1, -2, -3, -4, -5}, // unset elements are zeroed
+	}
+	if err := load(&r2, repSchema, repValues); err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(r2, want) {
+		t.Errorf("got %+v, want %+v", pretty.Value(r2), pretty.Value(want))
+	}
+	if got, want := cap(r2.Nums), 5; got != want {
+		t.Errorf("cap(r2.Nums) = %d, want %d", got, want)
+	}
+
+	// Short slice case.
+	r3 := repStruct{Nums: []int{-1}}
+	if err := load(&r3, repSchema, repValues); err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(r3, want) {
+		t.Errorf("got %+v, want %+v", pretty.Value(r3), pretty.Value(want))
+	}
+	if got, want := cap(r3.Nums), 3; got != want {
+		t.Errorf("cap(r3.Nums) = %d, want %d", got, want)
+	}
+
+}
+
+func TestStructLoaderOverflow(t *testing.T) {
+	type S struct {
+		I int16
+		F float32
+	}
+	schema := Schema{
+		{Name: "I", Type: IntegerFieldType},
+		{Name: "F", Type: FloatFieldType},
+	}
+	var s S
+	if err := load(&s, schema, []Value{int64(math.MaxInt16 + 1), 0}); err == nil {
+		t.Error("int: got nil, want error")
+	}
+	if err := load(&s, schema, []Value{int64(0), math.MaxFloat32 * 2}); err == nil {
+		t.Error("float: got nil, want error")
+	}
+}
+
+func TestStructLoaderFieldOverlap(t *testing.T) {
+	// It's OK if the struct has fields that the schema does not, and vice versa.
+	type S1 struct {
+		I int
+		X [][]int // not in the schema; does not even correspond to a valid BigQuery type
+		// many schema fields missing
+	}
+	var s1 S1
+	if err := load(&s1, schema2, testValues); err != nil {
+		t.Fatal(err)
+	}
+	want1 := S1{I: 7}
+	if !reflect.DeepEqual(s1, want1) {
+		t.Errorf("got %+v, want %+v", pretty.Value(s1), pretty.Value(want1))
+	}
+
+	// It's even valid to have no overlapping fields at all.
+	type S2 struct{ Z int }
+
+	var s2 S2
+	if err := load(&s2, schema2, testValues); err != nil {
+		t.Fatal(err)
+	}
+	want2 := S2{}
+	if !reflect.DeepEqual(s2, want2) {
+		t.Errorf("got %+v, want %+v", pretty.Value(s2), pretty.Value(want2))
+	}
+}
+
+func TestStructLoaderErrors(t *testing.T) {
+	check := func(sp interface{}) {
+		var sl structLoader
+		err := sl.set(sp, schema2)
+		if err == nil {
+			t.Errorf("%T: got nil, want error", sp)
+		}
+	}
+
+	type bad1 struct{ F int32 } // wrong type for FLOAT column
+	check(&bad1{})
+
+	type bad2 struct{ I uint } // unsupported integer type
+	check(&bad2{})
+
+	// Using more than one struct type with the same structLoader.
+	type different struct {
+		B bool
+		I int
+		times
+		S    string
+		s    string
+		Nums []int
+	}
+
+	var sl structLoader
+	if err := sl.set(&testStruct1{}, schema2); err != nil {
+		t.Fatal(err)
+	}
+	err := sl.set(&different{}, schema2)
+	if err == nil {
+		t.Error("different struct types: got nil, want error")
+	}
+}
+
+func load(pval interface{}, schema Schema, vals []Value) error {
+	var sl structLoader
+	if err := sl.set(pval, schema); err != nil {
+		return err
+	}
+	return sl.Load(vals, nil)
+}
+
+func BenchmarkStructLoader_NoCompile(b *testing.B) {
+	benchmarkStructLoader(b, false)
+}
+
+func BenchmarkStructLoader_Compile(b *testing.B) {
+	benchmarkStructLoader(b, true)
+}
+
+func benchmarkStructLoader(b *testing.B, compile bool) {
+	var ts1 testStruct1
+	for i := 0; i < b.N; i++ {
+		var sl structLoader
+		for j := 0; j < 10; j++ {
+			if err := load(&ts1, schema2, testValues); err != nil {
+				b.Fatal(err)
+			}
+			if !compile {
+				sl.typ = nil
+			}
+		}
 	}
 }
