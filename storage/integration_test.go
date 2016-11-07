@@ -614,10 +614,22 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 		}
 		attrs = append(attrs, attr)
 	}
-
-	msg, ok := itesting.TestIterator(attrs,
-		func() interface{} { return bkt.Objects(ctx, &Query{Prefix: "obj"}) },
-		func(it interface{}) (interface{}, error) { return it.(*ObjectIterator).Next() })
+	// The following iterator test fails occasionally, probably because the
+	// underlying Objects.List operation is eventually consistent. So we retry
+	// it a couple of times.
+	var msg string
+	var ok bool
+	for i := 0; i < 3; i++ {
+		msg, ok = itesting.TestIterator(attrs,
+			func() interface{} { return bkt.Objects(ctx, &Query{Prefix: "obj"}) },
+			func(it interface{}) (interface{}, error) { return it.(*ObjectIterator).Next() })
+		if ok {
+			break
+		} else {
+			t.Logf("TestIterator failed, trying again: %s", msg)
+			time.Sleep(1 * time.Second)
+		}
+	}
 	if !ok {
 		t.Errorf("ObjectIterator.Next: %s", msg)
 	}
