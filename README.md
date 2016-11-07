@@ -32,6 +32,53 @@ type State struct {
 See [the announcement](https://groups.google.com/forum/#!topic/google-api-go-announce/79jtrdeuJAg) for
 more details.
 
+_November 8, 2016_
+
+Breaking changes to datastore: contexts no longer hold namespaces; instead you
+must set a key's namespace explicitly. Also, key functions have been changed
+and renamed.
+
+* The WithNamespace function has been removed. To specify a namespace in a Query, use the Query.Namespace method:
+  ```go
+  q := datastore.NewQuery("Kind").Namespace("ns")
+  ```
+
+* All the fields of Key are exported. That means you can construct any Key with a struct literal:
+  ```go
+  k := &Key{Kind: "Kind",  ID: 37, Namespace: "ns"}
+  ```
+
+* As a result of the above, the Key methods Kind, ID, d.Name, Parent, SetParent and Namespace have been removed.
+
+* `NewIncompleteKey` has been removed, replaced by `IncompleteKey`. Replace
+  ```go
+  NewIncompleteKey(ctx, kind, parent)
+  ```
+  with
+  ```go
+  IncompleteKey(kind, parent)
+  ```
+  and if you do use namespaces, make sure you set the namespace on the returned key.
+
+* `NewKey` has been removed, replaced by `NameKey` and `IDKey`. Replace
+  ```go
+  NewKey(ctx, kind, name, 0, parent)
+  NewKey(ctx, kind, "", id, parent)
+  ```
+  with
+  ```go
+  NameKey(kind, name, parent)
+  IDKey(kind, id, parent)
+  ```
+  and if you do use namespaces, make sure you set the namespace on the returned key.
+
+* The `Done` variable has been removed. Replace `datastore.Done` with `iterator.Done`, from the package `google.golang.org/api/iterator`.
+
+* The `Client.Close` method will have a return type of error. It will return the result of closing the underlying gRPC connection.
+
+See [the announcement](https://groups.google.com/forum/#!topic/google-api-go-announce/hqXtM_4Ix-0) for
+more details.
+
 _October 27, 2016_
 
 Breaking change to bigquery: `NewGCSReference` is now a function,
