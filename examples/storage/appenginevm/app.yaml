@@ -1,5 +1,5 @@
 runtime: go
-api_version: go1
+api_version: 1
 vm: true
 
 manual_scaling:
