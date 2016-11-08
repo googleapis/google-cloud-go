@@ -66,8 +66,9 @@ func TestEncryption(t *testing.T) {
 		t.Fatalf("error when creating client: %v", err)
 	}
 	obj := client.Bucket("bucketname").Object("filename1")
-	key := []byte("secret-key")
+	key := []byte("secret-key-that-is-32-bytes-long")
 	wc := obj.Key(key).NewWriter(ctx)
+	// TODO(jba): use something other than fakeTransport, which always returns error.
 	wc.Write([]byte("hello world"))
 	wc.Close()
 	if got, want := ft.gotReq.Header.Get("x-goog-encryption-algorithm"), "AES256"; got != want {
