@@ -152,7 +152,7 @@ func makeRequests(t *testing.T, req *http.Request, traceClient *Client, rt *fake
 		if err != nil {
 			t.Fatalf("creating datastore client: %v", err)
 		}
-		k := datastore.NewKey(ctx, "Entity", "stringID", 0, nil)
+		k := datastore.NameKey("Entity", "stringID", nil)
 		e := new(datastore.Entity)
 		datastoreClient.Get(ctx, k, e)
 	}
