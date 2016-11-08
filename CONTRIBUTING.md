@@ -31,6 +31,7 @@ run the against the actual APIs.
 
 - **GCLOUD_TESTS_GOLANG_PROJECT_ID**: Developers Console project's ID (e.g. bamboo-shift-455)
 - **GCLOUD_TESTS_GOLANG_KEY**: The path to the JSON key file.
+- **GCLOUD_TESTS_API_KEY**: Your API key.
 
 Install the [gcloud command-line tool][gcloudcli] to your machine and use it
 to create the indexes used in the datastore integration tests with indexes
