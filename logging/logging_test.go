@@ -219,16 +219,48 @@ func TestLogAndEntries(t *testing.T) {
 	}
 }
 
+// compareEntries compares most fields list of Entries against expected. compareEntries does not compare:
+//   - HTTPRequest
+//   - Operation
+//   - Resource
 func compareEntries(got, want []*logging.Entry) (string, bool) {
 	if len(got) != len(want) {
 		return fmt.Sprintf("got %d entries, want %d", len(got), len(want)), false
 	}
 	for i := range got {
-		if !reflect.DeepEqual(got[i], want[i]) {
+		if !compareEntry(got[i], want[i]) {
 			return fmt.Sprintf("#%d:\ngot  %+v\nwant %+v", i, got[i], want[i]), false
 		}
 	}
 	return "", true
+}
+
+func compareEntry(got, want *logging.Entry) bool {
+	if got.Timestamp.Unix() != want.Timestamp.Unix() {
+		return false
+	}
+
+	if got.Severity != want.Severity {
+		return false
+	}
+
+	if !reflect.DeepEqual(got.Payload, want.Payload) {
+		return false
+	}
+
+	if !reflect.DeepEqual(got.Labels, want.Labels) {
+		return false
+	}
+
+	if got.InsertID != want.InsertID {
+		return false
+	}
+
+	if got.LogName != want.LogName {
+		return false
+	}
+
+	return true
 }
 
 func entryForTesting(payload interface{}) *logging.Entry {
@@ -236,7 +268,7 @@ func entryForTesting(payload interface{}) *logging.Entry {
 		Timestamp: testNow().UTC(),
 		Payload:   payload,
 		LogName:   "projects/" + testProjectID + "/logs/" + testLogID,
-		Resource:  &mrpb.MonitoredResource{Type: "global"},
+		Resource:  &mrpb.MonitoredResource{Type: "global", Labels: map[string]string{"project_id": testProjectID}},
 	}
 }
 
