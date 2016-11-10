@@ -17,9 +17,9 @@
 package language_test
 
 import (
-	"cloud.google.com/go/language/apiv1beta1"
+	"cloud.google.com/go/language/apiv1"
 	"golang.org/x/net/context"
-	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta1"
+	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1"
 )
 
 func ExampleNewClient() {
@@ -61,6 +61,24 @@ func ExampleClient_AnalyzeEntities() {
 	// TODO: Fill request struct fields.
 	}
 	resp, err := c.AnalyzeEntities(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_AnalyzeSyntax() {
+	ctx := context.Background()
+	c, err := language.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &languagepb.AnalyzeSyntaxRequest{
+	// TODO: Fill request struct fields.
+	}
+	resp, err := c.AnalyzeSyntax(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

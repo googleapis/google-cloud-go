@@ -25,7 +25,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
-	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta1"
+	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -35,6 +35,7 @@ import (
 type CallOptions struct {
 	AnalyzeSentiment []gax.CallOption
 	AnalyzeEntities  []gax.CallOption
+	AnalyzeSyntax    []gax.CallOption
 	AnnotateText     []gax.CallOption
 }
 
@@ -65,6 +66,7 @@ func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		AnalyzeSentiment: retry[[2]string{"default", "idempotent"}],
 		AnalyzeEntities:  retry[[2]string{"default", "idempotent"}],
+		AnalyzeSyntax:    retry[[2]string{"default", "idempotent"}],
 		AnnotateText:     retry[[2]string{"default", "idempotent"}],
 	}
 }
@@ -155,10 +157,26 @@ func (c *Client) AnalyzeEntities(ctx context.Context, req *languagepb.AnalyzeEnt
 	return resp, nil
 }
 
-// AnnotateText advanced API that analyzes the document and provides a full set of text
-// annotations, including semantic, syntactic, and sentiment information. This
-// API is intended for users who are familiar with machine learning and need
-// in-depth text features to build upon.
+// AnalyzeSyntax analyzes the syntax of the text and provides sentence boundaries and
+// tokenization along with part of speech tags, dependency trees, and other
+// properties.
+func (c *Client) AnalyzeSyntax(ctx context.Context, req *languagepb.AnalyzeSyntaxRequest) (*languagepb.AnalyzeSyntaxResponse, error) {
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	var resp *languagepb.AnalyzeSyntaxResponse
+	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		var err error
+		resp, err = c.client.AnalyzeSyntax(ctx, req)
+		return err
+	}, c.CallOptions.AnalyzeSyntax...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// AnnotateText a convenience method that provides all the features that analyzeSentiment,
+// analyzeEntities, and analyzeSyntax provide in one call.
 func (c *Client) AnnotateText(ctx context.Context, req *languagepb.AnnotateTextRequest) (*languagepb.AnnotateTextResponse, error) {
 	md, _ := metadata.FromContext(ctx)
 	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
