@@ -27,16 +27,31 @@
 //   ...
 //   traceClient, err = trace.NewClient(ctx, projectID)
 //
-// Incoming requests can contain a header which indicates that a trace is being
-// performed for the corresponding operation.  The SpanFromRequest function will
-// look for this header in an *http.Request.  If it is present, SpanFromRequest
-// creates a span for the request; otherwise it returns nil.
+// Calling SpanFromRequest will create a new trace span for an incoming HTTP
+// request.  If the request contains a trace context header, it is used to
+// determine the trace ID.  Otherwise, a new trace ID is created.
 //
 //   func handler(w http.ResponseWriter, r *http.Request) {
 //     span := traceClient.SpanFromRequest(r)
 //     defer span.Finish()
 //     ...
 //   }
+//
+// SpanFromRequest returns nil if the *Client is nil, so you can disable
+// tracing by not initializing your *Client variable.  All of the exported
+// functions on *Span do nothing when the *Span is nil.
+//
+// Although a trace span object is created for every request, only a subset of
+// traces are uploaded to the server, for efficiency.  By default, the requests
+// that are traced are those with the tracing bit set in the options field of
+// the trace context header.  Ideally, you should override this behaviour by
+// calling SetSamplingPolicy.  NewLimitedSampler returns an implementation of
+// SamplingPolicy which traces requests that have the tracing bit set, and also
+// randomly traces a specified fraction of requests.  Additionally, it sets a
+// limit on the number of requests traced per second.  The following example
+// traces one in every thousand requests, up to a limit of 5 per second.
+//
+//   traceClient.SetSamplingPolicy(trace.NewLimitedSampler(0.001, 5))
 //
 // You can create a new span as a child of an existing span with NewChild.
 //
@@ -103,12 +118,6 @@
 //     ...
 //   }
 //
-// Client.SpanFromRequest returns a nil *Span if there is no trace header in
-// the request.  All of the exported functions on *Span do nothing when the
-// *Span is nil, so you do not need to guard against nil receivers yourself.
-//
-// SpanFromRequest also returns nil if the *Client is nil, so you can disable
-// tracing by not initializing your *Client variable.
 package trace // import "cloud.google.com/go/trace"
 
 import (
@@ -290,47 +299,58 @@ func (c *Client) SetSamplingPolicy(p SamplingPolicy) {
 	}
 }
 
-// SpanFromRequest returns a new trace span.  If the incoming HTTP request's
-// headers don't specify that the request should be traced, and the sampling
-// policy doesn't determine the request should be traced, the returned span
-// will be nil.
-// It also returns nil if the client is nil.
-// When Finish is called on the returned span, the span and its descendants are
-// uploaded to the Google Stackdriver Trace server.
+// SpanFromRequest returns a new trace span.
+//
+// It returns nil iff the client is nil.
+//
+// If the incoming HTTP request contains a trace context header, the trace ID,
+// parent span ID, and tracing options will be read from that header.
+// Otherwise, a new trace ID is made and the parent span ID is zero.
+//
+// If a non-nil sampling policy has been set in the client, it can override the
+// options set in the header and choose whether to trace the request.
+//
+// If the request is not being traced, then a *Span is returned anyway, but it
+// will not be uploaded to the server -- it is only useful for propagating
+// trace context to child requests and for getting the TraceID.  All its
+// methods can still be called -- the Finish, FinishWait, and SetLabel methods
+// do nothing.  NewChild does nothing, and returns the same *Span.  TraceID
+// works as usual.
 func (client *Client) SpanFromRequest(r *http.Request) *Span {
 	if client == nil {
 		return nil
 	}
-	span := traceInfoFromRequest(r)
+	traceID, parentSpanID, options, hasTraceHeader := traceInfoFromRequest(r)
+	if !hasTraceHeader {
+		traceID = nextTraceID()
+	}
+	t := &trace{
+		traceID:       traceID,
+		client:        client,
+		globalOptions: options,
+		localOptions:  options,
+	}
+	span := startNewChildWithRequest(r, t, parentSpanID)
+	span.span.Kind = spanKindServer
+	span.rootSpan = true
 	if client.policy != nil {
-		d := client.policy.Sample(Parameters{HasTraceHeader: span != nil})
-		if !d.Trace {
-			return nil
+		d := client.policy.Sample(Parameters{HasTraceHeader: hasTraceHeader})
+		if d.Trace {
+			// Turn on tracing locally, and in child requests.
+			span.trace.localOptions |= optionTrace
+			span.trace.globalOptions |= optionTrace
+		} else {
+			// Turn off tracing locally.
+			span.trace.localOptions = 0
+			return span
 		}
 		if d.Sample {
-			// Include this request in the random sample.
-			if span == nil {
-				// We didn't create a trace from the request's headers, so create one
-				// now.
-				t := &trace{
-					traceID: nextTraceID(),
-					options: optionTrace,
-					client:  client,
-				}
-				span = startNewChildWithRequest(r, t, 0 /* parentSpanID */)
-				span.span.Kind = spanKindServer
-				span.rootSpan = true
-			}
-			// However the trace was initiated, it's in the random sample, so set the
-			// labels.
+			// This trace is in the random sample, so set the labels.
 			span.SetLabel(labelSamplingPolicy, d.Policy)
 			span.SetLabel(labelSamplingWeight, fmt.Sprint(d.Weight))
 		}
 	}
-	if span == nil {
-		return nil
-	}
-	span.trace.client = client
+
 	return span
 }
 
@@ -348,54 +368,43 @@ func FromContext(ctx context.Context) *Span {
 	return s
 }
 
-func traceInfoFromRequest(r *http.Request) *Span {
+func traceInfoFromRequest(r *http.Request) (string, uint64, optionFlags, bool) {
 	// See https://cloud.google.com/trace/docs/faq for the header format.
 	h := r.Header.Get(httpHeader)
 	// Return if the header is empty or missing, or if the header is unreasonably
 	// large, to avoid making unnecessary copies of a large string.
 	if h == "" || len(h) > 200 {
-		return nil
+		return "", 0, 0, false
 	}
 
 	// Parse the trace id field.
 	slash := strings.Index(h, `/`)
 	if slash == -1 {
-		return nil
+		return "", 0, 0, false
 	}
 	traceID, h := h[:slash], h[slash+1:]
 
 	// Parse the span id field.
 	semicolon := strings.Index(h, `;`)
 	if semicolon == -1 {
-		return nil
+		return "", 0, 0, false
 	}
 	spanstr, h := h[:semicolon], h[semicolon+1:]
 	spanID, err := strconv.ParseUint(spanstr, 10, 64)
 	if err != nil {
-		return nil
+		return "", 0, 0, false
 	}
 
 	// Parse the options field.
 	if !strings.HasPrefix(h, "o=") {
-		return nil
+		return "", 0, 0, false
 	}
 	o, err := strconv.ParseUint(h[2:], 10, 64)
 	if err != nil {
-		return nil
+		return "", 0, 0, false
 	}
 	options := optionFlags(o)
-	if options&optionTrace == 0 {
-		return nil
-	}
-
-	t := &trace{
-		traceID: traceID,
-		options: options,
-	}
-	rootSpan := startNewChildWithRequest(r, t, spanID)
-	rootSpan.span.Kind = spanKindServer
-	rootSpan.rootSpan = true
-	return rootSpan
+	return traceID, spanID, options, true
 }
 
 type optionFlags uint32
@@ -406,11 +415,12 @@ const (
 )
 
 type trace struct {
-	mu      sync.Mutex
-	client  *Client
-	traceID string
-	options optionFlags
-	spans   []*Span // finished spans for this trace.
+	mu            sync.Mutex
+	client        *Client
+	traceID       string
+	globalOptions optionFlags // options that will be passed to any child requests
+	localOptions  optionFlags // options applied in this server
+	spans         []*Span     // finished spans for this trace.
 }
 
 // finish appends s to t.spans.  If s is the root span, uploads the trace to the
@@ -447,7 +457,7 @@ func (t *trace) constructTrace(spans []*Span) *api.Trace {
 	for i, sp := range spans {
 		sp.span.StartTime = sp.start.In(time.UTC).Format(time.RFC3339Nano)
 		sp.span.EndTime = sp.end.In(time.UTC).Format(time.RFC3339Nano)
-		if t.options&optionStack != 0 {
+		if t.localOptions&optionStack != 0 {
 			sp.setStackLabel()
 		}
 		sp.SetLabel(labelHost, sp.host)
@@ -485,25 +495,47 @@ type Span struct {
 	statusCode int
 }
 
+func (s *Span) tracing() bool {
+	return s.trace.localOptions&optionTrace != 0
+}
+
 // NewChild creates a new span with the given name as a child of s.
 // If s is nil, does nothing and returns nil.
 func (s *Span) NewChild(name string) *Span {
 	if s == nil {
 		return nil
 	}
+	if !s.tracing() {
+		return s
+	}
 	return startNewChild(name, s.trace, s.span.SpanId)
 }
 
 // NewRemoteChild creates a new span as a child of s.
-// Span details are set from an outgoing *http.Request r.
-// A header is set in r so that the trace context is propagated to the destination.
+//
+// Some labels in the span are set from the outgoing *http.Request r.
+//
+// A header is set in r so that the trace context is propagated to the
+// destination.  The parent span ID in that header is set as follows:
+// - If the request is being traced, then the ID of s is used.
+// - If the request is not being traced, but there was a trace context header
+//   in the incoming request for this trace (the request passed to
+//   SpanFromRequest), the parent span ID in that header is used.
+// - Otherwise, the parent span ID is zero.
+// The tracing bit in the options is set if tracing is enabled, or if it was
+// set in the incoming request.
+//
 // If s is nil, does nothing and returns nil.
 func (s *Span) NewRemoteChild(r *http.Request) *Span {
 	if s == nil {
 		return nil
 	}
+	if !s.tracing() {
+		r.Header[httpHeader] = []string{spanHeader(s.trace.traceID, s.span.ParentSpanId, s.trace.globalOptions)}
+		return s
+	}
 	newSpan := startNewChildWithRequest(r, s.trace, s.span.SpanId)
-	r.Header[httpHeader] = []string{newSpan.spanHeader()}
+	r.Header[httpHeader] = []string{spanHeader(s.trace.traceID, newSpan.span.SpanId, s.trace.globalOptions)}
 	return newSpan
 }
 
@@ -520,17 +552,21 @@ func startNewChildWithRequest(r *http.Request, trace *trace, parentSpanId uint64
 }
 
 func startNewChild(name string, trace *trace, parentSpanId uint64) *Span {
+	spanID := nextSpanID()
+	for spanID == parentSpanId {
+		spanID = nextSpanID()
+	}
 	newSpan := &Span{
 		trace: trace,
 		span: api.TraceSpan{
 			Kind:         spanKindClient,
 			Name:         name,
 			ParentSpanId: parentSpanId,
-			SpanId:       nextSpanID(),
+			SpanId:       spanID,
 		},
 		start: time.Now(),
 	}
-	if trace.options&optionStack != 0 {
+	if trace.localOptions&optionStack != 0 {
 		_ = runtime.Callers(1, newSpan.stack[:])
 	}
 	return newSpan
@@ -551,6 +587,9 @@ func (s *Span) TraceID() string {
 // If s is nil, does nothing.
 func (s *Span) SetLabel(key, value string) {
 	if s == nil {
+		return
+	}
+	if !s.tracing() {
 		return
 	}
 	if value == "" {
@@ -600,6 +639,9 @@ func (s *Span) Finish(opts ...FinishOption) {
 	if s == nil {
 		return
 	}
+	if !s.tracing() {
+		return
+	}
 	s.trace.finish(s, false, opts...)
 }
 
@@ -609,12 +651,15 @@ func (s *Span) FinishWait(opts ...FinishOption) error {
 	if s == nil {
 		return nil
 	}
+	if !s.tracing() {
+		return nil
+	}
 	return s.trace.finish(s, true, opts...)
 }
 
-func (s *Span) spanHeader() string {
+func spanHeader(traceID string, spanID uint64, options optionFlags) string {
 	// See https://cloud.google.com/trace/docs/faq for the header format.
-	return fmt.Sprintf("%s/%d;o=%d", s.trace.traceID, s.span.SpanId, s.trace.options)
+	return fmt.Sprintf("%s/%d;o=%d", traceID, spanID, options)
 }
 
 func (s *Span) setStackLabel() {
