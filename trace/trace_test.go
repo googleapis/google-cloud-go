@@ -17,6 +17,7 @@ package trace
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -567,6 +568,104 @@ func TestWeights(t *testing.T) {
 		}
 		if totalWeight < expectedTotalWeight-totalWeightEpsilon || expectedTotalWeight+totalWeightEpsilon < totalWeight {
 			t.Errorf("headerRate %f: got total weight %f want ∈ [%d, %d]", headerRate, totalWeight, expectedTotalWeight-totalWeightEpsilon, expectedTotalWeight+totalWeightEpsilon)
+		}
+	}
+}
+
+type alwaysTrace struct{}
+
+func (a alwaysTrace) Sample(p Parameters) Decision {
+	return Decision{Trace: true}
+}
+
+type neverTrace struct{}
+
+func (a neverTrace) Sample(p Parameters) Decision {
+	return Decision{Trace: false}
+}
+
+func TestPropagation(t *testing.T) {
+	rt := newFakeRoundTripper()
+	traceClient := newTestClient(rt)
+	for _, header := range []string{
+		`0123456789ABCDEF0123456789ABCDEF/42;o=0`,
+		`0123456789ABCDEF0123456789ABCDEF/42;o=1`,
+		`0123456789ABCDEF0123456789ABCDEF/42;o=2`,
+		`0123456789ABCDEF0123456789ABCDEF/42;o=3`,
+		`0123456789ABCDEF0123456789ABCDEF/0;o=0`,
+		`0123456789ABCDEF0123456789ABCDEF/0;o=1`,
+		`0123456789ABCDEF0123456789ABCDEF/0;o=2`,
+		`0123456789ABCDEF0123456789ABCDEF/0;o=3`,
+		``,
+	} {
+		for _, policy := range []SamplingPolicy{
+			nil,
+			alwaysTrace{},
+			neverTrace{},
+		} {
+			traceClient.SetSamplingPolicy(policy)
+			req, err := http.NewRequest("GET", "http://example.com/foo", nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if header != "" {
+				req.Header["X-Cloud-Trace-Context"] = []string{header}
+			}
+
+			span := traceClient.SpanFromRequest(req)
+
+			req2, err := http.NewRequest("GET", "http://example.com/bar", nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			req3, err := http.NewRequest("GET", "http://example.com/baz", nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			span.NewRemoteChild(req2)
+			span.NewRemoteChild(req3)
+
+			var (
+				t1, t2, t3 string
+				s1, s2, s3 uint64
+				o1, o2, o3 uint64
+			)
+			fmt.Sscanf(header, "%32s/%d;o=%d", &t1, &s1, &o1)
+			fmt.Sscanf(req2.Header.Get("X-Cloud-Trace-Context"), "%32s/%d;o=%d", &t2, &s2, &o2)
+			fmt.Sscanf(req3.Header.Get("X-Cloud-Trace-Context"), "%32s/%d;o=%d", &t3, &s3, &o3)
+
+			if header == "" {
+				if t2 != t3 {
+					t.Errorf("expected the same trace ID in child requests, got %q %q", t2, t3)
+				}
+			} else {
+				if t2 != t1 || t3 != t1 {
+					t.Errorf("trace IDs should be passed to child requests")
+				}
+			}
+			trace := policy == alwaysTrace{} || policy == nil && (o1&1) != 0
+			if header == "" {
+				if trace && (s2 == 0 || s3 == 0) {
+					t.Errorf("got span IDs %d %d in child requests, want nonzero", s2, s3)
+				}
+				if trace && s2 == s3 {
+					t.Errorf("got span IDs %d %d in child requests, should be different", s2, s3)
+				}
+				if !trace && (s2 != 0 || s3 != 0) {
+					t.Errorf("got span IDs %d %d in child requests, want zero", s2, s3)
+				}
+			} else {
+				if trace && (s2 == s1 || s3 == s1 || s2 == s3) {
+					t.Errorf("parent span IDs in input and outputs should be all different, got %d %d %d", s1, s2, s3)
+				}
+				if !trace && (s2 != s1 || s3 != s1) {
+					t.Errorf("parent span ID in input, %d, should have been equal to parent span IDs in output: %d %d", s1, s2, s3)
+				}
+			}
+			expectTraceOption := policy == alwaysTrace{} || (o1&1) != 0
+			if expectTraceOption != ((o2&1) != 0) || expectTraceOption != ((o3&1) != 0) {
+				t.Errorf("tracing flag in child requests should be %t, got options %d %d", expectTraceOption, o2, o3)
+			}
 		}
 	}
 }
