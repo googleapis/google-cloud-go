@@ -22,13 +22,13 @@ import (
 	"fmt"
 	"net/http"
 
+	raw "cloud.google.com/go/translate/internal/translate/v2"
 	"golang.org/x/net/context"
 	"golang.org/x/text/language"
 	gtransport "google.golang.org/api/googleapi/transport"
-	raw "google.golang.org/api/translate/v2"
 )
 
-const userAgent = "gcloud-golang-translate/20161029"
+const userAgent = "gcloud-golang-translate/20161115"
 
 // Client is a client for the translate API.
 type Client struct {
