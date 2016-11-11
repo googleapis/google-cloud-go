@@ -20,39 +20,47 @@ package translate
 
 import (
 	"fmt"
-	"net/http"
+
+	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
 
 	raw "cloud.google.com/go/translate/internal/translate/v2"
 	"golang.org/x/net/context"
 	"golang.org/x/text/language"
-	gtransport "google.golang.org/api/googleapi/transport"
 )
 
 const userAgent = "gcloud-golang-translate/20161115"
+
+// Scope is the OAuth2 scope required by the Google Cloud Vision API.
+const Scope = raw.CloudPlatformScope
 
 // Client is a client for the translate API.
 type Client struct {
 	raw *raw.Service
 }
 
+const prodAddr = "https://translation.googleapis.com/language/translate/"
+
 // NewClient constructs a new Client that can perform Translate operations.
 //
 // You can find or create API key for your project from the Credentials page of
 // the Developers Console (console.developers.google.com).
-func NewClient(ctx context.Context, apiKey string) (*Client, error) {
-	// Construct a special HTTP client that understands API keys. We don't
-	// need OAuth2 support.
-	hc := &http.Client{
-		Transport: &gtransport.APIKey{
-			Key:       apiKey,
-			Transport: http.DefaultTransport,
-		},
+func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+	o := []option.ClientOption{
+		option.WithEndpoint(prodAddr),
+		option.WithScopes(Scope),
+		option.WithUserAgent(userAgent),
 	}
-	rawService, err := raw.New(hc)
+	o = append(o, opts...)
+	httpClient, endpoint, err := transport.NewHTTPClient(ctx, o...)
+	if err != nil {
+		return nil, fmt.Errorf("dialing: %v", err)
+	}
+	rawService, err := raw.New(httpClient)
 	if err != nil {
 		return nil, fmt.Errorf("translate client: %v", err)
 	}
-	rawService.UserAgent = userAgent
+	rawService.BasePath = endpoint
 	return &Client{raw: rawService}, nil
 }
 
