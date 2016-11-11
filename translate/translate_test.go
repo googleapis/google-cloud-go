@@ -24,9 +24,9 @@ import (
 	"strings"
 	"testing"
 
+	raw "cloud.google.com/go/translate/internal/translate/v2"
 	"golang.org/x/net/context"
 	"golang.org/x/text/language"
-	raw "google.golang.org/api/translate/v2"
 )
 
 func initTest(ctx context.Context, t *testing.T) *Client {
@@ -72,7 +72,6 @@ func TestTranslateURL(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	const urlPrefix = "https://www.googleapis.com/language/translate/v2?alt=json&"
 	for _, test := range []struct {
 		target language.Tag
 		inputs []string
