@@ -27,6 +27,7 @@ import (
 	raw "cloud.google.com/go/translate/internal/translate/v2"
 	"golang.org/x/net/context"
 	"golang.org/x/text/language"
+	"google.golang.org/api/option"
 )
 
 func initTest(ctx context.Context, t *testing.T) *Client {
@@ -37,7 +38,7 @@ func initTest(ctx context.Context, t *testing.T) *Client {
 	if apiKey == "" {
 		t.Skip("integration tests skipped: GCLOUD_TESTS_API_KEY not defined")
 	}
-	client, err := NewClient(ctx, apiKey)
+	client, err := NewClient(ctx, option.WithAPIKey(apiKey))
 	if err != nil {
 		t.Fatalf("NewClient: %v", err)
 	}
@@ -62,7 +63,7 @@ func TestTranslateURL(t *testing.T) {
 	// Make sure we generate the right one.
 	ctx := context.Background()
 
-	c, err := NewClient(ctx, "")
+	c, err := NewClient(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
