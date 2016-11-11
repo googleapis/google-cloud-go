@@ -42,7 +42,7 @@ func TestConvertBasicValues(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error converting: %v", err)
 	}
-	want := []Value{"a", 1, 1.2, true}
+	want := []Value{"a", int64(1), 1.2, true}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("converting basic values: got:\n%v\nwant:\n%v", got, want)
 	}
@@ -111,7 +111,7 @@ func TestBasicRepetition(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error converting: %v", err)
 	}
-	want := []Value{[]Value{1, 2, 3}}
+	want := []Value{[]Value{int64(1), int64(2), int64(3)}}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("converting basic repeated values: got:\n%v\nwant:\n%v", got, want)
 	}
@@ -148,7 +148,7 @@ func TestNestedRecordContainingRepetition(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error converting: %v", err)
 	}
-	want := []Value{[]Value{[]Value{1, 2, 3}}}
+	want := []Value{[]Value{[]Value{int64(1), int64(2), int64(3)}}}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("converting basic repeated values: got:\n%v\nwant:\n%v", got, want)
 	}
@@ -216,10 +216,10 @@ func TestRepeatedRecordContainingRepetition(t *testing.T) {
 	want := []Value{ // the row is a list of length 1, containing an entry for the repeated record.
 		[]Value{ // the repeated record is a list of length 2, containing an entry for each repetition.
 			[]Value{ // the record is a list of length 1, containing an entry for the repeated integer field.
-				[]Value{1, 2, 3}, // the repeated integer field is a list of length 3.
+				[]Value{int64(1), int64(2), int64(3)}, // the repeated integer field is a list of length 3.
 			},
 			[]Value{ // second record
-				[]Value{4, 5, 6},
+				[]Value{int64(4), int64(5), int64(6)},
 			},
 		},
 	}
@@ -306,14 +306,14 @@ func TestRepeatedRecordContainingRecord(t *testing.T) {
 			[]Value{ // record contains a string followed by a nested record.
 				"first repeated record",
 				[]Value{
-					1,
+					int64(1),
 					"two",
 				},
 			},
 			[]Value{ // second record.
 				"second repeated record",
 				[]Value{
-					3,
+					int64(3),
 					"four",
 				},
 			},
@@ -403,8 +403,8 @@ func TestConvertRows(t *testing.T) {
 		}},
 	}
 	want := [][]Value{
-		{"a", 1, 1.2, true},
-		{"b", 2, 2.2, false},
+		{"a", int64(1), 1.2, true},
+		{"b", int64(2), 2.2, false},
 	}
 	got, err := convertRows(rows, schema)
 	if err != nil {

@@ -16,6 +16,11 @@ backwards-incompatible changes.
 
 ## News
 
+_November 17, 2016_
+
+Change to BigQuery: values from INTEGER columns will now be returned as int64,
+not int. This will avoid errors arising from large values on 32-bit systems.
+
 _November 8, 2016_
 
 New datastore feature: datastore now encodes your nested Go structs as Entity values,

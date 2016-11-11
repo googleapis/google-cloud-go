@@ -195,7 +195,7 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 	case StringFieldType:
 		return val, nil
 	case IntegerFieldType:
-		return strconv.Atoi(val)
+		return strconv.ParseInt(val, 10, 64)
 	case FloatFieldType:
 		return strconv.ParseFloat(val, 64)
 	case BooleanFieldType:
