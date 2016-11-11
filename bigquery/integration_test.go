@@ -189,7 +189,7 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 		saverRows []*ValuesSaver
 	)
 	for i, name := range []string{"a", "b", "c"} {
-		row := []Value{name, i}
+		row := []Value{name, int64(i)}
 		wantRows = append(wantRows, row)
 		saverRows = append(saverRows, &ValuesSaver{
 			Schema:   schema,
@@ -408,9 +408,9 @@ func TestIntegration_Load(t *testing.T) {
 	// Load the table from a reader.
 	r := strings.NewReader("a,0\nb,1\nc,2\n")
 	wantRows := [][]Value{
-		[]Value{"a", 0},
-		[]Value{"b", 1},
-		[]Value{"c", 2},
+		[]Value{"a", int64(0)},
+		[]Value{"b", int64(1)},
+		[]Value{"c", int64(2)},
 	}
 	rs := NewReaderSource(r)
 	loader := table.LoaderFrom(rs)
@@ -435,9 +435,9 @@ func TestIntegration_DML(t *testing.T) {
 
 	// Use DML to insert.
 	wantRows := [][]Value{
-		[]Value{"a", 0},
-		[]Value{"b", 1},
-		[]Value{"c", 2},
+		[]Value{"a", int64(0)},
+		[]Value{"b", int64(1)},
+		[]Value{"c", int64(2)},
 	}
 	query := fmt.Sprintf("INSERT bigquery_integration_test.%s (name, num) "+
 		"VALUES ('a', 0), ('b', 1), ('c', 2)",
