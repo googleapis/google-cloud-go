@@ -26,6 +26,9 @@ import (
 	"testing"
 	"time"
 
+	gax "github.com/googleapis/gax-go"
+
+	cinternal "cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/logging"
 	"cloud.google.com/go/logging/internal"
@@ -494,24 +497,13 @@ func TestDeleteLog(t *testing.T) {
 }
 
 // waitFor calls f repeatedly with exponential backoff, blocking until it returns true.
-// It calls returns false after a while (if it times out).
+// It returns false after a while (if it times out).
 func waitFor(f func() bool) bool {
-	delay := time.Second
 	// TODO(shadams): Find a better way to deflake these tests.
-	timeout := time.NewTimer(2 * time.Minute)
-	for {
-		select {
-		case <-time.After(delay):
-			if f() {
-				timeout.Stop()
-				return true
-			}
-			delay = delay * 2
-		case <-timeout.C:
-			if f() {
-				return true
-			}
-			return false
-		}
-	}
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	defer cancel()
+	err := cinternal.Retry(ctx,
+		gax.Backoff{Initial: time.Second, Multiplier: 2},
+		func() (bool, error) { return f(), nil })
+	return err == nil
 }
