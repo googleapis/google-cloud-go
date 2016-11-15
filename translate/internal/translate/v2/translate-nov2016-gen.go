@@ -290,6 +290,9 @@ type TranslationsResource struct {
 	// is unspecified.
 	DetectedSourceLanguage string `json:"detectedSourceLanguage,omitempty"`
 
+	// Model: Model used for translation.
+	Model string `json:"model,omitempty"`
+
 	// TranslatedText: The translation.
 	TranslatedText string `json:"translatedText,omitempty"`
 
@@ -620,6 +623,13 @@ func (c *TranslationsListCall) Format(format string) *TranslationsListCall {
 	return c
 }
 
+// Model sets the optional parameter "model": the model to use for
+// translation
+func (c *TranslationsListCall) Model(model string) *TranslationsListCall {
+	c.urlParams_.Set("model", model)
+	return c
+}
+
 // Source sets the optional parameter "source": The source language of
 // the text
 func (c *TranslationsListCall) Source(source string) *TranslationsListCall {
@@ -744,6 +754,11 @@ func (c *TranslationsListCall) Do(opts ...googleapi.CallOption) (*TranslationsLi
 	//         "Specifies the input is in HTML",
 	//         "Specifies the input is in plain textual format"
 	//       ],
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "model": {
+	//       "description": "the model to use for translation",
 	//       "location": "query",
 	//       "type": "string"
 	//     },
