@@ -163,6 +163,10 @@
      "type": "string",
      "description": "Detected source language if source parameter is unspecified."
     },
+    "model": {
+      "type": "string",
+      "description": "Model used for translation."
+    },
     "translatedText": {
      "type": "string",
      "description": "The translation."
@@ -241,6 +245,11 @@
         "Specifies the input is in HTML",
         "Specifies the input is in plain textual format"
        ],
+       "location": "query"
+      },
+      "model": {
+       "type": "string",
+       "description": "the model to use for translation",
        "location": "query"
       },
       "q": {

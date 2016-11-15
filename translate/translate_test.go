@@ -192,6 +192,28 @@ func TestTranslateOneInput(t *testing.T) {
 	}
 }
 
+// This tests the beta "nmt" model.
+func TestTranslateModel(t *testing.T) {
+	ctx := context.Background()
+	c := initTest(ctx, t)
+	defer c.Close()
+
+	trs, err := c.Translate(ctx, []string{"Hello"}, language.French, &Options{Model: "nmt"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(trs) != 1 {
+		t.Fatalf("wanted one Translation, got %d", len(trs))
+	}
+	tr := trs[0]
+	if got, want := tr.Text, "Bonjour"; got != want {
+		t.Errorf("text: got %q, want %q", got, want)
+	}
+	if got, want := tr.Model, "nmt"; got != want {
+		t.Errorf("model: got %q, want %q", got, want)
+	}
+}
+
 func TestTranslateMultipleInputs(t *testing.T) {
 	ctx := context.Background()
 	c := initTest(ctx, t)

@@ -87,6 +87,9 @@ func (c *Client) Translate(ctx context.Context, inputs []string, target language
 		if f := opts.Format; f != "" {
 			call.Format(f)
 		}
+		if m := opts.Model; m != "" {
+			call.Model(m)
+		}
 	}
 	res, err := call.Do()
 	if err != nil {
@@ -104,6 +107,7 @@ func (c *Client) Translate(ctx context.Context, inputs []string, target language
 		ts = append(ts, Translation{
 			Text:   t.TranslatedText,
 			Source: source,
+			Model:  t.Model,
 		})
 	}
 	return ts, nil
@@ -119,6 +123,10 @@ type Options struct {
 	// Format describes the format of the input texts. The choices are HTML or
 	// Text. The default is HTML.
 	Format string
+
+	// The model to use for translation. The choices are "nmt" or "base". The
+	// default is "base".
+	Model string
 }
 
 // Constants for Options.Format.
@@ -136,6 +144,10 @@ type Translation struct {
 	// not supplied to Client.Translate. If source was supplied, this field
 	// will be empty.
 	Source language.Tag
+
+	// Model is the model that was used for translation.
+	// It may not match the model provided as an option to Client.Translate.
+	Model string
 }
 
 // DetectLanguage attempts to determine the language of the inputs. Each input
