@@ -34,6 +34,15 @@ type Config struct {
 	Creds             string // optional
 }
 
+type RequiredFlags uint
+
+const NoneRequired RequiredFlags = 0
+const (
+	ProjectRequired RequiredFlags = 1 << iota
+	InstanceRequired
+)
+const ProjectAndInstanceRequired RequiredFlags = ProjectRequired & InstanceRequired
+
 // RegisterFlags registers a set of standard flags for this config.
 // It should be called before flag.Parse.
 func (c *Config) RegisterFlags() {
@@ -43,12 +52,12 @@ func (c *Config) RegisterFlags() {
 }
 
 // CheckFlags checks that the required config values are set.
-func (c *Config) CheckFlags() error {
+func (c *Config) CheckFlags(required RequiredFlags) error {
 	var missing []string
-	if c.Project == "" {
+	if required&ProjectRequired != 0 && c.Project == "" {
 		missing = append(missing, "-project")
 	}
-	if c.Instance == "" {
+	if required&InstanceRequired != 0 && c.Instance == "" {
 		missing = append(missing, "-instance")
 	}
 	if len(missing) > 0 {

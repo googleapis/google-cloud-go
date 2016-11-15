@@ -59,7 +59,7 @@ func main() {
 	config.RegisterFlags()
 
 	flag.Parse()
-	if err := config.CheckFlags(); err != nil {
+	if err := config.CheckFlags(cbtrc.ProjectAndInstanceRequired); err != nil {
 		log.Fatal(err)
 	}
 	if config.Creds != "" {
