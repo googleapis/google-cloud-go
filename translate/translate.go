@@ -85,7 +85,7 @@ func (c *Client) Translate(ctx context.Context, inputs []string, target language
 			call.Source(s.String())
 		}
 		if f := opts.Format; f != "" {
-			call.Format(f)
+			call.Format(string(f))
 		}
 		if m := opts.Model; m != "" {
 			call.Model(m)
@@ -122,17 +122,20 @@ type Options struct {
 
 	// Format describes the format of the input texts. The choices are HTML or
 	// Text. The default is HTML.
-	Format string
+	Format Format
 
 	// The model to use for translation. The choices are "nmt" or "base". The
 	// default is "base".
 	Model string
 }
 
+// The format of the input text. Used in Options.Format.
+type Format string
+
 // Constants for Options.Format.
 const (
-	HTML string = "html"
-	Text string = "text"
+	HTML Format = "html"
+	Text Format = "text"
 )
 
 // A Translation contains the results of translating a piece of text.
