@@ -157,7 +157,7 @@ func (stripValueFilter) proto() *btpb.RowFilter {
 // TimestampRangeFilter returns a filter that matches any rows whose timestamp is within the given time bounds.  A zero
 // time means no bound.
 func TimestampRangeFilter(startTime time.Time, endTime time.Time) Filter {
-	return timestampRangeFilter{startTime: startTime, endTime: endTime}
+	return timestampRangeFilter{startTime, endTime}
 }
 
 type timestampRangeFilter struct {
@@ -180,4 +180,31 @@ func (trf timestampRangeFilter) proto() *btpb.RowFilter {
 	return &btpb.RowFilter{Filter: &btpb.RowFilter_TimestampRangeFilter{r}}
 }
 
-// TODO(dsymonds): More filters: cond, col/ts/value range, sampling
+// ColumnRangeFilter returns a filter that matches a contiguous range of columns within a single
+// family, as specified by an inclusive start qualifier and exclusive end qualifier.
+func ColumnRangeFilter(family, start, end string) Filter {
+	return columnRangeFilter{family, start, end}
+}
+
+type columnRangeFilter struct {
+	family string
+	start string
+	end string
+}
+
+func (crf columnRangeFilter) String() string {
+	return fmt.Sprintf("columnRangeFilter(%s,%s,%s)", crf.family, crf.start, crf.end)
+}
+
+func (crf columnRangeFilter) proto() *btpb.RowFilter {
+	r := &btpb.ColumnRange{FamilyName:crf.family}
+	if crf.start != "" {
+		r.StartQualifier = &btpb.ColumnRange_StartQualifierClosed{[]byte(crf.start)}
+	}
+	if crf.end != "" {
+		r.EndQualifier = &btpb.ColumnRange_EndQualifierOpen{[]byte(crf.end)}
+	}
+	return &btpb.RowFilter{&btpb.RowFilter_ColumnRangeFilter{r}}
+}
+
+// TODO(dsymonds): More filters: cond, value range, sampling
