@@ -461,6 +461,27 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) bool {
 			return false
 		}
 		return rx.Match(cell.value)
+	case *btpb.RowFilter_ColumnRangeFilter:
+		if fam != f.ColumnRangeFilter.FamilyName {
+			return false
+		}
+		// Start qualifier defaults to empty string closed
+		inRangeStart := func() bool { return col >= "" }
+		switch sq := f.ColumnRangeFilter.StartQualifier.(type) {
+		case *btpb.ColumnRange_StartQualifierOpen:
+			inRangeStart = func() bool { return col > string(sq.StartQualifierOpen) }
+		case *btpb.ColumnRange_StartQualifierClosed:
+			inRangeStart = func() bool { return col >= string(sq.StartQualifierClosed) }
+		}
+		// End qualifier defaults to no upper boundary
+		inRangeEnd := func() bool { return true }
+		switch eq := f.ColumnRangeFilter.EndQualifier.(type) {
+		case *btpb.ColumnRange_EndQualifierClosed:
+			inRangeEnd = func() bool { return col <= string(eq.EndQualifierClosed)}
+		case *btpb.ColumnRange_EndQualifierOpen:
+			inRangeEnd = func() bool { return col < string(eq.EndQualifierOpen)}
+		}
+		return inRangeStart() && inRangeEnd()
 	}
 }
 

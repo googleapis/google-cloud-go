@@ -220,6 +220,25 @@ func TestClientIntegration(t *testing.T) {
 			filter: ColumnFilter(".*j.*"), // matches "jadams" and "tjefferson"
 			want:   "gwashington-jadams-1,jadams-tjefferson-1,tjefferson-jadams-1,wmckinley-tjefferson-1",
 		},
+		{
+			desc:   "read range, with ColumnRangeFilter",
+			rr:     RowRange{},
+			filter: ColumnRangeFilter("follows", "h", "k"),
+			want:   "gwashington-jadams-1,tjefferson-jadams-1",
+		},
+		{
+			desc:   "read range from empty, with ColumnRangeFilter",
+			rr:     RowRange{},
+			filter: ColumnRangeFilter("follows", "", "u"),
+			want:   "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1,tjefferson-gwashington-1,tjefferson-jadams-1,wmckinley-tjefferson-1",
+
+		},
+		{
+			desc:   "read range from start to empty, with ColumnRangeFilter",
+			rr:     RowRange{},
+			filter: ColumnRangeFilter("follows", "h", ""),
+			want:   "gwashington-jadams-1,jadams-tjefferson-1,tjefferson-jadams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
+		},
 	}
 	for _, tc := range readTests {
 		var opts []ReadOption
