@@ -24,7 +24,6 @@ import (
 	"strings"
 	"testing"
 
-	raw "cloud.google.com/go/translate/internal/translate/v2"
 	"golang.org/x/net/context"
 	"golang.org/x/text/language"
 	"google.golang.org/api/option"
@@ -62,14 +61,8 @@ func TestTranslateURL(t *testing.T) {
 	// The translate API has all inputs in the URL.
 	// Make sure we generate the right one.
 	ctx := context.Background()
-
-	c, err := NewClient(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	// Replace HTTP client for testing.
 	ft := &fakeTransport{}
-	c.raw, err = raw.New(&http.Client{Transport: ft})
+	c, err := NewClient(ctx, option.WithHTTPClient(&http.Client{Transport: ft}))
 	if err != nil {
 		t.Fatal(err)
 	}
