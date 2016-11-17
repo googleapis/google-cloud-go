@@ -14,38 +14,36 @@
 
 // AUTO-GENERATED CODE. DO NOT EDIT.
 
-package vision_test
+package vision
 
 import (
-	"cloud.google.com/go/vision/apiv1"
-	"golang.org/x/net/context"
 	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
 )
 
-func ExampleNewImageAnnotatorClient() {
-	ctx := context.Background()
-	c, err := vision.NewImageAnnotatorClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use client.
-	_ = c
+import (
+	"io"
+
+	"golang.org/x/net/context"
+)
+
+var _ = io.EOF
+
+type mockImageAnnotator struct {
+	reqs []interface{}
+
+	// If set, all calls return this error.
+	err error
+
+	// responses to return if err == nil
+	resps []interface{}
 }
 
-func ExampleImageAnnotatorClient_BatchAnnotateImages() {
-	ctx := context.Background()
-	c, err := vision.NewImageAnnotatorClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
+var _ visionpb.ImageAnnotatorServer = &mockImageAnnotator{}
 
-	req := &visionpb.BatchAnnotateImagesRequest{
-	// TODO: Fill request struct fields.
+func (s *mockImageAnnotator) BatchAnnotateImages(_ context.Context, req *visionpb.BatchAnnotateImagesRequest) (*visionpb.BatchAnnotateImagesResponse, error) {
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
 	}
-	resp, err := c.BatchAnnotateImages(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
+	return s.resps[0].(*visionpb.BatchAnnotateImagesResponse), nil
 }

@@ -1,10 +1,10 @@
-// Copyright 2016 Google Inc. All Rights Reserved.
+// Copyright 2016, Google Inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -144,8 +144,7 @@ func (c *ErrorStatsClient) ListGroupStats(ctx context.Context, req *clouderrorre
 	md, _ := metadata.FromContext(ctx)
 	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	it := &ErrorGroupStatsIterator{}
-
-	fetch := func(pageSize int, pageToken string) (string, error) {
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouderrorreportingpb.ErrorGroupStats, string, error) {
 		var resp *clouderrorreportingpb.ListGroupStatsResponse
 		req.PageToken = pageToken
 		if pageSize > math.MaxInt32 {
@@ -158,20 +157,17 @@ func (c *ErrorStatsClient) ListGroupStats(ctx context.Context, req *clouderrorre
 			resp, err = c.errorStatsClient.ListGroupStats(ctx, req)
 			return err
 		}, c.CallOptions.ListGroupStats...)
+		return resp.ErrorGroupStats, resp.NextPageToken, err
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
 		if err != nil {
 			return "", err
 		}
-		it.items = append(it.items, resp.ErrorGroupStats...)
-		return resp.NextPageToken, nil
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
 	}
-	bufLen := func() int { return len(it.items) }
-	takeBuf := func() interface{} {
-		b := it.items
-		it.items = nil
-		return b
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, bufLen, takeBuf)
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	return it
 }
 
@@ -180,8 +176,7 @@ func (c *ErrorStatsClient) ListEvents(ctx context.Context, req *clouderrorreport
 	md, _ := metadata.FromContext(ctx)
 	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	it := &ErrorEventIterator{}
-
-	fetch := func(pageSize int, pageToken string) (string, error) {
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouderrorreportingpb.ErrorEvent, string, error) {
 		var resp *clouderrorreportingpb.ListEventsResponse
 		req.PageToken = pageToken
 		if pageSize > math.MaxInt32 {
@@ -194,20 +189,17 @@ func (c *ErrorStatsClient) ListEvents(ctx context.Context, req *clouderrorreport
 			resp, err = c.errorStatsClient.ListEvents(ctx, req)
 			return err
 		}, c.CallOptions.ListEvents...)
+		return resp.ErrorEvents, resp.NextPageToken, err
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
 		if err != nil {
 			return "", err
 		}
-		it.items = append(it.items, resp.ErrorEvents...)
-		return resp.NextPageToken, nil
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
 	}
-	bufLen := func() int { return len(it.items) }
-	takeBuf := func() interface{} {
-		b := it.items
-		it.items = nil
-		return b
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, bufLen, takeBuf)
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	return it
 }
 
@@ -232,6 +224,14 @@ type ErrorEventIterator struct {
 	items    []*clouderrorreportingpb.ErrorEvent
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*clouderrorreportingpb.ErrorEvent, nextPageToken string, err error)
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
@@ -250,11 +250,29 @@ func (it *ErrorEventIterator) Next() (*clouderrorreportingpb.ErrorEvent, error) 
 	return item, nil
 }
 
+func (it *ErrorEventIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ErrorEventIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // ErrorGroupStatsIterator manages a stream of *clouderrorreportingpb.ErrorGroupStats.
 type ErrorGroupStatsIterator struct {
 	items    []*clouderrorreportingpb.ErrorGroupStats
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*clouderrorreportingpb.ErrorGroupStats, nextPageToken string, err error)
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
@@ -271,4 +289,14 @@ func (it *ErrorGroupStatsIterator) Next() (*clouderrorreportingpb.ErrorGroupStat
 	item := it.items[0]
 	it.items = it.items[1:]
 	return item, nil
+}
+
+func (it *ErrorGroupStatsIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ErrorGroupStatsIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
