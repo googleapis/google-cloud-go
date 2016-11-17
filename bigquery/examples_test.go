@@ -248,6 +248,23 @@ func ExampleTable_Create() {
 	}
 }
 
+func ExampleTable_Create_schema() {
+	ctx := context.Background()
+	// Infer table schema from a Go type.
+	schema, err := bigquery.InferSchema(Item{})
+	if err != nil {
+		// TODO: Handle error.
+	}
+	client, err := bigquery.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	t := client.Dataset("my_dataset").Table("new-table")
+	if err := t.Create(ctx, schema); err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleTable_Delete() {
 	ctx := context.Background()
 	client, err := bigquery.NewClient(ctx, "project-id")
