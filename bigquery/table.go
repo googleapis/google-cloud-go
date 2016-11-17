@@ -63,15 +63,17 @@ type TableMetadata struct {
 	NumRows uint64
 }
 
-// CreateDisposition specifies the circumstances under which destination table will be created.
+// TableCreateDisposition specifies the circumstances under which destination table will be created.
 // Default is CreateIfNeeded.
 type TableCreateDisposition string
 
 const (
-	// The table will be created if it does not already exist.  Tables are created atomically on successful completion of a job.
+	// CreateIfNeeded will create the table if it does not already exist.
+	// Tables are created atomically on successful completion of a job.
 	CreateIfNeeded TableCreateDisposition = "CREATE_IF_NEEDED"
 
-	// The table must already exist and will not be automatically created.
+	// CreateNever ensures the table must already exist and will not be
+	// automatically created.
 	CreateNever TableCreateDisposition = "CREATE_NEVER"
 )
 
@@ -80,15 +82,15 @@ const (
 type TableWriteDisposition string
 
 const (
-	// Data will be appended to any existing data in the destination table.
+	// WriteAppend will append to any existing data in the destination table.
 	// Data is appended atomically on successful completion of a job.
 	WriteAppend TableWriteDisposition = "WRITE_APPEND"
 
-	// Existing data in the destination table will be overwritten.
+	// WriteTruncate overrides the existing data in the destination table.
 	// Data is overwritten atomically on successful completion of a job.
 	WriteTruncate TableWriteDisposition = "WRITE_TRUNCATE"
 
-	// Writes will fail if the destination table already contains data.
+	// WriteEmpty fails writes if the destination table already contains data.
 	WriteEmpty TableWriteDisposition = "WRITE_EMPTY"
 )
 
