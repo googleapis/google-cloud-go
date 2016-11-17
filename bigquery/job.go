@@ -15,6 +15,8 @@
 package bigquery
 
 import (
+	"cloud.google.com/go/internal"
+	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 )
@@ -105,4 +107,27 @@ func (j *Job) Status(ctx context.Context) (*JobStatus, error) {
 // Cancelled jobs may still incur costs.
 func (j *Job) Cancel(ctx context.Context) error {
 	return j.service.jobCancel(ctx, j.projectID, j.jobID)
+}
+
+// Wait blocks until the job or th context is done. It returns the final status
+// of the job.
+// If an error occurs while retrieving the status, Wait returns that error. But
+// Wait returns nil if the status was retrieved successfully, even if
+// status.Err() != nil. So callers must check both errors. See the example.
+func (j *Job) Wait(ctx context.Context) (*JobStatus, error) {
+	var js *JobStatus
+	err := internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
+		js, err = j.Status(ctx)
+		if err != nil {
+			return true, err
+		}
+		if js.Done() {
+			return true, nil
+		}
+		return false, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return js, nil
 }

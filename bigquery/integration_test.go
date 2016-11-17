@@ -239,12 +239,6 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// TODO(jba): poll status until job is done
-	_, err = job2.Status(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	rit, err = job2.Read(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -513,17 +507,12 @@ func hasStatusCode(err error, code int) bool {
 
 // wait polls the job until it is complete or an error is returned.
 func wait(ctx context.Context, job *Job) error {
-	for {
-		status, err := job.Status(ctx)
-		if err != nil {
-			return fmt.Errorf("getting job status: %v", err)
-		}
-		if status.Done() {
-			if status.Err() != nil {
-				return fmt.Errorf("job status: %#v", status.Err())
-			}
-			return nil
-		}
-		time.Sleep(1 * time.Second)
+	status, err := job.Wait(ctx)
+	if err != nil {
+		return fmt.Errorf("getting job status: %v", err)
 	}
+	if status.Err() != nil {
+		return fmt.Errorf("job status error: %#v", status.Err())
+	}
+	return nil
 }
