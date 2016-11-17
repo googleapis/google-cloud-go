@@ -1,10 +1,10 @@
-// Copyright 2016 Google Inc. All Rights Reserved.
+// Copyright 2016, Google Inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -67,7 +67,7 @@ func defaultCallOptions() *CallOptions {
 		},
 	}
 	return &CallOptions{
-		PatchTraces: retry[[2]string{"default", "non_idempotent"}],
+		PatchTraces: retry[[2]string{"default", "idempotent"}],
 		GetTrace:    retry[[2]string{"default", "idempotent"}],
 		ListTraces:  retry[[2]string{"default", "idempotent"}],
 	}
@@ -166,8 +166,7 @@ func (c *Client) ListTraces(ctx context.Context, req *cloudtracepb.ListTracesReq
 	md, _ := metadata.FromContext(ctx)
 	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	it := &TraceIterator{}
-
-	fetch := func(pageSize int, pageToken string) (string, error) {
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudtracepb.Trace, string, error) {
 		var resp *cloudtracepb.ListTracesResponse
 		req.PageToken = pageToken
 		if pageSize > math.MaxInt32 {
@@ -180,20 +179,17 @@ func (c *Client) ListTraces(ctx context.Context, req *cloudtracepb.ListTracesReq
 			resp, err = c.client.ListTraces(ctx, req)
 			return err
 		}, c.CallOptions.ListTraces...)
+		return resp.Traces, resp.NextPageToken, err
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
 		if err != nil {
 			return "", err
 		}
-		it.items = append(it.items, resp.Traces...)
-		return resp.NextPageToken, nil
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
 	}
-	bufLen := func() int { return len(it.items) }
-	takeBuf := func() interface{} {
-		b := it.items
-		it.items = nil
-		return b
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, bufLen, takeBuf)
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	return it
 }
 
@@ -202,6 +198,14 @@ type TraceIterator struct {
 	items    []*cloudtracepb.Trace
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*cloudtracepb.Trace, nextPageToken string, err error)
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
@@ -218,4 +222,14 @@ func (it *TraceIterator) Next() (*cloudtracepb.Trace, error) {
 	item := it.items[0]
 	it.items = it.items[1:]
 	return item, nil
+}
+
+func (it *TraceIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *TraceIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
