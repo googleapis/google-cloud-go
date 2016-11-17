@@ -17,7 +17,6 @@ package bigquery_test
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"cloud.google.com/go/bigquery"
 	"golang.org/x/net/context"
@@ -162,6 +161,26 @@ func ExampleJob_Read() {
 		// TODO: Handle error.
 	}
 	_ = it // TODO: iterate using Next or iterator.Pager.
+}
+
+func ExampleJob_Wait() {
+	ctx := context.Background()
+	client, err := bigquery.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	ds := client.Dataset("my_dataset")
+	job, err := ds.Table("t1").CopierFrom(ds.Table("t2")).Run(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	status, err := job.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	if status.Err() != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleDataset_Create() {
@@ -325,23 +344,14 @@ func ExampleTable_CopierFrom() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// Poll for job completion.
-	for {
-		status, err := job.Status(ctx)
-		if err != nil {
-			// TODO: Handle error.
-		}
-		if status.Done() {
-			if status.Err() != nil {
-				// TODO: Handle error.
-			}
-			break
-		}
-		time.Sleep(pollInterval)
+	status, err := job.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	if status.Err() != nil {
+		// TODO: Handle error.
 	}
 }
-
-const pollInterval = 30 * time.Second
 
 func ExampleTable_ExtractorTo() {
 	ctx := context.Background()
@@ -360,19 +370,12 @@ func ExampleTable_ExtractorTo() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// Poll for job completion.
-	for {
-		status, err := job.Status(ctx)
-		if err != nil {
-			// TODO: Handle error.
-		}
-		if status.Done() {
-			if status.Err() != nil {
-				// TODO: Handle error.
-			}
-			break
-		}
-		time.Sleep(pollInterval)
+	status, err := job.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	if status.Err() != nil {
+		// TODO: Handle error.
 	}
 }
 
@@ -393,19 +396,12 @@ func ExampleTable_LoaderFrom() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// Poll for job completion.
-	for {
-		status, err := job.Status(ctx)
-		if err != nil {
-			// TODO: Handle error.
-		}
-		if status.Done() {
-			if status.Err() != nil {
-				// TODO: Handle error.
-			}
-			break
-		}
-		time.Sleep(pollInterval)
+	status, err := job.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	if status.Err() != nil {
+		// TODO: Handle error.
 	}
 }
 
@@ -430,19 +426,12 @@ func ExampleTable_LoaderFrom_reader() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// Poll for job completion.
-	for {
-		status, err := job.Status(ctx)
-		if err != nil {
-			// TODO: Handle error.
-		}
-		if status.Done() {
-			if status.Err() != nil {
-				// TODO: Handle error.
-			}
-			break
-		}
-		time.Sleep(pollInterval)
+	status, err := job.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	if status.Err() != nil {
+		// TODO: Handle error.
 	}
 }
 
