@@ -17,31 +17,54 @@ package translate
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"reflect"
 	"strings"
+	"sync"
 	"testing"
+
+	"cloud.google.com/go/internal/testutil"
 
 	"golang.org/x/net/context"
 	"golang.org/x/text/language"
 	"google.golang.org/api/option"
 )
 
+var (
+	once    sync.Once
+	authOpt option.ClientOption
+)
+
 func initTest(ctx context.Context, t *testing.T) *Client {
 	if testing.Short() {
 		t.Skip("integration tests skipped in short mode")
 	}
-	apiKey := os.Getenv("GCLOUD_TESTS_API_KEY")
-	if apiKey == "" {
-		t.Skip("integration tests skipped: GCLOUD_TESTS_API_KEY not defined")
+	once.Do(func() { authOpt = authOption() })
+	if authOpt == nil {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
-	client, err := NewClient(ctx, option.WithAPIKey(apiKey))
+	client, err := NewClient(ctx, authOpt)
 	if err != nil {
 		t.Fatalf("NewClient: %v", err)
 	}
 	return client
+}
+
+func authOption() option.ClientOption {
+	ts := testutil.TokenSource(context.Background(), Scope)
+	if ts != nil {
+		log.Println("authenticating via OAuth2")
+		return option.WithTokenSource(ts)
+	}
+	apiKey := os.Getenv("GCLOUD_TESTS_API_KEY")
+	if apiKey != "" {
+		log.Println("authenticating with API key")
+		return option.WithAPIKey(apiKey)
+	}
+	return nil
 }
 
 type fakeTransport struct {
