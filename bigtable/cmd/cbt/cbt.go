@@ -37,6 +37,7 @@ import (
 	"cloud.google.com/go/bigtable"
 	"cloud.google.com/go/bigtable/internal/cbtrc"
 	"golang.org/x/net/context"
+	"google.golang.org/api/option"
 )
 
 var (
@@ -50,8 +51,12 @@ var (
 
 func getClient() *bigtable.Client {
 	if client == nil {
+		var opts []option.ClientOption
+		if ep := config.DataEndpoint; ep != "" {
+			opts = append(opts, option.WithEndpoint(ep))
+		}
 		var err error
-		client, err = bigtable.NewClient(context.Background(), config.Project, config.Instance)
+		client, err = bigtable.NewClient(context.Background(), config.Project, config.Instance, opts...)
 		if err != nil {
 			log.Fatalf("Making bigtable.Client: %v", err)
 		}
@@ -61,8 +66,12 @@ func getClient() *bigtable.Client {
 
 func getAdminClient() *bigtable.AdminClient {
 	if adminClient == nil {
+		var opts []option.ClientOption
+		if ep := config.AdminEndpoint; ep != "" {
+			opts = append(opts, option.WithEndpoint(ep))
+		}
 		var err error
-		adminClient, err = bigtable.NewAdminClient(context.Background(), config.Project, config.Instance)
+		adminClient, err = bigtable.NewAdminClient(context.Background(), config.Project, config.Instance, opts...)
 		if err != nil {
 			log.Fatalf("Making bigtable.AdminClient: %v", err)
 		}
@@ -72,8 +81,12 @@ func getAdminClient() *bigtable.AdminClient {
 
 func getInstanceAdminClient() *bigtable.InstanceAdminClient {
 	if instanceAdminClient == nil {
+		var opts []option.ClientOption
+		if ep := config.AdminEndpoint; ep != "" {
+			opts = append(opts, option.WithEndpoint(ep))
+		}
 		var err error
-		instanceAdminClient, err = bigtable.NewInstanceAdminClient(context.Background(), config.Project)
+		instanceAdminClient, err = bigtable.NewInstanceAdminClient(context.Background(), config.Project, opts...)
 		if err != nil {
 			log.Fatalf("Making bigtable.InstanceAdminClient: %v", err)
 		}
@@ -146,11 +159,14 @@ func init() {
 }
 
 var configHelp = `
-For convenience, values of the -project, -instance and -creds flags
-may be specified in ` + cbtrc.Filename() + ` in this format:
+For convenience, values of the -project, -instance, -creds,
+-admin-endpoint and -data-endpoint flags may be specified in
+` + cbtrc.Filename() + ` in this format:
 	project = my-project-123
 	instance = my-instance
 	creds = path-to-account-key.json
+	admin-endpoint = hostname:port
+	data-endpoint = hostname:port
 All values are optional, and all will be overridden by flags.
 `
 

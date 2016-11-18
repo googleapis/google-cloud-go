@@ -59,6 +59,8 @@ func TestPrefix(t *testing.T) {
 }
 
 var useProd = flag.String("use_prod", "", `if set to "proj,instance,table", run integration test against production`)
+var adminEndpoint = flag.String("admin-endpoint", "", "Override the admin api endpoint")
+var dataEndpoint = flag.String("data-endpoint", "", "Override the data api endpoint")
 
 func TestClientIntegration(t *testing.T) {
 	start := time.Now()
@@ -93,14 +95,22 @@ func TestClientIntegration(t *testing.T) {
 
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
 
-	client, err := NewClient(ctx, proj, instance, clientOpts...)
+	dataClientOpts := append([]option.ClientOption(nil), clientOpts...)
+	if *dataEndpoint != "" {
+		dataClientOpts = append(dataClientOpts, option.WithEndpoint(*dataEndpoint))
+	}
+	client, err := NewClient(ctx, proj, instance, dataClientOpts...)
 	if err != nil {
 		t.Fatalf("NewClient: %v", err)
 	}
 	defer client.Close()
 	checkpoint("dialed Client")
 
-	adminClient, err := NewAdminClient(ctx, proj, instance, clientOpts...)
+	adminClientOpts := append([]option.ClientOption(nil), clientOpts...)
+	if *adminEndpoint != "" {
+		adminClientOpts = append(adminClientOpts, option.WithEndpoint(*adminEndpoint))
+	}
+	adminClient, err := NewAdminClient(ctx, proj, instance, adminClientOpts...)
 	if err != nil {
 		t.Fatalf("NewAdminClient: %v", err)
 	}
@@ -231,7 +241,6 @@ func TestClientIntegration(t *testing.T) {
 			rr:     RowRange{},
 			filter: ColumnRangeFilter("follows", "", "u"),
 			want:   "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1,tjefferson-gwashington-1,tjefferson-jadams-1,wmckinley-tjefferson-1",
-
 		},
 		{
 			desc:   "read range from start to empty, with ColumnRangeFilter",
