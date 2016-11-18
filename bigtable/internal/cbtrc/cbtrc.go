@@ -32,6 +32,8 @@ import (
 type Config struct {
 	Project, Instance string // required
 	Creds             string // optional
+	AdminEndpoint     string // optional
+	DataEndpoint      string // optional
 }
 
 type RequiredFlags uint
@@ -49,6 +51,8 @@ func (c *Config) RegisterFlags() {
 	flag.StringVar(&c.Project, "project", c.Project, "project ID")
 	flag.StringVar(&c.Instance, "instance", c.Instance, "Cloud Bigtable instance")
 	flag.StringVar(&c.Creds, "creds", c.Creds, "if set, use application credentials in this file")
+	flag.StringVar(&c.AdminEndpoint, "admin-endpoint", c.AdminEndpoint, "Override the admin api endpoint")
+	flag.StringVar(&c.DataEndpoint, "data-endpoint", c.DataEndpoint, "Override the data api endpoint")
 }
 
 // CheckFlags checks that the required config values are set.
@@ -102,7 +106,12 @@ func Load() (*Config, error) {
 			c.Instance = val
 		case "creds":
 			c.Creds = val
+		case "admin-endpoint":
+			c.AdminEndpoint = val
+		case "data-endpoint":
+			c.DataEndpoint = val
 		}
+
 	}
 	return c, s.Err()
 }
