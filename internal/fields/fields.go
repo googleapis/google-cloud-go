@@ -71,6 +71,14 @@ func fieldByNameFunc(t reflect.Type, match func(string) bool) (result reflect.St
 			visited[t] = true
 			for i := 0; i < t.NumField(); i++ {
 				f := t.Field(i)
+
+				// If a named field is unexported, ignore it. An anonymous
+				// unexported field is processed, because it may contain
+				// exported fields, which are visible.
+				if f.PkgPath != "" && !f.Anonymous {
+					continue
+				}
+
 				// Find name and type for field f.
 				var fname string
 				var ntyp reflect.Type

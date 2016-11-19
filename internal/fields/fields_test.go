@@ -43,7 +43,7 @@ func TestFieldByNameFunc(t *testing.T) {
 		wantIndex []int
 	}{
 		{"Exported", []int{0}},
-		{"unexported", []int{1}},
+		{"unexported", nil},
 		{"Shadow", []int{2}},
 		{"Em", []int{3, 0}}, // field in embedded struct
 		{"Dup", nil},        // duplicate fields at the same level annihilate each other
