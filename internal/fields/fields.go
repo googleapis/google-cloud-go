@@ -14,7 +14,10 @@
 
 package fields
 
-import "reflect"
+import (
+	"reflect"
+	"sort"
+)
 
 // A fieldScan represents an item on the fieldByNameFunc scan work list.
 type fieldScan struct {
@@ -22,9 +25,44 @@ type fieldScan struct {
 	index []int
 }
 
-// fieldByNameFunc returns the struct field with a name that satisfies the
-// match function and a boolean to indicate if the field was found.
-func fieldByNameFunc(t reflect.Type, match func(string) bool) (result reflect.StructField, ok bool) {
+// Fields returns all the exported fields of t, which must be a struct type. It
+// follows the standard Go rules for embedded fields. The result is sorted by field name.
+//
+// Anonymous struct fields are treated as if their inner exported fields were
+// fields in the outer struct (embedding). The result includes all fields that
+// aren't shadowed by fields at higher level of embedding. If more than one
+// field with the same name exists at the same level of embedding, it is
+// excluded. An anonymous field that is not of struct type is treated as having
+// its type as its name.
+func Fields(t reflect.Type) []reflect.StructField {
+	fields := listFields(t)
+	sort.Sort(byName(fields))
+	// Delete all fields that are hidden by the Go rules for embedded fields.
+
+	// The fields are sorted in primary order of name, secondary order of field
+	// index length. So the first field with a given name is the dominant one.
+	var out []reflect.StructField
+	for advance, i := 0, 0; i < len(fields); i += advance {
+		// One iteration per name.
+		// Find the sequence of fields with the name of this first field.
+		fi := fields[i]
+		name := fi.Name
+		for advance = 1; i+advance < len(fields); advance++ {
+			fj := fields[i+advance]
+			if fj.Name != name {
+				break
+			}
+		}
+		// Find the dominant field, if any, out of all fields that have the same name.
+		dominant, ok := dominantField(fields[i : i+advance])
+		if ok {
+			out = append(out, dominant)
+		}
+	}
+	return out
+}
+
+func listFields(t reflect.Type) []reflect.StructField {
 	// This uses the same condition that the Go language does: there must be a unique instance
 	// of the match at a given depth level. If there are multiple instances of a match at the
 	// same depth, they annihilate each other and inhibit any possible match at a lower level.
@@ -50,6 +88,8 @@ func fieldByNameFunc(t reflect.Type, match func(string) bool) (result reflect.St
 	// It also avoids duplicated effort: if we didn't find the field in an
 	// embedded type T at level 2, we won't find it in one at level 4 either.
 	visited := map[reflect.Type]bool{}
+
+	var fields []reflect.StructField // Fields found.
 
 	for len(next) > 0 {
 		current, next = next, current[:0]
@@ -80,41 +120,32 @@ func fieldByNameFunc(t reflect.Type, match func(string) bool) (result reflect.St
 				}
 
 				// Find name and type for field f.
-				var fname string
 				var ntyp reflect.Type
-				if !f.Anonymous {
-					fname = f.Name
-				} else {
+				if f.Anonymous {
 					// Anonymous field of type T or *T.
-					// Name taken from type.
 					ntyp = f.Type
 					if ntyp.Kind() == reflect.Ptr {
 						ntyp = ntyp.Elem()
 					}
-					fname = ntyp.Name()
 				}
 
-				// Does it match?
-				if match(fname) {
-					// Potential match
-					if count[t] > 1 || ok {
-						// Name appeared multiple times at this level: annihilate.
-						return reflect.StructField{}, false
+				// Record non-anonymous fields, or anonymous non-struct fields.
+				if ntyp == nil || ntyp.Kind() != reflect.Struct {
+					sf := t.Field(i)
+					sf.Index = nil
+					sf.Index = append(sf.Index, scan.index...)
+					sf.Index = append(sf.Index, i)
+					fields = append(fields, sf)
+					if count[t] > 1 {
+						// If there were multiple instances, add a second,
+						// so that the annihilation code will see a duplicate.
+						fields = append(fields, fields[len(fields)-1])
 					}
-					result = t.Field(i)
-					result.Index = nil
-					result.Index = append(result.Index, scan.index...)
-					result.Index = append(result.Index, i)
-					ok = true
 					continue
 				}
 
 				// Queue embedded struct fields for processing with next level,
-				// but only if we haven't seen a match yet at this level and only
-				// if the embedded types haven't already been queued.
-				if ok || ntyp == nil || ntyp.Kind() != reflect.Struct {
-					continue
-				}
+				// but only if the embedded types haven't already been queued.
 				if nextCount[ntyp] > 0 {
 					nextCount[ntyp] = 2 // exact multiple doesn't matter
 					continue
@@ -132,9 +163,53 @@ func fieldByNameFunc(t reflect.Type, match func(string) bool) (result reflect.St
 				next = append(next, fieldScan{ntyp, index})
 			}
 		}
-		if ok {
+	}
+	return fields
+}
+
+// byName sorts field by name, breaking ties with depth, then breaking ties
+// with index sequence.
+type byName []reflect.StructField
+
+func (x byName) Len() int { return len(x) }
+
+func (x byName) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
+
+func (x byName) Less(i, j int) bool {
+	if x[i].Name != x[j].Name {
+		return x[i].Name < x[j].Name
+	}
+	if len(x[i].Index) != len(x[j].Index) {
+		return len(x[i].Index) < len(x[j].Index)
+	}
+	for k, xik := range x[i].Index {
+		if xik != x[j].Index[k] {
+			return xik < x[j].Index[k]
+		}
+	}
+	return false
+}
+
+// dominantField looks through the fields, all of which are known to have the
+// same name, to find the single field that dominates the others using Go's
+// embedding rules. If there are multiple top-level fields, the boolean will be
+// false: This condition is an error in Go and we skip all the fields.
+func dominantField(fields []reflect.StructField) (reflect.StructField, bool) {
+	// The fields are sorted in increasing index-length order. The winner
+	// must therefore be one with the shortest index length. Drop all
+	// longer entries, which is easy: just truncate the slice.
+	length := len(fields[0].Index)
+	for i, f := range fields {
+		if len(f.Index) > length {
+			fields = fields[:i]
 			break
 		}
 	}
-	return
+	// All remaining fields have the same length. If there's more than one,
+	// we have a conflict (two fields named "X" at the same level) and we
+	// return no field.
+	if len(fields) > 1 {
+		return reflect.StructField{}, false
+	}
+	return fields[0], true
 }
