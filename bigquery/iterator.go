@@ -48,7 +48,7 @@ type RowIterator struct {
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 
-	// StartIndex can be set before the first call to Next. If PageInfo().PageToken
+	// StartIndex can be set before the first call to Next. If PageInfo().Token
 	// is also set, StartIndex is ignored.
 	StartIndex uint64
 
