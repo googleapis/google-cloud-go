@@ -61,8 +61,12 @@ type S1 struct {
 
 var intType = reflect.TypeOf(int(0))
 
+func testTagParser(t reflect.StructTag) string {
+	return t.Get("test")
+}
+
 func TestFieldsNoTags(t *testing.T) {
-	got := Fields(reflect.TypeOf(S1{}))
+	got := Fields(reflect.TypeOf(S1{}), nil)
 	want := []Field{
 		{Name: "Anonymous", Index: []int{5}, Type: reflect.TypeOf(Anonymous(0))},
 		{Name: "Em1", Index: []int{3, 0}, Type: intType},
@@ -101,7 +105,7 @@ type tEmbed2 struct {
 }
 
 func TestFieldsWithTags(t *testing.T) {
-	got := Fields(reflect.TypeOf(S2{}))
+	got := Fields(reflect.TypeOf(S2{}), testTagParser)
 	want := []Field{
 		{Name: "Dup", NameFromTag: true, Index: []int{5, 0}, Type: intType},
 		{Name: "NoTag", Index: []int{0}, Type: intType},

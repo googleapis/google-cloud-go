@@ -36,6 +36,8 @@ type fieldScan struct {
 // Fields returns all the exported fields of t, which must be a struct type. It
 // follows the standard Go rules for embedded fields, modified by the presence
 // of tags. The result is sorted by field name.
+// If not nil, the given parseTag function should extract and return a name
+// from the struct tag. This name is used instead of the field's declared name.
 //
 // These rules apply in the absence of tags:
 // Anonymous struct fields are treated as if their inner exported fields were
@@ -53,8 +55,11 @@ type fieldScan struct {
 // If more than one field with the same name exists at the same level of embedding,
 // but exactly one of them is tagged, then the tagged field is reported and the others
 // are ignored.
-func Fields(t reflect.Type) []Field {
-	fields := listFields(t)
+func Fields(t reflect.Type, parseTag func(reflect.StructTag) string) []Field {
+	if parseTag == nil {
+		parseTag = func(reflect.StructTag) string { return "" }
+	}
+	fields := listFields(t, parseTag)
 	sort.Sort(byName(fields))
 	// Delete all fields that are hidden by the Go rules for embedded fields.
 
@@ -81,7 +86,7 @@ func Fields(t reflect.Type) []Field {
 	return out
 }
 
-func listFields(t reflect.Type) []Field {
+func listFields(t reflect.Type, parseTag func(reflect.StructTag) string) []Field {
 	// This uses the same condition that the Go language does: there must be a unique instance
 	// of the match at a given depth level. If there are multiple instances of a match at the
 	// same depth, they annihilate each other and inhibit any possible match at a lower level.
@@ -140,7 +145,7 @@ func listFields(t reflect.Type) []Field {
 
 				// Examine the tag.
 				// TODO(jba): make the tag name a parameter.
-				tagName := f.Tag.Get("test")
+				tagName := parseTag(f.Tag)
 
 				// Find name and type for field f.
 				var ntyp reflect.Type
