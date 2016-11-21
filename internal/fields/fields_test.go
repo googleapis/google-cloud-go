@@ -15,7 +15,7 @@
 package fields
 
 import (
-	"fmt"
+	"encoding/json"
 	"reflect"
 	"testing"
 )
@@ -61,10 +61,6 @@ type S1 struct {
 
 var intType = reflect.TypeOf(int(0))
 
-func testTagParser(t reflect.StructTag) string {
-	return t.Get("test")
-}
-
 func TestFieldsNoTags(t *testing.T) {
 	got := Fields(reflect.TypeOf(S1{}), nil)
 	want := []Field{
@@ -85,42 +81,142 @@ func TestFieldsNoTags(t *testing.T) {
 	}
 }
 
+func TestAgainstJSONEncodingNoTags(t *testing.T) {
+	// Demonstrates that this package produces the same set of fields as encoding/json.
+	s1 := S1{
+		Exported:   1,
+		unexported: 2,
+		Shadow:     3,
+		embed1: embed1{
+			Em1:    4,
+			Dup:    5,
+			Shadow: 6,
+			embed3: embed3{
+				Em3:    7,
+				embed5: embed5{x: 8},
+			},
+		},
+		embed2: &embed2{
+			Dup: 9,
+			embed3: embed3{
+				Em3:    10,
+				embed5: embed5{x: 11},
+			},
+			embed4: embed4{
+				Em4:    12,
+				Dup:    13,
+				embed1: &embed1{Em1: 14},
+			},
+		},
+		Anonymous: Anonymous(15),
+	}
+	bytes, err := json.Marshal(s1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var want S1
+	if err := json.Unmarshal(bytes, &want); err != nil {
+		t.Fatal(err)
+	}
+
+	var got S1
+	got.embed2 = &embed2{} // need this because reflection won't create it
+	fields := Fields(reflect.TypeOf(got), nil)
+	setFields(fields, &got, s1)
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got\n%+v\nwant\n%+v", got, want)
+	}
+}
+
 type S2 struct {
 	NoTag     int
-	XXX       int           `test:"tag"` // tag name takes precedence
-	Anonymous `test:"anon"` // anonymous non-structs also get their name from the tag
-	embed1    `test:"em"`   // embedded structs with tags become fields
+	XXX       int           `json:"tag"` // tag name takes precedence
+	Anonymous `json:"anon"` // anonymous non-structs also get their name from the tag
+	Embed     `json:"em"`   // embedded structs with tags become fields
 	tEmbed1
 	tEmbed2
 }
 
+type Embed struct {
+	Em int
+}
+
 type tEmbed1 struct {
 	Dup int
-	X   int `test:"Dup2"`
+	X   int `json:"Dup2"`
 }
 
 type tEmbed2 struct {
-	Y int `test:"Dup"`  // takes precedence over tEmbed1.Dup because it is tagged
-	Z int `test:"Dup2"` // same name as tEmbed1.X and both tagged, so ignored
+	Y int `json:"Dup"`  // takes precedence over tEmbed1.Dup because it is tagged
+	Z int `json:"Dup2"` // same name as tEmbed1.X and both tagged, so ignored
 }
 
+func jsonTagParser(t reflect.StructTag) string { return t.Get("json") }
+
 func TestFieldsWithTags(t *testing.T) {
-	got := Fields(reflect.TypeOf(S2{}), testTagParser)
+	got := Fields(reflect.TypeOf(S2{}), jsonTagParser)
 	want := []Field{
 		{Name: "Dup", NameFromTag: true, Index: []int{5, 0}, Type: intType},
 		{Name: "NoTag", Index: []int{0}, Type: intType},
 		{Name: "anon", NameFromTag: true, Index: []int{2}, Type: reflect.TypeOf(Anonymous(0))},
-		{Name: "em", NameFromTag: true, Index: []int{3}, Type: reflect.TypeOf(embed1{})},
+		{Name: "em", NameFromTag: true, Index: []int{3}, Type: reflect.TypeOf(Embed{})},
 		{Name: "tag", NameFromTag: true, Index: []int{1}, Type: intType},
 	}
 	if len(got) != len(want) {
-		fmt.Println(got)
 		t.Fatalf("got %d fields, want %d", len(got), len(want))
 	}
 	for i, g := range got {
 		w := want[i]
-		if !reflect.DeepEqual(got, want) {
+		if !reflect.DeepEqual(g, w) {
 			t.Errorf("got %+v, want %+v", g, w)
 		}
+	}
+}
+
+func TestAgainstJSONEncodingWithTags(t *testing.T) {
+	// Demonstrates that this package produces the same set of fields as encoding/json.
+	s2 := S2{
+		NoTag:     1,
+		XXX:       2,
+		Anonymous: 3,
+		Embed: Embed{
+			Em: 4,
+		},
+		tEmbed1: tEmbed1{
+			Dup: 5,
+			X:   6,
+		},
+		tEmbed2: tEmbed2{
+			Y: 7,
+			Z: 8,
+		},
+	}
+	bytes, err := json.Marshal(s2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var want S2
+	if err := json.Unmarshal(bytes, &want); err != nil {
+		t.Fatal(err)
+	}
+
+	var got S2
+	fields := Fields(reflect.TypeOf(got), jsonTagParser)
+	setFields(fields, &got, s2)
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got\n%+v\nwant\n%+v", got, want)
+	}
+}
+
+// Set the fields of dst from those of src.
+// dst must be a pointer to a struct value.
+// src must be a struct value.
+func setFields(fields []Field, dst, src interface{}) {
+	vsrc := reflect.ValueOf(src)
+	vdst := reflect.ValueOf(dst).Elem()
+	for _, f := range fields {
+		fdst := vdst.FieldByIndex(f.Index)
+		fsrc := vsrc.FieldByIndex(f.Index)
+		fdst.Set(fsrc)
 	}
 }
