@@ -46,10 +46,13 @@ type fieldScan struct {
 // its type as its name.
 //
 // Tags modify these rules as follows:
-// A field's tag modifies its name.
+// A field's tag is used as its name.
 // An anonymous struct field with a name given in its tag is treated as
 // a field having that name, rather than an embedded struct (the struct's
 // fields will not be returned).
+// If more than one field with the same name exists at the same level of embedding,
+// but exactly one of them is tagged, then the tagged field is reported and the others
+// are ignored.
 func Fields(t reflect.Type) []Field {
 	fields := listFields(t)
 	sort.Sort(byName(fields))
@@ -220,19 +223,31 @@ func (x byName) Less(i, j int) bool {
 
 // dominantField looks through the fields, all of which are known to have the
 // same name, to find the single field that dominates the others using Go's
-// embedding rules. If there are multiple top-level fields, the boolean will be
-// false: This condition is an error in Go and we skip all the fields.
-// TODO(jba): implement tagged fields taking precedence over non-tagged.
+// embedding rules, modified by the presence of tags. If there are multiple
+// top-level fields, the boolean will be false: This condition is an error in
+// Go and we skip all the fields.
 func dominantField(fields []Field) (Field, bool) {
 	// The fields are sorted in increasing index-length order. The winner
 	// must therefore be one with the shortest index length. Drop all
 	// longer entries, which is easy: just truncate the slice.
 	length := len(fields[0].Index)
+	tagged := -1 // Index of first tagged field.
 	for i, f := range fields {
 		if len(f.Index) > length {
 			fields = fields[:i]
 			break
 		}
+		if f.NameFromTag {
+			if tagged >= 0 {
+				// Multiple tagged fields at the same level: conflict.
+				// Return no field.
+				return Field{}, false
+			}
+			tagged = i
+		}
+	}
+	if tagged >= 0 {
+		return fields[tagged], true
 	}
 	// All remaining fields have the same length. If there's more than one,
 	// we have a conflict (two fields named "X" at the same level) and we

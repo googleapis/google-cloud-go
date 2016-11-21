@@ -71,7 +71,6 @@ func TestFieldsNoTags(t *testing.T) {
 		{Name: "Shadow", Index: []int{2}, Type: intType},
 	}
 	if len(got) != len(want) {
-		fmt.Println(got)
 		t.Fatalf("got %d fields, want %d", len(got), len(want))
 	}
 	for i, g := range got {
@@ -87,11 +86,24 @@ type S2 struct {
 	XXX       int           `test:"tag"` // tag name takes precedence
 	Anonymous `test:"anon"` // anonymous non-structs also get their name from the tag
 	embed1    `test:"em"`   // embedded structs with tags become fields
+	tEmbed1
+	tEmbed2
+}
+
+type tEmbed1 struct {
+	Dup int
+	X   int `test:"Dup2"`
+}
+
+type tEmbed2 struct {
+	Y int `test:"Dup"`  // takes precedence over tEmbed1.Dup because it is tagged
+	Z int `test:"Dup2"` // same name as tEmbed1.X and both tagged, so ignored
 }
 
 func TestFieldsWithTags(t *testing.T) {
 	got := Fields(reflect.TypeOf(S2{}))
 	want := []Field{
+		{Name: "Dup", NameFromTag: true, Index: []int{5, 0}, Type: intType},
 		{Name: "NoTag", Index: []int{0}, Type: intType},
 		{Name: "anon", NameFromTag: true, Index: []int{2}, Type: reflect.TypeOf(Anonymous(0))},
 		{Name: "em", NameFromTag: true, Index: []int{3}, Type: reflect.TypeOf(embed1{})},
