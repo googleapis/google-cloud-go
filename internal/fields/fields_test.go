@@ -50,7 +50,7 @@ type embed5 struct {
 
 type Anonymous int
 
-type S struct {
+type S1 struct {
 	Exported   int
 	unexported int
 	Shadow     int // shadows S1.Shadow
@@ -59,19 +59,16 @@ type S struct {
 	Anonymous
 }
 
-func TestFields(t *testing.T) {
-	got := Fields(reflect.TypeOf(S{}))
-	intType := reflect.TypeOf(int(0))
-	want := []struct {
-		name  string
-		index []int
-		typ   reflect.Type
-	}{
-		{"Anonymous", []int{5}, reflect.TypeOf(Anonymous(0))},
-		{"Em1", []int{3, 0}, intType},
-		{"Em4", []int{4, 2, 0}, intType},
-		{"Exported", []int{0}, intType},
-		{"Shadow", []int{2}, intType},
+var intType = reflect.TypeOf(int(0))
+
+func TestFieldsNoTags(t *testing.T) {
+	got := Fields(reflect.TypeOf(S1{}))
+	want := []Field{
+		{Name: "Anonymous", Index: []int{5}, Type: reflect.TypeOf(Anonymous(0))},
+		{Name: "Em1", Index: []int{3, 0}, Type: intType},
+		{Name: "Em4", Index: []int{4, 2, 0}, Type: intType},
+		{Name: "Exported", Index: []int{0}, Type: intType},
+		{Name: "Shadow", Index: []int{2}, Type: intType},
 	}
 	if len(got) != len(want) {
 		fmt.Println(got)
@@ -79,14 +76,35 @@ func TestFields(t *testing.T) {
 	}
 	for i, g := range got {
 		w := want[i]
-		if g.Name != w.name {
-			t.Errorf("name: got %q, want %q", g.Name, w.name)
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %+v, want %+v", g, w)
 		}
-		if !reflect.DeepEqual(g.Index, w.index) {
-			t.Errorf("index: got %v, want %v", g.Index, w.index)
-		}
-		if g.Type != w.typ {
-			t.Errorf("type: got %s, want %s", g.Type, w.typ)
+	}
+}
+
+type S2 struct {
+	NoTag     int
+	XXX       int           `test:"tag"` // tag name takes precedence
+	Anonymous `test:"anon"` // anonymous non-structs also get their name from the tag
+	embed1    `test:"em"`   // embedded structs with tags become fields
+}
+
+func TestFieldsWithTags(t *testing.T) {
+	got := Fields(reflect.TypeOf(S2{}))
+	want := []Field{
+		{Name: "NoTag", Index: []int{0}, Type: intType},
+		{Name: "anon", NameFromTag: true, Index: []int{2}, Type: reflect.TypeOf(Anonymous(0))},
+		{Name: "em", NameFromTag: true, Index: []int{3}, Type: reflect.TypeOf(embed1{})},
+		{Name: "tag", NameFromTag: true, Index: []int{1}, Type: intType},
+	}
+	if len(got) != len(want) {
+		fmt.Println(got)
+		t.Fatalf("got %d fields, want %d", len(got), len(want))
+	}
+	for i, g := range got {
+		w := want[i]
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %+v, want %+v", g, w)
 		}
 	}
 }

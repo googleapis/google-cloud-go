@@ -19,6 +19,14 @@ import (
 	"sort"
 )
 
+// A Field records information about a struct field.
+type Field struct {
+	Name        string       // effective field name
+	NameFromTag bool         // did Name come from a tag?
+	Type        reflect.Type // field type
+	Index       []int        // index sequence, for reflect.Value.FieldByIndex
+}
+
 // A fieldScan represents an item on the fieldByNameFunc scan work list.
 type fieldScan struct {
 	typ   reflect.Type
@@ -26,22 +34,30 @@ type fieldScan struct {
 }
 
 // Fields returns all the exported fields of t, which must be a struct type. It
-// follows the standard Go rules for embedded fields. The result is sorted by field name.
+// follows the standard Go rules for embedded fields, modified by the presence
+// of tags. The result is sorted by field name.
 //
+// These rules apply in the absence of tags:
 // Anonymous struct fields are treated as if their inner exported fields were
 // fields in the outer struct (embedding). The result includes all fields that
 // aren't shadowed by fields at higher level of embedding. If more than one
 // field with the same name exists at the same level of embedding, it is
 // excluded. An anonymous field that is not of struct type is treated as having
 // its type as its name.
-func Fields(t reflect.Type) []reflect.StructField {
+//
+// Tags modify these rules as follows:
+// A field's tag modifies its name.
+// An anonymous struct field with a name given in its tag is treated as
+// a field having that name, rather than an embedded struct (the struct's
+// fields will not be returned).
+func Fields(t reflect.Type) []Field {
 	fields := listFields(t)
 	sort.Sort(byName(fields))
 	// Delete all fields that are hidden by the Go rules for embedded fields.
 
 	// The fields are sorted in primary order of name, secondary order of field
 	// index length. So the first field with a given name is the dominant one.
-	var out []reflect.StructField
+	var out []Field
 	for advance, i := 0, 0; i < len(fields); i += advance {
 		// One iteration per name.
 		// Find the sequence of fields with the name of this first field.
@@ -62,7 +78,7 @@ func Fields(t reflect.Type) []reflect.StructField {
 	return out
 }
 
-func listFields(t reflect.Type) []reflect.StructField {
+func listFields(t reflect.Type) []Field {
 	// This uses the same condition that the Go language does: there must be a unique instance
 	// of the match at a given depth level. If there are multiple instances of a match at the
 	// same depth, they annihilate each other and inhibit any possible match at a lower level.
@@ -89,7 +105,7 @@ func listFields(t reflect.Type) []reflect.StructField {
 	// embedded type T at level 2, we won't find it in one at level 4 either.
 	visited := map[reflect.Type]bool{}
 
-	var fields []reflect.StructField // Fields found.
+	var fields []Field // Fields found.
 
 	for len(next) > 0 {
 		current, next = next, current[:0]
@@ -119,6 +135,10 @@ func listFields(t reflect.Type) []reflect.StructField {
 					continue
 				}
 
+				// Examine the tag.
+				// TODO(jba): make the tag name a parameter.
+				tagName := f.Tag.Get("test")
+
 				// Find name and type for field f.
 				var ntyp reflect.Type
 				if f.Anonymous {
@@ -129,10 +149,18 @@ func listFields(t reflect.Type) []reflect.StructField {
 					}
 				}
 
-				// Record non-anonymous fields, or anonymous non-struct fields.
-				if ntyp == nil || ntyp.Kind() != reflect.Struct {
-					sf := t.Field(i)
-					sf.Index = nil
+				// Record fields with a tag name, non-anonymous fields, or
+				// anonymous non-struct fields.
+				if tagName != "" || ntyp == nil || ntyp.Kind() != reflect.Struct {
+					name := tagName
+					if name == "" {
+						name = f.Name
+					}
+					sf := Field{
+						Name:        name,
+						NameFromTag: tagName != "",
+						Type:        f.Type,
+					}
 					sf.Index = append(sf.Index, scan.index...)
 					sf.Index = append(sf.Index, i)
 					fields = append(fields, sf)
@@ -169,7 +197,7 @@ func listFields(t reflect.Type) []reflect.StructField {
 
 // byName sorts field by name, breaking ties with depth, then breaking ties
 // with index sequence.
-type byName []reflect.StructField
+type byName []Field
 
 func (x byName) Len() int { return len(x) }
 
@@ -194,7 +222,8 @@ func (x byName) Less(i, j int) bool {
 // same name, to find the single field that dominates the others using Go's
 // embedding rules. If there are multiple top-level fields, the boolean will be
 // false: This condition is an error in Go and we skip all the fields.
-func dominantField(fields []reflect.StructField) (reflect.StructField, bool) {
+// TODO(jba): implement tagged fields taking precedence over non-tagged.
+func dominantField(fields []Field) (Field, bool) {
 	// The fields are sorted in increasing index-length order. The winner
 	// must therefore be one with the shortest index length. Drop all
 	// longer entries, which is easy: just truncate the slice.
@@ -209,7 +238,7 @@ func dominantField(fields []reflect.StructField) (reflect.StructField, bool) {
 	// we have a conflict (two fields named "X" at the same level) and we
 	// return no field.
 	if len(fields) > 1 {
-		return reflect.StructField{}, false
+		return Field{}, false
 	}
 	return fields[0], true
 }
