@@ -989,6 +989,21 @@ func TestIntegration_Encryption(t *testing.T) {
 	}
 }
 
+func TestIntegration_NonexistentBucket(t *testing.T) {
+	ctx := context.Background()
+	client, bucket := testConfig(ctx, t)
+	defer client.Close()
+
+	bkt := client.Bucket(bucket + "-nonexistent")
+	if _, err := bkt.Attrs(ctx); err != ErrBucketNotExist {
+		t.Errorf("Attrs: got %v, want ErrBucketNotExist", err)
+	}
+	it := bkt.Objects(ctx, nil)
+	if _, err := it.Next(); err != ErrBucketNotExist {
+		t.Errorf("Objects: got %v, want ErrBucketNotExist", err)
+	}
+}
+
 func readObject(ctx context.Context, obj *ObjectHandle) ([]byte, error) {
 	r, err := obj.NewReader(ctx)
 	if err != nil {
