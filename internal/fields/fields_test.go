@@ -63,7 +63,8 @@ type S1 struct {
 var intType = reflect.TypeOf(int(0))
 
 func TestFieldsNoTags(t *testing.T) {
-	got := Fields(reflect.TypeOf(S1{}), nil)
+	c := NewCache(nil)
+	got := c.Fields(reflect.TypeOf(S1{}))
 	want := []Field{
 		{Name: "Anonymous", Index: []int{5}, Type: reflect.TypeOf(Anonymous(0))},
 		{Name: "Em1", Index: []int{3, 0}, Type: intType},
@@ -122,7 +123,7 @@ func TestAgainstJSONEncodingNoTags(t *testing.T) {
 
 	var got S1
 	got.embed2 = &embed2{} // need this because reflection won't create it
-	fields := Fields(reflect.TypeOf(got), nil)
+	fields := NewCache(nil).Fields(reflect.TypeOf(got))
 	setFields(fields, &got, s1)
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got\n%+v\nwant\n%+v", got, want)
@@ -166,7 +167,7 @@ func jsonTagParser(t reflect.StructTag) (name string, keep bool, other interface
 }
 
 func TestFieldsWithTags(t *testing.T) {
-	got := Fields(reflect.TypeOf(S2{}), jsonTagParser)
+	got := NewCache(jsonTagParser).Fields(reflect.TypeOf(S2{}))
 	want := []Field{
 		{Name: "Dup", NameFromTag: true, Index: []int{6, 0}, Type: intType},
 		{Name: "NoTag", Index: []int{0}, Type: intType},
@@ -213,7 +214,7 @@ func TestAgainstJSONEncodingWithTags(t *testing.T) {
 	}
 
 	var got S2
-	fields := Fields(reflect.TypeOf(got), jsonTagParser)
+	fields := NewCache(jsonTagParser).Fields(reflect.TypeOf(got))
 	setFields(fields, &got, s2)
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got\n%+v\nwant\n%+v", got, want)
@@ -234,7 +235,7 @@ func TestUnexportedAnonymousNonStruct(t *testing.T) {
 		}
 	)
 
-	got := Fields(reflect.TypeOf(S{}), jsonTagParser)
+	got := NewCache(jsonTagParser).Fields(reflect.TypeOf(S{}))
 	if len(got) != 0 {
 		t.Errorf("got %d fields, want 0", len(got))
 	}
@@ -250,7 +251,7 @@ func TestUnexportedAnonymousStruct(t *testing.T) {
 			s1 `json:"Y"`
 		}
 	)
-	got := Fields(reflect.TypeOf(S2{}), jsonTagParser)
+	got := NewCache(jsonTagParser).Fields(reflect.TypeOf(S2{}))
 	if len(got) != 0 {
 		t.Errorf("got %d fields, want 0", len(got))
 	}
@@ -260,7 +261,7 @@ func TestIgnore(t *testing.T) {
 	type S struct {
 		X int `json:"-"`
 	}
-	got := Fields(reflect.TypeOf(S{}), jsonTagParser)
+	got := NewCache(jsonTagParser).Fields(reflect.TypeOf(S{}))
 	if len(got) != 0 {
 		t.Errorf("got %d fields, want 0", len(got))
 	}
@@ -270,7 +271,7 @@ func TestParsedTag(t *testing.T) {
 	type S struct {
 		X int `json:"name,omitempty"`
 	}
-	got := Fields(reflect.TypeOf(S{}), jsonTagParser)
+	got := NewCache(jsonTagParser).Fields(reflect.TypeOf(S{}))
 	want := []Field{
 		{Name: "name", NameFromTag: true, Type: intType,
 			Index: []int{0}, ParsedTag: []string{"omitempty"}},
