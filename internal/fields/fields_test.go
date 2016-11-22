@@ -152,7 +152,13 @@ type tEmbed2 struct {
 	Z int `json:"Dup2"` // same name as tEmbed1.X and both tagged, so ignored
 }
 
-func jsonTagParser(t reflect.StructTag) string { return t.Get("json") }
+func jsonTagParser(t reflect.StructTag) (string, bool) {
+	s := t.Get("json")
+	if s == "-" {
+		return "", false
+	}
+	return s, true
+}
 
 func TestFieldsWithTags(t *testing.T) {
 	got := Fields(reflect.TypeOf(S2{}), jsonTagParser)
@@ -240,6 +246,16 @@ func TestUnexportedAnonymousStruct(t *testing.T) {
 		}
 	)
 	got := Fields(reflect.TypeOf(S2{}), jsonTagParser)
+	if len(got) != 0 {
+		t.Errorf("got %d fields, want 0", len(got))
+	}
+}
+
+func TestIgnore(t *testing.T) {
+	type S struct {
+		X int `json:"-"`
+	}
+	got := Fields(reflect.TypeOf(S{}), jsonTagParser)
 	if len(got) != 0 {
 		t.Errorf("got %d fields, want 0", len(got))
 	}
