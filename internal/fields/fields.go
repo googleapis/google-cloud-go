@@ -17,6 +17,8 @@ package fields
 import (
 	"reflect"
 	"sort"
+	"sync"
+	"sync/atomic"
 )
 
 // A Field records information about a struct field.
@@ -26,6 +28,29 @@ type Field struct {
 	Type        reflect.Type // field type
 	Index       []int        // index sequence, for reflect.Value.FieldByIndex
 	ParsedTag   interface{}  // third return value of the parseTag function
+}
+
+// A Cache records information about the fields of struct types.
+//
+// A Cache is safe for use by multiple goroutines.
+type Cache struct {
+	parseTag func(reflect.StructTag) (name string, keep bool, other interface{})
+	cache    atomic.Value // map[reflect.Type][]Field
+	mu       sync.Mutex   // used only by writers of cache
+}
+
+// NewCache constructs a Cache. Its argument should be a function that accepts
+// a struct tag and returns three values: an alternative name for the field
+// extracted from the tag, a boolean saying whether to keep the field or ignore
+// it, and additional data that is stored with the field information to avoid
+// having to parse the tag again.
+func NewCache(parseTag func(reflect.StructTag) (name string, keep bool, other interface{})) *Cache {
+	if parseTag == nil {
+		parseTag = func(reflect.StructTag) (string, bool, interface{}) {
+			return "", true, nil
+		}
+	}
+	return &Cache{parseTag: parseTag}
 }
 
 // A fieldScan represents an item on the fieldByNameFunc scan work list.
@@ -56,13 +81,44 @@ type fieldScan struct {
 // If more than one field with the same name exists at the same level of embedding,
 // but exactly one of them is tagged, then the tagged field is reported and the others
 // are ignored.
-func Fields(t reflect.Type, parseTag func(reflect.StructTag) (name string, ignore bool, other interface{})) []Field {
-	if parseTag == nil {
-		parseTag = func(reflect.StructTag) (string, bool, interface{}) {
-			return "", true, nil
-		}
+func (c *Cache) Fields(t reflect.Type) []Field {
+	if t.Kind() != reflect.Struct {
+		panic("fields: Fields of non-struct type")
 	}
-	fields := listFields(t, parseTag)
+	return c.cachedTypeFields(t)
+}
+
+// cachedTypeFields is like typeFields but uses a cache to avoid repeated work.
+// This code has been copied and modified from
+// https://go.googlesource.com/go/+/go1.7.3/src/encoding/json/encode.go.
+func (c *Cache) cachedTypeFields(t reflect.Type) []Field {
+	mp, _ := c.cache.Load().(map[reflect.Type][]Field)
+	f := mp[t]
+	if f != nil {
+		return f
+	}
+
+	// Compute fields without lock.
+	// Might duplicate effort but won't hold other computations back.
+	f = c.typeFields(t)
+	if f == nil {
+		f = []Field{}
+	}
+
+	c.mu.Lock()
+	mp, _ = c.cache.Load().(map[reflect.Type][]Field)
+	newM := make(map[reflect.Type][]Field, len(mp)+1)
+	for k, v := range mp {
+		newM[k] = v
+	}
+	newM[t] = f
+	c.cache.Store(newM)
+	c.mu.Unlock()
+	return f
+}
+
+func (c *Cache) typeFields(t reflect.Type) []Field {
+	fields := c.listFields(t)
 	sort.Sort(byName(fields))
 	// Delete all fields that are hidden by the Go rules for embedded fields.
 
@@ -89,7 +145,7 @@ func Fields(t reflect.Type, parseTag func(reflect.StructTag) (name string, ignor
 	return out
 }
 
-func listFields(t reflect.Type, parseTag func(reflect.StructTag) (string, bool, interface{})) []Field {
+func (c *Cache) listFields(t reflect.Type) []Field {
 	// This uses the same condition that the Go language does: there must be a unique instance
 	// of the match at a given depth level. If there are multiple instances of a match at the
 	// same depth, they annihilate each other and inhibit any possible match at a lower level.
@@ -148,7 +204,7 @@ func listFields(t reflect.Type, parseTag func(reflect.StructTag) (string, bool, 
 				}
 
 				// Examine the tag.
-				tagName, keep, other := parseTag(f.Tag)
+				tagName, keep, other := c.parseTag(f.Tag)
 				if !keep {
 					continue
 				}
