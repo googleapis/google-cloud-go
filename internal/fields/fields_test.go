@@ -229,6 +229,22 @@ func TestUnexportedAnonymousNonStruct(t *testing.T) {
 	}
 }
 
+func TestUnexportedAnonymousStruct(t *testing.T) {
+	// An unexported anonymous struct with a tag is ignored.
+	// This is currently a bug in encoding/json.
+	// https://github.com/golang/go/issues/18009
+	type (
+		s1 struct{ X int }
+		S2 struct {
+			s1 `json:"Y"`
+		}
+	)
+	got := Fields(reflect.TypeOf(S2{}), jsonTagParser)
+	if len(got) != 0 {
+		t.Errorf("got %d fields, want 0", len(got))
+	}
+}
+
 // Set the fields of dst from those of src.
 // dst must be a pointer to a struct value.
 // src must be a struct value.
