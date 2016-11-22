@@ -20,28 +20,23 @@ import (
 	"testing"
 	"time"
 
-	"cloud.google.com/go/bigtable/bttest"
 	"golang.org/x/net/context"
-	"google.golang.org/api/option"
-	"google.golang.org/grpc"
 )
 
 func TestAdminIntegration(t *testing.T) {
-	srv, err := bttest.NewServer("127.0.0.1:0")
+	testEnv, err := NewIntegrationEnv()
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("IntegrationEnv: %v", err)
 	}
-	defer srv.Close()
-	t.Logf("bttest.Server running on %s", srv.Addr)
+	defer testEnv.Close()
 
-	ctx, _ := context.WithTimeout(context.Background(), 2*time.Second)
-
-	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
-	if err != nil {
-		t.Fatalf("grpc.Dial: %v", err)
+	timeout := 2 * time.Second
+	if testEnv.Config().UseProd {
+		timeout = 5 * time.Minute
 	}
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
 
-	adminClient, err := NewAdminClient(ctx, "proj", "instance", option.WithGRPCConn(conn))
+	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
 		t.Fatalf("NewAdminClient: %v", err)
 	}
