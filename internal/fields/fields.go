@@ -25,6 +25,7 @@ type Field struct {
 	NameFromTag bool         // did Name come from a tag?
 	Type        reflect.Type // field type
 	Index       []int        // index sequence, for reflect.Value.FieldByIndex
+	ParsedTag   interface{}  // third return value of the parseTag function
 }
 
 // A fieldScan represents an item on the fieldByNameFunc scan work list.
@@ -55,9 +56,11 @@ type fieldScan struct {
 // If more than one field with the same name exists at the same level of embedding,
 // but exactly one of them is tagged, then the tagged field is reported and the others
 // are ignored.
-func Fields(t reflect.Type, parseTag func(reflect.StructTag) (string, bool)) []Field {
+func Fields(t reflect.Type, parseTag func(reflect.StructTag) (name string, ignore bool, other interface{})) []Field {
 	if parseTag == nil {
-		parseTag = func(reflect.StructTag) (string, bool) { return "", true }
+		parseTag = func(reflect.StructTag) (string, bool, interface{}) {
+			return "", true, nil
+		}
 	}
 	fields := listFields(t, parseTag)
 	sort.Sort(byName(fields))
@@ -86,7 +89,7 @@ func Fields(t reflect.Type, parseTag func(reflect.StructTag) (string, bool)) []F
 	return out
 }
 
-func listFields(t reflect.Type, parseTag func(reflect.StructTag) (string, bool)) []Field {
+func listFields(t reflect.Type, parseTag func(reflect.StructTag) (string, bool, interface{})) []Field {
 	// This uses the same condition that the Go language does: there must be a unique instance
 	// of the match at a given depth level. If there are multiple instances of a match at the
 	// same depth, they annihilate each other and inhibit any possible match at a lower level.
@@ -145,7 +148,7 @@ func listFields(t reflect.Type, parseTag func(reflect.StructTag) (string, bool))
 				}
 
 				// Examine the tag.
-				tagName, keep := parseTag(f.Tag)
+				tagName, keep, other := parseTag(f.Tag)
 				if !keep {
 					continue
 				}
@@ -173,6 +176,7 @@ func listFields(t reflect.Type, parseTag func(reflect.StructTag) (string, bool))
 						Name:        name,
 						NameFromTag: tagName != "",
 						Type:        f.Type,
+						ParsedTag:   other,
 					}
 					sf.Index = append(sf.Index, scan.index...)
 					sf.Index = append(sf.Index, i)

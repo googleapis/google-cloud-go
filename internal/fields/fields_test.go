@@ -17,6 +17,7 @@ package fields
 import (
 	"encoding/json"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -152,12 +153,16 @@ type tEmbed2 struct {
 	Z int `json:"Dup2"` // same name as tEmbed1.X and both tagged, so ignored
 }
 
-func jsonTagParser(t reflect.StructTag) (string, bool) {
+func jsonTagParser(t reflect.StructTag) (name string, keep bool, other interface{}) {
 	s := t.Get("json")
-	if s == "-" {
-		return "", false
+	parts := strings.Split(s, ",")
+	if parts[0] == "-" {
+		return "", false, nil
 	}
-	return s, true
+	if len(parts) > 1 {
+		other = parts[1:]
+	}
+	return parts[0], true, other
 }
 
 func TestFieldsWithTags(t *testing.T) {
@@ -258,6 +263,20 @@ func TestIgnore(t *testing.T) {
 	got := Fields(reflect.TypeOf(S{}), jsonTagParser)
 	if len(got) != 0 {
 		t.Errorf("got %d fields, want 0", len(got))
+	}
+}
+
+func TestParsedTag(t *testing.T) {
+	type S struct {
+		X int `json:"name,omitempty"`
+	}
+	got := Fields(reflect.TypeOf(S{}), jsonTagParser)
+	want := []Field{
+		{Name: "name", NameFromTag: true, Type: intType,
+			Index: []int{0}, ParsedTag: []string{"omitempty"}},
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %+v, want %+v", got, want)
 	}
 }
 
