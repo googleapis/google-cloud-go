@@ -17,7 +17,6 @@ limitations under the License.
 package bigtable
 
 import (
-	"flag"
 	"fmt"
 	"math/rand"
 	"reflect"
@@ -27,10 +26,7 @@ import (
 	"testing"
 	"time"
 
-	"cloud.google.com/go/bigtable/bttest"
 	"golang.org/x/net/context"
-	"google.golang.org/api/option"
-	"google.golang.org/grpc"
 )
 
 func TestPrefix(t *testing.T) {
@@ -58,10 +54,6 @@ func TestPrefix(t *testing.T) {
 	}
 }
 
-var useProd = flag.String("use_prod", "", `if set to "proj,instance,table", run integration test against production`)
-var adminEndpoint = flag.String("admin-endpoint", "", "Override the admin api endpoint")
-var dataEndpoint = flag.String("data-endpoint", "", "Override the data api endpoint")
-
 func TestClientIntegration(t *testing.T) {
 	start := time.Now()
 	lastCheckpoint := start
@@ -71,51 +63,35 @@ func TestClientIntegration(t *testing.T) {
 		lastCheckpoint = n
 	}
 
-	proj, instance, table := "proj", "instance", "mytable"
-	var clientOpts []option.ClientOption
-	timeout := 20 * time.Second
-	if *useProd == "" {
-		srv, err := bttest.NewServer("127.0.0.1:0")
-		if err != nil {
-			t.Fatal(err)
-		}
-		defer srv.Close()
-		t.Logf("bttest.Server running on %s", srv.Addr)
-		conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
-		if err != nil {
-			t.Fatalf("grpc.Dial: %v", err)
-		}
-		clientOpts = []option.ClientOption{option.WithGRPCConn(conn)}
-	} else {
-		t.Logf("Running test against production")
-		a := strings.SplitN(*useProd, ",", 3)
-		proj, instance, table = a[0], a[1], a[2]
-		timeout = 5 * time.Minute
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
 	}
 
+	timeout := 20 * time.Second
+	if testEnv.Config().UseProd {
+		timeout = 5 * time.Minute
+		t.Logf("Running test against production")
+	} else {
+		t.Logf("bttest.Server running on %s", testEnv.Config().AdminEndpoint)
+	}
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
 
-	dataClientOpts := append([]option.ClientOption(nil), clientOpts...)
-	if *dataEndpoint != "" {
-		dataClientOpts = append(dataClientOpts, option.WithEndpoint(*dataEndpoint))
-	}
-	client, err := NewClient(ctx, proj, instance, dataClientOpts...)
+	client, err := testEnv.NewClient()
 	if err != nil {
-		t.Fatalf("NewClient: %v", err)
+		t.Fatalf("Client: %v", err)
 	}
 	defer client.Close()
 	checkpoint("dialed Client")
 
-	adminClientOpts := append([]option.ClientOption(nil), clientOpts...)
-	if *adminEndpoint != "" {
-		adminClientOpts = append(adminClientOpts, option.WithEndpoint(*adminEndpoint))
-	}
-	adminClient, err := NewAdminClient(ctx, proj, instance, adminClientOpts...)
+	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
-		t.Fatalf("NewAdminClient: %v", err)
+		t.Fatalf("AdminClient: %v", err)
 	}
 	defer adminClient.Close()
 	checkpoint("dialed AdminClient")
+
+	table := testEnv.Config().Table
 
 	// Delete the table at the end of the test.
 	// Do this even before creating the table so that if this is running
