@@ -147,7 +147,6 @@ func listFields(t reflect.Type, parseTag func(reflect.StructTag) string) []Field
 				// Examine the tag.
 				tagName := parseTag(f.Tag)
 
-				// Find name and type for field f.
 				var ntyp reflect.Type
 				if f.Anonymous {
 					// Anonymous field of type T or *T.
@@ -158,7 +157,7 @@ func listFields(t reflect.Type, parseTag func(reflect.StructTag) string) []Field
 				}
 
 				// Record fields with a tag name, non-anonymous fields, or
-				// exported anonymous non-struct fields.
+				// anonymous non-struct fields.
 				if tagName != "" || ntyp == nil || ntyp.Kind() != reflect.Struct {
 					if !exported {
 						continue
