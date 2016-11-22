@@ -129,10 +129,11 @@ func TestAgainstJSONEncodingNoTags(t *testing.T) {
 }
 
 type S2 struct {
-	NoTag     int
-	XXX       int           `json:"tag"` // tag name takes precedence
-	Anonymous `json:"anon"` // anonymous non-structs also get their name from the tag
-	Embed     `json:"em"`   // embedded structs with tags become fields
+	NoTag      int
+	XXX        int           `json:"tag"` // tag name takes precedence
+	Anonymous  `json:"anon"` // anonymous non-structs also get their name from the tag
+	unexported int           `json:"tag"`
+	Embed      `json:"em"`   // embedded structs with tags become fields
 	tEmbed1
 	tEmbed2
 }
@@ -156,10 +157,10 @@ func jsonTagParser(t reflect.StructTag) string { return t.Get("json") }
 func TestFieldsWithTags(t *testing.T) {
 	got := Fields(reflect.TypeOf(S2{}), jsonTagParser)
 	want := []Field{
-		{Name: "Dup", NameFromTag: true, Index: []int{5, 0}, Type: intType},
+		{Name: "Dup", NameFromTag: true, Index: []int{6, 0}, Type: intType},
 		{Name: "NoTag", Index: []int{0}, Type: intType},
 		{Name: "anon", NameFromTag: true, Index: []int{2}, Type: reflect.TypeOf(Anonymous(0))},
-		{Name: "em", NameFromTag: true, Index: []int{3}, Type: reflect.TypeOf(Embed{})},
+		{Name: "em", NameFromTag: true, Index: []int{4}, Type: reflect.TypeOf(Embed{})},
 		{Name: "tag", NameFromTag: true, Index: []int{1}, Type: intType},
 	}
 	if len(got) != len(want) {
