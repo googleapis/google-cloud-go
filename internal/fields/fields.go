@@ -55,9 +55,9 @@ type fieldScan struct {
 // If more than one field with the same name exists at the same level of embedding,
 // but exactly one of them is tagged, then the tagged field is reported and the others
 // are ignored.
-func Fields(t reflect.Type, parseTag func(reflect.StructTag) string) []Field {
+func Fields(t reflect.Type, parseTag func(reflect.StructTag) (string, bool)) []Field {
 	if parseTag == nil {
-		parseTag = func(reflect.StructTag) string { return "" }
+		parseTag = func(reflect.StructTag) (string, bool) { return "", true }
 	}
 	fields := listFields(t, parseTag)
 	sort.Sort(byName(fields))
@@ -86,7 +86,7 @@ func Fields(t reflect.Type, parseTag func(reflect.StructTag) string) []Field {
 	return out
 }
 
-func listFields(t reflect.Type, parseTag func(reflect.StructTag) string) []Field {
+func listFields(t reflect.Type, parseTag func(reflect.StructTag) (string, bool)) []Field {
 	// This uses the same condition that the Go language does: there must be a unique instance
 	// of the match at a given depth level. If there are multiple instances of a match at the
 	// same depth, they annihilate each other and inhibit any possible match at a lower level.
@@ -145,7 +145,10 @@ func listFields(t reflect.Type, parseTag func(reflect.StructTag) string) []Field
 				}
 
 				// Examine the tag.
-				tagName := parseTag(f.Tag)
+				tagName, keep := parseTag(f.Tag)
+				if !keep {
+					continue
+				}
 
 				var ntyp reflect.Type
 				if f.Anonymous {
