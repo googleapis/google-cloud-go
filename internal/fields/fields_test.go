@@ -209,6 +209,26 @@ func TestAgainstJSONEncodingWithTags(t *testing.T) {
 	}
 }
 
+func TestUnexportedAnonymousNonStruct(t *testing.T) {
+	// An unexported anonymous non-struct field should not be recorded.
+	// This is currently a bug in encoding/json.
+	// https://github.com/golang/go/issues/18009
+	type (
+		u int
+		v int
+		S struct {
+			u
+			v `json:"x"`
+			int
+		}
+	)
+
+	got := Fields(reflect.TypeOf(S{}), jsonTagParser)
+	if len(got) != 0 {
+		t.Errorf("got %d fields, want 0", len(got))
+	}
+}
+
 // Set the fields of dst from those of src.
 // dst must be a pointer to a struct value.
 // src must be a struct value.

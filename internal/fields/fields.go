@@ -135,16 +135,16 @@ func listFields(t reflect.Type, parseTag func(reflect.StructTag) string) []Field
 			visited[t] = true
 			for i := 0; i < t.NumField(); i++ {
 				f := t.Field(i)
+				exported := (f.PkgPath == "")
 
 				// If a named field is unexported, ignore it. An anonymous
 				// unexported field is processed, because it may contain
 				// exported fields, which are visible.
-				if f.PkgPath != "" && !f.Anonymous {
+				if !exported && !f.Anonymous {
 					continue
 				}
 
 				// Examine the tag.
-				// TODO(jba): make the tag name a parameter.
 				tagName := parseTag(f.Tag)
 
 				// Find name and type for field f.
@@ -158,8 +158,11 @@ func listFields(t reflect.Type, parseTag func(reflect.StructTag) string) []Field
 				}
 
 				// Record fields with a tag name, non-anonymous fields, or
-				// anonymous non-struct fields.
+				// exported anonymous non-struct fields.
 				if tagName != "" || ntyp == nil || ntyp.Kind() != reflect.Struct {
+					if !exported {
+						continue
+					}
 					name := tagName
 					if name == "" {
 						name = f.Name
