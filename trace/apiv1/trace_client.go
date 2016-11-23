@@ -179,7 +179,10 @@ func (c *Client) ListTraces(ctx context.Context, req *cloudtracepb.ListTracesReq
 			resp, err = c.client.ListTraces(ctx, req)
 			return err
 		}, c.CallOptions.ListTraces...)
-		return resp.Traces, resp.NextPageToken, err
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.Traces, resp.NextPageToken, nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)

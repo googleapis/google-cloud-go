@@ -222,7 +222,10 @@ func (c *IamClient) ListServiceAccounts(ctx context.Context, req *adminpb.ListSe
 			resp, err = c.iamClient.ListServiceAccounts(ctx, req)
 			return err
 		}, c.CallOptions.ListServiceAccounts...)
-		return resp.Accounts, resp.NextPageToken, err
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.Accounts, resp.NextPageToken, nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)

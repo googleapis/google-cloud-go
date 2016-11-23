@@ -21,14 +21,23 @@ import (
 )
 
 import (
+	"flag"
 	"io"
+	"log"
+	"net"
+	"os"
+	"reflect"
+	"testing"
 
 	"golang.org/x/net/context"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 )
 
 var _ = io.EOF
 
-type mockErrorGroupService struct {
+type mockErrorGroupServer struct {
 	reqs []interface{}
 
 	// If set, all calls return this error.
@@ -38,9 +47,7 @@ type mockErrorGroupService struct {
 	resps []interface{}
 }
 
-var _ clouderrorreportingpb.ErrorGroupServiceServer = &mockErrorGroupService{}
-
-func (s *mockErrorGroupService) GetGroup(_ context.Context, req *clouderrorreportingpb.GetGroupRequest) (*clouderrorreportingpb.ErrorGroup, error) {
+func (s *mockErrorGroupServer) GetGroup(_ context.Context, req *clouderrorreportingpb.GetGroupRequest) (*clouderrorreportingpb.ErrorGroup, error) {
 	s.reqs = append(s.reqs, req)
 	if s.err != nil {
 		return nil, s.err
@@ -48,7 +55,7 @@ func (s *mockErrorGroupService) GetGroup(_ context.Context, req *clouderrorrepor
 	return s.resps[0].(*clouderrorreportingpb.ErrorGroup), nil
 }
 
-func (s *mockErrorGroupService) UpdateGroup(_ context.Context, req *clouderrorreportingpb.UpdateGroupRequest) (*clouderrorreportingpb.ErrorGroup, error) {
+func (s *mockErrorGroupServer) UpdateGroup(_ context.Context, req *clouderrorreportingpb.UpdateGroupRequest) (*clouderrorreportingpb.ErrorGroup, error) {
 	s.reqs = append(s.reqs, req)
 	if s.err != nil {
 		return nil, s.err
@@ -56,7 +63,7 @@ func (s *mockErrorGroupService) UpdateGroup(_ context.Context, req *clouderrorre
 	return s.resps[0].(*clouderrorreportingpb.ErrorGroup), nil
 }
 
-type mockErrorStatsService struct {
+type mockErrorStatsServer struct {
 	reqs []interface{}
 
 	// If set, all calls return this error.
@@ -66,9 +73,7 @@ type mockErrorStatsService struct {
 	resps []interface{}
 }
 
-var _ clouderrorreportingpb.ErrorStatsServiceServer = &mockErrorStatsService{}
-
-func (s *mockErrorStatsService) ListGroupStats(_ context.Context, req *clouderrorreportingpb.ListGroupStatsRequest) (*clouderrorreportingpb.ListGroupStatsResponse, error) {
+func (s *mockErrorStatsServer) ListGroupStats(_ context.Context, req *clouderrorreportingpb.ListGroupStatsRequest) (*clouderrorreportingpb.ListGroupStatsResponse, error) {
 	s.reqs = append(s.reqs, req)
 	if s.err != nil {
 		return nil, s.err
@@ -76,7 +81,7 @@ func (s *mockErrorStatsService) ListGroupStats(_ context.Context, req *clouderro
 	return s.resps[0].(*clouderrorreportingpb.ListGroupStatsResponse), nil
 }
 
-func (s *mockErrorStatsService) ListEvents(_ context.Context, req *clouderrorreportingpb.ListEventsRequest) (*clouderrorreportingpb.ListEventsResponse, error) {
+func (s *mockErrorStatsServer) ListEvents(_ context.Context, req *clouderrorreportingpb.ListEventsRequest) (*clouderrorreportingpb.ListEventsResponse, error) {
 	s.reqs = append(s.reqs, req)
 	if s.err != nil {
 		return nil, s.err
@@ -84,7 +89,7 @@ func (s *mockErrorStatsService) ListEvents(_ context.Context, req *clouderrorrep
 	return s.resps[0].(*clouderrorreportingpb.ListEventsResponse), nil
 }
 
-func (s *mockErrorStatsService) DeleteEvents(_ context.Context, req *clouderrorreportingpb.DeleteEventsRequest) (*clouderrorreportingpb.DeleteEventsResponse, error) {
+func (s *mockErrorStatsServer) DeleteEvents(_ context.Context, req *clouderrorreportingpb.DeleteEventsRequest) (*clouderrorreportingpb.DeleteEventsResponse, error) {
 	s.reqs = append(s.reqs, req)
 	if s.err != nil {
 		return nil, s.err
@@ -92,7 +97,7 @@ func (s *mockErrorStatsService) DeleteEvents(_ context.Context, req *clouderrorr
 	return s.resps[0].(*clouderrorreportingpb.DeleteEventsResponse), nil
 }
 
-type mockReportErrorsService struct {
+type mockReportErrorsServer struct {
 	reqs []interface{}
 
 	// If set, all calls return this error.
@@ -102,12 +107,158 @@ type mockReportErrorsService struct {
 	resps []interface{}
 }
 
-var _ clouderrorreportingpb.ReportErrorsServiceServer = &mockReportErrorsService{}
-
-func (s *mockReportErrorsService) ReportErrorEvent(_ context.Context, req *clouderrorreportingpb.ReportErrorEventRequest) (*clouderrorreportingpb.ReportErrorEventResponse, error) {
+func (s *mockReportErrorsServer) ReportErrorEvent(_ context.Context, req *clouderrorreportingpb.ReportErrorEventRequest) (*clouderrorreportingpb.ReportErrorEventResponse, error) {
 	s.reqs = append(s.reqs, req)
 	if s.err != nil {
 		return nil, s.err
 	}
 	return s.resps[0].(*clouderrorreportingpb.ReportErrorEventResponse), nil
+}
+
+// clientOpt is the option tests should use to connect to the test server.
+// It is initialized by TestMain.
+var clientOpt option.ClientOption
+
+var (
+	mockErrorGroup   mockErrorGroupServer
+	mockErrorStats   mockErrorStatsServer
+	mockReportErrors mockReportErrorsServer
+)
+
+func TestMain(m *testing.M) {
+	flag.Parse()
+
+	serv := grpc.NewServer()
+	clouderrorreportingpb.RegisterErrorGroupServiceServer(serv, &mockErrorGroup)
+	clouderrorreportingpb.RegisterErrorStatsServiceServer(serv, &mockErrorStats)
+	clouderrorreportingpb.RegisterReportErrorsServiceServer(serv, &mockReportErrors)
+
+	lis, err := net.Listen("tcp", "localhost:0")
+	if err != nil {
+		log.Fatal(err)
+	}
+	go serv.Serve(lis)
+
+	conn, err := grpc.Dial(lis.Addr().String(), grpc.WithInsecure())
+	if err != nil {
+		log.Fatal(err)
+	}
+	clientOpt = option.WithGRPCConn(conn)
+
+	os.Exit(m.Run())
+}
+
+func TestErrorGroupServiceGetGroupError(t *testing.T) {
+	errCode := codes.Internal
+	mockErrorGroup.err = grpc.Errorf(errCode, "test error")
+
+	c, err := NewErrorGroupClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var req *clouderrorreportingpb.GetGroupRequest
+
+	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
+
+	_, err = c.GetGroup(context.Background(), req)
+
+	if c := grpc.Code(err); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
+func TestErrorGroupServiceUpdateGroupError(t *testing.T) {
+	errCode := codes.Internal
+	mockErrorGroup.err = grpc.Errorf(errCode, "test error")
+
+	c, err := NewErrorGroupClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var req *clouderrorreportingpb.UpdateGroupRequest
+
+	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
+
+	_, err = c.UpdateGroup(context.Background(), req)
+
+	if c := grpc.Code(err); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
+func TestErrorStatsServiceListGroupStatsError(t *testing.T) {
+	errCode := codes.Internal
+	mockErrorStats.err = grpc.Errorf(errCode, "test error")
+
+	c, err := NewErrorStatsClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var req *clouderrorreportingpb.ListGroupStatsRequest
+
+	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
+
+	_, err = c.ListGroupStats(context.Background(), req).Next()
+
+	if c := grpc.Code(err); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
+func TestErrorStatsServiceListEventsError(t *testing.T) {
+	errCode := codes.Internal
+	mockErrorStats.err = grpc.Errorf(errCode, "test error")
+
+	c, err := NewErrorStatsClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var req *clouderrorreportingpb.ListEventsRequest
+
+	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
+
+	_, err = c.ListEvents(context.Background(), req).Next()
+
+	if c := grpc.Code(err); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
+func TestErrorStatsServiceDeleteEventsError(t *testing.T) {
+	errCode := codes.Internal
+	mockErrorStats.err = grpc.Errorf(errCode, "test error")
+
+	c, err := NewErrorStatsClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var req *clouderrorreportingpb.DeleteEventsRequest
+
+	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
+
+	_, err = c.DeleteEvents(context.Background(), req)
+
+	if c := grpc.Code(err); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
+func TestReportErrorsServiceReportErrorEventError(t *testing.T) {
+	errCode := codes.Internal
+	mockReportErrors.err = grpc.Errorf(errCode, "test error")
+
+	c, err := NewReportErrorsClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var req *clouderrorreportingpb.ReportErrorEventRequest
+
+	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
+
+	_, err = c.ReportErrorEvent(context.Background(), req)
+
+	if c := grpc.Code(err); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
 }

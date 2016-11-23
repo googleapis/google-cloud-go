@@ -170,8 +170,8 @@ func LoggingLogPath(project, log string) string {
 	return path
 }
 
-// DeleteLog deletes a log and all its log entries.
-// The log will reappear if it receives new entries.
+// DeleteLog deletes all the log entries in a log.
+// The log reappears if it receives new entries.
 func (c *Client) DeleteLog(ctx context.Context, req *loggingpb.DeleteLogRequest) error {
 	md, _ := metadata.FromContext(ctx)
 	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
@@ -220,7 +220,10 @@ func (c *Client) ListLogEntries(ctx context.Context, req *loggingpb.ListLogEntri
 			resp, err = c.client.ListLogEntries(ctx, req)
 			return err
 		}, c.CallOptions.ListLogEntries...)
-		return resp.Entries, resp.NextPageToken, err
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.Entries, resp.NextPageToken, nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -252,7 +255,10 @@ func (c *Client) ListMonitoredResourceDescriptors(ctx context.Context, req *logg
 			resp, err = c.client.ListMonitoredResourceDescriptors(ctx, req)
 			return err
 		}, c.CallOptions.ListMonitoredResourceDescriptors...)
-		return resp.ResourceDescriptors, resp.NextPageToken, err
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.ResourceDescriptors, resp.NextPageToken, nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)

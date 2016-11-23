@@ -241,7 +241,10 @@ func (c *SubscriberClient) ListSubscriptions(ctx context.Context, req *pubsubpb.
 			resp, err = c.subscriberClient.ListSubscriptions(ctx, req)
 			return err
 		}, c.CallOptions.ListSubscriptions...)
-		return resp.Subscriptions, resp.NextPageToken, err
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.Subscriptions, resp.NextPageToken, nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
