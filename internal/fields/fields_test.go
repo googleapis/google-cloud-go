@@ -84,11 +84,11 @@ func TestFieldsNoTags(t *testing.T) {
 	c := NewCache(nil)
 	got := c.Fields(reflect.TypeOf(S1{}))
 	want := []*Field{
-		field("Anonymous", Anonymous(0), 5),
-		field("Em1", int(0), 3, 0),
-		field("Em4", int(0), 4, 2, 0),
 		field("Exported", int(0), 0),
 		field("Shadow", int(0), 2),
+		field("Em1", int(0), 3, 0),
+		field("Em4", int(0), 4, 2, 0),
+		field("Anonymous", Anonymous(0), 5),
 	}
 	if msg, ok := compareFields(got, want); !ok {
 		t.Error(msg)
@@ -181,11 +181,11 @@ func jsonTagParser(t reflect.StructTag) (name string, keep bool, other interface
 func TestFieldsWithTags(t *testing.T) {
 	got := NewCache(jsonTagParser).Fields(reflect.TypeOf(S2{}))
 	want := []*Field{
-		tfield("Dup", int(0), 6, 0),
 		field("NoTag", int(0), 0),
+		tfield("tag", int(0), 1),
 		tfield("anon", Anonymous(0), 2),
 		tfield("em", Embed{}, 4),
-		tfield("tag", int(0), 1),
+		tfield("Dup", int(0), 6, 0),
 	}
 	if msg, ok := compareFields(got, want); !ok {
 		t.Error(msg)
@@ -337,6 +337,11 @@ func TestMatchingField(t *testing.T) {
 		{"Abc", field("Abc", int(0), 1)},
 		{"AbC", field("AbC", int(0), 2)},
 		{"ABc", field("ABc", int(0), 0, 0)},
+		// If there are multiple matches but no exact match or tag,
+		// the first field wins, lexicographically by index.
+		// Here, "ABc" is at a deeper embedding level, but since S4 appears
+		// first in S3, its index precedes the other fields of S3.
+		{"abc", field("ABc", int(0), 0, 0)},
 		// Tag name takes precedence over untagged field of the same name.
 		// TODO(jba): add this case to TestFieldsWithTags.
 		{"Tag", tfield("Tag", int(0), 4)},

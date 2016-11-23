@@ -96,7 +96,8 @@ type fieldScan struct {
 
 // Fields returns all the exported fields of t, which must be a struct type. It
 // follows the standard Go rules for embedded fields, modified by the presence
-// of tags. The result is sorted by field name.
+// of tags. The result is sorted lexicographically by index.
+//
 // If not nil, the given parseTag function should extract and return a name
 // from the struct tag. This name is used instead of the field's declared name.
 //
@@ -126,9 +127,10 @@ func (c *Cache) Fields(t reflect.Type) List {
 // A List is a list of Fields.
 type List []Field
 
-// Match returns the field in the list whose name best matches the supplied name, nor nil
-// if no field does. If there is a field with the exact name, it is returned.
-// Otherwise the first field whose name matches case-insensitively is returned.
+// Match returns the field in the list whose name best matches the supplied
+// name, nor nil if no field does. If there is a field with the exact name, it
+// is returned. Otherwise the first field (sorted by index) whose name matches
+// case-insensitively is returned.
 func (l List) Match(name string) *Field {
 	return l.MatchBytes([]byte(name))
 }
@@ -203,6 +205,7 @@ func (c *Cache) typeFields(t reflect.Type) []Field {
 			out = append(out, dominant)
 		}
 	}
+	sort.Sort(byIndex(out))
 	return out
 }
 
@@ -350,6 +353,28 @@ func (x byName) Less(i, j int) bool {
 		}
 	}
 	return false
+}
+
+// byIndex sorts field by index sequence.
+type byIndex []Field
+
+func (x byIndex) Len() int { return len(x) }
+
+func (x byIndex) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
+
+func (x byIndex) Less(i, j int) bool {
+	xi := x[i].Index
+	xj := x[j].Index
+	ln := len(xi)
+	if l := len(xj); l < ln {
+		ln = l
+	}
+	for k := 0; k < ln; k++ {
+		if xi[k] != xj[k] {
+			return xi[k] < xj[k]
+		}
+	}
+	return len(xi) < len(xj)
 }
 
 // dominantField looks through the fields, all of which are known to have the
