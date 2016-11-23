@@ -16,6 +16,7 @@ package fields
 
 import (
 	"encoding/json"
+	"fmt"
 	"reflect"
 	"strings"
 	"testing"
@@ -62,24 +63,35 @@ type S1 struct {
 
 var intType = reflect.TypeOf(int(0))
 
+func field(name string, tval interface{}, index ...int) Field {
+	return Field{
+		Name:  name,
+		Type:  reflect.TypeOf(tval),
+		Index: index,
+	}
+}
+
+func tfield(name string, tval interface{}, index ...int) Field {
+	return Field{
+		Name:        name,
+		Type:        reflect.TypeOf(tval),
+		Index:       index,
+		NameFromTag: true,
+	}
+}
+
 func TestFieldsNoTags(t *testing.T) {
 	c := NewCache(nil)
 	got := c.Fields(reflect.TypeOf(S1{}))
 	want := []Field{
-		{Name: "Anonymous", Index: []int{5}, Type: reflect.TypeOf(Anonymous(0))},
-		{Name: "Em1", Index: []int{3, 0}, Type: intType},
-		{Name: "Em4", Index: []int{4, 2, 0}, Type: intType},
-		{Name: "Exported", Index: []int{0}, Type: intType},
-		{Name: "Shadow", Index: []int{2}, Type: intType},
+		field("Anonymous", Anonymous(0), 5),
+		field("Em1", int(0), 3, 0),
+		field("Em4", int(0), 4, 2, 0),
+		field("Exported", int(0), 0),
+		field("Shadow", int(0), 2),
 	}
-	if len(got) != len(want) {
-		t.Fatalf("got %d fields, want %d", len(got), len(want))
-	}
-	for i, g := range got {
-		w := want[i]
-		if !reflect.DeepEqual(got, want) {
-			t.Errorf("got %+v, want %+v", g, w)
-		}
+	if msg, ok := compareFields(got, want); !ok {
+		t.Error(msg)
 	}
 }
 
@@ -169,20 +181,14 @@ func jsonTagParser(t reflect.StructTag) (name string, keep bool, other interface
 func TestFieldsWithTags(t *testing.T) {
 	got := NewCache(jsonTagParser).Fields(reflect.TypeOf(S2{}))
 	want := []Field{
-		{Name: "Dup", NameFromTag: true, Index: []int{6, 0}, Type: intType},
-		{Name: "NoTag", Index: []int{0}, Type: intType},
-		{Name: "anon", NameFromTag: true, Index: []int{2}, Type: reflect.TypeOf(Anonymous(0))},
-		{Name: "em", NameFromTag: true, Index: []int{4}, Type: reflect.TypeOf(Embed{})},
-		{Name: "tag", NameFromTag: true, Index: []int{1}, Type: intType},
+		tfield("Dup", int(0), 6, 0),
+		field("NoTag", int(0), 0),
+		tfield("anon", Anonymous(0), 2),
+		tfield("em", Embed{}, 4),
+		tfield("tag", int(0), 1),
 	}
-	if len(got) != len(want) {
-		t.Fatalf("got %d fields, want %d", len(got), len(want))
-	}
-	for i, g := range got {
-		w := want[i]
-		if !reflect.DeepEqual(g, w) {
-			t.Errorf("got %+v, want %+v", g, w)
-		}
+	if msg, ok := compareFields(got, want); !ok {
+		t.Error(msg)
 	}
 }
 
@@ -279,6 +285,19 @@ func TestParsedTag(t *testing.T) {
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %+v, want %+v", got, want)
 	}
+}
+
+func compareFields(got, want []Field) (msg string, ok bool) {
+	if len(got) != len(want) {
+		return fmt.Sprintf("got %d fields, want %d", len(got), len(want)), false
+	}
+	for i, g := range got {
+		w := want[i]
+		if !reflect.DeepEqual(g, w) {
+			return fmt.Sprintf("got %+v, want %+v", g, w), false
+		}
+	}
+	return "", true
 }
 
 // Set the fields of dst from those of src.
