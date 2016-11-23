@@ -138,6 +138,20 @@ func TestIntegration_DatasetMetadata(t *testing.T) {
 	}
 }
 
+func TestIntegration_DatasetDelete(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	ds := client.Dataset("delete_test")
+	if err := ds.Create(ctx); err != nil && !hasStatusCode(err, http.StatusConflict) { // AlreadyExists is 409
+		t.Fatalf("creating dataset %s: %v", ds, err)
+	}
+	if err := ds.Delete(ctx); err != nil {
+		t.Fatalf("deleting dataset %s: %v", ds, err)
+	}
+}
+
 func TestIntegration_Tables(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
