@@ -249,6 +249,35 @@ func TestUnexportedAnonymousStruct(t *testing.T) {
 	}
 }
 
+func TestDominantField(t *testing.T) {
+	// With fields sorted by index length and then by tag presence,
+	// the dominant field is always the first. Make sure all error
+	// cases are caught.
+	for _, test := range []struct {
+		fields []Field
+		wantOK bool
+	}{
+		// A single field is OK.
+		{[]Field{{Index: []int{0}}}, true},
+		{[]Field{{Index: []int{0}, NameFromTag: true}}, true},
+		// A single field at top level is OK.
+		{[]Field{{Index: []int{0}}, {Index: []int{1, 0}}}, true},
+		{[]Field{{Index: []int{0}}, {Index: []int{1, 0}, NameFromTag: true}}, true},
+		{[]Field{{Index: []int{0}, NameFromTag: true}, {Index: []int{1, 0}, NameFromTag: true}}, true},
+		// A single tagged field is OK.
+		{[]Field{{Index: []int{0}, NameFromTag: true}, {Index: []int{1}}}, true},
+		// Two untagged fields at the same level is an error.
+		{[]Field{{Index: []int{0}}, {Index: []int{1}}}, false},
+		// Two tagged fields at the same level is an error.
+		{[]Field{{Index: []int{0}, NameFromTag: true}, {Index: []int{1}, NameFromTag: true}}, false},
+	} {
+		_, gotOK := dominantField(test.fields)
+		if gotOK != test.wantOK {
+			t.Errorf("%v: got %t, want %t", test.fields, gotOK, test.wantOK)
+		}
+	}
+}
+
 func TestIgnore(t *testing.T) {
 	type S struct {
 		X int `json:"-"`

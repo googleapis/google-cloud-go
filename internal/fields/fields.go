@@ -340,8 +340,11 @@ func newField(f reflect.StructField, tagName string, other interface{}, index []
 	return sf
 }
 
-// byName sorts field by name, breaking ties with depth, then breaking ties
-// with index sequence.
+// byName sorts fields using the following criteria, in order:
+// 1. name
+// 2. embedding depth
+// 3. tag presence (preferring a tagged field)
+// 4. index sequence.
 type byName []Field
 
 func (x byName) Len() int { return len(x) }
@@ -355,12 +358,10 @@ func (x byName) Less(i, j int) bool {
 	if len(x[i].Index) != len(x[j].Index) {
 		return len(x[i].Index) < len(x[j].Index)
 	}
-	for k, xik := range x[i].Index {
-		if xik != x[j].Index[k] {
-			return xik < x[j].Index[k]
-		}
+	if x[i].NameFromTag != x[j].NameFromTag {
+		return x[i].NameFromTag
 	}
-	return false
+	return byIndex(x).Less(i, j)
 }
 
 // byIndex sorts field by index sequence.
@@ -390,34 +391,12 @@ func (x byIndex) Less(i, j int) bool {
 // embedding rules, modified by the presence of tags. If there are multiple
 // top-level fields, the boolean will be false: This condition is an error in
 // Go and we skip all the fields.
-func dominantField(fields []Field) (Field, bool) {
-	// The fields are sorted in increasing index-length order. The winner
-	// must therefore be one with the shortest index length. Drop all
-	// longer entries, which is easy: just truncate the slice.
-	length := len(fields[0].Index)
-	tagged := -1 // Index of first tagged field.
-	for i, f := range fields {
-		if len(f.Index) > length {
-			fields = fields[:i]
-			break
-		}
-		if f.NameFromTag {
-			if tagged >= 0 {
-				// Multiple tagged fields at the same level: conflict.
-				// Return no field.
-				return Field{}, false
-			}
-			tagged = i
-		}
-	}
-	if tagged >= 0 {
-		return fields[tagged], true
-	}
-	// All remaining fields have the same length. If there's more than one,
-	// we have a conflict (two fields named "X" at the same level) and we
-	// return no field.
-	if len(fields) > 1 {
+func dominantField(fs []Field) (Field, bool) {
+	// The fields are sorted in increasing index-length order, then by presence of tag.
+	// That means that the first field is the dominant one. We need only check
+	// for error cases: two fields at top level, either both tagged or neither tagged.
+	if len(fs) > 1 && len(fs[0].Index) == len(fs[1].Index) && fs[0].NameFromTag == fs[1].NameFromTag {
 		return Field{}, false
 	}
-	return fields[0], true
+	return fs[0], true
 }
