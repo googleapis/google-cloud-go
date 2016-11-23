@@ -124,15 +124,8 @@ func TestAgainstJSONEncodingNoTags(t *testing.T) {
 		},
 		Anonymous: Anonymous(15),
 	}
-	bytes, err := json.Marshal(s1)
-	if err != nil {
-		t.Fatal(err)
-	}
 	var want S1
-	if err := json.Unmarshal(bytes, &want); err != nil {
-		t.Fatal(err)
-	}
-
+	jsonRoundTrip(t, s1, &want)
 	var got S1
 	got.embed2 = &embed2{} // need this because reflection won't create it
 	fields := NewCache(nil).Fields(reflect.TypeOf(got))
@@ -210,15 +203,8 @@ func TestAgainstJSONEncodingWithTags(t *testing.T) {
 			Z: 8,
 		},
 	}
-	bytes, err := json.Marshal(s2)
-	if err != nil {
-		t.Fatal(err)
-	}
 	var want S2
-	if err := json.Unmarshal(bytes, &want); err != nil {
-		t.Fatal(err)
-	}
-
+	jsonRoundTrip(t, s2, &want)
 	var got S2
 	fields := NewCache(jsonTagParser).Fields(reflect.TypeOf(got))
 	setFields(fields, &got, s2)
@@ -313,6 +299,16 @@ func setFields(fields []Field, dst, src interface{}) {
 	}
 }
 
+func jsonRoundTrip(t *testing.T, in, out interface{}) {
+	bytes, err := json.Marshal(in)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(bytes, out); err != nil {
+		t.Fatal(err)
+	}
+}
+
 type S3 struct {
 	S4
 	Abc        int
@@ -352,6 +348,40 @@ func TestMatchingField(t *testing.T) {
 	} {
 		if got := fields.Match(test.name); !reflect.DeepEqual(got, test.want) {
 			t.Errorf("match %q:\ngot  %+v\nwant %+v", test.name, got, test.want)
+		}
+	}
+}
+
+func TestAgainstJSONMatchingField(t *testing.T) {
+	s3 := S3{
+		S4:         S4{ABc: 1, Y: 2},
+		Abc:        3,
+		AbC:        4,
+		Tag:        5,
+		X:          6,
+		unexported: 7,
+	}
+	var want S3
+	jsonRoundTrip(t, s3, &want)
+	v := reflect.ValueOf(want)
+	fields := NewCache(jsonTagParser).Fields(reflect.TypeOf(S3{}))
+	for _, test := range []struct {
+		name string
+		got  int
+	}{
+		{"Abc", 3},
+		{"AbC", 4},
+		{"ABc", 1},
+		{"abc", 1},
+		{"Tag", 6},
+	} {
+		f := fields.Match(test.name)
+		if f == nil {
+			t.Fatalf("%s: no match", test.name)
+		}
+		w := v.FieldByIndex(f.Index).Interface()
+		if test.got != w {
+			t.Errorf("%s: got %d, want %d", test.name, test.got, w)
 		}
 	}
 }
