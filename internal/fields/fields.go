@@ -12,6 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package fields provides a view of the fields of a struct that follows the Go
+// rules, amended to consider tags and case insensitivity.
+//
+// Usage
+//
+// First define a function that interprets tags:
+//
+//   func parseTag(st reflect.StructTag) (name string, keep bool, other interface{}) { ... }
+//
+// The function's return values describe whether to ignore the field
+// completely or provide an alternate name, as well as other data from the
+// parse that is stored to avoid re-parsing.
+//
+// Next, construct a Cache, passing your function. As its name suggests, a
+// Cache remembers field information for a type, so subsequent calls with the
+// same type are very fast.
+//
+//    cache := fields.NewCache(parseTag)
+//
+// To get the fields of a struct type as determined by the above rules, call
+// the Fields method:
+//
+//    fields := cache.Fields(reflect.TypeOf(MyStruct{}))
 package fields
 
 import (
