@@ -264,12 +264,12 @@ func TestParsedTag(t *testing.T) {
 		X int `json:"name,omitempty"`
 	}
 	got := NewCache(jsonTagParser).Fields(reflect.TypeOf(S{}))
-	want := List{
+	want := []*Field{
 		{Name: "name", NameFromTag: true, Type: intType,
 			Index: []int{0}, ParsedTag: []string{"omitempty"}},
 	}
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("got\n%+v\nwant\n%+v", got, want)
+	if msg, ok := compareFields(got, want); !ok {
+		t.Error(msg)
 	}
 }
 
@@ -279,11 +279,23 @@ func compareFields(got []Field, want []*Field) (msg string, ok bool) {
 	}
 	for i, g := range got {
 		w := *want[i]
-		if !reflect.DeepEqual(g, w) {
+		if !fieldsEqual(&g, &w) {
 			return fmt.Sprintf("got %+v, want %+v", g, w), false
 		}
 	}
 	return "", true
+}
+
+// Need this because Field contains a function, which cannot be compared even
+// by reflect.DeepEqual.
+func fieldsEqual(f1, f2 *Field) bool {
+	if f1 == nil || f2 == nil {
+		return f1 == f2
+	}
+	return f1.Name == f2.Name &&
+		f1.NameFromTag == f2.NameFromTag &&
+		f1.Type == f2.Type &&
+		reflect.DeepEqual(f1.ParsedTag, f2.ParsedTag)
 }
 
 // Set the fields of dst from those of src.
@@ -346,7 +358,7 @@ func TestMatchingField(t *testing.T) {
 		// Untagged embedded structs disappear.
 		{"S4", nil},
 	} {
-		if got := fields.Match(test.name); !reflect.DeepEqual(got, test.want) {
+		if got := fields.Match(test.name); !fieldsEqual(got, test.want) {
 			t.Errorf("match %q:\ngot  %+v\nwant %+v", test.name, got, test.want)
 		}
 	}

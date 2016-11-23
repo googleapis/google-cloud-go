@@ -63,6 +63,9 @@ type Field struct {
 	Type        reflect.Type // field type
 	Index       []int        // index sequence, for reflect.Value.FieldByIndex
 	ParsedTag   interface{}  // third return value of the parseTag function
+
+	nameBytes []byte
+	equalFold func(s, t []byte) bool
 }
 
 // A Cache records information about the fields of struct types.
@@ -140,11 +143,10 @@ func (l List) MatchBytes(name []byte) *Field {
 	var f *Field
 	for i := range l {
 		ff := &l[i]
-		nameBytes := []byte(ff.Name)
-		if bytes.Equal(nameBytes, name) {
+		if bytes.Equal(ff.nameBytes, name) {
 			return ff
 		}
-		if f == nil && bytes.EqualFold(nameBytes, name) {
+		if f == nil && ff.equalFold(ff.nameBytes, name) {
 			f = ff
 		}
 	}
@@ -288,19 +290,7 @@ func (c *Cache) listFields(t reflect.Type) []Field {
 					if !exported {
 						continue
 					}
-					name := tagName
-					if name == "" {
-						name = f.Name
-					}
-					sf := Field{
-						Name:        name,
-						NameFromTag: tagName != "",
-						Type:        f.Type,
-						ParsedTag:   other,
-					}
-					sf.Index = append(sf.Index, scan.index...)
-					sf.Index = append(sf.Index, i)
-					fields = append(fields, sf)
+					fields = append(fields, newField(f, tagName, other, scan.index, i))
 					if count[t] > 1 {
 						// If there were multiple instances, add a second,
 						// so that the annihilation code will see a duplicate.
@@ -330,6 +320,24 @@ func (c *Cache) listFields(t reflect.Type) []Field {
 		}
 	}
 	return fields
+}
+
+func newField(f reflect.StructField, tagName string, other interface{}, index []int, i int) Field {
+	name := tagName
+	if name == "" {
+		name = f.Name
+	}
+	sf := Field{
+		Name:        name,
+		NameFromTag: tagName != "",
+		Type:        f.Type,
+		ParsedTag:   other,
+		nameBytes:   []byte(name),
+	}
+	sf.equalFold = foldFunc(sf.nameBytes)
+	sf.Index = append(sf.Index, index...)
+	sf.Index = append(sf.Index, i)
+	return sf
 }
 
 // byName sorts field by name, breaking ties with depth, then breaking ties
