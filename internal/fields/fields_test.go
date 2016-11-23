@@ -63,16 +63,16 @@ type S1 struct {
 
 var intType = reflect.TypeOf(int(0))
 
-func field(name string, tval interface{}, index ...int) Field {
-	return Field{
+func field(name string, tval interface{}, index ...int) *Field {
+	return &Field{
 		Name:  name,
 		Type:  reflect.TypeOf(tval),
 		Index: index,
 	}
 }
 
-func tfield(name string, tval interface{}, index ...int) Field {
-	return Field{
+func tfield(name string, tval interface{}, index ...int) *Field {
+	return &Field{
 		Name:        name,
 		Type:        reflect.TypeOf(tval),
 		Index:       index,
@@ -83,7 +83,7 @@ func tfield(name string, tval interface{}, index ...int) Field {
 func TestFieldsNoTags(t *testing.T) {
 	c := NewCache(nil)
 	got := c.Fields(reflect.TypeOf(S1{}))
-	want := []Field{
+	want := []*Field{
 		field("Anonymous", Anonymous(0), 5),
 		field("Em1", int(0), 3, 0),
 		field("Em4", int(0), 4, 2, 0),
@@ -180,7 +180,7 @@ func jsonTagParser(t reflect.StructTag) (name string, keep bool, other interface
 
 func TestFieldsWithTags(t *testing.T) {
 	got := NewCache(jsonTagParser).Fields(reflect.TypeOf(S2{}))
-	want := []Field{
+	want := []*Field{
 		tfield("Dup", int(0), 6, 0),
 		field("NoTag", int(0), 0),
 		tfield("anon", Anonymous(0), 2),
@@ -278,21 +278,21 @@ func TestParsedTag(t *testing.T) {
 		X int `json:"name,omitempty"`
 	}
 	got := NewCache(jsonTagParser).Fields(reflect.TypeOf(S{}))
-	want := []Field{
+	want := List{
 		{Name: "name", NameFromTag: true, Type: intType,
 			Index: []int{0}, ParsedTag: []string{"omitempty"}},
 	}
 	if !reflect.DeepEqual(got, want) {
-		t.Errorf("got %+v, want %+v", got, want)
+		t.Errorf("got\n%+v\nwant\n%+v", got, want)
 	}
 }
 
-func compareFields(got, want []Field) (msg string, ok bool) {
+func compareFields(got []Field, want []*Field) (msg string, ok bool) {
 	if len(got) != len(want) {
 		return fmt.Sprintf("got %d fields, want %d", len(got), len(want)), false
 	}
 	for i, g := range got {
-		w := want[i]
+		w := *want[i]
 		if !reflect.DeepEqual(g, w) {
 			return fmt.Sprintf("got %+v, want %+v", g, w), false
 		}
@@ -310,5 +310,43 @@ func setFields(fields []Field, dst, src interface{}) {
 		fdst := vdst.FieldByIndex(f.Index)
 		fsrc := vsrc.FieldByIndex(f.Index)
 		fdst.Set(fsrc)
+	}
+}
+
+type S3 struct {
+	S4
+	Abc        int
+	AbC        int
+	Tag        int
+	X          int `json:"Tag"`
+	unexported int
+}
+
+type S4 struct {
+	ABc int
+	Y   int `json:"Abc"` // ignored because of top-level Abc
+}
+
+func TestMatchingField(t *testing.T) {
+	fields := NewCache(jsonTagParser).Fields(reflect.TypeOf(S3{}))
+	for _, test := range []struct {
+		name string
+		want *Field
+	}{
+		// Exact match wins.
+		{"Abc", field("Abc", int(0), 1)},
+		{"AbC", field("AbC", int(0), 2)},
+		{"ABc", field("ABc", int(0), 0, 0)},
+		// Tag name takes precedence over untagged field of the same name.
+		// TODO(jba): add this case to TestFieldsWithTags.
+		{"Tag", tfield("Tag", int(0), 4)},
+		// Unexported fields disappear.
+		{"unexported", nil},
+		// Untagged embedded structs disappear.
+		{"S4", nil},
+	} {
+		if got := fields.Match(test.name); !reflect.DeepEqual(got, test.want) {
+			t.Errorf("match %q:\ngot  %+v\nwant %+v", test.name, got, test.want)
+		}
 	}
 }

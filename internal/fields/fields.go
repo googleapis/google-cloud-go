@@ -35,9 +35,21 @@
 // the Fields method:
 //
 //    fields := cache.Fields(reflect.TypeOf(MyStruct{}))
+//
+// The return value can be treated as a slice of Fields.
+//
+// Given a string, such as a key or column name obtained during unmarshalling,
+// call Match on the list of fields to find a field whose name is the best
+// match:
+//
+//   field := fields.Match(name)
+//
+// Match looks for an exact match first, then falls back to a case-insensitive
+// comparison.
 package fields
 
 import (
+	"bytes"
 	"reflect"
 	"sort"
 	"sync"
@@ -104,11 +116,37 @@ type fieldScan struct {
 // If more than one field with the same name exists at the same level of embedding,
 // but exactly one of them is tagged, then the tagged field is reported and the others
 // are ignored.
-func (c *Cache) Fields(t reflect.Type) []Field {
+func (c *Cache) Fields(t reflect.Type) List {
 	if t.Kind() != reflect.Struct {
 		panic("fields: Fields of non-struct type")
 	}
-	return c.cachedTypeFields(t)
+	return List(c.cachedTypeFields(t))
+}
+
+// A List is a list of Fields.
+type List []Field
+
+// Match returns the field in the list whose name best matches the supplied name, nor nil
+// if no field does. If there is a field with the exact name, it is returned.
+// Otherwise the first field whose name matches case-insensitively is returned.
+func (l List) Match(name string) *Field {
+	return l.MatchBytes([]byte(name))
+}
+
+// MatchBytes is identical to Match, except that the argument is a byte slice.
+func (l List) MatchBytes(name []byte) *Field {
+	var f *Field
+	for i := range l {
+		ff := &l[i]
+		nameBytes := []byte(ff.Name)
+		if bytes.Equal(nameBytes, name) {
+			return ff
+		}
+		if f == nil && bytes.EqualFold(nameBytes, name) {
+			f = ff
+		}
+	}
+	return f
 }
 
 // cachedTypeFields is like typeFields but uses a cache to avoid repeated work.
