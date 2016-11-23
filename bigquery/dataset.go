@@ -60,6 +60,11 @@ func (d *Dataset) Create(ctx context.Context) error {
 	return d.c.service.insertDataset(ctx, d.DatasetID, d.ProjectID)
 }
 
+// Delete deletes the dataset.
+func (d *Dataset) Delete(ctx context.Context) error {
+	return d.c.service.deleteDataset(ctx, d.DatasetID, d.ProjectID)
+}
+
 // Metadata fetches the metadata for the dataset.
 func (d *Dataset) Metadata(ctx context.Context) (*DatasetMetadata, error) {
 	return d.c.service.getDatasetMetadata(ctx, d.ProjectID, d.DatasetID)

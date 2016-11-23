@@ -52,6 +52,7 @@ type service interface {
 
 	// Datasets
 	insertDataset(ctx context.Context, datasetID, projectID string) error
+	deleteDataset(ctx context.Context, datasetID, projectID string) error
 	getDatasetMetadata(ctx context.Context, projectID, datasetID string) (*DatasetMetadata, error)
 
 	// Misc
@@ -527,6 +528,10 @@ func (s *bigqueryService) insertDataset(ctx context.Context, datasetID, projectI
 	}
 	_, err := s.s.Datasets.Insert(projectID, ds).Context(ctx).Do()
 	return err
+}
+
+func (s *bigqueryService) deleteDataset(ctx context.Context, datasetID, projectID string) error {
+	return s.s.Datasets.Delete(projectID, datasetID).Context(ctx).Do()
 }
 
 func (s *bigqueryService) getDatasetMetadata(ctx context.Context, projectID, datasetID string) (*DatasetMetadata, error) {
