@@ -248,7 +248,10 @@ func (c *PublisherClient) ListTopics(ctx context.Context, req *pubsubpb.ListTopi
 			resp, err = c.publisherClient.ListTopics(ctx, req)
 			return err
 		}, c.CallOptions.ListTopics...)
-		return resp.Topics, resp.NextPageToken, err
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.Topics, resp.NextPageToken, nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -280,7 +283,10 @@ func (c *PublisherClient) ListTopicSubscriptions(ctx context.Context, req *pubsu
 			resp, err = c.publisherClient.ListTopicSubscriptions(ctx, req)
 			return err
 		}, c.CallOptions.ListTopicSubscriptions...)
-		return resp.Subscriptions, resp.NextPageToken, err
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.Subscriptions, resp.NextPageToken, nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)

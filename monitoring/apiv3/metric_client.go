@@ -198,7 +198,10 @@ func (c *MetricClient) ListMonitoredResourceDescriptors(ctx context.Context, req
 			resp, err = c.metricClient.ListMonitoredResourceDescriptors(ctx, req)
 			return err
 		}, c.CallOptions.ListMonitoredResourceDescriptors...)
-		return resp.ResourceDescriptors, resp.NextPageToken, err
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.ResourceDescriptors, resp.NextPageToken, nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -246,7 +249,10 @@ func (c *MetricClient) ListMetricDescriptors(ctx context.Context, req *monitorin
 			resp, err = c.metricClient.ListMetricDescriptors(ctx, req)
 			return err
 		}, c.CallOptions.ListMetricDescriptors...)
-		return resp.MetricDescriptors, resp.NextPageToken, err
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.MetricDescriptors, resp.NextPageToken, nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -325,7 +331,10 @@ func (c *MetricClient) ListTimeSeries(ctx context.Context, req *monitoringpb.Lis
 			resp, err = c.metricClient.ListTimeSeries(ctx, req)
 			return err
 		}, c.CallOptions.ListTimeSeries...)
-		return resp.TimeSeries, resp.NextPageToken, err
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.TimeSeries, resp.NextPageToken, nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)

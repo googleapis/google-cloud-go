@@ -177,7 +177,10 @@ func (c *MetricsClient) ListLogMetrics(ctx context.Context, req *loggingpb.ListL
 			resp, err = c.metricsClient.ListLogMetrics(ctx, req)
 			return err
 		}, c.CallOptions.ListLogMetrics...)
-		return resp.Metrics, resp.NextPageToken, err
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.Metrics, resp.NextPageToken, nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)

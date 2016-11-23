@@ -190,7 +190,10 @@ func (c *GroupClient) ListGroups(ctx context.Context, req *monitoringpb.ListGrou
 			resp, err = c.groupClient.ListGroups(ctx, req)
 			return err
 		}, c.CallOptions.ListGroups...)
-		return resp.Group, resp.NextPageToken, err
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.Group, resp.NextPageToken, nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -283,7 +286,10 @@ func (c *GroupClient) ListGroupMembers(ctx context.Context, req *monitoringpb.Li
 			resp, err = c.groupClient.ListGroupMembers(ctx, req)
 			return err
 		}, c.CallOptions.ListGroupMembers...)
-		return resp.Members, resp.NextPageToken, err
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.Members, resp.NextPageToken, nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)

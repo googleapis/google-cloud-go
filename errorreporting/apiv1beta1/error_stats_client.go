@@ -157,7 +157,10 @@ func (c *ErrorStatsClient) ListGroupStats(ctx context.Context, req *clouderrorre
 			resp, err = c.errorStatsClient.ListGroupStats(ctx, req)
 			return err
 		}, c.CallOptions.ListGroupStats...)
-		return resp.ErrorGroupStats, resp.NextPageToken, err
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.ErrorGroupStats, resp.NextPageToken, nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -189,7 +192,10 @@ func (c *ErrorStatsClient) ListEvents(ctx context.Context, req *clouderrorreport
 			resp, err = c.errorStatsClient.ListEvents(ctx, req)
 			return err
 		}, c.CallOptions.ListEvents...)
-		return resp.ErrorEvents, resp.NextPageToken, err
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.ErrorEvents, resp.NextPageToken, nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
