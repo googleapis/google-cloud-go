@@ -207,6 +207,6 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 		f, err := strconv.ParseFloat(val, 64)
 		return Value(time.Unix(0, int64(f*1e9))), err
 	default:
-		return nil, errors.New("unrecognized type")
+		return nil, fmt.Errorf("unrecognized type: %s", typ)
 	}
 }
