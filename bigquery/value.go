@@ -15,6 +15,7 @@
 package bigquery
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"strconv"
@@ -194,6 +195,8 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 	switch typ {
 	case StringFieldType:
 		return val, nil
+	case BytesFieldType:
+		return base64.StdEncoding.DecodeString(val)
 	case IntegerFieldType:
 		return strconv.ParseInt(val, 10, 64)
 	case FloatFieldType:

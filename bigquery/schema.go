@@ -106,6 +106,7 @@ type FieldType string
 
 const (
 	StringFieldType    FieldType = "STRING"
+	BytesFieldType     FieldType = "BYTES"
 	IntegerFieldType   FieldType = "INTEGER"
 	FloatFieldType     FieldType = "FLOAT"
 	BooleanFieldType   FieldType = "BOOLEAN"

@@ -15,6 +15,7 @@
 package bigquery
 
 import (
+	"encoding/base64"
 	"fmt"
 	"reflect"
 	"testing"
@@ -29,6 +30,7 @@ func TestConvertBasicValues(t *testing.T) {
 		{Type: IntegerFieldType},
 		{Type: FloatFieldType},
 		{Type: BooleanFieldType},
+		{Type: BytesFieldType},
 	}
 	row := &bq.TableRow{
 		F: []*bq.TableCell{
@@ -36,13 +38,14 @@ func TestConvertBasicValues(t *testing.T) {
 			{V: "1"},
 			{V: "1.2"},
 			{V: "true"},
+			{V: base64.StdEncoding.EncodeToString([]byte("foo"))},
 		},
 	}
 	got, err := convertRow(row, schema)
 	if err != nil {
 		t.Fatalf("error converting: %v", err)
 	}
-	want := []Value{"a", int64(1), 1.2, true}
+	want := []Value{"a", int64(1), 1.2, true, []byte("foo")}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("converting basic values: got:\n%v\nwant:\n%v", got, want)
 	}
