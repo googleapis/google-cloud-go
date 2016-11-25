@@ -88,6 +88,13 @@ type QueryConfig struct {
 	// UseStandardSQL causes the query to use standard SQL.
 	// The default is false (using legacy SQL).
 	UseStandardSQL bool
+
+	// Parameters is a list of query parameters. The presence of parameters
+	// implies the use of standard SQL.
+	// If the query uses positional syntax ("?"), then no parameter may have a name.
+	// If the query uses named syntax ("@p"), then all parameters must have names.
+	// It is illegal to mix positional and named syntax.
+	Parameters []QueryParameter
 }
 
 // QueryPriority species a priority with which a query is to be executed.
@@ -97,6 +104,25 @@ const (
 	BatchPriority       QueryPriority = "BATCH"
 	InteractivePriority QueryPriority = "INTERACTIVE"
 )
+
+type QueryParameter struct {
+	// Name is used for named parameter mode.
+	// It must match the name in the query case-insensitively.
+	Name string
+
+	// Value is the value of the parameter.
+	// The following Go types are supported, with their corresponding
+	// Bigquery types:
+	// int, int8, int16, int32, int64, uint8, uint16, uint32: INT64
+	//   Note that uint, uint64 and uintptr are not supported, because
+	//   they may contain values that cannot fit into a 64-bit signed integer.
+	// float32, float64: FLOAT64
+	// bool: BOOL
+	// string: STRING
+	// []byte: BYTES
+	// time.Time: TIMESTAMP
+	Value interface{}
+}
 
 // A Query queries data from a BigQuery table. Use Client.Query to create a Query.
 type Query struct {
@@ -122,7 +148,9 @@ func (q *Query) Run(ctx context.Context) (*Job, error) {
 	}
 	setJobRef(job, q.JobID, q.client.projectID)
 
-	q.QueryConfig.populateJobQueryConfig(job.Configuration.Query)
+	if err := q.QueryConfig.populateJobQueryConfig(job.Configuration.Query); err != nil {
+		return nil, err
+	}
 	j, err := q.client.service.insertJob(ctx, q.client.projectID, &insertJobConf{job: job})
 	if err != nil {
 		return nil, err
@@ -131,7 +159,7 @@ func (q *Query) Run(ctx context.Context) (*Job, error) {
 	return j, nil
 }
 
-func (q *QueryConfig) populateJobQueryConfig(conf *bq.JobConfigurationQuery) {
+func (q *QueryConfig) populateJobQueryConfig(conf *bq.JobConfigurationQuery) error {
 	conf.Query = q.Q
 
 	if len(q.TableDefinitions) > 0 {
@@ -168,7 +196,7 @@ func (q *QueryConfig) populateJobQueryConfig(conf *bq.JobConfigurationQuery) {
 	if q.MaxBytesBilled >= 1 {
 		conf.MaximumBytesBilled = q.MaxBytesBilled
 	}
-	if q.UseStandardSQL {
+	if q.UseStandardSQL || len(q.Parameters) > 0 {
 		conf.UseLegacySql = false
 		conf.ForceSendFields = append(conf.ForceSendFields, "UseLegacySql")
 	}
@@ -176,4 +204,21 @@ func (q *QueryConfig) populateJobQueryConfig(conf *bq.JobConfigurationQuery) {
 	if q.Dst != nil && !q.Dst.implicitTable() {
 		conf.DestinationTable = q.Dst.tableRefProto()
 	}
+	for _, p := range q.Parameters {
+		pv, err := paramValue(p.Value)
+		if err != nil {
+			return err
+		}
+		pt, err := paramType(p.Value)
+		if err != nil {
+			return err
+		}
+		qp := &bq.QueryParameter{
+			Name:           p.Name,
+			ParameterValue: &pv,
+			ParameterType:  pt,
+		}
+		conf.QueryParameters = append(conf.QueryParameters, qp)
+	}
+	return nil
 }

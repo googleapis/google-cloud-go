@@ -48,6 +48,13 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func getClient(t *testing.T) *Client {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	return client
+}
+
 // If integration tests will be run, create a unique bucket for them.
 func initIntegrationTest() {
 	flag.Parse() // needed for testing.Short()
