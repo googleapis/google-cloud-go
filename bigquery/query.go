@@ -123,6 +123,8 @@ type QueryParameter struct {
 	// string: STRING
 	// []byte: BYTES
 	// time.Time: TIMESTAMP
+	// Arrays and slices of the above.
+	// Structs of the above. Only the exported fields are used.
 	Value interface{}
 }
 
@@ -207,7 +209,7 @@ func (q *QueryConfig) populateJobQueryConfig(conf *bq.JobConfigurationQuery) err
 		conf.DestinationTable = q.Dst.tableRefProto()
 	}
 	for _, p := range q.Parameters {
-		pv, err := paramValue(p.Value)
+		pv, err := paramValue(reflect.ValueOf(p.Value))
 		if err != nil {
 			return err
 		}
