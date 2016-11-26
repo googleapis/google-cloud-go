@@ -41,45 +41,94 @@ var scalarTests = []struct {
 		"2016-03-20 04:22:09.000005-01:02"},
 }
 
+type S1 struct {
+	A int
+	B *S2
+	C bool
+}
+
+type S2 struct {
+	D string
+	e int
+}
+
+var s1 = S1{
+	A: 1,
+	B: &S2{D: "s"},
+	C: true,
+}
+
+func sval(s string) bq.QueryParameterValue {
+	return bq.QueryParameterValue{Value: s}
+}
+
 func TestParamValueScalar(t *testing.T) {
 	for _, test := range scalarTests {
-		got, err := paramValue(test.val)
+		got, err := paramValue(reflect.ValueOf(test.val))
 		if err != nil {
 			t.Errorf("%v: got %v, want nil", test.val, err)
 			continue
 		}
-		if got.ArrayValues != nil {
-			t.Errorf("%v, ArrayValues: got %v, expected nil", test.val, got.ArrayValues)
-		}
-		if got.StructValues != nil {
-			t.Errorf("%v, StructValues: got %v, expected nil", test.val, got.StructValues)
-		}
-		if got.Value != test.want {
-			t.Errorf("%v: got %q, want %q", test.val, got.Value, test.want)
+		want := sval(test.want)
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("%v:\ngot  %+v\nwant %+v", test.val, got, want)
 		}
 	}
 }
 
 func TestParamValueArray(t *testing.T) {
+	qpv := bq.QueryParameterValue{ArrayValues: []*bq.QueryParameterValue{
+		{Value: "1"},
+		{Value: "2"},
+	},
+	}
 	for _, test := range []struct {
 		val  interface{}
-		want []string
+		want bq.QueryParameterValue
 	}{
-		{[]int(nil), []string{}},
-		{[]int{}, []string{}},
-		{[]int{1, 2}, []string{"1", "2"}},
-		{[3]int{1, 2, 3}, []string{"1", "2", "3"}},
+		{[]int(nil), bq.QueryParameterValue{}},
+		{[]int{}, bq.QueryParameterValue{}},
+		{[]int{1, 2}, qpv},
+		{[2]int{1, 2}, qpv},
 	} {
-		got, err := paramValue(test.val)
+		got, err := paramValue(reflect.ValueOf(test.val))
 		if err != nil {
 			t.Fatal(err)
 		}
-		var want bq.QueryParameterValue
-		for _, s := range test.want {
-			want.ArrayValues = append(want.ArrayValues, &bq.QueryParameterValue{Value: s})
+		if !reflect.DeepEqual(got, test.want) {
+			t.Errorf("%#v:\ngot  %+v\nwant %+v", test.val, got, test.want)
 		}
-		if !reflect.DeepEqual(got, want) {
-			t.Errorf("%#v:\ngot  %+v\nwant %+v", test.val, got, want)
+	}
+}
+
+func TestParamValueStruct(t *testing.T) {
+	got, err := paramValue(reflect.ValueOf(s1))
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := bq.QueryParameterValue{
+		StructValues: map[string]bq.QueryParameterValue{
+			"A": sval("1"),
+			"B": bq.QueryParameterValue{
+				StructValues: map[string]bq.QueryParameterValue{
+					"D": sval("s"),
+				},
+			},
+			"C": sval("true"),
+		},
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got  %+v\nwant %+v", got, want)
+	}
+}
+
+func TestParamValueErrors(t *testing.T) {
+	// paramValue lets a few invalid types through, but paramType catches them.
+	// Since we never call one without the other that's fine.
+	for _, val := range []interface{}{nil, new([]int)} {
+		_, err := paramValue(reflect.ValueOf(val))
+		if err == nil {
+			t.Errorf("%v (%T): got nil, want error", val, val)
 		}
 	}
 }
@@ -101,6 +150,19 @@ func TestParamType(t *testing.T) {
 		{[]byte("foo"), bytesParamType},
 		{[]int{}, &bq.QueryParameterType{Type: "ARRAY", ArrayType: int64ParamType}},
 		{[3]bool{}, &bq.QueryParameterType{Type: "ARRAY", ArrayType: boolParamType}},
+		{S1{}, &bq.QueryParameterType{
+			Type: "STRUCT",
+			StructTypes: []*bq.QueryParameterTypeStructTypes{
+				{Name: "A", Type: int64ParamType},
+				{Name: "B", Type: &bq.QueryParameterType{
+					Type: "STRUCT",
+					StructTypes: []*bq.QueryParameterTypeStructTypes{
+						{Name: "D", Type: stringParamType},
+					},
+				}},
+				{Name: "C", Type: boolParamType},
+			},
+		}},
 	} {
 		got, err := paramType(reflect.TypeOf(test.val))
 		if err != nil {
@@ -108,6 +170,17 @@ func TestParamType(t *testing.T) {
 		}
 		if !reflect.DeepEqual(got, test.want) {
 			t.Errorf("%v (%T): got %v, want %v", test.val, test.val, got, test.want)
+		}
+	}
+}
+
+func TestParamTypeErrors(t *testing.T) {
+	for _, val := range []interface{}{
+		nil, uint(0), new([]int), make(chan int),
+	} {
+		_, err := paramType(reflect.TypeOf(val))
+		if err == nil {
+			t.Errorf("%v (%T): got nil, want error", val, val)
 		}
 	}
 }
@@ -125,7 +198,7 @@ func TestIntegration_ScalarParam(t *testing.T) {
 	}
 }
 
-func TestIntegration_ArrayParam(t *testing.T) {
+func TestIntegration_OtherParam(t *testing.T) {
 	c := getClient(t)
 	for _, test := range []struct {
 		val  interface{}
@@ -135,6 +208,8 @@ func TestIntegration_ArrayParam(t *testing.T) {
 		{[]int{}, []Value(nil)},
 		{[]int{1, 2}, []Value{int64(1), int64(2)}},
 		{[3]int{1, 2, 3}, []Value{int64(1), int64(2), int64(3)}},
+		{S1{}, []Value{int64(0), nil, false}},
+		{s1, []Value{int64(1), []Value{"s"}, true}},
 	} {
 		got, err := paramRoundTrip(c, test.val)
 		if err != nil {

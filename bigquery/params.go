@@ -16,15 +16,20 @@ package bigquery
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"reflect"
 	"time"
+
+	"cloud.google.com/go/internal/fields"
 
 	bq "google.golang.org/api/bigquery/v2"
 )
 
 // See https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types#timestamp-type.
 var timestampFormat = "2006-01-02 15:04:05.999999-07:00"
+
+var fieldCache = fields.NewCache(nil)
 
 var (
 	int64ParamType     = &bq.QueryParameterType{Type: "INT64"}
@@ -38,55 +43,118 @@ var (
 var timeType = reflect.TypeOf(time.Time{})
 
 func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
+	if t == nil {
+		return nil, errors.New("bigquery: nil parameter")
+	}
+	if t == timeType {
+		return timestampParamType, nil
+	}
 	switch t.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint8, reflect.Uint16, reflect.Uint32:
 		return int64ParamType, nil
+
 	case reflect.Float32, reflect.Float64:
 		return float64ParamType, nil
+
 	case reflect.Bool:
 		return boolParamType, nil
+
 	case reflect.String:
 		return stringParamType, nil
-	case reflect.Slice, reflect.Array:
-		if t.Kind() == reflect.Slice && t.Elem().Kind() == reflect.Uint8 {
+
+	case reflect.Slice:
+		if t.Elem().Kind() == reflect.Uint8 {
 			return bytesParamType, nil
 		}
+		fallthrough
+
+	case reflect.Array:
 		et, err := paramType(t.Elem())
 		if err != nil {
 			return nil, err
 		}
 		return &bq.QueryParameterType{Type: "ARRAY", ArrayType: et}, nil
+
+	case reflect.Ptr:
+		if t.Elem().Kind() != reflect.Struct {
+			break
+		}
+		t = t.Elem()
+		fallthrough
+
+	case reflect.Struct:
+		var fts []*bq.QueryParameterTypeStructTypes
+		for _, f := range fieldCache.Fields(t) {
+			pt, err := paramType(f.Type)
+			if err != nil {
+				return nil, err
+			}
+			fts = append(fts, &bq.QueryParameterTypeStructTypes{
+				Name: f.Name,
+				Type: pt,
+			})
+		}
+		return &bq.QueryParameterType{Type: "STRUCT", StructTypes: fts}, nil
 	}
-	if t == timeType {
-		return timestampParamType, nil
-	}
-	return nil, fmt.Errorf("Go type %s cannot be represented as a parameter type", t)
+	return nil, fmt.Errorf("bigquery: Go type %s cannot be represented as a parameter type", t)
 }
 
-func paramValue(x interface{}) (bq.QueryParameterValue, error) {
-	// convenience function for scalar value
-	sval := func(s string) bq.QueryParameterValue {
-		return bq.QueryParameterValue{Value: s}
+func paramValue(v reflect.Value) (bq.QueryParameterValue, error) {
+	var res bq.QueryParameterValue
+	if !v.IsValid() {
+		return res, errors.New("bigquery: nil parameter")
 	}
-	switch x := x.(type) {
-	case []byte:
-		return sval(base64.StdEncoding.EncodeToString(x)), nil
-	case time.Time:
-		return sval(x.Format(timestampFormat)), nil
+	t := v.Type()
+	if t == timeType {
+		res.Value = v.Interface().(time.Time).Format(timestampFormat)
+		return res, nil
 	}
-	t := reflect.TypeOf(x)
 	switch t.Kind() {
-	case reflect.Slice, reflect.Array:
+	case reflect.Slice:
+		if t.Elem().Kind() == reflect.Uint8 {
+			res.Value = base64.StdEncoding.EncodeToString(v.Interface().([]byte))
+			return res, nil
+		}
+		fallthrough
+
+	case reflect.Array:
 		var vals []*bq.QueryParameterValue
-		v := reflect.ValueOf(x)
 		for i := 0; i < v.Len(); i++ {
-			val, err := paramValue(v.Index(i).Interface())
+			val, err := paramValue(v.Index(i))
 			if err != nil {
 				return bq.QueryParameterValue{}, err
 			}
 			vals = append(vals, &val)
 		}
 		return bq.QueryParameterValue{ArrayValues: vals}, nil
+
+	case reflect.Ptr:
+		if t.Elem().Kind() != reflect.Struct {
+			return res, fmt.Errorf("bigquery: Go type %s cannot be represented as a parameter value", t)
+		}
+		t = t.Elem()
+		v = v.Elem()
+		if !v.IsValid() {
+			// nil pointer becomes empty value
+			return res, nil
+		}
+		fallthrough
+
+	case reflect.Struct:
+		fields := fieldCache.Fields(t)
+		res.StructValues = map[string]bq.QueryParameterValue{}
+		for _, f := range fields {
+			fv := v.FieldByIndex(f.Index)
+			fp, err := paramValue(fv)
+			if err != nil {
+				return bq.QueryParameterValue{}, err
+			}
+			res.StructValues[f.Name] = fp
+		}
+		return res, nil
 	}
-	return sval(fmt.Sprint(x)), nil
+	// None of the above: assume a scalar type. (If it's not a valid type,
+	// paramType will catch the error.)
+	res.Value = fmt.Sprint(v.Interface())
+	return res, nil
 }
