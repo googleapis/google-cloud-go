@@ -15,6 +15,8 @@
 package bigquery
 
 import (
+	"reflect"
+
 	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 )
@@ -209,7 +211,7 @@ func (q *QueryConfig) populateJobQueryConfig(conf *bq.JobConfigurationQuery) err
 		if err != nil {
 			return err
 		}
-		pt, err := paramType(p.Value)
+		pt, err := paramType(reflect.TypeOf(p.Value))
 		if err != nil {
 			return err
 		}
