@@ -15,8 +15,8 @@
 package bigquery
 
 import (
-	"bytes"
 	"context"
+	"errors"
 	"math"
 	"reflect"
 	"testing"
@@ -60,7 +60,31 @@ func TestParamValueScalar(t *testing.T) {
 	}
 }
 
-func TestParamTypeScalar(t *testing.T) {
+func TestParamValueArray(t *testing.T) {
+	for _, test := range []struct {
+		val  interface{}
+		want []string
+	}{
+		{[]int(nil), []string{}},
+		{[]int{}, []string{}},
+		{[]int{1, 2}, []string{"1", "2"}},
+		{[3]int{1, 2, 3}, []string{"1", "2", "3"}},
+	} {
+		got, err := paramValue(test.val)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var want bq.QueryParameterValue
+		for _, s := range test.want {
+			want.ArrayValues = append(want.ArrayValues, &bq.QueryParameterValue{Value: s})
+		}
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("%#v:\ngot  %+v\nwant %+v", test.val, got, want)
+		}
+	}
+}
+
+func TestParamType(t *testing.T) {
 	for _, test := range []struct {
 		val  interface{}
 		want *bq.QueryParameterType
@@ -75,40 +99,69 @@ func TestParamTypeScalar(t *testing.T) {
 		{"string", stringParamType},
 		{time.Now(), timestampParamType},
 		{[]byte("foo"), bytesParamType},
+		{[]int{}, &bq.QueryParameterType{Type: "ARRAY", ArrayType: int64ParamType}},
+		{[3]bool{}, &bq.QueryParameterType{Type: "ARRAY", ArrayType: boolParamType}},
 	} {
-		got, err := paramType(test.val)
+		got, err := paramType(reflect.TypeOf(test.val))
 		if err != nil {
 			t.Fatal(err)
 		}
-		if got != test.want {
+		if !reflect.DeepEqual(got, test.want) {
 			t.Errorf("%v (%T): got %v, want %v", test.val, test.val, got, test.want)
 		}
 	}
 }
 
 func TestIntegration_ScalarParam(t *testing.T) {
-	ctx := context.Background()
 	c := getClient(t)
 	for _, test := range scalarTests {
-		q := c.Query("select ?")
-		q.Parameters = []QueryParameter{{Value: test.val}}
-		it, err := q.Read(ctx)
+		got, err := paramRoundTrip(c, test.val)
 		if err != nil {
 			t.Fatal(err)
 		}
-		var val []Value
-		err = it.Next(&val)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if len(val) != 1 {
-			t.Fatalf("got %d values, want 1", len(val))
-		}
-		got := val[0]
 		if !equal(got, test.val) {
 			t.Errorf("\ngot  %#v (%T)\nwant %#v (%T)", got, got, test.val, test.val)
 		}
 	}
+}
+
+func TestIntegration_ArrayParam(t *testing.T) {
+	c := getClient(t)
+	for _, test := range []struct {
+		val  interface{}
+		want interface{}
+	}{
+		{[]int(nil), []Value(nil)},
+		{[]int{}, []Value(nil)},
+		{[]int{1, 2}, []Value{int64(1), int64(2)}},
+		{[3]int{1, 2, 3}, []Value{int64(1), int64(2), int64(3)}},
+	} {
+		got, err := paramRoundTrip(c, test.val)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !equal(got, test.want) {
+			t.Errorf("\ngot  %#v (%T)\nwant %#v (%T)", got, got, test.want, test.want)
+		}
+	}
+}
+
+func paramRoundTrip(c *Client, x interface{}) (Value, error) {
+	q := c.Query("select ?")
+	q.Parameters = []QueryParameter{{Value: x}}
+	it, err := q.Read(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	var val []Value
+	err = it.Next(&val)
+	if err != nil {
+		return nil, err
+	}
+	if len(val) != 1 {
+		return nil, errors.New("wrong number of values")
+	}
+	return val[0], nil
 }
 
 func equal(x1, x2 interface{}) bool {
@@ -124,9 +177,7 @@ func equal(x1, x2 interface{}) bool {
 	case time.Time:
 		// BigQuery is only accurate to the microsecond.
 		return x1.Round(time.Microsecond).Equal(x2.(time.Time).Round(time.Microsecond))
-	case []byte:
-		return bytes.Equal(x1, x2.([]byte))
 	default:
-		return x1 == x2
+		return reflect.DeepEqual(x1, x2)
 	}
 }
