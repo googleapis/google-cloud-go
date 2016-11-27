@@ -112,6 +112,9 @@ const (
 	BooleanFieldType   FieldType = "BOOLEAN"
 	TimestampFieldType FieldType = "TIMESTAMP"
 	RecordFieldType    FieldType = "RECORD"
+	DateFieldType      FieldType = "DATE"
+	TimeFieldType      FieldType = "TIME"
+	DateTimeFieldType  FieldType = "DATETIME"
 )
 
 var errNoStruct = errors.New("bigquery: can only infer schema from struct or pointer to struct")

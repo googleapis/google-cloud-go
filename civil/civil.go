@@ -107,6 +107,20 @@ func (d1 Date) After(d2 Date) bool {
 	return d2.Before(d1)
 }
 
+// MarshalText implements the encoding.TextMarshaler interface.
+// The output is the result of d.String().
+func (d Date) MarshalText() ([]byte, error) {
+	return []byte(d.String()), nil
+}
+
+// UnmarshalText implements the encoding.TextUnmarshaler interface.
+// The date is expected to be a string in a format accepted by ParseDate.
+func (d *Date) UnmarshalText(data []byte) error {
+	var err error
+	*d, err = ParseDate(string(data))
+	return err
+}
+
 // A Time represents a time with nanosecond precision.
 //
 // This type does not include location information, and therefore does not
@@ -159,6 +173,20 @@ func (t Time) IsValid() bool {
 	// Construct a non-zero time.
 	tm := time.Date(2, 2, 2, t.Hour, t.Minute, t.Second, t.Nanosecond, time.UTC)
 	return TimeOf(tm) == t
+}
+
+// MarshalText implements the encoding.TextMarshaler interface.
+// The output is the result of t.String().
+func (t Time) MarshalText() ([]byte, error) {
+	return []byte(t.String()), nil
+}
+
+// UnmarshalText implements the encoding.TextUnmarshaler interface.
+// The time is expected to be a string in a format accepted by ParseTime.
+func (t *Time) UnmarshalText(data []byte) error {
+	var err error
+	*t, err = ParseTime(string(data))
+	return err
 }
 
 // A DateTime represents a date and time.
@@ -232,4 +260,18 @@ func (dt1 DateTime) Before(dt2 DateTime) bool {
 // After reports whether dt1 occurs after dt2.
 func (dt1 DateTime) After(dt2 DateTime) bool {
 	return dt2.Before(dt1)
+}
+
+// MarshalText implements the encoding.TextMarshaler interface.
+// The output is the result of dt.String().
+func (dt DateTime) MarshalText() ([]byte, error) {
+	return []byte(dt.String()), nil
+}
+
+// UnmarshalText implements the encoding.TextUnmarshaler interface.
+// The datetime is expected to be a string in a format accepted by ParseDateTime
+func (dt *DateTime) UnmarshalText(data []byte) error {
+	var err error
+	*dt, err = ParseDateTime(string(data))
+	return err
 }
