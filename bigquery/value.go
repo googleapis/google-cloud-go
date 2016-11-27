@@ -21,6 +21,8 @@ import (
 	"strconv"
 	"time"
 
+	"cloud.google.com/go/civil"
+
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -206,6 +208,12 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 	case TimestampFieldType:
 		f, err := strconv.ParseFloat(val, 64)
 		return Value(time.Unix(0, int64(f*1e9))), err
+	case DateFieldType:
+		return civil.ParseDate(val)
+	case TimeFieldType:
+		return civil.ParseTime(val)
+	case DateTimeFieldType:
+		return civil.ParseDateTime(val)
 	default:
 		return nil, fmt.Errorf("unrecognized type: %s", typ)
 	}

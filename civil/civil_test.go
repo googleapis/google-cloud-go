@@ -15,6 +15,8 @@
 package civil
 
 import (
+	"encoding/json"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -376,6 +378,64 @@ func TestDateTimeAfter(t *testing.T) {
 	} {
 		if got := test.dt1.After(test.dt2); got != test.want {
 			t.Errorf("%v.After(%v): got %t, want %t", test.dt1, test.dt2, got, test.want)
+		}
+	}
+}
+
+func TestMarshalJSON(t *testing.T) {
+	for _, test := range []struct {
+		value interface{}
+		want  string
+	}{
+		{Date{1987, 4, 15}, `"1987-04-15"`},
+		{Time{18, 54, 2, 0}, `"18:54:02"`},
+		{DateTime{Date{1987, 4, 15}, Time{18, 54, 2, 0}}, `"1987-04-15T18:54:02"`},
+	} {
+		bgot, err := json.Marshal(test.value)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got := string(bgot); got != test.want {
+			t.Errorf("%#v: got %s, want %s", test.value, got, test.want)
+		}
+	}
+}
+
+func TestUnmarshalJSON(t *testing.T) {
+	var d Date
+	var tm Time
+	var dt DateTime
+	for _, test := range []struct {
+		data string
+		ptr  interface{}
+		want interface{}
+	}{
+		{`"1987-04-15"`, &d, &Date{1987, 4, 15}},
+		{`"1987-04-\u0031\u0035"`, &d, &Date{1987, 4, 15}},
+		{`"18:54:02"`, &tm, &Time{18, 54, 2, 0}},
+		{`"1987-04-15T18:54:02"`, &dt, &DateTime{Date{1987, 4, 15}, Time{18, 54, 2, 0}}},
+	} {
+		if err := json.Unmarshal([]byte(test.data), test.ptr); err != nil {
+			t.Fatalf("%s: %v", test.data, err)
+		}
+		if !reflect.DeepEqual(test.ptr, test.want) {
+			t.Errorf("%s: got %#v, want %#v", test.data, test.ptr, test.want)
+		}
+	}
+
+	for _, bad := range []string{"", `""`, `"bad"`, `"1987-04-15x"`,
+		`19870415`,     // a JSON number
+		`11987-04-15x`, // not a JSON string
+
+	} {
+		if json.Unmarshal([]byte(bad), &d) == nil {
+			t.Errorf("%q, Date: got nil, want error", bad)
+		}
+		if json.Unmarshal([]byte(bad), &tm) == nil {
+			t.Errorf("%q, Time: got nil, want error", bad)
+		}
+		if json.Unmarshal([]byte(bad), &dt) == nil {
+			t.Errorf("%q, DateTime: got nil, want error", bad)
 		}
 	}
 }

@@ -26,6 +26,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
 	"golang.org/x/net/context"
@@ -224,17 +225,8 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 
 	// Wait until the data has been uploaded. This can take a few seconds, according
 	// to https://cloud.google.com/bigquery/streaming-data-into-bigquery.
-	for {
-		it := table.Read(ctx)
-		var v []Value
-		err := it.Next(&v)
-		if err == nil {
-			break
-		}
-		if err != iterator.Done {
-			t.Fatal(err)
-		}
-		time.Sleep(1 * time.Second)
+	if err := waitForRow(ctx, table); err != nil {
+		t.Fatal(err)
 	}
 
 	// Read the table.
@@ -469,6 +461,52 @@ func TestIntegration_DML(t *testing.T) {
 	checkRead(t, "INSERT", table.Read(ctx), wantRows)
 }
 
+func TestIntegration_TimeTypes(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	dtSchema := Schema{
+		{Name: "d", Type: DateFieldType},
+		{Name: "t", Type: TimeFieldType},
+		{Name: "dt", Type: DateTimeFieldType},
+	}
+	table := newTable(t, dtSchema)
+	defer table.Delete(ctx)
+
+	d := civil.Date{2016, 3, 20}
+	tm := civil.Time{12, 30, 0, 0}
+	wantRows := [][]Value{
+		[]Value{d, tm, civil.DateTime{d, tm}},
+	}
+	upl := table.Uploader()
+	if err := upl.Put(ctx, []*ValuesSaver{
+		{Schema: dtSchema, Row: wantRows[0]},
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := waitForRow(ctx, table); err != nil {
+		t.Fatal(err)
+	}
+
+	// SQL wants DATETIMEs with a space between date and time, but the service
+	// returns them in RFC3339 form, with a "T" between.
+	query := fmt.Sprintf("INSERT bigquery_integration_test.%s (d, t, dt) "+
+		"VALUES ('%s', '%s', '%s %s')",
+		table.TableID, d, tm, d, tm)
+	q := client.Query(query)
+	q.UseStandardSQL = true // necessary for DML
+	job, err := q.Run(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := wait(ctx, job); err != nil {
+		t.Fatal(err)
+	}
+	wantRows = append(wantRows, wantRows[0])
+	checkRead(t, "TimeTypes", table.Read(ctx), wantRows)
+}
+
 // Creates a new, temporary table with a unique name and the given schema.
 func newTable(t *testing.T, s Schema) *Table {
 	name := fmt.Sprintf("t%d", time.Now().UnixNano())
@@ -515,9 +553,18 @@ func readAll(it *RowIterator) ([][]Value, error) {
 
 type byCol0 [][]Value
 
-func (b byCol0) Len() int           { return len(b) }
-func (b byCol0) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
-func (b byCol0) Less(i, j int) bool { return b[i][0].(string) < b[j][0].(string) }
+func (b byCol0) Len() int      { return len(b) }
+func (b byCol0) Swap(i, j int) { b[i], b[j] = b[j], b[i] }
+func (b byCol0) Less(i, j int) bool {
+	switch a := b[i][0].(type) {
+	case string:
+		return a < b[j][0].(string)
+	case civil.Date:
+		return a.Before(b[j][0].(civil.Date))
+	default:
+		panic("unknown type")
+	}
+}
 
 func hasStatusCode(err error, code int) bool {
 	if e, ok := err.(*googleapi.Error); ok && e.Code == code {
@@ -536,4 +583,21 @@ func wait(ctx context.Context, job *Job) error {
 		return fmt.Errorf("job status error: %#v", status.Err())
 	}
 	return nil
+}
+
+// waitForRow polls the table until it contains a row.
+// TODO(jba): use internal.Retry.
+func waitForRow(ctx context.Context, table *Table) error {
+	for {
+		it := table.Read(ctx)
+		var v []Value
+		err := it.Next(&v)
+		if err == nil {
+			return nil
+		}
+		if err != iterator.Done {
+			return err
+		}
+		time.Sleep(1 * time.Second)
+	}
 }
