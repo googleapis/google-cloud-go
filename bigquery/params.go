@@ -51,6 +51,43 @@ var (
 	typeOfGoTime   = reflect.TypeOf(time.Time{})
 )
 
+type QueryParameter struct {
+	// Name is used for named parameter mode.
+	// It must match the name in the query case-insensitively.
+	Name string
+
+	// Value is the value of the parameter.
+	// The following Go types are supported, with their corresponding
+	// Bigquery types:
+	// int, int8, int16, int32, int64, uint8, uint16, uint32: INT64
+	//   Note that uint, uint64 and uintptr are not supported, because
+	//   they may contain values that cannot fit into a 64-bit signed integer.
+	// float32, float64: FLOAT64
+	// bool: BOOL
+	// string: STRING
+	// []byte: BYTES
+	// time.Time: TIMESTAMP
+	// Arrays and slices of the above.
+	// Structs of the above. Only the exported fields are used.
+	Value interface{}
+}
+
+func (p QueryParameter) toRaw() (*bq.QueryParameter, error) {
+	pv, err := paramValue(reflect.ValueOf(p.Value))
+	if err != nil {
+		return nil, err
+	}
+	pt, err := paramType(reflect.TypeOf(p.Value))
+	if err != nil {
+		return nil, err
+	}
+	return &bq.QueryParameter{
+		Name:           p.Name,
+		ParameterValue: &pv,
+		ParameterType:  pt,
+	}, nil
+}
+
 func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
 	if t == nil {
 		return nil, errors.New("bigquery: nil parameter")

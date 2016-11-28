@@ -15,8 +15,6 @@
 package bigquery
 
 import (
-	"reflect"
-
 	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 )
@@ -107,27 +105,6 @@ const (
 	InteractivePriority QueryPriority = "INTERACTIVE"
 )
 
-type QueryParameter struct {
-	// Name is used for named parameter mode.
-	// It must match the name in the query case-insensitively.
-	Name string
-
-	// Value is the value of the parameter.
-	// The following Go types are supported, with their corresponding
-	// Bigquery types:
-	// int, int8, int16, int32, int64, uint8, uint16, uint32: INT64
-	//   Note that uint, uint64 and uintptr are not supported, because
-	//   they may contain values that cannot fit into a 64-bit signed integer.
-	// float32, float64: FLOAT64
-	// bool: BOOL
-	// string: STRING
-	// []byte: BYTES
-	// time.Time: TIMESTAMP
-	// Arrays and slices of the above.
-	// Structs of the above. Only the exported fields are used.
-	Value interface{}
-}
-
 // A Query queries data from a BigQuery table. Use Client.Query to create a Query.
 type Query struct {
 	client *Client
@@ -209,18 +186,9 @@ func (q *QueryConfig) populateJobQueryConfig(conf *bq.JobConfigurationQuery) err
 		conf.DestinationTable = q.Dst.tableRefProto()
 	}
 	for _, p := range q.Parameters {
-		pv, err := paramValue(reflect.ValueOf(p.Value))
+		qp, err := p.toRaw()
 		if err != nil {
 			return err
-		}
-		pt, err := paramType(reflect.TypeOf(p.Value))
-		if err != nil {
-			return err
-		}
-		qp := &bq.QueryParameter{
-			Name:           p.Name,
-			ParameterValue: &pv,
-			ParameterType:  pt,
 		}
 		conf.QueryParameters = append(conf.QueryParameters, qp)
 	}
