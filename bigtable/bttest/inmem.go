@@ -308,12 +308,17 @@ func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRo
 	sort.Sort(byRowKey(rows))
 
 	limit := int(req.RowsLimit)
-	for i, r := range rows {
-		if limit > 0 && i >= limit {
+	count := 0
+	for _, r := range rows {
+		if limit > 0 && count >= limit {
 			return nil
 		}
-		if err := streamRow(stream, r, req.Filter); err != nil {
+		streamed, err := streamRow(stream, r, req.Filter)
+		if err != nil {
 			return err
+		}
+		if streamed {
+			count++
 		}
 	}
 	return nil
@@ -334,13 +339,17 @@ func addRows(start, end string, tbl *table, rowSet map[string]*row) {
 	}
 }
 
-func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter) error {
+// streamRow filters the given row and sends it via the given stream.
+// Returns true if at least one cell matched the filter and was streamed, false otherwise.
+func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter) (bool, error) {
 	r.mu.Lock()
 	nr := r.copy()
 	r.mu.Unlock()
 	r = nr
 
-	filterRow(f, r)
+	if !filterRow(f, r) {
+		return false, nil
+	}
 
 	rrr := &btpb.ReadRowsResponse{}
 	for col, cells := range r.cells {
@@ -366,13 +375,14 @@ func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter) e
 		rrr.Chunks[len(rrr.Chunks)-1].RowStatus = &btpb.ReadRowsResponse_CellChunk_CommitRow{true}
 	}
 
-	return stream.Send(rrr)
+	return true, stream.Send(rrr)
 }
 
-// filterRow modifies a row with the given filter.
-func filterRow(f *btpb.RowFilter, r *row) {
+// filterRow modifies a row with the given filter. Returns true if at least one cell from the row matches,
+// false otherwise.
+func filterRow(f *btpb.RowFilter, r *row) bool {
 	if f == nil {
-		return
+		return true
 	}
 	// Handle filters that apply beyond just including/excluding cells.
 	switch f := f.Filter.(type) {
@@ -380,7 +390,7 @@ func filterRow(f *btpb.RowFilter, r *row) {
 		for _, sub := range f.Chain.Filters {
 			filterRow(sub, r)
 		}
-		return
+		return true
 	case *btpb.RowFilter_Interleave_:
 		srs := make([]*row, 0, len(f.Interleave.Filters))
 		for _, sub := range f.Interleave.Filters {
@@ -399,7 +409,7 @@ func filterRow(f *btpb.RowFilter, r *row) {
 		for _, cs := range r.cells {
 			sort.Sort(byDescTS(cs))
 		}
-		return
+		return true
 	case *btpb.RowFilter_CellsPerColumnLimitFilter:
 		lim := int(f.CellsPerColumnLimitFilter)
 		for col, cs := range r.cells {
@@ -407,15 +417,28 @@ func filterRow(f *btpb.RowFilter, r *row) {
 				r.cells[col] = cs[:lim]
 			}
 		}
-		return
+		return true
+	case *btpb.RowFilter_RowKeyRegexFilter:
+		pat := string(f.RowKeyRegexFilter)
+		rx, err := regexp.Compile(pat)
+		if err != nil {
+			log.Printf("Bad rowkey_regex_filter pattern %q: %v", pat, err)
+			return false
+		}
+		if !rx.MatchString(r.key) {
+			return false
+		}
 	}
 
 	// Any other case, operate on a per-cell basis.
+	cellCount := 0
 	for key, cs := range r.cells {
 		i := strings.Index(key, ":") // guaranteed to exist
 		fam, col := key[:i], key[i+1:]
 		r.cells[key] = filterCells(f, fam, col, cs)
+		cellCount += len(r.cells[key])
 	}
+	return cellCount > 0
 }
 
 func filterCells(f *btpb.RowFilter, fam, col string, cs []cell) []cell {
@@ -434,6 +457,12 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) bool {
 	}
 	// TODO(dsymonds): Implement many more filters.
 	switch f := f.Filter.(type) {
+	case *btpb.RowFilter_CellsPerColumnLimitFilter:
+		// Don't log, row-level filter
+		return true
+	case *btpb.RowFilter_RowKeyRegexFilter:
+		// Don't log, row-level filter
+		return true
 	default:
 		log.Printf("WARNING: don't know how to handle filter of type %T (ignoring it)", f)
 		return true

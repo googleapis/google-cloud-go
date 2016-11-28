@@ -193,7 +193,8 @@ func TestClientIntegration(t *testing.T) {
 	readTests := []struct {
 		desc   string
 		rr     RowSet
-		filter Filter // may be nil
+		filter Filter     // may be nil
+		limit  ReadOption // may be nil
 
 		// We do the read, grab all the cells, turn them into "<row>-<col>-<val>",
 		// sort that list, and join with a comma.
@@ -248,11 +249,39 @@ func TestClientIntegration(t *testing.T) {
 			filter: ColumnRangeFilter("follows", "h", ""),
 			want:   "gwashington-jadams-1,jadams-tjefferson-1,tjefferson-jadams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
 		},
+		{
+			desc:   "read with RowKeyFilter",
+			rr:     RowRange{},
+			filter: RowKeyFilter(".*wash.*"),
+			want:   "gwashington-jadams-1",
+		},
+		{
+			desc:   "read with RowKeyFilter, no matches",
+			rr:     RowRange{},
+			filter: RowKeyFilter(".*xxx.*"),
+			want:   "",
+		},
+		{
+			desc:   "read with FamilyFilter, no matches",
+			rr:     RowRange{},
+			filter: FamilyFilter(".*xxx.*"),
+			want:   "",
+		},
+		{
+			desc:   "read with ColumnFilter + row limit",
+			rr:     RowRange{},
+			filter: ColumnFilter(".*j.*"), // matches "jadams" and "tjefferson"
+			limit:  LimitRows(2),
+			want:   "gwashington-jadams-1,jadams-tjefferson-1",
+		},
 	}
 	for _, tc := range readTests {
 		var opts []ReadOption
 		if tc.filter != nil {
 			opts = append(opts, RowFilter(tc.filter))
+		}
+		if tc.limit != nil {
+			opts = append(opts, tc.limit)
 		}
 		var elt []string
 		err := tbl.ReadRows(context.Background(), tc.rr, func(r Row) bool {
