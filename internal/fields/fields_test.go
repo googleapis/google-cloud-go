@@ -141,6 +141,8 @@ type S2 struct {
 	Anonymous  `json:"anon"` // anonymous non-structs also get their name from the tag
 	unexported int           `json:"tag"`
 	Embed      `json:"em"`   // embedded structs with tags become fields
+	Tag        int
+	YYY        int `json:"Tag"` // tag takes precedence over untagged field of the same name
 	tEmbed1
 	tEmbed2
 }
@@ -178,7 +180,8 @@ func TestFieldsWithTags(t *testing.T) {
 		tfield("tag", int(0), 1),
 		tfield("anon", Anonymous(0), 2),
 		tfield("em", Embed{}, 4),
-		tfield("Dup", int(0), 6, 0),
+		tfield("Tag", int(0), 6),
+		tfield("Dup", int(0), 8, 0),
 	}
 	if msg, ok := compareFields(got, want); !ok {
 		t.Error(msg)
@@ -380,7 +383,6 @@ func TestMatchingField(t *testing.T) {
 		// first in S3, its index precedes the other fields of S3.
 		{"abc", field("ABc", int(0), 0, 0)},
 		// Tag name takes precedence over untagged field of the same name.
-		// TODO(jba): add this case to TestFieldsWithTags.
 		{"Tag", tfield("Tag", int(0), 4)},
 		// Unexported fields disappear.
 		{"unexported", nil},
