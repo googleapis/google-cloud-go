@@ -22,6 +22,8 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/civil"
+
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -39,6 +41,9 @@ var scalarTests = []struct {
 	{[]byte("foo"), "Zm9v"}, // base64 encoding of "foo"
 	{time.Date(2016, 3, 20, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720)),
 		"2016-03-20 04:22:09.000005-01:02"},
+	{civil.Date{2016, 3, 20}, "2016-03-20"},
+	{civil.Time{4, 5, 6, 789000000}, "04:05:06.789000"},
+	{civil.DateTime{civil.Date{2016, 3, 20}, civil.Time{4, 5, 6, 789000000}}, "2016-03-20 04:05:06.789000"},
 }
 
 type S1 struct {
