@@ -477,11 +477,15 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) bool {
 		inRangeEnd := func() bool { return true }
 		switch eq := f.ColumnRangeFilter.EndQualifier.(type) {
 		case *btpb.ColumnRange_EndQualifierClosed:
-			inRangeEnd = func() bool { return col <= string(eq.EndQualifierClosed)}
+			inRangeEnd = func() bool { return col <= string(eq.EndQualifierClosed) }
 		case *btpb.ColumnRange_EndQualifierOpen:
-			inRangeEnd = func() bool { return col < string(eq.EndQualifierOpen)}
+			inRangeEnd = func() bool { return col < string(eq.EndQualifierOpen) }
 		}
 		return inRangeStart() && inRangeEnd()
+	case *btpb.RowFilter_TimestampRangeFilter:
+		// Lower bound is inclusive and defaults to 0, upper bound is exclusive and defaults to infinity.
+		return cell.ts >= f.TimestampRangeFilter.StartTimestampMicros &&
+			(f.TimestampRangeFilter.EndTimestampMicros == 0 || cell.ts < f.TimestampRangeFilter.EndTimestampMicros)
 	}
 }
 
