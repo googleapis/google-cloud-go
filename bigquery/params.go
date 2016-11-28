@@ -21,6 +21,7 @@ import (
 	"reflect"
 	"time"
 
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/fields"
 
 	bq "google.golang.org/api/bigquery/v2"
@@ -37,16 +38,31 @@ var (
 	boolParamType      = &bq.QueryParameterType{Type: "BOOL"}
 	stringParamType    = &bq.QueryParameterType{Type: "STRING"}
 	bytesParamType     = &bq.QueryParameterType{Type: "BYTES"}
+	dateParamType      = &bq.QueryParameterType{Type: "DATE"}
+	timeParamType      = &bq.QueryParameterType{Type: "TIME"}
+	dateTimeParamType  = &bq.QueryParameterType{Type: "DATETIME"}
 	timestampParamType = &bq.QueryParameterType{Type: "TIMESTAMP"}
 )
 
-var timeType = reflect.TypeOf(time.Time{})
+var (
+	typeOfDate     = reflect.TypeOf(civil.Date{})
+	typeOfTime     = reflect.TypeOf(civil.Time{})
+	typeOfDateTime = reflect.TypeOf(civil.DateTime{})
+	typeOfGoTime   = reflect.TypeOf(time.Time{})
+)
 
 func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
 	if t == nil {
 		return nil, errors.New("bigquery: nil parameter")
 	}
-	if t == timeType {
+	switch t {
+	case typeOfDate:
+		return dateParamType, nil
+	case typeOfTime:
+		return timeParamType, nil
+	case typeOfDateTime:
+		return dateTimeParamType, nil
+	case typeOfGoTime:
 		return timestampParamType, nil
 	}
 	switch t.Kind() {
@@ -105,7 +121,22 @@ func paramValue(v reflect.Value) (bq.QueryParameterValue, error) {
 		return res, errors.New("bigquery: nil parameter")
 	}
 	t := v.Type()
-	if t == timeType {
+	switch t {
+	case typeOfDate:
+		res.Value = v.Interface().(civil.Date).String()
+		return res, nil
+
+	case typeOfTime:
+		// civil.Time has nanosecond resolution, but BigQuery TIME only microsecond.
+		res.Value = civilTimeParamString(v.Interface().(civil.Time))
+		return res, nil
+
+	case typeOfDateTime:
+		dt := v.Interface().(civil.DateTime)
+		res.Value = dt.Date.String() + " " + civilTimeParamString(dt.Time)
+		return res, nil
+
+	case typeOfGoTime:
 		res.Value = v.Interface().(time.Time).Format(timestampFormat)
 		return res, nil
 	}
@@ -157,4 +188,14 @@ func paramValue(v reflect.Value) (bq.QueryParameterValue, error) {
 	// paramType will catch the error.)
 	res.Value = fmt.Sprint(v.Interface())
 	return res, nil
+}
+
+func civilTimeParamString(t civil.Time) string {
+	if t.Nanosecond == 0 {
+		return t.String()
+	} else {
+		micro := (t.Nanosecond + 500) / 1000 // round to nearest microsecond
+		t.Nanosecond = 0
+		return t.String() + fmt.Sprintf(".%06d", micro)
+	}
 }
