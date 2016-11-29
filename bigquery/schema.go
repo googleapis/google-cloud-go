@@ -171,7 +171,7 @@ func inferFieldSchema(rt reflect.Type) (*FieldSchema, error) {
 
 	switch rt.Kind() {
 	case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int,
-		reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uint, reflect.Uintptr:
+		reflect.Uint8, reflect.Uint16, reflect.Uint32:
 		return &FieldSchema{Required: true, Type: IntegerFieldType}, nil
 	case reflect.String:
 		return &FieldSchema{Required: true, Type: StringFieldType}, nil

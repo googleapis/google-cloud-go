@@ -198,12 +198,9 @@ type allSignedIntegers struct {
 }
 
 type allUnsignedIntegers struct {
-	Uint64  uint64
-	Uint32  uint32
-	Uint16  uint16
-	Uint8   uint8
-	Uintptr uintptr
-	Uint    uint
+	Uint32 uint32
+	Uint16 uint16
+	Uint8  uint8
 }
 
 type allFloat struct {
@@ -238,12 +235,9 @@ func TestSimpleInference(t *testing.T) {
 		{
 			in: allUnsignedIntegers{},
 			want: Schema{
-				fieldSchema("", "Uint64", "INTEGER", false, true),
 				fieldSchema("", "Uint32", "INTEGER", false, true),
 				fieldSchema("", "Uint16", "INTEGER", false, true),
 				fieldSchema("", "Uint8", "INTEGER", false, true),
-				fieldSchema("", "Uintptr", "INTEGER", false, true),
-				fieldSchema("", "Uint", "INTEGER", false, true),
 			},
 		},
 		{
@@ -443,6 +437,18 @@ func TestSchemaErrors(t *testing.T) {
 		{
 			in:  new(allStrings),
 			err: errNoStruct,
+		},
+		{
+			in:  struct{ Uint uint }{},
+			err: errUnsupportedFieldType,
+		},
+		{
+			in:  struct{ Uint64 uint64 }{},
+			err: errUnsupportedFieldType,
+		},
+		{
+			in:  struct{ Uintptr uintptr }{},
+			err: errUnsupportedFieldType,
 		},
 		{
 			in:  struct{ Complex complex64 }{},
