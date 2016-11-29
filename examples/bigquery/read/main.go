@@ -43,7 +43,7 @@ func printValues(ctx context.Context, it *bigquery.RowIterator) {
 	tw := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
 
 	for {
-		var vals bigquery.ValueList
+		var vals []bigquery.Value
 		err := it.Next(&vals)
 		if err == iterator.Done {
 			break
