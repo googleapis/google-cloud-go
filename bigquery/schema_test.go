@@ -263,7 +263,7 @@ func TestSimpleInference(t *testing.T) {
 			in: allStrings{},
 			want: Schema{
 				fieldSchema("", "String", "STRING", false, true),
-				fieldSchema("", "ByteSlice", "STRING", false, true),
+				fieldSchema("", "ByteSlice", "BYTES", false, true),
 			},
 		},
 	}
@@ -377,8 +377,8 @@ func TestRepeatedInference(t *testing.T) {
 		{
 			in: simpleRepeated{},
 			want: Schema{
-				fieldSchema("", "NotRepeated", "STRING", false, true),
-				fieldSchema("", "RepeatedByteSlice", "STRING", true, false),
+				fieldSchema("", "NotRepeated", "BYTES", false, true),
+				fieldSchema("", "RepeatedByteSlice", "BYTES", true, false),
 				fieldSchema("", "Repeated", "INTEGER", true, false),
 			},
 		},
