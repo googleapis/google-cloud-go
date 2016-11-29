@@ -226,7 +226,7 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 	// to https://cloud.google.com/bigquery/streaming-data-into-bigquery.
 	for {
 		it := table.Read(ctx)
-		var v ValueList
+		var v []Value
 		err := it.Next(&v)
 		if err == nil {
 			break
@@ -498,10 +498,10 @@ func checkRead(t *testing.T, msg string, it *RowIterator, want [][]Value) {
 	}
 }
 
-func readAll(it *RowIterator) ([]ValueList, error) {
-	var rows []ValueList
+func readAll(it *RowIterator) ([][]Value, error) {
+	var rows [][]Value
 	for {
-		var vals ValueList
+		var vals []Value
 		err := it.Next(&vals)
 		if err == iterator.Done {
 			return rows, nil
@@ -513,7 +513,7 @@ func readAll(it *RowIterator) ([]ValueList, error) {
 	}
 }
 
-type byCol0 []ValueList
+type byCol0 [][]Value
 
 func (b byCol0) Len() int           { return len(b) }
 func (b byCol0) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }

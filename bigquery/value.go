@@ -33,11 +33,11 @@ type ValueLoader interface {
 	Load(v []Value, s Schema) error
 }
 
-// ValueList converts a []Value to implement ValueLoader.
-type ValueList []Value
+// valueList converts a []Value to implement ValueLoader.
+type valueList []Value
 
-// Load stores a sequence of values in a ValueList.
-func (vs *ValueList) Load(v []Value, _ Schema) error {
+// Load stores a sequence of values in a valueList.
+func (vs *valueList) Load(v []Value, _ Schema) error {
 	*vs = append(*vs, v...)
 	return nil
 }

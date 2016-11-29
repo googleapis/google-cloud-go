@@ -96,17 +96,17 @@ func TestRead(t *testing.T) {
 		testCases := []struct {
 			data       [][][]Value
 			pageTokens map[string]string
-			want       []ValueList
+			want       [][]Value
 		}{
 			{
 				data:       [][][]Value{{{1, 2}, {11, 12}}, {{30, 40}, {31, 41}}},
 				pageTokens: map[string]string{"": "a", "a": ""},
-				want:       []ValueList{{1, 2}, {11, 12}, {30, 40}, {31, 41}},
+				want:       [][]Value{{1, 2}, {11, 12}, {30, 40}, {31, 41}},
 			},
 			{
 				data:       [][][]Value{{{1, 2}, {11, 12}}, {{30, 40}, {31, 41}}},
 				pageTokens: map[string]string{"": ""}, // no more pages after first one.
-				want:       []ValueList{{1, 2}, {11, 12}},
+				want:       [][]Value{{1, 2}, {11, 12}},
 			},
 		}
 		for _, tc := range testCases {
@@ -121,10 +121,10 @@ func TestRead(t *testing.T) {
 	}
 }
 
-func collectValues(t *testing.T, it *RowIterator) ([]ValueList, bool) {
-	var got []ValueList
+func collectValues(t *testing.T, it *RowIterator) ([][]Value, bool) {
+	var got [][]Value
 	for {
-		var vals ValueList
+		var vals []Value
 		err := it.Next(&vals)
 		if err == iterator.Done {
 			break
@@ -146,7 +146,7 @@ func TestNoMoreValues(t *testing.T) {
 		},
 	}
 	it := c.Dataset("dataset-id").Table("table-id").Read(context.Background())
-	var vals ValueList
+	var vals []Value
 	// We expect to retrieve two values and then fail on the next attempt.
 	if err := it.Next(&vals); err != nil {
 		t.Fatalf("Next: got: %v: want: nil", err)
@@ -195,8 +195,8 @@ func TestIncompleteJob(t *testing.T) {
 	if err != nil {
 		t.Fatalf("err calling Read: %v", err)
 	}
-	var got ValueList
-	want := ValueList{1, 2}
+	var got []Value
+	want := []Value{1, 2}
 	if err := it.Next(&got); err != nil {
 		t.Fatalf("Next: got: %v: want: nil", err)
 	}
@@ -225,7 +225,7 @@ func TestReadError(t *testing.T) {
 		service:   &errorReadService{},
 	}
 	it := c.Dataset("dataset-id").Table("table-id").Read(context.Background())
-	var vals ValueList
+	var vals []Value
 	if err := it.Next(&vals); err != errBang {
 		t.Fatalf("Get: got: %v: want: %v", err, errBang)
 	}
@@ -242,7 +242,7 @@ func TestReadTabledataOptions(t *testing.T) {
 	}
 	it := c.Dataset("dataset-id").Table("table-id").Read(context.Background())
 	it.PageInfo().MaxSize = 5
-	var vals ValueList
+	var vals []Value
 	if err := it.Next(&vals); err != nil {
 		t.Fatal(err)
 	}
@@ -280,7 +280,7 @@ func TestReadQueryOptions(t *testing.T) {
 		t.Fatalf("err calling Read: %v", err)
 	}
 	it.PageInfo().MaxSize = 5
-	var vals ValueList
+	var vals []Value
 	if err := it.Next(&vals); err != nil {
 		t.Fatalf("Next: got: %v: want: nil", err)
 	}

@@ -68,7 +68,7 @@ func (it *RowIterator) Next(dst interface{}) error {
 	if !ok {
 		switch dst := dst.(type) {
 		case *[]Value:
-			vl = (*ValueList)(dst)
+			vl = (*valueList)(dst)
 		case *map[string]Value:
 			vl = (*valueMap)(dst)
 		default:

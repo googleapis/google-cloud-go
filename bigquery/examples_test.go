@@ -131,7 +131,7 @@ func ExampleRowIterator_Next() {
 		// TODO: Handle error.
 	}
 	for {
-		var row bigquery.ValueList
+		var row []bigquery.Value
 		err := it.Next(&row)
 		if err == iterator.Done {
 			break

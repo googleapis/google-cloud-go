@@ -63,7 +63,7 @@ func TestIterator(t *testing.T) {
 		desc           string
 		pageToken      string
 		fetchResponses map[string]fetchResponse
-		want           []ValueList
+		want           [][]Value
 		wantErr        error
 		wantSchema     Schema
 	}{
@@ -78,7 +78,7 @@ func TestIterator(t *testing.T) {
 					},
 				},
 			},
-			want:       []ValueList{},
+			want:       [][]Value{},
 			wantSchema: Schema{},
 		},
 		{
@@ -92,7 +92,7 @@ func TestIterator(t *testing.T) {
 					},
 				},
 			},
-			want:       []ValueList{{1, 2}, {11, 12}},
+			want:       [][]Value{{1, 2}, {11, 12}},
 			wantSchema: iiSchema,
 		},
 		{
@@ -106,7 +106,7 @@ func TestIterator(t *testing.T) {
 					},
 				},
 			},
-			want:       []ValueList{{"1", 2}, {"11", 12}},
+			want:       [][]Value{{"1", 2}, {"11", 12}},
 			wantSchema: siSchema,
 		},
 		{
@@ -127,7 +127,7 @@ func TestIterator(t *testing.T) {
 					},
 				},
 			},
-			want:       []ValueList{{1, 2}, {11, 12}, {101, 102}, {111, 112}},
+			want:       [][]Value{{1, 2}, {11, 12}, {101, 102}, {111, 112}},
 			wantSchema: iiSchema,
 		},
 		{
@@ -155,7 +155,7 @@ func TestIterator(t *testing.T) {
 					},
 				},
 			},
-			want:       []ValueList{{1, 2}, {11, 12}, {101, 102}, {111, 112}},
+			want:       [][]Value{{1, 2}, {11, 12}, {101, 102}, {111, 112}},
 			wantSchema: iiSchema,
 		},
 		{
@@ -179,7 +179,7 @@ func TestIterator(t *testing.T) {
 					},
 				},
 			},
-			want:       []ValueList{{1, 2}, {11, 12}},
+			want:       [][]Value{{1, 2}, {11, 12}},
 			wantErr:    fetchFailure,
 			wantSchema: iiSchema,
 		},
@@ -203,7 +203,7 @@ func TestIterator(t *testing.T) {
 					},
 				},
 			},
-			want:       []ValueList{{101, 102}, {111, 112}},
+			want:       [][]Value{{101, 102}, {111, 112}},
 			wantSchema: iiSchema,
 		},
 
@@ -231,7 +231,7 @@ func TestIterator(t *testing.T) {
 			},
 			// In this test case, Next will return false on its first call,
 			// so we won't even attempt to call Get.
-			want:       []ValueList{},
+			want:       [][]Value{},
 			wantSchema: Schema{},
 		},
 	}
@@ -256,7 +256,7 @@ func TestIterator(t *testing.T) {
 }
 
 type valueListWithSchema struct {
-	vals   ValueList
+	vals   valueList
 	schema Schema
 }
 
@@ -267,8 +267,8 @@ func (v *valueListWithSchema) Load(vs []Value, s Schema) error {
 }
 
 // consumeRowIterator reads the schema and all values from a RowIterator and returns them.
-func consumeRowIterator(it *RowIterator) ([]ValueList, Schema, error) {
-	var got []ValueList
+func consumeRowIterator(it *RowIterator) ([][]Value, Schema, error) {
+	var got [][]Value
 	var schema Schema
 	for {
 		var vls valueListWithSchema
@@ -298,7 +298,7 @@ func (pf *delayedPageFetcher) fetch(ctx context.Context, s service, token string
 }
 
 func TestIterateIncompleteJob(t *testing.T) {
-	want := []ValueList{{1, 2}, {11, 12}, {101, 102}, {111, 112}}
+	want := [][]Value{{1, 2}, {11, 12}, {101, 102}, {111, 112}}
 	pf := pageFetcherStub{
 		fetchResponses: map[string]fetchResponse{
 			"": {
@@ -341,7 +341,7 @@ func TestNextDuringErrorState(t *testing.T) {
 		},
 	}
 	it := newRowIterator(context.Background(), nil, pf)
-	var vals ValueList
+	var vals []Value
 	if err := it.Next(&vals); err == nil {
 		t.Errorf("Expected error after calling Next")
 	}
@@ -353,7 +353,7 @@ func TestNextDuringErrorState(t *testing.T) {
 func TestNextAfterFinished(t *testing.T) {
 	testCases := []struct {
 		fetchResponses map[string]fetchResponse
-		want           []ValueList
+		want           [][]Value
 	}{
 		{
 			fetchResponses: map[string]fetchResponse{
@@ -364,7 +364,7 @@ func TestNextAfterFinished(t *testing.T) {
 					},
 				},
 			},
-			want: []ValueList{{1, 2}, {11, 12}},
+			want: [][]Value{{1, 2}, {11, 12}},
 		},
 		{
 			fetchResponses: map[string]fetchResponse{
@@ -375,7 +375,7 @@ func TestNextAfterFinished(t *testing.T) {
 					},
 				},
 			},
-			want: []ValueList{},
+			want: [][]Value{},
 		},
 	}
 
@@ -393,7 +393,7 @@ func TestNextAfterFinished(t *testing.T) {
 			t.Errorf("values: got:\n%v\nwant:\n%v", values, tc.want)
 		}
 		// Try calling Get again.
-		var vals ValueList
+		var vals []Value
 		if err := it.Next(&vals); err != iterator.Done {
 			t.Errorf("Expected Done calling Next when there are no more values")
 		}
