@@ -143,7 +143,7 @@ func inferStruct(rt reflect.Type) (Schema, error) {
 func inferFieldSchema(rt reflect.Type) (*FieldSchema, error) {
 	switch {
 	case isByteSlice(rt):
-		return &FieldSchema{Required: true, Type: StringFieldType}, nil
+		return &FieldSchema{Required: true, Type: BytesFieldType}, nil
 	case isTimeTime(rt):
 		return &FieldSchema{Required: true, Type: TimestampFieldType}, nil
 	case isRepeated(rt):
