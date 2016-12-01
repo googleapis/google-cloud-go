@@ -39,8 +39,9 @@ type ValueLoader interface {
 type valueList []Value
 
 // Load stores a sequence of values in a valueList.
+// It resets the slice length to zero, then appends each value to it.
 func (vs *valueList) Load(v []Value, _ Schema) error {
-	*vs = append(*vs, v...)
+	*vs = append((*vs)[:0], v...)
 	return nil
 }
 
