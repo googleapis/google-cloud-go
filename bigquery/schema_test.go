@@ -443,8 +443,27 @@ type Embedded struct {
 	Embedded int
 }
 
+type embedded struct {
+	Embedded2 int
+}
+
 type nestedEmbedded struct {
 	Embedded
+	embedded
+}
+
+func TestEmbeddedInference(t *testing.T) {
+	got, err := InferSchema(nestedEmbedded{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := Schema{
+		fieldSchema("", "Embedded", "INTEGER", false, true),
+		fieldSchema("", "Embedded2", "INTEGER", false, true),
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v, want %v", pretty.Value(got), pretty.Value(want))
+	}
 }
 
 func TestSchemaErrors(t *testing.T) {
@@ -510,10 +529,6 @@ func TestSchemaErrors(t *testing.T) {
 		},
 		{
 			in:  struct{ NestedChan struct{ Chan []chan bool } }{},
-			err: errUnsupportedFieldType,
-		},
-		{
-			in:  nestedEmbedded{},
 			err: errUnsupportedFieldType,
 		},
 	}

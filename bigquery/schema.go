@@ -127,7 +127,7 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 // unless the corresponding field in the supplied struct is a slice or array.
 // It is considered an error if the struct (including nested structs) contains
 // any exported fields that are pointers or one of the following types:
-// map, interface, complex64, complex128, func, chan.
+// uint, uint64, uintptr, map, interface, complex64, complex128, func, chan.
 // In these cases, an error will be returned.
 // Future versions may handle these cases without error.
 func InferSchema(st interface{}) (Schema, error) {
@@ -196,27 +196,13 @@ func inferFieldSchema(rt reflect.Type) (*FieldSchema, error) {
 // inferFields extracts all exported field types from struct type.
 func inferFields(rt reflect.Type) (Schema, error) {
 	var s Schema
-
-	for i := 0; i < rt.NumField(); i++ {
-		field := rt.Field(i)
-		if field.PkgPath != "" {
-			// field is unexported.
-			continue
-		}
-
-		if field.Anonymous {
-			// TODO(nightlyone) support embedded (see https://github.com/GoogleCloudPlatform/google-cloud-go/issues/238)
-			return nil, errUnsupportedFieldType
-		}
-
+	for _, field := range fieldCache.Fields(rt) {
 		f, err := inferFieldSchema(field.Type)
 		if err != nil {
 			return nil, err
 		}
 		f.Name = field.Name
-
 		s = append(s, f)
 	}
-
 	return s, nil
 }
