@@ -120,6 +120,8 @@ const (
 var errNoStruct = errors.New("bigquery: can only infer schema from struct or pointer to struct")
 var errUnsupportedFieldType = errors.New("bigquery: unsupported type of field in struct")
 
+var typeOfByteSlice = reflect.TypeOf([]byte{})
+
 // InferSchema tries to derive a BigQuery schema from the supplied struct value.
 // NOTE: All fields in the returned Schema are configured to be required,
 // unless the corresponding field in the supplied struct is a slice or array.
@@ -144,15 +146,22 @@ func inferStruct(rt reflect.Type) (Schema, error) {
 
 // inferFieldSchema infers the FieldSchema for a Go type
 func inferFieldSchema(rt reflect.Type) (*FieldSchema, error) {
-	switch {
-	case isByteSlice(rt):
+	switch rt {
+	case typeOfByteSlice:
 		return &FieldSchema{Required: true, Type: BytesFieldType}, nil
-	case isTimeTime(rt):
+	case typeOfGoTime:
 		return &FieldSchema{Required: true, Type: TimestampFieldType}, nil
-	case isRepeated(rt):
+	case typeOfDate:
+		return &FieldSchema{Required: true, Type: DateFieldType}, nil
+	case typeOfTime:
+		return &FieldSchema{Required: true, Type: TimeFieldType}, nil
+	case typeOfDateTime:
+		return &FieldSchema{Required: true, Type: DateTimeFieldType}, nil
+	}
+	switch rt.Kind() {
+	case reflect.Slice, reflect.Array:
 		et := rt.Elem()
-
-		if isRepeated(et) && !isByteSlice(et) {
+		if et != typeOfByteSlice && (et.Kind() == reflect.Slice || et.Kind() == reflect.Array) {
 			// Multi dimensional slices/arrays are not supported by BigQuery
 			return nil, errUnsupportedFieldType
 		}
@@ -164,15 +173,12 @@ func inferFieldSchema(rt reflect.Type) (*FieldSchema, error) {
 		f.Repeated = true
 		f.Required = false
 		return f, nil
-	case isStruct(rt):
+	case reflect.Struct:
 		nested, err := inferFields(rt)
 		if err != nil {
 			return nil, err
 		}
 		return &FieldSchema{Required: true, Type: RecordFieldType, Schema: nested}, nil
-	}
-
-	switch rt.Kind() {
 	case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int,
 		reflect.Uint8, reflect.Uint16, reflect.Uint32:
 		return &FieldSchema{Required: true, Type: IntegerFieldType}, nil
@@ -213,25 +219,4 @@ func inferFields(rt reflect.Type) (Schema, error) {
 	}
 
 	return s, nil
-}
-
-func isByteSlice(rt reflect.Type) bool {
-	return rt.Kind() == reflect.Slice && rt.Elem().Kind() == reflect.Uint8
-}
-
-func isTimeTime(rt reflect.Type) bool {
-	return rt.PkgPath() == "time" && rt.Name() == "Time"
-}
-
-func isStruct(rt reflect.Type) bool {
-	return rt.Kind() == reflect.Struct
-}
-
-func isRepeated(rt reflect.Type) bool {
-	switch rt.Kind() {
-	case reflect.Slice, reflect.Array:
-		return true
-	default:
-		return false
-	}
 }
