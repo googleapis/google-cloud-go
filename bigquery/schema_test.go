@@ -20,6 +20,9 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/civil"
+	"cloud.google.com/go/internal/pretty"
+
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -140,6 +143,21 @@ func TestSchemaConversion(t *testing.T) {
 			},
 		},
 		{
+			// civil times
+			bqSchema: &bq.TableSchema{
+				Fields: []*bq.TableFieldSchema{
+					bqTableFieldSchema("desc", "f1", "TIME", ""),
+					bqTableFieldSchema("desc", "f2", "DATE", ""),
+					bqTableFieldSchema("desc", "f3", "DATETIME", ""),
+				},
+			},
+			schema: Schema{
+				fieldSchema("desc", "f1", "TIME", false, false),
+				fieldSchema("desc", "f2", "DATE", false, false),
+				fieldSchema("desc", "f3", "DATETIME", false, false),
+			},
+		},
+		{
 			// nested
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{
@@ -175,7 +193,8 @@ func TestSchemaConversion(t *testing.T) {
 	for _, tc := range testCases {
 		bqSchema := tc.schema.asTableSchema()
 		if !reflect.DeepEqual(bqSchema, tc.bqSchema) {
-			t.Errorf("converting to TableSchema: got:\n%v\nwant:\n%v", bqSchema, tc.bqSchema)
+			t.Errorf("converting to TableSchema: got:\n%v\nwant:\n%v",
+				pretty.Value(bqSchema), pretty.Value(tc.bqSchema))
 		}
 		schema := convertTableSchema(tc.bqSchema)
 		if !reflect.DeepEqual(schema, tc.schema) {
@@ -214,7 +233,10 @@ type allBoolean struct {
 }
 
 type allTime struct {
-	Time time.Time
+	Timestamp time.Time
+	Time      civil.Time
+	Date      civil.Date
+	DateTime  civil.DateTime
 }
 
 func TestSimpleInference(t *testing.T) {
@@ -256,7 +278,10 @@ func TestSimpleInference(t *testing.T) {
 		{
 			in: allTime{},
 			want: Schema{
-				fieldSchema("", "Time", "TIMESTAMP", false, true),
+				fieldSchema("", "Timestamp", "TIMESTAMP", false, true),
+				fieldSchema("", "Time", "TIME", false, true),
+				fieldSchema("", "Date", "DATE", false, true),
+				fieldSchema("", "DateTime", "DATETIME", false, true),
 			},
 		},
 		{
@@ -273,7 +298,8 @@ func TestSimpleInference(t *testing.T) {
 			t.Fatalf("%d: error inferring TableSchema: %v", i, err)
 		}
 		if !reflect.DeepEqual(got, tc.want) {
-			t.Errorf("%d: inferring TableSchema: got:\n%#v\nwant:\n%#v", i, got, tc.want)
+			t.Errorf("%d: inferring TableSchema: got:\n%#v\nwant:\n%#v", i,
+				pretty.Value(got), pretty.Value(tc.want))
 		}
 	}
 }
