@@ -9,6 +9,12 @@ import "cloud.google.com/go"
 
 Go packages for Google Cloud Platform services.
 
+To install the packages on your system,
+
+```
+$ go get -u cloud.google.com/go/...
+```
+
 **NOTE:** These packages are under development, and may occasionally make
 backwards-incompatible changes.
 
