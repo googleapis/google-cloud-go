@@ -52,6 +52,7 @@ func TestConvertBasicValues(t *testing.T) {
 }
 
 func TestConvertTime(t *testing.T) {
+	// TODO(jba): add tests for civil time types.
 	schema := []*FieldSchema{
 		{Type: TimestampFieldType},
 	}
@@ -415,6 +416,34 @@ func TestConvertRows(t *testing.T) {
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("\ngot  %v\nwant %v", got, want)
+	}
+}
+
+func TestValueList(t *testing.T) {
+	schema := Schema{
+		{Name: "s", Type: StringFieldType},
+		{Name: "i", Type: IntegerFieldType},
+		{Name: "f", Type: FloatFieldType},
+		{Name: "b", Type: BooleanFieldType},
+	}
+	want := []Value{"x", 7, 3.14, true}
+	var got []Value
+	vl := (*valueList)(&got)
+	if err := vl.Load(want, schema); err != nil {
+		t.Fatal(err)
+	}
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %+v, want %+v", got, want)
+	}
+
+	// Load truncates, not appends.
+	// https://github.com/GoogleCloudPlatform/google-cloud-go/issues/437
+	if err := vl.Load(want, schema); err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %+v, want %+v", got, want)
 	}
 }
 
