@@ -116,7 +116,11 @@ property name, which must be one or more valid Go identifiers joined by ".",
 but may start with a lower case letter. An empty tag name means to just use the
 field name. A "-" tag name means that the datastore will ignore that field.
 
-The only valid options are "noindex" and "flatten".
+The only valid options are "omitempty", "noindex" and "flatten".
+
+If the options include "omitempty" and the value of the field is empty, then the field will be omitted on Save.
+The empty values are false, 0, any nil interface value, and any array, slice, map, or string of length zero.
+Struct field values will never be empty.
 
 If options include "noindex" then the field will not be indexed. All fields are indexed
 by default. Strings or byte slices longer than 1500 bytes cannot be indexed;
@@ -127,7 +131,7 @@ For a nested struct field, the options may also include "flatten". This indicate
 that the immediate fields and any nested substruct fields of the nested struct should be
 flattened. See below for examples.
 
-To use both the "noindex" and "flatten" options together, separate them by a comma.
+To use multiple options together, separate them by a comma.
 The order does not matter.
 
 If the options is "" then the comma may be omitted.
