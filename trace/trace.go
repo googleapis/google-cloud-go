@@ -217,23 +217,24 @@ var EnableGRPCTracingDialOption grpc.DialOption = grpc.WithUnaryInterceptor(grpc
 // The functionality in gRPC that this relies on is currently experimental.
 var EnableGRPCTracing option.ClientOption = option.WithGRPCDialOption(EnableGRPCTracingDialOption)
 
-func (client *Client) EnableGRPCServerTracing() func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
-		span := client.SpanFromGRPCContext(ctx, info.FullMethod)
-		resp, err = handler(ctx, req)
+func (client *Client) EnableGRPCServerTracing() grpc.ServerOption {
+	return grpc.UnaryInterceptor(func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+		span := client.spanFromGRPCContext(ctx, info.FullMethod)
+		resp, err = handler(NewContext(ctx, span), req)
 		if err != nil {
 			// TODO: standardize gRPC label names?
 			span.SetLabel("error", err.Error())
 		}
 		span.Finish()
 		return
-	}
+	})
 }
 
 func grpcUnaryInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 	// TODO: also intercept streams.
 	span := FromContext(ctx).NewChild(method)
-	err := invoker(ctx, method, req, reply, cc, opts...)
+
+	err := invoker(newGRPCContext(ctx, span), method, req, reply, cc, opts...)
 	if err != nil {
 		// TODO: standardize gRPC label names?
 		span.SetLabel("error", err.Error())
@@ -369,7 +370,7 @@ func (client *Client) SpanFromRequest(r *http.Request) *Span {
 	return span
 }
 
-func (client *Client) SpanFromGRPCContext(ctx context.Context, name string) *Span {
+func (client *Client) spanFromGRPCContext(ctx context.Context, name string) *Span {
 	if client == nil {
 		return nil
 	}
@@ -418,7 +419,7 @@ func NewContext(ctx context.Context, s *Span) context.Context {
 
 // NewGRPCContext returns a derived context compatible with gRPC
 // containing tracing information
-func NewGRPCContext(ctx context.Context, s *Span) context.Context {
+func newGRPCContext(ctx context.Context, s *Span) context.Context {
 	if s == nil {
 		return ctx
 	}
