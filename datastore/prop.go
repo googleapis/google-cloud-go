@@ -198,10 +198,8 @@ func getStructCodecLocked(t reflect.Type) (ret *structCodec, retErr error) {
 
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
-		// Skip unexported fields.
-		// Note that if f is an anonymous, unexported struct field,
-		// we will not promote its fields. We will skip f entirely.
-		if f.PkgPath != "" {
+		// Skip all unexported fields except unexported anonymous struct fields.
+		if f.PkgPath != "" /*unexported*/ && !(f.Type.Kind() == reflect.Struct && f.Anonymous) {
 			continue
 		}
 

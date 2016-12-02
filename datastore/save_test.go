@@ -156,8 +156,10 @@ func TestSaveEntityNested(t *testing.T) {
 			},
 			testKey0,
 			&pb.Entity{
-				Key:        keyToProto(testKey0),
-				Properties: map[string]*pb.Value{},
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"S": {ValueType: &pb.Value_StringValue{"hello"}},
+				},
 			},
 		},
 	}
