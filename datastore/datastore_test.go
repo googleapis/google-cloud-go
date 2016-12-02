@@ -136,6 +136,37 @@ type K1 struct {
 	K []*Key
 }
 
+type S struct {
+	St string
+}
+
+type NoOmit struct {
+	A string
+	B int  `datastore:"Bb"`
+	C bool `datastore:",noindex"`
+}
+
+type OmitAll struct {
+	A string `datastore:",omitempty"`
+	B int    `datastore:"Bb,omitempty"`
+	C bool   `datastore:",omitempty,noindex"`
+	F []int  `datastore:",omitempty"`
+}
+
+type Omit struct {
+	A string `datastore:",omitempty"`
+	B int    `datastore:"Bb,omitempty"`
+	C bool   `datastore:",omitempty,noindex"`
+	F []int  `datastore:",omitempty"`
+	S `datastore:",omitempty"`
+}
+
+type NoOmits struct {
+	No []NoOmit `datastore:",omitempty"`
+	S  `datastore:",omitempty"`
+	Ss S `datastore:",omitempty"`
+}
+
 type N0 struct {
 	X0
 	Nonymous X0
@@ -526,6 +557,88 @@ var testCases = []testCase{
 		"geopoint slice",
 		&G1{G: []GeoPoint{testGeoPt0, testGeoPt1}},
 		&G1{G: []GeoPoint{testGeoPt0, testGeoPt1}},
+		"",
+		"",
+	},
+	{
+		"omit empty, all",
+		&OmitAll{},
+		new(PropertyList),
+		"",
+		"",
+	},
+	{
+		"omit empty",
+		&Omit{},
+		&PropertyList{
+			Property{Name: "St", Value: "", NoIndex: false},
+		},
+		"",
+		"",
+	},
+	{
+		"omit empty, fields populated",
+		&Omit{
+			A: "a",
+			B: 10,
+			C: true,
+			F: []int{11},
+		},
+		&PropertyList{
+			Property{Name: "A", Value: "a", NoIndex: false},
+			Property{Name: "Bb", Value: int64(10), NoIndex: false},
+			Property{Name: "C", Value: true, NoIndex: true},
+			Property{Name: "F", Value: []interface{}{int64(11)}, NoIndex: false},
+			Property{Name: "St", Value: "", NoIndex: false},
+		},
+		"",
+		"",
+	},
+	{
+		"omit empty, fields populated",
+		&Omit{
+			A: "a",
+			B: 10,
+			C: true,
+			F: []int{11},
+			S: S{St: "string"},
+		},
+		&PropertyList{
+			Property{Name: "A", Value: "a", NoIndex: false},
+			Property{Name: "Bb", Value: int64(10), NoIndex: false},
+			Property{Name: "C", Value: true, NoIndex: true},
+			Property{Name: "F", Value: []interface{}{int64(11)}, NoIndex: false},
+			Property{Name: "St", Value: "string", NoIndex: false},
+		},
+		"",
+		"",
+	},
+	{
+		"omit empty does not propagate",
+		&NoOmits{
+			No: []NoOmit{
+				NoOmit{},
+			},
+			S:  S{},
+			Ss: S{},
+		},
+		&PropertyList{
+			Property{Name: "No", Value: []interface{}{
+				&Entity{
+					Properties: []Property{
+						Property{Name: "A", Value: "", NoIndex: false},
+						Property{Name: "Bb", Value: int64(0), NoIndex: false},
+						Property{Name: "C", Value: false, NoIndex: true},
+					},
+				},
+			}, NoIndex: false},
+			Property{Name: "Ss", Value: &Entity{
+				Properties: []Property{
+					Property{Name: "St", Value: "", NoIndex: false},
+				},
+			}, NoIndex: false},
+			Property{Name: "St", Value: "", NoIndex: false},
+		},
 		"",
 		"",
 	},

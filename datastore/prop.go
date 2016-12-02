@@ -154,6 +154,9 @@ type fieldCodec struct {
 	// flatten indicates that the field, a nested struct, should be saved
 	// as a flattened set of its fields, and not as an Entity value.
 	flatten bool
+	// omitEmpty indicates that the field should be omitted on save
+	// if empty.
+	omitEmpty bool
 	// structCodec is the codec fot the struct field at index 'path',
 	// or nil if the field is not a struct.
 	structCodec *structCodec
@@ -267,6 +270,7 @@ func getStructCodecLocked(t reflect.Type) (ret *structCodec, retErr error) {
 						path:        append([]int{i}, subfield.path...),
 						noIndex:     subfield.noIndex || opts["noindex"],
 						flatten:     subfield.flatten || opts["flatten"],
+						omitEmpty:   subfield.omitEmpty,
 						structCodec: subfield.structCodec,
 					}
 				}
@@ -281,6 +285,7 @@ func getStructCodecLocked(t reflect.Type) (ret *structCodec, retErr error) {
 			path:        []int{i},
 			noIndex:     opts["noindex"],
 			flatten:     opts["flatten"],
+			omitEmpty:   opts["omitempty"],
 			structCodec: sub,
 		}
 	}
