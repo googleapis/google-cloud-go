@@ -1447,7 +1447,9 @@ var testCases = []testCase{
 		&N4{
 			c4: c4{C: "s"},
 		},
-		new(PropertyList),
+		&PropertyList{
+			Property{Name: "C", Value: "s", NoIndex: false},
+		},
 		"",
 		"",
 	},
@@ -1653,7 +1655,6 @@ func TestRoundTrip(t *testing.T) {
 		}
 		if !equal {
 			t.Errorf("%s: compare:\ngot:  %#v\nwant: %#v", tc.desc, got, tc.want)
-			t.Logf("intermediate proto (%s):\n%s", tc.desc, proto.MarshalTextString(p))
 			continue
 		}
 	}
