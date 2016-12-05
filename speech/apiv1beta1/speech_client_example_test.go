@@ -20,7 +20,6 @@ import (
 	"io"
 
 	"cloud.google.com/go/speech/apiv1beta1"
-	"github.com/golang/protobuf/ptypes"
 	"golang.org/x/net/context"
 	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1beta1"
 )
@@ -68,11 +67,12 @@ func ExampleClient_AsyncRecognize() {
 		// TODO: Handle error.
 	}
 
-	var resp ptypes.DynamicAny // resp can also be concrete protobuf-generated types.
-	if err := op.Wait(ctx, &resp); err != nil {
+	resp, err := op.Wait(ctx)
+	if err != nil {
 		// TODO: Handle error.
 	}
 	// TODO: Use resp.
+	_ = resp
 }
 
 func StreamingRecognize() {

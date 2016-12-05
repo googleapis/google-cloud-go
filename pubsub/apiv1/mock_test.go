@@ -28,25 +28,29 @@ import (
 	"log"
 	"net"
 	"os"
-	"reflect"
 	"testing"
 
+	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )
 
 var _ = io.EOF
+var _ = ptypes.MarshalAny
+var _ status.Status
 
 type mockPublisherServer struct {
-	reqs []interface{}
+	reqs []proto.Message
 
 	// If set, all calls return this error.
 	err error
 
 	// responses to return if err == nil
-	resps []interface{}
+	resps []proto.Message
 }
 
 func (s *mockPublisherServer) CreateTopic(_ context.Context, req *pubsubpb.Topic) (*pubsubpb.Topic, error) {
@@ -98,13 +102,13 @@ func (s *mockPublisherServer) DeleteTopic(_ context.Context, req *pubsubpb.Delet
 }
 
 type mockIamPolicyServer struct {
-	reqs []interface{}
+	reqs []proto.Message
 
 	// If set, all calls return this error.
 	err error
 
 	// responses to return if err == nil
-	resps []interface{}
+	resps []proto.Message
 }
 
 func (s *mockIamPolicyServer) SetIamPolicy(_ context.Context, req *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
@@ -132,13 +136,13 @@ func (s *mockIamPolicyServer) TestIamPermissions(_ context.Context, req *iampb.T
 }
 
 type mockSubscriberServer struct {
-	reqs []interface{}
+	reqs []proto.Message
 
 	// If set, all calls return this error.
 	err error
 
 	// responses to return if err == nil
-	resps []interface{}
+	resps []proto.Message
 }
 
 func (s *mockSubscriberServer) CreateSubscription(_ context.Context, req *pubsubpb.Subscription) (*pubsubpb.Subscription, error) {
@@ -238,267 +242,845 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func TestPublisherCreateTopic(t *testing.T) {
+	var formattedName2 string = PublisherTopicPath("[PROJECT]", "[TOPIC]")
+	var expectedResponse = &pubsubpb.Topic{
+		Name: formattedName2,
+	}
+
+	mockPublisher.err = nil
+	mockPublisher.reqs = nil
+
+	mockPublisher.resps = append(mockPublisher.resps[:0], expectedResponse)
+
+	var formattedName string = PublisherTopicPath("[PROJECT]", "[TOPIC]")
+	var request = &pubsubpb.Topic{
+		Name: formattedName,
+	}
+
+	c, err := NewPublisherClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateTopic(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockPublisher.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestPublisherCreateTopicError(t *testing.T) {
 	errCode := codes.Internal
 	mockPublisher.err = grpc.Errorf(errCode, "test error")
 
+	var formattedName string = PublisherTopicPath("[PROJECT]", "[TOPIC]")
+	var request = &pubsubpb.Topic{
+		Name: formattedName,
+	}
+
 	c, err := NewPublisherClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *pubsubpb.Topic
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.CreateTopic(context.Background(), req)
+	resp, err := c.CreateTopic(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestPublisherPublish(t *testing.T) {
+	var messageIdsElement string = "messageIdsElement-744837059"
+	var messageIds = []string{messageIdsElement}
+	var expectedResponse = &pubsubpb.PublishResponse{
+		MessageIds: messageIds,
+	}
+
+	mockPublisher.err = nil
+	mockPublisher.reqs = nil
+
+	mockPublisher.resps = append(mockPublisher.resps[:0], expectedResponse)
+
+	var formattedTopic string = PublisherTopicPath("[PROJECT]", "[TOPIC]")
+	var data []byte = []byte("-86")
+	var messagesElement = &pubsubpb.PubsubMessage{
+		Data: data,
+	}
+	var messages = []*pubsubpb.PubsubMessage{messagesElement}
+	var request = &pubsubpb.PublishRequest{
+		Topic:    formattedTopic,
+		Messages: messages,
+	}
+
+	c, err := NewPublisherClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.Publish(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockPublisher.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestPublisherPublishError(t *testing.T) {
 	errCode := codes.Internal
 	mockPublisher.err = grpc.Errorf(errCode, "test error")
 
+	var formattedTopic string = PublisherTopicPath("[PROJECT]", "[TOPIC]")
+	var data []byte = []byte("-86")
+	var messagesElement = &pubsubpb.PubsubMessage{
+		Data: data,
+	}
+	var messages = []*pubsubpb.PubsubMessage{messagesElement}
+	var request = &pubsubpb.PublishRequest{
+		Topic:    formattedTopic,
+		Messages: messages,
+	}
+
 	c, err := NewPublisherClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *pubsubpb.PublishRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.Publish(context.Background(), req)
+	resp, err := c.Publish(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestPublisherGetTopic(t *testing.T) {
+	var name string = "name3373707"
+	var expectedResponse = &pubsubpb.Topic{
+		Name: name,
+	}
+
+	mockPublisher.err = nil
+	mockPublisher.reqs = nil
+
+	mockPublisher.resps = append(mockPublisher.resps[:0], expectedResponse)
+
+	var formattedTopic string = PublisherTopicPath("[PROJECT]", "[TOPIC]")
+	var request = &pubsubpb.GetTopicRequest{
+		Topic: formattedTopic,
+	}
+
+	c, err := NewPublisherClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetTopic(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockPublisher.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestPublisherGetTopicError(t *testing.T) {
 	errCode := codes.Internal
 	mockPublisher.err = grpc.Errorf(errCode, "test error")
 
+	var formattedTopic string = PublisherTopicPath("[PROJECT]", "[TOPIC]")
+	var request = &pubsubpb.GetTopicRequest{
+		Topic: formattedTopic,
+	}
+
 	c, err := NewPublisherClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *pubsubpb.GetTopicRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.GetTopic(context.Background(), req)
+	resp, err := c.GetTopic(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestPublisherListTopics(t *testing.T) {
+	var nextPageToken string = ""
+	var topicsElement *pubsubpb.Topic = &pubsubpb.Topic{}
+	var topics = []*pubsubpb.Topic{topicsElement}
+	var expectedResponse = &pubsubpb.ListTopicsResponse{
+		NextPageToken: nextPageToken,
+		Topics:        topics,
+	}
+
+	mockPublisher.err = nil
+	mockPublisher.reqs = nil
+
+	mockPublisher.resps = append(mockPublisher.resps[:0], expectedResponse)
+
+	var formattedProject string = PublisherProjectPath("[PROJECT]")
+	var request = &pubsubpb.ListTopicsRequest{
+		Project: formattedProject,
+	}
+
+	c, err := NewPublisherClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListTopics(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockPublisher.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.Topics[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestPublisherListTopicsError(t *testing.T) {
 	errCode := codes.Internal
 	mockPublisher.err = grpc.Errorf(errCode, "test error")
 
+	var formattedProject string = PublisherProjectPath("[PROJECT]")
+	var request = &pubsubpb.ListTopicsRequest{
+		Project: formattedProject,
+	}
+
 	c, err := NewPublisherClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *pubsubpb.ListTopicsRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.ListTopics(context.Background(), req).Next()
+	resp, err := c.ListTopics(context.Background(), request).Next()
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestPublisherListTopicSubscriptions(t *testing.T) {
+	var nextPageToken string = ""
+	var subscriptionsElement string = "subscriptionsElement1698708147"
+	var subscriptions = []string{subscriptionsElement}
+	var expectedResponse = &pubsubpb.ListTopicSubscriptionsResponse{
+		NextPageToken: nextPageToken,
+		Subscriptions: subscriptions,
+	}
+
+	mockPublisher.err = nil
+	mockPublisher.reqs = nil
+
+	mockPublisher.resps = append(mockPublisher.resps[:0], expectedResponse)
+
+	var formattedTopic string = PublisherTopicPath("[PROJECT]", "[TOPIC]")
+	var request = &pubsubpb.ListTopicSubscriptionsRequest{
+		Topic: formattedTopic,
+	}
+
+	c, err := NewPublisherClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListTopicSubscriptions(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockPublisher.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.Subscriptions[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestPublisherListTopicSubscriptionsError(t *testing.T) {
 	errCode := codes.Internal
 	mockPublisher.err = grpc.Errorf(errCode, "test error")
 
+	var formattedTopic string = PublisherTopicPath("[PROJECT]", "[TOPIC]")
+	var request = &pubsubpb.ListTopicSubscriptionsRequest{
+		Topic: formattedTopic,
+	}
+
 	c, err := NewPublisherClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *pubsubpb.ListTopicSubscriptionsRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.ListTopicSubscriptions(context.Background(), req).Next()
+	resp, err := c.ListTopicSubscriptions(context.Background(), request).Next()
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestPublisherDeleteTopic(t *testing.T) {
+	var expectedResponse *google_protobuf.Empty = &google_protobuf.Empty{}
+
+	mockPublisher.err = nil
+	mockPublisher.reqs = nil
+
+	mockPublisher.resps = append(mockPublisher.resps[:0], expectedResponse)
+
+	var formattedTopic string = PublisherTopicPath("[PROJECT]", "[TOPIC]")
+	var request = &pubsubpb.DeleteTopicRequest{
+		Topic: formattedTopic,
+	}
+
+	c, err := NewPublisherClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteTopic(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockPublisher.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
 func TestPublisherDeleteTopicError(t *testing.T) {
 	errCode := codes.Internal
 	mockPublisher.err = grpc.Errorf(errCode, "test error")
 
+	var formattedTopic string = PublisherTopicPath("[PROJECT]", "[TOPIC]")
+	var request = &pubsubpb.DeleteTopicRequest{
+		Topic: formattedTopic,
+	}
+
 	c, err := NewPublisherClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *pubsubpb.DeleteTopicRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	err = c.DeleteTopic(context.Background(), req)
+	err = c.DeleteTopic(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
 }
+func TestSubscriberCreateSubscription(t *testing.T) {
+	var formattedName2 string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var formattedTopic2 string = SubscriberTopicPath("[PROJECT]", "[TOPIC]")
+	var ackDeadlineSeconds int32 = 2135351438
+	var expectedResponse = &pubsubpb.Subscription{
+		Name:               formattedName2,
+		Topic:              formattedTopic2,
+		AckDeadlineSeconds: ackDeadlineSeconds,
+	}
+
+	mockSubscriber.err = nil
+	mockSubscriber.reqs = nil
+
+	mockSubscriber.resps = append(mockSubscriber.resps[:0], expectedResponse)
+
+	var formattedName string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var formattedTopic string = SubscriberTopicPath("[PROJECT]", "[TOPIC]")
+	var request = &pubsubpb.Subscription{
+		Name:  formattedName,
+		Topic: formattedTopic,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateSubscription(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockSubscriber.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestSubscriberCreateSubscriptionError(t *testing.T) {
 	errCode := codes.Internal
 	mockSubscriber.err = grpc.Errorf(errCode, "test error")
 
+	var formattedName string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var formattedTopic string = SubscriberTopicPath("[PROJECT]", "[TOPIC]")
+	var request = &pubsubpb.Subscription{
+		Name:  formattedName,
+		Topic: formattedTopic,
+	}
+
 	c, err := NewSubscriberClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *pubsubpb.Subscription
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.CreateSubscription(context.Background(), req)
+	resp, err := c.CreateSubscription(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestSubscriberGetSubscription(t *testing.T) {
+	var name string = "name3373707"
+	var topic string = "topic110546223"
+	var ackDeadlineSeconds int32 = 2135351438
+	var expectedResponse = &pubsubpb.Subscription{
+		Name:               name,
+		Topic:              topic,
+		AckDeadlineSeconds: ackDeadlineSeconds,
+	}
+
+	mockSubscriber.err = nil
+	mockSubscriber.reqs = nil
+
+	mockSubscriber.resps = append(mockSubscriber.resps[:0], expectedResponse)
+
+	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var request = &pubsubpb.GetSubscriptionRequest{
+		Subscription: formattedSubscription,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetSubscription(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockSubscriber.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestSubscriberGetSubscriptionError(t *testing.T) {
 	errCode := codes.Internal
 	mockSubscriber.err = grpc.Errorf(errCode, "test error")
 
+	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var request = &pubsubpb.GetSubscriptionRequest{
+		Subscription: formattedSubscription,
+	}
+
 	c, err := NewSubscriberClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *pubsubpb.GetSubscriptionRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.GetSubscription(context.Background(), req)
+	resp, err := c.GetSubscription(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestSubscriberListSubscriptions(t *testing.T) {
+	var nextPageToken string = ""
+	var subscriptionsElement *pubsubpb.Subscription = &pubsubpb.Subscription{}
+	var subscriptions = []*pubsubpb.Subscription{subscriptionsElement}
+	var expectedResponse = &pubsubpb.ListSubscriptionsResponse{
+		NextPageToken: nextPageToken,
+		Subscriptions: subscriptions,
+	}
+
+	mockSubscriber.err = nil
+	mockSubscriber.reqs = nil
+
+	mockSubscriber.resps = append(mockSubscriber.resps[:0], expectedResponse)
+
+	var formattedProject string = SubscriberProjectPath("[PROJECT]")
+	var request = &pubsubpb.ListSubscriptionsRequest{
+		Project: formattedProject,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListSubscriptions(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockSubscriber.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.Subscriptions[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestSubscriberListSubscriptionsError(t *testing.T) {
 	errCode := codes.Internal
 	mockSubscriber.err = grpc.Errorf(errCode, "test error")
 
+	var formattedProject string = SubscriberProjectPath("[PROJECT]")
+	var request = &pubsubpb.ListSubscriptionsRequest{
+		Project: formattedProject,
+	}
+
 	c, err := NewSubscriberClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *pubsubpb.ListSubscriptionsRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.ListSubscriptions(context.Background(), req).Next()
+	resp, err := c.ListSubscriptions(context.Background(), request).Next()
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestSubscriberDeleteSubscription(t *testing.T) {
+	var expectedResponse *google_protobuf.Empty = &google_protobuf.Empty{}
+
+	mockSubscriber.err = nil
+	mockSubscriber.reqs = nil
+
+	mockSubscriber.resps = append(mockSubscriber.resps[:0], expectedResponse)
+
+	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var request = &pubsubpb.DeleteSubscriptionRequest{
+		Subscription: formattedSubscription,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteSubscription(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockSubscriber.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
 func TestSubscriberDeleteSubscriptionError(t *testing.T) {
 	errCode := codes.Internal
 	mockSubscriber.err = grpc.Errorf(errCode, "test error")
 
+	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var request = &pubsubpb.DeleteSubscriptionRequest{
+		Subscription: formattedSubscription,
+	}
+
 	c, err := NewSubscriberClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *pubsubpb.DeleteSubscriptionRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	err = c.DeleteSubscription(context.Background(), req)
+	err = c.DeleteSubscription(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
 }
+func TestSubscriberModifyAckDeadline(t *testing.T) {
+	var expectedResponse *google_protobuf.Empty = &google_protobuf.Empty{}
+
+	mockSubscriber.err = nil
+	mockSubscriber.reqs = nil
+
+	mockSubscriber.resps = append(mockSubscriber.resps[:0], expectedResponse)
+
+	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var ackIds []string = nil
+	var ackDeadlineSeconds int32 = 2135351438
+	var request = &pubsubpb.ModifyAckDeadlineRequest{
+		Subscription:       formattedSubscription,
+		AckIds:             ackIds,
+		AckDeadlineSeconds: ackDeadlineSeconds,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.ModifyAckDeadline(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockSubscriber.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
 func TestSubscriberModifyAckDeadlineError(t *testing.T) {
 	errCode := codes.Internal
 	mockSubscriber.err = grpc.Errorf(errCode, "test error")
 
+	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var ackIds []string = nil
+	var ackDeadlineSeconds int32 = 2135351438
+	var request = &pubsubpb.ModifyAckDeadlineRequest{
+		Subscription:       formattedSubscription,
+		AckIds:             ackIds,
+		AckDeadlineSeconds: ackDeadlineSeconds,
+	}
+
 	c, err := NewSubscriberClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *pubsubpb.ModifyAckDeadlineRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	err = c.ModifyAckDeadline(context.Background(), req)
+	err = c.ModifyAckDeadline(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
 }
+func TestSubscriberAcknowledge(t *testing.T) {
+	var expectedResponse *google_protobuf.Empty = &google_protobuf.Empty{}
+
+	mockSubscriber.err = nil
+	mockSubscriber.reqs = nil
+
+	mockSubscriber.resps = append(mockSubscriber.resps[:0], expectedResponse)
+
+	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var ackIds []string = nil
+	var request = &pubsubpb.AcknowledgeRequest{
+		Subscription: formattedSubscription,
+		AckIds:       ackIds,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.Acknowledge(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockSubscriber.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
 func TestSubscriberAcknowledgeError(t *testing.T) {
 	errCode := codes.Internal
 	mockSubscriber.err = grpc.Errorf(errCode, "test error")
 
+	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var ackIds []string = nil
+	var request = &pubsubpb.AcknowledgeRequest{
+		Subscription: formattedSubscription,
+		AckIds:       ackIds,
+	}
+
 	c, err := NewSubscriberClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *pubsubpb.AcknowledgeRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	err = c.Acknowledge(context.Background(), req)
+	err = c.Acknowledge(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
 }
+func TestSubscriberPull(t *testing.T) {
+	var expectedResponse *pubsubpb.PullResponse = &pubsubpb.PullResponse{}
+
+	mockSubscriber.err = nil
+	mockSubscriber.reqs = nil
+
+	mockSubscriber.resps = append(mockSubscriber.resps[:0], expectedResponse)
+
+	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var maxMessages int32 = 496131527
+	var request = &pubsubpb.PullRequest{
+		Subscription: formattedSubscription,
+		MaxMessages:  maxMessages,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.Pull(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockSubscriber.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestSubscriberPullError(t *testing.T) {
 	errCode := codes.Internal
 	mockSubscriber.err = grpc.Errorf(errCode, "test error")
 
+	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var maxMessages int32 = 496131527
+	var request = &pubsubpb.PullRequest{
+		Subscription: formattedSubscription,
+		MaxMessages:  maxMessages,
+	}
+
 	c, err := NewSubscriberClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *pubsubpb.PullRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.Pull(context.Background(), req)
+	resp, err := c.Pull(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
-func TestSubscriberModifyPushConfigError(t *testing.T) {
-	errCode := codes.Internal
-	mockSubscriber.err = grpc.Errorf(errCode, "test error")
+func TestSubscriberModifyPushConfig(t *testing.T) {
+	var expectedResponse *google_protobuf.Empty = &google_protobuf.Empty{}
+
+	mockSubscriber.err = nil
+	mockSubscriber.reqs = nil
+
+	mockSubscriber.resps = append(mockSubscriber.resps[:0], expectedResponse)
+
+	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var pushConfig *pubsubpb.PushConfig = &pubsubpb.PushConfig{}
+	var request = &pubsubpb.ModifyPushConfigRequest{
+		Subscription: formattedSubscription,
+		PushConfig:   pushConfig,
+	}
 
 	c, err := NewSubscriberClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *pubsubpb.ModifyPushConfigRequest
+	err = c.ModifyPushConfig(context.Background(), request)
 
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	err = c.ModifyPushConfig(context.Background(), req)
+	if want, got := request, mockSubscriber.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestSubscriberModifyPushConfigError(t *testing.T) {
+	errCode := codes.Internal
+	mockSubscriber.err = grpc.Errorf(errCode, "test error")
+
+	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var pushConfig *pubsubpb.PushConfig = &pubsubpb.PushConfig{}
+	var request = &pubsubpb.ModifyPushConfigRequest{
+		Subscription: formattedSubscription,
+		PushConfig:   pushConfig,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.ModifyPushConfig(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)

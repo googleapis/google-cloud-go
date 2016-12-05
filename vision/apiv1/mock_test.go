@@ -26,25 +26,29 @@ import (
 	"log"
 	"net"
 	"os"
-	"reflect"
 	"testing"
 
+	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )
 
 var _ = io.EOF
+var _ = ptypes.MarshalAny
+var _ status.Status
 
 type mockImageAnnotatorServer struct {
-	reqs []interface{}
+	reqs []proto.Message
 
 	// If set, all calls return this error.
 	err error
 
 	// responses to return if err == nil
-	resps []interface{}
+	resps []proto.Message
 }
 
 func (s *mockImageAnnotatorServer) BatchAnnotateImages(_ context.Context, req *visionpb.BatchAnnotateImagesRequest) (*visionpb.BatchAnnotateImagesResponse, error) {
@@ -84,22 +88,57 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestImageAnnotatorBatchAnnotateImagesError(t *testing.T) {
-	errCode := codes.Internal
-	mockImageAnnotator.err = grpc.Errorf(errCode, "test error")
+func TestImageAnnotatorBatchAnnotateImages(t *testing.T) {
+	var expectedResponse *visionpb.BatchAnnotateImagesResponse = &visionpb.BatchAnnotateImagesResponse{}
+
+	mockImageAnnotator.err = nil
+	mockImageAnnotator.reqs = nil
+
+	mockImageAnnotator.resps = append(mockImageAnnotator.resps[:0], expectedResponse)
+
+	var requests []*visionpb.AnnotateImageRequest = nil
+	var request = &visionpb.BatchAnnotateImagesRequest{
+		Requests: requests,
+	}
 
 	c, err := NewImageAnnotatorClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *visionpb.BatchAnnotateImagesRequest
+	resp, err := c.BatchAnnotateImages(context.Background(), request)
 
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	_, err = c.BatchAnnotateImages(context.Background(), req)
+	if want, got := request, mockImageAnnotator.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestImageAnnotatorBatchAnnotateImagesError(t *testing.T) {
+	errCode := codes.Internal
+	mockImageAnnotator.err = grpc.Errorf(errCode, "test error")
+
+	var requests []*visionpb.AnnotateImageRequest = nil
+	var request = &visionpb.BatchAnnotateImagesRequest{
+		Requests: requests,
+	}
+
+	c, err := NewImageAnnotatorClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.BatchAnnotateImages(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }

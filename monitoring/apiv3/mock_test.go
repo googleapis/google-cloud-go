@@ -29,25 +29,29 @@ import (
 	"log"
 	"net"
 	"os"
-	"reflect"
 	"testing"
 
+	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )
 
 var _ = io.EOF
+var _ = ptypes.MarshalAny
+var _ status.Status
 
 type mockGroupServer struct {
-	reqs []interface{}
+	reqs []proto.Message
 
 	// If set, all calls return this error.
 	err error
 
 	// responses to return if err == nil
-	resps []interface{}
+	resps []proto.Message
 }
 
 func (s *mockGroupServer) ListGroups(_ context.Context, req *monitoringpb.ListGroupsRequest) (*monitoringpb.ListGroupsResponse, error) {
@@ -99,13 +103,13 @@ func (s *mockGroupServer) ListGroupMembers(_ context.Context, req *monitoringpb.
 }
 
 type mockMetricServer struct {
-	reqs []interface{}
+	reqs []proto.Message
 
 	// If set, all calls return this error.
 	err error
 
 	// responses to return if err == nil
-	resps []interface{}
+	resps []proto.Message
 }
 
 func (s *mockMetricServer) ListMonitoredResourceDescriptors(_ context.Context, req *monitoringpb.ListMonitoredResourceDescriptorsRequest) (*monitoringpb.ListMonitoredResourceDescriptorsResponse, error) {
@@ -203,267 +207,915 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func TestGroupServiceListGroups(t *testing.T) {
+	var nextPageToken string = ""
+	var groupElement *monitoringpb.Group = &monitoringpb.Group{}
+	var group = []*monitoringpb.Group{groupElement}
+	var expectedResponse = &monitoringpb.ListGroupsResponse{
+		NextPageToken: nextPageToken,
+		Group:         group,
+	}
+
+	mockGroup.err = nil
+	mockGroup.reqs = nil
+
+	mockGroup.resps = append(mockGroup.resps[:0], expectedResponse)
+
+	var formattedName string = GroupProjectPath("[PROJECT]")
+	var request = &monitoringpb.ListGroupsRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewGroupClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListGroups(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockGroup.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.Group[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestGroupServiceListGroupsError(t *testing.T) {
 	errCode := codes.Internal
 	mockGroup.err = grpc.Errorf(errCode, "test error")
 
+	var formattedName string = GroupProjectPath("[PROJECT]")
+	var request = &monitoringpb.ListGroupsRequest{
+		Name: formattedName,
+	}
+
 	c, err := NewGroupClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *monitoringpb.ListGroupsRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.ListGroups(context.Background(), req).Next()
+	resp, err := c.ListGroups(context.Background(), request).Next()
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestGroupServiceGetGroup(t *testing.T) {
+	var formattedName2 string = GroupGroupPath("[PROJECT]", "[GROUP]")
+	var displayName string = "displayName1615086568"
+	var parentName string = "parentName1015022848"
+	var filter string = "filter-1274492040"
+	var isCluster bool = false
+	var expectedResponse = &monitoringpb.Group{
+		Name:        formattedName2,
+		DisplayName: displayName,
+		ParentName:  parentName,
+		Filter:      filter,
+		IsCluster:   isCluster,
+	}
+
+	mockGroup.err = nil
+	mockGroup.reqs = nil
+
+	mockGroup.resps = append(mockGroup.resps[:0], expectedResponse)
+
+	var formattedName string = GroupGroupPath("[PROJECT]", "[GROUP]")
+	var request = &monitoringpb.GetGroupRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewGroupClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetGroup(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockGroup.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestGroupServiceGetGroupError(t *testing.T) {
 	errCode := codes.Internal
 	mockGroup.err = grpc.Errorf(errCode, "test error")
 
+	var formattedName string = GroupGroupPath("[PROJECT]", "[GROUP]")
+	var request = &monitoringpb.GetGroupRequest{
+		Name: formattedName,
+	}
+
 	c, err := NewGroupClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *monitoringpb.GetGroupRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.GetGroup(context.Background(), req)
+	resp, err := c.GetGroup(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestGroupServiceCreateGroup(t *testing.T) {
+	var formattedName2 string = GroupProjectPath("[PROJECT]")
+	var displayName string = "displayName1615086568"
+	var parentName string = "parentName1015022848"
+	var filter string = "filter-1274492040"
+	var isCluster bool = false
+	var expectedResponse = &monitoringpb.Group{
+		Name:        formattedName2,
+		DisplayName: displayName,
+		ParentName:  parentName,
+		Filter:      filter,
+		IsCluster:   isCluster,
+	}
+
+	mockGroup.err = nil
+	mockGroup.reqs = nil
+
+	mockGroup.resps = append(mockGroup.resps[:0], expectedResponse)
+
+	var formattedName string = GroupProjectPath("[PROJECT]")
+	var group *monitoringpb.Group = &monitoringpb.Group{}
+	var request = &monitoringpb.CreateGroupRequest{
+		Name:  formattedName,
+		Group: group,
+	}
+
+	c, err := NewGroupClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateGroup(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockGroup.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestGroupServiceCreateGroupError(t *testing.T) {
 	errCode := codes.Internal
 	mockGroup.err = grpc.Errorf(errCode, "test error")
 
+	var formattedName string = GroupProjectPath("[PROJECT]")
+	var group *monitoringpb.Group = &monitoringpb.Group{}
+	var request = &monitoringpb.CreateGroupRequest{
+		Name:  formattedName,
+		Group: group,
+	}
+
 	c, err := NewGroupClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *monitoringpb.CreateGroupRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.CreateGroup(context.Background(), req)
+	resp, err := c.CreateGroup(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestGroupServiceUpdateGroup(t *testing.T) {
+	var name string = "name3373707"
+	var displayName string = "displayName1615086568"
+	var parentName string = "parentName1015022848"
+	var filter string = "filter-1274492040"
+	var isCluster bool = false
+	var expectedResponse = &monitoringpb.Group{
+		Name:        name,
+		DisplayName: displayName,
+		ParentName:  parentName,
+		Filter:      filter,
+		IsCluster:   isCluster,
+	}
+
+	mockGroup.err = nil
+	mockGroup.reqs = nil
+
+	mockGroup.resps = append(mockGroup.resps[:0], expectedResponse)
+
+	var group *monitoringpb.Group = &monitoringpb.Group{}
+	var request = &monitoringpb.UpdateGroupRequest{
+		Group: group,
+	}
+
+	c, err := NewGroupClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateGroup(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockGroup.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestGroupServiceUpdateGroupError(t *testing.T) {
 	errCode := codes.Internal
 	mockGroup.err = grpc.Errorf(errCode, "test error")
 
+	var group *monitoringpb.Group = &monitoringpb.Group{}
+	var request = &monitoringpb.UpdateGroupRequest{
+		Group: group,
+	}
+
 	c, err := NewGroupClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *monitoringpb.UpdateGroupRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.UpdateGroup(context.Background(), req)
+	resp, err := c.UpdateGroup(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestGroupServiceDeleteGroup(t *testing.T) {
+	var expectedResponse *google_protobuf.Empty = &google_protobuf.Empty{}
+
+	mockGroup.err = nil
+	mockGroup.reqs = nil
+
+	mockGroup.resps = append(mockGroup.resps[:0], expectedResponse)
+
+	var formattedName string = GroupGroupPath("[PROJECT]", "[GROUP]")
+	var request = &monitoringpb.DeleteGroupRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewGroupClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteGroup(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockGroup.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
 func TestGroupServiceDeleteGroupError(t *testing.T) {
 	errCode := codes.Internal
 	mockGroup.err = grpc.Errorf(errCode, "test error")
 
+	var formattedName string = GroupGroupPath("[PROJECT]", "[GROUP]")
+	var request = &monitoringpb.DeleteGroupRequest{
+		Name: formattedName,
+	}
+
 	c, err := NewGroupClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *monitoringpb.DeleteGroupRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	err = c.DeleteGroup(context.Background(), req)
+	err = c.DeleteGroup(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
 }
+func TestGroupServiceListGroupMembers(t *testing.T) {
+	var nextPageToken string = ""
+	var totalSize int32 = -705419236
+	var membersElement *monitoredrespb.MonitoredResource = &monitoredrespb.MonitoredResource{}
+	var members = []*monitoredrespb.MonitoredResource{membersElement}
+	var expectedResponse = &monitoringpb.ListGroupMembersResponse{
+		NextPageToken: nextPageToken,
+		TotalSize:     totalSize,
+		Members:       members,
+	}
+
+	mockGroup.err = nil
+	mockGroup.reqs = nil
+
+	mockGroup.resps = append(mockGroup.resps[:0], expectedResponse)
+
+	var formattedName string = GroupGroupPath("[PROJECT]", "[GROUP]")
+	var request = &monitoringpb.ListGroupMembersRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewGroupClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListGroupMembers(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockGroup.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.Members[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestGroupServiceListGroupMembersError(t *testing.T) {
 	errCode := codes.Internal
 	mockGroup.err = grpc.Errorf(errCode, "test error")
 
+	var formattedName string = GroupGroupPath("[PROJECT]", "[GROUP]")
+	var request = &monitoringpb.ListGroupMembersRequest{
+		Name: formattedName,
+	}
+
 	c, err := NewGroupClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *monitoringpb.ListGroupMembersRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.ListGroupMembers(context.Background(), req).Next()
+	resp, err := c.ListGroupMembers(context.Background(), request).Next()
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestMetricServiceListMonitoredResourceDescriptors(t *testing.T) {
+	var nextPageToken string = ""
+	var resourceDescriptorsElement *monitoredrespb.MonitoredResourceDescriptor = &monitoredrespb.MonitoredResourceDescriptor{}
+	var resourceDescriptors = []*monitoredrespb.MonitoredResourceDescriptor{resourceDescriptorsElement}
+	var expectedResponse = &monitoringpb.ListMonitoredResourceDescriptorsResponse{
+		NextPageToken:       nextPageToken,
+		ResourceDescriptors: resourceDescriptors,
+	}
+
+	mockMetric.err = nil
+	mockMetric.reqs = nil
+
+	mockMetric.resps = append(mockMetric.resps[:0], expectedResponse)
+
+	var formattedName string = MetricProjectPath("[PROJECT]")
+	var request = &monitoringpb.ListMonitoredResourceDescriptorsRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewMetricClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListMonitoredResourceDescriptors(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockMetric.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.ResourceDescriptors[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestMetricServiceListMonitoredResourceDescriptorsError(t *testing.T) {
 	errCode := codes.Internal
 	mockMetric.err = grpc.Errorf(errCode, "test error")
 
+	var formattedName string = MetricProjectPath("[PROJECT]")
+	var request = &monitoringpb.ListMonitoredResourceDescriptorsRequest{
+		Name: formattedName,
+	}
+
 	c, err := NewMetricClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *monitoringpb.ListMonitoredResourceDescriptorsRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.ListMonitoredResourceDescriptors(context.Background(), req).Next()
+	resp, err := c.ListMonitoredResourceDescriptors(context.Background(), request).Next()
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestMetricServiceGetMonitoredResourceDescriptor(t *testing.T) {
+	var formattedName2 string = MetricMonitoredResourceDescriptorPath("[PROJECT]", "[MONITORED_RESOURCE_DESCRIPTOR]")
+	var type_ string = "type3575610"
+	var displayName string = "displayName1615086568"
+	var description string = "description-1724546052"
+	var expectedResponse = &monitoredrespb.MonitoredResourceDescriptor{
+		Name:        formattedName2,
+		Type:        type_,
+		DisplayName: displayName,
+		Description: description,
+	}
+
+	mockMetric.err = nil
+	mockMetric.reqs = nil
+
+	mockMetric.resps = append(mockMetric.resps[:0], expectedResponse)
+
+	var formattedName string = MetricMonitoredResourceDescriptorPath("[PROJECT]", "[MONITORED_RESOURCE_DESCRIPTOR]")
+	var request = &monitoringpb.GetMonitoredResourceDescriptorRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewMetricClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetMonitoredResourceDescriptor(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockMetric.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestMetricServiceGetMonitoredResourceDescriptorError(t *testing.T) {
 	errCode := codes.Internal
 	mockMetric.err = grpc.Errorf(errCode, "test error")
 
+	var formattedName string = MetricMonitoredResourceDescriptorPath("[PROJECT]", "[MONITORED_RESOURCE_DESCRIPTOR]")
+	var request = &monitoringpb.GetMonitoredResourceDescriptorRequest{
+		Name: formattedName,
+	}
+
 	c, err := NewMetricClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *monitoringpb.GetMonitoredResourceDescriptorRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.GetMonitoredResourceDescriptor(context.Background(), req)
+	resp, err := c.GetMonitoredResourceDescriptor(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestMetricServiceListMetricDescriptors(t *testing.T) {
+	var nextPageToken string = ""
+	var metricDescriptorsElement *metricpb.MetricDescriptor = &metricpb.MetricDescriptor{}
+	var metricDescriptors = []*metricpb.MetricDescriptor{metricDescriptorsElement}
+	var expectedResponse = &monitoringpb.ListMetricDescriptorsResponse{
+		NextPageToken:     nextPageToken,
+		MetricDescriptors: metricDescriptors,
+	}
+
+	mockMetric.err = nil
+	mockMetric.reqs = nil
+
+	mockMetric.resps = append(mockMetric.resps[:0], expectedResponse)
+
+	var formattedName string = MetricProjectPath("[PROJECT]")
+	var request = &monitoringpb.ListMetricDescriptorsRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewMetricClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListMetricDescriptors(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockMetric.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.MetricDescriptors[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestMetricServiceListMetricDescriptorsError(t *testing.T) {
 	errCode := codes.Internal
 	mockMetric.err = grpc.Errorf(errCode, "test error")
 
+	var formattedName string = MetricProjectPath("[PROJECT]")
+	var request = &monitoringpb.ListMetricDescriptorsRequest{
+		Name: formattedName,
+	}
+
 	c, err := NewMetricClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *monitoringpb.ListMetricDescriptorsRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.ListMetricDescriptors(context.Background(), req).Next()
+	resp, err := c.ListMetricDescriptors(context.Background(), request).Next()
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestMetricServiceGetMetricDescriptor(t *testing.T) {
+	var formattedName2 string = MetricMetricDescriptorPath("[PROJECT]", "[METRIC_DESCRIPTOR]")
+	var type_ string = "type3575610"
+	var unit string = "unit3594628"
+	var description string = "description-1724546052"
+	var displayName string = "displayName1615086568"
+	var expectedResponse = &metricpb.MetricDescriptor{
+		Name:        formattedName2,
+		Type:        type_,
+		Unit:        unit,
+		Description: description,
+		DisplayName: displayName,
+	}
+
+	mockMetric.err = nil
+	mockMetric.reqs = nil
+
+	mockMetric.resps = append(mockMetric.resps[:0], expectedResponse)
+
+	var formattedName string = MetricMetricDescriptorPath("[PROJECT]", "[METRIC_DESCRIPTOR]")
+	var request = &monitoringpb.GetMetricDescriptorRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewMetricClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetMetricDescriptor(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockMetric.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestMetricServiceGetMetricDescriptorError(t *testing.T) {
 	errCode := codes.Internal
 	mockMetric.err = grpc.Errorf(errCode, "test error")
 
+	var formattedName string = MetricMetricDescriptorPath("[PROJECT]", "[METRIC_DESCRIPTOR]")
+	var request = &monitoringpb.GetMetricDescriptorRequest{
+		Name: formattedName,
+	}
+
 	c, err := NewMetricClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *monitoringpb.GetMetricDescriptorRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.GetMetricDescriptor(context.Background(), req)
+	resp, err := c.GetMetricDescriptor(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestMetricServiceCreateMetricDescriptor(t *testing.T) {
+	var formattedName2 string = MetricProjectPath("[PROJECT]")
+	var type_ string = "type3575610"
+	var unit string = "unit3594628"
+	var description string = "description-1724546052"
+	var displayName string = "displayName1615086568"
+	var expectedResponse = &metricpb.MetricDescriptor{
+		Name:        formattedName2,
+		Type:        type_,
+		Unit:        unit,
+		Description: description,
+		DisplayName: displayName,
+	}
+
+	mockMetric.err = nil
+	mockMetric.reqs = nil
+
+	mockMetric.resps = append(mockMetric.resps[:0], expectedResponse)
+
+	var formattedName string = MetricProjectPath("[PROJECT]")
+	var metricDescriptor *metricpb.MetricDescriptor = &metricpb.MetricDescriptor{}
+	var request = &monitoringpb.CreateMetricDescriptorRequest{
+		Name:             formattedName,
+		MetricDescriptor: metricDescriptor,
+	}
+
+	c, err := NewMetricClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateMetricDescriptor(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockMetric.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestMetricServiceCreateMetricDescriptorError(t *testing.T) {
 	errCode := codes.Internal
 	mockMetric.err = grpc.Errorf(errCode, "test error")
 
+	var formattedName string = MetricProjectPath("[PROJECT]")
+	var metricDescriptor *metricpb.MetricDescriptor = &metricpb.MetricDescriptor{}
+	var request = &monitoringpb.CreateMetricDescriptorRequest{
+		Name:             formattedName,
+		MetricDescriptor: metricDescriptor,
+	}
+
 	c, err := NewMetricClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *monitoringpb.CreateMetricDescriptorRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.CreateMetricDescriptor(context.Background(), req)
+	resp, err := c.CreateMetricDescriptor(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestMetricServiceDeleteMetricDescriptor(t *testing.T) {
+	var expectedResponse *google_protobuf.Empty = &google_protobuf.Empty{}
+
+	mockMetric.err = nil
+	mockMetric.reqs = nil
+
+	mockMetric.resps = append(mockMetric.resps[:0], expectedResponse)
+
+	var formattedName string = MetricMetricDescriptorPath("[PROJECT]", "[METRIC_DESCRIPTOR]")
+	var request = &monitoringpb.DeleteMetricDescriptorRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewMetricClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteMetricDescriptor(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockMetric.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
 func TestMetricServiceDeleteMetricDescriptorError(t *testing.T) {
 	errCode := codes.Internal
 	mockMetric.err = grpc.Errorf(errCode, "test error")
 
+	var formattedName string = MetricMetricDescriptorPath("[PROJECT]", "[METRIC_DESCRIPTOR]")
+	var request = &monitoringpb.DeleteMetricDescriptorRequest{
+		Name: formattedName,
+	}
+
 	c, err := NewMetricClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *monitoringpb.DeleteMetricDescriptorRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	err = c.DeleteMetricDescriptor(context.Background(), req)
+	err = c.DeleteMetricDescriptor(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
 }
+func TestMetricServiceListTimeSeries(t *testing.T) {
+	var nextPageToken string = ""
+	var timeSeriesElement *monitoringpb.TimeSeries = &monitoringpb.TimeSeries{}
+	var timeSeries = []*monitoringpb.TimeSeries{timeSeriesElement}
+	var expectedResponse = &monitoringpb.ListTimeSeriesResponse{
+		NextPageToken: nextPageToken,
+		TimeSeries:    timeSeries,
+	}
+
+	mockMetric.err = nil
+	mockMetric.reqs = nil
+
+	mockMetric.resps = append(mockMetric.resps[:0], expectedResponse)
+
+	var formattedName string = MetricProjectPath("[PROJECT]")
+	var filter string = "filter-1274492040"
+	var interval *monitoringpb.TimeInterval = &monitoringpb.TimeInterval{}
+	var view monitoringpb.ListTimeSeriesRequest_TimeSeriesView = 0
+	var request = &monitoringpb.ListTimeSeriesRequest{
+		Name:     formattedName,
+		Filter:   filter,
+		Interval: interval,
+		View:     view,
+	}
+
+	c, err := NewMetricClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListTimeSeries(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockMetric.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.TimeSeries[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestMetricServiceListTimeSeriesError(t *testing.T) {
 	errCode := codes.Internal
 	mockMetric.err = grpc.Errorf(errCode, "test error")
 
+	var formattedName string = MetricProjectPath("[PROJECT]")
+	var filter string = "filter-1274492040"
+	var interval *monitoringpb.TimeInterval = &monitoringpb.TimeInterval{}
+	var view monitoringpb.ListTimeSeriesRequest_TimeSeriesView = 0
+	var request = &monitoringpb.ListTimeSeriesRequest{
+		Name:     formattedName,
+		Filter:   filter,
+		Interval: interval,
+		View:     view,
+	}
+
 	c, err := NewMetricClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *monitoringpb.ListTimeSeriesRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.ListTimeSeries(context.Background(), req).Next()
+	resp, err := c.ListTimeSeries(context.Background(), request).Next()
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
-func TestMetricServiceCreateTimeSeriesError(t *testing.T) {
-	errCode := codes.Internal
-	mockMetric.err = grpc.Errorf(errCode, "test error")
+func TestMetricServiceCreateTimeSeries(t *testing.T) {
+	var expectedResponse *google_protobuf.Empty = &google_protobuf.Empty{}
+
+	mockMetric.err = nil
+	mockMetric.reqs = nil
+
+	mockMetric.resps = append(mockMetric.resps[:0], expectedResponse)
+
+	var formattedName string = MetricProjectPath("[PROJECT]")
+	var timeSeries []*monitoringpb.TimeSeries = nil
+	var request = &monitoringpb.CreateTimeSeriesRequest{
+		Name:       formattedName,
+		TimeSeries: timeSeries,
+	}
 
 	c, err := NewMetricClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *monitoringpb.CreateTimeSeriesRequest
+	err = c.CreateTimeSeries(context.Background(), request)
 
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	err = c.CreateTimeSeries(context.Background(), req)
+	if want, got := request, mockMetric.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestMetricServiceCreateTimeSeriesError(t *testing.T) {
+	errCode := codes.Internal
+	mockMetric.err = grpc.Errorf(errCode, "test error")
+
+	var formattedName string = MetricProjectPath("[PROJECT]")
+	var timeSeries []*monitoringpb.TimeSeries = nil
+	var request = &monitoringpb.CreateTimeSeriesRequest{
+		Name:       formattedName,
+		TimeSeries: timeSeries,
+	}
+
+	c, err := NewMetricClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.CreateTimeSeries(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)

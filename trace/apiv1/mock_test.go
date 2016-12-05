@@ -27,25 +27,29 @@ import (
 	"log"
 	"net"
 	"os"
-	"reflect"
 	"testing"
 
+	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )
 
 var _ = io.EOF
+var _ = ptypes.MarshalAny
+var _ status.Status
 
 type mockTraceServer struct {
-	reqs []interface{}
+	reqs []proto.Message
 
 	// If set, all calls return this error.
 	err error
 
 	// responses to return if err == nil
-	resps []interface{}
+	resps []proto.Message
 }
 
 func (s *mockTraceServer) ListTraces(_ context.Context, req *cloudtracepb.ListTracesRequest) (*cloudtracepb.ListTracesResponse, error) {
@@ -101,60 +105,190 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func TestTraceServicePatchTraces(t *testing.T) {
+	var expectedResponse *google_protobuf.Empty = &google_protobuf.Empty{}
+
+	mockTrace.err = nil
+	mockTrace.reqs = nil
+
+	mockTrace.resps = append(mockTrace.resps[:0], expectedResponse)
+
+	var projectId string = "projectId-1969970175"
+	var traces *cloudtracepb.Traces = &cloudtracepb.Traces{}
+	var request = &cloudtracepb.PatchTracesRequest{
+		ProjectId: projectId,
+		Traces:    traces,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.PatchTraces(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockTrace.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
 func TestTraceServicePatchTracesError(t *testing.T) {
 	errCode := codes.Internal
 	mockTrace.err = grpc.Errorf(errCode, "test error")
 
+	var projectId string = "projectId-1969970175"
+	var traces *cloudtracepb.Traces = &cloudtracepb.Traces{}
+	var request = &cloudtracepb.PatchTracesRequest{
+		ProjectId: projectId,
+		Traces:    traces,
+	}
+
 	c, err := NewClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *cloudtracepb.PatchTracesRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	err = c.PatchTraces(context.Background(), req)
+	err = c.PatchTraces(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
 }
+func TestTraceServiceGetTrace(t *testing.T) {
+	var projectId2 string = "projectId2939242356"
+	var traceId2 string = "traceId2987826376"
+	var expectedResponse = &cloudtracepb.Trace{
+		ProjectId: projectId2,
+		TraceId:   traceId2,
+	}
+
+	mockTrace.err = nil
+	mockTrace.reqs = nil
+
+	mockTrace.resps = append(mockTrace.resps[:0], expectedResponse)
+
+	var projectId string = "projectId-1969970175"
+	var traceId string = "traceId1270300245"
+	var request = &cloudtracepb.GetTraceRequest{
+		ProjectId: projectId,
+		TraceId:   traceId,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetTrace(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockTrace.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestTraceServiceGetTraceError(t *testing.T) {
 	errCode := codes.Internal
 	mockTrace.err = grpc.Errorf(errCode, "test error")
 
+	var projectId string = "projectId-1969970175"
+	var traceId string = "traceId1270300245"
+	var request = &cloudtracepb.GetTraceRequest{
+		ProjectId: projectId,
+		TraceId:   traceId,
+	}
+
 	c, err := NewClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *cloudtracepb.GetTraceRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.GetTrace(context.Background(), req)
+	resp, err := c.GetTrace(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestTraceServiceListTraces(t *testing.T) {
+	var nextPageToken string = ""
+	var tracesElement *cloudtracepb.Trace = &cloudtracepb.Trace{}
+	var traces = []*cloudtracepb.Trace{tracesElement}
+	var expectedResponse = &cloudtracepb.ListTracesResponse{
+		NextPageToken: nextPageToken,
+		Traces:        traces,
+	}
+
+	mockTrace.err = nil
+	mockTrace.reqs = nil
+
+	mockTrace.resps = append(mockTrace.resps[:0], expectedResponse)
+
+	var projectId string = "projectId-1969970175"
+	var request = &cloudtracepb.ListTracesRequest{
+		ProjectId: projectId,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListTraces(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockTrace.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.Traces[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestTraceServiceListTracesError(t *testing.T) {
 	errCode := codes.Internal
 	mockTrace.err = grpc.Errorf(errCode, "test error")
 
+	var projectId string = "projectId-1969970175"
+	var request = &cloudtracepb.ListTracesRequest{
+		ProjectId: projectId,
+	}
+
 	c, err := NewClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *cloudtracepb.ListTracesRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.ListTraces(context.Background(), req).Next()
+	resp, err := c.ListTraces(context.Background(), request).Next()
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }

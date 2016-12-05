@@ -26,25 +26,29 @@ import (
 	"log"
 	"net"
 	"os"
-	"reflect"
 	"testing"
 
+	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )
 
 var _ = io.EOF
+var _ = ptypes.MarshalAny
+var _ status.Status
 
 type mockLanguageServer struct {
-	reqs []interface{}
+	reqs []proto.Message
 
 	// If set, all calls return this error.
 	err error
 
 	// responses to return if err == nil
-	resps []interface{}
+	resps []proto.Message
 }
 
 func (s *mockLanguageServer) AnalyzeSentiment(_ context.Context, req *languagepb.AnalyzeSentimentRequest) (*languagepb.AnalyzeSentimentResponse, error) {
@@ -108,79 +112,247 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func TestLanguageServiceAnalyzeSentiment(t *testing.T) {
+	var language string = "language-1613589672"
+	var expectedResponse = &languagepb.AnalyzeSentimentResponse{
+		Language: language,
+	}
+
+	mockLanguage.err = nil
+	mockLanguage.reqs = nil
+
+	mockLanguage.resps = append(mockLanguage.resps[:0], expectedResponse)
+
+	var document *languagepb.Document = &languagepb.Document{}
+	var request = &languagepb.AnalyzeSentimentRequest{
+		Document: document,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.AnalyzeSentiment(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockLanguage.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestLanguageServiceAnalyzeSentimentError(t *testing.T) {
 	errCode := codes.Internal
 	mockLanguage.err = grpc.Errorf(errCode, "test error")
 
+	var document *languagepb.Document = &languagepb.Document{}
+	var request = &languagepb.AnalyzeSentimentRequest{
+		Document: document,
+	}
+
 	c, err := NewClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *languagepb.AnalyzeSentimentRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.AnalyzeSentiment(context.Background(), req)
+	resp, err := c.AnalyzeSentiment(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestLanguageServiceAnalyzeEntities(t *testing.T) {
+	var language string = "language-1613589672"
+	var expectedResponse = &languagepb.AnalyzeEntitiesResponse{
+		Language: language,
+	}
+
+	mockLanguage.err = nil
+	mockLanguage.reqs = nil
+
+	mockLanguage.resps = append(mockLanguage.resps[:0], expectedResponse)
+
+	var document *languagepb.Document = &languagepb.Document{}
+	var encodingType languagepb.EncodingType = 0
+	var request = &languagepb.AnalyzeEntitiesRequest{
+		Document:     document,
+		EncodingType: encodingType,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.AnalyzeEntities(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockLanguage.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestLanguageServiceAnalyzeEntitiesError(t *testing.T) {
 	errCode := codes.Internal
 	mockLanguage.err = grpc.Errorf(errCode, "test error")
 
+	var document *languagepb.Document = &languagepb.Document{}
+	var encodingType languagepb.EncodingType = 0
+	var request = &languagepb.AnalyzeEntitiesRequest{
+		Document:     document,
+		EncodingType: encodingType,
+	}
+
 	c, err := NewClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *languagepb.AnalyzeEntitiesRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.AnalyzeEntities(context.Background(), req)
+	resp, err := c.AnalyzeEntities(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestLanguageServiceAnalyzeSyntax(t *testing.T) {
+	var language string = "language-1613589672"
+	var expectedResponse = &languagepb.AnalyzeSyntaxResponse{
+		Language: language,
+	}
+
+	mockLanguage.err = nil
+	mockLanguage.reqs = nil
+
+	mockLanguage.resps = append(mockLanguage.resps[:0], expectedResponse)
+
+	var document *languagepb.Document = &languagepb.Document{}
+	var encodingType languagepb.EncodingType = 0
+	var request = &languagepb.AnalyzeSyntaxRequest{
+		Document:     document,
+		EncodingType: encodingType,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.AnalyzeSyntax(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockLanguage.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestLanguageServiceAnalyzeSyntaxError(t *testing.T) {
 	errCode := codes.Internal
 	mockLanguage.err = grpc.Errorf(errCode, "test error")
 
+	var document *languagepb.Document = &languagepb.Document{}
+	var encodingType languagepb.EncodingType = 0
+	var request = &languagepb.AnalyzeSyntaxRequest{
+		Document:     document,
+		EncodingType: encodingType,
+	}
+
 	c, err := NewClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *languagepb.AnalyzeSyntaxRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.AnalyzeSyntax(context.Background(), req)
+	resp, err := c.AnalyzeSyntax(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestLanguageServiceAnnotateText(t *testing.T) {
+	var language string = "language-1613589672"
+	var expectedResponse = &languagepb.AnnotateTextResponse{
+		Language: language,
+	}
+
+	mockLanguage.err = nil
+	mockLanguage.reqs = nil
+
+	mockLanguage.resps = append(mockLanguage.resps[:0], expectedResponse)
+
+	var document *languagepb.Document = &languagepb.Document{}
+	var features *languagepb.AnnotateTextRequest_Features = &languagepb.AnnotateTextRequest_Features{}
+	var encodingType languagepb.EncodingType = 0
+	var request = &languagepb.AnnotateTextRequest{
+		Document:     document,
+		Features:     features,
+		EncodingType: encodingType,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.AnnotateText(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockLanguage.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestLanguageServiceAnnotateTextError(t *testing.T) {
 	errCode := codes.Internal
 	mockLanguage.err = grpc.Errorf(errCode, "test error")
 
+	var document *languagepb.Document = &languagepb.Document{}
+	var features *languagepb.AnnotateTextRequest_Features = &languagepb.AnnotateTextRequest_Features{}
+	var encodingType languagepb.EncodingType = 0
+	var request = &languagepb.AnnotateTextRequest{
+		Document:     document,
+		Features:     features,
+		EncodingType: encodingType,
+	}
+
 	c, err := NewClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *languagepb.AnnotateTextRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.AnnotateText(context.Background(), req)
+	resp, err := c.AnnotateText(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
