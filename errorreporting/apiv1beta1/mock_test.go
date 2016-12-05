@@ -26,25 +26,29 @@ import (
 	"log"
 	"net"
 	"os"
-	"reflect"
 	"testing"
 
+	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )
 
 var _ = io.EOF
+var _ = ptypes.MarshalAny
+var _ status.Status
 
 type mockErrorGroupServer struct {
-	reqs []interface{}
+	reqs []proto.Message
 
 	// If set, all calls return this error.
 	err error
 
 	// responses to return if err == nil
-	resps []interface{}
+	resps []proto.Message
 }
 
 func (s *mockErrorGroupServer) GetGroup(_ context.Context, req *clouderrorreportingpb.GetGroupRequest) (*clouderrorreportingpb.ErrorGroup, error) {
@@ -64,13 +68,13 @@ func (s *mockErrorGroupServer) UpdateGroup(_ context.Context, req *clouderrorrep
 }
 
 type mockErrorStatsServer struct {
-	reqs []interface{}
+	reqs []proto.Message
 
 	// If set, all calls return this error.
 	err error
 
 	// responses to return if err == nil
-	resps []interface{}
+	resps []proto.Message
 }
 
 func (s *mockErrorStatsServer) ListGroupStats(_ context.Context, req *clouderrorreportingpb.ListGroupStatsRequest) (*clouderrorreportingpb.ListGroupStatsResponse, error) {
@@ -98,13 +102,13 @@ func (s *mockErrorStatsServer) DeleteEvents(_ context.Context, req *clouderrorre
 }
 
 type mockReportErrorsServer struct {
-	reqs []interface{}
+	reqs []proto.Message
 
 	// If set, all calls return this error.
 	err error
 
 	// responses to return if err == nil
-	resps []interface{}
+	resps []proto.Message
 }
 
 func (s *mockReportErrorsServer) ReportErrorEvent(_ context.Context, req *clouderrorreportingpb.ReportErrorEventRequest) (*clouderrorreportingpb.ReportErrorEventResponse, error) {
@@ -148,117 +152,381 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func TestErrorGroupServiceGetGroup(t *testing.T) {
+	var name string = "name3373707"
+	var groupId string = "groupId506361563"
+	var expectedResponse = &clouderrorreportingpb.ErrorGroup{
+		Name:    name,
+		GroupId: groupId,
+	}
+
+	mockErrorGroup.err = nil
+	mockErrorGroup.reqs = nil
+
+	mockErrorGroup.resps = append(mockErrorGroup.resps[:0], expectedResponse)
+
+	var formattedGroupName string = ErrorGroupGroupPath("[PROJECT]", "[GROUP]")
+	var request = &clouderrorreportingpb.GetGroupRequest{
+		GroupName: formattedGroupName,
+	}
+
+	c, err := NewErrorGroupClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetGroup(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockErrorGroup.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestErrorGroupServiceGetGroupError(t *testing.T) {
 	errCode := codes.Internal
 	mockErrorGroup.err = grpc.Errorf(errCode, "test error")
 
+	var formattedGroupName string = ErrorGroupGroupPath("[PROJECT]", "[GROUP]")
+	var request = &clouderrorreportingpb.GetGroupRequest{
+		GroupName: formattedGroupName,
+	}
+
 	c, err := NewErrorGroupClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *clouderrorreportingpb.GetGroupRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.GetGroup(context.Background(), req)
+	resp, err := c.GetGroup(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestErrorGroupServiceUpdateGroup(t *testing.T) {
+	var name string = "name3373707"
+	var groupId string = "groupId506361563"
+	var expectedResponse = &clouderrorreportingpb.ErrorGroup{
+		Name:    name,
+		GroupId: groupId,
+	}
+
+	mockErrorGroup.err = nil
+	mockErrorGroup.reqs = nil
+
+	mockErrorGroup.resps = append(mockErrorGroup.resps[:0], expectedResponse)
+
+	var group *clouderrorreportingpb.ErrorGroup = &clouderrorreportingpb.ErrorGroup{}
+	var request = &clouderrorreportingpb.UpdateGroupRequest{
+		Group: group,
+	}
+
+	c, err := NewErrorGroupClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateGroup(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockErrorGroup.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestErrorGroupServiceUpdateGroupError(t *testing.T) {
 	errCode := codes.Internal
 	mockErrorGroup.err = grpc.Errorf(errCode, "test error")
 
+	var group *clouderrorreportingpb.ErrorGroup = &clouderrorreportingpb.ErrorGroup{}
+	var request = &clouderrorreportingpb.UpdateGroupRequest{
+		Group: group,
+	}
+
 	c, err := NewErrorGroupClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *clouderrorreportingpb.UpdateGroupRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.UpdateGroup(context.Background(), req)
+	resp, err := c.UpdateGroup(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestErrorStatsServiceListGroupStats(t *testing.T) {
+	var nextPageToken string = ""
+	var errorGroupStatsElement *clouderrorreportingpb.ErrorGroupStats = &clouderrorreportingpb.ErrorGroupStats{}
+	var errorGroupStats = []*clouderrorreportingpb.ErrorGroupStats{errorGroupStatsElement}
+	var expectedResponse = &clouderrorreportingpb.ListGroupStatsResponse{
+		NextPageToken:   nextPageToken,
+		ErrorGroupStats: errorGroupStats,
+	}
+
+	mockErrorStats.err = nil
+	mockErrorStats.reqs = nil
+
+	mockErrorStats.resps = append(mockErrorStats.resps[:0], expectedResponse)
+
+	var formattedProjectName string = ErrorStatsProjectPath("[PROJECT]")
+	var timeRange *clouderrorreportingpb.QueryTimeRange = &clouderrorreportingpb.QueryTimeRange{}
+	var request = &clouderrorreportingpb.ListGroupStatsRequest{
+		ProjectName: formattedProjectName,
+		TimeRange:   timeRange,
+	}
+
+	c, err := NewErrorStatsClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListGroupStats(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockErrorStats.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.ErrorGroupStats[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestErrorStatsServiceListGroupStatsError(t *testing.T) {
 	errCode := codes.Internal
 	mockErrorStats.err = grpc.Errorf(errCode, "test error")
 
+	var formattedProjectName string = ErrorStatsProjectPath("[PROJECT]")
+	var timeRange *clouderrorreportingpb.QueryTimeRange = &clouderrorreportingpb.QueryTimeRange{}
+	var request = &clouderrorreportingpb.ListGroupStatsRequest{
+		ProjectName: formattedProjectName,
+		TimeRange:   timeRange,
+	}
+
 	c, err := NewErrorStatsClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *clouderrorreportingpb.ListGroupStatsRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.ListGroupStats(context.Background(), req).Next()
+	resp, err := c.ListGroupStats(context.Background(), request).Next()
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestErrorStatsServiceListEvents(t *testing.T) {
+	var nextPageToken string = ""
+	var errorEventsElement *clouderrorreportingpb.ErrorEvent = &clouderrorreportingpb.ErrorEvent{}
+	var errorEvents = []*clouderrorreportingpb.ErrorEvent{errorEventsElement}
+	var expectedResponse = &clouderrorreportingpb.ListEventsResponse{
+		NextPageToken: nextPageToken,
+		ErrorEvents:   errorEvents,
+	}
+
+	mockErrorStats.err = nil
+	mockErrorStats.reqs = nil
+
+	mockErrorStats.resps = append(mockErrorStats.resps[:0], expectedResponse)
+
+	var formattedProjectName string = ErrorStatsProjectPath("[PROJECT]")
+	var groupId string = "groupId506361563"
+	var request = &clouderrorreportingpb.ListEventsRequest{
+		ProjectName: formattedProjectName,
+		GroupId:     groupId,
+	}
+
+	c, err := NewErrorStatsClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListEvents(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockErrorStats.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.ErrorEvents[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestErrorStatsServiceListEventsError(t *testing.T) {
 	errCode := codes.Internal
 	mockErrorStats.err = grpc.Errorf(errCode, "test error")
 
+	var formattedProjectName string = ErrorStatsProjectPath("[PROJECT]")
+	var groupId string = "groupId506361563"
+	var request = &clouderrorreportingpb.ListEventsRequest{
+		ProjectName: formattedProjectName,
+		GroupId:     groupId,
+	}
+
 	c, err := NewErrorStatsClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *clouderrorreportingpb.ListEventsRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.ListEvents(context.Background(), req).Next()
+	resp, err := c.ListEvents(context.Background(), request).Next()
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestErrorStatsServiceDeleteEvents(t *testing.T) {
+	var expectedResponse *clouderrorreportingpb.DeleteEventsResponse = &clouderrorreportingpb.DeleteEventsResponse{}
+
+	mockErrorStats.err = nil
+	mockErrorStats.reqs = nil
+
+	mockErrorStats.resps = append(mockErrorStats.resps[:0], expectedResponse)
+
+	var formattedProjectName string = ErrorStatsProjectPath("[PROJECT]")
+	var request = &clouderrorreportingpb.DeleteEventsRequest{
+		ProjectName: formattedProjectName,
+	}
+
+	c, err := NewErrorStatsClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.DeleteEvents(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockErrorStats.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestErrorStatsServiceDeleteEventsError(t *testing.T) {
 	errCode := codes.Internal
 	mockErrorStats.err = grpc.Errorf(errCode, "test error")
 
+	var formattedProjectName string = ErrorStatsProjectPath("[PROJECT]")
+	var request = &clouderrorreportingpb.DeleteEventsRequest{
+		ProjectName: formattedProjectName,
+	}
+
 	c, err := NewErrorStatsClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *clouderrorreportingpb.DeleteEventsRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.DeleteEvents(context.Background(), req)
+	resp, err := c.DeleteEvents(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
-func TestReportErrorsServiceReportErrorEventError(t *testing.T) {
-	errCode := codes.Internal
-	mockReportErrors.err = grpc.Errorf(errCode, "test error")
+func TestReportErrorsServiceReportErrorEvent(t *testing.T) {
+	var expectedResponse *clouderrorreportingpb.ReportErrorEventResponse = &clouderrorreportingpb.ReportErrorEventResponse{}
+
+	mockReportErrors.err = nil
+	mockReportErrors.reqs = nil
+
+	mockReportErrors.resps = append(mockReportErrors.resps[:0], expectedResponse)
+
+	var formattedProjectName string = ReportErrorsProjectPath("[PROJECT]")
+	var event *clouderrorreportingpb.ReportedErrorEvent = &clouderrorreportingpb.ReportedErrorEvent{}
+	var request = &clouderrorreportingpb.ReportErrorEventRequest{
+		ProjectName: formattedProjectName,
+		Event:       event,
+	}
 
 	c, err := NewReportErrorsClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *clouderrorreportingpb.ReportErrorEventRequest
+	resp, err := c.ReportErrorEvent(context.Background(), request)
 
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	_, err = c.ReportErrorEvent(context.Background(), req)
+	if want, got := request, mockReportErrors.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestReportErrorsServiceReportErrorEventError(t *testing.T) {
+	errCode := codes.Internal
+	mockReportErrors.err = grpc.Errorf(errCode, "test error")
+
+	var formattedProjectName string = ReportErrorsProjectPath("[PROJECT]")
+	var event *clouderrorreportingpb.ReportedErrorEvent = &clouderrorreportingpb.ReportedErrorEvent{}
+	var request = &clouderrorreportingpb.ReportErrorEventRequest{
+		ProjectName: formattedProjectName,
+		Event:       event,
+	}
+
+	c, err := NewReportErrorsClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ReportErrorEvent(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }

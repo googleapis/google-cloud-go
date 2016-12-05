@@ -27,25 +27,29 @@ import (
 	"log"
 	"net"
 	"os"
-	"reflect"
 	"testing"
 
+	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )
 
 var _ = io.EOF
+var _ = ptypes.MarshalAny
+var _ status.Status
 
 type mockSpeechServer struct {
-	reqs []interface{}
+	reqs []proto.Message
 
 	// If set, all calls return this error.
 	err error
 
 	// responses to return if err == nil
-	resps []interface{}
+	resps []proto.Message
 }
 
 func (s *mockSpeechServer) SyncRecognize(_ context.Context, req *speechpb.SyncRecognizeRequest) (*speechpb.SyncRecognizeResponse, error) {
@@ -65,40 +69,24 @@ func (s *mockSpeechServer) AsyncRecognize(_ context.Context, req *speechpb.Async
 }
 
 func (s *mockSpeechServer) StreamingRecognize(stream speechpb.Speech_StreamingRecognizeServer) error {
+	for {
+		if req, err := stream.Recv(); err == io.EOF {
+			break
+		} else if err != nil {
+			return err
+		} else {
+			s.reqs = append(s.reqs, req)
+		}
+	}
 	if s.err != nil {
 		return s.err
 	}
-
-	ch := make(chan error, 2)
-	go func() {
-		for {
-			if req, err := stream.Recv(); err == io.EOF {
-				ch <- nil
-				return
-			} else if err != nil {
-				ch <- err
-				return
-			} else {
-				s.reqs = append(s.reqs, req)
-			}
+	for _, v := range s.resps {
+		if err := stream.Send(v.(*speechpb.StreamingRecognizeResponse)); err != nil {
+			return err
 		}
-	}()
-	go func() {
-		for _, v := range s.resps {
-			if err := stream.Send(v.(*speechpb.StreamingRecognizeResponse)); err != nil {
-				ch <- err
-				return
-			}
-		}
-		ch <- nil
-	}()
-
-	// Doesn't really matter which one we get.
-	err := <-ch
-	if err2 := <-ch; err == nil {
-		err = err2
 	}
-	return err
+	return nil
 }
 
 // clientOpt is the option tests should use to connect to the test server.
@@ -130,64 +118,216 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func TestSpeechSyncRecognize(t *testing.T) {
+	var expectedResponse *speechpb.SyncRecognizeResponse = &speechpb.SyncRecognizeResponse{}
+
+	mockSpeech.err = nil
+	mockSpeech.reqs = nil
+
+	mockSpeech.resps = append(mockSpeech.resps[:0], expectedResponse)
+
+	var config *speechpb.RecognitionConfig = &speechpb.RecognitionConfig{}
+	var audio *speechpb.RecognitionAudio = &speechpb.RecognitionAudio{}
+	var request = &speechpb.SyncRecognizeRequest{
+		Config: config,
+		Audio:  audio,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.SyncRecognize(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockSpeech.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestSpeechSyncRecognizeError(t *testing.T) {
 	errCode := codes.Internal
 	mockSpeech.err = grpc.Errorf(errCode, "test error")
 
+	var config *speechpb.RecognitionConfig = &speechpb.RecognitionConfig{}
+	var audio *speechpb.RecognitionAudio = &speechpb.RecognitionAudio{}
+	var request = &speechpb.SyncRecognizeRequest{
+		Config: config,
+		Audio:  audio,
+	}
+
 	c, err := NewClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *speechpb.SyncRecognizeRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.SyncRecognize(context.Background(), req)
+	resp, err := c.SyncRecognize(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestSpeechAsyncRecognize(t *testing.T) {
+	var expectedResponse *speechpb.AsyncRecognizeResponse = &speechpb.AsyncRecognizeResponse{}
+
+	mockSpeech.err = nil
+	mockSpeech.reqs = nil
+
+	any, err := ptypes.MarshalAny(expectedResponse)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mockSpeech.resps = append(mockSpeech.resps[:0], &longrunningpb.Operation{
+		Name:   "longrunning-test",
+		Done:   true,
+		Result: &longrunningpb.Operation_Response{Response: any},
+	})
+
+	var config *speechpb.RecognitionConfig = &speechpb.RecognitionConfig{}
+	var audio *speechpb.RecognitionAudio = &speechpb.RecognitionAudio{}
+	var request = &speechpb.AsyncRecognizeRequest{
+		Config: config,
+		Audio:  audio,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	respLRO, err := c.AsyncRecognize(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := respLRO.Wait(context.Background())
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockSpeech.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestSpeechAsyncRecognizeError(t *testing.T) {
 	errCode := codes.Internal
-	mockSpeech.err = grpc.Errorf(errCode, "test error")
+	mockSpeech.err = nil
+	mockSpeech.resps = append(mockSpeech.resps[:0], &longrunningpb.Operation{
+		Name: "longrunning-test",
+		Done: true,
+		Result: &longrunningpb.Operation_Error{
+			Error: &status.Status{
+				Code:    int32(errCode),
+				Message: "test error",
+			},
+		},
+	})
+
+	var config *speechpb.RecognitionConfig = &speechpb.RecognitionConfig{}
+	var audio *speechpb.RecognitionAudio = &speechpb.RecognitionAudio{}
+	var request = &speechpb.AsyncRecognizeRequest{
+		Config: config,
+		Audio:  audio,
+	}
 
 	c, err := NewClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *speechpb.AsyncRecognizeRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.AsyncRecognize(context.Background(), req)
+	respLRO, err := c.AsyncRecognize(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := respLRO.Wait(context.Background())
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
-func TestSpeechStreamingRecognizeError(t *testing.T) {
-	errCode := codes.Internal
-	mockSpeech.err = grpc.Errorf(errCode, "test error")
+func TestSpeechStreamingRecognize(t *testing.T) {
+	var resultIndex int32 = 520358448
+	var expectedResponse = &speechpb.StreamingRecognizeResponse{
+		ResultIndex: resultIndex,
+	}
+
+	mockSpeech.err = nil
+	mockSpeech.reqs = nil
+
+	mockSpeech.resps = append(mockSpeech.resps[:0], expectedResponse)
+
+	var request *speechpb.StreamingRecognizeRequest = &speechpb.StreamingRecognizeRequest{}
 
 	c, err := NewClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	var req *speechpb.StreamingRecognizeRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
 
 	stream, err := c.StreamingRecognize(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = stream.Recv()
+	if err := stream.Send(request); err != nil {
+		t.Fatal(err)
+	}
+	if err := stream.CloseSend(); err != nil {
+		t.Fatal(err)
+	}
+	resp, err := stream.Recv()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockSpeech.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestSpeechStreamingRecognizeError(t *testing.T) {
+	errCode := codes.Internal
+	mockSpeech.err = grpc.Errorf(errCode, "test error")
+
+	var request *speechpb.StreamingRecognizeRequest = &speechpb.StreamingRecognizeRequest{}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	stream, err := c.StreamingRecognize(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := stream.Send(request); err != nil {
+		t.Fatal(err)
+	}
+	if err := stream.CloseSend(); err != nil {
+		t.Fatal(err)
+	}
+	resp, err := stream.Recv()
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }

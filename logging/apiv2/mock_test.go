@@ -18,6 +18,7 @@ package logging
 
 import (
 	google_protobuf "github.com/golang/protobuf/ptypes/empty"
+	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
 	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
 )
 
@@ -27,25 +28,29 @@ import (
 	"log"
 	"net"
 	"os"
-	"reflect"
 	"testing"
 
+	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )
 
 var _ = io.EOF
+var _ = ptypes.MarshalAny
+var _ status.Status
 
 type mockLoggingServer struct {
-	reqs []interface{}
+	reqs []proto.Message
 
 	// If set, all calls return this error.
 	err error
 
 	// responses to return if err == nil
-	resps []interface{}
+	resps []proto.Message
 }
 
 func (s *mockLoggingServer) DeleteLog(_ context.Context, req *loggingpb.DeleteLogRequest) (*google_protobuf.Empty, error) {
@@ -81,13 +86,13 @@ func (s *mockLoggingServer) ListMonitoredResourceDescriptors(_ context.Context, 
 }
 
 type mockConfigServer struct {
-	reqs []interface{}
+	reqs []proto.Message
 
 	// If set, all calls return this error.
 	err error
 
 	// responses to return if err == nil
-	resps []interface{}
+	resps []proto.Message
 }
 
 func (s *mockConfigServer) ListSinks(_ context.Context, req *loggingpb.ListSinksRequest) (*loggingpb.ListSinksResponse, error) {
@@ -131,13 +136,13 @@ func (s *mockConfigServer) DeleteSink(_ context.Context, req *loggingpb.DeleteSi
 }
 
 type mockMetricsServer struct {
-	reqs []interface{}
+	reqs []proto.Message
 
 	// If set, all calls return this error.
 	err error
 
 	// responses to return if err == nil
-	resps []interface{}
+	resps []proto.Message
 }
 
 func (s *mockMetricsServer) ListLogMetrics(_ context.Context, req *loggingpb.ListLogMetricsRequest) (*loggingpb.ListLogMetricsResponse, error) {
@@ -213,267 +218,867 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func TestLoggingServiceV2DeleteLog(t *testing.T) {
+	var expectedResponse *google_protobuf.Empty = &google_protobuf.Empty{}
+
+	mockLogging.err = nil
+	mockLogging.reqs = nil
+
+	mockLogging.resps = append(mockLogging.resps[:0], expectedResponse)
+
+	var formattedLogName string = LoggingLogPath("[PROJECT]", "[LOG]")
+	var request = &loggingpb.DeleteLogRequest{
+		LogName: formattedLogName,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteLog(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockLogging.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
 func TestLoggingServiceV2DeleteLogError(t *testing.T) {
 	errCode := codes.Internal
 	mockLogging.err = grpc.Errorf(errCode, "test error")
 
+	var formattedLogName string = LoggingLogPath("[PROJECT]", "[LOG]")
+	var request = &loggingpb.DeleteLogRequest{
+		LogName: formattedLogName,
+	}
+
 	c, err := NewClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *loggingpb.DeleteLogRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	err = c.DeleteLog(context.Background(), req)
+	err = c.DeleteLog(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
 }
+func TestLoggingServiceV2WriteLogEntries(t *testing.T) {
+	var expectedResponse *loggingpb.WriteLogEntriesResponse = &loggingpb.WriteLogEntriesResponse{}
+
+	mockLogging.err = nil
+	mockLogging.reqs = nil
+
+	mockLogging.resps = append(mockLogging.resps[:0], expectedResponse)
+
+	var entries []*loggingpb.LogEntry = nil
+	var request = &loggingpb.WriteLogEntriesRequest{
+		Entries: entries,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.WriteLogEntries(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockLogging.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestLoggingServiceV2WriteLogEntriesError(t *testing.T) {
 	errCode := codes.Internal
 	mockLogging.err = grpc.Errorf(errCode, "test error")
 
+	var entries []*loggingpb.LogEntry = nil
+	var request = &loggingpb.WriteLogEntriesRequest{
+		Entries: entries,
+	}
+
 	c, err := NewClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *loggingpb.WriteLogEntriesRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.WriteLogEntries(context.Background(), req)
+	resp, err := c.WriteLogEntries(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestLoggingServiceV2ListLogEntries(t *testing.T) {
+	var nextPageToken string = ""
+	var entriesElement *loggingpb.LogEntry = &loggingpb.LogEntry{}
+	var entries = []*loggingpb.LogEntry{entriesElement}
+	var expectedResponse = &loggingpb.ListLogEntriesResponse{
+		NextPageToken: nextPageToken,
+		Entries:       entries,
+	}
+
+	mockLogging.err = nil
+	mockLogging.reqs = nil
+
+	mockLogging.resps = append(mockLogging.resps[:0], expectedResponse)
+
+	var resourceNames []string = nil
+	var request = &loggingpb.ListLogEntriesRequest{
+		ResourceNames: resourceNames,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListLogEntries(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockLogging.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.Entries[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestLoggingServiceV2ListLogEntriesError(t *testing.T) {
 	errCode := codes.Internal
 	mockLogging.err = grpc.Errorf(errCode, "test error")
 
+	var resourceNames []string = nil
+	var request = &loggingpb.ListLogEntriesRequest{
+		ResourceNames: resourceNames,
+	}
+
 	c, err := NewClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *loggingpb.ListLogEntriesRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.ListLogEntries(context.Background(), req).Next()
+	resp, err := c.ListLogEntries(context.Background(), request).Next()
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestLoggingServiceV2ListMonitoredResourceDescriptors(t *testing.T) {
+	var nextPageToken string = ""
+	var resourceDescriptorsElement *monitoredrespb.MonitoredResourceDescriptor = &monitoredrespb.MonitoredResourceDescriptor{}
+	var resourceDescriptors = []*monitoredrespb.MonitoredResourceDescriptor{resourceDescriptorsElement}
+	var expectedResponse = &loggingpb.ListMonitoredResourceDescriptorsResponse{
+		NextPageToken:       nextPageToken,
+		ResourceDescriptors: resourceDescriptors,
+	}
+
+	mockLogging.err = nil
+	mockLogging.reqs = nil
+
+	mockLogging.resps = append(mockLogging.resps[:0], expectedResponse)
+
+	var request *loggingpb.ListMonitoredResourceDescriptorsRequest = &loggingpb.ListMonitoredResourceDescriptorsRequest{}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListMonitoredResourceDescriptors(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockLogging.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.ResourceDescriptors[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestLoggingServiceV2ListMonitoredResourceDescriptorsError(t *testing.T) {
 	errCode := codes.Internal
 	mockLogging.err = grpc.Errorf(errCode, "test error")
 
+	var request *loggingpb.ListMonitoredResourceDescriptorsRequest = &loggingpb.ListMonitoredResourceDescriptorsRequest{}
+
 	c, err := NewClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *loggingpb.ListMonitoredResourceDescriptorsRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.ListMonitoredResourceDescriptors(context.Background(), req).Next()
+	resp, err := c.ListMonitoredResourceDescriptors(context.Background(), request).Next()
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestConfigServiceV2ListSinks(t *testing.T) {
+	var nextPageToken string = ""
+	var sinksElement *loggingpb.LogSink = &loggingpb.LogSink{}
+	var sinks = []*loggingpb.LogSink{sinksElement}
+	var expectedResponse = &loggingpb.ListSinksResponse{
+		NextPageToken: nextPageToken,
+		Sinks:         sinks,
+	}
+
+	mockConfig.err = nil
+	mockConfig.reqs = nil
+
+	mockConfig.resps = append(mockConfig.resps[:0], expectedResponse)
+
+	var formattedParent string = ConfigParentPath("[PROJECT]")
+	var request = &loggingpb.ListSinksRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewConfigClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListSinks(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockConfig.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.Sinks[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestConfigServiceV2ListSinksError(t *testing.T) {
 	errCode := codes.Internal
 	mockConfig.err = grpc.Errorf(errCode, "test error")
 
+	var formattedParent string = ConfigParentPath("[PROJECT]")
+	var request = &loggingpb.ListSinksRequest{
+		Parent: formattedParent,
+	}
+
 	c, err := NewConfigClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *loggingpb.ListSinksRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.ListSinks(context.Background(), req).Next()
+	resp, err := c.ListSinks(context.Background(), request).Next()
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestConfigServiceV2GetSink(t *testing.T) {
+	var name string = "name3373707"
+	var destination string = "destination-1429847026"
+	var filter string = "filter-1274492040"
+	var writerIdentity string = "writerIdentity775638794"
+	var expectedResponse = &loggingpb.LogSink{
+		Name:           name,
+		Destination:    destination,
+		Filter:         filter,
+		WriterIdentity: writerIdentity,
+	}
+
+	mockConfig.err = nil
+	mockConfig.reqs = nil
+
+	mockConfig.resps = append(mockConfig.resps[:0], expectedResponse)
+
+	var formattedSinkName string = ConfigSinkPath("[PROJECT]", "[SINK]")
+	var request = &loggingpb.GetSinkRequest{
+		SinkName: formattedSinkName,
+	}
+
+	c, err := NewConfigClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetSink(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockConfig.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestConfigServiceV2GetSinkError(t *testing.T) {
 	errCode := codes.Internal
 	mockConfig.err = grpc.Errorf(errCode, "test error")
 
+	var formattedSinkName string = ConfigSinkPath("[PROJECT]", "[SINK]")
+	var request = &loggingpb.GetSinkRequest{
+		SinkName: formattedSinkName,
+	}
+
 	c, err := NewConfigClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *loggingpb.GetSinkRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.GetSink(context.Background(), req)
+	resp, err := c.GetSink(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestConfigServiceV2CreateSink(t *testing.T) {
+	var name string = "name3373707"
+	var destination string = "destination-1429847026"
+	var filter string = "filter-1274492040"
+	var writerIdentity string = "writerIdentity775638794"
+	var expectedResponse = &loggingpb.LogSink{
+		Name:           name,
+		Destination:    destination,
+		Filter:         filter,
+		WriterIdentity: writerIdentity,
+	}
+
+	mockConfig.err = nil
+	mockConfig.reqs = nil
+
+	mockConfig.resps = append(mockConfig.resps[:0], expectedResponse)
+
+	var formattedParent string = ConfigParentPath("[PROJECT]")
+	var sink *loggingpb.LogSink = &loggingpb.LogSink{}
+	var request = &loggingpb.CreateSinkRequest{
+		Parent: formattedParent,
+		Sink:   sink,
+	}
+
+	c, err := NewConfigClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateSink(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockConfig.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestConfigServiceV2CreateSinkError(t *testing.T) {
 	errCode := codes.Internal
 	mockConfig.err = grpc.Errorf(errCode, "test error")
 
+	var formattedParent string = ConfigParentPath("[PROJECT]")
+	var sink *loggingpb.LogSink = &loggingpb.LogSink{}
+	var request = &loggingpb.CreateSinkRequest{
+		Parent: formattedParent,
+		Sink:   sink,
+	}
+
 	c, err := NewConfigClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *loggingpb.CreateSinkRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.CreateSink(context.Background(), req)
+	resp, err := c.CreateSink(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestConfigServiceV2UpdateSink(t *testing.T) {
+	var name string = "name3373707"
+	var destination string = "destination-1429847026"
+	var filter string = "filter-1274492040"
+	var writerIdentity string = "writerIdentity775638794"
+	var expectedResponse = &loggingpb.LogSink{
+		Name:           name,
+		Destination:    destination,
+		Filter:         filter,
+		WriterIdentity: writerIdentity,
+	}
+
+	mockConfig.err = nil
+	mockConfig.reqs = nil
+
+	mockConfig.resps = append(mockConfig.resps[:0], expectedResponse)
+
+	var formattedSinkName string = ConfigSinkPath("[PROJECT]", "[SINK]")
+	var sink *loggingpb.LogSink = &loggingpb.LogSink{}
+	var request = &loggingpb.UpdateSinkRequest{
+		SinkName: formattedSinkName,
+		Sink:     sink,
+	}
+
+	c, err := NewConfigClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateSink(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockConfig.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestConfigServiceV2UpdateSinkError(t *testing.T) {
 	errCode := codes.Internal
 	mockConfig.err = grpc.Errorf(errCode, "test error")
 
+	var formattedSinkName string = ConfigSinkPath("[PROJECT]", "[SINK]")
+	var sink *loggingpb.LogSink = &loggingpb.LogSink{}
+	var request = &loggingpb.UpdateSinkRequest{
+		SinkName: formattedSinkName,
+		Sink:     sink,
+	}
+
 	c, err := NewConfigClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *loggingpb.UpdateSinkRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.UpdateSink(context.Background(), req)
+	resp, err := c.UpdateSink(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestConfigServiceV2DeleteSink(t *testing.T) {
+	var expectedResponse *google_protobuf.Empty = &google_protobuf.Empty{}
+
+	mockConfig.err = nil
+	mockConfig.reqs = nil
+
+	mockConfig.resps = append(mockConfig.resps[:0], expectedResponse)
+
+	var formattedSinkName string = ConfigSinkPath("[PROJECT]", "[SINK]")
+	var request = &loggingpb.DeleteSinkRequest{
+		SinkName: formattedSinkName,
+	}
+
+	c, err := NewConfigClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteSink(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockConfig.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
 func TestConfigServiceV2DeleteSinkError(t *testing.T) {
 	errCode := codes.Internal
 	mockConfig.err = grpc.Errorf(errCode, "test error")
 
+	var formattedSinkName string = ConfigSinkPath("[PROJECT]", "[SINK]")
+	var request = &loggingpb.DeleteSinkRequest{
+		SinkName: formattedSinkName,
+	}
+
 	c, err := NewConfigClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *loggingpb.DeleteSinkRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	err = c.DeleteSink(context.Background(), req)
+	err = c.DeleteSink(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
 }
+func TestMetricsServiceV2ListLogMetrics(t *testing.T) {
+	var nextPageToken string = ""
+	var metricsElement *loggingpb.LogMetric = &loggingpb.LogMetric{}
+	var metrics = []*loggingpb.LogMetric{metricsElement}
+	var expectedResponse = &loggingpb.ListLogMetricsResponse{
+		NextPageToken: nextPageToken,
+		Metrics:       metrics,
+	}
+
+	mockMetrics.err = nil
+	mockMetrics.reqs = nil
+
+	mockMetrics.resps = append(mockMetrics.resps[:0], expectedResponse)
+
+	var formattedParent string = MetricsParentPath("[PROJECT]")
+	var request = &loggingpb.ListLogMetricsRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewMetricsClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListLogMetrics(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockMetrics.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.Metrics[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestMetricsServiceV2ListLogMetricsError(t *testing.T) {
 	errCode := codes.Internal
 	mockMetrics.err = grpc.Errorf(errCode, "test error")
 
+	var formattedParent string = MetricsParentPath("[PROJECT]")
+	var request = &loggingpb.ListLogMetricsRequest{
+		Parent: formattedParent,
+	}
+
 	c, err := NewMetricsClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *loggingpb.ListLogMetricsRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.ListLogMetrics(context.Background(), req).Next()
+	resp, err := c.ListLogMetrics(context.Background(), request).Next()
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestMetricsServiceV2GetLogMetric(t *testing.T) {
+	var name string = "name3373707"
+	var description string = "description-1724546052"
+	var filter string = "filter-1274492040"
+	var expectedResponse = &loggingpb.LogMetric{
+		Name:        name,
+		Description: description,
+		Filter:      filter,
+	}
+
+	mockMetrics.err = nil
+	mockMetrics.reqs = nil
+
+	mockMetrics.resps = append(mockMetrics.resps[:0], expectedResponse)
+
+	var formattedMetricName string = MetricsMetricPath("[PROJECT]", "[METRIC]")
+	var request = &loggingpb.GetLogMetricRequest{
+		MetricName: formattedMetricName,
+	}
+
+	c, err := NewMetricsClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetLogMetric(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockMetrics.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestMetricsServiceV2GetLogMetricError(t *testing.T) {
 	errCode := codes.Internal
 	mockMetrics.err = grpc.Errorf(errCode, "test error")
 
+	var formattedMetricName string = MetricsMetricPath("[PROJECT]", "[METRIC]")
+	var request = &loggingpb.GetLogMetricRequest{
+		MetricName: formattedMetricName,
+	}
+
 	c, err := NewMetricsClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *loggingpb.GetLogMetricRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.GetLogMetric(context.Background(), req)
+	resp, err := c.GetLogMetric(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestMetricsServiceV2CreateLogMetric(t *testing.T) {
+	var name string = "name3373707"
+	var description string = "description-1724546052"
+	var filter string = "filter-1274492040"
+	var expectedResponse = &loggingpb.LogMetric{
+		Name:        name,
+		Description: description,
+		Filter:      filter,
+	}
+
+	mockMetrics.err = nil
+	mockMetrics.reqs = nil
+
+	mockMetrics.resps = append(mockMetrics.resps[:0], expectedResponse)
+
+	var formattedParent string = MetricsParentPath("[PROJECT]")
+	var metric *loggingpb.LogMetric = &loggingpb.LogMetric{}
+	var request = &loggingpb.CreateLogMetricRequest{
+		Parent: formattedParent,
+		Metric: metric,
+	}
+
+	c, err := NewMetricsClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateLogMetric(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockMetrics.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestMetricsServiceV2CreateLogMetricError(t *testing.T) {
 	errCode := codes.Internal
 	mockMetrics.err = grpc.Errorf(errCode, "test error")
 
+	var formattedParent string = MetricsParentPath("[PROJECT]")
+	var metric *loggingpb.LogMetric = &loggingpb.LogMetric{}
+	var request = &loggingpb.CreateLogMetricRequest{
+		Parent: formattedParent,
+		Metric: metric,
+	}
+
 	c, err := NewMetricsClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *loggingpb.CreateLogMetricRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.CreateLogMetric(context.Background(), req)
+	resp, err := c.CreateLogMetric(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
+func TestMetricsServiceV2UpdateLogMetric(t *testing.T) {
+	var name string = "name3373707"
+	var description string = "description-1724546052"
+	var filter string = "filter-1274492040"
+	var expectedResponse = &loggingpb.LogMetric{
+		Name:        name,
+		Description: description,
+		Filter:      filter,
+	}
+
+	mockMetrics.err = nil
+	mockMetrics.reqs = nil
+
+	mockMetrics.resps = append(mockMetrics.resps[:0], expectedResponse)
+
+	var formattedMetricName string = MetricsMetricPath("[PROJECT]", "[METRIC]")
+	var metric *loggingpb.LogMetric = &loggingpb.LogMetric{}
+	var request = &loggingpb.UpdateLogMetricRequest{
+		MetricName: formattedMetricName,
+		Metric:     metric,
+	}
+
+	c, err := NewMetricsClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateLogMetric(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockMetrics.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
 func TestMetricsServiceV2UpdateLogMetricError(t *testing.T) {
 	errCode := codes.Internal
 	mockMetrics.err = grpc.Errorf(errCode, "test error")
 
+	var formattedMetricName string = MetricsMetricPath("[PROJECT]", "[METRIC]")
+	var metric *loggingpb.LogMetric = &loggingpb.LogMetric{}
+	var request = &loggingpb.UpdateLogMetricRequest{
+		MetricName: formattedMetricName,
+		Metric:     metric,
+	}
+
 	c, err := NewMetricsClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *loggingpb.UpdateLogMetricRequest
-
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
-
-	_, err = c.UpdateLogMetric(context.Background(), req)
+	resp, err := c.UpdateLogMetric(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
-func TestMetricsServiceV2DeleteLogMetricError(t *testing.T) {
-	errCode := codes.Internal
-	mockMetrics.err = grpc.Errorf(errCode, "test error")
+func TestMetricsServiceV2DeleteLogMetric(t *testing.T) {
+	var expectedResponse *google_protobuf.Empty = &google_protobuf.Empty{}
+
+	mockMetrics.err = nil
+	mockMetrics.reqs = nil
+
+	mockMetrics.resps = append(mockMetrics.resps[:0], expectedResponse)
+
+	var formattedMetricName string = MetricsMetricPath("[PROJECT]", "[METRIC]")
+	var request = &loggingpb.DeleteLogMetricRequest{
+		MetricName: formattedMetricName,
+	}
 
 	c, err := NewMetricsClient(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var req *loggingpb.DeleteLogMetricRequest
+	err = c.DeleteLogMetric(context.Background(), request)
 
-	reflect.ValueOf(&req).Elem().Set(reflect.New(reflect.TypeOf(req).Elem()))
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	err = c.DeleteLogMetric(context.Background(), req)
+	if want, got := request, mockMetrics.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestMetricsServiceV2DeleteLogMetricError(t *testing.T) {
+	errCode := codes.Internal
+	mockMetrics.err = grpc.Errorf(errCode, "test error")
+
+	var formattedMetricName string = MetricsMetricPath("[PROJECT]", "[METRIC]")
+	var request = &loggingpb.DeleteLogMetricRequest{
+		MetricName: formattedMetricName,
+	}
+
+	c, err := NewMetricsClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteLogMetric(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)

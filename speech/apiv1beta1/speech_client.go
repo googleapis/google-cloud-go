@@ -19,6 +19,7 @@ package speech
 import (
 	"fmt"
 	"runtime"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/longrunning"
@@ -119,7 +120,8 @@ func (c *Client) Close() error {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *Client) SetGoogleClientInfo(name, version string) {
-	v := fmt.Sprintf("%s/%s %s gax/%s go/%s", name, version, gapicNameVersion, gax.Version, runtime.Version())
+	goVersion := strings.Replace(runtime.Version(), " ", "_", -1)
+	v := fmt.Sprintf("%s/%s %s gax/%s go/%s", name, version, gapicNameVersion, gax.Version, goVersion)
 	c.metadata = metadata.Pairs("x-goog-api-client", v)
 }
 
@@ -144,7 +146,7 @@ func (c *Client) SyncRecognize(ctx context.Context, req *speechpb.SyncRecognizeR
 // google.longrunning.Operations interface. Returns either an
 // `Operation.error` or an `Operation.response` which contains
 // an `AsyncRecognizeResponse` message.
-func (c *Client) AsyncRecognize(ctx context.Context, req *speechpb.AsyncRecognizeRequest) (*longrunning.Operation, error) {
+func (c *Client) AsyncRecognize(ctx context.Context, req *speechpb.AsyncRecognizeRequest) (*AsyncRecognizeResponseOperation, error) {
 	md, _ := metadata.FromContext(ctx)
 	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
 	var resp *longrunningpb.Operation
@@ -156,7 +158,9 @@ func (c *Client) AsyncRecognize(ctx context.Context, req *speechpb.AsyncRecogniz
 	if err != nil {
 		return nil, err
 	}
-	return longrunning.InternalNewOperation(c.Connection(), resp), nil
+	return &AsyncRecognizeResponseOperation{
+		lro: longrunning.InternalNewOperation(c.Connection(), resp),
+	}, nil
 }
 
 // StreamingRecognize perform bidirectional streaming speech-recognition: receive results while
@@ -174,4 +178,73 @@ func (c *Client) StreamingRecognize(ctx context.Context) (speechpb.Speech_Stream
 		return nil, err
 	}
 	return resp, nil
+}
+
+// AsyncRecognizeResponseOperation manages a long-running operation yielding speechpb.AsyncRecognizeResponse.
+type AsyncRecognizeResponseOperation struct {
+	lro *longrunning.Operation
+}
+
+// AsyncRecognizeResponseOperation returns a new AsyncRecognizeResponseOperation from a given name.
+// The name must be that of a previously created AsyncRecognizeResponseOperation, possibly from a different process.
+func (c *Client) AsyncRecognizeResponseOperation(name string) *AsyncRecognizeResponseOperation {
+	return &AsyncRecognizeResponseOperation{
+		lro: longrunning.InternalNewOperation(c.Connection(), &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *AsyncRecognizeResponseOperation) Wait(ctx context.Context) (*speechpb.AsyncRecognizeResponse, error) {
+	var resp speechpb.AsyncRecognizeResponse
+	if err := op.lro.Wait(ctx, &resp); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *AsyncRecognizeResponseOperation) Poll(ctx context.Context) (*speechpb.AsyncRecognizeResponse, error) {
+	var resp speechpb.AsyncRecognizeResponse
+	if err := op.lro.Poll(ctx, &resp); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *AsyncRecognizeResponseOperation) Metadata() (*speechpb.AsyncRecognizeMetadata, error) {
+	var meta speechpb.AsyncRecognizeMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *AsyncRecognizeResponseOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *AsyncRecognizeResponseOperation) Name() string {
+	return op.lro.Name()
 }
