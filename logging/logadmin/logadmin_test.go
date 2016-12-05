@@ -32,9 +32,11 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	durpb "github.com/golang/protobuf/ptypes/duration"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
+	audit "google.golang.org/genproto/googleapis/cloud/audit"
 	logtypepb "google.golang.org/genproto/googleapis/logging/type"
 	logpb "google.golang.org/genproto/googleapis/logging/v2"
 	"google.golang.org/grpc"
@@ -45,14 +47,17 @@ var (
 	testProjectID string
 )
 
-// If true, this test is using the production service, not a fake.
-var integrationTest bool
+var (
+	// If true, this test is using the production service, not a fake.
+	integrationTest bool
+
+	newClient func(ctx context.Context, projectID string) *Client
+)
 
 func TestMain(m *testing.M) {
 	flag.Parse() // needed for testing.Short()
 	ctx := context.Background()
 	testProjectID = testutil.ProjID()
-	var newClient func(ctx context.Context, projectID string) *Client
 	if testProjectID == "" || testing.Short() {
 		integrationTest = false
 		if testProjectID != "" {
@@ -64,7 +69,7 @@ func TestMain(m *testing.M) {
 			log.Fatalf("creating fake server: %v", err)
 		}
 		newClient = func(ctx context.Context, projectID string) *Client {
-			conn, err := grpc.Dial(addr, grpc.WithInsecure())
+			conn, err := grpc.Dial(addr, grpc.WithInsecure(), grpc.WithBlock())
 			if err != nil {
 				log.Fatalf("dialing %q: %v", addr, err)
 			}
@@ -82,7 +87,8 @@ func TestMain(m *testing.M) {
 		}
 		log.Printf("running integration tests with project %s", testProjectID)
 		newClient = func(ctx context.Context, projectID string) *Client {
-			c, err := NewClient(ctx, projectID, option.WithTokenSource(ts))
+			c, err := NewClient(ctx, projectID, option.WithTokenSource(ts),
+				option.WithGRPCDialOption(grpc.WithBlock()))
 			if err != nil {
 				log.Fatalf("creating prod client: %v", err)
 			}
@@ -98,7 +104,14 @@ func TestMain(m *testing.M) {
 	os.Exit(exit)
 }
 
-// EntryIterator is tested in the logging package.
+// EntryIterator and DeleteLog are tested in the logging package.
+
+func TestClientClose(t *testing.T) {
+	c := newClient(context.Background(), testProjectID)
+	if err := c.Close(); err != nil {
+		t.Errorf("want got %v, want nil", err)
+	}
+}
 
 func TestFromLogEntry(t *testing.T) {
 	now := time.Now()
@@ -181,6 +194,48 @@ func TestFromLogEntry(t *testing.T) {
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("FullEntry:\ngot  %+v\nwant %+v", got, want)
+	}
+
+	// Proto payload.
+	alog := &audit.AuditLog{
+		ServiceName:  "svc",
+		MethodName:   "method",
+		ResourceName: "shelves/S/books/B",
+	}
+	any, err := ptypes.MarshalAny(alog)
+	if err != nil {
+		t.Fatal(err)
+	}
+	logEntry = logpb.LogEntry{
+		LogName:   "projects/PROJECT_ID/logs/LOG_ID",
+		Resource:  res,
+		Timestamp: ts,
+		Payload:   &logpb.LogEntry_ProtoPayload{any},
+	}
+	got, err = fromLogEntry(&logEntry)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(got.Payload, alog) {
+		t.Errorf("got %+v, want %+v", got.Payload, alog)
+	}
+
+	// JSON payload.
+	jstruct := &structpb.Struct{map[string]*structpb.Value{
+		"f": &structpb.Value{&structpb.Value_NumberValue{3.1}},
+	}}
+	logEntry = logpb.LogEntry{
+		LogName:   "projects/PROJECT_ID/logs/LOG_ID",
+		Resource:  res,
+		Timestamp: ts,
+		Payload:   &logpb.LogEntry_JsonPayload{jstruct},
+	}
+	got, err = fromLogEntry(&logEntry)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(got.Payload, jstruct) {
+		t.Errorf("got %+v, want %+v", got.Payload, jstruct)
 	}
 }
 
