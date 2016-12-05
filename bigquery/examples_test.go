@@ -88,7 +88,7 @@ func ExampleClient_JobFromID() {
 	fmt.Println(job)
 }
 
-func Example_NewGCSReference() {
+func ExampleNewGCSReference() {
 	gcsRef := bigquery.NewGCSReference("gs://my-bucket/my-object")
 	fmt.Println(gcsRef)
 }
@@ -189,9 +189,33 @@ func ExampleDataset_Create() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	if err := client.Dataset("new-dataset").Create(ctx); err != nil {
+	if err := client.Dataset("my_dataset").Create(ctx); err != nil {
 		// TODO: Handle error.
 	}
+}
+
+func ExampleDataset_Delete() {
+	ctx := context.Background()
+	client, err := bigquery.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	if err := client.Dataset("my_dataset").Delete(ctx); err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleDataset_Metadata() {
+	ctx := context.Background()
+	client, err := bigquery.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	md, err := client.Dataset("my_dataset").Metadata(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Println(md)
 }
 
 func ExampleDataset_Table() {
