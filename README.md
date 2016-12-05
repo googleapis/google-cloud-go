@@ -22,6 +22,36 @@ backwards-incompatible changes.
 
 ## News
 
+_December 5, 2016_
+
+More changes to BigQuery:
+
+* The `ValueList` type was removed. It is no longer necessary. Instead of
+   ```go
+   var v ValueList
+   ... it.Next(&v) ..
+   ```
+   use
+
+   ```go
+   var v []Value
+   ... it.Next(&v) ...
+   ```
+
+* Previously, repeatedly calling `RowIterator.Next` on the same `[]Value` or
+  `ValueList` would append to the slice. Now each call resets the size to zero first.
+
+* Schema inference will infer the SQL type BYTES for a struct field of
+  type []byte. Previously it inferred STRING.
+
+* The types `uint`, `uint64` and `uintptr` are no longer supported in schema
+  inference. BigQuery's integer type is INT64, and those types may hold values
+  that are not correctly represented in a 64-bit signed integer.
+
+* The SQL types DATE, TIME and DATETIME are now supported. They correspond to
+  the `Date`, `Time` and `DateTime` types in the new `cloud.google.com/go/civil`
+  package.
+
 _November 17, 2016_
 
 Change to BigQuery: values from INTEGER columns will now be returned as int64,
@@ -32,7 +62,7 @@ _November 8, 2016_
 New datastore feature: datastore now encodes your nested Go structs as Entity values,
 instead of a flattened list of the embedded struct's fields.
 This means that you may now have twice-nested slices, eg.
-```
+```go
 type State struct {
   Cities  []struct{
     Populations []int
@@ -129,7 +159,7 @@ Breaking changes to cloud.google.com/go/bigquery:
     ```go
     client.DatasetInProject("project", "dataset").Table("table").Create(ctx)
     ```
-    
+
 * Dataset.ListTables have been replaced with Dataset.Tables.
     Replace
     ```go
@@ -150,7 +180,7 @@ Breaking changes to cloud.google.com/go/bigquery:
     }
     ```
 
-* Client.Read has been replaced with Job.Read, Table.Read and Query.Read. 
+* Client.Read has been replaced with Job.Read, Table.Read and Query.Read.
     Replace
     ```go
     it, err := client.Read(ctx, job)
