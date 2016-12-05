@@ -97,7 +97,7 @@ func ExampleClient_Put() {
 	}
 }
 
-func ExampleClient_PutFlatten() {
+func ExampleClient_Put_flatten() {
 	ctx := context.Background()
 	client, err := datastore.NewClient(ctx, "project-id")
 	if err != nil {
@@ -381,12 +381,16 @@ func ExampleDecodeKey() {
 	// Output: /Article,1
 }
 
-func ExampleNewKey() {
+func ExampleIDKey() {
 	// Key with numeric ID.
-	k1 := datastore.IDKey("Article", 1, nil)
+	k := datastore.IDKey("Article", 1, nil)
+	_ = k // TODO: Use key.
+}
+
+func ExampleNameKey() {
 	// Key with string ID.
-	k2 := datastore.NameKey("Article", "article8", nil)
-	_, _ = k1, k2 // TODO: Use keys.
+	k := datastore.NameKey("Article", "article8", nil)
+	_ = k // TODO: Use key.
 }
 
 func ExampleIncompleteKey() {
