@@ -56,31 +56,47 @@ func (t *Table) Uploader() *Uploader {
 	return &Uploader{t: t}
 }
 
-// Put uploads one or more rows to the BigQuery service.  src must implement ValueSaver or be a slice of ValueSavers.
+// Put uploads one or more rows to the BigQuery service.
+//
+// If src is ValueSaver, then its Save method is called to produce a row for uploading.
+//
+// If src is a struct or pointer to a struct, then its exported fields are used
+// to produce a row for uploading. The table's schema field names must match
+// the struct field names case-insensitively.
+//
+// If src is a slice of ValueSavers, structs, or struct pointers, then each
+// element of the slice is treated as above, and multiple rows are uploaded.
+//
 // Put returns a PutMultiError if one or more rows failed to be uploaded.
 // The PutMultiError contains a RowInsertionError for each failed row.
 func (u *Uploader) Put(ctx context.Context, src interface{}) error {
-	// TODO(mcgreevy): Support structs which do not implement ValueSaver as src, a la Datastore.
-
 	if saver, ok := src.(ValueSaver); ok {
 		return u.putMulti(ctx, []ValueSaver{saver})
 	}
-
 	srcVal := reflect.ValueOf(src)
-	if srcVal.Kind() != reflect.Slice {
-		return fmt.Errorf("%T is not a ValueSaver or slice of ValueSavers", src)
+	if isStructOrStructPointer(srcVal) {
+		return u.putMulti(ctx, []ValueSaver{structSaver{srcVal}})
 	}
-
+	if srcVal.Kind() != reflect.Slice {
+		return fmt.Errorf("%T is not a ValueSaver, struct, struct pointer, or slice", src)
+	}
 	var savers []ValueSaver
 	for i := 0; i < srcVal.Len(); i++ {
-		s := srcVal.Index(i).Interface()
-		saver, ok := s.(ValueSaver)
-		if !ok {
-			return fmt.Errorf("element %d of src is of type %T, which is not a ValueSaver", i, s)
+		vi := srcVal.Index(i)
+		s := vi.Interface()
+		if saver, ok := s.(ValueSaver); ok {
+			savers = append(savers, saver)
+		} else if isStructOrStructPointer(vi) {
+			savers = append(savers, structSaver{vi})
+		} else {
+			return fmt.Errorf("element %d of src is of type %T, which is not a ValueSaver, struct, or struct pointer", i, s)
 		}
-		savers = append(savers, saver)
 	}
 	return u.putMulti(ctx, savers)
+}
+
+func isStructOrStructPointer(v reflect.Value) bool {
+	return v.Kind() == reflect.Struct || (v.Kind() == reflect.Ptr && v.Elem().Kind() == reflect.Struct)
 }
 
 func (u *Uploader) putMulti(ctx context.Context, src []ValueSaver) error {

@@ -196,6 +196,11 @@ func TestIntegration_Tables(t *testing.T) {
 	}
 }
 
+type score struct {
+	Name string
+	Num  int
+}
+
 func TestIntegration_UploadAndRead(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -292,19 +297,40 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestIntegration_UploadAndReadStructs(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
+
+	// Populate the table.
+	upl := table.Uploader()
+	scores := []score{
+		{Name: "a", Num: 12},
+		{Name: "b", Num: 18},
+		{Name: "c", Num: 3},
+	}
+	if err := upl.Put(ctx, scores); err != nil {
+		t.Fatal(err)
+	}
+
+	// Wait until the data has been uploaded. This can take a few seconds, according
+	// to https://cloud.google.com/bigquery/streaming-data-into-bigquery.
+	if err := waitForRow(ctx, table); err != nil {
+		t.Fatal(err)
+	}
 
 	// Test iteration with structs.
-	type score struct {
-		Name string
-		Num  int
-	}
-	it = table.Read(ctx)
-	for i, vl := range valueLists {
+	it := table.Read(ctx)
+	for i, want := range scores {
 		var got score
 		if err := it.Next(&got); err != nil {
 			t.Fatal(err)
 		}
-		want := score{Name: vl[0].(string), Num: vl[1].(int)}
 		if got != want {
 			t.Errorf("%d: got %+v, want %+v", i, got, want)
 		}

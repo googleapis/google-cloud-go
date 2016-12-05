@@ -389,6 +389,29 @@ func TestValuesSaverConvertsToMap(t *testing.T) {
 	}
 }
 
+func TestStructSaver(t *testing.T) {
+	type S struct{ X int }
+	want := map[string]Value{"X": 7}
+
+	check := func(x interface{}) {
+		ss := structSaver{reflect.ValueOf(x)}
+		row, iid, err := ss.Save()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if iid != "" {
+			t.Errorf("%#v: got iid %q, want empty string", x, iid)
+		}
+		if !reflect.DeepEqual(row, want) {
+			t.Errorf("%#v: got %+v, want %+v", x, row, want)
+		}
+	}
+
+	s := S{X: 7}
+	check(s)
+	check(&s)
+}
+
 func TestConvertRows(t *testing.T) {
 	schema := []*FieldSchema{
 		{Type: StringFieldType},
