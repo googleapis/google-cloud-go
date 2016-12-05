@@ -343,7 +343,7 @@ type ValuesSaver struct {
 	Row []Value
 }
 
-// Save implements ValueSaver
+// Save implements ValueSaver.
 func (vls *ValuesSaver) Save() (map[string]Value, string, error) {
 	m, err := valuesToMap(vls.Row, vls.Schema)
 	return m, vls.InsertID, err
@@ -371,6 +371,26 @@ func valuesToMap(vs []Value, schema Schema) (map[string]Value, error) {
 		}
 	}
 	return m, nil
+}
+
+type structSaver struct {
+	val reflect.Value
+}
+
+// Save implements ValueSaver.
+func (s structSaver) Save() (row map[string]Value, insertID string, err error) {
+	row = map[string]Value{}
+	v := s.val
+	t := v.Type()
+	if t.Kind() == reflect.Ptr {
+		v = v.Elem()
+		t = t.Elem()
+	}
+	fields := fieldCache.Fields(t)
+	for _, f := range fields {
+		row[f.Name] = v.FieldByIndex(f.Index).Interface()
+	}
+	return row, "", nil
 }
 
 // convertRows converts a series of TableRows into a series of Value slices.
