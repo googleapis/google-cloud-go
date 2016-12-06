@@ -250,6 +250,19 @@ func TestClientIntegration(t *testing.T) {
 			limit:  LimitRows(2),
 			want:   "gwashington-jadams-1,jadams-tjefferson-1",
 		},
+		{
+			desc:   "read all, strip values",
+			rr:     RowRange{},
+			filter: StripValueFilter(),
+			want:   "gwashington-jadams-,jadams-gwashington-,jadams-tjefferson-,tjefferson-gwashington-,tjefferson-jadams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
+		},
+		{
+			desc:   "read with ColumnFilter + row limit + strip values",
+			rr:     RowRange{},
+			filter: ChainFilters(ColumnFilter(".*j.*"), StripValueFilter()), // matches "jadams" and "tjefferson"
+			limit:  LimitRows(2),
+			want:   "gwashington-jadams-,jadams-tjefferson-",
+		},
 	}
 	for _, tc := range readTests {
 		var opts []ReadOption
