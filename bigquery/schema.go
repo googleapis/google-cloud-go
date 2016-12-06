@@ -196,7 +196,11 @@ func inferFieldSchema(rt reflect.Type) (*FieldSchema, error) {
 // inferFields extracts all exported field types from struct type.
 func inferFields(rt reflect.Type) (Schema, error) {
 	var s Schema
-	for _, field := range fieldCache.Fields(rt) {
+	fields, err := fieldCache.Fields(rt)
+	if err != nil {
+		return nil, err
+	}
+	for _, field := range fields {
 		f, err := inferFieldSchema(field.Type)
 		if err != nil {
 			return nil, err

@@ -137,7 +137,11 @@ func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
 
 	case reflect.Struct:
 		var fts []*bq.QueryParameterTypeStructTypes
-		for _, f := range fieldCache.Fields(t) {
+		fields, err := fieldCache.Fields(t)
+		if err != nil {
+			return nil, err
+		}
+		for _, f := range fields {
 			pt, err := paramType(f.Type)
 			if err != nil {
 				return nil, err
@@ -209,7 +213,10 @@ func paramValue(v reflect.Value) (bq.QueryParameterValue, error) {
 		fallthrough
 
 	case reflect.Struct:
-		fields := fieldCache.Fields(t)
+		fields, err := fieldCache.Fields(t)
+		if err != nil {
+			return bq.QueryParameterValue{}, err
+		}
 		res.StructValues = map[string]bq.QueryParameterValue{}
 		for _, f := range fields {
 			fv := v.FieldByIndex(f.Index)
