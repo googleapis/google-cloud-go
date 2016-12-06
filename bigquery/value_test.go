@@ -586,6 +586,19 @@ func TestStructLoader(t *testing.T) {
 	if !reflect.DeepEqual(&np, want2) {
 		t.Errorf("got %+v, want %+v", pretty.Value(np), pretty.Value(*want2))
 	}
+
+	// Existing values should be reused.
+	nst := &nested{NestS: "x", NestI: -10}
+	np = nestedPtr{Nested: nst}
+	if err := load(&np, schema2, testValues); err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(&np, want2) {
+		t.Errorf("got %+v, want %+v", pretty.Value(np), pretty.Value(*want2))
+	}
+	if np.Nested != nst {
+		t.Error("nested struct pointers not equal")
+	}
 }
 
 type repStruct struct {

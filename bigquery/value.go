@@ -268,7 +268,9 @@ func runOps(ops []structLoaderOp, vstruct reflect.Value, values []Value) error {
 			// Support both structs and pointers to structs.
 			vsub := field
 			if field.Kind() == reflect.Ptr {
-				field.Set(reflect.New(field.Type().Elem()))
+				if field.IsNil() {
+					field.Set(reflect.New(field.Type().Elem()))
+				}
 				vsub = vsub.Elem()
 			}
 			if err := runOps(op.nested, vsub, values[op.valueIndex].([]Value)); err != nil {
