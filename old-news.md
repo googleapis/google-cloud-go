@@ -1,3 +1,190 @@
+_October 19, 2016_
+
+Breaking changes to cloud.google.com/go/bigquery:
+
+* Client.Table and Client.OpenTable have been removed.
+    Replace
+    ```go
+    client.OpenTable("project", "dataset", "table")
+    ```
+    with
+    ```go
+    client.DatasetInProject("project", "dataset").Table("table")
+    ```
+
+* Client.CreateTable has been removed.
+    Replace
+    ```go
+    client.CreateTable(ctx, "project", "dataset", "table")
+    ```
+    with
+    ```go
+    client.DatasetInProject("project", "dataset").Table("table").Create(ctx)
+    ```
+
+* Dataset.ListTables have been replaced with Dataset.Tables.
+    Replace
+    ```go
+    tables, err := ds.ListTables(ctx)
+    ```
+    with
+    ```go
+    it := ds.Tables(ctx)
+    for {
+        table, err := it.Next()
+        if err == iterator.Done {
+            break
+        }
+        if err != nil {
+            // TODO: Handle error.
+        }
+        // TODO: use table.
+    }
+    ```
+
+* Client.Read has been replaced with Job.Read, Table.Read and Query.Read.
+    Replace
+    ```go
+    it, err := client.Read(ctx, job)
+    ```
+    with
+    ```go
+    it, err := job.Read(ctx)
+    ```
+  and similarly for reading from tables or queries.
+
+* The iterator returned from the Read methods is now named RowIterator. Its
+  behavior is closer to the other iterators in these libraries. It no longer
+  supports the Schema method; see the next item.
+    Replace
+    ```go
+    for it.Next(ctx) {
+        var vals ValueList
+        if err := it.Get(&vals); err != nil {
+            // TODO: Handle error.
+        }
+        // TODO: use vals.
+    }
+    if err := it.Err(); err != nil {
+        // TODO: Handle error.
+    }
+    ```
+    with
+    ```
+    for {
+        var vals ValueList
+        err := it.Next(&vals)
+        if err == iterator.Done {
+            break
+        }
+        if err != nil {
+            // TODO: Handle error.
+        }
+        // TODO: use vals.
+    }
+    ```
+    Instead of the `RecordsPerRequest(n)` option, write
+    ```go
+    it.PageInfo().MaxSize = n
+    ```
+    Instead of the `StartIndex(i)` option, write
+    ```go
+    it.StartIndex = i
+    ```
+
+* ValueLoader.Load now takes a Schema in addition to a slice of Values.
+    Replace
+    ```go
+    func (vl *myValueLoader) Load(v []bigquery.Value)
+    ```
+    with
+    ```go
+    func (vl *myValueLoader) Load(v []bigquery.Value, s bigquery.Schema)
+    ```
+
+
+* Table.Patch is replace by Table.Update.
+    Replace
+    ```go
+    p := table.Patch()
+    p.Description("new description")
+    metadata, err := p.Apply(ctx)
+    ```
+    with
+    ```go
+    metadata, err := table.Update(ctx, bigquery.TableMetadataToUpdate{
+        Description: "new description",
+    })
+    ```
+
+* Client.Copy is replaced by separate methods for each of its four functions.
+  All options have been replaced by struct fields.
+
+  * To load data from Google Cloud Storage into a table, use Table.LoaderFrom.
+
+    Replace
+    ```go
+    client.Copy(ctx, table, gcsRef)
+    ```
+    with
+    ```go
+    table.LoaderFrom(gcsRef).Run(ctx)
+    ```
+    Instead of passing options to Copy, set fields on the Loader:
+    ```go
+    loader := table.LoaderFrom(gcsRef)
+    loader.WriteDisposition = bigquery.WriteTruncate
+    ```
+
+  * To extract data from a table into Google Cloud Storage, use
+    Table.ExtractorTo. Set fields on the returned Extractor instead of
+    passing options.
+
+    Replace
+    ```go
+    client.Copy(ctx, gcsRef, table)
+    ```
+    with
+    ```go
+    table.ExtractorTo(gcsRef).Run(ctx)
+    ```
+
+  * To copy data into a table from one or more other tables, use
+    Table.CopierFrom. Set fields on the returned Copier instead of passing options.
+
+    Replace
+    ```go
+    client.Copy(ctx, dstTable, srcTable)
+    ```
+    with
+    ```go
+    dst.Table.CopierFrom(srcTable).Run(ctx)
+    ```
+
+  * To start a query job, create a Query and call its Run method. Set fields
+  on the query instead of passing options.
+
+    Replace
+    ```go
+    client.Copy(ctx, table, query)
+    ```
+    with
+    ```go
+    query.Run(ctx)
+    ```
+
+* Table.NewUploader has been renamed to Table.Uploader. Instead of options,
+  configure an Uploader by setting its fields.
+    Replace
+    ```go
+    u := table.NewUploader(bigquery.UploadIgnoreUnknownValues())
+    ```
+    with
+    ```go
+    u := table.NewUploader(bigquery.UploadIgnoreUnknownValues())
+    u.IgnoreUnknownValues = true
+    ```
+
 _October 10, 2016_
 
 Breaking changes to cloud.google.com/go/storage:
@@ -7,7 +194,7 @@ Breaking changes to cloud.google.com/go/storage:
     ```go
     adminClient.CreateBucket(ctx, bucketName, attrs)
     ```
-    with 
+    with
     ```go
     client.Bucket(bucketName).Create(ctx, projectID, attrs)
     ```
