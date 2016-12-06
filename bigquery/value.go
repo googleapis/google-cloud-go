@@ -146,7 +146,10 @@ func (sl *structLoader) set(structp interface{}, schema Schema) error {
 // value of structType to the contents of a row with schema.
 func compileToOps(structType reflect.Type, schema Schema) ([]structLoaderOp, error) {
 	var ops []structLoaderOp
-	fields := fieldCache.Fields(structType)
+	fields, err := fieldCache.Fields(structType)
+	if err != nil {
+		return nil, err
+	}
 	for i, schemaField := range schema {
 		// Look for an exported struct field with the same name as the schema
 		// field, ignoring case (BigQuery column names are case-insensitive,
@@ -388,7 +391,10 @@ func (s structSaver) Save() (row map[string]Value, insertID string, err error) {
 		v = v.Elem()
 		t = t.Elem()
 	}
-	fields := fieldCache.Fields(t)
+	fields, err := fieldCache.Fields(t)
+	if err != nil {
+		return nil, "", err
+	}
 	for _, f := range fields {
 		row[f.Name] = v.FieldByIndex(f.Index).Interface()
 	}
