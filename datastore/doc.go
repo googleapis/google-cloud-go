@@ -42,10 +42,7 @@ Valid value types are:
   - structs whose fields are all valid value types,
   - slices of any of the above.
 
-Slices of structs are valid, as are structs that contain slices. However, if
-one struct contains another, then at most one of those can be repeated. This
-disqualifies recursively defined struct types: any struct T that (directly or
-indirectly) contains a []T.
+Slices of structs are valid, as are structs that contain slices.
 
 The Get and Put functions load and save an entity's contents. An entity's
 contents are typically represented by a struct pointer.

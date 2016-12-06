@@ -150,6 +150,7 @@ type S2 struct {
 	Embed      `json:"em"`   // embedded structs with tags become fields
 	Tag        int
 	YYY        int `json:"Tag"` // tag takes precedence over untagged field of the same name
+	Empty      int `json:""`    // empty tag is noop
 	tEmbed1
 	tEmbed2
 }
@@ -205,6 +206,7 @@ func TestFieldsWithTags(t *testing.T) {
 		tfield("anon", Anonymous(0), 2),
 		tfield("em", Embed{}, 4),
 		tfield("Tag", int(0), 6),
+		field("Empty", int(0), 7),
 		tfield("Dup", int(0), 8, 0),
 	}
 	if msg, ok := compareFields(got, want); !ok {
