@@ -496,6 +496,158 @@ func TestEmbeddedInference(t *testing.T) {
 	}
 }
 
+type withTags struct {
+	NoTag         int
+	ExcludeTag    int `bigquery:"-"`
+	SimpleTag     int `bigquery:"simple_tag"`
+	UnderscoreTag int `bigquery:"_id"`
+	MixedCase     int `bigquery:"MIXEDcase"`
+}
+
+type withTagsNested struct {
+	Nested          withTags `bigquery:"nested"`
+	NestedAnonymous struct {
+		ExcludeTag int `bigquery:"-"`
+		Inside     int `bigquery:"inside"`
+	} `bigquery:"anon"`
+}
+
+type withTagsRepeated struct {
+	Repeated          []withTags `bigquery:"repeated"`
+	RepeatedAnonymous []struct {
+		ExcludeTag int `bigquery:"-"`
+		Inside     int `bigquery:"inside"`
+	} `bigquery:"anon"`
+}
+
+type withTagsEmbedded struct {
+	withTags
+}
+
+var withTagsSchema = Schema{
+	reqField("NoTag", "INTEGER"),
+	reqField("simple_tag", "INTEGER"),
+	reqField("_id", "INTEGER"),
+	reqField("MIXEDcase", "INTEGER"),
+}
+
+func TestTagInference(t *testing.T) {
+	testCases := []struct {
+		in   interface{}
+		want Schema
+	}{
+		{
+			in:   withTags{},
+			want: withTagsSchema,
+		},
+		{
+			in: withTagsNested{},
+			want: Schema{
+				&FieldSchema{
+					Name:     "nested",
+					Required: true,
+					Type:     "RECORD",
+					Schema:   withTagsSchema,
+				},
+				&FieldSchema{
+					Name:     "anon",
+					Required: true,
+					Type:     "RECORD",
+					Schema:   Schema{reqField("inside", "INTEGER")},
+				},
+			},
+		},
+		{
+			in: withTagsRepeated{},
+			want: Schema{
+				&FieldSchema{
+					Name:     "repeated",
+					Repeated: true,
+					Type:     "RECORD",
+					Schema:   withTagsSchema,
+				},
+				&FieldSchema{
+					Name:     "anon",
+					Repeated: true,
+					Type:     "RECORD",
+					Schema:   Schema{reqField("inside", "INTEGER")},
+				},
+			},
+		},
+		{
+			in:   withTagsEmbedded{},
+			want: withTagsSchema,
+		},
+	}
+	for i, tc := range testCases {
+		got, err := InferSchema(tc.in)
+		if err != nil {
+			t.Fatalf("%d: error inferring TableSchema: %v", i, err)
+		}
+		if !reflect.DeepEqual(got, tc.want) {
+			t.Errorf("%d: inferring TableSchema: got:\n%#v\nwant:\n%#v", i,
+				pretty.Value(got), pretty.Value(tc.want))
+		}
+	}
+}
+
+func TestTagInferenceErrors(t *testing.T) {
+	testCases := []struct {
+		in  interface{}
+		err error
+	}{
+		{
+			in: struct {
+				LongTag int `bigquery:"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy"`
+			}{},
+			err: errInvalidFieldName,
+		},
+		{
+			in: struct {
+				UnsupporedStartChar int `bigquery:"øab"`
+			}{},
+			err: errInvalidFieldName,
+		},
+		{
+			in: struct {
+				UnsupportedEndChar int `bigquery:"abø"`
+			}{},
+			err: errInvalidFieldName,
+		},
+		{
+			in: struct {
+				UnsupportedMiddleChar int `bigquery:"aøb"`
+			}{},
+			err: errInvalidFieldName,
+		},
+		{
+			in: struct {
+				StartInt int `bigquery:"1abc"`
+			}{},
+			err: errInvalidFieldName,
+		},
+		{
+			in: struct {
+				Hyphens int `bigquery:"a-b"`
+			}{},
+			err: errInvalidFieldName,
+		},
+		{
+			in: struct {
+				OmitEmpty int `bigquery:"abc,omitempty"`
+			}{},
+			err: errInvalidFieldName,
+		},
+	}
+	for i, tc := range testCases {
+		want := tc.err
+		_, got := InferSchema(tc.in)
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("%d: inferring TableSchema: got:\n%#v\nwant:\n%#v", i, got, want)
+		}
+	}
+}
+
 func TestSchemaErrors(t *testing.T) {
 	testCases := []struct {
 		in  interface{}
