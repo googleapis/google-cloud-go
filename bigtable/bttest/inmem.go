@@ -445,10 +445,24 @@ func filterCells(f *btpb.RowFilter, fam, col string, cs []cell) []cell {
 	var ret []cell
 	for _, cell := range cs {
 		if includeCell(f, fam, col, cell) {
+			cell = modifyCell(f, cell)
 			ret = append(ret, cell)
 		}
 	}
 	return ret
+}
+
+func modifyCell(f *btpb.RowFilter, c cell) cell {
+	if f == nil {
+		return c
+	}
+	// Consider filters that may modify the cell contents
+	switch f.Filter.(type) {
+	case *btpb.RowFilter_StripValueTransformer:
+		return cell{ts: c.ts}
+	default:
+		return c
+	}
 }
 
 func includeCell(f *btpb.RowFilter, fam, col string, cell cell) bool {
@@ -462,6 +476,9 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) bool {
 		return true
 	case *btpb.RowFilter_RowKeyRegexFilter:
 		// Don't log, row-level filter
+		return true
+	case *btpb.RowFilter_StripValueTransformer:
+		// Don't log, cell-modifying filter
 		return true
 	default:
 		log.Printf("WARNING: don't know how to handle filter of type %T (ignoring it)", f)
