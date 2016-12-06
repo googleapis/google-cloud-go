@@ -136,6 +136,13 @@ func InferSchema(st interface{}) (Schema, error) {
 
 func inferStruct(rt reflect.Type) (Schema, error) {
 	switch rt.Kind() {
+	case reflect.Ptr:
+		if rt.Elem().Kind() != reflect.Struct {
+			return nil, errNoStruct
+		}
+		rt = rt.Elem()
+		fallthrough
+
 	case reflect.Struct:
 		return inferFields(rt)
 	default:
@@ -176,8 +183,8 @@ func inferFieldSchema(rt reflect.Type) (*FieldSchema, error) {
 		f.Repeated = true
 		f.Required = false
 		return f, nil
-	case reflect.Struct:
-		nested, err := inferFields(rt)
+	case reflect.Struct, reflect.Ptr:
+		nested, err := inferStruct(rt)
 		if err != nil {
 			return nil, err
 		}
