@@ -239,6 +239,14 @@ type allTime struct {
 	DateTime  civil.DateTime
 }
 
+func reqField(name, typ string) *FieldSchema {
+	return &FieldSchema{
+		Name:     name,
+		Type:     FieldType(typ),
+		Required: true,
+	}
+}
+
 func TestSimpleInference(t *testing.T) {
 	testCases := []struct {
 		in   interface{}
@@ -247,54 +255,54 @@ func TestSimpleInference(t *testing.T) {
 		{
 			in: allSignedIntegers{},
 			want: Schema{
-				fieldSchema("", "Int64", "INTEGER", false, true),
-				fieldSchema("", "Int32", "INTEGER", false, true),
-				fieldSchema("", "Int16", "INTEGER", false, true),
-				fieldSchema("", "Int8", "INTEGER", false, true),
-				fieldSchema("", "Int", "INTEGER", false, true),
+				reqField("Int64", "INTEGER"),
+				reqField("Int32", "INTEGER"),
+				reqField("Int16", "INTEGER"),
+				reqField("Int8", "INTEGER"),
+				reqField("Int", "INTEGER"),
 			},
 		},
 		{
 			in: allUnsignedIntegers{},
 			want: Schema{
-				fieldSchema("", "Uint32", "INTEGER", false, true),
-				fieldSchema("", "Uint16", "INTEGER", false, true),
-				fieldSchema("", "Uint8", "INTEGER", false, true),
+				reqField("Uint32", "INTEGER"),
+				reqField("Uint16", "INTEGER"),
+				reqField("Uint8", "INTEGER"),
 			},
 		},
 		{
 			in: allFloat{},
 			want: Schema{
-				fieldSchema("", "Float64", "FLOAT", false, true),
-				fieldSchema("", "Float32", "FLOAT", false, true),
+				reqField("Float64", "FLOAT"),
+				reqField("Float32", "FLOAT"),
 			},
 		},
 		{
 			in: allBoolean{},
 			want: Schema{
-				fieldSchema("", "Bool", "BOOLEAN", false, true),
+				reqField("Bool", "BOOLEAN"),
 			},
 		},
 		{
 			in: &allBoolean{},
 			want: Schema{
-				fieldSchema("", "Bool", "BOOLEAN", false, true),
+				reqField("Bool", "BOOLEAN"),
 			},
 		},
 		{
 			in: allTime{},
 			want: Schema{
-				fieldSchema("", "Timestamp", "TIMESTAMP", false, true),
-				fieldSchema("", "Time", "TIME", false, true),
-				fieldSchema("", "Date", "DATE", false, true),
-				fieldSchema("", "DateTime", "DATETIME", false, true),
+				reqField("Timestamp", "TIMESTAMP"),
+				reqField("Time", "TIME"),
+				reqField("Date", "DATE"),
+				reqField("DateTime", "DATETIME"),
 			},
 		},
 		{
 			in: allStrings{},
 			want: Schema{
-				fieldSchema("", "String", "STRING", false, true),
-				fieldSchema("", "ByteSlice", "BYTES", false, true),
+				reqField("String", "STRING"),
+				reqField("ByteSlice", "BYTES"),
 			},
 		},
 	}
@@ -339,41 +347,29 @@ func TestNestedInference(t *testing.T) {
 		{
 			in: containsNested{},
 			want: Schema{
-				fieldSchema("", "NotNested", "INTEGER", false, true),
+				reqField("NotNested", "INTEGER"),
 				&FieldSchema{
 					Name:     "Nested",
 					Required: true,
 					Type:     "RECORD",
-					Schema: []*FieldSchema{
-						{
-							Name:     "Inside",
-							Type:     "INTEGER",
-							Required: true,
-						},
-					},
+					Schema:   Schema{reqField("Inside", "INTEGER")},
 				},
 			},
 		},
 		{
 			in: containsDoubleNested{},
 			want: Schema{
-				fieldSchema("", "NotNested", "INTEGER", false, true),
+				reqField("NotNested", "INTEGER"),
 				&FieldSchema{
 					Name:     "Nested",
 					Required: true,
 					Type:     "RECORD",
-					Schema: []*FieldSchema{
+					Schema: Schema{
 						{
 							Name:     "InsideNested",
 							Required: true,
 							Type:     "RECORD",
-							Schema: []*FieldSchema{
-								{
-									Name:     "Inside",
-									Type:     "INTEGER",
-									Required: true,
-								},
-							},
+							Schema:   Schema{reqField("Inside", "INTEGER")},
 						},
 					},
 				},
@@ -386,7 +382,7 @@ func TestNestedInference(t *testing.T) {
 					Name:     "Ptr",
 					Required: true,
 					Type:     "RECORD",
-					Schema:   Schema{fieldSchema("", "Inside", "INTEGER", false, true)},
+					Schema:   Schema{reqField("Inside", "INTEGER")},
 				},
 			},
 		},
@@ -422,6 +418,14 @@ type moreRepeated struct {
 	PtrSlice *[]int
 }
 
+func repField(name, typ string) *FieldSchema {
+	return &FieldSchema{
+		Name:     name,
+		Type:     FieldType(typ),
+		Repeated: true,
+	}
+}
+
 func TestRepeatedInference(t *testing.T) {
 	testCases := []struct {
 		in   interface{}
@@ -430,26 +434,20 @@ func TestRepeatedInference(t *testing.T) {
 		{
 			in: simpleRepeated{},
 			want: Schema{
-				fieldSchema("", "NotRepeated", "BYTES", false, true),
-				fieldSchema("", "RepeatedByteSlice", "BYTES", true, false),
-				fieldSchema("", "Repeated", "INTEGER", true, false),
+				reqField("NotRepeated", "BYTES"),
+				repField("RepeatedByteSlice", "BYTES"),
+				repField("Repeated", "INTEGER"),
 			},
 		},
 		{
 			in: simpleNestedRepeated{},
 			want: Schema{
-				fieldSchema("", "NotRepeated", "INTEGER", false, true),
+				reqField("NotRepeated", "INTEGER"),
 				&FieldSchema{
 					Name:     "Repeated",
 					Repeated: true,
 					Type:     "RECORD",
-					Schema: []*FieldSchema{
-						{
-							Name:     "Inside",
-							Type:     "INTEGER",
-							Required: true,
-						},
-					},
+					Schema:   Schema{reqField("Inside", "INTEGER")},
 				},
 			},
 		},
@@ -485,8 +483,8 @@ func TestEmbeddedInference(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := Schema{
-		fieldSchema("", "Embedded", "INTEGER", false, true),
-		fieldSchema("", "Embedded2", "INTEGER", false, true),
+		reqField("Embedded", "INTEGER"),
+		reqField("Embedded2", "INTEGER"),
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v, want %v", pretty.Value(got), pretty.Value(want))
