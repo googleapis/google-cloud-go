@@ -326,16 +326,29 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 
 	// Test iteration with structs.
 	it := table.Read(ctx)
-	for i, want := range scores {
-		var got score
-		if err := it.Next(&got); err != nil {
+	var got []score
+	for {
+		var g score
+		err := it.Next(&g)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
 			t.Fatal(err)
 		}
-		if got != want {
-			t.Errorf("%d: got %+v, want %+v", i, got, want)
-		}
+		got = append(got, g)
+	}
+	sort.Sort(byName(got))
+	if !reflect.DeepEqual(got, scores) {
+		t.Errorf("got %+v, want %+v", got, scores)
 	}
 }
+
+type byName []score
+
+func (b byName) Len() int           { return len(b) }
+func (b byName) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
+func (b byName) Less(i, j int) bool { return b[i].Name < b[j].Name }
 
 func TestIntegration_Update(t *testing.T) {
 	if client == nil {
