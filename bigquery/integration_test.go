@@ -299,57 +299,6 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 	}
 }
 
-func TestIntegration_UploadAndReadStructs(t *testing.T) {
-	if client == nil {
-		t.Skip("Integration tests skipped")
-	}
-	ctx := context.Background()
-	table := newTable(t, schema)
-	defer table.Delete(ctx)
-
-	// Populate the table.
-	upl := table.Uploader()
-	scores := []score{
-		{Name: "a", Num: 12},
-		{Name: "b", Num: 18},
-		{Name: "c", Num: 3},
-	}
-	if err := upl.Put(ctx, scores); err != nil {
-		t.Fatal(err)
-	}
-
-	// Wait until the data has been uploaded. This can take a few seconds, according
-	// to https://cloud.google.com/bigquery/streaming-data-into-bigquery.
-	if err := waitForRow(ctx, table); err != nil {
-		t.Fatal(err)
-	}
-
-	// Test iteration with structs.
-	it := table.Read(ctx)
-	var got []score
-	for {
-		var g score
-		err := it.Next(&g)
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatal(err)
-		}
-		got = append(got, g)
-	}
-	sort.Sort(byName(got))
-	if !reflect.DeepEqual(got, scores) {
-		t.Errorf("got %+v, want %+v", got, scores)
-	}
-}
-
-type byName []score
-
-func (b byName) Len() int           { return len(b) }
-func (b byName) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
-func (b byName) Less(i, j int) bool { return b[i].Name < b[j].Name }
-
 func TestIntegration_Update(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
