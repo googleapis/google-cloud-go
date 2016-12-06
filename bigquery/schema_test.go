@@ -394,28 +394,25 @@ func TestNestedInference(t *testing.T) {
 			t.Fatalf("%d: error inferring TableSchema: %v", i, err)
 		}
 		if !reflect.DeepEqual(got, tc.want) {
-			t.Errorf("%d: inferring TableSchema: got:\n%#v\nwant:\n%#v", i, got, tc.want)
+			t.Errorf("%d: inferring TableSchema: got:\n%#v\nwant:\n%#v", i,
+				pretty.Value(got), pretty.Value(tc.want))
 		}
 	}
 }
 
-type simpleRepeated struct {
+type repeated struct {
 	NotRepeated       []byte
 	RepeatedByteSlice [][]byte
-	Repeated          []int
+	Slice             []int
+	Array             [5]bool
 }
 
-type simpleNestedRepeated struct {
+type nestedRepeated struct {
 	NotRepeated int
 	Repeated    []struct {
 		Inside int
 	}
-}
-
-type moreRepeated struct {
-	Array    [5]int
-	PtrArray *[5]int
-	PtrSlice *[]int
+	RepeatedPtr []*struct{ Inside int }
 }
 
 func repField(name, typ string) *FieldSchema {
@@ -432,19 +429,26 @@ func TestRepeatedInference(t *testing.T) {
 		want Schema
 	}{
 		{
-			in: simpleRepeated{},
+			in: repeated{},
 			want: Schema{
 				reqField("NotRepeated", "BYTES"),
 				repField("RepeatedByteSlice", "BYTES"),
-				repField("Repeated", "INTEGER"),
+				repField("Slice", "INTEGER"),
+				repField("Array", "BOOLEAN"),
 			},
 		},
 		{
-			in: simpleNestedRepeated{},
+			in: nestedRepeated{},
 			want: Schema{
 				reqField("NotRepeated", "INTEGER"),
-				&FieldSchema{
+				{
 					Name:     "Repeated",
+					Repeated: true,
+					Type:     "RECORD",
+					Schema:   Schema{reqField("Inside", "INTEGER")},
+				},
+				{
+					Name:     "RepeatedPtr",
 					Repeated: true,
 					Type:     "RECORD",
 					Schema:   Schema{reqField("Inside", "INTEGER")},
@@ -459,7 +463,8 @@ func TestRepeatedInference(t *testing.T) {
 			t.Fatalf("%d: error inferring TableSchema: %v", i, err)
 		}
 		if !reflect.DeepEqual(got, tc.want) {
-			t.Errorf("%d: inferring TableSchema: got:\n%#v\nwant:\n%#v", i, got, tc.want)
+			t.Errorf("%d: inferring TableSchema: got:\n%#v\nwant:\n%#v", i,
+				pretty.Value(got), pretty.Value(tc.want))
 		}
 	}
 }
