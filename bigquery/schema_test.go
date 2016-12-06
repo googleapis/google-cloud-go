@@ -276,6 +276,12 @@ func TestSimpleInference(t *testing.T) {
 			},
 		},
 		{
+			in: &allBoolean{},
+			want: Schema{
+				fieldSchema("", "Bool", "BOOLEAN", false, true),
+			},
+		},
+		{
 			in: allTime{},
 			want: Schema{
 				fieldSchema("", "Timestamp", "TIMESTAMP", false, true),
@@ -373,18 +379,17 @@ func TestNestedInference(t *testing.T) {
 				},
 			},
 		},
-		// TODO(jba): consider supporting pointers to structs, like encoding/json.
-		// {
-		// 	in: ptrNested{},
-		// 	want: Schema{
-		// 		&FieldSchema{
-		// 			Name:     "Ptr",
-		// 			Required: true,
-		// 			Type:     "RECORD",
-		// 			Schema:   Schema{fieldSchema("", "Inside", "INTEGER", false, true)},
-		// 		},
-		// 	},
-		// },
+		{
+			in: ptrNested{},
+			want: Schema{
+				&FieldSchema{
+					Name:     "Ptr",
+					Required: true,
+					Type:     "RECORD",
+					Schema:   Schema{fieldSchema("", "Inside", "INTEGER", false, true)},
+				},
+			},
+		},
 	}
 
 	for i, tc := range testCases {
@@ -448,15 +453,6 @@ func TestRepeatedInference(t *testing.T) {
 				},
 			},
 		},
-		// TODO(jba): consider supporting pointers to arrays and slices, like encoding/json.
-		// {
-		// 	in: moreRepeated{},
-		// 	want: Schema{
-		// 		fieldSchema("", "Array", "INTEGER", true, false),
-		// 		fieldSchema("", "PtrArray", "INTEGER", true, false),
-		// 		fieldSchema("", "PtrSlice", "INTEGER", true, false),
-		// 	},
-		// },
 	}
 
 	for i, tc := range testCases {
@@ -511,10 +507,6 @@ func TestSchemaErrors(t *testing.T) {
 			err: errNoStruct,
 		},
 		{
-			in:  new(allStrings),
-			err: errNoStruct,
-		},
-		{
 			in:  struct{ Uint uint }{},
 			err: errUnsupportedFieldType,
 		},
@@ -540,7 +532,7 @@ func TestSchemaErrors(t *testing.T) {
 		},
 		{
 			in:  struct{ Ptr *int }{},
-			err: errUnsupportedFieldType,
+			err: errNoStruct,
 		},
 		{
 			in:  struct{ Interface interface{} }{},
@@ -563,11 +555,11 @@ func TestSchemaErrors(t *testing.T) {
 			err: errUnsupportedFieldType,
 		},
 	}
-	for i, tc := range testCases {
+	for _, tc := range testCases {
 		want := tc.err
 		_, got := InferSchema(tc.in)
 		if !reflect.DeepEqual(got, want) {
-			t.Errorf("%d: inferring TableSchema: got:\n%#v\nwant:\n%#v", i, got, want)
+			t.Errorf("%#v: got:\n%#v\nwant:\n%#v", tc.in, got, want)
 		}
 	}
 }
