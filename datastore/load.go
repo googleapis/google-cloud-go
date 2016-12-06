@@ -20,6 +20,7 @@ import (
 	"strings"
 	"time"
 
+	"cloud.google.com/go/internal/fields"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 )
 
@@ -63,7 +64,7 @@ type propertyLoader struct {
 	m map[string]int
 }
 
-func (l *propertyLoader) load(codec *structCodec, structValue reflect.Value, p Property, prev map[string]struct{}) string {
+func (l *propertyLoader) load(codec fields.List, structValue reflect.Value, p Property, prev map[string]struct{}) string {
 	sl, ok := p.Value.([]interface{})
 	if !ok {
 		return l.loadOneElement(codec, structValue, p, prev)
@@ -80,7 +81,7 @@ func (l *propertyLoader) load(codec *structCodec, structValue reflect.Value, p P
 // loadOneElement loads the value of Property p into structValue based on the provided
 // codec. codec is used to find the field in structValue into which p should be loaded.
 // prev is the set of property names already seen for structValue.
-func (l *propertyLoader) loadOneElement(codec *structCodec, structValue reflect.Value, p Property, prev map[string]struct{}) string {
+func (l *propertyLoader) loadOneElement(codec fields.List, structValue reflect.Value, p Property, prev map[string]struct{}) string {
 	var sliceOk bool
 	var sliceIndex int
 	var v reflect.Value
@@ -88,9 +89,9 @@ func (l *propertyLoader) loadOneElement(codec *structCodec, structValue reflect.
 	name := p.Name
 	for name != "" {
 		// First we try to find a field with name matching
-		// the value of 'name' exactly.
-		decoder, ok := codec.fields[name]
-		if ok {
+		// the value of 'name' exactly (though case-insensitively).
+		field := codec.Match(name)
+		if field != nil {
 			name = ""
 		} else {
 			// Now try for legacy flattened nested field (named eg. "A.B.C.D").
@@ -103,7 +104,7 @@ func (l *propertyLoader) loadOneElement(codec *structCodec, structValue reflect.
 			// eg. for name "A.B.C.D", split off "A.B.C" and try to
 			// find a field in the codec with this name.
 			// Loop again with "A.B", etc.
-			for !ok {
+			for field == nil {
 				i := strings.LastIndex(parent, ".")
 				if i < 0 {
 					return "no such struct field"
@@ -112,13 +113,13 @@ func (l *propertyLoader) loadOneElement(codec *structCodec, structValue reflect.
 					return "field name cannot end with '.'"
 				}
 				parent, child = name[:i], name[i+1:]
-				decoder, ok = codec.fields[parent]
+				field = codec.Match(parent)
 			}
 
 			name = child
 		}
 
-		v = initField(structValue, decoder.path)
+		v = initField(structValue, field.Index)
 		if !v.IsValid() {
 			return "no such struct field"
 		}
@@ -126,8 +127,12 @@ func (l *propertyLoader) loadOneElement(codec *structCodec, structValue reflect.
 			return "cannot set struct field"
 		}
 
-		if decoder.structCodec != nil {
-			codec = decoder.structCodec
+		var err error
+		if field.Type.Kind() == reflect.Struct {
+			codec, err = structCache.Fields(field.Type)
+			if err != nil {
+				return err.Error()
+			}
 			structValue = v
 		}
 
@@ -142,6 +147,12 @@ func (l *propertyLoader) loadOneElement(codec *structCodec, structValue reflect.
 				v.Set(reflect.Append(v, reflect.New(v.Type().Elem()).Elem()))
 			}
 			structValue = v.Index(sliceIndex)
+			if structValue.Type().Kind() == reflect.Struct {
+				codec, err = structCache.Fields(structValue.Type())
+				if err != nil {
+					return err.Error()
+				}
+			}
 			sliceOk = true
 		}
 	}
@@ -245,8 +256,9 @@ func setVal(v reflect.Value, p Property) string {
 
 			// if ent has a Key value and our struct has a Key field,
 			// load the Entity's Key value into the Key field on the struct.
-			if ent.Key != nil && pls.codec.keyField != -1 {
-				pls.v.Field(pls.codec.keyField).Set(reflect.ValueOf(ent.Key))
+			keyField := pls.codec.Match(keyFieldName)
+			if keyField != nil && ent.Key != nil {
+				pls.v.FieldByIndex(keyField.Index).Set(reflect.ValueOf(ent.Key))
 			}
 
 			err = pls.Load(ent.Properties)
