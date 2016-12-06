@@ -547,6 +547,7 @@ var (
 			{Name: "nestS", Type: StringFieldType},
 			{Name: "nestI", Type: IntegerFieldType},
 		}},
+		{Name: "t", Type: StringFieldType},
 	}
 
 	testTimestamp = time.Date(2016, 11, 5, 7, 50, 22, 8, time.UTC)
@@ -556,7 +557,7 @@ var (
 
 	testValues = []Value{"x", "y", []byte{1, 2, 3}, int64(7), 3.14, true,
 		testTimestamp, testDate, testTime, testDateTime,
-		[]Value{"nested", int64(17)}}
+		[]Value{"nested", int64(17)}, "z"}
 )
 
 type testStruct1 struct {
@@ -569,6 +570,7 @@ type testStruct1 struct {
 	s      string
 	F      float64
 	Nested nested
+	Tagged string `bigquery:"t"`
 }
 
 type String string
@@ -601,6 +603,7 @@ func TestStructLoader(t *testing.T) {
 		S2:     "y",
 		By:     []byte{1, 2, 3},
 		Nested: nested{NestS: "nested", NestI: 17},
+		Tagged: "z",
 	}
 	if !reflect.DeepEqual(&ts1, want) {
 		t.Errorf("got %+v, want %+v", pretty.Value(ts1), pretty.Value(*want))

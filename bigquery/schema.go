@@ -117,8 +117,11 @@ const (
 	DateTimeFieldType  FieldType = "DATETIME"
 )
 
-var errNoStruct = errors.New("bigquery: can only infer schema from struct or pointer to struct")
-var errUnsupportedFieldType = errors.New("bigquery: unsupported type of field in struct")
+var (
+	errNoStruct             = errors.New("bigquery: can only infer schema from struct or pointer to struct")
+	errUnsupportedFieldType = errors.New("bigquery: unsupported type of field in struct")
+	errInvalidFieldName     = errors.New("bigquery: invalid name of field in struct")
+)
 
 var typeOfByteSlice = reflect.TypeOf([]byte{})
 
