@@ -51,7 +51,8 @@
 // limit on the number of requests traced per second.  The following example
 // traces one in every thousand requests, up to a limit of 5 per second.
 //
-//   traceClient.SetSamplingPolicy(trace.NewLimitedSampler(0.001, 5))
+//   p, err := trace.NewLimitedSampler(0.001, 5)
+//   traceClient.SetSamplingPolicy(p)
 //
 // You can create a new span as a child of an existing span with NewChild.
 //
