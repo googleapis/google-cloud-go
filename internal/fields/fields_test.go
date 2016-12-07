@@ -82,7 +82,7 @@ func tfield(name string, tval interface{}, index ...int) *Field {
 }
 
 func TestFieldsNoTags(t *testing.T) {
-	c := NewCache(nil)
+	c := NewCache(nil, nil)
 	got, err := c.Fields(reflect.TypeOf(S1{}))
 	if err != nil {
 		t.Fatal(err)
@@ -132,7 +132,7 @@ func TestAgainstJSONEncodingNoTags(t *testing.T) {
 	jsonRoundTrip(t, s1, &want)
 	var got S1
 	got.embed2 = &embed2{} // need this because reflection won't create it
-	fields, err := NewCache(nil).Fields(reflect.TypeOf(got))
+	fields, err := NewCache(nil, nil).Fields(reflect.TypeOf(got))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -180,8 +180,22 @@ func jsonTagParser(t reflect.StructTag) (name string, keep bool, other interface
 	return parts[0], true, other, nil
 }
 
+func validateFunc(t reflect.Type) (err error) {
+	if t.Kind() != reflect.Struct {
+		return errors.New("non-struct type used")
+	}
+
+	for i := 0; i < t.NumField(); i++ {
+		if t.Field(i).Type.Kind() == reflect.Slice {
+			return fmt.Errorf("slice field found at field %s on struct %s", t.Field(i).Name, t.Name())
+		}
+	}
+
+	return nil
+}
+
 func TestFieldsWithTags(t *testing.T) {
-	got, err := NewCache(jsonTagParser).Fields(reflect.TypeOf(S2{}))
+	got, err := NewCache(jsonTagParser, nil).Fields(reflect.TypeOf(S2{}))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -219,7 +233,7 @@ func TestAgainstJSONEncodingWithTags(t *testing.T) {
 	var want S2
 	jsonRoundTrip(t, s2, &want)
 	var got S2
-	fields, err := NewCache(jsonTagParser).Fields(reflect.TypeOf(got))
+	fields, err := NewCache(jsonTagParser, nil).Fields(reflect.TypeOf(got))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -243,7 +257,7 @@ func TestUnexportedAnonymousNonStruct(t *testing.T) {
 		}
 	)
 
-	got, err := NewCache(jsonTagParser).Fields(reflect.TypeOf(S{}))
+	got, err := NewCache(jsonTagParser, nil).Fields(reflect.TypeOf(S{}))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -262,7 +276,7 @@ func TestUnexportedAnonymousStruct(t *testing.T) {
 			s1 `json:"Y"`
 		}
 	)
-	got, err := NewCache(jsonTagParser).Fields(reflect.TypeOf(S2{}))
+	got, err := NewCache(jsonTagParser, nil).Fields(reflect.TypeOf(S2{}))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -304,7 +318,7 @@ func TestIgnore(t *testing.T) {
 	type S struct {
 		X int `json:"-"`
 	}
-	got, err := NewCache(jsonTagParser).Fields(reflect.TypeOf(S{}))
+	got, err := NewCache(jsonTagParser, nil).Fields(reflect.TypeOf(S{}))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -317,7 +331,7 @@ func TestParsedTag(t *testing.T) {
 	type S struct {
 		X int `json:"name,omitempty"`
 	}
-	got, err := NewCache(jsonTagParser).Fields(reflect.TypeOf(S{}))
+	got, err := NewCache(jsonTagParser, nil).Fields(reflect.TypeOf(S{}))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -327,6 +341,27 @@ func TestParsedTag(t *testing.T) {
 	}
 	if msg, ok := compareFields(got, want); !ok {
 		t.Error(msg)
+	}
+}
+
+func TestValidateFunc(t *testing.T) {
+	type MyInvalidStruct struct {
+		A string
+		B []int
+	}
+
+	_, err := NewCache(nil, validateFunc).Fields(reflect.TypeOf(MyInvalidStruct{}))
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+
+	type MyValidStruct struct {
+		A string
+		B int
+	}
+	_, err = NewCache(nil, validateFunc).Fields(reflect.TypeOf(MyValidStruct{}))
+	if err != nil {
+		t.Fatalf("expected nil, got error: %s\n", err)
 	}
 }
 
@@ -393,7 +428,7 @@ type S4 struct {
 }
 
 func TestMatchingField(t *testing.T) {
-	fields, err := NewCache(jsonTagParser).Fields(reflect.TypeOf(S3{}))
+	fields, err := NewCache(jsonTagParser, nil).Fields(reflect.TypeOf(S3{}))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -435,7 +470,7 @@ func TestAgainstJSONMatchingField(t *testing.T) {
 	var want S3
 	jsonRoundTrip(t, s3, &want)
 	v := reflect.ValueOf(want)
-	fields, err := NewCache(jsonTagParser).Fields(reflect.TypeOf(S3{}))
+	fields, err := NewCache(jsonTagParser, nil).Fields(reflect.TypeOf(S3{}))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -469,7 +504,7 @@ func TestTagErrors(t *testing.T) {
 			return "", false, nil, errors.New("error")
 		}
 		return s, true, nil, nil
-	})
+	}, nil)
 
 	type T struct {
 		X int `f:"ok"`
