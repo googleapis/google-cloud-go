@@ -378,6 +378,71 @@ func valuesToMap(vs []Value, schema Schema) (map[string]Value, error) {
 	return m, nil
 }
 
+// StructSaver implements ValueSaver for a struct.
+// The struct is converted to a map of values by using the values of struct
+// fields corresponding to schema fields. Additional and missing
+// fields are ignored, as are nested struct pointers that are nil.
+type StructSaver struct {
+	// Schema determines what fields of the struct are uploaded. It should
+	// match the table's schema.
+	Schema Schema
+
+	// If non-empty, BigQuery will use InsertID to de-duplicate insertions
+	// of this row on a best-effort basis.
+	InsertID string
+
+	// Struct should be a struct or a pointer to a struct.
+	Struct interface{}
+}
+
+// Save implements ValueSaver.
+func (ss *StructSaver) Save() (row map[string]Value, insertID string, err error) {
+	vstruct := reflect.ValueOf(ss.Struct)
+	row, err = structToMap(vstruct, ss.Schema)
+	if err != nil {
+		return nil, "", err
+	}
+	return row, ss.InsertID, nil
+}
+
+func structToMap(vstruct reflect.Value, schema Schema) (map[string]Value, error) {
+	if vstruct.Kind() == reflect.Ptr {
+		vstruct = vstruct.Elem()
+	}
+	if !vstruct.IsValid() {
+		return nil, nil
+	}
+	if vstruct.Kind() != reflect.Struct {
+		return nil, fmt.Errorf("bigquery: type is %s, need struct or struct pointer", vstruct.Type())
+	}
+	fields, err := fieldCache.Fields(vstruct.Type())
+	if err != nil {
+		return nil, err
+	}
+	m := map[string]Value{}
+	for _, schemaField := range schema {
+		// Look for an exported struct field with the same name as the schema
+		// field, ignoring case.
+		structField := fields.Match(schemaField.Name)
+		if structField == nil {
+			continue
+		}
+		vfield := vstruct.FieldByIndex(structField.Index)
+		if schemaField.Type != RecordFieldType {
+			m[schemaField.Name] = vfield.Interface()
+		} else {
+			m2, err := structToMap(vfield, schemaField.Schema)
+			if err != nil {
+				return nil, err
+			}
+			if m2 != nil {
+				m[schemaField.Name] = m2
+			}
+		}
+	}
+	return m, nil
+}
+
 // convertRows converts a series of TableRows into a series of Value slices.
 // schema is used to interpret the data from rows; its length must match the
 // length of each row.
