@@ -307,8 +307,8 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 	table := newTable(t, schema)
 	defer table.Delete(ctx)
 
-	// Populate the table.
 	upl := table.Uploader()
+	// Populate the table using StructSavers explicitly.
 	scores := []score{
 		{Name: "a", Num: 12},
 		{Name: "b", Num: 18},
@@ -322,13 +322,25 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// Continue uploading to the table using structs and struct pointers.
+
+	scores2 := []interface{}{
+		score{Name: "d", Num: 12},
+		&score{Name: "e", Num: 18},
+	}
+	if err := upl.Put(ctx, scores2); err != nil {
+		t.Fatal(err)
+	}
+
 	// Wait until the data has been uploaded. This can take a few seconds, according
 	// to https://cloud.google.com/bigquery/streaming-data-into-bigquery.
 	if err := waitForRow(ctx, table); err != nil {
 		t.Fatal(err)
 	}
 
-	// Test iteration with structs.
+	// Read what we wrote.
+	want := []score{scores[0], scores[1], scores[2],
+		scores2[0].(score), *scores2[1].(*score)}
 	it := table.Read(ctx)
 	var got []score
 	for {
@@ -343,8 +355,8 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 		got = append(got, g)
 	}
 	sort.Sort(byName(got))
-	if !reflect.DeepEqual(got, scores) {
-		t.Errorf("got %+v, want %+v", got, scores)
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %+v, want %+v", got, want)
 	}
 }
 
