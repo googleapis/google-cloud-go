@@ -389,6 +389,63 @@ func TestValuesSaverConvertsToMap(t *testing.T) {
 	}
 }
 
+func TestStructSaver(t *testing.T) {
+	schema := Schema{
+		{Name: "s", Type: StringFieldType},
+		{Name: "r", Type: IntegerFieldType, Repeated: true},
+		{Name: "nested", Type: RecordFieldType, Schema: Schema{
+			{Name: "b", Type: BooleanFieldType},
+		}},
+	}
+
+	type (
+		N struct{ B bool }
+		T struct {
+			S      string
+			R      []int
+			Nested *N
+		}
+	)
+
+	check := func(in interface{}, want map[string]Value) {
+		ss := StructSaver{
+			Schema:   schema,
+			InsertID: "iid",
+			Struct:   in,
+		}
+		got, gotIID, err := ss.Save()
+		if err != nil {
+			t.Fatalf("%#v: %v", in, err)
+		}
+		if wantIID := "iid"; gotIID != wantIID {
+			t.Errorf("%#v: InsertID: got %q, want %q", in, gotIID, wantIID)
+		}
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("%#v:\ngot\n%+v\nwant\n%+v", in, got, want)
+		}
+	}
+
+	in := T{S: "x", R: []int{1, 2}, Nested: &N{B: true}}
+	want := map[string]Value{
+		"s":      in.S,
+		"r":      in.R,
+		"nested": map[string]Value{"b": in.Nested.B},
+	}
+	check(in, want)
+	check(&in, want)
+	check(T{}, map[string]Value{
+		"s": "",
+		"r": []int(nil),
+	})
+
+	type T2 struct {
+		S string
+		// missing R
+		Extra int
+	}
+	check(T2{S: "x"}, map[string]Value{"s": "x"})
+}
+
 func TestConvertRows(t *testing.T) {
 	schema := []*FieldSchema{
 		{Type: StringFieldType},
