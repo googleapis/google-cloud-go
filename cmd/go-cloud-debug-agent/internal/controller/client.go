@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package debuglet is a library for interacting with the Google Cloud Debugger's Debuglet Controller service.
-package debuglet
+// Package controller is a library for interacting with the Google Cloud Debugger's Debuglet Controller service.
+package controller
 
 import (
 	"crypto/sha256"
