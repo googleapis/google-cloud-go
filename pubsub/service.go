@@ -218,9 +218,10 @@ func (s *apiService) modifyAckDeadline(ctx context.Context, subName string, dead
 // of ids is 100 bytes.
 //
 // With gRPC there is no way for the client to know the server's max message size (it is
-// configurable on the server), but it's safe to assume it is at least 1M.
+// configurable on the server). We know from experience that it
+// it 512K.
 const (
-	maxPayload       = 1 * 1024 * 1024
+	maxPayload       = 512 * 1024
 	ackFixedOverhead = 100
 	overheadPerID    = 3
 )
