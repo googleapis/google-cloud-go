@@ -70,27 +70,40 @@ type Field struct {
 
 type ParseTagFunc func(reflect.StructTag) (name string, keep bool, other interface{}, err error)
 
+type ValidateFunc func(reflect.Type) (err error)
+
 // A Cache records information about the fields of struct types.
 //
 // A Cache is safe for use by multiple goroutines.
 type Cache struct {
 	parseTag ParseTagFunc
+	validate ValidateFunc
 	cache    atomic.Value // map[reflect.Type][]Field
 	mu       sync.Mutex   // used only by writers of cache
 }
 
-// NewCache constructs a Cache. Its argument should be a function that accepts
+// NewCache constructs a Cache.
+// Its first argument should be a function that accepts
 // a struct tag and returns four values: an alternative name for the field
 // extracted from the tag, a boolean saying whether to keep the field or ignore
 // it, additional data that is stored with the field information to avoid
 // having to parse the tag again, and an error.
-func NewCache(parseTag ParseTagFunc) *Cache {
+// Its second argument should be a function that accepts a reflect.Type
+// and returns an error if the struct type is invalid in any way.
+// For example, it may check that all of the struct field tags are valid, or
+// that all fields are of an appropriate type.
+func NewCache(parseTag ParseTagFunc, validate ValidateFunc) *Cache {
 	if parseTag == nil {
 		parseTag = func(reflect.StructTag) (string, bool, interface{}, error) {
 			return "", true, nil, nil
 		}
 	}
-	return &Cache{parseTag: parseTag}
+	if validate == nil {
+		validate = func(reflect.Type) error {
+			return nil
+		}
+	}
+	return &Cache{parseTag: parseTag, validate: validate}
 }
 
 // A fieldScan represents an item on the fieldByNameFunc scan work list.
@@ -102,9 +115,6 @@ type fieldScan struct {
 // Fields returns all the exported fields of t, which must be a struct type. It
 // follows the standard Go rules for embedded fields, modified by the presence
 // of tags. The result is sorted lexicographically by index.
-//
-// If not nil, the given parseTag function should extract and return a name
-// from the struct tag. This name is used instead of the field's declared name.
 //
 // These rules apply in the absence of tags:
 // Anonymous struct fields are treated as if their inner exported fields were
@@ -169,21 +179,31 @@ func (c *Cache) cachedTypeFields(t reflect.Type) (List, error) {
 		return cv.fields, cv.err
 	}
 
+	// Validate type
+	if err := c.validate(t); err != nil {
+		c.add(t, cacheValue{nil, err})
+		return nil, err
+	}
+
 	// Compute fields without lock.
 	// Might duplicate effort but won't hold other computations back.
 	f, err := c.typeFields(t)
 	list := List(f)
+	c.add(t, cacheValue{list, err})
+	return list, err
+}
 
+// add atomically adds a new key-value pair to the cache
+func (c *Cache) add(k reflect.Type, v cacheValue) {
 	c.mu.Lock()
-	mp, _ = c.cache.Load().(map[reflect.Type]cacheValue)
+	mp, _ := c.cache.Load().(map[reflect.Type]cacheValue)
 	newM := make(map[reflect.Type]cacheValue, len(mp)+1)
 	for k, v := range mp {
 		newM[k] = v
 	}
-	newM[t] = cacheValue{list, err}
+	newM[k] = v
 	c.cache.Store(newM)
 	c.mu.Unlock()
-	return list, err
 }
 
 func (c *Cache) typeFields(t reflect.Type) ([]Field, error) {
