@@ -65,6 +65,9 @@ func fprint(w io.Writer, v reflect.Value, s state) {
 		fmt.Fprintf(w, "nil%s", s.suffix)
 		return
 	}
+	if v.Type().Kind() == reflect.Interface {
+		v = v.Elem()
+	}
 	for v.Type().Kind() == reflect.Ptr {
 		fmt.Fprintf(w, "&")
 		v = v.Elem()
