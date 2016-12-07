@@ -25,16 +25,20 @@
 // completely or provide an alternate name, as well as other data from the
 // parse that is stored to avoid re-parsing.
 //
-// Next, construct a Cache, passing your function. As its name suggests, a
-// Cache remembers field information for a type, so subsequent calls with the
-// same type are very fast.
+// Then define a function to validate the type:
 //
-//    cache := fields.NewCache(parseTag)
+//   func validate(t reflect.Type) error { ... }
+//
+// Next, construct a Cache, passing your functions. As its name suggests, a
+// Cache remembers validation and field information for a type, so subsequent
+// calls with the same type are very fast.
+//
+//    cache := fields.NewCache(parseTag, validate)
 //
 // To get the fields of a struct type as determined by the above rules, call
 // the Fields method:
 //
-//    fields := cache.Fields(reflect.TypeOf(MyStruct{}))
+//    fields, err := cache.Fields(reflect.TypeOf(MyStruct{}))
 //
 // The return value can be treated as a slice of Fields.
 //
@@ -52,8 +56,8 @@ import (
 	"bytes"
 	"reflect"
 	"sort"
-	"sync"
-	"sync/atomic"
+
+	"cloud.google.com/go/internal/atomiccache"
 )
 
 // A Field records information about a struct field.
@@ -70,7 +74,7 @@ type Field struct {
 
 type ParseTagFunc func(reflect.StructTag) (name string, keep bool, other interface{}, err error)
 
-type ValidateFunc func(reflect.Type) (err error)
+type ValidateFunc func(reflect.Type) error
 
 // A Cache records information about the fields of struct types.
 //
@@ -78,20 +82,21 @@ type ValidateFunc func(reflect.Type) (err error)
 type Cache struct {
 	parseTag ParseTagFunc
 	validate ValidateFunc
-	cache    atomic.Value // map[reflect.Type][]Field
-	mu       sync.Mutex   // used only by writers of cache
+	cache    atomiccache.Cache // from reflect.Type to cacheValue
 }
 
 // NewCache constructs a Cache.
+//
 // Its first argument should be a function that accepts
 // a struct tag and returns four values: an alternative name for the field
 // extracted from the tag, a boolean saying whether to keep the field or ignore
 // it, additional data that is stored with the field information to avoid
 // having to parse the tag again, and an error.
-// Its second argument should be a function that accepts a reflect.Type
-// and returns an error if the struct type is invalid in any way.
-// For example, it may check that all of the struct field tags are valid, or
-// that all fields are of an appropriate type.
+//
+// Its second argument should be a function that accepts a reflect.Type and
+// returns an error if the struct type is invalid in any way. For example, it
+// may check that all of the struct field tags are valid, or that all fields
+// are of an appropriate type.
 func NewCache(parseTag ParseTagFunc, validate ValidateFunc) *Cache {
 	if parseTag == nil {
 		parseTag = func(reflect.StructTag) (string, bool, interface{}, error) {
@@ -174,36 +179,14 @@ type cacheValue struct {
 // This code has been copied and modified from
 // https://go.googlesource.com/go/+/go1.7.3/src/encoding/json/encode.go.
 func (c *Cache) cachedTypeFields(t reflect.Type) (List, error) {
-	mp, _ := c.cache.Load().(map[reflect.Type]cacheValue)
-	if cv, ok := mp[t]; ok {
-		return cv.fields, cv.err
-	}
-
-	// Validate type
-	if err := c.validate(t); err != nil {
-		c.add(t, cacheValue{nil, err})
-		return nil, err
-	}
-
-	// Compute fields without lock.
-	// Might duplicate effort but won't hold other computations back.
-	f, err := c.typeFields(t)
-	list := List(f)
-	c.add(t, cacheValue{list, err})
-	return list, err
-}
-
-// add atomically adds a new key-value pair to the cache
-func (c *Cache) add(k reflect.Type, v cacheValue) {
-	c.mu.Lock()
-	mp, _ := c.cache.Load().(map[reflect.Type]cacheValue)
-	newM := make(map[reflect.Type]cacheValue, len(mp)+1)
-	for k, v := range mp {
-		newM[k] = v
-	}
-	newM[k] = v
-	c.cache.Store(newM)
-	c.mu.Unlock()
+	cv := c.cache.Get(t, func() interface{} {
+		if err := c.validate(t); err != nil {
+			return cacheValue{nil, err}
+		}
+		f, err := c.typeFields(t)
+		return cacheValue{List(f), err}
+	}).(cacheValue)
+	return cv.fields, cv.err
 }
 
 func (c *Cache) typeFields(t reflect.Type) ([]Field, error) {
