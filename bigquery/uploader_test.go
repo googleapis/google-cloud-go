@@ -18,6 +18,8 @@ import (
 	"reflect"
 	"testing"
 
+	"cloud.google.com/go/internal/pretty"
+
 	"golang.org/x/net/context"
 )
 
@@ -53,7 +55,7 @@ func TestRejectsNonValueSavers(t *testing.T) {
 
 	for _, tc := range testCases {
 		if err := u.Put(context.Background(), tc.src); err == nil {
-			t.Errorf("put value: %v; got err: %v; want nil", tc.src, err)
+			t.Errorf("put value: %v; got nil, want error", tc.src)
 		}
 	}
 }
@@ -119,8 +121,7 @@ func TestInsertsData(t *testing.T) {
 			projectID: "project-id",
 			service:   irr,
 		}
-		table := client.Dataset("dataset-id").Table("table-id")
-		u := Uploader{t: table}
+		u := client.Dataset("dataset-id").Table("table-id").Uploader()
 		for _, batch := range tc.data {
 			if len(batch) == 0 {
 				continue
@@ -237,6 +238,48 @@ func TestUploadOptionsPropagate(t *testing.T) {
 		got := *recorder.received
 		if got != want {
 			t.Errorf("%d: got %#v, want %#v, ul=%#v", i, got, want, tc.ul)
+		}
+	}
+}
+
+func TestValueSavers(t *testing.T) {
+	ts := &testSaver{ir: &insertionRow{}}
+	type T struct{ I int }
+	schema, err := InferSchema(T{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, test := range []struct {
+		in   interface{}
+		want []ValueSaver
+	}{
+		{ts, []ValueSaver{ts}},
+		{T{I: 1}, []ValueSaver{&StructSaver{Schema: schema, Struct: T{I: 1}}}},
+		{[]ValueSaver{ts, ts}, []ValueSaver{ts, ts}},
+		{[]interface{}{ts, ts}, []ValueSaver{ts, ts}},
+		{[]T{{I: 1}, {I: 2}}, []ValueSaver{
+			&StructSaver{Schema: schema, Struct: T{I: 1}},
+			&StructSaver{Schema: schema, Struct: T{I: 2}},
+		}},
+		{[]interface{}{T{I: 1}, &T{I: 2}}, []ValueSaver{
+			&StructSaver{Schema: schema, Struct: T{I: 1}},
+			&StructSaver{Schema: schema, Struct: &T{I: 2}},
+		}},
+	} {
+		got, err := valueSavers(test.in)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !reflect.DeepEqual(got, test.want) {
+
+			t.Errorf("%+v: got %v, want %v", test.in, pretty.Value(got), pretty.Value(test.want))
+		}
+		// Make sure Save is successful.
+		for i, vs := range got {
+			_, _, err := vs.Save()
+			if err != nil {
+				t.Fatalf("%+v, #%d: got error %v, want nil", test.in, i, err)
+			}
 		}
 	}
 }
