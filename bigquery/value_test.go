@@ -642,6 +642,7 @@ type repStruct struct {
 	Nums      []int
 	ShortNums [2]int // to test truncation
 	LongNums  [5]int // to test padding with zeroes
+	Nested    []*nested
 }
 
 var (
@@ -649,10 +650,18 @@ var (
 		{Name: "nums", Type: IntegerFieldType, Repeated: true},
 		{Name: "shortNums", Type: IntegerFieldType, Repeated: true},
 		{Name: "longNums", Type: IntegerFieldType, Repeated: true},
+		{Name: "nested", Type: RecordFieldType, Repeated: true, Schema: Schema{
+			{Name: "nestS", Type: StringFieldType},
+			{Name: "nestI", Type: IntegerFieldType},
+		}},
 	}
-
 	v123      = []Value{int64(1), int64(2), int64(3)}
-	repValues = []Value{v123, v123, v123}
+	repValues = []Value{v123, v123, v123,
+		[]Value{
+			[]Value{"x", int64(1)},
+			[]Value{"y", int64(2)},
+		},
+	}
 )
 
 func TestStructLoaderRepeated(t *testing.T) {
@@ -664,6 +673,7 @@ func TestStructLoaderRepeated(t *testing.T) {
 		Nums:      []int{1, 2, 3},
 		ShortNums: [...]int{1, 2}, // extra values discarded
 		LongNums:  [...]int{1, 2, 3, 0, 0},
+		Nested:    []*nested{{"x", 1}, {"y", 2}},
 	}
 	if !reflect.DeepEqual(r1, want) {
 		t.Errorf("got %+v, want %+v", pretty.Value(r1), pretty.Value(want))
