@@ -147,13 +147,13 @@ Google API                     | Status       | Package
 [Bigtable][cloud-bigtable]     | beta         | [`cloud.google.com/go/bigtable`][cloud-bigtable-ref]
 [BigQuery][cloud-bigquery]     | beta         | [`cloud.google.com/go/bigquery`][cloud-bigquery-ref]
 [Logging][cloud-logging]       | beta         | [`cloud.google.com/go/logging`][cloud-logging-ref]
-[Pub/Sub][cloud-pubsub]        | experimental | [`cloud.google.com/go/pubsub`][cloud-pubsub-ref]
-[Vision][cloud-vision]         | experimental | [`cloud.google.com/go/vision`][cloud-vision-ref]
-[Language][cloud-language]     | experimental | [`cloud.google.com/go/language/apiv1beta1`][cloud-language-ref]
-[Speech][cloud-speech]         | experimental | [`cloud.google.com/go/speech/apiv1beta`][cloud-speech-ref]
+[Pub/Sub][cloud-pubsub]        | alpha | [`cloud.google.com/go/pubsub`][cloud-pubsub-ref]
+[Vision][cloud-vision]         | alpha | [`cloud.google.com/go/vision`][cloud-vision-ref]
+[Language][cloud-language]     | alpha | [`cloud.google.com/go/language/apiv1beta1`][cloud-language-ref]
+[Speech][cloud-speech]         | alpha | [`cloud.google.com/go/speech/apiv1beta`][cloud-speech-ref]
 
 
-> **Experimental status**: the API is still being actively developed. As a
+> **Alpha status**: the API is still being actively developed. As a
 > result, it might change in backward-incompatible ways and is not recommended
 > for production use.
 >
