@@ -413,6 +413,7 @@ func structToMap(vstruct reflect.Value, schema Schema) (map[string]Value, error)
 	if !vstruct.IsValid() {
 		return nil, nil
 	}
+	m := map[string]Value{}
 	if vstruct.Kind() != reflect.Struct {
 		return nil, fmt.Errorf("bigquery: type is %s, need struct or struct pointer", vstruct.Type())
 	}
@@ -420,7 +421,6 @@ func structToMap(vstruct reflect.Value, schema Schema) (map[string]Value, error)
 	if err != nil {
 		return nil, err
 	}
-	m := map[string]Value{}
 	for _, schemaField := range schema {
 		// Look for an exported struct field with the same name as the schema
 		// field, ignoring case.
@@ -428,20 +428,55 @@ func structToMap(vstruct reflect.Value, schema Schema) (map[string]Value, error)
 		if structField == nil {
 			continue
 		}
-		vfield := vstruct.FieldByIndex(structField.Index)
-		if schemaField.Type != RecordFieldType {
-			m[schemaField.Name] = vfield.Interface()
-		} else {
-			m2, err := structToMap(vfield, schemaField.Schema)
-			if err != nil {
-				return nil, err
-			}
-			if m2 != nil {
-				m[schemaField.Name] = m2
-			}
+		val, err := structFieldToUploadValue(vstruct.FieldByIndex(structField.Index), schemaField)
+		if err != nil {
+			return nil, err
+		}
+		// Add the value to the map, unless it is nil.
+		if val != nil {
+			m[schemaField.Name] = val
 		}
 	}
 	return m, nil
+}
+
+// structFieldToUploadValue converts a struct field to a value suitable for ValueSaver.Save, using
+// the schemaField as a guide.
+// structFieldToUploadValue is careful to return a true nil interface{} when needed, so its
+// caller can easily identify a nil value.
+func structFieldToUploadValue(vfield reflect.Value, schemaField *FieldSchema) (interface{}, error) {
+	// A non-nested field, repeated or not, can be represented by its Go value.
+	if schemaField.Type != RecordFieldType {
+		return vfield.Interface(), nil
+	}
+	// A non-repeated nested field is converted into a map[string]Value.
+	if !schemaField.Repeated {
+		m, err := structToMap(vfield, schemaField.Schema)
+		if err != nil {
+			return nil, err
+		}
+		if m == nil {
+			return nil, nil
+		}
+		return m, nil
+	}
+	// A repeated nested field is converted into a slice of maps.
+	if vfield.Kind() != reflect.Slice && vfield.Kind() != reflect.Array {
+		return nil, fmt.Errorf("bigquery: repeated schema field %s requires slice or array, but value has type %s",
+			schemaField.Name, vfield.Type())
+	}
+	if vfield.Len() == 0 {
+		return nil, nil
+	}
+	var vals []Value
+	for i := 0; i < vfield.Len(); i++ {
+		m, err := structToMap(vfield.Index(i), schemaField.Schema)
+		if err != nil {
+			return nil, err
+		}
+		vals = append(vals, m)
+	}
+	return vals, nil
 }
 
 // convertRows converts a series of TableRows into a series of Value slices.
