@@ -396,18 +396,22 @@ func TestStructSaver(t *testing.T) {
 		{Name: "nested", Type: RecordFieldType, Schema: Schema{
 			{Name: "b", Type: BooleanFieldType},
 		}},
+		{Name: "rnested", Type: RecordFieldType, Repeated: true, Schema: Schema{
+			{Name: "b", Type: BooleanFieldType},
+		}},
 	}
 
 	type (
 		N struct{ B bool }
 		T struct {
-			S      string
-			R      []int
-			Nested *N
+			S       string
+			R       []int
+			Nested  *N
+			Rnested []*N
 		}
 	)
 
-	check := func(in interface{}, want map[string]Value) {
+	check := func(msg string, in interface{}, want map[string]Value) {
 		ss := StructSaver{
 			Schema:   schema,
 			InsertID: "iid",
@@ -415,35 +419,49 @@ func TestStructSaver(t *testing.T) {
 		}
 		got, gotIID, err := ss.Save()
 		if err != nil {
-			t.Fatalf("%#v: %v", in, err)
+			t.Fatalf("%s: %v", msg, err)
 		}
 		if wantIID := "iid"; gotIID != wantIID {
-			t.Errorf("%#v: InsertID: got %q, want %q", in, gotIID, wantIID)
+			t.Errorf("%s: InsertID: got %q, want %q", msg, gotIID, wantIID)
 		}
 		if !reflect.DeepEqual(got, want) {
-			t.Errorf("%#v:\ngot\n%+v\nwant\n%+v", in, got, want)
+			t.Errorf("%s:\ngot\n%#v\nwant\n%#v", msg, got, want)
 		}
 	}
 
-	in := T{S: "x", R: []int{1, 2}, Nested: &N{B: true}}
-	want := map[string]Value{
-		"s":      in.S,
-		"r":      in.R,
-		"nested": map[string]Value{"b": in.Nested.B},
+	in := T{
+		S:       "x",
+		R:       []int{1, 2},
+		Nested:  &N{B: true},
+		Rnested: []*N{{true}, {false}},
 	}
-	check(in, want)
-	check(&in, want)
-	check(T{}, map[string]Value{
+	want := map[string]Value{
+		"s":       "x",
+		"r":       []int{1, 2},
+		"nested":  map[string]Value{"b": true},
+		"rnested": []Value{map[string]Value{"b": true}, map[string]Value{"b": false}},
+	}
+	check("all values", in, want)
+	check("all values, ptr", &in, want)
+	check("empty struct", T{}, map[string]Value{
 		"s": "",
 		"r": []int(nil),
 	})
 
+	// Missing and extra fields ignored.
 	type T2 struct {
 		S string
-		// missing R
+		// missing R, Nested, RNested
 		Extra int
 	}
-	check(T2{S: "x"}, map[string]Value{"s": "x"})
+	check("missing and extra", T2{S: "x"}, map[string]Value{"s": "x"})
+
+	check("nils in slice", T{Rnested: []*N{{true}, nil, {false}}},
+		map[string]Value{
+			"s":       "",
+			"r":       []int(nil),
+			"rnested": []Value{map[string]Value{"b": true}, map[string]Value(nil), map[string]Value{"b": false}},
+		})
 }
 
 func TestConvertRows(t *testing.T) {
