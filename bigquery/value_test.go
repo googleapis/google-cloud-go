@@ -376,6 +376,37 @@ func TestValuesSaverConvertsToMap(t *testing.T) {
 				},
 			},
 		},
+		{ // repeated nested field
+			vs: ValuesSaver{
+				Schema: Schema{
+					{
+						Name: "records",
+						Type: RecordFieldType,
+						Schema: Schema{
+							{Name: "x", Type: IntegerFieldType},
+							{Name: "y", Type: IntegerFieldType},
+						},
+						Repeated: true,
+					},
+				},
+				InsertID: "iid",
+				Row: []Value{ // a row is a []Value
+					[]Value{ // repeated field's value is a []Value
+						[]Value{1, 2}, // first record of the repeated field
+						[]Value{3, 4}, // second record
+					},
+				},
+			},
+			want: &insertionRow{
+				InsertID: "iid",
+				Row: map[string]Value{
+					"records": []Value{
+						map[string]Value{"x": 1, "y": 2},
+						map[string]Value{"x": 3, "y": 4},
+					},
+				},
+			},
+		},
 	}
 	for _, tc := range testCases {
 		data, insertID, err := tc.vs.Save()
@@ -384,7 +415,7 @@ func TestValuesSaverConvertsToMap(t *testing.T) {
 		}
 		got := &insertionRow{insertID, data}
 		if !reflect.DeepEqual(got, tc.want) {
-			t.Errorf("saving ValuesSaver: got:\n%v\nwant:\n%v", got, tc.want)
+			t.Errorf("saving ValuesSaver:\ngot:\n%+v\nwant:\n%+v", got, tc.want)
 		}
 	}
 }

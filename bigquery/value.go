@@ -362,19 +362,37 @@ func valuesToMap(vs []Value, schema Schema) (map[string]Value, error) {
 
 	m := make(map[string]Value)
 	for i, fieldSchema := range schema {
-		if fieldSchema.Type == RecordFieldType {
-			nested, ok := vs[i].([]Value)
-			if !ok {
-				return nil, errors.New("Nested record is not a []Value")
-			}
-			value, err := valuesToMap(nested, fieldSchema.Schema)
+		if fieldSchema.Type != RecordFieldType {
+			m[fieldSchema.Name] = vs[i]
+			continue
+		}
+		// Nested record, possibly repeated.
+		vals, ok := vs[i].([]Value)
+		if !ok {
+			return nil, errors.New("nested record is not a []Value")
+		}
+		if !fieldSchema.Repeated {
+			value, err := valuesToMap(vals, fieldSchema.Schema)
 			if err != nil {
 				return nil, err
 			}
 			m[fieldSchema.Name] = value
-		} else {
-			m[fieldSchema.Name] = vs[i]
+			continue
 		}
+		// A repeated nested field is converted into a slice of maps.
+		var maps []Value
+		for _, v := range vals {
+			sv, ok := v.([]Value)
+			if !ok {
+				return nil, errors.New("nested record in slice is not a []Value")
+			}
+			value, err := valuesToMap(sv, fieldSchema.Schema)
+			if err != nil {
+				return nil, err
+			}
+			maps = append(maps, value)
+		}
+		m[fieldSchema.Name] = maps
 	}
 	return m, nil
 }
