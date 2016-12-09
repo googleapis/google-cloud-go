@@ -123,7 +123,7 @@ func toValueSaver(x interface{}) (ValueSaver, bool, error) {
 		return nil, false, nil
 	}
 	// TODO(jba): cache schema inference to speed this up.
-	schema, err := inferStruct(v.Type())
+	schema, err := inferSchemaReflect(v.Type())
 	if err != nil {
 		return nil, false, err
 	}
