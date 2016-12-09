@@ -150,6 +150,22 @@ func TestSaveEntityNested(t *testing.T) {
 			},
 		},
 		{
+			"key at top level",
+			&WithKey{
+				X: "three",
+				I: 3,
+				K: testKey0,
+			},
+			testKey0,
+			&pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"X": {ValueType: &pb.Value_StringValue{"three"}},
+					"I": {ValueType: &pb.Value_IntegerValue{3}},
+				},
+			},
+		},
+		{
 			"nested unexported anonymous struct field",
 			&UnexpAnonym{
 				a{S: "hello"},

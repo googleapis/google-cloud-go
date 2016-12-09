@@ -306,7 +306,26 @@ func loadEntity(dst interface{}, src *pb.Entity) (err error) {
 	if e, ok := dst.(PropertyLoadSaver); ok {
 		return e.Load(ent.Properties)
 	}
-	return LoadStruct(dst, ent.Properties)
+	return loadEntityToStruct(dst, ent)
+}
+
+func loadEntityToStruct(dst interface{}, ent *Entity) error {
+	pls, err := newStructPLS(dst)
+	if err != nil {
+		return err
+	}
+	// Load properties.
+	err = pls.Load(ent.Properties)
+	if err != nil {
+		return err
+	}
+	// Load key.
+	keyField := pls.codec.Match(keyFieldName)
+	if keyField != nil && ent.Key != nil {
+		pls.v.FieldByIndex(keyField.Index).Set(reflect.ValueOf(ent.Key))
+	}
+
+	return nil
 }
 
 func (s structPLS) Load(props []Property) error {

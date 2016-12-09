@@ -83,6 +83,46 @@ func TestBasics(t *testing.T) {
 	}
 }
 
+func TestTopLevelKeyLoaded(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	ctx, _ := context.WithTimeout(context.Background(), time.Second*20)
+	client := newClient(ctx, t)
+	defer client.Close()
+
+	completeKey := NameKey("EntityWithKey", "myent", nil)
+
+	type EntityWithKey struct {
+		I int
+		S string
+		K *Key `datastore:"__key__"`
+	}
+
+	in := &EntityWithKey{
+		I: 12,
+		S: "abcd",
+	}
+
+	k, err := client.Put(ctx, completeKey, in)
+	if err != nil {
+		t.Fatalf("client.Put: %v", err)
+	}
+
+	var e EntityWithKey
+	err = client.Get(ctx, k, &e)
+	if err != nil {
+		t.Fatalf("client.Get: %v", err)
+	}
+
+	// The two keys should be absolutely identical.
+	if !reflect.DeepEqual(e.K, k) {
+		t.Fatalf("e.K not equal to k; got %#v, want %#v", e.K, k)
+	}
+
+}
+
 func TestListValues(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")

@@ -367,16 +367,16 @@ type MutuallyRecursive1 struct {
 	R []MutuallyRecursive0
 }
 
-type NestedEntity struct {
+type EntityWithKey struct {
 	I int
 	S string
 	K *Key `datastore:"__key__"`
 }
 
-type NestedEntity2 NestedEntity
+type EntityWithKey2 EntityWithKey
 
-type WithNestedEntity struct {
-	N NestedEntity
+type WithNestedEntityWithKey struct {
+	N EntityWithKey
 }
 
 type WithNonKeyField struct {
@@ -1460,15 +1460,15 @@ var testCases = []testCase{
 	},
 	{
 		"nested entity with key",
-		&WithNestedEntity{
-			N: NestedEntity{
+		&WithNestedEntityWithKey{
+			N: EntityWithKey{
 				I: 12,
 				S: "abcd",
 				K: testKey0,
 			},
 		},
-		&WithNestedEntity{
-			N: NestedEntity{
+		&WithNestedEntityWithKey{
+			N: EntityWithKey{
 				I: 12,
 				S: "abcd",
 				K: testKey0,
@@ -1478,15 +1478,30 @@ var testCases = []testCase{
 		"",
 	},
 	{
-		"entity with key at top level (ignore key)",
-		&NestedEntity2{
+		"entity with key at top level",
+		&EntityWithKey{
 			I: 12,
 			S: "abc",
 			K: testKey0,
 		},
-		&NestedEntity2{
+		&EntityWithKey{
 			I: 12,
 			S: "abc",
+			K: testKey0,
+		},
+		"",
+		"",
+	},
+	{
+		"entity with key at top level (key is populated on load)",
+		&EntityWithKey{
+			I: 12,
+			S: "abc",
+		},
+		&EntityWithKey{
+			I: 12,
+			S: "abc",
+			K: testKey0,
 		},
 		"",
 		"",
@@ -1510,8 +1525,8 @@ var testCases = []testCase{
 	},
 	{
 		"nested load entity with key",
-		&WithNestedEntity{
-			N: NestedEntity{
+		&WithNestedEntityWithKey{
+			N: EntityWithKey{
 				I: 12,
 				S: "abcd",
 				K: testKey0,
@@ -1542,8 +1557,8 @@ var testCases = []testCase{
 			}, NoIndex: false},
 		},
 
-		&WithNestedEntity{
-			N: NestedEntity{
+		&WithNestedEntityWithKey{
+			N: EntityWithKey{
 				I: 12,
 				S: "abcd",
 				K: testKey0,
