@@ -143,6 +143,36 @@ func ExampleRowIterator_Next() {
 	}
 }
 
+func ExampleRowIterator_Next_struct() {
+	ctx := context.Background()
+	client, err := bigquery.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	type score struct {
+		Name string
+		Num  int
+	}
+
+	q := client.Query("select name, num from t1")
+	it, err := q.Read(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	for {
+		var s score
+		err := it.Next(&s)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		fmt.Println(s)
+	}
+}
+
 func ExampleJob_Read() {
 	ctx := context.Background()
 	client, err := bigquery.NewClient(ctx, "project-id")
@@ -277,6 +307,27 @@ func ExampleInferSchema() {
 	// Name STRING
 	// Size FLOAT
 	// Count INTEGER
+}
+
+func ExampleInferSchema_tags() {
+	type Item struct {
+		Name   string
+		Size   float64
+		Count  int    `bigquery:"number"`
+		Secret []byte `bigquery:"-"`
+	}
+	schema, err := bigquery.InferSchema(Item{})
+	if err != nil {
+		fmt.Println(err)
+		// TODO: Handle error.
+	}
+	for _, fs := range schema {
+		fmt.Println(fs.Name, fs.Type)
+	}
+	// Output:
+	// Name STRING
+	// Size FLOAT
+	// number INTEGER
 }
 
 func ExampleTable_Create() {
@@ -533,6 +584,55 @@ func ExampleUploader_Put() {
 		{Name: "n3", Size: 101.5, Count: 1},
 	}
 	if err := u.Put(ctx, items); err != nil {
+		// TODO: Handle error.
+	}
+}
+
+var schema bigquery.Schema
+
+func ExampleUploader_Put_structSaver() {
+	ctx := context.Background()
+	client, err := bigquery.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	u := client.Dataset("my_dataset").Table("my_table").Uploader()
+
+	type score struct {
+		Name string
+		Num  int
+	}
+
+	// Assume schema holds the table's schema.
+	savers := []*bigquery.StructSaver{
+		{Struct: score{Name: "n1", Num: 12}, Schema: schema, InsertID: "id1"},
+		{Struct: score{Name: "n2", Num: 31}, Schema: schema, InsertID: "id2"},
+		{Struct: score{Name: "n3", Num: 7}, Schema: schema, InsertID: "id3"},
+	}
+	if err := u.Put(ctx, savers); err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleUploader_Put_struct() {
+	ctx := context.Background()
+	client, err := bigquery.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	u := client.Dataset("my_dataset").Table("my_table").Uploader()
+
+	type score struct {
+		Name string
+		Num  int
+	}
+	scores := []score{
+		{Name: "n1", Num: 12},
+		{Name: "n2", Num: 31},
+		{Name: "n3", Num: 7},
+	}
+	// Schema is inferred from the score type.
+	if err := u.Put(ctx, scores); err != nil {
 		// TODO: Handle error.
 	}
 }
