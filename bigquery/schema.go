@@ -19,6 +19,8 @@ import (
 	"fmt"
 	"reflect"
 
+	"cloud.google.com/go/internal/atomiccache"
+
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -141,9 +143,21 @@ func InferSchema(st interface{}) (Schema, error) {
 	return inferSchemaReflect(reflect.TypeOf(st))
 }
 
-func inferSchemaReflect(t reflect.Type) (Schema, error) {
-	return inferStruct(t, map[reflect.Type]bool{})
+var schemaCache atomiccache.Cache
+
+type cacheVal struct {
+	schema Schema
+	err    error
 }
+
+func inferSchemaReflect(t reflect.Type) (Schema, error) {
+	cv := schemaCache.Get(t, func() interface{} {
+		s, err := inferStruct(t, map[reflect.Type]bool{})
+		return cacheVal{s, err}
+	}).(cacheVal)
+	return cv.schema, cv.err
+}
+
 func inferStruct(t reflect.Type, seen map[reflect.Type]bool) (Schema, error) {
 	if seen[t] {
 		return nil, fmt.Errorf("bigquery: schema inference for recursive type %s", t)
