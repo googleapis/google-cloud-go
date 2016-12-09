@@ -496,6 +496,18 @@ func TestEmbeddedInference(t *testing.T) {
 	}
 }
 
+func TestRecursiveInference(t *testing.T) {
+	type List struct {
+		Val  int
+		Next *List
+	}
+
+	_, err := InferSchema(List{})
+	if err == nil {
+		t.Fatal("got nil, want error")
+	}
+}
+
 type withTags struct {
 	NoTag         int
 	ExcludeTag    int `bigquery:"-"`
