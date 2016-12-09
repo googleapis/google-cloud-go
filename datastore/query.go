@@ -369,7 +369,7 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 	if q.ancestor != nil {
 		filters = append(filters, &pb.Filter{
 			FilterType: &pb.Filter_PropertyFilter{&pb.PropertyFilter{
-				Property: &pb.PropertyReference{Name: "__key__"},
+				Property: &pb.PropertyReference{Name: keyFieldName},
 				Op:       pb.PropertyFilter_HAS_ANCESTOR,
 				Value:    &pb.Value{ValueType: &pb.Value_KeyValue{keyToProto(q.ancestor)}},
 			}}})
