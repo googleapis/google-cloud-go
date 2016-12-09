@@ -15,6 +15,8 @@
 /*
 Package datastore provides a client for Google Cloud Datastore.
 
+Note: This package is in beta.  Some backwards-incompatible changes may occur.
+
 
 Basic Operations
 

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// TODO(jba): link in google.cloud.audit.AuditLog, to support activity logs (after it is published)
-
 // These features are missing now, but will likely be added:
 // - There is no way to specify CallOptions.
 
@@ -24,7 +22,7 @@
 // The client uses Logging API v2.
 // See https://cloud.google.com/logging/docs/api/v2/ for an introduction to the API.
 //
-// This package is experimental and subject to API changes.
+// Note: This package is in beta.  Some backwards-incompatible changes may occur.
 package logadmin // import "cloud.google.com/go/logging/logadmin"
 
 import (

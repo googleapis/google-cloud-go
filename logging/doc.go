@@ -20,7 +20,8 @@ see package cloud.google.com/go/logging/logadmin.
 This client uses Logging API v2.
 See https://cloud.google.com/logging/docs/api/v2/ for an introduction to the API.
 
-This package is experimental and subject to API changes.
+
+Note: This package is in beta.  Some backwards-incompatible changes may occur.
 
 
 Creating a Client
