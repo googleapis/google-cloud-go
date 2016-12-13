@@ -388,6 +388,23 @@ type NestedWithNonKeyField struct {
 	N WithNonKeyField
 }
 
+type Basic struct {
+	A string
+}
+
+type PtrToStructField struct {
+	B *Basic
+	C *Basic `datastore:"c,noindex"`
+	*Basic
+	D []*Basic
+}
+
+var two int = 2
+
+type PtrToInt struct {
+	I *int
+}
+
 type Doubler struct {
 	S string
 	I int64
@@ -1521,6 +1538,119 @@ var testCases = []testCase{
 			},
 		},
 		"datastore: __key__ field on struct datastore.WithNonKeyField is not a *datastore.Key",
+		"",
+	},
+	{
+		"save struct with ptr to struct fields",
+		&PtrToStructField{
+			&Basic{
+				A: "b",
+			},
+			&Basic{
+				A: "c",
+			},
+			&Basic{
+				A: "anon",
+			},
+			[]*Basic{
+				&Basic{
+					A: "slice0",
+				},
+				&Basic{
+					A: "slice1",
+				},
+			},
+		},
+		&PropertyList{
+			Property{Name: "A", Value: "anon", NoIndex: false},
+			Property{Name: "B", Value: &Entity{
+				Properties: []Property{
+					Property{Name: "A", Value: "b", NoIndex: false},
+				},
+			}},
+			Property{Name: "D", Value: []interface{}{
+				&Entity{
+					Properties: []Property{
+						Property{Name: "A", Value: "slice0", NoIndex: false},
+					},
+				},
+				&Entity{
+					Properties: []Property{
+						Property{Name: "A", Value: "slice1", NoIndex: false},
+					},
+				},
+			}, NoIndex: false},
+			Property{Name: "c", Value: &Entity{
+				Properties: []Property{
+					Property{Name: "A", Value: "c", NoIndex: true},
+				},
+			}, NoIndex: true},
+		},
+		"",
+		"",
+	},
+	{
+		"save and load struct with ptr to struct fields",
+		&PtrToStructField{
+			&Basic{
+				A: "b",
+			},
+			&Basic{
+				A: "c",
+			},
+			&Basic{
+				A: "anon",
+			},
+			[]*Basic{
+				&Basic{
+					A: "slice0",
+				},
+				&Basic{
+					A: "slice1",
+				},
+			},
+		},
+		&PtrToStructField{
+			&Basic{
+				A: "b",
+			},
+			&Basic{
+				A: "c",
+			},
+			&Basic{
+				A: "anon",
+			},
+			[]*Basic{
+				&Basic{
+					A: "slice0",
+				},
+				&Basic{
+					A: "slice1",
+				},
+			},
+		},
+		"",
+		"",
+	},
+	{
+		"save struct with pointer to int field",
+		&PtrToInt{
+			I: &two,
+		},
+		&PtrToInt{},
+		"unsupported struct field",
+		"",
+	},
+	{
+		"struct with nil ptr to struct fields",
+		&PtrToStructField{
+			nil,
+			nil,
+			nil,
+			nil,
+		},
+		new(PropertyList),
+		"",
 		"",
 	},
 	{

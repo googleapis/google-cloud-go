@@ -42,6 +42,7 @@ Valid value types are:
   - GeoPoint,
   - time.Time (stored with microsecond precision),
   - structs whose fields are all valid value types,
+  - pointers to structs whose fields are all valid value types,
   - slices of any of the above.
 
 Slices of structs are valid, as are structs that contain slices.
