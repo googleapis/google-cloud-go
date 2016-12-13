@@ -47,6 +47,8 @@ func typeMismatchReason(p Property, v reflect.Value) string {
 		entityType = "float"
 	case *Key:
 		entityType = "*datastore.Key"
+	case *Entity:
+		entityType = "*datastore.Entity"
 	case GeoPoint:
 		entityType = "GeoPoint"
 	case time.Time:
@@ -188,6 +190,7 @@ func (l *propertyLoader) loadOneElement(codec fields.List, structValue reflect.V
 // setVal sets 'v' to the value of the Property 'p'.
 func setVal(v reflect.Value, p Property) string {
 	pValue := p.Value
+
 	switch v.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		x, ok := pValue.(int64)
@@ -220,14 +223,36 @@ func setVal(v reflect.Value, p Property) string {
 		}
 		v.SetFloat(x)
 	case reflect.Ptr:
-		x, ok := pValue.(*Key)
-		if !ok && pValue != nil {
+		// v must be either a pointer to a Key or Entity.
+		if v.Type() != typeOfKeyPtr && v.Type().Elem().Kind() != reflect.Struct {
 			return typeMismatchReason(p, v)
 		}
-		if _, ok := v.Interface().(*Key); !ok {
+
+		if pValue == nil {
+			// If v is populated already, set it to nil.
+			if !v.IsNil() {
+				v.Set(reflect.New(v.Type()).Elem())
+			}
+			return ""
+		}
+
+		switch pValue.(type) {
+		case *Key:
+			if _, ok := v.Interface().(*Key); !ok {
+				return typeMismatchReason(p, v)
+			}
+			v.Set(reflect.ValueOf(pValue.(*Key)))
+		case *Entity:
+			if v.Type().Elem().Kind() != reflect.Struct {
+				return typeMismatchReason(p, v)
+			}
+			if v.IsNil() {
+				v.Set(reflect.New(v.Type().Elem()))
+			}
+			return setVal(v.Elem(), p)
+		default:
 			return typeMismatchReason(p, v)
 		}
-		v.Set(reflect.ValueOf(x))
 	case reflect.Struct:
 		switch v.Type() {
 		case typeOfTime:

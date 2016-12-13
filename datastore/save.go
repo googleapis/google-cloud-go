@@ -76,6 +76,15 @@ func saveStructProperty(props *[]Property, name string, opts saveOpts, v reflect
 			} else {
 				return saveSliceProperty(props, name, opts, v)
 			}
+		case reflect.Ptr:
+			if v.Type().Elem().Kind() != reflect.Struct {
+				return fmt.Errorf("datastore: unsupported struct field type: %s", v.Type())
+			}
+			if v.IsNil() {
+				return nil
+			}
+			v = v.Elem()
+			fallthrough
 		case reflect.Struct:
 			if !v.CanAddr() {
 				return fmt.Errorf("datastore: unsupported struct field: value is unaddressable")
@@ -185,7 +194,7 @@ func (s structPLS) Save() ([]Property, error) {
 func (s structPLS) save(props *[]Property, opts saveOpts, prefix string) error {
 	for _, f := range s.codec {
 		name := prefix + f.Name
-		v := s.v.FieldByIndex(f.Index)
+		v := getField(s.v, f.Index)
 		if !v.IsValid() || !v.CanSet() {
 			continue
 		}
@@ -204,6 +213,28 @@ func (s structPLS) save(props *[]Property, opts saveOpts, prefix string) error {
 		}
 	}
 	return nil
+}
+
+// getField returns the field from v at the given index path.
+// If it encounters a nil-valued field in the path, getField
+// stops and returns a zero-valued reflect.Value, preventing the
+// panic that would have been caused by reflect's FieldByIndex.
+func getField(v reflect.Value, index []int) reflect.Value {
+	var zero reflect.Value
+	if v.Type().Kind() != reflect.Struct {
+		return zero
+	}
+
+	for _, i := range index {
+		if v.Kind() == reflect.Ptr && v.Type().Elem().Kind() == reflect.Struct {
+			if v.IsNil() {
+				return zero
+			}
+			v = v.Elem()
+		}
+		v = v.Field(i)
+	}
+	return v
 }
 
 func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
