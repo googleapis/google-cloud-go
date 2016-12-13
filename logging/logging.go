@@ -313,7 +313,7 @@ func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 	go func() {
 		defer c.loggers.Done()
 		<-c.donec
-		l.bundler.Close()
+		l.bundler.Stop()
 	}()
 	return l
 }
