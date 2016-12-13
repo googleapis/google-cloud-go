@@ -28,7 +28,7 @@ type keepAlive struct {
 	s             service
 	Ctx           context.Context  // The context to use when extending deadlines.
 	Sub           string           // The full name of the subscription.
-	ExtensionTick <-chan time.Time // ExtenstionTick supplies the frequency with which to make extension requests.
+	ExtensionTick <-chan time.Time // ExtensionTick supplies the frequency with which to make extension requests.
 	Deadline      time.Duration    // How long to extend messages for each time they are extended. Should be greater than ExtensionTick frequency.
 	MaxExtension  time.Duration    // How long to keep extending each message's ack deadline before automatically removing it.
 
