@@ -22,6 +22,16 @@ backwards-incompatible changes.
 
 ## News
 
+_December 12, 2016_
+
+Beta release of BigQuery, DataStore, Logging and Storage. See the
+[blog post](https://cloudplatform.googleblog.com/2016/12/announcing-new-google-cloud-client.html).
+
+Also, BigQuery now supports structs. Read a row directly into a struct with
+`RowIterator.Next`, and upload a row directly from a struct with `Uploader.Put`.
+You can also use field tags. See the [package documentation][cloud-bigquery-ref]
+for details.
+
 _December 5, 2016_
 
 More changes to BigQuery:
@@ -358,7 +368,7 @@ if err != nil {
 }
 // Iterate through the results.
 for {
-    var values bigquery.ValueList
+    var values []bigquery.Value
     err := it.Next(&values)
     if err == iterator.Done {
         break
