@@ -499,19 +499,22 @@ func fromHTTPRequest(r *HTTPRequest) *logtypepb.HttpRequest {
 	}
 	u := *r.Request.URL
 	u.Fragment = ""
-	return &logtypepb.HttpRequest{
+	pb := &logtypepb.HttpRequest{
 		RequestMethod:                  r.Request.Method,
 		RequestUrl:                     u.String(),
 		RequestSize:                    r.RequestSize,
 		Status:                         int32(r.Status),
 		ResponseSize:                   r.ResponseSize,
-		Latency:                        ptypes.DurationProto(r.Latency),
 		UserAgent:                      r.Request.UserAgent(),
 		RemoteIp:                       r.RemoteIP, // TODO(jba): attempt to parse http.Request.RemoteAddr?
 		Referer:                        r.Request.Referer(),
 		CacheHit:                       r.CacheHit,
 		CacheValidatedWithOriginServer: r.CacheValidatedWithOriginServer,
 	}
+	if r.Latency != 0 {
+		pb.Latency = ptypes.DurationProto(r.Latency)
+	}
+	return pb
 }
 
 // toProtoStruct converts v, which must marshal into a JSON object,
