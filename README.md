@@ -159,7 +159,7 @@ Google API                     | Status       | Package
 [Logging][cloud-logging]       | beta         | [`cloud.google.com/go/logging`][cloud-logging-ref]
 [Pub/Sub][cloud-pubsub]        | alpha | [`cloud.google.com/go/pubsub`][cloud-pubsub-ref]
 [Vision][cloud-vision]         | alpha | [`cloud.google.com/go/vision`][cloud-vision-ref]
-[Language][cloud-language]     | alpha | [`cloud.google.com/go/language/apiv1beta1`][cloud-language-ref]
+[Language][cloud-language]     | alpha | [`cloud.google.com/go/language/apiv1`][cloud-language-ref]
 [Speech][cloud-speech]         | alpha | [`cloud.google.com/go/speech/apiv1beta`][cloud-speech-ref]
 
 
@@ -454,7 +454,7 @@ for more information.
 [cloud-vision-ref]: https://godoc.org/cloud.google.com/go/vision
 
 [cloud-language]: https://cloud.google.com/natural-language
-[cloud-language-ref]: https://godoc.org/cloud.google.com/go/language/apiv1beta1
+[cloud-language-ref]: https://godoc.org/cloud.google.com/go/language/apiv1
 
 [cloud-speech]: https://cloud.google.com/speech
 [cloud-speech-ref]: https://godoc.org/cloud.google.com/go/speech/apiv1beta1
