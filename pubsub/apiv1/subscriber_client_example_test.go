@@ -17,6 +17,8 @@
 package pubsub_test
 
 import (
+	"io"
+
 	"cloud.google.com/go/pubsub/apiv1"
 	"golang.org/x/net/context"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
@@ -188,6 +190,40 @@ func ExampleSubscriberClient_Pull() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func StreamingPull() {
+	ctx := context.Background()
+	c, err := pubsub.NewSubscriberClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	stream, err := c.StreamingPull(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	go func() {
+		reqs := []*pubsubpb.StreamingPullRequest{
+		// TODO: Create requests.
+		}
+		for _, req := range reqs {
+			if err := stream.Send(req); err != nil {
+				// TODO: Handle error.
+			}
+		}
+		stream.CloseSend()
+	}()
+	for {
+		resp, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			// TODO: handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }
 
 func ExampleSubscriberClient_ModifyPushConfig() {

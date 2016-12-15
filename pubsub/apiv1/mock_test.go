@@ -201,6 +201,27 @@ func (s *mockSubscriberServer) Pull(_ context.Context, req *pubsubpb.PullRequest
 	return s.resps[0].(*pubsubpb.PullResponse), nil
 }
 
+func (s *mockSubscriberServer) StreamingPull(stream pubsubpb.Subscriber_StreamingPullServer) error {
+	for {
+		if req, err := stream.Recv(); err == io.EOF {
+			break
+		} else if err != nil {
+			return err
+		} else {
+			s.reqs = append(s.reqs, req)
+		}
+	}
+	if s.err != nil {
+		return s.err
+	}
+	for _, v := range s.resps {
+		if err := stream.Send(v.(*pubsubpb.StreamingPullResponse)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (s *mockSubscriberServer) ModifyPushConfig(_ context.Context, req *pubsubpb.ModifyPushConfigRequest) (*google_protobuf.Empty, error) {
 	s.reqs = append(s.reqs, req)
 	if s.err != nil {
@@ -1026,6 +1047,84 @@ func TestSubscriberPullError(t *testing.T) {
 	}
 
 	resp, err := c.Pull(context.Background(), request)
+
+	if c := grpc.Code(err); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestSubscriberStreamingPull(t *testing.T) {
+	var expectedResponse *pubsubpb.StreamingPullResponse = &pubsubpb.StreamingPullResponse{}
+
+	mockSubscriber.err = nil
+	mockSubscriber.reqs = nil
+
+	mockSubscriber.resps = append(mockSubscriber.resps[:0], expectedResponse)
+
+	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var streamAckDeadlineSeconds int32 = 1875467245
+	var request = &pubsubpb.StreamingPullRequest{
+		Subscription:             formattedSubscription,
+		StreamAckDeadlineSeconds: streamAckDeadlineSeconds,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	stream, err := c.StreamingPull(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := stream.Send(request); err != nil {
+		t.Fatal(err)
+	}
+	if err := stream.CloseSend(); err != nil {
+		t.Fatal(err)
+	}
+	resp, err := stream.Recv()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockSubscriber.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestSubscriberStreamingPullError(t *testing.T) {
+	errCode := codes.Internal
+	mockSubscriber.err = grpc.Errorf(errCode, "test error")
+
+	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var streamAckDeadlineSeconds int32 = 1875467245
+	var request = &pubsubpb.StreamingPullRequest{
+		Subscription:             formattedSubscription,
+		StreamAckDeadlineSeconds: streamAckDeadlineSeconds,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	stream, err := c.StreamingPull(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := stream.Send(request); err != nil {
+		t.Fatal(err)
+	}
+	if err := stream.CloseSend(); err != nil {
+		t.Fatal(err)
+	}
+	resp, err := stream.Recv()
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)

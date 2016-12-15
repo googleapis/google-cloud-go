@@ -50,6 +50,7 @@ type SubscriberCallOptions struct {
 	ModifyAckDeadline  []gax.CallOption
 	Acknowledge        []gax.CallOption
 	Pull               []gax.CallOption
+	StreamingPull      []gax.CallOption
 	ModifyPushConfig   []gax.CallOption
 }
 
@@ -86,6 +87,7 @@ func defaultSubscriberCallOptions() *SubscriberCallOptions {
 		ModifyAckDeadline:  retry[[2]string{"default", "non_idempotent"}],
 		Acknowledge:        retry[[2]string{"messaging", "non_idempotent"}],
 		Pull:               retry[[2]string{"messaging", "non_idempotent"}],
+		StreamingPull:      retry[[2]string{"messaging", "non_idempotent"}],
 		ModifyPushConfig:   retry[[2]string{"default", "non_idempotent"}],
 	}
 }
@@ -326,6 +328,33 @@ func (c *SubscriberClient) Pull(ctx context.Context, req *pubsubpb.PullRequest) 
 		resp, err = c.subscriberClient.Pull(ctx, req)
 		return err
 	}, c.CallOptions.Pull...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// StreamingPull (EXPERIMENTAL) StreamingPull is an experimental feature. This RPC will
+// respond with UNIMPLEMENTED errors unless you have been invited to test
+// this feature. Contact cloud-pubsub@google.com with any questions.
+//
+// Establishes a stream with the server, which sends messages down to the
+// client. The client streams acknowledgements and ack deadline modifications
+// back to the server. The server will close the stream and return the status
+// on any error. The server may close the stream with status `OK` to reassign
+// server-side resources, in which case, the client should re-establish the
+// stream. `UNAVAILABLE` may also be returned in the case of a transient error
+// (e.g., a server restart). These should also be retried by the client. Flow
+// control can be achieved by configuring the underlying RPC channel.
+func (c *SubscriberClient) StreamingPull(ctx context.Context) (pubsubpb.Subscriber_StreamingPullClient, error) {
+	md, _ := metadata.FromContext(ctx)
+	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	var resp pubsubpb.Subscriber_StreamingPullClient
+	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		var err error
+		resp, err = c.subscriberClient.StreamingPull(ctx)
+		return err
+	}, c.CallOptions.StreamingPull...)
 	if err != nil {
 		return nil, err
 	}

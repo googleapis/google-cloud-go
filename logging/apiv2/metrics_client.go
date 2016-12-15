@@ -35,8 +35,8 @@ import (
 )
 
 var (
-	metricsParentPathTemplate = gax.MustCompilePathTemplate("projects/{project}")
-	metricsMetricPathTemplate = gax.MustCompilePathTemplate("projects/{project}/metrics/{metric}")
+	metricsProjectPathTemplate = gax.MustCompilePathTemplate("projects/{project}")
+	metricsMetricPathTemplate  = gax.MustCompilePathTemplate("projects/{project}/metrics/{metric}")
 )
 
 // MetricsCallOptions contains the retry settings for each method of MetricsClient.
@@ -138,9 +138,9 @@ func (c *MetricsClient) SetGoogleClientInfo(name, version string) {
 	c.metadata = metadata.Pairs("x-goog-api-client", v)
 }
 
-// MetricsParentPath returns the path for the parent resource.
-func MetricsParentPath(project string) string {
-	path, err := metricsParentPathTemplate.Render(map[string]string{
+// MetricsProjectPath returns the path for the project resource.
+func MetricsProjectPath(project string) string {
+	path, err := metricsProjectPathTemplate.Render(map[string]string{
 		"project": project,
 	})
 	if err != nil {

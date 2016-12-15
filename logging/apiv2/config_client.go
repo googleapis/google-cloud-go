@@ -35,8 +35,8 @@ import (
 )
 
 var (
-	configParentPathTemplate = gax.MustCompilePathTemplate("projects/{project}")
-	configSinkPathTemplate   = gax.MustCompilePathTemplate("projects/{project}/sinks/{sink}")
+	configProjectPathTemplate = gax.MustCompilePathTemplate("projects/{project}")
+	configSinkPathTemplate    = gax.MustCompilePathTemplate("projects/{project}/sinks/{sink}")
 )
 
 // ConfigCallOptions contains the retry settings for each method of ConfigClient.
@@ -139,9 +139,9 @@ func (c *ConfigClient) SetGoogleClientInfo(name, version string) {
 	c.metadata = metadata.Pairs("x-goog-api-client", v)
 }
 
-// ConfigParentPath returns the path for the parent resource.
-func ConfigParentPath(project string) string {
-	path, err := configParentPathTemplate.Render(map[string]string{
+// ConfigProjectPath returns the path for the project resource.
+func ConfigProjectPath(project string) string {
+	path, err := configProjectPathTemplate.Render(map[string]string{
 		"project": project,
 	})
 	if err != nil {
@@ -213,7 +213,11 @@ func (c *ConfigClient) GetSink(ctx context.Context, req *loggingpb.GetSinkReques
 	return resp, nil
 }
 
-// CreateSink creates a sink.
+// CreateSink creates a sink that exports specified log entries to a destination.  The
+// export of newly-ingested log entries begins immediately, unless the current
+// time is outside the sink's start and end times or the sink's
+// `writer_identity` is not permitted to write to the destination.  A sink can
+// export log entries only from the resource owning the sink.
 func (c *ConfigClient) CreateSink(ctx context.Context, req *loggingpb.CreateSinkRequest) (*loggingpb.LogSink, error) {
 	md, _ := metadata.FromContext(ctx)
 	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
@@ -229,7 +233,14 @@ func (c *ConfigClient) CreateSink(ctx context.Context, req *loggingpb.CreateSink
 	return resp, nil
 }
 
-// UpdateSink updates or creates a sink.
+// UpdateSink updates a sink. If the named sink doesn't exist, then this method is
+// identical to
+// [sinks.create](/logging/docs/api/reference/rest/v2/projects.sinks/create).
+// If the named sink does exist, then this method replaces the following
+// fields in the existing sink with values from the new sink: `destination`,
+// `filter`, `output_version_format`, `start_time`, and `end_time`.
+// The updated filter might also have a new `writer_identity`; see the
+// `unique_writer_identity` field.
 func (c *ConfigClient) UpdateSink(ctx context.Context, req *loggingpb.UpdateSinkRequest) (*loggingpb.LogSink, error) {
 	md, _ := metadata.FromContext(ctx)
 	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
@@ -245,7 +256,8 @@ func (c *ConfigClient) UpdateSink(ctx context.Context, req *loggingpb.UpdateSink
 	return resp, nil
 }
 
-// DeleteSink deletes a sink.
+// DeleteSink deletes a sink. If the sink has a unique `writer_identity`, then that
+// service account is also deleted.
 func (c *ConfigClient) DeleteSink(ctx context.Context, req *loggingpb.DeleteSinkRequest) error {
 	md, _ := metadata.FromContext(ctx)
 	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
