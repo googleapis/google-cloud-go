@@ -85,6 +85,14 @@ func (s *mockLoggingServer) ListMonitoredResourceDescriptors(_ context.Context, 
 	return s.resps[0].(*loggingpb.ListMonitoredResourceDescriptorsResponse), nil
 }
 
+func (s *mockLoggingServer) ListLogs(_ context.Context, req *loggingpb.ListLogsRequest) (*loggingpb.ListLogsResponse, error) {
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*loggingpb.ListLogsResponse), nil
+}
+
 type mockConfigServer struct {
 	reqs []proto.Message
 
@@ -456,6 +464,76 @@ func TestLoggingServiceV2ListMonitoredResourceDescriptorsError(t *testing.T) {
 	}
 	_ = resp
 }
+func TestLoggingServiceV2ListLogs(t *testing.T) {
+	var nextPageToken string = ""
+	var logNamesElement string = "logNamesElement-1079688374"
+	var logNames = []string{logNamesElement}
+	var expectedResponse = &loggingpb.ListLogsResponse{
+		NextPageToken: nextPageToken,
+		LogNames:      logNames,
+	}
+
+	mockLogging.err = nil
+	mockLogging.reqs = nil
+
+	mockLogging.resps = append(mockLogging.resps[:0], expectedResponse)
+
+	var formattedParent string = LoggingProjectPath("[PROJECT]")
+	var request = &loggingpb.ListLogsRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListLogs(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockLogging.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.LogNames[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestLoggingServiceV2ListLogsError(t *testing.T) {
+	errCode := codes.Internal
+	mockLogging.err = grpc.Errorf(errCode, "test error")
+
+	var formattedParent string = LoggingProjectPath("[PROJECT]")
+	var request = &loggingpb.ListLogsRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListLogs(context.Background(), request).Next()
+
+	if c := grpc.Code(err); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
 func TestConfigServiceV2ListSinks(t *testing.T) {
 	var nextPageToken string = ""
 	var sinksElement *loggingpb.LogSink = &loggingpb.LogSink{}
@@ -470,7 +548,7 @@ func TestConfigServiceV2ListSinks(t *testing.T) {
 
 	mockConfig.resps = append(mockConfig.resps[:0], expectedResponse)
 
-	var formattedParent string = ConfigParentPath("[PROJECT]")
+	var formattedParent string = ConfigProjectPath("[PROJECT]")
 	var request = &loggingpb.ListSinksRequest{
 		Parent: formattedParent,
 	}
@@ -509,7 +587,7 @@ func TestConfigServiceV2ListSinksError(t *testing.T) {
 	errCode := codes.Internal
 	mockConfig.err = grpc.Errorf(errCode, "test error")
 
-	var formattedParent string = ConfigParentPath("[PROJECT]")
+	var formattedParent string = ConfigProjectPath("[PROJECT]")
 	var request = &loggingpb.ListSinksRequest{
 		Parent: formattedParent,
 	}
@@ -606,7 +684,7 @@ func TestConfigServiceV2CreateSink(t *testing.T) {
 
 	mockConfig.resps = append(mockConfig.resps[:0], expectedResponse)
 
-	var formattedParent string = ConfigParentPath("[PROJECT]")
+	var formattedParent string = ConfigProjectPath("[PROJECT]")
 	var sink *loggingpb.LogSink = &loggingpb.LogSink{}
 	var request = &loggingpb.CreateSinkRequest{
 		Parent: formattedParent,
@@ -637,7 +715,7 @@ func TestConfigServiceV2CreateSinkError(t *testing.T) {
 	errCode := codes.Internal
 	mockConfig.err = grpc.Errorf(errCode, "test error")
 
-	var formattedParent string = ConfigParentPath("[PROJECT]")
+	var formattedParent string = ConfigProjectPath("[PROJECT]")
 	var sink *loggingpb.LogSink = &loggingpb.LogSink{}
 	var request = &loggingpb.CreateSinkRequest{
 		Parent: formattedParent,
@@ -787,7 +865,7 @@ func TestMetricsServiceV2ListLogMetrics(t *testing.T) {
 
 	mockMetrics.resps = append(mockMetrics.resps[:0], expectedResponse)
 
-	var formattedParent string = MetricsParentPath("[PROJECT]")
+	var formattedParent string = MetricsProjectPath("[PROJECT]")
 	var request = &loggingpb.ListLogMetricsRequest{
 		Parent: formattedParent,
 	}
@@ -826,7 +904,7 @@ func TestMetricsServiceV2ListLogMetricsError(t *testing.T) {
 	errCode := codes.Internal
 	mockMetrics.err = grpc.Errorf(errCode, "test error")
 
-	var formattedParent string = MetricsParentPath("[PROJECT]")
+	var formattedParent string = MetricsProjectPath("[PROJECT]")
 	var request = &loggingpb.ListLogMetricsRequest{
 		Parent: formattedParent,
 	}
@@ -919,7 +997,7 @@ func TestMetricsServiceV2CreateLogMetric(t *testing.T) {
 
 	mockMetrics.resps = append(mockMetrics.resps[:0], expectedResponse)
 
-	var formattedParent string = MetricsParentPath("[PROJECT]")
+	var formattedParent string = MetricsProjectPath("[PROJECT]")
 	var metric *loggingpb.LogMetric = &loggingpb.LogMetric{}
 	var request = &loggingpb.CreateLogMetricRequest{
 		Parent: formattedParent,
@@ -950,7 +1028,7 @@ func TestMetricsServiceV2CreateLogMetricError(t *testing.T) {
 	errCode := codes.Internal
 	mockMetrics.err = grpc.Errorf(errCode, "test error")
 
-	var formattedParent string = MetricsParentPath("[PROJECT]")
+	var formattedParent string = MetricsProjectPath("[PROJECT]")
 	var metric *loggingpb.LogMetric = &loggingpb.LogMetric{}
 	var request = &loggingpb.CreateLogMetricRequest{
 		Parent: formattedParent,

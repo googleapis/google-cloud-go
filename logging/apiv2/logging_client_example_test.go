@@ -109,3 +109,25 @@ func ExampleClient_ListMonitoredResourceDescriptors() {
 		_ = resp
 	}
 }
+
+func ExampleClient_ListLogs() {
+	ctx := context.Background()
+	c, err := logging.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &loggingpb.ListLogsRequest{
+	// TODO: Fill request struct fields.
+	}
+	it := c.ListLogs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err != nil {
+			// TODO: Handle error.
+			break
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
