@@ -64,6 +64,10 @@ type FileConfig struct {
 	// newlines are allowed when reading CSV data.
 	AllowQuotedNewlines bool
 
+	// Indicates if we should automatically infer the options and
+	// schema for CSV and JSON sources.
+	AutoDetect bool
+
 	// Encoding is the character encoding of data to be read.
 	Encoding Encoding
 
@@ -108,6 +112,7 @@ func (fc *FileConfig) quote() *string {
 func (fc *FileConfig) populateLoadConfig(conf *bq.JobConfigurationLoad) {
 	conf.SkipLeadingRows = fc.SkipLeadingRows
 	conf.SourceFormat = string(fc.SourceFormat)
+	conf.Autodetect = fc.AutoDetect
 	conf.AllowJaggedRows = fc.AllowJaggedRows
 	conf.AllowQuotedNewlines = fc.AllowQuotedNewlines
 	conf.Encoding = string(fc.Encoding)
