@@ -20,6 +20,17 @@ backwards-incompatible changes.
 
 **NOTE:** Github repo is a mirror of [https://code.googlesource.com/gocloud](https://code.googlesource.com/gocloud).
 
+  * [News](#news)
+  * [Supported APIs](#supported-apis)
+  * [Go Versions Supported](#go-versions-supported)
+  * [Authorization](#authorization)
+  * [Cloud Datastore](#cloud-datastore-)
+  * [Cloud Storage](#cloud-storage-)
+  * [Cloud Pub/Sub](#cloud-pub-sub-)
+  * [Cloud BigQuery](#cloud-bigquery-)
+  * [Stackdriver Logging](#stackdriver-logging-)
+
+
 ## News
 
 _December 12, 2016_
