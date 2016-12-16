@@ -209,7 +209,14 @@ type fetcherServiceWithModifyAckDeadline struct {
 }
 
 func (f *fetcherServiceWithModifyAckDeadline) modifyAckDeadline(_ context.Context, _ string, d time.Duration, ids []string) error {
-	f.events <- fmt.Sprintf("modAck(%v, %s)", ids, d)
+	// Different versions of Go use different representations for time.Duration(0).
+	var ds string
+	if d == 0 {
+		ds = "0s"
+	} else {
+		ds = d.String()
+	}
+	f.events <- fmt.Sprintf("modAck(%v, %s)", ids, ds)
 	return nil
 }
 
