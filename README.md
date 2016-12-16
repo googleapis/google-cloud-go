@@ -194,6 +194,10 @@ By default, each API will use [Google Application Default Credentials][default-c
 for authorization credentials used in calling the API endpoints. This will allow your
 application to run in many environments without requiring explicit configuration.
 
+```go
+client, err := storage.NewClient(ctx)
+```
+
 To authorize using a
 [JSON key file](https://cloud.google.com/iam/docs/managing-service-account-keys),
 pass
