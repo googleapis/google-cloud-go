@@ -188,7 +188,12 @@ func ProjectIDs(pids []string) EntriesOption { return projectIDs(pids) }
 
 type projectIDs []string
 
-func (p projectIDs) set(r *logpb.ListLogEntriesRequest) { r.ProjectIds = []string(p) }
+func (p projectIDs) set(r *logpb.ListLogEntriesRequest) {
+	r.ResourceNames = make([]string, len(p))
+	for i, v := range p {
+		r.ResourceNames[i] = fmt.Sprintf("projects/%s", v)
+	}
+}
 
 // Filter sets an advanced logs filter for listing log entries (see
 // https://cloud.google.com/logging/docs/view/advanced_filters). The filter is
@@ -232,7 +237,7 @@ func (c *Client) Entries(ctx context.Context, opts ...EntriesOption) *EntryItera
 
 func listLogEntriesRequest(projectID string, opts []EntriesOption) *logpb.ListLogEntriesRequest {
 	req := &logpb.ListLogEntriesRequest{
-		ProjectIds: []string{projectID},
+		ResourceNames: []string{"projects/" + projectID},
 	}
 	for _, opt := range opts {
 		opt.set(req)
