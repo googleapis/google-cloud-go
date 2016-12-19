@@ -89,7 +89,7 @@ type PushConfig struct {
 	// A URL locating the endpoint to which messages should be pushed.
 	Endpoint string
 
-	// Endpoint configuration attributes. See https://cloud.google.com/pubsub/reference/rest/v1/projects.subscriptions#PushConfig.FIELDS.attributes for more details.
+	// Endpoint configuration attributes. See https://cloud.google.com/pubsub/docs/reference/rest/v1/projects.subscriptions#pushconfig for more details.
 	Attributes map[string]string
 }
 
