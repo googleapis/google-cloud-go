@@ -20,6 +20,8 @@ package cbtconfig
 import (
 	"bufio"
 	"bytes"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -33,15 +35,18 @@ import (
 	"time"
 
 	"golang.org/x/oauth2"
+	"google.golang.org/grpc/credentials"
 )
 
 // Config represents a configuration.
 type Config struct {
-	Project, Instance string             // required
-	Creds             string             // optional
-	AdminEndpoint     string             // optional
-	DataEndpoint      string             // optional
-	TokenSource       oauth2.TokenSource // derived
+	Project, Instance string                           // required
+	Creds             string                           // optional
+	AdminEndpoint     string                           // optional
+	DataEndpoint      string                           // optional
+	CertFile          string                           // optional
+	TokenSource       oauth2.TokenSource               // derived
+	TLSCreds          credentials.TransportCredentials // derived
 }
 
 type RequiredFlags uint
@@ -61,11 +66,25 @@ func (c *Config) RegisterFlags() {
 	flag.StringVar(&c.Creds, "creds", c.Creds, "if set, use application credentials in this file")
 	flag.StringVar(&c.AdminEndpoint, "admin-endpoint", c.AdminEndpoint, "Override the admin api endpoint")
 	flag.StringVar(&c.DataEndpoint, "data-endpoint", c.DataEndpoint, "Override the data api endpoint")
+	flag.StringVar(&c.CertFile, "cert-file", c.CertFile, "Override the TLS certificates file")
 }
 
 // CheckFlags checks that the required config values are set.
 func (c *Config) CheckFlags(required RequiredFlags) error {
 	var missing []string
+	if c.CertFile != "" {
+		b, err := ioutil.ReadFile(c.CertFile)
+		if err != nil {
+			return fmt.Errorf("Failed to load certificates from %s: %v", c.CertFile, err)
+		}
+
+		cp := x509.NewCertPool()
+		if !cp.AppendCertsFromPEM(b) {
+			return fmt.Errorf("Failed to append certificates from %s", c.CertFile)
+		}
+
+		c.TLSCreds = credentials.NewTLS(&tls.Config{RootCAs: cp})
+	}
 	if required != NoneRequired {
 		c.SetFromGcloud()
 	}
@@ -174,8 +193,6 @@ func LoadGcloudConfig(gcloudCmd string, gcloudCmdArgs []string) (*GcloudConfig, 
 		return nil, fmt.Errorf("Could not parse gcloud configuration")
 	}
 
-	log.Printf("Retrieved gcloud configuration, active project is \"%s\"",
-		gcloudConfig.Configuration.Properties.Core.Project)
 	return &gcloudConfig, nil
 }
 
@@ -213,7 +230,9 @@ func (c *Config) SetFromGcloud() error {
 		return err
 	}
 
-	if c.Project == "" {
+	if c.Project == "" && gcloudConfig.Configuration.Properties.Core.Project != "" {
+		log.Printf("gcloud active project is \"%s\"",
+			gcloudConfig.Configuration.Properties.Core.Project)
 		c.Project = gcloudConfig.Configuration.Properties.Core.Project
 	}
 

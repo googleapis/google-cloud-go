@@ -38,6 +38,7 @@ import (
 	"cloud.google.com/go/bigtable/internal/cbtconfig"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc"
 )
 
 var (
@@ -49,15 +50,23 @@ var (
 	instanceAdminClient *bigtable.InstanceAdminClient
 )
 
+func getCredentialOpts(opts []option.ClientOption) []option.ClientOption {
+	if ts := config.TokenSource; ts != nil {
+		opts = append(opts, option.WithTokenSource(ts))
+	}
+	if tlsCreds := config.TLSCreds; tlsCreds != nil {
+		opts = append(opts, option.WithGRPCDialOption(grpc.WithTransportCredentials(tlsCreds)))
+	}
+	return opts
+}
+
 func getClient() *bigtable.Client {
 	if client == nil {
 		var opts []option.ClientOption
 		if ep := config.DataEndpoint; ep != "" {
 			opts = append(opts, option.WithEndpoint(ep))
 		}
-		if ts := config.TokenSource; ts != nil {
-			opts = append(opts, option.WithTokenSource(ts))
-		}
+		opts = getCredentialOpts(opts)
 		var err error
 		client, err = bigtable.NewClient(context.Background(), config.Project, config.Instance, opts...)
 		if err != nil {
@@ -73,9 +82,7 @@ func getAdminClient() *bigtable.AdminClient {
 		if ep := config.AdminEndpoint; ep != "" {
 			opts = append(opts, option.WithEndpoint(ep))
 		}
-		if ts := config.TokenSource; ts != nil {
-			opts = append(opts, option.WithTokenSource(ts))
-		}
+		opts = getCredentialOpts(opts)
 		var err error
 		adminClient, err = bigtable.NewAdminClient(context.Background(), config.Project, config.Instance, opts...)
 		if err != nil {
@@ -91,9 +98,7 @@ func getInstanceAdminClient() *bigtable.InstanceAdminClient {
 		if ep := config.AdminEndpoint; ep != "" {
 			opts = append(opts, option.WithEndpoint(ep))
 		}
-		if ts := config.TokenSource; ts != nil {
-			opts = append(opts, option.WithTokenSource(ts))
-		}
+		opts = getCredentialOpts(opts)
 		var err error
 		instanceAdminClient, err = bigtable.NewInstanceAdminClient(context.Background(), config.Project, opts...)
 		if err != nil {
