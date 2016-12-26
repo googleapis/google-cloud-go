@@ -54,11 +54,33 @@ func (vm *valueMap) Load(v []Value, s Schema) error {
 	if *vm == nil {
 		*vm = map[string]Value{}
 	}
-	// TODO(jba): treat nested records as nested maps.
-	for i, f := range s {
-		(*vm)[f.Name] = v[i]
-	}
+	loadMap(*vm, v, s)
 	return nil
+}
+
+func loadMap(m map[string]Value, vals []Value, s Schema) {
+	for i, f := range s {
+		val := vals[i]
+		var v interface{}
+		switch {
+		case f.Schema == nil:
+			v = val
+		case !f.Repeated:
+			m2 := map[string]Value{}
+			loadMap(m2, val.([]Value), f.Schema)
+			v = m2
+		default: // repeated and nested
+			sval := val.([]Value)
+			vs := make([]Value, len(sval))
+			for j, e := range sval {
+				m2 := map[string]Value{}
+				loadMap(m2, e.([]Value), f.Schema)
+				vs[j] = m2
+			}
+			v = vs
+		}
+		m[f.Name] = v
+	}
 }
 
 type structLoader struct {
