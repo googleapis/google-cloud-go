@@ -558,14 +558,24 @@ func TestValueList(t *testing.T) {
 }
 
 func TestValueMap(t *testing.T) {
+	ns := Schema{
+		{Name: "x", Type: IntegerFieldType},
+		{Name: "y", Type: IntegerFieldType},
+	}
 	schema := Schema{
 		{Name: "s", Type: StringFieldType},
 		{Name: "i", Type: IntegerFieldType},
 		{Name: "f", Type: FloatFieldType},
 		{Name: "b", Type: BooleanFieldType},
+		{Name: "n", Type: RecordFieldType, Schema: ns},
+		{Name: "rn", Type: RecordFieldType, Schema: ns, Repeated: true},
+	}
+	in := []Value{"x", 7, 3.14, true,
+		[]Value{1, 2},
+		[]Value{[]Value{3, 4}, []Value{5, 6}},
 	}
 	var vm valueMap
-	if err := vm.Load([]Value{"x", 7, 3.14, true}, schema); err != nil {
+	if err := vm.Load(in, schema); err != nil {
 		t.Fatal(err)
 	}
 	want := map[string]Value{
@@ -573,10 +583,16 @@ func TestValueMap(t *testing.T) {
 		"i": 7,
 		"f": 3.14,
 		"b": true,
+		"n": map[string]Value{"x": 1, "y": 2},
+		"rn": []Value{
+			map[string]Value{"x": 3, "y": 4},
+			map[string]Value{"x": 5, "y": 6},
+		},
 	}
 	if !reflect.DeepEqual(vm, valueMap(want)) {
-		t.Errorf("got %+v, want %+v", vm, want)
+		t.Errorf("got\n%+v\nwant\n%+v", vm, want)
 	}
+
 }
 
 var (
