@@ -70,6 +70,7 @@ var (
 	typeOfGoTime   = reflect.TypeOf(time.Time{})
 )
 
+// A QueryParameter is a parameter to a query.
 type QueryParameter struct {
 	// Name is used for named parameter mode.
 	// It must match the name in the query case-insensitively.

@@ -68,7 +68,7 @@ type QueryConfig struct {
 	// For additional limitations, see https://cloud.google.com/bigquery/querying-data#largequeryresults
 	AllowLargeResults bool
 
-	// Priority species the priority with which to schedule the query.
+	// Priority specifies the priority with which to schedule the query.
 	// The default priority is InteractivePriority.
 	// For more information, see https://cloud.google.com/bigquery/querying-data#batchqueries
 	Priority QueryPriority
@@ -97,7 +97,7 @@ type QueryConfig struct {
 	Parameters []QueryParameter
 }
 
-// QueryPriority species a priority with which a query is to be executed.
+// QueryPriority specifies a priority with which a query is to be executed.
 type QueryPriority string
 
 const (
