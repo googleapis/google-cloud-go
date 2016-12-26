@@ -105,6 +105,20 @@ func ExampleClient_Query() {
 	// TODO: Call Query.Run or Query.Read.
 }
 
+func ExampleClient_Query_parameters() {
+	ctx := context.Background()
+	client, err := bigquery.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	q := client.Query("select num from t1 where name = @user")
+	q.Parameters = []bigquery.QueryParameter{
+		{Name: "user", Value: "Elizabeth"},
+	}
+	// TODO: set other options on the Query.
+	// TODO: Call Query.Run or Query.Read.
+}
+
 func ExampleQuery_Read() {
 	ctx := context.Background()
 	client, err := bigquery.NewClient(ctx, "project-id")
