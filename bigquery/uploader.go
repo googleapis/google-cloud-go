@@ -69,6 +69,12 @@ func (t *Table) Uploader() *Uploader {
 //
 // Put returns a PutMultiError if one or more rows failed to be uploaded.
 // The PutMultiError contains a RowInsertionError for each failed row.
+//
+// Put will retry on temporary errors (see
+// https://cloud.google.com/bigquery/troubleshooting-errors). This can result
+// in duplicate rows if you do not use insert IDs. Also, if the error persists,
+// the call will run indefinitely. Pass a context with a timeout to prevent
+// hanging calls.
 func (u *Uploader) Put(ctx context.Context, src interface{}) error {
 	savers, err := valueSavers(src)
 	if err != nil {

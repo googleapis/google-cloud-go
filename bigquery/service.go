@@ -22,8 +22,12 @@ import (
 	"sync"
 	"time"
 
+	"cloud.google.com/go/internal"
+	gax "github.com/googleapis/gax-go"
+
 	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/googleapi"
 )
 
 // service provides an internal abstraction to isolate the generated
@@ -256,7 +260,12 @@ func (s *bigqueryService) insertRows(ctx context.Context, projectID, datasetID, 
 			Json:     m,
 		})
 	}
-	res, err := s.s.Tabledata.InsertAll(projectID, datasetID, tableID, req).Context(ctx).Do()
+	var res *bq.TableDataInsertAllResponse
+	err := runWithRetry(ctx, func() error {
+		var err error
+		res, err = s.s.Tabledata.InsertAll(projectID, datasetID, tableID, req).Context(ctx).Do()
+		return err
+	})
 	if err != nil {
 		return err
 	}
@@ -569,4 +578,36 @@ func (s *bigqueryService) convertListedDataset(d *bq.DatasetListDatasets) *Datas
 		ProjectID: d.DatasetReference.ProjectId,
 		DatasetID: d.DatasetReference.DatasetId,
 	}
+}
+
+// runWithRetry calls the function until it returns nil or a non-retryable error, or
+// the context is done.
+// See the similar function in ../storage/invoke.go. The main difference is the
+// reason for retrying.
+func runWithRetry(ctx context.Context, call func() error) error {
+	backoff := gax.Backoff{
+		Initial:    2 * time.Second,
+		Max:        32 * time.Second,
+		Multiplier: 2,
+	}
+	return internal.Retry(ctx, backoff, func() (stop bool, err error) {
+		err = call()
+		if err == nil {
+			return true, nil
+		}
+		e, ok := err.(*googleapi.Error)
+		if !ok {
+			return true, err
+		}
+		var reason string
+		if len(e.Errors) > 0 {
+			reason = e.Errors[0].Reason
+		}
+		// Retry using the criteria in
+		// https://cloud.google.com/bigquery/troubleshooting-errors
+		if reason == "backendError" && (e.Code == 500 || e.Code == 503) {
+			return false, nil
+		}
+		return true, err
+	})
 }
