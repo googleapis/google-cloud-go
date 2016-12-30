@@ -98,6 +98,24 @@ func TestIntegration_Create(t *testing.T) {
 	}
 }
 
+func TestIntegration_CreateView(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
+
+	// Test that standard SQL views work.
+	view := dataset.Table("t_view_standardsql")
+	query := ViewQuery(fmt.Sprintf("SELECT APPROX_COUNT_DISTINCT(name) FROM `%s.%s.%s`", dataset.ProjectID, dataset.DatasetID, table.TableID))
+	err := view.Create(context.Background(), UseStandardSQL(), query)
+	if err != nil {
+		t.Fatalf("table.create: Did not expect an error, got: %v", err)
+	}
+	view.Delete(ctx)
+}
+
 func TestIntegration_TableMetadata(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
