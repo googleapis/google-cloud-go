@@ -419,7 +419,7 @@ func (s *bigqueryService) createTable(ctx context.Context, conf *createTableConf
 		}
 		if conf.useStandardSQL {
 			table.View.UseLegacySql = false
-			table.ForceSendFields = append(table.ForceSendFields, "UseLegacySql")
+			table.View.ForceSendFields = append(table.View.ForceSendFields, "UseLegacySql")
 		}
 	}
 	if conf.schema != nil {
