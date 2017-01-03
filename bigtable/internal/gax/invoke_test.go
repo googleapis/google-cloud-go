@@ -37,8 +37,8 @@ func TestRandomizedDelays(t *testing.T) {
 	Invoke(ctx, func(childCtx context.Context) error {
 		// Keep failing, make sure we never slept more than max (plus a fudge factor)
 		if !invokeTime.IsZero() {
-			if time.Since(invokeTime) > (max + 20*time.Millisecond) {
-				t.Fatalf("Slept too long: %v", max)
+			if got, want := time.Since(invokeTime), max; got > (want + 20*time.Millisecond) {
+				t.Fatalf("Slept too long. Got: %v, want: %v", got, max)
 			}
 		}
 		invokeTime = time.Now()
