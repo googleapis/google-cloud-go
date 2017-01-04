@@ -175,9 +175,9 @@ Example code:
 		// Handle error.
 	}
 
-	var entities []Entity
+	var entities []MyEntity
 	q := datastore.NewQuery("Entity").Filter("A =", 12).Limit(1)
-	_, err := datastore.GetAll(ctx, q, &entities)
+	_, err := dsClient.GetAll(ctx, q, &entities)
 	if err != nil {
 		// Handle error
 	}
@@ -299,7 +299,7 @@ Example code:
 	func (x *CustomPropsExample) Save() ([]datastore.Property, error) {
 		// Validate the Sum field.
 		if x.Sum != x.I + x.J {
-			return errors.New("CustomPropsExample has inconsistent sum")
+			return nil, errors.New("CustomPropsExample has inconsistent sum")
 		}
 		// Save I and J as usual. The code below is equivalent to calling
 		// "return datastore.SaveStruct(x)", but is done manually for
@@ -313,7 +313,7 @@ Example code:
 				Name:  "J",
 				Value: int64(x.J),
 			},
-		}
+		}, nil
 	}
 
 The *PropertyList type implements PropertyLoadSaver, and can therefore hold an
@@ -355,7 +355,7 @@ Example code:
 		q := datastore.NewQuery("Widget").
 			Filter("Price <", 1000).
 			Order("-Price")
-		for t := dsClient.Run(ctx, q); ; {
+		for t := client.Run(ctx, q); ; {
 			var x Widget
 			key, err := t.Next(&x)
 			if err == iterator.Done {
@@ -382,7 +382,7 @@ Example code:
 	func incCount(ctx context.Context, client *datastore.Client) {
 		var count int
 		key := datastore.NameKey("Counter", "singleton", nil)
-		_, err := dsClient.RunInTransaction(ctx, func(tx *datastore.Transaction) error {
+		_, err := client.RunInTransaction(ctx, func(tx *datastore.Transaction) error {
 			var x Counter
 			if err := tx.Get(key, &x); err != nil && err != datastore.ErrNoSuchEntity {
 				return err
