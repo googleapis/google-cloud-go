@@ -44,6 +44,11 @@ var _ = ptypes.MarshalAny
 var _ status.Status
 
 type mockLoggingServer struct {
+	// Embed for forward compatibility.
+	// Tests will keep working if more methods are added
+	// in the future.
+	loggingpb.LoggingServiceV2Server
+
 	reqs []proto.Message
 
 	// If set, all calls return this error.
@@ -94,6 +99,11 @@ func (s *mockLoggingServer) ListLogs(_ context.Context, req *loggingpb.ListLogsR
 }
 
 type mockConfigServer struct {
+	// Embed for forward compatibility.
+	// Tests will keep working if more methods are added
+	// in the future.
+	loggingpb.ConfigServiceV2Server
+
 	reqs []proto.Message
 
 	// If set, all calls return this error.
@@ -144,6 +154,11 @@ func (s *mockConfigServer) DeleteSink(_ context.Context, req *loggingpb.DeleteSi
 }
 
 type mockMetricsServer struct {
+	// Embed for forward compatibility.
+	// Tests will keep working if more methods are added
+	// in the future.
+	loggingpb.MetricsServiceV2Server
+
 	reqs []proto.Message
 
 	// If set, all calls return this error.

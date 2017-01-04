@@ -43,6 +43,11 @@ var _ = ptypes.MarshalAny
 var _ status.Status
 
 type mockDebugger2Server struct {
+	// Embed for forward compatibility.
+	// Tests will keep working if more methods are added
+	// in the future.
+	clouddebuggerpb.Debugger2Server
+
 	reqs []proto.Message
 
 	// If set, all calls return this error.
@@ -93,6 +98,11 @@ func (s *mockDebugger2Server) ListDebuggees(_ context.Context, req *clouddebugge
 }
 
 type mockController2Server struct {
+	// Embed for forward compatibility.
+	// Tests will keep working if more methods are added
+	// in the future.
+	clouddebuggerpb.Controller2Server
+
 	reqs []proto.Message
 
 	// If set, all calls return this error.

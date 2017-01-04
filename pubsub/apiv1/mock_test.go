@@ -44,6 +44,11 @@ var _ = ptypes.MarshalAny
 var _ status.Status
 
 type mockPublisherServer struct {
+	// Embed for forward compatibility.
+	// Tests will keep working if more methods are added
+	// in the future.
+	pubsubpb.PublisherServer
+
 	reqs []proto.Message
 
 	// If set, all calls return this error.
@@ -102,6 +107,11 @@ func (s *mockPublisherServer) DeleteTopic(_ context.Context, req *pubsubpb.Delet
 }
 
 type mockIamPolicyServer struct {
+	// Embed for forward compatibility.
+	// Tests will keep working if more methods are added
+	// in the future.
+	iampb.IAMPolicyServer
+
 	reqs []proto.Message
 
 	// If set, all calls return this error.
@@ -136,6 +146,11 @@ func (s *mockIamPolicyServer) TestIamPermissions(_ context.Context, req *iampb.T
 }
 
 type mockSubscriberServer struct {
+	// Embed for forward compatibility.
+	// Tests will keep working if more methods are added
+	// in the future.
+	pubsubpb.SubscriberServer
+
 	reqs []proto.Message
 
 	// If set, all calls return this error.
@@ -264,9 +279,9 @@ func TestMain(m *testing.M) {
 }
 
 func TestPublisherCreateTopic(t *testing.T) {
-	var formattedName2 string = PublisherTopicPath("[PROJECT]", "[TOPIC]")
+	var name2 string = "name2-1052831874"
 	var expectedResponse = &pubsubpb.Topic{
-		Name: formattedName2,
+		Name: name2,
 	}
 
 	mockPublisher.err = nil
@@ -638,12 +653,12 @@ func TestPublisherDeleteTopicError(t *testing.T) {
 	}
 }
 func TestSubscriberCreateSubscription(t *testing.T) {
-	var formattedName2 string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
-	var formattedTopic2 string = SubscriberTopicPath("[PROJECT]", "[TOPIC]")
+	var name2 string = "name2-1052831874"
+	var topic2 string = "topic2-1139259102"
 	var ackDeadlineSeconds int32 = 2135351438
 	var expectedResponse = &pubsubpb.Subscription{
-		Name:               formattedName2,
-		Topic:              formattedTopic2,
+		Name:               name2,
+		Topic:              topic2,
 		AckDeadlineSeconds: ackDeadlineSeconds,
 	}
 
