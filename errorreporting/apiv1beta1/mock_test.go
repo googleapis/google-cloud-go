@@ -42,6 +42,11 @@ var _ = ptypes.MarshalAny
 var _ status.Status
 
 type mockErrorGroupServer struct {
+	// Embed for forward compatibility.
+	// Tests will keep working if more methods are added
+	// in the future.
+	clouderrorreportingpb.ErrorGroupServiceServer
+
 	reqs []proto.Message
 
 	// If set, all calls return this error.
@@ -68,6 +73,11 @@ func (s *mockErrorGroupServer) UpdateGroup(_ context.Context, req *clouderrorrep
 }
 
 type mockErrorStatsServer struct {
+	// Embed for forward compatibility.
+	// Tests will keep working if more methods are added
+	// in the future.
+	clouderrorreportingpb.ErrorStatsServiceServer
+
 	reqs []proto.Message
 
 	// If set, all calls return this error.
@@ -102,6 +112,11 @@ func (s *mockErrorStatsServer) DeleteEvents(_ context.Context, req *clouderrorre
 }
 
 type mockReportErrorsServer struct {
+	// Embed for forward compatibility.
+	// Tests will keep working if more methods are added
+	// in the future.
+	clouderrorreportingpb.ReportErrorsServiceServer
+
 	reqs []proto.Message
 
 	// If set, all calls return this error.

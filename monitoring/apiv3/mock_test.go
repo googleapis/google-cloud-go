@@ -45,6 +45,11 @@ var _ = ptypes.MarshalAny
 var _ status.Status
 
 type mockGroupServer struct {
+	// Embed for forward compatibility.
+	// Tests will keep working if more methods are added
+	// in the future.
+	monitoringpb.GroupServiceServer
+
 	reqs []proto.Message
 
 	// If set, all calls return this error.
@@ -103,6 +108,11 @@ func (s *mockGroupServer) ListGroupMembers(_ context.Context, req *monitoringpb.
 }
 
 type mockMetricServer struct {
+	// Embed for forward compatibility.
+	// Tests will keep working if more methods are added
+	// in the future.
+	monitoringpb.MetricServiceServer
+
 	reqs []proto.Message
 
 	// If set, all calls return this error.
@@ -278,13 +288,13 @@ func TestGroupServiceListGroupsError(t *testing.T) {
 	_ = resp
 }
 func TestGroupServiceGetGroup(t *testing.T) {
-	var formattedName2 string = GroupGroupPath("[PROJECT]", "[GROUP]")
+	var name2 string = "name2-1052831874"
 	var displayName string = "displayName1615086568"
 	var parentName string = "parentName1015022848"
 	var filter string = "filter-1274492040"
 	var isCluster bool = false
 	var expectedResponse = &monitoringpb.Group{
-		Name:        formattedName2,
+		Name:        name2,
 		DisplayName: displayName,
 		ParentName:  parentName,
 		Filter:      filter,
@@ -343,13 +353,13 @@ func TestGroupServiceGetGroupError(t *testing.T) {
 	_ = resp
 }
 func TestGroupServiceCreateGroup(t *testing.T) {
-	var formattedName2 string = GroupProjectPath("[PROJECT]")
+	var name2 string = "name2-1052831874"
 	var displayName string = "displayName1615086568"
 	var parentName string = "parentName1015022848"
 	var filter string = "filter-1274492040"
 	var isCluster bool = false
 	var expectedResponse = &monitoringpb.Group{
-		Name:        formattedName2,
+		Name:        name2,
 		DisplayName: displayName,
 		ParentName:  parentName,
 		Filter:      filter,
@@ -669,12 +679,12 @@ func TestMetricServiceListMonitoredResourceDescriptorsError(t *testing.T) {
 	_ = resp
 }
 func TestMetricServiceGetMonitoredResourceDescriptor(t *testing.T) {
-	var formattedName2 string = MetricMonitoredResourceDescriptorPath("[PROJECT]", "[MONITORED_RESOURCE_DESCRIPTOR]")
+	var name2 string = "name2-1052831874"
 	var type_ string = "type3575610"
 	var displayName string = "displayName1615086568"
 	var description string = "description-1724546052"
 	var expectedResponse = &monitoredrespb.MonitoredResourceDescriptor{
-		Name:        formattedName2,
+		Name:        name2,
 		Type:        type_,
 		DisplayName: displayName,
 		Description: description,
@@ -802,13 +812,13 @@ func TestMetricServiceListMetricDescriptorsError(t *testing.T) {
 	_ = resp
 }
 func TestMetricServiceGetMetricDescriptor(t *testing.T) {
-	var formattedName2 string = MetricMetricDescriptorPath("[PROJECT]", "[METRIC_DESCRIPTOR]")
+	var name2 string = "name2-1052831874"
 	var type_ string = "type3575610"
 	var unit string = "unit3594628"
 	var description string = "description-1724546052"
 	var displayName string = "displayName1615086568"
 	var expectedResponse = &metricpb.MetricDescriptor{
-		Name:        formattedName2,
+		Name:        name2,
 		Type:        type_,
 		Unit:        unit,
 		Description: description,
@@ -867,13 +877,13 @@ func TestMetricServiceGetMetricDescriptorError(t *testing.T) {
 	_ = resp
 }
 func TestMetricServiceCreateMetricDescriptor(t *testing.T) {
-	var formattedName2 string = MetricProjectPath("[PROJECT]")
+	var name2 string = "name2-1052831874"
 	var type_ string = "type3575610"
 	var unit string = "unit3594628"
 	var description string = "description-1724546052"
 	var displayName string = "displayName1615086568"
 	var expectedResponse = &metricpb.MetricDescriptor{
-		Name:        formattedName2,
+		Name:        name2,
 		Type:        type_,
 		Unit:        unit,
 		Description: description,

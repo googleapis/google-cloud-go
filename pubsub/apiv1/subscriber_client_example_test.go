@@ -192,7 +192,7 @@ func ExampleSubscriberClient_Pull() {
 	_ = resp
 }
 
-func StreamingPull() {
+func ExampleSubscriberClient_StreamingPull() {
 	ctx := context.Background()
 	c, err := pubsub.NewSubscriberClient(ctx)
 	if err != nil {

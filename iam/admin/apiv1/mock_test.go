@@ -44,6 +44,11 @@ var _ = ptypes.MarshalAny
 var _ status.Status
 
 type mockIamServer struct {
+	// Embed for forward compatibility.
+	// Tests will keep working if more methods are added
+	// in the future.
+	adminpb.IAMServer
+
 	reqs []proto.Message
 
 	// If set, all calls return this error.
@@ -265,7 +270,7 @@ func TestIamListServiceAccountsError(t *testing.T) {
 	_ = resp
 }
 func TestIamGetServiceAccount(t *testing.T) {
-	var formattedName2 string = IamServiceAccountPath("[PROJECT]", "[SERVICE_ACCOUNT]")
+	var name2 string = "name2-1052831874"
 	var projectId string = "projectId-1969970175"
 	var uniqueId string = "uniqueId-538310583"
 	var email string = "email96619420"
@@ -273,7 +278,7 @@ func TestIamGetServiceAccount(t *testing.T) {
 	var etag []byte = []byte("21")
 	var oauth2ClientId string = "oauth2ClientId-1833466037"
 	var expectedResponse = &adminpb.ServiceAccount{
-		Name:           formattedName2,
+		Name:           name2,
 		ProjectId:      projectId,
 		UniqueId:       uniqueId,
 		Email:          email,
@@ -334,7 +339,7 @@ func TestIamGetServiceAccountError(t *testing.T) {
 	_ = resp
 }
 func TestIamCreateServiceAccount(t *testing.T) {
-	var formattedName2 string = IamProjectPath("[PROJECT]")
+	var name2 string = "name2-1052831874"
 	var projectId string = "projectId-1969970175"
 	var uniqueId string = "uniqueId-538310583"
 	var email string = "email96619420"
@@ -342,7 +347,7 @@ func TestIamCreateServiceAccount(t *testing.T) {
 	var etag []byte = []byte("21")
 	var oauth2ClientId string = "oauth2ClientId-1833466037"
 	var expectedResponse = &adminpb.ServiceAccount{
-		Name:           formattedName2,
+		Name:           name2,
 		ProjectId:      projectId,
 		UniqueId:       uniqueId,
 		Email:          email,
@@ -407,7 +412,7 @@ func TestIamCreateServiceAccountError(t *testing.T) {
 	_ = resp
 }
 func TestIamUpdateServiceAccount(t *testing.T) {
-	var formattedName string = IamServiceAccountPath("[PROJECT]", "[SERVICE_ACCOUNT]")
+	var name string = "name3373707"
 	var projectId string = "projectId-1969970175"
 	var uniqueId string = "uniqueId-538310583"
 	var email string = "email96619420"
@@ -415,7 +420,7 @@ func TestIamUpdateServiceAccount(t *testing.T) {
 	var etag2 []byte = []byte("-120")
 	var oauth2ClientId string = "oauth2ClientId-1833466037"
 	var expectedResponse = &adminpb.ServiceAccount{
-		Name:           formattedName,
+		Name:           name,
 		ProjectId:      projectId,
 		UniqueId:       uniqueId,
 		Email:          email,
@@ -580,11 +585,11 @@ func TestIamListServiceAccountKeysError(t *testing.T) {
 	_ = resp
 }
 func TestIamGetServiceAccountKey(t *testing.T) {
-	var formattedName2 string = IamKeyPath("[PROJECT]", "[SERVICE_ACCOUNT]", "[KEY]")
+	var name2 string = "name2-1052831874"
 	var privateKeyData []byte = []byte("-58")
 	var publicKeyData []byte = []byte("-96")
 	var expectedResponse = &adminpb.ServiceAccountKey{
-		Name:           formattedName2,
+		Name:           name2,
 		PrivateKeyData: privateKeyData,
 		PublicKeyData:  publicKeyData,
 	}
@@ -641,11 +646,11 @@ func TestIamGetServiceAccountKeyError(t *testing.T) {
 	_ = resp
 }
 func TestIamCreateServiceAccountKey(t *testing.T) {
-	var formattedName2 string = IamServiceAccountPath("[PROJECT]", "[SERVICE_ACCOUNT]")
+	var name2 string = "name2-1052831874"
 	var privateKeyData []byte = []byte("-58")
 	var publicKeyData []byte = []byte("-96")
 	var expectedResponse = &adminpb.ServiceAccountKey{
-		Name:           formattedName2,
+		Name:           name2,
 		PrivateKeyData: privateKeyData,
 		PublicKeyData:  publicKeyData,
 	}

@@ -75,7 +75,7 @@ func ExampleClient_AsyncRecognize() {
 	_ = resp
 }
 
-func StreamingRecognize() {
+func ExampleClient_StreamingRecognize() {
 	ctx := context.Background()
 	c, err := speech.NewClient(ctx)
 	if err != nil {
