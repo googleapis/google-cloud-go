@@ -2341,6 +2341,101 @@ func TestPutInvalidEntity(t *testing.T) {
 	})
 }
 
+func TestDeferred(t *testing.T) {
+	type Ent struct {
+		A int
+		B string
+	}
+
+	keys := []*Key{
+		NameKey("testKind", "first", nil),
+		NameKey("testKind", "second", nil),
+	}
+
+	entity1 := &pb.Entity{
+		Key: keyToProto(keys[0]),
+		Properties: map[string]*pb.Value{
+			"A": {ValueType: &pb.Value_IntegerValue{1}},
+			"B": {ValueType: &pb.Value_StringValue{"one"}},
+		},
+	}
+	entity2 := &pb.Entity{
+		Key: keyToProto(keys[1]),
+		Properties: map[string]*pb.Value{
+			"A": {ValueType: &pb.Value_IntegerValue{2}},
+			"B": {ValueType: &pb.Value_StringValue{"two"}},
+		},
+	}
+
+	// count keeps track of the number of times fakeClient.lookup has been
+	// called.
+	var count int
+	// Fake client that will return Deferred keys in resp on the first call.
+	fakeClient := &fakeDatastoreClient{
+		lookup: func(*pb.LookupRequest) (*pb.LookupResponse, error) {
+			count++
+			// On the first call, we return deferred keys.
+			if count == 1 {
+				return &pb.LookupResponse{
+					Found: []*pb.EntityResult{
+						{
+							Entity:  entity1,
+							Version: 1,
+						},
+					},
+					Deferred: []*pb.Key{
+						keyToProto(keys[1]),
+					},
+				}, nil
+			}
+
+			// On the second call, we do not return any more deferred keys.
+			return &pb.LookupResponse{
+				Found: []*pb.EntityResult{
+					{
+						Entity:  entity2,
+						Version: 1,
+					},
+				},
+			}, nil
+		},
+	}
+	client := &Client{
+		client: fakeClient,
+	}
+
+	ctx := context.Background()
+
+	dst := make([]Ent, len(keys))
+	err := client.GetMulti(ctx, keys, dst)
+	if err != nil {
+		t.Fatalf("client.Get: %v", err)
+	}
+
+	if count != 2 {
+		t.Fatalf("expected client.lookup to be called 2 times. Got %d", count)
+	}
+
+	if len(dst) != 2 {
+		t.Fatalf("expected 2 entities returned, got %d", len(dst))
+	}
+
+	for _, e := range dst {
+		if e.A == 1 {
+			if e.B != "one" {
+				t.Fatalf("unexpected entity %#v", e)
+			}
+		} else if e.A == 2 {
+			if e.B != "two" {
+				t.Fatalf("unexpected entity %#v", e)
+			}
+		} else {
+			t.Fatalf("unexpected entity %#v", e)
+		}
+	}
+
+}
+
 type fakeDatastoreClient struct {
 	// Optional handlers for the datastore methods.
 	// Any handlers left undefined will return an error.
