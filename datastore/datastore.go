@@ -407,14 +407,27 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	if err != nil {
 		return err
 	}
-	if len(resp.Deferred) > 0 {
-		// TODO(jbd): Assess whether we should retry the deferred keys.
-		return errors.New("datastore: some entities temporarily unavailable")
+	found := resp.Found
+	// Upper bound 100 iterations to prevent infinite loop.
+	// We choose 100 iterations somewhat logically:
+	// Max number of Entities you can request from Datastore is 1,000.
+	// Max size for a Datastore Entity is 1 MiB.
+	// Max request size is 10 MiB, so we assume max response size is also 10 MiB.
+	// 1,000 / 10 = 100.
+	// Note that if ctx has a deadline, the deadline will probably
+	// be hit before we reach 100 iterations.
+	for i := 0; len(resp.Deferred) > 0 && i < 100; i++ {
+		req.Keys = resp.Deferred
+		resp, err = c.client.Lookup(ctx, req)
+		if err != nil {
+			return err
+		}
+		found = append(found, resp.Found...)
 	}
-	if len(keys) != len(resp.Found)+len(resp.Missing) {
+	if len(keys) != len(found)+len(resp.Missing) {
 		return errors.New("datastore: internal error: server returned the wrong number of entities")
 	}
-	for _, e := range resp.Found {
+	for _, e := range found {
 		k, err := protoToKey(e.Entity.Key)
 		if err != nil {
 			return errors.New("datastore: internal error: server returned an invalid key")
