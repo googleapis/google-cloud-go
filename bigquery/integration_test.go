@@ -42,6 +42,7 @@ var (
 		{Name: "name", Type: StringFieldType},
 		{Name: "num", Type: IntegerFieldType},
 	}
+	fiveMinutesFromNow time.Time
 )
 
 func TestMain(m *testing.M) {
@@ -133,6 +134,9 @@ func TestIntegration_TableMetadata(t *testing.T) {
 		t.Errorf("metadata.ID: got %q, want %q", got, want)
 	}
 	if got, want := md.Type, RegularTable; got != want {
+		t.Errorf("metadata.Type: got %v, want %v", got, want)
+	}
+	if got, want := md.ExpirationTime, fiveMinutesFromNow; !got.Equal(want) {
 		t.Errorf("metadata.Type: got %v, want %v", got, want)
 	}
 
@@ -636,9 +640,10 @@ func TestIntegration_TimeTypes(t *testing.T) {
 
 // Creates a new, temporary table with a unique name and the given schema.
 func newTable(t *testing.T, s Schema) *Table {
+	fiveMinutesFromNow = time.Now().Add(5 * time.Minute).Round(time.Second)
 	name := fmt.Sprintf("t%d", time.Now().UnixNano())
 	table := dataset.Table(name)
-	err := table.Create(context.Background(), s, TableExpiration(time.Now().Add(5*time.Minute)))
+	err := table.Create(context.Background(), s, TableExpiration(fiveMinutesFromNow))
 	if err != nil {
 		t.Fatal(err)
 	}
