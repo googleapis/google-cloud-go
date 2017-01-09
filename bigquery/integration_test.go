@@ -135,6 +135,38 @@ func TestIntegration_TableMetadata(t *testing.T) {
 	if got, want := md.Type, RegularTable; got != want {
 		t.Errorf("metadata.Type: got %v, want %v", got, want)
 	}
+
+	// Check that timePartitioning is nil by default
+	if md.TimePartitioning != nil {
+		t.Errorf("metadata.TimePartitioning: got %v, want %v", md.TimePartitioning, nil)
+	}
+
+	// Create tables that have time partitioning
+	partitionCases := []struct {
+		timePartitioning   TimePartitioning
+		expectedExpiration time.Duration
+	}{
+		{TimePartitioning{}, time.Duration(0)},
+		{TimePartitioning{time.Second}, time.Second},
+	}
+	for i, c := range partitionCases {
+		table := dataset.Table(fmt.Sprintf("t_metadata_partition_%v", i))
+		err = table.Create(context.Background(), schema, c.timePartitioning, TableExpiration(time.Now().Add(5*time.Minute)))
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer table.Delete(ctx)
+		md, err = table.Metadata(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		got := md.TimePartitioning
+		want := &TimePartitioning{c.expectedExpiration}
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("metadata.TimePartitioning: got %v, want %v", got, want)
+		}
+	}
 }
 
 func TestIntegration_DatasetMetadata(t *testing.T) {

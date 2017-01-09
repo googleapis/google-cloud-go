@@ -394,6 +394,7 @@ type createTableConf struct {
 	viewQuery                     string
 	schema                        *bq.TableSchema
 	useStandardSQL                bool
+	timePartitioning              *TimePartitioning
 }
 
 // createTable creates a table in the BigQuery service.
@@ -424,6 +425,12 @@ func (s *bigqueryService) createTable(ctx context.Context, conf *createTableConf
 	}
 	if conf.schema != nil {
 		table.Schema = conf.schema
+	}
+	if conf.timePartitioning != nil {
+		table.TimePartitioning = &bq.TimePartitioning{
+			Type:         "DAY",
+			ExpirationMs: int64(conf.timePartitioning.Expiration.Seconds() * 1000),
+		}
 	}
 
 	_, err := s.s.Tables.Insert(conf.projectID, conf.datasetID, table).Context(ctx).Do()
@@ -459,6 +466,9 @@ func bqTableToMetadata(t *bq.Table) *TableMetadata {
 	}
 	if t.View != nil {
 		md.View = t.View.Query
+	}
+	if t.TimePartitioning != nil {
+		md.TimePartitioning = &TimePartitioning{time.Duration(t.TimePartitioning.ExpirationMs) * time.Millisecond}
 	}
 
 	return md
