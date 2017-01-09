@@ -61,6 +61,9 @@ type TableMetadata struct {
 	// The number of rows of data in this table.
 	// This does not include data that is being buffered during a streaming insert.
 	NumRows uint64
+
+	// The time-based partitioning settings for this table.
+	TimePartitioning *TimePartitioning
 }
 
 // TableCreateDisposition specifies the circumstances under which destination table will be created.
@@ -175,6 +178,19 @@ func UseStandardSQL() CreateTableOption { return useStandardSQL{} }
 
 func (opt useStandardSQL) customizeCreateTable(conf *createTableConf) {
 	conf.useStandardSQL = true
+}
+
+// TimePartitioning is a CreateTableOption that can be used to set time-based
+// date partitioning on a table.
+// For more information see: https://cloud.google.com/bigquery/docs/creating-partitioned-tables
+type TimePartitioning struct {
+	// (Optional) The amount of time to keep the storage for a partition.
+	// If the duration is empty (0), the data in the partitions do not expire.
+	Expiration time.Duration
+}
+
+func (opt TimePartitioning) customizeCreateTable(conf *createTableConf) {
+	conf.timePartitioning = &opt
 }
 
 // Update modifies specific Table metadata fields.
