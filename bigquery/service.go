@@ -411,7 +411,7 @@ func (s *bigqueryService) createTable(ctx context.Context, conf *createTableConf
 		},
 	}
 	if !conf.expiration.IsZero() {
-		table.ExpirationTime = conf.expiration.UnixNano() / 1000
+		table.ExpirationTime = conf.expiration.UnixNano() / 1e6
 	}
 	// TODO(jba): make it impossible to provide both a view query and a schema.
 	if conf.viewQuery != "" {
