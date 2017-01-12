@@ -16,7 +16,7 @@ mkdir -p $GOCLOUD_HOME
 # Move code into $GOPATH and get dependencies
 cp -R . $GOCLOUD_HOME
 cd $GOCLOUD_HOME
-go get -u -v ./...
+go get -v ./...
 
 # Don't print out encryption keys, etc
 set +x
