@@ -69,6 +69,19 @@
 //   ...
 //   childSpan.Finish()
 //
+// Alternatively, if you have access to the X-Cloud-Trace-Context header value
+// but not the underlying HTTP request (this can happen if you are using a
+// different transport or messaging protocol, such as gRPC), you can use
+// SpanFromHeader instead of SpanFromRequest. In that case, you will need to
+// specify the span name explicility, since it cannot be constructed from the
+// HTTP request's URL and method.
+//
+//   func handler(r *somepkg.Request) {
+//     span := traceClient.SpanFromHeader("span name", r.TraceContext())
+//     defer span.Finish()
+//     ...
+//   }
+//
 // Spans can contain a map from keys to values that have useful information
 // about the span.  The elements of this map are called labels.  Some labels,
 // whose keys all begin with the string "trace.cloud.google.com/", are set
@@ -90,11 +103,12 @@
 //   ...
 //   childSpan.Finish(trace.WithResponse(resp))
 //
-// When a span created by SpanFromRequest is finished, the finished spans in the
-// corresponding trace -- the span itself and its descendants -- are uploaded
-// to the Stackdriver Trace server using the *Client that created the span.
-// Finish returns immediately, and uploading occurs asynchronously.  You can use
-// the FinishWait function instead to wait until uploading has finished.
+// When a span created by SpanFromRequest or SpamFromHeader is finished, the
+// finished spans in the corresponding trace -- the span itself and its
+// descendants -- are uploaded to the Stackdriver Trace server using the
+// *Client that created the span.  Finish returns immediately, and uploading
+// occurs asynchronously.  You can use the FinishWait function instead to wait
+// until uploading has finished.
 //
 //   err := span.FinishWait()
 //
@@ -300,7 +314,49 @@ func (c *Client) SetSamplingPolicy(p SamplingPolicy) {
 	}
 }
 
-// SpanFromRequest returns a new trace span.
+// SpanFromHeader returns a new trace span, based on a provided request header
+// value. See https://cloud.google.com/trace/docs/faq.
+//
+// It returns nil iff the client is nil.
+//
+// The trace information and identifiers will be read from the header value.
+// Otherwise, a new trace ID is made and the parent span ID is zero.
+//
+// The name of the new span is provided as an argument.
+//
+// If a non-nil sampling policy has been set in the client, it can override
+// the options set in the header and choose whether to trace the request.
+//
+// If the header doesn't have existing tracing information, then a *Span is
+// returned anyway, but it will not be uploaded to the server, just as when
+// calling SpanFromRequest on an untraced request.
+//
+// Most users using HTTP should use SpanFromRequest, rather than
+// SpanFromHeader, since it provides additional functionality for HTTP
+// requests. In particular, it will set various pieces of request information
+// as labels on the *Span, which is not available from the header alone.
+func (c *Client) SpanFromHeader(name string, header string) *Span {
+	if c == nil {
+		return nil
+	}
+	traceID, parentSpanID, options, ok := traceInfoFromHeader(header)
+	if !ok {
+		traceID = nextTraceID()
+	}
+	t := &trace{
+		traceID:       traceID,
+		client:        c,
+		globalOptions: options,
+		localOptions:  options,
+	}
+	span := startNewChild(name, t, parentSpanID)
+	span.span.Kind = spanKindServer
+	span.rootSpan = true
+	configureSpanFromPolicy(span, c.policy, ok)
+	return span
+}
+
+// SpanFromRequest returns a new trace span for an HTTP request.
 //
 // It returns nil iff the client is nil.
 //
@@ -317,42 +373,46 @@ func (c *Client) SetSamplingPolicy(p SamplingPolicy) {
 // methods can still be called -- the Finish, FinishWait, and SetLabel methods
 // do nothing.  NewChild does nothing, and returns the same *Span.  TraceID
 // works as usual.
-func (client *Client) SpanFromRequest(r *http.Request) *Span {
-	if client == nil {
+func (c *Client) SpanFromRequest(r *http.Request) *Span {
+	if c == nil {
 		return nil
 	}
-	traceID, parentSpanID, options, hasTraceHeader := traceInfoFromRequest(r)
-	if !hasTraceHeader {
+	traceID, parentSpanID, options, ok := traceInfoFromHeader(r.Header.Get(httpHeader))
+	if !ok {
 		traceID = nextTraceID()
 	}
 	t := &trace{
 		traceID:       traceID,
-		client:        client,
+		client:        c,
 		globalOptions: options,
 		localOptions:  options,
 	}
 	span := startNewChildWithRequest(r, t, parentSpanID)
 	span.span.Kind = spanKindServer
 	span.rootSpan = true
-	if client.policy != nil {
-		d := client.policy.Sample(Parameters{HasTraceHeader: hasTraceHeader})
-		if d.Trace {
-			// Turn on tracing locally, and in child requests.
-			span.trace.localOptions |= optionTrace
-			span.trace.globalOptions |= optionTrace
-		} else {
-			// Turn off tracing locally.
-			span.trace.localOptions = 0
-			return span
-		}
-		if d.Sample {
-			// This trace is in the random sample, so set the labels.
-			span.SetLabel(labelSamplingPolicy, d.Policy)
-			span.SetLabel(labelSamplingWeight, fmt.Sprint(d.Weight))
-		}
-	}
-
+	configureSpanFromPolicy(span, c.policy, ok)
 	return span
+}
+
+func configureSpanFromPolicy(s *Span, p SamplingPolicy, ok bool) {
+	if p == nil {
+		return
+	}
+	d := p.Sample(Parameters{HasTraceHeader: ok})
+	if d.Trace {
+		// Turn on tracing locally, and in child requests.
+		s.trace.localOptions |= optionTrace
+		s.trace.globalOptions |= optionTrace
+	} else {
+		// Turn off tracing locally.
+		s.trace.localOptions = 0
+		return
+	}
+	if d.Sample {
+		// This trace is in the random sample, so set the labels.
+		s.SetLabel(labelSamplingPolicy, d.Policy)
+		s.SetLabel(labelSamplingWeight, fmt.Sprint(d.Weight))
+	}
 }
 
 // NewContext returns a derived context containing the span.
@@ -369,9 +429,8 @@ func FromContext(ctx context.Context) *Span {
 	return s
 }
 
-func traceInfoFromRequest(r *http.Request) (string, uint64, optionFlags, bool) {
+func traceInfoFromHeader(h string) (string, uint64, optionFlags, bool) {
 	// See https://cloud.google.com/trace/docs/faq for the header format.
-	h := r.Header.Get(httpHeader)
 	// Return if the header is empty or missing, or if the header is unreasonably
 	// large, to avoid making unnecessary copies of a large string.
 	if h == "" || len(h) > 200 {
@@ -540,8 +599,8 @@ func (s *Span) NewRemoteChild(r *http.Request) *Span {
 	return newSpan
 }
 
-func startNewChildWithRequest(r *http.Request, trace *trace, parentSpanId uint64) *Span {
-	newSpan := startNewChild(r.URL.Path, trace, parentSpanId)
+func startNewChildWithRequest(r *http.Request, trace *trace, parentSpanID uint64) *Span {
+	newSpan := startNewChild(r.URL.Path, trace, parentSpanID)
 	if r.Host == "" {
 		newSpan.host = r.URL.Host
 	} else {
@@ -552,9 +611,9 @@ func startNewChildWithRequest(r *http.Request, trace *trace, parentSpanId uint64
 	return newSpan
 }
 
-func startNewChild(name string, trace *trace, parentSpanId uint64) *Span {
+func startNewChild(name string, trace *trace, parentSpanID uint64) *Span {
 	spanID := nextSpanID()
-	for spanID == parentSpanId {
+	for spanID == parentSpanID {
 		spanID = nextSpanID()
 	}
 	newSpan := &Span{
@@ -562,7 +621,7 @@ func startNewChild(name string, trace *trace, parentSpanId uint64) *Span {
 		span: api.TraceSpan{
 			Kind:         spanKindClient,
 			Name:         name,
-			ParentSpanId: parentSpanId,
+			ParentSpanId: parentSpanID,
 			SpanId:       spanID,
 		},
 		start: time.Now(),

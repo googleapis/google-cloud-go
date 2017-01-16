@@ -80,14 +80,12 @@ func (f *fakeDatastoreServer) Lookup(ctx context.Context, req *dspb.LookupReques
 }
 
 // makeRequests makes some requests.
-// req is an incoming request used to construct the trace.  traceClient is the
-// client used to upload the trace.  rt is the trace client's http client's
-// transport.  This is used to retrieve the trace uploaded by the client, if
-// any.  If expectTrace is true, we expect a trace will be uploaded.  If
-// synchronous is true, the call to Finish is expected not to return before the
-// client has uploaded any traces.
-func makeRequests(t *testing.T, req *http.Request, traceClient *Client, rt *fakeRoundTripper, synchronous bool, expectTrace bool) *http.Request {
-	span := traceClient.SpanFromRequest(req)
+// span is the root span.  rt is the trace client's http client's transport.
+// This is used to retrieve the trace uploaded by the client, if any.  If
+// expectTrace is true, we expect a trace will be uploaded.  If synchronous is
+// true, the call to Finish is expected not to return before the client has
+// uploaded any traces.
+func makeRequests(t *testing.T, span *Span, rt *fakeRoundTripper, synchronous bool, expectTrace bool) *http.Request {
 	ctx := NewContext(context.Background(), span)
 
 	// An HTTP request.
@@ -196,27 +194,52 @@ func makeRequests(t *testing.T, req *http.Request, traceClient *Client, rt *fake
 
 func TestTrace(t *testing.T) {
 	t.Parallel()
-	testTrace(t, false)
+	testTrace(t, false, true)
 }
 
 func TestTraceWithWait(t *testing.T) {
-	testTrace(t, true)
+	testTrace(t, true, true)
 }
 
-func testTrace(t *testing.T, synchronous bool) {
-	req, err := http.NewRequest("GET", "http://example.com/foo", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	req.Header["X-Cloud-Trace-Context"] = []string{`0123456789ABCDEF0123456789ABCDEF/42;o=3`}
+func TestTraceFromHeader(t *testing.T) {
+	t.Parallel()
+	testTrace(t, false, false)
+}
 
+func TestTraceFromHeaderWithWait(t *testing.T) {
+	testTrace(t, false, true)
+}
+
+func testTrace(t *testing.T, synchronous bool, fromRequest bool) {
+	const header = `0123456789ABCDEF0123456789ABCDEF/42;o=3`
 	rt := newFakeRoundTripper()
 	traceClient := newTestClient(rt)
-
-	uploaded := makeRequests(t, req, traceClient, rt, synchronous, true)
+	var span *Span
+	if fromRequest {
+		req, err := http.NewRequest("GET", "http://example.com/foo", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req.Header.Set("X-Cloud-Trace-Context", header)
+		span = traceClient.SpanFromRequest(req)
+	} else {
+		span = traceClient.SpanFromHeader("/foo", header)
+	}
+	uploaded := makeRequests(t, span, rt, synchronous, true)
 
 	if uploaded == nil {
 		t.Fatalf("No trace uploaded, expected one.")
+	}
+
+	var expectedServerLabels map[string]string
+	if fromRequest {
+		expectedServerLabels = map[string]string{
+			"trace.cloud.google.com/http/host":   "example.com",
+			"trace.cloud.google.com/http/method": "GET",
+			"trace.cloud.google.com/http/url":    "http://example.com/foo",
+		}
+	} else {
+		expectedServerLabels = map[string]string{}
 	}
 
 	expected := api.Traces{
@@ -265,13 +288,9 @@ func testTrace(t *testing.T, synchronous bool) {
 						Name:   "/google.datastore.v1.Datastore/Lookup",
 					},
 					{
-						Kind: "RPC_SERVER",
-						Labels: map[string]string{
-							"trace.cloud.google.com/http/host":   "example.com",
-							"trace.cloud.google.com/http/method": "GET",
-							"trace.cloud.google.com/http/url":    "http://example.com/foo",
-						},
-						Name: "/foo",
+						Kind:   "RPC_SERVER",
+						Labels: expectedServerLabels,
+						Name:   "/foo",
 					},
 				},
 				TraceId: "0123456789ABCDEF0123456789ABCDEF",
@@ -358,14 +377,22 @@ func testTrace(t *testing.T, synchronous bool) {
 }
 
 func TestNoTrace(t *testing.T) {
-	testNoTrace(t, false)
+	testNoTrace(t, false, true)
 }
 
 func TestNoTraceWithWait(t *testing.T) {
-	testNoTrace(t, true)
+	testNoTrace(t, true, true)
 }
 
-func testNoTrace(t *testing.T, synchronous bool) {
+func TestNoTraceFromHeader(t *testing.T) {
+	testNoTrace(t, false, false)
+}
+
+func TestNoTraceFromHeaderWithWait(t *testing.T) {
+	testNoTrace(t, true, false)
+}
+
+func testNoTrace(t *testing.T, synchronous bool, fromRequest bool) {
 	for _, header := range []string{
 		`0123456789ABCDEF0123456789ABCDEF/42;o=2`,
 		`0123456789ABCDEF0123456789ABCDEF/42;o=0`,
@@ -373,16 +400,22 @@ func testNoTrace(t *testing.T, synchronous bool) {
 		`0123456789ABCDEF0123456789ABCDEF`,
 		``,
 	} {
-		req, err := http.NewRequest("GET", "http://example.com/foo", nil)
-		if header != "" {
-			req.Header["X-Cloud-Trace-Context"] = []string{header}
-		}
-		if err != nil {
-			t.Fatal(err)
-		}
 		rt := newFakeRoundTripper()
 		traceClient := newTestClient(rt)
-		uploaded := makeRequests(t, req, traceClient, rt, synchronous, false)
+		var span *Span
+		if fromRequest {
+			req, err := http.NewRequest("GET", "http://example.com/foo", nil)
+			if header != "" {
+				req.Header.Set("X-Cloud-Trace-Context", header)
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			span = traceClient.SpanFromRequest(req)
+		} else {
+			span = traceClient.SpanFromHeader("/foo", header)
+		}
+		uploaded := makeRequests(t, span, rt, synchronous, false)
 		if uploaded != nil {
 			t.Errorf("Got a trace, expected none.")
 		}
@@ -609,7 +642,7 @@ func TestPropagation(t *testing.T) {
 				t.Fatal(err)
 			}
 			if header != "" {
-				req.Header["X-Cloud-Trace-Context"] = []string{header}
+				req.Header.Set("X-Cloud-Trace-Context", header)
 			}
 
 			span := traceClient.SpanFromRequest(req)
