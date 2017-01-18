@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"math/rand"
 	"reflect"
-	"sort"
 	"strings"
 	"sync"
 	"testing"
@@ -157,9 +156,6 @@ func TestClientIntegration(t *testing.T) {
 			{Row: "jadams", Column: "follows:tjefferson", Value: []byte("1")},
 		},
 	}
-	for _, ris := range row {
-		sort.Sort(byColumn(ris))
-	}
 	if !reflect.DeepEqual(row, wantRow) {
 		t.Errorf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
 	}
@@ -173,7 +169,7 @@ func TestClientIntegration(t *testing.T) {
 		limit  ReadOption // may be nil
 
 		// We do the read, grab all the cells, turn them into "<row>-<col>-<val>",
-		// sort that list, and join with a comma.
+		// and join with a comma.
 		want string
 	}{
 		{
@@ -294,6 +290,24 @@ func TestClientIntegration(t *testing.T) {
 			filter: ValueRangeFilter([]byte("3"), []byte("5")), // matches nothing
 			want:   "",
 		},
+		{
+			desc:   "read with InterleaveFilter, no matches on all filters",
+			rr:     RowRange{},
+			filter: InterleaveFilters(ColumnFilter(".*x.*"), ColumnFilter(".*z.*")),
+			want:   "",
+		},
+		{
+			desc:   "read with InterleaveFilter, no duplicate cells",
+			rr:     RowRange{},
+			filter: InterleaveFilters(ColumnFilter(".*g.*"), ColumnFilter(".*j.*")),
+			want:   "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1,tjefferson-gwashington-1,tjefferson-jadams-1,wmckinley-tjefferson-1",
+		},
+		{
+			desc:   "read with InterleaveFilter, with duplicate cells",
+			rr:     RowRange{},
+			filter: InterleaveFilters(ColumnFilter(".*g.*"), ColumnFilter(".*g.*")),
+			want:   "jadams-gwashington-1,jadams-gwashington-1,tjefferson-gwashington-1,tjefferson-gwashington-1",
+		},
 	}
 	for _, tc := range readTests {
 		var opts []ReadOption
@@ -316,7 +330,6 @@ func TestClientIntegration(t *testing.T) {
 			t.Errorf("%s: %v", tc.desc, err)
 			continue
 		}
-		sort.Strings(elt)
 		if got := strings.Join(elt, ","); got != tc.want {
 			t.Errorf("%s: wrong reads.\n got %q\nwant %q", tc.desc, got, tc.want)
 		}
@@ -337,7 +350,6 @@ func TestClientIntegration(t *testing.T) {
 		t.Errorf("read RowList: %v", err)
 	}
 
-	sort.Strings(elt)
 	if got := strings.Join(elt, ","); got != want {
 		t.Errorf("bulk read: wrong reads.\n got %q\nwant %q", got, want)
 	}
@@ -491,6 +503,37 @@ func TestClientIntegration(t *testing.T) {
 	if !reflect.DeepEqual(r, wantRow) {
 		t.Errorf("Cell with multiple versions and TimestampRangeFilter(1000, 0),\n got %v\nwant %v", r, wantRow)
 	}
+	// Delete non-existing cells, no such column family in this row
+	// Should not delete anything
+	if err := adminClient.CreateColumnFamily(ctx, table, "non-existing"); err != nil {
+		t.Fatalf("Creating column family: %v", err)
+	}
+	mut = NewMutation()
+	mut.DeleteTimestampRange("non-existing", "col", 2000, 3000) // half-open interval
+	if err := tbl.Apply(ctx, "testrow", mut); err != nil {
+		t.Fatalf("Mutating row: %v", err)
+	}
+	r, err = tbl.ReadRow(ctx, "testrow", RowFilter(LatestNFilter(3)))
+	if err != nil {
+		t.Fatalf("Reading row: %v", err)
+	}
+	if !reflect.DeepEqual(r, wantRow) {
+		t.Errorf("Cell was deleted unexpectly,\n got %v\nwant %v", r, wantRow)
+	}
+	// Delete non-existing cells, no such column in this column family
+	// Should not delete anything
+	mut = NewMutation()
+	mut.DeleteTimestampRange("ts", "non-existing", 2000, 3000) // half-open interval
+	if err := tbl.Apply(ctx, "testrow", mut); err != nil {
+		t.Fatalf("Mutating row: %v", err)
+	}
+	r, err = tbl.ReadRow(ctx, "testrow", RowFilter(LatestNFilter(3)))
+	if err != nil {
+		t.Fatalf("Reading row: %v", err)
+	}
+	if !reflect.DeepEqual(r, wantRow) {
+		t.Errorf("Cell was deleted unexpectly,\n got %v\nwant %v", r, wantRow)
+	}
 	// Delete the cell with timestamp 2000 and repeat the last read,
 	// checking that we get ts 3000 and ts 1000.
 	mut = NewMutation()
@@ -511,7 +554,7 @@ func TestClientIntegration(t *testing.T) {
 	}
 	checkpoint("tested multiple versions in a cell")
 
-	// Check DeleteColumnFamily
+	// Check DeleteCellsInFamily
 	if err := adminClient.CreateColumnFamily(ctx, table, "status"); err != nil {
 		t.Fatalf("Creating column family: %v", err)
 	}
@@ -555,11 +598,84 @@ func TestClientIntegration(t *testing.T) {
 			{Row: "row2", Column: "ts:col", Timestamp: 0, Value: []byte("3")},
 		},
 		"status": []ReadItem{
-			{Row: "row2", Column: "status:start", Timestamp: 0, Value: []byte("1")},
 			{Row: "row2", Column: "status:end", Timestamp: 0, Value: []byte("2")},
+			{Row: "row2", Column: "status:start", Timestamp: 0, Value: []byte("1")},
 		},
 	}
+	if !reflect.DeepEqual(r, wantRow) {
+		t.Errorf("Column family was deleted unexpectly.\n got %v\n want %v", r, wantRow)
+	}
 	checkpoint("tested family delete")
+
+	// Check DeleteCellsInColumn
+	mut = NewMutation()
+	mut.Set("status", "start", 0, []byte("1"))
+	mut.Set("status", "middle", 0, []byte("2"))
+	mut.Set("status", "end", 0, []byte("3"))
+	if err := tbl.Apply(ctx, "row3", mut); err != nil {
+		t.Errorf("Mutating row: %v", err)
+	}
+	mut = NewMutation()
+	mut.DeleteCellsInColumn("status", "middle")
+	if err := tbl.Apply(ctx, "row3", mut); err != nil {
+		t.Errorf("Delete column: %v", err)
+	}
+	r, err = tbl.ReadRow(ctx, "row3")
+	if err != nil {
+		t.Fatalf("Reading row: %v", err)
+	}
+	wantRow = Row{
+		"status": []ReadItem{
+			{Row: "row3", Column: "status:end", Timestamp: 0, Value: []byte("3")},
+			{Row: "row3", Column: "status:start", Timestamp: 0, Value: []byte("1")},
+		},
+	}
+	if !reflect.DeepEqual(r, wantRow) {
+		t.Errorf("Column was not deleted.\n got %v\n want %v", r, wantRow)
+	}
+	mut = NewMutation()
+	mut.DeleteCellsInColumn("status", "start")
+	if err := tbl.Apply(ctx, "row3", mut); err != nil {
+		t.Errorf("Delete column: %v", err)
+	}
+	r, err = tbl.ReadRow(ctx, "row3")
+	if err != nil {
+		t.Fatalf("Reading row: %v", err)
+	}
+	wantRow = Row{
+		"status": []ReadItem{
+			{Row: "row3", Column: "status:end", Timestamp: 0, Value: []byte("3")},
+		},
+	}
+	if !reflect.DeepEqual(r, wantRow) {
+		t.Errorf("Column was not deleted.\n got %v\n want %v", r, wantRow)
+	}
+	mut = NewMutation()
+	mut.DeleteCellsInColumn("status", "end")
+	if err := tbl.Apply(ctx, "row3", mut); err != nil {
+		t.Errorf("Delete column: %v", err)
+	}
+	r, err = tbl.ReadRow(ctx, "row3")
+	if err != nil {
+		t.Fatalf("Reading row: %v", err)
+	}
+	if len(r) != 0 {
+		t.Errorf("Delete column: got %v, want empty row", r)
+	}
+	// Add same cell after delete
+	mut = NewMutation()
+	mut.Set("status", "end", 0, []byte("3"))
+	if err := tbl.Apply(ctx, "row3", mut); err != nil {
+		t.Errorf("Mutating row: %v", err)
+	}
+	r, err = tbl.ReadRow(ctx, "row3")
+	if err != nil {
+		t.Fatalf("Reading row: %v", err)
+	}
+	if !reflect.DeepEqual(r, wantRow) {
+		t.Errorf("Column was not deleted correctly.\n got %v\n want %v", r, wantRow)
+	}
+	checkpoint("tested column delete")
 
 	// Do highly concurrent reads/writes.
 	// TODO(dsymonds): Raise this to 1000 when https://github.com/grpc/grpc-go/issues/205 is resolved.
@@ -688,9 +804,6 @@ func TestClientIntegration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Reading a bulk row: %v", err)
 		}
-		for _, ris := range row {
-			sort.Sort(byColumn(ris))
-		}
 		var wantItems []ReadItem
 		for _, val := range ss {
 			wantItems = append(wantItems, ReadItem{Row: rowKey, Column: "bulk:" + val, Value: []byte("1")})
@@ -731,12 +844,6 @@ func fill(b, sub []byte) {
 		b = b[n:]
 	}
 }
-
-type byColumn []ReadItem
-
-func (b byColumn) Len() int           { return len(b) }
-func (b byColumn) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
-func (b byColumn) Less(i, j int) bool { return b[i].Column < b[j].Column }
 
 func clearTimestamps(r Row) {
 	for _, ris := range r {

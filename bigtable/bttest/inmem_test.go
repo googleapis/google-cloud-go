@@ -273,50 +273,50 @@ func TestDropRowRange(t *testing.T) {
 	doWrite()
 	tblSize := len(tbl.rows)
 	req := &btapb.DropRowRangeRequest{
-		Name:tblInfo.Name,
+		Name:   tblInfo.Name,
 		Target: &btapb.DropRowRangeRequest_RowKeyPrefix{[]byte("AAA")},
 	}
 	if _, err = s.DropRowRange(ctx, req); err != nil {
 		t.Fatalf("Dropping first range: %v", err)
 	}
-	got, want := len(tbl.rows), tblSize - count
+	got, want := len(tbl.rows), tblSize-count
 	if got != want {
 		t.Errorf("Row count after first drop: got %d (%v), want %d", got, tbl.rows, want)
 	}
 
 	req = &btapb.DropRowRangeRequest{
-		Name:tblInfo.Name,
+		Name:   tblInfo.Name,
 		Target: &btapb.DropRowRangeRequest_RowKeyPrefix{[]byte("DDD")},
 	}
 	if _, err = s.DropRowRange(ctx, req); err != nil {
 		t.Fatalf("Dropping second range: %v", err)
 	}
-	got, want = len(tbl.rows), tblSize - (2 * count)
-	if got != want  {
+	got, want = len(tbl.rows), tblSize-(2*count)
+	if got != want {
 		t.Errorf("Row count after second drop: got %d (%v), want %d", got, tbl.rows, want)
 	}
 
 	req = &btapb.DropRowRangeRequest{
-		Name:tblInfo.Name,
+		Name:   tblInfo.Name,
 		Target: &btapb.DropRowRangeRequest_RowKeyPrefix{[]byte("XXX")},
 	}
 	if _, err = s.DropRowRange(ctx, req); err != nil {
 		t.Fatalf("Dropping invalid range: %v", err)
 	}
-	got, want = len(tbl.rows), tblSize - (2 * count)
-	if got != want  {
+	got, want = len(tbl.rows), tblSize-(2*count)
+	if got != want {
 		t.Errorf("Row count after invalid drop: got %d (%v), want %d", got, tbl.rows, want)
 	}
 
 	req = &btapb.DropRowRangeRequest{
-		Name:tblInfo.Name,
+		Name:   tblInfo.Name,
 		Target: &btapb.DropRowRangeRequest_DeleteAllDataFromTable{true},
 	}
 	if _, err = s.DropRowRange(ctx, req); err != nil {
 		t.Fatalf("Dropping all data: %v", err)
 	}
 	got, want = len(tbl.rows), 0
-	if got != want  {
+	if got != want {
 		t.Errorf("Row count after drop all: got %d, want %d", got, want)
 	}
 
@@ -325,25 +325,25 @@ func TestDropRowRange(t *testing.T) {
 	doWrite()
 
 	req = &btapb.DropRowRangeRequest{
-		Name:tblInfo.Name,
+		Name:   tblInfo.Name,
 		Target: &btapb.DropRowRangeRequest_DeleteAllDataFromTable{true},
 	}
 	if _, err = s.DropRowRange(ctx, req); err != nil {
 		t.Fatalf("Dropping all data: %v", err)
 	}
 	got, want = len(tbl.rows), 0
-	if got != want  {
+	if got != want {
 		t.Errorf("Row count after drop all: got %d, want %d", got, want)
 	}
 
 	doWrite()
 	got, want = len(tbl.rows), len(prefixes)
-	if got != want  {
+	if got != want {
 		t.Errorf("Row count after rewrite: got %d, want %d", got, want)
 	}
 
 	req = &btapb.DropRowRangeRequest{
-		Name:tblInfo.Name,
+		Name:   tblInfo.Name,
 		Target: &btapb.DropRowRangeRequest_RowKeyPrefix{[]byte("BBB")},
 	}
 	if _, err = s.DropRowRange(ctx, req); err != nil {
@@ -351,7 +351,167 @@ func TestDropRowRange(t *testing.T) {
 	}
 	doWrite()
 	got, want = len(tbl.rows), len(prefixes)
-	if got != want  {
+	if got != want {
 		t.Errorf("Row count after drop range: got %d, want %d", got, want)
 	}
+}
+
+type MockReadRowsServer struct {
+	responses []*btpb.ReadRowsResponse
+	grpc.ServerStream
+}
+
+func (s *MockReadRowsServer) Send(resp *btpb.ReadRowsResponse) error {
+	s.responses = append(s.responses, resp)
+	return nil
+}
+
+func TestReadRowsOrder(t *testing.T) {
+	s := &server{
+		tables: make(map[string]*table),
+	}
+	ctx := context.Background()
+	newTbl := btapb.Table{
+		ColumnFamilies: map[string]*btapb.ColumnFamily{
+			"cf0": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{1}}},
+		},
+	}
+	tblInfo, err := s.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "cluster", TableId: "t", Table: &newTbl})
+	if err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+	count := 3
+	mcf := func(i int) *btapb.ModifyColumnFamiliesRequest {
+		return &btapb.ModifyColumnFamiliesRequest{
+			Name: tblInfo.Name,
+			Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+				Id:  "cf" + strconv.Itoa(i),
+				Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{&btapb.ColumnFamily{}},
+			}},
+		}
+	}
+	for i := 1; i <= count; i++ {
+		_, err = s.ModifyColumnFamilies(ctx, mcf(i))
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	// Populate the table
+	for fc := 0; fc < count; fc++ {
+		for cc := count; cc > 0; cc-- {
+			for tc := 0; tc < count; tc++ {
+				req := &btpb.MutateRowRequest{
+					TableName: tblInfo.Name,
+					RowKey:    []byte("row"),
+					Mutations: []*btpb.Mutation{{
+						Mutation: &btpb.Mutation_SetCell_{&btpb.Mutation_SetCell{
+							FamilyName:      "cf" + strconv.Itoa(fc),
+							ColumnQualifier: []byte("col" + strconv.Itoa(cc)),
+							TimestampMicros: int64((tc + 1) * 1000),
+							Value:           []byte{},
+						}},
+					}},
+				}
+				if _, err := s.MutateRow(ctx, req); err != nil {
+					t.Fatalf("Populating table: %v", err)
+				}
+			}
+		}
+	}
+	req := &btpb.ReadRowsRequest{
+		TableName: tblInfo.Name,
+		Rows:      &btpb.RowSet{RowKeys: [][]byte{[]byte("row")}},
+	}
+	mock := &MockReadRowsServer{}
+	if err = s.ReadRows(req, mock); err != nil {
+		t.Errorf("ReadRows error: %v", err)
+	}
+	if len(mock.responses) == 0 {
+		t.Fatal("Response count: got 0, want > 0")
+	}
+	if len(mock.responses[0].Chunks) != 27 {
+		t.Fatal("Chunk count: got %d, want 27", len(mock.responses[0].Chunks))
+	}
+	testOrder := func(ms *MockReadRowsServer) {
+		var prevFam, prevCol string
+		var prevTime int64
+		for _, cc := range ms.responses[0].Chunks {
+			if prevFam == "" {
+				prevFam = cc.FamilyName.Value
+				prevCol = string(cc.Qualifier.Value)
+				prevTime = cc.TimestampMicros
+				continue
+			}
+			if cc.FamilyName.Value < prevFam {
+				t.Errorf("Family order is not correct: got %s < %s", cc.FamilyName.Value, prevFam)
+			} else if cc.FamilyName.Value == prevFam {
+				if string(cc.Qualifier.Value) < prevCol {
+					t.Errorf("Column order is not correct: got %s < %s", string(cc.Qualifier.Value), prevCol)
+				} else if string(cc.Qualifier.Value) == prevCol {
+					if cc.TimestampMicros > prevTime {
+						t.Errorf("cell order is not correct: got %d > %d", cc.TimestampMicros, prevTime)
+					}
+				}
+			}
+			prevFam = cc.FamilyName.Value
+			prevCol = string(cc.Qualifier.Value)
+			prevTime = cc.TimestampMicros
+		}
+	}
+	testOrder(mock)
+
+	// Read with interleave filter
+	inter := &btpb.RowFilter_Interleave{}
+	fnr := &btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{"1"}}
+	cqr := &btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{[]byte("2")}}
+	inter.Filters = append(inter.Filters, fnr, cqr)
+	req = &btpb.ReadRowsRequest{
+		TableName: tblInfo.Name,
+		Rows:      &btpb.RowSet{RowKeys: [][]byte{[]byte("row")}},
+		Filter: &btpb.RowFilter{
+			Filter: &btpb.RowFilter_Interleave_{inter},
+		},
+	}
+	mock = &MockReadRowsServer{}
+	if err = s.ReadRows(req, mock); err != nil {
+		t.Errorf("ReadRows error: %v", err)
+	}
+	if len(mock.responses) == 0 {
+		t.Fatal("Response count: got 0, want > 0")
+	}
+	if len(mock.responses[0].Chunks) != 18 {
+		t.Fatal("Chunk count: got %d, want 18", len(mock.responses[0].Chunks))
+	}
+	testOrder(mock)
+
+	// Check order after ReadModifyWriteRow
+	rmw := func(i int) *btpb.ReadModifyWriteRowRequest {
+		return &btpb.ReadModifyWriteRowRequest{
+			TableName: tblInfo.Name,
+			RowKey:    []byte("row"),
+			Rules: []*btpb.ReadModifyWriteRule{{
+				FamilyName:      "cf3",
+				ColumnQualifier: []byte("col" + strconv.Itoa(i)),
+				Rule:            &btpb.ReadModifyWriteRule_IncrementAmount{1},
+			}},
+		}
+	}
+	for i := count; i > 0; i-- {
+		s.ReadModifyWriteRow(ctx, rmw(i))
+	}
+	req = &btpb.ReadRowsRequest{
+		TableName: tblInfo.Name,
+		Rows:      &btpb.RowSet{RowKeys: [][]byte{[]byte("row")}},
+	}
+	mock = &MockReadRowsServer{}
+	if err = s.ReadRows(req, mock); err != nil {
+		t.Errorf("ReadRows error: %v", err)
+	}
+	if len(mock.responses) == 0 {
+		t.Fatal("Response count: got 0, want > 0")
+	}
+	if len(mock.responses[0].Chunks) != 30 {
+		t.Fatal("Chunk count: got %d, want 30", len(mock.responses[0].Chunks))
+	}
+	testOrder(mock)
 }
