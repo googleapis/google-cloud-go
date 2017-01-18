@@ -49,6 +49,7 @@ import (
 	statpb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"bytes"
 )
 
 // Server is an in-memory Cloud Bigtable fake.
@@ -418,6 +419,17 @@ func filterRow(f *btpb.RowFilter, r *row) bool {
 			}
 		}
 		return true
+	case *btpb.RowFilter_Condition_:
+		if filterRow(f.Condition.PredicateFilter, r.copy()) {
+			if f.Condition.TrueFilter == nil {
+				return false
+			}
+			return filterRow(f.Condition.TrueFilter, r)
+		}
+		if f.Condition.FalseFilter == nil {
+			return false
+		}
+		return filterRow(f.Condition.FalseFilter, r)
 	case *btpb.RowFilter_RowKeyRegexFilter:
 		pat := string(f.RowKeyRegexFilter)
 		rx, err := regexp.Compile(pat)
@@ -532,6 +544,25 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) bool {
 		// Lower bound is inclusive and defaults to 0, upper bound is exclusive and defaults to infinity.
 		return cell.ts >= f.TimestampRangeFilter.StartTimestampMicros &&
 			(f.TimestampRangeFilter.EndTimestampMicros == 0 || cell.ts < f.TimestampRangeFilter.EndTimestampMicros)
+	case *btpb.RowFilter_ValueRangeFilter:
+		v := cell.value
+		// Start value defaults to empty string closed
+		inRangeStart := func() bool { return bytes.Compare(v, []byte{}) >= 0}
+		switch sv := f.ValueRangeFilter.StartValue.(type) {
+		case *btpb.ValueRange_StartValueOpen:
+			inRangeStart = func() bool { return bytes.Compare(v, sv.StartValueOpen) > 0 }
+		case *btpb.ValueRange_StartValueClosed:
+			inRangeStart = func() bool { return bytes.Compare(v, sv.StartValueClosed) >= 0 }
+		}
+		// End value defaults to no upper boundary
+		inRangeEnd := func() bool { return true }
+		switch ev := f.ValueRangeFilter.EndValue.(type) {
+		case *btpb.ValueRange_EndValueClosed:
+			inRangeEnd = func() bool { return bytes.Compare(v, ev.EndValueClosed) <= 0 }
+		case *btpb.ValueRange_EndValueOpen:
+			inRangeEnd = func() bool { return bytes.Compare(v, ev.EndValueOpen) < 0 }
+		}
+		return inRangeStart() && inRangeEnd()
 	}
 }
 

@@ -168,9 +168,6 @@ func NewProdEnv(config IntegrationTestConfig) (*ProdEnv, error) {
 	if config.Table == "" {
 		return nil, errors.New("Table not set")
 	}
-	if config.Cluster == "" {
-		return nil, errors.New("Cluster not set")
-	}
 
 	return &ProdEnv{config}, nil
 }

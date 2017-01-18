@@ -263,6 +263,37 @@ func TestClientIntegration(t *testing.T) {
 			limit:  LimitRows(2),
 			want:   "gwashington-jadams-,jadams-tjefferson-",
 		},
+		{
+			desc:   "read with condition, strip values on true",
+			rr:     RowRange{},
+			filter: ConditionFilter(ColumnFilter(".*j.*"), StripValueFilter(), nil),
+			want:   "gwashington-jadams-,jadams-gwashington-,jadams-tjefferson-,tjefferson-gwashington-,tjefferson-jadams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
+		},
+		{
+			desc:   "read with condition, strip values on false",
+			rr:     RowRange{},
+			filter: ConditionFilter(ColumnFilter(".*xxx.*"), nil, StripValueFilter()),
+			want:   "gwashington-jadams-,jadams-gwashington-,jadams-tjefferson-,tjefferson-gwashington-,tjefferson-jadams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
+		},
+		{
+			desc:   "read with ValueRangeFilter + row limit",
+			rr:     RowRange{},
+			filter: ValueRangeFilter([]byte("1"), []byte("5")), // matches our value of "1"
+			limit:  LimitRows(2),
+			want:   "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1",
+		},
+		{
+			desc:   "read with ValueRangeFilter, no match on exclusive end",
+			rr:     RowRange{},
+			filter: ValueRangeFilter([]byte("0"), []byte("1")), // no match
+			want:   "",
+		},
+		{
+			desc:   "read with ValueRangeFilter, no matches",
+			rr:     RowRange{},
+			filter: ValueRangeFilter([]byte("3"), []byte("5")), // matches nothing
+			want:   "",
+		},
 	}
 	for _, tc := range readTests {
 		var opts []ReadOption
