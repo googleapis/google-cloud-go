@@ -214,4 +214,68 @@ func (crf columnRangeFilter) proto() *btpb.RowFilter {
 	return &btpb.RowFilter{&btpb.RowFilter_ColumnRangeFilter{r}}
 }
 
-// TODO(dsymonds): More filters: cond, value range, sampling
+// ValueRangeFilter returns a filter that matches cells with values that fall within
+// the given range, as specified by an inclusive start value and exclusive end value.
+func ValueRangeFilter(start, end []byte) Filter {
+	return valueRangeFilter{start, end}
+}
+
+type valueRangeFilter struct {
+	start  []byte
+	end    []byte
+}
+
+func (vrf valueRangeFilter) String() string {
+	return fmt.Sprintf("valueRangeFilter(%s,%s)", vrf.start, vrf.end)
+}
+
+func (vrf valueRangeFilter) proto() *btpb.RowFilter {
+	r := &btpb.ValueRange{}
+	if vrf.start != nil {
+		r.StartValue = &btpb.ValueRange_StartValueClosed{vrf.start}
+	}
+	if vrf.end != nil {
+		r.EndValue = &btpb.ValueRange_EndValueOpen{vrf.end}
+	}
+	return &btpb.RowFilter{&btpb.RowFilter_ValueRangeFilter{r}}
+}
+
+// ConditionFilter returns a filter that evaluates to one of two possible filters depending
+// on whether or not the given predicate filter matches at least one cell.
+// If the matched filter is nil then no results will be returned.
+// IMPORTANT NOTE: The predicate filter does not execute atomically with the
+// true and false filters, which may lead to inconsistent or unexpected
+// results. Additionally, condition filters have poor performance, especially
+// when filters are set for the false condition.
+func ConditionFilter(predicateFilter, trueFilter, falseFilter Filter) Filter {
+	return conditionFilter{predicateFilter, trueFilter, falseFilter}
+}
+
+type conditionFilter struct {
+	predicateFilter Filter
+	trueFilter			Filter
+	falseFilter			Filter
+}
+
+func (cf conditionFilter) String() string {
+	return fmt.Sprintf("conditionFilter(%s,%s,%s)", cf.predicateFilter, cf.trueFilter, cf.falseFilter)
+}
+
+func (cf conditionFilter) proto() *btpb.RowFilter {
+	var tf *btpb.RowFilter
+	var ff *btpb.RowFilter
+	if cf.trueFilter != nil {
+		tf = cf.trueFilter.proto()
+	}
+	if cf.falseFilter != nil {
+		ff = cf.falseFilter.proto()
+	}
+	return &btpb.RowFilter{
+		&btpb.RowFilter_Condition_{&btpb.RowFilter_Condition{
+			cf.predicateFilter.proto(),
+			tf,
+			ff,
+	}}}
+}
+
+// TODO(dsymonds): More filters: sampling
