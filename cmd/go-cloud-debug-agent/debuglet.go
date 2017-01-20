@@ -33,6 +33,9 @@ import (
 	"cloud.google.com/go/compute/metadata"
 	"golang.org/x/debug"
 	"golang.org/x/debug/local"
+	"golang.org/x/net/context"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 	cd "google.golang.org/api/clouddebugger/v2"
 )
 
@@ -80,14 +83,23 @@ func main() {
 	if err != nil {
 		log.Print("Reading source context file: ", err)
 	}
+	var ts oauth2.TokenSource
+	if *serviceAccountFile != "" {
+		if ts, err = serviceAcctTokenSource(context.Background(), *serviceAccountFile, cd.CloudDebuggerScope); err != nil {
+			log.Fatalf("Error getting credentials from file %s: %v", *serviceAccountFile, err)
+		}
+	} else if ts, err = google.DefaultTokenSource(context.Background(), cd.CloudDebuggerScope); err != nil {
+		log.Print("Error getting application default credentials for Cloud Debugger:", err)
+		os.Exit(103)
+	}
 	c, err := debuglet.NewController(debuglet.Options{
-		ProjectNumber:      *projectNumber,
-		ProjectID:          *projectID,
-		AppModule:          *appModule,
-		AppVersion:         *appVersion,
-		SourceContexts:     sourceContexts,
-		Verbose:            *verbose,
-		ServiceAccountFile: *serviceAccountFile,
+		ProjectNumber:  *projectNumber,
+		ProjectID:      *projectID,
+		AppModule:      *appModule,
+		AppVersion:     *appVersion,
+		SourceContexts: sourceContexts,
+		Verbose:        *verbose,
+		TokenSource:    ts,
 	})
 	if err != nil {
 		log.Fatal("Error connecting to Cloud Debugger: ", err)
@@ -422,4 +434,16 @@ var refersToString = map[int]string{
 	refersToUnspecified:          "UNSPECIFIED",
 	refersToBreakpointCondition:  "BREAKPOINT_CONDITION",
 	refersToBreakpointExpression: "BREAKPOINT_EXPRESSION",
+}
+
+func serviceAcctTokenSource(ctx context.Context, filename string, scope ...string) (oauth2.TokenSource, error) {
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, fmt.Errorf("cannot read service account file: %v", err)
+	}
+	cfg, err := google.JWTConfigFromJSON(data, scope...)
+	if err != nil {
+		return nil, fmt.Errorf("google.JWTConfigFromJSON: %v", err)
+	}
+	return cfg.TokenSource(ctx), nil
 }
