@@ -17,6 +17,8 @@ package controller
 import (
 	"testing"
 
+	"golang.org/x/oauth2"
+
 	cd "google.golang.org/api/clouddebugger/v2"
 	"google.golang.org/api/googleapi"
 )
@@ -154,7 +156,7 @@ func TestDebugletControllerClientLibrary(t *testing.T) {
 		err  error
 	)
 	m = &mockService{t: t}
-	newService = func(_ string) (serviceInterface, error) { return m, nil }
+	newService = func(_ oauth2.TokenSource) (serviceInterface, error) { return m, nil }
 	opts := Options{
 		ProjectNumber: "5",
 		ProjectID:     "p1",

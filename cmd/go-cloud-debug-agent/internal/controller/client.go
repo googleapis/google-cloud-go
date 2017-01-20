@@ -24,6 +24,7 @@ import (
 	"sync"
 
 	"golang.org/x/net/context"
+	"golang.org/x/oauth2"
 	cd "google.golang.org/api/clouddebugger/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
@@ -71,13 +72,13 @@ type Controller struct {
 // https://cloud.google.com/tools/cloud-debugger/setting-up-on-compute-engine
 // for further documentation of these parameters.
 type Options struct {
-	ProjectNumber      string              // GCP Project Number.
-	ProjectID          string              // GCP Project ID.
-	AppModule          string              // Module name for the debugged program.
-	AppVersion         string              // Version number for this module.
-	SourceContexts     []*cd.SourceContext // Description of source.
-	Verbose            bool
-	ServiceAccountFile string // File containing service account credentials.
+	ProjectNumber  string              // GCP Project Number.
+	ProjectID      string              // GCP Project ID.
+	AppModule      string              // Module name for the debugged program.
+	AppVersion     string              // Version number for this module.
+	SourceContexts []*cd.SourceContext // Description of source.
+	Verbose        bool
+	TokenSource    oauth2.TokenSource // Source of Credentials used for Stackdriver Debugger.
 }
 
 type serviceInterface interface {
@@ -86,12 +87,9 @@ type serviceInterface interface {
 	List(debuggeeID, waitToken string) (*cd.ListActiveBreakpointsResponse, error)
 }
 
-var newService = func(serviceAccountFile string) (serviceInterface, error) {
-	opts := []option.ClientOption{option.WithScopes(cd.CloudDebuggerScope)}
-	if serviceAccountFile != "" {
-		opts = append(opts, option.WithServiceAccountFile(serviceAccountFile))
-	}
-	httpClient, endpoint, err := transport.NewHTTPClient(context.Background(), opts...)
+var newService = func(tokenSource oauth2.TokenSource) (serviceInterface, error) {
+	httpClient, endpoint, err := transport.NewHTTPClient(context.Background(),
+		[]option.ClientOption{option.WithTokenSource(tokenSource)}...)
 	if err != nil {
 		return nil, err
 	}
@@ -154,7 +152,7 @@ func NewController(o Options) (*Controller, error) {
 		description += "-" + o.AppVersion
 	}
 
-	s, err := newService(o.ServiceAccountFile)
+	s, err := newService(o.TokenSource)
 	if err != nil {
 		return nil, err
 	}
