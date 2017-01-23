@@ -226,6 +226,7 @@ func (s *server) DropRowRange(ctx context.Context, req *btapb.DropRowRangeReques
 
 	if req.GetDeleteAllDataFromTable() {
 		tbl.rows = nil
+		tbl.rowIndex = make(map[string]*row)
 	} else {
 		// Delete rows by prefix
 		prefixBytes := req.GetRowKeyPrefix()
@@ -238,6 +239,10 @@ func (s *server) DropRowRange(ctx context.Context, req *btapb.DropRowRangeReques
 		end := 0
 		for i, row := range tbl.rows {
 			match := strings.HasPrefix(row.key, prefix)
+			if match {
+				// Delete the mapping. Row will be deleted from sorted range below.
+				delete(tbl.rowIndex, row.key)
+			}
 			if match && start == -1 {
 				start = i
 			} else if !match && start != -1 {
