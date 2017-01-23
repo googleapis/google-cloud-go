@@ -156,6 +156,7 @@ func (stripValueFilter) proto() *btpb.RowFilter {
 
 // TimestampRangeFilter returns a filter that matches any rows whose timestamp is within the given time bounds.  A zero
 // time means no bound.
+// The timestamp will be truncated to millisecond granularity.
 func TimestampRangeFilter(startTime time.Time, endTime time.Time) Filter {
 	trf := timestampRangeFilter{}
 	if !startTime.IsZero() {
@@ -169,6 +170,7 @@ func TimestampRangeFilter(startTime time.Time, endTime time.Time) Filter {
 
 // TimestampRangeFilterMicros returns a filter that matches any rows whose timestamp is within the given time bounds,
 // specified in units of microseconds since 1 January 1970. A zero value for the end time is interpreted as no bound.
+// The timestamp will be truncated to millisecond granularity.
 func TimestampRangeFilterMicros(startTime Timestamp, endTime Timestamp) Filter {
 	return timestampRangeFilter{startTime, endTime}
 }
@@ -184,7 +186,12 @@ func (trf timestampRangeFilter) String() string {
 
 func (trf timestampRangeFilter) proto() *btpb.RowFilter {
 	return &btpb.RowFilter{
-		Filter: &btpb.RowFilter_TimestampRangeFilter{&btpb.TimestampRange{int64(trf.startTime), int64(trf.endTime)}}}
+		Filter: &btpb.RowFilter_TimestampRangeFilter{
+				&btpb.TimestampRange{
+					int64(trf.startTime.TruncateToMilliseconds()),
+					int64(trf.endTime.TruncateToMilliseconds()),
+				},
+		}}
 }
 
 // ColumnRangeFilter returns a filter that matches a contiguous range of columns within a single
