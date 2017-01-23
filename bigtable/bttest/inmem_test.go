@@ -248,27 +248,29 @@ func TestDropRowRange(t *testing.T) {
 	// Populate the table
 	prefixes := []string{"AAA", "BBB", "CCC", "DDD"}
 	count := 3
-
-	for _, prefix := range prefixes {
-		for i := 0; i < count; i++ {
-			req := &btpb.MutateRowRequest{
-				TableName: tblInfo.Name,
-				RowKey:    []byte(prefix + strconv.Itoa(i)),
-				Mutations: []*btpb.Mutation{{
-					Mutation: &btpb.Mutation_SetCell_{&btpb.Mutation_SetCell{
-						FamilyName:      "cf",
-						ColumnQualifier: []byte("col"),
-						TimestampMicros: 0,
-						Value:           []byte{},
+	doWrite := func() {
+		for _, prefix := range prefixes {
+			for i := 0; i < count; i++ {
+				req := &btpb.MutateRowRequest{
+					TableName: tblInfo.Name,
+					RowKey:    []byte(prefix + strconv.Itoa(i)),
+					Mutations: []*btpb.Mutation{{
+						Mutation: &btpb.Mutation_SetCell_{&btpb.Mutation_SetCell{
+							FamilyName:      "cf",
+							ColumnQualifier: []byte("col"),
+							TimestampMicros: 0,
+							Value:           []byte{},
+						}},
 					}},
-				}},
-			}
-			if _, err := s.MutateRow(ctx, req); err != nil {
-				t.Fatalf("Populating table: %v", err)
+				}
+				if _, err := s.MutateRow(ctx, req); err != nil {
+					t.Fatalf("Populating table: %v", err)
+				}
 			}
 		}
 	}
 
+	doWrite()
 	tblSize := len(tbl.rows)
 	req := &btapb.DropRowRangeRequest{
 		Name:tblInfo.Name,
@@ -316,5 +318,40 @@ func TestDropRowRange(t *testing.T) {
 	got, want = len(tbl.rows), 0
 	if got != want  {
 		t.Errorf("Row count after drop all: got %d, want %d", got, want)
+	}
+
+	// Test that we can write rows, delete some and then write them again.
+	count = 1
+	doWrite()
+
+	req = &btapb.DropRowRangeRequest{
+		Name:tblInfo.Name,
+		Target: &btapb.DropRowRangeRequest_DeleteAllDataFromTable{true},
+	}
+	if _, err = s.DropRowRange(ctx, req); err != nil {
+		t.Fatalf("Dropping all data: %v", err)
+	}
+	got, want = len(tbl.rows), 0
+	if got != want  {
+		t.Errorf("Row count after drop all: got %d, want %d", got, want)
+	}
+
+	doWrite()
+	got, want = len(tbl.rows), len(prefixes)
+	if got != want  {
+		t.Errorf("Row count after rewrite: got %d, want %d", got, want)
+	}
+
+	req = &btapb.DropRowRangeRequest{
+		Name:tblInfo.Name,
+		Target: &btapb.DropRowRangeRequest_RowKeyPrefix{[]byte("BBB")},
+	}
+	if _, err = s.DropRowRange(ctx, req); err != nil {
+		t.Fatalf("Dropping range: %v", err)
+	}
+	doWrite()
+	got, want = len(tbl.rows), len(prefixes)
+	if got != want  {
+		t.Errorf("Row count after drop range: got %d, want %d", got, want)
 	}
 }
