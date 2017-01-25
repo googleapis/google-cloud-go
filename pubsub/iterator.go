@@ -39,7 +39,12 @@ type MessageIterator struct {
 	mu sync.Mutex
 
 	// closed is used to signal that Stop has been called.
-	closed chan struct{}
+	iterCtx      context.Context
+	iterCancel   context.CancelFunc
+	pullerCtx    context.Context
+	pullerCancel context.CancelFunc
+	kaCtx        context.Context
+	kaCancel     context.CancelFunc
 }
 
 // newMessageIterator starts a new MessageIterator.  Stop must be called on the MessageIterator
@@ -57,9 +62,12 @@ func newMessageIterator(ctx context.Context, s service, subName string, po *pull
 	// messages when they could be acked instead).
 	ackTicker := time.NewTicker(keepAlivePeriod / 2) // Stopped in it.Stop
 
+	iterCtx, iterCancel := context.WithCancel(ctx)
+
+	kaCtx, kaCancel := context.WithCancel(ctx)
 	ka := &keepAlive{
 		s:             s,
-		Ctx:           ctx,
+		Ctx:           kaCtx,
 		Sub:           subName,
 		ExtensionTick: kaTicker.C,
 		Deadline:      po.ackDeadline,
@@ -86,18 +94,24 @@ func newMessageIterator(ctx context.Context, s service, subName string, po *pull
 	nacker.DelayThreshold = keepAlivePeriod / 10 // nack promptly
 	nacker.BundleCountThreshold = 10
 
-	pull := newPuller(s, subName, ctx, po.maxPrefetch, ka.Add, ka.Remove)
+	pullerCtx, pullerCancel := context.WithCancel(ctx)
+	pull := newPuller(s, subName, pullerCtx, po.maxPrefetch, ka.Add, ka.Remove)
 
 	ka.Start()
 	ack.Start()
 	return &MessageIterator{
-		kaTicker:  kaTicker,
-		ackTicker: ackTicker,
-		ka:        ka,
-		acker:     ack,
+		kaTicker:     kaTicker,
+		ackTicker:    ackTicker,
+		ka:           ka,
+		acker:        ack,
 		nacker:    nacker,
-		puller:    pull,
-		closed:    make(chan struct{}),
+		puller:       pull,
+		pullerCtx:    pullerCtx,
+		pullerCancel: pullerCancel,
+		kaCtx:        kaCtx,
+		kaCancel:     kaCancel,
+		iterCtx:      iterCtx,
+		iterCancel:   iterCancel,
 	}
 }
 
@@ -106,19 +120,18 @@ func newMessageIterator(ctx context.Context, s service, subName string, po *pull
 // Once Stop has been called, calls to Next will return iterator.Done.
 func (it *MessageIterator) Next() (*Message, error) {
 	m, err := it.puller.Next()
-
+	select {
+	case <-it.iterCtx.Done():
+		//if context is done then return iterator.Done regaradless of the error
+		return nil, iterator.Done
+	default:
+	}
 	if err == nil {
 		m.it = it
 		return m, nil
 	}
 
-	select {
-	// If Stop has been called, we return Done regardless the value of err.
-	case <-it.closed:
-		return nil, iterator.Done
-	default:
-		return nil, err
-	}
+	return nil, err
 }
 
 // Client code must call Stop on a MessageIterator when finished with it.
@@ -132,7 +145,7 @@ func (it *MessageIterator) Stop() {
 	defer it.mu.Unlock()
 
 	select {
-	case <-it.closed:
+	case <-it.iterCtx.Done():
 		// Cleanup has already been performed.
 		return
 	default:
@@ -140,7 +153,7 @@ func (it *MessageIterator) Stop() {
 
 	// We close this channel before calling it.puller.Stop to ensure that we
 	// reliably return iterator.Done from Next.
-	close(it.closed)
+	it.pullerCancel()
 
 	// Stop the puller. Once this completes, no more messages will be added
 	// to it.ka.
@@ -154,6 +167,7 @@ func (it *MessageIterator) Stop() {
 	//   (a) it.ka.Ctx is done, or
 	//   (b) all messages have been removed from keepAlive.
 	// (b) will happen once all outstanding messages have been either ACKed or NACKed.
+	it.kaCancel()
 	it.ka.Stop()
 
 	// There are no more live messages, so kill off the acker.

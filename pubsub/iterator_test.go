@@ -16,6 +16,7 @@ package pubsub
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 	"testing"
 	"time"
@@ -24,6 +25,86 @@ import (
 
 	"google.golang.org/api/iterator"
 )
+
+var project = "lol-project"
+
+/*
+This test hangs with the following output:
+  go test --run TestExampleMessageIteratorDeadlockOnInflightMessages
+  message 0: msgid:1
+  calling it.Stop()
+  iterator is done.
+
+*/
+func TestDeadlockOnInflightMessages(t *testing.T) {
+	ctx := context.Background()
+	if pp := os.Getenv("PUBSUB_PROJECT"); pp != "" {
+		t.Logf("PUBSUB_PROJECT env var is set to \"%v\" using it as our project id.", pp)
+		project = pp
+	}
+
+	client, err := NewClient(ctx, project)
+	if err != nil {
+		t.Fatalf("error creating client.  %v", err)
+	}
+
+	topic := client.Topic("testtopicdelme")
+	ok, err := topic.Exists(ctx)
+	if err != nil {
+		t.Fatalf("error checking if topic exists.  %v", err)
+	}
+	if !ok {
+		top, err := client.CreateTopic(ctx, "testtopicdelme")
+		if err != nil {
+			t.Fatalf("error creating topic.  %v", err)
+		}
+		topic = top
+	}
+
+	subscription := client.Subscription("testsubdelme")
+	ok, err = subscription.Exists(ctx)
+	if err != nil {
+		t.Fatalf("error checking if sub exists.  %v", err)
+	}
+	if !ok {
+		sub, err := client.CreateSubscription(ctx, "test_subdelme", topic, 4*time.Second, nil)
+		if err != nil {
+			t.Fatalf("error creating subscription.  %v", err)
+		}
+		subscription = sub
+	}
+
+	it, err := subscription.Pull(ctx)
+	if err != nil {
+		t.Fatalf("error creating subscription puller.  %v", err)
+	}
+
+	topic.Publish(ctx, &Message{Data: []byte(fmt.Sprintf("msgid:%v", 1))})
+
+	go func() {
+		for i := 0; i < 10; i++ {
+			m, err := it.Next()
+			if err == iterator.Done {
+				fmt.Printf("iterator is done.\n")
+				break
+			}
+			if err != nil {
+				t.Fatalf("error from iterator.  %v", err)
+				break
+			}
+			fmt.Printf("message %d: %s\n", i, m.Data)
+
+			//m.Done(true) //NOT acking the message causes it.Stop() to hang
+		}
+	}()
+	time.Sleep(5 * time.Second)
+
+	fmt.Printf("calling it.Stop()\n")
+	it.Stop()
+
+	time.Sleep(5 * time.Second)
+	fmt.Printf("we made it past it.Stop()\n")
+}
 
 func TestReturnsDoneOnStop(t *testing.T) {
 	type testCase struct {
