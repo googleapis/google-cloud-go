@@ -16,7 +16,9 @@ package pubsub
 
 import (
 	"fmt"
+	"io"
 	"math"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/iam"
@@ -63,6 +65,8 @@ type service interface {
 	acknowledge(ctx context.Context, subName string, ackIDs []string) error
 
 	iamHandle(resourceName string) *iam.Handle
+
+	newStreamingPuller(ctx context.Context, subName string, ackDeadline int32) *streamingPuller
 
 	close() error
 }
@@ -221,13 +225,13 @@ func (s *apiService) modifyAckDeadline(ctx context.Context, subName string, dead
 // it 512K.
 const (
 	maxPayload       = 512 * 1024
-	ackFixedOverhead = 100
+	reqFixedOverhead = 100
 	overheadPerID    = 3
 )
 
 // splitAckIDs splits ids into two slices, the first of which contains at most maxPayload bytes of ackID data.
 func (s *apiService) splitAckIDs(ids []string) ([]string, []string) {
-	total := ackFixedOverhead
+	total := reqFixedOverhead
 	for i, id := range ids {
 		total += len(id) + overheadPerID
 		if total > maxPayload {
@@ -252,8 +256,12 @@ func (s *apiService) fetchMessages(ctx context.Context, subName string, maxMessa
 	if err != nil {
 		return nil, err
 	}
-	msgs := make([]*Message, 0, len(resp.ReceivedMessages))
-	for i, m := range resp.ReceivedMessages {
+	return convertMessages(resp.ReceivedMessages)
+}
+
+func convertMessages(rms []*pb.ReceivedMessage) ([]*Message, error) {
+	msgs := make([]*Message, 0, len(rms))
+	for i, m := range rms {
 		msg, err := toMessage(m)
 		if err != nil {
 			return nil, fmt.Errorf("pubsub: cannot decode the retrieved message at index: %d, message: %+v", i, m)
@@ -300,4 +308,178 @@ func trunc32(i int64) int32 {
 		i = math.MaxInt32
 	}
 	return int32(i)
+}
+
+func (s *apiService) newStreamingPuller(ctx context.Context, subName string, ackDeadlineSecs int32) *streamingPuller {
+	p := &streamingPuller{
+		ctx:             ctx,
+		subName:         subName,
+		ackDeadlineSecs: ackDeadlineSecs,
+		subc:            s.subc,
+	}
+	p.c = sync.NewCond(&p.mu)
+	return p
+}
+
+type streamingPuller struct {
+	ctx             context.Context
+	subName         string
+	ackDeadlineSecs int32
+	subc            *vkit.SubscriberClient
+
+	mu       sync.Mutex
+	c        *sync.Cond
+	inFlight bool
+	closed   bool // set after CloseSend called
+	spc      pb.Subscriber_StreamingPullClient
+	err      error
+}
+
+// open establishes (or re-establishes) a stream for pulling messages.
+// It takes care that only one RPC is in flight at a time.
+func (p *streamingPuller) open() error {
+	p.c.L.Lock()
+	defer p.c.L.Unlock()
+	p.openLocked()
+	return p.err
+}
+
+func (p *streamingPuller) openLocked() {
+	if p.inFlight {
+		// Another goroutine is opening; wait for it.
+		for p.inFlight {
+			p.c.Wait()
+		}
+		return
+	}
+	// No opens in flight; start one.
+	p.inFlight = true
+	p.c.L.Unlock()
+	spc, err := p.subc.StreamingPull(p.ctx)
+	if err == nil {
+		err = spc.Send(&pb.StreamingPullRequest{
+			Subscription:             p.subName,
+			StreamAckDeadlineSeconds: p.ackDeadlineSecs,
+		})
+	}
+	p.c.L.Lock()
+	p.spc = spc
+	p.err = err
+	p.inFlight = false
+	p.c.Broadcast()
+}
+
+func (p *streamingPuller) call(f func(pb.Subscriber_StreamingPullClient) error) error {
+	p.c.L.Lock()
+	defer p.c.L.Unlock()
+	// Wait for an open in flight.
+	for p.inFlight {
+		p.c.Wait()
+	}
+	// TODO(jba): better retry strategy.
+	var err error
+	for i := 0; i < 3; i++ {
+		if p.err != nil {
+			return p.err
+		}
+		spc := p.spc
+		// Do not call f with the lock held. Only one goroutine calls Send
+		// (streamingMessageIterator.sender) and only one calls Recv
+		// (streamingMessageIterator.receiver). If we locked, then a
+		// blocked Recv would prevent a Send from happening.
+		p.c.L.Unlock()
+		err = f(spc)
+		p.c.L.Lock()
+		if !p.closed && (err == io.EOF || grpc.Code(err) == codes.Unavailable) {
+			time.Sleep(500 * time.Millisecond)
+			p.openLocked()
+			continue
+		}
+		// Not a retry-able error; fail permanently.
+		// TODO(jba): for some errors, should we retry f (the Send or Recv)
+		// but not re-open the stream?
+		p.err = err
+		return err
+	}
+	p.err = fmt.Errorf("retry exceeded; last error was %v", err)
+	return p.err
+}
+
+func (p *streamingPuller) fetchMessages() ([]*Message, error) {
+	var res *pb.StreamingPullResponse
+	err := p.call(func(spc pb.Subscriber_StreamingPullClient) error {
+		var err error
+		res, err = spc.Recv()
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
+	return convertMessages(res.ReceivedMessages)
+}
+
+func (p *streamingPuller) send(req *pb.StreamingPullRequest) error {
+	// Note: len(modAckIDs) == len(modSecs)
+	var rest *pb.StreamingPullRequest
+	for len(req.AckIds) > 0 || len(req.ModifyDeadlineAckIds) > 0 {
+		req, rest = splitRequest(req, maxPayload)
+		err := p.call(func(spc pb.Subscriber_StreamingPullClient) error {
+			x := spc.Send(req)
+			return x
+		})
+		if err != nil {
+			return err
+		}
+		req = rest
+	}
+	return nil
+}
+
+func (p *streamingPuller) closeSend() {
+	p.mu.Lock()
+	p.closed = true
+	p.mu.Unlock()
+	p.spc.CloseSend()
+}
+
+// Split req into a prefix that is smaller than maxSize, and a remainder.
+func splitRequest(req *pb.StreamingPullRequest, maxSize int) (prefix, remainder *pb.StreamingPullRequest) {
+	const int32Bytes = 4
+
+	// Copy all fields before splitting the variable-sized ones.
+	remainder = &pb.StreamingPullRequest{}
+	*remainder = *req
+	// Split message so it isn't too big.
+	size := reqFixedOverhead
+	i := 0
+	for size < maxSize && (i < len(req.AckIds) || i < len(req.ModifyDeadlineAckIds)) {
+		if i < len(req.AckIds) {
+			size += overheadPerID + len(req.AckIds[i])
+		}
+		if i < len(req.ModifyDeadlineAckIds) {
+			size += overheadPerID + len(req.ModifyDeadlineAckIds[i]) + int32Bytes
+		}
+		i++
+	}
+
+	min := func(a, b int) int {
+		if a < b {
+			return a
+		}
+		return b
+	}
+
+	j := i
+	if size > maxSize {
+		j--
+	}
+	k := min(j, len(req.AckIds))
+	remainder.AckIds = req.AckIds[k:]
+	req.AckIds = req.AckIds[:k]
+	k = min(j, len(req.ModifyDeadlineAckIds))
+	remainder.ModifyDeadlineAckIds = req.ModifyDeadlineAckIds[k:]
+	remainder.ModifyDeadlineSeconds = req.ModifyDeadlineSeconds[k:]
+	req.ModifyDeadlineAckIds = req.ModifyDeadlineAckIds[:k]
+	req.ModifyDeadlineSeconds = req.ModifyDeadlineSeconds[:k]
+	return req, remainder
 }

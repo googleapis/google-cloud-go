@@ -107,9 +107,12 @@ func (ka *keepAlive) Stop() {
 func (ka *keepAlive) getAckIDs() (live, expired []string) {
 	ka.mu.Lock()
 	defer ka.mu.Unlock()
+	return getKeepAliveAckIDs(ka.items)
+}
 
+func getKeepAliveAckIDs(items map[string]time.Time) (live, expired []string) {
 	now := time.Now()
-	for id, expiry := range ka.items {
+	for id, expiry := range items {
 		if expiry.Before(now) {
 			expired = append(expired, id)
 		} else {

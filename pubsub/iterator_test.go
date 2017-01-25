@@ -82,6 +82,10 @@ func (s *blockingFetch) fetchMessages(ctx context.Context, subName string, maxMe
 	return nil, ctx.Err()
 }
 
+func (s *blockingFetch) newStreamingPuller(ctx context.Context, subName string, ackDeadline int32) *streamingPuller {
+	return nil
+}
+
 // justInTimeFetch simulates the situation where the iterator is aborted just after the fetch RPC
 // succeeds, so the rest of puller.Next will continue to execute and return sucessfully.
 type justInTimeFetch struct {
@@ -105,6 +109,10 @@ func (s *justInTimeFetch) splitAckIDs(ids []string) ([]string, []string) {
 }
 
 func (s *justInTimeFetch) modifyAckDeadline(ctx context.Context, subName string, deadline time.Duration, ackIDs []string) error {
+	return nil
+}
+
+func (s *justInTimeFetch) newStreamingPuller(ctx context.Context, subName string, ackDeadline int32) *streamingPuller {
 	return nil
 }
 
@@ -222,6 +230,10 @@ func (f *fetcherServiceWithModifyAckDeadline) modifyAckDeadline(_ context.Contex
 
 func (f *fetcherServiceWithModifyAckDeadline) splitAckIDs(ackIDs []string) ([]string, []string) {
 	return ackIDs, nil
+}
+
+func (f *fetcherServiceWithModifyAckDeadline) newStreamingPuller(ctx context.Context, subName string, ackDeadline int32) *streamingPuller {
+	return nil
 }
 
 func TestMultipleStopCallsBlockUntilMessageDone(t *testing.T) {
