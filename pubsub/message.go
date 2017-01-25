@@ -45,8 +45,8 @@ type Message struct {
 
 	calledDone bool
 
-	// The iterator that created this Message.
-	it *MessageIterator
+	// The done method of the iterator that created this Message.
+	done func(string, bool)
 }
 
 func toMessage(resp *pb.ReceivedMessage) (*Message, error) {
@@ -80,5 +80,5 @@ func (m *Message) Done(ack bool) {
 		return
 	}
 	m.calledDone = true
-	m.it.done(m.ackID, ack)
+	m.done(m.ackID, ack)
 }
