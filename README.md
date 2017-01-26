@@ -318,6 +318,8 @@ if err != nil {
 }
 ```
 
+Then use the client to publish and subscribe:
+
 ```go
 // Publish "hello world" on topic1.
 topic := client.Topic("topic1")
