@@ -408,6 +408,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		return err
 	}
 	found := resp.Found
+	missing := resp.Missing
 	// Upper bound 100 iterations to prevent infinite loop.
 	// We choose 100 iterations somewhat logically:
 	// Max number of Entities you can request from Datastore is 1,000.
@@ -423,8 +424,9 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 			return err
 		}
 		found = append(found, resp.Found...)
+		missing = append(missing, resp.Missing...)
 	}
-	if len(keys) != len(found)+len(resp.Missing) {
+	if len(keys) != len(found)+len(missing) {
 		return errors.New("datastore: internal error: server returned the wrong number of entities")
 	}
 	for _, e := range found {
@@ -445,7 +447,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 			any = true
 		}
 	}
-	for _, e := range resp.Missing {
+	for _, e := range missing {
 		k, err := protoToKey(e.Entity.Key)
 		if err != nil {
 			return errors.New("datastore: internal error: server returned an invalid key")

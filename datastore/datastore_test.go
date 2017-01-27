@@ -2436,6 +2436,90 @@ func TestDeferred(t *testing.T) {
 
 }
 
+func TestDeferredMissing(t *testing.T) {
+	type Ent struct {
+		A int
+		B string
+	}
+
+	keys := []*Key{
+		NameKey("testKind", "first", nil),
+		NameKey("testKind", "second", nil),
+	}
+
+	entity1 := &pb.Entity{
+		Key: keyToProto(keys[0]),
+	}
+	entity2 := &pb.Entity{
+		Key: keyToProto(keys[1]),
+	}
+
+	var count int
+	fakeClient := &fakeDatastoreClient{
+		lookup: func(*pb.LookupRequest) (*pb.LookupResponse, error) {
+			count++
+
+			if count == 1 {
+				return &pb.LookupResponse{
+					Missing: []*pb.EntityResult{
+						{
+							Entity:  entity1,
+							Version: 1,
+						},
+					},
+					Deferred: []*pb.Key{
+						keyToProto(keys[1]),
+					},
+				}, nil
+			}
+
+			return &pb.LookupResponse{
+				Missing: []*pb.EntityResult{
+					{
+						Entity:  entity2,
+						Version: 1,
+					},
+				},
+			}, nil
+		},
+	}
+	client := &Client{
+		client: fakeClient,
+	}
+
+	ctx := context.Background()
+
+	dst := make([]Ent, len(keys))
+	err := client.GetMulti(ctx, keys, dst)
+	errs, ok := err.(MultiError)
+	if !ok {
+		t.Fatalf("expected error returns to be MultiError; got %v", err)
+	}
+	if len(errs) != 2 {
+		t.Fatalf("expected 2 errors returns, got %d", len(errs))
+	}
+	if errs[0] != ErrNoSuchEntity {
+		t.Fatalf("expected error to be ErrNoSuchEntity; got %v", errs[0])
+	}
+	if errs[1] != ErrNoSuchEntity {
+		t.Fatalf("expected error to be ErrNoSuchEntity; got %v", errs[1])
+	}
+
+	if count != 2 {
+		t.Fatalf("expected client.lookup to be called 2 times. Got %d", count)
+	}
+
+	if len(dst) != 2 {
+		t.Fatalf("expected 2 entities returned, got %d", len(dst))
+	}
+
+	for _, e := range dst {
+		if e.A != 0 || e.B != "" {
+			t.Fatalf("unexpected entity %#v", e)
+		}
+	}
+}
+
 type fakeDatastoreClient struct {
 	// Optional handlers for the datastore methods.
 	// Any handlers left undefined will return an error.
