@@ -14,7 +14,8 @@
    the directions.
 1. Make changes and create a change by running `git codereview change <name>`,
 provide a commit message, and use `git codereview mail` to create a Gerrit CL.
-1. Keep amending to the change and mail as your receive feedback.
+1. Keep amending to the change with `git codereview change` and mail as your receive
+feedback. Each new mailed amendment will create a new patch set for your change in Gerrit.
 
 ## Integration Tests
 
