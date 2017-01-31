@@ -41,12 +41,19 @@ func ProjID() string {
 }
 
 // TokenSource returns the OAuth2 token source to use in integration tests,
-// or nil if none is configured. TokenSource will log.Fatal if the token
-// source is specified but missing or invalid.
+// or nil if none is configured. If the environment variable is unset,
+// TokenSource will try to find 'Application Default Credentials'. Else,
+// TokenSource will return nil.
+// TokenSource will log.Fatal if the token source is specified but missing or invalid.
 func TokenSource(ctx context.Context, scopes ...string) oauth2.TokenSource {
 	key := os.Getenv(envPrivateKey)
-	if key == "" {
-		return nil
+	if key == "" { // Try for application default credentials.
+		ts, err := google.DefaultTokenSource(ctx, scopes...)
+		if err != nil {
+			log.Println("No 'Application Default Credentials' found.")
+			return nil
+		}
+		return ts
 	}
 	jsonKey, err := ioutil.ReadFile(key)
 	if err != nil {
