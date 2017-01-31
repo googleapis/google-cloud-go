@@ -57,6 +57,9 @@ func saveStructProperty(props *[]Property, name string, opts saveOpts, v reflect
 		return nil
 	}
 
+	// Check if v implements PropertyLoadSaver.
+	pls, isPLS := v.Interface().(PropertyLoadSaver)
+
 	switch x := v.Interface().(type) {
 	case *Key, time.Time, GeoPoint:
 		p.Value = x
@@ -86,6 +89,15 @@ func saveStructProperty(props *[]Property, name string, opts saveOpts, v reflect
 			v = v.Elem()
 			fallthrough
 		case reflect.Struct:
+			if isPLS {
+				subProps, err := pls.Save()
+				if err != nil {
+					return err
+				}
+				p.Value = &Entity{Properties: subProps}
+				break
+			}
+
 			if !v.CanAddr() {
 				return fmt.Errorf("datastore: unsupported struct field: value is unaddressable")
 			}
@@ -107,6 +119,7 @@ func saveStructProperty(props *[]Property, name string, opts saveOpts, v reflect
 			if err != nil {
 				return err
 			}
+
 			p.Value = &Entity{
 				Key:        subKey,
 				Properties: subProps,
