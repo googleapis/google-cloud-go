@@ -355,7 +355,13 @@ type TestStruct struct {
 	Subs []*Sub
 }
 
-type Sub struct{ B bool }
+type Sub struct {
+	B       bool
+	SubSub  SubSub
+	SubSubs []*SubSub
+}
+
+type SubSub struct{ Count int }
 
 func TestIntegration_UploadAndReadStructs(t *testing.T) {
 	if client == nil {
@@ -373,9 +379,14 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 	// Populate the table.
 	upl := table.Uploader()
 	want := []*TestStruct{
-		{Name: "a", Nums: []int{1, 2}, Sub: Sub{B: true}, Subs: []*Sub{{false}, {true}}},
-		{Name: "b", Nums: []int{1}, Subs: []*Sub{{false}, {false}, {true}}},
+		{Name: "a", Nums: []int{1, 2}, Sub: Sub{B: true}, Subs: []*Sub{{B: false}, {B: true}}},
+		{Name: "b", Nums: []int{1}, Subs: []*Sub{{B: false}, {B: false}, {B: true}}},
 		{Name: "c", Sub: Sub{B: true}},
+		{
+			Name: "d",
+			Sub:  Sub{SubSub: SubSub{12}, SubSubs: []*SubSub{{1}, {2}, {3}}},
+			Subs: []*Sub{{B: false, SubSub: SubSub{4}}, {B: true, SubSubs: []*SubSub{{5}, {6}}}},
+		},
 	}
 	var savers []*StructSaver
 	for _, s := range want {
