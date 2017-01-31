@@ -1915,6 +1915,7 @@ func TestRoundTrip(t *testing.T) {
 			// Sort by name to make sure we have a deterministic order.
 			sortPL(*pl)
 		}
+
 		equal := false
 		if gotT, ok := got.(*T); ok {
 			// Round tripping a time.Time can result in a different time.Location: Local instead of UTC.
@@ -1928,6 +1929,189 @@ func TestRoundTrip(t *testing.T) {
 			continue
 		}
 	}
+}
+
+type aPtrPLS struct {
+	Count int
+}
+
+func (pls *aPtrPLS) Load([]Property) error {
+	pls.Count += 1
+	return nil
+}
+
+func (pls *aPtrPLS) Save() ([]Property, error) {
+	return []Property{{Name: "Count", Value: 4}}, nil
+}
+
+type aValuePLS struct {
+	Count int
+}
+
+func (pls aValuePLS) Load([]Property) error {
+	pls.Count += 2
+	return nil
+}
+
+func (pls aValuePLS) Save() ([]Property, error) {
+	return []Property{{Name: "Count", Value: 8}}, nil
+}
+
+type aNotPLS struct {
+	Count int
+}
+
+type plsString string
+
+func (s *plsString) Load([]Property) error {
+	*s = "LOADED"
+	return nil
+}
+
+func (s *plsString) Save() ([]Property, error) {
+	return []Property{{Name: "SS", Value: "SAVED"}}, nil
+}
+
+type aSubPLS struct {
+	Foo string
+	Bar *aPtrPLS
+}
+
+type aSubNotPLS struct {
+	Foo string
+	Bar *aNotPLS
+	S   plsString `datastore:",omitempty"`
+}
+
+type aSubPLSErr struct {
+	Foo string
+	Bar aValuePLS
+}
+
+func TestLoadSaveNestedStructPLS(t *testing.T) {
+	type testCase struct {
+		desc     string
+		src      interface{}
+		wantSave *pb.Entity
+		wantLoad interface{}
+		loadErr  string
+	}
+
+	testCases := []testCase{
+		{
+			desc: "substruct (ptr) does implement PLS",
+			src:  &aSubPLS{Foo: "foo", Bar: &aPtrPLS{Count: 2}},
+			wantSave: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Foo": {ValueType: &pb.Value_StringValue{"foo"}},
+					"Bar": {ValueType: &pb.Value_EntityValue{
+						&pb.Entity{
+							Properties: map[string]*pb.Value{
+								"Count": {ValueType: &pb.Value_IntegerValue{4}},
+							},
+						},
+					}},
+				},
+			},
+			// PLS impl for 'S' not used, not entity.
+			wantLoad: &aSubPLS{Foo: "foo", Bar: &aPtrPLS{Count: 1}},
+		},
+		{
+			desc: "substruct (ptr) does implement PLS, nil valued substruct",
+			src:  &aSubPLS{Foo: "foo"},
+			wantSave: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Foo": {ValueType: &pb.Value_StringValue{"foo"}},
+				},
+			},
+			wantLoad: &aSubPLS{Foo: "foo"},
+		},
+		{
+			desc: "substruct (ptr) does not implement PLS",
+			src:  &aSubNotPLS{Foo: "foo", Bar: &aNotPLS{Count: 2}, S: "something"},
+			wantSave: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Foo": {ValueType: &pb.Value_StringValue{"foo"}},
+					"Bar": {ValueType: &pb.Value_EntityValue{
+						&pb.Entity{
+							Properties: map[string]*pb.Value{
+								"Count": {ValueType: &pb.Value_IntegerValue{2}},
+							},
+						},
+					}},
+					// PLS impl for 'S' not used, not entity.
+					"S": {ValueType: &pb.Value_StringValue{"something"}},
+				},
+			},
+			wantLoad: &aSubNotPLS{Foo: "foo", Bar: &aNotPLS{Count: 2}, S: "something"},
+		},
+		{
+			desc: "substruct (value) does implement PLS, error",
+			src:  &aSubPLSErr{Foo: "foo", Bar: aValuePLS{Count: 3}},
+			wantSave: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Foo": {ValueType: &pb.Value_StringValue{"foo"}},
+					"Bar": {ValueType: &pb.Value_EntityValue{
+						&pb.Entity{
+							Properties: map[string]*pb.Value{
+								"Count": {ValueType: &pb.Value_IntegerValue{8}},
+							},
+						},
+					}},
+				},
+			},
+			wantLoad: &aSubPLSErr{},
+			loadErr:  "PropertyLoadSaver methods must be implemented on a pointer",
+		},
+	}
+
+	for _, tc := range testCases {
+		e, err := saveEntity(testKey0, tc.src)
+		if err != nil {
+			t.Errorf("%s: save: %v", tc.desc, err)
+			continue
+		}
+
+		if !reflect.DeepEqual(e, tc.wantSave) {
+			fmt.Println(*e.Key)
+			fmt.Println(*tc.wantSave.Key)
+			fmt.Println(*(e.Properties["Foo"].ValueType.(*pb.Value_StringValue)))
+			fmt.Println(*tc.wantSave.Properties["Foo"].ValueType.(*pb.Value_StringValue))
+			fmt.Println(*(e.Properties["Bar"].ValueType.(*pb.Value_EntityValue)))
+			fmt.Println(*tc.wantSave.Properties["Bar"].ValueType.(*pb.Value_EntityValue))
+			t.Errorf("%s: save: got: %#v,	want: %#v", tc.desc, e, tc.wantSave)
+			continue
+		}
+
+		gota := reflect.New(reflect.TypeOf(tc.wantLoad).Elem()).Interface()
+		err = loadEntity(gota, e)
+		switch tc.loadErr {
+		case "":
+			if err != nil {
+				t.Errorf("%s: load: %v", tc.desc, err)
+				continue
+			}
+		default:
+			if err == nil {
+				t.Errorf("%s: load: want err", tc.desc)
+				continue
+			}
+			if !strings.Contains(err.Error(), tc.loadErr) {
+				t.Errorf("%s: load: want err '%s', got '%s'", tc.desc, err.Error(), tc.loadErr)
+			}
+			continue
+		}
+
+		if !reflect.DeepEqual(tc.wantLoad, gota) {
+			t.Errorf("%s: load:	got: %#v,	want: %#v", tc.desc, gota, tc.wantLoad)
+			continue
+		}
+	}
+
 }
 
 func TestQueryConstruction(t *testing.T) {

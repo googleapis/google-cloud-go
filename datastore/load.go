@@ -236,19 +236,28 @@ func setVal(v reflect.Value, p Property) string {
 			return ""
 		}
 
-		switch pValue.(type) {
+		switch x := pValue.(type) {
 		case *Key:
 			if _, ok := v.Interface().(*Key); !ok {
 				return typeMismatchReason(p, v)
 			}
-			v.Set(reflect.ValueOf(pValue.(*Key)))
+			v.Set(reflect.ValueOf(x))
 		case *Entity:
-			if v.Type().Elem().Kind() != reflect.Struct {
-				return typeMismatchReason(p, v)
-			}
 			if v.IsNil() {
 				v.Set(reflect.New(v.Type().Elem()))
 			}
+			// Check if v implements PropertyLoadSaver.
+			if pls, ok := v.Interface().(PropertyLoadSaver); ok {
+				err := pls.Load(x.Properties)
+				if err != nil {
+					return err.Error()
+				}
+				return ""
+			}
+			if v.Type().Elem().Kind() != reflect.Struct {
+				return typeMismatchReason(p, v)
+			}
+
 			return setVal(v.Elem(), p)
 		default:
 			return typeMismatchReason(p, v)
@@ -273,7 +282,12 @@ func setVal(v reflect.Value, p Property) string {
 				return typeMismatchReason(p, v)
 			}
 
-			// Recursively load nested struct
+			// Check if v implements PropertyLoadSaver.
+			if _, ok := v.Interface().(PropertyLoadSaver); ok {
+				return fmt.Sprintf("datastore: PropertyLoadSaver methods must be implemented on a pointer to %T.", v.Interface())
+			}
+
+			// Recursively load nested struct.
 			pls, err := newStructPLS(v.Addr().Interface())
 			if err != nil {
 				return err.Error()
