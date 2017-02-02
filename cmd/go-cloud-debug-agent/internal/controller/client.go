@@ -82,14 +82,13 @@ type Options struct {
 }
 
 type serviceInterface interface {
-	Register(req *cd.RegisterDebuggeeRequest) (*cd.RegisterDebuggeeResponse, error)
-	Update(debuggeeID, breakpointID string, req *cd.UpdateActiveBreakpointRequest) (*cd.UpdateActiveBreakpointResponse, error)
-	List(debuggeeID, waitToken string) (*cd.ListActiveBreakpointsResponse, error)
+	Register(ctx context.Context, req *cd.RegisterDebuggeeRequest) (*cd.RegisterDebuggeeResponse, error)
+	Update(ctx context.Context, debuggeeID, breakpointID string, req *cd.UpdateActiveBreakpointRequest) (*cd.UpdateActiveBreakpointResponse, error)
+	List(ctx context.Context, debuggeeID, waitToken string) (*cd.ListActiveBreakpointsResponse, error)
 }
 
-var newService = func(tokenSource oauth2.TokenSource) (serviceInterface, error) {
-	httpClient, endpoint, err := transport.NewHTTPClient(context.Background(),
-		[]option.ClientOption{option.WithTokenSource(tokenSource)}...)
+var newService = func(ctx context.Context, tokenSource oauth2.TokenSource) (serviceInterface, error) {
+	httpClient, endpoint, err := transport.NewHTTPClient(ctx, option.WithTokenSource(tokenSource))
 	if err != nil {
 		return nil, err
 	}
@@ -107,25 +106,27 @@ type service struct {
 	s *cd.Service
 }
 
-func (s *service) Register(req *cd.RegisterDebuggeeRequest) (*cd.RegisterDebuggeeResponse, error) {
-	return cd.NewControllerDebuggeesService(s.s).Register(req).Do()
+func (s service) Register(ctx context.Context, req *cd.RegisterDebuggeeRequest) (*cd.RegisterDebuggeeResponse, error) {
+	call := cd.NewControllerDebuggeesService(s.s).Register(req)
+	return call.Context(ctx).Do()
 }
 
-func (s *service) Update(debuggeeID, breakpointID string, req *cd.UpdateActiveBreakpointRequest) (*cd.UpdateActiveBreakpointResponse, error) {
-	return cd.NewControllerDebuggeesBreakpointsService(s.s).Update(debuggeeID, breakpointID, req).Do()
+func (s service) Update(ctx context.Context, debuggeeID, breakpointID string, req *cd.UpdateActiveBreakpointRequest) (*cd.UpdateActiveBreakpointResponse, error) {
+	call := cd.NewControllerDebuggeesBreakpointsService(s.s).Update(debuggeeID, breakpointID, req)
+	return call.Context(ctx).Do()
 }
 
-func (s *service) List(debuggeeID, waitToken string) (*cd.ListActiveBreakpointsResponse, error) {
-	listCall := cd.NewControllerDebuggeesBreakpointsService(s.s).List(debuggeeID)
-	listCall.WaitToken(waitToken)
-	return listCall.Do()
+func (s service) List(ctx context.Context, debuggeeID, waitToken string) (*cd.ListActiveBreakpointsResponse, error) {
+	call := cd.NewControllerDebuggeesBreakpointsService(s.s).List(debuggeeID)
+	call.WaitToken(waitToken)
+	return call.Context(ctx).Do()
 }
 
 // NewController connects to the Debuglet Controller server using the given options,
 // and returns a Controller for that connection.
 // Google Application Default Credentials are used to connect to the Debuglet Controller;
 // see https://developers.google.com/identity/protocols/application-default-credentials
-func NewController(o Options) (*Controller, error) {
+func NewController(ctx context.Context, o Options) (*Controller, error) {
 	// We build a JSON encoding of o.SourceContexts so we can hash it.
 	scJSON, err := json.Marshal(o.SourceContexts)
 	if err != nil {
@@ -152,7 +153,7 @@ func NewController(o Options) (*Controller, error) {
 		description += "-" + o.AppVersion
 	}
 
-	s, err := newService(o.TokenSource)
+	s, err := newService(ctx, o.TokenSource)
 	if err != nil {
 		return nil, err
 	}
@@ -170,14 +171,14 @@ func NewController(o Options) (*Controller, error) {
 	return c, nil
 }
 
-func (c *Controller) getDebuggeeID() (string, error) {
+func (c *Controller) getDebuggeeID(ctx context.Context) (string, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if c.debuggeeID != "" {
 		return c.debuggeeID, nil
 	}
 	// The debuglet hasn't been registered yet, or it is disabled and we should try registering again.
-	if err := c.register(); err != nil {
+	if err := c.register(ctx); err != nil {
 		return "", err
 	}
 	return c.debuggeeID, nil
@@ -188,12 +189,12 @@ func (c *Controller) getDebuggeeID() (string, error) {
 // the previous call to List, the server can delay responding until it changes,
 // and return an error instead if no change occurs before a time limit the
 // server sets.  List can't be called concurrently with itself.
-func (c *Controller) List() (*cd.ListActiveBreakpointsResponse, error) {
-	id, err := c.getDebuggeeID()
+func (c *Controller) List(ctx context.Context) (*cd.ListActiveBreakpointsResponse, error) {
+	id, err := c.getDebuggeeID(ctx)
 	if err != nil {
 		return nil, err
 	}
-	resp, err := c.s.List(id, c.waitToken)
+	resp, err := c.s.List(ctx, id, c.waitToken)
 	if err != nil {
 		if isAbortedError(err) {
 			return nil, ErrListUnchanged
@@ -201,7 +202,7 @@ func (c *Controller) List() (*cd.ListActiveBreakpointsResponse, error) {
 		// For other errors, the protocol requires that we attempt to re-register.
 		c.mu.Lock()
 		defer c.mu.Unlock()
-		if regError := c.register(); regError != nil {
+		if regError := c.register(ctx); regError != nil {
 			return nil, regError
 		}
 		return nil, err
@@ -231,23 +232,23 @@ func isAbortedError(err error) bool {
 
 // Update reports information to the server about a breakpoint that was hit.
 // Update can be called concurrently with List and Update.
-func (c *Controller) Update(breakpointID string, bp *cd.Breakpoint) error {
+func (c *Controller) Update(ctx context.Context, breakpointID string, bp *cd.Breakpoint) error {
 	req := &cd.UpdateActiveBreakpointRequest{Breakpoint: bp}
 	if c.verbose {
 		log.Printf("sending update for %s: %v", breakpointID, req)
 	}
-	id, err := c.getDebuggeeID()
+	id, err := c.getDebuggeeID(ctx)
 	if err != nil {
 		return err
 	}
-	_, err = c.s.Update(id, breakpointID, req)
+	_, err = c.s.Update(ctx, id, breakpointID, req)
 	return err
 }
 
 // register calls the Debuglet Controller Register method, and sets c.debuggeeID.
 // c.mu should be locked while calling this function.  List and Update can't
 // make progress until it returns.
-func (c *Controller) register() error {
+func (c *Controller) register(ctx context.Context) error {
 	req := cd.RegisterDebuggeeRequest{
 		Debuggee: &cd.Debuggee{
 			AgentVersion:   agentVersionString,
@@ -257,7 +258,7 @@ func (c *Controller) register() error {
 			Uniquifier:     c.uniquifier,
 		},
 	}
-	resp, err := c.s.Register(&req)
+	resp, err := c.s.Register(ctx, &req)
 	if err != nil {
 		return err
 	}
