@@ -86,10 +86,14 @@
 // about the span.  The elements of this map are called labels.  Some labels,
 // whose keys all begin with the string "trace.cloud.google.com/", are set
 // automatically in the following ways:
+//
 // - SpanFromRequest sets some labels to data about the incoming request.
+//
 // - NewRemoteChild sets some labels to data about the outgoing request.
+//
 // - Finish sets a label to a stack trace, if the stack trace option is enabled
-//   in the incoming trace header.
+// in the incoming trace header.
+//
 // - The WithResponse option sets some labels to data about a response.
 // You can also set labels using SetLabel.  If a label is given a value
 // automatically and by SetLabel, the automatically-set value is used.
