@@ -142,10 +142,12 @@ import (
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/api/transport"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 const (
 	httpHeader          = `X-Cloud-Trace-Context`
+	grpcMetadataKey     = `gcloud-trace-grpc-context`
 	userAgent           = `gcloud-golang-trace/20160501`
 	cloudPlatformScope  = `https://www.googleapis.com/auth/cloud-platform`
 	spanKindClient      = `RPC_CLIENT`
@@ -216,10 +218,24 @@ var EnableGRPCTracingDialOption grpc.DialOption = grpc.WithUnaryInterceptor(grpc
 // The functionality in gRPC that this relies on is currently experimental.
 var EnableGRPCTracing option.ClientOption = option.WithGRPCDialOption(EnableGRPCTracingDialOption)
 
+func (client *Client) EnableGRPCServerTracing() grpc.ServerOption {
+	return grpc.UnaryInterceptor(func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+		span := client.spanFromGRPCContext(ctx, info.FullMethod)
+		resp, err = handler(NewContext(ctx, span), req)
+		if err != nil {
+			// TODO: standardize gRPC label names?
+			span.SetLabel("error", err.Error())
+		}
+		span.Finish()
+		return
+	})
+}
+
 func grpcUnaryInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 	// TODO: also intercept streams.
 	span := FromContext(ctx).NewChild(method)
-	err := invoker(ctx, method, req, reply, cc, opts...)
+
+	err := invoker(newGRPCContext(ctx, span), method, req, reply, cc, opts...)
 	if err != nil {
 		// TODO: standardize gRPC label names?
 		span.SetLabel("error", err.Error())
@@ -355,6 +371,45 @@ func (client *Client) SpanFromRequest(r *http.Request) *Span {
 	return span
 }
 
+func (client *Client) spanFromGRPCContext(ctx context.Context, name string) *Span {
+	if client == nil {
+		return nil
+	}
+	md, _ := metadata.FromContext(ctx)
+	traceID, parentSpanID, options, hasTraceHeader := traceInfoFromMetadata(md)
+	if !hasTraceHeader {
+		traceID = nextTraceID()
+	}
+	t := &trace{
+		traceID:       traceID,
+		client:        client,
+		globalOptions: options,
+		localOptions:  options,
+	}
+	span := startNewChild(name, t, parentSpanID)
+	span.span.Kind = spanKindServer
+	span.rootSpan = true
+	if client.policy != nil {
+		d := client.policy.Sample(Parameters{HasTraceHeader: hasTraceHeader})
+		if d.Trace {
+			// Turn on tracing locally, and in child requests.
+			span.trace.localOptions |= optionTrace
+			span.trace.globalOptions |= optionTrace
+		} else {
+			// Turn off tracing locally.
+			span.trace.localOptions = 0
+			return span
+		}
+		if d.Sample {
+			// This trace is in the random sample, so set the labels.
+			span.SetLabel(labelSamplingPolicy, d.Policy)
+			span.SetLabel(labelSamplingWeight, fmt.Sprint(d.Weight))
+		}
+	}
+
+	return span
+}
+
 // NewContext returns a derived context containing the span.
 func NewContext(ctx context.Context, s *Span) context.Context {
 	if s == nil {
@@ -363,15 +418,43 @@ func NewContext(ctx context.Context, s *Span) context.Context {
 	return context.WithValue(ctx, contextKey{}, s)
 }
 
+// NewGRPCContext returns a derived context compatible with gRPC
+// containing tracing information
+func newGRPCContext(ctx context.Context, s *Span) context.Context {
+	if s == nil {
+		return ctx
+	}
+	md, _ := metadata.FromContext(ctx)
+	if md == nil {
+		md = metadata.MD{}
+	}
+	md[grpcMetadataKey] = []string{spanHeader(s.trace.traceID, s.span.ParentSpanId, s.trace.globalOptions)}
+	return metadata.NewContext(ctx, md)
+}
+
 // FromContext returns the span contained in the context, or nil.
 func FromContext(ctx context.Context) *Span {
 	s, _ := ctx.Value(contextKey{}).(*Span)
 	return s
 }
 
+func traceInfoFromMetadata(md metadata.MD) (string, uint64, optionFlags, bool) {
+	if md == nil {
+		return "", 0, 0, false
+	}
+	str, _ := md[grpcMetadataKey]
+	if len(str) == 0 {
+		return "", 0, 0, false
+	}
+	return traceInfoFromString(str[0])
+}
+
 func traceInfoFromRequest(r *http.Request) (string, uint64, optionFlags, bool) {
 	// See https://cloud.google.com/trace/docs/faq for the header format.
-	h := r.Header.Get(httpHeader)
+	return traceInfoFromString(r.Header.Get(httpHeader))
+}
+
+func traceInfoFromString(h string) (string, uint64, optionFlags, bool) {
 	// Return if the header is empty or missing, or if the header is unreasonably
 	// large, to avoid making unnecessary copies of a large string.
 	if h == "" || len(h) > 200 {
