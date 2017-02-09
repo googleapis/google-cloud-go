@@ -89,36 +89,30 @@ func (l *propertyLoader) loadOneElement(codec fields.List, structValue reflect.V
 	var v reflect.Value
 
 	name := p.Name
-	for name != "" {
-		// First we try to find a field with name matching
-		// the value of 'name' exactly (though case-insensitively).
-		field := codec.Match(name)
-		if field != nil {
-			name = ""
-		} else {
-			// Now try for legacy flattened nested field (named eg. "A.B.C.D").
+	fieldNames := strings.Split(name, ".")
 
-			parent := name
-			child := ""
+	for len(fieldNames) > 0 {
+		var field *fields.Field
 
-			// Cut off the last field (delimited by ".") and find its parent
-			// in the codec.
-			// eg. for name "A.B.C.D", split off "A.B.C" and try to
-			// find a field in the codec with this name.
-			// Loop again with "A.B", etc.
-			for field == nil {
-				i := strings.LastIndex(parent, ".")
-				if i < 0 {
-					return "no such struct field"
-				}
-				if i == len(name)-1 {
-					return "field name cannot end with '.'"
-				}
-				parent, child = name[:i], name[i+1:]
-				field = codec.Match(parent)
+		// Start by trying to find a field with name. If none found,
+		// cut off the last field (delimited by ".") and find its parent
+		// in the codec.
+		// eg. for name "A.B.C.D", split off "A.B.C" and try to
+		// find a field in the codec with this name.
+		// Loop again with "A.B", etc.
+		for i := len(fieldNames); i > 0; i-- {
+			parent := strings.Join(fieldNames[:i], ".")
+			field = codec.Match(parent)
+			if field != nil {
+				fieldNames = fieldNames[i:]
+				break
 			}
+		}
 
-			name = child
+		// If we never found a matching field in the codec, return
+		// error message.
+		if field == nil {
+			return "no such struct field"
 		}
 
 		v = initField(structValue, field.Index)
