@@ -18,6 +18,7 @@ import (
 	"image/color"
 	"math"
 
+	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/vision/apiv1"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
@@ -39,7 +40,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c.SetGoogleClientInfo("vision", "0.1.0")
+	c.SetGoogleClientInfo("gccl", version.Repo)
 	return &Client{client: c}, nil
 }
 

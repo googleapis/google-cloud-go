@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/iam"
+	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/pubsub/apiv1"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
@@ -27,8 +28,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )
-
-const version = "0.2.0"
 
 type nextStringFunc func() (string, error)
 
@@ -83,8 +82,8 @@ func newPubSubService(ctx context.Context, opts []option.ClientOption) (*apiServ
 		_ = pubc.Close() // ignore error
 		return nil, err
 	}
-	pubc.SetGoogleClientInfo("pubsub", version)
-	subc.SetGoogleClientInfo("pubsub", version)
+	pubc.SetGoogleClientInfo("gccl", version.Repo)
+	subc.SetGoogleClientInfo("gccl", version.Repo)
 	return &apiService{pubc: pubc, subc: subc}, nil
 }
 
