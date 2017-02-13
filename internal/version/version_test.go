@@ -21,7 +21,7 @@ import (
 
 func TestGo(t *testing.T) {
 	got := Go()
-	want := `^go1\.\S+$`
+	want := `^\S+$`
 	match, err := regexp.MatchString(want, got)
 	if err != nil {
 		t.Fatal(err)
