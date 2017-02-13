@@ -508,28 +508,38 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		return nil, err
 	}
 	var res *http.Response
-	err = runWithRetry(ctx, func() error { res, err = o.c.hc.Do(req); return err })
+	err = runWithRetry(ctx, func() error { 
+		res, err = o.c.hc.Do(req);
+		if err != nil {
+			return err
+		}
+		
+		if res.StatusCode == http.StatusNotFound {
+			res.Body.Close()
+			return ErrObjectNotExist
+		}
+		if res.StatusCode < 200 || res.StatusCode > 299 {
+			body, _ := ioutil.ReadAll(res.Body)
+			res.Body.Close()
+			return &googleapi.Error{
+				Code:   res.StatusCode,
+				Header: res.Header,
+				Body:   string(body),
+			}
+		}
+		
+		if offset > 0 && length != 0 && res.StatusCode != http.StatusPartialContent {
+			res.Body.Close()
+			return errors.New("storage: partial request not satisfied")
+		}
+
+		return err 
+	})
+	
 	if err != nil {
 		return nil, err
 	}
-	if res.StatusCode == http.StatusNotFound {
-		res.Body.Close()
-		return nil, ErrObjectNotExist
-	}
-	if res.StatusCode < 200 || res.StatusCode > 299 {
-		body, _ := ioutil.ReadAll(res.Body)
-		res.Body.Close()
-		return nil, &googleapi.Error{
-			Code:   res.StatusCode,
-			Header: res.Header,
-			Body:   string(body),
-		}
-	}
-	if offset > 0 && length != 0 && res.StatusCode != http.StatusPartialContent {
-		res.Body.Close()
-		return nil, errors.New("storage: partial request not satisfied")
-	}
-
+	
 	var size int64 // total size of object, even if a range was requested.
 	if res.StatusCode == http.StatusPartialContent {
 		cr := strings.TrimSpace(res.Header.Get("Content-Range"))
