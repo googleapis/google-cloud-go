@@ -100,19 +100,24 @@ func TestAll(t *testing.T) {
 		})
 	}
 
-	ids, err := topic.Publish(ctx, msgs...)
-	if err != nil {
-		t.Fatalf("Publish (1) error: %v", err)
+	// Publish the messages.
+	type pubResult struct {
+		m *Message
+		r *PublishResult
 	}
-
-	if len(ids) != len(msgs) {
-		t.Errorf("unexpected number of message IDs received; %d, want %d", len(ids), len(msgs))
+	var rs []pubResult
+	for _, m := range msgs {
+		r := topic.Publish(ctx, m)
+		rs = append(rs, pubResult{m, r})
 	}
-
 	want := make(map[string]*messageData)
-	for i, m := range msgs {
-		md := extractMessageData(m)
-		md.ID = ids[i]
+	for _, res := range rs {
+		id, err := res.r.Get(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		md := extractMessageData(res.m)
+		md.ID = id
 		want[md.ID] = md
 	}
 
@@ -140,7 +145,8 @@ func TestAll(t *testing.T) {
 
 	// base64 test
 	data := "=@~"
-	_, err = topic.Publish(ctx, &Message{Data: []byte(data)})
+	res := topic.Publish(ctx, &Message{Data: []byte(data)})
+	_, err = res.Get(ctx)
 	if err != nil {
 		t.Fatalf("Publish error: %v", err)
 	}

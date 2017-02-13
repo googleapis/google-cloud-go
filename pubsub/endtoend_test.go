@@ -163,11 +163,17 @@ func publish(t *testing.T, ctx context.Context, topic *Topic) []string {
 			text := fmt.Sprintf("msg %02d-%02d", i, j)
 			msgs[j] = &Message{Data: []byte(text)}
 		}
-		ids, err := topic.Publish(ctx, msgs...)
-		if err != nil {
-			t.Errorf("Publish error: %v", err)
+		var rs []*PublishResult
+		for _, m := range msgs {
+			rs = append(rs, topic.Publish(ctx, m))
 		}
-		published = append(published, ids...)
+		for _, r := range rs {
+			id, err := r.Get(ctx)
+			if err != nil {
+				t.Errorf("Publish error: %v", err)
+			}
+			published = append(published, id)
+		}
 	}
 	return published
 }

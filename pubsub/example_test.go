@@ -110,13 +110,19 @@ func ExampleTopic_Publish() {
 	}
 
 	topic := client.Topic("topicName")
-	msgIDs, err := topic.Publish(ctx, &pubsub.Message{
+	var results []*pubsub.PublishResult
+	r := topic.Publish(ctx, &pubsub.Message{
 		Data: []byte("hello world"),
 	})
-	if err != nil {
-		// TODO: Handle error.
+	results = append(results, r)
+	// Do other work ...
+	for _, r := range results {
+		id, err := r.Get(ctx)
+		if err != nil {
+			// TODO: Handle error.
+		}
+		fmt.Printf("Published a message with a message ID: %s\n", id)
 	}
-	fmt.Printf("Published a message with a message ID: %s\n", msgIDs[0])
 }
 
 func ExampleTopic_Subscriptions() {
