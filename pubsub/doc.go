@@ -32,9 +32,14 @@ using the pubsub package like so:
 
 Messages may then be published to a topic:
 
- msgIDs, err := topic.Publish(ctx, &pubsub.Message{
-	Data: []byte("payload"),
- })
+ res := topic.Publish(ctx, &pubsub.Message{Data: []byte("payload")})
+
+Publish queues the message for publishing and returns immediately. When enough
+messages have accumulated, or enough time has elapsed, the batch of messages is
+sent to the Pub/Sub service.
+
+Publish returns a PublishResult, which behaves like a future: its Get method
+blocks until the message has been sent to the service.
 
 Receiving
 
