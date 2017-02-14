@@ -29,6 +29,7 @@ backwards-incompatible changes.
   * [Cloud Pub/Sub](#cloud-pub-sub-)
   * [Cloud BigQuery](#cloud-bigquery-)
   * [Stackdriver Logging](#stackdriver-logging-)
+  * [Cloud Spanner](#cloud-spanner-)
 
 
 ## News
@@ -172,6 +173,7 @@ Google API                     | Status       | Package
 [Vision][cloud-vision]         | alpha | [`cloud.google.com/go/vision`][cloud-vision-ref]
 [Language][cloud-language]     | alpha | [`cloud.google.com/go/language/apiv1`][cloud-language-ref]
 [Speech][cloud-speech]         | alpha | [`cloud.google.com/go/speech/apiv1beta`][cloud-speech-ref]
+[Spanner][cloud-spanner]       | alpha | [`cloud.google.com/go/spanner`][cloud-spanner-ref]
 
 
 > **Alpha status**: the API is still being actively developed. As a
@@ -430,6 +432,41 @@ if err != nil {
 }
 ```
 
+
+## Cloud Spanner [![GoDoc](https://godoc.org/cloud.google.com/go/spanner?status.svg)](https://godoc.org/cloud.google.com/go/spanner)
+
+- [About Cloud Spanner][cloud-spanner]
+- [API documentation][cloud-spanner-docs]
+- [Go client documentation](https://godoc.org/cloud.google.com/go/spanner)
+
+### Example Usage
+
+First create a `spanner.Client` to use throughout your application:
+
+```go
+client, err := spanner.NewClient(ctx, "projects/P/instances/I/databases/D")
+if err != nil {
+    log.Fatal(err)
+}
+```
+
+```go
+// Simple Reads And Writes
+_, err := client.Apply(ctx, []*spanner.Mutation{
+    spanner.Insert("Users",
+        []string{"name", "email"},
+        []interface{}{"alice", "a@example.com"})})
+if err != nil {
+    log.Fatal(err)
+}
+row, err := client.Single().ReadRow(ctx, "Users",
+    spanner.Key{"alice"}, []string{"email"})
+if err != nil {
+   log.Fatal(err)
+}
+```
+
+
 ## Contributing
 
 Contributions are welcome. Please, see the
@@ -475,5 +512,9 @@ for more information.
 
 [cloud-speech]: https://cloud.google.com/speech
 [cloud-speech-ref]: https://godoc.org/cloud.google.com/go/speech/apiv1beta1
+
+[cloud-spanner]: https://cloud.google.com/spanner/
+[cloud-spanner-ref]: https://godoc.org/cloud.google.com/go/spanner
+[cloud-spanner-docs]: https://cloud.google.com/spanner/docs
 
 [default-creds]: https://developers.google.com/identity/protocols/application-default-credentials
