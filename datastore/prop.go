@@ -223,8 +223,14 @@ func validateChildType(t reflect.Type, fieldName string, flatten, prevSlice bool
 	return nil
 }
 
+// isLeafType determines whether or not a type is a 'leaf type'
+// and should not be recursed into, but considered one field.
+func isLeafType(t reflect.Type) bool {
+	return t == typeOfTime || t == typeOfGeoPoint
+}
+
 // structCache collects the structs whose fields have already been calculated.
-var structCache = fields.NewCache(parseTag, validateType)
+var structCache = fields.NewCache(parseTag, validateType, isLeafType)
 
 // structPLS adapts a struct to be a PropertyLoadSaver.
 type structPLS struct {

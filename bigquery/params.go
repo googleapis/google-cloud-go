@@ -49,7 +49,7 @@ func bqTagParser(t reflect.StructTag) (name string, keep bool, other interface{}
 	return "", true, nil, nil
 }
 
-var fieldCache = fields.NewCache(bqTagParser, nil)
+var fieldCache = fields.NewCache(bqTagParser, nil, nil)
 
 var (
 	int64ParamType     = &bq.QueryParameterType{Type: "INT64"}
