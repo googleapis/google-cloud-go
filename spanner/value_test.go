@@ -17,7 +17,6 @@ limitations under the License.
 package spanner
 
 import (
-	"fmt"
 	"math"
 	"reflect"
 	"testing"
@@ -472,70 +471,103 @@ func TestGenericColumnValue(t *testing.T) {
 		{GenericColumnValue{listType(intType()), listProto(intProto(91), nullProto(), intProto(87))}, []NullInt64{{91, true}, {}, {87, true}}, false},
 		{GenericColumnValue{intType(), intProto(42)}, GenericColumnValue{intType(), intProto(42)}, false}, // trippy! :-)
 	} {
-		t.Run("", func(t *testing.T) {
-			// We take a copy and mutate because we're paranoid about immutability.
-			inCopy := GenericColumnValue{
-				Type:  proto.Clone(test.in.Type).(*sppb.Type),
-				Value: proto.Clone(test.in.Value).(*proto3.Value),
+		// We take a copy and mutate because we're paranoid about immutability.
+		inCopy := GenericColumnValue{
+			Type:  proto.Clone(test.in.Type).(*sppb.Type),
+			Value: proto.Clone(test.in.Value).(*proto3.Value),
+		}
+		gotp := reflect.New(reflect.TypeOf(test.want))
+		if err := inCopy.Decode(gotp.Interface()); err != nil {
+			if !test.fail {
+				t.Errorf("cannot decode %v to %v: %v", test.in, test.want, err)
 			}
-			gotp := reflect.New(reflect.TypeOf(test.want))
-			if err := inCopy.Decode(gotp.Interface()); err != nil {
-				if !test.fail {
-					t.Errorf("cannot decode %v to %v: %v", test.in, test.want, err)
-				}
-				return
-			}
-			if test.fail {
-				t.Errorf("decoding %v to %v succeeds unexpectedly", test.in, test.want)
-			}
-			// mutations to inCopy should be invisible to gotp.
-			inCopy.Type.Code = sppb.TypeCode_TIMESTAMP
-			inCopy.Value.Kind = &proto3.Value_NumberValue{NumberValue: 999}
-			got := reflect.Indirect(gotp).Interface()
-			if !reflect.DeepEqual(got, test.want) {
-				t.Errorf("unexpected decode result - got %v, want %v", got, test.want)
-			}
+			continue
+		}
+		if test.fail {
+			t.Errorf("decoding %v to %v succeeds unexpectedly", test.in, test.want)
+		}
+		// mutations to inCopy should be invisible to gotp.
+		inCopy.Type.Code = sppb.TypeCode_TIMESTAMP
+		inCopy.Value.Kind = &proto3.Value_NumberValue{NumberValue: 999}
+		got := reflect.Indirect(gotp).Interface()
+		if !reflect.DeepEqual(got, test.want) {
+			t.Errorf("unexpected decode result - got %v, want %v", got, test.want)
+		}
 
-			// Test we can go backwards as well.
-			v, err := NewGenericColumnValue(test.want)
-			if err != nil {
-				t.Fatalf("NewGenericColumnValue failed: %v", err)
-			}
+		// Test we can go backwards as well.
+		v, err := NewGenericColumnValue(test.want)
+		if err != nil {
+			t.Errorf("NewGenericColumnValue failed: %v", err)
+			continue
+		}
+		if !reflect.DeepEqual(*v, test.in) {
+			t.Errorf("unexpected encode result - got %v, want %v", v, test.in)
+		}
+		// If want is a GenericColumnValue, mutate its underlying value to validate
+		// we have taken a deep copy.
+		if gcv, ok := test.want.(GenericColumnValue); ok {
+			gcv.Type.Code = sppb.TypeCode_TIMESTAMP
+			gcv.Value.Kind = &proto3.Value_NumberValue{NumberValue: 999}
 			if !reflect.DeepEqual(*v, test.in) {
-				t.Errorf("unexpected encode result - got %v, want %v", v, test.in)
+				t.Errorf("expected deep copy - got %v, want %v", v, test.in)
 			}
-			// If want is a GenericColumnValue, mutate its underlying value to validate
-			// we have taken a deep copy.
-			if gcv, ok := test.want.(GenericColumnValue); ok {
-				gcv.Type.Code = sppb.TypeCode_TIMESTAMP
-				gcv.Value.Kind = &proto3.Value_NumberValue{NumberValue: 999}
-				if !reflect.DeepEqual(*v, test.in) {
-					t.Errorf("expected deep copy - got %v, want %v", v, test.in)
-				}
-			}
-		})
+		}
 	}
 }
 
-func BenchmarkEncodeIntArray(b *testing.B) {
-	for _, size := range []int{1, 10, 100, 1000} {
-		a := make([]int, size)
-		b.Run(fmt.Sprintf("orig-%d", size), func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
-				encodeIntArrayOrig(a)
-			}
-		})
-		b.Run(fmt.Sprintf("func-%d", size), func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
-				encodeIntArrayFunc(a)
-			}
-		})
-		b.Run(fmt.Sprintf("reflect-%d", size), func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
-				encodeIntArrayReflect(a)
-			}
-		})
+func runBench(b *testing.B, size int, f func(a []int) (*proto3.Value, *sppb.Type, error)) {
+	a := make([]int, size)
+	for i := 0; i < b.N; i++ {
+		f(a)
 	}
+}
+
+func BenchmarkEncodeIntArrayOrig1(b *testing.B) {
+	runBench(b, 1, encodeIntArrayOrig)
+}
+
+func BenchmarkEncodeIntArrayOrig10(b *testing.B) {
+	runBench(b, 10, encodeIntArrayOrig)
+}
+
+func BenchmarkEncodeIntArrayOrig100(b *testing.B) {
+	runBench(b, 100, encodeIntArrayOrig)
+}
+
+func BenchmarkEncodeIntArrayOrig1000(b *testing.B) {
+	runBench(b, 1000, encodeIntArrayOrig)
+}
+
+func BenchmarkEncodeIntArrayFunc1(b *testing.B) {
+	runBench(b, 1, encodeIntArrayFunc)
+}
+
+func BenchmarkEncodeIntArrayFunc10(b *testing.B) {
+	runBench(b, 10, encodeIntArrayFunc)
+}
+
+func BenchmarkEncodeIntArrayFunc100(b *testing.B) {
+	runBench(b, 100, encodeIntArrayFunc)
+}
+
+func BenchmarkEncodeIntArrayFunc1000(b *testing.B) {
+	runBench(b, 1000, encodeIntArrayFunc)
+}
+
+func BenchmarkEncodeIntArrayReflect1(b *testing.B) {
+	runBench(b, 1, encodeIntArrayReflect)
+}
+
+func BenchmarkEncodeIntArrayReflect10(b *testing.B) {
+	runBench(b, 10, encodeIntArrayReflect)
+}
+
+func BenchmarkEncodeIntArrayReflect100(b *testing.B) {
+	runBench(b, 100, encodeIntArrayReflect)
+}
+
+func BenchmarkEncodeIntArrayReflect1000(b *testing.B) {
+	runBench(b, 1000, encodeIntArrayReflect)
 }
 
 func encodeIntArrayOrig(a []int) (*proto3.Value, *sppb.Type, error) {
