@@ -34,16 +34,21 @@ import (
 
 const (
 	prodAddr = "spanner.googleapis.com:443"
-	// Scope is scope for Cloud Spanner Data API.
-	Scope = "https://www.googleapis.com/auth/spanner.data"
-	// AdminScope is scope for Cloud Spanner Admin APIs.
-	AdminScope = "https://www.googleapis.com/auth/spanner.admin"
+
 	// resourcePrefixHeader is the name of the metadata header used to indicate
 	// the resource being operated on.
 	resourcePrefixHeader = "google-cloud-resource-prefix"
 	// apiClientHeader is the name of the metadata header used to indicate client
 	// information.
 	apiClientHeader = "x-goog-api-client"
+)
+
+const (
+	// Scope is the scope for Cloud Spanner Data API.
+	Scope = "https://www.googleapis.com/auth/spanner.data"
+
+	// AdminScope is the scope for Cloud Spanner Admin APIs.
+	AdminScope = "https://www.googleapis.com/auth/spanner.admin"
 )
 
 var (
