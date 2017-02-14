@@ -34,6 +34,14 @@ backwards-incompatible changes.
 
 ## News
 
+_February 14, 2017_
+
+Release of a client library for Spanner. See
+the
+[blog post](https://cloudplatform.googleblog.com/2017/02/introducing-Cloud-Spanner-a-global-database-service-for-mission-critical-applications.html). 
+
+Note that although the Spanner service is beta, the Go client library is alpha.
+
 _December 12, 2016_
 
 Beta release of BigQuery, DataStore, Logging and Storage. See the
