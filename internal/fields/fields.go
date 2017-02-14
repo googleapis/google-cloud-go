@@ -29,11 +29,22 @@
 //
 //   func validate(t reflect.Type) error { ... }
 //
+// Then, if necessary, define a function to specify leaf types - types
+// which should be considered one field and not be recursed into:
+//
+//   func isLeafType(t reflect.Type) bool { ... }
+//
+// eg:
+//
+//   func isLeafType(t reflect.Type) bool {
+//      return t == reflect.TypeOf(time.Time{})
+//   }
+//
 // Next, construct a Cache, passing your functions. As its name suggests, a
 // Cache remembers validation and field information for a type, so subsequent
 // calls with the same type are very fast.
 //
-//    cache := fields.NewCache(parseTag, validate)
+//    cache := fields.NewCache(parseTag, validate, isLeafType)
 //
 // To get the fields of a struct type as determined by the above rules, call
 // the Fields method:
@@ -76,13 +87,16 @@ type ParseTagFunc func(reflect.StructTag) (name string, keep bool, other interfa
 
 type ValidateFunc func(reflect.Type) error
 
+type LeafTypesFunc func(reflect.Type) bool
+
 // A Cache records information about the fields of struct types.
 //
 // A Cache is safe for use by multiple goroutines.
 type Cache struct {
-	parseTag ParseTagFunc
-	validate ValidateFunc
-	cache    atomiccache.Cache // from reflect.Type to cacheValue
+	parseTag  ParseTagFunc
+	validate  ValidateFunc
+	leafTypes LeafTypesFunc
+	cache     atomiccache.Cache // from reflect.Type to cacheValue
 }
 
 // NewCache constructs a Cache.
@@ -97,7 +111,7 @@ type Cache struct {
 // returns an error if the struct type is invalid in any way. For example, it
 // may check that all of the struct field tags are valid, or that all fields
 // are of an appropriate type.
-func NewCache(parseTag ParseTagFunc, validate ValidateFunc) *Cache {
+func NewCache(parseTag ParseTagFunc, validate ValidateFunc, leafTypes LeafTypesFunc) *Cache {
 	if parseTag == nil {
 		parseTag = func(reflect.StructTag) (string, bool, interface{}, error) {
 			return "", true, nil, nil
@@ -108,7 +122,17 @@ func NewCache(parseTag ParseTagFunc, validate ValidateFunc) *Cache {
 			return nil
 		}
 	}
-	return &Cache{parseTag: parseTag, validate: validate}
+	if leafTypes == nil {
+		leafTypes = func(reflect.Type) bool {
+			return false
+		}
+	}
+
+	return &Cache{
+		parseTag:  parseTag,
+		validate:  validate,
+		leafTypes: leafTypes,
+	}
 }
 
 // A fieldScan represents an item on the fieldByNameFunc scan work list.
@@ -270,6 +294,7 @@ func (c *Cache) listFields(t reflect.Type) ([]Field, error) {
 			visited[t] = true
 			for i := 0; i < t.NumField(); i++ {
 				f := t.Field(i)
+
 				exported := (f.PkgPath == "")
 
 				// If a named field is unexported, ignore it. An anonymous
@@ -285,6 +310,10 @@ func (c *Cache) listFields(t reflect.Type) ([]Field, error) {
 					return nil, err
 				}
 				if !keep {
+					continue
+				}
+				if c.leafTypes(f.Type) {
+					fields = append(fields, newField(f, tagName, other, scan.index, i))
 					continue
 				}
 

@@ -1241,4 +1241,4 @@ func spannerTagParser(t reflect.StructTag) (name string, keep bool, other interf
 	return "", true, nil, nil
 }
 
-var fieldCache = fields.NewCache(spannerTagParser, nil)
+var fieldCache = fields.NewCache(spannerTagParser, nil, nil)

@@ -73,6 +73,8 @@ var (
 	testGeoPt0   = GeoPoint{Lat: 1.2, Lng: 3.4}
 	testGeoPt1   = GeoPoint{Lat: 5, Lng: 10}
 	testBadGeoPt = GeoPoint{Lat: 1000, Lng: 34}
+
+	ts = time.Unix(1e9, 0).UTC()
 )
 
 type B0 struct {
@@ -403,6 +405,14 @@ var two int = 2
 
 type PtrToInt struct {
 	I *int
+}
+
+type EmbeddedTime struct {
+	time.Time
+}
+
+type SpecialTime struct {
+	MyTime EmbeddedTime
 }
 
 type Doubler struct {
@@ -1874,6 +1884,22 @@ var testCases = []testCase{
 		"duplicate Property",
 		"",
 	},
+	{
+		"embedded time field",
+		&SpecialTime{MyTime: EmbeddedTime{ts}},
+		&SpecialTime{MyTime: EmbeddedTime{ts}},
+		"",
+		"",
+	},
+	{
+		"embedded time load",
+		&PropertyList{
+			Property{Name: "MyTime.Time", Value: ts},
+		},
+		&SpecialTime{MyTime: EmbeddedTime{ts}},
+		"",
+		"",
+	},
 }
 
 // checkErr returns the empty string if either both want and err are zero,
@@ -1917,11 +1943,14 @@ func TestRoundTrip(t *testing.T) {
 		}
 
 		equal := false
-		if gotT, ok := got.(*T); ok {
-			// Round tripping a time.Time can result in a different time.Location: Local instead of UTC.
-			// We therefore test equality explicitly, instead of relying on reflect.DeepEqual.
-			equal = gotT.T.Equal(tc.want.(*T).T)
-		} else {
+		switch v := got.(type) {
+		// Round tripping a time.Time can result in a different time.Location: Local instead of UTC.
+		// We therefore test equality explicitly, instead of relying on reflect.DeepEqual.
+		case *T:
+			equal = v.T.Equal(tc.want.(*T).T)
+		case *SpecialTime:
+			equal = v.MyTime.Equal(tc.want.(*SpecialTime).MyTime.Time)
+		default:
 			equal = reflect.DeepEqual(got, tc.want)
 		}
 		if !equal {
