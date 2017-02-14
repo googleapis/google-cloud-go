@@ -76,7 +76,7 @@ func TestReadTimestamp(t *testing.T) {
 
 // Test TimestampBound.String.
 func TestTimestampBoundString(t *testing.T) {
-	ts := time.Unix(1136239445, 0)
+	ts := time.Unix(1136239445, 0).UTC()
 	var tests = []struct {
 		tb   TimestampBound
 		want string
@@ -95,17 +95,17 @@ func TestTimestampBoundString(t *testing.T) {
 		},
 		{
 			tb:   TimestampBound{mode: minReadTimestamp, t: ts},
-			want: "(minReadTimestamp: 2006-01-02 14:04:05 -0800 PST)",
+			want: "(minReadTimestamp: 2006-01-02 22:04:05 +0000 UTC)",
 		},
 		{
 			tb:   TimestampBound{mode: readTimestamp, t: ts},
-			want: "(readTimestamp: 2006-01-02 14:04:05 -0800 PST)",
+			want: "(readTimestamp: 2006-01-02 22:04:05 +0000 UTC)",
 		},
 	}
 	for _, test := range tests {
 		got := test.tb.String()
 		if got != test.want {
-			t.Errorf("%#v.String() = %q; want %q", test.tb, got, test.want)
+			t.Errorf("%#v.String():\ngot  %q\nwant %q", test.tb, got, test.want)
 		}
 	}
 }
