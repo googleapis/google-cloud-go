@@ -22,8 +22,8 @@ and instances.
 Note: This package is in alpha. Backwards-incompatible changes may occur
 without notice.
 
-// See https://cloud.google.com/spanner/docs/getting-started/go/ for an introduction
-// to Cloud Spanner and additional help on using this API.
+See https://cloud.google.com/spanner/docs/getting-started/go/ for an introduction
+to Cloud Spanner and additional help on using this API.
 
 Creating a Client
 
