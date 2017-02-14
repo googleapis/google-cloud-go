@@ -1763,14 +1763,14 @@ func TestNewRow(t *testing.T) {
 			},
 		},
 	} {
-		t.Run("", func(t *testing.T) {
-			got, err := NewRow(test.names, test.values)
-			if !reflect.DeepEqual(err, test.wantErr) {
-				t.Fatalf("NewRow(%v,%v).err = %s, want %s", test.names, test.values, err, test.wantErr)
-			}
-			if !reflect.DeepEqual(got, test.want) {
-				t.Fatalf("NewRow(%v,%v) = %s, want %s", test.names, test.values, got, test.want)
-			}
-		})
+		got, err := NewRow(test.names, test.values)
+		if !reflect.DeepEqual(err, test.wantErr) {
+			t.Errorf("NewRow(%v,%v).err = %s, want %s", test.names, test.values, err, test.wantErr)
+			continue
+		}
+		if !reflect.DeepEqual(got, test.want) {
+			t.Errorf("NewRow(%v,%v) = %s, want %s", test.names, test.values, got, test.want)
+			continue
+		}
 	}
 }
