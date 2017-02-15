@@ -82,13 +82,16 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		option.WithUserAgent(userAgent),
 	}
 	opts = append(o, opts...)
-	hc, _, err := transport.NewHTTPClient(ctx, opts...)
+	hc, ep, err := transport.NewHTTPClient(ctx, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
 	rawService, err := raw.New(hc)
 	if err != nil {
 		return nil, fmt.Errorf("storage client: %v", err)
+	}
+	if ep != "" {
+		rawService.BasePath = ep
 	}
 	return &Client{
 		hc:  hc,
