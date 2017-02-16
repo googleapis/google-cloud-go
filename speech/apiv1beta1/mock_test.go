@@ -1,4 +1,4 @@
-// Copyright 2016, Google Inc. All rights reserved.
+// Copyright 2017, Google Inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -131,8 +131,18 @@ func TestSpeechSyncRecognize(t *testing.T) {
 
 	mockSpeech.resps = append(mockSpeech.resps[:0], expectedResponse)
 
-	var config *speechpb.RecognitionConfig = &speechpb.RecognitionConfig{}
-	var audio *speechpb.RecognitionAudio = &speechpb.RecognitionAudio{}
+	var encoding speechpb.RecognitionConfig_AudioEncoding = speechpb.RecognitionConfig_FLAC
+	var sampleRate int32 = 44100
+	var config = &speechpb.RecognitionConfig{
+		Encoding:   encoding,
+		SampleRate: sampleRate,
+	}
+	var uri string = "gs://bucket_name/file_name.flac"
+	var audio = &speechpb.RecognitionAudio{
+		AudioSource: &speechpb.RecognitionAudio_Uri{
+			Uri: uri,
+		},
+	}
 	var request = &speechpb.SyncRecognizeRequest{
 		Config: config,
 		Audio:  audio,
@@ -162,8 +172,18 @@ func TestSpeechSyncRecognizeError(t *testing.T) {
 	errCode := codes.Internal
 	mockSpeech.err = grpc.Errorf(errCode, "test error")
 
-	var config *speechpb.RecognitionConfig = &speechpb.RecognitionConfig{}
-	var audio *speechpb.RecognitionAudio = &speechpb.RecognitionAudio{}
+	var encoding speechpb.RecognitionConfig_AudioEncoding = speechpb.RecognitionConfig_FLAC
+	var sampleRate int32 = 44100
+	var config = &speechpb.RecognitionConfig{
+		Encoding:   encoding,
+		SampleRate: sampleRate,
+	}
+	var uri string = "gs://bucket_name/file_name.flac"
+	var audio = &speechpb.RecognitionAudio{
+		AudioSource: &speechpb.RecognitionAudio_Uri{
+			Uri: uri,
+		},
+	}
 	var request = &speechpb.SyncRecognizeRequest{
 		Config: config,
 		Audio:  audio,
@@ -197,8 +217,18 @@ func TestSpeechAsyncRecognize(t *testing.T) {
 		Result: &longrunningpb.Operation_Response{Response: any},
 	})
 
-	var config *speechpb.RecognitionConfig = &speechpb.RecognitionConfig{}
-	var audio *speechpb.RecognitionAudio = &speechpb.RecognitionAudio{}
+	var encoding speechpb.RecognitionConfig_AudioEncoding = speechpb.RecognitionConfig_FLAC
+	var sampleRate int32 = 44100
+	var config = &speechpb.RecognitionConfig{
+		Encoding:   encoding,
+		SampleRate: sampleRate,
+	}
+	var uri string = "gs://bucket_name/file_name.flac"
+	var audio = &speechpb.RecognitionAudio{
+		AudioSource: &speechpb.RecognitionAudio_Uri{
+			Uri: uri,
+		},
+	}
 	var request = &speechpb.AsyncRecognizeRequest{
 		Config: config,
 		Audio:  audio,
@@ -242,8 +272,18 @@ func TestSpeechAsyncRecognizeError(t *testing.T) {
 		},
 	})
 
-	var config *speechpb.RecognitionConfig = &speechpb.RecognitionConfig{}
-	var audio *speechpb.RecognitionAudio = &speechpb.RecognitionAudio{}
+	var encoding speechpb.RecognitionConfig_AudioEncoding = speechpb.RecognitionConfig_FLAC
+	var sampleRate int32 = 44100
+	var config = &speechpb.RecognitionConfig{
+		Encoding:   encoding,
+		SampleRate: sampleRate,
+	}
+	var uri string = "gs://bucket_name/file_name.flac"
+	var audio = &speechpb.RecognitionAudio{
+		AudioSource: &speechpb.RecognitionAudio_Uri{
+			Uri: uri,
+		},
+	}
 	var request = &speechpb.AsyncRecognizeRequest{
 		Config: config,
 		Audio:  audio,

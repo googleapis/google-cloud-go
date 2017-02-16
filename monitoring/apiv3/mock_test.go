@@ -1,4 +1,4 @@
-// Copyright 2016, Google Inc. All rights reserved.
+// Copyright 2017, Google Inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1012,7 +1012,7 @@ func TestMetricServiceListTimeSeries(t *testing.T) {
 	var formattedName string = MetricProjectPath("[PROJECT]")
 	var filter string = "filter-1274492040"
 	var interval *monitoringpb.TimeInterval = &monitoringpb.TimeInterval{}
-	var view monitoringpb.ListTimeSeriesRequest_TimeSeriesView = 0
+	var view monitoringpb.ListTimeSeriesRequest_TimeSeriesView = monitoringpb.ListTimeSeriesRequest_FULL
 	var request = &monitoringpb.ListTimeSeriesRequest{
 		Name:     formattedName,
 		Filter:   filter,
@@ -1057,7 +1057,7 @@ func TestMetricServiceListTimeSeriesError(t *testing.T) {
 	var formattedName string = MetricProjectPath("[PROJECT]")
 	var filter string = "filter-1274492040"
 	var interval *monitoringpb.TimeInterval = &monitoringpb.TimeInterval{}
-	var view monitoringpb.ListTimeSeriesRequest_TimeSeriesView = 0
+	var view monitoringpb.ListTimeSeriesRequest_TimeSeriesView = monitoringpb.ListTimeSeriesRequest_FULL
 	var request = &monitoringpb.ListTimeSeriesRequest{
 		Name:     formattedName,
 		Filter:   filter,

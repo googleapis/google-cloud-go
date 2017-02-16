@@ -1,4 +1,4 @@
-// Copyright 2016, Google Inc. All rights reserved.
+// Copyright 2017, Google Inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,10 +19,9 @@ package admin
 import (
 	"fmt"
 	"math"
-	"runtime"
-	"strings"
 	"time"
 
+	"cloud.google.com/go/internal/version"
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
@@ -32,7 +31,6 @@ import (
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 )
 
 var (
@@ -114,7 +112,7 @@ type IamClient struct {
 	CallOptions *IamCallOptions
 
 	// The metadata to be sent with each request.
-	metadata metadata.MD
+	xGoogHeader string
 }
 
 // NewIamClient creates a new iam client.
@@ -146,7 +144,7 @@ func NewIamClient(ctx context.Context, opts ...option.ClientOption) (*IamClient,
 
 		iamClient: adminpb.NewIAMClient(conn),
 	}
-	c.SetGoogleClientInfo("gax", gax.Version)
+	c.SetGoogleClientInfo("gapic", version.Repo)
 	return c, nil
 }
 
@@ -164,10 +162,8 @@ func (c *IamClient) Close() error {
 // SetGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *IamClient) SetGoogleClientInfo(name, version string) {
-	goVersion := strings.Replace(runtime.Version(), " ", "_", -1)
-	v := fmt.Sprintf("%s/%s %s gax/%s go/%s", name, version, gapicNameVersion, gax.Version, goVersion)
-	c.metadata = metadata.Pairs("x-goog-api-client", v)
+func (c *IamClient) SetGoogleClientInfo(clientName, clientVersion string) {
+	c.xGoogHeader = fmt.Sprintf("gl-go/%s %s/%s gax/%s grpc/", version.Go(), clientName, clientVersion, gax.Version)
 }
 
 // IamProjectPath returns the path for the project resource.
@@ -208,8 +204,7 @@ func IamKeyPath(project, serviceAccount, key string) string {
 
 // ListServiceAccounts lists [ServiceAccounts][google.iam.admin.v1.ServiceAccount] for a project.
 func (c *IamClient) ListServiceAccounts(ctx context.Context, req *adminpb.ListServiceAccountsRequest) *ServiceAccountIterator {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	it := &ServiceAccountIterator{}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ServiceAccount, string, error) {
 		var resp *adminpb.ListServiceAccountsResponse
@@ -243,8 +238,7 @@ func (c *IamClient) ListServiceAccounts(ctx context.Context, req *adminpb.ListSe
 
 // GetServiceAccount gets a [ServiceAccount][google.iam.admin.v1.ServiceAccount].
 func (c *IamClient) GetServiceAccount(ctx context.Context, req *adminpb.GetServiceAccountRequest) (*adminpb.ServiceAccount, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *adminpb.ServiceAccount
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -260,8 +254,7 @@ func (c *IamClient) GetServiceAccount(ctx context.Context, req *adminpb.GetServi
 // CreateServiceAccount creates a [ServiceAccount][google.iam.admin.v1.ServiceAccount]
 // and returns it.
 func (c *IamClient) CreateServiceAccount(ctx context.Context, req *adminpb.CreateServiceAccountRequest) (*adminpb.ServiceAccount, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *adminpb.ServiceAccount
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -280,8 +273,7 @@ func (c *IamClient) CreateServiceAccount(ctx context.Context, req *adminpb.Creat
 // `display_name` .
 // The `etag` is mandatory.
 func (c *IamClient) UpdateServiceAccount(ctx context.Context, req *adminpb.ServiceAccount) (*adminpb.ServiceAccount, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *adminpb.ServiceAccount
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -296,8 +288,7 @@ func (c *IamClient) UpdateServiceAccount(ctx context.Context, req *adminpb.Servi
 
 // DeleteServiceAccount deletes a [ServiceAccount][google.iam.admin.v1.ServiceAccount].
 func (c *IamClient) DeleteServiceAccount(ctx context.Context, req *adminpb.DeleteServiceAccountRequest) error {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
 		_, err = c.iamClient.DeleteServiceAccount(ctx, req)
@@ -308,8 +299,7 @@ func (c *IamClient) DeleteServiceAccount(ctx context.Context, req *adminpb.Delet
 
 // ListServiceAccountKeys lists [ServiceAccountKeys][google.iam.admin.v1.ServiceAccountKey].
 func (c *IamClient) ListServiceAccountKeys(ctx context.Context, req *adminpb.ListServiceAccountKeysRequest) (*adminpb.ListServiceAccountKeysResponse, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *adminpb.ListServiceAccountKeysResponse
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -325,8 +315,7 @@ func (c *IamClient) ListServiceAccountKeys(ctx context.Context, req *adminpb.Lis
 // GetServiceAccountKey gets the [ServiceAccountKey][google.iam.admin.v1.ServiceAccountKey]
 // by key id.
 func (c *IamClient) GetServiceAccountKey(ctx context.Context, req *adminpb.GetServiceAccountKeyRequest) (*adminpb.ServiceAccountKey, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *adminpb.ServiceAccountKey
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -342,8 +331,7 @@ func (c *IamClient) GetServiceAccountKey(ctx context.Context, req *adminpb.GetSe
 // CreateServiceAccountKey creates a [ServiceAccountKey][google.iam.admin.v1.ServiceAccountKey]
 // and returns it.
 func (c *IamClient) CreateServiceAccountKey(ctx context.Context, req *adminpb.CreateServiceAccountKeyRequest) (*adminpb.ServiceAccountKey, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *adminpb.ServiceAccountKey
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -358,8 +346,7 @@ func (c *IamClient) CreateServiceAccountKey(ctx context.Context, req *adminpb.Cr
 
 // DeleteServiceAccountKey deletes a [ServiceAccountKey][google.iam.admin.v1.ServiceAccountKey].
 func (c *IamClient) DeleteServiceAccountKey(ctx context.Context, req *adminpb.DeleteServiceAccountKeyRequest) error {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
 		_, err = c.iamClient.DeleteServiceAccountKey(ctx, req)
@@ -370,8 +357,7 @@ func (c *IamClient) DeleteServiceAccountKey(ctx context.Context, req *adminpb.De
 
 // SignBlob signs a blob using a service account's system-managed private key.
 func (c *IamClient) SignBlob(ctx context.Context, req *adminpb.SignBlobRequest) (*adminpb.SignBlobResponse, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *adminpb.SignBlobResponse
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -387,8 +373,7 @@ func (c *IamClient) SignBlob(ctx context.Context, req *adminpb.SignBlobRequest) 
 // getIamPolicy returns the IAM access control policy for a
 // [ServiceAccount][google.iam.admin.v1.ServiceAccount].
 func (c *IamClient) getIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -404,8 +389,7 @@ func (c *IamClient) getIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReq
 // setIamPolicy sets the IAM access control policy for a
 // [ServiceAccount][google.iam.admin.v1.ServiceAccount].
 func (c *IamClient) setIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -421,8 +405,7 @@ func (c *IamClient) setIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReq
 // TestIamPermissions tests the specified permissions against the IAM access control policy
 // for a [ServiceAccount][google.iam.admin.v1.ServiceAccount].
 func (c *IamClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -439,8 +422,7 @@ func (c *IamClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPe
 // A role is grantable if it can be used as the role in a binding for a policy
 // for that resource.
 func (c *IamClient) QueryGrantableRoles(ctx context.Context, req *adminpb.QueryGrantableRolesRequest) (*adminpb.QueryGrantableRolesResponse, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *adminpb.QueryGrantableRolesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error

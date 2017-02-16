@@ -1,4 +1,4 @@
-// Copyright 2016, Google Inc. All rights reserved.
+// Copyright 2017, Google Inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -186,7 +186,7 @@ func TestLanguageServiceAnalyzeEntities(t *testing.T) {
 	mockLanguage.resps = append(mockLanguage.resps[:0], expectedResponse)
 
 	var document *languagepb.Document = &languagepb.Document{}
-	var encodingType languagepb.EncodingType = 0
+	var encodingType languagepb.EncodingType = languagepb.EncodingType_NONE
 	var request = &languagepb.AnalyzeEntitiesRequest{
 		Document:     document,
 		EncodingType: encodingType,
@@ -217,7 +217,7 @@ func TestLanguageServiceAnalyzeEntitiesError(t *testing.T) {
 	mockLanguage.err = grpc.Errorf(errCode, "test error")
 
 	var document *languagepb.Document = &languagepb.Document{}
-	var encodingType languagepb.EncodingType = 0
+	var encodingType languagepb.EncodingType = languagepb.EncodingType_NONE
 	var request = &languagepb.AnalyzeEntitiesRequest{
 		Document:     document,
 		EncodingType: encodingType,
@@ -247,7 +247,7 @@ func TestLanguageServiceAnalyzeSyntax(t *testing.T) {
 	mockLanguage.resps = append(mockLanguage.resps[:0], expectedResponse)
 
 	var document *languagepb.Document = &languagepb.Document{}
-	var encodingType languagepb.EncodingType = 0
+	var encodingType languagepb.EncodingType = languagepb.EncodingType_NONE
 	var request = &languagepb.AnalyzeSyntaxRequest{
 		Document:     document,
 		EncodingType: encodingType,
@@ -278,7 +278,7 @@ func TestLanguageServiceAnalyzeSyntaxError(t *testing.T) {
 	mockLanguage.err = grpc.Errorf(errCode, "test error")
 
 	var document *languagepb.Document = &languagepb.Document{}
-	var encodingType languagepb.EncodingType = 0
+	var encodingType languagepb.EncodingType = languagepb.EncodingType_NONE
 	var request = &languagepb.AnalyzeSyntaxRequest{
 		Document:     document,
 		EncodingType: encodingType,
@@ -309,7 +309,7 @@ func TestLanguageServiceAnnotateText(t *testing.T) {
 
 	var document *languagepb.Document = &languagepb.Document{}
 	var features *languagepb.AnnotateTextRequest_Features = &languagepb.AnnotateTextRequest_Features{}
-	var encodingType languagepb.EncodingType = 0
+	var encodingType languagepb.EncodingType = languagepb.EncodingType_NONE
 	var request = &languagepb.AnnotateTextRequest{
 		Document:     document,
 		Features:     features,
@@ -342,7 +342,7 @@ func TestLanguageServiceAnnotateTextError(t *testing.T) {
 
 	var document *languagepb.Document = &languagepb.Document{}
 	var features *languagepb.AnnotateTextRequest_Features = &languagepb.AnnotateTextRequest_Features{}
-	var encodingType languagepb.EncodingType = 0
+	var encodingType languagepb.EncodingType = languagepb.EncodingType_NONE
 	var request = &languagepb.AnnotateTextRequest{
 		Document:     document,
 		Features:     features,
