@@ -1,4 +1,4 @@
-// Copyright 2016, Google Inc. All rights reserved.
+// Copyright 2017, Google Inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,10 +19,9 @@ package instance
 import (
 	"fmt"
 	"math"
-	"runtime"
-	"strings"
 	"time"
 
+	"cloud.google.com/go/internal/version"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
@@ -34,7 +33,6 @@ import (
 	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 )
 
 var (
@@ -108,7 +106,7 @@ type InstanceAdminClient struct {
 	CallOptions *InstanceAdminCallOptions
 
 	// The metadata to be sent with each request.
-	metadata metadata.MD
+	xGoogHeader string
 }
 
 // NewInstanceAdminClient creates a new instance admin client.
@@ -145,7 +143,7 @@ func NewInstanceAdminClient(ctx context.Context, opts ...option.ClientOption) (*
 
 		instanceAdminClient: instancepb.NewInstanceAdminClient(conn),
 	}
-	c.SetGoogleClientInfo("gax", gax.Version)
+	c.SetGoogleClientInfo("gapic", version.Repo)
 	return c, nil
 }
 
@@ -163,10 +161,8 @@ func (c *InstanceAdminClient) Close() error {
 // SetGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *InstanceAdminClient) SetGoogleClientInfo(name, version string) {
-	goVersion := strings.Replace(runtime.Version(), " ", "_", -1)
-	v := fmt.Sprintf("%s/%s %s gax/%s go/%s", name, version, gapicNameVersion, gax.Version, goVersion)
-	c.metadata = metadata.Pairs("x-goog-api-client", v)
+func (c *InstanceAdminClient) SetGoogleClientInfo(clientName, clientVersion string) {
+	c.xGoogHeader = fmt.Sprintf("gl-go/%s %s/%s gax/%s grpc/", version.Go(), clientName, clientVersion, gax.Version)
 }
 
 // InstanceAdminProjectPath returns the path for the project resource.
@@ -206,8 +202,7 @@ func InstanceAdminInstancePath(project, instance string) string {
 
 // ListInstanceConfigs lists the supported instance configurations for a given project.
 func (c *InstanceAdminClient) ListInstanceConfigs(ctx context.Context, req *instancepb.ListInstanceConfigsRequest) *InstanceConfigIterator {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	it := &InstanceConfigIterator{}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*instancepb.InstanceConfig, string, error) {
 		var resp *instancepb.ListInstanceConfigsResponse
@@ -241,8 +236,7 @@ func (c *InstanceAdminClient) ListInstanceConfigs(ctx context.Context, req *inst
 
 // GetInstanceConfig gets information about a particular instance configuration.
 func (c *InstanceAdminClient) GetInstanceConfig(ctx context.Context, req *instancepb.GetInstanceConfigRequest) (*instancepb.InstanceConfig, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *instancepb.InstanceConfig
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -257,8 +251,7 @@ func (c *InstanceAdminClient) GetInstanceConfig(ctx context.Context, req *instan
 
 // ListInstances lists all instances in the given project.
 func (c *InstanceAdminClient) ListInstances(ctx context.Context, req *instancepb.ListInstancesRequest) *InstanceIterator {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	it := &InstanceIterator{}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*instancepb.Instance, string, error) {
 		var resp *instancepb.ListInstancesResponse
@@ -292,8 +285,7 @@ func (c *InstanceAdminClient) ListInstances(ctx context.Context, req *instancepb
 
 // GetInstance gets information about a particular instance.
 func (c *InstanceAdminClient) GetInstance(ctx context.Context, req *instancepb.GetInstanceRequest) (*instancepb.Instance, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *instancepb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -341,8 +333,7 @@ func (c *InstanceAdminClient) GetInstance(ctx context.Context, req *instancepb.G
 // The [response][google.longrunning.Operation.response] field type is
 // [Instance][google.spanner.admin.instance.v1.Instance], if successful.
 func (c *InstanceAdminClient) CreateInstance(ctx context.Context, req *instancepb.CreateInstanceRequest) (*InstanceOperation, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -398,8 +389,7 @@ func (c *InstanceAdminClient) CreateInstance(ctx context.Context, req *instancep
 // Authorization requires `spanner.instances.update` permission on
 // resource [name][google.spanner.admin.instance.v1.Instance.name].
 func (c *InstanceAdminClient) UpdateInstance(ctx context.Context, req *instancepb.UpdateInstanceRequest) (*InstanceOperation, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -426,8 +416,7 @@ func (c *InstanceAdminClient) UpdateInstance(ctx context.Context, req *instancep
 //     irrevocably disappear from the API. All data in the databases
 //     is permanently deleted.
 func (c *InstanceAdminClient) DeleteInstance(ctx context.Context, req *instancepb.DeleteInstanceRequest) error {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
 		_, err = c.instanceAdminClient.DeleteInstance(ctx, req)
@@ -442,8 +431,7 @@ func (c *InstanceAdminClient) DeleteInstance(ctx context.Context, req *instancep
 // Authorization requires `spanner.instances.setIamPolicy` on
 // [resource][google.iam.v1.SetIamPolicyRequest.resource].
 func (c *InstanceAdminClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -462,8 +450,7 @@ func (c *InstanceAdminClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 // Authorization requires `spanner.instances.getIamPolicy` on
 // [resource][google.iam.v1.GetIamPolicyRequest.resource].
 func (c *InstanceAdminClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -483,8 +470,7 @@ func (c *InstanceAdminClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 // permission on the containing Google Cloud Project. Otherwise returns an
 // empty set of permissions.
 func (c *InstanceAdminClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error

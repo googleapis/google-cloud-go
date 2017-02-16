@@ -1,4 +1,4 @@
-// Copyright 2016, Google Inc. All rights reserved.
+// Copyright 2017, Google Inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,4 +22,14 @@
 // noted on the individual method pages.
 package monitoring // import "cloud.google.com/go/monitoring/apiv3"
 
-const gapicNameVersion = "gapic/0.1.0"
+import (
+	"golang.org/x/net/context"
+	"google.golang.org/grpc/metadata"
+)
+
+func insertXGoog(ctx context.Context, val string) context.Context {
+	md, _ := metadata.FromContext(ctx)
+	md = md.Copy()
+	md["x-goog-api-client"] = []string{val}
+	return metadata.NewContext(ctx, md)
+}

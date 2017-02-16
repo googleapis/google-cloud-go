@@ -1,4 +1,4 @@
-// Copyright 2016, Google Inc. All rights reserved.
+// Copyright 2017, Google Inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,10 +19,9 @@ package monitoring
 import (
 	"fmt"
 	"math"
-	"runtime"
-	"strings"
 	"time"
 
+	"cloud.google.com/go/internal/version"
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
@@ -33,7 +32,6 @@ import (
 	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 )
 
 var (
@@ -105,7 +103,7 @@ type MetricClient struct {
 	CallOptions *MetricCallOptions
 
 	// The metadata to be sent with each request.
-	metadata metadata.MD
+	xGoogHeader string
 }
 
 // NewMetricClient creates a new metric service client.
@@ -123,7 +121,7 @@ func NewMetricClient(ctx context.Context, opts ...option.ClientOption) (*MetricC
 
 		metricClient: monitoringpb.NewMetricServiceClient(conn),
 	}
-	c.SetGoogleClientInfo("gax", gax.Version)
+	c.SetGoogleClientInfo("gapic", version.Repo)
 	return c, nil
 }
 
@@ -141,10 +139,8 @@ func (c *MetricClient) Close() error {
 // SetGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *MetricClient) SetGoogleClientInfo(name, version string) {
-	goVersion := strings.Replace(runtime.Version(), " ", "_", -1)
-	v := fmt.Sprintf("%s/%s %s gax/%s go/%s", name, version, gapicNameVersion, gax.Version, goVersion)
-	c.metadata = metadata.Pairs("x-goog-api-client", v)
+func (c *MetricClient) SetGoogleClientInfo(clientName, clientVersion string) {
+	c.xGoogHeader = fmt.Sprintf("gl-go/%s %s/%s gax/%s grpc/", version.Go(), clientName, clientVersion, gax.Version)
 }
 
 // MetricProjectPath returns the path for the project resource.
@@ -184,8 +180,7 @@ func MetricMonitoredResourceDescriptorPath(project, monitoredResourceDescriptor 
 
 // ListMonitoredResourceDescriptors lists monitored resource descriptors that match a filter. This method does not require a Stackdriver account.
 func (c *MetricClient) ListMonitoredResourceDescriptors(ctx context.Context, req *monitoringpb.ListMonitoredResourceDescriptorsRequest) *MonitoredResourceDescriptorIterator {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	it := &MonitoredResourceDescriptorIterator{}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*monitoredrespb.MonitoredResourceDescriptor, string, error) {
 		var resp *monitoringpb.ListMonitoredResourceDescriptorsResponse
@@ -219,8 +214,7 @@ func (c *MetricClient) ListMonitoredResourceDescriptors(ctx context.Context, req
 
 // GetMonitoredResourceDescriptor gets a single monitored resource descriptor. This method does not require a Stackdriver account.
 func (c *MetricClient) GetMonitoredResourceDescriptor(ctx context.Context, req *monitoringpb.GetMonitoredResourceDescriptorRequest) (*monitoredrespb.MonitoredResourceDescriptor, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *monitoredrespb.MonitoredResourceDescriptor
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -235,8 +229,7 @@ func (c *MetricClient) GetMonitoredResourceDescriptor(ctx context.Context, req *
 
 // ListMetricDescriptors lists metric descriptors that match a filter. This method does not require a Stackdriver account.
 func (c *MetricClient) ListMetricDescriptors(ctx context.Context, req *monitoringpb.ListMetricDescriptorsRequest) *MetricDescriptorIterator {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	it := &MetricDescriptorIterator{}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metricpb.MetricDescriptor, string, error) {
 		var resp *monitoringpb.ListMetricDescriptorsResponse
@@ -270,8 +263,7 @@ func (c *MetricClient) ListMetricDescriptors(ctx context.Context, req *monitorin
 
 // GetMetricDescriptor gets a single metric descriptor. This method does not require a Stackdriver account.
 func (c *MetricClient) GetMetricDescriptor(ctx context.Context, req *monitoringpb.GetMetricDescriptorRequest) (*metricpb.MetricDescriptor, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *metricpb.MetricDescriptor
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -288,8 +280,7 @@ func (c *MetricClient) GetMetricDescriptor(ctx context.Context, req *monitoringp
 // User-created metric descriptors define
 // [custom metrics](/monitoring/custom-metrics).
 func (c *MetricClient) CreateMetricDescriptor(ctx context.Context, req *monitoringpb.CreateMetricDescriptorRequest) (*metricpb.MetricDescriptor, error) {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *metricpb.MetricDescriptor
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
@@ -305,8 +296,7 @@ func (c *MetricClient) CreateMetricDescriptor(ctx context.Context, req *monitori
 // DeleteMetricDescriptor deletes a metric descriptor. Only user-created
 // [custom metrics](/monitoring/custom-metrics) can be deleted.
 func (c *MetricClient) DeleteMetricDescriptor(ctx context.Context, req *monitoringpb.DeleteMetricDescriptorRequest) error {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
 		_, err = c.metricClient.DeleteMetricDescriptor(ctx, req)
@@ -317,8 +307,7 @@ func (c *MetricClient) DeleteMetricDescriptor(ctx context.Context, req *monitori
 
 // ListTimeSeries lists time series that match a filter. This method does not require a Stackdriver account.
 func (c *MetricClient) ListTimeSeries(ctx context.Context, req *monitoringpb.ListTimeSeriesRequest) *TimeSeriesIterator {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	it := &TimeSeriesIterator{}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*monitoringpb.TimeSeries, string, error) {
 		var resp *monitoringpb.ListTimeSeriesResponse
@@ -355,8 +344,7 @@ func (c *MetricClient) ListTimeSeries(ctx context.Context, req *monitoringpb.Lis
 // If any time series could not be written, a corresponding failure message is
 // included in the error response.
 func (c *MetricClient) CreateTimeSeries(ctx context.Context, req *monitoringpb.CreateTimeSeriesRequest) error {
-	md, _ := metadata.FromContext(ctx)
-	ctx = metadata.NewContext(ctx, metadata.Join(md, c.metadata))
+	ctx = insertXGoog(ctx, c.xGoogHeader)
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		var err error
 		_, err = c.metricClient.CreateTimeSeries(ctx, req)
