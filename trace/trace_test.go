@@ -214,7 +214,11 @@ func testTrace(t *testing.T, synchronous bool, fromRequest bool) {
 	const header = `0123456789ABCDEF0123456789ABCDEF/42;o=3`
 	rt := newFakeRoundTripper()
 	traceClient := newTestClient(rt)
-	var span *Span
+
+	span := traceClient.SpanFromHeader("/foo", header)
+	headerOrReqLabels := map[string]string{}
+	headerOrReqName := "/foo"
+
 	if fromRequest {
 		req, err := http.NewRequest("GET", "http://example.com/foo", nil)
 		if err != nil {
@@ -222,24 +226,17 @@ func testTrace(t *testing.T, synchronous bool, fromRequest bool) {
 		}
 		req.Header.Set("X-Cloud-Trace-Context", header)
 		span = traceClient.SpanFromRequest(req)
-	} else {
-		span = traceClient.SpanFromHeader("/foo", header)
-	}
-	uploaded := makeRequests(t, span, rt, synchronous, true)
-
-	if uploaded == nil {
-		t.Fatalf("No trace uploaded, expected one.")
-	}
-
-	var expectedServerLabels map[string]string
-	if fromRequest {
-		expectedServerLabels = map[string]string{
+		headerOrReqLabels = map[string]string{
 			"trace.cloud.google.com/http/host":   "example.com",
 			"trace.cloud.google.com/http/method": "GET",
 			"trace.cloud.google.com/http/url":    "http://example.com/foo",
 		}
-	} else {
-		expectedServerLabels = map[string]string{}
+		headerOrReqName = "example.com/foo"
+	}
+
+	uploaded := makeRequests(t, span, rt, synchronous, true)
+	if uploaded == nil {
+		t.Fatalf("No trace uploaded, expected one.")
 	}
 
 	expected := api.Traces{
@@ -255,7 +252,7 @@ func testTrace(t *testing.T, synchronous bool, fromRequest bool) {
 							"trace.cloud.google.com/http/status_code": "200",
 							"trace.cloud.google.com/http/url":         "http://example.com/bar",
 						},
-						Name: "/bar",
+						Name: "example.com/bar",
 					},
 					{
 						Kind: "RPC_CLIENT",
@@ -265,7 +262,7 @@ func testTrace(t *testing.T, synchronous bool, fromRequest bool) {
 							"trace.cloud.google.com/http/status_code": "200",
 							"trace.cloud.google.com/http/url":         "https://www.googleapis.com/compute/v1/projects/testproject/zones",
 						},
-						Name: "/compute/v1/projects/testproject/zones",
+						Name: "www.googleapis.com/compute/v1/projects/testproject/zones",
 					},
 					{
 						Kind: "RPC_CLIENT",
@@ -275,7 +272,7 @@ func testTrace(t *testing.T, synchronous bool, fromRequest bool) {
 							"trace.cloud.google.com/http/status_code": "200",
 							"trace.cloud.google.com/http/url":         "https://www.googleapis.com/storage/v1/b/testbucket/o",
 						},
-						Name: "/storage/v1/b/testbucket/o",
+						Name: "www.googleapis.com/storage/v1/b/testbucket/o",
 					},
 					&api.TraceSpan{
 						Kind:   "RPC_CLIENT",
@@ -289,8 +286,8 @@ func testTrace(t *testing.T, synchronous bool, fromRequest bool) {
 					},
 					{
 						Kind:   "RPC_SERVER",
-						Labels: expectedServerLabels,
-						Name:   "/foo",
+						Labels: headerOrReqLabels,
+						Name:   headerOrReqName,
 					},
 				},
 				TraceId: "0123456789ABCDEF0123456789ABCDEF",
@@ -372,7 +369,7 @@ func testTrace(t *testing.T, synchronous bool, fromRequest bool) {
 	if !reflect.DeepEqual(patch, expected) {
 		got, _ := json.Marshal(patch)
 		want, _ := json.Marshal(expected)
-		t.Errorf("PatchTraces request: got %s want %s", got, want)
+		t.Errorf("PatchTraces request: got %s \n\n want %s", got, want)
 	}
 }
 

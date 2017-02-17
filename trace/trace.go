@@ -604,7 +604,8 @@ func (s *Span) NewRemoteChild(r *http.Request) *Span {
 }
 
 func startNewChildWithRequest(r *http.Request, trace *trace, parentSpanID uint64) *Span {
-	newSpan := startNewChild(r.URL.Path, trace, parentSpanID)
+	name := r.URL.Host + r.URL.Path // drop scheme and query params
+	newSpan := startNewChild(name, trace, parentSpanID)
 	if r.Host == "" {
 		newSpan.host = r.URL.Host
 	} else {
