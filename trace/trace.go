@@ -37,9 +37,15 @@
 //     ...
 //   }
 //
-// SpanFromRequest returns nil if the *Client is nil, so you can disable
+// SpanFromRequest and NewSpan returns nil if the *Client is nil, so you can disable
 // tracing by not initializing your *Client variable.  All of the exported
 // functions on *Span do nothing when the *Span is nil.
+//
+// If you need to start traces that don't correspond to an incoming HTTP request,
+// you can use NewSpan to create a root-level span.
+//
+//   span := traceClient.NewSpan("span name")
+//   defer span.Finish()
 //
 // Although a trace span object is created for every request, only a subset of
 // traces are uploaded to the server, for efficiency.  By default, the requests
@@ -132,8 +138,8 @@
 // FromContext.
 //
 //   func foo(ctx context.Context) {
-//     newSpan := trace.FromContext(ctx).NewChild("in foo")
-//     defer newSpan.Finish()
+//     span := trace.FromContext(ctx).NewChild("in foo")
+//     defer span.Finish()
 //     ...
 //   }
 //
@@ -395,6 +401,27 @@ func (c *Client) SpanFromRequest(r *http.Request) *Span {
 	span.span.Kind = spanKindServer
 	span.rootSpan = true
 	configureSpanFromPolicy(span, c.policy, ok)
+	return span
+}
+
+// NewSpan returns a new trace span with the given name.
+//
+// A new trace and span ID is generated to trace the span.
+// Returned span need to be finished by calling Finish or FinishWait.
+func (c *Client) NewSpan(name string) *Span {
+	if c == nil {
+		return nil
+	}
+	t := &trace{
+		traceID:       nextTraceID(),
+		client:        c,
+		localOptions:  optionTrace,
+		globalOptions: optionTrace,
+	}
+	span := startNewChild(name, t, 0)
+	span.span.Kind = spanKindServer
+	span.rootSpan = true
+	configureSpanFromPolicy(span, c.policy, false)
 	return span
 }
 
