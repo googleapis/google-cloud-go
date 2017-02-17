@@ -74,7 +74,7 @@ type fakeDatastoreServer struct {
 
 func (f *fakeDatastoreServer) Lookup(ctx context.Context, req *dspb.LookupRequest) (*dspb.LookupResponse, error) {
 	if f.fail {
-		return nil, errors.New("failed!")
+		return nil, errors.New("lookup failed")
 	}
 	return &dspb.LookupResponse{}, nil
 }
