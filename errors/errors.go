@@ -88,6 +88,7 @@ import (
 	"time"
 
 	api "cloud.google.com/go/errorreporting/apiv1beta1"
+	"cloud.google.com/go/internal/version"
 	"cloud.google.com/go/logging"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"golang.org/x/net/context"
@@ -105,7 +106,11 @@ type apiInterface interface {
 
 var newApiInterface = func(ctx context.Context, opts ...option.ClientOption) (apiInterface, error) {
 	client, err := api.NewReportErrorsClient(ctx, opts...)
-	return client, err
+	if err != nil {
+		return nil, err
+	}
+	client.SetGoogleClientInfo("gccl", version.Repo)
+	return client, nil
 }
 
 type loggerInterface interface {
