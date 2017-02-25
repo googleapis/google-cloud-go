@@ -202,7 +202,7 @@ type SignedURLOptions struct {
 	// If provided, the client should provide the exact value on the request
 	// header in order to use the signed URL.
 	// Optional.
-	MD5 []byte
+	MD5 string
 }
 
 // SignedURL returns a URL for the specified object. Signed URLs allow
@@ -225,6 +225,12 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 	if opts.Expires.IsZero() {
 		return "", errors.New("storage: missing required expires option")
 	}
+	if opts.MD5 != "" {
+		md5, err := base64.StdEncoding.DecodeString(opts.MD5)
+		if err != nil || len(md5) != 16 {
+			return "", errors.New("storage: invalid MD5 checksum")
+		}
+	}
 
 	signBytes := opts.SignBytes
 	if opts.PrivateKey != nil {
@@ -241,8 +247,6 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 				sum[:],
 			)
 		}
-	} else {
-		signBytes = opts.SignBytes
 	}
 
 	u := &url.URL{

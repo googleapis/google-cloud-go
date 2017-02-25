@@ -236,7 +236,7 @@ func TestObjects(t *testing.T) {
 			GoogleAccessID: "xxx@clientid",
 			PrivateKey:     dummyKey("rsa"),
 			Method:         "GET",
-			MD5:            []byte("202cb962ac59075b964b07152d234b70"),
+			MD5:            "ICy5YqxZB1uWSwcVLSNLcA==",
 			Expires:        time.Date(2020, time.October, 2, 10, 0, 0, 0, time.UTC),
 			ContentType:    "application/json",
 			Headers:        []string{"x-header1", "x-header2"},
