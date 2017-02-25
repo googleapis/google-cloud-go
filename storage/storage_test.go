@@ -41,7 +41,7 @@ func TestSignedURL(t *testing.T) {
 		GoogleAccessID: "xxx@clientid",
 		PrivateKey:     dummyKey("rsa"),
 		Method:         "GET",
-		MD5:            []byte("202cb962ac59075b964b07152d234b70"),
+		MD5:            "ICy5YqxZB1uWSwcVLSNLcA==",
 		Expires:        expires,
 		ContentType:    "application/json",
 		Headers:        []string{"x-header1", "x-header2"},
@@ -51,13 +51,13 @@ func TestSignedURL(t *testing.T) {
 	}
 	want := "https://storage.googleapis.com/bucket-name/object-name?" +
 		"Expires=1033570800&GoogleAccessId=xxx%40clientid&Signature=" +
-		"c1dXXF5gVt4SwTpdOJb3titj9VaL7vVqFy3SiV3832Vt%2FQpE8DeaEcE49" +
-		"AaSFcbnHtN3m51m8OTAQ4j%2FzUFTg5ZRPBER5YfOBkbBd456TNYCSAtq4o" +
-		"hbcZN6F4GfGnVRw5BK4aqbWGeJ1gaAToOAGu7pdQPG8IIDUdKzSLZPMwfSq" +
-		"vg3xtHPtIc1T4Efbx0MYbEUKUoxrWq5VoAMe%2FhaBRMTwl4QZWJUasODjA" +
-		"uVVzESrzMqcyNmyKr2JIWCSpkBCLSGiMmyigZBmwSEqmO8GgR%2B2ebbcj%" +
-		"2BK7%2FqA4Dn3DP2Vv5qkdQhEorzmjeMP6sFYQvcnORNtcH323TlGWGf2OQ" +
-		"%3D%3D"
+		"ZMw18bZVhySNYAMEX87RMyuZCUMtGLVi%2B2zU2ByiQ0Rxgij%2BhFZ5LsT" +
+		"5ZPIH5h3QXB%2BiSb1URJnZo3aF0exVP%2FYR1hpg2e65w9HHt7yYjIqcg" +
+		"%2FfAOIyxriFtgRYk3oAv%2FFLF62fI8iF%2BCp0fWSm%2FHggz22blVnQz" +
+		"EtSP%2BuRhFle4172L%2B710sfMDtyQLKTz6W4TmRjC9ymTi8mVj95dZgyF" +
+		"RXbibTdtw0JzndE0Ig4c6pU4xDPPiyaziUSVDMIpzZDJH1GYOGHxbFasba4" +
+		"1rRoWWkdBnsMtHm2ck%2FsFD2leL6u8q0OpVAc4ZdxseucL4OpCy%2BCLhQ" +
+		"JFQT5bqSljP0g%3D%3D"
 	if url != want {
 		t.Fatalf("Unexpected signed URL; found %v", url)
 	}
@@ -69,7 +69,7 @@ func TestSignedURL_PEMPrivateKey(t *testing.T) {
 		GoogleAccessID: "xxx@clientid",
 		PrivateKey:     dummyKey("pem"),
 		Method:         "GET",
-		MD5:            []byte("202cb962ac59075b964b07152d234b70"),
+		MD5:            "ICy5YqxZB1uWSwcVLSNLcA==",
 		Expires:        expires,
 		ContentType:    "application/json",
 		Headers:        []string{"x-header1", "x-header2"},
@@ -79,9 +79,9 @@ func TestSignedURL_PEMPrivateKey(t *testing.T) {
 	}
 	want := "https://storage.googleapis.com/bucket-name/object-name?" +
 		"Expires=1033570800&GoogleAccessId=xxx%40clientid&Signature=" +
-		"mBaAxCtOmjKg2rboDFUnDeXDSH2l1W3swDB1ylpVicl3usUCjoBrgxmGp06" +
-		"zp5UK5KyzmylwaNZzDYP8je5LS8fUGguaA7TBIrBBcI0M1sRgGBrKi%2FfH" +
-		"RtJsUybrQq0xaMtxwf%2BezqAlwnYvWwlDB3sPrXZIo1v71z4xZg9b3dI%3D"
+		"gHlh63sOxJnNj22X%2B%2F4kwOSNMeqwXWr4udEfrzJPQcq1xzxA8ovMM5SOrOc%" +
+		"2FuE%2Ftc9%2Bq7a42CDBwZff1PsvuJMBDaPbluU257h%2Bvxx8lHMnb%2Bg1wD1" +
+		"99FiCE014MRH9TlIg%2FdXRkErosVWTy4GqAgZemmKHo0HwDGT6IovB9mdg%3D"
 	if url != want {
 		t.Fatalf("Unexpected signed URL; found %v", url)
 	}
@@ -95,7 +95,7 @@ func TestSignedURL_SignBytes(t *testing.T) {
 			return []byte("signed"), nil
 		},
 		Method:      "GET",
-		MD5:         []byte("202cb962ac59075b964b07152d234b70"),
+		MD5:         "ICy5YqxZB1uWSwcVLSNLcA==",
 		Expires:     expires,
 		ContentType: "application/json",
 		Headers:     []string{"x-header1", "x-header2"},
@@ -117,7 +117,7 @@ func TestSignedURL_URLUnsafeObjectName(t *testing.T) {
 		GoogleAccessID: "xxx@clientid",
 		PrivateKey:     dummyKey("pem"),
 		Method:         "GET",
-		MD5:            []byte("202cb962ac59075b964b07152d234b70"),
+		MD5:            "ICy5YqxZB1uWSwcVLSNLcA==",
 		Expires:        expires,
 		ContentType:    "application/json",
 		Headers:        []string{"x-header1", "x-header2"},
@@ -125,12 +125,11 @@ func TestSignedURL_URLUnsafeObjectName(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	want := "https://storage.googleapis.com/bucket-name/object%20nam" +
-		"e%E7%95%8C?Expires=1033570800&GoogleAccessId=xxx%40clientid" +
-		"&Signature=mk7P1WhANoWYi9tIp8%2F1ojV%2BZ2JxuAbLSqbeh4q6vcug" +
-		"kKfyz6J7gKJF2G4gJ%2BtLRnWAUnp3eNKCQ0OtI3pE6edWKU5rXwlE%2Brg" +
-		"kGwmY5ax2%2FVHGzNj2wJKTpsScFjueZr6o6e7fPoU3zIg3lgmjEm4pXh9Z" +
-		"AgbTmfpL4T0onRI%3D"
+	want := "https://storage.googleapis.com/bucket-name/object%20name%E7%95%8C?" +
+		"Expires=1033570800&GoogleAccessId=xxx%40clientid&Signature=" +
+		"LSxs1YwXNKOa7mQv1ZAI2ao0Fuv6yXLLU7%2BQ97z2B7hYZ57OiFwQ72EdGXSiIM" +
+		"JwLisEKkwoSlYCMm3uuTdgJtXXVi7SYXMfdeKaonyQwMv531KETCBTSewt8CW%2B" +
+		"FaUJ5SEYG44SeJCiqeIr3GF7t90UNWs6TdFXDaKShpQzBGg%3D"
 	if url != want {
 		t.Fatalf("Unexpected signed URL; found %v", url)
 	}
@@ -138,6 +137,7 @@ func TestSignedURL_URLUnsafeObjectName(t *testing.T) {
 
 func TestSignedURL_MissingOptions(t *testing.T) {
 	pk := dummyKey("rsa")
+	expires, _ := time.Parse(time.RFC3339, "2002-10-02T10:00:00-05:00")
 	var tests = []struct {
 		opts   *SignedURLOptions
 		errMsg string
@@ -179,6 +179,16 @@ func TestSignedURL_MissingOptions(t *testing.T) {
 				Method:         "PUT",
 			},
 			"missing required expires",
+		},
+		{
+			&SignedURLOptions{
+				GoogleAccessID: "access_id",
+				PrivateKey:     pk,
+				Method:         "PUT",
+				Expires:        expires,
+				MD5:            "invalid",
+			},
+			"invalid MD5 checksum",
 		},
 	}
 	for _, test := range tests {
@@ -300,7 +310,7 @@ func TestObjectNames(t *testing.T) {
 		GoogleAccessID: "xxx@clientid",
 		PrivateKey:     dummyKey("rsa"),
 		Method:         "GET",
-		MD5:            []byte("202cb962ac59075b964b07152d234b70"),
+		MD5:            "ICy5YqxZB1uWSwcVLSNLcA==",
 		Expires:        time.Date(2002, time.October, 2, 10, 0, 0, 0, time.UTC),
 		ContentType:    "application/json",
 		Headers:        []string{"x-header1", "x-header2"},
