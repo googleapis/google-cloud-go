@@ -23,6 +23,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	"cloud.google.com/go/internal/version"
+
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
@@ -117,7 +119,10 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	}
 	c := &Client{
 		database: database,
-		md:       metadata.Pairs(resourcePrefixHeader, database, apiClientHeader, clientUserAgent),
+		md: metadata.Pairs(
+			resourcePrefixHeader, database,
+			apiClientHeader, clientUserAgent,
+			"x-goog-api-client", fmt.Sprintf("gl-go/%s gccl/%s grpc/", version.Go(), version.Repo)),
 	}
 	allOpts := []option.ClientOption{option.WithEndpoint(prodAddr), option.WithScopes(Scope), option.WithUserAgent(clientUserAgent)}
 	allOpts = append(allOpts, opts...)
