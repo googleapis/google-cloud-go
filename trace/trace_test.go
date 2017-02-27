@@ -237,7 +237,7 @@ func TestNewSpan(t *testing.T) {
 							"trace.cloud.google.com/http/status_code": "200",
 							"trace.cloud.google.com/http/url":         "http://example.com/bar",
 						},
-						Name: "/bar",
+						Name: "example.com/bar",
 					},
 					{
 						Kind: "RPC_CLIENT",
@@ -247,7 +247,7 @@ func TestNewSpan(t *testing.T) {
 							"trace.cloud.google.com/http/status_code": "200",
 							"trace.cloud.google.com/http/url":         "https://www.googleapis.com/compute/v1/projects/testproject/zones",
 						},
-						Name: "/compute/v1/projects/testproject/zones",
+						Name: "www.googleapis.com/compute/v1/projects/testproject/zones",
 					},
 					{
 						Kind: "RPC_CLIENT",
@@ -257,7 +257,7 @@ func TestNewSpan(t *testing.T) {
 							"trace.cloud.google.com/http/status_code": "200",
 							"trace.cloud.google.com/http/url":         "https://www.googleapis.com/storage/v1/b/testbucket/o",
 						},
-						Name: "/storage/v1/b/testbucket/o",
+						Name: "www.googleapis.com/storage/v1/b/testbucket/o",
 					},
 					&api.TraceSpan{
 						Kind:   "RPC_CLIENT",
@@ -266,7 +266,7 @@ func TestNewSpan(t *testing.T) {
 					},
 					&api.TraceSpan{
 						Kind:   "RPC_CLIENT",
-						Labels: map[string]string{"error": "rpc error: code = 2 desc = failed!"},
+						Labels: map[string]string{"error": "rpc error: code = 2 desc = lookup failed"},
 						Name:   "/google.datastore.v1.Datastore/Lookup",
 					},
 					{
@@ -429,7 +429,7 @@ func testTrace(t *testing.T, synchronous bool, fromRequest bool) {
 					},
 					&api.TraceSpan{
 						Kind:   "RPC_CLIENT",
-						Labels: map[string]string{"error": "rpc error: code = 2 desc = failed!"},
+						Labels: map[string]string{"error": "rpc error: code = 2 desc = lookup failed"},
 						Name:   "/google.datastore.v1.Datastore/Lookup",
 					},
 					{
