@@ -21,6 +21,8 @@ import (
 	"os"
 	"reflect"
 
+	"cloud.google.com/go/internal/version"
+
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
@@ -57,8 +59,10 @@ type datastoreClient struct {
 
 func newDatastoreClient(conn *grpc.ClientConn, projectID string) pb.DatastoreClient {
 	return &datastoreClient{
-		c:  pb.NewDatastoreClient(conn),
-		md: metadata.Pairs(resourcePrefixHeader, "projects/"+projectID),
+		c: pb.NewDatastoreClient(conn),
+		md: metadata.Pairs(
+			resourcePrefixHeader, "projects/"+projectID,
+			"x-goog-api-client", fmt.Sprintf("gl-go/%s gccl/%s grpc/", version.Go(), version.Repo)),
 	}
 }
 
