@@ -34,5 +34,5 @@ set -x
 export GCLOUD_TESTS_GOLANG_KEY="$(pwd)/key.json"
 cd $GOCLOUD_HOME
 
-# Run tests
-GCLOUD_TESTS_GOLANG_PROJECT_ID="dulcet-port-762" go test -race -v ./...
+# Run tests and tee output to log file, to be pushed to GCS as artifact.
+GCLOUD_TESTS_GOLANG_PROJECT_ID="dulcet-port-762" go test -race -v ./... 2>&1 | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GOB_COMMIT.log
