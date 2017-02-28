@@ -274,7 +274,7 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 		})
 	}
 	if err := upl.Put(ctx, saverRows); err != nil {
-		t.Fatal(err)
+		t.Fatal(putError(err))
 	}
 
 	// Wait until the data has been uploaded. This can take a few seconds, according
@@ -365,24 +365,24 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	ctx := context.Background()
 	table := newTable(t, schema)
 	defer table.Delete(ctx)
 
 	// Populate the table.
 	upl := table.Uploader()
-	structs := []*TestStruct{
+	want := []*TestStruct{
 		{Name: "a", Nums: []int{1, 2}, Sub: Sub{B: true}, Subs: []*Sub{{false}, {true}}},
-		{Name: "b", Nums: []int{1}, Subs: []*Sub{{false}, nil, {true}}},
-		nil,
+		{Name: "b", Nums: []int{1}, Subs: []*Sub{{false}, {false}, {true}}},
 		{Name: "c", Sub: Sub{B: true}},
 	}
 	var savers []*StructSaver
-	for _, s := range structs {
+	for _, s := range want {
 		savers = append(savers, &StructSaver{Schema: schema, Struct: s})
 	}
 	if err := upl.Put(ctx, savers); err != nil {
-		t.Fatal(err)
+		t.Fatal(putError(err))
 	}
 
 	// Wait until the data has been uploaded. This can take a few seconds, according
@@ -407,13 +407,7 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 	}
 	sort.Sort(byName(got))
 
-	// BigQuery elides nils, both at top level and in nested structs.
-	// This may be surprising, but the client library is faithfully
-	// rendering these nils into JSON, so we should not change it.
-	// structs[1].Subs[1] and structs[2] are nil.
-	want := []*TestStruct{structs[0], structs[1], structs[3]}
-	want[1].Subs = []*Sub{want[1].Subs[0], want[1].Subs[2]}
-
+	// BigQuery does not elide nils. It reports an error for nil fields.
 	for i, g := range got {
 		if i >= len(want) {
 			t.Errorf("%d: got %v, past end of want", i, pretty.Value(g))
@@ -614,7 +608,7 @@ func TestIntegration_TimeTypes(t *testing.T) {
 	if err := upl.Put(ctx, []*ValuesSaver{
 		{Schema: dtSchema, Row: wantRows[0]},
 	}); err != nil {
-		t.Fatal(err)
+		t.Fatal(putError(err))
 	}
 	if err := waitForRow(ctx, table); err != nil {
 		t.Fatal(err)
@@ -732,4 +726,16 @@ func waitForRow(ctx context.Context, table *Table) error {
 		}
 		time.Sleep(1 * time.Second)
 	}
+}
+
+func putError(err error) string {
+	pme, ok := err.(PutMultiError)
+	if !ok {
+		return err.Error()
+	}
+	var msgs []string
+	for _, err := range pme {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "\n")
 }
