@@ -92,5 +92,10 @@ provides easy access to the positions of facial features:
 	fmt.Println(faces[0].Face.Eyes.Left.Pupil)
 
 This package is experimental and subject to API changes.
+
+Authentication
+
+See examples of authorization and authentication at
+https://godoc.org/cloud.google.com/go#pkg-examples.
 */
 package vision // import "cloud.google.com/go/vision"

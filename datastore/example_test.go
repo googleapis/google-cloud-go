@@ -24,22 +24,6 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-// TODO(jbd): Document other authorization methods and refer to them here.
-func Example_auth() {
-	ctx := context.Background()
-	// Use Google Application Default Credentials to authorize and authenticate the client.
-	// More information about Application Default Credentials and how to enable is at
-	// https://developers.google.com/identity/protocols/application-default-credentials.
-	client, err := datastore.NewClient(ctx, "project-id")
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// Use the client (see other examples).
-
-	// Close the client when finished.
-	client.Close()
-}
-
 func ExampleNewClient() {
 	ctx := context.Background()
 	client, err := datastore.NewClient(ctx, "project-id")
