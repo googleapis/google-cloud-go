@@ -140,7 +140,7 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 //
 // Recursively defined structs are also disallowed.
 func InferSchema(st interface{}) (Schema, error) {
-	return inferSchemaReflect(reflect.TypeOf(st))
+	return inferSchemaReflectCached(reflect.TypeOf(st))
 }
 
 var schemaCache atomiccache.Cache
@@ -150,19 +150,26 @@ type cacheVal struct {
 	err    error
 }
 
-func inferSchemaReflect(t reflect.Type) (Schema, error) {
+func inferSchemaReflectCached(t reflect.Type) (Schema, error) {
 	cv := schemaCache.Get(t, func() interface{} {
-		s, err := inferStruct(t, map[reflect.Type]bool{})
+		s, err := inferSchemaReflect(t)
 		return cacheVal{s, err}
 	}).(cacheVal)
 	return cv.schema, cv.err
 }
 
-func inferStruct(t reflect.Type, seen map[reflect.Type]bool) (Schema, error) {
-	if seen[t] {
+func inferSchemaReflect(t reflect.Type) (Schema, error) {
+	rec, err := hasRecursiveType(t, nil)
+	if err != nil {
+		return nil, err
+	}
+	if rec {
 		return nil, fmt.Errorf("bigquery: schema inference for recursive type %s", t)
 	}
-	seen[t] = true
+	return inferStruct(t)
+}
+
+func inferStruct(t reflect.Type) (Schema, error) {
 	switch t.Kind() {
 	case reflect.Ptr:
 		if t.Elem().Kind() != reflect.Struct {
@@ -172,14 +179,14 @@ func inferStruct(t reflect.Type, seen map[reflect.Type]bool) (Schema, error) {
 		fallthrough
 
 	case reflect.Struct:
-		return inferFields(t, seen)
+		return inferFields(t)
 	default:
 		return nil, errNoStruct
 	}
 }
 
 // inferFieldSchema infers the FieldSchema for a Go type
-func inferFieldSchema(rt reflect.Type, seen map[reflect.Type]bool) (*FieldSchema, error) {
+func inferFieldSchema(rt reflect.Type) (*FieldSchema, error) {
 	switch rt {
 	case typeOfByteSlice:
 		return &FieldSchema{Required: true, Type: BytesFieldType}, nil
@@ -203,7 +210,7 @@ func inferFieldSchema(rt reflect.Type, seen map[reflect.Type]bool) (*FieldSchema
 			return nil, errUnsupportedFieldType
 		}
 
-		f, err := inferFieldSchema(et, seen)
+		f, err := inferFieldSchema(et)
 		if err != nil {
 			return nil, err
 		}
@@ -211,7 +218,7 @@ func inferFieldSchema(rt reflect.Type, seen map[reflect.Type]bool) (*FieldSchema
 		f.Required = false
 		return f, nil
 	case reflect.Struct, reflect.Ptr:
-		nested, err := inferStruct(rt, seen)
+		nested, err := inferStruct(rt)
 		if err != nil {
 			return nil, err
 		}
@@ -228,14 +235,14 @@ func inferFieldSchema(rt reflect.Type, seen map[reflect.Type]bool) (*FieldSchema
 }
 
 // inferFields extracts all exported field types from struct type.
-func inferFields(rt reflect.Type, seen map[reflect.Type]bool) (Schema, error) {
+func inferFields(rt reflect.Type) (Schema, error) {
 	var s Schema
 	fields, err := fieldCache.Fields(rt)
 	if err != nil {
 		return nil, err
 	}
 	for _, field := range fields {
-		f, err := inferFieldSchema(field.Type, seen)
+		f, err := inferFieldSchema(field.Type)
 		if err != nil {
 			return nil, err
 		}
@@ -255,4 +262,51 @@ func isSupportedIntType(t reflect.Type) bool {
 	default:
 		return false
 	}
+}
+
+// typeList is a linked list of reflect.Types.
+type typeList struct {
+	t    reflect.Type
+	next *typeList
+}
+
+func (l *typeList) has(t reflect.Type) bool {
+	for l != nil {
+		if l.t == t {
+			return true
+		}
+		l = l.next
+	}
+	return false
+}
+
+// hasRecursiveType reports whether t or any type inside t refers to itself, directly or indirectly,
+// via exported fields. (Schema inference ignores unexported fields.)
+func hasRecursiveType(t reflect.Type, seen *typeList) (bool, error) {
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+	if t.Kind() != reflect.Struct {
+		return false, nil
+	}
+	if seen.has(t) {
+		return true, nil
+	}
+	fields, err := fieldCache.Fields(t)
+	if err != nil {
+		return false, err
+	}
+	seen = &typeList{t, seen}
+	// Because seen is a linked list, additions to it from one field's
+	// recursive call will not affect the value for subsequent fields' calls.
+	for _, field := range fields {
+		ok, err := hasRecursiveType(field.Type, seen)
+		if err != nil {
+			return false, err
+		}
+		if ok {
+			return true, nil
+		}
+	}
+	return false, nil
 }
