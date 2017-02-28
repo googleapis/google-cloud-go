@@ -376,13 +376,11 @@ func TestDecodeValue(t *testing.T) {
 			fail: false,
 		},
 	} {
-		t.Logf("(%v) Testing decoding %v(%v)", i, test.in, test.t)
 		gotp := reflect.New(reflect.TypeOf(test.want))
 		if err := decodeValue(test.in, test.t, gotp.Interface()); err != nil {
 			if !test.fail {
 				t.Errorf("%d: cannot decode %v(%v): %v", i, test.in, test.t, err)
 			}
-			t.Logf("%d: got error message %v", i, err)
 			continue
 		}
 		if test.fail {

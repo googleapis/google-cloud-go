@@ -230,7 +230,6 @@ func TestColumnValues(t *testing.T) {
 			[]NullRow(nil),
 		},
 	} {
-		t.Logf("Testing Column(%v): %v", i, row.fields[i])
 		for j, want := range wants {
 			// Prepare Value vector to test Row.Columns.
 			if j == 0 {

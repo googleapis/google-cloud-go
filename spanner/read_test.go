@@ -791,7 +791,6 @@ func TestRsdNonblockingStates(t *testing.T) {
 	}
 nextTest:
 	for _, test := range tests {
-		t.Logf("Testing %v", test.name)
 		ms := testutil.NewMockCloudSpanner(t, trxTs)
 		ms.Serve()
 		opts := []grpc.DialOption{
@@ -1063,7 +1062,6 @@ func TestRsdBlockingStates(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		t.Logf("Testing %v", test.name)
 		ms := testutil.NewMockCloudSpanner(t, trxTs)
 		ms.Serve()
 		opts := []grpc.DialOption{
@@ -1535,7 +1533,6 @@ func TestGrpcReconnect(t *testing.T) {
 	ms.AddMsg(nil, true)
 	select {
 	case <-row:
-		t.Logf("Stream established.")
 	case <-time.After(10 * time.Second):
 		t.Fatalf("expect stream to be established within 10 seconds, but it didn't")
 	}
@@ -1546,7 +1543,6 @@ func TestGrpcReconnect(t *testing.T) {
 	select {
 	case r, ok := <-retry:
 		if ok && r == 1 {
-			t.Logf("RPC retried.")
 			break
 		}
 		t.Errorf("retry count = %v, want 1", r)
