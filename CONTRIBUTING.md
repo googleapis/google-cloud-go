@@ -37,28 +37,30 @@ run the against the actual APIs.
 - **GCLOUD_TESTS_API_KEY**: Your API key.
 
 Install the [gcloud command-line tool][gcloudcli] to your machine and use it
-to create the indexes used in the datastore integration tests with indexes
-found in `datastore/testdata/index.yaml`:
+to create some resources used in integration tests.
 
 From the project's root directory:
 
 ``` sh
-# Set the default project in your env
+# Set the default project in your env.
 $ gcloud config set project $GCLOUD_TESTS_GOLANG_PROJECT_ID
 
-# Authenticate the gcloud tool with your account
+# Authenticate the gcloud tool with your account.
 $ gcloud auth login
 
-# Create the indexes
+# Create the indexes used in the datastore integration tests.
 $ gcloud preview datastore create-indexes datastore/testdata/index.yaml
-```
 
-The Sink integration tests in preview/logging require a Google Cloud storage
-bucket with the same name as your test project, and with the Stackdriver Logging
-service account as owner:
-``` sh
+# Create a Google Cloud storage bucket with the same name as your test project,
+# and with the Stackdriver Logging service account as owner, for the sink
+# integration tests in logging.
 $ gsutil mb gs://$GCLOUD_TESTS_GOLANG_PROJECT_ID
 $ gsutil acl ch -g cloud-logs@google.com:O gs://$GCLOUD_TESTS_GOLANG_PROJECT_ID
+
+# Create a Spanner instance for the spanner integration tests.
+$ gcloud beta spanner instances create go-integration-test --config regional-us-central1 --nodes 1 --description 'Instance for go client test'
+# NOTE: Spanner instances are priced by the node-hour, so you may want to delete
+# the instance after testing with 'gcloud beta spanner instances delete'.
 ```
 
 Once you've set the environment variables, you can run the integration tests by
