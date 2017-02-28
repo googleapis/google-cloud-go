@@ -411,5 +411,10 @@ directed to the emulator instead of the production Datastore service.
 To install and set up the emulator and its environment variables, see the documentation
 at https://cloud.google.com/datastore/docs/tools/datastore-emulator.
 
+Authentication
+
+See examples of authorization and authentication at
+https://godoc.org/cloud.google.com/go#pkg-examples.
+
 */
 package datastore // import "cloud.google.com/go/datastore"
