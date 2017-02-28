@@ -239,11 +239,55 @@ type allTime struct {
 	DateTime  civil.DateTime
 }
 
+type allPtrStrings struct {
+	String    *string
+	ByteSlice *[]byte
+}
+
+type allPtrSignedIntegers struct {
+	Int64 *int64
+	Int32 *int32
+	Int16 *int16
+	Int8  *int8
+	Int   *int
+}
+
+type allPtrUnsignedIntegers struct {
+	Uint32 *uint32
+	Uint16 *uint16
+	Uint8  *uint8
+}
+
+type allPtrFloat struct {
+	Float64 *float64
+	Float32 *float32
+	// NOTE: Complex32 and Complex64 are unsupported by BigQuery
+}
+
+type allPtrBoolean struct {
+	Bool *bool
+}
+
+type allPtrTime struct {
+	Timestamp time.Time
+	Time      civil.Time
+	Date      civil.Date
+	DateTime  civil.DateTime
+}
+
 func reqField(name, typ string) *FieldSchema {
 	return &FieldSchema{
 		Name:     name,
 		Type:     FieldType(typ),
 		Required: true,
+	}
+}
+
+func nullableField(name, typ string) *FieldSchema {
+	return &FieldSchema{
+		Name:     name,
+		Type:     FieldType(typ),
+		Required: false,
 	}
 }
 
@@ -299,10 +343,50 @@ func TestSimpleInference(t *testing.T) {
 			},
 		},
 		{
-			in: allStrings{},
+			in: allPtrStrings{},
 			want: Schema{
-				reqField("String", "STRING"),
-				reqField("ByteSlice", "BYTES"),
+				nullableField("String", "STRING"),
+				nullableField("ByteSlice", "BYTES"),
+			},
+		},
+		{
+			in: allPtrSignedIntegers{},
+			want: Schema{
+				nullableField("Int64", "INTEGER"),
+				nullableField("Int32", "INTEGER"),
+				nullableField("Int16", "INTEGER"),
+				nullableField("Int8", "INTEGER"),
+				nullableField("Int", "INTEGER"),
+			},
+		},
+		{
+			in: allPtrUnsignedIntegers{},
+			want: Schema{
+				nullableField("Uint32", "INTEGER"),
+				nullableField("Uint16", "INTEGER"),
+				nullableField("Uint8", "INTEGER"),
+			},
+		},
+		{
+			in: allPtrFloat{},
+			want: Schema{
+				nullableField("Float64", "FLOAT"),
+				nullableField("Float32", "FLOAT"),
+			},
+		},
+		{
+			in: allPtrBoolean{},
+			want: Schema{
+				nullableField("Bool", "BOOLEAN"),
+			},
+		},
+		{
+			in: allPtrTime{},
+			want: Schema{
+				reqField("Timestamp", "TIMESTAMP"),
+				reqField("Time", "TIME"),
+				reqField("Date", "DATE"),
+				reqField("DateTime", "DATETIME"),
 			},
 		},
 	}
@@ -380,7 +464,7 @@ func TestNestedInference(t *testing.T) {
 			want: Schema{
 				&FieldSchema{
 					Name:     "Ptr",
-					Required: true,
+					Required: false,
 					Type:     "RECORD",
 					Schema:   Schema{reqField("Inside", "INTEGER")},
 				},
@@ -670,10 +754,6 @@ func TestSchemaErrors(t *testing.T) {
 			err: errNoStruct,
 		},
 		{
-			in:  new(int),
-			err: errNoStruct,
-		},
-		{
 			in:  struct{ Uint uint }{},
 			err: errUnsupportedFieldType,
 		},
@@ -696,10 +776,6 @@ func TestSchemaErrors(t *testing.T) {
 		{
 			in:  struct{ Chan chan bool }{},
 			err: errUnsupportedFieldType,
-		},
-		{
-			in:  struct{ Ptr *int }{},
-			err: errNoStruct,
 		},
 		{
 			in:  struct{ Interface interface{} }{},

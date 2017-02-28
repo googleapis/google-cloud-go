@@ -152,17 +152,18 @@ type cacheVal struct {
 
 func inferSchemaReflect(t reflect.Type) (Schema, error) {
 	cv := schemaCache.Get(t, func() interface{} {
-		s, err := inferStruct(t, map[reflect.Type]bool{})
+		s, err := inferStruct(t, []reflect.Type{})
 		return cacheVal{s, err}
 	}).(cacheVal)
 	return cv.schema, cv.err
 }
 
-func inferStruct(t reflect.Type, seen map[reflect.Type]bool) (Schema, error) {
-	if seen[t] {
-		return nil, fmt.Errorf("bigquery: schema inference for recursive type %s", t)
+func inferStruct(t reflect.Type, seen []reflect.Type) (Schema, error) {
+	for _, s := range seen {
+		if s == t {
+			return nil, fmt.Errorf("bigquery: schema inference for recursive type %s", t)
+		}
 	}
-	seen[t] = true
 	switch t.Kind() {
 	case reflect.Ptr:
 		if t.Elem().Kind() != reflect.Struct {
@@ -170,16 +171,15 @@ func inferStruct(t reflect.Type, seen map[reflect.Type]bool) (Schema, error) {
 		}
 		t = t.Elem()
 		fallthrough
-
 	case reflect.Struct:
-		return inferFields(t, seen)
+		return inferFields(t, append(seen, t))
 	default:
 		return nil, errNoStruct
 	}
 }
 
 // inferFieldSchema infers the FieldSchema for a Go type
-func inferFieldSchema(rt reflect.Type, seen map[reflect.Type]bool) (*FieldSchema, error) {
+func inferFieldSchema(rt reflect.Type, seen []reflect.Type) (*FieldSchema, error) {
 	switch rt {
 	case typeOfByteSlice:
 		return &FieldSchema{Required: true, Type: BytesFieldType}, nil
@@ -210,12 +210,19 @@ func inferFieldSchema(rt reflect.Type, seen map[reflect.Type]bool) (*FieldSchema
 		f.Repeated = true
 		f.Required = false
 		return f, nil
-	case reflect.Struct, reflect.Ptr:
+	case reflect.Struct:
 		nested, err := inferStruct(rt, seen)
 		if err != nil {
 			return nil, err
 		}
 		return &FieldSchema{Required: true, Type: RecordFieldType, Schema: nested}, nil
+	case reflect.Ptr:
+		f, err := inferFieldSchema(rt.Elem(), seen)
+		if err != nil {
+			return nil, err
+		}
+		f.Required = false
+		return f, nil
 	case reflect.String:
 		return &FieldSchema{Required: true, Type: StringFieldType}, nil
 	case reflect.Bool:
@@ -228,7 +235,7 @@ func inferFieldSchema(rt reflect.Type, seen map[reflect.Type]bool) (*FieldSchema
 }
 
 // inferFields extracts all exported field types from struct type.
-func inferFields(rt reflect.Type, seen map[reflect.Type]bool) (Schema, error) {
+func inferFields(rt reflect.Type, seen []reflect.Type) (Schema, error) {
 	var s Schema
 	fields, err := fieldCache.Fields(rt)
 	if err != nil {
