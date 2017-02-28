@@ -34,6 +34,9 @@ import (
 
 // Test if runRetryable loop deals with various errors correctly.
 func TestRetry(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
 	responses := []error{
 		grpc.Errorf(codes.Internal, "transport is closing"),
 		grpc.Errorf(codes.Unknown, "unexpected EOF"),
