@@ -485,9 +485,19 @@ func structToMap(vstruct reflect.Value, schema Schema) (map[string]Value, error)
 // structFieldToUploadValue is careful to return a true nil interface{} when needed, so its
 // caller can easily identify a nil value.
 func structFieldToUploadValue(vfield reflect.Value, schemaField *FieldSchema) (interface{}, error) {
-	// A non-nested field, repeated or not, can be represented by its Go value.
+	if schemaField.Repeated && (vfield.Kind() != reflect.Slice && vfield.Kind() != reflect.Array) {
+		return nil, fmt.Errorf("bigquery: repeated schema field %s requires slice or array, but value has type %s",
+			schemaField.Name, vfield.Type())
+	}
+
+	// A non-nested field can be represented by its Go value.
 	if schemaField.Type != RecordFieldType {
-		return vfield.Interface(), nil
+		if !schemaField.Repeated || vfield.Len() > 0 {
+			return vfield.Interface(), nil
+		}
+		// The service treats a null repeated field as an error. Return
+		// nil to omit the field entirely.
+		return nil, nil
 	}
 	// A non-repeated nested field is converted into a map[string]Value.
 	if !schemaField.Repeated {
@@ -501,10 +511,6 @@ func structFieldToUploadValue(vfield reflect.Value, schemaField *FieldSchema) (i
 		return m, nil
 	}
 	// A repeated nested field is converted into a slice of maps.
-	if vfield.Kind() != reflect.Slice && vfield.Kind() != reflect.Array {
-		return nil, fmt.Errorf("bigquery: repeated schema field %s requires slice or array, but value has type %s",
-			schemaField.Name, vfield.Type())
-	}
 	if vfield.Len() == 0 {
 		return nil, nil
 	}
