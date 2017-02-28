@@ -120,7 +120,6 @@ func prepare(ctx context.Context, t *testing.T) error {
 		t.Errorf("cannot create testing DB %v: %v", db, err)
 		return err
 	}
-	t.Logf("created database: %v", db)
 	client, err = NewClientWithConfig(ctx, db, ClientConfig{
 		SessionPoolConfig: SessionPoolConfig{
 			WriteSessions: 0.2,
@@ -139,7 +138,6 @@ func tearDown(ctx context.Context, t *testing.T) {
 		if err := admin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{db}); err != nil {
 			t.Logf("failed to drop testing database: %v, might need a manual removal", db)
 		}
-		t.Logf("dropped database: %v", db)
 		admin.Close()
 	}
 	if client != nil {
@@ -181,7 +179,6 @@ func TestSingleUse(t *testing.T) {
 		if writes[i].ts, err = client.Apply(ctx, []*Mutation{m}, ApplyAtLeastOnce()); err != nil {
 			t.Fatal(err)
 		}
-		t.Logf("Timestamp of the %vth mutation: %v", i, writes[i].ts)
 	}
 
 	// For testing timestamp bound staleness.
@@ -384,7 +381,6 @@ func TestReadOnlyTransaction(t *testing.T) {
 		if writes[i].ts, err = client.Apply(ctx, []*Mutation{m}, ApplyAtLeastOnce()); err != nil {
 			t.Fatal(err)
 		}
-		t.Logf("Timestamp of the %vth mutation: %v", i, writes[i].ts)
 	}
 
 	// For testing timestamp bound staleness.
@@ -585,7 +581,6 @@ func TestReadWriteTransaction(t *testing.T) {
 		go func(iter int) {
 			defer wg.Done()
 			_, err := client.ReadWriteTransaction(ctx, func(tx *ReadWriteTransaction) error {
-				t.Logf("executing %v-th transfer", iter)
 				// Query Foo's balance and Bar's balance.
 				bf, e := readBalance(tx.Query(ctx,
 					Statement{"SELECT Balance FROM Accounts WHERE AccountId = @id", map[string]interface{}{"id": int64(1)}}))
@@ -596,9 +591,7 @@ func TestReadWriteTransaction(t *testing.T) {
 				if e != nil {
 					return e
 				}
-				t.Logf("\t %d: Foo's balance: %v, Bar's balance: %v", iter, bf, bb)
 				if bf <= 0 {
-					t.Logf("Foo's balance is already 0.")
 					return nil
 				}
 				bf--
@@ -653,7 +646,6 @@ func TestDbRemovalRecovery(t *testing.T) {
 	if err := admin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{db}); err != nil {
 		t.Fatalf("failed to drop testing database %v: %v", db, err)
 	}
-	t.Logf("dropped database: %v", db)
 
 	// Now, send the query.
 	iter := client.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
@@ -662,7 +654,6 @@ func TestDbRemovalRecovery(t *testing.T) {
 	if err == nil {
 		t.Errorf("client sends query to removed database successfully, want it to fail")
 	}
-	t.Logf("observed the expected failure to send query to database %v: %v", db, err)
 
 	// Recreate database and table.
 	op, err := admin.CreateDatabase(ctx, &adminpb.CreateDatabaseRequest{
@@ -688,7 +679,6 @@ func TestDbRemovalRecovery(t *testing.T) {
 	if err != nil && err != iterator.Done {
 		t.Fatalf("failed to send query to database %v: %v", db, err)
 	}
-	t.Logf("client session has recovered from database recreation")
 }
 
 // Test encoding/decoding non-struct Cloud Spanner types.
