@@ -306,13 +306,13 @@ func TestSimpleInference(t *testing.T) {
 			},
 		},
 	}
-	for i, tc := range testCases {
+	for _, tc := range testCases {
 		got, err := InferSchema(tc.in)
 		if err != nil {
-			t.Fatalf("%d: error inferring TableSchema: %v", i, err)
+			t.Fatalf("%T: error inferring TableSchema: %v", tc.in, err)
 		}
 		if !reflect.DeepEqual(got, tc.want) {
-			t.Errorf("%d: inferring TableSchema: got:\n%#v\nwant:\n%#v", i,
+			t.Errorf("%T: inferring TableSchema: got:\n%#v\nwant:\n%#v", tc.in,
 				pretty.Value(got), pretty.Value(tc.want))
 		}
 	}
@@ -337,6 +337,10 @@ type containsDoubleNested struct {
 
 type ptrNested struct {
 	Ptr *struct{ Inside int }
+}
+
+type dup struct { // more than one field of the same struct type
+	A, B allBoolean
 }
 
 func TestNestedInference(t *testing.T) {
@@ -386,15 +390,32 @@ func TestNestedInference(t *testing.T) {
 				},
 			},
 		},
+		{
+			in: dup{},
+			want: Schema{
+				&FieldSchema{
+					Name:     "A",
+					Required: true,
+					Type:     "RECORD",
+					Schema:   Schema{reqField("Bool", "BOOLEAN")},
+				},
+				&FieldSchema{
+					Name:     "B",
+					Required: true,
+					Type:     "RECORD",
+					Schema:   Schema{reqField("Bool", "BOOLEAN")},
+				},
+			},
+		},
 	}
 
-	for i, tc := range testCases {
+	for _, tc := range testCases {
 		got, err := InferSchema(tc.in)
 		if err != nil {
-			t.Fatalf("%d: error inferring TableSchema: %v", i, err)
+			t.Fatalf("%T: error inferring TableSchema: %v", tc.in, err)
 		}
 		if !reflect.DeepEqual(got, tc.want) {
-			t.Errorf("%d: inferring TableSchema: got:\n%#v\nwant:\n%#v", i,
+			t.Errorf("%T: inferring TableSchema: got:\n%#v\nwant:\n%#v", tc.in,
 				pretty.Value(got), pretty.Value(tc.want))
 		}
 	}
@@ -727,6 +748,45 @@ func TestSchemaErrors(t *testing.T) {
 		_, got := InferSchema(tc.in)
 		if !reflect.DeepEqual(got, want) {
 			t.Errorf("%#v: got:\n%#v\nwant:\n%#v", tc.in, got, want)
+		}
+	}
+}
+
+func TestHasRecursiveType(t *testing.T) {
+	type (
+		nonStruct int
+		nonRec    struct{ A string }
+		dup       struct{ A, B nonRec }
+		rec       struct {
+			A int
+			B *rec
+		}
+		recUnexported struct {
+			A int
+			b *rec
+		}
+		hasRec struct {
+			A int
+			R *rec
+		}
+	)
+	for _, test := range []struct {
+		in   interface{}
+		want bool
+	}{
+		{nonStruct(0), false},
+		{nonRec{}, false},
+		{dup{}, false},
+		{rec{}, true},
+		{recUnexported{}, false},
+		{hasRec{}, true},
+	} {
+		got, err := hasRecursiveType(reflect.TypeOf(test.in), nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got != test.want {
+			t.Errorf("%T: got %t, want %t", test.in, got, test.want)
 		}
 	}
 }
