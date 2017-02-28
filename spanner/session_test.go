@@ -172,6 +172,9 @@ func TestTakeWriteSessionFromIdleList(t *testing.T) {
 
 // TestTakeFromIdleListChecked tests taking sessions from session pool's idle list, but with a extra ping check.
 func TestTakeFromIdleListChecked(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
 	sp, sc, cancel := setup(t, SessionPoolConfig{})
 	defer cancel()
 	// Stop healthcheck workers to simulate slow pings.
@@ -222,6 +225,9 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 
 // TestTakeFromIdleWriteListChecked tests taking sessions from session pool's idle list, but with a extra ping check.
 func TestTakeFromIdleWriteListChecked(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
 	sp, sc, cancel := setup(t, SessionPoolConfig{})
 	defer cancel()
 	sc.MakeNice()
@@ -273,6 +279,9 @@ func TestTakeFromIdleWriteListChecked(t *testing.T) {
 
 // TestMaxOpenedSessions tests max open sessions constraint.
 func TestMaxOpenedSessions(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
 	sp, _, cancel := setup(t, SessionPoolConfig{MaxOpened: 1})
 	defer cancel()
 	sh1, err := sp.take(context.Background())
@@ -334,6 +343,9 @@ func TestMinOpenedSessions(t *testing.T) {
 
 // TestMaxBurst tests max burst constraint.
 func TestMaxBurst(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
 	sp, sc, cancel := setup(t, SessionPoolConfig{MaxBurst: 1})
 	defer cancel()
 	// Will cause session creation RPC to be retried forever.
@@ -373,6 +385,9 @@ func TestMaxBurst(t *testing.T) {
 
 // TestSessionrecycle tests recycling sessions.
 func TestSessionRecycle(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
 	sp, _, cancel := setup(t, SessionPoolConfig{MaxSessionAge: 100 * time.Millisecond, MinOpened: 1})
 	// Healthcheck is explicitly turned off in this test because it might aggressively expire sessions in idle list.
 	sp.hc.close()
@@ -456,6 +471,9 @@ func TestHcHeap(t *testing.T) {
 
 // TestHealthCheckScheduler tests if healthcheck workers can schedule and perform healthchecks properly.
 func TestHealthCheckScheduler(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
 	sp, sc, cancel := setup(t, SessionPoolConfig{})
 	defer cancel()
 	// Create 50 sessions.
@@ -485,6 +503,9 @@ func TestHealthCheckScheduler(t *testing.T) {
 
 // Tests that a fractions of sessions are prepared for write by health checker.
 func TestWriteSessionsPrepared(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
 	sp, sc, cancel := setup(t, SessionPoolConfig{WriteSessions: 0.5})
 	sc.MakeNice()
 	defer cancel()
@@ -536,6 +557,9 @@ func TestWriteSessionsPrepared(t *testing.T) {
 
 // TestTakeFromWriteQueue tests that sessionPool.take() returns write prepared sessions as well.
 func TestTakeFromWriteQueue(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
 	sp, sc, cancel := setup(t, SessionPoolConfig{MaxOpened: 1, WriteSessions: 1.0})
 	sc.MakeNice()
 	defer cancel()
@@ -561,6 +585,9 @@ func TestTakeFromWriteQueue(t *testing.T) {
 
 // TestSessionHealthCheck tests healthchecking cases.
 func TestSessionHealthCheck(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
 	sp, sc, cancel := setup(t, SessionPoolConfig{MaxSessionAge: 2 * time.Second})
 	defer cancel()
 	// Test pinging sessions.
@@ -641,6 +668,9 @@ func TestSessionHealthCheck(t *testing.T) {
 // when all test workers and healthcheck workers exit, mockclient, session pool and healthchecker should be in consistent state.
 func TestStressSessionPool(t *testing.T) {
 	// Use concurrent workers to test different session pool built from different configurations.
+	if testing.Short() {
+		t.SkipNow()
+	}
 	for ti, cfg := range []SessionPoolConfig{
 		SessionPoolConfig{},
 		SessionPoolConfig{MaxSessionAge: 20 * time.Millisecond},

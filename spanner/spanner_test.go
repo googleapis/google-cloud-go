@@ -52,23 +52,19 @@ var (
 	dbName string
 )
 
-// skipTest returns true if testProjectID is empty.
-func skipTest(t *testing.T) bool {
-	if testProjectID == "" {
-		t.Logf("skipping because not all environment variables are provided: GCLOUD_TESTS_GOLANG_PROJECT_ID=%q", testProjectID)
-		return true
-	}
-	return false
-}
-
 // prepare initializes Cloud Spanner testing DB and clients.
 func prepare(ctx context.Context, t *testing.T) error {
-	var err error
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	if testProjectID == "" {
+		t.Skip("Integration tests skipped: GCLOUD_TESTS_GOLANG_PROJECT_ID is missing")
+	}
 	ts := testutil.TokenSource(ctx, AdminScope, Scope)
 	if ts == nil {
-		t.Logf("cannot get service account credential from environment variable %v, skiping test", "GCLOUD_TESTS_GOLANG_KEY")
-		t.SkipNow()
+		t.Skip("Integration test skipped: cannot get service account credential from environment variable %v", "GCLOUD_TESTS_GOLANG_KEY")
 	}
+	var err error
 	// Create Admin client and Data client.
 	// TODO: Remove the EndPoint option once this is the default.
 	admin, err = database.NewDatabaseAdminClient(ctx, option.WithTokenSource(ts), option.WithEndpoint("spanner.googleapis.com:443"))
@@ -158,10 +154,6 @@ func tearDown(ctx context.Context, t *testing.T) {
 func TestSingleUse(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
-	if skipTest(t) {
-		// Skip inegration test if not all flags are provided.
-		t.SkipNow()
-	}
 	// Set up testing environment.
 	if err := prepare(ctx, t); err != nil {
 		// If prepare() fails, tear down whatever that's already up.
@@ -365,10 +357,6 @@ func TestSingleUse(t *testing.T) {
 func TestReadOnlyTransaction(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
-	if skipTest(t) {
-		// Skip inegration test if not all flags are provided.
-		t.SkipNow()
-	}
 	// Set up testing environment.
 	if err := prepare(ctx, t); err != nil {
 		// If prepare() fails, tear down whatever that's already up.
@@ -559,9 +547,6 @@ func TestReadWriteTransaction(t *testing.T) {
 	// Give a longer deadline because of transaction backoffs.
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
-	if skipTest(t) {
-		t.SkipNow()
-	}
 	if err := prepare(ctx, t); err != nil {
 		tearDown(ctx, t)
 		t.Fatalf("cannot set up testing environment: %v", err)
@@ -658,9 +643,6 @@ func TestReadWriteTransaction(t *testing.T) {
 func TestDbRemovalRecovery(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
-	if skipTest(t) {
-		t.SkipNow()
-	}
 	if err := prepare(ctx, t); err != nil {
 		tearDown(ctx, t)
 		t.Fatalf("cannot set up testing environment: %v", err)
@@ -713,9 +695,6 @@ func TestDbRemovalRecovery(t *testing.T) {
 func TestBasicTypes(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	if skipTest(t) {
-		t.SkipNow()
-	}
 	if err := prepare(ctx, t); err != nil {
 		tearDown(ctx, t)
 		t.Fatalf("cannot set up testing environment: %v", err)
@@ -866,9 +845,6 @@ func TestBasicTypes(t *testing.T) {
 func TestStructTypes(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
-	if skipTest(t) {
-		t.SkipNow()
-	}
 	if err := prepare(ctx, t); err != nil {
 		tearDown(ctx, t)
 		t.Fatalf("cannot set up testing environment: %v", err)
