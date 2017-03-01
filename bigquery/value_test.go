@@ -74,7 +74,7 @@ func TestConvertTime(t *testing.T) {
 		t.Errorf("converting basic values: got:\n%v\nwant:\n%v", got, thyme)
 	}
 	if got[0].(time.Time).Location() != time.UTC {
-		t.Errorf("expected time zone UTC: got:\n%v\n", got)
+		t.Errorf("expected time zone UTC: got:\n%v", got)
 	}
 }
 
