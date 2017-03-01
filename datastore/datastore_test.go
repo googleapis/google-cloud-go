@@ -2106,12 +2106,6 @@ func TestLoadSaveNestedStructPLS(t *testing.T) {
 		}
 
 		if !reflect.DeepEqual(e, tc.wantSave) {
-			fmt.Println(*e.Key)
-			fmt.Println(*tc.wantSave.Key)
-			fmt.Println(*(e.Properties["Foo"].ValueType.(*pb.Value_StringValue)))
-			fmt.Println(*tc.wantSave.Properties["Foo"].ValueType.(*pb.Value_StringValue))
-			fmt.Println(*(e.Properties["Bar"].ValueType.(*pb.Value_EntityValue)))
-			fmt.Println(*tc.wantSave.Properties["Bar"].ValueType.(*pb.Value_EntityValue))
 			t.Errorf("%s: save: got: %#v,	want: %#v", tc.desc, e, tc.wantSave)
 			continue
 		}
