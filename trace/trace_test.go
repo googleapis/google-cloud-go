@@ -266,7 +266,7 @@ func TestNewSpan(t *testing.T) {
 					},
 					&api.TraceSpan{
 						Kind:   "RPC_CLIENT",
-						Labels: map[string]string{"error": "rpc error: code = 2 desc = lookup failed"},
+						Labels: map[string]string{"error": "rpc error: code = Unknown desc = lookup failed"},
 						Name:   "/google.datastore.v1.Datastore/Lookup",
 					},
 					{
@@ -429,7 +429,7 @@ func testTrace(t *testing.T, synchronous bool, fromRequest bool) {
 					},
 					&api.TraceSpan{
 						Kind:   "RPC_CLIENT",
-						Labels: map[string]string{"error": "rpc error: code = 2 desc = lookup failed"},
+						Labels: map[string]string{"error": "rpc error: code = Unknown desc = lookup failed"},
 						Name:   "/google.datastore.v1.Datastore/Lookup",
 					},
 					{
