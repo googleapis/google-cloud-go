@@ -624,7 +624,7 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 		return strconv.ParseBool(val)
 	case TimestampFieldType:
 		f, err := strconv.ParseFloat(val, 64)
-		return Value(time.Unix(0, int64(f*1e9))), err
+		return Value(time.Unix(0, int64(f*1e9)).UTC()), err
 	case DateFieldType:
 		return civil.ParseDate(val)
 	case TimeFieldType:
