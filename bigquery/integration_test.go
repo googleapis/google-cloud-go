@@ -595,14 +595,16 @@ func TestIntegration_TimeTypes(t *testing.T) {
 		{Name: "d", Type: DateFieldType},
 		{Name: "t", Type: TimeFieldType},
 		{Name: "dt", Type: DateTimeFieldType},
+		{Name: "ts", Type: TimestampFieldType},
 	}
 	table := newTable(t, dtSchema)
 	defer table.Delete(ctx)
 
 	d := civil.Date{2016, 3, 20}
 	tm := civil.Time{12, 30, 0, 0}
+	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
 	wantRows := [][]Value{
-		[]Value{d, tm, civil.DateTime{d, tm}},
+		[]Value{d, tm, civil.DateTime{d, tm}, ts},
 	}
 	upl := table.Uploader()
 	if err := upl.Put(ctx, []*ValuesSaver{
@@ -616,9 +618,9 @@ func TestIntegration_TimeTypes(t *testing.T) {
 
 	// SQL wants DATETIMEs with a space between date and time, but the service
 	// returns them in RFC3339 form, with a "T" between.
-	query := fmt.Sprintf("INSERT bigquery_integration_test.%s (d, t, dt) "+
-		"VALUES ('%s', '%s', '%s %s')",
-		table.TableID, d, tm, d, tm)
+	query := fmt.Sprintf("INSERT bigquery_integration_test.%s (d, t, dt, ts) "+
+		"VALUES ('%s', '%s', '%s %s', '%s')",
+		table.TableID, d, tm, d, tm, ts.Format("2006-01-02 15:04:05"))
 	q := client.Query(query)
 	q.UseStandardSQL = true // necessary for DML
 	job, err := q.Run(ctx)
