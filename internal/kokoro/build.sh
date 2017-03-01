@@ -38,4 +38,4 @@ go get -v ./...
 # cd $GOCLOUD_HOME
 
 # Run tests and tee output to log file, to be pushed to GCS as artifact.
- go test -race -v -short ./... 2>&1 | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GOB_COMMIT.log
+ go test -race -v -short ./... 2>&1 | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_REVISION.log
