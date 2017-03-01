@@ -255,6 +255,11 @@ func newStructPLS(p interface{}) (*structPLS, error) {
 
 // LoadStruct loads the properties from p to dst.
 // dst must be a struct pointer.
+//
+// The values of dst's unmatched struct fields are not modified,
+// and matching slice-typed fields are not reset before appending to
+// them. In particular, it is recommended to pass a pointer to a zero
+// valued struct on each LoadStruct call.
 func LoadStruct(dst interface{}, p []Property) error {
 	x, err := newStructPLS(dst)
 	if err != nil {
