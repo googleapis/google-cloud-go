@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Fail on any error
-set -e
+set -eo pipefail
 
 # Display commands being run
 set -x
