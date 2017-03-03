@@ -205,7 +205,9 @@ var commands = []struct {
 		Name:     "createtable",
 		Desc:     "Create a table",
 		do:       doCreateTable,
-		Usage:    "cbt createtable <table>",
+		Usage:    "cbt createtable <table> [initial_splits...]\n" +
+			"  initial_splits=row		A row key to be used to initially split the table " +
+			"into multiple tablets. Can be repeated to create multiple splits.",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
@@ -335,10 +337,16 @@ func doCreateFamily(ctx context.Context, args ...string) {
 }
 
 func doCreateTable(ctx context.Context, args ...string) {
-	if len(args) != 1 {
-		log.Fatal("usage: cbt createtable <table>")
+	if len(args) < 1 {
+		log.Fatal("usage: cbt createtable <table> [initial_splits...]")
 	}
-	err := getAdminClient().CreateTable(ctx, args[0])
+	var err error
+	if len(args) > 1 {
+		splits := args[1:]
+		err = getAdminClient().CreatePresplitTable(ctx, args[0], splits)
+	} else {
+		err = getAdminClient().CreateTable(ctx, args[0])
+	}
 	if err != nil {
 		log.Fatalf("Creating table: %v", err)
 	}
