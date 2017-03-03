@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// TODO(jba): test crop hints, text annotation, web annotation
-// TODO(jba): expose DOCUMENT_TEXT annotation
+// TODO(jba): test crop hints, full text annotation, web annotation
 
 package vision
 
@@ -89,6 +88,9 @@ type AnnotateRequest struct {
 	// MaxTexts is the maximum number of separate pieces of text to detect in the
 	// image. Specifying a number greater than zero enables text detection.
 	MaxTexts int
+	// FullText specifies whether a full text (document OCR) should be run
+	// on the image.
+	FullText bool
 	// SafeSearch specifies whether a safe-search detection should be run on the image.
 	SafeSearch bool
 	// ImageProps specifies whether image properties should be obtained for the image.
@@ -125,6 +127,9 @@ func (ar *AnnotateRequest) toProto() *pb.AnnotateImageRequest {
 	}
 	if ar.MaxTexts > 0 {
 		add(pb.Feature_TEXT_DETECTION, ar.MaxTexts)
+	}
+	if ar.FullText {
+		add(pb.Feature_DOCUMENT_TEXT_DETECTION, 0)
 	}
 	if ar.SafeSearch {
 		add(pb.Feature_SAFE_SEARCH_DETECTION, 0)
@@ -227,6 +232,15 @@ func (c *Client) DetectTexts(ctx context.Context, img *Image, maxResults int) ([
 		return nil, err
 	}
 	return anns.Texts, nil
+}
+
+// DetectFullTexts performs full text (OCR) detection on the image.
+func (c *Client) DetectFullText(ctx context.Context, img *Image) (*TextAnnotation, error) {
+	anns, err := c.annotateOne(ctx, &AnnotateRequest{Image: img, FullText: true})
+	if err != nil {
+		return nil, err
+	}
+	return anns.FullText, nil
 }
 
 // DetectSafeSearch performs safe-search detection on the image.
