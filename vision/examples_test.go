@@ -48,8 +48,8 @@ func Example_NewImageFromReader() {
 	fmt.Println(img)
 }
 
-func Example_NewImageFromGCS() {
-	img := vision.NewImageFromGCS("gs://my-bucket/my-image.png")
+func Example_NewImageFromURI() {
+	img := vision.NewImageFromURI("gs://my-bucket/my-image.png")
 	fmt.Println(img)
 }
 
@@ -60,7 +60,7 @@ func ExampleClient_Annotate_oneImage() {
 		// TODO: handle error.
 	}
 	annsSlice, err := client.Annotate(ctx, &vision.AnnotateRequest{
-		Image:      vision.NewImageFromGCS("gs://my-bucket/my-image.png"),
+		Image:      vision.NewImageFromURI("gs://my-bucket/my-image.png"),
 		MaxLogos:   100,
 		MaxTexts:   100,
 		SafeSearch: true,
@@ -89,7 +89,7 @@ func ExampleClient_DetectFaces() {
 	if err != nil {
 		// TODO: handle error.
 	}
-	img := vision.NewImageFromGCS("gs://my-bucket/my-image.png")
+	img := vision.NewImageFromURI("gs://my-bucket/my-image.png")
 	faces, err := client.DetectFaces(ctx, img, 10)
 	if err != nil {
 		// TODO: handle error.

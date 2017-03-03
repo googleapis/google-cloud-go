@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// TODO(jba): test crop hints, text annotation, web annotation
+// TODO(jba): expose DOCUMENT_TEXT annotation
+
 package vision
 
 import (
 	"image/color"
 	"math"
 
-	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/vision/apiv1"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
@@ -40,7 +42,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c.SetGoogleClientInfo("gccl", version.Repo)
+	c.SetGoogleClientInfo("vision", "0.1.0")
 	return &Client{client: c}, nil
 }
 
@@ -90,6 +92,10 @@ type AnnotateRequest struct {
 	SafeSearch bool
 	// ImageProps specifies whether image properties should be obtained for the image.
 	ImageProps bool
+	// Web specifies whether web annotations should be obtained for the image.
+	Web bool
+	// CropHints specifies whether crop hints should be computed for the image.
+	CropHints *CropHintsParams
 }
 
 func (ar *AnnotateRequest) toProto() *pb.AnnotateImageRequest {
@@ -125,11 +131,34 @@ func (ar *AnnotateRequest) toProto() *pb.AnnotateImageRequest {
 	if ar.ImageProps {
 		add(pb.Feature_IMAGE_PROPERTIES, 0)
 	}
+	if ar.Web {
+		add(pb.Feature_WEB_DETECTION, 0)
+	}
+	if ar.CropHints != nil {
+		add(pb.Feature_CROP_HINTS, 0)
+		if ictx == nil {
+			ictx = &pb.ImageContext{}
+		}
+		ictx.CropHintsParams = &pb.CropHintsParams{
+			AspectRatios: ar.CropHints.AspectRatios,
+		}
+	}
 	return &pb.AnnotateImageRequest{
 		Image:        img,
 		Features:     features,
 		ImageContext: ictx,
 	}
+}
+
+// CropHintsParams are parameters for a request for crop hints.
+type CropHintsParams struct {
+	// Aspect ratios for desired crop hints, representing the ratio of the
+	// width to the height of the image. For example, if the desired aspect
+	// ratio is 4:3, the corresponding float value should be 1.33333. If not
+	// specified, the best possible crop is returned. The number of provided
+	// aspect ratios is limited to a maximum of 16; any aspect ratios provided
+	// after the 16th are ignored.
+	AspectRatios []float32
 }
 
 // Called for a single image and a single feature.
@@ -215,6 +244,24 @@ func (c *Client) DetectImageProps(ctx context.Context, img *Image) (*ImageProps,
 		return nil, err
 	}
 	return anns.ImageProps, nil
+}
+
+// DetectWeb computes a web annotation on the image.
+func (c *Client) DetectWeb(ctx context.Context, img *Image) (*WebDetection, error) {
+	anns, err := c.annotateOne(ctx, &AnnotateRequest{Image: img, Web: true})
+	if err != nil {
+		return nil, err
+	}
+	return anns.Web, nil
+}
+
+// CropHints computes crop hints for the image.
+func (c *Client) CropHints(ctx context.Context, img *Image, params *CropHintsParams) ([]*CropHint, error) {
+	anns, err := c.annotateOne(ctx, &AnnotateRequest{Image: img, CropHints: params})
+	if err != nil {
+		return nil, err
+	}
+	return anns.CropHints, nil
 }
 
 // A Likelihood is an approximate representation of a probability.

@@ -81,9 +81,9 @@ type ImageAnnotatorClient struct {
 
 // NewImageAnnotatorClient creates a new image annotator client.
 //
-// Service that performs Google Cloud Vision API detection tasks, such as face,
-// landmark, logo, label, and text detection, over client images, and returns
-// detected entities from the images.
+// Service that performs Google Cloud Vision API detection tasks over client
+// images, such as face, landmark, logo, label, and text detection. The
+// ImageAnnotator service returns detected entities from the images.
 func NewImageAnnotatorClient(ctx context.Context, opts ...option.ClientOption) (*ImageAnnotatorClient, error) {
 	conn, err := transport.DialGRPC(ctx, append(defaultImageAnnotatorClientOptions(), opts...)...)
 	if err != nil {

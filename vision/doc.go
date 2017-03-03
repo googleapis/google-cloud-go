@@ -43,9 +43,9 @@ Use NewImageFromReader to obtain an image from any io.Reader, such as an open fi
 	img, err := vision.NewImageFromReader(f)
 	if err != nil { ... }
 
-Use NewImageFromGCS to refer to an image in Google Cloud Storage:
+Use NewImageFromURI to refer to an image in Google Cloud Storage:
 
-	img := vision.NewImageFromGCS("gs://my-bucket/my-image.png")
+	img := vision.NewImageFromURI("gs://my-bucket/my-image.png")
 
 Annotating Images
 
