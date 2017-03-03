@@ -20,6 +20,7 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
+
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 )
@@ -33,7 +34,7 @@ func TestAnnotate(t *testing.T) {
 		path string // path to image file, relative to testdata
 		// If one of these is true, we expect that annotation to be non-nil.
 		faces, landmarks, logos, labels, texts bool
-		// We always expect safe search and image properties to be present.
+		// We always expect safe search, image properties, web and crop hints to be present.
 	}{
 		{path: "face.jpg", faces: true, labels: true},
 		{path: "cat.jpg", labels: true},
@@ -51,14 +52,20 @@ func TestAnnotate(t *testing.T) {
 			MaxLogos:     1,
 			MaxLabels:    1,
 			MaxTexts:     1,
+			Web:          true,
 			SafeSearch:   true,
 			ImageProps:   true,
+			CropHints:    &CropHintsParams{},
 		})
 		if err != nil {
 			t.Fatalf("annotating %s: %v", test.path, err)
 		}
 		anns := annsSlice[0]
 		p := map[bool]string{true: "present", false: "absent"}
+		if anns.Error != nil {
+			t.Errorf("%s: got Error %v; want nil", test.path, anns.Error)
+			continue
+		}
 		if got, want := (anns.Faces != nil), test.faces; got != want {
 			t.Errorf("%s: faces %s, want %s", test.path, p[got], p[want])
 		}
@@ -80,8 +87,11 @@ func TestAnnotate(t *testing.T) {
 		if got, want := (anns.ImageProps != nil), true; got != want {
 			t.Errorf("%s: image properties %s, want %s", test.path, p[got], p[want])
 		}
-		if anns.Error != nil {
-			t.Errorf("%s: got Error %v; want nil", test.path, anns.Error)
+		if got, want := (anns.Web != nil), true; got != want {
+			t.Errorf("%s: web %s, want %s", test.path, p[got], p[want])
+		}
+		if got, want := (anns.CropHints != nil), true; got != want {
+			t.Errorf("%s: crop hints %s, want %s", test.path, p[got], p[want])
 		}
 	}
 }

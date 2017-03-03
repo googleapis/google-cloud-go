@@ -27,7 +27,7 @@ import (
 type Image struct {
 	// Exactly one of content and gcsURI will be non-zero.
 	content []byte // raw image bytes
-	gcsURI  string // URI of the form "gs://BUCKET/OBJECT"
+	uri     string // URI of the form "gs://BUCKET/OBJECT", or public URL
 
 	// Rect is a rectangle on the Earth's surface represented by the
 	// image. It is optional.
@@ -60,13 +60,13 @@ func NewImageFromReader(r io.ReadCloser) (*Image, error) {
 	return &Image{content: bytes}, nil
 }
 
-// NewImageFromGCS returns an image that refers to an object in Google Cloud Storage.
-// gcsPath must be a valid Google Cloud Storage URI of the form "gs://BUCKET/OBJECT".
+// NewImageFromURI returns an image that refers to an object in Google Cloud Storage
+// (when the uri is of the form "gs://BUCKET/OBJECT") or at a public URL.
 //
 // You may optionally set Rect and LanguageHints on the returned Image before
 // using it.
-func NewImageFromGCS(gcsURI string) *Image {
-	return &Image{gcsURI: gcsURI}
+func NewImageFromURI(uri string) *Image {
+	return &Image{uri: uri}
 }
 
 // toProtos converts the Image to the two underlying API protos it represents,
@@ -76,8 +76,8 @@ func (img *Image) toProtos() (*pb.Image, *pb.ImageContext) {
 	switch {
 	case img.content != nil:
 		pimg = &pb.Image{Content: img.content}
-	case img.gcsURI != "":
-		pimg = &pb.Image{Source: &pb.ImageSource{GcsImageUri: img.gcsURI}}
+	case img.uri != "":
+		pimg = &pb.Image{Source: &pb.ImageSource{ImageUri: img.uri}}
 	}
 
 	var pctx *pb.ImageContext
@@ -87,6 +87,5 @@ func (img *Image) toProtos() (*pb.Image, *pb.ImageContext) {
 			LanguageHints: img.LanguageHints,
 		}
 	}
-
 	return pimg, pctx
 }
