@@ -33,7 +33,7 @@ func TestAnnotate(t *testing.T) {
 	tests := []struct {
 		path string // path to image file, relative to testdata
 		// If one of these is true, we expect that annotation to be non-nil.
-		faces, landmarks, logos, labels, texts bool
+		faces, landmarks, logos, labels, texts, fullText bool
 		// We always expect safe search, image properties, web and crop hints to be present.
 	}{
 		{path: "face.jpg", faces: true, labels: true},
@@ -52,6 +52,7 @@ func TestAnnotate(t *testing.T) {
 			MaxLogos:     1,
 			MaxLabels:    1,
 			MaxTexts:     1,
+			FullText:     true,
 			Web:          true,
 			SafeSearch:   true,
 			ImageProps:   true,
@@ -80,6 +81,9 @@ func TestAnnotate(t *testing.T) {
 		}
 		if got, want := (anns.Texts != nil), test.texts; got != want {
 			t.Errorf("%s: texts %s, want %s", test.path, p[got], p[want])
+		}
+		if got, want := (anns.FullText != nil), test.fullText; got != want {
+			t.Errorf("%s: full texts %s, want %s", test.path, p[got], p[want])
 		}
 		if got, want := (anns.SafeSearch != nil), true; got != want {
 			t.Errorf("%s: safe search %s, want %s", test.path, p[got], p[want])

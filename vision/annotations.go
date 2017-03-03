@@ -37,7 +37,7 @@ type Annotations struct {
 	Labels []*EntityAnnotation
 	// Texts holds the results of text detection.
 	Texts []*EntityAnnotation
-	// FullTexts holds the results of full text (OCR) detection.
+	// FullText holds the results of full text (OCR) detection.
 	FullText *TextAnnotation
 	// SafeSearch holds the results of safe-search detection.
 	SafeSearch *SafeSearchAnnotation
