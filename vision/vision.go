@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// TODO(jba): test crop hints, full text annotation, web annotation
-
 package vision
 
 import (
@@ -272,6 +270,12 @@ func (c *Client) DetectWeb(ctx context.Context, img *Image) (*WebDetection, erro
 
 // CropHints computes crop hints for the image.
 func (c *Client) CropHints(ctx context.Context, img *Image, params *CropHintsParams) ([]*CropHint, error) {
+	// A nil AnnotateRequest.CropHints means do not perform CropHints. But
+	// here the user is explicitly asking for CropHints, so treat nil as
+	// an empty CropHintsParams.
+	if params == nil {
+		params = &CropHintsParams{}
+	}
 	anns, err := c.annotateOne(ctx, &AnnotateRequest{Image: img, CropHints: params})
 	if err != nil {
 		return nil, err
