@@ -52,7 +52,7 @@ func TestAnnotate(t *testing.T) {
 			MaxLogos:     1,
 			MaxLabels:    1,
 			MaxTexts:     1,
-			FullText:     true,
+			DocumentText: true,
 			Web:          true,
 			SafeSearch:   true,
 			ImageProps:   true,
