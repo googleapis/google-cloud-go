@@ -39,10 +39,10 @@ func TestAnnotate(t *testing.T) {
 		{path: "face.jpg", faces: true, labels: true},
 		{path: "cat.jpg", labels: true},
 		{path: "faulkner.jpg", labels: true},
-		{path: "mountain.jpg", texts: true, labels: true},
+		{path: "mountain.jpg", texts: true, fullText: true, labels: true},
 		{path: "no-text.jpg", labels: true},
 		{path: "eiffel-tower.jpg", landmarks: true, labels: true},
-		{path: "google.png", logos: true, labels: true, texts: true},
+		{path: "google.png", logos: true, labels: true, texts: true, fullText: true},
 	}
 	for _, test := range tests {
 		annsSlice, err := client.Annotate(ctx, &AnnotateRequest{
@@ -52,7 +52,6 @@ func TestAnnotate(t *testing.T) {
 			MaxLogos:     1,
 			MaxLabels:    1,
 			MaxTexts:     1,
-			DocumentText: true,
 			Web:          true,
 			SafeSearch:   true,
 			ImageProps:   true,
@@ -139,6 +138,12 @@ func TestDetectMethods(t *testing.T) {
 				return as != nil, err
 			},
 		},
+		{"mountain.jpg",
+			func(img *Image) (bool, error) {
+				as, err := client.DetectDocumentText(ctx, img)
+				return as != nil, err
+			},
+		},
 		{"cat.jpg",
 			func(img *Image) (bool, error) {
 				as, err := client.DetectSafeSearch(ctx, img)
@@ -151,10 +156,23 @@ func TestDetectMethods(t *testing.T) {
 				return ip != nil, err
 			},
 		},
+		{"cat.jpg",
+			func(img *Image) (bool, error) {
+				as, err := client.DetectWeb(ctx, img)
+				return as != nil, err
+			},
+		},
+		{"cat.jpg",
+			func(img *Image) (bool, error) {
+				ch, err := client.CropHints(ctx, img, nil)
+				return ch != nil, err
+			},
+		},
 	} {
 		present, err := test.call(testImage(test.path))
 		if err != nil {
 			t.Errorf("%s, #%d: got err %v, want nil", test.path, i, err)
+			continue
 		}
 		if !present {
 			t.Errorf("%s, #%d: nil annotation, want non-nil", test.path, i)
