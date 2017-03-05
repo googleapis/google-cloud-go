@@ -1,0 +1,73 @@
+// Copyright 2017 Google Inc. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Package traceutil contains utilities for tracing.
+// This package is experimental and is subject to change.
+package traceutil
+
+import (
+	"net/http"
+
+	"cloud.google.com/go/trace"
+)
+
+type tracerTransport struct {
+	base http.RoundTripper
+}
+
+func (tt *tracerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	span := trace.FromContext(req.Context()).NewRemoteChild(req)
+	defer span.Finish()
+
+	return tt.base.RoundTrip(req)
+}
+
+// HTTPClient is an HTTP client that enhances http.Client
+// with automatic tracing support.
+type HTTPClient struct {
+	http.Client
+	tc *trace.Client
+}
+
+// Do behaves like (*http.Client).Do but automatically traces
+// outgoing requests if tracing is enabled for the current request.
+//
+// If req.Context() contains a traced *trace.Span, the outgoing request
+// is traced with the existing span. If not, the request is not traced.
+func (c *HTTPClient) Do(req *http.Request) (*http.Response, error) {
+	return c.Client.Do(req)
+}
+
+// NewHTTPClient creates a new HTTPClient that will trace the outgoing
+// requests using tc. The attributes of this client are inherited from the
+// given http.Client. If orig is nil, http.DefaultClient is used.
+func NewHTTPClient(tc *trace.Client, orig *http.Client) *HTTPClient {
+	if orig == nil {
+		orig = http.DefaultClient
+	}
+	rt := orig.Transport
+	if rt == nil {
+		rt = http.DefaultTransport
+	}
+	client := http.Client{
+		Transport:     &tracerTransport{base: rt},
+		CheckRedirect: orig.CheckRedirect,
+		Jar:           orig.Jar,
+		Timeout:       orig.Timeout,
+	}
+	return &HTTPClient{
+		Client: client,
+		tc:     tc,
+	}
+}
