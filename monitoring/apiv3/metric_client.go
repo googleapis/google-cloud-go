@@ -17,7 +17,6 @@
 package monitoring
 
 import (
-	"fmt"
 	"math"
 	"time"
 
@@ -78,6 +77,17 @@ func defaultMetricCallOptions() *MetricCallOptions {
 				})
 			}),
 		},
+		{"default", "non_idempotent"}: {
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.3,
+				})
+			}),
+		},
 	}
 	return &MetricCallOptions{
 		ListMonitoredResourceDescriptors: retry[[2]string{"default", "idempotent"}],
@@ -121,7 +131,7 @@ func NewMetricClient(ctx context.Context, opts ...option.ClientOption) (*MetricC
 
 		metricClient: monitoringpb.NewMetricServiceClient(conn),
 	}
-	c.SetGoogleClientInfo("gapic", version.Repo)
+	c.SetGoogleClientInfo()
 	return c, nil
 }
 
@@ -139,8 +149,10 @@ func (c *MetricClient) Close() error {
 // SetGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *MetricClient) SetGoogleClientInfo(clientName, clientVersion string) {
-	c.xGoogHeader = fmt.Sprintf("gl-go/%s %s/%s gax/%s grpc/", version.Go(), clientName, clientVersion, gax.Version)
+func (c *MetricClient) SetGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", version.Go()}, keyval...)
+	kv = append(kv, "gapic", version.Repo, "gax", gax.Version, "grpc", "")
+	c.xGoogHeader = gax.XGoogHeader(kv...)
 }
 
 // MetricProjectPath returns the path for the project resource.
