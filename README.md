@@ -178,7 +178,7 @@ Google API                     | Status       | Package
 [BigQuery][cloud-bigquery]     | beta         | [`cloud.google.com/go/bigquery`][cloud-bigquery-ref]
 [Logging][cloud-logging]       | beta         | [`cloud.google.com/go/logging`][cloud-logging-ref]
 [Pub/Sub][cloud-pubsub]        | alpha | [`cloud.google.com/go/pubsub`][cloud-pubsub-ref]
-[Vision][cloud-vision]         | alpha | [`cloud.google.com/go/vision`][cloud-vision-ref]
+[Vision][cloud-vision]         | beta | [`cloud.google.com/go/vision`][cloud-vision-ref]
 [Language][cloud-language]     | alpha | [`cloud.google.com/go/language/apiv1`][cloud-language-ref]
 [Speech][cloud-speech]         | alpha | [`cloud.google.com/go/speech/apiv1beta`][cloud-speech-ref]
 [Spanner][cloud-spanner]       | alpha | [`cloud.google.com/go/spanner`][cloud-spanner-ref]
