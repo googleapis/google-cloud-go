@@ -386,21 +386,9 @@ func TestObjects(t *testing.T) {
 			copyObj.Bucket, copyObj.Name, bucket, copyName)
 	}
 
-	// Check for error setting attributes but not ContentType.
-	const (
-		contentType     = "text/html"
-		contentEncoding = "identity"
-	)
-	copier := bkt.Object(copyName).CopierFrom(bkt.Object(objName))
-	copier.ContentEncoding = contentEncoding
-	_, err = copier.Run(ctx)
-	if err == nil {
-		t.Error("copy without ContentType: got nil, want error")
-	}
-
 	// Copying with attributes.
-	copier = bkt.Object(copyName).CopierFrom(bkt.Object(objName))
-	copier.ContentType = contentType
+	const contentEncoding = "identity"
+	copier := bkt.Object(copyName).CopierFrom(bkt.Object(objName))
 	copier.ContentEncoding = contentEncoding
 	copyObj, err = copier.Run(ctx)
 	if err != nil {
@@ -409,9 +397,6 @@ func TestObjects(t *testing.T) {
 		if !namesEqual(copyObj, bucket, copyName) {
 			t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
 				copyObj.Bucket, copyObj.Name, bucket, copyName)
-		}
-		if copyObj.ContentType != contentType {
-			t.Errorf("Copy ContentType: got %q, want %q", copyObj.ContentType, contentType)
 		}
 		if copyObj.ContentEncoding != contentEncoding {
 			t.Errorf("Copy ContentEncoding: got %q, want %q", copyObj.ContentEncoding, contentEncoding)
@@ -1002,6 +987,38 @@ func TestIntegration_NonexistentBucket(t *testing.T) {
 	if _, err := it.Next(); err != ErrBucketNotExist {
 		t.Errorf("Objects: got %v, want ErrBucketNotExist", err)
 	}
+}
+
+func TestIntegration_BucketInCopyAttrs(t *testing.T) {
+	// Confirm that if bucket is included in the object attributes of a rewrite
+	// call, but object name and content-type aren't, then we get an error. See
+	// the comment in Copier.Run.
+	ctx := context.Background()
+	client, bucket := testConfig(ctx, t)
+	defer client.Close()
+
+	bkt := client.Bucket(bucket)
+	obj := bkt.Object("bucketInCopyAttrs")
+	if err := writeObject(ctx, obj, "", []byte("foo")); err != nil {
+		t.Fatal(err)
+	}
+	copier := obj.CopierFrom(obj)
+	rawObject := copier.ObjectAttrs.toRawObject(bucket)
+	_, err := copier.callRewrite(ctx, obj, rawObject)
+	if err == nil {
+		t.Errorf("got nil, want error")
+	}
+}
+
+func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
+	w := obj.NewWriter(ctx)
+	w.ContentType = contentType
+	if contents != nil {
+		if _, err := w.Write([]byte(contents)); err != nil {
+			return err
+		}
+	}
+	return w.Close()
 }
 
 func readObject(ctx context.Context, obj *ObjectHandle) ([]byte, error) {
