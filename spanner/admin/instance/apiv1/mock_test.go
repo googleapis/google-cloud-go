@@ -21,7 +21,7 @@ import (
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
-	protobufpb "google.golang.org/genproto/protobuf/field_mask"
+	field_maskpb "google.golang.org/genproto/protobuf/field_mask"
 )
 
 import (
@@ -554,7 +554,7 @@ func TestInstanceAdminUpdateInstance(t *testing.T) {
 	})
 
 	var instance *instancepb.Instance = &instancepb.Instance{}
-	var fieldMask *protobufpb.FieldMask = &protobufpb.FieldMask{}
+	var fieldMask *field_maskpb.FieldMask = &field_maskpb.FieldMask{}
 	var request = &instancepb.UpdateInstanceRequest{
 		Instance:  instance,
 		FieldMask: fieldMask,
@@ -599,7 +599,7 @@ func TestInstanceAdminUpdateInstanceError(t *testing.T) {
 	})
 
 	var instance *instancepb.Instance = &instancepb.Instance{}
-	var fieldMask *protobufpb.FieldMask = &protobufpb.FieldMask{}
+	var fieldMask *field_maskpb.FieldMask = &field_maskpb.FieldMask{}
 	var request = &instancepb.UpdateInstanceRequest{
 		Instance:  instance,
 		FieldMask: fieldMask,

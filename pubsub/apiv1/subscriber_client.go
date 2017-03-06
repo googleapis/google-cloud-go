@@ -17,7 +17,6 @@
 package pubsub
 
 import (
-	"fmt"
 	"math"
 	"time"
 
@@ -120,7 +119,7 @@ func NewSubscriberClient(ctx context.Context, opts ...option.ClientOption) (*Sub
 
 		subscriberClient: pubsubpb.NewSubscriberClient(conn),
 	}
-	c.SetGoogleClientInfo("gapic", version.Repo)
+	c.SetGoogleClientInfo()
 	return c, nil
 }
 
@@ -138,8 +137,10 @@ func (c *SubscriberClient) Close() error {
 // SetGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *SubscriberClient) SetGoogleClientInfo(clientName, clientVersion string) {
-	c.xGoogHeader = fmt.Sprintf("gl-go/%s %s/%s gax/%s grpc/", version.Go(), clientName, clientVersion, gax.Version)
+func (c *SubscriberClient) SetGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", version.Go()}, keyval...)
+	kv = append(kv, "gapic", version.Repo, "gax", gax.Version, "grpc", "")
+	c.xGoogHeader = gax.XGoogHeader(kv...)
 }
 
 // SubscriberProjectPath returns the path for the project resource.
