@@ -67,7 +67,7 @@ func TestClientIntegration(t *testing.T) {
 		t.Fatalf("IntegrationEnv: %v", err)
 	}
 
-	timeout := 20 * time.Second
+	timeout := 30 * time.Second
 	if testEnv.Config().UseProd {
 		timeout = 5 * time.Minute
 		t.Logf("Running test against production")
