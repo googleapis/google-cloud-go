@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// TODO(jba): use writeObject throughout.
+
 package storage
 
 import (
@@ -989,6 +991,67 @@ func TestIntegration_NonexistentBucket(t *testing.T) {
 	}
 }
 
+func TestIntegration_PerObjectStorageClass(t *testing.T) {
+	const (
+		defaultStorageClass = "STANDARD"
+		newStorageClass     = "MULTI_REGIONAL"
+	)
+	ctx := context.Background()
+	client, bucket := testConfig(ctx, t)
+	defer client.Close()
+
+	bkt := client.Bucket(bucket)
+
+	// The bucket should have the default storage class.
+	battrs, err := bkt.Attrs(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if battrs.StorageClass != defaultStorageClass {
+		t.Fatalf("bucket storage class: got %q, want %q",
+			battrs.StorageClass, defaultStorageClass)
+	}
+	// Write an object; it should start with the bucket's storage class.
+	obj := bkt.Object("posc")
+	if err := writeObject(ctx, obj, "", []byte("foo")); err != nil {
+		t.Fatal(err)
+	}
+	oattrs, err := obj.Attrs(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if oattrs.StorageClass != defaultStorageClass {
+		t.Fatalf("object storage class: got %q, want %q",
+			oattrs.StorageClass, defaultStorageClass)
+	}
+	// Now use Copy to change the storage class.
+	copier := obj.CopierFrom(obj)
+	copier.StorageClass = newStorageClass
+	oattrs2, err := copier.Run(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if oattrs2.StorageClass != newStorageClass {
+		t.Fatalf("new object storage class: got %q, want %q",
+			oattrs2.StorageClass, newStorageClass)
+	}
+
+	// We can also write a new object using a non-default storage class.
+	obj2 := bkt.Object("posc2")
+	w := obj2.NewWriter(ctx)
+	w.StorageClass = newStorageClass
+	if _, err := w.Write([]byte("xxx")); err != nil {
+		t.Fatal(err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if w.Attrs().StorageClass != newStorageClass {
+		t.Fatalf("new object storage class: got %q, want %q",
+			w.Attrs().StorageClass, newStorageClass)
+	}
+}
+
 func TestIntegration_BucketInCopyAttrs(t *testing.T) {
 	// Confirm that if bucket is included in the object attributes of a rewrite
 	// call, but object name and content-type aren't, then we get an error. See
@@ -1062,7 +1125,7 @@ func cleanup() error {
 			return err
 		}
 		if time.Since(bktAttrs.Created) > expireAge {
-			log.Printf("deleting bucket %q, which more than %s old", bktAttrs.Name, expireAge)
+			log.Printf("deleting bucket %q, which is more than %s old", bktAttrs.Name, expireAge)
 			if err := killBucket(ctx, client, bktAttrs.Name); err != nil {
 				return err
 			}
