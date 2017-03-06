@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// TODO(jba): use writeObject throughout.
-
 package storage
 
 import (
@@ -201,14 +199,9 @@ func TestObjects(t *testing.T) {
 
 	// Test Writer.
 	for _, obj := range objects {
-		wc := bkt.Object(obj).NewWriter(ctx)
-		wc.ContentType = defaultType
 		c := randomContents()
-		if _, err := wc.Write(c); err != nil {
+		if err := writeObject(ctx, bkt.Object(obj), defaultType, c); err != nil {
 			t.Errorf("Write for %v failed with %v", obj, err)
-		}
-		if err := wc.Close(); err != nil {
-			t.Errorf("Close for %v failed with %v", obj, err)
 		}
 		contents[obj] = c
 	}
@@ -648,13 +641,9 @@ func TestACL(t *testing.T) {
 	}
 	aclObjects := []string{"acl1", "acl2"}
 	for _, obj := range aclObjects {
-		wc := bkt.Object(obj).NewWriter(ctx)
 		c := randomContents()
-		if _, err := wc.Write(c); err != nil {
+		if err := writeObject(ctx, bkt.Object(obj), "", c); err != nil {
 			t.Errorf("Write for %v failed with %v", obj, err)
-		}
-		if err := wc.Close(); err != nil {
-			t.Errorf("Close for %v failed with %v", obj, err)
 		}
 	}
 	name := aclObjects[0]
@@ -715,13 +704,8 @@ func TestValidObjectNames(t *testing.T) {
 		strings.Repeat("a", 1024),
 	}
 	for _, name := range validNames {
-		w := bkt.Object(name).NewWriter(ctx)
-		if _, err := w.Write([]byte("data")); err != nil {
+		if err := writeObject(ctx, bkt.Object(name), "", []byte("data")); err != nil {
 			t.Errorf("Object %q write failed: %v. Want success", name, err)
-			continue
-		}
-		if err := w.Close(); err != nil {
-			t.Errorf("Object %q close failed: %v. Want success", name, err)
 			continue
 		}
 		defer bkt.Object(name).Delete(ctx)
@@ -734,12 +718,8 @@ func TestValidObjectNames(t *testing.T) {
 		"bad\xffunicode",
 	}
 	for _, name := range invalidNames {
-		w := bkt.Object(name).NewWriter(ctx)
 		// Invalid object names will either cause failure during Write or Close.
-		if _, err := w.Write([]byte("data")); err != nil {
-			continue
-		}
-		if err := w.Close(); err != nil {
+		if err := writeObject(ctx, bkt.Object(name), "", []byte("data")); err != nil {
 			continue
 		}
 		defer bkt.Object(name).Delete(ctx)
@@ -776,14 +756,9 @@ func TestWriterContentType(t *testing.T) {
 			wantType: "image/jpeg",
 		},
 	}
-	for _, tt := range testCases {
-		w := obj.NewWriter(ctx)
-		w.ContentType = tt.setType
-		if _, err := w.Write([]byte(tt.content)); err != nil {
-			t.Errorf("w.Write: %v", err)
-		}
-		if err := w.Close(); err != nil {
-			t.Errorf("w.Close: %v", err)
+	for i, tt := range testCases {
+		if err := writeObject(ctx, obj, tt.setType, []byte(tt.content)); err != nil {
+			t.Errorf("writing #%d: %v", i, err)
 		}
 		attrs, err := obj.Attrs(ctx)
 		if err != nil {
@@ -1077,7 +1052,8 @@ func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, con
 	w := obj.NewWriter(ctx)
 	w.ContentType = contentType
 	if contents != nil {
-		if _, err := w.Write([]byte(contents)); err != nil {
+		if _, err := w.Write(contents); err != nil {
+			_ = w.Close()
 			return err
 		}
 	}
