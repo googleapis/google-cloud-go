@@ -56,35 +56,22 @@ Subsciptions may be created like so:
 
  sub, err := pubsubClient.CreateSubscription(context.Background(), "sub-name", topic, 0, nil)
 
-Messages are then consumed from a subscription via an iterator:
+Messages are then consumed from a subscription via callback.
 
- // Construct the iterator
- it, err := sub.Pull(context.Background())
- if err != nil {
-	// handle err ...
- }
- defer it.Stop()
-
- // Consume N messages
- for i := 0; i < N; i++ {
- 	msg, err := it.Next()
- 	if err == iterator.Done {
- 		break
- 	}
- 	if err != nil {
- 		// handle err ...
- 		break
- 	}
-
+ err := sub.Receive(context.Background(), func(ctx context.Context, m *Message) {
  	log.Print("got message: ", string(msg.Data))
- 	msg.Done(true)
+ 	msg.Done(pubsub.Ack)
+ })
+ if err != nil {
+	// Handle error.
  }
 
-The message iterator returns messages one at a time, fetching batches of
-messages behind the scenes as needed. Once client code has processed the
-message, it must call Message.Done, otherwise the message will eventually be
-redelivered. For more information and configuration options, see "Deadlines"
-below.
+The callback is invoked concurrently by multiple goroutines, maximizing
+throughput. To terminate a call to Receive, cancel its context.
+
+Once client code has processed the message, it must call Message.Done,
+otherwise the message will eventually be redelivered. For more information and
+configuration options, see "Deadlines" below.
 
 Note: It is possible for Messages to be redelivered, even if Message.Done has
 been called. Client code must be robust to multiple deliveries of messages.
@@ -113,12 +100,12 @@ faster message redelivery by the Pub/Sub system. However, a short ACK deadline
 may also increase the number of deadline extension RPCs that the pubsub package
 sends to the server.
 
-The default max extension period is DefaultMaxExtension, and can be overridden
-by passing a MaxExtension option to Subscription.Pull. Selecting a max
-extension period is a tradeoff between the speed at which client code must
+The default max extension period is DefaultPullSettings.MaxExtension, and can
+be overridden by setting Subscription.PullSettings.MaxExtension. Selecting a
+max extension period is a tradeoff between the speed at which client code must
 process messages, and the redelivery delay if messages fail to be acknowledged
-(e.g. because client code neglects to do so).  Using a large MaxExtension
-increases the available time for client code to process messages.  However, if
+(e.g. because client code neglects to do so). Using a large MaxExtension
+increases the available time for client code to process messages. However, if
 the client code neglects to call Message.Done, a large MaxExtension will
 increase the delay before the message is redelivered.
 

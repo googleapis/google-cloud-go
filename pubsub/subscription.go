@@ -18,17 +18,16 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"sync"
 	"time"
+
+	"google.golang.org/api/iterator"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 
 	"cloud.google.com/go/iam"
 	"golang.org/x/net/context"
 )
-
-// The default period for which to automatically extend Message acknowledgement deadlines.
-const DefaultMaxExtension = 10 * time.Minute
-
-// The default maximum number of messages that are prefetched from the server.
-const DefaultMaxPrefetch = 100
 
 // Subscription is a reference to a PubSub subscription.
 type Subscription struct {
@@ -36,13 +35,23 @@ type Subscription struct {
 
 	// The fully qualified identifier for the subscription, in the format "projects/<projid>/subscriptions/<name>"
 	name string
+
+	// Settings for pulling messages. Configure these before calling Receive.
+	ReceiveSettings ReceiveSettings
+
+	mu            sync.Mutex
+	receiveActive bool
 }
 
 // Subscription creates a reference to a subscription.
 func (c *Client) Subscription(id string) *Subscription {
+	return newSubscription(c.s, fmt.Sprintf("projects/%s/subscriptions/%s", c.projectID, id))
+}
+
+func newSubscription(s service, name string) *Subscription {
 	return &Subscription{
-		s:    c.s,
-		name: fmt.Sprintf("projects/%s/subscriptions/%s", c.projectID, id),
+		s:    s,
+		name: name,
 	}
 }
 
@@ -81,7 +90,7 @@ func (subs *SubscriptionIterator) Next() (*Subscription, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Subscription{s: subs.s, name: subName}, nil
+	return newSubscription(subs.s, subName), nil
 }
 
 // PushConfig contains configuration for subscriptions that operate in push mode.
@@ -100,9 +109,40 @@ type SubscriptionConfig struct {
 
 	// The default maximum time after a subscriber receives a message before
 	// the subscriber should acknowledge the message. Note: messages which are
-	// obtained via a MessageIterator need not be acknowledged within this
+	// obtained via Subscription.Receive need not be acknowledged within this
 	// deadline, as the deadline will be automatically extended.
 	AckDeadline time.Duration
+}
+
+// ReceiveSettings configure the Receive method.
+// A zero ReceiveSettings will result in values equivalent to DefaultReceiveSettings.
+type ReceiveSettings struct {
+	// MaxExtension is the maximum period for which the Subscription should
+	// automatically extend the ack deadline for each message.
+	//
+	// The Subscription will automatically extend the ack deadline of all
+	// fetched Messages for the duration specified. Automatic deadline
+	// extension may be disabled by specifying a duration less than 1.
+	MaxExtension time.Duration
+
+	// MaxOutstandingMessages is the maximum number of unprocessed messages
+	// (unacknowledged but not yet expired). If MaxOutstandingMessages is less
+	// than 1, it will be treated as if it were
+	// DefaultReceiveSettings.MaxOutstandingMessages.
+	MaxOutstandingMessages int
+
+	// MaxOutstandingBytes is the maximum size of unprocessed messages
+	// (unacknowledged but not yet expired). If MaxOutstandingBytes is less
+	// than 1, it will be treated as if it were
+	// DefaultReceiveSettings.MaxOutstandingBytes.
+	MaxOutstandingBytes int
+}
+
+// DefaultReceiveSettings holds the default values for ReceiveSettings.
+var DefaultReceiveSettings = ReceiveSettings{
+	MaxExtension:           10 * time.Minute,
+	MaxOutstandingMessages: 1000,
+	MaxOutstandingBytes:    1e9, // 1G
 }
 
 // Delete deletes the subscription.
@@ -128,23 +168,133 @@ func (s *Subscription) Config(ctx context.Context) (*SubscriptionConfig, error) 
 	return conf, nil
 }
 
-// Pull returns a MessageIterator that can be used to fetch Messages. The MessageIterator
-// will automatically extend the ack deadline of all fetched Messages, for the
-// period specified by DefaultMaxExtension. This may be overridden by supplying
-// a MaxExtension pull option.
+var errReceiveInProgress = errors.New("pubsub: Receive already in progress for this subscription")
+
+// Receive calls f with the outstanding messages from the subscription.
+// It blocks until ctx is done, or the service returns a non-retryable error.
 //
-// If ctx is cancelled or exceeds its deadline, outstanding acks or deadline
-// extensions will fail.
+// The standard way to terminate a Receive is to cancel its context:
 //
-// The caller must call Stop on the MessageIterator once finished with it.
-func (s *Subscription) Pull(ctx context.Context, opts ...PullOption) (*MessageIterator, error) {
+//   cctx, cancel := context.WithCancel(ctx)
+//   err := sub.Receive(cctx, callback)
+//   // Call cancel from callback, or another goroutine.
+//
+// If the service returns a non-retryable error, Receive returns that error after
+// all of the outstanding calls to f have returned. If ctx is done, Receive
+// returns either nil after all of the outstanding calls to f have returned and
+// all messages have been acknowledged or have expired.
+//
+// Receive calls f concurrently from multiple goroutines. It is encouraged to
+// process messages synchronously in f, even if that processing is relatively
+// time-consuming; Receive will spawn new goroutines for incoming messages,
+// limited by MaxOutstandingMessages and MaxOutstandingBytes in ReceiveSettings.
+//
+// The context passed to f will be canceled when ctx is Done or there is a
+// fatal service error.
+//
+// Receive will automatically extend the ack deadline of all fetched Messages for the
+// period specified by s.ReceiveSettings.MaxExtension.
+//
+// Each Subscription may have only one invocation of Receive active at a time.
+func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Message)) error {
+	s.mu.Lock()
+	if s.receiveActive {
+		s.mu.Unlock()
+		return errReceiveInProgress
+	}
+	s.receiveActive = true
+	s.mu.Unlock()
+	defer func() { s.mu.Lock(); s.receiveActive = false; s.mu.Unlock() }()
+
 	config, err := s.Config(ctx)
 	if err != nil {
-		return nil, err
+		if grpc.Code(err) == codes.Canceled {
+			return nil
+		}
+		return err
 	}
-	po := processPullOptions(opts)
-	po.ackDeadline = config.AckDeadline
-	return newMessageIterator(ctx, s.s, s.name, po), nil
+	maxCount := s.ReceiveSettings.MaxOutstandingMessages
+	if maxCount < 1 {
+		maxCount = DefaultReceiveSettings.MaxOutstandingMessages
+	}
+	maxBytes := s.ReceiveSettings.MaxOutstandingBytes
+	if maxBytes < 1 {
+		maxBytes = DefaultReceiveSettings.MaxOutstandingBytes
+	}
+
+	po := &pullOptions{
+		maxExtension: s.ReceiveSettings.MaxExtension,
+		maxPrefetch:  trunc32(int64(maxCount)),
+		ackDeadline:  config.AckDeadline,
+	}
+	if po.maxExtension < 1 {
+		po.maxExtension = 0
+	}
+	iter := newMessageIterator(context.Background(), s.s, s.name, po)
+	fc := flowController{
+		maxCount: maxCount,
+		maxSize:  maxBytes,
+	}
+
+	// Wait for all goroutines started by Receive to return, so instead of an
+	// obscure goroutine leak we have an obvious blocked call to Receive.
+	var wg sync.WaitGroup
+	defer wg.Wait()
+	// Cancel a sub-context when we return, to kick the context-aware callbacks
+	// and the goroutine below.
+	ctx2, cancel := context.WithCancel(ctx)
+	// Call stop when Receive's context is done.
+	// Stop will block until all outstanding messages have been acknowledged
+	// or there was a fatal service error.
+	// The iterator does not use the context passed to Receive. If it did, canceling
+	// that context would immediately stop the iterator without waiting for unacked
+	// messages.
+	wg.Add(1)
+	go func() {
+		<-ctx2.Done()
+		iter.Stop()
+		wg.Done()
+	}()
+	// Since defers happen in LIFO order, the defer of cancel must appear after the defer of wg.Wait.
+	defer cancel()
+	for {
+		msg, err := iter.Next()
+		if err == iterator.Done {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		// TODO(jba): call acquire closer to when the message is allocated.
+		acquireBytes := len(msg.Data)
+		// Don't block forever on overly large messages. Just let them through.
+		if acquireBytes > fc.maxSize {
+			acquireBytes = fc.maxSize
+		}
+		if err := fc.acquire(ctx, acquireBytes); err != nil {
+			// TODO(jba): test that this "orphaned" message is nacked immediately when ctx is done.
+			msg.Done(false)
+			return nil
+		}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			// TODO(jba): call release when the message is available for GC.
+			// This considers the message to be released when
+			// f is finished, but f may ack early or not at all.
+			defer fc.release(len(msg.Data))
+			f(ctx2, msg)
+		}()
+	}
+}
+
+// TODO(jba): remove when we delete messageIterator.
+type pullOptions struct {
+	maxExtension time.Duration
+	maxPrefetch  int32
+	// ackDeadline is the default ack deadline for the subscription. Not
+	// configurable.
+	ackDeadline time.Duration
 }
 
 // ModifyPushConfig updates the endpoint URL and other attributes of a push subscription.
@@ -158,75 +308,6 @@ func (s *Subscription) ModifyPushConfig(ctx context.Context, conf *PushConfig) e
 
 func (s *Subscription) IAM() *iam.Handle {
 	return s.s.iamHandle(s.name)
-}
-
-// A PullOption is an optional argument to Subscription.Pull.
-type PullOption interface {
-	setOptions(o *pullOptions)
-}
-
-type pullOptions struct {
-	// maxExtension is the maximum period for which the iterator should
-	// automatically extend the ack deadline for each message.
-	maxExtension time.Duration
-
-	// maxPrefetch is the maximum number of Messages to have in flight, to
-	// be returned by MessageIterator.Next.
-	maxPrefetch int32
-
-	// ackDeadline is the default ack deadline for the subscription.  Not
-	// configurable via a PullOption.
-	ackDeadline time.Duration
-}
-
-func processPullOptions(opts []PullOption) *pullOptions {
-	po := &pullOptions{
-		maxExtension: DefaultMaxExtension,
-		maxPrefetch:  DefaultMaxPrefetch,
-	}
-
-	for _, o := range opts {
-		o.setOptions(po)
-	}
-
-	return po
-}
-
-type maxPrefetch int32
-
-func (max maxPrefetch) setOptions(o *pullOptions) {
-	if o.maxPrefetch = int32(max); o.maxPrefetch < 1 {
-		o.maxPrefetch = 1
-	}
-}
-
-// MaxPrefetch returns a PullOption that limits Message prefetching.
-//
-// For performance reasons, the pubsub library may prefetch a pool of Messages
-// to be returned serially from MessageIterator.Next. MaxPrefetch is used to limit the
-// the size of this pool.
-//
-// If num is less than 1, it will be treated as if it were 1.
-func MaxPrefetch(num int) PullOption {
-	return maxPrefetch(trunc32(int64(num)))
-}
-
-type maxExtension time.Duration
-
-func (max maxExtension) setOptions(o *pullOptions) {
-	if o.maxExtension = time.Duration(max); o.maxExtension < 0 {
-		o.maxExtension = 0
-	}
-}
-
-// MaxExtension returns a PullOption that limits how long acks deadlines are
-// extended for.
-//
-// A MessageIterator will automatically extend the ack deadline of all fetched
-// Messages for the duration specified. Automatic deadline extension may be
-// disabled by specifying a duration of 0.
-func MaxExtension(duration time.Duration) PullOption {
-	return maxExtension(duration)
 }
 
 // CreateSubscription creates a new subscription on a topic.
@@ -244,7 +325,7 @@ func MaxExtension(duration time.Duration) PullOption {
 // the subscriber should acknowledge the message. It must be between 10 and 600
 // seconds (inclusive), and is rounded down to the nearest second. If the
 // provided ackDeadline is 0, then the default value of 10 seconds is used.
-// Note: messages which are obtained via a MessageIterator need not be
+// Note: messages which are obtained via Subscription.Receive need not be
 // acknowledged within this deadline, as the deadline will be automatically
 // extended.
 //
@@ -262,4 +343,52 @@ func (c *Client) CreateSubscription(ctx context.Context, id string, topic *Topic
 	sub := c.Subscription(id)
 	err := c.s.createSubscription(ctx, topic.name, sub.name, ackDeadline, pushConfig)
 	return sub, err
+}
+
+// flowController implements flow control for Subscriber.Receive.
+type flowController struct {
+	maxCount, maxSize int // max number of messages, total size
+
+	mu          sync.Mutex
+	count, size int             // current count and size
+	ready       chan<- struct{} // closed when waitSize can be satisfied
+	waitSize    int             // waiting for this size
+}
+
+// acquire blocks until one message of size bytes can proceed or ctx is done.
+// It returns nil in the first case, or ctx.Err() in the second. Only one call
+// to acquire can be active at a time.
+func (f *flowController) acquire(ctx context.Context, size int) error {
+	if size > f.maxSize {
+		return fmt.Errorf("pubsub: message size %d exceeds maximum allowed size %d", size, f.maxSize)
+	}
+	f.mu.Lock()
+	for f.count >= f.maxCount || size > f.maxSize-f.size {
+		ready := make(chan struct{})
+		f.ready = ready
+		f.waitSize = size
+		f.mu.Unlock()
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-ready:
+		}
+		f.mu.Lock()
+	}
+	f.count++
+	f.size += size
+	f.mu.Unlock()
+	return nil
+}
+
+// release notes that one message of size bytes is no longer outstanding.
+func (f *flowController) release(size int) {
+	f.mu.Lock()
+	f.count--
+	f.size -= size
+	if f.ready != nil && f.size <= f.maxSize-f.waitSize {
+		close(f.ready)
+		f.ready = nil
+	}
+	f.mu.Unlock()
 }

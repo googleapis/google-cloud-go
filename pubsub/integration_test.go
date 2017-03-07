@@ -124,43 +124,20 @@ func TestAll(t *testing.T) {
 
 	// Use a timeout to ensure that Pull does not block indefinitely if there are unexpectedly few messages available.
 	timeoutCtx, _ := context.WithTimeout(ctx, time.Minute)
-	it, err := sub.Pull(timeoutCtx)
+	gotMsgs, err := pullN(timeoutCtx, sub, len(want), func(ctx context.Context, m *Message) {
+		m.Done(true)
+	})
 	if err != nil {
-		t.Fatalf("error constructing iterator: %v", err)
+		t.Fatalf("Pull: %v", err)
 	}
-	defer it.Stop()
 	got := make(map[string]*messageData)
-	for i := 0; i < len(want); i++ {
-		m, err := it.Next()
-		if err != nil {
-			t.Fatalf("error getting next message: %v", err)
-		}
+	for _, m := range gotMsgs {
 		md := extractMessageData(m)
 		got[md.ID] = md
-		m.Done(true)
 	}
-
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("messages: got: %v ; want: %v", got, want)
 	}
-
-	// base64 test
-	data := "=@~"
-	res := topic.Publish(ctx, &Message{Data: []byte(data)})
-	_, err = res.Get(ctx)
-	if err != nil {
-		t.Fatalf("Publish error: %v", err)
-	}
-
-	m, err := it.Next()
-	if err != nil {
-		t.Fatalf("Pull error: %v", err)
-	}
-
-	if string(m.Data) != data {
-		t.Errorf("unexpected message received; %s, want %s", string(m.Data), data)
-	}
-	m.Done(true)
 
 	if msg, ok := testIAM(ctx, topic.IAM(), "pubsub.topics.get"); !ok {
 		t.Errorf("topic IAM: %s", msg)

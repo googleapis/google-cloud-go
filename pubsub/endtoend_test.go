@@ -25,7 +25,6 @@ import (
 	"golang.org/x/net/context"
 
 	"cloud.google.com/go/internal/testutil"
-	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
 
@@ -50,47 +49,16 @@ func (mc *messageCounter) Inc(msgID string) {
 	mc.recv <- struct{}{}
 }
 
-// process pulls messages from an iterator and records them in mc.
-func process(t *testing.T, it *MessageIterator, mc *messageCounter) {
-	for {
-		m, err := it.Next()
-		if err == iterator.Done {
-			return
-		}
-
-		if err != nil {
-			t.Errorf("unexpected err from iterator: %v", err)
-			return
-		}
-		mc.Inc(m.ID)
-		// Simulate time taken to process m, while continuing to process more messages.
-		go func() {
-			// Some messages will need to have their ack deadline extended due to this delay.
-			delay := rand.Intn(int(ackDeadline * 3))
-			time.After(time.Duration(delay))
-			m.Done(true)
-		}()
-	}
-}
-
-// newIter constructs a new MessageIterator.
-func newIter(t *testing.T, ctx context.Context, sub *Subscription) *MessageIterator {
-	it, err := sub.Pull(ctx)
-	if err != nil {
-		t.Fatalf("error constructing iterator: %v", err)
-	}
-	return it
-}
-
-// launchIter launches a number of goroutines to pull from the supplied MessageIterator.
-func launchIter(t *testing.T, ctx context.Context, it *MessageIterator, mc *messageCounter, n int, wg *sync.WaitGroup) {
-	for j := 0; j < n; j++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			process(t, it, mc)
-		}()
-	}
+// process handles a message and records it in mc.
+func process(t *testing.T, ctx context.Context, m *Message, mc *messageCounter) {
+	mc.Inc(m.ID)
+	// Simulate time taken to process m, while continuing to process more messages.
+	go func() {
+		// Some messages will need to have their ack deadline extended due to this delay.
+		delay := rand.Intn(int(ackDeadline * 3))
+		time.After(time.Duration(delay))
+		m.Done(true)
+	}()
 }
 
 // iteratorLifetime controls how long iterators live for before they are stopped.
@@ -122,36 +90,38 @@ func (el *explicitLifetimes) lifetimeChan() <-chan time.Time {
 
 // consumer consumes messages according to its configuration.
 type consumer struct {
-	// How many goroutines should pull from the subscription.
-	iteratorsInFlight int
-	// How many goroutines should pull from each iterator.
-	concurrencyPerIterator int
-
 	lifetimes iteratorLifetimes
 }
 
 // consume reads messages from a subscription, and keeps track of what it receives in mc.
 // After consume returns, the caller should wait on wg to ensure that no more updates to mc will be made.
-func (c *consumer) consume(t *testing.T, ctx context.Context, sub *Subscription, mc *messageCounter, wg *sync.WaitGroup, stop <-chan struct{}) {
-	for i := 0; i < c.iteratorsInFlight; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for {
-				it := newIter(t, ctx, sub)
-				launchIter(t, ctx, it, mc, c.concurrencyPerIterator, wg)
-
+func (c *consumer) consume(t *testing.T, ctx context.Context, sub *Subscription, mc *messageCounter, wg *sync.WaitGroup) {
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			ctx2, cancel := context.WithCancel(ctx)
+			defer cancel()
+			go func() {
 				select {
 				case <-c.lifetimes.lifetimeChan():
-					it.Stop()
-				case <-stop:
-					it.Stop()
-					return
+					cancel()
+				case <-ctx2.Done():
 				}
+			}()
+			err := sub.Receive(ctx2, func(ctx3 context.Context, m *Message) {
+				process(t, ctx3, m, mc)
+			})
+			if err != nil {
+				t.Fatalf("error from Receive: %v", err)
 			}
-
-		}()
-	}
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
+		}
+	}()
 }
 
 // publish publishes many messages to topic, and returns the published message ids.
@@ -257,8 +227,6 @@ func TestEndToEnd(t *testing.T) {
 	mcB := &messageCounter{counts: make(map[string]int), recv: recv}
 	mcC := &messageCounter{counts: make(map[string]int), recv: recv}
 
-	stopC := make(chan struct{})
-
 	// We have three subscriptions to our topic.
 	// Each subscription will get a copy of each pulished message.
 	//
@@ -269,62 +237,57 @@ func TestEndToEnd(t *testing.T) {
 
 	var wg sync.WaitGroup
 
+	cctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	con := &consumer{
-		concurrencyPerIterator: 1,
-		iteratorsInFlight:      2,
-		lifetimes:              immortal,
+		lifetimes: immortal,
 	}
-	con.consume(t, ctx, subA, mcA, &wg, stopC)
+	con.consume(t, cctx, subA, mcA, &wg)
 
 	con = &consumer{
-		concurrencyPerIterator: 1,
-		iteratorsInFlight:      2,
-		lifetimes:              immortal,
+		lifetimes: immortal,
 	}
-	con.consume(t, ctx, subB, mcB, &wg, stopC)
+	con.consume(t, cctx, subB, mcB, &wg)
 
 	con = &consumer{
-		concurrencyPerIterator: 1,
-		iteratorsInFlight:      2,
 		lifetimes: &explicitLifetimes{
 			lifetimes: []time.Duration{ackDeadline, ackDeadline, ackDeadline / 2, ackDeadline / 2},
 		},
 	}
-	con.consume(t, ctx, subC, mcC, &wg, stopC)
+	con.consume(t, cctx, subC, mcC, &wg)
 
-	go func() {
-		timeoutC := time.After(timeout)
-		// Every time this ticker ticks, we will check if we have received any
-		// messages since the last time it ticked.  We check less frequently
-		// than the ack deadline, so that we can detect if messages are
-		// redelivered after having their ack deadline extended.
-		checkQuiescence := time.NewTicker(ackDeadline * 3)
-		defer checkQuiescence.Stop()
+	timeoutC := time.After(timeout)
+	// Every time this ticker ticks, we will check if we have received any
+	// messages since the last time it ticked.  We check less frequently
+	// than the ack deadline, so that we can detect if messages are
+	// redelivered after having their ack deadline extended.
+	checkQuiescence := time.NewTicker(ackDeadline * 3)
+	defer checkQuiescence.Stop()
 
-		var received bool
-		for {
-			select {
-			case <-recv:
-				received = true
-			case <-checkQuiescence.C:
-				if received {
-					received = false
-				} else {
-					close(stopC)
-					return
-				}
-			case <-timeoutC:
-				t.Errorf("timed out")
-				close(stopC)
+	var received bool
+	for {
+		select {
+		case <-recv:
+			received = true
+		case <-checkQuiescence.C:
+			if received {
+				received = false
+			} else {
+				cancel()
 				return
 			}
+		case <-timeoutC:
+			t.Errorf("timed out")
+			cancel()
+			return
 		}
-	}()
-	wg.Wait()
+	}
 
-	for _, mc := range []*messageCounter{mcA, mcB, mcC} {
+	wg.Wait()
+	for i, mc := range []*messageCounter{mcA, mcB, mcC} {
 		if got, want := mc.counts, expectedCounts; !reflect.DeepEqual(got, want) {
-			t.Errorf("message counts: %v\n", diff(got, want))
+			t.Errorf("%d: message counts: %v\n", i, diff(got, want))
 		}
 	}
 }

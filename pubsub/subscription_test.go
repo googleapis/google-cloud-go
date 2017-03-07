@@ -17,6 +17,7 @@ package pubsub
 import (
 	"reflect"
 	"testing"
+	"time"
 
 	"golang.org/x/net/context"
 
@@ -142,10 +143,118 @@ func TestListTopicSubscriptions(t *testing.T) {
 
 func subNames(subs []*Subscription) []string {
 	var names []string
-
 	for _, sub := range subs {
 		names = append(names, sub.name)
-
 	}
 	return names
 }
+
+func TestFlowControllerNoBlock(t *testing.T) {
+	// No blocking if we don't exceed limits.
+	sizes := []int{2, 3, 5}
+	ctx := context.Background()
+	fc := &flowController{maxCount: 3, maxSize: 10}
+	for i := 0; i < 10; i++ {
+		for _, s := range sizes {
+			if err := fc.acquire(ctx, s); err != nil {
+				t.Fatal(err)
+			}
+		}
+		for _, s := range sizes {
+			fc.release(s)
+		}
+	}
+}
+
+func TestFlowControllerBlockOnSize(t *testing.T) {
+	ctx := context.Background()
+	fc := &flowController{maxCount: 3, maxSize: 10}
+	errc := make(chan error)
+	go func() {
+		fc.acquire(ctx, 3)
+		fc.acquire(ctx, 7)
+		errc <- fc.acquire(ctx, 2)
+	}()
+	select {
+	case <-errc:
+		t.Fatal("acquire(2) not blocked")
+	case <-time.After(100 * time.Millisecond):
+	}
+	fc.release(1)
+	select {
+	case <-errc:
+		t.Fatal("acquire(2) not blocked")
+	case <-time.After(100 * time.Millisecond):
+	}
+	fc.release(1)
+	select {
+	case err := <-errc:
+		if err != nil {
+			t.Fatalf("acquire(2) returned %v, want nil", err)
+		}
+	case <-time.After(100 * time.Millisecond):
+		t.Fatal("acquire(2) still blocked")
+	}
+}
+
+func TestFlowControllerBlockOnCount(t *testing.T) {
+	ctx := context.Background()
+	fc := &flowController{maxCount: 3, maxSize: 10}
+	errc := make(chan error)
+	go func() {
+		fc.acquire(ctx, 1)
+		fc.acquire(ctx, 1)
+		fc.acquire(ctx, 1)
+		errc <- fc.acquire(ctx, 1)
+	}()
+	select {
+	case <-errc:
+		t.Fatal("acquire not blocked")
+	case <-time.After(100 * time.Millisecond):
+	}
+	fc.release(1)
+	select {
+	case err := <-errc:
+		if err != nil {
+			t.Fatalf("acquire(2) returned %v, want nil", err)
+		}
+	case <-time.After(100 * time.Millisecond):
+		t.Fatal("acquire still blocked")
+	}
+}
+
+func TestFlowControllerRequestTooLarge(t *testing.T) {
+	fc := &flowController{maxCount: 3, maxSize: 10}
+	err := fc.acquire(context.Background(), 11)
+	if err == nil {
+		t.Error("got nil, want error")
+	}
+}
+
+func TestFlowControllerCancel(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	fc := &flowController{maxCount: 3, maxSize: 10}
+	errc := make(chan error)
+	go func() {
+		if err := fc.acquire(ctx, 5); err != nil {
+			t.Errorf("acquire returned %v", err)
+		}
+		errc <- fc.acquire(ctx, 6)
+	}()
+	select {
+	case <-errc:
+		t.Fatal("acquire not blocked")
+	case <-time.After(100 * time.Millisecond):
+	}
+	cancel()
+	select {
+	case err := <-errc:
+		if err != context.Canceled {
+			t.Fatalf("got %v, want %v", err, context.Canceled)
+		}
+	case <-time.After(100 * time.Millisecond):
+		t.Fatal("acquire still blocked")
+	}
+}
+
+// TODO(jba): write a highly parallel stress test for flow controller.
