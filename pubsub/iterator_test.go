@@ -26,33 +26,36 @@ import (
 )
 
 func TestReturnsDoneOnStop(t *testing.T) {
+	if useStreamingPull {
+		t.Skip("iterator tests are for polling pull only")
+	}
 	type testCase struct {
-		abort func(*MessageIterator, context.CancelFunc)
+		abort func(*messageIterator, context.CancelFunc)
 		want  error
 	}
 
 	for _, tc := range []testCase{
 		{
-			abort: func(it *MessageIterator, cancel context.CancelFunc) {
+			abort: func(it *messageIterator, cancel context.CancelFunc) {
 				it.Stop()
 			},
 			want: iterator.Done,
 		},
 		{
-			abort: func(it *MessageIterator, cancel context.CancelFunc) {
+			abort: func(it *messageIterator, cancel context.CancelFunc) {
 				cancel()
 			},
 			want: context.Canceled,
 		},
 		{
-			abort: func(it *MessageIterator, cancel context.CancelFunc) {
+			abort: func(it *messageIterator, cancel context.CancelFunc) {
 				it.Stop()
 				cancel()
 			},
 			want: iterator.Done,
 		},
 		{
-			abort: func(it *MessageIterator, cancel context.CancelFunc) {
+			abort: func(it *messageIterator, cancel context.CancelFunc) {
 				cancel()
 				it.Stop()
 			},
@@ -118,36 +121,39 @@ func (s *justInTimeFetch) newStreamingPuller(ctx context.Context, subName string
 
 func TestAfterAbortReturnsNoMoreThanOneMessage(t *testing.T) {
 	// Each test case is excercised by making two concurrent blocking calls on a
-	// MessageIterator, and then aborting the iterator.
+	// messageIterator, and then aborting the iterator.
 	// The result should be one call to Next returning a message, and the other returning an error.
+	if useStreamingPull {
+		t.Skip("iterator tests are for polling pull only")
+	}
 	type testCase struct {
-		abort func(*MessageIterator, context.CancelFunc)
+		abort func(*messageIterator, context.CancelFunc)
 		// want is the error that should be returned from one Next invocation.
 		want error
 	}
 	for n := 1; n < 3; n++ {
 		for _, tc := range []testCase{
 			{
-				abort: func(it *MessageIterator, cancel context.CancelFunc) {
+				abort: func(it *messageIterator, cancel context.CancelFunc) {
 					it.Stop()
 				},
 				want: iterator.Done,
 			},
 			{
-				abort: func(it *MessageIterator, cancel context.CancelFunc) {
+				abort: func(it *messageIterator, cancel context.CancelFunc) {
 					cancel()
 				},
 				want: context.Canceled,
 			},
 			{
-				abort: func(it *MessageIterator, cancel context.CancelFunc) {
+				abort: func(it *messageIterator, cancel context.CancelFunc) {
 					it.Stop()
 					cancel()
 				},
 				want: iterator.Done,
 			},
 			{
-				abort: func(it *MessageIterator, cancel context.CancelFunc) {
+				abort: func(it *messageIterator, cancel context.CancelFunc) {
 					cancel()
 					it.Stop()
 				},
@@ -237,6 +243,9 @@ func (f *fetcherServiceWithModifyAckDeadline) newStreamingPuller(ctx context.Con
 }
 
 func TestMultipleStopCallsBlockUntilMessageDone(t *testing.T) {
+	if useStreamingPull {
+		t.Skip("iterator tests are for polling pull only")
+	}
 	events := make(chan string, 3)
 	s := &fetcherServiceWithModifyAckDeadline{
 		fetcherService{
@@ -286,6 +295,9 @@ func TestMultipleStopCallsBlockUntilMessageDone(t *testing.T) {
 }
 
 func TestFastNack(t *testing.T) {
+	if useStreamingPull {
+		t.Skip("iterator tests are for polling pull only")
+	}
 	events := make(chan string, 3)
 	s := &fetcherServiceWithModifyAckDeadline{
 		fetcherService{
