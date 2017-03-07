@@ -185,6 +185,15 @@ const (
 	labelSamplingWeight = `trace.cloud.google.com/sampling_weight`
 )
 
+const (
+	// ScopeTraceAppend grants permissions to write trace data for a project.
+	ScopeTraceAppend = "https://www.googleapis.com/auth/trace.append"
+
+	// ScopeCloudPlatform grants permissions to view and manage your data
+	// across Google Cloud Platform services.
+	ScopeCloudPlatform = "https://www.googleapis.com/auth/cloud-platform"
+)
+
 type contextKey struct{}
 
 type stackLabelValue struct {
