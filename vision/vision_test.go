@@ -33,15 +33,15 @@ func TestAnnotate(t *testing.T) {
 	tests := []struct {
 		path string // path to image file, relative to testdata
 		// If one of these is true, we expect that annotation to be non-nil.
-		faces, landmarks, logos, labels, texts, fullText bool
-		// We always expect safe search, image properties, web and crop hints to be present.
+		faces, landmarks, logos, labels, texts, fullText, web bool
+		// We always expect safe search, image properties, and crop hints to be present.
 	}{
-		{path: "face.jpg", faces: true, labels: true},
-		{path: "cat.jpg", labels: true},
-		{path: "faulkner.jpg", labels: true},
-		{path: "mountain.jpg", texts: true, fullText: true, labels: true},
-		{path: "no-text.jpg", labels: true},
-		{path: "eiffel-tower.jpg", landmarks: true, labels: true},
+		{path: "face.jpg", faces: true, labels: true, web: true},
+		{path: "cat.jpg", labels: true, web: true},
+		{path: "faulkner.jpg", labels: true, web: true},
+		{path: "mountain.jpg", texts: true, fullText: true, labels: true, web: true},
+		{path: "no-text.jpg", labels: true, web: true},
+		{path: "eiffel-tower.jpg", landmarks: true, labels: true, web: true},
 		{path: "google.png", logos: true, labels: true, texts: true, fullText: true},
 	}
 	for _, test := range tests {
@@ -63,8 +63,7 @@ func TestAnnotate(t *testing.T) {
 		anns := annsSlice[0]
 		p := map[bool]string{true: "present", false: "absent"}
 		if anns.Error != nil {
-			t.Errorf("%s: got Error %v; want nil", test.path, anns.Error)
-			continue
+			t.Logf("%s: got unexpected Error %v", test.path, anns.Error)
 		}
 		if got, want := (anns.Faces != nil), test.faces; got != want {
 			t.Errorf("%s: faces %s, want %s", test.path, p[got], p[want])
