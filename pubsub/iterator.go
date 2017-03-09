@@ -323,6 +323,8 @@ func (it *streamingMessageIterator) stop() {
 	if it.err == nil {
 		it.err = iterator.Done
 	}
+	// Before reading from the channel, see if we're already drained.
+	it.checkDrained()
 	it.mu.Unlock()
 	// Nack all the pending messages.
 	// Grab the lock separately for each message to allow the receiver

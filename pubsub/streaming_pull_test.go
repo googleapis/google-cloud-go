@@ -58,7 +58,7 @@ func TestStreamingPullMultipleFetches(t *testing.T) {
 
 func testStreamingPullIteration(t *testing.T, client *Client, server *fakeServer, msgs []*pb.ReceivedMessage) {
 	if !useStreamingPull {
-		t.Skip()
+		t.SkipNow()
 	}
 	sub := client.Subscription("s")
 	iter, err := sub.Pull(context.Background())
@@ -101,7 +101,7 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *fakeServer
 
 func TestStreamingPullStop(t *testing.T) {
 	if !useStreamingPull {
-		t.Skip()
+		t.SkipNow()
 	}
 	// After Stop is called, Next returns iterator.Done.
 	client, server := newFake(t)
@@ -128,7 +128,7 @@ func TestStreamingPullStop(t *testing.T) {
 
 func TestStreamingPullError(t *testing.T) {
 	if !useStreamingPull {
-		t.Skip()
+		t.SkipNow()
 	}
 	client, server := newFake(t)
 	server.addStreamingPullError(grpc.Errorf(codes.Internal, ""))
@@ -148,7 +148,7 @@ func TestStreamingPullError(t *testing.T) {
 
 func TestStreamingPullCancel(t *testing.T) {
 	if !useStreamingPull {
-		t.Skip()
+		t.SkipNow()
 	}
 	// Test that canceling the iterator's context behaves correctly.
 	client, server := newFake(t)
@@ -186,7 +186,7 @@ func TestStreamingPullCancel(t *testing.T) {
 
 func TestStreamingPullRetry(t *testing.T) {
 	if !useStreamingPull {
-		t.Skip()
+		t.SkipNow()
 	}
 	// Check that we retry on io.EOF or Unavailable.
 	client, server := newFake(t)
@@ -202,7 +202,7 @@ func TestStreamingPullRetry(t *testing.T) {
 
 func TestStreamingPullConcurrent(t *testing.T) {
 	if !useStreamingPull {
-		t.Skip()
+		t.SkipNow()
 	}
 	newMsg := func(i int) *pb.ReceivedMessage {
 		return &pb.ReceivedMessage{
