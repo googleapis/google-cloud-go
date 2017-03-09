@@ -21,6 +21,7 @@ package pubsub
 import (
 	"io"
 	"sync"
+	"time"
 
 	"golang.org/x/net/context"
 
@@ -113,6 +114,12 @@ func (s *fakeServer) StreamingPull(stream pb.Subscriber_StreamingPullServer) err
 		}
 		pr := s.pullResponses[0]
 		s.pullResponses = s.pullResponses[1:]
+		if pr.err != nil {
+			// Add a slight delay to ensure the server receives any
+			// messages en route from the client before shutting down the stream.
+			// This reduces flakiness of tests involving retry.
+			time.Sleep(100 * time.Millisecond)
+		}
 		if pr.err == io.EOF {
 			return nil
 		}
