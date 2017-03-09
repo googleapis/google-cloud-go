@@ -508,3 +508,248 @@ func TestAlreadyPopulatedDst(t *testing.T) {
 		}
 	}
 }
+
+type PLS0 struct {
+	A string
+}
+
+func (p *PLS0) Load(props []Property) error {
+	for _, pp := range props {
+		if pp.Name == "A" {
+			p.A = pp.Value.(string)
+		}
+	}
+	return nil
+}
+
+func (p *PLS0) Save() (props []Property, err error) {
+	return []Property{{Name: "A", Value: p.A}}, nil
+}
+
+type KeyLoader1 struct {
+	A string
+	K *Key
+}
+
+func (kl *KeyLoader1) Load(props []Property) error {
+	for _, pp := range props {
+		if pp.Name == "A" {
+			kl.A = pp.Value.(string)
+		}
+	}
+	return nil
+}
+
+func (kl *KeyLoader1) Save() (props []Property, err error) {
+	return []Property{{Name: "A", Value: kl.A}}, nil
+}
+
+func (kl *KeyLoader1) LoadKey(k *Key) error {
+	kl.K = k
+	return nil
+}
+
+type KeyLoader2 struct {
+	B   int
+	Key *Key
+}
+
+func (kl *KeyLoader2) Load(props []Property) error {
+	for _, pp := range props {
+		if pp.Name == "B" {
+			kl.B = int(pp.Value.(int64))
+		}
+	}
+	return nil
+}
+
+func (kl *KeyLoader2) Save() (props []Property, err error) {
+	return []Property{{Name: "B", Value: int64(kl.B)}}, nil
+}
+
+func (kl *KeyLoader2) LoadKey(k *Key) error {
+	kl.Key = k
+	return nil
+}
+
+type KeyLoader3 struct {
+	C bool
+	K *Key
+}
+
+func (kl *KeyLoader3) Load(props []Property) error {
+	for _, pp := range props {
+		if pp.Name == "C" {
+			kl.C = pp.Value.(bool)
+		}
+	}
+	return nil
+}
+
+func (kl *KeyLoader3) Save() (props []Property, err error) {
+	return []Property{{Name: "C", Value: kl.C}}, nil
+}
+
+func (kl *KeyLoader3) LoadKey(k *Key) error {
+	kl.K = k
+	return nil
+}
+
+type KeyLoader4 struct {
+	PLS0
+	K *Key
+}
+
+func (kl *KeyLoader4) LoadKey(k *Key) error {
+	kl.K = k
+	return nil
+}
+
+type NotKeyLoader struct {
+	A string
+	K *Key
+}
+
+func (p *NotKeyLoader) Load(props []Property) error {
+	for _, pp := range props {
+		if pp.Name == "A" {
+			p.A = pp.Value.(string)
+		}
+	}
+	return nil
+}
+
+func (p *NotKeyLoader) Save() (props []Property, err error) {
+	return []Property{{Name: "A", Value: p.A}}, nil
+}
+
+type NestedKeyLoaders struct {
+	Two   *KeyLoader2
+	Three []*KeyLoader3
+	Four  *KeyLoader4
+	PLS   *NotKeyLoader
+}
+
+func TestKeyLoader(t *testing.T) {
+	testCases := []struct {
+		desc string
+		src  *pb.Entity
+		dst  interface{}
+		want interface{}
+	}{
+		{
+			"simple key loader",
+			&pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"A": {ValueType: &pb.Value_StringValue{"hello"}},
+				},
+			},
+			&KeyLoader1{},
+			&KeyLoader1{
+				A: "hello",
+				K: testKey0,
+			},
+		},
+		{
+			"embedded PLS key loader",
+			&pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"A": {ValueType: &pb.Value_StringValue{"hello"}},
+				},
+			},
+			&KeyLoader4{},
+			&KeyLoader4{
+				PLS0: PLS0{A: "hello"},
+				K:    testKey0,
+			},
+		},
+		{
+			"nested key loaders",
+			&pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Two": {ValueType: &pb.Value_EntityValue{
+						&pb.Entity{
+							Properties: map[string]*pb.Value{
+								"B": {ValueType: &pb.Value_IntegerValue{12}},
+							},
+							Key: keyToProto(testKey1a),
+						},
+					}},
+					"Three": {ValueType: &pb.Value_ArrayValue{
+						&pb.ArrayValue{
+							[]*pb.Value{
+								{ValueType: &pb.Value_EntityValue{
+									&pb.Entity{
+										Properties: map[string]*pb.Value{
+											"C": {ValueType: &pb.Value_BooleanValue{true}},
+										},
+										Key: keyToProto(testKey1b),
+									},
+								}},
+								{ValueType: &pb.Value_EntityValue{
+									&pb.Entity{
+										Properties: map[string]*pb.Value{
+											"C": {ValueType: &pb.Value_BooleanValue{false}},
+										},
+										Key: keyToProto(testKey0),
+									},
+								}},
+							},
+						},
+					}},
+					"Four": {ValueType: &pb.Value_EntityValue{
+						&pb.Entity{
+							Properties: map[string]*pb.Value{
+								"A": {ValueType: &pb.Value_StringValue{"testing"}},
+							},
+							Key: keyToProto(testKey2a),
+						},
+					}},
+					"PLS": {ValueType: &pb.Value_EntityValue{
+						&pb.Entity{
+							Properties: map[string]*pb.Value{
+								"A": {ValueType: &pb.Value_StringValue{"something"}},
+							},
+
+							Key: keyToProto(testKey1a),
+						},
+					}},
+				},
+			},
+			&NestedKeyLoaders{},
+			&NestedKeyLoaders{
+				Two: &KeyLoader2{B: 12, Key: testKey1a},
+				Three: []*KeyLoader3{
+					{
+						C: true,
+						K: testKey1b,
+					},
+					{
+						C: false,
+						K: testKey0,
+					},
+				},
+				Four: &KeyLoader4{
+					PLS0: PLS0{A: "testing"},
+					K:    testKey2a,
+				},
+				PLS: &NotKeyLoader{A: "something"},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		err := loadEntityProto(tc.dst, tc.src)
+		if err != nil {
+			t.Errorf("loadEntityProto: %s: %v", tc.desc, err)
+			continue
+		}
+
+		if !reflect.DeepEqual(tc.want, tc.dst) {
+			t.Errorf("%s: compare:\ngot:  %#v\nwant: %#v", tc.desc, tc.dst, tc.want)
+		}
+	}
+}

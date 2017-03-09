@@ -320,7 +320,14 @@ func loadEntityProto(dst interface{}, src *pb.Entity) error {
 
 func loadEntity(dst interface{}, ent *Entity) error {
 	if pls, ok := dst.(PropertyLoadSaver); ok {
-		return pls.Load(ent.Properties)
+		err := pls.Load(ent.Properties)
+		if err != nil {
+			return err
+		}
+		if e, ok := dst.(KeyLoader); ok {
+			err = e.LoadKey(ent.Key)
+		}
+		return err
 	}
 	return loadEntityToStruct(dst, ent)
 }

@@ -82,6 +82,14 @@ type PropertyLoadSaver interface {
 	Save() ([]Property, error)
 }
 
+// KeyLoader can store a Key.
+type KeyLoader interface {
+	// PropertyLoadSaver is embedded because a KeyLoader
+	// must also always implement PropertyLoadSaver.
+	PropertyLoadSaver
+	LoadKey(k *Key) error
+}
+
 // PropertyList converts a []Property to implement PropertyLoadSaver.
 type PropertyList []Property
 
