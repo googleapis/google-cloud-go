@@ -240,19 +240,11 @@ func setVal(v reflect.Value, p Property) string {
 			if v.IsNil() {
 				v.Set(reflect.New(v.Type().Elem()))
 			}
-			// Check if v implements PropertyLoadSaver.
-			if pls, ok := v.Interface().(PropertyLoadSaver); ok {
-				err := pls.Load(x.Properties)
-				if err != nil {
-					return err.Error()
-				}
-				return ""
-			}
-			if v.Type().Elem().Kind() != reflect.Struct {
-				return typeMismatchReason(p, v)
+			err := loadEntity(v.Interface(), x)
+			if err != nil {
+				return err.Error()
 			}
 
-			return setVal(v.Elem(), p)
 		default:
 			return typeMismatchReason(p, v)
 		}
@@ -281,20 +273,7 @@ func setVal(v reflect.Value, p Property) string {
 				return fmt.Sprintf("datastore: PropertyLoadSaver methods must be implemented on a pointer to %T.", v.Interface())
 			}
 
-			// Recursively load nested struct.
-			pls, err := newStructPLS(v.Addr().Interface())
-			if err != nil {
-				return err.Error()
-			}
-
-			// if ent has a Key value and our struct has a Key field,
-			// load the Entity's Key value into the Key field on the struct.
-			keyField := pls.codec.Match(keyFieldName)
-			if keyField != nil && ent.Key != nil {
-				pls.v.FieldByIndex(keyField.Index).Set(reflect.ValueOf(ent.Key))
-			}
-
-			err = pls.Load(ent.Properties)
+			err := loadEntity(v.Addr().Interface(), ent)
 			if err != nil {
 				return err.Error()
 			}
@@ -330,14 +309,18 @@ func initField(val reflect.Value, index []int) reflect.Value {
 	return val.Field(index[len(index)-1])
 }
 
-// loadEntity loads an EntityProto into PropertyLoadSaver or struct pointer.
-func loadEntity(dst interface{}, src *pb.Entity) (err error) {
+// loadEntityProto loads an EntityProto into PropertyLoadSaver or struct pointer.
+func loadEntityProto(dst interface{}, src *pb.Entity) error {
 	ent, err := protoToEntity(src)
 	if err != nil {
 		return err
 	}
-	if e, ok := dst.(PropertyLoadSaver); ok {
-		return e.Load(ent.Properties)
+	return loadEntity(dst, ent)
+}
+
+func loadEntity(dst interface{}, ent *Entity) error {
+	if pls, ok := dst.(PropertyLoadSaver); ok {
+		return pls.Load(ent.Properties)
 	}
 	return loadEntityToStruct(dst, ent)
 }

@@ -158,9 +158,9 @@ func TestLoadEntityNestedLegacy(t *testing.T) {
 
 	for _, tc := range testCases {
 		dst := reflect.New(reflect.TypeOf(tc.want).Elem()).Interface()
-		err := loadEntity(dst, tc.src)
+		err := loadEntityProto(dst, tc.src)
 		if err != nil {
-			t.Errorf("loadEntity: %s: %v", tc.desc, err)
+			t.Errorf("loadEntityProto: %s: %v", tc.desc, err)
 			continue
 		}
 
@@ -401,9 +401,9 @@ func TestLoadEntityNested(t *testing.T) {
 
 	for _, tc := range testCases {
 		dst := reflect.New(reflect.TypeOf(tc.want).Elem()).Interface()
-		err := loadEntity(dst, tc.src)
+		err := loadEntityProto(dst, tc.src)
 		if err != nil {
-			t.Errorf("loadEntity: %s: %v", tc.desc, err)
+			t.Errorf("loadEntityProto: %s: %v", tc.desc, err)
 			continue
 		}
 
@@ -497,9 +497,9 @@ func TestAlreadyPopulatedDst(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		err := loadEntity(tc.dst, tc.src)
+		err := loadEntityProto(tc.dst, tc.src)
 		if err != nil {
-			t.Errorf("loadEntity: %s: %v", tc.desc, err)
+			t.Errorf("loadEntityProto: %s: %v", tc.desc, err)
 			continue
 		}
 

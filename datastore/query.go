@@ -538,7 +538,7 @@ func (c *Client) GetAll(ctx context.Context, q *Query, dst interface{}) ([]*Key,
 				x := reflect.MakeMap(elemType)
 				ev.Elem().Set(x)
 			}
-			if err = loadEntity(ev.Interface(), e); err != nil {
+			if err = loadEntityProto(ev.Interface(), e); err != nil {
 				if _, ok := err.(*ErrFieldMismatch); ok {
 					// We continue loading entities even in the face of field mismatch errors.
 					// If we encounter any other error, that other error is returned. Otherwise,
@@ -628,7 +628,7 @@ func (t *Iterator) Next(dst interface{}) (*Key, error) {
 		return nil, err
 	}
 	if dst != nil && !t.keysOnly {
-		err = loadEntity(dst, e)
+		err = loadEntityProto(dst, e)
 	}
 	return k, err
 }

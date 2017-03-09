@@ -1932,7 +1932,7 @@ func TestRoundTrip(t *testing.T) {
 		} else {
 			got = reflect.New(reflect.TypeOf(tc.want).Elem()).Interface()
 		}
-		err = loadEntity(got, p)
+		err = loadEntityProto(got, p)
 		if s := checkErr(tc.getErr, err); s != "" {
 			t.Errorf("%s: load: %s", tc.desc, s)
 			continue
@@ -2111,7 +2111,7 @@ func TestLoadSaveNestedStructPLS(t *testing.T) {
 		}
 
 		gota := reflect.New(reflect.TypeOf(tc.wantLoad).Elem()).Interface()
-		err = loadEntity(gota, e)
+		err = loadEntityProto(gota, e)
 		switch tc.loadErr {
 		case "":
 			if err != nil {
