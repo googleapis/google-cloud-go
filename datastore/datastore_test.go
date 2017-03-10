@@ -1986,6 +1986,19 @@ func (pls aValuePLS) Save() ([]Property, error) {
 	return []Property{{Name: "Count", Value: 8}}, nil
 }
 
+type aValuePtrPLS struct {
+	Count int
+}
+
+func (pls *aValuePtrPLS) Load([]Property) error {
+	pls.Count = 11
+	return nil
+}
+
+func (pls *aValuePtrPLS) Save() ([]Property, error) {
+	return []Property{{Name: "Count", Value: 12}}, nil
+}
+
 type aNotPLS struct {
 	Count int
 }
@@ -2004,6 +2017,7 @@ func (s *plsString) Save() ([]Property, error) {
 type aSubPLS struct {
 	Foo string
 	Bar *aPtrPLS
+	Baz aValuePtrPLS
 }
 
 type aSubNotPLS struct {
@@ -2028,8 +2042,8 @@ func TestLoadSaveNestedStructPLS(t *testing.T) {
 
 	testCases := []testCase{
 		{
-			desc: "substruct (ptr) does implement PLS",
-			src:  &aSubPLS{Foo: "foo", Bar: &aPtrPLS{Count: 2}},
+			desc: "substructs do implement PLS",
+			src:  &aSubPLS{Foo: "foo", Bar: &aPtrPLS{Count: 2}, Baz: aValuePtrPLS{Count: 15}},
 			wantSave: &pb.Entity{
 				Key: keyToProto(testKey0),
 				Properties: map[string]*pb.Value{
@@ -2041,10 +2055,17 @@ func TestLoadSaveNestedStructPLS(t *testing.T) {
 							},
 						},
 					}},
+					"Baz": {ValueType: &pb.Value_EntityValue{
+						&pb.Entity{
+							Properties: map[string]*pb.Value{
+								"Count": {ValueType: &pb.Value_IntegerValue{12}},
+							},
+						},
+					}},
 				},
 			},
 			// PLS impl for 'S' not used, not entity.
-			wantLoad: &aSubPLS{Foo: "foo", Bar: &aPtrPLS{Count: 1}},
+			wantLoad: &aSubPLS{Foo: "foo", Bar: &aPtrPLS{Count: 1}, Baz: aValuePtrPLS{Count: 11}},
 		},
 		{
 			desc: "substruct (ptr) does implement PLS, nil valued substruct",
@@ -2053,9 +2074,16 @@ func TestLoadSaveNestedStructPLS(t *testing.T) {
 				Key: keyToProto(testKey0),
 				Properties: map[string]*pb.Value{
 					"Foo": {ValueType: &pb.Value_StringValue{"foo"}},
+					"Baz": {ValueType: &pb.Value_EntityValue{
+						&pb.Entity{
+							Properties: map[string]*pb.Value{
+								"Count": {ValueType: &pb.Value_IntegerValue{12}},
+							},
+						},
+					}},
 				},
 			},
-			wantLoad: &aSubPLS{Foo: "foo"},
+			wantLoad: &aSubPLS{Foo: "foo", Baz: aValuePtrPLS{Count: 11}},
 		},
 		{
 			desc: "substruct (ptr) does not implement PLS",
@@ -2106,7 +2134,7 @@ func TestLoadSaveNestedStructPLS(t *testing.T) {
 		}
 
 		if !reflect.DeepEqual(e, tc.wantSave) {
-			t.Errorf("%s: save: got: %#v,	want: %#v", tc.desc, e, tc.wantSave)
+			t.Errorf("%s: save: \ngot:  %#v\nwant: %#v", tc.desc, e, tc.wantSave)
 			continue
 		}
 
@@ -2124,13 +2152,13 @@ func TestLoadSaveNestedStructPLS(t *testing.T) {
 				continue
 			}
 			if !strings.Contains(err.Error(), tc.loadErr) {
-				t.Errorf("%s: load: want err '%s', got '%s'", tc.desc, err.Error(), tc.loadErr)
+				t.Errorf("%s: load: \ngot err  '%s'\nwant err '%s'", tc.desc, err.Error(), tc.loadErr)
 			}
 			continue
 		}
 
 		if !reflect.DeepEqual(tc.wantLoad, gota) {
-			t.Errorf("%s: load:	got: %#v,	want: %#v", tc.desc, gota, tc.wantLoad)
+			t.Errorf("%s: load:	\ngot:  %#v\nwant: %#v", tc.desc, gota, tc.wantLoad)
 			continue
 		}
 	}
