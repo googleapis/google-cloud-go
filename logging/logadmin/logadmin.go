@@ -326,6 +326,7 @@ func fromLogEntry(le *logpb.LogEntry) (*logging.Entry, error) {
 		Operation:   le.Operation,
 		LogName:     slashUnescaper.Replace(le.LogName),
 		Resource:    le.Resource,
+		Trace:       le.Trace,
 	}, nil
 }
 
