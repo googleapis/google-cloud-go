@@ -453,6 +453,11 @@ type Entry struct {
 	// by the client when reading entries. It is an error to set it when
 	// writing entries.
 	Resource *mrpb.MonitoredResource
+
+	// Trace is the resource name of the trace associated with the log entry,
+	// if any. If it contains a relative resource name, the name is assumed to
+	// be relative to //tracing.googleapis.com.
+	Trace string
 }
 
 // HTTPRequest contains an http.Request as well as additional
@@ -662,6 +667,7 @@ func toLogEntry(e Entry) (*logpb.LogEntry, error) {
 		HttpRequest: fromHTTPRequest(e.HTTPRequest),
 		Operation:   e.Operation,
 		Labels:      e.Labels,
+		Trace:       e.Trace,
 	}
 
 	switch p := e.Payload.(type) {
