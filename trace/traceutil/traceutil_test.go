@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 
@@ -102,5 +103,23 @@ func TestNewHTTPClient(t *testing.T) {
 			t.Errorf("trace ID = %q; want %q", got, want)
 		}
 	})
+}
 
+func TestHTTPHandlerNoTrace(t *testing.T) {
+	tc := newTestClient(&noopTransport{})
+	client := NewHTTPClient(tc, &http.Client{})
+	handler := HTTPHandler(tc, func(span *trace.Span, w http.ResponseWriter, r *http.Request) {
+		if span == nil {
+			t.Errorf("span is nil; want non-nil span")
+		}
+	})
+
+	ts := httptest.NewServer(handler)
+	defer ts.Close()
+
+	req, _ := http.NewRequest("GET", ts.URL, nil)
+	_, err := client.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
 }
