@@ -183,7 +183,7 @@ func TestAfterAbortReturnsNoMoreThanOneMessage(t *testing.T) {
 				}()
 			}
 			// Wait for goroutines to block on it.Next().
-			time.Sleep(time.Millisecond)
+			time.Sleep(50 * time.Millisecond)
 			tc.abort(it, cancel)
 
 			result1 := <-results
