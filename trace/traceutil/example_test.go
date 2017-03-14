@@ -36,12 +36,11 @@ func ExampleHTTPClient_Do() {
 }
 
 func ExampleHTTPHandler() {
-	handler := func(s *trace.Span, w http.ResponseWriter, r *http.Request) {
+	handler := func(w http.ResponseWriter, r *http.Request) {
 		client := traceutil.NewHTTPClient(traceClient, nil)
-		ctx := trace.NewContext(r.Context(), s)
 
 		req, _ := http.NewRequest("GET", "https://metadata/users", nil)
-		req = req.WithContext(ctx)
+		req = req.WithContext(r.Context())
 
 		// The outgoing request will be traced with r's trace ID.
 		if _, err := client.Do(req); err != nil {

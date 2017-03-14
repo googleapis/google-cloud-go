@@ -110,7 +110,8 @@ func TestNewHTTPClient(t *testing.T) {
 func TestHTTPHandlerNoTrace(t *testing.T) {
 	tc := newTestClient(&noopTransport{})
 	client := NewHTTPClient(tc, &http.Client{})
-	handler := HTTPHandler(tc, func(span *trace.Span, w http.ResponseWriter, r *http.Request) {
+	handler := HTTPHandler(tc, func(w http.ResponseWriter, r *http.Request) {
+		span := trace.FromContext(r.Context())
 		if span == nil {
 			t.Errorf("span is nil; want non-nil span")
 		}

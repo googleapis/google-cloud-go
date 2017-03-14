@@ -74,19 +74,25 @@ func NewHTTPClient(tc *trace.Client, orig *http.Client) *HTTPClient {
 	}
 }
 
-// HTTPHandler returns a http.Handler that extracts the span from the incoming HTTP request.
-func HTTPHandler(tc *trace.Client, h func(span *trace.Span, w http.ResponseWriter, r *http.Request)) http.Handler {
+// HTTPHandler returns a http.Handler that is aware of the incoming request's span.
+// The span can be extracted from the incoming request:
+//
+//    span := trace.FromContext(r.Context())
+//
+// The span will be auto finished by the handler.
+func HTTPHandler(tc *trace.Client, h func(w http.ResponseWriter, r *http.Request)) http.Handler {
 	return &handler{client: tc, handler: h}
 }
 
 type handler struct {
 	client  *trace.Client
-	handler func(span *trace.Span, w http.ResponseWriter, r *http.Request)
+	handler func(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	span := h.client.SpanFromRequest(r)
 	defer span.Finish()
 
-	h.handler(span, w, r)
+	r = r.WithContext(trace.NewContext(r.Context(), span))
+	h.handler(w, r)
 }
