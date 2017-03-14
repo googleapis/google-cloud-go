@@ -35,13 +35,10 @@ func ExampleHTTPClient_Do() {
 	}
 }
 
-func ExampleHTTPClient_Do_propagation() {
-	http.HandleFunc("/foo", func(w http.ResponseWriter, r *http.Request) {
-		span := traceClient.SpanFromRequest(r) // traceClient is a *trace.Client
-		defer span.Finish()
-
+func ExampleHTTPHandler() {
+	handler := func(s *trace.Span, w http.ResponseWriter, r *http.Request) {
 		client := traceutil.NewHTTPClient(traceClient, nil)
-		ctx := trace.NewContext(r.Context(), span)
+		ctx := trace.NewContext(r.Context(), s)
 
 		req, _ := http.NewRequest("GET", "https://metadata/users", nil)
 		req = req.WithContext(ctx)
@@ -50,5 +47,6 @@ func ExampleHTTPClient_Do_propagation() {
 		if _, err := client.Do(req); err != nil {
 			log.Fatal(err)
 		}
-	})
+	}
+	http.Handle("/foo", traceutil.HTTPHandler(traceClient, handler)) // traceClient is a *trace.Client
 }
