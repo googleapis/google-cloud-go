@@ -96,6 +96,13 @@ func saveStructProperty(props *[]Property, name string, opts saveOpts, v reflect
 				if err != nil {
 					return err
 				}
+				if opts.flatten {
+					for _, subp := range subProps {
+						subp.Name = name + "." + subp.Name
+						*props = append(*props, subp)
+					}
+					return nil
+				}
 				p.Value = &Entity{Properties: subProps}
 				break
 			}
