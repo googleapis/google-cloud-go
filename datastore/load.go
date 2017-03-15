@@ -90,6 +90,7 @@ func (l *propertyLoader) loadOneElement(codec fields.List, structValue reflect.V
 
 	name := p.Name
 	fieldNames := strings.Split(name, ".")
+	flattened := len(fieldNames) > 1
 
 	for len(fieldNames) > 0 {
 		var field *fields.Field
@@ -123,6 +124,19 @@ func (l *propertyLoader) loadOneElement(codec fields.List, structValue reflect.V
 			return "cannot set struct field"
 		}
 
+		// If field implements PLS and it has been flattened, we must
+		// delegate loading back to the PLS early, and stop iterating through
+		// fields.
+		if flattened {
+			ok, err := flattenedPLSLoad(v, p, fieldNames)
+			if err != nil {
+				return err.Error()
+			}
+			if ok {
+				return ""
+			}
+		}
+
 		var err error
 		if field.Type.Kind() == reflect.Struct {
 			codec, err = structCache.Fields(field.Type)
@@ -143,6 +157,20 @@ func (l *propertyLoader) loadOneElement(codec fields.List, structValue reflect.V
 				v.Set(reflect.Append(v, reflect.New(v.Type().Elem()).Elem()))
 			}
 			structValue = v.Index(sliceIndex)
+
+			// If field implements PLS and it has been flattened,
+			// we must delegate loading back to the PLS early, and stop
+			//  iterating through fields.
+			if flattened {
+				ok, err := flattenedPLSLoad(structValue, p, fieldNames)
+				if err != nil {
+					return err.Error()
+				}
+				if ok {
+					return ""
+				}
+			}
+
 			if structValue.Type().Kind() == reflect.Struct {
 				codec, err = structCache.Fields(structValue.Type())
 				if err != nil {
@@ -181,10 +209,54 @@ func (l *propertyLoader) loadOneElement(codec fields.List, structValue reflect.V
 	return ""
 }
 
+// flattenedPLSLoad first tries to converts v's value to a PLS, then v's addressed
+// value to a PLS. If neither succeeds, plsLoad returns false for first return
+// value. Otherwise, the first return value will be true.
+// If v is successfully converted to a PLS, plsLoad will then try to Load
+// the property p into v (by way of the PLS's Load method).
+//
+// Before calling Load, the Property's name must be altered
+// to reflect the field v.
+// For example, if our original field name was "A.B.C.D",
+// and at this point in iteration we had initialized the field
+// corresponding to "A" and have moved into the struct, so that now
+// v corresponds to the field named "B", then we want to let the
+// PLS handle this field (B)'s subfields ("C", "D"),
+// so we send the property to the PLS's Load, renamed to "C.D".
+//
+// flattenedPLSLoad is only meant to be used for PLS fields whose parent
+// has the 'flatten' option enabled.
+func flattenedPLSLoad(v reflect.Value, p Property, subfields []string) (ok bool, err error) {
+	switch v.Type().Kind() {
+	case reflect.Struct:
+		if _, ok = v.Interface().(PropertyLoadSaver); ok {
+			return false, fmt.Errorf("datastore: PropertyLoadSaver methods must be implemented on a pointer to %T.", v.Interface())
+		}
+		v = v.Addr()
+	case reflect.Ptr:
+		elemType := v.Type().Elem()
+		if elemType.Kind() != reflect.Struct {
+			return false, nil
+		}
+		if v.IsNil() {
+			v.Set(reflect.New(elemType))
+		}
+	default:
+		return false, nil
+	}
+
+	vpls, ok := v.Interface().(PropertyLoadSaver)
+	if !ok {
+		return false, nil
+	}
+
+	p.Name = strings.Join(subfields, ".")
+	return true, vpls.Load([]Property{p})
+}
+
 // setVal sets 'v' to the value of the Property 'p'.
 func setVal(v reflect.Value, p Property) string {
 	pValue := p.Value
-
 	switch v.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		x, ok := pValue.(int64)
@@ -263,16 +335,13 @@ func setVal(v reflect.Value, p Property) string {
 			}
 			v.Set(reflect.ValueOf(x))
 		default:
+			if _, ok := v.Interface().(PropertyLoadSaver); ok {
+				return fmt.Sprintf("datastore: PropertyLoadSaver methods must be implemented on a pointer to %T.", v.Interface())
+			}
 			ent, ok := pValue.(*Entity)
 			if !ok {
 				return typeMismatchReason(p, v)
 			}
-
-			// Check if v implements PropertyLoadSaver.
-			if _, ok := v.Interface().(PropertyLoadSaver); ok {
-				return fmt.Sprintf("datastore: PropertyLoadSaver methods must be implemented on a pointer to %T.", v.Interface())
-			}
-
 			err := loadEntity(v.Addr().Interface(), ent)
 			if err != nil {
 				return err.Error()

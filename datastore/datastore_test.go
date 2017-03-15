@@ -2031,6 +2031,79 @@ type aSubPLSErr struct {
 	Bar aValuePLS
 }
 
+type GrandparentFlatten struct {
+	Parent Parent `datastore:",flatten"`
+}
+
+type GrandparentOfPtrFlatten struct {
+	Parent ParentOfPtr `datastore:",flatten"`
+}
+
+type GrandparentOfSlice struct {
+	Parent ParentOfSlice
+}
+
+type GrandparentOfSlicePtrs struct {
+	Parent ParentOfSlicePtrs
+}
+
+type GrandparentOfSliceFlatten struct {
+	Parent ParentOfSlice `datastore:",flatten"`
+}
+
+type GrandparentOfSlicePtrsFlatten struct {
+	Parent ParentOfSlicePtrs `datastore:",flatten"`
+}
+
+type Grandparent struct {
+	Parent Parent
+}
+
+type Parent struct {
+	Child Child
+}
+
+type ParentOfPtr struct {
+	Child *Child
+}
+
+type ParentOfSlice struct {
+	Children []Child
+}
+
+type ParentOfSlicePtrs struct {
+	Children []*Child
+}
+
+type Child struct {
+	I          int
+	Grandchild Grandchild
+}
+
+type Grandchild struct {
+	S string
+}
+
+func (c *Child) Load(props []Property) error {
+	for _, p := range props {
+		if p.Name == "I" {
+			c.I += 1
+		} else if p.Name == "Grandchild.S" {
+			c.Grandchild.S = "grandchild loaded"
+		}
+	}
+
+	return nil
+}
+
+func (c *Child) Save() ([]Property, error) {
+	v := c.I + 1
+	return []Property{
+		{Name: "I", Value: v},
+		{Name: "Grandchild.S", Value: fmt.Sprintf("grandchild saved %d", v)},
+	}, nil
+}
+
 func TestLoadSaveNestedStructPLS(t *testing.T) {
 	type testCase struct {
 		desc     string
@@ -2100,6 +2173,7 @@ func TestLoadSaveNestedStructPLS(t *testing.T) {
 						},
 					}},
 					// PLS impl for 'S' not used, not entity.
+					// TODO(shadams): should this be?
 					"S": {ValueType: &pb.Value_StringValue{"something"}},
 				},
 			},
@@ -2123,6 +2197,365 @@ func TestLoadSaveNestedStructPLS(t *testing.T) {
 			},
 			wantLoad: &aSubPLSErr{},
 			loadErr:  "PropertyLoadSaver methods must be implemented on a pointer",
+		},
+		{
+			desc: "parent does not have flatten option, child impl PLS",
+			src: &Grandparent{
+				Parent: Parent{
+					Child: Child{
+						I: 9,
+						Grandchild: Grandchild{
+							S: "BAD",
+						},
+					},
+				},
+			},
+			wantSave: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Parent": {ValueType: &pb.Value_EntityValue{
+						&pb.Entity{
+							Properties: map[string]*pb.Value{
+								"Child": {ValueType: &pb.Value_EntityValue{
+									&pb.Entity{
+										Properties: map[string]*pb.Value{
+											"I":            {ValueType: &pb.Value_IntegerValue{10}},
+											"Grandchild.S": {ValueType: &pb.Value_StringValue{"grandchild saved 10"}},
+										},
+									},
+								}},
+							},
+						},
+					}},
+				},
+			},
+			wantLoad: &Grandparent{
+				Parent: Parent{
+					Child: Child{
+						I: 1,
+						Grandchild: Grandchild{
+							S: "grandchild loaded",
+						},
+					},
+				},
+			},
+		},
+		{
+			desc: "parent has flatten option enabled, child impl PLS",
+			src: &GrandparentFlatten{
+				Parent: Parent{
+					Child: Child{
+						I: 7,
+						Grandchild: Grandchild{
+							S: "BAD",
+						},
+					},
+				},
+			},
+			wantSave: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Parent.Child.I":            {ValueType: &pb.Value_IntegerValue{8}},
+					"Parent.Child.Grandchild.S": {ValueType: &pb.Value_StringValue{"grandchild saved 8"}},
+				},
+			},
+			wantLoad: &GrandparentFlatten{
+				Parent: Parent{
+					Child: Child{
+						I: 1,
+						Grandchild: Grandchild{
+							S: "grandchild loaded",
+						},
+					},
+				},
+			},
+		},
+
+		{
+			desc: "parent has flatten option enabled, child (ptr to) impl PLS",
+			src: &GrandparentOfPtrFlatten{
+				Parent: ParentOfPtr{
+					Child: &Child{
+						I: 7,
+						Grandchild: Grandchild{
+							S: "BAD",
+						},
+					},
+				},
+			},
+			wantSave: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Parent.Child.I":            {ValueType: &pb.Value_IntegerValue{8}},
+					"Parent.Child.Grandchild.S": {ValueType: &pb.Value_StringValue{"grandchild saved 8"}},
+				},
+			},
+			wantLoad: &GrandparentOfPtrFlatten{
+				Parent: ParentOfPtr{
+					Child: &Child{
+						I: 1,
+						Grandchild: Grandchild{
+							S: "grandchild loaded",
+						},
+					},
+				},
+			},
+		},
+		{
+			desc: "children (slice of) impl PLS",
+			src: &GrandparentOfSlice{
+				Parent: ParentOfSlice{
+					Children: []Child{
+						{
+							I: 7,
+							Grandchild: Grandchild{
+								S: "BAD",
+							},
+						},
+						{
+							I: 9,
+							Grandchild: Grandchild{
+								S: "BAD2",
+							},
+						},
+					},
+				},
+			},
+			wantSave: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Parent": {ValueType: &pb.Value_EntityValue{
+						&pb.Entity{
+							Properties: map[string]*pb.Value{
+								"Children": {ValueType: &pb.Value_ArrayValue{
+									ArrayValue: &pb.ArrayValue{Values: []*pb.Value{
+										{ValueType: &pb.Value_EntityValue{
+											&pb.Entity{
+												Properties: map[string]*pb.Value{
+													"I":            {ValueType: &pb.Value_IntegerValue{8}},
+													"Grandchild.S": {ValueType: &pb.Value_StringValue{"grandchild saved 8"}},
+												},
+											},
+										}},
+										{ValueType: &pb.Value_EntityValue{
+											&pb.Entity{
+												Properties: map[string]*pb.Value{
+													"I":            {ValueType: &pb.Value_IntegerValue{10}},
+													"Grandchild.S": {ValueType: &pb.Value_StringValue{"grandchild saved 10"}},
+												},
+											},
+										}},
+									}},
+								}},
+							},
+						},
+					}},
+				},
+			},
+			wantLoad: &GrandparentOfSlice{
+				Parent: ParentOfSlice{
+					Children: []Child{
+						{
+							I: 1,
+							Grandchild: Grandchild{
+								S: "grandchild loaded",
+							},
+						},
+						{
+							I: 1,
+							Grandchild: Grandchild{
+								S: "grandchild loaded",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			desc: "children (slice of ptrs) impl PLS",
+			src: &GrandparentOfSlicePtrs{
+				Parent: ParentOfSlicePtrs{
+					Children: []*Child{
+						{
+							I: 7,
+							Grandchild: Grandchild{
+								S: "BAD",
+							},
+						},
+						{
+							I: 9,
+							Grandchild: Grandchild{
+								S: "BAD2",
+							},
+						},
+					},
+				},
+			},
+			wantSave: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Parent": {ValueType: &pb.Value_EntityValue{
+						&pb.Entity{
+							Properties: map[string]*pb.Value{
+								"Children": {ValueType: &pb.Value_ArrayValue{
+									ArrayValue: &pb.ArrayValue{Values: []*pb.Value{
+										{ValueType: &pb.Value_EntityValue{
+											&pb.Entity{
+												Properties: map[string]*pb.Value{
+													"I":            {ValueType: &pb.Value_IntegerValue{8}},
+													"Grandchild.S": {ValueType: &pb.Value_StringValue{"grandchild saved 8"}},
+												},
+											},
+										}},
+										{ValueType: &pb.Value_EntityValue{
+											&pb.Entity{
+												Properties: map[string]*pb.Value{
+													"I":            {ValueType: &pb.Value_IntegerValue{10}},
+													"Grandchild.S": {ValueType: &pb.Value_StringValue{"grandchild saved 10"}},
+												},
+											},
+										}},
+									}},
+								}},
+							},
+						},
+					}},
+				},
+			},
+			wantLoad: &GrandparentOfSlicePtrs{
+				Parent: ParentOfSlicePtrs{
+					Children: []*Child{
+						{
+							I: 1,
+							Grandchild: Grandchild{
+								S: "grandchild loaded",
+							},
+						},
+						{
+							I: 1,
+							Grandchild: Grandchild{
+								S: "grandchild loaded",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			desc: "parent has flatten option, children (slice of) impl PLS",
+			src: &GrandparentOfSliceFlatten{
+				Parent: ParentOfSlice{
+					Children: []Child{
+						{
+							I: 7,
+							Grandchild: Grandchild{
+								S: "BAD",
+							},
+						},
+						{
+							I: 9,
+							Grandchild: Grandchild{
+								S: "BAD2",
+							},
+						},
+					},
+				},
+			},
+			wantSave: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Parent.Children.I": {ValueType: &pb.Value_ArrayValue{ArrayValue: &pb.ArrayValue{
+						Values: []*pb.Value{
+							{ValueType: &pb.Value_IntegerValue{8}},
+							{ValueType: &pb.Value_IntegerValue{10}},
+						},
+					},
+					}},
+					"Parent.Children.Grandchild.S": {ValueType: &pb.Value_ArrayValue{ArrayValue: &pb.ArrayValue{
+						Values: []*pb.Value{
+							{ValueType: &pb.Value_StringValue{"grandchild saved 8"}},
+							{ValueType: &pb.Value_StringValue{"grandchild saved 10"}},
+						},
+					},
+					}},
+				},
+			},
+			wantLoad: &GrandparentOfSliceFlatten{
+				Parent: ParentOfSlice{
+					Children: []Child{
+						{
+							I: 1,
+							Grandchild: Grandchild{
+								S: "grandchild loaded",
+							},
+						},
+						{
+							I: 1,
+							Grandchild: Grandchild{
+								S: "grandchild loaded",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			desc: "parent has flatten option, children (slice of ptrs) impl PLS",
+			src: &GrandparentOfSlicePtrsFlatten{
+				Parent: ParentOfSlicePtrs{
+					Children: []*Child{
+						{
+							I: 7,
+							Grandchild: Grandchild{
+								S: "BAD",
+							},
+						},
+						{
+							I: 9,
+							Grandchild: Grandchild{
+								S: "BAD2",
+							},
+						},
+					},
+				},
+			},
+			wantSave: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Parent.Children.I": {ValueType: &pb.Value_ArrayValue{ArrayValue: &pb.ArrayValue{
+						Values: []*pb.Value{
+							{ValueType: &pb.Value_IntegerValue{8}},
+							{ValueType: &pb.Value_IntegerValue{10}},
+						},
+					},
+					}},
+					"Parent.Children.Grandchild.S": {ValueType: &pb.Value_ArrayValue{ArrayValue: &pb.ArrayValue{
+						Values: []*pb.Value{
+							{ValueType: &pb.Value_StringValue{"grandchild saved 8"}},
+							{ValueType: &pb.Value_StringValue{"grandchild saved 10"}},
+						},
+					},
+					}},
+				},
+			},
+			wantLoad: &GrandparentOfSlicePtrsFlatten{
+				Parent: ParentOfSlicePtrs{
+					Children: []*Child{
+						{
+							I: 1,
+							Grandchild: Grandchild{
+								S: "grandchild loaded",
+							},
+						},
+						{
+							I: 1,
+							Grandchild: Grandchild{
+								S: "grandchild loaded",
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 
@@ -2162,7 +2595,6 @@ func TestLoadSaveNestedStructPLS(t *testing.T) {
 			continue
 		}
 	}
-
 }
 
 func TestQueryConstruction(t *testing.T) {
