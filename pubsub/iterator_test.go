@@ -184,7 +184,7 @@ func TestAfterAbortReturnsNoMoreThanOneMessage(t *testing.T) {
 					m, err := it.Next()
 					results <- &result{m, err}
 					if err == nil {
-						m.Done(false)
+						m.Nack()
 					}
 				}()
 			}
@@ -276,7 +276,7 @@ func TestMultipleStopCallsBlockUntilMessageDone(t *testing.T) {
 	}()
 
 	time.Sleep(10 * time.Millisecond)
-	m.Done(false)
+	m.Nack()
 
 	got := []string{<-events, <-events, <-events}
 	want := []string{"modAck([a], 0s)", "stopped", "stopped"}
@@ -325,7 +325,7 @@ func TestFastNack(t *testing.T) {
 		t.Errorf("error calling Next: %v", err)
 	}
 	// Ignore the first, nack the second.
-	m2.Done(false)
+	m2.Nack()
 
 	got := []string{<-events, <-events}
 	// The nack should happen before the deadline extension.

@@ -57,7 +57,7 @@ func process(t *testing.T, ctx context.Context, m *Message, mc *messageCounter) 
 		// Some messages will need to have their ack deadline extended due to this delay.
 		delay := rand.Intn(int(ackDeadline * 3))
 		time.After(time.Duration(delay))
-		m.Done(true)
+		m.Ack()
 	}()
 }
 

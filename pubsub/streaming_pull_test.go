@@ -67,7 +67,12 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *fakeServer
 		if err != nil {
 			panic(err)
 		}
-		m.Done(id%2 == 0) // ack evens, nack odds
+		// ack evens, nack odds
+		if id%2 == 0 {
+			m.Ack()
+		} else {
+			m.Nack()
+		}
 	})
 	if err != nil {
 		t.Fatalf("Pull: %v", err)
@@ -87,7 +92,7 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *fakeServer
 			t.Errorf("%d: no message for ackID %q", i, want.ackID)
 			continue
 		}
-		got.done = nil // Don't compare done; it's a function.
+		got.doneFunc = nil // Don't compare done; it's a function.
 		if !reflect.DeepEqual(got, want) {
 			t.Errorf("%d: got\n%#v\nwant\n%#v", i, got, want)
 		}
@@ -188,7 +193,7 @@ func TestStreamingPullOneActive(t *testing.T) {
 	sub := client.Subscription("s")
 	ctx, cancel := context.WithCancel(context.Background())
 	err := sub.Receive(ctx, func(ctx context.Context, m *Message) {
-		m.Done(true)
+		m.Ack()
 		err := sub.Receive(ctx, func(context.Context, *Message) {})
 		if err != errReceiveInProgress {
 			t.Errorf("got <%v>, want <%v>", err, errReceiveInProgress)
@@ -221,7 +226,7 @@ func TestStreamingPullConcurrent(t *testing.T) {
 	sub := client.Subscription("s")
 	ctx, _ := context.WithTimeout(context.Background(), time.Second)
 	gotMsgs, err := pullN(ctx, sub, nMessages, func(ctx context.Context, m *Message) {
-		m.Done(true)
+		m.Ack()
 	})
 	if err != nil {
 		t.Fatalf("Receive: %v", err)
@@ -255,7 +260,7 @@ func TestStreamingPullFlowControl(t *testing.T) {
 		errc <- sub.Receive(ctx, func(_ context.Context, m *Message) {
 			activec <- 1
 			<-waitc
-			m.Done(true)
+			m.Ack()
 		})
 	}()
 	// Here, two callbacks are active. Receive should be blocked in the flow

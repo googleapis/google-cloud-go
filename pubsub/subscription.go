@@ -273,7 +273,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		}
 		if err := fc.acquire(ctx, acquireBytes); err != nil {
 			// TODO(jba): test that this "orphaned" message is nacked immediately when ctx is done.
-			msg.Done(false)
+			msg.Nack()
 			return nil
 		}
 		wg.Add(1)
