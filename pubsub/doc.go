@@ -41,6 +41,11 @@ sent to the Pub/Sub service.
 Publish returns a PublishResult, which behaves like a future: its Get method
 blocks until the message has been sent to the service.
 
+Once there is no more intention to call Publish, Stop should be called to clean
+up goroutines created in the topic for publishing:
+
+  topic.Stop()
+
 Receiving
 
 To receive messages published to a topic, clients create subscriptions
