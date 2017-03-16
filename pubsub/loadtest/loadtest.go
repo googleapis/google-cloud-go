@@ -1,3 +1,17 @@
+// Copyright 2017 Google Inc. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package loadtest
 
 import (
@@ -78,14 +92,13 @@ func (l *Server) publishBatch() ([]int64, error) {
 	}
 
 	start := time.Now()
-	index := int64(cfg.batchSize)
 	latencies := make([]int64, cfg.batchSize)
 	startStr := strconv.FormatInt(start.UnixNano()/1e6, 10)
 	seqNum := atomic.AddInt32(&l.seqNum, cfg.batchSize) - cfg.batchSize
 
-	var rs []*pubsub.PublishResult
+	rs := make([]*pubsub.PublishResult, cfg.batchSize)
 	for i := int32(0); i < cfg.batchSize; i++ {
-		r := cfg.topic.Publish(context.TODO(), &pubsub.Message{
+		rs[i] = cfg.topic.Publish(context.TODO(), &pubsub.Message{
 			Data: cfg.msgData,
 			Attributes: map[string]string{
 				"sendTime":       startStr,
@@ -93,14 +106,12 @@ func (l *Server) publishBatch() ([]int64, error) {
 				"sequenceNumber": strconv.Itoa(int(seqNum + i)),
 			},
 		})
-		rs = append(rs, r)
 	}
-	for _, r := range rs {
+	for i, r := range rs {
 		_, err := r.Get(context.Background())
 		if err != nil {
 			return nil, err
 		}
-		i := atomic.AddInt64(&index, -1)
 		// TODO(jba,pongad): fix latencies
 		// Later values will be skewed by earlier ones, since we wait for the
 		// results in order. (On the other hand, it may not matter much, since
