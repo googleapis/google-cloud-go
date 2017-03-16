@@ -53,7 +53,7 @@ func BenchmarkPublishThroughput(b *testing.B) {
 	b.SetBytes(nMessages * messageSize)
 	client := perfClient(serverDelay, 1, b)
 
-	lts := &Server{id: "xxx"}
+	lts := &Server{ID: "xxx"}
 	lts.init(client, "t", messageSize, batchSize, batchDuration)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

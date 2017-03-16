@@ -23,7 +23,7 @@ type serverConfig struct {
 }
 
 type Server struct {
-	id string
+	ID string
 
 	cfg    atomic.Value
 	seqNum int32
@@ -89,7 +89,7 @@ func (l *Server) publishBatch() ([]int64, error) {
 			Data: cfg.msgData,
 			Attributes: map[string]string{
 				"sendTime":       startStr,
-				"clientId":       l.id,
+				"clientId":       l.ID,
 				"sequenceNumber": strconv.Itoa(int(seqNum + i)),
 			},
 		})
