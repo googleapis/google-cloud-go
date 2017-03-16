@@ -200,7 +200,7 @@ func ExampleSubscription_Receive() {
 	err = sub.Receive(ctx, func(ctx context.Context, m *pubsub.Message) {
 		// TODO: Handle message.
 		// NOTE: May be called concurrently; synchronize access to shared memory.
-		m.Done(true)
+		m.Ack()
 	})
 	if err != context.Canceled {
 		// TODO: Handle error.
@@ -220,7 +220,7 @@ func ExampleSubscription_Receive_options() {
 	sub.ReceiveSettings.MaxExtension = 5 * time.Second
 	err = sub.Receive(ctx, func(ctx context.Context, m *pubsub.Message) {
 		// TODO: Handle message.
-		m.Done(true)
+		m.Ack()
 	})
 	if err != context.Canceled {
 		// TODO: Handle error.

@@ -144,7 +144,7 @@ func (it *messageIterator) Next() (*Message, error) {
 func (it *pollingMessageIterator) next() (*Message, error) {
 	m, err := it.puller.Next()
 	if err == nil {
-		m.done = it.done
+		m.doneFunc = it.done
 		return m, nil
 	}
 
@@ -289,7 +289,7 @@ func (it *streamingMessageIterator) next() (*Message, error) {
 			if msg == nil {
 				break
 			}
-			msg.done = it.done
+			msg.doneFunc = it.done
 			return msg, nil
 
 		case <-it.ctx.Done():

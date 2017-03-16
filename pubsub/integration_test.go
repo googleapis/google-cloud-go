@@ -125,7 +125,7 @@ func TestAll(t *testing.T) {
 	// Use a timeout to ensure that Pull does not block indefinitely if there are unexpectedly few messages available.
 	timeoutCtx, _ := context.WithTimeout(ctx, time.Minute)
 	gotMsgs, err := pullN(timeoutCtx, sub, len(want), func(ctx context.Context, m *Message) {
-		m.Done(true)
+		m.Ack()
 	})
 	if err != nil {
 		t.Fatalf("Pull: %v", err)
