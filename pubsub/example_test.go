@@ -110,6 +110,7 @@ func ExampleTopic_Publish() {
 	}
 
 	topic := client.Topic("topicName")
+	defer topic.Stop()
 	var results []*pubsub.PublishResult
 	r := topic.Publish(ctx, &pubsub.Message{
 		Data: []byte("hello world"),
