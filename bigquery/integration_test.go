@@ -762,6 +762,58 @@ func TestIntegration_StandardQuery(t *testing.T) {
 	}
 }
 
+func TestIntegration_QueryParameters(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	d := civil.Date{2016, 3, 20}
+	tm := civil.Time{15, 04, 05, 0}
+	dtm := civil.DateTime{d, tm}
+	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
+
+	type ss struct {
+		String string
+	}
+
+	type s struct {
+		Timestamp      time.Time
+		StringArray    []string
+		SubStruct      ss
+		SubStructArray []ss
+	}
+
+	testCases := []struct {
+		query      string
+		parameters []QueryParameter
+		wantRow    []Value
+	}{
+		{"SELECT @val", []QueryParameter{{"val", 1}}, []Value{int64(1)}},
+		{"SELECT @val", []QueryParameter{{"val", 1.3}}, []Value{1.3}},
+		{"SELECT @val", []QueryParameter{{"val", true}}, []Value{true}},
+		{"SELECT @val", []QueryParameter{{"val", "ABC"}}, []Value{"ABC"}},
+		{"SELECT @val", []QueryParameter{{"val", []byte("foo")}}, []Value{[]byte("foo")}},
+		{"SELECT @val", []QueryParameter{{"val", ts}}, []Value{ts}},
+		{"SELECT @val", []QueryParameter{{"val", []time.Time{ts, ts}}}, []Value{[]Value{ts, ts}}},
+		{"SELECT @val", []QueryParameter{{"val", dtm}}, []Value{dtm}},
+		{"SELECT @val", []QueryParameter{{"val", d}}, []Value{d}},
+		{"SELECT @val", []QueryParameter{{"val", tm}}, []Value{tm}},
+		{"SELECT @val", []QueryParameter{{"val", s{ts, []string{"a", "b"}, ss{"c"}, []ss{{"d"}, {"e"}}}}},
+			[]Value{[]Value{ts, []Value{"a", "b"}, []Value{"c"}, []Value{[]Value{"d"}, []Value{"e"}}}}},
+		{"SELECT @val.Timestamp, @val.SubStruct.String", []QueryParameter{{"val", s{Timestamp: ts, SubStruct: ss{"a"}}}}, []Value{ts, "a"}},
+	}
+	for _, c := range testCases {
+		q := client.Query(c.query)
+		q.Parameters = c.parameters
+		it, err := q.Read(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		checkRead(t, "QueryParameters", it, [][]Value{c.wantRow})
+	}
+}
+
 // Creates a new, temporary table with a unique name and the given schema.
 func newTable(t *testing.T, s Schema) *Table {
 	fiveMinutesFromNow = time.Now().Add(5 * time.Minute).Round(time.Second)
