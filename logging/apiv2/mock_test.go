@@ -272,7 +272,7 @@ func TestLoggingServiceV2DeleteLog(t *testing.T) {
 }
 
 func TestLoggingServiceV2DeleteLogError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockLogging.err = grpc.Errorf(errCode, "test error")
 
 	var formattedLogName string = LoggingLogPath("[PROJECT]", "[LOG]")
@@ -325,7 +325,7 @@ func TestLoggingServiceV2WriteLogEntries(t *testing.T) {
 }
 
 func TestLoggingServiceV2WriteLogEntriesError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockLogging.err = grpc.Errorf(errCode, "test error")
 
 	var entries []*loggingpb.LogEntry = nil
@@ -395,7 +395,7 @@ func TestLoggingServiceV2ListLogEntries(t *testing.T) {
 }
 
 func TestLoggingServiceV2ListLogEntriesError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockLogging.err = grpc.Errorf(errCode, "test error")
 
 	var resourceNames []string = nil
@@ -462,7 +462,7 @@ func TestLoggingServiceV2ListMonitoredResourceDescriptors(t *testing.T) {
 }
 
 func TestLoggingServiceV2ListMonitoredResourceDescriptorsError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockLogging.err = grpc.Errorf(errCode, "test error")
 
 	var request *loggingpb.ListMonitoredResourceDescriptorsRequest = &loggingpb.ListMonitoredResourceDescriptorsRequest{}
@@ -529,7 +529,7 @@ func TestLoggingServiceV2ListLogs(t *testing.T) {
 }
 
 func TestLoggingServiceV2ListLogsError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockLogging.err = grpc.Errorf(errCode, "test error")
 
 	var formattedParent string = LoggingProjectPath("[PROJECT]")
@@ -599,7 +599,7 @@ func TestConfigServiceV2ListSinks(t *testing.T) {
 }
 
 func TestConfigServiceV2ListSinksError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockConfig.err = grpc.Errorf(errCode, "test error")
 
 	var formattedParent string = ConfigProjectPath("[PROJECT]")
@@ -662,7 +662,7 @@ func TestConfigServiceV2GetSink(t *testing.T) {
 }
 
 func TestConfigServiceV2GetSinkError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockConfig.err = grpc.Errorf(errCode, "test error")
 
 	var formattedSinkName string = ConfigSinkPath("[PROJECT]", "[SINK]")
@@ -727,7 +727,7 @@ func TestConfigServiceV2CreateSink(t *testing.T) {
 }
 
 func TestConfigServiceV2CreateSinkError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockConfig.err = grpc.Errorf(errCode, "test error")
 
 	var formattedParent string = ConfigProjectPath("[PROJECT]")
@@ -794,7 +794,7 @@ func TestConfigServiceV2UpdateSink(t *testing.T) {
 }
 
 func TestConfigServiceV2UpdateSinkError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockConfig.err = grpc.Errorf(errCode, "test error")
 
 	var formattedSinkName string = ConfigSinkPath("[PROJECT]", "[SINK]")
@@ -847,7 +847,7 @@ func TestConfigServiceV2DeleteSink(t *testing.T) {
 }
 
 func TestConfigServiceV2DeleteSinkError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockConfig.err = grpc.Errorf(errCode, "test error")
 
 	var formattedSinkName string = ConfigSinkPath("[PROJECT]", "[SINK]")
@@ -916,7 +916,7 @@ func TestMetricsServiceV2ListLogMetrics(t *testing.T) {
 }
 
 func TestMetricsServiceV2ListLogMetricsError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockMetrics.err = grpc.Errorf(errCode, "test error")
 
 	var formattedParent string = MetricsProjectPath("[PROJECT]")
@@ -977,7 +977,7 @@ func TestMetricsServiceV2GetLogMetric(t *testing.T) {
 }
 
 func TestMetricsServiceV2GetLogMetricError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockMetrics.err = grpc.Errorf(errCode, "test error")
 
 	var formattedMetricName string = MetricsMetricPath("[PROJECT]", "[METRIC]")
@@ -1040,7 +1040,7 @@ func TestMetricsServiceV2CreateLogMetric(t *testing.T) {
 }
 
 func TestMetricsServiceV2CreateLogMetricError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockMetrics.err = grpc.Errorf(errCode, "test error")
 
 	var formattedParent string = MetricsProjectPath("[PROJECT]")
@@ -1105,7 +1105,7 @@ func TestMetricsServiceV2UpdateLogMetric(t *testing.T) {
 }
 
 func TestMetricsServiceV2UpdateLogMetricError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockMetrics.err = grpc.Errorf(errCode, "test error")
 
 	var formattedMetricName string = MetricsMetricPath("[PROJECT]", "[METRIC]")
@@ -1158,7 +1158,7 @@ func TestMetricsServiceV2DeleteLogMetric(t *testing.T) {
 }
 
 func TestMetricsServiceV2DeleteLogMetricError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockMetrics.err = grpc.Errorf(errCode, "test error")
 
 	var formattedMetricName string = MetricsMetricPath("[PROJECT]", "[METRIC]")

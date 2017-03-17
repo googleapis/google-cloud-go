@@ -154,7 +154,7 @@ func TestLanguageServiceAnalyzeSentiment(t *testing.T) {
 }
 
 func TestLanguageServiceAnalyzeSentimentError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockLanguage.err = grpc.Errorf(errCode, "test error")
 
 	var document *languagepb.Document = &languagepb.Document{}
@@ -213,7 +213,7 @@ func TestLanguageServiceAnalyzeEntities(t *testing.T) {
 }
 
 func TestLanguageServiceAnalyzeEntitiesError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockLanguage.err = grpc.Errorf(errCode, "test error")
 
 	var document *languagepb.Document = &languagepb.Document{}
@@ -274,7 +274,7 @@ func TestLanguageServiceAnalyzeSyntax(t *testing.T) {
 }
 
 func TestLanguageServiceAnalyzeSyntaxError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockLanguage.err = grpc.Errorf(errCode, "test error")
 
 	var document *languagepb.Document = &languagepb.Document{}
@@ -337,7 +337,7 @@ func TestLanguageServiceAnnotateText(t *testing.T) {
 }
 
 func TestLanguageServiceAnnotateTextError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockLanguage.err = grpc.Errorf(errCode, "test error")
 
 	var document *languagepb.Document = &languagepb.Document{}

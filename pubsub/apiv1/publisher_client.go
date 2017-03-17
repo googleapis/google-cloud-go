@@ -74,7 +74,12 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 		{"messaging", "one_plus_delivery"}: {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Canceled,
+					codes.Unknown,
 					codes.DeadlineExceeded,
+					codes.ResourceExhausted,
+					codes.Aborted,
+					codes.Internal,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,

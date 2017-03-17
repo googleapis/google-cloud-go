@@ -169,7 +169,7 @@ func TestSpeechSyncRecognize(t *testing.T) {
 }
 
 func TestSpeechSyncRecognizeError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockSpeech.err = grpc.Errorf(errCode, "test error")
 
 	var encoding speechpb.RecognitionConfig_AudioEncoding = speechpb.RecognitionConfig_FLAC
@@ -259,7 +259,7 @@ func TestSpeechAsyncRecognize(t *testing.T) {
 }
 
 func TestSpeechAsyncRecognizeError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockSpeech.err = nil
 	mockSpeech.resps = append(mockSpeech.resps[:0], &longrunningpb.Operation{
 		Name: "longrunning-test",
@@ -349,7 +349,7 @@ func TestSpeechStreamingRecognize(t *testing.T) {
 }
 
 func TestSpeechStreamingRecognizeError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockSpeech.err = grpc.Errorf(errCode, "test error")
 
 	var request *speechpb.StreamingRecognizeRequest = &speechpb.StreamingRecognizeRequest{}

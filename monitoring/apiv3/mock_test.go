@@ -267,7 +267,7 @@ func TestGroupServiceListGroups(t *testing.T) {
 }
 
 func TestGroupServiceListGroupsError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockGroup.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = GroupProjectPath("[PROJECT]")
@@ -332,7 +332,7 @@ func TestGroupServiceGetGroup(t *testing.T) {
 }
 
 func TestGroupServiceGetGroupError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockGroup.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = GroupGroupPath("[PROJECT]", "[GROUP]")
@@ -399,7 +399,7 @@ func TestGroupServiceCreateGroup(t *testing.T) {
 }
 
 func TestGroupServiceCreateGroupError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockGroup.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = GroupProjectPath("[PROJECT]")
@@ -466,7 +466,7 @@ func TestGroupServiceUpdateGroup(t *testing.T) {
 }
 
 func TestGroupServiceUpdateGroupError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockGroup.err = grpc.Errorf(errCode, "test error")
 
 	var group *monitoringpb.Group = &monitoringpb.Group{}
@@ -517,7 +517,7 @@ func TestGroupServiceDeleteGroup(t *testing.T) {
 }
 
 func TestGroupServiceDeleteGroupError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockGroup.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = GroupGroupPath("[PROJECT]", "[GROUP]")
@@ -588,7 +588,7 @@ func TestGroupServiceListGroupMembers(t *testing.T) {
 }
 
 func TestGroupServiceListGroupMembersError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockGroup.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = GroupGroupPath("[PROJECT]", "[GROUP]")
@@ -658,7 +658,7 @@ func TestMetricServiceListMonitoredResourceDescriptors(t *testing.T) {
 }
 
 func TestMetricServiceListMonitoredResourceDescriptorsError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockMetric.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = MetricProjectPath("[PROJECT]")
@@ -721,7 +721,7 @@ func TestMetricServiceGetMonitoredResourceDescriptor(t *testing.T) {
 }
 
 func TestMetricServiceGetMonitoredResourceDescriptorError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockMetric.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = MetricMonitoredResourceDescriptorPath("[PROJECT]", "[MONITORED_RESOURCE_DESCRIPTOR]")
@@ -791,7 +791,7 @@ func TestMetricServiceListMetricDescriptors(t *testing.T) {
 }
 
 func TestMetricServiceListMetricDescriptorsError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockMetric.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = MetricProjectPath("[PROJECT]")
@@ -856,7 +856,7 @@ func TestMetricServiceGetMetricDescriptor(t *testing.T) {
 }
 
 func TestMetricServiceGetMetricDescriptorError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockMetric.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = MetricMetricDescriptorPath("[PROJECT]", "[METRIC_DESCRIPTOR]")
@@ -923,7 +923,7 @@ func TestMetricServiceCreateMetricDescriptor(t *testing.T) {
 }
 
 func TestMetricServiceCreateMetricDescriptorError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockMetric.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = MetricProjectPath("[PROJECT]")
@@ -976,7 +976,7 @@ func TestMetricServiceDeleteMetricDescriptor(t *testing.T) {
 }
 
 func TestMetricServiceDeleteMetricDescriptorError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockMetric.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = MetricMetricDescriptorPath("[PROJECT]", "[METRIC_DESCRIPTOR]")
@@ -1051,7 +1051,7 @@ func TestMetricServiceListTimeSeries(t *testing.T) {
 }
 
 func TestMetricServiceListTimeSeriesError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockMetric.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = MetricProjectPath("[PROJECT]")
@@ -1110,7 +1110,7 @@ func TestMetricServiceCreateTimeSeries(t *testing.T) {
 }
 
 func TestMetricServiceCreateTimeSeriesError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockMetric.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = MetricProjectPath("[PROJECT]")

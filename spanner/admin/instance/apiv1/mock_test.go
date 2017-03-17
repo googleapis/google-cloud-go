@@ -219,7 +219,7 @@ func TestInstanceAdminListInstanceConfigs(t *testing.T) {
 }
 
 func TestInstanceAdminListInstanceConfigsError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockInstanceAdmin.err = grpc.Errorf(errCode, "test error")
 
 	var formattedParent string = InstanceAdminProjectPath("[PROJECT]")
@@ -278,7 +278,7 @@ func TestInstanceAdminGetInstanceConfig(t *testing.T) {
 }
 
 func TestInstanceAdminGetInstanceConfigError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockInstanceAdmin.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = InstanceAdminInstanceConfigPath("[PROJECT]", "[INSTANCE_CONFIG]")
@@ -348,7 +348,7 @@ func TestInstanceAdminListInstances(t *testing.T) {
 }
 
 func TestInstanceAdminListInstancesError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockInstanceAdmin.err = grpc.Errorf(errCode, "test error")
 
 	var formattedParent string = InstanceAdminProjectPath("[PROJECT]")
@@ -411,7 +411,7 @@ func TestInstanceAdminGetInstance(t *testing.T) {
 }
 
 func TestInstanceAdminGetInstanceError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockInstanceAdmin.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = InstanceAdminInstancePath("[PROJECT]", "[INSTANCE]")
@@ -490,7 +490,7 @@ func TestInstanceAdminCreateInstance(t *testing.T) {
 }
 
 func TestInstanceAdminCreateInstanceError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockInstanceAdmin.err = nil
 	mockInstanceAdmin.resps = append(mockInstanceAdmin.resps[:0], &longrunningpb.Operation{
 		Name: "longrunning-test",
@@ -585,7 +585,7 @@ func TestInstanceAdminUpdateInstance(t *testing.T) {
 }
 
 func TestInstanceAdminUpdateInstanceError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockInstanceAdmin.err = nil
 	mockInstanceAdmin.resps = append(mockInstanceAdmin.resps[:0], &longrunningpb.Operation{
 		Name: "longrunning-test",
@@ -652,7 +652,7 @@ func TestInstanceAdminDeleteInstance(t *testing.T) {
 }
 
 func TestInstanceAdminDeleteInstanceError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockInstanceAdmin.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = InstanceAdminInstancePath("[PROJECT]", "[INSTANCE]")
@@ -712,7 +712,7 @@ func TestInstanceAdminSetIamPolicy(t *testing.T) {
 }
 
 func TestInstanceAdminSetIamPolicyError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockInstanceAdmin.err = grpc.Errorf(errCode, "test error")
 
 	var formattedResource string = InstanceAdminInstancePath("[PROJECT]", "[INSTANCE]")
@@ -773,7 +773,7 @@ func TestInstanceAdminGetIamPolicy(t *testing.T) {
 }
 
 func TestInstanceAdminGetIamPolicyError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockInstanceAdmin.err = grpc.Errorf(errCode, "test error")
 
 	var formattedResource string = InstanceAdminInstancePath("[PROJECT]", "[INSTANCE]")
@@ -829,7 +829,7 @@ func TestInstanceAdminTestIamPermissions(t *testing.T) {
 }
 
 func TestInstanceAdminTestIamPermissionsError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockInstanceAdmin.err = grpc.Errorf(errCode, "test error")
 
 	var formattedResource string = InstanceAdminInstancePath("[PROJECT]", "[INSTANCE]")
