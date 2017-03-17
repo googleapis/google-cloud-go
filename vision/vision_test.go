@@ -89,8 +89,10 @@ func TestAnnotate(t *testing.T) {
 		if got, want := (anns.ImageProps != nil), true; got != want {
 			t.Errorf("%s: image properties %s, want %s", test.path, p[got], p[want])
 		}
-		if got, want := (anns.Web != nil), true; got != want {
-			t.Errorf("%s: web %s, want %s", test.path, p[got], p[want])
+		if test.web {
+			if got, want := (anns.Web != nil), true; got != want {
+				t.Errorf("%s: web %s, want %s", test.path, p[got], p[want])
+			}
 		}
 		if got, want := (anns.CropHints != nil), true; got != want {
 			t.Errorf("%s: crop hints %s, want %s", test.path, p[got], p[want])
