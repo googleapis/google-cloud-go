@@ -57,6 +57,16 @@ func saveStructProperty(props *[]Property, name string, opts saveOpts, v reflect
 		return nil
 	}
 
+	// First check if field type implements PLS. If so, use PLS to
+	// save.
+	ok, err := plsFieldSave(props, p, name, opts, v)
+	if err != nil {
+		return err
+	}
+	if ok {
+		return nil
+	}
+
 	switch x := v.Interface().(type) {
 	case *Key, time.Time, GeoPoint:
 		p.Value = x
@@ -90,22 +100,6 @@ func saveStructProperty(props *[]Property, name string, opts saveOpts, v reflect
 				return fmt.Errorf("datastore: unsupported struct field: value is unaddressable")
 			}
 			vi := v.Addr().Interface()
-			pls, isPLS := vi.(PropertyLoadSaver)
-			if isPLS {
-				subProps, err := pls.Save()
-				if err != nil {
-					return err
-				}
-				if opts.flatten {
-					for _, subp := range subProps {
-						subp.Name = name + "." + subp.Name
-						*props = append(*props, subp)
-					}
-					return nil
-				}
-				p.Value = &Entity{Properties: subProps}
-				break
-			}
 
 			sub, err := newStructPLS(vi)
 			if err != nil {
@@ -137,6 +131,44 @@ func saveStructProperty(props *[]Property, name string, opts saveOpts, v reflect
 	}
 	*props = append(*props, p)
 	return nil
+}
+
+// plsFieldSave first tries to converts v's value to a PLS, then v's addressed
+// value to a PLS. If neither succeeds, plsFieldSave returns false for first return
+// value.
+// If v is successfully converted to a PLS, plsFieldSave will then add the
+// Value to property p by way of the PLS's Save method, and append it to props.
+//
+// If the flatten option is present in opts, name must be prepended to each property's
+// name before it is appended to props. Eg. if name were "A" and a subproperty's name
+// were "B", the resultant name of the property to be appended to props would be "A.B".
+func plsFieldSave(props *[]Property, p Property, name string, opts saveOpts, v reflect.Value) (ok bool, err error) {
+	vpls, err := plsForSave(v)
+	if err != nil {
+		return false, err
+	}
+
+	if vpls == nil {
+		return false, nil
+	}
+
+	subProps, err := vpls.Save()
+	if err != nil {
+		return true, err
+	}
+
+	if opts.flatten {
+		for _, subp := range subProps {
+			subp.Name = name + "." + subp.Name
+			*props = append(*props, subp)
+		}
+		return true, nil
+	}
+
+	p.Value = &Entity{Properties: subProps}
+	*props = append(*props, p)
+
+	return true, nil
 }
 
 // key extracts the *Key struct field from struct v based on the structCodec of s.

@@ -749,7 +749,7 @@ func TestKeyLoader(t *testing.T) {
 		}
 
 		if !reflect.DeepEqual(tc.want, tc.dst) {
-			t.Errorf("%s: compare:\ngot:  %#v\nwant: %#v", tc.desc, tc.dst, tc.want)
+			t.Errorf("%s: compare:\ngot:  %+v\nwant: %+v", tc.desc, tc.dst, tc.want)
 		}
 	}
 }
