@@ -348,20 +348,39 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 	}
 }
 
+type SubSubTestStruct struct {
+	Integer int64
+}
+
+type SubTestStruct struct {
+	String      string
+	Record      SubSubTestStruct
+	RecordArray []SubSubTestStruct
+}
+
 type TestStruct struct {
-	Name string
-	Nums []int
-	Sub  Sub
-	Subs []*Sub
-}
+	Name      string
+	Bytes     []byte
+	Integer   int64
+	Float     float64
+	Boolean   bool
+	Timestamp time.Time
+	Date      civil.Date
+	Time      civil.Time
+	DateTime  civil.DateTime
 
-type Sub struct {
-	B       bool
-	SubSub  SubSub
-	SubSubs []*SubSub
-}
+	StringArray    []string
+	IntegerArray   []int64
+	FloatArray     []float64
+	BooleanArray   []bool
+	TimestampArray []time.Time
+	DateArray      []civil.Date
+	TimeArray      []civil.Time
+	DateTimeArray  []civil.DateTime
 
-type SubSub struct{ Count int }
+	Record      SubTestStruct
+	RecordArray []SubTestStruct
+}
 
 func TestIntegration_UploadAndReadStructs(t *testing.T) {
 	if client == nil {
@@ -376,16 +395,61 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 	table := newTable(t, schema)
 	defer table.Delete(ctx)
 
+	d := civil.Date{2016, 3, 20}
+	tm := civil.Time{15, 4, 5, 0}
+	ts := time.Date(2016, 3, 20, 15, 4, 5, 0, time.UTC)
+	dtm := civil.DateTime{d, tm}
+
+	d2 := civil.Date{1994, 5, 15}
+	tm2 := civil.Time{1, 2, 4, 0}
+	ts2 := time.Date(1994, 5, 15, 1, 2, 4, 0, time.UTC)
+	dtm2 := civil.DateTime{d2, tm2}
+
 	// Populate the table.
 	upl := table.Uploader()
 	want := []*TestStruct{
-		{Name: "a", Nums: []int{1, 2}, Sub: Sub{B: true}, Subs: []*Sub{{B: false}, {B: true}}},
-		{Name: "b", Nums: []int{1}, Subs: []*Sub{{B: false}, {B: false}, {B: true}}},
-		{Name: "c", Sub: Sub{B: true}},
 		{
-			Name: "d",
-			Sub:  Sub{SubSub: SubSub{12}, SubSubs: []*SubSub{{1}, {2}, {3}}},
-			Subs: []*Sub{{B: false, SubSub: SubSub{4}}, {B: true, SubSubs: []*SubSub{{5}, {6}}}},
+			"a",
+			[]byte("byte"),
+			42,
+			3.14,
+			true,
+			ts,
+			d,
+			tm,
+			dtm,
+			[]string{"a", "b"},
+			[]int64{1, 2},
+			[]float64{1, 1.41},
+			[]bool{true, false},
+			[]time.Time{ts, ts2},
+			[]civil.Date{d, d2},
+			[]civil.Time{tm, tm2},
+			[]civil.DateTime{dtm, dtm2},
+			SubTestStruct{
+				"string",
+				SubSubTestStruct{24},
+				[]SubSubTestStruct{{1}, {2}},
+			},
+			[]SubTestStruct{
+				{String: "empty"},
+				{
+					"full",
+					SubSubTestStruct{1},
+					[]SubSubTestStruct{{1}, {2}},
+				},
+			},
+		},
+		{
+			Name:      "b",
+			Bytes:     []byte("byte2"),
+			Integer:   24,
+			Float:     4.13,
+			Boolean:   false,
+			Timestamp: ts,
+			Date:      d,
+			Time:      tm,
+			DateTime:  dtm,
 		},
 	}
 	var savers []*StructSaver
