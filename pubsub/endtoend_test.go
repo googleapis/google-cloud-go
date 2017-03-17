@@ -31,146 +31,11 @@ import (
 const timeout = time.Minute * 10
 const ackDeadline = time.Second * 10
 
-const batchSize = 100
-const batches = 100
+const nMessages = 1e4
 
-// messageCounter keeps track of how many times a given message has been received.
-type messageCounter struct {
-	mu     sync.Mutex
-	counts map[string]int
-	// A value is sent to recv each time Inc is called.
-	recv chan struct{}
-}
-
-func (mc *messageCounter) Inc(msgID string) {
-	mc.mu.Lock()
-	mc.counts[msgID] += 1
-	mc.mu.Unlock()
-	mc.recv <- struct{}{}
-}
-
-// process handles a message and records it in mc.
-func process(t *testing.T, ctx context.Context, m *Message, mc *messageCounter) {
-	mc.Inc(m.ID)
-	// Simulate time taken to process m, while continuing to process more messages.
-	go func() {
-		// Some messages will need to have their ack deadline extended due to this delay.
-		delay := rand.Intn(int(ackDeadline * 3))
-		time.After(time.Duration(delay))
-		m.Ack()
-	}()
-}
-
-// iteratorLifetime controls how long iterators live for before they are stopped.
-type iteratorLifetimes interface {
-	// lifetimeChan should be called when an iterator is started. The
-	// returned channel will send when the iterator should be stopped.
-	lifetimeChan() <-chan time.Time
-}
-
-var immortal = &explicitLifetimes{}
-
-// explicitLifetimes implements iteratorLifetime with hard-coded lifetimes, falling back
-// to indefinite lifetimes when no explicit lifetimes remain.
-type explicitLifetimes struct {
-	mu        sync.Mutex
-	lifetimes []time.Duration
-}
-
-func (el *explicitLifetimes) lifetimeChan() <-chan time.Time {
-	el.mu.Lock()
-	defer el.mu.Unlock()
-	if len(el.lifetimes) == 0 {
-		return nil
-	}
-	lifetime := el.lifetimes[0]
-	el.lifetimes = el.lifetimes[1:]
-	return time.After(lifetime)
-}
-
-// consumer consumes messages according to its configuration.
-type consumer struct {
-	lifetimes iteratorLifetimes
-}
-
-// consume reads messages from a subscription, and keeps track of what it receives in mc.
-// After consume returns, the caller should wait on wg to ensure that no more updates to mc will be made.
-func (c *consumer) consume(t *testing.T, ctx context.Context, sub *Subscription, mc *messageCounter, wg *sync.WaitGroup) {
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		for {
-			ctx2, cancel := context.WithCancel(ctx)
-			defer cancel()
-			go func() {
-				select {
-				case <-c.lifetimes.lifetimeChan():
-					cancel()
-				case <-ctx2.Done():
-				}
-			}()
-			err := sub.Receive(ctx2, func(ctx3 context.Context, m *Message) {
-				process(t, ctx3, m, mc)
-			})
-			if err != nil {
-				t.Fatalf("error from Receive: %v", err)
-			}
-			select {
-			case <-ctx.Done():
-				return
-			default:
-			}
-		}
-	}()
-}
-
-// publish publishes many messages to topic, and returns the published message ids.
-func publish(t *testing.T, ctx context.Context, topic *Topic) []string {
-	var published []string
-	msgs := make([]*Message, batchSize)
-	for i := 0; i < batches; i++ {
-		for j := 0; j < batchSize; j++ {
-			text := fmt.Sprintf("msg %02d-%02d", i, j)
-			msgs[j] = &Message{Data: []byte(text)}
-		}
-		var rs []*PublishResult
-		for _, m := range msgs {
-			rs = append(rs, topic.Publish(ctx, m))
-		}
-		for _, r := range rs {
-			id, err := r.Get(ctx)
-			if err != nil {
-				t.Errorf("Publish error: %v", err)
-			}
-			published = append(published, id)
-		}
-	}
-	return published
-}
-
-// diff returns counts of the differences between got and want.
-func diff(got, want map[string]int) map[string]int {
-	ids := make(map[string]struct{})
-	for k := range got {
-		ids[k] = struct{}{}
-	}
-	for k := range want {
-		ids[k] = struct{}{}
-	}
-
-	gotWantCount := make(map[string]int)
-	for k := range ids {
-		if got[k] == want[k] {
-			continue
-		}
-		desc := fmt.Sprintf("<got: %v ; want: %v>", got[k], want[k])
-		gotWantCount[desc] += 1
-	}
-	return gotWantCount
-}
-
-// TestEndToEnd pumps many messages into a topic and tests that they are all delivered to each subscription for the topic.
-// It also tests that messages are not unexpectedly redelivered.
+// TestEndToEnd pumps many messages into a topic and tests that they are all
+// delivered to each subscription for the topic. It also tests that messages
+// are not unexpectedly redelivered.
 func TestEndToEnd(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
@@ -196,67 +61,47 @@ func TestEndToEnd(t *testing.T) {
 	}
 	defer topic.Delete(ctx)
 
-	// Three subscriptions to the same topic.
-	var subA, subB, subC *Subscription
-	if subA, err = client.CreateSubscription(ctx, subPrefix+"-a", topic, ackDeadline, nil); err != nil {
-		t.Fatalf("CreateSub error: %v", err)
+	// Two subscriptions to the same topic.
+	var subs [2]*Subscription
+	for i := 0; i < len(subs); i++ {
+		subs[i], err = client.CreateSubscription(ctx, fmt.Sprintf("%s-%d", subPrefix, i), topic, ackDeadline, nil)
+		if err != nil {
+			t.Fatalf("CreateSub error: %v", err)
+		}
+		defer subs[i].Delete(ctx)
 	}
-	defer subA.Delete(ctx)
 
-	if subB, err = client.CreateSubscription(ctx, subPrefix+"-b", topic, ackDeadline, nil); err != nil {
-		t.Fatalf("CreateSub error: %v", err)
+	ids, err := publish(ctx, topic, nMessages)
+	if err != nil {
+		t.Fatalf("publish: %v", err)
 	}
-	defer subB.Delete(ctx)
-
-	if subC, err = client.CreateSubscription(ctx, subPrefix+"-c", topic, ackDeadline, nil); err != nil {
-		t.Fatalf("CreateSub error: %v", err)
-	}
-	defer subC.Delete(ctx)
-
-	expectedCounts := make(map[string]int)
-	for _, id := range publish(t, ctx, topic) {
-		expectedCounts[id] = 1
+	wantCounts := make(map[string]int)
+	for _, id := range ids {
+		wantCounts[id] = 1
 	}
 
 	// recv provides an indication that messages are still arriving.
 	recv := make(chan struct{})
-
-	// Keep track of the number of times each message (by message id) was
-	// seen from each subscription.
-	mcA := &messageCounter{counts: make(map[string]int), recv: recv}
-	mcB := &messageCounter{counts: make(map[string]int), recv: recv}
-	mcC := &messageCounter{counts: make(map[string]int), recv: recv}
-
-	// We have three subscriptions to our topic.
-	// Each subscription will get a copy of each pulished message.
-	//
-	// subA has just one iterator, while subB has two. The subB iterators
-	// will each process roughly half of the messages for subB. All of
-	// these iterators live until all messages have been consumed.  subC is
-	// processed by a series of short-lived iterators.
-
+	// We have two subscriptions to our topic.
+	// Each subscription will get a copy of each published message.
 	var wg sync.WaitGroup
-
 	cctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	con := &consumer{
-		lifetimes: immortal,
+	consumers := []*consumer{
+		{counts: make(map[string]int), recv: recv, durations: []time.Duration{time.Hour}},
+		{counts: make(map[string]int), recv: recv,
+			durations: []time.Duration{ackDeadline, ackDeadline, ackDeadline / 2, ackDeadline / 2}},
 	}
-	con.consume(t, cctx, subA, mcA, &wg)
-
-	con = &consumer{
-		lifetimes: immortal,
+	for i, con := range consumers {
+		con := con
+		sub := subs[i]
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			con.consume(t, cctx, sub)
+		}()
 	}
-	con.consume(t, cctx, subB, mcB, &wg)
-
-	con = &consumer{
-		lifetimes: &explicitLifetimes{
-			lifetimes: []time.Duration{ackDeadline, ackDeadline, ackDeadline / 2, ackDeadline / 2},
-		},
-	}
-	con.consume(t, cctx, subC, mcC, &wg)
-
 	timeoutC := time.After(timeout)
 	// Every time this ticker ticks, we will check if we have received any
 	// messages since the last time it ticked.  We check less frequently
@@ -286,9 +131,100 @@ loop:
 	}
 
 	wg.Wait()
-	for i, mc := range []*messageCounter{mcA, mcB, mcC} {
-		if got, want := mc.counts, expectedCounts; !reflect.DeepEqual(got, want) {
+	for i, con := range consumers {
+		if got, want := con.counts, wantCounts; !reflect.DeepEqual(got, want) {
 			t.Errorf("%d: message counts: %v\n", i, diff(got, want))
 		}
 	}
+}
+
+// publish publishes n messages to topic, and returns the published message IDs.
+func publish(ctx context.Context, topic *Topic, n int) ([]string, error) {
+	var rs []*PublishResult
+	for i := 0; i < n; i++ {
+		m := &Message{Data: []byte(fmt.Sprintf("msg %d", i))}
+		rs = append(rs, topic.Publish(ctx, m))
+	}
+	var ids []string
+	for _, r := range rs {
+		id, err := r.Get(ctx)
+		if err != nil {
+			return nil, err
+		}
+		ids = append(ids, id)
+	}
+	return ids, nil
+}
+
+// consumer consumes messages according to its configuration.
+type consumer struct {
+	durations []time.Duration
+
+	// A value is sent to recv each time Inc is called.
+	recv chan struct{}
+
+	mu     sync.Mutex
+	counts map[string]int
+}
+
+// consume reads messages from a subscription, and keeps track of what it receives in mc.
+// After consume returns, the caller should wait on wg to ensure that no more updates to mc will be made.
+func (c *consumer) consume(t *testing.T, ctx context.Context, sub *Subscription) {
+	for _, dur := range c.durations {
+		ctx2, cancel := context.WithCancel(ctx)
+		defer cancel()
+		go func() {
+			select {
+			case <-time.After(dur):
+				cancel()
+			case <-ctx2.Done():
+			}
+		}()
+		err := sub.Receive(ctx2, c.process)
+		if err != nil {
+			t.Errorf("error from Receive: %v", err)
+			return
+		}
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
+	}
+}
+
+// process handles a message and records it in mc.
+func (c *consumer) process(_ context.Context, m *Message) {
+	c.mu.Lock()
+	c.counts[m.ID] += 1
+	c.mu.Unlock()
+	c.recv <- struct{}{}
+	// Simulate time taken to process m, while continuing to process more messages.
+	go func() {
+		// Some messages will need to have their ack deadline extended due to this delay.
+		delay := rand.Intn(int(ackDeadline * 3))
+		time.After(time.Duration(delay))
+		m.Ack()
+	}()
+}
+
+// diff returns counts of the differences between got and want.
+func diff(got, want map[string]int) map[string]int {
+	ids := make(map[string]struct{})
+	for k := range got {
+		ids[k] = struct{}{}
+	}
+	for k := range want {
+		ids[k] = struct{}{}
+	}
+
+	gotWantCount := make(map[string]int)
+	for k := range ids {
+		if got[k] == want[k] {
+			continue
+		}
+		desc := fmt.Sprintf("<got: %v ; want: %v>", got[k], want[k])
+		gotWantCount[desc] += 1
+	}
+	return gotWantCount
 }
