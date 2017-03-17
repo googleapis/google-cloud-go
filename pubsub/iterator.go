@@ -198,7 +198,7 @@ func (it *pollingMessageIterator) stop() {
 
 	// There are no more live messages, so kill off the acker.
 	it.acker.Stop()
-	it.nacker.Stop()
+	it.nacker.Flush()
 	it.kaTicker.Stop()
 	it.ackTicker.Stop()
 }
