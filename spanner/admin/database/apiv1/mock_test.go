@@ -210,7 +210,7 @@ func TestDatabaseAdminListDatabases(t *testing.T) {
 }
 
 func TestDatabaseAdminListDatabasesError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockDatabaseAdmin.err = grpc.Errorf(errCode, "test error")
 
 	var formattedParent string = DatabaseAdminInstancePath("[PROJECT]", "[INSTANCE]")
@@ -281,7 +281,7 @@ func TestDatabaseAdminCreateDatabase(t *testing.T) {
 }
 
 func TestDatabaseAdminCreateDatabaseError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockDatabaseAdmin.err = nil
 	mockDatabaseAdmin.resps = append(mockDatabaseAdmin.resps[:0], &longrunningpb.Operation{
 		Name: "longrunning-test",
@@ -354,7 +354,7 @@ func TestDatabaseAdminGetDatabase(t *testing.T) {
 }
 
 func TestDatabaseAdminGetDatabaseError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockDatabaseAdmin.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = DatabaseAdminDatabasePath("[PROJECT]", "[INSTANCE]", "[DATABASE]")
@@ -419,7 +419,7 @@ func TestDatabaseAdminUpdateDatabaseDdl(t *testing.T) {
 }
 
 func TestDatabaseAdminUpdateDatabaseDdlError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockDatabaseAdmin.err = nil
 	mockDatabaseAdmin.resps = append(mockDatabaseAdmin.resps[:0], &longrunningpb.Operation{
 		Name: "longrunning-test",
@@ -485,7 +485,7 @@ func TestDatabaseAdminDropDatabase(t *testing.T) {
 }
 
 func TestDatabaseAdminDropDatabaseError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockDatabaseAdmin.err = grpc.Errorf(errCode, "test error")
 
 	var formattedDatabase string = DatabaseAdminDatabasePath("[PROJECT]", "[INSTANCE]", "[DATABASE]")
@@ -538,7 +538,7 @@ func TestDatabaseAdminGetDatabaseDdl(t *testing.T) {
 }
 
 func TestDatabaseAdminGetDatabaseDdlError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockDatabaseAdmin.err = grpc.Errorf(errCode, "test error")
 
 	var formattedDatabase string = DatabaseAdminDatabasePath("[PROJECT]", "[INSTANCE]", "[DATABASE]")
@@ -599,7 +599,7 @@ func TestDatabaseAdminSetIamPolicy(t *testing.T) {
 }
 
 func TestDatabaseAdminSetIamPolicyError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockDatabaseAdmin.err = grpc.Errorf(errCode, "test error")
 
 	var formattedResource string = DatabaseAdminDatabasePath("[PROJECT]", "[INSTANCE]", "[DATABASE]")
@@ -660,7 +660,7 @@ func TestDatabaseAdminGetIamPolicy(t *testing.T) {
 }
 
 func TestDatabaseAdminGetIamPolicyError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockDatabaseAdmin.err = grpc.Errorf(errCode, "test error")
 
 	var formattedResource string = DatabaseAdminDatabasePath("[PROJECT]", "[INSTANCE]", "[DATABASE]")
@@ -716,7 +716,7 @@ func TestDatabaseAdminTestIamPermissions(t *testing.T) {
 }
 
 func TestDatabaseAdminTestIamPermissionsError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockDatabaseAdmin.err = grpc.Errorf(errCode, "test error")
 
 	var formattedResource string = DatabaseAdminDatabasePath("[PROJECT]", "[INSTANCE]", "[DATABASE]")

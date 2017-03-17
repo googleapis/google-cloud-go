@@ -34,6 +34,7 @@ import (
 
 var (
 	subscriberProjectPathTemplate      = gax.MustCompilePathTemplate("projects/{project}")
+	subscriberSnapshotPathTemplate     = gax.MustCompilePathTemplate("projects/{project}/snapshots/{snapshot}")
 	subscriberSubscriptionPathTemplate = gax.MustCompilePathTemplate("projects/{project}/subscriptions/{subscription}")
 	subscriberTopicPathTemplate        = gax.MustCompilePathTemplate("projects/{project}/topics/{topic}")
 )
@@ -42,6 +43,7 @@ var (
 type SubscriberCallOptions struct {
 	CreateSubscription []gax.CallOption
 	GetSubscription    []gax.CallOption
+	UpdateSubscription []gax.CallOption
 	ListSubscriptions  []gax.CallOption
 	DeleteSubscription []gax.CallOption
 	ModifyAckDeadline  []gax.CallOption
@@ -49,6 +51,10 @@ type SubscriberCallOptions struct {
 	Pull               []gax.CallOption
 	StreamingPull      []gax.CallOption
 	ModifyPushConfig   []gax.CallOption
+	ListSnapshots      []gax.CallOption
+	CreateSnapshot     []gax.CallOption
+	DeleteSnapshot     []gax.CallOption
+	Seek               []gax.CallOption
 }
 
 func defaultSubscriberClientOptions() []option.ClientOption {
@@ -75,17 +81,59 @@ func defaultSubscriberCallOptions() *SubscriberCallOptions {
 				})
 			}),
 		},
+		{"default", "non_idempotent"}: {
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.3,
+				})
+			}),
+		},
+		{"messaging", "non_idempotent"}: {
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.3,
+				})
+			}),
+		},
+		{"messaging", "pull"}: {
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Canceled,
+					codes.DeadlineExceeded,
+					codes.ResourceExhausted,
+					codes.Internal,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.3,
+				})
+			}),
+		},
 	}
 	return &SubscriberCallOptions{
 		CreateSubscription: retry[[2]string{"default", "idempotent"}],
 		GetSubscription:    retry[[2]string{"default", "idempotent"}],
+		UpdateSubscription: retry[[2]string{"default", "idempotent"}],
 		ListSubscriptions:  retry[[2]string{"default", "idempotent"}],
 		DeleteSubscription: retry[[2]string{"default", "idempotent"}],
 		ModifyAckDeadline:  retry[[2]string{"default", "non_idempotent"}],
 		Acknowledge:        retry[[2]string{"messaging", "non_idempotent"}],
-		Pull:               retry[[2]string{"messaging", "non_idempotent"}],
-		StreamingPull:      retry[[2]string{"messaging", "non_idempotent"}],
+		Pull:               retry[[2]string{"messaging", "pull"}],
+		StreamingPull:      retry[[2]string{"messaging", "pull"}],
 		ModifyPushConfig:   retry[[2]string{"default", "non_idempotent"}],
+		ListSnapshots:      retry[[2]string{"default", "idempotent"}],
+		CreateSnapshot:     retry[[2]string{"default", "idempotent"}],
+		DeleteSnapshot:     retry[[2]string{"default", "idempotent"}],
+		Seek:               retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 
@@ -147,6 +195,18 @@ func (c *SubscriberClient) SetGoogleClientInfo(keyval ...string) {
 func SubscriberProjectPath(project string) string {
 	path, err := subscriberProjectPathTemplate.Render(map[string]string{
 		"project": project,
+	})
+	if err != nil {
+		panic(err)
+	}
+	return path
+}
+
+// SubscriberSnapshotPath returns the path for the snapshot resource.
+func SubscriberSnapshotPath(project, snapshot string) string {
+	path, err := subscriberSnapshotPathTemplate.Render(map[string]string{
+		"project":  project,
+		"snapshot": snapshot,
 	})
 	if err != nil {
 		panic(err)
@@ -219,6 +279,22 @@ func (c *SubscriberClient) GetSubscription(ctx context.Context, req *pubsubpb.Ge
 		resp, err = c.subscriberClient.GetSubscription(ctx, req)
 		return err
 	}, c.CallOptions.GetSubscription...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// UpdateSubscription updates an existing subscription. Note that certain properties of a
+// subscription, such as its topic, are not modifiable.
+func (c *SubscriberClient) UpdateSubscription(ctx context.Context, req *pubsubpb.UpdateSubscriptionRequest) (*pubsubpb.Subscription, error) {
+	ctx = insertXGoog(ctx, c.xGoogHeader)
+	var resp *pubsubpb.Subscription
+	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		var err error
+		resp, err = c.subscriberClient.UpdateSubscription(ctx, req)
+		return err
+	}, c.CallOptions.UpdateSubscription...)
 	if err != nil {
 		return nil, err
 	}
@@ -364,6 +440,136 @@ func (c *SubscriberClient) ModifyPushConfig(ctx context.Context, req *pubsubpb.M
 		return err
 	}, c.CallOptions.ModifyPushConfig...)
 	return err
+}
+
+// ListSnapshots lists the existing snapshots.
+func (c *SubscriberClient) ListSnapshots(ctx context.Context, req *pubsubpb.ListSnapshotsRequest) *SnapshotIterator {
+	ctx = insertXGoog(ctx, c.xGoogHeader)
+	it := &SnapshotIterator{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsubpb.Snapshot, string, error) {
+		var resp *pubsubpb.ListSnapshotsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context) error {
+			var err error
+			resp, err = c.subscriberClient.ListSnapshots(ctx, req)
+			return err
+		}, c.CallOptions.ListSnapshots...)
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.Snapshots, resp.NextPageToken, nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	return it
+}
+
+// CreateSnapshot creates a snapshot from the requested subscription.
+// If the snapshot already exists, returns `ALREADY_EXISTS`.
+// If the requested subscription doesn't exist, returns `NOT_FOUND`.
+//
+// If the name is not provided in the request, the server will assign a random
+// name for this snapshot on the same project as the subscription, conforming
+// to the
+// [resource name format](https://cloud.google.com/pubsub/docs/overview#names).
+// The generated name is populated in the returned Snapshot object.
+// Note that for REST API requests, you must specify a name in the request.
+func (c *SubscriberClient) CreateSnapshot(ctx context.Context, req *pubsubpb.CreateSnapshotRequest) (*pubsubpb.Snapshot, error) {
+	ctx = insertXGoog(ctx, c.xGoogHeader)
+	var resp *pubsubpb.Snapshot
+	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		var err error
+		resp, err = c.subscriberClient.CreateSnapshot(ctx, req)
+		return err
+	}, c.CallOptions.CreateSnapshot...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// DeleteSnapshot removes an existing snapshot. All messages retained in the snapshot
+// are immediately dropped. After a snapshot is deleted, a new one may be
+// created with the same name, but the new one has no association with the old
+// snapshot or its subscription, unless the same subscription is specified.
+func (c *SubscriberClient) DeleteSnapshot(ctx context.Context, req *pubsubpb.DeleteSnapshotRequest) error {
+	ctx = insertXGoog(ctx, c.xGoogHeader)
+	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		var err error
+		_, err = c.subscriberClient.DeleteSnapshot(ctx, req)
+		return err
+	}, c.CallOptions.DeleteSnapshot...)
+	return err
+}
+
+// Seek seeks an existing subscription to a point in time or to a given snapshot,
+// whichever is provided in the request.
+func (c *SubscriberClient) Seek(ctx context.Context, req *pubsubpb.SeekRequest) (*pubsubpb.SeekResponse, error) {
+	ctx = insertXGoog(ctx, c.xGoogHeader)
+	var resp *pubsubpb.SeekResponse
+	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		var err error
+		resp, err = c.subscriberClient.Seek(ctx, req)
+		return err
+	}, c.CallOptions.Seek...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// SnapshotIterator manages a stream of *pubsubpb.Snapshot.
+type SnapshotIterator struct {
+	items    []*pubsubpb.Snapshot
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*pubsubpb.Snapshot, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *SnapshotIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SnapshotIterator) Next() (*pubsubpb.Snapshot, error) {
+	var item *pubsubpb.Snapshot
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SnapshotIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SnapshotIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // SubscriptionIterator manages a stream of *pubsubpb.Subscription.

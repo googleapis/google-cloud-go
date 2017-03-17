@@ -225,7 +225,7 @@ func (c *DatabaseAdminClient) ListDatabases(ctx context.Context, req *databasepb
 // [CreateDatabaseMetadata][google.spanner.admin.database.v1.CreateDatabaseMetadata]. The
 // [response][google.longrunning.Operation.response] field type is
 // [Database][google.spanner.admin.database.v1.Database], if successful.
-func (c *DatabaseAdminClient) CreateDatabase(ctx context.Context, req *databasepb.CreateDatabaseRequest) (*DatabaseOperation, error) {
+func (c *DatabaseAdminClient) CreateDatabase(ctx context.Context, req *databasepb.CreateDatabaseRequest) (*CreateDatabaseOperation, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
@@ -236,8 +236,9 @@ func (c *DatabaseAdminClient) CreateDatabase(ctx context.Context, req *databasep
 	if err != nil {
 		return nil, err
 	}
-	return &DatabaseOperation{
-		lro: longrunning.InternalNewOperation(c.Connection(), resp),
+	return &CreateDatabaseOperation{
+		lro:         longrunning.InternalNewOperation(c.Connection(), resp),
+		xGoogHeader: c.xGoogHeader,
 	}, nil
 }
 
@@ -263,7 +264,7 @@ func (c *DatabaseAdminClient) GetDatabase(ctx context.Context, req *databasepb.G
 // track execution of the schema change(s). The
 // [metadata][google.longrunning.Operation.metadata] field type is
 // [UpdateDatabaseDdlMetadata][google.spanner.admin.database.v1.UpdateDatabaseDdlMetadata].  The operation has no response.
-func (c *DatabaseAdminClient) UpdateDatabaseDdl(ctx context.Context, req *databasepb.UpdateDatabaseDdlRequest) (*EmptyOperation, error) {
+func (c *DatabaseAdminClient) UpdateDatabaseDdl(ctx context.Context, req *databasepb.UpdateDatabaseDdlRequest) (*UpdateDatabaseDdlOperation, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
@@ -274,8 +275,9 @@ func (c *DatabaseAdminClient) UpdateDatabaseDdl(ctx context.Context, req *databa
 	if err != nil {
 		return nil, err
 	}
-	return &EmptyOperation{
-		lro: longrunning.InternalNewOperation(c.Connection(), resp),
+	return &UpdateDatabaseDdlOperation{
+		lro:         longrunning.InternalNewOperation(c.Connection(), resp),
+		xGoogHeader: c.xGoogHeader,
 	}, nil
 }
 
@@ -407,24 +409,29 @@ func (it *DatabaseIterator) takeBuf() interface{} {
 	return b
 }
 
-// DatabaseOperation manages a long-running operation yielding databasepb.Database.
-type DatabaseOperation struct {
+// CreateDatabaseOperation manages a long-running operation from CreateDatabase.
+type CreateDatabaseOperation struct {
 	lro *longrunning.Operation
+
+	// The metadata to be sent with each request.
+	xGoogHeader string
 }
 
-// DatabaseOperation returns a new DatabaseOperation from a given name.
-// The name must be that of a previously created DatabaseOperation, possibly from a different process.
-func (c *DatabaseAdminClient) DatabaseOperation(name string) *DatabaseOperation {
-	return &DatabaseOperation{
-		lro: longrunning.InternalNewOperation(c.Connection(), &longrunningpb.Operation{Name: name}),
+// CreateDatabaseOperation returns a new CreateDatabaseOperation from a given name.
+// The name must be that of a previously created CreateDatabaseOperation, possibly from a different process.
+func (c *DatabaseAdminClient) CreateDatabaseOperation(name string) *CreateDatabaseOperation {
+	return &CreateDatabaseOperation{
+		lro:         longrunning.InternalNewOperation(c.Connection(), &longrunningpb.Operation{Name: name}),
+		xGoogHeader: c.xGoogHeader,
 	}
 }
 
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
-func (op *DatabaseOperation) Wait(ctx context.Context) (*databasepb.Database, error) {
+func (op *CreateDatabaseOperation) Wait(ctx context.Context) (*databasepb.Database, error) {
 	var resp databasepb.Database
+	ctx = insertXGoog(ctx, op.xGoogHeader)
 	if err := op.lro.Wait(ctx, &resp); err != nil {
 		return nil, err
 	}
@@ -440,8 +447,9 @@ func (op *DatabaseOperation) Wait(ctx context.Context) (*databasepb.Database, er
 // If Poll succeeds and the operation has completed successfully,
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DatabaseOperation) Poll(ctx context.Context) (*databasepb.Database, error) {
+func (op *CreateDatabaseOperation) Poll(ctx context.Context) (*databasepb.Database, error) {
 	var resp databasepb.Database
+	ctx = insertXGoog(ctx, op.xGoogHeader)
 	if err := op.lro.Poll(ctx, &resp); err != nil {
 		return nil, err
 	}
@@ -455,7 +463,7 @@ func (op *DatabaseOperation) Poll(ctx context.Context) (*databasepb.Database, er
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *DatabaseOperation) Metadata() (*databasepb.CreateDatabaseMetadata, error) {
+func (op *CreateDatabaseOperation) Metadata() (*databasepb.CreateDatabaseMetadata, error) {
 	var meta databasepb.CreateDatabaseMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
@@ -466,33 +474,38 @@ func (op *DatabaseOperation) Metadata() (*databasepb.CreateDatabaseMetadata, err
 }
 
 // Done reports whether the long-running operation has completed.
-func (op *DatabaseOperation) Done() bool {
+func (op *CreateDatabaseOperation) Done() bool {
 	return op.lro.Done()
 }
 
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DatabaseOperation) Name() string {
+func (op *CreateDatabaseOperation) Name() string {
 	return op.lro.Name()
 }
 
-// EmptyOperation manages a long-running operation with no result.
-type EmptyOperation struct {
+// UpdateDatabaseDdlOperation manages a long-running operation with no result.
+type UpdateDatabaseDdlOperation struct {
 	lro *longrunning.Operation
+
+	// The metadata to be sent with each request.
+	xGoogHeader string
 }
 
-// EmptyOperation returns a new EmptyOperation from a given name.
-// The name must be that of a previously created EmptyOperation, possibly from a different process.
-func (c *DatabaseAdminClient) EmptyOperation(name string) *EmptyOperation {
-	return &EmptyOperation{
-		lro: longrunning.InternalNewOperation(c.Connection(), &longrunningpb.Operation{Name: name}),
+// UpdateDatabaseDdlOperation returns a new UpdateDatabaseDdlOperation from a given name.
+// The name must be that of a previously created UpdateDatabaseDdlOperation, possibly from a different process.
+func (c *DatabaseAdminClient) UpdateDatabaseDdlOperation(name string) *UpdateDatabaseDdlOperation {
+	return &UpdateDatabaseDdlOperation{
+		lro:         longrunning.InternalNewOperation(c.Connection(), &longrunningpb.Operation{Name: name}),
+		xGoogHeader: c.xGoogHeader,
 	}
 }
 
 // Wait blocks until the long-running operation is completed, returning any error encountered.
 //
 // See documentation of Poll for error-handling information.
-func (op *EmptyOperation) Wait(ctx context.Context) error {
+func (op *UpdateDatabaseDdlOperation) Wait(ctx context.Context) error {
+	ctx = insertXGoog(ctx, op.xGoogHeader)
 	return op.lro.Wait(ctx, nil)
 }
 
@@ -503,7 +516,8 @@ func (op *EmptyOperation) Wait(ctx context.Context) error {
 // If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
 // the operation has completed with failure, the error is returned and op.Done will return true.
 // If Poll succeeds and the operation has completed successfully, op.Done will return true.
-func (op *EmptyOperation) Poll(ctx context.Context) error {
+func (op *UpdateDatabaseDdlOperation) Poll(ctx context.Context) error {
+	ctx = insertXGoog(ctx, op.xGoogHeader)
 	return op.lro.Poll(ctx, nil)
 }
 
@@ -511,7 +525,7 @@ func (op *EmptyOperation) Poll(ctx context.Context) error {
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *EmptyOperation) Metadata() (*databasepb.UpdateDatabaseDdlMetadata, error) {
+func (op *UpdateDatabaseDdlOperation) Metadata() (*databasepb.UpdateDatabaseDdlMetadata, error) {
 	var meta databasepb.UpdateDatabaseDdlMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
@@ -522,12 +536,12 @@ func (op *EmptyOperation) Metadata() (*databasepb.UpdateDatabaseDdlMetadata, err
 }
 
 // Done reports whether the long-running operation has completed.
-func (op *EmptyOperation) Done() bool {
+func (op *UpdateDatabaseDdlOperation) Done() bool {
 	return op.lro.Done()
 }
 
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *EmptyOperation) Name() string {
+func (op *UpdateDatabaseDdlOperation) Name() string {
 	return op.lro.Name()
 }

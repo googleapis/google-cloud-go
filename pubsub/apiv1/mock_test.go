@@ -20,6 +20,7 @@ import (
 	google_protobuf "github.com/golang/protobuf/ptypes/empty"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
+	field_maskpb "google.golang.org/genproto/protobuf/field_mask"
 )
 
 import (
@@ -176,6 +177,14 @@ func (s *mockSubscriberServer) GetSubscription(_ context.Context, req *pubsubpb.
 	return s.resps[0].(*pubsubpb.Subscription), nil
 }
 
+func (s *mockSubscriberServer) UpdateSubscription(_ context.Context, req *pubsubpb.UpdateSubscriptionRequest) (*pubsubpb.Subscription, error) {
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*pubsubpb.Subscription), nil
+}
+
 func (s *mockSubscriberServer) ListSubscriptions(_ context.Context, req *pubsubpb.ListSubscriptionsRequest) (*pubsubpb.ListSubscriptionsResponse, error) {
 	s.reqs = append(s.reqs, req)
 	if s.err != nil {
@@ -243,6 +252,38 @@ func (s *mockSubscriberServer) ModifyPushConfig(_ context.Context, req *pubsubpb
 		return nil, s.err
 	}
 	return s.resps[0].(*google_protobuf.Empty), nil
+}
+
+func (s *mockSubscriberServer) ListSnapshots(_ context.Context, req *pubsubpb.ListSnapshotsRequest) (*pubsubpb.ListSnapshotsResponse, error) {
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*pubsubpb.ListSnapshotsResponse), nil
+}
+
+func (s *mockSubscriberServer) CreateSnapshot(_ context.Context, req *pubsubpb.CreateSnapshotRequest) (*pubsubpb.Snapshot, error) {
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*pubsubpb.Snapshot), nil
+}
+
+func (s *mockSubscriberServer) DeleteSnapshot(_ context.Context, req *pubsubpb.DeleteSnapshotRequest) (*google_protobuf.Empty, error) {
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*google_protobuf.Empty), nil
+}
+
+func (s *mockSubscriberServer) Seek(_ context.Context, req *pubsubpb.SeekRequest) (*pubsubpb.SeekResponse, error) {
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*pubsubpb.SeekResponse), nil
 }
 
 // clientOpt is the option tests should use to connect to the test server.
@@ -315,7 +356,7 @@ func TestPublisherCreateTopic(t *testing.T) {
 }
 
 func TestPublisherCreateTopicError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockPublisher.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = PublisherTopicPath("[PROJECT]", "[TOPIC]")
@@ -379,7 +420,7 @@ func TestPublisherPublish(t *testing.T) {
 }
 
 func TestPublisherPublishError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockPublisher.err = grpc.Errorf(errCode, "test error")
 
 	var formattedTopic string = PublisherTopicPath("[PROJECT]", "[TOPIC]")
@@ -442,7 +483,7 @@ func TestPublisherGetTopic(t *testing.T) {
 }
 
 func TestPublisherGetTopicError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockPublisher.err = grpc.Errorf(errCode, "test error")
 
 	var formattedTopic string = PublisherTopicPath("[PROJECT]", "[TOPIC]")
@@ -512,7 +553,7 @@ func TestPublisherListTopics(t *testing.T) {
 }
 
 func TestPublisherListTopicsError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockPublisher.err = grpc.Errorf(errCode, "test error")
 
 	var formattedProject string = PublisherProjectPath("[PROJECT]")
@@ -582,7 +623,7 @@ func TestPublisherListTopicSubscriptions(t *testing.T) {
 }
 
 func TestPublisherListTopicSubscriptionsError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockPublisher.err = grpc.Errorf(errCode, "test error")
 
 	var formattedTopic string = PublisherTopicPath("[PROJECT]", "[TOPIC]")
@@ -633,7 +674,7 @@ func TestPublisherDeleteTopic(t *testing.T) {
 }
 
 func TestPublisherDeleteTopicError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockPublisher.err = grpc.Errorf(errCode, "test error")
 
 	var formattedTopic string = PublisherTopicPath("[PROJECT]", "[TOPIC]")
@@ -656,10 +697,12 @@ func TestSubscriberCreateSubscription(t *testing.T) {
 	var name2 string = "name2-1052831874"
 	var topic2 string = "topic2-1139259102"
 	var ackDeadlineSeconds int32 = 2135351438
+	var retainAckedMessages bool = false
 	var expectedResponse = &pubsubpb.Subscription{
-		Name:               name2,
-		Topic:              topic2,
-		AckDeadlineSeconds: ackDeadlineSeconds,
+		Name:                name2,
+		Topic:               topic2,
+		AckDeadlineSeconds:  ackDeadlineSeconds,
+		RetainAckedMessages: retainAckedMessages,
 	}
 
 	mockSubscriber.err = nil
@@ -695,7 +738,7 @@ func TestSubscriberCreateSubscription(t *testing.T) {
 }
 
 func TestSubscriberCreateSubscriptionError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockSubscriber.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
@@ -721,10 +764,12 @@ func TestSubscriberGetSubscription(t *testing.T) {
 	var name string = "name3373707"
 	var topic string = "topic110546223"
 	var ackDeadlineSeconds int32 = 2135351438
+	var retainAckedMessages bool = false
 	var expectedResponse = &pubsubpb.Subscription{
-		Name:               name,
-		Topic:              topic,
-		AckDeadlineSeconds: ackDeadlineSeconds,
+		Name:                name,
+		Topic:               topic,
+		AckDeadlineSeconds:  ackDeadlineSeconds,
+		RetainAckedMessages: retainAckedMessages,
 	}
 
 	mockSubscriber.err = nil
@@ -758,7 +803,7 @@ func TestSubscriberGetSubscription(t *testing.T) {
 }
 
 func TestSubscriberGetSubscriptionError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockSubscriber.err = grpc.Errorf(errCode, "test error")
 
 	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
@@ -772,6 +817,73 @@ func TestSubscriberGetSubscriptionError(t *testing.T) {
 	}
 
 	resp, err := c.GetSubscription(context.Background(), request)
+
+	if c := grpc.Code(err); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestSubscriberUpdateSubscription(t *testing.T) {
+	var name string = "name3373707"
+	var topic string = "topic110546223"
+	var ackDeadlineSeconds int32 = 2135351438
+	var retainAckedMessages bool = false
+	var expectedResponse = &pubsubpb.Subscription{
+		Name:                name,
+		Topic:               topic,
+		AckDeadlineSeconds:  ackDeadlineSeconds,
+		RetainAckedMessages: retainAckedMessages,
+	}
+
+	mockSubscriber.err = nil
+	mockSubscriber.reqs = nil
+
+	mockSubscriber.resps = append(mockSubscriber.resps[:0], expectedResponse)
+
+	var subscription *pubsubpb.Subscription = &pubsubpb.Subscription{}
+	var updateMask *field_maskpb.FieldMask = &field_maskpb.FieldMask{}
+	var request = &pubsubpb.UpdateSubscriptionRequest{
+		Subscription: subscription,
+		UpdateMask:   updateMask,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateSubscription(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockSubscriber.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestSubscriberUpdateSubscriptionError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockSubscriber.err = grpc.Errorf(errCode, "test error")
+
+	var subscription *pubsubpb.Subscription = &pubsubpb.Subscription{}
+	var updateMask *field_maskpb.FieldMask = &field_maskpb.FieldMask{}
+	var request = &pubsubpb.UpdateSubscriptionRequest{
+		Subscription: subscription,
+		UpdateMask:   updateMask,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateSubscription(context.Background(), request)
 
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
@@ -828,7 +940,7 @@ func TestSubscriberListSubscriptions(t *testing.T) {
 }
 
 func TestSubscriberListSubscriptionsError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockSubscriber.err = grpc.Errorf(errCode, "test error")
 
 	var formattedProject string = SubscriberProjectPath("[PROJECT]")
@@ -879,7 +991,7 @@ func TestSubscriberDeleteSubscription(t *testing.T) {
 }
 
 func TestSubscriberDeleteSubscriptionError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockSubscriber.err = grpc.Errorf(errCode, "test error")
 
 	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
@@ -933,7 +1045,7 @@ func TestSubscriberModifyAckDeadline(t *testing.T) {
 }
 
 func TestSubscriberModifyAckDeadlineError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockSubscriber.err = grpc.Errorf(errCode, "test error")
 
 	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
@@ -989,7 +1101,7 @@ func TestSubscriberAcknowledge(t *testing.T) {
 }
 
 func TestSubscriberAcknowledgeError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockSubscriber.err = grpc.Errorf(errCode, "test error")
 
 	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
@@ -1046,7 +1158,7 @@ func TestSubscriberPull(t *testing.T) {
 }
 
 func TestSubscriberPullError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockSubscriber.err = grpc.Errorf(errCode, "test error")
 
 	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
@@ -1114,7 +1226,7 @@ func TestSubscriberStreamingPull(t *testing.T) {
 }
 
 func TestSubscriberStreamingPullError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockSubscriber.err = grpc.Errorf(errCode, "test error")
 
 	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
@@ -1179,7 +1291,7 @@ func TestSubscriberModifyPushConfig(t *testing.T) {
 }
 
 func TestSubscriberModifyPushConfigError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockSubscriber.err = grpc.Errorf(errCode, "test error")
 
 	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
@@ -1199,4 +1311,241 @@ func TestSubscriberModifyPushConfigError(t *testing.T) {
 	if c := grpc.Code(err); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+}
+func TestSubscriberListSnapshots(t *testing.T) {
+	var nextPageToken string = ""
+	var snapshotsElement *pubsubpb.Snapshot = &pubsubpb.Snapshot{}
+	var snapshots = []*pubsubpb.Snapshot{snapshotsElement}
+	var expectedResponse = &pubsubpb.ListSnapshotsResponse{
+		NextPageToken: nextPageToken,
+		Snapshots:     snapshots,
+	}
+
+	mockSubscriber.err = nil
+	mockSubscriber.reqs = nil
+
+	mockSubscriber.resps = append(mockSubscriber.resps[:0], expectedResponse)
+
+	var formattedProject string = SubscriberProjectPath("[PROJECT]")
+	var request = &pubsubpb.ListSnapshotsRequest{
+		Project: formattedProject,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListSnapshots(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockSubscriber.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.Snapshots[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestSubscriberListSnapshotsError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockSubscriber.err = grpc.Errorf(errCode, "test error")
+
+	var formattedProject string = SubscriberProjectPath("[PROJECT]")
+	var request = &pubsubpb.ListSnapshotsRequest{
+		Project: formattedProject,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListSnapshots(context.Background(), request).Next()
+
+	if c := grpc.Code(err); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestSubscriberCreateSnapshot(t *testing.T) {
+	var name2 string = "name2-1052831874"
+	var topic string = "topic110546223"
+	var expectedResponse = &pubsubpb.Snapshot{
+		Name:  name2,
+		Topic: topic,
+	}
+
+	mockSubscriber.err = nil
+	mockSubscriber.reqs = nil
+
+	mockSubscriber.resps = append(mockSubscriber.resps[:0], expectedResponse)
+
+	var formattedName string = SubscriberSnapshotPath("[PROJECT]", "[SNAPSHOT]")
+	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var request = &pubsubpb.CreateSnapshotRequest{
+		Name:         formattedName,
+		Subscription: formattedSubscription,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateSnapshot(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockSubscriber.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestSubscriberCreateSnapshotError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockSubscriber.err = grpc.Errorf(errCode, "test error")
+
+	var formattedName string = SubscriberSnapshotPath("[PROJECT]", "[SNAPSHOT]")
+	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var request = &pubsubpb.CreateSnapshotRequest{
+		Name:         formattedName,
+		Subscription: formattedSubscription,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateSnapshot(context.Background(), request)
+
+	if c := grpc.Code(err); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestSubscriberDeleteSnapshot(t *testing.T) {
+	var expectedResponse *google_protobuf.Empty = &google_protobuf.Empty{}
+
+	mockSubscriber.err = nil
+	mockSubscriber.reqs = nil
+
+	mockSubscriber.resps = append(mockSubscriber.resps[:0], expectedResponse)
+
+	var formattedSnapshot string = SubscriberSnapshotPath("[PROJECT]", "[SNAPSHOT]")
+	var request = &pubsubpb.DeleteSnapshotRequest{
+		Snapshot: formattedSnapshot,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteSnapshot(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockSubscriber.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestSubscriberDeleteSnapshotError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockSubscriber.err = grpc.Errorf(errCode, "test error")
+
+	var formattedSnapshot string = SubscriberSnapshotPath("[PROJECT]", "[SNAPSHOT]")
+	var request = &pubsubpb.DeleteSnapshotRequest{
+		Snapshot: formattedSnapshot,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteSnapshot(context.Background(), request)
+
+	if c := grpc.Code(err); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
+func TestSubscriberSeek(t *testing.T) {
+	var expectedResponse *pubsubpb.SeekResponse = &pubsubpb.SeekResponse{}
+
+	mockSubscriber.err = nil
+	mockSubscriber.reqs = nil
+
+	mockSubscriber.resps = append(mockSubscriber.resps[:0], expectedResponse)
+
+	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var request = &pubsubpb.SeekRequest{
+		Subscription: formattedSubscription,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.Seek(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockSubscriber.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestSubscriberSeekError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockSubscriber.err = grpc.Errorf(errCode, "test error")
+
+	var formattedSubscription string = SubscriberSubscriptionPath("[PROJECT]", "[SUBSCRIPTION]")
+	var request = &pubsubpb.SeekRequest{
+		Subscription: formattedSubscription,
+	}
+
+	c, err := NewSubscriberClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.Seek(context.Background(), request)
+
+	if c := grpc.Code(err); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
 }

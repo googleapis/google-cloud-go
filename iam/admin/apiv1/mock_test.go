@@ -249,7 +249,7 @@ func TestIamListServiceAccounts(t *testing.T) {
 }
 
 func TestIamListServiceAccountsError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockIam.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = IamProjectPath("[PROJECT]")
@@ -318,7 +318,7 @@ func TestIamGetServiceAccount(t *testing.T) {
 }
 
 func TestIamGetServiceAccountError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockIam.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = IamServiceAccountPath("[PROJECT]", "[SERVICE_ACCOUNT]")
@@ -389,7 +389,7 @@ func TestIamCreateServiceAccount(t *testing.T) {
 }
 
 func TestIamCreateServiceAccountError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockIam.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = IamProjectPath("[PROJECT]")
@@ -460,7 +460,7 @@ func TestIamUpdateServiceAccount(t *testing.T) {
 }
 
 func TestIamUpdateServiceAccountError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockIam.err = grpc.Errorf(errCode, "test error")
 
 	var etag []byte = []byte("21")
@@ -511,7 +511,7 @@ func TestIamDeleteServiceAccount(t *testing.T) {
 }
 
 func TestIamDeleteServiceAccountError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockIam.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = IamServiceAccountPath("[PROJECT]", "[SERVICE_ACCOUNT]")
@@ -564,7 +564,7 @@ func TestIamListServiceAccountKeys(t *testing.T) {
 }
 
 func TestIamListServiceAccountKeysError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockIam.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = IamServiceAccountPath("[PROJECT]", "[SERVICE_ACCOUNT]")
@@ -625,7 +625,7 @@ func TestIamGetServiceAccountKey(t *testing.T) {
 }
 
 func TestIamGetServiceAccountKeyError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockIam.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = IamKeyPath("[PROJECT]", "[SERVICE_ACCOUNT]", "[KEY]")
@@ -686,7 +686,7 @@ func TestIamCreateServiceAccountKey(t *testing.T) {
 }
 
 func TestIamCreateServiceAccountKeyError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockIam.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = IamServiceAccountPath("[PROJECT]", "[SERVICE_ACCOUNT]")
@@ -737,7 +737,7 @@ func TestIamDeleteServiceAccountKey(t *testing.T) {
 }
 
 func TestIamDeleteServiceAccountKeyError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockIam.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = IamKeyPath("[PROJECT]", "[SERVICE_ACCOUNT]", "[KEY]")
@@ -797,7 +797,7 @@ func TestIamSignBlob(t *testing.T) {
 }
 
 func TestIamSignBlobError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockIam.err = grpc.Errorf(errCode, "test error")
 
 	var formattedName string = IamServiceAccountPath("[PROJECT]", "[SERVICE_ACCOUNT]")
@@ -858,7 +858,7 @@ func TestIamGetIamPolicy(t *testing.T) {
 }
 
 func TestIamGetIamPolicyError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockIam.err = grpc.Errorf(errCode, "test error")
 
 	var formattedResource string = IamServiceAccountPath("[PROJECT]", "[SERVICE_ACCOUNT]")
@@ -919,7 +919,7 @@ func TestIamSetIamPolicy(t *testing.T) {
 }
 
 func TestIamSetIamPolicyError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockIam.err = grpc.Errorf(errCode, "test error")
 
 	var formattedResource string = IamServiceAccountPath("[PROJECT]", "[SERVICE_ACCOUNT]")
@@ -977,7 +977,7 @@ func TestIamTestIamPermissions(t *testing.T) {
 }
 
 func TestIamTestIamPermissionsError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockIam.err = grpc.Errorf(errCode, "test error")
 
 	var formattedResource string = IamServiceAccountPath("[PROJECT]", "[SERVICE_ACCOUNT]")
@@ -1033,7 +1033,7 @@ func TestIamQueryGrantableRoles(t *testing.T) {
 }
 
 func TestIamQueryGrantableRolesError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockIam.err = grpc.Errorf(errCode, "test error")
 
 	var fullResourceName string = "fullResourceName1300993644"

@@ -206,7 +206,7 @@ func TestErrorGroupServiceGetGroup(t *testing.T) {
 }
 
 func TestErrorGroupServiceGetGroupError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockErrorGroup.err = grpc.Errorf(errCode, "test error")
 
 	var formattedGroupName string = ErrorGroupGroupPath("[PROJECT]", "[GROUP]")
@@ -265,7 +265,7 @@ func TestErrorGroupServiceUpdateGroup(t *testing.T) {
 }
 
 func TestErrorGroupServiceUpdateGroupError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockErrorGroup.err = grpc.Errorf(errCode, "test error")
 
 	var group *clouderrorreportingpb.ErrorGroup = &clouderrorreportingpb.ErrorGroup{}
@@ -337,7 +337,7 @@ func TestErrorStatsServiceListGroupStats(t *testing.T) {
 }
 
 func TestErrorStatsServiceListGroupStatsError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockErrorStats.err = grpc.Errorf(errCode, "test error")
 
 	var formattedProjectName string = ErrorStatsProjectPath("[PROJECT]")
@@ -411,7 +411,7 @@ func TestErrorStatsServiceListEvents(t *testing.T) {
 }
 
 func TestErrorStatsServiceListEventsError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockErrorStats.err = grpc.Errorf(errCode, "test error")
 
 	var formattedProjectName string = ErrorStatsProjectPath("[PROJECT]")
@@ -467,7 +467,7 @@ func TestErrorStatsServiceDeleteEvents(t *testing.T) {
 }
 
 func TestErrorStatsServiceDeleteEventsError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockErrorStats.err = grpc.Errorf(errCode, "test error")
 
 	var formattedProjectName string = ErrorStatsProjectPath("[PROJECT]")
@@ -523,7 +523,7 @@ func TestReportErrorsServiceReportErrorEvent(t *testing.T) {
 }
 
 func TestReportErrorsServiceReportErrorEventError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockReportErrors.err = grpc.Errorf(errCode, "test error")
 
 	var formattedProjectName string = ReportErrorsProjectPath("[PROJECT]")

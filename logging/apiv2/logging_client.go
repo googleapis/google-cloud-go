@@ -184,6 +184,8 @@ func LoggingLogPath(project, log string) string {
 
 // DeleteLog deletes all the log entries in a log.
 // The log reappears if it receives new entries.
+// Log entries written shortly before the delete operation might not be
+// deleted.
 func (c *Client) DeleteLog(ctx context.Context, req *loggingpb.DeleteLogRequest) error {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
@@ -194,8 +196,7 @@ func (c *Client) DeleteLog(ctx context.Context, req *loggingpb.DeleteLogRequest)
 	return err
 }
 
-// WriteLogEntries writes log entries to Stackdriver Logging.  All log entries are
-// written by this method.
+// WriteLogEntries writes log entries to Stackdriver Logging.
 func (c *Client) WriteLogEntries(ctx context.Context, req *loggingpb.WriteLogEntriesRequest) (*loggingpb.WriteLogEntriesResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *loggingpb.WriteLogEntriesResponse
@@ -281,7 +282,7 @@ func (c *Client) ListMonitoredResourceDescriptors(ctx context.Context, req *logg
 	return it
 }
 
-// ListLogs lists the logs in projects or organizations.
+// ListLogs lists the logs in projects, organizations, folders, or billing accounts.
 // Only logs that have entries are listed.
 func (c *Client) ListLogs(ctx context.Context, req *loggingpb.ListLogsRequest) *StringIterator {
 	ctx = insertXGoog(ctx, c.xGoogHeader)

@@ -127,7 +127,7 @@ func TestImageAnnotatorBatchAnnotateImages(t *testing.T) {
 }
 
 func TestImageAnnotatorBatchAnnotateImagesError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockImageAnnotator.err = grpc.Errorf(errCode, "test error")
 
 	var requests []*visionpb.AnnotateImageRequest = nil

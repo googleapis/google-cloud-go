@@ -143,7 +143,7 @@ func TestTraceServicePatchTraces(t *testing.T) {
 }
 
 func TestTraceServicePatchTracesError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockTrace.err = grpc.Errorf(errCode, "test error")
 
 	var projectId string = "projectId-1969970175"
@@ -205,7 +205,7 @@ func TestTraceServiceGetTrace(t *testing.T) {
 }
 
 func TestTraceServiceGetTraceError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockTrace.err = grpc.Errorf(errCode, "test error")
 
 	var projectId string = "projectId-1969970175"
@@ -277,7 +277,7 @@ func TestTraceServiceListTraces(t *testing.T) {
 }
 
 func TestTraceServiceListTracesError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockTrace.err = grpc.Errorf(errCode, "test error")
 
 	var projectId string = "projectId-1969970175"

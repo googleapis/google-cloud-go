@@ -205,7 +205,7 @@ func TestDebugger2SetBreakpoint(t *testing.T) {
 }
 
 func TestDebugger2SetBreakpointError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockDebugger2.err = grpc.Errorf(errCode, "test error")
 
 	var debuggeeId string = "debuggeeId-997255898"
@@ -267,7 +267,7 @@ func TestDebugger2GetBreakpoint(t *testing.T) {
 }
 
 func TestDebugger2GetBreakpointError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockDebugger2.err = grpc.Errorf(errCode, "test error")
 
 	var debuggeeId string = "debuggeeId-997255898"
@@ -326,7 +326,7 @@ func TestDebugger2DeleteBreakpoint(t *testing.T) {
 }
 
 func TestDebugger2DeleteBreakpointError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockDebugger2.err = grpc.Errorf(errCode, "test error")
 
 	var debuggeeId string = "debuggeeId-997255898"
@@ -388,7 +388,7 @@ func TestDebugger2ListBreakpoints(t *testing.T) {
 }
 
 func TestDebugger2ListBreakpointsError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockDebugger2.err = grpc.Errorf(errCode, "test error")
 
 	var debuggeeId string = "debuggeeId-997255898"
@@ -446,7 +446,7 @@ func TestDebugger2ListDebuggees(t *testing.T) {
 }
 
 func TestDebugger2ListDebuggeesError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockDebugger2.err = grpc.Errorf(errCode, "test error")
 
 	var project string = "project-309310695"
@@ -502,7 +502,7 @@ func TestController2RegisterDebuggee(t *testing.T) {
 }
 
 func TestController2RegisterDebuggeeError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockController2.err = grpc.Errorf(errCode, "test error")
 
 	var debuggee *clouddebuggerpb.Debuggee = &clouddebuggerpb.Debuggee{}
@@ -561,7 +561,7 @@ func TestController2ListActiveBreakpoints(t *testing.T) {
 }
 
 func TestController2ListActiveBreakpointsError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockController2.err = grpc.Errorf(errCode, "test error")
 
 	var debuggeeId string = "debuggeeId-997255898"
@@ -617,7 +617,7 @@ func TestController2UpdateActiveBreakpoint(t *testing.T) {
 }
 
 func TestController2UpdateActiveBreakpointError(t *testing.T) {
-	errCode := codes.Internal
+	errCode := codes.PermissionDenied
 	mockController2.err = grpc.Errorf(errCode, "test error")
 
 	var debuggeeId string = "debuggeeId-997255898"
