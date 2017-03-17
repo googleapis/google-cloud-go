@@ -238,7 +238,7 @@ func (t *Topic) Stop() {
 	}
 	t.stopped = true
 	t.mu.Unlock()
-	t.bundler.Stop()
+	t.bundler.Flush()
 	// At this point, all pending bundles have been published and the bundler's
 	// goroutines have exited, so it is OK for this goroutine to close bundlec.
 	close(t.bundlec)
