@@ -153,7 +153,7 @@ func TestFlowControllerNoBlock(t *testing.T) {
 	// No blocking if we don't exceed limits.
 	sizes := []int{2, 3, 5}
 	ctx := context.Background()
-	fc := &flowController{maxCount: 3, maxSize: 10}
+	fc := newFlowController(3, 10)
 	for i := 0; i < 10; i++ {
 		for _, s := range sizes {
 			if err := fc.acquire(ctx, s); err != nil {
@@ -168,7 +168,7 @@ func TestFlowControllerNoBlock(t *testing.T) {
 
 func TestFlowControllerBlockOnSize(t *testing.T) {
 	ctx := context.Background()
-	fc := &flowController{maxCount: 3, maxSize: 10}
+	fc := newFlowController(3, 10)
 	errc := make(chan error)
 	go func() {
 		fc.acquire(ctx, 3)
@@ -199,7 +199,7 @@ func TestFlowControllerBlockOnSize(t *testing.T) {
 
 func TestFlowControllerBlockOnCount(t *testing.T) {
 	ctx := context.Background()
-	fc := &flowController{maxCount: 3, maxSize: 10}
+	fc := newFlowController(3, 10)
 	errc := make(chan error)
 	go func() {
 		fc.acquire(ctx, 1)
@@ -224,7 +224,7 @@ func TestFlowControllerBlockOnCount(t *testing.T) {
 }
 
 func TestFlowControllerRequestTooLarge(t *testing.T) {
-	fc := &flowController{maxCount: 3, maxSize: 10}
+	fc := newFlowController(3, 10)
 	err := fc.acquire(context.Background(), 11)
 	if err == nil {
 		t.Error("got nil, want error")
@@ -233,7 +233,7 @@ func TestFlowControllerRequestTooLarge(t *testing.T) {
 
 func TestFlowControllerCancel(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
-	fc := &flowController{maxCount: 3, maxSize: 10}
+	fc := newFlowController(3, 10)
 	errc := make(chan error)
 	go func() {
 		if err := fc.acquire(ctx, 5); err != nil {

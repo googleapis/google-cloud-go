@@ -275,7 +275,11 @@ func TestMultipleStopCallsBlockUntilMessageDone(t *testing.T) {
 		events <- "stopped"
 	}()
 
-	time.Sleep(10 * time.Millisecond)
+	select {
+	case <-events:
+		t.Fatal("Stop is not blocked")
+	case <-time.After(100 * time.Millisecond):
+	}
 	m.Nack()
 
 	got := []string{<-events, <-events, <-events}

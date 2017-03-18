@@ -21,12 +21,12 @@ import (
 	"sync"
 	"time"
 
+	"cloud.google.com/go/iam"
+	"golang.org/x/net/context"
+	"golang.org/x/sync/semaphore"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-
-	"cloud.google.com/go/iam"
-	"golang.org/x/net/context"
 )
 
 // Subscription is a reference to a PubSub subscription.
@@ -235,10 +235,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		ackDeadline:  config.AckDeadline,
 	}
 	iter := newMessageIterator(context.Background(), s.s, s.name, po)
-	fc := flowController{
-		maxCount: maxCount,
-		maxSize:  maxBytes,
-	}
+	fc := newFlowController(maxCount, maxBytes)
 
 	// Wait for all goroutines started by Receive to return, so instead of an
 	// obscure goroutine leak we have an obvious blocked call to Receive.
@@ -351,48 +348,36 @@ func (c *Client) CreateSubscription(ctx context.Context, id string, topic *Topic
 
 // flowController implements flow control for Subscriber.Receive.
 type flowController struct {
-	maxCount, maxSize int // max number of messages, total size
+	maxSize           int                 // max total size of messages
+	semCount, semSize *semaphore.Weighted // enforces max number and size of messages
+}
 
-	mu          sync.Mutex
-	count, size int             // current count and size
-	ready       chan<- struct{} // closed when waitSize can be satisfied
-	waitSize    int             // waiting for this size
+func newFlowController(maxCount, maxSize int) *flowController {
+	return &flowController{
+		maxSize:  maxSize,
+		semCount: semaphore.NewWeighted(int64(maxCount)),
+		semSize:  semaphore.NewWeighted(int64(maxSize)),
+	}
 }
 
 // acquire blocks until one message of size bytes can proceed or ctx is done.
-// It returns nil in the first case, or ctx.Err() in the second. Only one call
-// to acquire can be active at a time.
+// It returns nil in the first case, or ctx.Err() in the second.
 func (f *flowController) acquire(ctx context.Context, size int) error {
 	if size > f.maxSize {
 		return fmt.Errorf("pubsub: message size %d exceeds maximum allowed size %d", size, f.maxSize)
 	}
-	f.mu.Lock()
-	for f.count >= f.maxCount || size > f.maxSize-f.size {
-		ready := make(chan struct{})
-		f.ready = ready
-		f.waitSize = size
-		f.mu.Unlock()
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case <-ready:
-		}
-		f.mu.Lock()
+	if err := f.semCount.Acquire(ctx, 1); err != nil {
+		return err
 	}
-	f.count++
-	f.size += size
-	f.mu.Unlock()
+	if err := f.semSize.Acquire(ctx, int64(size)); err != nil {
+		f.semCount.Release(1)
+		return err
+	}
 	return nil
 }
 
 // release notes that one message of size bytes is no longer outstanding.
 func (f *flowController) release(size int) {
-	f.mu.Lock()
-	f.count--
-	f.size -= size
-	if f.ready != nil && f.size <= f.maxSize-f.waitSize {
-		close(f.ready)
-		f.ready = nil
-	}
-	f.mu.Unlock()
+	f.semCount.Release(1)
+	f.semSize.Release(int64(size))
 }
