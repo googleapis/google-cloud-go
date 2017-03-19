@@ -718,7 +718,7 @@ func TestIntegration_StandardQuery(t *testing.T) {
 	d := civil.Date{2016, 3, 20}
 	tm := civil.Time{15, 04, 05, 0}
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
-	tmd := ts.Format("2006-01-02 15:04:05")
+	dtm := ts.Format("2006-01-02 15:04:05")
 
 	// Constructs Value slices made up of int64s.
 	ints := func(args ...int) []Value {
@@ -738,12 +738,12 @@ func TestIntegration_StandardQuery(t *testing.T) {
 		{"SELECT TRUE", []Value{true}},
 		{"SELECT 'ABC'", []Value{"ABC"}},
 		{"SELECT CAST('foo' AS BYTES)", []Value{[]byte("foo")}},
-		{fmt.Sprintf("SELECT TIMESTAMP '%s'", tmd), []Value{ts}},
-		{fmt.Sprintf("SELECT [TIMESTAMP '%s', TIMESTAMP '%s']", tmd, tmd), []Value{[]Value{ts, ts}}},
-		{fmt.Sprintf("SELECT ('hello', TIMESTAMP '%s')", tmd), []Value{[]Value{"hello", ts}}},
-		{fmt.Sprintf("SELECT DATETIME(TIMESTAMP '%s')", tmd), []Value{civil.DateTime{d, tm}}},
-		{fmt.Sprintf("SELECT DATE(TIMESTAMP '%s')", tmd), []Value{d}},
-		{fmt.Sprintf("SELECT TIME(TIMESTAMP '%s')", tmd), []Value{tm}},
+		{fmt.Sprintf("SELECT TIMESTAMP '%s'", dtm), []Value{ts}},
+		{fmt.Sprintf("SELECT [TIMESTAMP '%s', TIMESTAMP '%s']", dtm, dtm), []Value{[]Value{ts, ts}}},
+		{fmt.Sprintf("SELECT ('hello', TIMESTAMP '%s')", dtm), []Value{[]Value{"hello", ts}}},
+		{fmt.Sprintf("SELECT DATETIME(TIMESTAMP '%s')", dtm), []Value{civil.DateTime{d, tm}}},
+		{fmt.Sprintf("SELECT DATE(TIMESTAMP '%s')", dtm), []Value{d}},
+		{fmt.Sprintf("SELECT TIME(TIMESTAMP '%s')", dtm), []Value{tm}},
 		{"SELECT (1, 2)", []Value{ints(1, 2)}},
 		{"SELECT [1, 2, 3]", []Value{ints(1, 2, 3)}},
 		{"SELECT ([1, 2], 3, [4, 5])", []Value{[]Value{ints(1, 2), int64(3), ints(4, 5)}}},
@@ -759,6 +759,38 @@ func TestIntegration_StandardQuery(t *testing.T) {
 			t.Fatal(err)
 		}
 		checkRead(t, "StandardQuery", it, [][]Value{c.wantRow})
+	}
+}
+
+func TestIntegration_LegacyQuery(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
+	dtm := ts.Format("2006-01-02 15:04:05")
+
+	testCases := []struct {
+		query   string
+		wantRow []Value
+	}{
+		{"SELECT 1", []Value{int64(1)}},
+		{"SELECT 1.3", []Value{1.3}},
+		{"SELECT TRUE", []Value{true}},
+		{"SELECT 'ABC'", []Value{"ABC"}},
+		{"SELECT CAST('foo' AS BYTES)", []Value{[]byte("foo")}},
+		{fmt.Sprintf("SELECT TIMESTAMP('%s')", dtm), []Value{ts}},
+		{fmt.Sprintf("SELECT DATE(TIMESTAMP('%s'))", dtm), []Value{"2016-03-20"}},
+		{fmt.Sprintf("SELECT TIME(TIMESTAMP('%s'))", dtm), []Value{"15:04:05"}},
+	}
+	for _, c := range testCases {
+		q := client.Query(c.query)
+		it, err := q.Read(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		checkRead(t, "LegacyQuery", it, [][]Value{c.wantRow})
 	}
 }
 
