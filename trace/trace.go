@@ -315,7 +315,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		traces := bundle.([]*api.Trace)
 		err := c.upload(traces)
 		if err != nil {
-			log.Printf("failed to upload %d traces to the Cloud Trace server.", len(traces))
+			log.Printf("failed to upload %d traces to the Cloud Trace server: %v", len(traces), err)
 		}
 	})
 	bundler.DelayThreshold = 2 * time.Second
