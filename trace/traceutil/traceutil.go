@@ -30,9 +30,12 @@ type tracerTransport struct {
 
 func (tt *tracerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	span := trace.FromContext(req.Context()).NewRemoteChild(req)
-	defer span.Finish()
+	resp, err := tt.base.RoundTrip(req)
 
-	return tt.base.RoundTrip(req)
+	// TODO(jbd): Is it possible to defer the span.Finish?
+	// In cases where RoundTrip panics, we still can finish the span.
+	span.Finish(trace.WithResponse(resp))
+	return resp, err
 }
 
 // HTTPClient is an HTTP client that enhances http.Client
