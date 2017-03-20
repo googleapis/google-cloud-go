@@ -221,14 +221,18 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	if maxBytes < 1 {
 		maxBytes = DefaultReceiveSettings.MaxOutstandingBytes
 	}
-
+	maxExt := s.ReceiveSettings.MaxExtension
+	if maxExt == 0 {
+		maxExt = DefaultReceiveSettings.MaxExtension
+	} else if maxExt < 0 {
+		// If MaxExtension is negative, disable automatic extension.
+		maxExt = 0
+	}
+	// TODO(jba): add tests that verify that ReceiveSettings are correctly processed.
 	po := &pullOptions{
-		maxExtension: s.ReceiveSettings.MaxExtension,
+		maxExtension: maxExt,
 		maxPrefetch:  trunc32(int64(maxCount)),
 		ackDeadline:  config.AckDeadline,
-	}
-	if po.maxExtension < 1 {
-		po.maxExtension = 0
 	}
 	iter := newMessageIterator(context.Background(), s.s, s.name, po)
 	fc := flowController{
