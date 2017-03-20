@@ -53,13 +53,12 @@ type Topic struct {
 
 	mu      sync.RWMutex
 	stopped bool
-	wg      sync.WaitGroup
+	bundler *bundler.Bundler
+
+	wg sync.WaitGroup
 
 	// Channel for message bundles to be published. Close to indicate that Stop was called.
 	bundlec chan []*bundledMessage
-
-	once    sync.Once
-	bundler *bundler.Bundler
 }
 
 // PublishSettings control the bundling of published messages.
@@ -209,7 +208,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		Data:       msg.Data,
 		Attributes: msg.Attributes,
 	})
-	t.once.Do(t.initBundler)
+	t.initBundler()
 	r := &PublishResult{ready: make(chan struct{})}
 	t.mu.RLock()
 	defer t.mu.RUnlock()
@@ -233,11 +232,12 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 // failed to be sent.
 func (t *Topic) Stop() {
 	t.mu.Lock()
-	if t.stopped {
-		return
-	}
+	noop := t.stopped || t.bundler == nil
 	t.stopped = true
 	t.mu.Unlock()
+	if noop {
+		return
+	}
 	t.bundler.Flush()
 	// At this point, all pending bundles have been published and the bundler's
 	// goroutines have exited, so it is OK for this goroutine to close bundlec.
@@ -279,6 +279,19 @@ type bundledMessage struct {
 }
 
 func (t *Topic) initBundler() {
+	t.mu.RLock()
+	noop := t.stopped || t.bundler != nil
+	t.mu.RUnlock()
+	if noop {
+		return
+	}
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	// Must re-check, since we released the lock.
+	if t.stopped || t.bundler != nil {
+		return
+	}
+
 	// TODO(jba): use a context detached from the one passed to NewClient.
 	ctx := context.TODO()
 	// Unless overridden, run several goroutines per CPU to call the Publish RPC.
