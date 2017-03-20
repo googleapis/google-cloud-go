@@ -210,13 +210,16 @@ func decodeFamilyProto(r Row, row string, f *btpb.Family) {
 	}
 }
 
-// RowSet is a set of rows to be read. It is satisfied by RowList and RowRange.
+// RowSet is a set of rows to be read. It is satisfied by RowList, RowRange and RowRangeList.
 type RowSet interface {
 	proto() *btpb.RowSet
 
 	// retainRowsAfter returns a new RowSet that does not include the
 	// given row key or any row key lexicographically less than it.
 	retainRowsAfter(lastRowKey string) RowSet
+
+	// Valid reports whether this set can cover at least one row.
+	valid() bool
 }
 
 // RowList is a sequence of row keys.
@@ -238,6 +241,10 @@ func (r RowList) retainRowsAfter(lastRowKey string) RowSet {
 		}
 	}
 	return retryKeys
+}
+
+func (r RowList) valid() bool {
+	return len(r) > 0
 }
 
 // A RowRange is a half-open interval [Start, Limit) encompassing
@@ -287,7 +294,7 @@ func (r RowRange) proto() *btpb.RowSet {
 }
 
 func (r RowRange) retainRowsAfter(lastRowKey string) RowSet {
-	if lastRowKey == "" {
+	if lastRowKey == "" || lastRowKey < r.start {
 		return r
 	}
 	// Set the beginning of the range to the row after the last scanned.
@@ -296,6 +303,46 @@ func (r RowRange) retainRowsAfter(lastRowKey string) RowSet {
 		return InfiniteRange(start)
 	}
 	return NewRange(start, r.limit)
+}
+
+func (r RowRange) valid() bool {
+	return r.start < r.limit
+}
+
+// RowRangeList is a sequence of RowRanges representing the union of the ranges.
+type RowRangeList []RowRange
+
+func (r RowRangeList) proto() *btpb.RowSet {
+	ranges := make([]*btpb.RowRange, len(r))
+	for i, rr := range r {
+		// RowRange.proto() returns a RowSet with a single element RowRange array
+		ranges[i] = rr.proto().RowRanges[0]
+	}
+	return &btpb.RowSet{RowRanges: ranges}
+}
+
+func (r RowRangeList) retainRowsAfter(lastRowKey string) RowSet {
+	if lastRowKey == "" {
+		return r
+	}
+	// Return a list of any range that has not yet been completely processed
+	var ranges RowRangeList
+	for _, rr := range r {
+		retained := rr.retainRowsAfter(lastRowKey)
+		if retained.valid() {
+			ranges = append(ranges, retained.(RowRange))
+		}
+	}
+	return ranges
+}
+
+func (r RowRangeList) valid() bool {
+ 	for _, rr := range r {
+		if rr.valid() {
+			return true
+		}
+	}
+	return false
 }
 
 // SingleRow returns a RowSet for reading a single row.
