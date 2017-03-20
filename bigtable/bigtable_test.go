@@ -308,6 +308,11 @@ func TestClientIntegration(t *testing.T) {
 			filter: InterleaveFilters(ColumnFilter(".*g.*"), ColumnFilter(".*g.*")),
 			want:   "jadams-gwashington-1,jadams-gwashington-1,tjefferson-gwashington-1,tjefferson-gwashington-1",
 		},
+		{
+			desc:   "read with a RowRangeList and no filter",
+			rr:     RowRangeList{NewRange("gargamel", "hubbard"), InfiniteRange("wmckinley"),},
+			want:   "gwashington-jadams-1,wmckinley-tjefferson-1",
+		},
 	}
 	for _, tc := range readTests {
 		var opts []ReadOption
