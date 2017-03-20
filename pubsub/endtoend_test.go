@@ -266,6 +266,7 @@ func TestEndToEnd(t *testing.T) {
 	defer checkQuiescence.Stop()
 
 	var received bool
+loop:
 	for {
 		select {
 		case <-recv:
@@ -275,7 +276,7 @@ func TestEndToEnd(t *testing.T) {
 				received = false
 			} else {
 				cancel()
-				return
+				break loop
 			}
 		case <-timeoutC:
 			t.Errorf("timed out")
