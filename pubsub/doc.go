@@ -59,8 +59,8 @@ Subsciptions may be created like so:
 Messages are then consumed from a subscription via callback.
 
  err := sub.Receive(context.Background(), func(ctx context.Context, m *Message) {
- 	log.Print("got message: ", string(msg.Data))
- 	msg.Ack()
+ 	log.Printf("Got message: %s", m.Data)
+ 	m.Ack()
  })
  if err != nil {
 	// Handle error.
