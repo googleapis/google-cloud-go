@@ -116,6 +116,20 @@ func TestListCompletelyEmptyTopics(t *testing.T) {
 	checkTopicListing(t, want)
 }
 
+func TestStopPublishOrder(t *testing.T) {
+	// Check that Stop doesn't panic if called before Publish.
+	// Also that Publish after Stop returns the right error.
+	ctx := context.Background()
+	c := &Client{projectID: "projid"}
+	topic := c.Topic("t")
+	topic.Stop()
+	r := topic.Publish(ctx, &Message{})
+	_, err := r.Get(ctx)
+	if err != errTopicStopped {
+		t.Errorf("got %v, want errTopicStopped", err)
+	}
+}
+
 func topicNames(topics []*Topic) []string {
 	var names []string
 
