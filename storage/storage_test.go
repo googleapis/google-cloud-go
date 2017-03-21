@@ -51,13 +51,13 @@ func TestSignedURL(t *testing.T) {
 	}
 	want := "https://storage.googleapis.com/bucket-name/object-name?" +
 		"Expires=1033570800&GoogleAccessId=xxx%40clientid&Signature=" +
-		"ITqNWQHr7ayIj%2B0Ds5%2FzUT2cWMQQouuFmu6L11Zd3kfNKvm3sjyGIzO" +
-		"gZsSUoter1SxP7BcrCzgqIZ9fQmgQnuIpqqLL4kcGmTbKsQS6hTknpJM%2F" +
-		"2lS4NY6UH1VXBgm2Tce28kz8rnmqG6svcGvtWuOgJsETeSIl1R9nAEIDCEq" +
-		"ZJzoOiru%2BODkHHkpoFjHWAwHugFHX%2B9EX4SxaytiN3oEy48HpYGWV0I" +
-		"h8NvU1hmeWzcLr41GnTADeCn7Eg%2Fb5H2GCNO70Cz%2Bw2fn%2BofLCUeR" +
-		"YQd%2FhES8oocv5kpHZkstc8s8uz3aKMsMauzZ9MOmGy%2F6VULBgIVvi6a" +
-		"AwEBIYOw%3D%3D"
+		"c1dXXF5gVt4SwTpdOJb3titj9VaL7vVqFy3SiV3832Vt%2FQpE8DeaEcE49" +
+		"AaSFcbnHtN3m51m8OTAQ4j%2FzUFTg5ZRPBER5YfOBkbBd456TNYCSAtq4o" +
+		"hbcZN6F4GfGnVRw5BK4aqbWGeJ1gaAToOAGu7pdQPG8IIDUdKzSLZPMwfSq" +
+		"vg3xtHPtIc1T4Efbx0MYbEUKUoxrWq5VoAMe%2FhaBRMTwl4QZWJUasODjA" +
+		"uVVzESrzMqcyNmyKr2JIWCSpkBCLSGiMmyigZBmwSEqmO8GgR%2B2ebbcj%" +
+		"2BK7%2FqA4Dn3DP2Vv5qkdQhEorzmjeMP6sFYQvcnORNtcH323TlGWGf2OQ" +
+		"%3D%3D"
 	if url != want {
 		t.Fatalf("Unexpected signed URL; found %v", url)
 	}
@@ -79,10 +79,9 @@ func TestSignedURL_PEMPrivateKey(t *testing.T) {
 	}
 	want := "https://storage.googleapis.com/bucket-name/object-name?" +
 		"Expires=1033570800&GoogleAccessId=xxx%40clientid&Signature=" +
-		"B7XkS4dfmVDoe%2FoDeXZkWlYmg8u2kI0SizTrzL5%2B9RmKnb5j7Kf34DZ" +
-		"JL8Hcjr1MdPFLNg2QV4lEH86Gqgqt%2Fv3jFOTRl4wlzcRU%2FvV5c5HU8M" +
-		"qW0FZ0IDbqod2RdsMONLEO6yQWV2HWFrMLKl2yMFlWCJ47et%2BFaHe6v4Z" +
-		"EBc0%3D"
+		"mBaAxCtOmjKg2rboDFUnDeXDSH2l1W3swDB1ylpVicl3usUCjoBrgxmGp06" +
+		"zp5UK5KyzmylwaNZzDYP8je5LS8fUGguaA7TBIrBBcI0M1sRgGBrKi%2FfH" +
+		"RtJsUybrQq0xaMtxwf%2BezqAlwnYvWwlDB3sPrXZIo1v71z4xZg9b3dI%3D"
 	if url != want {
 		t.Fatalf("Unexpected signed URL; found %v", url)
 	}
@@ -128,10 +127,10 @@ func TestSignedURL_URLUnsafeObjectName(t *testing.T) {
 	}
 	want := "https://storage.googleapis.com/bucket-name/object%20nam" +
 		"e%E7%95%8C?Expires=1033570800&GoogleAccessId=xxx%40clientid" +
-		"&Signature=bxORkrAm73INEMHktrE7VoUZQzVPvL5NFZ7noAI5zK%2BGSm" +
-		"%2BWFvsK%2FVnRGtYK9BK89jz%2BX4ZQd87nkMEJw1OsqmGNiepyzB%2B3o" +
-		"sUYrHyV7UnKs9bkQpBkqPFlfgK1o7oX4NJjA1oKjuHP%2Fj5%2FC15OPa3c" +
-		"vHV619BEb7vf30nAwQM%3D"
+		"&Signature=mk7P1WhANoWYi9tIp8%2F1ojV%2BZ2JxuAbLSqbeh4q6vcug" +
+		"kKfyz6J7gKJF2G4gJ%2BtLRnWAUnp3eNKCQ0OtI3pE6edWKU5rXwlE%2Brg" +
+		"kGwmY5ax2%2FVHGzNj2wJKTpsScFjueZr6o6e7fPoU3zIg3lgmjEm4pXh9Z" +
+		"AgbTmfpL4T0onRI%3D"
 	if url != want {
 		t.Fatalf("Unexpected signed URL; found %v", url)
 	}

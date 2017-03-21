@@ -254,7 +254,9 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 	fmt.Fprintf(buf, "%s\n", opts.MD5)
 	fmt.Fprintf(buf, "%s\n", opts.ContentType)
 	fmt.Fprintf(buf, "%d\n", opts.Expires.Unix())
-	fmt.Fprintf(buf, "%s", strings.Join(opts.Headers, "\n"))
+	if len(opts.Headers) > 0 {
+		fmt.Fprintf(buf, "%s\n", strings.Join(opts.Headers, "\n"))
+	}
 	fmt.Fprintf(buf, "%s", u.String())
 
 	b, err := signBytes(buf.Bytes())
