@@ -127,9 +127,9 @@ func (c *Client) SetGoogleClientInfo(keyval ...string) {
 func (c *Client) AnalyzeSentiment(ctx context.Context, req *languagepb.AnalyzeSentimentRequest) (*languagepb.AnalyzeSentimentResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *languagepb.AnalyzeSentimentResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AnalyzeSentiment(ctx, req)
+		resp, err = c.client.AnalyzeSentiment(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.AnalyzeSentiment...)
 	if err != nil {
@@ -143,9 +143,9 @@ func (c *Client) AnalyzeSentiment(ctx context.Context, req *languagepb.AnalyzeSe
 func (c *Client) AnalyzeEntities(ctx context.Context, req *languagepb.AnalyzeEntitiesRequest) (*languagepb.AnalyzeEntitiesResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *languagepb.AnalyzeEntitiesResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AnalyzeEntities(ctx, req)
+		resp, err = c.client.AnalyzeEntities(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.AnalyzeEntities...)
 	if err != nil {
@@ -160,9 +160,9 @@ func (c *Client) AnalyzeEntities(ctx context.Context, req *languagepb.AnalyzeEnt
 func (c *Client) AnalyzeSyntax(ctx context.Context, req *languagepb.AnalyzeSyntaxRequest) (*languagepb.AnalyzeSyntaxResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *languagepb.AnalyzeSyntaxResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AnalyzeSyntax(ctx, req)
+		resp, err = c.client.AnalyzeSyntax(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.AnalyzeSyntax...)
 	if err != nil {
@@ -176,9 +176,9 @@ func (c *Client) AnalyzeSyntax(ctx context.Context, req *languagepb.AnalyzeSynta
 func (c *Client) AnnotateText(ctx context.Context, req *languagepb.AnnotateTextRequest) (*languagepb.AnnotateTextResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *languagepb.AnnotateTextResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AnnotateText(ctx, req)
+		resp, err = c.client.AnnotateText(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.AnnotateText...)
 	if err != nil {

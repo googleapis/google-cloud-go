@@ -195,9 +195,9 @@ func (c *DatabaseAdminClient) ListDatabases(ctx context.Context, req *databasepb
 		} else {
 			req.PageSize = int32(pageSize)
 		}
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.databaseAdminClient.ListDatabases(ctx, req)
+			resp, err = c.databaseAdminClient.ListDatabases(ctx, req, settings.GRPC...)
 			return err
 		}, c.CallOptions.ListDatabases...)
 		if err != nil {
@@ -228,9 +228,9 @@ func (c *DatabaseAdminClient) ListDatabases(ctx context.Context, req *databasepb
 func (c *DatabaseAdminClient) CreateDatabase(ctx context.Context, req *databasepb.CreateDatabaseRequest) (*CreateDatabaseOperation, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.databaseAdminClient.CreateDatabase(ctx, req)
+		resp, err = c.databaseAdminClient.CreateDatabase(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.CreateDatabase...)
 	if err != nil {
@@ -246,9 +246,9 @@ func (c *DatabaseAdminClient) CreateDatabase(ctx context.Context, req *databasep
 func (c *DatabaseAdminClient) GetDatabase(ctx context.Context, req *databasepb.GetDatabaseRequest) (*databasepb.Database, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *databasepb.Database
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.databaseAdminClient.GetDatabase(ctx, req)
+		resp, err = c.databaseAdminClient.GetDatabase(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.GetDatabase...)
 	if err != nil {
@@ -267,9 +267,9 @@ func (c *DatabaseAdminClient) GetDatabase(ctx context.Context, req *databasepb.G
 func (c *DatabaseAdminClient) UpdateDatabaseDdl(ctx context.Context, req *databasepb.UpdateDatabaseDdlRequest) (*UpdateDatabaseDdlOperation, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.databaseAdminClient.UpdateDatabaseDdl(ctx, req)
+		resp, err = c.databaseAdminClient.UpdateDatabaseDdl(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.UpdateDatabaseDdl...)
 	if err != nil {
@@ -284,9 +284,9 @@ func (c *DatabaseAdminClient) UpdateDatabaseDdl(ctx context.Context, req *databa
 // DropDatabase drops (aka deletes) a Cloud Spanner database.
 func (c *DatabaseAdminClient) DropDatabase(ctx context.Context, req *databasepb.DropDatabaseRequest) error {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.databaseAdminClient.DropDatabase(ctx, req)
+		_, err = c.databaseAdminClient.DropDatabase(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.DropDatabase...)
 	return err
@@ -298,9 +298,9 @@ func (c *DatabaseAdminClient) DropDatabase(ctx context.Context, req *databasepb.
 func (c *DatabaseAdminClient) GetDatabaseDdl(ctx context.Context, req *databasepb.GetDatabaseDdlRequest) (*databasepb.GetDatabaseDdlResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *databasepb.GetDatabaseDdlResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.databaseAdminClient.GetDatabaseDdl(ctx, req)
+		resp, err = c.databaseAdminClient.GetDatabaseDdl(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.GetDatabaseDdl...)
 	if err != nil {
@@ -317,9 +317,9 @@ func (c *DatabaseAdminClient) GetDatabaseDdl(ctx context.Context, req *databasep
 func (c *DatabaseAdminClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *iampb.Policy
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.databaseAdminClient.SetIamPolicy(ctx, req)
+		resp, err = c.databaseAdminClient.SetIamPolicy(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.SetIamPolicy...)
 	if err != nil {
@@ -336,9 +336,9 @@ func (c *DatabaseAdminClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 func (c *DatabaseAdminClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *iampb.Policy
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.databaseAdminClient.GetIamPolicy(ctx, req)
+		resp, err = c.databaseAdminClient.GetIamPolicy(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.GetIamPolicy...)
 	if err != nil {
@@ -356,9 +356,9 @@ func (c *DatabaseAdminClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 func (c *DatabaseAdminClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *iampb.TestIamPermissionsResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.databaseAdminClient.TestIamPermissions(ctx, req)
+		resp, err = c.databaseAdminClient.TestIamPermissions(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.TestIamPermissions...)
 	if err != nil {

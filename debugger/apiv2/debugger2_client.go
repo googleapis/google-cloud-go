@@ -151,9 +151,9 @@ func (c *Debugger2Client) SetGoogleClientInfo(keyval ...string) {
 func (c *Debugger2Client) SetBreakpoint(ctx context.Context, req *clouddebuggerpb.SetBreakpointRequest) (*clouddebuggerpb.SetBreakpointResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *clouddebuggerpb.SetBreakpointResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.debugger2Client.SetBreakpoint(ctx, req)
+		resp, err = c.debugger2Client.SetBreakpoint(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.SetBreakpoint...)
 	if err != nil {
@@ -166,9 +166,9 @@ func (c *Debugger2Client) SetBreakpoint(ctx context.Context, req *clouddebuggerp
 func (c *Debugger2Client) GetBreakpoint(ctx context.Context, req *clouddebuggerpb.GetBreakpointRequest) (*clouddebuggerpb.GetBreakpointResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *clouddebuggerpb.GetBreakpointResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.debugger2Client.GetBreakpoint(ctx, req)
+		resp, err = c.debugger2Client.GetBreakpoint(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.GetBreakpoint...)
 	if err != nil {
@@ -180,9 +180,9 @@ func (c *Debugger2Client) GetBreakpoint(ctx context.Context, req *clouddebuggerp
 // DeleteBreakpoint deletes the breakpoint from the debuggee.
 func (c *Debugger2Client) DeleteBreakpoint(ctx context.Context, req *clouddebuggerpb.DeleteBreakpointRequest) error {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.debugger2Client.DeleteBreakpoint(ctx, req)
+		_, err = c.debugger2Client.DeleteBreakpoint(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.DeleteBreakpoint...)
 	return err
@@ -192,9 +192,9 @@ func (c *Debugger2Client) DeleteBreakpoint(ctx context.Context, req *clouddebugg
 func (c *Debugger2Client) ListBreakpoints(ctx context.Context, req *clouddebuggerpb.ListBreakpointsRequest) (*clouddebuggerpb.ListBreakpointsResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *clouddebuggerpb.ListBreakpointsResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.debugger2Client.ListBreakpoints(ctx, req)
+		resp, err = c.debugger2Client.ListBreakpoints(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.ListBreakpoints...)
 	if err != nil {
@@ -207,9 +207,9 @@ func (c *Debugger2Client) ListBreakpoints(ctx context.Context, req *clouddebugge
 func (c *Debugger2Client) ListDebuggees(ctx context.Context, req *clouddebuggerpb.ListDebuggeesRequest) (*clouddebuggerpb.ListDebuggeesResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *clouddebuggerpb.ListDebuggeesResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.debugger2Client.ListDebuggees(ctx, req)
+		resp, err = c.debugger2Client.ListDebuggees(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.ListDebuggees...)
 	if err != nil {

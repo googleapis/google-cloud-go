@@ -138,9 +138,9 @@ func ErrorGroupGroupPath(project, group string) string {
 func (c *ErrorGroupClient) GetGroup(ctx context.Context, req *clouderrorreportingpb.GetGroupRequest) (*clouderrorreportingpb.ErrorGroup, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *clouderrorreportingpb.ErrorGroup
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.errorGroupClient.GetGroup(ctx, req)
+		resp, err = c.errorGroupClient.GetGroup(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.GetGroup...)
 	if err != nil {
@@ -154,9 +154,9 @@ func (c *ErrorGroupClient) GetGroup(ctx context.Context, req *clouderrorreportin
 func (c *ErrorGroupClient) UpdateGroup(ctx context.Context, req *clouderrorreportingpb.UpdateGroupRequest) (*clouderrorreportingpb.ErrorGroup, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *clouderrorreportingpb.ErrorGroup
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.errorGroupClient.UpdateGroup(ctx, req)
+		resp, err = c.errorGroupClient.UpdateGroup(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.UpdateGroup...)
 	if err != nil {

@@ -138,9 +138,9 @@ func (c *Client) SetGoogleClientInfo(keyval ...string) {
 func (c *Client) SyncRecognize(ctx context.Context, req *speechpb.SyncRecognizeRequest) (*speechpb.SyncRecognizeResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *speechpb.SyncRecognizeResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.SyncRecognize(ctx, req)
+		resp, err = c.client.SyncRecognize(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.SyncRecognize...)
 	if err != nil {
@@ -156,9 +156,9 @@ func (c *Client) SyncRecognize(ctx context.Context, req *speechpb.SyncRecognizeR
 func (c *Client) AsyncRecognize(ctx context.Context, req *speechpb.AsyncRecognizeRequest) (*AsyncRecognizeOperation, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AsyncRecognize(ctx, req)
+		resp, err = c.client.AsyncRecognize(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.AsyncRecognize...)
 	if err != nil {
@@ -175,9 +175,9 @@ func (c *Client) AsyncRecognize(ctx context.Context, req *speechpb.AsyncRecogniz
 func (c *Client) StreamingRecognize(ctx context.Context) (speechpb.Speech_StreamingRecognizeClient, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp speechpb.Speech_StreamingRecognizeClient
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.StreamingRecognize(ctx)
+		resp, err = c.client.StreamingRecognize(ctx, settings.GRPC...)
 		return err
 	}, c.CallOptions.StreamingRecognize...)
 	if err != nil {

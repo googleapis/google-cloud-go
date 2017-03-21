@@ -188,9 +188,9 @@ func LoggingLogPath(project, log string) string {
 // deleted.
 func (c *Client) DeleteLog(ctx context.Context, req *loggingpb.DeleteLogRequest) error {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteLog(ctx, req)
+		_, err = c.client.DeleteLog(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.DeleteLog...)
 	return err
@@ -200,9 +200,9 @@ func (c *Client) DeleteLog(ctx context.Context, req *loggingpb.DeleteLogRequest)
 func (c *Client) WriteLogEntries(ctx context.Context, req *loggingpb.WriteLogEntriesRequest) (*loggingpb.WriteLogEntriesResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *loggingpb.WriteLogEntriesResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.WriteLogEntries(ctx, req)
+		resp, err = c.client.WriteLogEntries(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.WriteLogEntries...)
 	if err != nil {
@@ -225,9 +225,9 @@ func (c *Client) ListLogEntries(ctx context.Context, req *loggingpb.ListLogEntri
 		} else {
 			req.PageSize = int32(pageSize)
 		}
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListLogEntries(ctx, req)
+			resp, err = c.client.ListLogEntries(ctx, req, settings.GRPC...)
 			return err
 		}, c.CallOptions.ListLogEntries...)
 		if err != nil {
@@ -260,9 +260,9 @@ func (c *Client) ListMonitoredResourceDescriptors(ctx context.Context, req *logg
 		} else {
 			req.PageSize = int32(pageSize)
 		}
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListMonitoredResourceDescriptors(ctx, req)
+			resp, err = c.client.ListMonitoredResourceDescriptors(ctx, req, settings.GRPC...)
 			return err
 		}, c.CallOptions.ListMonitoredResourceDescriptors...)
 		if err != nil {
@@ -295,9 +295,9 @@ func (c *Client) ListLogs(ctx context.Context, req *loggingpb.ListLogsRequest) *
 		} else {
 			req.PageSize = int32(pageSize)
 		}
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListLogs(ctx, req)
+			resp, err = c.client.ListLogs(ctx, req, settings.GRPC...)
 			return err
 		}, c.CallOptions.ListLogs...)
 		if err != nil {

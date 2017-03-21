@@ -202,9 +202,9 @@ func (c *MetricClient) ListMonitoredResourceDescriptors(ctx context.Context, req
 		} else {
 			req.PageSize = int32(pageSize)
 		}
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metricClient.ListMonitoredResourceDescriptors(ctx, req)
+			resp, err = c.metricClient.ListMonitoredResourceDescriptors(ctx, req, settings.GRPC...)
 			return err
 		}, c.CallOptions.ListMonitoredResourceDescriptors...)
 		if err != nil {
@@ -228,9 +228,9 @@ func (c *MetricClient) ListMonitoredResourceDescriptors(ctx context.Context, req
 func (c *MetricClient) GetMonitoredResourceDescriptor(ctx context.Context, req *monitoringpb.GetMonitoredResourceDescriptorRequest) (*monitoredrespb.MonitoredResourceDescriptor, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *monitoredrespb.MonitoredResourceDescriptor
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metricClient.GetMonitoredResourceDescriptor(ctx, req)
+		resp, err = c.metricClient.GetMonitoredResourceDescriptor(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.GetMonitoredResourceDescriptor...)
 	if err != nil {
@@ -251,9 +251,9 @@ func (c *MetricClient) ListMetricDescriptors(ctx context.Context, req *monitorin
 		} else {
 			req.PageSize = int32(pageSize)
 		}
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metricClient.ListMetricDescriptors(ctx, req)
+			resp, err = c.metricClient.ListMetricDescriptors(ctx, req, settings.GRPC...)
 			return err
 		}, c.CallOptions.ListMetricDescriptors...)
 		if err != nil {
@@ -277,9 +277,9 @@ func (c *MetricClient) ListMetricDescriptors(ctx context.Context, req *monitorin
 func (c *MetricClient) GetMetricDescriptor(ctx context.Context, req *monitoringpb.GetMetricDescriptorRequest) (*metricpb.MetricDescriptor, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *metricpb.MetricDescriptor
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metricClient.GetMetricDescriptor(ctx, req)
+		resp, err = c.metricClient.GetMetricDescriptor(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.GetMetricDescriptor...)
 	if err != nil {
@@ -294,9 +294,9 @@ func (c *MetricClient) GetMetricDescriptor(ctx context.Context, req *monitoringp
 func (c *MetricClient) CreateMetricDescriptor(ctx context.Context, req *monitoringpb.CreateMetricDescriptorRequest) (*metricpb.MetricDescriptor, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *metricpb.MetricDescriptor
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metricClient.CreateMetricDescriptor(ctx, req)
+		resp, err = c.metricClient.CreateMetricDescriptor(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.CreateMetricDescriptor...)
 	if err != nil {
@@ -309,9 +309,9 @@ func (c *MetricClient) CreateMetricDescriptor(ctx context.Context, req *monitori
 // [custom metrics](/monitoring/custom-metrics) can be deleted.
 func (c *MetricClient) DeleteMetricDescriptor(ctx context.Context, req *monitoringpb.DeleteMetricDescriptorRequest) error {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.metricClient.DeleteMetricDescriptor(ctx, req)
+		_, err = c.metricClient.DeleteMetricDescriptor(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.DeleteMetricDescriptor...)
 	return err
@@ -329,9 +329,9 @@ func (c *MetricClient) ListTimeSeries(ctx context.Context, req *monitoringpb.Lis
 		} else {
 			req.PageSize = int32(pageSize)
 		}
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metricClient.ListTimeSeries(ctx, req)
+			resp, err = c.metricClient.ListTimeSeries(ctx, req, settings.GRPC...)
 			return err
 		}, c.CallOptions.ListTimeSeries...)
 		if err != nil {
@@ -357,9 +357,9 @@ func (c *MetricClient) ListTimeSeries(ctx context.Context, req *monitoringpb.Lis
 // included in the error response.
 func (c *MetricClient) CreateTimeSeries(ctx context.Context, req *monitoringpb.CreateTimeSeriesRequest) error {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.metricClient.CreateTimeSeries(ctx, req)
+		_, err = c.metricClient.CreateTimeSeries(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.CreateTimeSeries...)
 	return err

@@ -135,9 +135,9 @@ func (c *Client) SetGoogleClientInfo(keyval ...string) {
 // ID does not match, a new trace is created.
 func (c *Client) PatchTraces(ctx context.Context, req *cloudtracepb.PatchTracesRequest) error {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.PatchTraces(ctx, req)
+		_, err = c.client.PatchTraces(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.PatchTraces...)
 	return err
@@ -147,9 +147,9 @@ func (c *Client) PatchTraces(ctx context.Context, req *cloudtracepb.PatchTracesR
 func (c *Client) GetTrace(ctx context.Context, req *cloudtracepb.GetTraceRequest) (*cloudtracepb.Trace, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *cloudtracepb.Trace
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetTrace(ctx, req)
+		resp, err = c.client.GetTrace(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.GetTrace...)
 	if err != nil {
@@ -170,9 +170,9 @@ func (c *Client) ListTraces(ctx context.Context, req *cloudtracepb.ListTracesReq
 		} else {
 			req.PageSize = int32(pageSize)
 		}
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListTraces(ctx, req)
+			resp, err = c.client.ListTraces(ctx, req, settings.GRPC...)
 			return err
 		}, c.CallOptions.ListTraces...)
 		if err != nil {

@@ -226,9 +226,9 @@ func (c *IamClient) ListServiceAccounts(ctx context.Context, req *adminpb.ListSe
 		} else {
 			req.PageSize = int32(pageSize)
 		}
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.iamClient.ListServiceAccounts(ctx, req)
+			resp, err = c.iamClient.ListServiceAccounts(ctx, req, settings.GRPC...)
 			return err
 		}, c.CallOptions.ListServiceAccounts...)
 		if err != nil {
@@ -252,9 +252,9 @@ func (c *IamClient) ListServiceAccounts(ctx context.Context, req *adminpb.ListSe
 func (c *IamClient) GetServiceAccount(ctx context.Context, req *adminpb.GetServiceAccountRequest) (*adminpb.ServiceAccount, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *adminpb.ServiceAccount
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamClient.GetServiceAccount(ctx, req)
+		resp, err = c.iamClient.GetServiceAccount(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.GetServiceAccount...)
 	if err != nil {
@@ -268,9 +268,9 @@ func (c *IamClient) GetServiceAccount(ctx context.Context, req *adminpb.GetServi
 func (c *IamClient) CreateServiceAccount(ctx context.Context, req *adminpb.CreateServiceAccountRequest) (*adminpb.ServiceAccount, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *adminpb.ServiceAccount
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamClient.CreateServiceAccount(ctx, req)
+		resp, err = c.iamClient.CreateServiceAccount(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.CreateServiceAccount...)
 	if err != nil {
@@ -287,9 +287,9 @@ func (c *IamClient) CreateServiceAccount(ctx context.Context, req *adminpb.Creat
 func (c *IamClient) UpdateServiceAccount(ctx context.Context, req *adminpb.ServiceAccount) (*adminpb.ServiceAccount, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *adminpb.ServiceAccount
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamClient.UpdateServiceAccount(ctx, req)
+		resp, err = c.iamClient.UpdateServiceAccount(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.UpdateServiceAccount...)
 	if err != nil {
@@ -301,9 +301,9 @@ func (c *IamClient) UpdateServiceAccount(ctx context.Context, req *adminpb.Servi
 // DeleteServiceAccount deletes a [ServiceAccount][google.iam.admin.v1.ServiceAccount].
 func (c *IamClient) DeleteServiceAccount(ctx context.Context, req *adminpb.DeleteServiceAccountRequest) error {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.iamClient.DeleteServiceAccount(ctx, req)
+		_, err = c.iamClient.DeleteServiceAccount(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.DeleteServiceAccount...)
 	return err
@@ -313,9 +313,9 @@ func (c *IamClient) DeleteServiceAccount(ctx context.Context, req *adminpb.Delet
 func (c *IamClient) ListServiceAccountKeys(ctx context.Context, req *adminpb.ListServiceAccountKeysRequest) (*adminpb.ListServiceAccountKeysResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *adminpb.ListServiceAccountKeysResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamClient.ListServiceAccountKeys(ctx, req)
+		resp, err = c.iamClient.ListServiceAccountKeys(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.ListServiceAccountKeys...)
 	if err != nil {
@@ -329,9 +329,9 @@ func (c *IamClient) ListServiceAccountKeys(ctx context.Context, req *adminpb.Lis
 func (c *IamClient) GetServiceAccountKey(ctx context.Context, req *adminpb.GetServiceAccountKeyRequest) (*adminpb.ServiceAccountKey, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *adminpb.ServiceAccountKey
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamClient.GetServiceAccountKey(ctx, req)
+		resp, err = c.iamClient.GetServiceAccountKey(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.GetServiceAccountKey...)
 	if err != nil {
@@ -345,9 +345,9 @@ func (c *IamClient) GetServiceAccountKey(ctx context.Context, req *adminpb.GetSe
 func (c *IamClient) CreateServiceAccountKey(ctx context.Context, req *adminpb.CreateServiceAccountKeyRequest) (*adminpb.ServiceAccountKey, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *adminpb.ServiceAccountKey
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamClient.CreateServiceAccountKey(ctx, req)
+		resp, err = c.iamClient.CreateServiceAccountKey(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.CreateServiceAccountKey...)
 	if err != nil {
@@ -359,9 +359,9 @@ func (c *IamClient) CreateServiceAccountKey(ctx context.Context, req *adminpb.Cr
 // DeleteServiceAccountKey deletes a [ServiceAccountKey][google.iam.admin.v1.ServiceAccountKey].
 func (c *IamClient) DeleteServiceAccountKey(ctx context.Context, req *adminpb.DeleteServiceAccountKeyRequest) error {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.iamClient.DeleteServiceAccountKey(ctx, req)
+		_, err = c.iamClient.DeleteServiceAccountKey(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.DeleteServiceAccountKey...)
 	return err
@@ -371,9 +371,9 @@ func (c *IamClient) DeleteServiceAccountKey(ctx context.Context, req *adminpb.De
 func (c *IamClient) SignBlob(ctx context.Context, req *adminpb.SignBlobRequest) (*adminpb.SignBlobResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *adminpb.SignBlobResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamClient.SignBlob(ctx, req)
+		resp, err = c.iamClient.SignBlob(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.SignBlob...)
 	if err != nil {
@@ -387,9 +387,9 @@ func (c *IamClient) SignBlob(ctx context.Context, req *adminpb.SignBlobRequest) 
 func (c *IamClient) getIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *iampb.Policy
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamClient.GetIamPolicy(ctx, req)
+		resp, err = c.iamClient.GetIamPolicy(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.GetIamPolicy...)
 	if err != nil {
@@ -403,9 +403,9 @@ func (c *IamClient) getIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReq
 func (c *IamClient) setIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *iampb.Policy
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamClient.SetIamPolicy(ctx, req)
+		resp, err = c.iamClient.SetIamPolicy(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.SetIamPolicy...)
 	if err != nil {
@@ -419,9 +419,9 @@ func (c *IamClient) setIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReq
 func (c *IamClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *iampb.TestIamPermissionsResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamClient.TestIamPermissions(ctx, req)
+		resp, err = c.iamClient.TestIamPermissions(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.TestIamPermissions...)
 	if err != nil {
@@ -436,9 +436,9 @@ func (c *IamClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPe
 func (c *IamClient) QueryGrantableRoles(ctx context.Context, req *adminpb.QueryGrantableRolesRequest) (*adminpb.QueryGrantableRolesResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *adminpb.QueryGrantableRolesResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamClient.QueryGrantableRoles(ctx, req)
+		resp, err = c.iamClient.QueryGrantableRoles(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.QueryGrantableRoles...)
 	if err != nil {

@@ -259,9 +259,9 @@ func (c *SubscriberClient) TopicIAM(topic *pubsubpb.Topic) *iam.Handle {
 func (c *SubscriberClient) CreateSubscription(ctx context.Context, req *pubsubpb.Subscription) (*pubsubpb.Subscription, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *pubsubpb.Subscription
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.subscriberClient.CreateSubscription(ctx, req)
+		resp, err = c.subscriberClient.CreateSubscription(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.CreateSubscription...)
 	if err != nil {
@@ -274,9 +274,9 @@ func (c *SubscriberClient) CreateSubscription(ctx context.Context, req *pubsubpb
 func (c *SubscriberClient) GetSubscription(ctx context.Context, req *pubsubpb.GetSubscriptionRequest) (*pubsubpb.Subscription, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *pubsubpb.Subscription
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.subscriberClient.GetSubscription(ctx, req)
+		resp, err = c.subscriberClient.GetSubscription(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.GetSubscription...)
 	if err != nil {
@@ -290,9 +290,9 @@ func (c *SubscriberClient) GetSubscription(ctx context.Context, req *pubsubpb.Ge
 func (c *SubscriberClient) UpdateSubscription(ctx context.Context, req *pubsubpb.UpdateSubscriptionRequest) (*pubsubpb.Subscription, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *pubsubpb.Subscription
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.subscriberClient.UpdateSubscription(ctx, req)
+		resp, err = c.subscriberClient.UpdateSubscription(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.UpdateSubscription...)
 	if err != nil {
@@ -313,9 +313,9 @@ func (c *SubscriberClient) ListSubscriptions(ctx context.Context, req *pubsubpb.
 		} else {
 			req.PageSize = int32(pageSize)
 		}
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.subscriberClient.ListSubscriptions(ctx, req)
+			resp, err = c.subscriberClient.ListSubscriptions(ctx, req, settings.GRPC...)
 			return err
 		}, c.CallOptions.ListSubscriptions...)
 		if err != nil {
@@ -342,9 +342,9 @@ func (c *SubscriberClient) ListSubscriptions(ctx context.Context, req *pubsubpb.
 // subscription or its topic unless the same topic is specified.
 func (c *SubscriberClient) DeleteSubscription(ctx context.Context, req *pubsubpb.DeleteSubscriptionRequest) error {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.subscriberClient.DeleteSubscription(ctx, req)
+		_, err = c.subscriberClient.DeleteSubscription(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.DeleteSubscription...)
 	return err
@@ -357,9 +357,9 @@ func (c *SubscriberClient) DeleteSubscription(ctx context.Context, req *pubsubpb
 // subscription-level `ackDeadlineSeconds` used for subsequent messages.
 func (c *SubscriberClient) ModifyAckDeadline(ctx context.Context, req *pubsubpb.ModifyAckDeadlineRequest) error {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.subscriberClient.ModifyAckDeadline(ctx, req)
+		_, err = c.subscriberClient.ModifyAckDeadline(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.ModifyAckDeadline...)
 	return err
@@ -374,9 +374,9 @@ func (c *SubscriberClient) ModifyAckDeadline(ctx context.Context, req *pubsubpb.
 // than once will not result in an error.
 func (c *SubscriberClient) Acknowledge(ctx context.Context, req *pubsubpb.AcknowledgeRequest) error {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.subscriberClient.Acknowledge(ctx, req)
+		_, err = c.subscriberClient.Acknowledge(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.Acknowledge...)
 	return err
@@ -389,9 +389,9 @@ func (c *SubscriberClient) Acknowledge(ctx context.Context, req *pubsubpb.Acknow
 func (c *SubscriberClient) Pull(ctx context.Context, req *pubsubpb.PullRequest) (*pubsubpb.PullResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *pubsubpb.PullResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.subscriberClient.Pull(ctx, req)
+		resp, err = c.subscriberClient.Pull(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.Pull...)
 	if err != nil {
@@ -415,9 +415,9 @@ func (c *SubscriberClient) Pull(ctx context.Context, req *pubsubpb.PullRequest) 
 func (c *SubscriberClient) StreamingPull(ctx context.Context) (pubsubpb.Subscriber_StreamingPullClient, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp pubsubpb.Subscriber_StreamingPullClient
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.subscriberClient.StreamingPull(ctx)
+		resp, err = c.subscriberClient.StreamingPull(ctx, settings.GRPC...)
 		return err
 	}, c.CallOptions.StreamingPull...)
 	if err != nil {
@@ -434,9 +434,9 @@ func (c *SubscriberClient) StreamingPull(ctx context.Context) (pubsubpb.Subscrib
 // continuously through the call regardless of changes to the `PushConfig`.
 func (c *SubscriberClient) ModifyPushConfig(ctx context.Context, req *pubsubpb.ModifyPushConfigRequest) error {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.subscriberClient.ModifyPushConfig(ctx, req)
+		_, err = c.subscriberClient.ModifyPushConfig(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.ModifyPushConfig...)
 	return err
@@ -454,9 +454,9 @@ func (c *SubscriberClient) ListSnapshots(ctx context.Context, req *pubsubpb.List
 		} else {
 			req.PageSize = int32(pageSize)
 		}
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.subscriberClient.ListSnapshots(ctx, req)
+			resp, err = c.subscriberClient.ListSnapshots(ctx, req, settings.GRPC...)
 			return err
 		}, c.CallOptions.ListSnapshots...)
 		if err != nil {
@@ -489,9 +489,9 @@ func (c *SubscriberClient) ListSnapshots(ctx context.Context, req *pubsubpb.List
 func (c *SubscriberClient) CreateSnapshot(ctx context.Context, req *pubsubpb.CreateSnapshotRequest) (*pubsubpb.Snapshot, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *pubsubpb.Snapshot
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.subscriberClient.CreateSnapshot(ctx, req)
+		resp, err = c.subscriberClient.CreateSnapshot(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.CreateSnapshot...)
 	if err != nil {
@@ -506,9 +506,9 @@ func (c *SubscriberClient) CreateSnapshot(ctx context.Context, req *pubsubpb.Cre
 // snapshot or its subscription, unless the same subscription is specified.
 func (c *SubscriberClient) DeleteSnapshot(ctx context.Context, req *pubsubpb.DeleteSnapshotRequest) error {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.subscriberClient.DeleteSnapshot(ctx, req)
+		_, err = c.subscriberClient.DeleteSnapshot(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.DeleteSnapshot...)
 	return err
@@ -519,9 +519,9 @@ func (c *SubscriberClient) DeleteSnapshot(ctx context.Context, req *pubsubpb.Del
 func (c *SubscriberClient) Seek(ctx context.Context, req *pubsubpb.SeekRequest) (*pubsubpb.SeekResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *pubsubpb.SeekResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.subscriberClient.Seek(ctx, req)
+		resp, err = c.subscriberClient.Seek(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.Seek...)
 	if err != nil {

@@ -141,9 +141,9 @@ func ReportErrorsProjectPath(project string) string {
 func (c *ReportErrorsClient) ReportErrorEvent(ctx context.Context, req *clouderrorreportingpb.ReportErrorEventRequest) (*clouderrorreportingpb.ReportErrorEventResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *clouderrorreportingpb.ReportErrorEventResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.reportErrorsClient.ReportErrorEvent(ctx, req)
+		resp, err = c.reportErrorsClient.ReportErrorEvent(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.ReportErrorEvent...)
 	if err != nil {

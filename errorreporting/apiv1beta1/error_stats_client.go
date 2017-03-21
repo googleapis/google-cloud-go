@@ -150,9 +150,9 @@ func (c *ErrorStatsClient) ListGroupStats(ctx context.Context, req *clouderrorre
 		} else {
 			req.PageSize = int32(pageSize)
 		}
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.errorStatsClient.ListGroupStats(ctx, req)
+			resp, err = c.errorStatsClient.ListGroupStats(ctx, req, settings.GRPC...)
 			return err
 		}, c.CallOptions.ListGroupStats...)
 		if err != nil {
@@ -184,9 +184,9 @@ func (c *ErrorStatsClient) ListEvents(ctx context.Context, req *clouderrorreport
 		} else {
 			req.PageSize = int32(pageSize)
 		}
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.errorStatsClient.ListEvents(ctx, req)
+			resp, err = c.errorStatsClient.ListEvents(ctx, req, settings.GRPC...)
 			return err
 		}, c.CallOptions.ListEvents...)
 		if err != nil {
@@ -210,9 +210,9 @@ func (c *ErrorStatsClient) ListEvents(ctx context.Context, req *clouderrorreport
 func (c *ErrorStatsClient) DeleteEvents(ctx context.Context, req *clouderrorreportingpb.DeleteEventsRequest) (*clouderrorreportingpb.DeleteEventsResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *clouderrorreportingpb.DeleteEventsResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.errorStatsClient.DeleteEvents(ctx, req)
+		resp, err = c.errorStatsClient.DeleteEvents(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.DeleteEvents...)
 	if err != nil {
