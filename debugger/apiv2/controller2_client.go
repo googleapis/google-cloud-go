@@ -164,9 +164,9 @@ func (c *Controller2Client) SetGoogleClientInfo(keyval ...string) {
 func (c *Controller2Client) RegisterDebuggee(ctx context.Context, req *clouddebuggerpb.RegisterDebuggeeRequest) (*clouddebuggerpb.RegisterDebuggeeResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *clouddebuggerpb.RegisterDebuggeeResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.controller2Client.RegisterDebuggee(ctx, req)
+		resp, err = c.controller2Client.RegisterDebuggee(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.RegisterDebuggee...)
 	if err != nil {
@@ -191,9 +191,9 @@ func (c *Controller2Client) RegisterDebuggee(ctx context.Context, req *clouddebu
 func (c *Controller2Client) ListActiveBreakpoints(ctx context.Context, req *clouddebuggerpb.ListActiveBreakpointsRequest) (*clouddebuggerpb.ListActiveBreakpointsResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *clouddebuggerpb.ListActiveBreakpointsResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.controller2Client.ListActiveBreakpoints(ctx, req)
+		resp, err = c.controller2Client.ListActiveBreakpoints(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.ListActiveBreakpoints...)
 	if err != nil {
@@ -214,9 +214,9 @@ func (c *Controller2Client) ListActiveBreakpoints(ctx context.Context, req *clou
 func (c *Controller2Client) UpdateActiveBreakpoint(ctx context.Context, req *clouddebuggerpb.UpdateActiveBreakpointRequest) (*clouddebuggerpb.UpdateActiveBreakpointResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *clouddebuggerpb.UpdateActiveBreakpointResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.controller2Client.UpdateActiveBreakpoint(ctx, req)
+		resp, err = c.controller2Client.UpdateActiveBreakpoint(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.UpdateActiveBreakpoint...)
 	if err != nil {

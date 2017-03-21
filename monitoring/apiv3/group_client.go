@@ -194,9 +194,9 @@ func (c *GroupClient) ListGroups(ctx context.Context, req *monitoringpb.ListGrou
 		} else {
 			req.PageSize = int32(pageSize)
 		}
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.groupClient.ListGroups(ctx, req)
+			resp, err = c.groupClient.ListGroups(ctx, req, settings.GRPC...)
 			return err
 		}, c.CallOptions.ListGroups...)
 		if err != nil {
@@ -220,9 +220,9 @@ func (c *GroupClient) ListGroups(ctx context.Context, req *monitoringpb.ListGrou
 func (c *GroupClient) GetGroup(ctx context.Context, req *monitoringpb.GetGroupRequest) (*monitoringpb.Group, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *monitoringpb.Group
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.groupClient.GetGroup(ctx, req)
+		resp, err = c.groupClient.GetGroup(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.GetGroup...)
 	if err != nil {
@@ -235,9 +235,9 @@ func (c *GroupClient) GetGroup(ctx context.Context, req *monitoringpb.GetGroupRe
 func (c *GroupClient) CreateGroup(ctx context.Context, req *monitoringpb.CreateGroupRequest) (*monitoringpb.Group, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *monitoringpb.Group
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.groupClient.CreateGroup(ctx, req)
+		resp, err = c.groupClient.CreateGroup(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.CreateGroup...)
 	if err != nil {
@@ -251,9 +251,9 @@ func (c *GroupClient) CreateGroup(ctx context.Context, req *monitoringpb.CreateG
 func (c *GroupClient) UpdateGroup(ctx context.Context, req *monitoringpb.UpdateGroupRequest) (*monitoringpb.Group, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *monitoringpb.Group
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.groupClient.UpdateGroup(ctx, req)
+		resp, err = c.groupClient.UpdateGroup(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.UpdateGroup...)
 	if err != nil {
@@ -265,9 +265,9 @@ func (c *GroupClient) UpdateGroup(ctx context.Context, req *monitoringpb.UpdateG
 // DeleteGroup deletes an existing group.
 func (c *GroupClient) DeleteGroup(ctx context.Context, req *monitoringpb.DeleteGroupRequest) error {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.groupClient.DeleteGroup(ctx, req)
+		_, err = c.groupClient.DeleteGroup(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.DeleteGroup...)
 	return err
@@ -285,9 +285,9 @@ func (c *GroupClient) ListGroupMembers(ctx context.Context, req *monitoringpb.Li
 		} else {
 			req.PageSize = int32(pageSize)
 		}
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.groupClient.ListGroupMembers(ctx, req)
+			resp, err = c.groupClient.ListGroupMembers(ctx, req, settings.GRPC...)
 			return err
 		}, c.CallOptions.ListGroupMembers...)
 		if err != nil {

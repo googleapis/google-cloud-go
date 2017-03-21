@@ -122,9 +122,9 @@ func (c *ImageAnnotatorClient) SetGoogleClientInfo(keyval ...string) {
 func (c *ImageAnnotatorClient) BatchAnnotateImages(ctx context.Context, req *visionpb.BatchAnnotateImagesRequest) (*visionpb.BatchAnnotateImagesResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *visionpb.BatchAnnotateImagesResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.imageAnnotatorClient.BatchAnnotateImages(ctx, req)
+		resp, err = c.imageAnnotatorClient.BatchAnnotateImages(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.BatchAnnotateImages...)
 	if err != nil {

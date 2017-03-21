@@ -224,9 +224,9 @@ func (c *InstanceAdminClient) ListInstanceConfigs(ctx context.Context, req *inst
 		} else {
 			req.PageSize = int32(pageSize)
 		}
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.instanceAdminClient.ListInstanceConfigs(ctx, req)
+			resp, err = c.instanceAdminClient.ListInstanceConfigs(ctx, req, settings.GRPC...)
 			return err
 		}, c.CallOptions.ListInstanceConfigs...)
 		if err != nil {
@@ -250,9 +250,9 @@ func (c *InstanceAdminClient) ListInstanceConfigs(ctx context.Context, req *inst
 func (c *InstanceAdminClient) GetInstanceConfig(ctx context.Context, req *instancepb.GetInstanceConfigRequest) (*instancepb.InstanceConfig, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *instancepb.InstanceConfig
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.GetInstanceConfig(ctx, req)
+		resp, err = c.instanceAdminClient.GetInstanceConfig(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.GetInstanceConfig...)
 	if err != nil {
@@ -273,9 +273,9 @@ func (c *InstanceAdminClient) ListInstances(ctx context.Context, req *instancepb
 		} else {
 			req.PageSize = int32(pageSize)
 		}
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.instanceAdminClient.ListInstances(ctx, req)
+			resp, err = c.instanceAdminClient.ListInstances(ctx, req, settings.GRPC...)
 			return err
 		}, c.CallOptions.ListInstances...)
 		if err != nil {
@@ -299,9 +299,9 @@ func (c *InstanceAdminClient) ListInstances(ctx context.Context, req *instancepb
 func (c *InstanceAdminClient) GetInstance(ctx context.Context, req *instancepb.GetInstanceRequest) (*instancepb.Instance, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *instancepb.Instance
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.GetInstance(ctx, req)
+		resp, err = c.instanceAdminClient.GetInstance(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.GetInstance...)
 	if err != nil {
@@ -347,9 +347,9 @@ func (c *InstanceAdminClient) GetInstance(ctx context.Context, req *instancepb.G
 func (c *InstanceAdminClient) CreateInstance(ctx context.Context, req *instancepb.CreateInstanceRequest) (*CreateInstanceOperation, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.CreateInstance(ctx, req)
+		resp, err = c.instanceAdminClient.CreateInstance(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.CreateInstance...)
 	if err != nil {
@@ -404,9 +404,9 @@ func (c *InstanceAdminClient) CreateInstance(ctx context.Context, req *instancep
 func (c *InstanceAdminClient) UpdateInstance(ctx context.Context, req *instancepb.UpdateInstanceRequest) (*UpdateInstanceOperation, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.UpdateInstance(ctx, req)
+		resp, err = c.instanceAdminClient.UpdateInstance(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.UpdateInstance...)
 	if err != nil {
@@ -431,9 +431,9 @@ func (c *InstanceAdminClient) UpdateInstance(ctx context.Context, req *instancep
 //     is permanently deleted.
 func (c *InstanceAdminClient) DeleteInstance(ctx context.Context, req *instancepb.DeleteInstanceRequest) error {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.instanceAdminClient.DeleteInstance(ctx, req)
+		_, err = c.instanceAdminClient.DeleteInstance(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.DeleteInstance...)
 	return err
@@ -447,9 +447,9 @@ func (c *InstanceAdminClient) DeleteInstance(ctx context.Context, req *instancep
 func (c *InstanceAdminClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *iampb.Policy
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.SetIamPolicy(ctx, req)
+		resp, err = c.instanceAdminClient.SetIamPolicy(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.SetIamPolicy...)
 	if err != nil {
@@ -466,9 +466,9 @@ func (c *InstanceAdminClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 func (c *InstanceAdminClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *iampb.Policy
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.GetIamPolicy(ctx, req)
+		resp, err = c.instanceAdminClient.GetIamPolicy(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.GetIamPolicy...)
 	if err != nil {
@@ -486,9 +486,9 @@ func (c *InstanceAdminClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 func (c *InstanceAdminClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *iampb.TestIamPermissionsResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.TestIamPermissions(ctx, req)
+		resp, err = c.instanceAdminClient.TestIamPermissions(ctx, req, settings.GRPC...)
 		return err
 	}, c.CallOptions.TestIamPermissions...)
 	if err != nil {
