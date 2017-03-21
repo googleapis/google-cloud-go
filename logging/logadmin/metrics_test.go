@@ -17,12 +17,12 @@ package logadmin
 import (
 	"log"
 	"reflect"
+	"sort"
 	"testing"
 
 	ltesting "cloud.google.com/go/logging/internal/testing"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
-	itesting "google.golang.org/api/iterator/testing"
 )
 
 const testMetricIDPrefix = "GO-CLIENT-TEST-METRIC"
@@ -132,10 +132,29 @@ func TestListMetrics(t *testing.T) {
 		defer client.DeleteMetric(ctx, m.ID)
 	}
 
-	msg, ok := itesting.TestIterator(metrics,
-		func() interface{} { return client.Metrics(ctx) },
-		func(it interface{}) (interface{}, error) { return it.(*MetricIterator).Next() })
-	if !ok {
-		t.Fatal(msg)
+	var got []*Metric
+	it := client.Metrics(ctx)
+	for {
+		m, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		got = append(got, m)
+	}
+
+	sort.Sort(sortMetricID(metrics))
+	sort.Sort(sortMetricID(got))
+	if !reflect.DeepEqual(metrics, got) {
+		t.Errorf("got %+v, want %+v", got, metrics)
 	}
 }
+
+// Can't use sort.Slice right now, need go1.7 compatibility.
+type sortMetricID []*Metric
+
+func (a sortMetricID) Len() int           { return len(a) }
+func (a sortMetricID) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a sortMetricID) Less(i, j int) bool { return a[i].ID < a[j].ID }
