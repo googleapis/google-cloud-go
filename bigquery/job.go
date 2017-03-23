@@ -109,7 +109,7 @@ func (j *Job) Cancel(ctx context.Context) error {
 	return j.service.jobCancel(ctx, j.projectID, j.jobID)
 }
 
-// Wait blocks until the job or th context is done. It returns the final status
+// Wait blocks until the job or the context is done. It returns the final status
 // of the job.
 // If an error occurs while retrieving the status, Wait returns that error. But
 // Wait returns nil if the status was retrieved successfully, even if
