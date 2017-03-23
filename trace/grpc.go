@@ -67,10 +67,7 @@ func grpcUnaryInterceptor(ctx context.Context, method string, req, reply interfa
 // The functionality in gRPC that this feature relies on is currently experimental.
 func GRPCServerInterceptor(tc *Client) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
-		md, ok := metadata.FromContext(ctx)
-		if !ok {
-			return handler(ctx, req)
-		}
+		md, _ := metadata.FromContext(ctx)
 		if header, ok := md[grpcMetadataKey]; ok {
 			span := tc.SpanFromHeader("", strings.Join(header, ""))
 			defer span.Finish()
