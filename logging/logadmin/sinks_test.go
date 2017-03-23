@@ -28,7 +28,6 @@ import (
 	"cloud.google.com/go/storage"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
-	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
 )
 
@@ -195,12 +194,15 @@ func TestUpdateSink(t *testing.T) {
 func TestListSinks(t *testing.T) {
 	ctx := context.Background()
 	var sinks []*Sink
+	want := map[string]*Sink{}
 	for i := 0; i < 4; i++ {
-		sinks = append(sinks, &Sink{
+		s := &Sink{
 			ID:          ltesting.UniqueID(testSinkIDPrefix),
 			Destination: testSinkDestination,
 			Filter:      testFilter,
-		})
+		}
+		sinks = append(sinks, s)
+		want[s.ID] = s
 	}
 	for _, s := range sinks {
 		if _, err := client.CreateSink(ctx, s); err != nil {
@@ -209,10 +211,23 @@ func TestListSinks(t *testing.T) {
 		defer client.DeleteSink(ctx, s.ID)
 	}
 
-	msg, ok := itesting.TestIterator(sinks,
-		func() interface{} { return client.Sinks(ctx) },
-		func(it interface{}) (interface{}, error) { return it.(*SinkIterator).Next() })
-	if !ok {
-		t.Fatal(msg)
+	got := map[string]*Sink{}
+	it := client.Sinks(ctx)
+	for {
+		s, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		// If tests run simultaneously, we may have more sinks than we
+		// created. So only check for our own.
+		if _, ok := want[s.ID]; ok {
+			got[s.ID] = s
+		}
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %+v, want %+v", got, want)
 	}
 }
