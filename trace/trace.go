@@ -405,7 +405,7 @@ func (c *Client) NewSpan(name string) *Span {
 		globalOptions: optionTrace,
 	}
 	span := startNewChild(name, t, 0)
-	span.span.Kind = spanKindServer
+	span.span.Kind = spanKindUnspecified
 	span.rootSpan = true
 	configureSpanFromPolicy(span, c.policy, false)
 	return span

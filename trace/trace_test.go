@@ -270,7 +270,7 @@ func TestNewSpan(t *testing.T) {
 						Name:   "/google.datastore.v1.Datastore/Lookup",
 					},
 					{
-						Kind:   "RPC_SERVER",
+						Kind:   "SPAN_KIND_UNSPECIFIED",
 						Labels: map[string]string{},
 						Name:   "/foo",
 					},
