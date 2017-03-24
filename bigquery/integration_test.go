@@ -15,6 +15,7 @@
 package bigquery
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -26,7 +27,10 @@ import (
 	"testing"
 	"time"
 
+	gax "github.com/googleapis/gax-go"
+
 	"cloud.google.com/go/civil"
+	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
 	"golang.org/x/net/context"
@@ -637,28 +641,38 @@ func TestIntegration_DML(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	table := newTable(t, schema)
-	defer table.Delete(ctx)
+	// Retry insert; sometimes it fails with INTERNAL.
+	err := internal.Retry(ctx, gax.Backoff{}, func() (bool, error) {
+		table := newTable(t, schema)
+		defer table.Delete(ctx)
 
-	// Use DML to insert.
-	wantRows := [][]Value{
-		[]Value{"a", int64(0)},
-		[]Value{"b", int64(1)},
-		[]Value{"c", int64(2)},
-	}
-	query := fmt.Sprintf("INSERT bigquery_integration_test.%s (name, num) "+
-		"VALUES ('a', 0), ('b', 1), ('c', 2)",
-		table.TableID)
-	q := client.Query(query)
-	q.UseStandardSQL = true // necessary for DML
-	job, err := q.Run(ctx)
+		// Use DML to insert.
+		wantRows := [][]Value{
+			[]Value{"a", int64(0)},
+			[]Value{"b", int64(1)},
+			[]Value{"c", int64(2)},
+		}
+		query := fmt.Sprintf("INSERT bigquery_integration_test.%s (name, num) "+
+			"VALUES ('a', 0), ('b', 1), ('c', 2)",
+			table.TableID)
+		q := client.Query(query)
+		q.UseStandardSQL = true // necessary for DML
+		job, err := q.Run(ctx)
+		if err != nil {
+			return false, err
+		}
+		if err := wait(ctx, job); err != nil {
+			return false, err
+		}
+		if msg, ok := compareRead(table.Read(ctx), wantRows); !ok {
+			// Stop on read error, because that has never been flaky.
+			return true, errors.New(msg)
+		}
+		return true, nil
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := wait(ctx, job); err != nil {
-		t.Fatal(err)
-	}
-	checkRead(t, "INSERT", table.Read(ctx), wantRows)
 }
 
 func TestIntegration_TimeTypes(t *testing.T) {
@@ -859,21 +873,28 @@ func newTable(t *testing.T, s Schema) *Table {
 }
 
 func checkRead(t *testing.T, msg string, it *RowIterator, want [][]Value) {
+	if msg2, ok := compareRead(it, want); !ok {
+		t.Errorf("%s: %s", msg, msg2)
+	}
+}
+
+func compareRead(it *RowIterator, want [][]Value) (msg string, ok bool) {
 	got, err := readAll(it)
 	if err != nil {
-		t.Fatalf("%s: %v", msg, err)
+		return err.Error(), false
 	}
 	if len(got) != len(want) {
-		t.Errorf("%s: got %d rows, want %d", msg, len(got), len(want))
+		return fmt.Sprintf("got %d rows, want %d", len(got), len(want)), false
 	}
 	sort.Sort(byCol0(got))
 	for i, r := range got {
 		gotRow := []Value(r)
 		wantRow := want[i]
 		if !reflect.DeepEqual(gotRow, wantRow) {
-			t.Errorf("%s #%d: got %v, want %v", msg, i, gotRow, wantRow)
+			return fmt.Sprintf("#%d: got %v, want %v", i, gotRow, wantRow), false
 		}
 	}
+	return "", true
 }
 
 func readAll(it *RowIterator) ([][]Value, error) {
