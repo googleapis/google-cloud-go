@@ -560,8 +560,11 @@ func (c *Client) upload(traces []*api.Trace) error {
 
 // Span contains information about one span of a trace.
 type Span struct {
-	trace      *trace
-	span       api.TraceSpan
+	trace *trace
+
+	spanMu sync.Mutex // guards span.Labels
+	span   api.TraceSpan
+
 	start      time.Time
 	end        time.Time
 	rootSpan   bool
@@ -670,6 +673,9 @@ func (s *Span) SetLabel(key, value string) {
 	if !s.tracing() {
 		return
 	}
+	s.spanMu.Lock()
+	defer s.spanMu.Unlock()
+
 	if value == "" {
 		if s.span.Labels != nil {
 			delete(s.span.Labels, key)
