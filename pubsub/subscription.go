@@ -234,13 +234,17 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		maxPrefetch:  trunc32(int64(maxCount)),
 		ackDeadline:  config.AckDeadline,
 	}
-	iter := newMessageIterator(context.Background(), s.s, s.name, po)
 	fc := newFlowController(maxCount, maxBytes)
 
 	// Wait for all goroutines started by Receive to return, so instead of an
 	// obscure goroutine leak we have an obvious blocked call to Receive.
 	var wg sync.WaitGroup
 	defer wg.Wait()
+
+	return s.receive(ctx, &wg, po, fc, f)
+}
+
+func (s *Subscription) receive(ctx context.Context, wg *sync.WaitGroup, po *pullOptions, fc *flowController, f func(context.Context, *Message)) error {
 	// Cancel a sub-context when we return, to kick the context-aware callbacks
 	// and the goroutine below.
 	ctx2, cancel := context.WithCancel(ctx)
@@ -250,13 +254,13 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	// The iterator does not use the context passed to Receive. If it did, canceling
 	// that context would immediately stop the iterator without waiting for unacked
 	// messages.
+	iter := newMessageIterator(context.Background(), s.s, s.name, po)
 	wg.Add(1)
 	go func() {
 		<-ctx2.Done()
 		iter.Stop()
 		wg.Done()
 	}()
-	// Since defers happen in LIFO order, the defer of cancel must appear after the defer of wg.Wait.
 	defer cancel()
 	for {
 		msg, err := iter.Next()
