@@ -28,7 +28,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-const timeout = time.Minute * 1
+const timeout = time.Minute * 10
 const ackDeadline = time.Second * 10
 
 const nMessages = 1e4
