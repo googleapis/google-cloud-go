@@ -666,6 +666,8 @@ func (s *Span) TraceID() string {
 // If a label is given a value automatically and by SetLabel, the
 // automatically-set value is used.
 // If s is nil, does nothing.
+//
+// SetLabel shouldn't be called after Finish or FinishWait.
 func (s *Span) SetLabel(key, value string) {
 	if s == nil {
 		return
