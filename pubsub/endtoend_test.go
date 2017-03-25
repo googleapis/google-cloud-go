@@ -15,8 +15,11 @@
 package pubsub
 
 import (
+	"bytes"
 	"fmt"
+	"log"
 	"math/rand"
+	"os"
 	"reflect"
 	"sync"
 	"testing"
@@ -33,6 +36,9 @@ const ackDeadline = time.Second * 10
 
 const nMessages = 1e4
 
+// Buffer log messages to debug failures.
+var logBuf bytes.Buffer
+
 // TestEndToEnd pumps many messages into a topic and tests that they are all
 // delivered to each subscription for the topic. It also tests that messages
 // are not unexpectedly redelivered.
@@ -40,6 +46,7 @@ func TestEndToEnd(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
+	log.SetOutput(&logBuf)
 	ctx := context.Background()
 	ts := testutil.TokenSource(ctx, ScopePubSub, ScopeCloudPlatform)
 	if ts == nil {
@@ -102,36 +109,46 @@ func TestEndToEnd(t *testing.T) {
 			con.consume(t, cctx, sub)
 		}()
 	}
-	// Every time this ticker ticks, we will check if we have received any
-	// messages since the last time it ticked.  We check less frequently
-	// than the ack deadline, so that we can detect if messages are
-	// redelivered after having their ack deadline extended.
-	checkQuiescence := time.NewTicker(ackDeadline * 3)
-	defer checkQuiescence.Stop()
+	// Wait for a while after the last message before declaring quiescence.
+	// We wait a multiple of the ack deadline, for two reasons:
+	// 1. To detect if messages are redelivered after having their ack
+	//    deadline extended.
+	// 2. To wait for redelivery of messages that were en route when a Receive
+	//    is canceled. This can take considerably longer than the ack deadline.
+	quiescenceDur := ackDeadline * 6
+	quiescenceTimer := time.NewTimer(quiescenceDur)
 
-	var received bool
 loop:
 	for {
 		select {
 		case <-recv:
-			received = true
-		case <-checkQuiescence.C:
-			if received {
-				received = false
-			} else {
-				cancel()
-				break loop
+			// Reset timer so we wait quiescenceDur after the last message.
+			// See https://godoc.org/time#Timer.Reset for why the Stop
+			// and channel drain are necessary.
+			if !quiescenceTimer.Stop() {
+				<-quiescenceTimer.C
 			}
+			quiescenceTimer.Reset(quiescenceDur)
+
+		case <-quiescenceTimer.C:
+			cancel()
+			log.Println("quiesced")
+			break loop
+
 		case <-cctx.Done():
 			t.Fatal("timed out")
 		}
 	}
-
 	wg.Wait()
+	ok := true
 	for i, con := range consumers {
 		if got, want := con.counts, wantCounts; !reflect.DeepEqual(got, want) {
 			t.Errorf("%d: message counts: %v\n", i, diff(got, want))
+			ok = false
 		}
+	}
+	if !ok {
+		logBuf.WriteTo(os.Stdout)
 	}
 }
 
@@ -162,6 +179,7 @@ type consumer struct {
 
 	mu     sync.Mutex
 	counts map[string]int
+	total  int
 }
 
 // consume reads messages from a subscription, and keeps track of what it receives in mc.
@@ -170,7 +188,11 @@ func (c *consumer) consume(t *testing.T, ctx context.Context, sub *Subscription)
 	for _, dur := range c.durations {
 		ctx2, cancel := context.WithTimeout(ctx, dur)
 		defer cancel()
+		id := sub.name[len(sub.name)-2:]
+		log.Printf("%s: start receive", id)
+		prev := c.total
 		err := sub.Receive(ctx2, c.process)
+		log.Printf("%s: end receive; read %d", id, c.total-prev)
 		if err != nil {
 			t.Errorf("error from Receive: %v", err)
 			return
@@ -187,6 +209,7 @@ func (c *consumer) consume(t *testing.T, ctx context.Context, sub *Subscription)
 func (c *consumer) process(_ context.Context, m *Message) {
 	c.mu.Lock()
 	c.counts[m.ID] += 1
+	c.total++
 	c.mu.Unlock()
 	c.recv <- struct{}{}
 	// Simulate time taken to process m, while continuing to process more messages.
