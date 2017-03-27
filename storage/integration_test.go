@@ -30,6 +30,7 @@ import (
 	"os"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -1045,6 +1046,33 @@ func TestIntegration_BucketInCopyAttrs(t *testing.T) {
 	_, err := copier.callRewrite(ctx, obj, rawObject)
 	if err == nil {
 		t.Errorf("got nil, want error")
+	}
+}
+
+func TestIntegration_NoUnicodeNormalization(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client, _ := testConfig(ctx, t)
+	defer client.Close()
+	bkt := client.Bucket("storage-library-test-bucket")
+
+	for _, tst := range []struct {
+		nameQuoted, content string
+	}{
+		{`"Caf\u00e9"`, "Normalization Form C"},
+		{`"Cafe\u0301"`, "Normalization Form D"},
+	} {
+		name, err := strconv.Unquote(tst.nameQuoted)
+		if err != nil {
+			t.Fatalf("invalid name: %s: %v", tst.nameQuoted, err)
+		}
+		got, err := readObject(ctx, bkt.Object(name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if g := string(got); g != tst.content {
+			t.Errorf("content of %s is %q, want %q", tst.nameQuoted, g, tst.content)
+		}
 	}
 }
 
