@@ -20,10 +20,12 @@ package translate
 
 import (
 	"fmt"
+	"net/http"
 
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
 
+	"cloud.google.com/go/internal/version"
 	raw "cloud.google.com/go/translate/internal/translate/v2"
 	"golang.org/x/net/context"
 	"golang.org/x/text/language"
@@ -80,6 +82,7 @@ func (c *Client) Close() error { return nil }
 // The returned Translations appear in the same order as the inputs.
 func (c *Client) Translate(ctx context.Context, inputs []string, target language.Tag, opts *Options) ([]Translation, error) {
 	call := c.raw.Translations.List(inputs, target.String()).Context(ctx)
+	setClientHeader(call.Header())
 	if opts != nil {
 		if s := opts.Source; s != language.Und {
 			call.Source(s.String())
@@ -161,6 +164,7 @@ type Translation struct {
 // a single input string.
 func (c *Client) DetectLanguage(ctx context.Context, inputs []string) ([][]Detection, error) {
 	call := c.raw.Detections.List(inputs).Context(ctx)
+	setClientHeader(call.Header())
 	res, err := call.Do()
 	if err != nil {
 		return nil, err
@@ -202,6 +206,7 @@ type Detection struct {
 // readable names of supported languages.
 func (c *Client) SupportedLanguages(ctx context.Context, target language.Tag) ([]Language, error) {
 	call := c.raw.Languages.List().Context(ctx).Target(target.String())
+	setClientHeader(call.Header())
 	res, err := call.Do()
 	if err != nil {
 		return nil, err
@@ -227,4 +232,8 @@ type Language struct {
 
 	// Tag is a standard code for the language.
 	Tag language.Tag
+}
+
+func setClientHeader(headers http.Header) {
+	headers.Set("x-goog-api-client", fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), version.Repo))
 }
