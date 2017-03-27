@@ -3,8 +3,8 @@
 
 SHELL=/bin/bash
 
-REPO_ROOT=$(shell git rev-parse --show-toplevel)
-README=$(REPO_ROOT)/README.md
+GOCLOUD_HOME=$(GOPATH)/src/cloud.google.com/go
+README=$(GOCLOUD_HOME)/README.md
 
 .PHONY: readme test test-good test-bad-go test-bad-md
 
@@ -12,6 +12,9 @@ readme:
 	@tmp=$$(mktemp); \
 	awk -f snipmd.awk snippets.go $(README) > $$tmp; \
 	mv $$tmp $(README)
+
+diff:
+	diff $(README) <(awk -f snipmd.awk snippets.go $(README))
 
 test: test-good test-bad-go test-bad-md
 	@echo PASS
