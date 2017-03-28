@@ -188,10 +188,11 @@ func TestDetectMethods(t *testing.T) {
 	} {
 		i := i
 		path := test.path
+		call := test.call
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			present, err := test.call(testImage(path))
+			present, err := call(testImage(path))
 			if err != nil {
 				t.Errorf("%s, #%d: got err %v, want nil", path, i, err)
 			} else if !present {
