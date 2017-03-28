@@ -46,7 +46,7 @@ type QueryConfig struct {
 	CreateDisposition TableCreateDisposition
 
 	// WriteDisposition specifies how existing data in the destination table is treated.
-	// The default is WriteAppend.
+	// The default is WriteEmpty.
 	WriteDisposition TableWriteDisposition
 
 	// DisableQueryCache prevents results being fetched from the query cache.
