@@ -104,6 +104,8 @@ type insertJobConf struct {
 	media io.Reader
 }
 
+// Calls the Jobs.Insert RPC and returns a Job. Callers must set the returned Job's
+// client.
 func (s *bigqueryService) insertJob(ctx context.Context, projectID string, conf *insertJobConf) (*Job, error) {
 	call := s.s.Jobs.Insert(projectID, conf.job).Context(ctx)
 	if conf.media != nil {
@@ -113,7 +115,7 @@ func (s *bigqueryService) insertJob(ctx context.Context, projectID string, conf 
 	if err != nil {
 		return nil, err
 	}
-	return &Job{service: s, projectID: projectID, jobID: res.JobReference.JobId}, nil
+	return &Job{projectID: projectID, jobID: res.JobReference.JobId}, nil
 }
 
 type pagingConf struct {
@@ -338,13 +340,18 @@ func (s *bigqueryService) jobCancel(ctx context.Context, projectID, jobID string
 
 func (s *bigqueryService) jobStatus(ctx context.Context, projectID, jobID string) (*JobStatus, error) {
 	res, err := s.s.Jobs.Get(projectID, jobID).
-		Fields("status"). // Only fetch what we need.
+		Fields("status", "statistics"). // Only fetch what we need.
 		Context(ctx).
 		Do()
 	if err != nil {
 		return nil, err
 	}
-	return jobStatusFromProto(res.Status)
+	st, err := jobStatusFromProto(res.Status)
+	if err != nil {
+		return nil, err
+	}
+	st.Statistics = jobStatisticsFromProto(res.Statistics)
+	return st, nil
 }
 
 var stateMap = map[string]State{"PENDING": Pending, "RUNNING": Running, "DONE": Done}
@@ -369,6 +376,80 @@ func jobStatusFromProto(status *bq.JobStatus) (*JobStatus, error) {
 	return newStatus, nil
 }
 
+func jobStatisticsFromProto(s *bq.JobStatistics) *JobStatistics {
+	js := &JobStatistics{
+		CreationTime:        unixMillisToTime(s.CreationTime),
+		StartTime:           unixMillisToTime(s.StartTime),
+		EndTime:             unixMillisToTime(s.EndTime),
+		TotalBytesProcessed: s.TotalBytesProcessed,
+	}
+	switch {
+	case s.Extract != nil:
+		js.Details = &ExtractStatistics{
+			DestinationURIFileCounts: []int64(s.Extract.DestinationUriFileCounts),
+		}
+	case s.Load != nil:
+		js.Details = &LoadStatistics{
+			InputFileBytes: s.Load.InputFileBytes,
+			InputFiles:     s.Load.InputFiles,
+			OutputBytes:    s.Load.OutputBytes,
+			OutputRows:     s.Load.OutputRows,
+		}
+	case s.Query != nil:
+		var names []string
+		for _, qp := range s.Query.UndeclaredQueryParameters {
+			names = append(names, qp.Name)
+		}
+		var tables []*Table
+		for _, tr := range s.Query.ReferencedTables {
+			tables = append(tables, convertTableReference(tr))
+		}
+		js.Details = &QueryStatistics{
+			BillingTier:                   s.Query.BillingTier,
+			CacheHit:                      s.Query.CacheHit,
+			StatementType:                 s.Query.StatementType,
+			TotalBytesBilled:              s.Query.TotalBytesBilled,
+			TotalBytesProcessed:           s.Query.TotalBytesProcessed,
+			NumDMLAffectedRows:            s.Query.NumDmlAffectedRows,
+			QueryPlan:                     queryPlanFromProto(s.Query.QueryPlan),
+			Schema:                        convertTableSchema(s.Query.Schema),
+			ReferencedTables:              tables,
+			UndeclaredQueryParameterNames: names,
+		}
+	}
+	return js
+}
+
+func queryPlanFromProto(stages []*bq.ExplainQueryStage) []*ExplainQueryStage {
+	var res []*ExplainQueryStage
+	for _, s := range stages {
+		var steps []*ExplainQueryStep
+		for _, p := range s.Steps {
+			steps = append(steps, &ExplainQueryStep{
+				Kind:     p.Kind,
+				Substeps: p.Substeps,
+			})
+		}
+		res = append(res, &ExplainQueryStage{
+			ComputeRatioAvg: s.ComputeRatioAvg,
+			ComputeRatioMax: s.ComputeRatioMax,
+			ID:              s.Id,
+			Name:            s.Name,
+			ReadRatioAvg:    s.ReadRatioAvg,
+			ReadRatioMax:    s.ReadRatioMax,
+			RecordsRead:     s.RecordsRead,
+			RecordsWritten:  s.RecordsWritten,
+			Status:          s.Status,
+			Steps:           steps,
+			WaitRatioAvg:    s.WaitRatioAvg,
+			WaitRatioMax:    s.WaitRatioMax,
+			WriteRatioAvg:   s.WriteRatioAvg,
+			WriteRatioMax:   s.WriteRatioMax,
+		})
+	}
+	return res
+}
+
 // listTables returns a subset of tables that belong to a dataset, and a token for fetching the next subset.
 func (s *bigqueryService) listTables(ctx context.Context, projectID, datasetID string, pageSize int, pageToken string) ([]*Table, string, error) {
 	var tables []*Table
@@ -383,7 +464,7 @@ func (s *bigqueryService) listTables(ctx context.Context, projectID, datasetID s
 		return nil, "", err
 	}
 	for _, t := range res.Tables {
-		tables = append(tables, s.convertListedTable(t))
+		tables = append(tables, convertTableReference(t.TableReference))
 	}
 	return tables, res.NextPageToken, nil
 }
@@ -498,11 +579,11 @@ func unixMillisToTime(m int64) time.Time {
 	return time.Unix(0, m*1e6)
 }
 
-func (s *bigqueryService) convertListedTable(t *bq.TableListTables) *Table {
+func convertTableReference(tr *bq.TableReference) *Table {
 	return &Table{
-		ProjectID: t.TableReference.ProjectId,
-		DatasetID: t.TableReference.DatasetId,
-		TableID:   t.TableReference.TableId,
+		ProjectID: tr.ProjectId,
+		DatasetID: tr.DatasetId,
+		TableID:   tr.TableId,
 	}
 }
 

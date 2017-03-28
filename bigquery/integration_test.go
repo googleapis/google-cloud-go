@@ -316,6 +316,18 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 	}
 	checkRead(t, "job.Read", rit, wantRows)
 
+	// Get statistics.
+	jobStatus, err := job2.Status(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if jobStatus.Statistics == nil {
+		t.Fatal("jobStatus missing statistics")
+	}
+	if _, ok := jobStatus.Statistics.Details.(*QueryStatistics); !ok {
+		t.Errorf("expected QueryStatistics, got %T", jobStatus.Statistics.Details)
+	}
+
 	// Test reading directly into a []Value.
 	valueLists, err := readAll(table.Read(ctx))
 	if err != nil {
@@ -942,6 +954,15 @@ func wait(ctx context.Context, job *Job) error {
 	}
 	if status.Err() != nil {
 		return fmt.Errorf("job status error: %#v", status.Err())
+	}
+	if status.Statistics == nil {
+		return errors.New("nil Statistics")
+	}
+	if status.Statistics.EndTime.IsZero() {
+		return errors.New("EndTime is zero")
+	}
+	if status.Statistics.Details == nil {
+		return errors.New("nil Statistics.Details")
 	}
 	return nil
 }
