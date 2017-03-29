@@ -15,12 +15,16 @@
 package vision
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"sync"
 	"testing"
+	"time"
 
+	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
+	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 )
@@ -60,27 +64,42 @@ func TestAnnotate(t *testing.T) {
 }
 
 func runAnnotateTest(t *testing.T, ctx context.Context, client *Client, test annotateTest) {
-	annsSlice, err := client.Annotate(ctx, &AnnotateRequest{
-		Image:        testImage(test.path),
-		MaxFaces:     1,
-		MaxLandmarks: 1,
-		MaxLogos:     1,
-		MaxLabels:    1,
-		MaxTexts:     1,
-		Web:          true,
-		SafeSearch:   true,
-		ImageProps:   true,
-		CropHints:    &CropHintsParams{},
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+	var anns *Annotations
+	err := internal.Retry(ctx, gax.Backoff{
+		Initial: 500 * time.Millisecond,
+		Max:     2 * time.Second,
+	}, func() (stop bool, err error) {
+		annsSlice, err := client.Annotate(ctx, &AnnotateRequest{
+			Image:        testImage(test.path),
+			MaxFaces:     1,
+			MaxLandmarks: 1,
+			MaxLogos:     1,
+			MaxLabels:    1,
+			MaxTexts:     1,
+			Web:          true,
+			SafeSearch:   true,
+			ImageProps:   true,
+			CropHints:    &CropHintsParams{},
+		})
+		if err != nil {
+			// Stop on RPC error.
+			return true, err
+		}
+		anns = annsSlice[0]
+		if anns.Error != nil {
+			// Keep trying if the Error field is populated -- in practice
+			// it is transient for these inputs.
+			return false, fmt.Errorf("from Error field: %v", anns.Error)
+		}
+		return true, nil
 	})
 	if err != nil {
 		t.Errorf("annotating %s: %v", test.path, err)
 		return
 	}
-	anns := annsSlice[0]
 	p := map[bool]string{true: "present", false: "absent"}
-	if anns.Error != nil {
-		t.Logf("%s: got unexpected Error %v", test.path, anns.Error)
-	}
 	if got, want := (anns.Faces != nil), test.faces; got != want {
 		t.Errorf("%s: faces %s, want %s", test.path, p[got], p[want])
 	}
