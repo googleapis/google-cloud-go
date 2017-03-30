@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal"
+	"cloud.google.com/go/internal/version"
 	gax "github.com/googleapis/gax-go"
 
 	"golang.org/x/net/context"
@@ -70,6 +71,12 @@ type service interface {
 	listDatasets(ctx context.Context, projectID string, maxResults int, pageToken string, all bool, filter string) ([]*Dataset, string, error)
 }
 
+var xGoogHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), version.Repo)
+
+func setClientHeader(headers http.Header) {
+	headers.Set("x-goog-api-client", xGoogHeader)
+}
+
 type bigqueryService struct {
 	s *bq.Service
 }
@@ -108,6 +115,7 @@ type insertJobConf struct {
 // client.
 func (s *bigqueryService) insertJob(ctx context.Context, projectID string, conf *insertJobConf) (*Job, error) {
 	call := s.s.Jobs.Insert(projectID, conf.job).Context(ctx)
+	setClientHeader(call.Header())
 	if conf.media != nil {
 		call.Media(conf.media)
 	}
@@ -146,6 +154,7 @@ type readQueryConf struct {
 func (s *bigqueryService) readTabledata(ctx context.Context, conf *readTableConf, pageToken string) (*readDataResult, error) {
 	// Prepare request to fetch one page of table data.
 	req := s.s.Tabledata.List(conf.projectID, conf.datasetID, conf.tableID)
+	setClientHeader(req.Header())
 
 	if pageToken != "" {
 		req.PageToken(pageToken)
@@ -208,6 +217,7 @@ const getQueryResultsTimeout = time.Minute
 func (s *bigqueryService) readQuery(ctx context.Context, conf *readQueryConf, pageToken string) (*readDataResult, error) {
 	req := s.s.Jobs.GetQueryResults(conf.projectID, conf.jobID).
 		TimeoutMs(getQueryResultsTimeout.Nanoseconds() / 1e6)
+	setClientHeader(req.Header())
 
 	if pageToken != "" {
 		req.PageToken(pageToken)
@@ -265,7 +275,9 @@ func (s *bigqueryService) insertRows(ctx context.Context, projectID, datasetID, 
 	var res *bq.TableDataInsertAllResponse
 	err := runWithRetry(ctx, func() error {
 		var err error
-		res, err = s.s.Tabledata.InsertAll(projectID, datasetID, tableID, req).Context(ctx).Do()
+		req := s.s.Tabledata.InsertAll(projectID, datasetID, tableID, req).Context(ctx)
+		setClientHeader(req.Header())
+		res, err = req.Do()
 		return err
 	})
 	if err != nil {
@@ -456,6 +468,7 @@ func (s *bigqueryService) listTables(ctx context.Context, projectID, datasetID s
 	req := s.s.Tables.List(projectID, datasetID).
 		PageToken(pageToken).
 		Context(ctx)
+	setClientHeader(req.Header())
 	if pageSize > 0 {
 		req.MaxResults(int64(pageSize))
 	}
@@ -514,12 +527,16 @@ func (s *bigqueryService) createTable(ctx context.Context, conf *createTableConf
 		}
 	}
 
-	_, err := s.s.Tables.Insert(conf.projectID, conf.datasetID, table).Context(ctx).Do()
+	req := s.s.Tables.Insert(conf.projectID, conf.datasetID, table).Context(ctx)
+	setClientHeader(req.Header())
+	_, err := req.Do()
 	return err
 }
 
 func (s *bigqueryService) getTableMetadata(ctx context.Context, projectID, datasetID, tableID string) (*TableMetadata, error) {
-	table, err := s.s.Tables.Get(projectID, datasetID, tableID).Context(ctx).Do()
+	req := s.s.Tables.Get(projectID, datasetID, tableID).Context(ctx)
+	setClientHeader(req.Header())
+	table, err := req.Do()
 	if err != nil {
 		return nil, err
 	}
@@ -527,7 +544,9 @@ func (s *bigqueryService) getTableMetadata(ctx context.Context, projectID, datas
 }
 
 func (s *bigqueryService) deleteTable(ctx context.Context, projectID, datasetID, tableID string) error {
-	return s.s.Tables.Delete(projectID, datasetID, tableID).Context(ctx).Do()
+	req := s.s.Tables.Delete(projectID, datasetID, tableID).Context(ctx)
+	setClientHeader(req.Header())
+	return req.Do()
 }
 
 func bqTableToMetadata(t *bq.Table) *TableMetadata {
@@ -626,16 +645,22 @@ func (s *bigqueryService) insertDataset(ctx context.Context, datasetID, projectI
 	ds := &bq.Dataset{
 		DatasetReference: &bq.DatasetReference{DatasetId: datasetID},
 	}
-	_, err := s.s.Datasets.Insert(projectID, ds).Context(ctx).Do()
+	req := s.s.Datasets.Insert(projectID, ds).Context(ctx)
+	setClientHeader(req.Header())
+	_, err := req.Do()
 	return err
 }
 
 func (s *bigqueryService) deleteDataset(ctx context.Context, datasetID, projectID string) error {
-	return s.s.Datasets.Delete(projectID, datasetID).Context(ctx).Do()
+	req := s.s.Datasets.Delete(projectID, datasetID).Context(ctx)
+	setClientHeader(req.Header())
+	return req.Do()
 }
 
 func (s *bigqueryService) getDatasetMetadata(ctx context.Context, projectID, datasetID string) (*DatasetMetadata, error) {
-	table, err := s.s.Datasets.Get(projectID, datasetID).Context(ctx).Do()
+	req := s.s.Datasets.Get(projectID, datasetID).Context(ctx)
+	setClientHeader(req.Header())
+	table, err := req.Do()
 	if err != nil {
 		return nil, err
 	}
@@ -647,6 +672,7 @@ func (s *bigqueryService) listDatasets(ctx context.Context, projectID string, ma
 		Context(ctx).
 		PageToken(pageToken).
 		All(all)
+	setClientHeader(req.Header())
 	if maxResults > 0 {
 		req.MaxResults(int64(maxResults))
 	}
