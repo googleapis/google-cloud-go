@@ -93,6 +93,7 @@ func (w *Writer) open() error {
 		var resp *raw.Object
 		err := applyConds("NewWriter", w.o.gen, w.o.conds, call)
 		if err == nil {
+			setClientHeader(call.Header())
 			resp, err = call.Do()
 		}
 		if err != nil {
