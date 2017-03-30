@@ -181,11 +181,11 @@ Use `iterator.Done` instead, where `iterator` is the package
 
 Google API                     | Status       | Package
 -------------------------------|--------------|-----------------------------------------------------------
-[Datastore][cloud-datastore]   | beta         | [`cloud.google.com/go/datastore`][cloud-datastore-ref]
+[Datastore][cloud-datastore]   | stable       | [`cloud.google.com/go/datastore`][cloud-datastore-ref]
 [Storage][cloud-storage]       | beta         | [`cloud.google.com/go/storage`][cloud-storage-ref]
 [Bigtable][cloud-bigtable]     | beta         | [`cloud.google.com/go/bigtable`][cloud-bigtable-ref]
 [BigQuery][cloud-bigquery]     | beta         | [`cloud.google.com/go/bigquery`][cloud-bigquery-ref]
-[Logging][cloud-logging]       | beta         | [`cloud.google.com/go/logging`][cloud-logging-ref]
+[Logging][cloud-logging]       | stable       | [`cloud.google.com/go/logging`][cloud-logging-ref]
 [Pub/Sub][cloud-pubsub]        | alpha | [`cloud.google.com/go/pubsub`][cloud-pubsub-ref]
 [Vision][cloud-vision]         | beta | [`cloud.google.com/go/vision`][cloud-vision-ref]
 [Language][cloud-language]     | alpha | [`cloud.google.com/go/language/apiv1`][cloud-language-ref]
