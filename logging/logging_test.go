@@ -43,6 +43,8 @@ import (
 
 const testLogIDPrefix = "GO-LOGGING-CLIENT/TEST-LOG"
 
+var uids = testutil.NewUIDSpace(testLogIDPrefix)
+
 var (
 	client        *logging.Client
 	aclient       *logadmin.Client
@@ -141,10 +143,9 @@ func TestMain(m *testing.M) {
 }
 
 func initLogs(ctx context.Context) {
-	testLogID = ltesting.UniqueID(testLogIDPrefix)
+	testLogID = uids.New()
 	testFilter = fmt.Sprintf(`logName = "projects/%s/logs/%s"`, testProjectID,
 		strings.Replace(testLogID, "/", "%2F", -1))
-	// TODO(jba): Clean up from previous aborted tests by deleting old logs; requires ListLogs RPC.
 }
 
 // Testing of Logger.Log is done in logadmin_test.go, TestEntries.
