@@ -18,25 +18,27 @@ import (
 	"log"
 	"reflect"
 	"testing"
+	"time"
 
-	ltesting "cloud.google.com/go/logging/internal/testing"
+	"cloud.google.com/go/internal/testutil"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 )
 
-const testMetricIDPrefix = "GO-CLIENT-TEST-METRIC"
+var metricIDs = testutil.NewUIDSpace("GO-CLIENT-TEST-METRIC")
 
 // Initializes the tests before they run.
 func initMetrics(ctx context.Context) {
 	// Clean up from aborted tests.
-	var IDs []string
 	it := client.Metrics(ctx)
 loop:
 	for {
 		m, err := it.Next()
 		switch err {
 		case nil:
-			IDs = append(IDs, m.ID)
+			if metricIDs.Older(m.ID, 24*time.Hour) {
+				client.DeleteMetric(ctx, m.ID)
+			}
 		case iterator.Done:
 			break loop
 		default:
@@ -44,15 +46,12 @@ loop:
 			return
 		}
 	}
-	for _, mID := range ltesting.ExpiredUniqueIDs(IDs, testMetricIDPrefix) {
-		client.DeleteMetric(ctx, mID)
-	}
 }
 
 func TestCreateDeleteMetric(t *testing.T) {
 	ctx := context.Background()
 	metric := &Metric{
-		ID:          ltesting.UniqueID(testMetricIDPrefix),
+		ID:          metricIDs.New(),
 		Description: "DESC",
 		Filter:      "FILTER",
 	}
@@ -81,7 +80,7 @@ func TestCreateDeleteMetric(t *testing.T) {
 func TestUpdateMetric(t *testing.T) {
 	ctx := context.Background()
 	metric := &Metric{
-		ID:          ltesting.UniqueID(testMetricIDPrefix),
+		ID:          metricIDs.New(),
 		Description: "DESC",
 		Filter:      "FILTER",
 	}
@@ -120,7 +119,7 @@ func TestListMetrics(t *testing.T) {
 	want := map[string]*Metric{}
 	for i := 0; i < 10; i++ {
 		m := &Metric{
-			ID:          ltesting.UniqueID(testMetricIDPrefix),
+			ID:          metricIDs.New(),
 			Description: "DESC",
 			Filter:      "FILTER",
 		}
