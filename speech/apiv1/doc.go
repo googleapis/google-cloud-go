@@ -18,7 +18,7 @@
 // speech API.
 //
 // Google Cloud Speech API.
-package speech // import "cloud.google.com/go/speech/apiv1beta1"
+package speech // import "cloud.google.com/go/speech/apiv1"
 
 import (
 	"golang.org/x/net/context"

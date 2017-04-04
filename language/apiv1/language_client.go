@@ -138,8 +138,9 @@ func (c *Client) AnalyzeSentiment(ctx context.Context, req *languagepb.AnalyzeSe
 	return resp, nil
 }
 
-// AnalyzeEntities finds named entities (currently finds proper names) in the text,
-// entity types, salience, mentions for each entity, and other properties.
+// AnalyzeEntities finds named entities (currently proper names and common nouns) in the text
+// along with entity types, salience, mentions for each entity, and
+// other properties.
 func (c *Client) AnalyzeEntities(ctx context.Context, req *languagepb.AnalyzeEntitiesRequest) (*languagepb.AnalyzeEntitiesResponse, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	var resp *languagepb.AnalyzeEntitiesResponse
