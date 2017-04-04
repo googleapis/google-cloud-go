@@ -872,6 +872,41 @@ func TestIntegration_QueryParameters(t *testing.T) {
 	}
 }
 
+func TestIntegration_ReadNullIntoStruct(t *testing.T) {
+	// Reading a null into a struct field should return an error (not panic).
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
+
+	upl := table.Uploader()
+	row := &ValuesSaver{
+		Schema: schema,
+		Row:    []Value{"name", nil},
+	}
+	if err := upl.Put(ctx, []*ValuesSaver{row}); err != nil {
+		t.Fatal(putError(err))
+	}
+	if err := waitForRow(ctx, table); err != nil {
+		t.Fatal(err)
+	}
+
+	q := client.Query(fmt.Sprintf("select name, num from %s", table.TableID))
+	q.DefaultProjectID = dataset.ProjectID
+	q.DefaultDatasetID = dataset.DatasetID
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	type S struct{ Num int64 }
+	var s S
+	if err := it.Next(&s); err == nil {
+		t.Fatal("got nil, want error")
+	}
+}
+
 // Creates a new, temporary table with a unique name and the given schema.
 func newTable(t *testing.T, s Schema) *Table {
 	fiveMinutesFromNow = time.Now().Add(5 * time.Minute).Round(time.Second)
