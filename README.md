@@ -38,7 +38,7 @@ _March 17, 2017_
 
 Breaking Pubsub changes.
 * Publish is now asynchronous
-([announcement](https://groups.google.com/d/topic/google-api-go-announce/aaqRDIQ3rvU/discussion)). 
+([announcement](https://groups.google.com/d/topic/google-api-go-announce/aaqRDIQ3rvU/discussion)).
 * Subscription.Pull replaced by Subscription.Receive, which takes a callback ([announcement](https://groups.google.com/d/topic/google-api-go-announce/8pt6oetAdKc/discussion)).
 * Message.Done replaced with Message.Ack and Message.Nack.
 
@@ -47,7 +47,7 @@ _February 14, 2017_
 
 Release of a client library for Spanner. See
 the
-[blog post](https://cloudplatform.googleblog.com/2017/02/introducing-Cloud-Spanner-a-global-database-service-for-mission-critical-applications.html). 
+[blog post](https://cloudplatform.googleblog.com/2017/02/introducing-Cloud-Spanner-a-global-database-service-for-mission-critical-applications.html).
 
 Note that although the Spanner service is beta, the Go client library is alpha.
 
@@ -179,19 +179,19 @@ Use `iterator.Done` instead, where `iterator` is the package
 
 ## Supported APIs
 
-Google API                     | Status       | Package
--------------------------------|--------------|-----------------------------------------------------------
-[Datastore][cloud-datastore]   | stable       | [`cloud.google.com/go/datastore`][cloud-datastore-ref]
-[Storage][cloud-storage]       | beta         | [`cloud.google.com/go/storage`][cloud-storage-ref]
-[Bigtable][cloud-bigtable]     | beta         | [`cloud.google.com/go/bigtable`][cloud-bigtable-ref]
-[BigQuery][cloud-bigquery]     | beta         | [`cloud.google.com/go/bigquery`][cloud-bigquery-ref]
-[Logging][cloud-logging]       | stable       | [`cloud.google.com/go/logging`][cloud-logging-ref]
-[Pub/Sub][cloud-pubsub]        | alpha | [`cloud.google.com/go/pubsub`][cloud-pubsub-ref]
-[Vision][cloud-vision]         | beta | [`cloud.google.com/go/vision`][cloud-vision-ref]
-[Language][cloud-language]     | alpha | [`cloud.google.com/go/language/apiv1`][cloud-language-ref]
-[Speech][cloud-speech]         | alpha | [`cloud.google.com/go/speech/apiv1beta`][cloud-speech-ref]
-[Spanner][cloud-spanner]       | alpha | [`cloud.google.com/go/spanner`][cloud-spanner-ref]
-[Translate][cloud-translate]   | beta        | [`cloud.google.com/go/translate`][cloud-translate-ref]
+Google API                       | Status       | Package
+---------------------------------|--------------|-----------------------------------------------------------
+[Datastore][cloud-datastore]     | stable       | [`cloud.google.com/go/datastore`][cloud-datastore-ref]
+[Storage][cloud-storage]         | beta         | [`cloud.google.com/go/storage`][cloud-storage-ref]
+[Bigtable][cloud-bigtable]       | beta         | [`cloud.google.com/go/bigtable`][cloud-bigtable-ref]
+[BigQuery][cloud-bigquery]       | beta         | [`cloud.google.com/go/bigquery`][cloud-bigquery-ref]
+[Logging][cloud-logging]         | stable       | [`cloud.google.com/go/logging`][cloud-logging-ref]
+[Pub/Sub][cloud-pubsub]          | alpha        | [`cloud.google.com/go/pubsub`][cloud-pubsub-ref]
+[Vision][cloud-vision]           | beta         | [`cloud.google.com/go/vision`][cloud-vision-ref]
+[Language][cloud-language]       | alpha        | [`cloud.google.com/go/language/apiv1`][cloud-language-ref]
+[Speech][cloud-speech]           | alpha        | [`cloud.google.com/go/speech/apiv1beta`][cloud-speech-ref]
+[Spanner][cloud-spanner]         | alpha        | [`cloud.google.com/go/spanner`][cloud-spanner-ref]
+[Translation][cloud-translation] | beta         | [`cloud.google.com/go/translate`][cloud-translation-ref]
 
 
 > **Alpha status**: the API is still being actively developed. As a
@@ -545,7 +545,7 @@ for more information.
 [cloud-spanner-ref]: https://godoc.org/cloud.google.com/go/spanner
 [cloud-spanner-docs]: https://cloud.google.com/spanner/docs
 
-[cloud-translate]: https://cloud.google.com/translate
-[cloud-translate-ref]: https://godoc.org/cloud.google.com/go/translate
+[cloud-translation]: https://cloud.google.com/translation
+[cloud-translation-ref]: https://godoc.org/cloud.google.com/go/translation
 
 [default-creds]: https://developers.google.com/identity/protocols/application-default-credentials

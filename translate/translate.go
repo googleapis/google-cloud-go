@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package translate is a client for the Google Translate API.
-// See https://cloud.google.com/translate for details.
+// Package translate is a client for the Google Translation API.
+// See https://cloud.google.com/translation for details.
 //
 // This package is experimental and subject to change without notice.
 package translate
@@ -43,7 +43,7 @@ type Client struct {
 
 const prodAddr = "https://translation.googleapis.com/language/translate/"
 
-// NewClient constructs a new Client that can perform Translate operations.
+// NewClient constructs a new Client that can perform Translation operations.
 //
 // You can find or create API key for your project from the Credentials page of
 // the Developers Console (console.developers.google.com).
@@ -76,7 +76,7 @@ func (c *Client) Close() error { return nil }
 //
 // The target parameter supplies the language to translate to. The supported
 // languages are listed at
-// https://cloud.google.com/translate/v2/translate-reference#supported_languages.
+// https://cloud.google.com/translation/v2/translate-reference#supported_languages.
 // You can also call the SupportedLanguages method.
 //
 // The returned Translations appear in the same order as the inputs.
