@@ -19,9 +19,9 @@ package speech_test
 import (
 	"io"
 
-	"cloud.google.com/go/speech/apiv1beta1"
+	"cloud.google.com/go/speech/apiv1"
 	"golang.org/x/net/context"
-	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1beta1"
+	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
 )
 
 func ExampleNewClient() {
@@ -34,17 +34,17 @@ func ExampleNewClient() {
 	_ = c
 }
 
-func ExampleClient_SyncRecognize() {
+func ExampleClient_Recognize() {
 	ctx := context.Background()
 	c, err := speech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &speechpb.SyncRecognizeRequest{
+	req := &speechpb.RecognizeRequest{
 	// TODO: Fill request struct fields.
 	}
-	resp, err := c.SyncRecognize(ctx, req)
+	resp, err := c.Recognize(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -52,17 +52,17 @@ func ExampleClient_SyncRecognize() {
 	_ = resp
 }
 
-func ExampleClient_AsyncRecognize() {
+func ExampleClient_LongRunningRecognize() {
 	ctx := context.Background()
 	c, err := speech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &speechpb.AsyncRecognizeRequest{
+	req := &speechpb.LongRunningRecognizeRequest{
 	// TODO: Fill request struct fields.
 	}
-	op, err := c.AsyncRecognize(ctx, req)
+	op, err := c.LongRunningRecognize(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
