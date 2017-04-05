@@ -683,8 +683,22 @@ func TestEmptyBucketIterator(t *testing.T) {
 		if err != iterator.Done {
 			t.Errorf("got %v, want Done", err)
 		}
-	case <-time.After(50 * time.Millisecond):
+	case <-time.After(500 * time.Millisecond):
 		t.Error("timed out")
+	}
+}
+
+func TestCodecUint32(t *testing.T) {
+	t.Parallel()
+	for _, u := range []uint32{0, 1, 256, 0xFFFFFFFF} {
+		s := encodeUint32(u)
+		d, err := decodeUint32(s)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if d != u {
+			t.Errorf("got %d, want input %d", d, u)
+		}
 	}
 }
 

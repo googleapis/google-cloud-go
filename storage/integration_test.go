@@ -22,6 +22,7 @@ import (
 	"encoding/base64"
 	"flag"
 	"fmt"
+	"hash/crc32"
 	"io"
 	"io/ioutil"
 	"log"
@@ -1095,6 +1096,70 @@ func TestIntegration_NoUnicodeNormalization(t *testing.T) {
 		if g := string(got); g != tst.content {
 			t.Errorf("content of %s is %q, want %q", tst.nameQuoted, g, tst.content)
 		}
+	}
+}
+
+func TestIntegration_HashesOnUpload(t *testing.T) {
+	// Check that the user can provide hashes on upload, and that these are checked.
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	ctx := context.Background()
+	client, bucket := testConfig(ctx, t)
+	if client == nil {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
+	defer client.Close()
+	obj := client.Bucket(bucket).Object("hashesOnUpload-1")
+	data := []byte("I can't wait to be verified")
+
+	write := func(w *Writer) error {
+		if _, err := w.Write(data); err != nil {
+			w.Close()
+			return err
+		}
+		return w.Close()
+	}
+
+	crc32c := crc32.Checksum(data, crc32cTable)
+	// The correct CRC should succeed.
+	w := obj.NewWriter(ctx)
+	w.CRC32C = crc32c
+	w.SendCRC32C = true
+	if err := write(w); err != nil {
+		t.Fatal(err)
+	}
+
+	// If we change the CRC, validation should fail.
+	w = obj.NewWriter(ctx)
+	w.CRC32C = crc32c + 1
+	w.SendCRC32C = true
+	if err := write(w); err == nil {
+		t.Fatal("write with bad CRC32c: want error, got nil")
+	}
+
+	// If we have the wrong CRC but forget to send it, we succeed.
+	w = obj.NewWriter(ctx)
+	w.CRC32C = crc32c + 1
+	if err := write(w); err != nil {
+		t.Fatal(err)
+	}
+
+	// MD5
+	md5 := md5.Sum(data)
+	// The correct MD5 should succeed.
+	w = obj.NewWriter(ctx)
+	w.MD5 = md5[:]
+	if err := write(w); err != nil {
+		t.Fatal(err)
+	}
+
+	// If we change the MD5, validation should fail.
+	w = obj.NewWriter(ctx)
+	w.MD5 = append([]byte(nil), md5[:]...)
+	w.MD5[0]++
+	if err := write(w); err == nil {
+		t.Fatal("write with bad MD5: want error, got nil")
 	}
 }
 
