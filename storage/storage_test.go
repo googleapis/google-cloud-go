@@ -36,6 +36,7 @@ import (
 )
 
 func TestSignedURL(t *testing.T) {
+	t.Parallel()
 	expires, _ := time.Parse(time.RFC3339, "2002-10-02T10:00:00-05:00")
 	url, err := SignedURL("bucket-name", "object-name", &SignedURLOptions{
 		GoogleAccessID: "xxx@clientid",
@@ -64,6 +65,7 @@ func TestSignedURL(t *testing.T) {
 }
 
 func TestSignedURL_PEMPrivateKey(t *testing.T) {
+	t.Parallel()
 	expires, _ := time.Parse(time.RFC3339, "2002-10-02T10:00:00-05:00")
 	url, err := SignedURL("bucket-name", "object-name", &SignedURLOptions{
 		GoogleAccessID: "xxx@clientid",
@@ -88,6 +90,7 @@ func TestSignedURL_PEMPrivateKey(t *testing.T) {
 }
 
 func TestSignedURL_SignBytes(t *testing.T) {
+	t.Parallel()
 	expires, _ := time.Parse(time.RFC3339, "2002-10-02T10:00:00-05:00")
 	url, err := SignedURL("bucket-name", "object-name", &SignedURLOptions{
 		GoogleAccessID: "xxx@clientid",
@@ -112,6 +115,7 @@ func TestSignedURL_SignBytes(t *testing.T) {
 }
 
 func TestSignedURL_URLUnsafeObjectName(t *testing.T) {
+	t.Parallel()
 	expires, _ := time.Parse(time.RFC3339, "2002-10-02T10:00:00-05:00")
 	url, err := SignedURL("bucket-name", "object name界", &SignedURLOptions{
 		GoogleAccessID: "xxx@clientid",
@@ -136,6 +140,7 @@ func TestSignedURL_URLUnsafeObjectName(t *testing.T) {
 }
 
 func TestSignedURL_MissingOptions(t *testing.T) {
+	t.Parallel()
 	pk := dummyKey("rsa")
 	expires, _ := time.Parse(time.RFC3339, "2002-10-02T10:00:00-05:00")
 	var tests = []struct {
@@ -208,6 +213,7 @@ func dummyKey(kind string) []byte {
 }
 
 func TestCopyToMissingFields(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		srcBucket, srcName, destBucket, destName string
 		errMsg                                   string
@@ -245,6 +251,7 @@ func TestCopyToMissingFields(t *testing.T) {
 }
 
 func TestObjectNames(t *testing.T) {
+	t.Parallel()
 	// Naming requirements: https://cloud.google.com/storage/docs/bucket-naming
 	const maxLegalLength = 1024
 
@@ -328,6 +335,7 @@ func TestObjectNames(t *testing.T) {
 }
 
 func TestCondition(t *testing.T) {
+	t.Parallel()
 	gotReq := make(chan *http.Request, 1)
 	hc, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
 		io.Copy(ioutil.Discard, r.Body)
@@ -428,6 +436,7 @@ func TestCondition(t *testing.T) {
 }
 
 func TestConditionErrors(t *testing.T) {
+	t.Parallel()
 	for _, conds := range []Conditions{
 		{GenerationMatch: 0},
 		{DoesNotExist: false}, // same as above, actually
@@ -443,6 +452,7 @@ func TestConditionErrors(t *testing.T) {
 
 // Test object compose.
 func TestObjectCompose(t *testing.T) {
+	t.Parallel()
 	gotURL := make(chan string, 1)
 	gotBody := make(chan []byte, 1)
 	hc, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
@@ -621,6 +631,7 @@ func TestObjectCompose(t *testing.T) {
 // Test that ObjectIterator's Next and NextPage methods correctly terminate
 // if there is nothing to iterate over.
 func TestEmptyObjectIterator(t *testing.T) {
+	t.Parallel()
 	hClient, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
 		io.Copy(ioutil.Discard, r.Body)
 		fmt.Fprintf(w, "{}")
@@ -650,6 +661,7 @@ func TestEmptyObjectIterator(t *testing.T) {
 // Test that BucketIterator's Next method correctly terminates if there is
 // nothing to iterate over.
 func TestEmptyBucketIterator(t *testing.T) {
+	t.Parallel()
 	hClient, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
 		io.Copy(ioutil.Discard, r.Body)
 		fmt.Fprintf(w, "{}")

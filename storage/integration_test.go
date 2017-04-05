@@ -793,6 +793,7 @@ func TestWriterContentType(t *testing.T) {
 }
 
 func TestZeroSizedObject(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	client, bucket := testConfig(ctx, t)
 	defer client.Close()
@@ -973,6 +974,7 @@ func TestIntegration_Encryption(t *testing.T) {
 }
 
 func TestIntegration_NonexistentBucket(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	client, bucket := testConfig(ctx, t)
 	defer client.Close()
