@@ -189,7 +189,7 @@ Google API                       | Status       | Package
 [Pub/Sub][cloud-pubsub]          | alpha        | [`cloud.google.com/go/pubsub`][cloud-pubsub-ref]
 [Vision][cloud-vision]           | beta         | [`cloud.google.com/go/vision`][cloud-vision-ref]
 [Language][cloud-language]       | alpha        | [`cloud.google.com/go/language/apiv1`][cloud-language-ref]
-[Speech][cloud-speech]           | alpha        | [`cloud.google.com/go/speech/apiv1beta`][cloud-speech-ref]
+[Speech][cloud-speech]           | alpha        | [`cloud.google.com/go/speech/apiv1`][cloud-speech-ref]
 [Spanner][cloud-spanner]         | alpha        | [`cloud.google.com/go/spanner`][cloud-spanner-ref]
 [Translation][cloud-translation] | beta         | [`cloud.google.com/go/translate`][cloud-translation-ref]
 
@@ -539,7 +539,7 @@ for more information.
 [cloud-language-ref]: https://godoc.org/cloud.google.com/go/language/apiv1
 
 [cloud-speech]: https://cloud.google.com/speech
-[cloud-speech-ref]: https://godoc.org/cloud.google.com/go/speech/apiv1beta1
+[cloud-speech-ref]: https://godoc.org/cloud.google.com/go/speech/apiv1
 
 [cloud-spanner]: https://cloud.google.com/spanner/
 [cloud-spanner-ref]: https://godoc.org/cloud.google.com/go/spanner
