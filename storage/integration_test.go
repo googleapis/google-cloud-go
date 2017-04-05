@@ -216,6 +216,9 @@ func TestObjects(t *testing.T) {
 			t.Errorf("Can't create a reader for %v, errored with %v", obj, err)
 			continue
 		}
+		if !rc.checkCRC {
+			t.Errorf("%v: not checking CRC", obj)
+		}
 		slurp, err := ioutil.ReadAll(rc)
 		if err != nil {
 			t.Errorf("Can't ReadAll object %v, errored with %v", obj, err)
@@ -230,6 +233,23 @@ func TestObjects(t *testing.T) {
 			t.Errorf("ContentType (%q) = %q; want %q", obj, got, want)
 		}
 		rc.Close()
+
+		// Check early close.
+		buf := make([]byte, 1)
+		rc, err = bkt.Object(obj).NewReader(ctx)
+		if err != nil {
+			t.Fatalf("%v: %v", obj, err)
+		}
+		_, err = rc.Read(buf)
+		if err != nil {
+			t.Fatalf("%v: %v", obj, err)
+		}
+		if got, want := buf, contents[obj][:1]; !bytes.Equal(got, want) {
+			t.Errorf("Contents[0] (%q) = %q; want %q", obj, got, want)
+		}
+		if err := rc.Close(); err != nil {
+			t.Errorf("%v Close: %v", obj, err)
+		}
 
 		// Test SignedURL
 		opts := &SignedURLOptions{
