@@ -462,19 +462,19 @@ func traceInfoFromHeader(h string) (string, uint64, optionFlags, bool) {
 	traceID, h := h[:slash], h[slash+1:]
 
 	// Parse the span id field.
+	spanstr := h
 	semicolon := strings.Index(h, `;`)
-	if semicolon == -1 {
-		return "", 0, 0, false
+	if semicolon != -1 {
+		spanstr, h = h[:semicolon], h[semicolon+1:]
 	}
-	spanstr, h := h[:semicolon], h[semicolon+1:]
 	spanID, err := strconv.ParseUint(spanstr, 10, 64)
 	if err != nil {
 		return "", 0, 0, false
 	}
 
-	// Parse the options field.
+	// Parse the options field, options field is optional.
 	if !strings.HasPrefix(h, "o=") {
-		return "", 0, 0, false
+		return traceID, spanID, 0, true
 	}
 	o, err := strconv.ParseUint(h[2:], 10, 64)
 	if err != nil {
