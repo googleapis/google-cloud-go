@@ -192,6 +192,60 @@ func makeRequests(t *testing.T, span *Span, rt *fakeRoundTripper, synchronous bo
 	}
 }
 
+func TestHeader(t *testing.T) {
+	tests := []struct {
+		header      string
+		wantTraceID string
+		wantSpanID  uint64
+		wantOpts    optionFlags
+		wantOK      bool
+	}{
+		{
+			header:      "0123456789ABCDEF0123456789ABCDEF/1;o=1",
+			wantTraceID: "0123456789ABCDEF0123456789ABCDEF",
+			wantSpanID:  1,
+			wantOpts:    1,
+			wantOK:      true,
+		},
+		{
+			header:      "0123456789ABCDEF0123456789ABCDEF/1;o=0",
+			wantTraceID: "0123456789ABCDEF0123456789ABCDEF",
+			wantSpanID:  1,
+			wantOpts:    0,
+			wantOK:      true,
+		},
+		{
+			header:      "0123456789ABCDEF0123456789ABCDEF/1",
+			wantTraceID: "0123456789ABCDEF0123456789ABCDEF",
+			wantSpanID:  1,
+			wantOpts:    0,
+			wantOK:      true,
+		},
+		{
+			header:      "",
+			wantTraceID: "",
+			wantSpanID:  0,
+			wantOpts:    0,
+			wantOK:      false,
+		},
+	}
+	for _, tt := range tests {
+		traceID, parentSpanID, opts, ok := traceInfoFromHeader(tt.header)
+		if got, want := traceID, tt.wantTraceID; got != want {
+			t.Errorf("TraceID(%v) = %q; want %q", tt.header, got, want)
+		}
+		if got, want := parentSpanID, tt.wantSpanID; got != want {
+			t.Errorf("SpanID(%v) = %v; want %v", tt.header, got, want)
+		}
+		if got, want := opts, tt.wantOpts; got != want {
+			t.Errorf("Options(%v) = %v; want %v", tt.header, got, want)
+		}
+		if got, want := ok, tt.wantOK; got != want {
+			t.Errorf("Header exists (%v) = %v; want %v", tt.header, got, want)
+		}
+	}
+}
+
 func TestTrace(t *testing.T) {
 	t.Parallel()
 	testTrace(t, false, true)
