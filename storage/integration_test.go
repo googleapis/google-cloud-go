@@ -160,7 +160,7 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 	}
 
 	gen := wc.Attrs().Generation
-	metaGen := wc.Attrs().MetaGeneration
+	metaGen := wc.Attrs().Metageneration
 
 	if err := o.Generation(gen - 1).Delete(ctx); err == nil {
 		t.Fatalf("Unexpected successful delete with Generation")
