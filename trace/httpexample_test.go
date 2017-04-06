@@ -14,20 +14,19 @@
 
 // +build go1.7
 
-package traceutil_test
+package trace_test
 
 import (
 	"log"
 	"net/http"
 
 	"cloud.google.com/go/trace"
-	"cloud.google.com/go/trace/traceutil"
 )
 
 var traceClient *trace.Client
 
 func ExampleHTTPClient_Do() {
-	client := traceutil.NewHTTPClient(traceClient, nil) // traceClient is a *trace.Client
+	client := traceClient.NewHTTPClient(nil) // traceClient is a *Client
 
 	req, _ := http.NewRequest("GET", "https://metadata/users", nil)
 	if _, err := client.Do(req); err != nil {
@@ -36,8 +35,8 @@ func ExampleHTTPClient_Do() {
 }
 
 func ExampleHTTPHandler() {
-	handler := func(w http.ResponseWriter, r *http.Request) {
-		client := traceutil.NewHTTPClient(traceClient, nil)
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		client := traceClient.NewHTTPClient(nil)
 
 		req, _ := http.NewRequest("GET", "https://metadata/users", nil)
 		req = req.WithContext(r.Context())
@@ -46,6 +45,6 @@ func ExampleHTTPHandler() {
 		if _, err := client.Do(req); err != nil {
 			log.Fatal(err)
 		}
-	}
-	http.Handle("/foo", traceutil.HTTPHandler(traceClient, handler)) // traceClient is a *trace.Client
+	})
+	http.Handle("/foo", traceClient.HTTPHandler(handler)) // traceClient is a *Client
 }

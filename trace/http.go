@@ -14,27 +14,21 @@
 
 // +build go1.7
 
-// Package traceutil contains utilities for tracing.
-// This package is experimental and is subject to change.
-package traceutil
+package trace
 
-import (
-	"net/http"
-
-	"cloud.google.com/go/trace"
-)
+import "net/http"
 
 type tracerTransport struct {
 	base http.RoundTripper
 }
 
 func (tt *tracerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	span := trace.FromContext(req.Context()).NewRemoteChild(req)
+	span := FromContext(req.Context()).NewRemoteChild(req)
 	resp, err := tt.base.RoundTrip(req)
 
 	// TODO(jbd): Is it possible to defer the span.Finish?
 	// In cases where RoundTrip panics, we still can finish the span.
-	span.Finish(trace.WithResponse(resp))
+	span.Finish(WithResponse(resp))
 	return resp, err
 }
 
@@ -42,13 +36,13 @@ func (tt *tracerTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 // with automatic tracing support.
 type HTTPClient struct {
 	http.Client
-	tc *trace.Client
+	tc *Client
 }
 
 // Do behaves like (*http.Client).Do but automatically traces
 // outgoing requests if tracing is enabled for the current request.
 //
-// If req.Context() contains a traced *trace.Span, the outgoing request
+// If req.Context() contains a traced *Span, the outgoing request
 // is traced with the existing span. If not, the request is not traced.
 func (c *HTTPClient) Do(req *http.Request) (*http.Response, error) {
 	return c.Client.Do(req)
@@ -57,7 +51,7 @@ func (c *HTTPClient) Do(req *http.Request) (*http.Response, error) {
 // NewHTTPClient creates a new HTTPClient that will trace the outgoing
 // requests using tc. The attributes of this client are inherited from the
 // given http.Client. If orig is nil, http.DefaultClient is used.
-func NewHTTPClient(tc *trace.Client, orig *http.Client) *HTTPClient {
+func (tc *Client) NewHTTPClient(orig *http.Client) *HTTPClient {
 	if orig == nil {
 		orig = http.DefaultClient
 	}
@@ -77,25 +71,27 @@ func NewHTTPClient(tc *trace.Client, orig *http.Client) *HTTPClient {
 	}
 }
 
-// HTTPHandler returns a http.Handler that is aware of the incoming request's span.
-// The span can be extracted from the incoming request:
+// HTTPHandler returns a http.Handler from the given handler
+// that is aware of the incoming request's span.
+// The span can be extracted from the incoming request in handler
+// functions from incoming request's context:
 //
 //    span := trace.FromContext(r.Context())
 //
 // The span will be auto finished by the handler.
-func HTTPHandler(tc *trace.Client, h func(w http.ResponseWriter, r *http.Request)) http.Handler {
+func (tc *Client) HTTPHandler(h http.Handler) http.Handler {
 	return &handler{client: tc, handler: h}
 }
 
 type handler struct {
-	client  *trace.Client
-	handler func(w http.ResponseWriter, r *http.Request)
+	client  *Client
+	handler http.Handler
 }
 
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	span := h.client.SpanFromRequest(r)
 	defer span.Finish()
 
-	r = r.WithContext(trace.NewContext(r.Context(), span))
-	h.handler(w, r)
+	r = r.WithContext(NewContext(r.Context(), span))
+	h.handler.ServeHTTP(w, r)
 }
