@@ -14,24 +14,15 @@
 
 // +build go1.7
 
-package traceutil
+package trace
 
 import (
-	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
-
-	"cloud.google.com/go/trace"
-	"google.golang.org/api/option"
-)
-
-const (
-	testProjectID = "test-project"
-	traceHeader   = "X-Cloud-Trace-Context"
 )
 
 type noopTransport struct{}
@@ -60,21 +51,13 @@ func (rt *recorderTransport) RoundTrip(req *http.Request) (*http.Response, error
 	return resp, nil
 }
 
-func newTestClient(rt http.RoundTripper) *trace.Client {
-	t, err := trace.NewClient(context.Background(), testProjectID, option.WithHTTPClient(&http.Client{Transport: rt}))
-	if err != nil {
-		panic(err)
-	}
-	return t
-}
-
 func TestNewHTTPClient(t *testing.T) {
 	rt := &recorderTransport{
 		ch: make(chan *http.Request, 1),
 	}
 
 	tc := newTestClient(&noopTransport{})
-	client := NewHTTPClient(tc, &http.Client{
+	client := tc.NewHTTPClient(&http.Client{
 		Transport: rt,
 	})
 	req, _ := http.NewRequest("GET", "http://example.com", nil)
@@ -85,7 +68,7 @@ func TestNewHTTPClient(t *testing.T) {
 			t.Error(err)
 		}
 		outgoing := <-rt.ch
-		if got, want := outgoing.Header.Get(traceHeader), ""; want != got {
+		if got, want := outgoing.Header.Get(httpHeader), ""; want != got {
 			t.Errorf("got trace header = %q; want none", got)
 		}
 	})
@@ -93,14 +76,14 @@ func TestNewHTTPClient(t *testing.T) {
 	t.Run("Trace", func(t *testing.T) {
 		span := tc.NewSpan("/foo")
 
-		req = req.WithContext(trace.NewContext(req.Context(), span))
+		req = req.WithContext(NewContext(req.Context(), span))
 		_, err := client.Do(req)
 		if err != nil {
 			t.Error(err)
 		}
 		outgoing := <-rt.ch
 
-		s := tc.SpanFromHeader("/foo", outgoing.Header.Get(traceHeader))
+		s := tc.SpanFromHeader("/foo", outgoing.Header.Get(httpHeader))
 		if got, want := s.TraceID(), span.TraceID(); got != want {
 			t.Errorf("trace ID = %q; want %q", got, want)
 		}
@@ -109,13 +92,13 @@ func TestNewHTTPClient(t *testing.T) {
 
 func TestHTTPHandlerNoTrace(t *testing.T) {
 	tc := newTestClient(&noopTransport{})
-	client := NewHTTPClient(tc, &http.Client{})
-	handler := HTTPHandler(tc, func(w http.ResponseWriter, r *http.Request) {
-		span := trace.FromContext(r.Context())
+	client := tc.NewHTTPClient(&http.Client{})
+	handler := tc.HTTPHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		span := FromContext(r.Context())
 		if span == nil {
 			t.Errorf("span is nil; want non-nil span")
 		}
-	})
+	}))
 
 	ts := httptest.NewServer(handler)
 	defer ts.Close()
