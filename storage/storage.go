@@ -756,12 +756,12 @@ type ObjectAttrs struct {
 	// This field is read-only.
 	Generation int64
 
-	// MetaGeneration is the version of the metadata for this
+	// Metageneration is the version of the metadata for this
 	// object at this generation. This field is used for preconditions
 	// and for detecting changes in metadata. A metageneration number
 	// is only meaningful in the context of a particular generation
 	// of a particular object. This field is read-only.
-	MetaGeneration int64
+	Metageneration int64
 
 	// StorageClass is the storage class of the object.
 	// This value defines how objects in the bucket are stored and
@@ -844,7 +844,7 @@ func newObject(o *raw.Object) *ObjectAttrs {
 		MediaLink:         o.MediaLink,
 		Metadata:          o.Metadata,
 		Generation:        o.Generation,
-		MetaGeneration:    o.Metageneration,
+		Metageneration:    o.Metageneration,
 		StorageClass:      o.StorageClass,
 		CustomerKeySHA256: sha256,
 		Created:           convertTime(o.TimeCreated),
