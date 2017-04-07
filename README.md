@@ -182,7 +182,7 @@ Use `iterator.Done` instead, where `iterator` is the package
 Google API                       | Status       | Package
 ---------------------------------|--------------|-----------------------------------------------------------
 [Datastore][cloud-datastore]     | stable       | [`cloud.google.com/go/datastore`][cloud-datastore-ref]
-[Storage][cloud-storage]         | beta         | [`cloud.google.com/go/storage`][cloud-storage-ref]
+[Storage][cloud-storage]         | stable       | [`cloud.google.com/go/storage`][cloud-storage-ref]
 [Bigtable][cloud-bigtable]       | beta         | [`cloud.google.com/go/bigtable`][cloud-bigtable-ref]
 [BigQuery][cloud-bigquery]       | beta         | [`cloud.google.com/go/bigquery`][cloud-bigquery-ref]
 [Logging][cloud-logging]         | stable       | [`cloud.google.com/go/logging`][cloud-logging-ref]
