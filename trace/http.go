@@ -36,7 +36,7 @@ func (tt *tracerTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 // with automatic tracing support.
 type HTTPClient struct {
 	http.Client
-	tc *Client
+	traceClient *Client
 }
 
 // Do behaves like (*http.Client).Do but automatically traces
@@ -51,7 +51,7 @@ func (c *HTTPClient) Do(req *http.Request) (*http.Response, error) {
 // NewHTTPClient creates a new HTTPClient that will trace the outgoing
 // requests using tc. The attributes of this client are inherited from the
 // given http.Client. If orig is nil, http.DefaultClient is used.
-func (tc *Client) NewHTTPClient(orig *http.Client) *HTTPClient {
+func (c *Client) NewHTTPClient(orig *http.Client) *HTTPClient {
 	if orig == nil {
 		orig = http.DefaultClient
 	}
@@ -66,8 +66,8 @@ func (tc *Client) NewHTTPClient(orig *http.Client) *HTTPClient {
 		Timeout:       orig.Timeout,
 	}
 	return &HTTPClient{
-		Client: client,
-		tc:     tc,
+		Client:      client,
+		traceClient: c,
 	}
 }
 
@@ -79,17 +79,17 @@ func (tc *Client) NewHTTPClient(orig *http.Client) *HTTPClient {
 //    span := trace.FromContext(r.Context())
 //
 // The span will be auto finished by the handler.
-func (tc *Client) HTTPHandler(h http.Handler) http.Handler {
-	return &handler{client: tc, handler: h}
+func (c *Client) HTTPHandler(h http.Handler) http.Handler {
+	return &handler{traceClient: c, handler: h}
 }
 
 type handler struct {
-	client  *Client
-	handler http.Handler
+	traceClient *Client
+	handler     http.Handler
 }
 
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	span := h.client.SpanFromRequest(r)
+	span := h.traceClient.SpanFromRequest(r)
 	defer span.Finish()
 
 	r = r.WithContext(NewContext(r.Context(), span))
