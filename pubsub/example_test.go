@@ -64,7 +64,10 @@ func ExampleClient_CreateSubscription() {
 
 	// Create a new subscription to the previously created topic
 	// with the given name.
-	sub, err := client.CreateSubscription(ctx, "subName", topic, 10*time.Second, nil)
+	sub, err := client.CreateSubscription(ctx, "subName", pubsub.SubscriptionConfig{
+		Topic:       topic,
+		AckDeadline: 10 * time.Second,
+	})
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -256,7 +259,7 @@ func ExampleSubscription_ModifyPushConfig() {
 		// TODO: Handle error.
 	}
 	sub := client.Subscription("subName")
-	if err := sub.ModifyPushConfig(ctx, &pubsub.PushConfig{Endpoint: "https://example.com/push"}); err != nil {
+	if err := sub.ModifyPushConfig(ctx, pubsub.PushConfig{Endpoint: "https://example.com/push"}); err != nil {
 		// TODO: Handle error.
 	}
 }

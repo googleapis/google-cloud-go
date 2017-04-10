@@ -26,6 +26,7 @@ import (
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/pubsub/apiv1"
+	durpb "github.com/golang/protobuf/ptypes/duration"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
@@ -41,12 +42,12 @@ type nextSnapshotFunc func() (*snapshotConfig, error)
 // The single implementation, *apiService, contains all the knowledge
 // of the generated PubSub API (except for that present in legacy code).
 type service interface {
-	createSubscription(ctx context.Context, topicName, subName string, ackDeadline time.Duration, pushConfig *PushConfig) error
-	getSubscriptionConfig(ctx context.Context, subName string) (*SubscriptionConfig, string, error)
+	createSubscription(ctx context.Context, subName string, cfg SubscriptionConfig) error
+	getSubscriptionConfig(ctx context.Context, subName string) (SubscriptionConfig, string, error)
 	listProjectSubscriptions(ctx context.Context, projName string) nextStringFunc
 	deleteSubscription(ctx context.Context, name string) error
 	subscriptionExists(ctx context.Context, name string) (bool, error)
-	modifyPushConfig(ctx context.Context, subName string, conf *PushConfig) error
+	modifyPushConfig(ctx context.Context, subName string, conf PushConfig) error
 
 	createTopic(ctx context.Context, name string) error
 	deleteTopic(ctx context.Context, name string) error
@@ -109,34 +110,50 @@ func (s *apiService) close() error {
 	return err
 }
 
-func (s *apiService) createSubscription(ctx context.Context, topicName, subName string, ackDeadline time.Duration, pushConfig *PushConfig) error {
+func (s *apiService) createSubscription(ctx context.Context, subName string, cfg SubscriptionConfig) error {
 	var rawPushConfig *pb.PushConfig
-	if pushConfig != nil {
+	if cfg.PushConfig.Endpoint != "" || len(cfg.PushConfig.Attributes) != 0 {
 		rawPushConfig = &pb.PushConfig{
-			Attributes:   pushConfig.Attributes,
-			PushEndpoint: pushConfig.Endpoint,
+			Attributes:   cfg.PushConfig.Attributes,
+			PushEndpoint: cfg.PushConfig.Endpoint,
 		}
 	}
+	var retentionDuration *durpb.Duration
+	if cfg.retentionDuration != 0 {
+		retentionDuration = ptypes.DurationProto(cfg.retentionDuration)
+	}
+
 	_, err := s.subc.CreateSubscription(ctx, &pb.Subscription{
-		Name:               subName,
-		Topic:              topicName,
-		PushConfig:         rawPushConfig,
-		AckDeadlineSeconds: trunc32(int64(ackDeadline.Seconds())),
+		Name:                     subName,
+		Topic:                    cfg.Topic.name,
+		PushConfig:               rawPushConfig,
+		AckDeadlineSeconds:       trunc32(int64(cfg.AckDeadline.Seconds())),
+		RetainAckedMessages:      cfg.retainAckedMessages,
+		MessageRetentionDuration: retentionDuration,
 	})
 	return err
 }
 
-func (s *apiService) getSubscriptionConfig(ctx context.Context, subName string) (*SubscriptionConfig, string, error) {
+func (s *apiService) getSubscriptionConfig(ctx context.Context, subName string) (SubscriptionConfig, string, error) {
 	rawSub, err := s.subc.GetSubscription(ctx, &pb.GetSubscriptionRequest{Subscription: subName})
 	if err != nil {
-		return nil, "", err
+		return SubscriptionConfig{}, "", err
 	}
-	sub := &SubscriptionConfig{
+	var rd time.Duration
+	// TODO(pongad): Remove nil-check after white list is removed.
+	if rawSub.MessageRetentionDuration != nil {
+		if rd, err = ptypes.Duration(rawSub.MessageRetentionDuration); err != nil {
+			return SubscriptionConfig{}, "", err
+		}
+	}
+	sub := SubscriptionConfig{
 		AckDeadline: time.Second * time.Duration(rawSub.AckDeadlineSeconds),
 		PushConfig: PushConfig{
 			Endpoint:   rawSub.PushConfig.PushEndpoint,
 			Attributes: rawSub.PushConfig.Attributes,
 		},
+		retainAckedMessages: rawSub.RetainAckedMessages,
+		retentionDuration:   rd,
 	}
 	return sub, rawSub.Topic, nil
 }
@@ -300,7 +317,7 @@ func (s *apiService) publishMessages(ctx context.Context, topicName string, msgs
 	return resp.MessageIds, nil
 }
 
-func (s *apiService) modifyPushConfig(ctx context.Context, subName string, conf *PushConfig) error {
+func (s *apiService) modifyPushConfig(ctx context.Context, subName string, conf PushConfig) error {
 	return s.subc.ModifyPushConfig(ctx, &pb.ModifyPushConfigRequest{
 		Subscription: subName,
 		PushConfig: &pb.PushConfig{
