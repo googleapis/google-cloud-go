@@ -34,7 +34,7 @@ func ExampleHTTPClient_Do() {
 	}
 }
 
-func ExampleHTTPHandler() {
+func ExampleClient_HTTPHandler() {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		client := traceClient.NewHTTPClient(nil)
 
