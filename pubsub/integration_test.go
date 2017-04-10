@@ -75,7 +75,7 @@ func TestAll(t *testing.T) {
 	defer topic.Stop()
 
 	var sub *Subscription
-	if sub, err = client.CreateSubscription(ctx, subName, topic, 0, nil); err != nil {
+	if sub, err = client.CreateSubscription(ctx, subName, SubscriptionConfig{Topic: topic}); err != nil {
 		t.Errorf("CreateSub error: %v", err)
 	}
 
@@ -185,7 +185,16 @@ func TestAll(t *testing.T) {
 	}
 
 	err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (bool, error) {
-		err := snap.delete(timeoutCtx)
+		err := sub.seekToTime(timeoutCtx, time.Now())
+		return err == nil, err
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (bool, error) {
+		snapHandle := client.snapshot(snap.ID())
+		err := snapHandle.delete(timeoutCtx)
 		return err == nil, err
 	})
 	if err != nil {
