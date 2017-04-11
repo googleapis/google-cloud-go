@@ -17,7 +17,6 @@
 package trace
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -28,7 +27,6 @@ import (
 type noopTransport struct{}
 
 func (rt *noopTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	fmt.Println(req)
 	resp := &http.Response{
 		Status:     "200 OK",
 		StatusCode: 200,
