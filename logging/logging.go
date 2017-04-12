@@ -171,7 +171,7 @@ func init() {
 // log entry "ping" to a log named "ping".
 func (c *Client) Ping(ctx context.Context) error {
 	ent := &logpb.LogEntry{
-		Payload:   &logpb.LogEntry_TextPayload{"ping"},
+		Payload:   &logpb.LogEntry_TextPayload{TextPayload: "ping"},
 		Timestamp: unixZeroTimestamp, // Identical timestamps and insert IDs are both
 		InsertId:  "ping",            // necessary for the service to dedup these entries.
 	}
@@ -557,21 +557,21 @@ func jsonMapToProtoStruct(m map[string]interface{}) *structpb.Struct {
 func jsonValueToStructValue(v interface{}) *structpb.Value {
 	switch x := v.(type) {
 	case bool:
-		return &structpb.Value{Kind: &structpb.Value_BoolValue{x}}
+		return &structpb.Value{Kind: &structpb.Value_BoolValue{BoolValue: x}}
 	case float64:
-		return &structpb.Value{Kind: &structpb.Value_NumberValue{x}}
+		return &structpb.Value{Kind: &structpb.Value_NumberValue{NumberValue: x}}
 	case string:
-		return &structpb.Value{Kind: &structpb.Value_StringValue{x}}
+		return &structpb.Value{Kind: &structpb.Value_StringValue{StringValue: x}}
 	case nil:
 		return &structpb.Value{Kind: &structpb.Value_NullValue{}}
 	case map[string]interface{}:
-		return &structpb.Value{Kind: &structpb.Value_StructValue{jsonMapToProtoStruct(x)}}
+		return &structpb.Value{Kind: &structpb.Value_StructValue{StructValue: jsonMapToProtoStruct(x)}}
 	case []interface{}:
 		var vals []*structpb.Value
 		for _, e := range x {
 			vals = append(vals, jsonValueToStructValue(e))
 		}
-		return &structpb.Value{Kind: &structpb.Value_ListValue{&structpb.ListValue{vals}}}
+		return &structpb.Value{Kind: &structpb.Value_ListValue{ListValue: &structpb.ListValue{Values: vals}}}
 	default:
 		panic(fmt.Sprintf("bad type %T for JSON value", v))
 	}
@@ -672,13 +672,13 @@ func toLogEntry(e Entry) (*logpb.LogEntry, error) {
 
 	switch p := e.Payload.(type) {
 	case string:
-		ent.Payload = &logpb.LogEntry_TextPayload{p}
+		ent.Payload = &logpb.LogEntry_TextPayload{TextPayload: p}
 	default:
 		s, err := toProtoStruct(p)
 		if err != nil {
 			return nil, err
 		}
-		ent.Payload = &logpb.LogEntry_JsonPayload{s}
+		ent.Payload = &logpb.LogEntry_JsonPayload{JsonPayload: s}
 	}
 	return ent, nil
 }
