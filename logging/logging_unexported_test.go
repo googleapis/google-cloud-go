@@ -113,15 +113,16 @@ func TestToProtoStruct(t *testing.T) {
 	}
 	want := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
-			"foo": {Kind: &structpb.Value_StringValue{v.Foo}},
-			"baz": {Kind: &structpb.Value_ListValue{&structpb.ListValue{
-				[]*structpb.Value{{Kind: &structpb.Value_NumberValue{1.1}}}}}},
+			"foo": {Kind: &structpb.Value_StringValue{StringValue: v.Foo}},
+			"baz": {Kind: &structpb.Value_ListValue{ListValue: &structpb.ListValue{Values: []*structpb.Value{
+				{Kind: &structpb.Value_NumberValue{NumberValue: 1.1}},
+			}}}},
 			"moo": {Kind: &structpb.Value_StructValue{
-				&structpb.Struct{
+				StructValue: &structpb.Struct{
 					Fields: map[string]*structpb.Value{
-						"a": {Kind: &structpb.Value_NumberValue{1}},
-						"b": {Kind: &structpb.Value_StringValue{"two"}},
-						"c": {Kind: &structpb.Value_BoolValue{true}},
+						"a": {Kind: &structpb.Value_NumberValue{NumberValue: 1}},
+						"b": {Kind: &structpb.Value_StringValue{StringValue: "two"}},
+						"c": {Kind: &structpb.Value_BoolValue{BoolValue: true}},
 					},
 				},
 			}},
