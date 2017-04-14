@@ -1199,6 +1199,19 @@ func TestIntegration_BucketIAM(t *testing.T) {
 	if !policy.HasRole(member, role) {
 		t.Errorf("member %q does not have role %q", member, role)
 	}
+
+	// Check TestPermissions.
+	// This client should have all these permissions (and more).
+	perms := []string{"storage.buckets.get", "storage.buckets.delete"}
+	got, err := bkt.IAM().TestPermissions(ctx, perms)
+	if err != nil {
+		t.Fatalf("TestPermissions: %v", err)
+	}
+	sort.Strings(perms)
+	sort.Strings(got)
+	if !reflect.DeepEqual(got, perms) {
+		t.Errorf("got %v, want %v", got, perms)
+	}
 }
 
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
