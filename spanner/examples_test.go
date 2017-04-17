@@ -95,12 +95,96 @@ func ExampleClient_ReadWriteTransaction() {
 		}
 		balance -= 10
 		m := spanner.Update("Accounts", []string{"user", "balance"}, []interface{}{"alice", balance})
-		txn.BufferWrite([]*spanner.Mutation{m})
-
+		return txn.BufferWrite([]*spanner.Mutation{m})
 		// The buffered mutation will be committed.  If the commit
 		// fails with an IsAborted error, this function will be called
 		// again.
-		return nil
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleUpdate() {
+	ctx := context.Background()
+	client, err := spanner.NewClient(ctx, myDB)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	_, err = client.ReadWriteTransaction(ctx, func(txn *spanner.ReadWriteTransaction) error {
+		row, err := txn.ReadRow(ctx, "Accounts", spanner.Key{"alice"}, []string{"balance"})
+		if err != nil {
+			return err
+		}
+		var balance int64
+		if err := row.Column(0, &balance); err != nil {
+			return err
+		}
+		return txn.BufferWrite([]*spanner.Mutation{
+			spanner.Update("Accounts", []string{"user", "balance"}, []interface{}{"alice", balance + 10}),
+		})
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+// This example is the same as the one for Update, except for the use of UpdateMap.
+func ExampleUpdateMap() {
+	ctx := context.Background()
+	client, err := spanner.NewClient(ctx, myDB)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	_, err = client.ReadWriteTransaction(ctx, func(txn *spanner.ReadWriteTransaction) error {
+		row, err := txn.ReadRow(ctx, "Accounts", spanner.Key{"alice"}, []string{"balance"})
+		if err != nil {
+			return err
+		}
+		var balance int64
+		if err := row.Column(0, &balance); err != nil {
+			return err
+		}
+		return txn.BufferWrite([]*spanner.Mutation{
+			spanner.UpdateMap("Accounts", map[string]interface{}{
+				"user":    "alice",
+				"balance": balance + 10,
+			}),
+		})
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+// This example is the same as the one for Update, except for the use of UpdateStruct.
+func ExampleUpdateStruct() {
+	ctx := context.Background()
+	client, err := spanner.NewClient(ctx, myDB)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	type account struct {
+		User    string `spanner:"user"`
+		Balance int64  `spanner:"balance"`
+	}
+	_, err = client.ReadWriteTransaction(ctx, func(txn *spanner.ReadWriteTransaction) error {
+		row, err := txn.ReadRow(ctx, "Accounts", spanner.Key{"alice"}, []string{"balance"})
+		if err != nil {
+			return err
+		}
+		var balance int64
+		if err := row.Column(0, &balance); err != nil {
+			return err
+		}
+		m, err := spanner.UpdateStruct("Accounts", account{
+			User:    "alice",
+			Balance: balance + 10,
+		})
+		if err != nil {
+			return err
+		}
+		return txn.BufferWrite([]*spanner.Mutation{m})
 	})
 	if err != nil {
 		// TODO: Handle error.
