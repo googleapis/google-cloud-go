@@ -19,19 +19,16 @@ package spanner
 import (
 	"fmt"
 	"regexp"
-	"runtime"
 	"sync/atomic"
 	"time"
 
 	"cloud.google.com/go/internal/version"
-
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
+	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
 const (
@@ -55,7 +52,7 @@ const (
 
 var (
 	validDBPattern  = regexp.MustCompile("^projects/[^/]+/instances/[^/]+/databases/[^/]+$")
-	clientUserAgent = fmt.Sprintf("cloudspanner go/%s", runtime.Version())
+	clientUserAgent = fmt.Sprintf("gl-go/%s gccl/%s grpc/%s", version.Go(), version.Repo, grpc.Version)
 )
 
 func validDatabaseName(db string) error {
