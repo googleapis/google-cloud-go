@@ -24,6 +24,7 @@ import (
 	"cloud.google.com/go/spanner"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
+	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
 func ExampleNewClient() {
@@ -501,4 +502,35 @@ func ExampleReadOnlyTransaction_WithTimestampBound() {
 		// TODO: Handle error.
 	}
 	fmt.Println("read happened at", readTimestamp)
+}
+
+func ExampleNewGenericColumnValue_Decode() {
+	// In real applications, rows can be retrieved by methods like client.Single().ReadRow().
+	row, err := spanner.NewRow([]string{"intCol", "strCol"}, []interface{}{42, "my-text"})
+	if err != nil {
+		// TODO: Handle error.
+	}
+	for i := 0; i < row.Size(); i++ {
+		var col spanner.GenericColumnValue
+		if err := row.Column(i, &col); err != nil {
+			// TODO: Handle error.
+		}
+		switch col.Type.Code {
+		case sppb.TypeCode_INT64:
+			var v int64
+			if err := col.Decode(&v); err != nil {
+				// TODO: Handle error.
+			}
+			fmt.Println("int", v)
+		case sppb.TypeCode_STRING:
+			var v string
+			if err := col.Decode(&v); err != nil {
+				// TODO: Handle error.
+			}
+			fmt.Println("string", v)
+		}
+	}
+	// Output:
+	// int 42
+	// string my-text
 }
