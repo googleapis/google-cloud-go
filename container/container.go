@@ -135,7 +135,7 @@ type Resource struct {
 
 	// MachineType is a Google Compute Engine machine type (e.g. n1-standard-1).
 	// If none set, the default type is used while creating a new cluster.
-	MachineType string
+	MachineTypes []string
 
 	// This field is ignored. It was removed from the underlying container API in v1.
 	SourceImage string
@@ -160,7 +160,7 @@ func resourceFromRaw(c *raw.Cluster) *Resource {
 		Password:          c.MasterAuth.Password,
 		ContainerIPv4CIDR: c.ClusterIpv4Cidr,
 		ServicesIPv4CIDR:  c.ServicesIpv4Cidr,
-		MachineType:       c.NodeConfig.MachineType,
+		MachineTypes:      getMachineTypes(c.NodePools),
 	}
 	r.Created, _ = time.Parse(time.RFC3339, c.CreateTime)
 	return r
@@ -172,6 +172,14 @@ func resourcesFromRaw(c []*raw.Cluster) []*Resource {
 		r[i] = resourceFromRaw(val)
 	}
 	return r
+}
+
+func getMachineTypes(nodePools []*raw.NodePool) []string {
+	var machineTypes []string
+	for _, nodePool := range nodePools {
+		machineTypes = append(machineTypes, nodePool.Config.MachineType)
+	}
+	return machineTypes
 }
 
 // Op represents a Google Container Engine API operation.
