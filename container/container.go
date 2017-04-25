@@ -147,7 +147,7 @@ func resourceFromRaw(c *raw.Cluster) *Resource {
 		Description:       c.Description,
 		Zone:              c.Zone,
 		Status:            Status(c.Status),
-		Num:               c.InitialNodeCount,
+		Num:               c.CurrentNodeCount,
 		APIVersion:        c.InitialClusterVersion,
 		Endpoint:          c.Endpoint,
 		Username:          c.MasterAuth.Username,
