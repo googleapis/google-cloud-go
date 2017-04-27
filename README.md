@@ -185,6 +185,7 @@ Google API                       | Status       | Package
 [Bigtable][cloud-bigtable]       | beta         | [`cloud.google.com/go/bigtable`][cloud-bigtable-ref]
 [BigQuery][cloud-bigquery]       | beta         | [`cloud.google.com/go/bigquery`][cloud-bigquery-ref]
 [Logging][cloud-logging]         | stable       | [`cloud.google.com/go/logging`][cloud-logging-ref]
+[Monitoring][cloud-monitoring]   | alpha        | [`cloud.google.com/go/monitoring/apiv3`][cloud-monitoring-ref]
 [Pub/Sub][cloud-pubsub]          | alpha        | [`cloud.google.com/go/pubsub`][cloud-pubsub-ref]
 [Vision][cloud-vision]           | beta         | [`cloud.google.com/go/vision`][cloud-vision-ref]
 [Language][cloud-language]       | alpha        | [`cloud.google.com/go/language/apiv1`][cloud-language-ref]
@@ -530,6 +531,9 @@ for more information.
 [cloud-logging]: https://cloud.google.com/logging/
 [cloud-logging-docs]: https://cloud.google.com/logging/docs
 [cloud-logging-ref]: https://godoc.org/cloud.google.com/go/logging
+
+[cloud-monitoring]: https://cloud.google.com/monitoring/
+[cloud-monitoring-ref]: https://godoc.org/cloud.google.com/go/monitoring/apiv3
 
 [cloud-vision]: https://cloud.google.com/vision/
 [cloud-vision-ref]: https://godoc.org/cloud.google.com/go/vision
