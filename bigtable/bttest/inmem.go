@@ -398,7 +398,9 @@ func filterRow(f *btpb.RowFilter, r *row) bool {
 	switch f := f.Filter.(type) {
 	case *btpb.RowFilter_Chain_:
 		for _, sub := range f.Chain.Filters {
-			filterRow(sub, r)
+			if !filterRow(sub, r) {
+				return false
+			}
 		}
 		return true
 	case *btpb.RowFilter_Interleave_:
