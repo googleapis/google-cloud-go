@@ -595,8 +595,8 @@ func (s *server) MutateRow(ctx context.Context, req *btpb.MutateRowRequest) (*bt
 	fs := tbl.columnFamilies()
 	r := tbl.mutableRow(string(req.RowKey))
 	r.mu.Lock()
+	defer tbl.resortRowIndex() // Make sure the row lock is released before this grabs the table lock
 	defer r.mu.Unlock()
-
 	if err := applyMutations(tbl, r, req.Mutations, fs); err != nil {
 		return nil, err
 	}
@@ -615,6 +615,7 @@ func (s *server) MutateRows(req *btpb.MutateRowsRequest, stream btpb.Bigtable_Mu
 
 	fs := tbl.columnFamilies()
 
+	defer tbl.resortRowIndex()
 	for i, entry := range req.Entries {
 		r := tbl.mutableRow(string(entry.RowKey))
 		r.mu.Lock()
@@ -669,6 +670,7 @@ func (s *server) CheckAndMutateRow(ctx context.Context, req *btpb.CheckAndMutate
 		muts = req.TrueMutations
 	}
 
+	defer tbl.resortRowIndex()
 	if err := applyMutations(tbl, r, muts, fs); err != nil {
 		return nil, err
 	}
@@ -1006,10 +1008,15 @@ func (t *table) mutableRow(row string) *row {
 		r = newRow(row)
 		t.rowIndex[row] = r
 		t.rows = append(t.rows, r)
-		sort.Sort(byRowKey(t.rows)) // yay, inefficient!
 	}
 	t.mu.Unlock()
 	return r
+}
+
+func (t *table) resortRowIndex() {
+	t.mu.Lock()
+	sort.Sort(byRowKey(t.rows))
+	t.mu.Unlock()
 }
 
 func (t *table) gc() {
