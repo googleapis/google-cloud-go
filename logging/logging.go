@@ -482,6 +482,10 @@ type HTTPRequest struct {
 	// received until the response was sent.
 	Latency time.Duration
 
+	// LocalIP is the IP address (IPv4 or IPv6) of the origin server that the request
+	// was sent to.
+	LocalIP string
+
 	// RemoteIP is the IP address (IPv4 or IPv6) of the client that issued the
 	// HTTP request. Examples: "192.168.1.1", "FE80::0202:B3FF:FE1E:8329".
 	RemoteIP string
@@ -512,6 +516,7 @@ func fromHTTPRequest(r *HTTPRequest) *logtypepb.HttpRequest {
 		Status:                         int32(r.Status),
 		ResponseSize:                   r.ResponseSize,
 		UserAgent:                      r.Request.UserAgent(),
+		ServerIp:                       r.LocalIP,
 		RemoteIp:                       r.RemoteIP, // TODO(jba): attempt to parse http.Request.RemoteAddr?
 		Referer:                        r.Request.Referer(),
 		CacheHit:                       r.CacheHit,
