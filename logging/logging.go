@@ -36,6 +36,7 @@ import (
 	"sync"
 	"time"
 
+	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/logging/apiv2"
 	"cloud.google.com/go/logging/internal"
@@ -177,7 +178,7 @@ func (c *Client) Ping(ctx context.Context) error {
 	}
 	_, err := c.client.WriteLogEntries(ctx, &logpb.WriteLogEntriesRequest{
 		LogName:  internal.LogPath(c.parent(), "ping"),
-		Resource: &mrpb.MonitoredResource{Type: "global"},
+		Resource: globalResource(c.projectID),
 		Entries:  []*logpb.LogEntry{ent},
 	})
 	return err
@@ -209,6 +210,49 @@ func CommonResource(r *mrpb.MonitoredResource) LoggerOption { return commonResou
 type commonResource struct{ *mrpb.MonitoredResource }
 
 func (r commonResource) set(l *Logger) { l.commonResource = r.MonitoredResource }
+
+var detectedResource struct {
+	pb   *mrpb.MonitoredResource
+	once sync.Once
+}
+
+func detectResource() *mrpb.MonitoredResource {
+	detectedResource.once.Do(func() {
+		if !metadata.OnGCE() {
+			return
+		}
+		projectID, err := metadata.ProjectID()
+		if err != nil {
+			return
+		}
+		id, err := metadata.InstanceID()
+		if err != nil {
+			return
+		}
+		zone, err := metadata.Zone()
+		if err != nil {
+			return
+		}
+		detectedResource.pb = &mrpb.MonitoredResource{
+			Type: "gce_instance",
+			Labels: map[string]string{
+				"project_id":  projectID,
+				"instance_id": id,
+				"zone":        zone,
+			},
+		}
+	})
+	return detectedResource.pb
+}
+
+func globalResource(projectID string) *mrpb.MonitoredResource {
+	return &mrpb.MonitoredResource{
+		Type: "global",
+		Labels: map[string]string{
+			"project_id": projectID,
+		},
+	}
+}
 
 // CommonLabels are labels that apply to all log entries written from a Logger,
 // so that you don't have to repeat them in each log entry's Labels field. If
@@ -288,10 +332,14 @@ func (b bufferedByteLimit) set(l *Logger) { l.bundler.BufferedByteLimit = int(b)
 // characters: [A-Za-z0-9]; and punctuation characters: forward-slash,
 // underscore, hyphen, and period.
 func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
+	r := detectResource()
+	if r == nil {
+		r = globalResource(c.projectID)
+	}
 	l := &Logger{
 		client:         c,
 		logName:        internal.LogPath(c.parent(), logID),
-		commonResource: &mrpb.MonitoredResource{Type: "global"},
+		commonResource: r,
 	}
 	// TODO(jba): determine the right context for the bundle handler.
 	ctx := context.TODO()

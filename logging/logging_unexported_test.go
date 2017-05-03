@@ -34,7 +34,12 @@ import (
 func TestLoggerCreation(t *testing.T) {
 	const logID = "testing"
 	c := &Client{projectID: "PROJECT_ID"}
-	defaultResource := &mrpb.MonitoredResource{Type: "global"}
+	customResource := &mrpb.MonitoredResource{
+		Type: "global",
+		Labels: map[string]string{
+			"project_id": "ANOTHER_PROJECT",
+		},
+	}
 	defaultBundler := &bundler.Bundler{
 		DelayThreshold:       DefaultDelayThreshold,
 		BundleCountThreshold: DefaultEntryCountThreshold,
@@ -43,21 +48,44 @@ func TestLoggerCreation(t *testing.T) {
 		BufferedByteLimit:    DefaultBufferedByteLimit,
 	}
 	for _, test := range []struct {
-		options     []LoggerOption
-		wantLogger  *Logger
-		wantBundler *bundler.Bundler
+		options         []LoggerOption
+		wantLogger      *Logger
+		defaultResource bool
+		wantBundler     *bundler.Bundler
 	}{
-		{nil, &Logger{commonResource: defaultResource}, defaultBundler},
 		{
-			[]LoggerOption{CommonResource(nil), CommonLabels(map[string]string{"a": "1"})},
-			&Logger{commonResource: nil, commonLabels: map[string]string{"a": "1"}},
-			defaultBundler,
+			options:         nil,
+			wantLogger:      &Logger{},
+			defaultResource: true,
+			wantBundler:     defaultBundler,
 		},
 		{
-			[]LoggerOption{DelayThreshold(time.Minute), EntryCountThreshold(99),
-				EntryByteThreshold(17), EntryByteLimit(18), BufferedByteLimit(19)},
-			&Logger{commonResource: defaultResource},
-			&bundler.Bundler{
+			options: []LoggerOption{
+				CommonResource(nil),
+				CommonLabels(map[string]string{"a": "1"}),
+			},
+			wantLogger: &Logger{
+				commonResource: nil,
+				commonLabels:   map[string]string{"a": "1"},
+			},
+			wantBundler: defaultBundler,
+		},
+		{
+			options:     []LoggerOption{CommonResource(customResource)},
+			wantLogger:  &Logger{commonResource: customResource},
+			wantBundler: defaultBundler,
+		},
+		{
+			options: []LoggerOption{
+				DelayThreshold(time.Minute),
+				EntryCountThreshold(99),
+				EntryByteThreshold(17),
+				EntryByteLimit(18),
+				BufferedByteLimit(19),
+			},
+			wantLogger:      &Logger{},
+			defaultResource: true,
+			wantBundler: &bundler.Bundler{
 				DelayThreshold:       time.Minute,
 				BundleCountThreshold: 99,
 				BundleByteThreshold:  17,
@@ -67,7 +95,7 @@ func TestLoggerCreation(t *testing.T) {
 		},
 	} {
 		gotLogger := c.Logger(logID, test.options...)
-		if got, want := gotLogger.commonResource, test.wantLogger.commonResource; !reflect.DeepEqual(got, want) {
+		if got, want := gotLogger.commonResource, test.wantLogger.commonResource; !test.defaultResource && !proto.Equal(got, want) {
 			t.Errorf("%v: resource: got %v, want %v", test.options, got, want)
 		}
 		if got, want := gotLogger.commonLabels, test.wantLogger.commonLabels; !reflect.DeepEqual(got, want) {
