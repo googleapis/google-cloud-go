@@ -48,13 +48,7 @@ type ConfigCallOptions struct {
 func defaultConfigClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("logging.googleapis.com:443"),
-		option.WithScopes(
-			"https://www.googleapis.com/auth/cloud-platform",
-			"https://www.googleapis.com/auth/cloud-platform.read-only",
-			"https://www.googleapis.com/auth/logging.admin",
-			"https://www.googleapis.com/auth/logging.read",
-			"https://www.googleapis.com/auth/logging.write",
-		),
+		option.WithScopes(DefaultAuthScopes()...),
 	}
 }
 

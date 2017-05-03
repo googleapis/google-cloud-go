@@ -37,9 +37,7 @@ type ImageAnnotatorCallOptions struct {
 func defaultImageAnnotatorClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("vision.googleapis.com:443"),
-		option.WithScopes(
-			"https://www.googleapis.com/auth/cloud-platform",
-		),
+		option.WithScopes(DefaultAuthScopes()...),
 	}
 }
 

@@ -41,11 +41,7 @@ type CallOptions struct {
 func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("cloudtrace.googleapis.com:443"),
-		option.WithScopes(
-			"https://www.googleapis.com/auth/cloud-platform",
-			"https://www.googleapis.com/auth/trace.append",
-			"https://www.googleapis.com/auth/trace.readonly",
-		),
+		option.WithScopes(DefaultAuthScopes()...),
 	}
 }
 

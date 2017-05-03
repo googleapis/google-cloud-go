@@ -41,10 +41,7 @@ type Debugger2CallOptions struct {
 func defaultDebugger2ClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("clouddebugger.googleapis.com:443"),
-		option.WithScopes(
-			"https://www.googleapis.com/auth/cloud-platform",
-			"https://www.googleapis.com/auth/cloud_debugger",
-		),
+		option.WithScopes(DefaultAuthScopes()...),
 	}
 }
 

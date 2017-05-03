@@ -41,9 +41,7 @@ type ReportErrorsCallOptions struct {
 func defaultReportErrorsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("clouderrorreporting.googleapis.com:443"),
-		option.WithScopes(
-			"https://www.googleapis.com/auth/cloud-platform",
-		),
+		option.WithScopes(DefaultAuthScopes()...),
 	}
 }
 

@@ -59,10 +59,7 @@ type IamCallOptions struct {
 func defaultIamClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("iam.googleapis.com:443"),
-		option.WithScopes(
-			"https://www.googleapis.com/auth/cloud-platform",
-			"https://www.googleapis.com/auth/iam",
-		),
+		option.WithScopes(DefaultAuthScopes()...),
 	}
 }
 

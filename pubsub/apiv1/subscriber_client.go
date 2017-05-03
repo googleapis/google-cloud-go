@@ -60,10 +60,7 @@ type SubscriberCallOptions struct {
 func defaultSubscriberClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("pubsub.googleapis.com:443"),
-		option.WithScopes(
-			"https://www.googleapis.com/auth/cloud-platform",
-			"https://www.googleapis.com/auth/pubsub",
-		),
+		option.WithScopes(DefaultAuthScopes()...),
 	}
 }
 

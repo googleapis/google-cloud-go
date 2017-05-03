@@ -50,10 +50,7 @@ type PublisherCallOptions struct {
 func defaultPublisherClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("pubsub.googleapis.com:443"),
-		option.WithScopes(
-			"https://www.googleapis.com/auth/cloud-platform",
-			"https://www.googleapis.com/auth/pubsub",
-		),
+		option.WithScopes(DefaultAuthScopes()...),
 	}
 }
 

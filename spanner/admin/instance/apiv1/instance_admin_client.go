@@ -57,10 +57,7 @@ type InstanceAdminCallOptions struct {
 func defaultInstanceAdminClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("spanner.googleapis.com:443"),
-		option.WithScopes(
-			"https://www.googleapis.com/auth/cloud-platform",
-			"https://www.googleapis.com/auth/spanner.admin",
-		),
+		option.WithScopes(DefaultAuthScopes()...),
 	}
 }
 
