@@ -42,7 +42,7 @@ type OperationsCallOptions struct {
 func defaultOperationsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("longrunning.googleapis.com:443"),
-		option.WithScopes(),
+		option.WithScopes(DefaultAuthScopes()...),
 	}
 }
 

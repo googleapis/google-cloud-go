@@ -54,12 +54,7 @@ type MetricCallOptions struct {
 func defaultMetricClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("monitoring.googleapis.com:443"),
-		option.WithScopes(
-			"https://www.googleapis.com/auth/cloud-platform",
-			"https://www.googleapis.com/auth/monitoring",
-			"https://www.googleapis.com/auth/monitoring.read",
-			"https://www.googleapis.com/auth/monitoring.write",
-		),
+		option.WithScopes(DefaultAuthScopes()...),
 	}
 }
 

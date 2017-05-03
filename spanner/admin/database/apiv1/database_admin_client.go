@@ -55,10 +55,7 @@ type DatabaseAdminCallOptions struct {
 func defaultDatabaseAdminClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("spanner.googleapis.com:443"),
-		option.WithScopes(
-			"https://www.googleapis.com/auth/cloud-platform",
-			"https://www.googleapis.com/auth/spanner.admin",
-		),
+		option.WithScopes(DefaultAuthScopes()...),
 	}
 }
 
