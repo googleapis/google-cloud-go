@@ -687,11 +687,13 @@ func TestConfigServiceV2GetSink(t *testing.T) {
 	var destination string = "destination-1429847026"
 	var filter string = "filter-1274492040"
 	var writerIdentity string = "writerIdentity775638794"
+	var includeChildren bool = true
 	var expectedResponse = &loggingpb.LogSink{
-		Name:           name,
-		Destination:    destination,
-		Filter:         filter,
-		WriterIdentity: writerIdentity,
+		Name:            name,
+		Destination:     destination,
+		Filter:          filter,
+		WriterIdentity:  writerIdentity,
+		IncludeChildren: includeChildren,
 	}
 
 	mockConfig.err = nil
@@ -750,11 +752,13 @@ func TestConfigServiceV2CreateSink(t *testing.T) {
 	var destination string = "destination-1429847026"
 	var filter string = "filter-1274492040"
 	var writerIdentity string = "writerIdentity775638794"
+	var includeChildren bool = true
 	var expectedResponse = &loggingpb.LogSink{
-		Name:           name,
-		Destination:    destination,
-		Filter:         filter,
-		WriterIdentity: writerIdentity,
+		Name:            name,
+		Destination:     destination,
+		Filter:          filter,
+		WriterIdentity:  writerIdentity,
+		IncludeChildren: includeChildren,
 	}
 
 	mockConfig.err = nil
@@ -817,11 +821,13 @@ func TestConfigServiceV2UpdateSink(t *testing.T) {
 	var destination string = "destination-1429847026"
 	var filter string = "filter-1274492040"
 	var writerIdentity string = "writerIdentity775638794"
+	var includeChildren bool = true
 	var expectedResponse = &loggingpb.LogSink{
-		Name:           name,
-		Destination:    destination,
-		Filter:         filter,
-		WriterIdentity: writerIdentity,
+		Name:            name,
+		Destination:     destination,
+		Filter:          filter,
+		WriterIdentity:  writerIdentity,
+		IncludeChildren: includeChildren,
 	}
 
 	mockConfig.err = nil
