@@ -40,6 +40,9 @@ const (
 	// apiClientHeader is the name of the metadata header used to indicate client
 	// information.
 	apiClientHeader = "x-goog-api-client"
+
+	// numChannels is the default value for NumChannels of client
+	numChannels = 4
 )
 
 const (
@@ -79,6 +82,7 @@ type Client struct {
 // ClientConfig has configurations for the client.
 type ClientConfig struct {
 	// NumChannels is the number of GRPC channels.
+	// If zero, numChannels is used.
 	NumChannels int
 	co          []option.ClientOption
 	// SessionPoolConfig is the configuration for session pool.
@@ -125,7 +129,11 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	allOpts = append(allOpts, opts...)
 	// Prepare gRPC channels.
 	if config.NumChannels == 0 {
-		config.NumChannels = 4
+		config.NumChannels = numChannels
+	}
+	// Default MaxOpened sessions
+	if config.MaxOpened == 0 {
+		config.MaxOpened = uint64(config.NumChannels * 100)
 	}
 	for i := 0; i < config.NumChannels; i++ {
 		conn, err := transport.DialGRPC(ctx, allOpts...)
