@@ -96,12 +96,12 @@ func errDial(ci int, err error) error {
 	return e
 }
 
-func contextWithMetadata(ctx context.Context, md metadata.MD) context.Context {
-	existing, ok := metadata.FromContext(ctx)
+func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD) context.Context {
+	existing, ok := metadata.FromOutgoingContext(ctx)
 	if ok {
 		md = metadata.Join(existing, md)
 	}
-	return metadata.NewContext(ctx, md)
+	return metadata.NewOutgoingContext(ctx, md)
 }
 
 // NewClient creates a client to a database. A valid database name has the
