@@ -454,10 +454,13 @@ func (t *ReadOnlyTransaction) Close() {
 	}
 	sh := t.sh
 	t.mu.Unlock()
+
 	// If session handle is already destroyed, this becomes a noop.
 	// If there are still active queries and if the recycled session is reused before they complete, Cloud Spanner will cancel them
 	// on behalf of the new transaction on the session.
-	sh.recycle()
+	if sh != nil {
+		sh.recycle()
+	}
 }
 
 // Timestamp returns the timestamp chosen to perform reads and
