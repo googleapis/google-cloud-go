@@ -79,7 +79,7 @@ func ExampleClient_ReadWriteTransaction() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	_, err = client.ReadWriteTransaction(ctx, func(txn *spanner.ReadWriteTransaction) error {
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, txn *spanner.ReadWriteTransaction) error {
 		var balance int64
 		row, err := txn.ReadRow(ctx, "Accounts", spanner.Key{"alice"}, []string{"balance"})
 		if err != nil {
@@ -112,7 +112,7 @@ func ExampleUpdate() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	_, err = client.ReadWriteTransaction(ctx, func(txn *spanner.ReadWriteTransaction) error {
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, txn *spanner.ReadWriteTransaction) error {
 		row, err := txn.ReadRow(ctx, "Accounts", spanner.Key{"alice"}, []string{"balance"})
 		if err != nil {
 			return err
@@ -137,7 +137,7 @@ func ExampleUpdateMap() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	_, err = client.ReadWriteTransaction(ctx, func(txn *spanner.ReadWriteTransaction) error {
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, txn *spanner.ReadWriteTransaction) error {
 		row, err := txn.ReadRow(ctx, "Accounts", spanner.Key{"alice"}, []string{"balance"})
 		if err != nil {
 			return err
@@ -169,7 +169,7 @@ func ExampleUpdateStruct() {
 		User    string `spanner:"user"`
 		Balance int64  `spanner:"balance"`
 	}
-	_, err = client.ReadWriteTransaction(ctx, func(txn *spanner.ReadWriteTransaction) error {
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, txn *spanner.ReadWriteTransaction) error {
 		row, err := txn.ReadRow(ctx, "Accounts", spanner.Key{"alice"}, []string{"balance"})
 		if err != nil {
 			return err

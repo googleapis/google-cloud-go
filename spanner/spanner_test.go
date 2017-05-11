@@ -596,7 +596,7 @@ func TestReadWriteTransaction(t *testing.T) {
 		wg.Add(1)
 		go func(iter int) {
 			defer wg.Done()
-			_, err := client.ReadWriteTransaction(ctx, func(tx *ReadWriteTransaction) error {
+			_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 				// Query Foo's balance and Bar's balance.
 				bf, e := readBalance(tx.Query(ctx,
 					Statement{"SELECT Balance FROM Accounts WHERE AccountId = @id", map[string]interface{}{"id": int64(1)}}))
@@ -625,7 +625,7 @@ func TestReadWriteTransaction(t *testing.T) {
 	}
 	// Because of context timeout, all goroutines will eventually return.
 	wg.Wait()
-	_, err := client.ReadWriteTransaction(ctx, func(tx *ReadWriteTransaction) error {
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 		var bf, bb int64
 		r, e := tx.ReadRow(ctx, "Accounts", Key{int64(1)}, []string{"Balance"})
 		if e != nil {
@@ -817,6 +817,34 @@ func compareRows(iter *RowIterator, wantNums []int) (string, bool) {
 
 func keyRange(kind KeyRangeKind, start, end Key) KeySet {
 	return Range(KeyRange{Start: start, End: end, Kind: kind})
+}
+
+func TestNestedTransaction(t *testing.T) {
+	// You cannot use a transaction from inside a read-write transaction.
+	ctx := context.Background()
+	if err := prepare(ctx, t, singerDBStatements); err != nil {
+		tearDown(ctx, t)
+		t.Fatalf("cannot set up testing environment: %v", err)
+	}
+	defer tearDown(ctx, t)
+	client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		_, err := client.ReadWriteTransaction(ctx,
+			func(context.Context, *ReadWriteTransaction) error { return nil })
+		if ErrCode(err) != codes.FailedPrecondition {
+			t.Fatalf("got %v, want FailedPrecondition", err)
+		}
+		_, err = client.Single().ReadRow(ctx, "Singers", Key{1}, []string{"SingerId"})
+		if ErrCode(err) != codes.FailedPrecondition {
+			t.Fatalf("got %v, want FailedPrecondition", err)
+		}
+		rot := client.ReadOnlyTransaction()
+		defer rot.Close()
+		_, err = rot.ReadRow(ctx, "Singers", Key{1}, []string{"SingerId"})
+		if ErrCode(err) != codes.FailedPrecondition {
+			t.Fatalf("got %v, want FailedPrecondition", err)
+		}
+		return nil
+	})
 }
 
 // Test client recovery on database recreation.
