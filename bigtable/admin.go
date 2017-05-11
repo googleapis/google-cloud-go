@@ -207,6 +207,18 @@ func (ac *AdminClient) SetGCPolicy(ctx context.Context, table, family string, po
 	return err
 }
 
+// DropRowRange permanently deletes a row range from the specified table.
+func (ac *AdminClient) DropRowRange(ctx context.Context, table, rowKeyPrefix string) error {
+	ctx = mergeMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	req := &btapb.DropRowRangeRequest{
+		Name:   prefix + "/tables/" + table,
+		Target: &btapb.DropRowRangeRequest_RowKeyPrefix{[]byte(rowKeyPrefix)},
+	}
+	_, err := ac.tClient.DropRowRange(ctx, req)
+	return err
+}
+
 const instanceAdminAddr = "bigtableadmin.googleapis.com:443"
 
 // InstanceAdminClient is a client type for performing admin operations on instances.
