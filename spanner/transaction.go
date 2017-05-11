@@ -316,6 +316,9 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 
 // acquire implements txReadEnv.acquire.
 func (t *ReadOnlyTransaction) acquire(ctx context.Context) (*sessionHandle, *sppb.TransactionSelector, error) {
+	if err := checkNestedTxn(ctx); err != nil {
+		return nil, nil, err
+	}
 	if t.singleUse {
 		return t.acquireSingleUse(ctx)
 	}
@@ -437,6 +440,9 @@ func (t *ReadOnlyTransaction) Close() {
 	}
 	sh := t.sh
 	t.mu.Unlock()
+	if sh == nil {
+		return
+	}
 	// If session handle is already destroyed, this becomes a noop.
 	// If there are still active queries and if the recycled session is reused before they complete, Cloud Spanner will cancel them
 	// on behalf of the new transaction on the session.
@@ -706,12 +712,12 @@ func (t *ReadWriteTransaction) rollback(ctx context.Context) {
 }
 
 // runInTransaction executes f under a read-write transaction context.
-func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(t *ReadWriteTransaction) error) (time.Time, error) {
+func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error) (time.Time, error) {
 	var (
 		ts  time.Time
 		err error
 	)
-	if err = f(t); err == nil {
+	if err = f(context.WithValue(ctx, transactionInProgressKey{}, 1), t); err == nil {
 		// Try to commit if transaction body returns no error.
 		ts, err = t.commit(ctx)
 	}
