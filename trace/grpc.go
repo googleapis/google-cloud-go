@@ -23,7 +23,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-const grpcMetadataKey = "stackdriver-trace-context"
+const grpcMetadataKey = "x-cloud-trace-context"
 
 // GRPCClientInterceptor returns a grpc.UnaryClientInterceptor that traces all outgoing requests from a gRPC client.
 // The calling context should already have a *trace.Span; a child span will be
