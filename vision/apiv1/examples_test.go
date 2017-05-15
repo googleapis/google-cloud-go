@@ -40,6 +40,26 @@ func Example_NewImageFromURI() {
 	fmt.Println(img)
 }
 
+func ExampleImageAnnotatorClient_AnnotateImage() {
+	ctx := context.Background()
+	c, err := vision.NewImageAnnotatorClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	res, err := c.AnnotateImage(ctx, &pb.AnnotateImageRequest{
+		Image: vision.NewImageFromURI("gs://my-bucket/my-image.png"),
+		Features: []*pb.Feature{
+			{Type: pb.Feature_LANDMARK_DETECTION, MaxResults: 5},
+			{Type: pb.Feature_LABEL_DETECTION, MaxResults: 3},
+		},
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use res.
+	_ = res
+}
+
 func Example_FaceFromLandmarks() {
 	ctx := context.Background()
 	c, err := vision.NewImageAnnotatorClient(ctx)
