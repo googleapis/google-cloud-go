@@ -135,6 +135,9 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.MaxOpened == 0 {
 		config.MaxOpened = uint64(config.NumChannels * 100)
 	}
+	if config.MaxBurst == 0 {
+		config.MaxBurst = 10
+	}
 	for i := 0; i < config.NumChannels; i++ {
 		conn, err := transport.DialGRPC(ctx, allOpts...)
 		if err != nil {

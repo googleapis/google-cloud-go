@@ -351,7 +351,7 @@ type SessionPoolConfig struct {
 	// MaxSessionAge is the maximum duration that a session can be reused, zero
 	// means session pool will never expire sessions.
 	MaxSessionAge time.Duration
-	// MaxBurst is the maximum number of concurrent session creation requests,
+	// MaxBurst is the maximum number of concurrent session creation requests. Defaults to 10.
 	MaxBurst uint64
 	// WriteSessions is the fraction of sessions we try to keep prepared for write.
 	WriteSessions float64
