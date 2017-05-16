@@ -31,6 +31,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc/codes"
 
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 )
@@ -52,8 +53,54 @@ var (
 	dbName string
 )
 
+var (
+	singerDBStatements = []string{
+		`CREATE TABLE Singers (
+				SingerId	INT64 NOT NULL,
+				FirstName	STRING(1024),
+				LastName	STRING(1024),
+				SingerInfo	BYTES(MAX)
+			) PRIMARY KEY (SingerId)`,
+		`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
+		`CREATE TABLE Accounts (
+				AccountId	INT64 NOT NULL,
+				Nickname	STRING(100),
+				Balance		INT64 NOT NULL,
+			) PRIMARY KEY (AccountId)`,
+		`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
+		`CREATE TABLE Types (
+				RowID		INT64 NOT NULL,
+				String		STRING(MAX),
+				StringArray	ARRAY<STRING(MAX)>,
+				Bytes		BYTES(MAX),
+				BytesArray	ARRAY<BYTES(MAX)>,
+				Int64a		INT64,
+				Int64Array	ARRAY<INT64>,
+				Bool		BOOL,
+				BoolArray	ARRAY<BOOL>,
+				Float64		FLOAT64,
+				Float64Array	ARRAY<FLOAT64>,
+				Date		DATE,
+				DateArray	ARRAY<DATE>,
+				Timestamp	TIMESTAMP,
+				TimestampArray	ARRAY<TIMESTAMP>,
+			) PRIMARY KEY (RowID)`,
+	}
+
+	readDBStatements = []string{
+		`CREATE TABLE TestTable (
+                    Key          STRING(MAX) NOT NULL,
+                    StringValue  STRING(MAX)
+            ) PRIMARY KEY (Key)`,
+		`CREATE INDEX TestTableByValue ON TestTable(StringValue)`,
+		`CREATE INDEX TestTableByValueDesc ON TestTable(StringValue DESC)`,
+	}
+)
+
+type testTableRow struct{ Key, StringValue string }
+
 // prepare initializes Cloud Spanner testing DB and clients.
-func prepare(ctx context.Context, t *testing.T) error {
+func prepare(ctx context.Context, t *testing.T, statements []string) error {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -79,38 +126,7 @@ func prepare(ctx context.Context, t *testing.T) error {
 	op, err := admin.CreateDatabase(ctx, &adminpb.CreateDatabaseRequest{
 		Parent:          fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID),
 		CreateStatement: "CREATE DATABASE " + dbName,
-		ExtraStatements: []string{
-			`CREATE TABLE Singers (
-				SingerId	INT64 NOT NULL,
-				FirstName	STRING(1024),
-				LastName	STRING(1024),
-				SingerInfo	BYTES(MAX)
-			) PRIMARY KEY (SingerId)`,
-			`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
-			`CREATE TABLE Accounts (
-				AccountId	INT64 NOT NULL,
-				Nickname	STRING(100),
-				Balance		INT64 NOT NULL,
-			) PRIMARY KEY (AccountId)`,
-			`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
-			`CREATE TABLE Types (
-				RowID		INT64 NOT NULL,
-				String		STRING(MAX),
-				StringArray	ARRAY<STRING(MAX)>,
-				Bytes		BYTES(MAX),
-				BytesArray	ARRAY<BYTES(MAX)>,
-				Int64a		INT64,
-				Int64Array	ARRAY<INT64>,
-				Bool		BOOL,
-				BoolArray	ARRAY<BOOL>,
-				Float64		FLOAT64,
-				Float64Array	ARRAY<FLOAT64>,
-				Date		DATE,
-				DateArray	ARRAY<DATE>,
-				Timestamp	TIMESTAMP,
-				TimestampArray	ARRAY<TIMESTAMP>,
-			) PRIMARY KEY (RowID)`,
-		},
+		ExtraStatements: statements,
 	})
 	if err != nil {
 		t.Errorf("cannot create testing DB %v: %v", db, err)
@@ -153,7 +169,7 @@ func TestSingleUse(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	// Set up testing environment.
-	if err := prepare(ctx, t); err != nil {
+	if err := prepare(ctx, t, singerDBStatements); err != nil {
 		// If prepare() fails, tear down whatever that's already up.
 		tearDown(ctx, t)
 		t.Fatalf("cannot set up testing environment: %v", err)
@@ -355,7 +371,7 @@ func TestReadOnlyTransaction(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	// Set up testing environment.
-	if err := prepare(ctx, t); err != nil {
+	if err := prepare(ctx, t, singerDBStatements); err != nil {
 		// If prepare() fails, tear down whatever that's already up.
 		tearDown(ctx, t)
 		t.Fatalf("cannot set up testing environment: %v", err)
@@ -543,7 +559,7 @@ func TestReadWriteTransaction(t *testing.T) {
 	// Give a longer deadline because of transaction backoffs.
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
-	if err := prepare(ctx, t); err != nil {
+	if err := prepare(ctx, t, singerDBStatements); err != nil {
 		tearDown(ctx, t)
 		t.Fatalf("cannot set up testing environment: %v", err)
 	}
@@ -632,11 +648,182 @@ func TestReadWriteTransaction(t *testing.T) {
 	}
 }
 
+const (
+	testTable      = "TestTable"
+	testTableIndex = "TestTableByValue"
+)
+
+var testTableColumns = []string{"Key", "StringValue"}
+
+func TestReads(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	// Set up testing environment.
+	if err := prepare(ctx, t, readDBStatements); err != nil {
+		// If prepare() fails, tear down whatever that's already up.
+		tearDown(ctx, t)
+		t.Fatalf("cannot set up testing environment: %v", err)
+	}
+	// After all tests, tear down testing environment.
+	defer tearDown(ctx, t)
+
+	// Includes k0..k14. Strings sort lexically, eg "k1" < "k10" < "k2".
+	var ms []*Mutation
+	for i := 0; i < 15; i++ {
+		ms = append(ms, InsertOrUpdate(testTable,
+			testTableColumns,
+			[]interface{}{fmt.Sprintf("k%d", i), fmt.Sprintf("v%d", i)}))
+	}
+	if _, err := client.Apply(ctx, ms, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
+
+	// Empty read.
+	rows, err := readAllTestTable(client.Single().Read(ctx, testTable,
+		Range(KeyRange{Start: Key{"k99"}, End: Key{"z"}}), testTableColumns))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := len(rows), 0; got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+
+	// Index empty read.
+	rows, err = readAllTestTable(client.Single().ReadUsingIndex(ctx, testTable, testTableIndex,
+		Range(KeyRange{Start: Key{"v99"}, End: Key{"z"}}), testTableColumns))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := len(rows), 0; got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+
+	// Point read.
+	row, err := client.Single().ReadRow(ctx, testTable, Key{"k1"}, testTableColumns)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got testTableRow
+	if err := row.ToStruct(&got); err != nil {
+		t.Fatal(err)
+	}
+	if want := (testTableRow{"k1", "v1"}); got != want {
+		t.Errorf("got %v, want %v", got, want)
+	}
+
+	// Point read not found.
+	_, err = client.Single().ReadRow(ctx, testTable, Key{"k999"}, testTableColumns)
+	if ErrCode(err) != codes.NotFound {
+		t.Fatalf("got %v, want NotFound", err)
+	}
+
+	// No index point read not found, because Go does not have ReadRowUsingIndex.
+
+	rangeReads(ctx, t)
+	indexRangeReads(ctx, t)
+}
+
+func rangeReads(ctx context.Context, t *testing.T) {
+	checkRange := func(ks KeySet, wantNums ...int) {
+		if msg, ok := compareRows(client.Single().Read(ctx, testTable, ks, testTableColumns), wantNums); !ok {
+			t.Errorf("key set %+v: %s", ks, msg)
+		}
+	}
+
+	checkRange(Keys(Key{"k1"}), 1)
+	checkRange(keyRange(ClosedOpen, Key{"k3"}, Key{"k5"}), 3, 4)
+	checkRange(keyRange(ClosedClosed, Key{"k3"}, Key{"k5"}), 3, 4, 5)
+	checkRange(keyRange(OpenClosed, Key{"k3"}, Key{"k5"}), 4, 5)
+	checkRange(keyRange(OpenOpen, Key{"k3"}, Key{"k5"}), 4)
+
+	// Partial key specification.
+	checkRange(keyRange(ClosedClosed, Key{"k7"}, Key{}), 7, 8, 9)
+	checkRange(keyRange(OpenClosed, Key{"k7"}, Key{}), 8, 9)
+	checkRange(keyRange(ClosedOpen, Key{}, Key{"k11"}), 0, 1, 10)
+	checkRange(keyRange(ClosedClosed, Key{}, Key{"k11"}), 0, 1, 10, 11)
+
+	// The following produce empty ranges.
+	// TODO(jba): Consider a multi-part key to illustrate partial key behavior.
+	// checkRange(keyRange(ClosedOpen, Key{"k7"}, Key{}))
+	// checkRange(keyRange(OpenOpen, Key{"k7"}, Key{}))
+	// checkRange(keyRange(OpenOpen, Key{}, Key{"k11"}))
+	// checkRange(keyRange(OpenClosed, Key{}, Key{"k11"}))
+
+	// Prefix is component-wise, not string prefix.
+	checkRange(PrefixRange(Key{"k1"}), 1)
+	checkRange(keyRange(ClosedOpen, Key{"k1"}, Key{"k2"}), 1, 10, 11, 12, 13, 14)
+
+	checkRange(AllKeys(), 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+}
+
+func indexRangeReads(ctx context.Context, t *testing.T) {
+	checkRange := func(ks KeySet, wantNums ...int) {
+		if msg, ok := compareRows(client.Single().ReadUsingIndex(ctx, testTable, testTableIndex, ks, testTableColumns),
+			wantNums); !ok {
+			t.Errorf("key set %+v: %s", ks, msg)
+		}
+	}
+
+	checkRange(Keys(Key{"v1"}), 1)
+	checkRange(keyRange(ClosedOpen, Key{"v3"}, Key{"v5"}), 3, 4)
+	checkRange(keyRange(ClosedClosed, Key{"v3"}, Key{"v5"}), 3, 4, 5)
+	checkRange(keyRange(OpenClosed, Key{"v3"}, Key{"v5"}), 4, 5)
+	checkRange(keyRange(OpenOpen, Key{"v3"}, Key{"v5"}), 4)
+
+	// // Partial key specification.
+	checkRange(keyRange(ClosedClosed, Key{"v7"}, Key{}), 7, 8, 9)
+	checkRange(keyRange(OpenClosed, Key{"v7"}, Key{}), 8, 9)
+	checkRange(keyRange(ClosedOpen, Key{}, Key{"v11"}), 0, 1, 10)
+	checkRange(keyRange(ClosedClosed, Key{}, Key{"v11"}), 0, 1, 10, 11)
+
+	// // The following produce empty ranges.
+	// TODO(jba): uncomment when the spanner Internal error is fixed.
+	// checkRange(keyRange(ClosedOpen, Key{"v7"}, Key{}))
+	// checkRange(keyRange(OpenOpen, Key{"v7"}, Key{}))
+	// checkRange(keyRange(OpenOpen, Key{}, Key{"v11"}))
+	// checkRange(keyRange(OpenClosed, Key{}, Key{"v11"}))
+
+	// // Prefix is component-wise, not string prefix.
+	checkRange(PrefixRange(Key{"v1"}), 1)
+	checkRange(keyRange(ClosedOpen, Key{"v1"}, Key{"v2"}), 1, 10, 11, 12, 13, 14)
+	checkRange(AllKeys(), 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+
+	// Read from an index with DESC ordering.
+	wantNums := []int{14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0}
+	if msg, ok := compareRows(client.Single().ReadUsingIndex(ctx, testTable, "TestTableByValueDesc", AllKeys(), testTableColumns),
+		wantNums); !ok {
+		t.Errorf("desc: %s", msg)
+	}
+}
+
+func compareRows(iter *RowIterator, wantNums []int) (string, bool) {
+	rows, err := readAllTestTable(iter)
+	if err != nil {
+		return err.Error(), false
+	}
+	want := map[string]string{}
+	for _, n := range wantNums {
+		want[fmt.Sprintf("k%d", n)] = fmt.Sprintf("v%d", n)
+	}
+	got := map[string]string{}
+	for _, r := range rows {
+		got[r.Key] = r.StringValue
+	}
+	if !reflect.DeepEqual(got, want) {
+		return fmt.Sprintf("got %v, want %v", got, want), false
+	}
+	return "", true
+}
+
+func keyRange(kind KeyRangeKind, start, end Key) KeySet {
+	return Range(KeyRange{Start: start, End: end, Kind: kind})
+}
+
 // Test client recovery on database recreation.
 func TestDbRemovalRecovery(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
-	if err := prepare(ctx, t); err != nil {
+	if err := prepare(ctx, t, singerDBStatements); err != nil {
 		tearDown(ctx, t)
 		t.Fatalf("cannot set up testing environment: %v", err)
 	}
@@ -650,8 +837,7 @@ func TestDbRemovalRecovery(t *testing.T) {
 	// Now, send the query.
 	iter := client.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
 	defer iter.Stop()
-	_, err := iter.Next()
-	if err == nil {
+	if _, err := iter.Next(); err == nil {
 		t.Errorf("client sends query to removed database successfully, want it to fail")
 	}
 
@@ -685,7 +871,7 @@ func TestDbRemovalRecovery(t *testing.T) {
 func TestBasicTypes(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	if err := prepare(ctx, t); err != nil {
+	if err := prepare(ctx, t, singerDBStatements); err != nil {
 		tearDown(ctx, t)
 		t.Fatalf("cannot set up testing environment: %v", err)
 	}
@@ -835,7 +1021,7 @@ func TestBasicTypes(t *testing.T) {
 func TestStructTypes(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
-	if err := prepare(ctx, t); err != nil {
+	if err := prepare(ctx, t, singerDBStatements); err != nil {
 		tearDown(ctx, t)
 		t.Fatalf("cannot set up testing environment: %v", err)
 	}
@@ -951,5 +1137,24 @@ func readAll(iter *RowIterator) ([][]interface{}, error) {
 			return nil, err
 		}
 		vals = append(vals, v)
+	}
+}
+
+func readAllTestTable(iter *RowIterator) ([]testTableRow, error) {
+	defer iter.Stop()
+	var vals []testTableRow
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			return vals, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+		var ttr testTableRow
+		if err := row.ToStruct(&ttr); err != nil {
+			return nil, err
+		}
+		vals = append(vals, ttr)
 	}
 }
