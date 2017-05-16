@@ -52,30 +52,18 @@ func errSessionClosed(sh *sessionHandle) error {
 		"session is already recycled / destroyed: session_id = %q, rpc_client = %v", sh.getID(), sh.getClient())
 }
 
-// Read reads multiple rows from the database.
-//
-// The provided function is called once in serial for each row read.  If the
-// function returns a non-nil error, Read immediately returns that value.
-//
-// If no rows are read, Read will return nil without calling the provided
-// function.
+// Read returns a RowIterator for reading multiple rows from the database.
 func (t *txReadOnly) Read(ctx context.Context, table string, keys KeySet, columns []string) *RowIterator {
 	// ReadUsingIndex will use primary index if an empty index name is provided.
 	return t.ReadUsingIndex(ctx, table, "", keys, columns)
 }
 
-// ReadUsingIndex reads multiple rows from the database using an index.
+// ReadUsingIndex returns a RowIterator for reading multiple rows from the database
+// using an index.
 //
 // Currently, this function can only read columns that are part of the index
 // key, part of the primary key, or stored in the index due to a STORING clause
 // in the index definition.
-//
-// The provided function is called once in serial for each row read. If the
-// function returns a non-nil error, ReadUsingIndex immediately returns that
-// value.
-//
-// If no rows are read, ReadUsingIndex will return nil without calling the
-// provided function.
 func (t *txReadOnly) ReadUsingIndex(ctx context.Context, table, index string, keys KeySet, columns []string) *RowIterator {
 	var (
 		sh  *sessionHandle
@@ -121,7 +109,7 @@ func errRowNotFound(table string, key Key) error {
 // ReadRow reads a single row from the database.
 //
 // If no row is present with the given key, then ReadRow returns an error where
-// IsRowNotFound(err) is true.
+// spanner.ErrCode(err) is codes.NotFound.
 func (t *txReadOnly) ReadRow(ctx context.Context, table string, key Key, columns []string) (*Row, error) {
 	iter := t.Read(ctx, table, Keys(key), columns)
 	defer iter.Stop()
@@ -136,13 +124,8 @@ func (t *txReadOnly) ReadRow(ctx context.Context, table string, key Key, columns
 	}
 }
 
-// Query executes a query against the database.
-//
-// The provided function is called once in serial for each row read.  If the
-// function returns a non-nil error, Query immediately returns that value.
-//
-// If no rows are read, Query will return nil without calling the provided
-// function.
+// Query executes a query against the database. It returns a RowIterator
+// for retrieving the resulting rows.
 func (t *txReadOnly) Query(ctx context.Context, statement Statement) *RowIterator {
 	var (
 		sh  *sessionHandle
