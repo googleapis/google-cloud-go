@@ -254,14 +254,12 @@ func (t *Topic) publish(ctx context.Context, msg *Message, waitForFC bool) *Publ
 	defer t.mu.RUnlock()
 	// TODO(aboulhosn) [from bcmills] consider changing the semantics of bundler to perform this logic so we don't have to do it here
 	if t.stopped {
-		r.err = errTopicStopped
-		close(r.ready)
+		r.set("", errTopicStopped)
 		return r
 	}
 	if waitForFC {
 		if err := t.flowController.acquire(ctx, msg.size); err != nil {
-			r.err = err
-			close(r.ready)
+			r.set("", err)
 			return r
 		}
 	} else if !t.flowController.tryAcquire(msg.size) {
@@ -272,8 +270,7 @@ func (t *Topic) publish(ctx context.Context, msg *Message, waitForFC bool) *Publ
 	// is what ensures we have capacity to publish more messages.
 	err := t.bundler.AddWait(ctx, &bundledMessage{msg, r}, msg.size)
 	if err != nil {
-		r.err = err
-		close(r.ready)
+		r.set("", err)
 	}
 	return r
 }
@@ -322,6 +319,12 @@ func (r *PublishResult) Get(ctx context.Context) (serverID string, err error) {
 	case <-r.Ready():
 		return r.serverID, r.err
 	}
+}
+
+func (r *PublishResult) set(sid string, err error) {
+	r.serverID = sid
+	r.err = err
+	close(r.ready)
 }
 
 type bundledMessage struct {
@@ -392,11 +395,10 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	ids, err := t.s.publishMessages(ctx, t.name, msgs)
 	for i, bm := range bms {
 		if err != nil {
-			bm.res.err = err
+			bm.res.set("", err)
 		} else {
-			bm.res.serverID = ids[i]
+			bm.res.set(ids[i], nil)
 		}
 		t.flowController.release(msgs[i].size)
-		close(bm.res.ready)
 	}
 }
