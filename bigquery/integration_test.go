@@ -225,33 +225,37 @@ func TestIntegration_Tables(t *testing.T) {
 	ctx := context.Background()
 	table := newTable(t, schema)
 	defer table.Delete(ctx)
-
-	// Iterate over tables in the dataset.
-	it := dataset.Tables(ctx)
-	var tableNames []string
-	for {
-		tbl, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatal(err)
-		}
-		tableNames = append(tableNames, tbl.FullyQualifiedName())
-	}
-	// Other tests may be running with this dataset, so there might be more
-	// than just our table in the list. So don't try for an exact match; just
-	// make sure that our table is there somewhere.
-	found := false
 	wantName := table.FullyQualifiedName()
-	for _, tn := range tableNames {
-		if tn == wantName {
-			found = true
-			break
+
+	// This test is flaky due to eventual consistency.
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	err := internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
+		// Iterate over tables in the dataset.
+		it := dataset.Tables(ctx)
+		var tableNames []string
+		for {
+			tbl, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return false, err
+			}
+			tableNames = append(tableNames, tbl.FullyQualifiedName())
 		}
-	}
-	if !found {
-		t.Errorf("got %v\nwant %s in the list", tableNames, wantName)
+		// Other tests may be running with this dataset, so there might be more
+		// than just our table in the list. So don't try for an exact match; just
+		// make sure that our table is there somewhere.
+		for _, tn := range tableNames {
+			if tn == wantName {
+				return true, nil
+			}
+		}
+		return false, fmt.Errorf("got %v\nwant %s in the list", tableNames, wantName)
+	})
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 
