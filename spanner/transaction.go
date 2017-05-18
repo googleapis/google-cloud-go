@@ -84,7 +84,7 @@ func (t *txReadOnly) ReadUsingIndex(ctx context.Context, table, index string, ke
 		return &RowIterator{err: errSessionClosed(sh)}
 	}
 	return stream(
-		contextWithMetadata(ctx, sh.getMetadata()),
+		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			return client.StreamingRead(ctx,
 				&sppb.ReadRequest{
@@ -150,7 +150,7 @@ func (t *txReadOnly) Query(ctx context.Context, statement Statement) *RowIterato
 		return &RowIterator{err: err}
 	}
 	return stream(
-		contextWithMetadata(ctx, sh.getMetadata()),
+		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			req.ResumeToken = resumeToken
 			return client.ExecuteStreamingSql(ctx, req)
@@ -279,7 +279,7 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	err = runRetryable(contextWithMetadata(ctx, sh.getMetadata()), func(ctx context.Context) error {
+	err = runRetryable(contextWithOutgoingMetadata(ctx, sh.getMetadata()), func(ctx context.Context) error {
 		res, e := sh.getClient().BeginTransaction(ctx, &sppb.BeginTransactionRequest{
 			Session: sh.getID(),
 			Options: &sppb.TransactionOptions{
@@ -629,7 +629,7 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 		t.state = txActive
 		return nil
 	}
-	tx, err := beginTransaction(contextWithMetadata(ctx, t.sh.getMetadata()), t.sh.getID(), t.sh.getClient())
+	tx, err := beginTransaction(contextWithOutgoingMetadata(ctx, t.sh.getMetadata()), t.sh.getID(), t.sh.getClient())
 	if err == nil {
 		t.tx = tx
 		t.state = txActive
@@ -656,7 +656,7 @@ func (t *ReadWriteTransaction) commit(ctx context.Context) (time.Time, error) {
 	if sid == "" || client == nil {
 		return ts, errSessionClosed(t.sh)
 	}
-	err = runRetryable(contextWithMetadata(ctx, t.sh.getMetadata()), func(ctx context.Context) error {
+	err = runRetryable(contextWithOutgoingMetadata(ctx, t.sh.getMetadata()), func(ctx context.Context) error {
 		var trailer metadata.MD
 		res, e := client.Commit(ctx, &sppb.CommitRequest{
 			Session: sid,
@@ -690,7 +690,7 @@ func (t *ReadWriteTransaction) rollback(ctx context.Context) {
 	if sid == "" || client == nil {
 		return
 	}
-	err := runRetryable(contextWithMetadata(ctx, t.sh.getMetadata()), func(ctx context.Context) error {
+	err := runRetryable(contextWithOutgoingMetadata(ctx, t.sh.getMetadata()), func(ctx context.Context) error {
 		_, e := client.Rollback(ctx, &sppb.RollbackRequest{
 			Session:       sid,
 			TransactionId: t.tx,
@@ -759,7 +759,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 				return e
 			}
 		}
-		res, e := sh.getClient().Commit(contextWithMetadata(ctx, sh.getMetadata()), &sppb.CommitRequest{
+		res, e := sh.getClient().Commit(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.CommitRequest{
 			Session: sh.getID(),
 			Transaction: &sppb.CommitRequest_SingleUseTransaction{
 				SingleUseTransaction: &sppb.TransactionOptions{
