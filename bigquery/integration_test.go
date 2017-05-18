@@ -228,7 +228,7 @@ func TestIntegration_Tables(t *testing.T) {
 
 	// Iterate over tables in the dataset.
 	it := dataset.Tables(ctx)
-	var tables []*Table
+	var tableNames []string
 	for {
 		tbl, err := it.Next()
 		if err == iterator.Done {
@@ -237,20 +237,21 @@ func TestIntegration_Tables(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		tables = append(tables, tbl)
+		tableNames = append(tableNames, tbl.FullyQualifiedName())
 	}
 	// Other tests may be running with this dataset, so there might be more
 	// than just our table in the list. So don't try for an exact match; just
 	// make sure that our table is there somewhere.
 	found := false
-	for _, tbl := range tables {
-		if reflect.DeepEqual(tbl, table) {
+	wantName := table.FullyQualifiedName()
+	for _, tn := range tableNames {
+		if tn == wantName {
 			found = true
 			break
 		}
 	}
 	if !found {
-		t.Errorf("Tables: got %v\nshould see %v in the list", pretty.Value(tables), pretty.Value(table))
+		t.Errorf("got %v\nwant %s in the list", tableNames, wantName)
 	}
 }
 
