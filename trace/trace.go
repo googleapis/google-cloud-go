@@ -619,6 +619,20 @@ func (s *Span) NewRemoteChild(r *http.Request) *Span {
 	return newSpan
 }
 
+// Header returns the value of the X-Cloud-Trace-Context header that
+// should be used to propagate the span.  This is the inverse of
+// SpanFromHeader.
+//
+// Most users should use NewRemoteChild unless they have specific
+// propagation needs or want to control the naming of their span.
+// Header() does not create a new span.
+func (s *Span) Header() string {
+	if s == nil {
+		return ""
+	}
+	return spanHeader(s.trace.traceID, s.span.SpanId, s.trace.globalOptions)
+}
+
 func startNewChildWithRequest(r *http.Request, trace *trace, parentSpanID uint64) *Span {
 	name := r.URL.Host + r.URL.Path // drop scheme and query params
 	newSpan := startNewChild(name, trace, parentSpanID)
