@@ -122,8 +122,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		database: database,
 		md: metadata.Pairs(
 			resourcePrefixHeader, database,
-			apiClientHeader, clientUserAgent,
-			"x-goog-api-client", fmt.Sprintf("gl-go/%s gccl/%s grpc/", version.Go(), version.Repo)),
+			apiClientHeader, clientUserAgent),
 	}
 	allOpts := []option.ClientOption{option.WithEndpoint(prodAddr), option.WithScopes(Scope), option.WithUserAgent(clientUserAgent)}
 	allOpts = append(allOpts, opts...)
