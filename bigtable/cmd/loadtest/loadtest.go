@@ -26,6 +26,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"os/signal"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -107,6 +108,16 @@ func main() {
 	}
 	// Upon a successful run, delete the table. Don't bother checking for errors.
 	defer adminClient.DeleteTable(context.Background(), *scratchTable)
+
+	// Also delete the table on SIGTERM.
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		s := <-c
+		log.Printf("Caught %v, cleaning scratch table.", s)
+		adminClient.DeleteTable(context.Background(), *scratchTable)
+		os.Exit(1)
+	}()
 
 	log.Printf("Starting load test... (run for %v)", *runFor)
 	tbl := client.Open(*scratchTable)
