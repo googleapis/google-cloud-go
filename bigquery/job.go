@@ -29,24 +29,20 @@ type Job struct {
 	projectID string
 	jobID     string
 
-	isQuery bool
+	isQuery          bool
+	destinationTable *bq.TableReference // table to read query results from
 }
 
 // JobFromID creates a Job which refers to an existing BigQuery job. The job
 // need not have been created by this package. For example, the job may have
 // been created in the BigQuery console.
 func (c *Client) JobFromID(ctx context.Context, id string) (*Job, error) {
-	jobType, err := c.service.getJobType(ctx, c.projectID, id)
+	job, err := c.service.getJob(ctx, c.projectID, id)
 	if err != nil {
 		return nil, err
 	}
-
-	return &Job{
-		c:         c,
-		projectID: c.projectID,
-		jobID:     id,
-		isQuery:   jobType == queryJobType,
-	}, nil
+	job.c = c
+	return job, nil
 }
 
 func (j *Job) ID() string {
@@ -132,6 +128,19 @@ func (j *Job) Cancel(ctx context.Context) error {
 // Wait returns nil if the status was retrieved successfully, even if
 // status.Err() != nil. So callers must check both errors. See the example.
 func (j *Job) Wait(ctx context.Context) (*JobStatus, error) {
+	if j.isQuery {
+		// We can avoid polling for query jobs.
+		if _, err := j.c.service.waitForQuery(ctx, j.projectID, j.jobID); err != nil {
+			return nil, err
+		}
+		// Note: extra RPC even if you just want to wait for the query to finish.
+		js, err := j.Status(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return js, nil
+	}
+	// Non-query jobs must poll.
 	var js *JobStatus
 	err := internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
 		js, err = j.Status(ctx)
