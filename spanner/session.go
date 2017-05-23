@@ -218,8 +218,8 @@ func (s *session) refreshIdle() bool {
 	if err = runRetryable(ctx, func(ctx context.Context) error {
 		_, e := s.client.DeleteSession(contextWithOutgoingMetadata(ctx, s.pool.md), &sppb.DeleteSessionRequest{Name: sid})
 		return e
-	}); err != nil {
-		return false
+	}); err != nil && log.V(2) {
+		log.Warningf("Failed to delete session %v. Error: %v", sid, err)
 	}
 	return true
 }
