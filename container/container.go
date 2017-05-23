@@ -12,15 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package container contains a Google Container Engine client.
+// Package container contains a deprecated Google Container Engine client.
 //
-// For more information about the API,
-// see https://cloud.google.com/container-engine/docs
-//
-// Authentication
-//
-// See examples of authorization and authentication at
-// https://godoc.org/cloud.google.com/go#pkg-examples.
+// Deprecated: Use google.golang.org/api/container instead.
 package container // import "cloud.google.com/go/container"
 
 import (
