@@ -35,21 +35,25 @@ func (t *Table) Read(ctx context.Context) *RowIterator {
 	})
 }
 
-func (conf *readQueryConf) fetch(ctx context.Context, s service, token string) (*readDataResult, error) {
-	return s.readQuery(ctx, conf, token)
-}
-
-func (conf *readQueryConf) setPaging(pc *pagingConf) { conf.paging = *pc }
-
 // Read fetches the results of a query job.
 // If j is not a query job, Read returns an error.
 func (j *Job) Read(ctx context.Context) (*RowIterator, error) {
 	if !j.isQuery {
-		return nil, errors.New("Cannot read from a non-query job")
+		return nil, errors.New("bigquery: cannot read from a non-query job")
 	}
-	return newRowIterator(ctx, j.c.service, &readQueryConf{
-		projectID: j.projectID,
-		jobID:     j.jobID,
+	if j.destinationTable == nil {
+		return nil, errors.New("bigquery: query job missing destination table")
+	}
+	dest := j.destinationTable
+	schema, err := j.c.service.waitForQuery(ctx, dest.ProjectId, j.jobID)
+	if err != nil {
+		return nil, err
+	}
+	return newRowIterator(ctx, j.c.service, &readTableConf{
+		projectID: dest.ProjectId,
+		datasetID: dest.DatasetId,
+		tableID:   dest.TableId,
+		schema:    schema,
 	}), nil
 }
 
