@@ -24,96 +24,114 @@ import (
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
-// Test KeySet.proto().
-func TestKeySetToProto(t *testing.T) {
-	for _, test := range []struct {
+func TestKeySets(t *testing.T) {
+	int1 := intProto(1)
+	int2 := intProto(2)
+	int3 := intProto(3)
+	int4 := intProto(4)
+	for i, test := range []struct {
 		ks        KeySet
 		wantProto *sppb.KeySet
 	}{
 		{
-			KeySet{},
+			KeySets(),
+			&sppb.KeySet{},
+		},
+		{
+			Key{4},
 			&sppb.KeySet{
-				Keys:   []*proto3.ListValue{},
-				Ranges: []*sppb.KeyRange{},
+				Keys: []*proto3.ListValue{listValueProto(int4)},
 			},
 		},
 		{
-			KeySet{All: true},
+			AllKeys(),
+			&sppb.KeySet{All: true},
+		},
+		{
+			KeySets(Key{1, 2}, Key{3, 4}),
 			&sppb.KeySet{
-				All:    true,
-				Keys:   []*proto3.ListValue{},
-				Ranges: []*sppb.KeyRange{},
+				Keys: []*proto3.ListValue{
+					listValueProto(int1, int2),
+					listValueProto(int3, int4),
+				},
 			},
 		},
 		{
-			KeySet{Keys: []Key{{1, 2}, {3, 4}}},
-			&sppb.KeySet{
-				Keys:   []*proto3.ListValue{listValueProto(intProto(1), intProto(2)), listValueProto(intProto(3), intProto(4))},
-				Ranges: []*sppb.KeyRange{},
-			},
+			KeyRange{Key{1}, Key{2}, ClosedOpen},
+			&sppb.KeySet{Ranges: []*sppb.KeyRange{
+				&sppb.KeyRange{
+					&sppb.KeyRange_StartClosed{listValueProto(int1)},
+					&sppb.KeyRange_EndOpen{listValueProto(int2)},
+				},
+			}},
 		},
 		{
-			KeySet{Ranges: []KeyRange{{Key{1}, Key{2}, ClosedClosed}, {Key{3}, Key{10}, OpenClosed}}},
+			Key{2}.AsPrefix(),
+			&sppb.KeySet{Ranges: []*sppb.KeyRange{
+				&sppb.KeyRange{
+					&sppb.KeyRange_StartClosed{listValueProto(int2)},
+					&sppb.KeyRange_EndClosed{listValueProto(int2)},
+				},
+			}},
+		},
+		{
+			KeySets(
+				KeyRange{Key{1}, Key{2}, ClosedClosed},
+				KeyRange{Key{3}, Key{4}, OpenClosed},
+			),
 			&sppb.KeySet{
-				Keys: []*proto3.ListValue{},
 				Ranges: []*sppb.KeyRange{
 					&sppb.KeyRange{
-						&sppb.KeyRange_StartClosed{listValueProto(intProto(1))},
-						&sppb.KeyRange_EndClosed{listValueProto(intProto(2))},
+						&sppb.KeyRange_StartClosed{listValueProto(int1)},
+						&sppb.KeyRange_EndClosed{listValueProto(int2)},
 					},
 					&sppb.KeyRange{
-						&sppb.KeyRange_StartOpen{listValueProto(intProto(3))},
-						&sppb.KeyRange_EndClosed{listValueProto(intProto(10))},
+						&sppb.KeyRange_StartOpen{listValueProto(int3)},
+						&sppb.KeyRange_EndClosed{listValueProto(int4)},
 					},
 				},
 			},
 		},
+		{
+			KeySets(
+				Key{1},
+				KeyRange{Key{2}, Key{3}, ClosedClosed},
+				KeyRange{Key{4}, Key{5}, OpenClosed},
+				KeySets(),
+				Key{6}),
+			&sppb.KeySet{
+				Keys: []*proto3.ListValue{
+					listValueProto(int1),
+					listValueProto(intProto(6)),
+				},
+				Ranges: []*sppb.KeyRange{
+					&sppb.KeyRange{
+						&sppb.KeyRange_StartClosed{listValueProto(int2)},
+						&sppb.KeyRange_EndClosed{listValueProto(int3)},
+					},
+					&sppb.KeyRange{
+						&sppb.KeyRange_StartOpen{listValueProto(int4)},
+						&sppb.KeyRange_EndClosed{listValueProto(intProto(5))},
+					},
+				},
+			},
+		},
+		{
+			KeySets(
+				Key{1},
+				KeyRange{Key{2}, Key{3}, ClosedClosed},
+				AllKeys(),
+				KeyRange{Key{4}, Key{5}, OpenClosed},
+				Key{6}),
+			&sppb.KeySet{All: true},
+		},
 	} {
-		gotProto, err := test.ks.proto()
+		gotProto, err := test.ks.keySetProto()
 		if err != nil {
-			t.Errorf("%v.proto() returns error %v; want nil error", test.ks, err)
+			t.Errorf("#%d: %v.proto() returns error %v; want nil error", i, test.ks, err)
 		}
 		if !reflect.DeepEqual(gotProto, test.wantProto) {
-			t.Errorf("%v.proto() = \n%v\nwant:\n%v", test.ks, gotProto.String(), test.wantProto.String())
+			t.Errorf("#%d: %v.proto() = \n%v\nwant:\n%v", i, test.ks, gotProto.String(), test.wantProto.String())
 		}
-	}
-}
-
-// Test helpers that help to create KeySets.
-func TestKeySetHelpers(t *testing.T) {
-	// Test Keys with one key.
-	k := Key{[]byte{1, 2, 3}}
-	if got, want := Keys(k), (KeySet{Keys: []Key{k}}); !reflect.DeepEqual(got, want) {
-		t.Errorf("Keys(%q) = %q, want %q", k, got, want)
-	}
-	// Test Keys with multiple keys.
-	ks := []Key{Key{57}, Key{NullString{"value", false}}}
-	if got, want := Keys(ks...), (KeySet{Keys: ks}); !reflect.DeepEqual(got, want) {
-		t.Errorf("Keys(%v) = %v, want %v", ks, got, want)
-	}
-	// Test Range.
-	kr := KeyRange{Key{1}, Key{10}, ClosedClosed}
-	if got, want := Range(kr), (KeySet{Ranges: []KeyRange{kr}}); !reflect.DeepEqual(got, want) {
-		t.Errorf("Range(%v) = %v, want %v", kr, got, want)
-	}
-	// Test PrefixRange.
-	k = Key{2}
-	kr = KeyRange{k, k, ClosedClosed}
-	if got, want := PrefixRange(k), (KeySet{Ranges: []KeyRange{kr}}); !reflect.DeepEqual(got, want) {
-		t.Errorf("PrefixRange(%v) = %v, want %v", k, got, want)
-	}
-	// Test UnionKeySets.
-	sk1, sk2 := Keys(Key{2}), Keys(Key{3})
-	r1, r2 := Range(KeyRange{Key{1}, Key{10}, ClosedClosed}), Range(KeyRange{Key{15}, Key{20}, OpenClosed})
-	want := KeySet{
-		Keys:   []Key{Key{2}, Key{3}},
-		Ranges: []KeyRange{KeyRange{Key{1}, Key{10}, ClosedClosed}, KeyRange{Key{15}, Key{20}, OpenClosed}},
-	}
-	if got := UnionKeySets(sk1, sk2, r1, r2); !reflect.DeepEqual(got, want) {
-		t.Errorf("UnionKeySets(%v, %v, %v, %v) = %v, want %v", sk1, sk2, r1, r2, got, want)
-	}
-	all := AllKeys()
-	if got := UnionKeySets(sk1, sk2, r1, r2, all); !reflect.DeepEqual(got, all) {
-		t.Errorf("UnionKeySets(%v, %v, %v, %v, %v) = %v, want %v", sk1, sk2, r1, r2, all, got, all)
 	}
 }

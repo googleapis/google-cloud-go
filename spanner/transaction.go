@@ -70,7 +70,7 @@ func (t *txReadOnly) ReadUsingIndex(ctx context.Context, table, index string, ke
 		ts  *sppb.TransactionSelector
 		err error
 	)
-	kset, err := keys.proto()
+	kset, err := keys.keySetProto()
 	if err != nil {
 		return &RowIterator{err: err}
 	}
@@ -111,7 +111,7 @@ func errRowNotFound(table string, key Key) error {
 // If no row is present with the given key, then ReadRow returns an error where
 // spanner.ErrCode(err) is codes.NotFound.
 func (t *txReadOnly) ReadRow(ctx context.Context, table string, key Key, columns []string) (*Row, error) {
-	iter := t.Read(ctx, table, Keys(key), columns)
+	iter := t.Read(ctx, table, key, columns)
 	defer iter.Stop()
 	row, err := iter.Next()
 	switch err {

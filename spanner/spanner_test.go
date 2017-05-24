@@ -288,7 +288,7 @@ func TestSingleUse(t *testing.T) {
 		}
 		// SingleUse.Read
 		su = client.Single().WithTimestampBound(test.tb)
-		got, err = readAll(su.Read(ctx, "Singers", Keys(Key{1}, Key{3}, Key{4}), []string{"SingerId", "FirstName", "LastName"}))
+		got, err = readAll(su.Read(ctx, "Singers", KeySets(Key{1}, Key{3}, Key{4}), []string{"SingerId", "FirstName", "LastName"}))
 		if err != nil {
 			t.Errorf("%d: SingleUse.Read returns error %v, want nil", i, err)
 		}
@@ -328,7 +328,7 @@ func TestSingleUse(t *testing.T) {
 		}
 		// SingleUse.ReadUsingIndex
 		su = client.Single().WithTimestampBound(test.tb)
-		got, err = readAll(su.ReadUsingIndex(ctx, "Singers", "SingerByName", Keys(Key{"Marc", "Foo"}, Key{"Alpha", "Beta"}, Key{"Last", "End"}), []string{"SingerId", "FirstName", "LastName"}))
+		got, err = readAll(su.ReadUsingIndex(ctx, "Singers", "SingerByName", KeySets(Key{"Marc", "Foo"}, Key{"Alpha", "Beta"}, Key{"Last", "End"}), []string{"SingerId", "FirstName", "LastName"}))
 		if err != nil {
 			t.Errorf("%d: SingleUse.ReadUsingIndex returns error %v, want nil", i, err)
 		}
@@ -469,7 +469,7 @@ func TestReadOnlyTransaction(t *testing.T) {
 		}
 		roTs := rts
 		// ReadOnlyTransaction.Read
-		got, err = readAll(ro.Read(ctx, "Singers", Keys(Key{1}, Key{3}, Key{4}), []string{"SingerId", "FirstName", "LastName"}))
+		got, err = readAll(ro.Read(ctx, "Singers", KeySets(Key{1}, Key{3}, Key{4}), []string{"SingerId", "FirstName", "LastName"}))
 		if err != nil {
 			t.Errorf("%d: ReadOnlyTransaction.Read returns error %v, want nil", i, err)
 		}
@@ -513,7 +513,7 @@ func TestReadOnlyTransaction(t *testing.T) {
 			t.Errorf("%d: got unexpected results from ReadOnlyTransaction.ReadRow: %v, want %v", i, got, test.want)
 		}
 		// SingleUse.ReadUsingIndex
-		got, err = readAll(ro.ReadUsingIndex(ctx, "Singers", "SingerByName", Keys(Key{"Marc", "Foo"}, Key{"Alpha", "Beta"}, Key{"Last", "End"}), []string{"SingerId", "FirstName", "LastName"}))
+		got, err = readAll(ro.ReadUsingIndex(ctx, "Singers", "SingerByName", KeySets(Key{"Marc", "Foo"}, Key{"Alpha", "Beta"}, Key{"Last", "End"}), []string{"SingerId", "FirstName", "LastName"}))
 		if err != nil {
 			t.Errorf("%d: ReadOnlyTransaction.ReadUsingIndex returns error %v, want nil", i, err)
 		}
@@ -603,7 +603,7 @@ func TestReadWriteTransaction(t *testing.T) {
 				if e != nil {
 					return e
 				}
-				bb, e := readBalance(tx.Read(ctx, "Accounts", Keys(Key{int64(2)}), []string{"Balance"}))
+				bb, e := readBalance(tx.Read(ctx, "Accounts", KeySets(Key{int64(2)}), []string{"Balance"}))
 				if e != nil {
 					return e
 				}
@@ -634,7 +634,7 @@ func TestReadWriteTransaction(t *testing.T) {
 		if ce := r.Column(0, &bf); ce != nil {
 			return ce
 		}
-		bb, e = readBalance(tx.ReadUsingIndex(ctx, "Accounts", "AccountByNickname", Keys(Key{"Bar"}), []string{"Balance"}))
+		bb, e = readBalance(tx.ReadUsingIndex(ctx, "Accounts", "AccountByNickname", KeySets(Key{"Bar"}), []string{"Balance"}))
 		if e != nil {
 			return e
 		}
@@ -680,7 +680,7 @@ func TestReads(t *testing.T) {
 
 	// Empty read.
 	rows, err := readAllTestTable(client.Single().Read(ctx, testTable,
-		Range(KeyRange{Start: Key{"k99"}, End: Key{"z"}}), testTableColumns))
+		KeyRange{Start: Key{"k99"}, End: Key{"z"}}, testTableColumns))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -690,7 +690,7 @@ func TestReads(t *testing.T) {
 
 	// Index empty read.
 	rows, err = readAllTestTable(client.Single().ReadUsingIndex(ctx, testTable, testTableIndex,
-		Range(KeyRange{Start: Key{"v99"}, End: Key{"z"}}), testTableColumns))
+		KeyRange{Start: Key{"v99"}, End: Key{"z"}}, testTableColumns))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -730,28 +730,28 @@ func rangeReads(ctx context.Context, t *testing.T) {
 		}
 	}
 
-	checkRange(Keys(Key{"k1"}), 1)
-	checkRange(keyRange(ClosedOpen, Key{"k3"}, Key{"k5"}), 3, 4)
-	checkRange(keyRange(ClosedClosed, Key{"k3"}, Key{"k5"}), 3, 4, 5)
-	checkRange(keyRange(OpenClosed, Key{"k3"}, Key{"k5"}), 4, 5)
-	checkRange(keyRange(OpenOpen, Key{"k3"}, Key{"k5"}), 4)
+	checkRange(Key{"k1"}, 1)
+	checkRange(KeyRange{Key{"k3"}, Key{"k5"}, ClosedOpen}, 3, 4)
+	checkRange(KeyRange{Key{"k3"}, Key{"k5"}, ClosedClosed}, 3, 4, 5)
+	checkRange(KeyRange{Key{"k3"}, Key{"k5"}, OpenClosed}, 4, 5)
+	checkRange(KeyRange{Key{"k3"}, Key{"k5"}, OpenOpen}, 4)
 
 	// Partial key specification.
-	checkRange(keyRange(ClosedClosed, Key{"k7"}, Key{}), 7, 8, 9)
-	checkRange(keyRange(OpenClosed, Key{"k7"}, Key{}), 8, 9)
-	checkRange(keyRange(ClosedOpen, Key{}, Key{"k11"}), 0, 1, 10)
-	checkRange(keyRange(ClosedClosed, Key{}, Key{"k11"}), 0, 1, 10, 11)
+	checkRange(KeyRange{Key{"k7"}, Key{}, ClosedClosed}, 7, 8, 9)
+	checkRange(KeyRange{Key{"k7"}, Key{}, OpenClosed}, 8, 9)
+	checkRange(KeyRange{Key{}, Key{"k11"}, ClosedOpen}, 0, 1, 10)
+	checkRange(KeyRange{Key{}, Key{"k11"}, ClosedClosed}, 0, 1, 10, 11)
 
 	// The following produce empty ranges.
 	// TODO(jba): Consider a multi-part key to illustrate partial key behavior.
-	// checkRange(keyRange(ClosedOpen, Key{"k7"}, Key{}))
-	// checkRange(keyRange(OpenOpen, Key{"k7"}, Key{}))
-	// checkRange(keyRange(OpenOpen, Key{}, Key{"k11"}))
-	// checkRange(keyRange(OpenClosed, Key{}, Key{"k11"}))
+	// checkRange(KeyRange{Key{"k7"}, Key{}, ClosedOpen})
+	// checkRange(KeyRange{Key{"k7"}, Key{}, OpenOpen})
+	// checkRange(KeyRange{Key{}, Key{"k11"}, OpenOpen})
+	// checkRange(KeyRange{Key{}, Key{"k11"}, OpenClosed})
 
 	// Prefix is component-wise, not string prefix.
-	checkRange(PrefixRange(Key{"k1"}), 1)
-	checkRange(keyRange(ClosedOpen, Key{"k1"}, Key{"k2"}), 1, 10, 11, 12, 13, 14)
+	checkRange(Key{"k1"}.AsPrefix(), 1)
+	checkRange(KeyRange{Key{"k1"}, Key{"k2"}, ClosedOpen}, 1, 10, 11, 12, 13, 14)
 
 	checkRange(AllKeys(), 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
 }
@@ -764,28 +764,27 @@ func indexRangeReads(ctx context.Context, t *testing.T) {
 		}
 	}
 
-	checkRange(Keys(Key{"v1"}), 1)
-	checkRange(keyRange(ClosedOpen, Key{"v3"}, Key{"v5"}), 3, 4)
-	checkRange(keyRange(ClosedClosed, Key{"v3"}, Key{"v5"}), 3, 4, 5)
-	checkRange(keyRange(OpenClosed, Key{"v3"}, Key{"v5"}), 4, 5)
-	checkRange(keyRange(OpenOpen, Key{"v3"}, Key{"v5"}), 4)
+	checkRange(Key{"v1"}, 1)
+	checkRange(KeyRange{Key{"v3"}, Key{"v5"}, ClosedOpen}, 3, 4)
+	checkRange(KeyRange{Key{"v3"}, Key{"v5"}, ClosedClosed}, 3, 4, 5)
+	checkRange(KeyRange{Key{"v3"}, Key{"v5"}, OpenClosed}, 4, 5)
+	checkRange(KeyRange{Key{"v3"}, Key{"v5"}, OpenOpen}, 4)
 
 	// // Partial key specification.
-	checkRange(keyRange(ClosedClosed, Key{"v7"}, Key{}), 7, 8, 9)
-	checkRange(keyRange(OpenClosed, Key{"v7"}, Key{}), 8, 9)
-	checkRange(keyRange(ClosedOpen, Key{}, Key{"v11"}), 0, 1, 10)
-	checkRange(keyRange(ClosedClosed, Key{}, Key{"v11"}), 0, 1, 10, 11)
+	checkRange(KeyRange{Key{"v7"}, Key{}, ClosedClosed}, 7, 8, 9)
+	checkRange(KeyRange{Key{"v7"}, Key{}, OpenClosed}, 8, 9)
+	checkRange(KeyRange{Key{}, Key{"v11"}, ClosedOpen}, 0, 1, 10)
+	checkRange(KeyRange{Key{}, Key{"v11"}, ClosedClosed}, 0, 1, 10, 11)
 
 	// // The following produce empty ranges.
-	// TODO(jba): uncomment when the spanner Internal error is fixed.
-	// checkRange(keyRange(ClosedOpen, Key{"v7"}, Key{}))
-	// checkRange(keyRange(OpenOpen, Key{"v7"}, Key{}))
-	// checkRange(keyRange(OpenOpen, Key{}, Key{"v11"}))
-	// checkRange(keyRange(OpenClosed, Key{}, Key{"v11"}))
+	// checkRange(KeyRange{Key{"v7"}, Key{}, ClosedOpen})
+	// checkRange(KeyRange{Key{"v7"}, Key{}, OpenOpen})
+	// checkRange(KeyRange{Key{}, Key{"v11"}, OpenOpen})
+	// checkRange(KeyRange{Key{}, Key{"v11"}, OpenClosed})
 
 	// // Prefix is component-wise, not string prefix.
-	checkRange(PrefixRange(Key{"v1"}), 1)
-	checkRange(keyRange(ClosedOpen, Key{"v1"}, Key{"v2"}), 1, 10, 11, 12, 13, 14)
+	checkRange(Key{"v1"}.AsPrefix(), 1)
+	checkRange(KeyRange{Key{"v1"}, Key{"v2"}, ClosedOpen}, 1, 10, 11, 12, 13, 14)
 	checkRange(AllKeys(), 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
 
 	// Read from an index with DESC ordering.
@@ -813,10 +812,6 @@ func compareRows(iter *RowIterator, wantNums []int) (string, bool) {
 		return fmt.Sprintf("got %v, want %v", got, want), false
 	}
 	return "", true
-}
-
-func keyRange(kind KeyRangeKind, start, end Key) KeySet {
-	return Range(KeyRange{Start: start, End: end, Kind: kind})
 }
 
 func TestNestedTransaction(t *testing.T) {

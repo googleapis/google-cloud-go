@@ -235,8 +235,8 @@ func ExampleDelete() {
 	_ = m // TODO: use with Client.Apply or in a ReadWriteTransaction.
 }
 
-func ExampleDeleteKeyRange() {
-	m := spanner.DeleteKeyRange("Users", spanner.KeyRange{
+func ExampleDelete_KeyRange() {
+	m := spanner.Delete("Users", spanner.KeyRange{
 		Start: spanner.Key{"alice"},
 		End:   spanner.Key{"bob"},
 		Kind:  spanner.ClosedClosed,
@@ -409,7 +409,7 @@ func ExampleReadOnlyTransaction_Read() {
 		// TODO: Handle error.
 	}
 	iter := client.Single().Read(ctx, "Users",
-		spanner.Keys(spanner.Key{"alice"}, spanner.Key{"bob"}),
+		spanner.KeySets(spanner.Key{"alice"}, spanner.Key{"bob"}),
 		[]string{"name", "email"})
 	_ = iter // TODO: iterate using Next or Do.
 }
@@ -422,7 +422,7 @@ func ExampleReadOnlyTransaction_ReadUsingIndex() {
 	}
 	iter := client.Single().ReadUsingIndex(ctx, "Users",
 		"UsersByEmail",
-		spanner.Keys(spanner.Key{"a@example.com"}, spanner.Key{"b@example.com"}),
+		spanner.KeySets(spanner.Key{"a@example.com"}, spanner.Key{"b@example.com"}),
 		[]string{"name", "email"})
 	_ = iter // TODO: iterate using Next or Do.
 }

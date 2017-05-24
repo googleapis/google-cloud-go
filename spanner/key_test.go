@@ -251,3 +251,11 @@ func TestKeyRange(t *testing.T) {
 		}
 	}
 }
+
+func TestPrefixRange(t *testing.T) {
+	got := Key{1}.AsPrefix()
+	want := KeyRange{Start: Key{1}, End: Key{1}, Kind: ClosedClosed}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v, want %v", got, want)
+	}
+}
