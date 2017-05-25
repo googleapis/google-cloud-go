@@ -36,6 +36,7 @@ func TestToRawBucket(t *testing.T) {
 		// should be ignored:
 		MetaGeneration: 39,
 		Created:        time.Now(),
+		Labels:         map[string]string{"label": "value"},
 	}
 	got := attrs.toRawBucket()
 	want := &raw.Bucket{
@@ -49,6 +50,7 @@ func TestToRawBucket(t *testing.T) {
 		Location:     "loc",
 		StorageClass: "class",
 		Versioning:   nil, // ignore VersioningEnabled if flase
+		Labels:       map[string]string{"label": "value"},
 	}
 	msg, ok, err := pretty.Diff(want, got)
 	if err != nil {

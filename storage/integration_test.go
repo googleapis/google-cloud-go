@@ -149,9 +149,14 @@ func TestBucketMethods(t *testing.T) {
 	}
 
 	// Test Create and Delete with attributes.
+	labels := map[string]string{
+		"l1":    "v1",
+		"empty": "",
+	}
 	attrs = &BucketAttrs{
 		StorageClass:      "NEARLINE",
 		VersioningEnabled: true,
+		Labels:            labels,
 	}
 	if err := client.Bucket(newBucket).Create(ctx, projectID, attrs); err != nil {
 		t.Errorf("Bucket(%v).Create(%v, %v) failed: %v", newBucket, projectID, attrs, err)
@@ -168,6 +173,9 @@ func TestBucketMethods(t *testing.T) {
 		}
 		if !attrs.VersioningEnabled {
 			t.Error("got versioning disabled, wanted it enabled")
+		}
+		if got, want := attrs.Labels, labels; !reflect.DeepEqual(got, want) {
+			t.Errorf("labels: got %v, want %v", got, want)
 		}
 	}
 	if err := client.Bucket(newBucket).Delete(ctx); err != nil {
