@@ -212,6 +212,9 @@ type BucketAttrs struct {
 	// VersioningEnabled reports whether this bucket has versioning enabled.
 	// This field is read-only.
 	VersioningEnabled bool
+
+	// Labels are the bucket's labels.
+	Labels map[string]string
 }
 
 func newBucket(b *raw.Bucket) *BucketAttrs {
@@ -225,6 +228,7 @@ func newBucket(b *raw.Bucket) *BucketAttrs {
 		StorageClass:      b.StorageClass,
 		Created:           convertTime(b.TimeCreated),
 		VersioningEnabled: b.Versioning != nil && b.Versioning.Enabled,
+		Labels:            b.Labels,
 	}
 	acl := make([]ACLRule, len(b.Acl))
 	for i, rule := range b.Acl {
@@ -258,6 +262,14 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		}
 	}
 	dACL := toRawObjectACL(b.DefaultObjectACL)
+	// Copy label map.
+	var labels map[string]string
+	if len(b.Labels) > 0 {
+		labels = make(map[string]string, len(b.Labels))
+		for k, v := range b.Labels {
+			labels[k] = v
+		}
+	}
 	// Ignore VersioningEnabled if it is false. This is OK because
 	// we only call this method when creating a bucket, and by default
 	// new buckets have versioning off.
@@ -272,6 +284,7 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		StorageClass:     b.StorageClass,
 		Acl:              acl,
 		Versioning:       v,
+		Labels:           labels,
 	}
 }
 
