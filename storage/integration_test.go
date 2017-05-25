@@ -175,6 +175,52 @@ func TestBucketMethods(t *testing.T) {
 	}
 }
 
+func TestIntegration_BucketUpdate(t *testing.T) {
+	ctx := context.Background()
+	client, bucket := testConfig(ctx, t)
+	defer client.Close()
+
+	b := client.Bucket(bucket)
+
+	getAttrs := func() *BucketAttrs {
+		attrs, err := b.Attrs(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return attrs
+	}
+
+	if getAttrs().VersioningEnabled {
+		t.Fatal("should not have versioning by default")
+	}
+	// Using empty BucketAttrsToUpdate should be a no-nop.
+	attrs, err := b.Update(ctx, BucketAttrsToUpdate{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if attrs.VersioningEnabled {
+		t.Fatal("should not have versioning")
+	}
+
+	// Turn on versioning.
+	attrs, err = b.Update(ctx, BucketAttrsToUpdate{VersioningEnabled: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !attrs.VersioningEnabled {
+		t.Fatal("should have versioning now")
+	}
+
+	// Turn it off again.
+	attrs, err = b.Update(ctx, BucketAttrsToUpdate{VersioningEnabled: false})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if attrs.VersioningEnabled {
+		t.Fatal("should have versioning off")
+	}
+}
+
 func TestIntegration_ConditionalDelete(t *testing.T) {
 	ctx := context.Background()
 	client, bucket := testConfig(ctx, t)

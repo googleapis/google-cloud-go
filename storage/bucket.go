@@ -20,6 +20,7 @@ import (
 	"reflect"
 	"time"
 
+	"cloud.google.com/go/internal/optional"
 	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -272,6 +273,21 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		Acl:              acl,
 		Versioning:       v,
 	}
+}
+
+type BucketAttrsToUpdate struct {
+	VersioningEnabled optional.Bool
+}
+
+func (au *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
+	rb := &raw.Bucket{}
+	if au.VersioningEnabled != nil {
+		rb.Versioning = &raw.BucketVersioning{
+			Enabled:         optional.ToBool(au.VersioningEnabled),
+			ForceSendFields: []string{"Enabled"},
+		}
+	}
+	return rb
 }
 
 // If returns a new BucketHandle that applies a set of preconditions.
