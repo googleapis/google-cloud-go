@@ -76,44 +76,55 @@ func TestCallBuilders(t *testing.T) {
 		t.Fatal(err)
 	}
 	c := &Client{raw: rc}
+	const metagen = 17
 
 	b := c.Bucket("name")
 	bm := b.If(BucketConditions{MetagenerationMatch: metagen})
 
-	got, err := b.newGetCall()
-	if err != nil {
-		t.Fatal(err)
-	}
-	want := rc.Buckets.Get("name").Projection("full")
-	setClientHeader(want.Header())
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("got %#v, want %#v", got, want)
-	}
-	got, err = bm.newGetCall()
-	if err != nil {
-		t.Fatal(err)
-	}
-	want.IfMetagenerationMatch(17)
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("got %#v, want %#v", got, want)
-	}
+	for i, test := range []struct {
+		callFunc func(*BucketHandle) (interface{}, error)
+		want     interface {
+			Header() http.Header
+		}
+		metagenFunc func(interface{})
+	}{
+		{
+			func(b *BucketHandle) (interface{}, error) { return b.newGetCall() },
+			rc.Buckets.Get("name").Projection("full"),
+			func(req interface{}) { req.(*raw.BucketsGetCall).IfMetagenerationMatch(metagen) },
+		},
+		{
+			func(b *BucketHandle) (interface{}, error) { return b.newDeleteCall() },
+			rc.Buckets.Delete("name"),
+			func(req interface{}) { req.(*raw.BucketsDeleteCall).IfMetagenerationMatch(metagen) },
+		},
+		{
+			func(b *BucketHandle) (interface{}, error) {
+				return b.newPatchCall(&BucketAttrsToUpdate{VersioningEnabled: false})
+			},
+			rc.Buckets.Patch("name", &raw.Bucket{
+				Versioning: &raw.BucketVersioning{Enabled: false, ForceSendFields: []string{"Enabled"}},
+			}).Projection("full"),
+			func(req interface{}) { req.(*raw.BucketsPatchCall).IfMetagenerationMatch(metagen) },
+		},
+	} {
+		got, err := test.callFunc(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+		setClientHeader(test.want.Header())
+		if !reflect.DeepEqual(got, test.want) {
+			t.Errorf("#%d: got %#v, want %#v", i, got, test.want)
+		}
 
-	gotd, err := b.newDeleteCall()
-	if err != nil {
-		t.Fatal(err)
-	}
-	wantd := rc.Buckets.Delete("name")
-	setClientHeader(wantd.Header())
-	if !reflect.DeepEqual(gotd, wantd) {
-		t.Errorf("got %#v, want %#v", gotd, wantd)
-	}
-	gotd, err = bm.newDeleteCall()
-	if err != nil {
-		t.Fatal(err)
-	}
-	wantd.IfMetagenerationMatch(17)
-	if !reflect.DeepEqual(gotd, wantd) {
-		t.Errorf("got %#v, want %#v", gotd, wantd)
+		got, err = test.callFunc(bm)
+		if err != nil {
+			t.Fatal(err)
+		}
+		test.metagenFunc(test.want)
+		if !reflect.DeepEqual(got, test.want) {
+			t.Errorf("#%d: got %#v, want %#v", i, got, test.want)
+		}
 	}
 
 	// Error.
