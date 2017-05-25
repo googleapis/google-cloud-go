@@ -15,6 +15,8 @@
 package storage
 
 import (
+	"net/http"
+	"reflect"
 	"testing"
 	"time"
 
@@ -65,5 +67,64 @@ func TestToRawBucket(t *testing.T) {
 	}
 	if !ok {
 		t.Error(msg)
+	}
+}
+
+func TestCallBuilders(t *testing.T) {
+	rc, err := raw.New(&http.Client{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	c := &Client{raw: rc}
+
+	b := c.Bucket("name")
+	bm := b.If(BucketConditions{MetagenerationMatch: metagen})
+
+	got, err := b.newGetCall()
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := rc.Buckets.Get("name").Projection("full")
+	setClientHeader(want.Header())
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %#v, want %#v", got, want)
+	}
+	got, err = bm.newGetCall()
+	if err != nil {
+		t.Fatal(err)
+	}
+	want.IfMetagenerationMatch(17)
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %#v, want %#v", got, want)
+	}
+
+	gotd, err := b.newDeleteCall()
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantd := rc.Buckets.Delete("name")
+	setClientHeader(wantd.Header())
+	if !reflect.DeepEqual(gotd, wantd) {
+		t.Errorf("got %#v, want %#v", gotd, wantd)
+	}
+	gotd, err = bm.newDeleteCall()
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantd.IfMetagenerationMatch(17)
+	if !reflect.DeepEqual(gotd, wantd) {
+		t.Errorf("got %#v, want %#v", gotd, wantd)
+	}
+
+	// Error.
+	bm = b.If(BucketConditions{MetagenerationMatch: 1, MetagenerationNotMatch: 2})
+	if _, err := bm.newGetCall(); err == nil {
+		t.Errorf("got nil, want error")
+	}
+	if _, err := bm.newDeleteCall(); err == nil {
+		t.Errorf("got nil, want error")
+	}
+	if _, err := bm.newPatchCall(&BucketAttrsToUpdate{}); err == nil {
+		t.Errorf("got nil, want error")
 	}
 }

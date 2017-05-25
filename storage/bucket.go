@@ -15,7 +15,9 @@
 package storage
 
 import (
+	"fmt"
 	"net/http"
+	"reflect"
 	"time"
 
 	"golang.org/x/net/context"
@@ -27,11 +29,11 @@ import (
 // BucketHandle provides operations on a Google Cloud Storage bucket.
 // Use Client.Bucket to get a handle.
 type BucketHandle struct {
+	c                *Client
+	name             string
 	acl              ACLHandle
 	defaultObjectACL ACLHandle
-
-	c    *Client
-	name string
+	conds            *BucketConditions
 }
 
 // Bucket returns a BucketHandle, which provides operations on the named bucket.
@@ -74,9 +76,20 @@ func (b *BucketHandle) Create(ctx context.Context, projectID string, attrs *Buck
 
 // Delete deletes the Bucket.
 func (b *BucketHandle) Delete(ctx context.Context) error {
+	req, err := b.newDeleteCall()
+	if err != nil {
+		return err
+	}
+	return runWithRetry(ctx, func() error { return req.Context(ctx).Do() })
+}
+
+func (b *BucketHandle) newDeleteCall() (*raw.BucketsDeleteCall, error) {
 	req := b.c.raw.Buckets.Delete(b.name)
 	setClientHeader(req.Header())
-	return runWithRetry(ctx, func() error { return req.Context(ctx).Do() })
+	if err := applyBucketConds("BucketHandle.Delete", b.conds, req); err != nil {
+		return nil, err
+	}
+	return req, nil
 }
 
 // ACL returns an ACLHandle, which provides access to the bucket's access control list.
@@ -115,10 +128,11 @@ func (b *BucketHandle) Object(name string) *ObjectHandle {
 
 // Attrs returns the metadata for the bucket.
 func (b *BucketHandle) Attrs(ctx context.Context) (*BucketAttrs, error) {
-	req := b.c.raw.Buckets.Get(b.name).Projection("full")
-	setClientHeader(req.Header())
+	req, err := b.newGetCall()
+	if err != nil {
+		return nil, err
+	}
 	var resp *raw.Bucket
-	var err error
 	err = runWithRetry(ctx, func() error {
 		resp, err = req.Context(ctx).Do()
 		return err
@@ -130,6 +144,38 @@ func (b *BucketHandle) Attrs(ctx context.Context) (*BucketAttrs, error) {
 		return nil, err
 	}
 	return newBucket(resp), nil
+}
+
+func (b *BucketHandle) newGetCall() (*raw.BucketsGetCall, error) {
+	req := b.c.raw.Buckets.Get(b.name).Projection("full")
+	setClientHeader(req.Header())
+	if err := applyBucketConds("BucketHandle.Attrs", b.conds, req); err != nil {
+		return nil, err
+	}
+	return req, nil
+}
+
+func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (*BucketAttrs, error) {
+	req, err := b.newPatchCall(&uattrs)
+	if err != nil {
+		return nil, err
+	}
+	// TODO(jba): retry iff metagen is set?
+	rb, err := req.Context(ctx).Do()
+	if err != nil {
+		return nil, err
+	}
+	return newBucket(rb), nil
+}
+
+func (b *BucketHandle) newPatchCall(uattrs *BucketAttrsToUpdate) (*raw.BucketsPatchCall, error) {
+	rb := uattrs.toRawBucket()
+	req := b.c.raw.Buckets.Patch(b.name, rb).Projection("full")
+	setClientHeader(req.Header())
+	if err := applyBucketConds("BucketHandle.Update", b.conds, req); err != nil {
+		return nil, err
+	}
+	return req, nil
 }
 
 // BucketAttrs represents the metadata for a Google Cloud Storage bucket.
@@ -226,6 +272,65 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		Acl:              acl,
 		Versioning:       v,
 	}
+}
+
+// If returns a new BucketHandle that applies a set of preconditions.
+// Preconditions already set on the BucketHandle are ignored.
+// Operations on the new handle will only occur if the preconditions are
+// satisfied. The only valid preconditions for buckets are MetagenerationMatch
+// and MetagenerationNotMatch.
+func (b *BucketHandle) If(conds BucketConditions) *BucketHandle {
+	b2 := *b
+	b2.conds = &conds
+	return &b2
+}
+
+// BucketConditions constrain bucket methods to act on specific metagenerations.
+//
+// The zero value is an empty set of constraints.
+type BucketConditions struct {
+	// MetagenerationMatch specifies that the bucket must have the given
+	// metageneration for the operation to occur.
+	// If MetagenerationMatch is zero, it has no effect.
+	MetagenerationMatch int64
+
+	// MetagenerationNotMatch specifies that the bucket must not have the given
+	// metageneration for the operation to occur.
+	// If MetagenerationNotMatch is zero, it has no effect.
+	MetagenerationNotMatch int64
+}
+
+func (c *BucketConditions) validate(method string) error {
+	if *c == (BucketConditions{}) {
+		return fmt.Errorf("storage: %s: empty conditions", method)
+	}
+	if c.MetagenerationMatch != 0 && c.MetagenerationNotMatch != 0 {
+		return fmt.Errorf("storage: %s: multiple conditions specified for metageneration", method)
+	}
+	return nil
+}
+
+// applyBucketConds modifies the provided call using the conditions in conds.
+// call is something that quacks like a *raw.WhateverCall.
+func applyBucketConds(method string, conds *BucketConditions, call interface{}) error {
+	if conds == nil {
+		return nil
+	}
+	if err := conds.validate(method); err != nil {
+		return err
+	}
+	cval := reflect.ValueOf(call)
+	switch {
+	case conds.MetagenerationMatch != 0:
+		if !setConditionField(cval, "IfMetagenerationMatch", conds.MetagenerationMatch) {
+			return fmt.Errorf("storage: %s: ifMetagenerationMatch not supported", method)
+		}
+	case conds.MetagenerationNotMatch != 0:
+		if !setConditionField(cval, "IfMetagenerationNotMatch", conds.MetagenerationNotMatch) {
+			return fmt.Errorf("storage: %s: ifMetagenerationNotMatch not supported", method)
+		}
+	}
+	return nil
 }
 
 // Objects returns an iterator over the objects in the bucket that match the Query q.
