@@ -178,12 +178,20 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		}
 	}
 	dACL := toRawObjectACL(b.DefaultObjectACL)
+	// Ignore VersioningEnabled if it is false. This is OK because
+	// we only call this method when creating a bucket, and by default
+	// new buckets have versioning off.
+	var v *raw.BucketVersioning
+	if b.VersioningEnabled {
+		v = &raw.BucketVersioning{Enabled: true}
+	}
 	return &raw.Bucket{
 		Name:             b.Name,
 		DefaultObjectAcl: dACL,
 		Location:         b.Location,
 		StorageClass:     b.StorageClass,
 		Acl:              acl,
+		Versioning:       v,
 	}
 }
 
