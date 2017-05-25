@@ -872,7 +872,7 @@ func (c *contentTyper) ContentType() string {
 }
 
 // Conditions constrain methods to act on specific generations of
-// resources.
+// objects.
 //
 // The zero value is an empty set of constraints. Not all conditions or
 // combinations of conditions are applicable to all methods.
