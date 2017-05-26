@@ -45,6 +45,7 @@ func extractMessageData(m *Message) *messageData {
 }
 
 func TestAll(t *testing.T) {
+	t.Parallel()
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
