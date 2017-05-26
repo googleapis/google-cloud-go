@@ -915,10 +915,10 @@ func TestIntegration_ReadNullIntoStruct(t *testing.T) {
 
 // Creates a new, temporary table with a unique name and the given schema.
 func newTable(t *testing.T, s Schema) *Table {
-	fiveMinutesFromNow = time.Now().Add(5 * time.Minute).Round(time.Second)
+	expiration := time.Now().Add(10 * time.Minute).Round(time.Second)
 	name := fmt.Sprintf("t%d", time.Now().UnixNano())
 	table := dataset.Table(name)
-	err := table.Create(context.Background(), s, TableExpiration(fiveMinutesFromNow))
+	err := table.Create(context.Background(), s, TableExpiration(expiration))
 	if err != nil {
 		t.Fatal(err)
 	}
