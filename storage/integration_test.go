@@ -189,43 +189,67 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 	defer client.Close()
 
 	b := client.Bucket(bucket)
-
-	getAttrs := func() *BucketAttrs {
-		attrs, err := b.Attrs(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-		return attrs
+	attrs, err := b.Attrs(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if attrs.VersioningEnabled {
+		t.Fatal("bucket should not have versioning by default")
+	}
+	if len(attrs.Labels) > 0 {
+		t.Fatal("bucket should not have labels initially")
 	}
 
-	if getAttrs().VersioningEnabled {
-		t.Fatal("should not have versioning by default")
-	}
 	// Using empty BucketAttrsToUpdate should be a no-nop.
-	attrs, err := b.Update(ctx, BucketAttrsToUpdate{})
+	attrs, err = b.Update(ctx, BucketAttrsToUpdate{})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if attrs.VersioningEnabled {
 		t.Fatal("should not have versioning")
 	}
+	if len(attrs.Labels) > 0 {
+		t.Fatal("should not have labels")
+	}
 
-	// Turn on versioning.
-	attrs, err = b.Update(ctx, BucketAttrsToUpdate{VersioningEnabled: true})
+	// Turn on versioning, add some labels.
+	ua := BucketAttrsToUpdate{VersioningEnabled: true}
+	ua.SetLabel("l1", "v1")
+	ua.SetLabel("empty", "")
+	attrs, err = b.Update(ctx, ua)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if !attrs.VersioningEnabled {
 		t.Fatal("should have versioning now")
 	}
+	wantLabels := map[string]string{
+		"l1":    "v1",
+		"empty": "",
+	}
+	if !reflect.DeepEqual(attrs.Labels, wantLabels) {
+		t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
+	}
 
-	// Turn it off again.
-	attrs, err = b.Update(ctx, BucketAttrsToUpdate{VersioningEnabled: false})
+	// Turn  off versioning again; add and remove some more labels.
+	ua = BucketAttrsToUpdate{VersioningEnabled: false}
+	ua.SetLabel("l1", "v2")   // update
+	ua.SetLabel("new", "new") // create
+	ua.DeleteLabel("empty")   // delete
+	ua.DeleteLabel("absent")  // delete non-existent
+	attrs, err = b.Update(ctx, ua)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if attrs.VersioningEnabled {
 		t.Fatal("should have versioning off")
+	}
+	wantLabels = map[string]string{
+		"l1":  "v2",
+		"new": "new",
+	}
+	if !reflect.DeepEqual(attrs.Labels, wantLabels) {
+		t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
 	}
 }
 

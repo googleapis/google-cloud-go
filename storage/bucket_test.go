@@ -24,7 +24,7 @@ import (
 	raw "google.golang.org/api/storage/v1"
 )
 
-func TestToRawBucket(t *testing.T) {
+func TestBucketAttrsToRawBucket(t *testing.T) {
 	t.Parallel()
 	attrs := &BucketAttrs{
 		Name:              "name",
@@ -70,6 +70,50 @@ func TestToRawBucket(t *testing.T) {
 	if !ok {
 		t.Error(msg)
 	}
+}
+
+func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
+	t.Parallel()
+	au := &BucketAttrsToUpdate{VersioningEnabled: false}
+	au.SetLabel("a", "foo")
+	au.DeleteLabel("b")
+	au.SetLabel("c", "")
+	got := au.toRawBucket()
+	want := &raw.Bucket{
+		Versioning: &raw.BucketVersioning{
+			Enabled:         false,
+			ForceSendFields: []string{"Enabled"},
+		},
+		Labels: map[string]string{
+			"a": "foo",
+			"c": "",
+		},
+		NullFields: []string{"Labels.b"},
+	}
+	msg, ok, err := pretty.Diff(want, got)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok {
+		t.Error(msg)
+	}
+
+	var au2 BucketAttrsToUpdate
+	au2.DeleteLabel("b")
+	got = au2.toRawBucket()
+	want = &raw.Bucket{
+		Labels:          map[string]string{},
+		ForceSendFields: []string{"Labels"},
+		NullFields:      []string{"Labels.b"},
+	}
+	msg, ok, err = pretty.Diff(want, got)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok {
+		t.Error(msg)
+	}
+
 }
 
 func TestCallBuilders(t *testing.T) {
