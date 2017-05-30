@@ -15,6 +15,7 @@
 package bigquery
 
 import (
+	"errors"
 	"time"
 
 	"cloud.google.com/go/internal"
@@ -156,6 +157,28 @@ func (j *Job) Wait(ctx context.Context) (*JobStatus, error) {
 		return nil, err
 	}
 	return js, nil
+}
+
+// Read fetches the results of a query job.
+// If j is not a query job, Read returns an error.
+func (j *Job) Read(ctx context.Context) (*RowIterator, error) {
+	if !j.isQuery {
+		return nil, errors.New("bigquery: cannot read from a non-query job")
+	}
+	if j.destinationTable == nil {
+		return nil, errors.New("bigquery: query job missing destination table")
+	}
+	dest := j.destinationTable
+	schema, err := j.c.service.waitForQuery(ctx, dest.ProjectId, j.jobID)
+	if err != nil {
+		return nil, err
+	}
+	return newRowIterator(ctx, j.c.service, &readTableConf{
+		projectID: dest.ProjectId,
+		datasetID: dest.DatasetId,
+		tableID:   dest.TableId,
+		schema:    schema,
+	}), nil
 }
 
 // JobStatistics contains statistics about a job.
