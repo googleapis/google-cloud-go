@@ -160,6 +160,12 @@ type readTableConf struct {
 	schema                        Schema // lazily initialized when the first page of data is fetched.
 }
 
+func (conf *readTableConf) fetch(ctx context.Context, s service, token string) (*readDataResult, error) {
+	return s.readTabledata(ctx, conf, token)
+}
+
+func (conf *readTableConf) setPaging(pc *pagingConf) { conf.paging = *pc }
+
 type readDataResult struct {
 	pageToken string
 	rows      [][]Value

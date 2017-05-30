@@ -193,6 +193,15 @@ func (opt TimePartitioning) customizeCreateTable(conf *createTableConf) {
 	conf.timePartitioning = &opt
 }
 
+// Read fetches the contents of the table.
+func (t *Table) Read(ctx context.Context) *RowIterator {
+	return newRowIterator(ctx, t.c.service, &readTableConf{
+		projectID: t.ProjectID,
+		datasetID: t.DatasetID,
+		tableID:   t.TableID,
+	})
+}
+
 // Update modifies specific Table metadata fields.
 func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate) (*TableMetadata, error) {
 	var conf patchTableConf
