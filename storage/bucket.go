@@ -289,15 +289,49 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 }
 
 type BucketAttrsToUpdate struct {
+	// VersioningEnabled, if set, updates whether the bucket uses versioning.
 	VersioningEnabled optional.Bool
+
+	setLabels    map[string]string
+	deleteLabels map[string]bool
 }
 
-func (au *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
+// SetLabel causes a label to be added or modified when ua is used
+// in a call to Bucket.Update.
+func (ua *BucketAttrsToUpdate) SetLabel(name, value string) {
+	if ua.setLabels == nil {
+		ua.setLabels = map[string]string{}
+	}
+	ua.setLabels[name] = value
+}
+
+// DeleteLabel causes a label to be deleted when ua is used in a
+// call to Bucket.Update.
+func (ua *BucketAttrsToUpdate) DeleteLabel(name string) {
+	if ua.deleteLabels == nil {
+		ua.deleteLabels = map[string]bool{}
+	}
+	ua.deleteLabels[name] = true
+}
+
+func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 	rb := &raw.Bucket{}
-	if au.VersioningEnabled != nil {
+	if ua.VersioningEnabled != nil {
 		rb.Versioning = &raw.BucketVersioning{
-			Enabled:         optional.ToBool(au.VersioningEnabled),
+			Enabled:         optional.ToBool(ua.VersioningEnabled),
 			ForceSendFields: []string{"Enabled"},
+		}
+	}
+	if ua.setLabels != nil || ua.deleteLabels != nil {
+		rb.Labels = map[string]string{}
+		for k, v := range ua.setLabels {
+			rb.Labels[k] = v
+		}
+		if len(rb.Labels) == 0 && len(ua.deleteLabels) > 0 {
+			rb.ForceSendFields = append(rb.ForceSendFields, "Labels")
+		}
+		for l := range ua.deleteLabels {
+			rb.NullFields = append(rb.NullFields, "Labels."+l)
 		}
 	}
 	return rb
