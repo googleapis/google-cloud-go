@@ -138,6 +138,10 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.MaxBurst == 0 {
 		config.MaxBurst = 10
 	}
+	// Default MaxSessionAge
+	if config.maxSessionAge == 0 {
+		config.maxSessionAge = time.Minute * 30
+	}
 	for i := 0; i < config.NumChannels; i++ {
 		conn, err := gtransport.Dial(ctx, allOpts...)
 		if err != nil {
