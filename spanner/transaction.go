@@ -36,8 +36,10 @@ type transactionID []byte
 type txReadEnv interface {
 	// acquire returns a read-transaction environment that can be used to perform a transactional read.
 	acquire(ctx context.Context) (*sessionHandle, *sppb.TransactionSelector, error)
-	// release should be called at the end of every transactional read to deal with session recycling and read timestamp recording.
-	release(time.Time, error)
+	// sets the transaction's read timestamp
+	setTimestamp(time.Time)
+	// release should be called at the end of every transactional read to deal with session recycling.
+	release(error)
 }
 
 // txReadOnly contains methods for doing transactional reads.
@@ -97,6 +99,7 @@ func (t *txReadOnly) ReadUsingIndex(ctx context.Context, table, index string, ke
 					ResumeToken: resumeToken,
 				})
 		},
+		t.setTimestamp,
 		t.release,
 	)
 }
@@ -155,6 +158,7 @@ func (t *txReadOnly) Query(ctx context.Context, statement Statement) *RowIterato
 			req.ResumeToken = resumeToken
 			return client.ExecuteStreamingSql(ctx, req)
 		},
+		t.setTimestamp,
 		t.release)
 }
 
@@ -409,12 +413,17 @@ func (t *ReadOnlyTransaction) acquireMultiUse(ctx context.Context) (*sessionHand
 	}
 }
 
-// release implements txReadEnv.release.
-func (t *ReadOnlyTransaction) release(rts time.Time, err error) {
+func (t *ReadOnlyTransaction) setTimestamp(ts time.Time) {
 	t.mu.Lock()
-	if t.singleUse && !rts.IsZero() {
-		t.rts = rts
+	defer t.mu.Unlock()
+	if t.rts.IsZero() {
+		t.rts = ts
 	}
+}
+
+// release implements txReadEnv.release.
+func (t *ReadOnlyTransaction) release(err error) {
+	t.mu.Lock()
 	sh := t.sh
 	t.mu.Unlock()
 	if sh != nil { // sh could be nil if t.acquire() fails.
@@ -599,7 +608,7 @@ func (t *ReadWriteTransaction) acquire(ctx context.Context) (*sessionHandle, *sp
 }
 
 // release implements txReadEnv.release.
-func (t *ReadWriteTransaction) release(_ time.Time, err error) {
+func (t *ReadWriteTransaction) release(err error) {
 	t.mu.Lock()
 	sh := t.sh
 	t.mu.Unlock()

@@ -814,6 +814,57 @@ func compareRows(iter *RowIterator, wantNums []int) (string, bool) {
 	return "", true
 }
 
+func TestEarlyTimestamp(t *testing.T) {
+	// Test that we can get the timestamp from a read-only transaction as
+	// soon as we have read at least one row.
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	// Set up testing environment.
+	if err := prepare(ctx, t, readDBStatements); err != nil {
+		// If prepare() fails, tear down whatever that's already up.
+		tearDown(ctx, t)
+		t.Fatalf("cannot set up testing environment: %v", err)
+	}
+	// After all tests, tear down testing environment.
+	defer tearDown(ctx, t)
+
+	var ms []*Mutation
+	for i := 0; i < 3; i++ {
+		ms = append(ms, InsertOrUpdate(testTable,
+			testTableColumns,
+			[]interface{}{fmt.Sprintf("k%d", i), fmt.Sprintf("v%d", i)}))
+	}
+	if _, err := client.Apply(ctx, ms, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
+
+	txn := client.Single()
+	iter := txn.Read(ctx, testTable, AllKeys(), testTableColumns)
+	defer iter.Stop()
+	// In  single-use transaction, we should get an error before reading anything.
+	if _, err := txn.Timestamp(); err == nil {
+		t.Error("wanted error, got nil")
+	}
+	// After reading one row, the timestamp should be available.
+	_, err := iter.Next()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := txn.Timestamp(); err != nil {
+		t.Errorf("got %v, want nil", err)
+	}
+
+	txn = client.ReadOnlyTransaction()
+	defer txn.Close()
+	iter = txn.Read(ctx, testTable, AllKeys(), testTableColumns)
+	defer iter.Stop()
+	// In an ordinary read-only transaction, the timestamp should be
+	// available immediately.
+	if _, err := txn.Timestamp(); err != nil {
+		t.Errorf("got %v, want nil", err)
+	}
+}
+
 func TestNestedTransaction(t *testing.T) {
 	// You cannot use a transaction from inside a read-write transaction.
 	ctx := context.Background()
