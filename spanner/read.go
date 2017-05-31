@@ -45,24 +45,26 @@ func errEarlyReadEnd() error {
 
 // stream is the internal fault tolerant method for streaming data from
 // Cloud Spanner.
-func stream(ctx context.Context, rpc func(ct context.Context, resumeToken []byte) (streamingReceiver, error), release func(time.Time, error)) *RowIterator {
+func stream(ctx context.Context, rpc func(ct context.Context, resumeToken []byte) (streamingReceiver, error), setTimestamp func(time.Time), release func(error)) *RowIterator {
 	ctx, cancel := context.WithCancel(ctx)
 	return &RowIterator{
-		streamd: newResumableStreamDecoder(ctx, rpc),
-		rowd:    &partialResultSetDecoder{},
-		release: release,
-		cancel:  cancel,
+		streamd:      newResumableStreamDecoder(ctx, rpc),
+		rowd:         &partialResultSetDecoder{},
+		setTimestamp: setTimestamp,
+		release:      release,
+		cancel:       cancel,
 	}
 }
 
 // RowIterator is an iterator over Rows.
 type RowIterator struct {
-	streamd *resumableStreamDecoder
-	rowd    *partialResultSetDecoder
-	release func(time.Time, error)
-	cancel  func()
-	err     error
-	rows    []*Row
+	streamd      *resumableStreamDecoder
+	rowd         *partialResultSetDecoder
+	setTimestamp func(time.Time)
+	release      func(error)
+	cancel       func()
+	err          error
+	rows         []*Row
 }
 
 // Next returns the next result. Its second return value is iterator.Done if
@@ -76,6 +78,10 @@ func (r *RowIterator) Next() (*Row, error) {
 		r.rows, r.err = r.rowd.add(r.streamd.get())
 		if r.err != nil {
 			return nil, r.err
+		}
+		if !r.rowd.ts.IsZero() && r.setTimestamp != nil {
+			r.setTimestamp(r.rowd.ts)
+			r.setTimestamp = nil
 		}
 	}
 	if len(r.rows) > 0 {
@@ -123,7 +129,7 @@ func (r *RowIterator) Stop() {
 		r.cancel()
 	}
 	if r.release != nil {
-		r.release(r.rowd.ts, r.err)
+		r.release(r.err)
 		if r.err == nil {
 			r.err = spannerErrorf(codes.FailedPrecondition, "Next called after Stop")
 		}
