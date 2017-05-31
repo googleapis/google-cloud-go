@@ -247,10 +247,9 @@ func compareEntry(got, want *logging.Entry) bool {
 		return false
 	}
 
-	if !reflect.DeepEqual(got.Payload, want.Payload) {
+	if !ltesting.PayloadEqual(got.Payload, want.Payload) {
 		return false
 	}
-
 	if !reflect.DeepEqual(got.Labels, want.Labels) {
 		return false
 	}
