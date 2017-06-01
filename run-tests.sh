@@ -75,7 +75,7 @@ function depends_on_changed_package {
 
 shorts=
 fulls=
-for pkg in $(go list ./...); do            # for each package in the repo
+for pkg in $(go list $prefix/...); do      # for each package in the repo
   if depends_on_changed_package $pkg; then # if it depends on a changed package
     fulls="$fulls $pkg"                    # run the full test
   else                                     # otherwise
