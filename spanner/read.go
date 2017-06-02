@@ -365,7 +365,7 @@ func (d *resumableStreamDecoder) next() bool {
 			// Do context check here so that even gRPC failed to do
 			// so, resumableStreamDecoder can still break the loop
 			// as expected.
-			d.err = errContextCanceled(d.err)
+			d.err = errContextCanceled(d.err, d.ctx)
 			d.changeState(aborted)
 		default:
 		}

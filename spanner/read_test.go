@@ -1638,8 +1638,8 @@ func TestCancelTimeout(t *testing.T) {
 	}()
 	select {
 	case <-done:
-		if ErrCode(err) != codes.Canceled {
-			t.Errorf("streaming query timeout returns error %v, want error code %v", err, codes.Canceled)
+		if wantErr := codes.DeadlineExceeded; ErrCode(err) != wantErr {
+			t.Errorf("streaming query timeout returns error %v, want error code %v", err, wantErr)
 		}
 	case <-time.After(2 * time.Second):
 		t.Errorf("query doesn't timeout as expected")
