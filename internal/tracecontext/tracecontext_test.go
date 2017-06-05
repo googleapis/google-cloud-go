@@ -64,21 +64,19 @@ func TestDecode(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			gotTraceID, gotSpanID, gotOpts, gotOk := Decode(tt.data)
-			if !reflect.DeepEqual(gotTraceID, tt.wantTraceID) {
-				t.Errorf("Decode() gotTraceID = %v, want %v", gotTraceID, tt.wantTraceID)
-			}
-			if gotSpanID != tt.wantSpanID {
-				t.Errorf("Decode() gotSpanID = %v, want %v", gotSpanID, tt.wantSpanID)
-			}
-			if gotOpts != tt.wantOpts {
-				t.Errorf("Decode() gotOpts = %v, want %v", gotOpts, tt.wantOpts)
-			}
-			if gotOk != tt.wantOk {
-				t.Errorf("Decode() gotOk = %v, want %v", gotOk, tt.wantOk)
-			}
-		})
+		gotTraceID, gotSpanID, gotOpts, gotOk := Decode(tt.data)
+		if !reflect.DeepEqual(gotTraceID, tt.wantTraceID) {
+			t.Errorf("%s: Decode() gotTraceID = %v, want %v", tt.name, gotTraceID, tt.wantTraceID)
+		}
+		if gotSpanID != tt.wantSpanID {
+			t.Errorf("%s: Decode() gotSpanID = %v, want %v", tt.name, gotSpanID, tt.wantSpanID)
+		}
+		if gotOpts != tt.wantOpts {
+			t.Errorf("%s: Decode() gotOpts = %v, want %v", tt.name, gotOpts, tt.wantOpts)
+		}
+		if gotOk != tt.wantOk {
+			t.Errorf("%s: Decode() gotOk = %v, want %v", tt.name, gotOk, tt.wantOk)
+		}
 	}
 }
 
@@ -112,15 +110,13 @@ func TestEncode(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			gotN := Encode(tt.dst, tt.traceID, tt.spanID, tt.opts)
-			if gotN != tt.wantN {
-				t.Errorf("n = %v, want %v", gotN, tt.wantN)
-			}
-			if gotData := tt.dst; !reflect.DeepEqual(gotData, tt.wantData) {
-				t.Errorf("dst = %v, want %v", gotData, tt.wantData)
-			}
-		})
+		gotN := Encode(tt.dst, tt.traceID, tt.spanID, tt.opts)
+		if gotN != tt.wantN {
+			t.Errorf("%s: n = %v, want %v", tt.name, gotN, tt.wantN)
+		}
+		if gotData := tt.dst; !reflect.DeepEqual(gotData, tt.wantData) {
+			t.Errorf("%s: dst = %v, want %v", tt.name, gotData, tt.wantData)
+		}
 	}
 }
 
