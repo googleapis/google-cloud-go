@@ -170,7 +170,15 @@ func (ac *AdminClient) DeleteColumnFamily(ctx context.Context, table, family str
 
 // TableInfo represents information about a table.
 type TableInfo struct {
+	// DEPRECATED - This field is deprecated. Please use FamilyInfos instead.
 	Families []string
+	FamilyInfos []FamilyInfo
+}
+
+// FamilyInfo represents information about a column family.
+type FamilyInfo struct {
+	Name string
+	GCPolicy string
 }
 
 // TableInfo retrieves information about a table.
@@ -185,8 +193,9 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 		return nil, err
 	}
 	ti := &TableInfo{}
-	for fam := range res.ColumnFamilies {
-		ti.Families = append(ti.Families, fam)
+	for name, fam := range res.ColumnFamilies {
+		ti.Families = append(ti.Families, name)
+		ti.FamilyInfos = append(ti.FamilyInfos, FamilyInfo{Name: name, GCPolicy: GCRuleToString(fam.GcRule)})
 	}
 	return ti, nil
 }

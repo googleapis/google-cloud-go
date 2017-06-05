@@ -129,3 +129,27 @@ func (ma maxAgePolicy) proto() *bttdpb.GcRule {
 		}},
 	}
 }
+
+// GCRuleToString converts the given GcRule proto to a user-visible string.
+func GCRuleToString(rule *bttdpb.GcRule) string {
+	var ruleStr string
+	if r, ok := rule.Rule.(*bttdpb.GcRule_MaxNumVersions); ok {
+		ruleStr += MaxVersionsPolicy(int(r.MaxNumVersions)).String()
+	} else if r, ok := rule.Rule.(*bttdpb.GcRule_MaxAge); ok {
+		ruleStr += MaxAgePolicy(time.Duration(r.MaxAge.Seconds) * time.Second).String()
+	} else if r, ok := rule.Rule.(*bttdpb.GcRule_Intersection_); ok {
+		var chunks []string
+		for _, intRule := range r.Intersection.Rules {
+			chunks = append(chunks, GCRuleToString(intRule))
+		}
+		ruleStr += "(" + strings.Join(chunks, " && ") + ")"
+	} else if r, ok := rule.Rule.(*bttdpb.GcRule_Union_); ok {
+		var chunks []string
+		for _, unionRule := range r.Union.Rules {
+			chunks = append(chunks, GCRuleToString(unionRule))
+		}
+		ruleStr += "(" + strings.Join(chunks, " || ") + ")"
+	}
+
+	return ruleStr
+}
