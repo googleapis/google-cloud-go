@@ -203,7 +203,7 @@ func (q *partialResultQueue) clear() {
 	*q = partialResultQueue{}
 }
 
-// dump retrives all items from partialResultQueue and return them in a slice.
+// dump retrieves all items from partialResultQueue and return them in a slice.
 // It is used only in tests.
 func (q *partialResultQueue) dump() []*sppb.PartialResultSet {
 	var dq []*sppb.PartialResultSet
@@ -365,7 +365,7 @@ func (d *resumableStreamDecoder) next() bool {
 			// Do context check here so that even gRPC failed to do
 			// so, resumableStreamDecoder can still break the loop
 			// as expected.
-			d.err = errContextCanceled(d.err, d.ctx)
+			d.err = errContextCanceled(d.ctx, d.err)
 			d.changeState(aborted)
 		default:
 		}

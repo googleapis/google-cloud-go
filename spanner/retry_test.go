@@ -74,7 +74,7 @@ func TestRetry(t *testing.T) {
 		return retryErr
 	})
 	// Check error code and error message
-	if wantErrCode, wantErr := codes.DeadlineExceeded, errContextCanceled(retryErr, ctx); ErrCode(err) != wantErrCode || !reflect.DeepEqual(err, wantErr) {
+	if wantErrCode, wantErr := codes.DeadlineExceeded, errContextCanceled(ctx, retryErr); ErrCode(err) != wantErrCode || !reflect.DeepEqual(err, wantErr) {
 		t.Errorf("<err code, err>=\n<%v, %v>, want:\n<%v, %v>", ErrCode(err), err, wantErrCode, wantErr)
 	}
 	// Cancellation
@@ -89,7 +89,7 @@ func TestRetry(t *testing.T) {
 		return retryErr
 	})
 	// Check error code, error message, retry count
-	if wantErrCode, wantErr := codes.Canceled, errContextCanceled(retryErr, ctx); ErrCode(err) != wantErrCode || !reflect.DeepEqual(err, wantErr) || retries != 0 {
+	if wantErrCode, wantErr := codes.Canceled, errContextCanceled(ctx, retryErr); ErrCode(err) != wantErrCode || !reflect.DeepEqual(err, wantErr) || retries != 0 {
 		t.Errorf("<err code, err, retries>=\n<%v, %v, %v>, want:\n<%v, %v, %v>", ErrCode(err), err, retries, wantErrCode, wantErr, 0)
 	}
 }
