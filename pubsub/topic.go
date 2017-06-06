@@ -78,6 +78,9 @@ type PublishSettings struct {
 	// The number of goroutines that invoke the Publish RPC concurrently.
 	// Defaults to a multiple of GOMAXPROCS.
 	NumGoroutines int
+
+	// The maximum time that the client will attempt to publish a bundle of messages.
+	Timeout time.Duration
 }
 
 // DefaultPublishSettings holds the default values for topics' PublishSettings.
@@ -85,6 +88,7 @@ var DefaultPublishSettings = PublishSettings{
 	DelayThreshold: 1 * time.Millisecond,
 	CountThreshold: 100,
 	ByteThreshold:  1e6,
+	Timeout:        60 * time.Second,
 }
 
 // CreateTopic creates a new topic.
@@ -305,12 +309,19 @@ func (t *Topic) initBundler() {
 	if n <= 0 {
 		n = 25 * runtime.GOMAXPROCS(0)
 	}
+	timeout := t.PublishSettings.Timeout
 	t.wg.Add(n)
 	for i := 0; i < n; i++ {
 		go func() {
 			defer t.wg.Done()
 			for b := range t.bundlec {
-				t.publishMessageBundle(ctx, b)
+				bctx := ctx
+				cancel := func() {}
+				if timeout != 0 {
+					bctx, cancel = context.WithTimeout(ctx, timeout)
+				}
+				t.publishMessageBundle(bctx, b)
+				cancel()
 			}
 		}()
 	}
