@@ -165,18 +165,25 @@ func (j *Job) Read(ctx context.Context) (*RowIterator, error) {
 	if !j.isQuery {
 		return nil, errors.New("bigquery: cannot read from a non-query job")
 	}
-	if j.destinationTable == nil {
-		return nil, errors.New("bigquery: query job missing destination table")
+	var projectID string
+	if j.destinationTable != nil {
+		projectID = j.destinationTable.ProjectId
+	} else {
+		projectID = j.c.projectID
 	}
-	dest := j.destinationTable
-	schema, err := j.c.service.waitForQuery(ctx, dest.ProjectId, j.jobID)
+
+	schema, err := j.c.service.waitForQuery(ctx, projectID, j.jobID)
 	if err != nil {
 		return nil, err
 	}
+	// The destination table should only be nil if there was a query error.
+	if j.destinationTable == nil {
+		return nil, errors.New("bigquery: query job missing destination table")
+	}
 	return newRowIterator(ctx, j.c.service, &readTableConf{
-		projectID: dest.ProjectId,
-		datasetID: dest.DatasetId,
-		tableID:   dest.TableId,
+		projectID: j.destinationTable.ProjectId,
+		datasetID: j.destinationTable.DatasetId,
+		tableID:   j.destinationTable.TableId,
 		schema:    schema,
 	}), nil
 }
