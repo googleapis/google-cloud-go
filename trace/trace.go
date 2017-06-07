@@ -704,6 +704,21 @@ func (s *Span) SetLabel(key, value string) {
 	s.span.Labels[key] = value
 }
 
+// GetLabels returns all Labels set on this span. 
+// If s is nill, does nothing.
+func (s *Span) GetLabels() map[string]string {
+	if s == nil {
+		return nil
+	}
+	if !s.tracing() {
+		return nil
+	}
+	s.spanMu.Lock()
+	defer s.spanMu.Unlock()
+
+	return s.span.Labels
+}
+
 type FinishOption interface {
 	modifySpan(s *Span)
 }
