@@ -152,3 +152,25 @@ func TestPullerRetriesOnce(t *testing.T) {
 		t.Errorf("outstanding calls: got: %v, want: 0", len(s.results))
 	}
 }
+
+func TestPullerFailsAfterCancelOrDeadline(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	pull := newPuller(nil, "subname", ctx, 2, func(string) {}, func(string) {})
+
+	rpcError := errors.New("assumedRpcError")
+	fetchCalls := 0
+	pull.fetch = func() ([]*Message, error) {
+		fetchCalls += 1
+		cancel()
+		return nil, rpcError
+	}
+
+	_, err := pull.Next()
+	if err != rpcError {
+		t.Errorf("pull.Next err got: %v, want: %v", err, rpcError)
+	}
+
+	if fetchCalls != 1 {
+		t.Errorf("unexpected fetch calls: got: %v, want: 1", fetchCalls)
+	}
+}

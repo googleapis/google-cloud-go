@@ -80,7 +80,7 @@ func (p *puller) Next() (*Message, error) {
 		for i := 0; i < maxPullAttempts; i++ {
 			// Once Stop has completed, all future calls to Next will immediately fail at this point.
 			buf, err = p.fetch()
-			if err == nil || err == context.Canceled || err == context.DeadlineExceeded {
+			if err == nil || p.ctx.Err() != nil {
 				break
 			}
 		}
