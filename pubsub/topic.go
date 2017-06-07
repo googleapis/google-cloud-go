@@ -17,7 +17,6 @@ package pubsub
 import (
 	"errors"
 	"fmt"
-	"math"
 	"runtime"
 	"strings"
 	"sync"
@@ -37,6 +36,8 @@ const (
 
 	// The maximum size of a single publish request in bytes, as determined by the PubSub service.
 	MaxPublishRequestBytes = 1e7
+
+	maxInt = int(^uint(0) >> 1)
 )
 
 // ErrOversizedMessage indicates that a message's size exceeds MaxPublishRequestBytes.
@@ -222,7 +223,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	// TODO(jba) [from bcmills] consider using a shared channel per bundle
 	// (requires Bundler API changes; would reduce allocations)
 	// The call to Add should never return an error because the bundler's
-	// BufferedByteLimit is set to MaxInt64; we do not perform any flow
+	// BufferedByteLimit is set to maxInt; we do not perform any flow
 	// control in the client.
 	err := t.bundler.Add(&bundledMessage{msg, r}, msg.size)
 	if err != nil {
@@ -335,7 +336,7 @@ func (t *Topic) initBundler() {
 		t.bundler.BundleCountThreshold = MaxPublishRequestCount
 	}
 	t.bundler.BundleByteThreshold = t.PublishSettings.ByteThreshold
-	t.bundler.BufferedByteLimit = math.MaxInt64
+	t.bundler.BufferedByteLimit = maxInt
 	t.bundler.BundleByteLimit = MaxPublishRequestBytes
 }
 
