@@ -26,8 +26,10 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"os/signal"
 	"sync"
 	"sync/atomic"
+	"syscall"
 	"time"
 
 	"cloud.google.com/go/bigtable"
@@ -49,6 +51,7 @@ var (
 	client      *bigtable.Client
 	adminClient *bigtable.AdminClient
 )
+
 
 func main() {
 	var err error
@@ -107,6 +110,17 @@ func main() {
 	}
 	// Upon a successful run, delete the table. Don't bother checking for errors.
 	defer adminClient.DeleteTable(context.Background(), *scratchTable)
+
+	// Also delete the table on SIGTERM
+	c := make(chan os.Signal, 2)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		log.Printf("Caught signal - cleaning scratch table.")
+		adminClient.DeleteTable(context.Background(), *scratchTable)
+		os.Exit(1)
+	}()
+
 
 	log.Printf("Starting load test... (run for %v)", *runFor)
 	tbl := client.Open(*scratchTable)
