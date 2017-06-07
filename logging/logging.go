@@ -203,8 +203,9 @@ type LoggerOption interface {
 }
 
 // CommonResource sets the monitored resource associated with all log entries
-// written from a Logger. If not provided, a resource of type "global" is used.
-// This value can be overridden by setting an Entry's Resource field.
+// written from a Logger. If not provided, the resource is automatically
+// detected based on the running environment.  This value can be overridden
+// per-entry by setting an Entry's Resource field.
 func CommonResource(r *mrpb.MonitoredResource) LoggerOption { return commonResource{r} }
 
 type commonResource struct{ *mrpb.MonitoredResource }
