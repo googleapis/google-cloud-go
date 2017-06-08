@@ -49,6 +49,16 @@ type Writer struct {
 	// must be done before the first Write call.
 	ChunkSize int
 
+	// ProgressFunc can be used to monitor the progress of a large write.
+	// operation. If ProgressFunc is not nil and writing requires multiple
+	// calls to the underlying service (see
+	// https://cloud.google.com/storage/docs/json_api/v1/how-tos/resumable-upload),
+	// then ProgressFunc will be invoked after each call with the number of bytes of
+	// content copied so far.
+	//
+	// ProgressFunc should return quickly without blocking.
+	ProgressFunc func(int64)
+
 	ctx context.Context
 	o   *ObjectHandle
 
@@ -98,6 +108,9 @@ func (w *Writer) open() error {
 			Media(pr, mediaOpts...).
 			Projection("full").
 			Context(w.ctx)
+		if w.ProgressFunc != nil {
+			call.ProgressUpdater(func(n, _ int64) { w.ProgressFunc(n) })
+		}
 		if err := setEncryptionHeaders(call.Header(), w.o.encryptionKey, false); err != nil {
 			w.err = err
 			pr.CloseWithError(w.err)
