@@ -132,6 +132,9 @@ func (ma maxAgePolicy) proto() *bttdpb.GcRule {
 
 // GCRuleToString converts the given GcRule proto to a user-visible string.
 func GCRuleToString(rule *bttdpb.GcRule) string {
+	if rule == nil {
+		return "<default>"
+	}
 	var ruleStr string
 	if r, ok := rule.Rule.(*bttdpb.GcRule_MaxNumVersions); ok {
 		ruleStr += MaxVersionsPolicy(int(r.MaxNumVersions)).String()
