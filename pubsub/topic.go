@@ -44,6 +44,8 @@ const (
 var ErrOversizedMessage = bundler.ErrOversizedItem
 
 // Topic is a reference to a PubSub topic.
+//
+// The methods of Topic are safe for use by multiple goroutines.
 type Topic struct {
 	s service
 	// The fully qualified identifier for the topic, in the format "projects/<projid>/topics/<name>"
