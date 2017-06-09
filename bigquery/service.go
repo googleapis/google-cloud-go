@@ -561,9 +561,17 @@ func bqTableToMetadata(t *bq.Table) *TableMetadata {
 		md.View = t.View.Query
 	}
 	if t.TimePartitioning != nil {
-		md.TimePartitioning = &TimePartitioning{time.Duration(t.TimePartitioning.ExpirationMs) * time.Millisecond}
+		md.TimePartitioning = &TimePartitioning{
+			Expiration: time.Duration(t.TimePartitioning.ExpirationMs) * time.Millisecond,
+		}
 	}
-
+	if t.StreamingBuffer != nil {
+		md.StreamingBuffer = &StreamingBuffer{
+			EstimatedBytes:  t.StreamingBuffer.EstimatedBytes,
+			EstimatedRows:   t.StreamingBuffer.EstimatedRows,
+			OldestEntryTime: unixMillisToTime(int64(t.StreamingBuffer.OldestEntryTime)),
+		}
+	}
 	return md
 }
 
