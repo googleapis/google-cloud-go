@@ -89,9 +89,28 @@ type handler struct {
 }
 
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	span := h.traceClient.SpanFromRequest(r)
+	traceID, parentSpanID, options, optionsOk, ok := traceInfoFromHeader(r.Header.Get(httpHeader))
+	if !ok {
+		traceID = nextTraceID()
+	}
+	t := &trace{
+		traceID:       traceID,
+		client:        h.traceClient,
+		globalOptions: options,
+		localOptions:  options,
+	}
+	span := startNewChildWithRequest(r, t, parentSpanID)
+	span.span.Kind = spanKindServer
+	span.rootSpan = true
+	configureSpanFromPolicy(span, h.traceClient.policy, ok)
 	defer span.Finish()
 
 	r = r.WithContext(NewContext(r.Context(), span))
+	if ok && !optionsOk {
+		// Inject the trace context back to the response with the sampling options.
+		// TODO(jbd): Remove when there is a better way to report the client's sampling.
+		w.Header().Set(httpHeader, spanHeader(traceID, parentSpanID, span.trace.localOptions))
+	}
 	h.handler.ServeHTTP(w, r)
+
 }

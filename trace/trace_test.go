@@ -231,7 +231,7 @@ func TestHeader(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		traceID, parentSpanID, opts, ok := traceInfoFromHeader(tt.header)
+		traceID, parentSpanID, opts, _, ok := traceInfoFromHeader(tt.header)
 		if got, want := traceID, tt.wantTraceID; got != want {
 			t.Errorf("TraceID(%v) = %q; want %q", tt.header, got, want)
 		}

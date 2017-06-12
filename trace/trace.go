@@ -335,7 +335,7 @@ func (c *Client) SpanFromHeader(name string, header string) *Span {
 	if c == nil {
 		return nil
 	}
-	traceID, parentSpanID, options, ok := traceInfoFromHeader(header)
+	traceID, parentSpanID, options, _, ok := traceInfoFromHeader(header)
 	if !ok {
 		traceID = nextTraceID()
 	}
@@ -373,7 +373,7 @@ func (c *Client) SpanFromRequest(r *http.Request) *Span {
 	if c == nil {
 		return nil
 	}
-	traceID, parentSpanID, options, ok := traceInfoFromHeader(r.Header.Get(httpHeader))
+	traceID, parentSpanID, options, _, ok := traceInfoFromHeader(r.Header.Get(httpHeader))
 	if !ok {
 		traceID = nextTraceID()
 	}
@@ -446,20 +446,22 @@ func FromContext(ctx context.Context) *Span {
 	return s
 }
 
-func traceInfoFromHeader(h string) (string, uint64, optionFlags, bool) {
+func traceInfoFromHeader(h string) (traceID string, spanID uint64, options optionFlags, optionsOk bool, ok bool) {
 	// See https://cloud.google.com/trace/docs/faq for the header format.
 	// Return if the header is empty or missing, or if the header is unreasonably
 	// large, to avoid making unnecessary copies of a large string.
 	if h == "" || len(h) > 200 {
-		return "", 0, 0, false
+		return "", 0, 0, false, false
+
 	}
 
 	// Parse the trace id field.
 	slash := strings.Index(h, `/`)
 	if slash == -1 {
-		return "", 0, 0, false
+		return "", 0, 0, false, false
+
 	}
-	traceID, h := h[:slash], h[slash+1:]
+	traceID, h = h[:slash], h[slash+1:]
 
 	// Parse the span id field.
 	spanstr := h
@@ -469,19 +471,22 @@ func traceInfoFromHeader(h string) (string, uint64, optionFlags, bool) {
 	}
 	spanID, err := strconv.ParseUint(spanstr, 10, 64)
 	if err != nil {
-		return "", 0, 0, false
+		return "", 0, 0, false, false
+
 	}
 
 	// Parse the options field, options field is optional.
 	if !strings.HasPrefix(h, "o=") {
-		return traceID, spanID, 0, true
+		return traceID, spanID, 0, false, true
+
 	}
 	o, err := strconv.ParseUint(h[2:], 10, 64)
 	if err != nil {
-		return "", 0, 0, false
+		return "", 0, 0, false, false
+
 	}
-	options := optionFlags(o)
-	return traceID, spanID, options, true
+	options = optionFlags(o)
+	return traceID, spanID, options, true, true
 }
 
 type optionFlags uint32
