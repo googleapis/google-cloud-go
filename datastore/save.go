@@ -421,5 +421,9 @@ func isEmptyValue(v reflect.Value) bool {
 	case reflect.Interface, reflect.Ptr:
 		return v.IsNil()
 	}
+	if t, ok := v.Interface().(time.Time); ok && t.IsZero() {
+		return true
+	}
+
 	return false
 }
