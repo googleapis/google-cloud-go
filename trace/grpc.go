@@ -15,15 +15,17 @@
 package trace
 
 import (
-	"strings"
+	"encoding/hex"
+	"fmt"
 
+	"cloud.google.com/go/internal/tracecontext"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
-const grpcMetadataKey = "x-cloud-trace-context"
+const grpcMetadataKey = "grpc-trace-bin"
 
 // GRPCClientInterceptor returns a grpc.UnaryClientInterceptor that traces all outgoing requests from a gRPC client.
 // The calling context should already have a *trace.Span; a child span will be
@@ -41,13 +43,21 @@ func grpcUnaryInterceptor(ctx context.Context, method string, req, reply interfa
 	defer span.Finish()
 
 	if span != nil {
-		header := spanHeader(span.trace.traceID, span.span.ParentSpanId, span.trace.globalOptions)
+		tc := make([]byte, tracecontext.Len)
+		// traceID is a hex-encoded 128-bit value.
+		// TODO(jbd): Decode trace IDs upon arrival and
+		// represent trace IDs with 16 bytes internally.
+		tid, err := hex.DecodeString(span.trace.traceID)
+		if err != nil {
+			return invoker(ctx, method, req, reply, cc, opts...)
+		}
+		tracecontext.Encode(tc, tid, span.span.SpanId, byte(span.trace.globalOptions))
 		md, ok := metadata.FromOutgoingContext(ctx)
 		if !ok {
-			md = metadata.Pairs(grpcMetadataKey, header)
+			md = metadata.Pairs(grpcMetadataKey, string(tc))
 		} else {
 			md = md.Copy() // metadata is immutable, copy.
-			md[grpcMetadataKey] = []string{header}
+			md[grpcMetadataKey] = []string{string(tc)}
 		}
 		ctx = metadata.NewOutgoingContext(ctx, md)
 	}
@@ -70,7 +80,14 @@ func GRPCServerInterceptor(tc *Client) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 		md, _ := metadata.FromIncomingContext(ctx)
 		if header, ok := md[grpcMetadataKey]; ok {
-			span := tc.SpanFromHeader("", strings.Join(header, ""))
+			traceID, spanID, opts, ok := tracecontext.Decode([]byte(header[0]))
+			if !ok {
+				return handler(ctx, req)
+			}
+			// TODO(jbd): Generate a span directly from string(traceID), spanID and opts.
+			header := fmt.Sprintf("%x/%d;o=%d", traceID, spanID, opts)
+			span := tc.SpanFromHeader("", header)
+
 			defer span.Finish()
 			ctx = NewContext(ctx, span)
 		}

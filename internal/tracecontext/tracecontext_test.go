@@ -25,7 +25,7 @@ func TestDecode(t *testing.T) {
 	tests := []struct {
 		name        string
 		data        []byte
-		wantTraceID [2]uint64
+		wantTraceID []byte
 		wantSpanID  uint64
 		wantOpts    byte
 		wantOk      bool
@@ -33,7 +33,7 @@ func TestDecode(t *testing.T) {
 		{
 			name:        "nil data",
 			data:        nil,
-			wantTraceID: [2]uint64{},
+			wantTraceID: nil,
 			wantSpanID:  0,
 			wantOpts:    0,
 			wantOk:      false,
@@ -41,7 +41,7 @@ func TestDecode(t *testing.T) {
 		{
 			name:        "short data",
 			data:        []byte{0, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77},
-			wantTraceID: [2]uint64{},
+			wantTraceID: nil,
 			wantSpanID:  0,
 			wantOpts:    0,
 			wantOk:      false,
@@ -49,7 +49,7 @@ func TestDecode(t *testing.T) {
 		{
 			name:        "wrong field number",
 			data:        []byte{0, 1, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77},
-			wantTraceID: [2]uint64{},
+			wantTraceID: nil,
 			wantSpanID:  0,
 			wantOpts:    0,
 			wantOk:      false,
@@ -57,7 +57,7 @@ func TestDecode(t *testing.T) {
 		{
 			name:        "valid data",
 			data:        validData,
-			wantTraceID: [2]uint64{0x4F4E4D4C4B4A4948, 0x4746454443424140},
+			wantTraceID: []byte{64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79},
 			wantSpanID:  0x6867666564636261,
 			wantOpts:    1,
 			wantOk:      true,
@@ -84,7 +84,7 @@ func TestEncode(t *testing.T) {
 	tests := []struct {
 		name     string
 		dst      []byte
-		traceID  [2]uint64
+		traceID  []byte
 		spanID   uint64
 		opts     byte
 		wantN    int
@@ -93,7 +93,7 @@ func TestEncode(t *testing.T) {
 		{
 			name:     "short data",
 			dst:      make([]byte, 0),
-			traceID:  [2]uint64{5714589967255750984, 5135868584551137600},
+			traceID:  []byte("00112233445566"),
 			spanID:   0x6867666564636261,
 			opts:     1,
 			wantN:    -1,
@@ -101,11 +101,11 @@ func TestEncode(t *testing.T) {
 		},
 		{
 			name:     "valid data",
-			dst:      make([]byte, totalLen),
-			traceID:  [2]uint64{5714589967255750984, 5135868584551137600},
+			dst:      make([]byte, Len),
+			traceID:  []byte{64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79},
 			spanID:   0x6867666564636261,
 			opts:     1,
-			wantN:    totalLen,
+			wantN:    Len,
 			wantData: validData,
 		},
 	}
@@ -128,6 +128,8 @@ func BenchmarkDecode(b *testing.B) {
 
 func BenchmarkEncode(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Encode(validData, [2]uint64{1, 1}, 1, 1)
+		traceID := make([]byte, 16)
+		var opts byte
+		Encode(validData, traceID, 0, opts)
 	}
 }
