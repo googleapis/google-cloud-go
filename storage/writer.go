@@ -120,7 +120,14 @@ func (w *Writer) open() error {
 		err := applyConds("NewWriter", w.o.gen, w.o.conds, call)
 		if err == nil {
 			setClientHeader(call.Header())
-			resp, err = call.Do()
+			// We will only retry here if the initial POST, which obtains a URI for
+			// the resumable upload, fails with a retryable error. The upload itself
+			// has its own retry logic.
+			err = runWithRetry(w.ctx, func() error {
+				var err2 error
+				resp, err2 = call.Do()
+				return err2
+			})
 		}
 		if err != nil {
 			w.err = err
@@ -133,6 +140,11 @@ func (w *Writer) open() error {
 }
 
 // Write appends to w. It implements the io.Writer interface.
+//
+// Since writes happen asynchronously, Write may return a nil
+// error even though the write failed (or will fail). Always
+// use the error returned from Writer.Close to determine if
+// the upload was successful.
 func (w *Writer) Write(p []byte) (n int, err error) {
 	if w.err != nil {
 		return 0, w.err
