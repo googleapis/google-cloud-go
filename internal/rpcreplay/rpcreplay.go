@@ -15,11 +15,17 @@
 package rpcreplay
 
 import (
+	"bufio"
 	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
+	"os"
+	"sync"
 
+	"golang.org/x/net/context"
+
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 
 	pb "cloud.google.com/go/internal/rpcreplay/proto/rpcreplay"
@@ -28,6 +34,106 @@ import (
 	"github.com/golang/protobuf/ptypes/any"
 	spb "google.golang.org/genproto/googleapis/rpc/status"
 )
+
+// A Recorder records RPCs for later playback.
+type Recorder struct {
+	w *bufio.Writer
+	f *os.File
+
+	mu   sync.Mutex
+	next int
+}
+
+// NewRecorder creates a recorder that writes to filename. The file will
+// also store the initial bytes for retrieval during replay.
+//
+// You must call Close on the Recorder to ensure that all data is written.
+func NewRecorder(filename string, initial []byte) (*Recorder, error) {
+	f, err := os.Create(filename)
+	if err != nil {
+		return nil, err
+	}
+	rec, err := NewRecorderWriter(f, initial)
+	if err != nil {
+		_ = f.Close()
+		return nil, err
+	}
+	rec.f = f
+	return rec, nil
+}
+
+// NewRecorderWriter creates a recorder that writes to w. The initial
+// bytes will also be written to w for retrieval during replay.
+//
+// You must call Close on the Recorder to ensure that all data is written.
+func NewRecorderWriter(w io.Writer, initial []byte) (*Recorder, error) {
+	bw := bufio.NewWriter(w)
+	if err := writeHeader(bw, initial); err != nil {
+		return nil, err
+	}
+	return &Recorder{w: bw, next: 1}, nil
+}
+
+// DialOptions returns the options that must be passed to grpc.Dial
+// to enable recording.
+func (r *Recorder) DialOptions() []grpc.DialOption {
+	return []grpc.DialOption{
+		grpc.WithUnaryInterceptor(r.interceptUnary),
+	}
+}
+
+// Close saves any unwritten information.
+func (r *Recorder) Close() error {
+	err := r.w.Flush()
+	if r.f != nil {
+		if err2 := r.f.Close(); err == nil {
+			err = err2
+		}
+	}
+	return err
+}
+
+// Intercepts all unary (non-stream) RPCs.
+func (r *Recorder) interceptUnary(ctx context.Context, method string, req, res interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+	ereq := &entry{
+		kind:   pb.Entry_REQUEST,
+		method: method,
+		msg:    message{msg: req.(proto.Message)},
+	}
+	refIndex, err := r.writeEntry(ereq)
+	if err != nil {
+		return err
+	}
+	ierr := invoker(ctx, method, req, res, cc, opts...)
+	eres := &entry{
+		kind:     pb.Entry_RESPONSE,
+		refIndex: refIndex,
+	}
+	// If the error is not a gRPC status, then something more
+	// serious is wrong. More significantly, we have no way
+	// of serializing an arbitrary error. So just return it
+	// without recording the response.
+	if _, ok := status.FromError(ierr); !ok {
+		return ierr
+	}
+	eres.msg.set(res, ierr)
+	if _, err := r.writeEntry(eres); err != nil {
+		return err
+	}
+	return ierr
+}
+
+func (r *Recorder) writeEntry(e *entry) (int, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	err := writeEntry(r.w, e)
+	if err != nil {
+		return 0, err
+	}
+	n := r.next
+	r.next++
+	return n, nil
+}
 
 // An entry holds one gRPC action (request, response, etc.).
 type entry struct {

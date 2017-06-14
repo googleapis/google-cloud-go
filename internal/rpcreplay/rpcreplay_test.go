@@ -16,11 +16,16 @@ package rpcreplay
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"reflect"
 	"testing"
 
+	"github.com/golang/protobuf/proto"
+
+	ipb "cloud.google.com/go/internal/rpcreplay/proto/intstore"
 	rpb "cloud.google.com/go/internal/rpcreplay/proto/rpcreplay"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -94,5 +99,118 @@ func TestEntryIO(t *testing.T) {
 		if !got.equal(want) {
 			t.Errorf("#%d: got %v, want %v", i, got, want)
 		}
+	}
+}
+
+var initialState = []byte{1, 2, 3}
+
+func TestRecord(t *testing.T) {
+	srv := newIntStoreServer()
+	defer srv.stop()
+	buf := record(t, srv)
+
+	gotIstate, err := readHeader(buf)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(gotIstate, initialState) {
+		t.Fatalf("got %v, want %v", gotIstate, initialState)
+	}
+	item := &ipb.Item{Name: "a", Value: 1}
+	wantEntries := []*entry{
+		// Set
+		{
+			kind:   rpb.Entry_REQUEST,
+			method: "/intstore.IntStore/Set",
+			msg:    message{msg: item},
+		},
+		{
+			kind:     rpb.Entry_RESPONSE,
+			msg:      message{msg: &ipb.SetResponse{PrevValue: 0}},
+			refIndex: 1,
+		},
+		// Get
+		{
+			kind:   rpb.Entry_REQUEST,
+			method: "/intstore.IntStore/Get",
+			msg:    message{msg: &ipb.GetRequest{Name: "a"}},
+		},
+		{
+			kind:     rpb.Entry_RESPONSE,
+			msg:      message{msg: item},
+			refIndex: 3,
+		},
+		{
+			kind:   rpb.Entry_REQUEST,
+			method: "/intstore.IntStore/Get",
+			msg:    message{msg: &ipb.GetRequest{Name: "x"}},
+		},
+		{
+			kind:     rpb.Entry_RESPONSE,
+			msg:      message{err: status.Error(codes.NotFound, `"x"`)},
+			refIndex: 5,
+		},
+	}
+	for i, w := range wantEntries {
+		g, err := readEntry(buf)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !g.equal(w) {
+			t.Errorf("#%d:\ngot  %+v\nwant %+v", i+1, g, w)
+		}
+	}
+	g, err := readEntry(buf)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g != nil {
+		t.Errorf("\ngot  %+v\nwant nil", g)
+	}
+}
+
+func record(t *testing.T, srv *intStoreServer) *bytes.Buffer {
+	buf := &bytes.Buffer{}
+	rec, err := NewRecorderWriter(buf, initialState)
+	if err != nil {
+		t.Fatal(err)
+	}
+	testService(t, srv.Addr, rec.DialOptions())
+	if err := rec.Close(); err != nil {
+		t.Fatal(err)
+	}
+	return buf
+}
+
+func testService(t *testing.T, addr string, opts []grpc.DialOption) {
+	conn, err := grpc.Dial(addr,
+		append([]grpc.DialOption{grpc.WithInsecure()}, opts...)...)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+	client := ipb.NewIntStoreClient(conn)
+	ctx := context.Background()
+	item := &ipb.Item{Name: "a", Value: 1}
+	res, err := client.Set(ctx, item)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.PrevValue != 0 {
+		t.Errorf("got %d, want 0", res.PrevValue)
+	}
+	got, err := client.Get(ctx, &ipb.GetRequest{Name: "a"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !proto.Equal(got, item) {
+		t.Errorf("got %v, want %v", got, item)
+	}
+	_, err = client.Get(ctx, &ipb.GetRequest{Name: "x"})
+	if err == nil {
+		t.Fatal("got nil, want error")
+	}
+	if _, ok := status.FromError(err); !ok {
+		t.Errorf("got error type %T, want a grpc/status.Status", err)
 	}
 }
