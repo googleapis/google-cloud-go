@@ -60,11 +60,24 @@ func TestBindParams(t *testing.T) {
 	}
 
 	// Verify type error reporting.
-	st.Params["var"] = struct{}{}
-	wantErr := errBindParam("var", struct{}{}, errEncoderUnsupportedType(struct{}{}))
-	var got sppb.ExecuteSqlRequest
-	if err := st.bindParams(&got); !reflect.DeepEqual(err, wantErr) {
-		t.Errorf("got unexpected error: %v, want: %v", err, wantErr)
+	for _, test := range []struct {
+		val     interface{}
+		wantErr error
+	}{
+		{
+			struct{}{},
+			errBindParam("var", struct{}{}, errEncoderUnsupportedType(struct{}{})),
+		},
+		{
+			nil,
+			errBindParam("var", nil, errNilParam),
+		},
+	} {
+		st.Params["var"] = test.val
+		var got sppb.ExecuteSqlRequest
+		if err := st.bindParams(&got); !reflect.DeepEqual(err, test.wantErr) {
+			t.Errorf("value %#v:\ngot:  %v\nwant: %v", test.val, err, test.wantErr)
+		}
 	}
 }
 
