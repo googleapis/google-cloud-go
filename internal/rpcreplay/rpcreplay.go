@@ -37,11 +37,11 @@ import (
 
 // A Recorder records RPCs for later playback.
 type Recorder struct {
-	w *bufio.Writer
-	f *os.File
-
 	mu   sync.Mutex
+	w    *bufio.Writer
+	f    *os.File
 	next int
+	err  error
 }
 
 // NewRecorder creates a recorder that writes to filename. The file will
@@ -84,6 +84,11 @@ func (r *Recorder) DialOptions() []grpc.DialOption {
 
 // Close saves any unwritten information.
 func (r *Recorder) Close() error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.err != nil {
+		return r.err
+	}
 	err := r.w.Flush()
 	if r.f != nil {
 		if err2 := r.f.Close(); err == nil {
@@ -100,6 +105,7 @@ func (r *Recorder) interceptUnary(ctx context.Context, method string, req, res i
 		method: method,
 		msg:    message{msg: req.(proto.Message)},
 	}
+
 	refIndex, err := r.writeEntry(ereq)
 	if err != nil {
 		return err
@@ -114,6 +120,9 @@ func (r *Recorder) interceptUnary(ctx context.Context, method string, req, res i
 	// of serializing an arbitrary error. So just return it
 	// without recording the response.
 	if _, ok := status.FromError(ierr); !ok {
+		r.mu.Lock()
+		r.err = fmt.Errorf("saw non-status error in %s response: %v (%T)", method, ierr, ierr)
+		r.mu.Unlock()
 		return ierr
 	}
 	eres.msg.set(res, ierr)
@@ -126,8 +135,12 @@ func (r *Recorder) interceptUnary(ctx context.Context, method string, req, res i
 func (r *Recorder) writeEntry(e *entry) (int, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	if r.err != nil {
+		return 0, r.err
+	}
 	err := writeEntry(r.w, e)
 	if err != nil {
+		r.err = err
 		return 0, err
 	}
 	n := r.next
