@@ -1072,13 +1072,6 @@ func TestBasicTypes(t *testing.T) {
 
 		// One of the test cases is checking NaN handling.  Given
 		// NaN!=NaN, we can't use reflect to test for it.
-		isNaN := func(t interface{}) bool {
-			f, ok := t.(float64)
-			if !ok {
-				return false
-			}
-			return math.IsNaN(f)
-		}
 		if isNaN(got) && isNaN(want) {
 			continue
 		}
@@ -1178,6 +1171,145 @@ func TestStructTypes(t *testing.T) {
 			continue
 		}
 	}
+}
+
+// Test queries of the form "SELECT expr".
+func TestQueryExpressions(t *testing.T) {
+	ctx := context.Background()
+	if err := prepare(ctx, t, nil); err != nil {
+		tearDown(ctx, t)
+		t.Fatalf("cannot set up testing environment: %v", err)
+	}
+	defer tearDown(ctx, t)
+
+	newRow := func(vals []interface{}) *Row {
+		row, err := NewRow(make([]string, len(vals)), vals)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return row
+	}
+
+	tests := []struct {
+		expr string
+		want interface{}
+	}{
+		{"1", int64(1)},
+		{"[1, 2, 3]", []NullInt64{{1, true}, {2, true}, {3, true}}},
+		{"[1, NULL, 3]", []NullInt64{{1, true}, {0, false}, {3, true}}},
+		{"IEEE_DIVIDE(1, 0)", math.Inf(1)},
+		{"IEEE_DIVIDE(-1, 0)", math.Inf(-1)},
+		{"IEEE_DIVIDE(0, 0)", math.NaN()},
+		// TODO(jba): add IEEE_DIVIDE(0, 0) to the following array when we have a better equality predicate.
+		{"[IEEE_DIVIDE(1, 0), IEEE_DIVIDE(-1, 0)]", []NullFloat64{{math.Inf(1), true}, {math.Inf(-1), true}}},
+		{"ARRAY(SELECT AS STRUCT * FROM (SELECT 'a', 1) WHERE 0 = 1)", []NullRow{}},
+		{"ARRAY(SELECT STRUCT(1, 2))", []NullRow{{Row: *newRow([]interface{}{1, 2}), Valid: true}}},
+	}
+	for _, test := range tests {
+		iter := client.Single().Query(ctx, Statement{SQL: "SELECT " + test.expr})
+		defer iter.Stop()
+		row, err := iter.Next()
+		if err != nil {
+			t.Errorf("%q: %v", test.expr, err)
+			continue
+		}
+		// Create new instance of type of test.want.
+		gotp := reflect.New(reflect.TypeOf(test.want))
+		if err := row.Column(0, gotp.Interface()); err != nil {
+			t.Errorf("%q: Column returned error %v", test.expr, err)
+			continue
+		}
+		got := reflect.Indirect(gotp).Interface()
+		// TODO(jba): remove isNaN special case when we have a better equality predicate.
+		if isNaN(got) && isNaN(test.want) {
+			continue
+		}
+		if !reflect.DeepEqual(got, test.want) {
+			t.Errorf("%q\n got  %#v\nwant %#v", test.expr, got, test.want)
+		}
+	}
+}
+
+func isNaN(x interface{}) bool {
+	f, ok := x.(float64)
+	if !ok {
+		return false
+	}
+	return math.IsNaN(f)
+}
+
+func TestInvalidDatabase(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	if testProjectID == "" {
+		t.Skip("Integration tests skipped: GCLOUD_TESTS_GOLANG_PROJECT_ID is missing")
+	}
+	ctx := context.Background()
+	ts := testutil.TokenSource(ctx, Scope)
+	if ts == nil {
+		t.Skip("Integration test skipped: cannot get service account credential from environment variable %v", "GCLOUD_TESTS_GOLANG_KEY")
+	}
+	db := fmt.Sprintf("projects/%v/instances/%v/databases/invalid", testProjectID, testInstanceID)
+	c, err := NewClient(ctx, db, option.WithTokenSource(ts))
+	// Client creation should succeed even if the database is invalid.
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = c.Single().ReadRow(ctx, "TestTable", Key{1}, []string{"col1"})
+	if msg, ok := matchError(err, codes.NotFound, ""); !ok {
+		t.Fatal(msg)
+	}
+}
+
+func TestReadErrors(t *testing.T) {
+	ctx := context.Background()
+	if err := prepare(ctx, t, readDBStatements); err != nil {
+		tearDown(ctx, t)
+		t.Fatalf("cannot set up testing environment: %v", err)
+	}
+	defer tearDown(ctx, t)
+
+	// 	Read over invalid table fails
+	_, err := client.Single().ReadRow(ctx, "badTable", Key{1}, []string{"StringValue"})
+	if msg, ok := matchError(err, codes.NotFound, "badTable"); !ok {
+		t.Error(msg)
+	}
+	// Read over invalid column fails
+	_, err = client.Single().ReadRow(ctx, "TestTable", Key{1}, []string{"badcol"})
+	if msg, ok := matchError(err, codes.NotFound, "badcol"); !ok {
+		t.Error(msg)
+	}
+
+	// 	Invalid query fails
+	iter := client.Single().Query(ctx, Statement{SQL: "SELECT Apples AND Oranges"})
+	defer iter.Stop()
+	_, err = iter.Next()
+	if msg, ok := matchError(err, codes.InvalidArgument, "unrecognized name"); !ok {
+		t.Error(msg)
+	}
+
+	// Read should fail on cancellation.
+	cctx, cancel := context.WithCancel(ctx)
+	cancel()
+	_, err = client.Single().ReadRow(cctx, "TestTable", Key{1}, []string{"StringValue"})
+	if msg, ok := matchError(err, codes.Canceled, ""); !ok {
+		t.Error(msg)
+	}
+	// 	Read should fail if deadline exceeded.
+	dctx, _ := context.WithTimeout(ctx, time.Nanosecond)
+	<-dctx.Done()
+	_, err = client.Single().ReadRow(dctx, "TestTable", Key{1}, []string{"StringValue"})
+	if msg, ok := matchError(err, codes.DeadlineExceeded, ""); !ok {
+		t.Error(msg)
+	}
+}
+
+func matchError(got error, wantCode codes.Code, wantMsgPart string) (string, bool) {
+	if ErrCode(got) != wantCode || !strings.Contains(strings.ToLower(ErrDesc(got)), strings.ToLower(wantMsgPart)) {
+		return fmt.Sprintf("got error <%v>\n"+`want <code = %q, "...%s...">`, got, wantCode, wantMsgPart), false
+	}
+	return "", true
 }
 
 func rowToValues(r *Row) ([]interface{}, error) {
