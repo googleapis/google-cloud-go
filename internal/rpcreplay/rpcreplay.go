@@ -197,7 +197,7 @@ func (rep *Replayer) read(r io.Reader) error {
 	rep.initial = bytes
 
 	callsByIndex := map[int]*call{}
-	for i := 1; true; i++ {
+	for i := 1; ; i++ {
 		e, err := readEntry(r)
 		if err != nil {
 			return err
@@ -246,7 +246,8 @@ func (r *Replayer) DialOptions() []grpc.DialOption {
 // Initial returns the initial state saved by the Recorder.
 func (r *Replayer) Initial() []byte { return r.initial }
 
-// SetLogFunc sets a function to be used for debug logging.
+// SetLogFunc sets a function to be used for debug logging. The function
+// should be safe to be called from multiple goroutines.
 func (r *Replayer) SetLogFunc(f func(format string, v ...interface{})) {
 	r.log = f
 }
