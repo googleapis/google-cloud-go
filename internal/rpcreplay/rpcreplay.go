@@ -148,6 +148,146 @@ func (r *Recorder) writeEntry(e *entry) (int, error) {
 	return n, nil
 }
 
+// A Replayer replays a set of RPCs saved by a Recorder.
+type Replayer struct {
+	initial []byte                                // initial state
+	log     func(format string, v ...interface{}) // for debugging
+
+	mu    sync.Mutex
+	calls []*call
+}
+
+// A call represents a unary RPC, with a request and response (or error).
+type call struct {
+	method   string
+	request  proto.Message
+	response message
+}
+
+// NewReplayer creates a Replayer that reads from filename.
+func NewReplayer(filename string) (*Replayer, error) {
+	f, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	return NewReplayerReader(f)
+}
+
+// NewReplayerReader creates a Replayer that reads from r.
+func NewReplayerReader(r io.Reader) (*Replayer, error) {
+	rep := &Replayer{
+		log: func(string, ...interface{}) {},
+	}
+	if err := rep.read(r); err != nil {
+		return nil, err
+	}
+	return rep, nil
+}
+
+// read reads the stream of recorded entries.
+// It matches requests with responses, with each pair grouped
+// into a call struct.
+func (rep *Replayer) read(r io.Reader) error {
+	r = bufio.NewReader(r)
+	bytes, err := readHeader(r)
+	if err != nil {
+		return err
+	}
+	rep.initial = bytes
+
+	callsByIndex := map[int]*call{}
+	for i := 1; true; i++ {
+		e, err := readEntry(r)
+		if err != nil {
+			return err
+		}
+		if e == nil {
+			break
+		}
+		switch e.kind {
+		case pb.Entry_REQUEST:
+			callsByIndex[i] = &call{
+				method:  e.method,
+				request: e.msg.msg,
+			}
+
+		case pb.Entry_RESPONSE:
+			call := callsByIndex[e.refIndex]
+			if call == nil {
+				return fmt.Errorf("replayer: no request for response #%d", i)
+			}
+			delete(callsByIndex, e.refIndex)
+			call.response = e.msg
+			rep.calls = append(rep.calls, call)
+
+		default:
+			return fmt.Errorf("replayer: unknown kind %s", e.kind)
+		}
+	}
+	if len(callsByIndex) > 0 {
+		return fmt.Errorf("replayer: %d unmatched requests", len(callsByIndex))
+	}
+	return nil
+}
+
+// DialOptions returns the options that must be passed to grpc.Dial
+// to enable replaying.
+func (r *Replayer) DialOptions() []grpc.DialOption {
+	return []grpc.DialOption{
+		// On replay, we make no RPCs, which means the connection may be closed
+		// before the normally async Dial completes. Making the Dial synchronous
+		// fixes that.
+		grpc.WithBlock(),
+		grpc.WithUnaryInterceptor(r.interceptUnary),
+	}
+}
+
+// Initial returns the initial state saved by the Recorder.
+func (r *Replayer) Initial() []byte { return r.initial }
+
+// SetLogFunc sets a function to be used for debug logging.
+func (r *Replayer) SetLogFunc(f func(format string, v ...interface{})) {
+	r.log = f
+}
+
+// Close closes the Replayer.
+func (r *Replayer) Close() error {
+	return nil
+}
+
+func (r *Replayer) interceptUnary(_ context.Context, method string, req, res interface{}, _ *grpc.ClientConn, _ grpc.UnaryInvoker, _ ...grpc.CallOption) error {
+	mreq := req.(proto.Message)
+	r.log("request %s (%s)", method, req)
+	call := r.extractCall(method, mreq)
+	if call == nil {
+		return fmt.Errorf("replayer: request not found: %s", mreq)
+	}
+	r.log("returning %v", call.response)
+	if call.response.err != nil {
+		return call.response.err
+	}
+	proto.Merge(res.(proto.Message), call.response.msg) // copy msg into res
+	return nil
+}
+
+// extractCall finds the first call in the list with the same method
+// and request. It returns nil if it can't find such a call.
+func (r *Replayer) extractCall(method string, req proto.Message) *call {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	for i, call := range r.calls {
+		if call == nil {
+			continue
+		}
+		if method == call.method && proto.Equal(req, call.request) {
+			r.calls[i] = nil // nil out this call so we don't reuse it
+			return call
+		}
+	}
+	return nil
+}
+
 // An entry holds one gRPC action (request, response, etc.).
 type entry struct {
 	kind     pb.Entry_Kind

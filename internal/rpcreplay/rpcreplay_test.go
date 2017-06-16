@@ -168,6 +168,22 @@ func TestRecord(t *testing.T) {
 	}
 }
 
+func TestReplay(t *testing.T) {
+	srv := newIntStoreServer()
+	defer srv.stop()
+
+	buf := record(t, srv)
+	rep, err := NewReplayerReader(buf)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := rep.Initial(), initialState; !reflect.DeepEqual(got, want) {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+	// Replay the test.
+	testService(t, srv.Addr, rep.DialOptions())
+}
+
 func record(t *testing.T, srv *intStoreServer) *bytes.Buffer {
 	buf := &bytes.Buffer{}
 	rec, err := NewRecorderWriter(buf, initialState)
