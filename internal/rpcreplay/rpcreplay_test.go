@@ -16,15 +16,14 @@ package rpcreplay
 
 import (
 	"bytes"
-	"context"
 	"io"
 	"reflect"
 	"testing"
 
-	"github.com/golang/protobuf/proto"
-
 	ipb "cloud.google.com/go/internal/rpcreplay/proto/intstore"
 	rpb "cloud.google.com/go/internal/rpcreplay/proto/rpcreplay"
+	"github.com/golang/protobuf/proto"
+	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
