@@ -36,12 +36,9 @@ import (
 	"testing"
 	"time"
 
-	gax "github.com/googleapis/gax-go"
-
 	"golang.org/x/net/context"
 
 	"cloud.google.com/go/iam"
-	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -728,26 +725,11 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 		}
 		attrs = append(attrs, attr)
 	}
-	// The following iterator test fails occasionally, probably because the
-	// underlying Objects.List operation is eventually consistent. So we retry
-	// it.
-	tctx, cancel := context.WithTimeout(ctx, 30*time.Second)
-	defer cancel()
-	var msg string
-	var ok bool
-	err := internal.Retry(tctx, gax.Backoff{}, func() (stop bool, err error) {
-		msg, ok = itesting.TestIterator(attrs,
-			func() interface{} { return bkt.Objects(ctx, &Query{Prefix: "obj"}) },
-			func(it interface{}) (interface{}, error) { return it.(*ObjectIterator).Next() })
-		if ok {
-			return true, nil
-		} else {
-			t.Logf("TestIterator failed, trying again: %s", msg)
-			return false, nil
-		}
-	})
+	msg, ok := itesting.TestIterator(attrs,
+		func() interface{} { return bkt.Objects(ctx, &Query{Prefix: "obj"}) },
+		func(it interface{}) (interface{}, error) { return it.(*ObjectIterator).Next() })
 	if !ok {
-		t.Errorf("ObjectIterator.Next: %s (err=%v)", msg, err)
+		t.Errorf("ObjectIterator.Next: %s", msg)
 	}
 	// TODO(jba): test query.Delimiter != ""
 }
