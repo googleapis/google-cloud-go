@@ -76,17 +76,6 @@ func defaultInstanceAdminCallOptions() *InstanceAdminCallOptions {
 				})
 			}),
 		},
-		{"default", "non_idempotent"}: {
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        32000 * time.Millisecond,
-					Multiplier: 1.3,
-				})
-			}),
-		},
 	}
 	return &InstanceAdminCallOptions{
 		ListInstanceConfigs: retry[[2]string{"default", "idempotent"}],
