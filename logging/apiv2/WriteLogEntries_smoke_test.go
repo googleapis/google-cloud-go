@@ -54,7 +54,7 @@ func TestLoggingServiceV2Smoke(t *testing.T) {
 	}
 
 	var entries []*loggingpb.LogEntry = nil
-	var formattedLogName string = LoggingLogPath(projectId, "test-"+strconv.FormatInt(time.Now().UnixNano(), 10)+"")
+	var formattedLogName string = LogPath(projectId, "test-"+strconv.FormatInt(time.Now().UnixNano(), 10)+"")
 	var request = &loggingpb.WriteLogEntriesRequest{
 		Entries: entries,
 		LogName: formattedLogName,

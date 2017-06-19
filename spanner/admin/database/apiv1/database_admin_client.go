@@ -74,17 +74,6 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 				})
 			}),
 		},
-		{"default", "non_idempotent"}: {
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        32000 * time.Millisecond,
-					Multiplier: 1.3,
-				})
-			}),
-		},
 	}
 	return &DatabaseAdminCallOptions{
 		ListDatabases:      retry[[2]string{"default", "idempotent"}],
