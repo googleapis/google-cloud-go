@@ -381,7 +381,7 @@ func (w severityWriter) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-// Close closes the client.
+// Close waits for all opened loggers to be flushed and closes the client.
 func (c *Client) Close() error {
 	if c.closed {
 		return nil
