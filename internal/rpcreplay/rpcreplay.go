@@ -289,6 +289,50 @@ func (r *Replayer) extractCall(method string, req proto.Message) *call {
 	return nil
 }
 
+// Fprint reads the entries from filename and writes them to w in human-readable form.
+// It is intended for debugging.
+func Fprint(w io.Writer, filename string) error {
+	f, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	return FprintReader(w, f)
+}
+
+// FprintReader reads the entries from r and writes them to w in human-readable form.
+// It is intended for debugging.
+func FprintReader(w io.Writer, r io.Reader) error {
+	initial, err := readHeader(r)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintf(w, "initial state: %q\n", string(initial))
+	for i := 1; ; i++ {
+		e, err := readEntry(r)
+		if err != nil {
+			return err
+		}
+		if e == nil {
+			return nil
+		}
+
+		s := "message"
+		if e.msg.err != nil {
+			s = "error"
+		}
+		fmt.Fprintf(w, "#%d: kind: %s, method: %s, ref index: %d, %s:\n",
+			i, e.kind, e.method, e.refIndex, s)
+		if e.msg.err == nil {
+			if err := proto.MarshalText(w, e.msg.msg); err != nil {
+				return err
+			}
+		} else {
+			fmt.Fprintf(w, "%v\n", e.msg.err)
+		}
+	}
+}
+
 // An entry holds one gRPC action (request, response, etc.).
 type entry struct {
 	kind     pb.Entry_Kind
