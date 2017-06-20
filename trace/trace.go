@@ -580,7 +580,11 @@ type Span struct {
 	statusCode int
 }
 
-func (s *Span) tracing() bool {
+// Traced reports whether the current span is sampled to be traced.
+func (s *Span) Traced() bool {
+	if s == nil {
+		return false
+	}
 	return s.trace.localOptions&optionTrace != 0
 }
 
@@ -590,7 +594,8 @@ func (s *Span) NewChild(name string) *Span {
 	if s == nil {
 		return nil
 	}
-	if !s.tracing() {
+	if !s.Traced() {
+		// TODO(jbd): Document this behavior in godoc here and elsewhere.
 		return s
 	}
 	return startNewChild(name, s.trace, s.span.SpanId)
@@ -615,7 +620,7 @@ func (s *Span) NewRemoteChild(r *http.Request) *Span {
 	if s == nil {
 		return nil
 	}
-	if !s.tracing() {
+	if !s.Traced() {
 		r.Header[httpHeader] = []string{spanHeader(s.trace.traceID, s.span.ParentSpanId, s.trace.globalOptions)}
 		return s
 	}
@@ -691,7 +696,7 @@ func (s *Span) SetLabel(key, value string) {
 	if s == nil {
 		return
 	}
-	if !s.tracing() {
+	if !s.Traced() {
 		return
 	}
 	s.spanMu.Lock()
@@ -744,7 +749,7 @@ func (s *Span) Finish(opts ...FinishOption) {
 	if s == nil {
 		return
 	}
-	if !s.tracing() {
+	if !s.Traced() {
 		return
 	}
 	s.trace.finish(s, false, opts...)
@@ -756,7 +761,7 @@ func (s *Span) FinishWait(opts ...FinishOption) error {
 	if s == nil {
 		return nil
 	}
-	if !s.tracing() {
+	if !s.Traced() {
 		return nil
 	}
 	return s.trace.finish(s, true, opts...)
