@@ -20,7 +20,6 @@ import (
 
 	"cloud.google.com/go/internal/tracecontext"
 	"golang.org/x/net/context"
-	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -33,11 +32,11 @@ const grpcMetadataKey = "grpc-trace-bin"
 // the call will not be traced.
 //
 // The functionality in gRPC that this feature relies on is currently experimental.
-func GRPCClientInterceptor() grpc.UnaryClientInterceptor {
-	return grpc.UnaryClientInterceptor(grpcUnaryInterceptor)
+func (tc *Client) GRPCClientInterceptor() grpc.UnaryClientInterceptor {
+	return grpc.UnaryClientInterceptor(tc.grpcUnaryInterceptor)
 }
 
-func grpcUnaryInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+func (tc *Client) grpcUnaryInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 	// TODO: also intercept streams.
 	span := FromContext(ctx).NewChild(method)
 	defer span.Finish()
@@ -76,7 +75,7 @@ func grpcUnaryInterceptor(ctx context.Context, method string, req, reply interfa
 //	span := trace.FromContext(ctx)
 //
 // The functionality in gRPC that this feature relies on is currently experimental.
-func GRPCServerInterceptor(tc *Client) grpc.UnaryServerInterceptor {
+func (tc *Client) GRPCServerInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 		md, _ := metadata.FromIncomingContext(ctx)
 		if header, ok := md[grpcMetadataKey]; ok {
@@ -94,10 +93,3 @@ func GRPCServerInterceptor(tc *Client) grpc.UnaryServerInterceptor {
 		return handler(ctx, req)
 	}
 }
-
-// EnableGRPCTracing automatically traces all outgoing gRPC calls from cloud.google.com/go clients.
-//
-// The functionality in gRPC that this relies on is currently experimental.
-//
-// Deprecated: Use option.WithGRPCDialOption(grpc.WithUnaryInterceptor(GRPCClientInterceptor())) instead.
-var EnableGRPCTracing option.ClientOption = option.WithGRPCDialOption(grpc.WithUnaryInterceptor(GRPCClientInterceptor()))
