@@ -26,6 +26,7 @@ import (
 	"golang.org/x/net/context"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
 	pb "cloud.google.com/go/internal/rpcreplay/proto/rpcreplay"
@@ -79,6 +80,7 @@ func NewRecorderWriter(w io.Writer, initial []byte) (*Recorder, error) {
 func (r *Recorder) DialOptions() []grpc.DialOption {
 	return []grpc.DialOption{
 		grpc.WithUnaryInterceptor(r.interceptUnary),
+		grpc.WithStreamInterceptor(r.interceptStream),
 	}
 }
 
@@ -146,6 +148,78 @@ func (r *Recorder) writeEntry(e *entry) (int, error) {
 	n := r.next
 	r.next++
 	return n, nil
+}
+
+func (r *Recorder) interceptStream(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+	cstream, serr := streamer(ctx, desc, cc, method, opts...)
+	e := &entry{
+		kind:   pb.Entry_CREATE_STREAM,
+		method: method,
+	}
+	e.msg.set(nil, serr)
+	refIndex, err := r.writeEntry(e)
+	if err != nil {
+		return nil, err
+	}
+	return &recClientStream{
+		ctx:      ctx,
+		rec:      r,
+		cstream:  cstream,
+		refIndex: refIndex,
+	}, serr
+}
+
+// A recClientStream implements the gprc.ClientStream interface.
+// It behaves exactly like the default ClientStream, but also
+// records all messages sent and received.
+type recClientStream struct {
+	ctx      context.Context
+	rec      *Recorder
+	cstream  grpc.ClientStream
+	refIndex int
+}
+
+func (rcs *recClientStream) Context() context.Context { return rcs.ctx }
+
+func (rcs *recClientStream) SendMsg(m interface{}) error {
+	serr := rcs.cstream.SendMsg(m)
+	e := &entry{
+		kind:     pb.Entry_SEND,
+		refIndex: rcs.refIndex,
+	}
+	e.msg.set(m, serr)
+	if _, err := rcs.rec.writeEntry(e); err != nil {
+		return err
+	}
+	return serr
+}
+
+func (rcs *recClientStream) RecvMsg(m interface{}) error {
+	serr := rcs.cstream.RecvMsg(m)
+	e := &entry{
+		kind:     pb.Entry_RECV,
+		refIndex: rcs.refIndex,
+	}
+	e.msg.set(m, serr)
+	if _, err := rcs.rec.writeEntry(e); err != nil {
+		return err
+	}
+	return serr
+}
+
+func (rcs *recClientStream) Header() (metadata.MD, error) {
+	// TODO(jba): record.
+	return rcs.cstream.Header()
+}
+
+func (rcs *recClientStream) Trailer() metadata.MD {
+	// TODO(jba): record.
+	return rcs.cstream.Trailer()
+}
+
+func (rcs *recClientStream) CloseSend() error {
+	// TODO(jba): record.
+	return rcs.cstream.CloseSend()
 }
 
 // A Replayer replays a set of RPCs saved by a Recorder.
@@ -374,10 +448,10 @@ type message struct {
 }
 
 func (m *message) set(msg interface{}, err error) {
-	if msg != nil {
+	m.err = err
+	if err != io.EOF && msg != nil {
 		m.msg = msg.(proto.Message)
 	}
-	m.err = err
 }
 
 // File format:
@@ -473,7 +547,7 @@ func readEntry(r io.Reader) (*entry, error) {
 		}
 	} else if pe.IsError {
 		msg.err = io.EOF
-	} else {
+	} else if pe.Kind != pb.Entry_CREATE_STREAM {
 		return nil, errors.New("rpcreplay: entry with nil message and false is_error")
 	}
 	return &entry{
