@@ -39,7 +39,7 @@ func TestGRPCInterceptors(t *testing.T) {
 		}
 		addrCh <- lis.Addr()
 
-		s := grpc.NewServer(grpc.UnaryInterceptor(GRPCServerInterceptor(tc)))
+		s := grpc.NewServer(grpc.UnaryInterceptor(tc.GRPCServerInterceptor()))
 		pb.RegisterGreeterServer(s, &grpcServer{
 			fn: func(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 				incomingCh <- FromContext(ctx)
@@ -52,7 +52,7 @@ func TestGRPCInterceptors(t *testing.T) {
 	}()
 
 	addr := <-addrCh
-	conn, err := grpc.Dial(addr.String(), grpc.WithInsecure(), grpc.WithUnaryInterceptor(GRPCClientInterceptor()))
+	conn, err := grpc.Dial(addr.String(), grpc.WithInsecure(), grpc.WithUnaryInterceptor(tc.GRPCClientInterceptor()))
 	if err != nil {
 		log.Fatalf("Did not connect: %v", err)
 	}
