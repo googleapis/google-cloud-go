@@ -15,6 +15,7 @@
 package rpcreplay
 
 import (
+	"io"
 	"log"
 	"net"
 
@@ -76,4 +77,45 @@ func (s *intStoreServer) Get(_ context.Context, req *pb.GetRequest) (*pb.Item, e
 		return nil, grpc.Errorf(codes.NotFound, "%q", req.Name)
 	}
 	return &pb.Item{Name: req.Name, Value: val}, nil
+}
+
+func (s *intStoreServer) ListItems(_ *pb.ListItemsRequest, ss pb.IntStore_ListItemsServer) error {
+	for name, val := range s.items {
+		if err := ss.Send(&pb.Item{Name: name, Value: val}); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s *intStoreServer) SetStream(ss pb.IntStore_SetStreamServer) error {
+	n := 0
+	for {
+		item, err := ss.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		s.setItem(item)
+		n++
+	}
+	return ss.SendAndClose(&pb.Summary{Count: int32(n)})
+}
+
+func (s *intStoreServer) StreamChat(ss pb.IntStore_StreamChatServer) error {
+	for {
+		item, err := ss.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		if err := ss.Send(item); err != nil {
+			return err
+		}
+	}
+	return nil
 }
