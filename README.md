@@ -68,6 +68,8 @@ Google API                       | Status       | Package
 [Speech][cloud-speech]           | beta         | [`cloud.google.com/go/speech/apiv1`][cloud-speech-ref]
 [Spanner][cloud-spanner]         | alpha        | [`cloud.google.com/go/spanner`][cloud-spanner-ref]
 [Translation][cloud-translation] | beta         | [`cloud.google.com/go/translate`][cloud-translation-ref]
+[Trace][cloud-trace]             | alpha        | [`cloud.google.com/go/trace`][cloud-trace-ref]
+[ErrorReporting][cloud-errors]   | alpha        | [`cloud.google.com/go/errors`][cloud-errors-ref]
 
 
 > **Alpha status**: the API is still being actively developed. As a
@@ -426,5 +428,11 @@ for more information.
 
 [cloud-translation]: https://cloud.google.com/translation
 [cloud-translation-ref]: https://godoc.org/cloud.google.com/go/translation
+
+[cloud-trace]: https://cloud.google.com/trace/
+[cloud-trace-ref]: https://godoc.org/cloud.google.com/go/trace
+
+[cloud-errors]: https://cloud.google.com/error-reporting/
+[cloud-errors-ref]: https://godoc.org/cloud.google.com/go/errors
 
 [default-creds]: https://developers.google.com/identity/protocols/application-default-credentials
