@@ -39,29 +39,30 @@ func (tc *Client) GRPCClientInterceptor() grpc.UnaryClientInterceptor {
 func (tc *Client) grpcUnaryInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 	// TODO: also intercept streams.
 	span := FromContext(ctx).NewChild(method)
+	if span == nil {
+		span = tc.NewSpan(method)
+	}
 	defer span.Finish()
 
-	if span != nil {
-		tc := make([]byte, tracecontext.Len)
-		// traceID is a hex-encoded 128-bit value.
-		// TODO(jbd): Decode trace IDs upon arrival and
-		// represent trace IDs with 16 bytes internally.
-		tid, err := hex.DecodeString(span.trace.traceID)
-		if err != nil {
-			return invoker(ctx, method, req, reply, cc, opts...)
-		}
-		tracecontext.Encode(tc, tid, span.span.SpanId, byte(span.trace.globalOptions))
-		md, ok := metadata.FromOutgoingContext(ctx)
-		if !ok {
-			md = metadata.Pairs(grpcMetadataKey, string(tc))
-		} else {
-			md = md.Copy() // metadata is immutable, copy.
-			md[grpcMetadataKey] = []string{string(tc)}
-		}
-		ctx = metadata.NewOutgoingContext(ctx, md)
+	traceContext := make([]byte, tracecontext.Len)
+	// traceID is a hex-encoded 128-bit value.
+	// TODO(jbd): Decode trace IDs upon arrival and
+	// represent trace IDs with 16 bytes internally.
+	tid, err := hex.DecodeString(span.trace.traceID)
+	if err != nil {
+		return invoker(ctx, method, req, reply, cc, opts...)
 	}
+	tracecontext.Encode(traceContext, tid, span.span.SpanId, byte(span.trace.globalOptions))
+	md, ok := metadata.FromOutgoingContext(ctx)
+	if !ok {
+		md = metadata.Pairs(grpcMetadataKey, string(traceContext))
+	} else {
+		md = md.Copy() // metadata is immutable, copy.
+		md[grpcMetadataKey] = []string{string(traceContext)}
+	}
+	ctx = metadata.NewOutgoingContext(ctx, md)
 
-	err := invoker(ctx, method, req, reply, cc, opts...)
+	err = invoker(ctx, method, req, reply, cc, opts...)
 	if err != nil {
 		// TODO: standardize gRPC label names?
 		span.SetLabel("error", err.Error())
@@ -78,18 +79,17 @@ func (tc *Client) grpcUnaryInterceptor(ctx context.Context, method string, req, 
 func (tc *Client) GRPCServerInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 		md, _ := metadata.FromIncomingContext(ctx)
+		var traceHeader string
 		if header, ok := md[grpcMetadataKey]; ok {
 			traceID, spanID, opts, ok := tracecontext.Decode([]byte(header[0]))
-			if !ok {
-				return handler(ctx, req)
+			if ok {
+				// TODO(jbd): Generate a span directly from string(traceID), spanID and opts.
+				traceHeader = fmt.Sprintf("%x/%d;o=%d", traceID, spanID, opts)
 			}
-			// TODO(jbd): Generate a span directly from string(traceID), spanID and opts.
-			header := fmt.Sprintf("%x/%d;o=%d", traceID, spanID, opts)
-			span := tc.SpanFromHeader("", header)
-
-			defer span.Finish()
-			ctx = NewContext(ctx, span)
 		}
+		span := tc.SpanFromHeader(info.FullMethod, traceHeader)
+		defer span.Finish()
+		ctx = NewContext(ctx, span)
 		return handler(ctx, req)
 	}
 }

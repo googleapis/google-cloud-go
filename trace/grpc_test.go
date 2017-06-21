@@ -30,6 +30,96 @@ import (
 func TestGRPCInterceptors(t *testing.T) {
 	tc := newTestClient(&noopTransport{})
 
+	// default sampling with global=1.
+	parent := tc.SpanFromHeader("parent", "7f27601f17b7a2873739efd18ff83872/123;o=1")
+	testGRPCInterceptor(t, tc, parent, func(t *testing.T, out, in *Span) {
+		if in == nil {
+			t.Fatalf("missing span in the incoming context")
+		}
+		if got, want := in.TraceID(), out.TraceID(); got != want {
+			t.Errorf("incoming call is not tracing the outgoing trace; TraceID = %q; want %q", got, want)
+		}
+		if !in.Traced() {
+			t.Errorf("incoming span is not traced; want traced")
+		}
+	})
+
+	// default sampling with global=0.
+	parent = tc.SpanFromHeader("parent", "7f27601f17b7a2873739efd18ff83872/123;o=0")
+	testGRPCInterceptor(t, tc, parent, func(t *testing.T, out, in *Span) {
+		if in == nil {
+			t.Fatalf("missing span in the incoming context")
+		}
+		if got, want := in.TraceID(), out.TraceID(); got != want {
+			t.Errorf("incoming call is not tracing the outgoing trace; TraceID = %q; want %q", got, want)
+		}
+		if in.Traced() {
+			t.Errorf("incoming span is traced; want not traced")
+		}
+	})
+
+	// sampling all with global=1.
+	all, _ := NewLimitedSampler(1.0, 1<<32)
+	tc.SetSamplingPolicy(all)
+	parent = tc.SpanFromHeader("parent", "7f27601f17b7a2873739efd18ff83872/123;o=1")
+	testGRPCInterceptor(t, tc, parent, func(t *testing.T, out, in *Span) {
+		if in == nil {
+			t.Fatalf("missing span in the incoming context")
+		}
+		if got, want := in.TraceID(), out.TraceID(); got != want {
+			t.Errorf("incoming call is not tracing the outgoing trace; TraceID = %q; want %q", got, want)
+		}
+		if !in.Traced() {
+			t.Errorf("incoming span is not traced; want traced")
+		}
+	})
+
+	// sampling none with global=1.
+	none, _ := NewLimitedSampler(0, 0)
+	tc.SetSamplingPolicy(none)
+	parent = tc.SpanFromHeader("parent", "7f27601f17b7a2873739efd18ff83872/123;o=1")
+	testGRPCInterceptor(t, tc, parent, func(t *testing.T, out, in *Span) {
+		if in == nil {
+			t.Fatalf("missing span in the incoming context")
+		}
+		if got, want := in.TraceID(), out.TraceID(); got != want {
+			t.Errorf("incoming call is not tracing the outgoing trace; TraceID = %q; want %q", got, want)
+		}
+		if in.Traced() {
+			t.Errorf("incoming span is traced; want not traced")
+		}
+	})
+
+	// sampling all with no parent span.
+	tc.SetSamplingPolicy(all)
+	testGRPCInterceptor(t, tc, nil, func(t *testing.T, out, in *Span) {
+		if in == nil {
+			t.Fatalf("missing span in the incoming context")
+		}
+		if in.TraceID() == "" {
+			t.Errorf("incoming call TraceID is empty")
+		}
+		if !in.Traced() {
+			t.Errorf("incoming span is not traced; want traced")
+		}
+	})
+
+	// sampling none with no parent span.
+	tc.SetSamplingPolicy(none)
+	testGRPCInterceptor(t, tc, nil, func(t *testing.T, out, in *Span) {
+		if in == nil {
+			t.Fatalf("missing span in the incoming context")
+		}
+		if in.TraceID() == "" {
+			t.Errorf("incoming call TraceID is empty")
+		}
+		if in.Traced() {
+			t.Errorf("incoming span is traced; want not traced")
+		}
+	})
+}
+
+func testGRPCInterceptor(t *testing.T, tc *Client, parent *Span, assert func(t *testing.T, out, in *Span)) {
 	incomingCh := make(chan *Span, 1)
 	addrCh := make(chan net.Addr, 1)
 	go func() {
@@ -54,25 +144,18 @@ func TestGRPCInterceptors(t *testing.T) {
 	addr := <-addrCh
 	conn, err := grpc.Dial(addr.String(), grpc.WithInsecure(), grpc.WithUnaryInterceptor(tc.GRPCClientInterceptor()))
 	if err != nil {
-		log.Fatalf("Did not connect: %v", err)
+		t.Fatalf("Did not connect: %v", err)
 	}
 	defer conn.Close()
 	c := pb.NewGreeterClient(conn)
 
-	span := tc.NewSpan("parent")
-	outgoingCtx := NewContext(context.Background(), span)
+	outgoingCtx := NewContext(context.Background(), parent)
 	_, err = c.SayHello(outgoingCtx, &pb.HelloRequest{})
 	if err != nil {
 		log.Fatalf("Could not SayHello: %v", err)
 	}
 
-	incomingSpan := <-incomingCh
-	if incomingSpan == nil {
-		t.Fatalf("missing span in the incoming context")
-	}
-	if got, want := incomingSpan.TraceID(), span.TraceID(); got != want {
-		t.Errorf("incoming call is not tracing the outgoing trace; TraceID = %q; want %q", got, want)
-	}
+	assert(t, parent, <-incomingCh)
 }
 
 type noopTransport struct{}
