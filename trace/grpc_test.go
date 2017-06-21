@@ -15,8 +15,11 @@
 package trace
 
 import (
+	"io/ioutil"
 	"log"
 	"net"
+	"net/http"
+	"strings"
 	"testing"
 
 	pb "cloud.google.com/go/trace/testdata/helloworld"
@@ -70,6 +73,17 @@ func TestGRPCInterceptors(t *testing.T) {
 	if got, want := incomingSpan.TraceID(), span.TraceID(); got != want {
 		t.Errorf("incoming call is not tracing the outgoing trace; TraceID = %q; want %q", got, want)
 	}
+}
+
+type noopTransport struct{}
+
+func (rt *noopTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	resp := &http.Response{
+		Status:     "200 OK",
+		StatusCode: 200,
+		Body:       ioutil.NopCloser(strings.NewReader("{}")),
+	}
+	return resp, nil
 }
 
 type grpcServer struct {
