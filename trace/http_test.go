@@ -24,17 +24,6 @@ import (
 	"testing"
 )
 
-type noopTransport struct{}
-
-func (rt *noopTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	resp := &http.Response{
-		Status:     "200 OK",
-		StatusCode: 200,
-		Body:       ioutil.NopCloser(strings.NewReader("{}")),
-	}
-	return resp, nil
-}
-
 type recorderTransport struct {
 	ch chan *http.Request
 }
