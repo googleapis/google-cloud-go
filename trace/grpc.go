@@ -32,15 +32,15 @@ const grpcMetadataKey = "grpc-trace-bin"
 // the call will not be traced.
 //
 // The functionality in gRPC that this feature relies on is currently experimental.
-func (tc *Client) GRPCClientInterceptor() grpc.UnaryClientInterceptor {
-	return grpc.UnaryClientInterceptor(tc.grpcUnaryInterceptor)
+func (c *Client) GRPCClientInterceptor() grpc.UnaryClientInterceptor {
+	return grpc.UnaryClientInterceptor(c.grpcUnaryInterceptor)
 }
 
-func (tc *Client) grpcUnaryInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+func (c *Client) grpcUnaryInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 	// TODO: also intercept streams.
 	span := FromContext(ctx).NewChild(method)
 	if span == nil {
-		span = tc.NewSpan(method)
+		span = c.NewSpan(method)
 	}
 	defer span.Finish()
 
@@ -76,7 +76,7 @@ func (tc *Client) grpcUnaryInterceptor(ctx context.Context, method string, req, 
 //	span := trace.FromContext(ctx)
 //
 // The functionality in gRPC that this feature relies on is currently experimental.
-func (tc *Client) GRPCServerInterceptor() grpc.UnaryServerInterceptor {
+func (c *Client) GRPCServerInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 		md, _ := metadata.FromIncomingContext(ctx)
 		var traceHeader string
@@ -87,7 +87,7 @@ func (tc *Client) GRPCServerInterceptor() grpc.UnaryServerInterceptor {
 				traceHeader = fmt.Sprintf("%x/%d;o=%d", traceID, spanID, opts)
 			}
 		}
-		span := tc.SpanFromHeader(info.FullMethod, traceHeader)
+		span := c.SpanFromHeader(info.FullMethod, traceHeader)
 		defer span.Finish()
 		ctx = NewContext(ctx, span)
 		return handler(ctx, req)
