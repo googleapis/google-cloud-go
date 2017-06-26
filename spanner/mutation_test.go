@@ -330,6 +330,34 @@ func TestBadStructs(t *testing.T) {
 	}
 }
 
+func TestStructToMutationParams(t *testing.T) {
+	// Tests cases not covered elsewhere.
+	type S struct{ F int }
+
+	for _, test := range []struct {
+		in       interface{}
+		wantCols []string
+		wantVals []interface{}
+		wantErr  error
+	}{
+		{nil, nil, nil, errNotStruct(nil)},
+		{3, nil, nil, errNotStruct(3)},
+		{(*S)(nil), nil, nil, nil},
+		{&S{F: 1}, []string{"F"}, []interface{}{1}, nil},
+	} {
+		gotCols, gotVals, gotErr := structToMutationParams(test.in)
+		if !reflect.DeepEqual(gotCols, test.wantCols) {
+			t.Errorf("%#v: got cols %v, want %v", test.in, gotCols, test.wantCols)
+		}
+		if !reflect.DeepEqual(gotVals, test.wantVals) {
+			t.Errorf("%#v: got vals %v, want %v", test.in, gotVals, test.wantVals)
+		}
+		if !reflect.DeepEqual(gotErr, test.wantErr) {
+			t.Errorf("%#v: got err %v, want %v", test.in, gotErr, test.wantErr)
+		}
+	}
+}
+
 // Test encoding Mutation into proto.
 func TestEncodeMutation(t *testing.T) {
 	for _, test := range []struct {
