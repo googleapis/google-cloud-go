@@ -32,10 +32,10 @@ of interest:
 
     ctx := context.Background()
     client, err := spanner.NewClient(ctx, "projects/P/instances/I/databases/D")
-    defer client.Close()
     if err != nil {
         // TODO: Handle error.
     }
+    defer client.Close()
 
 Remember to close the client after use to free up the sessions in the session
 pool.
