@@ -18,7 +18,7 @@ messages, hiding the the details of the underlying server RPCs.  Google Cloud
 Pub/Sub is a many-to-many, asynchronous messaging system that decouples senders
 and receivers.
 
-Note: This package is experimental and may make backwards-incompatible changes.
+Note: This package is in beta. Some backwards-incompatible changes may occur.
 
 More information about Google Cloud Pub/Sub is available at
 https://cloud.google.com/pubsub/docs
