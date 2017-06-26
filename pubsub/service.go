@@ -22,7 +22,6 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
-	gax "github.com/googleapis/gax-go"
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/version"
