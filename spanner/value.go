@@ -22,7 +22,6 @@ import (
 	"math"
 	"reflect"
 	"strconv"
-	"strings"
 	"time"
 
 	"cloud.google.com/go/civil"
@@ -869,28 +868,6 @@ func decodeRowArray(ty *sppb.StructType, pb *proto3.ListValue) ([]NullRow, error
 		}
 	}
 	return a, nil
-}
-
-// structFieldColumn returns the name of i-th field of struct type typ if the field
-// is untagged; otherwise, it returns the tagged name of the field.
-func structFieldColumn(typ reflect.Type, i int) (col string, ok bool) {
-	desc := typ.Field(i)
-	if desc.PkgPath != "" || desc.Anonymous {
-		// Skip unexported or anonymous fields.
-		return "", false
-	}
-	col = desc.Name
-	if tag := desc.Tag.Get("spanner"); tag != "" {
-		if tag == "-" {
-			// Skip fields tagged "-" to match encoding/json and others.
-			return "", false
-		}
-		col = tag
-		if idx := strings.Index(tag, ","); idx != -1 {
-			col = tag[:idx]
-		}
-	}
-	return col, true
 }
 
 // errNilSpannerStructType returns error for unexpected nil Cloud Spanner STRUCT schema type in decoding.

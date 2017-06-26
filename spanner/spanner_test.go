@@ -674,7 +674,8 @@ func TestReads(t *testing.T) {
 			testTableColumns,
 			[]interface{}{fmt.Sprintf("k%d", i), fmt.Sprintf("v%d", i)}))
 	}
-	if _, err := client.Apply(ctx, ms, ApplyAtLeastOnce()); err != nil {
+	// Don't use ApplyAtLeastOnce, so we can test the other code path.
+	if _, err := client.Apply(ctx, ms); err != nil {
 		t.Fatal(err)
 	}
 
