@@ -235,7 +235,7 @@ func ExampleDelete() {
 	_ = m // TODO: use with Client.Apply or in a ReadWriteTransaction.
 }
 
-func ExampleDelete_KeyRange() {
+func ExampleDelete_keyRange() {
 	m := spanner.Delete("Users", spanner.KeyRange{
 		Start: spanner.Key{"alice"},
 		End:   spanner.Key{"bob"},
@@ -504,7 +504,7 @@ func ExampleReadOnlyTransaction_WithTimestampBound() {
 	fmt.Println("read happened at", readTimestamp)
 }
 
-func ExampleNewGenericColumnValue_Decode() {
+func ExampleGenericColumnValue_Decode() {
 	// In real applications, rows can be retrieved by methods like client.Single().ReadRow().
 	row, err := spanner.NewRow([]string{"intCol", "strCol"}, []interface{}{42, "my-text"})
 	if err != nil {
