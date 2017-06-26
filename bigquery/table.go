@@ -234,6 +234,7 @@ func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate) (*TableMet
 		conf.Name = &s
 	}
 	conf.Schema = tm.Schema
+	conf.ExpirationTime = tm.ExpirationTime
 	return t.c.service.patchTable(ctx, t.ProjectID, t.DatasetID, t.TableID, &conf)
 }
 
@@ -250,4 +251,7 @@ type TableMetadataToUpdate struct {
 	// When updating a schema, you can add columns but not remove them.
 	Schema Schema
 	// TODO(jba): support updating the view
+
+	// Set the expiration time for this table
+	ExpirationTime time.Time
 }
