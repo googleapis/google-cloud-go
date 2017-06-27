@@ -369,3 +369,24 @@ func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo,
 	}
 	return is, nil
 }
+
+// InstanceInfo returns information about an instance.
+func (iac *InstanceAdminClient) InstanceInfo(ctx context.Context, instanceId string) (*InstanceInfo, error) {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	req := &btapb.GetInstanceRequest{
+		Name: "projects/" + iac.project + "/instances/" + instanceId,
+	}
+	res, err := iac.iClient.GetInstance(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	m := instanceNameRegexp.FindStringSubmatch(res.Name)
+	if m == nil {
+		return nil, fmt.Errorf("malformed instance name %q", res.Name)
+	}
+	return &InstanceInfo{
+		Name:        m[2],
+		DisplayName: res.DisplayName,
+	}, nil
+}
