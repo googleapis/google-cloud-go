@@ -69,6 +69,7 @@ Google API                       | Status       | Package
 [Spanner][cloud-spanner]         | alpha        | [`cloud.google.com/go/spanner`][cloud-spanner-ref]
 [Translation][cloud-translation] | stable       | [`cloud.google.com/go/translate`][cloud-translation-ref]
 [Trace][cloud-trace]             | alpha        | [`cloud.google.com/go/trace`][cloud-trace-ref]
+[Video Intelligence][cloud-video]| alpha        | [`cloud.google.com/go/videointelligence/apiv1beta1`][cloud-video-ref]
 [ErrorReporting][cloud-errors]   | alpha        | [`cloud.google.com/go/errors`][cloud-errors-ref]
 
 
@@ -431,6 +432,9 @@ for more information.
 
 [cloud-trace]: https://cloud.google.com/trace/
 [cloud-trace-ref]: https://godoc.org/cloud.google.com/go/trace
+
+[cloud-video]: https://cloud.google.com/video-intelligence/
+[cloud-video-ref]: https://godoc.org/cloud.google.com/go/videointelligence/apiv1beta1
 
 [cloud-errors]: https://cloud.google.com/error-reporting/
 [cloud-errors-ref]: https://godoc.org/cloud.google.com/go/errors
