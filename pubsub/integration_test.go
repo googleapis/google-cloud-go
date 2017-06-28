@@ -272,7 +272,7 @@ func testIAM(ctx context.Context, h *iam.Handle, permission string) (msg string,
 	return "", true
 }
 
-func TestModifyPushConfig(t *testing.T) {
+func TestSubscriptionUpdate(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	if testing.Short() {
@@ -310,15 +310,10 @@ func TestModifyPushConfig(t *testing.T) {
 	}
 	defer sub.Delete(ctx)
 
-	getConfig := func() SubscriptionConfig {
-		sc, err := sub.Config(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-		return sc
+	sc, err := sub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	sc := getConfig()
 	if !reflect.DeepEqual(sc.PushConfig, PushConfig{}) {
 		t.Fatalf("got %+v, want empty PushConfig")
 	}
@@ -327,22 +322,30 @@ func TestModifyPushConfig(t *testing.T) {
 		Endpoint:   "https://" + projID + ".appspot.com/_ah/push-handlers/push",
 		Attributes: map[string]string{"x-goog-version": "v1"},
 	}
-	if err := sub.ModifyPushConfig(ctx, pc); err != nil {
+	sc, err = sub.Update(ctx, SubscriptionConfigToUpdate{PushConfig: &pc})
+	if err != nil {
 		t.Fatal(err)
 	}
 	// Despite the docs which say that Get always returns a valid "x-goog-version"
 	// attribute, none is returned. See
 	// https://cloud.google.com/pubsub/docs/reference/rpc/google.pubsub.v1#google.pubsub.v1.PushConfig
 	pc.Attributes = nil
-	if got, want := getConfig().PushConfig, pc; !reflect.DeepEqual(got, want) {
+	if got, want := sc.PushConfig, pc; !reflect.DeepEqual(got, want) {
 		t.Fatalf("setting push config: got\n%+v\nwant\n%+v", got, want)
 	}
 	// Remove the PushConfig, turning the subscription back into pull mode.
 	pc = PushConfig{}
-	if err := sub.ModifyPushConfig(ctx, pc); err != nil {
+	sc, err = sub.Update(ctx, SubscriptionConfigToUpdate{PushConfig: &pc})
+	if err != nil {
 		t.Fatal(err)
 	}
-	if got, want := getConfig().PushConfig, pc; !reflect.DeepEqual(got, want) {
+	if got, want := sc.PushConfig, pc; !reflect.DeepEqual(got, want) {
 		t.Fatalf("removing push config: got\n%+v\nwant %+v", got, want)
+	}
+
+	// If nothing changes, our client returns an error.
+	_, err = sub.Update(ctx, SubscriptionConfigToUpdate{})
+	if err == nil {
+		t.Fatal("got nil, wanted error")
 	}
 }

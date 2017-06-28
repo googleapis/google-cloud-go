@@ -187,9 +187,24 @@ func (s *Subscription) Config(ctx context.Context) (SubscriptionConfig, error) {
 	return conf, nil
 }
 
-// ModifyPushConfig updates the endpoint URL and other attributes of a push subscription.
-func (s *Subscription) ModifyPushConfig(ctx context.Context, conf PushConfig) error {
-	return s.s.modifyPushConfig(ctx, s.name, conf)
+// SubscriptionConfigToUpdate describes how to update a subscription.
+type SubscriptionConfigToUpdate struct {
+	// If non-nil, the push config is changed.
+	PushConfig *PushConfig
+}
+
+// Update changes an existing subscription according to the fields set in cfg.
+// It returns the new SubscriptionConfig.
+//
+// Update returns an error if no fields were modified.
+func (s *Subscription) Update(ctx context.Context, cfg SubscriptionConfigToUpdate) (SubscriptionConfig, error) {
+	if cfg.PushConfig == nil {
+		return SubscriptionConfig{}, errors.New("pubsub: UpdateSubscription call with nothing to update")
+	}
+	if err := s.s.modifyPushConfig(ctx, s.name, *cfg.PushConfig); err != nil {
+		return SubscriptionConfig{}, err
+	}
+	return s.Config(ctx)
 }
 
 func (s *Subscription) IAM() *iam.Handle {
