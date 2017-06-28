@@ -262,6 +262,7 @@ type ObjectHandle struct {
 	gen           int64 // a negative value indicates latest
 	conds         *Conditions
 	encryptionKey []byte // AES-256 key
+	userProject   string // for requester-pays buckets
 }
 
 // ACL provides access to the object's access control list.
@@ -313,6 +314,9 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (*ObjectAttrs, error) {
 	call := o.c.raw.Objects.Get(o.bucket, o.object).Projection("full").Context(ctx)
 	if err := applyConds("Attrs", o.gen, o.conds, call); err != nil {
 		return nil, err
+	}
+	if o.userProject != "" {
+		call.UserProject(o.userProject)
 	}
 	if err := setEncryptionHeaders(call.Header(), o.encryptionKey, false); err != nil {
 		return nil, err
@@ -388,6 +392,9 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 	if err := applyConds("Update", o.gen, o.conds, call); err != nil {
 		return nil, err
 	}
+	if o.userProject != "" {
+		call.UserProject(o.userProject)
+	}
 	if err := setEncryptionHeaders(call.Header(), o.encryptionKey, false); err != nil {
 		return nil, err
 	}
@@ -434,6 +441,10 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 	if err := applyConds("Delete", o.gen, o.conds, call); err != nil {
 		return err
 	}
+	if o.userProject != "" {
+		call.UserProject(o.userProject)
+	}
+	// Encryption doesn't apply to Delete.
 	setClientHeader(call.Header())
 	err := runWithRetry(ctx, func() error { return call.Do() })
 	switch e := err.(type) {
@@ -490,6 +501,9 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		req.Header.Set("Range", fmt.Sprintf("bytes=%d-", offset))
 	} else if length > 0 {
 		req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", offset, offset+length-1))
+	}
+	if o.userProject != "" {
+		req.Header.Set("X-Goog-User-Project", o.userProject)
 	}
 	if err := setEncryptionHeaders(req.Header, o.encryptionKey, false); err != nil {
 		return nil, err
