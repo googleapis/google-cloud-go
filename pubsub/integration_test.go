@@ -52,6 +52,10 @@ func TestAll(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
+	projID := testutil.ProjID()
+	if projID == "" {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
 	ctx := context.Background()
 	ts := testutil.TokenSource(ctx, ScopePubSub, ScopeCloudPlatform)
 	if ts == nil {
@@ -62,7 +66,7 @@ func TestAll(t *testing.T) {
 	topicName := fmt.Sprintf("topic-%d", now.Unix())
 	subName := fmt.Sprintf("subscription-%d", now.Unix())
 
-	client, err := NewClient(ctx, testutil.ProjID(), option.WithTokenSource(ts))
+	client, err := NewClient(ctx, projID, option.WithTokenSource(ts))
 	if err != nil {
 		t.Fatalf("Creating client error: %v", err)
 	}
@@ -266,4 +270,79 @@ func testIAM(ctx context.Context, h *iam.Handle, permission string) (msg string,
 		return fmt.Sprintf("TestPermissions: got %v, want %v", gotPerms, wantPerms), false
 	}
 	return "", true
+}
+
+func TestModifyPushConfig(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	projID := testutil.ProjID()
+	if projID == "" {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details.")
+	}
+	ts := testutil.TokenSource(ctx, ScopePubSub, ScopeCloudPlatform)
+	if ts == nil {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
+
+	now := time.Now()
+	topicName := fmt.Sprintf("topic-modify-%d", now.Unix())
+	subName := fmt.Sprintf("subscription-modify-%d", now.Unix())
+
+	client, err := NewClient(ctx, projID, option.WithTokenSource(ts))
+	if err != nil {
+		t.Fatalf("Creating client error: %v", err)
+	}
+	defer client.Close()
+
+	var topic *Topic
+	if topic, err = client.CreateTopic(ctx, topicName); err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer topic.Stop()
+	defer topic.Delete(ctx)
+
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subName, SubscriptionConfig{Topic: topic}); err != nil {
+		t.Fatalf("CreateSub error: %v", err)
+	}
+	defer sub.Delete(ctx)
+
+	getConfig := func() SubscriptionConfig {
+		sc, err := sub.Config(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return sc
+	}
+
+	sc := getConfig()
+	if !reflect.DeepEqual(sc.PushConfig, PushConfig{}) {
+		t.Fatalf("got %+v, want empty PushConfig")
+	}
+	// Add a PushConfig.
+	pc := PushConfig{
+		Endpoint:   "https://" + projID + ".appspot.com/_ah/push-handlers/push",
+		Attributes: map[string]string{"x-goog-version": "v1"},
+	}
+	if err := sub.ModifyPushConfig(ctx, pc); err != nil {
+		t.Fatal(err)
+	}
+	// Despite the docs which say that Get always returns a valid "x-goog-version"
+	// attribute, none is returned. See
+	// https://cloud.google.com/pubsub/docs/reference/rpc/google.pubsub.v1#google.pubsub.v1.PushConfig
+	pc.Attributes = nil
+	if got, want := getConfig().PushConfig, pc; !reflect.DeepEqual(got, want) {
+		t.Fatalf("setting push config: got\n%+v\nwant\n%+v", got, want)
+	}
+	// Remove the PushConfig, turning the subscription back into pull mode.
+	pc = PushConfig{}
+	if err := sub.ModifyPushConfig(ctx, pc); err != nil {
+		t.Fatal(err)
+	}
+	if got, want := getConfig().PushConfig, pc; !reflect.DeepEqual(got, want) {
+		t.Fatalf("removing push config: got\n%+v\nwant %+v", got, want)
+	}
 }
