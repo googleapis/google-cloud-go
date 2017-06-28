@@ -252,14 +252,18 @@ func ExampleSubscription_Receive_maxOutstanding() {
 	}
 }
 
-func ExampleSubscription_ModifyPushConfig() {
+func ExampleSubscription_Update() {
 	ctx := context.Background()
 	client, err := pubsub.NewClient(ctx, "project-id")
 	if err != nil {
 		// TODO: Handle error.
 	}
 	sub := client.Subscription("subName")
-	if err := sub.ModifyPushConfig(ctx, pubsub.PushConfig{Endpoint: "https://example.com/push"}); err != nil {
+	subConfig, err := sub.Update(ctx, pubsub.SubscriptionConfigToUpdate{
+		PushConfig: &pubsub.PushConfig{Endpoint: "https://example.com/push"},
+	})
+	if err != nil {
 		// TODO: Handle error.
 	}
+	_ = subConfig // TODO: Use SubscriptionConfig.
 }
