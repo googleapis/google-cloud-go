@@ -153,9 +153,35 @@ func TestBucketMethods(t *testing.T) {
 		StorageClass:      "NEARLINE",
 		VersioningEnabled: true,
 		Labels:            labels,
+		Lifecycle: Lifecycle{
+			Rules: []LifecycleRule{{
+				Action: LifecycleAction{
+					Type:         SetStorageClassAction,
+					StorageClass: "NEARLINE",
+				},
+				Condition: LifecycleCondition{
+					AgeInDays:             10,
+					Liveness:              Archived,
+					CreatedBefore:         time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
+					MatchesStorageClasses: []string{"MULTI_REGIONAL", "REGIONAL", "STANDARD"},
+					NumNewerVersions:      3,
+				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					AgeInDays:             30,
+					Liveness:              Live,
+					CreatedBefore:         time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
+					MatchesStorageClasses: []string{"NEARLINE"},
+					NumNewerVersions:      10,
+				},
+			}},
+		},
 	}
 	if err := client.Bucket(newBucket).Create(ctx, projectID, attrs); err != nil {
-		t.Errorf("Bucket(%v).Create(%v, %v) failed: %v", newBucket, projectID, attrs, err)
+		t.Errorf("Bucket(%v).Create(%v, %+v) failed: %v", newBucket, projectID, attrs, err)
 	}
 	attrs, err = b.Attrs(ctx)
 	if err != nil {
