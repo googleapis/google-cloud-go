@@ -17,12 +17,14 @@ package pubsub
 import (
 	"errors"
 	"fmt"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
 
 	"cloud.google.com/go/iam"
 	"golang.org/x/net/context"
+	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -147,6 +149,11 @@ type ReceiveSettings struct {
 	// the value is negative, then there will be no limit on the number of bytes
 	// for unprocessed messages.
 	MaxOutstandingBytes int
+
+	// NumGoroutines is the number of goroutines Receive will spawn to pull
+	// messages concurrently. If NumGoroutines is less than 1, it will be treated
+	// as if it were DefaultReceiveSettings.NumGoroutines.
+	NumGoroutines int
 }
 
 // DefaultReceiveSettings holds the default values for ReceiveSettings.
@@ -154,6 +161,7 @@ var DefaultReceiveSettings = ReceiveSettings{
 	MaxExtension:           10 * time.Minute,
 	MaxOutstandingMessages: 1000,
 	MaxOutstandingBytes:    1e9, // 1G
+	NumGoroutines:          10 * runtime.GOMAXPROCS(0),
 }
 
 // Delete deletes the subscription.
@@ -286,6 +294,10 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		// If MaxExtension is negative, disable automatic extension.
 		maxExt = 0
 	}
+	numGoroutines := s.ReceiveSettings.NumGoroutines
+	if numGoroutines < 1 {
+		numGoroutines = DefaultReceiveSettings.NumGoroutines
+	}
 	// TODO(jba): add tests that verify that ReceiveSettings are correctly processed.
 	po := &pullOptions{
 		maxExtension: maxExt,
@@ -296,13 +308,16 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 
 	// Wait for all goroutines started by Receive to return, so instead of an
 	// obscure goroutine leak we have an obvious blocked call to Receive.
-	var wg sync.WaitGroup
-	defer wg.Wait()
-
-	return s.receive(ctx, &wg, po, fc, f)
+	group, gctx := errgroup.WithContext(ctx)
+	for i := 0; i < numGoroutines; i++ {
+		group.Go(func() error {
+			return s.receive(gctx, group, po, fc, f)
+		})
+	}
+	return group.Wait()
 }
 
-func (s *Subscription) receive(ctx context.Context, wg *sync.WaitGroup, po *pullOptions, fc *flowController, f func(context.Context, *Message)) error {
+func (s *Subscription) receive(ctx context.Context, group *errgroup.Group, po *pullOptions, fc *flowController, f func(context.Context, *Message)) error {
 	// Cancel a sub-context when we return, to kick the context-aware callbacks
 	// and the goroutine below.
 	ctx2, cancel := context.WithCancel(ctx)
@@ -313,12 +328,11 @@ func (s *Subscription) receive(ctx context.Context, wg *sync.WaitGroup, po *pull
 	// that context would immediately stop the iterator without waiting for unacked
 	// messages.
 	iter := newMessageIterator(context.Background(), s.s, s.name, po)
-	wg.Add(1)
-	go func() {
+	group.Go(func() error {
 		<-ctx2.Done()
 		iter.Stop()
-		wg.Done()
-	}()
+		return nil
+	})
 	defer cancel()
 	for {
 		msg, err := iter.Next()
@@ -334,15 +348,14 @@ func (s *Subscription) receive(ctx context.Context, wg *sync.WaitGroup, po *pull
 			msg.Nack()
 			return nil
 		}
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		group.Go(func() error {
 			// TODO(jba): call release when the message is available for GC.
 			// This considers the message to be released when
 			// f is finished, but f may ack early or not at all.
 			defer fc.release(len(msg.Data))
 			f(ctx2, msg)
-		}()
+			return nil
+		})
 	}
 }
 
