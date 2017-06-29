@@ -22,7 +22,6 @@ import (
 	"bytes"
 	"errors"
 	"log"
-	"runtime"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -149,13 +148,11 @@ func (s *SubServer) Start(ctx context.Context, req *pb.StartRequest) (*pb.StartR
 	}
 
 	// Load test API doesn't define any way to stop right now.
-	for i := 0; i < 30*runtime.GOMAXPROCS(0); i++ {
-		go func() {
-			sub := c.Subscription(req.GetPubsubOptions().Subscription)
-			err := sub.Receive(context.Background(), s.callback)
-			log.Fatal(err)
-		}()
-	}
+	go func() {
+		sub := c.Subscription(req.GetPubsubOptions().Subscription)
+		err := sub.Receive(context.Background(), s.callback)
+		log.Fatal(err)
+	}()
 
 	log.Println("started")
 	return &pb.StartResponse{}, nil
