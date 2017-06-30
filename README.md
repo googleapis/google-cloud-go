@@ -33,21 +33,22 @@ make backwards-incompatible changes.
 
 ## News
 
-_March 17, 2017_
+_June 17, 2017_
 
-Breaking Pubsub changes.
-* Publish is now asynchronous
-([announcement](https://groups.google.com/d/topic/google-api-go-announce/aaqRDIQ3rvU/discussion)).
-* Subscription.Pull replaced by Subscription.Receive, which takes a callback ([announcement](https://groups.google.com/d/topic/google-api-go-announce/8pt6oetAdKc/discussion)).
-* Message.Done replaced with Message.Ack and Message.Nack.
+*v0.10.0*
 
-_February 14, 2017_
+- pubsub: Subscription.ModifyPushConfig replaced with Subscription.Update.
 
-Release of a client library for Spanner. See
-the
-[blog post](https://cloudplatform.googleblog.com/2017/02/introducing-Cloud-Spanner-a-global-database-service-for-mission-critical-applications.html).
+- pubsub: Subscription.Receive now runs concurrently for higher throughput.
 
-Note that although the Spanner service is beta, the Go client library is alpha.
+- vision: cloud.google.com/go/vision is deprecated. Use
+cloud.google.com/go/vision/apiv1 instead.
+
+- translation: now stable.
+
+- trace: several changes to the surface. See the link below.
+
+[Code changes required from v0.9.0.](https://github.com/GoogleCloudPlatform/google-cloud-go/blob/master/MIGRATION.md)
 
 
 [Older news](https://github.com/GoogleCloudPlatform/google-cloud-go/blob/master/old-news.md)
