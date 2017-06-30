@@ -488,8 +488,8 @@ func (p *streamingPuller) send(req *pb.StreamingPullRequest) error {
 func (p *streamingPuller) closeSend() {
 	p.mu.Lock()
 	p.closed = true
-	p.mu.Unlock()
 	p.spc.CloseSend()
+	p.mu.Unlock()
 }
 
 // Split req into a prefix that is smaller than maxSize, and a remainder.
