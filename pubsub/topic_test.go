@@ -156,6 +156,7 @@ func TestPublishTimeout(t *testing.T) {
 	topic := c.Topic("t")
 	topic.PublishSettings.Timeout = 3 * time.Second
 	r := topic.Publish(ctx, &Message{})
+	defer topic.Stop()
 	select {
 	case <-r.Ready():
 		_, err = r.Get(ctx)

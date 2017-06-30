@@ -83,6 +83,7 @@ func TestEndToEnd(t *testing.T) {
 	}
 
 	ids, err := publish(ctx, topic, nMessages)
+	topic.Stop()
 	if err != nil {
 		t.Fatalf("publish: %v", err)
 	}
