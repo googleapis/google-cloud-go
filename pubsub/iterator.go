@@ -86,10 +86,8 @@ func newPollingMessageIterator(ctx context.Context, s service, subName string, p
 	keepAlivePeriod := po.ackDeadline - 5*time.Second
 	kaTicker := time.NewTicker(keepAlivePeriod) // Stopped in it.Stop
 
-	// TODO: make ackTicker more configurable.  Something less than
-	// kaTicker is a reasonable default (there's no point extending
-	// messages when they could be acked instead).
-	ackTicker := time.NewTicker(keepAlivePeriod / 2) // Stopped in it.Stop
+	// Ack promptly so users don't lose work if client crashes.
+	ackTicker := time.NewTicker(100 * time.Millisecond) // Stopped in it.Stop
 	ka := &keepAlive{
 		s:             s,
 		Ctx:           ctx,
@@ -116,7 +114,7 @@ func newPollingMessageIterator(ctx context.Context, s service, subName string, p
 		// redelivered.
 		_ = s.modifyAckDeadline(ctx, subName, 0, ackIDs.([]string))
 	})
-	nacker.DelayThreshold = keepAlivePeriod / 10 // nack promptly
+	nacker.DelayThreshold = 100 * time.Millisecond // nack promptly
 	nacker.BundleCountThreshold = 10
 
 	pull := newPuller(s, subName, ctx, po.maxPrefetch, ka.Add, ka.Remove)
@@ -240,11 +238,9 @@ func newStreamingMessageIterator(ctx context.Context, sp *streamingPuller, po *p
 	keepAlivePeriod := po.ackDeadline - 5*time.Second
 	kaTicker := time.NewTicker(keepAlivePeriod)
 
-	// TODO: make ackTicker more configurable.  Something less than
-	// kaTicker is a reasonable default (there's no point extending
-	// messages when they could be acked instead).
-	ackTicker := time.NewTicker(keepAlivePeriod / 2)
-	nackTicker := time.NewTicker(keepAlivePeriod / 10)
+	// Ack promptly so users don't lose work if client crashes.
+	ackTicker := time.NewTicker(100 * time.Millisecond)
+	nackTicker := time.NewTicker(100 * time.Millisecond)
 	it := &streamingMessageIterator{
 		ctx:        ctx,
 		sp:         sp,
