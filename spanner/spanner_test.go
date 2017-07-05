@@ -1271,7 +1271,7 @@ func TestReadErrors(t *testing.T) {
 	}
 	defer tearDown(ctx, t)
 
-	// 	Read over invalid table fails
+	// Read over invalid table fails
 	_, err := client.Single().ReadRow(ctx, "badTable", Key{1}, []string{"StringValue"})
 	if msg, ok := matchError(err, codes.NotFound, "badTable"); !ok {
 		t.Error(msg)
@@ -1282,7 +1282,7 @@ func TestReadErrors(t *testing.T) {
 		t.Error(msg)
 	}
 
-	// 	Invalid query fails
+	// Invalid query fails
 	iter := client.Single().Query(ctx, Statement{SQL: "SELECT Apples AND Oranges"})
 	defer iter.Stop()
 	_, err = iter.Next()
@@ -1297,7 +1297,7 @@ func TestReadErrors(t *testing.T) {
 	if msg, ok := matchError(err, codes.Canceled, ""); !ok {
 		t.Error(msg)
 	}
-	// 	Read should fail if deadline exceeded.
+	// Read should fail if deadline exceeded.
 	dctx, _ := context.WithTimeout(ctx, time.Nanosecond)
 	<-dctx.Done()
 	_, err = client.Single().ReadRow(dctx, "TestTable", Key{1}, []string{"StringValue"})
