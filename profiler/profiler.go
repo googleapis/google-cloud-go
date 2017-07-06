@@ -112,7 +112,7 @@ type Config struct {
 
 // Start starts a goroutine to collect and upload profiles.
 // See package level documentation for details.
-func Start(cfg *Config) error {
+func Start(cfg *Config, options ...option.ClientOption) error {
 	var err error
 	startOnce.Do(func() {
 		initializeConfig(cfg)
@@ -131,6 +131,7 @@ func Start(cfg *Config) error {
 			option.WithTokenSource(ts),
 			option.WithScopes(scope),
 		}
+		opts = append(opts, options...)
 
 		var conn *grpc.ClientConn
 		conn, err = transport.DialGRPC(ctx, opts...)
