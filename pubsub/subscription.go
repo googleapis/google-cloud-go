@@ -262,7 +262,7 @@ var errReceiveInProgress = errors.New("pubsub: Receive already in progress for t
 //
 // If the service returns a non-retryable error, Receive returns that error after
 // all of the outstanding calls to f have returned. If ctx is done, Receive
-// returns either nil after all of the outstanding calls to f have returned and
+// returns nil after all of the outstanding calls to f have returned and
 // all messages have been acknowledged or have expired.
 //
 // Receive calls f concurrently from multiple goroutines. It is encouraged to

@@ -121,7 +121,7 @@ func TestStreamingPullError(t *testing.T) {
 	}
 	client, server := newFake(t)
 	server.addStreamingPullMessages(testMessages[:1])
-	server.addStreamingPullError(grpc.Errorf(codes.Internal, ""))
+	server.addStreamingPullError(grpc.Errorf(codes.Unknown, ""))
 	sub := client.Subscription("s")
 	callbackDone := make(chan struct{})
 	ctx, _ := context.WithTimeout(context.Background(), time.Second)
@@ -137,7 +137,7 @@ func TestStreamingPullError(t *testing.T) {
 	default:
 		t.Fatal("Receive returned but callback was not done")
 	}
-	if want := codes.Internal; grpc.Code(err) != want {
+	if want := codes.Unknown; grpc.Code(err) != want {
 		t.Fatalf("got <%v>, want code %v", err, want)
 	}
 }
@@ -157,6 +157,7 @@ func TestStreamingPullCancel(t *testing.T) {
 		atomic.AddInt32(&n, 1)
 		defer atomic.AddInt32(&n, -1)
 		cancel()
+		m.Ack()
 	})
 	if got := atomic.LoadInt32(&n); got != 0 {
 		t.Errorf("Receive returned with %d callbacks still running", got)
