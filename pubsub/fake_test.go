@@ -84,7 +84,7 @@ func (s *fakeServer) StreamingPull(stream pb.Subscriber_StreamingPullServer) err
 	if err != nil {
 		return err
 	}
-	// Consume and ignore subsequent requests.
+	// Consume subsequent requests.
 	errc := make(chan error, 1)
 	s.wg.Add(1)
 	go func() {
