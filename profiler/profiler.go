@@ -93,17 +93,31 @@ const (
 type Config struct {
 	// Target groups related deployments together, defaults to "unknown".
 	Target string
+
 	// DebugLogging enables detailed debug logging from profiler.
 	DebugLogging bool
-	// ProjectID is the ID of the cloud project to use instead of
-	// the one read from the VM metadata server. Typically for testing.
+
+	// ProjectID is the Cloud Console project ID to use instead of
+	// the one read from the VM metadata server.
+	//
+	// Set this if you are running the agent in your local environment
+	// or anywhere else outside of Google Cloud Platform.
 	ProjectID string
+
 	// InstanceName is the name of the VM instance to use instead of
-	// the one read from the VM metadata server. Typically for testing.
+	// the one read from the VM metadata server.
+	//
+	// Set this if you are running the agent in your local environment
+	// or anywhere else outside of Google Cloud Platform.
 	InstanceName string
+
 	// ZoneName is the name of the zone to use instead of
-	// the one read from the VM metadata server. Typically for testing.
+	// the one read from the VM metadata server.
+	//
+	// Set this if you are running the agent in your local environment
+	// or anywhere else outside of Google Cloud Platform.
 	ZoneName string
+
 	// APIAddr is the HTTP endpoint to use to connect to the profiler
 	// agent API. Defaults to the production environment, overridable
 	// for testing.
