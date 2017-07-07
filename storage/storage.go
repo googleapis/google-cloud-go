@@ -360,7 +360,7 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 	}
 	if uattrs.ContentEncoding != nil {
 		attrs.ContentEncoding = optional.ToString(uattrs.ContentEncoding)
-		forceSendFields = append(forceSendFields, "ContentType")
+		forceSendFields = append(forceSendFields, "ContentEncoding")
 	}
 	if uattrs.ContentDisposition != nil {
 		attrs.ContentDisposition = optional.ToString(uattrs.ContentDisposition)
