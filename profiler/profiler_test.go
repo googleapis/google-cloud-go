@@ -17,11 +17,11 @@ package profiler
 import (
 	"errors"
 	"io"
-	"reflect"
 	"strings"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/profiler/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/golang/protobuf/proto"
@@ -87,7 +87,7 @@ func TestCreateProfile(t *testing.T) {
 
 	gotP := a.createProfile(ctx)
 
-	if !reflect.DeepEqual(gotP, p) {
+	if !testutil.Equal(gotP, p) {
 		t.Errorf("CreateProfile() got wrong profile, got %v, want %v", gotP, p)
 	}
 }
@@ -327,10 +327,10 @@ func TestInitializeResources(t *testing.T) {
 
 	md, _ := grpcmd.FromOutgoingContext(ctx)
 
-	if !reflect.DeepEqual(md[xGoogAPIMetadata], a.client.xGoogHeader) {
+	if !testutil.Equal(md[xGoogAPIMetadata], a.client.xGoogHeader) {
 		t.Errorf("md[%v] = %v, want equal xGoogHeader = %v", xGoogAPIMetadata, md[xGoogAPIMetadata], a.client.xGoogHeader)
 	}
-	if !reflect.DeepEqual(md[deploymentKeyMetadata], a.client.profilerHeader) {
+	if !testutil.Equal(md[deploymentKeyMetadata], a.client.profilerHeader) {
 		t.Errorf("md[%v] = %v, want equal profilerHeader = %v", deploymentKeyMetadata, md[deploymentKeyMetadata], a.client.profilerHeader)
 	}
 }
@@ -355,7 +355,7 @@ func TestInitializeDeployment(t *testing.T) {
 
 	want := createTestDeployment()
 
-	if !reflect.DeepEqual(d, want) {
+	if !testutil.Equal(d, want) {
 		t.Errorf("initializeDeployment() got wrong deployment, got: %v, want %v", d, want)
 	}
 }
