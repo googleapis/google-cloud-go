@@ -20,6 +20,7 @@ import (
 	"reflect"
 
 	"golang.org/x/net/context"
+	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/storage/v1"
 )
 
@@ -76,10 +77,10 @@ func (a *ACLHandle) Delete(ctx context.Context, entity ACLEntity) error {
 // Set sets the permission level for the given entity.
 func (a *ACLHandle) Set(ctx context.Context, entity ACLEntity, role ACLRole) error {
 	if a.object != "" {
-		return a.objectSet(ctx, entity, role)
+		return a.objectSet(ctx, entity, role, false)
 	}
 	if a.isDefault {
-		return a.bucketDefaultSet(ctx, entity, role)
+		return a.objectSet(ctx, entity, role, true)
 	}
 	return a.bucketSet(ctx, entity, role)
 }
@@ -108,24 +109,6 @@ func (a *ACLHandle) bucketDefaultList(ctx context.Context) ([]ACLRule, error) {
 		return nil, fmt.Errorf("storage: error listing default object ACL for bucket %q: %v", a.bucket, err)
 	}
 	return toACLRules(acls.Items), nil
-}
-
-func (a *ACLHandle) bucketDefaultSet(ctx context.Context, entity ACLEntity, role ACLRole) error {
-	acl := &raw.ObjectAccessControl{
-		Bucket: a.bucket,
-		Entity: string(entity),
-		Role:   string(role),
-	}
-	err := runWithRetry(ctx, func() error {
-		req := a.c.raw.DefaultObjectAccessControls.Update(a.bucket, string(entity), acl)
-		a.configureCall(req, ctx)
-		_, err := req.Do()
-		return err
-	})
-	if err != nil {
-		return fmt.Errorf("storage: error updating default ACL entry for bucket %q, entity %q: %v", a.bucket, entity, err)
-	}
-	return nil
 }
 
 func (a *ACLHandle) bucketDefaultDelete(ctx context.Context, entity ACLEntity) error {
@@ -205,20 +188,34 @@ func (a *ACLHandle) objectList(ctx context.Context) ([]ACLRule, error) {
 	return toACLRules(acls.Items), nil
 }
 
-func (a *ACLHandle) objectSet(ctx context.Context, entity ACLEntity, role ACLRole) error {
+func (a *ACLHandle) objectSet(ctx context.Context, entity ACLEntity, role ACLRole, isBucketDefault bool) error {
+	type setRequest interface {
+		Do(opts ...googleapi.CallOption) (*raw.ObjectAccessControl, error)
+		Header() http.Header
+	}
+
 	acl := &raw.ObjectAccessControl{
 		Bucket: a.bucket,
 		Entity: string(entity),
 		Role:   string(role),
 	}
+	var req setRequest
+	if isBucketDefault {
+		req = a.c.raw.DefaultObjectAccessControls.Update(a.bucket, string(entity), acl)
+	} else {
+		req = a.c.raw.ObjectAccessControls.Update(a.bucket, a.object, string(entity), acl)
+	}
+	a.configureCall(req, ctx)
 	err := runWithRetry(ctx, func() error {
-		req := a.c.raw.ObjectAccessControls.Update(a.bucket, a.object, string(entity), acl)
-		a.configureCall(req, ctx)
 		_, err := req.Do()
 		return err
 	})
 	if err != nil {
-		return fmt.Errorf("storage: error updating object ACL entry for bucket %q, file %q, entity %q: %v", a.bucket, a.object, entity, err)
+		if isBucketDefault {
+			return fmt.Errorf("storage: error updating default ACL entry for bucket %q, entity %q: %v", a.bucket, entity, err)
+		} else {
+			return fmt.Errorf("storage: error updating object ACL entry for bucket %q, object %q, entity %q: %v", a.bucket, a.object, entity, err)
+		}
 	}
 	return nil
 }
