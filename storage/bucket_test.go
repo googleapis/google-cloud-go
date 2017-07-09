@@ -20,7 +20,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
+
 	"cloud.google.com/go/internal/pretty"
+	"cloud.google.com/go/internal/testutil"
 	raw "google.golang.org/api/storage/v1"
 )
 
@@ -136,6 +139,19 @@ func TestCallBuilders(t *testing.T) {
 	b := c.Bucket("name")
 	bm := b.If(BucketConditions{MetagenerationMatch: metagen}).UserProject("p")
 
+	equal := func(x, y interface{}) bool {
+		return testutil.Equal(x, y,
+			cmp.AllowUnexported(
+				raw.BucketsGetCall{},
+				raw.BucketsDeleteCall{},
+				raw.BucketsPatchCall{},
+			),
+			cmp.FilterPath(func(p cmp.Path) bool {
+				return p[len(p)-1].Type() == reflect.TypeOf(&raw.Service{})
+			}, cmp.Ignore()),
+		)
+	}
+
 	for i, test := range []struct {
 		callFunc func(*BucketHandle) (interface{}, error)
 		want     interface {
@@ -168,16 +184,15 @@ func TestCallBuilders(t *testing.T) {
 			t.Fatal(err)
 		}
 		setClientHeader(test.want.Header())
-		if !reflect.DeepEqual(got, test.want) {
+		if !equal(got, test.want) {
 			t.Errorf("#%d: got %#v, want %#v", i, got, test.want)
 		}
-
 		got, err = test.callFunc(bm)
 		if err != nil {
 			t.Fatal(err)
 		}
 		test.metagenFunc(test.want)
-		if !reflect.DeepEqual(got, test.want) {
+		if !equal(got, test.want) {
 			t.Errorf("#%d:\ngot  %#v\nwant %#v", i, got, test.want)
 		}
 	}

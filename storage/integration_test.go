@@ -29,7 +29,6 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
-	"reflect"
 	"sort"
 	"strconv"
 	"strings"
@@ -171,7 +170,7 @@ func TestBucketMethods(t *testing.T) {
 		if !attrs.VersioningEnabled {
 			t.Error("got versioning disabled, wanted it enabled")
 		}
-		if got, want := attrs.Labels, labels; !reflect.DeepEqual(got, want) {
+		if got, want := attrs.Labels, labels; !testutil.Equal(got, want) {
 			t.Errorf("labels: got %v, want %v", got, want)
 		}
 	}
@@ -224,7 +223,7 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		"l1":    "v1",
 		"empty": "",
 	}
-	if !reflect.DeepEqual(attrs.Labels, wantLabels) {
+	if !testutil.Equal(attrs.Labels, wantLabels) {
 		t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
 	}
 
@@ -245,7 +244,7 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		"l1":  "v2",
 		"new": "new",
 	}
-	if !reflect.DeepEqual(attrs.Labels, wantLabels) {
+	if !testutil.Equal(attrs.Labels, wantLabels) {
 		t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
 	}
 }
@@ -543,7 +542,7 @@ func TestObjects(t *testing.T) {
 		if got, want := updated.ContentLanguage, "en"; got != want {
 			t.Errorf("updated.ContentLanguage == %q; want %q", updated.ContentLanguage, want)
 		}
-		if got, want := updated.Metadata, metadata; !reflect.DeepEqual(got, want) {
+		if got, want := updated.Metadata, metadata; !testutil.Equal(got, want) {
 			t.Errorf("updated.Metadata == %+v; want %+v", updated.Metadata, want)
 		}
 		if got, want := updated.Created, created; got != want {
@@ -1299,7 +1298,7 @@ func TestIntegration_BucketIAM(t *testing.T) {
 	}
 	sort.Strings(perms)
 	sort.Strings(got)
-	if !reflect.DeepEqual(got, perms) {
+	if !testutil.Equal(got, perms) {
 		t.Errorf("got %v, want %v", got, perms)
 	}
 }
