@@ -15,13 +15,13 @@
 package bigquery
 
 import (
-	"reflect"
 	"strings"
 	"testing"
 
 	"golang.org/x/net/context"
 
 	"cloud.google.com/go/internal/pretty"
+	"cloud.google.com/go/internal/testutil"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -221,7 +221,7 @@ func TestLoad(t *testing.T) {
 			t.Errorf("%d: err calling Loader.Run: %v", i, err)
 			continue
 		}
-		if !reflect.DeepEqual(s.Job, tc.want) {
+		if !testutil.Equal(s.Job, tc.want) {
 			t.Errorf("loading %d: got:\n%v\nwant:\n%v",
 				i, pretty.Value(s.Job), pretty.Value(tc.want))
 		}

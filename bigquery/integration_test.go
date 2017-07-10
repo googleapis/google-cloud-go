@@ -21,7 +21,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"reflect"
 	"sort"
 	"strings"
 	"testing"
@@ -172,7 +171,7 @@ func TestIntegration_TableMetadata(t *testing.T) {
 
 		got := md.TimePartitioning
 		want := &TimePartitioning{c.expectedExpiration}
-		if !reflect.DeepEqual(got, want) {
+		if !testutil.Equal(got, want) {
 			t.Errorf("metadata.TimePartitioning: got %v, want %v", got, want)
 		}
 	}
@@ -347,7 +346,7 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 			t.Fatal(err)
 		}
 		want := []Value(vl)
-		if !reflect.DeepEqual(got, want) {
+		if !testutil.Equal(got, want) {
 			t.Errorf("%d: got %v, want %v", i, got, want)
 		}
 	}
@@ -509,7 +508,7 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 	for i, g := range got {
 		if i >= len(want) {
 			t.Errorf("%d: got %v, past end of want", i, pretty.Value(g))
-		} else if w := want[i]; !reflect.DeepEqual(g, w) {
+		} else if w := want[i]; !testutil.Equal(g, w) {
 			t.Errorf("%d: got %v, want %v", i, pretty.Value(g), pretty.Value(w))
 		}
 	}
@@ -549,7 +548,7 @@ func TestIntegration_Update(t *testing.T) {
 	if got.Name != wantName {
 		t.Errorf("Name: got %q, want %q", got.Name, wantName)
 	}
-	if !reflect.DeepEqual(got.Schema, schema) {
+	if !testutil.Equal(got.Schema, schema) {
 		t.Errorf("Schema: got %v, want %v", pretty.Value(got.Schema), pretty.Value(schema))
 	}
 
@@ -573,7 +572,7 @@ func TestIntegration_Update(t *testing.T) {
 
 	// Wherever you add the column, it appears at the end.
 	schema3 := Schema{schema2[0], schema2[2], schema2[1]}
-	if !reflect.DeepEqual(got.Schema, schema3) {
+	if !testutil.Equal(got.Schema, schema3) {
 		t.Errorf("add field:\ngot  %v\nwant %v",
 			pretty.Value(got.Schema), pretty.Value(schema3))
 	}
@@ -583,7 +582,7 @@ func TestIntegration_Update(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(got.Schema, schema3) {
+	if !testutil.Equal(got.Schema, schema3) {
 		t.Errorf("empty schema:\ngot  %v\nwant %v",
 			pretty.Value(got.Schema), pretty.Value(schema3))
 	}
@@ -943,7 +942,7 @@ func compareRead(it *RowIterator, want [][]Value) (msg string, ok bool) {
 	for i, r := range got {
 		gotRow := []Value(r)
 		wantRow := want[i]
-		if !reflect.DeepEqual(gotRow, wantRow) {
+		if !testutil.Equal(gotRow, wantRow) {
 			return fmt.Sprintf("#%d: got %v, want %v", i, gotRow, wantRow), false
 		}
 	}

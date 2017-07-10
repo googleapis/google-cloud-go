@@ -15,8 +15,9 @@
 package bigquery
 
 import (
-	"reflect"
 	"testing"
+
+	"cloud.google.com/go/internal/testutil"
 
 	"golang.org/x/net/context"
 
@@ -95,7 +96,7 @@ func TestExtract(t *testing.T) {
 			t.Errorf("err calling extract: %v", err)
 			continue
 		}
-		if !reflect.DeepEqual(s.Job, tc.want) {
+		if !testutil.Equal(s.Job, tc.want) {
 			t.Errorf("extracting: got:\n%v\nwant:\n%v", s.Job, tc.want)
 		}
 	}
