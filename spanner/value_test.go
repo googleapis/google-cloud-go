@@ -23,7 +23,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/civil"
-	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
@@ -475,13 +474,8 @@ func TestGenericColumnValue(t *testing.T) {
 		{GenericColumnValue{listType(intType()), listProto(intProto(91), nullProto(), intProto(87))}, []NullInt64{{91, true}, {}, {87, true}}, false},
 		{GenericColumnValue{intType(), intProto(42)}, GenericColumnValue{intType(), intProto(42)}, false}, // trippy! :-)
 	} {
-		// We take a copy and mutate because we're paranoid about immutability.
-		inCopy := GenericColumnValue{
-			Type:  proto.Clone(test.in.Type).(*sppb.Type),
-			Value: proto.Clone(test.in.Value).(*proto3.Value),
-		}
 		gotp := reflect.New(reflect.TypeOf(test.want))
-		if err := inCopy.Decode(gotp.Interface()); err != nil {
+		if err := test.in.Decode(gotp.Interface()); err != nil {
 			if !test.fail {
 				t.Errorf("cannot decode %v to %v: %v", test.in, test.want, err)
 			}
@@ -489,13 +483,6 @@ func TestGenericColumnValue(t *testing.T) {
 		}
 		if test.fail {
 			t.Errorf("decoding %v to %v succeeds unexpectedly", test.in, test.want)
-		}
-		// mutations to inCopy should be invisible to gotp.
-		inCopy.Type.Code = sppb.TypeCode_TIMESTAMP
-		inCopy.Value.Kind = &proto3.Value_NumberValue{NumberValue: 999}
-		got := reflect.Indirect(gotp).Interface()
-		if !reflect.DeepEqual(got, test.want) {
-			t.Errorf("unexpected decode result - got %v, want %v", got, test.want)
 		}
 
 		// Test we can go backwards as well.
@@ -506,15 +493,6 @@ func TestGenericColumnValue(t *testing.T) {
 		}
 		if !reflect.DeepEqual(*v, test.in) {
 			t.Errorf("unexpected encode result - got %v, want %v", v, test.in)
-		}
-		// If want is a GenericColumnValue, mutate its underlying value to validate
-		// we have taken a deep copy.
-		if gcv, ok := test.want.(GenericColumnValue); ok {
-			gcv.Type.Code = sppb.TypeCode_TIMESTAMP
-			gcv.Value.Kind = &proto3.Value_NumberValue{NumberValue: 999}
-			if !reflect.DeepEqual(*v, test.in) {
-				t.Errorf("expected deep copy - got %v, want %v", v, test.in)
-			}
 		}
 	}
 }
@@ -614,4 +592,14 @@ func encodeArrayReflect(a interface{}) (*proto3.Value, error) {
 		}
 	}
 	return listProto(vs...), nil
+}
+
+func BenchmarkDecodeGeneric(b *testing.B) {
+	v := stringProto("test")
+	t := stringType()
+	var g GenericColumnValue
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		decodeValue(v, t, &g)
+	}
 }
