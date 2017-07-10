@@ -128,6 +128,9 @@ type NullRow struct {
 // column.  See google.spanner.v1.ResultSet proto for details.  This can be
 // useful for proxying query results when the result types are not known in
 // advance.
+//
+// If you populate a GenericColumnValue from a row using Row.Column or related
+// methods, do not modify the contents of Type and Value.
 type GenericColumnValue struct {
 	Type  *sppb.Type
 	Value *proto3.Value
@@ -610,12 +613,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 		}
 		*p = y
 	case *GenericColumnValue:
-		*p = GenericColumnValue{
-			// Deep clone to ensure subsequent changes to t or v
-			// don't affect our decoded value.
-			Type:  proto.Clone(t).(*sppb.Type),
-			Value: proto.Clone(v).(*proto3.Value),
-		}
+		*p = GenericColumnValue{Type: t, Value: v}
 	default:
 		// Check if the proto encoding is for an array of structs.
 		if !(code == sppb.TypeCode_ARRAY && acode == sppb.TypeCode_STRUCT) {
