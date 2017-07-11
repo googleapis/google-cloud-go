@@ -53,7 +53,7 @@ type pollingMessageIterator struct {
 	closed chan struct{}
 }
 
-var useStreamingPull = false
+var useStreamingPull = true
 
 // newMessageIterator starts a new messageIterator.  Stop must be called on the messageIterator
 // when it is no longer needed.
@@ -74,7 +74,6 @@ func newMessageIterator(ctx context.Context, s service, subName string, po *pull
 		}
 	}
 	// TODO(jba): handle other non-nil error?
-	log.Println("using streaming pull")
 	return &messageIterator{
 		impl: newStreamingMessageIterator(ctx, sp, po),
 	}
