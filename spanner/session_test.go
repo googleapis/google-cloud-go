@@ -844,10 +844,10 @@ func TestMaintainer(t *testing.T) {
 		t.SkipNow()
 	}
 	var (
-		kMinOpened uint64 = 5
-		kMaxIdle   uint64 = 4
+		minOpened uint64 = 5
+		maxIdle   uint64 = 4
 	)
-	sp, _, cancel := setup(t, SessionPoolConfig{MinOpened: kMinOpened, MaxIdle: kMaxIdle})
+	sp, _, cancel := setup(t, SessionPoolConfig{MinOpened: minOpened, MaxIdle: maxIdle})
 	sampleInterval := sp.SessionPoolConfig.healthCheckSampleInterval
 	hcInterval := sp.SessionPoolConfig.HealthCheckInterval
 	defer cancel()
@@ -889,8 +889,8 @@ func TestMaintainer(t *testing.T) {
 	}
 	<-time.After(sampleInterval*10 + hcInterval)
 	sp.mu.Lock()
-	if sp.numOpened != kMinOpened {
-		t.Errorf("Scale down. Expect %d open, got %d", kMinOpened, sp.numOpened)
+	if sp.numOpened != minOpened {
+		t.Errorf("Scale down. Expect %d open, got %d", minOpened, sp.numOpened)
 	}
 	sp.mu.Unlock()
 }
