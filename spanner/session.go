@@ -985,9 +985,9 @@ func (hc *healthChecker) maintainer() {
 	<-hc.ready
 
 	var (
-		kWindowSize uint64 = 10
-		iteration   uint64 = 0
-		timeout     <-chan time.Time
+		windowSize uint64 = 10
+		iteration  uint64
+		timeout    <-chan time.Time
 	)
 
 	// replenishPool is run if numOpened is less than sessionsToKeep, timeouts on sampleInterval.
@@ -1080,7 +1080,7 @@ func (hc *healthChecker) maintainer() {
 		hc.pool.mu.Unlock()
 
 		hc.mu.Lock()
-		if iteration%kWindowSize == 0 || maxSessionsInUse < currSessionsInUse {
+		if iteration%windowSize == 0 || maxSessionsInUse < currSessionsInUse {
 			maxSessionsInUse = currSessionsInUse
 		}
 		sessionsToKeep := maxUint64(hc.pool.MinOpened,

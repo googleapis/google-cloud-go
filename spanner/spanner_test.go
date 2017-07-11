@@ -17,6 +17,7 @@ limitations under the License.
 package spanner
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"reflect"
@@ -120,7 +121,7 @@ func prepare(ctx context.Context, t *testing.T, statements []string) error {
 		return err
 	}
 	// Construct test DB name.
-	dbName = fmt.Sprintf("gotest_%v", time.Now().UnixNano())
+	dbName = fmt.Sprintf("gotest_%v_%s", time.Now().UnixNano(), t.Name())
 	db = fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectID, testInstanceID, dbName)
 	// Create database and tables.
 	op, err := admin.CreateDatabase(ctx, &adminpb.CreateDatabaseRequest{
@@ -166,6 +167,7 @@ func tearDown(ctx context.Context, t *testing.T) {
 
 // Test SingleUse transaction.
 func TestSingleUse(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	// Set up testing environment.
@@ -246,7 +248,7 @@ func TestSingleUse(t *testing.T) {
 			ReadTimestamp(writes[2].ts),
 			func(ts time.Time) error {
 				if ts != writes[2].ts {
-					return fmt.Errorf("read got timestamp %v, expect %v", ts, writes[2].ts)
+					return fmt.Errorf("read got timestamp %v, want %v", ts, writes[2].ts)
 				}
 				return nil
 			},
@@ -368,6 +370,7 @@ func TestSingleUse(t *testing.T) {
 // Test ReadOnlyTransaction. The testsuite is mostly like SingleUse, except it
 // also tests for a single timestamp across multiple reads.
 func TestReadOnlyTransaction(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	// Set up testing environment.
@@ -554,8 +557,43 @@ func TestReadOnlyTransaction(t *testing.T) {
 	}
 }
 
+// Test ReadOnlyTransaction with different timestamp bound when there's an update at the same time.
+func TestUpdateDuringRead(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	if err := prepare(ctx, t, singerDBStatements); err != nil {
+		tearDown(ctx, t)
+		t.Fatalf("cannot set up testing environment: %v", err)
+	}
+	defer tearDown(ctx, t)
+
+	for i, tb := range []TimestampBound{
+		StrongRead(),
+		ReadTimestamp(time.Now().Add(-time.Minute * 30)), // version GC is 1 hour
+		ExactStaleness(time.Minute * 30),
+	} {
+		ro := client.ReadOnlyTransaction().WithTimestampBound(tb)
+		_, err := ro.ReadRow(ctx, "Singers", Key{i}, []string{"SingerId"})
+		if ErrCode(err) != codes.NotFound {
+			t.Errorf("%d: ReadOnlyTransaction.ReadRow before write returns error: %v, want NotFound", i, err)
+		}
+
+		m := InsertOrUpdate("Singers", []string{"SingerId"}, []interface{}{i})
+		if _, err := client.Apply(ctx, []*Mutation{m}, ApplyAtLeastOnce()); err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = ro.ReadRow(ctx, "Singers", Key{i}, []string{"SingerId"})
+		if ErrCode(err) != codes.NotFound {
+			t.Errorf("%d: ReadOnlyTransaction.ReadRow after write returns error: %v, want NotFound", i, err)
+		}
+	}
+}
+
 // Test ReadWriteTransaction.
 func TestReadWriteTransaction(t *testing.T) {
+	t.Parallel()
 	// Give a longer deadline because of transaction backoffs.
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
@@ -656,6 +694,7 @@ const (
 var testTableColumns = []string{"Key", "StringValue"}
 
 func TestReads(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	// Set up testing environment.
@@ -816,6 +855,7 @@ func compareRows(iter *RowIterator, wantNums []int) (string, bool) {
 }
 
 func TestEarlyTimestamp(t *testing.T) {
+	t.Parallel()
 	// Test that we can get the timestamp from a read-only transaction as
 	// soon as we have read at least one row.
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
@@ -867,6 +907,7 @@ func TestEarlyTimestamp(t *testing.T) {
 }
 
 func TestNestedTransaction(t *testing.T) {
+	t.Parallel()
 	// You cannot use a transaction from inside a read-write transaction.
 	ctx := context.Background()
 	if err := prepare(ctx, t, singerDBStatements); err != nil {
@@ -896,6 +937,7 @@ func TestNestedTransaction(t *testing.T) {
 
 // Test client recovery on database recreation.
 func TestDbRemovalRecovery(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	if err := prepare(ctx, t, singerDBStatements); err != nil {
@@ -944,6 +986,7 @@ func TestDbRemovalRecovery(t *testing.T) {
 
 // Test encoding/decoding non-struct Cloud Spanner types.
 func TestBasicTypes(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	if err := prepare(ctx, t, singerDBStatements); err != nil {
@@ -1087,6 +1130,7 @@ func TestBasicTypes(t *testing.T) {
 
 // Test decoding Cloud Spanner STRUCT type.
 func TestStructTypes(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	if err := prepare(ctx, t, singerDBStatements); err != nil {
@@ -1176,6 +1220,7 @@ func TestStructTypes(t *testing.T) {
 
 // Test queries of the form "SELECT expr".
 func TestQueryExpressions(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	if err := prepare(ctx, t, nil); err != nil {
 		tearDown(ctx, t)
@@ -1240,6 +1285,7 @@ func isNaN(x interface{}) bool {
 }
 
 func TestInvalidDatabase(t *testing.T) {
+	t.Parallel()
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -1264,6 +1310,7 @@ func TestInvalidDatabase(t *testing.T) {
 }
 
 func TestReadErrors(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	if err := prepare(ctx, t, readDBStatements); err != nil {
 		tearDown(ctx, t)
@@ -1363,5 +1410,137 @@ func readAllTestTable(iter *RowIterator) ([]testTableRow, error) {
 			return nil, err
 		}
 		vals = append(vals, ttr)
+	}
+}
+
+// Test TransactionRunner. Test that transactions are aborted and retried as expected.
+func TestTransactionRunner(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	if err := prepare(ctx, t, singerDBStatements); err != nil {
+		tearDown(ctx, t)
+		t.Fatalf("cannot set up testing environment: %v", err)
+	}
+	defer tearDown(ctx, t)
+
+	// Test 1: User error should abort the transaction.
+	_, _ = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		tx.BufferWrite([]*Mutation{
+			Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)})})
+		return errors.New("user error")
+	})
+	// Empty read.
+	rows, err := readAllTestTable(client.Single().Read(ctx, "Accounts", Key{1}, []string{"AccountId", "Nickname", "Balance"}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := len(rows), 0; got != want {
+		t.Errorf("Empty read, got %d, want %d.", got, want)
+	}
+
+	// Test 2: Expect abort and retry.
+	// We run two ReadWriteTransactions concurrently and make txn1 abort txn2 by committing writes to the column txn2 have read,
+	// and expect the following read to abort and txn2 retries.
+
+	// Set up two accounts
+	accounts := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Balance"}, []interface{}{int64(1), int64(0)}),
+		Insert("Accounts", []string{"AccountId", "Balance"}, []interface{}{int64(2), int64(1)}),
+	}
+	if _, err := client.Apply(ctx, accounts, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
+
+	var (
+		cTxn1Start  = make(chan struct{})
+		cTxn1Commit = make(chan struct{})
+		cTxn2Start  = make(chan struct{})
+		wg          sync.WaitGroup
+	)
+
+	// read balance, check error if we don't expect abort.
+	readBalance := func(tx interface {
+		ReadRow(ctx context.Context, table string, key Key, columns []string) (*Row, error)
+	}, key int64, expectAbort bool) (int64, error) {
+		var b int64
+		r, e := tx.ReadRow(ctx, "Accounts", Key{int64(key)}, []string{"Balance"})
+		if e != nil {
+			if expectAbort && !isAbortErr(e) {
+				t.Errorf("ReadRow got %v, want Abort error.", e)
+			}
+			return b, e
+		}
+		if ce := r.Column(0, &b); ce != nil {
+			return b, ce
+		}
+		return b, nil
+	}
+
+	wg.Add(2)
+	// Txn 1
+	go func() {
+		defer wg.Done()
+		var once sync.Once
+		_, e := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+			b, e := readBalance(tx, 1, false)
+			if e != nil {
+				return e
+			}
+			// txn 1 can abort, in that case we skip closing the channel on retry.
+			once.Do(func() { close(cTxn1Start) })
+			tx.BufferWrite([]*Mutation{
+				Update("Accounts", []string{"AccountId", "Balance"}, []interface{}{int64(1), int64(b + 1)})})
+			// Wait for second transaction.
+			<-cTxn2Start
+			return nil
+		})
+		close(cTxn1Commit)
+		if e != nil {
+			t.Errorf("Transaction 1 commit, got %v, want nil.", e)
+		}
+	}()
+	// Txn 2
+	go func() {
+		// Wait until txn 1 starts.
+		<-cTxn1Start
+		defer wg.Done()
+		var (
+			once sync.Once
+			b1   int64
+			b2   int64
+			e    error
+		)
+		_, e = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+			if b1, e = readBalance(tx, 1, false); e != nil {
+				return e
+			}
+			// Skip closing channel on retry.
+			once.Do(func() { close(cTxn2Start) })
+			// Wait until txn 1 successfully commits.
+			<-cTxn1Commit
+			// Txn1 has committed and written a balance to the account.
+			// Now this transaction (txn2) reads and re-writes the balance.
+			// The first time through, it will abort because it overlaps with txn1.
+			// Then it will retry after txn1 commits, and succeed.
+			if b2, e = readBalance(tx, 2, true); e != nil {
+				return e
+			}
+			tx.BufferWrite([]*Mutation{
+				Update("Accounts", []string{"AccountId", "Balance"}, []interface{}{int64(2), int64(b1 + b2)})})
+			return nil
+		})
+		if e != nil {
+			t.Errorf("Transaction 2 commit, got %v, want nil.", e)
+		}
+	}()
+	wg.Wait()
+	// Check that both transactions' effects are visible.
+	for i := int64(1); i <= int64(2); i++ {
+		if b, e := readBalance(client.Single(), i, false); e != nil {
+			t.Fatalf("ReadBalance for key %d error %v.", i, e)
+		} else if b != i {
+			t.Errorf("Balance for key %d, got %d, want %d.", i, b, i)
+		}
 	}
 }
