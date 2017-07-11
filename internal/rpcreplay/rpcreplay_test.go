@@ -17,11 +17,11 @@ package rpcreplay
 import (
 	"bytes"
 	"io"
-	"reflect"
 	"testing"
 
 	ipb "cloud.google.com/go/internal/rpcreplay/proto/intstore"
 	rpb "cloud.google.com/go/internal/rpcreplay/proto/rpcreplay"
+	"cloud.google.com/go/internal/testutil"
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -54,7 +54,7 @@ func TestHeaderIO(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(got, want) {
+	if !testutil.Equal(got, want) {
 		t.Errorf("got %v, want %v", got, want)
 	}
 
@@ -112,7 +112,7 @@ func TestRecord(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(gotIstate, initialState) {
+	if !testutil.Equal(gotIstate, initialState) {
 		t.Fatalf("got %v, want %v", gotIstate, initialState)
 	}
 	item := &ipb.Item{Name: "a", Value: 1}
@@ -248,7 +248,7 @@ func TestReplay(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got, want := rep.Initial(), initialState; !reflect.DeepEqual(got, want) {
+	if got, want := rep.Initial(), initialState; !testutil.Equal(got, want) {
 		t.Fatalf("got %v, want %v", got, want)
 	}
 	// Replay the test.
