@@ -123,6 +123,9 @@ func TestStreamingPullError(t *testing.T) {
 	server.addStreamingPullMessages(testMessages[:1])
 	server.addStreamingPullError(grpc.Errorf(codes.Unknown, ""))
 	sub := client.Subscription("s")
+	// Use only one goroutine, since the fake server is configured to
+	// return only one error.
+	sub.ReceiveSettings.NumGoroutines = 1
 	callbackDone := make(chan struct{})
 	ctx, _ := context.WithTimeout(context.Background(), time.Second)
 	err := sub.Receive(ctx, func(ctx context.Context, m *Message) {
