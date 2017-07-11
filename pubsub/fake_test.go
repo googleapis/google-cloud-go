@@ -78,23 +78,10 @@ func (s *fakeServer) wait() {
 func (s *fakeServer) StreamingPull(stream pb.Subscriber_StreamingPullServer) error {
 	s.wg.Add(1)
 	defer s.wg.Done()
-
-	// Receive initial request.
-	_, err := stream.Recv()
-	if err == io.EOF {
-		return nil
-	}
-	if err != nil {
-		return err
-	}
-	// Consume subsequent requests.
 	errc := make(chan error, 1)
-	// Wait until the receive goroutine is done before exiting.
-	// We can't use s.wg, because it could race with fakeServer.wait.
-	donec := make(chan struct{})
-	defer func() { <-donec }()
+	s.wg.Add(1)
 	go func() {
-		defer close(donec)
+		defer s.wg.Done()
 		for {
 			req, err := stream.Recv()
 			if err != nil {
