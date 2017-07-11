@@ -118,6 +118,16 @@ func NewRow(columnNames []string, columnValues []interface{}) (*Row, error) {
 	return &r, nil
 }
 
+// GetFields returns returns a slice of StructType_Fields for a row
+func (r *Row) GetFields() []*sppb.StructType_Field {
+	return r.fields
+}
+
+// GetVals returns raw protobuf values for a row
+func (r *Row) GetVals() []*proto3.Value {
+	return r.vals
+}
+
 // Size is the number of columns in the row.
 func (r *Row) Size() int {
 	return len(r.fields)
