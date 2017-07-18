@@ -31,7 +31,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
@@ -100,7 +100,7 @@ func perfClient(pubDelay time.Duration, nConns int, f interface {
 	if err != nil {
 		f.Fatal(err)
 	}
-	conn, err := transport.DialGRPCInsecure(ctx,
+	conn, err := gtransport.DialInsecure(ctx,
 		option.WithEndpoint(srv.Addr),
 		option.WithGRPCConnectionPool(nConns))
 	if err != nil {
