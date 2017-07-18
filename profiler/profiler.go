@@ -50,7 +50,7 @@ import (
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/devtools/cloudprofiler/v2"
 	edpb "google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
@@ -154,7 +154,7 @@ func start(cfg *Config, options ...option.ClientOption) error {
 	}
 	opts = append(opts, options...)
 
-	conn, err := transport.DialGRPC(ctx, opts...)
+	conn, err := gtransport.Dial(ctx, opts...)
 	if err != nil {
 		debugLog("failed to dial GRPC: %v", err)
 		return err

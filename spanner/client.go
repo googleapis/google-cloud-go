@@ -25,7 +25,7 @@ import (
 	"cloud.google.com/go/internal/version"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -139,7 +139,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.MaxBurst = 10
 	}
 	for i := 0; i < config.NumChannels; i++ {
-		conn, err := transport.DialGRPC(ctx, allOpts...)
+		conn, err := gtransport.Dial(ctx, allOpts...)
 		if err != nil {
 			return nil, errDial(i, err)
 		}

@@ -36,7 +36,7 @@ import (
 	"unicode/utf8"
 
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	htransport "google.golang.org/api/transport/http"
 
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/version"
@@ -89,7 +89,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		option.WithUserAgent(userAgent),
 	}
 	opts = append(o, opts...)
-	hc, ep, err := transport.NewHTTPClient(ctx, opts...)
+	hc, ep, err := htransport.NewClient(ctx, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}

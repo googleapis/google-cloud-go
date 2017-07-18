@@ -26,7 +26,7 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -52,7 +52,7 @@ func NewAdminClient(ctx context.Context, project, instance string, opts ...optio
 		return nil, err
 	}
 	o = append(o, opts...)
-	conn, err := transport.DialGRPC(ctx, o...)
+	conn, err := gtransport.Dial(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
@@ -185,13 +185,13 @@ func (ac *AdminClient) DeleteColumnFamily(ctx context.Context, table, family str
 // TableInfo represents information about a table.
 type TableInfo struct {
 	// DEPRECATED - This field is deprecated. Please use FamilyInfos instead.
-	Families []string
+	Families    []string
 	FamilyInfos []FamilyInfo
 }
 
 // FamilyInfo represents information about a column family.
 type FamilyInfo struct {
-	Name string
+	Name     string
 	GCPolicy string
 }
 
@@ -265,7 +265,7 @@ func NewInstanceAdminClient(ctx context.Context, project string, opts ...option.
 		return nil, err
 	}
 	o = append(o, opts...)
-	conn, err := transport.DialGRPC(ctx, o...)
+	conn, err := gtransport.Dial(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
