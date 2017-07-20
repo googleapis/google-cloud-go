@@ -70,7 +70,7 @@ Google API                       | Status       | Package
 [Spanner][cloud-spanner]         | alpha        | [`cloud.google.com/go/spanner`][cloud-spanner-ref]
 [Translation][cloud-translation] | stable       | [`cloud.google.com/go/translate`][cloud-translation-ref]
 [Trace][cloud-trace]             | alpha        | [`cloud.google.com/go/trace`][cloud-trace-ref]
-[Video Intelligence][cloud-video]| alpha        | [`cloud.google.com/go/videointelligence/apiv1beta1`][cloud-video-ref]
+[Video Intelligence][cloud-video]| beta         | [`cloud.google.com/go/videointelligence/apiv1beta1`][cloud-video-ref]
 [ErrorReporting][cloud-errors]   | alpha        | [`cloud.google.com/go/errors`][cloud-errors-ref]
 
 
