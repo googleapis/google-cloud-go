@@ -282,13 +282,21 @@ func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
 		return
 	}
 
+	// Starting Go 1.9 the profiles are symbolized by runtime/pprof.
+	// TODO(jianqiaoli): Remove the symbolization code when we decide to
+	// stop supporting Go 1.8.
+	if !shouldAssumeSymbolized {
+		if err := parseAndSymbolize(&prof); err != nil {
+			debugLog("failed to symbolize profile: %v", err)
+		}
+	}
+
 	p.ProfileBytes = prof.Bytes()
 	req := pb.UpdateProfileRequest{Profile: p}
 
 	// Upload profile, discard profile in case of error.
 	debugLog("start uploading profile")
-	_, err := a.client.client.UpdateProfile(ctx, &req)
-	if err != nil {
+	if _, err := a.client.client.UpdateProfile(ctx, &req); err != nil {
 		debugLog("failed to upload profile: %v", err)
 	}
 }
