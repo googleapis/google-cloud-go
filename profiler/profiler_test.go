@@ -191,11 +191,10 @@ func TestProfileAndUpload(t *testing.T) {
 
 		if tt.wantBytes != nil {
 			wantProfile := &pb.Profile{
-				ProfileType: p.ProfileType,
-				Duration:    p.Duration,
+				ProfileType:  p.ProfileType,
+				Duration:     p.Duration,
+				ProfileBytes: tt.wantBytes,
 			}
-			wantProfile.Labels = a.deployment.Labels
-			wantProfile.ProfileBytes = tt.wantBytes
 			wantRequest := pb.UpdateProfileRequest{
 				Profile: wantProfile,
 			}

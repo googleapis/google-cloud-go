@@ -251,6 +251,7 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 		}
 	}))
 
+	debugLog("successfully created profile %v", p.GetProfileType())
 	return p
 }
 
@@ -282,10 +283,10 @@ func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
 	}
 
 	p.ProfileBytes = prof.Bytes()
-	p.Labels = a.deployment.Labels
 	req := pb.UpdateProfileRequest{Profile: p}
 
 	// Upload profile, discard profile in case of error.
+	debugLog("start uploading profile")
 	_, err := a.client.client.UpdateProfile(ctx, &req)
 	if err != nil {
 		debugLog("failed to upload profile: %v", err)
