@@ -459,6 +459,33 @@ func filterRow(f *btpb.RowFilter, r *row) bool {
 		if !rx.MatchString(r.key) {
 			return false
 		}
+	case *btpb.RowFilter_CellsPerRowLimitFilter:
+		// Grab the first n cells in the row.
+		lim := int(f.CellsPerRowLimitFilter)
+		for _, fam := range r.families {
+			for col, cs := range fam.cells {
+				if len(cs) > lim {
+					fam.cells[col] = cs[:lim]
+					return true
+				}
+				lim -= len(cs)
+			}
+		}
+		return true
+	case *btpb.RowFilter_CellsPerRowOffsetFilter:
+		// Skip the first n cells in the row.
+		offset := int(f.CellsPerRowOffsetFilter)
+		for _, fam := range r.families {
+			for col, cs := range fam.cells {
+				if offset > 0 && offset < len(cs) {
+					fam.cells[col] = cs[offset:]
+					offset = 0
+				} else {
+					offset -= len(cs)
+				}
+			}
+		}
+		return true
 	}
 
 	// Any other case, operate on a per-cell basis.
