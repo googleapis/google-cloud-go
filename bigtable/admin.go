@@ -311,6 +311,14 @@ func (st StorageType) proto() btapb.StorageType {
 	return btapb.StorageType_SSD
 }
 
+// InstanceType is the type of the instance
+type InstanceType int32
+
+const (
+	PRODUCTION  InstanceType = InstanceType(btapb.Instance_PRODUCTION)
+	DEVELOPMENT              = InstanceType(btapb.Instance_DEVELOPMENT)
+)
+
 // InstanceInfo represents information about an instance
 type InstanceInfo struct {
 	Name        string // name of the instance
@@ -320,8 +328,10 @@ type InstanceInfo struct {
 // InstanceConf contains the information necessary to create an Instance
 type InstanceConf struct {
 	InstanceId, DisplayName, ClusterId, Zone string
-	NumNodes                                 int32
-	StorageType                              StorageType
+	// NumNodes must not be specified for DEVELOPMENT instance types
+	NumNodes     int32
+	StorageType  StorageType
+	InstanceType InstanceType
 }
 
 var instanceNameRegexp = regexp.MustCompile(`^projects/([^/]+)/instances/([a-z][-a-z0-9]*)$`)
@@ -333,7 +343,7 @@ func (iac *InstanceAdminClient) CreateInstance(ctx context.Context, conf *Instan
 	req := &btapb.CreateInstanceRequest{
 		Parent:     "projects/" + iac.project,
 		InstanceId: conf.InstanceId,
-		Instance:   &btapb.Instance{DisplayName: conf.DisplayName},
+		Instance:   &btapb.Instance{DisplayName: conf.DisplayName, Type: btapb.Instance_Type(conf.InstanceType)},
 		Clusters: map[string]*btapb.Cluster{
 			conf.ClusterId: {
 				ServeNodes:         conf.NumNodes,
