@@ -121,7 +121,7 @@ func prepare(ctx context.Context, t *testing.T, statements []string) error {
 		return err
 	}
 	// Construct test DB name.
-	dbName = fmt.Sprintf("gotest_%v_%s", time.Now().UnixNano(), t.Name())
+	dbName = fmt.Sprintf("gotest_%v", time.Now().UnixNano())
 	db = fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectID, testInstanceID, dbName)
 	// Create database and tables.
 	op, err := admin.CreateDatabase(ctx, &adminpb.CreateDatabaseRequest{
@@ -167,7 +167,6 @@ func tearDown(ctx context.Context, t *testing.T) {
 
 // Test SingleUse transaction.
 func TestSingleUse(t *testing.T) {
-	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	// Set up testing environment.
@@ -370,7 +369,6 @@ func TestSingleUse(t *testing.T) {
 // Test ReadOnlyTransaction. The testsuite is mostly like SingleUse, except it
 // also tests for a single timestamp across multiple reads.
 func TestReadOnlyTransaction(t *testing.T) {
-	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	// Set up testing environment.
@@ -559,7 +557,6 @@ func TestReadOnlyTransaction(t *testing.T) {
 
 // Test ReadOnlyTransaction with different timestamp bound when there's an update at the same time.
 func TestUpdateDuringRead(t *testing.T) {
-	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	if err := prepare(ctx, t, singerDBStatements); err != nil {
@@ -593,7 +590,6 @@ func TestUpdateDuringRead(t *testing.T) {
 
 // Test ReadWriteTransaction.
 func TestReadWriteTransaction(t *testing.T) {
-	t.Parallel()
 	// Give a longer deadline because of transaction backoffs.
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
@@ -694,7 +690,6 @@ const (
 var testTableColumns = []string{"Key", "StringValue"}
 
 func TestReads(t *testing.T) {
-	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	// Set up testing environment.
@@ -855,7 +850,6 @@ func compareRows(iter *RowIterator, wantNums []int) (string, bool) {
 }
 
 func TestEarlyTimestamp(t *testing.T) {
-	t.Parallel()
 	// Test that we can get the timestamp from a read-only transaction as
 	// soon as we have read at least one row.
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
@@ -907,7 +901,6 @@ func TestEarlyTimestamp(t *testing.T) {
 }
 
 func TestNestedTransaction(t *testing.T) {
-	t.Parallel()
 	// You cannot use a transaction from inside a read-write transaction.
 	ctx := context.Background()
 	if err := prepare(ctx, t, singerDBStatements); err != nil {
@@ -937,7 +930,6 @@ func TestNestedTransaction(t *testing.T) {
 
 // Test client recovery on database recreation.
 func TestDbRemovalRecovery(t *testing.T) {
-	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	if err := prepare(ctx, t, singerDBStatements); err != nil {
@@ -986,7 +978,6 @@ func TestDbRemovalRecovery(t *testing.T) {
 
 // Test encoding/decoding non-struct Cloud Spanner types.
 func TestBasicTypes(t *testing.T) {
-	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	if err := prepare(ctx, t, singerDBStatements); err != nil {
@@ -1130,7 +1121,6 @@ func TestBasicTypes(t *testing.T) {
 
 // Test decoding Cloud Spanner STRUCT type.
 func TestStructTypes(t *testing.T) {
-	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	if err := prepare(ctx, t, singerDBStatements); err != nil {
@@ -1220,7 +1210,6 @@ func TestStructTypes(t *testing.T) {
 
 // Test queries of the form "SELECT expr".
 func TestQueryExpressions(t *testing.T) {
-	t.Parallel()
 	ctx := context.Background()
 	if err := prepare(ctx, t, nil); err != nil {
 		tearDown(ctx, t)
@@ -1285,7 +1274,6 @@ func isNaN(x interface{}) bool {
 }
 
 func TestInvalidDatabase(t *testing.T) {
-	t.Parallel()
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -1310,7 +1298,6 @@ func TestInvalidDatabase(t *testing.T) {
 }
 
 func TestReadErrors(t *testing.T) {
-	t.Parallel()
 	ctx := context.Background()
 	if err := prepare(ctx, t, readDBStatements); err != nil {
 		tearDown(ctx, t)
@@ -1415,7 +1402,6 @@ func readAllTestTable(iter *RowIterator) ([]testTableRow, error) {
 
 // Test TransactionRunner. Test that transactions are aborted and retried as expected.
 func TestTransactionRunner(t *testing.T) {
-	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	if err := prepare(ctx, t, singerDBStatements); err != nil {
