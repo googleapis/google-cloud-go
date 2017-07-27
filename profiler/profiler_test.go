@@ -345,7 +345,7 @@ func TestInitializeDeployment(t *testing.T) {
 		return testZoneName, nil
 	}
 
-	config = &Config{Target: testTarget}
+	config = Config{Target: testTarget}
 	d, err := initializeDeployment()
 
 	if err != nil {

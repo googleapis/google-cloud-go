@@ -60,7 +60,7 @@ import (
 )
 
 var (
-	config    = &Config{}
+	config    Config
 	startOnce sync.Once
 	// getProjectID, getInstanceName, getZone, startCPUProfile, stopCPUProfile,
 	// writeHeapProfile and sleep are overrideable for testing.
@@ -129,14 +129,14 @@ var startError error
 
 // Start starts a goroutine to collect and upload profiles.
 // See package level documentation for details.
-func Start(cfg *Config, options ...option.ClientOption) error {
+func Start(cfg Config, options ...option.ClientOption) error {
 	startOnce.Do(func() {
 		startError = start(cfg, options...)
 	})
 	return startError
 }
 
-func start(cfg *Config, options ...option.ClientOption) error {
+func start(cfg Config, options ...option.ClientOption) error {
 	initializeConfig(cfg)
 
 	ctx := context.Background()
@@ -394,8 +394,8 @@ func initializeResources(ctx context.Context, conn *grpc.ClientConn, d *pb.Deplo
 	}, ctx
 }
 
-func initializeConfig(cfg *Config) {
-	*config = *cfg
+func initializeConfig(cfg Config) {
+	config = cfg
 
 	if config.Target == "" {
 		config.Target = "unknown"

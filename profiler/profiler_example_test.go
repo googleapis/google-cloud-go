@@ -25,7 +25,7 @@ func ExampleStart() {
 	//
 	// Optionally DebugLogging can be set in the config to enable detailed
 	// logging from profiler.
-	err := profiler.Start(&profiler.Config{Target: "my-target"})
+	err := profiler.Start(profiler.Config{Target: "my-target"})
 	if err != nil {
 		//TODO: Handle error.
 	}
