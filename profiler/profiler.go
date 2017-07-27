@@ -166,7 +166,9 @@ func start(cfg Config, options ...option.ClientOption) error {
 		return err
 	}
 
-	a, ctx := initializeResources(ctx, conn, d)
+	l := initializeProfileLabels()
+
+	a, ctx := initializeResources(ctx, conn, d, l)
 	go pollProfilerService(ctx, a)
 	return nil
 }
@@ -180,9 +182,9 @@ func debugLog(format string, e ...interface{}) {
 // agent polls Cloud Profiler server for instructions on behalf of
 // a task, and collects and uploads profiles as requested.
 type agent struct {
-	client             *client
-	deployment         *pb.Deployment
-	creationErrorCount int64
+	client        *client
+	deployment    *pb.Deployment
+	profileLabels map[string]string
 }
 
 // abortedBackoffDuration retrieves the retry duration from gRPC trailing
@@ -292,6 +294,7 @@ func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
 	}
 
 	p.ProfileBytes = prof.Bytes()
+	p.Labels = a.profileLabels
 	req := pb.UpdateProfileRequest{Profile: p}
 
 	// Upload profile, discard profile in case of error.
@@ -354,14 +357,6 @@ func initializeDeployment() (*pb.Deployment, error) {
 		}
 	}
 
-	instance := config.InstanceName
-	if instance == "" {
-		instance, err = getInstanceName()
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	zone := config.ZoneName
 	if zone == "" {
 		zone, err = getZone()
@@ -374,13 +369,25 @@ func initializeDeployment() (*pb.Deployment, error) {
 		ProjectId: projectID,
 		Target:    config.Target,
 		Labels: map[string]string{
-			instanceLabel: instance,
 			zoneNameLabel: zone,
 		},
 	}, nil
 }
 
-func initializeResources(ctx context.Context, conn *grpc.ClientConn, d *pb.Deployment) (*agent, context.Context) {
+func initializeProfileLabels() map[string]string {
+	instance := config.InstanceName
+	if instance == "" {
+		var err error
+		if instance, err = getInstanceName(); err != nil {
+			instance = "unknown"
+			debugLog("failed to get instance name: %v", err)
+		}
+	}
+
+	return map[string]string{instanceLabel: instance}
+}
+
+func initializeResources(ctx context.Context, conn *grpc.ClientConn, d *pb.Deployment, l map[string]string) (*agent, context.Context) {
 	c := &client{
 		client: pb.NewProfilerServiceClient(conn),
 	}
@@ -389,8 +396,9 @@ func initializeResources(ctx context.Context, conn *grpc.ClientConn, d *pb.Deplo
 
 	ctx = c.insertMetadata(ctx)
 	return &agent{
-		client:     c,
-		deployment: d,
+		client:        c,
+		deployment:    d,
+		profileLabels: l,
 	}, ctx
 }
 

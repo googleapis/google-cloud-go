@@ -17,10 +17,12 @@ package profiler
 import (
 	"errors"
 	"io"
+	"runtime/pprof"
 	"strings"
 	"testing"
 	"time"
 
+	gcemd "cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/profiler/mocks"
 	"github.com/golang/mock/gomock"
@@ -45,7 +47,6 @@ const (
 func createTestDeployment() *pb.Deployment {
 	labels := make(map[string]string)
 	labels[zoneNameLabel] = testZoneName
-	labels[instanceLabel] = testInstanceName
 	return &pb.Deployment{
 		ProjectId: testProjectID,
 		Target:    testTarget,
@@ -55,11 +56,11 @@ func createTestDeployment() *pb.Deployment {
 
 func createTestAgent(psc pb.ProfilerServiceClient) *agent {
 	c := &client{client: psc}
-	a := &agent{
-		client:     c,
-		deployment: createTestDeployment(),
+	return &agent{
+		client:        c,
+		deployment:    createTestDeployment(),
+		profileLabels: map[string]string{instanceLabel: testInstanceName},
 	}
-	return a
 }
 
 func createTrailers(dur time.Duration) map[string]string {
@@ -93,6 +94,13 @@ func TestCreateProfile(t *testing.T) {
 }
 
 func TestProfileAndUpload(t *testing.T) {
+	defer func() {
+		startCPUProfile = pprof.StartCPUProfile
+		stopCPUProfile = pprof.StopCPUProfile
+		writeHeapProfile = pprof.WriteHeapProfile
+		sleep = gax.Sleep
+	}()
+
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -188,12 +196,12 @@ func TestProfileAndUpload(t *testing.T) {
 		if tt.duration != nil {
 			p.Duration = ptypes.DurationProto(*tt.duration)
 		}
-
 		if tt.wantBytes != nil {
 			wantProfile := &pb.Profile{
 				ProfileType:  p.ProfileType,
 				Duration:     p.Duration,
 				ProfileBytes: tt.wantBytes,
+				Labels:       a.profileLabels,
 			}
 			wantRequest := pb.UpdateProfileRequest{
 				Profile: wantProfile,
@@ -296,9 +304,11 @@ func TestRetry(t *testing.T) {
 
 func TestInitializeResources(t *testing.T) {
 	d := createTestDeployment()
+	l := map[string]string{instanceLabel: testInstanceName}
+
 	ctx := context.Background()
 
-	a, ctx := initializeResources(ctx, nil, d)
+	a, ctx := initializeResources(ctx, nil, d, l)
 
 	if xg := a.client.xGoogHeader; len(xg) == 0 {
 		t.Errorf("initializeResources() sets empty xGoogHeader")
@@ -317,11 +327,11 @@ func TestInitializeResources(t *testing.T) {
 		}
 	}
 
-	wantPH := "test-project-ID##test-target##instance|test-instance-name#zone|test-zone-name"
+	wantProfilerHeader := "test-project-ID##test-target##zone|test-zone-name"
 	if ph := a.client.profilerHeader; len(ph) == 0 {
 		t.Errorf("initializeResources() sets empty profilerHeader")
-	} else if ph[0] != wantPH {
-		t.Errorf("initializeResources() sets wrong profilerHeader, got: %v, want: %v", ph[0], wantPH)
+	} else if ph[0] != wantProfilerHeader {
+		t.Errorf("initializeResources() sets wrong profilerHeader, got: %v, want: %v", ph[0], wantProfilerHeader)
 	}
 
 	md, _ := grpcmd.FromOutgoingContext(ctx)
@@ -335,11 +345,14 @@ func TestInitializeResources(t *testing.T) {
 }
 
 func TestInitializeDeployment(t *testing.T) {
+	defer func() {
+		getProjectID = gcemd.ProjectID
+		getZone = gcemd.Zone
+		config = Config{}
+	}()
+
 	getProjectID = func() (string, error) {
 		return testProjectID, nil
-	}
-	getInstanceName = func() (string, error) {
-		return testInstanceName, nil
 	}
 	getZone = func() (string, error) {
 		return testZoneName, nil
@@ -347,14 +360,27 @@ func TestInitializeDeployment(t *testing.T) {
 
 	config = Config{Target: testTarget}
 	d, err := initializeDeployment()
-
 	if err != nil {
 		t.Errorf("initializeDeployment() got error: %v, want no error", err)
 	}
 
-	want := createTestDeployment()
+	if want := createTestDeployment(); !testutil.Equal(d, want) {
+		t.Errorf("initializeDeployment() got: %v, want %v", d, want)
+	}
+}
 
-	if !testutil.Equal(d, want) {
-		t.Errorf("initializeDeployment() got wrong deployment, got: %v, want %v", d, want)
+func TestInitializeProfileLabels(t *testing.T) {
+	defer func() {
+		getInstanceName = gcemd.InstanceName
+	}()
+
+	getInstanceName = func() (string, error) {
+		return testInstanceName, nil
+	}
+
+	l := initializeProfileLabels()
+	want := map[string]string{instanceLabel: testInstanceName}
+	if !testutil.Equal(l, want) {
+		t.Errorf("initializeProfileLabels() got: %v, want %v", l, want)
 	}
 }
