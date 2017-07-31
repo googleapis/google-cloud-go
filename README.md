@@ -33,7 +33,24 @@ make backwards-incompatible changes.
 
 ## News
 
+_July 31, 2017_
+
+*v0.11.0*
+
+- Clients for spanner, pubsub and video are now in beta.
+
+- New client for DLP.
+
+- spanner: performance and testing improvements.
+
+- storage: requester-pays buckets are supported.
+
+- storage, profiler, bigtable, bigquery: bug fixes and other minor improvements.
+
+- pubsub: bug fixes and other minor improvements
+
 _June 17, 2017_
+
 
 *v0.10.0*
 
