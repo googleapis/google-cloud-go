@@ -629,9 +629,10 @@ func convertTableReference(tr *bq.TableReference) *Table {
 // patchTableConf contains fields to be patched.
 type patchTableConf struct {
 	// These fields are omitted from the patch operation if nil.
-	Description *string
-	Name        *string
-	Schema      Schema
+	Description    *string
+	Name           *string
+	Schema         Schema
+	ExpirationTime time.Time
 }
 
 func (s *bigqueryService) patchTable(ctx context.Context, projectID, datasetID, tableID string, conf *patchTableConf) (*TableMetadata, error) {
@@ -651,6 +652,10 @@ func (s *bigqueryService) patchTable(ctx context.Context, projectID, datasetID, 
 	if conf.Schema != nil {
 		t.Schema = conf.Schema.asTableSchema()
 		forceSend("Schema")
+	}
+	if !conf.ExpirationTime.IsZero() {
+		t.ExpirationTime = conf.ExpirationTime.UnixNano() / 1e6
+		forceSend("ExpirationTime")
 	}
 	table, err := s.s.Tables.Patch(projectID, datasetID, tableID, t).
 		Context(ctx).
