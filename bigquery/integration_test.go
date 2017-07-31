@@ -586,9 +586,11 @@ func TestIntegration_TableUpdate(t *testing.T) {
 	}
 	wantDescription := tm.Description + "more"
 	wantName := tm.Name + "more"
+	wantExpiration := tm.ExpirationTime.Add(time.Hour * 24)
 	got, err := table.Update(ctx, TableMetadataToUpdate{
-		Description: wantDescription,
-		Name:        wantName,
+		Description:    wantDescription,
+		Name:           wantName,
+		ExpirationTime: wantExpiration,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -598,6 +600,9 @@ func TestIntegration_TableUpdate(t *testing.T) {
 	}
 	if got.Name != wantName {
 		t.Errorf("Name: got %q, want %q", got.Name, wantName)
+	}
+	if got.ExpirationTime != wantExpiration {
+		t.Errorf("ExpirationTime: got %q, want %q", got.ExpirationTime, wantExpiration)
 	}
 	if !testutil.Equal(got.Schema, schema) {
 		t.Errorf("Schema: got %v, want %v", pretty.Value(got.Schema), pretty.Value(schema))
