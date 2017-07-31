@@ -17,6 +17,7 @@ package pubsub
 import (
 	"errors"
 	"fmt"
+	"io"
 	"strings"
 	"sync"
 	"time"
@@ -24,7 +25,6 @@ import (
 	"cloud.google.com/go/iam"
 	"golang.org/x/net/context"
 	"golang.org/x/sync/errgroup"
-	"google.golang.org/api/iterator"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )
@@ -358,35 +358,40 @@ func (s *Subscription) receive(ctx context.Context, po *pullOptions, fc *flowCon
 	wg.Add(1)
 	go func() {
 		<-ctx2.Done()
-		iter.Stop()
+		iter.stop()
 		wg.Done()
 	}()
 	defer wg.Wait()
 
 	defer cancel()
 	for {
-		msg, err := iter.Next()
-		if err == iterator.Done {
+		msgs, err := iter.receive()
+		if err == io.EOF {
 			return nil
 		}
 		if err != nil {
 			return err
 		}
-		// TODO(jba): call acquire closer to when the message is allocated.
-		if err := fc.acquire(ctx, len(msg.Data)); err != nil {
-			// TODO(jba): test that this "orphaned" message is nacked immediately when ctx is done.
-			msg.Nack()
-			return nil
+		for i, msg := range msgs {
+			msg := msg
+			// TODO(jba): call acquire closer to when the message is allocated.
+			if err := fc.acquire(ctx, len(msg.Data)); err != nil {
+				// TODO(jba): test that these "orphaned" messages are nacked immediately when ctx is done.
+				for _, m := range msgs[i:] {
+					m.Nack()
+				}
+				return nil
+			}
+			wg.Add(1)
+			go func() {
+				// TODO(jba): call release when the message is available for GC.
+				// This considers the message to be released when
+				// f is finished, but f may ack early or not at all.
+				defer wg.Done()
+				defer fc.release(len(msg.Data))
+				f(ctx2, msg)
+			}()
 		}
-		wg.Add(1)
-		go func() {
-			// TODO(jba): call release when the message is available for GC.
-			// This considers the message to be released when
-			// f is finished, but f may ack early or not at all.
-			defer wg.Done()
-			defer fc.release(len(msg.Data))
-			f(ctx2, msg)
-		}()
 	}
 }
 

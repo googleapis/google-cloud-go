@@ -19,7 +19,6 @@ import (
 	"time"
 
 	"golang.org/x/net/context"
-	"google.golang.org/api/iterator"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
@@ -43,7 +42,6 @@ type streamingMessageIterator struct {
 	failed     chan struct{} // closed on stream error
 	stopped    chan struct{} // closed when Stop is called
 	drained    chan struct{} // closed when stopped && no more pending messages
-	msgc       chan *Message
 	wg         sync.WaitGroup
 
 	mu                 sync.Mutex
@@ -63,113 +61,36 @@ func newStreamingMessageIterator(ctx context.Context, sp *streamingPuller, po *p
 	ackTicker := time.NewTicker(100 * time.Millisecond)
 	nackTicker := time.NewTicker(100 * time.Millisecond)
 	it := &streamingMessageIterator{
-		ctx:        ctx,
-		sp:         sp,
-		po:         po,
-		kaTicker:   kaTicker,
-		ackTicker:  ackTicker,
-		nackTicker: nackTicker,
-		failed:     make(chan struct{}),
-		stopped:    make(chan struct{}),
-		drained:    make(chan struct{}),
-		// use maxPrefetch as the channel's buffer size.
-		msgc:               make(chan *Message, po.maxPrefetch),
+		ctx:                ctx,
+		sp:                 sp,
+		po:                 po,
+		kaTicker:           kaTicker,
+		ackTicker:          ackTicker,
+		nackTicker:         nackTicker,
+		failed:             make(chan struct{}),
+		stopped:            make(chan struct{}),
+		drained:            make(chan struct{}),
 		keepAliveDeadlines: map[string]time.Time{},
 		pendingReq:         &pb.StreamingPullRequest{},
 	}
-	it.wg.Add(2)
-	go it.receiver()
+	it.wg.Add(1)
 	go it.sender()
 	return it
 }
 
-// Next returns the next Message to be processed.  The caller must call
-// Message.Done when finished with it.
-// Once Stop has been called, calls to Next will return iterator.Done.
-func (it *streamingMessageIterator) Next() (*Message, error) {
-	// If ctx has been cancelled or the iterator is done, return straight
-	// away (even if there are buffered messages available).
-	select {
-	case <-it.ctx.Done():
-		return nil, it.ctx.Err()
-
-	case <-it.failed:
-		break
-
-	case <-it.stopped:
-		break
-
-	default:
-		// Wait for a message, but also for one of the above conditions.
-		select {
-		case msg := <-it.msgc:
-			// Since active select cases are chosen at random, this can return
-			// nil (from the channel close) even if it.failed or it.stopped is
-			// closed.
-			if msg == nil {
-				break
-			}
-			msg.doneFunc = it.done
-			return msg, nil
-
-		case <-it.ctx.Done():
-			return nil, it.ctx.Err()
-
-		case <-it.failed:
-			break
-
-		case <-it.stopped:
-			break
-		}
-	}
-	// Here if the iterator is done.
-	it.mu.Lock()
-	defer it.mu.Unlock()
-	return nil, it.err
-}
-
-// Client code must call Stop on a messageIterator when finished with it.
+// Subscription.receive will call stop on its messageIterator when finished with it.
 // Stop will block until Done has been called on all Messages that have been
 // returned by Next, or until the context with which the messageIterator was created
 // is cancelled or exceeds its deadline.
-// Stop need only be called once, but may be called multiple times from
-// multiple goroutines.
-func (it *streamingMessageIterator) Stop() {
+func (it *streamingMessageIterator) stop() {
 	it.mu.Lock()
 	select {
 	case <-it.stopped:
-		it.mu.Unlock()
-		it.wg.Wait()
-		return
 	default:
 		close(it.stopped)
 	}
-	if it.err == nil {
-		it.err = iterator.Done
-	}
-	// Before reading from the channel, see if we're already drained.
 	it.checkDrained()
 	it.mu.Unlock()
-	// Nack all the pending messages.
-	// Grab the lock separately for each message to allow the receiver
-	// and sender goroutines to make progress.
-	// Why this will eventually terminate:
-	// - If the receiver is not blocked on a stream Recv, then
-	//   it will write all the messages it has received to the channel,
-	//   then exit, closing the channel.
-	// - If the receiver is blocked, then this loop will eventually
-	//   nack all the messages in the channel. Once done is called
-	//   on the remaining messages, the iterator will be marked as drained,
-	//   which will trigger the sender to terminate. When it does, it
-	//   performs a CloseSend on the stream, which will result in the blocked
-	//   stream Recv returning.
-	for m := range it.msgc {
-		it.mu.Lock()
-		delete(it.keepAliveDeadlines, m.ackID)
-		it.addDeadlineMod(m.ackID, 0)
-		it.checkDrained()
-		it.mu.Unlock()
-	}
 	it.wg.Wait()
 }
 
@@ -224,52 +145,40 @@ func (it *streamingMessageIterator) fail(err error) {
 	it.mu.Unlock()
 }
 
-// receiver runs in a goroutine and handles all receives from the stream.
-func (it *streamingMessageIterator) receiver() {
-	defer it.wg.Done()
-	defer close(it.msgc)
-	for {
-		// Stop retrieving messages if the context is done, the stream
-		// failed, or the iterator's Stop method was called.
-		select {
-		case <-it.ctx.Done():
-			return
-		case <-it.failed:
-			return
-		case <-it.stopped:
-			return
-		default:
-		}
-		// Receive messages from stream. This may block indefinitely.
-		msgs, err := it.sp.fetchMessages()
-
-		// The streamingPuller handles retries, so any error here
-		// is fatal to the iterator.
-		if err != nil {
-			it.fail(err)
-			return
-		}
-		// We received some messages. Remember them so we can
-		// keep them alive.
-		deadline := time.Now().Add(it.po.maxExtension)
-		it.mu.Lock()
-		for _, m := range msgs {
-			it.keepAliveDeadlines[m.ackID] = deadline
-		}
-		it.mu.Unlock()
-		// Deliver the messages to the channel.
-		for _, m := range msgs {
-			select {
-			case <-it.ctx.Done():
-				return
-			case <-it.failed:
-				return
-				// Don't return if stopped. We want to send the remaining
-				// messages on the channel, where they will be nacked.
-			case it.msgc <- m:
-			}
-		}
+// receive makes a call to the stream's Recv method and returns
+// its messages.
+func (it *streamingMessageIterator) receive() ([]*Message, error) {
+	// Stop retrieving messages if the context is done, the stream
+	// failed, or the iterator's Stop method was called.
+	select {
+	case <-it.ctx.Done():
+		return nil, it.ctx.Err()
+	default:
 	}
+	it.mu.Lock()
+	err := it.err
+	it.mu.Unlock()
+	if err != nil {
+		return nil, err
+	}
+	// Receive messages from stream. This may block indefinitely.
+	msgs, err := it.sp.fetchMessages()
+	// The streamingPuller handles retries, so any error here
+	// is fatal.
+	if err != nil {
+		it.fail(err)
+		return nil, err
+	}
+	// We received some messages. Remember them so we can
+	// keep them alive.
+	deadline := time.Now().Add(it.po.maxExtension)
+	it.mu.Lock()
+	for _, m := range msgs {
+		m.doneFunc = it.done
+		it.keepAliveDeadlines[m.ackID] = deadline
+	}
+	it.mu.Unlock()
+	return msgs, nil
 }
 
 // sender runs in a goroutine and handles all sends to the stream.
