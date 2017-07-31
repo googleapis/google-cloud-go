@@ -252,6 +252,6 @@ type TableMetadataToUpdate struct {
 	Schema Schema
 	// TODO(jba): support updating the view
 
-	// Set the expiration time for this table
+	// ExpirationTime is the time when this table expires.
 	ExpirationTime time.Time
 }
