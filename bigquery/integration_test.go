@@ -808,7 +808,9 @@ func TestIntegration_DML(t *testing.T) {
 		q.UseStandardSQL = true // necessary for DML
 		job, err := q.Run(ctx)
 		if err != nil {
-			fmt.Printf("q.Run: %v\n", err)
+			if e, ok := err.(*googleapi.Error); ok && e.Code < 500 {
+				return true, err // fail on 4xx
+			}
 			return false, err
 		}
 		if err := wait(ctx, job); err != nil {
