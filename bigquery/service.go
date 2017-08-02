@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"sync"
 	"time"
 
 	"cloud.google.com/go/internal"
@@ -176,7 +175,6 @@ type readDataResult struct {
 func (s *bigqueryService) readTabledata(ctx context.Context, conf *readTableConf, pageToken string) (*readDataResult, error) {
 	// Prepare request to fetch one page of table data.
 	req := s.s.Tabledata.List(conf.projectID, conf.datasetID, conf.tableID)
-	req.Context(ctx)
 	setClientHeader(req.Header())
 	if pageToken != "" {
 		req.PageToken(pageToken)
@@ -189,39 +187,37 @@ func (s *bigqueryService) readTabledata(ctx context.Context, conf *readTableConf
 	}
 
 	// Fetch the table schema in the background, if necessary.
-	var schemaErr error
-	var schemaFetch sync.WaitGroup
-	if conf.schema == nil {
-		schemaFetch.Add(1)
+	errc := make(chan error, 1)
+	if conf.schema != nil {
+		errc <- nil
+	} else {
 		go func() {
-			defer schemaFetch.Done()
 			var t *bq.Table
-			schemaErr = runWithRetry(ctx, func() (err error) {
+			err := runWithRetry(ctx, func() (err error) {
 				t, err = s.s.Tables.Get(conf.projectID, conf.datasetID, conf.tableID).
 					Fields("schema").
 					Context(ctx).
 					Do()
 				return err
 			})
-			if schemaErr == nil && t.Schema != nil {
+			if err == nil && t.Schema != nil {
 				conf.schema = convertTableSchema(t.Schema)
 			}
+			errc <- err
 		}()
 	}
 	var res *bq.TableDataList
 	err := runWithRetry(ctx, func() (err error) {
-		res, err = req.Do()
+		res, err = req.Context(ctx).Do()
 		return err
 	})
 	if err != nil {
 		return nil, err
 	}
-
-	schemaFetch.Wait()
-	if schemaErr != nil {
-		return nil, schemaErr
+	err = <-errc
+	if err != nil {
+		return nil, err
 	}
-
 	result := &readDataResult{
 		pageToken: res.PageToken,
 		totalRows: uint64(res.TotalRows),
