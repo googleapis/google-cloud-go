@@ -43,7 +43,10 @@ var (
 	dataset *Dataset
 	schema  = Schema{
 		{Name: "name", Type: StringFieldType},
-		{Name: "num", Type: IntegerFieldType},
+		{Name: "nums", Type: IntegerFieldType, Repeated: true},
+		{Name: "rec", Type: RecordFieldType, Schema: Schema{
+			{Name: "bool", Type: BooleanFieldType},
+		}},
 	}
 	testTableExpiration time.Time
 )
@@ -274,7 +277,7 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 		saverRows []*ValuesSaver
 	)
 	for i, name := range []string{"a", "b", "c"} {
-		row := []Value{name, int64(i)}
+		row := []Value{name, []Value{int64(i)}, []Value{true}}
 		wantRows = append(wantRows, row)
 		saverRows = append(saverRows, &ValuesSaver{
 			Schema:   schema,
@@ -296,7 +299,8 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 	checkRead(t, "upload", table.Read(ctx), wantRows)
 
 	// Query the table.
-	q := client.Query(fmt.Sprintf("select name, num from %s", table.TableID))
+	q := client.Query(fmt.Sprintf("select name, nums, rec from %s", table.TableID))
+	q.UseStandardSQL = true
 	q.DefaultProjectID = dataset.ProjectID
 	q.DefaultDatasetID = dataset.DatasetID
 
@@ -361,9 +365,11 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 		if got, want := len(vm), len(vl); got != want {
 			t.Fatalf("valueMap len: got %d, want %d", got, want)
 		}
+		// With maps, structs become nested maps.
+		vl[2] = map[string]Value{"bool": vl[2].([]Value)[0]}
 		for i, v := range vl {
-			if got, want := vm[schema[i].Name], v; got != want {
-				t.Errorf("%d, name=%s: got %v, want %v",
+			if got, want := vm[schema[i].Name], v; !testutil.Equal(got, want) {
+				t.Errorf("%d, name=%s: got %#v, want %#v",
 					i, schema[i].Name, got, want)
 			}
 		}
@@ -561,8 +567,9 @@ func TestIntegration_Update(t *testing.T) {
 	}
 	schema2 := Schema{
 		schema[0],
-		{Name: "rec", Type: RecordFieldType, Schema: nested},
+		{Name: "rec2", Type: RecordFieldType, Schema: nested},
 		schema[1],
+		schema[2],
 	}
 
 	got, err = table.Update(ctx, TableMetadataToUpdate{Schema: schema2})
@@ -571,7 +578,7 @@ func TestIntegration_Update(t *testing.T) {
 	}
 
 	// Wherever you add the column, it appears at the end.
-	schema3 := Schema{schema2[0], schema2[2], schema2[1]}
+	schema3 := Schema{schema2[0], schema2[2], schema2[3], schema2[1]}
 	if !testutil.Equal(got.Schema, schema3) {
 		t.Errorf("add field:\ngot  %v\nwant %v",
 			pretty.Value(got.Schema), pretty.Value(schema3))
@@ -593,21 +600,22 @@ func TestIntegration_Update(t *testing.T) {
 		fields []*FieldSchema
 	}{
 		{"change from optional to required", []*FieldSchema{
-			schema3[0],
-			{Name: "num", Type: IntegerFieldType, Required: true},
+			{Name: "name", Type: StringFieldType, Required: true},
+			schema3[1],
 			schema3[2],
+			schema3[3],
 		}},
 		{"add a required field", []*FieldSchema{
-			schema3[0], schema3[1], schema3[2],
+			schema3[0], schema3[1], schema3[2], schema3[3],
 			{Name: "req", Type: StringFieldType, Required: true},
 		}},
-		{"remove a field", []*FieldSchema{schema3[0], schema3[1]}},
+		{"remove a field", []*FieldSchema{schema3[0], schema3[1], schema3[2]}},
 		{"remove a nested field", []*FieldSchema{
-			schema3[0], schema3[1],
-			{Name: "rec", Type: RecordFieldType, Schema: Schema{nested[0]}}}},
+			schema3[0], schema3[1], schema3[2],
+			{Name: "rec2", Type: RecordFieldType, Schema: Schema{nested[0]}}}},
 		{"remove all nested fields", []*FieldSchema{
-			schema3[0], schema3[1],
-			{Name: "rec", Type: RecordFieldType, Schema: Schema{}}}},
+			schema3[0], schema3[1], schema3[2],
+			{Name: "rec2", Type: RecordFieldType, Schema: Schema{}}}},
 	} {
 		for {
 			_, err = table.Update(ctx, TableMetadataToUpdate{Schema: Schema(test.fields)})
@@ -631,7 +639,11 @@ func TestIntegration_Load(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	table := newTable(t, schema)
+	// CSV data can't be loaded into a repeated field, so we use a different schema.
+	table := newTable(t, Schema{
+		{Name: "name", Type: StringFieldType},
+		{Name: "nums", Type: IntegerFieldType},
+	})
 	defer table.Delete(ctx)
 
 	// Load the table from a reader.
@@ -666,20 +678,22 @@ func TestIntegration_DML(t *testing.T) {
 
 		// Use DML to insert.
 		wantRows := [][]Value{
-			[]Value{"a", int64(0)},
-			[]Value{"b", int64(1)},
-			[]Value{"c", int64(2)},
+			[]Value{"a", []Value{int64(0)}, []Value{true}},
+			[]Value{"b", []Value{int64(1)}, []Value{false}},
+			[]Value{"c", []Value{int64(2)}, []Value{true}},
 		}
-		query := fmt.Sprintf("INSERT bigquery_integration_test.%s (name, num) "+
-			"VALUES ('a', 0), ('b', 1), ('c', 2)",
+		query := fmt.Sprintf("INSERT bigquery_integration_test.%s (name, nums, rec) "+
+			"VALUES ('a', [0], STRUCT<BOOL>(TRUE)), ('b', [1], STRUCT<BOOL>(FALSE)), ('c', [2], STRUCT<BOOL>(TRUE))",
 			table.TableID)
 		q := client.Query(query)
 		q.UseStandardSQL = true // necessary for DML
 		job, err := q.Run(ctx)
 		if err != nil {
+			fmt.Printf("q.Run: %v\n", err)
 			return false, err
 		}
 		if err := wait(ctx, job); err != nil {
+			fmt.Printf("wait: %v\n", err)
 			return false, err
 		}
 		if msg, ok := compareRead(table.Read(ctx), wantRows); !ok {
@@ -890,7 +904,7 @@ func TestIntegration_ReadNullIntoStruct(t *testing.T) {
 	upl := table.Uploader()
 	row := &ValuesSaver{
 		Schema: schema,
-		Row:    []Value{"name", nil},
+		Row:    []Value{nil, []Value{}, []Value{nil}},
 	}
 	if err := upl.Put(ctx, []*ValuesSaver{row}); err != nil {
 		t.Fatal(putError(err))
@@ -899,14 +913,14 @@ func TestIntegration_ReadNullIntoStruct(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	q := client.Query(fmt.Sprintf("select name, num from %s", table.TableID))
+	q := client.Query(fmt.Sprintf("select name from %s", table.TableID))
 	q.DefaultProjectID = dataset.ProjectID
 	q.DefaultDatasetID = dataset.DatasetID
 	it, err := q.Read(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
-	type S struct{ Num int64 }
+	type S struct{ Name string }
 	var s S
 	if err := it.Next(&s); err == nil {
 		t.Fatal("got nil, want error")
@@ -943,7 +957,7 @@ func compareRead(it *RowIterator, want [][]Value) (msg string, ok bool) {
 		gotRow := []Value(r)
 		wantRow := want[i]
 		if !testutil.Equal(gotRow, wantRow) {
-			return fmt.Sprintf("#%d: got %v, want %v", i, gotRow, wantRow), false
+			return fmt.Sprintf("#%d: got %#v, want %#v", i, gotRow, wantRow), false
 		}
 	}
 	return "", true
