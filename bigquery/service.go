@@ -176,8 +176,8 @@ type readDataResult struct {
 func (s *bigqueryService) readTabledata(ctx context.Context, conf *readTableConf, pageToken string) (*readDataResult, error) {
 	// Prepare request to fetch one page of table data.
 	req := s.s.Tabledata.List(conf.projectID, conf.datasetID, conf.tableID)
+	req.Context(ctx)
 	setClientHeader(req.Header())
-
 	if pageToken != "" {
 		req.PageToken(pageToken)
 	} else {
@@ -196,17 +196,23 @@ func (s *bigqueryService) readTabledata(ctx context.Context, conf *readTableConf
 		go func() {
 			defer schemaFetch.Done()
 			var t *bq.Table
-			t, schemaErr = s.s.Tables.Get(conf.projectID, conf.datasetID, conf.tableID).
-				Fields("schema").
-				Context(ctx).
-				Do()
+			schemaErr = runWithRetry(ctx, func() (err error) {
+				t, err = s.s.Tables.Get(conf.projectID, conf.datasetID, conf.tableID).
+					Fields("schema").
+					Context(ctx).
+					Do()
+				return err
+			})
 			if schemaErr == nil && t.Schema != nil {
 				conf.schema = convertTableSchema(t.Schema)
 			}
 		}()
 	}
-
-	res, err := req.Context(ctx).Do()
+	var res *bq.TableDataList
+	err := runWithRetry(ctx, func() (err error) {
+		res, err = req.Do()
+		return err
+	})
 	if err != nil {
 		return nil, err
 	}
