@@ -124,7 +124,7 @@ func TestBucketMethods(t *testing.T) {
 	b := client.Bucket(newBucket)
 	// Test Create and Delete.
 	if err := b.Create(ctx, projectID, nil); err != nil {
-		t.Errorf("Bucket(%v).Create(%v, %v) failed: %v", newBucket, projectID, nil, err)
+		t.Fatalf("Bucket(%v).Create(%v, %v) failed: %v", newBucket, projectID, nil, err)
 	}
 	attrs, err := b.Attrs(ctx)
 	if err != nil {
@@ -163,7 +163,7 @@ func TestBucketMethods(t *testing.T) {
 					AgeInDays:             10,
 					Liveness:              Archived,
 					CreatedBefore:         time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
-					MatchesStorageClasses: []string{"MULTI_REGIONAL", "REGIONAL", "STANDARD"},
+					MatchesStorageClasses: []string{"MULTI_REGIONAL", "STANDARD"},
 					NumNewerVersions:      3,
 				},
 			}, {
@@ -181,7 +181,7 @@ func TestBucketMethods(t *testing.T) {
 		},
 	}
 	if err := client.Bucket(newBucket).Create(ctx, projectID, attrs); err != nil {
-		t.Errorf("Bucket(%v).Create(%v, %+v) failed: %v", newBucket, projectID, attrs, err)
+		t.Fatalf("Bucket(%v).Create(%v, %+v) failed: %v", newBucket, projectID, attrs, err)
 	}
 	attrs, err = b.Attrs(ctx)
 	if err != nil {

@@ -71,6 +71,11 @@ func (b *BucketHandle) Create(ctx context.Context, projectID string, attrs *Buck
 		bkt = &raw.Bucket{}
 	}
 	bkt.Name = b.name
+	// If there is lifecycle information but no location, explicitly set
+	// the location. This is a GCS quirk/bug.
+	if bkt.Location == "" && bkt.Lifecycle != nil {
+		bkt.Location = "US"
+	}
 	req := b.c.raw.Buckets.Insert(projectID, bkt)
 	setClientHeader(req.Header())
 	return runWithRetry(ctx, func() error { _, err := req.Context(ctx).Do(); return err })
