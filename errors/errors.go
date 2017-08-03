@@ -148,7 +148,6 @@ type loggingSender struct {
 	logger         loggerInterface
 	projectID      string
 	serviceContext map[string]string
-	client         *logging.Client
 }
 
 // Client represents a Google Cloud Error Reporting client.
@@ -387,7 +386,7 @@ func (s *loggingSender) send(ctx context.Context, r *http.Request, message strin
 }
 
 func (s *loggingSender) close() error {
-	return s.client.Close()
+	return s.logger.Close()
 }
 
 func (s *errorApiSender) send(ctx context.Context, r *http.Request, message string) {
