@@ -17,6 +17,8 @@ package bigquery
 import (
 	"time"
 
+	"cloud.google.com/go/internal/optional"
+
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 )
@@ -32,12 +34,21 @@ type DatasetMetadata struct {
 	CreationTime           time.Time
 	LastModifiedTime       time.Time // When the dataset or any of its tables were modified.
 	DefaultTableExpiration time.Duration
-	Description            string // The user-friendly description of this table.
-	Name                   string // The user-friendly name for this table.
+	Description            string // The user-friendly description of this dataset.
+	Name                   string // The user-friendly name for this dataset.
 	ID                     string
 	Location               string            // The geo location of the dataset.
 	Labels                 map[string]string // User-provided labels.
+
+	// ETag obtained when reading metadata. Set it when updating a dataset's metadata
+	// to ensure that the metadata hasn't changed since it was read.
+	ETag string
 	// TODO(jba): access rules
+}
+
+type DatasetMetadataToUpdate struct {
+	Description optional.String // The user-friendly description of this table.
+	Name        optional.String // The user-friendly name for this dataset.
 }
 
 // Dataset creates a handle to a BigQuery dataset in the client's project.
@@ -68,6 +79,15 @@ func (d *Dataset) Delete(ctx context.Context) error {
 // Metadata fetches the metadata for the dataset.
 func (d *Dataset) Metadata(ctx context.Context) (*DatasetMetadata, error) {
 	return d.c.service.getDatasetMetadata(ctx, d.ProjectID, d.DatasetID)
+}
+
+// Update modifies specific Dataset metadata fields.
+// To perform a read-modify-write that protects against intervening reads,
+// set the etag argument to the DatasetMetadata.ETag field from the read.
+// TODO(jba): describe errora
+// Pass the empty string for etag for a "blind write" that will always succeed.
+func (d *Dataset) Update(ctx context.Context, dm DatasetMetadataToUpdate, etag string) (*DatasetMetadata, error) {
+	return d.c.service.patchDataset(ctx, d.ProjectID, d.DatasetID, &dm, etag)
 }
 
 // Table creates a handle to a BigQuery table in the dataset.

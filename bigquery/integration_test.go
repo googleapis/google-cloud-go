@@ -221,6 +221,51 @@ func TestIntegration_DatasetDelete(t *testing.T) {
 	}
 }
 
+func TestIntegration_DatasetUpdate(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+
+	check := func(md *DatasetMetadata, wantDesc, wantName string) {
+		if md.Description != wantDesc {
+			t.Errorf("description: got %q, want %q", md.Description, wantDesc)
+		}
+		if md.Name != wantName {
+			t.Errorf("name: got %q, want %q", md.Name, wantName)
+		}
+	}
+
+	ctx := context.Background()
+	md, err := dataset.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.ETag == "" {
+		t.Fatal("empty ETag")
+	}
+	// Write without ETag succeeds.
+	desc := md.Description + "d2"
+	name := md.Name + "n2"
+	md2, err := dataset.Update(ctx, DatasetMetadataToUpdate{Description: desc, Name: name}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	check(md2, desc, name)
+
+	// Write with original ETag fails because of intervening write.
+	_, err = dataset.Update(ctx, DatasetMetadataToUpdate{Description: "d", Name: "n"}, md.ETag)
+	if err == nil {
+		t.Fatal("got nil, want error")
+	}
+
+	// Write with most recent ETag succeeds.
+	md3, err := dataset.Update(ctx, DatasetMetadataToUpdate{Description: "", Name: ""}, md2.ETag)
+	if err != nil {
+		t.Fatal(err)
+	}
+	check(md3, "", "")
+}
+
 func TestIntegration_Tables(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -526,7 +571,7 @@ func (b byName) Len() int           { return len(b) }
 func (b byName) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
 func (b byName) Less(i, j int) bool { return b[i].Name < b[j].Name }
 
-func TestIntegration_Update(t *testing.T) {
+func TestIntegration_TableUpdate(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}

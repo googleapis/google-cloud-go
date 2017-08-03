@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal"
+	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/version"
 	gax "github.com/googleapis/gax-go"
 
@@ -57,6 +58,7 @@ type service interface {
 	insertDataset(ctx context.Context, datasetID, projectID string) error
 	deleteDataset(ctx context.Context, datasetID, projectID string) error
 	getDatasetMetadata(ctx context.Context, projectID, datasetID string) (*DatasetMetadata, error)
+	patchDataset(ctx context.Context, projectID, datasetID string, dm *DatasetMetadataToUpdate, etag string) (*DatasetMetadata, error)
 
 	// Misc
 
@@ -343,11 +345,12 @@ func (s *bigqueryService) jobStatus(ctx context.Context, projectID, jobID string
 
 func (s *bigqueryService) getJobInternal(ctx context.Context, projectID, jobID string, fields ...googleapi.Field) (*bq.Job, error) {
 	var job *bq.Job
+	call := s.s.Jobs.Get(projectID, jobID).
+		Fields(fields...).
+		Context(ctx)
+	setClientHeader(call.Header())
 	err := runWithRetry(ctx, func() (err error) {
-		job, err = s.s.Jobs.Get(projectID, jobID).
-			Fields(fields...).
-			Context(ctx).
-			Do()
+		job, err = call.Do()
 		return err
 	})
 	if err != nil {
@@ -362,11 +365,12 @@ func (s *bigqueryService) jobCancel(ctx context.Context, projectID, jobID string
 	// docs: "This call will return immediately, and the client will need
 	// to poll for the job status to see if the cancel completed
 	// successfully".  So it would be misleading to return a status.
+	call := s.s.Jobs.Cancel(projectID, jobID).
+		Fields(). // We don't need any of the response data.
+		Context(ctx)
+	setClientHeader(call.Header())
 	return runWithRetry(ctx, func() error {
-		_, err := s.s.Jobs.Cancel(projectID, jobID).
-			Fields(). // We don't need any of the response data.
-			Context(ctx).
-			Do()
+		_, err := call.Do()
 		return err
 	})
 }
@@ -607,6 +611,7 @@ func bqDatasetToMetadata(d *bq.Dataset) *DatasetMetadata {
 		ID:                     d.Id,
 		Location:               d.Location,
 		Labels:                 d.Labels,
+		ETag:                   d.Etag,
 	}
 }
 
@@ -659,9 +664,9 @@ func (s *bigqueryService) patchTable(ctx context.Context, projectID, datasetID, 
 		t.ExpirationTime = conf.ExpirationTime.UnixNano() / 1e6
 		forceSend("ExpirationTime")
 	}
-	table, err := s.s.Tables.Patch(projectID, datasetID, tableID, t).
-		Context(ctx).
-		Do()
+	call := s.s.Tables.Patch(projectID, datasetID, tableID, t).Context(ctx)
+	setClientHeader(call.Header())
+	table, err := call.Do()
 	if err != nil {
 		return nil, err
 	}
@@ -677,6 +682,32 @@ func (s *bigqueryService) insertDataset(ctx context.Context, datasetID, projectI
 	setClientHeader(req.Header())
 	_, err := req.Do()
 	return err
+}
+
+func (s *bigqueryService) patchDataset(ctx context.Context, projectID, datasetID string, dm *DatasetMetadataToUpdate, etag string) (*DatasetMetadata, error) {
+	ds := &bq.Dataset{Etag: ""}
+	forceSend := func(field string) {
+		ds.ForceSendFields = append(ds.ForceSendFields, field)
+	}
+
+	if dm.Description != nil {
+		ds.Description = optional.ToString(dm.Description)
+		forceSend("Description")
+	}
+	if dm.Name != nil {
+		ds.FriendlyName = optional.ToString(dm.Name)
+		forceSend("FriendlyName")
+	}
+	call := s.s.Datasets.Patch(projectID, datasetID, ds).Context(ctx)
+	setClientHeader(call.Header())
+	if etag != "" {
+		call.Header().Set("If-Match", etag)
+	}
+	ds2, err := call.Do()
+	if err != nil {
+		return nil, err
+	}
+	return bqDatasetToMetadata(ds2), nil
 }
 
 func (s *bigqueryService) deleteDataset(ctx context.Context, datasetID, projectID string) error {
