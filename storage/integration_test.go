@@ -45,7 +45,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-const testPrefix = "-go-cloud-storage-test"
+const testPrefix = "-go-test"
 
 // suffix is a timestamp-based suffix which is added to all buckets created by
 // tests. This reduces flakiness when the tests are run in parallel and allows
