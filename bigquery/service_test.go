@@ -73,6 +73,7 @@ func TestBQTableToMetadata(t *testing.T) {
 					EstimatedRows:   3,
 					OldestEntryTime: aTime,
 				},
+				ETag: "etag",
 			},
 		},
 	} {

@@ -285,8 +285,8 @@ func ExampleDataset_Update_readModifyWrite() {
 	fmt.Println(md2)
 }
 
-// To perform a blind write, ignoring the existing state (and possibly overwriting other
-// updates), pass the empty string as the etag.
+// To perform a blind write, ignoring the existing state (and possibly overwriting
+// other updates), pass the empty string as the etag.
 func ExampleDataset_Update_blindWrite() {
 	ctx := context.Background()
 	client, err := bigquery.NewClient(ctx, "project-id")
@@ -572,7 +572,32 @@ func ExampleTable_Read() {
 	_ = it // TODO: iterate using Next or iterator.Pager.
 }
 
-func ExampleTable_Update() {
+// This example illustrates how to perform a read-modify-write sequence on table
+// metadata. Passing the metadata's ETag to the Update call ensures that the call
+// will fail if the metadata was changed since the read.
+func ExampleTable_Update_readModifyWrite() {
+	ctx := context.Background()
+	client, err := bigquery.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	t := client.Dataset("my_dataset").Table("my_table")
+	md, err := t.Metadata(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	md2, err := t.Update(ctx,
+		bigquery.TableMetadataToUpdate{Name: "new " + md.Name},
+		md.ETag)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Println(md2)
+}
+
+// To perform a blind write, ignoring the existing state (and possibly overwriting
+// other updates), pass the empty string as the etag.
+func ExampleTable_Update_blindWrite() {
 	ctx := context.Background()
 	client, err := bigquery.NewClient(ctx, "project-id")
 	if err != nil {
@@ -581,7 +606,7 @@ func ExampleTable_Update() {
 	t := client.Dataset("my_dataset").Table("my_table")
 	tm, err := t.Update(ctx, bigquery.TableMetadataToUpdate{
 		Description: "my favorite table",
-	})
+	}, "")
 	if err != nil {
 		// TODO: Handle error.
 	}

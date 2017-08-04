@@ -40,8 +40,8 @@ type DatasetMetadata struct {
 	Location               string            // The geo location of the dataset.
 	Labels                 map[string]string // User-provided labels.
 
-	// ETag obtained when reading metadata. Set it when updating a dataset's metadata
-	// to ensure that the metadata hasn't changed since it was read.
+	// ETag is the ETag obtained when reading metadata. Pass it to Dataset.Update to
+	// ensure that the metadata hasn't changed since it was read.
 	ETag string
 	// TODO(jba): access rules
 }
