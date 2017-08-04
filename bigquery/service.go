@@ -48,7 +48,7 @@ type service interface {
 
 	// listTables returns a page of Tables and a next page token. Note: the Tables do not have their c field populated.
 	listTables(ctx context.Context, projectID, datasetID string, pageSize int, pageToken string) ([]*Table, string, error)
-	patchTable(ctx context.Context, projectID, datasetID, tableID string, conf *patchTableConf) (*TableMetadata, error)
+	patchTable(ctx context.Context, projectID, datasetID, tableID string, conf *patchTableConf, etag string) (*TableMetadata, error)
 
 	// Table data
 	readTabledata(ctx context.Context, conf *readTableConf, pageToken string) (*readDataResult, error)
@@ -578,6 +578,7 @@ func bqTableToMetadata(t *bq.Table) *TableMetadata {
 		ExpirationTime:   unixMillisToTime(t.ExpirationTime),
 		CreationTime:     unixMillisToTime(t.CreationTime),
 		LastModifiedTime: unixMillisToTime(int64(t.LastModifiedTime)),
+		ETag:             t.Etag,
 	}
 	if t.Schema != nil {
 		md.Schema = convertTableSchema(t.Schema)
@@ -642,7 +643,7 @@ type patchTableConf struct {
 	ExpirationTime time.Time
 }
 
-func (s *bigqueryService) patchTable(ctx context.Context, projectID, datasetID, tableID string, conf *patchTableConf) (*TableMetadata, error) {
+func (s *bigqueryService) patchTable(ctx context.Context, projectID, datasetID, tableID string, conf *patchTableConf, etag string) (*TableMetadata, error) {
 	t := &bq.Table{}
 	forceSend := func(field string) {
 		t.ForceSendFields = append(t.ForceSendFields, field)
@@ -666,6 +667,9 @@ func (s *bigqueryService) patchTable(ctx context.Context, projectID, datasetID, 
 	}
 	call := s.s.Tables.Patch(projectID, datasetID, tableID, t).Context(ctx)
 	setClientHeader(call.Header())
+	if etag != "" {
+		call.Header().Set("If-Match", etag)
+	}
 	table, err := call.Do()
 	if err != nil {
 		return nil, err
@@ -685,7 +689,7 @@ func (s *bigqueryService) insertDataset(ctx context.Context, datasetID, projectI
 }
 
 func (s *bigqueryService) patchDataset(ctx context.Context, projectID, datasetID string, dm *DatasetMetadataToUpdate, etag string) (*DatasetMetadata, error) {
-	ds := &bq.Dataset{Etag: ""}
+	ds := &bq.Dataset{}
 	forceSend := func(field string) {
 		ds.ForceSendFields = append(ds.ForceSendFields, field)
 	}

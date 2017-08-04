@@ -591,7 +591,7 @@ func TestIntegration_TableUpdate(t *testing.T) {
 		Description:    wantDescription,
 		Name:           wantName,
 		ExpirationTime: wantExpiration,
-	})
+	}, tm.ETag)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -608,6 +608,17 @@ func TestIntegration_TableUpdate(t *testing.T) {
 		t.Errorf("Schema: got %v, want %v", pretty.Value(got.Schema), pretty.Value(schema))
 	}
 
+	// Blind write succeeds.
+	_, err = table.Update(ctx, TableMetadataToUpdate{Name: "x"}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Write with old etag fails.
+	_, err = table.Update(ctx, TableMetadataToUpdate{Name: "y"}, got.ETag)
+	if err == nil {
+		t.Fatal("Update with old ETag succeeded, wanted failure")
+	}
+
 	// Test schema update.
 	// Columns can be added. schema2 is the same as schema, except for the
 	// added column in the middle.
@@ -622,7 +633,7 @@ func TestIntegration_TableUpdate(t *testing.T) {
 		schema[2],
 	}
 
-	got, err = table.Update(ctx, TableMetadataToUpdate{Schema: schema2})
+	got, err = table.Update(ctx, TableMetadataToUpdate{Schema: schema2}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -635,7 +646,7 @@ func TestIntegration_TableUpdate(t *testing.T) {
 	}
 
 	// Updating with the empty schema succeeds, but is a no-op.
-	got, err = table.Update(ctx, TableMetadataToUpdate{Schema: Schema{}})
+	got, err = table.Update(ctx, TableMetadataToUpdate{Schema: Schema{}}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -644,7 +655,7 @@ func TestIntegration_TableUpdate(t *testing.T) {
 			pretty.Value(got.Schema), pretty.Value(schema3))
 	}
 
-	// Error cases.
+	// Error cases when updating schema.
 	for _, test := range []struct {
 		desc   string
 		fields []*FieldSchema
@@ -668,7 +679,7 @@ func TestIntegration_TableUpdate(t *testing.T) {
 			{Name: "rec2", Type: RecordFieldType, Schema: Schema{}}}},
 	} {
 		for {
-			_, err = table.Update(ctx, TableMetadataToUpdate{Schema: Schema(test.fields)})
+			_, err = table.Update(ctx, TableMetadataToUpdate{Schema: Schema(test.fields)}, "")
 			if !hasStatusCode(err, 403) {
 				break
 			}

@@ -69,6 +69,10 @@ type TableMetadata struct {
 	// present. This field will be nil if the table is not being streamed to or if
 	// there is no data in the streaming buffer.
 	StreamingBuffer *StreamingBuffer
+
+	// ETag is the ETag obtained when reading metadata. Pass it to Table.Update to
+	// ensure that the metadata hasn't changed since it was read.
+	ETag string
 }
 
 // TableCreateDisposition specifies the circumstances under which destination table will be created.
@@ -223,7 +227,7 @@ func (t *Table) Read(ctx context.Context) *RowIterator {
 }
 
 // Update modifies specific Table metadata fields.
-func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate) (*TableMetadata, error) {
+func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag string) (*TableMetadata, error) {
 	var conf patchTableConf
 	if tm.Description != nil {
 		s := optional.ToString(tm.Description)
@@ -235,7 +239,7 @@ func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate) (*TableMet
 	}
 	conf.Schema = tm.Schema
 	conf.ExpirationTime = tm.ExpirationTime
-	return t.c.service.patchTable(ctx, t.ProjectID, t.DatasetID, t.TableID, &conf)
+	return t.c.service.patchTable(ctx, t.ProjectID, t.DatasetID, t.TableID, &conf, etag)
 }
 
 // TableMetadataToUpdate is used when updating a table's metadata.
