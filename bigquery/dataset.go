@@ -32,10 +32,10 @@ type Dataset struct {
 
 type DatasetMetadata struct {
 	CreationTime           time.Time
-	LastModifiedTime       time.Time // When the dataset or any of its tables were modified.
-	DefaultTableExpiration time.Duration
-	Description            string // The user-friendly description of this dataset.
-	Name                   string // The user-friendly name for this dataset.
+	LastModifiedTime       time.Time     // When the dataset or any of its tables were modified.
+	DefaultTableExpiration time.Duration // The default expiration time for new tables.
+	Description            string        // The user-friendly description of this dataset.
+	Name                   string        // The user-friendly name for this dataset.
 	ID                     string
 	Location               string            // The geo location of the dataset.
 	Labels                 map[string]string // User-provided labels.
@@ -49,6 +49,9 @@ type DatasetMetadata struct {
 type DatasetMetadataToUpdate struct {
 	Description optional.String // The user-friendly description of this table.
 	Name        optional.String // The user-friendly name for this dataset.
+	// DefaultTableExpiration is the the default expiration time for new tables.
+	// If set to time.Duration(0), new tables never expire.
+	DefaultTableExpiration optional.Duration
 }
 
 // Dataset creates a handle to a BigQuery dataset in the client's project.
@@ -84,7 +87,6 @@ func (d *Dataset) Metadata(ctx context.Context) (*DatasetMetadata, error) {
 // Update modifies specific Dataset metadata fields.
 // To perform a read-modify-write that protects against intervening reads,
 // set the etag argument to the DatasetMetadata.ETag field from the read.
-// TODO(jba): describe errora
 // Pass the empty string for etag for a "blind write" that will always succeed.
 func (d *Dataset) Update(ctx context.Context, dm DatasetMetadataToUpdate, etag string) (*DatasetMetadata, error) {
 	return d.c.service.patchDataset(ctx, d.ProjectID, d.DatasetID, &dm, etag)
