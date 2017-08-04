@@ -702,6 +702,15 @@ func (s *bigqueryService) patchDataset(ctx context.Context, projectID, datasetID
 		ds.FriendlyName = optional.ToString(dm.Name)
 		forceSend("FriendlyName")
 	}
+	if dm.DefaultTableExpiration != nil {
+		dur := optional.ToDuration(dm.DefaultTableExpiration)
+		if dur == 0 {
+			// Send a null to delete the field.
+			ds.NullFields = append(ds.NullFields, "DefaultTableExpirationMs")
+		} else {
+			ds.DefaultTableExpirationMs = int64(dur.Seconds() * 1000)
+		}
+	}
 	call := s.s.Datasets.Patch(projectID, datasetID, ds).Context(ctx)
 	setClientHeader(call.Header())
 	if etag != "" {
