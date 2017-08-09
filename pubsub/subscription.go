@@ -152,6 +152,12 @@ type ReceiveSettings struct {
 	// NumGoroutines is the number of goroutines Receive will spawn to pull
 	// messages concurrently. If NumGoroutines is less than 1, it will be treated
 	// as if it were DefaultReceiveSettings.NumGoroutines.
+	//
+	// NumGoroutines does not limit the number of messages that can be processed
+	// concurrently. Even with one goroutine, many messages might be processed at
+	// once, because that goroutine may continually receive messages and invoke the
+	// function passed to Receive on them. To limit the number of messages being
+	// processed concurrently, set MaxOutstandingMessages.
 	NumGoroutines int
 }
 
