@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package errors is a Google Stackdriver Error Reporting library.
+// Package errorreporting is a Google Stackdriver Error Reporting library.
 //
 // This package is still experimental and subject to change.
 //
@@ -20,9 +20,9 @@
 //
 // To initialize a client, use the NewClient function.
 //
-//   import "cloud.google.com/go/errors"
+//   import "cloud.google.com/go/errorreporting"
 //   ...
-//   errorsClient, err = errors.NewClient(ctx, projectID, "myservice", "v1.0", true)
+//   errorsClient, err = errorreporting.NewClient(ctx, projectID, "myservice", "v1.0", true)
 //
 // The client can recover panics in your program and report them as errors.
 // To use this functionality, defer its Catch method, as you would any other
@@ -42,17 +42,17 @@
 // WithMessage and WithMessagef add a custom message after the recovered value,
 // using fmt.Sprint and fmt.Sprintf respectively.
 //
-//   defer errorsClient.Catch(ctx, errors.WithMessagef("x=%d", x))
+//   defer errorsClient.Catch(ctx, errorreporting.WithMessagef("x=%d", x))
 //
 // WithRequest fills in various fields in the error report with information
 // about an http.Request that's being handled.
 //
-//   defer errorsClient.Catch(ctx, errors.WithRequest(httpReq))
+//   defer errorsClient.Catch(ctx, errorreporting.WithRequest(httpReq))
 //
 // By default, after recovering a panic, Catch will panic again with the
 // recovered value.  You can turn off this behavior with the Repanic option.
 //
-//   defer errorsClient.Catch(ctx, errors.Repanic(false))
+//   defer errorsClient.Catch(ctx, errorreporting.Repanic(false))
 //
 // You can also change the default behavior for the client by changing the
 // RepanicDefault field.
@@ -69,9 +69,7 @@
 // If you try to write an error report with a nil client, or if the client
 // fails to write the report to the server, the error report is logged using
 // log.Println.
-//
-// Deprecated: Use cloud.google.com/go/errorreporting instead.
-package errors // import "cloud.google.com/go/errors"
+package errorreporting // import "cloud.google.com/go/errorreporting"
 
 import (
 	"bytes"
@@ -235,7 +233,7 @@ type Option interface {
 //
 //   func foo(ctx context.Context, ...) {
 //     hasPanicked := true
-//     defer errorsClient.Catch(ctx, errors.PanicFlag(&hasPanicked))
+//     defer errorsClient.Catch(ctx, errorreporting.PanicFlag(&hasPanicked))
 //     ...
 //     ...
 //     // We have reached the end of the function, so we're not panicking.
@@ -434,7 +432,7 @@ func chopStack(s []byte, isPanic bool) string {
 	if isPanic {
 		f = []byte("panic(")
 	} else {
-		f = []byte("cloud.google.com/go/errors.(*Client).Report")
+		f = []byte("cloud.google.com/go/errorreporting.(*Client).Report")
 	}
 
 	lfFirst := bytes.IndexByte(s, '\n')
