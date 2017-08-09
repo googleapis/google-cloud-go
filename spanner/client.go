@@ -41,9 +41,6 @@ const (
 	// xGoogHeaderKey is the name of the metadata header used to indicate client
 	// information.
 	xGoogHeaderKey = "x-goog-api-client"
-
-	// numChannels is the default value for NumChannels of client
-	numChannels = 4
 )
 
 const (
@@ -82,8 +79,8 @@ type Client struct {
 
 // ClientConfig has configurations for the client.
 type ClientConfig struct {
-	// NumChannels is the number of GRPC channels.
-	// If zero, numChannels is used.
+	// NumChannels is the number of gRPC channels.
+	// If zero, a reasonable default is used based on the execution environment.
 	NumChannels int
 	co          []option.ClientOption
 	// SessionPoolConfig is the configuration for session pool.
