@@ -171,60 +171,6 @@ func (s *session) ping() error {
 	})
 }
 
-// refreshIdle refreshes the session's session ID if it is in its home session pool's idle list
-// and returns true if successful.
-func (s *session) refreshIdle() bool {
-	s.mu.Lock()
-	validAndIdle := s.valid && s.idleList != nil
-	s.mu.Unlock()
-	if !validAndIdle {
-		// Optimization: return early if s is not valid or if s is not in idle list.
-		return false
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	var sid string
-	err := runRetryable(ctx, func(ctx context.Context) error {
-		session, e := s.client.CreateSession(contextWithOutgoingMetadata(ctx, s.pool.md), &sppb.CreateSessionRequest{Database: s.pool.db})
-		if e != nil {
-			return e
-		}
-		sid = session.Name
-		return nil
-	})
-	if err != nil {
-		return false
-	}
-	s.pool.mu.Lock()
-	s.mu.Lock()
-	var recycle bool
-	if s.valid && s.idleList != nil {
-		// session is in idle list, refresh its session id.
-		sid, s.id = s.id, sid
-		s.createTime = time.Now()
-		if s.tx != nil {
-			s.tx = nil
-			s.pool.idleWriteList.Remove(s.idleList)
-			// We need to put this session back into the pool.
-			recycle = true
-		}
-	}
-	s.mu.Unlock()
-	s.pool.mu.Unlock()
-	if recycle {
-		s.pool.recycle(s)
-	}
-	// If we fail to explicitly destroy the session, it will be eventually garbage collected by
-	// Cloud Spanner.
-	if err = runRetryable(ctx, func(ctx context.Context) error {
-		_, e := s.client.DeleteSession(contextWithOutgoingMetadata(ctx, s.pool.md), &sppb.DeleteSessionRequest{Name: sid})
-		return e
-	}); err != nil && log.V(2) {
-		log.Warningf("Failed to delete session %v. Error: %v", sid, err)
-	}
-	return true
-}
-
 // setHcIndex atomically sets the session's index in the healthcheck queue and returns the old index.
 func (s *session) setHcIndex(i int) int {
 	s.mu.Lock()
@@ -352,9 +298,6 @@ type SessionPoolConfig struct {
 	// to be broken, it will still be evicted from session pool, therefore it is
 	// posssible that the number of opened sessions drops below MinOpened.
 	MinOpened uint64
-	// maxSessionAge is the maximum duration that a session can be reused, zero
-	// means session pool will never expire sessions.
-	maxSessionAge time.Duration
 	// MaxIdle is the maximum number of idle sessions, pool is allowed to keep. Defaults to 0.
 	MaxIdle uint64
 	// MaxBurst is the maximum number of concurrent session creation requests. Defaults to 10.
@@ -365,8 +308,6 @@ type SessionPoolConfig struct {
 	HealthCheckWorkers int
 	// HealthCheckInterval is how often the health checker pings a session. Defaults to 5 min.
 	HealthCheckInterval time.Duration
-	// healthCheckMaintainerEnabled enables the session pool maintainer.
-	healthCheckMaintainerEnabled bool
 	// healthCheckSampleInterval is how often the health checker samples live session (for use in maintaining session pool size). Defaults to 1 min.
 	healthCheckSampleInterval time.Duration
 }
@@ -677,10 +618,6 @@ func (p *sessionPool) recycle(s *session) bool {
 		// Reject the session if session is invalid or pool itself is invalid.
 		return false
 	}
-	if p.maxSessionAge != 0 && s.createTime.Add(p.maxSessionAge).Before(time.Now()) && p.numOpened > p.MinOpened {
-		// session expires and number of opened sessions exceeds MinOpened, let the session destroy itself.
-		return false
-	}
 	// Put session at the back of the list to round robin for load balancing across channels.
 	if s.isWritePrepared() {
 		s.setIdleList(p.idleWriteList.PushBack(s))
@@ -796,10 +733,8 @@ func newHealthChecker(interval time.Duration, workers int, sampleInterval time.D
 		ready:          make(chan struct{}),
 		done:           make(chan struct{}),
 	}
-	if hc.pool.healthCheckMaintainerEnabled {
-		hc.waitWorkers.Add(1)
-		go hc.maintainer()
-	}
+	hc.waitWorkers.Add(1)
+	go hc.maintainer()
 	for i := 1; i <= hc.workers; i++ {
 		hc.waitWorkers.Add(1)
 		go hc.worker(i)
@@ -880,12 +815,6 @@ func (hc *healthChecker) healthCheck(s *session) {
 		// Session pool is closed, perform a garbage collection.
 		s.destroy(false)
 		return
-	}
-	if s.pool.maxSessionAge != 0 && s.createTime.Add(s.pool.maxSessionAge).Before(time.Now()) {
-		// Session reaches its maximum age, retire it. Failing that try to refresh it.
-		if s.destroy(true) || !s.refreshIdle() {
-			return
-		}
 	}
 	if err := s.ping(); shouldDropSession(err) {
 		// Ping failed, destroy the session.

@@ -340,11 +340,15 @@ func (m *MockCloudSpannerClient) expectAction(methods ...string) (Action, error)
 
 // Freeze stalls all requests.
 func (m *MockCloudSpannerClient) Freeze() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	m.freezed = make(chan struct{})
 }
 
 // Unfreeze restores processing requests.
 func (m *MockCloudSpannerClient) Unfreeze() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	close(m.freezed)
 }
 
@@ -356,8 +360,11 @@ func (m *MockCloudSpannerClient) CheckActionsConsumed() {
 }
 
 // ready checks conditions before executing requests
-// TODO: also check injected errors, actions
+// TODO: add checks for injected errors, actions
 func (m *MockCloudSpannerClient) ready() {
+	m.mu.Lock()
+	freezed := m.freezed
+	m.mu.Unlock()
 	// check if client should be freezed
-	<-m.freezed
+	<-freezed
 }
