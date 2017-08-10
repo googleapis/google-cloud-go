@@ -396,6 +396,9 @@ type ReadOption interface {
 }
 
 // RowFilter returns a ReadOption that applies f to the contents of read rows.
+//
+// If multiple RowFilters are provided, only the last is used. To combine filters,
+// use ChainFilters or InterleaveFilters instead.
 func RowFilter(f Filter) ReadOption { return rowFilter{f} }
 
 type rowFilter struct{ f Filter }
