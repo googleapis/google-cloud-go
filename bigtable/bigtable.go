@@ -53,7 +53,12 @@ func NewClient(ctx context.Context, project, instance string, opts ...option.Cli
 		return nil, err
 	}
 	// Default to a small connection pool that can be overridden.
-	o = append(o, option.WithGRPCConnectionPool(4))
+	o = append(o,
+		option.WithGRPCConnectionPool(4),
+
+		// TODO(grpc/grpc-go#1388) using connection pool without WithBlock
+		// can cause RPCs to fail randomly. We can delete this after the issue is fixed.
+		option.WithGRPCDialOption(grpc.WithBlock()))
 	o = append(o, opts...)
 	conn, err := gtransport.Dial(ctx, o...)
 	if err != nil {
