@@ -147,7 +147,6 @@ func keyToProto(k *Key) *pb.Key {
 		return nil
 	}
 
-	// TODO(jbd): Eliminate unrequired allocations.
 	var path []*pb.Key_PathElement
 	for {
 		el := &pb.Key_PathElement{Kind: k.Kind}
@@ -156,12 +155,19 @@ func keyToProto(k *Key) *pb.Key {
 		} else if k.Name != "" {
 			el.IdType = &pb.Key_PathElement_Name{Name: k.Name}
 		}
-		path = append([]*pb.Key_PathElement{el}, path...)
+		path = append(path, el)
 		if k.Parent == nil {
 			break
 		}
 		k = k.Parent
 	}
+
+	// The path should be in order [grandparent, parent, child]
+	// We did it backward above, so reverse back.
+	for i := 0; i < len(path)/2; i++ {
+		path[i], path[len(path)-i-1] = path[len(path)-i-1], path[i]
+	}
+
 	key := &pb.Key{Path: path}
 	if k.Namespace != "" {
 		key.PartitionId = &pb.PartitionId{
@@ -336,17 +342,21 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		return nil
 	}
 
-	// Go through keys, validate them, serialize then, and create a dict mapping them to their index
+	// Go through keys, validate them, serialize then, and create a dict mapping them to their indices.
+	// Equal keys are deduped.
 	multiErr, any := make(MultiError, len(keys)), false
-	keyMap := make(map[string]int)
-	pbKeys := make([]*pb.Key, len(keys))
+	keyMap := make(map[string][]int, len(keys))
+	pbKeys := make([]*pb.Key, 0, len(keys))
 	for i, k := range keys {
 		if !k.valid() {
 			multiErr[i] = ErrInvalidKey
 			any = true
 		} else {
-			keyMap[k.String()] = i
-			pbKeys[i] = keyToProto(k)
+			ks := k.String()
+			if _, ok := keyMap[ks]; !ok {
+				pbKeys = append(pbKeys, keyToProto(k))
+			}
+			keyMap[ks] = append(keyMap[ks], i)
 		}
 	}
 	if any {
@@ -380,25 +390,26 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		found = append(found, resp.Found...)
 		missing = append(missing, resp.Missing...)
 	}
-	if len(keys) != len(found)+len(missing) {
-		return errors.New("datastore: internal error: server returned the wrong number of entities")
-	}
+
+	filled := 0
 	for _, e := range found {
 		k, err := protoToKey(e.Entity.Key)
 		if err != nil {
 			return errors.New("datastore: internal error: server returned an invalid key")
 		}
-		index := keyMap[k.String()]
-		elem := v.Index(index)
-		if multiArgType == multiArgTypePropertyLoadSaver || multiArgType == multiArgTypeStruct {
-			elem = elem.Addr()
-		}
-		if multiArgType == multiArgTypeStructPtr && elem.IsNil() {
-			elem.Set(reflect.New(elem.Type().Elem()))
-		}
-		if err := loadEntityProto(elem.Interface(), e.Entity); err != nil {
-			multiErr[index] = err
-			any = true
+		filled += len(keyMap[k.String()])
+		for _, index := range keyMap[k.String()] {
+			elem := v.Index(index)
+			if multiArgType == multiArgTypePropertyLoadSaver || multiArgType == multiArgTypeStruct {
+				elem = elem.Addr()
+			}
+			if multiArgType == multiArgTypeStructPtr && elem.IsNil() {
+				elem.Set(reflect.New(elem.Type().Elem()))
+			}
+			if err := loadEntityProto(elem.Interface(), e.Entity); err != nil {
+				multiErr[index] = err
+				any = true
+			}
 		}
 	}
 	for _, e := range missing {
@@ -406,9 +417,17 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		if err != nil {
 			return errors.New("datastore: internal error: server returned an invalid key")
 		}
-		multiErr[keyMap[k.String()]] = ErrNoSuchEntity
+		filled += len(keyMap[k.String()])
+		for _, index := range keyMap[k.String()] {
+			multiErr[index] = ErrNoSuchEntity
+		}
 		any = true
 	}
+
+	if filled != len(keys) {
+		return errors.New("datastore: internal error: server returned the wrong number of entities")
+	}
+
 	if any {
 		return multiErr
 	}
@@ -538,13 +557,18 @@ func (c *Client) DeleteMulti(ctx context.Context, keys []*Key) error {
 
 func deleteMutations(keys []*Key) ([]*pb.Mutation, error) {
 	mutations := make([]*pb.Mutation, 0, len(keys))
+	set := make(map[string]bool, len(keys))
 	for _, k := range keys {
 		if k.Incomplete() {
 			return nil, fmt.Errorf("datastore: can't delete the incomplete key: %v", k)
 		}
-		mutations = append(mutations, &pb.Mutation{
-			Operation: &pb.Mutation_Delete{Delete: keyToProto(k)},
-		})
+		ks := k.String()
+		if !set[ks] {
+			mutations = append(mutations, &pb.Mutation{
+				Operation: &pb.Mutation_Delete{Delete: keyToProto(k)},
+			})
+		}
+		set[ks] = true
 	}
 	return mutations, nil
 }
