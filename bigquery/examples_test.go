@@ -394,6 +394,7 @@ func ExampleTable_Create() {
 	}
 }
 
+// If you know your table's schema initially, pass a Schema to Create.
 func ExampleTable_Create_schema() {
 	ctx := context.Background()
 	// Infer table schema from a Go type.

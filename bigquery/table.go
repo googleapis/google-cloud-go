@@ -148,6 +148,8 @@ func (t *Table) implicitTable() bool {
 }
 
 // Create creates a table in the BigQuery service.
+// To create a table with a schema, pass in a Schema to Create;
+// Schema is a valid CreateTableOption.
 func (t *Table) Create(ctx context.Context, options ...CreateTableOption) error {
 	conf := &createTableConf{
 		projectID: t.ProjectID,
