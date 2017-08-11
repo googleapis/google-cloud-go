@@ -515,6 +515,8 @@ func ExampleTable_LoaderFrom() {
 	}
 	gcsRef := bigquery.NewGCSReference("gs://my-bucket/my-object")
 	gcsRef.AllowJaggedRows = true
+	gcsRef.MaxBadRecords = 5
+	gcsRef.Schema = schema
 	// TODO: set other options on the GCSReference.
 	ds := client.Dataset("my_dataset")
 	loader := ds.Table("my_table").LoaderFrom(gcsRef)
@@ -545,6 +547,8 @@ func ExampleTable_LoaderFrom_reader() {
 	}
 	rs := bigquery.NewReaderSource(f)
 	rs.AllowJaggedRows = true
+	rs.MaxBadRecords = 5
+	rs.Schema = schema
 	// TODO: set other options on the GCSReference.
 	ds := client.Dataset("my_dataset")
 	loader := ds.Table("my_table").LoaderFrom(rs)
