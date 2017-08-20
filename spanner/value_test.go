@@ -159,7 +159,7 @@ func TestDecodeValue(t *testing.T) {
 		{nullProto(), stringType(), "abc", true},
 		{stringProto("abc"), stringType(), NullString{"abc", true}, false},
 		{nullProto(), stringType(), NullString{}, false},
-		// STRING ARRAY
+		// STRING ARRAY with []NullString
 		{
 			listProto(stringProto("abc"), nullProto(), stringProto("bcd")),
 			listType(stringType()),
@@ -167,6 +167,13 @@ func TestDecodeValue(t *testing.T) {
 			false,
 		},
 		{nullProto(), listType(stringType()), []NullString(nil), false},
+		// STRING ARRAY with []string
+		{
+			listProto(stringProto("abc"), stringProto("bcd")),
+			listType(stringType()),
+			[]string{"abc", "bcd"},
+			false,
+		},
 		// BYTES
 		{bytesProto([]byte("ab")), bytesType(), []byte("ab"), false},
 		{nullProto(), bytesType(), []byte(nil), false},
@@ -178,23 +185,28 @@ func TestDecodeValue(t *testing.T) {
 		{nullProto(), intType(), int64(0), true},
 		{intProto(15), intType(), NullInt64{15, true}, false},
 		{nullProto(), intType(), NullInt64{}, false},
-		// INT64 ARRAY
+		// INT64 ARRAY with []NullInt64
 		{listProto(intProto(91), nullProto(), intProto(87)), listType(intType()), []NullInt64{{91, true}, {}, {87, true}}, false},
 		{nullProto(), listType(intType()), []NullInt64(nil), false},
+		// INT64 ARRAY with []int64
+		{listProto(intProto(91), intProto(87)), listType(intType()), []int64{91, 87}, false},
+		//{nullProto(), listType(intType()), []int64{}, false},
 		// BOOL
 		{boolProto(true), boolType(), true, false},
 		{nullProto(), boolType(), true, true},
 		{boolProto(true), boolType(), NullBool{true, true}, false},
 		{nullProto(), boolType(), NullBool{}, false},
-		// BOOL ARRAY
+		// BOOL ARRAY with []NullBool
 		{listProto(boolProto(true), boolProto(false), nullProto()), listType(boolType()), []NullBool{{true, true}, {false, true}, {}}, false},
 		{nullProto(), listType(boolType()), []NullBool(nil), false},
+		// BOOL ARRAY with []bool
+		{listProto(boolProto(true), boolProto(false)), listType(boolType()), []bool{true, false}, false},
 		// FLOAT64
 		{floatProto(3.14), floatType(), 3.14, false},
 		{nullProto(), floatType(), 0.00, true},
 		{floatProto(3.14), floatType(), NullFloat64{3.14, true}, false},
 		{nullProto(), floatType(), NullFloat64{}, false},
-		// FLOAT64 ARRAY
+		// FLOAT64 ARRAY with []NullFloat64
 		{
 			listProto(floatProto(math.Inf(1)), floatProto(math.Inf(-1)), nullProto(), floatProto(3.1)),
 			listType(floatType()),
@@ -202,20 +214,31 @@ func TestDecodeValue(t *testing.T) {
 			false,
 		},
 		{nullProto(), listType(floatType()), []NullFloat64(nil), false},
+		// FLOAT64 ARRAY with []float64
+		{
+			listProto(floatProto(math.Inf(1)), floatProto(math.Inf(-1)), floatProto(3.1)),
+			listType(floatType()),
+			[]float64{math.Inf(1), math.Inf(-1), 3.1},
+			false,
+		},
 		// TIMESTAMP
 		{timeProto(t1), timeType(), t1, false},
 		{timeProto(t1), timeType(), NullTime{t1, true}, false},
 		{nullProto(), timeType(), NullTime{}, false},
-		// TIMESTAMP ARRAY
+		// TIMESTAMP ARRAY with []NullTime
 		{listProto(timeProto(t1), timeProto(t2), timeProto(t3), nullProto()), listType(timeType()), []NullTime{{t1, true}, {t2, true}, {t3, true}, {}}, false},
 		{nullProto(), listType(timeType()), []NullTime(nil), false},
+		// TIMESTAMP ARRAY with []time.Time
+		{listProto(timeProto(t1), timeProto(t2), timeProto(t3)), listType(timeType()), []time.Time{t1, t2, t3}, false},
 		// DATE
 		{dateProto(d1), dateType(), d1, false},
 		{dateProto(d1), dateType(), NullDate{d1, true}, false},
 		{nullProto(), dateType(), NullDate{}, false},
-		// DATE ARRAY
+		// DATE ARRAY with []NullDate
 		{listProto(dateProto(d1), dateProto(d2), nullProto()), listType(dateType()), []NullDate{{d1, true}, {d2, true}, {}}, false},
 		{nullProto(), listType(dateType()), []NullDate(nil), false},
+		// DATE ARRAY with []civil.Date
+		{listProto(dateProto(d1), dateProto(d2)), listType(dateType()), []civil.Date{d1, d2}, false},
 		// STRUCT ARRAY
 		// STRUCT schema is equal to the following Go struct:
 		// type s struct {
