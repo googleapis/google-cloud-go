@@ -33,7 +33,7 @@ make backwards-incompatible changes.
 
 ## News
 
-_August 22, 2017+
+_August 22, 2017_
 
 *v0.12.0*
 
