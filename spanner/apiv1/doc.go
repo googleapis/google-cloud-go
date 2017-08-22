@@ -19,6 +19,8 @@
 //
 // Cloud Spanner is a managed, mission-critical, globally consistent and
 // scalable relational database service.
+//
+// Use the client at cloud.google.com/go/spanner in preference to this.
 package spanner // import "cloud.google.com/go/spanner/apiv1"
 
 import (

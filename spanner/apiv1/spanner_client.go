@@ -64,18 +64,29 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		{"long_running", "long_running"}: {
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.3,
+				})
+			}),
+		},
 	}
 	return &CallOptions{
-		CreateSession:       retry[[2]string{"default", "non_idempotent"}],
+		CreateSession:       retry[[2]string{"default", "idempotent"}],
 		GetSession:          retry[[2]string{"default", "idempotent"}],
 		DeleteSession:       retry[[2]string{"default", "idempotent"}],
-		ExecuteSql:          retry[[2]string{"default", "non_idempotent"}],
+		ExecuteSql:          retry[[2]string{"default", "idempotent"}],
 		ExecuteStreamingSql: retry[[2]string{"default", "non_idempotent"}],
-		Read:                retry[[2]string{"default", "non_idempotent"}],
+		Read:                retry[[2]string{"default", "idempotent"}],
 		StreamingRead:       retry[[2]string{"default", "non_idempotent"}],
-		BeginTransaction:    retry[[2]string{"default", "non_idempotent"}],
-		Commit:              retry[[2]string{"default", "non_idempotent"}],
-		Rollback:            retry[[2]string{"default", "non_idempotent"}],
+		BeginTransaction:    retry[[2]string{"default", "idempotent"}],
+		Commit:              retry[[2]string{"long_running", "long_running"}],
+		Rollback:            retry[[2]string{"default", "idempotent"}],
 	}
 }
 
