@@ -48,7 +48,6 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
-	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/devtools/cloudprofiler/v2"
@@ -141,15 +140,8 @@ func start(cfg Config, options ...option.ClientOption) error {
 
 	ctx := context.Background()
 
-	ts, err := google.DefaultTokenSource(ctx, scope)
-	if err != nil {
-		debugLog("failed to get application default credentials: %v", err)
-		return err
-	}
-
 	opts := []option.ClientOption{
 		option.WithEndpoint(config.APIAddr),
-		option.WithTokenSource(ts),
 		option.WithScopes(scope),
 	}
 	opts = append(opts, options...)
