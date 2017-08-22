@@ -134,9 +134,9 @@ func (c *Client) SetGoogleClientInfo(keyval ...string) {
 }
 
 // AnnotateVideo performs asynchronous video annotation. Progress and results can be
-// retrieved through the `google.longrunning.Operations` interface.
-// `Operation.metadata` contains `AnnotateVideoProgress` (progress).
-// `Operation.response` contains `AnnotateVideoResponse` (results).
+// retrieved through the google.longrunning.Operations interface.
+// Operation.metadata contains AnnotateVideoProgress (progress).
+// Operation.response contains AnnotateVideoResponse (results).
 func (c *Client) AnnotateVideo(ctx context.Context, req *videointelligencepb.AnnotateVideoRequest, opts ...gax.CallOption) (*AnnotateVideoOperation, error) {
 	ctx = insertXGoog(ctx, c.xGoogHeader)
 	opts = append(c.CallOptions.AnnotateVideo[0:len(c.CallOptions.AnnotateVideo):len(c.CallOptions.AnnotateVideo)], opts...)
@@ -172,7 +172,7 @@ func (c *Client) AnnotateVideoOperation(name string) *AnnotateVideoOperation {
 // See documentation of Poll for error-handling information.
 func (op *AnnotateVideoOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*videointelligencepb.AnnotateVideoResponse, error) {
 	var resp videointelligencepb.AnnotateVideoResponse
-	if err := op.lro.Wait(ctx, &resp, opts...); err != nil {
+	if err := op.lro.WaitWithInterval(ctx, &resp, 45000*time.Millisecond, opts...); err != nil {
 		return nil, err
 	}
 	return &resp, nil
