@@ -15,21 +15,26 @@
 package profiler
 
 import (
+	"bytes"
+	"compress/gzip"
 	"errors"
+	"fmt"
 	"io"
-	"runtime/pprof"
+	"log"
+	"math/rand"
 	"strings"
 	"testing"
 	"time"
 
-	gcemd "cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/profiler/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	"github.com/google/pprof/profile"
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
+	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/devtools/cloudprofiler/v2"
 	edpb "google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
@@ -38,12 +43,15 @@ import (
 )
 
 const (
-	testProjectID      = "test-project-ID"
-	testInstanceName   = "test-instance-name"
-	testZoneName       = "test-zone-name"
-	testTarget         = "test-target"
-	testService        = "test-service"
-	testServiceVersion = "test-service-version"
+	testProjectID       = "test-project-ID"
+	testInstanceName    = "test-instance-name"
+	testZoneName        = "test-zone-name"
+	testTarget          = "test-target"
+	testService         = "test-service"
+	testServiceVersion  = "test-service-version"
+	testProfileDuration = time.Second * 10
+	testServerTimeout   = time.Second * 15
+	wantFunctionName    = "profilee"
 )
 
 func createTestDeployment() *pb.Deployment {
@@ -98,11 +106,9 @@ func TestCreateProfile(t *testing.T) {
 }
 
 func TestProfileAndUpload(t *testing.T) {
+	oldStartCPUProfile, oldStopCPUProfile, oldWriteHeapProfile, oldSleep := startCPUProfile, stopCPUProfile, writeHeapProfile, sleep
 	defer func() {
-		startCPUProfile = pprof.StartCPUProfile
-		stopCPUProfile = pprof.StopCPUProfile
-		writeHeapProfile = pprof.WriteHeapProfile
-		sleep = gax.Sleep
+		startCPUProfile, stopCPUProfile, writeHeapProfile, sleep = oldStartCPUProfile, oldStopCPUProfile, oldWriteHeapProfile, oldSleep
 	}()
 
 	ctx := context.Background()
@@ -339,10 +345,9 @@ func TestInitializeResources(t *testing.T) {
 }
 
 func TestInitializeDeployment(t *testing.T) {
+	oldGetProjectID, oldGetZone, oldConfig := getProjectID, getZone, config
 	defer func() {
-		getProjectID = gcemd.ProjectID
-		getZone = gcemd.Zone
-		config = Config{}
+		getProjectID, getZone, config = oldGetProjectID, oldGetZone, oldConfig
 	}()
 
 	getProjectID = func() (string, error) {
@@ -360,7 +365,7 @@ func TestInitializeDeployment(t *testing.T) {
 	}
 
 	if want := createTestDeployment(); !testutil.Equal(d, want) {
-		t.Errorf("initializeDeployment() got: %v, want %v", d, want)
+		t.Errorf("createTestDeployment() got: %v, want %v", d, want)
 	}
 }
 
@@ -407,8 +412,9 @@ func TestInitializeConfig(t *testing.T) {
 }
 
 func TestInitializeProfileLabels(t *testing.T) {
+	oldGetInstanceName := getInstanceName
 	defer func() {
-		getInstanceName = gcemd.InstanceName
+		getInstanceName = oldGetInstanceName
 	}()
 
 	getInstanceName = func() (string, error) {
@@ -419,5 +425,144 @@ func TestInitializeProfileLabels(t *testing.T) {
 	want := map[string]string{instanceLabel: testInstanceName}
 	if !testutil.Equal(l, want) {
 		t.Errorf("initializeProfileLabels() got: %v, want %v", l, want)
+	}
+}
+
+type fakeProfilerServer struct {
+	pb.ProfilerServiceServer
+	count          int
+	gotCPUProfile  []byte
+	gotHeapProfile []byte
+	done           chan bool
+}
+
+func (fs *fakeProfilerServer) CreateProfile(ctx context.Context, in *pb.CreateProfileRequest) (*pb.Profile, error) {
+	fs.count++
+	switch fs.count {
+	case 1:
+		return &pb.Profile{Name: "testCPU", ProfileType: pb.ProfileType_CPU, Duration: ptypes.DurationProto(testProfileDuration)}, nil
+	case 2:
+		return &pb.Profile{Name: "testHeap", ProfileType: pb.ProfileType_HEAP}, nil
+	default:
+		select {}
+	}
+}
+
+func (fs *fakeProfilerServer) UpdateProfile(ctx context.Context, in *pb.UpdateProfileRequest) (*pb.Profile, error) {
+	switch in.Profile.ProfileType {
+	case pb.ProfileType_CPU:
+		fs.gotCPUProfile = in.Profile.ProfileBytes
+	case pb.ProfileType_HEAP:
+		fs.gotHeapProfile = in.Profile.ProfileBytes
+		fs.done <- true
+	}
+
+	return in.Profile, nil
+}
+
+func profileeLoop(quit chan bool) {
+	for {
+		select {
+		case <-quit:
+			return
+		default:
+			profileeWork()
+		}
+	}
+}
+
+func profileeWork() {
+	data := make([]byte, 1024*1024)
+	rand.Read(data)
+
+	var b bytes.Buffer
+	gz := gzip.NewWriter(&b)
+	if _, err := gz.Write(data); err != nil {
+		log.Printf("failed to write to gzip stream", err)
+		return
+	}
+	if err := gz.Flush(); err != nil {
+		log.Printf("failed to flush to gzip stream", err)
+		return
+	}
+	if err := gz.Close(); err != nil {
+		log.Printf("failed to close gzip stream", err)
+	}
+}
+
+func checkSymbolization(p *profile.Profile) error {
+	for _, l := range p.Location {
+		if len(l.Line) > 0 && l.Line[0].Function != nil && strings.Contains(l.Line[0].Function.Name, wantFunctionName) {
+			return nil
+		}
+	}
+	return fmt.Errorf("want function name %v not found in profile", wantFunctionName)
+}
+
+func validateProfile(rawData []byte) error {
+	p, err := profile.ParseData(rawData)
+	if err != nil {
+		return fmt.Errorf("ParseData failed: %v", err)
+	}
+
+	if len(p.Sample) == 0 {
+		return fmt.Errorf("profile contains zero samples: %v", p)
+	}
+
+	if len(p.Location) == 0 {
+		return fmt.Errorf("profile contains zero locations: %v", p)
+	}
+
+	if len(p.Function) == 0 {
+		return fmt.Errorf("profile contains zero functions: %v", p)
+	}
+
+	if err := checkSymbolization(p); err != nil {
+		return fmt.Errorf("checkSymbolization failed: %v for %v", err, p)
+	}
+	return nil
+}
+
+func TestAgentWithServer(t *testing.T) {
+	oldDialGRPC, oldConfig := dialGRPC, config
+	defer func() {
+		dialGRPC, config = oldDialGRPC, oldConfig
+	}()
+
+	srv, err := testutil.NewServer()
+	if err != nil {
+		t.Fatalf("testutil.NewServer(): %v", err)
+	}
+	fakeServer := &fakeProfilerServer{done: make(chan bool)}
+	pb.RegisterProfilerServiceServer(srv.Gsrv, fakeServer)
+
+	srv.Start()
+
+	dialGRPC = gtransport.DialInsecure
+	if err := Start(Config{
+		Target:       testTarget,
+		ProjectID:    testProjectID,
+		InstanceName: testInstanceName,
+		ZoneName:     testZoneName,
+		APIAddr:      srv.Addr,
+	}); err != nil {
+		t.Fatalf("Start(): %v", err)
+	}
+
+	quitProfilee := make(chan bool)
+	go profileeLoop(quitProfilee)
+
+	select {
+	case <-fakeServer.done:
+	case <-time.After(testServerTimeout):
+		t.Errorf("got timeout after %v, want fake server done", testServerTimeout)
+	}
+	quitProfilee <- true
+
+	if err := validateProfile(fakeServer.gotCPUProfile); err != nil {
+		t.Errorf("validateProfile(gotCPUProfile): %v", err)
+	}
+	if err := validateProfile(fakeServer.gotHeapProfile); err != nil {
+		t.Errorf("validateProfile(gotHeapProfile): %v", err)
 	}
 }
