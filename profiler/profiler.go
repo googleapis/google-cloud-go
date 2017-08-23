@@ -60,8 +60,7 @@ import (
 var (
 	config    Config
 	startOnce sync.Once
-	// getProjectID, getInstanceName, getZone, startCPUProfile, stopCPUProfile,
-	// writeHeapProfile and sleep are overrideable for testing.
+	// The functions below are stubbed to be overrideable for testing.
 	getProjectID     = gcemd.ProjectID
 	getInstanceName  = gcemd.InstanceName
 	getZone          = gcemd.Zone
@@ -69,6 +68,7 @@ var (
 	stopCPUProfile   = pprof.StopCPUProfile
 	writeHeapProfile = pprof.WriteHeapProfile
 	sleep            = gax.Sleep
+	dialGRPC         = gtransport.Dial
 )
 
 const (
@@ -168,7 +168,7 @@ func start(cfg Config, options ...option.ClientOption) error {
 	}
 	opts = append(opts, options...)
 
-	conn, err := gtransport.Dial(ctx, opts...)
+	conn, err := dialGRPC(ctx, opts...)
 	if err != nil {
 		debugLog("failed to dial GRPC: %v", err)
 		return err
