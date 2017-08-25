@@ -327,20 +327,10 @@ func TestInitializeResources(t *testing.T) {
 		}
 	}
 
-	wantProfilerHeader := "test-project-ID##test-target##zone|test-zone-name"
-	if ph := a.client.profilerHeader; len(ph) == 0 {
-		t.Errorf("initializeResources() sets empty profilerHeader")
-	} else if ph[0] != wantProfilerHeader {
-		t.Errorf("initializeResources() sets wrong profilerHeader, got: %v, want: %v", ph[0], wantProfilerHeader)
-	}
-
 	md, _ := grpcmd.FromOutgoingContext(ctx)
 
 	if !testutil.Equal(md[xGoogAPIMetadata], a.client.xGoogHeader) {
 		t.Errorf("md[%v] = %v, want equal xGoogHeader = %v", xGoogAPIMetadata, md[xGoogAPIMetadata], a.client.xGoogHeader)
-	}
-	if !testutil.Equal(md[deploymentKeyMetadata], a.client.profilerHeader) {
-		t.Errorf("md[%v] = %v, want equal profilerHeader = %v", deploymentKeyMetadata, md[deploymentKeyMetadata], a.client.profilerHeader)
 	}
 }
 
