@@ -34,11 +34,8 @@ package profiler
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"log"
 	"runtime/pprof"
-	"sort"
-	"strings"
 	"sync"
 	"time"
 
@@ -73,12 +70,11 @@ var (
 )
 
 const (
-	apiAddress            = "cloudprofiler.googleapis.com:443"
-	xGoogAPIMetadata      = "x-goog-api-client"
-	deploymentKeyMetadata = "x-profiler-deployment-key-bin"
-	zoneNameLabel         = "zone"
-	instanceLabel         = "instance"
-	scope                 = "https://www.googleapis.com/auth/monitoring.write"
+	apiAddress       = "cloudprofiler.googleapis.com:443"
+	xGoogAPIMetadata = "x-goog-api-client"
+	zoneNameLabel    = "zone"
+	instanceLabel    = "instance"
+	scope            = "https://www.googleapis.com/auth/monitoring.write"
 
 	initialBackoff = time.Second
 	// Ensure the agent will recover within 1 hour.
@@ -303,22 +299,6 @@ type client struct {
 
 	// Metadata for google API to be sent with each request.
 	xGoogHeader []string
-
-	// Metadata for Cloud Profiler API to be sent with each request.
-	profilerHeader []string
-}
-
-// setProfilerHeader sets the unique key string for a deployment target in
-// the `x-profiler-deployment-key-bin` header passed on each request.
-// Intended for use by Cloud Profiler agents.
-func (c *client) setProfilerHeader(d *pb.Deployment) {
-	labels := make([]string, 0, len(d.Labels))
-	for k, v := range d.Labels {
-		labels = append(labels, fmt.Sprintf("%s|%s", k, v))
-	}
-	sort.Strings(labels)
-	key := d.ProjectId + "##" + d.Target + "##" + strings.Join(labels, "#")
-	c.profilerHeader = []string{key}
 }
 
 // setXGoogHeader sets the name and version of the application in
@@ -334,7 +314,6 @@ func (c *client) insertMetadata(ctx context.Context) context.Context {
 	md, _ := grpcmd.FromOutgoingContext(ctx)
 	md = md.Copy()
 	md[xGoogAPIMetadata] = c.xGoogHeader
-	md[deploymentKeyMetadata] = c.profilerHeader
 	return grpcmd.NewOutgoingContext(ctx, md)
 }
 
@@ -384,7 +363,6 @@ func initializeResources(ctx context.Context, conn *grpc.ClientConn, d *pb.Deplo
 		client: pb.NewProfilerServiceClient(conn),
 	}
 	c.setXGoogHeader()
-	c.setProfilerHeader(d)
 
 	ctx = c.insertMetadata(ctx)
 	return &agent{
