@@ -216,6 +216,7 @@ func decodeFamilyProto(r Row, row string, f *btpb.Family) {
 }
 
 // RowSet is a set of rows to be read. It is satisfied by RowList, RowRange and RowRangeList.
+// The serialized size of the RowSet must be no larger than 1MiB.
 type RowSet interface {
 	proto() *btpb.RowSet
 
@@ -579,7 +580,7 @@ type entryErr struct {
 	Err   error
 }
 
-// ApplyBulk applies multiple Mutations.
+// ApplyBulk applies multiple Mutations, up to a maximum of 100,000.
 // Each mutation is individually applied atomically,
 // but the set of mutations may be applied in any order.
 //
