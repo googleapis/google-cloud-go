@@ -18,7 +18,7 @@
 // Google Cloud Video Intelligence API.
 //
 // Google Cloud Video Intelligence API.
-package videointelligence // import "cloud.google.com/go/videointelligence/apiv1beta1"
+package videointelligence // import "cloud.google.com/go/videointelligence/apiv1beta2"
 
 import (
 	"golang.org/x/net/context"
