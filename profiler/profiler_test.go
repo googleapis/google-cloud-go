@@ -38,18 +38,22 @@ import (
 )
 
 const (
-	testProjectID    = "test-project-ID"
-	testInstanceName = "test-instance-name"
-	testZoneName     = "test-zone-name"
-	testTarget       = "test-target"
+	testProjectID      = "test-project-ID"
+	testInstanceName   = "test-instance-name"
+	testZoneName       = "test-zone-name"
+	testTarget         = "test-target"
+	testService        = "test-service"
+	testServiceVersion = "test-service-version"
 )
 
 func createTestDeployment() *pb.Deployment {
-	labels := make(map[string]string)
-	labels[zoneNameLabel] = testZoneName
+	labels := map[string]string{
+		zoneNameLabel: testZoneName,
+		versionLabel:  testServiceVersion,
+	}
 	return &pb.Deployment{
 		ProjectId: testProjectID,
-		Target:    testTarget,
+		Target:    testService,
 		Labels:    labels,
 	}
 }
@@ -348,7 +352,8 @@ func TestInitializeDeployment(t *testing.T) {
 		return testZoneName, nil
 	}
 
-	config = Config{Target: testTarget}
+	cfg := Config{Service: testService, ServiceVersion: testServiceVersion}
+	initializeConfig(cfg)
 	d, err := initializeDeployment()
 	if err != nil {
 		t.Errorf("initializeDeployment() got error: %v, want no error", err)
@@ -356,6 +361,48 @@ func TestInitializeDeployment(t *testing.T) {
 
 	if want := createTestDeployment(); !testutil.Equal(d, want) {
 		t.Errorf("initializeDeployment() got: %v, want %v", d, want)
+	}
+}
+
+func TestInitializeConfig(t *testing.T) {
+	oldConfig := config
+	defer func() {
+		config = oldConfig
+	}()
+
+	for _, tt := range []struct {
+		config          Config
+		wantTarget      string
+		wantErrorString string
+	}{
+		{
+			Config{Service: testService},
+			testService,
+			"",
+		},
+		{
+			Config{Target: testTarget},
+			testTarget,
+			"",
+		},
+		{
+			Config{},
+			"",
+			"service name must be specified in the configuration",
+		},
+	} {
+		errorString := ""
+		if err := initializeConfig(tt.config); err != nil {
+			errorString = err.Error()
+		}
+
+		if errorString != tt.wantErrorString {
+			t.Errorf("initializeConfig(%v) got error: %v, want %v", tt.config, errorString, tt.wantErrorString)
+		}
+
+		if config.Target != tt.wantTarget {
+			t.Errorf("initializeConfig(%v) got target: %v, want %v", tt.config, config.Target, tt.wantTarget)
+		}
 	}
 }
 
