@@ -26,7 +26,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
-	videointelligencepb "google.golang.org/genproto/googleapis/cloud/videointelligence/v1beta1"
+	videointelligencepb "google.golang.org/genproto/googleapis/cloud/videointelligence/v1beta2"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
