@@ -190,7 +190,6 @@ func TestDecodeValue(t *testing.T) {
 		{nullProto(), listType(intType()), []NullInt64(nil), false},
 		// INT64 ARRAY with []int64
 		{listProto(intProto(91), intProto(87)), listType(intType()), []int64{91, 87}, false},
-		//{nullProto(), listType(intType()), []int64{}, false},
 		// BOOL
 		{boolProto(true), boolType(), true, false},
 		{nullProto(), boolType(), true, true},
