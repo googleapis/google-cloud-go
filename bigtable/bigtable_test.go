@@ -776,7 +776,7 @@ func TestClientIntegration(t *testing.T) {
 	checkpoint("tested high concurrency")
 
 	// Large reads, writes and scans.
-	bigBytes := make([]byte, 3<<20) // 3 MB is large, but less than current gRPC max of 4 MB.
+	bigBytes := make([]byte, 5<<20) // 5 MB is larger than current default gRPC max of 4 MB, but less than the max we set.
 	nonsense := []byte("lorem ipsum dolor sit amet, ")
 	fill(bigBytes, nonsense)
 	mut = NewMutation()
