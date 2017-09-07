@@ -872,8 +872,9 @@ func decodeStringArray(pb *proto3.ListValue) ([]string, error) {
 		return nil, errNilListValue("STRING")
 	}
 	a := make([]string, len(pb.Values))
+	st := stringType()
 	for i, v := range pb.Values {
-		if err := decodeValue(v, stringType(), &a[i]); err != nil {
+		if err := decodeValue(v, st, &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "STRING", err)
 		}
 	}
