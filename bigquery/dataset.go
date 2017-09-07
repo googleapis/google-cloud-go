@@ -148,17 +148,21 @@ func (it *TableIterator) fetch(pageSize int, pageToken string) (string, error) {
 	return tok, nil
 }
 
-// Datasets returns an iterator over the datasets in the Client's project.
+// Datasets returns an iterator over the datasets in a project.
+// The Client's project is used by default, but that can be
+// changed by setting ProjectID on the returned iterator before calling Next.
 func (c *Client) Datasets(ctx context.Context) *DatasetIterator {
 	return c.DatasetsInProject(ctx, c.projectID)
 }
 
 // DatasetsInProject returns an iterator over the datasets in the provided project.
+//
+// Deprecated: call Client.Datasets, then set ProjectID on the returned iterator.
 func (c *Client) DatasetsInProject(ctx context.Context, projectID string) *DatasetIterator {
 	it := &DatasetIterator{
 		ctx:       ctx,
 		c:         c,
-		projectID: projectID,
+		ProjectID: projectID,
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
@@ -170,18 +174,23 @@ func (c *Client) DatasetsInProject(ctx context.Context, projectID string) *Datas
 // DatasetIterator iterates over the datasets in a project.
 type DatasetIterator struct {
 	// ListHidden causes hidden datasets to be listed when set to true.
+	// Set before the first call to Next.
 	ListHidden bool
 
 	// Filter restricts the datasets returned by label. The filter syntax is described in
 	// https://cloud.google.com/bigquery/docs/labeling-datasets#filtering_datasets_using_labels
+	// Set before the first call to Next.
 	Filter string
 
-	ctx       context.Context
-	projectID string
-	c         *Client
-	pageInfo  *iterator.PageInfo
-	nextFunc  func() error
-	items     []*Dataset
+	// The project ID of the listed datasets.
+	// Set before the first call to Next.
+	ProjectID string
+
+	ctx      context.Context
+	c        *Client
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+	items    []*Dataset
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
@@ -197,7 +206,7 @@ func (it *DatasetIterator) Next() (*Dataset, error) {
 }
 
 func (it *DatasetIterator) fetch(pageSize int, pageToken string) (string, error) {
-	datasets, nextPageToken, err := it.c.service.listDatasets(it.ctx, it.projectID,
+	datasets, nextPageToken, err := it.c.service.listDatasets(it.ctx, it.ProjectID,
 		pageSize, pageToken, it.ListHidden, it.Filter)
 	if err != nil {
 		return "", err
