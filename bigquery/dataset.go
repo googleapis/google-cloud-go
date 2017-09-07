@@ -52,6 +52,27 @@ type DatasetMetadataToUpdate struct {
 	// DefaultTableExpiration is the the default expiration time for new tables.
 	// If set to time.Duration(0), new tables never expire.
 	DefaultTableExpiration optional.Duration
+
+	setLabels    map[string]string
+	deleteLabels map[string]bool
+}
+
+// SetLabel causes a label to be added or modified when dm is used
+// in a call to Dataset.Update.
+func (dm *DatasetMetadataToUpdate) SetLabel(name, value string) {
+	if dm.setLabels == nil {
+		dm.setLabels = map[string]string{}
+	}
+	dm.setLabels[name] = value
+}
+
+// DeleteLabel causes a label to be deleted when dm is used in a
+// call to Dataset.Update.
+func (dm *DatasetMetadataToUpdate) DeleteLabel(name string) {
+	if dm.deleteLabels == nil {
+		dm.deleteLabels = map[string]bool{}
+	}
+	dm.deleteLabels[name] = true
 }
 
 // Dataset creates a handle to a BigQuery dataset in the client's project.
