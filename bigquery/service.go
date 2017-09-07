@@ -689,6 +689,20 @@ func (s *bigqueryService) insertDataset(ctx context.Context, datasetID, projectI
 }
 
 func (s *bigqueryService) patchDataset(ctx context.Context, projectID, datasetID string, dm *DatasetMetadataToUpdate, etag string) (*DatasetMetadata, error) {
+	ds := bqDatasetFromMetadata(dm)
+	call := s.s.Datasets.Patch(projectID, datasetID, ds).Context(ctx)
+	setClientHeader(call.Header())
+	if etag != "" {
+		call.Header().Set("If-Match", etag)
+	}
+	ds2, err := call.Do()
+	if err != nil {
+		return nil, err
+	}
+	return bqDatasetToMetadata(ds2), nil
+}
+
+func bqDatasetFromMetadata(dm *DatasetMetadataToUpdate) *bq.Dataset {
 	ds := &bq.Dataset{}
 	forceSend := func(field string) {
 		ds.ForceSendFields = append(ds.ForceSendFields, field)
@@ -711,16 +725,19 @@ func (s *bigqueryService) patchDataset(ctx context.Context, projectID, datasetID
 			ds.DefaultTableExpirationMs = int64(dur.Seconds() * 1000)
 		}
 	}
-	call := s.s.Datasets.Patch(projectID, datasetID, ds).Context(ctx)
-	setClientHeader(call.Header())
-	if etag != "" {
-		call.Header().Set("If-Match", etag)
+	if dm.setLabels != nil || dm.deleteLabels != nil {
+		ds.Labels = map[string]string{}
+		for k, v := range dm.setLabels {
+			ds.Labels[k] = v
+		}
+		if len(ds.Labels) == 0 && len(dm.deleteLabels) > 0 {
+			forceSend("Labels")
+		}
+		for l := range dm.deleteLabels {
+			ds.NullFields = append(ds.NullFields, "Labels."+l)
+		}
 	}
-	ds2, err := call.Do()
-	if err != nil {
-		return nil, err
-	}
-	return bqDatasetToMetadata(ds2), nil
+	return ds
 }
 
 func (s *bigqueryService) deleteDataset(ctx context.Context, datasetID, projectID string) error {

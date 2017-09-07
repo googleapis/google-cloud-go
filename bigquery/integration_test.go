@@ -303,6 +303,37 @@ func TestIntegration_DatasetUpdateDefaultExpiration(t *testing.T) {
 	}
 }
 
+func TestIntegration_DatasetUpdateLabels(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	md, err := dataset.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// TODO(jba): use a separate dataset for each test run so
+	// tests don't interfere with each other.
+	var dm DatasetMetadataToUpdate
+	dm.SetLabel("label", "value")
+	md, err = dataset.Update(ctx, dm, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := md.Labels["label"], "value"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+	dm = DatasetMetadataToUpdate{}
+	dm.DeleteLabel("label")
+	md, err = dataset.Update(ctx, dm, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := md.Labels["label"]; ok {
+		t.Error("label still present after deletion")
+	}
+}
+
 func TestIntegration_Tables(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
