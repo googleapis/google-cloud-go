@@ -115,6 +115,7 @@ func BenchmarkDecodeArray(b *testing.B) {
 				{"DateDirect", decodeArray_Date_direct},
 				{"DateFunc", decodeArray_Date_func},
 				{"DateReflect", decodeArray_Date_reflect},
+				{"StringDecodeStringArray", decodeStringArrayWrap},
 				{"StringDirect", decodeArray_String_direct},
 				{"StringFunc", decodeArray_String_func},
 				{"StringReflect", decodeArray_String_reflect},
@@ -150,6 +151,12 @@ func decodeArray_Date_func(pb *proto3.ListValue) {
 func decodeArray_Date_reflect(pb *proto3.ListValue) {
 	var a []civil.Date
 	if err := decodeArray_reflect(pb, "DATE", dateType(), &a); err != nil {
+		panic(err)
+	}
+}
+
+func decodeStringArrayWrap(pb *proto3.ListValue) {
+	if _, err := decodeStringArray(pb); err != nil {
 		panic(err)
 	}
 }
