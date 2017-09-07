@@ -15,6 +15,7 @@
 package bigquery
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -501,6 +502,7 @@ type createTableConf struct {
 	viewQuery                     string
 	schema                        *bq.TableSchema
 	useStandardSQL                bool
+	useLegacySQL                  bool
 	timePartitioning              *TimePartitioning
 }
 
@@ -510,6 +512,9 @@ type createTableConf struct {
 // Note: expiration can only be set during table creation.
 // Note: after table creation, a view can be modified only if its table was initially created with a view.
 func (s *bigqueryService) createTable(ctx context.Context, conf *createTableConf) error {
+	if conf.useStandardSQL && conf.useLegacySQL {
+		return errors.New("bigquery: cannot provide both UseStandardSQL and UseLegacySQL")
+	}
 	table := &bq.Table{
 		// TODO(jba): retry? Is this always idempotent?
 		TableReference: &bq.TableReference{
@@ -529,6 +534,9 @@ func (s *bigqueryService) createTable(ctx context.Context, conf *createTableConf
 		if conf.useStandardSQL {
 			table.View.UseLegacySql = false
 			table.View.ForceSendFields = append(table.View.ForceSendFields, "UseLegacySql")
+		}
+		if conf.useLegacySQL {
+			table.View.UseLegacySql = true
 		}
 	}
 	if conf.schema != nil {

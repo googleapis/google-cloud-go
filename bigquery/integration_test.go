@@ -1056,6 +1056,77 @@ func TestIntegration_ReadNullIntoStruct(t *testing.T) {
 	}
 }
 
+const (
+	stdName    = "`bigquery-public-data.samples.shakespeare`"
+	legacyName = "[bigquery-public-data:samples.shakespeare]"
+)
+
+// These tests exploit the fact that the two SQL versions have different syntaxes for
+// fully-qualified table names.
+var useLegacySqlTests = []struct {
+	t           string // name of table
+	std, legacy bool   // use standard/legacy SQL
+	err         bool   // do we expect an error?
+}{
+	{t: legacyName, std: false, legacy: true, err: false},
+	{t: legacyName, std: true, legacy: false, err: true},
+	{t: legacyName, std: false, legacy: false, err: false}, // legacy SQL is default
+	{t: legacyName, std: true, legacy: true, err: true},
+	{t: stdName, std: false, legacy: true, err: true},
+	{t: stdName, std: true, legacy: false, err: false},
+	{t: stdName, std: false, legacy: false, err: true}, // legacy SQL is default
+	{t: stdName, std: true, legacy: true, err: true},
+}
+
+func TestIntegration_QueryUseLegacySQL(t *testing.T) {
+	// Test the UseLegacySQL and UseStandardSQL options for queries.
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	for _, test := range useLegacySqlTests {
+		q := client.Query(fmt.Sprintf("select word from %s limit 1", test.t))
+		q.UseStandardSQL = test.std
+		q.UseLegacySQL = test.legacy
+		_, err := q.Read(ctx)
+		gotErr := err != nil
+		if gotErr && !test.err {
+			t.Errorf("%+v:\nunexpected error: %v", test, err)
+		} else if !gotErr && test.err {
+			t.Errorf("%+v:\nsucceeded, but want error", test)
+		}
+	}
+}
+
+func TestIntegration_TableUseLegacySQL(t *testing.T) {
+	// Test the UseLegacySQL and UseStandardSQL options for CreateTable.
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
+	for i, test := range useLegacySqlTests {
+		view := dataset.Table(fmt.Sprintf("t_view_%d", i))
+		vq := ViewQuery(fmt.Sprintf("SELECT word from %s", test.t))
+		opts := []CreateTableOption{vq}
+		if test.std {
+			opts = append(opts, UseStandardSQL())
+		}
+		if test.legacy {
+			opts = append(opts, UseLegacySQL())
+		}
+		err := view.Create(ctx, opts...)
+		gotErr := err != nil
+		if gotErr && !test.err {
+			t.Errorf("%+v:\nunexpected error: %v", test, err)
+		} else if !gotErr && test.err {
+			t.Errorf("%+v:\nsucceeded, but want error", test)
+		}
+		view.Delete(ctx)
+	}
+}
+
 // Creates a new, temporary table with a unique name and the given schema.
 func newTable(t *testing.T, s Schema) *Table {
 	name := fmt.Sprintf("t%d", time.Now().UnixNano())

@@ -206,6 +206,16 @@ func (opt useStandardSQL) customizeCreateTable(conf *createTableConf) {
 	conf.useStandardSQL = true
 }
 
+type useLegacySQL struct{}
+
+// UseLegacySQL returns a CreateTableOption to set the table to use legacy SQL.
+// This is currently the default.
+func UseLegacySQL() CreateTableOption { return useLegacySQL{} }
+
+func (opt useLegacySQL) customizeCreateTable(conf *createTableConf) {
+	conf.useLegacySQL = true
+}
+
 // TimePartitioning is a CreateTableOption that can be used to set time-based
 // date partitioning on a table.
 // For more information see: https://cloud.google.com/bigquery/docs/creating-partitioned-tables

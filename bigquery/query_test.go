@@ -15,6 +15,7 @@
 package bigquery
 
 import (
+	"fmt"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
@@ -302,5 +303,28 @@ func TestConfiguringQuery(t *testing.T) {
 	}
 	if !testutil.Equal(s.Job, want) {
 		t.Errorf("querying: got:\n%v\nwant:\n%v", s.Job, want)
+	}
+}
+
+func TestQueryLegacySQL(t *testing.T) {
+	c := &Client{
+		projectID: "project-id",
+		service:   &testService{},
+	}
+	q := c.Query("q")
+	q.UseStandardSQL = true
+	q.UseLegacySQL = true
+	_, err := q.Run(context.Background())
+	if err == nil {
+		t.Error("UseStandardSQL and UseLegacySQL: got nil, want error")
+	}
+	q = c.Query("q")
+	q.Parameters = []QueryParameter{{Name: "p", Value: 3}}
+	q.UseLegacySQL = true
+	_, err = q.Run(context.Background())
+	if err == nil {
+		t.Error("Parameters and UseLegacySQL: got nil, want error")
+	} else {
+		fmt.Println(err)
 	}
 }
