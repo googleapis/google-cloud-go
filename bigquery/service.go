@@ -41,6 +41,7 @@ type service interface {
 	getJob(ctx context.Context, projectId, jobID string) (*Job, error)
 	jobCancel(ctx context.Context, projectId, jobID string) error
 	jobStatus(ctx context.Context, projectId, jobID string) (*JobStatus, error)
+	listJobs(ctx context.Context, projectId string, maxResults int, pageToken string, all bool, state string) ([]JobInfo, string, error)
 
 	// Tables
 	createTable(ctx context.Context, conf *createTableConf) error
@@ -313,22 +314,11 @@ func (s *bigqueryService) insertRows(ctx context.Context, projectID, datasetID, 
 }
 
 func (s *bigqueryService) getJob(ctx context.Context, projectID, jobID string) (*Job, error) {
-	job, err := s.getJobInternal(ctx, projectID, jobID, "configuration")
+	bqjob, err := s.getJobInternal(ctx, projectID, jobID, "configuration")
 	if err != nil {
 		return nil, err
 	}
-	var isQuery bool
-	var dest *bq.TableReference
-	if job.Configuration.Query != nil {
-		isQuery = true
-		dest = job.Configuration.Query.DestinationTable
-	}
-	return &Job{
-		projectID:        projectID,
-		jobID:            jobID,
-		isQuery:          isQuery,
-		destinationTable: dest,
-	}, nil
+	return jobFromProtos(bqjob.JobReference, bqjob.Configuration), nil
 }
 
 func (s *bigqueryService) jobStatus(ctx context.Context, projectID, jobID string) (*JobStatus, error) {
@@ -346,9 +336,10 @@ func (s *bigqueryService) jobStatus(ctx context.Context, projectID, jobID string
 
 func (s *bigqueryService) getJobInternal(ctx context.Context, projectID, jobID string, fields ...googleapi.Field) (*bq.Job, error) {
 	var job *bq.Job
-	call := s.s.Jobs.Get(projectID, jobID).
-		Fields(fields...).
-		Context(ctx)
+	call := s.s.Jobs.Get(projectID, jobID).Context(ctx)
+	if len(fields) > 0 {
+		call = call.Fields(fields...)
+	}
 	setClientHeader(call.Header())
 	err := runWithRetry(ctx, func() (err error) {
 		job, err = call.Do()
@@ -374,6 +365,21 @@ func (s *bigqueryService) jobCancel(ctx context.Context, projectID, jobID string
 		_, err := call.Do()
 		return err
 	})
+}
+
+func jobFromProtos(jr *bq.JobReference, config *bq.JobConfiguration) *Job {
+	var isQuery bool
+	var dest *bq.TableReference
+	if config.Query != nil {
+		isQuery = true
+		dest = config.Query.DestinationTable
+	}
+	return &Job{
+		projectID:        jr.ProjectId,
+		jobID:            jr.JobId,
+		isQuery:          isQuery,
+		destinationTable: dest,
+	}
 }
 
 var stateMap = map[string]State{"PENDING": Pending, "RUNNING": Running, "DONE": Done}
@@ -805,6 +811,46 @@ func (s *bigqueryService) convertListedDataset(d *bq.DatasetListDatasets) *Datas
 		ProjectID: d.DatasetReference.ProjectId,
 		DatasetID: d.DatasetReference.DatasetId,
 	}
+}
+
+func (s *bigqueryService) listJobs(ctx context.Context, projectID string, maxResults int, pageToken string, all bool, state string) ([]JobInfo, string, error) {
+	req := s.s.Jobs.List(projectID).
+		Context(ctx).
+		PageToken(pageToken).
+		Projection("full").
+		AllUsers(all)
+	if state != "" {
+		req.StateFilter(state)
+	}
+	setClientHeader(req.Header())
+	if maxResults > 0 {
+		req.MaxResults(int64(maxResults))
+	}
+	res, err := req.Do()
+	if err != nil {
+		return nil, "", err
+	}
+	var jobInfos []JobInfo
+	for _, j := range res.Jobs {
+		ji, err := s.convertListedJob(j)
+		if err != nil {
+			return nil, "", err
+		}
+		jobInfos = append(jobInfos, ji)
+	}
+	return jobInfos, res.NextPageToken, nil
+}
+
+func (s *bigqueryService) convertListedJob(j *bq.JobListJobs) (JobInfo, error) {
+	st, err := jobStatusFromProto(j.Status)
+	if err != nil {
+		return JobInfo{}, err
+	}
+	st.Statistics = jobStatisticsFromProto(j.Statistics)
+	return JobInfo{
+		Job:    jobFromProtos(j.JobReference, j.Configuration),
+		Status: st,
+	}, nil
 }
 
 // runWithRetry calls the function until it returns nil or a non-retryable error, or

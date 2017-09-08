@@ -1117,6 +1117,38 @@ func TestIntegration_TableUseLegacySQL(t *testing.T) {
 	}
 }
 
+func TestIntegration_ListJobs(t *testing.T) {
+	// It's difficult to test the list of jobs, because we can't easily
+	// control what's in it. Also, there are many jobs in the test project,
+	// and it takes considerable time to list them all.
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	// About all we can do is list a few jobs.
+	const max = 20
+	var jis []JobInfo
+	it := client.Jobs(ctx)
+	for {
+		ji, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		jis = append(jis, ji)
+		if len(jis) >= max {
+			break
+		}
+	}
+	// We expect that there is at least one job in the last few months.
+	if len(jis) == 0 {
+		t.Fatal("did not get any jobs")
+	}
+}
+
 // Creates a new, temporary table with a unique name and the given schema.
 func newTable(t *testing.T, s Schema) *Table {
 	name := fmt.Sprintf("t%d", time.Now().UnixNano())
