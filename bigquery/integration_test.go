@@ -246,20 +246,20 @@ func TestIntegration_DatasetUpdateETags(t *testing.T) {
 	// Write without ETag succeeds.
 	desc := md.Description + "d2"
 	name := md.Name + "n2"
-	md2, err := dataset.Update(ctx, DatasetMetadataToUpdate{Description: desc, Name: name}, "")
+	md2, err := datasetUpdate(ctx, dataset, DatasetMetadataToUpdate{Description: desc, Name: name}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
 	check(md2, desc, name)
 
 	// Write with original ETag fails because of intervening write.
-	_, err = dataset.Update(ctx, DatasetMetadataToUpdate{Description: "d", Name: "n"}, md.ETag)
+	_, err = datasetUpdate(ctx, dataset, DatasetMetadataToUpdate{Description: "d", Name: "n"}, md.ETag)
 	if err == nil {
 		t.Fatal("got nil, want error")
 	}
 
 	// Write with most recent ETag succeeds.
-	md3, err := dataset.Update(ctx, DatasetMetadataToUpdate{Description: "", Name: ""}, md2.ETag)
+	md3, err := datasetUpdate(ctx, dataset, DatasetMetadataToUpdate{Description: "", Name: ""}, md2.ETag)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -276,7 +276,7 @@ func TestIntegration_DatasetUpdateDefaultExpiration(t *testing.T) {
 		t.Fatal(err)
 	}
 	// Set the default expiration time.
-	md, err = dataset.Update(ctx,
+	md, err = datasetUpdate(ctx, dataset,
 		DatasetMetadataToUpdate{DefaultTableExpiration: time.Hour}, "")
 	if err != nil {
 		t.Fatal(err)
@@ -285,7 +285,7 @@ func TestIntegration_DatasetUpdateDefaultExpiration(t *testing.T) {
 		t.Fatalf("got %s, want 1h", md.DefaultTableExpiration)
 	}
 	// Omitting DefaultTableExpiration doesn't change it.
-	md, err = dataset.Update(ctx, DatasetMetadataToUpdate{Name: "xyz"}, "")
+	md, err = datasetUpdate(ctx, dataset, DatasetMetadataToUpdate{Name: "xyz"}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -293,7 +293,7 @@ func TestIntegration_DatasetUpdateDefaultExpiration(t *testing.T) {
 		t.Fatalf("got %s, want 1h", md.DefaultTableExpiration)
 	}
 	// Setting it to 0 deletes it (which looks like a 0 duration).
-	md, err = dataset.Update(ctx,
+	md, err = datasetUpdate(ctx, dataset,
 		DatasetMetadataToUpdate{DefaultTableExpiration: time.Duration(0)}, "")
 	if err != nil {
 		t.Fatal(err)
@@ -316,7 +316,7 @@ func TestIntegration_DatasetUpdateLabels(t *testing.T) {
 	// tests don't interfere with each other.
 	var dm DatasetMetadataToUpdate
 	dm.SetLabel("label", "value")
-	md, err = dataset.Update(ctx, dm, "")
+	md, err = datasetUpdate(ctx, dataset, dm, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -325,7 +325,7 @@ func TestIntegration_DatasetUpdateLabels(t *testing.T) {
 	}
 	dm = DatasetMetadataToUpdate{}
 	dm.DeleteLabel("label")
-	md, err = dataset.Update(ctx, dm, "")
+	md, err = datasetUpdate(ctx, dataset, dm, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -655,7 +655,7 @@ func TestIntegration_TableUpdate(t *testing.T) {
 	wantDescription := tm.Description + "more"
 	wantName := tm.Name + "more"
 	wantExpiration := tm.ExpirationTime.Add(time.Hour * 24)
-	got, err := table.Update(ctx, TableMetadataToUpdate{
+	got, err := tableUpdate(ctx, table, TableMetadataToUpdate{
 		Description:    wantDescription,
 		Name:           wantName,
 		ExpirationTime: wantExpiration,
@@ -677,12 +677,12 @@ func TestIntegration_TableUpdate(t *testing.T) {
 	}
 
 	// Blind write succeeds.
-	_, err = table.Update(ctx, TableMetadataToUpdate{Name: "x"}, "")
+	_, err = tableUpdate(ctx, table, TableMetadataToUpdate{Name: "x"}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
 	// Write with old etag fails.
-	_, err = table.Update(ctx, TableMetadataToUpdate{Name: "y"}, got.ETag)
+	_, err = tableUpdate(ctx, table, TableMetadataToUpdate{Name: "y"}, got.ETag)
 	if err == nil {
 		t.Fatal("Update with old ETag succeeded, wanted failure")
 	}
@@ -701,7 +701,7 @@ func TestIntegration_TableUpdate(t *testing.T) {
 		schema[2],
 	}
 
-	got, err = table.Update(ctx, TableMetadataToUpdate{Schema: schema2}, "")
+	got, err = tableUpdate(ctx, table, TableMetadataToUpdate{Schema: schema2}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -714,7 +714,7 @@ func TestIntegration_TableUpdate(t *testing.T) {
 	}
 
 	// Updating with the empty schema succeeds, but is a no-op.
-	got, err = table.Update(ctx, TableMetadataToUpdate{Schema: Schema{}}, "")
+	got, err = tableUpdate(ctx, table, TableMetadataToUpdate{Schema: Schema{}}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -746,15 +746,7 @@ func TestIntegration_TableUpdate(t *testing.T) {
 			schema3[0], schema3[1], schema3[2],
 			{Name: "rec2", Type: RecordFieldType, Schema: Schema{}}}},
 	} {
-		for {
-			_, err = table.Update(ctx, TableMetadataToUpdate{Schema: Schema(test.fields)}, "")
-			if !hasStatusCode(err, 403) {
-				break
-			}
-			// We've hit the rate limit for updates. Wait a bit and retry.
-			t.Logf("%s: retrying after getting %v", test.desc, err)
-			time.Sleep(4 * time.Second)
-		}
+		_, err = tableUpdate(ctx, table, TableMetadataToUpdate{Schema: Schema(test.fields)}, "")
 		if err == nil {
 			t.Errorf("%s: want error, got nil", test.desc)
 		} else if !hasStatusCode(err, 400) {
@@ -1136,6 +1128,34 @@ func newTable(t *testing.T, s Schema) *Table {
 		t.Fatal(err)
 	}
 	return table
+}
+
+// Call Table.Update, retrying if the rate limit is exceeded.
+func tableUpdate(ctx context.Context, table *Table, tmu TableMetadataToUpdate, etag string) (*TableMetadata, error) {
+	var tm *TableMetadata
+	err := internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
+		tm, err = table.Update(ctx, tmu, etag)
+		//  Stop retrying when the code is not 403 (rate limit exceeded).
+		return !hasStatusCode(err, 403), err
+	})
+	if err != nil {
+		return nil, err
+	}
+	return tm, nil
+}
+
+// Call Dataset.Update, retrying if the rate limit is exceeded.
+func datasetUpdate(ctx context.Context, ds *Dataset, dmu DatasetMetadataToUpdate, etag string) (*DatasetMetadata, error) {
+	var dm *DatasetMetadata
+	err := internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
+		dm, err = ds.Update(ctx, dmu, etag)
+		//  Stop retrying when the code is not 403 (rate limit exceeded).
+		return !hasStatusCode(err, 403), err
+	})
+	if err != nil {
+		return nil, err
+	}
+	return dm, nil
 }
 
 func checkRead(t *testing.T, msg string, it *RowIterator, want [][]Value) {
