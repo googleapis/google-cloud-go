@@ -37,6 +37,7 @@ import (
 	"bytes"
 	"errors"
 	"log"
+	"os"
 	"runtime/pprof"
 	"sync"
 	"time"
@@ -406,12 +407,19 @@ func initializeResources(ctx context.Context, conn *grpc.ClientConn, d *pb.Deplo
 func initializeConfig(cfg Config) error {
 	config = cfg
 
-	if config.Service != "" {
+	switch {
+	case config.Service != "":
 		config.Target = config.Service
+	case config.Target == "":
+		config.Target = os.Getenv("GAE_SERVICE")
 	}
 
 	if config.Target == "" {
 		return errors.New("service name must be specified in the configuration")
+	}
+
+	if config.ServiceVersion == "" {
+		config.ServiceVersion = os.Getenv("GAE_VERSION")
 	}
 
 	if config.APIAddr == "" {
