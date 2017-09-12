@@ -22,6 +22,7 @@ import (
 	"io"
 	"log"
 	"math/rand"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -48,7 +49,7 @@ const (
 	testZoneName        = "test-zone-name"
 	testTarget          = "test-target"
 	testService         = "test-service"
-	testServiceVersion  = "test-service-version"
+	testSvcVersion      = "test-service-version"
 	testProfileDuration = time.Second * 10
 	testServerTimeout   = time.Second * 15
 	wantFunctionName    = "profilee"
@@ -57,7 +58,7 @@ const (
 func createTestDeployment() *pb.Deployment {
 	labels := map[string]string{
 		zoneNameLabel: testZoneName,
-		versionLabel:  testServiceVersion,
+		versionLabel:  testSvcVersion,
 	}
 	return &pb.Deployment{
 		ProjectId: testProjectID,
@@ -357,7 +358,7 @@ func TestInitializeDeployment(t *testing.T) {
 		return testZoneName, nil
 	}
 
-	cfg := Config{Service: testService, ServiceVersion: testServiceVersion}
+	cfg := Config{Service: testService, ServiceVersion: testSvcVersion}
 	initializeConfig(cfg)
 	d, err := initializeDeployment()
 	if err != nil {
@@ -370,32 +371,93 @@ func TestInitializeDeployment(t *testing.T) {
 }
 
 func TestInitializeConfig(t *testing.T) {
-	oldConfig := config
+	oldConfig, oldService, oldVersion := config, os.Getenv("GAE_SERVICE"), os.Getenv("GAE_VERSION")
 	defer func() {
 		config = oldConfig
+		if err := os.Setenv("GAE_SERVICE", oldService); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.Setenv("GAE_VERSION", oldVersion); err != nil {
+			t.Fatal(err)
+		}
 	}()
-
+	testGAEService := "test-gae-service"
+	testGAEVersion := "test-gae-version"
 	for _, tt := range []struct {
 		config          Config
 		wantTarget      string
 		wantErrorString string
+		wantSvcVersion  string
+		onGAE           bool
 	}{
 		{
 			Config{Service: testService},
 			testService,
 			"",
+			"",
+			false,
 		},
 		{
 			Config{Target: testTarget},
 			testTarget,
 			"",
+			"",
+			false,
 		},
 		{
 			Config{},
 			"",
 			"service name must be specified in the configuration",
+			"",
+			false,
+		},
+		{
+			Config{Service: testService},
+			testService,
+			"",
+			testGAEVersion,
+			true,
+		},
+		{
+			Config{Target: testTarget},
+			testTarget,
+			"",
+			testGAEVersion,
+			true,
+		},
+		{
+			Config{},
+			testGAEService,
+			"",
+			testGAEVersion,
+			true,
+		},
+		{
+			Config{Service: testService, ServiceVersion: testSvcVersion},
+			testService,
+			"",
+			testSvcVersion,
+			false,
+		},
+		{
+			Config{Service: testService, ServiceVersion: testSvcVersion},
+			testService,
+			"",
+			testSvcVersion,
+			true,
 		},
 	} {
+		envService, envVersion := "", ""
+		if tt.onGAE {
+			envService, envVersion = testGAEService, testGAEVersion
+		}
+		if err := os.Setenv("GAE_SERVICE", envService); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.Setenv("GAE_VERSION", envVersion); err != nil {
+			t.Fatal(err)
+		}
+
 		errorString := ""
 		if err := initializeConfig(tt.config); err != nil {
 			errorString = err.Error()
@@ -407,6 +469,9 @@ func TestInitializeConfig(t *testing.T) {
 
 		if config.Target != tt.wantTarget {
 			t.Errorf("initializeConfig(%v) got target: %v, want %v", tt.config, config.Target, tt.wantTarget)
+		}
+		if config.ServiceVersion != tt.wantSvcVersion {
+			t.Errorf("initializeConfig(%v) got service version: %v, want %v", tt.config, config.ServiceVersion, tt.wantSvcVersion)
 		}
 	}
 }
