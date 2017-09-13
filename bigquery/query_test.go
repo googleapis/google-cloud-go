@@ -15,7 +15,6 @@
 package bigquery
 
 import (
-	"fmt"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
@@ -324,7 +323,5 @@ func TestQueryLegacySQL(t *testing.T) {
 	_, err = q.Run(context.Background())
 	if err == nil {
 		t.Error("Parameters and UseLegacySQL: got nil, want error")
-	} else {
-		fmt.Println(err)
 	}
 }
