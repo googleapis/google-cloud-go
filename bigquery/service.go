@@ -617,7 +617,7 @@ func bqDatasetToMetadata(d *bq.Dataset) *DatasetMetadata {
 		DefaultTableExpiration: time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
 		Description:            d.Description,
 		Name:                   d.FriendlyName,
-		ID:                     d.Id,
+		FullID:                 d.Id,
 		Location:               d.Location,
 		Labels:                 d.Labels,
 		ETag:                   d.Etag,
