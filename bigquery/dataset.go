@@ -32,11 +32,11 @@ type Dataset struct {
 
 type DatasetMetadata struct {
 	CreationTime           time.Time
-	LastModifiedTime       time.Time     // When the dataset or any of its tables were modified.
-	DefaultTableExpiration time.Duration // The default expiration time for new tables.
-	Description            string        // The user-friendly description of this dataset.
-	Name                   string        // The user-friendly name for this dataset.
-	ID                     string
+	LastModifiedTime       time.Time         // When the dataset or any of its tables were modified.
+	DefaultTableExpiration time.Duration     // The default expiration time for new tables.
+	Description            string            // The user-friendly description of this dataset.
+	Name                   string            // The user-friendly name for this dataset.
+	FullID                 string            // The full dataset ID in the form projectID:datasetID.
 	Location               string            // The geo location of the dataset.
 	Labels                 map[string]string // User-provided labels.
 

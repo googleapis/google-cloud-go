@@ -189,8 +189,8 @@ func TestIntegration_DatasetMetadata(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got, want := md.ID, fmt.Sprintf("%s:%s", dataset.ProjectID, dataset.DatasetID); got != want {
-		t.Errorf("ID: got %q, want %q", got, want)
+	if got, want := md.FullID, fmt.Sprintf("%s:%s", dataset.ProjectID, dataset.DatasetID); got != want {
+		t.Errorf("FullID: got %q, want %q", got, want)
 	}
 	jan2016 := time.Date(2016, 1, 1, 0, 0, 0, 0, time.UTC)
 	if md.CreationTime.Before(jan2016) {
