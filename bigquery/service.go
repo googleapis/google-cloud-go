@@ -678,8 +678,11 @@ func (s *bigqueryService) patchTable(ctx context.Context, projectID, datasetID, 
 	if etag != "" {
 		call.Header().Set("If-Match", etag)
 	}
-	table, err := call.Do()
-	if err != nil {
+	var table *bq.Table
+	if err := runWithRetry(ctx, func() (err error) {
+		table, err = call.Do()
+		return err
+	}); err != nil {
 		return nil, err
 	}
 	return bqTableToMetadata(table), nil
@@ -703,8 +706,11 @@ func (s *bigqueryService) patchDataset(ctx context.Context, projectID, datasetID
 	if etag != "" {
 		call.Header().Set("If-Match", etag)
 	}
-	ds2, err := call.Do()
-	if err != nil {
+	var ds2 *bq.Dataset
+	if err := runWithRetry(ctx, func() (err error) {
+		ds2, err = call.Do()
+		return err
+	}); err != nil {
 		return nil, err
 	}
 	return bqDatasetToMetadata(ds2), nil
@@ -806,8 +812,9 @@ func (s *bigqueryService) convertListedDataset(d *bq.DatasetListDatasets) *Datas
 // See the similar function in ../storage/invoke.go. The main difference is the
 // reason for retrying.
 func runWithRetry(ctx context.Context, call func() error) error {
+	// These parameters match the suggestions in https://cloud.google.com/bigquery/sla.
 	backoff := gax.Backoff{
-		Initial:    2 * time.Second,
+		Initial:    1 * time.Second,
 		Max:        32 * time.Second,
 		Multiplier: 2,
 	}
@@ -820,7 +827,7 @@ func runWithRetry(ctx context.Context, call func() error) error {
 	})
 }
 
-// Use the criteria in https://cloud.google.com/bigquery/troubleshooting-errors.
+// This is the correct definition of retryable according to the BigQuery team.
 func retryableError(err error) bool {
 	e, ok := err.(*googleapi.Error)
 	if !ok {
@@ -830,5 +837,5 @@ func retryableError(err error) bool {
 	if len(e.Errors) > 0 {
 		reason = e.Errors[0].Reason
 	}
-	return reason == "backendError" && (e.Code == 500 || e.Code == 503)
+	return reason == "backendError" || reason == "rateLimitExceeded"
 }
