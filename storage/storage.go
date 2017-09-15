@@ -110,7 +110,10 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 //
 // Close need not be called at program exit.
 func (c *Client) Close() error {
+	// Set fields to nil so that subsequent uses
+	// will panic.
 	c.hc = nil
+	c.raw = nil
 	return nil
 }
 
