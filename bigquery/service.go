@@ -314,7 +314,7 @@ func (s *bigqueryService) insertRows(ctx context.Context, projectID, datasetID, 
 }
 
 func (s *bigqueryService) getJob(ctx context.Context, projectID, jobID string) (*Job, error) {
-	bqjob, err := s.getJobInternal(ctx, projectID, jobID, "configuration")
+	bqjob, err := s.getJobInternal(ctx, projectID, jobID, "configuration", "jobReference")
 	if err != nil {
 		return nil, err
 	}
