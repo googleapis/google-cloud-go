@@ -45,8 +45,8 @@ import (
 
 const (
 	testProjectID       = "test-project-ID"
-	testInstanceName    = "test-instance-name"
-	testZoneName        = "test-zone-name"
+	testInstance        = "test-instance"
+	testZone            = "test-zone"
 	testTarget          = "test-target"
 	testService         = "test-service"
 	testSvcVersion      = "test-service-version"
@@ -57,7 +57,7 @@ const (
 
 func createTestDeployment() *pb.Deployment {
 	labels := map[string]string{
-		zoneNameLabel: testZoneName,
+		zoneNameLabel: testZone,
 		versionLabel:  testSvcVersion,
 	}
 	return &pb.Deployment{
@@ -72,7 +72,7 @@ func createTestAgent(psc pb.ProfilerServiceClient) *agent {
 	return &agent{
 		client:        c,
 		deployment:    createTestDeployment(),
-		profileLabels: map[string]string{instanceLabel: testInstanceName},
+		profileLabels: map[string]string{instanceLabel: testInstance},
 	}
 }
 
@@ -315,7 +315,7 @@ func TestRetry(t *testing.T) {
 
 func TestInitializeResources(t *testing.T) {
 	d := createTestDeployment()
-	l := map[string]string{instanceLabel: testInstanceName}
+	l := map[string]string{instanceLabel: testInstance}
 
 	ctx := context.Background()
 
@@ -355,7 +355,7 @@ func TestInitializeDeployment(t *testing.T) {
 		return testProjectID, nil
 	}
 	getZone = func() (string, error) {
-		return testZoneName, nil
+		return testZone, nil
 	}
 
 	cfg := Config{Service: testService, ServiceVersion: testSvcVersion}
@@ -483,11 +483,11 @@ func TestInitializeProfileLabels(t *testing.T) {
 	}()
 
 	getInstanceName = func() (string, error) {
-		return testInstanceName, nil
+		return testInstance, nil
 	}
 
 	l := initializeProfileLabels()
-	want := map[string]string{instanceLabel: testInstanceName}
+	want := map[string]string{instanceLabel: testInstance}
 	if !testutil.Equal(l, want) {
 		t.Errorf("initializeProfileLabels() got: %v, want %v", l, want)
 	}
@@ -605,11 +605,11 @@ func TestAgentWithServer(t *testing.T) {
 
 	dialGRPC = gtransport.DialInsecure
 	if err := Start(Config{
-		Target:       testTarget,
-		ProjectID:    testProjectID,
-		InstanceName: testInstanceName,
-		ZoneName:     testZoneName,
-		APIAddr:      srv.Addr,
+		Target:    testTarget,
+		ProjectID: testProjectID,
+		Instance:  testInstance,
+		Zone:      testZone,
+		APIAddr:   srv.Addr,
 	}); err != nil {
 		t.Fatalf("Start(): %v", err)
 	}
