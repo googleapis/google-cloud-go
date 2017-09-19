@@ -117,19 +117,19 @@ type Config struct {
 	// or anywhere else outside of Google Cloud Platform.
 	ProjectID string
 
-	// InstanceName is the name of the VM instance to use instead of
+	// Instance is the name of the VM instance to use instead of
 	// the one read from the VM metadata server.
 	//
 	// Set this if you are running the agent in your local environment
 	// or anywhere else outside of Google Cloud Platform.
-	InstanceName string
+	Instance string
 
-	// ZoneName is the name of the zone to use instead of
+	// Zone is the name of the zone to use instead of
 	// the one read from the VM metadata server.
 	//
 	// Set this if you are running the agent in your local environment
 	// or anywhere else outside of Google Cloud Platform.
-	ZoneName string
+	Zone string
 
 	// APIAddr is the HTTP endpoint to use to connect to the profiler
 	// agent API. Defaults to the production environment, overridable
@@ -355,7 +355,7 @@ func initializeDeployment() (*pb.Deployment, error) {
 		}
 	}
 
-	zone := config.ZoneName
+	zone := config.Zone
 	if zone == "" {
 		zone, err = getZone()
 		if err != nil {
@@ -378,7 +378,7 @@ func initializeDeployment() (*pb.Deployment, error) {
 }
 
 func initializeProfileLabels() map[string]string {
-	instance := config.InstanceName
+	instance := config.Instance
 	if instance == "" {
 		var err error
 		if instance, err = getInstanceName(); err != nil {
