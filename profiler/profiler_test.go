@@ -68,9 +68,8 @@ func createTestDeployment() *pb.Deployment {
 }
 
 func createTestAgent(psc pb.ProfilerServiceClient) *agent {
-	c := &client{client: psc}
 	return &agent{
-		client:        c,
+		client:        psc,
 		deployment:    createTestDeployment(),
 		profileLabels: map[string]string{instanceLabel: testInstance},
 	}
@@ -313,67 +312,85 @@ func TestRetry(t *testing.T) {
 	}
 }
 
-func TestInitializeResources(t *testing.T) {
-	d := createTestDeployment()
-	l := map[string]string{instanceLabel: testInstance}
-
-	ctx := context.Background()
-
-	a, ctx := initializeResources(ctx, nil, d, l)
-
-	if xg := a.client.xGoogHeader; len(xg) == 0 {
-		t.Errorf("initializeResources() sets empty xGoogHeader")
-	} else {
-		if !strings.Contains(xg[0], "gl-go/") {
-			t.Errorf("initializeResources() sets wrong xGoogHeader, got: %v, want gl-go key", xg[0])
-		}
-		if !strings.Contains(xg[0], "gccl/") {
-			t.Errorf("initializeResources() sets wrong xGoogHeader, got: %v, want gccl key", xg[0])
-		}
-		if !strings.Contains(xg[0], "gax/") {
-			t.Errorf("initializeResources() sets wrong xGoogHeader, got: %v, want gax key", xg[0])
-		}
-		if !strings.Contains(xg[0], "grpc/") {
-			t.Errorf("initializeResources() sets wrong xGoogHeader, got: %v, want grpc key", xg[0])
-		}
-	}
-
+func TestWithXGoogHeader(t *testing.T) {
+	ctx := withXGoogHeader(context.Background())
 	md, _ := grpcmd.FromOutgoingContext(ctx)
 
-	if !testutil.Equal(md[xGoogAPIMetadata], a.client.xGoogHeader) {
-		t.Errorf("md[%v] = %v, want equal xGoogHeader = %v", xGoogAPIMetadata, md[xGoogAPIMetadata], a.client.xGoogHeader)
+	if xg := md[xGoogAPIMetadata]; len(xg) == 0 {
+		t.Errorf("withXGoogHeader() sets empty xGoogHeader")
+	} else {
+		if !strings.Contains(xg[0], "gl-go/") {
+			t.Errorf("withXGoogHeader() got: %v, want gl-go key", xg[0])
+		}
+		if !strings.Contains(xg[0], "gccl/") {
+			t.Errorf("withXGoogHeader() got: %v, want gccl key", xg[0])
+		}
+		if !strings.Contains(xg[0], "gax/") {
+			t.Errorf("withXGoogHeader() got: %v, want gax key", xg[0])
+		}
+		if !strings.Contains(xg[0], "grpc/") {
+			t.Errorf("withXGoogHeader() got: %v, want grpc key", xg[0])
+		}
 	}
 }
 
-func TestInitializeDeployment(t *testing.T) {
-	oldGetProjectID, oldGetZone, oldConfig := getProjectID, getZone, config
+func TestInitializeAgent(t *testing.T) {
+	oldConfig := config
 	defer func() {
-		getProjectID, getZone, config = oldGetProjectID, oldGetZone, oldConfig
+		config = oldConfig
 	}()
 
-	getProjectID = func() (string, error) {
-		return testProjectID, nil
-	}
-	getZone = func() (string, error) {
-		return testZone, nil
-	}
+	for _, tt := range []struct {
+		config               Config
+		wantDeploymentLabels map[string]string
+		wantProfileLabels    map[string]string
+	}{
+		{
+			config:               Config{ServiceVersion: testSvcVersion, zone: testZone},
+			wantDeploymentLabels: map[string]string{zoneNameLabel: testZone, versionLabel: testSvcVersion},
+			wantProfileLabels:    map[string]string{},
+		},
+		{
+			config:               Config{zone: testZone},
+			wantDeploymentLabels: map[string]string{zoneNameLabel: testZone},
+			wantProfileLabels:    map[string]string{},
+		},
+		{
+			config:               Config{ServiceVersion: testSvcVersion},
+			wantDeploymentLabels: map[string]string{versionLabel: testSvcVersion},
+			wantProfileLabels:    map[string]string{},
+		},
+		{
+			config:               Config{instance: testInstance},
+			wantDeploymentLabels: map[string]string{},
+			wantProfileLabels:    map[string]string{instanceLabel: testInstance},
+		},
+	} {
 
-	cfg := Config{Service: testService, ServiceVersion: testSvcVersion}
-	initializeConfig(cfg)
-	d, err := initializeDeployment()
-	if err != nil {
-		t.Errorf("initializeDeployment() got error: %v, want no error", err)
-	}
+		config = tt.config
+		config.ProjectID = testProjectID
+		config.Target = testTarget
+		a := initializeAgent(nil)
 
-	if want := createTestDeployment(); !testutil.Equal(d, want) {
-		t.Errorf("createTestDeployment() got: %v, want %v", d, want)
+		wantDeployment := &pb.Deployment{
+			ProjectId: testProjectID,
+			Target:    testTarget,
+			Labels:    tt.wantDeploymentLabels,
+		}
+		if !testutil.Equal(a.deployment, wantDeployment) {
+			t.Errorf("initializeResources() got deployment: %v, want %v", a.deployment, wantDeployment)
+		}
+
+		if !testutil.Equal(a.profileLabels, tt.wantProfileLabels) {
+			t.Errorf("initializeResources() got profile labels: %v, want %v", a.profileLabels, tt.wantProfileLabels)
+		}
 	}
 }
 
 func TestInitializeConfig(t *testing.T) {
-	oldConfig, oldService, oldVersion := config, os.Getenv("GAE_SERVICE"), os.Getenv("GAE_VERSION")
+	oldConfig, oldService, oldVersion, oldGetProjectID, oldGetInstanceName, oldGetZone, oldOnGCE := config, os.Getenv("GAE_SERVICE"), os.Getenv("GAE_VERSION"), getProjectID, getInstanceName, getZone, onGCE
 	defer func() {
-		config = oldConfig
+		config, getProjectID, getInstanceName, getZone, onGCE = oldConfig, oldGetProjectID, oldGetInstanceName, oldGetZone, oldOnGCE
 		if err := os.Setenv("GAE_SERVICE", oldService); err != nil {
 			t.Fatal(err)
 		}
@@ -383,68 +400,83 @@ func TestInitializeConfig(t *testing.T) {
 	}()
 	testGAEService := "test-gae-service"
 	testGAEVersion := "test-gae-version"
+	testGCEProjectID := "test-gce-project-id"
 	for _, tt := range []struct {
 		config          Config
-		wantTarget      string
+		wantConfig      Config
 		wantErrorString string
-		wantSvcVersion  string
 		onGAE           bool
+		onGCE           bool
 	}{
 		{
 			Config{Service: testService},
-			testService,
-			"",
+			Config{Target: testService, ProjectID: testGCEProjectID, zone: testZone, instance: testInstance},
 			"",
 			false,
+			true,
 		},
 		{
 			Config{Target: testTarget},
-			testTarget,
-			"",
+			Config{Target: testTarget, ProjectID: testGCEProjectID, zone: testZone, instance: testInstance},
 			"",
 			false,
+			true,
 		},
 		{
 			Config{},
-			"",
+			Config{},
 			"service name must be specified in the configuration",
-			"",
 			false,
+			true,
 		},
 		{
 			Config{Service: testService},
-			testService,
+			Config{Target: testService, ServiceVersion: testGAEVersion, ProjectID: testGCEProjectID, zone: testZone, instance: testInstance},
 			"",
-			testGAEVersion,
+			true,
 			true,
 		},
 		{
 			Config{Target: testTarget},
-			testTarget,
+			Config{Target: testTarget, ServiceVersion: testGAEVersion, ProjectID: testGCEProjectID, zone: testZone, instance: testInstance},
 			"",
-			testGAEVersion,
+			true,
 			true,
 		},
 		{
 			Config{},
-			testGAEService,
+			Config{Target: testGAEService, ServiceVersion: testGAEVersion, ProjectID: testGCEProjectID, zone: testZone, instance: testInstance},
 			"",
-			testGAEVersion,
+			true,
 			true,
 		},
 		{
 			Config{Service: testService, ServiceVersion: testSvcVersion},
-			testService,
+			Config{Target: testService, ServiceVersion: testSvcVersion, ProjectID: testGCEProjectID, zone: testZone, instance: testInstance},
 			"",
-			testSvcVersion,
 			false,
+			true,
 		},
 		{
 			Config{Service: testService, ServiceVersion: testSvcVersion},
-			testService,
+			Config{Target: testService, ServiceVersion: testSvcVersion, ProjectID: testGCEProjectID, zone: testZone, instance: testInstance},
 			"",
-			testSvcVersion,
 			true,
+			true,
+		},
+		{
+			Config{Service: testService, ProjectID: testProjectID},
+			Config{Target: testService, ProjectID: testProjectID, zone: testZone, instance: testInstance},
+			"",
+			false,
+			true,
+		},
+		{
+			Config{Service: testService},
+			Config{Target: testService},
+			"project ID must be specified in the configuration if running outside of GCP",
+			false,
+			false,
 		},
 	} {
 		envService, envVersion := "", ""
@@ -457,39 +489,81 @@ func TestInitializeConfig(t *testing.T) {
 		if err := os.Setenv("GAE_VERSION", envVersion); err != nil {
 			t.Fatal(err)
 		}
+		if tt.onGCE {
+			onGCE = func() bool { return true }
+			getProjectID = func() (string, error) { return testGCEProjectID, nil }
+			getZone = func() (string, error) { return testZone, nil }
+			getInstanceName = func() (string, error) { return testInstance, nil }
+		} else {
+			onGCE = func() bool { return false }
+			getProjectID = func() (string, error) { return "", fmt.Errorf("test get project id error") }
+			getZone = func() (string, error) { return "", fmt.Errorf("test get zone error") }
+			getInstanceName = func() (string, error) { return "", fmt.Errorf("test get instance error") }
+		}
 
 		errorString := ""
 		if err := initializeConfig(tt.config); err != nil {
 			errorString = err.Error()
 		}
 
-		if errorString != tt.wantErrorString {
-			t.Errorf("initializeConfig(%v) got error: %v, want %v", tt.config, errorString, tt.wantErrorString)
+		if !strings.Contains(errorString, tt.wantErrorString) {
+			t.Errorf("initializeConfig(%v) got error: %v, want contain %v", tt.config, errorString, tt.wantErrorString)
 		}
 
-		if config.Target != tt.wantTarget {
-			t.Errorf("initializeConfig(%v) got target: %v, want %v", tt.config, config.Target, tt.wantTarget)
+		if tt.wantErrorString == "" {
+			tt.wantConfig.APIAddr = apiAddress
 		}
-		if config.ServiceVersion != tt.wantSvcVersion {
-			t.Errorf("initializeConfig(%v) got service version: %v, want %v", tt.config, config.ServiceVersion, tt.wantSvcVersion)
+		tt.wantConfig.Service = tt.config.Service
+		if config != tt.wantConfig {
+			t.Errorf("initializeConfig(%v) got: %v, want %v", tt.config, config, tt.wantConfig)
 		}
 	}
-}
 
-func TestInitializeProfileLabels(t *testing.T) {
-	oldGetInstanceName := getInstanceName
-	defer func() {
-		getInstanceName = oldGetInstanceName
-	}()
+	for _, tt := range []struct {
+		wantErrorString   string
+		getProjectIDError bool
+		getZoneError      bool
+		getInstanceError  bool
+	}{
+		{
+			wantErrorString:   "failed to get the project ID from Compute Engine:",
+			getProjectIDError: true,
+		},
+		{
+			wantErrorString: "failed to get zone from Compute Engine:",
+			getZoneError:    true,
+		},
+		{
+			wantErrorString:  "failed to get instance from Compute Engine:",
+			getInstanceError: true,
+		},
+	} {
+		onGCE = func() bool { return true }
+		if tt.getProjectIDError {
+			getProjectID = func() (string, error) { return "", fmt.Errorf("test get project ID error") }
+		} else {
+			getProjectID = func() (string, error) { return testGCEProjectID, nil }
+		}
 
-	getInstanceName = func() (string, error) {
-		return testInstance, nil
-	}
+		if tt.getZoneError {
+			getZone = func() (string, error) { return "", fmt.Errorf("test get zone error") }
+		} else {
+			getZone = func() (string, error) { return testZone, nil }
+		}
 
-	l := initializeProfileLabels()
-	want := map[string]string{instanceLabel: testInstance}
-	if !testutil.Equal(l, want) {
-		t.Errorf("initializeProfileLabels() got: %v, want %v", l, want)
+		if tt.getInstanceError {
+			getInstanceName = func() (string, error) { return "", fmt.Errorf("test get instance error") }
+		} else {
+			getInstanceName = func() (string, error) { return testInstance, nil }
+		}
+		errorString := ""
+		if err := initializeConfig(Config{Service: testService}); err != nil {
+			errorString = err.Error()
+		}
+
+		if !strings.Contains(errorString, tt.wantErrorString) {
+			t.Errorf("initializeConfig() got error: %v, want contain %v", errorString, tt.wantErrorString)
+		}
 	}
 }
 
@@ -607,9 +681,9 @@ func TestAgentWithServer(t *testing.T) {
 	if err := Start(Config{
 		Target:    testTarget,
 		ProjectID: testProjectID,
-		Instance:  testInstance,
-		Zone:      testZone,
 		APIAddr:   srv.Addr,
+		instance:  testInstance,
+		zone:      testZone,
 	}); err != nil {
 		t.Fatalf("Start(): %v", err)
 	}

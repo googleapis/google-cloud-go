@@ -36,6 +36,7 @@ package profiler
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"runtime/pprof"
@@ -70,6 +71,7 @@ var (
 	writeHeapProfile = pprof.WriteHeapProfile
 	sleep            = gax.Sleep
 	dialGRPC         = gtransport.Dial
+	onGCE            = gcemd.OnGCE
 )
 
 const (
@@ -117,20 +119,6 @@ type Config struct {
 	// or anywhere else outside of Google Cloud Platform.
 	ProjectID string
 
-	// Instance is the name of the VM instance to use instead of
-	// the one read from the VM metadata server.
-	//
-	// Set this if you are running the agent in your local environment
-	// or anywhere else outside of Google Cloud Platform.
-	Instance string
-
-	// Zone is the name of the zone to use instead of
-	// the one read from the VM metadata server.
-	//
-	// Set this if you are running the agent in your local environment
-	// or anywhere else outside of Google Cloud Platform.
-	Zone string
-
 	// APIAddr is the HTTP endpoint to use to connect to the profiler
 	// agent API. Defaults to the production environment, overridable
 	// for testing.
@@ -138,6 +126,9 @@ type Config struct {
 
 	// Target is deprecated, use Service instead.
 	Target string
+
+	instance string
+	zone     string
 }
 
 // startError represents the error occured during the
@@ -175,16 +166,8 @@ func start(cfg Config, options ...option.ClientOption) error {
 		return err
 	}
 
-	d, err := initializeDeployment()
-	if err != nil {
-		debugLog("failed to initialize deployment: %v", err)
-		return err
-	}
-
-	l := initializeProfileLabels()
-
-	a, ctx := initializeResources(ctx, conn, d, l)
-	go pollProfilerService(ctx, a)
+	a := initializeAgent(pb.NewProfilerServiceClient(conn))
+	go pollProfilerService(withXGoogHeader(ctx), a)
 	return nil
 }
 
@@ -197,7 +180,7 @@ func debugLog(format string, e ...interface{}) {
 // agent polls Cloud Profiler server for instructions on behalf of
 // a task, and collects and uploads profiles as requested.
 type agent struct {
-	client        *client
+	client        pb.ProfilerServiceClient
 	deployment    *pb.Deployment
 	profileLabels map[string]string
 }
@@ -255,7 +238,7 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 
 	gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		p, err = a.client.client.CreateProfile(ctx, &req, grpc.Trailer(&md))
+		p, err = a.client.CreateProfile(ctx, &req, grpc.Trailer(&md))
 		return err
 	}, gax.WithRetry(func() gax.Retryer {
 		return &retryer{
@@ -314,94 +297,49 @@ func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
 
 	// Upload profile, discard profile in case of error.
 	debugLog("start uploading profile")
-	if _, err := a.client.client.UpdateProfile(ctx, &req); err != nil {
+	if _, err := a.client.UpdateProfile(ctx, &req); err != nil {
 		debugLog("failed to upload profile: %v", err)
 	}
 }
 
-// client is a client for interacting with Cloud Profiler API.
-type client struct {
-	// gRPC API client.
-	client pb.ProfilerServiceClient
-
-	// Metadata for google API to be sent with each request.
-	xGoogHeader []string
-}
-
-// setXGoogHeader sets the name and version of the application in
+// withXGoogHeader sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *client) setXGoogHeader(keyval ...string) {
+func withXGoogHeader(ctx context.Context, keyval ...string) context.Context {
 	kv := append([]string{"gl-go", version.Go(), "gccl", version.Repo}, keyval...)
 	kv = append(kv, "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeader = []string{gax.XGoogHeader(kv...)}
-}
 
-func (c *client) insertMetadata(ctx context.Context) context.Context {
 	md, _ := grpcmd.FromOutgoingContext(ctx)
 	md = md.Copy()
-	md[xGoogAPIMetadata] = c.xGoogHeader
+	md[xGoogAPIMetadata] = []string{gax.XGoogHeader(kv...)}
 	return grpcmd.NewOutgoingContext(ctx, md)
 }
 
-func initializeDeployment() (*pb.Deployment, error) {
-	var err error
-
-	projectID := config.ProjectID
-	if projectID == "" {
-		projectID, err = getProjectID()
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	zone := config.Zone
-	if zone == "" {
-		zone, err = getZone()
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	labels := map[string]string{
-		zoneNameLabel: zone,
+func initializeAgent(c pb.ProfilerServiceClient) *agent {
+	labels := map[string]string{}
+	if config.zone != "" {
+		labels[zoneNameLabel] = config.zone
 	}
 	if config.ServiceVersion != "" {
 		labels[versionLabel] = config.ServiceVersion
 	}
-
-	return &pb.Deployment{
-		ProjectId: projectID,
+	d := &pb.Deployment{
+		ProjectId: config.ProjectID,
 		Target:    config.Target,
 		Labels:    labels,
-	}, nil
-}
-
-func initializeProfileLabels() map[string]string {
-	instance := config.Instance
-	if instance == "" {
-		var err error
-		if instance, err = getInstanceName(); err != nil {
-			instance = "unknown"
-			debugLog("failed to get instance name: %v", err)
-		}
 	}
 
-	return map[string]string{instanceLabel: instance}
-}
+	profileLabels := map[string]string{}
 
-func initializeResources(ctx context.Context, conn *grpc.ClientConn, d *pb.Deployment, l map[string]string) (*agent, context.Context) {
-	c := &client{
-		client: pb.NewProfilerServiceClient(conn),
+	if config.instance != "" {
+		profileLabels[instanceLabel] = config.instance
 	}
-	c.setXGoogHeader()
 
-	ctx = c.insertMetadata(ctx)
 	return &agent{
 		client:        c,
 		deployment:    d,
-		profileLabels: l,
-	}, ctx
+		profileLabels: profileLabels,
+	}
 }
 
 func initializeConfig(cfg Config) error {
@@ -420,6 +358,28 @@ func initializeConfig(cfg Config) error {
 
 	if config.ServiceVersion == "" {
 		config.ServiceVersion = os.Getenv("GAE_VERSION")
+	}
+
+	if onGCE() {
+		var err error
+		if config.ProjectID == "" {
+			if config.ProjectID, err = getProjectID(); err != nil {
+				return fmt.Errorf("failed to get the project ID from Compute Engine: %v", err)
+			}
+		}
+
+		if config.zone, err = getZone(); err != nil {
+			return fmt.Errorf("failed to get zone from Compute Engine: %v", err)
+		}
+
+		if config.instance, err = getInstanceName(); err != nil {
+			return fmt.Errorf("failed to get instance from Compute Engine: %v", err)
+		}
+
+	} else {
+		if config.ProjectID == "" {
+			return fmt.Errorf("project ID must be specified in the configuration if running outside of GCP")
+		}
 	}
 
 	if config.APIAddr == "" {
