@@ -57,7 +57,7 @@ type service interface {
 	insertRows(ctx context.Context, projectID, datasetID, tableID string, rows []*insertionRow, conf *insertRowsConf) error
 
 	// Datasets
-	insertDataset(ctx context.Context, datasetID, projectID string) error
+	insertDataset(ctx context.Context, datasetID, projectID string, dm *DatasetMetadata) error
 	deleteDataset(ctx context.Context, datasetID, projectID string) error
 	getDatasetMetadata(ctx context.Context, projectID, datasetID string) (*DatasetMetadata, error)
 	patchDataset(ctx context.Context, projectID, datasetID string, dm *DatasetMetadataToUpdate, etag string) (*DatasetMetadata, error)
@@ -694,19 +694,21 @@ func (s *bigqueryService) patchTable(ctx context.Context, projectID, datasetID, 
 	return bqTableToMetadata(table), nil
 }
 
-func (s *bigqueryService) insertDataset(ctx context.Context, datasetID, projectID string) error {
+func (s *bigqueryService) insertDataset(ctx context.Context, datasetID, projectID string, dm *DatasetMetadata) error {
 	// TODO(jba): retry?
-	ds := &bq.Dataset{
-		DatasetReference: &bq.DatasetReference{DatasetId: datasetID},
+	ds, err := bqDatasetFromMetadata(dm)
+	if err != nil {
+		return err
 	}
+	ds.DatasetReference = &bq.DatasetReference{DatasetId: datasetID}
 	req := s.s.Datasets.Insert(projectID, ds).Context(ctx)
 	setClientHeader(req.Header())
-	_, err := req.Do()
+	_, err = req.Do()
 	return err
 }
 
 func (s *bigqueryService) patchDataset(ctx context.Context, projectID, datasetID string, dm *DatasetMetadataToUpdate, etag string) (*DatasetMetadata, error) {
-	ds := bqDatasetFromMetadata(dm)
+	ds := bqDatasetFromUpdateMetadata(dm)
 	call := s.s.Datasets.Patch(projectID, datasetID, ds).Context(ctx)
 	setClientHeader(call.Header())
 	if etag != "" {
@@ -722,7 +724,42 @@ func (s *bigqueryService) patchDataset(ctx context.Context, projectID, datasetID
 	return bqDatasetToMetadata(ds2), nil
 }
 
-func bqDatasetFromMetadata(dm *DatasetMetadataToUpdate) *bq.Dataset {
+func bqDatasetFromMetadata(dm *DatasetMetadata) (*bq.Dataset, error) {
+	ds := &bq.Dataset{}
+	if dm == nil {
+		return ds, nil
+	}
+	if dm.Name != "" {
+		ds.FriendlyName = dm.Name
+	}
+	if dm.Description != "" {
+		ds.Description = dm.Description
+	}
+	if dm.Location != "" {
+		ds.Location = dm.Location
+	}
+	if dm.DefaultTableExpiration != 0 {
+		ds.DefaultTableExpirationMs = int64(dm.DefaultTableExpiration / time.Millisecond)
+	}
+	if dm.Labels != nil {
+		ds.Labels = dm.Labels
+	}
+	if !dm.CreationTime.IsZero() {
+		return nil, errors.New("bigquery: Dataset.CreationTime is not writable")
+	}
+	if !dm.LastModifiedTime.IsZero() {
+		return nil, errors.New("bigquery: Dataset.LastModifiedTime is not writable")
+	}
+	if dm.FullID != "" {
+		return nil, errors.New("bigquery: Dataset.FullID is not writable")
+	}
+	if dm.ETag != "" {
+		return nil, errors.New("bigquery: Dataset.ETag is not writable")
+	}
+	return ds, nil
+}
+
+func bqDatasetFromUpdateMetadata(dm *DatasetMetadataToUpdate) *bq.Dataset {
 	ds := &bq.Dataset{}
 	forceSend := func(field string) {
 		ds.ForceSendFields = append(ds.ForceSendFields, field)
@@ -742,7 +779,7 @@ func bqDatasetFromMetadata(dm *DatasetMetadataToUpdate) *bq.Dataset {
 			// Send a null to delete the field.
 			ds.NullFields = append(ds.NullFields, "DefaultTableExpirationMs")
 		} else {
-			ds.DefaultTableExpirationMs = int64(dur.Seconds() * 1000)
+			ds.DefaultTableExpirationMs = int64(dur / time.Millisecond)
 		}
 	}
 	if dm.setLabels != nil || dm.deleteLabels != nil {

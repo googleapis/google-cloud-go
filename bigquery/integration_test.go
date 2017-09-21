@@ -49,6 +49,7 @@ var (
 		}},
 	}
 	testTableExpiration time.Time
+	datasetIDs          = testutil.NewUIDSpace("dataset")
 )
 
 func TestMain(m *testing.M) {
@@ -82,13 +83,13 @@ func initIntegrationTest() {
 		log.Fatalf("NewClient: %v", err)
 	}
 	dataset = client.Dataset("bigquery_integration_test")
-	if err := dataset.Create(ctx); err != nil && !hasStatusCode(err, http.StatusConflict) { // AlreadyExists is 409
+	if err := dataset.Create(ctx, nil); err != nil && !hasStatusCode(err, http.StatusConflict) { // AlreadyExists is 409
 		log.Fatalf("creating dataset: %v", err)
 	}
 	testTableExpiration = time.Now().Add(10 * time.Minute).Round(time.Second)
 }
 
-func TestIntegration_Create(t *testing.T) {
+func TestIntegration_TableCreate(t *testing.T) {
 	// Check that creating a record field with an empty schema is an error.
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -106,7 +107,7 @@ func TestIntegration_Create(t *testing.T) {
 	}
 }
 
-func TestIntegration_CreateView(t *testing.T) {
+func TestIntegration_TableCreateView(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
@@ -180,6 +181,33 @@ func TestIntegration_TableMetadata(t *testing.T) {
 	}
 }
 
+func TestIntegration_DatasetCreate(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	uid := strings.Replace(datasetIDs.New(), "-", "_", -1)
+	ds := client.Dataset(uid)
+	wmd := &DatasetMetadata{Name: "name", Location: "EU"}
+	err := ds.Create(ctx, wmd)
+	if err != nil {
+		t.Fatal(err)
+	}
+	gmd, err := ds.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := gmd.Name, wmd.Name; got != want {
+		t.Errorf("name: got %q, want %q", got, want)
+	}
+	if got, want := gmd.Location, wmd.Location; got != want {
+		t.Errorf("location: got %q, want %q", got, want)
+	}
+	if err := ds.Delete(ctx); err != nil {
+		t.Fatalf("deleting dataset %s: %v", ds, err)
+	}
+}
+
 func TestIntegration_DatasetMetadata(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -213,7 +241,7 @@ func TestIntegration_DatasetDelete(t *testing.T) {
 	}
 	ctx := context.Background()
 	ds := client.Dataset("delete_test")
-	if err := ds.Create(ctx); err != nil && !hasStatusCode(err, http.StatusConflict) { // AlreadyExists is 409
+	if err := ds.Create(ctx, nil); err != nil && !hasStatusCode(err, http.StatusConflict) { // AlreadyExists is 409
 		t.Fatalf("creating dataset %s: %v", ds, err)
 	}
 	if err := ds.Delete(ctx); err != nil {
