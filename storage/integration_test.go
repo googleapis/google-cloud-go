@@ -1333,8 +1333,6 @@ func TestIntegration_BucketIAM(t *testing.T) {
 }
 
 func TestIntegration_RequesterPays(t *testing.T) {
-	t.Skip("skipping temporarily because of an issue with GCS")
-
 	ctx := context.Background()
 	client, bucketName := testConfig(ctx, t)
 	defer client.Close()
