@@ -53,11 +53,12 @@ type TableMetadata struct {
 	// The query to use for a view. If provided on create, Schema must be nil.
 	ViewQuery string
 
-	// Use Legacy SQL for the view query. The default.
+	// Use Legacy SQL for the view query.
 	// At most one of UseLegacySQL and UseStandardSQL can be true.
 	UseLegacySQL bool
 
-	// Use Legacy SQL for the view query.
+	// Use Legacy SQL for the view query. The default.
+	// At most one of UseLegacySQL and UseStandardSQL can be true.
 	UseStandardSQL bool
 
 	// If non-nil, the table is partitioned by time.

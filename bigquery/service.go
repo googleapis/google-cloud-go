@@ -542,8 +542,7 @@ func bqTableFromMetadata(tm *TableMetadata) (*bq.Table, error) {
 		t.View = &bq.ViewDefinition{Query: tm.ViewQuery}
 		if tm.UseLegacySQL {
 			t.View.UseLegacySql = true
-		}
-		if tm.UseStandardSQL {
+		} else {
 			t.View.UseLegacySql = false
 			t.View.ForceSendFields = append(t.View.ForceSendFields, "UseLegacySql")
 		}
