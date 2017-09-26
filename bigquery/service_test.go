@@ -114,6 +114,16 @@ func TestBQTableFromMetadata(t *testing.T) {
 			},
 		},
 		{
+			&TableMetadata{ViewQuery: "q"},
+			&bq.Table{
+				View: &bq.ViewDefinition{
+					Query:           "q",
+					UseLegacySql:    false,
+					ForceSendFields: []string{"UseLegacySql"},
+				},
+			},
+		},
+		{
 			&TableMetadata{
 				ViewQuery:        "q",
 				UseLegacySQL:     true,

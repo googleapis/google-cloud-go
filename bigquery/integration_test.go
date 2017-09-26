@@ -992,6 +992,7 @@ func TestIntegration_LegacyQuery(t *testing.T) {
 	}
 	for _, c := range testCases {
 		q := client.Query(c.query)
+		q.UseLegacySQL = true
 		it, err := q.Read(ctx)
 		if err != nil {
 			t.Fatal(err)
@@ -1101,11 +1102,11 @@ var useLegacySqlTests = []struct {
 }{
 	{t: legacyName, std: false, legacy: true, err: false},
 	{t: legacyName, std: true, legacy: false, err: true},
-	{t: legacyName, std: false, legacy: false, err: false}, // legacy SQL is default
+	{t: legacyName, std: false, legacy: false, err: true}, // standard SQL is default
 	{t: legacyName, std: true, legacy: true, err: true},
 	{t: stdName, std: false, legacy: true, err: true},
 	{t: stdName, std: true, legacy: false, err: false},
-	{t: stdName, std: false, legacy: false, err: true}, // legacy SQL is default
+	{t: stdName, std: false, legacy: false, err: false}, // standard SQL is default
 	{t: stdName, std: true, legacy: true, err: true},
 }
 
