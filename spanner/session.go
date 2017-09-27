@@ -678,7 +678,7 @@ func (p *sessionPool) recycle(s *session) bool {
 		return false
 	}
 	if p.maxSessionAge != 0 && s.createTime.Add(p.maxSessionAge).Before(time.Now()) && p.numOpened > p.MinOpened {
-		// session expires and number of opened sessions exceeds MinOpened, let the session  itself.
+		// session expires and number of opened sessions exceeds MinOpened, let the session destroy itself.
 		return false
 	}
 	// Put session at the back of the list to round robin for load balancing across channels.
