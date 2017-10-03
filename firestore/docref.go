@@ -84,20 +84,22 @@ func (d *DocumentRef) Get(ctx context.Context) (*DocumentSnapshot, error) {
 // struct. The map keys or exported struct fields become the fields of the firestore
 // document.
 // The values of data are converted to Firestore values as follows:
-// - bool converts to Bool.
-// - string converts to String.
-// - int, int8, int16, int32 and int64 convert to Integer.
-// - uint8, uint16 and uint32 convert to Integer. uint64 is disallowed,
-//   because it can represent values that cannot be represented in an int64, which
-//   is the underlying type of a Integer.
-// - float32 and float64 convert to Double.
-// - []byte converts to Bytes.
-// - time.Time converts to Timestamp.
-// - latlng.LatLng converts to GeoPoint. latlng is the package
-//   "google.golang.org/genproto/googleapis/type/latlng".
-// - Slices convert to Array.
-// - Maps and structs convert to Map.
-// - nils of any type convert to Null.
+//
+//   - bool converts to Bool.
+//   - string converts to String.
+//   - int, int8, int16, int32 and int64 convert to Integer.
+//   - uint8, uint16 and uint32 convert to Integer. uint64 is disallowed,
+//     because it can represent values that cannot be represented in an int64, which
+//     is the underlying type of a Integer.
+//   - float32 and float64 convert to Double.
+//   - []byte converts to Bytes.
+//   - time.Time converts to Timestamp.
+//   - latlng.LatLng converts to GeoPoint. latlng is the package
+//     "google.golang.org/genproto/googleapis/type/latlng".
+//   - Slices convert to Array.
+//   - Maps and structs convert to Map.
+//   - nils of any type convert to Null.
+//
 // Pointers and interface{} are also permitted, and their elements processed
 // recursively.
 //
@@ -105,11 +107,12 @@ func (d *DocumentRef) Get(ctx context.Context) (*DocumentSnapshot, error) {
 // begin with "firestore:" and are followed by "-", meaning "ignore this field," or
 // an alternative name for the field. Following the name, these comma-separated
 // options may be provided:
-// - omitempty: Do not encode this field if it is empty. A value is empty
-//   if it is a zero value, or an array, slice or map of length zero.
-// - serverTimestamp: The field must be of type time.Time. When writing, if
-//   the field has the zero value, the server will populate the stored document with
-//   the time that the request is processed.
+//
+//   - omitempty: Do not encode this field if it is empty. A value is empty
+//     if it is a zero value, or an array, slice or map of length zero.
+//   - serverTimestamp: The field must be of type time.Time. When writing, if
+//     the field has the zero value, the server will populate the stored document with
+//     the time that the request is processed.
 func (d *DocumentRef) Create(ctx context.Context, data interface{}) (*WriteResult, error) {
 	ws, err := d.newReplaceWrites(data, nil, Exists(false))
 	if err != nil {
@@ -118,8 +121,10 @@ func (d *DocumentRef) Create(ctx context.Context, data interface{}) (*WriteResul
 	return d.Parent.c.commit(ctx, ws)
 }
 
-// Set creates or overwrites the document with the given data.
-// See DocumentRef.Create for the acceptable values of data.
+// Set creates or overwrites the document with the given data. See DocumentRef.Create
+// for the acceptable values of data. Without options, Set overwrites the document
+// completely. Specify one of the Merge options to preserve an existing document's
+// fields.
 func (d *DocumentRef) Set(ctx context.Context, data interface{}, opts ...SetOption) (*WriteResult, error) {
 	ws, err := d.newReplaceWrites(data, opts, nil)
 	if err != nil {
@@ -409,8 +414,9 @@ func (d *DocumentRef) newTransform(serverTimestampFieldPaths []FieldPath) *pb.Wr
 var (
 	// Delete is used as a value in a call to UpdateMap to indicate that the
 	// corresponding key should be deleted.
-	Delete = new(int) // not new(struct{}), because addresses of zero-sized values
-	// may not be unique
+	Delete = new(int)
+	// Not new(struct{}), because addresses of zero-sized values
+	// may not be unique.
 
 	// ServerTimestamp is used as a value in a call to UpdateMap to indicate that the
 	// key's value should be set to the time at which the server processed

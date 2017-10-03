@@ -24,7 +24,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 )
 
-// A Precondition modifies a Firestore update, delete or verify operation.
+// A Precondition modifies a Firestore update or delete operation.
 type Precondition interface {
 	// Returns the corresponding Precondition proto.
 	preconditionProto() (*pb.Precondition, error)
