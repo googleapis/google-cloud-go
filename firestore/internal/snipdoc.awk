@@ -30,7 +30,7 @@
 #
 # The following transformations are made to the Go code:
 # - Trailing blank lines are removed.
-# - `ELLIPSIS` and `_ = ELLIPSIS` are replaced by `...` 
+# - `ELLIPSIS` and `_ = ELLIPSIS` are replaced by `...`
 
 
 /^[ \t]*\/\/\[/ { # start snippet in Go file
@@ -47,7 +47,7 @@
   if (inGo()) {
     if (curSnip != "") {
       # Remove all trailing newlines.
-      gsub(/\n+$/, "", snips[curSnip]) 
+      gsub(/[\t\n]+$/, "", snips[curSnip])
       curSnip = ""
       next
     } else {
@@ -77,14 +77,23 @@ ENDFILE {
 # Matches every line.
 {
   if (curSnip != "") {
+    # If the first line in the snip has no indent, add the indent.
+    if (snips[curSnip] == "") {
+      if (index($0, "\t") == 1) {
+        extraIndent = ""
+      } else {
+        extraIndent = "\t"
+      }
+    }
+
     line = $0
     # Replace ELLIPSIS.
     gsub(/_ = ELLIPSIS/, "...", line)
     gsub(/ELLIPSIS/, "...", line)
 
-    snips[curSnip] = snips[curSnip]  line "\n"
+    snips[curSnip] = snips[curSnip] extraIndent line "\n"
   } else if (inTemplate()) {
-    afterSnip = 0 
+    afterSnip = 0
     # Copy to output.
     print
   }

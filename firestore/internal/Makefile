@@ -2,7 +2,7 @@
 
 SHELL=/bin/bash
 
-../doc.go: doc-snippets.go doc.template 
+../doc.go: doc-snippets.go doc.template snipdoc.awk
 	@tmp=$$(mktemp) && \
 	awk -f snipdoc.awk doc-snippets.go doc.template > $$tmp && \
 	chmod +w ../doc.go && \

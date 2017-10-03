@@ -62,10 +62,10 @@ Call its Data method to obtain the entire document contents as a map.
 You can also obtain a single field with DataAt, or extract the data into a struct
 with DataTo. With the type definition
 
-type State struct {
-	Capital    string  `firestore:"capital"`
-	Population float64 `firestore:"pop"` // in millions
-}
+	type State struct {
+		Capital    string  `firestore:"capital"`
+		Population float64 `firestore:"pop"` // in millions
+	}
 
 we can extract the document's data into a value of type State:
 
