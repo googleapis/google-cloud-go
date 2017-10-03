@@ -17,10 +17,11 @@ package firestore
 import (
 	"errors"
 	"fmt"
-	"golang.org/x/net/context"
 	"io"
 	"math"
 	"reflect"
+
+	"golang.org/x/net/context"
 
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 
@@ -46,6 +47,8 @@ type Query struct {
 	err                    error
 }
 
+// DocumentID is the special field name representing the ID of a document
+// in queries.
 const DocumentID = "__name__"
 
 // Select returns a new Query that specifies the field paths
@@ -151,7 +154,8 @@ func (q Query) Limit(n int) Query {
 // If an OrderBy call uses the special DocumentID field path, the corresponding value
 // should be the document ID relative to the query's collection. For example, to
 // start at the document "NewYork" in the "States" collection, write
-// client.Collection("States").OrderBy(DocumentID, firestore.Asc).StartAt("NewYork")
+//
+//   client.Collection("States").OrderBy(DocumentID, firestore.Asc).StartAt("NewYork")
 //
 // Calling StartAt overrides a previous call to StartAt or StartAfter.
 func (q Query) StartAt(fieldValues ...interface{}) Query {

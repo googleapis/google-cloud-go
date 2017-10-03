@@ -187,7 +187,7 @@ func (c *Client) GetAll(ctx context.Context, docRefs []*DocumentRef) ([]*Documen
 	return docs, nil
 }
 
-// Collections returns an interator over the top-level collections
+// Collections returns an interator over the top-level collections.
 func (c *Client) Collections(ctx context.Context) *CollectionIterator {
 	it := &CollectionIterator{
 		err:    checkTransaction(ctx),
@@ -231,7 +231,7 @@ func (c *Client) commit(ctx context.Context, ws []*pb.Write) (*WriteResult, erro
 type WriteResult struct {
 	// The time at which the document was updated, or created if it did not
 	// previously exist. Writes that do not actually change the document do
-	// no change the update time.
+	// not change the update time.
 	UpdateTime time.Time
 }
 

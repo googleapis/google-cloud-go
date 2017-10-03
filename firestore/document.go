@@ -75,27 +75,27 @@ func (d *DocumentSnapshot) Data() map[string]interface{} {
 // map[string]interface{} or a pointer to a struct.
 //
 // Firestore field values are converted to Go values as follows:
-// - Null converts to nil.
-// - Bool converts to bool.
-// - String converts to string.
-// - Integer converts int64. When setting a struct field, any signed or unsigned
-//   integer type is permitted except uint64. Overflow is detected and results in
-//   an error.
-// - Double converts to float64. When setting a struct field, float32 is permitted.
-//   Overflow is detected and results in an error.
-// - Bytes is converted to []byte.
-// - Timestamp converts to time.Time.
-// - GeoPoint converts to latlng.LatLng, where latlng is the package
-//   "google.golang.org/genproto/googleapis/type/latlng".
-// - Arrays convert to []interface{}. When setting a struct field, the field
-//   may be a slice or array of any type and is populated recursively.
-//   Slices are resized to the incoming value's size, while arrays that are too
-//   long have excess elements filled with zero values. If the array is too short,
-//   excess incoming values will be dropped.
-// - Maps convert to map[string]interface{}. When setting a struct field,
-//   maps of key type string and any value type are permitted, and are populated
-//   recursively.
-// - References are converted to DocumentRefs.
+//   - Null converts to nil.
+//   - Bool converts to bool.
+//   - String converts to string.
+//   - Integer converts int64. When setting a struct field, any signed or unsigned
+//     integer type is permitted except uint64. Overflow is detected and results in
+//     an error.
+//   - Double converts to float64. When setting a struct field, float32 is permitted.
+//     Overflow is detected and results in an error.
+//   - Bytes is converted to []byte.
+//   - Timestamp converts to time.Time.
+//   - GeoPoint converts to latlng.LatLng, where latlng is the package
+//     "google.golang.org/genproto/googleapis/type/latlng".
+//   - Arrays convert to []interface{}. When setting a struct field, the field
+//     may be a slice or array of any type and is populated recursively.
+//     Slices are resized to the incoming value's size, while arrays that are too
+//     long have excess elements filled with zero values. If the array is too short,
+//     excess incoming values will be dropped.
+//   - Maps convert to map[string]interface{}. When setting a struct field,
+//     maps of key type string and any value type are permitted, and are populated
+//     recursively.
+//   - References are converted to DocumentRefs.
 //
 // Field names given by struct field tags are observed, as described in
 // DocumentRef.Create.

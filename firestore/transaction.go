@@ -25,7 +25,7 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
-// Transaction represents a FireStore transaction.
+// Transaction represents a Firestore transaction.
 type Transaction struct {
 	c              *Client
 	ctx            context.Context
@@ -212,7 +212,7 @@ func (t *Transaction) Get(dr *DocumentRef) (*DocumentSnapshot, error) {
 }
 
 // A Queryer is a Query or a CollectionRef. CollectionRefs act as queries whose
-// results are all documents in the collection.
+// results are all the documents in the collection.
 type Queryer interface {
 	query() *Query
 }
