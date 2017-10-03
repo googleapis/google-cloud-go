@@ -16,8 +16,7 @@
 
 /*
 Package firestore provides a client for reading and writing to a Cloud Firestore
-database. See the admin client under firestore/apiv1beta1 to operate on namespaces,
-databases and indexes.
+database. 
 
 See https://cloud.google.com/firestore/docs for an introduction
 to Cloud Firestore and additional help on using the Firestore API.
