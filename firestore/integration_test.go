@@ -42,6 +42,11 @@ func TestMain(m *testing.M) {
 	os.Exit(status)
 }
 
+const (
+	envProjID     = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
+	envPrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
+)
+
 var (
 	iClient       *Client
 	iColl         *CollectionRef
@@ -54,12 +59,13 @@ func initIntegrationTest() {
 		return
 	}
 	ctx := context.Background()
-	testProjectID := testutil.ProjID()
+	testProjectID := os.Getenv(envProjID)
 	if testProjectID == "" {
 		log.Println("Integration tests skipped. See CONTRIBUTING.md for details")
 		return
 	}
-	ts := testutil.TokenSource(ctx, "https://www.googleapis.com/auth/cloud-platform",
+	ts := testutil.TokenSourceEnv(ctx, envPrivateKey,
+		"https://www.googleapis.com/auth/cloud-platform",
 		"https://www.googleapis.com/auth/datastore")
 	if ts == nil {
 		log.Fatal("The project key must be set. See CONTRIBUTING.md for details")
@@ -551,9 +557,9 @@ func TestIntegration_ServerTimestamp(t *testing.T) {
 	ctx := context.Background()
 	doc := integrationColl(t).NewDoc()
 	// Bound times of the RPC, with some slack for clock skew.
-	start := time.Now().Add(-50 * time.Millisecond)
+	start := time.Now()
 	mustCreate("ServerTimestamp", t, doc, data)
-	end := time.Now().Add(50 * time.Millisecond)
+	end := time.Now()
 	ds, err := doc.Get(ctx)
 	if err != nil {
 		t.Fatal(err)
