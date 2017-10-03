@@ -16,10 +16,11 @@ package firestore
 
 import (
 	"fmt"
-	"golang.org/x/net/context"
 	"reflect"
 	"testing"
 	"time"
+
+	"golang.org/x/net/context"
 
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 
@@ -87,7 +88,7 @@ func newMock(t *testing.T) (*Client, *mockServer) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
+	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		t.Fatal(err)
 	}
