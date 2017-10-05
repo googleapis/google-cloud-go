@@ -174,7 +174,7 @@ func (t *Table) implicitTable() bool {
 }
 
 // Create creates a table in the BigQuery service.
-// Pass in a TableMetadata value to configure the dataset.
+// Pass in a TableMetadata value to configure the table.
 func (t *Table) Create(ctx context.Context, tm *TableMetadata) error {
 	return t.c.service.createTable(ctx, t.ProjectID, t.DatasetID, t.TableID, tm)
 }
