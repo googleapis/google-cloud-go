@@ -36,9 +36,9 @@ func Example() {
 	}()
 
 	// Report an error.
-	err := doSomething()
+	err = doSomething()
 	if err != nil {
-		ec.Report(errorreporintg.Entry{
+		ec.Report(errorreporting.Entry{
 			Error: err,
 		})
 	}
