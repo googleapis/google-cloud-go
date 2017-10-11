@@ -41,12 +41,12 @@ func setupFakeServer(opt ...grpc.ServerOption) (tbl *Table, cleanup func(), err 
 		return nil, nil, err
 	}
 
-	client, err := NewClient(context.Background(), "client", "instance", option.WithGRPCConn(conn))
+	client, err := NewClient(context.Background(), "client", "instance", option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
 	if err != nil {
 		return nil, nil, err
 	}
 
-	adminClient, err := NewAdminClient(context.Background(), "client", "instance", option.WithGRPCConn(conn))
+	adminClient, err := NewAdminClient(context.Background(), "client", "instance", option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
 	if err != nil {
 		return nil, nil, err
 	}
