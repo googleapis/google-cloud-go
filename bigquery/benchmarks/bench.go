@@ -81,5 +81,6 @@ func doQuery(ctx context.Context, c *bigquery.Client, qt string) {
 		}
 		numRows++
 	}
-	log.Printf("query %q: %d rows, %d cols, first byte %s, total %s", qt, numRows, numCols, firstByte, time.Since(startTime))
+	log.Printf("query %q: %d rows, %d cols, first byte %f sec, total %f sec",
+		qt, numRows, numCols, firstByte.Seconds(), time.Since(startTime).Seconds())
 }
