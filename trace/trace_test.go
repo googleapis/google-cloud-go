@@ -952,3 +952,14 @@ func TestPropagation(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkSpanFromHeader(b *testing.B) {
+	const header = `0123456789ABCDEF0123456789ABCDEF/42;o=0`
+	const name = "/foo"
+
+	rt := newFakeRoundTripper()
+	traceClient := newTestClient(rt)
+	for n := 0; n < b.N; n++ {
+		traceClient.SpanFromHeader(name, header)
+	}
+}
