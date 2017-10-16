@@ -36,17 +36,17 @@ func setupFakeServer(opt ...grpc.ServerOption) (tbl *Table, cleanup func(), err 
 	if err != nil {
 		return nil, nil, err
 	}
-	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
+	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		return nil, nil, err
 	}
 
-	client, err := NewClient(context.Background(), "client", "instance", option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
+	client, err := NewClient(context.Background(), "client", "instance", option.WithGRPCConn(conn))
 	if err != nil {
 		return nil, nil, err
 	}
 
-	adminClient, err := NewAdminClient(context.Background(), "client", "instance", option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
+	adminClient, err := NewAdminClient(context.Background(), "client", "instance", option.WithGRPCConn(conn))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -80,10 +80,10 @@ func TestRetryApply(t *testing.T) {
 		return handler(ctx, req)
 	}
 	tbl, cleanup, err := setupFakeServer(grpc.UnaryInterceptor(errInjector))
-	defer cleanup()
 	if err != nil {
 		t.Fatalf("fake server setup: %v", err)
 	}
+	defer cleanup()
 
 	mut := NewMutation()
 	mut.Set("cf", "col", 1, []byte("val"))
