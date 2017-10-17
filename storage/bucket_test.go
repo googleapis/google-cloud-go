@@ -52,7 +52,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		},
 		Location:     "loc",
 		StorageClass: "class",
-		Versioning:   nil, // ignore VersioningEnabled if flase
+		Versioning:   nil, // ignore VersioningEnabled if false
 		Labels:       map[string]string{"label": "value"},
 	}
 	msg, ok, err := pretty.Diff(want, got)
