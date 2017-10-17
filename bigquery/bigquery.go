@@ -40,6 +40,7 @@ const userAgent = "gcloud-golang-bigquery/20160429"
 type Client struct {
 	service   service
 	projectID string
+	bqs       *bq.Service
 }
 
 // NewClient constructs a new Client which can perform BigQuery operations.
@@ -64,6 +65,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	c := &Client{
 		service:   s,
 		projectID: projectID,
+		bqs:       s.s,
 	}
 	return c, nil
 }
