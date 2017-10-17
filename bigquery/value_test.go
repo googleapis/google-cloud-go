@@ -339,8 +339,9 @@ func TestRepeatedRecordContainingRecord(t *testing.T) {
 
 func TestValuesSaverConvertsToMap(t *testing.T) {
 	testCases := []struct {
-		vs   ValuesSaver
-		want *insertionRow
+		vs           ValuesSaver
+		wantInsertID string
+		wantRow      map[string]Value
 	}{
 		{
 			vs: ValuesSaver{
@@ -351,10 +352,8 @@ func TestValuesSaverConvertsToMap(t *testing.T) {
 				InsertID: "iid",
 				Row:      []Value{1, "a"},
 			},
-			want: &insertionRow{
-				InsertID: "iid",
-				Row:      map[string]Value{"intField": 1, "strField": "a"},
-			},
+			wantInsertID: "iid",
+			wantRow:      map[string]Value{"intField": 1, "strField": "a"},
 		},
 		{
 			vs: ValuesSaver{
@@ -371,13 +370,11 @@ func TestValuesSaverConvertsToMap(t *testing.T) {
 				InsertID: "iid",
 				Row:      []Value{1, []Value{[]Value{2, 3}}},
 			},
-			want: &insertionRow{
-				InsertID: "iid",
-				Row: map[string]Value{
-					"intField": 1,
-					"recordField": map[string]Value{
-						"nestedInt": []Value{2, 3},
-					},
+			wantInsertID: "iid",
+			wantRow: map[string]Value{
+				"intField": 1,
+				"recordField": map[string]Value{
+					"nestedInt": []Value{2, 3},
 				},
 			},
 		},
@@ -402,25 +399,26 @@ func TestValuesSaverConvertsToMap(t *testing.T) {
 					},
 				},
 			},
-			want: &insertionRow{
-				InsertID: "iid",
-				Row: map[string]Value{
-					"records": []Value{
-						map[string]Value{"x": 1, "y": 2},
-						map[string]Value{"x": 3, "y": 4},
-					},
+			wantInsertID: "iid",
+			wantRow: map[string]Value{
+				"records": []Value{
+					map[string]Value{"x": 1, "y": 2},
+					map[string]Value{"x": 3, "y": 4},
 				},
 			},
 		},
 	}
 	for _, tc := range testCases {
-		data, insertID, err := tc.vs.Save()
+		gotRow, gotInsertID, err := tc.vs.Save()
 		if err != nil {
 			t.Errorf("Expected successful save; got: %v", err)
+			continue
 		}
-		got := &insertionRow{insertID, data}
-		if !testutil.Equal(got, tc.want) {
-			t.Errorf("saving ValuesSaver:\ngot:\n%+v\nwant:\n%+v", got, tc.want)
+		if !testutil.Equal(gotRow, tc.wantRow) {
+			t.Errorf("%v row:\ngot:\n%+v\nwant:\n%+v", tc.vs, gotRow, tc.wantRow)
+		}
+		if !testutil.Equal(gotInsertID, tc.wantInsertID) {
+			t.Errorf("%v ID:\ngot:\n%+v\nwant:\n%+v", tc.vs, gotInsertID, tc.wantInsertID)
 		}
 	}
 }

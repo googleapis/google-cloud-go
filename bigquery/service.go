@@ -54,7 +54,6 @@ type service interface {
 
 	// Table data
 	readTabledata(ctx context.Context, conf *readTableConf, pageToken string) (*readDataResult, error)
-	insertRows(ctx context.Context, projectID, datasetID, tableID string, rows []*insertionRow, conf *insertRowsConf) error
 
 	// Datasets
 	insertDataset(ctx context.Context, datasetID, projectID string, dm *DatasetMetadata) error
@@ -258,59 +257,6 @@ func (s *bigqueryService) waitForQuery(ctx context.Context, projectID, jobID str
 		return nil, err
 	}
 	return convertTableSchema(res.Schema), nil
-}
-
-type insertRowsConf struct {
-	templateSuffix      string
-	ignoreUnknownValues bool
-	skipInvalidRows     bool
-}
-
-func (s *bigqueryService) insertRows(ctx context.Context, projectID, datasetID, tableID string, rows []*insertionRow, conf *insertRowsConf) error {
-	req := &bq.TableDataInsertAllRequest{
-		TemplateSuffix:      conf.templateSuffix,
-		IgnoreUnknownValues: conf.ignoreUnknownValues,
-		SkipInvalidRows:     conf.skipInvalidRows,
-	}
-	for _, row := range rows {
-		m := make(map[string]bq.JsonValue)
-		for k, v := range row.Row {
-			m[k] = bq.JsonValue(v)
-		}
-		req.Rows = append(req.Rows, &bq.TableDataInsertAllRequestRows{
-			InsertId: row.InsertID,
-			Json:     m,
-		})
-	}
-	call := s.s.Tabledata.InsertAll(projectID, datasetID, tableID, req).Context(ctx)
-	setClientHeader(call.Header())
-	var res *bq.TableDataInsertAllResponse
-	err := runWithRetry(ctx, func() (err error) {
-		res, err = call.Do()
-		return err
-	})
-	if err != nil {
-		return err
-	}
-	if len(res.InsertErrors) == 0 {
-		return nil
-	}
-
-	var errs PutMultiError
-	for _, e := range res.InsertErrors {
-		if int(e.Index) > len(rows) {
-			return fmt.Errorf("internal error: unexpected row index: %v", e.Index)
-		}
-		rie := RowInsertionError{
-			InsertID: rows[e.Index].InsertID,
-			RowIndex: int(e.Index),
-		}
-		for _, errp := range e.Errors {
-			rie.Errors = append(rie.Errors, errorFromErrorProto(errp))
-		}
-		errs = append(errs, rie)
-	}
-	return errs
 }
 
 func (s *bigqueryService) getJob(ctx context.Context, projectID, jobID string) (*Job, error) {
