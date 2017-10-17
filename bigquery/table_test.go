@@ -188,3 +188,47 @@ func TestBQTableFromMetadata(t *testing.T) {
 		}
 	}
 }
+
+func TestBQTableFromMetadataToUpdate(t *testing.T) {
+	aTime := time.Date(2017, 1, 26, 0, 0, 0, 0, time.Local)
+	for _, test := range []struct {
+		tm   TableMetadataToUpdate
+		want *bq.Table
+	}{
+		{
+			tm:   TableMetadataToUpdate{},
+			want: &bq.Table{},
+		},
+		{
+			tm: TableMetadataToUpdate{
+				Description: "d",
+				Name:        "n",
+			},
+			want: &bq.Table{
+				Description:     "d",
+				FriendlyName:    "n",
+				ForceSendFields: []string{"Description", "FriendlyName"},
+			},
+		},
+		{
+			tm: TableMetadataToUpdate{
+				Schema:         Schema{fieldSchema("desc", "name", "STRING", false, true)},
+				ExpirationTime: aTime,
+			},
+			want: &bq.Table{
+				Schema: &bq.TableSchema{
+					Fields: []*bq.TableFieldSchema{
+						bqTableFieldSchema("desc", "name", "STRING", "REQUIRED"),
+					},
+				},
+				ExpirationTime:  aTime.UnixNano() / 1e6,
+				ForceSendFields: []string{"Schema", "ExpirationTime"},
+			},
+		},
+	} {
+		got := bqTableFromMetadataToUpdate(test.tm)
+		if !testutil.Equal(got, test.want) {
+			t.Errorf("%v:\ngot  %v\nwant %v", test.tm, got, test.want)
+		}
+	}
+}

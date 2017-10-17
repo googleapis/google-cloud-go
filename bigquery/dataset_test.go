@@ -18,6 +18,9 @@ import (
 	"errors"
 	"strconv"
 	"testing"
+	"time"
+
+	"cloud.google.com/go/internal/testutil"
 
 	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
@@ -164,5 +167,42 @@ func TestDatasets(t *testing.T) {
 		func(it interface{}) (interface{}, error) { return it.(*DatasetIterator).Next() })
 	if !ok {
 		t.Fatalf("ListHidden=false: %s", msg)
+	}
+}
+
+func TestBQDatasetFromMetadata(t *testing.T) {
+	for _, test := range []struct {
+		in   *DatasetMetadata
+		want *bq.Dataset
+	}{
+		{nil, &bq.Dataset{}},
+		{&DatasetMetadata{Name: "name"}, &bq.Dataset{FriendlyName: "name"}},
+		{&DatasetMetadata{
+			Name:                   "name",
+			Description:            "desc",
+			DefaultTableExpiration: time.Hour,
+			Location:               "EU",
+			Labels:                 map[string]string{"x": "y"},
+		}, &bq.Dataset{
+			FriendlyName:             "name",
+			Description:              "desc",
+			DefaultTableExpirationMs: 60 * 60 * 1000,
+			Location:                 "EU",
+			Labels:                   map[string]string{"x": "y"},
+		}},
+	} {
+		got, err := bqDatasetFromMetadata(test.in)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !testutil.Equal(got, test.want) {
+			t.Errorf("%v:\ngot  %+v\nwant %+v", test.in, got, test.want)
+		}
+	}
+
+	// Check that non-writeable fields are unset.
+	_, err := bqDatasetFromMetadata(&DatasetMetadata{FullID: "x"})
+	if err == nil {
+		t.Error("got nil, want error")
 	}
 }
