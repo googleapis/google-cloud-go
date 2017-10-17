@@ -20,22 +20,22 @@ import (
 	"testing"
 
 	"golang.org/x/net/context"
+	bq "google.golang.org/api/bigquery/v2"
 	itest "google.golang.org/api/iterator/testing"
 )
 
 // readServiceStub services read requests by returning data from an in-memory list of values.
-type listTablesServiceStub struct {
+type listTablesStub struct {
 	expectedProject, expectedDataset string
-	tables                           []*Table
-	service
+	tables                           []*bq.TableListTables
 }
 
-func (s *listTablesServiceStub) listTables(ctx context.Context, projectID, datasetID string, pageSize int, pageToken string) ([]*Table, string, error) {
-	if projectID != s.expectedProject {
-		return nil, "", errors.New("wrong project id")
+func (s *listTablesStub) listTables(it *TableIterator, pageSize int, pageToken string) (*bq.TableList, error) {
+	if it.dataset.ProjectID != s.expectedProject {
+		return nil, errors.New("wrong project id")
 	}
-	if datasetID != s.expectedDataset {
-		return nil, "", errors.New("wrong dataset id")
+	if it.dataset.DatasetID != s.expectedDataset {
+		return nil, errors.New("wrong dataset id")
 	}
 	const maxPageSize = 2
 	if pageSize <= 0 || pageSize > maxPageSize {
@@ -46,7 +46,7 @@ func (s *listTablesServiceStub) listTables(ctx context.Context, projectID, datas
 		var err error
 		start, err = strconv.Atoi(pageToken)
 		if err != nil {
-			return nil, "", err
+			return nil, err
 		}
 	}
 	end := start + pageSize
@@ -57,24 +57,36 @@ func (s *listTablesServiceStub) listTables(ctx context.Context, projectID, datas
 	if end < len(s.tables) {
 		nextPageToken = strconv.Itoa(end)
 	}
-	return s.tables[start:end], nextPageToken, nil
+	return &bq.TableList{
+		Tables:        s.tables[start:end],
+		NextPageToken: nextPageToken,
+	}, nil
 }
 
 func TestTables(t *testing.T) {
-	t1 := &Table{ProjectID: "p1", DatasetID: "d1", TableID: "t1"}
-	t2 := &Table{ProjectID: "p1", DatasetID: "d1", TableID: "t2"}
-	t3 := &Table{ProjectID: "p1", DatasetID: "d1", TableID: "t3"}
-	allTables := []*Table{t1, t2, t3}
-	c := &Client{
-		service: &listTablesServiceStub{
-			expectedProject: "x",
-			expectedDataset: "y",
-			tables:          allTables,
-		},
-		projectID: "x",
+	c := &Client{projectID: "p1"}
+	inTables := []*bq.TableListTables{
+		{TableReference: &bq.TableReference{ProjectId: "p1", DatasetId: "d1", TableId: "t1"}},
+		{TableReference: &bq.TableReference{ProjectId: "p1", DatasetId: "d1", TableId: "t2"}},
+		{TableReference: &bq.TableReference{ProjectId: "p1", DatasetId: "d1", TableId: "t3"}},
 	}
-	msg, ok := itest.TestIterator(allTables,
-		func() interface{} { return c.Dataset("y").Tables(context.Background()) },
+	outTables := []*Table{
+		{ProjectID: "p1", DatasetID: "d1", TableID: "t1", c: c},
+		{ProjectID: "p1", DatasetID: "d1", TableID: "t2", c: c},
+		{ProjectID: "p1", DatasetID: "d1", TableID: "t3", c: c},
+	}
+
+	lts := &listTablesStub{
+		expectedProject: "p1",
+		expectedDataset: "d1",
+		tables:          inTables,
+	}
+	old := listTables
+	listTables = lts.listTables // cannot use t.Parallel with this test
+	defer func() { listTables = old }()
+
+	msg, ok := itest.TestIterator(outTables,
+		func() interface{} { return c.Dataset("d1").Tables(context.Background()) },
 		func(it interface{}) (interface{}, error) { return it.(*TableIterator).Next() })
 	if !ok {
 		t.Error(msg)

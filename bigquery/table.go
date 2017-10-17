@@ -15,6 +15,7 @@
 package bigquery
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -175,18 +176,146 @@ func (t *Table) implicitTable() bool {
 
 // Create creates a table in the BigQuery service.
 // Pass in a TableMetadata value to configure the table.
+// If tm.View.Query is non-empty, the created table will be of type VIEW.
+// Expiration can only be set during table creation.
+// After table creation, a view can be modified only if its table was initially created with a view.
 func (t *Table) Create(ctx context.Context, tm *TableMetadata) error {
-	return t.c.service.createTable(ctx, t.ProjectID, t.DatasetID, t.TableID, tm)
+	//return t.c.service.createTable(ctx, t.ProjectID, t.DatasetID, t.TableID, tm)
+	//func (s *bigqueryService) createTable(ctx context.Context, projectID, datasetID, tableID string, tm *TableMetadata) error {
+	table, err := bqTableFromMetadata(tm)
+	if err != nil {
+		return err
+	}
+	table.TableReference = &bq.TableReference{
+		ProjectId: t.ProjectID,
+		DatasetId: t.DatasetID,
+		TableId:   t.TableID,
+	}
+	req := t.c.bqs.Tables.Insert(t.ProjectID, t.DatasetID, table).Context(ctx)
+	setClientHeader(req.Header())
+	_, err = req.Do()
+	return err
+}
+
+func bqTableFromMetadata(tm *TableMetadata) (*bq.Table, error) {
+	t := &bq.Table{}
+	if tm == nil {
+		return t, nil
+	}
+	if tm.Schema != nil && tm.ViewQuery != "" {
+		return nil, errors.New("bigquery: provide Schema or ViewQuery, not both")
+	}
+	t.FriendlyName = tm.Name
+	t.Description = tm.Description
+	if tm.Schema != nil {
+		t.Schema = tm.Schema.asTableSchema()
+	}
+	if tm.ViewQuery != "" {
+		if tm.UseStandardSQL && tm.UseLegacySQL {
+			return nil, errors.New("bigquery: cannot provide both UseStandardSQL and UseLegacySQL")
+		}
+		t.View = &bq.ViewDefinition{Query: tm.ViewQuery}
+		if tm.UseLegacySQL {
+			t.View.UseLegacySql = true
+		} else {
+			t.View.UseLegacySql = false
+			t.View.ForceSendFields = append(t.View.ForceSendFields, "UseLegacySql")
+		}
+	} else if tm.UseLegacySQL || tm.UseStandardSQL {
+		return nil, errors.New("bigquery: UseLegacy/StandardSQL requires ViewQuery")
+	}
+	if tm.TimePartitioning != nil {
+		t.TimePartitioning = &bq.TimePartitioning{
+			Type:         "DAY",
+			ExpirationMs: int64(tm.TimePartitioning.Expiration / time.Millisecond),
+		}
+	}
+	if !tm.ExpirationTime.IsZero() {
+		t.ExpirationTime = tm.ExpirationTime.UnixNano() / 1e6
+	}
+
+	if tm.FullID != "" {
+		return nil, errors.New("cannot set FullID on create")
+	}
+	if tm.Type != "" {
+		return nil, errors.New("cannot set Type on create")
+	}
+	if !tm.CreationTime.IsZero() {
+		return nil, errors.New("cannot set CreationTime on create")
+	}
+	if !tm.LastModifiedTime.IsZero() {
+		return nil, errors.New("cannot set LastModifiedTime on create")
+	}
+	if tm.NumBytes != 0 {
+		return nil, errors.New("cannot set NumBytes on create")
+	}
+	if tm.NumRows != 0 {
+		return nil, errors.New("cannot set NumRows on create")
+	}
+	if tm.StreamingBuffer != nil {
+		return nil, errors.New("cannot set StreamingBuffer on create")
+	}
+	if tm.ETag != "" {
+		return nil, errors.New("cannot set ETag on create")
+	}
+	return t, nil
 }
 
 // Metadata fetches the metadata for the table.
 func (t *Table) Metadata(ctx context.Context) (*TableMetadata, error) {
-	return t.c.service.getTableMetadata(ctx, t.ProjectID, t.DatasetID, t.TableID)
+	req := t.c.bqs.Tables.Get(t.ProjectID, t.DatasetID, t.TableID).Context(ctx)
+	setClientHeader(req.Header())
+	var table *bq.Table
+	err := runWithRetry(ctx, func() (err error) {
+		table, err = req.Do()
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
+	return bqTableToMetadata(table), nil
+}
+
+func bqTableToMetadata(t *bq.Table) *TableMetadata {
+	md := &TableMetadata{
+		Description:      t.Description,
+		Name:             t.FriendlyName,
+		Type:             TableType(t.Type),
+		FullID:           t.Id,
+		NumBytes:         t.NumBytes,
+		NumRows:          t.NumRows,
+		ExpirationTime:   unixMillisToTime(t.ExpirationTime),
+		CreationTime:     unixMillisToTime(t.CreationTime),
+		LastModifiedTime: unixMillisToTime(int64(t.LastModifiedTime)),
+		ETag:             t.Etag,
+	}
+	if t.Schema != nil {
+		md.Schema = convertTableSchema(t.Schema)
+	}
+	if t.View != nil {
+		md.ViewQuery = t.View.Query
+		md.UseLegacySQL = t.View.UseLegacySql
+	}
+	if t.TimePartitioning != nil {
+		md.TimePartitioning = &TimePartitioning{
+			Expiration: time.Duration(t.TimePartitioning.ExpirationMs) * time.Millisecond,
+		}
+	}
+	if t.StreamingBuffer != nil {
+		md.StreamingBuffer = &StreamingBuffer{
+			EstimatedBytes:  t.StreamingBuffer.EstimatedBytes,
+			EstimatedRows:   t.StreamingBuffer.EstimatedRows,
+			OldestEntryTime: unixMillisToTime(int64(t.StreamingBuffer.OldestEntryTime)),
+		}
+	}
+	return md
 }
 
 // Delete deletes the table.
 func (t *Table) Delete(ctx context.Context) error {
-	return t.c.service.deleteTable(ctx, t.ProjectID, t.DatasetID, t.TableID)
+	req := t.c.bqs.Tables.Delete(t.ProjectID, t.DatasetID, t.TableID).Context(ctx)
+	setClientHeader(req.Header())
+	return runWithRetry(ctx, func() error { return req.Do() })
 }
 
 // Read fetches the contents of the table.

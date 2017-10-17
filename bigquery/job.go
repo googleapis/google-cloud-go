@@ -154,7 +154,19 @@ func (j *Job) Status(ctx context.Context) (*JobStatus, error) {
 // cancellation to take effect. To check whether the job has terminated, use Job.Status.
 // Cancelled jobs may still incur costs.
 func (j *Job) Cancel(ctx context.Context) error {
-	return j.c.service.jobCancel(ctx, j.projectID, j.jobID)
+	// Jobs.Cancel returns a job entity, but the only relevant piece of
+	// data it may contain (the status of the job) is unreliable.  From the
+	// docs: "This call will return immediately, and the client will need
+	// to poll for the job status to see if the cancel completed
+	// successfully".  So it would be misleading to return a status.
+	call := j.c.bqs.Jobs.Cancel(j.projectID, j.jobID).
+		Fields(). // We don't need any of the response data.
+		Context(ctx)
+	setClientHeader(call.Header())
+	return runWithRetry(ctx, func() error {
+		_, err := call.Do()
+		return err
+	})
 }
 
 // Wait blocks until the job or the context is done. It returns the final status
@@ -417,14 +429,47 @@ func (it *JobIterator) fetch(pageSize int, pageToken string) (string, error) {
 	default:
 		return "", fmt.Errorf("bigquery: invalid value for JobIterator.State: %d", it.State)
 	}
-	jobInfos, nextPageToken, err := it.c.service.listJobs(it.ctx, it.ProjectID, pageSize, pageToken, it.AllUsers, st)
+
+	req := it.c.bqs.Jobs.List(it.ProjectID).
+		Context(it.ctx).
+		PageToken(pageToken).
+		Projection("full").
+		AllUsers(it.AllUsers)
+	if st != "" {
+		req.StateFilter(st)
+	}
+	setClientHeader(req.Header())
+	if pageSize > 0 {
+		req.MaxResults(int64(pageSize))
+	}
+	res, err := req.Do()
 	if err != nil {
 		return "", err
+	}
+	var jobInfos []JobInfo
+	for _, j := range res.Jobs {
+		ji, err := convertListedJob(j)
+		if err != nil {
+			return "", err
+		}
+		jobInfos = append(jobInfos, ji)
 	}
 	for _, ji := range jobInfos {
 		ji.Job.c = it.c
 		ji.Status.setClient(it.c)
 		it.items = append(it.items, ji)
 	}
-	return nextPageToken, nil
+	return res.NextPageToken, nil
+}
+
+func convertListedJob(j *bq.JobListJobs) (JobInfo, error) {
+	st, err := jobStatusFromProto(j.Status)
+	if err != nil {
+		return JobInfo{}, err
+	}
+	st.Statistics = jobStatisticsFromProto(j.Statistics)
+	return JobInfo{
+		Job:    jobFromProtos(j.JobReference, j.Configuration),
+		Status: st,
+	}, nil
 }
