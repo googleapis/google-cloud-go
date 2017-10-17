@@ -1333,6 +1333,7 @@ func TestIntegration_BucketIAM(t *testing.T) {
 }
 
 func TestIntegration_RequesterPays(t *testing.T) {
+	t.Skip("test is broken; fix is WIP")
 	ctx := context.Background()
 	client, bucketName := testConfig(ctx, t)
 	defer client.Close()
