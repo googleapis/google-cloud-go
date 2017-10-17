@@ -20,6 +20,7 @@ import (
 	"cloud.google.com/go/internal/optional"
 
 	"golang.org/x/net/context"
+	bq "google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/iterator"
 )
 
@@ -163,16 +164,42 @@ func (it *TableIterator) Next() (*Table, error) {
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
 func (it *TableIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 
+// for testing
+var listTables = func(it *TableIterator, pageSize int, pageToken string) (*bq.TableList, error) {
+	call := it.dataset.c.bqs.Tables.List(it.dataset.ProjectID, it.dataset.DatasetID).
+		PageToken(pageToken).
+		Context(it.ctx)
+	setClientHeader(call.Header())
+	if pageSize > 0 {
+		call.MaxResults(int64(pageSize))
+	}
+	var res *bq.TableList
+	err := runWithRetry(it.ctx, func() (err error) {
+		res, err = call.Do()
+		return err
+	})
+	return res, err
+}
+
 func (it *TableIterator) fetch(pageSize int, pageToken string) (string, error) {
-	tables, tok, err := it.dataset.c.service.listTables(it.ctx, it.dataset.ProjectID, it.dataset.DatasetID, pageSize, pageToken)
+	res, err := listTables(it, pageSize, pageToken)
 	if err != nil {
 		return "", err
 	}
-	for _, t := range tables {
-		t.c = it.dataset.c
-		it.tables = append(it.tables, t)
+	for _, t := range res.Tables {
+		tr := convertTableReference(t.TableReference)
+		tr.c = it.dataset.c
+		it.tables = append(it.tables, tr)
 	}
-	return tok, nil
+	return res.NextPageToken, nil
+}
+
+func convertTableReference(tr *bq.TableReference) *Table {
+	return &Table{
+		ProjectID: tr.ProjectId,
+		DatasetID: tr.DatasetId,
+		TableID:   tr.TableId,
+	}
 }
 
 // Datasets returns an iterator over the datasets in a project.

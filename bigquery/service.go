@@ -39,17 +39,8 @@ type service interface {
 	// Jobs
 	insertJob(ctx context.Context, projectId string, conf *insertJobConf) (*Job, error)
 	getJob(ctx context.Context, projectId, jobID string) (*Job, error)
-	jobCancel(ctx context.Context, projectId, jobID string) error
 	jobStatus(ctx context.Context, projectId, jobID string) (*JobStatus, error)
-	listJobs(ctx context.Context, projectId string, maxResults int, pageToken string, all bool, state string) ([]JobInfo, string, error)
 
-	// Tables
-	createTable(ctx context.Context, projectID, datasetID, tableID string, tm *TableMetadata) error
-	getTableMetadata(ctx context.Context, projectID, datasetID, tableID string) (*TableMetadata, error)
-	deleteTable(ctx context.Context, projectID, datasetID, tableID string) error
-
-	// listTables returns a page of Tables and a next page token. Note: the Tables do not have their c field populated.
-	listTables(ctx context.Context, projectID, datasetID string, pageSize int, pageToken string) ([]*Table, string, error)
 	patchTable(ctx context.Context, projectID, datasetID, tableID string, conf *patchTableConf, etag string) (*TableMetadata, error)
 
 	// Table data
@@ -297,22 +288,6 @@ func (s *bigqueryService) getJobInternal(ctx context.Context, projectID, jobID s
 	return job, nil
 }
 
-func (s *bigqueryService) jobCancel(ctx context.Context, projectID, jobID string) error {
-	// Jobs.Cancel returns a job entity, but the only relevant piece of
-	// data it may contain (the status of the job) is unreliable.  From the
-	// docs: "This call will return immediately, and the client will need
-	// to poll for the job status to see if the cancel completed
-	// successfully".  So it would be misleading to return a status.
-	call := s.s.Jobs.Cancel(projectID, jobID).
-		Fields(). // We don't need any of the response data.
-		Context(ctx)
-	setClientHeader(call.Header())
-	return runWithRetry(ctx, func() error {
-		_, err := call.Do()
-		return err
-	})
-}
-
 func jobFromProtos(jr *bq.JobReference, config *bq.JobConfiguration) *Job {
 	var isQuery bool
 	var dest *bq.TableReference
@@ -424,169 +399,6 @@ func queryPlanFromProto(stages []*bq.ExplainQueryStage) []*ExplainQueryStage {
 	return res
 }
 
-// listTables returns a subset of tables that belong to a dataset, and a token for fetching the next subset.
-func (s *bigqueryService) listTables(ctx context.Context, projectID, datasetID string, pageSize int, pageToken string) ([]*Table, string, error) {
-	var tables []*Table
-	req := s.s.Tables.List(projectID, datasetID).
-		PageToken(pageToken).
-		Context(ctx)
-	setClientHeader(req.Header())
-	if pageSize > 0 {
-		req.MaxResults(int64(pageSize))
-	}
-	var res *bq.TableList
-	err := runWithRetry(ctx, func() (err error) {
-		res, err = req.Do()
-		return err
-	})
-	if err != nil {
-		return nil, "", err
-	}
-	for _, t := range res.Tables {
-		tables = append(tables, convertTableReference(t.TableReference))
-	}
-	return tables, res.NextPageToken, nil
-}
-
-// createTable creates a table in the BigQuery service.
-// If tm.ViewQuery is non-empty, the created table will be of type VIEW.
-// Note: expiration can only be set during table creation.
-// Note: after table creation, a view can be modified only if its table was initially created with a view.
-func (s *bigqueryService) createTable(ctx context.Context, projectID, datasetID, tableID string, tm *TableMetadata) error {
-	table, err := bqTableFromMetadata(tm)
-	if err != nil {
-		return err
-	}
-	table.TableReference = &bq.TableReference{
-		ProjectId: projectID,
-		DatasetId: datasetID,
-		TableId:   tableID,
-	}
-	req := s.s.Tables.Insert(projectID, datasetID, table).Context(ctx)
-	setClientHeader(req.Header())
-	_, err = req.Do()
-	return err
-}
-
-func bqTableFromMetadata(tm *TableMetadata) (*bq.Table, error) {
-	t := &bq.Table{}
-	if tm == nil {
-		return t, nil
-	}
-	if tm.Schema != nil && tm.ViewQuery != "" {
-		return nil, errors.New("bigquery: provide Schema or ViewQuery, not both")
-	}
-	t.FriendlyName = tm.Name
-	t.Description = tm.Description
-	if tm.Schema != nil {
-		t.Schema = tm.Schema.asTableSchema()
-	}
-	if tm.ViewQuery != "" {
-		if tm.UseStandardSQL && tm.UseLegacySQL {
-			return nil, errors.New("bigquery: cannot provide both UseStandardSQL and UseLegacySQL")
-		}
-		t.View = &bq.ViewDefinition{Query: tm.ViewQuery}
-		if tm.UseLegacySQL {
-			t.View.UseLegacySql = true
-		} else {
-			t.View.UseLegacySql = false
-			t.View.ForceSendFields = append(t.View.ForceSendFields, "UseLegacySql")
-		}
-	} else if tm.UseLegacySQL || tm.UseStandardSQL {
-		return nil, errors.New("bigquery: UseLegacy/StandardSQL requires ViewQuery")
-	}
-	if tm.TimePartitioning != nil {
-		t.TimePartitioning = &bq.TimePartitioning{
-			Type:         "DAY",
-			ExpirationMs: int64(tm.TimePartitioning.Expiration / time.Millisecond),
-		}
-	}
-	if !tm.ExpirationTime.IsZero() {
-		t.ExpirationTime = tm.ExpirationTime.UnixNano() / 1e6
-	}
-
-	if tm.FullID != "" {
-		return nil, errors.New("cannot set FullID on create")
-	}
-	if tm.Type != "" {
-		return nil, errors.New("cannot set Type on create")
-	}
-	if !tm.CreationTime.IsZero() {
-		return nil, errors.New("cannot set CreationTime on create")
-	}
-	if !tm.LastModifiedTime.IsZero() {
-		return nil, errors.New("cannot set LastModifiedTime on create")
-	}
-	if tm.NumBytes != 0 {
-		return nil, errors.New("cannot set NumBytes on create")
-	}
-	if tm.NumRows != 0 {
-		return nil, errors.New("cannot set NumRows on create")
-	}
-	if tm.StreamingBuffer != nil {
-		return nil, errors.New("cannot set StreamingBuffer on create")
-	}
-	if tm.ETag != "" {
-		return nil, errors.New("cannot set ETag on create")
-	}
-	return t, nil
-}
-
-func (s *bigqueryService) getTableMetadata(ctx context.Context, projectID, datasetID, tableID string) (*TableMetadata, error) {
-	req := s.s.Tables.Get(projectID, datasetID, tableID).Context(ctx)
-	setClientHeader(req.Header())
-	var table *bq.Table
-	err := runWithRetry(ctx, func() (err error) {
-		table, err = req.Do()
-		return err
-	})
-	if err != nil {
-		return nil, err
-	}
-	return bqTableToMetadata(table), nil
-}
-
-func (s *bigqueryService) deleteTable(ctx context.Context, projectID, datasetID, tableID string) error {
-	req := s.s.Tables.Delete(projectID, datasetID, tableID).Context(ctx)
-	setClientHeader(req.Header())
-	return runWithRetry(ctx, func() error { return req.Do() })
-}
-
-func bqTableToMetadata(t *bq.Table) *TableMetadata {
-	md := &TableMetadata{
-		Description:      t.Description,
-		Name:             t.FriendlyName,
-		Type:             TableType(t.Type),
-		FullID:           t.Id,
-		NumBytes:         t.NumBytes,
-		NumRows:          t.NumRows,
-		ExpirationTime:   unixMillisToTime(t.ExpirationTime),
-		CreationTime:     unixMillisToTime(t.CreationTime),
-		LastModifiedTime: unixMillisToTime(int64(t.LastModifiedTime)),
-		ETag:             t.Etag,
-	}
-	if t.Schema != nil {
-		md.Schema = convertTableSchema(t.Schema)
-	}
-	if t.View != nil {
-		md.ViewQuery = t.View.Query
-		md.UseLegacySQL = t.View.UseLegacySql
-	}
-	if t.TimePartitioning != nil {
-		md.TimePartitioning = &TimePartitioning{
-			Expiration: time.Duration(t.TimePartitioning.ExpirationMs) * time.Millisecond,
-		}
-	}
-	if t.StreamingBuffer != nil {
-		md.StreamingBuffer = &StreamingBuffer{
-			EstimatedBytes:  t.StreamingBuffer.EstimatedBytes,
-			EstimatedRows:   t.StreamingBuffer.EstimatedRows,
-			OldestEntryTime: unixMillisToTime(int64(t.StreamingBuffer.OldestEntryTime)),
-		}
-	}
-	return md
-}
-
 func bqDatasetToMetadata(d *bq.Dataset) *DatasetMetadata {
 	/// TODO(jba): access
 	return &DatasetMetadata{
@@ -610,14 +422,6 @@ func unixMillisToTime(m int64) time.Time {
 		return time.Time{}
 	}
 	return time.Unix(0, m*1e6)
-}
-
-func convertTableReference(tr *bq.TableReference) *Table {
-	return &Table{
-		ProjectID: tr.ProjectId,
-		DatasetID: tr.DatasetId,
-		TableID:   tr.TableId,
-	}
 }
 
 // patchTableConf contains fields to be patched.
@@ -810,46 +614,6 @@ func (s *bigqueryService) convertListedDataset(d *bq.DatasetListDatasets) *Datas
 		ProjectID: d.DatasetReference.ProjectId,
 		DatasetID: d.DatasetReference.DatasetId,
 	}
-}
-
-func (s *bigqueryService) listJobs(ctx context.Context, projectID string, maxResults int, pageToken string, all bool, state string) ([]JobInfo, string, error) {
-	req := s.s.Jobs.List(projectID).
-		Context(ctx).
-		PageToken(pageToken).
-		Projection("full").
-		AllUsers(all)
-	if state != "" {
-		req.StateFilter(state)
-	}
-	setClientHeader(req.Header())
-	if maxResults > 0 {
-		req.MaxResults(int64(maxResults))
-	}
-	res, err := req.Do()
-	if err != nil {
-		return nil, "", err
-	}
-	var jobInfos []JobInfo
-	for _, j := range res.Jobs {
-		ji, err := s.convertListedJob(j)
-		if err != nil {
-			return nil, "", err
-		}
-		jobInfos = append(jobInfos, ji)
-	}
-	return jobInfos, res.NextPageToken, nil
-}
-
-func (s *bigqueryService) convertListedJob(j *bq.JobListJobs) (JobInfo, error) {
-	st, err := jobStatusFromProto(j.Status)
-	if err != nil {
-		return JobInfo{}, err
-	}
-	st.Statistics = jobStatisticsFromProto(j.Statistics)
-	return JobInfo{
-		Job:    jobFromProtos(j.JobReference, j.Configuration),
-		Status: st,
-	}, nil
 }
 
 // runWithRetry calls the function until it returns nil or a non-retryable error, or
