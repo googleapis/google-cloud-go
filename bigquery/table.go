@@ -329,18 +329,45 @@ func (t *Table) Read(ctx context.Context) *RowIterator {
 
 // Update modifies specific Table metadata fields.
 func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag string) (*TableMetadata, error) {
-	var conf patchTableConf
+	bqt := bqTableFromMetadataToUpdate(tm)
+	call := t.c.bqs.Tables.Patch(t.ProjectID, t.DatasetID, t.TableID, bqt).Context(ctx)
+	setClientHeader(call.Header())
+	if etag != "" {
+		call.Header().Set("If-Match", etag)
+	}
+	var res *bq.Table
+	if err := runWithRetry(ctx, func() (err error) {
+		res, err = call.Do()
+		return err
+	}); err != nil {
+		return nil, err
+	}
+	return bqTableToMetadata(res), nil
+}
+
+func bqTableFromMetadataToUpdate(tm TableMetadataToUpdate) *bq.Table {
+	t := &bq.Table{}
+	forceSend := func(field string) {
+		t.ForceSendFields = append(t.ForceSendFields, field)
+	}
+
 	if tm.Description != nil {
-		s := optional.ToString(tm.Description)
-		conf.Description = &s
+		t.Description = optional.ToString(tm.Description)
+		forceSend("Description")
 	}
 	if tm.Name != nil {
-		s := optional.ToString(tm.Name)
-		conf.Name = &s
+		t.FriendlyName = optional.ToString(tm.Name)
+		forceSend("FriendlyName")
 	}
-	conf.Schema = tm.Schema
-	conf.ExpirationTime = tm.ExpirationTime
-	return t.c.service.patchTable(ctx, t.ProjectID, t.DatasetID, t.TableID, &conf, etag)
+	if tm.Schema != nil {
+		t.Schema = tm.Schema.asTableSchema()
+		forceSend("Schema")
+	}
+	if !tm.ExpirationTime.IsZero() {
+		t.ExpirationTime = tm.ExpirationTime.UnixNano() / 1e6
+		forceSend("ExpirationTime")
+	}
+	return t
 }
 
 // TableMetadataToUpdate is used when updating a table's metadata.

@@ -15,7 +15,6 @@
 package bigquery
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -41,15 +40,10 @@ type service interface {
 	getJob(ctx context.Context, projectId, jobID string) (*Job, error)
 	jobStatus(ctx context.Context, projectId, jobID string) (*JobStatus, error)
 
-	patchTable(ctx context.Context, projectID, datasetID, tableID string, conf *patchTableConf, etag string) (*TableMetadata, error)
-
 	// Table data
 	readTabledata(ctx context.Context, conf *readTableConf, pageToken string) (*readDataResult, error)
 
 	// Datasets
-	insertDataset(ctx context.Context, datasetID, projectID string, dm *DatasetMetadata) error
-	deleteDataset(ctx context.Context, datasetID, projectID string) error
-	getDatasetMetadata(ctx context.Context, projectID, datasetID string) (*DatasetMetadata, error)
 	patchDataset(ctx context.Context, projectID, datasetID string, dm *DatasetMetadataToUpdate, etag string) (*DatasetMetadata, error)
 
 	// Misc
@@ -399,21 +393,6 @@ func queryPlanFromProto(stages []*bq.ExplainQueryStage) []*ExplainQueryStage {
 	return res
 }
 
-func bqDatasetToMetadata(d *bq.Dataset) *DatasetMetadata {
-	/// TODO(jba): access
-	return &DatasetMetadata{
-		CreationTime:           unixMillisToTime(d.CreationTime),
-		LastModifiedTime:       unixMillisToTime(d.LastModifiedTime),
-		DefaultTableExpiration: time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
-		Description:            d.Description,
-		Name:                   d.FriendlyName,
-		FullID:                 d.Id,
-		Location:               d.Location,
-		Labels:                 d.Labels,
-		ETag:                   d.Etag,
-	}
-}
-
 // Convert a number of milliseconds since the Unix epoch to a time.Time.
 // Treat an input of zero specially: convert it to the zero time,
 // rather than the start of the epoch.
@@ -422,65 +401,6 @@ func unixMillisToTime(m int64) time.Time {
 		return time.Time{}
 	}
 	return time.Unix(0, m*1e6)
-}
-
-// patchTableConf contains fields to be patched.
-type patchTableConf struct {
-	// These fields are omitted from the patch operation if nil.
-	Description    *string
-	Name           *string
-	Schema         Schema
-	ExpirationTime time.Time
-}
-
-func (s *bigqueryService) patchTable(ctx context.Context, projectID, datasetID, tableID string, conf *patchTableConf, etag string) (*TableMetadata, error) {
-	t := &bq.Table{}
-	forceSend := func(field string) {
-		t.ForceSendFields = append(t.ForceSendFields, field)
-	}
-
-	if conf.Description != nil {
-		t.Description = *conf.Description
-		forceSend("Description")
-	}
-	if conf.Name != nil {
-		t.FriendlyName = *conf.Name
-		forceSend("FriendlyName")
-	}
-	if conf.Schema != nil {
-		t.Schema = conf.Schema.asTableSchema()
-		forceSend("Schema")
-	}
-	if !conf.ExpirationTime.IsZero() {
-		t.ExpirationTime = conf.ExpirationTime.UnixNano() / 1e6
-		forceSend("ExpirationTime")
-	}
-	call := s.s.Tables.Patch(projectID, datasetID, tableID, t).Context(ctx)
-	setClientHeader(call.Header())
-	if etag != "" {
-		call.Header().Set("If-Match", etag)
-	}
-	var table *bq.Table
-	if err := runWithRetry(ctx, func() (err error) {
-		table, err = call.Do()
-		return err
-	}); err != nil {
-		return nil, err
-	}
-	return bqTableToMetadata(table), nil
-}
-
-func (s *bigqueryService) insertDataset(ctx context.Context, datasetID, projectID string, dm *DatasetMetadata) error {
-	// TODO(jba): retry?
-	ds, err := bqDatasetFromMetadata(dm)
-	if err != nil {
-		return err
-	}
-	ds.DatasetReference = &bq.DatasetReference{DatasetId: datasetID}
-	req := s.s.Datasets.Insert(projectID, ds).Context(ctx)
-	setClientHeader(req.Header())
-	_, err = req.Do()
-	return err
 }
 
 func (s *bigqueryService) patchDataset(ctx context.Context, projectID, datasetID string, dm *DatasetMetadataToUpdate, etag string) (*DatasetMetadata, error) {
@@ -498,31 +418,6 @@ func (s *bigqueryService) patchDataset(ctx context.Context, projectID, datasetID
 		return nil, err
 	}
 	return bqDatasetToMetadata(ds2), nil
-}
-
-func bqDatasetFromMetadata(dm *DatasetMetadata) (*bq.Dataset, error) {
-	ds := &bq.Dataset{}
-	if dm == nil {
-		return ds, nil
-	}
-	ds.FriendlyName = dm.Name
-	ds.Description = dm.Description
-	ds.Location = dm.Location
-	ds.DefaultTableExpirationMs = int64(dm.DefaultTableExpiration / time.Millisecond)
-	ds.Labels = dm.Labels
-	if !dm.CreationTime.IsZero() {
-		return nil, errors.New("bigquery: Dataset.CreationTime is not writable")
-	}
-	if !dm.LastModifiedTime.IsZero() {
-		return nil, errors.New("bigquery: Dataset.LastModifiedTime is not writable")
-	}
-	if dm.FullID != "" {
-		return nil, errors.New("bigquery: Dataset.FullID is not writable")
-	}
-	if dm.ETag != "" {
-		return nil, errors.New("bigquery: Dataset.ETag is not writable")
-	}
-	return ds, nil
 }
 
 func bqDatasetFromUpdateMetadata(dm *DatasetMetadataToUpdate) *bq.Dataset {
@@ -561,25 +456,6 @@ func bqDatasetFromUpdateMetadata(dm *DatasetMetadataToUpdate) *bq.Dataset {
 		}
 	}
 	return ds
-}
-
-func (s *bigqueryService) deleteDataset(ctx context.Context, datasetID, projectID string) error {
-	req := s.s.Datasets.Delete(projectID, datasetID).Context(ctx)
-	setClientHeader(req.Header())
-	return runWithRetry(ctx, func() error { return req.Do() })
-}
-
-func (s *bigqueryService) getDatasetMetadata(ctx context.Context, projectID, datasetID string) (*DatasetMetadata, error) {
-	req := s.s.Datasets.Get(projectID, datasetID).Context(ctx)
-	setClientHeader(req.Header())
-	var ds *bq.Dataset
-	if err := runWithRetry(ctx, func() (err error) {
-		ds, err = req.Do()
-		return err
-	}); err != nil {
-		return nil, err
-	}
-	return bqDatasetToMetadata(ds), nil
 }
 
 func (s *bigqueryService) listDatasets(ctx context.Context, projectID string, maxResults int, pageToken string, all bool, filter string) ([]*Dataset, string, error) {

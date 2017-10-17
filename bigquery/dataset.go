@@ -15,6 +15,7 @@
 package bigquery
 
 import (
+	"errors"
 	"time"
 
 	"cloud.google.com/go/internal/optional"
@@ -99,17 +100,76 @@ func (c *Client) DatasetInProject(projectID, datasetID string) *Dataset {
 // Create creates a dataset in the BigQuery service. An error will be returned if the
 // dataset already exists. Pass in a DatasetMetadata value to configure the dataset.
 func (d *Dataset) Create(ctx context.Context, md *DatasetMetadata) error {
-	return d.c.service.insertDataset(ctx, d.DatasetID, d.ProjectID, md)
+	ds, err := bqDatasetFromMetadata(md)
+	if err != nil {
+		return err
+	}
+	ds.DatasetReference = &bq.DatasetReference{DatasetId: d.DatasetID}
+	call := d.c.bqs.Datasets.Insert(d.ProjectID, ds).Context(ctx)
+	setClientHeader(call.Header())
+	_, err = call.Do()
+	return err
+}
+
+func bqDatasetFromMetadata(dm *DatasetMetadata) (*bq.Dataset, error) {
+	ds := &bq.Dataset{}
+	if dm == nil {
+		return ds, nil
+	}
+	ds.FriendlyName = dm.Name
+	ds.Description = dm.Description
+	ds.Location = dm.Location
+	ds.DefaultTableExpirationMs = int64(dm.DefaultTableExpiration / time.Millisecond)
+	ds.Labels = dm.Labels
+	if !dm.CreationTime.IsZero() {
+		return nil, errors.New("bigquery: Dataset.CreationTime is not writable")
+	}
+	if !dm.LastModifiedTime.IsZero() {
+		return nil, errors.New("bigquery: Dataset.LastModifiedTime is not writable")
+	}
+	if dm.FullID != "" {
+		return nil, errors.New("bigquery: Dataset.FullID is not writable")
+	}
+	if dm.ETag != "" {
+		return nil, errors.New("bigquery: Dataset.ETag is not writable")
+	}
+	return ds, nil
 }
 
 // Delete deletes the dataset.
 func (d *Dataset) Delete(ctx context.Context) error {
-	return d.c.service.deleteDataset(ctx, d.DatasetID, d.ProjectID)
+	call := d.c.bqs.Datasets.Delete(d.ProjectID, d.DatasetID).Context(ctx)
+	setClientHeader(call.Header())
+	return runWithRetry(ctx, func() error { return call.Do() })
 }
 
 // Metadata fetches the metadata for the dataset.
 func (d *Dataset) Metadata(ctx context.Context) (*DatasetMetadata, error) {
-	return d.c.service.getDatasetMetadata(ctx, d.ProjectID, d.DatasetID)
+	call := d.c.bqs.Datasets.Get(d.ProjectID, d.DatasetID).Context(ctx)
+	setClientHeader(call.Header())
+	var ds *bq.Dataset
+	if err := runWithRetry(ctx, func() (err error) {
+		ds, err = call.Do()
+		return err
+	}); err != nil {
+		return nil, err
+	}
+	return bqDatasetToMetadata(ds), nil
+}
+
+func bqDatasetToMetadata(d *bq.Dataset) *DatasetMetadata {
+	/// TODO(jba): access
+	return &DatasetMetadata{
+		CreationTime:           unixMillisToTime(d.CreationTime),
+		LastModifiedTime:       unixMillisToTime(d.LastModifiedTime),
+		DefaultTableExpiration: time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
+		Description:            d.Description,
+		Name:                   d.FriendlyName,
+		FullID:                 d.Id,
+		Location:               d.Location,
+		Labels:                 d.Labels,
+		ETag:                   d.Etag,
+	}
 }
 
 // Update modifies specific Dataset metadata fields.
