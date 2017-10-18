@@ -96,74 +96,83 @@ func TestTables(t *testing.T) {
 	}
 }
 
-type listDatasetsFake struct {
-	service
-
-	projectID string
-	datasets  []*Dataset
-	hidden    map[*Dataset]bool
+type listDatasetsStub struct {
+	expectedProject string
+	datasets        []*bq.DatasetListDatasets
+	hidden          map[*bq.DatasetListDatasets]bool
 }
 
-func (df *listDatasetsFake) listDatasets(_ context.Context, projectID string, pageSize int, pageToken string, listHidden bool, filter string) ([]*Dataset, string, error) {
+func (s *listDatasetsStub) listDatasets(it *DatasetIterator, pageSize int, pageToken string) (*bq.DatasetList, error) {
 	const maxPageSize = 2
 	if pageSize <= 0 || pageSize > maxPageSize {
 		pageSize = maxPageSize
 	}
-	if filter != "" {
-		return nil, "", errors.New("filter not supported")
+	if it.Filter != "" {
+		return nil, errors.New("filter not supported")
 	}
-	if projectID != df.projectID {
-		return nil, "", errors.New("bad project ID")
+	if it.ProjectID != s.expectedProject {
+		return nil, errors.New("bad project ID")
 	}
 	start := 0
 	if pageToken != "" {
 		var err error
 		start, err = strconv.Atoi(pageToken)
 		if err != nil {
-			return nil, "", err
+			return nil, err
 		}
 	}
 	var (
 		i             int
-		result        []*Dataset
+		result        []*bq.DatasetListDatasets
 		nextPageToken string
 	)
-	for i = start; len(result) < pageSize && i < len(df.datasets); i++ {
-		if df.hidden[df.datasets[i]] && !listHidden {
+	for i = start; len(result) < pageSize && i < len(s.datasets); i++ {
+		if s.hidden[s.datasets[i]] && !it.ListHidden {
 			continue
 		}
-		result = append(result, df.datasets[i])
+		result = append(result, s.datasets[i])
 	}
-	if i < len(df.datasets) {
+	if i < len(s.datasets) {
 		nextPageToken = strconv.Itoa(i)
 	}
-	return result, nextPageToken, nil
+	return &bq.DatasetList{
+		Datasets:      result,
+		NextPageToken: nextPageToken,
+	}, nil
 }
 
 func TestDatasets(t *testing.T) {
-	service := &listDatasetsFake{projectID: "p"}
-	client := &Client{service: service}
-	datasets := []*Dataset{
+	client := &Client{projectID: "p"}
+	inDatasets := []*bq.DatasetListDatasets{
+		{DatasetReference: &bq.DatasetReference{ProjectId: "p", DatasetId: "a"}},
+		{DatasetReference: &bq.DatasetReference{ProjectId: "p", DatasetId: "b"}},
+		{DatasetReference: &bq.DatasetReference{ProjectId: "p", DatasetId: "hidden"}},
+		{DatasetReference: &bq.DatasetReference{ProjectId: "p", DatasetId: "c"}},
+	}
+	outDatasets := []*Dataset{
 		{"p", "a", client},
 		{"p", "b", client},
 		{"p", "hidden", client},
 		{"p", "c", client},
 	}
-	service.datasets = datasets
-	service.hidden = map[*Dataset]bool{datasets[2]: true}
-	c := &Client{
-		projectID: "p",
-		service:   service,
+	lds := &listDatasetsStub{
+		expectedProject: "p",
+		datasets:        inDatasets,
+		hidden:          map[*bq.DatasetListDatasets]bool{inDatasets[2]: true},
 	}
-	msg, ok := itest.TestIterator(datasets,
-		func() interface{} { it := c.Datasets(context.Background()); it.ListHidden = true; return it },
+	old := listDatasets
+	listDatasets = lds.listDatasets // cannot use t.Parallel with this test
+	defer func() { listDatasets = old }()
+
+	msg, ok := itest.TestIterator(outDatasets,
+		func() interface{} { it := client.Datasets(context.Background()); it.ListHidden = true; return it },
 		func(it interface{}) (interface{}, error) { return it.(*DatasetIterator).Next() })
 	if !ok {
 		t.Fatalf("ListHidden=true: %s", msg)
 	}
 
-	msg, ok = itest.TestIterator([]*Dataset{datasets[0], datasets[1], datasets[3]},
-		func() interface{} { it := c.Datasets(context.Background()); it.ListHidden = false; return it },
+	msg, ok = itest.TestIterator([]*Dataset{outDatasets[0], outDatasets[1], outDatasets[3]},
+		func() interface{} { it := client0.Datasets(context.Background()); it.ListHidden = false; return it },
 		func(it interface{}) (interface{}, error) { return it.(*DatasetIterator).Next() })
 	if !ok {
 		t.Fatalf("ListHidden=false: %s", msg)
@@ -204,5 +213,28 @@ func TestBQDatasetFromMetadata(t *testing.T) {
 	_, err := bqDatasetFromMetadata(&DatasetMetadata{FullID: "x"})
 	if err == nil {
 		t.Error("got nil, want error")
+	}
+}
+
+func TestBQDatasetFromUpdateMetadata(t *testing.T) {
+	dm := DatasetMetadataToUpdate{
+		Description: "desc",
+		Name:        "name",
+		DefaultTableExpiration: time.Hour,
+	}
+	dm.SetLabel("label", "value")
+	dm.DeleteLabel("del")
+
+	got := bqDatasetFromUpdateMetadata(&dm)
+	want := &bq.Dataset{
+		Description:              "desc",
+		FriendlyName:             "name",
+		DefaultTableExpirationMs: 60 * 60 * 1000,
+		Labels:          map[string]string{"label": "value"},
+		ForceSendFields: []string{"Description", "FriendlyName"},
+		NullFields:      []string{"Labels.del"},
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("-got, +want:\n%s", diff)
 	}
 }
