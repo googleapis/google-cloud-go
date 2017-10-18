@@ -31,6 +31,8 @@
 //
 // The caller must provide the service string in the config, and
 // may provide other information as well. See Config for details.
+//
+// Profiler requires Go 1.7 or later.
 package profiler
 
 import (
