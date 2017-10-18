@@ -48,9 +48,7 @@ func (c *Client) JobFromID(ctx context.Context, id string) (*Job, error) {
 	if err != nil {
 		return nil, err
 	}
-	job := jobFromProtos(bqjob.JobReference, bqjob.Configuration)
-	job.c = c
-	return job, nil
+	return jobFromProtos(bqjob.JobReference, bqjob.Configuration, c), nil
 }
 
 // ID returns the job's ID.
@@ -130,18 +128,6 @@ func (s *JobStatus) Err() error {
 	return s.err
 }
 
-// Fill in the client field of Tables in the statistics.
-func (s *JobStatus) setClient(c *Client) {
-	if s.Statistics == nil {
-		return
-	}
-	if qs, ok := s.Statistics.Details.(*QueryStatistics); ok {
-		for _, t := range qs.ReferencedTables {
-			t.c = c
-		}
-	}
-}
-
 // Status returns the current status of the job. It fails if the Status could not be determined.
 func (j *Job) Status(ctx context.Context) (*JobStatus, error) {
 	bqjob, err := j.c.getJobInternal(ctx, j.jobID, "status", "statistics")
@@ -152,8 +138,7 @@ func (j *Job) Status(ctx context.Context) (*JobStatus, error) {
 	if err != nil {
 		return nil, err
 	}
-	js.Statistics = jobStatisticsFromProto(bqjob.Statistics)
-	js.setClient(j.c)
+	js.Statistics = jobStatisticsFromProto(bqjob.Statistics, j.c)
 	return js, nil
 }
 
@@ -184,7 +169,7 @@ func (j *Job) Cancel(ctx context.Context) error {
 func (j *Job) Wait(ctx context.Context) (*JobStatus, error) {
 	if j.isQuery {
 		// We can avoid polling for query jobs.
-		if _, err := j.c.service.waitForQuery(ctx, j.projectID, j.jobID); err != nil {
+		if _, err := j.waitForQuery(ctx, j.projectID); err != nil {
 			return nil, err
 		}
 		// Note: extra RPC even if you just want to wait for the query to finish.
@@ -215,6 +200,10 @@ func (j *Job) Wait(ctx context.Context) (*JobStatus, error) {
 // Read fetches the results of a query job.
 // If j is not a query job, Read returns an error.
 func (j *Job) Read(ctx context.Context) (*RowIterator, error) {
+	return j.read(ctx, j.waitForQuery, fetchPage)
+}
+
+func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, string) (Schema, error), pf pageFetcher) (*RowIterator, error) {
 	if !j.isQuery {
 		return nil, errors.New("bigquery: cannot read from a non-query job")
 	}
@@ -224,8 +213,7 @@ func (j *Job) Read(ctx context.Context) (*RowIterator, error) {
 	} else {
 		projectID = j.c.projectID
 	}
-
-	schema, err := j.c.service.waitForQuery(ctx, projectID, j.jobID)
+	schema, err := waitForQuery(ctx, projectID)
 	if err != nil {
 		return nil, err
 	}
@@ -233,12 +221,37 @@ func (j *Job) Read(ctx context.Context) (*RowIterator, error) {
 	if j.destinationTable == nil {
 		return nil, errors.New("bigquery: query job missing destination table")
 	}
-	return newRowIterator(ctx, j.c.service, &readTableConf{
-		projectID: j.destinationTable.ProjectId,
-		datasetID: j.destinationTable.DatasetId,
-		tableID:   j.destinationTable.TableId,
-		schema:    schema,
-	}), nil
+	dt := convertTableReference(j.destinationTable, j.c)
+	it := newRowIterator(ctx, dt, pf)
+	it.schema = schema
+	return it, nil
+}
+
+// waitForQuery waits for the query job to complete and returns its schema.
+func (j *Job) waitForQuery(ctx context.Context, projectID string) (Schema, error) {
+	// Use GetQueryResults only to wait for completion, not to read results.
+	call := j.c.bqs.Jobs.GetQueryResults(projectID, j.jobID).Context(ctx).MaxResults(0)
+	setClientHeader(call.Header())
+	backoff := gax.Backoff{
+		Initial:    1 * time.Second,
+		Multiplier: 2,
+		Max:        60 * time.Second,
+	}
+	var res *bq.GetQueryResultsResponse
+	err := internal.Retry(ctx, backoff, func() (stop bool, err error) {
+		res, err = call.Do()
+		if err != nil {
+			return !retryableError(err), err
+		}
+		if !res.JobComplete { // GetQueryResults may return early without error; retry.
+			return false, nil
+		}
+		return true, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return convertTableSchema(res.Schema), nil
 }
 
 // JobStatistics contains statistics about a job.
@@ -453,30 +466,24 @@ func (it *JobIterator) fetch(pageSize int, pageToken string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	var jobInfos []JobInfo
 	for _, j := range res.Jobs {
-		ji, err := convertListedJob(j)
+		ji, err := convertListedJob(j, it.c)
 		if err != nil {
 			return "", err
 		}
-		jobInfos = append(jobInfos, ji)
-	}
-	for _, ji := range jobInfos {
-		ji.Job.c = it.c
-		ji.Status.setClient(it.c)
 		it.items = append(it.items, ji)
 	}
 	return res.NextPageToken, nil
 }
 
-func convertListedJob(j *bq.JobListJobs) (JobInfo, error) {
+func convertListedJob(j *bq.JobListJobs, c *Client) (JobInfo, error) {
 	st, err := jobStatusFromProto(j.Status)
 	if err != nil {
 		return JobInfo{}, err
 	}
-	st.Statistics = jobStatisticsFromProto(j.Statistics)
+	st.Statistics = jobStatisticsFromProto(j.Statistics, c)
 	return JobInfo{
-		Job:    jobFromProtos(j.JobReference, j.Configuration),
+		Job:    jobFromProtos(j.JobReference, j.Configuration, c),
 		Status: st,
 	}, nil
 }
@@ -498,7 +505,7 @@ func (c *Client) getJobInternal(ctx context.Context, jobID string, fields ...goo
 	return job, nil
 }
 
-func jobFromProtos(jr *bq.JobReference, config *bq.JobConfiguration) *Job {
+func jobFromProtos(jr *bq.JobReference, config *bq.JobConfiguration, c *Client) *Job {
 	var isQuery bool
 	var dest *bq.TableReference
 	if config.Query != nil {
@@ -510,6 +517,7 @@ func jobFromProtos(jr *bq.JobReference, config *bq.JobConfiguration) *Job {
 		jobID:            jr.JobId,
 		isQuery:          isQuery,
 		destinationTable: dest,
+		c:                c,
 	}
 }
 
@@ -535,7 +543,7 @@ func jobStatusFromProto(status *bq.JobStatus) (*JobStatus, error) {
 	return newStatus, nil
 }
 
-func jobStatisticsFromProto(s *bq.JobStatistics) *JobStatistics {
+func jobStatisticsFromProto(s *bq.JobStatistics, c *Client) *JobStatistics {
 	js := &JobStatistics{
 		CreationTime:        unixMillisToTime(s.CreationTime),
 		StartTime:           unixMillisToTime(s.StartTime),
@@ -561,7 +569,7 @@ func jobStatisticsFromProto(s *bq.JobStatistics) *JobStatistics {
 		}
 		var tables []*Table
 		for _, tr := range s.Query.ReferencedTables {
-			tables = append(tables, convertTableReference(tr))
+			tables = append(tables, convertTableReference(tr, c))
 		}
 		js.Details = &QueryStatistics{
 			BillingTier:                   s.Query.BillingTier,

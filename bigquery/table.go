@@ -320,11 +320,11 @@ func (t *Table) Delete(ctx context.Context) error {
 
 // Read fetches the contents of the table.
 func (t *Table) Read(ctx context.Context) *RowIterator {
-	return newRowIterator(ctx, t.c.service, &readTableConf{
-		projectID: t.ProjectID,
-		datasetID: t.DatasetID,
-		tableID:   t.TableID,
-	})
+	return t.read(ctx, fetchPage)
+}
+
+func (t *Table) read(ctx context.Context, pf pageFetcher) *RowIterator {
+	return newRowIterator(ctx, t, pf)
 }
 
 // Update modifies specific Table metadata fields.
