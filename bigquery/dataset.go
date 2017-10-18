@@ -177,7 +177,58 @@ func bqDatasetToMetadata(d *bq.Dataset) *DatasetMetadata {
 // set the etag argument to the DatasetMetadata.ETag field from the read.
 // Pass the empty string for etag for a "blind write" that will always succeed.
 func (d *Dataset) Update(ctx context.Context, dm DatasetMetadataToUpdate, etag string) (*DatasetMetadata, error) {
-	return d.c.service.patchDataset(ctx, d.ProjectID, d.DatasetID, &dm, etag)
+	ds := bqDatasetFromUpdateMetadata(&dm)
+	call := d.c.bqs.Datasets.Patch(d.ProjectID, d.DatasetID, ds).Context(ctx)
+	setClientHeader(call.Header())
+	if etag != "" {
+		call.Header().Set("If-Match", etag)
+	}
+	var ds2 *bq.Dataset
+	if err := runWithRetry(ctx, func() (err error) {
+		ds2, err = call.Do()
+		return err
+	}); err != nil {
+		return nil, err
+	}
+	return bqDatasetToMetadata(ds2), nil
+}
+
+func bqDatasetFromUpdateMetadata(dm *DatasetMetadataToUpdate) *bq.Dataset {
+	ds := &bq.Dataset{}
+	forceSend := func(field string) {
+		ds.ForceSendFields = append(ds.ForceSendFields, field)
+	}
+
+	if dm.Description != nil {
+		ds.Description = optional.ToString(dm.Description)
+		forceSend("Description")
+	}
+	if dm.Name != nil {
+		ds.FriendlyName = optional.ToString(dm.Name)
+		forceSend("FriendlyName")
+	}
+	if dm.DefaultTableExpiration != nil {
+		dur := optional.ToDuration(dm.DefaultTableExpiration)
+		if dur == 0 {
+			// Send a null to delete the field.
+			ds.NullFields = append(ds.NullFields, "DefaultTableExpirationMs")
+		} else {
+			ds.DefaultTableExpirationMs = int64(dur / time.Millisecond)
+		}
+	}
+	if dm.setLabels != nil || dm.deleteLabels != nil {
+		ds.Labels = map[string]string{}
+		for k, v := range dm.setLabels {
+			ds.Labels[k] = v
+		}
+		if len(ds.Labels) == 0 && len(dm.deleteLabels) > 0 {
+			forceSend("Labels")
+		}
+		for l := range dm.deleteLabels {
+			ds.NullFields = append(ds.NullFields, "Labels."+l)
+		}
+	}
+	return ds
 }
 
 // Table creates a handle to a BigQuery table in the dataset.
@@ -319,15 +370,38 @@ func (it *DatasetIterator) Next() (*Dataset, error) {
 	return item, nil
 }
 
+// for testing
+var listDatasets = func(it *DatasetIterator, pageSize int, pageToken string) (*bq.DatasetList, error) {
+	call := it.c.bqs.Datasets.List(it.ProjectID).
+		Context(it.ctx).
+		PageToken(pageToken).
+		All(it.ListHidden)
+	setClientHeader(call.Header())
+	if pageSize > 0 {
+		call.MaxResults(int64(pageSize))
+	}
+	if it.Filter != "" {
+		call.Filter(it.Filter)
+	}
+	var res *bq.DatasetList
+	err := runWithRetry(it.ctx, func() (err error) {
+		res, err = call.Do()
+		return err
+	})
+	return res, err
+}
+
 func (it *DatasetIterator) fetch(pageSize int, pageToken string) (string, error) {
-	datasets, nextPageToken, err := it.c.service.listDatasets(it.ctx, it.ProjectID,
-		pageSize, pageToken, it.ListHidden, it.Filter)
+	res, err := listDatasets(it, pageSize, pageToken)
 	if err != nil {
 		return "", err
 	}
-	for _, d := range datasets {
-		d.c = it.c
-		it.items = append(it.items, d)
+	for _, d := range res.Datasets {
+		it.items = append(it.items, &Dataset{
+			ProjectID: d.DatasetReference.ProjectId,
+			DatasetID: d.DatasetReference.DatasetId,
+			c:         it.c,
+		})
 	}
-	return nextPageToken, nil
+	return res.NextPageToken, nil
 }

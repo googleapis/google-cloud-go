@@ -20,7 +20,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal"
-	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/version"
 	gax "github.com/googleapis/gax-go"
 
@@ -41,16 +40,10 @@ type service interface {
 	// Table data
 	readTabledata(ctx context.Context, conf *readTableConf, pageToken string) (*readDataResult, error)
 
-	// Datasets
-	patchDataset(ctx context.Context, projectID, datasetID string, dm *DatasetMetadataToUpdate, etag string) (*DatasetMetadata, error)
-
 	// Misc
 
 	// Waits for a query to complete.
 	waitForQuery(ctx context.Context, projectID, jobID string) (Schema, error)
-
-	// listDatasets returns a page of Datasets and a next page token. Note: the Datasets do not have their c field populated.
-	listDatasets(ctx context.Context, projectID string, maxResults int, pageToken string, all bool, filter string) ([]*Dataset, string, error)
 }
 
 var xGoogHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), version.Repo)
@@ -355,95 +348,6 @@ func unixMillisToTime(m int64) time.Time {
 		return time.Time{}
 	}
 	return time.Unix(0, m*1e6)
-}
-
-func (s *bigqueryService) patchDataset(ctx context.Context, projectID, datasetID string, dm *DatasetMetadataToUpdate, etag string) (*DatasetMetadata, error) {
-	ds := bqDatasetFromUpdateMetadata(dm)
-	call := s.s.Datasets.Patch(projectID, datasetID, ds).Context(ctx)
-	setClientHeader(call.Header())
-	if etag != "" {
-		call.Header().Set("If-Match", etag)
-	}
-	var ds2 *bq.Dataset
-	if err := runWithRetry(ctx, func() (err error) {
-		ds2, err = call.Do()
-		return err
-	}); err != nil {
-		return nil, err
-	}
-	return bqDatasetToMetadata(ds2), nil
-}
-
-func bqDatasetFromUpdateMetadata(dm *DatasetMetadataToUpdate) *bq.Dataset {
-	ds := &bq.Dataset{}
-	forceSend := func(field string) {
-		ds.ForceSendFields = append(ds.ForceSendFields, field)
-	}
-
-	if dm.Description != nil {
-		ds.Description = optional.ToString(dm.Description)
-		forceSend("Description")
-	}
-	if dm.Name != nil {
-		ds.FriendlyName = optional.ToString(dm.Name)
-		forceSend("FriendlyName")
-	}
-	if dm.DefaultTableExpiration != nil {
-		dur := optional.ToDuration(dm.DefaultTableExpiration)
-		if dur == 0 {
-			// Send a null to delete the field.
-			ds.NullFields = append(ds.NullFields, "DefaultTableExpirationMs")
-		} else {
-			ds.DefaultTableExpirationMs = int64(dur / time.Millisecond)
-		}
-	}
-	if dm.setLabels != nil || dm.deleteLabels != nil {
-		ds.Labels = map[string]string{}
-		for k, v := range dm.setLabels {
-			ds.Labels[k] = v
-		}
-		if len(ds.Labels) == 0 && len(dm.deleteLabels) > 0 {
-			forceSend("Labels")
-		}
-		for l := range dm.deleteLabels {
-			ds.NullFields = append(ds.NullFields, "Labels."+l)
-		}
-	}
-	return ds
-}
-
-func (s *bigqueryService) listDatasets(ctx context.Context, projectID string, maxResults int, pageToken string, all bool, filter string) ([]*Dataset, string, error) {
-	req := s.s.Datasets.List(projectID).
-		Context(ctx).
-		PageToken(pageToken).
-		All(all)
-	setClientHeader(req.Header())
-	if maxResults > 0 {
-		req.MaxResults(int64(maxResults))
-	}
-	if filter != "" {
-		req.Filter(filter)
-	}
-	var res *bq.DatasetList
-	err := runWithRetry(ctx, func() (err error) {
-		res, err = req.Do()
-		return err
-	})
-	if err != nil {
-		return nil, "", err
-	}
-	var datasets []*Dataset
-	for _, d := range res.Datasets {
-		datasets = append(datasets, s.convertListedDataset(d))
-	}
-	return datasets, res.NextPageToken, nil
-}
-
-func (s *bigqueryService) convertListedDataset(d *bq.DatasetListDatasets) *Dataset {
-	return &Dataset{
-		ProjectID: d.DatasetReference.ProjectId,
-		DatasetID: d.DatasetReference.DatasetId,
-	}
 }
 
 // runWithRetry calls the function until it returns nil or a non-retryable error, or
