@@ -172,7 +172,7 @@ func TestDatasets(t *testing.T) {
 	}
 
 	msg, ok = itest.TestIterator([]*Dataset{outDatasets[0], outDatasets[1], outDatasets[3]},
-		func() interface{} { it := client0.Datasets(context.Background()); it.ListHidden = false; return it },
+		func() interface{} { it := client.Datasets(context.Background()); it.ListHidden = false; return it },
 		func(it interface{}) (interface{}, error) { return it.(*DatasetIterator).Next() })
 	if !ok {
 		t.Fatalf("ListHidden=false: %s", msg)
