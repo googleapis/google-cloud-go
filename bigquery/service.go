@@ -16,7 +16,6 @@ package bigquery
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"time"
 
@@ -36,7 +35,6 @@ import (
 // of the generated BigQuery API.
 type service interface {
 	// Jobs
-	insertJob(ctx context.Context, projectId string, conf *insertJobConf) (*Job, error)
 	getJob(ctx context.Context, projectId, jobID string) (*Job, error)
 	jobStatus(ctx context.Context, projectId, jobID string) (*JobStatus, error)
 
@@ -88,50 +86,6 @@ func getPages(token string, getPage func(token string) (nextToken string, err er
 			return nil
 		}
 	}
-}
-
-type insertJobConf struct {
-	job   *bq.Job
-	media io.Reader
-}
-
-// Calls the Jobs.Insert RPC and returns a Job. Callers must set the returned Job's
-// client.
-func (s *bigqueryService) insertJob(ctx context.Context, projectID string, conf *insertJobConf) (*Job, error) {
-	call := s.s.Jobs.Insert(projectID, conf.job).Context(ctx)
-	setClientHeader(call.Header())
-	if conf.media != nil {
-		call.Media(conf.media)
-	}
-	var res *bq.Job
-	var err error
-	invoke := func() error {
-		res, err = call.Do()
-		return err
-	}
-	// A job with a client-generated ID can be retried; the presence of the
-	// ID makes the insert operation idempotent.
-	// We don't retry if there is media, because it is an io.Reader. We'd
-	// have to read the contents and keep it in memory, and that could be expensive.
-	// TODO(jba): Look into retrying if media != nil.
-	if conf.job.JobReference != nil && conf.media == nil {
-		err = runWithRetry(ctx, invoke)
-	} else {
-		err = invoke()
-	}
-	if err != nil {
-		return nil, err
-	}
-
-	var dt *bq.TableReference
-	if qc := res.Configuration.Query; qc != nil {
-		dt = qc.DestinationTable
-	}
-	return &Job{
-		projectID:        projectID,
-		jobID:            res.JobReference.JobId,
-		destinationTable: dt,
-	}, nil
 }
 
 type pagingConf struct {

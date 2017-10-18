@@ -18,8 +18,6 @@ import (
 	"strings"
 	"testing"
 
-	"golang.org/x/net/context"
-
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -211,16 +209,11 @@ func TestLoad(t *testing.T) {
 	}
 
 	for i, tc := range testCases {
-		s := &testService{}
-		c.service = s
 		loader := tc.dst.LoaderFrom(tc.src)
 		tc.config.Src = tc.src
 		tc.config.Dst = tc.dst
 		loader.LoadConfig = tc.config
-		if _, err := loader.Run(context.Background()); err != nil {
-			t.Errorf("#%d: err calling Loader.Run: %v", i, err)
-			continue
-		}
-		checkJob(t, i, s.Job, tc.want)
+		got, _ := loader.newJob()
+		checkJob(t, i, got, tc.want)
 	}
 }

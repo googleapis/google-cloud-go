@@ -63,6 +63,10 @@ func (t *Table) CopierFrom(srcs ...*Table) *Copier {
 
 // Run initiates a copy job.
 func (c *Copier) Run(ctx context.Context) (*Job, error) {
+	return c.c.insertJob(ctx, c.newJob(), nil)
+}
+
+func (c *Copier) newJob() *bq.Job {
 	conf := &bq.JobConfigurationTableCopy{
 		CreateDisposition: string(c.CreateDisposition),
 		WriteDisposition:  string(c.WriteDisposition),
@@ -75,5 +79,5 @@ func (c *Copier) Run(ctx context.Context) (*Job, error) {
 		JobReference:  createJobRef(c.JobID, c.AddJobIDSuffix, c.c.projectID),
 		Configuration: &bq.JobConfiguration{Copy: conf},
 	}
-	return c.c.insertJob(ctx, &insertJobConf{job: job})
+	return job
 }

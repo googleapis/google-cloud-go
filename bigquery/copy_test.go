@@ -17,7 +17,6 @@ package bigquery
 import (
 	"testing"
 
-	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -111,22 +110,14 @@ func TestCopy(t *testing.T) {
 			}(),
 		},
 	}
-
+	c := &Client{projectID: "client-project-id"}
 	for i, tc := range testCases {
-		s := &testService{}
-		c := &Client{
-			service:   s,
-			projectID: "client-project-id",
-		}
 		tc.dst.c = c
 		copier := tc.dst.CopierFrom(tc.srcs...)
 		tc.config.Srcs = tc.srcs
 		tc.config.Dst = tc.dst
 		copier.CopyConfig = tc.config
-		if _, err := copier.Run(context.Background()); err != nil {
-			t.Errorf("#%d: err calling Run: %v", i, err)
-			continue
-		}
-		checkJob(t, i, s.Job, tc.want)
+		got := copier.newJob()
+		checkJob(t, i, got, tc.want)
 	}
 }

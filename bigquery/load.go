@@ -15,6 +15,8 @@
 package bigquery
 
 import (
+	"io"
+
 	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 )
@@ -54,7 +56,8 @@ type Loader struct {
 // This package defines two LoadSources: GCSReference, for Google Cloud Storage
 // objects, and ReaderSource, for data read from an io.Reader.
 type LoadSource interface {
-	populateInsertJobConfForLoad(conf *insertJobConf)
+	// populates job, returns media
+	populateJobForLoad(job *bq.Job) io.Reader
 }
 
 // LoaderFrom returns a Loader which can be used to load data into a BigQuery table.
@@ -73,6 +76,11 @@ func (t *Table) LoaderFrom(src LoadSource) *Loader {
 
 // Run initiates a load job.
 func (l *Loader) Run(ctx context.Context) (*Job, error) {
+	job, media := l.newJob()
+	return l.c.insertJob(ctx, job, media)
+}
+
+func (l *Loader) newJob() (*bq.Job, io.Reader) {
 	job := &bq.Job{
 		JobReference: createJobRef(l.JobID, l.AddJobIDSuffix, l.c.projectID),
 		Configuration: &bq.JobConfiguration{
@@ -82,8 +90,7 @@ func (l *Loader) Run(ctx context.Context) (*Job, error) {
 			},
 		},
 	}
-	conf := &insertJobConf{job: job}
-	l.Src.populateInsertJobConfForLoad(conf)
+	media := l.Src.populateJobForLoad(job)
 	job.Configuration.Load.DestinationTable = l.Dst.tableRefProto()
-	return l.c.insertJob(ctx, conf)
+	return job, media
 }

@@ -18,7 +18,6 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
-	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -77,19 +76,4 @@ func checkJob(t *testing.T, i int, got, want *bq.Job) {
 	if d != "" {
 		t.Errorf("#%d: (got=-, want=+) %s", i, d)
 	}
-}
-
-type testService struct {
-	*bq.Job
-
-	service
-}
-
-func (s *testService) insertJob(ctx context.Context, projectID string, conf *insertJobConf) (*Job, error) {
-	s.Job = conf.job
-	return &Job{}, nil
-}
-
-func (s *testService) jobStatus(ctx context.Context, projectID, jobID string) (*JobStatus, error) {
-	return &JobStatus{State: Done}, nil
 }

@@ -19,8 +19,6 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 
-	"golang.org/x/net/context"
-
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -281,24 +279,21 @@ func TestQuery(t *testing.T) {
 		},
 	}
 	for i, tc := range testCases {
-		s := &testService{}
-		c.service = s
 		query := c.Query("")
 		query.QueryConfig = *tc.src
 		query.Dst = tc.dst
-		if _, err := query.Run(context.Background()); err != nil {
+		got, err := query.newJob()
+		if err != nil {
 			t.Errorf("#%d: err calling query: %v", i, err)
 			continue
 		}
-		checkJob(t, i, s.Job, tc.want)
+		checkJob(t, i, got, tc.want)
 	}
 }
 
 func TestConfiguringQuery(t *testing.T) {
-	s := &testService{}
 	c := &Client{
 		projectID: "project-id",
-		service:   s,
 	}
 
 	query := c.Query("q")
@@ -326,30 +321,28 @@ func TestConfiguringQuery(t *testing.T) {
 		},
 	}
 
-	if _, err := query.Run(context.Background()); err != nil {
-		t.Fatalf("err calling Query.Run: %v", err)
+	got, err := query.newJob()
+	if err != nil {
+		t.Fatalf("err calling Query.newJob: %v", err)
 	}
-	if diff := testutil.Diff(s.Job, want); diff != "" {
+	if diff := testutil.Diff(got, want); diff != "" {
 		t.Errorf("querying: -got +want:\n%s", diff)
 	}
 }
 
 func TestQueryLegacySQL(t *testing.T) {
-	c := &Client{
-		projectID: "project-id",
-		service:   &testService{},
-	}
+	c := &Client{projectID: "project-id"}
 	q := c.Query("q")
 	q.UseStandardSQL = true
 	q.UseLegacySQL = true
-	_, err := q.Run(context.Background())
+	_, err := q.newJob()
 	if err == nil {
 		t.Error("UseStandardSQL and UseLegacySQL: got nil, want error")
 	}
 	q = c.Query("q")
 	q.Parameters = []QueryParameter{{Name: "p", Value: 3}}
 	q.UseLegacySQL = true
-	_, err = q.Run(context.Background())
+	_, err = q.newJob()
 	if err == nil {
 		t.Error("Parameters and UseLegacySQL: got nil, want error")
 	}

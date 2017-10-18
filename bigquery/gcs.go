@@ -14,7 +14,11 @@
 
 package bigquery
 
-import bq "google.golang.org/api/bigquery/v2"
+import (
+	"io"
+
+	bq "google.golang.org/api/bigquery/v2"
+)
 
 // GCSReference is a reference to one or more Google Cloud Storage objects, which together constitute
 // an input or output to a BigQuery operation.
@@ -53,9 +57,10 @@ const (
 	Gzip Compression = "GZIP"
 )
 
-func (gcs *GCSReference) populateInsertJobConfForLoad(conf *insertJobConf) {
-	conf.job.Configuration.Load.SourceUris = gcs.uris
-	gcs.FileConfig.populateLoadConfig(conf.job.Configuration.Load)
+func (gcs *GCSReference) populateJobForLoad(job *bq.Job) io.Reader {
+	job.Configuration.Load.SourceUris = gcs.uris
+	gcs.FileConfig.populateLoadConfig(job.Configuration.Load)
+	return nil
 }
 
 func (gcs *GCSReference) externalDataConfig() bq.ExternalDataConfiguration {

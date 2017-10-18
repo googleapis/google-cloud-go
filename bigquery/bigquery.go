@@ -18,6 +18,7 @@ package bigquery
 
 import (
 	"fmt"
+	"io"
 
 	"google.golang.org/api/option"
 	htransport "google.golang.org/api/transport/http"
@@ -77,11 +78,41 @@ func (c *Client) Close() error {
 	return nil
 }
 
-func (c *Client) insertJob(ctx context.Context, conf *insertJobConf) (*Job, error) {
-	job, err := c.service.insertJob(ctx, c.projectID, conf)
+// Calls the Jobs.Insert RPC and returns a Job.
+func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader) (*Job, error) {
+	call := c.bqs.Jobs.Insert(c.projectID, job).Context(ctx)
+	setClientHeader(call.Header())
+	if media != nil {
+		call.Media(media)
+	}
+	var res *bq.Job
+	var err error
+	invoke := func() error {
+		res, err = call.Do()
+		return err
+	}
+	// A job with a client-generated ID can be retried; the presence of the
+	// ID makes the insert operation idempotent.
+	// We don't retry if there is media, because it is an io.Reader. We'd
+	// have to read the contents and keep it in memory, and that could be expensive.
+	// TODO(jba): Look into retrying if media != nil.
+	if job.JobReference != nil && media == nil {
+		err = runWithRetry(ctx, invoke)
+	} else {
+		err = invoke()
+	}
 	if err != nil {
 		return nil, err
 	}
-	job.c = c
-	return job, nil
+
+	var dt *bq.TableReference
+	if qc := res.Configuration.Query; qc != nil {
+		dt = qc.DestinationTable
+	}
+	return &Job{
+		c:                c,
+		projectID:        c.projectID,
+		jobID:            res.JobReference.JobId,
+		destinationTable: dt,
+	}, nil
 }
