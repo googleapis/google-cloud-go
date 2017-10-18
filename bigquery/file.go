@@ -34,9 +34,9 @@ func NewReaderSource(r io.Reader) *ReaderSource {
 	return &ReaderSource{r: r}
 }
 
-func (r *ReaderSource) populateInsertJobConfForLoad(conf *insertJobConf) {
-	conf.media = r.r
-	r.FileConfig.populateLoadConfig(conf.job.Configuration.Load)
+func (r *ReaderSource) populateJobForLoad(job *bq.Job) io.Reader {
+	r.FileConfig.populateLoadConfig(job.Configuration.Load)
+	return r.r
 }
 
 // FileConfig contains configuration options that pertain to files, typically

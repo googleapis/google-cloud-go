@@ -58,12 +58,16 @@ func (t *Table) ExtractorTo(dst *GCSReference) *Extractor {
 
 // Run initiates an extract job.
 func (e *Extractor) Run(ctx context.Context) (*Job, error) {
+	return e.c.insertJob(ctx, e.newJob(), nil)
+}
+
+func (e *Extractor) newJob() *bq.Job {
 	var printHeader *bool
 	if e.DisableHeader {
 		f := false
 		printHeader = &f
 	}
-	job := &bq.Job{
+	return &bq.Job{
 		JobReference: createJobRef(e.JobID, e.AddJobIDSuffix, e.c.projectID),
 		Configuration: &bq.JobConfiguration{
 			Extract: &bq.JobConfigurationExtract{
@@ -76,5 +80,4 @@ func (e *Extractor) Run(ctx context.Context) (*Job, error) {
 			},
 		},
 	}
-	return e.c.insertJob(ctx, &insertJobConf{job: job})
 }

@@ -17,8 +17,6 @@ package bigquery
 import (
 	"testing"
 
-	"golang.org/x/net/context"
-
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -40,9 +38,7 @@ func defaultExtractJob() *bq.Job {
 
 func TestExtract(t *testing.T) {
 	defer fixRandomJobID("RANDOM")()
-	s := &testService{}
 	c := &Client{
-		service:   s,
 		projectID: "client-project-id",
 	}
 
@@ -92,10 +88,7 @@ func TestExtract(t *testing.T) {
 		tc.config.Src = ext.Src
 		tc.config.Dst = ext.Dst
 		ext.ExtractConfig = tc.config
-		if _, err := ext.Run(context.Background()); err != nil {
-			t.Errorf("#%d: err calling extract: %v", i, err)
-			continue
-		}
-		checkJob(t, i, s.Job, tc.want)
+		got := ext.newJob()
+		checkJob(t, i, got, tc.want)
 	}
 }

@@ -128,6 +128,19 @@ func (c *Client) Query(q string) *Query {
 
 // Run initiates a query job.
 func (q *Query) Run(ctx context.Context) (*Job, error) {
+	job, err := q.newJob()
+	if err != nil {
+		return nil, err
+	}
+	j, err := q.client.insertJob(ctx, job, nil)
+	if err != nil {
+		return nil, err
+	}
+	j.isQuery = true
+	return j, nil
+}
+
+func (q *Query) newJob() (*bq.Job, error) {
 	job := &bq.Job{
 		JobReference: createJobRef(q.JobID, q.AddJobIDSuffix, q.client.projectID),
 		Configuration: &bq.JobConfiguration{
@@ -137,12 +150,7 @@ func (q *Query) Run(ctx context.Context) (*Job, error) {
 	if err := q.QueryConfig.populateJobQueryConfig(job.Configuration.Query); err != nil {
 		return nil, err
 	}
-	j, err := q.client.insertJob(ctx, &insertJobConf{job: job})
-	if err != nil {
-		return nil, err
-	}
-	j.isQuery = true
-	return j, nil
+	return job, nil
 }
 
 func (q *QueryConfig) populateJobQueryConfig(conf *bq.JobConfigurationQuery) error {
