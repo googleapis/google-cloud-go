@@ -39,7 +39,6 @@ const userAgent = "gcloud-golang-bigquery/20160429"
 
 // Client may be used to perform BigQuery operations.
 type Client struct {
-	service   service
 	projectID string
 	bqs       *bq.Service
 }
@@ -55,18 +54,16 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	o = append(o, opts...)
 	httpClient, endpoint, err := htransport.NewClient(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("bigquery: dialing: %v", err)
 	}
-
-	s, err := newBigqueryService(httpClient, endpoint)
+	bqs, err := bq.New(httpClient)
 	if err != nil {
-		return nil, fmt.Errorf("constructing bigquery client: %v", err)
+		return nil, fmt.Errorf("bigquery: constructing client: %v", err)
 	}
-
+	bqs.BasePath = endpoint
 	c := &Client{
-		service:   s,
 		projectID: projectID,
-		bqs:       s.s,
+		bqs:       bqs,
 	}
 	return c, nil
 }

@@ -298,18 +298,17 @@ func (it *TableIterator) fetch(pageSize int, pageToken string) (string, error) {
 		return "", err
 	}
 	for _, t := range res.Tables {
-		tr := convertTableReference(t.TableReference)
-		tr.c = it.dataset.c
-		it.tables = append(it.tables, tr)
+		it.tables = append(it.tables, convertTableReference(t.TableReference, it.dataset.c))
 	}
 	return res.NextPageToken, nil
 }
 
-func convertTableReference(tr *bq.TableReference) *Table {
+func convertTableReference(tr *bq.TableReference, c *Client) *Table {
 	return &Table{
 		ProjectID: tr.ProjectId,
 		DatasetID: tr.DatasetId,
 		TableID:   tr.TableId,
+		c:         c,
 	}
 }
 

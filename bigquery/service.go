@@ -24,42 +24,13 @@ import (
 	gax "github.com/googleapis/gax-go"
 
 	"golang.org/x/net/context"
-	bq "google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/googleapi"
 )
-
-// service provides an internal abstraction to isolate the generated
-// BigQuery API; most of this package uses this interface instead.
-// The single implementation, *bigqueryService, contains all the knowledge
-// of the generated BigQuery API.
-type service interface {
-	// Table data
-	readTabledata(ctx context.Context, conf *readTableConf, pageToken string) (*readDataResult, error)
-
-	// Misc
-
-	// Waits for a query to complete.
-	waitForQuery(ctx context.Context, projectID, jobID string) (Schema, error)
-}
 
 var xGoogHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), version.Repo)
 
 func setClientHeader(headers http.Header) {
 	headers.Set("x-goog-api-client", xGoogHeader)
-}
-
-type bigqueryService struct {
-	s *bq.Service
-}
-
-func newBigqueryService(client *http.Client, endpoint string) (*bigqueryService, error) {
-	s, err := bq.New(client)
-	if err != nil {
-		return nil, fmt.Errorf("constructing bigquery client: %v", err)
-	}
-	s.BasePath = endpoint
-
-	return &bigqueryService{s: s}, nil
 }
 
 // getPages calls the supplied getPage function repeatedly until there are no pages left to get.
@@ -75,116 +46,6 @@ func getPages(token string, getPage func(token string) (nextToken string, err er
 			return nil
 		}
 	}
-}
-
-type pagingConf struct {
-	recordsPerRequest    int64
-	setRecordsPerRequest bool
-
-	startIndex uint64
-}
-
-type readTableConf struct {
-	projectID, datasetID, tableID string
-	paging                        pagingConf
-	schema                        Schema // lazily initialized when the first page of data is fetched.
-}
-
-func (conf *readTableConf) fetch(ctx context.Context, s service, token string) (*readDataResult, error) {
-	return s.readTabledata(ctx, conf, token)
-}
-
-func (conf *readTableConf) setPaging(pc *pagingConf) { conf.paging = *pc }
-
-type readDataResult struct {
-	pageToken string
-	rows      [][]Value
-	totalRows uint64
-	schema    Schema
-}
-
-func (s *bigqueryService) readTabledata(ctx context.Context, conf *readTableConf, pageToken string) (*readDataResult, error) {
-	// Prepare request to fetch one page of table data.
-	req := s.s.Tabledata.List(conf.projectID, conf.datasetID, conf.tableID)
-	setClientHeader(req.Header())
-	if pageToken != "" {
-		req.PageToken(pageToken)
-	} else {
-		req.StartIndex(conf.paging.startIndex)
-	}
-
-	if conf.paging.setRecordsPerRequest {
-		req.MaxResults(conf.paging.recordsPerRequest)
-	}
-
-	// Fetch the table schema in the background, if necessary.
-	errc := make(chan error, 1)
-	if conf.schema != nil {
-		errc <- nil
-	} else {
-		go func() {
-			var t *bq.Table
-			err := runWithRetry(ctx, func() (err error) {
-				t, err = s.s.Tables.Get(conf.projectID, conf.datasetID, conf.tableID).
-					Fields("schema").
-					Context(ctx).
-					Do()
-				return err
-			})
-			if err == nil && t.Schema != nil {
-				conf.schema = convertTableSchema(t.Schema)
-			}
-			errc <- err
-		}()
-	}
-	var res *bq.TableDataList
-	err := runWithRetry(ctx, func() (err error) {
-		res, err = req.Context(ctx).Do()
-		return err
-	})
-	if err != nil {
-		return nil, err
-	}
-	err = <-errc
-	if err != nil {
-		return nil, err
-	}
-	result := &readDataResult{
-		pageToken: res.PageToken,
-		totalRows: uint64(res.TotalRows),
-		schema:    conf.schema,
-	}
-	result.rows, err = convertRows(res.Rows, conf.schema)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
-}
-
-func (s *bigqueryService) waitForQuery(ctx context.Context, projectID, jobID string) (Schema, error) {
-	// Use GetQueryResults only to wait for completion, not to read results.
-	req := s.s.Jobs.GetQueryResults(projectID, jobID).Context(ctx).MaxResults(0)
-	setClientHeader(req.Header())
-	backoff := gax.Backoff{
-		Initial:    1 * time.Second,
-		Multiplier: 2,
-		Max:        60 * time.Second,
-	}
-	var res *bq.GetQueryResultsResponse
-	err := internal.Retry(ctx, backoff, func() (stop bool, err error) {
-		res, err = req.Do()
-		if err != nil {
-			return !retryableError(err), err
-		}
-		if !res.JobComplete { // GetQueryResults may return early without error; retry.
-			return false, nil
-		}
-		return true, nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return convertTableSchema(res.Schema), nil
 }
 
 // Convert a number of milliseconds since the Unix epoch to a time.Time.
