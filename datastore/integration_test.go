@@ -1051,6 +1051,51 @@ func TestTransaction(t *testing.T) {
 	}
 }
 
+func TestReadOnlyTransaction(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	ctx := context.Background()
+	client := newClient(ctx, t, nil)
+	defer client.Close()
+
+	type value struct{ N int }
+
+	// Put a value.
+	const n = 5
+	v := &value{N: n}
+	key, err := client.Put(ctx, IncompleteKey("roTxn", nil), v)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Delete(ctx, key)
+
+	// Read it from a read-only transaction.
+	_, err = client.RunInTransaction(ctx, func(tx *Transaction) error {
+		if err := tx.Get(key, v); err != nil {
+			return err
+		}
+		return nil
+	}, ReadOnly)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v.N != n {
+		t.Fatalf("got %d, want %d", v.N, n)
+	}
+
+	// Attempting to write from a read-only transaction is an error.
+	_, err = client.RunInTransaction(ctx, func(tx *Transaction) error {
+		if _, err := tx.Put(key, v); err != nil {
+			return err
+		}
+		return nil
+	}, ReadOnly)
+	if err == nil {
+		t.Fatal("got nil, want error")
+	}
+}
+
 func TestNilPointers(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)

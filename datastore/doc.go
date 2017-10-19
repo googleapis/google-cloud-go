@@ -436,6 +436,9 @@ Example code:
 		fmt.Printf("Count=%d\n", count)
 	}
 
+Pass the ReadOnly option to RunInTransaction if your transaction is used only for Get,
+GetMulti or queries. Read-only transactions are more efficient.
+
 Google Cloud Datastore Emulator
 
 This package supports the Cloud Datastore emulator, which is useful for testing and

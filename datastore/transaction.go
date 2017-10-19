@@ -32,6 +32,8 @@ var errExpiredTransaction = errors.New("datastore: transaction expired")
 
 type transactionSettings struct {
 	attempts int
+	readOnly bool
+	prevID   []byte // ID of the transaction to retry
 }
 
 // newTransactionSettings creates a transactionSettings with a given TransactionOption slice.
@@ -62,6 +64,19 @@ func (w maxAttempts) apply(s *transactionSettings) {
 	}
 }
 
+// ReadOnly is a TransactionOption that marks the transaction as read-only.
+var ReadOnly TransactionOption
+
+func init() {
+	ReadOnly = readOnly{}
+}
+
+type readOnly struct{}
+
+func (readOnly) apply(s *transactionSettings) {
+	s.readOnly = true
+}
+
 // Transaction represents a set of datastore operations to be committed atomically.
 //
 // Operations are enqueued by calling the Put and Delete methods on Transaction
@@ -86,14 +101,26 @@ func (c *Client) NewTransaction(ctx context.Context, opts ...TransactionOption) 
 			return nil, errors.New("datastore: NewTransaction does not accept MaxAttempts option")
 		}
 	}
-	req := &pb.BeginTransactionRequest{
-		ProjectId: c.dataset,
+	return c.newTransaction(ctx, newTransactionSettings(opts))
+}
+
+func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (*Transaction, error) {
+	req := &pb.BeginTransactionRequest{ProjectId: c.dataset}
+	if s.readOnly {
+		req.TransactionOptions = &pb.TransactionOptions{
+			Mode: &pb.TransactionOptions_ReadOnly_{&pb.TransactionOptions_ReadOnly{}},
+		}
+	} else if s.prevID != nil {
+		req.TransactionOptions = &pb.TransactionOptions{
+			Mode: &pb.TransactionOptions_ReadWrite_{&pb.TransactionOptions_ReadWrite{
+				PreviousTransaction: s.prevID,
+			}},
+		}
 	}
 	resp, err := c.client.BeginTransaction(ctx, req)
 	if err != nil {
 		return nil, err
 	}
-
 	return &Transaction{
 		id:        resp.Transaction,
 		ctx:       ctx,
@@ -128,7 +155,7 @@ func (c *Client) NewTransaction(ctx context.Context, opts ...TransactionOption) 
 func (c *Client) RunInTransaction(ctx context.Context, f func(tx *Transaction) error, opts ...TransactionOption) (*Commit, error) {
 	settings := newTransactionSettings(opts)
 	for n := 0; n < settings.attempts; n++ {
-		tx, err := c.NewTransaction(ctx)
+		tx, err := c.newTransaction(ctx, settings)
 		if err != nil {
 			return nil, err
 		}
@@ -138,6 +165,11 @@ func (c *Client) RunInTransaction(ctx context.Context, f func(tx *Transaction) e
 		}
 		if cmt, err := tx.Commit(); err != ErrConcurrentTransaction {
 			return cmt, err
+		}
+		// Pass this transaction's ID to the retry transaction to preserve
+		// transaction priority.
+		if !settings.readOnly {
+			settings.prevID = tx.id
 		}
 	}
 	return nil, ErrConcurrentTransaction
