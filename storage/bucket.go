@@ -35,7 +35,7 @@ type BucketHandle struct {
 	acl              ACLHandle
 	defaultObjectACL ACLHandle
 	conds            *BucketConditions
-	userProject      string // project for requester-pays buckets
+	userProject      string // project for Requester Pays buckets
 }
 
 // Bucket returns a BucketHandle, which provides operations on the named bucket.
@@ -237,6 +237,9 @@ type BucketAttrs struct {
 	Labels map[string]string
 
 	// RequesterPays reports whether the bucket is a Requester Pays bucket.
+	// Clients performing operations on Requester Pays buckets must provide
+	// a user project (see BucketHandle.UserProject), which will be billed
+	// for the operations.
 	RequesterPays bool
 	// Lifecycle is the lifecycle configuration for objects in the bucket.
 	Lifecycle Lifecycle
@@ -506,8 +509,9 @@ func (c *BucketConditions) validate(method string) error {
 }
 
 // UserProject returns a new BucketHandle that passes the project ID as the user
-// project for all subsequent calls. A user project is required for all operations
-// on requester-pays buckets.
+// project for all subsequent calls. A user project is required for all operations on
+// Requester Pays buckets. The user project, rather than the bucket's owning project,
+// will be billed for those operations.
 func (b *BucketHandle) UserProject(projectID string) *BucketHandle {
 	b2 := *b
 	b2.userProject = projectID
@@ -604,6 +608,7 @@ func toLifecycle(rl *raw.BucketLifecycle) Lifecycle {
 		if rr.Condition.CreatedBefore != "" {
 			r.Condition.CreatedBefore, _ = time.Parse(rfc3339Date, rr.Condition.CreatedBefore)
 		}
+		l.Rules = append(l.Rules, r)
 	}
 	return l
 }
