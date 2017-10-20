@@ -509,9 +509,10 @@ func (c *BucketConditions) validate(method string) error {
 }
 
 // UserProject returns a new BucketHandle that passes the project ID as the user
-// project for all subsequent calls. A user project is required for all operations on
-// Requester Pays buckets. The user project, rather than the bucket's owning project,
-// will be billed for those operations.
+// project for all subsequent calls. Calls with a user project will be billed to that
+// project rather than to the bucket's owning project.
+//
+// A user project is required for all operations on Requester Pays buckets.
 func (b *BucketHandle) UserProject(projectID string) *BucketHandle {
 	b2 := *b
 	b2.userProject = projectID
