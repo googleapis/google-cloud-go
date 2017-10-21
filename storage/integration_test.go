@@ -115,7 +115,7 @@ func config(ctx context.Context) (*Client, string) {
 	return client, p + suffix
 }
 
-func TestBucketMethods(t *testing.T) {
+func TestIntegration_BucketMethods(t *testing.T) {
 	ctx := context.Background()
 	client, bucket := testConfig(ctx, t)
 	defer client.Close()
@@ -309,7 +309,7 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 	}
 }
 
-func TestObjects(t *testing.T) {
+func TestIntegration_Objects(t *testing.T) {
 	// TODO(djd): there are a lot of closely-related tests here which share
 	// a common setup. Once we can depend on Go 1.7 features, we should refactor
 	// this test to use the sub-test feature. This will increase the readability
@@ -763,7 +763,7 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 	// TODO(jba): test query.Delimiter != ""
 }
 
-func TestACL(t *testing.T) {
+func TestIntegration_ACL(t *testing.T) {
 	ctx := context.Background()
 	client, bucket := testConfig(ctx, t)
 	defer client.Close()
@@ -832,7 +832,7 @@ func hasRule(acl []ACLRule, rule ACLRule) bool {
 	return false
 }
 
-func TestValidObjectNames(t *testing.T) {
+func TestIntegration_ValidObjectNames(t *testing.T) {
 	ctx := context.Background()
 	client, bucket := testConfig(ctx, t)
 	defer client.Close()
@@ -869,7 +869,7 @@ func TestValidObjectNames(t *testing.T) {
 	}
 }
 
-func TestWriterContentType(t *testing.T) {
+func TestIntegration_WriterContentType(t *testing.T) {
 	ctx := context.Background()
 	client, bucket := testConfig(ctx, t)
 	defer client.Close()
@@ -913,7 +913,7 @@ func TestWriterContentType(t *testing.T) {
 	}
 }
 
-func TestZeroSizedObject(t *testing.T) {
+func TestIntegration_ZeroSizedObject(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	client, bucket := testConfig(ctx, t)
@@ -1620,6 +1620,73 @@ func TestNotifications(t *testing.T) {
 		t.Fatal(err)
 	}
 	checkNotifications("after delete", map[string]*Notification{})
+}
+
+func TestIntegration_Public(t *testing.T) {
+	// Confirm that an unauthenticated client can access a public bucket.
+
+	// See https://cloud.google.com/storage/docs/public-datasets/landsat
+	const landsatBucket = "gcp-public-data-landsat"
+	const landsatPrefix = "LC08/PRE/044/034/LC80440342016259LGN00/"
+	const landsatObject = landsatPrefix + "LC80440342016259LGN00_MTL.txt"
+
+	// Create an unauthenticated client.
+	ctx := context.Background()
+	client, err := NewClient(ctx, option.WithoutAuthentication())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+	bkt := client.Bucket(landsatBucket)
+	obj := bkt.Object(landsatObject)
+
+	// Read a public object.
+	bytes, err := readObject(ctx, obj)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := len(bytes), 7903; got != want {
+		t.Errorf("len(bytes) = %d, want %d", got, want)
+	}
+
+	// List objects in a public bucket.
+	iter := bkt.Objects(ctx, &Query{Prefix: landsatPrefix})
+	gotCount := 0
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		gotCount++
+	}
+	if wantCount := 13; gotCount != wantCount {
+		t.Errorf("object count: got %d, want %d", gotCount, wantCount)
+	}
+
+	errCode := func(err error) int {
+		if err, ok := err.(*googleapi.Error); !ok {
+			return -1
+		} else {
+			return err.Code
+		}
+	}
+
+	// Reading from or writing to a non-public bucket fails.
+	c, bucketName := testConfig(ctx, t)
+	defer c.Close()
+	nonPublicObj := client.Bucket(bucketName).Object("noauth")
+	// Oddly, reading returns 403 but writing returns 401.
+	_, err = readObject(ctx, nonPublicObj)
+	if got, want := errCode(err), 403; got != want {
+		t.Errorf("got code %d; want %d\nerror: %v", got, want, err)
+	}
+	err = writeObject(ctx, nonPublicObj, "text/plain", []byte("b"))
+	if got, want := errCode(err), 401; got != want {
+		t.Errorf("got code %d; want %d\nerror: %v", got, want, err)
+	}
 }
 
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {

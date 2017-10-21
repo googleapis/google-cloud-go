@@ -26,10 +26,14 @@ import (
 	"cloud.google.com/go/storage"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// Use Google Application Default Credentials to authorize and authenticate the client.
+	// More information about Application Default Credentials and how to enable is at
+	// https://developers.google.com/identity/protocols/application-default-credentials.
 	client, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: handle error.
@@ -42,21 +46,19 @@ func ExampleNewClient() {
 	}
 }
 
-func ExampleNewClient_auth() {
+// This example shows how to create an unauthenticated client, which
+// can be used to access public data.
+func ExampleNewClient_unauthenticated() {
 	ctx := context.Background()
-	// Use Google Application Default Credentials to authorize and authenticate the client.
-	// More information about Application Default Credentials and how to enable is at
-	// https://developers.google.com/identity/protocols/application-default-credentials.
-	client, err := storage.NewClient(ctx)
+	client, err := storage.NewClient(ctx, option.WithoutAuthentication())
 	if err != nil {
-		log.Fatal(err)
+		// TODO: handle error.
 	}
-
 	// Use the client.
 
 	// Close the client when finished.
 	if err := client.Close(); err != nil {
-		log.Fatal(err)
+		// TODO: handle error.
 	}
 }
 
