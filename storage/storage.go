@@ -264,8 +264,9 @@ type ObjectHandle struct {
 	acl           ACLHandle
 	gen           int64 // a negative value indicates latest
 	conds         *Conditions
-	encryptionKey []byte // AES-256 key
-	userProject   string // for requester-pays buckets
+	encryptionKey []byte            // AES-256 key
+	userProject   string            // for requester-pays buckets
+	reqHeaders    map[string]string // to set custom request headers e.g. "Accept-Encoding"
 }
 
 // ACL provides access to the object's access control list.
@@ -467,6 +468,19 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 	return err
 }
 
+// SetRequestHeader sets the request header on the storage object request.
+// Use this to set e.g. "Accept-Encoding: gzip" to prevent decompressive
+// transcoding from occurring.
+//
+// Returns the ObjectHandle itself to allow chaining.
+func (o *ObjectHandle) SetRequestHeader(header string, value string) *ObjectHandle {
+	if o.reqHeaders == nil {
+		o.reqHeaders = make(map[string]string)
+	}
+	o.reqHeaders[header] = string
+	return o
+}
+
 // NewReader creates a new Reader to read the contents of the
 // object.
 // ErrObjectNotExist will be returned if the object is not found.
@@ -513,6 +527,12 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	}
 	if o.userProject != "" {
 		req.Header.Set("X-Goog-User-Project", o.userProject)
+	}
+	if o.reqHeaders != nil {
+		// Allow whitelist of headers
+		if o.reqHeaders["Accept-Encoding"] != "" {
+			req.Header.Set("Accept-Encoding", o.reqHeaders["Accept-Encoding"])
+		}
 	}
 	if err := setEncryptionHeaders(req.Header, o.encryptionKey, false); err != nil {
 		return nil, err
