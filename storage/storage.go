@@ -264,9 +264,9 @@ type ObjectHandle struct {
 	acl           ACLHandle
 	gen           int64 // a negative value indicates latest
 	conds         *Conditions
-	encryptionKey []byte              // AES-256 key
-	userProject   string              // for requester-pays buckets
-	reqHeaders    map[string][]string // to set custom request headers e.g. "Accept-Encoding"
+	encryptionKey []byte            // AES-256 key
+	userProject   string            // for requester-pays buckets
+	reqHeaders    map[string]string // to set custom request headers e.g. "Accept-Encoding"
 }
 
 // ACL provides access to the object's access control list.
