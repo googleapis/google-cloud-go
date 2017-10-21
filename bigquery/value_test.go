@@ -61,19 +61,29 @@ func TestConvertTime(t *testing.T) {
 	// TODO(jba): add tests for civil time types.
 	schema := []*FieldSchema{
 		{Type: TimestampFieldType},
+		{Type: DateFieldType},
+		{Type: TimeFieldType},
+		{Type: DateTimeFieldType},
 	}
-	thyme := time.Date(1970, 1, 1, 10, 0, 0, 10, time.UTC)
+	ts := testTimestamp.Round(time.Millisecond)
 	row := &bq.TableRow{
 		F: []*bq.TableCell{
-			{V: fmt.Sprintf("%.10f", float64(thyme.UnixNano())/1e9)},
+			{V: fmt.Sprintf("%.10f", float64(ts.UnixNano())/1e9)},
+			{V: testDate.String()},
+			{V: testTime.String()},
+			{V: testDateTime.String()},
 		},
 	}
 	got, err := convertRow(row, schema)
 	if err != nil {
 		t.Fatalf("error converting: %v", err)
 	}
-	if !got[0].(time.Time).Equal(thyme) {
-		t.Errorf("converting basic values: got:\n%v\nwant:\n%v", got, thyme)
+	want := []Value{ts, testDate, testTime, testDateTime}
+	for i, g := range got {
+		w := want[i]
+		if !testutil.Equal(g, w) {
+			t.Errorf("#%d: got:\n%v\nwant:\n%v", i, g, w)
+		}
 	}
 	if got[0].(time.Time).Location() != time.UTC {
 		t.Errorf("expected time zone UTC: got:\n%v", got)
@@ -337,6 +347,38 @@ func TestRepeatedRecordContainingRecord(t *testing.T) {
 	}
 }
 
+func TestConvertRowErrors(t *testing.T) {
+	// mismatched lengths
+	if _, err := convertRow(&bq.TableRow{F: []*bq.TableCell{{V: ""}}}, Schema{}); err == nil {
+		t.Error("got nil, want error")
+	}
+	v3 := map[string]interface{}{"v": 3}
+	for _, test := range []struct {
+		value interface{}
+		fs    FieldSchema
+	}{
+		{3, FieldSchema{Type: IntegerFieldType}}, // not a string
+		{[]interface{}{v3}, // not a string, repeated
+			FieldSchema{Type: IntegerFieldType, Repeated: true}},
+		{map[string]interface{}{"f": []interface{}{v3}}, // not a string, nested
+			FieldSchema{Type: RecordFieldType, Schema: Schema{{Type: IntegerFieldType}}}},
+		{map[string]interface{}{"f": []interface{}{v3}}, // wrong length, nested
+			FieldSchema{Type: RecordFieldType, Schema: Schema{}}},
+	} {
+		_, err := convertRow(
+			&bq.TableRow{F: []*bq.TableCell{{V: test.value}}},
+			Schema{&test.fs})
+		if err == nil {
+			t.Errorf("value %v, fs %v: got nil, want error", test.value, test.fs)
+		}
+	}
+
+	// bad field type
+	if _, err := convertBasicType("", FieldType("BAD")); err == nil {
+		t.Error("got nil, want error")
+	}
+}
+
 func TestValuesSaverConvertsToMap(t *testing.T) {
 	testCases := []struct {
 		vs           ValuesSaver
@@ -423,6 +465,39 @@ func TestValuesSaverConvertsToMap(t *testing.T) {
 	}
 }
 
+func TestValuesToMapErrors(t *testing.T) {
+	for _, test := range []struct {
+		values []Value
+		schema Schema
+	}{
+		{ // mismatched length
+			[]Value{1},
+			Schema{},
+		},
+		{ // nested record not a slice
+			[]Value{1},
+			Schema{{Type: RecordFieldType}},
+		},
+		{ // nested record mismatched length
+			[]Value{[]Value{1}},
+			Schema{{Type: RecordFieldType}},
+		},
+		{ // nested repeated record not a slice
+			[]Value{[]Value{1}},
+			Schema{{Type: RecordFieldType, Repeated: true}},
+		},
+		{ // nested repeated record mismatched length
+			[]Value{[]Value{[]Value{1}}},
+			Schema{{Type: RecordFieldType, Repeated: true}},
+		},
+	} {
+		_, err := valuesToMap(test.values, test.schema)
+		if err == nil {
+			t.Errorf("%v, %v: got nil, want error", test.values, test.schema)
+		}
+	}
+}
+
 func TestStructSaver(t *testing.T) {
 	schema := Schema{
 		{Name: "s", Type: StringFieldType},
@@ -494,6 +569,34 @@ func TestStructSaver(t *testing.T) {
 		})
 }
 
+func TestStructSaverErrors(t *testing.T) {
+	type (
+		badField struct {
+			I int `bigquery:"@"`
+		}
+		badR  struct{ R int }
+		badRN struct{ R []int }
+	)
+
+	for i, test := range []struct {
+		struct_ interface{}
+		schema  Schema
+	}{
+		{0, nil},                                              // not a struct
+		{&badField{}, nil},                                    // bad field name
+		{&badR{}, Schema{{Name: "r", Repeated: true}}},        // repeated field has bad type
+		{&badR{}, Schema{{Name: "r", Type: RecordFieldType}}}, // nested field has bad type
+		{&badRN{[]int{0}}, // nested repeated field has bad type
+			Schema{{Name: "r", Type: RecordFieldType, Repeated: true}}},
+	} {
+		ss := &StructSaver{Struct: test.struct_, Schema: test.schema}
+		_, _, err := ss.Save()
+		if err == nil {
+			t.Errorf("#%d, %v, %v: got nil, want error", i, test.struct_, test.schema)
+		}
+	}
+}
+
 func TestConvertRows(t *testing.T) {
 	schema := []*FieldSchema{
 		{Type: StringFieldType},
@@ -525,6 +628,12 @@ func TestConvertRows(t *testing.T) {
 	}
 	if !testutil.Equal(got, want) {
 		t.Errorf("\ngot  %v\nwant %v", got, want)
+	}
+
+	rows[0].F[0].V = 1
+	_, err = convertRows(rows, schema)
+	if err == nil {
+		t.Error("got nil, want error")
 	}
 }
 
@@ -833,6 +942,65 @@ func TestStructLoaderErrors(t *testing.T) {
 	type bad2 struct{ I uint } // unsupported integer type
 	check(&bad2{})
 
+	type bad3 struct {
+		I int `bigquery:"@"`
+	} // bad field name
+	check(&bad3{})
+
+	type bad4 struct{ Nested int } // non-struct for nested field
+	check(&bad4{})
+
+	type bad5 struct{ Nested struct{ NestS int } } // bad nested struct
+	check(&bad5{})
+
+	bad6 := &struct{ Nums int }{} // non-slice for repeated field
+	sl := structLoader{}
+	err := sl.set(bad6, repSchema)
+	if err == nil {
+		t.Errorf("%T: got nil, want error", bad6)
+	}
+
+	// sl.set's error is sticky, with even good input.
+	err2 := sl.set(&repStruct{}, repSchema)
+	if err2 != err {
+		t.Errorf("%v != %v, expected equal", err2, err)
+	}
+	// sl.Load is similarly sticky
+	err2 = sl.Load(nil, nil)
+	if err2 != err {
+		t.Errorf("%v != %v, expected equal", err2, err)
+	}
+
+	// Null values.
+	schema := Schema{
+		{Name: "i", Type: IntegerFieldType},
+		{Name: "f", Type: FloatFieldType},
+		{Name: "b", Type: BooleanFieldType},
+		{Name: "s", Type: StringFieldType},
+		{Name: "by", Type: BytesFieldType},
+		{Name: "d", Type: DateFieldType},
+	}
+	type s struct {
+		I  int
+		F  float64
+		B  bool
+		S  string
+		By []byte
+		D  civil.Date
+	}
+	vals := []Value{int64(0), 0.0, false, "", []byte{}, testDate}
+	if err := load(&s{}, schema, vals); err != nil {
+		t.Fatal(err)
+	}
+	for i, e := range vals {
+		vals[i] = nil
+		got := load(&s{}, schema, vals)
+		if got != errNoNulls {
+			t.Errorf("#%d: got %v, want %v", i, got, errNoNulls)
+		}
+		vals[i] = e
+	}
+
 	// Using more than one struct type with the same structLoader.
 	type different struct {
 		B bool
@@ -843,11 +1011,11 @@ func TestStructLoaderErrors(t *testing.T) {
 		Nums []int
 	}
 
-	var sl structLoader
+	sl = structLoader{}
 	if err := sl.set(&testStruct1{}, schema2); err != nil {
 		t.Fatal(err)
 	}
-	err := sl.set(&different{}, schema2)
+	err = sl.set(&different{}, schema2)
 	if err == nil {
 		t.Error("different struct types: got nil, want error")
 	}

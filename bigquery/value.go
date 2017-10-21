@@ -243,7 +243,7 @@ func compileToOps(structType reflect.Type, schema Schema) ([]structLoaderOp, err
 }
 
 // determineSetFunc chooses the best function for setting a field of type ftype
-// to a value whose schema field type is sftype. It returns nil if stype
+// to a value whose schema field type is stype. It returns nil if stype
 // is not assignable to ftype.
 // determineSetFunc considers only basic types. See compileToOps for
 // handling of repetition and nesting.
@@ -618,7 +618,6 @@ func convertNestedRecord(val map[string]interface{}, schema Schema) (Value, erro
 	for i, cell := range record {
 		// each cell contains a single entry, keyed by "v"
 		val := cell.(map[string]interface{})["v"]
-
 		fs := schema[i]
 		v, err := convertValue(val, fs.Type, fs.Schema)
 		if err != nil {

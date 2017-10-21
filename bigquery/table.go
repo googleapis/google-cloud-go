@@ -178,10 +178,9 @@ func (t *Table) implicitTable() bool {
 // Pass in a TableMetadata value to configure the table.
 // If tm.View.Query is non-empty, the created table will be of type VIEW.
 // Expiration can only be set during table creation.
-// After table creation, a view can be modified only if its table was initially created with a view.
+// After table creation, a view can be modified only if its table was initially created
+// with a view.
 func (t *Table) Create(ctx context.Context, tm *TableMetadata) error {
-	//return t.c.service.createTable(ctx, t.ProjectID, t.DatasetID, t.TableID, tm)
-	//func (s *bigqueryService) createTable(ctx context.Context, projectID, datasetID, tableID string, tm *TableMetadata) error {
 	table, err := bqTableFromMetadata(tm)
 	if err != nil {
 		return err
