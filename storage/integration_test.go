@@ -1584,6 +1584,44 @@ func keyFileEmail(filename string) (string, error) {
 	return v.ClientEmail, nil
 }
 
+func TestNotifications(t *testing.T) {
+	ctx := context.Background()
+	client, bucket := testConfig(ctx, t)
+	defer client.Close()
+	bkt := client.Bucket(bucket)
+
+	checkNotifications := func(msg string, want map[string]*Notification) {
+		got, err := bkt.Notifications(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := testutil.Diff(got, want); diff != "" {
+			t.Errorf("%s: got=-, want=+:\n%s", msg, diff)
+		}
+	}
+	checkNotifications("initial", map[string]*Notification{})
+
+	nArg := &Notification{
+		TopicProjectID: testutil.ProjID(),
+		TopicID:        "go-storage-notification-test",
+		PayloadFormat:  NoPayload,
+	}
+	n, err := bkt.AddNotification(ctx, nArg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	nArg.ID = n.ID
+	if !testutil.Equal(n, nArg) {
+		t.Errorf("got %+v, want %+v", n, nArg)
+	}
+	checkNotifications("after add", map[string]*Notification{n.ID: n})
+
+	if err := bkt.DeleteNotification(ctx, n.ID); err != nil {
+		t.Fatal(err)
+	}
+	checkNotifications("after delete", map[string]*Notification{})
+}
+
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
 	w := obj.NewWriter(ctx)
 	w.ContentType = contentType

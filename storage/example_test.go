@@ -176,6 +176,57 @@ func ExampleBucketHandle_Objects() {
 	_ = it // TODO: iterate using Next or iterator.Pager.
 }
 
+func ExampleBucketHandle_AddNotification() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	b := client.Bucket("my-bucket")
+	n, err := b.AddNotification(ctx, &storage.Notification{
+		TopicProjectID: "my-project",
+		TopicID:        "my-topic",
+		PayloadFormat:  storage.JSONPayload,
+	})
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Println(n.ID)
+}
+
+func ExampleBucketHandle_Notifications() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	b := client.Bucket("my-bucket")
+	ns, err := b.Notifications(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	for id, n := range ns {
+		fmt.Printf("%s: %+v\n", id, n)
+	}
+}
+
+var notificationID string
+
+func ExampleBucketHandle_DeleteNotification() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	b := client.Bucket("my-bucket")
+	// TODO: Obtain notificationID from BucketHandle.AddNotification
+	// or BucketHandle.Notifications.
+	err = b.DeleteNotification(ctx, notificationID)
+	if err != nil {
+		// TODO: handle error.
+	}
+}
+
 func ExampleObjectIterator_Next() {
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
