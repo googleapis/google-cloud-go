@@ -816,7 +816,6 @@ func TestUserProject(t *testing.T) {
 	check("buckets.delete", func() { b.Delete(ctx) })
 	check("buckets.get", func() { b.Attrs(ctx) })
 	check("buckets.patch", func() { b.Update(ctx, BucketAttrsToUpdate{}) })
-	check("buckets.getIamPolicy", func() { b.IAM().Policy(ctx) })
 	check("storage.objects.compose", func() { o.ComposerFrom(b.Object("x")).Run(ctx) })
 	check("storage.objects.delete", func() { o.Delete(ctx) })
 	check("storage.objects.get", func() { o.Attrs(ctx) })
@@ -836,12 +835,18 @@ func TestUserProject(t *testing.T) {
 		func() { b.DefaultObjectACL().Set(ctx, "", "") })
 	check("storage.defaultObjectAccessControls.delete",
 		func() { b.DefaultObjectACL().Delete(ctx, "") })
+	check("buckets.getIamPolicy", func() { b.IAM().Policy(ctx) })
 	check("buckets.setIamPolicy", func() {
 		p := &iam.Policy{}
 		p.Add("m", iam.Owner)
 		b.IAM().SetPolicy(ctx, p)
 	})
 	check("buckets.testIamPermissions", func() { b.IAM().TestPermissions(ctx, nil) })
+	check("storage.notifications.insert", func() {
+		b.AddNotification(ctx, &Notification{TopicProjectID: "p", TopicID: "t"})
+	})
+	check("storage.notifications.delete", func() { b.DeleteNotification(ctx, "n") })
+	check("storage.notifications.list", func() { b.Notifications(ctx) })
 }
 
 func newTestServer(handler func(w http.ResponseWriter, r *http.Request)) (*http.Client, func()) {
