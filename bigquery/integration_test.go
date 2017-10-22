@@ -371,6 +371,34 @@ func TestIntegration_DatasetUpdateLabels(t *testing.T) {
 	}
 }
 
+func TestIntegration_TableUpdateLabels(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
+
+	var tm TableMetadataToUpdate
+	tm.SetLabel("label", "value")
+	md, err := table.Update(ctx, tm, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := md.Labels["label"], "value"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+	tm = TableMetadataToUpdate{}
+	tm.DeleteLabel("label")
+	md, err = table.Update(ctx, tm, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := md.Labels["label"]; ok {
+		t.Error("label still present after deletion")
+	}
+}
+
 func TestIntegration_Tables(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")

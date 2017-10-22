@@ -61,26 +61,7 @@ type DatasetMetadataToUpdate struct {
 	// If set to time.Duration(0), new tables never expire.
 	DefaultTableExpiration optional.Duration
 
-	setLabels    map[string]string
-	deleteLabels map[string]bool
-}
-
-// SetLabel causes a label to be added or modified when dm is used
-// in a call to Dataset.Update.
-func (dm *DatasetMetadataToUpdate) SetLabel(name, value string) {
-	if dm.setLabels == nil {
-		dm.setLabels = map[string]string{}
-	}
-	dm.setLabels[name] = value
-}
-
-// DeleteLabel causes a label to be deleted when dm is used in a
-// call to Dataset.Update.
-func (dm *DatasetMetadataToUpdate) DeleteLabel(name string) {
-	if dm.deleteLabels == nil {
-		dm.deleteLabels = map[string]bool{}
-	}
-	dm.deleteLabels[name] = true
+	labelUpdater
 }
 
 // Dataset creates a handle to a BigQuery dataset in the client's project.
@@ -216,18 +197,10 @@ func bqDatasetFromUpdateMetadata(dm *DatasetMetadataToUpdate) *bq.Dataset {
 			ds.DefaultTableExpirationMs = int64(dur / time.Millisecond)
 		}
 	}
-	if dm.setLabels != nil || dm.deleteLabels != nil {
-		ds.Labels = map[string]string{}
-		for k, v := range dm.setLabels {
-			ds.Labels[k] = v
-		}
-		if len(ds.Labels) == 0 && len(dm.deleteLabels) > 0 {
-			forceSend("Labels")
-		}
-		for l := range dm.deleteLabels {
-			ds.NullFields = append(ds.NullFields, "Labels."+l)
-		}
-	}
+	labels, forces, nulls := dm.update()
+	ds.Labels = labels
+	ds.ForceSendFields = append(ds.ForceSendFields, forces...)
+	ds.NullFields = append(ds.NullFields, nulls...)
 	return ds
 }
 
