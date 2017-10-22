@@ -366,23 +366,41 @@ func bqTableFromMetadataToUpdate(tm TableMetadataToUpdate) *bq.Table {
 		t.ExpirationTime = tm.ExpirationTime.UnixNano() / 1e6
 		forceSend("ExpirationTime")
 	}
+	if tm.ViewQuery != nil {
+		t.View = &bq.ViewDefinition{
+			Query:           optional.ToString(tm.ViewQuery),
+			ForceSendFields: []string{"Query"},
+		}
+	}
+	if tm.UseLegacySQL != nil {
+		if t.View == nil {
+			t.View = &bq.ViewDefinition{}
+		}
+		t.View.UseLegacySql = optional.ToBool(tm.UseLegacySQL)
+		t.View.ForceSendFields = append(t.View.ForceSendFields, "UseLegacySql")
+	}
 	return t
 }
 
 // TableMetadataToUpdate is used when updating a table's metadata.
 // Only non-nil fields will be updated.
 type TableMetadataToUpdate struct {
-	// Description is the user-friendly description of this table.
+	// The user-friendly description of this table.
 	Description optional.String
 
-	// Name is the user-friendly name for this table.
+	// The user-friendly name for this table.
 	Name optional.String
 
-	// Schema is the table's schema.
+	// The table's schema.
 	// When updating a schema, you can add columns but not remove them.
 	Schema Schema
-	// TODO(jba): support updating the view
 
-	// ExpirationTime is the time when this table expires.
+	// The time when this table expires.
 	ExpirationTime time.Time
+
+	// The query to use for a view.
+	ViewQuery optional.String
+
+	// Use Legacy SQL for the view query.
+	UseLegacySQL optional.Bool
 }
