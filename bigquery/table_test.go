@@ -52,8 +52,9 @@ func TestBQTableToMetadata(t *testing.T) {
 					ExpirationMs: 7890,
 					Type:         "DAY",
 				},
-				Type: "EXTERNAL",
-				View: &bq.ViewDefinition{Query: "view-query"},
+				Type:   "EXTERNAL",
+				View:   &bq.ViewDefinition{Query: "view-query"},
+				Labels: map[string]string{"a": "b"},
 			},
 			&TableMetadata{
 				Description:      "desc",
@@ -61,6 +62,7 @@ func TestBQTableToMetadata(t *testing.T) {
 				ViewQuery:        "view-query",
 				FullID:           "id",
 				Type:             ExternalTable,
+				Labels:           map[string]string{"a": "b"},
 				ExpirationTime:   aTime.Truncate(time.Millisecond),
 				CreationTime:     aTime.Truncate(time.Millisecond),
 				LastModifiedTime: aTime.Truncate(time.Millisecond),
@@ -100,6 +102,7 @@ func TestBQTableFromMetadata(t *testing.T) {
 				Description:    "d",
 				Schema:         sc,
 				ExpirationTime: aTime,
+				Labels:         map[string]string{"a": "b"},
 			},
 			&bq.Table{
 				FriendlyName: "n",
@@ -110,6 +113,7 @@ func TestBQTableFromMetadata(t *testing.T) {
 					},
 				},
 				ExpirationTime: aTimeMillis,
+				Labels:         map[string]string{"a": "b"},
 			},
 		},
 		{
@@ -250,10 +254,21 @@ func TestBQTableFromMetadataToUpdate(t *testing.T) {
 				},
 			},
 		},
+		{
+			tm: func() (tm TableMetadataToUpdate) {
+				tm.SetLabel("L", "V")
+				tm.DeleteLabel("D")
+				return tm
+			}(),
+			want: &bq.Table{
+				Labels:     map[string]string{"L": "V"},
+				NullFields: []string{"Labels.D"},
+			},
+		},
 	} {
 		got := bqTableFromMetadataToUpdate(test.tm)
 		if !testutil.Equal(got, test.want) {
-			t.Errorf("%v:\ngot  %v\nwant %v", test.tm, got, test.want)
+			t.Errorf("%+v:\ngot  %+v\nwant %+v", test.tm, got, test.want)
 		}
 	}
 }

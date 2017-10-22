@@ -69,6 +69,9 @@ type TableMetadata struct {
 	// indefinitely. Expired tables will be deleted and their storage reclaimed.
 	ExpirationTime time.Time
 
+	// User-provided labels.
+	Labels map[string]string
+
 	// All the fields below are read-only.
 
 	FullID           string // An opaque ID uniquely identifying the table.
@@ -206,6 +209,7 @@ func bqTableFromMetadata(tm *TableMetadata) (*bq.Table, error) {
 	}
 	t.FriendlyName = tm.Name
 	t.Description = tm.Description
+	t.Labels = tm.Labels
 	if tm.Schema != nil {
 		t.Schema = tm.Schema.asTableSchema()
 	}
@@ -281,6 +285,7 @@ func bqTableToMetadata(t *bq.Table) *TableMetadata {
 		Name:             t.FriendlyName,
 		Type:             TableType(t.Type),
 		FullID:           t.Id,
+		Labels:           t.Labels,
 		NumBytes:         t.NumBytes,
 		NumRows:          t.NumRows,
 		ExpirationTime:   unixMillisToTime(t.ExpirationTime),
@@ -379,6 +384,10 @@ func bqTableFromMetadataToUpdate(tm TableMetadataToUpdate) *bq.Table {
 		t.View.UseLegacySql = optional.ToBool(tm.UseLegacySQL)
 		t.View.ForceSendFields = append(t.View.ForceSendFields, "UseLegacySql")
 	}
+	labels, forces, nulls := tm.update()
+	t.Labels = labels
+	t.ForceSendFields = append(t.ForceSendFields, forces...)
+	t.NullFields = append(t.NullFields, nulls...)
 	return t
 }
 
@@ -403,4 +412,45 @@ type TableMetadataToUpdate struct {
 
 	// Use Legacy SQL for the view query.
 	UseLegacySQL optional.Bool
+
+	labelUpdater
+}
+
+// labelUpdater contains common code for updating labels.
+type labelUpdater struct {
+	setLabels    map[string]string
+	deleteLabels map[string]bool
+}
+
+// SetLabel causes a label to be added or modified on a call to Update.
+func (u *labelUpdater) SetLabel(name, value string) {
+	if u.setLabels == nil {
+		u.setLabels = map[string]string{}
+	}
+	u.setLabels[name] = value
+}
+
+// DeleteLabel causes a label to be deleted on a call to Update.
+func (u *labelUpdater) DeleteLabel(name string) {
+	if u.deleteLabels == nil {
+		u.deleteLabels = map[string]bool{}
+	}
+	u.deleteLabels[name] = true
+}
+
+func (u *labelUpdater) update() (labels map[string]string, forces, nulls []string) {
+	if u.setLabels == nil && u.deleteLabels == nil {
+		return nil, nil, nil
+	}
+	labels = map[string]string{}
+	for k, v := range u.setLabels {
+		labels[k] = v
+	}
+	if len(labels) == 0 && len(u.deleteLabels) > 0 {
+		forces = []string{"Labels"}
+	}
+	for l := range u.deleteLabels {
+		nulls = append(nulls, "Labels."+l)
+	}
+	return labels, forces, nulls
 }
