@@ -225,6 +225,31 @@ func TestBQTableFromMetadataToUpdate(t *testing.T) {
 				ForceSendFields: []string{"Schema", "ExpirationTime"},
 			},
 		},
+		{
+			tm: TableMetadataToUpdate{ViewQuery: "q"},
+			want: &bq.Table{
+				View: &bq.ViewDefinition{Query: "q", ForceSendFields: []string{"Query"}},
+			},
+		},
+		{
+			tm: TableMetadataToUpdate{UseLegacySQL: false},
+			want: &bq.Table{
+				View: &bq.ViewDefinition{
+					UseLegacySql:    false,
+					ForceSendFields: []string{"UseLegacySql"},
+				},
+			},
+		},
+		{
+			tm: TableMetadataToUpdate{ViewQuery: "q", UseLegacySQL: true},
+			want: &bq.Table{
+				View: &bq.ViewDefinition{
+					Query:           "q",
+					UseLegacySql:    true,
+					ForceSendFields: []string{"Query", "UseLegacySql"},
+				},
+			},
+		},
 	} {
 		got := bqTableFromMetadataToUpdate(test.tm)
 		if !testutil.Equal(got, test.want) {
