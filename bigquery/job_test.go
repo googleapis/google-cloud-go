@@ -22,7 +22,7 @@ import (
 )
 
 func TestCreateJobRef(t *testing.T) {
-	defer fixRandomJobID("RANDOM")()
+	defer fixRandomID("RANDOM")()
 	for _, test := range []struct {
 		jobID          string
 		addJobIDSuffix bool
@@ -57,10 +57,10 @@ func TestCreateJobRef(t *testing.T) {
 	}
 }
 
-func fixRandomJobID(s string) func() {
-	prev := randomJobIDFn
-	randomJobIDFn = func() string { return s }
-	return func() { randomJobIDFn = prev }
+func fixRandomID(s string) func() {
+	prev := randomIDFn
+	randomIDFn = func() string { return s }
+	return func() { randomIDFn = prev }
 }
 
 func checkJob(t *testing.T, i int, got, want *bq.Job) {

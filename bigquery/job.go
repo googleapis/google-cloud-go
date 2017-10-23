@@ -84,9 +84,9 @@ type JobStatus struct {
 // projectID must be non-empty.
 func createJobRef(jobID string, addJobIDSuffix bool, projectID string) *bq.JobReference {
 	if jobID == "" {
-		jobID = randomJobIDFn()
+		jobID = randomIDFn()
 	} else if addJobIDSuffix {
-		jobID += "-" + randomJobIDFn()
+		jobID += "-" + randomIDFn()
 	}
 	// We don't check whether projectID is empty; the server will return an
 	// error when it encounters the resulting JobReference.
@@ -104,11 +104,15 @@ var (
 )
 
 // For testing.
-var randomJobIDFn = randomJobID
+var randomIDFn = randomID
 
-func randomJobID() string {
-	// As of August 2017, the BigQuery service uses 27 alphanumeric characters for suffixes.
-	var b [27]byte
+// As of August 2017, the BigQuery service uses 27 alphanumeric characters for
+// suffixes.
+const randomIDLen = 27
+
+func randomID() string {
+	// This is used for both job IDs and insert IDs.
+	var b [randomIDLen]byte
 	rngMu.Lock()
 	for i := 0; i < len(b); i++ {
 		b[i] = alphanum[rng.Intn(len(alphanum))]
