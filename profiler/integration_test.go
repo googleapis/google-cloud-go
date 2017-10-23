@@ -181,6 +181,11 @@ func newInstanceConfigs() []instanceConfig {
 			service:   fmt.Sprintf("profiler-test-go17-%d-gce", runID),
 			goVersion: "1.7",
 		},
+		{
+			name:      fmt.Sprintf("profiler-test-go16-%d", runID),
+			service:   fmt.Sprintf("profiler-test-go16-%d-gce", runID),
+			goVersion: "1.6",
+		},
 	}
 }
 

@@ -35,8 +35,6 @@
 // profiling can be enabled in the config. Note that goroutine and mutex
 // profiles are shown as "threads" and "contention" profiles in the profiler
 // UI.
-//
-// Profiler requires Go 1.7 or later.
 package profiler
 
 import (
