@@ -150,17 +150,6 @@ func (fc *FileConfig) populateExternalDataConfig(conf *bq.ExternalDataConfigurat
 	}
 }
 
-// DataFormat describes the format of BigQuery table data.
-type DataFormat string
-
-// Constants describing the format of BigQuery table data.
-const (
-	CSV             DataFormat = "CSV"
-	Avro            DataFormat = "AVRO"
-	JSON            DataFormat = "NEWLINE_DELIMITED_JSON"
-	DatastoreBackup DataFormat = "DATASTORE_BACKUP"
-)
-
 // Encoding specifies the character encoding of data to be loaded into BigQuery.
 // See https://cloud.google.com/bigquery/docs/reference/v2/jobs#configuration.load.encoding
 // for more details about how this is used.
