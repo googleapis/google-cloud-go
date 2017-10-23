@@ -95,6 +95,7 @@ type QueryConfig struct {
 	MaxBytesBilled int64
 
 	// UseStandardSQL causes the query to use standard SQL. The default.
+	// Deprecated: use UseLegacySQL.
 	UseStandardSQL bool
 
 	// UseLegacySQL causes the query to use legacy SQL.

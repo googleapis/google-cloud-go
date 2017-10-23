@@ -60,6 +60,7 @@ type TableMetadata struct {
 
 	// Use Legacy SQL for the view query. The default.
 	// At most one of UseLegacySQL and UseStandardSQL can be true.
+	// Deprecated: use UseLegacySQL.
 	UseStandardSQL bool
 
 	// If non-nil, the table is partitioned by time.
