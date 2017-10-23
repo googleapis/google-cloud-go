@@ -21,11 +21,6 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
-// ExternalData is a table which is stored outside of BigQuery.  It is implemented by GCSReference.
-type ExternalData interface {
-	externalDataConfig() bq.ExternalDataConfiguration
-}
-
 // QueryConfig holds the configuration for a query job.
 type QueryConfig struct {
 	// JobID is the ID to use for the job. If empty, a random job ID will be generated.
