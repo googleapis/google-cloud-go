@@ -43,7 +43,7 @@ func defaultCopyJob() *bq.Job {
 }
 
 func TestCopy(t *testing.T) {
-	defer fixRandomJobID("RANDOM")()
+	defer fixRandomID("RANDOM")()
 	testCases := []struct {
 		dst    *Table
 		srcs   []*Table

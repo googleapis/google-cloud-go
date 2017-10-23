@@ -37,7 +37,7 @@ func defaultExtractJob() *bq.Job {
 }
 
 func TestExtract(t *testing.T) {
-	defer fixRandomJobID("RANDOM")()
+	defer fixRandomID("RANDOM")()
 	c := &Client{
 		projectID: "client-project-id",
 	}

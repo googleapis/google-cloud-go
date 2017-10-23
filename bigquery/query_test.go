@@ -45,7 +45,7 @@ func defaultQueryJob() *bq.Job {
 }
 
 func TestQuery(t *testing.T) {
-	defer fixRandomJobID("RANDOM")()
+	defer fixRandomID("RANDOM")()
 	c := &Client{
 		projectID: "client-project-id",
 	}
