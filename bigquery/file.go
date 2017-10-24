@@ -48,28 +48,9 @@ type FileConfig struct {
 	// Allowed values are: CSV, Avro, JSON, DatastoreBackup.  The default is CSV.
 	SourceFormat DataFormat
 
-	// FieldDelimiter is the separator for fields in a CSV file, used when
-	// reading or exporting data. The default is ",".
-	FieldDelimiter string
-
-	// The number of rows at the top of a CSV file that BigQuery will skip when
-	// reading data.
-	SkipLeadingRows int64
-
-	// AllowJaggedRows causes missing trailing optional columns to be tolerated
-	// when reading CSV data. Missing values are treated as nulls.
-	AllowJaggedRows bool
-
-	// AllowQuotedNewlines sets whether quoted data sections containing
-	// newlines are allowed when reading CSV data.
-	AllowQuotedNewlines bool
-
 	// Indicates if we should automatically infer the options and
 	// schema for CSV and JSON sources.
 	AutoDetect bool
-
-	// Encoding is the character encoding of data to be read.
-	Encoding Encoding
 
 	// MaxBadRecords is the maximum number of bad records that will be ignored
 	// when reading data.
@@ -87,26 +68,8 @@ type FileConfig struct {
 	// unless the data is being loaded into a table that already exists.
 	Schema Schema
 
-	// Quote is the value used to quote data sections in a CSV file. The
-	// default quotation character is the double quote ("), which is used if
-	// both Quote and ForceZeroQuote are unset.
-	// To specify that no character should be interpreted as a quotation
-	// character, set ForceZeroQuote to true.
-	// Only used when reading data.
-	Quote          string
-	ForceZeroQuote bool
-}
-
-// quote returns the CSV quote character, or nil if unset.
-func (fc *FileConfig) quote() *string {
-	if fc.ForceZeroQuote {
-		quote := ""
-		return &quote
-	}
-	if fc.Quote == "" {
-		return nil
-	}
-	return &fc.Quote
+	// Additional options for CSV files.
+	CSVOptions
 }
 
 func (fc *FileConfig) populateLoadConfig(conf *bq.JobConfigurationLoad) {
@@ -131,7 +94,7 @@ func (fc *FileConfig) populateExternalDataConfig(conf *bq.ExternalDataConfigurat
 		// Format must be explicitly set for external data sources.
 		format = CSV
 	}
-	// TODO(jba): support AutoDetect.
+	conf.Autodetect = fc.AutoDetect
 	conf.IgnoreUnknownValues = fc.IgnoreUnknownValues
 	conf.MaxBadRecords = fc.MaxBadRecords
 	conf.SourceFormat = string(format)
@@ -139,14 +102,7 @@ func (fc *FileConfig) populateExternalDataConfig(conf *bq.ExternalDataConfigurat
 		conf.Schema = fc.Schema.asTableSchema()
 	}
 	if format == CSV {
-		conf.CsvOptions = &bq.CsvOptions{
-			AllowJaggedRows:     fc.AllowJaggedRows,
-			AllowQuotedNewlines: fc.AllowQuotedNewlines,
-			Encoding:            string(fc.Encoding),
-			FieldDelimiter:      fc.FieldDelimiter,
-			SkipLeadingRows:     fc.SkipLeadingRows,
-			Quote:               fc.quote(),
-		}
+		fc.CSVOptions.populateExternalDataConfig(conf)
 	}
 }
 
