@@ -20,8 +20,7 @@
 //
 //   import "cloud.google.com/go/profiler"
 //   ...
-//   err := profiler.Start(profiler.Config{Service: "my-service"})
-//   if err != nil {
+//   if err := profiler.Start(profiler.Config{Service: "my-service"}); err != nil {
 //       // TODO: Handle error.
 //   }
 //
