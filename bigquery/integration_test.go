@@ -1118,16 +1118,16 @@ func TestIntegration_ExtractExternal(t *testing.T) {
 	if err := wait(ctx, job); err != nil {
 		t.Fatal(err)
 	}
+
+	edc := &ExternalDataConfig{
+		SourceFormat: CSV,
+		SourceURIs:   []string{uri},
+		Schema:       schema,
+		Options:      &CSVOptions{SkipLeadingRows: 1},
+	}
 	// Query that CSV file directly.
 	q := client.Query("SELECT * FROM csv")
-	q.TableDefinitions = map[string]ExternalData{
-		"csv": &ExternalDataConfig{
-			SourceFormat: CSV,
-			SourceURIs:   []string{uri},
-			Schema:       schema,
-			Options:      &CSVOptions{SkipLeadingRows: 1},
-		},
-	}
+	q.TableDefinitions = map[string]ExternalData{"csv": edc}
 	wantRows := [][]Value{
 		[]Value{"a", int64(1)},
 		[]Value{"b", int64(2)},
@@ -1138,6 +1138,36 @@ func TestIntegration_ExtractExternal(t *testing.T) {
 		t.Fatal(err)
 	}
 	checkRead(t, "external query", iter, wantRows)
+
+	// Make a table pointing to the file, and query it.
+	// BigQuery does not allow a Table.Read on an external table.
+	table = dataset.Table(fmt.Sprintf("t%d", time.Now().UnixNano()))
+	err = table.Create(context.Background(), &TableMetadata{
+		Schema:             schema,
+		ExpirationTime:     testTableExpiration,
+		ExternalDataConfig: edc,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	q = client.Query(fmt.Sprintf("SELECT * FROM %s.%s", table.DatasetID, table.TableID))
+	iter, err = q.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	checkRead(t, "external table", iter, wantRows)
+
+	// While we're here, check that the table metadata is correct.
+	md, err := table.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// One difference: since BigQuery returns the schema as part of the ordinary
+	// table metadata, it does not populate ExternalDataConfig.Schema.
+	md.ExternalDataConfig.Schema = md.Schema
+	if diff := testutil.Diff(md.ExternalDataConfig, edc); diff != "" {
+		t.Errorf("got=-, want=+\n%s", diff)
+	}
 }
 
 func TestIntegration_ReadNullIntoStruct(t *testing.T) {

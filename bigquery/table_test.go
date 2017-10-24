@@ -55,20 +55,24 @@ func TestBQTableToMetadata(t *testing.T) {
 				Type:   "EXTERNAL",
 				View:   &bq.ViewDefinition{Query: "view-query"},
 				Labels: map[string]string{"a": "b"},
+				ExternalDataConfiguration: &bq.ExternalDataConfiguration{
+					SourceFormat: "GOOGLE_SHEETS",
+				},
 			},
 			&TableMetadata{
-				Description:      "desc",
-				Name:             "fname",
-				ViewQuery:        "view-query",
-				FullID:           "id",
-				Type:             ExternalTable,
-				Labels:           map[string]string{"a": "b"},
-				ExpirationTime:   aTime.Truncate(time.Millisecond),
-				CreationTime:     aTime.Truncate(time.Millisecond),
-				LastModifiedTime: aTime.Truncate(time.Millisecond),
-				NumBytes:         123,
-				NumRows:          7,
-				TimePartitioning: &TimePartitioning{Expiration: 7890 * time.Millisecond},
+				Description:        "desc",
+				Name:               "fname",
+				ViewQuery:          "view-query",
+				FullID:             "id",
+				Type:               ExternalTable,
+				Labels:             map[string]string{"a": "b"},
+				ExternalDataConfig: &ExternalDataConfig{SourceFormat: GoogleSheets},
+				ExpirationTime:     aTime.Truncate(time.Millisecond),
+				CreationTime:       aTime.Truncate(time.Millisecond),
+				LastModifiedTime:   aTime.Truncate(time.Millisecond),
+				NumBytes:           123,
+				NumRows:            7,
+				TimePartitioning:   &TimePartitioning{Expiration: 7890 * time.Millisecond},
 				StreamingBuffer: &StreamingBuffer{
 					EstimatedBytes:  11,
 					EstimatedRows:   3,
@@ -78,7 +82,10 @@ func TestBQTableToMetadata(t *testing.T) {
 			},
 		},
 	} {
-		got := bqTableToMetadata(test.in)
+		got, err := bqTableToMetadata(test.in)
+		if err != nil {
+			t.Fatal(err)
+		}
 		if diff := testutil.Diff(got, test.want); diff != "" {
 			t.Errorf("%+v:\n, -got, +want:\n%s", test.in, diff)
 		}
@@ -98,11 +105,12 @@ func TestBQTableFromMetadata(t *testing.T) {
 		{&TableMetadata{}, &bq.Table{}},
 		{
 			&TableMetadata{
-				Name:           "n",
-				Description:    "d",
-				Schema:         sc,
-				ExpirationTime: aTime,
-				Labels:         map[string]string{"a": "b"},
+				Name:               "n",
+				Description:        "d",
+				Schema:             sc,
+				ExpirationTime:     aTime,
+				Labels:             map[string]string{"a": "b"},
+				ExternalDataConfig: &ExternalDataConfig{SourceFormat: Bigtable},
 			},
 			&bq.Table{
 				FriendlyName: "n",
@@ -114,6 +122,7 @@ func TestBQTableFromMetadata(t *testing.T) {
 				},
 				ExpirationTime: aTimeMillis,
 				Labels:         map[string]string{"a": "b"},
+				ExternalDataConfiguration: &bq.ExternalDataConfiguration{SourceFormat: "BIGTABLE"},
 			},
 		},
 		{
