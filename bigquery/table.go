@@ -73,6 +73,9 @@ type TableMetadata struct {
 	// User-provided labels.
 	Labels map[string]string
 
+	// Information about a table stored outside of BigQuery.
+	ExternalDataConfig *ExternalDataConfig
+
 	// All the fields below are read-only.
 
 	FullID           string // An opaque ID uniquely identifying the table.
@@ -237,7 +240,10 @@ func bqTableFromMetadata(tm *TableMetadata) (*bq.Table, error) {
 	if !tm.ExpirationTime.IsZero() {
 		t.ExpirationTime = tm.ExpirationTime.UnixNano() / 1e6
 	}
-
+	if tm.ExternalDataConfig != nil {
+		edc := tm.ExternalDataConfig.externalDataConfig()
+		t.ExternalDataConfiguration = &edc
+	}
 	if tm.FullID != "" {
 		return nil, errors.New("cannot set FullID on create")
 	}
@@ -277,10 +283,10 @@ func (t *Table) Metadata(ctx context.Context) (*TableMetadata, error) {
 	if err != nil {
 		return nil, err
 	}
-	return bqTableToMetadata(table), nil
+	return bqTableToMetadata(table)
 }
 
-func bqTableToMetadata(t *bq.Table) *TableMetadata {
+func bqTableToMetadata(t *bq.Table) (*TableMetadata, error) {
 	md := &TableMetadata{
 		Description:      t.Description,
 		Name:             t.FriendlyName,
@@ -313,7 +319,14 @@ func bqTableToMetadata(t *bq.Table) *TableMetadata {
 			OldestEntryTime: unixMillisToTime(int64(t.StreamingBuffer.OldestEntryTime)),
 		}
 	}
-	return md
+	if t.ExternalDataConfiguration != nil {
+		edc, err := bqToExternalDataConfig(t.ExternalDataConfiguration)
+		if err != nil {
+			return nil, err
+		}
+		md.ExternalDataConfig = edc
+	}
+	return md, nil
 }
 
 // Delete deletes the table.
@@ -347,7 +360,7 @@ func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag strin
 	}); err != nil {
 		return nil, err
 	}
-	return bqTableToMetadata(res), nil
+	return bqTableToMetadata(res)
 }
 
 func bqTableFromMetadataToUpdate(tm TableMetadataToUpdate) *bq.Table {
