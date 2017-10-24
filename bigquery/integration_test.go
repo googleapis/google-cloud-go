@@ -32,6 +32,7 @@ import (
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/storage"
 	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -39,9 +40,10 @@ import (
 )
 
 var (
-	client  *Client
-	dataset *Dataset
-	schema  = Schema{
+	client        *Client
+	storageClient *storage.Client
+	dataset       *Dataset
+	schema        = Schema{
 		{Name: "name", Type: StringFieldType},
 		{Name: "nums", Type: IntegerFieldType, Repeated: true},
 		{Name: "rec", Type: RecordFieldType, Schema: Schema{
@@ -81,6 +83,11 @@ func initIntegrationTest() {
 	client, err = NewClient(ctx, projID, option.WithTokenSource(ts))
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)
+	}
+	storageClient, err = storage.NewClient(ctx,
+		option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl)))
+	if err != nil {
+		log.Fatalf("storage.NewClient: %v", err)
 	}
 	dataset = client.Dataset("bigquery_integration_test")
 	if err := dataset.Create(ctx, nil); err != nil && !hasStatusCode(err, http.StatusConflict) { // AlreadyExists is 409
@@ -478,7 +485,6 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 
 	// Query the table.
 	q := client.Query(fmt.Sprintf("select name, nums, rec from %s", table.TableID))
-	q.UseStandardSQL = true
 	q.DefaultProjectID = dataset.ProjectID
 	q.DefaultDatasetID = dataset.DatasetID
 
@@ -857,22 +863,30 @@ func TestIntegration_DML(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	// Retry insert; sometimes it fails with INTERNAL.
-	err := internal.Retry(ctx, gax.Backoff{}, func() (bool, error) {
-		table := newTable(t, schema)
-		defer table.Delete(ctx)
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
 
+	sql := fmt.Sprintf(`INSERT bigquery_integration_test.%s (name, nums, rec)
+						VALUES ('a', [0], STRUCT<BOOL>(TRUE)),
+							   ('b', [1], STRUCT<BOOL>(FALSE)),
+							   ('c', [2], STRUCT<BOOL>(TRUE))`,
+		table.TableID)
+	if err := dmlInsert(ctx, sql); err != nil {
+		t.Fatal(err)
+	}
+	wantRows := [][]Value{
+		[]Value{"a", []Value{int64(0)}, []Value{true}},
+		[]Value{"b", []Value{int64(1)}, []Value{false}},
+		[]Value{"c", []Value{int64(2)}, []Value{true}},
+	}
+	checkRead(t, "DML", table.Read(ctx), wantRows)
+}
+
+func dmlInsert(ctx context.Context, sql string) error {
+	// Retry insert; sometimes it fails with INTERNAL.
+	return internal.Retry(ctx, gax.Backoff{}, func() (bool, error) {
 		// Use DML to insert.
-		wantRows := [][]Value{
-			[]Value{"a", []Value{int64(0)}, []Value{true}},
-			[]Value{"b", []Value{int64(1)}, []Value{false}},
-			[]Value{"c", []Value{int64(2)}, []Value{true}},
-		}
-		query := fmt.Sprintf("INSERT bigquery_integration_test.%s (name, nums, rec) "+
-			"VALUES ('a', [0], STRUCT<BOOL>(TRUE)), ('b', [1], STRUCT<BOOL>(FALSE)), ('c', [2], STRUCT<BOOL>(TRUE))",
-			table.TableID)
-		q := client.Query(query)
-		q.UseStandardSQL = true // necessary for DML
+		q := client.Query(sql)
 		job, err := q.Run(ctx)
 		if err != nil {
 			if e, ok := err.(*googleapi.Error); ok && e.Code < 500 {
@@ -881,18 +895,13 @@ func TestIntegration_DML(t *testing.T) {
 			return false, err
 		}
 		if err := wait(ctx, job); err != nil {
-			fmt.Printf("wait: %v\n", err)
+			if e, ok := err.(*googleapi.Error); ok && e.Code < 500 {
+				return true, err // fail on 4xx
+			}
 			return false, err
-		}
-		if msg, ok := compareRead(table.Read(ctx), wantRows); !ok {
-			// Stop on read error, because that has never been flaky.
-			return true, errors.New(msg)
 		}
 		return true, nil
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
 }
 
 func TestIntegration_TimeTypes(t *testing.T) {
@@ -930,13 +939,7 @@ func TestIntegration_TimeTypes(t *testing.T) {
 	query := fmt.Sprintf("INSERT bigquery_integration_test.%s (d, t, dt, ts) "+
 		"VALUES ('%s', '%s', '%s %s', '%s')",
 		table.TableID, d, tm, d, tm, ts.Format("2006-01-02 15:04:05"))
-	q := client.Query(query)
-	q.UseStandardSQL = true // necessary for DML
-	job, err := q.Run(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := wait(ctx, job); err != nil {
+	if err := dmlInsert(ctx, query); err != nil {
 		t.Fatal(err)
 	}
 	wantRows = append(wantRows, wantRows[0])
@@ -987,7 +990,6 @@ func TestIntegration_StandardQuery(t *testing.T) {
 	}
 	for _, c := range testCases {
 		q := client.Query(c.query)
-		q.UseStandardSQL = true
 		it, err := q.Read(ctx)
 		if err != nil {
 			t.Fatal(err)
@@ -1079,6 +1081,63 @@ func TestIntegration_QueryParameters(t *testing.T) {
 		}
 		checkRead(t, "QueryParameters", it, [][]Value{c.wantRow})
 	}
+}
+
+func TestIntegration_ExtractExternal(t *testing.T) {
+	// Create a table, extract it to GCS, then query it externally.
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	schema := Schema{
+		{Name: "name", Type: StringFieldType},
+		{Name: "num", Type: IntegerFieldType},
+	}
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
+
+	// Insert table data.
+	sql := fmt.Sprintf(`INSERT bigquery_integration_test.%s (name, num)
+		                VALUES ('a', 1), ('b', 2), ('c', 3)`,
+		table.TableID)
+	if err := dmlInsert(ctx, sql); err != nil {
+		t.Fatal(err)
+	}
+	// Extract to a GCS object as CSV.
+	bucketName := testutil.ProjID()
+	objectName := fmt.Sprintf("bq-test-%s.csv", table.TableID)
+	uri := fmt.Sprintf("gs://%s/%s", bucketName, objectName)
+	defer storageClient.Bucket(bucketName).Object(objectName).Delete(ctx)
+	gr := NewGCSReference(uri)
+	gr.DestinationFormat = CSV
+	e := table.ExtractorTo(gr)
+	job, err := e.Run(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := wait(ctx, job); err != nil {
+		t.Fatal(err)
+	}
+	// Query that CSV file directly.
+	q := client.Query("SELECT * FROM csv")
+	q.TableDefinitions = map[string]ExternalData{
+		"csv": &ExternalDataConfig{
+			SourceFormat: CSV,
+			SourceURIs:   []string{uri},
+			Schema:       schema,
+			Options:      &CSVOptions{SkipLeadingRows: 1},
+		},
+	}
+	wantRows := [][]Value{
+		[]Value{"a", int64(1)},
+		[]Value{"b", int64(2)},
+		[]Value{"c", int64(3)},
+	}
+	iter, err := q.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	checkRead(t, "external query", iter, wantRows)
 }
 
 func TestIntegration_ReadNullIntoStruct(t *testing.T) {
@@ -1296,7 +1355,7 @@ func hasStatusCode(err error, code int) bool {
 func wait(ctx context.Context, job *Job) error {
 	status, err := job.Wait(ctx)
 	if err != nil {
-		return fmt.Errorf("getting job status: %v", err)
+		return err
 	}
 	if status.Err() != nil {
 		return fmt.Errorf("job status error: %#v", status.Err())
