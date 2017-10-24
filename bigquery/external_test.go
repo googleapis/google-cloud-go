@@ -81,7 +81,7 @@ func TestExternalDataConfig(t *testing.T) {
 	}
 }
 
-func TestCSVQuote(t *testing.T) {
+func TestQuote(t *testing.T) {
 	ptr := func(s string) *string { return &s }
 
 	for _, test := range []struct {
