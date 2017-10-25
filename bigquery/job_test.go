@@ -49,7 +49,8 @@ func TestCreateJobRef(t *testing.T) {
 			want:           "foo-RANDOM",
 		},
 	} {
-		jr := createJobRef(test.jobID, test.addJobIDSuffix, "projectID")
+		jc := JobIDConfig{JobID: test.jobID, AddJobIDSuffix: test.addJobIDSuffix}
+		jr := jc.createJobRef("projectID")
 		got := jr.JobId
 		if got != test.want {
 			t.Errorf("%q, %t: got %q, want %q", test.jobID, test.addJobIDSuffix, got, test.want)

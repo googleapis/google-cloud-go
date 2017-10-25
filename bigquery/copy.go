@@ -21,12 +21,6 @@ import (
 
 // CopyConfig holds the configuration for a copy job.
 type CopyConfig struct {
-	// JobID is the ID to use for the job. If empty, a random job ID will be generated.
-	JobID string
-
-	// If AddJobIDSuffix is true, then a random string will be appended to JobID.
-	AddJobIDSuffix bool
-
 	// Srcs are the tables from which data will be copied.
 	Srcs []*Table
 
@@ -44,6 +38,7 @@ type CopyConfig struct {
 
 // A Copier copies data into a BigQuery table from one or more BigQuery tables.
 type Copier struct {
+	JobIDConfig
 	CopyConfig
 	c *Client
 }
@@ -76,7 +71,7 @@ func (c *Copier) newJob() *bq.Job {
 		conf.SourceTables = append(conf.SourceTables, t.tableRefProto())
 	}
 	job := &bq.Job{
-		JobReference:  createJobRef(c.JobID, c.AddJobIDSuffix, c.c.projectID),
+		JobReference:  c.JobIDConfig.createJobRef(c.c.projectID),
 		Configuration: &bq.JobConfiguration{Copy: conf},
 	}
 	return job

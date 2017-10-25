@@ -47,6 +47,7 @@ func TestCopy(t *testing.T) {
 	testCases := []struct {
 		dst    *Table
 		srcs   []*Table
+		jobID  string
 		config CopyConfig
 		want   *bq.Job
 	}{
@@ -102,7 +103,7 @@ func TestCopy(t *testing.T) {
 					TableID:   "s-table-id",
 				},
 			},
-			config: CopyConfig{JobID: "job-id"},
+			jobID: "job-id",
 			want: func() *bq.Job {
 				j := defaultCopyJob()
 				j.JobReference.JobId = "job-id"
@@ -114,6 +115,7 @@ func TestCopy(t *testing.T) {
 	for i, tc := range testCases {
 		tc.dst.c = c
 		copier := tc.dst.CopierFrom(tc.srcs...)
+		copier.JobID = tc.jobID
 		tc.config.Srcs = tc.srcs
 		tc.config.Dst = tc.dst
 		copier.CopyConfig = tc.config

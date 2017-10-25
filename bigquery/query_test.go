@@ -50,9 +50,10 @@ func TestQuery(t *testing.T) {
 		projectID: "client-project-id",
 	}
 	testCases := []struct {
-		dst  *Table
-		src  *QueryConfig
-		want *bq.Job
+		dst         *Table
+		src         *QueryConfig
+		jobIDConfig JobIDConfig
+		want        *bq.Job
 	}{
 		{
 			dst:  c.Dataset("dataset-id").Table("table-id"),
@@ -71,12 +72,9 @@ func TestQuery(t *testing.T) {
 			}(),
 		},
 		{
-			dst: c.Dataset("dataset-id").Table("table-id"),
-			src: &QueryConfig{
-				Q:              "query string",
-				JobID:          "jobID",
-				AddJobIDSuffix: true,
-			},
+			dst:         c.Dataset("dataset-id").Table("table-id"),
+			jobIDConfig: JobIDConfig{JobID: "jobID", AddJobIDSuffix: true},
+			src:         &QueryConfig{Q: "query string"},
 			want: func() *bq.Job {
 				j := defaultQueryJob()
 				j.Configuration.Query.DefaultDataset = nil
@@ -280,6 +278,7 @@ func TestQuery(t *testing.T) {
 	}
 	for i, tc := range testCases {
 		query := c.Query("")
+		query.JobIDConfig = tc.jobIDConfig
 		query.QueryConfig = *tc.src
 		query.Dst = tc.dst
 		got, err := query.newJob()

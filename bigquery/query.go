@@ -23,12 +23,6 @@ import (
 
 // QueryConfig holds the configuration for a query job.
 type QueryConfig struct {
-	// JobID is the ID to use for the job. If empty, a random job ID will be generated.
-	JobID string
-
-	// If AddJobIDSuffix is true, then a random string will be appended to JobID.
-	AddJobIDSuffix bool
-
 	// Dst is the table into which the results of the query will be written.
 	// If this field is nil, a temporary table will be created.
 	Dst *Table
@@ -114,8 +108,9 @@ const (
 
 // A Query queries data from a BigQuery table. Use Client.Query to create a Query.
 type Query struct {
-	client *Client
+	JobIDConfig
 	QueryConfig
+	client *Client
 }
 
 // Query creates a query with string q.
@@ -143,7 +138,7 @@ func (q *Query) Run(ctx context.Context) (*Job, error) {
 
 func (q *Query) newJob() (*bq.Job, error) {
 	job := &bq.Job{
-		JobReference: createJobRef(q.JobID, q.AddJobIDSuffix, q.client.projectID),
+		JobReference: q.JobIDConfig.createJobRef(q.client.projectID),
 		Configuration: &bq.JobConfiguration{
 			Query: &bq.JobConfigurationQuery{},
 		},

@@ -23,12 +23,6 @@ import (
 
 // LoadConfig holds the configuration for a load job.
 type LoadConfig struct {
-	// JobID is the ID to use for the job. If empty, a random job ID will be generated.
-	JobID string
-
-	// If AddJobIDSuffix is true, then a random string will be appended to JobID.
-	AddJobIDSuffix bool
-
 	// Src is the source from which data will be loaded.
 	Src LoadSource
 
@@ -46,6 +40,7 @@ type LoadConfig struct {
 
 // A Loader loads data from Google Cloud Storage into a BigQuery table.
 type Loader struct {
+	JobIDConfig
 	LoadConfig
 	c *Client
 }
@@ -82,7 +77,7 @@ func (l *Loader) Run(ctx context.Context) (*Job, error) {
 
 func (l *Loader) newJob() (*bq.Job, io.Reader) {
 	job := &bq.Job{
-		JobReference: createJobRef(l.JobID, l.AddJobIDSuffix, l.c.projectID),
+		JobReference: l.JobIDConfig.createJobRef(l.c.projectID),
 		Configuration: &bq.JobConfiguration{
 			Load: &bq.JobConfigurationLoad{
 				CreateDisposition: string(l.CreateDisposition),
