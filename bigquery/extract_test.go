@@ -17,6 +17,10 @@ package bigquery
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+
+	"cloud.google.com/go/internal/testutil"
+
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -90,5 +94,15 @@ func TestExtract(t *testing.T) {
 		ext.ExtractConfig = tc.config
 		got := ext.newJob()
 		checkJob(t, i, got, tc.want)
+
+		jc, err := bqToJobConfig(got.Configuration, c)
+		if err != nil {
+			t.Fatalf("#%d: %v", i, err)
+		}
+		diff := testutil.Diff(jc, &ext.ExtractConfig,
+			cmp.AllowUnexported(Table{}, Client{}))
+		if diff != "" {
+			t.Errorf("#%d: (got=-, want=+:\n%s", i, diff)
+		}
 	}
 }

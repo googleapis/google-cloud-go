@@ -193,6 +193,15 @@ func (o *CSVOptions) quote() *string {
 	return &o.Quote
 }
 
+func (o *CSVOptions) setQuote(ps *string) {
+	if ps != nil {
+		o.Quote = *ps
+		if o.Quote == "" {
+			o.ForceZeroQuote = true
+		}
+	}
+}
+
 func bqToCSVOptions(q *bq.CsvOptions) *CSVOptions {
 	o := &CSVOptions{
 		AllowJaggedRows:     q.AllowJaggedRows,
@@ -201,12 +210,7 @@ func bqToCSVOptions(q *bq.CsvOptions) *CSVOptions {
 		FieldDelimiter:      q.FieldDelimiter,
 		SkipLeadingRows:     q.SkipLeadingRows,
 	}
-	if q.Quote != nil {
-		o.Quote = *q.Quote
-		if o.Quote == "" {
-			o.ForceZeroQuote = true
-		}
-	}
+	o.setQuote(q.Quote)
 	return o
 }
 

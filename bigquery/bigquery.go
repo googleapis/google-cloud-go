@@ -111,17 +111,7 @@ func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader) (*
 	if err != nil {
 		return nil, err
 	}
-
-	var dt *bq.TableReference
-	if qc := res.Configuration.Query; qc != nil {
-		dt = qc.DestinationTable
-	}
-	return &Job{
-		c:                c,
-		projectID:        c.projectID,
-		jobID:            res.JobReference.JobId,
-		destinationTable: dt,
-	}, nil
+	return jobFromProtos(res.JobReference, res.Configuration, c), nil
 }
 
 // Convert a number of milliseconds since the Unix epoch to a time.Time.

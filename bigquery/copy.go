@@ -36,6 +36,30 @@ type CopyConfig struct {
 	WriteDisposition TableWriteDisposition
 }
 
+func (c *CopyConfig) toBQ() *bq.JobConfigurationTableCopy {
+	q := &bq.JobConfigurationTableCopy{
+		CreateDisposition: string(c.CreateDisposition),
+		WriteDisposition:  string(c.WriteDisposition),
+		DestinationTable:  c.Dst.tableRefProto(),
+	}
+	for _, t := range c.Srcs {
+		q.SourceTables = append(q.SourceTables, t.tableRefProto())
+	}
+	return q
+}
+
+func bqToCopyConfig(q *bq.JobConfigurationTableCopy, c *Client) *CopyConfig {
+	cc := &CopyConfig{
+		CreateDisposition: TableCreateDisposition(q.CreateDisposition),
+		WriteDisposition:  TableWriteDisposition(q.WriteDisposition),
+		Dst:               convertTableReference(q.DestinationTable, c),
+	}
+	for _, t := range q.SourceTables {
+		cc.Srcs = append(cc.Srcs, convertTableReference(t, c))
+	}
+	return cc
+}
+
 // A Copier copies data into a BigQuery table from one or more BigQuery tables.
 type Copier struct {
 	JobIDConfig
@@ -62,17 +86,9 @@ func (c *Copier) Run(ctx context.Context) (*Job, error) {
 }
 
 func (c *Copier) newJob() *bq.Job {
-	conf := &bq.JobConfigurationTableCopy{
-		CreateDisposition: string(c.CreateDisposition),
-		WriteDisposition:  string(c.WriteDisposition),
-		DestinationTable:  c.Dst.tableRefProto(),
-	}
-	for _, t := range c.Srcs {
-		conf.SourceTables = append(conf.SourceTables, t.tableRefProto())
-	}
 	job := &bq.Job{
 		JobReference:  c.JobIDConfig.createJobRef(c.c.projectID),
-		Configuration: &bq.JobConfiguration{Copy: conf},
+		Configuration: &bq.JobConfiguration{Copy: c.CopyConfig.toBQ()},
 	}
 	return job
 }

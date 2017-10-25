@@ -23,8 +23,8 @@ import (
 // GCSReference is a reference to one or more Google Cloud Storage objects, which together constitute
 // an input or output to a BigQuery operation.
 type GCSReference struct {
-	// TODO(jba): Export so that GCSReference can be used to hold data from a Job.get api call and expose it to the user.
-	uris []string
+	// URIs refer to Google Cloud Storage objects.
+	URIs []string
 
 	FileConfig
 
@@ -46,7 +46,7 @@ type GCSReference struct {
 // For more information about the treatment of wildcards and multiple URIs,
 // see https://cloud.google.com/bigquery/exporting-data-from-bigquery#exportingmultiple
 func NewGCSReference(uri ...string) *GCSReference {
-	return &GCSReference{uris: uri}
+	return &GCSReference{URIs: uri}
 }
 
 // Compression is the type of compression to apply when writing data to Google Cloud Storage.
@@ -57,16 +57,16 @@ const (
 	Gzip Compression = "GZIP"
 )
 
-func (gcs *GCSReference) populateJobForLoad(job *bq.Job) io.Reader {
-	job.Configuration.Load.SourceUris = gcs.uris
-	gcs.FileConfig.populateLoadConfig(job.Configuration.Load)
+func (gcs *GCSReference) populateLoadConfig(lc *bq.JobConfigurationLoad) io.Reader {
+	lc.SourceUris = gcs.URIs
+	gcs.FileConfig.populateLoadConfig(lc)
 	return nil
 }
 
 func (gcs *GCSReference) externalDataConfig() bq.ExternalDataConfiguration {
 	conf := bq.ExternalDataConfiguration{
 		Compression: string(gcs.Compression),
-		SourceUris:  append([]string{}, gcs.uris...),
+		SourceUris:  append([]string{}, gcs.URIs...),
 	}
 	gcs.FileConfig.populateExternalDataConfig(&conf)
 	return conf

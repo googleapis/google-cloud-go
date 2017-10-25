@@ -17,6 +17,8 @@ package bigquery
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	"cloud.google.com/go/internal/testutil"
 
 	bq "google.golang.org/api/bigquery/v2"
@@ -246,16 +248,6 @@ func TestQuery(t *testing.T) {
 				Q:                "query string",
 				DefaultProjectID: "def-project-id",
 				DefaultDatasetID: "def-dataset-id",
-				MaxBytesBilled:   -1,
-			},
-			want: defaultQueryJob(),
-		},
-		{
-			dst: c.Dataset("dataset-id").Table("table-id"),
-			src: &QueryConfig{
-				Q:                "query string",
-				DefaultProjectID: "def-project-id",
-				DefaultDatasetID: "def-dataset-id",
 				UseStandardSQL:   true,
 			},
 			want: defaultQueryJob(),
@@ -287,6 +279,55 @@ func TestQuery(t *testing.T) {
 			continue
 		}
 		checkJob(t, i, got, tc.want)
+
+		// Round-trip.
+		jc, err := bqToJobConfig(got.Configuration, c)
+		if err != nil {
+			t.Fatalf("#%d: %v", i, err)
+		}
+		wantConfig := query.QueryConfig
+		// We set AllowLargeResults to true when DisableFlattenedResults is true.
+		if wantConfig.DisableFlattenedResults {
+			wantConfig.AllowLargeResults = true
+		}
+		// A QueryConfig with neither UseXXXSQL field set is equivalent
+		// to one where UseStandardSQL = true.
+		if !wantConfig.UseLegacySQL && !wantConfig.UseStandardSQL {
+			wantConfig.UseStandardSQL = true
+		}
+		// Treat nil and empty tables the same, and ignore the client.
+		tableEqual := func(t1, t2 *Table) bool {
+			if t1 == nil {
+				t1 = &Table{}
+			}
+			if t2 == nil {
+				t2 = &Table{}
+			}
+			return t1.ProjectID == t2.ProjectID && t1.DatasetID == t2.DatasetID && t1.TableID == t2.TableID
+		}
+		// A table definition that is a GCSReference round-trips as an ExternalDataConfig.
+		// TODO(jba): see if there is a way to express this with a transformer.
+		gcsRefToEDC := func(g *GCSReference) *ExternalDataConfig {
+			q := g.externalDataConfig()
+			e, _ := bqToExternalDataConfig(&q)
+			return e
+		}
+		externalDataEqual := func(e1, e2 ExternalData) bool {
+			if r, ok := e1.(*GCSReference); ok {
+				e1 = gcsRefToEDC(r)
+			}
+			if r, ok := e2.(*GCSReference); ok {
+				e2 = gcsRefToEDC(r)
+			}
+			return cmp.Equal(e1, e2)
+		}
+		diff := testutil.Diff(jc.(*QueryConfig), &wantConfig,
+			cmp.Comparer(tableEqual),
+			cmp.Comparer(externalDataEqual),
+		)
+		if diff != "" {
+			t.Errorf("#%d: (got=-, want=+:\n%s", i, diff)
+		}
 	}
 }
 

@@ -22,6 +22,10 @@ import (
 
 // A ReaderSource is a source for a load operation that gets
 // data from an io.Reader.
+//
+// When a ReaderSource is part of a LoadConfig obtained via Job.Config,
+// its internal io.Reader will be nil, so it cannot be used for a
+// subsequent load operation.
 type ReaderSource struct {
 	r io.Reader
 	FileConfig
@@ -34,8 +38,8 @@ func NewReaderSource(r io.Reader) *ReaderSource {
 	return &ReaderSource{r: r}
 }
 
-func (r *ReaderSource) populateJobForLoad(job *bq.Job) io.Reader {
-	r.FileConfig.populateLoadConfig(job.Configuration.Load)
+func (r *ReaderSource) populateLoadConfig(lc *bq.JobConfigurationLoad) io.Reader {
+	r.FileConfig.populateLoadConfig(lc)
 	return r.r
 }
 
@@ -86,6 +90,20 @@ func (fc *FileConfig) populateLoadConfig(conf *bq.JobConfigurationLoad) {
 		conf.Schema = fc.Schema.asTableSchema()
 	}
 	conf.Quote = fc.quote()
+}
+
+func bqPopulateFileConfig(conf *bq.JobConfigurationLoad, fc *FileConfig) {
+	fc.SourceFormat = DataFormat(conf.SourceFormat)
+	fc.AutoDetect = conf.Autodetect
+	fc.MaxBadRecords = conf.MaxBadRecords
+	fc.IgnoreUnknownValues = conf.IgnoreUnknownValues
+	fc.Schema = convertTableSchema(conf.Schema)
+	fc.SkipLeadingRows = conf.SkipLeadingRows
+	fc.AllowJaggedRows = conf.AllowJaggedRows
+	fc.AllowQuotedNewlines = conf.AllowQuotedNewlines
+	fc.Encoding = Encoding(conf.Encoding)
+	fc.FieldDelimiter = conf.FieldDelimiter
+	fc.CSVOptions.setQuote(conf.Quote)
 }
 
 func (fc *FileConfig) populateExternalDataConfig(conf *bq.ExternalDataConfiguration) {

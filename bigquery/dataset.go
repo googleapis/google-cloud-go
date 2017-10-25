@@ -51,7 +51,6 @@ type DatasetMetadata struct {
 	// ETag is the ETag obtained when reading metadata. Pass it to Dataset.Update to
 	// ensure that the metadata hasn't changed since it was read.
 	ETag string
-	// TODO(jba): access rules
 }
 
 // DatasetMetadataToUpdate is used when updating a dataset's metadata.
