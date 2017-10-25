@@ -31,6 +31,39 @@ type ExtractConfig struct {
 	DisableHeader bool
 }
 
+func (e *ExtractConfig) toBQ() *bq.JobConfigurationExtract {
+	var printHeader *bool
+	if e.DisableHeader {
+		f := false
+		printHeader = &f
+	}
+	return &bq.JobConfigurationExtract{
+		DestinationUris:   append([]string{}, e.Dst.URIs...),
+		Compression:       string(e.Dst.Compression),
+		DestinationFormat: string(e.Dst.DestinationFormat),
+		FieldDelimiter:    e.Dst.FieldDelimiter,
+		SourceTable:       e.Src.tableRefProto(),
+		PrintHeader:       printHeader,
+	}
+}
+
+func bqToExtractConfig(q *bq.JobConfigurationExtract, c *Client) *ExtractConfig {
+	return &ExtractConfig{
+		Dst: &GCSReference{
+			URIs:              q.DestinationUris,
+			Compression:       Compression(q.Compression),
+			DestinationFormat: DataFormat(q.DestinationFormat),
+			FileConfig: FileConfig{
+				CSVOptions: CSVOptions{
+					FieldDelimiter: q.FieldDelimiter,
+				},
+			},
+		},
+		DisableHeader: q.PrintHeader != nil && !*q.PrintHeader,
+		Src:           convertTableReference(q.SourceTable, c),
+	}
+}
+
 // An Extractor extracts data from a BigQuery table into Google Cloud Storage.
 type Extractor struct {
 	JobIDConfig
@@ -57,22 +90,10 @@ func (e *Extractor) Run(ctx context.Context) (*Job, error) {
 }
 
 func (e *Extractor) newJob() *bq.Job {
-	var printHeader *bool
-	if e.DisableHeader {
-		f := false
-		printHeader = &f
-	}
 	return &bq.Job{
 		JobReference: e.JobIDConfig.createJobRef(e.c.projectID),
 		Configuration: &bq.JobConfiguration{
-			Extract: &bq.JobConfigurationExtract{
-				DestinationUris:   append([]string{}, e.Dst.uris...),
-				Compression:       string(e.Dst.Compression),
-				DestinationFormat: string(e.Dst.DestinationFormat),
-				FieldDelimiter:    e.Dst.FieldDelimiter,
-				SourceTable:       e.Src.tableRefProto(),
-				PrintHeader:       printHeader,
-			},
+			Extract: e.ExtractConfig.toBQ(),
 		},
 	}
 }

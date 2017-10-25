@@ -228,6 +228,25 @@ func ExampleJob_Wait() {
 	}
 }
 
+func ExampleJob_Config() {
+	ctx := context.Background()
+	client, err := bigquery.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	ds := client.Dataset("my_dataset")
+	job, err := ds.Table("t1").CopierFrom(ds.Table("t2")).Run(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	jc, err := job.Config()
+	if err != nil {
+		// TODO: Handle error.
+	}
+	copyConfig := jc.(*bigquery.CopyConfig)
+	fmt.Println(copyConfig.Dst, copyConfig.CreateDisposition)
+}
+
 func ExampleDataset_Create() {
 	ctx := context.Background()
 	client, err := bigquery.NewClient(ctx, "project-id")

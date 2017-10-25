@@ -16,7 +16,7 @@ package bigquery
 
 func defaultGCS() *GCSReference {
 	return &GCSReference{
-		uris: []string{"uri"},
+		URIs: []string{"uri"},
 	}
 }
 

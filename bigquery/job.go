@@ -38,6 +38,8 @@ type Job struct {
 
 	isQuery          bool
 	destinationTable *bq.TableReference // table to read query results from
+
+	config *bq.JobConfiguration
 }
 
 // JobFromID creates a Job which refers to an existing BigQuery job. The job
@@ -78,6 +80,39 @@ type JobStatus struct {
 
 	// Statistics about the job.
 	Statistics *JobStatistics
+}
+
+// JobConfig contains configuration information for a job. It is implemented by
+// *CopyConfig, *ExtractConfig, *LoadConfig and *QueryConfig.
+type JobConfig interface {
+	isJobConfig()
+}
+
+func (*CopyConfig) isJobConfig()    {}
+func (*ExtractConfig) isJobConfig() {}
+func (*LoadConfig) isJobConfig()    {}
+func (*QueryConfig) isJobConfig()   {}
+
+// Config returns the configuration information for j.
+func (j *Job) Config() (JobConfig, error) {
+	return bqToJobConfig(j.config, j.c)
+}
+
+func bqToJobConfig(q *bq.JobConfiguration, c *Client) (JobConfig, error) {
+	switch {
+	case q == nil:
+		return nil, nil
+	case q.Copy != nil:
+		return bqToCopyConfig(q.Copy, c), nil
+	case q.Extract != nil:
+		return bqToExtractConfig(q.Extract, c), nil
+	case q.Load != nil:
+		return bqToLoadConfig(q.Load, c), nil
+	case q.Query != nil:
+		return bqToQueryConfig(q.Query, c)
+	default:
+		return nil, nil
+	}
 }
 
 // JobIDConfig  describes how to create an ID for a job.
@@ -531,6 +566,7 @@ func jobFromProtos(jr *bq.JobReference, config *bq.JobConfiguration, c *Client) 
 		jobID:            jr.JobId,
 		isQuery:          isQuery,
 		destinationTable: dest,
+		config:           config,
 		c:                c,
 	}
 }

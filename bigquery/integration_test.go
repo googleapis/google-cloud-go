@@ -27,6 +27,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go"
 
 	"cloud.google.com/go/civil"
@@ -890,10 +891,27 @@ func TestIntegration_Load(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	conf, err := job.Config()
+	if err != nil {
+		t.Fatal(err)
+	}
+	config, ok := conf.(*LoadConfig)
+	if !ok {
+		t.Fatalf("got %T, want LoadConfig", conf)
+	}
+	diff := testutil.Diff(config, &loader.LoadConfig,
+		cmp.AllowUnexported(Table{}),
+		cmpopts.IgnoreUnexported(Client{}, ReaderSource{}),
+		// returned schema is at top level, not in the config
+		cmpopts.IgnoreFields(FileConfig{}, "Schema"))
+	if diff != "" {
+		t.Errorf("got=-, want=+:\n%s", diff)
+	}
 	if err := wait(ctx, job); err != nil {
 		t.Fatal(err)
 	}
 	checkRead(t, "reader load", table.Read(ctx), wantRows)
+
 }
 
 func TestIntegration_DML(t *testing.T) {
@@ -1114,7 +1132,11 @@ func TestIntegration_QueryParameters(t *testing.T) {
 	for _, c := range testCases {
 		q := client.Query(c.query)
 		q.Parameters = c.parameters
-		it, err := q.Read(ctx)
+		job, err := q.Run(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		it, err := job.Read(ctx)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1153,6 +1175,20 @@ func TestIntegration_ExtractExternal(t *testing.T) {
 	job, err := e.Run(ctx)
 	if err != nil {
 		t.Fatal(err)
+	}
+	conf, err := job.Config()
+	if err != nil {
+		t.Fatal(err)
+	}
+	config, ok := conf.(*ExtractConfig)
+	if !ok {
+		t.Fatalf("got %T, want ExtractConfig", conf)
+	}
+	diff := testutil.Diff(config, &e.ExtractConfig,
+		cmp.AllowUnexported(Table{}),
+		cmpopts.IgnoreUnexported(Client{}))
+	if diff != "" {
+		t.Errorf("got=-, want=+:\n%s", diff)
 	}
 	if err := wait(ctx, job); err != nil {
 		t.Fatal(err)

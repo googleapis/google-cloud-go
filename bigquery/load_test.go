@@ -18,6 +18,10 @@ import (
 	"strings"
 	"testing"
 
+	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
+
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -217,5 +221,16 @@ func TestLoad(t *testing.T) {
 		loader.LoadConfig = tc.config
 		got, _ := loader.newJob()
 		checkJob(t, i, got, tc.want)
+
+		jc, err := bqToJobConfig(got.Configuration, c)
+		if err != nil {
+			t.Fatalf("#%d: %v", i, err)
+		}
+		diff := testutil.Diff(jc.(*LoadConfig), &loader.LoadConfig,
+			cmp.AllowUnexported(Table{}, Client{}),
+			cmpopts.IgnoreUnexported(ReaderSource{}))
+		if diff != "" {
+			t.Errorf("#%d: (got=-, want=+:\n%s", i, diff)
+		}
 	}
 }

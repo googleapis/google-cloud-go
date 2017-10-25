@@ -17,6 +17,10 @@ package bigquery
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp/cmpopts"
+
+	"cloud.google.com/go/internal/testutil"
+
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -121,5 +125,15 @@ func TestCopy(t *testing.T) {
 		copier.CopyConfig = tc.config
 		got := copier.newJob()
 		checkJob(t, i, got, tc.want)
+
+		jc, err := bqToJobConfig(got.Configuration, c)
+		if err != nil {
+			t.Fatalf("#%d: %v", i, err)
+		}
+		diff := testutil.Diff(jc.(*CopyConfig), &copier.CopyConfig,
+			cmpopts.IgnoreUnexported(Table{}))
+		if diff != "" {
+			t.Errorf("#%d: (got=-, want=+:\n%s", i, diff)
+		}
 	}
 }

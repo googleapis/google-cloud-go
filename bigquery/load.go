@@ -24,6 +24,7 @@ import (
 // LoadConfig holds the configuration for a load job.
 type LoadConfig struct {
 	// Src is the source from which data will be loaded.
+	//
 	Src LoadSource
 
 	// Dst is the table into which the data will be loaded.
@@ -36,6 +37,38 @@ type LoadConfig struct {
 	// WriteDisposition specifies how existing data in the destination table is treated.
 	// The default is WriteAppend.
 	WriteDisposition TableWriteDisposition
+
+	// TODO(jba): add TimePartitioning
+}
+
+func (l *LoadConfig) toBQ() (*bq.JobConfigurationLoad, io.Reader) {
+	lc := &bq.JobConfigurationLoad{
+		CreateDisposition: string(l.CreateDisposition),
+		WriteDisposition:  string(l.WriteDisposition),
+		DestinationTable:  l.Dst.tableRefProto(),
+	}
+	media := l.Src.populateLoadConfig(lc)
+	return lc, media
+}
+
+func bqToLoadConfig(q *bq.JobConfigurationLoad, c *Client) *LoadConfig {
+	lc := &LoadConfig{
+		CreateDisposition: TableCreateDisposition(q.CreateDisposition),
+		WriteDisposition:  TableWriteDisposition(q.WriteDisposition),
+		Dst:               convertTableReference(q.DestinationTable, c),
+	}
+	var fc *FileConfig
+	if len(q.SourceUris) == 0 {
+		s := NewReaderSource(nil)
+		fc = &s.FileConfig
+		lc.Src = s
+	} else {
+		s := NewGCSReference(q.SourceUris...)
+		fc = &s.FileConfig
+		lc.Src = s
+	}
+	bqPopulateFileConfig(q, fc)
+	return lc
 }
 
 // A Loader loads data from Google Cloud Storage into a BigQuery table.
@@ -51,8 +84,8 @@ type Loader struct {
 // This package defines two LoadSources: GCSReference, for Google Cloud Storage
 // objects, and ReaderSource, for data read from an io.Reader.
 type LoadSource interface {
-	// populates job, returns media
-	populateJobForLoad(job *bq.Job) io.Reader
+	// populates config, returns media
+	populateLoadConfig(*bq.JobConfigurationLoad) io.Reader
 }
 
 // LoaderFrom returns a Loader which can be used to load data into a BigQuery table.
@@ -76,16 +109,9 @@ func (l *Loader) Run(ctx context.Context) (*Job, error) {
 }
 
 func (l *Loader) newJob() (*bq.Job, io.Reader) {
-	job := &bq.Job{
-		JobReference: l.JobIDConfig.createJobRef(l.c.projectID),
-		Configuration: &bq.JobConfiguration{
-			Load: &bq.JobConfigurationLoad{
-				CreateDisposition: string(l.CreateDisposition),
-				WriteDisposition:  string(l.WriteDisposition),
-			},
-		},
-	}
-	media := l.Src.populateJobForLoad(job)
-	job.Configuration.Load.DestinationTable = l.Dst.tableRefProto()
-	return job, media
+	lc, media := l.LoadConfig.toBQ()
+	return &bq.Job{
+		JobReference:  l.JobIDConfig.createJobRef(l.c.projectID),
+		Configuration: &bq.JobConfiguration{Load: lc},
+	}, media
 }
