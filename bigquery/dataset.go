@@ -16,6 +16,7 @@ package bigquery
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"cloud.google.com/go/internal/optional"
@@ -40,6 +41,7 @@ type DatasetMetadata struct {
 	Location               string            // The geo location of the dataset.
 	DefaultTableExpiration time.Duration     // The default expiration time for new tables.
 	Labels                 map[string]string // User-provided labels.
+	Access                 []*AccessEntry    // Access permissions.
 
 	// These fields are read-only.
 	CreationTime     time.Time
@@ -57,9 +59,13 @@ type DatasetMetadata struct {
 type DatasetMetadataToUpdate struct {
 	Description optional.String // The user-friendly description of this table.
 	Name        optional.String // The user-friendly name for this dataset.
+
 	// DefaultTableExpiration is the the default expiration time for new tables.
 	// If set to time.Duration(0), new tables never expire.
 	DefaultTableExpiration optional.Duration
+
+	// The entire access list. It is not possible to replace individual entries.
+	Access []*AccessEntry
 
 	labelUpdater
 }
@@ -102,6 +108,11 @@ func bqDatasetFromMetadata(dm *DatasetMetadata) (*bq.Dataset, error) {
 	ds.Location = dm.Location
 	ds.DefaultTableExpirationMs = int64(dm.DefaultTableExpiration / time.Millisecond)
 	ds.Labels = dm.Labels
+	var err error
+	ds.Access, err = accessListToBQ(dm.Access)
+	if err != nil {
+		return nil, err
+	}
 	if !dm.CreationTime.IsZero() {
 		return nil, errors.New("bigquery: Dataset.CreationTime is not writable")
 	}
@@ -115,6 +126,18 @@ func bqDatasetFromMetadata(dm *DatasetMetadata) (*bq.Dataset, error) {
 		return nil, errors.New("bigquery: Dataset.ETag is not writable")
 	}
 	return ds, nil
+}
+
+func accessListToBQ(a []*AccessEntry) ([]*bq.DatasetAccess, error) {
+	var q []*bq.DatasetAccess
+	for _, e := range a {
+		a, err := e.toBQ()
+		if err != nil {
+			return nil, err
+		}
+		q = append(q, a)
+	}
+	return q, nil
 }
 
 // Delete deletes the dataset.
@@ -135,12 +158,11 @@ func (d *Dataset) Metadata(ctx context.Context) (*DatasetMetadata, error) {
 	}); err != nil {
 		return nil, err
 	}
-	return bqDatasetToMetadata(ds), nil
+	return bqDatasetToMetadata(ds)
 }
 
-func bqDatasetToMetadata(d *bq.Dataset) *DatasetMetadata {
-	/// TODO(jba): access
-	return &DatasetMetadata{
+func bqDatasetToMetadata(d *bq.Dataset) (*DatasetMetadata, error) {
+	dm := &DatasetMetadata{
 		CreationTime:           unixMillisToTime(d.CreationTime),
 		LastModifiedTime:       unixMillisToTime(d.LastModifiedTime),
 		DefaultTableExpiration: time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
@@ -151,6 +173,14 @@ func bqDatasetToMetadata(d *bq.Dataset) *DatasetMetadata {
 		Labels:                 d.Labels,
 		ETag:                   d.Etag,
 	}
+	for _, a := range d.Access {
+		e, err := bqToAccessEntry(a, nil)
+		if err != nil {
+			return nil, err
+		}
+		dm.Access = append(dm.Access, e)
+	}
+	return dm, nil
 }
 
 // Update modifies specific Dataset metadata fields.
@@ -158,7 +188,10 @@ func bqDatasetToMetadata(d *bq.Dataset) *DatasetMetadata {
 // set the etag argument to the DatasetMetadata.ETag field from the read.
 // Pass the empty string for etag for a "blind write" that will always succeed.
 func (d *Dataset) Update(ctx context.Context, dm DatasetMetadataToUpdate, etag string) (*DatasetMetadata, error) {
-	ds := bqDatasetFromUpdateMetadata(&dm)
+	ds, err := bqDatasetFromUpdateMetadata(&dm)
+	if err != nil {
+		return nil, err
+	}
 	call := d.c.bqs.Datasets.Patch(d.ProjectID, d.DatasetID, ds).Context(ctx)
 	setClientHeader(call.Header())
 	if etag != "" {
@@ -171,10 +204,10 @@ func (d *Dataset) Update(ctx context.Context, dm DatasetMetadataToUpdate, etag s
 	}); err != nil {
 		return nil, err
 	}
-	return bqDatasetToMetadata(ds2), nil
+	return bqDatasetToMetadata(ds2)
 }
 
-func bqDatasetFromUpdateMetadata(dm *DatasetMetadataToUpdate) *bq.Dataset {
+func bqDatasetFromUpdateMetadata(dm *DatasetMetadataToUpdate) (*bq.Dataset, error) {
 	ds := &bq.Dataset{}
 	forceSend := func(field string) {
 		ds.ForceSendFields = append(ds.ForceSendFields, field)
@@ -197,11 +230,21 @@ func bqDatasetFromUpdateMetadata(dm *DatasetMetadataToUpdate) *bq.Dataset {
 			ds.DefaultTableExpirationMs = int64(dur / time.Millisecond)
 		}
 	}
+	if dm.Access != nil {
+		var err error
+		ds.Access, err = accessListToBQ(dm.Access)
+		if err != nil {
+			return nil, err
+		}
+		if len(ds.Access) == 0 {
+			ds.NullFields = append(ds.NullFields, "Access")
+		}
+	}
 	labels, forces, nulls := dm.update()
 	ds.Labels = labels
 	ds.ForceSendFields = append(ds.ForceSendFields, forces...)
 	ds.NullFields = append(ds.NullFields, nulls...)
-	return ds
+	return ds, nil
 }
 
 // Table creates a handle to a BigQuery table in the dataset.
@@ -376,4 +419,84 @@ func (it *DatasetIterator) fetch(pageSize int, pageToken string) (string, error)
 		})
 	}
 	return res.NextPageToken, nil
+}
+
+// An AccessEntry describes the permissions that an entity has on a dataset.
+type AccessEntry struct {
+	Role       AccessRole // The role of the entity
+	EntityType EntityType // The type of entity
+	Entity     string     // The entity (individual or group) granted access
+	View       *Table     // The view granted access (EntityType must be ViewEntity)
+}
+
+// AccessRole is the level of access to grant to a dataset.
+type AccessRole string
+
+const (
+	OwnerRole  AccessRole = "OWNER"
+	ReaderRole AccessRole = "READER"
+	WriterRole AccessRole = "WRITER"
+)
+
+// EntityType is the type of entity in an AccessEntry.
+type EntityType int
+
+const (
+	// A domain (e.g. "example.com")
+	DomainEntity EntityType = iota + 1
+
+	// Email address of a Google Group
+	GroupEmailEntity
+
+	// Email address of an individual user.
+	UserEmailEntity
+
+	// A special group: one of projectOwners, projectReaders, projectWriters or allAuthenticatedUsers.
+	SpecialGroupEntity
+
+	// A BigQuery view.
+	ViewEntity
+)
+
+func (e *AccessEntry) toBQ() (*bq.DatasetAccess, error) {
+	q := &bq.DatasetAccess{Role: string(e.Role)}
+	switch e.EntityType {
+	case DomainEntity:
+		q.Domain = e.Entity
+	case GroupEmailEntity:
+		q.GroupByEmail = e.Entity
+	case UserEmailEntity:
+		q.UserByEmail = e.Entity
+	case SpecialGroupEntity:
+		q.SpecialGroup = e.Entity
+	case ViewEntity:
+		q.View = e.View.tableRefProto()
+	default:
+		return nil, fmt.Errorf("bigquery: unknown entity type %d", e.EntityType)
+	}
+	return q, nil
+}
+
+func bqToAccessEntry(q *bq.DatasetAccess, c *Client) (*AccessEntry, error) {
+	e := &AccessEntry{Role: AccessRole(q.Role)}
+	switch {
+	case q.Domain != "":
+		e.Entity = q.Domain
+		e.EntityType = DomainEntity
+	case q.GroupByEmail != "":
+		e.Entity = q.GroupByEmail
+		e.EntityType = GroupEmailEntity
+	case q.UserByEmail != "":
+		e.Entity = q.UserByEmail
+		e.EntityType = UserEmailEntity
+	case q.SpecialGroup != "":
+		e.Entity = q.SpecialGroup
+		e.EntityType = SpecialGroupEntity
+	case q.View != nil:
+		e.View = c.DatasetInProject(q.View.ProjectId, q.View.DatasetId).Table(q.View.TableId)
+		e.EntityType = ViewEntity
+	default:
+		return nil, errors.New("bigquery: invalid access value")
+	}
+	return e, nil
 }
