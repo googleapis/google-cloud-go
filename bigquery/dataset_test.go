@@ -20,6 +20,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
+
 	"cloud.google.com/go/internal/testutil"
 
 	"golang.org/x/net/context"
@@ -192,12 +194,14 @@ func TestBQDatasetFromMetadata(t *testing.T) {
 			DefaultTableExpiration: time.Hour,
 			Location:               "EU",
 			Labels:                 map[string]string{"x": "y"},
+			Access:                 []*AccessEntry{{Role: OwnerRole, Entity: "example.com", EntityType: DomainEntity}},
 		}, &bq.Dataset{
 			FriendlyName:             "name",
 			Description:              "desc",
 			DefaultTableExpirationMs: 60 * 60 * 1000,
 			Location:                 "EU",
 			Labels:                   map[string]string{"x": "y"},
+			Access:                   []*bq.DatasetAccess{{Role: "OWNER", Domain: "example.com"}},
 		}},
 	} {
 		got, err := bqDatasetFromMetadata(test.in)
@@ -210,9 +214,58 @@ func TestBQDatasetFromMetadata(t *testing.T) {
 	}
 
 	// Check that non-writeable fields are unset.
-	_, err := bqDatasetFromMetadata(&DatasetMetadata{FullID: "x"})
-	if err == nil {
-		t.Error("got nil, want error")
+	aTime := time.Date(2017, 1, 26, 0, 0, 0, 0, time.Local)
+	for _, dm := range []*DatasetMetadata{
+		{CreationTime: aTime},
+		{LastModifiedTime: aTime},
+		{FullID: "x"},
+		{ETag: "e"},
+	} {
+		if _, err := bqDatasetFromMetadata(dm); err == nil {
+			t.Errorf("%+v: got nil, want error", dm)
+		}
+	}
+}
+
+func TestBQDatasetToMetadata(t *testing.T) {
+	cTime := time.Date(2017, 1, 26, 0, 0, 0, 0, time.Local)
+	cMillis := cTime.UnixNano() / 1e6
+	mTime := time.Date(2017, 10, 31, 0, 0, 0, 0, time.Local)
+	mMillis := mTime.UnixNano() / 1e6
+	q := &bq.Dataset{
+		CreationTime:             cMillis,
+		LastModifiedTime:         mMillis,
+		FriendlyName:             "name",
+		Description:              "desc",
+		DefaultTableExpirationMs: 60 * 60 * 1000,
+		Location:                 "EU",
+		Labels:                   map[string]string{"x": "y"},
+		Access: []*bq.DatasetAccess{
+			{Role: "READER", UserByEmail: "joe@example.com"},
+			{Role: "WRITER", GroupByEmail: "users@example.com"},
+		},
+		Etag: "etag",
+	}
+	want := &DatasetMetadata{
+		CreationTime:           cTime,
+		LastModifiedTime:       mTime,
+		Name:                   "name",
+		Description:            "desc",
+		DefaultTableExpiration: time.Hour,
+		Location:               "EU",
+		Labels:                 map[string]string{"x": "y"},
+		Access: []*AccessEntry{
+			{Role: ReaderRole, Entity: "joe@example.com", EntityType: UserEmailEntity},
+			{Role: WriterRole, Entity: "users@example.com", EntityType: GroupEmailEntity},
+		},
+		ETag: "etag",
+	}
+	got, err := bqDatasetToMetadata(q)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("-got, +want:\n%s", diff)
 	}
 }
 
@@ -225,7 +278,10 @@ func TestBQDatasetFromUpdateMetadata(t *testing.T) {
 	dm.SetLabel("label", "value")
 	dm.DeleteLabel("del")
 
-	got := bqDatasetFromUpdateMetadata(&dm)
+	got, err := bqDatasetFromUpdateMetadata(&dm)
+	if err != nil {
+		t.Fatal(err)
+	}
 	want := &bq.Dataset{
 		Description:              "desc",
 		FriendlyName:             "name",
@@ -236,5 +292,37 @@ func TestBQDatasetFromUpdateMetadata(t *testing.T) {
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Errorf("-got, +want:\n%s", diff)
+	}
+}
+
+func TestConvertAccessEntry(t *testing.T) {
+	c := &Client{projectID: "pid"}
+	for _, e := range []*AccessEntry{
+		{Role: ReaderRole, Entity: "e", EntityType: DomainEntity},
+		{Role: WriterRole, Entity: "e", EntityType: GroupEmailEntity},
+		{Role: OwnerRole, Entity: "e", EntityType: UserEmailEntity},
+		{Role: ReaderRole, Entity: "e", EntityType: SpecialGroupEntity},
+		{Role: ReaderRole, EntityType: ViewEntity,
+			View: &Table{ProjectID: "p", DatasetID: "d", TableID: "t", c: c}},
+	} {
+		q, err := e.toBQ()
+		if err != nil {
+			t.Fatal(err)
+		}
+		got, err := bqToAccessEntry(q, c)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := testutil.Diff(got, e, cmp.AllowUnexported(Table{}, Client{})); diff != "" {
+			t.Errorf("got=-, want=+:\n%s", diff)
+		}
+	}
+
+	e := &AccessEntry{Role: ReaderRole, Entity: "e"}
+	if _, err := e.toBQ(); err == nil {
+		t.Error("got nil, want error")
+	}
+	if _, err := bqToAccessEntry(&bq.DatasetAccess{Role: "WRITER"}, nil); err == nil {
+		t.Error("got nil, want error")
 	}
 }

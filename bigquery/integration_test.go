@@ -347,6 +347,40 @@ func TestIntegration_DatasetUpdateDefaultExpiration(t *testing.T) {
 	}
 }
 
+func TestIntegration_DatasetUpdateAccess(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	md, err := dataset.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	origAccess := append([]*AccessEntry(nil), md.Access...)
+	// TODO(jba): use a separate dataset for each test run so
+	// tests don't interfere with each other.
+	newEntry := &AccessEntry{
+		Role:       ReaderRole,
+		Entity:     "Joe@example.com",
+		EntityType: UserEmailEntity,
+	}
+	newAccess := append(md.Access, newEntry)
+	dm := DatasetMetadataToUpdate{Access: newAccess}
+	md, err = dataset.Update(ctx, dm, md.ETag)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		_, err := dataset.Update(ctx, DatasetMetadataToUpdate{Access: origAccess}, md.ETag)
+		if err != nil {
+			t.Log("could not restore dataset access list")
+		}
+	}()
+	if diff := testutil.Diff(md.Access, newAccess); diff != "" {
+		t.Fatalf("got=-, want=+:\n%s", diff)
+	}
+}
+
 func TestIntegration_DatasetUpdateLabels(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
