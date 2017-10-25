@@ -71,6 +71,7 @@ func TestLoad(t *testing.T) {
 	testCases := []struct {
 		dst    *Table
 		src    LoadSource
+		jobID  string
 		config LoadConfig
 		want   *bq.Job
 	}{
@@ -80,11 +81,11 @@ func TestLoad(t *testing.T) {
 			want: defaultLoadJob(),
 		},
 		{
-			dst: c.Dataset("dataset-id").Table("table-id"),
+			dst:   c.Dataset("dataset-id").Table("table-id"),
+			jobID: "ajob",
 			config: LoadConfig{
 				CreateDisposition: CreateNever,
 				WriteDisposition:  WriteTruncate,
-				JobID:             "ajob",
 			},
 			src: NewGCSReference("uri"),
 			want: func() *bq.Job {
@@ -210,6 +211,7 @@ func TestLoad(t *testing.T) {
 
 	for i, tc := range testCases {
 		loader := tc.dst.LoaderFrom(tc.src)
+		loader.JobID = tc.jobID
 		tc.config.Src = tc.src
 		tc.config.Dst = tc.dst
 		loader.LoadConfig = tc.config

@@ -80,20 +80,30 @@ type JobStatus struct {
 	Statistics *JobStatistics
 }
 
+// JobIDConfig  describes how to create an ID for a job.
+type JobIDConfig struct {
+
+	// JobID is the ID to use for the job. If empty, a random job ID will be generated.
+	JobID string
+
+	// If AddJobIDSuffix is true, then a random string will be appended to JobID.
+	AddJobIDSuffix bool
+}
+
 // createJobRef creates a JobReference.
 // projectID must be non-empty.
-func createJobRef(jobID string, addJobIDSuffix bool, projectID string) *bq.JobReference {
-	if jobID == "" {
-		jobID = randomIDFn()
-	} else if addJobIDSuffix {
-		jobID += "-" + randomIDFn()
-	}
+func (j *JobIDConfig) createJobRef(projectID string) *bq.JobReference {
 	// We don't check whether projectID is empty; the server will return an
 	// error when it encounters the resulting JobReference.
-	return &bq.JobReference{
-		JobId:     jobID,
-		ProjectId: projectID,
+	jr := &bq.JobReference{ProjectId: projectID}
+	if j.JobID == "" {
+		jr.JobId = randomIDFn()
+	} else if j.AddJobIDSuffix {
+		jr.JobId = j.JobID + "-" + randomIDFn()
+	} else {
+		jr.JobId = j.JobID
 	}
+	return jr
 }
 
 const alphanum = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"

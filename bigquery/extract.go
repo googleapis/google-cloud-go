@@ -21,12 +21,6 @@ import (
 
 // ExtractConfig holds the configuration for an extract job.
 type ExtractConfig struct {
-	// JobID is the ID to use for the job. If empty, a random job ID will be generated.
-	JobID string
-
-	// If AddJobIDSuffix is true, then a random string will be appended to JobID.
-	AddJobIDSuffix bool
-
 	// Src is the table from which data will be extracted.
 	Src *Table
 
@@ -39,6 +33,7 @@ type ExtractConfig struct {
 
 // An Extractor extracts data from a BigQuery table into Google Cloud Storage.
 type Extractor struct {
+	JobIDConfig
 	ExtractConfig
 	c *Client
 }
@@ -68,7 +63,7 @@ func (e *Extractor) newJob() *bq.Job {
 		printHeader = &f
 	}
 	return &bq.Job{
-		JobReference: createJobRef(e.JobID, e.AddJobIDSuffix, e.c.projectID),
+		JobReference: e.JobIDConfig.createJobRef(e.c.projectID),
 		Configuration: &bq.JobConfiguration{
 			Extract: &bq.JobConfigurationExtract{
 				DestinationUris:   append([]string{}, e.Dst.uris...),
