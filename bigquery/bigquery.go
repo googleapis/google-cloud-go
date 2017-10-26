@@ -111,7 +111,7 @@ func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader) (*
 	if err != nil {
 		return nil, err
 	}
-	return jobFromProtos(res.JobReference, res.Configuration, c), nil
+	return bqToJob(res, c)
 }
 
 // Convert a number of milliseconds since the Unix epoch to a time.Time.

@@ -86,7 +86,18 @@ func ExampleClient_JobFromID() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	fmt.Println(job)
+	fmt.Println(job.LastStatus()) // Display the job's status.
+}
+
+func ExampleClient_Jobs() {
+	ctx := context.Background()
+	client, err := bigquery.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	it := client.Jobs(ctx)
+	it.State = bigquery.Running // list only running jobs.
+	_ = it                      // TODO: iterate using Next or iterator.Pager.
 }
 
 func ExampleNewGCSReference() {

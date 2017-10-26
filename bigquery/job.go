@@ -40,18 +40,19 @@ type Job struct {
 	isQuery          bool
 	destinationTable *bq.TableReference // table to read query results from
 
-	config *bq.JobConfiguration
+	config     *bq.JobConfiguration
+	lastStatus *JobStatus
 }
 
 // JobFromID creates a Job which refers to an existing BigQuery job. The job
 // need not have been created by this package. For example, the job may have
 // been created in the BigQuery console.
 func (c *Client) JobFromID(ctx context.Context, id string) (*Job, error) {
-	bqjob, err := c.getJobInternal(ctx, id, "configuration", "jobReference")
+	bqjob, err := c.getJobInternal(ctx, id, "configuration", "jobReference", "status", "statistics")
 	if err != nil {
 		return nil, err
 	}
-	return jobFromProtos(bqjob.JobReference, bqjob.Configuration, c), nil
+	return bqToJob(bqjob, c)
 }
 
 // ID returns the job's ID.
@@ -177,18 +178,24 @@ func (s *JobStatus) Err() error {
 	return s.err
 }
 
-// Status returns the current status of the job. It fails if the Status could not be determined.
+// Status retrieves the current status of the job from BigQuery. It fails if the Status could not be determined.
 func (j *Job) Status(ctx context.Context) (*JobStatus, error) {
 	bqjob, err := j.c.getJobInternal(ctx, j.jobID, "status", "statistics")
 	if err != nil {
 		return nil, err
 	}
-	js, err := jobStatusFromProto(bqjob.Status)
-	if err != nil {
+	if err := j.setStatus(bqjob.Status); err != nil {
 		return nil, err
 	}
-	js.Statistics = jobStatisticsFromProto(bqjob.Statistics, j.c)
-	return js, nil
+	j.setStatistics(bqjob.Statistics, j.c)
+	return j.lastStatus, nil
+}
+
+// LastStatus returns the most recently retrieved status of the job. The status is
+// retrieved when a new job is created, or when JobFromID or Job.Status is called.
+// Call Job.Status to get the most up-to-date information about a job.
+func (j *Job) LastStatus() *JobStatus {
+	return j.lastStatus
 }
 
 // Cancel requests that a job be cancelled. This method returns without waiting for
@@ -454,12 +461,6 @@ func (c *Client) Jobs(ctx context.Context) *JobIterator {
 	return it
 }
 
-// A JobInfo consists of a Job and a JobStatus.
-type JobInfo struct {
-	Job    *Job
-	Status *JobStatus
-}
-
 // JobIterator iterates over jobs in a project.
 type JobIterator struct {
 	ProjectID string // Project ID of the jobs to list. Default is the client's project.
@@ -470,14 +471,14 @@ type JobIterator struct {
 	c        *Client
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
-	items    []JobInfo
+	items    []*Job
 }
 
 func (it *JobIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 
-func (it *JobIterator) Next() (JobInfo, error) {
+func (it *JobIterator) Next() (*Job, error) {
 	if err := it.nextFunc(); err != nil {
-		return JobInfo{}, err
+		return nil, err
 	}
 	item := it.items[0]
 	it.items = it.items[1:]
@@ -516,25 +517,17 @@ func (it *JobIterator) fetch(pageSize int, pageToken string) (string, error) {
 		return "", err
 	}
 	for _, j := range res.Jobs {
-		ji, err := convertListedJob(j, it.c)
+		job, err := convertListedJob(j, it.c)
 		if err != nil {
 			return "", err
 		}
-		it.items = append(it.items, ji)
+		it.items = append(it.items, job)
 	}
 	return res.NextPageToken, nil
 }
 
-func convertListedJob(j *bq.JobListJobs, c *Client) (JobInfo, error) {
-	st, err := jobStatusFromProto(j.Status)
-	if err != nil {
-		return JobInfo{}, err
-	}
-	st.Statistics = jobStatisticsFromProto(j.Statistics, c)
-	return JobInfo{
-		Job:    jobFromProtos(j.JobReference, j.Configuration, c),
-		Status: st,
-	}, nil
+func convertListedJob(j *bq.JobListJobs, c *Client) (*Job, error) {
+	return bqToJob2(j.JobReference, j.Configuration, j.Status, j.Statistics, c)
 }
 
 func (c *Client) getJobInternal(ctx context.Context, jobID string, fields ...googleapi.Field) (*bq.Job, error) {
@@ -554,46 +547,62 @@ func (c *Client) getJobInternal(ctx context.Context, jobID string, fields ...goo
 	return job, nil
 }
 
-func jobFromProtos(jr *bq.JobReference, config *bq.JobConfiguration, c *Client) *Job {
-	var isQuery bool
-	var dest *bq.TableReference
-	if config.Query != nil {
-		isQuery = true
-		dest = config.Query.DestinationTable
+func bqToJob(q *bq.Job, c *Client) (*Job, error) {
+	return bqToJob2(q.JobReference, q.Configuration, q.Status, q.Statistics, c)
+}
+
+func bqToJob2(qr *bq.JobReference, qc *bq.JobConfiguration, qs *bq.JobStatus, qt *bq.JobStatistics, c *Client) (*Job, error) {
+	j := &Job{
+		projectID: qr.ProjectId,
+		jobID:     qr.JobId,
+		c:         c,
 	}
-	return &Job{
-		projectID:        jr.ProjectId,
-		jobID:            jr.JobId,
-		isQuery:          isQuery,
-		destinationTable: dest,
-		config:           config,
-		c:                c,
+	j.setConfig(qc)
+	if err := j.setStatus(qs); err != nil {
+		return nil, err
+	}
+	j.setStatistics(qt, c)
+	return j, nil
+}
+
+func (j *Job) setConfig(config *bq.JobConfiguration) {
+	if config == nil {
+		return
+	}
+	j.config = config
+	if config.Query != nil {
+		j.isQuery = true
+		j.destinationTable = config.Query.DestinationTable
 	}
 }
 
 var stateMap = map[string]State{"PENDING": Pending, "RUNNING": Running, "DONE": Done}
 
-func jobStatusFromProto(status *bq.JobStatus) (*JobStatus, error) {
-	state, ok := stateMap[status.State]
-	if !ok {
-		return nil, fmt.Errorf("unexpected job state: %v", status.State)
+func (j *Job) setStatus(qs *bq.JobStatus) error {
+	if qs == nil {
+		return nil
 	}
-
-	newStatus := &JobStatus{
+	state, ok := stateMap[qs.State]
+	if !ok {
+		return fmt.Errorf("unexpected job state: %v", qs.State)
+	}
+	j.lastStatus = &JobStatus{
 		State: state,
 		err:   nil,
 	}
-	if err := errorFromErrorProto(status.ErrorResult); state == Done && err != nil {
-		newStatus.err = err
+	if err := errorFromErrorProto(qs.ErrorResult); state == Done && err != nil {
+		j.lastStatus.err = err
 	}
-
-	for _, ep := range status.Errors {
-		newStatus.Errors = append(newStatus.Errors, errorFromErrorProto(ep))
+	for _, ep := range qs.Errors {
+		j.lastStatus.Errors = append(j.lastStatus.Errors, errorFromErrorProto(ep))
 	}
-	return newStatus, nil
+	return nil
 }
 
-func jobStatisticsFromProto(s *bq.JobStatistics, c *Client) *JobStatistics {
+func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
+	if s == nil || j.lastStatus == nil {
+		return
+	}
 	js := &JobStatistics{
 		CreationTime:        unixMillisToTime(s.CreationTime),
 		StartTime:           unixMillisToTime(s.StartTime),
@@ -634,7 +643,7 @@ func jobStatisticsFromProto(s *bq.JobStatistics, c *Client) *JobStatistics {
 			UndeclaredQueryParameterNames: names,
 		}
 	}
-	return js
+	j.lastStatus.Statistics = js
 }
 
 func queryPlanFromProto(stages []*bq.ExplainQueryStage) []*ExplainQueryStage {

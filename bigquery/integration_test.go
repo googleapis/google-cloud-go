@@ -535,10 +535,15 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
+	if job1.LastStatus() == nil {
+		t.Error("no LastStatus")
+	}
 	job2, err := client.JobFromID(ctx, job1.ID())
 	if err != nil {
 		t.Fatal(err)
+	}
+	if job2.LastStatus() == nil {
+		t.Error("no LastStatus")
 	}
 	rit, err = job2.Read(ctx)
 	if err != nil {
@@ -892,6 +897,9 @@ func TestIntegration_Load(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if job.LastStatus() == nil {
+		t.Error("no LastStatus")
+	}
 	conf, err := job.Config()
 	if err != nil {
 		t.Fatal(err)
@@ -1137,6 +1145,9 @@ func TestIntegration_QueryParameters(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		if job.LastStatus() == nil {
+			t.Error("no LastStatus")
+		}
 		it, err := job.Read(ctx)
 		if err != nil {
 			t.Fatal(err)
@@ -1152,16 +1163,17 @@ func TestIntegration_QueryDryRun(t *testing.T) {
 	ctx := context.Background()
 	q := client.Query("SELECT word from " + stdName + " LIMIT 10")
 	q.DryRun = true
-	_, err := q.Run(ctx)
+	job, err := q.Run(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
-	// Calling Status on a dry-run job fails.
-	// TODO(jba): find a way to get the status of a dry-run job.
-	// s, err := job.Status(ctx)
-	// if err != nil {
-	// 	t.Fatal(err)
-	// }
+	s := job.LastStatus()
+	if s.State != Done {
+		t.Errorf("state is %v, expected Done", s.State)
+	}
+	if s.Statistics == nil {
+		t.Error("no statistics")
+	}
 }
 
 func TestIntegration_ExtractExternal(t *testing.T) {
@@ -1379,23 +1391,23 @@ func TestIntegration_ListJobs(t *testing.T) {
 
 	// About all we can do is list a few jobs.
 	const max = 20
-	var jis []JobInfo
+	var jobs []*Job
 	it := client.Jobs(ctx)
 	for {
-		ji, err := it.Next()
+		job, err := it.Next()
 		if err == iterator.Done {
 			break
 		}
 		if err != nil {
 			t.Fatal(err)
 		}
-		jis = append(jis, ji)
-		if len(jis) >= max {
+		jobs = append(jobs, job)
+		if len(jobs) >= max {
 			break
 		}
 	}
 	// We expect that there is at least one job in the last few months.
-	if len(jis) == 0 {
+	if len(jobs) == 0 {
 		t.Fatal("did not get any jobs")
 	}
 }
