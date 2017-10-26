@@ -46,6 +46,12 @@ func defaultQueryJob() *bq.Job {
 	}
 }
 
+var defaultQuery = &QueryConfig{
+	Q:                "query string",
+	DefaultProjectID: "def-project-id",
+	DefaultDatasetID: "def-dataset-id",
+}
+
 func TestQuery(t *testing.T) {
 	defer fixRandomID("RANDOM")()
 	c := &Client{
