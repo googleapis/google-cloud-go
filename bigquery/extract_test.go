@@ -40,6 +40,12 @@ func defaultExtractJob() *bq.Job {
 	}
 }
 
+func defaultGCS() *GCSReference {
+	return &GCSReference{
+		URIs: []string{"uri"},
+	}
+}
+
 func TestExtract(t *testing.T) {
 	defer fixRandomID("RANDOM")()
 	c := &Client{
