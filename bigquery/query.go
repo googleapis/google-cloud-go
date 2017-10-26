@@ -107,7 +107,9 @@ type QueryConfig struct {
 	// empty response with some processing statistics, while an invalid query will
 	// return the same error it would if it wasn't a dry run.
 	//
-	// Query.Read will fail with dry-run queries; use Query.Run instead.
+	// Query.Read will fail with dry-run queries. Call Query.Run instead, and then
+	// call LastStatus on the returned job to get statistics. Calling Status on a
+	// dry-run job will fail.
 	DryRun bool
 }
 
