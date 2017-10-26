@@ -149,6 +149,25 @@ type TimePartitioning struct {
 	Expiration time.Duration
 }
 
+func (p *TimePartitioning) toBQ() *bq.TimePartitioning {
+	if p == nil {
+		return nil
+	}
+	return &bq.TimePartitioning{
+		Type:         "DAY",
+		ExpirationMs: int64(p.Expiration / time.Millisecond),
+	}
+}
+
+func bqToTimePartitioning(q *bq.TimePartitioning) *TimePartitioning {
+	if q == nil {
+		return nil
+	}
+	return &TimePartitioning{
+		Expiration: time.Duration(q.ExpirationMs) * time.Millisecond,
+	}
+}
+
 // StreamingBuffer holds information about the streaming buffer.
 type StreamingBuffer struct {
 	// A lower-bound estimate of the number of bytes currently in the streaming
@@ -231,12 +250,7 @@ func bqTableFromMetadata(tm *TableMetadata) (*bq.Table, error) {
 	} else if tm.UseLegacySQL || tm.UseStandardSQL {
 		return nil, errors.New("bigquery: UseLegacy/StandardSQL requires ViewQuery")
 	}
-	if tm.TimePartitioning != nil {
-		t.TimePartitioning = &bq.TimePartitioning{
-			Type:         "DAY",
-			ExpirationMs: int64(tm.TimePartitioning.Expiration / time.Millisecond),
-		}
-	}
+	t.TimePartitioning = tm.TimePartitioning.toBQ()
 	if !tm.ExpirationTime.IsZero() {
 		t.ExpirationTime = tm.ExpirationTime.UnixNano() / 1e6
 	}
@@ -307,11 +321,7 @@ func bqTableToMetadata(t *bq.Table) (*TableMetadata, error) {
 		md.ViewQuery = t.View.Query
 		md.UseLegacySQL = t.View.UseLegacySql
 	}
-	if t.TimePartitioning != nil {
-		md.TimePartitioning = &TimePartitioning{
-			Expiration: time.Duration(t.TimePartitioning.ExpirationMs) * time.Millisecond,
-		}
-	}
+	md.TimePartitioning = bqToTimePartitioning(t.TimePartitioning)
 	if t.StreamingBuffer != nil {
 		md.StreamingBuffer = &StreamingBuffer{
 			EstimatedBytes:  t.StreamingBuffer.EstimatedBytes,
