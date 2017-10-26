@@ -189,12 +189,11 @@ func paramValue(v reflect.Value) (bq.QueryParameterValue, error) {
 
 	case typeOfTime:
 		// civil.Time has nanosecond resolution, but BigQuery TIME only microsecond.
-		res.Value = civilTimeParamString(v.Interface().(civil.Time))
+		res.Value = CivilTimeString(v.Interface().(civil.Time))
 		return res, nil
 
 	case typeOfDateTime:
-		dt := v.Interface().(civil.DateTime)
-		res.Value = dt.Date.String() + " " + civilTimeParamString(dt.Time)
+		res.Value = CivilDateTimeString(v.Interface().(civil.DateTime))
 		return res, nil
 
 	case typeOfGoTime:
@@ -252,14 +251,4 @@ func paramValue(v reflect.Value) (bq.QueryParameterValue, error) {
 	// paramType will catch the error.)
 	res.Value = fmt.Sprint(v.Interface())
 	return res, nil
-}
-
-func civilTimeParamString(t civil.Time) string {
-	if t.Nanosecond == 0 {
-		return t.String()
-	} else {
-		micro := (t.Nanosecond + 500) / 1000 // round to nearest microsecond
-		t.Nanosecond = 0
-		return t.String() + fmt.Sprintf(".%06d", micro)
-	}
 }

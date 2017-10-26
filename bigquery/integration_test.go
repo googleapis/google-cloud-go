@@ -26,6 +26,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go"
 
 	"cloud.google.com/go/civil"
@@ -642,10 +643,9 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 	defer table.Delete(ctx)
 
 	d := civil.Date{2016, 3, 20}
-	tm := civil.Time{15, 4, 5, 0}
-	ts := time.Date(2016, 3, 20, 15, 4, 5, 0, time.UTC)
+	tm := civil.Time{15, 4, 5, 6000}
+	ts := time.Date(2016, 3, 20, 15, 4, 5, 6000, time.UTC)
 	dtm := civil.DateTime{d, tm}
-
 	d2 := civil.Date{1994, 5, 15}
 	tm2 := civil.Time{1, 2, 4, 0}
 	ts2 := time.Date(1994, 5, 15, 1, 2, 4, 0, time.UTC)
@@ -728,12 +728,16 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 	}
 	sort.Sort(byName(got))
 
+	// Compare times to the microsecond.
+	timeEq := func(x, y time.Time) bool {
+		return x.Round(time.Microsecond).Equal(y.Round(time.Microsecond))
+	}
 	// BigQuery does not elide nils. It reports an error for nil fields.
 	for i, g := range got {
 		if i >= len(want) {
 			t.Errorf("%d: got %v, past end of want", i, pretty.Value(g))
-		} else if w := want[i]; !testutil.Equal(g, w) {
-			t.Errorf("%d: got %v, want %v", i, pretty.Value(g), pretty.Value(w))
+		} else if diff := testutil.Diff(g, want[i], cmp.Comparer(timeEq)); diff != "" {
+			t.Errorf("%d: got=-, want=+:\n%s", i, diff)
 		}
 	}
 }
@@ -953,10 +957,11 @@ func TestIntegration_TimeTypes(t *testing.T) {
 	defer table.Delete(ctx)
 
 	d := civil.Date{2016, 3, 20}
-	tm := civil.Time{12, 30, 0, 0}
+	tm := civil.Time{12, 30, 0, 6000}
+	dtm := civil.DateTime{d, tm}
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
 	wantRows := [][]Value{
-		[]Value{d, tm, civil.DateTime{d, tm}, ts},
+		[]Value{d, tm, dtm, ts},
 	}
 	upl := table.Uploader()
 	if err := upl.Put(ctx, []*ValuesSaver{
@@ -971,8 +976,8 @@ func TestIntegration_TimeTypes(t *testing.T) {
 	// SQL wants DATETIMEs with a space between date and time, but the service
 	// returns them in RFC3339 form, with a "T" between.
 	query := fmt.Sprintf("INSERT bigquery_integration_test.%s (d, t, dt, ts) "+
-		"VALUES ('%s', '%s', '%s %s', '%s')",
-		table.TableID, d, tm, d, tm, ts.Format("2006-01-02 15:04:05"))
+		"VALUES ('%s', '%s', '%s', '%s')",
+		table.TableID, d, CivilTimeString(tm), CivilDateTimeString(dtm), ts.Format("2006-01-02 15:04:05"))
 	if err := dmlInsert(ctx, query); err != nil {
 		t.Fatal(err)
 	}
