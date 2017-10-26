@@ -221,7 +221,7 @@ func TestReadQueryOptions(t *testing.T) {
 	}
 
 	want := []pageFetcherArgs{{
-		table:     convertTableReference(tr, c),
+		table:     bqToTable(tr, c),
 		pageSize:  5,
 		pageToken: "",
 	}}

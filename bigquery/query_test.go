@@ -318,7 +318,7 @@ func TestQuery(t *testing.T) {
 		// A table definition that is a GCSReference round-trips as an ExternalDataConfig.
 		// TODO(jba): see if there is a way to express this with a transformer.
 		gcsRefToEDC := func(g *GCSReference) *ExternalDataConfig {
-			q := g.externalDataConfig()
+			q := g.toBQ()
 			e, _ := bqToExternalDataConfig(&q)
 			return e
 		}

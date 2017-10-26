@@ -86,7 +86,7 @@ func (c *Client) DatasetInProject(projectID, datasetID string) *Dataset {
 // Create creates a dataset in the BigQuery service. An error will be returned if the
 // dataset already exists. Pass in a DatasetMetadata value to configure the dataset.
 func (d *Dataset) Create(ctx context.Context, md *DatasetMetadata) error {
-	ds, err := bqDatasetFromMetadata(md)
+	ds, err := md.toBQ()
 	if err != nil {
 		return err
 	}
@@ -97,7 +97,7 @@ func (d *Dataset) Create(ctx context.Context, md *DatasetMetadata) error {
 	return err
 }
 
-func bqDatasetFromMetadata(dm *DatasetMetadata) (*bq.Dataset, error) {
+func (dm *DatasetMetadata) toBQ() (*bq.Dataset, error) {
 	ds := &bq.Dataset{}
 	if dm == nil {
 		return ds, nil
@@ -157,10 +157,10 @@ func (d *Dataset) Metadata(ctx context.Context) (*DatasetMetadata, error) {
 	}); err != nil {
 		return nil, err
 	}
-	return bqDatasetToMetadata(ds)
+	return bqToDatasetMetadata(ds)
 }
 
-func bqDatasetToMetadata(d *bq.Dataset) (*DatasetMetadata, error) {
+func bqToDatasetMetadata(d *bq.Dataset) (*DatasetMetadata, error) {
 	dm := &DatasetMetadata{
 		CreationTime:           unixMillisToTime(d.CreationTime),
 		LastModifiedTime:       unixMillisToTime(d.LastModifiedTime),
@@ -187,7 +187,7 @@ func bqDatasetToMetadata(d *bq.Dataset) (*DatasetMetadata, error) {
 // set the etag argument to the DatasetMetadata.ETag field from the read.
 // Pass the empty string for etag for a "blind write" that will always succeed.
 func (d *Dataset) Update(ctx context.Context, dm DatasetMetadataToUpdate, etag string) (*DatasetMetadata, error) {
-	ds, err := bqDatasetFromUpdateMetadata(&dm)
+	ds, err := dm.toBQ()
 	if err != nil {
 		return nil, err
 	}
@@ -203,10 +203,10 @@ func (d *Dataset) Update(ctx context.Context, dm DatasetMetadataToUpdate, etag s
 	}); err != nil {
 		return nil, err
 	}
-	return bqDatasetToMetadata(ds2)
+	return bqToDatasetMetadata(ds2)
 }
 
-func bqDatasetFromUpdateMetadata(dm *DatasetMetadataToUpdate) (*bq.Dataset, error) {
+func (dm *DatasetMetadataToUpdate) toBQ() (*bq.Dataset, error) {
 	ds := &bq.Dataset{}
 	forceSend := func(field string) {
 		ds.ForceSendFields = append(ds.ForceSendFields, field)
@@ -313,12 +313,12 @@ func (it *TableIterator) fetch(pageSize int, pageToken string) (string, error) {
 		return "", err
 	}
 	for _, t := range res.Tables {
-		it.tables = append(it.tables, convertTableReference(t.TableReference, it.dataset.c))
+		it.tables = append(it.tables, bqToTable(t.TableReference, it.dataset.c))
 	}
 	return res.NextPageToken, nil
 }
 
-func convertTableReference(tr *bq.TableReference, c *Client) *Table {
+func bqToTable(tr *bq.TableReference, c *Client) *Table {
 	return &Table{
 		ProjectID: tr.ProjectId,
 		DatasetID: tr.DatasetId,
@@ -469,7 +469,7 @@ func (e *AccessEntry) toBQ() (*bq.DatasetAccess, error) {
 	case SpecialGroupEntity:
 		q.SpecialGroup = e.Entity
 	case ViewEntity:
-		q.View = e.View.tableRefProto()
+		q.View = e.View.toBQ()
 	default:
 		return nil, fmt.Errorf("bigquery: unknown entity type %d", e.EntityType)
 	}

@@ -38,7 +38,7 @@ const (
 // *ExternalDataConfig.
 // GCSReference also implements it, for backwards compatibility.
 type ExternalData interface {
-	externalDataConfig() bq.ExternalDataConfiguration
+	toBQ() bq.ExternalDataConfiguration
 }
 
 // ExternalDataConfig describes data external to BigQuery that can be used
@@ -88,7 +88,7 @@ type ExternalDataConfig struct {
 	Options ExternalDataConfigOptions
 }
 
-func (e *ExternalDataConfig) externalDataConfig() bq.ExternalDataConfiguration {
+func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
 	q := bq.ExternalDataConfiguration{
 		SourceFormat:        string(e.SourceFormat),
 		SourceUris:          e.SourceURIs,
@@ -98,7 +98,7 @@ func (e *ExternalDataConfig) externalDataConfig() bq.ExternalDataConfiguration {
 		MaxBadRecords:       e.MaxBadRecords,
 	}
 	if e.Schema != nil {
-		q.Schema = e.Schema.asTableSchema()
+		q.Schema = e.Schema.toBQ()
 	}
 	if e.Options != nil {
 		e.Options.populateExternalDataConfig(&q)
@@ -114,7 +114,7 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 		Compression:         Compression(q.Compression),
 		IgnoreUnknownValues: q.IgnoreUnknownValues,
 		MaxBadRecords:       q.MaxBadRecords,
-		Schema:              convertTableSchema(q.Schema),
+		Schema:              bqToSchema(q.Schema),
 	}
 	switch {
 	case q.CsvOptions != nil:

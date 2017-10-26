@@ -277,7 +277,7 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 	if j.destinationTable == nil {
 		return nil, errors.New("bigquery: query job missing destination table")
 	}
-	dt := convertTableReference(j.destinationTable, j.c)
+	dt := bqToTable(j.destinationTable, j.c)
 	it := newRowIterator(ctx, dt, pf)
 	it.schema = schema
 	return it, nil
@@ -307,7 +307,7 @@ func (j *Job) waitForQuery(ctx context.Context, projectID string) (Schema, error
 	if err != nil {
 		return nil, err
 	}
-	return convertTableSchema(res.Schema), nil
+	return bqToSchema(res.Schema), nil
 }
 
 // JobStatistics contains statistics about a job.
@@ -590,11 +590,11 @@ func (j *Job) setStatus(qs *bq.JobStatus) error {
 		State: state,
 		err:   nil,
 	}
-	if err := errorFromErrorProto(qs.ErrorResult); state == Done && err != nil {
+	if err := bqToError(qs.ErrorResult); state == Done && err != nil {
 		j.lastStatus.err = err
 	}
 	for _, ep := range qs.Errors {
-		j.lastStatus.Errors = append(j.lastStatus.Errors, errorFromErrorProto(ep))
+		j.lastStatus.Errors = append(j.lastStatus.Errors, bqToError(ep))
 	}
 	return nil
 }
@@ -628,7 +628,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 		}
 		var tables []*Table
 		for _, tr := range s.Query.ReferencedTables {
-			tables = append(tables, convertTableReference(tr, c))
+			tables = append(tables, bqToTable(tr, c))
 		}
 		js.Details = &QueryStatistics{
 			BillingTier:                   s.Query.BillingTier,
@@ -638,7 +638,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 			TotalBytesProcessed:           s.Query.TotalBytesProcessed,
 			NumDMLAffectedRows:            s.Query.NumDmlAffectedRows,
 			QueryPlan:                     queryPlanFromProto(s.Query.QueryPlan),
-			Schema:                        convertTableSchema(s.Query.Schema),
+			Schema:                        bqToSchema(s.Query.Schema),
 			ReferencedTables:              tables,
 			UndeclaredQueryParameterNames: names,
 		}

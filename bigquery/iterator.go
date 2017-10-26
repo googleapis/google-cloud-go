@@ -166,7 +166,7 @@ func fetchPage(ctx context.Context, t *Table, schema Schema, startIndex uint64, 
 				return err
 			})
 			if err == nil && bqt.Schema != nil {
-				schema = convertTableSchema(bqt.Schema)
+				schema = bqToSchema(bqt.Schema)
 			}
 			errc <- err
 		}()

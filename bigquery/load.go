@@ -50,7 +50,7 @@ func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
 		Load: &bq.JobConfigurationLoad{
 			CreateDisposition: string(l.CreateDisposition),
 			WriteDisposition:  string(l.WriteDisposition),
-			DestinationTable:  l.Dst.tableRefProto(),
+			DestinationTable:  l.Dst.toBQ(),
 			TimePartitioning:  l.TimePartitioning.toBQ(),
 		},
 	}
@@ -63,7 +63,7 @@ func bqToLoadConfig(q *bq.JobConfiguration, c *Client) *LoadConfig {
 		Labels:            q.Labels,
 		CreateDisposition: TableCreateDisposition(q.Load.CreateDisposition),
 		WriteDisposition:  TableWriteDisposition(q.Load.WriteDisposition),
-		Dst:               convertTableReference(q.Load.DestinationTable, c),
+		Dst:               bqToTable(q.Load.DestinationTable, c),
 		TimePartitioning:  bqToTimePartitioning(q.Load.TimePartitioning),
 	}
 	var fc *FileConfig

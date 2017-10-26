@@ -210,7 +210,7 @@ func handleInsertErrors(ierrs []*bq.TableDataInsertAllResponseInsertErrors, rows
 			RowIndex: int(e.Index),
 		}
 		for _, errp := range e.Errors {
-			rie.Errors = append(rie.Errors, errorFromErrorProto(errp))
+			rie.Errors = append(rie.Errors, bqToError(errp))
 		}
 		errs = append(errs, rie)
 	}

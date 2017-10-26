@@ -101,7 +101,7 @@ type QueryParameter struct {
 	Value interface{}
 }
 
-func (p QueryParameter) toRaw() (*bq.QueryParameter, error) {
+func (p QueryParameter) toBQ() (*bq.QueryParameter, error) {
 	pv, err := paramValue(reflect.ValueOf(p.Value))
 	if err != nil {
 		return nil, err
