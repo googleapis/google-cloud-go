@@ -24,7 +24,6 @@ import (
 // LoadConfig holds the configuration for a load job.
 type LoadConfig struct {
 	// Src is the source from which data will be loaded.
-	//
 	Src LoadSource
 
 	// Dst is the table into which the data will be loaded.
@@ -38,36 +37,43 @@ type LoadConfig struct {
 	// The default is WriteAppend.
 	WriteDisposition TableWriteDisposition
 
+	// The labels associated with this job.
+	Labels map[string]string
+
 	// TODO(jba): add TimePartitioning
 }
 
-func (l *LoadConfig) toBQ() (*bq.JobConfigurationLoad, io.Reader) {
-	lc := &bq.JobConfigurationLoad{
-		CreateDisposition: string(l.CreateDisposition),
-		WriteDisposition:  string(l.WriteDisposition),
-		DestinationTable:  l.Dst.tableRefProto(),
+func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
+	config := &bq.JobConfiguration{
+		Labels: l.Labels,
+		Load: &bq.JobConfigurationLoad{
+			CreateDisposition: string(l.CreateDisposition),
+			WriteDisposition:  string(l.WriteDisposition),
+			DestinationTable:  l.Dst.tableRefProto(),
+		},
 	}
-	media := l.Src.populateLoadConfig(lc)
-	return lc, media
+	media := l.Src.populateLoadConfig(config.Load)
+	return config, media
 }
 
-func bqToLoadConfig(q *bq.JobConfigurationLoad, c *Client) *LoadConfig {
+func bqToLoadConfig(q *bq.JobConfiguration, c *Client) *LoadConfig {
 	lc := &LoadConfig{
-		CreateDisposition: TableCreateDisposition(q.CreateDisposition),
-		WriteDisposition:  TableWriteDisposition(q.WriteDisposition),
-		Dst:               convertTableReference(q.DestinationTable, c),
+		Labels:            q.Labels,
+		CreateDisposition: TableCreateDisposition(q.Load.CreateDisposition),
+		WriteDisposition:  TableWriteDisposition(q.Load.WriteDisposition),
+		Dst:               convertTableReference(q.Load.DestinationTable, c),
 	}
 	var fc *FileConfig
-	if len(q.SourceUris) == 0 {
+	if len(q.Load.SourceUris) == 0 {
 		s := NewReaderSource(nil)
 		fc = &s.FileConfig
 		lc.Src = s
 	} else {
-		s := NewGCSReference(q.SourceUris...)
+		s := NewGCSReference(q.Load.SourceUris...)
 		fc = &s.FileConfig
 		lc.Src = s
 	}
-	bqPopulateFileConfig(q, fc)
+	bqPopulateFileConfig(q.Load, fc)
 	return lc
 }
 
@@ -109,9 +115,9 @@ func (l *Loader) Run(ctx context.Context) (*Job, error) {
 }
 
 func (l *Loader) newJob() (*bq.Job, io.Reader) {
-	lc, media := l.LoadConfig.toBQ()
+	config, media := l.LoadConfig.toBQ()
 	return &bq.Job{
 		JobReference:  l.JobIDConfig.createJobRef(l.c.projectID),
-		Configuration: &bq.JobConfiguration{Load: lc},
+		Configuration: config,
 	}, media
 }

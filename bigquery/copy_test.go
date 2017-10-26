@@ -86,9 +86,11 @@ func TestCopy(t *testing.T) {
 			config: CopyConfig{
 				CreateDisposition: CreateNever,
 				WriteDisposition:  WriteTruncate,
+				Labels:            map[string]string{"a": "b"},
 			},
 			want: func() *bq.Job {
 				j := defaultCopyJob()
+				j.Configuration.Labels = map[string]string{"a": "b"}
 				j.Configuration.Copy.CreateDisposition = "CREATE_NEVER"
 				j.Configuration.Copy.WriteDisposition = "WRITE_TRUNCATE"
 				return j

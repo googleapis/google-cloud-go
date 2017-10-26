@@ -29,38 +29,46 @@ type ExtractConfig struct {
 
 	// DisableHeader disables the printing of a header row in exported data.
 	DisableHeader bool
+
+	// The labels associated with this job.
+	Labels map[string]string
 }
 
-func (e *ExtractConfig) toBQ() *bq.JobConfigurationExtract {
+func (e *ExtractConfig) toBQ() *bq.JobConfiguration {
 	var printHeader *bool
 	if e.DisableHeader {
 		f := false
 		printHeader = &f
 	}
-	return &bq.JobConfigurationExtract{
-		DestinationUris:   append([]string{}, e.Dst.URIs...),
-		Compression:       string(e.Dst.Compression),
-		DestinationFormat: string(e.Dst.DestinationFormat),
-		FieldDelimiter:    e.Dst.FieldDelimiter,
-		SourceTable:       e.Src.tableRefProto(),
-		PrintHeader:       printHeader,
+	return &bq.JobConfiguration{
+		Labels: e.Labels,
+		Extract: &bq.JobConfigurationExtract{
+			DestinationUris:   append([]string{}, e.Dst.URIs...),
+			Compression:       string(e.Dst.Compression),
+			DestinationFormat: string(e.Dst.DestinationFormat),
+			FieldDelimiter:    e.Dst.FieldDelimiter,
+			SourceTable:       e.Src.tableRefProto(),
+			PrintHeader:       printHeader,
+		},
 	}
 }
 
-func bqToExtractConfig(q *bq.JobConfigurationExtract, c *Client) *ExtractConfig {
+func bqToExtractConfig(q *bq.JobConfiguration, c *Client) *ExtractConfig {
+	qe := q.Extract
 	return &ExtractConfig{
+		Labels: q.Labels,
 		Dst: &GCSReference{
-			URIs:              q.DestinationUris,
-			Compression:       Compression(q.Compression),
-			DestinationFormat: DataFormat(q.DestinationFormat),
+			URIs:              qe.DestinationUris,
+			Compression:       Compression(qe.Compression),
+			DestinationFormat: DataFormat(qe.DestinationFormat),
 			FileConfig: FileConfig{
 				CSVOptions: CSVOptions{
-					FieldDelimiter: q.FieldDelimiter,
+					FieldDelimiter: qe.FieldDelimiter,
 				},
 			},
 		},
-		DisableHeader: q.PrintHeader != nil && !*q.PrintHeader,
-		Src:           convertTableReference(q.SourceTable, c),
+		DisableHeader: qe.PrintHeader != nil && !*qe.PrintHeader,
+		Src:           convertTableReference(qe.SourceTable, c),
 	}
 }
 
@@ -91,9 +99,7 @@ func (e *Extractor) Run(ctx context.Context) (*Job, error) {
 
 func (e *Extractor) newJob() *bq.Job {
 	return &bq.Job{
-		JobReference: e.JobIDConfig.createJobRef(e.c.projectID),
-		Configuration: &bq.JobConfiguration{
-			Extract: e.ExtractConfig.toBQ(),
-		},
+		JobReference:  e.JobIDConfig.createJobRef(e.c.projectID),
+		Configuration: e.ExtractConfig.toBQ(),
 	}
 }

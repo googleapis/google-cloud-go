@@ -34,27 +34,35 @@ type CopyConfig struct {
 	// WriteDisposition specifies how existing data in the destination table is treated.
 	// The default is WriteEmpty.
 	WriteDisposition TableWriteDisposition
+
+	// The labels associated with this job.
+	Labels map[string]string
 }
 
-func (c *CopyConfig) toBQ() *bq.JobConfigurationTableCopy {
-	q := &bq.JobConfigurationTableCopy{
-		CreateDisposition: string(c.CreateDisposition),
-		WriteDisposition:  string(c.WriteDisposition),
-		DestinationTable:  c.Dst.tableRefProto(),
-	}
+func (c *CopyConfig) toBQ() *bq.JobConfiguration {
+	var ts []*bq.TableReference
 	for _, t := range c.Srcs {
-		q.SourceTables = append(q.SourceTables, t.tableRefProto())
+		ts = append(ts, t.tableRefProto())
 	}
-	return q
+	return &bq.JobConfiguration{
+		Labels: c.Labels,
+		Copy: &bq.JobConfigurationTableCopy{
+			CreateDisposition: string(c.CreateDisposition),
+			WriteDisposition:  string(c.WriteDisposition),
+			DestinationTable:  c.Dst.tableRefProto(),
+			SourceTables:      ts,
+		},
+	}
 }
 
-func bqToCopyConfig(q *bq.JobConfigurationTableCopy, c *Client) *CopyConfig {
+func bqToCopyConfig(q *bq.JobConfiguration, c *Client) *CopyConfig {
 	cc := &CopyConfig{
-		CreateDisposition: TableCreateDisposition(q.CreateDisposition),
-		WriteDisposition:  TableWriteDisposition(q.WriteDisposition),
-		Dst:               convertTableReference(q.DestinationTable, c),
+		Labels:            q.Labels,
+		CreateDisposition: TableCreateDisposition(q.Copy.CreateDisposition),
+		WriteDisposition:  TableWriteDisposition(q.Copy.WriteDisposition),
+		Dst:               convertTableReference(q.Copy.DestinationTable, c),
 	}
-	for _, t := range q.SourceTables {
+	for _, t := range q.Copy.SourceTables {
 		cc.Srcs = append(cc.Srcs, convertTableReference(t, c))
 	}
 	return cc
@@ -86,9 +94,8 @@ func (c *Copier) Run(ctx context.Context) (*Job, error) {
 }
 
 func (c *Copier) newJob() *bq.Job {
-	job := &bq.Job{
+	return &bq.Job{
 		JobReference:  c.JobIDConfig.createJobRef(c.c.projectID),
-		Configuration: &bq.JobConfiguration{Copy: c.CopyConfig.toBQ()},
+		Configuration: c.CopyConfig.toBQ(),
 	}
-	return job
 }

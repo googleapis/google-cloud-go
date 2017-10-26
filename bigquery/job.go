@@ -103,13 +103,13 @@ func bqToJobConfig(q *bq.JobConfiguration, c *Client) (JobConfig, error) {
 	case q == nil:
 		return nil, nil
 	case q.Copy != nil:
-		return bqToCopyConfig(q.Copy, c), nil
+		return bqToCopyConfig(q, c), nil
 	case q.Extract != nil:
-		return bqToExtractConfig(q.Extract, c), nil
+		return bqToExtractConfig(q, c), nil
 	case q.Load != nil:
-		return bqToLoadConfig(q.Load, c), nil
+		return bqToLoadConfig(q, c), nil
 	case q.Query != nil:
-		return bqToQueryConfig(q.Query, c)
+		return bqToQueryConfig(q, c)
 	default:
 		return nil, nil
 	}
@@ -117,7 +117,6 @@ func bqToJobConfig(q *bq.JobConfiguration, c *Client) (JobConfig, error) {
 
 // JobIDConfig  describes how to create an ID for a job.
 type JobIDConfig struct {
-
 	// JobID is the ID to use for the job. If empty, a random job ID will be generated.
 	JobID string
 

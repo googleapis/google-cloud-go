@@ -58,11 +58,15 @@ func TestExtract(t *testing.T) {
 			want: defaultExtractJob(),
 		},
 		{
-			dst:    defaultGCS(),
-			src:    c.Dataset("dataset-id").Table("table-id"),
-			config: ExtractConfig{DisableHeader: true},
+			dst: defaultGCS(),
+			src: c.Dataset("dataset-id").Table("table-id"),
+			config: ExtractConfig{
+				DisableHeader: true,
+				Labels:        map[string]string{"a": "b"},
+			},
 			want: func() *bq.Job {
 				j := defaultExtractJob()
+				j.Configuration.Labels = map[string]string{"a": "b"}
 				f := false
 				j.Configuration.Extract.PrintHeader = &f
 				return j
