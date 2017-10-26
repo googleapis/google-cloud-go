@@ -40,7 +40,8 @@ type LoadConfig struct {
 	// The labels associated with this job.
 	Labels map[string]string
 
-	// TODO(jba): add TimePartitioning
+	// If non-nil, the destination table is partitioned by time.
+	TimePartitioning *TimePartitioning
 }
 
 func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
@@ -50,6 +51,7 @@ func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
 			CreateDisposition: string(l.CreateDisposition),
 			WriteDisposition:  string(l.WriteDisposition),
 			DestinationTable:  l.Dst.tableRefProto(),
+			TimePartitioning:  l.TimePartitioning.toBQ(),
 		},
 	}
 	media := l.Src.populateLoadConfig(config.Load)
@@ -62,6 +64,7 @@ func bqToLoadConfig(q *bq.JobConfiguration, c *Client) *LoadConfig {
 		CreateDisposition: TableCreateDisposition(q.Load.CreateDisposition),
 		WriteDisposition:  TableWriteDisposition(q.Load.WriteDisposition),
 		Dst:               convertTableReference(q.Load.DestinationTable, c),
+		TimePartitioning:  bqToTimePartitioning(q.Load.TimePartitioning),
 	}
 	var fc *FileConfig
 	if len(q.Load.SourceUris) == 0 {

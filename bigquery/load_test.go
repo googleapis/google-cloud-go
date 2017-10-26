@@ -17,6 +17,7 @@ package bigquery
 import (
 	"strings"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
@@ -91,6 +92,7 @@ func TestLoad(t *testing.T) {
 				CreateDisposition: CreateNever,
 				WriteDisposition:  WriteTruncate,
 				Labels:            map[string]string{"a": "b"},
+				TimePartitioning:  &TimePartitioning{Expiration: 1234 * time.Millisecond},
 			},
 			src: NewGCSReference("uri"),
 			want: func() *bq.Job {
@@ -98,6 +100,10 @@ func TestLoad(t *testing.T) {
 				j.Configuration.Labels = map[string]string{"a": "b"}
 				j.Configuration.Load.CreateDisposition = "CREATE_NEVER"
 				j.Configuration.Load.WriteDisposition = "WRITE_TRUNCATE"
+				j.Configuration.Load.TimePartitioning = &bq.TimePartitioning{
+					Type:         "DAY",
+					ExpirationMs: 1234,
+				}
 				j.JobReference = &bq.JobReference{
 					JobId:     "ajob",
 					ProjectId: "client-project-id",
