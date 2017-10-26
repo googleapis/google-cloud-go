@@ -182,7 +182,7 @@ type StreamingBuffer struct {
 	OldestEntryTime time.Time
 }
 
-func (t *Table) tableRefProto() *bq.TableReference {
+func (t *Table) toBQ() *bq.TableReference {
 	return &bq.TableReference{
 		ProjectId: t.ProjectID,
 		DatasetId: t.DatasetID,
@@ -207,7 +207,7 @@ func (t *Table) implicitTable() bool {
 // After table creation, a view can be modified only if its table was initially created
 // with a view.
 func (t *Table) Create(ctx context.Context, tm *TableMetadata) error {
-	table, err := bqTableFromMetadata(tm)
+	table, err := tm.toBQ()
 	if err != nil {
 		return err
 	}
@@ -222,7 +222,7 @@ func (t *Table) Create(ctx context.Context, tm *TableMetadata) error {
 	return err
 }
 
-func bqTableFromMetadata(tm *TableMetadata) (*bq.Table, error) {
+func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	t := &bq.Table{}
 	if tm == nil {
 		return t, nil
@@ -234,7 +234,7 @@ func bqTableFromMetadata(tm *TableMetadata) (*bq.Table, error) {
 	t.Description = tm.Description
 	t.Labels = tm.Labels
 	if tm.Schema != nil {
-		t.Schema = tm.Schema.asTableSchema()
+		t.Schema = tm.Schema.toBQ()
 	}
 	if tm.ViewQuery != "" {
 		if tm.UseStandardSQL && tm.UseLegacySQL {
@@ -255,7 +255,7 @@ func bqTableFromMetadata(tm *TableMetadata) (*bq.Table, error) {
 		t.ExpirationTime = tm.ExpirationTime.UnixNano() / 1e6
 	}
 	if tm.ExternalDataConfig != nil {
-		edc := tm.ExternalDataConfig.externalDataConfig()
+		edc := tm.ExternalDataConfig.toBQ()
 		t.ExternalDataConfiguration = &edc
 	}
 	if tm.FullID != "" {
@@ -297,10 +297,10 @@ func (t *Table) Metadata(ctx context.Context) (*TableMetadata, error) {
 	if err != nil {
 		return nil, err
 	}
-	return bqTableToMetadata(table)
+	return bqToTableMetadata(table)
 }
 
-func bqTableToMetadata(t *bq.Table) (*TableMetadata, error) {
+func bqToTableMetadata(t *bq.Table) (*TableMetadata, error) {
 	md := &TableMetadata{
 		Description:      t.Description,
 		Name:             t.FriendlyName,
@@ -315,7 +315,7 @@ func bqTableToMetadata(t *bq.Table) (*TableMetadata, error) {
 		ETag:             t.Etag,
 	}
 	if t.Schema != nil {
-		md.Schema = convertTableSchema(t.Schema)
+		md.Schema = bqToSchema(t.Schema)
 	}
 	if t.View != nil {
 		md.ViewQuery = t.View.Query
@@ -357,7 +357,7 @@ func (t *Table) read(ctx context.Context, pf pageFetcher) *RowIterator {
 
 // Update modifies specific Table metadata fields.
 func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag string) (*TableMetadata, error) {
-	bqt := bqTableFromMetadataToUpdate(tm)
+	bqt := tm.toBQ()
 	call := t.c.bqs.Tables.Patch(t.ProjectID, t.DatasetID, t.TableID, bqt).Context(ctx)
 	setClientHeader(call.Header())
 	if etag != "" {
@@ -370,10 +370,10 @@ func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag strin
 	}); err != nil {
 		return nil, err
 	}
-	return bqTableToMetadata(res)
+	return bqToTableMetadata(res)
 }
 
-func bqTableFromMetadataToUpdate(tm TableMetadataToUpdate) *bq.Table {
+func (tm *TableMetadataToUpdate) toBQ() *bq.Table {
 	t := &bq.Table{}
 	forceSend := func(field string) {
 		t.ForceSendFields = append(t.ForceSendFields, field)
@@ -388,7 +388,7 @@ func bqTableFromMetadataToUpdate(tm TableMetadataToUpdate) *bq.Table {
 		forceSend("FriendlyName")
 	}
 	if tm.Schema != nil {
-		t.Schema = tm.Schema.asTableSchema()
+		t.Schema = tm.Schema.toBQ()
 		forceSend("Schema")
 	}
 	if !tm.ExpirationTime.IsZero() {

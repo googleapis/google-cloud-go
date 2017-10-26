@@ -47,7 +47,7 @@ func (e *ExtractConfig) toBQ() *bq.JobConfiguration {
 			Compression:       string(e.Dst.Compression),
 			DestinationFormat: string(e.Dst.DestinationFormat),
 			FieldDelimiter:    e.Dst.FieldDelimiter,
-			SourceTable:       e.Src.tableRefProto(),
+			SourceTable:       e.Src.toBQ(),
 			PrintHeader:       printHeader,
 		},
 	}
@@ -68,7 +68,7 @@ func bqToExtractConfig(q *bq.JobConfiguration, c *Client) *ExtractConfig {
 			},
 		},
 		DisableHeader: qe.PrintHeader != nil && !*qe.PrintHeader,
-		Src:           convertTableReference(qe.SourceTable, c),
+		Src:           bqToTable(qe.SourceTable, c),
 	}
 }
 

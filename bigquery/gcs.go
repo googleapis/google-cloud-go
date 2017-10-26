@@ -63,7 +63,7 @@ func (gcs *GCSReference) populateLoadConfig(lc *bq.JobConfigurationLoad) io.Read
 	return nil
 }
 
-func (gcs *GCSReference) externalDataConfig() bq.ExternalDataConfiguration {
+func (gcs *GCSReference) toBQ() bq.ExternalDataConfiguration {
 	conf := bq.ExternalDataConfiguration{
 		Compression: string(gcs.Compression),
 		SourceUris:  append([]string{}, gcs.URIs...),

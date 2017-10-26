@@ -70,7 +70,7 @@ func TestExternalDataConfig(t *testing.T) {
 			},
 		},
 	} {
-		q := want.externalDataConfig()
+		q := want.toBQ()
 		got, err := bqToExternalDataConfig(&q)
 		if err != nil {
 			t.Fatal(err)

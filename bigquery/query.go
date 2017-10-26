@@ -126,7 +126,7 @@ func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
 		qconf.TableDefinitions = make(map[string]bq.ExternalDataConfiguration)
 	}
 	for name, data := range qc.TableDefinitions {
-		qconf.TableDefinitions[name] = data.externalDataConfig()
+		qconf.TableDefinitions[name] = data.toBQ()
 	}
 	if qc.DefaultProjectID != "" || qc.DefaultDatasetID != "" {
 		qconf.DefaultDataset = &bq.DatasetReference{
@@ -159,10 +159,10 @@ func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
 		qconf.ForceSendFields = append(qconf.ForceSendFields, "UseLegacySql")
 	}
 	if qc.Dst != nil && !qc.Dst.implicitTable() {
-		qconf.DestinationTable = qc.Dst.tableRefProto()
+		qconf.DestinationTable = qc.Dst.toBQ()
 	}
 	for _, p := range qc.Parameters {
-		qp, err := p.toRaw()
+		qp, err := p.toBQ()
 		if err != nil {
 			return nil, err
 		}
@@ -213,7 +213,7 @@ func bqToQueryConfig(q *bq.JobConfiguration, c *Client) (*QueryConfig, error) {
 		qc.DisableFlattenedResults = true
 	}
 	if qq.DestinationTable != nil {
-		qc.Dst = convertTableReference(qq.DestinationTable, c)
+		qc.Dst = bqToTable(qq.DestinationTable, c)
 	}
 	for _, qp := range qq.QueryParameters {
 		p, err := bqToQueryParameter(qp)

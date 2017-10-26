@@ -22,7 +22,7 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
-func TestBQTableToMetadata(t *testing.T) {
+func TestBQToTableMetadata(t *testing.T) {
 	aTime := time.Date(2017, 1, 26, 0, 0, 0, 0, time.Local)
 	aTimeMillis := aTime.UnixNano() / 1e6
 	for _, test := range []struct {
@@ -82,7 +82,7 @@ func TestBQTableToMetadata(t *testing.T) {
 			},
 		},
 	} {
-		got, err := bqTableToMetadata(test.in)
+		got, err := bqToTableMetadata(test.in)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -92,7 +92,7 @@ func TestBQTableToMetadata(t *testing.T) {
 	}
 }
 
-func TestBQTableFromMetadata(t *testing.T) {
+func TestTableMetadataToBQ(t *testing.T) {
 	aTime := time.Date(2017, 1, 26, 0, 0, 0, 0, time.Local)
 	aTimeMillis := aTime.UnixNano() / 1e6
 	sc := Schema{fieldSchema("desc", "name", "STRING", false, true)}
@@ -171,7 +171,7 @@ func TestBQTableFromMetadata(t *testing.T) {
 			},
 		},
 	} {
-		got, err := bqTableFromMetadata(test.in)
+		got, err := test.in.toBQ()
 		if err != nil {
 			t.Fatalf("%+v: %v", test.in, err)
 		}
@@ -195,14 +195,14 @@ func TestBQTableFromMetadata(t *testing.T) {
 		{StreamingBuffer: &StreamingBuffer{}},
 		{ETag: "x"},
 	} {
-		_, err := bqTableFromMetadata(in)
+		_, err := in.toBQ()
 		if err == nil {
 			t.Errorf("%+v: got nil, want error", in)
 		}
 	}
 }
 
-func TestBQTableFromMetadataToUpdate(t *testing.T) {
+func TestTableMetadataToUpdateToBQ(t *testing.T) {
 	aTime := time.Date(2017, 1, 26, 0, 0, 0, 0, time.Local)
 	for _, test := range []struct {
 		tm   TableMetadataToUpdate
@@ -275,7 +275,7 @@ func TestBQTableFromMetadataToUpdate(t *testing.T) {
 			},
 		},
 	} {
-		got := bqTableFromMetadataToUpdate(test.tm)
+		got := test.tm.toBQ()
 		if !testutil.Equal(got, test.want) {
 			t.Errorf("%+v:\ngot  %+v\nwant %+v", test.tm, got, test.want)
 		}

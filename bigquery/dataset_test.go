@@ -181,7 +181,7 @@ func TestDatasets(t *testing.T) {
 	}
 }
 
-func TestBQDatasetFromMetadata(t *testing.T) {
+func TestDatasetToBQ(t *testing.T) {
 	for _, test := range []struct {
 		in   *DatasetMetadata
 		want *bq.Dataset
@@ -204,7 +204,7 @@ func TestBQDatasetFromMetadata(t *testing.T) {
 			Access:                   []*bq.DatasetAccess{{Role: "OWNER", Domain: "example.com"}},
 		}},
 	} {
-		got, err := bqDatasetFromMetadata(test.in)
+		got, err := test.in.toBQ()
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -221,13 +221,13 @@ func TestBQDatasetFromMetadata(t *testing.T) {
 		{FullID: "x"},
 		{ETag: "e"},
 	} {
-		if _, err := bqDatasetFromMetadata(dm); err == nil {
+		if _, err := dm.toBQ(); err == nil {
 			t.Errorf("%+v: got nil, want error", dm)
 		}
 	}
 }
 
-func TestBQDatasetToMetadata(t *testing.T) {
+func TestBQToDatasetMetadata(t *testing.T) {
 	cTime := time.Date(2017, 1, 26, 0, 0, 0, 0, time.Local)
 	cMillis := cTime.UnixNano() / 1e6
 	mTime := time.Date(2017, 10, 31, 0, 0, 0, 0, time.Local)
@@ -260,7 +260,7 @@ func TestBQDatasetToMetadata(t *testing.T) {
 		},
 		ETag: "etag",
 	}
-	got, err := bqDatasetToMetadata(q)
+	got, err := bqToDatasetMetadata(q)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -269,7 +269,7 @@ func TestBQDatasetToMetadata(t *testing.T) {
 	}
 }
 
-func TestBQDatasetFromUpdateMetadata(t *testing.T) {
+func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 	dm := DatasetMetadataToUpdate{
 		Description: "desc",
 		Name:        "name",
@@ -278,7 +278,7 @@ func TestBQDatasetFromUpdateMetadata(t *testing.T) {
 	dm.SetLabel("label", "value")
 	dm.DeleteLabel("del")
 
-	got, err := bqDatasetFromUpdateMetadata(&dm)
+	got, err := dm.toBQ()
 	if err != nil {
 		t.Fatal(err)
 	}

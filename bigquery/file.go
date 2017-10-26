@@ -87,7 +87,7 @@ func (fc *FileConfig) populateLoadConfig(conf *bq.JobConfigurationLoad) {
 	conf.IgnoreUnknownValues = fc.IgnoreUnknownValues
 	conf.MaxBadRecords = fc.MaxBadRecords
 	if fc.Schema != nil {
-		conf.Schema = fc.Schema.asTableSchema()
+		conf.Schema = fc.Schema.toBQ()
 	}
 	conf.Quote = fc.quote()
 }
@@ -97,7 +97,7 @@ func bqPopulateFileConfig(conf *bq.JobConfigurationLoad, fc *FileConfig) {
 	fc.AutoDetect = conf.Autodetect
 	fc.MaxBadRecords = conf.MaxBadRecords
 	fc.IgnoreUnknownValues = conf.IgnoreUnknownValues
-	fc.Schema = convertTableSchema(conf.Schema)
+	fc.Schema = bqToSchema(conf.Schema)
 	fc.SkipLeadingRows = conf.SkipLeadingRows
 	fc.AllowJaggedRows = conf.AllowJaggedRows
 	fc.AllowQuotedNewlines = conf.AllowQuotedNewlines
@@ -117,7 +117,7 @@ func (fc *FileConfig) populateExternalDataConfig(conf *bq.ExternalDataConfigurat
 	conf.MaxBadRecords = fc.MaxBadRecords
 	conf.SourceFormat = string(format)
 	if fc.Schema != nil {
-		conf.Schema = fc.Schema.asTableSchema()
+		conf.Schema = fc.Schema.toBQ()
 	}
 	if format == CSV {
 		fc.CSVOptions.populateExternalDataConfig(conf)

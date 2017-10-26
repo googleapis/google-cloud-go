@@ -42,14 +42,14 @@ type CopyConfig struct {
 func (c *CopyConfig) toBQ() *bq.JobConfiguration {
 	var ts []*bq.TableReference
 	for _, t := range c.Srcs {
-		ts = append(ts, t.tableRefProto())
+		ts = append(ts, t.toBQ())
 	}
 	return &bq.JobConfiguration{
 		Labels: c.Labels,
 		Copy: &bq.JobConfigurationTableCopy{
 			CreateDisposition: string(c.CreateDisposition),
 			WriteDisposition:  string(c.WriteDisposition),
-			DestinationTable:  c.Dst.tableRefProto(),
+			DestinationTable:  c.Dst.toBQ(),
 			SourceTables:      ts,
 		},
 	}
@@ -60,10 +60,10 @@ func bqToCopyConfig(q *bq.JobConfiguration, c *Client) *CopyConfig {
 		Labels:            q.Labels,
 		CreateDisposition: TableCreateDisposition(q.Copy.CreateDisposition),
 		WriteDisposition:  TableWriteDisposition(q.Copy.WriteDisposition),
-		Dst:               convertTableReference(q.Copy.DestinationTable, c),
+		Dst:               bqToTable(q.Copy.DestinationTable, c),
 	}
 	for _, t := range q.Copy.SourceTables {
-		cc.Srcs = append(cc.Srcs, convertTableReference(t, c))
+		cc.Srcs = append(cc.Srcs, bqToTable(t, c))
 	}
 	return cc
 }
