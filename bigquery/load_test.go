@@ -90,10 +90,12 @@ func TestLoad(t *testing.T) {
 			config: LoadConfig{
 				CreateDisposition: CreateNever,
 				WriteDisposition:  WriteTruncate,
+				Labels:            map[string]string{"a": "b"},
 			},
 			src: NewGCSReference("uri"),
 			want: func() *bq.Job {
 				j := defaultLoadJob()
+				j.Configuration.Labels = map[string]string{"a": "b"}
 				j.Configuration.Load.CreateDisposition = "CREATE_NEVER"
 				j.Configuration.Load.WriteDisposition = "WRITE_TRUNCATE"
 				j.JobReference = &bq.JobReference{

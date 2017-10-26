@@ -65,10 +65,12 @@ func TestQuery(t *testing.T) {
 		{
 			dst: c.Dataset("dataset-id").Table("table-id"),
 			src: &QueryConfig{
-				Q: "query string",
+				Q:      "query string",
+				Labels: map[string]string{"a": "b"},
 			},
 			want: func() *bq.Job {
 				j := defaultQueryJob()
+				j.Configuration.Labels = map[string]string{"a": "b"}
 				j.Configuration.Query.DefaultDataset = nil
 				return j
 			}(),

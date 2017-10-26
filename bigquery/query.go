@@ -99,10 +99,13 @@ type QueryConfig struct {
 	// If the query uses named syntax ("@p"), then all parameters must have names.
 	// It is illegal to mix positional and named syntax.
 	Parameters []QueryParameter
+
+	// The labels associated with this job.
+	Labels map[string]string
 }
 
-func (qc *QueryConfig) toBQ() (*bq.JobConfigurationQuery, error) {
-	conf := &bq.JobConfigurationQuery{
+func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
+	qconf := &bq.JobConfigurationQuery{
 		Query:              qc.Q,
 		CreateDisposition:  string(qc.CreateDisposition),
 		WriteDisposition:   string(qc.WriteDisposition),
@@ -111,28 +114,28 @@ func (qc *QueryConfig) toBQ() (*bq.JobConfigurationQuery, error) {
 		MaximumBytesBilled: qc.MaxBytesBilled,
 	}
 	if len(qc.TableDefinitions) > 0 {
-		conf.TableDefinitions = make(map[string]bq.ExternalDataConfiguration)
+		qconf.TableDefinitions = make(map[string]bq.ExternalDataConfiguration)
 	}
 	for name, data := range qc.TableDefinitions {
-		conf.TableDefinitions[name] = data.externalDataConfig()
+		qconf.TableDefinitions[name] = data.externalDataConfig()
 	}
 	if qc.DefaultProjectID != "" || qc.DefaultDatasetID != "" {
-		conf.DefaultDataset = &bq.DatasetReference{
+		qconf.DefaultDataset = &bq.DatasetReference{
 			DatasetId: qc.DefaultDatasetID,
 			ProjectId: qc.DefaultProjectID,
 		}
 	}
 	if tier := int64(qc.MaxBillingTier); tier > 0 {
-		conf.MaximumBillingTier = &tier
+		qconf.MaximumBillingTier = &tier
 	}
 	f := false
 	if qc.DisableQueryCache {
-		conf.UseQueryCache = &f
+		qconf.UseQueryCache = &f
 	}
 	if qc.DisableFlattenedResults {
-		conf.FlattenResults = &f
+		qconf.FlattenResults = &f
 		// DisableFlattenResults implies AllowLargeResults.
-		conf.AllowLargeResults = true
+		qconf.AllowLargeResults = true
 	}
 	if qc.UseStandardSQL && qc.UseLegacySQL {
 		return nil, errors.New("bigquery: cannot provide both UseStandardSQL and UseLegacySQL")
@@ -141,62 +144,67 @@ func (qc *QueryConfig) toBQ() (*bq.JobConfigurationQuery, error) {
 		return nil, errors.New("bigquery: cannot provide both Parameters (implying standard SQL) and UseLegacySQL")
 	}
 	if qc.UseLegacySQL {
-		conf.UseLegacySql = true
+		qconf.UseLegacySql = true
 	} else {
-		conf.UseLegacySql = false
-		conf.ForceSendFields = append(conf.ForceSendFields, "UseLegacySql")
+		qconf.UseLegacySql = false
+		qconf.ForceSendFields = append(qconf.ForceSendFields, "UseLegacySql")
 	}
 	if qc.Dst != nil && !qc.Dst.implicitTable() {
-		conf.DestinationTable = qc.Dst.tableRefProto()
+		qconf.DestinationTable = qc.Dst.tableRefProto()
 	}
 	for _, p := range qc.Parameters {
 		qp, err := p.toRaw()
 		if err != nil {
 			return nil, err
 		}
-		conf.QueryParameters = append(conf.QueryParameters, qp)
+		qconf.QueryParameters = append(qconf.QueryParameters, qp)
 	}
-	return conf, nil
+	return &bq.JobConfiguration{
+		Labels: qc.Labels,
+		Query:  qconf,
+	}, nil
 }
 
-func bqToQueryConfig(q *bq.JobConfigurationQuery, c *Client) (*QueryConfig, error) {
+func bqToQueryConfig(q *bq.JobConfiguration, c *Client) (*QueryConfig, error) {
+	qq := q.Query
 	qc := &QueryConfig{
-		Q:                 q.Query,
-		CreateDisposition: TableCreateDisposition(q.CreateDisposition),
-		WriteDisposition:  TableWriteDisposition(q.WriteDisposition),
-		AllowLargeResults: q.AllowLargeResults,
-		Priority:          QueryPriority(q.Priority),
-		MaxBytesBilled:    q.MaximumBytesBilled,
-		UseLegacySQL:      q.UseLegacySql,
-		UseStandardSQL:    !q.UseLegacySql,
+		Labels:            q.Labels,
+		Q:                 qq.Query,
+		CreateDisposition: TableCreateDisposition(qq.CreateDisposition),
+		WriteDisposition:  TableWriteDisposition(qq.WriteDisposition),
+		AllowLargeResults: qq.AllowLargeResults,
+		Priority:          QueryPriority(qq.Priority),
+		MaxBytesBilled:    qq.MaximumBytesBilled,
+		UseLegacySQL:      qq.UseLegacySql,
+		UseStandardSQL:    !qq.UseLegacySql,
 	}
-	if len(q.TableDefinitions) > 0 {
+	if len(qq.TableDefinitions) > 0 {
 		qc.TableDefinitions = make(map[string]ExternalData)
 	}
-	for name, qedc := range q.TableDefinitions {
+	for name, qedc := range qq.TableDefinitions {
 		edc, err := bqToExternalDataConfig(&qedc)
 		if err != nil {
 			return nil, err
 		}
 		qc.TableDefinitions[name] = edc
 	}
-	if q.DefaultDataset != nil {
-		qc.DefaultProjectID = q.DefaultDataset.ProjectId
-		qc.DefaultDatasetID = q.DefaultDataset.DatasetId
+	if qq.DefaultDataset != nil {
+		qc.DefaultProjectID = qq.DefaultDataset.ProjectId
+		qc.DefaultDatasetID = qq.DefaultDataset.DatasetId
 	}
-	if q.MaximumBillingTier != nil {
-		qc.MaxBillingTier = int(*q.MaximumBillingTier)
+	if qq.MaximumBillingTier != nil {
+		qc.MaxBillingTier = int(*qq.MaximumBillingTier)
 	}
-	if q.UseQueryCache != nil && !*q.UseQueryCache {
+	if qq.UseQueryCache != nil && !*qq.UseQueryCache {
 		qc.DisableQueryCache = true
 	}
-	if q.FlattenResults != nil && !*q.FlattenResults {
+	if qq.FlattenResults != nil && !*qq.FlattenResults {
 		qc.DisableFlattenedResults = true
 	}
-	if q.DestinationTable != nil {
-		qc.Dst = convertTableReference(q.DestinationTable, c)
+	if qq.DestinationTable != nil {
+		qc.Dst = convertTableReference(qq.DestinationTable, c)
 	}
-	for _, qp := range q.QueryParameters {
+	for _, qp := range qq.QueryParameters {
 		p, err := bqToQueryParameter(qp)
 		if err != nil {
 			return nil, err
@@ -244,13 +252,13 @@ func (q *Query) Run(ctx context.Context) (*Job, error) {
 }
 
 func (q *Query) newJob() (*bq.Job, error) {
-	qc, err := q.QueryConfig.toBQ()
+	config, err := q.QueryConfig.toBQ()
 	if err != nil {
 		return nil, err
 	}
 	return &bq.Job{
 		JobReference:  q.JobIDConfig.createJobRef(q.client.projectID),
-		Configuration: &bq.JobConfiguration{Query: qc},
+		Configuration: config,
 	}, nil
 }
 

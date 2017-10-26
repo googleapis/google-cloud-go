@@ -887,6 +887,7 @@ func TestIntegration_Load(t *testing.T) {
 	rs := NewReaderSource(r)
 	loader := table.LoaderFrom(rs)
 	loader.WriteDisposition = WriteTruncate
+	loader.Labels = map[string]string{"test": "go"}
 	job, err := loader.Run(ctx)
 	if err != nil {
 		t.Fatal(err)
