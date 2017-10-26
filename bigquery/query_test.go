@@ -67,10 +67,12 @@ func TestQuery(t *testing.T) {
 			src: &QueryConfig{
 				Q:      "query string",
 				Labels: map[string]string{"a": "b"},
+				DryRun: true,
 			},
 			want: func() *bq.Job {
 				j := defaultQueryJob()
 				j.Configuration.Labels = map[string]string{"a": "b"}
+				j.Configuration.DryRun = true
 				j.Configuration.Query.DefaultDataset = nil
 				return j
 			}(),

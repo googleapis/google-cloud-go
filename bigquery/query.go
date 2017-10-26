@@ -102,6 +102,13 @@ type QueryConfig struct {
 
 	// The labels associated with this job.
 	Labels map[string]string
+
+	// If true, don't actually run this job. A valid query will return a mostly
+	// empty response with some processing statistics, while an invalid query will
+	// return the same error it would if it wasn't a dry run.
+	//
+	// Query.Read will fail with dry-run queries; use Query.Run instead.
+	DryRun bool
 }
 
 func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
@@ -161,6 +168,7 @@ func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
 	}
 	return &bq.JobConfiguration{
 		Labels: qc.Labels,
+		DryRun: qc.DryRun,
 		Query:  qconf,
 	}, nil
 }
@@ -169,6 +177,7 @@ func bqToQueryConfig(q *bq.JobConfiguration, c *Client) (*QueryConfig, error) {
 	qq := q.Query
 	qc := &QueryConfig{
 		Labels:            q.Labels,
+		DryRun:            q.DryRun,
 		Q:                 qq.Query,
 		CreateDisposition: TableCreateDisposition(qq.CreateDisposition),
 		WriteDisposition:  TableWriteDisposition(qq.WriteDisposition),

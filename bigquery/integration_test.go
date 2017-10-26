@@ -1145,6 +1145,25 @@ func TestIntegration_QueryParameters(t *testing.T) {
 	}
 }
 
+func TestIntegration_QueryDryRun(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	q := client.Query("SELECT word from " + stdName + " LIMIT 10")
+	q.DryRun = true
+	_, err := q.Run(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Calling Status on a dry-run job fails.
+	// TODO(jba): find a way to get the status of a dry-run job.
+	// s, err := job.Status(ctx)
+	// if err != nil {
+	// 	t.Fatal(err)
+	// }
+}
+
 func TestIntegration_ExtractExternal(t *testing.T) {
 	// Create a table, extract it to GCS, then query it externally.
 	if client == nil {

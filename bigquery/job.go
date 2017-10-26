@@ -36,6 +36,7 @@ type Job struct {
 	projectID string
 	jobID     string
 
+	// TODO(jba): remove these fields, because they're in config.
 	isQuery          bool
 	destinationTable *bq.TableReference // table to read query results from
 
