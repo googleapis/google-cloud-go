@@ -390,12 +390,15 @@ func TestValuesSaverConvertsToMap(t *testing.T) {
 				Schema: []*FieldSchema{
 					{Name: "intField", Type: IntegerFieldType},
 					{Name: "strField", Type: StringFieldType},
+					{Name: "dtField", Type: DateTimeFieldType},
 				},
 				InsertID: "iid",
-				Row:      []Value{1, "a"},
+				Row: []Value{1, "a",
+					civil.DateTime{civil.Date{1, 2, 3}, civil.Time{4, 5, 6, 7000}}},
 			},
 			wantInsertID: "iid",
-			wantRow:      map[string]Value{"intField": 1, "strField": "a"},
+			wantRow: map[string]Value{"intField": 1, "strField": "a",
+				"dtField": "0001-02-03 04:05:06.000007"},
 		},
 		{
 			vs: ValuesSaver{
@@ -502,6 +505,8 @@ func TestStructSaver(t *testing.T) {
 	schema := Schema{
 		{Name: "s", Type: StringFieldType},
 		{Name: "r", Type: IntegerFieldType, Repeated: true},
+		{Name: "t", Type: TimeFieldType},
+		{Name: "tr", Type: TimeFieldType, Repeated: true},
 		{Name: "nested", Type: RecordFieldType, Schema: Schema{
 			{Name: "b", Type: BooleanFieldType},
 		}},
@@ -515,6 +520,8 @@ func TestStructSaver(t *testing.T) {
 		T struct {
 			S       string
 			R       []int
+			T       civil.Time
+			TR      []civil.Time
 			Nested  *N
 			Rnested []*N
 		}
@@ -537,22 +544,27 @@ func TestStructSaver(t *testing.T) {
 			t.Errorf("%s:\ngot\n%#v\nwant\n%#v", msg, got, want)
 		}
 	}
-
+	ct1 := civil.Time{1, 2, 3, 4000}
+	ct2 := civil.Time{5, 6, 7, 8000}
 	in := T{
 		S:       "x",
 		R:       []int{1, 2},
+		T:       ct1,
+		TR:      []civil.Time{ct1, ct2},
 		Nested:  &N{B: true},
 		Rnested: []*N{{true}, {false}},
 	}
 	want := map[string]Value{
 		"s":       "x",
 		"r":       []int{1, 2},
+		"t":       "01:02:03.000004",
+		"tr":      []string{"01:02:03.000004", "05:06:07.000008"},
 		"nested":  map[string]Value{"b": true},
 		"rnested": []Value{map[string]Value{"b": true}, map[string]Value{"b": false}},
 	}
 	check("all values", in, want)
 	check("all values, ptr", &in, want)
-	check("empty struct", T{}, map[string]Value{"s": ""})
+	check("empty struct", T{}, map[string]Value{"s": "", "t": "00:00:00"})
 
 	// Missing and extra fields ignored.
 	type T2 struct {
@@ -565,6 +577,7 @@ func TestStructSaver(t *testing.T) {
 	check("nils in slice", T{Rnested: []*N{{true}, nil, {false}}},
 		map[string]Value{
 			"s":       "",
+			"t":       "00:00:00",
 			"rnested": []Value{map[string]Value{"b": true}, map[string]Value(nil), map[string]Value{"b": false}},
 		})
 }
