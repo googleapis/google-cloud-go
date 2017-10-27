@@ -245,7 +245,7 @@ func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Contex
 		ts time.Time
 		sh *sessionHandle
 	)
-	err := runRetryable(ctx, func(ctx context.Context) error {
+	err := runRetryableNoWrap(ctx, func(ctx context.Context) error {
 		var (
 			err error
 			t   *ReadWriteTransaction
@@ -272,10 +272,7 @@ func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Contex
 			return errRetry(err)
 		}
 		ts, err = t.runInTransaction(ctx, f)
-		if err != nil {
-			return err
-		}
-		return nil
+		return err
 	})
 	if sh != nil {
 		sh.recycle()
