@@ -143,7 +143,7 @@ func accessListToBQ(a []*AccessEntry) ([]*bq.DatasetAccess, error) {
 func (d *Dataset) Delete(ctx context.Context) error {
 	call := d.c.bqs.Datasets.Delete(d.ProjectID, d.DatasetID).Context(ctx)
 	setClientHeader(call.Header())
-	return runWithRetry(ctx, func() error { return call.Do() })
+	return call.Do()
 }
 
 // Metadata fetches the metadata for the dataset.

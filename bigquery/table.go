@@ -343,7 +343,7 @@ func bqToTableMetadata(t *bq.Table) (*TableMetadata, error) {
 func (t *Table) Delete(ctx context.Context) error {
 	req := t.c.bqs.Tables.Delete(t.ProjectID, t.DatasetID, t.TableID).Context(ctx)
 	setClientHeader(req.Header())
-	return runWithRetry(ctx, func() error { return req.Do() })
+	return req.Do()
 }
 
 // Read fetches the contents of the table.
