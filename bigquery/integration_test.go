@@ -1193,12 +1193,16 @@ func TestIntegration_QueryDryRun(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	s := job.LastStatus()
 	if s.State != Done {
 		t.Errorf("state is %v, expected Done", s.State)
 	}
 	if s.Statistics == nil {
-		t.Error("no statistics")
+		t.Fatal("no statistics")
+	}
+	if s.Statistics.Details.(*QueryStatistics).Schema == nil {
+		t.Fatal("no schema")
 	}
 }
 
