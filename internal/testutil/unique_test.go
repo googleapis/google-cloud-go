@@ -22,8 +22,14 @@ import (
 func TestNew(t *testing.T) {
 	s := NewUIDSpace("prefix")
 	tm := time.Date(2017, 1, 6, 0, 0, 0, 21, time.UTC)
-	got := s.newID(tm)
+	got := s.newID(tm, '-')
 	want := "prefix-20170106-21-0000"
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+
+	got = s.newID(tm, '_')
+	want = "prefix_20170106_21_0001"
 	if got != want {
 		t.Errorf("got %q, want %q", got, want)
 	}
