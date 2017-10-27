@@ -54,11 +54,14 @@ var (
 	}
 	testTableExpiration time.Time
 	datasetIDs          = testutil.NewUIDSpace("dataset")
+	tableIDs            = testutil.NewUIDSpace("table")
 )
 
 func TestMain(m *testing.M) {
-	initIntegrationTest()
-	os.Exit(m.Run())
+	cleanup := initIntegrationTest()
+	r := m.Run()
+	cleanup()
+	os.Exit(r)
 }
 
 func getClient(t *testing.T) *Client {
@@ -69,16 +72,16 @@ func getClient(t *testing.T) *Client {
 }
 
 // If integration tests will be run, create a unique bucket for them.
-func initIntegrationTest() {
+func initIntegrationTest() func() {
 	flag.Parse() // needed for testing.Short()
 	if testing.Short() {
-		return
+		return func() {}
 	}
 	ctx := context.Background()
 	ts := testutil.TokenSource(ctx, Scope)
 	if ts == nil {
 		log.Println("Integration tests skipped. See CONTRIBUTING.md for details")
-		return
+		return func() {}
 	}
 	projID := testutil.ProjID()
 	var err error
@@ -91,13 +94,36 @@ func initIntegrationTest() {
 	if err != nil {
 		log.Fatalf("storage.NewClient: %v", err)
 	}
-	dataset = client.Dataset("bigquery_integration_test")
-	if err := dataset.Create(ctx, nil); err != nil && !hasStatusCode(err, http.StatusConflict) { // AlreadyExists is 409
-		log.Fatalf("creating dataset: %v", err)
+	// BigQuery does not accept hyphens in dataset or table IDs, so we create IDs
+	// with underscores.
+	dataset = client.Dataset(datasetIDs.NewSep('_'))
+	if err := dataset.Create(ctx, nil); err != nil {
+		log.Fatalf("creating dataset %s: %v", dataset.DatasetID, err)
 	}
 	testTableExpiration = time.Now().Add(10 * time.Minute).Round(time.Second)
+	return func() {
+		if err := deleteDataset(ctx, dataset); err != nil {
+			log.Printf("could not delete %s", dataset.DatasetID)
+		}
+	}
 }
 
+func deleteDataset(ctx context.Context, ds *Dataset) error {
+	it := ds.Tables(ctx)
+	for {
+		tbl, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		if err := tbl.Delete(ctx); err != nil {
+			return err
+		}
+	}
+	return ds.Delete(ctx)
+}
 func TestIntegration_TableCreate(t *testing.T) {
 	// Check that creating a record field with an empty schema is an error.
 	if client == nil {
@@ -206,8 +232,7 @@ func TestIntegration_DatasetCreate(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	uid := strings.Replace(datasetIDs.New(), "-", "_", -1)
-	ds := client.Dataset(uid)
+	ds := client.Dataset(datasetIDs.NewSep('_'))
 	wmd := &DatasetMetadata{Name: "name", Location: "EU"}
 	err := ds.Create(ctx, wmd)
 	if err != nil {
@@ -260,12 +285,12 @@ func TestIntegration_DatasetDelete(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	ds := client.Dataset("delete_test")
-	if err := ds.Create(ctx, nil); err != nil && !hasStatusCode(err, http.StatusConflict) { // AlreadyExists is 409
-		t.Fatalf("creating dataset %s: %v", ds, err)
+	ds := client.Dataset(datasetIDs.NewSep('_'))
+	if err := ds.Create(ctx, nil); err != nil {
+		t.Fatalf("creating dataset %s: %v", ds.DatasetID, err)
 	}
 	if err := ds.Delete(ctx); err != nil {
-		t.Fatalf("deleting dataset %s: %v", ds, err)
+		t.Fatalf("deleting dataset %s: %v", ds.DatasetID, err)
 	}
 }
 
@@ -931,11 +956,11 @@ func TestIntegration_DML(t *testing.T) {
 	table := newTable(t, schema)
 	defer table.Delete(ctx)
 
-	sql := fmt.Sprintf(`INSERT bigquery_integration_test.%s (name, nums, rec)
+	sql := fmt.Sprintf(`INSERT %s.%s (name, nums, rec)
 						VALUES ('a', [0], STRUCT<BOOL>(TRUE)),
 							   ('b', [1], STRUCT<BOOL>(FALSE)),
 							   ('c', [2], STRUCT<BOOL>(TRUE))`,
-		table.TableID)
+		table.DatasetID, table.TableID)
 	if err := dmlInsert(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
@@ -1002,9 +1027,10 @@ func TestIntegration_TimeTypes(t *testing.T) {
 
 	// SQL wants DATETIMEs with a space between date and time, but the service
 	// returns them in RFC3339 form, with a "T" between.
-	query := fmt.Sprintf("INSERT bigquery_integration_test.%s (d, t, dt, ts) "+
+	query := fmt.Sprintf("INSERT %s.%s (d, t, dt, ts) "+
 		"VALUES ('%s', '%s', '%s', '%s')",
-		table.TableID, d, CivilTimeString(tm), CivilDateTimeString(dtm), ts.Format("2006-01-02 15:04:05"))
+		table.DatasetID, table.TableID,
+		d, CivilTimeString(tm), CivilDateTimeString(dtm), ts.Format("2006-01-02 15:04:05"))
 	if err := dmlInsert(ctx, query); err != nil {
 		t.Fatal(err)
 	}
@@ -1190,9 +1216,9 @@ func TestIntegration_ExtractExternal(t *testing.T) {
 	defer table.Delete(ctx)
 
 	// Insert table data.
-	sql := fmt.Sprintf(`INSERT bigquery_integration_test.%s (name, num)
+	sql := fmt.Sprintf(`INSERT %s.%s (name, num)
 		                VALUES ('a', 1), ('b', 2), ('c', 3)`,
-		table.TableID)
+		table.DatasetID, table.TableID)
 	if err := dmlInsert(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
@@ -1248,7 +1274,7 @@ func TestIntegration_ExtractExternal(t *testing.T) {
 
 	// Make a table pointing to the file, and query it.
 	// BigQuery does not allow a Table.Read on an external table.
-	table = dataset.Table(fmt.Sprintf("t%d", time.Now().UnixNano()))
+	table = dataset.Table(tableIDs.NewSep('_'))
 	err = table.Create(context.Background(), &TableMetadata{
 		Schema:             schema,
 		ExpirationTime:     testTableExpiration,
@@ -1414,8 +1440,7 @@ func TestIntegration_ListJobs(t *testing.T) {
 
 // Creates a new, temporary table with a unique name and the given schema.
 func newTable(t *testing.T, s Schema) *Table {
-	name := fmt.Sprintf("t%d", time.Now().UnixNano())
-	table := dataset.Table(name)
+	table := dataset.Table(tableIDs.NewSep('_'))
 	err := table.Create(context.Background(), &TableMetadata{
 		Schema:         s,
 		ExpirationTime: testTableExpiration,
