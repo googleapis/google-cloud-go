@@ -48,6 +48,8 @@ func NewAction(m string, e error) Action {
 
 // MockCloudSpannerClient is a mock implementation of sppb.SpannerClient.
 type MockCloudSpannerClient struct {
+	sppb.SpannerClient
+
 	mu sync.Mutex
 	t  *testing.T
 	// Live sessions on the client.
@@ -380,6 +382,13 @@ func (m *MockCloudSpannerClient) Freeze() {
 // Unfreeze restores processing requests.
 func (m *MockCloudSpannerClient) Unfreeze() {
 	close(m.freezed)
+}
+
+// CheckActionsConsumed checks that all actions have been consumed.
+func (m *MockCloudSpannerClient) CheckActionsConsumed() {
+	if len(m.actions) != 0 {
+		m.t.Fatalf("unconsumed mock client actions: %v", m.actions)
+	}
 }
 
 // ready checks conditions before executing requests

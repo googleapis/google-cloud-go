@@ -207,3 +207,21 @@ func TestBadSession(t *testing.T) {
 		t.Errorf("Expect applyAtLeastOnce to fail, got %v, want %v.", got, wantErr)
 	}
 }
+
+func TestFunctionErrorReturned(t *testing.T) {
+	t.Parallel()
+	_, mc, client := mockClient(t)
+	defer client.Close()
+	mc.SetActions(
+		testutil.NewAction("Begin", nil),
+		testutil.NewAction("Rollback", nil),
+	)
+
+	want := errors.New("an error")
+	_, got := client.ReadWriteTransaction(context.Background(),
+		func(context.Context, *ReadWriteTransaction) error { return want })
+	if got != want {
+		t.Errorf("got <%v>, want <%v>", got, want)
+	}
+	mc.CheckActionsConsumed()
+}
