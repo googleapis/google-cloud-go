@@ -367,6 +367,14 @@ func (d *DocumentRef) newUpdateWrites(data interface{}, fieldPaths []FieldPath, 
 	if err != nil {
 		return nil, err
 	}
+	// Remove server timestamp fields from fieldPaths. Those fields were removed
+	// from the document by toProtoDocument, so they should not be in the update
+	// mask.
+	// Note: this is technically O(n^2), but it is unlikely that there is
+	// more than one server timestamp path.
+	fieldPaths = removePathsIf(fieldPaths, func(fp FieldPath) bool {
+		return fp.in(serverTimestampPaths)
+	})
 	sfps := toServiceFieldPaths(fieldPaths)
 	doc.Name = d.Path
 	return d.writeWithTransform(&pb.Write{
