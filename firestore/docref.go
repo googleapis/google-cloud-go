@@ -148,10 +148,10 @@ func (d *DocumentRef) newReplaceWrites(data interface{}, opts []SetOption, p Pre
 		return nil, errNilDocRef
 	}
 	origFieldPaths, allPaths, err := processSetOptions(opts)
-	isMerge := len(origFieldPaths) > 0 || allPaths // was some Merge option specified?
 	if err != nil {
 		return nil, err
 	}
+	isMerge := len(origFieldPaths) > 0 || allPaths // was some Merge option specified?
 	doc, serverTimestampPaths, err := toProtoDocument(data)
 	if err != nil {
 		return nil, err
@@ -214,7 +214,7 @@ func (d *DocumentRef) newReplaceWrites(data interface{}, opts []SetOption, p Pre
 		// There were field paths, but they all got removed.
 		// The write does nothing but enforce the precondition.
 		w = &pb.Write{CurrentDocument: pc}
-	case !isMerge:
+	case !isMerge && (pc != nil || doc.Fields != nil):
 		// Set without merge, so no update mask.
 		w = &pb.Write{
 			Operation:       &pb.Write_Update{doc},
