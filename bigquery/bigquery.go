@@ -14,8 +14,6 @@
 
 package bigquery
 
-// TODO(mcgreevy): support dry-run mode when creating jobs.
-
 import (
 	"fmt"
 	"io"
