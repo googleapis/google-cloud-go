@@ -384,8 +384,6 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	origAccess := append([]*AccessEntry(nil), md.Access...)
-	// TODO(jba): use a separate dataset for each test run so
-	// tests don't interfere with each other.
 	newEntry := &AccessEntry{
 		Role:       ReaderRole,
 		Entity:     "Joe@example.com",
@@ -417,8 +415,6 @@ func TestIntegration_DatasetUpdateLabels(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// TODO(jba): use a separate dataset for each test run so
-	// tests don't interfere with each other.
 	var dm DatasetMetadataToUpdate
 	dm.SetLabel("label", "value")
 	md, err = dataset.Update(ctx, dm, "")

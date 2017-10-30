@@ -138,7 +138,6 @@ type ExternalDataConfigOptions interface {
 }
 
 // CSVOptions are additional options for CSV external data sources.
-// TODO(jba): combine with FileConfig.
 type CSVOptions struct {
 	// AllowJaggedRows causes missing trailing optional columns to be tolerated
 	// when reading CSV data. Missing values are treated as nulls.
@@ -181,7 +180,6 @@ func (o *CSVOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration)
 }
 
 // quote returns the CSV quote character, or nil if unset.
-// TODO(jba): combine with FileConfig.quote.
 func (o *CSVOptions) quote() *string {
 	if o.ForceZeroQuote {
 		quote := ""

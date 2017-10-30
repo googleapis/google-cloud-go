@@ -58,7 +58,6 @@ func TestConvertBasicValues(t *testing.T) {
 }
 
 func TestConvertTime(t *testing.T) {
-	// TODO(jba): add tests for civil time types.
 	schema := []*FieldSchema{
 		{Type: TimestampFieldType},
 		{Type: DateFieldType},
