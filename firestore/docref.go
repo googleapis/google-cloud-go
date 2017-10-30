@@ -411,18 +411,29 @@ func (d *DocumentRef) newTransform(serverTimestampFieldPaths []FieldPath) *pb.Wr
 	}
 }
 
-var (
+type sentinel int
+
+const (
 	// Delete is used as a value in a call to UpdateMap to indicate that the
 	// corresponding key should be deleted.
-	Delete = new(int)
-	// Not new(struct{}), because addresses of zero-sized values
-	// may not be unique.
+	Delete sentinel = iota
 
 	// ServerTimestamp is used as a value in a call to UpdateMap to indicate that the
 	// key's value should be set to the time at which the server processed
 	// the request.
-	ServerTimestamp = new(int)
+	ServerTimestamp
 )
+
+func (s sentinel) String() string {
+	switch s {
+	case Delete:
+		return "Delete"
+	case ServerTimestamp:
+		return "ServerTimestamp"
+	default:
+		return "<?sentinel?>"
+	}
+}
 
 // UpdateMap updates the document using the given data. Map keys replace the stored
 // values, but other fields of the stored document are untouched.
