@@ -36,10 +36,6 @@ type Job struct {
 	projectID string
 	jobID     string
 
-	// TODO(jba): remove these fields, because they're in config.
-	isQuery          bool
-	destinationTable *bq.TableReference // table to read query results from
-
 	config     *bq.JobConfiguration
 	lastStatus *JobStatus
 }
@@ -223,7 +219,7 @@ func (j *Job) Cancel(ctx context.Context) error {
 // Wait returns nil if the status was retrieved successfully, even if
 // status.Err() != nil. So callers must check both errors. See the example.
 func (j *Job) Wait(ctx context.Context) (*JobStatus, error) {
-	if j.isQuery {
+	if j.isQuery() {
 		// We can avoid polling for query jobs.
 		if _, err := j.waitForQuery(ctx, j.projectID); err != nil {
 			return nil, err
@@ -260,24 +256,20 @@ func (j *Job) Read(ctx context.Context) (*RowIterator, error) {
 }
 
 func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, string) (Schema, error), pf pageFetcher) (*RowIterator, error) {
-	if !j.isQuery {
+	if !j.isQuery() {
 		return nil, errors.New("bigquery: cannot read from a non-query job")
 	}
-	var projectID string
-	if j.destinationTable != nil {
-		projectID = j.destinationTable.ProjectId
-	} else {
-		projectID = j.c.projectID
+	destTable := j.config.Query.DestinationTable
+	// The destination table should only be nil if there was a query error.
+	if destTable == nil {
+		return nil, errors.New("bigquery: query job missing destination table")
 	}
+	projectID := destTable.ProjectId
 	schema, err := waitForQuery(ctx, projectID)
 	if err != nil {
 		return nil, err
 	}
-	// The destination table should only be nil if there was a query error.
-	if j.destinationTable == nil {
-		return nil, errors.New("bigquery: query job missing destination table")
-	}
-	dt := bqToTable(j.destinationTable, j.c)
+	dt := bqToTable(destTable, j.c)
 	it := newRowIterator(ctx, dt, pf)
 	it.schema = schema
 	return it, nil
@@ -570,10 +562,10 @@ func (j *Job) setConfig(config *bq.JobConfiguration) {
 		return
 	}
 	j.config = config
-	if config.Query != nil {
-		j.isQuery = true
-		j.destinationTable = config.Query.DestinationTable
-	}
+}
+
+func (j *Job) isQuery() bool {
+	return j.config != nil && j.config.Query != nil
 }
 
 var stateMap = map[string]State{"PENDING": Pending, "RUNNING": Running, "DONE": Done}

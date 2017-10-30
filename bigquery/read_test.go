@@ -69,11 +69,14 @@ func TestRead(t *testing.T) {
 		projectID: "project-id",
 		jobID:     "job-id",
 		c:         c,
-		isQuery:   true,
-		destinationTable: &bq.TableReference{
-			ProjectId: "project-id",
-			DatasetId: "dataset-id",
-			TableId:   "table-id",
+		config: &bq.JobConfiguration{
+			Query: &bq.JobConfigurationQuery{
+				DestinationTable: &bq.TableReference{
+					ProjectId: "project-id",
+					DatasetId: "dataset-id",
+					TableId:   "table-id",
+				},
+			},
 		},
 	}
 
@@ -204,11 +207,12 @@ func TestReadQueryOptions(t *testing.T) {
 		TableId:   "table-id",
 	}
 	queryJob := &Job{
-		projectID:        "project-id",
-		jobID:            "job-id",
-		c:                c,
-		isQuery:          true,
-		destinationTable: tr,
+		projectID: "project-id",
+		jobID:     "job-id",
+		c:         c,
+		config: &bq.JobConfiguration{
+			Query: &bq.JobConfigurationQuery{DestinationTable: tr},
+		},
 	}
 	it, err := queryJob.read(context.Background(), waitForQueryStub, pf.fetchPage)
 	if err != nil {
