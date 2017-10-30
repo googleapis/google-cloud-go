@@ -53,8 +53,8 @@ var (
 		}},
 	}
 	testTableExpiration time.Time
-	datasetIDs          = testutil.NewUIDSpace("dataset")
-	tableIDs            = testutil.NewUIDSpace("table")
+	datasetIDs          = testutil.NewUIDSpaceSep("dataset", '_')
+	tableIDs            = testutil.NewUIDSpaceSep("table", '_')
 )
 
 func TestMain(m *testing.M) {
@@ -96,7 +96,7 @@ func initIntegrationTest() func() {
 	}
 	// BigQuery does not accept hyphens in dataset or table IDs, so we create IDs
 	// with underscores.
-	dataset = client.Dataset(datasetIDs.NewSep('_'))
+	dataset = client.Dataset(datasetIDs.New())
 	if err := dataset.Create(ctx, nil); err != nil {
 		log.Fatalf("creating dataset %s: %v", dataset.DatasetID, err)
 	}
@@ -232,7 +232,7 @@ func TestIntegration_DatasetCreate(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	ds := client.Dataset(datasetIDs.NewSep('_'))
+	ds := client.Dataset(datasetIDs.New())
 	wmd := &DatasetMetadata{Name: "name", Location: "EU"}
 	err := ds.Create(ctx, wmd)
 	if err != nil {
@@ -285,7 +285,7 @@ func TestIntegration_DatasetDelete(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	ds := client.Dataset(datasetIDs.NewSep('_'))
+	ds := client.Dataset(datasetIDs.New())
 	if err := ds.Create(ctx, nil); err != nil {
 		t.Fatalf("creating dataset %s: %v", ds.DatasetID, err)
 	}
@@ -1274,7 +1274,7 @@ func TestIntegration_ExtractExternal(t *testing.T) {
 
 	// Make a table pointing to the file, and query it.
 	// BigQuery does not allow a Table.Read on an external table.
-	table = dataset.Table(tableIDs.NewSep('_'))
+	table = dataset.Table(tableIDs.New())
 	err = table.Create(context.Background(), &TableMetadata{
 		Schema:             schema,
 		ExpirationTime:     testTableExpiration,
@@ -1440,7 +1440,7 @@ func TestIntegration_ListJobs(t *testing.T) {
 
 // Creates a new, temporary table with a unique name and the given schema.
 func newTable(t *testing.T, s Schema) *Table {
-	table := dataset.Table(tableIDs.NewSep('_'))
+	table := dataset.Table(tableIDs.New())
 	err := table.Create(context.Background(), &TableMetadata{
 		Schema:         s,
 		ExpirationTime: testTableExpiration,
