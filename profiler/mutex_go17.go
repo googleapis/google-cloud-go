@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All Rights Reserved.
+// Copyright 2017 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,16 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package bigquery
+// +build !go1.8
 
-func defaultGCS() *GCSReference {
-	return &GCSReference{
-		uris: []string{"uri"},
-	}
-}
+package profiler
 
-var defaultQuery = &QueryConfig{
-	Q:                "query string",
-	DefaultProjectID: "def-project-id",
-	DefaultDatasetID: "def-dataset-id",
+func enableMutexProfiling() bool {
+	return false
 }
