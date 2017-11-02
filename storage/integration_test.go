@@ -1441,12 +1441,11 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		// user: not an Owner on the containing project
 		// userProject: not the containing one, but user has Editor role on it
 		// result: success, by the standard requester-pays rule
-		// TODO(jba): enable when the service is fixed.
-		// if err := f(ob.UserProject(otherProjID)); err != nil {
-		// 	t.Errorf("%s: got %v, want nil\n"+
-		// 		"confirm that %s is an Editor on %s",
-		// 		msg, err, otherUser, otherProjID)
-		// }
+		if err := f(ob.UserProject(otherProjID)); err != nil {
+			t.Errorf("%s: got %v, want nil\n"+
+				"confirm that %s is an Editor on %s and that that project has billing enabled",
+				msg, err, otherUser, otherProjID)
+		}
 		// user: not an Owner on the containing project
 		// userProject: the containing one, on which the user does NOT have Editor permission.
 		// result: failure
