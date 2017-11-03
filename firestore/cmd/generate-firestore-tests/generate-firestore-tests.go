@@ -18,6 +18,7 @@ import (
 	"flag"
 	"fmt"
 	"go/doc"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -304,17 +305,24 @@ func main() {
 	if *outputDir == "" {
 		log.Fatal("-o required")
 	}
-	genGet()
-	genCreate()
-	genSet()
-	genUpdate()
-	genUpdatePaths()
-	genDelete()
+	binf, err := os.Create(filepath.Join(*outputDir, "tests.binprotos"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	genGet(binf)
+	genCreate(binf)
+	genSet(binf)
+	genUpdate(binf)
+	genUpdatePaths(binf)
+	genDelete(binf)
+	if err := binf.Close(); err != nil {
+		log.Fatalf("closing binary file: %v", err)
+	}
 	fmt.Printf("wrote %d tests to %s\n", nTests, *outputDir)
 }
 
-func genGet() {
-	outputTest("get-1", "A call to DocumentRef.Get.", &tpb.Test{
+func genGet(binw io.Writer) {
+	outputTest("get-1", "A call to DocumentRef.Get.", binw, &tpb.Test{
 		Description: "Get a document",
 		Test: &tpb.Test_Get{&tpb.GetTest{
 			DocRefPath: docPath,
@@ -323,7 +331,7 @@ func genGet() {
 	})
 }
 
-func genCreate() {
+func genCreate(binw io.Writer) {
 	var tests []writeTest
 	tests = append(tests, basicTests...)
 	tests = append(tests, createSetTests...)
@@ -347,11 +355,11 @@ func genCreate() {
 				IsError:    test.isErr,
 			}},
 		}
-		outputTest(fmt.Sprintf("create-%d", i+1), test.comment, tp)
+		outputTest(fmt.Sprintf("create-%d", i+1), test.comment, binw, tp)
 	}
 
 }
-func genSet() {
+func genSet(binw io.Writer) {
 	var tests []writeTest
 	tests = append(tests, basicTests...)
 	tests = append(tests, createSetTests...)
@@ -487,11 +495,11 @@ bug.`,
 				IsError:    test.isErr,
 			}},
 		}
-		outputTest(fmt.Sprintf("set-%d", i+1), test.comment, tp)
+		outputTest(fmt.Sprintf("set-%d", i+1), test.comment, binw, tp)
 	}
 }
 
-func genUpdate() {
+func genUpdate(binw io.Writer) {
 	var tests []writeTest
 	tests = append(tests, basicTests...)
 	tests = append(tests, updateTests...)
@@ -554,11 +562,11 @@ An update operation is produced just to hold the precondition.`,
 		if test.commentForUpdate != "" {
 			comment += "\n\n" + test.commentForUpdate
 		}
-		outputTest(fmt.Sprintf("update-%d", i+1), comment, tp)
+		outputTest(fmt.Sprintf("update-%d", i+1), comment, binw, tp)
 	}
 }
 
-func genUpdatePaths() {
+func genUpdatePaths(binw io.Writer) {
 	var tests []writeTest
 	tests = append(tests, basicTests...)
 	tests = append(tests, updateTests...)
@@ -626,11 +634,11 @@ Each FieldPath is a sequence of uninterpreted path components.`,
 		if test.commentForUpdate != "" {
 			comment += "\n\n" + test.commentForUpdate
 		}
-		outputTest(fmt.Sprintf("update-paths-%d", i+1), test.comment, tp)
+		outputTest(fmt.Sprintf("update-paths-%d", i+1), test.comment, binw, tp)
 	}
 }
 
-func genDelete() {
+func genDelete(binw io.Writer) {
 	for i, test := range []struct {
 		desc    string
 		comment string
@@ -672,7 +680,7 @@ func genDelete() {
 				IsError:      test.isErr,
 			}},
 		}
-		outputTest(fmt.Sprintf("delete-%d", i+1), test.comment, tp)
+		outputTest(fmt.Sprintf("delete-%d", i+1), test.comment, binw, tp)
 	}
 }
 
@@ -751,15 +759,15 @@ func toFieldPaths(fps [][]string) []*tpb.FieldPath {
 	return ps
 }
 
-func outputTest(filename, comment string, t *tpb.Test) {
-	pathname := filepath.Join(*outputDir, fmt.Sprintf("%s.textproto", filename))
-	if err := writeTestToFile(pathname, comment, t); err != nil {
+func outputTest(filename, comment string, binw io.Writer, t *tpb.Test) {
+	basename := filepath.Join(*outputDir, filename+".textproto")
+	if err := writeTestToFile(basename, comment, binw, t); err != nil {
 		log.Fatalf("writing test: %v", err)
 	}
 	nTests++
 }
 
-func writeTestToFile(pathname, comment string, t *tpb.Test) (err error) {
+func writeTestToFile(pathname, comment string, binw io.Writer, t *tpb.Test) (err error) {
 	f, err := os.Create(pathname)
 	if err != nil {
 		return err
@@ -779,7 +787,17 @@ func writeTestToFile(pathname, comment string, t *tpb.Test) (err error) {
 	if err := proto.MarshalText(f, t); err != nil {
 		return err
 	}
-	return nil
+
+	// Write binary protos to a single file, each preceded by its length as a varint.
+	bytes, err := proto.Marshal(t)
+	if err != nil {
+		return err
+	}
+	if _, err = binw.Write(proto.EncodeVarint(uint64(len(bytes)))); err != nil {
+		return err
+	}
+	_, err = binw.Write(bytes)
+	return err
 }
 
 func mp(args ...interface{}) map[string]*fspb.Value {
