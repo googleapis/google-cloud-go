@@ -144,10 +144,10 @@ func TestTakeWriteSessionFromIdleList(t *testing.T) {
 	t.Parallel()
 	sp, sc, cancel := setup(t, SessionPoolConfig{MaxIdle: 20}) // make sure maintainer keeps the idle sessions
 	defer cancel()
-	act := testutil.NewAction("Begin", nil)
+
 	acts := make([]testutil.Action, 20)
 	for i := 0; i < len(acts); i++ {
-		acts[i] = act
+		acts[i] = testutil.Action{"BeginTransaction", nil}
 	}
 	sc.SetActions(acts...)
 	// Take ten sessions from session pool and recycle them.
