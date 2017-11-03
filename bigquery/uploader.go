@@ -156,6 +156,9 @@ func (u *Uploader) putMulti(ctx context.Context, src []ValueSaver) error {
 	if err != nil {
 		return err
 	}
+	if req == nil {
+		return nil
+	}
 	call := u.t.c.bqs.Tabledata.InsertAll(u.t.ProjectID, u.t.DatasetID, u.t.TableID, req)
 	call = call.Context(ctx)
 	setClientHeader(call.Header())
@@ -171,6 +174,9 @@ func (u *Uploader) putMulti(ctx context.Context, src []ValueSaver) error {
 }
 
 func (u *Uploader) newInsertRequest(savers []ValueSaver) (*bq.TableDataInsertAllRequest, error) {
+	if savers == nil { // If there are no rows, do nothing.
+		return nil, nil
+	}
 	req := &bq.TableDataInsertAllRequest{
 		TemplateSuffix:      u.TableTemplateSuffix,
 		IgnoreUnknownValues: u.IgnoreUnknownValues,

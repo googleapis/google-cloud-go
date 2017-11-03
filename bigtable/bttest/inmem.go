@@ -907,6 +907,7 @@ func (s *server) ReadModifyWriteRow(ctx context.Context, req *btpb.ReadModifyWri
 		f.Columns = append(f.Columns, &btpb.Column{
 			Qualifier: []byte(qual),
 			Cells: []*btpb.Cell{{
+				TimestampMicros: cell.ts,
 				Value: cell.value,
 			}},
 		})
