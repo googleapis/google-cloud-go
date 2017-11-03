@@ -442,6 +442,10 @@ func TestClientIntegration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("ApplyReadModifyWrite %+v: %v", step.rmw, err)
 		}
+		// Make sure the modified cell returned by the RMW operation has a timestamp.
+		if row["counter"][0].Timestamp == 0 {
+			t.Errorf("RMW returned cell timestamp: got %v, want > 0", row["counter"][0].Timestamp)
+		}
 		clearTimestamps(row)
 		wantRow := Row{"counter": []ReadItem{{Row: "gwashington", Column: "counter:likes", Value: step.want}}}
 		if !reflect.DeepEqual(row, wantRow) {
