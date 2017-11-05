@@ -199,29 +199,14 @@ func (d *DocumentRef) newReplaceWrites(data interface{}, opts []SetOption, p Pre
 			return nil, err
 		}
 	}
-	var w *pb.Write
-	switch {
-	case len(fieldPaths) > 0:
-		// There are field paths, so we need an update mask.
-		sfps := toServiceFieldPaths(fieldPaths)
-		sort.Strings(sfps) // TODO(jba): make tests pass without this
-		w = &pb.Write{
-			Operation:       &pb.Write_Update{doc},
-			UpdateMask:      &pb.DocumentMask{FieldPaths: sfps},
-			CurrentDocument: pc,
-		}
-	case isMerge && pc != nil:
+	if isMerge && pc != nil {
 		// There were field paths, but they all got removed.
 		// The write does nothing but enforce the precondition.
-		w = &pb.Write{CurrentDocument: pc}
-	case !isMerge && (pc != nil || doc.Fields != nil):
-		// Set without merge, so no update mask.
-		w = &pb.Write{
-			Operation:       &pb.Write_Update{doc},
-			CurrentDocument: pc,
-		}
+		// This will cause newUpdateWithTransform to omit the update
+		// operation from the write.
+		doc.Fields = nil
 	}
-	return d.writeWithTransform(w, serverTimestampPaths), nil
+	return d.newUpdateWithTransform(doc, fieldPaths, pc, serverTimestampPaths), nil
 }
 
 // Create a new map that contains only the field paths in fps.
@@ -367,39 +352,53 @@ func (d *DocumentRef) newUpdateWrites(data interface{}, fieldPaths []FieldPath, 
 	if err != nil {
 		return nil, err
 	}
-	// Remove server timestamp fields from fieldPaths. Those fields were removed
-	// from the document by toProtoDocument, so they should not be in the update
-	// mask.
-	// Note: this is technically O(n^2), but it is unlikely that there is
-	// more than one server timestamp path.
-	fieldPaths = removePathsIf(fieldPaths, func(fp FieldPath) bool {
-		return fp.in(serverTimestampPaths)
-	})
-	sfps := toServiceFieldPaths(fieldPaths)
 	doc.Name = d.Path
-	return d.writeWithTransform(&pb.Write{
-		Operation:       &pb.Write_Update{doc},
-		UpdateMask:      &pb.DocumentMask{FieldPaths: sfps},
-		CurrentDocument: pc,
-	}, serverTimestampPaths), nil
+	return d.newUpdateWithTransform(doc, fieldPaths, pc, serverTimestampPaths), nil
 }
 
 var requestTimeTransform = &pb.DocumentTransform_FieldTransform_SetToServerValue{
 	pb.DocumentTransform_FieldTransform_REQUEST_TIME,
 }
 
-func (d *DocumentRef) writeWithTransform(w *pb.Write, serverTimestampFieldPaths []FieldPath) []*pb.Write {
+// newUpdateWithTransform constructs operations for a commit. Most generally, it
+// returns an update operation followed by a transform.
+//
+// If there are no serverTimestampPaths, the transform is omitted.
+//
+// If doc.Fields is empty, there are no updatePaths, and there is no precondition,
+// the the update is omitted.
+func (d *DocumentRef) newUpdateWithTransform(doc *pb.Document, updatePaths []FieldPath, pc *pb.Precondition, serverTimestampPaths []FieldPath) []*pb.Write {
+	// Remove server timestamp fields from updatePaths. Those fields were removed
+	// from the document by toProtoDocument, so they should not be in the update
+	// mask.
+	// Note: this is technically O(n^2), but it is unlikely that there is
+	// more than one server timestamp path.
+	updatePaths = removePathsIf(updatePaths, func(fp FieldPath) bool {
+		return fp.in(serverTimestampPaths)
+	})
 	var ws []*pb.Write
-	if w != nil {
+	if len(doc.Fields) > 0 || len(updatePaths) > 0 {
+		var mask *pb.DocumentMask
+		if len(updatePaths) > 0 {
+			sfps := toServiceFieldPaths(updatePaths)
+			sort.Strings(sfps) // TODO(jba): make tests pass without this
+			mask = &pb.DocumentMask{FieldPaths: sfps}
+		}
+		w := &pb.Write{
+			Operation:       &pb.Write_Update{doc},
+			UpdateMask:      mask,
+			CurrentDocument: pc,
+		}
 		ws = append(ws, w)
+		pc = nil // If the precondition is in the write, we don't need it in the transform.
 	}
-	if len(serverTimestampFieldPaths) > 0 {
-		ws = append(ws, d.newTransform(serverTimestampFieldPaths))
+	if len(serverTimestampPaths) > 0 || pc != nil {
+		ws = append(ws, d.newTransform(serverTimestampPaths, pc))
 	}
 	return ws
 }
 
-func (d *DocumentRef) newTransform(serverTimestampFieldPaths []FieldPath) *pb.Write {
+func (d *DocumentRef) newTransform(serverTimestampFieldPaths []FieldPath, pc *pb.Precondition) *pb.Write {
 	sort.Sort(byPath(serverTimestampFieldPaths)) // TODO(jba): make tests pass without this
 	var fts []*pb.DocumentTransform_FieldTransform
 	for _, p := range serverTimestampFieldPaths {
@@ -416,6 +415,7 @@ func (d *DocumentRef) newTransform(serverTimestampFieldPaths []FieldPath) *pb.Wr
 				// TODO(jba): should the transform have the same preconditions as the write?
 			},
 		},
+		CurrentDocument: pc,
 	}
 }
 
