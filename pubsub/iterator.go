@@ -212,7 +212,8 @@ func (it *streamingMessageIterator) sender() {
 
 		case <-it.kaTicker.C:
 			it.mu.Lock()
-			send = it.handleKeepAlives()
+			it.handleKeepAlives()
+			send = (len(it.pendingModAcks) > 0)
 
 		case <-it.nackTicker.C:
 			it.mu.Lock()
@@ -247,31 +248,22 @@ func (it *streamingMessageIterator) sender() {
 }
 
 // handleKeepAlives modifies the pending request to include deadline extensions
-// for live messages. It also purges expired messages. It reports whether
-// there were any live messages.
+// for live messages. It also purges expired messages.
 //
 // Called with the lock held.
-func (it *streamingMessageIterator) handleKeepAlives() bool {
-	live, expired := getKeepAliveAckIDs(it.keepAliveDeadlines)
-	for _, e := range expired {
-		delete(it.keepAliveDeadlines, e)
-	}
-	dl := trunc32(int64(it.po.ackDeadline.Seconds()))
-	for _, id := range live {
-		it.pendingModAcks[id] = dl
-	}
-	it.checkDrained()
-	return len(live) > 0
-}
-
-func getKeepAliveAckIDs(items map[string]time.Time) (live, expired []string) {
+func (it *streamingMessageIterator) handleKeepAlives() {
 	now := time.Now()
-	for id, expiry := range items {
+	dl := trunc32(int64(it.po.ackDeadline.Seconds()))
+	for id, expiry := range it.keepAliveDeadlines {
 		if expiry.Before(now) {
-			expired = append(expired, id)
+			// This delete will not result in skipping any map items, as implied by
+			// the spec at https://golang.org/ref/spec#For_statements, "For
+			// statements with range clause", note 3, and stated explicitly at
+			// https://groups.google.com/forum/#!msg/golang-nuts/UciASUb03Js/pzSq5iVFAQAJ.
+			delete(it.keepAliveDeadlines, id)
 		} else {
-			live = append(live, id)
+			it.pendingModAcks[id] = dl
 		}
 	}
-	return live, expired
+	it.checkDrained()
 }
