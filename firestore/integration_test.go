@@ -321,7 +321,7 @@ func TestIntegration_Set(t *testing.T) {
 	// SetOptions:
 	// Only fields mentioned in the Merge option will be changed.
 	// In this case, "str" will not be changed to "1".
-	wr3, err := doc.Set(ctx, newData, Merge("x", "y"))
+	wr3, err := doc.Set(ctx, newData, Merge([]string{"x"}, []string{"y"}))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -603,7 +603,7 @@ func TestIntegration_MergeServerTimestamp(t *testing.T) {
 	// specify only "b" in the list of merge fields.
 	_, err = doc.Set(ctx,
 		map[string]interface{}{"a": 2, "b": ServerTimestamp},
-		Merge("b"))
+		Merge([]string{"b"}))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -650,7 +650,7 @@ func TestIntegration_MergeNestedServerTimestamp(t *testing.T) {
 			"b": ServerTimestamp,
 			"c": map[string]interface{}{"d": ServerTimestamp},
 		},
-		Merge("c.d"))
+		Merge([]string{"c", "d"}))
 	if err != nil {
 		t.Fatal(err)
 	}

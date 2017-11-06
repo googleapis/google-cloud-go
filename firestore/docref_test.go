@@ -95,7 +95,7 @@ func TestDocSet(t *testing.T) {
 		{
 			desc:  "Merge with a field",
 			data:  map[string]interface{}{"a": 1, "b": 2},
-			opt:   Merge("a"),
+			opt:   Merge([]string{"a"}),
 			write: map[string]*pb.Value{"a": intval(1)},
 			mask:  []string{"a"},
 		},
@@ -105,7 +105,7 @@ func TestDocSet(t *testing.T) {
 				"a": map[string]interface{}{"b": 1, "c": 2},
 				"d": 3,
 			},
-			opt: Merge("a"),
+			opt: Merge([]string{"a"}),
 			write: map[string]*pb.Value{"a": mapval(map[string]*pb.Value{
 				"b": intval(1),
 				"c": intval(2),
@@ -135,7 +135,7 @@ func TestDocSet(t *testing.T) {
 		{
 			desc: "Merge with FieldPaths",
 			data: map[string]interface{}{"*": map[string]interface{}{"~": true}},
-			opt:  MergePaths([]string{"*", "~"}),
+			opt:  Merge([]string{"*", "~"}),
 			write: map[string]*pb.Value{
 				"*": mapval(map[string]*pb.Value{
 					"~": boolval(true),
@@ -148,7 +148,7 @@ func TestDocSet(t *testing.T) {
 			data: struct {
 				A map[string]bool `firestore:"*"`
 			}{A: map[string]bool{"~": true}},
-			opt: MergePaths([]string{"*", "~"}),
+			opt: Merge([]string{"*", "~"}),
 			write: map[string]*pb.Value{
 				"*": mapval(map[string]*pb.Value{
 					"~": boolval(true),
@@ -171,7 +171,7 @@ func TestDocSet(t *testing.T) {
 		{
 			desc:      "a ServerTimestamp alone with a path",
 			data:      map[string]interface{}{"b": ServerTimestamp},
-			opt:       MergePaths([]string{"b"}),
+			opt:       Merge([]string{"b"}),
 			write:     nil,
 			transform: []string{"b"},
 		},
@@ -205,7 +205,7 @@ func TestDocSet(t *testing.T) {
 		{
 			desc:      "ServerTimestamp with Merge of both fields",
 			data:      map[string]interface{}{"a": 1, "b": ServerTimestamp},
-			opt:       Merge("a", "b"),
+			opt:       Merge([]string{"a"}, []string{"b"}),
 			write:     map[string]*pb.Value{"a": intval(1)},
 			mask:      []string{"a"},
 			transform: []string{"b"},
@@ -213,20 +213,20 @@ func TestDocSet(t *testing.T) {
 		{
 			desc:  "If is ServerTimestamp not in Merge, no transform",
 			data:  map[string]interface{}{"a": 1, "b": ServerTimestamp},
-			opt:   Merge("a"),
+			opt:   Merge([]string{"a"}),
 			write: map[string]*pb.Value{"a": intval(1)},
 			mask:  []string{"a"},
 		},
 		{
 			desc:      "If no ordinary values in Merge, no write",
 			data:      map[string]interface{}{"a": 1, "b": ServerTimestamp},
-			opt:       Merge("b"),
+			opt:       Merge([]string{"b"}),
 			transform: []string{"b"},
 		},
 		{
 			desc:  "Merge fields must all be present in data.",
 			data:  map[string]interface{}{"a": 1},
-			opt:   Merge("b", "a"),
+			opt:   Merge([]string{"b"}, []string{"a"}),
 			isErr: true,
 		},
 		{
@@ -243,7 +243,7 @@ func TestDocSet(t *testing.T) {
 		{
 			desc:  "Delete cannot even appear in an unmerged field (allow?)",
 			data:  map[string]interface{}{"a": 1, "b": Delete},
-			opt:   Merge("a"),
+			opt:   Merge([]string{"a"}),
 			isErr: true,
 		},
 	} {
