@@ -116,23 +116,7 @@ var MergeAll SetOption = merge{all: true}
 // overwritten. Other fields on the existing document will be untouched. It is an
 // error if a provided field path does not refer to a value in the data passed to
 // Set.
-//
-// Each element of fieldPaths must be a single field or a dot-separated sequence of
-// fields, none of which contain the runes "˜*/[]". Use MergePaths instead for such
-// paths.
-func Merge(fieldPaths ...string) SetOption {
-	fps, err := parseDotSeparatedStrings(fieldPaths)
-	if err != nil {
-		return merge{err: err}
-	}
-	return merge{paths: fps}
-}
-
-// MergePaths returns a SetOption that causes only the given field paths to be
-// overwritten. Other fields on the existing document will be untouched. It is an
-// error if a provided field path does not refer to a value in the data passed to
-// Set.
-func MergePaths(fps ...FieldPath) SetOption {
+func Merge(fps ...FieldPath) SetOption {
 	for _, fp := range fps {
 		if err := fp.validate(); err != nil {
 			return merge{err: err}
