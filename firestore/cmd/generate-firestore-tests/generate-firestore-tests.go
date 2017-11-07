@@ -89,14 +89,6 @@ var (
 				"b", mp("c", []interface{}{"three", mp("d", true)}),
 			),
 		},
-		{
-			desc:    "empty field",
-			comment: `Empty fields are not allowed.`,
-			inData:  `{"": 1}`,
-			paths:   [][]string{{""}},
-			values:  []string{`1`},
-			isErr:   true,
-		},
 	}
 
 	// tests for Create and Set
