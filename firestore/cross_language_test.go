@@ -17,7 +17,6 @@
 package firestore
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -32,6 +31,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	ts "github.com/golang/protobuf/ptypes/timestamp"
+	"golang.org/x/net/context"
 	fspb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 )
 
