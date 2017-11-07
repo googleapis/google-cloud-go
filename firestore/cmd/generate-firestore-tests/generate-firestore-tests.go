@@ -477,10 +477,6 @@ bug.`,
 	}...)
 
 	for i, test := range tests {
-		var opts []*tpb.SetOption
-		if test.opt != nil {
-			opts = []*tpb.SetOption{test.opt}
-		}
 		var req *fspb.CommitRequest
 		if !test.isErr {
 			req = newCommitRequest(test.outData, test.mask, nil, test.transform)
@@ -489,7 +485,7 @@ bug.`,
 			Description: test.desc,
 			Test: &tpb.Test_Set{&tpb.SetTest{
 				DocRefPath: docPath,
-				Options:    opts,
+				Option:     test.opt,
 				JsonData:   test.inData,
 				Request:    req,
 				IsError:    test.isErr,
