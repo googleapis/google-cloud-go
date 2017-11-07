@@ -7,7 +7,7 @@
 description: "MergeAll with nested fields"
 set: <
   doc_ref_path: "projects/projectID/databases/(default)/documents/C/d"
-  options: <
+  option: <
     all: true
   >
   json_data: "{\"h\": { \"g\": 3, \"f\": 4 }}"

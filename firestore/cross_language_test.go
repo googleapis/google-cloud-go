@@ -112,8 +112,8 @@ func runTest(t *testing.T, msg string, test *pb.Test) {
 		ref := docRefFromPath(tt.Set.DocRefPath, c)
 		data := convertData(tt.Set.JsonData)
 		var opts []SetOption
-		for _, opt := range tt.Set.Options {
-			opts = append(opts, convertSetOption(opt))
+		if tt.Set.Option != nil {
+			opts = []SetOption{convertSetOption(tt.Set.Option)}
 		}
 		_, err := ref.Set(ctx, data, opts...)
 		check(err, tt.Set.IsError)
