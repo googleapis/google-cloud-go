@@ -217,7 +217,7 @@ func convertSetOption(opt *pb.SetOption) SetOption {
 	if opt.All {
 		return MergeAll
 	}
-	return MergePaths(convertFieldPaths(opt.Fields)...)
+	return Merge(convertFieldPaths(opt.Fields)...)
 }
 
 func convertFieldPaths(fps []*pb.FieldPath) []FieldPath {
