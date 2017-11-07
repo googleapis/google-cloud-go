@@ -6,7 +6,7 @@
 description: "Merge with a field"
 set: <
   doc_ref_path: "projects/projectID/databases/(default)/documents/C/d"
-  options: <
+  option: <
     fields: <
       field: "a"
     >

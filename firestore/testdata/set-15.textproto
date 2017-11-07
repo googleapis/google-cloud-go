@@ -6,7 +6,7 @@
 description: "MergeAll"
 set: <
   doc_ref_path: "projects/projectID/databases/(default)/documents/C/d"
-  options: <
+  option: <
     all: true
   >
   json_data: "{\"a\": 1, \"b\": 2}"

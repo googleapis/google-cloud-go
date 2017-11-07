@@ -7,7 +7,7 @@
 description: "Merge field is not a leaf"
 set: <
   doc_ref_path: "projects/projectID/databases/(default)/documents/C/d"
-  options: <
+  option: <
     fields: <
       field: "h"
     >
