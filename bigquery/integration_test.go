@@ -755,15 +755,14 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 	}
 	sort.Sort(byName(got))
 
-	// Compare times to the microsecond.
-	timeEq := func(x, y time.Time) bool {
-		return x.Round(time.Microsecond).Equal(y.Round(time.Microsecond))
-	}
+	// Round times to the microsecond.
+	roundToMicros := cmp.Transformer("RoundToMicros",
+		func(t time.Time) time.Time { return t.Round(time.Microsecond) })
 	// BigQuery does not elide nils. It reports an error for nil fields.
 	for i, g := range got {
 		if i >= len(want) {
 			t.Errorf("%d: got %v, past end of want", i, pretty.Value(g))
-		} else if diff := testutil.Diff(g, want[i], cmp.Comparer(timeEq)); diff != "" {
+		} else if diff := testutil.Diff(g, want[i], roundToMicros); diff != "" {
 			t.Errorf("%d: got=-, want=+:\n%s", i, diff)
 		}
 	}
