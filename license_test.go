@@ -30,6 +30,7 @@ var sentinels = []string{
 }
 
 func TestLicense(t *testing.T) {
+	t.Parallel()
 	err := filepath.Walk(".", func(path string, fi os.FileInfo, err error) error {
 		if err != nil {
 			return err
