@@ -262,6 +262,7 @@ func (it *streamingMessageIterator) handleKeepAlives() {
 			// https://groups.google.com/forum/#!msg/golang-nuts/UciASUb03Js/pzSq5iVFAQAJ.
 			delete(it.keepAliveDeadlines, id)
 		} else {
+			// This will not overwrite a nack, because nacking removes the ID from keepAliveDeadlines.
 			it.pendingModAcks[id] = dl
 		}
 	}
