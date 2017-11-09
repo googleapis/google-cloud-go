@@ -587,13 +587,14 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		crc, checkCRC = parseCRC32c(res)
 	}
 	return &Reader{
-		body:         body,
-		size:         size,
-		remain:       remain,
-		contentType:  res.Header.Get("Content-Type"),
-		cacheControl: res.Header.Get("Cache-Control"),
-		wantCRC:      crc,
-		checkCRC:     checkCRC,
+		body:            body,
+		size:            size,
+		remain:          remain,
+		contentType:     res.Header.Get("Content-Type"),
+		contentEncoding: res.Header.Get("Content-Encoding"),
+		cacheControl:    res.Header.Get("Cache-Control"),
+		wantCRC:         crc,
+		checkCRC:        checkCRC,
 	}, nil
 }
 
