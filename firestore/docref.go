@@ -48,13 +48,6 @@ func newDocRef(parent *CollectionRef, id string) *DocumentRef {
 	}
 }
 
-func (d1 *DocumentRef) equal(d2 *DocumentRef) bool {
-	if d1 == nil || d2 == nil {
-		return d1 == d2
-	}
-	return d1.Parent.equal(d2.Parent) && d1.Path == d2.Path && d1.ID == d2.ID
-}
-
 // Collection returns a reference to sub-collection of this document.
 func (d *DocumentRef) Collection(id string) *CollectionRef {
 	return newCollRefWithParent(d.Parent.c, d, id)
