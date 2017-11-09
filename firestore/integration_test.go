@@ -948,7 +948,7 @@ func copyMap(m map[string]interface{}) map[string]interface{} {
 
 func checkTimeBetween(t *testing.T, got, low, high time.Time) {
 	// Allow slack for clock skew.
-	const slack = 2 * time.Second
+	const slack = 4 * time.Second
 	low = low.Add(-slack)
 	high = high.Add(slack)
 	if got.Before(low) || got.After(high) {
