@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -36,15 +35,7 @@ import (
 )
 
 func TestCrossLanguageTests(t *testing.T) {
-	testDir := os.Getenv("GCLOUD_FS_TESTS")
-	if testDir == "" {
-		testDir = "testdata"
-	}
-	runTestsFromDirectory(t, testDir)
-}
-
-func runTestsFromDirectory(t *testing.T, dir string) {
-	t.Logf("running cross-language tests from %s", dir)
+	const dir = "testdata"
 	fis, err := ioutil.ReadDir(dir)
 	if err != nil {
 		t.Fatal(err)
