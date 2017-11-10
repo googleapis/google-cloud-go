@@ -1,4 +1,4 @@
-// Copyright 2017, Google Inc. All rights reserved.
+// Copyright 2017, Google LLC All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 // Package longrunning is an auto-generated package for the
 // Google Long Running Operations API.
 //
-//   NOTE: This package is in alpha. It is not stable, and is likely to be subject to changes.
+//   NOTE: This package is in alpha. It is not stable, and is likely to change.
 //
 //
 // Use the client at cloud.google.com/go/longrunning in preference to this.
