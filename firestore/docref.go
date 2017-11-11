@@ -111,7 +111,7 @@ func (d *DocumentRef) Create(ctx context.Context, data interface{}) (*WriteResul
 	if err != nil {
 		return nil, err
 	}
-	return d.Parent.c.commit(ctx, ws)
+	return d.Parent.c.commit1(ctx, ws)
 }
 
 // Set creates or overwrites the document with the given data. See DocumentRef.Create
@@ -123,7 +123,7 @@ func (d *DocumentRef) Set(ctx context.Context, data interface{}, opts ...SetOpti
 	if err != nil {
 		return nil, err
 	}
-	return d.Parent.c.commit(ctx, ws)
+	return d.Parent.c.commit1(ctx, ws)
 }
 
 // Delete deletes the document. If the document doesn't exist, it does nothing
@@ -133,7 +133,7 @@ func (d *DocumentRef) Delete(ctx context.Context, preconds ...Precondition) (*Wr
 	if err != nil {
 		return nil, err
 	}
-	return d.Parent.c.commit(ctx, ws)
+	return d.Parent.c.commit1(ctx, ws)
 }
 
 func (d *DocumentRef) newReplaceWrites(data interface{}, opts []SetOption, p Precondition) ([]*pb.Write, error) {
@@ -460,7 +460,7 @@ func (d *DocumentRef) UpdateMap(ctx context.Context, data map[string]interface{}
 	if err != nil {
 		return nil, err
 	}
-	return d.Parent.c.commit(ctx, ws)
+	return d.Parent.c.commit1(ctx, ws)
 }
 
 func isStructOrStructPtr(x interface{}) bool {
@@ -491,7 +491,7 @@ func (d *DocumentRef) UpdateStruct(ctx context.Context, fieldPaths []string, dat
 	if err != nil {
 		return nil, err
 	}
-	return d.Parent.c.commit(ctx, ws)
+	return d.Parent.c.commit1(ctx, ws)
 }
 
 // A FieldPathUpdate describes an update to a value referred to by a FieldPath.
@@ -509,7 +509,7 @@ func (d *DocumentRef) UpdatePaths(ctx context.Context, data []FieldPathUpdate, p
 	if err != nil {
 		return nil, err
 	}
-	return d.Parent.c.commit(ctx, ws)
+	return d.Parent.c.commit1(ctx, ws)
 }
 
 // Collections returns an interator over the immediate sub-collections of the document.
