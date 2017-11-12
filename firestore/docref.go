@@ -140,11 +140,13 @@ func (d *DocumentRef) newReplaceWrites(data interface{}, opts []SetOption, p Pre
 	if d == nil {
 		return nil, errNilDocRef
 	}
+	if len(opts) > 0 && p != nil {
+		return nil, errors.New("firestore: newReplaceWrites has options and precondition")
+	}
 	origFieldPaths, allPaths, err := processSetOptions(opts)
 	if err != nil {
 		return nil, err
 	}
-	isMerge := len(origFieldPaths) > 0 || allPaths // was some Merge option specified?
 	doc, serverTimestampPaths, err := toProtoDocument(data)
 	if err != nil {
 		return nil, err
@@ -191,13 +193,6 @@ func (d *DocumentRef) newReplaceWrites(data interface{}, opts []SetOption, p Pre
 		if err != nil {
 			return nil, err
 		}
-	}
-	if isMerge && pc != nil {
-		// There were field paths, but they all got removed.
-		// The write does nothing but enforce the precondition.
-		// This will cause newUpdateWithTransform to omit the update
-		// operation from the write.
-		doc.Fields = nil
 	}
 	return d.newUpdateWithTransform(doc, fieldPaths, pc, serverTimestampPaths), nil
 }
