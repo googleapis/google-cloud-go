@@ -421,12 +421,14 @@ func filterRow(f *btpb.RowFilter, r *row) bool {
 				}
 			}
 		}
+		var count int
 		for _, fam := range r.families {
 			for _, cs := range fam.cells {
 				sort.Sort(byDescTS(cs))
+				count += len(cs)
 			}
 		}
-		return true
+		return count > 0
 	case *btpb.RowFilter_CellsPerColumnLimitFilter:
 		lim := int(f.CellsPerColumnLimitFilter)
 		for _, fam := range r.families {
