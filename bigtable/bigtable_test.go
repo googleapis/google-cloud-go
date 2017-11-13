@@ -319,6 +319,12 @@ func TestClientIntegration(t *testing.T) {
 			filter: ConditionFilter(ChainFilters(ColumnFilter(".*j.*"), ColumnFilter(".*mckinley.*")), StripValueFilter(), nil),
 			want:   "",
 		},
+		{
+			desc:   "chain that ends with an interleave that has no match. covers #804",
+			rr:     RowRange{},
+			filter: ConditionFilter(ChainFilters(ColumnFilter(".*j.*"), InterleaveFilters(ColumnFilter(".*x.*"), ColumnFilter(".*z.*"))), StripValueFilter(), nil),
+			want:   "",
+		},
 	}
 	for _, tc := range readTests {
 		var opts []ReadOption
