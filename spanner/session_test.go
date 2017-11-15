@@ -431,6 +431,7 @@ func TestSessionDestroy(t *testing.T) {
 	t.Parallel()
 	sp, _, cancel := setup(t, SessionPoolConfig{MinOpened: 1})
 	defer cancel()
+	<-time.After(10 * time.Millisecond) // maintainer will create one session, we wait for it create session to avoid flakiness in test
 	sh, err := sp.take(context.Background())
 	if err != nil {
 		t.Errorf("cannot get session from session pool: %v", err)
@@ -439,11 +440,11 @@ func TestSessionDestroy(t *testing.T) {
 	sh.recycle()
 	if d := s.destroy(true); d || !s.isValid() {
 		// Session should be remaining because of min open sessions constraint.
-		t.Errorf("session %v was destroyed in expiration mode, want it to stay alive", s)
+		t.Errorf("session %v invalid, want it to stay alive. (destroy in expiration mode, success: %v)", s, d)
 	}
 	if d := s.destroy(false); !d || s.isValid() {
 		// Session should be destroyed.
-		t.Errorf("failed to destroy session %s", s)
+		t.Errorf("failed to destroy session %v. (destroy in default mode, success: %v)", s, d)
 	}
 }
 
