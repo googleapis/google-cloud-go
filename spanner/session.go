@@ -577,34 +577,32 @@ func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, err
 			if !p.isHealthy(s) {
 				continue
 			}
-			if !s.isWritePrepared() {
-				if err = s.prepareForWrite(ctx); err != nil {
-					return nil, toSpannerError(err)
+		} else {
+			// Idle list is empty, block if session pool has reached max session creation concurrency or max number of open sessions.
+			if (p.MaxOpened > 0 && p.numOpened >= p.MaxOpened) || (p.MaxBurst > 0 && p.createReqs >= p.MaxBurst) {
+				mayGetSession := p.mayGetSession
+				p.mu.Unlock()
+				select {
+				case <-ctx.Done():
+					return nil, errGetSessionTimeout()
+				case <-mayGetSession:
 				}
+				continue
 			}
-			return &sessionHandle{session: s}, nil
-		}
-		// Idle list is empty, block if session pool has reached max session creation concurrency or max number of open sessions.
-		if (p.MaxOpened > 0 && p.numOpened >= p.MaxOpened) || (p.MaxBurst > 0 && p.createReqs >= p.MaxBurst) {
-			mayGetSession := p.mayGetSession
-			p.mu.Unlock()
-			select {
-			case <-ctx.Done():
-				return nil, errGetSessionTimeout()
-			case <-mayGetSession:
-			}
-			continue
-		}
 
-		// Take budget before the actual session creation.
-		p.numOpened++
-		p.createReqs++
-		p.mu.Unlock()
-		if s, err = p.createSession(ctx); err != nil {
-			return nil, toSpannerError(err)
+			// Take budget before the actual session creation.
+			p.numOpened++
+			p.createReqs++
+			p.mu.Unlock()
+			if s, err = p.createSession(ctx); err != nil {
+				return nil, toSpannerError(err)
+			}
 		}
-		if err = s.prepareForWrite(ctx); err != nil {
-			return nil, toSpannerError(err)
+		if !s.isWritePrepared() {
+			if err = s.prepareForWrite(ctx); err != nil {
+				s.recycle()
+				return nil, toSpannerError(err)
+			}
 		}
 		return &sessionHandle{session: s}, nil
 	}
@@ -880,8 +878,8 @@ func (hc *healthChecker) worker(i int) {
 			err := ws.prepareForWrite(contextWithOutgoingMetadata(ctx, hc.pool.md))
 			cancel()
 			if err != nil {
-				// TODO(dixiao): handle error properly
-				log.Errorf("prepareForWrite failed: %v", err)
+				// Skip handling prepare error, session can be prepared in next cycle
+				log.Warningf("Failed to prepare session, error: %v", toSpannerError(err))
 			}
 			hc.pool.recycle(ws)
 			hc.pool.mu.Lock()
@@ -955,6 +953,7 @@ func (hc *healthChecker) maintainer() {
 			}
 			if shouldPrepareWrite {
 				if err = s.prepareForWrite(ctx); err != nil {
+					p.recycle(s)
 					log.Warningf("Failed to prepare session, error: %v", toSpannerError(err))
 					continue
 				}
