@@ -30,9 +30,14 @@ type Precondition interface {
 	preconditionProto() (*pb.Precondition, error)
 }
 
-// Exists returns a Precondition that checks for the existence or non-existence
-// of a resource before writing to it. If the check fails, the write does not occur.
-func Exists(b bool) Precondition { return exists(b) }
+// Exists is a Precondition that checks for the existence of a resource before
+// writing to it. If the check fails, the write does not occur.
+var Exists Precondition
+
+func init() {
+	// Initialize here so godoc doesn't show the internal value.
+	Exists = exists(true)
+}
 
 type exists bool
 
@@ -42,7 +47,13 @@ func (e exists) preconditionProto() (*pb.Precondition, error) {
 	}, nil
 }
 
-func (e exists) String() string { return fmt.Sprintf("Exists(%t)", e) }
+func (e exists) String() string {
+	if e {
+		return "Exists"
+	} else {
+		return "DoesNotExist"
+	}
+}
 
 // LastUpdateTime returns a Precondition that checks that a resource must exist and
 // must have last been updated at the given time. If the check fails, the write

@@ -107,7 +107,7 @@ func (d *DocumentRef) Get(ctx context.Context) (*DocumentSnapshot, error) {
 //     the field has the zero value, the server will populate the stored document with
 //     the time that the request is processed.
 func (d *DocumentRef) Create(ctx context.Context, data interface{}) (*WriteResult, error) {
-	ws, err := d.newReplaceWrites(data, nil, Exists(false))
+	ws, err := d.newReplaceWrites(data, nil, exists(false))
 	if err != nil {
 		return nil, err
 	}
