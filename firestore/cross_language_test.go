@@ -226,7 +226,7 @@ func convertPrecondition(t *testing.T, fp *fspb.Precondition) []Precondition {
 	var pc Precondition
 	switch fp := fp.ConditionType.(type) {
 	case *fspb.Precondition_Exists:
-		pc = Exists(fp.Exists)
+		pc = exists(fp.Exists)
 	case *fspb.Precondition_UpdateTime:
 		tm, err := ptypes.Timestamp(fp.UpdateTime)
 		if err != nil {

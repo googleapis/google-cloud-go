@@ -47,7 +47,7 @@ func (b *WriteBatch) add(ws []*pb.Write, err error) *WriteBatch {
 // Create adds a Create operation to the batch.
 // See DocumentRef.Create for details.
 func (b *WriteBatch) Create(dr *DocumentRef, data interface{}) *WriteBatch {
-	return b.add(dr.newReplaceWrites(data, nil, Exists(false)))
+	return b.add(dr.newReplaceWrites(data, nil, exists(false)))
 }
 
 // Set adds a Set operation to the batch.
