@@ -237,6 +237,21 @@ func TestIntegration_Get(t *testing.T) {
 	if want := wantIntegrationTestMap; !testEqual(got, want) {
 		t.Errorf("got\n%v\nwant\n%v", pretty.Value(got), pretty.Value(want))
 	}
+
+	doc = integrationColl(t).NewDoc()
+	empty := map[string]interface{}{}
+	mustCreate("Get empty", t, doc, empty)
+	ds, err = doc.Get(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ds.CreateTime != ds.UpdateTime {
+		t.Errorf("create time %s != update time %s", ds.CreateTime, ds.UpdateTime)
+	}
+	if got, want := ds.Data(), empty; !testEqual(got, want) {
+		t.Errorf("got\n%v\nwant\n%v", pretty.Value(got), pretty.Value(want))
+	}
+
 	_, err = integrationColl(t).NewDoc().Get(ctx)
 	codeEq(t, "Get on a missing doc", codes.NotFound, err)
 }
