@@ -365,7 +365,7 @@ func (d *DocumentRef) newUpdateWithTransform(doc *pb.Document, updatePaths []Fie
 		return fp.in(serverTimestampPaths)
 	})
 	var ws []*pb.Write
-	if len(doc.Fields) > 0 || len(updatePaths) > 0 {
+	if len(doc.Fields) > 0 || len(updatePaths) > 0 || (pc != nil && len(serverTimestampPaths) == 0) {
 		var mask *pb.DocumentMask
 		if len(updatePaths) > 0 {
 			sfps := toServiceFieldPaths(updatePaths)
