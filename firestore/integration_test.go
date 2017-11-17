@@ -226,10 +226,7 @@ func TestIntegration_Get(t *testing.T) {
 	ctx := context.Background()
 	doc := integrationColl(t).NewDoc()
 	mustCreate("Get #1", t, doc, integrationTestMap)
-	ds, err := doc.Get(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+	ds := mustGet("Get #1", t, doc)
 	if ds.CreateTime != ds.UpdateTime {
 		t.Errorf("create time %s != update time %s", ds.CreateTime, ds.UpdateTime)
 	}
@@ -241,10 +238,7 @@ func TestIntegration_Get(t *testing.T) {
 	doc = integrationColl(t).NewDoc()
 	empty := map[string]interface{}{}
 	mustCreate("Get empty", t, doc, empty)
-	ds, err = doc.Get(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+	ds = mustGet("Get empty", t, doc)
 	if ds.CreateTime != ds.UpdateTime {
 		t.Errorf("create time %s != update time %s", ds.CreateTime, ds.UpdateTime)
 	}
@@ -252,7 +246,7 @@ func TestIntegration_Get(t *testing.T) {
 		t.Errorf("got\n%v\nwant\n%v", pretty.Value(got), pretty.Value(want))
 	}
 
-	_, err = integrationColl(t).NewDoc().Get(ctx)
+	_, err := integrationColl(t).NewDoc().Get(ctx)
 	codeEq(t, "Get on a missing doc", codes.NotFound, err)
 }
 
@@ -319,12 +313,8 @@ func TestIntegration_Set(t *testing.T) {
 	if !wr1.UpdateTime.Before(wr2.UpdateTime) {
 		t.Errorf("update time did not increase: old=%s, new=%s", wr1.UpdateTime, wr2.UpdateTime)
 	}
-	ds, err := doc.Get(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	got := ds.Data()
-	if !testEqual(got, newData) {
+	ds := mustGet("Set #1", t, doc)
+	if got := ds.Data(); !testEqual(got, newData) {
 		t.Errorf("got %v, want %v", got, newData)
 	}
 
@@ -340,17 +330,13 @@ func TestIntegration_Set(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	ds, err = doc.Get(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	got = ds.Data()
+	ds = mustGet("Set #2", t, doc)
 	want := map[string]interface{}{
 		"str": "change",
 		"x":   "2",
 		"y":   "3",
 	}
-	if !testEqual(got, want) {
+	if got := ds.Data(); !testEqual(got, want) {
 		t.Errorf("got %v, want %v", got, want)
 	}
 	if !wr2.UpdateTime.Before(wr3.UpdateTime) {
@@ -363,17 +349,13 @@ func TestIntegration_Set(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	ds, err = doc.Get(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	got = ds.Data()
+	ds = mustGet("Set #3", t, doc)
 	want = map[string]interface{}{
 		"str": "change",
 		"x":   "4",
 		"y":   "5",
 	}
-	if !testEqual(got, want) {
+	if got := ds.Data(); !testEqual(got, want) {
 		t.Errorf("got %v, want %v", got, want)
 	}
 	if !wr3.UpdateTime.Before(wr4.UpdateTime) {
@@ -421,10 +403,7 @@ func TestIntegration_UpdateMap(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	ds, err := doc.Get(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+	ds := mustGet("UpdateMap", t, doc)
 	got := ds.Data()
 	want := copyMap(wantIntegrationTestMap)
 	want["bool"] = false
@@ -458,10 +437,7 @@ func TestIntegration_UpdateStruct(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	ds, err := doc.Get(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+	ds := mustGet("UpdateStruct", t, doc)
 	var got integrationTestStructType
 	if err := ds.DataTo(&got); err != nil {
 		t.Fatal(err)
@@ -497,10 +473,7 @@ func TestIntegration_UpdatePaths(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	ds, err := doc.Get(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+	ds := mustGet("UpdatePaths", t, doc)
 	got := ds.Data()
 	want := copyMap(wantIntegrationTestMap)
 	want["bool"] = false
@@ -572,16 +545,12 @@ func TestIntegration_ServerTimestamp(t *testing.T) {
 		D: map[string]interface{}{"x": ServerTimestamp},
 		// E is unset, so will get the server timestamp.
 	}
-	ctx := context.Background()
 	doc := integrationColl(t).NewDoc()
 	// Bound times of the RPC, with some slack for clock skew.
 	start := time.Now()
 	mustCreate("ServerTimestamp", t, doc, data)
 	end := time.Now()
-	ds, err := doc.Get(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+	ds := mustGet("ServerTimestamp", t, doc)
 	var got S
 	if err := ds.DataTo(&got); err != nil {
 		t.Fatal(err)
@@ -609,10 +578,7 @@ func TestIntegration_MergeServerTimestamp(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	docSnap, err := doc.Get(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+	docSnap := mustGet("MergeST #1", t, doc)
 	data1 := docSnap.Data()
 	// Merge with a document with a different value of "a". However,
 	// specify only "b" in the list of merge fields.
@@ -623,10 +589,7 @@ func TestIntegration_MergeServerTimestamp(t *testing.T) {
 		t.Fatal(err)
 	}
 	// The result should leave "a" unchanged, while "b" is updated.
-	docSnap, err = doc.Get(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+	docSnap = mustGet("MergeST #2", t, doc)
 	data2 := docSnap.Data()
 	if got, want := data2["a"], data1["a"]; got != want {
 		t.Errorf("got %v, want %v", got, want)
@@ -652,11 +615,7 @@ func TestIntegration_MergeNestedServerTimestamp(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	docSnap, err := doc.Get(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	data1 := docSnap.Data()
+	data1 := mustGet("MergeNST #1", t, doc).Data()
 	// Merge with a document with a different value of "a". However,
 	// specify only "c.d" in the list of merge fields.
 	_, err = doc.Set(ctx,
@@ -670,11 +629,7 @@ func TestIntegration_MergeNestedServerTimestamp(t *testing.T) {
 		t.Fatal(err)
 	}
 	// The result should leave "a" and "b" unchanged, while "c.d" is updated.
-	docSnap, err = doc.Get(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	data2 := docSnap.Data()
+	data2 := mustGet("MergeNST #2", t, doc).Data()
 	if got, want := data2["a"], data1["a"]; got != want {
 		t.Errorf("a: got %v, want %v", got, want)
 	}
@@ -707,22 +662,14 @@ func TestIntegration_WriteBatch(t *testing.T) {
 	if got, want := len(wrs), 4; got != want {
 		t.Fatalf("got %d WriteResults, want %d", got, want)
 	}
-	ds, err := doc1.Get(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	got1 := ds.Data()
+	got1 := mustGet("WriteBatch #1", t, doc1).Data()
 	want := copyMap(wantIntegrationTestMap)
 	want["bool"] = false
 	delete(want, "str")
 	if !testEqual(got1, want) {
 		t.Errorf("got\n%#v\nwant\n%#v", got1, want)
 	}
-	ds, err = doc2.Get(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	got2 := ds.Data()
+	got2 := mustGet("WriteBatch #2", t, doc2).Data()
 	if !testEqual(got2, wantIntegrationTestMap) {
 		t.Errorf("got\n%#v\nwant\n%#v", got2, wantIntegrationTestMap)
 	}
@@ -911,10 +858,7 @@ func TestIntegration_RunTransaction(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	ds, err := patDoc.Get(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+	ds := mustGet("RunTransaction", t, patDoc)
 	var got Player
 	if err := ds.DataTo(&got); err != nil {
 		t.Fatal(err)
@@ -951,6 +895,14 @@ func mustCreate(msg string, t *testing.T, doc *DocumentRef, data interface{}) *W
 		t.Fatalf("%s: creating: %v", msg, err)
 	}
 	return wr
+}
+
+func mustGet(msg string, t *testing.T, doc *DocumentRef) *DocumentSnapshot {
+	d, err := doc.Get(context.Background())
+	if err != nil {
+		t.Fatalf("%s: getting: %v", msg, err)
+	}
+	return d
 }
 
 func copyMap(m map[string]interface{}) map[string]interface{} {
