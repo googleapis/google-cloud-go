@@ -2,7 +2,7 @@
 # github.com/GoogleCloudPlatform/google-cloud-common/testing/firestore/cmd/generate-firestore-tests/generate-firestore-tests.go.
 
 # If the only values in the input are ServerTimestamps, then no update operation
-# should be produced unless there are preconditions.
+# should be produced.
 
 description: "update-paths: ServerTimestamp alone"
 update_paths: <
