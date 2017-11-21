@@ -107,11 +107,27 @@ func (d *DocumentRef) Get(ctx context.Context) (*DocumentSnapshot, error) {
 //     the field has the zero value, the server will populate the stored document with
 //     the time that the request is processed.
 func (d *DocumentRef) Create(ctx context.Context, data interface{}) (*WriteResult, error) {
-	ws, err := d.newReplaceWrites(data, nil, exists(false))
+	ws, err := d.newCreateWrites(data)
 	if err != nil {
 		return nil, err
 	}
 	return d.Parent.c.commit1(ctx, ws)
+}
+
+func (d *DocumentRef) newCreateWrites(data interface{}) ([]*pb.Write, error) {
+	if d == nil {
+		return nil, errNilDocRef
+	}
+	doc, serverTimestampPaths, err := toProtoDocument(data)
+	if err != nil {
+		return nil, err
+	}
+	doc.Name = d.Path
+	pc, err := exists(false).preconditionProto()
+	if err != nil {
+		return nil, err
+	}
+	return d.newUpdateWithTransform(doc, nil, pc, serverTimestampPaths, false), nil
 }
 
 // Set creates or overwrites the document with the given data. See DocumentRef.Create
@@ -119,29 +135,16 @@ func (d *DocumentRef) Create(ctx context.Context, data interface{}) (*WriteResul
 // completely. Specify one of the Merge options to preserve an existing document's
 // fields.
 func (d *DocumentRef) Set(ctx context.Context, data interface{}, opts ...SetOption) (*WriteResult, error) {
-	ws, err := d.newReplaceWrites(data, opts, nil)
+	ws, err := d.newSetWrites(data, opts)
 	if err != nil {
 		return nil, err
 	}
 	return d.Parent.c.commit1(ctx, ws)
 }
 
-// Delete deletes the document. If the document doesn't exist, it does nothing
-// and returns no error.
-func (d *DocumentRef) Delete(ctx context.Context, preconds ...Precondition) (*WriteResult, error) {
-	ws, err := d.newDeleteWrites(preconds)
-	if err != nil {
-		return nil, err
-	}
-	return d.Parent.c.commit1(ctx, ws)
-}
-
-func (d *DocumentRef) newReplaceWrites(data interface{}, opts []SetOption, p Precondition) ([]*pb.Write, error) {
+func (d *DocumentRef) newSetWrites(data interface{}, opts []SetOption) ([]*pb.Write, error) {
 	if d == nil {
 		return nil, errNilDocRef
-	}
-	if len(opts) > 0 && p != nil {
-		return nil, errors.New("firestore: newReplaceWrites has options and precondition")
 	}
 	origFieldPaths, allPaths, err := processSetOptions(opts)
 	if err != nil {
@@ -187,14 +190,17 @@ func (d *DocumentRef) newReplaceWrites(data interface{}, opts []SetOption, p Pre
 			}
 		}
 	}
-	var pc *pb.Precondition
-	if p != nil {
-		pc, err = p.preconditionProto()
-		if err != nil {
-			return nil, err
-		}
+	return d.newUpdateWithTransform(doc, fieldPaths, nil, serverTimestampPaths, len(opts) == 0), nil
+}
+
+// Delete deletes the document. If the document doesn't exist, it does nothing
+// and returns no error.
+func (d *DocumentRef) Delete(ctx context.Context, preconds ...Precondition) (*WriteResult, error) {
+	ws, err := d.newDeleteWrites(preconds)
+	if err != nil {
+		return nil, err
 	}
-	return d.newUpdateWithTransform(doc, fieldPaths, pc, serverTimestampPaths), nil
+	return d.Parent.c.commit1(ctx, ws)
 }
 
 // Create a new map that contains only the field paths in fps.
@@ -341,7 +347,7 @@ func (d *DocumentRef) newUpdateWrites(data interface{}, fieldPaths []FieldPath, 
 		return nil, err
 	}
 	doc.Name = d.Path
-	return d.newUpdateWithTransform(doc, fieldPaths, pc, serverTimestampPaths), nil
+	return d.newUpdateWithTransform(doc, fieldPaths, pc, serverTimestampPaths, false), nil
 }
 
 var requestTimeTransform = &pb.DocumentTransform_FieldTransform_SetToServerValue{
@@ -354,8 +360,8 @@ var requestTimeTransform = &pb.DocumentTransform_FieldTransform_SetToServerValue
 // If there are no serverTimestampPaths, the transform is omitted.
 //
 // If doc.Fields is empty, there are no updatePaths, and there is no precondition,
-// the the update is omitted.
-func (d *DocumentRef) newUpdateWithTransform(doc *pb.Document, updatePaths []FieldPath, pc *pb.Precondition, serverTimestampPaths []FieldPath) []*pb.Write {
+// the update is omitted, unless updateOnEmpty is true.
+func (d *DocumentRef) newUpdateWithTransform(doc *pb.Document, updatePaths []FieldPath, pc *pb.Precondition, serverTimestampPaths []FieldPath, updateOnEmpty bool) []*pb.Write {
 	// Remove server timestamp fields from updatePaths. Those fields were removed
 	// from the document by toProtoDocument, so they should not be in the update
 	// mask.
@@ -365,7 +371,8 @@ func (d *DocumentRef) newUpdateWithTransform(doc *pb.Document, updatePaths []Fie
 		return fp.in(serverTimestampPaths)
 	})
 	var ws []*pb.Write
-	if len(doc.Fields) > 0 || len(updatePaths) > 0 || (pc != nil && len(serverTimestampPaths) == 0) {
+	if updateOnEmpty || len(doc.Fields) > 0 ||
+		len(updatePaths) > 0 || (pc != nil && len(serverTimestampPaths) == 0) {
 		var mask *pb.DocumentMask
 		if len(updatePaths) > 0 {
 			sfps := toServiceFieldPaths(updatePaths)
