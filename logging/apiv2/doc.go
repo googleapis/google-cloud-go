@@ -19,8 +19,7 @@
 //
 //   NOTE: This package is in alpha. It is not stable, and is likely to change.
 //
-// The Stackdriver Logging API lets you write log entries and manage your
-// logs, log sinks and logs-based metrics.
+// Writes log entries and manages your Stackdriver Logging configuration.
 //
 // Use the client at cloud.google.com/go/logging in preference to this.
 package logging // import "cloud.google.com/go/logging/apiv2"

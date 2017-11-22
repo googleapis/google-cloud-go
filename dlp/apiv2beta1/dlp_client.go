@@ -35,10 +35,10 @@ import (
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	DeidentifyContent      []gax.CallOption
-	AnalyzeDataSourceRisk  []gax.CallOption
 	InspectContent         []gax.CallOption
 	RedactContent          []gax.CallOption
+	DeidentifyContent      []gax.CallOption
+	AnalyzeDataSourceRisk  []gax.CallOption
 	CreateInspectOperation []gax.CallOption
 	ListInspectFindings    []gax.CallOption
 	ListInfoTypes          []gax.CallOption
@@ -68,10 +68,10 @@ func defaultCallOptions() *CallOptions {
 		},
 	}
 	return &CallOptions{
-		DeidentifyContent:      retry[[2]string{"default", "idempotent"}],
-		AnalyzeDataSourceRisk:  retry[[2]string{"default", "idempotent"}],
 		InspectContent:         retry[[2]string{"default", "non_idempotent"}],
 		RedactContent:          retry[[2]string{"default", "non_idempotent"}],
+		DeidentifyContent:      retry[[2]string{"default", "idempotent"}],
+		AnalyzeDataSourceRisk:  retry[[2]string{"default", "idempotent"}],
 		CreateInspectOperation: retry[[2]string{"default", "non_idempotent"}],
 		ListInspectFindings:    retry[[2]string{"default", "idempotent"}],
 		ListInfoTypes:          retry[[2]string{"default", "idempotent"}],
@@ -161,6 +161,40 @@ func ResultPath(result string) string {
 		""
 }
 
+// InspectContent finds potentially sensitive info in a list of strings.
+// This method has limits on input size, processing time, and output size.
+func (c *Client) InspectContent(ctx context.Context, req *dlppb.InspectContentRequest, opts ...gax.CallOption) (*dlppb.InspectContentResponse, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.InspectContent[0:len(c.CallOptions.InspectContent):len(c.CallOptions.InspectContent)], opts...)
+	var resp *dlppb.InspectContentResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.InspectContent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// RedactContent redacts potentially sensitive info from a list of strings.
+// This method has limits on input size, processing time, and output size.
+func (c *Client) RedactContent(ctx context.Context, req *dlppb.RedactContentRequest, opts ...gax.CallOption) (*dlppb.RedactContentResponse, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.RedactContent[0:len(c.CallOptions.RedactContent):len(c.CallOptions.RedactContent)], opts...)
+	var resp *dlppb.RedactContentResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RedactContent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // DeidentifyContent de-identifies potentially sensitive info from a list of strings.
 // This method has limits on input size and output size.
 func (c *Client) DeidentifyContent(ctx context.Context, req *dlppb.DeidentifyContentRequest, opts ...gax.CallOption) (*dlppb.DeidentifyContentResponse, error) {
@@ -195,40 +229,6 @@ func (c *Client) AnalyzeDataSourceRisk(ctx context.Context, req *dlppb.AnalyzeDa
 	return &AnalyzeDataSourceRiskOperation{
 		lro: longrunning.InternalNewOperation(c.LROClient, resp),
 	}, nil
-}
-
-// InspectContent finds potentially sensitive info in a list of strings.
-// This method has limits on input size, processing time, and output size.
-func (c *Client) InspectContent(ctx context.Context, req *dlppb.InspectContentRequest, opts ...gax.CallOption) (*dlppb.InspectContentResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.InspectContent[0:len(c.CallOptions.InspectContent):len(c.CallOptions.InspectContent)], opts...)
-	var resp *dlppb.InspectContentResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.InspectContent(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// RedactContent redacts potentially sensitive info from a list of strings.
-// This method has limits on input size, processing time, and output size.
-func (c *Client) RedactContent(ctx context.Context, req *dlppb.RedactContentRequest, opts ...gax.CallOption) (*dlppb.RedactContentResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.RedactContent[0:len(c.CallOptions.RedactContent):len(c.CallOptions.RedactContent)], opts...)
-	var resp *dlppb.RedactContentResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.RedactContent(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
 }
 
 // CreateInspectOperation schedules a job scanning content in a Google Cloud Platform data

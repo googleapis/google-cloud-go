@@ -45,7 +45,7 @@ func defaultClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	retry := map[[2]string][]gax.CallOption{
-		{"write_sink", "idempotent"}: {
+		{"default", "idempotent"}: {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -59,8 +59,8 @@ func defaultCallOptions() *CallOptions {
 		},
 	}
 	return &CallOptions{
-		BatchWriteSpans: retry[[2]string{"write_sink", "non_idempotent"}],
-		CreateSpan:      retry[[2]string{"write_sink", "idempotent"}],
+		BatchWriteSpans: retry[[2]string{"default", "non_idempotent"}],
+		CreateSpan:      retry[[2]string{"default", "idempotent"}],
 	}
 }
 

@@ -14,14 +14,14 @@
 
 // AUTO-GENERATED CODE. DO NOT EDIT.
 
-// Package language is an auto-generated package for the
-// Google Cloud Natural Language API.
-
+// Package datatransfer is an auto-generated package for the
+// BigQuery Data Transfer API.
 //
-// Google Cloud Natural Language API provides natural language understanding
-// technologies to developers. Examples include sentiment analysis, entity
-// recognition, and text annotations.
-package language // import "cloud.google.com/go/language/apiv1"
+//   NOTE: This package is in alpha. It is not stable, and is likely to change.
+//
+// Transfers data from partner SaaS applications to Google BigQuery on a
+// scheduled, managed basis.
+package datatransfer // import "cloud.google.com/go/cloud/bigquery/datatransfer/apiv1"
 
 import (
 	"golang.org/x/net/context"
@@ -42,6 +42,8 @@ func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 // DefaultAuthScopes reports the default set of authentication scopes to use with this package.
 func DefaultAuthScopes() []string {
 	return []string{
+		"https://www.googleapis.com/auth/bigquery",
 		"https://www.googleapis.com/auth/cloud-platform",
+		"https://www.googleapis.com/auth/cloud-platform.read-only",
 	}
 }
