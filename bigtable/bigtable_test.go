@@ -68,14 +68,16 @@ func TestClientIntegration(t *testing.T) {
 		t.Fatalf("IntegrationEnv: %v", err)
 	}
 
-	timeout := 30 * time.Second
+	var timeout time.Duration
 	if testEnv.Config().UseProd {
 		timeout = 5 * time.Minute
 		t.Logf("Running test against production")
 	} else {
+		timeout = 1 * time.Minute
 		t.Logf("bttest.Server running on %s", testEnv.Config().AdminEndpoint)
 	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	client, err := testEnv.NewClient()
 	if err != nil {
