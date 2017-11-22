@@ -5,3 +5,5 @@ SRC=$(GOPATH)/src/github.com/GoogleCloudPlatform/google-cloud-common/testing/fir
 refresh:
 	-rm *.textproto
 	cp $(SRC)/*.textproto .
+	openssl dgst -sha1 $(SRC)/tests.binprotos > VERSION
+
