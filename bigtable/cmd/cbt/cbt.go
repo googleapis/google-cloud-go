@@ -284,10 +284,12 @@ var commands = []struct {
 		Name: "read",
 		Desc: "Read rows",
 		do:   doRead,
-		Usage: "cbt read <table> [start=<row>] [end=<row>] [prefix=<prefix>] [count=<n>]\n" +
+		Usage: "cbt read <table> [start=<row>] [end=<row>] [prefix=<prefix>]" +
+			" [regex=<regex>] [count=<n>]\n" +
 			"  start=<row>		Start reading at this row\n" +
 			"  end=<row>		Stop reading before this row\n" +
 			"  prefix=<prefix>	Read rows with this prefix\n" +
+			"  regex=<regex> 	Read rows with keys matching this regex\n" +
 			"  count=<n>		Read only this many rows\n",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
@@ -672,7 +674,7 @@ func doRead(ctx context.Context, args ...string) {
 		case "limit":
 			// Be nicer; we used to support this, but renamed it to "end".
 			log.Fatalf("Unknown arg key %q; did you mean %q?", key, "end")
-		case "start", "end", "prefix", "count":
+		case "start", "end", "prefix", "count", "regex":
 			parsed[key] = val
 		}
 	}
@@ -697,6 +699,9 @@ func doRead(ctx context.Context, args ...string) {
 			log.Fatalf("Bad count %q: %v", count, err)
 		}
 		opts = append(opts, bigtable.LimitRows(n))
+	}
+	if regex := parsed["regex"]; regex != "" {
+		opts = append(opts, bigtable.RowFilter(bigtable.RowKeyFilter(regex)))
 	}
 
 	// TODO(dsymonds): Support filters.
