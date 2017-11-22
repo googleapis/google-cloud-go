@@ -19,8 +19,9 @@
 
 //
 // Integrates Google Vision features, including image labeling, face, logo,
-// and landmark detection, optical character recognition (OCR), and detection
-// of explicit content, into applications.
+// and
+// landmark detection, optical character recognition (OCR), and detection of
+// explicit content, into applications.
 package vision // import "cloud.google.com/go/vision/apiv1"
 
 import (
@@ -43,5 +44,6 @@ func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 func DefaultAuthScopes() []string {
 	return []string{
 		"https://www.googleapis.com/auth/cloud-platform",
+		"https://www.googleapis.com/auth/cloud-vision",
 	}
 }
