@@ -1,4 +1,4 @@
-// Copyright 2017, Google Inc. All rights reserved.
+// Copyright 2017, Google LLC All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,27 +33,19 @@ func ExampleNewClient() {
 	_ = c
 }
 
-func ExampleClient_ListTraces() {
+func ExampleClient_PatchTraces() {
 	ctx := context.Background()
 	c, err := trace.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &cloudtracepb.ListTracesRequest{
+	req := &cloudtracepb.PatchTracesRequest{
 	// TODO: Fill request struct fields.
 	}
-	it := c.ListTraces(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
+	err = c.PatchTraces(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
 }
 
@@ -75,18 +67,26 @@ func ExampleClient_GetTrace() {
 	_ = resp
 }
 
-func ExampleClient_PatchTraces() {
+func ExampleClient_ListTraces() {
 	ctx := context.Background()
 	c, err := trace.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &cloudtracepb.PatchTracesRequest{
+	req := &cloudtracepb.ListTracesRequest{
 	// TODO: Fill request struct fields.
 	}
-	err = c.PatchTraces(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListTraces(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
 }

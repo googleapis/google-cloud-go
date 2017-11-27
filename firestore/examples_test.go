@@ -262,7 +262,7 @@ func ExampleDocumentRef_Set_merge() {
 	// To do a merging Set with struct data, specify the exact fields to overwrite.
 	// MergeAll is disallowed here, because it would probably be a mistake: the "capital"
 	// field would be overwritten with the empty string.
-	_, err = client.Doc("States/Alabama").Set(ctx, State{Population: 5.2}, firestore.Merge("pop"))
+	_, err = client.Doc("States/Alabama").Set(ctx, State{Population: 5.2}, firestore.Merge([]string{"pop"}))
 	if err != nil {
 		// TODO: Handle error.
 	}

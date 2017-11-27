@@ -1,4 +1,4 @@
-// Copyright 2017, Google Inc. All rights reserved.
+// Copyright 2017, Google LLC All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,13 +17,15 @@
 // Package trace is an auto-generated package for the
 // Stackdriver Trace API.
 //
-//   NOTE: This package is in alpha. It is not stable, and is likely to be subject to changes.
+//   NOTE: This package is in alpha. It is not stable, and is likely to change.
 //
 // Send and retrieve trace data from Stackdriver Trace. Data is generated and
 // available by default for all App Engine applications. Data from other
 // applications can be written to Stackdriver Trace for display, reporting,
 // and
 // analysis.
+//
+// Use the client at cloud.google.com/go/trace in preference to this.
 package trace // import "cloud.google.com/go/trace/apiv1"
 
 import (

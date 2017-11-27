@@ -15,8 +15,9 @@
 package firestore
 
 import (
-	"golang.org/x/net/context"
 	"testing"
+
+	"golang.org/x/net/context"
 
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 
@@ -326,7 +327,10 @@ func TestTransactionErrors(t *testing.T) {
 		},
 		func(ctx context.Context) error { it := c.Collections(ctx); _, err := it.Next(); return err },
 		func(ctx context.Context) error { it := dr.Collections(ctx); _, err := it.Next(); return err },
-		func(ctx context.Context) error { _, err := c.Batch().Commit(ctx); return err },
+		func(ctx context.Context) error {
+			_, err := c.Batch().Set(dr, testData).Commit(ctx)
+			return err
+		},
 		func(ctx context.Context) error {
 			it := c.Collection("C").Documents(ctx)
 			_, err := it.Next()

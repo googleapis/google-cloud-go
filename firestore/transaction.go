@@ -234,13 +234,13 @@ func (t *Transaction) Documents(q Queryer) *DocumentIterator {
 // Create adds a Create operation to the Transaction.
 // See DocumentRef.Create for details.
 func (t *Transaction) Create(dr *DocumentRef, data interface{}) error {
-	return t.addWrites(dr.newReplaceWrites(data, nil, Exists(false)))
+	return t.addWrites(dr.newCreateWrites(data))
 }
 
 // Set adds a Set operation to the Transaction.
 // See DocumentRef.Set for details.
 func (t *Transaction) Set(dr *DocumentRef, data interface{}, opts ...SetOption) error {
-	return t.addWrites(dr.newReplaceWrites(data, opts, nil))
+	return t.addWrites(dr.newSetWrites(data, opts))
 }
 
 // Delete adds a Delete operation to the Transaction.

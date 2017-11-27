@@ -1647,6 +1647,36 @@ func TestRowIteratorDo(t *testing.T) {
 	}
 }
 
+func TestRowIteratorDoWithError(t *testing.T) {
+	restore := setMaxBytesBetweenResumeTokens()
+	defer restore()
+	ms := testutil.NewMockCloudSpanner(t, trxTs)
+	ms.Serve()
+	defer ms.Stop()
+	cc := dialMock(t, ms)
+	defer cc.Close()
+	mc := sppb.NewSpannerClient(cc)
+
+	for i := 0; i < 3; i++ {
+		ms.AddMsg(nil, false)
+	}
+	ms.AddMsg(io.EOF, true)
+	iter := stream(context.Background(),
+		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+			return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
+				Sql:         "SELECT t.key key, t.value value FROM t_mock t",
+				ResumeToken: resumeToken,
+			})
+		},
+		nil,
+		func(error) {})
+	injected := errors.New("Failed iterator")
+	err := iter.Do(func(r *Row) error { return injected })
+	if err != injected {
+		t.Errorf("got <%v>, want <%v>", err, injected)
+	}
+}
+
 func TestIteratorStopEarly(t *testing.T) {
 	ctx := context.Background()
 	restore := setMaxBytesBetweenResumeTokens()

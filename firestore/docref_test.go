@@ -22,7 +22,6 @@ import (
 
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 
-	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/genproto/googleapis/type/latlng"
 	"google.golang.org/grpc"
@@ -76,246 +75,34 @@ func TestDocGet(t *testing.T) {
 }
 
 func TestDocSet(t *testing.T) {
+	// Most tests for Set are in the cross-language tests.
 	ctx := context.Background()
 	c, srv := newMock(t)
-	for _, test := range []struct {
-		desc      string
-		data      interface{}
-		opt       SetOption
-		write     map[string]*pb.Value
-		mask      []string
-		transform []string
-		isErr     bool
-	}{
-		{
-			desc:  "Set with no options",
-			data:  map[string]interface{}{"a": 1},
-			write: map[string]*pb.Value{"a": intval(1)},
-		},
-		{
-			desc:  "Merge with a field",
-			data:  map[string]interface{}{"a": 1, "b": 2},
-			opt:   Merge("a"),
-			write: map[string]*pb.Value{"a": intval(1)},
-			mask:  []string{"a"},
-		},
-		{
-			desc: "Merge field is not a leaf",
-			data: map[string]interface{}{
-				"a": map[string]interface{}{"b": 1, "c": 2},
-				"d": 3,
-			},
-			opt: Merge("a"),
-			write: map[string]*pb.Value{"a": mapval(map[string]*pb.Value{
-				"b": intval(1),
-				"c": intval(2),
-			})},
-			mask: []string{"a"},
-		},
-		{
-			desc:  "MergeAll",
-			data:  map[string]interface{}{"a": 1, "b": 2},
-			opt:   MergeAll,
-			write: map[string]*pb.Value{"a": intval(1), "b": intval(2)},
-			mask:  []string{"a", "b"},
-		},
-		{
-			desc: "MergeAll with nested fields",
-			data: map[string]interface{}{
-				"a": 1,
-				"b": map[string]interface{}{"c": 2},
-			},
-			opt: MergeAll,
-			write: map[string]*pb.Value{
-				"a": intval(1),
-				"b": mapval(map[string]*pb.Value{"c": intval(2)}),
-			},
-			mask: []string{"a", "b.c"},
-		},
-		{
-			desc: "Merge with FieldPaths",
-			data: map[string]interface{}{"*": map[string]interface{}{"~": true}},
-			opt:  MergePaths([]string{"*", "~"}),
-			write: map[string]*pb.Value{
-				"*": mapval(map[string]*pb.Value{
-					"~": boolval(true),
-				}),
-			},
-			mask: []string{"`*`.`~`"},
-		},
-		{
-			desc: "Merge with a struct and FieldPaths",
-			data: struct {
-				A map[string]bool `firestore:"*"`
-			}{A: map[string]bool{"~": true}},
-			opt: MergePaths([]string{"*", "~"}),
-			write: map[string]*pb.Value{
-				"*": mapval(map[string]*pb.Value{
-					"~": boolval(true),
-				}),
-			},
-			mask: []string{"`*`.`~`"},
-		},
-		{
-			desc:      "a ServerTimestamp field becomes a transform",
-			data:      map[string]interface{}{"a": 1, "b": ServerTimestamp},
-			write:     map[string]*pb.Value{"a": intval(1)},
-			transform: []string{"b"},
-		},
-		{
-			desc:      "a ServerTimestamp alone",
-			data:      map[string]interface{}{"b": ServerTimestamp},
-			write:     nil,
-			transform: []string{"b"},
-		},
-		{
-			desc:      "a ServerTimestamp alone with a path",
-			data:      map[string]interface{}{"b": ServerTimestamp},
-			opt:       MergePaths([]string{"b"}),
-			write:     nil,
-			transform: []string{"b"},
-		},
-		{
-			desc: "nested ServerTimestamp field",
-			data: map[string]interface{}{
-				"a": 1,
-				"b": map[string]interface{}{"c": ServerTimestamp},
-			},
-			write:     map[string]*pb.Value{"a": intval(1)},
-			transform: []string{"b.c"},
-		},
-		{
-			desc: "multiple ServerTimestamp fields",
-			data: map[string]interface{}{
-				"a": 1,
-				"b": ServerTimestamp,
-				"c": map[string]interface{}{"d": ServerTimestamp},
-			},
-			write:     map[string]*pb.Value{"a": intval(1)},
-			transform: []string{"b", "c.d"},
-		},
-		{
-			desc:      "ServerTimestamp with MergeAll",
-			data:      map[string]interface{}{"a": 1, "b": ServerTimestamp},
-			opt:       MergeAll,
-			write:     map[string]*pb.Value{"a": intval(1)},
-			mask:      []string{"a"},
-			transform: []string{"b"},
-		},
-		{
-			desc:      "ServerTimestamp with Merge of both fields",
-			data:      map[string]interface{}{"a": 1, "b": ServerTimestamp},
-			opt:       Merge("a", "b"),
-			write:     map[string]*pb.Value{"a": intval(1)},
-			mask:      []string{"a"},
-			transform: []string{"b"},
-		},
-		{
-			desc:  "If is ServerTimestamp not in Merge, no transform",
-			data:  map[string]interface{}{"a": 1, "b": ServerTimestamp},
-			opt:   Merge("a"),
-			write: map[string]*pb.Value{"a": intval(1)},
-			mask:  []string{"a"},
-		},
-		{
-			desc:      "If no ordinary values in Merge, no write",
-			data:      map[string]interface{}{"a": 1, "b": ServerTimestamp},
-			opt:       Merge("b"),
-			transform: []string{"b"},
-		},
-		{
-			desc:  "Merge fields must all be present in data.",
-			data:  map[string]interface{}{"a": 1},
-			opt:   Merge("b", "a"),
-			isErr: true,
-		},
-		{
-			desc:  "MergeAll cannot be used with structs",
-			data:  struct{ A int }{A: 1},
-			opt:   MergeAll,
-			isErr: true,
-		},
-		{
-			desc:  "Delete cannot appear in data",
-			data:  map[string]interface{}{"a": 1, "b": Delete},
-			isErr: true,
-		},
-		{
-			desc:  "Delete cannot even appear in an unmerged field (allow?)",
-			data:  map[string]interface{}{"a": 1, "b": Delete},
-			opt:   Merge("a"),
-			isErr: true,
-		},
-	} {
-		srv.reset()
-		if !test.isErr {
-			var writes []*pb.Write
-			if test.write != nil || test.mask != nil {
-				w := &pb.Write{}
-				if test.write != nil {
-					w.Operation = &pb.Write_Update{
-						Update: &pb.Document{
-							Name:   "projects/projectID/databases/(default)/documents/C/d",
-							Fields: test.write,
-						},
-					}
-				}
-				if test.mask != nil {
-					w.UpdateMask = &pb.DocumentMask{FieldPaths: test.mask}
-				}
-				writes = append(writes, w)
-			}
-			if test.transform != nil {
-				var fts []*pb.DocumentTransform_FieldTransform
-				for _, p := range test.transform {
-					fts = append(fts, &pb.DocumentTransform_FieldTransform{
-						FieldPath:     p,
-						TransformType: requestTimeTransform,
-					})
-				}
-				writes = append(writes, &pb.Write{
-					Operation: &pb.Write_Transform{
-						&pb.DocumentTransform{
-							Document:        "projects/projectID/databases/(default)/documents/C/d",
-							FieldTransforms: fts,
+
+	doc := c.Collection("C").Doc("d")
+	// Merge with a struct and FieldPaths.
+	srv.addRPC(&pb.CommitRequest{
+		Database: "projects/projectID/databases/(default)",
+		Writes: []*pb.Write{
+			{
+				Operation: &pb.Write_Update{
+					Update: &pb.Document{
+						Name: "projects/projectID/databases/(default)/documents/C/d",
+						Fields: map[string]*pb.Value{
+							"*": mapval(map[string]*pb.Value{
+								"~": boolval(true),
+							}),
 						},
 					},
-				})
-			}
-
-			srv.addRPC(&pb.CommitRequest{
-				Database: "projects/projectID/databases/(default)",
-				Writes:   writes,
-			}, commitResponseForSet)
-		}
-		var opts []SetOption
-		if test.opt != nil {
-			opts = []SetOption{test.opt}
-		}
-		wr, err := c.Collection("C").Doc("d").Set(ctx, test.data, opts...)
-		if test.isErr && err == nil {
-			t.Errorf("%s: got nil, want error")
-			continue
-		}
-		if !test.isErr && err != nil {
-			t.Errorf("%s: %v", test.desc, err)
-			continue
-		}
-		if err == nil && !testEqual(wr, writeResultForSet) {
-			t.Errorf("%s: got %v, want %v", test.desc, wr, writeResultForSet)
-		}
-	}
-}
-
-func TestDocCreate(t *testing.T) {
-	ctx := context.Background()
-	c, srv := newMock(t)
-	wantReq := commitRequestForSet()
-	wantReq.Writes[0].CurrentDocument = &pb.Precondition{
-		ConditionType: &pb.Precondition_Exists{false},
-	}
-	srv.addRPC(wantReq, commitResponseForSet)
-	wr, err := c.Collection("C").Doc("d").Create(ctx, testData)
+				},
+				UpdateMask: &pb.DocumentMask{FieldPaths: []string{"`*`.`~`"}},
+			},
+		},
+	}, commitResponseForSet)
+	data := struct {
+		A map[string]bool `firestore:"*"`
+	}{A: map[string]bool{"~": true}}
+	wr, err := doc.Set(ctx, data, Merge([]string{"*", "~"}))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -323,8 +110,20 @@ func TestDocCreate(t *testing.T) {
 		t.Errorf("got %v, want %v", wr, writeResultForSet)
 	}
 
+	// MergeAll cannot be used with structs.
+	_, err = doc.Set(ctx, data, MergeAll)
+	if err == nil {
+		t.Errorf("got nil, want error")
+	}
+}
+
+func TestDocCreate(t *testing.T) {
 	// Verify creation with structs. In particular, make sure zero values
 	// are handled well.
+	// Other tests for Create are handled by the cross-language tests.
+	ctx := context.Background()
+	c, srv := newMock(t)
+
 	type create struct {
 		Time  time.Time
 		Bytes []byte
@@ -353,7 +152,7 @@ func TestDocCreate(t *testing.T) {
 		},
 		commitResponseForSet,
 	)
-	_, err = c.Collection("C").Doc("d").Create(ctx, &create{})
+	_, err := c.Collection("C").Doc("d").Create(ctx, &create{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -381,131 +180,12 @@ func TestDocDelete(t *testing.T) {
 	}
 }
 
-func TestDocDeleteLastUpdateTime(t *testing.T) {
-	ctx := context.Background()
-	c, srv := newMock(t)
-	wantReq := &pb.CommitRequest{
-		Database: "projects/projectID/databases/(default)",
-		Writes: []*pb.Write{
-			{
-				Operation: &pb.Write_Delete{"projects/projectID/databases/(default)/documents/C/d"},
-				CurrentDocument: &pb.Precondition{
-					ConditionType: &pb.Precondition_UpdateTime{aTimestamp2},
-				},
-			}},
-	}
-	srv.addRPC(wantReq, commitResponseForSet)
-	wr, err := c.Collection("C").Doc("d").Delete(ctx, LastUpdateTime(aTime2))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !testEqual(wr, writeResultForSet) {
-		t.Errorf("got %+v, want %+v", wr, writeResultForSet)
-	}
-}
-
 var (
 	testData   = map[string]interface{}{"a": 1}
 	testFields = map[string]*pb.Value{"a": intval(1)}
 )
 
-func TestUpdateMap(t *testing.T) {
-	ctx := context.Background()
-	c, srv := newMock(t)
-	for _, test := range []struct {
-		data       map[string]interface{}
-		wantFields map[string]*pb.Value
-		wantPaths  []string
-	}{
-		{
-			data: map[string]interface{}{"a.b": 1},
-			wantFields: map[string]*pb.Value{
-				"a": mapval(map[string]*pb.Value{"b": intval(1)}),
-			},
-			wantPaths: []string{"a.b"},
-		},
-		{
-			data: map[string]interface{}{
-				"a": 1,
-				"b": Delete,
-			},
-			wantFields: map[string]*pb.Value{"a": intval(1)},
-			wantPaths:  []string{"a", "b"},
-		},
-	} {
-		srv.reset()
-		wantReq := &pb.CommitRequest{
-			Database: "projects/projectID/databases/(default)",
-			Writes: []*pb.Write{{
-				Operation: &pb.Write_Update{
-					Update: &pb.Document{
-						Name:   "projects/projectID/databases/(default)/documents/C/d",
-						Fields: test.wantFields,
-					}},
-				UpdateMask: &pb.DocumentMask{FieldPaths: test.wantPaths},
-				CurrentDocument: &pb.Precondition{
-					ConditionType: &pb.Precondition_Exists{true},
-				},
-			}},
-		}
-		// Sort update masks, because map iteration order is random.
-		sort.Strings(wantReq.Writes[0].UpdateMask.FieldPaths)
-		srv.addRPCAdjust(wantReq, commitResponseForSet, func(gotReq proto.Message) {
-			sort.Strings(gotReq.(*pb.CommitRequest).Writes[0].UpdateMask.FieldPaths)
-		})
-		wr, err := c.Collection("C").Doc("d").UpdateMap(ctx, test.data)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if !testEqual(wr, writeResultForSet) {
-			t.Errorf("%v:\ngot %+v, want %+v", test.data, wr, writeResultForSet)
-		}
-	}
-}
-
-func TestUpdateMapLastUpdateTime(t *testing.T) {
-	ctx := context.Background()
-	c, srv := newMock(t)
-
-	wantReq := &pb.CommitRequest{
-		Database: "projects/projectID/databases/(default)",
-		Writes: []*pb.Write{{
-			Operation: &pb.Write_Update{
-				Update: &pb.Document{
-					Name:   "projects/projectID/databases/(default)/documents/C/d",
-					Fields: map[string]*pb.Value{"a": intval(1)},
-				}},
-			UpdateMask: &pb.DocumentMask{FieldPaths: []string{"a"}},
-			CurrentDocument: &pb.Precondition{
-				ConditionType: &pb.Precondition_UpdateTime{aTimestamp2},
-			},
-		}},
-	}
-	srv.addRPC(wantReq, commitResponseForSet)
-	wr, err := c.Collection("C").Doc("d").UpdateMap(ctx, map[string]interface{}{"a": 1}, LastUpdateTime(aTime2))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !testEqual(wr, writeResultForSet) {
-		t.Errorf("got %v, want %v", wr, writeResultForSet)
-	}
-}
-
-func TestUpdateMapErrors(t *testing.T) {
-	ctx := context.Background()
-	c, _ := newMock(t)
-	for _, in := range []map[string]interface{}{
-		nil, // no paths
-		map[string]interface{}{"a~b": 1},         // invalid character
-		map[string]interface{}{"a..b": 1},        // empty path component
-		map[string]interface{}{"a.b": 1, "a": 2}, // prefix
-	} {
-		_, err := c.Collection("C").Doc("d").UpdateMap(ctx, in)
-		if err == nil {
-			t.Errorf("%v: got nil, want error", in)
-		}
-	}
-}
+// UpdateMap and UpdatePaths are tested by the cross-language tests.
 
 func TestUpdateStruct(t *testing.T) {
 	type update struct{ A int }
@@ -583,89 +263,6 @@ func TestUpdateStructErrors(t *testing.T) {
 		},
 	} {
 		_, err := doc.UpdateStruct(ctx, test.fields, test.data)
-		if err == nil {
-			t.Errorf("%s: got nil, want error", test.desc)
-		}
-	}
-}
-
-func TestUpdatePaths(t *testing.T) {
-	ctx := context.Background()
-	c, srv := newMock(t)
-	for _, test := range []struct {
-		data       []FieldPathUpdate
-		wantFields map[string]*pb.Value
-		wantPaths  []string
-	}{
-		{
-			data: []FieldPathUpdate{
-				{Path: []string{"*", "~"}, Value: 1},
-				{Path: []string{"*", "/"}, Value: 2},
-			},
-			wantFields: map[string]*pb.Value{
-				"*": mapval(map[string]*pb.Value{
-					"~": intval(1),
-					"/": intval(2),
-				}),
-			},
-			wantPaths: []string{"`*`.`~`", "`*`.`/`"},
-		},
-		{
-			data: []FieldPathUpdate{
-				{Path: []string{"*"}, Value: 1},
-				{Path: []string{"]"}, Value: Delete},
-			},
-			wantFields: map[string]*pb.Value{"*": intval(1)},
-			wantPaths:  []string{"`*`", "`]`"},
-		},
-	} {
-		srv.reset()
-		wantReq := &pb.CommitRequest{
-			Database: "projects/projectID/databases/(default)",
-			Writes: []*pb.Write{{
-				Operation: &pb.Write_Update{
-					Update: &pb.Document{
-						Name:   "projects/projectID/databases/(default)/documents/C/d",
-						Fields: test.wantFields,
-					}},
-				UpdateMask: &pb.DocumentMask{FieldPaths: test.wantPaths},
-				CurrentDocument: &pb.Precondition{
-					ConditionType: &pb.Precondition_Exists{true},
-				},
-			}},
-		}
-		// Sort update masks, because map iteration order is random.
-		sort.Strings(wantReq.Writes[0].UpdateMask.FieldPaths)
-		srv.addRPCAdjust(wantReq, commitResponseForSet, func(gotReq proto.Message) {
-			sort.Strings(gotReq.(*pb.CommitRequest).Writes[0].UpdateMask.FieldPaths)
-		})
-		wr, err := c.Collection("C").Doc("d").UpdatePaths(ctx, test.data)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if !testEqual(wr, writeResultForSet) {
-			t.Errorf("%v:\ngot %+v, want %+v", test.data, wr, writeResultForSet)
-		}
-	}
-}
-
-func TestUpdatePathsErrors(t *testing.T) {
-	fpu := func(s ...string) FieldPathUpdate { return FieldPathUpdate{Path: s} }
-
-	ctx := context.Background()
-	c, _ := newMock(t)
-	doc := c.Collection("C").Doc("d")
-	for _, test := range []struct {
-		desc string
-		data []FieldPathUpdate
-	}{
-		{"no updates", nil},
-		{"empty", []FieldPathUpdate{fpu("")}},
-		{"empty component", []FieldPathUpdate{fpu("*", "")}},
-		{"duplicate field", []FieldPathUpdate{fpu("~"), fpu("*"), fpu("~")}},
-		{"prefix", []FieldPathUpdate{fpu("*", "a"), fpu("b"), fpu("*", "a", "b")}},
-	} {
-		_, err := doc.UpdatePaths(ctx, test.data)
 		if err == nil {
 			t.Errorf("%s: got nil, want error", test.desc)
 		}

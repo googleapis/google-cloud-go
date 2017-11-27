@@ -1,4 +1,4 @@
-// Copyright 2017, Google Inc. All rights reserved.
+// Copyright 2017, Google LLC All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ func defaultClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	retry := map[[2]string][]gax.CallOption{
-		{"write_sink", "idempotent"}: {
+		{"default", "idempotent"}: {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -59,8 +59,8 @@ func defaultCallOptions() *CallOptions {
 		},
 	}
 	return &CallOptions{
-		BatchWriteSpans: retry[[2]string{"write_sink", "non_idempotent"}],
-		CreateSpan:      retry[[2]string{"write_sink", "idempotent"}],
+		BatchWriteSpans: retry[[2]string{"default", "non_idempotent"}],
+		CreateSpan:      retry[[2]string{"default", "idempotent"}],
 	}
 }
 
@@ -75,8 +75,8 @@ type Client struct {
 	// The call options for this service.
 	CallOptions *CallOptions
 
-	// The metadata to be sent with each request.
-	Metadata metadata.MD
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
 }
 
 // NewClient creates a new trace service client.
@@ -118,7 +118,7 @@ func (c *Client) Close() error {
 func (c *Client) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", version.Go()}, keyval...)
 	kv = append(kv, "gapic", version.Repo, "gax", gax.Version, "grpc", grpc.Version)
-	c.Metadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
 // ProjectPath returns the path for the project resource.
@@ -147,7 +147,7 @@ func SpanPath(project, trace, span string) string {
 // undefined behavior. If the name does not match, a new trace is created
 // with given set of spans.
 func (c *Client) BatchWriteSpans(ctx context.Context, req *cloudtracepb.BatchWriteSpansRequest, opts ...gax.CallOption) error {
-	ctx = insertMetadata(ctx, c.Metadata)
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.BatchWriteSpans[0:len(c.CallOptions.BatchWriteSpans):len(c.CallOptions.BatchWriteSpans)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -159,7 +159,7 @@ func (c *Client) BatchWriteSpans(ctx context.Context, req *cloudtracepb.BatchWri
 
 // CreateSpan creates a new Span.
 func (c *Client) CreateSpan(ctx context.Context, req *cloudtracepb.Span, opts ...gax.CallOption) (*cloudtracepb.Span, error) {
-	ctx = insertMetadata(ctx, c.Metadata)
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.CreateSpan[0:len(c.CallOptions.CreateSpan):len(c.CallOptions.CreateSpan)], opts...)
 	var resp *cloudtracepb.Span
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
