@@ -138,10 +138,6 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.MaxBurst == 0 {
 		config.MaxBurst = 10
 	}
-	// Default MaxSessionAge
-	if config.maxSessionAge == 0 {
-		config.maxSessionAge = time.Minute * 30
-	}
 	for i := 0; i < config.NumChannels; i++ {
 		conn, err := gtransport.Dial(ctx, allOpts...)
 		if err != nil {
@@ -245,7 +241,7 @@ func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Contex
 		ts time.Time
 		sh *sessionHandle
 	)
-	err := runRetryable(ctx, func(ctx context.Context) error {
+	err := runRetryableNoWrap(ctx, func(ctx context.Context) error {
 		var (
 			err error
 			t   *ReadWriteTransaction
@@ -272,10 +268,7 @@ func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Contex
 			return errRetry(err)
 		}
 		ts, err = t.runInTransaction(ctx, f)
-		if err != nil {
-			return err
-		}
-		return nil
+		return err
 	})
 	if sh != nil {
 		sh.recycle()

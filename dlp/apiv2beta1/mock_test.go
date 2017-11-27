@@ -1,4 +1,4 @@
-// Copyright 2017, Google Inc. All rights reserved.
+// Copyright 2017, Google LLC All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -186,6 +186,186 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func TestDlpServiceInspectContent(t *testing.T) {
+	var expectedResponse *dlppb.InspectContentResponse = &dlppb.InspectContentResponse{}
+
+	mockDlp.err = nil
+	mockDlp.reqs = nil
+
+	mockDlp.resps = append(mockDlp.resps[:0], expectedResponse)
+
+	var name string = "EMAIL_ADDRESS"
+	var infoTypesElement = &dlppb.InfoType{
+		Name: name,
+	}
+	var infoTypes = []*dlppb.InfoType{infoTypesElement}
+	var inspectConfig = &dlppb.InspectConfig{
+		InfoTypes: infoTypes,
+	}
+	var type_ string = "text/plain"
+	var value string = "My email is example@example.com."
+	var itemsElement = &dlppb.ContentItem{
+		Type: type_,
+		DataItem: &dlppb.ContentItem_Value{
+			Value: value,
+		},
+	}
+	var items = []*dlppb.ContentItem{itemsElement}
+	var request = &dlppb.InspectContentRequest{
+		InspectConfig: inspectConfig,
+		Items:         items,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.InspectContent(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockDlp.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestDlpServiceInspectContentError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockDlp.err = gstatus.Error(errCode, "test error")
+
+	var name string = "EMAIL_ADDRESS"
+	var infoTypesElement = &dlppb.InfoType{
+		Name: name,
+	}
+	var infoTypes = []*dlppb.InfoType{infoTypesElement}
+	var inspectConfig = &dlppb.InspectConfig{
+		InfoTypes: infoTypes,
+	}
+	var type_ string = "text/plain"
+	var value string = "My email is example@example.com."
+	var itemsElement = &dlppb.ContentItem{
+		Type: type_,
+		DataItem: &dlppb.ContentItem_Value{
+			Value: value,
+		},
+	}
+	var items = []*dlppb.ContentItem{itemsElement}
+	var request = &dlppb.InspectContentRequest{
+		InspectConfig: inspectConfig,
+		Items:         items,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.InspectContent(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestDlpServiceRedactContent(t *testing.T) {
+	var expectedResponse *dlppb.RedactContentResponse = &dlppb.RedactContentResponse{}
+
+	mockDlp.err = nil
+	mockDlp.reqs = nil
+
+	mockDlp.resps = append(mockDlp.resps[:0], expectedResponse)
+
+	var name string = "EMAIL_ADDRESS"
+	var infoTypesElement = &dlppb.InfoType{
+		Name: name,
+	}
+	var infoTypes = []*dlppb.InfoType{infoTypesElement}
+	var inspectConfig = &dlppb.InspectConfig{
+		InfoTypes: infoTypes,
+	}
+	var type_ string = "text/plain"
+	var value string = "My email is example@example.com."
+	var itemsElement = &dlppb.ContentItem{
+		Type: type_,
+		DataItem: &dlppb.ContentItem_Value{
+			Value: value,
+		},
+	}
+	var items = []*dlppb.ContentItem{itemsElement}
+	var request = &dlppb.RedactContentRequest{
+		InspectConfig: inspectConfig,
+		Items:         items,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.RedactContent(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockDlp.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestDlpServiceRedactContentError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockDlp.err = gstatus.Error(errCode, "test error")
+
+	var name string = "EMAIL_ADDRESS"
+	var infoTypesElement = &dlppb.InfoType{
+		Name: name,
+	}
+	var infoTypes = []*dlppb.InfoType{infoTypesElement}
+	var inspectConfig = &dlppb.InspectConfig{
+		InfoTypes: infoTypes,
+	}
+	var type_ string = "text/plain"
+	var value string = "My email is example@example.com."
+	var itemsElement = &dlppb.ContentItem{
+		Type: type_,
+		DataItem: &dlppb.ContentItem_Value{
+			Value: value,
+		},
+	}
+	var items = []*dlppb.ContentItem{itemsElement}
+	var request = &dlppb.RedactContentRequest{
+		InspectConfig: inspectConfig,
+		Items:         items,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.RedactContent(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
 func TestDlpServiceDeidentifyContent(t *testing.T) {
 	var expectedResponse *dlppb.DeidentifyContentResponse = &dlppb.DeidentifyContentResponse{}
 
@@ -328,208 +508,6 @@ func TestDlpServiceAnalyzeDataSourceRiskError(t *testing.T) {
 		t.Fatal(err)
 	}
 	resp, err := respLRO.Wait(context.Background())
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
-func TestDlpServiceInspectContent(t *testing.T) {
-	var expectedResponse *dlppb.InspectContentResponse = &dlppb.InspectContentResponse{}
-
-	mockDlp.err = nil
-	mockDlp.reqs = nil
-
-	mockDlp.resps = append(mockDlp.resps[:0], expectedResponse)
-
-	var name string = "EMAIL_ADDRESS"
-	var infoTypesElement = &dlppb.InfoType{
-		Name: name,
-	}
-	var infoTypes = []*dlppb.InfoType{infoTypesElement}
-	var inspectConfig = &dlppb.InspectConfig{
-		InfoTypes: infoTypes,
-	}
-	var type_ string = "text/plain"
-	var value string = "My email is example@example.com."
-	var itemsElement = &dlppb.ContentItem{
-		Type: type_,
-		DataItem: &dlppb.ContentItem_Value{
-			Value: value,
-		},
-	}
-	var items = []*dlppb.ContentItem{itemsElement}
-	var request = &dlppb.InspectContentRequest{
-		InspectConfig: inspectConfig,
-		Items:         items,
-	}
-
-	c, err := NewClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.InspectContent(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockDlp.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestDlpServiceInspectContentError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockDlp.err = gstatus.Error(errCode, "test error")
-
-	var name string = "EMAIL_ADDRESS"
-	var infoTypesElement = &dlppb.InfoType{
-		Name: name,
-	}
-	var infoTypes = []*dlppb.InfoType{infoTypesElement}
-	var inspectConfig = &dlppb.InspectConfig{
-		InfoTypes: infoTypes,
-	}
-	var type_ string = "text/plain"
-	var value string = "My email is example@example.com."
-	var itemsElement = &dlppb.ContentItem{
-		Type: type_,
-		DataItem: &dlppb.ContentItem_Value{
-			Value: value,
-		},
-	}
-	var items = []*dlppb.ContentItem{itemsElement}
-	var request = &dlppb.InspectContentRequest{
-		InspectConfig: inspectConfig,
-		Items:         items,
-	}
-
-	c, err := NewClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.InspectContent(context.Background(), request)
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
-func TestDlpServiceRedactContent(t *testing.T) {
-	var expectedResponse *dlppb.RedactContentResponse = &dlppb.RedactContentResponse{}
-
-	mockDlp.err = nil
-	mockDlp.reqs = nil
-
-	mockDlp.resps = append(mockDlp.resps[:0], expectedResponse)
-
-	var name string = "EMAIL_ADDRESS"
-	var infoTypesElement = &dlppb.InfoType{
-		Name: name,
-	}
-	var infoTypes = []*dlppb.InfoType{infoTypesElement}
-	var inspectConfig = &dlppb.InspectConfig{
-		InfoTypes: infoTypes,
-	}
-	var type_ string = "text/plain"
-	var value string = "My email is example@example.com."
-	var itemsElement = &dlppb.ContentItem{
-		Type: type_,
-		DataItem: &dlppb.ContentItem_Value{
-			Value: value,
-		},
-	}
-	var items = []*dlppb.ContentItem{itemsElement}
-	var name2 string = "EMAIL_ADDRESS"
-	var infoType = &dlppb.InfoType{
-		Name: name2,
-	}
-	var replaceWith string = "REDACTED"
-	var replaceConfigsElement = &dlppb.RedactContentRequest_ReplaceConfig{
-		InfoType:    infoType,
-		ReplaceWith: replaceWith,
-	}
-	var replaceConfigs = []*dlppb.RedactContentRequest_ReplaceConfig{replaceConfigsElement}
-	var request = &dlppb.RedactContentRequest{
-		InspectConfig:  inspectConfig,
-		Items:          items,
-		ReplaceConfigs: replaceConfigs,
-	}
-
-	c, err := NewClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.RedactContent(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockDlp.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestDlpServiceRedactContentError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockDlp.err = gstatus.Error(errCode, "test error")
-
-	var name string = "EMAIL_ADDRESS"
-	var infoTypesElement = &dlppb.InfoType{
-		Name: name,
-	}
-	var infoTypes = []*dlppb.InfoType{infoTypesElement}
-	var inspectConfig = &dlppb.InspectConfig{
-		InfoTypes: infoTypes,
-	}
-	var type_ string = "text/plain"
-	var value string = "My email is example@example.com."
-	var itemsElement = &dlppb.ContentItem{
-		Type: type_,
-		DataItem: &dlppb.ContentItem_Value{
-			Value: value,
-		},
-	}
-	var items = []*dlppb.ContentItem{itemsElement}
-	var name2 string = "EMAIL_ADDRESS"
-	var infoType = &dlppb.InfoType{
-		Name: name2,
-	}
-	var replaceWith string = "REDACTED"
-	var replaceConfigsElement = &dlppb.RedactContentRequest_ReplaceConfig{
-		InfoType:    infoType,
-		ReplaceWith: replaceWith,
-	}
-	var replaceConfigs = []*dlppb.RedactContentRequest_ReplaceConfig{replaceConfigsElement}
-	var request = &dlppb.RedactContentRequest{
-		InspectConfig:  inspectConfig,
-		Items:          items,
-		ReplaceConfigs: replaceConfigs,
-	}
-
-	c, err := NewClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.RedactContent(context.Background(), request)
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)

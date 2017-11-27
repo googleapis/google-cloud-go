@@ -1,4 +1,4 @@
-// Copyright 2017, Google Inc. All rights reserved.
+// Copyright 2017, Google LLC All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 // Package errorreporting is an auto-generated package for the
 // Stackdriver Error Reporting API.
 //
-//   NOTE: This package is in alpha. It is not stable, and is likely to be subject to changes.
+//   NOTE: This package is in alpha. It is not stable, and is likely to change.
 //
 // Stackdriver Error Reporting groups and counts similar errors from cloud
 // services. The Stackdriver Error Reporting API provides a way to report new
