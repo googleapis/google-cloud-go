@@ -2,9 +2,10 @@
 # github.com/GoogleCloudPlatform/google-cloud-common/testing/firestore/cmd/generate-firestore-tests/generate-firestore-tests.go.
 
 # If a field path is in a merge option, the value at that path replaces the stored
-# value. That is true even if the value is complex.
+# value. If the value has only ServerTimestamps, they become transforms and we
+# clear the value by including the field path in the update mask.
 
-description: "set-merge: Merge field is not a leaf"
+description: "set-merge: non-leaf merge field with ServerTimestamp alone"
 set: <
   doc_ref_path: "projects/projectID/databases/(default)/documents/C/d"
   option: <
@@ -12,34 +13,24 @@ set: <
       field: "h"
     >
   >
-  json_data: "{\"h\": {\"f\": 5, \"g\": 6}, \"e\": 7}"
+  json_data: "{\"h\": {\"g\": \"ServerTimestamp\"}, \"e\": 7}"
   request: <
     database: "projects/projectID/databases/(default)"
     writes: <
       update: <
         name: "projects/projectID/databases/(default)/documents/C/d"
-        fields: <
-          key: "h"
-          value: <
-            map_value: <
-              fields: <
-                key: "f"
-                value: <
-                  integer_value: 5
-                >
-              >
-              fields: <
-                key: "g"
-                value: <
-                  integer_value: 6
-                >
-              >
-            >
-          >
-        >
       >
       update_mask: <
         field_paths: "h"
+      >
+    >
+    writes: <
+      transform: <
+        document: "projects/projectID/databases/(default)/documents/C/d"
+        field_transforms: <
+          field_path: "h.g"
+          set_to_server_value: REQUEST_TIME
+        >
       >
     >
   >
