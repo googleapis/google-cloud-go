@@ -249,21 +249,9 @@ func (t *Transaction) Delete(dr *DocumentRef, opts ...Precondition) error {
 	return t.addWrites(dr.newDeleteWrites(opts))
 }
 
-// UpdateMap adds a new Update operation to the Transaction.
-// See DocumentRef.UpdateMap for details.
-func (t *Transaction) UpdateMap(dr *DocumentRef, data map[string]interface{}, opts ...Precondition) error {
-	return t.addWrites(dr.newUpdateMapWrites(data, opts))
-}
-
-// UpdateStruct adds a new Update operation to the Transaction.
-// See DocumentRef.UpdateStruct for details.
-func (t *Transaction) UpdateStruct(dr *DocumentRef, fieldPaths []string, data interface{}, opts ...Precondition) error {
-	return t.addWrites(dr.newUpdateStructWrites(fieldPaths, data, opts))
-}
-
-// UpdatePaths adds a new Update operation to the Transaction.
-// See DocumentRef.UpdatePaths for details.
-func (t *Transaction) UpdatePaths(dr *DocumentRef, data []FieldPathUpdate, opts ...Precondition) error {
+// Update adds a new Update operation to the Transaction.
+// See DocumentRef.Update for details.
+func (t *Transaction) Update(dr *DocumentRef, data []Update, opts ...Precondition) error {
 	return t.addWrites(dr.newUpdatePathWrites(data, opts))
 }
 

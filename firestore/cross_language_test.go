@@ -110,35 +110,27 @@ func runTest(t *testing.T, msg string, test *pb.Test) {
 		check(err, tt.Set.IsError)
 
 	case *pb.Test_Update:
-		srv.addRPC(tt.Update.Request, commitResponseForSet)
-		ref := docRefFromPath(tt.Update.DocRefPath, c)
-		data := convertData(tt.Update.JsonData)
-		preconds := convertPrecondition(t, tt.Update.Precondition)
-		_, err := ref.UpdateMap(ctx, data, preconds...)
-		if tt.Update.IsError && err == nil {
-			t.Errorf("%s: got nil, want error", msg)
-		} else if !tt.Update.IsError && err != nil {
-			t.Errorf("%s: %v", msg, err)
-		}
+		// Ignore Update test because we only support UpdatePaths.
+		// Not to worry, every Update test has a corresponding UpdatePaths test.
 
 	case *pb.Test_UpdatePaths:
 		srv.addRPC(tt.UpdatePaths.Request, commitResponseForSet)
 		ref := docRefFromPath(tt.UpdatePaths.DocRefPath, c)
 		preconds := convertPrecondition(t, tt.UpdatePaths.Precondition)
 		paths := convertFieldPaths(tt.UpdatePaths.FieldPaths)
-		var fpus []FieldPathUpdate
+		var ups []Update
 		for i, path := range paths {
 			jsonValue := tt.UpdatePaths.JsonValues[i]
 			var val interface{}
 			if err := json.Unmarshal([]byte(jsonValue), &val); err != nil {
 				t.Fatalf("%s: %q: %v", msg, jsonValue, err)
 			}
-			fpus = append(fpus, FieldPathUpdate{
-				Path:  path,
-				Value: convertTestValue(val),
+			ups = append(ups, Update{
+				FieldPath: path,
+				Value:     convertTestValue(val),
 			})
 		}
-		_, err := ref.UpdatePaths(ctx, fpus, preconds...)
+		_, err := ref.Update(ctx, ups, preconds...)
 		check(err, tt.UpdatePaths.IsError)
 
 	case *pb.Test_Delete:

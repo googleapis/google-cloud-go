@@ -54,18 +54,6 @@ func parseDotSeparatedString(s string) (FieldPath, error) {
 	return fp, nil
 }
 
-func parseDotSeparatedStrings(strs []string) ([]FieldPath, error) {
-	var fps []FieldPath
-	for _, s := range strs {
-		fp, err := parseDotSeparatedString(s)
-		if err != nil {
-			return nil, err
-		}
-		fps = append(fps, fp)
-	}
-	return fps, nil
-}
-
 func (fp1 FieldPath) equal(fp2 FieldPath) bool {
 	if len(fp1) != len(fp2) {
 		return false
@@ -149,15 +137,15 @@ func (b byPath) Len() int           { return len(b) }
 func (b byPath) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
 func (b byPath) Less(i, j int) bool { return b[i].less(b[j]) }
 
-// createMapFromFieldPathUpdates uses fpus to construct a valid Firestore data value
-// in the form of a map. It assumes the FieldPaths in fpus have already been
-// validated and checked for prefixes. If any field path is associated with the
-// Delete value, it is not stored in the map.
-func createMapFromFieldPathUpdates(fpus []FieldPathUpdate) map[string]interface{} {
+// createMapFromUpdates uses a list of updates to construct a valid
+// Firestore data value in the form of a map. It assumes the FieldPaths in the updates
+// already been validated and checked for prefixes. If any field path is associated
+// with the Delete value, it is not stored in the map.
+func createMapFromUpdates(fpvs []fpv) map[string]interface{} {
 	m := map[string]interface{}{}
-	for _, fpu := range fpus {
-		if fpu.Value != Delete {
-			setAtPath(m, fpu.Path, fpu.Value)
+	for _, v := range fpvs {
+		if v.value != Delete {
+			setAtPath(m, v.fieldPath, v.value)
 		}
 	}
 	return m
