@@ -16,6 +16,7 @@ package firestore
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"sort"
 
@@ -276,65 +277,29 @@ func (d *DocumentRef) newDeleteWrites(preconds []Precondition) ([]*pb.Write, err
 	}}, nil
 }
 
-func (d *DocumentRef) newUpdateMapWrites(data map[string]interface{}, preconds []Precondition) ([]*pb.Write, error) {
-	// Collect all the (top-level) keys map; they will comprise the update mask.
-	// Also, translate the map into a sequence of FieldPathUpdates.
+func (d *DocumentRef) newUpdatePathWrites(updates []Update, preconds []Precondition) ([]*pb.Write, error) {
+	if len(updates) == 0 {
+		return nil, errors.New("firestore: no paths to update")
+	}
 	var fps []FieldPath
-	var fpus []FieldPathUpdate
-	for k, v := range data {
-		fp, err := parseDotSeparatedString(k)
+	var fpvs []fpv
+	for _, u := range updates {
+		v, err := u.process()
 		if err != nil {
 			return nil, err
 		}
-		fps = append(fps, fp)
-		fpus = append(fpus, FieldPathUpdate{Path: fp, Value: v})
-	}
-	// Check that there are no duplicate field paths, and that no field
-	// path is a prefix of another.
-	if err := checkNoDupOrPrefix(fps); err != nil {
-		return nil, err
-	}
-	// Re-create the map from the field paths and their corresponding values. A field path
-	// with a Delete value will not appear in the map but it will appear in the
-	// update mask, which will cause it to be deleted.
-	m := createMapFromFieldPathUpdates(fpus)
-	return d.newUpdateWrites(m, fps, preconds)
-}
-
-func (d *DocumentRef) newUpdateStructWrites(fieldPaths []string, data interface{}, preconds []Precondition) ([]*pb.Write, error) {
-	if !isStructOrStructPtr(data) {
-		return nil, errors.New("firestore: data is not struct or struct pointer")
-	}
-	fps, err := parseDotSeparatedStrings(fieldPaths)
-	if err != nil {
-		return nil, err
+		fps = append(fps, v.fieldPath)
+		fpvs = append(fpvs, v)
 	}
 	if err := checkNoDupOrPrefix(fps); err != nil {
 		return nil, err
 	}
-	return d.newUpdateWrites(data, fps, preconds)
-}
-
-func (d *DocumentRef) newUpdatePathWrites(data []FieldPathUpdate, preconds []Precondition) ([]*pb.Write, error) {
-	var fps []FieldPath
-	for _, fpu := range data {
-		if err := fpu.Path.validate(); err != nil {
-			return nil, err
-		}
-		fps = append(fps, fpu.Path)
-	}
-	if err := checkNoDupOrPrefix(fps); err != nil {
-		return nil, err
-	}
-	m := createMapFromFieldPathUpdates(data)
+	m := createMapFromUpdates(fpvs)
 	return d.newUpdateWrites(m, fps, preconds)
 }
 
 // newUpdateWrites creates Write operations for an update.
 func (d *DocumentRef) newUpdateWrites(data interface{}, fieldPaths []FieldPath, preconds []Precondition) ([]*pb.Write, error) {
-	if len(fieldPaths) == 0 {
-		return nil, errors.New("firestore: no paths to update")
-	}
 	if d == nil {
 		return nil, errNilDocRef
 	}
@@ -438,33 +403,6 @@ func (s sentinel) String() string {
 	}
 }
 
-// UpdateMap updates the document using the given data. Map keys replace the stored
-// values, but other fields of the stored document are untouched.
-// See DocumentRef.Create for acceptable map values.
-//
-// If a map key is a multi-element field path, like "a.b", then only key "b" of
-// the map value at "a" is changed; the rest of the map is preserved.
-// For example, if the stored data is
-//     {"a": {"b": 1, "c": 2}}
-// then
-//     UpdateMap({"a": {"b": 3}}) => {"a": {"b": 3}}
-// while
-//     UpdateMap({"a.b": 3}) => {"a": {"b": 3, "c": 2}}
-//
-// To delete a key, specify it in the input with a value of firestore.Delete.
-//
-// Field paths expressed as map keys must not contain any of the runes "˜*/[]".
-// Use UpdatePaths instead for such paths.
-//
-// UpdateMap returns an error if the document does not exist.
-func (d *DocumentRef) UpdateMap(ctx context.Context, data map[string]interface{}, preconds ...Precondition) (*WriteResult, error) {
-	ws, err := d.newUpdateMapWrites(data, preconds)
-	if err != nil {
-		return nil, err
-	}
-	return d.Parent.c.commit1(ctx, ws)
-}
-
 func isStructOrStructPtr(x interface{}) bool {
 	v := reflect.ValueOf(x)
 	if v.Kind() == reflect.Struct {
@@ -476,38 +414,45 @@ func isStructOrStructPtr(x interface{}) bool {
 	return false
 }
 
-// UpdateStruct updates the given field paths of the stored document from the fields
-// of data, which must be a struct or a pointer to a struct. Other fields of the
-// stored document are untouched.
-// See DocumentRef.Create for the acceptable values of the struct's fields.
+// An Update describes an update to a value referred to by a path.
+// An Update should have either a non-empty Path or a non-empty FieldPath,
+// but not both.
 //
-// Each element of fieldPaths is a single field or a dot-separated sequence of
-// fields, none of which contain the runes "˜*/[]".
-//
-// If an element of fieldPaths does not have a corresponding field in the struct,
-// that key is deleted from the stored document.
-//
-// UpdateStruct returns an error if the document does not exist.
-func (d *DocumentRef) UpdateStruct(ctx context.Context, fieldPaths []string, data interface{}, preconds ...Precondition) (*WriteResult, error) {
-	ws, err := d.newUpdateStructWrites(fieldPaths, data, preconds)
-	if err != nil {
-		return nil, err
-	}
-	return d.Parent.c.commit1(ctx, ws)
-}
-
-// A FieldPathUpdate describes an update to a value referred to by a FieldPath.
 // See DocumentRef.Create for acceptable values.
 // To delete a field, specify firestore.Delete as the value.
-type FieldPathUpdate struct {
-	Path  FieldPath
-	Value interface{}
+type Update struct {
+	Path      string // Will be split on dots, and must not contain any of "˜*/[]".
+	FieldPath FieldPath
+	Value     interface{}
 }
 
-// UpdatePaths updates the document using the given data. The values at the given
+// An fpv is a pair of validated FieldPath and value.
+type fpv struct {
+	fieldPath FieldPath
+	value     interface{}
+}
+
+func (u *Update) process() (v fpv, err error) {
+	if (u.Path != "") == (u.FieldPath != nil) {
+		return v, fmt.Errorf("firestore: update %+v should have exactly one of Path or FieldPath", u)
+	}
+	fp := u.FieldPath
+	if fp == nil {
+		fp, err = parseDotSeparatedString(u.Path)
+		if err != nil {
+			return v, err
+		}
+	}
+	if err := fp.validate(); err != nil {
+		return v, err
+	}
+	return fpv{fp, u.Value}, nil
+}
+
+// Update updates the document. The values at the given
 // field paths are replaced, but other fields of the stored document are untouched.
-func (d *DocumentRef) UpdatePaths(ctx context.Context, data []FieldPathUpdate, preconds ...Precondition) (*WriteResult, error) {
-	ws, err := d.newUpdatePathWrites(data, preconds)
+func (d *DocumentRef) Update(ctx context.Context, updates []Update, preconds ...Precondition) (*WriteResult, error) {
+	ws, err := d.newUpdatePathWrites(updates, preconds)
 	if err != nil {
 		return nil, err
 	}
