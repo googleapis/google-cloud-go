@@ -38,16 +38,14 @@ var (
 )
 
 func bqTagParser(t reflect.StructTag) (name string, keep bool, other interface{}, err error) {
-	if s := t.Get("bigquery"); s != "" {
-		if s == "-" {
-			return "", false, nil, nil
-		}
-		if !validFieldName.MatchString(s) {
-			return "", false, nil, errInvalidFieldName
-		}
-		return s, true, nil, nil
+	name, keep, opts, err := fields.ParseStandardTag("bigquery", t)
+	if err != nil {
+		return "", false, nil, err
 	}
-	return "", true, nil, nil
+	if name != "" && !validFieldName.MatchString(name) {
+		return "", false, nil, errInvalidFieldName
+	}
+	return name, keep, opts, nil
 }
 
 var fieldCache = fields.NewCache(bqTagParser, nil, nil)

@@ -53,8 +53,10 @@ var (
 		}},
 	}
 	testTableExpiration time.Time
-	datasetIDs          = testutil.NewUIDSpaceSep("dataset", '_')
-	tableIDs            = testutil.NewUIDSpaceSep("table", '_')
+	// BigQuery does not accept hyphens in dataset or table IDs, so we create IDs
+	// with underscores.
+	datasetIDs = testutil.NewUIDSpaceSep("dataset", '_')
+	tableIDs   = testutil.NewUIDSpaceSep("table", '_')
 )
 
 func TestMain(m *testing.M) {
@@ -94,8 +96,6 @@ func initIntegrationTest() func() {
 	if err != nil {
 		log.Fatalf("storage.NewClient: %v", err)
 	}
-	// BigQuery does not accept hyphens in dataset or table IDs, so we create IDs
-	// with underscores.
 	dataset = client.Dataset(datasetIDs.New())
 	if err := dataset.Create(ctx, nil); err != nil {
 		log.Fatalf("creating dataset %s: %v", dataset.DatasetID, err)
