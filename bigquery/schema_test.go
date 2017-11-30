@@ -666,12 +666,6 @@ func TestTagInferenceErrors(t *testing.T) {
 			}{},
 			err: errInvalidFieldName,
 		},
-		{
-			in: struct {
-				OmitEmpty int `bigquery:"abc,omitempty"`
-			}{},
-			err: errInvalidFieldName,
-		},
 	}
 	for i, tc := range testCases {
 		want := tc.err

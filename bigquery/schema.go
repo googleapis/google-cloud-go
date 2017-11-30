@@ -141,6 +141,7 @@ func InferSchema(st interface{}) (Schema, error) {
 	return inferSchemaReflectCached(reflect.TypeOf(st))
 }
 
+// TODO(jba): replace with sync.Map for Go 1.9.
 var schemaCache atomiccache.Cache
 
 type cacheVal struct {
