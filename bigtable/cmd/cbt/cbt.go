@@ -217,6 +217,13 @@ var commands = []struct {
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
+		Name:     "deletecolumn",
+		Desc:     "Delete all cells in a column",
+		do:       doDeleteColumn,
+		Usage:    "cbt deletecolumn <table> <row> <family> <column>",
+		Required: cbtconfig.ProjectAndInstanceRequired,
+	},
+	{
 		Name:     "deletefamily",
 		Desc:     "Delete a column family",
 		do:       doDeleteFamily,
@@ -364,6 +371,18 @@ func doCreateTable(ctx context.Context, args ...string) {
 	}
 	if err != nil {
 		log.Fatalf("Creating table: %v", err)
+	}
+}
+
+func doDeleteColumn(ctx context.Context, args ...string) {
+	if len(args) != 4 {
+		log.Fatal("usage: cbt deletecolumn <table> <row> <family> <column>")
+	}
+	tbl := getClient().Open(args[0])
+	mut := bigtable.NewMutation()
+	mut.DeleteCellsInColumn(args[2], args[3])
+	if err := tbl.Apply(ctx, args[1], mut); err != nil {
+		log.Fatalf("Deleting cells in column: %v", err)
 	}
 }
 
