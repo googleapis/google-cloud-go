@@ -197,16 +197,28 @@ func TestIntegration_TableMetadata(t *testing.T) {
 
 	// Create tables that have time partitioning
 	partitionCases := []struct {
-		timePartitioning   TimePartitioning
-		expectedExpiration time.Duration
+		timePartitioning TimePartitioning
+		wantExpiration   time.Duration
+		wantField        string
 	}{
-		{TimePartitioning{}, time.Duration(0)},
-		{TimePartitioning{time.Second}, time.Second},
+		{TimePartitioning{}, time.Duration(0), ""},
+		{TimePartitioning{Expiration: time.Second}, time.Second, ""},
+		{
+			TimePartitioning{
+				Expiration: time.Second,
+				Field:      "date",
+			}, time.Second, "date"},
 	}
+
+	schema2 := Schema{
+		{Name: "name", Type: StringFieldType},
+		{Name: "date", Type: DateFieldType},
+	}
+
 	for i, c := range partitionCases {
 		table := dataset.Table(fmt.Sprintf("t_metadata_partition_%v", i))
 		err = table.Create(context.Background(), &TableMetadata{
-			Schema:           schema,
+			Schema:           schema2,
 			TimePartitioning: &c.timePartitioning,
 			ExpirationTime:   time.Now().Add(5 * time.Minute),
 		})
@@ -220,7 +232,10 @@ func TestIntegration_TableMetadata(t *testing.T) {
 		}
 
 		got := md.TimePartitioning
-		want := &TimePartitioning{c.expectedExpiration}
+		want := &TimePartitioning{
+			Expiration: c.wantExpiration,
+			Field:      c.wantField,
+		}
 		if !testutil.Equal(got, want) {
 			t.Errorf("metadata.TimePartitioning: got %v, want %v", got, want)
 		}
