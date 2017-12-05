@@ -37,7 +37,7 @@ import (
 )
 
 type nextStringFunc func() (string, error)
-type nextSnapshotFunc func() (*snapshotConfig, error)
+type nextSnapshotFunc func() (*SnapshotConfig, error)
 
 // service provides an internal abstraction to isolate the generated
 // PubSub API; most of this package uses this interface instead.
@@ -74,7 +74,7 @@ type service interface {
 
 	newStreamingPuller(ctx context.Context, subName string, ackDeadline int32) *streamingPuller
 
-	createSnapshot(ctx context.Context, snapName, subName string) (*snapshotConfig, error)
+	createSnapshot(ctx context.Context, snapName, subName string) (*SnapshotConfig, error)
 	deleteSnapshot(ctx context.Context, snapName string) error
 	listProjectSnapshots(ctx context.Context, projName string) nextSnapshotFunc
 
@@ -536,7 +536,7 @@ func splitRequest(req *pb.StreamingPullRequest, maxSize int) (prefix, remainder 
 	return req, remainder
 }
 
-func (s *apiService) createSnapshot(ctx context.Context, snapName, subName string) (*snapshotConfig, error) {
+func (s *apiService) createSnapshot(ctx context.Context, snapName, subName string) (*SnapshotConfig, error) {
 	snap, err := s.subc.CreateSnapshot(ctx, &pb.CreateSnapshotRequest{
 		Name:         snapName,
 		Subscription: subName,
@@ -555,7 +555,7 @@ func (s *apiService) listProjectSnapshots(ctx context.Context, projName string) 
 	it := s.subc.ListSnapshots(ctx, &pb.ListSnapshotsRequest{
 		Project: projName,
 	})
-	return func() (*snapshotConfig, error) {
+	return func() (*SnapshotConfig, error) {
 		snap, err := it.Next()
 		if err != nil {
 			return nil, err
@@ -564,13 +564,13 @@ func (s *apiService) listProjectSnapshots(ctx context.Context, projName string) 
 	}
 }
 
-func (s *apiService) toSnapshotConfig(snap *pb.Snapshot) (*snapshotConfig, error) {
+func (s *apiService) toSnapshotConfig(snap *pb.Snapshot) (*SnapshotConfig, error) {
 	exp, err := ptypes.Timestamp(snap.ExpireTime)
 	if err != nil {
 		return nil, err
 	}
-	return &snapshotConfig{
-		snapshot: &snapshot{
+	return &SnapshotConfig{
+		Snapshot: &Snapshot{
 			s:    s,
 			name: snap.Name,
 		},

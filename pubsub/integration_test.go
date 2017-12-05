@@ -159,14 +159,14 @@ func TestAll(t *testing.T) {
 		t.Errorf("sub IAM: %s", msg)
 	}
 
-	snap, err := sub.createSnapshot(ctx, "")
+	snap, err := sub.CreateSnapshot(ctx, "")
 	if err != nil {
 		t.Fatalf("CreateSnapshot error: %v", err)
 	}
 
 	timeoutCtx, _ = context.WithTimeout(ctx, time.Minute)
 	err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (bool, error) {
-		snapIt := client.snapshots(timeoutCtx)
+		snapIt := client.Snapshots(timeoutCtx)
 		for {
 			s, err := snapIt.Next()
 			if err == nil && s.name == snap.name {
@@ -185,7 +185,7 @@ func TestAll(t *testing.T) {
 	}
 
 	err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (bool, error) {
-		err := sub.seekToSnapshot(timeoutCtx, snap.snapshot)
+		err := sub.SeekToSnapshot(timeoutCtx, snap.Snapshot)
 		return err == nil, err
 	})
 	if err != nil {
@@ -193,7 +193,7 @@ func TestAll(t *testing.T) {
 	}
 
 	err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (bool, error) {
-		err := sub.seekToTime(timeoutCtx, time.Now())
+		err := sub.SeekToTime(timeoutCtx, time.Now())
 		return err == nil, err
 	})
 	if err != nil {
@@ -201,8 +201,8 @@ func TestAll(t *testing.T) {
 	}
 
 	err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (bool, error) {
-		snapHandle := client.snapshot(snap.ID())
-		err := snapHandle.delete(timeoutCtx)
+		snapHandle := client.Snapshot(snap.ID())
+		err := snapHandle.Delete(timeoutCtx)
 		return err == nil, err
 	})
 	if err != nil {

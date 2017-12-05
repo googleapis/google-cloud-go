@@ -23,7 +23,7 @@ import (
 )
 
 // Snapshot is a reference to a PubSub snapshot.
-type snapshot struct {
+type Snapshot struct {
 	s service
 
 	// The fully qualified identifier for the snapshot, in the format "projects/<projid>/snapshots/<snap>"
@@ -31,7 +31,7 @@ type snapshot struct {
 }
 
 // ID returns the unique identifier of the snapshot within its project.
-func (s *snapshot) ID() string {
+func (s *Snapshot) ID() string {
 	slash := strings.LastIndex(s.name, "/")
 	if slash == -1 {
 		// name is not a fully-qualified name.
@@ -41,40 +41,40 @@ func (s *snapshot) ID() string {
 }
 
 // SnapshotConfig contains the details of a Snapshot.
-type snapshotConfig struct {
-	*snapshot
+type SnapshotConfig struct {
+	*Snapshot
 	Topic      *Topic
 	Expiration time.Time
 }
 
 // Snapshot creates a reference to a snapshot.
-func (c *Client) snapshot(id string) *snapshot {
-	return &snapshot{
+func (c *Client) Snapshot(id string) *Snapshot {
+	return &Snapshot{
 		s:    c.s,
 		name: vkit.SubscriberSnapshotPath(c.projectID, id),
 	}
 }
 
 // Snapshots returns an iterator which returns snapshots for this project.
-func (c *Client) snapshots(ctx context.Context) *snapshotConfigIterator {
-	return &snapshotConfigIterator{
+func (c *Client) Snapshots(ctx context.Context) *SnapshotConfigIterator {
+	return &SnapshotConfigIterator{
 		next: c.s.listProjectSnapshots(ctx, c.fullyQualifiedProjectName()),
 	}
 }
 
 // SnapshotConfigIterator is an iterator that returns a series of snapshots.
-type snapshotConfigIterator struct {
+type SnapshotConfigIterator struct {
 	next nextSnapshotFunc
 }
 
 // Next returns the next SnapshotConfig. Its second return value is iterator.Done if there are no more results.
 // Once Next returns iterator.Done, all subsequent calls will return iterator.Done.
-func (snaps *snapshotConfigIterator) Next() (*snapshotConfig, error) {
+func (snaps *SnapshotConfigIterator) Next() (*SnapshotConfig, error) {
 	return snaps.next()
 }
 
 // Delete deletes a snapshot.
-func (snap *snapshot) delete(ctx context.Context) error {
+func (snap *Snapshot) Delete(ctx context.Context) error {
 	return snap.s.deleteSnapshot(ctx, snap.name)
 }
 
@@ -89,7 +89,7 @@ func (snap *snapshot) delete(ctx context.Context) error {
 // window (or to a point before the system's notion of the subscription
 // creation time), only retained messages will be marked as unacknowledged,
 // and already-expunged messages will not be restored.
-func (s *Subscription) seekToTime(ctx context.Context, t time.Time) error {
+func (s *Subscription) SeekToTime(ctx context.Context, t time.Time) error {
 	return s.s.seekToTime(ctx, s.name, t)
 }
 
@@ -103,7 +103,7 @@ func (s *Subscription) seekToTime(ctx context.Context, t time.Time) error {
 //      unacknowledged when Snapshot returns without error.
 //  (b) Any messages published to the subscription's topic following
 //      Snapshot returning without error.
-func (s *Subscription) createSnapshot(ctx context.Context, name string) (*snapshotConfig, error) {
+func (s *Subscription) CreateSnapshot(ctx context.Context, name string) (*SnapshotConfig, error) {
 	if name != "" {
 		name = vkit.SubscriberSnapshotPath(strings.Split(s.name, "/")[1], name)
 	}
@@ -114,6 +114,6 @@ func (s *Subscription) createSnapshot(ctx context.Context, name string) (*snapsh
 //
 // The snapshot needs not be created from this subscription,
 // but the snapshot must be for the topic this subscription is subscribed to.
-func (s *Subscription) seekToSnapshot(ctx context.Context, snap *snapshot) error {
+func (s *Subscription) SeekToSnapshot(ctx context.Context, snap *Snapshot) error {
 	return s.s.seekToSnapshot(ctx, s.name, snap.name)
 }
