@@ -21,7 +21,7 @@
 //
 // Transfers data from partner SaaS applications to Google BigQuery on a
 // scheduled, managed basis.
-package datatransfer // import "cloud.google.com/go/cloud/bigquery/datatransfer/apiv1"
+package datatransfer // import "cloud.google.com/go/bigquery/datatransfer/apiv1"
 
 import (
 	"golang.org/x/net/context"
