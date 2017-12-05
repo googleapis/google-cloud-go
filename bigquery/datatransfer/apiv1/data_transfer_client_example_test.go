@@ -17,7 +17,7 @@
 package datatransfer_test
 
 import (
-	"cloud.google.com/go/cloud/bigquery/datatransfer/apiv1"
+	"cloud.google.com/go/bigquery/datatransfer/apiv1"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
