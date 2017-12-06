@@ -29,9 +29,9 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"google.golang.org/grpc/codes"
 )
 
 const adminAddr = "bigtableadmin.googleapis.com:443"
@@ -336,23 +336,54 @@ type InstanceConf struct {
 	InstanceType InstanceType
 }
 
+// InstanceWithClustersConfig contains the information necessary to create an Instance
+type InstanceWithClustersConfig struct {
+	InstanceID, DisplayName string
+	Clusters                []ClusterConfig
+	InstanceType            InstanceType
+}
+
 var instanceNameRegexp = regexp.MustCompile(`^projects/([^/]+)/instances/([a-z][-a-z0-9]*)$`)
 
 // CreateInstance creates a new instance in the project.
 // This method will return when the instance has been created or when an error occurs.
 func (iac *InstanceAdminClient) CreateInstance(ctx context.Context, conf *InstanceConf) error {
-	ctx = mergeOutgoingMetadata(ctx, iac.md)
-	req := &btapb.CreateInstanceRequest{
-		Parent:     "projects/" + iac.project,
-		InstanceId: conf.InstanceId,
-		Instance:   &btapb.Instance{DisplayName: conf.DisplayName, Type: btapb.Instance_Type(conf.InstanceType)},
-		Clusters: map[string]*btapb.Cluster{
-			conf.ClusterId: {
-				ServeNodes:         conf.NumNodes,
-				DefaultStorageType: conf.StorageType.proto(),
-				Location:           "projects/" + iac.project + "/locations/" + conf.Zone,
+	newConfig := InstanceWithClustersConfig{
+		InstanceID:   conf.InstanceId,
+		DisplayName:  conf.DisplayName,
+		InstanceType: conf.InstanceType,
+		Clusters: []ClusterConfig{
+			{
+				InstanceID:  conf.InstanceId,
+				ClusterID:   conf.ClusterId,
+				Zone:        conf.Zone,
+				NumNodes:    conf.NumNodes,
+				StorageType: conf.StorageType,
 			},
 		},
+	}
+	return iac.CreateInstanceWithClusters(ctx, &newConfig)
+}
+
+// CreateInstance creates a new instance with configured clusters in the project.
+// This method will return when the instance has been created or when an error occurs.
+//
+// Instances with multiple clusters are part of a private alpha release of Cloud Bigtable replication.
+// This feature is not currently available to most Cloud Bigtable customers. This feature
+// might be changed in backward-incompatible ways and is not recommended for
+// production use. It is not subject to any SLA or deprecation policy.
+func (iac *InstanceAdminClient) CreateInstanceWithClusters(ctx context.Context, conf *InstanceWithClustersConfig) error {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	clusters := make(map[string]*btapb.Cluster)
+	for _, cluster := range conf.Clusters {
+		clusters[cluster.ClusterID] = cluster.proto(iac.project)
+	}
+
+	req := &btapb.CreateInstanceRequest{
+		Parent:     "projects/" + iac.project,
+		InstanceId: conf.InstanceID,
+		Instance:   &btapb.Instance{DisplayName: conf.DisplayName, Type: btapb.Instance_Type(conf.InstanceType)},
+		Clusters:   clusters,
 	}
 
 	lro, err := iac.iClient.CreateInstance(ctx, req)
@@ -420,4 +451,100 @@ func (iac *InstanceAdminClient) InstanceInfo(ctx context.Context, instanceId str
 		Name:        m[2],
 		DisplayName: res.DisplayName,
 	}, nil
+}
+
+// ClusterConfig contains the information necessary to create a cluster
+type ClusterConfig struct {
+	InstanceID, ClusterID, Zone string
+	NumNodes                    int32
+	StorageType                 StorageType
+}
+
+func (cc *ClusterConfig) proto(project string) *btapb.Cluster {
+	return &btapb.Cluster{
+		ServeNodes:         cc.NumNodes,
+		DefaultStorageType: cc.StorageType.proto(),
+		Location:           "projects/" + project + "/locations/" + cc.Zone,
+	}
+}
+
+// ClusterInfo represents information about a cluster.
+type ClusterInfo struct {
+	Name       string // name of the cluster
+	Zone       string // GCP zone of the cluster (e.g. "us-central1-a")
+	ServeNodes int    // number of allocated serve nodes
+	State      string // state of the cluster
+}
+
+// CreateCluster creates a new cluster in an instance.
+// This method will return when the cluster has been created or when an error occurs.
+//
+// This is a private alpha release of Cloud Bigtable replication. This feature
+// is not currently available to most Cloud Bigtable customers. This feature
+// might be changed in backward-incompatible ways and is not recommended for
+// production use. It is not subject to any SLA or deprecation policy.
+func (iac *InstanceAdminClient) CreateCluster(ctx context.Context, conf *ClusterConfig) error {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+
+	req := &btapb.CreateClusterRequest{
+		Parent:    "projects/" + iac.project + "/instances/" + conf.InstanceID,
+		ClusterId: conf.ClusterID,
+		Cluster:   conf.proto(iac.project),
+	}
+
+	lro, err := iac.iClient.CreateCluster(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.Cluster{}
+	return longrunning.InternalNewOperation(iac.lroClient, lro).Wait(ctx, &resp)
+}
+
+// DeleteCluster deletes a cluster from an instance.
+//
+// This is a private alpha release of Cloud Bigtable replication. This feature
+// is not currently available to most Cloud Bigtable customers. This feature
+// might be changed in backward-incompatible ways and is not recommended for
+// production use. It is not subject to any SLA or deprecation policy.
+func (iac *InstanceAdminClient) DeleteCluster(ctx context.Context, instanceId, clusterId string) error {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	req := &btapb.DeleteClusterRequest{"projects/" + iac.project + "/instances/" + instanceId + "/clusters/" + clusterId}
+	_, err := iac.iClient.DeleteCluster(ctx, req)
+	return err
+}
+
+// UpdateCluster updates attributes of a cluster
+func (iac *InstanceAdminClient) UpdateCluster(ctx context.Context, instanceId, clusterId string, serveNodes int32) error {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	cluster := &btapb.Cluster{
+		Name:       "projects/" + iac.project + "/instances/" + instanceId + "/clusters/" + clusterId,
+		ServeNodes: serveNodes}
+	lro, err := iac.iClient.UpdateCluster(ctx, cluster)
+	if err != nil {
+		return err
+	}
+	return longrunning.InternalNewOperation(iac.lroClient, lro).Wait(ctx, nil)
+}
+
+// Clusters lists the clusters in an instance.
+func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceId string) ([]*ClusterInfo, error) {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	req := &btapb.ListClustersRequest{Parent: "projects/" + iac.project + "/instances/" + instanceId}
+	res, err := iac.iClient.ListClusters(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	// TODO(garyelliott): Deal with failed_locations.
+	var cis []*ClusterInfo
+	for _, c := range res.Clusters {
+		nameParts := strings.Split(c.Name, "/")
+		locParts := strings.Split(c.Location, "/")
+		cis = append(cis, &ClusterInfo{
+			Name:       nameParts[len(nameParts)-1],
+			Zone:       locParts[len(locParts)-1],
+			ServeNodes: int(c.ServeNodes),
+			State:      c.State.String(),
+		})
+	}
+	return cis, nil
 }

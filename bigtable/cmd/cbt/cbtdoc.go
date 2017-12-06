@@ -28,8 +28,13 @@ Usage:
 The commands are:
 
 	count                     Count rows in a table
+	createinstance            Create an instance with an initial cluster
+	createcluster             Create a cluster in the configured instance (replication alpha)
 	createfamily              Create a column family
 	createtable               Create a table
+	updatecluster             Update a cluster in the configured instance
+	deleteinstance            Deletes an instance
+	deletecluster             Deletes a cluster from the configured instance (replication alpha)
 	deletecolumn              Delete all cells in a column
 	deletefamily              Delete a column family
 	deleterow                 Delete a row
@@ -37,6 +42,7 @@ The commands are:
 	doc                       Print godoc-suitable documentation for cbt
 	help                      Print help text
 	listinstances             List instances in a project
+	listclusters              List instances in an instance
 	lookup                    Read from a single row
 	ls                        List tables and column families
 	mddoc                     Print documentation for cbt in Markdown format
@@ -57,10 +63,54 @@ The options are:
 		if set, use application credentials in this file
 
 
+Alpha features are not currently available to most Cloud Bigtable customers. The
+features might be changed in backward-incompatible ways and are not recommended
+for production use. They are not subject to any SLA or deprecation policy.
+
+For convenience, values of the -project, -instance, -creds,
+-admin-endpoint and -data-endpoint flags may be specified in
+/usr/local/google/home/igorbernstein/.cbtrc in this format:
+	project = my-project-123
+	instance = my-instance
+	creds = path-to-account-key.json
+	admin-endpoint = hostname:port
+	data-endpoint = hostname:port
+All values are optional, and all will be overridden by flags.
+
+
+
 Count rows in a table
 
 Usage:
 	cbt count <table>
+
+
+
+
+Create an instance with an initial cluster
+
+Usage:
+	cbt createinstance <instance-id> <display-name> <cluster-id> <zone> <num-nodes> <storage type>
+	  instance-id					Permanent, unique id for the instance
+	  display-name	  			Description of the instance
+	  cluster-id						Permanent, unique id for the cluster in the instance
+	  zone				  				The zone in which to create the cluster
+	  num-nodes	  				The number of nodes to create
+	  storage-type					SSD or HDD
+
+
+
+
+
+Create a cluster in the configured instance (replication alpha)
+
+Usage:
+	cbt createcluster <cluster-id> <zone> <num-nodes> <storage type>
+	  cluster-id		Permanent, unique id for the cluster in the instance
+	  zone				  The zone in which to create the cluster
+	  num-nodes	  The number of nodes to create
+	  storage-type	SSD or HDD
+
 
 
 
@@ -76,8 +126,36 @@ Usage:
 Create a table
 
 Usage:
-	cbt createtable <table> [initial_splits...]
-	  initial_splits=row		A row key to be used to initially split the table into multiple tablets. Can be repeated to create multiple splits.
+	cbt createtable <table> [families=family[:(maxage=<d> | maxversions=<n>)],...] [splits=split,...]
+	  families: Column families and their associated GC policies. See "setgcpolicy".
+	  					 Example: families=family1:maxage=1w,family2:maxversions=1
+	  splits:   Row key to be used to initially split the table
+
+
+
+
+Update a cluster in the configured instance
+
+Usage:
+	cbt updatecluster <cluster-id> [num-nodes=num-nodes]
+	  cluster-id		Permanent, unique id for the cluster in the instance
+	  num-nodes		The number of nodes to update to
+
+
+
+
+Deletes an instance
+
+Usage:
+	cbt deleteinstance <instance>
+
+
+
+
+Deletes a cluster from the configured instance (replication alpha)
+
+Usage:
+	cbt deletecluster <cluster>
 
 
 
@@ -134,6 +212,14 @@ List instances in a project
 
 Usage:
 	cbt listinstances
+
+
+
+
+List instances in an instance
+
+Usage:
+	cbt listclusters
 
 
 
