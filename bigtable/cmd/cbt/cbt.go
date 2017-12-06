@@ -34,6 +34,8 @@ import (
 	"text/template"
 	"time"
 
+	"encoding/csv"
+
 	"cloud.google.com/go/bigtable"
 	"cloud.google.com/go/bigtable/internal/cbtconfig"
 	"golang.org/x/net/context"
@@ -170,10 +172,15 @@ func init() {
 	}
 	tw.Flush()
 	buf.WriteString(configHelp)
+	buf.WriteString("\ncbt ` + version + ` ` + revision + ` ` + revisionDate + `")
 	cmdSummary = buf.String()
 }
 
 var configHelp = `
+Alpha features are not currently available to most Cloud Bigtable customers. The
+features might be changed in backward-incompatible ways and are not recommended
+for production use. They are not subject to any SLA or deprecation policy.
+
 For convenience, values of the -project, -instance, -creds,
 -admin-endpoint and -data-endpoint flags may be specified in
 ` + cbtconfig.Filename() + ` in this format:
@@ -183,8 +190,6 @@ For convenience, values of the -project, -instance, -creds,
 	admin-endpoint = hostname:port
 	data-endpoint = hostname:port
 All values are optional, and all will be overridden by flags.
-
-cbt ` + version + ` ` + revision + ` ` + revisionDate + `
 `
 
 var commands = []struct {
@@ -201,6 +206,30 @@ var commands = []struct {
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
+		Name: "createinstance",
+		Desc: "Create an instance with an initial cluster",
+		do:   doCreateInstance,
+		Usage: "cbt createinstance <instance-id> <display-name> <cluster-id> <zone> <num-nodes> <storage type>\n" +
+			"  instance-id					Permanent, unique id for the instance\n" +
+			"  display-name	  			Description of the instance\n" +
+			"  cluster-id						Permanent, unique id for the cluster in the instance\n" +
+			"  zone				  				The zone in which to create the cluster\n" +
+			"  num-nodes	  				The number of nodes to create\n" +
+			"  storage-type					SSD or HDD\n",
+		Required: cbtconfig.ProjectRequired,
+	},
+	{
+		Name: "createcluster",
+		Desc: "Create a cluster in the configured instance (replication alpha)",
+		do:   doCreateCluster,
+		Usage: "cbt createcluster <cluster-id> <zone> <num-nodes> <storage type>\n" +
+			"  cluster-id		Permanent, unique id for the cluster in the instance\n" +
+			"  zone				  The zone in which to create the cluster\n" +
+			"  num-nodes	  The number of nodes to create\n" +
+			"  storage-type	SSD or HDD\n",
+		Required: cbtconfig.ProjectAndInstanceRequired,
+	},
+	{
 		Name:     "createfamily",
 		Desc:     "Create a column family",
 		do:       doCreateFamily,
@@ -211,9 +240,33 @@ var commands = []struct {
 		Name: "createtable",
 		Desc: "Create a table",
 		do:   doCreateTable,
-		Usage: "cbt createtable <table> [initial_splits...]\n" +
-			"  initial_splits=row		A row key to be used to initially split the table " +
-			"into multiple tablets. Can be repeated to create multiple splits.",
+		Usage: "cbt createtable <table> [families=family[:(maxage=<d> | maxversions=<n>)],...] [splits=split,...]\n" +
+			"  families: Column families and their associated GC policies. See \"setgcpolicy\".\n" +
+			"  					 Example: families=family1:maxage=1w,family2:maxversions=1\n" +
+			"  splits:   Row key to be used to initially split the table",
+		Required: cbtconfig.ProjectAndInstanceRequired,
+	},
+	{
+		Name: "updatecluster",
+		Desc: "Update a cluster in the configured instance",
+		do:   doUpdateCluster,
+		Usage: "cbt updatecluster <cluster-id> [num-nodes=num-nodes]\n" +
+			"  cluster-id		Permanent, unique id for the cluster in the instance\n" +
+			"  num-nodes		The number of nodes to update to",
+		Required: cbtconfig.ProjectAndInstanceRequired,
+	},
+	{
+		Name:     "deleteinstance",
+		Desc:     "Deletes an instance",
+		do:       doDeleteInstance,
+		Usage:    "cbt deleteinstance <instance>",
+		Required: cbtconfig.ProjectRequired,
+	},
+	{
+		Name:     "deletecluster",
+		Desc:     "Deletes a cluster from the configured instance (replication alpha)",
+		do:       doDeleteCluster,
+		Usage:    "cbt deletecluster <cluster>",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
@@ -264,6 +317,13 @@ var commands = []struct {
 		do:       doListInstances,
 		Usage:    "cbt listinstances",
 		Required: cbtconfig.ProjectRequired,
+	},
+	{
+		Name:     "listclusters",
+		Desc:     "List instances in an instance",
+		do:       doListClusters,
+		Usage:    "cbt listclusters",
+		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
 		Name:     "lookup",
@@ -348,6 +408,51 @@ func doCount(ctx context.Context, args ...string) {
 	fmt.Println(n)
 }
 
+func doCreateTable(ctx context.Context, args ...string) {
+	if len(args) < 1 {
+		log.Fatal("usage: cbt createtable <table> [families=family[:gcpolicy],...] [splits=split,...]")
+	}
+
+	tblConf := bigtable.TableConf{TableID: args[0]}
+	for _, arg := range args[1:] {
+		i := strings.Index(arg, "=")
+		if i < 0 {
+			log.Fatalf("Bad arg %q", arg)
+		}
+		key, val := arg[:i], arg[i+1:]
+		chunks, err := csv.NewReader(strings.NewReader(val)).Read()
+		if err != nil {
+			log.Fatalf("Invalid families arg format: %v", err)
+		}
+		switch key {
+		default:
+			log.Fatalf("Unknown arg key %q", key)
+		case "families":
+			tblConf.Families = make(map[string]bigtable.GCPolicy)
+			for _, family := range chunks {
+				famPolicy := strings.Split(family, ":")
+				var gcPolicy bigtable.GCPolicy
+				if len(famPolicy) < 2 {
+					gcPolicy = bigtable.MaxVersionsPolicy(1)
+					log.Printf("Using default GC Policy of %v for family %v", gcPolicy, family)
+				} else {
+					gcPolicy, err = parseGCPolicy(famPolicy[1])
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+				tblConf.Families[famPolicy[0]] = gcPolicy
+			}
+		case "splits":
+			tblConf.SplitKeys = chunks
+		}
+	}
+
+	if err := getAdminClient().CreateTableFromConf(ctx, &tblConf); err != nil {
+		log.Fatalf("Creating table: %v", err)
+	}
+}
+
 func doCreateFamily(ctx context.Context, args ...string) {
 	if len(args) != 2 {
 		log.Fatal("usage: cbt createfamily <table> <family>")
@@ -358,19 +463,115 @@ func doCreateFamily(ctx context.Context, args ...string) {
 	}
 }
 
-func doCreateTable(ctx context.Context, args ...string) {
-	if len(args) < 1 {
-		log.Fatal("usage: cbt createtable <table> [initial_splits...]")
+func doCreateInstance(ctx context.Context, args ...string) {
+	if len(args) < 6 {
+		log.Fatal("cbt createinstance <instance-id> <display-name> <cluster-id> <zone> <num-nodes> <storage type>")
 	}
-	var err error
-	if len(args) > 1 {
-		splits := args[1:]
-		err = getAdminClient().CreatePresplitTable(ctx, args[0], splits)
-	} else {
-		err = getAdminClient().CreateTable(ctx, args[0])
-	}
+
+	numNodes, err := strconv.ParseInt(args[4], 0, 32)
 	if err != nil {
-		log.Fatalf("Creating table: %v", err)
+		log.Fatalf("Bad num-nodes %q: %v", args[4], err)
+	}
+
+	sType, err := parseStorageType(args[5])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ic := bigtable.InstanceWithClustersConfig{
+		InstanceID:  args[0],
+		DisplayName: args[1],
+		Clusters: []bigtable.ClusterConfig{{
+			ClusterID:   args[2],
+			Zone:        args[3],
+			NumNodes:    int32(numNodes),
+			StorageType: sType,
+		}},
+	}
+	err = getInstanceAdminClient().CreateInstanceWithClusters(ctx, &ic)
+	if err != nil {
+		log.Fatalf("Creating instance: %v", err)
+	}
+}
+
+func doCreateCluster(ctx context.Context, args ...string) {
+	if len(args) < 4 {
+		log.Fatal("usage: cbt createcluster <cluster-id> <zone> <num-nodes> <storage type>")
+	}
+
+	numNodes, err := strconv.ParseInt(args[2], 0, 32)
+	if err != nil {
+		log.Fatalf("Bad num_nodes %q: %v", args[2], err)
+	}
+
+	sType, err := parseStorageType(args[3])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cc := bigtable.ClusterConfig{
+		InstanceID:  config.Instance,
+		ClusterID:   args[0],
+		Zone:        args[1],
+		NumNodes:    int32(numNodes),
+		StorageType: sType,
+	}
+	err = getInstanceAdminClient().CreateCluster(ctx, &cc)
+	if err != nil {
+		log.Fatalf("Creating cluster: %v", err)
+	}
+}
+
+func doUpdateCluster(ctx context.Context, args ...string) {
+	if len(args) < 2 {
+		log.Fatal("cbt updatecluster <cluster-id> [num-nodes=num-nodes]")
+	}
+
+	numNodes := int64(0)
+	var err error
+	for _, arg := range args[1:] {
+		i := strings.Index(arg, "=")
+		if i < 0 {
+			log.Fatalf("Bad arg %q", arg)
+		}
+		key, val := arg[:i], arg[i+1:]
+		switch key {
+		default:
+			log.Fatalf("Unknown arg key %q", key)
+		case "num-nodes":
+			numNodes, err = strconv.ParseInt(val, 0, 32)
+			if err != nil {
+				log.Fatalf("Bad num-nodes %q: %v", val, err)
+			}
+		}
+	}
+	if numNodes > 0 {
+		err = getInstanceAdminClient().UpdateCluster(ctx, config.Instance, args[0], int32(numNodes))
+		if err != nil {
+			log.Fatalf("Updating cluster: %v", err)
+		}
+	} else {
+		log.Fatal("Updating cluster: nothing to update")
+	}
+}
+
+func doDeleteInstance(ctx context.Context, args ...string) {
+	if len(args) != 1 {
+		log.Fatal("usage: cbt deleteinstance <instance>")
+	}
+	err := getInstanceAdminClient().DeleteInstance(ctx, args[0])
+	if err != nil {
+		log.Fatalf("Deleting instance: %v", err)
+	}
+}
+
+func doDeleteCluster(ctx context.Context, args ...string) {
+	if len(args) != 1 {
+		log.Fatal("usage: cbt deletecluster <cluster>")
+	}
+	err := getInstanceAdminClient().DeleteCluster(ctx, config.Instance, args[0])
+	if err != nil {
+		log.Fatalf("Deleting cluster: %v", err)
 	}
 }
 
@@ -450,8 +651,9 @@ func docFlags() []*flag.Flag {
 
 func doDocReal(ctx context.Context, args ...string) {
 	data := map[string]interface{}{
-		"Commands": commands,
-		"Flags":    docFlags(),
+		"Commands":   commands,
+		"Flags":      docFlags(),
+		"ConfigHelp": configHelp,
 	}
 	var buf bytes.Buffer
 	if err := docTemplate.Execute(&buf, data); err != nil {
@@ -514,6 +716,8 @@ The options are:
 	-{{.Name}} string
 		{{.Usage}}{{end}}
 
+{{.ConfigHelp}}
+
 {{range .Commands}}
 {{.Desc}}
 
@@ -554,6 +758,23 @@ func doListInstances(ctx context.Context, args ...string) {
 	fmt.Fprintf(tw, "-------------\t----\n")
 	for _, i := range is {
 		fmt.Fprintf(tw, "%s\t%s\n", i.Name, i.DisplayName)
+	}
+	tw.Flush()
+}
+
+func doListClusters(ctx context.Context, args ...string) {
+	if len(args) != 0 {
+		log.Fatalf("usage: cbt listclusters")
+	}
+	cis, err := getInstanceAdminClient().Clusters(ctx, config.Instance)
+	if err != nil {
+		log.Fatalf("Getting list of clusters: %v", err)
+	}
+	tw := tabwriter.NewWriter(os.Stdout, 10, 8, 4, '\t', 0)
+	fmt.Fprintf(tw, "Cluster Name\tZone\tState\n")
+	fmt.Fprintf(tw, "------------\t----\t----\n")
+	for _, ci := range cis {
+		fmt.Fprintf(tw, "%s\t%s\t%s (%d serve nodes)\n", ci.Name, ci.Zone, ci.State, ci.ServeNodes)
 	}
 	tw.Flush()
 }
@@ -635,8 +856,9 @@ func doLS(ctx context.Context, args ...string) {
 
 func doMDDocReal(ctx context.Context, args ...string) {
 	data := map[string]interface{}{
-		"Commands": commands,
-		"Flags":    docFlags(),
+		"Commands":   commands,
+		"Flags":      docFlags(),
+		"ConfigHelp": configHelp,
 	}
 	var buf bytes.Buffer
 	if err := mddocTemplate.Execute(&buf, data); err != nil {
@@ -665,6 +887,8 @@ The options are:
 {{range .Flags}}
 	-{{.Name}} string
 		{{.Usage}}{{end}}
+
+{{.ConfigHelp}}
 
 {{range .Commands}}
 ## {{.Desc}}
@@ -773,26 +997,44 @@ func doSetGCPolicy(ctx context.Context, args ...string) {
 	table := args[0]
 	fam := args[1]
 
+	pol, err := parseGCPolicy(args[2])
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := getAdminClient().SetGCPolicy(ctx, table, fam, pol); err != nil {
+		log.Fatalf("Setting GC policy: %v", err)
+	}
+}
+
+func parseGCPolicy(policyStr string) (bigtable.GCPolicy, error) {
 	var pol bigtable.GCPolicy
-	switch p := args[2]; {
+	switch p := policyStr; {
 	case strings.HasPrefix(p, "maxage="):
 		d, err := parseDuration(p[7:])
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		pol = bigtable.MaxAgePolicy(d)
 	case strings.HasPrefix(p, "maxversions="):
 		n, err := strconv.ParseUint(p[12:], 10, 16)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		pol = bigtable.MaxVersionsPolicy(int(n))
 	default:
-		log.Fatalf("Bad GC policy %q", p)
+		return nil, fmt.Errorf("Bad GC policy %q", p)
 	}
-	if err := getAdminClient().SetGCPolicy(ctx, table, fam, pol); err != nil {
-		log.Fatalf("Setting GC policy: %v", err)
+	return pol, nil
+}
+
+func parseStorageType(storageTypeStr string) (bigtable.StorageType, error) {
+	switch storageTypeStr {
+	case "SSD":
+		return bigtable.SSD, nil
+	case "HDD":
+		return bigtable.HDD, nil
 	}
+	return -1, fmt.Errorf("Invalid storage type: %v, must be SSD or HDD", storageTypeStr)
 }
 
 // parseDuration parses a duration string.
