@@ -99,6 +99,9 @@ func TestAdminIntegration(t *testing.T) {
 	if got, want := list(), []string{"myothertable", "mytable"}; !containsAll(got, want) {
 		t.Errorf("adminClient.Tables returned %#v, want %#v", got, want)
 	}
+
+	adminClient.WaitForReplication(ctx, "mytable")
+
 	if err := adminClient.DeleteTable(ctx, "myothertable"); err != nil {
 		t.Fatalf("Deleting table: %v", err)
 	}

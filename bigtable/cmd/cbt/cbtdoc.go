@@ -49,6 +49,7 @@ The commands are:
 	read                      Read rows
 	set                       Set value of a cell
 	setgcpolicy               Set the GC policy for a column family
+	waitforreplication        Blocks until all the completed writes have been replicated to all the clusters (replication alpha)
 	version                   Print the current cbt version
 
 Use "cbt help <command>" for more information about a command.
@@ -283,6 +284,14 @@ Usage:
 
 	  maxage=<d>		Maximum timestamp age to preserve (e.g. "1h", "4d")
 	  maxversions=<n>	Maximum number of versions to preserve
+
+
+
+
+Blocks until all the completed writes have been replicated to all the clusters (replication alpha)
+
+Usage:
+	cbt waitforreplication <table>
 
 
 

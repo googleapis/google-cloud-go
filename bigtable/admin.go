@@ -20,7 +20,9 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
 
+	"cloud.google.com/go/bigtable/internal/gax"
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
@@ -243,6 +245,73 @@ func (ac *AdminClient) DropRowRange(ctx context.Context, table, rowKeyPrefix str
 	}
 	_, err := ac.tClient.DropRowRange(ctx, req)
 	return err
+}
+
+// getConsistencyToken gets the consistency token for a table.
+func (ac *AdminClient) getConsistencyToken(ctx context.Context, tableName string) (string, error) {
+	req := &btapb.GenerateConsistencyTokenRequest{
+		Name: tableName,
+	}
+	resp, err := ac.tClient.GenerateConsistencyToken(ctx, req)
+	if err != nil {
+		return "", err
+	}
+	return resp.GetConsistencyToken(), nil
+}
+
+// isConsistent checks if a token is consistent for a table.
+func (ac *AdminClient) isConsistent(ctx context.Context, tableName, token string) (bool, error) {
+	req := &btapb.CheckConsistencyRequest{
+		Name:             tableName,
+		ConsistencyToken: token,
+	}
+	var resp *btapb.CheckConsistencyResponse
+
+	// Retry calls on retryable errors to avoid losing the token gathered before.
+	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		var err error
+		resp, err = ac.tClient.CheckConsistency(ctx, req)
+		return err
+	}, retryOptions...)
+	if err != nil {
+		return false, err
+	}
+	return resp.GetConsistent(), nil
+}
+
+// WaitForReplication waits until all the writes committed before the call started have been propagated to all the clusters in the instance via replication.
+//
+// This is a private alpha release of Cloud Bigtable replication. This feature
+// is not currently available to most Cloud Bigtable customers. This feature
+// might be changed in backward-incompatible ways and is not recommended for
+// production use. It is not subject to any SLA or deprecation policy.
+func (ac *AdminClient) WaitForReplication(ctx context.Context, table string) error {
+	// Get the token.
+	prefix := ac.instancePrefix()
+	tableName := prefix + "/tables/" + table
+	token, err := ac.getConsistencyToken(ctx, tableName)
+	if err != nil {
+		return err
+	}
+
+	// Periodically check if the token is consistent.
+	timer := time.NewTicker(time.Second * 10)
+	defer timer.Stop()
+	for {
+		consistent, err := ac.isConsistent(ctx, tableName, token)
+		if err != nil {
+			return err
+		}
+		if consistent {
+			return nil
+		}
+		// Sleep for a bit or until the ctx is cancelled.
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-timer.C:
+		}
+	}
 }
 
 const instanceAdminAddr = "bigtableadmin.googleapis.com:443"
