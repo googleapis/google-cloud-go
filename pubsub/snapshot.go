@@ -78,7 +78,7 @@ func (snap *Snapshot) Delete(ctx context.Context) error {
 	return snap.s.deleteSnapshot(ctx, snap.name)
 }
 
-// SeekTime seeks the subscription to a point in time.
+// SeekToTime seeks the subscription to a point in time.
 //
 // Messages retained in the subscription that were published before this
 // time are marked as acknowledged, and messages retained in the
@@ -93,7 +93,7 @@ func (s *Subscription) SeekToTime(ctx context.Context, t time.Time) error {
 	return s.s.seekToTime(ctx, s.name, t)
 }
 
-// Snapshot creates a new snapshot from this subscription.
+// CreateSnapshot creates a new snapshot from this subscription.
 // The snapshot will be for the topic this subscription is subscribed to.
 // If the name is empty string, a unique name is assigned.
 //
@@ -110,7 +110,7 @@ func (s *Subscription) CreateSnapshot(ctx context.Context, name string) (*Snapsh
 	return s.s.createSnapshot(ctx, name, s.name)
 }
 
-// SeekSnapshot seeks the subscription to a snapshot.
+// SeekToSnapshot seeks the subscription to a snapshot.
 //
 // The snapshot needs not be created from this subscription,
 // but the snapshot must be for the topic this subscription is subscribed to.
