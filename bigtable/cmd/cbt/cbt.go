@@ -495,7 +495,9 @@ var docTemplate = template.Must(template.New("doc").Funcs(template.FuncMap{
 //go:generate go run cbt.go -o cbtdoc.go doc
 
 /*
-Cbt is a tool for doing basic interactions with Cloud Bigtable.
+Cbt is a tool for doing basic interactions with Cloud Bigtable. To learn how to
+install the cbt tool, see the
+[cbt overview](https://cloud.google.com/bigtable/docs/go/cbt-overview).
 
 Usage:
 
