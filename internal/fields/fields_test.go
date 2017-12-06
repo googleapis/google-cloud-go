@@ -104,6 +104,9 @@ func TestFieldsNoTags(t *testing.T) {
 		field("Em4", int(0), 4, 2, 0),
 		field("Anonymous", Anonymous(0), 5),
 	}
+	for _, f := range want {
+		f.ParsedTag = nil
+	}
 	if msg, ok := compareFields(got, want); !ok {
 		t.Error(msg)
 	}
