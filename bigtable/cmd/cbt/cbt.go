@@ -383,6 +383,13 @@ var commands = []struct {
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
+		Name:     "waitforreplication",
+		Desc:     "Blocks until all the completed writes have been replicated to all the clusters (replication alpha)",
+		do:       doWaitForReplicaiton,
+		Usage:    "cbt waitforreplication <table>",
+		Required: cbtconfig.ProjectAndInstanceRequired,
+	},
+	{
 		Name:     "version",
 		Desc:     "Print the current cbt version",
 		do:       doVersion,
@@ -1003,6 +1010,18 @@ func doSetGCPolicy(ctx context.Context, args ...string) {
 	}
 	if err := getAdminClient().SetGCPolicy(ctx, table, fam, pol); err != nil {
 		log.Fatalf("Setting GC policy: %v", err)
+	}
+}
+
+func doWaitForReplicaiton(ctx context.Context, args ...string) {
+	if len(args) != 1 {
+		log.Fatalf("usage: cbt waitforreplication <table>")
+	}
+	table := args[0]
+
+	fmt.Printf("Waiting for all writes up to %s to be replicated.\n", time.Now().Format("2006/01/02-15:04:05"))
+	if err := getAdminClient().WaitForReplication(ctx, table); err != nil {
+		log.Fatalf("Waiting for replication: %v", err)
 	}
 }
 
