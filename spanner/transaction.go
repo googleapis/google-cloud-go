@@ -66,7 +66,9 @@ func (t *txReadOnly) Read(ctx context.Context, table string, keys KeySet, column
 // Currently, this function can only read columns that are part of the index
 // key, part of the primary key, or stored in the index due to a STORING clause
 // in the index definition.
-func (t *txReadOnly) ReadUsingIndex(ctx context.Context, table, index string, keys KeySet, columns []string) *RowIterator {
+func (t *txReadOnly) ReadUsingIndex(ctx context.Context, table, index string, keys KeySet, columns []string) (ri *RowIterator) {
+	ctx = traceStartSpan(ctx, "cloud.google.com/go/spanner.Read")
+	defer func() { traceEndSpan(ctx, ri.err) }()
 	var (
 		sh  *sessionHandle
 		ts  *sppb.TransactionSelector
@@ -129,7 +131,9 @@ func (t *txReadOnly) ReadRow(ctx context.Context, table string, key Key, columns
 
 // Query executes a query against the database. It returns a RowIterator
 // for retrieving the resulting rows.
-func (t *txReadOnly) Query(ctx context.Context, statement Statement) *RowIterator {
+func (t *txReadOnly) Query(ctx context.Context, statement Statement) (ri *RowIterator) {
+	ctx = traceStartSpan(ctx, "cloud.google.com/go/spanner.Query")
+	defer func() { traceEndSpan(ctx, ri.err) }()
 	var (
 		sh  *sessionHandle
 		ts  *sppb.TransactionSelector
