@@ -164,7 +164,9 @@ Usage:
 Delete all cells in a column
 
 Usage:
-	cbt deletecolumn <table> <row> <family> <column>
+	cbt deletecolumn <table> <row> <family> <column> [app-profile=<app profile id>]
+	  app-profile=<app profile id>		The app profile id to use for the request (replication alpha)
+
 
 
 
@@ -180,7 +182,9 @@ Usage:
 Delete a row
 
 Usage:
-	cbt deleterow <table> <row>
+	cbt deleterow <table> <row> [app-profile=<app profile id>]
+	  app-profile=<app profile id>		The app profile id to use for the request (replication alpha)
+
 
 
 
@@ -228,7 +232,9 @@ Usage:
 Read from a single row
 
 Usage:
-	cbt lookup <table> <row>
+	cbt lookup <table> <row> [app-profile=<app profile id>]
+	  app-profile=<app profile id>		The app profile id to use for the request (replication alpha)
+
 
 
 
@@ -253,12 +259,13 @@ Usage:
 Read rows
 
 Usage:
-	cbt read <table> [start=<row>] [end=<row>] [prefix=<prefix>] [regex=<regex>] [count=<n>]
+	cbt read <table> [start=<row>] [end=<row>] [prefix=<prefix>] [regex=<regex>] [count=<n>] [app-profile=<app profile id>]
 	  start=<row>		Start reading at this row
 	  end=<row>		Stop reading before this row
 	  prefix=<prefix>	Read rows with this prefix
 	  regex=<regex> 	Read rows with keys matching this regex
 	  count=<n>		Read only this many rows
+	  app-profile=<app profile id>		The app profile id to use for the request (replication alpha)
 
 
 
@@ -267,7 +274,8 @@ Usage:
 Set value of a cell
 
 Usage:
-	cbt set <table> <row> family:column=val[@ts] ...
+	cbt set <table> <row> [app-profile=<app profile id>] family:column=val[@ts] ...
+	  app-profile=<app profile id>		The app profile id to use for the request (replication alpha)
 	  family:column=val[@ts] may be repeated to set multiple cells.
 
 	  ts is an optional integer timestamp.

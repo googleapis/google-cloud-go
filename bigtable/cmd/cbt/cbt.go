@@ -66,7 +66,7 @@ func getCredentialOpts(opts []option.ClientOption) []option.ClientOption {
 	return opts
 }
 
-func getClient() *bigtable.Client {
+func getClient(clientConf bigtable.ClientConfig) *bigtable.Client {
 	if client == nil {
 		var opts []option.ClientOption
 		if ep := config.DataEndpoint; ep != "" {
@@ -74,7 +74,7 @@ func getClient() *bigtable.Client {
 		}
 		opts = getCredentialOpts(opts)
 		var err error
-		client, err = bigtable.NewClient(context.Background(), config.Project, config.Instance, opts...)
+		client, err = bigtable.NewClientWithConfig(context.Background(), config.Project, config.Instance, clientConf, opts...)
 		if err != nil {
 			log.Fatalf("Making bigtable.Client: %v", err)
 		}
@@ -270,10 +270,11 @@ var commands = []struct {
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
-		Name:     "deletecolumn",
-		Desc:     "Delete all cells in a column",
-		do:       doDeleteColumn,
-		Usage:    "cbt deletecolumn <table> <row> <family> <column>",
+		Name: "deletecolumn",
+		Desc: "Delete all cells in a column",
+		do:   doDeleteColumn,
+		Usage: "cbt deletecolumn <table> <row> <family> <column> [app-profile=<app profile id>]\n" +
+			"  app-profile=<app profile id>		The app profile id to use for the request (replication alpha)\n",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
@@ -284,10 +285,11 @@ var commands = []struct {
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
-		Name:     "deleterow",
-		Desc:     "Delete a row",
-		do:       doDeleteRow,
-		Usage:    "cbt deleterow <table> <row>",
+		Name: "deleterow",
+		Desc: "Delete a row",
+		do:   doDeleteRow,
+		Usage: "cbt deleterow <table> <row> [app-profile=<app profile id>]\n" +
+			"  app-profile=<app profile id>		The app profile id to use for the request (replication alpha)\n",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
@@ -326,10 +328,11 @@ var commands = []struct {
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
-		Name:     "lookup",
-		Desc:     "Read from a single row",
-		do:       doLookup,
-		Usage:    "cbt lookup <table> <row>",
+		Name: "lookup",
+		Desc: "Read from a single row",
+		do:   doLookup,
+		Usage: "cbt lookup <table> <row> [app-profile=<app profile id>]\n" +
+			"  app-profile=<app profile id>		The app profile id to use for the request (replication alpha)\n",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
@@ -352,19 +355,21 @@ var commands = []struct {
 		Desc: "Read rows",
 		do:   doRead,
 		Usage: "cbt read <table> [start=<row>] [end=<row>] [prefix=<prefix>]" +
-			" [regex=<regex>] [count=<n>]\n" +
+			" [regex=<regex>] [count=<n>] [app-profile=<app profile id>]\n" +
 			"  start=<row>		Start reading at this row\n" +
 			"  end=<row>		Stop reading before this row\n" +
 			"  prefix=<prefix>	Read rows with this prefix\n" +
 			"  regex=<regex> 	Read rows with keys matching this regex\n" +
-			"  count=<n>		Read only this many rows\n",
+			"  count=<n>		Read only this many rows\n" +
+			"  app-profile=<app profile id>		The app profile id to use for the request (replication alpha)\n",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
 		Name: "set",
 		Desc: "Set value of a cell",
 		do:   doSet,
-		Usage: "cbt set <table> <row> family:column=val[@ts] ...\n" +
+		Usage: "cbt set <table> <row> [app-profile=<app profile id>] family:column=val[@ts] ...\n" +
+			"  app-profile=<app profile id>		The app profile id to use for the request (replication alpha)\n" +
 			"  family:column=val[@ts] may be repeated to set multiple cells.\n" +
 			"\n" +
 			"  ts is an optional integer timestamp.\n" +
@@ -402,7 +407,7 @@ func doCount(ctx context.Context, args ...string) {
 	if len(args) != 1 {
 		log.Fatal("usage: cbt count <table>")
 	}
-	tbl := getClient().Open(args[0])
+	tbl := getClient(bigtable.ClientConfig{}).Open(args[0])
 
 	n := 0
 	err := tbl.ReadRows(ctx, bigtable.InfiniteRange(""), func(_ bigtable.Row) bool {
@@ -583,10 +588,18 @@ func doDeleteCluster(ctx context.Context, args ...string) {
 }
 
 func doDeleteColumn(ctx context.Context, args ...string) {
-	if len(args) != 4 {
-		log.Fatal("usage: cbt deletecolumn <table> <row> <family> <column>")
+	usage := "usage: cbt deletecolumn <table> <row> <family> <column> [app-profile=<app profile id>]"
+	if len(args) != 4 || len(args) != 5 {
+		log.Fatal(usage)
 	}
-	tbl := getClient().Open(args[0])
+	var appProfile string
+	if len(args) == 5 {
+		if !strings.HasPrefix(args[4], "app-profile=") {
+			log.Fatal(usage)
+		}
+		appProfile = strings.Split(args[4], "=")[1]
+	}
+	tbl := getClient(bigtable.ClientConfig{AppProfile: appProfile}).Open(args[0])
 	mut := bigtable.NewMutation()
 	mut.DeleteCellsInColumn(args[2], args[3])
 	if err := tbl.Apply(ctx, args[1], mut); err != nil {
@@ -605,10 +618,18 @@ func doDeleteFamily(ctx context.Context, args ...string) {
 }
 
 func doDeleteRow(ctx context.Context, args ...string) {
-	if len(args) != 2 {
-		log.Fatal("usage: cbt deleterow <table> <row>")
+	usage := "usage: cbt deleterow <table> <row> [app-profile=<app profile id>]"
+	if len(args) != 2 || len(args) != 3 {
+		log.Fatal(usage)
 	}
-	tbl := getClient().Open(args[0])
+	var appProfile string
+	if len(args) == 3 {
+		if !strings.HasPrefix(args[2], "app-profile=") {
+			log.Fatal(usage)
+		}
+		appProfile = strings.Split(args[2], "=")[1]
+	}
+	tbl := getClient(bigtable.ClientConfig{AppProfile: appProfile}).Open(args[0])
 	mut := bigtable.NewMutation()
 	mut.DeleteRow()
 	if err := tbl.Apply(ctx, args[1], mut); err != nil {
@@ -787,11 +808,19 @@ func doListClusters(ctx context.Context, args ...string) {
 }
 
 func doLookup(ctx context.Context, args ...string) {
-	if len(args) != 2 {
-		log.Fatalf("usage: cbt lookup <table> <row>")
+	if len(args) < 2 {
+		log.Fatalf("usage: cbt lookup <table> <row> [app-profile=<app profile id>]")
+	}
+	var appProfile string
+	if len(args) > 2 {
+		i := strings.Index(args[2], "=")
+		if i < 0 {
+			log.Fatalf("Bad arg %q", args[2])
+		}
+		appProfile = strings.Split(args[2], "=")[1]
 	}
 	table, row := args[0], args[1]
-	tbl := getClient().Open(table)
+	tbl := getClient(bigtable.ClientConfig{AppProfile: appProfile}).Open(table)
 	r, err := tbl.ReadRow(ctx, row)
 	if err != nil {
 		log.Fatalf("Reading row: %v", err)
@@ -911,7 +940,6 @@ func doRead(ctx context.Context, args ...string) {
 	if len(args) < 1 {
 		log.Fatalf("usage: cbt read <table> [args ...]")
 	}
-	tbl := getClient().Open(args[0])
 
 	parsed := make(map[string]string)
 	for _, arg := range args[1:] {
@@ -926,7 +954,7 @@ func doRead(ctx context.Context, args ...string) {
 		case "limit":
 			// Be nicer; we used to support this, but renamed it to "end".
 			log.Fatalf("Unknown arg key %q; did you mean %q?", key, "end")
-		case "start", "end", "prefix", "count", "regex":
+		case "start", "end", "prefix", "count", "regex", "app-profile":
 			parsed[key] = val
 		}
 	}
@@ -957,6 +985,7 @@ func doRead(ctx context.Context, args ...string) {
 	}
 
 	// TODO(dsymonds): Support filters.
+	tbl := getClient(bigtable.ClientConfig{AppProfile: parsed["app-profile"]}).Open(args[0])
 	err := tbl.ReadRows(ctx, rr, func(r bigtable.Row) bool {
 		printRow(r)
 		return true
@@ -970,12 +999,16 @@ var setArg = regexp.MustCompile(`([^:]+):([^=]*)=(.*)`)
 
 func doSet(ctx context.Context, args ...string) {
 	if len(args) < 3 {
-		log.Fatalf("usage: cbt set <table> <row> family:[column]=val[@ts] ...")
+		log.Fatalf("usage: cbt set <table> <row> [app-profile=<app profile id>] family:[column]=val[@ts] ...")
 	}
-	tbl := getClient().Open(args[0])
+	var appProfile string
 	row := args[1]
 	mut := bigtable.NewMutation()
 	for _, arg := range args[2:] {
+		if strings.HasPrefix(arg, "app-profile=") {
+			appProfile = strings.Split(arg, "=")[1]
+			continue
+		}
 		m := setArg.FindStringSubmatch(arg)
 		if m == nil {
 			log.Fatalf("Bad set arg %q", arg)
@@ -992,6 +1025,7 @@ func doSet(ctx context.Context, args ...string) {
 		}
 		mut.Set(m[1], m[2], ts, []byte(val))
 	}
+	tbl := getClient(bigtable.ClientConfig{AppProfile: appProfile}).Open(args[0])
 	if err := tbl.Apply(ctx, row, mut); err != nil {
 		log.Fatalf("Applying mutation: %v", err)
 	}
