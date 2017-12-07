@@ -757,3 +757,27 @@ func ExampleUploader_Put_struct() {
 		// TODO: Handle error.
 	}
 }
+
+func ExampleUploader_Put_valuesSaver() {
+	ctx := context.Background()
+	client, err := bigquery.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	u := client.Dataset("my_dataset").Table("my_table").Uploader()
+
+	var vss []*bigquery.ValuesSaver
+	for i, name := range []string{"n1", "n2", "n3"} {
+		// Assume schema holds the table's schema.
+		vss = append(vss, &bigquery.ValuesSaver{
+			Schema:   schema,
+			InsertID: name,
+			Row:      []bigquery.Value{name, int64(i)},
+		})
+	}
+
+	if err := u.Put(ctx, vss); err != nil {
+		// TODO: Handle error.
+	}
+}
