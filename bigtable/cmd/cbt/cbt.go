@@ -39,6 +39,7 @@ import (
 	"cloud.google.com/go/bigtable"
 	"cloud.google.com/go/bigtable/internal/cbtconfig"
 	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 )
@@ -392,6 +393,46 @@ var commands = []struct {
 		Desc:     "Blocks until all the completed writes have been replicated to all the clusters (replication alpha)",
 		do:       doWaitForReplicaiton,
 		Usage:    "cbt waitforreplication <table>",
+		Required: cbtconfig.ProjectAndInstanceRequired,
+	},
+	{
+		Name: "createtablefromsnapshot",
+		Desc: "Create a table from a snapshot (snapshots alpha)",
+		do:   doCreateTableFromSnapshot,
+		Usage: "cbt createtablefromsnapshot <table> <cluster> <snapshot>\n" +
+			"  table	The name of the table to create\n" +
+			"  cluster	The cluster where the snapshot is located\n" +
+			"  snapshot	The snapshot to restore",
+		Required: cbtconfig.ProjectAndInstanceRequired,
+	},
+	{
+		Name: "createsnapshot",
+		Desc: "Create a snapshot from a source table (snapshots alpha)",
+		do:   doSnapshotTable,
+		Usage: "cbt createsnapshot <cluster> <snapshot> <table> [ttl=<d>]\n" +
+			"\n" +
+			`  [ttl=<d>]		Lifespan of the snapshot (e.g. "1h", "4d")` + "\n",
+		Required: cbtconfig.ProjectAndInstanceRequired,
+	},
+	{
+		Name:     "listsnapshots",
+		Desc:     "List snapshots in a cluster (snapshots alpha)",
+		do:       doListSnapshots,
+		Usage:    "cbt listsnapshots [<cluster>]",
+		Required: cbtconfig.ProjectAndInstanceRequired,
+	},
+	{
+		Name:     "getsnapshot",
+		Desc:     "Get snapshot info (snapshots alpha)",
+		do:       doGetSnapshot,
+		Usage:    "cbt getsnapshot <cluster> <snapshot>",
+		Required: cbtconfig.ProjectAndInstanceRequired,
+	},
+	{
+		Name:     "deletesnapshot",
+		Desc:     "Delete snapshot in a cluster (snapshots alpha)",
+		do:       doDeleteSnapshot,
+		Usage:    "cbt deletesnapshot <cluster> <snapshot>",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
@@ -1088,6 +1129,120 @@ func parseStorageType(storageTypeStr string) (bigtable.StorageType, error) {
 		return bigtable.HDD, nil
 	}
 	return -1, fmt.Errorf("Invalid storage type: %v, must be SSD or HDD", storageTypeStr)
+}
+
+func doCreateTableFromSnapshot(ctx context.Context, args ...string) {
+	if len(args) != 3 {
+		log.Fatal("usage: cbt createtablefromsnapshot <table> <cluster> <snapshot>")
+	}
+	tableName := args[0]
+	clusterName := args[1]
+	snapshotName := args[2]
+	err := getAdminClient().CreateTableFromSnapshot(ctx, tableName, clusterName, snapshotName)
+
+	if err != nil {
+		log.Fatalf("Creating table: %v", err)
+	}
+}
+
+func doSnapshotTable(ctx context.Context, args ...string) {
+	if len(args) != 3 && len(args) != 4 {
+		log.Fatal("usage: cbt createsnapshot <cluster> <snapshot> <table> [ttl=<d>]")
+	}
+	clusterName := args[0]
+	snapshotName := args[1]
+	tableName := args[2]
+	ttl := bigtable.DefaultSnapshotDuration
+
+	for _, arg := range args[3:] {
+		i := strings.Index(arg, "=")
+		if i < 0 {
+			log.Fatalf("Bad arg %q", arg)
+		}
+		key, val := arg[:i], arg[i+1:]
+		switch key {
+		default:
+			log.Fatalf("Unknown arg key %q", key)
+		case "ttl":
+			var err error
+			ttl, err = parseDuration(val)
+			if err != nil {
+				log.Fatalf("Invalid snapshot ttl value %q: %v", val, err)
+			}
+		}
+	}
+
+	err := getAdminClient().SnapshotTable(ctx, tableName, clusterName, snapshotName, ttl)
+	if err != nil {
+		log.Fatalf("Failed to create Snapshot: %v", err)
+	}
+}
+
+func doListSnapshots(ctx context.Context, args ...string) {
+	if len(args) != 0 && len(args) != 1 {
+		log.Fatal("usage: cbt listsnapshots [<cluster>]")
+	}
+
+	var cluster string
+
+	if len(args) == 0 {
+		cluster = "-"
+	} else {
+		cluster = args[0]
+	}
+
+	it := getAdminClient().ListSnapshots(ctx, cluster)
+
+	tw := tabwriter.NewWriter(os.Stdout, 10, 8, 4, '\t', 0)
+	fmt.Fprintf(tw, "Snapshot\tSource Table\tCreated At\tExpires At\n")
+	fmt.Fprintf(tw, "--------\t------------\t----------\t----------\n")
+	timeLayout := "2006-01-02 15:04 MST"
+
+	for {
+		snapshot, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Failed to fetch snapshots %v", err)
+		}
+		fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", snapshot.Name, snapshot.SourceTable, snapshot.CreateTime.Format(timeLayout), snapshot.DeleteTime.Format(timeLayout))
+	}
+	tw.Flush()
+}
+
+func doGetSnapshot(ctx context.Context, args ...string) {
+	if len(args) != 2 {
+		log.Fatalf("usage: cbt getsnapshot <cluster> <snapshot>")
+	}
+	clusterName := args[0]
+	snapshotName := args[1]
+
+	snapshot, err := getAdminClient().SnapshotInfo(ctx, clusterName, snapshotName)
+	if err != nil {
+		log.Fatalf("Failed to get snapshot: %v", err)
+	}
+
+	timeLayout := "2006-01-02 15:04 MST"
+
+	fmt.Printf("Name: %s\n", snapshot.Name)
+	fmt.Printf("Source table: %s\n", snapshot.SourceTable)
+	fmt.Printf("Created at: %s\n", snapshot.CreateTime.Format(timeLayout))
+	fmt.Printf("Expires at: %s\n", snapshot.DeleteTime.Format(timeLayout))
+}
+
+func doDeleteSnapshot(ctx context.Context, args ...string) {
+	if len(args) != 2 {
+		log.Fatal("usage: cbt deletesnapshot <cluster> <snapshot>")
+	}
+	cluster := args[0]
+	snapshot := args[1]
+
+	err := getAdminClient().DeleteSnapshot(ctx, cluster, snapshot)
+
+	if err != nil {
+		log.Fatalf("Failed to delete snapshot: %v", err)
+	}
 }
 
 // parseDuration parses a duration string.

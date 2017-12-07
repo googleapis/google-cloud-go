@@ -18,6 +18,7 @@ package bigtable
 
 import (
 	"fmt"
+	"math"
 	"regexp"
 	"strings"
 	"time"
@@ -26,7 +27,11 @@ import (
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	"github.com/golang/protobuf/ptypes"
+	durpb "github.com/golang/protobuf/ptypes/duration"
 	"golang.org/x/net/context"
+	"google.golang.org/api/cloudresourcemanager/v1"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
@@ -40,8 +45,9 @@ const adminAddr = "bigtableadmin.googleapis.com:443"
 
 // AdminClient is a client type for performing admin operations within a specific instance.
 type AdminClient struct {
-	conn    *grpc.ClientConn
-	tClient btapb.BigtableTableAdminClient
+	conn      *grpc.ClientConn
+	tClient   btapb.BigtableTableAdminClient
+	lroClient *lroauto.OperationsClient
 
 	project, instance string
 
@@ -55,17 +61,32 @@ func NewAdminClient(ctx context.Context, project, instance string, opts ...optio
 	if err != nil {
 		return nil, err
 	}
+	// Need to add scopes for long running operations (for create table & snapshots)
+	o = append(o, option.WithScopes(cloudresourcemanager.CloudPlatformScope))
 	o = append(o, opts...)
 	conn, err := gtransport.Dial(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
+
+	lroClient, err := lroauto.NewOperationsClient(ctx, option.WithGRPCConn(conn))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection
+		// and never actually need to dial.
+		// If this does happen, we could leak conn. However, we cannot close conn:
+		// If the user invoked the function with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO(pongad): investigate error conditions.
+		return nil, err
+	}
+
 	return &AdminClient{
-		conn:     conn,
-		tClient:  btapb.NewBigtableTableAdminClient(conn),
-		project:  project,
-		instance: instance,
-		md:       metadata.Pairs(resourcePrefixHeader, fmt.Sprintf("projects/%s/instances/%s", project, instance)),
+		conn:      conn,
+		tClient:   btapb.NewBigtableTableAdminClient(conn),
+		lroClient: lroClient,
+		project:   project,
+		instance:  instance,
+		md:        metadata.Pairs(resourcePrefixHeader, fmt.Sprintf("projects/%s/instances/%s", project, instance)),
 	}, nil
 }
 
@@ -244,6 +265,216 @@ func (ac *AdminClient) DropRowRange(ctx context.Context, table, rowKeyPrefix str
 		Target: &btapb.DropRowRangeRequest_RowKeyPrefix{[]byte(rowKeyPrefix)},
 	}
 	_, err := ac.tClient.DropRowRange(ctx, req)
+	return err
+}
+
+// CreateTableFromSnapshot creates a table from snapshot.
+// The table will be created in the same cluster as the snapshot.
+//
+// This is a private alpha release of Cloud Bigtable snapshots. This feature
+// is not currently available to most Cloud Bigtable customers. This feature
+// might be changed in backward-incompatible ways and is not recommended for
+// production use. It is not subject to any SLA or deprecation policy.
+func (ac *AdminClient) CreateTableFromSnapshot(ctx context.Context, table, cluster, snapshot string) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	snapshotPath := prefix + "/clusters/" + cluster + "/snapshots/" + snapshot
+
+	req := &btapb.CreateTableFromSnapshotRequest{
+		Parent:         prefix,
+		TableId:        table,
+		SourceSnapshot: snapshotPath,
+	}
+	op, err := ac.tClient.CreateTableFromSnapshot(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.Table{}
+	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
+}
+
+const DefaultSnapshotDuration time.Duration = 0
+
+// Creates a new snapshot in the specified cluster from the specified source table.
+// Setting the ttl to `DefaultSnapshotDuration` will use the server side default for the duration.
+//
+// This is a private alpha release of Cloud Bigtable snapshots. This feature
+// is not currently available to most Cloud Bigtable customers. This feature
+// might be changed in backward-incompatible ways and is not recommended for
+// production use. It is not subject to any SLA or deprecation policy.
+func (ac *AdminClient) SnapshotTable(ctx context.Context, table, cluster, snapshot string, ttl time.Duration) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+
+	var ttlProto *durpb.Duration
+
+	if ttl > 0 {
+		ttlProto = ptypes.DurationProto(ttl)
+	}
+
+	req := &btapb.SnapshotTableRequest{
+		Name:       prefix + "/tables/" + table,
+		Cluster:    prefix + "/clusters/" + cluster,
+		SnapshotId: snapshot,
+		Ttl:        ttlProto,
+	}
+
+	op, err := ac.tClient.SnapshotTable(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.Snapshot{}
+	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
+}
+
+// Returns a SnapshotIterator for iterating over the snapshots in a cluster.
+// To list snapshots across all of the clusters in the instance specify "-" as the cluster.
+//
+// This is a private alpha release of Cloud Bigtable snapshots. This feature
+// is not currently available to most Cloud Bigtable customers. This feature
+// might be changed in backward-incompatible ways and is not recommended for
+// production use. It is not subject to any SLA or deprecation policy.
+func (ac *AdminClient) ListSnapshots(ctx context.Context, cluster string) *SnapshotIterator {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	clusterPath := prefix + "/clusters/" + cluster
+
+	it := &SnapshotIterator{}
+	req := &btapb.ListSnapshotsRequest{
+		Parent: clusterPath,
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+
+		resp, err := ac.tClient.ListSnapshots(ctx, req)
+		if err != nil {
+			return "", err
+		}
+		for _, s := range resp.Snapshots {
+			snapshotInfo, err := newSnapshotInfo(s)
+			if err != nil {
+				return "", fmt.Errorf("Failed to parse snapshot proto %v", err)
+			}
+			it.items = append(it.items, snapshotInfo)
+		}
+		return resp.NextPageToken, nil
+	}
+	bufLen := func() int { return len(it.items) }
+	takeBuf := func() interface{} { b := it.items; it.items = nil; return b }
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, bufLen, takeBuf)
+
+	return it
+}
+
+func newSnapshotInfo(snapshot *btapb.Snapshot) (*SnapshotInfo, error) {
+	nameParts := strings.Split(snapshot.Name, "/")
+	name := nameParts[len(nameParts)-1]
+	tablePathParts := strings.Split(snapshot.SourceTable.Name, "/")
+	tableId := tablePathParts[len(tablePathParts)-1]
+
+	createTime, err := ptypes.Timestamp(snapshot.CreateTime)
+	if err != nil {
+		return nil, fmt.Errorf("Invalid createTime: %v", err)
+	}
+
+	deleteTime, err := ptypes.Timestamp(snapshot.DeleteTime)
+	if err != nil {
+		return nil, fmt.Errorf("Invalid deleteTime: %v", err)
+	}
+
+	return &SnapshotInfo{
+		Name:        name,
+		SourceTable: tableId,
+		DataSize:    snapshot.DataSizeBytes,
+		CreateTime:  createTime,
+		DeleteTime:  deleteTime,
+	}, nil
+}
+
+// An EntryIterator iterates over log entries.
+//
+// This is a private alpha release of Cloud Bigtable snapshots. This feature
+// is not currently available to most Cloud Bigtable customers. This feature
+// might be changed in backward-incompatible ways and is not recommended for
+// production use. It is not subject to any SLA or deprecation policy.
+type SnapshotIterator struct {
+	items    []*SnapshotInfo
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+}
+
+// PageInfo supports pagination. See https://godoc.org/google.golang.org/api/iterator package for details.
+func (it *SnapshotIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done
+// (https://godoc.org/google.golang.org/api/iterator) if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SnapshotIterator) Next() (*SnapshotInfo, error) {
+	if err := it.nextFunc(); err != nil {
+		return nil, err
+	}
+	item := it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+type SnapshotInfo struct {
+	Name        string
+	SourceTable string
+	DataSize    int64
+	CreateTime  time.Time
+	DeleteTime  time.Time
+}
+
+// Get snapshot metadata.
+//
+// This is a private alpha release of Cloud Bigtable snapshots. This feature
+// is not currently available to most Cloud Bigtable customers. This feature
+// might be changed in backward-incompatible ways and is not recommended for
+// production use. It is not subject to any SLA or deprecation policy.
+func (ac *AdminClient) SnapshotInfo(ctx context.Context, cluster, snapshot string) (*SnapshotInfo, error) {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	clusterPath := prefix + "/clusters/" + cluster
+	snapshotPath := clusterPath + "/snapshots/" + snapshot
+
+	req := &btapb.GetSnapshotRequest{
+		Name: snapshotPath,
+	}
+
+	resp, err := ac.tClient.GetSnapshot(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return newSnapshotInfo(resp)
+}
+
+// Delete a snapshot in a cluster.
+//
+// This is a private alpha release of Cloud Bigtable snapshots. This feature
+// is not currently available to most Cloud Bigtable customers. This feature
+// might be changed in backward-incompatible ways and is not recommended for
+// production use. It is not subject to any SLA or deprecation policy.
+func (ac *AdminClient) DeleteSnapshot(ctx context.Context, cluster, snapshot string) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	clusterPath := prefix + "/clusters/" + cluster
+	snapshotPath := clusterPath + "/snapshots/" + snapshot
+
+	req := &btapb.DeleteSnapshotRequest{
+		Name: snapshotPath,
+	}
+	_, err := ac.tClient.DeleteSnapshot(ctx, req)
 	return err
 }
 
