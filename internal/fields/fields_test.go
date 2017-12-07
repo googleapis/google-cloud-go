@@ -142,9 +142,10 @@ func TestAgainstJSONEncodingNoTags(t *testing.T) {
 		Anonymous: Anonymous(15),
 	}
 	var want S1
+	want.embed2 = &embed2{} // need this because reflection won't create it
 	jsonRoundTrip(t, s1, &want)
 	var got S1
-	got.embed2 = &embed2{} // need this because reflection won't create it
+	got.embed2 = &embed2{}
 	fields, err := NewCache(nil, nil, nil).Fields(reflect.TypeOf(got))
 	if err != nil {
 		t.Fatal(err)
