@@ -536,6 +536,7 @@ type withTags struct {
 	SimpleTag     int `bigquery:"simple_tag"`
 	UnderscoreTag int `bigquery:"_id"`
 	MixedCase     int `bigquery:"MIXEDcase"`
+	Nullable      int `bigquery:",nullable"`
 }
 
 type withTagsNested struct {
@@ -563,6 +564,7 @@ var withTagsSchema = Schema{
 	reqField("simple_tag", "INTEGER"),
 	reqField("_id", "INTEGER"),
 	reqField("MIXEDcase", "INTEGER"),
+	{Name: "Nullable", Type: FieldType("INTEGER"), Required: false},
 }
 
 func TestTagInference(t *testing.T) {
@@ -673,6 +675,13 @@ func TestTagInferenceErrors(t *testing.T) {
 		if got != want {
 			t.Errorf("%d: inferring TableSchema: got:\n%#v\nwant:\n%#v", i, got, want)
 		}
+	}
+
+	_, err := InferSchema(struct {
+		X int `bigquery:",optional"`
+	}{})
+	if err == nil {
+		t.Error("got nil, want error")
 	}
 }
 
