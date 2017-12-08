@@ -310,11 +310,7 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 }
 
 func TestIntegration_Objects(t *testing.T) {
-	// TODO(djd): there are a lot of closely-related tests here which share
-	// a common setup. Once we can depend on Go 1.7 features, we should refactor
-	// this test to use the sub-test feature. This will increase the readability
-	// of this test, and should also reduce the time it takes to execute.
-	// https://golang.org/pkg/testing/#hdr-Subtests_and_Sub_benchmarks
+	// TODO(jba): Use subtests (Go 1.7).
 	ctx := context.Background()
 	client, bucket := testConfig(ctx, t)
 	defer client.Close()
@@ -386,33 +382,6 @@ func TestIntegration_Objects(t *testing.T) {
 		if err := rc.Close(); err != nil {
 			t.Errorf("%v Close: %v", obj, err)
 		}
-
-		// Test SignedURL
-		opts := &SignedURLOptions{
-			GoogleAccessID: "xxx@clientid",
-			PrivateKey:     dummyKey("rsa"),
-			Method:         "GET",
-			MD5:            "ICy5YqxZB1uWSwcVLSNLcA==",
-			Expires:        time.Date(2020, time.October, 2, 10, 0, 0, 0, time.UTC),
-			ContentType:    "application/json",
-			Headers:        []string{"x-header1", "x-header2"},
-		}
-		u, err := SignedURL(bucket, obj, opts)
-		if err != nil {
-			t.Fatalf("SignedURL(%q, %q) errored with %v", bucket, obj, err)
-		}
-		res, err := client.hc.Get(u)
-		if err != nil {
-			t.Fatalf("Can't get URL %q: %v", u, err)
-		}
-		slurp, err = ioutil.ReadAll(res.Body)
-		if err != nil {
-			t.Fatalf("Can't ReadAll signed object %v, errored with %v", obj, err)
-		}
-		if got, want := slurp, contents[obj]; !bytes.Equal(got, want) {
-			t.Errorf("Contents (%v) = %q; want %q", obj, got, want)
-		}
-		res.Body.Close()
 	}
 
 	obj := objects[0]
@@ -761,6 +730,115 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 		t.Errorf("ObjectIterator.Next: %s", msg)
 	}
 	// TODO(jba): test query.Delimiter != ""
+}
+
+func TestIntegration_SignedURL(t *testing.T) {
+	// To test SignedURL, we need a real user email and private key. Extract them
+	// from the JSON key file.
+	jwtConf, err := testutil.JWTConfig()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if jwtConf == nil {
+		t.Skip("JSON key file is not present")
+	}
+
+	ctx := context.Background()
+	client, bucket := testConfig(ctx, t)
+	defer client.Close()
+
+	bkt := client.Bucket(bucket)
+	obj := "signedURL"
+	contents := []byte("This is a test of SignedURL.\n")
+	md5 := "Jyxvgwm9n2MsrGTMPbMeYA==" // base64-encoded MD5 of contents
+	if err := writeObject(ctx, bkt.Object(obj), "text/plain", contents); err != nil {
+		t.Fatalf("writing: %v", err)
+	}
+	for _, test := range []struct {
+		desc    string
+		opts    SignedURLOptions
+		headers map[string][]string
+		fail    bool
+	}{
+		{
+			desc: "basic",
+		},
+		{
+			desc:    "MD5 sent and matches",
+			opts:    SignedURLOptions{MD5: md5},
+			headers: map[string][]string{"Content-MD5": {md5}},
+		},
+		{
+			desc: "MD5 not sent",
+			opts: SignedURLOptions{MD5: md5},
+			fail: true,
+		},
+		{
+			desc:    "Content-Type sent and matches",
+			opts:    SignedURLOptions{ContentType: "text/plain"},
+			headers: map[string][]string{"Content-Type": {"text/plain"}},
+		},
+		{
+			desc:    "Content-Type sent but does not match",
+			opts:    SignedURLOptions{ContentType: "text/plain"},
+			headers: map[string][]string{"Content-Type": {"application/json"}},
+			fail:    true,
+		},
+		{
+			desc: "Canonical headers sent and match",
+			opts: SignedURLOptions{Headers: []string{
+				" X-Goog-Foo: Bar baz ",
+				"X-Goog-Novalue", // ignored: no value
+				"X-Google-Foo",   // ignored: wrong prefix
+			}},
+			headers: map[string][]string{"X-Goog-foo": {"Bar baz  "}},
+		},
+		{
+			desc:    "Canonical headers sent but don't match",
+			opts:    SignedURLOptions{Headers: []string{" X-Goog-Foo: Bar baz"}},
+			headers: map[string][]string{"X-Goog-Foo": {"bar baz"}},
+			fail:    true,
+		},
+	} {
+		opts := test.opts
+		opts.GoogleAccessID = jwtConf.Email
+		opts.PrivateKey = jwtConf.PrivateKey
+		opts.Method = "GET"
+		opts.Expires = time.Now().Add(time.Hour)
+		u, err := SignedURL(bucket, obj, &opts)
+		if err != nil {
+			t.Errorf("%s: SignedURL: %v", test.desc, err)
+			continue
+		}
+		got, err := getURL(u, test.headers)
+		if err != nil && !test.fail {
+			t.Errorf("%s: getURL %q: %v", test.desc, u, err)
+		} else if err == nil && !bytes.Equal(got, contents) {
+			t.Errorf("%s: got %q, want %q", test.desc, got, contents)
+		}
+	}
+}
+
+// Make a GET request to a URL using an unauthenticated client, and return its contents.
+func getURL(url string, headers map[string][]string) ([]byte, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = headers
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+	bytes, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	if res.StatusCode != 200 {
+		return nil, fmt.Errorf("code=%d, body=%s", res.StatusCode, string(bytes))
+	}
+	return bytes, nil
 }
 
 func TestIntegration_ACL(t *testing.T) {
