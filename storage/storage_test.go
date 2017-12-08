@@ -43,50 +43,45 @@ import (
 func TestHeaderSanitization(t *testing.T) {
 	t.Parallel()
 	var tests = []struct {
-		input    []string
-		expected []string
-		errMsg   string
+		desc string
+		in   []string
+		want []string
 	}{
 		{
-			input:    []string{"x-goog-header1:true", "x-goog-header2:0"},
-			expected: []string{"x-goog-header1:true", "x-goog-header2:0"},
-			errMsg:   "already sanitized headers should not be modified",
+			desc: "already sanitized headers should not be modified",
+			in:   []string{"x-goog-header1:true", "x-goog-header2:0"},
+			want: []string{"x-goog-header1:true", "x-goog-header2:0"},
 		},
 		{
-			input:    []string{"x-goog-header2:0", "x-goog-header1:true"},
-			expected: []string{"x-goog-header1:true", "x-goog-header2:0"},
-			errMsg:   "sanitized headers should be sorted",
+			desc: "sanitized headers should be sorted",
+			in:   []string{"x-goog-header2:0", "x-goog-header1:true"},
+			want: []string{"x-goog-header1:true", "x-goog-header2:0"},
 		},
 		{
-			input:    []string{"x-goog-header1:true", "x-goog-no-value", "non-canonical-header:not-of-use"},
-			expected: []string{"x-goog-header1:true"},
-			errMsg:   "non-canonical headers should be removed",
+			desc: "non-canonical headers should be removed",
+			in:   []string{"x-goog-header1:true", "x-goog-no-value", "non-canonical-header:not-of-use"},
+			want: []string{"x-goog-header1:true"},
 		},
 		{
-			input:    []string{"x-goog-header1:true", "x-goog-encryption-key:my_key", "x-goog-encryption-key-sha256:my_sha256"},
-			expected: []string{"x-goog-header1:true"},
-			errMsg:   "excluded canonical headers should be removed",
+			desc: "excluded canonical headers should be removed",
+			in:   []string{"x-goog-header1:true", "x-goog-encryption-key:my_key", "x-goog-encryption-key-sha256:my_sha256"},
+			want: []string{"x-goog-header1:true"},
 		},
 		{
-			input:    []string{"x-goog-header1 : \textra-spaces ", "X-Goog-Header2:CamelCaseValue"},
-			expected: []string{"x-goog-header1:extra-spaces", "x-goog-header2:CamelCaseValue"},
-			errMsg:   "dirty headers should be formatted correctly",
+			desc: "dirty headers should be formatted correctly",
+			in:   []string{" x-goog-header1 : \textra-spaces ", "X-Goog-Header2:CamelCaseValue"},
+			want: []string{"x-goog-header1:extra-spaces", "x-goog-header2:CamelCaseValue"},
 		},
 		{
-			input:    []string{"x-goog-header1:value1", "X-Goog-Header1:value2"},
-			expected: []string{"x-goog-header1:value1,value2"},
-			errMsg:   "duplicated headers should be merged",
+			desc: "duplicate headers should be merged",
+			in:   []string{"x-goog-header1:value1", "X-Goog-Header1:value2"},
+			want: []string{"x-goog-header1:value1,value2"},
 		},
 	}
 	for _, test := range tests {
-		actual := sanitizeHeaders(test.input)
-		if len(actual) != len(test.expected) {
-			t.Fatalf("%s; wanted %v but found %v", test.errMsg, test.expected, actual)
-		}
-		for i := 0; i < len(test.expected); i++ {
-			if actual[i] != test.expected[i] {
-				t.Fatalf("%s; wanted %v but found %v", test.errMsg, test.expected[i], actual[i])
-			}
+		got := sanitizeHeaders(test.in)
+		if !testutil.Equal(got, test.want) {
+			t.Errorf("%s: got %v, want %v", test.desc, got, test.want)
 		}
 	}
 }

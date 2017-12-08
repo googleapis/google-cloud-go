@@ -192,7 +192,7 @@ var (
 	}
 )
 
-// Headers used for signing need to follow the specifications set out at:
+// sanitizeHeaders applies the specifications for canonical extension headers at
 // https://cloud.google.com/storage/docs/access-control/signed-urls#about-canonical-extension-headers.
 func sanitizeHeaders(hdrs []string) []string {
 	headerMap := map[string][]string{}
@@ -207,12 +207,11 @@ func sanitizeHeaders(hdrs []string) []string {
 		}
 
 		header := strings.ToLower(strings.TrimSpace(headerMatches[1]))
-		value := strings.TrimSpace(headerMatches[2])
 		if excludedCanonicalHeaders[headerMatches[1]] {
 			// Do not keep any deliberately excluded canonical headers when signing.
 			continue
 		}
-
+		value := strings.TrimSpace(headerMatches[2])
 		if len(value) > 0 {
 			// Remove duplicate headers by appending the values of duplicates
 			// in their order of appearance.
@@ -265,7 +264,6 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 			return "", errors.New("storage: invalid MD5 checksum")
 		}
 	}
-
 	opts.Headers = sanitizeHeaders(opts.Headers)
 
 	signBytes := opts.SignBytes
