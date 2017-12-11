@@ -264,7 +264,7 @@ func TestIntegration_DatasetCreate(t *testing.T) {
 		t.Errorf("location: got %q, want %q", got, want)
 	}
 	if err := ds.Delete(ctx); err != nil {
-		t.Fatalf("deleting dataset %s: %v", ds, err)
+		t.Fatalf("deleting dataset %v: %v", ds, err)
 	}
 }
 

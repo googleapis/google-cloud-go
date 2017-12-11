@@ -300,7 +300,7 @@ func TestSubscriptionUpdate(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !testutil.Equal(sc.PushConfig, PushConfig{}) {
-		t.Fatalf("got %+v, want empty PushConfig")
+		t.Fatalf("got %+v, want empty PushConfig", sc.PushConfig)
 	}
 	// Add a PushConfig.
 	projID := testutil.ProjID()
