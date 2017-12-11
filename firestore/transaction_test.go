@@ -303,7 +303,7 @@ func TestTransactionErrors(t *testing.T) {
 		return c.RunTransaction(ctx, func(context.Context, *Transaction) error { return nil })
 	})
 	if got, want := err, errNestedTransaction; got != want {
-		t.Errorf("got <%v>, want <%V>", got, want)
+		t.Errorf("got <%v>, want <%v>", got, want)
 	}
 
 	// Non-transactional operation.

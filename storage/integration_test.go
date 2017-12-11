@@ -1012,7 +1012,7 @@ func TestIntegration_Encryption(t *testing.T) {
 		}
 		gotContents := string(got)
 		if gotContents != wantContents {
-			t.Errorf("%s: got %q, want %q", gotContents, wantContents)
+			t.Errorf("%s: got %q, want %q", msg, gotContents, wantContents)
 		}
 	}
 
@@ -1468,7 +1468,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	})
 	if attrs != nil {
 		if got, want := attrs.RequesterPays, true; got != want {
-			t.Fatalf("attr.RequesterPays = %b, want %b", got, want)
+			t.Fatalf("attr.RequesterPays = %t, want %t", got, want)
 		}
 	}
 	// Object operations.

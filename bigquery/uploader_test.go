@@ -93,7 +93,7 @@ func TestNewInsertRequest(t *testing.T) {
 		}
 		want := tc.req
 		if !testutil.Equal(got, want) {
-			t.Errorf("%#d: %#v: got %#v, want %#v", i, tc.ul, got, want)
+			t.Errorf("%d: %#v: got %#v, want %#v", i, tc.ul, got, want)
 		}
 	}
 }

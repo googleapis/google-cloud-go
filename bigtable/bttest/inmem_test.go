@@ -17,6 +17,7 @@ package bttest
 import (
 	"fmt"
 	"math/rand"
+	"strconv"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -26,7 +27,6 @@ import (
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
-	"strconv"
 )
 
 func TestConcurrentMutationsReadModifyAndGC(t *testing.T) {
@@ -430,7 +430,7 @@ func TestReadRowsOrder(t *testing.T) {
 		t.Fatal("Response count: got 0, want > 0")
 	}
 	if len(mock.responses[0].Chunks) != 27 {
-		t.Fatal("Chunk count: got %d, want 27", len(mock.responses[0].Chunks))
+		t.Fatalf("Chunk count: got %d, want 27", len(mock.responses[0].Chunks))
 	}
 	testOrder := func(ms *MockReadRowsServer) {
 		var prevFam, prevCol string
@@ -480,7 +480,7 @@ func TestReadRowsOrder(t *testing.T) {
 		t.Fatal("Response count: got 0, want > 0")
 	}
 	if len(mock.responses[0].Chunks) != 18 {
-		t.Fatal("Chunk count: got %d, want 18", len(mock.responses[0].Chunks))
+		t.Fatalf("Chunk count: got %d, want 18", len(mock.responses[0].Chunks))
 	}
 	testOrder(mock)
 
@@ -511,7 +511,7 @@ func TestReadRowsOrder(t *testing.T) {
 		t.Fatal("Response count: got 0, want > 0")
 	}
 	if len(mock.responses[0].Chunks) != 30 {
-		t.Fatal("Chunk count: got %d, want 30", len(mock.responses[0].Chunks))
+		t.Fatalf("Chunk count: got %d, want 30", len(mock.responses[0].Chunks))
 	}
 	testOrder(mock)
 }
