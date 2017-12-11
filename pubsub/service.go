@@ -97,7 +97,9 @@ func newPubSubService(ctx context.Context, opts []option.ClientOption) (*apiServ
 	}
 	subc, err := vkit.NewSubscriberClient(ctx, option.WithGRPCConn(pubc.Connection()))
 	if err != nil {
-		_ = pubc.Close() // ignore error
+		// Should never happen, since we are passing in the connection.
+		// If it does, we cannot close, because the user may have passed in their
+		// own connection originally.
 		return nil, err
 	}
 	pubc.SetGoogleClientInfo("gccl", version.Repo)
