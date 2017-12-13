@@ -123,8 +123,8 @@ func (s *apiService) createSubscription(ctx context.Context, subName string, cfg
 		}
 	}
 	var retentionDuration *durpb.Duration
-	if cfg.retentionDuration != 0 {
-		retentionDuration = ptypes.DurationProto(cfg.retentionDuration)
+	if cfg.RetentionDuration != 0 {
+		retentionDuration = ptypes.DurationProto(cfg.RetentionDuration)
 	}
 
 	_, err := s.subc.CreateSubscription(ctx, &pb.Subscription{
@@ -132,7 +132,7 @@ func (s *apiService) createSubscription(ctx context.Context, subName string, cfg
 		Topic:                    cfg.Topic.name,
 		PushConfig:               rawPushConfig,
 		AckDeadlineSeconds:       trunc32(int64(cfg.AckDeadline.Seconds())),
-		RetainAckedMessages:      cfg.retainAckedMessages,
+		RetainAckedMessages:      cfg.RetainAckedMessages,
 		MessageRetentionDuration: retentionDuration,
 	})
 	return err
@@ -156,8 +156,8 @@ func (s *apiService) getSubscriptionConfig(ctx context.Context, subName string) 
 			Endpoint:   rawSub.PushConfig.PushEndpoint,
 			Attributes: rawSub.PushConfig.Attributes,
 		},
-		retainAckedMessages: rawSub.RetainAckedMessages,
-		retentionDuration:   rd,
+		RetainAckedMessages: rawSub.RetainAckedMessages,
+		RetentionDuration:   rd,
 	}
 	return sub, rawSub.Topic, nil
 }
