@@ -355,7 +355,7 @@ func TestIteratorNextTypes(t *testing.T) {
 		struct{}{},
 	} {
 		if err := it.Next(v); err == nil {
-			t.Error("%v: want error, got nil", v)
+			t.Errorf("%v: want error, got nil", v)
 		}
 	}
 }

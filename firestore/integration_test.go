@@ -389,91 +389,22 @@ func TestIntegration_Delete(t *testing.T) {
 		er(doc.Delete(ctx, LastUpdateTime(wr.UpdateTime))))
 }
 
-func TestIntegration_UpdateMap(t *testing.T) {
+func TestIntegration_Update(t *testing.T) {
 	ctx := context.Background()
 	doc := integrationColl(t).NewDoc()
-	mustCreate("UpdateMap", t, doc, integrationTestMap)
-	um := map[string]interface{}{
-		"bool":        false,
-		"time":        17,
-		"null":        Delete,
-		"noSuchField": Delete, // deleting a non-existent field is a no-op
+	mustCreate("Update", t, doc, integrationTestMap)
+	fpus := []Update{
+		{Path: "bool", Value: false},
+		{Path: "time", Value: 17},
+		{FieldPath: []string{"*", "`"}, Value: 18},
+		{Path: "null", Value: Delete},
+		{Path: "noSuchField", Value: Delete}, // deleting a non-existent field is a no-op
 	}
-	wr, err := doc.UpdateMap(ctx, um)
+	wr, err := doc.Update(ctx, fpus)
 	if err != nil {
 		t.Fatal(err)
 	}
-	ds := mustGet("UpdateMap", t, doc)
-	got := ds.Data()
-	want := copyMap(wantIntegrationTestMap)
-	want["bool"] = false
-	want["time"] = int64(17)
-	delete(want, "null")
-	if !testEqual(got, want) {
-		t.Errorf("got\n%#v\nwant\n%#v", got, want)
-	}
-
-	er := func(_ *WriteResult, err error) error { return err }
-	codeEq(t, "UpdateMap on missing doc", codes.NotFound,
-		er(integrationColl(t).NewDoc().UpdateMap(ctx, um)))
-	codeEq(t, "UpdateMap with wrong LastUpdateTime", codes.FailedPrecondition,
-		er(doc.UpdateMap(ctx, um, LastUpdateTime(wr.UpdateTime.Add(-time.Millisecond)))))
-	codeEq(t, "UpdateMap with right LastUpdateTime", codes.OK,
-		er(doc.UpdateMap(ctx, um, LastUpdateTime(wr.UpdateTime))))
-	codeEq(t, "just server transform", codes.OK,
-		er(doc.UpdateMap(ctx, map[string]interface{}{"a": ServerTimestamp})))
-}
-
-func TestIntegration_UpdateStruct(t *testing.T) {
-	ctx := context.Background()
-	doc := integrationColl(t).NewDoc()
-	mustCreate("UpdateStruct", t, doc, integrationTestStruct)
-	fields := []string{"Bool", "Time", "Null", "noSuchField"}
-	wr, err := doc.UpdateStruct(ctx, fields,
-		integrationTestStructType{
-			Bool: false,
-			Time: aTime2,
-		})
-	if err != nil {
-		t.Fatal(err)
-	}
-	ds := mustGet("UpdateStruct", t, doc)
-	var got integrationTestStructType
-	if err := ds.DataTo(&got); err != nil {
-		t.Fatal(err)
-	}
-	want := integrationTestStruct
-	want.Bool = false
-	want.Time = aTime2
-	if !testEqual(got, want) {
-		t.Errorf("got\n%#v\nwant\n%#v", got, want)
-	}
-
-	er := func(_ *WriteResult, err error) error { return err }
-	codeEq(t, "UpdateStruct on missing doc", codes.NotFound,
-		er(integrationColl(t).NewDoc().UpdateStruct(ctx, fields, integrationTestStruct)))
-	codeEq(t, "UpdateStruct with wrong LastUpdateTime", codes.FailedPrecondition,
-		er(doc.UpdateStruct(ctx, fields, integrationTestStruct, LastUpdateTime(wr.UpdateTime.Add(-time.Millisecond)))))
-	codeEq(t, "UpdateStruct with right LastUpdateTime", codes.OK,
-		er(doc.UpdateStruct(ctx, fields, integrationTestStruct, LastUpdateTime(wr.UpdateTime))))
-}
-
-func TestIntegration_UpdatePaths(t *testing.T) {
-	ctx := context.Background()
-	doc := integrationColl(t).NewDoc()
-	mustCreate("UpdatePaths", t, doc, integrationTestMap)
-	fpus := []FieldPathUpdate{
-		{Path: []string{"bool"}, Value: false},
-		{Path: []string{"time"}, Value: 17},
-		{Path: []string{"*", "`"}, Value: 18},
-		{Path: []string{"null"}, Value: Delete},
-		{Path: []string{"noSuchField"}, Value: Delete}, // deleting a non-existent field is a no-op
-	}
-	wr, err := doc.UpdatePaths(ctx, fpus)
-	if err != nil {
-		t.Fatal(err)
-	}
-	ds := mustGet("UpdatePaths", t, doc)
+	ds := mustGet("Update", t, doc)
 	got := ds.Data()
 	want := copyMap(wantIntegrationTestMap)
 	want["bool"] = false
@@ -486,12 +417,12 @@ func TestIntegration_UpdatePaths(t *testing.T) {
 
 	er := func(_ *WriteResult, err error) error { return err }
 
-	codeEq(t, "UpdatePaths on missing doc", codes.NotFound,
-		er(integrationColl(t).NewDoc().UpdatePaths(ctx, fpus)))
-	codeEq(t, "UpdatePaths with wrong LastUpdateTime", codes.FailedPrecondition,
-		er(doc.UpdatePaths(ctx, fpus, LastUpdateTime(wr.UpdateTime.Add(-time.Millisecond)))))
-	codeEq(t, "UpdatePaths with right LastUpdateTime", codes.OK,
-		er(doc.UpdatePaths(ctx, fpus, LastUpdateTime(wr.UpdateTime))))
+	codeEq(t, "Update on missing doc", codes.NotFound,
+		er(integrationColl(t).NewDoc().Update(ctx, fpus)))
+	codeEq(t, "Update with wrong LastUpdateTime", codes.FailedPrecondition,
+		er(doc.Update(ctx, fpus, LastUpdateTime(wr.UpdateTime.Add(-time.Millisecond)))))
+	codeEq(t, "Update with right LastUpdateTime", codes.OK,
+		er(doc.Update(ctx, fpus, LastUpdateTime(wr.UpdateTime))))
 }
 
 func TestIntegration_Collections(t *testing.T) {
@@ -652,8 +583,8 @@ func TestIntegration_WriteBatch(t *testing.T) {
 	doc2 := iColl.NewDoc()
 	b.Create(doc1, integrationTestMap)
 	b.Set(doc2, integrationTestMap)
-	b.UpdateMap(doc1, map[string]interface{}{"bool": false})
-	b.UpdateMap(doc1, map[string]interface{}{"str": Delete})
+	b.Update(doc1, []Update{{Path: "bool", Value: false}})
+	b.Update(doc1, []Update{{Path: "str", Value: Delete}})
 
 	wrs, err := b.Commit(ctx)
 	if err != nil {
@@ -840,14 +771,13 @@ func TestIntegration_RunTransaction(t *testing.T) {
 		if err != nil {
 			return err
 		}
-		err = tx.UpdateStruct(patDoc, []string{"Score"},
-			Player{Score: int(score.(int64) + 7)})
+		err = tx.Update(patDoc, []Update{{Path: "Score", Value: int(score.(int64) + 7)}})
 		if err != nil {
 			return err
 		}
-		// Since the Star field is called "*", we must use UpdatePaths to change it.
-		err = tx.UpdatePaths(patDoc,
-			[]FieldPathUpdate{{Path: []string{"*"}, Value: !star.(bool)}})
+		// Since the Star field is called "*", we must use Update to change it.
+		err = tx.Update(patDoc,
+			[]Update{{FieldPath: []string{"*"}, Value: !star.(bool)}})
 		if err != nil {
 			return err
 		}

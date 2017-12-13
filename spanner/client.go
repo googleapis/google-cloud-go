@@ -125,7 +125,17 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 			resourcePrefixHeader, database,
 			xGoogHeaderKey, xGoogHeaderVal),
 	}
-	allOpts := []option.ClientOption{option.WithEndpoint(prodAddr), option.WithScopes(Scope), option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)))}
+	allOpts := []option.ClientOption{
+		option.WithEndpoint(prodAddr),
+		option.WithScopes(Scope),
+		option.WithGRPCDialOption(
+			grpc.WithDefaultCallOptions(
+				grpc.MaxCallSendMsgSize(100<<20),
+				grpc.MaxCallRecvMsgSize(100<<20),
+			),
+		),
+	}
+	allOpts = append(allOpts, openCensusOptions()...)
 	allOpts = append(allOpts, opts...)
 	// Prepare gRPC channels.
 	if config.NumChannels == 0 {

@@ -14,17 +14,14 @@
 
 // AUTO-GENERATED CODE. DO NOT EDIT.
 
-// Package trace is an auto-generated package for the
-// Stackdriver Trace API.
+// Package datatransfer is an auto-generated package for the
+// BigQuery Data Transfer API.
 //
 //   NOTE: This package is in alpha. It is not stable, and is likely to change.
 //
-// Sends application trace data to Stackdriver Trace for viewing. Trace data
-// is
-// collected for all App Engine applications by default. Trace data from
-// other
-// applications can be provided using this API.
-package trace // import "cloud.google.com/go/trace/apiv2"
+// Transfers data from partner SaaS applications to Google BigQuery on a
+// scheduled, managed basis.
+package datatransfer // import "cloud.google.com/go/bigquery/datatransfer/apiv1"
 
 import (
 	"golang.org/x/net/context"
@@ -45,7 +42,8 @@ func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 // DefaultAuthScopes reports the default set of authentication scopes to use with this package.
 func DefaultAuthScopes() []string {
 	return []string{
+		"https://www.googleapis.com/auth/bigquery",
 		"https://www.googleapis.com/auth/cloud-platform",
-		"https://www.googleapis.com/auth/trace.append",
+		"https://www.googleapis.com/auth/cloud-platform.read-only",
 	}
 }

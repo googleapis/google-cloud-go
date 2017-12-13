@@ -91,15 +91,15 @@ func (d *DocumentSnapshot) DataTo(p interface{}) error {
 	return setFromProtoValue(p, &pb.Value{&pb.Value_MapValue{&pb.MapValue{d.proto.Fields}}}, d.c)
 }
 
-// DataAt returns the data value denoted by fieldPath.
+// DataAt returns the data value denoted by path.
 //
-// The fieldPath argument can be a single field or a dot-separated sequence of
+// The path argument can be a single field or a dot-separated sequence of
 // fields, and must not contain any of the runes "˜*/[]". Use DataAtPath instead for
 // such a path.
 //
 // See DocumentSnapshot.DataTo for how Firestore values are converted to Go values.
-func (d *DocumentSnapshot) DataAt(fieldPath string) (interface{}, error) {
-	fp, err := parseDotSeparatedString(fieldPath)
+func (d *DocumentSnapshot) DataAt(path string) (interface{}, error) {
+	fp, err := parseDotSeparatedString(path)
 	if err != nil {
 		return nil, err
 	}

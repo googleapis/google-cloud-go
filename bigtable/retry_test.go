@@ -232,7 +232,7 @@ func TestRetryApplyBulk(t *testing.T) {
 	}
 	errors, err = tbl.ApplyBulk(ctx, []string{"row1", "row2"}, []*Mutation{m1, niMut})
 	if err != nil {
-		t.Errorf("unretryable errors: request failed %v")
+		t.Errorf("unretryable errors: request failed %v", err)
 	}
 	want := []error{
 		grpc.Errorf(codes.FailedPrecondition, ""),

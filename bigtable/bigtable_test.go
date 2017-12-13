@@ -70,7 +70,7 @@ func TestClientIntegration(t *testing.T) {
 
 	var timeout time.Duration
 	if testEnv.Config().UseProd {
-		timeout = 5 * time.Minute
+		timeout = 10 * time.Minute
 		t.Logf("Running test against production")
 	} else {
 		timeout = 1 * time.Minute
@@ -128,6 +128,11 @@ func TestClientIntegration(t *testing.T) {
 		}
 	}
 	checkpoint("inserted initial data")
+
+	if err := adminClient.WaitForReplication(ctx, table); err != nil {
+		t.Errorf("Waiting for replication for table %q: %v", table, err)
+	}
+	checkpoint("waited for replication")
 
 	// Do a conditional mutation with a complex filter.
 	mutTrue := NewMutation()

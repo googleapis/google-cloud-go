@@ -167,18 +167,19 @@ Or you can infer the schema from a struct:
     // schema1 and schema2 are identical.
 
 Struct inference supports tags like those of the encoding/json package,
-so you can change names or ignore fields:
+so you can change names, ignore fields, or mark a field as nullable (non-required):
 
     type student2 struct {
-        Name   string `bigquery:"full_name"`
-        Grades []int
-        Secret string `bigquery:"-"`
+        Name     string `bigquery:"full_name"`
+        Grades   []int
+        Secret   string `bigquery:"-"`
+        Optional int    `bigquery:",nullable"
     }
     schema3, err := bigquery.InferSchema(student2{})
     if err != nil {
         // TODO: Handle error.
     }
-    // schema3 has fields "full_name" and "Grade".
+    // schema3 has required fields "full_name", "Grade" and nullable field "Optional".
 
 Having constructed a schema, you can create a table with it like so:
 

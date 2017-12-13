@@ -44,10 +44,28 @@ type Client struct {
 	conn              *grpc.ClientConn
 	client            btpb.BigtableClient
 	project, instance string
+	// App Profiles are part of the private alpha release of Cloud Bigtable replication.
+	// This feature
+	// is not currently available to most Cloud Bigtable customers. This feature
+	// might be changed in backward-incompatible ways and is not recommended for
+	// production use. It is not subject to any SLA or deprecation policy.
+	appProfile string
+}
+
+// ClientConfig has configurations for the client.
+type ClientConfig struct {
+	// The id of the app profile to associate with all data operations sent from this client.
+	// If unspecified, the default app profile for the instance will be used.
+	AppProfile string
 }
 
 // NewClient creates a new Client for a given project and instance.
+// The default ClientConfig will be used.
 func NewClient(ctx context.Context, project, instance string, opts ...option.ClientOption) (*Client, error) {
+	return NewClientWithConfig(ctx, project, instance, ClientConfig{}, opts...)
+}
+
+func NewClientWithConfig(ctx context.Context, project, instance string, config ClientConfig, opts ...option.ClientOption) (*Client, error) {
 	o, err := btopt.DefaultClientOptions(prodAddr, Scope, clientUserAgent)
 	if err != nil {
 		return nil, err
@@ -131,8 +149,9 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 	var prevRowKey string
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
 		req := &btpb.ReadRowsRequest{
-			TableName: t.c.fullTableName(t.table),
-			Rows:      arg.proto(),
+			TableName:    t.c.fullTableName(t.table),
+			AppProfileId: t.c.appProfile,
+			Rows:         arg.proto(),
 		}
 		for _, opt := range opts {
 			opt.set(req)
@@ -440,9 +459,10 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 	var callOptions []gax.CallOption
 	if m.cond == nil {
 		req := &btpb.MutateRowRequest{
-			TableName: t.c.fullTableName(t.table),
-			RowKey:    []byte(row),
-			Mutations: m.ops,
+			TableName:    t.c.fullTableName(t.table),
+			AppProfileId: t.c.appProfile,
+			RowKey:       []byte(row),
+			Mutations:    m.ops,
 		}
 		if mutationsAreRetryable(m.ops) {
 			callOptions = retryOptions
@@ -461,6 +481,7 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 
 	req := &btpb.CheckAndMutateRowRequest{
 		TableName:       t.c.fullTableName(t.table),
+		AppProfileId:    t.c.appProfile,
 		RowKey:          []byte(row),
 		PredicateFilter: m.cond.proto(),
 	}
@@ -670,8 +691,9 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, opts ...
 		entries[i] = entryErr.Entry
 	}
 	req := &btpb.MutateRowsRequest{
-		TableName: t.c.fullTableName(t.table),
-		Entries:   entries,
+		TableName:    t.c.fullTableName(t.table),
+		AppProfileId: t.c.appProfile,
+		Entries:      entries,
 	}
 	stream, err := t.c.client.MutateRows(ctx, req)
 	if err != nil {
@@ -729,9 +751,10 @@ func (ts Timestamp) TruncateToMilliseconds() Timestamp {
 func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
 	ctx = mergeOutgoingMetadata(ctx, t.md)
 	req := &btpb.ReadModifyWriteRowRequest{
-		TableName: t.c.fullTableName(t.table),
-		RowKey:    []byte(row),
-		Rules:     m.ops,
+		TableName:    t.c.fullTableName(t.table),
+		AppProfileId: t.c.appProfile,
+		RowKey:       []byte(row),
+		Rules:        m.ops,
 	}
 	res, err := t.c.client.ReadModifyWriteRow(ctx, req)
 	if err != nil {

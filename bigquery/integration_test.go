@@ -53,8 +53,10 @@ var (
 		}},
 	}
 	testTableExpiration time.Time
-	datasetIDs          = testutil.NewUIDSpaceSep("dataset", '_')
-	tableIDs            = testutil.NewUIDSpaceSep("table", '_')
+	// BigQuery does not accept hyphens in dataset or table IDs, so we create IDs
+	// with underscores.
+	datasetIDs = testutil.NewUIDSpaceSep("dataset", '_')
+	tableIDs   = testutil.NewUIDSpaceSep("table", '_')
 )
 
 func TestMain(m *testing.M) {
@@ -94,8 +96,6 @@ func initIntegrationTest() func() {
 	if err != nil {
 		log.Fatalf("storage.NewClient: %v", err)
 	}
-	// BigQuery does not accept hyphens in dataset or table IDs, so we create IDs
-	// with underscores.
 	dataset = client.Dataset(datasetIDs.New())
 	if err := dataset.Create(ctx, nil); err != nil {
 		log.Fatalf("creating dataset %s: %v", dataset.DatasetID, err)
@@ -197,16 +197,28 @@ func TestIntegration_TableMetadata(t *testing.T) {
 
 	// Create tables that have time partitioning
 	partitionCases := []struct {
-		timePartitioning   TimePartitioning
-		expectedExpiration time.Duration
+		timePartitioning TimePartitioning
+		wantExpiration   time.Duration
+		wantField        string
 	}{
-		{TimePartitioning{}, time.Duration(0)},
-		{TimePartitioning{time.Second}, time.Second},
+		{TimePartitioning{}, time.Duration(0), ""},
+		{TimePartitioning{Expiration: time.Second}, time.Second, ""},
+		{
+			TimePartitioning{
+				Expiration: time.Second,
+				Field:      "date",
+			}, time.Second, "date"},
 	}
+
+	schema2 := Schema{
+		{Name: "name", Type: StringFieldType},
+		{Name: "date", Type: DateFieldType},
+	}
+
 	for i, c := range partitionCases {
 		table := dataset.Table(fmt.Sprintf("t_metadata_partition_%v", i))
 		err = table.Create(context.Background(), &TableMetadata{
-			Schema:           schema,
+			Schema:           schema2,
 			TimePartitioning: &c.timePartitioning,
 			ExpirationTime:   time.Now().Add(5 * time.Minute),
 		})
@@ -220,7 +232,10 @@ func TestIntegration_TableMetadata(t *testing.T) {
 		}
 
 		got := md.TimePartitioning
-		want := &TimePartitioning{c.expectedExpiration}
+		want := &TimePartitioning{
+			Expiration: c.wantExpiration,
+			Field:      c.wantField,
+		}
 		if !testutil.Equal(got, want) {
 			t.Errorf("metadata.TimePartitioning: got %v, want %v", got, want)
 		}
@@ -249,7 +264,7 @@ func TestIntegration_DatasetCreate(t *testing.T) {
 		t.Errorf("location: got %q, want %q", got, want)
 	}
 	if err := ds.Delete(ctx); err != nil {
-		t.Fatalf("deleting dataset %s: %v", ds, err)
+		t.Fatalf("deleting dataset %v: %v", ds, err)
 	}
 }
 
