@@ -114,7 +114,7 @@ func initIntegrationTest() {
 	ctx := context.Background()
 	ts := testutil.TokenSource(ctx, AdminScope, Scope)
 	if ts == nil {
-		log.Print("Integration test skipped: cannot get service account credential from environment variable %v", "GCLOUD_TESTS_GOLANG_KEY")
+		log.Printf("Integration test skipped: cannot get service account credential from environment variable %v", "GCLOUD_TESTS_GOLANG_KEY")
 		return
 	}
 	var err error
