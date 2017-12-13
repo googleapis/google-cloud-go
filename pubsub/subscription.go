@@ -115,13 +115,13 @@ type SubscriptionConfig struct {
 
 	// Whether to retain acknowledged messages. If true, acknowledged messages
 	// will not be expunged until they fall out of the RetentionDuration window.
-	retainAckedMessages bool
+	RetainAckedMessages bool
 
-	// How long to retain messages in backlog, from the time of publish. If RetainAckedMessages is true,
-	// this duration affects the retention of acknowledged messages,
-	// otherwise only unacknowledged messages are retained.
+	// How long to retain messages in backlog, from the time of publish. If
+	// RetainAckedMessages is true, this duration affects the retention of
+	// acknowledged messages, otherwise only unacknowledged messages are retained.
 	// Defaults to 7 days. Cannot be longer than 7 days or shorter than 10 minutes.
-	retentionDuration time.Duration
+	RetentionDuration time.Duration
 }
 
 // ReceiveSettings configure the Receive method.
