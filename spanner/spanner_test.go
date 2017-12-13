@@ -279,7 +279,7 @@ func TestSingleUse(t *testing.T) {
 		if err != nil {
 			t.Errorf("%d: SingleUse.Query returns error %v, want nil", i, err)
 		}
-		if !reflect.DeepEqual(got, test.want) {
+		if !testEqual(got, test.want) {
 			t.Errorf("%d: got unexpected result from SingleUse.Query: %v, want %v", i, got, test.want)
 		}
 		rts, err := su.Timestamp()
@@ -295,7 +295,7 @@ func TestSingleUse(t *testing.T) {
 		if err != nil {
 			t.Errorf("%d: SingleUse.Read returns error %v, want nil", i, err)
 		}
-		if !reflect.DeepEqual(got, test.want) {
+		if !testEqual(got, test.want) {
 			t.Errorf("%d: got unexpected result from SingleUse.Read: %v, want %v", i, got, test.want)
 		}
 		rts, err = su.Timestamp()
@@ -326,7 +326,7 @@ func TestSingleUse(t *testing.T) {
 				t.Errorf("%d: SingleUse.ReadRow(%v) doesn't return expected timestamp: %v", i, k, err)
 			}
 		}
-		if !reflect.DeepEqual(got, test.want) {
+		if !testEqual(got, test.want) {
 			t.Errorf("%d: got unexpected results from SingleUse.ReadRow: %v, want %v", i, got, test.want)
 		}
 		// SingleUse.ReadUsingIndex
@@ -349,7 +349,7 @@ func TestSingleUse(t *testing.T) {
 			}
 			found := false
 			for _, w := range test.want {
-				if reflect.DeepEqual(g, w) {
+				if testEqual(g, w) {
 					found = true
 				}
 			}
@@ -456,7 +456,7 @@ func TestReadOnlyTransaction(t *testing.T) {
 		if err != nil {
 			t.Errorf("%d: ReadOnlyTransaction.Query returns error %v, want nil", i, err)
 		}
-		if !reflect.DeepEqual(got, test.want) {
+		if !testEqual(got, test.want) {
 			t.Errorf("%d: got unexpected result from ReadOnlyTransaction.Query: %v, want %v", i, got, test.want)
 		}
 		rts, err := ro.Timestamp()
@@ -472,7 +472,7 @@ func TestReadOnlyTransaction(t *testing.T) {
 		if err != nil {
 			t.Errorf("%d: ReadOnlyTransaction.Read returns error %v, want nil", i, err)
 		}
-		if !reflect.DeepEqual(got, test.want) {
+		if !testEqual(got, test.want) {
 			t.Errorf("%d: got unexpected result from ReadOnlyTransaction.Read: %v, want %v", i, got, test.want)
 		}
 		rts, err = ro.Timestamp()
@@ -508,7 +508,7 @@ func TestReadOnlyTransaction(t *testing.T) {
 				t.Errorf("%d: got two read timestamps: %v, %v, want ReadOnlyTransaction to return always the same read timestamp", i, roTs, rts)
 			}
 		}
-		if !reflect.DeepEqual(got, test.want) {
+		if !testEqual(got, test.want) {
 			t.Errorf("%d: got unexpected results from ReadOnlyTransaction.ReadRow: %v, want %v", i, got, test.want)
 		}
 		// SingleUse.ReadUsingIndex
@@ -530,7 +530,7 @@ func TestReadOnlyTransaction(t *testing.T) {
 			}
 			found := false
 			for _, w := range test.want {
-				if reflect.DeepEqual(g, w) {
+				if testEqual(g, w) {
 					found = true
 				}
 			}
@@ -833,7 +833,7 @@ func compareRows(iter *RowIterator, wantNums []int) (string, bool) {
 	for _, r := range rows {
 		got[r.Key] = r.StringValue
 	}
-	if !reflect.DeepEqual(got, want) {
+	if !testEqual(got, want) {
 		return fmt.Sprintf("got %v, want %v", got, want), false
 	}
 	return "", true
@@ -1093,7 +1093,7 @@ func TestBasicTypes(t *testing.T) {
 		}
 
 		// Check non-NaN cases.
-		if !reflect.DeepEqual(got, want) {
+		if !testEqual(got, want) {
 			t.Errorf("%d: col:%v val:%#v, got %#v, want %#v", i, test.col, test.val, got, want)
 			continue
 		}
@@ -1165,7 +1165,7 @@ func TestStructTypes(t *testing.T) {
 						},
 					},
 				}
-				if !reflect.DeepEqual(want, s) {
+				if !testEqual(want, s) {
 					return fmt.Errorf("unexpected decoding result: %v, want %v", s, want)
 				}
 				return nil
@@ -1236,7 +1236,7 @@ func TestQueryExpressions(t *testing.T) {
 		if isNaN(got) && isNaN(test.want) {
 			continue
 		}
-		if !reflect.DeepEqual(got, test.want) {
+		if !testEqual(got, test.want) {
 			t.Errorf("%q\n got  %#v\nwant %#v", test.expr, got, test.want)
 		}
 	}
