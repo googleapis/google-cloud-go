@@ -69,7 +69,17 @@ func saveStructProperty(props *[]Property, name string, opts saveOpts, v reflect
 	}
 
 	switch x := v.Interface().(type) {
-	case *Key, time.Time, GeoPoint:
+	case *Key:
+		p.Value = x
+	case GeoPoint:
+		if opts.omitEmpty && (GeoPoint{}) == x {
+			return nil
+		}
+		p.Value = x
+	case time.Time:
+		if opts.omitEmpty && x.IsZero() {
+			return nil
+		}
 		p.Value = x
 	default:
 		switch v.Kind() {
