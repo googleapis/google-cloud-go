@@ -15,6 +15,7 @@
 package pubsub
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -24,41 +25,6 @@ import (
 
 	"google.golang.org/api/iterator"
 )
-
-type subListService struct {
-	service
-	subs []string
-	err  error
-
-	t *testing.T // for error logging.
-}
-
-func (s *subListService) newNextStringFunc() nextStringFunc {
-	return func() (string, error) {
-		if len(s.subs) == 0 {
-			return "", iterator.Done
-		}
-		sn := s.subs[0]
-		s.subs = s.subs[1:]
-		return sn, s.err
-	}
-}
-
-func (s *subListService) listProjectSubscriptions(ctx context.Context, projName string) nextStringFunc {
-	if projName != "projects/projid" {
-		s.t.Fatalf("unexpected call: projName: %q", projName)
-		return nil
-	}
-	return s.newNextStringFunc()
-}
-
-func (s *subListService) listTopicSubscriptions(ctx context.Context, topicName string) nextStringFunc {
-	if topicName != "projects/projid/topics/topic" {
-		s.t.Fatalf("unexpected call: topicName: %q", topicName)
-		return nil
-	}
-	return s.newNextStringFunc()
-}
 
 // All returns the remaining subscriptions from this iterator.
 func slurpSubs(it *SubscriptionIterator) ([]*Subscription, error) {
@@ -77,77 +43,72 @@ func slurpSubs(it *SubscriptionIterator) ([]*Subscription, error) {
 
 func TestSubscriptionID(t *testing.T) {
 	const id = "id"
-	serv := &subListService{
-		subs: []string{"projects/projid/subscriptions/s1", "projects/projid/subscriptions/s2"},
-		t:    t,
-	}
-	c := &Client{projectID: "projid", s: serv}
+	c := &Client{projectID: "projid"}
 	s := c.Subscription(id)
 	if got, want := s.ID(), id; got != want {
 		t.Errorf("Subscription.ID() = %q; want %q", got, want)
 	}
-	want := []string{"s1", "s2"}
-	subs, err := slurpSubs(c.Subscriptions(context.Background()))
-	if err != nil {
-		t.Errorf("error listing subscriptions: %v", err)
-	}
-	for i, s := range subs {
-		if got, want := s.ID(), want[i]; got != want {
-			t.Errorf("Subscription.ID() = %q; want %q", got, want)
-		}
-	}
 }
 
 func TestListProjectSubscriptions(t *testing.T) {
-	snames := []string{"projects/projid/subscriptions/s1", "projects/projid/subscriptions/s2",
-		"projects/projid/subscriptions/s3"}
-	s := &subListService{subs: snames, t: t}
-	c := &Client{projectID: "projid", s: s}
-	subs, err := slurpSubs(c.Subscriptions(context.Background()))
+	ctx := context.Background()
+	c, _ := newFake(t)
+	topic := mustCreateTopic(t, c, "t")
+	var want []string
+	for i := 1; i <= 2; i++ {
+		id := fmt.Sprintf("s%d", i)
+		want = append(want, id)
+		_, err := c.CreateSubscription(ctx, id, SubscriptionConfig{Topic: topic})
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	subs, err := slurpSubs(c.Subscriptions(ctx))
 	if err != nil {
-		t.Errorf("error listing subscriptions: %v", err)
+		t.Fatal(err)
 	}
-	got := subNames(subs)
-	want := []string{
-		"projects/projid/subscriptions/s1",
-		"projects/projid/subscriptions/s2",
-		"projects/projid/subscriptions/s3"}
+
+	got := getSubIDs(subs)
 	if !testutil.Equal(got, want) {
-		t.Errorf("sub list: got: %v, want: %v", got, want)
+		t.Errorf("got %v, want %v", got, want)
 	}
-	if len(s.subs) != 0 {
-		t.Errorf("outstanding subs: %v", s.subs)
+}
+
+func getSubIDs(subs []*Subscription) []string {
+	var names []string
+	for _, sub := range subs {
+		names = append(names, sub.ID())
 	}
+	return names
 }
 
 func TestListTopicSubscriptions(t *testing.T) {
-	snames := []string{"projects/projid/subscriptions/s1", "projects/projid/subscriptions/s2",
-		"projects/projid/subscriptions/s3"}
-	s := &subListService{subs: snames, t: t}
-	c := &Client{projectID: "projid", s: s}
-	subs, err := slurpSubs(c.Topic("topic").Subscriptions(context.Background()))
-	if err != nil {
-		t.Errorf("error listing subscriptions: %v", err)
+	ctx := context.Background()
+	c, _ := newFake(t)
+	topics := []*Topic{
+		mustCreateTopic(t, c, "t0"),
+		mustCreateTopic(t, c, "t1"),
 	}
-	got := subNames(subs)
-	want := []string{
-		"projects/projid/subscriptions/s1",
-		"projects/projid/subscriptions/s2",
-		"projects/projid/subscriptions/s3"}
-	if !testutil.Equal(got, want) {
-		t.Errorf("sub list: got: %v, want: %v", got, want)
+	wants := make([][]string, 2)
+	for i := 0; i < 5; i++ {
+		id := fmt.Sprintf("s%d", i)
+		sub, err := c.CreateSubscription(ctx, id, SubscriptionConfig{Topic: topics[i%2]})
+		if err != nil {
+			t.Fatal(err)
+		}
+		wants[i%2] = append(wants[i%2], sub.ID())
 	}
-	if len(s.subs) != 0 {
-		t.Errorf("outstanding subs: %v", s.subs)
-	}
-}
 
-func subNames(subs []*Subscription) []string {
-	var names []string
-	for _, sub := range subs {
-		names = append(names, sub.name)
+	for i, topic := range topics {
+		subs, err := slurpSubs(topic.Subscriptions(ctx))
+		if err != nil {
+			t.Fatal(err)
+		}
+		got := getSubIDs(subs)
+		if !testutil.Equal(got, wants[i]) {
+			t.Errorf("#%d: got %v, want %v", i, got, wants[i])
+		}
 	}
-	return names
 }
 
 const defaultRetentionDuration = 168 * time.Hour
