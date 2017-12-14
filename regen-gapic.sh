@@ -54,4 +54,9 @@ for api in "${APIS[@]}"; do
   artman2 --config "$api" generate go_gapic
   cp -r artman-genfiles/gapi-*/cloud.google.com/go/* $GOPATH/src/cloud.google.com/go/
 done
+
+go list cloud.google.com/go/... | grep apiv | xargs go test
+
+go test -short cloud.google.com/go/...
+
 echo "googleapis version: $(git rev-parse HEAD)"
