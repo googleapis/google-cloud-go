@@ -84,16 +84,25 @@ func (s *Subscription) ID() string {
 
 // Subscriptions returns an iterator which returns all of the subscriptions for the client's project.
 func (c *Client) Subscriptions(ctx context.Context) *SubscriptionIterator {
+	it := c.subc.ListSubscriptions(ctx, &pb.ListSubscriptionsRequest{
+		Project: c.fullyQualifiedProjectName(),
+	})
 	return &SubscriptionIterator{
-		s:    c.s,
-		next: c.s.listProjectSubscriptions(ctx, c.fullyQualifiedProjectName()),
+		s: c.s,
+		next: func() (string, error) {
+			sub, err := it.Next()
+			if err != nil {
+				return "", err
+			}
+			return sub.Name, nil
+		},
 	}
 }
 
 // SubscriptionIterator is an iterator that returns a series of subscriptions.
 type SubscriptionIterator struct {
 	s    service
-	next nextStringFunc
+	next func() (string, error)
 }
 
 // Next returns the next subscription. If there are no more subscriptions, iterator.Done will be returned.

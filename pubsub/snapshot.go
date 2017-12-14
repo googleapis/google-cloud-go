@@ -59,14 +59,22 @@ func (c *Client) Snapshot(id string) *Snapshot {
 
 // Snapshots returns an iterator which returns snapshots for this project.
 func (c *Client) Snapshots(ctx context.Context) *SnapshotConfigIterator {
-	return &SnapshotConfigIterator{
-		next: c.s.listProjectSnapshots(ctx, c.fullyQualifiedProjectName()),
+	it := c.subc.ListSnapshots(ctx, &pb.ListSnapshotsRequest{
+		Project: c.fullyQualifiedProjectName(),
+	})
+	next := func() (*SnapshotConfig, error) {
+		snap, err := it.Next()
+		if err != nil {
+			return nil, err
+		}
+		return c.s.toSnapshotConfig(snap)
 	}
+	return &SnapshotConfigIterator{next: next}
 }
 
 // SnapshotConfigIterator is an iterator that returns a series of snapshots.
 type SnapshotConfigIterator struct {
-	next nextSnapshotFunc
+	next func() (*SnapshotConfig, error)
 }
 
 // Next returns the next SnapshotConfig. Its second return value is iterator.Done if there are no more results.

@@ -152,16 +152,23 @@ func newTopic(s service, name string) *Topic {
 
 // Topics returns an iterator which returns all of the topics for the client's project.
 func (c *Client) Topics(ctx context.Context) *TopicIterator {
+	it := c.pubc.ListTopics(ctx, &pb.ListTopicsRequest{Project: c.fullyQualifiedProjectName()})
 	return &TopicIterator{
-		s:    c.s,
-		next: c.s.listProjectTopics(ctx, c.fullyQualifiedProjectName()),
+		s: c.s,
+		next: func() (string, error) {
+			topic, err := it.Next()
+			if err != nil {
+				return "", err
+			}
+			return topic.Name, nil
+		},
 	}
 }
 
 // TopicIterator is an iterator that returns a series of topics.
 type TopicIterator struct {
 	s    service
-	next nextStringFunc
+	next func() (string, error)
 }
 
 // Next returns the next topic. If there are no more topics, iterator.Done will be returned.
@@ -213,12 +220,15 @@ func (t *Topic) IAM() *iam.Handle {
 }
 
 // Subscriptions returns an iterator which returns the subscriptions for this topic.
+//
+// Some of the returned subscriptions may belong to a project other than t.
 func (t *Topic) Subscriptions(ctx context.Context) *SubscriptionIterator {
-	// NOTE: zero or more Subscriptions that are ultimately returned by this
-	// Subscriptions iterator may belong to a different project to t.
+	it := t.pubc.ListTopicSubscriptions(ctx, &pb.ListTopicSubscriptionsRequest{
+		Topic: t.name,
+	})
 	return &SubscriptionIterator{
 		s:    t.s,
-		next: t.s.listTopicSubscriptions(ctx, t.name),
+		next: it.Next,
 	}
 }
 

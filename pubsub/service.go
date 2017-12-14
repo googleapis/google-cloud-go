@@ -33,24 +33,14 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type nextStringFunc func() (string, error)
-type nextSnapshotFunc func() (*SnapshotConfig, error)
-
 // service provides an internal abstraction to isolate the generated
 // PubSub API; most of this package uses this interface instead.
 // The single implementation, *apiService, contains all the knowledge
 // of the generated PubSub API (except for that present in legacy code).
 type service interface {
-	listProjectSubscriptions(ctx context.Context, projName string) nextStringFunc
-	listProjectTopics(ctx context.Context, projName string) nextStringFunc
-	listTopicSubscriptions(ctx context.Context, topicName string) nextStringFunc
-
 	fetchMessages(ctx context.Context, subName string, maxMessages int32) ([]*Message, error)
 	publishMessages(ctx context.Context, topicName string, msgs []*Message) ([]string, error)
-
 	newStreamingPuller(ctx context.Context, subName string, ackDeadline int32) *streamingPuller
-
-	listProjectSnapshots(ctx context.Context, projName string) nextSnapshotFunc
 	toSnapshotConfig(snap *pb.Snapshot) (*SnapshotConfig, error)
 }
 
@@ -80,39 +70,6 @@ func newPubSubService(ctx context.Context, opts []option.ClientOption) (*apiServ
 type stringsPage struct {
 	strings []string
 	tok     string
-}
-
-func (s *apiService) listProjectSubscriptions(ctx context.Context, projName string) nextStringFunc {
-	it := s.subc.ListSubscriptions(ctx, &pb.ListSubscriptionsRequest{
-		Project: projName,
-	})
-	return func() (string, error) {
-		sub, err := it.Next()
-		if err != nil {
-			return "", err
-		}
-		return sub.Name, nil
-	}
-}
-
-func (s *apiService) listProjectTopics(ctx context.Context, projName string) nextStringFunc {
-	it := s.pubc.ListTopics(ctx, &pb.ListTopicsRequest{
-		Project: projName,
-	})
-	return func() (string, error) {
-		topic, err := it.Next()
-		if err != nil {
-			return "", err
-		}
-		return topic.Name, nil
-	}
-}
-
-func (s *apiService) listTopicSubscriptions(ctx context.Context, topicName string) nextStringFunc {
-	it := s.pubc.ListTopicSubscriptions(ctx, &pb.ListTopicSubscriptionsRequest{
-		Topic: topicName,
-	})
-	return it.Next
 }
 
 // maxPayload is the maximum number of bytes to devote to actual ids in
@@ -372,19 +329,6 @@ func splitRequest(req *pb.StreamingPullRequest, maxSize int) (prefix, remainder 
 	req.ModifyDeadlineAckIds = req.ModifyDeadlineAckIds[:k]
 	req.ModifyDeadlineSeconds = req.ModifyDeadlineSeconds[:k]
 	return req, remainder
-}
-
-func (s *apiService) listProjectSnapshots(ctx context.Context, projName string) nextSnapshotFunc {
-	it := s.subc.ListSnapshots(ctx, &pb.ListSnapshotsRequest{
-		Project: projName,
-	})
-	return func() (*SnapshotConfig, error) {
-		snap, err := it.Next()
-		if err != nil {
-			return nil, err
-		}
-		return s.toSnapshotConfig(snap)
-	}
 }
 
 func (s *apiService) toSnapshotConfig(snap *pb.Snapshot) (*SnapshotConfig, error) {
