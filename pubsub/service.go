@@ -26,7 +26,6 @@ import (
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/pubsub/apiv1"
-	durpb "github.com/golang/protobuf/ptypes/duration"
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
@@ -115,26 +114,7 @@ func (s *apiService) close() error {
 }
 
 func (s *apiService) createSubscription(ctx context.Context, subName string, cfg SubscriptionConfig) error {
-	var rawPushConfig *pb.PushConfig
-	if cfg.PushConfig.Endpoint != "" || len(cfg.PushConfig.Attributes) != 0 {
-		rawPushConfig = &pb.PushConfig{
-			Attributes:   cfg.PushConfig.Attributes,
-			PushEndpoint: cfg.PushConfig.Endpoint,
-		}
-	}
-	var retentionDuration *durpb.Duration
-	if cfg.RetentionDuration != 0 {
-		retentionDuration = ptypes.DurationProto(cfg.RetentionDuration)
-	}
-
-	_, err := s.subc.CreateSubscription(ctx, &pb.Subscription{
-		Name:                     subName,
-		Topic:                    cfg.Topic.name,
-		PushConfig:               rawPushConfig,
-		AckDeadlineSeconds:       trunc32(int64(cfg.AckDeadline.Seconds())),
-		RetainAckedMessages:      cfg.RetainAckedMessages,
-		MessageRetentionDuration: retentionDuration,
-	})
+	_, err := s.subc.CreateSubscription(ctx, cfg.toProto(subName))
 	return err
 }
 
@@ -143,23 +123,11 @@ func (s *apiService) getSubscriptionConfig(ctx context.Context, subName string) 
 	if err != nil {
 		return SubscriptionConfig{}, "", err
 	}
-	var rd time.Duration
-	// TODO(pongad): Remove nil-check after white list is removed.
-	if rawSub.MessageRetentionDuration != nil {
-		if rd, err = ptypes.Duration(rawSub.MessageRetentionDuration); err != nil {
-			return SubscriptionConfig{}, "", err
-		}
+	cfg, err := protoToSubscriptionConfig(rawSub, s)
+	if err != nil {
+		return SubscriptionConfig{}, "", err
 	}
-	sub := SubscriptionConfig{
-		AckDeadline: time.Second * time.Duration(rawSub.AckDeadlineSeconds),
-		PushConfig: PushConfig{
-			Endpoint:   rawSub.PushConfig.PushEndpoint,
-			Attributes: rawSub.PushConfig.Attributes,
-		},
-		RetainAckedMessages: rawSub.RetainAckedMessages,
-		RetentionDuration:   rd,
-	}
-	return sub, rawSub.Topic, nil
+	return cfg, rawSub.Topic, nil
 }
 
 // stringsPage contains a list of strings and a token for fetching the next page.

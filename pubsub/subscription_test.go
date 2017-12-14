@@ -16,6 +16,7 @@ package pubsub
 
 import (
 	"testing"
+	"time"
 
 	"cloud.google.com/go/internal/testutil"
 
@@ -147,4 +148,72 @@ func subNames(subs []*Subscription) []string {
 		names = append(names, sub.name)
 	}
 	return names
+}
+
+const defaultRetentionDuration = 168 * time.Hour
+
+func TestUpdateSubscription(t *testing.T) {
+	ctx := context.Background()
+	client, _ := newFake(t)
+	defer client.Close()
+
+	topic := client.Topic("t")
+	sub, err := client.CreateSubscription(ctx, "s", SubscriptionConfig{Topic: topic})
+	if err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := sub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := SubscriptionConfig{
+		Topic:               topic,
+		AckDeadline:         10 * time.Second,
+		RetainAckedMessages: false,
+		RetentionDuration:   defaultRetentionDuration,
+	}
+	if !testutil.Equal(cfg, want) {
+		t.Fatalf("\ngot  %+v\nwant %+v", cfg, want)
+	}
+
+	got, err := sub.Update(ctx, SubscriptionConfigToUpdate{
+		AckDeadline:         20 * time.Second,
+		RetainAckedMessages: true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want = SubscriptionConfig{
+		Topic:               topic,
+		AckDeadline:         20 * time.Second,
+		RetainAckedMessages: true,
+		RetentionDuration:   defaultRetentionDuration,
+	}
+	if !testutil.Equal(got, want) {
+		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
+	}
+
+	got, err = sub.Update(ctx, SubscriptionConfigToUpdate{RetentionDuration: 2 * time.Hour})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want.RetentionDuration = 2 * time.Hour
+	if !testutil.Equal(got, want) {
+		t.Fatalf("\ngot %+v\nwant %+v", got, want)
+	}
+
+	_, err = sub.Update(ctx, SubscriptionConfigToUpdate{})
+	if err == nil {
+		t.Fatal("got nil, want error")
+	}
+}
+
+func (t1 *Topic) Equal(t2 *Topic) bool {
+	if t1 == nil && t2 == nil {
+		return true
+	}
+	if t1 == nil || t2 == nil {
+		return false
+	}
+	return t1.s == t2.s && t1.name == t2.name
 }
