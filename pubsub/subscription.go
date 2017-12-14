@@ -23,8 +23,13 @@ import (
 	"time"
 
 	"cloud.google.com/go/iam"
+	"cloud.google.com/go/internal/optional"
+	"github.com/golang/protobuf/ptypes"
+	durpb "github.com/golang/protobuf/ptypes/duration"
 	"golang.org/x/net/context"
 	"golang.org/x/sync/errgroup"
+	pb "google.golang.org/genproto/googleapis/pubsub/v1"
+	fmpb "google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )
@@ -102,6 +107,13 @@ type PushConfig struct {
 	Attributes map[string]string
 }
 
+func (pc *PushConfig) toProto() *pb.PushConfig {
+	return &pb.PushConfig{
+		Attributes:   pc.Attributes,
+		PushEndpoint: pc.Endpoint,
+	}
+}
+
 // Subscription config contains the configuration of a subscription.
 type SubscriptionConfig struct {
 	Topic      *Topic
@@ -122,6 +134,45 @@ type SubscriptionConfig struct {
 	// acknowledged messages, otherwise only unacknowledged messages are retained.
 	// Defaults to 7 days. Cannot be longer than 7 days or shorter than 10 minutes.
 	RetentionDuration time.Duration
+}
+
+func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
+	var pbPushConfig *pb.PushConfig
+	if cfg.PushConfig.Endpoint != "" || len(cfg.PushConfig.Attributes) != 0 {
+		pbPushConfig = &pb.PushConfig{
+			Attributes:   cfg.PushConfig.Attributes,
+			PushEndpoint: cfg.PushConfig.Endpoint,
+		}
+	}
+	var retentionDuration *durpb.Duration
+	if cfg.RetentionDuration != 0 {
+		retentionDuration = ptypes.DurationProto(cfg.RetentionDuration)
+	}
+	return &pb.Subscription{
+		Name:                     name,
+		Topic:                    cfg.Topic.name,
+		PushConfig:               pbPushConfig,
+		AckDeadlineSeconds:       trunc32(int64(cfg.AckDeadline.Seconds())),
+		RetainAckedMessages:      cfg.RetainAckedMessages,
+		MessageRetentionDuration: retentionDuration,
+	}
+}
+
+func protoToSubscriptionConfig(pbSub *pb.Subscription, s service) (SubscriptionConfig, error) {
+	rd, err := ptypes.Duration(pbSub.MessageRetentionDuration)
+	if err != nil {
+		return SubscriptionConfig{}, err
+	}
+	return SubscriptionConfig{
+		Topic:       newTopic(s, pbSub.Topic),
+		AckDeadline: time.Second * time.Duration(pbSub.AckDeadlineSeconds),
+		PushConfig: PushConfig{
+			Endpoint:   pbSub.PushConfig.PushEndpoint,
+			Attributes: pbSub.PushConfig.Attributes,
+		},
+		RetainAckedMessages: pbSub.RetainAckedMessages,
+		RetentionDuration:   rd,
+	}, nil
 }
 
 // ReceiveSettings configure the Receive method.
@@ -196,6 +247,15 @@ func (s *Subscription) Config(ctx context.Context) (SubscriptionConfig, error) {
 type SubscriptionConfigToUpdate struct {
 	// If non-nil, the push config is changed.
 	PushConfig *PushConfig
+
+	// If non-zero, the ack deadline is changed.
+	AckDeadline time.Duration
+
+	// If set, RetainAckedMessages is changed.
+	RetainAckedMessages optional.Bool
+
+	// If non-zero, RetentionDuration is changed.
+	RetentionDuration time.Duration
 }
 
 // Update changes an existing subscription according to the fields set in cfg.
@@ -203,13 +263,40 @@ type SubscriptionConfigToUpdate struct {
 //
 // Update returns an error if no fields were modified.
 func (s *Subscription) Update(ctx context.Context, cfg SubscriptionConfigToUpdate) (SubscriptionConfig, error) {
-	if cfg.PushConfig == nil {
+	req := s.updateRequest(&cfg)
+	if len(req.UpdateMask.Paths) == 0 {
 		return SubscriptionConfig{}, errors.New("pubsub: UpdateSubscription call with nothing to update")
 	}
-	if err := s.s.modifyPushConfig(ctx, s.name, *cfg.PushConfig); err != nil {
+	rpsub, err := s.s.(*apiService).subc.UpdateSubscription(ctx, req)
+	if err != nil {
 		return SubscriptionConfig{}, err
 	}
-	return s.Config(ctx)
+	return protoToSubscriptionConfig(rpsub, s.s)
+}
+
+func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.UpdateSubscriptionRequest {
+	psub := &pb.Subscription{Name: s.name}
+	var paths []string
+	if cfg.PushConfig != nil {
+		psub.PushConfig = cfg.PushConfig.toProto()
+		paths = append(paths, "push_config")
+	}
+	if cfg.AckDeadline != 0 {
+		psub.AckDeadlineSeconds = trunc32(int64(cfg.AckDeadline.Seconds()))
+		paths = append(paths, "ack_deadline_seconds")
+	}
+	if cfg.RetainAckedMessages != nil {
+		psub.RetainAckedMessages = optional.ToBool(cfg.RetainAckedMessages)
+		paths = append(paths, "retain_acked_messages")
+	}
+	if cfg.RetentionDuration != 0 {
+		psub.MessageRetentionDuration = ptypes.DurationProto(cfg.RetentionDuration)
+		paths = append(paths, "message_retention_duration")
+	}
+	return &pb.UpdateSubscriptionRequest{
+		Subscription: psub,
+		UpdateMask:   &fmpb.FieldMask{Paths: paths},
+	}
 }
 
 func (s *Subscription) IAM() *iam.Handle {
