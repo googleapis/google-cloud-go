@@ -19,7 +19,9 @@ import (
 	"time"
 
 	vkit "cloud.google.com/go/pubsub/apiv1"
+	"github.com/golang/protobuf/ptypes"
 	"golang.org/x/net/context"
+	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
 // Snapshot is a reference to a PubSub snapshot.
@@ -75,7 +77,7 @@ func (snaps *SnapshotConfigIterator) Next() (*SnapshotConfig, error) {
 
 // Delete deletes a snapshot.
 func (snap *Snapshot) Delete(ctx context.Context) error {
-	return snap.s.deleteSnapshot(ctx, snap.name)
+	return snap.s.(*apiService).subc.DeleteSnapshot(ctx, &pb.DeleteSnapshotRequest{Snapshot: snap.name})
 }
 
 // SeekToTime seeks the subscription to a point in time.
@@ -90,7 +92,15 @@ func (snap *Snapshot) Delete(ctx context.Context) error {
 // creation time), only retained messages will be marked as unacknowledged,
 // and already-expunged messages will not be restored.
 func (s *Subscription) SeekToTime(ctx context.Context, t time.Time) error {
-	return s.s.seekToTime(ctx, s.name, t)
+	ts, err := ptypes.TimestampProto(t)
+	if err != nil {
+		return err
+	}
+	_, err = s.subc.Seek(ctx, &pb.SeekRequest{
+		Subscription: s.name,
+		Target:       &pb.SeekRequest_Time{ts},
+	})
+	return err
 }
 
 // CreateSnapshot creates a new snapshot from this subscription.
@@ -107,13 +117,24 @@ func (s *Subscription) CreateSnapshot(ctx context.Context, name string) (*Snapsh
 	if name != "" {
 		name = vkit.SubscriberSnapshotPath(strings.Split(s.name, "/")[1], name)
 	}
-	return s.s.createSnapshot(ctx, name, s.name)
+	snap, err := s.subc.CreateSnapshot(ctx, &pb.CreateSnapshotRequest{
+		Name:         name,
+		Subscription: s.name,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return s.s.toSnapshotConfig(snap)
 }
 
 // SeekToSnapshot seeks the subscription to a snapshot.
 //
-// The snapshot needs not be created from this subscription,
-// but the snapshot must be for the topic this subscription is subscribed to.
+// The snapshot need not be created from this subscription,
+// but it must be for the topic this subscription is subscribed to.
 func (s *Subscription) SeekToSnapshot(ctx context.Context, snap *Snapshot) error {
-	return s.s.seekToSnapshot(ctx, s.name, snap.name)
+	_, err := s.subc.Seek(ctx, &pb.SeekRequest{
+		Subscription: s.name,
+		Target:       &pb.SeekRequest_Snapshot{snap.name},
+	})
+	return err
 }

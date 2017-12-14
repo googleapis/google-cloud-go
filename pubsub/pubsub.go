@@ -20,12 +20,12 @@ import (
 	"runtime"
 	"time"
 
+	vkit "cloud.google.com/go/pubsub/apiv1"
+	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
-
-	"golang.org/x/net/context"
 )
 
 const (
@@ -46,7 +46,9 @@ const prodAddr = "https://pubsub.googleapis.com/"
 // A Client may be shared by multiple goroutines.
 type Client struct {
 	projectID string
-	s         service
+	s         service // TODO(jba): remove
+	pubc      *vkit.PublisherClient
+	subc      *vkit.SubscriberClient
 }
 
 // NewClient creates a new PubSub client.
@@ -83,6 +85,8 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	c := &Client{
 		projectID: projectID,
 		s:         s,
+		pubc:      s.pubc,
+		subc:      s.subc,
 	}
 
 	return c, nil
@@ -94,7 +98,10 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 // If the client is available for the lifetime of the program, then Close need not be
 // called at exit.
 func (c *Client) Close() error {
-	return c.s.close()
+	// Return the first error, because the first call closes the connection.
+	err := c.pubc.Close()
+	_ = c.subc.Close()
+	return err
 }
 
 func (c *Client) fullyQualifiedProjectName() string {
