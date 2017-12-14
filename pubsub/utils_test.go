@@ -16,8 +16,6 @@ package pubsub
 
 import (
 	"time"
-
-	"golang.org/x/net/context"
 )
 
 type modDeadlineCall struct {
@@ -39,25 +37,4 @@ type testService struct {
 
 	// The arguments of each call to acknowledge are written to this channel.
 	acknowledgeCalled chan acknowledgeCall
-}
-
-func (s *testService) modifyAckDeadline(ctx context.Context, subName string, deadline time.Duration, ackIDs []string) error {
-	s.modDeadlineCalled <- modDeadlineCall{
-		subName:  subName,
-		deadline: deadline,
-		ackIDs:   ackIDs,
-	}
-	return nil
-}
-
-func (s *testService) acknowledge(ctx context.Context, subName string, ackIDs []string) error {
-	s.acknowledgeCalled <- acknowledgeCall{
-		subName: subName,
-		ackIDs:  ackIDs,
-	}
-	return nil
-}
-
-func (s *testService) splitAckIDs(ids []string) ([]string, []string) {
-	return ids, nil
 }

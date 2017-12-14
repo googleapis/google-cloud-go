@@ -24,6 +24,7 @@ import (
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/optional"
+	vkit "cloud.google.com/go/pubsub/apiv1"
 	"github.com/golang/protobuf/ptypes"
 	durpb "github.com/golang/protobuf/ptypes/duration"
 	"golang.org/x/net/context"
@@ -36,7 +37,8 @@ import (
 
 // Subscription is a reference to a PubSub subscription.
 type Subscription struct {
-	s service
+	s    service
+	subc *vkit.SubscriberClient
 
 	// The fully qualified identifier for the subscription, in the format "projects/<projid>/subscriptions/<name>"
 	name string
@@ -54,8 +56,13 @@ func (c *Client) Subscription(id string) *Subscription {
 }
 
 func newSubscription(s service, name string) *Subscription {
+	var subc *vkit.SubscriberClient
+	if as, ok := s.(*apiService); ok {
+		subc = as.subc
+	}
 	return &Subscription{
 		s:    s,
+		subc: subc,
 		name: name,
 	}
 }
@@ -222,25 +229,32 @@ var DefaultReceiveSettings = ReceiveSettings{
 
 // Delete deletes the subscription.
 func (s *Subscription) Delete(ctx context.Context) error {
-	return s.s.deleteSubscription(ctx, s.name)
+	return s.subc.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{Subscription: s.name})
 }
 
 // Exists reports whether the subscription exists on the server.
 func (s *Subscription) Exists(ctx context.Context) (bool, error) {
-	return s.s.subscriptionExists(ctx, s.name)
+	_, err := s.subc.GetSubscription(ctx, &pb.GetSubscriptionRequest{Subscription: s.name})
+	if err == nil {
+		return true, nil
+	}
+	if grpc.Code(err) == codes.NotFound {
+		return false, nil
+	}
+	return false, err
 }
 
 // Config fetches the current configuration for the subscription.
 func (s *Subscription) Config(ctx context.Context) (SubscriptionConfig, error) {
-	conf, topicName, err := s.s.getSubscriptionConfig(ctx, s.name)
+	pbSub, err := s.subc.GetSubscription(ctx, &pb.GetSubscriptionRequest{Subscription: s.name})
 	if err != nil {
 		return SubscriptionConfig{}, err
 	}
-	conf.Topic = &Topic{
-		s:    s.s,
-		name: topicName,
+	cfg, err := protoToSubscriptionConfig(pbSub, s.s)
+	if err != nil {
+		return SubscriptionConfig{}, err
 	}
-	return conf, nil
+	return cfg, nil
 }
 
 // SubscriptionConfigToUpdate describes how to update a subscription.
@@ -300,7 +314,7 @@ func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.Update
 }
 
 func (s *Subscription) IAM() *iam.Handle {
-	return s.s.iamHandle(s.name)
+	return iam.InternalNewHandle(s.subc.Connection(), s.name)
 }
 
 // CreateSubscription creates a new subscription on a topic.
@@ -337,8 +351,11 @@ func (c *Client) CreateSubscription(ctx context.Context, id string, cfg Subscrip
 	}
 
 	sub := c.Subscription(id)
-	err := c.s.createSubscription(ctx, sub.name, cfg)
-	return sub, err
+	_, err := c.subc.CreateSubscription(ctx, cfg.toProto(sub.name))
+	if err != nil {
+		return nil, err
+	}
+	return sub, nil
 }
 
 var errReceiveInProgress = errors.New("pubsub: Receive already in progress for this subscription")

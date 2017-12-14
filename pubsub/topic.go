@@ -23,10 +23,13 @@ import (
 	"time"
 
 	"cloud.google.com/go/iam"
+	vkit "cloud.google.com/go/pubsub/apiv1"
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/api/support/bundler"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 )
 
 const (
@@ -47,7 +50,8 @@ var ErrOversizedMessage = bundler.ErrOversizedItem
 //
 // The methods of Topic are safe for use by multiple goroutines.
 type Topic struct {
-	s service
+	s    service
+	pubc *vkit.PublisherClient
 	// The fully qualified identifier for the topic, in the format "projects/<projid>/topics/<name>"
 	name string
 
@@ -102,8 +106,11 @@ var DefaultPublishSettings = PublishSettings{
 // If the topic already exists an error will be returned.
 func (c *Client) CreateTopic(ctx context.Context, id string) (*Topic, error) {
 	t := c.Topic(id)
-	err := c.s.createTopic(ctx, t.name)
-	return t, err
+	_, err := c.pubc.CreateTopic(ctx, &pb.Topic{Name: t.name})
+	if err != nil {
+		return nil, err
+	}
+	return t, nil
 }
 
 // Topic creates a reference to a topic in the client's project.
@@ -130,8 +137,13 @@ func newTopic(s service, name string) *Topic {
 	// bundlec is unbuffered. A buffer would occupy memory not
 	// accounted for by the bundler, so BufferedByteLimit would be a lie:
 	// the actual memory consumed would be higher.
+	var pubc *vkit.PublisherClient
+	if as, ok := s.(*apiService); ok {
+		pubc = as.pubc
+	}
 	return &Topic{
 		s:               s,
+		pubc:            pubc,
 		name:            name,
 		PublishSettings: DefaultPublishSettings,
 		bundlec:         make(chan []*bundledMessage),
@@ -178,7 +190,7 @@ func (t *Topic) String() string {
 
 // Delete deletes the topic.
 func (t *Topic) Delete(ctx context.Context) error {
-	return t.s.deleteTopic(ctx, t.name)
+	return t.pubc.DeleteTopic(ctx, &pb.DeleteTopicRequest{Topic: t.name})
 }
 
 // Exists reports whether the topic exists on the server.
@@ -186,12 +198,18 @@ func (t *Topic) Exists(ctx context.Context) (bool, error) {
 	if t.name == "_deleted-topic_" {
 		return false, nil
 	}
-
-	return t.s.topicExists(ctx, t.name)
+	_, err := t.pubc.GetTopic(ctx, &pb.GetTopicRequest{Topic: t.name})
+	if err == nil {
+		return true, nil
+	}
+	if grpc.Code(err) == codes.NotFound {
+		return false, nil
+	}
+	return false, err
 }
 
 func (t *Topic) IAM() *iam.Handle {
-	return t.s.iamHandle(t.name)
+	return iam.InternalNewHandle(t.pubc.Connection(), t.name)
 }
 
 // Subscriptions returns an iterator which returns the subscriptions for this topic.
