@@ -26,7 +26,7 @@ import (
 
 // Snapshot is a reference to a PubSub snapshot.
 type Snapshot struct {
-	s service
+	c *Client
 
 	// The fully qualified identifier for the snapshot, in the format "projects/<projid>/snapshots/<snap>"
 	name string
@@ -52,7 +52,7 @@ type SnapshotConfig struct {
 // Snapshot creates a reference to a snapshot.
 func (c *Client) Snapshot(id string) *Snapshot {
 	return &Snapshot{
-		s:    c.s,
+		c:    c,
 		name: vkit.SubscriberSnapshotPath(c.projectID, id),
 	}
 }
@@ -67,7 +67,7 @@ func (c *Client) Snapshots(ctx context.Context) *SnapshotConfigIterator {
 		if err != nil {
 			return nil, err
 		}
-		return c.s.toSnapshotConfig(snap)
+		return toSnapshotConfig(snap, c)
 	}
 	return &SnapshotConfigIterator{next: next}
 }
@@ -85,7 +85,7 @@ func (snaps *SnapshotConfigIterator) Next() (*SnapshotConfig, error) {
 
 // Delete deletes a snapshot.
 func (snap *Snapshot) Delete(ctx context.Context) error {
-	return snap.s.(*apiService).subc.DeleteSnapshot(ctx, &pb.DeleteSnapshotRequest{Snapshot: snap.name})
+	return snap.c.subc.DeleteSnapshot(ctx, &pb.DeleteSnapshotRequest{Snapshot: snap.name})
 }
 
 // SeekToTime seeks the subscription to a point in time.
@@ -104,7 +104,7 @@ func (s *Subscription) SeekToTime(ctx context.Context, t time.Time) error {
 	if err != nil {
 		return err
 	}
-	_, err = s.subc.Seek(ctx, &pb.SeekRequest{
+	_, err = s.c.subc.Seek(ctx, &pb.SeekRequest{
 		Subscription: s.name,
 		Target:       &pb.SeekRequest_Time{ts},
 	})
@@ -125,14 +125,14 @@ func (s *Subscription) CreateSnapshot(ctx context.Context, name string) (*Snapsh
 	if name != "" {
 		name = vkit.SubscriberSnapshotPath(strings.Split(s.name, "/")[1], name)
 	}
-	snap, err := s.subc.CreateSnapshot(ctx, &pb.CreateSnapshotRequest{
+	snap, err := s.c.subc.CreateSnapshot(ctx, &pb.CreateSnapshotRequest{
 		Name:         name,
 		Subscription: s.name,
 	})
 	if err != nil {
 		return nil, err
 	}
-	return s.s.toSnapshotConfig(snap)
+	return toSnapshotConfig(snap, s.c)
 }
 
 // SeekToSnapshot seeks the subscription to a snapshot.
@@ -140,9 +140,21 @@ func (s *Subscription) CreateSnapshot(ctx context.Context, name string) (*Snapsh
 // The snapshot need not be created from this subscription,
 // but it must be for the topic this subscription is subscribed to.
 func (s *Subscription) SeekToSnapshot(ctx context.Context, snap *Snapshot) error {
-	_, err := s.subc.Seek(ctx, &pb.SeekRequest{
+	_, err := s.c.subc.Seek(ctx, &pb.SeekRequest{
 		Subscription: s.name,
 		Target:       &pb.SeekRequest_Snapshot{snap.name},
 	})
 	return err
+}
+
+func toSnapshotConfig(snap *pb.Snapshot, c *Client) (*SnapshotConfig, error) {
+	exp, err := ptypes.Timestamp(snap.ExpireTime)
+	if err != nil {
+		return nil, err
+	}
+	return &SnapshotConfig{
+		Snapshot:   &Snapshot{c: c, name: snap.Name},
+		Topic:      newTopic(c, snap.Topic),
+		Expiration: exp,
+	}, nil
 }

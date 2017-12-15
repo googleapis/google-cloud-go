@@ -111,11 +111,10 @@ func TestPublishTimeout(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	s, err := newPubSubService(context.Background(), []option.ClientOption{option.WithGRPCConn(conn)})
+	c, err := NewClient(ctx, "projectID", option.WithGRPCConn(conn))
 	if err != nil {
 		t.Fatal(err)
 	}
-	c := &Client{s: s}
 	topic := c.Topic("t")
 	topic.PublishSettings.Timeout = 3 * time.Second
 	r := topic.Publish(ctx, &Message{})

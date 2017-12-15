@@ -20,57 +20,14 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/golang/protobuf/ptypes"
-
-	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/pubsub/apiv1"
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
-	"google.golang.org/api/option"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
-
-// service provides an internal abstraction to isolate the generated
-// PubSub API; most of this package uses this interface instead.
-// The single implementation, *apiService, contains all the knowledge
-// of the generated PubSub API (except for that present in legacy code).
-type service interface {
-	fetchMessages(ctx context.Context, subName string, maxMessages int32) ([]*Message, error)
-	publishMessages(ctx context.Context, topicName string, msgs []*Message) ([]string, error)
-	newStreamingPuller(ctx context.Context, subName string, ackDeadline int32) *streamingPuller
-	toSnapshotConfig(snap *pb.Snapshot) (*SnapshotConfig, error)
-}
-
-type apiService struct {
-	pubc *vkit.PublisherClient
-	subc *vkit.SubscriberClient
-}
-
-func newPubSubService(ctx context.Context, opts []option.ClientOption) (*apiService, error) {
-	pubc, err := vkit.NewPublisherClient(ctx, opts...)
-	if err != nil {
-		return nil, err
-	}
-	subc, err := vkit.NewSubscriberClient(ctx, option.WithGRPCConn(pubc.Connection()))
-	if err != nil {
-		// Should never happen, since we are passing in the connection.
-		// If it does, we cannot close, because the user may have passed in their
-		// own connection originally.
-		return nil, err
-	}
-	pubc.SetGoogleClientInfo("gccl", version.Repo)
-	subc.SetGoogleClientInfo("gccl", version.Repo)
-	return &apiService{pubc: pubc, subc: subc}, nil
-}
-
-// stringsPage contains a list of strings and a token for fetching the next page.
-type stringsPage struct {
-	strings []string
-	tok     string
-}
 
 // maxPayload is the maximum number of bytes to devote to actual ids in
 // acknowledgement or modifyAckDeadline requests. A serialized
@@ -90,17 +47,6 @@ const (
 	maxSendRecvBytes = 20 * 1024 * 1024 // 20M
 )
 
-func (s *apiService) fetchMessages(ctx context.Context, subName string, maxMessages int32) ([]*Message, error) {
-	resp, err := s.subc.Pull(ctx, &pb.PullRequest{
-		Subscription: subName,
-		MaxMessages:  maxMessages,
-	}, gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(maxSendRecvBytes)))
-	if err != nil {
-		return nil, err
-	}
-	return convertMessages(resp.ReceivedMessages)
-}
-
 func convertMessages(rms []*pb.ReceivedMessage) ([]*Message, error) {
 	msgs := make([]*Message, 0, len(rms))
 	for i, m := range rms {
@@ -113,24 +59,6 @@ func convertMessages(rms []*pb.ReceivedMessage) ([]*Message, error) {
 	return msgs, nil
 }
 
-func (s *apiService) publishMessages(ctx context.Context, topicName string, msgs []*Message) ([]string, error) {
-	rawMsgs := make([]*pb.PubsubMessage, len(msgs))
-	for i, msg := range msgs {
-		rawMsgs[i] = &pb.PubsubMessage{
-			Data:       msg.Data,
-			Attributes: msg.Attributes,
-		}
-	}
-	resp, err := s.pubc.Publish(ctx, &pb.PublishRequest{
-		Topic:    topicName,
-		Messages: rawMsgs,
-	}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)))
-	if err != nil {
-		return nil, err
-	}
-	return resp.MessageIds, nil
-}
-
 func trunc32(i int64) int32 {
 	if i > math.MaxInt32 {
 		i = math.MaxInt32
@@ -138,12 +66,12 @@ func trunc32(i int64) int32 {
 	return int32(i)
 }
 
-func (s *apiService) newStreamingPuller(ctx context.Context, subName string, ackDeadlineSecs int32) *streamingPuller {
+func newStreamingPuller(ctx context.Context, subc *vkit.SubscriberClient, subName string, ackDeadlineSecs int32) *streamingPuller {
 	p := &streamingPuller{
 		ctx:             ctx,
 		subName:         subName,
 		ackDeadlineSecs: ackDeadlineSecs,
-		subc:            s.subc,
+		subc:            subc,
 	}
 	p.c = sync.NewCond(&p.mu)
 	return p
@@ -329,19 +257,4 @@ func splitRequest(req *pb.StreamingPullRequest, maxSize int) (prefix, remainder 
 	req.ModifyDeadlineAckIds = req.ModifyDeadlineAckIds[:k]
 	req.ModifyDeadlineSeconds = req.ModifyDeadlineSeconds[:k]
 	return req, remainder
-}
-
-func (s *apiService) toSnapshotConfig(snap *pb.Snapshot) (*SnapshotConfig, error) {
-	exp, err := ptypes.Timestamp(snap.ExpireTime)
-	if err != nil {
-		return nil, err
-	}
-	return &SnapshotConfig{
-		Snapshot: &Snapshot{
-			s:    s,
-			name: snap.Name,
-		},
-		Topic:      newTopic(s, snap.Topic),
-		Expiration: exp,
-	}, nil
 }

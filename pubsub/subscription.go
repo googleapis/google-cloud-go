@@ -24,7 +24,6 @@ import (
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/optional"
-	vkit "cloud.google.com/go/pubsub/apiv1"
 	"github.com/golang/protobuf/ptypes"
 	durpb "github.com/golang/protobuf/ptypes/duration"
 	"golang.org/x/net/context"
@@ -37,8 +36,7 @@ import (
 
 // Subscription is a reference to a PubSub subscription.
 type Subscription struct {
-	s    service
-	subc *vkit.SubscriberClient
+	c *Client
 
 	// The fully qualified identifier for the subscription, in the format "projects/<projid>/subscriptions/<name>"
 	name string
@@ -52,18 +50,9 @@ type Subscription struct {
 
 // Subscription creates a reference to a subscription.
 func (c *Client) Subscription(id string) *Subscription {
-	return newSubscription(c.s, fmt.Sprintf("projects/%s/subscriptions/%s", c.projectID, id))
-}
-
-func newSubscription(s service, name string) *Subscription {
-	var subc *vkit.SubscriberClient
-	if as, ok := s.(*apiService); ok {
-		subc = as.subc
-	}
 	return &Subscription{
-		s:    s,
-		subc: subc,
-		name: name,
+		c:    c,
+		name: fmt.Sprintf("projects/%s/subscriptions/%s", c.projectID, id),
 	}
 }
 
@@ -88,7 +77,7 @@ func (c *Client) Subscriptions(ctx context.Context) *SubscriptionIterator {
 		Project: c.fullyQualifiedProjectName(),
 	})
 	return &SubscriptionIterator{
-		s: c.s,
+		c: c,
 		next: func() (string, error) {
 			sub, err := it.Next()
 			if err != nil {
@@ -101,7 +90,7 @@ func (c *Client) Subscriptions(ctx context.Context) *SubscriptionIterator {
 
 // SubscriptionIterator is an iterator that returns a series of subscriptions.
 type SubscriptionIterator struct {
-	s    service
+	c    *Client
 	next func() (string, error)
 }
 
@@ -111,7 +100,7 @@ func (subs *SubscriptionIterator) Next() (*Subscription, error) {
 	if err != nil {
 		return nil, err
 	}
-	return newSubscription(subs.s, subName), nil
+	return &Subscription{c: subs.c, name: subName}, nil
 }
 
 // PushConfig contains configuration for subscriptions that operate in push mode.
@@ -174,13 +163,13 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 	}
 }
 
-func protoToSubscriptionConfig(pbSub *pb.Subscription, s service) (SubscriptionConfig, error) {
+func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionConfig, error) {
 	rd, err := ptypes.Duration(pbSub.MessageRetentionDuration)
 	if err != nil {
 		return SubscriptionConfig{}, err
 	}
 	return SubscriptionConfig{
-		Topic:       newTopic(s, pbSub.Topic),
+		Topic:       newTopic(c, pbSub.Topic),
 		AckDeadline: time.Second * time.Duration(pbSub.AckDeadlineSeconds),
 		PushConfig: PushConfig{
 			Endpoint:   pbSub.PushConfig.PushEndpoint,
@@ -238,12 +227,12 @@ var DefaultReceiveSettings = ReceiveSettings{
 
 // Delete deletes the subscription.
 func (s *Subscription) Delete(ctx context.Context) error {
-	return s.subc.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{Subscription: s.name})
+	return s.c.subc.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{Subscription: s.name})
 }
 
 // Exists reports whether the subscription exists on the server.
 func (s *Subscription) Exists(ctx context.Context) (bool, error) {
-	_, err := s.subc.GetSubscription(ctx, &pb.GetSubscriptionRequest{Subscription: s.name})
+	_, err := s.c.subc.GetSubscription(ctx, &pb.GetSubscriptionRequest{Subscription: s.name})
 	if err == nil {
 		return true, nil
 	}
@@ -255,11 +244,11 @@ func (s *Subscription) Exists(ctx context.Context) (bool, error) {
 
 // Config fetches the current configuration for the subscription.
 func (s *Subscription) Config(ctx context.Context) (SubscriptionConfig, error) {
-	pbSub, err := s.subc.GetSubscription(ctx, &pb.GetSubscriptionRequest{Subscription: s.name})
+	pbSub, err := s.c.subc.GetSubscription(ctx, &pb.GetSubscriptionRequest{Subscription: s.name})
 	if err != nil {
 		return SubscriptionConfig{}, err
 	}
-	cfg, err := protoToSubscriptionConfig(pbSub, s.s)
+	cfg, err := protoToSubscriptionConfig(pbSub, s.c)
 	if err != nil {
 		return SubscriptionConfig{}, err
 	}
@@ -290,11 +279,11 @@ func (s *Subscription) Update(ctx context.Context, cfg SubscriptionConfigToUpdat
 	if len(req.UpdateMask.Paths) == 0 {
 		return SubscriptionConfig{}, errors.New("pubsub: UpdateSubscription call with nothing to update")
 	}
-	rpsub, err := s.s.(*apiService).subc.UpdateSubscription(ctx, req)
+	rpsub, err := s.c.subc.UpdateSubscription(ctx, req)
 	if err != nil {
 		return SubscriptionConfig{}, err
 	}
-	return protoToSubscriptionConfig(rpsub, s.s)
+	return protoToSubscriptionConfig(rpsub, s.c)
 }
 
 func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.UpdateSubscriptionRequest {
@@ -323,7 +312,7 @@ func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.Update
 }
 
 func (s *Subscription) IAM() *iam.Handle {
-	return iam.InternalNewHandle(s.subc.Connection(), s.name)
+	return iam.InternalNewHandle(s.c.subc.Connection(), s.name)
 }
 
 // CreateSubscription creates a new subscription on a topic.
@@ -460,7 +449,7 @@ func (s *Subscription) receive(ctx context.Context, po *pullOptions, fc *flowCon
 	// The iterator does not use the context passed to Receive. If it did, canceling
 	// that context would immediately stop the iterator without waiting for unacked
 	// messages.
-	iter := newMessageIterator(context.Background(), s.s, s.name, po)
+	iter := newMessageIterator(context.Background(), s.c.subc, s.name, po)
 
 	// We cannot use errgroup from Receive here. Receive might already be calling group.Wait,
 	// and group.Wait cannot be called concurrently with group.Go. We give each receive() its
