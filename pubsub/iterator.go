@@ -18,6 +18,7 @@ import (
 	"sync"
 	"time"
 
+	vkit "cloud.google.com/go/pubsub/apiv1"
 	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
@@ -26,8 +27,8 @@ import (
 // when it is no longer needed.
 // subName is the full name of the subscription to pull messages from.
 // ctx is the context to use for acking messages and extending message deadlines.
-func newMessageIterator(ctx context.Context, s service, subName string, po *pullOptions) *streamingMessageIterator {
-	sp := s.newStreamingPuller(ctx, subName, int32(po.ackDeadline.Seconds()))
+func newMessageIterator(ctx context.Context, subc *vkit.SubscriberClient, subName string, po *pullOptions) *streamingMessageIterator {
+	sp := newStreamingPuller(ctx, subc, subName, int32(po.ackDeadline.Seconds()))
 	_ = sp.open() // error stored in sp
 	return newStreamingMessageIterator(ctx, sp, po)
 }

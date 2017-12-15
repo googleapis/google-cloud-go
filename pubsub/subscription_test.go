@@ -176,5 +176,5 @@ func (t1 *Topic) Equal(t2 *Topic) bool {
 	if t1 == nil || t2 == nil {
 		return false
 	}
-	return t1.s == t2.s && t1.name == t2.name
+	return t1.c == t2.c && t1.name == t2.name
 }
