@@ -411,7 +411,7 @@ func TestIntegration_Errors(t *testing.T) {
 		sub.Delete(ctx)
 	}
 
-	// Negative ack deadline.
+	// Ack deadline less than minimum.
 	sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{
 		Topic:       topic,
 		AckDeadline: 5 * time.Second,
