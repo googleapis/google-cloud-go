@@ -20,12 +20,12 @@ import (
 	"container/heap"
 	"container/list"
 	"fmt"
+	"log"
 	"math/rand"
 	"strings"
 	"sync"
 	"time"
 
-	log "github.com/golang/glog"
 	"golang.org/x/net/context"
 
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
@@ -266,8 +266,8 @@ func (s *session) destroy(isExpire bool) bool {
 		_, e := s.client.DeleteSession(ctx, &sppb.DeleteSessionRequest{Name: s.getID()})
 		return e
 	})
-	if err != nil && log.V(2) {
-		log.Warningf("Failed to delete session %v. Error: %v", s.getID(), err)
+	if err != nil {
+		log.Printf("Failed to delete session %v. Error: %v", s.getID(), err)
 	}
 	return true
 }
@@ -900,7 +900,7 @@ func (hc *healthChecker) worker(i int) {
 			cancel()
 			if err != nil {
 				// Skip handling prepare error, session can be prepared in next cycle
-				log.Warningf("Failed to prepare session, error: %v", toSpannerError(err))
+				log.Printf("Failed to prepare session, error: %v", toSpannerError(err))
 			}
 			hc.pool.recycle(ws)
 			hc.pool.mu.Lock()
@@ -969,13 +969,13 @@ func (hc *healthChecker) maintainer() {
 				err error
 			)
 			if s, err = p.createSession(ctx); err != nil {
-				log.Warningf("Failed to create session, error: %v", toSpannerError(err))
+				log.Printf("Failed to create session, error: %v", toSpannerError(err))
 				continue
 			}
 			if shouldPrepareWrite {
 				if err = s.prepareForWrite(ctx); err != nil {
 					p.recycle(s)
-					log.Warningf("Failed to prepare session, error: %v", toSpannerError(err))
+					log.Printf("Failed to prepare session, error: %v", toSpannerError(err))
 					continue
 				}
 			}

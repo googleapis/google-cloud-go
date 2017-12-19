@@ -19,10 +19,10 @@ package spanner
 import (
 	"bytes"
 	"io"
+	"log"
 	"sync/atomic"
 	"time"
 
-	log "github.com/golang/glog"
 	proto "github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	"golang.org/x/net/context"
@@ -445,7 +445,7 @@ func (d *resumableStreamDecoder) next() bool {
 			return true
 
 		default:
-			log.Errorf("Unexpected resumableStreamDecoder.state: %v", d.state)
+			log.Printf("Unexpected resumableStreamDecoder.state: %v", d.state)
 			return false
 		}
 	}
