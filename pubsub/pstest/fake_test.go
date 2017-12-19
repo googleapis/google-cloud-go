@@ -66,12 +66,78 @@ func TestTopics(t *testing.T) {
 	}
 }
 
+func TestSubscriptions(t *testing.T) {
+	pclient, sclient, server := newFake(t)
+	ctx := context.Background()
+	topic := mustCreateTopic(t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	var subs []*pb.Subscription
+	for i := 0; i < 3; i++ {
+		subs = append(subs, mustCreateSubscription(t, sclient, &pb.Subscription{
+			Name:               fmt.Sprintf("projects/P/subscriptions/S%d", i),
+			Topic:              topic.Name,
+			AckDeadlineSeconds: int32(10 * (i + 1)),
+		}))
+	}
+
+	if got, want := len(server.gServer.subs), len(subs); got != want {
+		t.Fatalf("got %d subscriptions, want %d", got, want)
+	}
+	for _, s := range subs {
+		got, err := sclient.GetSubscription(ctx, &pb.GetSubscriptionRequest{Subscription: s.Name})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !testutil.Equal(got, s) {
+			t.Errorf("\ngot %+v\nwant %+v", got, s)
+		}
+	}
+
+	res, err := sclient.ListSubscriptions(ctx, &pb.ListSubscriptionsRequest{Project: "projects/P"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := res.Subscriptions, subs; !testutil.Equal(got, want) {
+		t.Errorf("\ngot %+v\nwant %+v", got, want)
+	}
+
+	res2, err := pclient.ListTopicSubscriptions(ctx, &pb.ListTopicSubscriptionsRequest{Topic: topic.Name})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := len(res2.Subscriptions), len(subs); got != want {
+		t.Fatalf("got %d subs, want %d", got, want)
+	}
+	for i, got := range res2.Subscriptions {
+		want := subs[i].Name
+		if !testutil.Equal(got, want) {
+			t.Errorf("\ngot %+v\nwant %+v", got, want)
+		}
+	}
+
+	for _, s := range subs {
+		if _, err := sclient.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{Subscription: s.Name}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if got, want := len(server.gServer.subs), 0; got != want {
+		t.Fatalf("got %d subscriptions, want %d", got, want)
+	}
+}
+
 func mustCreateTopic(t *testing.T, pc pb.PublisherClient, topic *pb.Topic) *pb.Topic {
 	top, err := pc.CreateTopic(context.Background(), topic)
 	if err != nil {
 		t.Fatal(err)
 	}
 	return top
+}
+
+func mustCreateSubscription(t *testing.T, sc pb.SubscriberClient, sub *pb.Subscription) *pb.Subscription {
+	sub, err := sc.CreateSubscription(context.Background(), sub)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return sub
 }
 
 func newFake(t *testing.T) (pb.PublisherClient, pb.SubscriberClient, *Server) {

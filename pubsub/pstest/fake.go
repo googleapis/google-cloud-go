@@ -22,6 +22,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"github.com/golang/protobuf/ptypes"
+	durpb "github.com/golang/protobuf/ptypes/duration"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
@@ -165,6 +167,149 @@ func (s *gServer) DeleteTopic(_ context.Context, req *pb.DeleteTopicRequest) (*e
 	return &emptypb.Empty{}, nil
 }
 
+func (s *gServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*pb.Subscription, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if ps.Name == "" {
+		return nil, grpc.Errorf(codes.InvalidArgument, "missing name")
+	}
+	if s.subs[ps.Name] != nil {
+		return nil, grpc.Errorf(codes.AlreadyExists, "subscription %q", ps.Name)
+	}
+	if ps.Topic == "" {
+		return nil, grpc.Errorf(codes.InvalidArgument, "missing topic")
+	}
+	top := s.topics[ps.Topic]
+	if top == nil {
+		return nil, grpc.Errorf(codes.NotFound, "topic %q", ps.Topic)
+	}
+	if err := checkAckDeadline(ps.AckDeadlineSeconds); err != nil {
+		return nil, err
+	}
+	if ps.MessageRetentionDuration == nil {
+		ps.MessageRetentionDuration = defaultMessageRetentionDuration
+	}
+	if err := checkMRD(ps.MessageRetentionDuration); err != nil {
+		return nil, err
+	}
+	if ps.PushConfig == nil {
+		ps.PushConfig = &pb.PushConfig{}
+	}
+
+	sub := newSubscription(top, &s.mu, ps)
+	top.subs[ps.Name] = sub
+	s.subs[ps.Name] = sub
+	sub.start(&s.wg)
+	return ps, nil
+}
+
+func checkAckDeadline(ads int32) error {
+	if ads < 10 || ads > 600 {
+		// PubSub service returns Unknown.
+		return grpc.Errorf(codes.Unknown, "bad ack_deadline_seconds: %d", ads)
+	}
+	return nil
+}
+
+const (
+	minMessageRetentionDuration = 10 * time.Minute
+	maxMessageRetentionDuration = 168 * time.Hour
+)
+
+var defaultMessageRetentionDuration = ptypes.DurationProto(maxMessageRetentionDuration)
+
+func checkMRD(pmrd *durpb.Duration) error {
+	mrd, err := ptypes.Duration(pmrd)
+	if err != nil || mrd < minMessageRetentionDuration || mrd > maxMessageRetentionDuration {
+		return grpc.Errorf(codes.InvalidArgument, "bad message_retention_duration %+v", pmrd)
+	}
+	return nil
+}
+
+func (s *gServer) GetSubscription(_ context.Context, req *pb.GetSubscriptionRequest) (*pb.Subscription, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if sub := s.subs[req.Subscription]; sub != nil {
+		return sub.proto, nil
+	}
+	return nil, grpc.Errorf(codes.NotFound, "subscription %q", req.Subscription)
+}
+
+func (s *gServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscriptionRequest) (*pb.Subscription, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	sub := s.subs[req.Subscription.Name]
+	if sub == nil {
+		return nil, grpc.Errorf(codes.NotFound, "subscription %q", req.Subscription.Name)
+	}
+
+	sub.topic.mu.Lock()
+	defer sub.topic.mu.Unlock()
+	for _, path := range req.UpdateMask.Paths {
+		switch path {
+		case "push_config":
+			sub.proto.PushConfig = req.Subscription.PushConfig
+
+		case "ack_deadline_seconds":
+			a := req.Subscription.AckDeadlineSeconds
+			if err := checkAckDeadline(a); err != nil {
+				return nil, err
+			}
+			sub.proto.AckDeadlineSeconds = a
+
+		case "retain_acked_messages":
+			sub.proto.RetainAckedMessages = req.Subscription.RetainAckedMessages
+
+		case "message_retention_duration":
+			if err := checkMRD(req.Subscription.MessageRetentionDuration); err != nil {
+				return nil, err
+			}
+			sub.proto.MessageRetentionDuration = req.Subscription.MessageRetentionDuration
+
+			// TODO(jba): labels
+		default:
+			return nil, grpc.Errorf(codes.InvalidArgument, "unknown field name %q", path)
+		}
+	}
+	return sub.proto, nil
+}
+
+func (s *gServer) ListSubscriptions(_ context.Context, req *pb.ListSubscriptionsRequest) (*pb.ListSubscriptionsResponse, error) {
+	var names []string
+	for name := range s.subs {
+		if strings.HasPrefix(name, req.Project) {
+			names = append(names, name)
+		}
+	}
+	sort.Strings(names)
+	from, to, nextToken, err := testutil.PageBounds(int(req.PageSize), req.PageToken, len(names))
+	if err != nil {
+		return nil, err
+	}
+	res := &pb.ListSubscriptionsResponse{NextPageToken: nextToken}
+	for i := from; i < to; i++ {
+		res.Subscriptions = append(res.Subscriptions, s.subs[names[i]].proto)
+	}
+	return res, nil
+}
+
+func (s *gServer) DeleteSubscription(_ context.Context, req *pb.DeleteSubscriptionRequest) (*emptypb.Empty, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	sub := s.subs[req.Subscription]
+	if sub == nil {
+		return nil, grpc.Errorf(codes.NotFound, "subscription %q", req.Subscription)
+	}
+	sub.stop()
+	delete(s.subs, req.Subscription)
+	sub.topic.deleteSub(sub)
+	return &emptypb.Empty{}, nil
+}
+
 type topic struct {
 	mu    sync.Mutex
 	proto *pb.Topic
@@ -194,9 +339,48 @@ type subscription struct {
 	mu         *sync.Mutex
 	proto      *pb.Subscription
 	ackTimeout time.Duration
+	msgs       map[string]*message // unacked messages by message ID
 	done       chan struct{}
+}
+
+func newSubscription(t *topic, mu *sync.Mutex, ps *pb.Subscription) *subscription {
+	return &subscription{
+		topic:      t,
+		mu:         mu,
+		proto:      ps,
+		ackTimeout: 10 * time.Second,
+		msgs:       map[string]*message{},
+		done:       make(chan struct{}),
+	}
+}
+
+func (s *subscription) start(wg *sync.WaitGroup) {
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			select {
+			case <-s.done:
+				return
+			case <-time.After(1 * time.Second):
+				s.deliver()
+			}
+		}
+	}()
 }
 
 func (s *subscription) stop() {
 	close(s.done)
+}
+
+func (s *subscription) deliver() {
+}
+
+type message struct {
+	proto       *pb.ReceivedMessage
+	publishTime time.Time
+	ackDeadline time.Time
+	deliveries  *int
+	acks        *int
+	streamIndex int // index of stream that currently owns msg, for round-robin delivery
 }
