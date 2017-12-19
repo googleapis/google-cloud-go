@@ -15,12 +15,11 @@
 package pstest
 
 import (
-	"context"
 	"fmt"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
-
+	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 )
@@ -121,6 +120,36 @@ func TestSubscriptions(t *testing.T) {
 	}
 	if got, want := len(server.gServer.subs), 0; got != want {
 		t.Fatalf("got %d subscriptions, want %d", got, want)
+	}
+}
+
+func TestPublish(t *testing.T) {
+	s, err := NewServer()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var ids []string
+	for i := 0; i < 3; i++ {
+		id, err := s.Publish("t", []byte("hello"), nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		ids = append(ids, id)
+	}
+	s.Wait()
+	ms := s.Messages()
+	if got, want := len(ms), len(ids); got != want {
+		t.Errorf("got %d messages, want %d", got, want)
+	}
+	for i, id := range ids {
+		if got, want := ms[i].ID, id; got != want {
+			t.Errorf("got %s, want %s", got, want)
+		}
+	}
+
+	m := s.Message(ids[1])
+	if m == nil {
+		t.Error("got nil, want a message")
 	}
 }
 

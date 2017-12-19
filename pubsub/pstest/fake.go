@@ -16,6 +16,7 @@
 package pstest
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 	"sync"
@@ -71,6 +72,22 @@ func NewServer() (*Server, error) {
 	return s, nil
 }
 
+// Publish behaves as if the Publish RPC was called with a message with the given
+// data and attrs. It returns the ID of the message.
+// The topic will be created if it doesn't exist.
+func (s *Server) Publish(topic string, data []byte, attrs map[string]string) (string, error) {
+	_, _ = s.gServer.CreateTopic(nil, &pb.Topic{Name: topic})
+	req := &pb.PublishRequest{
+		Topic:    topic,
+		Messages: []*pb.PubsubMessage{{Data: data, Attributes: attrs}},
+	}
+	res, err := s.gServer.Publish(nil, req)
+	if err != nil {
+		return "", err
+	}
+	return res.MessageIds[0], nil
+}
+
 // A Message is a message that was published to the server.
 type Message struct {
 	ID          string
@@ -83,6 +100,38 @@ type Message struct {
 	// protected by server mutex
 	deliveries int
 	acks       int
+}
+
+// Messages returns information about all messages ever published.
+func (s *Server) Messages() []*Message {
+	s.gServer.mu.Lock()
+	defer s.gServer.mu.Unlock()
+
+	var msgs []*Message
+	for _, m := range s.msgs {
+		m.Deliveries = m.deliveries
+		m.Acks = m.acks
+		msgs = append(msgs, m)
+	}
+	return msgs
+}
+
+// Message returns the message with the given ID, or nil if no message
+// with that ID was published.
+func (s *Server) Message(id string) *Message {
+	s.gServer.mu.Lock()
+	defer s.gServer.mu.Unlock()
+
+	m := s.msgsByID[id]
+	if m != nil {
+		m.Deliveries = m.deliveries
+		m.Acks = m.acks
+	}
+	return m
+}
+
+func (s *Server) Wait() {
+	s.gServer.wg.Wait()
 }
 
 func (s *gServer) CreateTopic(_ context.Context, t *pb.Topic) (*pb.Topic, error) {
@@ -310,6 +359,42 @@ func (s *gServer) DeleteSubscription(_ context.Context, req *pb.DeleteSubscripti
 	return &emptypb.Empty{}, nil
 }
 
+func (s *gServer) Publish(_ context.Context, req *pb.PublishRequest) (*pb.PublishResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if req.Topic == "" {
+		return nil, grpc.Errorf(codes.InvalidArgument, "missing topic")
+	}
+	top := s.topics[req.Topic]
+	if top == nil {
+		return nil, grpc.Errorf(codes.NotFound, "topic %q", req.Topic)
+	}
+	var ids []string
+	for _, pm := range req.Messages {
+		id := fmt.Sprintf("m%d", s.nextID)
+		s.nextID++
+		pm.MessageId = id
+		pubTime := now()
+		tsPubTime, err := ptypes.TimestampProto(pubTime)
+		if err != nil {
+			return nil, grpc.Errorf(codes.Internal, err.Error())
+		}
+		pm.PublishTime = tsPubTime
+		m := &Message{
+			ID:          id,
+			Data:        pm.Data,
+			Attributes:  pm.Attributes,
+			PublishTime: pubTime,
+		}
+		top.publish(pm, m)
+		ids = append(ids, id)
+		s.msgs = append(s.msgs, m)
+		s.msgsByID[id] = m
+	}
+	return &pb.PublishResponse{MessageIds: ids}, nil
+}
+
 type topic struct {
 	mu    sync.Mutex
 	proto *pb.Topic
@@ -332,6 +417,21 @@ func (t *topic) stop() {
 
 func (t *topic) deleteSub(sub *subscription) {
 	delete(t.subs, sub.proto.Name)
+}
+
+func (t *topic) publish(pm *pb.PubsubMessage, m *Message) {
+	for _, s := range t.subs {
+		s.msgs[pm.MessageId] = &message{
+			publishTime: m.PublishTime,
+			proto: &pb.ReceivedMessage{
+				AckId:   pm.MessageId,
+				Message: pm,
+			},
+			deliveries:  &m.deliveries,
+			acks:        &m.acks,
+			streamIndex: -1,
+		}
+	}
 }
 
 type subscription struct {
