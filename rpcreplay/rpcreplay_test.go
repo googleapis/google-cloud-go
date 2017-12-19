@@ -19,9 +19,9 @@ import (
 	"io"
 	"testing"
 
-	ipb "cloud.google.com/go/internal/rpcreplay/proto/intstore"
-	rpb "cloud.google.com/go/internal/rpcreplay/proto/rpcreplay"
 	"cloud.google.com/go/internal/testutil"
+	ipb "cloud.google.com/go/rpcreplay/proto/intstore"
+	rpb "cloud.google.com/go/rpcreplay/proto/rpcreplay"
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
