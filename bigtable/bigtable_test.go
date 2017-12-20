@@ -54,6 +54,29 @@ func TestPrefix(t *testing.T) {
 	}
 }
 
+func TestApplyErrors(t *testing.T) {
+	ctx := context.Background()
+	table := &Table{
+		c: &Client{
+			project:  "P",
+			instance: "I",
+		},
+		table: "t",
+	}
+	f := ColumnFilter("C")
+	m := NewMutation()
+	m.DeleteRow()
+	// Test nested conditional mutations.
+	cm := NewCondMutation(f, NewCondMutation(f, m, nil), nil)
+	if err := table.Apply(ctx, "x", cm); err == nil {
+		t.Error("got nil, want error")
+	}
+	cm = NewCondMutation(f, nil, NewCondMutation(f, m, nil))
+	if err := table.Apply(ctx, "x", cm); err == nil {
+		t.Error("got nil, want error")
+	}
+}
+
 func TestClientIntegration(t *testing.T) {
 	start := time.Now()
 	lastCheckpoint := start

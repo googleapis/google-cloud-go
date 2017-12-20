@@ -486,9 +486,15 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 		PredicateFilter: m.cond.proto(),
 	}
 	if m.mtrue != nil {
+		if m.mtrue.cond != nil {
+			return errors.New("bigtable: conditional mutations cannot be nested")
+		}
 		req.TrueMutations = m.mtrue.ops
 	}
 	if m.mfalse != nil {
+		if m.mfalse.cond != nil {
+			return errors.New("bigtable: conditional mutations cannot be nested")
+		}
 		req.FalseMutations = m.mfalse.ops
 	}
 	if mutationsAreRetryable(req.TrueMutations) && mutationsAreRetryable(req.FalseMutations) {
