@@ -246,13 +246,101 @@ func (s *mockMetricServer) CreateTimeSeries(ctx context.Context, req *monitoring
 	return s.resps[0].(*emptypb.Empty), nil
 }
 
+type mockUptimeCheckServer struct {
+	// Embed for forward compatibility.
+	// Tests will keep working if more methods are added
+	// in the future.
+	monitoringpb.UptimeCheckServiceServer
+
+	reqs []proto.Message
+
+	// If set, all calls return this error.
+	err error
+
+	// responses to return if err == nil
+	resps []proto.Message
+}
+
+func (s *mockUptimeCheckServer) ListUptimeCheckConfigs(ctx context.Context, req *monitoringpb.ListUptimeCheckConfigsRequest) (*monitoringpb.ListUptimeCheckConfigsResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*monitoringpb.ListUptimeCheckConfigsResponse), nil
+}
+
+func (s *mockUptimeCheckServer) GetUptimeCheckConfig(ctx context.Context, req *monitoringpb.GetUptimeCheckConfigRequest) (*monitoringpb.UptimeCheckConfig, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*monitoringpb.UptimeCheckConfig), nil
+}
+
+func (s *mockUptimeCheckServer) CreateUptimeCheckConfig(ctx context.Context, req *monitoringpb.CreateUptimeCheckConfigRequest) (*monitoringpb.UptimeCheckConfig, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*monitoringpb.UptimeCheckConfig), nil
+}
+
+func (s *mockUptimeCheckServer) UpdateUptimeCheckConfig(ctx context.Context, req *monitoringpb.UpdateUptimeCheckConfigRequest) (*monitoringpb.UptimeCheckConfig, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*monitoringpb.UptimeCheckConfig), nil
+}
+
+func (s *mockUptimeCheckServer) DeleteUptimeCheckConfig(ctx context.Context, req *monitoringpb.DeleteUptimeCheckConfigRequest) (*emptypb.Empty, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*emptypb.Empty), nil
+}
+
+func (s *mockUptimeCheckServer) ListUptimeCheckIps(ctx context.Context, req *monitoringpb.ListUptimeCheckIpsRequest) (*monitoringpb.ListUptimeCheckIpsResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*monitoringpb.ListUptimeCheckIpsResponse), nil
+}
+
 // clientOpt is the option tests should use to connect to the test server.
 // It is initialized by TestMain.
 var clientOpt option.ClientOption
 
 var (
-	mockGroup  mockGroupServer
-	mockMetric mockMetricServer
+	mockGroup       mockGroupServer
+	mockMetric      mockMetricServer
+	mockUptimeCheck mockUptimeCheckServer
 )
 
 func TestMain(m *testing.M) {
@@ -261,6 +349,7 @@ func TestMain(m *testing.M) {
 	serv := grpc.NewServer()
 	monitoringpb.RegisterGroupServiceServer(serv, &mockGroup)
 	monitoringpb.RegisterMetricServiceServer(serv, &mockMetric)
+	monitoringpb.RegisterUptimeCheckServiceServer(serv, &mockUptimeCheck)
 
 	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
@@ -1218,4 +1307,381 @@ func TestMetricServiceCreateTimeSeriesError(t *testing.T) {
 	} else if c := st.Code(); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+}
+func TestUptimeCheckServiceListUptimeCheckConfigs(t *testing.T) {
+	var nextPageToken string = ""
+	var uptimeCheckConfigsElement *monitoringpb.UptimeCheckConfig = &monitoringpb.UptimeCheckConfig{}
+	var uptimeCheckConfigs = []*monitoringpb.UptimeCheckConfig{uptimeCheckConfigsElement}
+	var expectedResponse = &monitoringpb.ListUptimeCheckConfigsResponse{
+		NextPageToken:      nextPageToken,
+		UptimeCheckConfigs: uptimeCheckConfigs,
+	}
+
+	mockUptimeCheck.err = nil
+	mockUptimeCheck.reqs = nil
+
+	mockUptimeCheck.resps = append(mockUptimeCheck.resps[:0], expectedResponse)
+
+	var formattedParent string = UptimeCheckProjectPath("[PROJECT]")
+	var request = &monitoringpb.ListUptimeCheckConfigsRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewUptimeCheckClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListUptimeCheckConfigs(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockUptimeCheck.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.UptimeCheckConfigs[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestUptimeCheckServiceListUptimeCheckConfigsError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockUptimeCheck.err = gstatus.Error(errCode, "test error")
+
+	var formattedParent string = UptimeCheckProjectPath("[PROJECT]")
+	var request = &monitoringpb.ListUptimeCheckConfigsRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewUptimeCheckClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListUptimeCheckConfigs(context.Background(), request).Next()
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestUptimeCheckServiceGetUptimeCheckConfig(t *testing.T) {
+	var name2 string = "name2-1052831874"
+	var displayName string = "displayName1615086568"
+	var expectedResponse = &monitoringpb.UptimeCheckConfig{
+		Name:        name2,
+		DisplayName: displayName,
+	}
+
+	mockUptimeCheck.err = nil
+	mockUptimeCheck.reqs = nil
+
+	mockUptimeCheck.resps = append(mockUptimeCheck.resps[:0], expectedResponse)
+
+	var formattedName string = UptimeCheckUptimeCheckConfigPath("[PROJECT]", "[UPTIME_CHECK_CONFIG]")
+	var request = &monitoringpb.GetUptimeCheckConfigRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewUptimeCheckClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetUptimeCheckConfig(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockUptimeCheck.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestUptimeCheckServiceGetUptimeCheckConfigError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockUptimeCheck.err = gstatus.Error(errCode, "test error")
+
+	var formattedName string = UptimeCheckUptimeCheckConfigPath("[PROJECT]", "[UPTIME_CHECK_CONFIG]")
+	var request = &monitoringpb.GetUptimeCheckConfigRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewUptimeCheckClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetUptimeCheckConfig(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestUptimeCheckServiceCreateUptimeCheckConfig(t *testing.T) {
+	var name string = "name3373707"
+	var displayName string = "displayName1615086568"
+	var expectedResponse = &monitoringpb.UptimeCheckConfig{
+		Name:        name,
+		DisplayName: displayName,
+	}
+
+	mockUptimeCheck.err = nil
+	mockUptimeCheck.reqs = nil
+
+	mockUptimeCheck.resps = append(mockUptimeCheck.resps[:0], expectedResponse)
+
+	var formattedParent string = UptimeCheckProjectPath("[PROJECT]")
+	var uptimeCheckConfig *monitoringpb.UptimeCheckConfig = &monitoringpb.UptimeCheckConfig{}
+	var request = &monitoringpb.CreateUptimeCheckConfigRequest{
+		Parent:            formattedParent,
+		UptimeCheckConfig: uptimeCheckConfig,
+	}
+
+	c, err := NewUptimeCheckClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateUptimeCheckConfig(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockUptimeCheck.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestUptimeCheckServiceCreateUptimeCheckConfigError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockUptimeCheck.err = gstatus.Error(errCode, "test error")
+
+	var formattedParent string = UptimeCheckProjectPath("[PROJECT]")
+	var uptimeCheckConfig *monitoringpb.UptimeCheckConfig = &monitoringpb.UptimeCheckConfig{}
+	var request = &monitoringpb.CreateUptimeCheckConfigRequest{
+		Parent:            formattedParent,
+		UptimeCheckConfig: uptimeCheckConfig,
+	}
+
+	c, err := NewUptimeCheckClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateUptimeCheckConfig(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestUptimeCheckServiceUpdateUptimeCheckConfig(t *testing.T) {
+	var name string = "name3373707"
+	var displayName string = "displayName1615086568"
+	var expectedResponse = &monitoringpb.UptimeCheckConfig{
+		Name:        name,
+		DisplayName: displayName,
+	}
+
+	mockUptimeCheck.err = nil
+	mockUptimeCheck.reqs = nil
+
+	mockUptimeCheck.resps = append(mockUptimeCheck.resps[:0], expectedResponse)
+
+	var uptimeCheckConfig *monitoringpb.UptimeCheckConfig = &monitoringpb.UptimeCheckConfig{}
+	var request = &monitoringpb.UpdateUptimeCheckConfigRequest{
+		UptimeCheckConfig: uptimeCheckConfig,
+	}
+
+	c, err := NewUptimeCheckClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateUptimeCheckConfig(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockUptimeCheck.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestUptimeCheckServiceUpdateUptimeCheckConfigError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockUptimeCheck.err = gstatus.Error(errCode, "test error")
+
+	var uptimeCheckConfig *monitoringpb.UptimeCheckConfig = &monitoringpb.UptimeCheckConfig{}
+	var request = &monitoringpb.UpdateUptimeCheckConfigRequest{
+		UptimeCheckConfig: uptimeCheckConfig,
+	}
+
+	c, err := NewUptimeCheckClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateUptimeCheckConfig(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestUptimeCheckServiceDeleteUptimeCheckConfig(t *testing.T) {
+	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
+
+	mockUptimeCheck.err = nil
+	mockUptimeCheck.reqs = nil
+
+	mockUptimeCheck.resps = append(mockUptimeCheck.resps[:0], expectedResponse)
+
+	var formattedName string = UptimeCheckUptimeCheckConfigPath("[PROJECT]", "[UPTIME_CHECK_CONFIG]")
+	var request = &monitoringpb.DeleteUptimeCheckConfigRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewUptimeCheckClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteUptimeCheckConfig(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockUptimeCheck.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestUptimeCheckServiceDeleteUptimeCheckConfigError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockUptimeCheck.err = gstatus.Error(errCode, "test error")
+
+	var formattedName string = UptimeCheckUptimeCheckConfigPath("[PROJECT]", "[UPTIME_CHECK_CONFIG]")
+	var request = &monitoringpb.DeleteUptimeCheckConfigRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewUptimeCheckClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteUptimeCheckConfig(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
+func TestUptimeCheckServiceListUptimeCheckIps(t *testing.T) {
+	var nextPageToken string = ""
+	var uptimeCheckIpsElement *monitoringpb.UptimeCheckIp = &monitoringpb.UptimeCheckIp{}
+	var uptimeCheckIps = []*monitoringpb.UptimeCheckIp{uptimeCheckIpsElement}
+	var expectedResponse = &monitoringpb.ListUptimeCheckIpsResponse{
+		NextPageToken:  nextPageToken,
+		UptimeCheckIps: uptimeCheckIps,
+	}
+
+	mockUptimeCheck.err = nil
+	mockUptimeCheck.reqs = nil
+
+	mockUptimeCheck.resps = append(mockUptimeCheck.resps[:0], expectedResponse)
+
+	var request *monitoringpb.ListUptimeCheckIpsRequest = &monitoringpb.ListUptimeCheckIpsRequest{}
+
+	c, err := NewUptimeCheckClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListUptimeCheckIps(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockUptimeCheck.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.UptimeCheckIps[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestUptimeCheckServiceListUptimeCheckIpsError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockUptimeCheck.err = gstatus.Error(errCode, "test error")
+
+	var request *monitoringpb.ListUptimeCheckIpsRequest = &monitoringpb.ListUptimeCheckIpsRequest{}
+
+	c, err := NewUptimeCheckClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListUptimeCheckIps(context.Background(), request).Next()
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
 }

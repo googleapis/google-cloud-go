@@ -19,10 +19,10 @@ package spanner
 import (
 	"bytes"
 	"io"
+	"log"
 	"sync/atomic"
 	"time"
 
-	log "github.com/golang/glog"
 	proto "github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	"golang.org/x/net/context"
@@ -47,6 +47,7 @@ func errEarlyReadEnd() error {
 // Cloud Spanner.
 func stream(ctx context.Context, rpc func(ct context.Context, resumeToken []byte) (streamingReceiver, error), setTimestamp func(time.Time), release func(error)) *RowIterator {
 	ctx, cancel := context.WithCancel(ctx)
+	ctx = traceStartSpan(ctx, "cloud.google.com/go/spanner.RowIterator")
 	return &RowIterator{
 		streamd:      newResumableStreamDecoder(ctx, rpc),
 		rowd:         &partialResultSetDecoder{},
@@ -125,6 +126,9 @@ func (r *RowIterator) Do(f func(r *Row) error) error {
 
 // Stop terminates the iteration. It should be called after every iteration.
 func (r *RowIterator) Stop() {
+	if r.streamd != nil {
+		defer traceEndSpan(r.streamd.ctx, r.err)
+	}
 	if r.cancel != nil {
 		r.cancel()
 	}
@@ -441,7 +445,7 @@ func (d *resumableStreamDecoder) next() bool {
 			return true
 
 		default:
-			log.Errorf("Unexpected resumableStreamDecoder.state: %v", d.state)
+			log.Printf("Unexpected resumableStreamDecoder.state: %v", d.state)
 			return false
 		}
 	}
@@ -486,7 +490,9 @@ func (d *resumableStreamDecoder) resetBackOff() {
 
 // doBackoff does an exponential backoff sleep.
 func (d *resumableStreamDecoder) doBackOff() {
-	ticker := time.NewTicker(d.backoff.delay(d.retryCount))
+	delay := d.backoff.delay(d.retryCount)
+	tracePrintf(d.ctx, nil, "Backing off stream read for %s", delay)
+	ticker := time.NewTicker(delay)
 	defer ticker.Stop()
 	d.retryCount++
 	select {

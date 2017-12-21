@@ -24,7 +24,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"cloud.google.com/go/civil"
-	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
 
 	bq "google.golang.org/api/bigquery/v2"
@@ -790,12 +789,8 @@ func TestStructLoader(t *testing.T) {
 		Nested: nested{NestS: "nested", NestI: 17},
 		Tagged: "z",
 	}
-	if !testutil.Equal(&ts1, want, cmp.AllowUnexported(testStruct1{})) {
-		t.Errorf("got %+v, want %+v", pretty.Value(ts1), pretty.Value(*want))
-		d, _, err := pretty.Diff(*want, ts1)
-		if err == nil {
-			t.Logf("diff:\n%s", d)
-		}
+	if diff := testutil.Diff(&ts1, want, cmp.AllowUnexported(testStruct1{})); diff != "" {
+		t.Error(diff)
 	}
 
 	// Test pointers to nested structs.
@@ -805,8 +800,8 @@ func TestStructLoader(t *testing.T) {
 		t.Fatal(err)
 	}
 	want2 := &nestedPtr{Nested: &nested{NestS: "nested", NestI: 17}}
-	if !testutil.Equal(&np, want2) {
-		t.Errorf("got %+v, want %+v", pretty.Value(np), pretty.Value(*want2))
+	if diff := testutil.Diff(&np, want2); diff != "" {
+		t.Error(diff)
 	}
 
 	// Existing values should be reused.
@@ -815,8 +810,8 @@ func TestStructLoader(t *testing.T) {
 	if err := load(&np, schema2, testValues); err != nil {
 		t.Fatal(err)
 	}
-	if !testutil.Equal(&np, want2) {
-		t.Errorf("got %+v, want %+v", pretty.Value(np), pretty.Value(*want2))
+	if diff := testutil.Diff(&np, want2); diff != "" {
+		t.Error(diff)
 	}
 	if np.Nested != nst {
 		t.Error("nested struct pointers not equal")
@@ -860,10 +855,9 @@ func TestStructLoaderRepeated(t *testing.T) {
 		LongNums:  [...]int{1, 2, 3, 0, 0},
 		Nested:    []*nested{{"x", 1}, {"y", 2}},
 	}
-	if !testutil.Equal(r1, want) {
-		t.Errorf("got %+v, want %+v", pretty.Value(r1), pretty.Value(want))
+	if diff := testutil.Diff(r1, want); diff != "" {
+		t.Error(diff)
 	}
-
 	r2 := repStruct{
 		Nums:     []int{-1, -2, -3, -4, -5},    // truncated to zero and appended to
 		LongNums: [...]int{-1, -2, -3, -4, -5}, // unset elements are zeroed
@@ -871,8 +865,8 @@ func TestStructLoaderRepeated(t *testing.T) {
 	if err := load(&r2, repSchema, repValues); err != nil {
 		t.Fatal(err)
 	}
-	if !testutil.Equal(r2, want) {
-		t.Errorf("got %+v, want %+v", pretty.Value(r2), pretty.Value(want))
+	if diff := testutil.Diff(r2, want); diff != "" {
+		t.Error(diff)
 	}
 	if got, want := cap(r2.Nums), 5; got != want {
 		t.Errorf("cap(r2.Nums) = %d, want %d", got, want)
@@ -883,13 +877,12 @@ func TestStructLoaderRepeated(t *testing.T) {
 	if err := load(&r3, repSchema, repValues); err != nil {
 		t.Fatal(err)
 	}
-	if !testutil.Equal(r3, want) {
-		t.Errorf("got %+v, want %+v", pretty.Value(r3), pretty.Value(want))
+	if diff := testutil.Diff(r3, want); diff != "" {
+		t.Error(diff)
 	}
 	if got, want := cap(r3.Nums), 3; got != want {
 		t.Errorf("cap(r3.Nums) = %d, want %d", got, want)
 	}
-
 }
 
 func TestStructLoaderOverflow(t *testing.T) {
@@ -922,8 +915,8 @@ func TestStructLoaderFieldOverlap(t *testing.T) {
 		t.Fatal(err)
 	}
 	want1 := S1{I: 7}
-	if !testutil.Equal(s1, want1) {
-		t.Errorf("got %+v, want %+v", pretty.Value(s1), pretty.Value(want1))
+	if diff := testutil.Diff(s1, want1); diff != "" {
+		t.Error(diff)
 	}
 
 	// It's even valid to have no overlapping fields at all.
@@ -934,8 +927,8 @@ func TestStructLoaderFieldOverlap(t *testing.T) {
 		t.Fatal(err)
 	}
 	want2 := S2{}
-	if !testutil.Equal(s2, want2) {
-		t.Errorf("got %+v, want %+v", pretty.Value(s2), pretty.Value(want2))
+	if diff := testutil.Diff(s2, want2); diff != "" {
+		t.Error(diff)
 	}
 }
 
