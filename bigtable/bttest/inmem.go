@@ -665,7 +665,7 @@ func (s *server) MutateRow(ctx context.Context, req *btpb.MutateRowRequest) (*bt
 		return nil, status.Errorf(codes.NotFound, "table %q not found", req.TableName)
 	}
 	fs := tbl.columnFamilies()
-	r, _ := tbl.mutableRow(string(req.RowKey))
+	r, _ := tbl.mutableRow(string(req.RowKey), true)
 	r.mu.Lock()
 	defer tbl.resortRowIndex() // Make sure the row lock is released before this grabs the table lock
 	defer r.mu.Unlock()
@@ -686,9 +686,13 @@ func (s *server) MutateRows(req *btpb.MutateRowsRequest, stream btpb.Bigtable_Mu
 
 	fs := tbl.columnFamilies()
 
-	defer tbl.resortRowIndex()
+	var newRows []*row
 	for i, entry := range req.Entries {
-		r, _ := tbl.mutableRow(string(entry.RowKey))
+		r, isNew := tbl.mutableRow(string(entry.RowKey), false)
+		if isNew {
+			newRows = append(newRows, r)
+		}
+
 		r.mu.Lock()
 		code, msg := int32(codes.OK), ""
 		if err := applyMutations(tbl, r, entry.Mutations, fs); err != nil {
@@ -702,6 +706,12 @@ func (s *server) MutateRows(req *btpb.MutateRowsRequest, stream btpb.Bigtable_Mu
 		r.mu.Unlock()
 	}
 	stream.Send(res)
+	tbl.mu.Lock()
+	if len(newRows) > 0 {
+		tbl.linkNewRowsUnsafe(newRows)
+	}
+	tbl.resortRowIndexUnsafe()
+	tbl.mu.Unlock()
 	return nil
 }
 
@@ -716,7 +726,7 @@ func (s *server) CheckAndMutateRow(ctx context.Context, req *btpb.CheckAndMutate
 
 	fs := tbl.columnFamilies()
 
-	r, _ := tbl.mutableRow(string(req.RowKey))
+	r, _ := tbl.mutableRow(string(req.RowKey), true)
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -870,7 +880,7 @@ func (s *server) ReadModifyWriteRow(ctx context.Context, req *btpb.ReadModifyWri
 	fs := tbl.columnFamilies()
 
 	rowKey := string(req.RowKey)
-	r, isNewRow := tbl.mutableRow(rowKey)
+	r, isNewRow := tbl.mutableRow(rowKey, true)
 	// This must be done before the row lock, acquired below, is released.
 	if isNewRow {
 		defer tbl.resortRowIndex()
@@ -1065,7 +1075,7 @@ func (t *table) columnFamilies() map[string]*columnFamily {
 	return cp
 }
 
-func (t *table) mutableRow(row string) (mutRow *row, isNewRow bool) {
+func (t *table) mutableRow(row string, linkNew bool) (mutRow *row, isNewRow bool) {
 	// Try fast path first.
 	t.mu.RLock()
 	r := t.rowIndex[row]
@@ -1080,7 +1090,9 @@ func (t *table) mutableRow(row string) (mutRow *row, isNewRow bool) {
 	if r == nil {
 		r = newRow(row)
 		t.rowIndex[row] = r
-		t.rows = append(t.rows, r)
+		if linkNew {
+			t.rows = append(t.rows, r)
+		}
 	}
 	t.mu.Unlock()
 	return r, true
@@ -1088,8 +1100,16 @@ func (t *table) mutableRow(row string) (mutRow *row, isNewRow bool) {
 
 func (t *table) resortRowIndex() {
 	t.mu.Lock()
-	sort.Sort(byRowKey(t.rows))
+	t.resortRowIndexUnsafe()
 	t.mu.Unlock()
+}
+
+func (t *table) resortRowIndexUnsafe() {
+	sort.Sort(byRowKey(t.rows))
+}
+
+func (t *table) linkNewRowsUnsafe(rows []*row) {
+	t.rows = append(t.rows, rows...)
 }
 
 func (t *table) gc() {
