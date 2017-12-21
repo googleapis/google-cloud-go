@@ -14,9 +14,11 @@
 
 /*
 Package rpcreplay supports the capture and replay of gRPC calls. Its main goal is
-to improve testing. Once one captures the calls of a test that runs against a real
-service, one has an "automatic mock" that can be replayed against the same test,
+to improve testing. Once you capture the calls of a test that runs against a real
+service, you have an "automatic mock" that can be replayed against the same test,
 yielding a unit test that is fast and flake-free.
+
+This package is EXPERIMENTAL and subject to change without notice.
 
 
 Recording
@@ -31,7 +33,7 @@ DialOptions to grpc.Dial:
     }()
     conn, err := grpc.Dial(serverAddress, rec.DialOptions()...)
 
-It's essential to close the Recorder when the interaction is finished.
+It is essential to close the Recorder when the interaction is finished.
 
 There is also a NewRecorderWriter function for capturing to an arbitrary
 io.Writer.
@@ -52,9 +54,9 @@ have to be as careful about the error returned from Close).
 Initial State
 
 A test might use random or time-sensitive values, for instance to create unique
-resources for isolation from other tests. The test therefore has initial values --
-the current time, a random seed -- that differ from run to run. You must record this
-initial state and re-establish it on replay.
+resources for isolation from other tests. The test therefore has initial values, such
+as the current time, or a random seed, that differ from run to run. You must record
+this initial state and re-establish it on replay.
 
 To record the initial state, serialize it into a []byte and pass it as the second
 argument to NewRecorder:
@@ -103,4 +105,4 @@ the order they were recorded. No attempt is made to match message contents.
 At present, this package does not record or replay stream headers and trailers, or
 the result of the CloseSend method.
 */
-package rpcreplay // import "cloud.google.com/go/internal/rpcreplay"
+package rpcreplay // import "cloud.google.com/go/rpcreplay"

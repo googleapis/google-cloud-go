@@ -600,7 +600,7 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 	}
 
 	// Test reading directly into a []Value.
-	valueLists, err := readAll(table.Read(ctx))
+	valueLists, schema, _, err := readAll(table.Read(ctx))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -609,6 +609,9 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 		var got []Value
 		if err := it.Next(&got); err != nil {
 			t.Fatal(err)
+		}
+		if !testutil.Equal(it.Schema, schema) {
+			t.Fatalf("got schema %v, want %v", it.Schema, schema)
 		}
 		want := []Value(vl)
 		if !testutil.Equal(got, want) {
@@ -954,7 +957,7 @@ func TestIntegration_Load(t *testing.T) {
 	if err := wait(ctx, job); err != nil {
 		t.Fatal(err)
 	}
-	checkRead(t, "reader load", table.Read(ctx), wantRows)
+	checkReadAndTotalRows(t, "reader load", table.Read(ctx), wantRows)
 
 }
 
@@ -1284,7 +1287,7 @@ func TestIntegration_ExtractExternal(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	checkRead(t, "external query", iter, wantRows)
+	checkReadAndTotalRows(t, "external query", iter, wantRows)
 
 	// Make a table pointing to the file, and query it.
 	// BigQuery does not allow a Table.Read on an external table.
@@ -1302,7 +1305,7 @@ func TestIntegration_ExtractExternal(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	checkRead(t, "external table", iter, wantRows)
+	checkReadAndTotalRows(t, "external table", iter, wantRows)
 
 	// While we're here, check that the table metadata is correct.
 	md, err := table.Metadata(ctx)
@@ -1466,18 +1469,27 @@ func newTable(t *testing.T, s Schema) *Table {
 }
 
 func checkRead(t *testing.T, msg string, it *RowIterator, want [][]Value) {
-	if msg2, ok := compareRead(it, want); !ok {
+	if msg2, ok := compareRead(it, want, false); !ok {
 		t.Errorf("%s: %s", msg, msg2)
 	}
 }
 
-func compareRead(it *RowIterator, want [][]Value) (msg string, ok bool) {
-	got, err := readAll(it)
+func checkReadAndTotalRows(t *testing.T, msg string, it *RowIterator, want [][]Value) {
+	if msg2, ok := compareRead(it, want, true); !ok {
+		t.Errorf("%s: %s", msg, msg2)
+	}
+}
+
+func compareRead(it *RowIterator, want [][]Value, compareTotalRows bool) (msg string, ok bool) {
+	got, _, totalRows, err := readAll(it)
 	if err != nil {
 		return err.Error(), false
 	}
 	if len(got) != len(want) {
 		return fmt.Sprintf("got %d rows, want %d", len(got), len(want)), false
+	}
+	if compareTotalRows && len(got) != int(totalRows) {
+		return fmt.Sprintf("got %d rows, but totalRows = %d", len(got), totalRows), false
 	}
 	sort.Sort(byCol0(got))
 	for i, r := range got {
@@ -1490,18 +1502,24 @@ func compareRead(it *RowIterator, want [][]Value) (msg string, ok bool) {
 	return "", true
 }
 
-func readAll(it *RowIterator) ([][]Value, error) {
-	var rows [][]Value
+func readAll(it *RowIterator) ([][]Value, Schema, uint64, error) {
+	var (
+		rows      [][]Value
+		schema    Schema
+		totalRows uint64
+	)
 	for {
 		var vals []Value
 		err := it.Next(&vals)
 		if err == iterator.Done {
-			return rows, nil
+			return rows, schema, totalRows, nil
 		}
 		if err != nil {
-			return nil, err
+			return nil, nil, 0, err
 		}
 		rows = append(rows, vals)
+		schema = it.Schema
+		totalRows = it.TotalRows
 	}
 }
 
