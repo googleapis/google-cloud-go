@@ -271,7 +271,7 @@ func TestDropRowRange(t *testing.T) {
 	}
 
 	doWrite()
-	tblSize := len(tbl.rows)
+	tblSize := tbl.rows.Len()
 	req := &btapb.DropRowRangeRequest{
 		Name:   tblInfo.Name,
 		Target: &btapb.DropRowRangeRequest_RowKeyPrefix{[]byte("AAA")},
@@ -279,7 +279,7 @@ func TestDropRowRange(t *testing.T) {
 	if _, err = s.DropRowRange(ctx, req); err != nil {
 		t.Fatalf("Dropping first range: %v", err)
 	}
-	got, want := len(tbl.rows), tblSize-count
+	got, want := tbl.rows.Len(), tblSize-count
 	if got != want {
 		t.Errorf("Row count after first drop: got %d (%v), want %d", got, tbl.rows, want)
 	}
@@ -291,7 +291,7 @@ func TestDropRowRange(t *testing.T) {
 	if _, err = s.DropRowRange(ctx, req); err != nil {
 		t.Fatalf("Dropping second range: %v", err)
 	}
-	got, want = len(tbl.rows), tblSize-(2*count)
+	got, want = tbl.rows.Len(), tblSize-(2*count)
 	if got != want {
 		t.Errorf("Row count after second drop: got %d (%v), want %d", got, tbl.rows, want)
 	}
@@ -303,7 +303,7 @@ func TestDropRowRange(t *testing.T) {
 	if _, err = s.DropRowRange(ctx, req); err != nil {
 		t.Fatalf("Dropping invalid range: %v", err)
 	}
-	got, want = len(tbl.rows), tblSize-(2*count)
+	got, want = tbl.rows.Len(), tblSize-(2*count)
 	if got != want {
 		t.Errorf("Row count after invalid drop: got %d (%v), want %d", got, tbl.rows, want)
 	}
@@ -315,7 +315,7 @@ func TestDropRowRange(t *testing.T) {
 	if _, err = s.DropRowRange(ctx, req); err != nil {
 		t.Fatalf("Dropping all data: %v", err)
 	}
-	got, want = len(tbl.rows), 0
+	got, want = tbl.rows.Len(), 0
 	if got != want {
 		t.Errorf("Row count after drop all: got %d, want %d", got, want)
 	}
@@ -331,13 +331,13 @@ func TestDropRowRange(t *testing.T) {
 	if _, err = s.DropRowRange(ctx, req); err != nil {
 		t.Fatalf("Dropping all data: %v", err)
 	}
-	got, want = len(tbl.rows), 0
+	got, want = tbl.rows.Len(), 0
 	if got != want {
 		t.Errorf("Row count after drop all: got %d, want %d", got, want)
 	}
 
 	doWrite()
-	got, want = len(tbl.rows), len(prefixes)
+	got, want = tbl.rows.Len(), len(prefixes)
 	if got != want {
 		t.Errorf("Row count after rewrite: got %d, want %d", got, want)
 	}
@@ -350,7 +350,7 @@ func TestDropRowRange(t *testing.T) {
 		t.Fatalf("Dropping range: %v", err)
 	}
 	doWrite()
-	got, want = len(tbl.rows), len(prefixes)
+	got, want = tbl.rows.Len(), len(prefixes)
 	if got != want {
 		t.Errorf("Row count after drop range: got %d, want %d", got, want)
 	}
@@ -364,6 +364,56 @@ type MockReadRowsServer struct {
 func (s *MockReadRowsServer) Send(resp *btpb.ReadRowsResponse) error {
 	s.responses = append(s.responses, resp)
 	return nil
+}
+
+func TestReadRows(t *testing.T) {
+	ctx := context.Background()
+	s := &server{
+		tables: make(map[string]*table),
+	}
+	newTbl := btapb.Table{
+		ColumnFamilies: map[string]*btapb.ColumnFamily{
+			"cf0": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{1}}},
+		},
+	}
+	tblInfo, err := s.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "cluster", TableId: "t", Table: &newTbl})
+	if err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+	mreq := &btpb.MutateRowRequest{
+		TableName: tblInfo.Name,
+		RowKey:    []byte("row"),
+		Mutations: []*btpb.Mutation{{
+			Mutation: &btpb.Mutation_SetCell_{&btpb.Mutation_SetCell{
+				FamilyName:      "cf0",
+				ColumnQualifier: []byte("col"),
+				TimestampMicros: 1000,
+				Value:           []byte{},
+			}},
+		}},
+	}
+	if _, err := s.MutateRow(ctx, mreq); err != nil {
+		t.Fatalf("Populating table: %v", err)
+	}
+
+	for _, rowset := range []*btpb.RowSet{
+		{RowKeys: [][]byte{[]byte("row")}},
+		{RowRanges: []*btpb.RowRange{{StartKey: &btpb.RowRange_StartKeyClosed{[]byte("")}}}},
+		{RowRanges: []*btpb.RowRange{{StartKey: &btpb.RowRange_StartKeyClosed{[]byte("r")}}}},
+		{RowRanges: []*btpb.RowRange{{
+			StartKey: &btpb.RowRange_StartKeyClosed{[]byte("")},
+			EndKey:   &btpb.RowRange_EndKeyOpen{[]byte("s")},
+		}}},
+	} {
+		mock := &MockReadRowsServer{}
+		req := &btpb.ReadRowsRequest{TableName: tblInfo.Name, Rows: rowset}
+		if err = s.ReadRows(req, mock); err != nil {
+			t.Fatalf("ReadRows error: %v", err)
+		}
+		if got, want := len(mock.responses), 1; got != want {
+			t.Errorf("%+v: response count: got %d, want %d", rowset, got, want)
+		}
+	}
 }
 
 func TestReadRowsOrder(t *testing.T) {
