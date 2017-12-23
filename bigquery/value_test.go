@@ -735,6 +735,7 @@ var (
 		{Name: "s2", Type: StringFieldType},
 		{Name: "by", Type: BytesFieldType},
 		{Name: "I", Type: IntegerFieldType},
+		{Name: "U", Type: IntegerFieldType},
 		{Name: "F", Type: FloatFieldType},
 		{Name: "B", Type: BooleanFieldType},
 		{Name: "TS", Type: TimestampFieldType},
@@ -753,7 +754,7 @@ var (
 	testTime      = civil.Time{7, 50, 22, 8}
 	testDateTime  = civil.DateTime{testDate, testTime}
 
-	testValues = []Value{"x", "y", []byte{1, 2, 3}, int64(7), 3.14, true,
+	testValues = []Value{"x", "y", []byte{1, 2, 3}, int64(7), int64(8), 3.14, true,
 		testTimestamp, testDate, testTime, testDateTime,
 		[]Value{"nested", int64(17)}, "z"}
 )
@@ -761,6 +762,7 @@ var (
 type testStruct1 struct {
 	B bool
 	I int
+	U uint16
 	times
 	S      string
 	S2     String
@@ -795,6 +797,7 @@ func TestStructLoader(t *testing.T) {
 	want := &testStruct1{
 		B:      true,
 		I:      7,
+		U:      8,
 		F:      3.14,
 		times:  times{TS: testTimestamp, T: testTime, D: testDate, DT: testDateTime},
 		S:      "x",
@@ -902,18 +905,25 @@ func TestStructLoaderRepeated(t *testing.T) {
 func TestStructLoaderOverflow(t *testing.T) {
 	type S struct {
 		I int16
+		U uint16
 		F float32
 	}
 	schema := Schema{
 		{Name: "I", Type: IntegerFieldType},
+		{Name: "U", Type: IntegerFieldType},
 		{Name: "F", Type: FloatFieldType},
 	}
 	var s S
-	if err := load(&s, schema, []Value{int64(math.MaxInt16 + 1), 0}); err == nil {
-		t.Error("int: got nil, want error")
-	}
-	if err := load(&s, schema, []Value{int64(0), math.MaxFloat32 * 2}); err == nil {
-		t.Error("float: got nil, want error")
+	z64 := int64(0)
+	for _, vals := range [][]Value{
+		{int64(math.MaxInt16 + 1), z64, 0},
+		{z64, int64(math.MaxInt32), 0},
+		{z64, int64(-1), 0},
+		{z64, z64, math.MaxFloat32 * 2},
+	} {
+		if err := load(&s, schema, vals); err == nil {
+			t.Errorf("%+v: got nil, want error", vals)
+		}
 	}
 }
 
