@@ -18,6 +18,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"math"
 	"reflect"
 	"strconv"
 	"time"
@@ -705,7 +706,12 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 		return strconv.ParseBool(val)
 	case TimestampFieldType:
 		f, err := strconv.ParseFloat(val, 64)
-		return Value(time.Unix(0, int64(f*1e9)).UTC()), err
+		if err != nil {
+			return nil, err
+		}
+		secs := math.Trunc(f)
+		nanos := (f - secs) * 1e9
+		return Value(time.Unix(int64(secs), int64(nanos)).UTC()), nil
 	case DateFieldType:
 		return civil.ParseDate(val)
 	case TimeFieldType:

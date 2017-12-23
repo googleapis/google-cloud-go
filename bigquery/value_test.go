@@ -88,6 +88,20 @@ func TestConvertTime(t *testing.T) {
 	}
 }
 
+func TestConvertSmallTimes(t *testing.T) {
+	for _, year := range []int{1600, 1066, 1} {
+		want := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
+		s := fmt.Sprintf("%.10f", float64(want.Unix()))
+		got, err := convertBasicType(s, TimestampFieldType)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !got.(time.Time).Equal(want) {
+			t.Errorf("got %v, want %v", got, want)
+		}
+	}
+}
+
 func TestConvertNullValues(t *testing.T) {
 	schema := []*FieldSchema{
 		{Type: StringFieldType},
