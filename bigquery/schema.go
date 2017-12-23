@@ -198,7 +198,7 @@ func inferFieldSchema(rt reflect.Type, nullable bool) (*FieldSchema, error) {
 	case typeOfDateTime:
 		return &FieldSchema{Required: !nullable, Type: DateTimeFieldType}, nil
 	}
-	if isSupportedIntType(rt) {
+	if isSupportedIntType(rt) || isSupportedUintType(rt) {
 		return &FieldSchema{Required: !nullable, Type: IntegerFieldType}, nil
 	}
 	switch rt.Kind() {
@@ -258,12 +258,22 @@ func inferFields(rt reflect.Type) (Schema, error) {
 	return s, nil
 }
 
-// isSupportedIntType reports whether t can be properly represented by the
-// BigQuery INTEGER/INT64 type.
+// isSupportedIntType reports whether t is an int type that can be properly
+// represented by the BigQuery INTEGER/INT64 type.
 func isSupportedIntType(t reflect.Type) bool {
 	switch t.Kind() {
-	case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int,
-		reflect.Uint8, reflect.Uint16, reflect.Uint32:
+	case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int:
+		return true
+	default:
+		return false
+	}
+}
+
+// isSupportedIntType reports whether t is a uint type that can be properly
+// represented by the BigQuery INTEGER/INT64 type.
+func isSupportedUintType(t reflect.Type) bool {
+	switch t.Kind() {
+	case reflect.Uint8, reflect.Uint16, reflect.Uint32:
 		return true
 	default:
 		return false

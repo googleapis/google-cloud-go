@@ -126,6 +126,18 @@ func setInt(v reflect.Value, x interface{}) error {
 	return nil
 }
 
+func setUint(v reflect.Value, x interface{}) error {
+	if x == nil {
+		return errNoNulls
+	}
+	xx := x.(int64)
+	if xx < 0 || v.OverflowUint(uint64(xx)) {
+		return fmt.Errorf("bigquery: value %v overflows struct field of type %v", xx, v.Type())
+	}
+	v.SetUint(uint64(xx))
+	return nil
+}
+
 func setFloat(v reflect.Value, x interface{}) error {
 	if x == nil {
 		return errNoNulls
@@ -261,7 +273,9 @@ func determineSetFunc(ftype reflect.Type, stype FieldType) setFunc {
 		}
 
 	case IntegerFieldType:
-		if isSupportedIntType(ftype) {
+		if isSupportedUintType(ftype) {
+			return setUint
+		} else if isSupportedIntType(ftype) {
 			return setInt
 		}
 
