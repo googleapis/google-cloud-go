@@ -366,6 +366,19 @@ func TestSingleUse(t *testing.T) {
 			t.Errorf("%d: SingleUse.ReadUsingIndex doesn't return expected timestamp: %v", i, err)
 		}
 	}
+
+	// Reading with limit.
+	su := client.Single()
+	const limit = 1
+	gotRows, err := readAll(su.ReadWithOptions(ctx, "Singers", KeySets(Key{1}, Key{3}, Key{4}),
+		[]string{"SingerId", "FirstName", "LastName"}, &ReadOptions{Limit: limit}))
+	if err != nil {
+		t.Errorf("SingleUse.ReadWithOptions returns error %v, want nil", err)
+	}
+	if got, want := len(gotRows), limit; got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+
 }
 
 // Test ReadOnlyTransaction. The testsuite is mostly like SingleUse, except it
