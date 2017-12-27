@@ -1242,6 +1242,48 @@ func TestQueryExpressions(t *testing.T) {
 	}
 }
 
+func TestQueryStats(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client, _, tearDown := prepare(ctx, t, singerDBStatements)
+	defer tearDown()
+
+	accounts := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+	if _, err := client.Apply(ctx, accounts, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
+	const sql = "SELECT Balance FROM Accounts"
+
+	qp, err := client.Single().AnalyzeQuery(ctx, Statement{sql, nil})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(qp.PlanNodes) == 0 {
+		t.Error("got zero plan nodes, expected at least one")
+	}
+
+	iter := client.Single().QueryWithStats(ctx, Statement{sql, nil})
+	defer iter.Stop()
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	if iter.QueryPlan == nil {
+		t.Error("got nil QueryPlan, expected one")
+	}
+	if iter.QueryStats == nil {
+		t.Error("got nil QueryStats, expected some")
+	}
+}
+
 func isNaN(x interface{}) bool {
 	f, ok := x.(float64)
 	if !ok {

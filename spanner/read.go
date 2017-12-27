@@ -23,10 +23,10 @@ import (
 	"sync/atomic"
 	"time"
 
+	"cloud.google.com/go/internal/protostruct"
 	proto "github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	"golang.org/x/net/context"
-
 	"google.golang.org/api/iterator"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
@@ -59,6 +59,14 @@ func stream(ctx context.Context, rpc func(ct context.Context, resumeToken []byte
 
 // RowIterator is an iterator over Rows.
 type RowIterator struct {
+	// The plan for the query. Available after RowIterator.Next returns iterator.Done
+	// if QueryWithStats was called.
+	QueryPlan *sppb.QueryPlan
+
+	// Execution statistics for the query. Available after RowIterator.Next returns iterator.Done
+	// if QueryWithStats was called.
+	QueryStats map[string]interface{}
+
 	streamd      *resumableStreamDecoder
 	rowd         *partialResultSetDecoder
 	setTimestamp func(time.Time)
@@ -76,7 +84,12 @@ func (r *RowIterator) Next() (*Row, error) {
 		return nil, r.err
 	}
 	for len(r.rows) == 0 && r.streamd.next() {
-		r.rows, r.err = r.rowd.add(r.streamd.get())
+		prs := r.streamd.get()
+		if prs.Stats != nil {
+			r.QueryPlan = prs.Stats.QueryPlan
+			r.QueryStats = protostruct.DecodeToMap(prs.Stats.QueryStats)
+		}
+		r.rows, r.err = r.rowd.add(prs)
 		if r.err != nil {
 			return nil, r.err
 		}
