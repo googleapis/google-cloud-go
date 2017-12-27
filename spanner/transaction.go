@@ -131,7 +131,40 @@ func (t *txReadOnly) ReadRow(ctx context.Context, table string, key Key, columns
 
 // Query executes a query against the database. It returns a RowIterator
 // for retrieving the resulting rows.
-func (t *txReadOnly) Query(ctx context.Context, statement Statement) (ri *RowIterator) {
+//
+// Query returns only row data, without a query plan or execution statistics.
+// Use QueryWithStats to get rows along with the plan and statistics.
+// Use AnalyzeQuery to get just the plan.
+func (t *txReadOnly) Query(ctx context.Context, statement Statement) *RowIterator {
+	return t.query(ctx, statement, sppb.ExecuteSqlRequest_NORMAL)
+}
+
+// Query executes a query against the database. It returns a RowIterator
+// for retrieving the resulting rows. The RowIterator will also be populated
+// with a query plan and execution statistics.
+func (t *txReadOnly) QueryWithStats(ctx context.Context, statement Statement) *RowIterator {
+	return t.query(ctx, statement, sppb.ExecuteSqlRequest_PROFILE)
+}
+
+// AnalyzeQuery returns the query plan for statement.
+func (t *txReadOnly) AnalyzeQuery(ctx context.Context, statement Statement) (*sppb.QueryPlan, error) {
+	iter := t.query(ctx, statement, sppb.ExecuteSqlRequest_PLAN)
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+	}
+	if iter.QueryPlan == nil {
+		return nil, spannerErrorf(codes.Internal, "query plan unavailable")
+	}
+	return iter.QueryPlan, nil
+}
+
+func (t *txReadOnly) query(ctx context.Context, statement Statement, mode sppb.ExecuteSqlRequest_QueryMode) (ri *RowIterator) {
 	ctx = traceStartSpan(ctx, "cloud.google.com/go/spanner.Query")
 	defer func() { traceEndSpan(ctx, ri.err) }()
 	var (
@@ -152,6 +185,7 @@ func (t *txReadOnly) Query(ctx context.Context, statement Statement) (ri *RowIte
 		Session:     sid,
 		Transaction: ts,
 		Sql:         statement.SQL,
+		QueryMode:   mode,
 	}
 	if err := statement.bindParams(req); err != nil {
 		return &RowIterator{err: err}
