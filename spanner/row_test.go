@@ -1684,9 +1684,36 @@ func TestToStruct(t *testing.T) {
 	err := row.ToStruct(&s[0])
 	if err != nil {
 		t.Errorf("row.ToStruct() returns error: %v, want nil", err)
-	}
-	if !testEqual(s[0], s[1]) {
+	} else if !testEqual(s[0], s[1]) {
 		t.Errorf("row.ToStruct() fetches struct %v, want %v", s[0], s[1])
+	}
+}
+
+func TestToStructEmbedded(t *testing.T) {
+	type (
+		S1 struct{ F1 string }
+		S2 struct {
+			S1
+			F2 string
+		}
+	)
+	r := Row{
+		[]*sppb.StructType_Field{
+			{"F1", stringType()},
+			{"F2", stringType()},
+		},
+		[]*proto3.Value{
+			stringProto("v1"),
+			stringProto("v2"),
+		},
+	}
+	var got S2
+	if err := r.ToStruct(&got); err != nil {
+		t.Fatal(err)
+	}
+	want := S2{S1: S1{F1: "v1"}, F2: "v2"}
+	if !testEqual(got, want) {
+		t.Errorf("got %+v, want %+v", got, want)
 	}
 }
 
