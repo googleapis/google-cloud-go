@@ -64,6 +64,8 @@ func loadMap(m map[string]Value, vals []Value, s Schema) {
 		val := vals[i]
 		var v interface{}
 		switch {
+		case val == nil:
+			v = val
 		case f.Schema == nil:
 			v = val
 		case !f.Repeated:
@@ -80,6 +82,7 @@ func loadMap(m map[string]Value, vals []Value, s Schema) {
 			}
 			v = vs
 		}
+
 		m[f.Name] = v
 	}
 }
@@ -168,9 +171,20 @@ func setString(v reflect.Value, x interface{}) error {
 
 func setBytes(v reflect.Value, x interface{}) error {
 	if x == nil {
-		return errNoNulls
+		v.SetBytes(nil)
+	} else {
+		v.SetBytes(x.([]byte))
 	}
-	v.SetBytes(x.([]byte))
+	return nil
+}
+
+func setNull(v reflect.Value, x interface{}, build func() interface{}) error {
+	if x == nil {
+		v.Set(reflect.Zero(v.Type()))
+	} else {
+		n := build()
+		v.Set(reflect.ValueOf(n))
+	}
 	return nil
 }
 
@@ -241,7 +255,7 @@ func compileToOps(structType reflect.Type, schema Schema) ([]structLoaderOp, err
 				return nil, err
 			}
 			op.setFunc = func(v reflect.Value, val interface{}) error {
-				return setNested(nested, v, val.([]Value))
+				return setNested(nested, v, val)
 			}
 		} else {
 			op.setFunc = determineSetFunc(t, schemaField.Type)
@@ -255,6 +269,17 @@ func compileToOps(structType reflect.Type, schema Schema) ([]structLoaderOp, err
 	return ops, nil
 }
 
+var (
+	typeOfNullInt64     = reflect.TypeOf(NullInt64{})
+	typeOfNullFloat64   = reflect.TypeOf(NullFloat64{})
+	typeOfNullBool      = reflect.TypeOf(NullBool{})
+	typeOfNullString    = reflect.TypeOf(NullString{})
+	typeOfNullTimestamp = reflect.TypeOf(NullTimestamp{})
+	typeOfNullDate      = reflect.TypeOf(NullDate{})
+	typeOfNullTime      = reflect.TypeOf(NullTime{})
+	typeOfNullDateTime  = reflect.TypeOf(NullDateTime{})
+)
+
 // determineSetFunc chooses the best function for setting a field of type ftype
 // to a value whose schema field type is stype. It returns nil if stype
 // is not assignable to ftype.
@@ -265,6 +290,13 @@ func determineSetFunc(ftype reflect.Type, stype FieldType) setFunc {
 	case StringFieldType:
 		if ftype.Kind() == reflect.String {
 			return setString
+		}
+		if ftype == typeOfNullString {
+			return func(v reflect.Value, x interface{}) error {
+				return setNull(v, x, func() interface{} {
+					return NullString{StringVal: x.(string), Valid: true}
+				})
+			}
 		}
 
 	case BytesFieldType:
@@ -278,36 +310,85 @@ func determineSetFunc(ftype reflect.Type, stype FieldType) setFunc {
 		} else if isSupportedIntType(ftype) {
 			return setInt
 		}
+		if ftype == typeOfNullInt64 {
+			return func(v reflect.Value, x interface{}) error {
+				return setNull(v, x, func() interface{} {
+					return NullInt64{Int64: x.(int64), Valid: true}
+				})
+			}
+		}
 
 	case FloatFieldType:
 		switch ftype.Kind() {
 		case reflect.Float32, reflect.Float64:
 			return setFloat
 		}
+		if ftype == typeOfNullFloat64 {
+			return func(v reflect.Value, x interface{}) error {
+				return setNull(v, x, func() interface{} {
+					return NullFloat64{Float64: x.(float64), Valid: true}
+				})
+			}
+		}
 
 	case BooleanFieldType:
 		if ftype.Kind() == reflect.Bool {
 			return setBool
+		}
+		if ftype == typeOfNullBool {
+			return func(v reflect.Value, x interface{}) error {
+				return setNull(v, x, func() interface{} {
+					return NullBool{Bool: x.(bool), Valid: true}
+				})
+			}
 		}
 
 	case TimestampFieldType:
 		if ftype == typeOfGoTime {
 			return setAny
 		}
+		if ftype == typeOfNullTimestamp {
+			return func(v reflect.Value, x interface{}) error {
+				return setNull(v, x, func() interface{} {
+					return NullTimestamp{Timestamp: x.(time.Time), Valid: true}
+				})
+			}
+		}
 
 	case DateFieldType:
 		if ftype == typeOfDate {
 			return setAny
+		}
+		if ftype == typeOfNullDate {
+			return func(v reflect.Value, x interface{}) error {
+				return setNull(v, x, func() interface{} {
+					return NullDate{Date: x.(civil.Date), Valid: true}
+				})
+			}
 		}
 
 	case TimeFieldType:
 		if ftype == typeOfTime {
 			return setAny
 		}
+		if ftype == typeOfNullTime {
+			return func(v reflect.Value, x interface{}) error {
+				return setNull(v, x, func() interface{} {
+					return NullTime{Time: x.(civil.Time), Valid: true}
+				})
+			}
+		}
 
 	case DateTimeFieldType:
 		if ftype == typeOfDateTime {
 			return setAny
+		}
+		if ftype == typeOfNullDateTime {
+			return func(v reflect.Value, x interface{}) error {
+				return setNull(v, x, func() interface{} {
+					return NullDateTime{DateTime: x.(civil.DateTime), Valid: true}
+				})
+			}
 		}
 	}
 	return nil
@@ -338,16 +419,21 @@ func runOps(ops []structLoaderOp, vstruct reflect.Value, values []Value) error {
 	return nil
 }
 
-func setNested(ops []structLoaderOp, v reflect.Value, vals []Value) error {
+func setNested(ops []structLoaderOp, v reflect.Value, val interface{}) error {
 	// v is either a struct or a pointer to a struct.
 	if v.Kind() == reflect.Ptr {
+		// If the value is nil, set the pointer to nil.
+		if val == nil {
+			v.Set(reflect.Zero(v.Type()))
+			return nil
+		}
 		// If the pointer is nil, set it to a zero struct value.
 		if v.IsNil() {
 			v.Set(reflect.New(v.Type().Elem()))
 		}
 		v = v.Elem()
 	}
-	return runOps(ops, v, vals)
+	return runOps(ops, v, val.([]Value))
 }
 
 func setRepeated(field reflect.Value, vslice []Value, setElem setFunc) error {
@@ -419,6 +505,10 @@ func valuesToMap(vs []Value, schema Schema) (map[string]Value, error) {
 
 	m := make(map[string]Value)
 	for i, fieldSchema := range schema {
+		if vs[i] == nil {
+			m[fieldSchema.Name] = nil
+			continue
+		}
 		if fieldSchema.Type != RecordFieldType {
 			m[fieldSchema.Name] = toUploadValue(vs[i], fieldSchema)
 			continue
@@ -565,10 +655,16 @@ func toUploadValue(val interface{}, fs *FieldSchema) interface{} {
 func toUploadValueReflect(v reflect.Value, fs *FieldSchema) interface{} {
 	switch fs.Type {
 	case TimeFieldType:
+		if v.Type() == typeOfNullTime {
+			return v.Interface()
+		}
 		return civilToUploadValue(v, fs, func(v reflect.Value) string {
 			return CivilTimeString(v.Interface().(civil.Time))
 		})
 	case DateTimeFieldType:
+		if v.Type() == typeOfNullDateTime {
+			return v.Interface()
+		}
 		return civilToUploadValue(v, fs, func(v reflect.Value) string {
 			return CivilDateTimeString(v.Interface().(civil.DateTime))
 		})

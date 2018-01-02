@@ -674,6 +674,10 @@ type TestStruct struct {
 	RecordArray []SubTestStruct
 }
 
+// Round times to the microsecond for comparison purposes.
+var roundToMicros = cmp.Transformer("RoundToMicros",
+	func(t time.Time) time.Time { return t.Round(time.Microsecond) })
+
 func TestIntegration_UploadAndReadStructs(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -773,9 +777,6 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 	}
 	sort.Sort(byName(got))
 
-	// Round times to the microsecond.
-	roundToMicros := cmp.Transformer("RoundToMicros",
-		func(t time.Time) time.Time { return t.Round(time.Microsecond) })
 	// BigQuery does not elide nils. It reports an error for nil fields.
 	for i, g := range got {
 		if i >= len(want) {
@@ -791,6 +792,69 @@ type byName []*TestStruct
 func (b byName) Len() int           { return len(b) }
 func (b byName) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
 func (b byName) Less(i, j int) bool { return b[i].Name < b[j].Name }
+
+func TestIntegration_UploadAndReadNullable(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctm := civil.Time{15, 4, 5, 6000}
+	cdt := civil.DateTime{testDate, ctm}
+	testUploadAndReadNullable(t, testStructNullable{}, make([]Value, len(testStructNullableSchema)))
+	testUploadAndReadNullable(t, testStructNullable{
+		String:    NullString{"x", true},
+		Bytes:     []byte{1, 2, 3},
+		Integer:   NullInt64{1, true},
+		Float:     NullFloat64{2.3, true},
+		Boolean:   NullBool{true, true},
+		Timestamp: NullTimestamp{testTimestamp, true},
+		Date:      NullDate{testDate, true},
+		Time:      NullTime{ctm, true},
+		DateTime:  NullDateTime{cdt, true},
+		Record:    &subNullable{X: NullInt64{4, true}},
+	},
+		[]Value{"x", []byte{1, 2, 3}, int64(1), 2.3, true, testTimestamp, testDate, ctm, cdt, []Value{int64(4)}})
+}
+
+func testUploadAndReadNullable(t *testing.T, ts testStructNullable, wantRow []Value) {
+	ctx := context.Background()
+	table := newTable(t, testStructNullableSchema)
+	defer table.Delete(ctx)
+
+	// Populate the table.
+	upl := table.Uploader()
+	if err := upl.Put(ctx, []*StructSaver{{Schema: testStructNullableSchema, Struct: ts}}); err != nil {
+		t.Fatal(putError(err))
+	}
+	// Wait until the data has been uploaded. This can take a few seconds, according
+	// to https://cloud.google.com/bigquery/streaming-data-into-bigquery.
+	if err := waitForRow(ctx, table); err != nil {
+		t.Fatal(err)
+	}
+
+	// Read into a []Value.
+	iter := table.Read(ctx)
+	gotRows, _, _, err := readAll(iter)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(gotRows) != 1 {
+		t.Fatalf("got %d rows, want 1", len(gotRows))
+	}
+	if diff := testutil.Diff(gotRows[0], wantRow, roundToMicros); diff != "" {
+		t.Error(diff)
+	}
+
+	// Read into a struct.
+	want := ts
+	var sn testStructNullable
+	it := table.Read(ctx)
+	if err := it.Next(&sn); err != nil {
+		t.Fatal(err)
+	}
+	if diff := testutil.Diff(sn, want, roundToMicros); diff != "" {
+		t.Error(diff)
+	}
+}
 
 func TestIntegration_TableUpdate(t *testing.T) {
 	if client == nil {
