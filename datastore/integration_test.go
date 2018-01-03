@@ -20,6 +20,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"reflect"
 	"sort"
@@ -115,23 +116,40 @@ func initReplay() {
 		log.Fatalf("unmarshaling initial replay info: %v", err)
 	}
 	timeNow = ri.Time.In(time.Local)
-	replayOpts := []option.ClientOption{
-		// Block until a connection is established. Otherwise, on replay,
-		// the client.Close happens so quickly that the connection hasn't
-		// had time to establish, and grpc gets confused and logs errors.
-		option.WithGRPCDialOption(grpc.WithBlock()),
-	}
-	for _, opt := range rep.DialOptions() {
-		replayOpts = append(replayOpts, option.WithGRPCDialOption(opt))
+
+	conn, err := replayConn(rep)
+	if err != nil {
+		log.Fatal(err)
 	}
 	newTestClient = func(ctx context.Context, t *testing.T) *Client {
-		client, err := NewClient(ctx, ri.ProjectID, replayOpts...)
+		client, err := NewClient(ctx, ri.ProjectID, option.WithGRPCConn(conn))
 		if err != nil {
 			t.Fatalf("NewClient: %v", err)
 		}
 		return client
 	}
 	log.Printf("replaying from %s", replayFilename)
+}
+
+func replayConn(rep *rpcreplay.Replayer) (*grpc.ClientConn, error) {
+	// If we make a real connection we need creds from somewhere, and they
+	// might not be available, for instance on Travis.
+	// Replaying doesn't require a connection live at all, but we need
+	// something to attach gRPC interceptors to.
+	// So we start a local listener and connect to it, then close them down.
+	// TODO(jba): build something like this into the replayer?
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		return nil, err
+	}
+	conn, err := grpc.Dial(l.Addr().String(),
+		append([]grpc.DialOption{grpc.WithInsecure()}, rep.DialOptions()...)...)
+	if err != nil {
+		return nil, err
+	}
+	conn.Close()
+	l.Close()
+	return conn, nil
 }
 
 func newClient(ctx context.Context, t *testing.T, dialOpts []grpc.DialOption) *Client {
