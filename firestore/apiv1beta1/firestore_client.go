@@ -171,53 +171,6 @@ func (c *Client) SetGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// DatabaseRootPath returns the path for the database root resource.
-func DatabaseRootPath(project, database string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/databases/" +
-		database +
-		""
-}
-
-// DocumentRootPath returns the path for the document root resource.
-func DocumentRootPath(project, database string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/databases/" +
-		database +
-		"/documents" +
-		""
-}
-
-// DocumentPathPath returns the path for the document path resource.
-func DocumentPathPath(project, database, documentPath string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/databases/" +
-		database +
-		"/documents/" +
-		documentPath +
-		""
-}
-
-// AnyPathPath returns the path for the any path resource.
-func AnyPathPath(project, database, document, anyPath string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/databases/" +
-		database +
-		"/documents/" +
-		document +
-		"/" +
-		anyPath +
-		""
-}
-
 // GetDocument gets a single document.
 func (c *Client) GetDocument(ctx context.Context, req *firestorepb.GetDocumentRequest, opts ...gax.CallOption) (*firestorepb.Document, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)

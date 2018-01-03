@@ -126,24 +126,6 @@ func (c *MetricsClient) SetGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// MetricsProjectPath returns the path for the project resource.
-func MetricsProjectPath(project string) string {
-	return "" +
-		"projects/" +
-		project +
-		""
-}
-
-// MetricsMetricPath returns the path for the metric resource.
-func MetricsMetricPath(project, metric string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/metrics/" +
-		metric +
-		""
-}
-
 // ListLogMetrics lists logs-based metrics.
 func (c *MetricsClient) ListLogMetrics(ctx context.Context, req *loggingpb.ListLogMetricsRequest, opts ...gax.CallOption) *LogMetricIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)

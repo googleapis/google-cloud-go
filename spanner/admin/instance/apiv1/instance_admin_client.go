@@ -175,34 +175,6 @@ func (c *InstanceAdminClient) setGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// InstanceAdminProjectPath returns the path for the project resource.
-func InstanceAdminProjectPath(project string) string {
-	return "" +
-		"projects/" +
-		project +
-		""
-}
-
-// InstanceAdminInstanceConfigPath returns the path for the instance config resource.
-func InstanceAdminInstanceConfigPath(project, instanceConfig string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/instanceConfigs/" +
-		instanceConfig +
-		""
-}
-
-// InstanceAdminInstancePath returns the path for the instance resource.
-func InstanceAdminInstancePath(project, instance string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/instances/" +
-		instance +
-		""
-}
-
 // ListInstanceConfigs lists the supported instance configurations for a given project.
 func (c *InstanceAdminClient) ListInstanceConfigs(ctx context.Context, req *instancepb.ListInstanceConfigsRequest, opts ...gax.CallOption) *InstanceConfigIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)

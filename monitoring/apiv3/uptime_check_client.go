@@ -134,24 +134,6 @@ func (c *UptimeCheckClient) setGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// UptimeCheckProjectPath returns the path for the project resource.
-func UptimeCheckProjectPath(project string) string {
-	return "" +
-		"projects/" +
-		project +
-		""
-}
-
-// UptimeCheckUptimeCheckConfigPath returns the path for the uptime check config resource.
-func UptimeCheckUptimeCheckConfigPath(project, uptimeCheckConfig string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/uptimeCheckConfigs/" +
-		uptimeCheckConfig +
-		""
-}
-
 // ListUptimeCheckConfigs lists the existing valid uptime check configurations for the project,
 // leaving out any invalid configurations.
 func (c *UptimeCheckClient) ListUptimeCheckConfigs(ctx context.Context, req *monitoringpb.ListUptimeCheckConfigsRequest, opts ...gax.CallOption) *UptimeCheckConfigIterator {

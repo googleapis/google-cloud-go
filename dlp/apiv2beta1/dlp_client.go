@@ -153,14 +153,6 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ResultPath returns the path for the result resource.
-func ResultPath(result string) string {
-	return "" +
-		"inspect/results/" +
-		result +
-		""
-}
-
 // InspectContent finds potentially sensitive info in a list of strings.
 // This method has limits on input size, processing time, and output size.
 func (c *Client) InspectContent(ctx context.Context, req *dlppb.InspectContentRequest, opts ...gax.CallOption) (*dlppb.InspectContentResponse, error) {

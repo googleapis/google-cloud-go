@@ -137,34 +137,6 @@ func (c *ConfigClient) SetGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ConfigProjectPath returns the path for the project resource.
-func ConfigProjectPath(project string) string {
-	return "" +
-		"projects/" +
-		project +
-		""
-}
-
-// ConfigSinkPath returns the path for the sink resource.
-func ConfigSinkPath(project, sink string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/sinks/" +
-		sink +
-		""
-}
-
-// ConfigExclusionPath returns the path for the exclusion resource.
-func ConfigExclusionPath(project, exclusion string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/exclusions/" +
-		exclusion +
-		""
-}
-
 // ListSinks lists sinks.
 func (c *ConfigClient) ListSinks(ctx context.Context, req *loggingpb.ListSinksRequest, opts ...gax.CallOption) *LogSinkIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)

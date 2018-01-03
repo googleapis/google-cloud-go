@@ -15,10 +15,10 @@
 package pubsub
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
-	vkit "cloud.google.com/go/pubsub/apiv1"
 	"github.com/golang/protobuf/ptypes"
 	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
@@ -53,7 +53,7 @@ type SnapshotConfig struct {
 func (c *Client) Snapshot(id string) *Snapshot {
 	return &Snapshot{
 		c:    c,
-		name: vkit.SubscriberSnapshotPath(c.projectID, id),
+		name: fmt.Sprintf("projects/%s/snapshots/%s", c.projectID, id),
 	}
 }
 
@@ -123,7 +123,7 @@ func (s *Subscription) SeekToTime(ctx context.Context, t time.Time) error {
 //      Snapshot returning without error.
 func (s *Subscription) CreateSnapshot(ctx context.Context, name string) (*SnapshotConfig, error) {
 	if name != "" {
-		name = vkit.SubscriberSnapshotPath(strings.Split(s.name, "/")[1], name)
+		name = fmt.Sprintf("projects/%s/snapshots/%s", strings.Split(s.name, "/")[1], name)
 	}
 	snap, err := s.c.subc.CreateSnapshot(ctx, &pb.CreateSnapshotRequest{
 		Name:         name,
