@@ -380,7 +380,7 @@ func TestGroupServiceListGroups(t *testing.T) {
 
 	mockGroup.resps = append(mockGroup.resps[:0], expectedResponse)
 
-	var formattedName string = GroupProjectPath("[PROJECT]")
+	var formattedName string = fmt.Sprintf("projects/%s", "[PROJECT]")
 	var request = &monitoringpb.ListGroupsRequest{
 		Name: formattedName,
 	}
@@ -419,7 +419,7 @@ func TestGroupServiceListGroupsError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockGroup.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = GroupProjectPath("[PROJECT]")
+	var formattedName string = fmt.Sprintf("projects/%s", "[PROJECT]")
 	var request = &monitoringpb.ListGroupsRequest{
 		Name: formattedName,
 	}
@@ -457,7 +457,7 @@ func TestGroupServiceGetGroup(t *testing.T) {
 
 	mockGroup.resps = append(mockGroup.resps[:0], expectedResponse)
 
-	var formattedName string = GroupGroupPath("[PROJECT]", "[GROUP]")
+	var formattedName string = fmt.Sprintf("projects/%s/groups/%s", "[PROJECT]", "[GROUP]")
 	var request = &monitoringpb.GetGroupRequest{
 		Name: formattedName,
 	}
@@ -486,7 +486,7 @@ func TestGroupServiceGetGroupError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockGroup.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = GroupGroupPath("[PROJECT]", "[GROUP]")
+	var formattedName string = fmt.Sprintf("projects/%s/groups/%s", "[PROJECT]", "[GROUP]")
 	var request = &monitoringpb.GetGroupRequest{
 		Name: formattedName,
 	}
@@ -524,7 +524,7 @@ func TestGroupServiceCreateGroup(t *testing.T) {
 
 	mockGroup.resps = append(mockGroup.resps[:0], expectedResponse)
 
-	var formattedName string = GroupProjectPath("[PROJECT]")
+	var formattedName string = fmt.Sprintf("projects/%s", "[PROJECT]")
 	var group *monitoringpb.Group = &monitoringpb.Group{}
 	var request = &monitoringpb.CreateGroupRequest{
 		Name:  formattedName,
@@ -555,7 +555,7 @@ func TestGroupServiceCreateGroupError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockGroup.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = GroupProjectPath("[PROJECT]")
+	var formattedName string = fmt.Sprintf("projects/%s", "[PROJECT]")
 	var group *monitoringpb.Group = &monitoringpb.Group{}
 	var request = &monitoringpb.CreateGroupRequest{
 		Name:  formattedName,
@@ -651,7 +651,7 @@ func TestGroupServiceDeleteGroup(t *testing.T) {
 
 	mockGroup.resps = append(mockGroup.resps[:0], expectedResponse)
 
-	var formattedName string = GroupGroupPath("[PROJECT]", "[GROUP]")
+	var formattedName string = fmt.Sprintf("projects/%s/groups/%s", "[PROJECT]", "[GROUP]")
 	var request = &monitoringpb.DeleteGroupRequest{
 		Name: formattedName,
 	}
@@ -677,7 +677,7 @@ func TestGroupServiceDeleteGroupError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockGroup.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = GroupGroupPath("[PROJECT]", "[GROUP]")
+	var formattedName string = fmt.Sprintf("projects/%s/groups/%s", "[PROJECT]", "[GROUP]")
 	var request = &monitoringpb.DeleteGroupRequest{
 		Name: formattedName,
 	}
@@ -711,7 +711,7 @@ func TestGroupServiceListGroupMembers(t *testing.T) {
 
 	mockGroup.resps = append(mockGroup.resps[:0], expectedResponse)
 
-	var formattedName string = GroupGroupPath("[PROJECT]", "[GROUP]")
+	var formattedName string = fmt.Sprintf("projects/%s/groups/%s", "[PROJECT]", "[GROUP]")
 	var request = &monitoringpb.ListGroupMembersRequest{
 		Name: formattedName,
 	}
@@ -750,7 +750,7 @@ func TestGroupServiceListGroupMembersError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockGroup.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = GroupGroupPath("[PROJECT]", "[GROUP]")
+	var formattedName string = fmt.Sprintf("projects/%s/groups/%s", "[PROJECT]", "[GROUP]")
 	var request = &monitoringpb.ListGroupMembersRequest{
 		Name: formattedName,
 	}
@@ -783,7 +783,7 @@ func TestMetricServiceListMonitoredResourceDescriptors(t *testing.T) {
 
 	mockMetric.resps = append(mockMetric.resps[:0], expectedResponse)
 
-	var formattedName string = MetricProjectPath("[PROJECT]")
+	var formattedName string = fmt.Sprintf("projects/%s", "[PROJECT]")
 	var request = &monitoringpb.ListMonitoredResourceDescriptorsRequest{
 		Name: formattedName,
 	}
@@ -822,7 +822,7 @@ func TestMetricServiceListMonitoredResourceDescriptorsError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockMetric.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = MetricProjectPath("[PROJECT]")
+	var formattedName string = fmt.Sprintf("projects/%s", "[PROJECT]")
 	var request = &monitoringpb.ListMonitoredResourceDescriptorsRequest{
 		Name: formattedName,
 	}
@@ -858,7 +858,7 @@ func TestMetricServiceGetMonitoredResourceDescriptor(t *testing.T) {
 
 	mockMetric.resps = append(mockMetric.resps[:0], expectedResponse)
 
-	var formattedName string = MetricMonitoredResourceDescriptorPath("[PROJECT]", "[MONITORED_RESOURCE_DESCRIPTOR]")
+	var formattedName string = fmt.Sprintf("projects/%s/monitoredResourceDescriptors/%s", "[PROJECT]", "[MONITORED_RESOURCE_DESCRIPTOR]")
 	var request = &monitoringpb.GetMonitoredResourceDescriptorRequest{
 		Name: formattedName,
 	}
@@ -887,7 +887,7 @@ func TestMetricServiceGetMonitoredResourceDescriptorError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockMetric.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = MetricMonitoredResourceDescriptorPath("[PROJECT]", "[MONITORED_RESOURCE_DESCRIPTOR]")
+	var formattedName string = fmt.Sprintf("projects/%s/monitoredResourceDescriptors/%s", "[PROJECT]", "[MONITORED_RESOURCE_DESCRIPTOR]")
 	var request = &monitoringpb.GetMonitoredResourceDescriptorRequest{
 		Name: formattedName,
 	}
@@ -920,7 +920,7 @@ func TestMetricServiceListMetricDescriptors(t *testing.T) {
 
 	mockMetric.resps = append(mockMetric.resps[:0], expectedResponse)
 
-	var formattedName string = MetricProjectPath("[PROJECT]")
+	var formattedName string = fmt.Sprintf("projects/%s", "[PROJECT]")
 	var request = &monitoringpb.ListMetricDescriptorsRequest{
 		Name: formattedName,
 	}
@@ -959,7 +959,7 @@ func TestMetricServiceListMetricDescriptorsError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockMetric.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = MetricProjectPath("[PROJECT]")
+	var formattedName string = fmt.Sprintf("projects/%s", "[PROJECT]")
 	var request = &monitoringpb.ListMetricDescriptorsRequest{
 		Name: formattedName,
 	}
@@ -997,7 +997,7 @@ func TestMetricServiceGetMetricDescriptor(t *testing.T) {
 
 	mockMetric.resps = append(mockMetric.resps[:0], expectedResponse)
 
-	var formattedName string = MetricMetricDescriptorPath("[PROJECT]", "[METRIC_DESCRIPTOR]")
+	var formattedName string = fmt.Sprintf("projects/%s/metricDescriptors/%s", "[PROJECT]", "[METRIC_DESCRIPTOR]")
 	var request = &monitoringpb.GetMetricDescriptorRequest{
 		Name: formattedName,
 	}
@@ -1026,7 +1026,7 @@ func TestMetricServiceGetMetricDescriptorError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockMetric.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = MetricMetricDescriptorPath("[PROJECT]", "[METRIC_DESCRIPTOR]")
+	var formattedName string = fmt.Sprintf("projects/%s/metricDescriptors/%s", "[PROJECT]", "[METRIC_DESCRIPTOR]")
 	var request = &monitoringpb.GetMetricDescriptorRequest{
 		Name: formattedName,
 	}
@@ -1064,7 +1064,7 @@ func TestMetricServiceCreateMetricDescriptor(t *testing.T) {
 
 	mockMetric.resps = append(mockMetric.resps[:0], expectedResponse)
 
-	var formattedName string = MetricProjectPath("[PROJECT]")
+	var formattedName string = fmt.Sprintf("projects/%s", "[PROJECT]")
 	var metricDescriptor *metricpb.MetricDescriptor = &metricpb.MetricDescriptor{}
 	var request = &monitoringpb.CreateMetricDescriptorRequest{
 		Name:             formattedName,
@@ -1095,7 +1095,7 @@ func TestMetricServiceCreateMetricDescriptorError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockMetric.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = MetricProjectPath("[PROJECT]")
+	var formattedName string = fmt.Sprintf("projects/%s", "[PROJECT]")
 	var metricDescriptor *metricpb.MetricDescriptor = &metricpb.MetricDescriptor{}
 	var request = &monitoringpb.CreateMetricDescriptorRequest{
 		Name:             formattedName,
@@ -1124,7 +1124,7 @@ func TestMetricServiceDeleteMetricDescriptor(t *testing.T) {
 
 	mockMetric.resps = append(mockMetric.resps[:0], expectedResponse)
 
-	var formattedName string = MetricMetricDescriptorPath("[PROJECT]", "[METRIC_DESCRIPTOR]")
+	var formattedName string = fmt.Sprintf("projects/%s/metricDescriptors/%s", "[PROJECT]", "[METRIC_DESCRIPTOR]")
 	var request = &monitoringpb.DeleteMetricDescriptorRequest{
 		Name: formattedName,
 	}
@@ -1150,7 +1150,7 @@ func TestMetricServiceDeleteMetricDescriptorError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockMetric.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = MetricMetricDescriptorPath("[PROJECT]", "[METRIC_DESCRIPTOR]")
+	var formattedName string = fmt.Sprintf("projects/%s/metricDescriptors/%s", "[PROJECT]", "[METRIC_DESCRIPTOR]")
 	var request = &monitoringpb.DeleteMetricDescriptorRequest{
 		Name: formattedName,
 	}
@@ -1182,7 +1182,7 @@ func TestMetricServiceListTimeSeries(t *testing.T) {
 
 	mockMetric.resps = append(mockMetric.resps[:0], expectedResponse)
 
-	var formattedName string = MetricProjectPath("[PROJECT]")
+	var formattedName string = fmt.Sprintf("projects/%s", "[PROJECT]")
 	var filter string = "filter-1274492040"
 	var interval *monitoringpb.TimeInterval = &monitoringpb.TimeInterval{}
 	var view monitoringpb.ListTimeSeriesRequest_TimeSeriesView = monitoringpb.ListTimeSeriesRequest_FULL
@@ -1227,7 +1227,7 @@ func TestMetricServiceListTimeSeriesError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockMetric.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = MetricProjectPath("[PROJECT]")
+	var formattedName string = fmt.Sprintf("projects/%s", "[PROJECT]")
 	var filter string = "filter-1274492040"
 	var interval *monitoringpb.TimeInterval = &monitoringpb.TimeInterval{}
 	var view monitoringpb.ListTimeSeriesRequest_TimeSeriesView = monitoringpb.ListTimeSeriesRequest_FULL
@@ -1260,7 +1260,7 @@ func TestMetricServiceCreateTimeSeries(t *testing.T) {
 
 	mockMetric.resps = append(mockMetric.resps[:0], expectedResponse)
 
-	var formattedName string = MetricProjectPath("[PROJECT]")
+	var formattedName string = fmt.Sprintf("projects/%s", "[PROJECT]")
 	var timeSeries []*monitoringpb.TimeSeries = nil
 	var request = &monitoringpb.CreateTimeSeriesRequest{
 		Name:       formattedName,
@@ -1288,7 +1288,7 @@ func TestMetricServiceCreateTimeSeriesError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockMetric.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = MetricProjectPath("[PROJECT]")
+	var formattedName string = fmt.Sprintf("projects/%s", "[PROJECT]")
 	var timeSeries []*monitoringpb.TimeSeries = nil
 	var request = &monitoringpb.CreateTimeSeriesRequest{
 		Name:       formattedName,
@@ -1322,7 +1322,7 @@ func TestUptimeCheckServiceListUptimeCheckConfigs(t *testing.T) {
 
 	mockUptimeCheck.resps = append(mockUptimeCheck.resps[:0], expectedResponse)
 
-	var formattedParent string = UptimeCheckProjectPath("[PROJECT]")
+	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
 	var request = &monitoringpb.ListUptimeCheckConfigsRequest{
 		Parent: formattedParent,
 	}
@@ -1361,7 +1361,7 @@ func TestUptimeCheckServiceListUptimeCheckConfigsError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockUptimeCheck.err = gstatus.Error(errCode, "test error")
 
-	var formattedParent string = UptimeCheckProjectPath("[PROJECT]")
+	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
 	var request = &monitoringpb.ListUptimeCheckConfigsRequest{
 		Parent: formattedParent,
 	}
@@ -1393,7 +1393,7 @@ func TestUptimeCheckServiceGetUptimeCheckConfig(t *testing.T) {
 
 	mockUptimeCheck.resps = append(mockUptimeCheck.resps[:0], expectedResponse)
 
-	var formattedName string = UptimeCheckUptimeCheckConfigPath("[PROJECT]", "[UPTIME_CHECK_CONFIG]")
+	var formattedName string = fmt.Sprintf("projects/%s/uptimeCheckConfigs/%s", "[PROJECT]", "[UPTIME_CHECK_CONFIG]")
 	var request = &monitoringpb.GetUptimeCheckConfigRequest{
 		Name: formattedName,
 	}
@@ -1422,7 +1422,7 @@ func TestUptimeCheckServiceGetUptimeCheckConfigError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockUptimeCheck.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = UptimeCheckUptimeCheckConfigPath("[PROJECT]", "[UPTIME_CHECK_CONFIG]")
+	var formattedName string = fmt.Sprintf("projects/%s/uptimeCheckConfigs/%s", "[PROJECT]", "[UPTIME_CHECK_CONFIG]")
 	var request = &monitoringpb.GetUptimeCheckConfigRequest{
 		Name: formattedName,
 	}
@@ -1454,7 +1454,7 @@ func TestUptimeCheckServiceCreateUptimeCheckConfig(t *testing.T) {
 
 	mockUptimeCheck.resps = append(mockUptimeCheck.resps[:0], expectedResponse)
 
-	var formattedParent string = UptimeCheckProjectPath("[PROJECT]")
+	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
 	var uptimeCheckConfig *monitoringpb.UptimeCheckConfig = &monitoringpb.UptimeCheckConfig{}
 	var request = &monitoringpb.CreateUptimeCheckConfigRequest{
 		Parent:            formattedParent,
@@ -1485,7 +1485,7 @@ func TestUptimeCheckServiceCreateUptimeCheckConfigError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockUptimeCheck.err = gstatus.Error(errCode, "test error")
 
-	var formattedParent string = UptimeCheckProjectPath("[PROJECT]")
+	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
 	var uptimeCheckConfig *monitoringpb.UptimeCheckConfig = &monitoringpb.UptimeCheckConfig{}
 	var request = &monitoringpb.CreateUptimeCheckConfigRequest{
 		Parent:            formattedParent,
@@ -1575,7 +1575,7 @@ func TestUptimeCheckServiceDeleteUptimeCheckConfig(t *testing.T) {
 
 	mockUptimeCheck.resps = append(mockUptimeCheck.resps[:0], expectedResponse)
 
-	var formattedName string = UptimeCheckUptimeCheckConfigPath("[PROJECT]", "[UPTIME_CHECK_CONFIG]")
+	var formattedName string = fmt.Sprintf("projects/%s/uptimeCheckConfigs/%s", "[PROJECT]", "[UPTIME_CHECK_CONFIG]")
 	var request = &monitoringpb.DeleteUptimeCheckConfigRequest{
 		Name: formattedName,
 	}
@@ -1601,7 +1601,7 @@ func TestUptimeCheckServiceDeleteUptimeCheckConfigError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockUptimeCheck.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = UptimeCheckUptimeCheckConfigPath("[PROJECT]", "[UPTIME_CHECK_CONFIG]")
+	var formattedName string = fmt.Sprintf("projects/%s/uptimeCheckConfigs/%s", "[PROJECT]", "[UPTIME_CHECK_CONFIG]")
 	var request = &monitoringpb.DeleteUptimeCheckConfigRequest{
 		Name: formattedName,
 	}

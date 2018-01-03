@@ -157,28 +157,6 @@ func (c *DatabaseAdminClient) setGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// DatabaseAdminInstancePath returns the path for the instance resource.
-func DatabaseAdminInstancePath(project, instance string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/instances/" +
-		instance +
-		""
-}
-
-// DatabaseAdminDatabasePath returns the path for the database resource.
-func DatabaseAdminDatabasePath(project, instance, database string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/instances/" +
-		instance +
-		"/databases/" +
-		database +
-		""
-}
-
 // ListDatabases lists Cloud Spanner databases.
 func (c *DatabaseAdminClient) ListDatabases(ctx context.Context, req *databasepb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)

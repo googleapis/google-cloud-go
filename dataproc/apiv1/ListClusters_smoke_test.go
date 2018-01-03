@@ -21,6 +21,7 @@ import (
 )
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 	"time"
@@ -31,6 +32,7 @@ import (
 	"google.golang.org/api/option"
 )
 
+var _ = fmt.Sprintf
 var _ = iterator.Done
 var _ = strconv.FormatUint
 var _ = time.Now

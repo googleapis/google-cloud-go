@@ -21,6 +21,7 @@ import (
 )
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 	"time"
@@ -31,6 +32,7 @@ import (
 	"google.golang.org/api/option"
 )
 
+var _ = fmt.Sprintf
 var _ = iterator.Done
 var _ = strconv.FormatUint
 var _ = time.Now
@@ -53,7 +55,7 @@ func TestTraceServiceSmoke(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var formattedName string = ProjectPath(projectId)
+	var formattedName string = fmt.Sprintf("projects/%s", projectId)
 	var request = &cloudtracepb.BatchWriteSpansRequest{
 		Name: formattedName,
 	}

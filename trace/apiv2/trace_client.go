@@ -121,26 +121,6 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ProjectPath returns the path for the project resource.
-func ProjectPath(project string) string {
-	return "" +
-		"projects/" +
-		project +
-		""
-}
-
-// SpanPath returns the path for the span resource.
-func SpanPath(project, trace, span string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/traces/" +
-		trace +
-		"/spans/" +
-		span +
-		""
-}
-
 // BatchWriteSpans sends new spans to new or existing traces. You cannot update
 // existing spans.
 func (c *Client) BatchWriteSpans(ctx context.Context, req *cloudtracepb.BatchWriteSpansRequest, opts ...gax.CallOption) error {

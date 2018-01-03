@@ -678,7 +678,7 @@ func TestDlpServiceListInspectFindings(t *testing.T) {
 
 	mockDlp.resps = append(mockDlp.resps[:0], expectedResponse)
 
-	var formattedName string = ResultPath("[RESULT]")
+	var formattedName string = fmt.Sprintf("inspect/results/%s", "[RESULT]")
 	var request = &dlppb.ListInspectFindingsRequest{
 		Name: formattedName,
 	}
@@ -707,7 +707,7 @@ func TestDlpServiceListInspectFindingsError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockDlp.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = ResultPath("[RESULT]")
+	var formattedName string = fmt.Sprintf("inspect/results/%s", "[RESULT]")
 	var request = &dlppb.ListInspectFindingsRequest{
 		Name: formattedName,
 	}

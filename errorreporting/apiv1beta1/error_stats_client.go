@@ -122,14 +122,6 @@ func (c *ErrorStatsClient) SetGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ErrorStatsProjectPath returns the path for the project resource.
-func ErrorStatsProjectPath(project string) string {
-	return "" +
-		"projects/" +
-		project +
-		""
-}
-
 // ListGroupStats lists the specified groups.
 func (c *ErrorStatsClient) ListGroupStats(ctx context.Context, req *clouderrorreportingpb.ListGroupStatsRequest, opts ...gax.CallOption) *ErrorGroupStatsIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)

@@ -117,16 +117,6 @@ func (c *ErrorGroupClient) SetGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ErrorGroupGroupPath returns the path for the group resource.
-func ErrorGroupGroupPath(project, group string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/groups/" +
-		group +
-		""
-}
-
 // GetGroup get the specified group.
 func (c *ErrorGroupClient) GetGroup(ctx context.Context, req *clouderrorreportingpb.GetGroupRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ErrorGroup, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)

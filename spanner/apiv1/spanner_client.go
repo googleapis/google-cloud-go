@@ -151,32 +151,6 @@ func (c *Client) SetGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// DatabasePath returns the path for the database resource.
-func DatabasePath(project, instance, database string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/instances/" +
-		instance +
-		"/databases/" +
-		database +
-		""
-}
-
-// SessionPath returns the path for the session resource.
-func SessionPath(project, instance, database, session string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/instances/" +
-		instance +
-		"/databases/" +
-		database +
-		"/sessions/" +
-		session +
-		""
-}
-
 // CreateSession creates a new session. A session can be used to perform
 // transactions that read and/or modify data in a Cloud Spanner database.
 // Sessions are meant to be reused for many consecutive

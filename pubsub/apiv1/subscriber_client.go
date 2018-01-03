@@ -177,44 +177,6 @@ func (c *SubscriberClient) SetGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// SubscriberProjectPath returns the path for the project resource.
-func SubscriberProjectPath(project string) string {
-	return "" +
-		"projects/" +
-		project +
-		""
-}
-
-// SubscriberSnapshotPath returns the path for the snapshot resource.
-func SubscriberSnapshotPath(project, snapshot string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/snapshots/" +
-		snapshot +
-		""
-}
-
-// SubscriberSubscriptionPath returns the path for the subscription resource.
-func SubscriberSubscriptionPath(project, subscription string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/subscriptions/" +
-		subscription +
-		""
-}
-
-// SubscriberTopicPath returns the path for the topic resource.
-func SubscriberTopicPath(project, topic string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/topics/" +
-		topic +
-		""
-}
-
 func (c *SubscriberClient) SubscriptionIAM(subscription *pubsubpb.Subscription) *iam.Handle {
 	return iam.InternalNewHandle(c.Connection(), subscription.Name)
 }

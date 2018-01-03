@@ -134,34 +134,6 @@ func (c *MetricClient) setGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// MetricProjectPath returns the path for the project resource.
-func MetricProjectPath(project string) string {
-	return "" +
-		"projects/" +
-		project +
-		""
-}
-
-// MetricMetricDescriptorPath returns the path for the metric descriptor resource.
-func MetricMetricDescriptorPath(project, metricDescriptor string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/metricDescriptors/" +
-		metricDescriptor +
-		""
-}
-
-// MetricMonitoredResourceDescriptorPath returns the path for the monitored resource descriptor resource.
-func MetricMonitoredResourceDescriptorPath(project, monitoredResourceDescriptor string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/monitoredResourceDescriptors/" +
-		monitoredResourceDescriptor +
-		""
-}
-
 // ListMonitoredResourceDescriptors lists monitored resource descriptors that match a filter. This method does not require a Stackdriver account.
 func (c *MetricClient) ListMonitoredResourceDescriptors(ctx context.Context, req *monitoringpb.ListMonitoredResourceDescriptorsRequest, opts ...gax.CallOption) *MonitoredResourceDescriptorIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)

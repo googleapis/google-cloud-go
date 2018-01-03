@@ -148,24 +148,6 @@ func (c *PublisherClient) SetGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// PublisherProjectPath returns the path for the project resource.
-func PublisherProjectPath(project string) string {
-	return "" +
-		"projects/" +
-		project +
-		""
-}
-
-// PublisherTopicPath returns the path for the topic resource.
-func PublisherTopicPath(project, topic string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/topics/" +
-		topic +
-		""
-}
-
 func (c *PublisherClient) SubscriptionIAM(subscription *pubsubpb.Subscription) *iam.Handle {
 	return iam.InternalNewHandle(c.Connection(), subscription.Name)
 }

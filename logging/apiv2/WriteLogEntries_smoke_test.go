@@ -21,6 +21,7 @@ import (
 )
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 	"time"
@@ -31,6 +32,7 @@ import (
 	"google.golang.org/api/option"
 )
 
+var _ = fmt.Sprintf
 var _ = iterator.Done
 var _ = strconv.FormatUint
 var _ = time.Now
@@ -54,7 +56,7 @@ func TestLoggingServiceV2Smoke(t *testing.T) {
 	}
 
 	var entries []*loggingpb.LogEntry = nil
-	var formattedLogName string = LogPath(projectId, "test-"+strconv.FormatInt(time.Now().UnixNano(), 10)+"")
+	var formattedLogName string = fmt.Sprintf("projects/%s/logs/%s", projectId, "test-"+strconv.FormatInt(time.Now().UnixNano(), 10)+"")
 	var request = &loggingpb.WriteLogEntriesRequest{
 		Entries: entries,
 		LogName: formattedLogName,

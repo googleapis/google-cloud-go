@@ -139,24 +139,6 @@ func (c *GroupClient) setGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// GroupProjectPath returns the path for the project resource.
-func GroupProjectPath(project string) string {
-	return "" +
-		"projects/" +
-		project +
-		""
-}
-
-// GroupGroupPath returns the path for the group resource.
-func GroupGroupPath(project, group string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/groups/" +
-		group +
-		""
-}
-
 // ListGroups lists the existing groups.
 func (c *GroupClient) ListGroups(ctx context.Context, req *monitoringpb.ListGroupsRequest, opts ...gax.CallOption) *GroupIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)

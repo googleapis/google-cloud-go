@@ -140,24 +140,6 @@ func (c *Client) SetGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ProjectPath returns the path for the project resource.
-func ProjectPath(project string) string {
-	return "" +
-		"projects/" +
-		project +
-		""
-}
-
-// LogPath returns the path for the log resource.
-func LogPath(project, log string) string {
-	return "" +
-		"projects/" +
-		project +
-		"/logs/" +
-		log +
-		""
-}
-
 // DeleteLog deletes all the log entries in a log.
 // The log reappears if it receives new entries.
 // Log entries written shortly before the delete operation might not be

@@ -21,6 +21,7 @@ import (
 )
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 	"time"
@@ -31,6 +32,7 @@ import (
 	"google.golang.org/api/option"
 )
 
+var _ = fmt.Sprintf
 var _ = iterator.Done
 var _ = strconv.FormatUint
 var _ = time.Now
@@ -53,7 +55,7 @@ func TestReportErrorsServiceSmoke(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var formattedProjectName string = ReportErrorsProjectPath(projectId)
+	var formattedProjectName string = fmt.Sprintf("projects/%s", projectId)
 	var message string = "[MESSAGE]"
 	var service string = "[SERVICE]"
 	var serviceContext = &clouderrorreportingpb.ServiceContext{
