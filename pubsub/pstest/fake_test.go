@@ -128,17 +128,10 @@ func TestSubscriptions(t *testing.T) {
 }
 
 func TestPublish(t *testing.T) {
-	s, err := NewServer()
-	if err != nil {
-		t.Fatal(err)
-	}
+	s := NewServer()
 	var ids []string
 	for i := 0; i < 3; i++ {
-		id, err := s.Publish("t", []byte("hello"), nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		ids = append(ids, id)
+		ids = append(ids, s.Publish("t", []byte("hello"), nil))
 	}
 	s.Wait()
 	ms := s.Messages()
@@ -272,6 +265,24 @@ func TestMultiStreams(t *testing.T) {
 	}
 }
 
+func TestStreamingPullTimeout(t *testing.T) {
+	pclient, sclient, srv := newFake(t)
+	timeout := 200 * time.Millisecond
+	srv.SetStreamTimeout(timeout)
+	top := mustCreateTopic(t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	sub := mustCreateSubscription(t, sclient, &pb.Subscription{
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top.Name,
+		AckDeadlineSeconds: 10,
+	})
+	stream := mustStartPull(t, sclient, sub)
+	time.Sleep(2 * timeout)
+	_, err := stream.Recv()
+	if err != io.EOF {
+		t.Errorf("got %v, want io.EOF", err)
+	}
+}
+
 func mustStartPull(t *testing.T, sc pb.SubscriberClient, sub *pb.Subscription) pb.Subscriber_StreamingPullClient {
 	spc, err := sc.StreamingPull(context.Background())
 	if err != nil {
@@ -322,10 +333,7 @@ func mustCreateSubscription(t *testing.T, sc pb.SubscriberClient, sub *pb.Subscr
 }
 
 func newFake(t *testing.T) (pb.PublisherClient, pb.SubscriberClient, *Server) {
-	srv, err := NewServer()
-	if err != nil {
-		t.Fatal(err)
-	}
+	srv := NewServer()
 	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
 	if err != nil {
 		t.Fatal(err)

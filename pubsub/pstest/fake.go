@@ -57,20 +57,21 @@ type gServer struct {
 	pb.PublisherServer
 	pb.SubscriberServer
 
-	mu       sync.Mutex
-	topics   map[string]*topic
-	subs     map[string]*subscription
-	msgs     []*Message // all messages ever published
-	msgsByID map[string]*Message
-	wg       sync.WaitGroup
-	nextID   int
+	mu            sync.Mutex
+	topics        map[string]*topic
+	subs          map[string]*subscription
+	msgs          []*Message // all messages ever published
+	msgsByID      map[string]*Message
+	wg            sync.WaitGroup
+	nextID        int
+	streamTimeout time.Duration
 }
 
 // NewServer creates a new fake server running in the current process.
-func NewServer() (*Server, error) {
+func NewServer() *Server {
 	srv, err := testutil.NewServer()
 	if err != nil {
-		return nil, err
+		panic(fmt.Sprintf("pstest.NewServer: %v", err))
 	}
 	s := &Server{
 		Addr: srv.Addr,
@@ -83,13 +84,15 @@ func NewServer() (*Server, error) {
 	pb.RegisterPublisherServer(srv.Gsrv, &s.gServer)
 	pb.RegisterSubscriberServer(srv.Gsrv, &s.gServer)
 	srv.Start()
-	return s, nil
+	return s
 }
 
 // Publish behaves as if the Publish RPC was called with a message with the given
 // data and attrs. It returns the ID of the message.
 // The topic will be created if it doesn't exist.
-func (s *Server) Publish(topic string, data []byte, attrs map[string]string) (string, error) {
+//
+// Publish panics if there is an error, which is appropriate for testing.
+func (s *Server) Publish(topic string, data []byte, attrs map[string]string) string {
 	_, _ = s.gServer.CreateTopic(nil, &pb.Topic{Name: topic})
 	req := &pb.PublishRequest{
 		Topic:    topic,
@@ -97,9 +100,18 @@ func (s *Server) Publish(topic string, data []byte, attrs map[string]string) (st
 	}
 	res, err := s.gServer.Publish(nil, req)
 	if err != nil {
-		return "", err
+		panic(fmt.Sprintf("pstest.Server.Publish: %v", err))
 	}
-	return res.MessageIds[0], nil
+	return res.MessageIds[0]
+}
+
+// Set the amount of time a stream will be active before it shuts itself down.
+// This mimics the real service's behavior of closing streams after 30 minutes.
+// If SetStreamTimeout is never called or is passed zero, streams never shut down.
+func (s *Server) SetStreamTimeout(d time.Duration) {
+	s.gServer.mu.Lock()
+	defer s.gServer.mu.Unlock()
+	s.gServer.streamTimeout = d
 }
 
 // A Message is a message that was published to the server.
@@ -144,6 +156,7 @@ func (s *Server) Message(id string) *Message {
 	return m
 }
 
+// Wait blocks until all server activity has completed.
 func (s *Server) Wait() {
 	s.gServer.wg.Wait()
 }
@@ -504,7 +517,7 @@ func (s *gServer) StreamingPull(sps pb.Subscriber_StreamingPullServer) error {
 		return grpc.Errorf(codes.NotFound, "subscription %s", req.Subscription)
 	}
 	// Create a new stream to handle the pull.
-	st := sub.newStream(sps)
+	st := sub.newStream(sps, s.streamTimeout)
 	err = st.pull(&s.wg)
 	sub.deleteStream(st)
 	return err
@@ -577,13 +590,14 @@ func (s *subscription) deliverMessage(m *message, i int, tNow time.Time) (int, b
 	return 0, false
 }
 
-func (s *subscription) newStream(gs pb.Subscriber_StreamingPullServer) *stream {
+func (s *subscription) newStream(gs pb.Subscriber_StreamingPullServer, timeout time.Duration) *stream {
 	st := &stream{
 		sub:        s,
 		done:       make(chan struct{}),
 		msgc:       make(chan *pb.ReceivedMessage),
 		gstream:    gs,
 		ackTimeout: s.ackTimeout,
+		timeout:    timeout,
 	}
 	s.mu.Lock()
 	s.streams = append(s.streams, st)
@@ -632,6 +646,7 @@ type stream struct {
 	msgc       chan *pb.ReceivedMessage
 	gstream    pb.Subscriber_StreamingPullServer
 	ackTimeout time.Duration
+	timeout    time.Duration
 }
 
 // pull manages the StreamingPull interaction for the life of the stream.
@@ -646,11 +661,20 @@ func (st *stream) pull(wg *sync.WaitGroup) error {
 		defer wg.Done()
 		errc <- st.recvLoop()
 	}()
-	err := <-errc
-	close(st.done)
-	if err == io.EOF {
-		return nil
+	var tchan <-chan time.Time
+	if st.timeout > 0 {
+		tchan = time.After(st.timeout)
 	}
+	// Wait until one of the goroutines returns an error, or we time out.
+	var err error
+	select {
+	case err = <-errc:
+		if err == io.EOF {
+			err = nil
+		}
+	case <-tchan:
+	}
+	close(st.done) // stop the other goroutine
 	return err
 }
 
