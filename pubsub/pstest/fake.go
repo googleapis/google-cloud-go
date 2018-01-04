@@ -17,9 +17,11 @@ package pstest
 
 import (
 	"fmt"
+	"io"
 	"sort"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
@@ -32,7 +34,19 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
-var now = time.Now
+// For testing. Note that even though changes to the now variable are atomic, a call
+// to the stored function can race with a change to that function. This could be a
+// problem if tests are run in parallel, or even if concurrent parts of the same test
+// change the value of the variable.
+var now atomic.Value
+
+func init() {
+	now.Store(time.Now)
+}
+
+func timeNow() time.Time {
+	return now.Load().(func() time.Time)()
+}
 
 type Server struct {
 	Addr string // The address that the server is listening on.
@@ -295,8 +309,6 @@ func (s *gServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 		return nil, grpc.Errorf(codes.NotFound, "subscription %q", req.Subscription.Name)
 	}
 
-	sub.topic.mu.Lock()
-	defer sub.topic.mu.Unlock()
 	for _, path := range req.UpdateMask.Paths {
 		switch path {
 		case "push_config":
@@ -327,6 +339,9 @@ func (s *gServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 }
 
 func (s *gServer) ListSubscriptions(_ context.Context, req *pb.ListSubscriptionsRequest) (*pb.ListSubscriptionsResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	var names []string
 	for name := range s.subs {
 		if strings.HasPrefix(name, req.Project) {
@@ -375,7 +390,7 @@ func (s *gServer) Publish(_ context.Context, req *pb.PublishRequest) (*pb.Publis
 		id := fmt.Sprintf("m%d", s.nextID)
 		s.nextID++
 		pm.MessageId = id
-		pubTime := now()
+		pubTime := timeNow()
 		tsPubTime, err := ptypes.TimestampProto(pubTime)
 		if err != nil {
 			return nil, grpc.Errorf(codes.Internal, err.Error())
@@ -396,7 +411,6 @@ func (s *gServer) Publish(_ context.Context, req *pb.PublishRequest) (*pb.Publis
 }
 
 type topic struct {
-	mu    sync.Mutex
 	proto *pb.Topic
 	subs  map[string]*subscription
 }
@@ -440,6 +454,7 @@ type subscription struct {
 	proto      *pb.Subscription
 	ackTimeout time.Duration
 	msgs       map[string]*message // unacked messages by message ID
+	streams    []*stream
 	done       chan struct{}
 }
 
@@ -473,7 +488,125 @@ func (s *subscription) stop() {
 	close(s.done)
 }
 
+func (s *gServer) StreamingPull(sps pb.Subscriber_StreamingPullServer) error {
+	// Receive initial message configuring the pull.
+	req, err := sps.Recv()
+	if err != nil {
+		return err
+	}
+	if req.Subscription == "" {
+		return grpc.Errorf(codes.InvalidArgument, "missing subscription")
+	}
+	s.mu.Lock()
+	sub := s.subs[req.Subscription]
+	s.mu.Unlock()
+	if sub == nil {
+		return grpc.Errorf(codes.NotFound, "subscription %s", req.Subscription)
+	}
+	// Create a new stream to handle the pull.
+	st := sub.newStream(sps)
+	err = st.pull(&s.wg)
+	sub.deleteStream(st)
+	return err
+}
+
+var retentionDuration = 10 * time.Minute
+
 func (s *subscription) deliver() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	tNow := timeNow()
+	for id, m := range s.msgs {
+		// Mark a message as re-deliverable if its ack deadline has expired.
+		if m.outstanding() && tNow.After(m.ackDeadline) {
+			m.makeAvailable()
+		}
+		pubTime, err := ptypes.Timestamp(m.proto.Message.PublishTime)
+		if err != nil {
+			panic(err)
+		}
+		// Remove messages that have been undelivered for a long time.
+		if !m.outstanding() && tNow.Sub(pubTime) > retentionDuration {
+			delete(s.msgs, id)
+		}
+	}
+	// Try to deliver each remaining message.
+	curIndex := 0
+	for _, m := range s.msgs {
+		// If the message was never delivered before, start with the stream at
+		// curIndex. If it was delivered before, start with the stream after the one
+		// that owned it.
+		if m.streamIndex < 0 {
+			delIndex, ok := s.deliverMessage(m, curIndex, tNow)
+			if !ok {
+				break
+			}
+			curIndex = delIndex + 1
+			m.streamIndex = curIndex
+		} else {
+			delIndex, ok := s.deliverMessage(m, m.streamIndex, tNow)
+			if !ok {
+				break
+			}
+			m.streamIndex = delIndex
+		}
+	}
+}
+
+// deliverMessage attempts to deliver m to the stream at index i. If it can't, it
+// tries streams i+1, i+2, ..., wrapping around. It returns the index of the stream
+// it delivered the message to, or 0, false if it didn't deliver the message because
+// there are no active streams.
+func (s *subscription) deliverMessage(m *message, i int, tNow time.Time) (int, bool) {
+	for len(s.streams) > 0 {
+		if i >= len(s.streams) {
+			i = 0
+		}
+		st := s.streams[i]
+		select {
+		case <-st.done:
+			s.streams = deleteStreamAt(s.streams, i)
+
+		case st.msgc <- m.proto:
+			(*m.deliveries)++
+			m.ackDeadline = tNow.Add(st.ackTimeout)
+			return i, true
+		}
+	}
+	return 0, false
+}
+
+func (s *subscription) newStream(gs pb.Subscriber_StreamingPullServer) *stream {
+	st := &stream{
+		sub:        s,
+		done:       make(chan struct{}),
+		msgc:       make(chan *pb.ReceivedMessage),
+		gstream:    gs,
+		ackTimeout: s.ackTimeout,
+	}
+	s.mu.Lock()
+	s.streams = append(s.streams, st)
+	s.mu.Unlock()
+	return st
+}
+
+func (s *subscription) deleteStream(st *stream) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	var i int
+	for i = 0; i < len(s.streams); i++ {
+		if s.streams[i] == st {
+			break
+		}
+	}
+	if i < len(s.streams) {
+		s.streams = deleteStreamAt(s.streams, i)
+	}
+}
+func deleteStreamAt(s []*stream, i int) []*stream {
+	// Preserve order for round-robin delivery.
+	return append(s[:i], s[i+1:]...)
 }
 
 type message struct {
@@ -483,4 +616,104 @@ type message struct {
 	deliveries  *int
 	acks        *int
 	streamIndex int // index of stream that currently owns msg, for round-robin delivery
+}
+
+func (m *message) outstanding() bool {
+	return !m.ackDeadline.IsZero()
+}
+
+func (m *message) makeAvailable() {
+	m.ackDeadline = time.Time{}
+}
+
+type stream struct {
+	sub        *subscription
+	done       chan struct{} // closed when the stream is finished
+	msgc       chan *pb.ReceivedMessage
+	gstream    pb.Subscriber_StreamingPullServer
+	ackTimeout time.Duration
+}
+
+// pull manages the StreamingPull interaction for the life of the stream.
+func (st *stream) pull(wg *sync.WaitGroup) error {
+	errc := make(chan error, 2)
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		errc <- st.sendLoop()
+	}()
+	go func() {
+		defer wg.Done()
+		errc <- st.recvLoop()
+	}()
+	err := <-errc
+	close(st.done)
+	if err == io.EOF {
+		return nil
+	}
+	return err
+}
+
+func (st *stream) sendLoop() error {
+	for {
+		select {
+		case <-st.done:
+			return nil
+		case rm := <-st.msgc:
+			res := &pb.StreamingPullResponse{ReceivedMessages: []*pb.ReceivedMessage{rm}}
+			if err := st.gstream.Send(res); err != nil {
+				return err
+			}
+		}
+	}
+}
+
+func (st *stream) recvLoop() error {
+	for {
+		req, err := st.gstream.Recv()
+		if err != nil {
+			return err
+		}
+		st.sub.handleStreamingPullRequest(st, req)
+	}
+}
+
+func (s *subscription) handleStreamingPullRequest(st *stream, req *pb.StreamingPullRequest) {
+	// Lock the entire server.
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	for _, ackID := range req.AckIds {
+		s.ack(ackID)
+	}
+	for i, id := range req.ModifyDeadlineAckIds {
+		s.modifyAckDeadline(id, secsToDur(req.ModifyDeadlineSeconds[i]))
+	}
+	if req.StreamAckDeadlineSeconds > 0 {
+		st.ackTimeout = secsToDur(req.StreamAckDeadlineSeconds)
+	}
+}
+
+func (s *subscription) ack(id string) {
+	m := s.msgs[id]
+	if m != nil {
+		(*m.acks)++
+		delete(s.msgs, id)
+	}
+}
+
+func (s *subscription) modifyAckDeadline(id string, d time.Duration) {
+	m := s.msgs[id]
+	if m == nil { // already acked: ignore.
+		return
+	}
+	if d == 0 { // nack
+		m.makeAvailable()
+	} else { // extend the deadline by d
+		m.ackDeadline = timeNow().Add(d)
+	}
+}
+
+func secsToDur(secs int32) time.Duration {
+	return time.Duration(secs) * time.Second
 }
