@@ -16,7 +16,11 @@ package pstest
 
 import (
 	"fmt"
+	"io"
 	"testing"
+	"time"
+
+	"github.com/golang/protobuf/ptypes"
 
 	"cloud.google.com/go/internal/testutil"
 	"golang.org/x/net/context"
@@ -151,6 +155,154 @@ func TestPublish(t *testing.T) {
 	if m == nil {
 		t.Error("got nil, want a message")
 	}
+}
+
+// Note: this sets the fake's "now" time, so it is senstive to concurrent changes to "now".
+func publish(t *testing.T, pclient pb.PublisherClient, topic *pb.Topic, messages []*pb.PubsubMessage) map[string]*pb.PubsubMessage {
+	pubTime := time.Now()
+	now.Store(func() time.Time { return pubTime })
+	defer func() { now.Store(time.Now) }()
+
+	res, err := pclient.Publish(context.Background(), &pb.PublishRequest{
+		Topic:    topic.Name,
+		Messages: messages,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	tsPubTime, err := ptypes.TimestampProto(pubTime)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]*pb.PubsubMessage{}
+	for i, id := range res.MessageIds {
+		want[id] = &pb.PubsubMessage{
+			Data:        messages[i].Data,
+			Attributes:  messages[i].Attributes,
+			MessageId:   id,
+			PublishTime: tsPubTime,
+		}
+	}
+	return want
+}
+
+func TestStreamingPull(t *testing.T) {
+	// A simple test of streaming pull.
+	pclient, sclient, _ := newFake(t)
+	top := mustCreateTopic(t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	sub := mustCreateSubscription(t, sclient, &pb.Subscription{
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top.Name,
+		AckDeadlineSeconds: 10,
+	})
+
+	want := publish(t, pclient, top, []*pb.PubsubMessage{
+		{Data: []byte("d1")},
+		{Data: []byte("d2")},
+		{Data: []byte("d3")},
+	})
+	got := pullN(t, len(want), sclient, sub)
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Error(diff)
+	}
+}
+
+func TestMultiSubs(t *testing.T) {
+	// Each subscription gets every message.
+	pclient, sclient, _ := newFake(t)
+	top := mustCreateTopic(t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	sub1 := mustCreateSubscription(t, sclient, &pb.Subscription{
+		Name:               "projects/P/subscriptions/S1",
+		Topic:              top.Name,
+		AckDeadlineSeconds: 10,
+	})
+	sub2 := mustCreateSubscription(t, sclient, &pb.Subscription{
+		Name:               "projects/P/subscriptions/S2",
+		Topic:              top.Name,
+		AckDeadlineSeconds: 10,
+	})
+
+	want := publish(t, pclient, top, []*pb.PubsubMessage{
+		{Data: []byte("d1")},
+		{Data: []byte("d2")},
+		{Data: []byte("d3")},
+	})
+	got1 := pullN(t, len(want), sclient, sub1)
+	got2 := pullN(t, len(want), sclient, sub2)
+	if diff := testutil.Diff(got1, want); diff != "" {
+		t.Error(diff)
+	}
+	if diff := testutil.Diff(got2, want); diff != "" {
+		t.Error(diff)
+	}
+}
+
+func TestMultiStreams(t *testing.T) {
+	// Messages are handed out to the streams of a subscription in round-robin order.
+	pclient, sclient, _ := newFake(t)
+	top := mustCreateTopic(t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	sub := mustCreateSubscription(t, sclient, &pb.Subscription{
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top.Name,
+		AckDeadlineSeconds: 10,
+	})
+	want := publish(t, pclient, top, []*pb.PubsubMessage{
+		{Data: []byte("d1")},
+		{Data: []byte("d2")},
+		{Data: []byte("d3")},
+		{Data: []byte("d4")},
+	})
+	streams := []pb.Subscriber_StreamingPullClient{
+		mustStartPull(t, sclient, sub),
+		mustStartPull(t, sclient, sub),
+	}
+	got := map[string]*pb.PubsubMessage{}
+	for i := 0; i < 2; i++ {
+		for _, st := range streams {
+			res, err := st.Recv()
+			if err != nil {
+				t.Fatal(err)
+			}
+			m := res.ReceivedMessages[0]
+			got[m.Message.MessageId] = m.Message
+		}
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Error(diff)
+	}
+}
+
+func mustStartPull(t *testing.T, sc pb.SubscriberClient, sub *pb.Subscription) pb.Subscriber_StreamingPullClient {
+	spc, err := sc.StreamingPull(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := spc.Send(&pb.StreamingPullRequest{Subscription: sub.Name}); err != nil {
+		t.Fatal(err)
+	}
+	return spc
+}
+
+func pullN(t *testing.T, n int, sc pb.SubscriberClient, sub *pb.Subscription) map[string]*pb.PubsubMessage {
+	spc := mustStartPull(t, sc, sub)
+	got := map[string]*pb.PubsubMessage{}
+	for i := 0; i < n; i++ {
+		res, err := spc.Recv()
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, m := range res.ReceivedMessages {
+			got[m.Message.MessageId] = m.Message
+		}
+	}
+	if err := spc.CloseSend(); err != nil {
+		t.Fatal(err)
+	}
+	_, err := spc.Recv()
+	if err != io.EOF {
+		t.Fatal(err)
+	}
+	return got
 }
 
 func mustCreateTopic(t *testing.T, pc pb.PublisherClient, topic *pb.Topic) *pb.Topic {
