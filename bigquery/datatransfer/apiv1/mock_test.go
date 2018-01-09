@@ -1,10 +1,10 @@
-// Copyright 2017, Google LLC All rights reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -259,7 +259,7 @@ func TestDataTransferServiceGetDataSource(t *testing.T) {
 	var defaultSchedule string = "defaultSchedule-800168235"
 	var supportsCustomSchedule bool = true
 	var helpUrl string = "helpUrl-789431439"
-	var defaultDataRefreshWindowDays int32 = -1804935157
+	var defaultDataRefreshWindowDays int32 = 1804935157
 	var manualRunsDisabled bool = true
 	var expectedResponse = &datatransferpb.DataSource{
 		Name:                      name2,
@@ -409,7 +409,7 @@ func TestDataTransferServiceCreateTransferConfig(t *testing.T) {
 	var schedule string = "schedule-697920873"
 	var dataRefreshWindowDays int32 = 327632845
 	var disabled bool = true
-	var userId int64 = -147132913
+	var userId int64 = 147132913
 	var datasetRegion string = "datasetRegion959248539"
 	var expectedResponse = &datatransferpb.TransferConfig{
 		Name:                  name,
@@ -488,7 +488,7 @@ func TestDataTransferServiceUpdateTransferConfig(t *testing.T) {
 	var schedule string = "schedule-697920873"
 	var dataRefreshWindowDays int32 = 327632845
 	var disabled bool = true
-	var userId int64 = -147132913
+	var userId int64 = 147132913
 	var datasetRegion string = "datasetRegion959248539"
 	var expectedResponse = &datatransferpb.TransferConfig{
 		Name:                  name,
@@ -619,7 +619,7 @@ func TestDataTransferServiceGetTransferConfig(t *testing.T) {
 	var schedule string = "schedule-697920873"
 	var dataRefreshWindowDays int32 = 327632845
 	var disabled bool = true
-	var userId int64 = -147132913
+	var userId int64 = 147132913
 	var datasetRegion string = "datasetRegion959248539"
 	var expectedResponse = &datatransferpb.TransferConfig{
 		Name:                  name2,
@@ -826,7 +826,7 @@ func TestDataTransferServiceGetTransferRun(t *testing.T) {
 	var name2 string = "name2-1052831874"
 	var destinationDatasetId string = "destinationDatasetId1541564179"
 	var dataSourceId string = "dataSourceId-1015796374"
-	var userId int64 = -147132913
+	var userId int64 = 147132913
 	var schedule string = "schedule-697920873"
 	var expectedResponse = &datatransferpb.TransferRun{
 		Name:                 name2,
