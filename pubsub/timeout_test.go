@@ -15,7 +15,7 @@
 package pubsub
 
 import (
-	"fmt"
+	"log"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -30,9 +30,10 @@ import (
 // Using the fake PubSub server in the pstest package, verify that streaming
 // pull resumes if the server stream times out.
 func TestStreamTimeout(t *testing.T) {
+	log.SetFlags(log.Lmicroseconds)
 	ctx := context.Background()
 	srv := pstest.NewServer()
-	srv.SetStreamTimeout(500 * time.Millisecond)
+	srv.SetStreamTimeout(2 * time.Second)
 	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
 	if err != nil {
 		t.Fatal(err)
@@ -51,7 +52,7 @@ func TestStreamTimeout(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	const nPublish = 5
+	const nPublish = 8
 	rctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 	errc := make(chan error)
@@ -68,11 +69,10 @@ func TestStreamTimeout(t *testing.T) {
 
 	for i := 0; i < nPublish; i++ {
 		pr := topic.Publish(ctx, &Message{Data: []byte("msg")})
-		id, err := pr.Get(ctx)
+		_, err := pr.Get(ctx)
 		if err != nil {
 			t.Fatal(err)
 		}
-		fmt.Printf("pub id = %s\n", id)
 		time.Sleep(250 * time.Millisecond)
 	}
 
