@@ -1,10 +1,10 @@
-// Copyright 2017, Google LLC All rights reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -1026,7 +1026,7 @@ func TestSubscriberGetSubscriptionError(t *testing.T) {
 func TestSubscriberUpdateSubscription(t *testing.T) {
 	var name string = "name3373707"
 	var topic string = "topic110546223"
-	var ackDeadlineSeconds2 int32 = -921632575
+	var ackDeadlineSeconds2 int32 = 921632575
 	var retainAckedMessages bool = false
 	var expectedResponse = &pubsubpb.Subscription{
 		Name:                name,
