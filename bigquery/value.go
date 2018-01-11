@@ -269,17 +269,6 @@ func compileToOps(structType reflect.Type, schema Schema) ([]structLoaderOp, err
 	return ops, nil
 }
 
-var (
-	typeOfNullInt64     = reflect.TypeOf(NullInt64{})
-	typeOfNullFloat64   = reflect.TypeOf(NullFloat64{})
-	typeOfNullBool      = reflect.TypeOf(NullBool{})
-	typeOfNullString    = reflect.TypeOf(NullString{})
-	typeOfNullTimestamp = reflect.TypeOf(NullTimestamp{})
-	typeOfNullDate      = reflect.TypeOf(NullDate{})
-	typeOfNullTime      = reflect.TypeOf(NullTime{})
-	typeOfNullDateTime  = reflect.TypeOf(NullDateTime{})
-)
-
 // determineSetFunc chooses the best function for setting a field of type ftype
 // to a value whose schema field type is stype. It returns nil if stype
 // is not assignable to ftype.
