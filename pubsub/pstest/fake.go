@@ -12,7 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package pstest provides a fake PubSub service for testing.
+// Package pstest provides a fake Cloud PubSub service for testing. It implements a
+// simplified form of the service, suitable for unit tests. It may behave
+// differently from the actual service in ways in which the service is
+// non-deterministic or unspecified: timing, delivery order, etc.
+//
+// This package is EXPERIMENTAL and is subject to change without notice.
+//
+// See the example for usage.
 package pstest
 
 import (
@@ -49,8 +56,8 @@ func timeNow() time.Time {
 }
 
 type Server struct {
-	Addr string // The address that the server is listening on.
-	gServer
+	Addr    string // The address that the server is listening on.
+	gServer gServer
 }
 
 type gServer struct {
@@ -105,9 +112,10 @@ func (s *Server) Publish(topic string, data []byte, attrs map[string]string) str
 	return res.MessageIds[0]
 }
 
-// Set the amount of time a stream will be active before it shuts itself down.
-// This mimics the real service's behavior of closing streams after 30 minutes.
-// If SetStreamTimeout is never called or is passed zero, streams never shut down.
+// SetStreamTimeout sets the amount of time a stream will be active before it shuts
+// itself down. This mimics the real service's behavior of closing streams after 30
+// minutes. If SetStreamTimeout is never called or is passed zero, streams never shut
+// down.
 func (s *Server) SetStreamTimeout(d time.Duration) {
 	s.gServer.mu.Lock()
 	defer s.gServer.mu.Unlock()
@@ -120,8 +128,8 @@ type Message struct {
 	Data        []byte
 	Attributes  map[string]string
 	PublishTime time.Time
-	Deliveries  int
-	Acks        int
+	Deliveries  int // number of times delivery of the message was attempted
+	Acks        int // number of acks received from clients
 
 	// protected by server mutex
 	deliveries int
@@ -134,7 +142,7 @@ func (s *Server) Messages() []*Message {
 	defer s.gServer.mu.Unlock()
 
 	var msgs []*Message
-	for _, m := range s.msgs {
+	for _, m := range s.gServer.msgs {
 		m.Deliveries = m.deliveries
 		m.Acks = m.acks
 		msgs = append(msgs, m)
@@ -148,7 +156,7 @@ func (s *Server) Message(id string) *Message {
 	s.gServer.mu.Lock()
 	defer s.gServer.mu.Unlock()
 
-	m := s.msgsByID[id]
+	m := s.gServer.msgsByID[id]
 	if m != nil {
 		m.Deliveries = m.deliveries
 		m.Acks = m.acks
