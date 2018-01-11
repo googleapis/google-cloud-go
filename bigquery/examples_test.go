@@ -399,7 +399,8 @@ func ExampleInferSchema_tags() {
 		Size     float64
 		Count    int    `bigquery:"number"`
 		Secret   []byte `bigquery:"-"`
-		Optional bool   `bigquery:",nullable"`
+		Optional bigquery.NullBool
+		OptBytes []byte `bigquery:",nullable"`
 	}
 	schema, err := bigquery.InferSchema(Item{})
 	if err != nil {
@@ -414,6 +415,7 @@ func ExampleInferSchema_tags() {
 	// Size FLOAT true
 	// number INTEGER true
 	// Optional BOOLEAN false
+	// OptBytes BYTES false
 }
 
 func ExampleTable_Create() {

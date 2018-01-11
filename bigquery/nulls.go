@@ -17,6 +17,7 @@ package bigquery
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"time"
 
 	"cloud.google.com/go/civil"
@@ -131,4 +132,38 @@ func nulljson(valid bool, v interface{}) ([]byte, error) {
 		return jsonNull, nil
 	}
 	return json.Marshal(v)
+}
+
+var (
+	typeOfNullInt64     = reflect.TypeOf(NullInt64{})
+	typeOfNullFloat64   = reflect.TypeOf(NullFloat64{})
+	typeOfNullBool      = reflect.TypeOf(NullBool{})
+	typeOfNullString    = reflect.TypeOf(NullString{})
+	typeOfNullTimestamp = reflect.TypeOf(NullTimestamp{})
+	typeOfNullDate      = reflect.TypeOf(NullDate{})
+	typeOfNullTime      = reflect.TypeOf(NullTime{})
+	typeOfNullDateTime  = reflect.TypeOf(NullDateTime{})
+)
+
+func nullableFieldType(t reflect.Type) FieldType {
+	switch t {
+	case typeOfNullInt64:
+		return IntegerFieldType
+	case typeOfNullFloat64:
+		return FloatFieldType
+	case typeOfNullBool:
+		return BooleanFieldType
+	case typeOfNullString:
+		return StringFieldType
+	case typeOfNullTimestamp:
+		return TimestampFieldType
+	case typeOfNullDate:
+		return DateFieldType
+	case typeOfNullTime:
+		return TimeFieldType
+	case typeOfNullDateTime:
+		return DateTimeFieldType
+	default:
+		return ""
+	}
 }
