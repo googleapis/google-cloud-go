@@ -1316,7 +1316,7 @@ func TestInvalidDatabase(t *testing.T) {
 	ctx := context.Background()
 	ts := testutil.TokenSource(ctx, Scope)
 	if ts == nil {
-		t.Skip("Integration test skipped: cannot get service account credential from environment variable %v", "GCLOUD_TESTS_GOLANG_KEY")
+		t.Skip("Integration test skipped: cannot get service account credential from environment variable GCLOUD_TESTS_GOLANG_KEY")
 	}
 	db := fmt.Sprintf("projects/%v/instances/%v/databases/invalid", testProjectID, testInstanceID)
 	c, err := NewClient(ctx, db, option.WithTokenSource(ts))
