@@ -148,6 +148,12 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 
 	var prevRowKey string
 	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		if !arg.valid() {
+			// Empty row set, no need to make an API call.
+			// NOTE: we must return early if arg.(type) == RowList because reading an empty RowList from
+			// bigtable returns all rows from that table.
+			return nil
+		}
 		req := &btpb.ReadRowsRequest{
 			TableName:    t.c.fullTableName(t.table),
 			AppProfileId: t.c.appProfile,
