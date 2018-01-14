@@ -338,7 +338,7 @@ func (r RowRange) retainRowsAfter(lastRowKey string) RowSet {
 }
 
 func (r RowRange) valid() bool {
-	return r.start < r.limit
+	return r.Unbounded() || r.start < r.limit
 }
 
 // RowRangeList is a sequence of RowRanges representing the union of the ranges.
