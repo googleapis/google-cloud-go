@@ -19,7 +19,7 @@ Package bttest contains test helpers for working with the bigtable package.
 
 To use a Server, create it, and then connect to it with no security:
 (The project/instance values are ignored.)
-	srv, err := bttest.NewServer("127.0.0.1:0")
+	srv, err := bttest.NewServer("localhost:0")
 	...
 	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
 	...
