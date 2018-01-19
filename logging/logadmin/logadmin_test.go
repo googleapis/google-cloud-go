@@ -233,29 +233,30 @@ func TestFromLogEntry(t *testing.T) {
 
 func TestListLogEntriesRequest(t *testing.T) {
 	for _, test := range []struct {
-		opts       []EntriesOption
-		projectIDs []string
-		filter     string
-		orderBy    string
+		opts          []EntriesOption
+		resourceNames []string
+		filter        string
+		orderBy       string
 	}{
 		// Default is client's project ID, empty filter and orderBy.
-		{nil,
-			[]string{"PROJECT_ID"}, "", ""},
+		{nil, []string{"projects/PROJECT_ID"}, "", ""},
 		{[]EntriesOption{NewestFirst(), Filter("f")},
-			[]string{"PROJECT_ID"}, "f", "timestamp desc"},
+			[]string{"projects/PROJECT_ID"}, "f", "timestamp desc"},
 		{[]EntriesOption{ProjectIDs([]string{"foo"})},
-			[]string{"foo"}, "", ""},
+			[]string{"projects/foo"}, "", ""},
+		{[]EntriesOption{ResourceNames([]string{"folders/F", "organizations/O"})},
+			[]string{"folders/F", "organizations/O"}, "", ""},
 		{[]EntriesOption{NewestFirst(), Filter("f"), ProjectIDs([]string{"foo"})},
-			[]string{"foo"}, "f", "timestamp desc"},
+			[]string{"projects/foo"}, "f", "timestamp desc"},
 		{[]EntriesOption{NewestFirst(), Filter("f"), ProjectIDs([]string{"foo"})},
-			[]string{"foo"}, "f", "timestamp desc"},
+			[]string{"projects/foo"}, "f", "timestamp desc"},
 		// If there are repeats, last one wins.
 		{[]EntriesOption{NewestFirst(), Filter("no"), ProjectIDs([]string{"foo"}), Filter("f")},
-			[]string{"foo"}, "f", "timestamp desc"},
+			[]string{"projects/foo"}, "f", "timestamp desc"},
 	} {
-		got := listLogEntriesRequest("PROJECT_ID", test.opts)
+		got := listLogEntriesRequest("projects/PROJECT_ID", test.opts)
 		want := &logpb.ListLogEntriesRequest{
-			ResourceNames: []string{"projects/" + test.projectIDs[0]},
+			ResourceNames: test.resourceNames,
 			Filter:        test.filter,
 			OrderBy:       test.orderBy,
 		}
