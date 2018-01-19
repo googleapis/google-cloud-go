@@ -27,6 +27,7 @@ google/cloud/bigquery/datatransfer/artman_bigquerydatatransfer.yaml
 google/cloud/dataproc/artman_dataproc_v1.yaml
 google/cloud/language/artman_language_v1.yaml
 google/cloud/language/artman_language_v1beta2.yaml
+google/cloud/oslogin/artman_oslogin_v1beta.yaml
 google/cloud/speech/artman_speech_v1.yaml
 google/cloud/speech/artman_speech_v1beta1.yaml
 google/cloud/videointelligence/artman_videointelligence_v1beta1.yaml

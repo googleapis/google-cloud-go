@@ -366,6 +366,19 @@ func TestSingleUse(t *testing.T) {
 			t.Errorf("%d: SingleUse.ReadUsingIndex doesn't return expected timestamp: %v", i, err)
 		}
 	}
+
+	// Reading with limit.
+	su := client.Single()
+	const limit = 1
+	gotRows, err := readAll(su.ReadWithOptions(ctx, "Singers", KeySets(Key{1}, Key{3}, Key{4}),
+		[]string{"SingerId", "FirstName", "LastName"}, &ReadOptions{Limit: limit}))
+	if err != nil {
+		t.Errorf("SingleUse.ReadWithOptions returns error %v, want nil", err)
+	}
+	if got, want := len(gotRows), limit; got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+
 }
 
 // Test ReadOnlyTransaction. The testsuite is mostly like SingleUse, except it
@@ -1303,7 +1316,7 @@ func TestInvalidDatabase(t *testing.T) {
 	ctx := context.Background()
 	ts := testutil.TokenSource(ctx, Scope)
 	if ts == nil {
-		t.Skip("Integration test skipped: cannot get service account credential from environment variable %v", "GCLOUD_TESTS_GOLANG_KEY")
+		t.Skip("Integration test skipped: cannot get service account credential from environment variable GCLOUD_TESTS_GOLANG_KEY")
 	}
 	db := fmt.Sprintf("projects/%v/instances/%v/databases/invalid", testProjectID, testInstanceID)
 	c, err := NewClient(ctx, db, option.WithTokenSource(ts))

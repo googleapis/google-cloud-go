@@ -27,6 +27,8 @@ import (
 	"cloud.google.com/go/internal/testutil"
 
 	"golang.org/x/net/context"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
 )
 
 func TestPrefix(t *testing.T) {
@@ -940,6 +942,103 @@ func TestClientIntegration(t *testing.T) {
 		t.Errorf("No errors for bad bulk mutation")
 	} else if status[0] == nil || status[1] == nil {
 		t.Errorf("No error for bad bulk mutation")
+	}
+}
+
+type requestCountingInterceptor struct {
+	grpc.ClientStream
+	requestCallback func()
+}
+
+func (i *requestCountingInterceptor) SendMsg(m interface{}) error {
+	i.requestCallback()
+	return i.ClientStream.SendMsg(m)
+}
+
+func (i *requestCountingInterceptor) RecvMsg(m interface{}) error {
+	return i.ClientStream.RecvMsg(m)
+}
+
+func requestCallback(callback func()) func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+	return func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+		clientStream, err := streamer(ctx, desc, cc, method, opts...)
+		return &requestCountingInterceptor{
+			ClientStream:    clientStream,
+			requestCallback: callback,
+		}, err
+	}
+}
+
+// TestReadRowsInvalidRowSet verifies that the client doesn't send ReadRows() requests with invalid RowSets.
+func TestReadRowsInvalidRowSet(t *testing.T) {
+	testEnv, err := NewEmulatedEnv(IntegrationTestConfig{})
+	if err != nil {
+		t.Fatalf("NewEmulatedEnv failed: %v", err)
+	}
+	var requestCount int
+	incrementRequestCount := func() { requestCount++ }
+	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock(),
+		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)),
+		grpc.WithStreamInterceptor(requestCallback(incrementRequestCount)),
+	)
+	if err != nil {
+		t.Fatalf("grpc.Dial failed: %v", err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	adminClient, err := NewAdminClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatalf("NewClient failed: %v", err)
+	}
+	defer adminClient.Close()
+	if err := adminClient.CreateTable(ctx, testEnv.config.Table); err != nil {
+		t.Fatalf("CreateTable(%v) failed: %v", testEnv.config.Table, err)
+	}
+	client, err := NewClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatalf("NewClient failed: %v", err)
+	}
+	defer client.Close()
+	table := client.Open(testEnv.config.Table)
+	tests := []struct {
+		rr    RowSet
+		valid bool
+	}{
+		{
+			rr:    RowRange{},
+			valid: true,
+		},
+		{
+			rr:    RowRange{start: "b"},
+			valid: true,
+		},
+		{
+			rr:    RowRange{start: "b", limit: "c"},
+			valid: true,
+		},
+		{
+			rr:    RowRange{start: "b", limit: "a"},
+			valid: false,
+		},
+		{
+			rr:    RowList{"a"},
+			valid: true,
+		},
+		{
+			rr:    RowList{},
+			valid: false,
+		},
+	}
+	for _, test := range tests {
+		requestCount = 0
+		err = table.ReadRows(ctx, test.rr, func(r Row) bool { return true })
+		if err != nil {
+			t.Fatalf("ReadRows(%v) failed: %v", test.rr, err)
+		}
+		requestValid := requestCount != 0
+		if requestValid != test.valid {
+			t.Errorf("%s: got %v, want %v", test.rr, requestValid, test.valid)
+		}
 	}
 }
 

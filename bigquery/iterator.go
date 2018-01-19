@@ -93,8 +93,11 @@ type RowIterator struct {
 // type (RECORD or nested schema) corresponds to a nested struct or struct pointer.
 // All calls to Next on the same iterator must use the same struct type.
 //
-// It is an error to attempt to read a BigQuery NULL value into a struct field.
-// If your table contains NULLs, use a *[]Value or *map[string]Value.
+// It is an error to attempt to read a BigQuery NULL value into a struct field,
+// unless the field is of type []byte or is one of the special Null types: NullInt64,
+// NullFloat64, NullBool, NullString, NullTimestamp, NullDate, NullTime or
+// NullDateTime. You can also use a *[]Value or *map[string]Value to read from a
+// table with NULLs.
 func (it *RowIterator) Next(dst interface{}) error {
 	var vl ValueLoader
 	switch dst := dst.(type) {

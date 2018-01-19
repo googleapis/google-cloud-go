@@ -62,5 +62,5 @@ func tracePrintf(ctx context.Context, attrMap map[string]interface{}, format str
 		}
 		attrs = append(attrs, a)
 	}
-	trace.FromContext(ctx).LazyPrintfWithAttributes(attrs, format, args...)
+	trace.FromContext(ctx).Annotatef(attrs, format, args...)
 }
