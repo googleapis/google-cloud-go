@@ -50,9 +50,14 @@ type Subscription struct {
 
 // Subscription creates a reference to a subscription.
 func (c *Client) Subscription(id string) *Subscription {
+	return c.SubscriptionInProject(id, c.projectID)
+}
+
+// SubscriptionInProject creates a reference to a subscription in a given project.
+func (c *Client) SubscriptionInProject(id, projectID string) *Subscription {
 	return &Subscription{
 		c:    c,
-		name: fmt.Sprintf("projects/%s/subscriptions/%s", c.projectID, id),
+		name: fmt.Sprintf("projects/%s/subscriptions/%s", projectID, id),
 	}
 }
 
