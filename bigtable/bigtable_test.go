@@ -154,10 +154,11 @@ func TestClientIntegration(t *testing.T) {
 	}
 	checkpoint("inserted initial data")
 
-	if err := adminClient.WaitForReplication(ctx, table); err != nil {
-		t.Errorf("Waiting for replication for table %q: %v", table, err)
-	}
-	checkpoint("waited for replication")
+	// TODO(igorbernstein): re-enable this when ready
+	//if err := adminClient.WaitForReplication(ctx, table); err != nil {
+	//	t.Errorf("Waiting for replication for table %q: %v", table, err)
+	//}
+	//checkpoint("waited for replication")
 
 	// Do a conditional mutation with a complex filter.
 	mutTrue := NewMutation()
