@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"reflect"
 	"regexp"
-	"strings"
 	"time"
 
 	"cloud.google.com/go/civil"
@@ -306,11 +305,7 @@ func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterTyp
 	case "TIMESTAMP":
 		return time.Parse(timestampFormat, qval.Value)
 	case "DATETIME":
-		parts := strings.Fields(qval.Value)
-		if len(parts) != 2 {
-			return nil, fmt.Errorf("bigquery: bad DATETIME value %q", qval.Value)
-		}
-		return civil.ParseDateTime(parts[0] + "T" + parts[1])
+		return parseCivilDateTime(qval.Value)
 	default:
 		return convertBasicType(qval.Value, paramTypeToFieldType[qtype.Type])
 	}
