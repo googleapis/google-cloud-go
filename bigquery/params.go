@@ -204,6 +204,8 @@ func paramValue(v reflect.Value) (bq.QueryParameterValue, error) {
 
 	case typeOfTime:
 		// civil.Time has nanosecond resolution, but BigQuery TIME only microsecond.
+		// (If we send nanoseconds, then when we try to read the result we get "query job
+		// missing destination table").
 		res.Value = CivilTimeString(v.Interface().(civil.Time))
 		return res, nil
 
