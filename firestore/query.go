@@ -446,10 +446,7 @@ type order struct {
 }
 
 func (r order) isDocumentID() bool {
-	if len(r.fieldPath) == 1 && r.fieldPath[0] == DocumentID {
-		return true
-	}
-	return false
+	return len(r.fieldPath) == 1 && r.fieldPath[0] == DocumentID
 }
 
 func (r order) toProto() (*pb.StructuredQuery_Order, error) {
