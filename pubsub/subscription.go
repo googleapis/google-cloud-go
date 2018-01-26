@@ -493,13 +493,15 @@ func (s *Subscription) receive(ctx context.Context, po *pullOptions, fc *flowCon
 				}
 				return nil
 			}
+			old := msg.doneFunc
+			msgLen := len(msg.Data)
+			msg.doneFunc = func(ackID string, ack bool) {
+				defer fc.release(msgLen)
+				old(ackID, ack)
+			}
 			wg.Add(1)
 			go func() {
-				// TODO(jba): call release when the message is available for GC.
-				// This considers the message to be released when
-				// f is finished, but f may ack early or not at all.
 				defer wg.Done()
-				defer fc.release(len(msg.Data))
 				f(ctx2, msg)
 			}()
 		}
