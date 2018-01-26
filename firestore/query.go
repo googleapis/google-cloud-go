@@ -48,6 +48,10 @@ type Query struct {
 	err                    error
 }
 
+func (q *Query) collectionPath() string {
+	return q.parentPath + "/documents/" + q.collectionID
+}
+
 // DocumentID is the special field name representing the ID of a document
 // in queries.
 const DocumentID = "__name__"
@@ -66,18 +70,17 @@ func (q Query) Select(paths ...string) Query {
 		}
 		fps = append(fps, fp)
 	}
-	if fps == nil {
-		q.selection = []FieldPath{{DocumentID}}
-	} else {
-		q.selection = fps
-	}
-	return q
+	return q.SelectPaths(fps...)
 }
 
 // SelectPaths returns a new Query that specifies the field paths
 // to return from the result documents.
 func (q Query) SelectPaths(fieldPaths ...FieldPath) Query {
-	q.selection = fieldPaths
+	if len(fieldPaths) == 0 {
+		q.selection = []FieldPath{{DocumentID}}
+	} else {
+		q.selection = fieldPaths
+	}
 	return q
 }
 
@@ -330,7 +333,7 @@ func (q *Query) toCursor(fieldValues []interface{}, ds *DocumentSnapshot, before
 	var vals []*pb.Value
 	var err error
 	if ds != nil {
-		vals, err = docSnapshotToCursorValues(ds, orders)
+		vals, err = q.docSnapshotToCursorValues(ds, orders)
 	} else if len(fieldValues) != 0 {
 		vals, err = q.fieldValuesToCursorValues(fieldValues)
 	} else {
@@ -358,7 +361,7 @@ func (q *Query) fieldValuesToCursorValues(fieldValues []interface{}) ([]*pb.Valu
 			if !ok {
 				return nil, fmt.Errorf("firestore: expected doc ID for DocumentID field, got %T", fval)
 			}
-			vals[i] = &pb.Value{&pb.Value_ReferenceValue{q.parentPath + "/documents/" + q.collectionID + "/" + docID}}
+			vals[i] = &pb.Value{&pb.Value_ReferenceValue{q.collectionPath() + "/" + docID}}
 		} else {
 			var sawTransform bool
 			vals[i], sawTransform, err = toProtoValue(reflect.ValueOf(fval))
@@ -373,11 +376,15 @@ func (q *Query) fieldValuesToCursorValues(fieldValues []interface{}) ([]*pb.Valu
 	return vals, nil
 }
 
-func docSnapshotToCursorValues(ds *DocumentSnapshot, orders []order) ([]*pb.Value, error) {
+func (q *Query) docSnapshotToCursorValues(ds *DocumentSnapshot, orders []order) ([]*pb.Value, error) {
 	// TODO(jba): error if doc snap does not belong to the right collection.
 	vals := make([]*pb.Value, len(orders))
 	for i, ord := range orders {
 		if ord.isDocumentID() {
+			dp, qp := ds.Ref.Parent.Path, q.collectionPath()
+			if dp != qp {
+				return nil, fmt.Errorf("firestore: document snapshot for %s passed to query on %s", dp, qp)
+			}
 			vals[i] = &pb.Value{&pb.Value_ReferenceValue{ds.Ref.Path}}
 		} else {
 			val, err := valueAtPath(ord.fieldPath, ds.proto.Fields)
