@@ -498,7 +498,7 @@ func (s *subscription) start(wg *sync.WaitGroup) {
 			select {
 			case <-s.done:
 				return
-			case <-time.After(1 * time.Second):
+			case <-time.After(10 * time.Millisecond):
 				s.deliver()
 			}
 		}
