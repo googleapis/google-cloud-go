@@ -169,9 +169,13 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 }
 
 func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionConfig, error) {
-	rd, err := ptypes.Duration(pbSub.MessageRetentionDuration)
-	if err != nil {
-		return SubscriptionConfig{}, err
+	rd := time.Hour * 24 * 7
+	var err error
+	if pbSub.MessageRetentionDuration != nil {
+		rd, err = ptypes.Duration(pbSub.MessageRetentionDuration)
+		if err != nil {
+			return SubscriptionConfig{}, err
+		}
 	}
 	return SubscriptionConfig{
 		Topic:       newTopic(c, pbSub.Topic),
