@@ -51,7 +51,7 @@ type Client struct {
 }
 
 // NewClient creates a new PubSub client.
-func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
+func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (c *Client, err error) {
 	var o []option.ClientOption
 	// Environment variables for gcloud emulator:
 	// https://cloud.google.com/sdk/gcloud/reference/beta/emulators/pubsub/
@@ -69,6 +69,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 				Time: 5 * time.Minute,
 			})),
 		}
+		o = append(o, openCensusOptions()...)
 	}
 	o = append(o, opts...)
 	pubc, err := vkit.NewPublisherClient(ctx, o...)
