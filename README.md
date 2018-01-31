@@ -33,6 +33,38 @@ make backwards-incompatible changes.
 
 ## News
 
+_January 18, 2018_
+
+*v0.18.0*
+
+- bigquery:
+  - Marked stable.
+  - Schema inference of nullable fields supported.
+  - Added TimePartitioning to QueryConfig.
+
+- firestore: Data provided to DocumentRef.Set with a Merge option can contain
+  Delete sentinels.
+
+- logging: Clients can accept parent resources other than projects.
+
+- pubsub:
+  - pubsub/pstest: A lighweight fake for pubsub. Experimental; feedback welcome.
+  - Support updating more subscription metadata: AckDeadline,
+    RetainAckedMessages and RetentionDuration.
+
+- oslogin/apiv1beta: New client for the Cloud OS Login API.
+
+- rpcreplay: A package for recording and replaying gRPC traffic.
+
+- spanner:
+  - Add a ReadWithOptions that supports a row limit, as well as an index.
+  - Support query plan and execution statistics.
+  - Added [OpenCensus](http://opencensus.io) support.
+
+- storage: Clarify checksum validation for gzipped files (it is not validated
+  when the file is served uncompressed).
+
+
 _December 11, 2017_
 
 *v0.17.0*
@@ -110,8 +142,8 @@ _October 3, 2017_
 
 Google API                       | Status       | Package
 ---------------------------------|--------------|-----------------------------------------------------------
-[BigQuery][cloud-bigquery]       | beta         | [`cloud.google.com/go/bigquery`][cloud-bigquery-ref]
-[Bigtable][cloud-bigtable]       | beta         | [`cloud.google.com/go/bigtable`][cloud-bigtable-ref]
+[BigQuery][cloud-bigquery]       | stable       | [`cloud.google.com/go/bigquery`][cloud-bigquery-ref]
+[Bigtable][cloud-bigtable]       | stable       | [`cloud.google.com/go/bigtable`][cloud-bigtable-ref]
 [Container][cloud-container]     | alpha        | [`cloud.google.com/go/container/apiv1`][cloud-container-ref]
 [Data Loss Prevention][cloud-dlp]| alpha        | [`cloud.google.com/go/dlp/apiv2beta1`][cloud-dlp-ref]
 [Datastore][cloud-datastore]     | stable       | [`cloud.google.com/go/datastore`][cloud-datastore-ref]
@@ -121,6 +153,7 @@ Google API                       | Status       | Package
 [Language][cloud-language]       | stable       | [`cloud.google.com/go/language/apiv1`][cloud-language-ref]
 [Logging][cloud-logging]         | stable       | [`cloud.google.com/go/logging`][cloud-logging-ref]
 [Monitoring][cloud-monitoring]   | beta         | [`cloud.google.com/go/monitoring/apiv3`][cloud-monitoring-ref]
+[OS Login][cloud-oslogin]        | alpha        | [`cloud.google.com/compute/docs/oslogin/rest`][cloud-oslogin-ref]
 [Pub/Sub][cloud-pubsub]          | beta         | [`cloud.google.com/go/pubsub`][cloud-pubsub-ref]
 [Spanner][cloud-spanner]         | stable       | [`cloud.google.com/go/spanner`][cloud-spanner-ref]
 [Speech][cloud-speech]           | stable       | [`cloud.google.com/go/speech/apiv1`][cloud-speech-ref]
@@ -481,6 +514,9 @@ for more information.
 
 [cloud-language]: https://cloud.google.com/natural-language
 [cloud-language-ref]: https://godoc.org/cloud.google.com/go/language/apiv1
+
+[cloud-oslogin]: https://cloud.google.com/compute/docs/oslogin/rest
+[cloud-oslogin-ref]: https://cloud.google.com/compute/docs/oslogin/rest
 
 [cloud-speech]: https://cloud.google.com/speech
 [cloud-speech-ref]: https://godoc.org/cloud.google.com/go/speech/apiv1

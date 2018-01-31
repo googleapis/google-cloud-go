@@ -131,7 +131,7 @@ func TestPublish(t *testing.T) {
 	s := NewServer()
 	var ids []string
 	for i := 0; i < 3; i++ {
-		ids = append(ids, s.Publish("t", []byte("hello"), nil))
+		ids = append(ids, s.Publish("projects/p/topics/t", []byte("hello"), nil))
 	}
 	s.Wait()
 	ms := s.Messages()
