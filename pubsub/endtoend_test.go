@@ -31,7 +31,7 @@ import (
 )
 
 const timeout = time.Minute * 10
-const ackDeadline = time.Second * 10
+const ackDeadline = time.Second * 15
 
 const nMessages = 1e4
 

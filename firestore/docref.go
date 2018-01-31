@@ -54,7 +54,9 @@ func (d *DocumentRef) Collection(id string) *CollectionRef {
 	return newCollRefWithParent(d.Parent.c, d, id)
 }
 
-// Get retrieves the document. It returns an error if the document does not exist.
+// Get retrieves the document. It returns a NotFound error if the document does not exist.
+// You can test for NotFound with
+//    grpc.Code(err) == codes.NotFound
 func (d *DocumentRef) Get(ctx context.Context) (*DocumentSnapshot, error) {
 	if err := checkTransaction(ctx); err != nil {
 		return nil, err
@@ -64,7 +66,6 @@ func (d *DocumentRef) Get(ctx context.Context) (*DocumentSnapshot, error) {
 	}
 	doc, err := d.Parent.c.c.GetDocument(withResourceHeader(ctx, d.Parent.c.path()),
 		&pb.GetDocumentRequest{Name: d.Path})
-	// TODO(jba): verify that GetDocument returns NOT_FOUND.
 	if err != nil {
 		return nil, err
 	}

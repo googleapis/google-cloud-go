@@ -25,6 +25,7 @@ package pstest
 import (
 	"fmt"
 	"io"
+	"path"
 	"sort"
 	"strings"
 	"sync"
@@ -100,6 +101,14 @@ func NewServer() *Server {
 //
 // Publish panics if there is an error, which is appropriate for testing.
 func (s *Server) Publish(topic string, data []byte, attrs map[string]string) string {
+	const topicPattern = "projects/*/topics/*"
+	ok, err := path.Match(topicPattern, topic)
+	if err != nil {
+		panic(err)
+	}
+	if !ok {
+		panic(fmt.Sprintf("topic name must be of the form %q", topicPattern))
+	}
 	_, _ = s.gServer.CreateTopic(nil, &pb.Topic{Name: topic})
 	req := &pb.PublishRequest{
 		Topic:    topic,
@@ -498,7 +507,7 @@ func (s *subscription) start(wg *sync.WaitGroup) {
 			select {
 			case <-s.done:
 				return
-			case <-time.After(1 * time.Second):
+			case <-time.After(10 * time.Millisecond):
 				s.deliver()
 			}
 		}

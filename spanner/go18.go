@@ -33,15 +33,17 @@ func openCensusOptions() []option.ClientOption {
 }
 
 func traceStartSpan(ctx context.Context, name string) context.Context {
-	return trace.StartSpan(ctx, name)
+	ctx, _ = trace.StartSpan(ctx, name)
+	return ctx
 }
 
 func traceEndSpan(ctx context.Context, err error) {
 	span := trace.FromContext(ctx)
 	if err != nil {
+		// TODO(jba): Add error code to the status.
 		span.SetStatus(trace.Status{Message: err.Error()})
 	}
-	trace.EndSpan(ctx)
+	span.End()
 }
 
 func tracePrintf(ctx context.Context, attrMap map[string]interface{}, format string, args ...interface{}) {

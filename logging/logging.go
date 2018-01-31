@@ -556,9 +556,7 @@ type Entry struct {
 	// reading entries. It is an error to set it when writing entries.
 	LogName string
 
-	// Resource is the monitored resource associated with the entry. It is set
-	// by the client when reading entries. It is an error to set it when
-	// writing entries.
+	// Resource is the monitored resource associated with the entry.
 	Resource *mrpb.MonitoredResource
 
 	// Trace is the resource name of the trace associated with the log entry,
@@ -777,6 +775,7 @@ func toLogEntry(e Entry) (*logpb.LogEntry, error) {
 		Operation:   e.Operation,
 		Labels:      e.Labels,
 		Trace:       e.Trace,
+		Resource:    e.Resource,
 	}
 
 	switch p := e.Payload.(type) {
