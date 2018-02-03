@@ -218,6 +218,7 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 	return &btapb.Table{
 		Name:           tblName,
 		ColumnFamilies: toColumnFamilies(tbl.families),
+		Granularity:    btapb.Table_TimestampGranularity(btapb.Table_MILLIS),
 	}, nil
 }
 
