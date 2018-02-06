@@ -525,9 +525,8 @@ type Entry struct {
 	// The zero value is Default.
 	Severity Severity
 
-	// Payload must be either a string or something that
-	// marshals via the encoding/json package to a JSON object
-	// (and not any other type of JSON value).
+	// Payload must be either a string, or something that marshals via the
+	// encoding/json package to a JSON object (and not any other type of JSON value).
 	Payload interface{}
 
 	// Labels optionally specifies key/value labels for the log entry.
@@ -640,13 +639,19 @@ func toProtoStruct(v interface{}) (*structpb.Struct, error) {
 	if s, ok := v.(*structpb.Struct); ok {
 		return s, nil
 	}
-	// v is a Go struct that supports JSON marshalling. We want a Struct
+	// v is a Go value that supports JSON marshalling. We want a Struct
 	// protobuf. Some day we may have a more direct way to get there, but right
-	// now the only way is to marshal the Go struct to JSON, unmarshal into a
+	// now the only way is to marshal the Go value to JSON, unmarshal into a
 	// map, and then build the Struct proto from the map.
-	jb, err := json.Marshal(v)
-	if err != nil {
-		return nil, fmt.Errorf("logging: json.Marshal: %v", err)
+	var jb []byte
+	var err error
+	if raw, ok := v.(json.RawMessage); ok { // needed for Go 1.7 and below
+		jb = []byte(raw)
+	} else {
+		jb, err = json.Marshal(v)
+		if err != nil {
+			return nil, fmt.Errorf("logging: json.Marshal: %v", err)
+		}
 	}
 	var m map[string]interface{}
 	err = json.Unmarshal(jb, &m)
@@ -777,7 +782,6 @@ func toLogEntry(e Entry) (*logpb.LogEntry, error) {
 		Trace:       e.Trace,
 		Resource:    e.Resource,
 	}
-
 	switch p := e.Payload.(type) {
 	case string:
 		ent.Payload = &logpb.LogEntry_TextPayload{TextPayload: p}
