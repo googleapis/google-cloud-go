@@ -68,6 +68,23 @@ not recommended for normal use.
 	lg.LogSync(ctx, logging.Entry{Payload: "ALERT! Something critical happened!"})
 
 
+Payloads
+
+An entry payload can be a string, as in the examples above. It can also be any value
+that can be marshaled to a JSON object, like a map[string]interface{} or a struct:
+
+	type MyEntry struct {
+		Name  string
+		Count int
+	}
+	lg.Log(logging.Entry{Payload: MyEntry{Name: "Bob", Count: 3}})
+
+If you have a []byte of JSON, wrap it in json.RawMessage:
+
+	j := []byte(`{"Name": "Bob", "Count": 3}`)
+	lg.Log(logging.Entry{Payload: json.RawMessage(j)})
+
+
 The Standard Logger Interface
 
 You may want use a standard log.Logger in your program.
