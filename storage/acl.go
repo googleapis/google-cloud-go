@@ -63,7 +63,10 @@ type ACLHandle struct {
 }
 
 // Delete permanently deletes the ACL entry for the given entity.
-func (a *ACLHandle) Delete(ctx context.Context, entity ACLEntity) error {
+func (a *ACLHandle) Delete(ctx context.Context, entity ACLEntity) (err error) {
+	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.ACL.Delete")
+	defer func() { traceEndSpan(ctx, err) }()
+
 	if a.object != "" {
 		return a.objectDelete(ctx, entity)
 	}
@@ -74,7 +77,10 @@ func (a *ACLHandle) Delete(ctx context.Context, entity ACLEntity) error {
 }
 
 // Set sets the permission level for the given entity.
-func (a *ACLHandle) Set(ctx context.Context, entity ACLEntity, role ACLRole) error {
+func (a *ACLHandle) Set(ctx context.Context, entity ACLEntity, role ACLRole) (err error) {
+	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.ACL.Set")
+	defer func() { traceEndSpan(ctx, err) }()
+
 	if a.object != "" {
 		return a.objectSet(ctx, entity, role, false)
 	}
@@ -85,7 +91,10 @@ func (a *ACLHandle) Set(ctx context.Context, entity ACLEntity, role ACLRole) err
 }
 
 // List retrieves ACL entries.
-func (a *ACLHandle) List(ctx context.Context) ([]ACLRule, error) {
+func (a *ACLHandle) List(ctx context.Context) (_ []ACLRule, err error) {
+	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.ACL.List")
+	defer func() { traceEndSpan(ctx, err) }()
+
 	if a.object != "" {
 		return a.objectList(ctx)
 	}

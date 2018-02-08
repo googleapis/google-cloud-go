@@ -63,7 +63,10 @@ type Copier struct {
 }
 
 // Run performs the copy.
-func (c *Copier) Run(ctx context.Context) (*ObjectAttrs, error) {
+func (c *Copier) Run(ctx context.Context) (_ *ObjectAttrs, err error) {
+	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Copier.Run")
+	defer func() { traceEndSpan(ctx, err) }()
+
 	if err := c.src.validate(); err != nil {
 		return nil, err
 	}
@@ -149,7 +152,10 @@ type Composer struct {
 }
 
 // Run performs the compose operation.
-func (c *Composer) Run(ctx context.Context) (*ObjectAttrs, error) {
+func (c *Composer) Run(ctx context.Context) (_ *ObjectAttrs, err error) {
+	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Composer.Run")
+	defer func() { traceEndSpan(ctx, err) }()
+
 	if err := c.dst.validate(); err != nil {
 		return nil, err
 	}
@@ -191,7 +197,6 @@ func (c *Composer) Run(ctx context.Context) (*ObjectAttrs, error) {
 		return nil, err
 	}
 	var obj *raw.Object
-	var err error
 	setClientHeader(call.Header())
 	err = runWithRetry(ctx, func() error { obj, err = call.Do(); return err })
 	if err != nil {
