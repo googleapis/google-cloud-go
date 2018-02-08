@@ -41,7 +41,8 @@ Valid value types are:
   - time.Time (stored with microsecond precision),
   - structs whose fields are all valid value types,
   - pointers to structs whose fields are all valid value types,
-  - slices of any of the above.
+  - slices of any of the above,
+  - pointers to a signed integer, bool, string, float32, or float64.
 
 Slices of structs are valid, as are structs that contain slices.
 
@@ -116,9 +117,10 @@ field name. A "-" tag name means that the datastore will ignore that field.
 
 The only valid options are "omitempty", "noindex" and "flatten".
 
-If the options include "omitempty" and the value of the field is empty, then the field will be omitted on Save.
-The empty values are false, 0, any nil interface value, and any array, slice, map, or string of length zero.
-Struct field values will never be empty.
+If the options include "omitempty" and the value of the field is empty, then the
+field will be omitted on Save. The empty values are false, 0, any nil pointer or
+interface value, and any array, slice, map, or string of length zero. Struct field
+values will never be empty, except for nil pointers.
 
 If options include "noindex" then the field will not be indexed. All fields are indexed
 by default. Strings or byte slices longer than 1500 bytes cannot be indexed;
@@ -150,6 +152,17 @@ Example code:
 		I int `datastore:"-"`
 		J int `datastore:",noindex" json:"j"`
 	}
+
+
+Pointer Fields
+
+A struct field can be a pointer to a signed integer, floating-point number, string or bool.
+Putting a non-nil pointer will store its dereferenced value. Putting a nil pointer will
+store a Datastore NULL, unless the field is marked omitempty, in which case no property
+will be stored.
+
+Getting a NULL into a pointer field sets the pointer to nil. Getting any other value
+allocates new storage with the value, and sets the field to point to it.
 
 
 Key Field
