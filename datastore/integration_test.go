@@ -1160,3 +1160,37 @@ func TestNestedRepeatedElementNoIndex(t *testing.T) {
 		t.Fatalf("client.Delete: %v", err)
 	}
 }
+
+func TestPointerFields(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	want := populatedPointers()
+	key, err := client.Put(ctx, IncompleteKey("pointers", nil), want)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got Pointers
+	if err := client.Get(ctx, key, &got); err != nil {
+		t.Fatal(err)
+	}
+	if got.Pi == nil || *got.Pi != *want.Pi {
+		t.Errorf("Pi: got %v, want %v", got.Pi, *want.Pi)
+	}
+	if got.Ps == nil || *got.Ps != *want.Ps {
+		t.Errorf("Ps: got %v, want %v", got.Ps, *want.Ps)
+	}
+	if got.Pb == nil || *got.Pb != *want.Pb {
+		t.Errorf("Pb: got %v, want %v", got.Pb, *want.Pb)
+	}
+	if got.Pf == nil || *got.Pf != *want.Pf {
+		t.Errorf("Pf: got %v, want %v", got.Pf, *want.Pf)
+	}
+	if got.Pg == nil || *got.Pg != *want.Pg {
+		t.Errorf("Pg: got %v, want %v", got.Pg, *want.Pg)
+	}
+	if got.Pt == nil || !got.Pt.Equal(*want.Pt) {
+		t.Errorf("Pt: got %v, want %v", got.Pt, *want.Pt)
+	}
+}
