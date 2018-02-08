@@ -118,7 +118,10 @@ func toRawNotification(n *Notification) *raw.Notification {
 // AddNotification adds a notification to b. You must set n's TopicProjectID, TopicID
 // and PayloadFormat, and must not set its ID. The other fields are all optional. The
 // returned Notification's ID can be used to refer to it.
-func (b *BucketHandle) AddNotification(ctx context.Context, n *Notification) (*Notification, error) {
+func (b *BucketHandle) AddNotification(ctx context.Context, n *Notification) (_ *Notification, err error) {
+	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Bucket.AddNotification")
+	defer func() { traceEndSpan(ctx, err) }()
+
 	if n.ID != "" {
 		return nil, errors.New("storage: AddNotification: ID must not be set")
 	}
@@ -142,14 +145,16 @@ func (b *BucketHandle) AddNotification(ctx context.Context, n *Notification) (*N
 
 // Notifications returns all the Notifications configured for this bucket, as a map
 // indexed by notification ID.
-func (b *BucketHandle) Notifications(ctx context.Context) (map[string]*Notification, error) {
+func (b *BucketHandle) Notifications(ctx context.Context) (_ map[string]*Notification, err error) {
+	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Bucket.Notifications")
+	defer func() { traceEndSpan(ctx, err) }()
+
 	call := b.c.raw.Notifications.List(b.name)
 	setClientHeader(call.Header())
 	if b.userProject != "" {
 		call.UserProject(b.userProject)
 	}
 	var res *raw.Notifications
-	var err error
 	err = runWithRetry(ctx, func() error {
 		res, err = call.Context(ctx).Do()
 		return err
@@ -169,7 +174,10 @@ func notificationsToMap(rns []*raw.Notification) map[string]*Notification {
 }
 
 // DeleteNotification deletes the notification with the given ID.
-func (b *BucketHandle) DeleteNotification(ctx context.Context, id string) error {
+func (b *BucketHandle) DeleteNotification(ctx context.Context, id string) (err error) {
+	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Bucket.DeleteNotification")
+	defer func() { traceEndSpan(ctx, err) }()
+
 	call := b.c.raw.Notifications.Delete(b.name, id)
 	setClientHeader(call.Header())
 	if b.userProject != "" {

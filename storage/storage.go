@@ -368,7 +368,10 @@ func (o *ObjectHandle) Key(encryptionKey []byte) *ObjectHandle {
 
 // Attrs returns meta information about the object.
 // ErrObjectNotExist will be returned if the object is not found.
-func (o *ObjectHandle) Attrs(ctx context.Context) (*ObjectAttrs, error) {
+func (o *ObjectHandle) Attrs(ctx context.Context) (_ *ObjectAttrs, err error) {
+	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Object.Attrs")
+	defer func() { traceEndSpan(ctx, err) }()
+
 	if err := o.validate(); err != nil {
 		return nil, err
 	}
@@ -383,7 +386,6 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (*ObjectAttrs, error) {
 		return nil, err
 	}
 	var obj *raw.Object
-	var err error
 	setClientHeader(call.Header())
 	err = runWithRetry(ctx, func() error { obj, err = call.Do(); return err })
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
@@ -398,7 +400,10 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (*ObjectAttrs, error) {
 // Update updates an object with the provided attributes.
 // All zero-value attributes are ignored.
 // ErrObjectNotExist will be returned if the object is not found.
-func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (*ObjectAttrs, error) {
+func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (_ *ObjectAttrs, err error) {
+	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Object.Update")
+	defer func() { traceEndSpan(ctx, err) }()
+
 	if err := o.validate(); err != nil {
 		return nil, err
 	}
@@ -466,7 +471,6 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 		return nil, err
 	}
 	var obj *raw.Object
-	var err error
 	setClientHeader(call.Header())
 	err = runWithRetry(ctx, func() error { obj, err = call.Do(); return err })
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
@@ -544,7 +548,10 @@ func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
 // NewRangeReader reads part of an object, reading at most length bytes
 // starting at the given offset. If length is negative, the object is read
 // until the end.
-func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64) (*Reader, error) {
+func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64) (_ *Reader, err error) {
+	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Object.NewRangeReader")
+	defer func() { traceEndSpan(ctx, err) }()
+
 	if err := o.validate(); err != nil {
 		return nil, err
 	}
