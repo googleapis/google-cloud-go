@@ -35,6 +35,8 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // TODO(djd): Make test entity clean up more robust: some test entities may
@@ -1192,5 +1194,84 @@ func TestPointerFields(t *testing.T) {
 	}
 	if got.Pt == nil || !got.Pt.Equal(*want.Pt) {
 		t.Errorf("Pt: got %v, want %v", got.Pt, *want.Pt)
+	}
+}
+
+func TestMutate(t *testing.T) {
+	// test Client.Mutate
+	testMutate(t, func(ctx context.Context, client *Client, muts ...*Mutation) ([]*Key, error) {
+		return client.Mutate(ctx, muts...)
+	})
+	// test Transaction.Mutate
+	testMutate(t, func(ctx context.Context, client *Client, muts ...*Mutation) ([]*Key, error) {
+		var pkeys []*PendingKey
+		commit, err := client.RunInTransaction(ctx, func(tx *Transaction) error {
+			var err error
+			pkeys, err = tx.Mutate(muts...)
+			return err
+		})
+		if err != nil {
+			return nil, err
+		}
+		var keys []*Key
+		for _, pk := range pkeys {
+			keys = append(keys, commit.Key(pk))
+		}
+		return keys, nil
+	})
+}
+
+func testMutate(t *testing.T, mutate func(ctx context.Context, client *Client, muts ...*Mutation) ([]*Key, error)) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	type T struct{ I int }
+
+	check := func(k *Key, want interface{}) {
+		var x T
+		err := client.Get(ctx, k, &x)
+		switch want := want.(type) {
+		case error:
+			if err != want {
+				t.Errorf("key %s: got error %v, want %v", k, err, want)
+			}
+		case int:
+			if err != nil {
+				t.Fatalf("key %s: %v", k, err)
+			}
+			if x.I != want {
+				t.Errorf("key %s: got %d, want %d", k, x.I, want)
+			}
+		default:
+			panic("check: bad arg")
+		}
+	}
+
+	keys, err := mutate(ctx, client,
+		NewInsert(IncompleteKey("t", nil), &T{1}),
+		NewUpsert(IncompleteKey("t", nil), &T{2}),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	check(keys[0], 1)
+	check(keys[1], 2)
+
+	_, err = mutate(ctx, client,
+		NewUpdate(keys[0], &T{3}),
+		NewDelete(keys[1]),
+	)
+	check(keys[0], 3)
+	check(keys[1], ErrNoSuchEntity)
+
+	_, err = mutate(ctx, client, NewInsert(keys[0], &T{4}))
+	if got, want := status.Code(err), codes.AlreadyExists; got != want {
+		t.Errorf("Insert existing key: got %s, want %s", got, want)
+	}
+
+	_, err = mutate(ctx, client, NewUpdate(keys[1], &T{4}))
+	if got, want := status.Code(err), codes.NotFound; got != want {
+		t.Errorf("Update non-existing key: got %s, want %s", got, want)
 	}
 }
