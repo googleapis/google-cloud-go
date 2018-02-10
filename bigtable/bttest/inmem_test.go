@@ -522,6 +522,7 @@ func TestReadRowsOrder(t *testing.T) {
 			Filter: &btpb.RowFilter_Interleave_{Interleave: inter},
 		},
 	}
+
 	mock = &MockReadRowsServer{}
 	if err = s.ReadRows(req, mock); err != nil {
 		t.Errorf("ReadRows error: %v", err)
@@ -617,5 +618,101 @@ func TestCheckAndMutateRowWithoutPredicate(t *testing.T) {
 		t.Errorf("CheckAndMutateRow error: %v", err)
 	} else if got, want := res.PredicateMatched, true; got != want {
 		t.Errorf("Invalid PredicateMatched value: got %t, want %t", got, want)
+	}
+}
+
+// helper function to populate table data
+func populateTable(ctx context.Context, s *server) (*btapb.Table, error) {
+	newTbl := btapb.Table{
+		ColumnFamilies: map[string]*btapb.ColumnFamily{
+			"cf0": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{1}}},
+		},
+	}
+	tblInfo, err := s.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "cluster", TableId: "t", Table: &newTbl})
+	if err != nil {
+		return nil, err
+	}
+	count := 3
+	mcf := func(i int) *btapb.ModifyColumnFamiliesRequest {
+		return &btapb.ModifyColumnFamiliesRequest{
+			Name: tblInfo.Name,
+			Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+				Id:  "cf" + strconv.Itoa(i),
+				Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{&btapb.ColumnFamily{}},
+			}},
+		}
+	}
+	for i := 1; i <= count; i++ {
+		_, err = s.ModifyColumnFamilies(ctx, mcf(i))
+		if err != nil {
+			return nil, err
+		}
+	}
+	// Populate the table
+	for fc := 0; fc < count; fc++ {
+		for cc := count; cc > 0; cc-- {
+			for tc := 0; tc < count; tc++ {
+				req := &btpb.MutateRowRequest{
+					TableName: tblInfo.Name,
+					RowKey:    []byte("row"),
+					Mutations: []*btpb.Mutation{{
+						Mutation: &btpb.Mutation_SetCell_{&btpb.Mutation_SetCell{
+							FamilyName:      "cf" + strconv.Itoa(fc),
+							ColumnQualifier: []byte("col" + strconv.Itoa(cc)),
+							TimestampMicros: int64((tc + 1) * 1000),
+							Value:           []byte{},
+						}},
+					}},
+				}
+				if _, err := s.MutateRow(ctx, req); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+
+	return tblInfo, nil
+}
+
+func TestFilters(t *testing.T) {
+	tests := []struct {
+		in  *btpb.RowFilter
+		out int
+	}{
+		{in: &btpb.RowFilter{Filter: &btpb.RowFilter_BlockAllFilter{true}}, out: 0},
+		{in: &btpb.RowFilter{Filter: &btpb.RowFilter_BlockAllFilter{false}}, out: 1},
+		{in: &btpb.RowFilter{Filter: &btpb.RowFilter_PassAllFilter{true}}, out: 1},
+		{in: &btpb.RowFilter{Filter: &btpb.RowFilter_PassAllFilter{false}}, out: 0},
+	}
+
+	ctx := context.Background()
+
+	s := &server{
+		tables: make(map[string]*table),
+	}
+
+	tblInfo, err := populateTable(ctx, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req := &btpb.ReadRowsRequest{
+		TableName: tblInfo.Name,
+		Rows:      &btpb.RowSet{RowKeys: [][]byte{[]byte("row")}},
+	}
+
+	for _, tc := range tests {
+		req.Filter = tc.in
+
+		mock := &MockReadRowsServer{}
+		if err = s.ReadRows(req, mock); err != nil {
+			t.Errorf("ReadRows error: %v", err)
+			continue
+		}
+
+		if len(mock.responses) != tc.out {
+			t.Errorf("Response count: got %d, want %d", len(mock.responses), tc.out)
+			continue
+		}
 	}
 }
