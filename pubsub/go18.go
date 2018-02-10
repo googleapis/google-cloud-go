@@ -20,7 +20,7 @@ import (
 	"log"
 	"sync"
 
-	ocgrpc "go.opencensus.io/plugin/grpc"
+	"go.opencensus.io/plugin/ocgrpc"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
