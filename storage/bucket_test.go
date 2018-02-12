@@ -20,10 +20,9 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-
-	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/storage/v1"
 )

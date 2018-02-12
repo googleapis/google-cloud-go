@@ -615,6 +615,21 @@ func (b *BucketHandle) UserProject(projectID string) *BucketHandle {
 	return &b2
 }
 
+// LockRetentionPolicy locks a bucket's retention policy until a previously-configured
+// RetentionPeriod past the EffectiveTime. Note that if RetentionPeriod is set to less
+// than a day, the retention policy is treated as a development configuration and locking
+// will have no effect. The BucketHandle must have a metageneration condition that
+// matches the bucket's metageneration. See BucketHandle.If.
+func (b *BucketHandle) LockRetentionPolicy(ctx context.Context) error {
+	var metageneration int64
+	if b.conds != nil {
+		metageneration = b.conds.MetagenerationMatch
+	}
+	req := b.c.raw.Buckets.LockRetentionPolicy(b.name, metageneration)
+	_, err := req.Context(ctx).Do()
+	return err
+}
+
 // applyBucketConds modifies the provided call using the conditions in conds.
 // call is something that quacks like a *raw.WhateverCall.
 func applyBucketConds(method string, conds *BucketConditions, call interface{}) error {

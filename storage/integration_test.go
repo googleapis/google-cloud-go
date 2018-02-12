@@ -2133,6 +2133,58 @@ func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
 	}
 }
 
+func TestIntegration_LockBucket(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+
+	bkt := client.Bucket(uidSpace.New())
+	err := bkt.Create(ctx, testutil.ProjID(), &BucketAttrs{RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour * 25}})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	attrs, err := bkt.Attrs(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = bkt.If(BucketConditions{MetagenerationMatch: attrs.MetaGeneration}).LockRetentionPolicy(ctx)
+	if err != nil {
+		t.Fatal("could not lock", err)
+	}
+
+	_, err = bkt.Update(ctx, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour}})
+	if err == nil {
+		t.Fatal("Expected error updating locked bucket, got nil")
+	}
+}
+
+func TestIntegration_LockBucket_MetagenerationRequired(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+
+	bkt := client.Bucket(uidSpace.New())
+	err := bkt.Create(ctx, testutil.ProjID(), &BucketAttrs{RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour * 25}})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = bkt.LockRetentionPolicy(ctx)
+	if err == nil {
+		t.Fatal("expected error locking bucket without metageneration condition, got nil")
+	}
+}
+
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
 	w := obj.NewWriter(ctx)
 	w.ContentType = contentType
