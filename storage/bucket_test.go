@@ -40,6 +40,14 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		MetaGeneration: 39,
 		Created:        time.Now(),
 		Labels:         map[string]string{"label": "value"},
+		CORS: []CORS{
+			{
+				MaxAge:          time.Hour,
+				Methods:         []string{"GET", "POST"},
+				Origins:         []string{"*"},
+				ResponseHeaders: []string{"FOO"},
+			},
+		},
 	}
 	got := attrs.toRawBucket()
 	want := &raw.Bucket{
@@ -54,6 +62,14 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		StorageClass: "class",
 		Versioning:   nil, // ignore VersioningEnabled if false
 		Labels:       map[string]string{"label": "value"},
+		Cors: []*raw.BucketCors{
+			{
+				MaxAgeSeconds:  3600,
+				Method:         []string{"GET", "POST"},
+				Origin:         []string{"*"},
+				ResponseHeader: []string{"FOO"},
+			},
+		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
@@ -231,6 +247,14 @@ func TestNewBucket(t *testing.T) {
 				},
 			}},
 		},
+		Cors: []*raw.BucketCors{
+			{
+				MaxAgeSeconds:  3600,
+				Method:         []string{"GET", "POST"},
+				Origin:         []string{"*"},
+				ResponseHeader: []string{"FOO"},
+			},
+		},
 		Acl: []*raw.BucketAccessControl{
 			{Bucket: "name", Role: "READER", Email: "joe@example.com", Entity: "allUsers"},
 		},
@@ -259,6 +283,14 @@ func TestNewBucket(t *testing.T) {
 						NumNewerVersions:      3,
 					},
 				},
+			},
+		},
+		CORS: []CORS{
+			{
+				MaxAge:          time.Hour,
+				Methods:         []string{"GET", "POST"},
+				Origins:         []string{"*"},
+				ResponseHeaders: []string{"FOO"},
 			},
 		},
 		ACL:              []ACLRule{{Entity: "allUsers", Role: RoleReader}},
