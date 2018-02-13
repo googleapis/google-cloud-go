@@ -317,10 +317,10 @@ func (r RowRange) String() string {
 
 func (r RowRange) proto() *btpb.RowSet {
 	rr := &btpb.RowRange{
-		StartKey: &btpb.RowRange_StartKeyClosed{[]byte(r.start)},
+		StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte(r.start)},
 	}
 	if !r.Unbounded() {
-		rr.EndKey = &btpb.RowRange_EndKeyOpen{[]byte(r.limit)}
+		rr.EndKey = &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte(r.limit)}
 	}
 	return &btpb.RowSet{RowRanges: []*btpb.RowRange{rr}}
 }
@@ -564,7 +564,7 @@ func NewCondMutation(cond Filter, mtrue, mfalse *Mutation) *Mutation {
 // The timestamp will be truncated to millisecond granularity.
 // A timestamp of ServerTime means to use the server timestamp.
 func (m *Mutation) Set(family, column string, ts Timestamp, value []byte) {
-	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_SetCell_{&btpb.Mutation_SetCell{
+	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
 		FamilyName:      family,
 		ColumnQualifier: []byte(column),
 		TimestampMicros: int64(ts.TruncateToMilliseconds()),
@@ -574,7 +574,7 @@ func (m *Mutation) Set(family, column string, ts Timestamp, value []byte) {
 
 // DeleteCellsInColumn will delete all the cells whose columns are family:column.
 func (m *Mutation) DeleteCellsInColumn(family, column string) {
-	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_DeleteFromColumn_{&btpb.Mutation_DeleteFromColumn{
+	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_DeleteFromColumn_{DeleteFromColumn: &btpb.Mutation_DeleteFromColumn{
 		FamilyName:      family,
 		ColumnQualifier: []byte(column),
 	}}})
@@ -585,7 +585,7 @@ func (m *Mutation) DeleteCellsInColumn(family, column string) {
 // If end is zero, it will be interpreted as infinity.
 // The timestamps will be truncated to millisecond granularity.
 func (m *Mutation) DeleteTimestampRange(family, column string, start, end Timestamp) {
-	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_DeleteFromColumn_{&btpb.Mutation_DeleteFromColumn{
+	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_DeleteFromColumn_{DeleteFromColumn: &btpb.Mutation_DeleteFromColumn{
 		FamilyName:      family,
 		ColumnQualifier: []byte(column),
 		TimeRange: &btpb.TimestampRange{
@@ -597,14 +597,14 @@ func (m *Mutation) DeleteTimestampRange(family, column string, start, end Timest
 
 // DeleteCellsInFamily will delete all the cells whose columns are family:*.
 func (m *Mutation) DeleteCellsInFamily(family string) {
-	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_DeleteFromFamily_{&btpb.Mutation_DeleteFromFamily{
+	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_DeleteFromFamily_{DeleteFromFamily: &btpb.Mutation_DeleteFromFamily{
 		FamilyName: family,
 	}}})
 }
 
 // DeleteRow deletes the entire row.
 func (m *Mutation) DeleteRow() {
-	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_DeleteFromRow_{&btpb.Mutation_DeleteFromRow{}}})
+	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_DeleteFromRow_{DeleteFromRow: &btpb.Mutation_DeleteFromRow{}}})
 }
 
 // entryErr is a container that combines an entry with the error that was returned for it.
@@ -803,7 +803,7 @@ func (m *ReadModifyWrite) AppendValue(family, column string, v []byte) {
 	m.ops = append(m.ops, &btpb.ReadModifyWriteRule{
 		FamilyName:      family,
 		ColumnQualifier: []byte(column),
-		Rule:            &btpb.ReadModifyWriteRule_AppendValue{v},
+		Rule:            &btpb.ReadModifyWriteRule_AppendValue{AppendValue: v},
 	})
 }
 
@@ -815,7 +815,7 @@ func (m *ReadModifyWrite) Increment(family, column string, delta int64) {
 	m.ops = append(m.ops, &btpb.ReadModifyWriteRule{
 		FamilyName:      family,
 		ColumnQualifier: []byte(column),
-		Rule:            &btpb.ReadModifyWriteRule_IncrementAmount{delta},
+		Rule:            &btpb.ReadModifyWriteRule_IncrementAmount{IncrementAmount: delta},
 	})
 }
 
