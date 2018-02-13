@@ -108,11 +108,11 @@ func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (*T
 	req := &pb.BeginTransactionRequest{ProjectId: c.dataset}
 	if s.readOnly {
 		req.TransactionOptions = &pb.TransactionOptions{
-			Mode: &pb.TransactionOptions_ReadOnly_{&pb.TransactionOptions_ReadOnly{}},
+			Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: &pb.TransactionOptions_ReadOnly{}},
 		}
 	} else if s.prevID != nil {
 		req.TransactionOptions = &pb.TransactionOptions{
-			Mode: &pb.TransactionOptions_ReadWrite_{&pb.TransactionOptions_ReadWrite{
+			Mode: &pb.TransactionOptions_ReadWrite_{ReadWrite: &pb.TransactionOptions_ReadWrite{
 				PreviousTransaction: s.prevID,
 			}},
 		}

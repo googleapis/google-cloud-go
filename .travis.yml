@@ -10,7 +10,7 @@ install:
 script:
 - openssl aes-256-cbc -K $encrypted_a8b3f4fc85f4_key -iv $encrypted_a8b3f4fc85f4_iv -in keys.tar.enc -out keys.tar -d
 - tar xvf keys.tar
-- go vet cloud.google.com/go/bigtable/...
+- go vet cloud.google.com/go/{bigquery,bigtable,civil,cmd,compute,container,dataproc,datastore}/...
 - GCLOUD_TESTS_GOLANG_PROJECT_ID="dulcet-port-762"
   GCLOUD_TESTS_GOLANG_KEY="$(pwd)/dulcet-port-762-key.json"
   GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID="gcloud-golang-firestore-tests"
