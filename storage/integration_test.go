@@ -1939,6 +1939,92 @@ func TestIntegration_CancelWrite(t *testing.T) {
 	}
 }
 
+func TestIntegration_UpdateCORS(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	uidSpace := testutil.NewUIDSpace("integration-test")
+
+	ctx := context.Background()
+	client, _ := testConfig(ctx, t)
+	defer client.Close()
+
+	initialSettings := []CORS{
+		{
+			MaxAge:          time.Hour,
+			Methods:         []string{"POST"},
+			Origins:         []string{"some-origin.com"},
+			ResponseHeaders: []string{"foo-bar"},
+		},
+	}
+
+	for _, test := range []struct {
+		input []CORS
+		want  []CORS
+	}{
+		{
+			input: []CORS{
+				{
+					MaxAge:          time.Hour,
+					Methods:         []string{"GET"},
+					Origins:         []string{"*"},
+					ResponseHeaders: []string{"some-header"},
+				},
+			},
+			want: []CORS{
+				{
+					MaxAge:          time.Hour,
+					Methods:         []string{"GET"},
+					Origins:         []string{"*"},
+					ResponseHeaders: []string{"some-header"},
+				},
+			},
+		},
+		{
+			input: []CORS{},
+			want:  nil,
+		},
+		{
+			input: nil,
+			want: []CORS{
+				{
+					MaxAge:          time.Hour,
+					Methods:         []string{"POST"},
+					Origins:         []string{"some-origin.com"},
+					ResponseHeaders: []string{"foo-bar"},
+				},
+			},
+		},
+	} {
+		bkt := client.Bucket(uidSpace.New())
+		defer func(b *BucketHandle) {
+			err := b.Delete(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+		}(bkt)
+		err := bkt.Create(ctx, testutil.ProjID(), &BucketAttrs{CORS: initialSettings})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = bkt.Update(ctx, BucketAttrsToUpdate{CORS: test.input})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		attrs, err := bkt.Attrs(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if diff := testutil.Diff(attrs.CORS, test.want); diff != "" {
+			t.Errorf("input: %v\ngot=-, want=+:\n%s", test.input, diff)
+		}
+	}
+}
+
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
 	w := obj.NewWriter(ctx)
 	w.ContentType = contentType
