@@ -50,7 +50,7 @@ func TestNewTransaction(t *testing.T) {
 			&pb.BeginTransactionRequest{
 				ProjectId: "project",
 				TransactionOptions: &pb.TransactionOptions{
-					Mode: &pb.TransactionOptions_ReadOnly_{&pb.TransactionOptions_ReadOnly{}},
+					Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: &pb.TransactionOptions_ReadOnly{}},
 				},
 			},
 		},
@@ -59,10 +59,9 @@ func TestNewTransaction(t *testing.T) {
 			&pb.BeginTransactionRequest{
 				ProjectId: "project",
 				TransactionOptions: &pb.TransactionOptions{
-					Mode: &pb.TransactionOptions_ReadWrite_{
-						&pb.TransactionOptions_ReadWrite{
-							PreviousTransaction: []byte("tid"),
-						},
+					Mode: &pb.TransactionOptions_ReadWrite_{ReadWrite: &pb.TransactionOptions_ReadWrite{
+						PreviousTransaction: []byte("tid"),
+					},
 					},
 				},
 			},

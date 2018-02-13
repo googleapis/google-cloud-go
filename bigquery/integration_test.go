@@ -691,14 +691,14 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 	table := newTable(t, schema)
 	defer table.Delete(ctx)
 
-	d := civil.Date{2016, 3, 20}
-	tm := civil.Time{15, 4, 5, 6000}
+	d := civil.Date{Year: 2016, Month: 3, Day: 20}
+	tm := civil.Time{Hour: 15, Minute: 4, Second: 5, Nanosecond: 6000}
 	ts := time.Date(2016, 3, 20, 15, 4, 5, 6000, time.UTC)
-	dtm := civil.DateTime{d, tm}
-	d2 := civil.Date{1994, 5, 15}
-	tm2 := civil.Time{1, 2, 4, 0}
+	dtm := civil.DateTime{Date: d, Time: tm}
+	d2 := civil.Date{Year: 1994, Month: 5, Day: 15}
+	tm2 := civil.Time{Hour: 1, Minute: 2, Second: 4, Nanosecond: 0}
 	ts2 := time.Date(1994, 5, 15, 1, 2, 4, 0, time.UTC)
-	dtm2 := civil.DateTime{d2, tm2}
+	dtm2 := civil.DateTime{Date: d2, Time: tm2}
 
 	// Populate the table.
 	upl := table.Uploader()
@@ -797,8 +797,8 @@ func TestIntegration_UploadAndReadNullable(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
-	ctm := civil.Time{15, 4, 5, 6000}
-	cdt := civil.DateTime{testDate, ctm}
+	ctm := civil.Time{Hour: 15, Minute: 4, Second: 5, Nanosecond: 6000}
+	cdt := civil.DateTime{Date: testDate, Time: ctm}
 	testUploadAndReadNullable(t, testStructNullable{}, make([]Value, len(testStructNullableSchema)))
 	testUploadAndReadNullable(t, testStructNullable{
 		String:    NullString{"x", true},
@@ -1085,9 +1085,9 @@ func TestIntegration_TimeTypes(t *testing.T) {
 	table := newTable(t, dtSchema)
 	defer table.Delete(ctx)
 
-	d := civil.Date{2016, 3, 20}
-	tm := civil.Time{12, 30, 0, 6000}
-	dtm := civil.DateTime{d, tm}
+	d := civil.Date{Year: 2016, Month: 3, Day: 20}
+	tm := civil.Time{Hour: 12, Minute: 30, Second: 0, Nanosecond: 6000}
+	dtm := civil.DateTime{Date: d, Time: tm}
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
 	wantRows := [][]Value{
 		[]Value{d, tm, dtm, ts},
@@ -1121,8 +1121,8 @@ func TestIntegration_StandardQuery(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	d := civil.Date{2016, 3, 20}
-	tm := civil.Time{15, 04, 05, 0}
+	d := civil.Date{Year: 2016, Month: 3, Day: 20}
+	tm := civil.Time{Hour: 15, Minute: 04, Second: 05, Nanosecond: 0}
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
 	dtm := ts.Format("2006-01-02 15:04:05")
 
@@ -1147,7 +1147,7 @@ func TestIntegration_StandardQuery(t *testing.T) {
 		{fmt.Sprintf("SELECT TIMESTAMP '%s'", dtm), []Value{ts}},
 		{fmt.Sprintf("SELECT [TIMESTAMP '%s', TIMESTAMP '%s']", dtm, dtm), []Value{[]Value{ts, ts}}},
 		{fmt.Sprintf("SELECT ('hello', TIMESTAMP '%s')", dtm), []Value{[]Value{"hello", ts}}},
-		{fmt.Sprintf("SELECT DATETIME(TIMESTAMP '%s')", dtm), []Value{civil.DateTime{d, tm}}},
+		{fmt.Sprintf("SELECT DATETIME(TIMESTAMP '%s')", dtm), []Value{civil.DateTime{Date: d, Time: tm}}},
 		{fmt.Sprintf("SELECT DATE(TIMESTAMP '%s')", dtm), []Value{d}},
 		{fmt.Sprintf("SELECT TIME(TIMESTAMP '%s')", dtm), []Value{tm}},
 		{"SELECT (1, 2)", []Value{ints(1, 2)}},
@@ -1206,11 +1206,11 @@ func TestIntegration_QueryParameters(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	d := civil.Date{2016, 3, 20}
-	tm := civil.Time{15, 04, 05, 3008}
+	d := civil.Date{Year: 2016, Month: 3, Day: 20}
+	tm := civil.Time{Hour: 15, Minute: 04, Second: 05, Nanosecond: 3008}
 	rtm := tm
 	rtm.Nanosecond = 3000 // round to microseconds
-	dtm := civil.DateTime{d, tm}
+	dtm := civil.DateTime{Date: d, Time: tm}
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
 
 	type ss struct {
@@ -1275,8 +1275,8 @@ func TestIntegration_QueryParameters(t *testing.T) {
 		{
 			"SELECT @val",
 			[]QueryParameter{{"val", dtm}},
-			[]Value{civil.DateTime{d, rtm}},
-			civil.DateTime{d, rtm},
+			[]Value{civil.DateTime{Date: d, Time: rtm}},
+			civil.DateTime{Date: d, Time: rtm},
 		},
 		{
 			"SELECT @val",
