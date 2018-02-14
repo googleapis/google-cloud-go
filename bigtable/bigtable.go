@@ -84,10 +84,11 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
 	return &Client{
-		conn:     conn,
-		client:   btpb.NewBigtableClient(conn),
-		project:  project,
-		instance: instance,
+		conn:       conn,
+		client:     btpb.NewBigtableClient(conn),
+		project:    project,
+		instance:   instance,
+		appProfile: config.AppProfile,
 	}, nil
 }
 
