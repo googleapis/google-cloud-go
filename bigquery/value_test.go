@@ -406,7 +406,10 @@ func TestValuesSaverConvertsToMap(t *testing.T) {
 				},
 				InsertID: "iid",
 				Row: []Value{1, "a",
-					civil.DateTime{civil.Date{1, 2, 3}, civil.Time{4, 5, 6, 7000}}},
+					civil.DateTime{
+						Date: civil.Date{Year: 1, Month: 2, Day: 3},
+						Time: civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 7000}},
+				},
 			},
 			wantInsertID: "iid",
 			wantRow: map[string]Value{"intField": 1, "strField": "a",
@@ -559,8 +562,8 @@ func TestStructSaver(t *testing.T) {
 		}
 	}
 
-	ct1 := civil.Time{1, 2, 3, 4000}
-	ct2 := civil.Time{5, 6, 7, 8000}
+	ct1 := civil.Time{Hour: 1, Minute: 2, Second: 3, Nanosecond: 4000}
+	ct2 := civil.Time{Hour: 5, Minute: 6, Second: 7, Nanosecond: 8000}
 	in := T{
 		S:       "x",
 		R:       []int{1, 2},
@@ -772,9 +775,9 @@ var (
 	}
 
 	testTimestamp = time.Date(2016, 11, 5, 7, 50, 22, 8, time.UTC)
-	testDate      = civil.Date{2016, 11, 5}
-	testTime      = civil.Time{7, 50, 22, 8}
-	testDateTime  = civil.DateTime{testDate, testTime}
+	testDate      = civil.Date{Year: 2016, Month: 11, Day: 5}
+	testTime      = civil.Time{Hour: 7, Minute: 50, Second: 22, Nanosecond: 8}
+	testDateTime  = civil.DateTime{Date: testDate, Time: testTime}
 
 	testValues = []Value{"x", "y", []byte{1, 2, 3}, int64(7), int64(8), 3.14, true,
 		testTimestamp, testDate, testTime, testDateTime,
