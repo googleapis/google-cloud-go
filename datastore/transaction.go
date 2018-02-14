@@ -108,11 +108,11 @@ func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (*T
 	req := &pb.BeginTransactionRequest{ProjectId: c.dataset}
 	if s.readOnly {
 		req.TransactionOptions = &pb.TransactionOptions{
-			Mode: &pb.TransactionOptions_ReadOnly_{&pb.TransactionOptions_ReadOnly{}},
+			Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: &pb.TransactionOptions_ReadOnly{}},
 		}
 	} else if s.prevID != nil {
 		req.TransactionOptions = &pb.TransactionOptions{
-			Mode: &pb.TransactionOptions_ReadWrite_{&pb.TransactionOptions_ReadWrite{
+			Mode: &pb.TransactionOptions_ReadWrite_{ReadWrite: &pb.TransactionOptions_ReadWrite{
 				PreviousTransaction: s.prevID,
 			}},
 		}
@@ -273,6 +273,7 @@ func (t *Transaction) Put(key *Key, src interface{}) (*PendingKey, error) {
 // PutMulti is a batch version of Put. One PendingKey is returned for each
 // element of src in the same order.
 func (t *Transaction) PutMulti(keys []*Key, src interface{}) ([]*PendingKey, error) {
+	// TODO(jba): rewrite in terms of Mutate.
 	if t.id == nil {
 		return nil, errExpiredTransaction
 	}
@@ -312,6 +313,7 @@ func (t *Transaction) Delete(key *Key) error {
 
 // DeleteMulti is a batch version of Delete.
 func (t *Transaction) DeleteMulti(keys []*Key) error {
+	// TODO(jba): rewrite in terms of Mutate.
 	if t.id == nil {
 		return errExpiredTransaction
 	}
@@ -323,12 +325,53 @@ func (t *Transaction) DeleteMulti(keys []*Key) error {
 	return nil
 }
 
+// Mutate adds the mutations to the transaction. They will all be applied atomically
+// upon calling Commit. Mutate returns a PendingKey for each Mutation in the argument
+// list, in the same order. PendingKeys for Delete mutations are always nil.
+//
+// If any of the mutations are invalid, Mutate returns a MultiError with the errors.
+// Mutate returns a MultiError in this case even if there is only one Mutation.
+//
+// For an example, see Client.Mutate.
+func (t *Transaction) Mutate(muts ...*Mutation) ([]*PendingKey, error) {
+	if t.id == nil {
+		return nil, errExpiredTransaction
+	}
+	pmuts, err := mutationProtos(muts)
+	if err != nil {
+		return nil, err
+	}
+	origin := len(t.mutations)
+	t.mutations = append(t.mutations, pmuts...)
+	// Prepare the returned handles, pre-populating where possible.
+	ret := make([]*PendingKey, len(muts))
+	for i, mut := range muts {
+		if mut.isDelete() {
+			continue
+		}
+		p := &PendingKey{}
+		if mut.key.Incomplete() {
+			// This key will be in the final commit result.
+			t.pending[origin+i] = p
+		} else {
+			p.key = mut.key
+		}
+		ret[i] = p
+	}
+	return ret, nil
+}
+
 // Commit represents the result of a committed transaction.
 type Commit struct{}
 
 // Key resolves a pending key handle into a final key.
 func (c *Commit) Key(p *PendingKey) *Key {
-	if c != p.commit {
+	if p == nil { // if called on a *PendingKey from a Delete mutation
+		return nil
+	}
+	// If p.commit is nil, the PendingKey did not come from an incomplete key,
+	// so p.key is valid.
+	if p.commit != nil && c != p.commit {
 		panic("PendingKey was not created by corresponding transaction")
 	}
 	return p.key

@@ -321,6 +321,15 @@ type commonLabels map[string]string
 
 func (c commonLabels) set(l *Logger) { l.commonLabels = c }
 
+// ConcurrentWriteLimit determines how many goroutines will send log entries to the
+// underlying service. The default is 1. Set ConcurrentWriteLimit to a higher value to
+// increase throughput.
+func ConcurrentWriteLimit(n int) LoggerOption { return concurrentWriteLimit(n) }
+
+type concurrentWriteLimit int
+
+func (c concurrentWriteLimit) set(l *Logger) { l.bundler.HandlerLimit = int(c) }
+
 // DelayThreshold is the maximum amount of time that an entry should remain
 // buffered in memory before a call to the logging service is triggered. Larger
 // values of DelayThreshold will generally result in fewer calls to the logging
@@ -409,12 +418,14 @@ func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 	for _, opt := range opts {
 		opt.set(l)
 	}
-
 	l.stdLoggers = map[Severity]*log.Logger{}
 	for s := range severityName {
 		l.stdLoggers[s] = log.New(severityWriter{l, s}, "", 0)
 	}
+
 	c.loggers.Add(1)
+	// Start a goroutine that cleans up the bundler, its channel
+	// and the writer goroutines when the client is closed.
 	go func() {
 		defer c.loggers.Done()
 		<-c.donec
@@ -445,7 +456,7 @@ func (c *Client) Close() error {
 	c.loggers.Wait() // wait for all bundlers to flush and close
 	// Now there can be no more errors.
 	close(c.errc) // terminate error goroutine
-	// Prefer logging errors to close errors.
+	// Prefer errors arising from logging to the error returned from Close.
 	err := c.extractErrorInfo()
 	err2 := c.client.Close()
 	if err == nil {

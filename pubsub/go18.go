@@ -20,8 +20,9 @@ import (
 	"log"
 	"sync"
 
-	ocgrpc "go.opencensus.io/plugin/grpc"
+	"go.opencensus.io/plugin/ocgrpc"
 	"go.opencensus.io/stats"
+	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
@@ -46,67 +47,67 @@ func init() {
 var (
 	// PullCount is a measure of the number of messages pulled.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
-	PullCount *stats.MeasureInt64
+	PullCount *stats.Int64Measure
 
 	// AckCount is a measure of the number of messages acked.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
-	AckCount *stats.MeasureInt64
+	AckCount *stats.Int64Measure
 
 	// NackCount is a measure of the number of messages nacked.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
-	NackCount *stats.MeasureInt64
+	NackCount *stats.Int64Measure
 
 	// ModAckCount is a measure of the number of messages whose ack-deadline was modified.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
-	ModAckCount *stats.MeasureInt64
+	ModAckCount *stats.Int64Measure
 
 	// StreamOpenCount is a measure of the number of times a streaming-pull stream was opened.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
-	StreamOpenCount *stats.MeasureInt64
+	StreamOpenCount *stats.Int64Measure
 
 	// StreamRetryCount is a measure of the number of times a streaming-pull operation was retried.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
-	StreamRetryCount *stats.MeasureInt64
+	StreamRetryCount *stats.Int64Measure
 
 	// StreamRequestCount is a measure of the number of requests sent on a streaming-pull stream.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
-	StreamRequestCount *stats.MeasureInt64
+	StreamRequestCount *stats.Int64Measure
 
 	// StreamRequestCount is a measure of the number of responses received on a streaming-pull stream.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
-	StreamResponseCount *stats.MeasureInt64
+	StreamResponseCount *stats.Int64Measure
 
 	// PullCountView is a cumulative sum of PullCount.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
-	PullCountView *stats.View
+	PullCountView *view.View
 
 	// AckCountView is a cumulative sum of AckCount.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
-	AckCountView *stats.View
+	AckCountView *view.View
 
 	// NackCountView is a cumulative sum of NackCount.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
-	NackCountView *stats.View
+	NackCountView *view.View
 
 	// ModAckCountView is a cumulative sum of ModAckCount.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
-	ModAckCountView *stats.View
+	ModAckCountView *view.View
 
 	// StreamOpenCountView is a cumulative sum of StreamOpenCount.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
-	StreamOpenCountView *stats.View
+	StreamOpenCountView *view.View
 
 	// StreamRetryCountView is a cumulative sum of StreamRetryCount.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
-	StreamRetryCountView *stats.View
+	StreamRetryCountView *view.View
 
 	// StreamRequestCountView is a cumulative sum of StreamRequestCount.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
-	StreamRequestCountView *stats.View
+	StreamRequestCountView *view.View
 
 	// StreamResponseCountView is a cumulative sum of StreamResponseCount.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
-	StreamResponseCountView *stats.View
+	StreamResponseCountView *view.View
 )
 
 const statsPrefix = "cloud.google.com/go/pubsub/"
@@ -131,19 +132,19 @@ func init() {
 	StreamResponseCountView = mustNewView(StreamResponseCount)
 }
 
-func mustNewMeasure(name, desc string) *stats.MeasureInt64 {
+func mustNewMeasure(name, desc string) *stats.Int64Measure {
 	const unitCount = "1"
 	name = statsPrefix + name
-	m, err := stats.NewMeasureInt64(name, desc, unitCount)
+	m, err := stats.Int64(name, desc, unitCount)
 	if err != nil {
 		log.Fatalf("creating %q: %v", name, err)
 	}
 	return m
 }
 
-func mustNewView(m *stats.MeasureInt64) *stats.View {
-	v, err := stats.NewView(m.Name(), "cumulative "+m.Description(),
-		[]tag.Key{subscriptionKey}, m, stats.SumAggregation{}, stats.Cumulative{})
+func mustNewView(m *stats.Int64Measure) *view.View {
+	v, err := view.New(m.Name(), "cumulative "+m.Description(),
+		[]tag.Key{subscriptionKey}, m, view.SumAggregation{})
 	if err != nil {
 		log.Fatalf("creating view for %q: %v", m.Name(), err)
 	}
@@ -162,6 +163,6 @@ func withSubscriptionKey(ctx context.Context, subName string) context.Context {
 	return ctx
 }
 
-func recordStat(ctx context.Context, m *stats.MeasureInt64, n int64) {
+func recordStat(ctx context.Context, m *stats.Int64Measure, n int64) {
 	stats.Record(ctx, m.M(n))
 }

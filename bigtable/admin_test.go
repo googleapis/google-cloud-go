@@ -183,6 +183,67 @@ func TestAdminIntegration(t *testing.T) {
 	}
 }
 
+func TestInstanceUpdate(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	timeout := 2 * time.Second
+	if testEnv.Config().UseProd {
+		timeout = 5 * time.Minute
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+
+	defer adminClient.Close()
+
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+
+	if iAdminClient == nil {
+		return
+	}
+
+	defer iAdminClient.Close()
+
+	iInfo, err := iAdminClient.InstanceInfo(ctx, adminClient.instance)
+	if err != nil {
+		t.Errorf("InstanceInfo: %v", err)
+	}
+
+	if iInfo.Name != adminClient.instance {
+		t.Errorf("InstanceInfo returned name %#v, want %#v", iInfo.Name, adminClient.instance)
+	}
+
+	if iInfo.DisplayName != adminClient.instance {
+		t.Errorf("InstanceInfo returned name %#v, want %#v", iInfo.Name, adminClient.instance)
+	}
+
+	const numNodes = 4
+	// update cluster nodes
+	if err := iAdminClient.UpdateCluster(ctx, adminClient.instance, testEnv.Config().Cluster, int32(numNodes)); err != nil {
+		t.Errorf("UpdateCluster: %v", err)
+	}
+
+	// get cluster after updating
+	cis, err := iAdminClient.GetCluster(ctx, adminClient.instance, testEnv.Config().Cluster)
+	if err != nil {
+		t.Errorf("GetCluster %v", err)
+	}
+	if cis.ServeNodes != int(numNodes) {
+		t.Errorf("ServeNodes returned %d, want %d", cis.ServeNodes, int(numNodes))
+	}
+}
+
 func TestAdminSnapshotIntegration(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {

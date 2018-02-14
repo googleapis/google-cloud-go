@@ -24,8 +24,8 @@ import (
 )
 
 var (
-	nullsTestTime     = civil.Time{7, 50, 22, 1000}
-	nullsTestDateTime = civil.DateTime{civil.Date{2016, 11, 5}, nullsTestTime}
+	nullsTestTime     = civil.Time{Hour: 7, Minute: 50, Second: 22, Nanosecond: 1000}
+	nullsTestDateTime = civil.DateTime{Date: civil.Date{Year: 2016, Month: 11, Day: 5}, Time: nullsTestTime}
 )
 
 func TestNullsJSON(t *testing.T) {
