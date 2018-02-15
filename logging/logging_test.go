@@ -472,9 +472,14 @@ func TestLogsAndDelete(t *testing.T) {
 		}
 		if strings.HasPrefix(logID, testLogIDPrefix) {
 			if err := aclient.DeleteLog(ctx, logID); err != nil {
-				t.Fatalf("deleting %q: %v", logID, err)
+				// Ignore NotFound. Sometimes, amazingly, DeleteLog cannot find
+				// a log that is returned by Logs.
+				if status.Code(err) != codes.NotFound {
+					t.Fatalf("deleting %q: %v", logID, err)
+				}
+			} else {
+				nDeleted++
 			}
-			nDeleted++
 		}
 	}
 	t.Logf("deleted %d logs", nDeleted)
