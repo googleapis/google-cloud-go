@@ -241,6 +241,7 @@ type BucketAttrs struct {
 	// a user project (see BucketHandle.UserProject), which will be billed
 	// for the operations.
 	RequesterPays bool
+
 	// Lifecycle is the lifecycle configuration for objects in the bucket.
 	Lifecycle Lifecycle
 
