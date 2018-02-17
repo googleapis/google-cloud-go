@@ -886,6 +886,58 @@ func TestIntegration_TransactionGetAll(t *testing.T) {
 	}
 }
 
+func TestIntegration_WatchDocument(t *testing.T) {
+	coll := integrationColl(t)
+	ctx := context.Background()
+	doc := coll.NewDoc()
+	it := doc.Snapshots(ctx)
+	defer it.Stop()
+
+	next := func() *DocumentSnapshot {
+		snap, err := it.Next()
+		if err != nil {
+			t.Fatal(err)
+		}
+		return snap
+	}
+
+	snap := next()
+	if snap.Exists() {
+		t.Fatal("snapshot exists; it should not")
+	}
+	want := map[string]interface{}{"a": int64(1), "b": "two"}
+	mustCreate("watch 1", t, doc, want)
+	snap = next()
+	if got := snap.Data(); !testutil.Equal(got, want) {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+
+	_, err := doc.Update(ctx, []Update{{Path: "a", Value: int64(2)}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want["a"] = int64(2)
+	snap = next()
+	if got := snap.Data(); !testutil.Equal(got, want) {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+
+	_, err = doc.Delete(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	snap = next()
+	if snap.Exists() {
+		t.Fatal("snapshot exists; it should not")
+	}
+
+	mustCreate("watch 2", t, doc, want)
+	snap = next()
+	if got := snap.Data(); !testutil.Equal(got, want) {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+}
+
 func codeEq(t *testing.T, msg string, code codes.Code, err error) {
 	if grpc.Code(err) != code {
 		t.Fatalf("%s:\ngot <%v>\nwant code %s", msg, err, code)
