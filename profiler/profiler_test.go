@@ -407,7 +407,7 @@ func TestInitializeAgent(t *testing.T) {
 }
 
 func TestInitializeConfig(t *testing.T) {
-	oldConfig, oldService, oldVersion, oldGetProjectID, oldGetInstanceName, oldGetZone, oldOnGCE := config, os.Getenv("GAE_SERVICE"), os.Getenv("GAE_VERSION"), getProjectID, getInstanceName, getZone, onGCE
+	oldConfig, oldService, oldVersion, oldEnvProjectID, oldGetProjectID, oldGetInstanceName, oldGetZone, oldOnGCE := config, os.Getenv("GAE_SERVICE"), os.Getenv("GAE_VERSION"), os.Getenv("GOOGLE_CLOUD_PROJECT"), getProjectID, getInstanceName, getZone, onGCE
 	defer func() {
 		config, getProjectID, getInstanceName, getZone, onGCE = oldConfig, oldGetProjectID, oldGetInstanceName, oldGetZone, oldOnGCE
 		if err := os.Setenv("GAE_SERVICE", oldService); err != nil {
@@ -416,126 +416,181 @@ func TestInitializeConfig(t *testing.T) {
 		if err := os.Setenv("GAE_VERSION", oldVersion); err != nil {
 			t.Fatal(err)
 		}
+		if err := os.Setenv("GOOGLE_CLOUD_PROJECT", oldEnvProjectID); err != nil {
+			t.Fatal(err)
+		}
 	}()
-	testGAEService := "test-gae-service"
-	testGAEVersion := "test-gae-version"
-	testGCEProjectID := "test-gce-project-id"
+	const (
+		testGAEService   = "test-gae-service"
+		testGAEVersion   = "test-gae-version"
+		testGCEProjectID = "test-gce-project-id"
+		testEnvProjectID = "test-env-project-id"
+	)
 	for _, tt := range []struct {
+		desc            string
 		config          Config
 		wantConfig      Config
 		wantErrorString string
 		onGAE           bool
 		onGCE           bool
+		envProjectID    bool
 	}{
 		{
+			"accepts service name",
 			Config{Service: testService},
 			Config{Target: testService, ProjectID: testGCEProjectID, zone: testZone, instance: testInstance},
 			"",
 			false,
 			true,
+			false,
 		},
 		{
+			"accepts target name",
 			Config{Target: testTarget},
 			Config{Target: testTarget, ProjectID: testGCEProjectID, zone: testZone, instance: testInstance},
 			"",
 			false,
 			true,
+			false,
 		},
 		{
+			"env project overrides GCE project",
+			Config{Service: testService},
+			Config{Target: testService, ProjectID: testEnvProjectID, zone: testZone, instance: testInstance},
+			"",
+			false,
+			true,
+			true,
+		},
+		{
+			"requires service name",
 			Config{},
 			Config{},
 			"service name must be specified in the configuration",
 			false,
 			true,
+			false,
 		},
 		{
+			"accepts service name from config and service version from GAE",
 			Config{Service: testService},
 			Config{Target: testService, ServiceVersion: testGAEVersion, ProjectID: testGCEProjectID, zone: testZone, instance: testInstance},
 			"",
 			true,
 			true,
+			false,
 		},
 		{
+			"accepts target name from config and service version from GAE",
 			Config{Target: testTarget},
 			Config{Target: testTarget, ServiceVersion: testGAEVersion, ProjectID: testGCEProjectID, zone: testZone, instance: testInstance},
 			"",
 			true,
 			true,
+			false,
 		},
 		{
+			"reads both service name and version from GAE env vars",
 			Config{},
 			Config{Target: testGAEService, ServiceVersion: testGAEVersion, ProjectID: testGCEProjectID, zone: testZone, instance: testInstance},
 			"",
 			true,
 			true,
+			false,
 		},
 		{
+			"accepts service version from config",
 			Config{Service: testService, ServiceVersion: testSvcVersion},
 			Config{Target: testService, ServiceVersion: testSvcVersion, ProjectID: testGCEProjectID, zone: testZone, instance: testInstance},
 			"",
 			false,
 			true,
+			false,
 		},
 		{
+			"configured version has priority over GAE-provided version",
 			Config{Service: testService, ServiceVersion: testSvcVersion},
 			Config{Target: testService, ServiceVersion: testSvcVersion, ProjectID: testGCEProjectID, zone: testZone, instance: testInstance},
 			"",
 			true,
 			true,
+			false,
 		},
 		{
+			"configured project ID has priority over metadata-provided project ID",
 			Config{Service: testService, ProjectID: testProjectID},
 			Config{Target: testService, ProjectID: testProjectID, zone: testZone, instance: testInstance},
 			"",
 			false,
 			true,
+			false,
 		},
 		{
+			"configured project ID has priority over environment project ID",
+			Config{Service: testService, ProjectID: testProjectID},
+			Config{Target: testService, ProjectID: testProjectID},
+			"",
+			false,
+			false,
+			true,
+		},
+		{
+			"requires project ID if not on GCE",
 			Config{Service: testService},
 			Config{Target: testService},
 			"project ID must be specified in the configuration if running outside of GCP",
 			false,
 			false,
+			false,
 		},
 	} {
-		envService, envVersion := "", ""
-		if tt.onGAE {
-			envService, envVersion = testGAEService, testGAEVersion
-		}
-		if err := os.Setenv("GAE_SERVICE", envService); err != nil {
-			t.Fatal(err)
-		}
-		if err := os.Setenv("GAE_VERSION", envVersion); err != nil {
-			t.Fatal(err)
-		}
-		if tt.onGCE {
-			onGCE = func() bool { return true }
-			getProjectID = func() (string, error) { return testGCEProjectID, nil }
-			getZone = func() (string, error) { return testZone, nil }
-			getInstanceName = func() (string, error) { return testInstance, nil }
-		} else {
-			onGCE = func() bool { return false }
-			getProjectID = func() (string, error) { return "", fmt.Errorf("test get project id error") }
-			getZone = func() (string, error) { return "", fmt.Errorf("test get zone error") }
-			getInstanceName = func() (string, error) { return "", fmt.Errorf("test get instance error") }
-		}
+		t.Run(tt.desc, func(t *testing.T) {
+			envService, envVersion := "", ""
+			if tt.onGAE {
+				envService, envVersion = testGAEService, testGAEVersion
+			}
+			if err := os.Setenv("GAE_SERVICE", envService); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.Setenv("GAE_VERSION", envVersion); err != nil {
+				t.Fatal(err)
+			}
+			if tt.onGCE {
+				onGCE = func() bool { return true }
+				getProjectID = func() (string, error) { return testGCEProjectID, nil }
+				getZone = func() (string, error) { return testZone, nil }
+				getInstanceName = func() (string, error) { return testInstance, nil }
+			} else {
+				onGCE = func() bool { return false }
+				getProjectID = func() (string, error) { return "", fmt.Errorf("test get project id error") }
+				getZone = func() (string, error) { return "", fmt.Errorf("test get zone error") }
+				getInstanceName = func() (string, error) { return "", fmt.Errorf("test get instance error") }
+			}
+			envProjectID := ""
+			if tt.envProjectID {
+				envProjectID = testEnvProjectID
+			}
+			if err := os.Setenv("GOOGLE_CLOUD_PROJECT", envProjectID); err != nil {
+				t.Fatal(err)
+			}
 
-		errorString := ""
-		if err := initializeConfig(tt.config); err != nil {
-			errorString = err.Error()
-		}
+			errorString := ""
+			if err := initializeConfig(tt.config); err != nil {
+				errorString = err.Error()
+			}
 
-		if !strings.Contains(errorString, tt.wantErrorString) {
-			t.Errorf("initializeConfig(%v) got error: %v, want contain %v", tt.config, errorString, tt.wantErrorString)
-		}
+			if !strings.Contains(errorString, tt.wantErrorString) {
+				t.Errorf("initializeConfig(%v) got error: %v, want contain %v", tt.config, errorString, tt.wantErrorString)
+			}
 
-		if tt.wantErrorString == "" {
-			tt.wantConfig.APIAddr = apiAddress
-		}
-		tt.wantConfig.Service = tt.config.Service
-		if config != tt.wantConfig {
-			t.Errorf("initializeConfig(%v) got: %v, want %v", tt.config, config, tt.wantConfig)
-		}
+			if tt.wantErrorString == "" {
+				tt.wantConfig.APIAddr = apiAddress
+			}
+			tt.wantConfig.Service = tt.config.Service
+			if config != tt.wantConfig {
+				t.Errorf("initializeConfig(%v) got: %v, want %v", tt.config, config, tt.wantConfig)
+			}
+		})
 	}
 
 	for _, tt := range []struct {
