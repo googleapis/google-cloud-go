@@ -345,34 +345,52 @@ func TestInitializeAgent(t *testing.T) {
 	for _, tt := range []struct {
 		config               Config
 		enableMutex          bool
+		wantProfileTypes     []pb.ProfileType
 		wantDeploymentLabels map[string]string
 		wantProfileLabels    map[string]string
 	}{
 		{
 			config:               Config{ServiceVersion: testSvcVersion, zone: testZone},
+			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_THREADS},
 			wantDeploymentLabels: map[string]string{zoneNameLabel: testZone, versionLabel: testSvcVersion},
 			wantProfileLabels:    map[string]string{},
 		},
 		{
 			config:               Config{zone: testZone},
+			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_THREADS},
 			wantDeploymentLabels: map[string]string{zoneNameLabel: testZone},
 			wantProfileLabels:    map[string]string{},
 		},
 		{
 			config:               Config{ServiceVersion: testSvcVersion},
+			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_THREADS},
 			wantDeploymentLabels: map[string]string{versionLabel: testSvcVersion},
 			wantProfileLabels:    map[string]string{},
 		},
 		{
 			config:               Config{instance: testInstance},
+			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_THREADS},
 			wantDeploymentLabels: map[string]string{},
 			wantProfileLabels:    map[string]string{instanceLabel: testInstance},
 		},
 		{
 			config:               Config{instance: testInstance},
 			enableMutex:          true,
+			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_THREADS, pb.ProfileType_CONTENTION},
 			wantDeploymentLabels: map[string]string{},
 			wantProfileLabels:    map[string]string{instanceLabel: testInstance},
+		},
+		{
+			config:               Config{NoHeapProfiling: true},
+			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_THREADS},
+			wantDeploymentLabels: map[string]string{},
+			wantProfileLabels:    map[string]string{},
+		},
+		{
+			config:               Config{NoHeapProfiling: true, NoGoroutineProfiling: true},
+			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU},
+			wantDeploymentLabels: map[string]string{},
+			wantProfileLabels:    map[string]string{},
 		},
 	} {
 
@@ -390,19 +408,12 @@ func TestInitializeAgent(t *testing.T) {
 		if !testutil.Equal(a.deployment, wantDeployment) {
 			t.Errorf("initializeAgent() got deployment: %v, want %v", a.deployment, wantDeployment)
 		}
-
 		if !testutil.Equal(a.profileLabels, tt.wantProfileLabels) {
 			t.Errorf("initializeAgent() got profile labels: %v, want %v", a.profileLabels, tt.wantProfileLabels)
 		}
-
-		wantProfileTypes := []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_THREADS}
-		if tt.enableMutex {
-			wantProfileTypes = append(wantProfileTypes, pb.ProfileType_CONTENTION)
+		if !testutil.Equal(a.profileTypes, tt.wantProfileTypes) {
+			t.Errorf("initializeAgent() got profile types: %v, want %v", a.profileTypes, tt.wantProfileTypes)
 		}
-		if !testutil.Equal(a.profileTypes, wantProfileTypes) {
-			t.Errorf("initializeAgent() got profile types: %v, want %v", a.profileTypes, wantProfileTypes)
-		}
-
 	}
 }
 

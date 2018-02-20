@@ -123,6 +123,12 @@ type Config struct {
 	// than Go 1.8.
 	MutexProfiling bool
 
+	// When true, collecting the heap profiles is disabled.
+	NoHeapProfiling bool
+
+	// When true, collecting the goroutine profiles is disabled.
+	NoGoroutineProfiling bool
+
 	// ProjectID is the Cloud Console project ID to use instead of
 	// the one read from the VM metadata server.
 	//
@@ -411,7 +417,13 @@ func initializeAgent(c pb.ProfilerServiceClient) *agent {
 		profileLabels[instanceLabel] = config.instance
 	}
 
-	profileTypes := []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_THREADS}
+	profileTypes := []pb.ProfileType{pb.ProfileType_CPU}
+	if !config.NoHeapProfiling {
+		profileTypes = append(profileTypes, pb.ProfileType_HEAP)
+	}
+	if !config.NoGoroutineProfiling {
+		profileTypes = append(profileTypes, pb.ProfileType_THREADS)
+	}
 	if mutexEnabled {
 		profileTypes = append(profileTypes, pb.ProfileType_CONTENTION)
 	}
