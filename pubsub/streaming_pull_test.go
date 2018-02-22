@@ -102,7 +102,7 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *fakeServer
 			t.Errorf("%d: no message for ackID %q", i, want.ackID)
 			continue
 		}
-		if !testutil.Equal(got, want, cmp.AllowUnexported(Message{}), cmpopts.IgnoreTypes(func(string, bool) {})) {
+		if !testutil.Equal(got, want, cmp.AllowUnexported(Message{}), cmpopts.IgnoreTypes(time.Time{}, func(string, bool, time.Time) {})) {
 			t.Errorf("%d: got\n%#v\nwant\n%#v", i, got, want)
 		}
 	}
