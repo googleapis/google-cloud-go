@@ -318,6 +318,18 @@ func (m *MockCloudSpannerClient) Rollback(c context.Context, r *sppb.RollbackReq
 	return nil, nil
 }
 
+// PartitionQuery is a placeholder for SpannerServer.PartitionQuery.
+func (m *MockCloudSpannerClient) PartitionQuery(ctx context.Context, r *sppb.PartitionQueryRequest, opts ...grpc.CallOption) (*sppb.PartitionResponse, error) {
+	m.ready()
+	return nil, errors.New("Unimplemented")
+}
+
+// PartitionRead is a placeholder for SpannerServer.PartitionRead.
+func (m *MockCloudSpannerClient) PartitionRead(ctx context.Context, r *sppb.PartitionReadRequest, opts ...grpc.CallOption) (*sppb.PartitionResponse, error) {
+	m.ready()
+	return nil, errors.New("Unimplemented")
+}
+
 func (m *MockCloudSpannerClient) expectAction(methods ...string) (Action, error) {
 	for _, me := range methods {
 		if err := m.injErr[me]; err != nil {
