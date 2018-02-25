@@ -65,6 +65,10 @@ set -eo pipefail
 # Display commands being run.
 set -x
 
+# Shut down the VM in 5 minutes after this script exits
+# to stop accounting the VM for billing and cores quota.
+trap "sleep 300 && poweroff" EXIT
+
 # Install git
 sudo apt-get update
 sudo apt-get -y -q install git-all
