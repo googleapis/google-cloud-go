@@ -26,25 +26,15 @@ Connection pooling differs in clients based on their transport. Cloud
 clients either rely on HTTP or gRPC transports to communicate
 with Google Cloud.
 
-Cloud clients that use HTTP rely on the underlying HTTP transport to
-cache connections for later re-use. These are cached to the default
-http.MaxIdleConns and http.MaxIdleConnsPerHost settings in
+Cloud clients that use HTTP (bigquery, compute, storage, and translate) rely on the
+underlying HTTP transport to cache connections for later re-use. These are cached to
+the default http.MaxIdleConns and http.MaxIdleConnsPerHost settings in
 http.DefaultTransport.
 
-For gPRC clients, connection pooling is configurable to the user. Users of
-cloud client libraries may specify option.WithGRPCConnectionPool(n)
-as a client option to NewClient calls. This configures the underlying
-gRPC connections to be pooled and addressed in a round robin fashion.
-The recommended size is GOMAXPROCS.
-
-Client Transports
-
-The following clients use HTTP: bigquery, compute, storage, translate.
-
-The following clients use gRPC: bigtable, container, dataproc, datastore,
-debugger, dlp, errorreporting, firestore, iam, language, logging,
-longrunning, monitoring, oslogin, profiler, pubsub, rpcreplay, spanner,
-speech, trace, videointelligence, vision.
+For gPRC clients (all others in this repo), connection pooling is configurable. Users
+of cloud client libraries may specify option.WithGRPCConnectionPool(n) as a client
+option to NewClient calls. This configures the underlying gRPC connections to be
+pooled and addressed in a round robin fashion.
 
 */
 package cloud // import "cloud.google.com/go"
