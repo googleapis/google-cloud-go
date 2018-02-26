@@ -33,6 +33,44 @@ make backwards-incompatible changes.
 
 ## News
 
+_February 26, 2018_
+
+*v0.19.0*
+
+- bigquery:
+  - Support customer-managed encryption keys.
+
+- bigtable:
+  - Improved emulator support.
+  - Support GetCluster.
+
+- datastore:
+  - Add general mutations.
+  - Support pointer struct fields.
+  - Support transaction options.
+
+- firestore:
+  - Add Transaction.GetAll.
+  - Support document cursors.
+
+- logging:
+  - Support concurrent RPCs to the service.
+  - Support per-entry resources.
+
+- profiler:
+  - Add config options to disable heap and thread profiling.
+  - Read the project ID from $GOOGLE_CLOUD_PROJECT when it's set.
+
+- pubsub:
+  - BEHAVIOR CHANGE: Release flow control after ack/nack (instead of after the
+    callback returns).
+  - Add SubscriptionInProject.
+  - Add OpenCensus instrumentation for streaming pull.
+
+- storage:
+  - Support CORS.
+
+
 _January 18, 2018_
 
 *v0.18.0*
@@ -95,45 +133,6 @@ _December 11, 2017_
   - Schema inference supports the "nullable" option in struct tags for
     non-required fields.
   - TimePartitioning supports "Field".
-
-
-_October 30, 2017_
-
-*v0.16.0*
-
-- Other bigquery changes:
-  - `JobIterator.Next` returns `*Job`; removed `JobInfo` (BREAKING CHANGE).
-  - UseStandardSQL is deprecated; set UseLegacySQL to true if you need
-    Legacy SQL.
-  - Uploader.Put will generate a random insert ID if you do not provide one.
-  - Support time partitioning for load jobs.
-  - Support dry-run queries.
-  - A `Job` remembers its last retrieved status.
-  - Support retrieving job configuration.
-  - Support labels for jobs and tables.
-  - Support dataset access lists.
-  - Improve support for external data sources, including data from Bigtable and
-    Google Sheets, and tables with external data.
-  - Support updating a table's view configuration.
-  - Fix uploading civil times with nanoseconds.
-
-- storage:
-  - Support PubSub notifications.
-  - Support Requester Pays buckets.
-
-- profiler: Support goroutine and mutex profile types.
-
-
-_October 3, 2017_
-
-*v0.15.0*
-
-- firestore: beta release. See the
-  [announcement](https://firebase.googleblog.com/2017/10/introducing-cloud-firestore.html).
-
-- errorreporting: The existing package has been redesigned.
-
-- errors: This package has been removed. Use errorreporting.
 
 
 [Older news](https://github.com/GoogleCloudPlatform/google-cloud-go/blob/master/old-news.md)
