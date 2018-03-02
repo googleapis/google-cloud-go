@@ -14,7 +14,7 @@
 
 // +build !go1.8
 
-package spanner
+package bigtable
 
 import (
 	"golang.org/x/net/context"
