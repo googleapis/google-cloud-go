@@ -67,6 +67,10 @@ func toProtoValue(v reflect.Value) (pbv *pb.Value, sawServerTimestamp bool, err 
 		}
 		return &pb.Value{&pb.Value_TimestampValue{ts}}, false, nil
 	case *ts.Timestamp:
+		if x == nil {
+			// gRPC doesn't like nil oneofs. Use NullValue.
+			return nullValue, false, nil
+		}
 		return &pb.Value{&pb.Value_TimestampValue{x}}, false, nil
 	case *latlng.LatLng:
 		if x == nil {

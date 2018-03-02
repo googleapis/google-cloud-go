@@ -85,6 +85,7 @@ func TestToProtoValue(t *testing.T) {
 		{[]int(nil), nullValue},
 		{map[string]int(nil), nullValue},
 		{(*testStruct1)(nil), nullValue},
+		{(*ts.Timestamp)(nil), nullValue},
 		{(*latlng.LatLng)(nil), nullValue},
 		{(*DocumentRef)(nil), nullValue},
 		{true, boolval(true)},
