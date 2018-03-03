@@ -23,8 +23,42 @@ import (
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
+func TestPartitionRoundTrip(t *testing.T) {
+	t.Parallel()
+	for i, want := range []Partition{
+		{rreq: &sppb.ReadRequest{Table: "t"}},
+		{qreq: &sppb.ExecuteSqlRequest{Sql: "sql"}},
+	} {
+		got := serdesPartition(t, i, &want)
+		if !testEqual(got, want) {
+			t.Errorf("got: %#v\nwant:%#v", got, want)
+		}
+	}
+}
+
+func TestBROTIDRoundTrip(t *testing.T) {
+	t.Parallel()
+	tm := time.Now()
+	want := BatchReadOnlyTransactionID{
+		tid: []byte("tid"),
+		sid: "sid",
+		rts: tm,
+	}
+	data, err := want.MarshalBinary()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got BatchReadOnlyTransactionID
+	if err := got.UnmarshalBinary(data); err != nil {
+		t.Fatal(err)
+	}
+	if !testEqual(got, want) {
+		t.Errorf("got: %#v\nwant:%#v", got, want)
+	}
+}
+
 // serdesPartition is a helper that serialize a Partition then deserialize it
-func serdesPartition(t *testing.T, i int64, p1 *Partition) (p2 Partition) {
+func serdesPartition(t *testing.T, i int, p1 *Partition) (p2 Partition) {
 	var (
 		data []byte
 		err  error
@@ -36,26 +70,4 @@ func serdesPartition(t *testing.T, i int64, p1 *Partition) (p2 Partition) {
 		t.Fatalf("#%d: decoding failed %v", i, err)
 	}
 	return p2
-}
-
-// Test serdes of Partition.
-func TestPartitionSerdes(t *testing.T) {
-	t.Parallel()
-	var (
-		p1, p2 Partition
-		rreq   = &sppb.ReadRequest{}
-		qreq   = &sppb.ExecuteSqlRequest{}
-		seed   = time.Now().UnixNano()
-	)
-	p1.rreq = rreq
-	p2 = serdesPartition(t, seed, &p1)
-	if !testEqual(p1, p2) {
-		t.Errorf("Seed:%d, serdes of read Partition failed, \ngot: %#v, \nwant:%#v", seed, p2, p1)
-	}
-	p1.rreq = nil
-	p1.qreq = qreq
-	p2 = serdesPartition(t, seed, &p1)
-	if !testEqual(p1, p2) {
-		t.Errorf("Seed:%d, serdes of query Partition failed, \ngot: %#v, \nwant:%#v", seed, p2, p1)
-	}
 }

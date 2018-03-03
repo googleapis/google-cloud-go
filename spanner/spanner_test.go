@@ -1653,7 +1653,7 @@ func TestBatchQuery(t *testing.T) {
 	for i, p := range partitions {
 		iter := txn.Execute(ctx, p)
 		defer iter.Stop()
-		p2 := serdesPartition(t, int64(i), p)
+		p2 := serdesPartition(t, i, p)
 		iter2 := txn2.Execute(ctx, &p2)
 		defer iter2.Stop()
 
@@ -1736,7 +1736,7 @@ func TestBatchRead(t *testing.T) {
 	for i, p := range partitions {
 		iter := txn.Execute(ctx, p)
 		defer iter.Stop()
-		p2 := serdesPartition(t, int64(i), p)
+		p2 := serdesPartition(t, i, p)
 		iter2 := txn2.Execute(ctx, &p2)
 		defer iter2.Stop()
 
