@@ -279,44 +279,37 @@ func (tid BatchReadOnlyTransactionID) MarshalBinary() (data []byte, err error) {
 
 // UnmarshalBinary implements BinaryUnmarshaler.
 func (tid *BatchReadOnlyTransactionID) UnmarshalBinary(data []byte) error {
-	reader := bytes.NewReader(data)
-	dec := gob.NewDecoder(reader)
+	dec := gob.NewDecoder(bytes.NewReader(data))
 	if err := dec.Decode(&tid.tid); err != nil {
 		return err
 	}
 	if err := dec.Decode(&tid.sid); err != nil {
 		return err
 	}
-	if err := dec.Decode(&tid.rts); err != nil {
-		return err
-	}
-	return nil
+	return dec.Decode(&tid.rts)
 }
 
 // MarshalBinary implements BinaryMarshaler.
 func (p Partition) MarshalBinary() (data []byte, err error) {
-	var (
-		buf             bytes.Buffer
-		isReadPartition bool
-	)
+	var buf bytes.Buffer
 	enc := gob.NewEncoder(&buf)
 	if err := enc.Encode(p.pt); err != nil {
 		return nil, err
 	}
+	var isReadPartition bool
+	var req proto.Message
 	if p.rreq != nil {
 		isReadPartition = true
+		req = p.rreq
+	} else {
+		isReadPartition = false
+		req = p.qreq
 	}
 	if err := enc.Encode(isReadPartition); err != nil {
 		return nil, err
 	}
-	if isReadPartition {
-		if data, err = proto.Marshal(p.rreq); err != nil {
-			return nil, err
-		}
-	} else {
-		if data, err = proto.Marshal(p.qreq); err != nil {
-			return nil, err
-		}
+	if data, err = proto.Marshal(req); err != nil {
+		return nil, err
 	}
 	if err := enc.Encode(data); err != nil {
 		return nil, err
@@ -329,11 +322,9 @@ func (p *Partition) UnmarshalBinary(data []byte) error {
 	var (
 		isReadPartition bool
 		d               []byte
-		qreq            = &sppb.ExecuteSqlRequest{}
-		rreq            = &sppb.ReadRequest{}
+		err             error
 	)
-	reader := bytes.NewReader(data)
-	dec := gob.NewDecoder(reader)
+	dec := gob.NewDecoder(bytes.NewReader(data))
 	if err := dec.Decode(&p.pt); err != nil {
 		return err
 	}
@@ -344,15 +335,11 @@ func (p *Partition) UnmarshalBinary(data []byte) error {
 		return err
 	}
 	if isReadPartition {
-		if err := proto.Unmarshal(d, rreq); err != nil {
-			return err
-		}
-		p.rreq = rreq
+		p.rreq = &sppb.ReadRequest{}
+		err = proto.Unmarshal(d, p.rreq)
 	} else {
-		if err := proto.Unmarshal(d, qreq); err != nil {
-			return err
-		}
-		p.qreq = qreq
+		p.qreq = &sppb.ExecuteSqlRequest{}
+		err = proto.Unmarshal(d, p.qreq)
 	}
-	return nil
+	return err
 }
