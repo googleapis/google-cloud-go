@@ -199,10 +199,12 @@ func (t *BatchReadOnlyTransaction) Close() {
 
 // Cleanup cleans up all the resources used by this transaction and makes
 // it unusable. Once this method is invoked, the transaction is no longer
-// usable anywhere including other clients/processes with which this
-// transaction was shared. This is optional but recommended.
-// The resources will be freed when the session is recycled. For more info
-// about recycled sessions:
+// usable anywhere, including other clients/processes with which this
+// transaction was shared.
+//
+// Calling Cleanup is optional, but recommended. If Cleanup is not called, the
+// transaction's resources will be freed when the session expires on the backend and
+// is deleted. For more information about recycled sessions, see
 // https://cloud.google.com/spanner/docs/sessions.
 func (t *BatchReadOnlyTransaction) Cleanup(ctx context.Context) {
 	t.Close()
