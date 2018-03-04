@@ -165,7 +165,7 @@ func (b *BucketHandle) Attrs(ctx context.Context) (_ *BucketAttrs, err error) {
 	if err != nil {
 		return nil, err
 	}
-	return newBucket(resp), nil
+	return newBucket(resp)
 }
 
 func (b *BucketHandle) newGetCall() (*raw.BucketsGetCall, error) {
@@ -193,7 +193,7 @@ func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (
 	if err != nil {
 		return nil, err
 	}
-	return newBucket(rb), nil
+	return newBucket(rb)
 }
 
 func (b *BucketHandle) newPatchCall(uattrs *BucketAttrsToUpdate) (*raw.BucketsPatchCall, error) {
@@ -258,6 +258,11 @@ type BucketAttrs struct {
 	// Lifecycle is the lifecycle configuration for objects in the bucket.
 	Lifecycle Lifecycle
 
+	// Retention policy enforces a minimum retention time for all objects
+	// contained in the bucket. A RetentionPolicy of nil implies the bucket
+	// has no minimum data retention.
+	RetentionPolicy *RetentionPolicy
+
 	// The bucket's Cross-Origin Resource Sharing (CORS) configuration.
 	CORS []CORS
 }
@@ -265,6 +270,27 @@ type BucketAttrs struct {
 // Lifecycle is the lifecycle configuration for objects in the bucket.
 type Lifecycle struct {
 	Rules []LifecycleRule
+}
+
+// Retention policy enforces a minimum retention time for all objects
+// contained in the bucket.
+//
+// Any attempt to overwrite or delete objects younger than the retention
+// period will result in an error. An unlocked retention policy can be
+// modified or removed from the bucket via the Update method. A
+// locked retention policy cannot be removed or shortened in duration
+// for the lifetime of the bucket.
+type RetentionPolicy struct {
+	// RetentionPeriod specifies the duration that objects need to be
+	// retained. Retention duration must be greater than zero and less than
+	// 100 years. Note that enforcement of retention periods less than a day
+	// is not guaranteed. Such periods should only be used for testing
+	// purposes.
+	RetentionPeriod time.Duration
+
+	// EffectiveTime is the time from which the policy was enforced and
+	// effective. This field is read-only.
+	EffectiveTime time.Time
 }
 
 const (
@@ -352,9 +378,13 @@ type LifecycleCondition struct {
 	NumNewerVersions int64
 }
 
-func newBucket(b *raw.Bucket) *BucketAttrs {
+func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 	if b == nil {
-		return nil
+		return nil, nil
+	}
+	rp, err := toRetentionPolicy(b.RetentionPolicy)
+	if err != nil {
+		return nil, err
 	}
 	bucket := &BucketAttrs{
 		Name:              b.Name,
@@ -366,6 +396,7 @@ func newBucket(b *raw.Bucket) *BucketAttrs {
 		Labels:            b.Labels,
 		RequesterPays:     b.Billing != nil && b.Billing.RequesterPays,
 		Lifecycle:         toLifecycle(b.Lifecycle),
+		RetentionPolicy:   rp,
 		CORS:              toCORS(b.Cors),
 	}
 	acl := make([]ACLRule, len(b.Acl))
@@ -384,7 +415,7 @@ func newBucket(b *raw.Bucket) *BucketAttrs {
 		}
 	}
 	bucket.DefaultObjectACL = objACL
-	return bucket
+	return bucket, nil
 }
 
 // toRawBucket copies the editable attribute from b to the raw library's Bucket type.
@@ -429,6 +460,7 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		Labels:           labels,
 		Billing:          bb,
 		Lifecycle:        toRawLifecycle(b.Lifecycle),
+		RetentionPolicy:  b.RetentionPolicy.toRawRetentionPolicy(),
 		Cors:             toRawCORS(b.CORS),
 	}
 }
@@ -462,6 +494,10 @@ type BucketAttrsToUpdate struct {
 	// RequesterPays, if set, updates whether the bucket is a Requester Pays bucket.
 	RequesterPays optional.Bool
 
+	// RetentionPolicy, if set, updates the retention policy of the bucket. Using
+	// RetentionPolicy.RetentionPeriod = 0 will delete the existing policy.
+	RetentionPolicy *RetentionPolicy
+
 	// CORS, if set, replaces the CORS configuration with a new configuration.
 	// When an empty slice is provided, all CORS policies are removed; when nil
 	// is provided, the value is ignored in the update.
@@ -494,6 +530,14 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 	if ua.CORS != nil {
 		rb.Cors = toRawCORS(ua.CORS)
 		rb.ForceSendFields = append(rb.ForceSendFields, "Cors")
+	}
+	if ua.RetentionPolicy != nil {
+		if ua.RetentionPolicy.RetentionPeriod == 0 {
+			rb.NullFields = append(rb.NullFields, "RetentionPolicy")
+			rb.RetentionPolicy = nil
+		} else {
+			rb.RetentionPolicy = ua.RetentionPolicy.toRawRetentionPolicy()
+		}
 	}
 	if ua.VersioningEnabled != nil {
 		rb.Versioning = &raw.BucketVersioning{
@@ -592,6 +636,29 @@ func applyBucketConds(method string, conds *BucketConditions, call interface{}) 
 		}
 	}
 	return nil
+}
+
+func (rp *RetentionPolicy) toRawRetentionPolicy() *raw.BucketRetentionPolicy {
+	if rp == nil {
+		return nil
+	}
+	return &raw.BucketRetentionPolicy{
+		RetentionPeriod: int64(rp.RetentionPeriod / time.Second),
+	}
+}
+
+func toRetentionPolicy(rp *raw.BucketRetentionPolicy) (*RetentionPolicy, error) {
+	if rp == nil {
+		return nil, nil
+	}
+	t, err := time.Parse(time.RFC3339, rp.EffectiveTime)
+	if err != nil {
+		return nil, err
+	}
+	return &RetentionPolicy{
+		RetentionPeriod: time.Duration(rp.RetentionPeriod) * time.Second,
+		EffectiveTime:   t,
+	}, nil
 }
 
 func toRawCORS(c []CORS) []*raw.BucketCors {
@@ -819,9 +886,6 @@ func (it *BucketIterator) Next() (*BucketAttrs, error) {
 func (it *BucketIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 
 func (it *BucketIterator) fetch(pageSize int, pageToken string) (_ string, err error) {
-	it.ctx = trace.StartSpan(it.ctx, "cloud.google.com/go/storage.Bucket.List")
-	defer func() { trace.EndSpan(it.ctx, err) }()
-
 	req := it.client.raw.Buckets.List(it.projectID)
 	setClientHeader(req.Header())
 	req.Projection("full")
@@ -839,7 +903,11 @@ func (it *BucketIterator) fetch(pageSize int, pageToken string) (_ string, err e
 		return "", err
 	}
 	for _, item := range resp.Items {
-		it.buckets = append(it.buckets, newBucket(item))
+		b, err := newBucket(item)
+		if err != nil {
+			return "", err
+		}
+		it.buckets = append(it.buckets, b)
 	}
 	return resp.NextPageToken, nil
 }
