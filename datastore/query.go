@@ -445,7 +445,10 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 // with the sum of the query's offset and limit. Unless the result count is
 // expected to be small, it is best to specify a limit; otherwise Count will
 // continue until it finishes counting or the provided context expires.
-func (c *Client) Count(ctx context.Context, q *Query) (int, error) {
+func (c *Client) Count(ctx context.Context, q *Query) (_ int, err error) {
+	traceStartSpan(ctx, "cloud.google.com/go/datastore.Query.Count")
+	defer func() { traceEndSpan(ctx, err) }()
+
 	// Check that the query is well-formed.
 	if q.err != nil {
 		return 0, q.err
@@ -492,7 +495,10 @@ func (c *Client) Count(ctx context.Context, q *Query) (int, error) {
 // expected to be small, it is best to specify a limit; otherwise GetAll will
 // continue until it finishes collecting results or the provided context
 // expires.
-func (c *Client) GetAll(ctx context.Context, q *Query, dst interface{}) ([]*Key, error) {
+func (c *Client) GetAll(ctx context.Context, q *Query, dst interface{}) (_ []*Key, err error) {
+	traceStartSpan(ctx, "cloud.google.com/go/datastore.Query.GetAll")
+	defer func() { traceEndSpan(ctx, err) }()
+
 	var (
 		dv               reflect.Value
 		mat              multiArgType
@@ -575,6 +581,9 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 			ProjectId: c.dataset,
 		},
 	}
+
+	traceStartSpan(ctx, "cloud.google.com/go/datastore.Query.Run")
+	defer func() { traceEndSpan(ctx, t.err) }()
 	if q.namespace != "" {
 		t.req.PartitionId = &pb.PartitionId{
 			NamespaceId: q.namespace,
@@ -622,7 +631,7 @@ type Iterator struct {
 // If the query is not keys only and dst is non-nil, it also loads the entity
 // stored for that key into the struct pointer or PropertyLoadSaver dst, with
 // the same semantics and possible errors as for the Get function.
-func (t *Iterator) Next(dst interface{}) (*Key, error) {
+func (t *Iterator) Next(dst interface{}) (_ *Key, err error) {
 	k, e, err := t.next()
 	if err != nil {
 		return nil, err
@@ -725,7 +734,10 @@ func (t *Iterator) nextBatch() error {
 }
 
 // Cursor returns a cursor for the iterator's current location.
-func (t *Iterator) Cursor() (Cursor, error) {
+func (t *Iterator) Cursor() (_ Cursor, err error) {
+	traceStartSpan(t.ctx, "cloud.google.com/go/datastore.Query.Cursor")
+	defer func() { traceEndSpan(t.ctx, err) }()
+
 	// If there is still an offset, we need to the skip those results first.
 	for t.err == nil && t.offset > 0 {
 		t.err = t.nextBatch()

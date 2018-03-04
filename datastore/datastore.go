@@ -302,11 +302,14 @@ func (c *Client) Close() error {
 // type than the one it was stored from, or when a field is missing or
 // unexported in the destination struct. ErrFieldMismatch is only returned if
 // dst is a struct pointer.
-func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) error {
+func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error) {
+	traceStartSpan(ctx, "cloud.google.com/go/datastore.Get")
+	defer func() { traceEndSpan(ctx, err) }()
+
 	if dst == nil { // get catches nil interfaces; we need to catch nil ptr here
 		return ErrInvalidEntityType
 	}
-	err := c.get(ctx, []*Key{key}, []interface{}{dst}, nil)
+	err = c.get(ctx, []*Key{key}, []interface{}{dst}, nil)
 	if me, ok := err.(MultiError); ok {
 		return me[0]
 	}
@@ -323,7 +326,10 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) error {
 // As a special case, PropertyList is an invalid type for dst, even though a
 // PropertyList is a slice of structs. It is treated as invalid to avoid being
 // mistakenly passed when []PropertyList was intended.
-func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) error {
+func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (err error) {
+	traceStartSpan(ctx, "cloud.google.com/go/datastore.GetMulti")
+	defer func() { traceEndSpan(ctx, err) }()
+
 	return c.get(ctx, keys, dst, nil)
 }
 
@@ -452,8 +458,11 @@ func (c *Client) Put(ctx context.Context, key *Key, src interface{}) (*Key, erro
 // PutMulti is a batch version of Put.
 //
 // src must satisfy the same conditions as the dst argument to GetMulti.
-func (c *Client) PutMulti(ctx context.Context, keys []*Key, src interface{}) ([]*Key, error) {
-	// TODO(jba): rewrite in terms of Mutate.
+// TODO(jba): rewrite in terms of Mutate.
+func (c *Client) PutMulti(ctx context.Context, keys []*Key, src interface{}) (_ []*Key, err error) {
+	traceStartSpan(ctx, "cloud.google.com/go/datastore.PutMulti")
+	defer func() { traceEndSpan(ctx, err) }()
+
 	mutations, err := putMutations(keys, src)
 	if err != nil {
 		return nil, err
@@ -541,8 +550,11 @@ func (c *Client) Delete(ctx context.Context, key *Key) error {
 }
 
 // DeleteMulti is a batch version of Delete.
-func (c *Client) DeleteMulti(ctx context.Context, keys []*Key) error {
-	// TODO(jba): rewrite in terms of Mutate.
+// TODO(jba): rewrite in terms of Mutate.
+func (c *Client) DeleteMulti(ctx context.Context, keys []*Key) (err error) {
+	traceStartSpan(ctx, "cloud.google.com/go/datastore.DeleteMulti")
+	defer func() { traceEndSpan(ctx, err) }()
+
 	mutations, err := deleteMutations(keys)
 	if err != nil {
 		return err
@@ -580,7 +592,10 @@ func deleteMutations(keys []*Key) ([]*pb.Mutation, error) {
 //
 // If any of the mutations are invalid, Mutate returns a MultiError with the errors.
 // Mutate returns a MultiError in this case even if there is only one Mutation.
-func (c *Client) Mutate(ctx context.Context, muts ...*Mutation) ([]*Key, error) {
+func (c *Client) Mutate(ctx context.Context, muts ...*Mutation) (_ []*Key, err error) {
+	traceStartSpan(ctx, "cloud.google.com/go/datastore.Mutate")
+	defer func() { traceEndSpan(ctx, err) }()
+
 	pmuts, err := mutationProtos(muts)
 	if err != nil {
 		return nil, err
