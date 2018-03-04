@@ -36,6 +36,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"golang.org/x/net/context"
 
 	"cloud.google.com/go/iam"
@@ -2020,6 +2021,76 @@ func TestIntegration_UpdateCORS(t *testing.T) {
 		}
 
 		if diff := testutil.Diff(attrs.CORS, test.want); diff != "" {
+			t.Errorf("input: %v\ngot=-, want=+:\n%s", test.input, diff)
+		}
+	}
+}
+
+func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	uidSpace := testutil.NewUIDSpace("integration-test")
+
+	ctx := context.Background()
+	client, _ := testConfig(ctx, t)
+	defer client.Close()
+
+	initial := &RetentionPolicy{RetentionPeriod: time.Minute}
+
+	for _, test := range []struct {
+		input *RetentionPolicy
+		want  *RetentionPolicy
+	}{
+		{ // Update
+			input: &RetentionPolicy{RetentionPeriod: time.Hour},
+			want:  &RetentionPolicy{RetentionPeriod: time.Hour},
+		},
+		{ // Update even with timestamp (EffectiveTime should be ignored)
+			input: &RetentionPolicy{RetentionPeriod: time.Hour, EffectiveTime: time.Now()},
+			want:  &RetentionPolicy{RetentionPeriod: time.Hour},
+		},
+		{ // Remove
+			input: &RetentionPolicy{},
+			want:  nil,
+		},
+		{ // Remove even with timestamp (EffectiveTime should be ignored)
+			input: &RetentionPolicy{EffectiveTime: time.Now()},
+			want:  nil,
+		},
+		{ // Ignore
+			input: nil,
+			want:  initial,
+		},
+	} {
+		bkt := client.Bucket(uidSpace.New())
+		err := bkt.Create(ctx, testutil.ProjID(), &BucketAttrs{RetentionPolicy: initial})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		defer func() {
+			if err := bkt.Delete(ctx); err != nil {
+				t.Fatal(err)
+			}
+		}()
+
+		_, err = bkt.Update(ctx, BucketAttrsToUpdate{RetentionPolicy: test.input})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		attrs, err := bkt.Attrs(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if attrs.RetentionPolicy != nil && attrs.RetentionPolicy.EffectiveTime.Unix() == 0 {
+			// Should be set by the server and parsed by the client
+			t.Fatal("EffectiveTime should be set, but it was not")
+		}
+		if diff := testutil.Diff(attrs.RetentionPolicy, test.want, cmpopts.IgnoreTypes(time.Time{})); diff != "" {
 			t.Errorf("input: %v\ngot=-, want=+:\n%s", test.input, diff)
 		}
 	}
