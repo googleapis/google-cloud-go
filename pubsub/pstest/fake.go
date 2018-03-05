@@ -297,8 +297,11 @@ func (s *gServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	return ps, nil
 }
 
+// Can be set for testing.
+var minAckDeadlineSecs int32 = 10
+
 func checkAckDeadline(ads int32) error {
-	if ads < 10 || ads > 600 {
+	if ads < minAckDeadlineSecs || ads > 600 {
 		// PubSub service returns Unknown.
 		return grpc.Errorf(codes.Unknown, "bad ack_deadline_seconds: %d", ads)
 	}
@@ -489,11 +492,15 @@ type subscription struct {
 }
 
 func newSubscription(t *topic, mu *sync.Mutex, ps *pb.Subscription) *subscription {
+	at := time.Duration(ps.AckDeadlineSeconds) * time.Second
+	if at == 0 {
+		at = 10 * time.Second
+	}
 	return &subscription{
 		topic:      t,
 		mu:         mu,
 		proto:      ps,
-		ackTimeout: 10 * time.Second,
+		ackTimeout: at,
 		msgs:       map[string]*message{},
 		done:       make(chan struct{}),
 	}
@@ -564,6 +571,9 @@ func (s *subscription) deliver() {
 	// Try to deliver each remaining message.
 	curIndex := 0
 	for _, m := range s.msgs {
+		if m.outstanding() {
+			continue
+		}
 		// If the message was never delivered before, start with the stream at
 		// curIndex. If it was delivered before, start with the stream after the one
 		// that owned it.
@@ -649,6 +659,7 @@ type message struct {
 	streamIndex int // index of stream that currently owns msg, for round-robin delivery
 }
 
+// A message is outstanding if it is owned by some stream.
 func (m *message) outstanding() bool {
 	return !m.ackDeadline.IsZero()
 }
