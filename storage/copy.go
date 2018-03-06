@@ -18,6 +18,7 @@ import (
 	"errors"
 	"fmt"
 
+	"cloud.google.com/go/internal/trace"
 	"golang.org/x/net/context"
 	raw "google.golang.org/api/storage/v1"
 )
@@ -64,8 +65,8 @@ type Copier struct {
 
 // Run performs the copy.
 func (c *Copier) Run(ctx context.Context) (_ *ObjectAttrs, err error) {
-	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Copier.Run")
-	defer func() { traceEndSpan(ctx, err) }()
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Copier.Run")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	if err := c.src.validate(); err != nil {
 		return nil, err
@@ -153,8 +154,8 @@ type Composer struct {
 
 // Run performs the compose operation.
 func (c *Composer) Run(ctx context.Context) (_ *ObjectAttrs, err error) {
-	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Composer.Run")
-	defer func() { traceEndSpan(ctx, err) }()
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Composer.Run")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	if err := c.dst.validate(); err != nil {
 		return nil, err

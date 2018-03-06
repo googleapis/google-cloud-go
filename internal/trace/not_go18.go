@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2018 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 
 // +build !go1.8
 
-package datastore
+package trace
 
 import (
 	"golang.org/x/net/context"
@@ -22,9 +22,9 @@ import (
 
 // OpenCensus only supports go 1.8 and higher.
 
-func traceStartSpan(ctx context.Context, _ string) context.Context {
+func StartSpan(ctx context.Context, _ string) context.Context {
 	return ctx
 }
 
-func traceEndSpan(context.Context, error) {
+func EndSpan(context.Context, error) {
 }

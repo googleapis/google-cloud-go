@@ -17,6 +17,7 @@ package datastore
 import (
 	"errors"
 
+	"cloud.google.com/go/internal/trace"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -96,8 +97,8 @@ type Transaction struct {
 
 // NewTransaction starts a new transaction.
 func (c *Client) NewTransaction(ctx context.Context, opts ...TransactionOption) (_ *Transaction, err error) {
-	traceStartSpan(ctx, "cloud.google.com/go/datastore.NewTransaction")
-	defer func() { traceEndSpan(ctx, err) }()
+	trace.StartSpan(ctx, "cloud.google.com/go/datastore.NewTransaction")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	for _, o := range opts {
 		if _, ok := o.(maxAttempts); ok {
@@ -156,8 +157,8 @@ func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (*T
 // Transaction.Get will append when unmarshalling slice fields, so it is not
 // necessarily idempotent.
 func (c *Client) RunInTransaction(ctx context.Context, f func(tx *Transaction) error, opts ...TransactionOption) (_ *Commit, err error) {
-	traceStartSpan(ctx, "cloud.google.com/go/datastore.RunInTransaction")
-	defer func() { traceEndSpan(ctx, err) }()
+	trace.StartSpan(ctx, "cloud.google.com/go/datastore.RunInTransaction")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	settings := newTransactionSettings(opts)
 	for n := 0; n < settings.attempts; n++ {
@@ -183,8 +184,8 @@ func (c *Client) RunInTransaction(ctx context.Context, f func(tx *Transaction) e
 
 // Commit applies the enqueued operations atomically.
 func (t *Transaction) Commit() (_ *Commit, err error) {
-	traceStartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.Commit")
-	defer func() { traceEndSpan(t.ctx, err) }()
+	trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.Commit")
+	defer func() { trace.EndSpan(t.ctx, err) }()
 
 	if t.id == nil {
 		return nil, errExpiredTransaction
@@ -223,8 +224,8 @@ func (t *Transaction) Commit() (_ *Commit, err error) {
 
 // Rollback abandons a pending transaction.
 func (t *Transaction) Rollback() (err error) {
-	traceStartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.Rollback")
-	defer func() { traceEndSpan(t.ctx, err) }()
+	trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.Rollback")
+	defer func() { trace.EndSpan(t.ctx, err) }()
 
 	if t.id == nil {
 		return errExpiredTransaction
@@ -244,8 +245,8 @@ func (t *Transaction) Rollback() (err error) {
 // level, another transaction cannot concurrently modify the data that is read
 // or modified by this transaction.
 func (t *Transaction) Get(key *Key, dst interface{}) (err error) {
-	traceStartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.Get")
-	defer func() { traceEndSpan(t.ctx, err) }()
+	trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.Get")
+	defer func() { trace.EndSpan(t.ctx, err) }()
 
 	opts := &pb.ReadOptions{
 		ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
@@ -259,8 +260,8 @@ func (t *Transaction) Get(key *Key, dst interface{}) (err error) {
 
 // GetMulti is a batch version of Get.
 func (t *Transaction) GetMulti(keys []*Key, dst interface{}) (err error) {
-	traceStartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.GetMulti")
-	defer func() { traceEndSpan(t.ctx, err) }()
+	trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.GetMulti")
+	defer func() { trace.EndSpan(t.ctx, err) }()
 
 	if t.id == nil {
 		return errExpiredTransaction
@@ -292,8 +293,8 @@ func (t *Transaction) Put(key *Key, src interface{}) (*PendingKey, error) {
 // element of src in the same order.
 // TODO(jba): rewrite in terms of Mutate.
 func (t *Transaction) PutMulti(keys []*Key, src interface{}) (_ []*PendingKey, err error) {
-	traceStartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.PutMulti")
-	defer func() { traceEndSpan(t.ctx, err) }()
+	trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.PutMulti")
+	defer func() { trace.EndSpan(t.ctx, err) }()
 
 	if t.id == nil {
 		return nil, errExpiredTransaction
@@ -335,8 +336,8 @@ func (t *Transaction) Delete(key *Key) error {
 // DeleteMulti is a batch version of Delete.
 // TODO(jba): rewrite in terms of Mutate.
 func (t *Transaction) DeleteMulti(keys []*Key) (err error) {
-	traceStartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.DeleteMulti")
-	defer func() { traceEndSpan(t.ctx, err) }()
+	trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.DeleteMulti")
+	defer func() { trace.EndSpan(t.ctx, err) }()
 
 	if t.id == nil {
 		return errExpiredTransaction

@@ -16,6 +16,7 @@ package storage
 
 import (
 	"cloud.google.com/go/iam"
+	"cloud.google.com/go/internal/trace"
 	"golang.org/x/net/context"
 	raw "google.golang.org/api/storage/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
@@ -36,8 +37,8 @@ type iamClient struct {
 }
 
 func (c *iamClient) Get(ctx context.Context, resource string) (_ *iampb.Policy, err error) {
-	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.IAM.Get")
-	defer func() { traceEndSpan(ctx, err) }()
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.IAM.Get")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	call := c.raw.Buckets.GetIamPolicy(resource)
 	setClientHeader(call.Header())
@@ -56,8 +57,8 @@ func (c *iamClient) Get(ctx context.Context, resource string) (_ *iampb.Policy, 
 }
 
 func (c *iamClient) Set(ctx context.Context, resource string, p *iampb.Policy) (err error) {
-	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.IAM.Set")
-	defer func() { traceEndSpan(ctx, err) }()
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.IAM.Set")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	rp := iamToStoragePolicy(p)
 	call := c.raw.Buckets.SetIamPolicy(resource, rp)
@@ -72,8 +73,8 @@ func (c *iamClient) Set(ctx context.Context, resource string, p *iampb.Policy) (
 }
 
 func (c *iamClient) Test(ctx context.Context, resource string, perms []string) (_ []string, err error) {
-	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.IAM.Test")
-	defer func() { traceEndSpan(ctx, err) }()
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.IAM.Test")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	call := c.raw.Buckets.TestIamPermissions(resource, perms)
 	setClientHeader(call.Header())
