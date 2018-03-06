@@ -37,6 +37,7 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/option"
 	htransport "google.golang.org/api/transport/http"
 
@@ -369,8 +370,8 @@ func (o *ObjectHandle) Key(encryptionKey []byte) *ObjectHandle {
 // Attrs returns meta information about the object.
 // ErrObjectNotExist will be returned if the object is not found.
 func (o *ObjectHandle) Attrs(ctx context.Context) (_ *ObjectAttrs, err error) {
-	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Object.Attrs")
-	defer func() { traceEndSpan(ctx, err) }()
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.Attrs")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	if err := o.validate(); err != nil {
 		return nil, err
@@ -401,8 +402,8 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (_ *ObjectAttrs, err error) {
 // All zero-value attributes are ignored.
 // ErrObjectNotExist will be returned if the object is not found.
 func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (_ *ObjectAttrs, err error) {
-	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Object.Update")
-	defer func() { traceEndSpan(ctx, err) }()
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.Update")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	if err := o.validate(); err != nil {
 		return nil, err
@@ -549,8 +550,8 @@ func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
 // starting at the given offset. If length is negative, the object is read
 // until the end.
 func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64) (_ *Reader, err error) {
-	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Object.NewRangeReader")
-	defer func() { traceEndSpan(ctx, err) }()
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.NewRangeReader")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	if err := o.validate(); err != nil {
 		return nil, err

@@ -14,34 +14,43 @@
 
 // +build go1.8
 
-package storage
+package trace
 
 import (
 	"go.opencensus.io/trace"
 	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/genproto/googleapis/rpc/code"
+	"google.golang.org/grpc/status"
 )
 
-func traceStartSpan(ctx context.Context, name string) context.Context {
+func StartSpan(ctx context.Context, name string) context.Context {
 	ctx, _ = trace.StartSpan(ctx, name)
 	return ctx
 }
 
-func traceEndSpan(ctx context.Context, err error) {
+func EndSpan(ctx context.Context, err error) {
 	span := trace.FromContext(ctx)
 	if err != nil {
-		if err2, ok := err.(*googleapi.Error); ok {
-			span.SetStatus(trace.Status{Code: httpStatusCodeToOCCode(err2.Code), Message: err2.Message})
-		} else if err == ErrBucketNotExist || err == ErrObjectNotExist {
-			span.SetStatus(trace.Status{Code: int32(code.Code_NOT_FOUND), Message: err.Error()})
-		} else {
-			span.SetStatus(trace.Status{Code: int32(code.Code_UNKNOWN), Message: err.Error()})
-		}
+		span.SetStatus(toStatus(err))
 	}
 	span.End()
 }
 
+// ToStatus interrogates an error and converts it to an appropriate
+// OpenCensus status.
+func toStatus(err error) trace.Status {
+	if err2, ok := err.(*googleapi.Error); ok {
+		return trace.Status{Code: httpStatusCodeToOCCode(err2.Code), Message: err2.Message}
+	} else if s, ok := status.FromError(err); ok {
+		return trace.Status{Code: int32(s.Code()), Message: s.Message()}
+	} else {
+		return trace.Status{Code: int32(code.Code_UNKNOWN), Message: err.Error()}
+	}
+}
+
+// TODO (deklerk): switch to using OpenCensus function when it becomes available.
+// Reference: https://github.com/googleapis/googleapis/blob/26b634d2724ac5dd30ae0b0cbfb01f07f2e4050e/google/rpc/code.proto
 func httpStatusCodeToOCCode(httpStatusCode int) int32 {
 	switch httpStatusCode {
 	case 200:

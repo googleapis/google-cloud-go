@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"regexp"
 
+	"cloud.google.com/go/internal/trace"
 	"golang.org/x/net/context"
 	raw "google.golang.org/api/storage/v1"
 )
@@ -119,8 +120,8 @@ func toRawNotification(n *Notification) *raw.Notification {
 // and PayloadFormat, and must not set its ID. The other fields are all optional. The
 // returned Notification's ID can be used to refer to it.
 func (b *BucketHandle) AddNotification(ctx context.Context, n *Notification) (_ *Notification, err error) {
-	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Bucket.AddNotification")
-	defer func() { traceEndSpan(ctx, err) }()
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Bucket.AddNotification")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	if n.ID != "" {
 		return nil, errors.New("storage: AddNotification: ID must not be set")
@@ -146,8 +147,8 @@ func (b *BucketHandle) AddNotification(ctx context.Context, n *Notification) (_ 
 // Notifications returns all the Notifications configured for this bucket, as a map
 // indexed by notification ID.
 func (b *BucketHandle) Notifications(ctx context.Context) (_ map[string]*Notification, err error) {
-	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Bucket.Notifications")
-	defer func() { traceEndSpan(ctx, err) }()
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Bucket.Notifications")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	call := b.c.raw.Notifications.List(b.name)
 	setClientHeader(call.Header())
@@ -175,8 +176,8 @@ func notificationsToMap(rns []*raw.Notification) map[string]*Notification {
 
 // DeleteNotification deletes the notification with the given ID.
 func (b *BucketHandle) DeleteNotification(ctx context.Context, id string) (err error) {
-	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Bucket.DeleteNotification")
-	defer func() { traceEndSpan(ctx, err) }()
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Bucket.DeleteNotification")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	call := b.c.raw.Notifications.Delete(b.name, id)
 	setClientHeader(call.Header())

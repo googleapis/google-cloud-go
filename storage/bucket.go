@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/optional"
+	"cloud.google.com/go/internal/trace"
 	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -64,8 +65,8 @@ func (c *Client) Bucket(name string) *BucketHandle {
 // Create creates the Bucket in the project.
 // If attrs is nil the API defaults will be used.
 func (b *BucketHandle) Create(ctx context.Context, projectID string, attrs *BucketAttrs) (err error) {
-	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Bucket.Create")
-	defer func() { traceEndSpan(ctx, err) }()
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Bucket.Create")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	var bkt *raw.Bucket
 	if attrs != nil {
@@ -86,8 +87,8 @@ func (b *BucketHandle) Create(ctx context.Context, projectID string, attrs *Buck
 
 // Delete deletes the Bucket.
 func (b *BucketHandle) Delete(ctx context.Context) (err error) {
-	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Bucket.Delete")
-	defer func() { traceEndSpan(ctx, err) }()
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Bucket.Delete")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	req, err := b.newDeleteCall()
 	if err != nil {
@@ -146,8 +147,8 @@ func (b *BucketHandle) Object(name string) *ObjectHandle {
 
 // Attrs returns the metadata for the bucket.
 func (b *BucketHandle) Attrs(ctx context.Context) (_ *BucketAttrs, err error) {
-	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Bucket.Attrs")
-	defer func() { traceEndSpan(ctx, err) }()
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Bucket.Attrs")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	req, err := b.newGetCall()
 	if err != nil {
@@ -180,8 +181,8 @@ func (b *BucketHandle) newGetCall() (*raw.BucketsGetCall, error) {
 }
 
 func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (_ *BucketAttrs, err error) {
-	ctx = traceStartSpan(ctx, "cloud.google.com/go/storage.Bucket.Create")
-	defer func() { traceEndSpan(ctx, err) }()
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Bucket.Create")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	req, err := b.newPatchCall(&uattrs)
 	if err != nil {
@@ -818,8 +819,8 @@ func (it *BucketIterator) Next() (*BucketAttrs, error) {
 func (it *BucketIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 
 func (it *BucketIterator) fetch(pageSize int, pageToken string) (_ string, err error) {
-	it.ctx = traceStartSpan(it.ctx, "cloud.google.com/go/storage.Bucket.List")
-	defer func() { traceEndSpan(it.ctx, err) }()
+	it.ctx = trace.StartSpan(it.ctx, "cloud.google.com/go/storage.Bucket.List")
+	defer func() { trace.EndSpan(it.ctx, err) }()
 
 	req := it.client.raw.Buckets.List(it.projectID)
 	setClientHeader(req.Header())
