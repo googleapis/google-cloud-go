@@ -26,5 +26,5 @@ func traceStartSpan(ctx context.Context, _ string) context.Context {
 	return ctx
 }
 
-func traceEndSpan(context.Context) {
+func traceEndSpan(context.Context, error) {
 }
