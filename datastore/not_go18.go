@@ -18,7 +18,6 @@ package datastore
 
 import (
 	"golang.org/x/net/context"
-	"google.golang.org/api/option"
 )
 
 // OpenCensus only supports go 1.8 and higher.
