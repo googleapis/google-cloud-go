@@ -101,6 +101,13 @@ var (
 			) PRIMARY KEY (a)`,
 	}
 	simpleDBTableColumns = []string{"a", "b"}
+
+	ctsDBStatements = []string{
+		`CREATE TABLE TestTable (
+		    Key  STRING(MAX) NOT NULL,
+		    Ts   TIMESTAMP OPTIONS (allow_commit_timestamp = true),
+	    ) PRIMARY KEY (Key)`,
+	}
 )
 
 const (
@@ -1800,5 +1807,73 @@ func TestBROTNormal(t *testing.T) {
 	}
 	if err = row.Columns(&i); err != nil {
 		t.Errorf("failed to parse row %v", err)
+	}
+}
+
+func TestCommitTimestamp(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
+	defer cancel()
+	client, _, tearDown := prepare(ctx, t, ctsDBStatements)
+	defer tearDown()
+
+	type testTableRow struct {
+		Key string
+		Ts  NullTime
+	}
+
+	var (
+		cts1, cts2, ts1, ts2 time.Time
+		err                  error
+	)
+
+	// Apply mutation in sequence, expect to see commit timestamp in good order, check also the commit timestamp returned
+	for _, it := range []struct {
+		k string
+		t *time.Time
+	}{
+		{"a", &cts1},
+		{"b", &cts2},
+	} {
+		tt := testTableRow{Key: it.k, Ts: NullTime{CommitTimestamp, true}}
+		m, err := InsertStruct("TestTable", tt)
+		if err != nil {
+			t.Fatal(err)
+		}
+		*it.t, err = client.Apply(ctx, []*Mutation{m}, ApplyAtLeastOnce())
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	txn := client.ReadOnlyTransaction()
+	for _, it := range []struct {
+		k string
+		t *time.Time
+	}{
+		{"a", &ts1},
+		{"b", &ts2},
+	} {
+		if r, e := txn.ReadRow(ctx, "TestTable", Key{it.k}, []string{"Ts"}); e != nil {
+			t.Fatal(err)
+		} else {
+			var got testTableRow
+			if err := r.ToStruct(&got); err != nil {
+				t.Fatal(err)
+			}
+			*it.t = got.Ts.Time
+		}
+	}
+	if !cts1.Equal(ts1) {
+		t.Errorf("Expect commit timestamp returned and read to match for txn1, got %v and %v.", cts1, ts1)
+	}
+	if !cts2.Equal(ts2) {
+		t.Errorf("Expect commit timestamp returned and read to match for txn2, got %v and %v.", cts2, ts2)
+	}
+
+	// Try writing a timestamp in the future to commit timestamp, expect error
+	_, err = client.Apply(ctx, []*Mutation{InsertOrUpdate("TestTable", []string{"Key", "Ts"}, []interface{}{"a", time.Now().Add(time.Hour)})}, ApplyAtLeastOnce())
+	if msg, ok := matchError(err, codes.FailedPrecondition, "Cannot write timestamps in the future"); !ok {
+		t.Error(msg)
 	}
 }
