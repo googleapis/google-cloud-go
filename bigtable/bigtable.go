@@ -33,6 +33,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 const prodAddr = "bigtable.googleapis.com:443"
@@ -672,7 +673,7 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 		if len(entries) > 0 && len(idempotentRetryCodes) > 0 {
 			// We have at least one mutation that needs to be retried.
 			// Return an arbitrary error that is retryable according to callOptions.
-			return grpc.Errorf(idempotentRetryCodes[0], "Synthetic error: partial failure of ApplyBulk")
+			return status.Errorf(idempotentRetryCodes[0], "Synthetic error: partial failure of ApplyBulk")
 		}
 		return nil
 	}, retryOptions...)
@@ -740,11 +741,11 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, opts ...
 		}
 
 		for i, entry := range res.Entries {
-			status := entry.Status
-			if status.Code == int32(codes.OK) {
+			s := entry.Status
+			if s.Code == int32(codes.OK) {
 				entryErrs[i].Err = nil
 			} else {
-				entryErrs[i].Err = grpc.Errorf(codes.Code(status.Code), status.Message)
+				entryErrs[i].Err = status.Errorf(codes.Code(s.Code), s.Message)
 			}
 		}
 		after(res)
