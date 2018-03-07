@@ -15,6 +15,7 @@
 package firestore
 
 import (
+	"math"
 	"testing"
 
 	"golang.org/x/net/context"
@@ -24,6 +25,54 @@ import (
 
 	"github.com/golang/protobuf/ptypes/wrappers"
 )
+
+func TestFilterToProto(t *testing.T) {
+	for _, test := range []struct {
+		in   filter
+		want *pb.StructuredQuery_Filter
+	}{
+		{
+			filter{[]string{"a"}, ">", 1},
+			&pb.StructuredQuery_Filter{FilterType: &pb.StructuredQuery_Filter_FieldFilter{
+				FieldFilter: &pb.StructuredQuery_FieldFilter{
+					Field: &pb.StructuredQuery_FieldReference{FieldPath: "a"},
+					Op:    pb.StructuredQuery_FieldFilter_GREATER_THAN,
+					Value: intval(1),
+				},
+			}},
+		},
+		{
+			filter{[]string{"a"}, "==", nil},
+			&pb.StructuredQuery_Filter{FilterType: &pb.StructuredQuery_Filter_UnaryFilter{
+				UnaryFilter: &pb.StructuredQuery_UnaryFilter{
+					OperandType: &pb.StructuredQuery_UnaryFilter_Field{
+						Field: &pb.StructuredQuery_FieldReference{FieldPath: "a"},
+					},
+					Op: pb.StructuredQuery_UnaryFilter_IS_NULL,
+				},
+			}},
+		},
+		{
+			filter{[]string{"a"}, "==", math.NaN()},
+			&pb.StructuredQuery_Filter{FilterType: &pb.StructuredQuery_Filter_UnaryFilter{
+				UnaryFilter: &pb.StructuredQuery_UnaryFilter{
+					OperandType: &pb.StructuredQuery_UnaryFilter_Field{
+						Field: &pb.StructuredQuery_FieldReference{FieldPath: "a"},
+					},
+					Op: pb.StructuredQuery_UnaryFilter_IS_NAN,
+				},
+			}},
+		},
+	} {
+		got, err := test.in.toProto()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !testEqual(got, test.want) {
+			t.Errorf("%+v:\ngot\n%v\nwant\n%v", test.in, pretty.Value(got), pretty.Value(test.want))
+		}
+	}
+}
 
 func TestQueryToProto(t *testing.T) {
 	filtr := func(path []string, op string, val interface{}) *pb.StructuredQuery_Filter {
@@ -88,9 +137,24 @@ func TestQueryToProto(t *testing.T) {
 			},
 		},
 		{
-			desc: `  q.Where("a", ">", 5)`,
+			desc: `q.Where("a", ">", 5)`,
 			in:   q.Where("a", ">", 5),
 			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, ">", 5)},
+		},
+		{
+			desc: `q.Where("a", "==", nil)`,
+			in:   q.Where("a", "==", nil),
+			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "==", nil)},
+		},
+		{
+			desc: `q.Where("a", "==", NaN)`,
+			in:   q.Where("a", "==", math.NaN()),
+			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "==", math.NaN())},
+		},
+		{
+			desc: `q.Where("a", "==", NaN)`,
+			in:   q.Where("a", "==", float32(math.NaN())),
+			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "==", math.NaN())},
 		},
 		{
 			desc: `q.Where("a", ">", 5).Where("b", "<", "foo")`,

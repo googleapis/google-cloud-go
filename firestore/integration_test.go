@@ -19,6 +19,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"sort"
 	"testing"
@@ -683,6 +684,38 @@ func TestIntegration_Query(t *testing.T) {
 	}
 	if got, want := len(seen), len(wants); got != want {
 		t.Errorf("got %d docs with 'q', want %d", len(seen), len(wants))
+	}
+}
+
+// Test unary filters.
+func TestIntegration_QueryUnary(t *testing.T) {
+	ctx := context.Background()
+	coll := integrationColl(t)
+	mustCreate("q", t, coll.NewDoc(), map[string]interface{}{"x": 2, "q": "a"})
+	mustCreate("q", t, coll.NewDoc(), map[string]interface{}{"x": 2, "q": nil})
+	mustCreate("q", t, coll.NewDoc(), map[string]interface{}{"x": 2, "q": math.NaN()})
+	wantNull := map[string]interface{}{"q": nil}
+	wantNaN := map[string]interface{}{"q": math.NaN()}
+
+	base := coll.Select("q").Where("x", "==", 2)
+	for _, test := range []struct {
+		q    Query
+		want map[string]interface{}
+	}{
+		{base.Where("q", "==", nil), wantNull},
+		{base.Where("q", "==", math.NaN()), wantNaN},
+	} {
+		got, err := test.q.Documents(ctx).GetAll()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(got) != 1 {
+			t.Errorf("got %d responses, want 1", len(got))
+			continue
+		}
+		if g, w := got[0].Data(), test.want; !testEqual(g, w) {
+			t.Errorf("%v: got %v, want %v", test.q, g, w)
+		}
 	}
 }
 
