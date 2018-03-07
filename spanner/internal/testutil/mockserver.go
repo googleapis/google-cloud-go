@@ -154,7 +154,7 @@ func DecodeResumeToken(t []byte) (uint64, error) {
 func (m *MockCloudSpanner) ExecuteStreamingSql(r *sppb.ExecuteSqlRequest, s sppb.Spanner_ExecuteStreamingSqlServer) error {
 	switch r.Sql {
 	case "SELECT * from t_unavailable":
-		return grpc.Errorf(codes.Unavailable, "mock table unavailable")
+		return status.Errorf(codes.Unavailable, "mock table unavailable")
 	case "SELECT t.key key, t.value value FROM t_mock t":
 		if r.ResumeToken != nil {
 			s, err := DecodeResumeToken(r.ResumeToken)
