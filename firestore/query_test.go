@@ -16,6 +16,7 @@ package firestore
 
 import (
 	"math"
+	"sort"
 	"testing"
 
 	"golang.org/x/net/context"
@@ -612,4 +613,114 @@ func TestQueryGetAll(t *testing.T) {
 			t.Errorf("#%d: got %+v, want %+v", i, pretty.Value(got), pretty.Value(want))
 		}
 	}
+}
+
+func TestQueryCompareFunc(t *testing.T) {
+	mv := func(fields ...interface{}) map[string]*pb.Value {
+		m := map[string]*pb.Value{}
+		for i := 0; i < len(fields); i += 2 {
+			m[fields[i].(string)] = fields[i+1].(*pb.Value)
+		}
+		return m
+	}
+	snap := func(ref *DocumentRef, fields map[string]*pb.Value) *DocumentSnapshot {
+		return &DocumentSnapshot{Ref: ref, proto: &pb.Document{Fields: fields}}
+	}
+
+	c := &Client{}
+	coll := c.Collection("C")
+	doc1 := coll.Doc("doc1")
+	doc2 := coll.Doc("doc2")
+	doc3 := coll.Doc("doc3")
+	doc4 := coll.Doc("doc4")
+	for _, test := range []struct {
+		q    Query
+		in   []*DocumentSnapshot
+		want []*DocumentSnapshot
+	}{
+		{
+			q: coll.OrderBy("foo", Asc),
+			in: []*DocumentSnapshot{
+				snap(doc3, mv("foo", intval(2))),
+				snap(doc4, mv("foo", intval(1))),
+				snap(doc2, mv("foo", intval(2))),
+			},
+			want: []*DocumentSnapshot{
+				snap(doc4, mv("foo", intval(1))),
+				snap(doc2, mv("foo", intval(2))),
+				snap(doc3, mv("foo", intval(2))),
+			},
+		},
+		{
+			q: coll.OrderBy("foo", Desc),
+			in: []*DocumentSnapshot{
+				snap(doc3, mv("foo", intval(2))),
+				snap(doc4, mv("foo", intval(1))),
+				snap(doc2, mv("foo", intval(2))),
+			},
+			want: []*DocumentSnapshot{
+				snap(doc3, mv("foo", intval(2))),
+				snap(doc2, mv("foo", intval(2))),
+				snap(doc4, mv("foo", intval(1))),
+			},
+		},
+		{
+			q: coll.OrderBy("foo.bar", Asc),
+			in: []*DocumentSnapshot{
+				snap(doc1, mv("foo", mapval(mv("bar", intval(1))))),
+				snap(doc2, mv("foo", mapval(mv("bar", intval(2))))),
+				snap(doc3, mv("foo", mapval(mv("bar", intval(2))))),
+			},
+			want: []*DocumentSnapshot{
+				snap(doc1, mv("foo", mapval(mv("bar", intval(1))))),
+				snap(doc2, mv("foo", mapval(mv("bar", intval(2))))),
+				snap(doc3, mv("foo", mapval(mv("bar", intval(2))))),
+			},
+		},
+		{
+			q: coll.OrderBy("foo.bar", Desc),
+			in: []*DocumentSnapshot{
+				snap(doc1, mv("foo", mapval(mv("bar", intval(1))))),
+				snap(doc2, mv("foo", mapval(mv("bar", intval(2))))),
+				snap(doc3, mv("foo", mapval(mv("bar", intval(2))))),
+			},
+			want: []*DocumentSnapshot{
+				snap(doc3, mv("foo", mapval(mv("bar", intval(2))))),
+				snap(doc2, mv("foo", mapval(mv("bar", intval(2))))),
+				snap(doc1, mv("foo", mapval(mv("bar", intval(1))))),
+			},
+		},
+	} {
+		got := append([]*DocumentSnapshot(nil), test.in...)
+		sort.Sort(byQuery{test.q.compareFunc(), got})
+		if diff := testDiff(got, test.want); diff != "" {
+			t.Errorf("%+v: %s", test.q, diff)
+		}
+	}
+
+	// Want error on missing field.
+	q := coll.OrderBy("bar", Asc)
+	if q.err != nil {
+		t.Fatalf("bad query: %v", q.err)
+	}
+	cf := q.compareFunc()
+	s := snap(doc1, mv("foo", intval(1)))
+	if _, err := cf(s, s); err == nil {
+		t.Error("got nil, want error")
+	}
+}
+
+type byQuery struct {
+	compare func(d1, d2 *DocumentSnapshot) (int, error)
+	docs    []*DocumentSnapshot
+}
+
+func (b byQuery) Len() int      { return len(b.docs) }
+func (b byQuery) Swap(i, j int) { b.docs[i], b.docs[j] = b.docs[j], b.docs[i] }
+func (b byQuery) Less(i, j int) bool {
+	c, err := b.compare(b.docs[i], b.docs[j])
+	if err != nil {
+		panic(err)
+	}
+	return c < 0
 }

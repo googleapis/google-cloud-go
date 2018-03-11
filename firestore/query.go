@@ -20,6 +20,7 @@ import (
 	"io"
 	"math"
 	"reflect"
+	"strings"
 
 	"golang.org/x/net/context"
 
@@ -395,6 +396,41 @@ func (q *Query) docSnapshotToCursorValues(ds *DocumentSnapshot, orders []order) 
 		}
 	}
 	return vals, nil
+}
+
+// Returns a function that compares DocumentSnapshots according to q's ordering.
+func (q Query) compareFunc() func(d1, d2 *DocumentSnapshot) (int, error) {
+	// Add implicit sorting by name, using the last specified direction.
+	lastDir := Asc
+	if len(q.orders) > 0 {
+		lastDir = q.orders[len(q.orders)-1].dir
+	}
+	orders := append(q.copyOrders(), order{[]string{DocumentID}, lastDir})
+	return func(d1, d2 *DocumentSnapshot) (int, error) {
+		for _, ord := range orders {
+			var cmp int
+			if len(ord.fieldPath) == 1 && ord.fieldPath[0] == DocumentID {
+				cmp = strings.Compare(d1.Ref.Path, d2.Ref.Path)
+			} else {
+				v1, err := valueAtPath(ord.fieldPath, d1.proto.Fields)
+				if err != nil {
+					return 0, err
+				}
+				v2, err := valueAtPath(ord.fieldPath, d2.proto.Fields)
+				if err != nil {
+					return 0, err
+				}
+				cmp = compareValues(v1, v2)
+			}
+			if cmp != 0 {
+				if ord.dir == Desc {
+					cmp = -cmp
+				}
+				return cmp, nil
+			}
+		}
+		return 0, nil
+	}
 }
 
 type filter struct {
