@@ -26,6 +26,7 @@ import (
 
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 
+	"cloud.google.com/go/internal/btree"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/api/iterator"
 )

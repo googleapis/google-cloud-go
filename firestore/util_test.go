@@ -54,7 +54,7 @@ func mustTimestampProto(t time.Time) *tspb.Timestamp {
 var cmpOpts = []cmp.Option{
 	cmp.AllowUnexported(DocumentRef{}, CollectionRef{}, DocumentSnapshot{},
 		Query{}, filter{}, order{}, fpv{}),
-	cmpopts.IgnoreTypes(Client{}),
+	cmpopts.IgnoreTypes(Client{}, &Client{}),
 }
 
 // testEqual implements equality for Firestore tests.
