@@ -845,3 +845,40 @@ func mergeOutgoingMetadata(ctx context.Context, md metadata.MD) context.Context 
 	mdCopy, _ := metadata.FromOutgoingContext(ctx)
 	return metadata.NewOutgoingContext(ctx, metadata.Join(mdCopy, md))
 }
+
+func (t *Table) SampleRowKeys(ctx context.Context) ([]string, error) {
+	ctx = mergeOutgoingMetadata(ctx, t.md)
+	var sampledRowKeys []string
+	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		sampledRowKeys = nil
+		req := &btpb.SampleRowKeysRequest{
+			TableName:    t.c.fullTableName(t.table),
+			AppProfileId: t.c.appProfile,
+		}
+		ctx, cancel := context.WithCancel(ctx) // for aborting the stream
+		defer cancel()
+
+		stream, err := t.c.client.SampleRowKeys(ctx, req)
+		if err != nil {
+			return err
+		}
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				return err
+			}
+
+			key := string(res.RowKey)
+			if key == "" {
+				continue
+			}
+
+			sampledRowKeys = append(sampledRowKeys, key)
+		}
+		return nil
+	}, retryOptions...)
+	return sampledRowKeys, err
+}
