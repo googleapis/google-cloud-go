@@ -28,7 +28,7 @@ import (
 
 func openCensusOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithGRPCDialOption(grpc.WithStatsHandler(ocgrpc.NewClientStatsHandler())),
+		option.WithGRPCDialOption(grpc.WithStatsHandler(&ocgrpc.ClientHandler{})),
 	}
 }
 
