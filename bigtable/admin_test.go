@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
+	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	"strings"
 )
 
@@ -358,5 +359,75 @@ func TestAdminSnapshotIntegration(t *testing.T) {
 	}
 	if got, want := len(snapshots), 0; got != want {
 		t.Fatalf("List after delete len: %d, want: %d", got, want)
+	}
+}
+
+func TestGranularity(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	timeout := 2 * time.Second
+	if testEnv.Config().UseProd {
+		timeout = 5 * time.Minute
+	}
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	list := func() []string {
+		tbls, err := adminClient.Tables(ctx)
+		if err != nil {
+			t.Fatalf("Fetching list of tables: %v", err)
+		}
+		sort.Strings(tbls)
+		return tbls
+	}
+	containsAll := func(got, want []string) bool {
+		gotSet := make(map[string]bool)
+
+		for _, s := range got {
+			gotSet[s] = true
+		}
+		for _, s := range want {
+			if !gotSet[s] {
+				return false
+			}
+		}
+		return true
+	}
+
+	defer adminClient.DeleteTable(ctx, "mytable")
+
+	if err := adminClient.CreateTable(ctx, "mytable"); err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+
+	tables := list()
+	if got, want := tables, []string{"mytable"}; !containsAll(got, want) {
+		t.Errorf("adminClient.Tables returned %#v, want %#v", got, want)
+	}
+
+	// calling ModifyColumnFamilies to check the granularity of table
+	prefix := adminClient.instancePrefix()
+	req := &btapb.ModifyColumnFamiliesRequest{
+		Name: prefix + "/tables/" + "mytable",
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+			Id:  "cf",
+			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{&btapb.ColumnFamily{}},
+		}},
+	}
+	table, err := adminClient.tClient.ModifyColumnFamilies(ctx, req)
+	if err != nil {
+		t.Fatalf("Creating column family: %v", err)
+	}
+	if table.Granularity != btapb.Table_TimestampGranularity(btapb.Table_MILLIS) {
+		t.Errorf("ModifyColumnFamilies returned granularity %#v, want %#v", table.Granularity, btapb.Table_TimestampGranularity(btapb.Table_MILLIS))
 	}
 }

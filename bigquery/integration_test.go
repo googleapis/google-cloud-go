@@ -943,23 +943,23 @@ func TestIntegration_TableUpdate(t *testing.T) {
 	// Error cases when updating schema.
 	for _, test := range []struct {
 		desc   string
-		fields []*FieldSchema
+		fields Schema
 	}{
-		{"change from optional to required", []*FieldSchema{
+		{"change from optional to required", Schema{
 			{Name: "name", Type: StringFieldType, Required: true},
 			schema3[1],
 			schema3[2],
 			schema3[3],
 		}},
-		{"add a required field", []*FieldSchema{
+		{"add a required field", Schema{
 			schema3[0], schema3[1], schema3[2], schema3[3],
 			{Name: "req", Type: StringFieldType, Required: true},
 		}},
-		{"remove a field", []*FieldSchema{schema3[0], schema3[1], schema3[2]}},
-		{"remove a nested field", []*FieldSchema{
+		{"remove a field", Schema{schema3[0], schema3[1], schema3[2]}},
+		{"remove a nested field", Schema{
 			schema3[0], schema3[1], schema3[2],
 			{Name: "rec2", Type: RecordFieldType, Schema: Schema{nested[0]}}}},
-		{"remove all nested fields", []*FieldSchema{
+		{"remove all nested fields", Schema{
 			schema3[0], schema3[1], schema3[2],
 			{Name: "rec2", Type: RecordFieldType, Schema: Schema{}}}},
 	} {

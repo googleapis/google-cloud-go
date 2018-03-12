@@ -19,8 +19,8 @@ import (
 
 	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var testClient = &Client{
@@ -181,7 +181,7 @@ func TestGetAllErrors(t *testing.T) {
 			Database:  dbPath,
 			Documents: []string{docPath},
 		},
-		[]interface{}{grpc.Errorf(codes.Internal, "")},
+		[]interface{}{status.Errorf(codes.Internal, "")},
 	)
 	_, err := c.GetAll(ctx, []*DocumentRef{c.Doc("C/a")})
 	codeEq(t, "GetAll #1", codes.Internal, err)

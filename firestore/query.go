@@ -407,6 +407,21 @@ func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 	if err := f.fieldPath.validate(); err != nil {
 		return nil, err
 	}
+	if uop, ok := unaryOpFor(f.value); ok {
+		if f.op != "==" {
+			return nil, fmt.Errorf("firestore: must use '==' when comparing %v", f.value)
+		}
+		return &pb.StructuredQuery_Filter{
+			FilterType: &pb.StructuredQuery_Filter_UnaryFilter{
+				UnaryFilter: &pb.StructuredQuery_UnaryFilter{
+					OperandType: &pb.StructuredQuery_UnaryFilter_Field{
+						Field: fref(f.fieldPath),
+					},
+					Op: uop,
+				},
+			},
+		}, nil
+	}
 	var op pb.StructuredQuery_FieldFilter_Operator
 	switch f.op {
 	case "<":
@@ -431,13 +446,35 @@ func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 	}
 	return &pb.StructuredQuery_Filter{
 		FilterType: &pb.StructuredQuery_Filter_FieldFilter{
-			&pb.StructuredQuery_FieldFilter{
+			FieldFilter: &pb.StructuredQuery_FieldFilter{
 				Field: fref(f.fieldPath),
 				Op:    op,
 				Value: val,
 			},
 		},
 	}, nil
+}
+
+func unaryOpFor(value interface{}) (pb.StructuredQuery_UnaryFilter_Operator, bool) {
+	switch {
+	case value == nil:
+		return pb.StructuredQuery_UnaryFilter_IS_NULL, true
+	case isNaN(value):
+		return pb.StructuredQuery_UnaryFilter_IS_NAN, true
+	default:
+		return pb.StructuredQuery_UnaryFilter_OPERATOR_UNSPECIFIED, false
+	}
+}
+
+func isNaN(x interface{}) bool {
+	switch x := x.(type) {
+	case float32:
+		return math.IsNaN(float64(x))
+	case float64:
+		return math.IsNaN(x)
+	default:
+		return false
+	}
 }
 
 type order struct {

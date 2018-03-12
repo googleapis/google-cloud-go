@@ -107,10 +107,10 @@ An Entry may have one of a number of severity levels associated with it.
 Viewing Logs
 
 You can view Stackdriver logs for projects at
-https://console.cloud.google.com/logs/viewer. From the dropdown at the top left,
-select "Google Project" and then the project ID. Logs for organizations, folders and
-billing accounts can be viewed on the command line with the "gcloud logging read"
-command.
+https://console.cloud.google.com/logs/viewer. Use the dropdown at the top left. When
+running from a Google Cloud Platform VM, select "GCE VM Instance". Otherwise, select
+"Google Project" and then the project ID. Logs for organizations, folders and billing
+accounts can be viewed on the command line with the "gcloud logging read" command.
 
 
 */
