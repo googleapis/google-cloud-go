@@ -499,9 +499,9 @@ func (s *Subscription) receive(ctx context.Context, po *pullOptions, fc *flowCon
 			}
 			old := msg.doneFunc
 			msgLen := len(msg.Data)
-			msg.doneFunc = func(ackID string, ack bool) {
+			msg.doneFunc = func(ackID string, ack bool, receiveTime time.Time) {
 				defer fc.release(msgLen)
-				old(ackID, ack)
+				old(ackID, ack, receiveTime)
 			}
 			wg.Add(1)
 			go func() {

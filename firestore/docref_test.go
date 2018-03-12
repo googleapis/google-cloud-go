@@ -21,6 +21,7 @@ import (
 	"time"
 
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
+	"google.golang.org/grpc/status"
 
 	"golang.org/x/net/context"
 	"google.golang.org/genproto/googleapis/type/latlng"
@@ -66,7 +67,7 @@ func TestDocGet(t *testing.T) {
 		&pb.GetDocumentRequest{
 			Name: "projects/projectID/databases/(default)/documents/C/b",
 		},
-		grpc.Errorf(codes.NotFound, "not found"),
+		status.Errorf(codes.NotFound, "not found"),
 	)
 	_, err = c.Collection("C").Doc("b").Get(ctx)
 	if grpc.Code(err) != codes.NotFound {
