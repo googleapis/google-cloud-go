@@ -83,7 +83,7 @@ func compareValues(a, b *pb.Value) int {
 		return compareMaps(a.MapValue.Fields, b.GetMapValue().Fields)
 
 	default:
-		panic(fmt.Sprintf("bad value type: %v", a.ValueType))
+		panic(fmt.Sprintf("bad value type: %v", a))
 	}
 }
 
@@ -199,6 +199,6 @@ func typeOrder(v *pb.Value) int {
 	case *pb.Value_MapValue:
 		return 9
 	default:
-		panic(fmt.Sprintf("bad value type: %v", v.ValueType))
+		panic(fmt.Sprintf("bad value type: %v", v))
 	}
 }
