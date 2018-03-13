@@ -66,7 +66,7 @@ func compareValues(a, b *pb.Value) int {
 		return bytes.Compare(a.BytesValue, b.GetBytesValue())
 
 	case *pb.Value_ReferenceValue:
-		return strings.Compare(a.ReferenceValue, b.GetReferenceValue())
+		return compareReferences(a.ReferenceValue, b.GetReferenceValue())
 
 	case *pb.Value_GeoPointValue:
 		ag := a.GeoPointValue
@@ -115,6 +115,18 @@ func compareTimestamps(a, b *tspb.Timestamp) int {
 		return c
 	}
 	return compareInt64s(int64(a.Nanos), int64(b.Nanos))
+}
+
+func compareReferences(a, b string) int {
+	// Compare path components lexicographically.
+	pa := strings.Split(a, "/")
+	pb := strings.Split(b, "/")
+	for i := 0; i < len(pa) && i < len(pb); i++ {
+		if c := strings.Compare(pa[i], pb[i]); c != 0 {
+			return c
+		}
+	}
+	return compareInt64s(int64(len(pa)), int64(len(pb)))
 }
 
 func compareArrays(a, b []*pb.Value) int {
