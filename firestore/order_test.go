@@ -65,7 +65,7 @@ func TestCompareValues(t *testing.T) {
 		refval("projects/p1/databases/d1/documents/c10/doc1"),
 		refval("projects/p1/databases/dkkkkklkjnjkkk1/documents/c2/doc1"),
 		refval("projects/p2/databases/d2/documents/c1/doc1"),
-		refval("projects/p2/databases/d2/documents/cl1-/doc1"),
+		refval("projects/p2/databases/d2/documents/c1-/doc1"),
 		geopoint(-90, -180),
 		geopoint(-90, 0),
 		geopoint(-90, 180),
