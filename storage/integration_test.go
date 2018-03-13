@@ -2092,6 +2092,47 @@ func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
 	}
 }
 
+func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+
+	bkt := client.Bucket(uidSpace.New())
+	err := bkt.Create(ctx, testutil.ProjID(), &BucketAttrs{RetentionPolicy: &RetentionPolicy{RetentionPeriod: 25 * time.Hour}})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	oh := bkt.Object("some-object")
+	if err = writeObject(ctx, oh, "text/plain", []byte("hello world")); err != nil {
+		t.Fatal(err)
+	}
+
+	err = oh.Delete(ctx)
+	if err == nil {
+		t.Fatal("expected to err deleting an object in a bucket with retention period, but got nil")
+	}
+
+	// Remove the retention period
+	_, err = bkt.Update(ctx, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{RetentionPeriod: 0}})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = oh.Delete(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := bkt.Delete(ctx); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
 	w := obj.NewWriter(ctx)
 	w.ContentType = contentType
