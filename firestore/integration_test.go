@@ -938,6 +938,89 @@ func TestIntegration_WatchDocument(t *testing.T) {
 	}
 }
 
+type imap map[string]interface{}
+
+func TestIntegration_WatchQuery(t *testing.T) {
+	ctx := context.Background()
+	coll := integrationColl(t)
+
+	q := coll.Where("e", ">", 1).OrderBy("e", Asc)
+	it := q.Snapshots(ctx)
+	defer it.Stop()
+
+	next := func() []*DocumentSnapshot {
+		diter, err := it.Next()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if it.ReadTime.IsZero() {
+			t.Fatal("zero time")
+		}
+		ds, err := diter.GetAll()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if it.Size != len(ds) {
+			t.Fatalf("Size=%d but we have %d docs", it.Size, len(ds))
+		}
+		return ds
+	}
+
+	check := func(msg string, gotd []*DocumentSnapshot, wantd ...imap) {
+		if got, want := len(gotd), len(wantd); got != want {
+			t.Errorf("%s: got %d docs, want %d", msg, got, want)
+			return
+		}
+		for i, d := range gotd {
+			if got, want := imap(d.Data()), wantd[i]; !testEqual(got, want) {
+				t.Errorf("%s, #%d: got %v, want %v", msg, i, got, want)
+			}
+		}
+	}
+
+	check("initial", next())
+
+	doc1 := coll.NewDoc()
+	want := imap{"e": int64(2), "b": "two"}
+	mustCreate("qwatch 1", t, doc1, want)
+	check("one", next(), want)
+
+	// Add a doc that does not match. We won't see a snapshot  for this.
+	doc2 := coll.NewDoc()
+	mustCreate("qwatch 2", t, doc2, imap{"e": int64(1)})
+
+	// Update the first doc. We should see the change. We won't see doc2.
+	_, err := doc1.Update(ctx, []Update{{Path: "e", Value: int64(3)}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want["e"] = int64(3)
+	check("update", next(), want)
+
+	// Now update doc so that it is not in the query. We should see a snapshot with no docs.
+	_, err = doc1.Update(ctx, []Update{{Path: "e", Value: int64(0)}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	check("update2", next())
+
+	// Add two docs out of order. We should see them in order.
+	doc3 := coll.NewDoc()
+	doc4 := coll.NewDoc()
+	want3 := imap{"e": int64(5)}
+	want4 := imap{"e": int64(4)}
+	mustCreate("qwatch 3", t, doc3, want3)
+	mustCreate("qwatch 4", t, doc4, want4)
+	next() // first snapshot has just the first doc; throw it away
+	check("two", next(), want4, want3)
+
+	// Delete a doc.
+	if _, err := doc4.Delete(ctx); err != nil {
+		t.Fatal(err)
+	}
+	check("after del", next(), want3)
+}
+
 func codeEq(t *testing.T, msg string, code codes.Code, err error) {
 	if grpc.Code(err) != code {
 		t.Fatalf("%s:\ngot <%v>\nwant code %s", msg, err, code)
