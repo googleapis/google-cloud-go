@@ -95,6 +95,7 @@ func newWatchStreamForQuery(ctx context.Context, q Query) (*watchStream, error) 
 				QueryType: &pb.Target_QueryTarget_StructuredQuery{qp},
 			},
 		},
+		TargetId: watchTargetID,
 	}
 	w := newWatchStream(ctx, q.c, target)
 	compare := q.compareFunc()
@@ -203,7 +204,7 @@ func (s *watchStream) handleNextMessage() bool {
 func (s *watchStream) handleTargetChange(tc *pb.TargetChange) bool {
 	switch tc.TargetChangeType {
 	case pb.TargetChange_NO_CHANGE:
-		s.logf("TargetNoChange %d", len(tc.TargetIds))
+		s.logf("TargetNoChange %d %v", len(tc.TargetIds), tc.ReadTime)
 		if len(tc.TargetIds) == 0 && tc.ReadTime != nil && s.current {
 			// Everything is up-to-date, so we are ready to return a snapshot.
 			rt, err := ptypes.Timestamp(tc.ReadTime)
