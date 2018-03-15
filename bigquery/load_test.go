@@ -237,6 +237,7 @@ func TestLoad(t *testing.T) {
 	for i, tc := range testCases {
 		loader := tc.dst.LoaderFrom(tc.src)
 		loader.JobID = tc.jobID
+		loader.Location = tc.location
 		tc.config.Src = tc.src
 		tc.config.Dst = tc.dst
 		loader.LoadConfig = tc.config

@@ -45,9 +45,10 @@ type Job struct {
 // need not have been created by this package. For example, the job may have
 // been created in the BigQuery console.
 //
-// For jobs whose location is other than "US" or "EU", use JobFromIDLocation.
+// For jobs whose location is other than "US" or "EU", set Client.Location or use
+// JobFromIDLocation.
 func (c *Client) JobFromID(ctx context.Context, id string) (*Job, error) {
-	return c.JobFromIDLocation(ctx, id, "")
+	return c.JobFromIDLocation(ctx, id, c.Location)
 }
 
 // JobFromIDLocation creates a Job which refers to an existing BigQuery job. The job
@@ -141,11 +142,14 @@ type JobIDConfig struct {
 }
 
 // createJobRef creates a JobReference.
-// projectID must be non-empty.
-func (j *JobIDConfig) createJobRef(projectID string) *bq.JobReference {
+func (j *JobIDConfig) createJobRef(c *Client) *bq.JobReference {
 	// We don't check whether projectID is empty; the server will return an
 	// error when it encounters the resulting JobReference.
-	jr := &bq.JobReference{ProjectId: projectID, Location: j.Location}
+	loc := j.Location
+	if loc == "" { // Use Client.Location as a default.
+		loc = c.Location
+	}
+	jr := &bq.JobReference{ProjectId: c.projectID, Location: loc}
 	if j.JobID == "" {
 		jr.JobId = randomIDFn()
 	} else if j.AddJobIDSuffix {

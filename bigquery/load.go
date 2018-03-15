@@ -125,7 +125,7 @@ func (l *Loader) Run(ctx context.Context) (*Job, error) {
 func (l *Loader) newJob() (*bq.Job, io.Reader) {
 	config, media := l.LoadConfig.toBQ()
 	return &bq.Job{
-		JobReference:  l.JobIDConfig.createJobRef(l.c.projectID),
+		JobReference:  l.JobIDConfig.createJobRef(l.c),
 		Configuration: config,
 	}, media
 }

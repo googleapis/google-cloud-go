@@ -59,6 +59,9 @@ var (
 	tableIDs   = testutil.NewUIDSpaceSep("table", '_')
 )
 
+// Note: integration tests cannot be run in parallel, because TestIntegration_Location
+// modifies the client.
+
 func TestMain(m *testing.M) {
 	cleanup := initIntegrationTest()
 	r := m.Run()
@@ -1609,9 +1612,19 @@ func TestIntegration_Location(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
+	client.Location = ""
+	testLocation(t, tokyo)
+	client.Location = tokyo
+	defer func() {
+		client.Location = ""
+	}()
+	testLocation(t, "")
+}
+
+func testLocation(t *testing.T, loc string) {
 	ctx := context.Background()
 	tokyoDataset := client.Dataset("tokyo")
-	err := tokyoDataset.Create(ctx, &DatasetMetadata{Location: tokyo})
+	err := tokyoDataset.Create(ctx, &DatasetMetadata{Location: loc})
 	if err != nil && !hasStatusCode(err, 409) { // 409 = already exists
 		t.Fatal(err)
 	}
@@ -1635,7 +1648,7 @@ func TestIntegration_Location(t *testing.T) {
 	}
 	defer table.Delete(ctx)
 	loader := table.LoaderFrom(NewReaderSource(strings.NewReader("a,0\nb,1\nc,2\n")))
-	loader.Location = tokyo
+	loader.Location = loc
 	job, err := loader.Run(ctx)
 	if err != nil {
 		t.Fatal("loader.Run", err)
@@ -1644,21 +1657,26 @@ func TestIntegration_Location(t *testing.T) {
 		t.Fatalf("job location: got %s, want %s", job.Location(), tokyo)
 	}
 	_, err = client.JobFromID(ctx, job.ID())
-	if err == nil {
-		t.Error("JobFromID with Tokyo job: want error, got nil")
+	if client.Location == "" && err == nil {
+		t.Error("JobFromID with Tokyo job, no client location: want error, got nil")
+	}
+	if client.Location != "" && err != nil {
+		t.Errorf("JobFromID with Tokyo job, with client location: want nil, got %v", err)
 	}
 	_, err = client.JobFromIDLocation(ctx, job.ID(), "US")
 	if err == nil {
 		t.Error("JobFromIDLocation with US: want error, got nil")
 	}
-	job2, err := client.JobFromIDLocation(ctx, job.ID(), tokyo)
-	if err != nil {
-		t.Fatal(err)
+	job2, err := client.JobFromIDLocation(ctx, job.ID(), loc)
+	if loc == tokyo && err != nil {
+		t.Errorf("loc=tokyo: %v", err)
 	}
-	if job2.ID() != job.ID() || job2.Location() != tokyo {
+	if loc == "" && err == nil {
+		t.Error("loc empty: got nil, want error")
+	}
+	if job2 != nil && (job2.ID() != job.ID() || job2.Location() != tokyo) {
 		t.Errorf("got id %s loc %s, want id%s loc %s", job2.ID(), job2.Location(), job.ID(), tokyo)
 	}
-
 	if err := wait(ctx, job); err != nil {
 		t.Fatal(err)
 	}
@@ -1668,7 +1686,7 @@ func TestIntegration_Location(t *testing.T) {
 	}
 
 	q := client.Query(fmt.Sprintf("SELECT * FROM %s.%s", table.DatasetID, table.TableID))
-	q.Location = tokyo
+	q.Location = loc
 	iter, err := q.Read(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -1682,7 +1700,7 @@ func TestIntegration_Location(t *testing.T) {
 
 	table2 := tokyoDataset.Table(tableIDs.New())
 	copier := table2.CopierFrom(table)
-	copier.Location = tokyo
+	copier.Location = loc
 	if _, err := copier.Run(ctx); err != nil {
 		t.Fatal(err)
 	}
@@ -1693,7 +1711,7 @@ func TestIntegration_Location(t *testing.T) {
 	gr := NewGCSReference(uri)
 	gr.DestinationFormat = CSV
 	e := table.ExtractorTo(gr)
-	e.Location = tokyo
+	e.Location = loc
 	if _, err := e.Run(ctx); err != nil {
 		t.Fatal(err)
 	}
