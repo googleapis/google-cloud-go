@@ -1603,6 +1603,102 @@ func TestIntegration_ListJobs(t *testing.T) {
 	}
 }
 
+const tokyo = "asia-northeast1"
+
+func TestIntegration_Location(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	tokyoDataset := client.Dataset("tokyo")
+	err := tokyoDataset.Create(ctx, &DatasetMetadata{Location: tokyo})
+	if err != nil && !hasStatusCode(err, 409) { // 409 = already exists
+		t.Fatal(err)
+	}
+	md, err := tokyoDataset.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.Location != tokyo {
+		t.Fatalf("dataset location: got %s, want %s", md.Location, tokyo)
+	}
+	table := tokyoDataset.Table(tableIDs.New())
+	err = table.Create(context.Background(), &TableMetadata{
+		Schema: Schema{
+			{Name: "name", Type: StringFieldType},
+			{Name: "nums", Type: IntegerFieldType},
+		},
+		ExpirationTime: testTableExpiration,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer table.Delete(ctx)
+	loader := table.LoaderFrom(NewReaderSource(strings.NewReader("a,0\nb,1\nc,2\n")))
+	loader.Location = tokyo
+	job, err := loader.Run(ctx)
+	if err != nil {
+		t.Fatal("loader.Run", err)
+	}
+	if job.Location() != tokyo {
+		t.Fatalf("job location: got %s, want %s", job.Location(), tokyo)
+	}
+	_, err = client.JobFromID(ctx, job.ID())
+	if err == nil {
+		t.Error("JobFromID with Tokyo job: want error, got nil")
+	}
+	_, err = client.JobFromIDLocation(ctx, job.ID(), "US")
+	if err == nil {
+		t.Error("JobFromIDLocation with US: want error, got nil")
+	}
+	job2, err := client.JobFromIDLocation(ctx, job.ID(), tokyo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if job2.ID() != job.ID() || job2.Location() != tokyo {
+		t.Errorf("got id %s loc %s, want id%s loc %s", job2.ID(), job2.Location(), job.ID(), tokyo)
+	}
+
+	if err := wait(ctx, job); err != nil {
+		t.Fatal(err)
+	}
+	// Cancel should succeed even if the job is done.
+	if err := job.Cancel(ctx); err != nil {
+		t.Fatal(err)
+	}
+
+	q := client.Query(fmt.Sprintf("SELECT * FROM %s.%s", table.DatasetID, table.TableID))
+	q.Location = tokyo
+	iter, err := q.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantRows := [][]Value{
+		[]Value{"a", int64(0)},
+		[]Value{"b", int64(1)},
+		[]Value{"c", int64(2)},
+	}
+	checkRead(t, "location", iter, wantRows)
+
+	table2 := tokyoDataset.Table(tableIDs.New())
+	copier := table2.CopierFrom(table)
+	copier.Location = tokyo
+	if _, err := copier.Run(ctx); err != nil {
+		t.Fatal(err)
+	}
+	bucketName := testutil.ProjID()
+	objectName := fmt.Sprintf("bq-test-%s.csv", table.TableID)
+	uri := fmt.Sprintf("gs://%s/%s", bucketName, objectName)
+	defer storageClient.Bucket(bucketName).Object(objectName).Delete(ctx)
+	gr := NewGCSReference(uri)
+	gr.DestinationFormat = CSV
+	e := table.ExtractorTo(gr)
+	e.Location = tokyo
+	if _, err := e.Run(ctx); err != nil {
+		t.Fatal(err)
+	}
+}
+
 // Creates a new, temporary table with a unique name and the given schema.
 func newTable(t *testing.T, s Schema) *Table {
 	table := dataset.Table(tableIDs.New())

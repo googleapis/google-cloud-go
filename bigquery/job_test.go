@@ -26,6 +26,7 @@ func TestCreateJobRef(t *testing.T) {
 	for _, test := range []struct {
 		jobID          string
 		addJobIDSuffix bool
+		location       string
 		want           string
 	}{
 		{
@@ -47,6 +48,11 @@ func TestCreateJobRef(t *testing.T) {
 			jobID:          "foo",
 			addJobIDSuffix: true,
 			want:           "foo-RANDOM",
+		},
+		{
+			jobID:          "foo",
+			addJobIDSuffix: false,
+			want:           "foo",
 		},
 	} {
 		jc := JobIDConfig{JobID: test.jobID, AddJobIDSuffix: test.addJobIDSuffix}
