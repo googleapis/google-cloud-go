@@ -304,7 +304,7 @@ func (c *Client) Close() error {
 // unexported in the destination struct. ErrFieldMismatch is only returned if
 // dst is a struct pointer.
 func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error) {
-	trace.StartSpan(ctx, "cloud.google.com/go/datastore.Get")
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Get")
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	if dst == nil { // get catches nil interfaces; we need to catch nil ptr here
@@ -328,7 +328,7 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error)
 // PropertyList is a slice of structs. It is treated as invalid to avoid being
 // mistakenly passed when []PropertyList was intended.
 func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (err error) {
-	trace.StartSpan(ctx, "cloud.google.com/go/datastore.GetMulti")
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.GetMulti")
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	return c.get(ctx, keys, dst, nil)
@@ -461,7 +461,7 @@ func (c *Client) Put(ctx context.Context, key *Key, src interface{}) (*Key, erro
 // src must satisfy the same conditions as the dst argument to GetMulti.
 // TODO(jba): rewrite in terms of Mutate.
 func (c *Client) PutMulti(ctx context.Context, keys []*Key, src interface{}) (_ []*Key, err error) {
-	trace.StartSpan(ctx, "cloud.google.com/go/datastore.PutMulti")
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.PutMulti")
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	mutations, err := putMutations(keys, src)
@@ -553,7 +553,7 @@ func (c *Client) Delete(ctx context.Context, key *Key) error {
 // DeleteMulti is a batch version of Delete.
 // TODO(jba): rewrite in terms of Mutate.
 func (c *Client) DeleteMulti(ctx context.Context, keys []*Key) (err error) {
-	trace.StartSpan(ctx, "cloud.google.com/go/datastore.DeleteMulti")
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.DeleteMulti")
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	mutations, err := deleteMutations(keys)
@@ -594,7 +594,7 @@ func deleteMutations(keys []*Key) ([]*pb.Mutation, error) {
 // If any of the mutations are invalid, Mutate returns a MultiError with the errors.
 // Mutate returns a MultiError in this case even if there is only one Mutation.
 func (c *Client) Mutate(ctx context.Context, muts ...*Mutation) (_ []*Key, err error) {
-	trace.StartSpan(ctx, "cloud.google.com/go/datastore.Mutate")
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Mutate")
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	pmuts, err := mutationProtos(muts)
