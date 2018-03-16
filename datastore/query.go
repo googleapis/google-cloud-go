@@ -447,7 +447,7 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 // expected to be small, it is best to specify a limit; otherwise Count will
 // continue until it finishes counting or the provided context expires.
 func (c *Client) Count(ctx context.Context, q *Query) (_ int, err error) {
-	trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.Count")
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.Count")
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	// Check that the query is well-formed.
@@ -497,7 +497,7 @@ func (c *Client) Count(ctx context.Context, q *Query) (_ int, err error) {
 // continue until it finishes collecting results or the provided context
 // expires.
 func (c *Client) GetAll(ctx context.Context, q *Query, dst interface{}) (_ []*Key, err error) {
-	trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.GetAll")
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.GetAll")
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	var (
@@ -583,7 +583,7 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 		},
 	}
 
-	trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.Run")
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.Run")
 	defer func() { trace.EndSpan(ctx, t.err) }()
 	if q.namespace != "" {
 		t.req.PartitionId = &pb.PartitionId{
@@ -736,7 +736,7 @@ func (t *Iterator) nextBatch() error {
 
 // Cursor returns a cursor for the iterator's current location.
 func (t *Iterator) Cursor() (_ Cursor, err error) {
-	trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Query.Cursor")
+	t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Query.Cursor")
 	defer func() { trace.EndSpan(t.ctx, err) }()
 
 	// If there is still an offset, we need to the skip those results first.
