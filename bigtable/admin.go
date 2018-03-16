@@ -25,6 +25,7 @@ import (
 
 	"cloud.google.com/go/bigtable/internal/gax"
 	btopt "cloud.google.com/go/bigtable/internal/option"
+	"cloud.google.com/go/iam"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	"github.com/golang/protobuf/ptypes"
@@ -882,4 +883,8 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 		State:      c.State.String(),
 	}
 	return cis, nil
+}
+
+func (iac *InstanceAdminClient) InstanceIAM(instanceID string) *iam.Handle {
+	return iam.InternalNewHandleGRPCClient(iac.iClient, "projects/"+iac.project+"/instances/"+instanceID)
 }
