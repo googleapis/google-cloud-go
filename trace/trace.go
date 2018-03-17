@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// This package is OBSOLETE. See https://godoc.org/go.opencensus.io/trace.
+// This package is OBSOLETE. See https://godoc.org/go.opencensus.io/trace; and use
+// OpenCensus Stackdriver exporter, https://godoc.org/go.opencensus.io/exporter/stackdriver.
 //
 // Package trace is a Google Stackdriver Trace library.
 //
