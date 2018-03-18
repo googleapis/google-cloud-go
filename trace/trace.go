@@ -176,11 +176,11 @@ const (
 	spanKindServer      = `RPC_SERVER`
 	spanKindUnspecified = `SPAN_KIND_UNSPECIFIED`
 	maxStackFrames      = 20
+	labelAgent          = `trace.cloud.google.com/agent`
 )
 
 // Stackdriver Trace API predefined labels.
 const (
-	LabelAgent              = `trace.cloud.google.com/agent`
 	LabelComponent          = `trace.cloud.google.com/component`
 	LabelErrorMessage       = `trace.cloud.google.com/error/message`
 	LabelErrorName          = `trace.cloud.google.com/error/name`
@@ -574,6 +574,7 @@ func (t *trace) constructTrace(spans []*Span) *api.Trace {
 		if sp.statusCode != 0 {
 			sp.SetLabel(LabelHTTPStatusCode, strconv.Itoa(sp.statusCode))
 		}
+		sp.SetLabel(labelAgent, userAgent)
 		apiSpans[i] = &sp.span
 	}
 
