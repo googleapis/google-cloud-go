@@ -136,7 +136,6 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 			),
 		),
 	}
-	allOpts = append(allOpts, openCensusOptions()...)
 	allOpts = append(allOpts, opts...)
 	// Prepare gRPC channels.
 	if config.NumChannels == 0 {
