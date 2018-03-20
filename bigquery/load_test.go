@@ -105,6 +105,7 @@ func TestLoad(t *testing.T) {
 				Labels:                      map[string]string{"a": "b"},
 				TimePartitioning:            &TimePartitioning{Expiration: 1234 * time.Millisecond},
 				DestinationEncryptionConfig: &EncryptionConfig{KMSKeyName: "keyName"},
+				SchemaUpdateOptions:         []string{"ALLOW_FIELD_ADDITION"},
 			},
 			src: NewGCSReference("uri"),
 			want: func() *bq.Job {
@@ -121,6 +122,7 @@ func TestLoad(t *testing.T) {
 					JobId:     "ajob",
 					ProjectId: "client-project-id",
 				}
+				j.Configuration.Load.SchemaUpdateOptions = []string{"ALLOW_FIELD_ADDITION"}
 				return j
 			}(),
 		},
