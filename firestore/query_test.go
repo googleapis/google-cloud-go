@@ -24,6 +24,7 @@ import (
 	"cloud.google.com/go/internal/pretty"
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 
+	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/golang/protobuf/ptypes/wrappers"
 )
 
@@ -589,10 +590,10 @@ func TestQueryGetAll(t *testing.T) {
 			Fields:     map[string]*pb.Value{"f": intval(1)},
 		},
 	}
-
+	wantReadTimes := []*tspb.Timestamp{aTimestamp, aTimestamp2}
 	srv.addRPC(nil, []interface{}{
-		&pb.RunQueryResponse{Document: wantPBDocs[0]},
-		&pb.RunQueryResponse{Document: wantPBDocs[1]},
+		&pb.RunQueryResponse{Document: wantPBDocs[0], ReadTime: aTimestamp},
+		&pb.RunQueryResponse{Document: wantPBDocs[1], ReadTime: aTimestamp2},
 	})
 	gotDocs, err := c.Collection("C").Documents(ctx).GetAll()
 	if err != nil {
@@ -602,7 +603,7 @@ func TestQueryGetAll(t *testing.T) {
 		t.Errorf("got %d docs, wanted %d", got, want)
 	}
 	for i, got := range gotDocs {
-		want, err := newDocumentSnapshot(c.Doc(docNames[i]), wantPBDocs[i], c)
+		want, err := newDocumentSnapshot(c.Doc(docNames[i]), wantPBDocs[i], c, wantReadTimes[i])
 		if err != nil {
 			t.Fatal(err)
 		}

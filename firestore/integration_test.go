@@ -260,6 +260,7 @@ func TestIntegration_GetAll(t *testing.T) {
 	for i := 0; i < 5; i++ {
 		doc := coll.NewDoc()
 		docRefs = append(docRefs, doc)
+		// TODO(jba): omit one create so we can test missing doc behavior.
 		mustCreate("GetAll #1", t, doc, getAll{N: i})
 	}
 	docSnapshots, err := iClient.GetAll(ctx, docRefs)
@@ -277,6 +278,9 @@ func TestIntegration_GetAll(t *testing.T) {
 		want := getAll{N: i}
 		if got != want {
 			t.Errorf("%d: got %+v, want %+v", i, got, want)
+		}
+		if ds.ReadTime.IsZero() {
+			t.Errorf("%d: got zero read time", i)
 		}
 	}
 }
