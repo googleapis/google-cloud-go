@@ -608,7 +608,7 @@ func (it *DocumentIterator) Next() (*DocumentSnapshot, error) {
 		it.err = err
 		return nil, err
 	}
-	doc, err := newDocumentSnapshot(docRef, res.Document, client)
+	doc, err := newDocumentSnapshot(docRef, res.Document, client, res.ReadTime)
 	if err != nil {
 		it.err = err
 		return nil, err

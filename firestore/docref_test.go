@@ -21,7 +21,6 @@ import (
 	"time"
 
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
-	"google.golang.org/grpc/status"
 
 	"golang.org/x/net/context"
 	"google.golang.org/genproto/googleapis/type/latlng"
@@ -46,7 +45,15 @@ func TestDocGet(t *testing.T) {
 		UpdateTime: aTimestamp,
 		Fields:     map[string]*pb.Value{"f": intval(1)},
 	}
-	srv.addRPC(&pb.GetDocumentRequest{Name: path}, pdoc)
+	srv.addRPC(&pb.BatchGetDocumentsRequest{
+		Database:  c.path(),
+		Documents: []string{path},
+	}, []interface{}{
+		&pb.BatchGetDocumentsResponse{
+			Result:   &pb.BatchGetDocumentsResponse_Found{pdoc},
+			ReadTime: aTimestamp2,
+		},
+	})
 	ref := c.Collection("C").Doc("a")
 	gotDoc, err := ref.Get(ctx)
 	if err != nil {
@@ -56,6 +63,7 @@ func TestDocGet(t *testing.T) {
 		Ref:        ref,
 		CreateTime: aTime,
 		UpdateTime: aTime,
+		ReadTime:   aTime2,
 		proto:      pdoc,
 		c:          c,
 	}
@@ -63,12 +71,17 @@ func TestDocGet(t *testing.T) {
 		t.Fatalf("\ngot  %+v\nwant %+v", gotDoc, wantDoc)
 	}
 
+	path2 := "projects/projectID/databases/(default)/documents/C/b"
 	srv.addRPC(
-		&pb.GetDocumentRequest{
-			Name: "projects/projectID/databases/(default)/documents/C/b",
-		},
-		status.Errorf(codes.NotFound, "not found"),
-	)
+		&pb.BatchGetDocumentsRequest{
+			Database:  c.path(),
+			Documents: []string{path2},
+		}, []interface{}{
+			&pb.BatchGetDocumentsResponse{
+				Result:   &pb.BatchGetDocumentsResponse_Missing{path2},
+				ReadTime: aTimestamp3,
+			},
+		})
 	_, err = c.Collection("C").Doc("b").Get(ctx)
 	if grpc.Code(err) != codes.NotFound {
 		t.Errorf("got %v, want NotFound", err)
