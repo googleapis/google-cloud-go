@@ -17,6 +17,7 @@ package bigquery
 import (
 	"io"
 
+	"cloud.google.com/go/internal/trace"
 	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 )
@@ -123,7 +124,10 @@ func (t *Table) LoaderFrom(src LoadSource) *Loader {
 }
 
 // Run initiates a load job.
-func (l *Loader) Run(ctx context.Context) (*Job, error) {
+func (l *Loader) Run(ctx context.Context) (_ *Job, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Load.Run")
+	defer func() { trace.EndSpan(ctx, err) }()
+
 	job, media := l.newJob()
 	return l.c.insertJob(ctx, job, media)
 }
