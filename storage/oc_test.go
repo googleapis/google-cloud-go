@@ -28,8 +28,7 @@ func TestIntegration_OCTracing(t *testing.T) {
 		t.Skip("Integration tests skipped in short mode")
 	}
 
-	c := make(chan *trace.SpanData, 1024)
-	te := &testExporter{c: c}
+	te := &testExporter{}
 	trace.RegisterExporter(te)
 	defer trace.UnregisterExporter(te)
 	trace.SetDefaultSampler(trace.AlwaysSample())
@@ -41,18 +40,15 @@ func TestIntegration_OCTracing(t *testing.T) {
 	bkt := client.Bucket(bucketName)
 	bkt.Attrs(ctx)
 
-	select {
-	case <-c:
-	default:
-		t.Fatal("Expected some trace to be created, but none was")
-		return
+	if len(te.spans) != 1 {
+		t.Fatalf("Expected 1 span to be created, but got %d", len(te.spans))
 	}
 }
 
 type testExporter struct {
-	c chan *trace.SpanData
+	spans []*trace.SpanData
 }
 
 func (te *testExporter) ExportSpan(s *trace.SpanData) {
-	te.c <- s
+	te.spans = append(te.spans, s)
 }

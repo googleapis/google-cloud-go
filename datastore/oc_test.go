@@ -18,7 +18,6 @@ package datastore
 
 import (
 	"testing"
-	"time"
 
 	"go.opencensus.io/trace"
 	"golang.org/x/net/context"
@@ -46,17 +45,15 @@ func TestOCTracing(t *testing.T) {
 		t.Fatalf("client.Put: %v", err)
 	}
 
-	time.Sleep(time.Second)
-
-	if len(te.c) == 0 {
-		t.Fatal("Expected some trace to be created, but none was")
+	if len(te.spans) != 1 {
+		t.Fatalf("Expected 1 span to be created, but got %d", len(te.spans))
 	}
 }
 
 type testExporter struct {
-	c []*trace.SpanData
+	spans []*trace.SpanData
 }
 
 func (te *testExporter) ExportSpan(s *trace.SpanData) {
-	te.c = append(te.c, s)
+	te.spans = append(te.spans, s)
 }
