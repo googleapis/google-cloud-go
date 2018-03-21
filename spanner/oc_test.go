@@ -58,6 +58,7 @@ func TestOCStats(t *testing.T) {
 	}
 }
 
+// TODO(deklerk): move to internal/
 type testExporter struct {
 	c chan *statsview.Data
 }

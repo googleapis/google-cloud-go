@@ -50,6 +50,7 @@ func TestOCTracing(t *testing.T) {
 	}
 }
 
+// TODO(deklerk): move to internal/
 type testExporter struct {
 	spans []*trace.SpanData
 }

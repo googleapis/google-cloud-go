@@ -14,7 +14,7 @@
 
 // +build go1.8
 
-package storage
+package bigquery
 
 import (
 	"testing"
@@ -23,7 +23,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-func TestIntegration_OCTracing(t *testing.T) {
+func TestOCTracing(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -34,11 +34,14 @@ func TestIntegration_OCTracing(t *testing.T) {
 	trace.SetDefaultSampler(trace.AlwaysSample())
 
 	ctx := context.Background()
-	client := testConfig(ctx, t)
+	client, err := NewClient(ctx, "client-project-id")
+	if err != nil {
+		t.Fatal(err)
+	}
 	defer client.Close()
 
-	bkt := client.Bucket(bucketName)
-	bkt.Attrs(ctx)
+	q := client.Query("select *")
+	q.Run(ctx) // Doesn't matter if we get an error; span should be created either way
 
 	if len(te.spans) != 1 {
 		t.Fatalf("Expected 1 span to be created, but got %d", len(te.spans))
