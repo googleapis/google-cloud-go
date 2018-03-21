@@ -37,7 +37,6 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"go.opencensus.io/trace"
 	"golang.org/x/net/context"
 
 	"cloud.google.com/go/iam"
@@ -2186,28 +2185,6 @@ func TestIntegration_LockBucket_MetagenerationRequired(t *testing.T) {
 	}
 }
 
-func TestIntegration_OCTracing(t *testing.T) {
-	c := make(chan *trace.SpanData, 1024)
-	te := &testExporter{c: c}
-	trace.RegisterExporter(te)
-	defer trace.UnregisterExporter(te)
-	trace.SetDefaultSampler(trace.AlwaysSample())
-
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-
-	bkt := client.Bucket(bucketName)
-	bkt.Attrs(ctx)
-
-	select {
-	case <-c:
-	default:
-		t.Fatal("Expected some trace to be created, but none was")
-		return
-	}
-}
-
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
 	w := obj.NewWriter(ctx)
 	w.ContentType = contentType
@@ -2306,11 +2283,3 @@ func randomContents() []byte {
 type zeros struct{}
 
 func (zeros) Read(p []byte) (int, error) { return len(p), nil }
-
-type testExporter struct {
-	c chan *trace.SpanData
-}
-
-func (te *testExporter) ExportSpan(s *trace.SpanData) {
-	te.c <- s
-}
