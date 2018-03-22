@@ -261,6 +261,10 @@ type BucketAttrs struct {
 	// Retention policy enforces a minimum retention time for all objects
 	// contained in the bucket. A RetentionPolicy of nil implies the bucket
 	// has no minimum data retention.
+	//
+	// This feature is in private alpha release. It is not currently available to
+	// most customers. It might be changed in backwards-incompatible ways and is not
+	// subject to any SLA or deprecation policy.
 	RetentionPolicy *RetentionPolicy
 
 	// The bucket's Cross-Origin Resource Sharing (CORS) configuration.
@@ -280,6 +284,10 @@ type Lifecycle struct {
 // modified or removed from the bucket via the Update method. A
 // locked retention policy cannot be removed or shortened in duration
 // for the lifetime of the bucket.
+//
+// This feature is in private alpha release. It is not currently available to
+// most customers. It might be changed in backwards-incompatible ways and is not
+// subject to any SLA or deprecation policy.
 type RetentionPolicy struct {
 	// RetentionPeriod specifies the duration that objects need to be
 	// retained. Retention duration must be greater than zero and less than
@@ -496,6 +504,10 @@ type BucketAttrsToUpdate struct {
 
 	// RetentionPolicy, if set, updates the retention policy of the bucket. Using
 	// RetentionPolicy.RetentionPeriod = 0 will delete the existing policy.
+	//
+	// This feature is in private alpha release. It is not currently available to
+	// most customers. It might be changed in backwards-incompatible ways and is not
+	// subject to any SLA or deprecation policy.
 	RetentionPolicy *RetentionPolicy
 
 	// CORS, if set, replaces the CORS configuration with a new configuration.
@@ -620,6 +632,10 @@ func (b *BucketHandle) UserProject(projectID string) *BucketHandle {
 // than a day, the retention policy is treated as a development configuration and locking
 // will have no effect. The BucketHandle must have a metageneration condition that
 // matches the bucket's metageneration. See BucketHandle.If.
+//
+// This feature is in private alpha release. It is not currently available to
+// most customers. It might be changed in backwards-incompatible ways and is not
+// subject to any SLA or deprecation policy.
 func (b *BucketHandle) LockRetentionPolicy(ctx context.Context) error {
 	var metageneration int64
 	if b.conds != nil {
