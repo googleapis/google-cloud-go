@@ -134,7 +134,7 @@ func (s *watchStream) nextSnapshot() (*btree.BTree, time.Time, error) {
 			_ = s.close() // ignore error
 			return nil, time.Time{}, s.err
 		}
-		newDocTree := computeSnapshot(s.docTree, s.docMap, s.changeMap)
+		newDocTree := computeSnapshot(s.docTree, s.docMap, s.changeMap, s.readTime)
 		// Only return a snapshot if something has changed, or this is the first snapshot.
 		if !s.hasReturned || newDocTree != s.docTree {
 			s.docTree = newDocTree
@@ -304,7 +304,7 @@ func assert(b bool) {
 // Applies the mutations in changeMap to both the document tree and the
 // document lookup map. Modifies docMap in place and returns a new docTree.
 // If there were no changes, returns docTree unmodified.
-func computeSnapshot(docTree *btree.BTree, docMap, changeMap map[string]*DocumentSnapshot) *btree.BTree {
+func computeSnapshot(docTree *btree.BTree, docMap, changeMap map[string]*DocumentSnapshot, readTime time.Time) *btree.BTree {
 	updatedTree := docTree
 	assert(docTree.Len() == len(docMap))
 	// TODO(jba): also return the ordered set of changes.
@@ -322,6 +322,7 @@ func computeSnapshot(docTree *btree.BTree, docMap, changeMap map[string]*Documen
 	for _, newDoc := range adds {
 		name := newDoc.Ref.Path
 		assert(docMap[name] == nil)
+		newDoc.ReadTime = readTime
 		docMap[name] = newDoc
 		updatedTree.Set(newDoc, nil)
 	}
@@ -333,6 +334,7 @@ func computeSnapshot(docTree *btree.BTree, docMap, changeMap map[string]*Documen
 			if updatedTree == docTree {
 				updatedTree = docTree.Clone()
 			}
+			newDoc.ReadTime = readTime
 			docMap[name] = newDoc
 			updatedTree.Delete(oldDoc)
 			updatedTree.Set(newDoc, nil)
