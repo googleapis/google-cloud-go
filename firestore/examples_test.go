@@ -468,6 +468,7 @@ func ExampleDocumentIterator_Next() {
 		Where("pop", ">", 10).
 		OrderBy("pop", firestore.Desc)
 	iter := q.Documents(ctx)
+	defer iter.Stop()
 	for {
 		doc, err := iter.Next()
 		if err == iterator.Done {

@@ -236,11 +236,7 @@ func (t *Transaction) Documents(q Queryer) *DocumentIterator {
 		return &DocumentIterator{err: errReadAfterWrite}
 	}
 	return &DocumentIterator{
-		iter: &queryDocumentIterator{
-			ctx: t.ctx,
-			q:   q.query(),
-			tid: t.id,
-		},
+		iter: newQueryDocumentIterator(t.ctx, q.query(), t.id),
 	}
 }
 
