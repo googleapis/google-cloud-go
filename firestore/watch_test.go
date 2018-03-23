@@ -21,7 +21,6 @@ import (
 
 	"cloud.google.com/go/internal/btree"
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
@@ -121,7 +120,7 @@ func TestComputeSnapshot(t *testing.T) {
 			[]*DocumentSnapshot{ds1, ds2c},
 		},
 	} {
-		docTree = computeSnapshot(docTree, docMap, test.changeMap)
+		docTree = computeSnapshot(docTree, docMap, test.changeMap, time.Time{})
 		got := treeDocs(docTree)
 		if diff := testDiff(got, test.want); diff != "" {
 			t.Fatalf("%s: %s", test.desc, diff)
@@ -134,7 +133,7 @@ func TestComputeSnapshot(t *testing.T) {
 
 	// Verify that if there are no changes, the returned docTree is identical to the first arg.
 	// docTree already has ds2c.
-	got := computeSnapshot(docTree, docMap, dmap{ds2c.Ref.Path: ds2c})
+	got := computeSnapshot(docTree, docMap, dmap{ds2c.Ref.Path: ds2c}, time.Time{})
 	if got != docTree {
 		t.Error("returned docTree != arg docTree")
 	}
@@ -167,12 +166,11 @@ func TestWatchStream(t *testing.T) {
 	defer cancel()
 
 	baseTime := time.Now()
+	readTime := baseTime.Add(5 * time.Second)
+	readTimestamp := mustTimestampProto(readTime)
 	doc := func(path string, value int, tm time.Time) *DocumentSnapshot {
 		ref := c.Doc(path)
-		ts, err := ptypes.TimestampProto(tm)
-		if err != nil {
-			t.Fatal(err)
-		}
+		ts := mustTimestampProto(tm)
 		return &DocumentSnapshot{
 			Ref: ref,
 			proto: &pb.Document{
@@ -183,6 +181,7 @@ func TestWatchStream(t *testing.T) {
 			},
 			CreateTime: tm,
 			UpdateTime: tm,
+			ReadTime:   readTime,
 		}
 	}
 	change := func(ds *DocumentSnapshot) *pb.ListenResponse {
@@ -204,7 +203,7 @@ func TestWatchStream(t *testing.T) {
 	}}}
 	noChange := &pb.ListenResponse{ResponseType: &pb.ListenResponse_TargetChange{&pb.TargetChange{
 		TargetChangeType: pb.TargetChange_NO_CHANGE,
-		ReadTime:         ptypes.TimestampNow(),
+		ReadTime:         readTimestamp,
 	}}}
 	doc1 := doc("C/d1", 1, baseTime)
 	doc1a := doc("C/d1", 2, baseTime.Add(time.Second))

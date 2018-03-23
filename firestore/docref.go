@@ -20,7 +20,6 @@ import (
 	"io"
 	"reflect"
 	"sort"
-	"time"
 
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
@@ -563,24 +562,21 @@ func iterFetch(pageSize int, pageToken string, pi *iterator.PageInfo, next func(
 
 // Snapshots returns an iterator over snapshots of the document. Each time the document
 // changes or is added or deleted, a new snapshot will be generated.
-func (d *DocumentRef) Snapshots(ctx context.Context) *DocumentSnapshotIterator {
-	return &DocumentSnapshotIterator{
+func (d *DocumentRef) Snapshots(ctx context.Context) *SnapshotIterator {
+	return &SnapshotIterator{
 		docref: d,
 		ws:     newWatchStreamForDocument(ctx, d),
 	}
 }
 
-// DocumentSnapshotIterator is an iterator over snapshots of a document.
+// SnapshotIterator is an iterator over snapshots of a document.
 // Call Next on the iterator to get a snapshot of the document each time it changes.
 // Call Stop on the iterator when done.
 //
 // For an example, see DocumentRef.Snapshots.
-type DocumentSnapshotIterator struct {
+type SnapshotIterator struct {
 	docref *DocumentRef
 	ws     *watchStream
-
-	// The time at which the most recent document snapshot was obtained from Firestore.
-	ReadTime time.Time
 }
 
 // Next blocks until the document changes, then returns the DocumentSnapshot for
@@ -588,7 +584,7 @@ type DocumentSnapshotIterator struct {
 // returns a DocumentSnapshot whose Exists method returns false.
 //
 // Next never returns iterator.Done unless it is called after Stop.
-func (it *DocumentSnapshotIterator) Next() (*DocumentSnapshot, error) {
+func (it *SnapshotIterator) Next() (*DocumentSnapshot, error) {
 	btree, readTime, err := it.ws.nextSnapshot()
 	if err != nil {
 		if err == io.EOF {
@@ -597,9 +593,8 @@ func (it *DocumentSnapshotIterator) Next() (*DocumentSnapshot, error) {
 		// watchStream's error is sticky, so SnapshotIterator does not need to remember it.
 		return nil, err
 	}
-	it.ReadTime = readTime
 	if btree.Len() == 0 { // document deleted
-		return &DocumentSnapshot{Ref: it.docref}, nil
+		return &DocumentSnapshot{Ref: it.docref, ReadTime: readTime}, nil
 	}
 	snap, _ := btree.At(0)
 	return snap.(*DocumentSnapshot), nil
@@ -608,6 +603,6 @@ func (it *DocumentSnapshotIterator) Next() (*DocumentSnapshot, error) {
 // Stop stops receiving snapshots.
 // You should always call Stop when you are done with an iterator, to free up resources.
 // It is not safe to call Stop concurrently with Next.
-func (it *DocumentSnapshotIterator) Stop() {
+func (it *SnapshotIterator) Stop() {
 	it.ws.stop()
 }
