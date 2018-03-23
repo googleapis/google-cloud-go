@@ -117,6 +117,7 @@ func TestRunTransaction(t *testing.T) {
 	srv.addRPC(commitReq, &pb.CommitResponse{CommitTime: aTimestamp3})
 	err = c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
 		it := tx.Documents(c.Collection("C"))
+		defer it.Stop()
 		_, err := it.Next()
 		if err != iterator.Done {
 			return err
@@ -242,6 +243,7 @@ func TestTransactionErrors(t *testing.T) {
 	err = c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
 		tx.Delete(c.Doc("C/a"))
 		it := tx.Documents(c.Collection("C").Select("x"))
+		defer it.Stop()
 		if _, err := it.Next(); err != iterator.Done {
 			return err
 		}
@@ -339,6 +341,7 @@ func TestTransactionErrors(t *testing.T) {
 		},
 		func(ctx context.Context) error {
 			it := c.Collection("C").Documents(ctx)
+			defer it.Stop()
 			_, err := it.Next()
 			return err
 		},

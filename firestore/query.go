@@ -547,11 +547,8 @@ func trunc32(i int) int32 {
 // Documents returns an iterator over the query's resulting documents.
 func (q Query) Documents(ctx context.Context) *DocumentIterator {
 	return &DocumentIterator{
-		iter: &queryDocumentIterator{
-			ctx: withResourceHeader(ctx, q.c.path()),
-			q:   &q,
-		},
-		err: checkTransaction(ctx),
+		iter: newQueryDocumentIterator(withResourceHeader(ctx, q.c.path()), &q, nil),
+		err:  checkTransaction(ctx),
 	}
 }
 
@@ -568,6 +565,7 @@ type DocumentIterator struct {
 // is an internal detail.
 type docIterator interface {
 	next() (*DocumentSnapshot, error)
+	stop()
 }
 
 // Next returns the next result. Its second return value is iterator.Done if there
@@ -584,8 +582,22 @@ func (it *DocumentIterator) Next() (*DocumentSnapshot, error) {
 	return ds, err
 }
 
+// Stop stops the iterator, freeing its resources.
+// Always call Stop when you are done with an iterator.
+// It is not safe to call Stop concurrently with Next.
+func (it *DocumentIterator) Stop() {
+	if it.iter != nil { // possible in error cases
+		it.iter.stop()
+	}
+	if it.err == nil {
+		it.err = iterator.Done
+	}
+}
+
 // GetAll returns all the documents remaining from the iterator.
+// It is not necessary to call Stop on the iterator after calling GetAll.
 func (it *DocumentIterator) GetAll() ([]*DocumentSnapshot, error) {
+	defer it.Stop()
 	var docs []*DocumentSnapshot
 	for {
 		doc, err := it.Next()
@@ -600,13 +612,22 @@ func (it *DocumentIterator) GetAll() ([]*DocumentSnapshot, error) {
 	return docs, nil
 }
 
-// TODO(jba): The iterator needs a Stop method.
-
 type queryDocumentIterator struct {
 	ctx          context.Context
+	cancel       func()
 	q            *Query
 	tid          []byte // transaction ID, if any
 	streamClient pb.Firestore_RunQueryClient
+}
+
+func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte) *queryDocumentIterator {
+	ctx, cancel := context.WithCancel(ctx)
+	return &queryDocumentIterator{
+		ctx:    ctx,
+		cancel: cancel,
+		q:      q,
+		tid:    tid,
+	}
 }
 
 func (it *queryDocumentIterator) next() (*DocumentSnapshot, error) {
@@ -652,6 +673,10 @@ func (it *queryDocumentIterator) next() (*DocumentSnapshot, error) {
 		return nil, err
 	}
 	return doc, nil
+}
+
+func (it *queryDocumentIterator) stop() {
+	it.cancel()
 }
 
 // Snapshots returns an iterator over snapshots of the query. Each time the query
@@ -724,3 +749,5 @@ func (it *btreeDocumentIterator) next() (*DocumentSnapshot, error) {
 	}
 	return it.Key.(*DocumentSnapshot), nil
 }
+
+func (*btreeDocumentIterator) stop() {}

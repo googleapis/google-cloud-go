@@ -170,6 +170,7 @@ Call the Query's Documents method to get an iterator, and use it like
 the other Google Cloud Client iterators.
 
 	iter := q.Documents(ctx)
+	defer iter.Stop()
 	for {
 		doc, err := iter.Next()
 		if err == iterator.Done {
