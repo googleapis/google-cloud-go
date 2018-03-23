@@ -209,17 +209,4 @@ func TestGetAllErrors(t *testing.T) {
 	if _, err := c.GetAll(ctx, []*DocumentRef{c.Doc("C/a")}); err == nil {
 		t.Error("got nil, want error")
 	}
-
-	// Doc never appears (server bug).
-	srv.reset()
-	srv.addRPC(
-		&pb.BatchGetDocumentsRequest{
-			Database:  dbPath,
-			Documents: []string{docPath},
-		},
-		[]interface{}{},
-	)
-	if _, err := c.GetAll(ctx, []*DocumentRef{c.Doc("C/a")}); err == nil {
-		t.Error("got nil, want error")
-	}
 }
