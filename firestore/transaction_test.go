@@ -54,12 +54,16 @@ func TestRunTransaction(t *testing.T) {
 		Fields:     map[string]*pb.Value{"count": intval(1)},
 	}
 	srv.addRPC(
-		&pb.GetDocumentRequest{
-			Name:                db + "/documents/C/a",
-			ConsistencySelector: &pb.GetDocumentRequest_Transaction{tid},
-		},
-		aDoc,
-	)
+		&pb.BatchGetDocumentsRequest{
+			Database:            c.path(),
+			Documents:           []string{db + "/documents/C/a"},
+			ConsistencySelector: &pb.BatchGetDocumentsRequest_Transaction{tid},
+		}, []interface{}{
+			&pb.BatchGetDocumentsResponse{
+				Result:   &pb.BatchGetDocumentsResponse_Found{aDoc},
+				ReadTime: aTimestamp2,
+			},
+		})
 	aDoc2 := &pb.Document{
 		Name:   aDoc.Name,
 		Fields: map[string]*pb.Value{"count": intval(2)},
@@ -156,9 +160,10 @@ func TestTransactionErrors(t *testing.T) {
 			Database: db,
 		}
 		beginRes = &pb.BeginTransactionResponse{Transaction: tid}
-		getReq   = &pb.GetDocumentRequest{
-			Name:                db + "/documents/C/a",
-			ConsistencySelector: &pb.GetDocumentRequest_Transaction{tid},
+		getReq   = &pb.BatchGetDocumentsRequest{
+			Database:            c.path(),
+			Documents:           []string{db + "/documents/C/a"},
+			ConsistencySelector: &pb.BatchGetDocumentsRequest_Transaction{tid},
 		}
 		rollbackReq = &pb.RollbackRequest{Database: db, Transaction: tid}
 		commitReq   = &pb.CommitRequest{Database: db, Transaction: tid}
@@ -199,10 +204,15 @@ func TestTransactionErrors(t *testing.T) {
 	// Commit has a permanent error.
 	srv.reset()
 	srv.addRPC(beginReq, beginRes)
-	srv.addRPC(getReq, &pb.Document{
-		Name:       "projects/projectID/databases/(default)/documents/C/a",
-		CreateTime: aTimestamp,
-		UpdateTime: aTimestamp2,
+	srv.addRPC(getReq, []interface{}{
+		&pb.BatchGetDocumentsResponse{
+			Result: &pb.BatchGetDocumentsResponse_Found{&pb.Document{
+				Name:       "projects/projectID/databases/(default)/documents/C/a",
+				CreateTime: aTimestamp,
+				UpdateTime: aTimestamp2,
+			}},
+			ReadTime: aTimestamp2,
+		},
 	})
 	srv.addRPC(commitReq, internalErr)
 	err = c.RunTransaction(ctx, get)

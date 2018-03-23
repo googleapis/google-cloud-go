@@ -124,7 +124,7 @@ func (c *Client) idsToRef(IDs []string, dbPath string) (*CollectionRef, *Documen
 // GetAll retrieves multiple documents with a single call. The DocumentSnapshots are
 // returned in the order of the given DocumentRefs.
 //
-// If a document is not present, the corresponding DocumentSnapshot will be nil.
+// If a document is not present, the corresponding DocumentSnapshot's Exists method will return false.
 func (c *Client) GetAll(ctx context.Context, docRefs []*DocumentRef) ([]*DocumentSnapshot, error) {
 	if err := checkTransaction(ctx); err != nil {
 		return nil, err
@@ -189,13 +189,11 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte)
 		if !ok {
 			return nil, fmt.Errorf("firestore: passed %q to BatchGetDocuments but never saw response", name)
 		}
-		if r.doc != nil {
-			doc, err := newDocumentSnapshot(docRefs[i], r.doc, c, r.readTime)
-			if err != nil {
-				return nil, err
-			}
-			docs[i] = doc
+		doc, err := newDocumentSnapshot(docRefs[i], r.doc, c, r.readTime)
+		if err != nil {
+			return nil, err
 		}
+		docs[i] = doc
 	}
 	return docs, nil
 }

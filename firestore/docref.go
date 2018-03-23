@@ -57,9 +57,11 @@ func (d *DocumentRef) Collection(id string) *CollectionRef {
 	return newCollRefWithParent(d.Parent.c, d, id)
 }
 
-// Get retrieves the document. It returns a NotFound error if the document does not exist.
-// You can test for NotFound with
+// Get retrieves the document. If the document does not exist, Get return a NotFound error, which
+// can be checked with
 //    grpc.Code(err) == codes.NotFound
+// In that case, Get returns a non-nil DocumentSnapshot whose Exists method return false and whose
+// ReadTime is the time of the failed read operation.
 func (d *DocumentRef) Get(ctx context.Context) (*DocumentSnapshot, error) {
 	if err := checkTransaction(ctx); err != nil {
 		return nil, err
@@ -71,10 +73,11 @@ func (d *DocumentRef) Get(ctx context.Context) (*DocumentSnapshot, error) {
 	if err != nil {
 		return nil, err
 	}
-	if docsnaps[0] == nil {
-		return nil, status.Errorf(codes.NotFound, "%q not found", d.Path)
+	ds := docsnaps[0]
+	if !ds.Exists() {
+		return ds, status.Errorf(codes.NotFound, "%q not found", d.Path)
 	}
-	return docsnaps[0], nil
+	return ds, nil
 }
 
 // Create creates the document with the given data.

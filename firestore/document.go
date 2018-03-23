@@ -53,7 +53,8 @@ type DocumentSnapshot struct {
 }
 
 // Exists reports whether the DocumentSnapshot represents an existing document.
-// DocumentSnapshots for deleted documents may be returned by SnapshotIterator.Next.
+// Even if Exists returns false, the Ref and ReadTime fields of the DocumentSnapshot
+// are valid.
 func (d *DocumentSnapshot) Exists() bool {
 	return d.proto != nil
 }
@@ -277,19 +278,20 @@ func newDocumentSnapshot(ref *DocumentRef, proto *pb.Document, c *Client, readTi
 		c:     c,
 		proto: proto,
 	}
-	ts, err := ptypes.Timestamp(proto.CreateTime)
-	if err != nil {
-		return nil, err
+	if proto != nil {
+		ts, err := ptypes.Timestamp(proto.CreateTime)
+		if err != nil {
+			return nil, err
+		}
+		d.CreateTime = ts
+		ts, err = ptypes.Timestamp(proto.UpdateTime)
+		if err != nil {
+			return nil, err
+		}
+		d.UpdateTime = ts
 	}
-	d.CreateTime = ts
-	ts, err = ptypes.Timestamp(proto.UpdateTime)
-	if err != nil {
-		return nil, err
-	}
-	d.UpdateTime = ts
-	// TODO(jba): remove nil check when all callers pass a read time.
 	if readTime != nil {
-		ts, err = ptypes.Timestamp(readTime)
+		ts, err := ptypes.Timestamp(readTime)
 		if err != nil {
 			return nil, err
 		}
