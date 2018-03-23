@@ -247,8 +247,14 @@ func TestIntegration_Get(t *testing.T) {
 		t.Errorf("got\n%v\nwant\n%v", pretty.Value(got), pretty.Value(want))
 	}
 
-	_, err := integrationColl(t).NewDoc().Get(ctx)
+	ds, err := integrationColl(t).NewDoc().Get(ctx)
 	codeEq(t, "Get on a missing doc", codes.NotFound, err)
+	if ds == nil || ds.Exists() {
+		t.Fatal("got nil or existing doc snapshot, want !ds.Exists")
+	}
+	if ds.ReadTime.IsZero() {
+		t.Error("got zero read time")
+	}
 }
 
 func TestIntegration_GetAll(t *testing.T) {
@@ -260,8 +266,9 @@ func TestIntegration_GetAll(t *testing.T) {
 	for i := 0; i < 5; i++ {
 		doc := coll.NewDoc()
 		docRefs = append(docRefs, doc)
-		// TODO(jba): omit one create so we can test missing doc behavior.
-		mustCreate("GetAll #1", t, doc, getAll{N: i})
+		if i != 3 {
+			mustCreate("GetAll", t, doc, getAll{N: i})
+		}
 	}
 	docSnapshots, err := iClient.GetAll(ctx, docRefs)
 	if err != nil {
@@ -271,13 +278,21 @@ func TestIntegration_GetAll(t *testing.T) {
 		t.Fatalf("got %d snapshots, want %d", got, want)
 	}
 	for i, ds := range docSnapshots {
-		var got getAll
-		if err := ds.DataTo(&got); err != nil {
-			t.Fatal(err)
-		}
-		want := getAll{N: i}
-		if got != want {
-			t.Errorf("%d: got %+v, want %+v", i, got, want)
+		if i == 3 {
+			if ds == nil || ds.Exists() {
+				t.Fatal("got nil or existing doc snapshot, want !ds.Exists")
+			}
+			err := ds.DataTo(nil)
+			codeEq(t, "DataTo on a missing doc", codes.NotFound, err)
+		} else {
+			var got getAll
+			if err := ds.DataTo(&got); err != nil {
+				t.Fatal(err)
+			}
+			want := getAll{N: i}
+			if got != want {
+				t.Errorf("%d: got %+v, want %+v", i, got, want)
+			}
 		}
 		if ds.ReadTime.IsZero() {
 			t.Errorf("%d: got zero read time", i)

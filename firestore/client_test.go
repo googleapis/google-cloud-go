@@ -156,12 +156,9 @@ func testGetAll(t *testing.T, c *Client, srv *mockServer, dbPath string, getAll 
 		t.Errorf("got %d docs, wanted %d", got, want)
 	}
 	for i, got := range docs {
-		var want *DocumentSnapshot
-		if wantPBDocs[i] != nil {
-			want, err = newDocumentSnapshot(docRefs[i], wantPBDocs[i], c, wantReadTimes[i])
-			if err != nil {
-				t.Fatal(err)
-			}
+		want, err := newDocumentSnapshot(docRefs[i], wantPBDocs[i], c, wantReadTimes[i])
+		if err != nil {
+			t.Fatal(err)
 		}
 		if diff := testDiff(got, want); diff != "" {
 			t.Errorf("#%d: got=--, want==++\n%s", i, diff)
