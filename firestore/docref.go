@@ -562,19 +562,19 @@ func iterFetch(pageSize int, pageToken string, pi *iterator.PageInfo, next func(
 
 // Snapshots returns an iterator over snapshots of the document. Each time the document
 // changes or is added or deleted, a new snapshot will be generated.
-func (d *DocumentRef) Snapshots(ctx context.Context) *SnapshotIterator {
-	return &SnapshotIterator{
+func (d *DocumentRef) Snapshots(ctx context.Context) *DocumentSnapshotIterator {
+	return &DocumentSnapshotIterator{
 		docref: d,
 		ws:     newWatchStreamForDocument(ctx, d),
 	}
 }
 
-// SnapshotIterator is an iterator over snapshots of a document.
+// DocumentSnapshotIterator is an iterator over snapshots of a document.
 // Call Next on the iterator to get a snapshot of the document each time it changes.
 // Call Stop on the iterator when done.
 //
 // For an example, see DocumentRef.Snapshots.
-type SnapshotIterator struct {
+type DocumentSnapshotIterator struct {
 	docref *DocumentRef
 	ws     *watchStream
 }
@@ -584,7 +584,7 @@ type SnapshotIterator struct {
 // returns a DocumentSnapshot whose Exists method returns false.
 //
 // Next never returns iterator.Done unless it is called after Stop.
-func (it *SnapshotIterator) Next() (*DocumentSnapshot, error) {
+func (it *DocumentSnapshotIterator) Next() (*DocumentSnapshot, error) {
 	btree, readTime, err := it.ws.nextSnapshot()
 	if err != nil {
 		if err == io.EOF {
@@ -603,6 +603,6 @@ func (it *SnapshotIterator) Next() (*DocumentSnapshot, error) {
 // Stop stops receiving snapshots.
 // You should always call Stop when you are done with an iterator, to free up resources.
 // It is not safe to call Stop concurrently with Next.
-func (it *SnapshotIterator) Stop() {
+func (it *DocumentSnapshotIterator) Stop() {
 	it.ws.stop()
 }
