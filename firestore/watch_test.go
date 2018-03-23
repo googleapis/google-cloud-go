@@ -153,9 +153,18 @@ func mapDocs(m map[string]*DocumentSnapshot, less func(a, b interface{}) bool) [
 	for _, d := range m {
 		ds = append(ds, d)
 	}
-	sort.Slice(ds, func(i, j int) bool { return less(ds[i], ds[j]) })
+	sort.Sort(byLessFunc{ds, less})
 	return ds
 }
+
+type byLessFunc struct {
+	s    []*DocumentSnapshot
+	less func(a, b interface{}) bool
+}
+
+func (b byLessFunc) Len() int           { return len(b.s) }
+func (b byLessFunc) Swap(i, j int)      { b.s[i], b.s[j] = b.s[j], b.s[i] }
+func (b byLessFunc) Less(i, j int) bool { return b.less(b.s[i], b.s[j]) }
 
 func TestWatchStream(t *testing.T) {
 	// Preliminary, very basic tests. Will expand and turn into cross-language tests
