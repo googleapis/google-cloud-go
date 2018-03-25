@@ -94,7 +94,7 @@ func (t *Table) ExtractorTo(dst *GCSReference) *Extractor {
 }
 
 // Run initiates an extract job.
-func (e *Extractor) Run(ctx context.Context) (_ *Job, err error) {
+func (e *Extractor) Run(ctx context.Context) (j *Job, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Extractor.Run")
 	defer func() { trace.EndSpan(ctx, err) }()
 

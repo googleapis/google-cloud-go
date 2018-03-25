@@ -158,7 +158,7 @@ func (d *Dataset) Delete(ctx context.Context) (err error) {
 }
 
 // Metadata fetches the metadata for the dataset.
-func (d *Dataset) Metadata(ctx context.Context) (_ *DatasetMetadata, err error) {
+func (d *Dataset) Metadata(ctx context.Context) (md *DatasetMetadata, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Dataset.Metadata")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -200,7 +200,7 @@ func bqToDatasetMetadata(d *bq.Dataset) (*DatasetMetadata, error) {
 // To perform a read-modify-write that protects against intervening reads,
 // set the etag argument to the DatasetMetadata.ETag field from the read.
 // Pass the empty string for etag for a "blind write" that will always succeed.
-func (d *Dataset) Update(ctx context.Context, dm DatasetMetadataToUpdate, etag string) (_ *DatasetMetadata, err error) {
+func (d *Dataset) Update(ctx context.Context, dm DatasetMetadataToUpdate, etag string) (md *DatasetMetadata, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Dataset.Update")
 	defer func() { trace.EndSpan(ctx, err) }()
 

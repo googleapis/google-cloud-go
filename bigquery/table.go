@@ -327,7 +327,7 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 }
 
 // Metadata fetches the metadata for the table.
-func (t *Table) Metadata(ctx context.Context) (_ *TableMetadata, err error) {
+func (t *Table) Metadata(ctx context.Context) (md *TableMetadata, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Table.Metadata")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -404,7 +404,7 @@ func (t *Table) read(ctx context.Context, pf pageFetcher) *RowIterator {
 }
 
 // Update modifies specific Table metadata fields.
-func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag string) (_ *TableMetadata, err error) {
+func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag string) (md *TableMetadata, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Table.Update")
 	defer func() { trace.EndSpan(ctx, err) }()
 

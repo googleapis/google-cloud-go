@@ -124,7 +124,7 @@ func (t *Table) LoaderFrom(src LoadSource) *Loader {
 }
 
 // Run initiates a load job.
-func (l *Loader) Run(ctx context.Context) (_ *Job, err error) {
+func (l *Loader) Run(ctx context.Context) (j *Job, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Load.Run")
 	defer func() { trace.EndSpan(ctx, err) }()
 
