@@ -55,7 +55,7 @@ func (c *Client) JobFromID(ctx context.Context, id string) (*Job, error) {
 // JobFromIDLocation creates a Job which refers to an existing BigQuery job. The job
 // need not have been created by this package (for example, it may have
 // been created in the BigQuery console), but it must exist in the specified location.
-func (c *Client) JobFromIDLocation(ctx context.Context, id, location string) (_ *Job, err error) {
+func (c *Client) JobFromIDLocation(ctx context.Context, id, location string) (j *Job, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.JobFromIDLocation")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -201,7 +201,7 @@ func (s *JobStatus) Err() error {
 }
 
 // Status retrieves the current status of the job from BigQuery. It fails if the Status could not be determined.
-func (j *Job) Status(ctx context.Context) (_ *JobStatus, err error) {
+func (j *Job) Status(ctx context.Context) (js *JobStatus, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Job.Status")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -248,7 +248,7 @@ func (j *Job) Cancel(ctx context.Context) error {
 // If an error occurs while retrieving the status, Wait returns that error. But
 // Wait returns nil if the status was retrieved successfully, even if
 // status.Err() != nil. So callers must check both errors. See the example.
-func (j *Job) Wait(ctx context.Context) (_ *JobStatus, err error) {
+func (j *Job) Wait(ctx context.Context) (js *JobStatus, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Job.Wait")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -265,7 +265,6 @@ func (j *Job) Wait(ctx context.Context) (_ *JobStatus, err error) {
 		return js, nil
 	}
 	// Non-query jobs must poll.
-	var js *JobStatus
 	err = internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
 		js, err = j.Status(ctx)
 		if err != nil {
@@ -284,7 +283,7 @@ func (j *Job) Wait(ctx context.Context) (_ *JobStatus, err error) {
 
 // Read fetches the results of a query job.
 // If j is not a query job, Read returns an error.
-func (j *Job) Read(ctx context.Context) (_ *RowIterator, err error) {
+func (j *Job) Read(ctx context.Context) (ri *RowIterator, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Job.Read")
 	defer func() { trace.EndSpan(ctx, err) }()
 

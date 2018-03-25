@@ -112,7 +112,7 @@ func NewClient(ctx context.Context, database string, opts ...option.ClientOption
 
 // NewClientWithConfig creates a client to a database. A valid database name has the
 // form projects/PROJECT_ID/instances/INSTANCE_ID/databases/DATABASE_ID.
-func NewClientWithConfig(ctx context.Context, database string, config ClientConfig, opts ...option.ClientOption) (_ *Client, err error) {
+func NewClientWithConfig(ctx context.Context, database string, config ClientConfig, opts ...option.ClientOption) (c *Client, err error) {
 	ctx = traceStartSpan(ctx, "cloud.google.com/go/spanner.NewClient")
 	defer func() { traceEndSpan(ctx, err) }()
 
@@ -120,7 +120,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	if err := validDatabaseName(database); err != nil {
 		return nil, err
 	}
-	c := &Client{
+	c = &Client{
 		database: database,
 		md: metadata.Pairs(
 			resourcePrefixHeader, database,
