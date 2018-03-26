@@ -707,6 +707,9 @@ type QuerySnapshotIterator struct {
 	// The number of results in the most recent snapshot.
 	Size int
 
+	// The changes since the previous snapshot.
+	Changes []DocumentChange
+
 	ws  *watchStream
 	err error
 }
@@ -719,7 +722,7 @@ func (it *QuerySnapshotIterator) Next() (*DocumentIterator, error) {
 	if it.err != nil {
 		return nil, it.err
 	}
-	btree, readTime, err := it.ws.nextSnapshot()
+	btree, changes, readTime, err := it.ws.nextSnapshot()
 	if err != nil {
 		if err == io.EOF {
 			err = iterator.Done
@@ -727,6 +730,7 @@ func (it *QuerySnapshotIterator) Next() (*DocumentIterator, error) {
 		it.err = err
 		return nil, it.err
 	}
+	it.Changes = changes
 	it.ReadTime = readTime
 	it.Size = btree.Len()
 	return &DocumentIterator{
