@@ -27,6 +27,8 @@ import (
 
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
@@ -963,7 +965,7 @@ func TestIntegration_WatchQuery(t *testing.T) {
 	it := q.Snapshots(ctx)
 	defer it.Stop()
 
-	next := func() []*DocumentSnapshot {
+	next := func() ([]*DocumentSnapshot, []DocumentChange) {
 		diter, err := it.Next()
 		if err != nil {
 			t.Fatal(err)
@@ -978,27 +980,27 @@ func TestIntegration_WatchQuery(t *testing.T) {
 		if it.Size != len(ds) {
 			t.Fatalf("Size=%d but we have %d docs", it.Size, len(ds))
 		}
-		return ds
+		return ds, it.Changes
 	}
 
-	check := func(msg string, gotd []*DocumentSnapshot, wantd ...imap) {
-		if got, want := len(gotd), len(wantd); got != want {
-			t.Errorf("%s: got %d docs, want %d", msg, got, want)
-			return
+	copts := append([]cmp.Option{cmpopts.IgnoreFields(DocumentSnapshot{}, "ReadTime")}, cmpOpts...)
+	check := func(msg string, wantd []*DocumentSnapshot, wantc []DocumentChange) {
+		gotd, gotc := next()
+		if diff := testutil.Diff(gotd, wantd, copts...); diff != "" {
+			t.Errorf("%s: %s", msg, diff)
 		}
-		for i, d := range gotd {
-			if got, want := imap(d.Data()), wantd[i]; !testEqual(got, want) {
-				t.Errorf("%s, #%d: got %v, want %v", msg, i, got, want)
-			}
+		if diff := testutil.Diff(gotc, wantc, copts...); diff != "" {
+			t.Errorf("%s: %s", msg, diff)
 		}
 	}
 
-	check("initial", next())
-
+	check("initial", nil, nil)
 	doc1 := coll.NewDoc()
-	want := imap{"e": int64(2), "b": "two"}
-	mustCreate("qwatch 1", t, doc1, want)
-	check("one", next(), want)
+	mustCreate("qwatch 1", t, doc1, imap{"e": int64(2), "b": "two"})
+	wds := mustGet("qwatch 1", t, doc1)
+	check("one",
+		[]*DocumentSnapshot{wds},
+		[]DocumentChange{{Kind: DocumentAdded, Doc: wds, OldIndex: -1, NewIndex: 0}})
 
 	// Add a doc that does not match. We won't see a snapshot  for this.
 	doc2 := coll.NewDoc()
@@ -1009,15 +1011,17 @@ func TestIntegration_WatchQuery(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want["e"] = int64(3)
-	check("update", next(), want)
+	wds = mustGet("qw update", t, doc1)
+	check("update",
+		[]*DocumentSnapshot{wds},
+		[]DocumentChange{{Kind: DocumentModified, Doc: wds, OldIndex: 0, NewIndex: 0}})
 
 	// Now update doc so that it is not in the query. We should see a snapshot with no docs.
 	_, err = doc1.Update(ctx, []Update{{Path: "e", Value: int64(0)}})
 	if err != nil {
 		t.Fatal(err)
 	}
-	check("update2", next())
+	check("update2", nil, []DocumentChange{{Kind: DocumentRemoved, Doc: wds, OldIndex: 0, NewIndex: -1}})
 
 	// Add two docs out of order. We should see them in order.
 	doc3 := coll.NewDoc()
@@ -1026,14 +1030,19 @@ func TestIntegration_WatchQuery(t *testing.T) {
 	want4 := imap{"e": int64(4)}
 	mustCreate("qwatch 3", t, doc3, want3)
 	mustCreate("qwatch 4", t, doc4, want4)
-	next() // first snapshot has just the first doc; throw it away
-	check("two", next(), want4, want3)
-
+	wds4 := mustGet("qw4", t, doc4)
+	wds3 := mustGet("qw3", t, doc3)
+	check("two#1", []*DocumentSnapshot{wds3}, []DocumentChange{{Kind: DocumentAdded, Doc: wds3, OldIndex: -1, NewIndex: 0}})
+	check("two#2",
+		[]*DocumentSnapshot{wds4, wds3},
+		[]DocumentChange{
+			{Kind: DocumentAdded, Doc: wds4, OldIndex: -1, NewIndex: 0},
+		})
 	// Delete a doc.
 	if _, err := doc4.Delete(ctx); err != nil {
 		t.Fatal(err)
 	}
-	check("after del", next(), want3)
+	check("after del", []*DocumentSnapshot{wds3}, []DocumentChange{{Kind: DocumentRemoved, Doc: wds4, OldIndex: 0, NewIndex: -1}})
 }
 
 func codeEq(t *testing.T, msg string, code codes.Code, err error) {
