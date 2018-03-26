@@ -1045,6 +1045,25 @@ func TestIntegration_WatchQuery(t *testing.T) {
 	check("after del", []*DocumentSnapshot{wds3}, []DocumentChange{{Kind: DocumentRemoved, Doc: wds4, OldIndex: 0, NewIndex: -1}})
 }
 
+func TestIntegration_WatchQueryCancel(t *testing.T) {
+	ctx := context.Background()
+	coll := integrationColl(t)
+
+	q := coll.Where("e", ">", 1).OrderBy("e", Asc)
+	ctx, cancel := context.WithCancel(ctx)
+	it := q.Snapshots(ctx)
+	defer it.Stop()
+
+	// First call opens the stream.
+	_, err := it.Next()
+	if err != nil {
+		t.Fatal(err)
+	}
+	cancel()
+	_, err = it.Next()
+	codeEq(t, "after cancel", codes.Canceled, err)
+}
+
 func codeEq(t *testing.T, msg string, code codes.Code, err error) {
 	if grpc.Code(err) != code {
 		t.Fatalf("%s:\ngot <%v>\nwant code %s", msg, err, code)
