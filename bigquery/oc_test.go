@@ -19,7 +19,7 @@ package bigquery
 import (
 	"testing"
 
-	"go.opencensus.io/trace"
+	"cloud.google.com/go/internal/testutil"
 	"golang.org/x/net/context"
 )
 
@@ -28,10 +28,8 @@ func TestOCTracing(t *testing.T) {
 		t.Skip("Integration tests skipped in short mode")
 	}
 
-	te := &testExporter{}
-	trace.RegisterExporter(te)
-	defer trace.UnregisterExporter(te)
-	trace.SetDefaultSampler(trace.AlwaysSample())
+	te := testutil.NewTestExporter()
+	defer te.Unregister()
 
 	ctx := context.Background()
 	client, err := NewClient(ctx, "client-project-id")
@@ -43,16 +41,7 @@ func TestOCTracing(t *testing.T) {
 	q := client.Query("select *")
 	q.Run(ctx) // Doesn't matter if we get an error; span should be created either way
 
-	if len(te.spans) != 1 {
-		t.Fatalf("Expected 1 span to be created, but got %d", len(te.spans))
+	if len(te.Spans) != 1 {
+		t.Fatalf("Expected 1 span to be created, but got %d", len(te.Spans))
 	}
-}
-
-// TODO(deklerk): move to internal/
-type testExporter struct {
-	spans []*trace.SpanData
-}
-
-func (te *testExporter) ExportSpan(s *trace.SpanData) {
-	te.spans = append(te.spans, s)
 }
