@@ -19,7 +19,7 @@ package datastore
 import (
 	"testing"
 
-	"go.opencensus.io/trace"
+	"cloud.google.com/go/internal/testutil"
 	"golang.org/x/net/context"
 )
 
@@ -28,10 +28,8 @@ func TestOCTracing(t *testing.T) {
 		t.Skip("Integration tests skipped in short mode")
 	}
 
-	te := &testExporter{}
-	trace.RegisterExporter(te)
-	defer trace.UnregisterExporter(te)
-	trace.SetDefaultSampler(trace.AlwaysSample())
+	te := testutil.NewTestExporter()
+	defer te.Unregister()
 
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
@@ -45,16 +43,7 @@ func TestOCTracing(t *testing.T) {
 		t.Fatalf("client.Put: %v", err)
 	}
 
-	if len(te.spans) == 0 {
+	if len(te.Spans) == 0 {
 		t.Fatalf("Expected some span to be created, but got %d", 0)
 	}
-}
-
-// TODO(deklerk): move to internal/
-type testExporter struct {
-	spans []*trace.SpanData
-}
-
-func (te *testExporter) ExportSpan(s *trace.SpanData) {
-	te.spans = append(te.spans, s)
 }
