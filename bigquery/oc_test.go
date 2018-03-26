@@ -24,19 +24,12 @@ import (
 )
 
 func TestOCTracing(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Integration tests skipped in short mode")
-	}
+	ctx := context.Background()
+	client := getClient(t)
+	defer client.Close()
 
 	te := testutil.NewTestExporter()
 	defer te.Unregister()
-
-	ctx := context.Background()
-	client, err := NewClient(ctx, "client-project-id")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer client.Close()
 
 	q := client.Query("select *")
 	q.Run(ctx) // Doesn't matter if we get an error; span should be created either way
