@@ -24,16 +24,12 @@ import (
 )
 
 func TestIntegration_OCTracing(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Integration tests skipped in short mode")
-	}
-
-	te := testutil.NewTestExporter()
-	defer te.Unregister()
-
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
+
+	te := testutil.NewTestExporter()
+	defer te.Unregister()
 
 	bkt := client.Bucket(bucketName)
 	bkt.Attrs(ctx)
