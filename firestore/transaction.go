@@ -173,7 +173,7 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 		}
 		// Use exponential backoff to avoid contention with other running
 		// transactions.
-		if cerr := gax.Sleep(ctx, backoff.Pause()); cerr != nil {
+		if cerr := sleep(ctx, backoff.Pause()); cerr != nil {
 			err = cerr
 			break
 		}

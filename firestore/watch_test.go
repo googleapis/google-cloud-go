@@ -274,3 +274,70 @@ func TestWatchStream(t *testing.T) {
 		}
 	}
 }
+
+func TestWatchCancel(t *testing.T) {
+	// Canceling the context of a watch should result in a codes.Canceled error from the next
+	// call to the iterator's Next method.
+	ctx := context.Background()
+	c, srv := newMock(t)
+	q := Query{c: c, collectionID: "x"}
+
+	// Cancel before open.
+	ctx2, cancel := context.WithCancel(ctx)
+	ws, err := newWatchStreamForQuery(ctx2, q)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cancel()
+	_, _, _, err = ws.nextSnapshot()
+	codeEq(t, "cancel before open", codes.Canceled, err)
+
+	request := &pb.ListenRequest{
+		Database:     "projects/projectID/databases/(default)",
+		TargetChange: &pb.ListenRequest_AddTarget{ws.target},
+	}
+	current := &pb.ListenResponse{ResponseType: &pb.ListenResponse_TargetChange{&pb.TargetChange{
+		TargetChangeType: pb.TargetChange_CURRENT,
+	}}}
+	noChange := &pb.ListenResponse{ResponseType: &pb.ListenResponse_TargetChange{&pb.TargetChange{
+		TargetChangeType: pb.TargetChange_NO_CHANGE,
+		ReadTime:         aTimestamp,
+	}}}
+
+	// Cancel from gax.Sleep. We should still see a gRPC error with codes.Canceled, not a
+	// context.Canceled error.
+	ctx2, cancel = context.WithCancel(ctx)
+	ws, err = newWatchStreamForQuery(ctx2, q)
+	if err != nil {
+		t.Fatal(err)
+	}
+	srv.addRPC(request, []interface{}{current, noChange})
+	_, _, _, _ = ws.nextSnapshot()
+	cancel()
+	// Because of how the mock works, the following results in an EOF on the stream, which
+	// is a non-permanent error that causes a retry. That retry ends up in gax.Sleep, which
+	// finds that the context is done and returns ctx.Err(), which is context.Canceled.
+	// Verify that we transform that context.Canceled into a gRPC Status with code Canceled.
+	_, _, _, err = ws.nextSnapshot()
+	codeEq(t, "cancel from gax.Sleep", codes.Canceled, err)
+
+	// Cancel from an RPC.
+	ctx2, cancel = context.WithCancel(ctx)
+	ws, err = newWatchStreamForQuery(ctx2, q)
+	if err != nil {
+		t.Fatal(err)
+	}
+	srv.addRPC(request, []interface{}{current, noChange,
+		&pb.ListenResponse{ResponseType: &pb.ListenResponse_DocumentChange{&pb.DocumentChange{
+			Document:  nil,
+			TargetIds: []int32{watchTargetID},
+		}}},
+	})
+	// Call nextSnapshot once to open the stream.
+	_, _, _, _ = ws.nextSnapshot()
+	cancel()
+	// This call to nextSnapshot will call Recv on the stream with a canceled context,
+	// so the error will come from gRPC.
+	_, _, _, err = ws.nextSnapshot()
+	codeEq(t, "cancel from Recv", codes.Canceled, err)
+}

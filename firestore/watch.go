@@ -478,7 +478,7 @@ func (s *watchStream) recv() (*pb.ListenResponse, error) {
 		if status.Code(err) == codes.ResourceExhausted {
 			dur = s.backoff.Max
 		}
-		if err := gax.Sleep(s.ctx, dur); err != nil {
+		if err := sleep(s.ctx, dur); err != nil {
 			return nil, err
 		}
 		s.lc = nil
@@ -506,7 +506,7 @@ func isPermanentWatchError(err error) bool {
 		return false
 	}
 	switch status.Code(err) {
-	case codes.Canceled, codes.Unknown, codes.DeadlineExceeded, codes.ResourceExhausted,
+	case codes.Unknown, codes.DeadlineExceeded, codes.ResourceExhausted,
 		codes.Internal, codes.Unavailable, codes.Unauthenticated:
 		return false
 	default:

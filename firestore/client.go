@@ -29,9 +29,12 @@ import (
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 
 	"github.com/golang/protobuf/ptypes"
+	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 // resourcePrefixHeader is the name of the metadata header used to indicate
@@ -266,4 +269,15 @@ func writeResultFromProto(wr *pb.WriteResult) (*WriteResult, error) {
 		// TODO(jba): Follow up if Delete is supposed to return a nil timestamp.
 	}
 	return &WriteResult{UpdateTime: t}, nil
+}
+
+func sleep(ctx context.Context, dur time.Duration) error {
+	switch err := gax.Sleep(ctx, dur); err {
+	case context.Canceled:
+		return status.Error(codes.Canceled, "context canceled")
+	case context.DeadlineExceeded:
+		return status.Error(codes.DeadlineExceeded, "context deadline exceeded")
+	default:
+		return err
+	}
 }
