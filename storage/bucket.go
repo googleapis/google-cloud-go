@@ -515,6 +515,8 @@ type BucketAttrsToUpdate struct {
 	// is provided, the value is ignored in the update.
 	CORS []CORS
 
+	Lifecycle Lifecycle
+
 	setLabels    map[string]string
 	deleteLabels map[string]bool
 }
@@ -575,6 +577,7 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 			rb.NullFields = append(rb.NullFields, "Labels."+l)
 		}
 	}
+	rb.Lifecycle = toRawLifecycle(ua.Lifecycle)
 	return rb
 }
 
