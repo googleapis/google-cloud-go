@@ -144,16 +144,6 @@ func TestQueryToProto(t *testing.T) {
 			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, ">", 5)},
 		},
 		{
-			desc: `q.Where("a", "==", nil)`,
-			in:   q.Where("a", "==", nil),
-			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "==", nil)},
-		},
-		{
-			desc: `q.Where("a", "==", NaN)`,
-			in:   q.Where("a", "==", math.NaN()),
-			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "==", math.NaN())},
-		},
-		{
 			desc: `q.Where("a", "==", NaN)`,
 			in:   q.Where("a", "==", float32(math.NaN())),
 			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "==", math.NaN())},

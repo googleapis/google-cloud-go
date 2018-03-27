@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"path"
 	"path/filepath"
 	"strings"
@@ -211,6 +212,8 @@ func convertTestValue(v interface{}) interface{} {
 			return ServerTimestamp
 		case "Delete":
 			return Delete
+		case "NaN":
+			return math.NaN()
 		default:
 			return v
 		}
