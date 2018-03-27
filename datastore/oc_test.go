@@ -24,16 +24,12 @@ import (
 )
 
 func TestOCTracing(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Integration tests skipped in short mode")
-	}
-
-	te := testutil.NewTestExporter()
-	defer te.Unregister()
-
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
+
+	te := testutil.NewTestExporter()
+	defer te.Unregister()
 
 	type SomeValue struct {
 		S string
