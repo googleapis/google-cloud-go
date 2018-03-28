@@ -1052,11 +1052,11 @@ func codeEq(t *testing.T, msg string, code codes.Code, err error) {
 }
 
 func loc() string {
-	pc := make([]uintptr, 1)
-	runtime.Callers(3, pc) // our caller's caller
-	fs := runtime.CallersFrames(pc)
-	f, _ := fs.Next()
-	return fmt.Sprintf("%s:%d", filepath.Base(f.File), f.Line)
+	_, file, line, ok := runtime.Caller(2)
+	if !ok {
+		return "???"
+	}
+	return fmt.Sprintf("%s:%d", filepath.Base(file), line)
 }
 
 func copyMap(m map[string]interface{}) map[string]interface{} {
