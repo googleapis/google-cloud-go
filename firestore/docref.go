@@ -182,6 +182,10 @@ func (d *DocumentRef) newSetWrites(data interface{}, opts []SetOption) ([]*pb.Wr
 		if v.Kind() != reflect.Map {
 			return nil, errors.New("firestore: MergeAll can only be specified with map data")
 		}
+		if v.Len() == 0 {
+			// Special case: MergeAll with an empty map.
+			return d.newUpdateWithTransform(&pb.Document{Name: d.Path}, []FieldPath{}, nil, nil, true), nil
+		}
 		fpvsFromData(v, nil, &fpvs)
 	} else {
 		// Set with merge paths.  Collect only the values at the given paths.
@@ -218,6 +222,10 @@ func fpvsFromData(v reflect.Value, prefix FieldPath, fpvs *[]fpv) {
 // removePathsIf creates a new slice of FieldPaths that contains
 // exactly those elements of fps for which pred returns false.
 func removePathsIf(fps []FieldPath, pred func(FieldPath) bool) []FieldPath {
+	// Return fps if it's empty to preserve the distinction betweeen nil and zero-length.
+	if len(fps) == 0 {
+		return fps
+	}
 	var result []FieldPath
 	for _, fp := range fps {
 		if !pred(fp) {
@@ -344,7 +352,7 @@ func (d *DocumentRef) newUpdateWithTransform(doc *pb.Document, updatePaths []Fie
 	if updateOnEmpty || len(doc.Fields) > 0 ||
 		len(updatePaths) > 0 || (pc != nil && len(serverTimestampPaths) == 0) {
 		var mask *pb.DocumentMask
-		if len(updatePaths) > 0 {
+		if updatePaths != nil {
 			sfps := toServiceFieldPaths(updatePaths)
 			sort.Strings(sfps) // TODO(jba): make tests pass without this
 			mask = &pb.DocumentMask{FieldPaths: sfps}
