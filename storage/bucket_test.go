@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/storage"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/googleapi"
@@ -43,6 +44,15 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		MetaGeneration: 39,
 		Created:        time.Now(),
 		Labels:         map[string]string{"label": "value"},
+		Lifecycle: Lifecycle{Rules: []storage.LifecycleRule{storage.LifecycleRule{
+			Action: storage.LifecycleAction{
+				Type: "Delete",
+			},
+			Condition: storage.LifecycleCondition{
+				AgeInDays: 30,
+				//ToDO -- add more fields
+			},
+		}}},
 		CORS: []CORS{
 			{
 				MaxAge:          time.Hour,
@@ -68,6 +78,11 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		},
 		Versioning: nil, // ignore VersioningEnabled if false
 		Labels:     map[string]string{"label": "value"},
+		Lifecycle: &raw.BucketLifecycle{
+			Rule: []&raw.BucketLifecycleRule{
+				&raw.BucketLifecycleRule{ Action: &raw.BucketLifecycleRuleAction{ Type: "Delete" }, Condition: &raw.BucketLifecycleRuleCondition{ Age: 30 } }
+			}
+		}
 		Cors: []*raw.BucketCors{
 			{
 				MaxAgeSeconds:  3600,
