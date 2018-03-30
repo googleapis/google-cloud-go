@@ -403,7 +403,7 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		VersioningEnabled: b.Versioning != nil && b.Versioning.Enabled,
 		Labels:            b.Labels,
 		RequesterPays:     b.Billing != nil && b.Billing.RequesterPays,
-		Lifecycle:         toLifecycle(b.Lifecycle),
+		Lifecycle:         toLifecycle(&b.Lifecycle),
 		RetentionPolicy:   rp,
 		CORS:              toCORS(b.Cors),
 	}
@@ -467,7 +467,7 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		Versioning:       v,
 		Labels:           labels,
 		Billing:          bb,
-		Lifecycle:        toRawLifecycle(b.Lifecycle),
+		Lifecycle:        toRawLifecycle(&b.Lifecycle),
 		RetentionPolicy:  b.RetentionPolicy.toRawRetentionPolicy(),
 		Cors:             toRawCORS(b.CORS),
 	}
@@ -515,7 +515,7 @@ type BucketAttrsToUpdate struct {
 	// is provided, the value is ignored in the update.
 	CORS []CORS
 
-	Lifecycle Lifecycle
+	Lifecycle *Lifecycle
 
 	setLabels    map[string]string
 	deleteLabels map[string]bool
@@ -721,7 +721,10 @@ func toCORS(rc []*raw.BucketCors) []CORS {
 	return out
 }
 
-func toRawLifecycle(l Lifecycle) *raw.BucketLifecycle {
+func toRawLifecycle(l *Lifecycle) *raw.BucketLifecycle {
+	if l == nil {
+		return nil
+	}
 	var rl raw.BucketLifecycle
 	if len(l.Rules) == 0 {
 		return nil
