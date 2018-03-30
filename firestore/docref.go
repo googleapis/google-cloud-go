@@ -588,7 +588,7 @@ type DocumentSnapshotIterator struct {
 //
 // Next never returns iterator.Done unless it is called after Stop.
 func (it *DocumentSnapshotIterator) Next() (*DocumentSnapshot, error) {
-	btree, readTime, err := it.ws.nextSnapshot()
+	btree, _, readTime, err := it.ws.nextSnapshot()
 	if err != nil {
 		if err == io.EOF {
 			err = iterator.Done

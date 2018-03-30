@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"sort"
 	"time"
 
 	"cloud.google.com/go/internal/btree"
@@ -33,6 +34,28 @@ import (
 // LogWatchStreams controls whether watch stream status changes are logged.
 // This feature is EXPERIMENTAL and may disappear at any time.
 var LogWatchStreams bool = false
+
+// DocumentChangeKind describes the kind of change to a document between
+// query snapshots.
+type DocumentChangeKind int
+
+const (
+	DocumentAdded DocumentChangeKind = iota
+	DocumentRemoved
+	DocumentModified
+)
+
+// A DocumentChange describes the change to a document from one query snapshot to the next.
+type DocumentChange struct {
+	Kind DocumentChangeKind
+	Doc  *DocumentSnapshot
+	// The zero-based index of the document in the sequence of query results prior to this change,
+	// or -1 if the document was not present.
+	OldIndex int
+	// The zero-based index of the document in the sequence of query results after this change,
+	// or -1 if the document is no longer present.
+	NewIndex int
+}
 
 // Implementation of realtime updates (a.k.a. watch).
 // This code is closely based on the Node.js implementation,
@@ -52,13 +75,14 @@ var defaultBackoff = gax.Backoff{
 type watchStream struct {
 	ctx         context.Context
 	c           *Client
-	lc          pb.Firestore_ListenClient // the gRPC stream
-	target      *pb.Target                // document or query being watched
-	backoff     gax.Backoff               // for stream retries
-	err         error                     // sticky permanent error
-	readTime    time.Time                 // time of most recent snapshot
-	current     bool                      // saw CURRENT, but not RESET; precondition for a snapshot
-	hasReturned bool                      // have we returned a snapshot yet?
+	lc          pb.Firestore_ListenClient                 // the gRPC stream
+	target      *pb.Target                                // document or query being watched
+	backoff     gax.Backoff                               // for stream retries
+	err         error                                     // sticky permanent error
+	readTime    time.Time                                 // time of most recent snapshot
+	current     bool                                      // saw CURRENT, but not RESET; precondition for a snapshot
+	hasReturned bool                                      // have we returned a snapshot yet?
+	compare     func(a, b *DocumentSnapshot) (int, error) // compare documents according to query
 
 	// An ordered tree where DocumentSnapshots are the keys.
 	docTree *btree.BTree
@@ -69,18 +93,15 @@ type watchStream struct {
 	changeMap map[string]*DocumentSnapshot
 }
 
-const btreeDegree = 4
-
 func newWatchStreamForDocument(ctx context.Context, dr *DocumentRef) *watchStream {
-	w := newWatchStream(ctx, dr.Parent.c, &pb.Target{
+	// A single document is always equal to itself.
+	compare := func(_, _ *DocumentSnapshot) (int, error) { return 0, nil }
+	return newWatchStream(ctx, dr.Parent.c, compare, &pb.Target{
 		TargetType: &pb.Target_Documents{
 			Documents: &pb.Target_DocumentsTarget{[]string{dr.Path}},
 		},
 		TargetId: watchTargetID,
 	})
-	// Always called with the same document, so the less function always returns false.
-	w.docTree = btree.New(btreeDegree, func(_, _ interface{}) bool { return false })
-	return w
 }
 
 func newWatchStreamForQuery(ctx context.Context, q Query) (*watchStream, error) {
@@ -97,44 +118,55 @@ func newWatchStreamForQuery(ctx context.Context, q Query) (*watchStream, error) 
 		},
 		TargetId: watchTargetID,
 	}
-	w := newWatchStream(ctx, q.c, target)
-	compare := q.compareFunc()
-	w.docTree = btree.New(btreeDegree, func(a, b interface{}) bool {
-		c, err := compare(a.(*DocumentSnapshot), b.(*DocumentSnapshot))
-		if err != nil {
-			w.err = err
-			return false
-		}
-		return c < 0
-	})
-	return w, nil
+	return newWatchStream(ctx, q.c, q.compareFunc(), target), nil
 }
 
-func newWatchStream(ctx context.Context, c *Client, target *pb.Target) *watchStream {
-	return &watchStream{
+const btreeDegree = 4
+
+func newWatchStream(ctx context.Context, c *Client, compare func(_, _ *DocumentSnapshot) (int, error), target *pb.Target) *watchStream {
+	w := &watchStream{
 		ctx:       ctx,
 		c:         c,
+		compare:   compare,
 		target:    target,
 		backoff:   defaultBackoff,
 		docMap:    map[string]*DocumentSnapshot{},
 		changeMap: map[string]*DocumentSnapshot{},
 	}
+	w.docTree = btree.New(btreeDegree, func(a, b interface{}) bool {
+		return w.less(a.(*DocumentSnapshot), b.(*DocumentSnapshot))
+	})
+	return w
+}
+
+func (s *watchStream) less(a, b *DocumentSnapshot) bool {
+	c, err := s.compare(a, b)
+	if err != nil {
+		s.err = err
+		return false
+	}
+	return c < 0
 }
 
 // Once nextSnapshot returns an error, it will always return the same error.
-func (s *watchStream) nextSnapshot() (*btree.BTree, time.Time, error) {
+func (s *watchStream) nextSnapshot() (*btree.BTree, []DocumentChange, time.Time, error) {
 	if s.err != nil {
-		return nil, time.Time{}, s.err
+		return nil, nil, time.Time{}, s.err
 	}
+	var changes []DocumentChange
 	for {
 		// Process messages until we are in a consistent state.
 		for !s.handleNextMessage() {
 		}
 		if s.err != nil {
 			_ = s.close() // ignore error
-			return nil, time.Time{}, s.err
+			return nil, nil, time.Time{}, s.err
 		}
-		newDocTree := computeSnapshot(s.docTree, s.docMap, s.changeMap, s.readTime)
+		var newDocTree *btree.BTree
+		newDocTree, changes = s.computeSnapshot(s.docTree, s.docMap, s.changeMap, s.readTime)
+		if s.err != nil {
+			return nil, nil, time.Time{}, s.err
+		}
 		// Only return a snapshot if something has changed, or this is the first snapshot.
 		if !s.hasReturned || newDocTree != s.docTree {
 			s.docTree = newDocTree
@@ -143,7 +175,7 @@ func (s *watchStream) nextSnapshot() (*btree.BTree, time.Time, error) {
 	}
 	s.changeMap = map[string]*DocumentSnapshot{}
 	s.hasReturned = true
-	return s.docTree, s.readTime, nil
+	return s.docTree, changes, s.readTime, nil
 }
 
 // Read a message from the stream and handle it. Return true when
@@ -304,45 +336,88 @@ func assert(b bool) {
 // Applies the mutations in changeMap to both the document tree and the
 // document lookup map. Modifies docMap in place and returns a new docTree.
 // If there were no changes, returns docTree unmodified.
-func computeSnapshot(docTree *btree.BTree, docMap, changeMap map[string]*DocumentSnapshot, readTime time.Time) *btree.BTree {
+func (s *watchStream) computeSnapshot(docTree *btree.BTree, docMap, changeMap map[string]*DocumentSnapshot, readTime time.Time) (*btree.BTree, []DocumentChange) {
+	var changes []DocumentChange
 	updatedTree := docTree
 	assert(docTree.Len() == len(docMap))
-	// TODO(jba): also return the ordered set of changes.
 	updates, adds, deletes := extractChanges(docMap, changeMap)
 	if len(adds) > 0 || len(deletes) > 0 {
 		updatedTree = docTree.Clone()
 	}
-	for _, name := range deletes {
-		oldDoc := docMap[name]
+	// Process the sorted changes in the order that is expected by our clients
+	// (removals, additions, and then modifications). We also need to sort the
+	// individual changes to assure that oldIndex/newIndex keep incrementing.
+	deldocs := make([]*DocumentSnapshot, len(deletes))
+	for i, d := range deletes {
+		deldocs[i] = docMap[d]
+	}
+	sort.Sort(byLess{deldocs, s.less})
+	for _, oldDoc := range deldocs {
 		assert(oldDoc != nil)
-		delete(docMap, name)
+		delete(docMap, oldDoc.Ref.Path)
+		_, oldi := updatedTree.GetWithIndex(oldDoc)
+		// TODO(jba): have btree.Delete return old index
 		_, found := updatedTree.Delete(oldDoc)
 		assert(found)
+		changes = append(changes, DocumentChange{
+			Kind:     DocumentRemoved,
+			Doc:      oldDoc,
+			OldIndex: oldi,
+			NewIndex: -1,
+		})
 	}
+	sort.Sort(byLess{adds, s.less})
 	for _, newDoc := range adds {
 		name := newDoc.Ref.Path
 		assert(docMap[name] == nil)
 		newDoc.ReadTime = readTime
 		docMap[name] = newDoc
 		updatedTree.Set(newDoc, nil)
+		// TODO(jba): change btree so Set returns index as second value.
+		_, newi := updatedTree.GetWithIndex(newDoc)
+		changes = append(changes, DocumentChange{
+			Kind:     DocumentAdded,
+			Doc:      newDoc,
+			OldIndex: -1,
+			NewIndex: newi,
+		})
 	}
+	sort.Sort(byLess{updates, s.less})
 	for _, newDoc := range updates {
 		name := newDoc.Ref.Path
 		oldDoc := docMap[name]
 		assert(oldDoc != nil)
-		if !newDoc.UpdateTime.Equal(oldDoc.UpdateTime) {
-			if updatedTree == docTree {
-				updatedTree = docTree.Clone()
-			}
-			newDoc.ReadTime = readTime
-			docMap[name] = newDoc
-			updatedTree.Delete(oldDoc)
-			updatedTree.Set(newDoc, nil)
+		if newDoc.UpdateTime.Equal(oldDoc.UpdateTime) {
+			continue
 		}
+		if updatedTree == docTree {
+			updatedTree = docTree.Clone()
+		}
+		newDoc.ReadTime = readTime
+		docMap[name] = newDoc
+		_, oldi := updatedTree.GetWithIndex(oldDoc)
+		updatedTree.Delete(oldDoc)
+		updatedTree.Set(newDoc, nil)
+		_, newi := updatedTree.GetWithIndex(newDoc)
+		changes = append(changes, DocumentChange{
+			Kind:     DocumentModified,
+			Doc:      newDoc,
+			OldIndex: oldi,
+			NewIndex: newi,
+		})
 	}
 	assert(updatedTree.Len() == len(docMap))
-	return updatedTree
+	return updatedTree, changes
 }
+
+type byLess struct {
+	s    []*DocumentSnapshot
+	less func(a, b *DocumentSnapshot) bool
+}
+
+func (b byLess) Len() int           { return len(b.s) }
+func (b byLess) Swap(i, j int)      { b.s[i], b.s[j] = b.s[j], b.s[i] }
+func (b byLess) Less(i, j int) bool { return b.less(b.s[i], b.s[j]) }
 
 func hasWatchTargetID(ids []int32) bool {
 	for _, id := range ids {
@@ -403,7 +478,7 @@ func (s *watchStream) recv() (*pb.ListenResponse, error) {
 		if status.Code(err) == codes.ResourceExhausted {
 			dur = s.backoff.Max
 		}
-		if err := gax.Sleep(s.ctx, dur); err != nil {
+		if err := sleep(s.ctx, dur); err != nil {
 			return nil, err
 		}
 		s.lc = nil
@@ -431,7 +506,7 @@ func isPermanentWatchError(err error) bool {
 		return false
 	}
 	switch status.Code(err) {
-	case codes.Canceled, codes.Unknown, codes.DeadlineExceeded, codes.ResourceExhausted,
+	case codes.Unknown, codes.DeadlineExceeded, codes.ResourceExhausted,
 		codes.Internal, codes.Unavailable, codes.Unauthenticated:
 		return false
 	default:
