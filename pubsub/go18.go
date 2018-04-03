@@ -75,7 +75,7 @@ var (
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	StreamRequestCount = stats.Int64(statsPrefix+"stream_request_count", "Number gRPC StreamingPull request messages sent", stats.UnitNone)
 
-	// StreamRequestCount is a measure of the number of responses received on a streaming-pull stream.
+	// StreamResponseCount is a measure of the number of responses received on a streaming-pull stream.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	StreamResponseCount = stats.Int64(statsPrefix+"stream_response_count", "Number of gRPC StreamingPull response messages received", stats.UnitNone)
 
