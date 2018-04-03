@@ -39,7 +39,7 @@ func NewTestExporter() *TestExporter {
 	}
 
 	trace.RegisterExporter(te)
-	trace.SetDefaultSampler(trace.AlwaysSample())
+	trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
 
 	return te
 }
