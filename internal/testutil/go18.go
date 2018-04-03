@@ -17,6 +17,7 @@
 package testutil
 
 import (
+	"log"
 	"time"
 
 	"go.opencensus.io/plugin/ocgrpc"
@@ -34,8 +35,8 @@ func NewTestExporter() *TestExporter {
 
 	view.RegisterExporter(te)
 	view.SetReportingPeriod(time.Millisecond)
-	if err := ocgrpc.ClientRequestCountView.Subscribe(); err != nil {
-		panic(err)
+	if err := view.Register(ocgrpc.ClientRequestCountView); err != nil {
+		log.Fatal(err)
 	}
 
 	trace.RegisterExporter(te)
