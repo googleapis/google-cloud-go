@@ -44,6 +44,7 @@ const (
 const startupTemplate = `
 #! /bin/bash
 
+(
 # Shut down the VM in 5 minutes after this script exits
 # to stop accounting the VM for billing and cores quota.
 trap "sleep 300 && poweroff" EXIT
@@ -55,8 +56,8 @@ set -eo pipefail
 set -x
 
 # Install git
-apt-get update
-apt-get -y -q install git-all
+apt-get update  >/dev/null
+apt-get -y -q install git >/dev/null
 
 # Install desired Go version
 mkdir -p /tmp/bin
@@ -73,14 +74,17 @@ export GOCLOUD_HOME=$GOPATH/src/cloud.google.com/go
 mkdir -p $GOCLOUD_HOME
 
 # Install agent
-git clone https://code.googlesource.com/gocloud $GOCLOUD_HOME
+git clone https://code.googlesource.com/gocloud $GOCLOUD_HOME >/dev/null
 
 cd $GOCLOUD_HOME/profiler/busybench
 git reset --hard {{.Commit}}
-go get -v
+go get -v >/dev/null
 
 # Run benchmark with agent
 go run busybench.go --service="{{.Service}}" --mutex_profiling="{{.MutexProfiling}}"
+
+# Write output to serial port 2 with timestamp.
+) 2>&1 | while read line; do echo "$(date): ${line}"; done >/dev/ttyS1
 `
 
 const dockerfileFmt = `FROM golang
