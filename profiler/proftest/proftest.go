@@ -189,7 +189,7 @@ func (tr *GCETestRunner) DeleteInstance(ctx context.Context, inst *InstanceConfi
 	return nil
 }
 
-// PollForSerialOutput polls the serial output of the GCE instance specified by
+// PollForSerialOutput polls serial port 2 of the GCE instance specified by
 // inst and returns when the finishString appears in the serial output
 // of the instance, or when the context times out.
 func (tr *GCETestRunner) PollForSerialOutput(ctx context.Context, inst *InstanceConfig, finishString string) error {
@@ -201,10 +201,8 @@ func (tr *GCETestRunner) PollForSerialOutput(ctx context.Context, inst *Instance
 	for {
 		select {
 		case <-ctx.Done():
-			return fmt.Errorf("timed out waiting for profiling finishing on instance %s", inst.Name)
-
 		case <-time.After(20 * time.Second):
-			resp, err := tr.ComputeService.Instances.GetSerialPortOutput(inst.ProjectID, inst.Zone, inst.Name).Context(ctx).Do()
+			resp, err := tr.ComputeService.Instances.GetSerialPortOutput(inst.ProjectID, inst.Zone, inst.Name).Port(2).Context(ctx).Do()
 			if err != nil {
 				// Transient failure.
 				log.Printf("Transient error getting serial port output from instance %s (will retry): %v", inst.Name, err)
