@@ -634,7 +634,7 @@ func doDeleteCluster(ctx context.Context, args ...string) {
 
 func doDeleteColumn(ctx context.Context, args ...string) {
 	usage := "usage: cbt deletecolumn <table> <row> <family> <column> [app-profile=<app profile id>]"
-	if len(args) != 4 || len(args) != 5 {
+	if len(args) != 4 && len(args) != 5 {
 		log.Fatal(usage)
 	}
 	var appProfile string
@@ -664,7 +664,7 @@ func doDeleteFamily(ctx context.Context, args ...string) {
 
 func doDeleteRow(ctx context.Context, args ...string) {
 	usage := "usage: cbt deleterow <table> <row> [app-profile=<app profile id>]"
-	if len(args) != 2 || len(args) != 3 {
+	if len(args) != 2 && len(args) != 3 {
 		log.Fatal(usage)
 	}
 	var appProfile string
