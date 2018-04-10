@@ -42,7 +42,7 @@ func ExampleClient_SyncRecognize() {
 	}
 
 	req := &speechpb.SyncRecognizeRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.SyncRecognize(ctx, req)
 	if err != nil {
@@ -60,7 +60,7 @@ func ExampleClient_AsyncRecognize() {
 	}
 
 	req := &speechpb.AsyncRecognizeRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	op, err := c.AsyncRecognize(ctx, req)
 	if err != nil {
@@ -87,7 +87,7 @@ func ExampleClient_StreamingRecognize() {
 	}
 	go func() {
 		reqs := []*speechpb.StreamingRecognizeRequest{
-			// TODO: Create requests.
+		// TODO: Create requests.
 		}
 		for _, req := range reqs {
 			if err := stream.Send(req); err != nil {

@@ -41,7 +41,7 @@ func ExampleMetricClient_ListMonitoredResourceDescriptors() {
 	}
 
 	req := &monitoringpb.ListMonitoredResourceDescriptorsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListMonitoredResourceDescriptors(ctx, req)
 	for {
@@ -65,7 +65,7 @@ func ExampleMetricClient_GetMonitoredResourceDescriptor() {
 	}
 
 	req := &monitoringpb.GetMonitoredResourceDescriptorRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetMonitoredResourceDescriptor(ctx, req)
 	if err != nil {
@@ -83,7 +83,7 @@ func ExampleMetricClient_ListMetricDescriptors() {
 	}
 
 	req := &monitoringpb.ListMetricDescriptorsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListMetricDescriptors(ctx, req)
 	for {
@@ -107,7 +107,7 @@ func ExampleMetricClient_GetMetricDescriptor() {
 	}
 
 	req := &monitoringpb.GetMetricDescriptorRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetMetricDescriptor(ctx, req)
 	if err != nil {
@@ -125,7 +125,7 @@ func ExampleMetricClient_CreateMetricDescriptor() {
 	}
 
 	req := &monitoringpb.CreateMetricDescriptorRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.CreateMetricDescriptor(ctx, req)
 	if err != nil {
@@ -143,7 +143,7 @@ func ExampleMetricClient_DeleteMetricDescriptor() {
 	}
 
 	req := &monitoringpb.DeleteMetricDescriptorRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteMetricDescriptor(ctx, req)
 	if err != nil {
@@ -159,7 +159,7 @@ func ExampleMetricClient_ListTimeSeries() {
 	}
 
 	req := &monitoringpb.ListTimeSeriesRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListTimeSeries(ctx, req)
 	for {
@@ -183,7 +183,7 @@ func ExampleMetricClient_CreateTimeSeries() {
 	}
 
 	req := &monitoringpb.CreateTimeSeriesRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.CreateTimeSeries(ctx, req)
 	if err != nil {

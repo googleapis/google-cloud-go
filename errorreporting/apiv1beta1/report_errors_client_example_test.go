@@ -40,7 +40,7 @@ func ExampleReportErrorsClient_ReportErrorEvent() {
 	}
 
 	req := &clouderrorreportingpb.ReportErrorEventRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.ReportErrorEvent(ctx, req)
 	if err != nil {

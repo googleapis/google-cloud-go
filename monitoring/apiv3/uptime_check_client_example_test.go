@@ -41,7 +41,7 @@ func ExampleUptimeCheckClient_ListUptimeCheckConfigs() {
 	}
 
 	req := &monitoringpb.ListUptimeCheckConfigsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListUptimeCheckConfigs(ctx, req)
 	for {
@@ -65,7 +65,7 @@ func ExampleUptimeCheckClient_GetUptimeCheckConfig() {
 	}
 
 	req := &monitoringpb.GetUptimeCheckConfigRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetUptimeCheckConfig(ctx, req)
 	if err != nil {
@@ -83,7 +83,7 @@ func ExampleUptimeCheckClient_CreateUptimeCheckConfig() {
 	}
 
 	req := &monitoringpb.CreateUptimeCheckConfigRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.CreateUptimeCheckConfig(ctx, req)
 	if err != nil {
@@ -101,7 +101,7 @@ func ExampleUptimeCheckClient_UpdateUptimeCheckConfig() {
 	}
 
 	req := &monitoringpb.UpdateUptimeCheckConfigRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.UpdateUptimeCheckConfig(ctx, req)
 	if err != nil {
@@ -119,7 +119,7 @@ func ExampleUptimeCheckClient_DeleteUptimeCheckConfig() {
 	}
 
 	req := &monitoringpb.DeleteUptimeCheckConfigRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteUptimeCheckConfig(ctx, req)
 	if err != nil {
@@ -135,7 +135,7 @@ func ExampleUptimeCheckClient_ListUptimeCheckIps() {
 	}
 
 	req := &monitoringpb.ListUptimeCheckIpsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListUptimeCheckIps(ctx, req)
 	for {

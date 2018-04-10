@@ -40,7 +40,7 @@ func ExampleClient_InspectContent() {
 	}
 
 	req := &dlppb.InspectContentRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.InspectContent(ctx, req)
 	if err != nil {
@@ -58,7 +58,7 @@ func ExampleClient_RedactContent() {
 	}
 
 	req := &dlppb.RedactContentRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.RedactContent(ctx, req)
 	if err != nil {
@@ -76,7 +76,7 @@ func ExampleClient_DeidentifyContent() {
 	}
 
 	req := &dlppb.DeidentifyContentRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.DeidentifyContent(ctx, req)
 	if err != nil {
@@ -94,7 +94,7 @@ func ExampleClient_AnalyzeDataSourceRisk() {
 	}
 
 	req := &dlppb.AnalyzeDataSourceRiskRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	op, err := c.AnalyzeDataSourceRisk(ctx, req)
 	if err != nil {
@@ -117,7 +117,7 @@ func ExampleClient_CreateInspectOperation() {
 	}
 
 	req := &dlppb.CreateInspectOperationRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	op, err := c.CreateInspectOperation(ctx, req)
 	if err != nil {
@@ -140,7 +140,7 @@ func ExampleClient_ListInspectFindings() {
 	}
 
 	req := &dlppb.ListInspectFindingsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.ListInspectFindings(ctx, req)
 	if err != nil {
@@ -158,7 +158,7 @@ func ExampleClient_ListInfoTypes() {
 	}
 
 	req := &dlppb.ListInfoTypesRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.ListInfoTypes(ctx, req)
 	if err != nil {
@@ -176,7 +176,7 @@ func ExampleClient_ListRootCategories() {
 	}
 
 	req := &dlppb.ListRootCategoriesRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.ListRootCategories(ctx, req)
 	if err != nil {

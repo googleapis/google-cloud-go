@@ -42,7 +42,7 @@ func ExampleDatabaseAdminClient_ListDatabases() {
 	}
 
 	req := &databasepb.ListDatabasesRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListDatabases(ctx, req)
 	for {
@@ -66,7 +66,7 @@ func ExampleDatabaseAdminClient_CreateDatabase() {
 	}
 
 	req := &databasepb.CreateDatabaseRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	op, err := c.CreateDatabase(ctx, req)
 	if err != nil {
@@ -89,7 +89,7 @@ func ExampleDatabaseAdminClient_GetDatabase() {
 	}
 
 	req := &databasepb.GetDatabaseRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetDatabase(ctx, req)
 	if err != nil {
@@ -107,7 +107,7 @@ func ExampleDatabaseAdminClient_UpdateDatabaseDdl() {
 	}
 
 	req := &databasepb.UpdateDatabaseDdlRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	op, err := c.UpdateDatabaseDdl(ctx, req)
 	if err != nil {
@@ -126,7 +126,7 @@ func ExampleDatabaseAdminClient_DropDatabase() {
 	}
 
 	req := &databasepb.DropDatabaseRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.DropDatabase(ctx, req)
 	if err != nil {
@@ -142,7 +142,7 @@ func ExampleDatabaseAdminClient_GetDatabaseDdl() {
 	}
 
 	req := &databasepb.GetDatabaseDdlRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetDatabaseDdl(ctx, req)
 	if err != nil {
@@ -160,7 +160,7 @@ func ExampleDatabaseAdminClient_SetIamPolicy() {
 	}
 
 	req := &iampb.SetIamPolicyRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -178,7 +178,7 @@ func ExampleDatabaseAdminClient_GetIamPolicy() {
 	}
 
 	req := &iampb.GetIamPolicyRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -196,7 +196,7 @@ func ExampleDatabaseAdminClient_TestIamPermissions() {
 	}
 
 	req := &iampb.TestIamPermissionsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

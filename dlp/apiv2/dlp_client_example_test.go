@@ -41,7 +41,7 @@ func ExampleClient_InspectContent() {
 	}
 
 	req := &dlppb.InspectContentRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.InspectContent(ctx, req)
 	if err != nil {
@@ -59,7 +59,7 @@ func ExampleClient_RedactImage() {
 	}
 
 	req := &dlppb.RedactImageRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.RedactImage(ctx, req)
 	if err != nil {
@@ -77,7 +77,7 @@ func ExampleClient_DeidentifyContent() {
 	}
 
 	req := &dlppb.DeidentifyContentRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.DeidentifyContent(ctx, req)
 	if err != nil {
@@ -95,7 +95,7 @@ func ExampleClient_ReidentifyContent() {
 	}
 
 	req := &dlppb.ReidentifyContentRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.ReidentifyContent(ctx, req)
 	if err != nil {
@@ -113,7 +113,7 @@ func ExampleClient_ListInfoTypes() {
 	}
 
 	req := &dlppb.ListInfoTypesRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.ListInfoTypes(ctx, req)
 	if err != nil {
@@ -131,7 +131,7 @@ func ExampleClient_CreateInspectTemplate() {
 	}
 
 	req := &dlppb.CreateInspectTemplateRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.CreateInspectTemplate(ctx, req)
 	if err != nil {
@@ -149,7 +149,7 @@ func ExampleClient_UpdateInspectTemplate() {
 	}
 
 	req := &dlppb.UpdateInspectTemplateRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.UpdateInspectTemplate(ctx, req)
 	if err != nil {
@@ -167,7 +167,7 @@ func ExampleClient_GetInspectTemplate() {
 	}
 
 	req := &dlppb.GetInspectTemplateRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetInspectTemplate(ctx, req)
 	if err != nil {
@@ -185,7 +185,7 @@ func ExampleClient_ListInspectTemplates() {
 	}
 
 	req := &dlppb.ListInspectTemplatesRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListInspectTemplates(ctx, req)
 	for {
@@ -209,7 +209,7 @@ func ExampleClient_DeleteInspectTemplate() {
 	}
 
 	req := &dlppb.DeleteInspectTemplateRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteInspectTemplate(ctx, req)
 	if err != nil {
@@ -225,7 +225,7 @@ func ExampleClient_CreateDeidentifyTemplate() {
 	}
 
 	req := &dlppb.CreateDeidentifyTemplateRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.CreateDeidentifyTemplate(ctx, req)
 	if err != nil {
@@ -243,7 +243,7 @@ func ExampleClient_UpdateDeidentifyTemplate() {
 	}
 
 	req := &dlppb.UpdateDeidentifyTemplateRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.UpdateDeidentifyTemplate(ctx, req)
 	if err != nil {
@@ -261,7 +261,7 @@ func ExampleClient_GetDeidentifyTemplate() {
 	}
 
 	req := &dlppb.GetDeidentifyTemplateRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetDeidentifyTemplate(ctx, req)
 	if err != nil {
@@ -279,7 +279,7 @@ func ExampleClient_ListDeidentifyTemplates() {
 	}
 
 	req := &dlppb.ListDeidentifyTemplatesRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListDeidentifyTemplates(ctx, req)
 	for {
@@ -303,7 +303,7 @@ func ExampleClient_DeleteDeidentifyTemplate() {
 	}
 
 	req := &dlppb.DeleteDeidentifyTemplateRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteDeidentifyTemplate(ctx, req)
 	if err != nil {
@@ -319,7 +319,7 @@ func ExampleClient_CreateDlpJob() {
 	}
 
 	req := &dlppb.CreateDlpJobRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.CreateDlpJob(ctx, req)
 	if err != nil {
@@ -337,7 +337,7 @@ func ExampleClient_ListDlpJobs() {
 	}
 
 	req := &dlppb.ListDlpJobsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListDlpJobs(ctx, req)
 	for {
@@ -361,7 +361,7 @@ func ExampleClient_GetDlpJob() {
 	}
 
 	req := &dlppb.GetDlpJobRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetDlpJob(ctx, req)
 	if err != nil {
@@ -379,7 +379,7 @@ func ExampleClient_DeleteDlpJob() {
 	}
 
 	req := &dlppb.DeleteDlpJobRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteDlpJob(ctx, req)
 	if err != nil {
@@ -395,7 +395,7 @@ func ExampleClient_CancelDlpJob() {
 	}
 
 	req := &dlppb.CancelDlpJobRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.CancelDlpJob(ctx, req)
 	if err != nil {
@@ -411,7 +411,7 @@ func ExampleClient_ListJobTriggers() {
 	}
 
 	req := &dlppb.ListJobTriggersRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListJobTriggers(ctx, req)
 	for {
@@ -435,7 +435,7 @@ func ExampleClient_GetJobTrigger() {
 	}
 
 	req := &dlppb.GetJobTriggerRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetJobTrigger(ctx, req)
 	if err != nil {
@@ -453,7 +453,7 @@ func ExampleClient_DeleteJobTrigger() {
 	}
 
 	req := &dlppb.DeleteJobTriggerRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteJobTrigger(ctx, req)
 	if err != nil {
@@ -469,7 +469,7 @@ func ExampleClient_UpdateJobTrigger() {
 	}
 
 	req := &dlppb.UpdateJobTriggerRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.UpdateJobTrigger(ctx, req)
 	if err != nil {
@@ -487,7 +487,7 @@ func ExampleClient_CreateJobTrigger() {
 	}
 
 	req := &dlppb.CreateJobTriggerRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.CreateJobTrigger(ctx, req)
 	if err != nil {

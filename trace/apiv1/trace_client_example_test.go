@@ -41,7 +41,7 @@ func ExampleClient_PatchTraces() {
 	}
 
 	req := &cloudtracepb.PatchTracesRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.PatchTraces(ctx, req)
 	if err != nil {
@@ -57,7 +57,7 @@ func ExampleClient_GetTrace() {
 	}
 
 	req := &cloudtracepb.GetTraceRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetTrace(ctx, req)
 	if err != nil {
@@ -75,7 +75,7 @@ func ExampleClient_ListTraces() {
 	}
 
 	req := &cloudtracepb.ListTracesRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListTraces(ctx, req)
 	for {

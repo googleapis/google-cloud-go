@@ -40,7 +40,7 @@ func ExampleController2Client_RegisterDebuggee() {
 	}
 
 	req := &clouddebuggerpb.RegisterDebuggeeRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.RegisterDebuggee(ctx, req)
 	if err != nil {
@@ -58,7 +58,7 @@ func ExampleController2Client_ListActiveBreakpoints() {
 	}
 
 	req := &clouddebuggerpb.ListActiveBreakpointsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.ListActiveBreakpoints(ctx, req)
 	if err != nil {
@@ -76,7 +76,7 @@ func ExampleController2Client_UpdateActiveBreakpoint() {
 	}
 
 	req := &clouddebuggerpb.UpdateActiveBreakpointRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.UpdateActiveBreakpoint(ctx, req)
 	if err != nil {

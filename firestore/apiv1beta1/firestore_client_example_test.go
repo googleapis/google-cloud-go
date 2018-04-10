@@ -43,7 +43,7 @@ func ExampleClient_GetDocument() {
 	}
 
 	req := &firestorepb.GetDocumentRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetDocument(ctx, req)
 	if err != nil {
@@ -61,7 +61,7 @@ func ExampleClient_ListDocuments() {
 	}
 
 	req := &firestorepb.ListDocumentsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListDocuments(ctx, req)
 	for {
@@ -85,7 +85,7 @@ func ExampleClient_CreateDocument() {
 	}
 
 	req := &firestorepb.CreateDocumentRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.CreateDocument(ctx, req)
 	if err != nil {
@@ -103,7 +103,7 @@ func ExampleClient_UpdateDocument() {
 	}
 
 	req := &firestorepb.UpdateDocumentRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.UpdateDocument(ctx, req)
 	if err != nil {
@@ -121,7 +121,7 @@ func ExampleClient_DeleteDocument() {
 	}
 
 	req := &firestorepb.DeleteDocumentRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteDocument(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleClient_BatchGetDocuments() {
 	}
 
 	req := &firestorepb.BatchGetDocumentsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	stream, err := c.BatchGetDocuments(ctx, req)
 	if err != nil {
@@ -164,7 +164,7 @@ func ExampleClient_BeginTransaction() {
 	}
 
 	req := &firestorepb.BeginTransactionRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.BeginTransaction(ctx, req)
 	if err != nil {
@@ -182,7 +182,7 @@ func ExampleClient_Commit() {
 	}
 
 	req := &firestorepb.CommitRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.Commit(ctx, req)
 	if err != nil {
@@ -200,7 +200,7 @@ func ExampleClient_Rollback() {
 	}
 
 	req := &firestorepb.RollbackRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.Rollback(ctx, req)
 	if err != nil {
@@ -216,7 +216,7 @@ func ExampleClient_RunQuery() {
 	}
 
 	req := &firestorepb.RunQueryRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	stream, err := c.RunQuery(ctx, req)
 	if err != nil {
@@ -247,7 +247,7 @@ func ExampleClient_Write() {
 	}
 	go func() {
 		reqs := []*firestorepb.WriteRequest{
-			// TODO: Create requests.
+		// TODO: Create requests.
 		}
 		for _, req := range reqs {
 			if err := stream.Send(req); err != nil {
@@ -281,7 +281,7 @@ func ExampleClient_Listen() {
 	}
 	go func() {
 		reqs := []*firestorepb.ListenRequest{
-			// TODO: Create requests.
+		// TODO: Create requests.
 		}
 		for _, req := range reqs {
 			if err := stream.Send(req); err != nil {
@@ -311,7 +311,7 @@ func ExampleClient_ListCollectionIds() {
 	}
 
 	req := &firestorepb.ListCollectionIdsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListCollectionIds(ctx, req)
 	for {
