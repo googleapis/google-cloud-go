@@ -14,17 +14,18 @@
 
 // AUTO-GENERATED CODE. DO NOT EDIT.
 
-package language_test
+package monitoring_test
 
 import (
-	"cloud.google.com/go/language/apiv1beta2"
+	"cloud.google.com/go/monitoring/apiv3"
 	"golang.org/x/net/context"
-	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta2"
+	"google.golang.org/api/iterator"
+	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 )
 
-func ExampleNewClient() {
+func ExampleNewAlertPolicyClient() {
 	ctx := context.Background()
-	c, err := language.NewClient(ctx)
+	c, err := monitoring.NewAlertPolicyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -32,17 +33,41 @@ func ExampleNewClient() {
 	_ = c
 }
 
-func ExampleClient_AnalyzeSentiment() {
+func ExampleAlertPolicyClient_ListAlertPolicies() {
 	ctx := context.Background()
-	c, err := language.NewClient(ctx)
+	c, err := monitoring.NewAlertPolicyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &languagepb.AnalyzeSentimentRequest{
+	req := &monitoringpb.ListAlertPoliciesRequest{
 	// TODO: Fill request struct fields.
 	}
-	resp, err := c.AnalyzeSentiment(ctx, req)
+	it := c.ListAlertPolicies(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAlertPolicyClient_GetAlertPolicy() {
+	ctx := context.Background()
+	c, err := monitoring.NewAlertPolicyClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &monitoringpb.GetAlertPolicyRequest{
+	// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetAlertPolicy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -50,17 +75,17 @@ func ExampleClient_AnalyzeSentiment() {
 	_ = resp
 }
 
-func ExampleClient_AnalyzeEntities() {
+func ExampleAlertPolicyClient_CreateAlertPolicy() {
 	ctx := context.Background()
-	c, err := language.NewClient(ctx)
+	c, err := monitoring.NewAlertPolicyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &languagepb.AnalyzeEntitiesRequest{
+	req := &monitoringpb.CreateAlertPolicyRequest{
 	// TODO: Fill request struct fields.
 	}
-	resp, err := c.AnalyzeEntities(ctx, req)
+	resp, err := c.CreateAlertPolicy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -68,71 +93,33 @@ func ExampleClient_AnalyzeEntities() {
 	_ = resp
 }
 
-func ExampleClient_AnalyzeEntitySentiment() {
+func ExampleAlertPolicyClient_DeleteAlertPolicy() {
 	ctx := context.Background()
-	c, err := language.NewClient(ctx)
+	c, err := monitoring.NewAlertPolicyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &languagepb.AnalyzeEntitySentimentRequest{
+	req := &monitoringpb.DeleteAlertPolicyRequest{
 	// TODO: Fill request struct fields.
 	}
-	resp, err := c.AnalyzeEntitySentiment(ctx, req)
+	err = c.DeleteAlertPolicy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
-func ExampleClient_AnalyzeSyntax() {
+func ExampleAlertPolicyClient_UpdateAlertPolicy() {
 	ctx := context.Background()
-	c, err := language.NewClient(ctx)
+	c, err := monitoring.NewAlertPolicyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &languagepb.AnalyzeSyntaxRequest{
+	req := &monitoringpb.UpdateAlertPolicyRequest{
 	// TODO: Fill request struct fields.
 	}
-	resp, err := c.AnalyzeSyntax(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_ClassifyText() {
-	ctx := context.Background()
-	c, err := language.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &languagepb.ClassifyTextRequest{
-	// TODO: Fill request struct fields.
-	}
-	resp, err := c.ClassifyText(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_AnnotateText() {
-	ctx := context.Background()
-	c, err := language.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &languagepb.AnnotateTextRequest{
-	// TODO: Fill request struct fields.
-	}
-	resp, err := c.AnnotateText(ctx, req)
+	resp, err := c.UpdateAlertPolicy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

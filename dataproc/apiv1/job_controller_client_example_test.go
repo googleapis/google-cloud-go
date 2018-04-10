@@ -41,7 +41,7 @@ func ExampleJobControllerClient_SubmitJob() {
 	}
 
 	req := &dataprocpb.SubmitJobRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.SubmitJob(ctx, req)
 	if err != nil {
@@ -59,7 +59,7 @@ func ExampleJobControllerClient_GetJob() {
 	}
 
 	req := &dataprocpb.GetJobRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetJob(ctx, req)
 	if err != nil {
@@ -77,7 +77,7 @@ func ExampleJobControllerClient_ListJobs() {
 	}
 
 	req := &dataprocpb.ListJobsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListJobs(ctx, req)
 	for {
@@ -101,7 +101,7 @@ func ExampleJobControllerClient_UpdateJob() {
 	}
 
 	req := &dataprocpb.UpdateJobRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.UpdateJob(ctx, req)
 	if err != nil {
@@ -119,7 +119,7 @@ func ExampleJobControllerClient_CancelJob() {
 	}
 
 	req := &dataprocpb.CancelJobRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.CancelJob(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleJobControllerClient_DeleteJob() {
 	}
 
 	req := &dataprocpb.DeleteJobRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteJob(ctx, req)
 	if err != nil {

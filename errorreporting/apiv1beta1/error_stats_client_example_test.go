@@ -41,7 +41,7 @@ func ExampleErrorStatsClient_ListGroupStats() {
 	}
 
 	req := &clouderrorreportingpb.ListGroupStatsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListGroupStats(ctx, req)
 	for {
@@ -65,7 +65,7 @@ func ExampleErrorStatsClient_ListEvents() {
 	}
 
 	req := &clouderrorreportingpb.ListEventsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListEvents(ctx, req)
 	for {
@@ -89,7 +89,7 @@ func ExampleErrorStatsClient_DeleteEvents() {
 	}
 
 	req := &clouderrorreportingpb.DeleteEventsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.DeleteEvents(ctx, req)
 	if err != nil {

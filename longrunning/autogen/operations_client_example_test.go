@@ -41,7 +41,7 @@ func ExampleOperationsClient_GetOperation() {
 	}
 
 	req := &longrunningpb.GetOperationRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -59,7 +59,7 @@ func ExampleOperationsClient_ListOperations() {
 	}
 
 	req := &longrunningpb.ListOperationsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListOperations(ctx, req)
 	for {
@@ -83,7 +83,7 @@ func ExampleOperationsClient_CancelOperation() {
 	}
 
 	req := &longrunningpb.CancelOperationRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -99,7 +99,7 @@ func ExampleOperationsClient_DeleteOperation() {
 	}
 
 	req := &longrunningpb.DeleteOperationRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteOperation(ctx, req)
 	if err != nil {

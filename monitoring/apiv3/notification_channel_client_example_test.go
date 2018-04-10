@@ -23,9 +23,9 @@ import (
 	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 )
 
-func ExampleNewMetricClient() {
+func ExampleNewNotificationChannelClient() {
 	ctx := context.Background()
-	c, err := monitoring.NewMetricClient(ctx)
+	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -33,17 +33,17 @@ func ExampleNewMetricClient() {
 	_ = c
 }
 
-func ExampleMetricClient_ListMonitoredResourceDescriptors() {
+func ExampleNotificationChannelClient_ListNotificationChannelDescriptors() {
 	ctx := context.Background()
-	c, err := monitoring.NewMetricClient(ctx)
+	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &monitoringpb.ListMonitoredResourceDescriptorsRequest{
+	req := &monitoringpb.ListNotificationChannelDescriptorsRequest{
 	// TODO: Fill request struct fields.
 	}
-	it := c.ListMonitoredResourceDescriptors(ctx, req)
+	it := c.ListNotificationChannelDescriptors(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -57,17 +57,17 @@ func ExampleMetricClient_ListMonitoredResourceDescriptors() {
 	}
 }
 
-func ExampleMetricClient_GetMonitoredResourceDescriptor() {
+func ExampleNotificationChannelClient_GetNotificationChannelDescriptor() {
 	ctx := context.Background()
-	c, err := monitoring.NewMetricClient(ctx)
+	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &monitoringpb.GetMonitoredResourceDescriptorRequest{
+	req := &monitoringpb.GetNotificationChannelDescriptorRequest{
 	// TODO: Fill request struct fields.
 	}
-	resp, err := c.GetMonitoredResourceDescriptor(ctx, req)
+	resp, err := c.GetNotificationChannelDescriptor(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -75,17 +75,17 @@ func ExampleMetricClient_GetMonitoredResourceDescriptor() {
 	_ = resp
 }
 
-func ExampleMetricClient_ListMetricDescriptors() {
+func ExampleNotificationChannelClient_ListNotificationChannels() {
 	ctx := context.Background()
-	c, err := monitoring.NewMetricClient(ctx)
+	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &monitoringpb.ListMetricDescriptorsRequest{
+	req := &monitoringpb.ListNotificationChannelsRequest{
 	// TODO: Fill request struct fields.
 	}
-	it := c.ListMetricDescriptors(ctx, req)
+	it := c.ListNotificationChannels(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -99,17 +99,17 @@ func ExampleMetricClient_ListMetricDescriptors() {
 	}
 }
 
-func ExampleMetricClient_GetMetricDescriptor() {
+func ExampleNotificationChannelClient_GetNotificationChannel() {
 	ctx := context.Background()
-	c, err := monitoring.NewMetricClient(ctx)
+	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &monitoringpb.GetMetricDescriptorRequest{
+	req := &monitoringpb.GetNotificationChannelRequest{
 	// TODO: Fill request struct fields.
 	}
-	resp, err := c.GetMetricDescriptor(ctx, req)
+	resp, err := c.GetNotificationChannel(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -117,17 +117,17 @@ func ExampleMetricClient_GetMetricDescriptor() {
 	_ = resp
 }
 
-func ExampleMetricClient_CreateMetricDescriptor() {
+func ExampleNotificationChannelClient_CreateNotificationChannel() {
 	ctx := context.Background()
-	c, err := monitoring.NewMetricClient(ctx)
+	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &monitoringpb.CreateMetricDescriptorRequest{
+	req := &monitoringpb.CreateNotificationChannelRequest{
 	// TODO: Fill request struct fields.
 	}
-	resp, err := c.CreateMetricDescriptor(ctx, req)
+	resp, err := c.CreateNotificationChannel(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -135,57 +135,35 @@ func ExampleMetricClient_CreateMetricDescriptor() {
 	_ = resp
 }
 
-func ExampleMetricClient_DeleteMetricDescriptor() {
+func ExampleNotificationChannelClient_UpdateNotificationChannel() {
 	ctx := context.Background()
-	c, err := monitoring.NewMetricClient(ctx)
+	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &monitoringpb.DeleteMetricDescriptorRequest{
+	req := &monitoringpb.UpdateNotificationChannelRequest{
 	// TODO: Fill request struct fields.
 	}
-	err = c.DeleteMetricDescriptor(ctx, req)
+	resp, err := c.UpdateNotificationChannel(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
-func ExampleMetricClient_ListTimeSeries() {
+func ExampleNotificationChannelClient_DeleteNotificationChannel() {
 	ctx := context.Background()
-	c, err := monitoring.NewMetricClient(ctx)
+	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &monitoringpb.ListTimeSeriesRequest{
+	req := &monitoringpb.DeleteNotificationChannelRequest{
 	// TODO: Fill request struct fields.
 	}
-	it := c.ListTimeSeries(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleMetricClient_CreateTimeSeries() {
-	ctx := context.Background()
-	c, err := monitoring.NewMetricClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &monitoringpb.CreateTimeSeriesRequest{
-	// TODO: Fill request struct fields.
-	}
-	err = c.CreateTimeSeries(ctx, req)
+	err = c.DeleteNotificationChannel(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

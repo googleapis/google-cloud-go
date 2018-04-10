@@ -41,7 +41,7 @@ func ExampleClient_DeleteLog() {
 	}
 
 	req := &loggingpb.DeleteLogRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteLog(ctx, req)
 	if err != nil {
@@ -57,7 +57,7 @@ func ExampleClient_WriteLogEntries() {
 	}
 
 	req := &loggingpb.WriteLogEntriesRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.WriteLogEntries(ctx, req)
 	if err != nil {
@@ -75,7 +75,7 @@ func ExampleClient_ListLogEntries() {
 	}
 
 	req := &loggingpb.ListLogEntriesRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListLogEntries(ctx, req)
 	for {
@@ -99,7 +99,7 @@ func ExampleClient_ListMonitoredResourceDescriptors() {
 	}
 
 	req := &loggingpb.ListMonitoredResourceDescriptorsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListMonitoredResourceDescriptors(ctx, req)
 	for {
@@ -123,7 +123,7 @@ func ExampleClient_ListLogs() {
 	}
 
 	req := &loggingpb.ListLogsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListLogs(ctx, req)
 	for {

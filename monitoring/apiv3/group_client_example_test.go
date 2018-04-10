@@ -41,7 +41,7 @@ func ExampleGroupClient_ListGroups() {
 	}
 
 	req := &monitoringpb.ListGroupsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListGroups(ctx, req)
 	for {
@@ -65,7 +65,7 @@ func ExampleGroupClient_GetGroup() {
 	}
 
 	req := &monitoringpb.GetGroupRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetGroup(ctx, req)
 	if err != nil {
@@ -83,7 +83,7 @@ func ExampleGroupClient_CreateGroup() {
 	}
 
 	req := &monitoringpb.CreateGroupRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.CreateGroup(ctx, req)
 	if err != nil {
@@ -101,7 +101,7 @@ func ExampleGroupClient_UpdateGroup() {
 	}
 
 	req := &monitoringpb.UpdateGroupRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.UpdateGroup(ctx, req)
 	if err != nil {
@@ -119,7 +119,7 @@ func ExampleGroupClient_DeleteGroup() {
 	}
 
 	req := &monitoringpb.DeleteGroupRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteGroup(ctx, req)
 	if err != nil {
@@ -135,7 +135,7 @@ func ExampleGroupClient_ListGroupMembers() {
 	}
 
 	req := &monitoringpb.ListGroupMembersRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListGroupMembers(ctx, req)
 	for {

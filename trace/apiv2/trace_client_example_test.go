@@ -40,7 +40,7 @@ func ExampleClient_BatchWriteSpans() {
 	}
 
 	req := &cloudtracepb.BatchWriteSpansRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.BatchWriteSpans(ctx, req)
 	if err != nil {
@@ -56,7 +56,7 @@ func ExampleClient_CreateSpan() {
 	}
 
 	req := &cloudtracepb.Span{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.CreateSpan(ctx, req)
 	if err != nil {
