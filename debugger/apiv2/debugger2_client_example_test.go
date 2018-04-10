@@ -40,7 +40,7 @@ func ExampleDebugger2Client_SetBreakpoint() {
 	}
 
 	req := &clouddebuggerpb.SetBreakpointRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.SetBreakpoint(ctx, req)
 	if err != nil {
@@ -58,7 +58,7 @@ func ExampleDebugger2Client_GetBreakpoint() {
 	}
 
 	req := &clouddebuggerpb.GetBreakpointRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetBreakpoint(ctx, req)
 	if err != nil {
@@ -76,7 +76,7 @@ func ExampleDebugger2Client_DeleteBreakpoint() {
 	}
 
 	req := &clouddebuggerpb.DeleteBreakpointRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteBreakpoint(ctx, req)
 	if err != nil {
@@ -92,7 +92,7 @@ func ExampleDebugger2Client_ListBreakpoints() {
 	}
 
 	req := &clouddebuggerpb.ListBreakpointsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.ListBreakpoints(ctx, req)
 	if err != nil {
@@ -110,7 +110,7 @@ func ExampleDebugger2Client_ListDebuggees() {
 	}
 
 	req := &clouddebuggerpb.ListDebuggeesRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.ListDebuggees(ctx, req)
 	if err != nil {

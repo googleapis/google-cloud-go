@@ -40,7 +40,7 @@ func ExampleErrorGroupClient_GetGroup() {
 	}
 
 	req := &clouderrorreportingpb.GetGroupRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetGroup(ctx, req)
 	if err != nil {
@@ -58,7 +58,7 @@ func ExampleErrorGroupClient_UpdateGroup() {
 	}
 
 	req := &clouderrorreportingpb.UpdateGroupRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.UpdateGroup(ctx, req)
 	if err != nil {

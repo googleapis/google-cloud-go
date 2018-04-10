@@ -40,7 +40,7 @@ func ExampleImageAnnotatorClient_BatchAnnotateImages() {
 	}
 
 	req := &visionpb.BatchAnnotateImagesRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.BatchAnnotateImages(ctx, req)
 	if err != nil {

@@ -43,7 +43,7 @@ func ExampleClient_CreateSession() {
 	}
 
 	req := &spannerpb.CreateSessionRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.CreateSession(ctx, req)
 	if err != nil {
@@ -61,7 +61,7 @@ func ExampleClient_GetSession() {
 	}
 
 	req := &spannerpb.GetSessionRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetSession(ctx, req)
 	if err != nil {
@@ -79,7 +79,7 @@ func ExampleClient_ListSessions() {
 	}
 
 	req := &spannerpb.ListSessionsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListSessions(ctx, req)
 	for {
@@ -103,7 +103,7 @@ func ExampleClient_DeleteSession() {
 	}
 
 	req := &spannerpb.DeleteSessionRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteSession(ctx, req)
 	if err != nil {
@@ -119,7 +119,7 @@ func ExampleClient_ExecuteSql() {
 	}
 
 	req := &spannerpb.ExecuteSqlRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.ExecuteSql(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleClient_ExecuteStreamingSql() {
 	}
 
 	req := &spannerpb.ExecuteSqlRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	stream, err := c.ExecuteStreamingSql(ctx, req)
 	if err != nil {
@@ -164,7 +164,7 @@ func ExampleClient_Read() {
 	}
 
 	req := &spannerpb.ReadRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.Read(ctx, req)
 	if err != nil {
@@ -182,7 +182,7 @@ func ExampleClient_StreamingRead() {
 	}
 
 	req := &spannerpb.ReadRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	stream, err := c.StreamingRead(ctx, req)
 	if err != nil {
@@ -209,7 +209,7 @@ func ExampleClient_BeginTransaction() {
 	}
 
 	req := &spannerpb.BeginTransactionRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.BeginTransaction(ctx, req)
 	if err != nil {
@@ -227,7 +227,7 @@ func ExampleClient_Commit() {
 	}
 
 	req := &spannerpb.CommitRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.Commit(ctx, req)
 	if err != nil {
@@ -245,7 +245,7 @@ func ExampleClient_Rollback() {
 	}
 
 	req := &spannerpb.RollbackRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.Rollback(ctx, req)
 	if err != nil {
@@ -261,7 +261,7 @@ func ExampleClient_PartitionQuery() {
 	}
 
 	req := &spannerpb.PartitionQueryRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.PartitionQuery(ctx, req)
 	if err != nil {
@@ -279,7 +279,7 @@ func ExampleClient_PartitionRead() {
 	}
 
 	req := &spannerpb.PartitionReadRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.PartitionRead(ctx, req)
 	if err != nil {

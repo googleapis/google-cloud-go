@@ -41,7 +41,7 @@ func ExampleAlertPolicyClient_ListAlertPolicies() {
 	}
 
 	req := &monitoringpb.ListAlertPoliciesRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListAlertPolicies(ctx, req)
 	for {
@@ -65,7 +65,7 @@ func ExampleAlertPolicyClient_GetAlertPolicy() {
 	}
 
 	req := &monitoringpb.GetAlertPolicyRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetAlertPolicy(ctx, req)
 	if err != nil {
@@ -83,7 +83,7 @@ func ExampleAlertPolicyClient_CreateAlertPolicy() {
 	}
 
 	req := &monitoringpb.CreateAlertPolicyRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.CreateAlertPolicy(ctx, req)
 	if err != nil {
@@ -101,7 +101,7 @@ func ExampleAlertPolicyClient_DeleteAlertPolicy() {
 	}
 
 	req := &monitoringpb.DeleteAlertPolicyRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteAlertPolicy(ctx, req)
 	if err != nil {
@@ -117,7 +117,7 @@ func ExampleAlertPolicyClient_UpdateAlertPolicy() {
 	}
 
 	req := &monitoringpb.UpdateAlertPolicyRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.UpdateAlertPolicy(ctx, req)
 	if err != nil {

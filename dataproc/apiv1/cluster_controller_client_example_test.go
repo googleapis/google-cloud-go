@@ -41,7 +41,7 @@ func ExampleClusterControllerClient_CreateCluster() {
 	}
 
 	req := &dataprocpb.CreateClusterRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	op, err := c.CreateCluster(ctx, req)
 	if err != nil {
@@ -64,7 +64,7 @@ func ExampleClusterControllerClient_UpdateCluster() {
 	}
 
 	req := &dataprocpb.UpdateClusterRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	op, err := c.UpdateCluster(ctx, req)
 	if err != nil {
@@ -87,7 +87,7 @@ func ExampleClusterControllerClient_DeleteCluster() {
 	}
 
 	req := &dataprocpb.DeleteClusterRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	op, err := c.DeleteCluster(ctx, req)
 	if err != nil {
@@ -106,7 +106,7 @@ func ExampleClusterControllerClient_GetCluster() {
 	}
 
 	req := &dataprocpb.GetClusterRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetCluster(ctx, req)
 	if err != nil {
@@ -124,7 +124,7 @@ func ExampleClusterControllerClient_ListClusters() {
 	}
 
 	req := &dataprocpb.ListClustersRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListClusters(ctx, req)
 	for {
@@ -148,7 +148,7 @@ func ExampleClusterControllerClient_DiagnoseCluster() {
 	}
 
 	req := &dataprocpb.DiagnoseClusterRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	op, err := c.DiagnoseCluster(ctx, req)
 	if err != nil {

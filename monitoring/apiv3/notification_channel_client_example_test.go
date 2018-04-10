@@ -41,7 +41,7 @@ func ExampleNotificationChannelClient_ListNotificationChannelDescriptors() {
 	}
 
 	req := &monitoringpb.ListNotificationChannelDescriptorsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListNotificationChannelDescriptors(ctx, req)
 	for {
@@ -65,7 +65,7 @@ func ExampleNotificationChannelClient_GetNotificationChannelDescriptor() {
 	}
 
 	req := &monitoringpb.GetNotificationChannelDescriptorRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetNotificationChannelDescriptor(ctx, req)
 	if err != nil {
@@ -83,7 +83,7 @@ func ExampleNotificationChannelClient_ListNotificationChannels() {
 	}
 
 	req := &monitoringpb.ListNotificationChannelsRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	it := c.ListNotificationChannels(ctx, req)
 	for {
@@ -107,7 +107,7 @@ func ExampleNotificationChannelClient_GetNotificationChannel() {
 	}
 
 	req := &monitoringpb.GetNotificationChannelRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetNotificationChannel(ctx, req)
 	if err != nil {
@@ -125,7 +125,7 @@ func ExampleNotificationChannelClient_CreateNotificationChannel() {
 	}
 
 	req := &monitoringpb.CreateNotificationChannelRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.CreateNotificationChannel(ctx, req)
 	if err != nil {
@@ -143,7 +143,7 @@ func ExampleNotificationChannelClient_UpdateNotificationChannel() {
 	}
 
 	req := &monitoringpb.UpdateNotificationChannelRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	resp, err := c.UpdateNotificationChannel(ctx, req)
 	if err != nil {
@@ -161,7 +161,7 @@ func ExampleNotificationChannelClient_DeleteNotificationChannel() {
 	}
 
 	req := &monitoringpb.DeleteNotificationChannelRequest{
-		// TODO: Fill request struct fields.
+	// TODO: Fill request struct fields.
 	}
 	err = c.DeleteNotificationChannel(ctx, req)
 	if err != nil {
