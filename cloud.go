@@ -17,8 +17,24 @@ Package cloud is the root of the packages used to access Google Cloud
 Services. See https://godoc.org/cloud.google.com/go for a full list
 of sub-packages.
 
-Examples in this package show ways to authorize and authenticate the
-sub packages.
+
+Authentication and Authorization
+
+All the clients in sub-packages support authentication via Google Application Default Credentials,
+or by providing credentials in JSON form. See the authentication examples in this package for details.
+
+
+Timeouts and Cancellation
+
+By default, all RPCs made by the clients in sub-packages will run indefinitely, retrying on
+temporary errors when correctness allows. To set timeouts or arrange for cancellation, use contexts.
+See the examples for details.
+
+Do not attempt to control the initial connection (dialing) of a service by setting a
+timeout on the context passed to NewClient. Dialing is non-blocking, so timeouts
+would be ineffective and would only interfere with credential refreshing, which uses
+the same context.
+
 
 Connection Pooling
 
