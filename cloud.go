@@ -20,15 +20,17 @@ of sub-packages.
 
 Authentication and Authorization
 
-All the clients in sub-packages support authentication via Google Application Default Credentials,
-or by providing credentials in JSON form. See the authentication examples in this package for details.
+All the clients in sub-packages support authentication via Google Application Default
+Credentials (see https://cloud.google.com/docs/authentication/production), or
+by providing a JSON key file for a Service Account. See the authentication examples
+in this package for details.
 
 
 Timeouts and Cancellation
 
-By default, all RPCs made by the clients in sub-packages will run indefinitely, retrying on
-temporary errors when correctness allows. To set timeouts or arrange for cancellation, use contexts.
-See the examples for details.
+By default, all requests in sub-packages will run indefinitely, retrying on transient
+errors when correctness allows. To set timeouts or arrange for cancellation, use
+contexts. See the examples for details.
 
 Do not attempt to control the initial connection (dialing) of a service by setting a
 timeout on the context passed to NewClient. Dialing is non-blocking, so timeouts
