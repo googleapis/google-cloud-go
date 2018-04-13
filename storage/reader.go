@@ -65,6 +65,15 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		Path:     fmt.Sprintf("/%s/%s", o.bucket, o.object),
 		RawQuery: conditionsQuery(o.gen, o.conds),
 	}
+
+	if o.schema != "" {
+		u.Scheme = o.schema
+	}
+
+	if o.host != "" {
+		u.Host = o.host
+	}
+
 	verb := "GET"
 	if length == 0 {
 		verb = "HEAD"

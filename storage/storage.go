@@ -316,6 +316,8 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 // Use BucketHandle.Object to get a handle.
 type ObjectHandle struct {
 	c              *Client
+	schema string
+	host string
 	bucket         string
 	object         string
 	acl            ACLHandle
@@ -324,6 +326,14 @@ type ObjectHandle struct {
 	encryptionKey  []byte // AES-256 key
 	userProject    string // for requester-pays buckets
 	readCompressed bool   // Accept-Encoding: gzip
+}
+
+// Endpoint changes the end point
+func (o *ObjectHandle) Endpoint(schema, host string) *ObjectHandle {
+	o2 := *o
+	o2.schema = schema
+	o2.host = host
+	return &o2
 }
 
 // ACL provides access to the object's access control list.
