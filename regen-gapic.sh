@@ -25,6 +25,7 @@ set -ex
 APIS=(
 google/cloud/bigquery/datatransfer/artman_bigquerydatatransfer.yaml
 google/cloud/dataproc/artman_dataproc_v1.yaml
+google/cloud/dialogflow/artman_dialogflow_v2.yaml
 google/cloud/language/artman_language_v1.yaml
 google/cloud/language/artman_language_v1beta2.yaml
 google/cloud/oslogin/artman_oslogin_v1beta.yaml
