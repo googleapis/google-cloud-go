@@ -26,12 +26,15 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	pb "cloud.google.com/go/firestore/genproto"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	ts "github.com/golang/protobuf/ptypes/timestamp"
+	"github.com/google/go-cmp/cmp"
 	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
 	fspb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 )
 
@@ -41,6 +44,9 @@ func TestCrossLanguageTests(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	wtid := watchTargetID
+	watchTargetID = 1
+	defer func() { watchTargetID = wtid }()
 	n := 0
 	for _, fi := range fis {
 		if strings.HasSuffix(fi.Name(), ".textproto") {
@@ -168,9 +174,70 @@ func runTest(t *testing.T, msg string, test *pb.Test) {
 			}
 		}
 
+	case *pb.Test_Listen:
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		iter := c.Collection("C").OrderBy("a", Asc).Snapshots(ctx)
+		var rs []interface{}
+		for _, r := range tt.Listen.Responses {
+			rs = append(rs, r)
+		}
+		srv.addRPC(&fspb.ListenRequest{
+			Database:     "projects/projectID/databases/(default)",
+			TargetChange: &fspb.ListenRequest_AddTarget{iter.ws.target},
+		}, rs)
+		got, err := nSnapshots(iter, len(tt.Listen.Snapshots))
+		if err != nil {
+			t.Errorf("%s: %v", msg, err)
+		} else if diff := cmp.Diff(got, tt.Listen.Snapshots); diff != "" {
+			t.Errorf("%s:\n%s", msg, diff)
+		}
+
 	default:
 		t.Fatalf("unknown test type %T", tt)
 	}
+}
+
+func nSnapshots(iter *QuerySnapshotIterator, n int) ([]*pb.Snapshot, error) {
+	var snaps []*pb.Snapshot
+	for i := 0; i < n; i++ {
+		diter, err := iter.Next()
+		if err != nil {
+			return snaps, err
+		}
+		s := &pb.Snapshot{ReadTime: mustTimestampProto(iter.ReadTime)}
+		for {
+			doc, err := diter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return snaps, err
+			}
+			s.Docs = append(s.Docs, doc.proto)
+		}
+		for _, c := range iter.Changes {
+			var k pb.DocChange_Kind
+			switch c.Kind {
+			case DocumentAdded:
+				k = pb.DocChange_ADDED
+			case DocumentRemoved:
+				k = pb.DocChange_REMOVED
+			case DocumentModified:
+				k = pb.DocChange_MODIFIED
+			default:
+				panic("bad kind")
+			}
+			s.Changes = append(s.Changes, &pb.DocChange{
+				Kind:     k,
+				Doc:      c.Doc.proto,
+				OldIndex: int32(c.OldIndex),
+				NewIndex: int32(c.NewIndex),
+			})
+		}
+		snaps = append(snaps, s)
+	}
+	return snaps, nil
 }
 
 func docRefFromPath(p string, c *Client) *DocumentRef {
