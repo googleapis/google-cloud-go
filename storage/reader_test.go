@@ -113,8 +113,14 @@ func handleRangeRead(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type http2Error string
+
+func (h http2Error) Error() string {
+	return string(h)
+}
+
 func TestRangeReaderRetry(t *testing.T) {
-	retryErr := errors.New("blah blah INTERNAL_ERROR")
+	retryErr := http2Error("blah blah INTERNAL_ERROR")
 	readBytes := []byte(readData)
 	hc, close := newTestServer(handleRangeRead)
 	defer close()
