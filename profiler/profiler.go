@@ -85,6 +85,7 @@ const (
 	xGoogAPIMetadata = "x-goog-api-client"
 	zoneNameLabel    = "zone"
 	versionLabel     = "version"
+	languageLabel    = "language"
 	instanceLabel    = "instance"
 	scope            = "https://www.googleapis.com/auth/monitoring.write"
 
@@ -401,7 +402,7 @@ func withXGoogHeader(ctx context.Context, keyval ...string) context.Context {
 }
 
 func initializeAgent(c pb.ProfilerServiceClient) *agent {
-	labels := map[string]string{}
+	labels := map[string]string{languageLabel: "go"}
 	if config.zone != "" {
 		labels[zoneNameLabel] = config.zone
 	}
