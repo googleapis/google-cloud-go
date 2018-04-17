@@ -97,8 +97,9 @@ func (d *DocumentRef) Get(ctx context.Context) (*DocumentSnapshot, error) {
 //   - float32 and float64 convert to Double.
 //   - []byte converts to Bytes.
 //   - time.Time converts to Timestamp.
-//   - latlng.LatLng converts to GeoPoint. latlng is the package
-//     "google.golang.org/genproto/googleapis/type/latlng".
+//   - *latlng.LatLng converts to GeoPoint. latlng is the package
+//     "google.golang.org/genproto/googleapis/type/latlng". You should always use
+//     a pointer to a LatLng.
 //   - Slices convert to Array.
 //   - Maps and structs convert to Map.
 //   - nils of any type convert to Null.
