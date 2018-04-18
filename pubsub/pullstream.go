@@ -115,7 +115,9 @@ func (s *pullStream) call(f func(pb.Subscriber_StreamingPullClient) error) error
 		if err != nil {
 			if isRetryable(err) {
 				recordStat(s.ctx, StreamRetryCount, 1)
-				gax.Sleep(s.ctx, bo.Pause())
+				if err != io.EOF { // don't sleep on normal close
+					gax.Sleep(s.ctx, bo.Pause())
+				}
 				continue
 			}
 			s.mu.Lock()
