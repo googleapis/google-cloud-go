@@ -119,6 +119,9 @@ func (w *Writer) open() error {
 		if w.ProgressFunc != nil {
 			call.ProgressUpdater(func(n, _ int64) { w.ProgressFunc(n) })
 		}
+		if attrs.KMSKeyName != "" {
+			call.KmsKeyName(attrs.KMSKeyName)
+		}
 		if err := setEncryptionHeaders(call.Header(), w.o.encryptionKey, false); err != nil {
 			w.mu.Lock()
 			w.err = err

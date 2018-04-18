@@ -1513,7 +1513,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		// result: failure, by the standard requester-pays rule
 		err := f(ob)
 		if got, want := errCode(err), wantErrorCode; got != want {
-			t.Errorf("%s: got error %s, want code %d\n"+
+			t.Errorf("%s: got error %v, want code %d\n"+
 				"confirm that %s is NOT an Owner on %s",
 				msg, err, want, otherUser, projID)
 		}
@@ -1530,7 +1530,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		// result: failure
 		err = f(ob.UserProject("veener-jba"))
 		if got, want := errCode(err), 403; got != want {
-			t.Errorf("%s: got error %s, want code %d\n"+
+			t.Errorf("%s: got error %v, want code %d\n"+
 				"confirm that %s is NOT an Editor on %s",
 				msg, err, want, otherUser, "veener-jba")
 		}
@@ -1625,18 +1625,22 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	})
 
 	// Deletion.
-	call("delete object", func(b *BucketHandle) error {
-		err := b.Object("foo").Delete(ctx)
-		if err == ErrObjectNotExist {
-			return nil
-		}
-		return err
-	})
+	// TODO(jba): uncomment when internal bug 78341001 is resolved.
+	// call("delete object", func(b *BucketHandle) error {
+	// 	err := b.Object("foo").Delete(ctx)
+	// 	fmt.Printf("#### deleting foo returns %v\n", err)
+	// 	if err == ErrObjectNotExist {
+	// 		return nil
+	// 	}
+	// 	return err
+	// })
+	b.Object("foo").Delete(ctx) // remove when above is uncommented
 	for _, obj := range []string{"copy", "compose"} {
 		if err := b.UserProject(projID).Object(obj).Delete(ctx); err != nil {
 			t.Fatalf("could not delete %q: %v", obj, err)
 		}
 	}
+
 	if err := b.Delete(ctx); err != nil {
 		t.Fatalf("deleting bucket: %v", err)
 	}
@@ -2182,6 +2186,117 @@ func TestIntegration_LockBucket_MetagenerationRequired(t *testing.T) {
 	err = bkt.LockRetentionPolicy(ctx)
 	if err == nil {
 		t.Fatal("expected error locking bucket without metageneration condition, got nil")
+	}
+}
+
+func TestIntegration_KMS(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+
+	// TODO(jba): make the key configurable? Or just require this name?
+	keyNameRoot := "projects/" + testutil.ProjID() + "/locations/global/keyRings/go-integration-test/cryptoKeys/key"
+	keyName := keyNameRoot + "1"
+	contents := []byte("my secret")
+
+	write := func(obj *ObjectHandle, setKey bool) {
+		w := obj.NewWriter(ctx)
+		if setKey {
+			w.KMSKeyName = keyName
+		}
+		_, err := w.Write(contents)
+		if err2 := w.Close(); err2 != nil {
+			err = err2
+		}
+		if err != nil {
+			t.Fatalf("writing with key %q: %v", keyName, err)
+		}
+	}
+
+	checkRead := func(obj *ObjectHandle) {
+		got, err := readObject(ctx, obj)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !bytes.Equal(got, contents) {
+			t.Errorf("got %v, want %v", got, contents)
+		}
+		attrs, err := obj.Attrs(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(attrs.KMSKeyName) < len(keyName) || attrs.KMSKeyName[:len(keyName)] != keyName {
+			t.Errorf("got %q, want %q", attrs.KMSKeyName, keyName)
+		}
+	}
+
+	// Write an object with a key, then read it to verify its contents and the presence of the key name.
+	bkt := client.Bucket(bucketName)
+	obj := bkt.Object("kms")
+	write(obj, true)
+	checkRead(obj)
+
+	// Encrypt an object with a CSEK, then copy it using a CMEK.
+	src := bkt.Object("csek").Key([]byte("my-secret-AES-256-encryption-key"))
+	if err := writeObject(ctx, src, "text/plain", contents); err != nil {
+		t.Fatal(err)
+	}
+	dest := bkt.Object("cmek")
+	c := dest.CopierFrom(src)
+	c.DestinationKMSKeyName = keyName
+	if _, err := c.Run(ctx); err != nil {
+		t.Fatal(err)
+	}
+	checkRead(dest)
+
+	// Create a bucket with a default key, then write and read an object.
+	bkt = client.Bucket(uidSpace.New())
+	if err := bkt.Create(ctx, testutil.ProjID(), &BucketAttrs{
+		Encryption: &BucketEncryption{DefaultKMSKeyName: keyName},
+	}); err != nil {
+		t.Fatal(err)
+	}
+	defer bkt.Delete(ctx)
+
+	attrs, err := bkt.Attrs(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := attrs.Encryption.DefaultKMSKeyName, keyName; got != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
+	obj = bkt.Object("kms")
+	write(obj, false)
+	checkRead(obj)
+
+	// Update the bucket's default key to a different name.
+	// (This key doesn't have to exist.)
+	keyName2 := keyNameRoot + "2"
+	attrs, err = bkt.Update(ctx, BucketAttrsToUpdate{Encryption: &BucketEncryption{DefaultKMSKeyName: keyName2}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := attrs.Encryption.DefaultKMSKeyName, keyName2; got != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
+	attrs, err = bkt.Attrs(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := attrs.Encryption.DefaultKMSKeyName, keyName2; got != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
+
+	// Remove the default KMS key.
+	attrs, err = bkt.Update(ctx, BucketAttrsToUpdate{Encryption: &BucketEncryption{DefaultKMSKeyName: ""}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if attrs.Encryption != nil {
+		t.Fatalf("got %#v, want nil", attrs.Encryption)
 	}
 }
 

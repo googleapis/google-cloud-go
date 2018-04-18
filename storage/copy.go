@@ -60,6 +60,11 @@ type Copier struct {
 	// ProgressFunc should return quickly without blocking.
 	ProgressFunc func(copiedBytes, totalBytes uint64)
 
+	// The Cloud KMS key, in the form projects/P/locations/L/keyRings/R/cryptoKeys/K,
+	// that will be used to encrypt the object. Overrides the object's KMSKeyName, if
+	// any.
+	DestinationKMSKeyName string
+
 	dst, src *ObjectHandle
 }
 
@@ -99,6 +104,9 @@ func (c *Copier) callRewrite(ctx context.Context, rawObj *raw.Object) (*raw.Rewr
 	call.Context(ctx).Projection("full")
 	if c.RewriteToken != "" {
 		call.RewriteToken(c.RewriteToken)
+	}
+	if c.DestinationKMSKeyName != "" {
+		call.DestinationKmsKeyName(c.DestinationKMSKeyName)
 	}
 	if err := applyConds("Copy destination", c.dst.gen, c.dst.conds, call); err != nil {
 		return nil, err
