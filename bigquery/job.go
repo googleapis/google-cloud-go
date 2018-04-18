@@ -420,17 +420,41 @@ type QueryStatistics struct {
 
 // ExplainQueryStage describes one stage of a query.
 type ExplainQueryStage struct {
+	// CompletedParallelInputs: Number of parallel input segments completed.
+	CompletedParallelInputs int64
+
+	// ComputeAvg: Duration the average shard spent on CPU-bound tasks.
+	ComputeAvg time.Duration
+
+	// ComputeMax: Duration the slowest shard spent on CPU-bound tasks.
+	ComputeMax time.Duration
+
 	// Relative amount of the total time the average shard spent on CPU-bound tasks.
 	ComputeRatioAvg float64
 
 	// Relative amount of the total time the slowest shard spent on CPU-bound tasks.
 	ComputeRatioMax float64
 
+	// EndTime: Stage end time.
+	EndTime time.Time
+
 	// Unique ID for stage within plan.
 	ID int64
 
+	// InputStages: IDs for stages that are inputs to this stage.
+	InputStages []int64
+
 	// Human-readable name for stage.
 	Name string
+
+	// ParallelInputs: Number of parallel input segments to be processed.
+	ParallelInputs int64
+
+	// ReadAvg: Duration the average shard spent reading input.
+	ReadAvg time.Duration
+
+	// ReadMax: Duration the slowest shard spent reading input.
+	ReadMax time.Duration
 
 	// Relative amount of the total time the average shard spent reading input.
 	ReadRatioAvg float64
@@ -444,6 +468,16 @@ type ExplainQueryStage struct {
 	// Number of records written by the stage.
 	RecordsWritten int64
 
+	// ShuffleOutputBytes: Total number of bytes written to shuffle.
+	ShuffleOutputBytes int64
+
+	// ShuffleOutputBytesSpilled: Total number of bytes written to shuffle
+	// and spilled to disk.
+	ShuffleOutputBytesSpilled int64
+
+	// StartTime: Stage start time.
+	StartTime time.Time
+
 	// Current status for the stage.
 	Status string
 
@@ -451,11 +485,23 @@ type ExplainQueryStage struct {
 	// chronological).
 	Steps []*ExplainQueryStep
 
+	// WaitAvg: Duration the average shard spent waiting to be scheduled.
+	WaitAvg time.Duration
+
+	// WaitMax: Duration the slowest shard spent waiting to be scheduled.
+	WaitMax time.Duration
+
 	// Relative amount of the total time the average shard spent waiting to be scheduled.
 	WaitRatioAvg float64
 
 	// Relative amount of the total time the slowest shard spent waiting to be scheduled.
 	WaitRatioMax float64
+
+	// WriteAvg: Duration the average shard spent on writing output.
+	WriteAvg time.Duration
+
+	// WriteMax: Duration the slowest shard spent on writing output.
+	WriteMax time.Duration
 
 	// Relative amount of the total time the average shard spent on writing output.
 	WriteRatioAvg float64
@@ -691,20 +737,35 @@ func queryPlanFromProto(stages []*bq.ExplainQueryStage) []*ExplainQueryStage {
 			})
 		}
 		res = append(res, &ExplainQueryStage{
-			ComputeRatioAvg: s.ComputeRatioAvg,
-			ComputeRatioMax: s.ComputeRatioMax,
-			ID:              s.Id,
-			Name:            s.Name,
-			ReadRatioAvg:    s.ReadRatioAvg,
-			ReadRatioMax:    s.ReadRatioMax,
-			RecordsRead:     s.RecordsRead,
-			RecordsWritten:  s.RecordsWritten,
-			Status:          s.Status,
-			Steps:           steps,
-			WaitRatioAvg:    s.WaitRatioAvg,
-			WaitRatioMax:    s.WaitRatioMax,
-			WriteRatioAvg:   s.WriteRatioAvg,
-			WriteRatioMax:   s.WriteRatioMax,
+			CompletedParallelInputs:   s.CompletedParallelInputs,
+			ComputeAvg:                time.Duration(s.ComputeMsAvg) * time.Millisecond,
+			ComputeMax:                time.Duration(s.ComputeMsMax) * time.Millisecond,
+			ComputeRatioAvg:           s.ComputeRatioAvg,
+			ComputeRatioMax:           s.ComputeRatioMax,
+			EndTime:                   time.Unix(0, s.EndMs*1e6),
+			ID:                        s.Id,
+			InputStages:               s.InputStages,
+			Name:                      s.Name,
+			ParallelInputs:            s.ParallelInputs,
+			ReadAvg:                   time.Duration(s.ReadMsAvg) * time.Millisecond,
+			ReadMax:                   time.Duration(s.ReadMsMax) * time.Millisecond,
+			ReadRatioAvg:              s.ReadRatioAvg,
+			ReadRatioMax:              s.ReadRatioMax,
+			RecordsRead:               s.RecordsRead,
+			RecordsWritten:            s.RecordsWritten,
+			ShuffleOutputBytes:        s.ShuffleOutputBytes,
+			ShuffleOutputBytesSpilled: s.ShuffleOutputBytesSpilled,
+			StartTime:                 time.Unix(0, s.StartMs*1e6),
+			Status:                    s.Status,
+			Steps:                     steps,
+			WaitAvg:                   time.Duration(s.WaitMsAvg) * time.Millisecond,
+			WaitMax:                   time.Duration(s.WaitMsMax) * time.Millisecond,
+			WaitRatioAvg:              s.WaitRatioAvg,
+			WaitRatioMax:              s.WaitRatioMax,
+			WriteAvg:                  time.Duration(s.WriteMsAvg) * time.Millisecond,
+			WriteMax:                  time.Duration(s.WriteMsMax) * time.Millisecond,
+			WriteRatioAvg:             s.WriteRatioAvg,
+			WriteRatioMax:             s.WriteRatioMax,
 		})
 	}
 	return res
