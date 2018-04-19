@@ -81,7 +81,6 @@ func TestStreamTimeout(t *testing.T) {
 		t.Fatal(err)
 	}
 	n := atomic.LoadInt64(&nSeen)
-	t.Logf("Receive returned %v after seeing %d messages\n", err, n)
 	if n < nPublish {
 		t.Errorf("got %d messages, want %d", n, nPublish)
 	}

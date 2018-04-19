@@ -171,6 +171,20 @@ func checkAckDeadline(ads int32) error {
 	return nil
 }
 
+func (s *fakeServer) Acknowledge(ctx context.Context, req *pb.AcknowledgeRequest) (*emptypb.Empty, error) {
+	for _, id := range req.AckIds {
+		s.Acked[id] = true
+	}
+	return &emptypb.Empty{}, nil
+}
+
+func (s *fakeServer) ModifyAckDeadline(ctx context.Context, req *pb.ModifyAckDeadlineRequest) (*emptypb.Empty, error) {
+	for _, id := range req.AckIds {
+		s.Deadlines[id] = req.AckDeadlineSeconds
+	}
+	return &emptypb.Empty{}, nil
+}
+
 func (s *fakeServer) CreateSubscription(ctx context.Context, sub *pb.Subscription) (*pb.Subscription, error) {
 	if s.subs[sub.Name] != nil {
 		return nil, status.Errorf(codes.AlreadyExists, "subscription %q", sub.Name)
