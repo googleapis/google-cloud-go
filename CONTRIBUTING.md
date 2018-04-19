@@ -23,6 +23,8 @@ provide a commit message, and use `git codereview mail` to create a Gerrit CL.
 1. Keep amending to the change with `git codereview change` and mail as your receive
 feedback. Each new mailed amendment will create a new patch set for your change in Gerrit.
 
+PRs are also accepted!
+
 ## Integration Tests
 
 In addition to the unit tests, you may run the integration test suite.
