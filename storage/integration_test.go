@@ -257,17 +257,13 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
+	h := testHelper{t}
 
 	o := client.Bucket(bucketName).Object("conddel")
 
 	wc := o.NewWriter(ctx)
 	wc.ContentType = "text/plain"
-	if _, err := wc.Write([]byte("foo")); err != nil {
-		t.Fatal(err)
-	}
-	if err := wc.Close(); err != nil {
-		t.Fatal(err)
-	}
+	h.mustWrite(wc, []byte("foo"))
 
 	gen := wc.Attrs().Generation
 	metaGen := wc.Attrs().Metageneration
@@ -455,10 +451,7 @@ func TestIntegration_Objects(t *testing.T) {
 	}
 
 	// Test StatObject.
-	o, err := bkt.Object(objName).Attrs(ctx)
-	if err != nil {
-		t.Error(err)
-	}
+	o := h.mustObjectAttrs(bkt.Object(objName))
 	if got, want := o.Name, objName; got != want {
 		t.Errorf("Name (%v) = %q; want %q", objName, got, want)
 	}
@@ -607,10 +600,8 @@ func TestIntegration_Objects(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	slurp, err := readObject(ctx, publicClient.Bucket(bucketName).Object(publicObj))
-	if err != nil {
-		t.Errorf("readObject failed with %v", err)
-	} else if !bytes.Equal(slurp, contents[publicObj]) {
+	slurp := h.mustRead(publicClient.Bucket(bucketName).Object(publicObj))
+	if !bytes.Equal(slurp, contents[publicObj]) {
 		t.Errorf("Public object's content: got %q, want %q", slurp, contents[publicObj])
 	}
 
@@ -624,9 +615,7 @@ func TestIntegration_Objects(t *testing.T) {
 	}
 
 	// Test deleting the copy object.
-	if err := bkt.Object(copyName).Delete(ctx); err != nil {
-		t.Errorf("Deletion of %v failed with %v", copyName, err)
-	}
+	h.mustDeleteObject(bkt.Object(copyName))
 	// Deleting it a second time should return ErrObjectNotExist.
 	if err := bkt.Object(copyName).Delete(ctx); err != ErrObjectNotExist {
 		t.Errorf("second deletion of %v = %v; want ErrObjectNotExist", copyName, err)
@@ -644,10 +633,7 @@ func TestIntegration_Objects(t *testing.T) {
 		wantContents = append(wantContents, contents[obj]...)
 	}
 	checkCompose := func(obj *ObjectHandle, wantContentType string) {
-		rc, err := obj.NewReader(ctx)
-		if err != nil {
-			t.Fatalf("NewReader: %v", err)
-		}
+		rc := h.mustNewReader(obj)
 		slurp, err = ioutil.ReadAll(rc)
 		if err != nil {
 			t.Fatalf("ioutil.ReadAll: %v", err)
@@ -685,18 +671,14 @@ func namesEqual(obj *ObjectAttrs, bucketName, objectName string) bool {
 
 func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 	ctx := context.Background()
+	h := testHelper{t}
 	// Collect the list of items we expect: ObjectAttrs in lexical order by name.
 	names := make([]string, len(objects))
 	copy(names, objects)
 	sort.Strings(names)
 	var attrs []*ObjectAttrs
 	for _, name := range names {
-		attr, err := bkt.Object(name).Attrs(ctx)
-		if err != nil {
-			t.Errorf("Object(%q).Attrs: %v", name, err)
-			return
-		}
-		attrs = append(attrs, attr)
+		attrs = append(attrs, h.mustObjectAttrs(bkt.Object(name)))
 	}
 	msg, ok := itesting.TestIterator(attrs,
 		func() interface{} { return bkt.Objects(ctx, &Query{Prefix: "obj"}) },
@@ -971,6 +953,7 @@ func TestIntegration_ZeroSizedObject(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
+	h := testHelper{t}
 
 	obj := client.Bucket(bucketName).Object("zero")
 
@@ -982,10 +965,7 @@ func TestIntegration_ZeroSizedObject(t *testing.T) {
 	defer obj.Delete(ctx)
 
 	// Check we can read it too.
-	body, err := readObject(ctx, obj)
-	if err != nil {
-		t.Fatalf("readObject: %v", err)
-	}
+	body := h.mustRead(obj)
 	if len(body) != 0 {
 		t.Errorf("Body is %v, want empty []byte{}", body)
 	}
@@ -998,6 +978,7 @@ func TestIntegration_Encryption(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
+	h := testHelper{t}
 
 	obj := client.Bucket(bucketName).Object("customer-encryption")
 	key := []byte("my-secret-AES-256-encryption-key")
@@ -1047,10 +1028,7 @@ func TestIntegration_Encryption(t *testing.T) {
 			t.Errorf("%s: reading without key: want error, got nil", msg)
 		}
 		// Reading the object with the key should succeed.
-		got, err := readObject(ctx, o.Key(k))
-		if err != nil {
-			t.Fatalf("%s: %v", msg, err)
-		}
+		got := h.mustRead(o.Key(k))
 		gotContents := string(got)
 		// And the contents should match what we wrote.
 		if gotContents != wantContents {
@@ -1059,10 +1037,7 @@ func TestIntegration_Encryption(t *testing.T) {
 	}
 
 	checkReadUnencrypted := func(msg string, obj *ObjectHandle, wantContents string) {
-		got, err := readObject(ctx, obj)
-		if err != nil {
-			t.Fatalf("%s: %v", msg, err)
-		}
+		got := h.mustRead(obj)
 		gotContents := string(got)
 		if gotContents != wantContents {
 			t.Errorf("%s: got %q, want %q", msg, gotContents, wantContents)
@@ -1071,11 +1046,7 @@ func TestIntegration_Encryption(t *testing.T) {
 
 	// Write to obj using our own encryption key, which is a valid 32-byte
 	// AES-256 key.
-	w := obj.Key(key).NewWriter(ctx)
-	w.Write([]byte(contents))
-	if err := w.Close(); err != nil {
-		t.Fatal(err)
-	}
+	h.mustWrite(obj.Key(key).NewWriter(ctx), []byte(contents))
 
 	checkMetadataCall("Attrs", func(o *ObjectHandle) (*ObjectAttrs, error) {
 		return o.Attrs(ctx)
@@ -1183,9 +1154,7 @@ func TestIntegration_PerObjectStorageClass(t *testing.T) {
 	}
 	// Write an object; it should start with the bucket's storage class.
 	obj := bkt.Object("posc")
-	if err := writeObject(ctx, obj, "", []byte("foo")); err != nil {
-		t.Fatal(err)
-	}
+	h.mustWrite(obj.NewWriter(ctx), []byte("foo"))
 	oattrs, err := obj.Attrs(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -1210,12 +1179,7 @@ func TestIntegration_PerObjectStorageClass(t *testing.T) {
 	obj2 := bkt.Object("posc2")
 	w := obj2.NewWriter(ctx)
 	w.StorageClass = newStorageClass
-	if _, err := w.Write([]byte("xxx")); err != nil {
-		t.Fatal(err)
-	}
-	if err := w.Close(); err != nil {
-		t.Fatal(err)
-	}
+	h.mustWrite(w, []byte("xxx"))
 	if w.Attrs().StorageClass != newStorageClass {
 		t.Fatalf("new object storage class: got %q, want %q",
 			w.Attrs().StorageClass, newStorageClass)
@@ -1229,12 +1193,11 @@ func TestIntegration_BucketInCopyAttrs(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
+	h := testHelper{t}
 
 	bkt := client.Bucket(bucketName)
 	obj := bkt.Object("bucketInCopyAttrs")
-	if err := writeObject(ctx, obj, "", []byte("foo")); err != nil {
-		t.Fatal(err)
-	}
+	h.mustWrite(obj.NewWriter(ctx), []byte("foo"))
 	copier := obj.CopierFrom(obj)
 	rawObject := copier.ObjectAttrs.toRawObject(bucketName)
 	_, err := copier.callRewrite(ctx, rawObject)
@@ -1249,6 +1212,7 @@ func TestIntegration_NoUnicodeNormalization(t *testing.T) {
 	client := testConfig(ctx, t)
 	defer client.Close()
 	bkt := client.Bucket("storage-library-test-bucket")
+	h := testHelper{t}
 
 	for _, tst := range []struct {
 		nameQuoted, content string
@@ -1260,12 +1224,8 @@ func TestIntegration_NoUnicodeNormalization(t *testing.T) {
 		if err != nil {
 			t.Fatalf("invalid name: %s: %v", tst.nameQuoted, err)
 		}
-		got, err := readObject(ctx, bkt.Object(name))
-		if err != nil {
-			t.Fatal(err)
-		}
-		if g := string(got); g != tst.content {
-			t.Errorf("content of %s is %q, want %q", tst.nameQuoted, g, tst.content)
+		if got := string(h.mustRead(bkt.Object(name))); got != tst.content {
+			t.Errorf("content of %s is %q, want %q", tst.nameQuoted, got, tst.content)
 		}
 	}
 }
@@ -1676,7 +1636,6 @@ func TestNotifications(t *testing.T) {
 
 func TestIntegration_Public(t *testing.T) {
 	// Confirm that an unauthenticated client can access a public bucket.
-
 	// See https://cloud.google.com/storage/docs/public-datasets/landsat
 	const landsatBucket = "gcp-public-data-landsat"
 	const landsatPrefix = "LC08/PRE/044/034/LC80440342016259LGN00/"
@@ -1689,14 +1648,12 @@ func TestIntegration_Public(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer client.Close()
+	h := testHelper{t}
 	bkt := client.Bucket(landsatBucket)
 	obj := bkt.Object(landsatObject)
 
 	// Read a public object.
-	bytes, err := readObject(ctx, obj)
-	if err != nil {
-		t.Fatal(err)
-	}
+	bytes := h.mustRead(obj)
 	if got, want := len(bytes), 7903; got != want {
 		t.Errorf("len(bytes) = %d, want %d", got, want)
 	}
@@ -2058,11 +2015,7 @@ func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
 
 	// Remove the retention period
 	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{RetentionPeriod: 0}})
-
-	if err := oh.Delete(ctx); err != nil {
-		t.Fatal(err)
-	}
-
+	h.mustDeleteObject(oh)
 	h.mustDeleteBucket(bkt)
 }
 
@@ -2129,27 +2082,15 @@ func TestIntegration_KMS(t *testing.T) {
 		if setKey {
 			w.KMSKeyName = keyName
 		}
-		_, err := w.Write(contents)
-		if err2 := w.Close(); err2 != nil {
-			err = err2
-		}
-		if err != nil {
-			t.Fatalf("writing with key %q: %v", keyName, err)
-		}
+		h.mustWrite(w, contents)
 	}
 
 	checkRead := func(obj *ObjectHandle) {
-		got, err := readObject(ctx, obj)
-		if err != nil {
-			t.Fatal(err)
-		}
+		got := h.mustRead(obj)
 		if !bytes.Equal(got, contents) {
 			t.Errorf("got %v, want %v", got, contents)
 		}
-		attrs, err := obj.Attrs(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
+		attrs := h.mustObjectAttrs(obj)
 		if len(attrs.KMSKeyName) < len(keyName) || attrs.KMSKeyName[:len(keyName)] != keyName {
 			t.Errorf("got %q, want %q", attrs.KMSKeyName, keyName)
 		}
@@ -2160,7 +2101,7 @@ func TestIntegration_KMS(t *testing.T) {
 	obj := bkt.Object("kms")
 	write(obj, true)
 	checkRead(obj)
-	obj.Delete(ctx)
+	h.mustDeleteObject(obj)
 
 	// Encrypt an object with a CSEK, then copy it using a CMEK.
 	src := bkt.Object("csek").Key([]byte("my-secret-AES-256-encryption-key"))
@@ -2191,7 +2132,7 @@ func TestIntegration_KMS(t *testing.T) {
 	obj = bkt.Object("kms")
 	write(obj, false)
 	checkRead(obj)
-	obj.Delete(ctx)
+	h.mustDeleteObject(obj)
 
 	// Update the bucket's default key to a different name.
 	// (This key doesn't have to exist.)
@@ -2250,6 +2191,38 @@ func (h testHelper) mustObjectAttrs(o *ObjectHandle) *ObjectAttrs {
 		h.t.Fatalf("%s: object attrs: %v", loc(), err)
 	}
 	return attrs
+}
+
+func (h testHelper) mustDeleteObject(o *ObjectHandle) {
+	if err := o.Delete(context.Background()); err != nil {
+		h.t.Fatalf("%s: object delete: %v", loc(), err)
+	}
+}
+
+func (h testHelper) mustWrite(w *Writer, data []byte) {
+	if _, err := w.Write(data); err != nil {
+		w.Close()
+		h.t.Fatalf("%s: write: %v", loc(), err)
+	}
+	if err := w.Close(); err != nil {
+		h.t.Fatalf("%s: close write: %v", loc(), err)
+	}
+}
+
+func (h testHelper) mustRead(obj *ObjectHandle) []byte {
+	data, err := readObject(context.Background(), obj)
+	if err != nil {
+		h.t.Fatalf("%s: read: %v", loc(), err)
+	}
+	return data
+}
+
+func (h testHelper) mustNewReader(obj *ObjectHandle) *Reader {
+	r, err := obj.NewReader(context.Background())
+	if err != nil {
+		h.t.Fatalf("%s: new reader: %v", loc(), err)
+	}
+	return r
 }
 
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
