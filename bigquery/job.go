@@ -404,6 +404,9 @@ type QueryStatistics struct {
 	// statements INSERT, UPDATE or DELETE.
 	NumDMLAffectedRows int64
 
+	// Describes a timeline of job execution.
+	Timeline []*QueryTimelineSample
+
 	// ReferencedTables: [Output-only, Experimental] Referenced tables for
 	// the job. Queries that reference more than 50 tables will not have a
 	// complete list.
@@ -517,6 +520,25 @@ type ExplainQueryStep struct {
 
 	// Human-readable stage descriptions.
 	Substeps []string
+}
+
+// QueryTimelineSample represents a sample of execution statistics at a point in time.
+type QueryTimelineSample struct {
+
+	// Total number of units currently being processed by workers, represented as largest value since last sample.
+	ActiveUnits int64
+
+	// Total parallel units of work completed by this query.
+	CompletedUnits int64
+
+	// Time elapsed since start of query execution.
+	Elapsed time.Duration
+
+	// Total parallel units of work remaining for the active stages.
+	PendingUnits int64
+
+	// Cumulative slot-milliseconds consumed by the query.
+	SlotMillis int64
 }
 
 func (*ExtractStatistics) implementsStatistics() {}
@@ -719,6 +741,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 			NumDMLAffectedRows:            s.Query.NumDmlAffectedRows,
 			QueryPlan:                     queryPlanFromProto(s.Query.QueryPlan),
 			Schema:                        bqToSchema(s.Query.Schema),
+			Timeline:                      timelineFromProto(s.Query.Timeline),
 			ReferencedTables:              tables,
 			UndeclaredQueryParameterNames: names,
 		}
@@ -766,6 +789,20 @@ func queryPlanFromProto(stages []*bq.ExplainQueryStage) []*ExplainQueryStage {
 			WriteMax:                  time.Duration(s.WriteMsMax) * time.Millisecond,
 			WriteRatioAvg:             s.WriteRatioAvg,
 			WriteRatioMax:             s.WriteRatioMax,
+		})
+	}
+	return res
+}
+
+func timelineFromProto(timeline []*bq.QueryTimelineSample) []*QueryTimelineSample {
+	var res []*QueryTimelineSample
+	for _, s := range timeline {
+		res = append(res, &QueryTimelineSample{
+			ActiveUnits:    s.ActiveUnits,
+			CompletedUnits: s.CompletedUnits,
+			Elapsed:        time.Duration(s.ElapsedMs) * time.Millisecond,
+			PendingUnits:   s.PendingUnits,
+			SlotMillis:     s.TotalSlotMs,
 		})
 	}
 	return res
