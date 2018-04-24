@@ -505,6 +505,7 @@ type BucketEncryption struct {
 	// A Cloud KMS key name, in the form
 	// projects/P/locations/L/keyRings/R/cryptoKeys/K, that will be used to encrypt
 	// objects inserted into this bucket, if no encryption method is specified.
+	// The key's location must be the same as the bucket's.
 	DefaultKMSKeyName string
 }
 
