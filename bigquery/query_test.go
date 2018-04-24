@@ -26,6 +26,7 @@ import (
 )
 
 func defaultQueryJob() *bq.Job {
+	pfalse := false
 	return &bq.Job{
 		JobReference: &bq.JobReference{JobId: "RANDOM", ProjectId: "client-project-id"},
 		Configuration: &bq.JobConfiguration{
@@ -40,8 +41,7 @@ func defaultQueryJob() *bq.Job {
 					ProjectId: "def-project-id",
 					DatasetId: "def-dataset-id",
 				},
-				UseLegacySql:    false,
-				ForceSendFields: []string{"UseLegacySql"},
+				UseLegacySql: &pfalse,
 			},
 		},
 	}
@@ -271,7 +271,8 @@ func TestQuery(t *testing.T) {
 			},
 			want: func() *bq.Job {
 				j := defaultQueryJob()
-				j.Configuration.Query.UseLegacySql = true
+				ptrue := true
+				j.Configuration.Query.UseLegacySql = &ptrue
 				j.Configuration.Query.ForceSendFields = nil
 				return j
 			}(),
@@ -354,6 +355,7 @@ func TestConfiguringQuery(t *testing.T) {
 	// Note: Other configuration fields are tested in other tests above.
 	// A lot of that can be consolidated once Client.Copy is gone.
 
+	pfalse := false
 	want := &bq.Job{
 		Configuration: &bq.JobConfiguration{
 			Query: &bq.JobConfigurationQuery{
@@ -362,10 +364,9 @@ func TestConfiguringQuery(t *testing.T) {
 					ProjectId: "def-project-id",
 					DatasetId: "def-dataset-id",
 				},
-				UseLegacySql:                       false,
+				UseLegacySql:                       &pfalse,
 				TimePartitioning:                   &bq.TimePartitioning{ExpirationMs: 1234000, Field: "f", Type: "DAY"},
 				DestinationEncryptionConfiguration: &bq.EncryptionConfiguration{KmsKeyName: "keyName"},
-				ForceSendFields:                    []string{"UseLegacySql"},
 			},
 		},
 		JobReference: &bq.JobReference{

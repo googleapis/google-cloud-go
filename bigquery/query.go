@@ -162,11 +162,12 @@ func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
 	if len(qc.Parameters) > 0 && qc.UseLegacySQL {
 		return nil, errors.New("bigquery: cannot provide both Parameters (implying standard SQL) and UseLegacySQL")
 	}
+	ptrue := true
+	pfalse := false
 	if qc.UseLegacySQL {
-		qconf.UseLegacySql = true
+		qconf.UseLegacySql = &ptrue
 	} else {
-		qconf.UseLegacySql = false
-		qconf.ForceSendFields = append(qconf.ForceSendFields, "UseLegacySql")
+		qconf.UseLegacySql = &pfalse
 	}
 	if qc.Dst != nil && !qc.Dst.implicitTable() {
 		qconf.DestinationTable = qc.Dst.toBQ()
@@ -196,10 +197,11 @@ func bqToQueryConfig(q *bq.JobConfiguration, c *Client) (*QueryConfig, error) {
 		AllowLargeResults: qq.AllowLargeResults,
 		Priority:          QueryPriority(qq.Priority),
 		MaxBytesBilled:    qq.MaximumBytesBilled,
-		UseLegacySQL:      qq.UseLegacySql,
-		UseStandardSQL:    !qq.UseLegacySql,
+		UseLegacySQL:      qq.UseLegacySql == nil || *qq.UseLegacySql,
 		TimePartitioning:  bqToTimePartitioning(qq.TimePartitioning),
 	}
+	qc.UseStandardSQL = !qc.UseLegacySQL
+
 	if len(qq.TableDefinitions) > 0 {
 		qc.TableDefinitions = make(map[string]ExternalData)
 	}
