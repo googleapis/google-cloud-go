@@ -38,6 +38,8 @@ import (
 	fspb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 )
 
+const conformanceTestWatchTargetID = 1
+
 func TestCrossLanguageTests(t *testing.T) {
 	const dir = "testdata"
 	fis, err := ioutil.ReadDir(dir)
@@ -45,7 +47,7 @@ func TestCrossLanguageTests(t *testing.T) {
 		t.Fatal(err)
 	}
 	wtid := watchTargetID
-	watchTargetID = 1
+	watchTargetID = conformanceTestWatchTargetID
 	defer func() { watchTargetID = wtid }()
 	n := 0
 	for _, fi := range fis {
@@ -191,6 +193,12 @@ func runTest(t *testing.T, msg string, test *pb.Test) {
 			t.Errorf("%s: %v", msg, err)
 		} else if diff := cmp.Diff(got, tt.Listen.Snapshots); diff != "" {
 			t.Errorf("%s:\n%s", msg, diff)
+		}
+		if tt.Listen.IsError {
+			_, err := iter.Next()
+			if err == nil {
+				t.Errorf("%s: got nil, want error", msg)
+			}
 		}
 
 	default:
