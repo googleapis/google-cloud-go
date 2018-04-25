@@ -54,5 +54,18 @@ of cloud client libraries may specify option.WithGRPCConnectionPool(n) as a clie
 option to NewClient calls. This configures the underlying gRPC connections to be
 pooled and addressed in a round robin fashion.
 
+
+Using the Libraries with Docker
+
+Minimal docker images like Alpine lack CA certificates. This causes RPCs to appear to
+hang, because gRPC retries indefinitely. See https://github.com/GoogleCloudPlatform/google-cloud-go/issues/928
+for more information.
+
+Debugging
+
+To see gRPC logs, set the environment variable GRPC_GO_LOG_SEVERITY_LEVEL. See
+https://godoc.org/google.golang.org/grpc/grpclog for more information.
+
+For HTTP logging, set the GODEBUG environment variable to "http2debug=1" or "http2debug=2".
 */
 package cloud // import "cloud.google.com/go"
