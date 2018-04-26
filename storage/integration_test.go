@@ -2067,20 +2067,23 @@ func TestIntegration_KMS(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
+	keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
+	if keyRingName == "" {
+		t.Fatal("GCLOUD_TESTS_GOLANG_KEYRING must be set. See CONTRIBUTING.md for details")
+	}
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
 	h := testHelper{t}
 
-	// TODO(jba): make the key configurable? Or just require this name?
-	keyNameRoot := "projects/" + testutil.ProjID() + "/locations/global/keyRings/go-integration-test/cryptoKeys/key"
-	keyName := keyNameRoot + "1"
+	keyName1 := keyRingName + "/cryptoKeys/key1"
+	keyName2 := keyRingName + "/cryptoKeys/key2"
 	contents := []byte("my secret")
 
 	write := func(obj *ObjectHandle, setKey bool) {
 		w := obj.NewWriter(ctx)
 		if setKey {
-			w.KMSKeyName = keyName
+			w.KMSKeyName = keyName1
 		}
 		h.mustWrite(w, contents)
 	}
@@ -2091,8 +2094,8 @@ func TestIntegration_KMS(t *testing.T) {
 			t.Errorf("got %v, want %v", got, contents)
 		}
 		attrs := h.mustObjectAttrs(obj)
-		if len(attrs.KMSKeyName) < len(keyName) || attrs.KMSKeyName[:len(keyName)] != keyName {
-			t.Errorf("got %q, want %q", attrs.KMSKeyName, keyName)
+		if len(attrs.KMSKeyName) < len(keyName1) || attrs.KMSKeyName[:len(keyName1)] != keyName1 {
+			t.Errorf("got %q, want %q", attrs.KMSKeyName, keyName1)
 		}
 	}
 
@@ -2110,7 +2113,7 @@ func TestIntegration_KMS(t *testing.T) {
 	}
 	dest := bkt.Object("cmek")
 	c := dest.CopierFrom(src)
-	c.DestinationKMSKeyName = keyName
+	c.DestinationKMSKeyName = keyName1
 	if _, err := c.Run(ctx); err != nil {
 		t.Fatal(err)
 	}
@@ -2121,12 +2124,12 @@ func TestIntegration_KMS(t *testing.T) {
 	// Create a bucket with a default key, then write and read an object.
 	bkt = client.Bucket(uidSpace.New())
 	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
-		Encryption: &BucketEncryption{DefaultKMSKeyName: keyName},
+		Encryption: &BucketEncryption{DefaultKMSKeyName: keyName1},
 	})
 	defer h.mustDeleteBucket(bkt)
 
 	attrs := h.mustBucketAttrs(bkt)
-	if got, want := attrs.Encryption.DefaultKMSKeyName, keyName; got != want {
+	if got, want := attrs.Encryption.DefaultKMSKeyName, keyName1; got != want {
 		t.Fatalf("got %q, want %q", got, want)
 	}
 	obj = bkt.Object("kms")
@@ -2136,7 +2139,6 @@ func TestIntegration_KMS(t *testing.T) {
 
 	// Update the bucket's default key to a different name.
 	// (This key doesn't have to exist.)
-	keyName2 := keyNameRoot + "2"
 	attrs = h.mustUpdateBucket(bkt, BucketAttrsToUpdate{Encryption: &BucketEncryption{DefaultKMSKeyName: keyName2}})
 	if got, want := attrs.Encryption.DefaultKMSKeyName, keyName2; got != want {
 		t.Fatalf("got %q, want %q", got, want)
