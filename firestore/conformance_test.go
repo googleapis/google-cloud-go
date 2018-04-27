@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// A runner for the cross-language tests.
+// A runner for the conformance tests.
 
 package firestore
 
@@ -40,7 +40,7 @@ import (
 
 const conformanceTestWatchTargetID = 1
 
-func TestCrossLanguageTests(t *testing.T) {
+func TestConformanceTests(t *testing.T) {
 	const dir = "testdata"
 	fis, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -56,7 +56,7 @@ func TestCrossLanguageTests(t *testing.T) {
 			n++
 		}
 	}
-	t.Logf("ran %d cross-language tests", n)
+	t.Logf("ran %d conformance tests", n)
 }
 
 func runTestFromFile(t *testing.T, filename string) {
