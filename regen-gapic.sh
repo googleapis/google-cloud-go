@@ -45,7 +45,6 @@ google/firestore/artman_firestore.yaml
 google/logging/artman_logging.yaml
 google/longrunning/artman_longrunning.yaml
 google/monitoring/artman_monitoring.yaml
-google/privacy/dlp/artman_dlp_v2beta1.yaml
 google/privacy/dlp/artman_dlp_v2.yaml
 google/pubsub/artman_pubsub.yaml
 google/spanner/admin/database/artman_spanner_admin_database.yaml
@@ -59,8 +58,8 @@ for api in "${APIS[@]}"; do
   cp -r artman-genfiles/gapi-*/cloud.google.com/go/* $GOPATH/src/cloud.google.com/go/
 done
 
-go list cloud.google.com/go/... | grep apiv | xargs go test
+#go list cloud.google.com/go/... | grep apiv | xargs go test
 
-go test -short cloud.google.com/go/...
+#go test -short cloud.google.com/go/...
 
-echo "googleapis version: $(git rev-parse HEAD)"
+#echo "googleapis version: $(git rev-parse HEAD)"
