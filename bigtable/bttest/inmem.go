@@ -699,8 +699,7 @@ func (s *server) MutateRows(req *btpb.MutateRowsRequest, stream btpb.Bigtable_Mu
 		}
 		r.mu.Unlock()
 	}
-	stream.Send(res)
-	return nil
+	return stream.Send(res)
 }
 
 func (s *server) CheckAndMutateRow(ctx context.Context, req *btpb.CheckAndMutateRowRequest) (*btpb.CheckAndMutateRowResponse, error) {

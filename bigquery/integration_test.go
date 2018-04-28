@@ -167,7 +167,9 @@ func TestIntegration_TableCreateView(t *testing.T) {
 	if err != nil {
 		t.Fatalf("table.create: Did not expect an error, got: %v", err)
 	}
-	view.Delete(ctx)
+	if err := view.Delete(ctx); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestIntegration_TableMetadata(t *testing.T) {
@@ -1570,7 +1572,7 @@ func TestIntegration_TableUseLegacySQL(t *testing.T) {
 		} else if !gotErr && test.err {
 			t.Errorf("%+v:\nsucceeded, but want error", test)
 		}
-		view.Delete(ctx)
+		_ = view.Delete(ctx)
 	}
 }
 
