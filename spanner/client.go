@@ -442,8 +442,7 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 	}
 	if !ao.atLeastOnce {
 		return c.ReadWriteTransaction(ctx, func(ctx context.Context, t *ReadWriteTransaction) error {
-			t.BufferWrite(ms)
-			return nil
+			return t.BufferWrite(ms)
 		})
 	}
 
