@@ -1246,7 +1246,7 @@ func TestIntegration_HashesOnUpload(t *testing.T) {
 
 	write := func(w *Writer) error {
 		if _, err := w.Write(data); err != nil {
-			w.Close()
+			_ = w.Close()
 			return err
 		}
 		return w.Close()

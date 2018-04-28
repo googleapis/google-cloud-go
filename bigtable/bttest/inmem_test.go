@@ -99,7 +99,9 @@ func TestConcurrentMutationsReadModifyAndGC(t *testing.T) {
 					RowKey:    []byte(fmt.Sprint(rand.Intn(100))),
 					Mutations: ms(),
 				}
-				s.MutateRow(ctx, req)
+				if _, err := s.MutateRow(ctx, req); err != nil {
+					panic(err) // can't use t.Fatal in goroutine
+				}
 			}
 		}()
 		wg.Add(1)
@@ -548,7 +550,9 @@ func TestReadRowsOrder(t *testing.T) {
 		}
 	}
 	for i := count; i > 0; i-- {
-		s.ReadModifyWriteRow(ctx, rmw(i))
+		if _, err := s.ReadModifyWriteRow(ctx, rmw(i)); err != nil {
+			t.Fatal(err)
+		}
 	}
 	req = &btpb.ReadRowsRequest{
 		TableName: tblInfo.Name,
