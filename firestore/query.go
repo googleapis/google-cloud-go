@@ -160,7 +160,7 @@ func (q Query) Offset(n int) Query {
 // Limit returns a new Query that specifies the maximum number of results to return.
 // It must not be negative.
 func (q Query) Limit(n int) Query {
-	q.limit = &wrappers.Int32Value{trunc32(n)}
+	q.limit = &wrappers.Int32Value{Value: trunc32(n)}
 	return q
 }
 

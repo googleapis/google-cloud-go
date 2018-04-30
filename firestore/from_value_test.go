@@ -33,7 +33,7 @@ import (
 var (
 	tm  = time.Date(2016, 12, 25, 0, 0, 0, 123456789, time.UTC)
 	ll  = &latlng.LatLng{Latitude: 20, Longitude: 30}
-	ptm = &ts.Timestamp{12345, 67890}
+	ptm = &ts.Timestamp{Seconds: 12345, Nanos: 67890}
 )
 
 func TestCreateFromProtoValue(t *testing.T) {

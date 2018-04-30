@@ -185,7 +185,7 @@ func TestQueryToProto(t *testing.T) {
 			in:   q.Offset(2).Limit(3),
 			want: &pb.StructuredQuery{
 				Offset: 2,
-				Limit:  &wrappers.Int32Value{3},
+				Limit:  &wrappers.Int32Value{Value: 3},
 			},
 		},
 		{
@@ -193,7 +193,7 @@ func TestQueryToProto(t *testing.T) {
 			in:   q.Offset(2).Limit(3).Limit(4).Offset(5), // last wins
 			want: &pb.StructuredQuery{
 				Offset: 5,
-				Limit:  &wrappers.Int32Value{4},
+				Limit:  &wrappers.Int32Value{Value: 4},
 			},
 		},
 		{
