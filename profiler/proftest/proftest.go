@@ -201,6 +201,7 @@ func (tr *GCETestRunner) PollForSerialOutput(ctx context.Context, inst *Instance
 	for {
 		select {
 		case <-ctx.Done():
+			return ctx.Err()
 		case <-time.After(20 * time.Second):
 			resp, err := tr.ComputeService.Instances.GetSerialPortOutput(inst.ProjectID, inst.Zone, inst.Name).Port(2).Context(ctx).Do()
 			if err != nil {
