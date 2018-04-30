@@ -63,6 +63,9 @@ type Copier struct {
 	// The Cloud KMS key, in the form projects/P/locations/L/keyRings/R/cryptoKeys/K,
 	// that will be used to encrypt the object. Overrides the object's KMSKeyName, if
 	// any.
+	//
+	// It is an error to provide both a DestinationKMSKeyName and a customer-supplied
+	// encryption key (via ObjectHandle.Key) on the destination object.
 	DestinationKMSKeyName string
 
 	dst, src *ObjectHandle
@@ -78,6 +81,9 @@ func (c *Copier) Run(ctx context.Context) (attrs *ObjectAttrs, err error) {
 	}
 	if err := c.dst.validate(); err != nil {
 		return nil, err
+	}
+	if c.DestinationKMSKeyName != "" && c.dst.encryptionKey != nil {
+		return nil, errors.New("storage: cannot use DestinationKMSKeyName with a customer-supplied encryption key")
 	}
 	// Convert destination attributes to raw form, omitting the bucket.
 	// If the bucket is included but name or content-type aren't, the service
