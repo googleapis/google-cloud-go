@@ -64,8 +64,9 @@ type Copier struct {
 	// that will be used to encrypt the object. Overrides the object's KMSKeyName, if
 	// any.
 	//
-	// It is an error to provide both a DestinationKMSKeyName and a customer-supplied
-	// encryption key (via ObjectHandle.Key) on the destination object.
+	// Providing both a DestinationKMSKeyName and a customer-supplied encryption key
+	// (via ObjectHandle.Key) on the destination object will result in an error when
+	// Run is called.
 	DestinationKMSKeyName string
 
 	dst, src *ObjectHandle
