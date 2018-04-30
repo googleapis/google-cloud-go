@@ -2107,7 +2107,7 @@ func TestIntegration_KMS(t *testing.T) {
 	h.mustDeleteObject(obj)
 
 	// Encrypt an object with a CSEK, then copy it using a CMEK.
-	src := bkt.Object("csek").Key([]byte("my-secret-AES-256-encryption-key"))
+	src := bkt.Object("csek").Key(testEncryptionKey)
 	if err := writeObject(ctx, src, "text/plain", contents); err != nil {
 		t.Fatal(err)
 	}

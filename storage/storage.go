@@ -725,6 +725,9 @@ type ObjectAttrs struct {
 	// Cloud KMS key name, in the form
 	// projects/P/locations/L/keyRings/R/cryptoKeys/K, used to encrypt this object,
 	// if the object is encrypted by such a key.
+	//
+	// It is an error to provide both a KMSKeyName and a customer-supplied encryption key
+	// (via ObjectHandle.Key) when writing.
 	KMSKeyName string
 
 	// Prefix is set only for ObjectAttrs which represent synthetic "directory
