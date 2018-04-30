@@ -1377,7 +1377,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	h := testHelper{t}
 
 	bucketName2 := uidSpace.New()
-	b := client.Bucket(bucketName2)
+	b1 := client.Bucket(bucketName2)
 	projID := testutil.ProjID()
 	// Use Firestore project as a project that does not contain the bucket.
 	otherProjID := os.Getenv(envFirestoreProjID)
@@ -1393,7 +1393,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer otherClient.Close()
-	ob := otherClient.Bucket(bucketName2)
+	b2 := otherClient.Bucket(bucketName2)
 	user, err := keyFileEmail(os.Getenv("GCLOUD_TESTS_GOLANG_KEY"))
 	if err != nil {
 		t.Fatal(err)
@@ -1404,8 +1404,8 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	}
 
 	// Create a requester-pays bucket. The bucket is contained in the project projID.
-	h.mustCreate(b, projID, &BucketAttrs{RequesterPays: true})
-	if err := b.ACL().Set(ctx, ACLEntity("user-"+otherUser), RoleOwner); err != nil {
+	h.mustCreate(b1, projID, &BucketAttrs{RequesterPays: true})
+	if err := b1.ACL().Set(ctx, ACLEntity("user-"+otherUser), RoleOwner); err != nil {
 		t.Fatal(err)
 	}
 
@@ -1429,7 +1429,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		// user: an Owner on the containing project
 		// userProject: absent
 		// result: success, by the rule permitting access by owners of the containing bucket.
-		if err := f(b); err != nil {
+		if err := f(b1); err != nil {
 			t.Errorf("%s: %v, want nil\n"+
 				"confirm that %s is an Owner on %s",
 				msg, err, user, projID)
@@ -1437,13 +1437,13 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		// user: an Owner on the containing project
 		// userProject: containing project
 		// result: success, by the same rule as above; userProject is unnecessary but allowed.
-		if err := f(b.UserProject(projID)); err != nil {
+		if err := f(b1.UserProject(projID)); err != nil {
 			t.Errorf("%s: got %v, want nil", msg, err)
 		}
 		// user: not an Owner on the containing project
 		// userProject: absent
 		// result: failure, by the standard requester-pays rule
-		err := f(ob)
+		err := f(b2)
 		if got, want := errCode(err), wantErrorCode; got != want {
 			t.Errorf("%s: got error %v, want code %d\n"+
 				"confirm that %s is NOT an Owner on %s",
@@ -1452,7 +1452,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		// user: not an Owner on the containing project
 		// userProject: not the containing one, but user has Editor role on it
 		// result: success, by the standard requester-pays rule
-		if err := f(ob.UserProject(otherProjID)); err != nil {
+		if err := f(b2.UserProject(otherProjID)); err != nil {
 			t.Errorf("%s: got %v, want nil\n"+
 				"confirm that %s is an Editor on %s and that that project has billing enabled",
 				msg, err, otherUser, otherProjID)
@@ -1460,7 +1460,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		// user: not an Owner on the containing project
 		// userProject: the containing one, on which the user does NOT have Editor permission.
 		// result: failure
-		err = f(ob.UserProject("veener-jba"))
+		err = f(b2.UserProject("veener-jba"))
 		if got, want := errCode(err), 403; got != want {
 			t.Errorf("%s: got error %v, want code %d\n"+
 				"confirm that %s is NOT an Editor on %s",
@@ -1555,25 +1555,22 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		_, err := b.Object("compose").ComposerFrom(b.Object("foo"), b.Object("copy")).Run(ctx)
 		return err
 	})
-
-	// Deletion.
-	// TODO(jba): uncomment when internal bug 78341001 is resolved.
-	// call("delete object", func(b *BucketHandle) error {
-	// 	err := b.Object("foo").Delete(ctx)
-	// 	fmt.Printf("#### deleting foo returns %v\n", err)
-	// 	if err == ErrObjectNotExist {
-	// 		return nil
-	// 	}
-	// 	return err
-	// })
-	b.Object("foo").Delete(ctx) // remove when above is uncommented
+	call("delete object", func(b *BucketHandle) error {
+		// Make sure the object exists, so we don't get confused by ErrObjectNotExist.
+		// The storage service may perform validation in any order (perhaps in parallel),
+		// so if we delete an object that doesn't exist and for which we lack permission,
+		// we could see either of those two errors. (See Google-internal bug 78341001.)
+		h.mustWrite(b1.Object("foo").NewWriter(ctx), []byte("hello")) // note: b1, not b.
+		return b.Object("foo").Delete(ctx)
+	})
+	b1.Object("foo").Delete(ctx) // Make sure object is deleted.
 	for _, obj := range []string{"copy", "compose"} {
-		if err := b.UserProject(projID).Object(obj).Delete(ctx); err != nil {
+		if err := b1.UserProject(projID).Object(obj).Delete(ctx); err != nil {
 			t.Fatalf("could not delete %q: %v", obj, err)
 		}
 	}
 
-	h.mustDeleteBucket(b)
+	h.mustDeleteBucket(b1)
 }
 
 // TODO(jba): move to testutil, factor out from firestore/integration_test.go.
