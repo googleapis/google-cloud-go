@@ -30,6 +30,7 @@ google/cloud/dialogflow/artman_dialogflow_v2.yaml
 google/cloud/language/artman_language_v1.yaml
 google/cloud/language/artman_language_v1beta2.yaml
 google/cloud/oslogin/artman_oslogin_v1beta.yaml
+google/cloud/redis/artman_redis_v1beta1.yaml
 google/cloud/speech/artman_speech_v1.yaml
 google/cloud/speech/artman_speech_v1beta1.yaml
 google/cloud/speech/artman_speech_v1p1beta1.yaml
