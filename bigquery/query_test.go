@@ -352,6 +352,8 @@ func TestConfiguringQuery(t *testing.T) {
 	query.DefaultDatasetID = "def-dataset-id"
 	query.TimePartitioning = &TimePartitioning{Expiration: 1234 * time.Second, Field: "f"}
 	query.DestinationEncryptionConfig = &EncryptionConfig{KMSKeyName: "keyName"}
+	query.SchemaUpdateOptions = []string{"ALLOW_FIELD_ADDITION"}
+
 	// Note: Other configuration fields are tested in other tests above.
 	// A lot of that can be consolidated once Client.Copy is gone.
 
@@ -367,6 +369,7 @@ func TestConfiguringQuery(t *testing.T) {
 				UseLegacySql:                       &pfalse,
 				TimePartitioning:                   &bq.TimePartitioning{ExpirationMs: 1234000, Field: "f", Type: "DAY"},
 				DestinationEncryptionConfiguration: &bq.EncryptionConfiguration{KmsKeyName: "keyName"},
+				SchemaUpdateOptions:                []string{"ALLOW_FIELD_ADDITION"},
 			},
 		},
 		JobReference: &bq.JobReference{
