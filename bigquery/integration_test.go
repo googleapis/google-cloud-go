@@ -19,6 +19,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math/big"
 	"net/http"
 	"os"
 	"sort"
@@ -672,6 +673,7 @@ type TestStruct struct {
 	Date      civil.Date
 	Time      civil.Time
 	DateTime  civil.DateTime
+	Numeric   *big.Rat
 
 	StringArray    []string
 	IntegerArray   []int64
@@ -681,6 +683,7 @@ type TestStruct struct {
 	DateArray      []civil.Date
 	TimeArray      []civil.Time
 	DateTimeArray  []civil.DateTime
+	NumericArray   []*big.Rat
 
 	Record      SubTestStruct
 	RecordArray []SubTestStruct
@@ -725,6 +728,7 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 			d,
 			tm,
 			dtm,
+			big.NewRat(57, 100),
 			[]string{"a", "b"},
 			[]int64{1, 2},
 			[]float64{1, 1.41},
@@ -733,6 +737,7 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 			[]civil.Date{d, d2},
 			[]civil.Time{tm, tm2},
 			[]civil.DateTime{dtm, dtm2},
+			[]*big.Rat{big.NewRat(1, 2), big.NewRat(3, 5)},
 			SubTestStruct{
 				"string",
 				SubSubTestStruct{24},
@@ -757,6 +762,7 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 			Date:      d,
 			Time:      tm,
 			DateTime:  dtm,
+			Numeric:   big.NewRat(4499, 10000),
 		},
 	}
 	var savers []*StructSaver
@@ -811,6 +817,7 @@ func TestIntegration_UploadAndReadNullable(t *testing.T) {
 	}
 	ctm := civil.Time{Hour: 15, Minute: 4, Second: 5, Nanosecond: 6000}
 	cdt := civil.DateTime{Date: testDate, Time: ctm}
+	rat := big.NewRat(33, 100)
 	testUploadAndReadNullable(t, testStructNullable{}, make([]Value, len(testStructNullableSchema)))
 	testUploadAndReadNullable(t, testStructNullable{
 		String:    NullString{"x", true},
@@ -822,9 +829,10 @@ func TestIntegration_UploadAndReadNullable(t *testing.T) {
 		Date:      NullDate{testDate, true},
 		Time:      NullTime{ctm, true},
 		DateTime:  NullDateTime{cdt, true},
+		Numeric:   rat,
 		Record:    &subNullable{X: NullInt64{4, true}},
 	},
-		[]Value{"x", []byte{1, 2, 3}, int64(1), 2.3, true, testTimestamp, testDate, ctm, cdt, []Value{int64(4)}})
+		[]Value{"x", []byte{1, 2, 3}, int64(1), 2.3, true, testTimestamp, testDate, ctm, cdt, rat, []Value{int64(4)}})
 }
 
 func testUploadAndReadNullable(t *testing.T, ts testStructNullable, wantRow []Value) {
@@ -1153,6 +1161,8 @@ func TestIntegration_StandardQuery(t *testing.T) {
 	}{
 		{"SELECT 1", ints(1)},
 		{"SELECT 1.3", []Value{1.3}},
+		{"SELECT CAST(1.3  AS NUMERIC)", []Value{big.NewRat(13, 10)}},
+		{"SELECT NUMERIC '0.25'", []Value{big.NewRat(1, 4)}},
 		{"SELECT TRUE", []Value{true}},
 		{"SELECT 'ABC'", []Value{"ABC"}},
 		{"SELECT CAST('foo' AS BYTES)", []Value{[]byte("foo")}},
@@ -1224,6 +1234,7 @@ func TestIntegration_QueryParameters(t *testing.T) {
 	rtm.Nanosecond = 3000 // round to microseconds
 	dtm := civil.DateTime{Date: d, Time: tm}
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
+	rat := big.NewRat(13, 10)
 
 	type ss struct {
 		String string
@@ -1253,6 +1264,12 @@ func TestIntegration_QueryParameters(t *testing.T) {
 			[]QueryParameter{{"val", 1.3}},
 			[]Value{1.3},
 			1.3,
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{{"val", rat}},
+			[]Value{rat},
+			rat,
 		},
 		{
 			"SELECT @val",
@@ -1723,6 +1740,26 @@ func testLocation(t *testing.T, loc string) {
 	e.Location = loc
 	if _, err := e.Run(ctx); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestIntegration_NumericErrors(t *testing.T) {
+	// Verify that the service returns an error for a big.Rat that's too large.
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	schema := Schema{{Name: "n", Type: NumericFieldType}}
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
+	tooBigRat := &big.Rat{}
+	if _, ok := tooBigRat.SetString("1e40"); !ok {
+		t.Fatal("big.Rat.SetString failed")
+	}
+	upl := table.Uploader()
+	err := upl.Put(ctx, []*ValuesSaver{{Schema: schema, Row: []Value{tooBigRat}}})
+	if err == nil {
+		t.Fatal("got nil, want error")
 	}
 }
 
