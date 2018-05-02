@@ -173,10 +173,10 @@ Or you can infer the schema from a struct:
 
 Struct inference supports tags like those of the encoding/json package, so you can
 change names, ignore fields, or mark a field as nullable (non-required). Fields
-declared as on of the Null types (NullInt64, NullFloat64, NullString, NullBool,
+declared as one of the Null types (NullInt64, NullFloat64, NullString, NullBool,
 NullTimestamp, NullDate, NullTime and NullDateTime) are automatically inferred as
-nullable, so the "nullable" tag is only needed for []byte and pointer-to-struct
-fields.
+nullable, so the "nullable" tag is only needed for []byte, *big.Rat and
+pointer-to-struct fields.
 
     type student2 struct {
         Name     string `bigquery:"full_name"`
