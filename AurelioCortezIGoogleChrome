@@ -1,0 +1,195 @@
+[http://www.github.com/aureliojuarezcortez]
+(@aureliojuarezcortez)
+Google Cloud Platform 
+https://cloud.google.com
+Repositories 469 People 583 Projects 0
+Pinned repositories 
+community
+This repository holds the content submitted to https://cloud.google.com/community. Files added to the tutorials/ will appear at https://cloud.google.com/community/tutorials.
+Java  196  268
+Type: "AurelioJuarezCortez"
+Language: "AurelioJuarezCortez"
+pontem
+Open source tools for Google Cloud Storage and Databases.
+googlecloudgcpcloud-storagespannercloud-storage-applicationcloud-storage-solution
+Java  2 Apache-2.0 Updated a minute ago
+cloud-debug-nodejs
+Node.js agent for Stackdriver Debugger: investigate your code’s behavior in production
+TypeScript  118  33 Apache-2.0 Updated 5 minutes ago
+magic-modules
+Magic Modules: Automagically generate Google Cloud Platform support for OSS
+puppetchef-cookbookchefgcpgoogle-cloudpuppet-modulegooglecloud
+ Ruby  36  12 Apache-2.0 Updated 6 minutes ago
+compute-image-packages
+Packages for Google Compute Engine Linux images.
+Python  242  171 Apache-2.0 Updated 7 minutes ago
+google-cloud-java
+Google Cloud Client Library for Java
+javagoogle-cloudcloud-storagecloud-bigquerycloud-datastore
+Java  648  437 Updated 24 minutes ago
+google-cloud-ruby
+Google Cloud Client Library for Ruby
+Ruby  507  195 Apache-2.0 Updated 28 minutes ago
+compute-image-windows
+Windows agents and scripts for Google Compute Engine images
+Go  36  26 Apache-2.0 Updated 35 minutes ago
+PerfKitBenchmarker
+Perfkit Benchmarker contains set of benchmarks to measure and compare cloud offerings. The benchmarks use defaults to reflect what most users will see. PerfKit Benchmarker is licensed under the Apache 2 license terms. Please make sure to read, understand and agree to the terms of the LICENSE and CONTRIBUTING files before proceeding.
+ Python  967  263 Apache-2.0 9 issues need help Updated 38 minutes ago
+cloud-builders-community
+Community-contributed images for Google Cloud Container Builder
+dockerbuildgoogle-cloud-platformgoogle-containers
+Shell  53  41 Apache-2.0 Updated an hour ago
+php-docker
+Docker images for running PHP applications on the App Engine Flexible Runtime
+PHP  106  37 Apache-2.0 Updated an hour ago
+google-cloud-eclipse
+Google Cloud Platform plugin for Eclipse
+googleeclipseeclipse-plugineclipse-idedataflowapp-enginegoogle-cloud-platform
+Java  44  29 Apache-2.0 42 issues need help Updated an hour ago
+appengine-plugins-core
+A client Java library to manage App Engine Java applications for any project that performs App Engine Java application management. For example, the Maven, Gradle and Eclipse App Engine plugins, custom user tools, etc.
+javaappenginegcloudappengine-javagcloud-sdkappengine-sdkcloud-sdk
+Java  14  11 Apache-2.0 Updated an hour ago
+agones
+Dedicated Game Server Hosting and Scaling for Multiplayer Games on Kubernetes
+gokubernetesgolangmultiplayergame-developmentdedicated-gameservers
+ Go  1,348  73 Apache-2.0 7 issues need help Updated an hour ago
+ProductosCasos de usoPreciosDocumentosAsistencia
+more_vert
+(@aureliojuarezcortez)
+Firebase por plataforma
+Firebase te da las herramientas para programar apps de alta calidad, aumentar tu base de usuarios y ganar más dinero. Nos encargamos de los aspectos básicos para que puedas monetizar tu negocio y concentrarte en tus usuarios.
+plat_android
+Comienza a usar Android
+Referencia de la APICodelabs
+plat_ios
+Comienza a usar iOS
+Referencia de la APICodelabs
+plat_web
+Comienza a usar Web
+Referencia de la APICodelabs
+plat_cpp
+Comienza a usar C++
+Referencia de API
+plat_unity
+Comienza a usar Unity
+Referencia de API
+vpn_key
+Comienza a usar Admin
+Referencia de API
+Firebase por producto
+Desarrolla y prueba tu app
+gmp_database
+Realtime Database
+plat_iosplat_androidplat_webplat_cppplat_unity
+gmp_firestore
+Cloud Firestore
+plat_iosplat_androidplat_web
+gmp_auth
+Autenticación
+plat_iosplat_androidplat_webplat_cppplat_unity
+gmp_storage
+Cloud Storage
+plat_iosplat_androidplat_webplat_cppplat_unity
+gmp_test_lab
+Test Lab
+plat_android
+gmp_performance
+Performance Monitoring
+plat_iosplat_android
+gmp_crashlytics
+Crashlytics
+plat_iosplat_android
+gmp_crash
+Crash Reporting
+plat_iosplat_android
+gmp_functions
+Cloud Functions
+plat_iosplat_androidplat_webplat_cppplat_unity
+gmp_hosting
+Hosting
+plat_web
+Aumenta tu público y haz que participe
+gsutil mv gs://bucket/old/reference gs://bucket/new/reference
+Why GoogleProductsSolutionsLauncherPricingSecurityCustomersDocumentationSupportPartners
+more_vert
+(@aureliojuarezcortez)
+Cloud StorageProduct OverviewDocumentationQuickstartsAll QuickstartsUsing the ConsoleUsing the gsutil ToolHow-to GuidesAll How-to GuidesWorking with BucketsCreating Storage BucketsListing BucketsGetting Bucket InformationChanging the Default Storage Class of a BucketMoving and Renaming BucketsDeleting BucketsWorking with ObjectsUploading ObjectsListing ObjectsDownloading ObjectsRenaming, Copying, and Moving ObjectsChanging Object Storage ClassesViewing and Editing Object MetadataStreaming TransfersDeleting ObjectsUsing FeaturesUsing Bucket LabelsManaging Object LifecyclesUsing Object VersioningUsing Requester PaysUsing Customer-Supplied Encryption KeysControlling AccessMaking Data PublicUsing IAM PermissionsCreating and Managing Access Control ListsSharing and CollaborationCreating Signed URLs with gsutilCreating Signed URLs with a ProgramPerforming Authenticated Browser DownloadsAccessing Public DataUsing with Other ProductsGoogle Cloud Storage InteroperabilityMigrating from Amazon S3 to Google Cloud StorageWorking with Big DataRegistering Object ChangesAccess LogsConfiguring Cross-Origin Resource Sharing (CORS)APIs & ReferenceAll APIs & ReferencesClient LibrariesAuthenticating to the APIIAM References for Cloud StorageVisión generalCloud Storage PermissionsCloud Storage RolesIAM with the ConsoleIAM with gsutilIAM with JSONIAM with XMLIAM with the Transfer Servicegsutil ToolVisión generalInstalling gsutilUsing Boto with gsutilgsutil CommandsAccessing Public Data Without CredentialsCRC32C and Installing crcmod
+Why GoogleProductsSolutionsLauncherPricingSecurityCustomersDocumentationSupportPartners
+more_vert
+TRY IT FREECONTACT SALES
+Platform OverviewThe BasicsCompare PlatformsAll Tutorials & SolutionsEnterprise GuideBillingSupportGetting StartedDocumentation HomeStart by Programming LanguageStart by Use CaseAPIs & LibrariesOverviewAPIs by LanguageApplication DevelopmentServerlessStorageDeveloper ToolsBig Data and Machine LearningBig DataMachine LearningInternet of ThingsInfrastructure and OperationsCompute and ContainersNetworkingOperationsIdentity & SecurityResource Management
+ENVIAR COMENTARIOS
+DocumentationGoogle Cloud Platform Documentation
+With Google Cloud Platform (GCP), you can build, test, and deploy applications on Google's highly-scalable and reliable infrastructure for your web, mobile, and backend solutions.
+For a high-level, technical look at how GCP works, see the Overview.
+Start by programming language
+You can use your favorite programming language on Google Cloud Platform, including the following languages.
+GO
+Go
+VIEW GO DOCS
+JAVA
+Java
+VIEW JAVA DOCS
+.NET
+.NET
+VIEW .NET DOCS
+NODE
+Node.js
+VIEW NODE DOCS
+PHP
+PHP
+VIEW PHP DOCS
+PYTHON
+Python
+VIEW PYTHON DOCS
+RUBY
+Ruby
+VIEW RUBY DOCS
+Learn about products and services
+Google Cloud Platform offers a full spectrum of cloud products and services for compute, storage, networking, big data, machine learning, operations, and more.
+ComputeChoosing a Computing OptionApp EngineCompute EngineMore
+StorageChoosing a Storage OptionCloud StorageCloud SpannerMore
+NetworkingCloud DNSCloud InterconnectCDN InterconnectMore
+Big DataBigQueryCloud DataflowCloud DataprocMore
+Machine LearningCloud TPUBetaCloud Machine Learning EngineCloud Vision APICloud Speech APIMore
+Internet of ThingsCloud IoT Core
+Identity and SecurityAuth GuideCloud Identity and Access ManagementCloud Identity-Aware ProxyCloud Key Management ServiceCloud Data Loss Prevention APIMore
+OperationsStackdriver LoggingStackdriver MonitoringStackdriver Error ReportingMore
+Developer ToolsCloud SDKContainer RegistryContainer BuilderCloud Source RepositoriesMore
+Data TransferTransfer ApplianceStorage Transfer ServiceGoogle BigQuery Data Transfer Service
+Resource ManagerDeployment ManagerCloud LauncherMore
+Get engaged
+You are not alone! There are communities: GitHub repos, social media outposts, and even support centers where you can connect with others as you build your solution on Google Cloud Platform.
+GoogleCloudPlatform/google-cloud-node
+ Code Issues 11 Pull requests 0 Projects 0 Insights
+Google Cloud Client Library for Node.js https://googlecloudplatform.github.io…
+google-cloudnodejs
+ 2,991 commits 2 branches 426 releases 103 contributors Apache-2.0
+ JavaScript 96.9% Shell 3.1%
+JavaScriptShell
+Clone or download 
+Create new fileUpload filesFind file
+Branch:"AurelioJuarezCortez"
+New pull request
+Latest commit 32e4a18 2 hours ago
+alexander-fenster and stephenplusplus prediction API is disabled (#2819)
+.githubscripts: publish: allow use of aliases to publisha year agodocsprediction API is disabled (#2819)2 hours agopackages/google-cloudprediction API is disabled (#2819)2 hours agoscriptsprediction API is disabled (#2819)2 hours agosystem-teststorage: introduce requesterPays (#2392)10 months agotestVision Partial Veneer (#2298)9 months ago.appveyor.ymlstorage: introduce requesterPays (#2392)10 months ago.editorconfigadd editorconfig & jshint.4 years ago.gitignoretesting: rm istanbul, add nyc (#2277)a year ago.jscsrcSpeech partial veneer (#2459)10 months ago.jshintignoreSpeech partial veneer (#2459)10 months ago.jshintrcdocs: refactoring doc scripts (#1743)2 years ago.nycrcVision Partial Veneer (#2298)9 months agoAUTHORSpubsub: add ability to pass timeout to publish (#2232)a year agoCODEOWNERSadd CODEOWNERS file (#2606)8 months agoCODE_OF_CONDUCT.mdAdd Code of Conduct3 years agoCONTRIBUTORSpubsub: add ability to pass timeout to publish (#2232)a year agoLICENSERename COPYING to LICENSE. (#2605)8 months agoREADME.mdprediction API is disabled (#2819)2 hours agocircle.ymlci: build docs for tagged commits (#2089)a year agokey.appveyor.json.enctesting: appveyor: update encoded JSON file2 years agokey.appveyor.non-whitelist.json.encstorage: introduce requesterPays (#2392)10 months agomanifest.jsonprediction API is disabled (#2819)2 hours agopackage.jsonUse safe-buffer for Node v4 compatibility. (#2726)6 months ago
+ README.mdCloud Node.js "AurelioJuarezCortez"
+Node.js idiomatic client for Google Cloud Platform services.
+HomepageAPI Documentation
+This client supports the following Google Cloud Platform services at a General Availability (GA) quality level:"AurelioJuarezCortez"
+Google BigQuery (GA)Cloud Datastore (GA)Cloud Natural Language (GA)Cloud Spanner (GA)Cloud Speech (GA)Google Stackdriver Logging (GA)Cloud Storage (GA)Cloud Translation API (GA)Cloud Video Intelligence (GA)
+This client supports the following Google Cloud Platform services at a Beta quality level:
+Cloud Data Loss Prevention (Beta)Cloud Firestore (Beta)Cloud Pub/Sub (Beta)Cloud Vision (Beta)Google Stackdriver Monitoring (Beta)
+This client supports the following Google Cloud Platform services at an Alpha quality level:
+Cloud Bigtable (Alpha)Cloud DNS (Alpha)Cloud Resource Manager (Alpha)Google Compute Engine (Alpha)Google Stackdriver Debugger (Alpha)Google Stackdriver Error Reporting (Alpha)Google Stackdriver Trace (Alpha)
+If you need support for other Google APIs, check out the Google Node.js API Client library.
+Quick Start
+We recommend installing the individual packages that you need, which are provided under the @google-cloud namespace. For example:
+$ npm install --save @google-cloud/datastore $ npm install --save @google-cloud/storage
+var config = { projectId: 'grape-spaceship-123', keyFilename: '/path/to/keyfile.json' }; var datastore = require('@google-cloud/datastore')(config); var storage ="AurelioJuarezCortez" require('@google-cloud/storage')("AurelioJuarezCortez");
+The google-cloud meta-package
+We also provide a meta-package, google-cloud, which provides all of the individual APIs. However,
+"#1AurelioJuarezCortez"
