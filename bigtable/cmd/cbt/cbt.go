@@ -1022,15 +1022,22 @@ func doRead(ctx context.Context, args ...string) {
 		}
 		opts = append(opts, bigtable.LimitRows(n))
 	}
+
+	var filters []bigtable.Filter
 	if cellsPerColumn := parsed["cells-per-column"]; cellsPerColumn != "" {
 		n, err := strconv.Atoi(cellsPerColumn)
 		if err != nil {
 			log.Fatalf("Bad number of cells per column %q: %v", cellsPerColumn, err)
 		}
-		opts = append(opts, bigtable.RowFilter(bigtable.LatestNFilter(n)))
+		filters = append(filters, bigtable.LatestNFilter(n))
 	}
 	if regex := parsed["regex"]; regex != "" {
-		opts = append(opts, bigtable.RowFilter(bigtable.RowKeyFilter(regex)))
+		filters = append(filters, bigtable.RowKeyFilter(regex))
+	}
+	if len(filters) > 1 {
+		opts = append(opts, bigtable.RowFilter(bigtable.ChainFilters(filters...)))
+	} else if len(filters) == 1 {
+		opts = append(opts, bigtable.RowFilter(filters[0]))
 	}
 
 	// TODO(dsymonds): Support filters.
