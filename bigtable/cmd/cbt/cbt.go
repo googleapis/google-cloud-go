@@ -332,7 +332,8 @@ var commands = []struct {
 		Name: "lookup",
 		Desc: "Read from a single row",
 		do:   doLookup,
-		Usage: "cbt lookup <table> <row> [app-profile=<app profile id>]\n" +
+		Usage: "cbt lookup <table> <row> [cells-per-column=<n>] [app-profile=<app profile id>]\n" +
+			"  cells-per-column=<n> 			Read only this many cells per column\n" +
 			"  app-profile=<app profile id>		The app profile id to use for the request (replication alpha)\n",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
@@ -851,19 +852,34 @@ func doListClusters(ctx context.Context, args ...string) {
 
 func doLookup(ctx context.Context, args ...string) {
 	if len(args) < 2 {
-		log.Fatalf("usage: cbt lookup <table> <row> [app-profile=<app profile id>]")
+		log.Fatalf("usage: cbt lookup <table> <row> [cells-per-column=<n>] [app-profile=<app profile id>]")
 	}
-	var appProfile string
-	if len(args) > 2 {
-		i := strings.Index(args[2], "=")
+
+	parsed := make(map[string]string)
+	for _, arg := range args[2:] {
+		i := strings.Index(arg, "=")
 		if i < 0 {
-			log.Fatalf("Bad arg %q", args[2])
+			log.Fatalf("Bad arg %q", arg)
 		}
-		appProfile = strings.Split(args[2], "=")[1]
+		key, val := arg[:i], arg[i+1:]
+		switch key {
+		default:
+			log.Fatalf("Unknown arg key %q", key)
+		case "cells-per-column", "app-profile":
+			parsed[key] = val
+		}
+	}
+	var opts []bigtable.ReadOption
+	if cellsPerColumn := parsed["cells-per-column"]; cellsPerColumn != "" {
+		n, err := strconv.Atoi(cellsPerColumn)
+		if err != nil {
+			log.Fatalf("Bad number of cells per column %q: %v", cellsPerColumn, err)
+		}
+		opts = append(opts, bigtable.RowFilter(bigtable.LatestNFilter(n)))
 	}
 	table, row := args[0], args[1]
-	tbl := getClient(bigtable.ClientConfig{AppProfile: appProfile}).Open(table)
-	r, err := tbl.ReadRow(ctx, row)
+	tbl := getClient(bigtable.ClientConfig{AppProfile: parsed["app-profile"]}).Open(table)
+	r, err := tbl.ReadRow(ctx, row, opts...)
 	if err != nil {
 		log.Fatalf("Reading row: %v", err)
 	}
