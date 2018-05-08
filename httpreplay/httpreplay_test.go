@@ -29,6 +29,9 @@ import (
 )
 
 func TestIntegration_RecordAndReplay(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
 	f, err := ioutil.TempFile("", "httpreplay")
 	if err != nil {
 		t.Fatal(err)
@@ -49,7 +52,8 @@ func TestIntegration_RecordAndReplay(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	hc, err := rec.Client(ctx, option.WithScopes(storage.ScopeFullControl))
+	hc, err := rec.Client(ctx, option.WithTokenSource(
+		testutil.TokenSource(ctx, storage.ScopeFullControl)))
 	if err != nil {
 		t.Fatal(err)
 	}
