@@ -90,7 +90,7 @@ go run busybench.go --service="{{.Service}}" --mutex_profiling="{{.MutexProfilin
 const dockerfileFmt = `FROM golang
 RUN git clone https://code.googlesource.com/gocloud /go/src/cloud.google.com/go \
     && cd /go/src/cloud.google.com/go/profiler/busybench && git reset --hard %s \
-    && go get -v && go install -v
+    && go get && go install
 CMD ["busybench", "--service", "%s"]
  `
 
