@@ -949,7 +949,7 @@ func TestNestedTransaction(t *testing.T) {
 // Test client recovery on database recreation.
 func TestDbRemovalRecovery(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
 	defer cancel()
 	client, dbPath, tearDown := prepare(ctx, t, singerDBStatements)
 	defer tearDown()
@@ -1922,5 +1922,212 @@ func TestCommitTimestamp(t *testing.T) {
 	_, err = client.Apply(ctx, []*Mutation{InsertOrUpdate("TestTable", []string{"Key", "Ts"}, []interface{}{"a", time.Now().Add(time.Hour)})}, ApplyAtLeastOnce())
 	if msg, ok := matchError(err, codes.FailedPrecondition, "Cannot write timestamps in the future"); !ok {
 		t.Error(msg)
+	}
+}
+
+func TestDML(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+	client, _, tearDown := prepare(ctx, t, singerDBStatements)
+	defer tearDown()
+
+	// Function that reads a single row's first name from within a transaction.
+	readFirstName := func(tx *ReadWriteTransaction, key int) (string, error) {
+		row, err := tx.ReadRow(ctx, "Singers", Key{key}, []string{"FirstName"})
+		if err != nil {
+			return "", err
+		}
+		var fn string
+		if err := row.Column(0, &fn); err != nil {
+			return "", err
+		}
+		return fn, nil
+	}
+
+	// Function that reads multiple rows' first names from outside a read/write transaction.
+	readFirstNames := func(keys ...int) []string {
+		var ks []KeySet
+		for _, k := range keys {
+			ks = append(ks, Key{k})
+		}
+		iter := client.Single().Read(ctx, "Singers", KeySets(ks...), []string{"FirstName"})
+		var got []string
+		var fn string
+		err := iter.Do(func(row *Row) error {
+			if err := row.Column(0, &fn); err != nil {
+				return err
+			}
+			got = append(got, fn)
+			return nil
+		})
+		if err != nil {
+			t.Fatalf("readFirstNames(%v): %v", keys, err)
+		}
+		return got
+	}
+
+	// Use ReadWriteTransaction.Query to execute a DML statement.
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		iter := tx.Query(ctx, Statement{
+			SQL: `INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (1, "Umm", "Kulthum")`,
+		})
+		defer iter.Stop()
+		if row, err := iter.Next(); err != iterator.Done {
+			t.Fatalf("got results from iterator, want none: %#v, err = %v\n", row, err)
+		}
+		if iter.RowCount != 1 {
+			t.Errorf("row count: got %d, want 1", iter.RowCount)
+		}
+		// The results of the DML statement should be visible to the transaction.
+		got, err := readFirstName(tx, 1)
+		if err != nil {
+			return err
+		}
+		if want := "Umm"; got != want {
+			t.Errorf("got %q, want %q", got, want)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Use ReadWriteTransaction.Update to execute a DML statement.
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		count, err := tx.Update(ctx, Statement{
+			SQL: `Insert INTO Singers (SingerId, FirstName, LastName) VALUES (2, "Eduard", "Khil")`,
+		})
+		if count != 1 {
+			t.Errorf("row count: got %d, want 1", count)
+		}
+		got, err := readFirstName(tx, 2)
+		if err != nil {
+			return err
+		}
+		if want := "Eduard"; got != want {
+			t.Errorf("got %q, want %q", got, want)
+		}
+		return nil
+
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Roll back a DML statement and confirm that it didn't happen.
+	var fail = errors.New("fail")
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		_, err := tx.Update(ctx, Statement{
+			SQL: `INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (3, "Audra", "McDonald")`,
+		})
+		if err != nil {
+			return err
+		}
+		return fail
+	})
+	if err != fail {
+		t.Fatalf("rolling back: got error %v, want the error 'fail'", err)
+	}
+	_, err = client.Single().ReadRow(ctx, "Singers", Key{3}, []string{"FirstName"})
+	if got, want := ErrCode(err), codes.NotFound; got != want {
+		t.Errorf("got %s, want %s", got, want)
+	}
+
+	// Run two DML statements in the same transaction.
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		_, err := tx.Update(ctx, Statement{SQL: `UPDATE Singers SET FirstName = "Oum" WHERE SingerId = 1`})
+		if err != nil {
+			return err
+		}
+		_, err = tx.Update(ctx, Statement{SQL: `UPDATE Singers SET FirstName = "Eddie" WHERE SingerId = 2`})
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := readFirstNames(1, 2)
+	want := []string{"Oum", "Eddie"}
+	if !testEqual(got, want) {
+		t.Errorf("got %v, want %v", got, want)
+	}
+
+	// Run a DML statement and an ordinary mutation in the same transaction.
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		_, err := tx.Update(ctx, Statement{
+			SQL: `INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (3, "Audra", "McDonald")`,
+		})
+		if err != nil {
+			return err
+		}
+		tx.BufferWrite([]*Mutation{
+			Insert("Singers", []string{"SingerId", "FirstName", "LastName"},
+				[]interface{}{4, "Andy", "Irvine"}),
+		})
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	got = readFirstNames(3, 4)
+	want = []string{"Audra", "Andy"}
+	if !testEqual(got, want) {
+		t.Errorf("got %v, want %v", got, want)
+	}
+
+	// Attempt to run a query using update.
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		_, err := tx.Update(ctx, Statement{SQL: `SELECT FirstName from Singers`})
+		return err
+	})
+	if got, want := ErrCode(err), codes.InvalidArgument; got != want {
+		t.Errorf("got %s, want %s", got, want)
+	}
+}
+
+func TestPDML(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+	client, _, tearDown := prepare(ctx, t, singerDBStatements)
+	defer tearDown()
+
+	columns := []string{"SingerId", "FirstName", "LastName"}
+
+	// Populate the Singers table.
+	var muts []*Mutation
+	for _, row := range [][]interface{}{
+		{1, "Umm", "Kulthum"},
+		{2, "Eduard", "Khil"},
+		{3, "Audra", "McDonald"},
+	} {
+		muts = append(muts, Insert("Singers", columns, row))
+	}
+	if _, err := client.Apply(ctx, muts); err != nil {
+		t.Fatal(err)
+	}
+	// Identifiers in PDML statements must be fully qualified.
+	// TODO(jba): revisit the above.
+	count, err := client.PartitionedUpdate(ctx, Statement{
+		SQL: `UPDATE Singers SET Singers.FirstName = "changed" WHERE Singers.SingerId >= 1 AND Singers.SingerId <= 3`,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := int64(3); count != want {
+		t.Errorf("got %d, want %d", count, want)
+	}
+	got, err := readAll(client.Single().Read(ctx, "Singers", AllKeys(), columns))
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := [][]interface{}{
+		{int64(1), "changed", "Kulthum"},
+		{int64(2), "changed", "Khil"},
+		{int64(3), "changed", "McDonald"},
+	}
+	if !testEqual(got, want) {
+		t.Errorf("\ngot %v\nwant%v", got, want)
 	}
 }
