@@ -416,6 +416,9 @@ type QueryStatistics struct {
 	// non-legacy SQL queries.
 	Schema Schema
 
+	// Slot-milliseconds consumed by this query job.
+	SlotMillis int64
+
 	// Standard SQL: list of undeclared query parameter names detected during a
 	// dry run validation.
 	UndeclaredQueryParameterNames []string
@@ -741,6 +744,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 			NumDMLAffectedRows:            s.Query.NumDmlAffectedRows,
 			QueryPlan:                     queryPlanFromProto(s.Query.QueryPlan),
 			Schema:                        bqToSchema(s.Query.Schema),
+			SlotMillis:                    s.Query.TotalSlotMs,
 			Timeline:                      timelineFromProto(s.Query.Timeline),
 			ReferencedTables:              tables,
 			UndeclaredQueryParameterNames: names,
