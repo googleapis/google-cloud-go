@@ -165,9 +165,9 @@ func writeLog(logger *har.Logger, filename string) error {
 
 // Headers that may contain sensitive data (auth tokens, keys).
 var sensitiveHeaders = []string{
-	"authorization",
-	"x-goog-encryption-key",             // used by Cloud Storage for customer-supplied encryption
-	"x-goog-copy-source-encryption-key", // ditto
+	"Authorization",
+	"X-Goog-Encryption-Key",             // used by Cloud Storage for customer-supplied encryption
+	"X-Goog-Copy-Source-Encryption-Key", // ditto
 }
 
 // withRedactedHeaders removes sensitive header contents before calling mod.
