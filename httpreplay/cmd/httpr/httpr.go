@@ -34,10 +34,11 @@ import (
 )
 
 var (
-	port        = flag.Int("port", 8080, "port of the proxy")
-	controlPort = flag.Int("control-port", 8181, "port for controlling the proxy")
-	record      = flag.String("record", "", "record traffic and save to filename")
-	replay      = flag.String("replay", "", "read filename and replay traffic")
+	port         = flag.Int("port", 8080, "port of the proxy")
+	controlPort  = flag.Int("control-port", 8181, "port for controlling the proxy")
+	record       = flag.String("record", "", "record traffic and save to filename")
+	replay       = flag.String("replay", "", "read filename and replay traffic")
+	debugHeaders = flag.Bool("debug-headers", false, "log header mismatches")
 )
 
 func main() {
@@ -60,6 +61,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	proxy.DebugHeaders = *debugHeaders
 
 	// Expose certificate authority on the control port.
 	mux := http.NewServeMux()

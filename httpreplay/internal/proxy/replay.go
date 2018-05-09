@@ -21,9 +21,11 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"mime"
 	"mime/multipart"
 	"net/http"
+	"reflect"
 	"strings"
 
 	"github.com/google/martian/har"
@@ -138,6 +140,30 @@ func (r replayRoundTripper) RoundTrip(req *http.Request) (*http.Response, error)
 	return nil, fmt.Errorf("no matching request for %+v", req)
 }
 
+// Headers that shouldn't be compared, becuase they may differ on different executions
+// of the same code, or may not be present during record or replay.
+var ignoreHeaders = map[string]bool{}
+
+func init() {
+	// Sensitive headers are redacted in the log, so they won't be equal to incoming values.
+	for _, h := range sensitiveHeaders {
+		ignoreHeaders[h] = true
+	}
+	for _, h := range []string{
+		"Content-Type", // handled by requestBody
+		"Date",
+		"Host",
+		"Transfer-Encoding",
+		"Via",
+		"X-Forwarded-For",
+		"X-Forwarded-Host",
+		"X-Forwarded-Proto",
+		"X-Forwarded-Url",
+	} {
+		ignoreHeaders[h] = true
+	}
+}
+
 // Report whether the incoming request in matches the candidate request cand.
 func requestsMatch(in *http.Request, inBody *requestBody, cand *har.Request, candBody *requestBody) bool {
 	// TODO(jba): compare headers?
@@ -147,7 +173,22 @@ func requestsMatch(in *http.Request, inBody *requestBody, cand *har.Request, can
 	if in.URL.String() != cand.URL {
 		return false
 	}
-	return inBody.equal(candBody)
+	if !inBody.equal(candBody) {
+		return false
+	}
+	// Check headers last. See DebugHeaders.
+	return headersMatch(in.Header, harHeadersToHTTP(cand.Headers), ignoreHeaders)
+}
+
+func harHeadersToHTTP(hhs []har.Header) http.Header {
+	// Unfortunately, the har package joins multiple header values with ", ",
+	// which isn't reversible if any of the values contains a comma.
+	// We hope for the best.
+	res := http.Header{}
+	for _, hh := range hhs {
+		res[hh.Name] = strings.Split(hh.Value, ", ")
+	}
+	return res
 }
 
 // Convert a HAR response to a Go http.Response.
@@ -247,6 +288,44 @@ func (r1 *requestBody) equal(r2 *requestBody) bool {
 	}
 	for i, p1 := range r1.parts {
 		if !bytes.Equal(p1, r2.parts[i]) {
+			return false
+		}
+	}
+	return true
+}
+
+// DebugHeaders helps to determine whether a header should be ignored.
+// When true, if requests have the same method, URL and body but differ
+// in a header, the first mismatched header is logged.
+var DebugHeaders = false
+
+func headersMatch(in, cand http.Header, ignores map[string]bool) bool {
+	for k1, v1 := range in {
+		if ignores[k1] {
+			continue
+		}
+		v2 := cand[k1]
+		if v2 == nil {
+			if DebugHeaders {
+				log.Printf("header %s: present in incoming request but not candidate", k1)
+			}
+			return false
+		}
+		if !reflect.DeepEqual(v1, v2) {
+			if DebugHeaders {
+				log.Printf("header %s: incoming %v, candidate %v", k1, v1, v2)
+			}
+			return false
+		}
+	}
+	for k2 := range cand {
+		if ignores[k2] {
+			continue
+		}
+		if in[k2] == nil {
+			if DebugHeaders {
+				log.Printf("header %s: not in incoming request but present in candidate", k2)
+			}
 			return false
 		}
 	}

@@ -67,3 +67,46 @@ func TestRequestBody(t *testing.T) {
 		t.Error("equal returned false, want true")
 	}
 }
+
+func TestHeadersMatch(t *testing.T) {
+	for _, test := range []struct {
+		h1, h2 http.Header
+		want   bool
+	}{
+		{
+			http.Header{"A": {"x"}, "B": {"y", "z"}},
+			http.Header{"A": {"x"}, "B": {"y", "z"}},
+			true,
+		},
+		{
+			http.Header{"A": {"x"}, "B": {"y", "z"}},
+			http.Header{"A": {"x"}, "B": {"w"}},
+			false,
+		},
+		{
+			http.Header{"A": {"x"}, "B": {"y", "z"}, "I": {"foo"}},
+			http.Header{"A": {"x"}, "B": {"y", "z"}, "I": {"bar"}},
+			true,
+		},
+		{
+			http.Header{"A": {"x"}, "B": {"y", "z"}},
+			http.Header{"A": {"x"}, "B": {"y", "z"}, "I": {"bar"}},
+			true,
+		},
+		{
+			http.Header{"A": {"x"}, "B": {"y", "z"}, "I": {"foo"}},
+			http.Header{"A": {"x"}, "I": {"bar"}},
+			false,
+		},
+		{
+			http.Header{"A": {"x"}, "I": {"foo"}},
+			http.Header{"A": {"x"}, "B": {"y", "z"}, "I": {"bar"}},
+			false,
+		},
+	} {
+		got := headersMatch(test.h1, test.h2, map[string]bool{"I": true})
+		if got != test.want {
+			t.Errorf("%v, %v: got %t, want %t", test.h1, test.h2, got, test.want)
+		}
+	}
+}

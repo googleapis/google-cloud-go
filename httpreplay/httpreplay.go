@@ -128,3 +128,10 @@ func (r *Replayer) Client(ctx context.Context) (*http.Client, error) {
 func (r *Replayer) Close() error {
 	return r.proxy.Close()
 }
+
+// DebugHeaders helps to determine whether a header should be ignored.
+// When true, if requests have the same method, URL and body but differ
+// in a header, the first mismatched header is logged.
+func DebugHeaders() {
+	proxy.DebugHeaders = true
+}
