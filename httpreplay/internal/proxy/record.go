@@ -47,6 +47,9 @@ type Proxy struct {
 	// The URL of the proxy.
 	URL *url.URL
 
+	// Initial state of the client. Must be serializable with json.Marshal.
+	Initial interface{}
+
 	mproxy   *martian.Proxy
 	filename string      // for log
 	logger   *har.Logger // for recording only
@@ -149,18 +152,26 @@ func (p *Proxy) Transport() *http.Transport {
 func (p *Proxy) Close() error {
 	p.mproxy.Close()
 	if p.logger != nil {
-		return writeLog(p.logger, p.filename)
+		return p.writeLog()
 	}
 	return nil
 }
 
-func writeLog(logger *har.Logger, filename string) error {
-	har := logger.ExportAndReset()
-	bytes, err := json.Marshal(har)
+type httprFile struct {
+	Initial interface{}
+	HAR     *har.HAR
+}
+
+func (p *Proxy) writeLog() error {
+	f := httprFile{
+		Initial: p.Initial,
+		HAR:     p.logger.ExportAndReset(),
+	}
+	bytes, err := json.Marshal(f)
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(filename, bytes, 0600) // only accessible by owner
+	return ioutil.WriteFile(p.filename, bytes, 0600) // only accessible by owner
 }
 
 // Headers that may contain sensitive data (auth tokens, keys).

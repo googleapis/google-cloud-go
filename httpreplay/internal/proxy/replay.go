@@ -38,11 +38,12 @@ func ForReplaying(filename string, port int) (*Proxy, error) {
 	if err != nil {
 		return nil, err
 	}
-	calls, err := readLog(filename)
+	calls, initial, err := readLog(filename)
 	if err != nil {
 		return nil, err
 	}
 	p.mproxy.SetRoundTripper(replayRoundTripper{calls: calls})
+	p.Initial = initial
 
 	// Debug logging.
 	// TODO(jba): factor out from here and ForRecording.
@@ -64,19 +65,19 @@ type call struct {
 	res     *har.Response
 }
 
-func readLog(filename string) ([]*call, error) {
+func readLog(filename string) ([]*call, interface{}, error) {
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	var h har.HAR
-	if err := json.Unmarshal(bytes, &h); err != nil {
-		return nil, err
+	var f httprFile
+	if err := json.Unmarshal(bytes, &f); err != nil {
+		return nil, nil, err
 	}
 	ignoreIDs := map[string]bool{} // IDs of requests to ignore
 	callsByID := map[string]*call{}
 	var calls []*call
-	for _, e := range h.Log.Entries {
+	for _, e := range f.HAR.Log.Entries {
 		if ignoreIDs[e.ID] {
 			continue
 		}
@@ -84,7 +85,7 @@ func readLog(filename string) ([]*call, error) {
 		switch {
 		case !ok:
 			if e.Request == nil {
-				return nil, fmt.Errorf("first entry for ID %s does not have a request", e.ID)
+				return nil, nil, fmt.Errorf("first entry for ID %s does not have a request", e.ID)
 			}
 			if e.Request.Method == "CONNECT" {
 				// Ignore CONNECT methods.
@@ -92,7 +93,7 @@ func readLog(filename string) ([]*call, error) {
 			} else {
 				reqBody, err := newRequestBodyFromHAR(e.Request)
 				if err != nil {
-					return nil, err
+					return nil, nil, err
 				}
 				c := &call{e.Request, reqBody, e.Response}
 				calls = append(calls, c)
@@ -100,21 +101,21 @@ func readLog(filename string) ([]*call, error) {
 			}
 		case e.Request != nil:
 			if e.Response != nil {
-				return nil, errors.New("HAR entry has both request and response")
+				return nil, nil, errors.New("HAR entry has both request and response")
 			}
 			c.req = e.Request
 		case e.Response != nil:
 			c.res = e.Response
 		default:
-			return nil, errors.New("HAR entry has neither request nor response")
+			return nil, nil, errors.New("HAR entry has neither request nor response")
 		}
 	}
 	for _, c := range calls {
 		if c.req == nil || c.res == nil {
-			return nil, fmt.Errorf("missing request or response: %+v", c)
+			return nil, nil, fmt.Errorf("missing request or response: %+v", c)
 		}
 	}
-	return calls, nil
+	return calls, f.Initial, nil
 }
 
 type replayRoundTripper struct {

@@ -21,8 +21,10 @@
 package main
 
 import (
+	"encoding/base64"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -63,9 +65,10 @@ func main() {
 	}
 	proxy.DebugHeaders = *debugHeaders
 
-	// Expose certificate authority on the control port.
+	// Expose handlers on the control port.
 	mux := http.NewServeMux()
 	mux.Handle("/authority.cer", martianhttp.NewAuthorityHandler(pr.CACert))
+	mux.HandleFunc("/initial", handleInitial(pr))
 	lControl, err := net.Listen("tcp", fmt.Sprintf(":%d", *controlPort))
 	if err != nil {
 		log.Fatal(err)
@@ -80,5 +83,44 @@ func main() {
 	log.Println("httpr: shutting down")
 	if err := pr.Close(); err != nil {
 		log.Fatal(err)
+	}
+}
+
+func handleInitial(pr *proxy.Proxy) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		switch req.Method {
+		case "GET":
+			if pr.Initial != nil {
+				switch x := pr.Initial.(type) {
+				case []byte:
+					w.Write(x)
+				case string:
+					// If it's base64, then it's most likely from the JSON in the saved file
+					// (json.Marshal encodes []byte as a base64 string).  Decode it.
+					if bytes, err := base64.StdEncoding.DecodeString(x); err == nil {
+						w.Write(bytes)
+					} else {
+						// If it's not base64, write the string out directly.
+						w.Write([]byte(x))
+					}
+				default:
+					// We don't know what it is, so just print it.
+					fmt.Fprint(w, x)
+				}
+			}
+
+		case "POST":
+			bytes, err := ioutil.ReadAll(req.Body)
+			req.Body.Close()
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprintf(w, "reading body: %v", err)
+			}
+			pr.Initial = bytes
+
+		default:
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprint(w, "use GET to retrieve initial or POST to set it")
+		}
 	}
 }

@@ -48,7 +48,7 @@ func TestIntegration_RecordAndReplay(t *testing.T) {
 	ctx := context.Background()
 
 	// Record.
-	rec, err := httpreplay.NewRecorder(replayFilename)
+	rec, err := httpreplay.NewRecorder(replayFilename, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -79,6 +79,9 @@ func TestIntegration_RecordAndReplay(t *testing.T) {
 	}
 	if !bytes.Equal(gotc, wantc) {
 		t.Errorf("got %q, want %q", gotc, wantc)
+	}
+	if got, want := rep.Initial(), "initial state"; got != want {
+		t.Errorf("initial: got %v, want %q", got, want)
 	}
 }
 

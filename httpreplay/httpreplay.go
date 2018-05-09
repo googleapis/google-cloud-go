@@ -49,14 +49,17 @@ type Recorder struct {
 	proxy    *proxy.Proxy
 }
 
-// NewRecorder creates a recorder that writes to filename.
+// NewRecorder creates a recorder that writes to filename. The file will
+// also store initial state that can be retrieved to configure replay. The "initial"
+// argument must work with json.Marshal.
 //
 // You must call Close on the Recorder to ensure that all data is written.
-func NewRecorder(filename string) (*Recorder, error) {
+func NewRecorder(filename string, initial interface{}) (*Recorder, error) {
 	p, err := proxy.ForRecording(filename, 0)
 	if err != nil {
 		return nil, err
 	}
+	p.Initial = initial
 	return &Recorder{proxy: p}, nil
 }
 
@@ -122,6 +125,11 @@ func NewReplayer(filename string) (*Replayer, error) {
 // contacts a real backend.
 func (r *Replayer) Client(ctx context.Context) (*http.Client, error) {
 	return &http.Client{Transport: r.proxy.Transport()}, nil
+}
+
+// Initial returns the initial state saved by the Recorder.
+func (r *Replayer) Initial() interface{} {
+	return r.proxy.Initial
 }
 
 // Close closes the replayer.
