@@ -81,7 +81,7 @@ func ForRecording(filename string, port int) (*Proxy, error) {
 	logGroup.AddResponseModifier(skipAuth)
 	p.logger = har.NewLogger()
 	logGroup.AddRequestModifier(martian.RequestModifierFunc(
-		func(req *http.Request) error { return redactHeadersThenLog(req, p.logger) }))
+		func(req *http.Request) error { return withRedactedHeaders(req, p.logger) }))
 	logGroup.AddResponseModifier(p.logger)
 
 	stack.AddRequestModifier(logGroup)
@@ -163,16 +163,26 @@ func writeLog(logger *har.Logger, filename string) error {
 	return ioutil.WriteFile(filename, bytes, 0600) // only accessible by owner
 }
 
-// redactHeadersThenLog removes sensitive header contents before logging.
-func redactHeadersThenLog(req *http.Request, hl *har.Logger) error {
-	const auth = "Authorization"
-	a, ok := req.Header[auth]
-	if ok {
-		req.Header.Set(auth, "REDACTED")
+// Headers that may contain sensitive data (auth tokens, keys).
+var sensitiveHeaders = []string{
+	"authorization",
+	"x-goog-encryption-key",             // used by Cloud Storage for customer-supplied encryption
+	"x-goog-copy-source-encryption-key", // ditto
+}
+
+// withRedactedHeaders removes sensitive header contents before calling mod.
+func withRedactedHeaders(req *http.Request, mod martian.RequestModifier) error {
+	// We have to change the headers, then log, then restore them.
+	replaced := map[string]string{}
+	for _, h := range sensitiveHeaders {
+		if v := req.Header.Get(h); v != "" {
+			replaced[h] = v
+			req.Header.Set(h, "REDACTED")
+		}
 	}
-	err := hl.ModifyRequest(req)
-	if ok {
-		req.Header[auth] = a
+	err := mod.ModifyRequest(req)
+	for h, v := range replaced {
+		req.Header.Set(h, v)
 	}
 	return err
 }
