@@ -422,6 +422,13 @@ type QueryStatistics struct {
 	// Standard SQL: list of undeclared query parameter names detected during a
 	// dry run validation.
 	UndeclaredQueryParameterNames []string
+
+	// DDL target table.
+	DDLTargetTable *Table
+
+	// DDL Operation performed on the target table.  Used to report how the
+	// query impacted the DDL target table.
+	DDLOperationPerformed string
 }
 
 // ExplainQueryStage describes one stage of a query.
@@ -738,6 +745,8 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 		js.Details = &QueryStatistics{
 			BillingTier:                   s.Query.BillingTier,
 			CacheHit:                      s.Query.CacheHit,
+			DDLTargetTable:                bqToTable(s.Query.DdlTargetTable, c),
+			DDLOperationPerformed:         s.Query.DdlOperationPerformed,
 			StatementType:                 s.Query.StatementType,
 			TotalBytesBilled:              s.Query.TotalBytesBilled,
 			TotalBytesProcessed:           s.Query.TotalBytesProcessed,
