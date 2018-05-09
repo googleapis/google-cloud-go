@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// +build go1.8
+
 // Package httpreplay provides an API for recording and replaying traffic
 // from HTTP-based Google API clients.
 //
@@ -28,6 +30,7 @@
 // 3.  Close the Replayer when you're done.
 //
 // This package is EXPERIMENTAL and is subject to change or removal without notice.
+// It requires Go version 1.8 or higher.
 package httpreplay
 
 // TODO(jba): add examples.
