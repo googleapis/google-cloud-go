@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"strings"
 	"testing"
 	"time"
 
@@ -101,6 +102,7 @@ func run(t *testing.T, mode, filename string) string {
 		t.Fatal(err)
 	}
 	var hc *http.Client
+	initial := "initial state"
 	if mode == "record" {
 		ts := testutil.TokenSource(ctx, storage.ScopeFullControl)
 		hc = &http.Client{
@@ -109,8 +111,33 @@ func run(t *testing.T, mode, filename string) string {
 				Source: ts,
 			},
 		}
+		res, err := http.Post(
+			fmt.Sprintf("http://localhost:%s/initial", cport),
+			"text/plain",
+			strings.NewReader(initial))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if res.StatusCode != 200 {
+			t.Fatalf("from POST: %s", res.Status)
+		}
 	} else {
 		hc = &http.Client{Transport: tr}
+		res, err := http.Get(fmt.Sprintf("http://localhost:%s/initial", cport))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if res.StatusCode != 200 {
+			t.Fatalf("from GET: %s", res.Status)
+		}
+		bytes, err := ioutil.ReadAll(res.Body)
+		res.Body.Close()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got, want := string(bytes), initial; got != want {
+			t.Errorf("initial: got %q, want %q", got, want)
+		}
 	}
 	client, err := storage.NewClient(ctx, option.WithHTTPClient(hc))
 	if err != nil {
@@ -178,6 +205,9 @@ func getBody(url string) ([]byte, error) {
 	res, err := http.Get(url)
 	if err != nil {
 		return nil, err
+	}
+	if res.StatusCode != 200 {
+		return nil, fmt.Errorf("response: %s", res.Status)
 	}
 	defer res.Body.Close()
 	return ioutil.ReadAll(res.Body)
