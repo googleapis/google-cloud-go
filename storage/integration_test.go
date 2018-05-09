@@ -2121,6 +2121,7 @@ func TestIntegration_KMS(t *testing.T) {
 	// Create a bucket with a default key, then write and read an object.
 	bkt = client.Bucket(uidSpace.New())
 	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
+		Location:   "US",
 		Encryption: &BucketEncryption{DefaultKMSKeyName: keyName1},
 	})
 	defer h.mustDeleteBucket(bkt)
