@@ -157,10 +157,6 @@ func run(t *testing.T, mode, filename string) string {
 
 func start(args ...string) (*exec.Cmd, error) {
 	cmd := exec.Command("./httpr", args...)
-	if testing.Verbose() {
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-	}
 	if err := cmd.Start(); err != nil {
 		return nil, err
 	}
