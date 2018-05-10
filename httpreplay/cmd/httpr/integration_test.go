@@ -22,7 +22,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net"
 	"net/http"
 	"net/url"
@@ -38,6 +37,8 @@ import (
 	"golang.org/x/oauth2"
 	"google.golang.org/api/option"
 )
+
+const initial = "initial state"
 
 func TestIntegration_HTTPR(t *testing.T) {
 	if testing.Short() {
@@ -61,29 +62,90 @@ func TestIntegration_HTTPR(t *testing.T) {
 		t.Fatalf("running 'go build': %v", err)
 	}
 	defer os.Remove("./httpr")
-	want := run(t, "record", replayFilename)
-	got := run(t, "replay", replayFilename)
+	want := runRecord(t, replayFilename)
+	got := runReplay(t, replayFilename)
 	if got != want {
 		t.Fatalf("got %q, want %q", got, want)
 	}
 }
 
-// mode must be either "record" or "replay".
-func run(t *testing.T, mode, filename string) string {
-	pport, err := pickPort()
-	if err != nil {
-		t.Fatal(err)
-	}
-	cport, err := pickPort()
-	if err != nil {
-		t.Fatal(err)
-	}
-	cmd, err := start("-port", pport, "-control-port", cport, "-"+mode, filename, "-debug-headers")
+func runRecord(t *testing.T, filename string) string {
+	cmd, tr, cport, err := start("-record", filename)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer stop(t, cmd)
 
+	ctx := context.Background()
+	hc := &http.Client{
+		Transport: &oauth2.Transport{
+			Base:   tr,
+			Source: testutil.TokenSource(ctx, storage.ScopeFullControl),
+		},
+	}
+	res, err := http.Post(
+		fmt.Sprintf("http://localhost:%s/initial", cport),
+		"text/plain",
+		strings.NewReader(initial))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.StatusCode != 200 {
+		t.Fatalf("from POST: %s", res.Status)
+	}
+	info, err := getBucketInfo(ctx, hc)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return info
+}
+
+func runReplay(t *testing.T, filename string) string {
+	cmd, tr, cport, err := start("-replay", filename)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer stop(t, cmd)
+
+	hc := &http.Client{Transport: tr}
+	res, err := http.Get(fmt.Sprintf("http://localhost:%s/initial", cport))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.StatusCode != 200 {
+		t.Fatalf("from GET: %s", res.Status)
+	}
+	bytes, err := ioutil.ReadAll(res.Body)
+	res.Body.Close()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := string(bytes), initial; got != want {
+		t.Errorf("initial: got %q, want %q", got, want)
+	}
+	info, err := getBucketInfo(context.Background(), hc)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return info
+}
+
+// Start the proxy binary and wait for it to come up.
+// Return a transport that talks to the proxy, as well as the control port.
+// modeFlag must be either "-record" or "-replay".
+func start(modeFlag, filename string) (*exec.Cmd, *http.Transport, string, error) {
+	pport, err := pickPort()
+	if err != nil {
+		return nil, nil, "", err
+	}
+	cport, err := pickPort()
+	if err != nil {
+		return nil, nil, "", err
+	}
+	cmd := exec.Command("./httpr", "-port", pport, "-control-port", cport, modeFlag, filename, "-debug-headers")
+	if err := cmd.Start(); err != nil {
+		return nil, nil, "", err
+	}
 	// Wait for the server to come up.
 	serverUp := false
 	for i := 0; i < 10; i++ {
@@ -95,72 +157,13 @@ func run(t *testing.T, mode, filename string) string {
 		time.Sleep(time.Second)
 	}
 	if !serverUp {
-		t.Fatal("httpr never came up")
+		return nil, nil, "", errors.New("server never came up")
 	}
-
-	ctx := context.Background()
 	tr, err := proxyTransport(pport, cport)
 	if err != nil {
-		t.Fatal(err)
+		return nil, nil, "", err
 	}
-	var hc *http.Client
-	initial := "initial state"
-	if mode == "record" {
-		ts := testutil.TokenSource(ctx, storage.ScopeFullControl)
-		hc = &http.Client{
-			Transport: &oauth2.Transport{
-				Base:   tr,
-				Source: ts,
-			},
-		}
-		res, err := http.Post(
-			fmt.Sprintf("http://localhost:%s/initial", cport),
-			"text/plain",
-			strings.NewReader(initial))
-		if err != nil {
-			t.Fatal(err)
-		}
-		if res.StatusCode != 200 {
-			t.Fatalf("from POST: %s", res.Status)
-		}
-	} else {
-		hc = &http.Client{Transport: tr}
-		res, err := http.Get(fmt.Sprintf("http://localhost:%s/initial", cport))
-		if err != nil {
-			t.Fatal(err)
-		}
-		if res.StatusCode != 200 {
-			t.Fatalf("from GET: %s", res.Status)
-		}
-		bytes, err := ioutil.ReadAll(res.Body)
-		res.Body.Close()
-		if err != nil {
-			t.Fatal(err)
-		}
-		if got, want := string(bytes), initial; got != want {
-			t.Errorf("initial: got %q, want %q", got, want)
-		}
-	}
-	client, err := storage.NewClient(ctx, option.WithHTTPClient(hc))
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer client.Close()
-	b := client.Bucket(testutil.ProjID())
-	attrs, err := b.Attrs(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return fmt.Sprintf("name:%s reqpays:%v location:%s sclass:%s",
-		attrs.Name, attrs.RequesterPays, attrs.Location, attrs.StorageClass)
-}
-
-func start(args ...string) (*exec.Cmd, error) {
-	cmd := exec.Command("./httpr", args...)
-	if err := cmd.Start(); err != nil {
-		return nil, err
-	}
-	return cmd, nil
+	return cmd, tr, cport, nil
 }
 
 func stop(t *testing.T, cmd *exec.Cmd) {
@@ -197,6 +200,21 @@ func proxyTransport(pport, cport string) (*http.Transport, error) {
 		Proxy:           http.ProxyURL(&url.URL{Host: "localhost:" + pport}),
 		TLSClientConfig: &tls.Config{RootCAs: caCertPool},
 	}, nil
+}
+
+func getBucketInfo(ctx context.Context, hc *http.Client) (string, error) {
+	client, err := storage.NewClient(ctx, option.WithHTTPClient(hc))
+	if err != nil {
+		return "", err
+	}
+	defer client.Close()
+	b := client.Bucket(testutil.ProjID())
+	attrs, err := b.Attrs(ctx)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("name:%s reqpays:%v location:%s sclass:%s",
+		attrs.Name, attrs.RequesterPays, attrs.Location, attrs.StorageClass), nil
 }
 
 func getBody(url string) ([]byte, error) {
