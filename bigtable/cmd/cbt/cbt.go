@@ -469,19 +469,16 @@ func doCreateTable(ctx context.Context, args ...string) {
 	}
 
 	tblConf := bigtable.TableConf{TableID: args[0]}
-	for _, arg := range args[1:] {
-		i := strings.Index(arg, "=")
-		if i < 0 {
-			log.Fatalf("Bad arg %q", arg)
-		}
-		key, val := arg[:i], arg[i+1:]
+	parsed, err := parseArgs(args[1:], []string{"families", "splits"})
+	if err != nil {
+		log.Fatal(err)
+	}
+	for key, val := range parsed {
 		chunks, err := csv.NewReader(strings.NewReader(val)).Read()
 		if err != nil {
-			log.Fatalf("Invalid families arg format: %v", err)
+			log.Fatalf("Invalid %s arg format: %v", key, err)
 		}
 		switch key {
-		default:
-			log.Fatalf("Unknown arg key %q", key)
 		case "families":
 			tblConf.Families = make(map[string]bigtable.GCPolicy)
 			for _, family := range chunks {
@@ -583,21 +580,14 @@ func doUpdateCluster(ctx context.Context, args ...string) {
 	}
 
 	numNodes := int64(0)
-	var err error
-	for _, arg := range args[1:] {
-		i := strings.Index(arg, "=")
-		if i < 0 {
-			log.Fatalf("Bad arg %q", arg)
-		}
-		key, val := arg[:i], arg[i+1:]
-		switch key {
-		default:
-			log.Fatalf("Unknown arg key %q", key)
-		case "num-nodes":
-			numNodes, err = strconv.ParseInt(val, 0, 32)
-			if err != nil {
-				log.Fatalf("Bad num-nodes %q: %v", val, err)
-			}
+	parsed, err := parseArgs(args[1:], []string{"num-nodes"})
+	if err != nil {
+		log.Fatal(err)
+	}
+	if val, ok := parsed["num-nodes"]; ok {
+		numNodes, err = strconv.ParseInt(val, 0, 32)
+		if err != nil {
+			log.Fatalf("Bad num-nodes %q: %v", val, err)
 		}
 	}
 	if numNodes > 0 {
@@ -855,19 +845,9 @@ func doLookup(ctx context.Context, args ...string) {
 		log.Fatalf("usage: cbt lookup <table> <row> [cells-per-column=<n>] [app-profile=<app profile id>]")
 	}
 
-	parsed := make(map[string]string)
-	for _, arg := range args[2:] {
-		i := strings.Index(arg, "=")
-		if i < 0 {
-			log.Fatalf("Bad arg %q", arg)
-		}
-		key, val := arg[:i], arg[i+1:]
-		switch key {
-		default:
-			log.Fatalf("Unknown arg key %q", key)
-		case "cells-per-column", "app-profile":
-			parsed[key] = val
-		}
+	parsed, err := parseArgs(args[2:], []string{"cells-per-column", "app-profile"})
+	if err != nil {
+		log.Fatal(err)
 	}
 	var opts []bigtable.ReadOption
 	if cellsPerColumn := parsed["cells-per-column"]; cellsPerColumn != "" {
@@ -999,22 +979,15 @@ func doRead(ctx context.Context, args ...string) {
 		log.Fatalf("usage: cbt read <table> [args ...]")
 	}
 
-	parsed := make(map[string]string)
-	for _, arg := range args[1:] {
-		i := strings.Index(arg, "=")
-		if i < 0 {
-			log.Fatalf("Bad arg %q", arg)
-		}
-		key, val := arg[:i], arg[i+1:]
-		switch key {
-		default:
-			log.Fatalf("Unknown arg key %q", key)
-		case "limit":
-			// Be nicer; we used to support this, but renamed it to "end".
-			log.Fatalf("Unknown arg key %q; did you mean %q?", key, "end")
-		case "start", "end", "prefix", "count", "cells-per-column", "regex", "app-profile":
-			parsed[key] = val
-		}
+	parsed, err := parseArgs(args[1:], []string{
+		"start", "end", "prefix", "count", "cells-per-column", "regex", "app-profile", "limit",
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	if _, ok := parsed["limit"]; ok {
+		// Be nicer; we used to support this, but renamed it to "end".
+		log.Fatal("Unknown arg key 'limit'; did you mean 'end'?")
 	}
 	if (parsed["start"] != "" || parsed["end"] != "") && parsed["prefix"] != "" {
 		log.Fatal(`"start"/"end" may not be mixed with "prefix"`)
@@ -1058,7 +1031,7 @@ func doRead(ctx context.Context, args ...string) {
 
 	// TODO(dsymonds): Support filters.
 	tbl := getClient(bigtable.ClientConfig{AppProfile: parsed["app-profile"]}).Open(args[0])
-	err := tbl.ReadRows(ctx, rr, func(r bigtable.Row) bool {
+	err = tbl.ReadRows(ctx, rr, func(r bigtable.Row) bool {
 		printRow(r)
 		return true
 	}, opts...)
@@ -1216,25 +1189,19 @@ func doSnapshotTable(ctx context.Context, args ...string) {
 	tableName := args[2]
 	ttl := bigtable.DefaultSnapshotDuration
 
-	for _, arg := range args[3:] {
-		i := strings.Index(arg, "=")
-		if i < 0 {
-			log.Fatalf("Bad arg %q", arg)
-		}
-		key, val := arg[:i], arg[i+1:]
-		switch key {
-		default:
-			log.Fatalf("Unknown arg key %q", key)
-		case "ttl":
-			var err error
-			ttl, err = parseDuration(val)
-			if err != nil {
-				log.Fatalf("Invalid snapshot ttl value %q: %v", val, err)
-			}
+	parsed, err := parseArgs(args[3:], []string{"ttl"})
+	if err != nil {
+		log.Fatal(err)
+	}
+	if val, ok := parsed["ttl"]; ok {
+		var err error
+		ttl, err = parseDuration(val)
+		if err != nil {
+			log.Fatalf("Invalid snapshot ttl value %q: %v", val, err)
 		}
 	}
 
-	err := getAdminClient().SnapshotTable(ctx, tableName, clusterName, snapshotName, ttl)
+	err = getAdminClient().SnapshotTable(ctx, tableName, clusterName, snapshotName, ttl)
 	if err != nil {
 		log.Fatalf("Failed to create Snapshot: %v", err)
 	}
@@ -1351,4 +1318,32 @@ var unitMap = map[string]time.Duration{
 
 func doVersion(ctx context.Context, args ...string) {
 	fmt.Printf("%s %s %s\n", version, revision, revisionDate)
+}
+
+// parseArgs takes a slice of arguments of the form key=value and returns a map from
+// key to value. It returns an error if an argument is malformed or a key is not in
+// the valid slice.
+func parseArgs(args []string, valid []string) (map[string]string, error) {
+	parsed := make(map[string]string)
+	for _, arg := range args {
+		i := strings.Index(arg, "=")
+		if i < 0 {
+			return nil, fmt.Errorf("Bad arg %q", arg)
+		}
+		key, val := arg[:i], arg[i+1:]
+		if !stringInSlice(key, valid) {
+			return nil, fmt.Errorf("Unknown arg key %q", key)
+		}
+		parsed[key] = val
+	}
+	return parsed, nil
+}
+
+func stringInSlice(s string, list []string) bool {
+	for _, e := range list {
+		if s == e {
+			return true
+		}
+	}
+	return false
 }
