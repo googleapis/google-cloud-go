@@ -55,6 +55,14 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+const (
+	// Seconds field of the minimum valid Timestamp.
+	minValidSeconds = 0
+
+	// Seconds field of the max valid Timestamp.
+	maxValidSeconds = 253402300800
+)
+
 // Server is an in-memory Cloud Bigtable fake.
 // It is unauthenticated, and only a rough approximation.
 type Server struct {
@@ -1053,6 +1061,10 @@ func newTable(ctr *btapb.CreateTableRequest) *table {
 }
 
 func (t *table) validTimestamp(ts int64) bool {
+	if ts <= minValidSeconds || ts >= maxValidSeconds {
+		return false
+	}
+
 	// Assume millisecond granularity is required.
 	return ts%1000 == 0
 }

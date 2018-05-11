@@ -764,7 +764,7 @@ type Timestamp int64
 const ServerTime Timestamp = -1
 
 // Time converts a time.Time into a Timestamp.
-func Time(t time.Time) Timestamp { return Timestamp(t.UnixNano() / 1e3) }
+func Time(t time.Time) Timestamp { return Timestamp(t.Unix()) }
 
 // Now returns the Timestamp representation of the current time on the client.
 func Now() Timestamp { return Time(time.Now()) }
