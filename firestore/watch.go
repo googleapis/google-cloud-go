@@ -99,7 +99,7 @@ func newWatchStreamForDocument(ctx context.Context, dr *DocumentRef) *watchStrea
 	compare := func(_, _ *DocumentSnapshot) (int, error) { return 0, nil }
 	return newWatchStream(ctx, dr.Parent.c, compare, &pb.Target{
 		TargetType: &pb.Target_Documents{
-			Documents: &pb.Target_DocumentsTarget{[]string{dr.Path}},
+			Documents: &pb.Target_DocumentsTarget{Documents: []string{dr.Path}},
 		},
 		TargetId: watchTargetID,
 	})
