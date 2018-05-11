@@ -153,7 +153,7 @@ func TestAdminIntegration(t *testing.T) {
 	for _, prefix := range prefixes {
 		for i := 0; i < 5; i++ {
 			mut := NewMutation()
-			mut.Set("cf", "col", 0, []byte("1"))
+			mut.Set("cf", "col", 1000, []byte("1"))
 			if err := tbl.Apply(ctx, fmt.Sprintf("%v-%v", prefix, i), mut); err != nil {
 				t.Fatalf("Mutating row: %v", err)
 			}

@@ -207,7 +207,7 @@ func TestSampleRowKeys(t *testing.T) {
 				Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
 					FamilyName:      "cf",
 					ColumnQualifier: []byte("col"),
-					TimestampMicros: 0,
+					TimestampMicros: 1000,
 					Value:           val,
 				}},
 			}},
@@ -262,7 +262,7 @@ func TestDropRowRange(t *testing.T) {
 						Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
 							FamilyName:      "cf",
 							ColumnQualifier: []byte("col"),
-							TimestampMicros: 0,
+							TimestampMicros: 1000,
 							Value:           []byte{},
 						}},
 					}},
@@ -597,7 +597,7 @@ func TestCheckAndMutateRowWithoutPredicate(t *testing.T) {
 			Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
 				FamilyName:      "cf",
 				ColumnQualifier: []byte("col"),
-				TimestampMicros: 0,
+				TimestampMicros: 1000,
 				Value:           val,
 			}},
 		}},

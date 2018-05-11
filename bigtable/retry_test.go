@@ -90,7 +90,7 @@ func TestRetryApply(t *testing.T) {
 	defer cleanup()
 
 	mut := NewMutation()
-	mut.Set("cf", "col", 1, []byte("val"))
+	mut.Set("cf", "col", 1000, []byte("val"))
 	if err := tbl.Apply(ctx, "row1", mut); err != nil {
 		t.Errorf("applying single mutation with retries: %v", err)
 	}
@@ -112,7 +112,7 @@ func TestRetryApply(t *testing.T) {
 	mutTrue := NewMutation()
 	mutTrue.DeleteRow()
 	mutFalse := NewMutation()
-	mutFalse.Set("cf", "col", 1, []byte("val"))
+	mutFalse.Set("cf", "col", 1000, []byte("val"))
 	condMut := NewCondMutation(ValueFilter("."), mutTrue, mutFalse)
 
 	errCount = 0
