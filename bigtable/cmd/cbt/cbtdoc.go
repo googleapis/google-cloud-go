@@ -50,6 +50,11 @@ The commands are:
 	set                       Set value of a cell
 	setgcpolicy               Set the GC policy for a column family
 	waitforreplication        Blocks until all the completed writes have been replicated to all the clusters (replication alpha)
+	createtablefromsnapshot   Create a table from a snapshot (snapshots alpha)
+	createsnapshot            Create a snapshot from a source table (snapshots alpha)
+	listsnapshots             List snapshots in a cluster (snapshots alpha)
+	getsnapshot               Get snapshot info (snapshots alpha)
+	deletesnapshot            Delete snapshot in a cluster (snapshots alpha)
 	version                   Print the current cbt version
 
 Use "cbt help <command>" for more information about a command.
@@ -70,7 +75,7 @@ for production use. They are not subject to any SLA or deprecation policy.
 
 For convenience, values of the -project, -instance, -creds,
 -admin-endpoint and -data-endpoint flags may be specified in
-/usr/local/google/home/igorbernstein/.cbtrc in this format:
+.cbtrc in this format:
 	project = my-project-123
 	instance = my-instance
 	creds = path-to-account-key.json
@@ -232,7 +237,8 @@ Usage:
 Read from a single row
 
 Usage:
-	cbt lookup <table> <row> [app-profile=<app profile id>]
+	cbt lookup <table> <row> [cells-per-column=<n>] [app-profile=<app profile id>]
+	  cells-per-column=<n> 			Read only this many cells per column
 	  app-profile=<app profile id>		The app profile id to use for the request (replication alpha)
 
 
@@ -259,12 +265,13 @@ Usage:
 Read rows
 
 Usage:
-	cbt read <table> [start=<row>] [end=<row>] [prefix=<prefix>] [regex=<regex>] [count=<n>] [app-profile=<app profile id>]
+	cbt read <table> [start=<row>] [end=<row>] [prefix=<prefix>] [regex=<regex>] [count=<n>] [cells-per-column=<n>] [app-profile=<app profile id>]
 	  start=<row>		Start reading at this row
 	  end=<row>		Stop reading before this row
 	  prefix=<prefix>	Read rows with this prefix
 	  regex=<regex> 	Read rows with keys matching this regex
 	  count=<n>		Read only this many rows
+	  cells-per-column=<n>	Read only this many cells per column
 	  app-profile=<app profile id>		The app profile id to use for the request (replication alpha)
 
 
@@ -300,6 +307,52 @@ Blocks until all the completed writes have been replicated to all the clusters (
 
 Usage:
 	cbt waitforreplication <table>
+
+
+
+
+Create a table from a snapshot (snapshots alpha)
+
+Usage:
+	cbt createtablefromsnapshot <table> <cluster> <snapshot>
+	  table	The name of the table to create
+	  cluster	The cluster where the snapshot is located
+	  snapshot	The snapshot to restore
+
+
+
+
+Create a snapshot from a source table (snapshots alpha)
+
+Usage:
+	cbt createsnapshot <cluster> <snapshot> <table> [ttl=<d>]
+
+	  [ttl=<d>]		Lifespan of the snapshot (e.g. "1h", "4d")
+
+
+
+
+
+List snapshots in a cluster (snapshots alpha)
+
+Usage:
+	cbt listsnapshots [<cluster>]
+
+
+
+
+Get snapshot info (snapshots alpha)
+
+Usage:
+	cbt getsnapshot <cluster> <snapshot>
+
+
+
+
+Delete snapshot in a cluster (snapshots alpha)
+
+Usage:
+	cbt deletesnapshot <cluster> <snapshot>
 
 
 
