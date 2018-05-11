@@ -34,6 +34,7 @@ import (
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/storage"
 	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
@@ -55,8 +56,8 @@ var (
 	testTableExpiration time.Time
 	// BigQuery does not accept hyphens in dataset or table IDs, so we create IDs
 	// with underscores.
-	datasetIDs = testutil.NewUIDSpaceSep("dataset", '_')
-	tableIDs   = testutil.NewUIDSpaceSep("table", '_')
+	datasetIDs = uid.NewSpace("dataset", &uid.Options{Sep: '_'})
+	tableIDs   = uid.NewSpace("table", &uid.Options{Sep: '_'})
 )
 
 // Note: integration tests cannot be run in parallel, because TestIntegration_Location

@@ -29,6 +29,7 @@ import (
 
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/internal/uid"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
@@ -55,7 +56,7 @@ const (
 var (
 	iClient       *Client
 	iColl         *CollectionRef
-	collectionIDs = testutil.NewUIDSpace("go-integration-test")
+	collectionIDs = uid.NewSpace("go-integration-test", nil)
 )
 
 func initIntegrationTest() {

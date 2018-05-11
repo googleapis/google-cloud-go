@@ -43,6 +43,7 @@ import (
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/internal/uid"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
@@ -52,7 +53,7 @@ import (
 const testPrefix = "go-integration-test"
 
 var (
-	uidSpace   = testutil.NewUIDSpace(testPrefix)
+	uidSpace   = uid.NewSpace(testPrefix, nil)
 	bucketName = uidSpace.New()
 )
 
