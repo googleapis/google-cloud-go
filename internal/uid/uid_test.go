@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package testutil
+package uid
 
 import (
 	"testing"
@@ -20,16 +20,16 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	s := NewUIDSpace("prefix")
 	tm := time.Date(2017, 1, 6, 0, 0, 0, 21, time.UTC)
-	got := s.newID(tm)
+	s := NewSpace("prefix", &Options{Time: tm})
+	got := s.New()
 	want := "prefix-20170106-21-0000"
 	if got != want {
 		t.Errorf("got %q, want %q", got, want)
 	}
 
-	s2 := NewUIDSpaceSep("prefix2", '_')
-	got = s2.newID(tm)
+	s2 := NewSpace("prefix2", &Options{Sep: '_', Time: tm})
+	got = s2.New()
 	want = "prefix2_20170106_21_0000"
 	if got != want {
 		t.Errorf("got %q, want %q", got, want)
@@ -37,7 +37,8 @@ func TestNew(t *testing.T) {
 }
 
 func TestTimestamp(t *testing.T) {
-	s := NewUIDSpace("unique-ID")
+	s := NewSpace("unique-ID", nil)
+	startTime := s.Time
 	uid := s.New()
 	got, ok := s.Timestamp(uid)
 	if !ok {
@@ -60,9 +61,9 @@ func TestTimestamp(t *testing.T) {
 }
 
 func TestOlder(t *testing.T) {
-	s := NewUIDSpace("uid")
+	s := NewSpace("uid", nil)
 	// A non-matching ID returns false.
-	id2 := NewUIDSpace("different-prefix").New()
+	id2 := NewSpace("different-prefix", nil).New()
 	if got, want := s.Older(id2, time.Second), false; got != want {
 		t.Errorf("got %t, want %t", got, want)
 	}
