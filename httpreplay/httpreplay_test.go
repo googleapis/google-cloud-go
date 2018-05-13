@@ -114,7 +114,7 @@ func run(t *testing.T, hc *http.Client) (*storage.BucketAttrs, []byte) {
 	}
 	obj := b.Object("replay-test")
 	w := obj.NewWriter(ctx)
-	if _, err := w.Write([]byte("hello")); err != nil {
+	if _, err := w.Write([]byte{150, 151, 152}); err != nil {
 		t.Fatal(err)
 	}
 	if err := w.Close(); err != nil {

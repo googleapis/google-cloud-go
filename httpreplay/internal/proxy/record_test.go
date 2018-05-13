@@ -17,11 +17,13 @@
 package proxy
 
 import (
+	"encoding/json"
 	"net/http"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/martian"
+	"github.com/google/martian/har"
 )
 
 func TestWithRedactedHeaders(t *testing.T) {
@@ -61,5 +63,21 @@ func TestWithRedactedHeaders(t *testing.T) {
 	// The request's headers should be the same.
 	if got, want := req.Header, orig; !testutil.Equal(got, want) {
 		t.Errorf("got  %+v\nwant %+v", got, want)
+	}
+}
+
+func TestMarshalPostData(t *testing.T) {
+	want := string([]byte{150, 151, 152})
+	pd := &har.PostData{Text: want}
+	byts, err := json.Marshal(pd)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var pd2 har.PostData
+	if err := json.Unmarshal(byts, &pd2); err != nil {
+		t.Fatal(err)
+	}
+	if got := pd2.Text; got != want {
+		t.Errorf("got %v, want %v", got, want)
 	}
 }

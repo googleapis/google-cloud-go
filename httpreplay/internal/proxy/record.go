@@ -169,7 +169,7 @@ func (p *Proxy) writeLog() error {
 		Initial: p.Initial,
 		HAR:     p.logger.ExportAndReset(),
 	}
-	bytes, err := json.Marshal(f)
+	bytes, err := json.MarshalIndent(f, "", "  ")
 	if err != nil {
 		return err
 	}
