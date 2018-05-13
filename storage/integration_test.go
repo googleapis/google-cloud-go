@@ -35,12 +35,14 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"golang.org/x/net/context"
 
+	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
@@ -50,49 +52,151 @@ import (
 	"google.golang.org/api/option"
 )
 
-const testPrefix = "go-integration-test"
+const (
+	testPrefix     = "go-integration-test"
+	replayFilename = "storage.replay"
+)
 
 var (
-	uidSpace   = uid.NewSpace(testPrefix, nil)
-	bucketName = uidSpace.New()
+	record = flag.Bool("record", false, "record RPCs")
+
+	uidSpace   *uid.Space
+	bucketName string
+	// Use our own random number generator to isolate the sequence of random numbers from
+	// other packages. This makes it possible to use HTTP replay and draw the same sequence
+	// of numbers as during recording.
+	rng           *rand.Rand
+	newTestClient func(ctx context.Context, opts ...option.ClientOption) (*Client, error)
 )
 
 func TestMain(m *testing.M) {
-	integrationTest := initIntegrationTest()
+	cleanup := initIntegrationTest()
 	exit := m.Run()
-	if integrationTest {
-		if err := cleanup(); err != nil {
-			// No need to be loud if cleanup() fails; we'll get
-			// any undeleted buckets next time.
-			log.Printf("Post-test cleanup failed: %v\n", err)
-		}
+	if err := cleanup(); err != nil {
+		// Don't fail the test if cleanup fails.
+		log.Printf("Post-test cleanup failed: %v", err)
 	}
 	os.Exit(exit)
 }
 
 // If integration tests will be run, create a unique bucket for them.
-func initIntegrationTest() bool {
+// Also, set newTestClient to handle record/replay.
+// Return a cleanup function.
+func initIntegrationTest() func() error {
 	flag.Parse() // needed for testing.Short()
-	ctx := context.Background()
-	if testing.Short() {
-		return false
+	_, err := os.Stat(replayFilename)
+	replayFileExists := (err == nil)
+	switch {
+	case testing.Short() && *record:
+		log.Fatal("cannot combine -short and -record")
+		return nil
+
+	case testing.Short() && replayFileExists && testutil.ProjID() != "":
+		httpreplay.DebugHeaders()
+		// go test -short with a replay file will replay the integration tests, if
+		// the environment variables have been set.
+		replayer, err := httpreplay.NewReplayer(replayFilename)
+		if err != nil {
+			log.Fatal(err)
+		}
+		var t time.Time
+		if err := json.Unmarshal(replayer.Initial(), &t); err != nil {
+			log.Fatal(err)
+		}
+		initUIDsAndRand(t)
+		newTestClient = func(ctx context.Context, _ ...option.ClientOption) (*Client, error) {
+			hc, err := replayer.Client(ctx) // no creds needed
+			if err != nil {
+				return nil, err
+			}
+			return NewClient(ctx, option.WithHTTPClient(hc))
+		}
+		log.Printf("replaying from %s", replayFilename)
+		return func() error { return replayer.Close() }
+
+	case testing.Short():
+		// go test -short without a replay file skips the integration tests.
+		newTestClient = nil
+		return func() error { return nil }
+
+	default: // Run integration tests against a real backend.
+		now := time.Now().UTC()
+		initUIDsAndRand(now)
+		var cleanup func() error
+		if *record {
+			// Remember the time for replay.
+			nowBytes, err := json.Marshal(now)
+			if err != nil {
+				log.Fatal(err)
+			}
+			recorder, err := httpreplay.NewRecorder(replayFilename, nowBytes)
+			if err != nil {
+				log.Fatalf("could not record: %v", err)
+			}
+			newTestClient = func(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+				hc, err := recorder.Client(ctx, opts...)
+				if err != nil {
+					return nil, err
+				}
+				return NewClient(ctx, option.WithHTTPClient(hc))
+			}
+			cleanup = func() error {
+				err1 := cleanupBuckets()
+				err2 := recorder.Close()
+				if err1 != nil {
+					return err1
+				}
+				return err2
+			}
+			log.Printf("recording to %s", replayFilename)
+		} else {
+			newTestClient = NewClient
+			cleanup = cleanupBuckets
+		}
+		ctx := context.Background()
+		client := config(ctx)
+		if client == nil {
+			return func() error { return nil }
+		}
+		defer client.Close()
+		if err := client.Bucket(bucketName).Create(ctx, testutil.ProjID(), nil); err != nil {
+			log.Fatalf("creating bucket %q: %v", bucketName, err)
+		}
+		return cleanup
 	}
-	client := config(ctx)
-	if client == nil {
-		return false
-	}
-	defer client.Close()
-	if err := client.Bucket(bucketName).Create(ctx, testutil.ProjID(), nil); err != nil {
-		log.Fatalf("creating bucket %q: %v", bucketName, err)
-	}
-	return true
+}
+
+func initUIDsAndRand(t time.Time) {
+	uidSpace = uid.NewSpace(testPrefix, &uid.Options{Time: t})
+	bucketName = uidSpace.New()
+	// Use our own random source, to avoid other parts of the program taking
+	// random numbers from the global source and putting record and replay
+	// out of sync.
+	s := &lockedSource{src: rand.NewSource(t.UnixNano())}
+	rng = rand.New(s)
+}
+
+// lockedSource makes a rand.Source safe for use by multiple goroutines.
+type lockedSource struct {
+	mu  sync.Mutex
+	src rand.Source
+}
+
+func (ls *lockedSource) Int63() int64 {
+	ls.mu.Lock()
+	defer ls.mu.Unlock()
+	return ls.src.Int63()
+}
+
+func (ls *lockedSource) Seed(int64) {
+	panic("shouldn't be calling Seed")
 }
 
 // testConfig returns the Client used to access GCS. testConfig skips
 // the current test if credentials are not available or when being run
 // in Short mode.
 func testConfig(ctx context.Context, t *testing.T) *Client {
-	if testing.Short() {
+	if newTestClient == nil {
 		t.Skip("Integration tests skipped in short mode")
 	}
 	client := config(ctx)
@@ -108,11 +212,7 @@ func config(ctx context.Context) *Client {
 	if ts == nil {
 		return nil
 	}
-	p := testutil.ProjID()
-	if p == "" {
-		log.Fatal("The project ID must be set. See CONTRIBUTING.md for details")
-	}
-	client, err := NewClient(ctx, option.WithTokenSource(ts))
+	client, err := newTestClient(ctx, option.WithTokenSource(ts))
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)
 	}
@@ -304,7 +404,6 @@ func TestIntegration_Objects(t *testing.T) {
 	client := testConfig(ctx, t)
 	defer client.Close()
 	h := testHelper{t}
-
 	bkt := client.Bucket(bucketName)
 
 	const defaultType = "text/plain"
@@ -414,44 +513,12 @@ func TestIntegration_Objects(t *testing.T) {
 		rc.Close()
 	}
 
-	// Test content encoding
-	const zeroCount = 20 << 20
-	w := bkt.Object("gzip-test").NewWriter(ctx)
-	w.ContentEncoding = "gzip"
-	gw := gzip.NewWriter(w)
-	if _, err := io.Copy(gw, io.LimitReader(zeros{}, zeroCount)); err != nil {
-		t.Fatalf("io.Copy, upload: %v", err)
-	}
-	if err := gw.Close(); err != nil {
-		t.Errorf("gzip.Close(): %v", err)
-	}
-	if err := w.Close(); err != nil {
-		t.Errorf("w.Close(): %v", err)
-	}
-	r, err := bkt.Object("gzip-test").NewReader(ctx)
-	if err != nil {
-		t.Fatalf("NewReader(gzip-test): %v", err)
-	}
-	n, err := io.Copy(ioutil.Discard, r)
-	if err != nil {
-		t.Errorf("io.Copy, download: %v", err)
-	}
-	if n != zeroCount {
-		t.Errorf("downloaded bad data: got %d bytes, want %d", n, zeroCount)
-	}
-
-	// Test NotFound.
-	_, err = bkt.Object("obj-not-exists").NewReader(ctx)
-	if err != ErrObjectNotExist {
-		t.Errorf("Object should not exist, err found to be %v", err)
-	}
-
 	objName := objects[0]
 
 	// Test NewReader googleapi.Error.
 	// Since a 429 or 5xx is hard to cause, we trigger a 416.
 	realLen := len(contents[objName])
-	_, err = bkt.Object(objName).NewRangeReader(ctx, int64(realLen*2), 10)
+	_, err := bkt.Object(objName).NewRangeReader(ctx, int64(realLen*2), 10)
 	if err, ok := err.(*googleapi.Error); !ok {
 		t.Error("NewRangeReader did not return a googleapi.Error")
 	} else {
@@ -611,7 +678,7 @@ func TestIntegration_Objects(t *testing.T) {
 	if err = bkt.Object(publicObj).ACL().Set(ctx, AllUsers, RoleReader); err != nil {
 		t.Errorf("PutACLEntry failed with %v", err)
 	}
-	publicClient, err := NewClient(ctx, option.WithHTTPClient(http.DefaultClient))
+	publicClient, err := newTestClient(ctx, option.WithoutAuthentication())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -681,6 +748,46 @@ func TestIntegration_Objects(t *testing.T) {
 	checkCompose(compDst, "text/json")
 }
 
+func TestIntegration_Encoding(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	bkt := client.Bucket(bucketName)
+
+	// Test content encoding
+	const zeroCount = 20 << 1 // TODO: should be 20 << 20
+	obj := bkt.Object("gzip-test")
+	w := obj.NewWriter(ctx)
+	w.ContentEncoding = "gzip"
+	gw := gzip.NewWriter(w)
+	if _, err := io.Copy(gw, io.LimitReader(zeros{}, zeroCount)); err != nil {
+		t.Fatalf("io.Copy, upload: %v", err)
+	}
+	if err := gw.Close(); err != nil {
+		t.Errorf("gzip.Close(): %v", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Errorf("w.Close(): %v", err)
+	}
+	r, err := obj.NewReader(ctx)
+	if err != nil {
+		t.Fatalf("NewReader(gzip-test): %v", err)
+	}
+	n, err := io.Copy(ioutil.Discard, r)
+	if err != nil {
+		t.Errorf("io.Copy, download: %v", err)
+	}
+	if n != zeroCount {
+		t.Errorf("downloaded bad data: got %d bytes, want %d", n, zeroCount)
+	}
+
+	// Test NotFound.
+	_, err = bkt.Object("obj-not-exists").NewReader(ctx)
+	if err != ErrObjectNotExist {
+		t.Errorf("Object should not exist, err found to be %v", err)
+	}
+}
+
 func namesEqual(obj *ObjectAttrs, bucketName, objectName string) bool {
 	return obj.Bucket == bucketName && obj.Name == objectName
 }
@@ -706,6 +813,9 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 }
 
 func TestIntegration_SignedURL(t *testing.T) {
+	if testing.Short() { // do not test during replay
+		t.Skip("Integration tests skipped in short mode")
+	}
 	// To test SignedURL, we need a real user email and private key. Extract them
 	// from the JSON key file.
 	jwtConf, err := testutil.JWTConfig()
@@ -1248,14 +1358,8 @@ func TestIntegration_NoUnicodeNormalization(t *testing.T) {
 
 func TestIntegration_HashesOnUpload(t *testing.T) {
 	// Check that the user can provide hashes on upload, and that these are checked.
-	if testing.Short() {
-		t.Skip("Integration tests skipped in short mode")
-	}
 	ctx := context.Background()
 	client := testConfig(ctx, t)
-	if client == nil {
-		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
-	}
 	defer client.Close()
 	obj := client.Bucket(bucketName).Object("hashesOnUpload-1")
 	data := []byte("I can't wait to be verified")
@@ -1404,7 +1508,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	if ts == nil {
 		t.Fatalf("need a second account (env var %s)", envFirestorePrivateKey)
 	}
-	otherClient, err := NewClient(ctx, option.WithTokenSource(ts))
+	otherClient, err := newTestClient(ctx, option.WithTokenSource(ts))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1461,9 +1565,9 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		// result: failure, by the standard requester-pays rule
 		err := f(b2)
 		if got, want := errCode(err), wantErrorCode; got != want {
-			t.Errorf("%s: got error %v, want code %d\n"+
+			t.Errorf("%s: got error %v with code %d, want code %d\n"+
 				"confirm that %s is NOT an Owner on %s",
-				msg, err, want, otherUser, projID)
+				msg, err, got, want, otherUser, projID)
 		}
 		// user: not an Owner on the containing project
 		// userProject: not the containing one, but user has Editor role on it
@@ -1609,7 +1713,7 @@ func keyFileEmail(filename string) (string, error) {
 	return v.ClientEmail, nil
 }
 
-func TestNotifications(t *testing.T) {
+func TestIntegration_Notifications(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -1647,16 +1751,20 @@ func TestNotifications(t *testing.T) {
 	checkNotifications("after delete", map[string]*Notification{})
 }
 
-func TestIntegration_Public(t *testing.T) {
+func TestIntegration_PublicBucket(t *testing.T) {
 	// Confirm that an unauthenticated client can access a public bucket.
 	// See https://cloud.google.com/storage/docs/public-datasets/landsat
+	if newTestClient == nil {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
 	const landsatBucket = "gcp-public-data-landsat"
 	const landsatPrefix = "LC08/PRE/044/034/LC80440342016259LGN00/"
 	const landsatObject = landsatPrefix + "LC80440342016259LGN00_MTL.txt"
 
 	// Create an unauthenticated client.
 	ctx := context.Background()
-	client, err := NewClient(ctx, option.WithoutAuthentication())
+	client, err := newTestClient(ctx, option.WithoutAuthentication())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1714,9 +1822,10 @@ func TestIntegration_Public(t *testing.T) {
 func TestIntegration_ReadCRC(t *testing.T) {
 	// Test that the checksum is handled correctly when reading files.
 	// For gzipped files, see https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/1641.
-	if testing.Short() {
+	if newTestClient == nil {
 		t.Skip("Integration tests skipped in short mode")
 	}
+
 	const (
 		// This is an uncompressed file.
 		// See https://cloud.google.com/storage/docs/public-datasets/landsat
@@ -1728,7 +1837,7 @@ func TestIntegration_ReadCRC(t *testing.T) {
 		gzippedContents = "hello world" // uncompressed contents of the file
 	)
 	ctx := context.Background()
-	client, err := NewClient(ctx, option.WithoutAuthentication())
+	client, err := newTestClient(ctx, option.WithoutAuthentication())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1835,9 +1944,6 @@ func TestIntegration_ReadCRC(t *testing.T) {
 
 func TestIntegration_CancelWrite(t *testing.T) {
 	// Verify that canceling the writer's context immediately stops uploading an object.
-	if testing.Short() {
-		t.Skip("Integration tests skipped in short mode")
-	}
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -1871,10 +1977,6 @@ func TestIntegration_CancelWrite(t *testing.T) {
 }
 
 func TestIntegration_UpdateCORS(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Integration tests skipped in short mode")
-	}
-
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -1939,10 +2041,6 @@ func TestIntegration_UpdateCORS(t *testing.T) {
 }
 
 func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Integration tests skipped in short mode")
-	}
-
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -1991,10 +2089,6 @@ func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
 }
 
 func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Integration tests skipped in short mode")
-	}
-
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -2019,10 +2113,6 @@ func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
 }
 
 func TestIntegration_LockBucket(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Integration tests skipped in short mode")
-	}
-
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -2043,10 +2133,6 @@ func TestIntegration_LockBucket(t *testing.T) {
 }
 
 func TestIntegration_LockBucket_MetagenerationRequired(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Integration tests skipped in short mode")
-	}
-
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -2063,18 +2149,15 @@ func TestIntegration_LockBucket_MetagenerationRequired(t *testing.T) {
 }
 
 func TestIntegration_KMS(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Integration tests skipped in short mode")
-	}
-	keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
-	if keyRingName == "" {
-		t.Fatal("GCLOUD_TESTS_GOLANG_KEYRING must be set. See CONTRIBUTING.md for details")
-	}
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
 	h := testHelper{t}
 
+	keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
+	if keyRingName == "" {
+		t.Fatal("GCLOUD_TESTS_GOLANG_KEYRING must be set. See CONTRIBUTING.md for details")
+	}
 	keyName1 := keyRingName + "/cryptoKeys/key1"
 	keyName2 := keyRingName + "/cryptoKeys/key2"
 	contents := []byte("my secret")
@@ -2261,9 +2344,9 @@ func readObject(ctx context.Context, obj *ObjectHandle) ([]byte, error) {
 	return ioutil.ReadAll(r)
 }
 
-// cleanup deletes the bucket used for testing, as well as old
+// cleanupBuckets deletes the bucket used for testing, as well as old
 // testing buckets that weren't cleaned previously.
-func cleanup() error {
+func cleanupBuckets() error {
 	if testing.Short() {
 		return nil // Don't clean up in short mode.
 	}
@@ -2330,7 +2413,7 @@ func killBucket(ctx context.Context, client *Client, bucketName string) error {
 
 func randomContents() []byte {
 	h := md5.New()
-	io.WriteString(h, fmt.Sprintf("hello world%d", rand.Intn(100000)))
+	io.WriteString(h, fmt.Sprintf("hello world%d", rng.Intn(100000)))
 	return h.Sum(nil)
 }
 
