@@ -28,6 +28,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/google/martian/har"
@@ -74,7 +75,7 @@ func readLog(filename string) ([]*call, []byte, error) {
 	}
 	var f httprFile
 	if err := json.Unmarshal(bytes, &f); err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("%s: %v", filename, err)
 	}
 	ignoreIDs := map[string]bool{} // IDs of requests to ignore
 	callsByID := map[string]*call{}
@@ -135,9 +136,7 @@ func (r replayRoundTripper) RoundTrip(req *http.Request) (*http.Response, error)
 		}
 		if requestsMatch(req, reqBody, call.req, call.reqBody) {
 			r.calls[i] = nil // nil out this call so we don't reuse it
-			res := harResponseToHTTPResponse(call.res)
-			res.Request = req
-			return res, nil
+			return harResponseToHTTPResponse(call.res, req), nil
 		}
 	}
 	return nil, fmt.Errorf("no matching request for %+v", req)
@@ -169,7 +168,6 @@ func init() {
 
 // Report whether the incoming request in matches the candidate request cand.
 func requestsMatch(in *http.Request, inBody *requestBody, cand *har.Request, candBody *requestBody) bool {
-	// TODO(jba): compare headers?
 	if in.Method != cand.Method {
 		return false
 	}
@@ -184,12 +182,9 @@ func requestsMatch(in *http.Request, inBody *requestBody, cand *har.Request, can
 }
 
 func harHeadersToHTTP(hhs []har.Header) http.Header {
-	// Unfortunately, the har package joins multiple header values with ", ",
-	// which isn't reversible if any of the values contains a comma.
-	// We hope for the best.
 	res := http.Header{}
 	for _, hh := range hhs {
-		res[hh.Name] = strings.Split(hh.Value, ", ")
+		res[hh.Name] = append(res[hh.Name], hh.Value)
 	}
 	return res
 }
@@ -197,15 +192,27 @@ func harHeadersToHTTP(hhs []har.Header) http.Header {
 // Convert a HAR response to a Go http.Response.
 // HAR (Http ARchive) is a standard for storing HTTP interactions.
 // See http://www.softwareishard.com/blog/har-12-spec.
-func harResponseToHTTPResponse(hr *har.Response) *http.Response {
-	return &http.Response{
-		StatusCode: hr.Status,
-		Status:     hr.StatusText,
-		Proto:      hr.HTTPVersion,
-		// TODO(jba): headers?
+func harResponseToHTTPResponse(hr *har.Response, req *http.Request) *http.Response {
+	res := &http.Response{
+		StatusCode:    hr.Status,
+		Status:        hr.StatusText,
+		Proto:         hr.HTTPVersion,
+		Header:        harHeadersToHTTP(hr.Headers),
 		Body:          ioutil.NopCloser(bytes.NewReader(hr.Content.Text)),
 		ContentLength: int64(len(hr.Content.Text)),
 	}
+	res.Request = req
+	// For HEAD, set ContentLength to the value of the Content-Length header, or -1
+	// if there isn't one.
+	if req.Method == "HEAD" {
+		res.ContentLength = -1
+		if c := res.Header["Content-Length"]; len(c) == 1 {
+			if c64, err := strconv.ParseInt(c[0], 10, 64); err == nil {
+				res.ContentLength = c64
+			}
+		}
+	}
+	return res
 }
 
 // A requestBody represents the body of a request. If the content type is multipart, the
