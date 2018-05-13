@@ -172,8 +172,7 @@ func init() {
 		fmt.Fprintf(tw, "cbt %s\t%s\n", cmd.Name, cmd.Desc)
 	}
 	tw.Flush()
-	buf.WriteString(configHelp)
-	buf.WriteString("\ncbt ` + version + ` ` + revision + ` ` + revisionDate + `")
+	buf.WriteString(configHelp)	
 	cmdSummary = buf.String()
 }
 
