@@ -136,7 +136,7 @@ func TestRunTransaction(t *testing.T) {
 			Database: db,
 			Options: &pb.TransactionOptions{
 				Mode: &pb.TransactionOptions_ReadWrite_{
-					&pb.TransactionOptions_ReadWrite{tid},
+					&pb.TransactionOptions_ReadWrite{RetryTransaction: tid},
 				},
 			},
 		},
@@ -301,7 +301,7 @@ func TestTransactionErrors(t *testing.T) {
 			Database: db,
 			Options: &pb.TransactionOptions{
 				Mode: &pb.TransactionOptions_ReadWrite_{
-					&pb.TransactionOptions_ReadWrite{tid},
+					&pb.TransactionOptions_ReadWrite{RetryTransaction: tid},
 				},
 			},
 		},
