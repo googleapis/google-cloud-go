@@ -183,7 +183,7 @@ func prepare(ctx context.Context, t *testing.T, statements []string) (client *Cl
 	}
 	return client, dbPath, func() {
 		client.Close()
-		if err := admin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{dbPath}); err != nil {
+		if err := admin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: dbPath}); err != nil {
 			t.Logf("failed to drop database %s (error %v), might need a manual removal",
 				dbPath, err)
 		}
@@ -955,7 +955,7 @@ func TestDbRemovalRecovery(t *testing.T) {
 	defer tearDown()
 
 	// Drop the testing database.
-	if err := admin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{dbPath}); err != nil {
+	if err := admin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: dbPath}); err != nil {
 		t.Fatalf("failed to drop testing database %v: %v", dbPath, err)
 	}
 
