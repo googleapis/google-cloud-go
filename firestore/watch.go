@@ -24,7 +24,7 @@ import (
 
 	"cloud.google.com/go/internal/btree"
 	"github.com/golang/protobuf/ptypes"
-	gax "github.com/googleapis/gax-go"
+	"github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 	"google.golang.org/grpc/codes"
@@ -40,7 +40,7 @@ var LogWatchStreams bool = false
 type DocumentChangeKind int
 
 const (
-	DocumentAdded DocumentChangeKind = iota
+	DocumentAdded    DocumentChangeKind = iota
 	DocumentRemoved
 	DocumentModified
 )
@@ -267,15 +267,15 @@ func (s *watchStream) handleTargetChange(tc *pb.TargetChange) bool {
 		}
 		return true
 
-	// The targets reflect all changes committed before the targets were added
-	// to the stream.
+		// The targets reflect all changes committed before the targets were added
+		// to the stream.
 	case pb.TargetChange_CURRENT:
 		s.logf("TargetCurrent")
 		s.current = true
 
-	// The targets have been reset, and a new initial state for the targets will be
-	// returned in subsequent changes. Whatever changes have happened so far no
-	// longer matter.
+		// The targets have been reset, and a new initial state for the targets will be
+		// returned in subsequent changes. Whatever changes have happened so far no
+		// longer matter.
 	case pb.TargetChange_RESET:
 		s.logf("TargetReset")
 		s.resetDocs()

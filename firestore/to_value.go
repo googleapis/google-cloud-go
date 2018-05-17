@@ -59,13 +59,13 @@ func toProtoValue(v reflect.Value) (pbv *pb.Value, sawServerTimestamp bool, err 
 	}
 	switch x := vi.(type) {
 	case []byte:
-		return &pb.Value{ValueType: &pb.Value_BytesValue{x}}, false, nil
+		return &pb.Value{ValueType: &pb.Value_BytesValue{BytesValue: x}}, false, nil
 	case time.Time:
 		ts, err := ptypes.TimestampProto(x)
 		if err != nil {
 			return nil, false, err
 		}
-		return &pb.Value{ValueType: &pb.Value_TimestampValue{ts}}, false, nil
+		return &pb.Value{ValueType: &pb.Value_TimestampValue{TimestampValue: ts}}, false, nil
 	case *ts.Timestamp:
 		if x == nil {
 			// gRPC doesn't like nil oneofs. Use NullValue.
@@ -139,7 +139,7 @@ func sliceToProtoValue(v reflect.Value) (*pb.Value, bool, error) {
 		}
 		vals[i] = val
 	}
-	return &pb.Value{ValueType: &pb.Value_ArrayValue{&pb.ArrayValue{Values: vals}}}, false, nil
+	return &pb.Value{ValueType: &pb.Value_ArrayValue{ArrayValue: &pb.ArrayValue{Values: vals}}}, false, nil
 }
 
 func mapToProtoValue(v reflect.Value) (*pb.Value, bool, error) {
@@ -175,7 +175,7 @@ func mapToProtoValue(v reflect.Value) (*pb.Value, bool, error) {
 		// The entire map consisted of ServerTimestamp values.
 		pv = nil
 	} else {
-		pv = &pb.Value{ValueType: &pb.Value_MapValue{&pb.MapValue{Fields: m}}}
+		pv = &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: m}}}
 	}
 	return pv, sawServerTimestamp, nil
 }
@@ -215,7 +215,7 @@ func structToProtoValue(v reflect.Value) (*pb.Value, bool, error) {
 		// The entire struct consisted of ServerTimestamp or omitempty values.
 		pv = nil
 	} else {
-		pv = &pb.Value{ValueType: &pb.Value_MapValue{&pb.MapValue{Fields: m}}}
+		pv = &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: m}}}
 	}
 	return pv, sawServerTimestamp, nil
 }
