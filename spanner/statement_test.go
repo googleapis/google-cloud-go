@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"math"
+	"reflect"
 	"testing"
 	"time"
 
@@ -52,6 +53,39 @@ func TestBindParams(t *testing.T) {
 		d2, _ = civil.ParseDate("0001-01-01")
 		d3, _ = civil.ParseDate("9999-12-31")
 	)
+
+	type staticStruct struct {
+		Field int `spanner:"field"`
+	}
+
+	dynamicStructType := reflect.StructOf([]reflect.StructField{
+		{Name: "A", Type: reflect.TypeOf(t1), Tag: `spanner:"field"`},
+		{Name: "B", Type: reflect.TypeOf(3.14), Tag: `spanner:""`},
+	})
+	dynamicStructArrType := reflect.SliceOf(reflect.PtrTo(dynamicStructType))
+	dynamicEmptyStructType := reflect.StructOf(make([]reflect.StructField, 0, 0))
+
+	dynamicStructTypeProto := structType(
+		mkField("field", timeType()),
+		mkField("", floatType()))
+
+	var (
+		s1 = staticStruct{10}
+		s2 = staticStruct{20}
+	)
+
+	s3 := reflect.New(dynamicStructType)
+	s3.Elem().Field(0).Set(reflect.ValueOf(t1))
+	s3.Elem().Field(1).SetFloat(1.4)
+
+	s4 := reflect.New(dynamicStructType)
+	s4.Elem().Field(0).Set(reflect.ValueOf(t2))
+	s4.Elem().Field(1).SetFloat(-13.3)
+
+	dynamicStructArrayVal := reflect.MakeSlice(dynamicStructArrType, 2, 2)
+	dynamicStructArrayVal.Index(0).Set(s3)
+	dynamicStructArrayVal.Index(1).Set(s4)
+
 	for i, test := range []struct {
 		val       interface{}
 		wantField *proto3.Value
@@ -127,6 +161,60 @@ func TestBindParams(t *testing.T) {
 		{[]time.Time{}, listProto(), listType(timeType())},
 		{[]time.Time{t1, t2, t3}, listProto(timeProto(t1), timeProto(t2), timeProto(t3)), listType(timeType())},
 		{[]NullTime{{t2, true}, {}}, listProto(timeProto(t2), nullProto()), listType(timeType())},
+		// Struct
+		{
+			s1,
+			listProto(intProto(10)),
+			structType(mkField("field", intType())),
+		},
+		{
+			s3.Interface(),
+			listProto(timeProto(t1), floatProto(1.4)),
+			structType(
+				mkField("field", timeType()),
+				mkField("", floatType())),
+		},
+		{
+			(*struct {
+				F1 civil.Date `spanner:""`
+				F2 bool
+			})(nil),
+			nullProto(),
+			structType(
+				mkField("", dateType()),
+				mkField("F2", boolType())),
+		},
+		{
+			reflect.Zero(reflect.PtrTo(dynamicEmptyStructType)).Interface(),
+			nullProto(),
+			structType([]*sppb.StructType_Field{}...),
+		},
+		// Array-of-struct
+		{
+			[]staticStruct{s1, s2},
+			listProto(listProto(intProto(10)), listProto(intProto(20))),
+			listType(structType(mkField("field", intType()))),
+		},
+		{
+			dynamicStructArrayVal.Interface(),
+			listProto(
+				listProto(timeProto(t1), floatProto(1.4)),
+				listProto(timeProto(t2), floatProto(-13.3))),
+			listType(dynamicStructTypeProto),
+		},
+		{
+			[]*struct {
+				F1 time.Time `spanner:"field"`
+				F2 float64   `spanner:""`
+			}{
+				nil,
+				{t1, 1.4},
+			},
+			listProto(
+				nullProto(),
+				listProto(timeProto(t1), floatProto(1.4))),
+			listType(dynamicStructTypeProto),
+		},
 	} {
 		st.Params["var"] = test.val
 		want.Params.Fields["var"] = test.wantField
@@ -146,10 +234,6 @@ func TestBindParams(t *testing.T) {
 		val     interface{}
 		wantErr error
 	}{
-		{
-			struct{}{},
-			errBindParam("var", struct{}{}, errEncoderUnsupportedType(struct{}{})),
-		},
 		{
 			nil,
 			errBindParam("var", nil, errNilParam),
