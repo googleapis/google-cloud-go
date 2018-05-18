@@ -33,6 +33,17 @@ make backwards-incompatible changes.
 
 ## News
 
+_May 18, 2018_
+
+*v0.23.0*
+
+- bigquery: Add DDL stats to query statistics.
+- bigtable:
+  - cbt: Add cells-per-column limit for row lookup.
+  - cbt: Make it possible to combine read filters.
+- dlp: v2beta2 client removed. Use the v2 client instead.
+- firestore, spanner: Fix compilation errors due to protobuf changes.
+
 _May 8, 2018_
 
 *v0.22.0*
