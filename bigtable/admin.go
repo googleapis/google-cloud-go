@@ -26,16 +26,19 @@ import (
 	"cloud.google.com/go/bigtable/internal/gax"
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/iam"
+	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	"github.com/golang/protobuf/ptypes"
 	durpb "github.com/golang/protobuf/ptypes/duration"
+	"github.com/pkg/errors"
 	"golang.org/x/net/context"
-	cloudresourcemanager "google.golang.org/api/cloudresourcemanager/v1"
+	"google.golang.org/api/cloudresourcemanager/v1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
+	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -887,4 +890,203 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 
 func (iac *InstanceAdminClient) InstanceIAM(instanceID string) *iam.Handle {
 	return iam.InternalNewHandleGRPCClient(iac.iClient, "projects/"+iac.project+"/instances/"+instanceID)
+
+}
+
+// Routing policies.
+const (
+	MultiClusterRouting  = "multi_cluster_routing_use_any"
+	SingleClusterRouting = "single_cluster_routing"
+)
+
+// ProfileConf contains the information necessary to create an profile
+type ProfileConf struct {
+	Name                     string
+	ProfileID                string
+	InstanceID               string
+	Etag                     string
+	Description              string
+	RoutingPolicy            string
+	ClusterID                string
+	AllowTransactionalWrites bool
+}
+
+type ProfileIterator struct {
+	items    []*btapb.AppProfile
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+}
+
+//set this to patch app profile. If unset, no fields will be replaced.
+type ProfileAttrsToUpdate struct {
+	// If set, updates the description.
+	Description optional.String
+
+	//If set, updates the routing policy.
+	RoutingPolicy optional.String
+
+	//If RoutingPolicy is updated to SingleClusterRouting, set these fields as well.
+	ClusterID                string
+	AllowTransactionalWrites bool
+}
+
+func (p *ProfileAttrsToUpdate) GetFieldMaskPath() []string {
+	path := make([]string, 0)
+	if p.Description != nil {
+		path = append(path, "description")
+	}
+
+	if p.RoutingPolicy != nil {
+		path = append(path, optional.ToString(p.RoutingPolicy))
+	}
+	return path
+}
+
+// PageInfo supports pagination. See https://godoc.org/google.golang.org/api/iterator package for details.
+func (it *ProfileIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done
+// (https://godoc.org/google.golang.org/api/iterator) if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ProfileIterator) Next() (*btapb.AppProfile, error) {
+	if err := it.nextFunc(); err != nil {
+		return nil, err
+	}
+	item := it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+// CreateAppProfile creates an app profile within an instance.
+func (iac *InstanceAdminClient) CreateAppProfile(ctx context.Context, profile ProfileConf) (*btapb.AppProfile, error) {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	parent := "projects/" + iac.project + "/instances/" + profile.InstanceID
+	appProfile := &btapb.AppProfile{
+		Etag:        profile.Etag,
+		Description: profile.Description,
+	}
+
+	if profile.RoutingPolicy == "" {
+		return nil, errors.New("invalid routing policy")
+	}
+
+	switch profile.RoutingPolicy {
+	case MultiClusterRouting:
+		appProfile.RoutingPolicy = &btapb.AppProfile_MultiClusterRoutingUseAny_{
+			MultiClusterRoutingUseAny: &btapb.AppProfile_MultiClusterRoutingUseAny{},
+		}
+	case SingleClusterRouting:
+		appProfile.RoutingPolicy = &btapb.AppProfile_SingleClusterRouting_{
+			SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+				ClusterId:                profile.ClusterID,
+				AllowTransactionalWrites: profile.AllowTransactionalWrites,
+			},
+		}
+	default:
+		return nil, errors.New("invalid routing policy")
+	}
+
+	return iac.iClient.CreateAppProfile(ctx, &btapb.CreateAppProfileRequest{
+		Parent:         parent,
+		AppProfile:     appProfile,
+		AppProfileId:   profile.ProfileID,
+		IgnoreWarnings: true,
+	})
+}
+
+// GetAppProfile gets information about an app profile.
+func (iac *InstanceAdminClient) GetAppProfile(ctx context.Context, instanceID, name string) (*btapb.AppProfile, error) {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	profileRequest := &btapb.GetAppProfileRequest{
+		Name: "projects/" + iac.project + "/instances/" + instanceID + "/appProfiles/" + name,
+	}
+	return iac.iClient.GetAppProfile(ctx, profileRequest)
+
+}
+
+// ListAppProfiles lists information about app profiles in an instance.
+func (iac *InstanceAdminClient) ListAppProfiles(ctx context.Context, instanceID string) *ProfileIterator {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	listRequest := &btapb.ListAppProfilesRequest{
+		Parent: "projects/" + iac.project + "/instances/" + instanceID,
+	}
+
+	pit := &ProfileIterator{}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		listRequest.PageToken = pageToken
+		profileRes, err := iac.iClient.ListAppProfiles(ctx, listRequest)
+		if err != nil {
+			return "", err
+		}
+
+		for _, a := range profileRes.AppProfiles {
+			pit.items = append(pit.items, a)
+		}
+		return profileRes.NextPageToken, nil
+	}
+
+	bufLen := func() int { return len(pit.items) }
+	takeBuf := func() interface{} { b := pit.items; pit.items = nil; return b }
+	pit.pageInfo, pit.nextFunc = iterator.NewPageInfo(fetch, bufLen, takeBuf)
+	return pit
+
+}
+
+// UpdateAppProfile updates an app profile within an instance.
+// updateAttrs should be set. If unset, all fields will be replaced.
+func (iac *InstanceAdminClient) UpdateAppProfile(ctx context.Context, instanceID, profileID string, updateAttrs ProfileAttrsToUpdate) error {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+
+	profile := &btapb.AppProfile{
+		Name: "projects/" + iac.project + "/instances/" + instanceID + "/appProfiles/" + profileID,
+	}
+
+	if updateAttrs.Description != nil {
+		profile.Description = optional.ToString(updateAttrs.Description)
+	}
+	if updateAttrs.RoutingPolicy != nil {
+		switch optional.ToString(updateAttrs.RoutingPolicy) {
+		case MultiClusterRouting:
+			profile.RoutingPolicy = &btapb.AppProfile_MultiClusterRoutingUseAny_{
+				MultiClusterRoutingUseAny: &btapb.AppProfile_MultiClusterRoutingUseAny{},
+			}
+		case SingleClusterRouting:
+			profile.RoutingPolicy = &btapb.AppProfile_SingleClusterRouting_{
+				SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+					ClusterId:                updateAttrs.ClusterID,
+					AllowTransactionalWrites: updateAttrs.AllowTransactionalWrites,
+				},
+			}
+		default:
+			return errors.New("invalid routing policy")
+		}
+	}
+	patchRequest := &btapb.UpdateAppProfileRequest{
+		AppProfile: profile,
+		UpdateMask: &field_mask.FieldMask{
+			Paths: updateAttrs.GetFieldMaskPath(),
+		},
+		IgnoreWarnings: true,
+	}
+	updateRequest, err := iac.iClient.UpdateAppProfile(ctx, patchRequest)
+	if err != nil {
+		return err
+	}
+
+	return longrunning.InternalNewOperation(iac.lroClient, updateRequest).Wait(ctx, nil)
+
+}
+
+// DeleteAppProfile deletes an app profile from an instance.
+func (iac *InstanceAdminClient) DeleteAppProfile(ctx context.Context, instanceID, name string) error {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	deleteProfileRequest := &btapb.DeleteAppProfileRequest{
+		Name:           "projects/" + iac.project + "/instances/" + instanceID + "/appProfiles/" + name,
+		IgnoreWarnings: true,
+	}
+	_, err := iac.iClient.DeleteAppProfile(ctx, deleteProfileRequest)
+	return err
+
 }
