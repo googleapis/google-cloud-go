@@ -49,8 +49,8 @@ type Proxy struct {
 	// The URL of the proxy.
 	URL *url.URL
 
-	// Initial state of the client. Must be serializable with json.Marshal.
-	Initial interface{}
+	// Initial state of the client.
+	Initial []byte
 
 	mproxy   *martian.Proxy
 	filename string      // for log
@@ -160,7 +160,7 @@ func (p *Proxy) Close() error {
 }
 
 type httprFile struct {
-	Initial interface{}
+	Initial []byte
 	HAR     *har.HAR
 }
 
