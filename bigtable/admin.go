@@ -342,12 +342,6 @@ func (ac *AdminClient) SnapshotTable(ctx context.Context, table, cluster, snapsh
 	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
 }
 
-// ListSnapshots returns a SnapshotIterator for iterating over the snapshots in a cluster.
-// Deprecated: see AdminClient.Snapshots.
-func (ac *AdminClient) ListSnapshots(ctx context.Context, cluster string) *SnapshotIterator {
-	return ac.Snapshots(ctx, cluster)
-}
-
 // Snapshots returns a SnapshotIterator for iterating over the snapshots in a cluster.
 // To list snapshots across all of the clusters in the instance specify "-" as the cluster.
 //
