@@ -67,7 +67,7 @@ type call struct {
 	res     *har.Response
 }
 
-func readLog(filename string) ([]*call, interface{}, error) {
+func readLog(filename string) ([]*call, []byte, error) {
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, nil, err

@@ -18,10 +18,12 @@ package httpreplay_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/internal/testutil"
@@ -50,7 +52,12 @@ func TestIntegration_RecordAndReplay(t *testing.T) {
 	ctx := context.Background()
 
 	// Record.
-	rec, err := httpreplay.NewRecorder(replayFilename, nil)
+	initial := time.Now()
+	ibytes, err := json.Marshal(initial)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rec, err := httpreplay.NewRecorder(replayFilename, ibytes)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -82,8 +89,12 @@ func TestIntegration_RecordAndReplay(t *testing.T) {
 	if !bytes.Equal(gotc, wantc) {
 		t.Errorf("got %q, want %q", gotc, wantc)
 	}
-	if got, want := rep.Initial(), "initial state"; got != want {
-		t.Errorf("initial: got %v, want %q", got, want)
+	var gotInitial time.Time
+	if err := json.Unmarshal(rep.Initial(), &gotInitial); err != nil {
+		t.Fatal(err)
+	}
+	if !gotInitial.Equal(initial) {
+		t.Errorf("initial: got %v, want %v", gotInitial, initial)
 	}
 }
 
