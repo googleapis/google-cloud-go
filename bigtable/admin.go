@@ -30,7 +30,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	durpb "github.com/golang/protobuf/ptypes/duration"
 	"golang.org/x/net/context"
-	"google.golang.org/api/cloudresourcemanager/v1"
+	cloudresourcemanager "google.golang.org/api/cloudresourcemanager/v1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -342,14 +342,20 @@ func (ac *AdminClient) SnapshotTable(ctx context.Context, table, cluster, snapsh
 	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
 }
 
-// Returns a SnapshotIterator for iterating over the snapshots in a cluster.
+// ListSnapshots returns a SnapshotIterator for iterating over the snapshots in a cluster.
+// Deprecated: see AdminClient.Snapshots.
+func (ac *AdminClient) ListSnapshots(ctx context.Context, cluster string) *SnapshotIterator {
+	return ac.Snapshots(ctx, cluster)
+}
+
+// Snapshots returns a SnapshotIterator for iterating over the snapshots in a cluster.
 // To list snapshots across all of the clusters in the instance specify "-" as the cluster.
 //
-// This is a private alpha release of Cloud Bigtable snapshots. This feature
-// is not currently available to most Cloud Bigtable customers. This feature
-// might be changed in backward-incompatible ways and is not recommended for
-// production use. It is not subject to any SLA or deprecation policy.
-func (ac *AdminClient) ListSnapshots(ctx context.Context, cluster string) *SnapshotIterator {
+// This is a private alpha release of Cloud Bigtable snapshots. This feature is not
+// currently available to most Cloud Bigtable customers. This feature might be
+// changed in backward-incompatible ways and is not recommended for production use.
+// It is not subject to any SLA or deprecation policy.
+func (ac *AdminClient) Snapshots(ctx context.Context, cluster string) *SnapshotIterator {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 	clusterPath := prefix + "/clusters/" + cluster
@@ -392,7 +398,7 @@ func newSnapshotInfo(snapshot *btapb.Snapshot) (*SnapshotInfo, error) {
 	nameParts := strings.Split(snapshot.Name, "/")
 	name := nameParts[len(nameParts)-1]
 	tablePathParts := strings.Split(snapshot.SourceTable.Name, "/")
-	tableId := tablePathParts[len(tablePathParts)-1]
+	tableID := tablePathParts[len(tablePathParts)-1]
 
 	createTime, err := ptypes.Timestamp(snapshot.CreateTime)
 	if err != nil {
@@ -406,7 +412,7 @@ func newSnapshotInfo(snapshot *btapb.Snapshot) (*SnapshotInfo, error) {
 
 	return &SnapshotInfo{
 		Name:        name,
-		SourceTable: tableId,
+		SourceTable: tableID,
 		DataSize:    snapshot.DataSizeBytes,
 		CreateTime:  createTime,
 		DeleteTime:  deleteTime,
@@ -710,9 +716,9 @@ func (iac *InstanceAdminClient) CreateInstanceWithClusters(ctx context.Context, 
 }
 
 // DeleteInstance deletes an instance from the project.
-func (iac *InstanceAdminClient) DeleteInstance(ctx context.Context, instanceId string) error {
+func (iac *InstanceAdminClient) DeleteInstance(ctx context.Context, instanceID string) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
-	req := &btapb.DeleteInstanceRequest{Name: "projects/" + iac.project + "/instances/" + instanceId}
+	req := &btapb.DeleteInstanceRequest{Name: "projects/" + iac.project + "/instances/" + instanceID}
 	_, err := iac.iClient.DeleteInstance(ctx, req)
 	return err
 }
@@ -748,10 +754,10 @@ func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo,
 }
 
 // InstanceInfo returns information about an instance.
-func (iac *InstanceAdminClient) InstanceInfo(ctx context.Context, instanceId string) (*InstanceInfo, error) {
+func (iac *InstanceAdminClient) InstanceInfo(ctx context.Context, instanceID string) (*InstanceInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.GetInstanceRequest{
-		Name: "projects/" + iac.project + "/instances/" + instanceId,
+		Name: "projects/" + iac.project + "/instances/" + instanceID,
 	}
 	res, err := iac.iClient.GetInstance(ctx, req)
 	if err != nil {
@@ -821,18 +827,18 @@ func (iac *InstanceAdminClient) CreateCluster(ctx context.Context, conf *Cluster
 // is not currently available to most Cloud Bigtable customers. This feature
 // might be changed in backward-incompatible ways and is not recommended for
 // production use. It is not subject to any SLA or deprecation policy.
-func (iac *InstanceAdminClient) DeleteCluster(ctx context.Context, instanceId, clusterId string) error {
+func (iac *InstanceAdminClient) DeleteCluster(ctx context.Context, instanceID, clusterID string) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
-	req := &btapb.DeleteClusterRequest{Name: "projects/" + iac.project + "/instances/" + instanceId + "/clusters/" + clusterId}
+	req := &btapb.DeleteClusterRequest{Name: "projects/" + iac.project + "/instances/" + instanceID + "/clusters/" + clusterID}
 	_, err := iac.iClient.DeleteCluster(ctx, req)
 	return err
 }
 
 // UpdateCluster updates attributes of a cluster
-func (iac *InstanceAdminClient) UpdateCluster(ctx context.Context, instanceId, clusterId string, serveNodes int32) error {
+func (iac *InstanceAdminClient) UpdateCluster(ctx context.Context, instanceID, clusterID string, serveNodes int32) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	cluster := &btapb.Cluster{
-		Name:       "projects/" + iac.project + "/instances/" + instanceId + "/clusters/" + clusterId,
+		Name:       "projects/" + iac.project + "/instances/" + instanceID + "/clusters/" + clusterID,
 		ServeNodes: serveNodes}
 	lro, err := iac.iClient.UpdateCluster(ctx, cluster)
 	if err != nil {
@@ -842,9 +848,9 @@ func (iac *InstanceAdminClient) UpdateCluster(ctx context.Context, instanceId, c
 }
 
 // Clusters lists the clusters in an instance.
-func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceId string) ([]*ClusterInfo, error) {
+func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string) ([]*ClusterInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
-	req := &btapb.ListClustersRequest{Parent: "projects/" + iac.project + "/instances/" + instanceId}
+	req := &btapb.ListClustersRequest{Parent: "projects/" + iac.project + "/instances/" + instanceID}
 	res, err := iac.iClient.ListClusters(ctx, req)
 	if err != nil {
 		return nil, err

@@ -273,7 +273,7 @@ func TestAdminSnapshotIntegration(t *testing.T) {
 	list := func(cluster string) ([]*SnapshotInfo, error) {
 		infos := []*SnapshotInfo(nil)
 
-		it := adminClient.ListSnapshots(ctx, cluster)
+		it := adminClient.Snapshots(ctx, cluster)
 		for {
 			s, err := it.Next()
 			if err == iterator.Done {

@@ -1220,7 +1220,7 @@ func doListSnapshots(ctx context.Context, args ...string) {
 		cluster = args[0]
 	}
 
-	it := getAdminClient().ListSnapshots(ctx, cluster)
+	it := getAdminClient().Snapshots(ctx, cluster)
 
 	tw := tabwriter.NewWriter(os.Stdout, 10, 8, 4, '\t', 0)
 	fmt.Fprintf(tw, "Snapshot\tSource Table\tCreated At\tExpires At\n")
