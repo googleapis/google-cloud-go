@@ -23,7 +23,6 @@
 package main
 
 import (
-	"encoding/base64"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -93,22 +92,7 @@ func handleInitial(pr *proxy.Proxy) http.HandlerFunc {
 		switch req.Method {
 		case "GET":
 			if pr.Initial != nil {
-				switch x := pr.Initial.(type) {
-				case []byte:
-					w.Write(x)
-				case string:
-					// If it's base64, then it's most likely from the JSON in the saved file
-					// (json.Marshal encodes []byte as a base64 string).  Decode it.
-					if bytes, err := base64.StdEncoding.DecodeString(x); err == nil {
-						w.Write(bytes)
-					} else {
-						// If it's not base64, write the string out directly.
-						w.Write([]byte(x))
-					}
-				default:
-					// We don't know what it is, so just print it.
-					fmt.Fprint(w, x)
-				}
+				w.Write(pr.Initial)
 			}
 
 		case "POST":
