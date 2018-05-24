@@ -75,7 +75,7 @@ for production use. They are not subject to any SLA or deprecation policy.
 
 For convenience, values of the -project, -instance, -creds,
 -admin-endpoint and -data-endpoint flags may be specified in
-.cbtrc in this format:
+~/.cbtrc in this format:
 	project = my-project-123
 	instance = my-instance
 	creds = path-to-account-key.json
