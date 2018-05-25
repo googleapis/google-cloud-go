@@ -252,6 +252,21 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 	if !testutil.Equal(attrs.Labels, wantLabels) {
 		t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
 	}
+
+	// Configure a lifecycle
+	wantLifecycle := Lifecycle{
+		Rules: []LifecycleRule{
+			{
+				Action:    LifecycleAction{Type: "Delete"},
+				Condition: LifecycleCondition{AgeInDays: 30},
+			},
+		},
+	}
+	ua = BucketAttrsToUpdate{Lifecycle: &wantLifecycle}
+	attrs = h.mustUpdateBucket(b, ua)
+	if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
+		t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
+	}
 }
 
 func TestIntegration_ConditionalDelete(t *testing.T) {
