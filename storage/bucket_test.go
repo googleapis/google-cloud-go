@@ -100,6 +100,14 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		RequesterPays:     false,
 		RetentionPolicy:   &RetentionPolicy{RetentionPeriod: time.Hour},
 		Encryption:        &BucketEncryption{DefaultKMSKeyName: "key2"},
+		Lifecycle: &Lifecycle{
+			Rules: []LifecycleRule{
+				{
+					Action:    LifecycleAction{Type: "Delete"},
+					Condition: LifecycleCondition{AgeInDays: 30},
+				},
+			},
+		},
 	}
 	au.SetLabel("a", "foo")
 	au.DeleteLabel("b")
@@ -121,6 +129,14 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		RetentionPolicy: &raw.BucketRetentionPolicy{RetentionPeriod: 3600},
 		Encryption:      &raw.BucketEncryption{DefaultKmsKeyName: "key2"},
 		NullFields:      []string{"Labels.b"},
+		Lifecycle: &raw.BucketLifecycle{
+			Rule: []*raw.BucketLifecycleRule{
+				{
+					Action:    &raw.BucketLifecycleRuleAction{Type: "Delete"},
+					Condition: &raw.BucketLifecycleRuleCondition{Age: 30},
+				},
+			},
+		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
