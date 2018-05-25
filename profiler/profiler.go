@@ -98,12 +98,14 @@ const (
 
 // Config is the profiler configuration.
 type Config struct {
-	// Service (or deprecated Target) must be provided to start the profiler.
-	// It specifies the name of the service under which the profiled data
-	// will be recorded and exposed at the Profiler UI for the project.
-	// You can specify an arbitrary string, but see Deployment.target at
+	// Service must be provided to start the profiler. It specifies the name of
+	// the service under which the profiled data will be recorded and exposed at
+	// the Profiler UI for the project. You can specify an arbitrary string, but
+	// see Deployment.target at
 	// https://github.com/googleapis/googleapis/blob/master/google/devtools/cloudprofiler/v2/profiler.proto
-	// for restrictions.
+	// for restrictions. If the parameter is not set, the agent will probe
+	// GAE_SERVICE environment variable which is present in Google App Engine
+	// environment.
 	// NOTE: The string should be the same across different replicas of
 	// your service so that the globally constant profiling rate is
 	// maintained. Do not put things like PID or unique pod ID in the name.
@@ -112,7 +114,8 @@ type Config struct {
 	// ServiceVersion is an optional field specifying the version of the
 	// service. It can be an arbitrary string. Profiler profiles
 	// once per minute for each version of each service in each zone.
-	// ServiceVersion defaults to an empty string.
+	// ServiceVersion defaults to GAE_VERSION environment variable if that is
+	// set, or to empty string otherwise.
 	ServiceVersion string
 
 	// DebugLogging enables detailed debug logging from profiler. It
@@ -130,8 +133,9 @@ type Config struct {
 	// When true, collecting the goroutine profiles is disabled.
 	NoGoroutineProfiling bool
 
-	// ProjectID is the Cloud Console project ID to use instead of
-	// the one read from the VM metadata server.
+	// ProjectID is the Cloud Console project ID to use instead of the one set by
+	// GOOGLE_CLOUD_PROJECT environment variable or read from the VM metadata
+	// server.
 	//
 	// Set this if you are running the agent in your local environment
 	// or anywhere else outside of Google Cloud Platform.
@@ -141,9 +145,6 @@ type Config struct {
 	// agent API. Defaults to the production environment, overridable
 	// for testing.
 	APIAddr string
-
-	// Target is deprecated, use Service instead.
-	Target string
 
 	instance string
 	zone     string
@@ -411,7 +412,7 @@ func initializeAgent(c pb.ProfilerServiceClient) *agent {
 	}
 	d := &pb.Deployment{
 		ProjectId: config.ProjectID,
-		Target:    config.Target,
+		Target:    config.Service,
 		Labels:    labels,
 	}
 
@@ -443,15 +444,11 @@ func initializeAgent(c pb.ProfilerServiceClient) *agent {
 func initializeConfig(cfg Config) error {
 	config = cfg
 
-	switch {
-	case config.Service != "":
-		config.Target = config.Service
-	case config.Target == "":
-		config.Target = os.Getenv("GAE_SERVICE")
+	if config.Service == "" {
+		config.Service = os.Getenv("GAE_SERVICE")
 	}
-
-	if config.Target == "" {
-		return errors.New("service name must be specified in the configuration")
+	if config.Service == "" {
+		return errors.New("service name must be configured")
 	}
 
 	if config.ServiceVersion == "" {
