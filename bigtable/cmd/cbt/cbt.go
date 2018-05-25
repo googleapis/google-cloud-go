@@ -332,7 +332,9 @@ var commands = []struct {
 		Name: "lookup",
 		Desc: "Read from a single row",
 		do:   doLookup,
-		Usage: "cbt lookup <table> <row> [cells-per-column=<n>] [app-profile=<app profile id>]\n" +
+		Usage: "cbt lookup <table> <row> [columns=<family:qualifier>,...] [cells-per-column=<n>] " +
+			"[app-profile=<app profile id>]\n" +
+			"  columns                          Read only these columns. Format <column-family>:<column-qualifier>, comma-separated" +
 			"  cells-per-column=<n> 			Read only this many cells per column\n" +
 			"  app-profile=<app profile id>		The app profile id to use for the request (replication alpha)\n",
 		Required: cbtconfig.ProjectAndInstanceRequired,
@@ -357,11 +359,13 @@ var commands = []struct {
 		Desc: "Read rows",
 		do:   doRead,
 		Usage: "cbt read <table> [start=<row>] [end=<row>] [prefix=<prefix>]" +
-			" [regex=<regex>] [count=<n>] [cells-per-column=<n>] [app-profile=<app profile id>]\n" +
+			" [regex=<regex>] [columns=<family:qualifier>,...] [count=<n>] [cells-per-column=<n>]" +
+			" [app-profile=<app profile id>]\n" +
 			"  start=<row>		Start reading at this row\n" +
 			"  end=<row>		Stop reading before this row\n" +
 			"  prefix=<prefix>	Read rows with this prefix\n" +
 			"  regex=<regex> 	Read rows with keys matching this regex\n" +
+			"  columns          Read only these columns. Format <column-family>:<column-qualifier>, comma-separated" +
 			"  count=<n>		Read only this many rows\n" +
 			"  cells-per-column=<n>	Read only this many cells per column\n" +
 			"  app-profile=<app profile id>		The app profile id to use for the request (replication alpha)\n",
@@ -842,21 +846,37 @@ func doListClusters(ctx context.Context, args ...string) {
 
 func doLookup(ctx context.Context, args ...string) {
 	if len(args) < 2 {
-		log.Fatalf("usage: cbt lookup <table> <row> [cells-per-column=<n>] [app-profile=<app profile id>]")
+		log.Fatalf("usage: cbt lookup <table> <row> [columns=<family:qualifier>...] [cells-per-column=<n>] " +
+			"[app-profile=<app profile id>]")
 	}
 
-	parsed, err := parseArgs(args[2:], []string{"cells-per-column", "app-profile"})
+	parsed, err := parseArgs(args[2:], []string{"columns", "cells-per-column", "app-profile"})
 	if err != nil {
 		log.Fatal(err)
 	}
 	var opts []bigtable.ReadOption
+	var filters []bigtable.Filter
 	if cellsPerColumn := parsed["cells-per-column"]; cellsPerColumn != "" {
 		n, err := strconv.Atoi(cellsPerColumn)
 		if err != nil {
 			log.Fatalf("Bad number of cells per column %q: %v", cellsPerColumn, err)
 		}
-		opts = append(opts, bigtable.RowFilter(bigtable.LatestNFilter(n)))
+		filters = append(filters, bigtable.LatestNFilter(n))
 	}
+	if columns := parsed["columns"]; columns != "" {
+		columnFilters, err := parseColumnsFilter(columns)
+		if err != nil {
+			log.Fatal(err)
+		}
+		filters = append(filters, columnFilters)
+	}
+
+	if len(filters) > 1 {
+		opts = append(opts, bigtable.RowFilter(bigtable.ChainFilters(filters...)))
+	} else if len(filters) == 1 {
+		opts = append(opts, bigtable.RowFilter(filters[0]))
+	}
+
 	table, row := args[0], args[1]
 	tbl := getClient(bigtable.ClientConfig{AppProfile: parsed["app-profile"]}).Open(table)
 	r, err := tbl.ReadRow(ctx, row, opts...)
@@ -980,7 +1000,7 @@ func doRead(ctx context.Context, args ...string) {
 	}
 
 	parsed, err := parseArgs(args[1:], []string{
-		"start", "end", "prefix", "count", "cells-per-column", "regex", "app-profile", "limit",
+		"start", "end", "prefix", "columns", "count", "cells-per-column", "regex", "app-profile", "limit",
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -1023,6 +1043,14 @@ func doRead(ctx context.Context, args ...string) {
 	if regex := parsed["regex"]; regex != "" {
 		filters = append(filters, bigtable.RowKeyFilter(regex))
 	}
+	if columns := parsed["columns"]; columns != "" {
+		columnFilters, err := parseColumnsFilter(columns)
+		if err != nil {
+			log.Fatal(err)
+		}
+		filters = append(filters, columnFilters)
+	}
+
 	if len(filters) > 1 {
 		opts = append(opts, bigtable.RowFilter(bigtable.ChainFilters(filters...)))
 	} else if len(filters) == 1 {
@@ -1346,4 +1374,44 @@ func stringInSlice(s string, list []string) bool {
 		}
 	}
 	return false
+}
+
+func parseColumnsFilter(columns string) (bigtable.Filter, error) {
+	splitColumns := strings.FieldsFunc(columns, func(c rune) bool { return c == ',' })
+	if len(splitColumns) == 1 {
+		filter, err := columnFilter(splitColumns[0])
+		if err != nil {
+			return nil, err
+		}
+		return filter, nil
+	} else {
+		var columnFilters []bigtable.Filter
+		for _, column := range splitColumns {
+			filter, err := columnFilter(column)
+			if err != nil {
+				return nil, err
+			}
+			columnFilters = append(columnFilters, filter)
+		}
+		return bigtable.InterleaveFilters(columnFilters...), nil
+	}
+}
+
+func columnFilter(column string) (bigtable.Filter, error) {
+	splitColumn := strings.Split(column, ":")
+	if len(splitColumn) == 1 {
+		return bigtable.ColumnFilter(splitColumn[0]), nil
+	} else if len(splitColumn) == 2 {
+		if strings.HasSuffix(column, ":") {
+			return bigtable.FamilyFilter(splitColumn[0]), nil
+		} else if strings.HasPrefix(column, ":") {
+			return bigtable.ColumnFilter(splitColumn[1]), nil
+		} else {
+			familyFilter := bigtable.FamilyFilter(splitColumn[0])
+			qualifierFilter := bigtable.ColumnFilter(splitColumn[1])
+			return bigtable.ChainFilters(familyFilter, qualifierFilter), nil
+		}
+	} else {
+		return nil, fmt.Errorf("Bad format for column %q", column)
+	}
 }

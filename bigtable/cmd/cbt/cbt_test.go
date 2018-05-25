@@ -130,3 +130,95 @@ func TestParseArgs(t *testing.T) {
 		t.Error("invalid: got nil, want error")
 	}
 }
+
+func TestParseColumnsFilter(t *testing.T) {
+	tests := []struct {
+		in   string
+		out  bigtable.Filter
+		fail bool
+	}{
+		{
+			in:  "columnA",
+			out: bigtable.ColumnFilter("columnA"),
+		},
+		{
+			in:  "familyA:columnA",
+			out: bigtable.ChainFilters(bigtable.FamilyFilter("familyA"), bigtable.ColumnFilter("columnA")),
+		},
+		{
+			in:  "columnA,columnB",
+			out: bigtable.InterleaveFilters(bigtable.ColumnFilter("columnA"), bigtable.ColumnFilter("columnB")),
+		},
+		{
+			in: "familyA:columnA,columnB",
+			out: bigtable.InterleaveFilters(
+				bigtable.ChainFilters(bigtable.FamilyFilter("familyA"), bigtable.ColumnFilter("columnA")),
+				bigtable.ColumnFilter("columnB"),
+			),
+		},
+		{
+			in: "columnA,familyB:columnB",
+			out: bigtable.InterleaveFilters(
+				bigtable.ColumnFilter("columnA"),
+				bigtable.ChainFilters(bigtable.FamilyFilter("familyB"), bigtable.ColumnFilter("columnB")),
+			),
+		},
+		{
+			in: "familyA:columnA,familyB:columnB",
+			out: bigtable.InterleaveFilters(
+				bigtable.ChainFilters(bigtable.FamilyFilter("familyA"), bigtable.ColumnFilter("columnA")),
+				bigtable.ChainFilters(bigtable.FamilyFilter("familyB"), bigtable.ColumnFilter("columnB")),
+			),
+		},
+		{
+			in:  "familyA:",
+			out: bigtable.FamilyFilter("familyA"),
+		},
+		{
+			in:  ":columnA",
+			out: bigtable.ColumnFilter("columnA"),
+		},
+		{
+			in: ",:columnA,,familyB:columnB,",
+			out: bigtable.InterleaveFilters(
+				bigtable.ColumnFilter("columnA"),
+				bigtable.ChainFilters(bigtable.FamilyFilter("familyB"), bigtable.ColumnFilter("columnB")),
+			),
+		},
+		{
+			in:   "familyA:columnA:cellA",
+			fail: true,
+		},
+		{
+			in:   "familyA::columnA",
+			fail: true,
+		},
+	}
+
+	for _, tc := range tests {
+		got, err := parseColumnsFilter(tc.in)
+
+		if !tc.fail && err != nil {
+			t.Errorf("parseColumnsFilter(%q) unexpectedly failed: %v", tc.in, err)
+			continue
+		}
+		if tc.fail && err == nil {
+			t.Errorf("parseColumnsFilter(%q) did not fail", tc.in)
+			continue
+		}
+		if tc.fail {
+			continue
+		}
+
+		var cmpOpts cmp.Options
+		cmpOpts =
+			append(
+				cmpOpts,
+				cmp.AllowUnexported(bigtable.ChainFilters([]bigtable.Filter{}...)),
+				cmp.AllowUnexported(bigtable.InterleaveFilters([]bigtable.Filter{}...)))
+
+		if !cmp.Equal(got, tc.out, cmpOpts) {
+			t.Errorf("parseColumnsFilter(%q) = %v, want %v", tc.in, got, tc.out)
+		}
+	}
+}
