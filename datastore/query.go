@@ -490,7 +490,7 @@ func (c *Client) Count(ctx context.Context, q *Query) (n int, err error) {
 //
 // If q is a ``keys-only'' query, GetAll ignores dst and only returns the keys.
 //
-// The running time and number of API calls made by GetAll scale linearly with
+// The running time and number of API calls made by GetAll scale linearly
 // with the sum of the query's offset and limit. Unless the result count is
 // expected to be small, it is best to specify a limit; otherwise GetAll will
 // continue until it finishes collecting results or the provided context
