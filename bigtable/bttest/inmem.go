@@ -1267,8 +1267,8 @@ func applyGC(cells []cell, rule *btapb.GcRule) []cell {
 type family struct {
 	name     string            // Column family name
 	order    uint64            // Creation order of column family
-	colNames []string          // Collumn names are sorted in lexicographical ascending order
-	cells    map[string][]cell // Keyed by collumn name; cells are in descending timestamp order
+	colNames []string          // Column names are sorted in lexicographical ascending order
+	cells    map[string][]cell // Keyed by column name; cells are in descending timestamp order
 }
 
 type byCreationOrder []*family

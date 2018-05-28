@@ -255,7 +255,7 @@ type resumableStreamDecoder struct {
 	// ctx is the caller's context, used for cancel/timeout Next().
 	ctx context.Context
 	// rpc is a factory of streamingReceiver, which might resume
-	// a pervious stream from the point encoded in restartToken.
+	// a previous stream from the point encoded in restartToken.
 	// rpc is always a wrapper of a Cloud Spanner query which is
 	// resumable.
 	rpc func(ctx context.Context, restartToken []byte) (streamingReceiver, error)

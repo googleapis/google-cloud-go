@@ -150,7 +150,7 @@ type Config struct {
 	zone     string
 }
 
-// startError represents the error occured during the
+// startError represents the error occurred during the
 // initializating and starting of the agent.
 var startError error
 

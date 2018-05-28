@@ -190,12 +190,12 @@ func randomID() string {
 }
 
 // Done reports whether the job has completed.
-// After Done returns true, the Err method will return an error if the job completed unsuccesfully.
+// After Done returns true, the Err method will return an error if the job completed unsuccessfully.
 func (s *JobStatus) Done() bool {
 	return s.State == Done
 }
 
-// Err returns the error that caused the job to complete unsuccesfully (if any).
+// Err returns the error that caused the job to complete unsuccessfully (if any).
 func (s *JobStatus) Err() error {
 	return s.err
 }
