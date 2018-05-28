@@ -218,7 +218,7 @@ func ExampleNewQuery() {
 }
 
 func ExampleNewQuery_options() {
-	// Query to order the posts by the number of comments they have recieved.
+	// Query to order the posts by the number of comments they have received.
 	q := datastore.NewQuery("Post").Order("-Comments")
 	// Start listing from an offset and limit the results.
 	q = q.Offset(20).Limit(10)

@@ -309,7 +309,7 @@ const (
 	rfc3339Date = "2006-01-02"
 
 	// DeleteAction is a lifecycle action that deletes a live and/or archived
-	// objects. Takes precendence over SetStorageClass actions.
+	// objects. Takes precedence over SetStorageClass actions.
 	DeleteAction = "Delete"
 
 	// SetStorageClassAction changes the storage class of live and/or archived

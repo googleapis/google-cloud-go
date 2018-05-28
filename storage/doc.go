@@ -64,7 +64,7 @@ global across all projects.
 
 Each bucket has associated metadata, represented in this package by
 BucketAttrs. The third argument to BucketHandle.Create allows you to set
-the intial BucketAttrs of a bucket. To retrieve a bucket's attributes, use
+the initial BucketAttrs of a bucket. To retrieve a bucket's attributes, use
 Attrs:
 
     attrs, err := bkt.Attrs(ctx)

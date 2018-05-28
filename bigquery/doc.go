@@ -86,7 +86,7 @@ You can also use a struct whose exported fields match the query:
 
 You can also start the query running and get the results later.
 Create the query as above, but call Run instead of Read. This returns a Job,
-which represents an asychronous operation.
+which represents an asynchronous operation.
 
     job, err := q.Run(ctx)
     if err != nil {
