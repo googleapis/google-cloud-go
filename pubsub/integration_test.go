@@ -106,55 +106,11 @@ func TestIntegration_All(t *testing.T) {
 		t.Errorf("subscription %s should exist, but it doesn't", sub.ID())
 	}
 
-	var msgs []*Message
-	for i := 0; i < 10; i++ {
-		text := fmt.Sprintf("a message with an index %d", i)
-		attrs := make(map[string]string)
-		attrs["foo"] = "bar"
-		msgs = append(msgs, &Message{
-			Data:       []byte(text),
-			Attributes: attrs,
-		})
-	}
-
-	// Publish the messages.
-	type pubResult struct {
-		m *Message
-		r *PublishResult
-	}
-	var rs []pubResult
-	for _, m := range msgs {
-		r := topic.Publish(ctx, m)
-		rs = append(rs, pubResult{m, r})
-	}
-	want := make(map[string]*messageData)
-	for _, res := range rs {
-		id, err := res.r.Get(ctx)
-		if err != nil {
-			t.Fatal(err)
+	for _, sync := range []bool{false, true} {
+		for _, maxMsgs := range []int{0, 3, -1} { // MaxOutstandingMessages = default, 3, unlimited
+			testPublishAndReceive(t, topic, sub, maxMsgs, sync)
 		}
-		md := extractMessageData(res.m)
-		md.ID = id
-		want[md.ID] = md
 	}
-
-	// Use a timeout to ensure that Pull does not block indefinitely if there are unexpectedly few messages available.
-	timeoutCtx, _ := context.WithTimeout(ctx, time.Minute)
-	gotMsgs, err := pullN(timeoutCtx, sub, len(want), func(ctx context.Context, m *Message) {
-		m.Ack()
-	})
-	if err != nil {
-		t.Fatalf("Pull: %v", err)
-	}
-	got := make(map[string]*messageData)
-	for _, m := range gotMsgs {
-		md := extractMessageData(m)
-		got[md.ID] = md
-	}
-	if !testutil.Equal(got, want) {
-		t.Errorf("messages: got: %v ; want: %v", got, want)
-	}
-
 	if msg, ok := testIAM(ctx, topic.IAM(), "pubsub.topics.get"); !ok {
 		t.Errorf("topic IAM: %s", msg)
 	}
@@ -167,7 +123,8 @@ func TestIntegration_All(t *testing.T) {
 		t.Fatalf("CreateSnapshot error: %v", err)
 	}
 
-	timeoutCtx, _ = context.WithTimeout(ctx, time.Minute)
+	timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute)
+	defer cancel()
 	err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (bool, error) {
 		snapIt := client.Snapshots(timeoutCtx)
 		for {
@@ -218,6 +175,62 @@ func TestIntegration_All(t *testing.T) {
 
 	if err := topic.Delete(ctx); err != nil {
 		t.Errorf("DeleteTopic error: %v", err)
+	}
+}
+
+func testPublishAndReceive(t *testing.T, topic *Topic, sub *Subscription, maxMsgs int, synchronous bool) {
+	ctx := context.Background()
+	var msgs []*Message
+	for i := 0; i < 10; i++ {
+		text := fmt.Sprintf("a message with an index %d", i)
+		attrs := make(map[string]string)
+		attrs["foo"] = "bar"
+		msgs = append(msgs, &Message{
+			Data:       []byte(text),
+			Attributes: attrs,
+		})
+	}
+
+	// Publish some messages.
+	type pubResult struct {
+		m *Message
+		r *PublishResult
+	}
+	var rs []pubResult
+	for _, m := range msgs {
+		r := topic.Publish(ctx, m)
+		rs = append(rs, pubResult{m, r})
+	}
+	want := make(map[string]*messageData)
+	for _, res := range rs {
+		id, err := res.r.Get(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		md := extractMessageData(res.m)
+		md.ID = id
+		want[md.ID] = md
+	}
+
+	sub.ReceiveSettings.MaxOutstandingMessages = maxMsgs
+	sub.ReceiveSettings.Synchronous = synchronous
+	// Use a timeout to ensure that Pull does not block indefinitely if there are
+	// unexpectedly few messages available.
+	timeoutCtx, _ := context.WithTimeout(ctx, time.Minute)
+	gotMsgs, err := pullN(timeoutCtx, sub, len(want), func(ctx context.Context, m *Message) {
+		m.Ack()
+	})
+	if err != nil {
+		t.Fatalf("Pull: %v", err)
+	}
+	got := make(map[string]*messageData)
+	for _, m := range gotMsgs {
+		md := extractMessageData(m)
+		got[md.ID] = md
+	}
+	if !testutil.Equal(got, want) {
+		t.Errorf("MaxOutstandingMessages=%d, Synchronous=%t: messages: got: %v ; want: %v",
+			maxMsgs, synchronous, got, want)
 	}
 }
 

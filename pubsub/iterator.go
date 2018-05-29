@@ -31,16 +31,7 @@ import (
 // of the actual deadline.
 const gracePeriod = 5 * time.Second
 
-// newMessageIterator starts a new streamingMessageIterator.  Stop must be called on the messageIterator
-// when it is no longer needed.
-// subName is the full name of the subscription to pull messages from.
-// ctx is the context to use for acking messages and extending message deadlines.
-func newMessageIterator(ctx context.Context, subc *vkit.SubscriberClient, subName string, po *pullOptions) *streamingMessageIterator {
-	ps := newPullStream(ctx, subc.StreamingPull, subName)
-	return newStreamingMessageIterator(ctx, ps, po, subc, subName, po.minAckDeadline)
-}
-
-type streamingMessageIterator struct {
+type messageIterator struct {
 	ctx        context.Context
 	po         *pullOptions
 	ps         *pullStream
@@ -73,7 +64,15 @@ type streamingMessageIterator struct {
 	minAckDeadline time.Duration
 }
 
-func newStreamingMessageIterator(ctx context.Context, ps *pullStream, po *pullOptions, subc *vkit.SubscriberClient, subName string, minAckDeadline time.Duration) *streamingMessageIterator {
+// newMessageIterator starts and returns a new messageIterator.
+// ctx is the context to use for acking messages and extending message deadlines.
+// subName is the full name of the subscription to pull messages from.
+// Stop must be called on the messageIterator when it is no longer needed.
+func newMessageIterator(ctx context.Context, subc *vkit.SubscriberClient, subName string, po *pullOptions) *messageIterator {
+	var ps *pullStream
+	if !po.synchronous {
+		ps = newPullStream(ctx, subc.StreamingPull, subName)
+	}
 	// The period will update each tick based on the distribution of acks. We'll start by arbitrarily sending
 	// the first keepAlive halfway towards the minimum ack deadline.
 	keepAlivePeriod := minAckDeadline / 2
@@ -82,7 +81,7 @@ func newStreamingMessageIterator(ctx context.Context, ps *pullStream, po *pullOp
 	ackTicker := time.NewTicker(100 * time.Millisecond)
 	nackTicker := time.NewTicker(100 * time.Millisecond)
 	pingTicker := time.NewTicker(30 * time.Second)
-	it := &streamingMessageIterator{
+	it := &messageIterator{
 		ctx:                ctx,
 		ps:                 ps,
 		po:                 po,
@@ -100,7 +99,6 @@ func newStreamingMessageIterator(ctx context.Context, ps *pullStream, po *pullOp
 		pendingAcks:        map[string]bool{},
 		pendingNacks:       map[string]bool{},
 		pendingModAcks:     map[string]bool{},
-		minAckDeadline:     minAckDeadline,
 	}
 	it.wg.Add(1)
 	go it.sender()
@@ -111,7 +109,7 @@ func newStreamingMessageIterator(ctx context.Context, ps *pullStream, po *pullOp
 // Stop will block until Done has been called on all Messages that have been
 // returned by Next, or until the context with which the messageIterator was created
 // is cancelled or exceeds its deadline.
-func (it *streamingMessageIterator) stop() {
+func (it *messageIterator) stop() {
 	it.mu.Lock()
 	select {
 	case <-it.stopped:
@@ -127,7 +125,7 @@ func (it *streamingMessageIterator) stop() {
 // pending messages have either been n/acked or expired.
 //
 // Called with the lock held.
-func (it *streamingMessageIterator) checkDrained() {
+func (it *messageIterator) checkDrained() {
 	select {
 	case <-it.drained:
 		return
@@ -143,7 +141,7 @@ func (it *streamingMessageIterator) checkDrained() {
 }
 
 // Called when a message is acked/nacked.
-func (it *streamingMessageIterator) done(ackID string, ack bool, receiveTime time.Time) {
+func (it *messageIterator) done(ackID string, ack bool, receiveTime time.Time) {
 	it.ackTimeDist.Record(int(time.Since(receiveTime) / time.Second))
 	it.mu.Lock()
 	defer it.mu.Unlock()
@@ -159,7 +157,7 @@ func (it *streamingMessageIterator) done(ackID string, ack bool, receiveTime tim
 // fail is called when a stream method returns a permanent error.
 // fail returns it.err. This may be err, or it may be the error
 // set by an earlier call to fail.
-func (it *streamingMessageIterator) fail(err error) error {
+func (it *messageIterator) fail(err error) error {
 	it.mu.Lock()
 	defer it.mu.Unlock()
 	if it.err == nil {
@@ -169,9 +167,10 @@ func (it *streamingMessageIterator) fail(err error) error {
 	return it.err
 }
 
-// receive makes a call to the stream's Recv method and returns
+// receive makes a call to the stream's Recv method, or the Pull RPC, and returns
 // its messages.
-func (it *streamingMessageIterator) receive() ([]*Message, error) {
+// maxToPull is the maximum number of messages for the Pull RPC.
+func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	it.mu.Lock()
 	if it.err != nil {
 		return nil, it.err
@@ -186,18 +185,23 @@ func (it *streamingMessageIterator) receive() ([]*Message, error) {
 	default:
 	}
 
-	// Receive messages from stream. This may block indefinitely.
-	res, err := it.ps.Recv()
-	// The pullStream handles retries, so any error here is fatal.
+	var rmsgs []*pb.ReceivedMessage
+	var err error
+	if it.po.synchronous {
+		rmsgs, err = it.pullMessages(maxToPull)
+	} else {
+		rmsgs, err = it.recvMessages()
+	}
+	// Any error here is fatal.
 	if err != nil {
 		return nil, it.fail(err)
 	}
-	msgs, err := convertMessages(res.ReceivedMessages)
+	msgs, err := convertMessages(rmsgs)
 	if err != nil {
 		return nil, it.fail(err)
 	}
 	// We received some messages. Remember them so we can keep them alive. Also,
-	// do a receipt mod-ack.
+	// do a receipt mod-ack when streaming.
 	maxExt := time.Now().Add(it.po.maxExtension)
 	ackIDs := map[string]bool{}
 	it.mu.Lock()
@@ -207,28 +211,71 @@ func (it *streamingMessageIterator) receive() ([]*Message, error) {
 		addRecv(m.ID, m.ackID, now)
 		m.doneFunc = it.done
 		it.keepAliveDeadlines[m.ackID] = maxExt
-
 		// Don't change the mod-ack if the message is going to be nacked. This is
 		// possible if there are retries.
-		if !it.pendingNacks[m.ackID] {
+		if !it.pendingNacks[m.ackID] && !it.po.synchronous {
 			ackIDs[m.ackID] = true
 		}
 	}
 	deadline := it.ackDeadline()
 	it.mu.Unlock()
-	if !it.sendModAck(ackIDs, deadline) {
-		return nil, it.err
+	if len(ackIDs) > 0 {
+		if !it.sendModAck(ackIDs, deadline) {
+			return nil, it.err
+		}
 	}
 	return msgs, nil
 }
 
+// Get messages using the Pull RPC.
+// This may block indefinitely. It may also return zero messages, after some time waiting.
+func (it *messageIterator) pullMessages(maxToPull int32) ([]*pb.ReceivedMessage, error) {
+	// Use a different context so this RPC can be canceled.
+	cctx, cancel := context.WithCancel(it.ctx)
+	defer cancel()
+	go func() {
+		// Turn a stop into a cancel.
+		// TODO(jba): replace the stopped channel with a context.
+		select {
+		case <-it.stopped:
+			cancel()
+		case <-cctx.Done():
+			// We end up here when the deferred cancel runs at the end of the function.
+		}
+	}()
+	res, err := it.subc.Pull(cctx, &pb.PullRequest{
+		Subscription: it.subName,
+		MaxMessages:  maxToPull,
+	})
+	switch {
+	case err == context.Canceled:
+		return nil, nil
+	case err != nil:
+		return nil, err
+	default:
+		return res.ReceivedMessages, nil
+	}
+}
+
+func (it *messageIterator) recvMessages() ([]*pb.ReceivedMessage, error) {
+	res, err := it.ps.Recv()
+	if err != nil {
+		return nil, err
+	}
+	return res.ReceivedMessages, nil
+}
+
 // sender runs in a goroutine and handles all sends to the stream.
-func (it *streamingMessageIterator) sender() {
+func (it *messageIterator) sender() {
 	defer it.wg.Done()
 	defer it.ackTicker.Stop()
 	defer it.nackTicker.Stop()
 	defer it.pingTicker.Stop()
-	defer it.ps.CloseSend()
+	defer func() {
+		if it.ps != nil {
+			it.ps.CloseSend()
+		}
+	}()
 
 	done := false
 	for !done {
@@ -281,8 +328,8 @@ func (it *streamingMessageIterator) sender() {
 
 		case <-it.pingTicker.C:
 			it.mu.Lock()
-			// Ping only if we are processing messages.
-			sendPing = (len(it.keepAliveDeadlines) > 0)
+			// Ping only if we are processing messages via streaming.
+			sendPing = !it.po.synchronous && (len(it.keepAliveDeadlines) > 0)
 		}
 		// Lock is held here.
 		var acks, nacks, modAcks map[string]bool
@@ -326,7 +373,7 @@ func (it *streamingMessageIterator) sender() {
 // for live messages. It also purges expired messages.
 //
 // Called with the lock held.
-func (it *streamingMessageIterator) handleKeepAlives() {
+func (it *messageIterator) handleKeepAlives() {
 	now := time.Now()
 	for id, expiry := range it.keepAliveDeadlines {
 		if expiry.Before(now) {
@@ -343,7 +390,7 @@ func (it *streamingMessageIterator) handleKeepAlives() {
 	it.checkDrained()
 }
 
-func (it *streamingMessageIterator) sendAck(m map[string]bool) bool {
+func (it *messageIterator) sendAck(m map[string]bool) bool {
 	return it.sendAckIDRPC(m, func(ids []string) error {
 		addAcks(ids)
 		return it.subc.Acknowledge(it.ctx, &pb.AcknowledgeRequest{
@@ -357,7 +404,7 @@ func (it *streamingMessageIterator) sendAck(m map[string]bool) bool {
 // on the time it takes to process messages. The percentile chosen is the 99%th
 // percentile in order to capture the highest amount of time necessary without
 // considering 1% outliers.
-func (it *streamingMessageIterator) sendModAck(m map[string]bool, deadline time.Duration) bool {
+func (it *messageIterator) sendModAck(m map[string]bool, deadline time.Duration) bool {
 	return it.sendAckIDRPC(m, func(ids []string) error {
 		addModAcks(ids, int32(deadline/time.Second))
 		return it.subc.ModifyAckDeadline(it.ctx, &pb.ModifyAckDeadlineRequest{
@@ -368,7 +415,7 @@ func (it *streamingMessageIterator) sendModAck(m map[string]bool, deadline time.
 	})
 }
 
-func (it *streamingMessageIterator) sendAckIDRPC(ackIDSet map[string]bool, call func([]string) error) bool {
+func (it *messageIterator) sendAckIDRPC(ackIDSet map[string]bool, call func([]string) error) bool {
 	ackIDs := make([]string, 0, len(ackIDSet))
 	for k := range ackIDSet {
 		ackIDs = append(ackIDs, k)
@@ -392,7 +439,7 @@ func (it *streamingMessageIterator) sendAckIDRPC(ackIDSet map[string]bool, call 
 // network. This matters if it takes a long time to process messages relative to the
 // default ack deadline, and if the messages are small enough so that many can fit
 // into the buffer.
-func (it *streamingMessageIterator) pingStream() {
+func (it *messageIterator) pingStream() {
 	// Ignore error; if the stream is broken, this doesn't matter anyway.
 	_ = it.ps.Send(&pb.StreamingPullRequest{})
 }
@@ -416,14 +463,14 @@ func splitRequestIDs(ids []string, maxSize int) (prefix, remainder []string) {
 // times should be safe. The highest 1% may expire. This number was chosen
 // as a way to cover most users' usecases without losing the value of
 // expiration.
-func (it *streamingMessageIterator) ackDeadline() time.Duration {
+func (it *messageIterator) ackDeadline() time.Duration {
 	pt := time.Duration(it.ackTimeDist.Percentile(.99)) * time.Second
 
 	if pt > maxAckDeadline {
 		return maxAckDeadline
 	}
-	if pt < it.minAckDeadline {
-		return it.minAckDeadline
+	if pt < minAckDeadline {
+		return minAckDeadline
 	}
 	return pt
 }
