@@ -178,6 +178,40 @@ func TestUpdateSubscription(t *testing.T) {
 	}
 }
 
+func TestReceive(t *testing.T) {
+	testReceive(t, true)
+	testReceive(t, false)
+}
+
+func testReceive(t *testing.T, synchronous bool) {
+	ctx := context.Background()
+	client, srv := newFake(t)
+	defer client.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	sub, err := client.CreateSubscription(ctx, "s", SubscriptionConfig{Topic: topic})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := 0; i < 256; i++ {
+		srv.Publish(topic.name, []byte{byte(i)}, nil)
+	}
+	sub.ReceiveSettings.Synchronous = synchronous
+	msgs, err := pullN(ctx, sub, 256, func(_ context.Context, m *Message) { m.Ack() })
+	if err != nil {
+		t.Fatal(err)
+	}
+	var seen [256]bool
+	for _, m := range msgs {
+		seen[m.Data[0]] = true
+	}
+	for i, saw := range seen {
+		if !saw {
+			t.Errorf("sync=%t: did not see message #%d", synchronous, i)
+		}
+	}
+}
+
 func (t1 *Topic) Equal(t2 *Topic) bool {
 	if t1 == nil && t2 == nil {
 		return true
