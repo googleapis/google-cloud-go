@@ -105,7 +105,7 @@ func (s *pullStream) call(f func(pb.Subscriber_StreamingPullClient) error) error
 		err error
 		bo  gax.Backoff
 	)
-	for i := 0; ; i++ {
+	for {
 		spc, err = s.get(spc)
 		if err != nil {
 			// Preserve the existing behavior of not retrying on open. Is that a bug?
