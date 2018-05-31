@@ -95,6 +95,8 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 }
 
 // PublisherClient is a client for interacting with Google Cloud Pub/Sub API.
+//
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type PublisherClient struct {
 	// The connection to the service.
 	conn *grpc.ClientConn

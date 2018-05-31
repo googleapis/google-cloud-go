@@ -94,6 +94,8 @@ func defaultIamCallOptions() *IamCallOptions {
 }
 
 // IamClient is a client for interacting with Google Identity and Access Management (IAM) API.
+//
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type IamClient struct {
 	// The connection to the service.
 	conn *grpc.ClientConn

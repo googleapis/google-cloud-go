@@ -74,6 +74,8 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 }
 
 // MetricsClient is a client for interacting with Stackdriver Logging API.
+//
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type MetricsClient struct {
 	// The connection to the service.
 	conn *grpc.ClientConn

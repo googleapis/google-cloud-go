@@ -76,6 +76,8 @@ func defaultGroupCallOptions() *GroupCallOptions {
 }
 
 // GroupClient is a client for interacting with Stackdriver Monitoring API.
+//
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type GroupClient struct {
 	// The connection to the service.
 	conn *grpc.ClientConn
