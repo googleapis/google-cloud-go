@@ -85,6 +85,8 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 }
 
 // DatabaseAdminClient is a client for interacting with Cloud Spanner Database Admin API.
+//
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type DatabaseAdminClient struct {
 	// The connection to the service.
 	conn *grpc.ClientConn

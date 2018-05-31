@@ -87,6 +87,8 @@ func defaultInstanceAdminCallOptions() *InstanceAdminCallOptions {
 }
 
 // InstanceAdminClient is a client for interacting with Cloud Spanner Instance Admin API.
+//
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type InstanceAdminClient struct {
 	// The connection to the service.
 	conn *grpc.ClientConn
