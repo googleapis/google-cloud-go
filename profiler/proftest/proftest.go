@@ -26,12 +26,15 @@ import (
 	"archive/zip"
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/googleapis/gax-go"
 
 	"cloud.google.com/go/storage"
 	"golang.org/x/build/kubernetes"
@@ -144,7 +147,7 @@ func (tr *GCETestRunner) StartInstance(ctx context.Context, inst *InstanceConfig
 		return err
 	}
 
-	_, err = tr.ComputeService.Instances.Insert(inst.ProjectID, inst.Zone, &compute.Instance{
+	op, err := tr.ComputeService.Instances.Insert(inst.ProjectID, inst.Zone, &compute.Instance{
 		MachineType: fmt.Sprintf("zones/%s/machineTypes/%s", inst.Zone, inst.MachineType),
 		Name:        inst.Name,
 		Disks: []*compute.AttachedDisk{{
@@ -177,7 +180,47 @@ func (tr *GCETestRunner) StartInstance(ctx context.Context, inst *InstanceConfig
 		}},
 	}).Do()
 
-	return err
+	if err != nil {
+		return fmt.Errorf("failed to create instance: %v", err)
+	}
+
+	// Poll status of the operation to create the instance.
+	getOpCall := tr.ComputeService.ZoneOperations.Get(inst.ProjectID, inst.Zone, op.Name)
+	for {
+		if err := checkOpErrors(op); err != nil {
+			return fmt.Errorf("failed to create instance: %v", err)
+		}
+		if op.Status == "DONE" {
+			return nil
+		}
+
+		if err := gax.Sleep(ctx, 5*time.Second); err != nil {
+			return err
+		}
+
+		op, err = getOpCall.Do()
+		if err != nil {
+			return fmt.Errorf("failed to get operation: %v", err)
+		}
+	}
+}
+
+// checkOpErrors returns nil if the operation does not have any errors and an
+// error summarizing all errors encountered if the operation has errored.
+func checkOpErrors(op *compute.Operation) error {
+	if op.Error == nil || len(op.Error.Errors) == 0 {
+		return nil
+	}
+
+	var errs []string
+	for _, e := range op.Error.Errors {
+		if e.Message != "" {
+			errs = append(errs, e.Message)
+		} else {
+			errs = append(errs, e.Code)
+		}
+	}
+	return errors.New(strings.Join(errs, ","))
 }
 
 // DeleteInstance deletes an instance with project id, name, and zone matched
