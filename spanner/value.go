@@ -79,25 +79,6 @@ type NullFloat64 struct {
 	Valid   bool // Valid is true if Float64 is not NULL.
 }
 
-// Cloud Spanner STRUCT (aka STRUCT) values (https://cloud.google.com/spanner/docs/data-types#struct-type)
-// can be represented by a Go struct value.
-// The spanner.StructType  of such values is built from the field types and field tag information
-// of the Go struct. If a field in the struct type definition has a "spanner:<field_name>" tag,
-// then the value of the "spanner" key in the tag is used as the name for that field in the
-// built spanner.StructType, otherwise the field name in the struct definition is used. To specify a
-// field with an empty field name in a Cloud Spanner STRUCT type, use the `spanner:""` tag
-// annotation against the corresponding field in the Go struct's type definition.
-//
-// A STRUCT value can contain STRUCT-typed and Array-of-STRUCT typed fields and these can be
-// specified using named struct-typed and []struct-typed fields inside a Go struct. However,
-// embedded struct fields are not allowed. Unexported struct fields are ignored.
-//
-// NULL STRUCT values in Cloud Spanner are typed. A nil pointer to a Go struct value can be used to
-// specify a NULL STRUCT value of the corresponding spanner.StructType.  Nil and empty slices of a
-// Go STRUCT type can be used to specify NULL and empty array values respectively of the
-// corresponding spanner.StructType. A slice of pointers to a Go struct type can be used to specify
-// an array of NULL-able STRUCT values.
-
 // String implements Stringer.String for NullFloat64
 func (n NullFloat64) String() string {
 	if !n.Valid {
@@ -213,12 +194,6 @@ func errNilDst(dst interface{}) error {
 // non-nil array element type.
 func errNilArrElemType(t *sppb.Type) error {
 	return spannerErrorf(codes.FailedPrecondition, "array type %v is with nil array element type", t)
-}
-
-func errUnsupportedEmbeddedStructFields(fname string) error {
-	return spannerErrorf(codes.InvalidArgument, "Embedded field: %s. Embedded and anonymous fields are not allowed "+
-		"when converting Go structs to Cloud Spanner STRUCT values. To create a STRUCT value with an "+
-		"unnamed field, use a `spanner:\"\"` field tag.", fname)
 }
 
 // errDstNotForNull returns error for decoding a SQL NULL value into a destination which doesn't
@@ -1421,148 +1396,10 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		// transmission don't affect our encoded value.
 		pb = proto.Clone(v.Value).(*proto3.Value)
 		pt = proto.Clone(v.Type).(*sppb.Type)
-	case []GenericColumnValue:
-		return nil, nil, errEncoderUnsupportedType(v)
 	default:
-		if !isStructOrArrayOfStructValue(v) {
-			return nil, nil, errEncoderUnsupportedType(v)
-		}
-		typ := reflect.TypeOf(v)
-
-		// Value is a Go struct value/ptr.
-		if (typ.Kind() == reflect.Struct) ||
-			(typ.Kind() == reflect.Ptr && typ.Elem().Kind() == reflect.Struct) {
-			return encodeStruct(v)
-		}
-
-		// Value is a slice of Go struct values/ptrs.
-		if typ.Kind() == reflect.Slice {
-			return encodeStructArray(v)
-		}
+		return nil, nil, errEncoderUnsupportedType(v)
 	}
 	return pb, pt, nil
-}
-
-// Encodes a Go struct value/ptr in v to the spanner Value and Type protos. v itself must
-// be non-nil.
-func encodeStruct(v interface{}) (*proto3.Value, *sppb.Type, error) {
-	typ := reflect.TypeOf(v)
-	val := reflect.ValueOf(v)
-
-	// Pointer to struct.
-	if typ.Kind() == reflect.Ptr && typ.Elem().Kind() == reflect.Struct {
-		typ = typ.Elem()
-		if val.IsNil() {
-			// nil pointer to struct, representing a NULL STRUCT value. Use a dummy value to
-			// get the type.
-			_, st, err := encodeStruct(reflect.Zero(typ).Interface())
-			if err != nil {
-				return nil, nil, err
-			}
-			return nullProto(), st, nil
-		}
-		val = val.Elem()
-	}
-
-	if typ.Kind() != reflect.Struct {
-		return nil, nil, errEncoderUnsupportedType(v)
-	}
-
-	stf := make([]*sppb.StructType_Field, 0, typ.NumField())
-	stv := make([]*proto3.Value, 0, typ.NumField())
-
-	for i := 0; i < typ.NumField(); i++ {
-		// If the field has a 'spanner' tag, use the value of that tag as the field name.
-		// This is used to build STRUCT types with unnamed/duplicate fields.
-		sf := typ.Field(i)
-		fval := val.Field(i)
-
-		// Embedded fields are not allowed.
-		if sf.Anonymous {
-			return nil, nil, errUnsupportedEmbeddedStructFields(sf.Name)
-		}
-
-		// Unexported fields are ignored.
-		if !fval.CanInterface() {
-			continue
-		}
-
-		fname, ok := sf.Tag.Lookup("spanner")
-		if !ok {
-			fname = sf.Name
-		}
-
-		eval, etype, err := encodeValue(fval.Interface())
-		if err != nil {
-			return nil, nil, err
-		}
-
-		stf = append(stf, mkField(fname, etype))
-		stv = append(stv, eval)
-	}
-
-	return listProto(stv...), structType(stf...), nil
-}
-
-// Encodes a slice of Go struct values/ptrs in v to the spanner Value and Type protos. v itself
-// must be non-nil.
-func encodeStructArray(v interface{}) (*proto3.Value, *sppb.Type, error) {
-	etyp := reflect.TypeOf(v).Elem()
-	sliceval := reflect.ValueOf(v)
-
-	// Slice of pointers to structs.
-	if etyp.Kind() == reflect.Ptr {
-		etyp = etyp.Elem()
-	}
-
-	// Use a dummy struct value to get the element type
-	_, elemTyp, err := encodeStruct(reflect.Zero(etyp).Interface())
-	if err != nil {
-		return nil, nil, err
-	}
-
-	// nil slice represents a NULL array-of-struct.
-	if sliceval.IsNil() {
-		return nullProto(), listType(elemTyp), nil
-	}
-
-	values := make([]*proto3.Value, 0, sliceval.Len())
-
-	for i := 0; i < sliceval.Len(); i++ {
-		ev, _, err := encodeStruct(sliceval.Index(i).Interface())
-		if err != nil {
-			return nil, nil, err
-		}
-		values = append(values, ev)
-	}
-	return listProto(values...), listType(elemTyp), nil
-}
-
-func isStructOrArrayOfStructValue(v interface{}) bool {
-	typ := reflect.TypeOf(v)
-	if typ.Kind() == reflect.Slice {
-		typ = typ.Elem()
-	}
-	if typ.Kind() == reflect.Ptr {
-		typ = typ.Elem()
-	}
-	return typ.Kind() == reflect.Struct
-}
-
-func isSupportedMutationType(v interface{}) bool {
-	switch v.(type) {
-	case string, NullString, []string, []NullString,
-		[]byte, [][]byte,
-		int, []int, int64, []int64, NullInt64, []NullInt64,
-		bool, []bool, NullBool, []NullBool,
-		float64, []float64, NullFloat64, []NullFloat64,
-		time.Time, []time.Time, NullTime, []NullTime,
-		civil.Date, []civil.Date, NullDate, []NullDate,
-		GenericColumnValue:
-		return true
-	default:
-		return false
-	}
 }
 
 // encodeValueArray encodes a Value array into a proto3.ListValue.
@@ -1570,9 +1407,6 @@ func encodeValueArray(vs []interface{}) (*proto3.ListValue, error) {
 	lv := &proto3.ListValue{}
 	lv.Values = make([]*proto3.Value, 0, len(vs))
 	for _, v := range vs {
-		if !isSupportedMutationType(v) {
-			return nil, errEncoderUnsupportedType(v)
-		}
 		pb, _, err := encodeValue(v)
 		if err != nil {
 			return nil, err
