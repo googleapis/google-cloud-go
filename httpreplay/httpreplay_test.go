@@ -33,6 +33,7 @@ import (
 )
 
 func TestIntegration_RecordAndReplay(t *testing.T) {
+	httpreplay.DebugHeaders()
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
