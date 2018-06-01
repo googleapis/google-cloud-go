@@ -36,6 +36,7 @@ google/cloud/speech/artman_speech_v1.yaml
 google/cloud/speech/artman_speech_v1beta1.yaml
 google/cloud/speech/artman_speech_v1p1beta1.yaml
 google/cloud/tasks/artman_cloudtasks.yaml
+google/cloud/texttospeech/artman_texttospeech_v1.yaml
 google/cloud/videointelligence/artman_videointelligence_v1beta1.yaml
 google/cloud/videointelligence/artman_videointelligence_v1beta2.yaml
 google/cloud/vision/artman_vision_v1.yaml
