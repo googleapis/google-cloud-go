@@ -161,6 +161,7 @@ func init() {
 		"X-Forwarded-Host",
 		"X-Forwarded-Proto",
 		"X-Forwarded-Url",
+		"X-Cloud-Trace-Context", // OpenCensus traces have a random ID
 	} {
 		ignoreHeaders[h] = true
 	}
