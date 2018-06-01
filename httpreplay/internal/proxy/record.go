@@ -63,15 +63,23 @@ func ForRecording(filename string, port int) (*Proxy, error) {
 	if err != nil {
 		return nil, err
 	}
-	// Configure the transport for the proxy's outgoing traffic.
-	p.mproxy.SetRoundTripper(&http.Transport{
-		Dial: (&net.Dialer{
+	// Configure the transport for the proxy's outgoing traffic. We MUST use
+	// DialContext and not Dial. In Go 1.10, Setting Dial (but not DialContext)
+	// disables HTTP2, and that gives different behavior than http.DefaultTransport.
+	// (For example, GET
+	// https://storage.googleapis.com/storage-library-test-bucket/gzipped-text.txt
+	// with an "Accept-Encoding: gzip" header returns a Content-Length header with
+	// HTTP2, but not HTTP1.)
+	// We must also hide the type http.Transport from martian, because it looks for
+	// http.Transport and sets the Dial field!
+	p.mproxy.SetRoundTripper((*hideTransport)(&http.Transport{
+		DialContext: (&net.Dialer{
 			Timeout:   30 * time.Second,
 			KeepAlive: 30 * time.Second,
-		}).Dial,
+		}).DialContext,
 		TLSHandshakeTimeout:   10 * time.Second,
 		ExpectContinueTimeout: time.Second,
-	})
+	}))
 
 	// Construct a group that performs the standard proxy stack of request/response
 	// modifications.
@@ -102,6 +110,12 @@ func ForRecording(filename string, port int) (*Proxy, error) {
 		return nil, err
 	}
 	return p, nil
+}
+
+type hideTransport http.Transport
+
+func (t *hideTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	return (*http.Transport)(t).RoundTrip(req)
 }
 
 func newProxy(filename string) (*Proxy, error) {
