@@ -55,6 +55,7 @@ var (
 	version      = "<unknown version>"
 	revision     = "<unknown revision>"
 	revisionDate = "<unknown revision date>"
+	cliUserAgent = "cbt-cli-go/unknown"
 )
 
 func getCredentialOpts(opts []option.ClientOption) []option.ClientOption {
@@ -73,12 +74,14 @@ func getClient(clientConf bigtable.ClientConfig) *bigtable.Client {
 		if ep := config.DataEndpoint; ep != "" {
 			opts = append(opts, option.WithEndpoint(ep))
 		}
+		opts = append(opts, option.WithUserAgent(cliUserAgent))
 		opts = getCredentialOpts(opts)
 		var err error
 		client, err = bigtable.NewClientWithConfig(context.Background(), config.Project, config.Instance, clientConf, opts...)
 		if err != nil {
 			log.Fatalf("Making bigtable.Client: %v", err)
 		}
+		opts = append(opts, option.WithUserAgent(cliUserAgent))
 	}
 	return client
 }
@@ -89,6 +92,7 @@ func getAdminClient() *bigtable.AdminClient {
 		if ep := config.AdminEndpoint; ep != "" {
 			opts = append(opts, option.WithEndpoint(ep))
 		}
+		opts = append(opts, option.WithUserAgent(cliUserAgent))
 		opts = getCredentialOpts(opts)
 		var err error
 		adminClient, err = bigtable.NewAdminClient(context.Background(), config.Project, config.Instance, opts...)
@@ -143,6 +147,10 @@ func main() {
 		os.Stdout = f
 	}
 
+	if config.UserAgent != "" {
+		cliUserAgent = config.UserAgent
+	}
+
 	ctx := context.Background()
 	for _, cmd := range commands {
 		if cmd.Name == flag.Arg(0) {
@@ -173,7 +181,7 @@ func init() {
 	}
 	tw.Flush()
 	buf.WriteString(configHelp)
-	buf.WriteString("\ncbt ` + version + ` ` + revision + ` ` + revisionDate + `")
+	buf.WriteString("\ncbt " + version + " " + revision + " " + revisionDate + "\n")
 	cmdSummary = buf.String()
 }
 
