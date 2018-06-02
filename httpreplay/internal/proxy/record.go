@@ -35,7 +35,6 @@ import (
 
 	"github.com/google/martian"
 	"github.com/google/martian/fifo"
-	"github.com/google/martian/har"
 	"github.com/google/martian/httpspec"
 	"github.com/google/martian/martianlog"
 	"github.com/google/martian/mitm"
@@ -53,8 +52,8 @@ type Proxy struct {
 	Initial []byte
 
 	mproxy   *martian.Proxy
-	filename string      // for log
-	logger   *har.Logger // for recording only
+	filename string  // for log
+	logger   *Logger // for recording only
 }
 
 // ForRecording returns a Proxy configured to record.
@@ -92,9 +91,8 @@ func ForRecording(filename string, port int) (*Proxy, error) {
 	skipAuth := skipLoggingByHost("accounts.google.com")
 	logGroup.AddRequestModifier(skipAuth)
 	logGroup.AddResponseModifier(skipAuth)
-	p.logger = har.NewLogger()
-	logGroup.AddRequestModifier(martian.RequestModifierFunc(
-		func(req *http.Request) error { return withRedactedHeaders(req, p.logger) }))
+	p.logger = NewLogger()
+	logGroup.AddRequestModifier(p.logger)
 	logGroup.AddResponseModifier(p.logger)
 
 	stack.AddRequestModifier(logGroup)
@@ -173,45 +171,14 @@ func (p *Proxy) Close() error {
 	return nil
 }
 
-type httprFile struct {
-	Initial []byte
-	HAR     *har.HAR
-}
-
 func (p *Proxy) writeLog() error {
-	f := httprFile{
-		Initial: p.Initial,
-		HAR:     p.logger.ExportAndReset(),
-	}
-	bytes, err := json.MarshalIndent(f, "", "  ")
+	lg := p.logger.Extract()
+	lg.Initial = p.Initial
+	bytes, err := json.MarshalIndent(lg, "", "  ")
 	if err != nil {
 		return err
 	}
 	return ioutil.WriteFile(p.filename, bytes, 0600) // only accessible by owner
-}
-
-// Headers that may contain sensitive data (auth tokens, keys).
-var sensitiveHeaders = []string{
-	"Authorization",
-	"X-Goog-Encryption-Key",             // used by Cloud Storage for customer-supplied encryption
-	"X-Goog-Copy-Source-Encryption-Key", // ditto
-}
-
-// withRedactedHeaders removes sensitive header contents before calling mod.
-func withRedactedHeaders(req *http.Request, mod martian.RequestModifier) error {
-	// We have to change the headers, then log, then restore them.
-	replaced := map[string]string{}
-	for _, h := range sensitiveHeaders {
-		if v := req.Header.Get(h); v != "" {
-			replaced[h] = v
-			req.Header.Set(h, "REDACTED")
-		}
-	}
-	err := mod.ModifyRequest(req)
-	for h, v := range replaced {
-		req.Header.Set(h, v)
-	}
-	return err
 }
 
 // skipLoggingByHost disables logging for traffic to a particular host.

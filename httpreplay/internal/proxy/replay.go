@@ -28,10 +28,8 @@ import (
 	"mime/multipart"
 	"net/http"
 	"reflect"
-	"strconv"
 	"strings"
 
-	"github.com/google/martian/har"
 	"github.com/google/martian/martianlog"
 )
 
@@ -63,9 +61,9 @@ func ForReplaying(filename string, port int) (*Proxy, error) {
 
 // A call is an HTTP request and its matching response.
 type call struct {
-	req     *har.Request
+	req     *Request
 	reqBody *requestBody // parsed request body
-	res     *har.Response
+	res     *Response
 }
 
 func readLog(filename string) ([]*call, []byte, error) {
@@ -73,14 +71,18 @@ func readLog(filename string) ([]*call, []byte, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	var f httprFile
-	if err := json.Unmarshal(bytes, &f); err != nil {
+	var lg Log
+	if err := json.Unmarshal(bytes, &lg); err != nil {
 		return nil, nil, fmt.Errorf("%s: %v", filename, err)
+	}
+	if lg.Version != LogVersion {
+		return nil, nil, fmt.Errorf("httpreplay proxy: read log version %s but current version is %s",
+			lg.Version, LogVersion)
 	}
 	ignoreIDs := map[string]bool{} // IDs of requests to ignore
 	callsByID := map[string]*call{}
 	var calls []*call
-	for _, e := range f.HAR.Log.Entries {
+	for _, e := range lg.Entries {
 		if ignoreIDs[e.ID] {
 			continue
 		}
@@ -94,7 +96,7 @@ func readLog(filename string) ([]*call, []byte, error) {
 				// Ignore CONNECT methods.
 				ignoreIDs[e.ID] = true
 			} else {
-				reqBody, err := newRequestBodyFromHAR(e.Request)
+				reqBody, err := newRequestBodyFromLog(e.Request)
 				if err != nil {
 					return nil, nil, err
 				}
@@ -118,7 +120,7 @@ func readLog(filename string) ([]*call, []byte, error) {
 			return nil, nil, fmt.Errorf("missing request or response: %+v", c)
 		}
 	}
-	return calls, f.Initial, nil
+	return calls, lg.Initial, nil
 }
 
 type replayRoundTripper struct {
@@ -136,7 +138,7 @@ func (r replayRoundTripper) RoundTrip(req *http.Request) (*http.Response, error)
 		}
 		if requestsMatch(req, reqBody, call.req, call.reqBody) {
 			r.calls[i] = nil // nil out this call so we don't reuse it
-			return harResponseToHTTPResponse(call.res, req), nil
+			return toHTTPResponse(call.res, req), nil
 		}
 	}
 	return nil, fmt.Errorf("no matching request for %+v", req)
@@ -148,7 +150,7 @@ var ignoreHeaders = map[string]bool{}
 
 func init() {
 	// Sensitive headers are redacted in the log, so they won't be equal to incoming values.
-	for _, h := range sensitiveHeaders {
+	for h := range sensitiveHeaders {
 		ignoreHeaders[h] = true
 	}
 	for _, h := range []string{
@@ -168,7 +170,7 @@ func init() {
 }
 
 // Report whether the incoming request in matches the candidate request cand.
-func requestsMatch(in *http.Request, inBody *requestBody, cand *har.Request, candBody *requestBody) bool {
+func requestsMatch(in *http.Request, inBody *requestBody, cand *Request, candBody *requestBody) bool {
 	if in.Method != cand.Method {
 		return false
 	}
@@ -179,41 +181,7 @@ func requestsMatch(in *http.Request, inBody *requestBody, cand *har.Request, can
 		return false
 	}
 	// Check headers last. See DebugHeaders.
-	return headersMatch(in.Header, harHeadersToHTTP(cand.Headers), ignoreHeaders)
-}
-
-func harHeadersToHTTP(hhs []har.Header) http.Header {
-	res := http.Header{}
-	for _, hh := range hhs {
-		res[hh.Name] = append(res[hh.Name], hh.Value)
-	}
-	return res
-}
-
-// Convert a HAR response to a Go http.Response.
-// HAR (Http ARchive) is a standard for storing HTTP interactions.
-// See http://www.softwareishard.com/blog/har-12-spec.
-func harResponseToHTTPResponse(hr *har.Response, req *http.Request) *http.Response {
-	res := &http.Response{
-		StatusCode:    hr.Status,
-		Status:        hr.StatusText,
-		Proto:         hr.HTTPVersion,
-		Header:        harHeadersToHTTP(hr.Headers),
-		Body:          ioutil.NopCloser(bytes.NewReader(hr.Content.Text)),
-		ContentLength: int64(len(hr.Content.Text)),
-	}
-	res.Request = req
-	// For HEAD, set ContentLength to the value of the Content-Length header, or -1
-	// if there isn't one.
-	if req.Method == "HEAD" {
-		res.ContentLength = -1
-		if c := res.Header["Content-Length"]; len(c) == 1 {
-			if c64, err := strconv.ParseInt(c[0], 10, 64); err == nil {
-				res.ContentLength = c64
-			}
-		}
-	}
-	return res
+	return headersMatch(in.Header, cand.Header, ignoreHeaders)
 }
 
 // A requestBody represents the body of a request. If the content type is multipart, the
@@ -231,18 +199,11 @@ func newRequestBodyFromHTTP(req *http.Request) (*requestBody, error) {
 	return newRequestBody(req.Header.Get("Content-Type"), req.Body)
 }
 
-func newRequestBodyFromHAR(req *har.Request) (*requestBody, error) {
-	if req.PostData == nil {
+func newRequestBodyFromLog(req *Request) (*requestBody, error) {
+	if req.Body == nil {
 		return nil, nil
 	}
-	var cth string
-	for _, h := range req.Headers {
-		if h.Name == "Content-Type" {
-			cth = h.Value
-			break
-		}
-	}
-	return newRequestBody(cth, strings.NewReader(req.PostData.Text))
+	return newRequestBody(req.Header.Get("Content-Type"), bytes.NewReader(req.Body))
 }
 
 // newRequestBody parses the Content-Type header, reads the body, and splits it into
