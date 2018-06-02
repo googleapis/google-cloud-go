@@ -999,9 +999,9 @@ func TestIntegration_Load(t *testing.T) {
 	// Load the table from a reader.
 	r := strings.NewReader("a,0\nb,1\nc,2\n")
 	wantRows := [][]Value{
-		[]Value{"a", int64(0)},
-		[]Value{"b", int64(1)},
-		[]Value{"c", int64(2)},
+		{"a", int64(0)},
+		{"b", int64(1)},
+		{"c", int64(2)},
 	}
 	rs := NewReaderSource(r)
 	loader := table.LoaderFrom(rs)
@@ -1054,9 +1054,9 @@ func TestIntegration_DML(t *testing.T) {
 		t.Fatal(err)
 	}
 	wantRows := [][]Value{
-		[]Value{"a", []Value{int64(0)}, []Value{true}},
-		[]Value{"b", []Value{int64(1)}, []Value{false}},
-		[]Value{"c", []Value{int64(2)}, []Value{true}},
+		{"a", []Value{int64(0)}, []Value{true}},
+		{"b", []Value{int64(1)}, []Value{false}},
+		{"c", []Value{int64(2)}, []Value{true}},
 	}
 	checkRead(t, "DML", table.Read(ctx), wantRows)
 }
@@ -1102,7 +1102,7 @@ func TestIntegration_TimeTypes(t *testing.T) {
 	dtm := civil.DateTime{Date: d, Time: tm}
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
 	wantRows := [][]Value{
-		[]Value{d, tm, dtm, ts},
+		{d, tm, dtm, ts},
 	}
 	upl := table.Uploader()
 	if err := upl.Put(ctx, []*ValuesSaver{
@@ -1439,9 +1439,9 @@ func TestIntegration_ExtractExternal(t *testing.T) {
 	q := client.Query("SELECT * FROM csv")
 	q.TableDefinitions = map[string]ExternalData{"csv": edc}
 	wantRows := [][]Value{
-		[]Value{"a", int64(1)},
-		[]Value{"b", int64(2)},
-		[]Value{"c", int64(3)},
+		{"a", int64(1)},
+		{"b", int64(2)},
+		{"c", int64(3)},
 	}
 	iter, err := q.Read(ctx)
 	if err != nil {
@@ -1701,9 +1701,9 @@ func testLocation(t *testing.T, loc string) {
 		t.Fatal(err)
 	}
 	wantRows := [][]Value{
-		[]Value{"a", int64(0)},
-		[]Value{"b", int64(1)},
-		[]Value{"c", int64(2)},
+		{"a", int64(0)},
+		{"b", int64(1)},
+		{"c", int64(2)},
 	}
 	checkRead(t, "location", iter, wantRows)
 

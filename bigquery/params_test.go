@@ -88,7 +88,7 @@ var (
 	s1ParamValue = bq.QueryParameterValue{
 		StructValues: map[string]bq.QueryParameterValue{
 			"A": sval("1"),
-			"B": bq.QueryParameterValue{
+			"B": {
 				StructValues: map[string]bq.QueryParameterValue{
 					"D": sval("s"),
 				},

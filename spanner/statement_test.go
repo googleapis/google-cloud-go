@@ -112,21 +112,21 @@ func TestBindParams(t *testing.T) {
 		{[]byte(nil), nullProto(), bytesType()},
 		{[][]byte(nil), nullProto(), listType(bytesType())},
 		{[][]byte{}, listProto(), listType(bytesType())},
-		{[][]byte{[]byte{1}, []byte(nil)}, listProto(bytesProto([]byte{1}), nullProto()), listType(bytesType())},
+		{[][]byte{{1}, []byte(nil)}, listProto(bytesProto([]byte{1}), nullProto()), listType(bytesType())},
 		// date
 		{d1, dateProto(d1), dateType()},
 		{NullDate{civil.Date{}, false}, nullProto(), dateType()},
 		{[]civil.Date(nil), nullProto(), listType(dateType())},
 		{[]civil.Date{}, listProto(), listType(dateType())},
 		{[]civil.Date{d1, d2, d3}, listProto(dateProto(d1), dateProto(d2), dateProto(d3)), listType(dateType())},
-		{[]NullDate{NullDate{d2, true}, NullDate{}}, listProto(dateProto(d2), nullProto()), listType(dateType())},
+		{[]NullDate{{d2, true}, {}}, listProto(dateProto(d2), nullProto()), listType(dateType())},
 		// timestamp
 		{t1, timeProto(t1), timeType()},
 		{NullTime{}, nullProto(), timeType()},
 		{[]time.Time(nil), nullProto(), listType(timeType())},
 		{[]time.Time{}, listProto(), listType(timeType())},
 		{[]time.Time{t1, t2, t3}, listProto(timeProto(t1), timeProto(t2), timeProto(t3)), listType(timeType())},
-		{[]NullTime{NullTime{t2, true}, NullTime{}}, listProto(timeProto(t2), nullProto()), listType(timeType())},
+		{[]NullTime{{t2, true}, {}}, listProto(timeProto(t2), nullProto()), listType(timeType())},
 	} {
 		st.Params["var"] = test.val
 		want.Params.Fields["var"] = test.wantField
