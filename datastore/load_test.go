@@ -310,7 +310,7 @@ func TestLoadEntityNested(t *testing.T) {
 			},
 
 			want: &NestedSliceOfSimple{
-				A: []Simple{Simple{I: 3}, Simple{I: 4}},
+				A: []Simple{{I: 3}, {I: 4}},
 			},
 		},
 		{
@@ -766,12 +766,12 @@ func TestLoadPointers(t *testing.T) {
 		{
 			desc: "nil properties load as nil pointers",
 			in: []Property{
-				Property{Name: "Pi", Value: nil},
-				Property{Name: "Ps", Value: nil},
-				Property{Name: "Pb", Value: nil},
-				Property{Name: "Pf", Value: nil},
-				Property{Name: "Pg", Value: nil},
-				Property{Name: "Pt", Value: nil},
+				{Name: "Pi", Value: nil},
+				{Name: "Ps", Value: nil},
+				{Name: "Pb", Value: nil},
+				{Name: "Pf", Value: nil},
+				{Name: "Pg", Value: nil},
+				{Name: "Pt", Value: nil},
 			},
 			want: Pointers{},
 		},
@@ -783,12 +783,12 @@ func TestLoadPointers(t *testing.T) {
 		{
 			desc: "non-nil properties load as the appropriate values",
 			in: []Property{
-				Property{Name: "Pi", Value: int64(1)},
-				Property{Name: "Ps", Value: "x"},
-				Property{Name: "Pb", Value: true},
-				Property{Name: "Pf", Value: 3.14},
-				Property{Name: "Pg", Value: GeoPoint{Lat: 1, Lng: 2}},
-				Property{Name: "Pt", Value: time.Unix(100, 0)},
+				{Name: "Pi", Value: int64(1)},
+				{Name: "Ps", Value: "x"},
+				{Name: "Pb", Value: true},
+				{Name: "Pf", Value: 3.14},
+				{Name: "Pg", Value: GeoPoint{Lat: 1, Lng: 2}},
+				{Name: "Pt", Value: time.Unix(100, 0)},
 			},
 			want: func() Pointers {
 				p := populatedPointers()

@@ -690,7 +690,7 @@ var testCases = []testCase{
 		"omit empty does not propagate",
 		&NoOmits{
 			No: []NoOmit{
-				NoOmit{},
+				{},
 			},
 			S:  S{},
 			Ss: S{},
@@ -699,15 +699,15 @@ var testCases = []testCase{
 			Property{Name: "No", Value: []interface{}{
 				&Entity{
 					Properties: []Property{
-						Property{Name: "A", Value: "", NoIndex: false},
-						Property{Name: "Bb", Value: int64(0), NoIndex: false},
-						Property{Name: "C", Value: false, NoIndex: true},
+						{Name: "A", Value: "", NoIndex: false},
+						{Name: "Bb", Value: int64(0), NoIndex: false},
+						{Name: "C", Value: false, NoIndex: true},
 					},
 				},
 			}, NoIndex: false},
 			Property{Name: "Ss", Value: &Entity{
 				Properties: []Property{
-					Property{Name: "St", Value: "", NoIndex: false},
+					{Name: "St", Value: "", NoIndex: false},
 				},
 			}, NoIndex: false},
 			Property{Name: "St", Value: "", NoIndex: false},
@@ -1181,26 +1181,26 @@ var testCases = []testCase{
 			Property{Name: "I", Value: []interface{}{
 				&Entity{
 					Properties: []Property{
-						Property{Name: "W", Value: int64(10), NoIndex: false},
-						Property{Name: "X", Value: "ten", NoIndex: false},
+						{Name: "W", Value: int64(10), NoIndex: false},
+						{Name: "X", Value: "ten", NoIndex: false},
 					},
 				},
 				&Entity{
 					Properties: []Property{
-						Property{Name: "W", Value: int64(20), NoIndex: false},
-						Property{Name: "X", Value: "twenty", NoIndex: false},
+						{Name: "W", Value: int64(20), NoIndex: false},
+						{Name: "X", Value: "twenty", NoIndex: false},
 					},
 				},
 				&Entity{
 					Properties: []Property{
-						Property{Name: "W", Value: int64(30), NoIndex: false},
-						Property{Name: "X", Value: "thirty", NoIndex: false},
+						{Name: "W", Value: int64(30), NoIndex: false},
+						{Name: "X", Value: "thirty", NoIndex: false},
 					},
 				},
 			}, NoIndex: false},
 			Property{Name: "J", Value: &Entity{
 				Properties: []Property{
-					Property{Name: "Y", Value: float64(3.14), NoIndex: false},
+					{Name: "Y", Value: float64(3.14), NoIndex: false},
 				},
 			}, NoIndex: false},
 			Property{Name: "Z", Value: true, NoIndex: false},
@@ -1233,9 +1233,9 @@ var testCases = []testCase{
 		&PropertyList{
 			Property{Name: "A0.A1.A2", Value: &Entity{
 				Properties: []Property{
-					Property{Name: "B3", Value: &Entity{
+					{Name: "B3", Value: &Entity{
 						Properties: []Property{
-							Property{Name: "C4.C5", Value: int64(88), NoIndex: false},
+							{Name: "C4.C5", Value: int64(88), NoIndex: false},
 						},
 					}, NoIndex: false},
 				},
@@ -1249,9 +1249,9 @@ var testCases = []testCase{
 		&PropertyList{
 			Property{Name: "A0.A1.A2", Value: &Entity{
 				Properties: []Property{
-					Property{Name: "B3", Value: &Entity{
+					{Name: "B3", Value: &Entity{
 						Properties: []Property{
-							Property{Name: "C4.C5", Value: 99, NoIndex: false},
+							{Name: "C4.C5", Value: 99, NoIndex: false},
 						},
 					}, NoIndex: false},
 				},
@@ -1440,83 +1440,83 @@ var testCases = []testCase{
 		&PropertyList{
 			Property{Name: "Blue", Value: &Entity{
 				Properties: []Property{
-					Property{Name: "I", Value: int64(0), NoIndex: false},
-					Property{Name: "Nonymous", Value: []interface{}{
+					{Name: "I", Value: int64(0), NoIndex: false},
+					{Name: "Nonymous", Value: []interface{}{
 						&Entity{
 							Properties: []Property{
-								Property{Name: "I", Value: int64(0), NoIndex: false},
-								Property{Name: "S", Value: "blu0", NoIndex: false},
+								{Name: "I", Value: int64(0), NoIndex: false},
+								{Name: "S", Value: "blu0", NoIndex: false},
 							},
 						},
 						&Entity{
 							Properties: []Property{
-								Property{Name: "I", Value: int64(0), NoIndex: false},
-								Property{Name: "S", Value: "blu1", NoIndex: false},
+								{Name: "I", Value: int64(0), NoIndex: false},
+								{Name: "S", Value: "blu1", NoIndex: false},
 							},
 						},
 						&Entity{
 							Properties: []Property{
-								Property{Name: "I", Value: int64(0), NoIndex: false},
-								Property{Name: "S", Value: "blu2", NoIndex: false},
+								{Name: "I", Value: int64(0), NoIndex: false},
+								{Name: "S", Value: "blu2", NoIndex: false},
 							},
 						},
 						&Entity{
 							Properties: []Property{
-								Property{Name: "I", Value: int64(0), NoIndex: false},
-								Property{Name: "S", Value: "blu3", NoIndex: false},
+								{Name: "I", Value: int64(0), NoIndex: false},
+								{Name: "S", Value: "blu3", NoIndex: false},
 							},
 						},
 					}, NoIndex: false},
-					Property{Name: "Other", Value: "", NoIndex: false},
-					Property{Name: "S", Value: "bleu", NoIndex: false},
+					{Name: "Other", Value: "", NoIndex: false},
+					{Name: "S", Value: "bleu", NoIndex: false},
 				},
 			}, NoIndex: false},
 			Property{Name: "green", Value: &Entity{
 				Properties: []Property{
-					Property{Name: "I", Value: int64(0), NoIndex: false},
-					Property{Name: "Nonymous", Value: []interface{}{
+					{Name: "I", Value: int64(0), NoIndex: false},
+					{Name: "Nonymous", Value: []interface{}{
 						&Entity{
 							Properties: []Property{
-								Property{Name: "I", Value: int64(0), NoIndex: false},
-								Property{Name: "S", Value: "verde0", NoIndex: false},
+								{Name: "I", Value: int64(0), NoIndex: false},
+								{Name: "S", Value: "verde0", NoIndex: false},
 							},
 						},
 						&Entity{
 							Properties: []Property{
-								Property{Name: "I", Value: int64(0), NoIndex: false},
-								Property{Name: "S", Value: "verde1", NoIndex: false},
+								{Name: "I", Value: int64(0), NoIndex: false},
+								{Name: "S", Value: "verde1", NoIndex: false},
 							},
 						},
 						&Entity{
 							Properties: []Property{
-								Property{Name: "I", Value: int64(0), NoIndex: false},
-								Property{Name: "S", Value: "verde2", NoIndex: false},
+								{Name: "I", Value: int64(0), NoIndex: false},
+								{Name: "S", Value: "verde2", NoIndex: false},
 							},
 						},
 					}, NoIndex: false},
-					Property{Name: "Other", Value: "", NoIndex: false},
-					Property{Name: "S", Value: "vert", NoIndex: false},
+					{Name: "Other", Value: "", NoIndex: false},
+					{Name: "S", Value: "vert", NoIndex: false},
 				},
 			}, NoIndex: false},
 			Property{Name: "red", Value: &Entity{
 				Properties: []Property{
-					Property{Name: "I", Value: int64(0), NoIndex: false},
-					Property{Name: "Nonymous", Value: []interface{}{
+					{Name: "I", Value: int64(0), NoIndex: false},
+					{Name: "Nonymous", Value: []interface{}{
 						&Entity{
 							Properties: []Property{
-								Property{Name: "I", Value: int64(0), NoIndex: false},
-								Property{Name: "S", Value: "rosso0", NoIndex: false},
+								{Name: "I", Value: int64(0), NoIndex: false},
+								{Name: "S", Value: "rosso0", NoIndex: false},
 							},
 						},
 						&Entity{
 							Properties: []Property{
-								Property{Name: "I", Value: int64(0), NoIndex: false},
-								Property{Name: "S", Value: "rosso1", NoIndex: false},
+								{Name: "I", Value: int64(0), NoIndex: false},
+								{Name: "S", Value: "rosso1", NoIndex: false},
 							},
 						},
 					}, NoIndex: false},
-					Property{Name: "Other", Value: "", NoIndex: false},
-					Property{Name: "S", Value: "rouge", NoIndex: false},
+					{Name: "Other", Value: "", NoIndex: false},
+					{Name: "S", Value: "rouge", NoIndex: false},
 				},
 			}, NoIndex: false},
 		},
@@ -1601,10 +1601,10 @@ var testCases = []testCase{
 				A: "anon",
 			},
 			[]*Basic{
-				&Basic{
+				{
 					A: "slice0",
 				},
-				&Basic{
+				{
 					A: "slice1",
 				},
 			},
@@ -1613,24 +1613,24 @@ var testCases = []testCase{
 			Property{Name: "A", Value: "anon", NoIndex: false},
 			Property{Name: "B", Value: &Entity{
 				Properties: []Property{
-					Property{Name: "A", Value: "b", NoIndex: false},
+					{Name: "A", Value: "b", NoIndex: false},
 				},
 			}},
 			Property{Name: "D", Value: []interface{}{
 				&Entity{
 					Properties: []Property{
-						Property{Name: "A", Value: "slice0", NoIndex: false},
+						{Name: "A", Value: "slice0", NoIndex: false},
 					},
 				},
 				&Entity{
 					Properties: []Property{
-						Property{Name: "A", Value: "slice1", NoIndex: false},
+						{Name: "A", Value: "slice1", NoIndex: false},
 					},
 				},
 			}, NoIndex: false},
 			Property{Name: "c", Value: &Entity{
 				Properties: []Property{
-					Property{Name: "A", Value: "c", NoIndex: true},
+					{Name: "A", Value: "c", NoIndex: true},
 				},
 			}, NoIndex: true},
 		},
@@ -1650,10 +1650,10 @@ var testCases = []testCase{
 				A: "anon",
 			},
 			[]*Basic{
-				&Basic{
+				{
 					A: "slice0",
 				},
-				&Basic{
+				{
 					A: "slice1",
 				},
 			},
@@ -1669,10 +1669,10 @@ var testCases = []testCase{
 				A: "anon",
 			},
 			[]*Basic{
-				&Basic{
+				{
 					A: "slice0",
 				},
-				&Basic{
+				{
 					A: "slice1",
 				},
 			},
@@ -1705,8 +1705,8 @@ var testCases = []testCase{
 			Property{Name: "N", Value: &Entity{
 				Key: testKey0,
 				Properties: []Property{
-					Property{Name: "I", Value: int64(12), NoIndex: false},
-					Property{Name: "S", Value: "abcd", NoIndex: false},
+					{Name: "I", Value: int64(12), NoIndex: false},
+					{Name: "S", Value: "abcd", NoIndex: false},
 				},
 			},
 				NoIndex: false},
@@ -1720,8 +1720,8 @@ var testCases = []testCase{
 			Property{Name: "N", Value: &Entity{
 				Key: testKey0,
 				Properties: []Property{
-					Property{Name: "I", Value: int64(12), NoIndex: false},
-					Property{Name: "S", Value: "abcd", NoIndex: false},
+					{Name: "I", Value: int64(12), NoIndex: false},
+					{Name: "S", Value: "abcd", NoIndex: false},
 				},
 			}, NoIndex: false},
 		},
@@ -1744,7 +1744,7 @@ var testCases = []testCase{
 		&PropertyList{
 			Property{Name: "red", Value: &Entity{
 				Properties: []Property{
-					Property{Name: "C", Value: "s", NoIndex: false},
+					{Name: "C", Value: "s", NoIndex: false},
 				},
 			}, NoIndex: false},
 		},
@@ -1817,14 +1817,14 @@ var testCases = []testCase{
 		&PropertyList{
 			Property{Name: "A", Value: &Entity{
 				Properties: []Property{
-					Property{Name: "X", Value: "", NoIndex: true},
-					Property{Name: "Y", Value: "", NoIndex: true},
+					{Name: "X", Value: "", NoIndex: true},
+					{Name: "Y", Value: "", NoIndex: true},
 				},
 			}, NoIndex: true},
 			Property{Name: "B", Value: &Entity{
 				Properties: []Property{
-					Property{Name: "X", Value: "", NoIndex: true},
-					Property{Name: "Y", Value: "", NoIndex: false},
+					{Name: "X", Value: "", NoIndex: true},
+					{Name: "Y", Value: "", NoIndex: false},
 				},
 			}, NoIndex: false},
 		},
@@ -1839,8 +1839,8 @@ var testCases = []testCase{
 		&PropertyList{
 			Property{Name: "foo", Value: &Entity{
 				Properties: []Property{
-					Property{Name: "W", Value: int64(0), NoIndex: false},
-					Property{Name: "X", Value: "", NoIndex: false},
+					{Name: "W", Value: int64(0), NoIndex: false},
+					{Name: "X", Value: "", NoIndex: false},
 				},
 			}, NoIndex: false},
 		},

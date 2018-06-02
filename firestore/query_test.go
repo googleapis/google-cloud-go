@@ -445,7 +445,7 @@ func TestQueryToProtoErrors(t *testing.T) {
 	}
 	q := coll.Query
 	for _, query := range []Query{
-		Query{},                                // no collection ID
+		{}, // no collection ID
 		q.Where("x", "!=", 1),                  // invalid operator
 		q.Where("~", ">", 1),                   // invalid path
 		q.WherePath([]string{"*", ""}, ">", 1), // invalid path

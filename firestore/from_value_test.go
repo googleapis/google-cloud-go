@@ -116,7 +116,7 @@ func testSetFromProtoValue(t *testing.T, prefix string, r tester) {
 
 	one := newfloat(1)
 	six := newfloat(6)
-	st := []*T{&T{I: &six}, nil, &T{I: &six, J: 7}}
+	st := []*T{{I: &six}, nil, {I: &six, J: 7}}
 	vs := interface{}(T{J: 1})
 	vm := interface{}(map[string]float64{"i": 1})
 	var (
@@ -153,9 +153,9 @@ func testSetFromProtoValue(t *testing.T, prefix string, r tester) {
 			r.Map("i", r.Float(1)), // sets st[1] to a new struct
 			r.Map("i", r.Float(2)), // modifies st[2]
 		),
-			[]*T{nil, &T{I: &one}, &T{I: &six, J: 7}}},
+			[]*T{nil, {I: &one}, {I: &six, J: 7}}},
 		{&mi, r.Map("a", r.Float(1), "b", r.Float(2)), map[string]interface{}{"a": 1.0, "b": 2.0}},
-		{&ms, r.Map("a", r.Map("j", r.Float(1))), map[string]T{"a": T{J: 1}}},
+		{&ms, r.Map("a", r.Map("j", r.Float(1))), map[string]T{"a": {J: 1}}},
 		{&vs, r.Map("i", r.Float(2)), map[string]interface{}{"i": 2.0}},
 		{&vm, r.Map("i", r.Float(2)), map[string]interface{}{"i": 2.0}},
 		{&ll, r.Null(), (*latlng.LatLng)(nil)},

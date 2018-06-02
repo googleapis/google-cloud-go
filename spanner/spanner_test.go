@@ -326,7 +326,7 @@ func TestSingleUse(t *testing.T) {
 		}
 		// SingleUse.ReadRow
 		got = nil
-		for _, k := range []Key{Key{1}, Key{3}, Key{4}} {
+		for _, k := range []Key{{1}, {3}, {4}} {
 			su = client.Single().WithTimestampBound(test.tb)
 			r, err := su.ReadRow(ctx, "Singers", k, []string{"SingerId", "FirstName", "LastName"})
 			if err != nil {
@@ -519,7 +519,7 @@ func TestReadOnlyTransaction(t *testing.T) {
 		}
 		// ReadOnlyTransaction.ReadRow
 		got = nil
-		for _, k := range []Key{Key{1}, Key{3}, Key{4}} {
+		for _, k := range []Key{{1}, {3}, {4}} {
 			r, err := ro.ReadRow(ctx, "Singers", k, []string{"SingerId", "FirstName", "LastName"})
 			if err != nil {
 				continue
@@ -1034,7 +1034,7 @@ func TestBasicTypes(t *testing.T) {
 		{col: "Bytes", val: []byte(nil)},
 		{col: "BytesArray", val: [][]byte(nil)},
 		{col: "BytesArray", val: [][]byte{}},
-		{col: "BytesArray", val: [][]byte{[]byte{1}, []byte{2, 3}}},
+		{col: "BytesArray", val: [][]byte{{1}, {2, 3}}},
 		{col: "Int64a", val: 0, want: int64(0)},
 		{col: "Int64a", val: -1, want: int64(-1)},
 		{col: "Int64a", val: 2, want: int64(2)},
