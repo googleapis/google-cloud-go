@@ -68,6 +68,7 @@ func TestIntegration_RecordAndReplay(t *testing.T) {
 		t.Fatal(err)
 	}
 	wanta, wantc := run(t, hc)
+	testReadCRC(t, hc, "recording")
 	if err := rec.Close(); err != nil {
 		t.Fatalf("rec.Close: %v", err)
 	}
@@ -83,6 +84,7 @@ func TestIntegration_RecordAndReplay(t *testing.T) {
 		t.Fatal(err)
 	}
 	gota, gotc := run(t, hc)
+	testReadCRC(t, hc, "replaying")
 
 	if diff := testutil.Diff(gota, wanta); diff != "" {
 		t.Error(diff)
@@ -115,7 +117,8 @@ func run(t *testing.T, hc *http.Client) (*storage.BucketAttrs, []byte) {
 	}
 	obj := b.Object("replay-test")
 	w := obj.NewWriter(ctx)
-	if _, err := w.Write([]byte{150, 151, 152}); err != nil {
+	data := []byte{150, 151, 152}
+	if _, err := w.Write(data); err != nil {
 		t.Fatal(err)
 	}
 	if err := w.Close(); err != nil {
@@ -131,5 +134,169 @@ func run(t *testing.T, hc *http.Client) (*storage.BucketAttrs, []byte) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	return attrs, contents
+}
+
+func testReadCRC(t *testing.T, hc *http.Client, mode string) {
+	const (
+		// This is an uncompressed file.
+		// See https://cloud.google.com/storage/docs/public-datasets/landsat
+		uncompressedBucket = "gcp-public-data-landsat"
+		uncompressedObject = "LC08/PRE/044/034/LC80440342016259LGN00/LC80440342016259LGN00_MTL.txt"
+
+		gzippedBucket   = "storage-library-test-bucket"
+		gzippedObject   = "gzipped-text.txt"
+		gzippedContents = "hello world" // uncompressed contents of the file
+	)
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx, option.WithHTTPClient(hc))
+	if err != nil {
+		t.Fatalf("%s: %v", mode, err)
+	}
+	defer client.Close()
+
+	uncompressedObj := client.Bucket(uncompressedBucket).Object(uncompressedObject)
+	gzippedObj := client.Bucket(gzippedBucket).Object(gzippedObject)
+
+	for _, test := range []struct {
+		desc           string
+		obj            *storage.ObjectHandle
+		offset, length int64
+		readCompressed bool // don't decompress a gzipped file
+
+		wantErr    bool
+		wantSize   int64 // Reader.Size
+		wantRemain int64 // Reader.Remain
+		wantLen    int   // length of contents
+	}{
+		{
+			desc:           "uncompressed, entire file",
+			obj:            uncompressedObj,
+			offset:         0,
+			length:         -1,
+			readCompressed: false,
+			wantSize:       7903,
+			wantRemain:     7903,
+			wantLen:        7903,
+		},
+		{
+			desc:           "uncompressed, entire file, don't decompress",
+			obj:            uncompressedObj,
+			offset:         0,
+			length:         -1,
+			readCompressed: true,
+			wantSize:       7903,
+			wantRemain:     7903,
+			wantLen:        7903,
+		},
+		{
+			desc:           "uncompressed, suffix",
+			obj:            uncompressedObj,
+			offset:         3,
+			length:         -1,
+			readCompressed: false,
+			wantSize:       7903,
+			wantRemain:     7900,
+			wantLen:        7900,
+		},
+		{
+			desc:           "uncompressed, prefix",
+			obj:            uncompressedObj,
+			offset:         0,
+			length:         18,
+			readCompressed: false,
+			wantSize:       7903,
+			wantRemain:     18,
+			wantLen:        18,
+		},
+		{
+			// When a gzipped file is unzipped by GCS, we can't verify the checksum
+			// because it was computed against the zipped contents. There is no
+			// header that indicates that a gzipped file is being served unzipped.
+			// But our CRC check only happens if there is a Content-Length header,
+			// and that header is absent for this read.
+			desc:           "compressed, entire file, server unzips",
+			obj:            gzippedObj,
+			offset:         0,
+			length:         -1,
+			readCompressed: false,
+			wantSize:       -1,
+			wantRemain:     -1,
+			wantLen:        11,
+		},
+		{
+			// When we read a gzipped file uncompressed, it's like reading a regular file:
+			// the served content and the CRC match.
+			desc:           "compressed, entire file, read compressed",
+			obj:            gzippedObj,
+			offset:         0,
+			length:         -1,
+			readCompressed: true,
+			wantSize:       31,
+			wantRemain:     31,
+			wantLen:        31,
+		},
+		{
+			desc:           "compressed, partial, server unzips",
+			obj:            gzippedObj,
+			offset:         1,
+			length:         8,
+			readCompressed: false,
+			wantErr:        true, // GCS can't serve part of a gzipped object
+		},
+		{
+			desc:           "compressed, partial, read compressed",
+			obj:            gzippedObj,
+			offset:         1,
+			length:         8,
+			readCompressed: true,
+			wantSize:       31,
+			wantRemain:     8,
+			wantLen:        8,
+		},
+		{
+			desc:       "uncompressed, HEAD",
+			obj:        uncompressedObj,
+			offset:     0,
+			length:     0,
+			wantSize:   7903,
+			wantRemain: 0,
+			wantLen:    0,
+		},
+		{
+			desc:       "compressed, HEAD",
+			obj:        gzippedObj,
+			offset:     0,
+			length:     0,
+			wantSize:   -1,
+			wantRemain: 0,
+			wantLen:    0,
+		},
+	} {
+		obj := test.obj.ReadCompressed(test.readCompressed)
+		r, err := obj.NewRangeReader(ctx, test.offset, test.length)
+		if err != nil {
+			if test.wantErr {
+				continue
+			}
+			t.Errorf("%s: %s: %v", mode, test.desc, err)
+			continue
+		}
+		if got, want := r.Size(), test.wantSize; got != want {
+			t.Errorf("%s: %s: size: got %d, want %d", mode, test.desc, got, want)
+		}
+		if got, want := r.Remain(), test.wantRemain; got != want {
+			t.Errorf("%s: %s: remain: got %d, want %d", mode, test.desc, got, want)
+		}
+		data, err := ioutil.ReadAll(r)
+		_ = r.Close()
+		if err != nil {
+			t.Errorf("%s: %s: %v", mode, test.desc, err)
+			continue
+		}
+		if got, want := len(data), test.wantLen; got != want {
+			t.Errorf("%s: %s: len: got %d, want %d", mode, test.desc, got, want)
+		}
+	}
 }

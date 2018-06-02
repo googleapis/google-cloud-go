@@ -24,8 +24,6 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/google/martian/har"
 )
 
 func TestRequestBody(t *testing.T) {
@@ -111,79 +109,6 @@ func TestHeadersMatch(t *testing.T) {
 		got := headersMatch(test.h1, test.h2, map[string]bool{"I": true})
 		if got != test.want {
 			t.Errorf("%v, %v: got %t, want %t", test.h1, test.h2, got, test.want)
-		}
-	}
-}
-
-func TestHarResponseToHTTPResponse(t *testing.T) {
-	for _, test := range []struct {
-		desc string
-		hr   *har.Response
-		req  *http.Request
-		want *http.Response
-	}{
-		{
-			desc: "GET request",
-			hr: &har.Response{
-				Status:      201,
-				StatusText:  "201",
-				HTTPVersion: "1.1",
-				Headers:     []har.Header{{Name: "h", Value: "v"}},
-				Content:     &har.Content{Text: []byte("text")},
-			},
-			req: &http.Request{Method: "GET"},
-			want: &http.Response{
-				Request:       &http.Request{Method: "GET"},
-				StatusCode:    201,
-				Status:        "201",
-				Proto:         "1.1",
-				Header:        http.Header{"h": {"v"}},
-				ContentLength: 4,
-			},
-		},
-		{
-			desc: "HEAD request with no Content-Length header",
-			hr: &har.Response{
-				Status:      201,
-				StatusText:  "201",
-				HTTPVersion: "1.1",
-				Headers:     []har.Header{{Name: "h", Value: "v"}},
-				Content:     &har.Content{Text: []byte("text")},
-			},
-			req: &http.Request{Method: "HEAD"},
-			want: &http.Response{
-				Request:       &http.Request{Method: "HEAD"},
-				StatusCode:    201,
-				Status:        "201",
-				Proto:         "1.1",
-				Header:        http.Header{"h": {"v"}},
-				ContentLength: -1,
-			},
-		},
-		{
-			desc: "HEAD request with Content-Length header",
-			hr: &har.Response{
-				Status:      201,
-				StatusText:  "201",
-				HTTPVersion: "1.1",
-				Headers:     []har.Header{{Name: "h", Value: "v"}, {Name: "Content-Length", Value: "17"}},
-				Content:     &har.Content{Text: []byte("text")},
-			},
-			req: &http.Request{Method: "HEAD"},
-			want: &http.Response{
-				Request:       &http.Request{Method: "HEAD"},
-				StatusCode:    201,
-				Status:        "201",
-				Proto:         "1.1",
-				Header:        http.Header{"h": {"v"}, "Content-Length": {"17"}},
-				ContentLength: 17,
-			},
-		},
-	} {
-		got := harResponseToHTTPResponse(test.hr, test.req)
-		got.Body = nil
-		if diff := testutil.Diff(got, test.want, cmpopts.IgnoreUnexported(http.Request{})); diff != "" {
-			t.Errorf("%s: %s", test.desc, diff)
 		}
 	}
 }
