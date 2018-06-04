@@ -67,6 +67,9 @@ type TableMetadata struct {
 	// If non-nil, the table is partitioned by time.
 	TimePartitioning *TimePartitioning
 
+	// Clustering specifies the data clustering configuration for the table.
+	Clustering *Clustering
+
 	// The time when this table expires. If not set, the table will persist
 	// indefinitely. Expired tables will be deleted and their storage reclaimed.
 	ExpirationTime time.Time
@@ -176,6 +179,30 @@ func bqToTimePartitioning(q *bq.TimePartitioning) *TimePartitioning {
 	return &TimePartitioning{
 		Expiration: time.Duration(q.ExpirationMs) * time.Millisecond,
 		Field:      q.Field,
+	}
+}
+
+// Clustering governs the organization of data within a partitioned table.
+// For more information, see https://cloud.google.com/bigquery/docs/clustered-tables
+type Clustering struct {
+	Fields []string
+}
+
+func (c *Clustering) toBQ() *bq.Clustering {
+	if c == nil {
+		return nil
+	}
+	return &bq.Clustering{
+		Fields: c.Fields,
+	}
+}
+
+func bqToClustering(q *bq.Clustering) *Clustering {
+	if q == nil {
+		return nil
+	}
+	return &Clustering{
+		Fields: q.Fields,
 	}
 }
 
@@ -291,6 +318,7 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 		return nil, errors.New("bigquery: UseLegacy/StandardSQL requires ViewQuery")
 	}
 	t.TimePartitioning = tm.TimePartitioning.toBQ()
+	t.Clustering = tm.Clustering.toBQ()
 	if !tm.ExpirationTime.IsZero() {
 		t.ExpirationTime = tm.ExpirationTime.UnixNano() / 1e6
 	}
@@ -367,6 +395,7 @@ func bqToTableMetadata(t *bq.Table) (*TableMetadata, error) {
 		md.UseLegacySQL = t.View.UseLegacySql
 	}
 	md.TimePartitioning = bqToTimePartitioning(t.TimePartitioning)
+	md.Clustering = bqToClustering(t.Clustering)
 	if t.StreamingBuffer != nil {
 		md.StreamingBuffer = &StreamingBuffer{
 			EstimatedBytes:  t.StreamingBuffer.EstimatedBytes,
