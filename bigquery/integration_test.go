@@ -301,8 +301,16 @@ func TestIntegration_TableMetadata(t *testing.T) {
 		{Name: "date", Type: DateFieldType},
 	}
 
+	clustering := &Clustering{
+		Fields: []string{"name"},
+	}
+
+	// Currently, clustering depends on partitioning.  Interleave testing of the two features.
 	for i, c := range partitionCases {
-		table := dataset.Table(fmt.Sprintf("t_metadata_partition_%v", i))
+		table := dataset.Table(fmt.Sprintf("t_metadata_partition_nocluster_%v", i))
+		clusterTable := dataset.Table(fmt.Sprintf("t_metadata_partition_cluster_%v", i))
+
+		// Create unclustered, partitioned variant and get metadata.
 		err = table.Create(context.Background(), &TableMetadata{
 			Schema:           schema2,
 			TimePartitioning: &c.timePartitioning,
@@ -312,20 +320,47 @@ func TestIntegration_TableMetadata(t *testing.T) {
 			t.Fatal(err)
 		}
 		defer table.Delete(ctx)
-		md, err = table.Metadata(ctx)
+		md, err := table.Metadata(ctx)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		got := md.TimePartitioning
-		want := &TimePartitioning{
-			Expiration: c.wantExpiration,
-			Field:      c.wantField,
+		// Created clustered table and get metadata.
+		err = clusterTable.Create(context.Background(), &TableMetadata{
+			Schema:           schema2,
+			TimePartitioning: &c.timePartitioning,
+			ExpirationTime:   time.Now().Add(5 * time.Minute),
+			Clustering:       clustering,
+		})
+		clusterMD, err := clusterTable.Metadata(ctx)
+		if err != nil {
+			t.Fatal(err)
 		}
-		if !testutil.Equal(got, want) {
-			t.Errorf("metadata.TimePartitioning: got %v, want %v", got, want)
+
+		for _, v := range []*TableMetadata{md, clusterMD} {
+			got := v.TimePartitioning
+			want := &TimePartitioning{
+				Expiration: c.wantExpiration,
+				Field:      c.wantField,
+			}
+			if !testutil.Equal(got, want) {
+				t.Errorf("metadata.TimePartitioning: got %v, want %v", got, want)
+			}
 		}
+
+		if md.Clustering != nil {
+			t.Errorf("metadata.Clustering was not nil on unclustered table %s", table.TableID)
+		}
+		got := clusterMD.Clustering
+		want := clustering
+		if clusterMD.Clustering != clustering {
+			if !testutil.Equal(got, want) {
+				t.Errorf("metadata.Clustering: got %v, want %v", got, want)
+			}
+		}
+
 	}
+
 }
 
 func TestIntegration_DatasetCreate(t *testing.T) {

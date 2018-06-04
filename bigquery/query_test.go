@@ -351,6 +351,9 @@ func TestConfiguringQuery(t *testing.T) {
 	query.DefaultProjectID = "def-project-id"
 	query.DefaultDatasetID = "def-dataset-id"
 	query.TimePartitioning = &TimePartitioning{Expiration: 1234 * time.Second, Field: "f"}
+	query.Clustering = &Clustering{
+		Fields: []string{"cfield1"},
+	}
 	query.DestinationEncryptionConfig = &EncryptionConfig{KMSKeyName: "keyName"}
 	query.SchemaUpdateOptions = []string{"ALLOW_FIELD_ADDITION"}
 
@@ -368,6 +371,7 @@ func TestConfiguringQuery(t *testing.T) {
 				},
 				UseLegacySql:                       &pfalse,
 				TimePartitioning:                   &bq.TimePartitioning{ExpirationMs: 1234000, Field: "f", Type: "DAY"},
+				Clustering:                         &bq.Clustering{Fields: []string{"cfield1"}},
 				DestinationEncryptionConfiguration: &bq.EncryptionConfiguration{KmsKeyName: "keyName"},
 				SchemaUpdateOptions:                []string{"ALLOW_FIELD_ADDITION"},
 			},
