@@ -268,7 +268,7 @@ Google API                       | Status       | Package
 [Logging][cloud-logging]         | stable       | [`cloud.google.com/go/logging`][cloud-logging-ref]
 [Monitoring][cloud-monitoring]   | beta         | [`cloud.google.com/go/monitoring/apiv3`][cloud-monitoring-ref]
 [OS Login][cloud-oslogin]        | alpha        | [`cloud.google.com/compute/docs/oslogin/rest`][cloud-oslogin-ref]
-[Pub/Sub][cloud-pubsub]          | beta         | [`cloud.google.com/go/pubsub`][cloud-pubsub-ref]
+[Pub/Sub][cloud-pubsub]          | stable       | [`cloud.google.com/go/pubsub`][cloud-pubsub-ref]
 [Spanner][cloud-spanner]         | stable       | [`cloud.google.com/go/spanner`][cloud-spanner-ref]
 [Speech][cloud-speech]           | stable       | [`cloud.google.com/go/speech/apiv1`][cloud-speech-ref]
 [Storage][cloud-storage]         | stable       | [`cloud.google.com/go/storage`][cloud-storage-ref]
