@@ -626,6 +626,11 @@ func (p *NotKeyLoader) Save() (props []Property, err error) {
 	return []Property{{Name: "A", Value: p.A}}, nil
 }
 
+type NotPLSKeyLoader struct {
+	A string
+	K *Key `datastore:"__key__"`
+}
+
 type NestedKeyLoaders struct {
 	Two   *KeyLoader2
 	Three []*KeyLoader3
@@ -650,6 +655,21 @@ func TestKeyLoader(t *testing.T) {
 			},
 			dst: &KeyLoader1{},
 			want: &KeyLoader1{
+				A: "hello",
+				K: testKey0,
+			},
+		},
+		{
+			desc: "simple key loader with unmatched properties",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"A": {ValueType: &pb.Value_StringValue{StringValue: "hello"}},
+					"B": {ValueType: &pb.Value_StringValue{StringValue: "unmatched"}},
+				},
+			},
+			dst: &NotPLSKeyLoader{},
+			want: &NotPLSKeyLoader{
 				A: "hello",
 				K: testKey0,
 			},
@@ -747,8 +767,12 @@ func TestKeyLoader(t *testing.T) {
 	for _, tc := range testCases {
 		err := loadEntityProto(tc.dst, tc.src)
 		if err != nil {
-			t.Errorf("loadEntityProto: %s: %v", tc.desc, err)
-			continue
+			// While loadEntityProto may return an error, if that error is
+			// ErrFieldMismatch, then there is still data in tc.dst to compare.
+			if _, ok := err.(*ErrFieldMismatch); !ok {
+				t.Errorf("loadEntityProto: %s: %v", tc.desc, err)
+				continue
+			}
 		}
 
 		if !testutil.Equal(tc.want, tc.dst) {
