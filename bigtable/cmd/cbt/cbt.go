@@ -266,14 +266,14 @@ var commands = []struct {
 	},
 	{
 		Name:     "deleteinstance",
-		Desc:     "Deletes an instance",
+		Desc:     "Delete an instance",
 		do:       doDeleteInstance,
 		Usage:    "cbt deleteinstance <instance>",
 		Required: cbtconfig.ProjectRequired,
 	},
 	{
 		Name:     "deletecluster",
-		Desc:     "Deletes a cluster from the configured instance (replication alpha)",
+		Desc:     "Delete a cluster from the configured instance (replication alpha)",
 		do:       doDeleteCluster,
 		Usage:    "cbt deletecluster <cluster>",
 		Required: cbtconfig.ProjectAndInstanceRequired,
@@ -331,7 +331,7 @@ var commands = []struct {
 	},
 	{
 		Name:     "listclusters",
-		Desc:     "List instances in an instance",
+		Desc:     "List clusters in an instance",
 		do:       doListClusters,
 		Usage:    "cbt listclusters",
 		Required: cbtconfig.ProjectAndInstanceRequired,
@@ -340,9 +340,9 @@ var commands = []struct {
 		Name: "lookup",
 		Desc: "Read from a single row",
 		do:   doLookup,
-		Usage: "cbt lookup <table> <row> [columns=<family:qualifier>,...] [cells-per-column=<n>] " +
+		Usage: "cbt lookup <table> <row> [columns=[family]:[qualifier],...] [cells-per-column=<n>] " +
 			"[app-profile=<app profile id>]\n" +
-			"  columns                          Read only these columns. Format <column-family>:<column-qualifier>, comma-separated" +
+			"  columns=[family]:[qualifier],...	Read only these columns, comma-separated\n" +
 			"  cells-per-column=<n> 			Read only this many cells per column\n" +
 			"  app-profile=<app profile id>		The app profile id to use for the request (replication alpha)\n",
 		Required: cbtconfig.ProjectAndInstanceRequired,
@@ -367,15 +367,15 @@ var commands = []struct {
 		Desc: "Read rows",
 		do:   doRead,
 		Usage: "cbt read <table> [start=<row>] [end=<row>] [prefix=<prefix>]" +
-			" [regex=<regex>] [columns=<family:qualifier>,...] [count=<n>] [cells-per-column=<n>]" +
+			" [regex=<regex>] [columns=[family]:[qualifier],...] [count=<n>] [cells-per-column=<n>]" +
 			" [app-profile=<app profile id>]\n" +
-			"  start=<row>		Start reading at this row\n" +
-			"  end=<row>		Stop reading before this row\n" +
-			"  prefix=<prefix>	Read rows with this prefix\n" +
-			"  regex=<regex> 	Read rows with keys matching this regex\n" +
-			"  columns          Read only these columns. Format <column-family>:<column-qualifier>, comma-separated" +
-			"  count=<n>		Read only this many rows\n" +
-			"  cells-per-column=<n>	Read only this many cells per column\n" +
+			"  start=<row>				Start reading at this row\n" +
+			"  end=<row>				Stop reading before this row\n" +
+			"  prefix=<prefix>			Read rows with this prefix\n" +
+			"  regex=<regex> 			Read rows with keys matching this regex\n" +
+			"  columns=[family]:[qualifier],...	Read only these columns, comma-separated\n" +
+			"  count=<n>				Read only this many rows\n" +
+			"  cells-per-column=<n>			Read only this many cells per column\n" +
 			"  app-profile=<app profile id>		The app profile id to use for the request (replication alpha)\n",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
@@ -404,7 +404,7 @@ var commands = []struct {
 	},
 	{
 		Name:     "waitforreplication",
-		Desc:     "Blocks until all the completed writes have been replicated to all the clusters (replication alpha)",
+		Desc:     "Block until all the completed writes have been replicated to all the clusters (replication alpha)",
 		do:       doWaitForReplicaiton,
 		Usage:    "cbt waitforreplication <table>",
 		Required: cbtconfig.ProjectAndInstanceRequired,
