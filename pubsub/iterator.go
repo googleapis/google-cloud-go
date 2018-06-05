@@ -29,7 +29,7 @@ import (
 // subName is the full name of the subscription to pull messages from.
 // ctx is the context to use for acking messages and extending message deadlines.
 func newMessageIterator(ctx context.Context, subc *vkit.SubscriberClient, subName string, po *pullOptions) *streamingMessageIterator {
-	ps := newPullStream(ctx, subc, subName, int32(po.ackDeadline.Seconds()))
+	ps := newPullStream(ctx, subc.StreamingPull, subName, int32(po.ackDeadline.Seconds()))
 	return newStreamingMessageIterator(ctx, ps, po, subc, subName)
 }
 
