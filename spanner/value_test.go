@@ -426,6 +426,7 @@ func TestDecodeValue(t *testing.T) {
 
 // Test error cases for decodeValue.
 func TestDecodeValueErrors(t *testing.T) {
+	var s string
 	for i, test := range []struct {
 		in *proto3.Value
 		t  *sppb.Type
@@ -433,6 +434,7 @@ func TestDecodeValueErrors(t *testing.T) {
 	}{
 		{nullProto(), stringType(), nil},
 		{nullProto(), stringType(), 1},
+		{timeProto(t1), timeType(), &s},
 	} {
 		err := decodeValue(test.in, test.t, test.v)
 		if err == nil {
@@ -517,6 +519,52 @@ func TestGenericColumnValue(t *testing.T) {
 		}
 		if !testEqual(*v, test.in) {
 			t.Errorf("unexpected encode result - got %v, want %v", v, test.in)
+		}
+	}
+}
+
+func TestDecodeStruct(t *testing.T) {
+	stype := &sppb.StructType{Fields: []*sppb.StructType_Field{
+		{Name: "Id", Type: stringType()},
+		{Name: "Time", Type: timeType()},
+	}}
+	lv := listValueProto(stringProto("id"), timeProto(t1))
+
+	type (
+		S1 struct {
+			Id   string
+			Time time.Time
+		}
+		S2 struct {
+			Id   string
+			Time string
+		}
+	)
+	var (
+		s1 S1
+		s2 S2
+	)
+
+	for i, test := range []struct {
+		ptr  interface{}
+		want interface{}
+		fail bool
+	}{
+		{
+			ptr:  &s1,
+			want: &S1{Id: "id", Time: t1},
+		},
+		{
+			ptr:  &s2,
+			fail: true,
+		},
+	} {
+		err := decodeStruct(stype, lv, test.ptr)
+		if (err != nil) != test.fail {
+			t.Errorf("#%d: got error %v, wanted fail: %v", i, err, test.fail)
+		}
+		if err == nil && !testEqual(test.ptr, test.want) {
+			t.Errorf("#%d: got %+v, want %+v", i, test.ptr, test.want)
 		}
 	}
 }
