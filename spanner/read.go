@@ -137,7 +137,7 @@ func (r *RowIterator) Do(f func(r *Row) error) error {
 	}
 }
 
-// Stop terminates the iteration. It should be called after every iteration.
+// Stop terminates the iteration. It should be called after you finish using the iterator.
 func (r *RowIterator) Stop() {
 	if r.streamd != nil {
 		defer traceEndSpan(r.streamd.ctx, r.err)
