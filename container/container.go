@@ -229,12 +229,6 @@ func (c *Client) Cluster(ctx context.Context, zone, name string) (*Resource, err
 	return resourceFromRaw(resp), nil
 }
 
-// CreateCluster creates a new cluster with the provided metadata
-// in the specified zone.
-func (c *Client) CreateCluster(ctx context.Context, zone string, resource *Resource) (*Resource, error) {
-	panic("not implemented")
-}
-
 // DeleteCluster deletes a cluster.
 func (c *Client) DeleteCluster(ctx context.Context, zone, name string) error {
 	_, err := c.svc.Projects.Zones.Clusters.Delete(c.projectID, zone, name).Do()
