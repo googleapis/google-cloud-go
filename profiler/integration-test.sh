@@ -1,5 +1,12 @@
 #!/bin/bash
 
+retry() {
+  for i in {1..3}; do
+    "${@}" && return 0
+  done
+  return 1
+}
+
 # Fail on any error.
 set -eo pipefail
 
@@ -32,5 +39,5 @@ export GCLOUD_TESTS_GOLANG_ZONE="us-west1-b"
 export GCLOUD_TESTS_GOLANG_BUCKET="dulcet-port-762-go-cloud-profiler-test"
 
 cd $GOCLOUD_HOME/profiler
-go get -t -tags=integration .
+retry go get -t -tags=integration .
 go test -timeout=60m -parallel=5 -tags=integration -run TestAgentIntegration -commit="$COMMIT"
