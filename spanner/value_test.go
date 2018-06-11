@@ -244,73 +244,6 @@ func TestEncodeStructValuePointers(t *testing.T) {
 	}
 }
 
-func TestEncodeStructValueDynamicStructs(t *testing.T) {
-	dynStructType := reflect.StructOf([]reflect.StructField{
-		{Name: "A", Type: reflect.TypeOf(0), Tag: `spanner:"a"`},
-		{Name: "B", Type: reflect.TypeOf(""), Tag: `spanner:"b"`},
-	})
-	dynNullableStructType := reflect.PtrTo(dynStructType)
-	dynStructArrType := reflect.SliceOf(dynStructType)
-	dynNullableStructArrType := reflect.SliceOf(dynNullableStructType)
-
-	dynStructValue := reflect.New(dynStructType)
-	dynStructValue.Elem().Field(0).SetInt(10)
-	dynStructValue.Elem().Field(1).SetString("abc")
-
-	dynStructArrValue := reflect.MakeSlice(dynNullableStructArrType, 2, 2)
-	dynStructArrValue.Index(0).Set(reflect.Zero(dynNullableStructType))
-	dynStructArrValue.Index(1).Set(dynStructValue)
-
-	structProtoType := structType(
-		mkField("a", intType()),
-		mkField("b", stringType()))
-
-	arrProtoType := listType(structProtoType)
-
-	for _, test := range []encodeTest{
-		{
-			"Dynanic non-NULL struct value.",
-			dynStructValue.Elem().Interface(),
-			listProto(intProto(10), stringProto("abc")),
-			structProtoType,
-		},
-		{
-			"Dynanic NULL struct value.",
-			reflect.Zero(dynNullableStructType).Interface(),
-			nullProto(),
-			structProtoType,
-		},
-		{
-			"Empty array of dynamic structs.",
-			reflect.MakeSlice(dynStructArrType, 0, 0).Interface(),
-			listProto([]*proto3.Value{}...),
-			arrProtoType,
-		},
-		{
-			"NULL array of non-NULL-able dynamic structs.",
-			reflect.Zero(dynStructArrType).Interface(),
-			nullProto(),
-			arrProtoType,
-		},
-		{
-			"NULL array of NULL-able(nil) dynamic structs.",
-			reflect.Zero(dynNullableStructArrType).Interface(),
-			nullProto(),
-			arrProtoType,
-		},
-		{
-			"Array containing NULL(nil) dynamic-typed struct elements.",
-			dynStructArrValue.Interface(),
-			listProto(
-				nullProto(),
-				listProto(intProto(10), stringProto("abc"))),
-			arrProtoType,
-		},
-	} {
-		encodeStructValue(test, t)
-	}
-}
-
 func TestEncodeStructValueErrors(t *testing.T) {
 	type Embedded struct {
 		A int
@@ -582,76 +515,6 @@ func TestEncodeStructValueFieldNames(t *testing.T) {
 	}
 }
 
-func TestEncodeStructValueEmptyStruct(t *testing.T) {
-	emptyListValue := listProto([]*proto3.Value{}...)
-	emptyStructType := structType([]*sppb.StructType_Field{}...)
-	emptyStruct := struct{}{}
-	nullEmptyStruct := (*struct{})(nil)
-
-	dynamicEmptyStructType := reflect.StructOf(make([]reflect.StructField, 0, 0))
-	dynamicStructArrType := reflect.SliceOf(reflect.PtrTo((dynamicEmptyStructType)))
-
-	dynamicEmptyStruct := reflect.New(dynamicEmptyStructType)
-	dynamicNullEmptyStruct := reflect.Zero(reflect.PtrTo(dynamicEmptyStructType))
-
-	dynamicStructArrValue := reflect.MakeSlice(dynamicStructArrType, 2, 2)
-	dynamicStructArrValue.Index(0).Set(dynamicNullEmptyStruct)
-	dynamicStructArrValue.Index(1).Set(dynamicEmptyStruct)
-
-	for _, test := range []encodeTest{
-		{
-			"Go empty struct.",
-			emptyStruct,
-			emptyListValue,
-			emptyStructType,
-		},
-		{
-			"Dynamic empty struct.",
-			dynamicEmptyStruct.Interface(),
-			emptyListValue,
-			emptyStructType,
-		},
-		{
-			"Go NULL empty struct.",
-			nullEmptyStruct,
-			nullProto(),
-			emptyStructType,
-		},
-		{
-			"Dynamic NULL empty struct.",
-			dynamicNullEmptyStruct.Interface(),
-			nullProto(),
-			emptyStructType,
-		},
-		{
-			"Non-empty array of dynamic NULL and non-NULL empty structs.",
-			dynamicStructArrValue.Interface(),
-			listProto(nullProto(), emptyListValue),
-			listType(emptyStructType),
-		},
-		{
-			"Non-empty array of nullable empty structs.",
-			[]*struct{}{nullEmptyStruct, &emptyStruct},
-			listProto(nullProto(), emptyListValue),
-			listType(emptyStructType),
-		},
-		{
-			"Empty array of empty struct.",
-			[]struct{}{},
-			emptyListValue,
-			listType(emptyStructType),
-		},
-		{
-			"Null array of empty structs.",
-			[]struct{}(nil),
-			nullProto(),
-			listType(emptyStructType),
-		},
-	} {
-		encodeStructValue(test, t)
-	}
-}
-
 func TestEncodeStructValueBasicFields(t *testing.T) {
 	StructTypeProto := structType(
 		mkField("Stringf", stringType()),
@@ -825,46 +688,6 @@ func TestEncodeStructValueArrayFields(t *testing.T) {
 				nullProto(),
 				nullProto()),
 			StructTypeProto,
-		},
-	} {
-		encodeStructValue(test, t)
-	}
-}
-
-func TestEncodeStructValueMixedStructTypes(t *testing.T) {
-	type staticStruct struct {
-		F int `spanner:"fStatic"`
-	}
-	s1 := staticStruct{10}
-	s2 := (*staticStruct)(nil)
-
-	var f float64
-	dynStructType := reflect.StructOf([]reflect.StructField{
-		{Name: "A", Type: reflect.TypeOf(f), Tag: `spanner:"fDynamic"`},
-	})
-	s3 := reflect.New(dynStructType)
-	s3.Elem().Field(0).SetFloat(3.14)
-
-	for _, test := range []encodeTest{
-		{
-			"'struct' with static and dynamic *struct, []*struct, []struct fields",
-			struct {
-				A []staticStruct
-				B []*staticStruct
-				C interface{}
-			}{
-				[]staticStruct{s1, s1},
-				[]*staticStruct{&s1, s2},
-				s3.Interface(),
-			},
-			listProto(
-				listProto(listProto(intProto(10)), listProto(intProto(10))),
-				listProto(listProto(intProto(10)), nullProto()),
-				listProto(floatProto(3.14))),
-			structType(
-				mkField("A", listType(structType(mkField("fStatic", intType())))),
-				mkField("B", listType(structType(mkField("fStatic", intType())))),
-				mkField("C", structType(mkField("fDynamic", floatType())))),
 		},
 	} {
 		encodeStructValue(test, t)
