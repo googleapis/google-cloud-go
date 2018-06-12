@@ -20,7 +20,7 @@ import (
 	"log"
 	"sync"
 
-	"golang.org/x/debug"
+	"cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug"
 	cd "google.golang.org/api/clouddebugger/v2"
 )
 
