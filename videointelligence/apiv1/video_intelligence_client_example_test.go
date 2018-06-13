@@ -40,7 +40,7 @@ func ExampleClient_AnnotateVideo() {
 	}
 
 	req := &videointelligencepb.AnnotateVideoRequest{
-	// TODO: Fill request struct fields.
+		// TODO: Fill request struct fields.
 	}
 	op, err := c.AnnotateVideo(ctx, req)
 	if err != nil {
