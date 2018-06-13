@@ -48,7 +48,10 @@ func TestLicense(t *testing.T) {
 			// Automatically generated.
 			return nil
 		}
-
+		if path == "cmd/go-cloud-debug-agent/internal/debug/elf/elf.go" {
+			// BSD license, which is compatible, is embedded in the file.
+			return nil
+		}
 		src, err := ioutil.ReadFile(path)
 		if err != nil {
 			return nil
