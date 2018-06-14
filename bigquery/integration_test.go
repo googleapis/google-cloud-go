@@ -1763,6 +1763,20 @@ func TestIntegration_NumericErrors(t *testing.T) {
 	}
 }
 
+func TestIntegration_QueryErrors(t *testing.T) {
+	// Verify that a bad query returns an appropriate error.
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	q := client.Query("blah blah broken")
+	_, err := q.Read(ctx)
+	const want = "invalidQuery"
+	if !strings.Contains(err.Error(), want) {
+		t.Fatalf("got %q, want substring %q", err, want)
+	}
+}
+
 // Creates a new, temporary table with a unique name and the given schema.
 func newTable(t *testing.T, s Schema) *Table {
 	table := dataset.Table(tableIDs.New())
