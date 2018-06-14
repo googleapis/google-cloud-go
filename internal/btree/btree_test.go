@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc.
+// Copyright 2014 Google LLC
 // Modified 2018 by Jonathan Amsterdam (jbamsterdam@gmail.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
