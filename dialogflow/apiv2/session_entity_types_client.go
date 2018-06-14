@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/version"
+	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
@@ -143,6 +144,7 @@ func (c *SessionEntityTypesClient) ListSessionEntityTypes(ctx context.Context, r
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListSessionEntityTypes[0:len(c.CallOptions.ListSessionEntityTypes):len(c.CallOptions.ListSessionEntityTypes)], opts...)
 	it := &SessionEntityTypeIterator{}
+	req = proto.Clone(req).(*dialogflowpb.ListSessionEntityTypesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.SessionEntityType, string, error) {
 		var resp *dialogflowpb.ListSessionEntityTypesResponse
 		req.PageToken = pageToken
@@ -170,6 +172,7 @@ func (c *SessionEntityTypesClient) ListSessionEntityTypes(ctx context.Context, r
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.PageSize)
 	return it
 }
 
