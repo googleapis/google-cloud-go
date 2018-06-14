@@ -1,4 +1,4 @@
-// Copyright 2014 Google LLC
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,18 +21,6 @@ import (
 )
 
 // This example demonstrates how to use your own transport when using this package.
-// It assumes a type called userAgentTransport that implements the http.RoundTripper
-// interface, like so:
-//
-//     type userAgentTransport struct {
-// 	       userAgent string
-// 	       base      http.RoundTripper
-//     }
-//
-//     func (t userAgentTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-// 	       req.Header.Set("User-Agent", t.userAgent)
-// 	       return t.base.RoundTrip(req)
-//     }
 func ExampleNewClient() {
 	c := metadata.NewClient(&http.Client{Transport: userAgentTransport{
 		userAgent: "my-user-agent",
@@ -45,11 +33,13 @@ func ExampleNewClient() {
 	_ = p // TODO: Use p.
 }
 
+// userAgentTransport sets the User-Agent header before calling base.
 type userAgentTransport struct {
 	userAgent string
 	base      http.RoundTripper
 }
 
+// RoundTrip implements the http.RoundTripper interface.
 func (t userAgentTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	req.Header.Set("User-Agent", t.userAgent)
 	return t.base.RoundTrip(req)
