@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"testing"
 
-	"cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug"
 	"cloud.google.com/go/internal/testutil"
+	"golang.org/x/debug"
 	cd "google.golang.org/api/clouddebugger/v2"
 )
 
