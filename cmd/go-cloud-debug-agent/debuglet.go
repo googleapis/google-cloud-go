@@ -29,10 +29,10 @@ import (
 
 	"cloud.google.com/go/cmd/go-cloud-debug-agent/internal/breakpoints"
 	debuglet "cloud.google.com/go/cmd/go-cloud-debug-agent/internal/controller"
-	"cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug"
-	"cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/local"
 	"cloud.google.com/go/cmd/go-cloud-debug-agent/internal/valuecollector"
 	"cloud.google.com/go/compute/metadata"
+	"golang.org/x/debug"
+	"golang.org/x/debug/local"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
