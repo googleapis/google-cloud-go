@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/version"
+	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
@@ -169,6 +170,7 @@ func (c *Client) ListDataSources(ctx context.Context, req *datatransferpb.ListDa
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListDataSources[0:len(c.CallOptions.ListDataSources):len(c.CallOptions.ListDataSources)], opts...)
 	it := &DataSourceIterator{}
+	req = proto.Clone(req).(*datatransferpb.ListDataSourcesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datatransferpb.DataSource, string, error) {
 		var resp *datatransferpb.ListDataSourcesResponse
 		req.PageToken = pageToken
@@ -196,6 +198,7 @@ func (c *Client) ListDataSources(ctx context.Context, req *datatransferpb.ListDa
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.PageSize)
 	return it
 }
 
@@ -266,6 +269,7 @@ func (c *Client) ListTransferConfigs(ctx context.Context, req *datatransferpb.Li
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListTransferConfigs[0:len(c.CallOptions.ListTransferConfigs):len(c.CallOptions.ListTransferConfigs)], opts...)
 	it := &TransferConfigIterator{}
+	req = proto.Clone(req).(*datatransferpb.ListTransferConfigsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datatransferpb.TransferConfig, string, error) {
 		var resp *datatransferpb.ListTransferConfigsResponse
 		req.PageToken = pageToken
@@ -293,6 +297,7 @@ func (c *Client) ListTransferConfigs(ctx context.Context, req *datatransferpb.Li
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.PageSize)
 	return it
 }
 
@@ -348,6 +353,7 @@ func (c *Client) ListTransferRuns(ctx context.Context, req *datatransferpb.ListT
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListTransferRuns[0:len(c.CallOptions.ListTransferRuns):len(c.CallOptions.ListTransferRuns)], opts...)
 	it := &TransferRunIterator{}
+	req = proto.Clone(req).(*datatransferpb.ListTransferRunsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datatransferpb.TransferRun, string, error) {
 		var resp *datatransferpb.ListTransferRunsResponse
 		req.PageToken = pageToken
@@ -375,6 +381,7 @@ func (c *Client) ListTransferRuns(ctx context.Context, req *datatransferpb.ListT
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.PageSize)
 	return it
 }
 
@@ -383,6 +390,7 @@ func (c *Client) ListTransferLogs(ctx context.Context, req *datatransferpb.ListT
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListTransferLogs[0:len(c.CallOptions.ListTransferLogs):len(c.CallOptions.ListTransferLogs)], opts...)
 	it := &TransferMessageIterator{}
+	req = proto.Clone(req).(*datatransferpb.ListTransferLogsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datatransferpb.TransferMessage, string, error) {
 		var resp *datatransferpb.ListTransferLogsResponse
 		req.PageToken = pageToken
@@ -410,6 +418,7 @@ func (c *Client) ListTransferLogs(ctx context.Context, req *datatransferpb.ListT
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.PageSize)
 	return it
 }
 

@@ -23,6 +23,7 @@ import (
 	"cloud.google.com/go/internal/version"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	"github.com/golang/protobuf/proto"
 	structpbpb "github.com/golang/protobuf/ptypes/struct"
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
@@ -188,6 +189,7 @@ func (c *EntityTypesClient) ListEntityTypes(ctx context.Context, req *dialogflow
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListEntityTypes[0:len(c.CallOptions.ListEntityTypes):len(c.CallOptions.ListEntityTypes)], opts...)
 	it := &EntityTypeIterator{}
+	req = proto.Clone(req).(*dialogflowpb.ListEntityTypesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.EntityType, string, error) {
 		var resp *dialogflowpb.ListEntityTypesResponse
 		req.PageToken = pageToken
@@ -215,6 +217,7 @@ func (c *EntityTypesClient) ListEntityTypes(ctx context.Context, req *dialogflow
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.PageSize)
 	return it
 }
 
