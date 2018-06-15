@@ -49,7 +49,7 @@ func (r *ReaderSource) populateLoadConfig(lc *bq.JobConfigurationLoad) io.Reader
 // loaded into a table via the Table.LoaderFromReader.
 type FileConfig struct {
 	// SourceFormat is the format of the data to be read.
-	// Allowed values are: CSV, Avro, Parquet, JSON, DatastoreBackup.  The default is CSV.
+	// Allowed values are: Avro, CSV, DatastoreBackup, JSON, ORC, and Parquet.  The default is CSV.
 	SourceFormat DataFormat
 
 	// Indicates if we should automatically infer the options and
