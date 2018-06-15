@@ -14,6 +14,8 @@
 
 // Functions for reading values of various types from a program's memory.
 
+// +build linux
+
 package server
 
 import (
