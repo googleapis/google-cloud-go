@@ -456,6 +456,47 @@ var commands = []struct {
 		Usage:    "cbt version",
 		Required: cbtconfig.NoneRequired,
 	},
+	{
+		Name: "createappprofile",
+		Desc: "Creates app profile for an instance",
+		do:   doCreateAppProfile,
+		Usage: "cbt createappprofile <instance-id> <profile-id> <description> <etag> <routing-policy> \n" +
+			"[cluster-id=<cluster-id>] [allow-transactional-writes=<allow-transactional-writes>] \n" +
+			"set multi_cluster_routing_use_any or single_cluster_routing as possible values for routing policy \n" +
+			"provide cluster-id=clusterID and allow-transactional-writes=true or false in case of single_cluster_routing ",
+		Required: cbtconfig.ProjectAndInstanceRequired,
+	},
+	{
+		Name:     "getappprofile",
+		Desc:     "Reads app profile for an instance",
+		do:       doGetAppProfile,
+		Usage:    "cbt getappprofile <instance-id> <profile-id>",
+		Required: cbtconfig.ProjectAndInstanceRequired,
+	},
+	{
+		Name:     "listappprofile",
+		Desc:     "Lists app profile for an instance",
+		do:       doListAppProfiles,
+		Usage:    "cbt listappprofile <instance-id> ",
+		Required: cbtconfig.ProjectAndInstanceRequired,
+	},
+	{
+		Name: "updateappprofile",
+		Desc: "Updates app profile for an instance",
+		do:   doUpdateAppProfile,
+		Usage: "cbt updateappprofile  <instance-id> <profile-id> <description> <routing-policy>" +
+			"[cluster-id=<cluster-id>] [allow-transactional-writes=<allow-transactional-writes>] \n" +
+			"set multi_cluster_routing_use_any or single_cluster_routing as possible values for routing policy \n" +
+			"provide cluster-id=clusterID and allow-transactional-writes=true or false in case of single_cluster_routing ",
+		Required: cbtconfig.ProjectAndInstanceRequired,
+	},
+	{
+		Name:     "deleteappprofile",
+		Desc:     "Deletes app profile for an instance",
+		do:       doDeleteAppProfile,
+		Usage:    "cbt deleteappprofile <instance-id> <profile-id>",
+		Required: cbtconfig.ProjectAndInstanceRequired,
+	},
 }
 
 func doCount(ctx context.Context, args ...string) {
@@ -1307,6 +1348,141 @@ func doDeleteSnapshot(ctx context.Context, args ...string) {
 
 	if err != nil {
 		log.Fatalf("Failed to delete snapshot: %v", err)
+	}
+}
+
+func doCreateAppProfile(ctx context.Context, args ...string) {
+	if len(args) < 5 {
+		log.Fatal("usage: cbt createappprofile <instance-id> <profile-id> <description> <etag> <routing-policy> \n" +
+			"[cluster-id=<cluster-id>] [allow-transactional-writes=<allow-transactional-writes>] \n" +
+			"set multi_cluster_routing_use_any or single_cluster_routing as possible values for routing policy \n" +
+			"provide cluster-id=clusterID and allow-transactional-writes=true or false in case of single_cluster_routing ")
+	}
+
+	routingPolicy := args[4]
+	config := bigtable.ProfileConf{
+		RoutingPolicy: routingPolicy,
+		InstanceID:    args[0],
+		ProfileID:     args[1],
+		Description:   args[2],
+		Etag:          args[3],
+	}
+	if routingPolicy == bigtable.SingleClusterRouting {
+		parsed, err := parseArgs(args[4:], []string{
+			"cluster-id", "allow-transactional-writes",
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		transactionWrites, err := strconv.ParseBool(parsed["allow-transactional-writes"])
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		config.ClusterID = parsed["cluster-id"]
+		config.AllowTransactionalWrites = transactionWrites
+	}
+
+	profile, err := getInstanceAdminClient().CreateAppProfile(ctx, config)
+	if err != nil {
+		log.Fatalf("Failed to create app profile : %v", err)
+	}
+
+	fmt.Printf("Name: %s\n", profile.Name)
+	fmt.Printf("Etag: %v\n", profile.GetEtag())
+	fmt.Printf("Description: %s\n", profile.Description)
+	fmt.Printf("RoutingPolicy: %v\n", profile.GetRoutingPolicy())
+}
+
+func doGetAppProfile(ctx context.Context, args ...string) {
+	if len(args) != 2 {
+		log.Fatalln("usage: cbt getappprofile <instance-id> <profile-id>")
+	}
+
+	instanceId := args[0]
+	profileId := args[1]
+	profile, err := getInstanceAdminClient().GetAppProfile(ctx, instanceId, profileId)
+	if err != nil {
+		log.Fatalf("Failed to get app profile : %v", err)
+	}
+
+	fmt.Printf("Name: %s\n", profile.Name)
+	fmt.Printf("Etag: %s\n", profile.Etag)
+	fmt.Printf("Description: %s\n", profile.Description)
+	fmt.Printf("RoutingPolicy: %v\n", profile.RoutingPolicy)
+}
+
+func doListAppProfiles(ctx context.Context, args ...string) {
+	if len(args) != 1 {
+		log.Fatalln("usage: cbt listappprofile <instance-id>")
+	}
+
+	instance := args[0]
+
+	it := getInstanceAdminClient().ListAppProfiles(ctx, instance)
+
+	tw := tabwriter.NewWriter(os.Stdout, 10, 8, 4, '\t', 0)
+	fmt.Fprintf(tw, "AppProfile\tProfile Description\tProfile Etag\tProfile Routing Policy\n")
+	fmt.Fprintf(tw, "-----------\t--------------------\t------------\t----------------------\n")
+
+	for {
+		profile, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Failed to fetch app profile %v", err)
+		}
+		fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", profile.Name, profile.Description, profile.Etag, profile.RoutingPolicy)
+	}
+	tw.Flush()
+}
+
+func doUpdateAppProfile(ctx context.Context, args ...string) {
+
+	if len(args) < 4 {
+		log.Fatal("usage: cbt updateappprofile  <instance-id> <profile-id> <description> <routing-policy> [cluster-id=<cluster-id>] [allow-transactional-writes=<allow-transactional-writes>]")
+	}
+
+	routingPolicy := args[3]
+	InstanceID := args[0]
+	ProfileID := args[1]
+	config := bigtable.ProfileAttrsToUpdate{
+		RoutingPolicy: routingPolicy,
+		Description:   args[2],
+	}
+	if routingPolicy == bigtable.SingleClusterRouting {
+		parsed, err := parseArgs(args[3:], []string{
+			"cluster-id", "allow-transactional-writes",
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		transactionWrites, err := strconv.ParseBool(parsed["allow-transactional-writes"])
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		config.ClusterID = parsed["cluster-id"]
+		config.AllowTransactionalWrites = transactionWrites
+	}
+
+	err := getInstanceAdminClient().UpdateAppProfile(ctx, InstanceID, ProfileID, config)
+	if err != nil {
+		log.Fatalf("Failed to update app profile : %v", err)
+	}
+}
+
+func doDeleteAppProfile(ctx context.Context, args ...string) {
+	if len(args) != 2 {
+		log.Println("usage: cbt deleteappprofile <instance-id> <profile-id>")
+	}
+
+	err := getInstanceAdminClient().DeleteAppProfile(ctx, args[0], args[1])
+	if err != nil {
+		log.Fatalf("Failed to delete  app profile : %v", err)
 	}
 }
 
