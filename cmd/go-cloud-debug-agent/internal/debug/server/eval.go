@@ -20,6 +20,8 @@
 // Stricter type checking.
 // More expression types.
 
+// +build linux
+
 package server
 
 import (

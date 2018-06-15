@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// +build linux
+
 // Package server provides RPC access to a local program being debugged.
 // It is the remote end of the client implementation of the Program interface.
 package server
