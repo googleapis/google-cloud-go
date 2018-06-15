@@ -433,6 +433,10 @@ func (tr *GKETestRunner) createCluster(ctx context.Context, client *http.Client,
 }
 
 func (tr *GKETestRunner) deployContainer(ctx context.Context, kubernetesClient *kubernetes.Client, podName, ImageName string) error {
+	// TODO: Pod restart policy defaults to "Always". Previous logs will disappear
+	// after restarting. Always restart causes the test not be able to see the
+	// finish signal. Should probably set the restart policy to "OnFailure" when
+	// we get the GKE workflow working and testable.
 	pod := &k8sapi.Pod{
 		ObjectMeta: k8sapi.ObjectMeta{
 			Name: podName,
