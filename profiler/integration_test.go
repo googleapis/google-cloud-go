@@ -21,6 +21,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 	"text/template"
 	"time"
@@ -33,7 +34,7 @@ import (
 
 var (
 	commit = flag.String("commit", "", "git commit to test")
-	runID  = time.Now().Unix()
+	runID  = strings.Replace(time.Now().Format("2006-01-02-15-04-05.000000-0700"), ".", "-", -1)
 )
 
 const (
@@ -176,10 +177,10 @@ func TestAgentIntegration(t *testing.T) {
 			InstanceConfig: proftest.InstanceConfig{
 				ProjectID:   projectID,
 				Zone:        zone,
-				Name:        fmt.Sprintf("profiler-test-go110-%d", runID),
+				Name:        fmt.Sprintf("profiler-test-go110-%s", runID),
 				MachineType: "n1-standard-1",
 			},
-			name:             fmt.Sprintf("profiler-test-go110-%d-gce", runID),
+			name:             fmt.Sprintf("profiler-test-go110-%s-gce", runID),
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION"},
 			goVersion:        "1.10",
 			mutexProfiling:   true,
@@ -188,10 +189,10 @@ func TestAgentIntegration(t *testing.T) {
 			InstanceConfig: proftest.InstanceConfig{
 				ProjectID:   projectID,
 				Zone:        zone,
-				Name:        fmt.Sprintf("profiler-test-go19-%d", runID),
+				Name:        fmt.Sprintf("profiler-test-go19-%s", runID),
 				MachineType: "n1-standard-1",
 			},
-			name:             fmt.Sprintf("profiler-test-go19-%d-gce", runID),
+			name:             fmt.Sprintf("profiler-test-go19-%s-gce", runID),
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION"},
 			goVersion:        "1.9",
 			mutexProfiling:   true,
@@ -200,10 +201,10 @@ func TestAgentIntegration(t *testing.T) {
 			InstanceConfig: proftest.InstanceConfig{
 				ProjectID:   projectID,
 				Zone:        zone,
-				Name:        fmt.Sprintf("profiler-test-go18-%d", runID),
+				Name:        fmt.Sprintf("profiler-test-go18-%s", runID),
 				MachineType: "n1-standard-1",
 			},
-			name:             fmt.Sprintf("profiler-test-go18-%d-gce", runID),
+			name:             fmt.Sprintf("profiler-test-go18-%s-gce", runID),
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION"},
 			goVersion:        "1.8",
 			mutexProfiling:   true,
@@ -212,10 +213,10 @@ func TestAgentIntegration(t *testing.T) {
 			InstanceConfig: proftest.InstanceConfig{
 				ProjectID:   projectID,
 				Zone:        zone,
-				Name:        fmt.Sprintf("profiler-test-go17-%d", runID),
+				Name:        fmt.Sprintf("profiler-test-go17-%s", runID),
 				MachineType: "n1-standard-1",
 			},
-			name:             fmt.Sprintf("profiler-test-go17-%d-gce", runID),
+			name:             fmt.Sprintf("profiler-test-go17-%s-gce", runID),
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS"},
 			goVersion:        "1.7",
 		},
@@ -223,10 +224,10 @@ func TestAgentIntegration(t *testing.T) {
 			InstanceConfig: proftest.InstanceConfig{
 				ProjectID:   projectID,
 				Zone:        zone,
-				Name:        fmt.Sprintf("profiler-test-go16-%d", runID),
+				Name:        fmt.Sprintf("profiler-test-go16-%s", runID),
 				MachineType: "n1-standard-1",
 			},
-			name:             fmt.Sprintf("profiler-test-go16-%d-gce", runID),
+			name:             fmt.Sprintf("profiler-test-go16-%s-gce", runID),
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS"},
 			goVersion:        "1.6",
 		},
