@@ -24,13 +24,19 @@ import (
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
+// Between message receipt and ack (that is, the time spent processing a message) we want to extend the message
+// deadline by way of modack. However, we don't want to extend the deadline right as soon as the deadline expires;
+// instead, we'd want to extend the deadline a little bit of time ahead. gracePeriod is that amount of time ahead
+// of the actual deadline.
+const gracePeriod = 5 * time.Second
+
 // newMessageIterator starts a new streamingMessageIterator.  Stop must be called on the messageIterator
 // when it is no longer needed.
 // subName is the full name of the subscription to pull messages from.
 // ctx is the context to use for acking messages and extending message deadlines.
 func newMessageIterator(ctx context.Context, subc *vkit.SubscriberClient, subName string, po *pullOptions) *streamingMessageIterator {
 	ps := newPullStream(ctx, subc.StreamingPull, subName, int32(po.ackDeadline.Seconds()))
-	return newStreamingMessageIterator(ctx, ps, po, subc, subName)
+	return newStreamingMessageIterator(ctx, ps, po, subc, subName, po.minAckDeadline)
 }
 
 type streamingMessageIterator struct {
@@ -39,30 +45,30 @@ type streamingMessageIterator struct {
 	ps         *pullStream
 	subc       *vkit.SubscriberClient
 	subName    string
-	kaTicker   *time.Ticker  // keep-alive (deadline extensions)
-	ackTicker  *time.Ticker  // message acks
-	nackTicker *time.Ticker  // message nacks (more frequent than acks)
-	pingTicker *time.Ticker  //  sends to the stream to keep it open
-	failed     chan struct{} // closed on stream error
-	stopped    chan struct{} // closed when Stop is called
-	drained    chan struct{} // closed when stopped && no more pending messages
+	kaTick     <-chan time.Time // keep-alive (deadline extensions)
+	ackTicker  *time.Ticker     // message acks
+	nackTicker *time.Ticker     // message nacks (more frequent than acks)
+	pingTicker *time.Ticker     //  sends to the stream to keep it open
+	failed     chan struct{}    // closed on stream error
+	stopped    chan struct{}    // closed when Stop is called
+	drained    chan struct{}    // closed when stopped && no more pending messages
 	wg         sync.WaitGroup
 
 	mu                 sync.Mutex
-	ackTimeDist        *distribution.D
-	keepAliveDeadlines map[string]time.Time
+	ackTimeDist        *distribution.D      // dist uses seconds
+	keepAliveDeadlines map[string]time.Time // id to expiration time
 	pendingAcks        map[string]bool
 	pendingNacks       map[string]bool
 	pendingModAcks     map[string]bool // ack IDs whose ack deadline is to be modified
 	err                error           // error from stream failure
+
+	minAckDeadline time.Duration
 }
 
-func newStreamingMessageIterator(ctx context.Context, ps *pullStream, po *pullOptions, subc *vkit.SubscriberClient, subName string) *streamingMessageIterator {
-	// TODO: make kaTicker frequency more configurable. (ackDeadline - 5s) is a
-	// reasonable default for now, because the minimum ack period is 10s. This
-	// gives us 5s grace.
-	keepAlivePeriod := po.ackDeadline - 5*time.Second
-	kaTicker := time.NewTicker(keepAlivePeriod)
+func newStreamingMessageIterator(ctx context.Context, ps *pullStream, po *pullOptions, subc *vkit.SubscriberClient, subName string, minAckDeadline time.Duration) *streamingMessageIterator {
+	// The period will update each tick based on the distribution of acks. We'll start by arbitrarily sending
+	// the first keepAlive halfway towards the minimum ack deadline.
+	keepAlivePeriod := minAckDeadline / 2
 
 	// Ack promptly so users don't lose work if client crashes.
 	ackTicker := time.NewTicker(100 * time.Millisecond)
@@ -74,7 +80,7 @@ func newStreamingMessageIterator(ctx context.Context, ps *pullStream, po *pullOp
 		po:                 po,
 		subc:               subc,
 		subName:            subName,
-		kaTicker:           kaTicker,
+		kaTick:             time.After(keepAlivePeriod),
 		ackTicker:          ackTicker,
 		nackTicker:         nackTicker,
 		pingTicker:         pingTicker,
@@ -86,6 +92,7 @@ func newStreamingMessageIterator(ctx context.Context, ps *pullStream, po *pullOp
 		pendingAcks:        map[string]bool{},
 		pendingNacks:       map[string]bool{},
 		pendingModAcks:     map[string]bool{},
+		minAckDeadline:     minAckDeadline,
 	}
 	it.wg.Add(1)
 	go it.sender()
@@ -191,15 +198,16 @@ func (it *streamingMessageIterator) receive() ([]*Message, error) {
 		addRecv(m.ID, m.ackID, now)
 		m.doneFunc = it.done
 		it.keepAliveDeadlines[m.ackID] = maxExt
-		// The receipt mod-ack uses the subscription's configured ack deadline. Don't
-		// change the mod-ack if the message is going to be nacked. This is possible
-		// if there are retries.
+
+		// Don't change the mod-ack if the message is going to be nacked. This is
+		// possible if there are retries.
 		if !it.pendingNacks[m.ackID] {
 			ackIDs[m.ackID] = true
 		}
 	}
+	deadline := it.ackDeadline()
 	it.mu.Unlock()
-	if !it.sendModAck(ackIDs, trunc32(int64(it.po.ackDeadline.Seconds()))) {
+	if !it.sendModAck(ackIDs, deadline) {
 		return nil, it.err
 	}
 	return msgs, nil
@@ -208,7 +216,6 @@ func (it *streamingMessageIterator) receive() ([]*Message, error) {
 // sender runs in a goroutine and handles all sends to the stream.
 func (it *streamingMessageIterator) sender() {
 	defer it.wg.Done()
-	defer it.kaTicker.Stop()
 	defer it.ackTicker.Stop()
 	defer it.nackTicker.Stop()
 	defer it.pingTicker.Stop()
@@ -220,6 +227,9 @@ func (it *streamingMessageIterator) sender() {
 		sendNacks := false
 		sendModAcks := false
 		sendPing := false
+
+		dl := it.ackDeadline()
+
 		select {
 		case <-it.ctx.Done():
 			// Context canceled or timed out: stop immediately, without
@@ -239,10 +249,18 @@ func (it *streamingMessageIterator) sender() {
 			// No point in sending modacks.
 			done = true
 
-		case <-it.kaTicker.C:
+		case <-it.kaTick:
 			it.mu.Lock()
 			it.handleKeepAlives()
 			sendModAcks = (len(it.pendingModAcks) > 0)
+
+			nextTick := dl - gracePeriod
+			if nextTick <= 0 {
+				// If the deadline is <= gracePeriod, let's tick again halfway to
+				// the deadline.
+				nextTick = dl / 2
+			}
+			it.kaTick = time.After(nextTick)
 
 		case <-it.nackTicker.C:
 			it.mu.Lock()
@@ -285,7 +303,7 @@ func (it *streamingMessageIterator) sender() {
 			}
 		}
 		if sendModAcks {
-			if !it.sendModAck(modAcks, trunc32(int64(it.po.ackDeadline.Seconds()))) {
+			if !it.sendModAck(modAcks, dl) {
 				return
 			}
 		}
@@ -326,12 +344,16 @@ func (it *streamingMessageIterator) sendAck(m map[string]bool) bool {
 	})
 }
 
-func (it *streamingMessageIterator) sendModAck(m map[string]bool, deadlineSecs int32) bool {
+// The receipt mod-ack amount is derived from a percentile distribution based
+// on the time it takes to process messages. The percentile chosen is the 99%th
+// percentile in order to capture the highest amount of time necessary without
+// considering 1% outliers.
+func (it *streamingMessageIterator) sendModAck(m map[string]bool, deadline time.Duration) bool {
 	return it.sendAckIDRPC(m, func(ids []string) error {
-		addModAcks(ids, deadlineSecs)
+		addModAcks(ids, int32(deadline/time.Second))
 		return it.subc.ModifyAckDeadline(it.ctx, &pb.ModifyAckDeadlineRequest{
 			Subscription:       it.subName,
-			AckDeadlineSeconds: deadlineSecs,
+			AckDeadlineSeconds: int32(deadline / time.Second),
 			AckIds:             ids,
 		})
 	})
@@ -377,4 +399,22 @@ func splitRequestIDs(ids []string, maxSize int) (prefix, remainder []string) {
 		i--
 	}
 	return ids[:i], ids[i:]
+}
+
+// The deadline to ack is derived from a percentile distribution based
+// on the time it takes to process messages. The percentile chosen is the 99%th
+// percentile - that is, processing times up to the 99%th longest processing
+// times should be safe. The highest 1% may expire. This number was chosen
+// as a way to cover most users' usecases without losing the value of
+// expiration.
+func (it *streamingMessageIterator) ackDeadline() time.Duration {
+	pt := time.Duration(it.ackTimeDist.Percentile(.99)) * time.Second
+
+	if pt > maxAckDeadline {
+		return maxAckDeadline
+	}
+	if pt < it.minAckDeadline {
+		return it.minAckDeadline
+	}
+	return pt
 }

@@ -235,6 +235,9 @@ type ReceiveSettings struct {
 	NumGoroutines int
 }
 
+// This is a var so that tests can change it.
+var minAckDeadline = 10 * time.Second
+
 // DefaultReceiveSettings holds the default values for ReceiveSettings.
 var DefaultReceiveSettings = ReceiveSettings{
 	MaxExtension:           10 * time.Minute,
@@ -450,9 +453,10 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	}
 	// TODO(jba): add tests that verify that ReceiveSettings are correctly processed.
 	po := &pullOptions{
-		maxExtension: maxExt,
-		maxPrefetch:  trunc32(int64(maxCount)),
-		ackDeadline:  config.AckDeadline,
+		minAckDeadline: minAckDeadline,
+		maxExtension:   maxExt,
+		maxPrefetch:    trunc32(int64(maxCount)),
+		ackDeadline:    config.AckDeadline,
 	}
 	fc := newFlowController(maxCount, maxBytes)
 
@@ -529,8 +533,9 @@ func (s *Subscription) receive(ctx context.Context, po *pullOptions, fc *flowCon
 
 // TODO(jba): remove when we delete messageIterator.
 type pullOptions struct {
-	maxExtension time.Duration
-	maxPrefetch  int32
+	minAckDeadline time.Duration
+	maxExtension   time.Duration
+	maxPrefetch    int32
 	// ackDeadline is the default ack deadline for the subscription. Not
 	// configurable.
 	ackDeadline time.Duration
