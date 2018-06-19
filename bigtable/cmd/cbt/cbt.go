@@ -1561,7 +1561,6 @@ func stringInSlice(s string, list []string) bool {
 }
 
 func parseColumnsFilter(columns string) (bigtable.Filter, error) {
-
 	splitColumns := strings.FieldsFunc(columns, func(c rune) bool { return c == ',' })
 	if len(splitColumns) == 1 {
 		filter, err := columnFilter(splitColumns[0])
