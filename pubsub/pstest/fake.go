@@ -50,6 +50,7 @@ var now atomic.Value
 
 func init() {
 	now.Store(time.Now)
+	ResetMinAckDeadline()
 }
 
 func timeNow() time.Time {
@@ -143,6 +144,14 @@ type Message struct {
 	// protected by server mutex
 	deliveries int
 	acks       int
+	Modacks    []Modack // modacks received by server for this message
+
+}
+
+type Modack struct {
+	AckID       string
+	AckDeadline int32
+	ReceivedAt  time.Time
 }
 
 // Messages returns information about all messages ever published.
@@ -315,7 +324,25 @@ func (s *gServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 }
 
 // Can be set for testing.
-var minAckDeadlineSecs int32 = 10
+var minAckDeadlineSecs int32
+
+// SetMinAckDeadlineSecs changes the minack deadline to n. Must be
+// greater than or equal to 1 second. Remember to reset this value
+// to the default after your test changes it. Example usage:
+// 		pstest.SetMinAckDeadlineSecs(1)
+// 		defer pstest.ResetMinAckDeadlineSecs()
+func SetMinAckDeadline(n time.Duration) {
+	if n < time.Second {
+		panic("SetMinAckDeadline expects a value greater than 1 second")
+	}
+
+	minAckDeadlineSecs = int32(n / time.Second)
+}
+
+// ResetMinAckDeadlineSecs resets the minack deadline to the default.
+func ResetMinAckDeadline() {
+	minAckDeadlineSecs = 10
+}
 
 func checkAckDeadline(ads int32) error {
 	if ads < minAckDeadlineSecs || ads > 600 {
@@ -560,6 +587,12 @@ func (s *gServer) Acknowledge(_ context.Context, req *pb.AcknowledgeRequest) (*e
 func (s *gServer) ModifyAckDeadline(_ context.Context, req *pb.ModifyAckDeadlineRequest) (*emptypb.Empty, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
+	now := time.Now()
+	for _, id := range req.AckIds {
+		s.msgsByID[id].Modacks = append(s.msgsByID[id].Modacks, Modack{AckID: id, AckDeadline: req.AckDeadlineSeconds, ReceivedAt: now})
+	}
+
 	if req.Subscription == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "missing subscription")
 	}

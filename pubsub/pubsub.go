@@ -36,11 +36,9 @@ const (
 	// ScopeCloudPlatform grants permissions to view and manage your data
 	// across Google Cloud Platform services.
 	ScopeCloudPlatform = "https://www.googleapis.com/auth/cloud-platform"
-)
 
-const (
-	prodAddr       = "https://pubsub.googleapis.com/"
-	minAckDeadline = 10 * time.Second
+	prodAddr = "https://pubsub.googleapis.com/"
+
 	maxAckDeadline = 10 * time.Minute
 )
 
