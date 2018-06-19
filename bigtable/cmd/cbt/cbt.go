@@ -1385,6 +1385,7 @@ func stringInSlice(s string, list []string) bool {
 }
 
 func parseColumnsFilter(columns string) (bigtable.Filter, error) {
+
 	splitColumns := strings.FieldsFunc(columns, func(c rune) bool { return c == ',' })
 	if len(splitColumns) == 1 {
 		filter, err := columnFilter(splitColumns[0])
@@ -1392,17 +1393,17 @@ func parseColumnsFilter(columns string) (bigtable.Filter, error) {
 			return nil, err
 		}
 		return filter, nil
-	} else {
-		var columnFilters []bigtable.Filter
-		for _, column := range splitColumns {
-			filter, err := columnFilter(column)
-			if err != nil {
-				return nil, err
-			}
-			columnFilters = append(columnFilters, filter)
-		}
-		return bigtable.InterleaveFilters(columnFilters...), nil
 	}
+
+	var columnFilters []bigtable.Filter
+	for _, column := range splitColumns {
+		filter, err := columnFilter(column)
+		if err != nil {
+			return nil, err
+		}
+		columnFilters = append(columnFilters, filter)
+	}
+	return bigtable.InterleaveFilters(columnFilters...), nil
 }
 
 func columnFilter(column string) (bigtable.Filter, error) {
