@@ -396,7 +396,7 @@ var commands = []struct {
 		Name: "setgcpolicy",
 		Desc: "Set the GC policy for a column family",
 		do:   doSetGCPolicy,
-		Usage: "cbt setgcpolicy <table> <family> ( maxage=<d> | maxversions=<n> )\n" +
+		Usage: "cbt setgcpolicy <table> <family> ( maxage=<d> | maxversions=<n> | never)\n" +
 			"\n" +
 			`  maxage=<d>		Maximum timestamp age to preserve (e.g. "1h", "4d")` + "\n" +
 			"  maxversions=<n>	Maximum number of versions to preserve",
@@ -1155,7 +1155,7 @@ func doSet(ctx context.Context, args ...string) {
 
 func doSetGCPolicy(ctx context.Context, args ...string) {
 	if len(args) < 3 {
-		log.Fatalf("usage: cbt setgcpolicy <table> <family> ( maxage=<d> | maxversions=<n> | maxage=<d> (and|or) maxversions=<n> )")
+		log.Fatalf("usage: cbt setgcpolicy <table> <family> ( maxage=<d> | maxversions=<n> | maxage=<d> (and|or) maxversions=<n> | never )")
 	}
 	table := args[0]
 	fam := args[1]
@@ -1183,6 +1183,7 @@ func doWaitForReplicaiton(ctx context.Context, args ...string) {
 
 func parseGCPolicy(policyStr string) (bigtable.GCPolicy, error) {
 	words := strings.Fields(policyStr)
+
 	switch len(words) {
 	case 1:
 		return parseSinglePolicy(words[0])
@@ -1211,10 +1212,16 @@ func parseGCPolicy(policyStr string) (bigtable.GCPolicy, error) {
 
 func parseSinglePolicy(s string) (bigtable.GCPolicy, error) {
 	words := strings.Split(s, "=")
-	if len(words) != 2 {
-		return nil, fmt.Errorf("Expected 'name=value', got %q", words)
+	if len(words) != 2 && words[0] != "never" {
+		return nil, fmt.Errorf("Expected 'name=value ', got %q", words)
 	}
+
 	switch words[0] {
+	case "never":
+		if len(words) != 1 {
+			return nil, fmt.Errorf("Expected 'never', got %q", s)
+		}
+		return bigtable.NoGcPolicy(), nil
 	case "maxage":
 		d, err := parseDuration(words[1])
 		if err != nil {
@@ -1228,7 +1235,7 @@ func parseSinglePolicy(s string) (bigtable.GCPolicy, error) {
 		}
 		return bigtable.MaxVersionsPolicy(int(n)), nil
 	default:
-		return nil, fmt.Errorf("Expected 'maxage' or 'maxversions', got %q", words[1])
+		return nil, fmt.Errorf("Expected 'maxage' or 'maxversions', got %q", words[len(words)-1])
 	}
 	return nil, nil
 }

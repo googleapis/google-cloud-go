@@ -91,6 +91,8 @@ func TestParseGCPolicy(t *testing.T) {
 		{in: "foomaxage=1h and maxversions=1", fail: true},
 		{in: "maxage=1h and barmaxversions=1", fail: true},
 		{in: "foomaxage=1h and barmaxversions=1", fail: true},
+		{in: "never", out: bigtable.NoGcPolicy()},
+		{in: "never=never", fail: true},
 	}
 	for _, tc := range tests {
 		got, err := parseGCPolicy(tc.in)
