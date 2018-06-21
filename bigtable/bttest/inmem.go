@@ -179,8 +179,6 @@ func (s *server) DeleteTable(ctx context.Context, req *btapb.DeleteTableRequest)
 }
 
 func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColumnFamiliesRequest) (*btapb.Table, error) {
-	tblName := req.Name[strings.LastIndex(req.Name, "/")+1:]
-
 	s.mu.Lock()
 	tbl, ok := s.tables[req.Name]
 	s.mu.Unlock()
@@ -224,7 +222,7 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 
 	s.needGC()
 	return &btapb.Table{
-		Name:           tblName,
+		Name:           req.Name,
 		ColumnFamilies: toColumnFamilies(tbl.families),
 		Granularity:    btapb.Table_TimestampGranularity(btapb.Table_MILLIS),
 	}, nil
