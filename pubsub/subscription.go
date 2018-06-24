@@ -124,7 +124,7 @@ func (pc *PushConfig) toProto() *pb.PushConfig {
 	}
 }
 
-// Subscription config contains the configuration of a subscription.
+// SubscriptionConfig describes the configuration of a subscription.
 type SubscriptionConfig struct {
 	Topic      *Topic
 	PushConfig PushConfig
@@ -144,6 +144,9 @@ type SubscriptionConfig struct {
 	// acknowledged messages, otherwise only unacknowledged messages are retained.
 	// Defaults to 7 days. Cannot be longer than 7 days or shorter than 10 minutes.
 	RetentionDuration time.Duration
+
+	// The set of labels for the subscription.
+	Labels map[string]string
 }
 
 func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
@@ -165,6 +168,7 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		AckDeadlineSeconds:       trunc32(int64(cfg.AckDeadline.Seconds())),
 		RetainAckedMessages:      cfg.RetainAckedMessages,
 		MessageRetentionDuration: retentionDuration,
+		Labels: cfg.Labels,
 	}
 }
 
@@ -186,6 +190,7 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 		},
 		RetainAckedMessages: pbSub.RetainAckedMessages,
 		RetentionDuration:   rd,
+		Labels:              pbSub.Labels,
 	}, nil
 }
 
@@ -281,6 +286,12 @@ type SubscriptionConfigToUpdate struct {
 
 	// If non-zero, RetentionDuration is changed.
 	RetentionDuration time.Duration
+
+	// If non-nil, the current set of labels is completely
+	// replaced by the new set.
+	// This field has beta status. It is not subject to the stability guarantee
+	// and may change.
+	Labels map[string]string
 }
 
 // Update changes an existing subscription according to the fields set in cfg.
@@ -317,6 +328,10 @@ func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.Update
 	if cfg.RetentionDuration != 0 {
 		psub.MessageRetentionDuration = ptypes.DurationProto(cfg.RetentionDuration)
 		paths = append(paths, "message_retention_duration")
+	}
+	if cfg.Labels != nil {
+		psub.Labels = cfg.Labels
+		paths = append(paths, "labels")
 	}
 	return &pb.UpdateSubscriptionRequest{
 		Subscription: psub,

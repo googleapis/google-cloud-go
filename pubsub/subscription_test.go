@@ -143,6 +143,7 @@ func TestUpdateSubscription(t *testing.T) {
 	got, err := sub.Update(ctx, SubscriptionConfigToUpdate{
 		AckDeadline:         20 * time.Second,
 		RetainAckedMessages: true,
+		Labels:              map[string]string{"label": "value"},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -152,16 +153,21 @@ func TestUpdateSubscription(t *testing.T) {
 		AckDeadline:         20 * time.Second,
 		RetainAckedMessages: true,
 		RetentionDuration:   defaultRetentionDuration,
+		Labels:              map[string]string{"label": "value"},
 	}
 	if !testutil.Equal(got, want) {
 		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
 	}
 
-	got, err = sub.Update(ctx, SubscriptionConfigToUpdate{RetentionDuration: 2 * time.Hour})
+	got, err = sub.Update(ctx, SubscriptionConfigToUpdate{
+		RetentionDuration: 2 * time.Hour,
+		Labels:            map[string]string{},
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
 	want.RetentionDuration = 2 * time.Hour
+	want.Labels = nil
 	if !testutil.Equal(got, want) {
 		t.Fatalf("\ngot %+v\nwant %+v", got, want)
 	}

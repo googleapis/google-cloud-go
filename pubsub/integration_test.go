@@ -322,6 +322,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 		AckDeadline:         2 * time.Minute,
 		RetainAckedMessages: true,
 		RetentionDuration:   2 * time.Hour,
+		Labels:              map[string]string{"label": "value"},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -332,22 +333,27 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 		AckDeadline:         2 * time.Minute,
 		RetainAckedMessages: true,
 		RetentionDuration:   2 * time.Hour,
+		Labels:              map[string]string{"label": "value"},
 	}
+
 	if !testutil.Equal(got, want) {
 		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
 	}
+
 	// Remove the PushConfig, turning the subscription back into pull mode.
-	// Change AckDeadline, but nothing else.
+	// Change AckDeadline, remove labels.
 	pc = PushConfig{}
 	got, err = sub.Update(ctx, SubscriptionConfigToUpdate{
 		PushConfig:  &pc,
 		AckDeadline: 30 * time.Second,
+		Labels:      map[string]string{},
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
 	want.PushConfig = pc
 	want.AckDeadline = 30 * time.Second
+	want.Labels = nil
 	// service issue: PushConfig attributes are not removed.
 	// TODO(jba): remove when issue resolved.
 	want.PushConfig.Attributes = map[string]string{"x-goog-version": "v1"}
@@ -358,6 +364,48 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 	_, err = sub.Update(ctx, SubscriptionConfigToUpdate{})
 	if err == nil {
 		t.Fatal("got nil, wanted error")
+	}
+}
+
+func TestIntegration_UpdateTopic(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client := integrationTestClient(t, ctx)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer topic.Stop()
+	defer topic.Delete(ctx)
+
+	got, err := topic.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := TopicConfig{}
+	if !testutil.Equal(got, want) {
+		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
+	}
+
+	labels := map[string]string{"label": "value"}
+	got, err = topic.Update(ctx, TopicConfigToUpdate{Labels: labels})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want = TopicConfig{Labels: labels}
+	if !testutil.Equal(got, want) {
+		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
+	}
+	// Remove all labels.
+	got, err = topic.Update(ctx, TopicConfigToUpdate{Labels: map[string]string{}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want.Labels = nil
+	if !testutil.Equal(got, want) {
+		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
 	}
 }
 

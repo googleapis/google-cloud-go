@@ -28,6 +28,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/api/support/bundler"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
+	fmpb "google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )
@@ -134,6 +135,89 @@ func newTopic(c *Client, name string) *Topic {
 		c:               c,
 		name:            name,
 		PublishSettings: DefaultPublishSettings,
+	}
+}
+
+// TopicConfig describes the configuration of a topic.
+type TopicConfig struct {
+	// The set of labels for the topic.
+	Labels map[string]string
+	// The topic's message storage policy.
+	MessageStoragePolicy MessageStoragePolicy
+}
+
+// TopicConfigToUpdate describes how to update a topic.
+type TopicConfigToUpdate struct {
+	// If non-nil, the current set of labels is completely
+	// replaced by the new set.
+	// This field has beta status. It is not subject to the stability guarantee
+	// and may change.
+	Labels map[string]string
+}
+
+func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
+	return TopicConfig{
+		Labels:               pbt.Labels,
+		MessageStoragePolicy: protoToMessageStoragePolicy(pbt.MessageStoragePolicy),
+	}
+}
+
+// MessageStoragePolicy constrains how messages published to the topic may be stored. It
+// is determined when the topic is created based on the policy configured at
+// the project level.
+type MessageStoragePolicy struct {
+	// The list of GCP regions where messages that are published to the topic may
+	// be persisted in storage. Messages published by publishers running in
+	// non-allowed GCP regions (or running outside of GCP altogether) will be
+	// routed for storage in one of the allowed regions. An empty list indicates a
+	// misconfiguration at the project or organization level, which will result in
+	// all Publish operations failing.
+	AllowedPersistenceRegions []string
+}
+
+func protoToMessageStoragePolicy(msp *pb.MessageStoragePolicy) MessageStoragePolicy {
+	if msp == nil {
+		return MessageStoragePolicy{}
+	}
+	return MessageStoragePolicy{AllowedPersistenceRegions: msp.AllowedPersistenceRegions}
+}
+
+// Config returns the TopicConfig for the topic.
+func (t *Topic) Config(ctx context.Context) (TopicConfig, error) {
+	pbt, err := t.c.pubc.GetTopic(ctx, &pb.GetTopicRequest{Topic: t.name})
+	if err != nil {
+		return TopicConfig{}, err
+	}
+	return protoToTopicConfig(pbt), nil
+}
+
+// Update changes an existing topic according to the fields set in cfg. It returns
+// the new TopicConfig.
+//
+// Any call to Update (even with an empty TopicConfigToUpdate) will update the
+// MessageStoragePolicy for the topic from the organization's settings.
+func (t *Topic) Update(ctx context.Context, cfg TopicConfigToUpdate) (TopicConfig, error) {
+	req := t.updateRequest(cfg)
+	if len(req.UpdateMask.Paths) == 0 {
+		return TopicConfig{}, errors.New("pubsub: UpdateTopic call with nothing to update")
+	}
+	rpt, err := t.c.pubc.UpdateTopic(ctx, req)
+	if err != nil {
+		return TopicConfig{}, err
+	}
+	return protoToTopicConfig(rpt), nil
+}
+
+func (t *Topic) updateRequest(cfg TopicConfigToUpdate) *pb.UpdateTopicRequest {
+	pt := &pb.Topic{Name: t.name}
+	paths := []string{"message_storage_policy"} // always fetch
+	if cfg.Labels != nil {
+		pt.Labels = cfg.Labels
+		paths = append(paths, "labels")
+	}
+	return &pb.UpdateTopicRequest{
+		Topic:      pt,
+		UpdateMask: &fmpb.FieldMask{Paths: paths},
 	}
 }
 
