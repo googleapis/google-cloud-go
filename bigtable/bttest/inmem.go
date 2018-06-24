@@ -779,9 +779,13 @@ func applyMutations(tbl *table, r *row, muts []*btpb.Mutation, fs map[string]*co
 					if !tbl.validTimestamp(tsr.StartTimestampMicros) {
 						return fmt.Errorf("invalid timestamp %d", tsr.StartTimestampMicros)
 					}
-					if !tbl.validTimestamp(tsr.EndTimestampMicros) {
+					if !tbl.validTimestamp(tsr.EndTimestampMicros) && tsr.EndTimestampMicros != 0 {
 						return fmt.Errorf("invalid timestamp %d", tsr.EndTimestampMicros)
 					}
+					if tsr.StartTimestampMicros >= tsr.EndTimestampMicros && tsr.EndTimestampMicros != 0 {
+						return fmt.Errorf("inverted or invalid timestamp range [%d, %d]", tsr.StartTimestampMicros, tsr.EndTimestampMicros)
+					}
+
 					// Find half-open interval to remove.
 					// Cells are in descending timestamp order,
 					// so the predicates to sort.Search are inverted.

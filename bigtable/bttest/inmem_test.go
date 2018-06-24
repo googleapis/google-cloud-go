@@ -803,3 +803,99 @@ func TestFilters(t *testing.T) {
 		}
 	}
 }
+
+func Test_Mutation_DeleteFromColumn(t *testing.T) {
+	ctx := context.Background()
+
+	s := &server{
+		tables: make(map[string]*table),
+	}
+
+	tblInfo, err := populateTable(ctx, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		in   *btpb.MutateRowRequest
+		fail bool
+	}{
+		{in: &btpb.MutateRowRequest{
+			TableName: tblInfo.Name,
+			RowKey:    []byte("row"),
+			Mutations: []*btpb.Mutation{{
+				Mutation: &btpb.Mutation_DeleteFromColumn_{DeleteFromColumn: &btpb.Mutation_DeleteFromColumn{
+					FamilyName:      "cf1",
+					ColumnQualifier: []byte("col1"),
+					TimeRange: &btpb.TimestampRange{
+						StartTimestampMicros: 2000,
+						EndTimestampMicros:   1000,
+					},
+				}},
+			}},
+		},
+			fail: true,
+		},
+		{in: &btpb.MutateRowRequest{
+			TableName: tblInfo.Name,
+			RowKey:    []byte("row"),
+			Mutations: []*btpb.Mutation{{
+				Mutation: &btpb.Mutation_DeleteFromColumn_{DeleteFromColumn: &btpb.Mutation_DeleteFromColumn{
+					FamilyName:      "cf2",
+					ColumnQualifier: []byte("col2"),
+					TimeRange: &btpb.TimestampRange{
+						StartTimestampMicros: 1000,
+						EndTimestampMicros:   2000,
+					},
+				}},
+			}},
+		},
+			fail: false,
+		},
+		{in: &btpb.MutateRowRequest{
+			TableName: tblInfo.Name,
+			RowKey:    []byte("row"),
+			Mutations: []*btpb.Mutation{{
+				Mutation: &btpb.Mutation_DeleteFromColumn_{DeleteFromColumn: &btpb.Mutation_DeleteFromColumn{
+					FamilyName:      "cf3",
+					ColumnQualifier: []byte("col3"),
+					TimeRange: &btpb.TimestampRange{
+						StartTimestampMicros: 1000,
+						EndTimestampMicros:   0,
+					},
+				}},
+			}},
+		},
+			fail: false,
+		},
+		{in: &btpb.MutateRowRequest{
+			TableName: tblInfo.Name,
+			RowKey:    []byte("row"),
+			Mutations: []*btpb.Mutation{{
+				Mutation: &btpb.Mutation_DeleteFromColumn_{DeleteFromColumn: &btpb.Mutation_DeleteFromColumn{
+					FamilyName:      "cf4",
+					ColumnQualifier: []byte("col4"),
+					TimeRange: &btpb.TimestampRange{
+						StartTimestampMicros: 0,
+						EndTimestampMicros:   1000,
+					},
+				}},
+			}},
+		},
+			fail: true,
+		},
+	}
+
+	for _, tst := range tests {
+		_, err = s.MutateRow(ctx, tst.in)
+
+		if err != nil && !tst.fail {
+			t.Errorf("expected passed got failure for : %v \n with err: %v", tst.in, err)
+		}
+
+		if err == nil && tst.fail {
+			t.Errorf("expected failure got passed for : %v", tst)
+		}
+	}
+
+}
