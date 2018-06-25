@@ -109,7 +109,7 @@ func NewClient(ctx context.Context, projectID string, cfg Config, opts ...option
 		for _, req := range reqs {
 			_, err = client.apiClient.ReportErrorEvent(ctx, req)
 			if err != nil {
-				client.onError(fmt.Errorf("failed to upload: %v", err))
+				client.onError(err)
 			}
 		}
 	})
