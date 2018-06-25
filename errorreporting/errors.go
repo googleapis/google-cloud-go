@@ -61,6 +61,7 @@ type Config struct {
 type Entry struct {
 	Error error
 	Req   *http.Request // if error is associated with a request.
+	User  string        // an identifier for the user affected by the error
 	Stack []byte        // if user does not provide a stack trace, runtime.Stack will be called
 }
 
@@ -181,6 +182,12 @@ func (c *Client) newRequest(e Entry) *pb.ReportErrorEventRequest {
 				RemoteIp:  r.RemoteAddr,
 			},
 		}
+	}
+	if e.User != "" {
+		if errorContext == nil {
+			errorContext = &pb.ErrorContext{}
+		}
+		errorContext.User = e.User
 	}
 	return &pb.ReportErrorEventRequest{
 		ProjectName: c.projectName,
