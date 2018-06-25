@@ -25,24 +25,22 @@ import (
 
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
-	erpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
+	pb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
 )
 
 type fakeReportErrorsClient struct {
-	req    *erpb.ReportErrorEventRequest
+	req    *pb.ReportErrorEventRequest
 	fail   bool
 	doneCh chan struct{}
 }
 
-func (c *fakeReportErrorsClient) ReportErrorEvent(ctx context.Context, req *erpb.ReportErrorEventRequest, _ ...gax.CallOption) (*erpb.ReportErrorEventResponse, error) {
-	defer func() {
-		close(c.doneCh)
-	}()
+func (c *fakeReportErrorsClient) ReportErrorEvent(ctx context.Context, req *pb.ReportErrorEventRequest, _ ...gax.CallOption) (*pb.ReportErrorEventResponse, error) {
+	defer close(c.doneCh)
 	if c.fail {
 		return nil, errors.New("request failed")
 	}
 	c.req = req
-	return &erpb.ReportErrorEventResponse{}, nil
+	return &pb.ReportErrorEventResponse{}, nil
 }
 
 func (c *fakeReportErrorsClient) Close() error {
@@ -69,7 +67,7 @@ func newTestClient(c *fakeReportErrorsClient) *Client {
 	return t
 }
 
-func commonChecks(t *testing.T, req *erpb.ReportErrorEventRequest, fn string) {
+func commonChecks(t *testing.T, req *pb.ReportErrorEventRequest, fn string) {
 	if req.Event.ServiceContext.Service != "myservice" {
 		t.Errorf("error report didn't contain service name")
 	}
@@ -96,6 +94,7 @@ func TestReport(t *testing.T) {
 	}
 	commonChecks(t, r, "errorreporting.TestReport")
 }
+
 func TestReportSync(t *testing.T) {
 	ctx := context.Background()
 	fc := newFakeReportErrorsClient()
@@ -110,4 +109,43 @@ func TestReportSync(t *testing.T) {
 		t.Fatalf("got no error report, expected one")
 	}
 	commonChecks(t, r, "errorreporting.TestReport")
+}
+
+func TestChopStack(t *testing.T) {
+	for _, test := range []struct {
+		name     string
+		in       []byte
+		expected string
+	}{
+		{
+			name: "Report",
+			in: []byte(` goroutine 39 [running]:
+runtime/debug.Stack()
+	/gopath/runtime/debug/stack.go:24 +0x79
+cloud.google.com/go/errorreporting.(*Client).logInternal()
+	/gopath/cloud.google.com/go/errorreporting/errors.go:259 +0x18b
+cloud.google.com/go/errorreporting.(*Client).Report()
+	/gopath/cloud.google.com/go/errorreporting/errors.go:248 +0x4ed
+cloud.google.com/go/errorreporting.TestReport()
+	/gopath/cloud.google.com/go/errorreporting/errors_test.go:137 +0x2a1
+testing.tRunner()
+	/gopath/testing/testing.go:610 +0x81
+created by testing.(*T).Run
+	/gopath/testing/testing.go:646 +0x2ec
+`),
+			expected: ` goroutine 39 [running]:
+cloud.google.com/go/errorreporting.TestReport()
+	/gopath/cloud.google.com/go/errorreporting/errors_test.go:137 +0x2a1
+testing.tRunner()
+	/gopath/testing/testing.go:610 +0x81
+created by testing.(*T).Run
+	/gopath/testing/testing.go:646 +0x2ec
+`,
+		},
+	} {
+		out := chopStack(test.in)
+		if out != test.expected {
+			t.Errorf("case %q: chopStack(%q): got %q want %q", test.name, test.in, out, test.expected)
+		}
+	}
 }
