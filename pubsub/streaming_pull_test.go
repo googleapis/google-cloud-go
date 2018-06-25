@@ -49,19 +49,19 @@ var (
 )
 
 func TestStreamingPullBasic(t *testing.T) {
-	client, server := newFake(t)
+	client, server := newMock(t)
 	server.addStreamingPullMessages(testMessages)
 	testStreamingPullIteration(t, client, server, testMessages)
 }
 
 func TestStreamingPullMultipleFetches(t *testing.T) {
-	client, server := newFake(t)
+	client, server := newMock(t)
 	server.addStreamingPullMessages(testMessages[:1])
 	server.addStreamingPullMessages(testMessages[1:])
 	testStreamingPullIteration(t, client, server, testMessages)
 }
 
-func testStreamingPullIteration(t *testing.T, client *Client, server *fakeServer, msgs []*pb.ReceivedMessage) {
+func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer, msgs []*pb.ReceivedMessage) {
 	sub := client.Subscription("S")
 	gotMsgs, err := pullN(context.Background(), sub, len(msgs), func(_ context.Context, m *Message) {
 		id, err := strconv.Atoi(m.ackID)
@@ -116,7 +116,7 @@ func TestStreamingPullError(t *testing.T) {
 	// If an RPC to the service returns a non-retryable error, Pull should
 	// return after all callbacks return, without waiting for messages to be
 	// acked.
-	client, server := newFake(t)
+	client, server := newMock(t)
 	server.addStreamingPullMessages(testMessages[:1])
 	server.addStreamingPullError(status.Errorf(codes.Unknown, ""))
 	sub := client.Subscription("S")
@@ -145,7 +145,7 @@ func TestStreamingPullError(t *testing.T) {
 func TestStreamingPullCancel(t *testing.T) {
 	// If Receive's context is canceled, it should return after all callbacks
 	// return and all messages have been acked.
-	client, server := newFake(t)
+	client, server := newMock(t)
 	server.addStreamingPullMessages(testMessages)
 	sub := client.Subscription("S")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -166,7 +166,7 @@ func TestStreamingPullCancel(t *testing.T) {
 
 func TestStreamingPullRetry(t *testing.T) {
 	// Check that we retry on io.EOF or Unavailable.
-	client, server := newFake(t)
+	client, server := newMock(t)
 	server.addStreamingPullMessages(testMessages[:1])
 	server.addStreamingPullError(io.EOF)
 	server.addStreamingPullError(io.EOF)
@@ -180,7 +180,7 @@ func TestStreamingPullRetry(t *testing.T) {
 
 func TestStreamingPullOneActive(t *testing.T) {
 	// Only one call to Pull can be active at a time.
-	client, srv := newFake(t)
+	client, srv := newMock(t)
 	srv.addStreamingPullMessages(testMessages[:1])
 	sub := client.Subscription("S")
 	ctx, cancel := context.WithCancel(context.Background())
@@ -206,7 +206,7 @@ func TestStreamingPullConcurrent(t *testing.T) {
 	}
 
 	// Multiple goroutines should be able to read from the same iterator.
-	client, server := newFake(t)
+	client, server := newMock(t)
 	// Add a lot of messages, a few at a time, to make sure both threads get a chance.
 	nMessages := 100
 	for i := 0; i < nMessages; i += 2 {
@@ -234,7 +234,7 @@ func TestStreamingPullConcurrent(t *testing.T) {
 
 func TestStreamingPullFlowControl(t *testing.T) {
 	// Callback invocations should not occur if flow control limits are exceeded.
-	client, server := newFake(t)
+	client, server := newMock(t)
 	server.addStreamingPullMessages(testMessages)
 	sub := client.Subscription("S")
 	sub.ReceiveSettings.MaxOutstandingMessages = 2
@@ -275,8 +275,8 @@ func TestStreamingPullFlowControl(t *testing.T) {
 	}
 }
 
-func newFake(t *testing.T) (*Client, *fakeServer) {
-	srv, err := newFakeServer()
+func newMock(t *testing.T) (*Client, *mockServer) {
+	srv, err := newMockServer()
 	if err != nil {
 		t.Fatal(err)
 	}
