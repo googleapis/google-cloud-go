@@ -14,7 +14,7 @@
 
 package pubsub
 
-// This file provides a fake/mock in-memory pubsub server.
+// This file provides a mock in-memory pubsub server for streaming pull testing.
 
 import (
 	"io"
@@ -27,7 +27,7 @@ import (
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
-type fakeServer struct {
+type mockServer struct {
 	pb.SubscriberServer
 
 	Addr string
@@ -45,12 +45,12 @@ type pullResponse struct {
 	err  error
 }
 
-func newFakeServer() (*fakeServer, error) {
+func newMockServer() (*mockServer, error) {
 	srv, err := testutil.NewServer()
 	if err != nil {
 		return nil, err
 	}
-	fake := &fakeServer{
+	mock := &mockServer{
 		Addr:      srv.Addr,
 		Acked:     map[string]bool{},
 		Deadlines: map[string]int32{},
@@ -59,25 +59,25 @@ func newFakeServer() (*fakeServer, error) {
 			PushConfig:         &pb.PushConfig{},
 		},
 	}
-	pb.RegisterSubscriberServer(srv.Gsrv, fake)
+	pb.RegisterSubscriberServer(srv.Gsrv, mock)
 	srv.Start()
-	return fake, nil
+	return mock, nil
 }
 
 // Each call to addStreamingPullMessages results in one StreamingPullResponse.
-func (s *fakeServer) addStreamingPullMessages(msgs []*pb.ReceivedMessage) {
+func (s *mockServer) addStreamingPullMessages(msgs []*pb.ReceivedMessage) {
 	s.pullResponses = append(s.pullResponses, &pullResponse{msgs, nil})
 }
 
-func (s *fakeServer) addStreamingPullError(err error) {
+func (s *mockServer) addStreamingPullError(err error) {
 	s.pullResponses = append(s.pullResponses, &pullResponse{nil, err})
 }
 
-func (s *fakeServer) wait() {
+func (s *mockServer) wait() {
 	s.wg.Wait()
 }
 
-func (s *fakeServer) StreamingPull(stream pb.Subscriber_StreamingPullServer) error {
+func (s *mockServer) StreamingPull(stream pb.Subscriber_StreamingPullServer) error {
 	s.wg.Add(1)
 	defer s.wg.Done()
 	errc := make(chan error, 1)
@@ -140,20 +140,20 @@ func (s *fakeServer) StreamingPull(stream pb.Subscriber_StreamingPullServer) err
 	}
 }
 
-func (s *fakeServer) Acknowledge(ctx context.Context, req *pb.AcknowledgeRequest) (*emptypb.Empty, error) {
+func (s *mockServer) Acknowledge(ctx context.Context, req *pb.AcknowledgeRequest) (*emptypb.Empty, error) {
 	for _, id := range req.AckIds {
 		s.Acked[id] = true
 	}
 	return &emptypb.Empty{}, nil
 }
 
-func (s *fakeServer) ModifyAckDeadline(ctx context.Context, req *pb.ModifyAckDeadlineRequest) (*emptypb.Empty, error) {
+func (s *mockServer) ModifyAckDeadline(ctx context.Context, req *pb.ModifyAckDeadlineRequest) (*emptypb.Empty, error) {
 	for _, id := range req.AckIds {
 		s.Deadlines[id] = req.AckDeadlineSeconds
 	}
 	return &emptypb.Empty{}, nil
 }
 
-func (s *fakeServer) GetSubscription(ctx context.Context, req *pb.GetSubscriptionRequest) (*pb.Subscription, error) {
+func (s *mockServer) GetSubscription(ctx context.Context, req *pb.GetSubscriptionRequest) (*pb.Subscription, error) {
 	return s.sub, nil
 }
