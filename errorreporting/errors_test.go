@@ -83,12 +83,15 @@ func commonChecks(t *testing.T, req *pb.ReportErrorEventRequest, fn string) {
 	if !strings.Contains(req.Event.Message, fn) {
 		t.Errorf("error report didn't contain stack trace")
 	}
+	if got, want := req.Event.Context.User, "user"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
 }
 
 func TestReport(t *testing.T) {
 	fc := newFakeReportErrorsClient()
 	c := newTestClient(fc, defaultConfig)
-	c.Report(Entry{Error: errors.New("error")})
+	c.Report(Entry{Error: errors.New("error"), User: "user"})
 	c.Flush()
 	<-fc.doneCh
 	r := fc.req
@@ -102,7 +105,7 @@ func TestReportSync(t *testing.T) {
 	ctx := context.Background()
 	fc := newFakeReportErrorsClient()
 	c := newTestClient(fc, defaultConfig)
-	if err := c.ReportSync(ctx, Entry{Error: errors.New("error")}); err != nil {
+	if err := c.ReportSync(ctx, Entry{Error: errors.New("error"), User: "user"}); err != nil {
 		t.Fatalf("cannot upload errors: %v", err)
 	}
 
