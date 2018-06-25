@@ -102,6 +102,7 @@ func NewClient(ctx context.Context, projectID string, cfg Config, opts ...option
 			Service: cfg.ServiceName,
 			Version: cfg.ServiceVersion,
 		},
+		onErrorFn: cfg.OnError,
 	}
 	bundler := bundler.NewBundler((*pb.ReportErrorEventRequest)(nil), func(bundle interface{}) {
 		reqs := bundle.([]*pb.ReportErrorEventRequest)

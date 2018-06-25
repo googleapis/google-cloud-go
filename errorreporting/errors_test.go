@@ -18,6 +18,7 @@ import (
 	"errors"
 	"strings"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/internal/testutil"
 
@@ -47,20 +48,22 @@ func (c *fakeReportErrorsClient) Close() error {
 	return nil
 }
 
+var defaultConfig = Config{
+	ServiceName:    "myservice",
+	ServiceVersion: "v1.0",
+}
+
 func newFakeReportErrorsClient() *fakeReportErrorsClient {
 	c := &fakeReportErrorsClient{}
 	c.doneCh = make(chan struct{})
 	return c
 }
 
-func newTestClient(c *fakeReportErrorsClient) *Client {
+func newTestClient(c *fakeReportErrorsClient, cfg Config) *Client {
 	newClient = func(ctx context.Context, opts ...option.ClientOption) (client, error) {
 		return c, nil
 	}
-	t, err := NewClient(context.Background(), testutil.ProjID(), Config{
-		ServiceName:    "myservice",
-		ServiceVersion: "v1.0",
-	})
+	t, err := NewClient(context.Background(), testutil.ProjID(), cfg)
 	if err != nil {
 		panic(err)
 	}
@@ -84,9 +87,9 @@ func commonChecks(t *testing.T, req *pb.ReportErrorEventRequest, fn string) {
 
 func TestReport(t *testing.T) {
 	fc := newFakeReportErrorsClient()
-	c := newTestClient(fc)
+	c := newTestClient(fc, defaultConfig)
 	c.Report(Entry{Error: errors.New("error")})
-
+	c.Flush()
 	<-fc.doneCh
 	r := fc.req
 	if r == nil {
@@ -98,7 +101,7 @@ func TestReport(t *testing.T) {
 func TestReportSync(t *testing.T) {
 	ctx := context.Background()
 	fc := newFakeReportErrorsClient()
-	c := newTestClient(fc)
+	c := newTestClient(fc, defaultConfig)
 	if err := c.ReportSync(ctx, Entry{Error: errors.New("error")}); err != nil {
 		t.Fatalf("cannot upload errors: %v", err)
 	}
@@ -109,6 +112,26 @@ func TestReportSync(t *testing.T) {
 		t.Fatalf("got no error report, expected one")
 	}
 	commonChecks(t, r, "errorreporting.TestReport")
+}
+
+func TestOnError(t *testing.T) {
+	fc := newFakeReportErrorsClient()
+	fc.fail = true
+	cfg := defaultConfig
+	errc := make(chan error, 1)
+	cfg.OnError = func(err error) { errc <- err }
+	c := newTestClient(fc, cfg)
+	c.Report(Entry{Error: errors.New("error")})
+	c.Flush()
+	<-fc.doneCh
+	select {
+	case err := <-errc:
+		if err == nil {
+			t.Error("got nil, want error")
+		}
+	case <-time.After(5 * time.Second):
+		t.Error("timeout")
+	}
 }
 
 func TestChopStack(t *testing.T) {
