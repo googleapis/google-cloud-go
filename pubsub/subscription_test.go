@@ -20,10 +20,13 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/pubsub/pstest"
 
 	"golang.org/x/net/context"
 
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
 )
 
 // All returns the remaining subscriptions from this iterator.
@@ -52,7 +55,7 @@ func TestSubscriptionID(t *testing.T) {
 
 func TestListProjectSubscriptions(t *testing.T) {
 	ctx := context.Background()
-	c, _ := newFake(t)
+	c, _ := newFake2(t)
 	topic := mustCreateTopic(t, c, "t")
 	var want []string
 	for i := 1; i <= 2; i++ {
@@ -84,7 +87,7 @@ func getSubIDs(subs []*Subscription) []string {
 
 func TestListTopicSubscriptions(t *testing.T) {
 	ctx := context.Background()
-	c, _ := newFake(t)
+	c, _ := newFake2(t)
 	topics := []*Topic{
 		mustCreateTopic(t, c, "t0"),
 		mustCreateTopic(t, c, "t1"),
@@ -115,10 +118,10 @@ const defaultRetentionDuration = 168 * time.Hour
 
 func TestUpdateSubscription(t *testing.T) {
 	ctx := context.Background()
-	client, _ := newFake(t)
+	client, _ := newFake2(t)
 	defer client.Close()
 
-	topic := client.Topic("t")
+	topic := mustCreateTopic(t, client, "t")
 	sub, err := client.CreateSubscription(ctx, "s", SubscriptionConfig{Topic: topic})
 	if err != nil {
 		t.Fatal(err)
@@ -177,4 +180,17 @@ func (t1 *Topic) Equal(t2 *Topic) bool {
 		return false
 	}
 	return t1.c == t2.c && t1.name == t2.name
+}
+
+func newFake2(t *testing.T) (*Client, *pstest.Server) {
+	ctx := context.Background()
+	srv := pstest.NewServer()
+	client, err := NewClient(ctx, "P",
+		option.WithEndpoint(srv.Addr),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithInsecure()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return client, srv
 }

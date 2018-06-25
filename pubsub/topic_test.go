@@ -61,7 +61,7 @@ func slurpTopics(it *TopicIterator) ([]*Topic, error) {
 
 func TestTopicID(t *testing.T) {
 	const id = "id"
-	c, _ := newFake(t)
+	c, _ := newFake2(t)
 	s := c.Topic(id)
 	if got, want := s.ID(), id; got != want {
 		t.Errorf("Token.ID() = %q; want %q", got, want)
@@ -69,7 +69,7 @@ func TestTopicID(t *testing.T) {
 }
 
 func TestListTopics(t *testing.T) {
-	c, _ := newFake(t)
+	c, _ := newFake2(t)
 	var ids []string
 	for i := 1; i <= 4; i++ {
 		id := fmt.Sprintf("t%d", i)
@@ -80,7 +80,7 @@ func TestListTopics(t *testing.T) {
 }
 
 func TestListCompletelyEmptyTopics(t *testing.T) {
-	c, _ := newFake(t)
+	c, _ := newFake2(t)
 	checkTopicListing(t, c, nil)
 }
 
