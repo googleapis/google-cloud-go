@@ -131,10 +131,10 @@ func (c *Client) onError(err error) {
 	log.Println(err)
 }
 
-// Close closes any resources held by the client.
+// Close calls Flush, then closes any resources held by the client.
 // Close should be called when the client is no longer needed.
-// It need not be called at program exit.
 func (c *Client) Close() error {
+	c.Flush()
 	return c.apiClient.Close()
 }
 
