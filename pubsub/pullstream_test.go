@@ -28,6 +28,7 @@ func TestPullStreamGet(t *testing.T) {
 	// Test that we retry on the initial Send call from pullstream.get. We don't do this
 	// test with the server in fake_test.go because there's no clear way to get Send
 	// to fail from the server.
+	t.Parallel()
 	for _, test := range []struct {
 		desc     string
 		errors   []error

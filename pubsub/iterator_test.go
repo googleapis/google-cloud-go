@@ -21,6 +21,7 @@ import (
 )
 
 func TestSplitRequestIDs(t *testing.T) {
+	t.Parallel()
 	ids := []string{"aaaa", "bbbb", "cccc", "dddd", "eeee"}
 	for _, test := range []struct {
 		ids        []string

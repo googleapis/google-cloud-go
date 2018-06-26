@@ -73,7 +73,7 @@ func integrationTestClient(t *testing.T, ctx context.Context) *Client {
 	return client
 }
 
-func TestAll(t *testing.T) {
+func TestIntegration_All(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(t, ctx)
@@ -279,7 +279,7 @@ func testIAM(ctx context.Context, h *iam.Handle, permission string) (msg string,
 	return "", true
 }
 
-func TestSubscriptionUpdate(t *testing.T) {
+func TestIntegration_UpdateSubscription(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(t, ctx)
@@ -361,7 +361,7 @@ func TestSubscriptionUpdate(t *testing.T) {
 	}
 }
 
-func TestPublicTopic(t *testing.T) {
+func TestIntegration_PublicTopic(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(t, ctx)

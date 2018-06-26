@@ -166,6 +166,7 @@ func TestStreamingPullCancel(t *testing.T) {
 
 func TestStreamingPullRetry(t *testing.T) {
 	// Check that we retry on io.EOF or Unavailable.
+	t.Parallel()
 	client, server := newMock(t)
 	server.addStreamingPullMessages(testMessages[:1])
 	server.addStreamingPullError(io.EOF)
