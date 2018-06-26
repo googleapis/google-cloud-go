@@ -30,6 +30,7 @@ import (
 // Using the fake PubSub server in the pstest package, verify that streaming
 // pull resumes if the server stream times out.
 func TestStreamTimeout(t *testing.T) {
+	t.Parallel()
 	log.SetFlags(log.Lmicroseconds)
 	ctx := context.Background()
 	srv := pstest.NewServer()

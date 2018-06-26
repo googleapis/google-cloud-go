@@ -41,10 +41,10 @@ const (
 // Buffer log messages to debug failures.
 var logBuf bytes.Buffer
 
-// TestEndToEnd pumps many messages into a topic and tests that they are all
+// The end-to-end pumps many messages into a topic and tests that they are all
 // delivered to each subscription for the topic. It also tests that messages
 // are not unexpectedly redelivered.
-func TestEndToEnd(t *testing.T) {
+func TestIntegration_EndToEnd(t *testing.T) {
 	t.Parallel()
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")

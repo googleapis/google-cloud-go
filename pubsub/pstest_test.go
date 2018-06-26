@@ -28,6 +28,7 @@ import (
 )
 
 func TestPSTest(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	srv := pstest.NewServer()
 
