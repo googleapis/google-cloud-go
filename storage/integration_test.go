@@ -401,7 +401,7 @@ func TestIntegration_Objects(t *testing.T) {
 		}
 		slurp, err := ioutil.ReadAll(rc)
 		if err != nil {
-			t.Errorf("%d:Can't ReadAll object %v, errored with %v", i, obj, err)
+			t.Errorf("%+v: can't ReadAll object %v, errored with %v", r, obj, err)
 			continue
 		}
 		if len(slurp) != int(r.want) {
@@ -1740,9 +1740,8 @@ func TestIntegration_ReadCRC(t *testing.T) {
 		offset, length int64
 		readCompressed bool // don't decompress a gzipped file
 
-		wantErr     bool
-		wantCheck   bool // Should Reader try to check the CRC?
-		wantChecked bool // Did Reader actually check the CRC?
+		wantErr   bool
+		wantCheck bool // Should Reader try to check the CRC?
 	}{
 		{
 			desc:           "uncompressed, entire file",
@@ -1751,7 +1750,6 @@ func TestIntegration_ReadCRC(t *testing.T) {
 			length:         -1,
 			readCompressed: false,
 			wantCheck:      true,
-			wantChecked:    true,
 		},
 		{
 			desc:           "uncompressed, entire file, don't decompress",
@@ -1760,7 +1758,6 @@ func TestIntegration_ReadCRC(t *testing.T) {
 			length:         -1,
 			readCompressed: true,
 			wantCheck:      true,
-			wantChecked:    true,
 		},
 		{
 			desc:           "uncompressed, suffix",
@@ -1769,7 +1766,6 @@ func TestIntegration_ReadCRC(t *testing.T) {
 			length:         -1,
 			readCompressed: false,
 			wantCheck:      false,
-			wantChecked:    false,
 		},
 		{
 			desc:           "uncompressed, prefix",
@@ -1778,21 +1774,17 @@ func TestIntegration_ReadCRC(t *testing.T) {
 			length:         18,
 			readCompressed: false,
 			wantCheck:      false,
-			wantChecked:    false,
 		},
 		{
-			// When a gzipped file is unzipped by GCS, we can't verify the checksum
-			// because it was computed against the zipped contents. There is no
-			// header that indicates that a gzipped file is being served unzipped.
-			// But our CRC check only happens if there is a Content-Length header,
-			// and that header is absent for this read.
-			desc:           "compressed, entire file, server unzips",
+			// When a gzipped file is unzipped on read, we can't verify the checksum
+			// because it was computed against the zipped contents. We can detect
+			// this case using http.Response.Uncompressed.
+			desc:           "compressed, entire file, unzipped",
 			obj:            client.Bucket(gzippedBucket).Object(gzippedObject),
 			offset:         0,
 			length:         -1,
 			readCompressed: false,
-			wantCheck:      true,
-			wantChecked:    false,
+			wantCheck:      false,
 		},
 		{
 			// When we read a gzipped file uncompressed, it's like reading a regular file:
@@ -1803,7 +1795,6 @@ func TestIntegration_ReadCRC(t *testing.T) {
 			length:         -1,
 			readCompressed: true,
 			wantCheck:      true,
-			wantChecked:    true,
 		},
 		{
 			desc:           "compressed, partial, server unzips",
@@ -1813,7 +1804,6 @@ func TestIntegration_ReadCRC(t *testing.T) {
 			readCompressed: false,
 			wantErr:        true, // GCS can't serve part of a gzipped object
 			wantCheck:      false,
-			wantChecked:    false,
 		},
 		{
 			desc:           "compressed, partial, read compressed",
@@ -1822,7 +1812,6 @@ func TestIntegration_ReadCRC(t *testing.T) {
 			length:         8,
 			readCompressed: true,
 			wantCheck:      false,
-			wantChecked:    false,
 		},
 	} {
 		obj := test.obj.ReadCompressed(test.readCompressed)
@@ -1840,9 +1829,6 @@ func TestIntegration_ReadCRC(t *testing.T) {
 		_ = r.Close()
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)
-		}
-		if got, want := r.checkedCRC, test.wantChecked; got != want {
-			t.Errorf("%s, checkedCRC: got %t, want %t", test.desc, got, want)
 		}
 	}
 }
