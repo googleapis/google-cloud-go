@@ -488,9 +488,9 @@ func TestLoggingServiceV2ListLogEntries(t *testing.T) {
 
 	mockLogging.resps = append(mockLogging.resps[:0], expectedResponse)
 
-	var resourceNames []string = nil
+	var formattedResourceNames []string = nil
 	var request = &loggingpb.ListLogEntriesRequest{
-		ResourceNames: resourceNames,
+		ResourceNames: formattedResourceNames,
 	}
 
 	c, err := NewClient(context.Background(), clientOpt)
@@ -527,9 +527,9 @@ func TestLoggingServiceV2ListLogEntriesError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockLogging.err = gstatus.Error(errCode, "test error")
 
-	var resourceNames []string = nil
+	var formattedResourceNames []string = nil
 	var request = &loggingpb.ListLogEntriesRequest{
-		ResourceNames: resourceNames,
+		ResourceNames: formattedResourceNames,
 	}
 
 	c, err := NewClient(context.Background(), clientOpt)
@@ -915,9 +915,11 @@ func TestConfigServiceV2UpdateSink(t *testing.T) {
 
 	var formattedSinkName string = fmt.Sprintf("projects/%s/sinks/%s", "[PROJECT]", "[SINK]")
 	var sink *loggingpb.LogSink = &loggingpb.LogSink{}
+	var updateMask *field_maskpb.FieldMask = &field_maskpb.FieldMask{}
 	var request = &loggingpb.UpdateSinkRequest{
-		SinkName: formattedSinkName,
-		Sink:     sink,
+		SinkName:   formattedSinkName,
+		Sink:       sink,
+		UpdateMask: updateMask,
 	}
 
 	c, err := NewConfigClient(context.Background(), clientOpt)
@@ -946,9 +948,11 @@ func TestConfigServiceV2UpdateSinkError(t *testing.T) {
 
 	var formattedSinkName string = fmt.Sprintf("projects/%s/sinks/%s", "[PROJECT]", "[SINK]")
 	var sink *loggingpb.LogSink = &loggingpb.LogSink{}
+	var updateMask *field_maskpb.FieldMask = &field_maskpb.FieldMask{}
 	var request = &loggingpb.UpdateSinkRequest{
-		SinkName: formattedSinkName,
-		Sink:     sink,
+		SinkName:   formattedSinkName,
+		Sink:       sink,
+		UpdateMask: updateMask,
 	}
 
 	c, err := NewConfigClient(context.Background(), clientOpt)

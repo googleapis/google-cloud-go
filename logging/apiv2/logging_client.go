@@ -60,21 +60,8 @@ func defaultCallOptions() *CallOptions {
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        1000 * time.Millisecond,
-					Multiplier: 1.2,
-				})
-			}),
-		},
-		{"list", "idempotent"}: {
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
-					codes.Internal,
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        1000 * time.Millisecond,
-					Multiplier: 1.2,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.3,
 				})
 			}),
 		},
@@ -82,7 +69,7 @@ func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		DeleteLog:                        retry[[2]string{"default", "idempotent"}],
 		WriteLogEntries:                  retry[[2]string{"default", "non_idempotent"}],
-		ListLogEntries:                   retry[[2]string{"list", "idempotent"}],
+		ListLogEntries:                   retry[[2]string{"default", "idempotent"}],
 		ListMonitoredResourceDescriptors: retry[[2]string{"default", "idempotent"}],
 		ListLogs: retry[[2]string{"default", "idempotent"}],
 	}
@@ -158,13 +145,14 @@ func (c *Client) DeleteLog(ctx context.Context, req *loggingpb.DeleteLogRequest,
 	return err
 }
 
-// WriteLogEntries ## Log entry resources
-//
-// Writes log entries to Stackdriver Logging. This API method is the
+// WriteLogEntries writes log entries to Stackdriver Logging. This API method is the
 // only way to send log entries to Stackdriver Logging. This method
 // is used, directly or indirectly, by the Stackdriver Logging agent
 // (fluentd) and all logging libraries configured to use Stackdriver
 // Logging.
+// A single request may contain log entries for a maximum of 1000
+// different resources (projects, organizations, billing accounts or
+// folders)
 func (c *Client) WriteLogEntries(ctx context.Context, req *loggingpb.WriteLogEntriesRequest, opts ...gax.CallOption) (*loggingpb.WriteLogEntriesResponse, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.WriteLogEntries[0:len(c.CallOptions.WriteLogEntries):len(c.CallOptions.WriteLogEntries)], opts...)
