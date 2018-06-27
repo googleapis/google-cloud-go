@@ -138,6 +138,9 @@ type Client struct {
 // blocks or images.
 // The service also includes methods for sensitive data redaction and
 // scheduling of data scans on Google Cloud Platform based data sets.
+//
+// To learn more about concepts and find how-to guides see
+// https://cloud.google.com/dlp/docs/.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	conn, err := transport.DialGRPC(ctx, append(defaultClientOptions(), opts...)...)
 	if err != nil {
@@ -175,8 +178,13 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // InspectContent finds potentially sensitive info in content.
 // This method has limits on input size, processing time, and output size.
-// How-to guide for text (at /dlp/docs/inspecting-text), How-to guide for
-// images (at /dlp/docs/inspecting-images)
+//
+// When no InfoTypes or CustomInfoTypes are specified in this request, the
+// system will automatically choose what detectors to run. By default this may
+// be all types, but may change over time as detectors are updated.
+//
+// For how to guides, see https://cloud.google.com/dlp/docs/inspecting-images
+// and https://cloud.google.com/dlp/docs/inspecting-text,
 func (c *Client) InspectContent(ctx context.Context, req *dlppb.InspectContentRequest, opts ...gax.CallOption) (*dlppb.InspectContentResponse, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.InspectContent[0:len(c.CallOptions.InspectContent):len(c.CallOptions.InspectContent)], opts...)
@@ -194,7 +202,12 @@ func (c *Client) InspectContent(ctx context.Context, req *dlppb.InspectContentRe
 
 // RedactImage redacts potentially sensitive info from an image.
 // This method has limits on input size, processing time, and output size.
-// How-to guide (at /dlp/docs/redacting-sensitive-data-images)
+// See https://cloud.google.com/dlp/docs/redacting-sensitive-data-images to
+// learn more.
+//
+// When no InfoTypes or CustomInfoTypes are specified in this request, the
+// system will automatically choose what detectors to run. By default this may
+// be all types, but may change over time as detectors are updated.
 func (c *Client) RedactImage(ctx context.Context, req *dlppb.RedactImageRequest, opts ...gax.CallOption) (*dlppb.RedactImageResponse, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.RedactImage[0:len(c.CallOptions.RedactImage):len(c.CallOptions.RedactImage)], opts...)
@@ -212,7 +225,12 @@ func (c *Client) RedactImage(ctx context.Context, req *dlppb.RedactImageRequest,
 
 // DeidentifyContent de-identifies potentially sensitive info from a ContentItem.
 // This method has limits on input size and output size.
-// How-to guide (at /dlp/docs/deidentify-sensitive-data)
+// See https://cloud.google.com/dlp/docs/deidentify-sensitive-data to
+// learn more.
+//
+// When no InfoTypes or CustomInfoTypes are specified in this request, the
+// system will automatically choose what detectors to run. By default this may
+// be all types, but may change over time as detectors are updated.
 func (c *Client) DeidentifyContent(ctx context.Context, req *dlppb.DeidentifyContentRequest, opts ...gax.CallOption) (*dlppb.DeidentifyContentResponse, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.DeidentifyContent[0:len(c.CallOptions.DeidentifyContent):len(c.CallOptions.DeidentifyContent)], opts...)
@@ -229,6 +247,9 @@ func (c *Client) DeidentifyContent(ctx context.Context, req *dlppb.DeidentifyCon
 }
 
 // ReidentifyContent re-identifies content that has been de-identified.
+// See
+// https://cloud.google.com/dlp/docs/pseudonymization#re-identification_in_free_text_code_example
+// to learn more.
 func (c *Client) ReidentifyContent(ctx context.Context, req *dlppb.ReidentifyContentRequest, opts ...gax.CallOption) (*dlppb.ReidentifyContentResponse, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ReidentifyContent[0:len(c.CallOptions.ReidentifyContent):len(c.CallOptions.ReidentifyContent)], opts...)
@@ -245,8 +266,8 @@ func (c *Client) ReidentifyContent(ctx context.Context, req *dlppb.ReidentifyCon
 }
 
 // ListInfoTypes returns a list of the sensitive information types that the DLP API
-// supports. For more information, see Listing supported predefined
-// infoTypes (at /dlp/docs/listing-infotypes).
+// supports. See https://cloud.google.com/dlp/docs/infotypes-reference to
+// learn more.
 func (c *Client) ListInfoTypes(ctx context.Context, req *dlppb.ListInfoTypesRequest, opts ...gax.CallOption) (*dlppb.ListInfoTypesResponse, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListInfoTypes[0:len(c.CallOptions.ListInfoTypes):len(c.CallOptions.ListInfoTypes)], opts...)
@@ -264,6 +285,7 @@ func (c *Client) ListInfoTypes(ctx context.Context, req *dlppb.ListInfoTypesRequ
 
 // CreateInspectTemplate creates an InspectTemplate for re-using frequently used configuration
 // for inspecting content, images, and storage.
+// See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 func (c *Client) CreateInspectTemplate(ctx context.Context, req *dlppb.CreateInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.CreateInspectTemplate[0:len(c.CallOptions.CreateInspectTemplate):len(c.CallOptions.CreateInspectTemplate)], opts...)
@@ -280,6 +302,7 @@ func (c *Client) CreateInspectTemplate(ctx context.Context, req *dlppb.CreateIns
 }
 
 // UpdateInspectTemplate updates the InspectTemplate.
+// See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 func (c *Client) UpdateInspectTemplate(ctx context.Context, req *dlppb.UpdateInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.UpdateInspectTemplate[0:len(c.CallOptions.UpdateInspectTemplate):len(c.CallOptions.UpdateInspectTemplate)], opts...)
@@ -296,6 +319,7 @@ func (c *Client) UpdateInspectTemplate(ctx context.Context, req *dlppb.UpdateIns
 }
 
 // GetInspectTemplate gets an InspectTemplate.
+// See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 func (c *Client) GetInspectTemplate(ctx context.Context, req *dlppb.GetInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.GetInspectTemplate[0:len(c.CallOptions.GetInspectTemplate):len(c.CallOptions.GetInspectTemplate)], opts...)
@@ -312,6 +336,7 @@ func (c *Client) GetInspectTemplate(ctx context.Context, req *dlppb.GetInspectTe
 }
 
 // ListInspectTemplates lists InspectTemplates.
+// See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 func (c *Client) ListInspectTemplates(ctx context.Context, req *dlppb.ListInspectTemplatesRequest, opts ...gax.CallOption) *InspectTemplateIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListInspectTemplates[0:len(c.CallOptions.ListInspectTemplates):len(c.CallOptions.ListInspectTemplates)], opts...)
@@ -349,6 +374,7 @@ func (c *Client) ListInspectTemplates(ctx context.Context, req *dlppb.ListInspec
 }
 
 // DeleteInspectTemplate deletes an InspectTemplate.
+// See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 func (c *Client) DeleteInspectTemplate(ctx context.Context, req *dlppb.DeleteInspectTemplateRequest, opts ...gax.CallOption) error {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.DeleteInspectTemplate[0:len(c.CallOptions.DeleteInspectTemplate):len(c.CallOptions.DeleteInspectTemplate)], opts...)
@@ -362,6 +388,8 @@ func (c *Client) DeleteInspectTemplate(ctx context.Context, req *dlppb.DeleteIns
 
 // CreateDeidentifyTemplate creates a DeidentifyTemplate for re-using frequently used configuration
 // for de-identifying content, images, and storage.
+// See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
+// more.
 func (c *Client) CreateDeidentifyTemplate(ctx context.Context, req *dlppb.CreateDeidentifyTemplateRequest, opts ...gax.CallOption) (*dlppb.DeidentifyTemplate, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.CreateDeidentifyTemplate[0:len(c.CallOptions.CreateDeidentifyTemplate):len(c.CallOptions.CreateDeidentifyTemplate)], opts...)
@@ -378,6 +406,8 @@ func (c *Client) CreateDeidentifyTemplate(ctx context.Context, req *dlppb.Create
 }
 
 // UpdateDeidentifyTemplate updates the DeidentifyTemplate.
+// See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
+// more.
 func (c *Client) UpdateDeidentifyTemplate(ctx context.Context, req *dlppb.UpdateDeidentifyTemplateRequest, opts ...gax.CallOption) (*dlppb.DeidentifyTemplate, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.UpdateDeidentifyTemplate[0:len(c.CallOptions.UpdateDeidentifyTemplate):len(c.CallOptions.UpdateDeidentifyTemplate)], opts...)
@@ -394,6 +424,8 @@ func (c *Client) UpdateDeidentifyTemplate(ctx context.Context, req *dlppb.Update
 }
 
 // GetDeidentifyTemplate gets a DeidentifyTemplate.
+// See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
+// more.
 func (c *Client) GetDeidentifyTemplate(ctx context.Context, req *dlppb.GetDeidentifyTemplateRequest, opts ...gax.CallOption) (*dlppb.DeidentifyTemplate, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.GetDeidentifyTemplate[0:len(c.CallOptions.GetDeidentifyTemplate):len(c.CallOptions.GetDeidentifyTemplate)], opts...)
@@ -410,6 +442,8 @@ func (c *Client) GetDeidentifyTemplate(ctx context.Context, req *dlppb.GetDeiden
 }
 
 // ListDeidentifyTemplates lists DeidentifyTemplates.
+// See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
+// more.
 func (c *Client) ListDeidentifyTemplates(ctx context.Context, req *dlppb.ListDeidentifyTemplatesRequest, opts ...gax.CallOption) *DeidentifyTemplateIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListDeidentifyTemplates[0:len(c.CallOptions.ListDeidentifyTemplates):len(c.CallOptions.ListDeidentifyTemplates)], opts...)
@@ -447,6 +481,8 @@ func (c *Client) ListDeidentifyTemplates(ctx context.Context, req *dlppb.ListDei
 }
 
 // DeleteDeidentifyTemplate deletes a DeidentifyTemplate.
+// See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
+// more.
 func (c *Client) DeleteDeidentifyTemplate(ctx context.Context, req *dlppb.DeleteDeidentifyTemplateRequest, opts ...gax.CallOption) error {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.DeleteDeidentifyTemplate[0:len(c.CallOptions.DeleteDeidentifyTemplate):len(c.CallOptions.DeleteDeidentifyTemplate)], opts...)
@@ -459,7 +495,12 @@ func (c *Client) DeleteDeidentifyTemplate(ctx context.Context, req *dlppb.Delete
 }
 
 // CreateDlpJob creates a new job to inspect storage or calculate risk metrics.
-// How-to guide (at /dlp/docs/compute-risk-analysis).
+// See https://cloud.google.com/dlp/docs/inspecting-storage and
+// https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
+//
+// When no InfoTypes or CustomInfoTypes are specified in inspect jobs, the
+// system will automatically choose what detectors to run. By default this may
+// be all types, but may change over time as detectors are updated.
 func (c *Client) CreateDlpJob(ctx context.Context, req *dlppb.CreateDlpJobRequest, opts ...gax.CallOption) (*dlppb.DlpJob, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.CreateDlpJob[0:len(c.CallOptions.CreateDlpJob):len(c.CallOptions.CreateDlpJob)], opts...)
@@ -476,6 +517,8 @@ func (c *Client) CreateDlpJob(ctx context.Context, req *dlppb.CreateDlpJobReques
 }
 
 // ListDlpJobs lists DlpJobs that match the specified filter in the request.
+// See https://cloud.google.com/dlp/docs/inspecting-storage and
+// https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
 func (c *Client) ListDlpJobs(ctx context.Context, req *dlppb.ListDlpJobsRequest, opts ...gax.CallOption) *DlpJobIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListDlpJobs[0:len(c.CallOptions.ListDlpJobs):len(c.CallOptions.ListDlpJobs)], opts...)
@@ -513,6 +556,8 @@ func (c *Client) ListDlpJobs(ctx context.Context, req *dlppb.ListDlpJobsRequest,
 }
 
 // GetDlpJob gets the latest state of a long-running DlpJob.
+// See https://cloud.google.com/dlp/docs/inspecting-storage and
+// https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
 func (c *Client) GetDlpJob(ctx context.Context, req *dlppb.GetDlpJobRequest, opts ...gax.CallOption) (*dlppb.DlpJob, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.GetDlpJob[0:len(c.CallOptions.GetDlpJob):len(c.CallOptions.GetDlpJob)], opts...)
@@ -531,6 +576,8 @@ func (c *Client) GetDlpJob(ctx context.Context, req *dlppb.GetDlpJobRequest, opt
 // DeleteDlpJob deletes a long-running DlpJob. This method indicates that the client is
 // no longer interested in the DlpJob result. The job will be cancelled if
 // possible.
+// See https://cloud.google.com/dlp/docs/inspecting-storage and
+// https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
 func (c *Client) DeleteDlpJob(ctx context.Context, req *dlppb.DeleteDlpJobRequest, opts ...gax.CallOption) error {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.DeleteDlpJob[0:len(c.CallOptions.DeleteDlpJob):len(c.CallOptions.DeleteDlpJob)], opts...)
@@ -545,6 +592,8 @@ func (c *Client) DeleteDlpJob(ctx context.Context, req *dlppb.DeleteDlpJobReques
 // CancelDlpJob starts asynchronous cancellation on a long-running DlpJob. The server
 // makes a best effort to cancel the DlpJob, but success is not
 // guaranteed.
+// See https://cloud.google.com/dlp/docs/inspecting-storage and
+// https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
 func (c *Client) CancelDlpJob(ctx context.Context, req *dlppb.CancelDlpJobRequest, opts ...gax.CallOption) error {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.CancelDlpJob[0:len(c.CallOptions.CancelDlpJob):len(c.CallOptions.CancelDlpJob)], opts...)
@@ -557,6 +606,7 @@ func (c *Client) CancelDlpJob(ctx context.Context, req *dlppb.CancelDlpJobReques
 }
 
 // ListJobTriggers lists job triggers.
+// See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
 func (c *Client) ListJobTriggers(ctx context.Context, req *dlppb.ListJobTriggersRequest, opts ...gax.CallOption) *JobTriggerIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListJobTriggers[0:len(c.CallOptions.ListJobTriggers):len(c.CallOptions.ListJobTriggers)], opts...)
@@ -594,6 +644,7 @@ func (c *Client) ListJobTriggers(ctx context.Context, req *dlppb.ListJobTriggers
 }
 
 // GetJobTrigger gets a job trigger.
+// See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
 func (c *Client) GetJobTrigger(ctx context.Context, req *dlppb.GetJobTriggerRequest, opts ...gax.CallOption) (*dlppb.JobTrigger, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.GetJobTrigger[0:len(c.CallOptions.GetJobTrigger):len(c.CallOptions.GetJobTrigger)], opts...)
@@ -610,6 +661,7 @@ func (c *Client) GetJobTrigger(ctx context.Context, req *dlppb.GetJobTriggerRequ
 }
 
 // DeleteJobTrigger deletes a job trigger.
+// See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
 func (c *Client) DeleteJobTrigger(ctx context.Context, req *dlppb.DeleteJobTriggerRequest, opts ...gax.CallOption) error {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.DeleteJobTrigger[0:len(c.CallOptions.DeleteJobTrigger):len(c.CallOptions.DeleteJobTrigger)], opts...)
@@ -622,6 +674,7 @@ func (c *Client) DeleteJobTrigger(ctx context.Context, req *dlppb.DeleteJobTrigg
 }
 
 // UpdateJobTrigger updates a job trigger.
+// See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
 func (c *Client) UpdateJobTrigger(ctx context.Context, req *dlppb.UpdateJobTriggerRequest, opts ...gax.CallOption) (*dlppb.JobTrigger, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.UpdateJobTrigger[0:len(c.CallOptions.UpdateJobTrigger):len(c.CallOptions.UpdateJobTrigger)], opts...)
@@ -639,6 +692,7 @@ func (c *Client) UpdateJobTrigger(ctx context.Context, req *dlppb.UpdateJobTrigg
 
 // CreateJobTrigger creates a job trigger to run DLP actions such as scanning storage for
 // sensitive information on a set schedule.
+// See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
 func (c *Client) CreateJobTrigger(ctx context.Context, req *dlppb.CreateJobTriggerRequest, opts ...gax.CallOption) (*dlppb.JobTrigger, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.CreateJobTrigger[0:len(c.CallOptions.CreateJobTrigger):len(c.CallOptions.CreateJobTrigger)], opts...)

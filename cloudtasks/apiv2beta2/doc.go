@@ -19,9 +19,7 @@
 //
 //   NOTE: This package is in alpha. It is not stable, and is likely to change.
 //
-// Manages the execution of large numbers of distributed requests. Cloud
-// Tasks
-// is in Alpha.
+// Manages the execution of large numbers of distributed requests.
 package cloudtasks // import "cloud.google.com/go/cloudtasks/apiv2beta2"
 
 import (

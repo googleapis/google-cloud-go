@@ -159,7 +159,8 @@ func (c *PublisherClient) TopicIAM(topic *pubsubpb.Topic) *iam.Handle {
 	return iam.InternalNewHandle(c.Connection(), topic.Name)
 }
 
-// CreateTopic creates the given topic with the given name.
+// CreateTopic creates the given topic with the given name. See the
+// <a href="/pubsub/docs/admin#resource_names"> resource name rules</a>.
 func (c *PublisherClient) CreateTopic(ctx context.Context, req *pubsubpb.Topic, opts ...gax.CallOption) (*pubsubpb.Topic, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.CreateTopic[0:len(c.CallOptions.CreateTopic):len(c.CallOptions.CreateTopic)], opts...)
@@ -175,12 +176,8 @@ func (c *PublisherClient) CreateTopic(ctx context.Context, req *pubsubpb.Topic, 
 	return resp, nil
 }
 
-// UpdateTopic updates an existing topic. Note that certain properties of a topic are not
-// modifiable.  Options settings follow the style guide:
-// NOTE:  The style guide requires body: "topic" instead of body: "*".
-// Keeping the latter for internal consistency in V1, however it should be
-// corrected in V2.  See
-// https://cloud.google.com/apis/design/standard_methods#update for details.
+// UpdateTopic updates an existing topic. Note that certain properties of a
+// topic are not modifiable.
 func (c *PublisherClient) UpdateTopic(ctx context.Context, req *pubsubpb.UpdateTopicRequest, opts ...gax.CallOption) (*pubsubpb.Topic, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.UpdateTopic[0:len(c.CallOptions.UpdateTopic):len(c.CallOptions.UpdateTopic)], opts...)
@@ -267,7 +264,7 @@ func (c *PublisherClient) ListTopics(ctx context.Context, req *pubsubpb.ListTopi
 	return it
 }
 
-// ListTopicSubscriptions lists the name of the subscriptions for this topic.
+// ListTopicSubscriptions lists the names of the subscriptions on this topic.
 func (c *PublisherClient) ListTopicSubscriptions(ctx context.Context, req *pubsubpb.ListTopicSubscriptionsRequest, opts ...gax.CallOption) *StringIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListTopicSubscriptions[0:len(c.CallOptions.ListTopicSubscriptions):len(c.CallOptions.ListTopicSubscriptions)], opts...)
