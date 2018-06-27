@@ -64,8 +64,8 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        1000 * time.Millisecond,
-					Multiplier: 1.2,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.3,
 				})
 			}),
 		},
@@ -74,7 +74,7 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		ListSinks:       retry[[2]string{"default", "idempotent"}],
 		GetSink:         retry[[2]string{"default", "idempotent"}],
 		CreateSink:      retry[[2]string{"default", "non_idempotent"}],
-		UpdateSink:      retry[[2]string{"default", "non_idempotent"}],
+		UpdateSink:      retry[[2]string{"default", "idempotent"}],
 		DeleteSink:      retry[[2]string{"default", "idempotent"}],
 		ListExclusions:  retry[[2]string{"default", "idempotent"}],
 		GetExclusion:    retry[[2]string{"default", "idempotent"}],

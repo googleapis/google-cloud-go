@@ -59,8 +59,8 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        1000 * time.Millisecond,
-					Multiplier: 1.2,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.3,
 				})
 			}),
 		},
@@ -69,7 +69,7 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 		ListLogMetrics:  retry[[2]string{"default", "idempotent"}],
 		GetLogMetric:    retry[[2]string{"default", "idempotent"}],
 		CreateLogMetric: retry[[2]string{"default", "non_idempotent"}],
-		UpdateLogMetric: retry[[2]string{"default", "non_idempotent"}],
+		UpdateLogMetric: retry[[2]string{"default", "idempotent"}],
 		DeleteLogMetric: retry[[2]string{"default", "idempotent"}],
 	}
 }
