@@ -86,7 +86,7 @@ func defaultCallOptions() *CallOptions {
 		GetQueue:           retry[[2]string{"default", "idempotent"}],
 		CreateQueue:        retry[[2]string{"default", "non_idempotent"}],
 		UpdateQueue:        retry[[2]string{"default", "non_idempotent"}],
-		DeleteQueue:        retry[[2]string{"default", "non_idempotent"}],
+		DeleteQueue:        retry[[2]string{"default", "idempotent"}],
 		PurgeQueue:         retry[[2]string{"default", "non_idempotent"}],
 		PauseQueue:         retry[[2]string{"default", "non_idempotent"}],
 		ResumeQueue:        retry[[2]string{"default", "non_idempotent"}],
@@ -507,11 +507,6 @@ func (c *Client) GetTask(ctx context.Context, req *taskspb.GetTaskRequest, opts 
 
 // CreateTask creates a task and adds it to a queue.
 //
-// To add multiple tasks at the same time, use
-// HTTP batching (at /storage/docs/json_api/v1/how-tos/batch)
-// or the batching documentation for your client library, for example
-// https://developers.google.com/api-client-library/python/guide/batch.
-//
 // Tasks cannot be updated after creation; there is no UpdateTask command.
 //
 //   For App Engine queues (at google.cloud.tasks.v2beta2.AppEngineHttpTarget),
@@ -603,11 +598,6 @@ func (c *Client) LeaseTasks(ctx context.Context, req *taskspb.LeaseTasksRequest,
 // by a later [LeaseTasks][google.cloud.tasks.v2beta2.CloudTasks.LeaseTasks],
 // [GetTask][google.cloud.tasks.v2beta2.CloudTasks.GetTask], or
 // [ListTasks][google.cloud.tasks.v2beta2.CloudTasks.ListTasks].
-//
-// To acknowledge multiple tasks at the same time, use
-// HTTP batching (at /storage/docs/json_api/v1/how-tos/batch)
-// or the batching documentation for your client library, for example
-// https://developers.google.com/api-client-library/python/guide/batch.
 func (c *Client) AcknowledgeTask(ctx context.Context, req *taskspb.AcknowledgeTaskRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
