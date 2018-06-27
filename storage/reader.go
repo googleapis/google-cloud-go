@@ -130,11 +130,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	if err != nil {
 		return nil, err
 	}
-	var (
-		size     int64 // total size of object, even if a range was requested.
-		checkCRC bool
-		crc      uint32
-	)
+	var size int64 // total size of object, even if a range was requested.
 	if res.StatusCode == http.StatusPartialContent {
 		cr := strings.TrimSpace(res.Header.Get("Content-Range"))
 		if !strings.HasPrefix(cr, "bytes ") || !strings.Contains(cr, "/") {
@@ -147,17 +143,6 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		}
 	} else {
 		size = res.ContentLength
-		// Check the CRC iff all of the following hold:
-		// - We asked for content (length != 0).
-		// - We got all the content (status != PartialContent).
-		// - The server sent a CRC header.
-		// - The Go http stack did not uncompress the file.
-		// - We were not served compressed data that was uncompressed on download.
-		// The problem with the last two cases is that the CRC will not match--GCS
-		// computes it on the compressed contents).
-		if length != 0 && !res.Uncompressed && !uncompressedByServer(res) {
-			crc, checkCRC = parseCRC32c(res)
-		}
 	}
 
 	remain := res.ContentLength
@@ -166,6 +151,14 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		remain = 0
 		body.Close()
 		body = emptyBody
+	}
+	var (
+		checkCRC bool
+		crc      uint32
+	)
+	// Even if there is a CRC header, we can't compute the hash on partial data.
+	if remain == size {
+		crc, checkCRC = parseCRC32c(res)
 	}
 	return &Reader{
 		body:            body,
@@ -178,10 +171,6 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		checkCRC:        checkCRC,
 		reopen:          reopen,
 	}, nil
-}
-
-func uncompressedByServer(res *http.Response) bool {
-	return strings.Contains(res.Header.Get("X-Google-Gfe-Response-Body-Transformations"), "gunzipped")
 }
 
 func parseCRC32c(res *http.Response) (uint32, bool) {
@@ -214,6 +203,7 @@ type Reader struct {
 	checkCRC           bool   // should we check the CRC?
 	wantCRC            uint32 // the CRC32c value the server sent in the header
 	gotCRC             uint32 // running crc
+	checkedCRC         bool   // did we check the CRC? (For tests.)
 	reopen             func(seen int64) (*http.Response, error)
 }
 
@@ -232,7 +222,8 @@ func (r *Reader) Read(p []byte) (int, error) {
 		// Check CRC here. It would be natural to check it in Close, but
 		// everybody defers Close on the assumption that it doesn't return
 		// anything worth looking at.
-		if err == io.EOF {
+		if r.remain == 0 { // Only check if we have Content-Length.
+			r.checkedCRC = true
 			if r.gotCRC != r.wantCRC {
 				return n, fmt.Errorf("storage: bad CRC on read: got %d, want %d",
 					r.gotCRC, r.wantCRC)
