@@ -17,11 +17,13 @@
 package proxy
 
 import (
+	"bytes"
+	"fmt"
 	"log"
 	"net/http"
 )
 
-// Useful things for when we need to figure out what's actually being transmitted.
+// Useful things for when we need to figure out what's actually going on under the hood.
 
 type debugTransport struct {
 	prefix string
@@ -49,4 +51,13 @@ func logHeaders(hs http.Header) {
 	for k, v := range hs {
 		log.Printf("    %s: %s", k, v)
 	}
+}
+
+func (r *requestBody) String() string {
+	buf := &bytes.Buffer{}
+	fmt.Fprintf(buf, "media type: %q\n", r.mediaType)
+	for i, p := range r.parts {
+		fmt.Fprintf(buf, "part #%d: %q\n", i, string(p))
+	}
+	return buf.String()
 }
