@@ -21,7 +21,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/version"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
@@ -165,7 +164,6 @@ func (c *Client) ListTraces(ctx context.Context, req *cloudtracepb.ListTracesReq
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListTraces[0:len(c.CallOptions.ListTraces):len(c.CallOptions.ListTraces)], opts...)
 	it := &TraceIterator{}
-	req = proto.Clone(req).(*cloudtracepb.ListTracesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudtracepb.Trace, string, error) {
 		var resp *cloudtracepb.ListTracesResponse
 		req.PageToken = pageToken
@@ -193,7 +191,6 @@ func (c *Client) ListTraces(ctx context.Context, req *cloudtracepb.ListTracesReq
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
 	return it
 }
 

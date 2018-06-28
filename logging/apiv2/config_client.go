@@ -21,7 +21,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/version"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
@@ -145,7 +144,6 @@ func (c *ConfigClient) ListSinks(ctx context.Context, req *loggingpb.ListSinksRe
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListSinks[0:len(c.CallOptions.ListSinks):len(c.CallOptions.ListSinks)], opts...)
 	it := &LogSinkIterator{}
-	req = proto.Clone(req).(*loggingpb.ListSinksRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*loggingpb.LogSink, string, error) {
 		var resp *loggingpb.ListSinksResponse
 		req.PageToken = pageToken
@@ -173,7 +171,6 @@ func (c *ConfigClient) ListSinks(ctx context.Context, req *loggingpb.ListSinksRe
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
 	return it
 }
 
@@ -249,7 +246,6 @@ func (c *ConfigClient) ListExclusions(ctx context.Context, req *loggingpb.ListEx
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListExclusions[0:len(c.CallOptions.ListExclusions):len(c.CallOptions.ListExclusions)], opts...)
 	it := &LogExclusionIterator{}
-	req = proto.Clone(req).(*loggingpb.ListExclusionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*loggingpb.LogExclusion, string, error) {
 		var resp *loggingpb.ListExclusionsResponse
 		req.PageToken = pageToken
@@ -277,7 +273,6 @@ func (c *ConfigClient) ListExclusions(ctx context.Context, req *loggingpb.ListEx
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
 	return it
 }
 
