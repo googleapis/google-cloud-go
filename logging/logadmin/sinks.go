@@ -53,10 +53,11 @@ type Sink struct {
 
 // CreateSink creates a Sink. It returns an error if the Sink already exists.
 // Requires AdminScope.
-func (c *Client) CreateSink(ctx context.Context, sink *Sink) (*Sink, error) {
+func (c *Client) CreateSink(ctx context.Context, sink *Sink, uniqueWriterIdentity bool) (*Sink, error) {
 	ls, err := c.sClient.CreateSink(ctx, &logpb.CreateSinkRequest{
 		Parent: c.parent,
 		Sink:   toLogSink(sink),
+		UniqueWriterIdentity: uniqueWriterIdentity,
 	})
 	if err != nil {
 		fmt.Printf("Sink: %+v\n", toLogSink(sink))
