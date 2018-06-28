@@ -15,6 +15,7 @@
 package bigquery
 
 import (
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -32,6 +33,7 @@ import (
 	gax "github.com/googleapis/gax-go"
 
 	"cloud.google.com/go/civil"
+	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
@@ -42,6 +44,10 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
+
+const replayFilename = "bigquery.replay"
+
+var record = flag.Bool("record", false, "record RPCs")
 
 var (
 	client        *Client
@@ -54,11 +60,8 @@ var (
 			{Name: "bool", Type: BooleanFieldType},
 		}},
 	}
-	testTableExpiration time.Time
-	// BigQuery does not accept hyphens in dataset or table IDs, so we create IDs
-	// with underscores.
-	datasetIDs = uid.NewSpace("dataset", &uid.Options{Sep: '_'})
-	tableIDs   = uid.NewSpace("table", &uid.Options{Sep: '_'})
+	testTableExpiration  time.Time
+	datasetIDs, tableIDs *uid.Space
 )
 
 // Note: integration tests cannot be run in parallel, because TestIntegration_Location
@@ -78,34 +81,126 @@ func getClient(t *testing.T) *Client {
 	return client
 }
 
-// If integration tests will be run, create a unique bucket for them.
+// If integration tests will be run, create a unique dataset for them.
+// Return a cleanup function.
 func initIntegrationTest() func() {
-	flag.Parse() // needed for testing.Short()
-	if testing.Short() {
-		return func() {}
-	}
 	ctx := context.Background()
-	ts := testutil.TokenSource(ctx, Scope)
-	if ts == nil {
-		log.Println("Integration tests skipped. See CONTRIBUTING.md for details")
-		return func() {}
-	}
+	flag.Parse() // needed for testing.Short()
 	projID := testutil.ProjID()
-	var err error
-	client, err = NewClient(ctx, projID, option.WithTokenSource(ts))
-	if err != nil {
-		log.Fatalf("NewClient: %v", err)
+	switch {
+	case testing.Short() && *record:
+		log.Fatal("cannot combine -short and -record")
+		return func() {}
+
+	case testing.Short() && httpreplay.Supported() && testutil.CanReplay(replayFilename) && projID != "":
+		// go test -short with a replay file will replay the integration tests if the
+		// environment variables are set.
+		log.Printf("replaying from %s", replayFilename)
+		httpreplay.DebugHeaders()
+		replayer, err := httpreplay.NewReplayer(replayFilename)
+		if err != nil {
+			log.Fatal(err)
+		}
+		var t time.Time
+		if err := json.Unmarshal(replayer.Initial(), &t); err != nil {
+			log.Fatal(err)
+		}
+		hc, err := replayer.Client(ctx) // no creds needed
+		if err != nil {
+			log.Fatal(err)
+		}
+		client, err = NewClient(ctx, projID, option.WithHTTPClient(hc))
+		if err != nil {
+			log.Fatal(err)
+		}
+		storageClient, err = storage.NewClient(ctx, option.WithHTTPClient(hc))
+		if err != nil {
+			log.Fatal(err)
+		}
+		cleanup := initTestState(client, t)
+		return func() {
+			cleanup()
+			_ = replayer.Close() // No actionable error returned.
+		}
+
+	case testing.Short():
+		// go test -short without a replay file skips the integration tests.
+		if testutil.CanReplay(replayFilename) && projID != "" {
+			log.Print("replay not supported for Go versions before 1.8")
+		}
+		client = nil
+		storageClient = nil
+		return func() {}
+
+	default: // Run integration tests against a real backend.
+		ts := testutil.TokenSource(ctx, Scope)
+		if ts == nil {
+			log.Println("Integration tests skipped. See CONTRIBUTING.md for details")
+			return func() {}
+		}
+		bqOpt := option.WithTokenSource(ts)
+		sOpt := option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl))
+		cleanup := func() {}
+		now := time.Now().UTC()
+		if *record {
+			if !httpreplay.Supported() {
+				log.Print("record not supported for Go versions before 1.8")
+			} else {
+				nowBytes, err := json.Marshal(now)
+				if err != nil {
+					log.Fatal(err)
+				}
+				recorder, err := httpreplay.NewRecorder(replayFilename, nowBytes)
+				if err != nil {
+					log.Fatalf("could not record: %v", err)
+				}
+				log.Printf("recording to %s", replayFilename)
+				hc, err := recorder.Client(ctx, bqOpt)
+				if err != nil {
+					log.Fatal(err)
+				}
+				bqOpt = option.WithHTTPClient(hc)
+				hc, err = recorder.Client(ctx, sOpt)
+				if err != nil {
+					log.Fatal(err)
+				}
+				sOpt = option.WithHTTPClient(hc)
+				cleanup = func() {
+					if err := recorder.Close(); err != nil {
+						log.Printf("saving recording: %v", err)
+					}
+				}
+			}
+		}
+		var err error
+		client, err = NewClient(ctx, projID, bqOpt)
+		if err != nil {
+			log.Fatalf("NewClient: %v", err)
+		}
+		storageClient, err = storage.NewClient(ctx, sOpt)
+		if err != nil {
+			log.Fatalf("storage.NewClient: %v", err)
+		}
+		c := initTestState(client, now)
+		return func() { c(); cleanup() }
 	}
-	storageClient, err = storage.NewClient(ctx,
-		option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl)))
-	if err != nil {
-		log.Fatalf("storage.NewClient: %v", err)
-	}
+}
+
+func initTestState(client *Client, t time.Time) func() {
+	// BigQuery does not accept hyphens in dataset or table IDs, so we create IDs
+	// with underscores.
+	ctx := context.Background()
+	opts := &uid.Options{Sep: '_', Time: t}
+	datasetIDs = uid.NewSpace("dataset", opts)
+	tableIDs = uid.NewSpace("table", opts)
+	testTableExpiration = t.Add(10 * time.Minute).Round(time.Second)
+	// For replayability, seed the random source with t.
+	Seed(t.UnixNano())
+
 	dataset = client.Dataset(datasetIDs.New())
 	if err := dataset.Create(ctx, nil); err != nil {
 		log.Fatalf("creating dataset %s: %v", dataset.DatasetID, err)
 	}
-	testTableExpiration = time.Now().Add(10 * time.Minute).Round(time.Second)
 	return func() {
 		if err := dataset.DeleteWithContents(ctx); err != nil {
 			log.Printf("could not delete %s", dataset.DatasetID)
@@ -124,7 +219,7 @@ func TestIntegration_TableCreate(t *testing.T) {
 	}
 	err := table.Create(context.Background(), &TableMetadata{
 		Schema:         schema,
-		ExpirationTime: time.Now().Add(5 * time.Minute),
+		ExpirationTime: testTableExpiration.Add(5 * time.Minute),
 	})
 	if err == nil {
 		t.Fatal("want error, got nil")
@@ -211,7 +306,7 @@ func TestIntegration_TableMetadata(t *testing.T) {
 		err = table.Create(context.Background(), &TableMetadata{
 			Schema:           schema2,
 			TimePartitioning: &c.timePartitioning,
-			ExpirationTime:   time.Now().Add(5 * time.Minute),
+			ExpirationTime:   testTableExpiration,
 		})
 		if err != nil {
 			t.Fatal(err)
@@ -564,7 +659,6 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 	if err := waitForRow(ctx, table); err != nil {
 		t.Fatal(err)
 	}
-
 	// Read the table.
 	checkRead(t, "upload", table.Read(ctx), wantRows)
 
@@ -651,6 +745,7 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 			}
 		}
 	}
+
 }
 
 type SubSubTestStruct struct {
