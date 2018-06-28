@@ -156,7 +156,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		// The problem with the last two cases is that the CRC will not match -- GCS
 		// computes it on the compressed contents, but we compute it on the
 		// uncompressed contents.
-		if length != 0 && !res.Uncompressed && !uncompressedByServer(res) {
+		if length != 0 && !goHTTPUncompressed(res) && !uncompressedByServer(res) {
 			crc, checkCRC = parseCRC32c(res)
 		}
 	}
