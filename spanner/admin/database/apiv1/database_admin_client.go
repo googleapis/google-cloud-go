@@ -23,7 +23,6 @@ import (
 	"cloud.google.com/go/internal/version"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
@@ -165,7 +164,6 @@ func (c *DatabaseAdminClient) ListDatabases(ctx context.Context, req *databasepb
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListDatabases[0:len(c.CallOptions.ListDatabases):len(c.CallOptions.ListDatabases)], opts...)
 	it := &DatabaseIterator{}
-	req = proto.Clone(req).(*databasepb.ListDatabasesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*databasepb.Database, string, error) {
 		var resp *databasepb.ListDatabasesResponse
 		req.PageToken = pageToken
@@ -193,7 +191,6 @@ func (c *DatabaseAdminClient) ListDatabases(ctx context.Context, req *databasepb
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
 	return it
 }
 

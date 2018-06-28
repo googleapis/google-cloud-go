@@ -23,7 +23,6 @@ import (
 	"cloud.google.com/go/internal/version"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
@@ -225,7 +224,6 @@ func (c *ClusterControllerClient) ListClusters(ctx context.Context, req *datapro
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListClusters[0:len(c.CallOptions.ListClusters):len(c.CallOptions.ListClusters)], opts...)
 	it := &ClusterIterator{}
-	req = proto.Clone(req).(*dataprocpb.ListClustersRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataprocpb.Cluster, string, error) {
 		var resp *dataprocpb.ListClustersResponse
 		req.PageToken = pageToken
@@ -253,7 +251,6 @@ func (c *ClusterControllerClient) ListClusters(ctx context.Context, req *datapro
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
 	return it
 }
 

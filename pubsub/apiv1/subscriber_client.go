@@ -22,7 +22,6 @@ import (
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/version"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
@@ -253,7 +252,6 @@ func (c *SubscriberClient) ListSubscriptions(ctx context.Context, req *pubsubpb.
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListSubscriptions[0:len(c.CallOptions.ListSubscriptions):len(c.CallOptions.ListSubscriptions)], opts...)
 	it := &SubscriptionIterator{}
-	req = proto.Clone(req).(*pubsubpb.ListSubscriptionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsubpb.Subscription, string, error) {
 		var resp *pubsubpb.ListSubscriptionsResponse
 		req.PageToken = pageToken
@@ -281,7 +279,6 @@ func (c *SubscriberClient) ListSubscriptions(ctx context.Context, req *pubsubpb.
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
 	return it
 }
 
@@ -401,7 +398,6 @@ func (c *SubscriberClient) ListSnapshots(ctx context.Context, req *pubsubpb.List
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListSnapshots[0:len(c.CallOptions.ListSnapshots):len(c.CallOptions.ListSnapshots)], opts...)
 	it := &SnapshotIterator{}
-	req = proto.Clone(req).(*pubsubpb.ListSnapshotsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsubpb.Snapshot, string, error) {
 		var resp *pubsubpb.ListSnapshotsResponse
 		req.PageToken = pageToken
@@ -429,7 +425,6 @@ func (c *SubscriberClient) ListSnapshots(ctx context.Context, req *pubsubpb.List
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
 	return it
 }
 
