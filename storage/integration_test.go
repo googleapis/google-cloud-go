@@ -67,6 +67,8 @@ var (
 	// of numbers as during recording.
 	rng           *rand.Rand
 	newTestClient func(ctx context.Context, opts ...option.ClientOption) (*Client, error)
+
+	replaying bool
 )
 
 func TestMain(m *testing.M) {
@@ -84,17 +86,16 @@ func TestMain(m *testing.M) {
 // Return a cleanup function.
 func initIntegrationTest() func() error {
 	flag.Parse() // needed for testing.Short()
-	_, err := os.Stat(replayFilename)
-	replayFileExists := (err == nil)
 	switch {
 	case testing.Short() && *record:
 		log.Fatal("cannot combine -short and -record")
 		return nil
 
-	case testing.Short() && replayFileExists && testutil.ProjID() != "":
-		httpreplay.DebugHeaders()
+	case testing.Short() && testutil.CanReplay(replayFilename) && testutil.ProjID() != "":
 		// go test -short with a replay file will replay the integration tests, if
-		// the environment variables have been set.
+		// the appropriate environment variables have been set.
+		replaying = true
+		httpreplay.DebugHeaders()
 		replayer, err := httpreplay.NewReplayer(replayFilename)
 		if err != nil {
 			log.Fatal(err)
@@ -196,7 +197,7 @@ func (ls *lockedSource) Seed(int64) {
 // the current test if credentials are not available or when being run
 // in Short mode.
 func testConfig(ctx context.Context, t *testing.T) *Client {
-	if newTestClient == nil {
+	if testing.Short() && !replaying {
 		t.Skip("Integration tests skipped in short mode")
 	}
 	client := config(ctx)
@@ -1754,7 +1755,7 @@ func TestIntegration_Notifications(t *testing.T) {
 func TestIntegration_PublicBucket(t *testing.T) {
 	// Confirm that an unauthenticated client can access a public bucket.
 	// See https://cloud.google.com/storage/docs/public-datasets/landsat
-	if newTestClient == nil {
+	if testing.Short() && !replaying {
 		t.Skip("Integration tests skipped in short mode")
 	}
 
@@ -1822,7 +1823,7 @@ func TestIntegration_PublicBucket(t *testing.T) {
 func TestIntegration_ReadCRC(t *testing.T) {
 	// Test that the checksum is handled correctly when reading files.
 	// For gzipped files, see https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/1641.
-	if newTestClient == nil {
+	if testing.Short() && !replaying {
 		t.Skip("Integration tests skipped in short mode")
 	}
 

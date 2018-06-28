@@ -74,7 +74,7 @@ func testMain(m *testing.M) int {
 		if *record {
 			log.Fatal("cannot combine -short and -record")
 		}
-		if _, err := os.Stat(replayFilename); err == nil {
+		if testutil.CanReplay(replayFilename) {
 			initReplay()
 		}
 	} else if *record {
