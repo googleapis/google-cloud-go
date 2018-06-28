@@ -93,3 +93,14 @@ func jwtConfigFromFile(filename string, scopes []string) (*jwt.Config, error) {
 	}
 	return conf, nil
 }
+
+// CanReplay reports whether an integration test can be run in replay mode.
+// The replay file must exist, and the GCLOUD_TESTS_GOLANG_ENABLE_REPLAY
+// environment variable must be non-empty.
+func CanReplay(replayFilename string) bool {
+	if os.Getenv("GCLOUD_TESTS_GOLANG_ENABLE_REPLAY") == "" {
+		return false
+	}
+	_, err := os.Stat(replayFilename)
+	return err == nil
+}
