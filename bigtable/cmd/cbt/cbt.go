@@ -1160,7 +1160,6 @@ func doSetGCPolicy(ctx context.Context, args ...string) {
 	}
 	table := args[0]
 	fam := args[1]
-
 	pol, err := parseGCPolicy(strings.Join(args[2:], " "))
 	if err != nil {
 		log.Fatal(err)
@@ -1180,65 +1179,6 @@ func doWaitForReplicaiton(ctx context.Context, args ...string) {
 	if err := getAdminClient().WaitForReplication(ctx, table); err != nil {
 		log.Fatalf("Waiting for replication: %v", err)
 	}
-}
-
-func parseGCPolicy(policyStr string) (bigtable.GCPolicy, error) {
-	words := strings.Fields(policyStr)
-
-	switch len(words) {
-	case 1:
-		return parseSinglePolicy(words[0])
-	case 3:
-		p1, err := parseSinglePolicy(words[0])
-		if err != nil {
-			return nil, err
-		}
-		p2, err := parseSinglePolicy(words[2])
-		if err != nil {
-			return nil, err
-		}
-		switch words[1] {
-		case "and":
-			return bigtable.IntersectionPolicy(p1, p2), nil
-		case "or":
-			return bigtable.UnionPolicy(p1, p2), nil
-		default:
-			return nil, fmt.Errorf("Expected 'and' or 'or', saw %q", words[1])
-		}
-	default:
-		return nil, fmt.Errorf("Expected '1' or '3' parameter count, saw %d", len(words))
-	}
-	return nil, nil
-}
-
-func parseSinglePolicy(s string) (bigtable.GCPolicy, error) {
-	words := strings.Split(s, "=")
-	if len(words) != 2 && words[0] != "never" {
-		return nil, fmt.Errorf("Expected 'name=value ', got %q", words)
-	}
-
-	switch words[0] {
-	case "never":
-		if len(words) != 1 {
-			return nil, fmt.Errorf("Expected 'never', got %q", s)
-		}
-		return bigtable.NoGcPolicy(), nil
-	case "maxage":
-		d, err := parseDuration(words[1])
-		if err != nil {
-			return nil, err
-		}
-		return bigtable.MaxAgePolicy(d), nil
-	case "maxversions":
-		n, err := strconv.ParseUint(words[1], 10, 16)
-		if err != nil {
-			return nil, err
-		}
-		return bigtable.MaxVersionsPolicy(int(n)), nil
-	default:
-		return nil, fmt.Errorf("Expected 'maxage' or 'maxversions', got %q", words[len(words)-1])
-	}
-	return nil, nil
 }
 
 func parseStorageType(storageTypeStr string) (bigtable.StorageType, error) {
