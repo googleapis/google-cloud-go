@@ -1407,9 +1407,9 @@ func doGetAppProfile(ctx context.Context, args ...string) {
 		log.Fatalln("usage: cbt getappprofile <instance-id> <profile-id>")
 	}
 
-	instanceId := args[0]
-	profileId := args[1]
-	profile, err := getInstanceAdminClient().GetAppProfile(ctx, instanceId, profileId)
+	instanceID := args[0]
+	profileID := args[1]
+	profile, err := getInstanceAdminClient().GetAppProfile(ctx, instanceID, profileID)
 	if err != nil {
 		log.Fatalf("Failed to get app profile : %v", err)
 	}
