@@ -109,6 +109,11 @@ func (r *Replayer) Initial() []byte {
 	return r.proxy.Initial
 }
 
+// IgnoreHeader will not use h when matching requests.
+func (r *Replayer) IgnoreHeader(h string) {
+	r.proxy.IgnoreHeader(h)
+}
+
 // Close closes the replayer.
 func (r *Replayer) Close() error {
 	return r.proxy.Close()
