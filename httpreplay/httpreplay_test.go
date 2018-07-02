@@ -165,10 +165,8 @@ func testReadCRC(t *testing.T, hc *http.Client, mode string) {
 		offset, length int64
 		readCompressed bool // don't decompress a gzipped file
 
-		wantErr    bool
-		wantSize   int64 // Reader.Size
-		wantRemain int64 // Reader.Remain
-		wantLen    int   // length of contents
+		wantErr bool
+		wantLen int // length of contents
 	}{
 		{
 			desc:           "uncompressed, entire file",
@@ -176,8 +174,6 @@ func testReadCRC(t *testing.T, hc *http.Client, mode string) {
 			offset:         0,
 			length:         -1,
 			readCompressed: false,
-			wantSize:       7903,
-			wantRemain:     7903,
 			wantLen:        7903,
 		},
 		{
@@ -186,8 +182,6 @@ func testReadCRC(t *testing.T, hc *http.Client, mode string) {
 			offset:         0,
 			length:         -1,
 			readCompressed: true,
-			wantSize:       7903,
-			wantRemain:     7903,
 			wantLen:        7903,
 		},
 		{
@@ -196,8 +190,6 @@ func testReadCRC(t *testing.T, hc *http.Client, mode string) {
 			offset:         3,
 			length:         -1,
 			readCompressed: false,
-			wantSize:       7903,
-			wantRemain:     7900,
 			wantLen:        7900,
 		},
 		{
@@ -206,8 +198,6 @@ func testReadCRC(t *testing.T, hc *http.Client, mode string) {
 			offset:         0,
 			length:         18,
 			readCompressed: false,
-			wantSize:       7903,
-			wantRemain:     18,
 			wantLen:        18,
 		},
 		{
@@ -221,8 +211,6 @@ func testReadCRC(t *testing.T, hc *http.Client, mode string) {
 			offset:         0,
 			length:         -1,
 			readCompressed: false,
-			wantSize:       -1,
-			wantRemain:     -1,
 			wantLen:        11,
 		},
 		{
@@ -233,8 +221,6 @@ func testReadCRC(t *testing.T, hc *http.Client, mode string) {
 			offset:         0,
 			length:         -1,
 			readCompressed: true,
-			wantSize:       31,
-			wantRemain:     31,
 			wantLen:        31,
 		},
 		{
@@ -251,27 +237,21 @@ func testReadCRC(t *testing.T, hc *http.Client, mode string) {
 			offset:         1,
 			length:         8,
 			readCompressed: true,
-			wantSize:       31,
-			wantRemain:     8,
 			wantLen:        8,
 		},
 		{
-			desc:       "uncompressed, HEAD",
-			obj:        uncompressedObj,
-			offset:     0,
-			length:     0,
-			wantSize:   7903,
-			wantRemain: 0,
-			wantLen:    0,
+			desc:    "uncompressed, HEAD",
+			obj:     uncompressedObj,
+			offset:  0,
+			length:  0,
+			wantLen: 0,
 		},
 		{
-			desc:       "compressed, HEAD",
-			obj:        gzippedObj,
-			offset:     0,
-			length:     0,
-			wantSize:   -1,
-			wantRemain: 0,
-			wantLen:    0,
+			desc:    "compressed, HEAD",
+			obj:     gzippedObj,
+			offset:  0,
+			length:  0,
+			wantLen: 0,
 		},
 	} {
 		obj := test.obj.ReadCompressed(test.readCompressed)
@@ -282,12 +262,6 @@ func testReadCRC(t *testing.T, hc *http.Client, mode string) {
 			}
 			t.Errorf("%s: %s: %v", mode, test.desc, err)
 			continue
-		}
-		if got, want := r.Size(), test.wantSize; got != want {
-			t.Errorf("%s: %s: size: got %d, want %d", mode, test.desc, got, want)
-		}
-		if got, want := r.Remain(), test.wantRemain; got != want {
-			t.Errorf("%s: %s: remain: got %d, want %d", mode, test.desc, got, want)
 		}
 		data, err := ioutil.ReadAll(r)
 		_ = r.Close()
