@@ -168,6 +168,7 @@ func init() {
 		"X-Forwarded-Proto",
 		"X-Forwarded-Url",
 		"X-Cloud-Trace-Context", // OpenCensus traces have a random ID
+		"X-Goog-Api-Client",     // can differ for, e.g., different Go versions
 	} {
 		ignoreHeaders[h] = true
 	}
