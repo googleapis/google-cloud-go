@@ -51,9 +51,10 @@ type Proxy struct {
 	// Initial state of the client.
 	Initial []byte
 
-	mproxy   *martian.Proxy
-	filename string  // for log
-	logger   *Logger // for recording only
+	mproxy        *martian.Proxy
+	filename      string          // for log
+	logger        *Logger         // for recording only
+	ignoreHeaders map[string]bool // headers the user has asked to ignore
 }
 
 // ForRecording returns a Proxy configured to record.
@@ -118,10 +119,15 @@ func newProxy(filename string) (*Proxy, error) {
 		return nil, err
 	}
 	mproxy.SetMITM(mc)
+	ih := map[string]bool{}
+	for k, v := range ignoreHeaders {
+		ih[k] = v
+	}
 	return &Proxy{
-		mproxy:   mproxy,
-		CACert:   x509c,
-		filename: filename,
+		mproxy:        mproxy,
+		CACert:        x509c,
+		filename:      filename,
+		ignoreHeaders: ih,
 	}, nil
 }
 
@@ -143,6 +149,11 @@ func (p *Proxy) Transport() *http.Transport {
 		TLSClientConfig: &tls.Config{RootCAs: caCertPool},
 		Proxy:           func(*http.Request) (*url.URL, error) { return p.URL, nil },
 	}
+}
+
+// IgnoreHeader will cause h to be ignored during matching on replay.
+func (p *Proxy) IgnoreHeader(h string) {
+	p.ignoreHeaders[http.CanonicalHeaderKey(h)] = true
 }
 
 // Close closes the proxy. If the proxy is recording, it also writes the log.

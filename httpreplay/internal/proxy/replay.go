@@ -43,7 +43,10 @@ func ForReplaying(filename string, port int) (*Proxy, error) {
 	if err != nil {
 		return nil, err
 	}
-	p.mproxy.SetRoundTripper(replayRoundTripper{calls: calls})
+	p.mproxy.SetRoundTripper(replayRoundTripper{
+		calls:         calls,
+		ignoreHeaders: p.ignoreHeaders,
+	})
 	p.Initial = initial
 
 	// Debug logging.
@@ -124,7 +127,8 @@ func readLog(filename string) ([]*call, []byte, error) {
 }
 
 type replayRoundTripper struct {
-	calls []*call
+	calls         []*call
+	ignoreHeaders map[string]bool
 }
 
 func (r replayRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
@@ -136,7 +140,7 @@ func (r replayRoundTripper) RoundTrip(req *http.Request) (*http.Response, error)
 		if call == nil {
 			continue
 		}
-		if requestsMatch(req, reqBody, call.req, call.reqBody) {
+		if requestsMatch(req, reqBody, call.req, call.reqBody, r.ignoreHeaders) {
 			r.calls[i] = nil // nil out this call so we don't reuse it
 			return toHTTPResponse(call.res, req), nil
 		}
@@ -144,7 +148,7 @@ func (r replayRoundTripper) RoundTrip(req *http.Request) (*http.Response, error)
 	return nil, fmt.Errorf("no matching request for %+v", req)
 }
 
-// Headers that shouldn't be compared, becuase they may differ on different executions
+// Headers that shouldn't be compared, because they may differ on different executions
 // of the same code, or may not be present during record or replay.
 var ignoreHeaders = map[string]bool{}
 
@@ -170,7 +174,7 @@ func init() {
 }
 
 // Report whether the incoming request in matches the candidate request cand.
-func requestsMatch(in *http.Request, inBody *requestBody, cand *Request, candBody *requestBody) bool {
+func requestsMatch(in *http.Request, inBody *requestBody, cand *Request, candBody *requestBody, ignoreHeaders map[string]bool) bool {
 	if in.Method != cand.Method {
 		return false
 	}
