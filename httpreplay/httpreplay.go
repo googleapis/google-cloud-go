@@ -125,3 +125,7 @@ func (r *Replayer) Close() error {
 func DebugHeaders() {
 	proxy.DebugHeaders = true
 }
+
+// Supported reports whether httpreplay is supported in the current version of Go.
+// For Go 1.8 and above, the answer is true.
+func Supported() bool { return true }

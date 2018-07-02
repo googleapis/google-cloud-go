@@ -17,3 +17,36 @@
 // httpreplay is available in go1.8 and forward. This file exists only for 1.6 and 1.7 to
 // compile, since every package must have some buildable file else go test ./... fails.
 package httpreplay
+
+import (
+	"net/http"
+
+	"golang.org/x/net/context"
+	"google.golang.org/api/option"
+)
+
+// Supported reports whether httpreplay is supported in the current version of Go.
+// For Go 1.7 and below, the answer is false.
+func Supported() bool { return false }
+
+type (
+	Recorder struct{}
+
+	Replayer struct{}
+)
+
+func NewRecorder(string, []byte) (*Recorder, error) { return nil, nil }
+
+func (*Recorder) Client(context.Context, ...option.ClientOption) (*http.Client, error) {
+	return nil, nil
+}
+func (*Recorder) Close() error { return nil }
+
+func NewReplayer(string) (*Replayer, error) { return nil, nil }
+
+func (*Replayer) Initial() []byte                              { return nil }
+func (*Replayer) IgnoreHeader(string)                          {}
+func (*Replayer) Client(context.Context) (*http.Client, error) { return nil, nil }
+func (*Replayer) Close() error                                 { return nil }
+
+func DebugHeaders() {}

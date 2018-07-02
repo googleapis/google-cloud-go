@@ -91,7 +91,7 @@ func initIntegrationTest() func() error {
 		log.Fatal("cannot combine -short and -record")
 		return nil
 
-	case testing.Short() && testutil.CanReplay(replayFilename) && testutil.ProjID() != "":
+	case testing.Short() && httpreplay.Supported() && testutil.CanReplay(replayFilename) && testutil.ProjID() != "":
 		// go test -short with a replay file will replay the integration tests, if
 		// the appropriate environment variables have been set.
 		replaying = true
@@ -117,6 +117,9 @@ func initIntegrationTest() func() error {
 
 	case testing.Short():
 		// go test -short without a replay file skips the integration tests.
+		if testutil.CanReplay(replayFilename) && testutil.ProjID() != "" {
+			log.Print("replay not supported for Go versions before 1.8")
+		}
 		newTestClient = nil
 		return func() error { return nil }
 
@@ -124,7 +127,7 @@ func initIntegrationTest() func() error {
 		now := time.Now().UTC()
 		initUIDsAndRand(now)
 		var cleanup func() error
-		if *record {
+		if *record && httpreplay.Supported() {
 			// Remember the time for replay.
 			nowBytes, err := json.Marshal(now)
 			if err != nil {
@@ -151,6 +154,9 @@ func initIntegrationTest() func() error {
 			}
 			log.Printf("recording to %s", replayFilename)
 		} else {
+			if *record {
+				log.Print("record not supported for Go versions before 1.8")
+			}
 			newTestClient = NewClient
 			cleanup = cleanupBuckets
 		}
