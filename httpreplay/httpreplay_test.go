@@ -224,14 +224,6 @@ func testReadCRC(t *testing.T, hc *http.Client, mode string) {
 			wantLen:        31,
 		},
 		{
-			desc:           "compressed, partial, server unzips",
-			obj:            gzippedObj,
-			offset:         1,
-			length:         8,
-			readCompressed: false,
-			wantErr:        true, // GCS can't serve part of a gzipped object
-		},
-		{
 			desc:           "compressed, partial, read compressed",
 			obj:            gzippedObj,
 			offset:         1,
