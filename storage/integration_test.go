@@ -35,7 +35,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 	"testing"
 	"time"
 
@@ -179,24 +178,7 @@ func initUIDsAndRand(t time.Time) {
 	// Use our own random source, to avoid other parts of the program taking
 	// random numbers from the global source and putting record and replay
 	// out of sync.
-	s := &lockedSource{src: rand.NewSource(t.UnixNano())}
-	rng = rand.New(s)
-}
-
-// lockedSource makes a rand.Source safe for use by multiple goroutines.
-type lockedSource struct {
-	mu  sync.Mutex
-	src rand.Source
-}
-
-func (ls *lockedSource) Int63() int64 {
-	ls.mu.Lock()
-	defer ls.mu.Unlock()
-	return ls.src.Int63()
-}
-
-func (ls *lockedSource) Seed(int64) {
-	panic("shouldn't be calling Seed")
+	rng = testutil.NewRand(t)
 }
 
 // testConfig returns the Client used to access GCS. testConfig skips
