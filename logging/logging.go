@@ -545,6 +545,10 @@ type Entry struct {
 	// encoding/json package to a JSON object (and not any other type of JSON value).
 	Payload interface{}
 
+	// SourceLocation optionally specifies the source code location that produced
+	// the log entry.
+	SourceLocation *logpb.LogEntrySourceLocation
+
 	// Labels optionally specifies key/value labels for the log entry.
 	// The Logger.Log method takes ownership of this map. See Logger.CommonLabels
 	// for more about labels.
@@ -791,14 +795,15 @@ func toLogEntry(e Entry) (*logpb.LogEntry, error) {
 		return nil, err
 	}
 	ent := &logpb.LogEntry{
-		Timestamp:   ts,
-		Severity:    logtypepb.LogSeverity(e.Severity),
-		InsertId:    e.InsertID,
-		HttpRequest: fromHTTPRequest(e.HTTPRequest),
-		Operation:   e.Operation,
-		Labels:      e.Labels,
-		Trace:       e.Trace,
-		Resource:    e.Resource,
+		Timestamp:      ts,
+		Severity:       logtypepb.LogSeverity(e.Severity),
+		InsertId:       e.InsertID,
+		HttpRequest:    fromHTTPRequest(e.HTTPRequest),
+		Operation:      e.Operation,
+		SourceLocation: e.SourceLocation,
+		Labels:         e.Labels,
+		Trace:          e.Trace,
+		Resource:       e.Resource,
 	}
 	switch p := e.Payload.(type) {
 	case string:
