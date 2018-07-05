@@ -159,6 +159,7 @@ func init() {
 	}
 	for _, h := range []string{
 		"Content-Type", // handled by requestBody
+		"Connection",
 		"Date",
 		"Host",
 		"Transfer-Encoding",
