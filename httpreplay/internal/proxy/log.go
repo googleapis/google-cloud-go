@@ -63,6 +63,8 @@ type Request struct {
 type Response struct {
 	StatusCode int         // http.Response.StatusCode
 	Proto      string      // http.Response.Proto
+	ProtoMajor int         // http.Response.ProtoMajor
+	ProtoMinor int         // http.Response.ProtoMinor
 	Header     http.Header // http.Response.Header
 	Body       []byte      // http.Response.Body, read to completion
 	Trailer    http.Header `json:",omitempty"` // http.Response.Trailer
@@ -166,6 +168,8 @@ func fromHTTPResponse(res *http.Response) (*Response, error) {
 	return &Response{
 		StatusCode: res.StatusCode,
 		Proto:      res.Proto,
+		ProtoMajor: res.ProtoMajor,
+		ProtoMinor: res.ProtoMinor,
 		Header:     res.Header,
 		Body:       data,
 		Trailer:    res.Trailer,
@@ -176,6 +180,8 @@ func toHTTPResponse(lr *Response, req *http.Request) *http.Response {
 	res := &http.Response{
 		StatusCode:    lr.StatusCode,
 		Proto:         lr.Proto,
+		ProtoMajor:    lr.ProtoMajor,
+		ProtoMinor:    lr.ProtoMinor,
 		Header:        lr.Header,
 		Body:          ioutil.NopCloser(bytes.NewReader(lr.Body)),
 		ContentLength: int64(len(lr.Body)),
