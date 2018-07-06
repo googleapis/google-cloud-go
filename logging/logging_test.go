@@ -229,6 +229,7 @@ func TestLogAndEntries(t *testing.T) {
 //   - HTTPRequest
 //   - Operation
 //   - Resource
+//   - SourceLocation
 func compareEntries(got, want []*logging.Entry) (string, bool) {
 	if len(got) != len(want) {
 		return fmt.Sprintf("got %d entries, want %d", len(got), len(want)), false
