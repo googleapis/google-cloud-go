@@ -915,11 +915,9 @@ func TestConfigServiceV2UpdateSink(t *testing.T) {
 
 	var formattedSinkName string = fmt.Sprintf("projects/%s/sinks/%s", "[PROJECT]", "[SINK]")
 	var sink *loggingpb.LogSink = &loggingpb.LogSink{}
-	var updateMask *field_maskpb.FieldMask = &field_maskpb.FieldMask{}
 	var request = &loggingpb.UpdateSinkRequest{
-		SinkName:   formattedSinkName,
-		Sink:       sink,
-		UpdateMask: updateMask,
+		SinkName: formattedSinkName,
+		Sink:     sink,
 	}
 
 	c, err := NewConfigClient(context.Background(), clientOpt)
@@ -948,11 +946,9 @@ func TestConfigServiceV2UpdateSinkError(t *testing.T) {
 
 	var formattedSinkName string = fmt.Sprintf("projects/%s/sinks/%s", "[PROJECT]", "[SINK]")
 	var sink *loggingpb.LogSink = &loggingpb.LogSink{}
-	var updateMask *field_maskpb.FieldMask = &field_maskpb.FieldMask{}
 	var request = &loggingpb.UpdateSinkRequest{
-		SinkName:   formattedSinkName,
-		Sink:       sink,
-		UpdateMask: updateMask,
+		SinkName: formattedSinkName,
+		Sink:     sink,
 	}
 
 	c, err := NewConfigClient(context.Background(), clientOpt)
