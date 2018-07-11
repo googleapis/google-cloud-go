@@ -33,6 +33,25 @@ make backwards-incompatible changes.
 
 ## News
 
+_July 11, 2018_
+
+*v0.25.0*
+
+- Added [Code of Conduct](https://github.com/GoogleCloudPlatform/google-cloud-go/blob/master/CODE_OF_CONDUCT.md)
+- bigtable:
+  - cbt: Support a GC policy of "never".
+- errorreporting:
+  - Support User.
+  - Close now calls Flush.
+  - Use OnError (previously ignored).
+  - Pass through the RPC error as-is to OnError.
+- httpreplay: A tool for recording and replaying HTTP requests
+  (for the bigquery and storage clients in this repo).
+- kms: v1 client added
+- logging: add SourceLocation to Entry.
+- storage: improve CRC checking on read.
+
+
 _June 18, 2018_
 
 *v0.24.0*
