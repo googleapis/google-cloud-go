@@ -574,6 +574,61 @@ func (s *gServer) StreamingPull(sps pb.Subscriber_StreamingPullServer) error {
 	return err
 }
 
+func (s *gServer) Seek(ctx context.Context, req *pb.SeekRequest) (*pb.SeekResponse, error) {
+	// Only handle time-based seeking for now.
+	// This fake doesn't deal with snapshots.
+	var target time.Time
+	switch v := req.Target.(type) {
+	case *pb.SeekRequest_Time:
+		var err error
+		target, err = ptypes.Timestamp(v.Time)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "bad Time target: %v", err)
+		}
+	default:
+		return nil, status.Errorf(codes.Unimplemented, "unhandled Seek target type %T", v)
+	}
+
+	// The entire server must be locked while doing the work below,
+	// because the messages don't have any other synchronization.
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	sub := s.subs[req.Subscription]
+	if sub == nil {
+		return nil, status.Errorf(codes.NotFound, "subscription %s", req.Subscription)
+	}
+
+	// Drop all messages from sub that were published before the target time.
+	sub.mu.Lock()
+	defer sub.mu.Unlock()
+	for id, m := range sub.msgs {
+		if m.publishTime.Before(target) {
+			delete(sub.msgs, id)
+			(*m.acks)++
+		}
+	}
+	// Un-ack any already-acked messages after this time;
+	// redelivering them to the subscription is the closest analogue here.
+	for _, m := range s.msgs {
+		if m.PublishTime.Before(target) {
+			continue
+		}
+		sub.msgs[m.ID] = &message{
+			publishTime: m.PublishTime,
+			proto: &pb.ReceivedMessage{
+				AckId: m.ID,
+				// This was not preserved!
+				//Message: pm,
+			},
+			deliveries:  &m.deliveries,
+			acks:        &m.acks,
+			streamIndex: -1,
+		}
+	}
+	return &pb.SeekResponse{}, nil
+}
+
 var retentionDuration = 10 * time.Minute
 
 func (s *subscription) deliver() {
