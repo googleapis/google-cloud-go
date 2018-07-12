@@ -530,11 +530,6 @@ func (ac *AdminClient) isConsistent(ctx context.Context, tableName, token string
 }
 
 // WaitForReplication waits until all the writes committed before the call started have been propagated to all the clusters in the instance via replication.
-//
-// This is a private alpha release of Cloud Bigtable replication. This feature
-// is not currently available to most Cloud Bigtable customers. This feature
-// might be changed in backward-incompatible ways and is not recommended for
-// production use. It is not subject to any SLA or deprecation policy.
 func (ac *AdminClient) WaitForReplication(ctx context.Context, table string) error {
 	// Get the token.
 	prefix := ac.instancePrefix()
@@ -686,11 +681,6 @@ func (iac *InstanceAdminClient) CreateInstance(ctx context.Context, conf *Instan
 
 // CreateInstance creates a new instance with configured clusters in the project.
 // This method will return when the instance has been created or when an error occurs.
-//
-// Instances with multiple clusters are part of a private alpha release of Cloud Bigtable replication.
-// This feature is not currently available to most Cloud Bigtable customers. This feature
-// might be changed in backward-incompatible ways and is not recommended for
-// production use. It is not subject to any SLA or deprecation policy.
 func (iac *InstanceAdminClient) CreateInstanceWithClusters(ctx context.Context, conf *InstanceWithClustersConfig) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	clusters := make(map[string]*btapb.Cluster)
@@ -797,11 +787,6 @@ type ClusterInfo struct {
 
 // CreateCluster creates a new cluster in an instance.
 // This method will return when the cluster has been created or when an error occurs.
-//
-// This is a private alpha release of Cloud Bigtable replication. This feature
-// is not currently available to most Cloud Bigtable customers. This feature
-// might be changed in backward-incompatible ways and is not recommended for
-// production use. It is not subject to any SLA or deprecation policy.
 func (iac *InstanceAdminClient) CreateCluster(ctx context.Context, conf *ClusterConfig) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 
@@ -820,11 +805,6 @@ func (iac *InstanceAdminClient) CreateCluster(ctx context.Context, conf *Cluster
 }
 
 // DeleteCluster deletes a cluster from an instance.
-//
-// This is a private alpha release of Cloud Bigtable replication. This feature
-// is not currently available to most Cloud Bigtable customers. This feature
-// might be changed in backward-incompatible ways and is not recommended for
-// production use. It is not subject to any SLA or deprecation policy.
 func (iac *InstanceAdminClient) DeleteCluster(ctx context.Context, instanceID, clusterID string) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.DeleteClusterRequest{Name: "projects/" + iac.project + "/instances/" + instanceID + "/clusters/" + clusterID}

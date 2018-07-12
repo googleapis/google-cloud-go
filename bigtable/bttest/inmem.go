@@ -266,10 +266,6 @@ func (s *server) DropRowRange(ctx context.Context, req *btapb.DropRowRangeReques
 	return &emptypb.Empty{}, nil
 }
 
-// This is a private alpha release of Cloud Bigtable replication. This feature
-// is not currently available to most Cloud Bigtable customers. This feature
-// might be changed in backward-incompatible ways and is not recommended for
-// production use. It is not subject to any SLA or deprecation policy.
 func (s *server) GenerateConsistencyToken(ctx context.Context, req *btapb.GenerateConsistencyTokenRequest) (*btapb.GenerateConsistencyTokenResponse, error) {
 	// Check that the table exists.
 	_, ok := s.tables[req.Name]
@@ -282,10 +278,6 @@ func (s *server) GenerateConsistencyToken(ctx context.Context, req *btapb.Genera
 	}, nil
 }
 
-// This is a private alpha release of Cloud Bigtable replication. This feature
-// is not currently available to most Cloud Bigtable customers. This feature
-// might be changed in backward-incompatible ways and is not recommended for
-// production use. It is not subject to any SLA or deprecation policy.
 func (s *server) CheckConsistency(ctx context.Context, req *btapb.CheckConsistencyRequest) (*btapb.CheckConsistencyResponse, error) {
 	// Check that the table exists.
 	_, ok := s.tables[req.Name]
