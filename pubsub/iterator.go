@@ -142,13 +142,16 @@ func (it *streamingMessageIterator) done(ackID string, ack bool, receiveTime tim
 }
 
 // fail is called when a stream method returns a permanent error.
-func (it *streamingMessageIterator) fail(err error) {
+// fail returns it.err. This may be err, or it may be the error
+// set by an earlier call to fail.
+func (it *streamingMessageIterator) fail(err error) error {
 	it.mu.Lock()
+	defer it.mu.Unlock()
 	if it.err == nil {
 		it.err = err
 		close(it.failed)
 	}
-	it.mu.Unlock()
+	return it.err
 }
 
 // receive makes a call to the stream's Recv method and returns
@@ -171,13 +174,11 @@ func (it *streamingMessageIterator) receive() ([]*Message, error) {
 	res, err := it.ps.Recv()
 	// The pullStream handles retries, so any error here is fatal.
 	if err != nil {
-		it.fail(err)
-		return nil, err
+		return nil, it.fail(err)
 	}
 	msgs, err := convertMessages(res.ReceivedMessages)
 	if err != nil {
-		it.fail(err)
-		return nil, err
+		return nil, it.fail(err)
 	}
 	// We received some messages. Remember them so we can keep them alive. Also,
 	// do a receipt mod-ack.
