@@ -1580,6 +1580,7 @@ func TestCancelTimeout(t *testing.T) {
 	}
 	// Test query timeout.
 	ctx, cancel = context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
 	go func() {
 		// Establish a stream to mock cloud spanner server.
 		iter := stream(ctx,

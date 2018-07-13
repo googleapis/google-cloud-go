@@ -1262,6 +1262,9 @@ func testMutate(t *testing.T, mutate func(ctx context.Context, client *Client, m
 		NewUpdate(keys[0], &T{3}),
 		NewDelete(keys[1]),
 	)
+	if err != nil {
+		t.Fatal(err)
+	}
 	check(keys[0], 3)
 	check(keys[1], ErrNoSuchEntity)
 

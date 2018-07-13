@@ -494,11 +494,11 @@ func TestClientIntegration(t *testing.T) {
 	}
 
 	// Check for google-cloud-go/issues/723. RMWs that insert new rows should keep row order sorted in the emulator.
-	row, err = tbl.ApplyReadModifyWrite(ctx, "issue-723-2", appendRMW([]byte{0}))
+	_, err = tbl.ApplyReadModifyWrite(ctx, "issue-723-2", appendRMW([]byte{0}))
 	if err != nil {
 		t.Fatalf("ApplyReadModifyWrite null string: %v", err)
 	}
-	row, err = tbl.ApplyReadModifyWrite(ctx, "issue-723-1", appendRMW([]byte{0}))
+	_, err = tbl.ApplyReadModifyWrite(ctx, "issue-723-1", appendRMW([]byte{0}))
 	if err != nil {
 		t.Fatalf("ApplyReadModifyWrite null string: %v", err)
 	}
@@ -875,6 +875,9 @@ func TestClientIntegration(t *testing.T) {
 		rc++
 		return true
 	}, LimitRows(int64(wantRc)))
+	if err != nil {
+		t.Fatal(err)
+	}
 	if rc != wantRc {
 		t.Errorf("Scan with row limit returned %d rows, want %d", rc, wantRc)
 	}

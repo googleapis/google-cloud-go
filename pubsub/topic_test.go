@@ -101,6 +101,9 @@ func TestStopPublishOrder(t *testing.T) {
 func TestPublishTimeout(t *testing.T) {
 	ctx := context.Background()
 	serv, err := testutil.NewServer()
+	if err != nil {
+		t.Fatal(err)
+	}
 	pubsubpb.RegisterPublisherServer(serv.Gsrv, &alwaysFailPublish{})
 	conn, err := grpc.Dial(serv.Addr, grpc.WithInsecure())
 	if err != nil {

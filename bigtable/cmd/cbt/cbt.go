@@ -81,7 +81,6 @@ func getClient(clientConf bigtable.ClientConfig) *bigtable.Client {
 		if err != nil {
 			log.Fatalf("Making bigtable.Client: %v", err)
 		}
-		opts = append(opts, option.WithUserAgent(cliUserAgent))
 	}
 	return client
 }
