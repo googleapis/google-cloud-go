@@ -150,7 +150,7 @@ func TestPublish(t *testing.T) {
 	}
 }
 
-// Note: this sets the fake's "now" time, so it is senstive to concurrent changes to "now".
+// Note: this sets the fake's "now" time, so it is sensitive to concurrent changes to "now".
 func publish(t *testing.T, pclient pb.PublisherClient, topic *pb.Topic, messages []*pb.PubsubMessage) map[string]*pb.PubsubMessage {
 	pubTime := time.Now()
 	now.Store(func() time.Time { return pubTime })
