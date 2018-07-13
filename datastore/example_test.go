@@ -390,6 +390,9 @@ func ExampleClient_GetAll() {
 	}
 	var posts []*Post
 	keys, err := client.GetAll(ctx, datastore.NewQuery("Post"), &posts)
+	if err != nil {
+		// TODO: Handle error.
+	}
 	for i, key := range keys {
 		fmt.Println(key)
 		fmt.Println(posts[i])

@@ -34,9 +34,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/googleapis/gax-go"
-
 	"cloud.google.com/go/storage"
+	gax "github.com/googleapis/gax-go"
 	"golang.org/x/build/kubernetes"
 	k8sapi "golang.org/x/build/kubernetes/api"
 	"golang.org/x/build/kubernetes/gke"
@@ -294,6 +293,9 @@ func (tr *TestRunner) QueryProfiles(projectID, service, startTime, endTime, prof
 // bucket and pushes the image to Google Container Registry.
 func (tr *GKETestRunner) createAndPublishDockerImage(ctx context.Context, projectID, sourceBucket, sourceObject, ImageName string) error {
 	cloudbuildService, err := cloudbuild.New(tr.Client)
+	if err != nil {
+		return err
+	}
 
 	build := &cloudbuild.Build{
 		Source: &cloudbuild.Source{

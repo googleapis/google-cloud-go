@@ -77,7 +77,9 @@ func TestStreamTimeout(t *testing.T) {
 		time.Sleep(250 * time.Millisecond)
 	}
 
-	err = <-errc
+	if err := <-errc; err != nil {
+		t.Fatal(err)
+	}
 	if err := sub.Delete(ctx); err != nil {
 		t.Fatal(err)
 	}
