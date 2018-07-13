@@ -543,9 +543,11 @@ func (c *Client) Jobs(ctx context.Context) *JobIterator {
 
 // JobIterator iterates over jobs in a project.
 type JobIterator struct {
-	ProjectID string // Project ID of the jobs to list. Default is the client's project.
-	AllUsers  bool   // Whether to list jobs owned by all users in the project, or just the current caller.
-	State     State  // List only jobs in the given state. Defaults to all states.
+	ProjectID       string    // Project ID of the jobs to list. Default is the client's project.
+	AllUsers        bool      // Whether to list jobs owned by all users in the project, or just the current caller.
+	State           State     // List only jobs in the given state. Defaults to all states.
+	MinCreationTime time.Time // List only jobs created after this time.
+	MaxCreationTime time.Time // List only jobs created before this time.
 
 	ctx      context.Context
 	c        *Client
@@ -587,6 +589,12 @@ func (it *JobIterator) fetch(pageSize int, pageToken string) (string, error) {
 		AllUsers(it.AllUsers)
 	if st != "" {
 		req.StateFilter(st)
+	}
+	if !it.MinCreationTime.IsZero() {
+		req.MinCreationTime(uint64(it.MinCreationTime.UnixNano() / 1e6))
+	}
+	if !it.MaxCreationTime.IsZero() {
+		req.MaxCreationTime(uint64(it.MaxCreationTime.UnixNano() / 1e6))
 	}
 	setClientHeader(req.Header())
 	if pageSize > 0 {
