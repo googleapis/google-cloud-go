@@ -29,6 +29,7 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
+	"sync"
 
 	"github.com/google/martian/martianlog"
 )
@@ -43,7 +44,7 @@ func ForReplaying(filename string, port int) (*Proxy, error) {
 	if err != nil {
 		return nil, err
 	}
-	p.mproxy.SetRoundTripper(replayRoundTripper{
+	p.mproxy.SetRoundTripper(&replayRoundTripper{
 		calls:         calls,
 		ignoreHeaders: p.ignoreHeaders,
 	})
@@ -127,15 +128,18 @@ func readLog(filename string) ([]*call, []byte, error) {
 }
 
 type replayRoundTripper struct {
+	mu            sync.Mutex
 	calls         []*call
 	ignoreHeaders map[string]bool
 }
 
-func (r replayRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+func (r *replayRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	reqBody, err := newRequestBodyFromHTTP(req)
 	if err != nil {
 		return nil, err
 	}
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	for i, call := range r.calls {
 		if call == nil {
 			continue
