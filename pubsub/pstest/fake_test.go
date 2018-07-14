@@ -446,6 +446,27 @@ func TestStreamingPullTimeout(t *testing.T) {
 	}
 }
 
+func TestSeek(t *testing.T) {
+	pclient, sclient, _ := newFake(t)
+	top := mustCreateTopic(t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	sub := mustCreateSubscription(t, sclient, &pb.Subscription{
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top.Name,
+		AckDeadlineSeconds: 10,
+	})
+	ts, err := ptypes.TimestampProto(time.Now())
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = sclient.Seek(context.Background(), &pb.SeekRequest{
+		Subscription: sub.Name,
+		Target:       &pb.SeekRequest_Time{ts},
+	})
+	if err != nil {
+		t.Errorf("Seeking: %v", err)
+	}
+}
+
 func mustStartPull(t *testing.T, sc pb.SubscriberClient, sub *pb.Subscription) pb.Subscriber_StreamingPullClient {
 	spc, err := sc.StreamingPull(context.Background())
 	if err != nil {

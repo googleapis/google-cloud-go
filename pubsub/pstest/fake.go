@@ -600,8 +600,6 @@ func (s *gServer) Seek(ctx context.Context, req *pb.SeekRequest) (*pb.SeekRespon
 	}
 
 	// Drop all messages from sub that were published before the target time.
-	sub.mu.Lock()
-	defer sub.mu.Unlock()
 	for id, m := range sub.msgs {
 		if m.publishTime.Before(target) {
 			delete(sub.msgs, id)
