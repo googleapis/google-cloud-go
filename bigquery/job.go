@@ -30,11 +30,11 @@ import (
 
 // A Job represents an operation which has been submitted to BigQuery for processing.
 type Job struct {
-	c         *Client
-	projectID string
-	jobID     string
-	location  string
-
+	c          *Client
+	projectID  string
+	jobID      string
+	location   string
+	email      string
 	config     *bq.JobConfiguration
 	lastStatus *JobStatus
 }
@@ -71,6 +71,11 @@ func (j *Job) ID() string {
 // Location returns the job's location.
 func (j *Job) Location() string {
 	return j.location
+}
+
+// Email returns the email of the job's creator.
+func (j *Job) Email() string {
+	return j.email
 }
 
 // State is one of a sequence of states that a Job progresses through as it is processed.
@@ -620,7 +625,7 @@ func (it *JobIterator) fetch(pageSize int, pageToken string) (string, error) {
 }
 
 func convertListedJob(j *bq.JobListJobs, c *Client) (*Job, error) {
-	return bqToJob2(j.JobReference, j.Configuration, j.Status, j.Statistics, c)
+	return bqToJob2(j.JobReference, j.Configuration, j.Status, j.Statistics, j.UserEmail, c)
 }
 
 func (c *Client) getJobInternal(ctx context.Context, jobID, location string, fields ...googleapi.Field) (*bq.Job, error) {
@@ -644,15 +649,16 @@ func (c *Client) getJobInternal(ctx context.Context, jobID, location string, fie
 }
 
 func bqToJob(q *bq.Job, c *Client) (*Job, error) {
-	return bqToJob2(q.JobReference, q.Configuration, q.Status, q.Statistics, c)
+	return bqToJob2(q.JobReference, q.Configuration, q.Status, q.Statistics, q.UserEmail, c)
 }
 
-func bqToJob2(qr *bq.JobReference, qc *bq.JobConfiguration, qs *bq.JobStatus, qt *bq.JobStatistics, c *Client) (*Job, error) {
+func bqToJob2(qr *bq.JobReference, qc *bq.JobConfiguration, qs *bq.JobStatus, qt *bq.JobStatistics, email string, c *Client) (*Job, error) {
 	j := &Job{
 		projectID: qr.ProjectId,
 		jobID:     qr.JobId,
 		location:  qr.Location,
 		c:         c,
+		email:     email,
 	}
 	j.setConfig(qc)
 	if err := j.setStatus(qs); err != nil {
