@@ -56,8 +56,8 @@ func (s *pageFetcherReadStub) fetchPage(ctx context.Context, t *Table, schema Sc
 	return result, nil
 }
 
-func waitForQueryStub(context.Context, string) (Schema, error) {
-	return nil, nil
+func waitForQueryStub(context.Context, string) (Schema, uint64, error) {
+	return nil, 1, nil
 }
 
 func TestRead(t *testing.T) {
