@@ -226,7 +226,7 @@ func (j *Job) Wait(ctx context.Context) (js *JobStatus, err error) {
 
 	if j.isQuery() {
 		// We can avoid polling for query jobs.
-		if _, err := j.waitForQuery(ctx, j.projectID); err != nil {
+		if _, _, err := j.waitForQuery(ctx, j.projectID); err != nil {
 			return nil, err
 		}
 		// Note: extra RPC even if you just want to wait for the query to finish.
@@ -262,7 +262,7 @@ func (j *Job) Read(ctx context.Context) (ri *RowIterator, err error) {
 	return j.read(ctx, j.waitForQuery, fetchPage)
 }
 
-func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, string) (Schema, error), pf pageFetcher) (*RowIterator, error) {
+func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, string) (Schema, uint64, error), pf pageFetcher) (*RowIterator, error) {
 	if !j.isQuery() {
 		return nil, errors.New("bigquery: cannot read from a non-query job")
 	}
@@ -272,7 +272,7 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 	if destTable != nil && projectID != destTable.ProjectId {
 		return nil, fmt.Errorf("bigquery: job project ID is %q, but destination table's is %q", projectID, destTable.ProjectId)
 	}
-	schema, err := waitForQuery(ctx, projectID)
+	schema, totalRows, err := waitForQuery(ctx, projectID)
 	if err != nil {
 		return nil, err
 	}
@@ -280,13 +280,18 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 		return nil, errors.New("bigquery: query job missing destination table")
 	}
 	dt := bqToTable(destTable, j.c)
+	if totalRows == 0 {
+		pf = nil
+	}
 	it := newRowIterator(ctx, dt, pf)
 	it.Schema = schema
+	it.TotalRows = totalRows
 	return it, nil
 }
 
-// waitForQuery waits for the query job to complete and returns its schema.
-func (j *Job) waitForQuery(ctx context.Context, projectID string) (Schema, error) {
+// waitForQuery waits for the query job to complete and returns its schema. It also
+// returns the total number of rows in the result set.
+func (j *Job) waitForQuery(ctx context.Context, projectID string) (Schema, uint64, error) {
 	// Use GetQueryResults only to wait for completion, not to read results.
 	call := j.c.bqs.Jobs.GetQueryResults(projectID, j.jobID).Location(j.location).Context(ctx).MaxResults(0)
 	setClientHeader(call.Header())
@@ -307,9 +312,9 @@ func (j *Job) waitForQuery(ctx context.Context, projectID string) (Schema, error
 		return true, nil
 	})
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return bqToSchema(res.Schema), nil
+	return bqToSchema(res.Schema), res.TotalRows, nil
 }
 
 // JobStatistics contains statistics about a job.

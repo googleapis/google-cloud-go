@@ -1166,23 +1166,27 @@ func TestIntegration_DML(t *testing.T) {
 
 func runDML(ctx context.Context, sql string) error {
 	// Retry insert; sometimes it fails with INTERNAL.
-	return internal.Retry(ctx, gax.Backoff{}, func() (bool, error) {
-		// Use DML to insert.
-		q := client.Query(sql)
-		job, err := q.Run(ctx)
+	return internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
+		ri, err := client.Query(sql).Read(ctx)
 		if err != nil {
 			if e, ok := err.(*googleapi.Error); ok && e.Code < 500 {
 				return true, err // fail on 4xx
 			}
 			return false, err
 		}
-		if err := wait(ctx, job); err != nil {
-			if e, ok := err.(*googleapi.Error); ok && e.Code < 500 {
-				return true, err // fail on 4xx
-			}
-			return false, err
+		// It is OK to try to iterate over DML results. The first call to Next
+		// will return iterator.Done.
+		err = ri.Next(nil)
+		if err == nil {
+			return true, errors.New("want iterator.Done on the first call, got nil")
 		}
-		return true, nil
+		if err == iterator.Done {
+			return true, nil
+		}
+		if e, ok := err.(*googleapi.Error); ok && e.Code < 500 {
+			return true, err // fail on 4xx
+		}
+		return false, err
 	})
 }
 
@@ -1891,6 +1895,7 @@ func TestIntegration_Model(t *testing.T) {
 		                VALUES (1, 0), (2, 1), (3, 0), (4, 1)`,
 		tableName)
 	wantNumRows := 4
+
 	if err := runDML(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
