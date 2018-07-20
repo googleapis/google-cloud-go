@@ -361,14 +361,10 @@ func deltaMutexProfile(ctx context.Context, duration time.Duration, prof *bytes.
 		return err
 	}
 
-	// TODO(jianqiaoli): Remove this check when github.com/google/pprof/issues/242
-	// is fixed.
-	if len(p0.Mapping) > 0 {
-		p0.Scale(-1)
-		p, err = profile.Merge([]*profile.Profile{p0, p})
-		if err != nil {
-			return err
-		}
+	p0.Scale(-1)
+	p, err = profile.Merge([]*profile.Profile{p0, p})
+	if err != nil {
+		return err
 	}
 
 	// The mutex profile is not symbolized by runtime.pprof until
