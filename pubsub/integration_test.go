@@ -373,6 +373,18 @@ func TestIntegration_UpdateTopic(t *testing.T) {
 	client := integrationTestClient(t, ctx)
 	defer client.Close()
 
+	compareConfig := func(got TopicConfig, wantLabels map[string]string) bool {
+		if !testutil.Equal(got.Labels, wantLabels) {
+			return false
+		}
+		// For MessageStoragePolicy, we don't want to check for an exact set of regions.
+		// That set may change at any time. Instead, just make sure that the set isn't empty.
+		if len(got.MessageStoragePolicy.AllowedPersistenceRegions) == 0 {
+			return false
+		}
+		return true
+	}
+
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
@@ -384,9 +396,8 @@ func TestIntegration_UpdateTopic(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := TopicConfig{}
-	if !testutil.Equal(got, want) {
-		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
+	if !compareConfig(got, nil) {
+		t.Fatalf("\ngot  %+v\nwant no labels", got)
 	}
 
 	labels := map[string]string{"label": "value"}
@@ -394,18 +405,16 @@ func TestIntegration_UpdateTopic(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want = TopicConfig{Labels: labels}
-	if !testutil.Equal(got, want) {
-		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
+	if !compareConfig(got, labels) {
+		t.Fatalf("\ngot  %+v\nwant labels %+v", got, labels)
 	}
 	// Remove all labels.
 	got, err = topic.Update(ctx, TopicConfigToUpdate{Labels: map[string]string{}})
 	if err != nil {
 		t.Fatal(err)
 	}
-	want.Labels = nil
-	if !testutil.Equal(got, want) {
-		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
+	if !compareConfig(got, nil) {
+		t.Fatalf("\ngot  %+v\nwant no labels", got)
 	}
 }
 
