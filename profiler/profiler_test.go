@@ -631,7 +631,6 @@ func TestInitializeConfig(t *testing.T) {
 }
 
 type fakeProfilerServer struct {
-	pb.ProfilerServiceServer
 	count       int
 	gotProfiles map[string][]byte
 	done        chan bool
@@ -659,6 +658,10 @@ func (fs *fakeProfilerServer) UpdateProfile(ctx context.Context, in *pb.UpdatePr
 	}
 
 	return in.Profile, nil
+}
+
+func (fs *fakeProfilerServer) CreateOfflineProfile(_ context.Context, _ *pb.CreateOfflineProfileRequest) (*pb.Profile, error) {
+	return nil, status.Error(codes.Unimplemented, "")
 }
 
 func profileeLoop(quit chan bool) {
