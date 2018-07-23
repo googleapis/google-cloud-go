@@ -82,6 +82,12 @@ func (b *BucketHandle) Create(ctx context.Context, projectID string, attrs *Buck
 	}
 	req := b.c.raw.Buckets.Insert(projectID, bkt)
 	setClientHeader(req.Header())
+	if attrs != nil && attrs.PredefinedACL != "" {
+		req.PredefinedAcl(attrs.PredefinedACL)
+	}
+	if attrs != nil && attrs.PredefinedDefaultObjectACL != "" {
+		req.PredefinedDefaultObjectAcl(attrs.PredefinedDefaultObjectACL)
+	}
 	return runWithRetry(ctx, func() error { _, err := req.Context(ctx).Do(); return err })
 }
 
@@ -222,6 +228,20 @@ type BucketAttrs struct {
 	// DefaultObjectACL is the list of access controls to
 	// apply to new objects when no object ACL is provided.
 	DefaultObjectACL []ACLRule
+
+	// If not empty, applies a predefined set of access controls. It should be set
+	// only when creating a bucket.
+	// It is always empty for BucketAttrs returned from the service.
+	// See https://cloud.google.com/storage/docs/json_api/v1/buckets/insert
+	// for valid values.
+	PredefinedACL string
+
+	// If not empty, applies a predefined set of default object access controls.
+	// It should be set only when creating a bucket.
+	// It is always empty for BucketAttrs returned from the service.
+	// See https://cloud.google.com/storage/docs/json_api/v1/buckets/insert
+	// for valid values.
+	PredefinedDefaultObjectACL string
 
 	// Location is the location of the bucket. It defaults to "US".
 	Location string

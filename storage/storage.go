@@ -634,6 +634,14 @@ type ObjectAttrs struct {
 	// ACL is the list of access control rules for the object.
 	ACL []ACLRule
 
+	// If not empty, applies a predefined set of access controls. It should be set
+	// only when writing, copying or composing an object. When copying or composing,
+	// it acts as the destinationPredefinedAcl parameter.
+	// PredefinedACL is always empty for ObjectAttrs returned from the service.
+	// See https://cloud.google.com/storage/docs/json_api/v1/objects/insert
+	// for valid values.
+	PredefinedACL string
+
 	// Owner is the owner of the object. This field is read-only.
 	//
 	// If non-zero, it is in the form of "user-<userId>".

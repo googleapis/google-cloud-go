@@ -2229,6 +2229,78 @@ func TestIntegration_KMS(t *testing.T) {
 	}
 }
 
+func TestIntegration_PredefinedACLs(t *testing.T) {
+	check := func(msg string, rs []ACLRule, i int, wantEntity ACLEntity, wantRole ACLRole) {
+		if i >= len(rs) {
+			t.Errorf("%s: no rule at index %d", msg, i)
+			return
+		}
+		got := rs[i]
+		if got.Entity != wantEntity || got.Role != wantRole {
+			t.Errorf("%s[%d]: got %+v, want Entity %s and Role %s",
+				msg, i, got, wantEntity, wantRole)
+		}
+	}
+	checkPrefix := func(msg string, rs []ACLRule, i int, wantPrefix string, wantRole ACLRole) {
+		if i >= len(rs) {
+			t.Errorf("%s: no rule at index %d", msg, i)
+			return
+		}
+		got := rs[i]
+		if !strings.HasPrefix(string(got.Entity), wantPrefix) || got.Role != wantRole {
+			t.Errorf("%s[%d]: got %+v, want Entity %s... and Role %s",
+				msg, i, got, wantPrefix, wantRole)
+		}
+	}
+
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	h := testHelper{t}
+
+	bkt := client.Bucket(uidSpace.New())
+	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
+		PredefinedACL:              "authenticatedRead",
+		PredefinedDefaultObjectACL: "publicRead",
+	})
+	defer h.mustDeleteBucket(bkt)
+	attrs := h.mustBucketAttrs(bkt)
+	checkPrefix("Bucket.ACL", attrs.ACL, 0, "project-owners", RoleOwner)
+	check("Bucket.ACL", attrs.ACL, 1, AllAuthenticatedUsers, RoleReader)
+	check("DefaultObjectACL", attrs.DefaultObjectACL, 0, AllUsers, RoleReader)
+
+	obj := bkt.Object("private")
+	w := obj.NewWriter(ctx)
+	w.PredefinedACL = "private"
+	h.mustWrite(w, []byte("private"))
+	defer h.mustDeleteObject(obj)
+	checkPrefix("Object.ACL", w.Attrs().ACL, 0, "user", RoleOwner)
+
+	dst := bkt.Object("dst")
+	copier := dst.CopierFrom(obj)
+	copier.PredefinedACL = "publicRead"
+	oattrs, err := copier.Run(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer h.mustDeleteObject(dst)
+	// The copied object still retains the "private" ACL of the source object.
+	checkPrefix("Copy dest", oattrs.ACL, 0, "user", RoleOwner)
+	check("Copy dest", oattrs.ACL, 1, AllUsers, RoleReader)
+
+	comp := bkt.Object("comp")
+	composer := comp.ComposerFrom(obj, dst)
+	composer.PredefinedACL = "authenticatedRead"
+	oattrs, err = composer.Run(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer h.mustDeleteObject(comp)
+	// The composed object still retains the "private" ACL.
+	checkPrefix("Copy dest", oattrs.ACL, 0, "user", RoleOwner)
+	check("Bucket.ACL", attrs.ACL, 1, AllAuthenticatedUsers, RoleReader)
+}
+
 type testHelper struct {
 	t *testing.T
 }
