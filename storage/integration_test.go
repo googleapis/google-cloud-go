@@ -38,6 +38,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"golang.org/x/net/context"
 
@@ -921,10 +922,11 @@ func TestIntegration_ACL(t *testing.T) {
 	bkt := client.Bucket(bucketName)
 
 	entity := ACLEntity("domain-google.com")
-	rule := ACLRule{Entity: entity, Role: RoleReader}
+	rule := ACLRule{Entity: entity, Role: RoleReader, Domain: "google.com"}
 	if err := bkt.DefaultObjectACL().Set(ctx, entity, RoleReader); err != nil {
 		t.Errorf("Can't put default ACL rule for the bucket, errored with %v", err)
 	}
+
 	acl, err := bkt.DefaultObjectACL().List(ctx)
 	if err != nil {
 		t.Errorf("DefaultObjectACL.List for bucket %q: %v", bucketName, err)
@@ -957,7 +959,7 @@ func TestIntegration_ACL(t *testing.T) {
 	}
 
 	entity2 := ACLEntity("user-jbd@google.com")
-	rule2 := ACLRule{Entity: entity2, Role: RoleReader}
+	rule2 := ACLRule{Entity: entity2, Role: RoleReader, Email: "jbd@google.com"}
 	if err := bkt.ACL().Set(ctx, entity2, RoleReader); err != nil {
 		t.Errorf("Error while putting bucket ACL rule: %v", err)
 	}
@@ -975,7 +977,7 @@ func TestIntegration_ACL(t *testing.T) {
 
 func hasRule(acl []ACLRule, rule ACLRule) bool {
 	for _, r := range acl {
-		if r == rule {
+		if cmp.Equal(r, rule) {
 			return true
 		}
 	}
