@@ -54,6 +54,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		},
 		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
 		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -114,6 +115,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		},
 		Encryption: &raw.BucketEncryption{DefaultKmsKeyName: "key"},
 		Logging:    &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:    &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		Lifecycle: &raw.BucketLifecycle{
 			Rule: []*raw.BucketLifecycleRule{{
 				Action: &raw.BucketLifecycleRuleAction{
@@ -178,6 +180,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 			},
 		},
 		Logging: &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website: &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 	}
 	au.SetLabel("a", "foo")
 	au.DeleteLabel("b")
@@ -208,6 +211,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 			},
 		},
 		Logging: &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website: &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
@@ -230,10 +234,11 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		RetentionPolicy: &RetentionPolicy{},
 		Encryption:      &BucketEncryption{},
 		Logging:         &BucketLogging{},
+		Website:         &BucketWebsite{},
 	}
 	got = au3.toRawBucket()
 	want = &raw.Bucket{
-		NullFields: []string{"RetentionPolicy", "Encryption", "Logging"},
+		NullFields: []string{"RetentionPolicy", "Encryption", "Logging", "Website"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
@@ -376,6 +381,7 @@ func TestNewBucket(t *testing.T) {
 		},
 		Encryption: &raw.BucketEncryption{DefaultKmsKeyName: "key"},
 		Logging:    &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:    &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 	}
 	want := &BucketAttrs{
 		Name:              "name",
@@ -416,6 +422,7 @@ func TestNewBucket(t *testing.T) {
 		},
 		Encryption:       &BucketEncryption{DefaultKMSKeyName: "key"},
 		Logging:          &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:          &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		ACL:              []ACLRule{{Entity: "allUsers", Role: RoleReader, Email: "joe@example.com"}},
 		DefaultObjectACL: nil,
 	}
