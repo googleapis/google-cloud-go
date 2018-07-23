@@ -275,6 +275,9 @@ type BucketAttrs struct {
 
 	// The logging configuration.
 	Logging *BucketLogging
+
+	// The website configuration.
+	Website *BucketWebsite
 }
 
 // Lifecycle is the lifecycle configuration for objects in the bucket.
@@ -404,6 +407,22 @@ type BucketLogging struct {
 	LogObjectPrefix string
 }
 
+// Website holds the bucket's website configuration, controlling how the
+// service behaves when accessing bucket contents as a web site. See
+// https://cloud.google.com/storage/docs/static-website for more information.
+type BucketWebsite struct {
+	// If the requested object path is missing, the service will ensure the path has
+	// a trailing '/', append this suffix, and attempt to retrieve the resulting
+	// object. This allows the creation of index.html objects to represent directory
+	// pages.
+	MainPageSuffix string
+
+	// If the requested object path is missing, and any mainPageSuffix object is
+	// missing, if applicable, the service will return the named object from this
+	// bucket as the content for a 404 Not Found result.
+	NotFoundPage string
+}
+
 func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 	if b == nil {
 		return nil, nil
@@ -428,6 +447,7 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		CORS:              toCORS(b.Cors),
 		Encryption:        toBucketEncryption(b.Encryption),
 		Logging:           toBucketLogging(b.Logging),
+		Website:           toBucketWebsite(b.Website),
 	}, nil
 }
 
@@ -466,6 +486,7 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		Cors:             toRawCORS(b.CORS),
 		Encryption:       b.Encryption.toRawBucketEncryption(),
 		Logging:          b.Logging.toRawBucketLogging(),
+		Website:          b.Website.toRawBucketWebsite(),
 	}
 }
 
@@ -529,6 +550,9 @@ type BucketAttrsToUpdate struct {
 
 	// If set, replaces the logging configuration of the bucket.
 	Logging *BucketLogging
+
+	// If set, replaces the website configuration of the bucket.
+	Website *BucketWebsite
 
 	setLabels    map[string]string
 	deleteLabels map[string]bool
@@ -595,6 +619,14 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 			rb.Logging = nil
 		} else {
 			rb.Logging = ua.Logging.toRawBucketLogging()
+		}
+	}
+	if ua.Website != nil {
+		if *ua.Website == (BucketWebsite{}) {
+			rb.NullFields = append(rb.NullFields, "Website")
+			rb.Website = nil
+		} else {
+			rb.Website = ua.Website.toRawBucketWebsite()
 		}
 	}
 	if ua.setLabels != nil || ua.deleteLabels != nil {
@@ -855,6 +887,26 @@ func toBucketLogging(b *raw.BucketLogging) *BucketLogging {
 	return &BucketLogging{
 		LogBucket:       b.LogBucket,
 		LogObjectPrefix: b.LogObjectPrefix,
+	}
+}
+
+func (w *BucketWebsite) toRawBucketWebsite() *raw.BucketWebsite {
+	if w == nil {
+		return nil
+	}
+	return &raw.BucketWebsite{
+		MainPageSuffix: w.MainPageSuffix,
+		NotFoundPage:   w.NotFoundPage,
+	}
+}
+
+func toBucketWebsite(w *raw.BucketWebsite) *BucketWebsite {
+	if w == nil {
+		return nil
+	}
+	return &BucketWebsite{
+		MainPageSuffix: w.MainPageSuffix,
+		NotFoundPage:   w.NotFoundPage,
 	}
 }
 
