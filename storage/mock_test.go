@@ -15,6 +15,7 @@
 package storage
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -57,6 +58,14 @@ func (t *mockTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	result := t.results[0]
 	t.results = t.results[1:]
 	return result.res, result.err
+}
+
+func (t *mockTransport) gotJSONBody() map[string]interface{} {
+	m := map[string]interface{}{}
+	if err := json.Unmarshal(t.gotBody, &m); err != nil {
+		panic(err)
+	}
+	return m
 }
 
 func mockClient(t *testing.T, m *mockTransport) *Client {

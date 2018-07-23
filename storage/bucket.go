@@ -412,13 +412,15 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 	if err != nil {
 		return nil, err
 	}
-	bucket := &BucketAttrs{
+	return &BucketAttrs{
 		Name:              b.Name,
 		Location:          b.Location,
 		MetaGeneration:    b.Metageneration,
 		StorageClass:      b.StorageClass,
 		Created:           convertTime(b.TimeCreated),
 		VersioningEnabled: b.Versioning != nil && b.Versioning.Enabled,
+		ACL:               toBucketACLRules(b.Acl),
+		DefaultObjectACL:  toObjectACLRules(b.DefaultObjectAcl),
 		Labels:            b.Labels,
 		RequesterPays:     b.Billing != nil && b.Billing.RequesterPays,
 		Lifecycle:         toLifecycle(b.Lifecycle),
@@ -426,39 +428,11 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		CORS:              toCORS(b.Cors),
 		Encryption:        toBucketEncryption(b.Encryption),
 		Logging:           toBucketLogging(b.Logging),
-	}
-	acl := make([]ACLRule, len(b.Acl))
-	for i, rule := range b.Acl {
-		acl[i] = ACLRule{
-			Entity: ACLEntity(rule.Entity),
-			Role:   ACLRole(rule.Role),
-		}
-	}
-	bucket.ACL = acl
-	objACL := make([]ACLRule, len(b.DefaultObjectAcl))
-	for i, rule := range b.DefaultObjectAcl {
-		objACL[i] = ACLRule{
-			Entity: ACLEntity(rule.Entity),
-			Role:   ACLRole(rule.Role),
-		}
-	}
-	bucket.DefaultObjectACL = objACL
-	return bucket, nil
+	}, nil
 }
 
 // toRawBucket copies the editable attribute from b to the raw library's Bucket type.
 func (b *BucketAttrs) toRawBucket() *raw.Bucket {
-	var acl []*raw.BucketAccessControl
-	if len(b.ACL) > 0 {
-		acl = make([]*raw.BucketAccessControl, len(b.ACL))
-		for i, rule := range b.ACL {
-			acl[i] = &raw.BucketAccessControl{
-				Entity: string(rule.Entity),
-				Role:   string(rule.Role),
-			}
-		}
-	}
-	dACL := toRawObjectACL(b.DefaultObjectACL)
 	// Copy label map.
 	var labels map[string]string
 	if len(b.Labels) > 0 {
@@ -480,10 +454,10 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 	}
 	return &raw.Bucket{
 		Name:             b.Name,
-		DefaultObjectAcl: dACL,
 		Location:         b.Location,
 		StorageClass:     b.StorageClass,
-		Acl:              acl,
+		Acl:              toRawBucketACL(b.ACL),
+		DefaultObjectAcl: toRawObjectACL(b.DefaultObjectACL),
 		Versioning:       v,
 		Labels:           labels,
 		Billing:          bb,

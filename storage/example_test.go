@@ -391,7 +391,7 @@ func ExampleWriter_Write() {
 	}
 	wc := client.Bucket("bucketname").Object("filename1").NewWriter(ctx)
 	wc.ContentType = "text/plain"
-	wc.ACL = []storage.ACLRule{{storage.AllUsers, storage.RoleReader}}
+	wc.ACL = []storage.ACLRule{{Entity: storage.AllUsers, Role: storage.RoleReader}}
 	if _, err := wc.Write([]byte("hello world")); err != nil {
 		// TODO: handle error.
 		// Note that Write may return nil in some error situations,

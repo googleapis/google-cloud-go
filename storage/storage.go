@@ -595,23 +595,8 @@ func parseKey(key []byte) (*rsa.PrivateKey, error) {
 	return parsed, nil
 }
 
-func toRawObjectACL(oldACL []ACLRule) []*raw.ObjectAccessControl {
-	var acl []*raw.ObjectAccessControl
-	if len(oldACL) > 0 {
-		acl = make([]*raw.ObjectAccessControl, len(oldACL))
-		for i, rule := range oldACL {
-			acl[i] = &raw.ObjectAccessControl{
-				Entity: string(rule.Entity),
-				Role:   string(rule.Role),
-			}
-		}
-	}
-	return acl
-}
-
 // toRawObject copies the editable attributes from o to the raw library's Object type.
 func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
-	acl := toRawObjectACL(o.ACL)
 	return &raw.Object{
 		Bucket:             bucket,
 		Name:               o.Name,
@@ -621,7 +606,7 @@ func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
 		CacheControl:       o.CacheControl,
 		ContentDisposition: o.ContentDisposition,
 		StorageClass:       o.StorageClass,
-		Acl:                acl,
+		Acl:                toRawObjectACL(o.ACL),
 		Metadata:           o.Metadata,
 	}
 }
@@ -751,13 +736,6 @@ func newObject(o *raw.Object) *ObjectAttrs {
 	if o == nil {
 		return nil
 	}
-	acl := make([]ACLRule, len(o.Acl))
-	for i, rule := range o.Acl {
-		acl[i] = ACLRule{
-			Entity: ACLEntity(rule.Entity),
-			Role:   ACLRole(rule.Role),
-		}
-	}
 	owner := ""
 	if o.Owner != nil {
 		owner = o.Owner.Entity
@@ -774,7 +752,7 @@ func newObject(o *raw.Object) *ObjectAttrs {
 		ContentType:        o.ContentType,
 		ContentLanguage:    o.ContentLanguage,
 		CacheControl:       o.CacheControl,
-		ACL:                acl,
+		ACL:                toObjectACLRules(o.Acl),
 		Owner:              owner,
 		ContentEncoding:    o.ContentEncoding,
 		ContentDisposition: o.ContentDisposition,
