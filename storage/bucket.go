@@ -272,6 +272,9 @@ type BucketAttrs struct {
 
 	// The encryption configuration used by default for newly inserted objects.
 	Encryption *BucketEncryption
+
+	// The logging configuration.
+	Logging *BucketLogging
 }
 
 // Lifecycle is the lifecycle configuration for objects in the bucket.
@@ -389,6 +392,18 @@ type LifecycleCondition struct {
 	NumNewerVersions int64
 }
 
+// BucketLogging holds the bucket's logging configuration, which defines the
+// destination bucket and optional name prefix for the current bucket's
+// logs.
+type BucketLogging struct {
+	// The destination bucket where the current bucket's logs
+	// should be placed.
+	LogBucket string
+
+	// A prefix for log object names.
+	LogObjectPrefix string
+}
+
 func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 	if b == nil {
 		return nil, nil
@@ -410,6 +425,7 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		RetentionPolicy:   rp,
 		CORS:              toCORS(b.Cors),
 		Encryption:        toBucketEncryption(b.Encryption),
+		Logging:           toBucketLogging(b.Logging),
 	}
 	acl := make([]ACLRule, len(b.Acl))
 	for i, rule := range b.Acl {
@@ -475,6 +491,7 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		RetentionPolicy:  b.RetentionPolicy.toRawRetentionPolicy(),
 		Cors:             toRawCORS(b.CORS),
 		Encryption:       b.Encryption.toRawBucketEncryption(),
+		Logging:          b.Logging.toRawBucketLogging(),
 	}
 }
 
@@ -536,6 +553,9 @@ type BucketAttrsToUpdate struct {
 	// If set, replaces the lifecycle configuration of the bucket.
 	Lifecycle *Lifecycle
 
+	// If set, replaces the logging configuration of the bucket.
+	Logging *BucketLogging
+
 	setLabels    map[string]string
 	deleteLabels map[string]bool
 }
@@ -594,6 +614,14 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 	}
 	if ua.Lifecycle != nil {
 		rb.Lifecycle = toRawLifecycle(*ua.Lifecycle)
+	}
+	if ua.Logging != nil {
+		if *ua.Logging == (BucketLogging{}) {
+			rb.NullFields = append(rb.NullFields, "Logging")
+			rb.Logging = nil
+		} else {
+			rb.Logging = ua.Logging.toRawBucketLogging()
+		}
 	}
 	if ua.setLabels != nil || ua.deleteLabels != nil {
 		rb.Labels = map[string]string{}
@@ -834,6 +862,26 @@ func toBucketEncryption(e *raw.BucketEncryption) *BucketEncryption {
 		return nil
 	}
 	return &BucketEncryption{DefaultKMSKeyName: e.DefaultKmsKeyName}
+}
+
+func (b *BucketLogging) toRawBucketLogging() *raw.BucketLogging {
+	if b == nil {
+		return nil
+	}
+	return &raw.BucketLogging{
+		LogBucket:       b.LogBucket,
+		LogObjectPrefix: b.LogObjectPrefix,
+	}
+}
+
+func toBucketLogging(b *raw.BucketLogging) *BucketLogging {
+	if b == nil {
+		return nil
+	}
+	return &BucketLogging{
+		LogBucket:       b.LogBucket,
+		LogObjectPrefix: b.LogObjectPrefix,
+	}
 }
 
 // Objects returns an iterator over the objects in the bucket that match the Query q.
