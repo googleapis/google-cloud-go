@@ -546,7 +546,7 @@ func (tr *GKETestRunner) uploadImageSource(ctx context.Context, bucket, objectNa
 	}
 	wc := tr.StorageClient.Bucket(bucket).Object(objectName).NewWriter(ctx)
 	wc.ContentType = "application/zip"
-	wc.ACL = []storage.ACLRule{{storage.AllUsers, storage.RoleReader}}
+	wc.ACL = []storage.ACLRule{{Entity: storage.AllUsers, Role: storage.RoleReader}}
 	if _, err := wc.Write(zipBuf.Bytes()); err != nil {
 		return err
 	}
