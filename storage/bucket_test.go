@@ -52,6 +52,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 			},
 		},
 		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
+		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 	}
 	got := attrs.toRawBucket()
 	want := &raw.Bucket{
@@ -78,6 +79,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 			},
 		},
 		Encryption: &raw.BucketEncryption{DefaultKmsKeyName: "key"},
+		Logging:    &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
@@ -108,6 +110,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 				},
 			},
 		},
+		Logging: &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 	}
 	au.SetLabel("a", "foo")
 	au.DeleteLabel("b")
@@ -137,6 +140,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 				},
 			},
 		},
+		Logging: &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
@@ -158,10 +162,11 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	au3 := &BucketAttrsToUpdate{
 		RetentionPolicy: &RetentionPolicy{},
 		Encryption:      &BucketEncryption{},
+		Logging:         &BucketLogging{},
 	}
 	got = au3.toRawBucket()
 	want = &raw.Bucket{
-		NullFields: []string{"RetentionPolicy", "Encryption"},
+		NullFields: []string{"RetentionPolicy", "Encryption", "Logging"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
@@ -303,6 +308,7 @@ func TestNewBucket(t *testing.T) {
 			{Bucket: "name", Role: "READER", Email: "joe@example.com", Entity: "allUsers"},
 		},
 		Encryption: &raw.BucketEncryption{DefaultKmsKeyName: "key"},
+		Logging:    &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 	}
 	want := &BucketAttrs{
 		Name:              "name",
@@ -344,6 +350,7 @@ func TestNewBucket(t *testing.T) {
 		Encryption:       &BucketEncryption{DefaultKMSKeyName: "key"},
 		ACL:              []ACLRule{{Entity: "allUsers", Role: RoleReader}},
 		DefaultObjectACL: []ACLRule{},
+		Logging:          &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 	}
 	got, err := newBucket(rb)
 	if err != nil {
