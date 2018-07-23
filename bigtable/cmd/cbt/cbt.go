@@ -459,10 +459,9 @@ var commands = []struct {
 		Name: "createappprofile",
 		Desc: "Creates app profile for an instance",
 		do:   doCreateAppProfile,
-		Usage: "cbt createappprofile <instance-id> <profile-id> <description> <etag> <routing-policy> \n" +
-			"[cluster-id=<cluster-id>] [allow-transactional-writes=<allow-transactional-writes>] \n" +
-			"set multi_cluster_routing_use_any or single_cluster_routing as possible values for routing policy \n" +
-			"provide cluster-id=clusterID and allow-transactional-writes=true or false in case of single_cluster_routing ",
+		Usage: "usage: cbt createappprofile <instance-id> <profile-id> <description> " +
+			"(route-any | [ route-to=<cluster-id> : transactional-writes]) [optional flag] \n" +
+			"optional flags may be `force`",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
@@ -483,10 +482,9 @@ var commands = []struct {
 		Name: "updateappprofile",
 		Desc: "Updates app profile for an instance",
 		do:   doUpdateAppProfile,
-		Usage: "cbt updateappprofile  <instance-id> <profile-id> <description> <routing-policy>" +
-			"[cluster-id=<cluster-id>] [allow-transactional-writes=<allow-transactional-writes>] \n" +
-			"set multi_cluster_routing_use_any or single_cluster_routing as possible values for routing policy \n" +
-			"provide cluster-id=clusterID and allow-transactional-writes=true or false in case of single_cluster_routing ",
+		Usage: "usage: cbt updateappprofile  <instance-id> <profile-id> <description>" +
+			"(route-any | [ route-to=<cluster-id> : transactional-writes]) [optional flag] \n" +
+			"optional flags may be `force`",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
@@ -1357,36 +1355,48 @@ func doDeleteSnapshot(ctx context.Context, args ...string) {
 }
 
 func doCreateAppProfile(ctx context.Context, args ...string) {
-	if len(args) < 5 {
-		log.Fatal("usage: cbt createappprofile <instance-id> <profile-id> <description> <etag> <routing-policy> \n" +
-			"[cluster-id=<cluster-id>] [allow-transactional-writes=<allow-transactional-writes>] \n" +
-			"set multi_cluster_routing_use_any or single_cluster_routing as possible values for routing policy \n" +
-			"provide cluster-id=clusterID and allow-transactional-writes=true or false in case of single_cluster_routing ")
+	if len(args) < 4 || len(args) > 6 {
+		log.Fatal("usage: cbt createappprofile <instance-id> <profile-id> <description> " +
+			" (route-any | [ route-to=<cluster-id> : transactional-writes]) [optional flag] \n" +
+			"optional flags may be `force`")
 	}
 
-	routingPolicy := args[4]
+	routingPolicy, clusterID, err := parseProfileRoute(args[3])
+	if err != nil {
+		log.Fatalln("Exactly one of (route-any | [route-to : transactional-writes]) must be specified.")
+	}
+
 	config := bigtable.ProfileConf{
 		RoutingPolicy: routingPolicy,
 		InstanceID:    args[0],
 		ProfileID:     args[1],
 		Description:   args[2],
-		Etag:          args[3],
 	}
+
+	opFlags := []string{"force", "transactional-writes"}
+	parseValues, err := parseArgs(args[4:], opFlags)
+	if err != nil {
+		log.Fatalf("optional flags can be specified as (force=<true>|transactional-writes=<true>) got %s ", args[4:])
+	}
+
+	for _, f := range opFlags {
+		fv, err := parseProfileOpts(f, parseValues)
+		if err != nil {
+			log.Fatalf("optional flags can be specified as (force=<true>|transactional-writes=<true>) got %s ", args[4:])
+		}
+
+		switch f {
+		case opFlags[0]:
+			config.IgnoreWarnings = fv
+		case opFlags[1]:
+			config.AllowTransactionalWrites = fv
+		default:
+
+		}
+	}
+
 	if routingPolicy == bigtable.SingleClusterRouting {
-		parsed, err := parseArgs(args[4:], []string{
-			"cluster-id", "allow-transactional-writes",
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		transactionWrites, err := strconv.ParseBool(parsed["allow-transactional-writes"])
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		config.ClusterID = parsed["cluster-id"]
-		config.AllowTransactionalWrites = transactionWrites
+		config.ClusterID = clusterID
 	}
 
 	profile, err := getInstanceAdminClient().CreateAppProfile(ctx, config)
@@ -1395,9 +1405,7 @@ func doCreateAppProfile(ctx context.Context, args ...string) {
 	}
 
 	fmt.Printf("Name: %s\n", profile.Name)
-	fmt.Printf("Etag: %v\n", profile.GetEtag())
-	fmt.Printf("Description: %s\n", profile.Description)
-	fmt.Printf("RoutingPolicy: %v\n", profile.GetRoutingPolicy())
+	fmt.Printf("RoutingPolicy: %v\n", profile.RoutingPolicy)
 }
 
 func doGetAppProfile(ctx context.Context, args ...string) {
@@ -1447,34 +1455,47 @@ func doListAppProfiles(ctx context.Context, args ...string) {
 func doUpdateAppProfile(ctx context.Context, args ...string) {
 
 	if len(args) < 4 {
-		log.Fatal("usage: cbt updateappprofile  <instance-id> <profile-id> <description> <routing-policy> [cluster-id=<cluster-id>] [allow-transactional-writes=<allow-transactional-writes>]")
+		log.Fatal("usage: cbt updateappprofile  <instance-id> <profile-id> <description>" +
+			" (route-any | [ route-to=<cluster-id> : transactional-writes]) [optional flag] \n" +
+			"optional flags may be `force`")
 	}
 
-	routingPolicy := args[3]
+	routingPolicy, clusterID, err := parseProfileRoute(args[3])
+	if err != nil {
+		log.Fatalln("Exactly one of (route-any | [route-to : transactional-writes]) must be specified.")
+	}
 	InstanceID := args[0]
 	ProfileID := args[1]
 	config := bigtable.ProfileAttrsToUpdate{
 		RoutingPolicy: routingPolicy,
 		Description:   args[2],
 	}
-	if routingPolicy == bigtable.SingleClusterRouting {
-		parsed, err := parseArgs(args[3:], []string{
-			"cluster-id", "allow-transactional-writes",
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		transactionWrites, err := strconv.ParseBool(parsed["allow-transactional-writes"])
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		config.ClusterID = parsed["cluster-id"]
-		config.AllowTransactionalWrites = transactionWrites
+	opFlags := []string{"force", "transactional-writes"}
+	parseValues, err := parseArgs(args[4:], opFlags)
+	if err != nil {
+		log.Fatalf("optional flags can be specified as (force=<true>|transactional-writes=<true>) got %s ", args[4:])
 	}
 
-	err := getInstanceAdminClient().UpdateAppProfile(ctx, InstanceID, ProfileID, config)
+	for _, f := range opFlags {
+		fv, err := parseProfileOpts(f, parseValues)
+		if err != nil {
+			log.Fatalf("optional flags can be specified as (force=<true>|transactional-writes=<true>) got %s ", args[4:])
+		}
+
+		switch f {
+		case opFlags[0]:
+			config.IgnoreWarnings = fv
+		case opFlags[1]:
+			config.AllowTransactionalWrites = fv
+		default:
+
+		}
+	}
+	if routingPolicy == bigtable.SingleClusterRouting {
+		config.ClusterID = clusterID
+	}
+
+	err = getInstanceAdminClient().UpdateAppProfile(ctx, InstanceID, ProfileID, config)
 	if err != nil {
 		log.Fatalf("Failed to update app profile : %v", err)
 	}
@@ -1603,4 +1624,42 @@ func columnFilter(column string) (bigtable.Filter, error) {
 	} else {
 		return nil, fmt.Errorf("Bad format for column %q", column)
 	}
+}
+
+func parseProfileRoute(str string) (routingPolicy, clusterID string, err error) {
+
+	route := strings.Split(str, "=")
+	switch route[0] {
+	case "route-any":
+		if len(route) > 1 {
+			err = fmt.Errorf("got %v", route)
+			break
+		}
+		routingPolicy = bigtable.MultiClusterRouting
+
+	case "route-to":
+		if len(route) != 2 || route[1] == "" {
+			err = fmt.Errorf("got %v", route)
+			break
+		}
+		routingPolicy = bigtable.SingleClusterRouting
+		clusterID = route[1]
+	default:
+		err = fmt.Errorf("got %v", route)
+	}
+
+	return
+}
+
+func parseProfileOpts(opt string, parsedArgs map[string]string) (bool, error) {
+
+	if val, ok := parsedArgs[opt]; ok {
+		status, err := strconv.ParseBool(val)
+		if err != nil {
+			return false, fmt.Errorf("expected %s = <true> got %s ", opt, val)
+		}
+
+		return status, nil
+	}
+	return false, nil
 }

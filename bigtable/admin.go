@@ -889,6 +889,9 @@ type ProfileConf struct {
 	RoutingPolicy            string
 	ClusterID                string
 	AllowTransactionalWrites bool
+
+	// If true, warnings are ignored
+	IgnoreWarnings bool
 }
 
 type ProfileIterator struct {
@@ -908,6 +911,9 @@ type ProfileAttrsToUpdate struct {
 	//If RoutingPolicy is updated to SingleClusterRouting, set these fields as well.
 	ClusterID                string
 	AllowTransactionalWrites bool
+
+	// If true, warnings are ignored
+	IgnoreWarnings bool
 }
 
 func (p *ProfileAttrsToUpdate) GetFieldMaskPath() []string {
@@ -972,7 +978,7 @@ func (iac *InstanceAdminClient) CreateAppProfile(ctx context.Context, profile Pr
 		Parent:         parent,
 		AppProfile:     appProfile,
 		AppProfileId:   profile.ProfileID,
-		IgnoreWarnings: true,
+		IgnoreWarnings: profile.IgnoreWarnings,
 	})
 }
 
@@ -1048,7 +1054,7 @@ func (iac *InstanceAdminClient) UpdateAppProfile(ctx context.Context, instanceID
 		UpdateMask: &field_mask.FieldMask{
 			Paths: updateAttrs.GetFieldMaskPath(),
 		},
-		IgnoreWarnings: true,
+		IgnoreWarnings: updateAttrs.IgnoreWarnings,
 	}
 	updateRequest, err := iac.iClient.UpdateAppProfile(ctx, patchRequest)
 	if err != nil {
