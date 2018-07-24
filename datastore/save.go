@@ -95,6 +95,10 @@ func saveStructProperty(props *[]Property, name string, opts saveOpts, v reflect
 					*props = append(*props, p)
 					return nil
 				}
+				// When we recurse on the derefenced pointer, omitempty no longer applies:
+				// we already know the pointer is not empty, it doesn't matter if its referent
+				// is empty or not.
+				opts.omitEmpty = false
 				return saveStructProperty(props, name, opts, v.Elem())
 			}
 			if v.Type().Elem().Kind() != reflect.Struct {
