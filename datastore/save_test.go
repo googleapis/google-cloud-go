@@ -228,6 +228,11 @@ func TestSavePointers(t *testing.T) {
 			want: []Property(nil),
 		},
 		{
+			desc: "non-nil omitempty zero-valued pointers are saved",
+			in:   func() *PointersOmitEmpty { pi := 0; return &PointersOmitEmpty{Pi: &pi} }(),
+			want: []Property{{Name: "Pi", Value: int64(0)}},
+		},
+		{
 			desc: "non-nil zero-valued pointers save as zero values",
 			in:   populatedPointers(),
 			want: []Property{
