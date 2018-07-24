@@ -613,9 +613,9 @@ func (it *DocumentSnapshotIterator) Next() (*DocumentSnapshot, error) {
 	return snap.(*DocumentSnapshot), nil
 }
 
-// Stop stops receiving snapshots.
-// You should always call Stop when you are done with an iterator, to free up resources.
-// It is not safe to call Stop concurrently with Next.
+// Stop stops receiving snapshots. You should always call Stop when you are done with
+// a DocumentSnapshotIterator, to free up resources. It is not safe to call Stop
+// concurrently with Next.
 func (it *DocumentSnapshotIterator) Stop() {
 	it.ws.stop()
 }
