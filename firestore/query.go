@@ -583,7 +583,7 @@ func (it *DocumentIterator) Next() (*DocumentSnapshot, error) {
 }
 
 // Stop stops the iterator, freeing its resources.
-// Always call Stop when you are done with an iterator.
+// Always call Stop when you are done with a DocumentIterator.
 // It is not safe to call Stop concurrently with Next.
 func (it *DocumentIterator) Stop() {
 	if it.iter != nil { // possible in error cases
@@ -738,9 +738,9 @@ func (it *QuerySnapshotIterator) Next() (*DocumentIterator, error) {
 	}, nil
 }
 
-// Stop stops receiving snapshots.
-// You should always call Stop when you are done with an iterator, to free up resources.
-// It is not safe to call Stop concurrently with Next.
+// Stop stops receiving snapshots. You should always call Stop when you are done with
+// a QuerySnapshotIterator, to free up resources. It is not safe to call Stop
+// concurrently with Next.
 func (it *QuerySnapshotIterator) Stop() {
 	it.ws.stop()
 }
