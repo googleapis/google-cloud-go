@@ -403,6 +403,30 @@ func ExampleWriter_Write() {
 	fmt.Println("updated object:", wc.Attrs())
 }
 
+// To limit the time to write an object (or do anything else
+// that takes a context), use context.WithTimeout.
+func ExampleWriter_Write_timeout() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	tctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel() // Cancel when done, whether we time out or not.
+	wc := client.Bucket("bucketname").Object("filename1").NewWriter(tctx)
+	wc.ContentType = "text/plain"
+	wc.ACL = []storage.ACLRule{{Entity: storage.AllUsers, Role: storage.RoleReader}}
+	if _, err := wc.Write([]byte("hello world")); err != nil {
+		// TODO: handle error.
+		// Note that Write may return nil in some error situations,
+		// so always check the error from Close.
+	}
+	if err := wc.Close(); err != nil {
+		// TODO: handle error.
+	}
+	fmt.Println("updated object:", wc.Attrs())
+}
+
 // To make sure the data you write is uncorrupted, use an MD5 or CRC32c
 // checksum. This example illustrates CRC32c.
 func ExampleWriter_Write_checksum() {
