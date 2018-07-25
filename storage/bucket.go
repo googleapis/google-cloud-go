@@ -194,6 +194,12 @@ func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (
 	if err != nil {
 		return nil, err
 	}
+	if uattrs.PredefinedACL != "" {
+		req.PredefinedAcl(uattrs.PredefinedACL)
+	}
+	if uattrs.PredefinedDefaultObjectACL != "" {
+		req.PredefinedDefaultObjectAcl(uattrs.PredefinedDefaultObjectACL)
+	}
 	// TODO(jba): retry iff metagen is set?
 	rb, err := req.Context(ctx).Do()
 	if err != nil {
@@ -574,6 +580,14 @@ type BucketAttrsToUpdate struct {
 	// If set, replaces the website configuration of the bucket.
 	Website *BucketWebsite
 
+	// If not empty, applies a predefined set of access controls.
+	// See https://cloud.google.com/storage/docs/json_api/v1/buckets/patch.
+	PredefinedACL string
+
+	// If not empty, applies a predefined set of default object access controls.
+	// See https://cloud.google.com/storage/docs/json_api/v1/buckets/patch.
+	PredefinedDefaultObjectACL string
+
 	setLabels    map[string]string
 	deleteLabels map[string]bool
 }
@@ -648,6 +662,16 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 		} else {
 			rb.Website = ua.Website.toRawBucketWebsite()
 		}
+	}
+	if ua.PredefinedACL != "" {
+		// Clear ACL or the call will fail.
+		rb.Acl = nil
+		rb.ForceSendFields = append(rb.ForceSendFields, "Acl")
+	}
+	if ua.PredefinedDefaultObjectACL != "" {
+		// Clear ACLs or the call will fail.
+		rb.DefaultObjectAcl = nil
+		rb.ForceSendFields = append(rb.ForceSendFields, "DefaultObjectAcl")
 	}
 	if ua.setLabels != nil || ua.deleteLabels != nil {
 		rb.Labels = map[string]string{}

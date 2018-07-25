@@ -467,6 +467,9 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 	if o.userProject != "" {
 		call.UserProject(o.userProject)
 	}
+	if uattrs.PredefinedACL != "" {
+		call.PredefinedAcl(uattrs.PredefinedACL)
+	}
 	if err := setEncryptionHeaders(call.Header(), o.encryptionKey, false); err != nil {
 		return nil, err
 	}
@@ -501,6 +504,10 @@ type ObjectAttrsToUpdate struct {
 	CacheControl       optional.String
 	Metadata           map[string]string // set to map[string]string{} to delete
 	ACL                []ACLRule
+
+	// If not empty, applies a predefined set of access controls. ACL must be nil.
+	// See https://cloud.google.com/storage/docs/json_api/v1/objects/patch.
+	PredefinedACL string
 }
 
 // Delete deletes the single specified object.
