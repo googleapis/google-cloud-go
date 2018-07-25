@@ -567,55 +567,48 @@ func TestIntegration_Objects(t *testing.T) {
 
 	// Test UpdateAttrs.
 	metadata := map[string]string{"key": "value"}
-	updated, err := bkt.Object(objName).Update(ctx, ObjectAttrsToUpdate{
+	updated := h.mustUpdateObject(bkt.Object(objName), ObjectAttrsToUpdate{
 		ContentType:     "text/html",
 		ContentLanguage: "en",
 		Metadata:        metadata,
 		ACL:             []ACLRule{{Entity: "domain-google.com", Role: RoleReader}},
 	})
-	if err != nil {
-		t.Errorf("UpdateAttrs failed with %v", err)
-	} else {
-		if got, want := updated.ContentType, "text/html"; got != want {
-			t.Errorf("updated.ContentType == %q; want %q", got, want)
-		}
-		if got, want := updated.ContentLanguage, "en"; got != want {
-			t.Errorf("updated.ContentLanguage == %q; want %q", updated.ContentLanguage, want)
-		}
-		if got, want := updated.Metadata, metadata; !testutil.Equal(got, want) {
-			t.Errorf("updated.Metadata == %+v; want %+v", updated.Metadata, want)
-		}
-		if got, want := updated.Created, created; got != want {
-			t.Errorf("updated.Created == %q; want %q", got, want)
-		}
-		if !updated.Created.Before(updated.Updated) {
-			t.Errorf("updated.Updated should be newer than update.Created")
-		}
+	if got, want := updated.ContentType, "text/html"; got != want {
+		t.Errorf("updated.ContentType == %q; want %q", got, want)
 	}
+	if got, want := updated.ContentLanguage, "en"; got != want {
+		t.Errorf("updated.ContentLanguage == %q; want %q", updated.ContentLanguage, want)
+	}
+	if got, want := updated.Metadata, metadata; !testutil.Equal(got, want) {
+		t.Errorf("updated.Metadata == %+v; want %+v", updated.Metadata, want)
+	}
+	if got, want := updated.Created, created; got != want {
+		t.Errorf("updated.Created == %q; want %q", got, want)
+	}
+	if !updated.Created.Before(updated.Updated) {
+		t.Errorf("updated.Updated should be newer than update.Created")
+	}
+
 	// Delete ContentType and ContentLanguage.
-	updated, err = bkt.Object(objName).Update(ctx, ObjectAttrsToUpdate{
+	updated = h.mustUpdateObject(bkt.Object(objName), ObjectAttrsToUpdate{
 		ContentType:     "",
 		ContentLanguage: "",
 		Metadata:        map[string]string{},
 	})
-	if err != nil {
-		t.Errorf("UpdateAttrs failed with %v", err)
-	} else {
-		if got, want := updated.ContentType, ""; got != want {
-			t.Errorf("updated.ContentType == %q; want %q", got, want)
-		}
-		if got, want := updated.ContentLanguage, ""; got != want {
-			t.Errorf("updated.ContentLanguage == %q; want %q", updated.ContentLanguage, want)
-		}
-		if updated.Metadata != nil {
-			t.Errorf("updated.Metadata == %+v; want nil", updated.Metadata)
-		}
-		if got, want := updated.Created, created; got != want {
-			t.Errorf("updated.Created == %q; want %q", got, want)
-		}
-		if !updated.Created.Before(updated.Updated) {
-			t.Errorf("updated.Updated should be newer than update.Created")
-		}
+	if got, want := updated.ContentType, ""; got != want {
+		t.Errorf("updated.ContentType == %q; want %q", got, want)
+	}
+	if got, want := updated.ContentLanguage, ""; got != want {
+		t.Errorf("updated.ContentLanguage == %q; want %q", updated.ContentLanguage, want)
+	}
+	if updated.Metadata != nil {
+		t.Errorf("updated.Metadata == %+v; want nil", updated.Metadata)
+	}
+	if got, want := updated.Created, created; got != want {
+		t.Errorf("updated.Created == %q; want %q", got, want)
+	}
+	if !updated.Created.Before(updated.Updated) {
+		t.Errorf("updated.Updated should be newer than update.Created")
 	}
 
 	// Test checksums.
@@ -2269,13 +2262,31 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 	check("Bucket.ACL", attrs.ACL, 1, AllAuthenticatedUsers, RoleReader)
 	check("DefaultObjectACL", attrs.DefaultObjectACL, 0, AllUsers, RoleReader)
 
+	// Bucket update
+	attrs = h.mustUpdateBucket(bkt, BucketAttrsToUpdate{
+		PredefinedACL:              "private",
+		PredefinedDefaultObjectACL: "authenticatedRead",
+	})
+	checkPrefix("Bucket.ACL update", attrs.ACL, 0, "project-owners", RoleOwner)
+	check("DefaultObjectACL update", attrs.DefaultObjectACL, 0, AllAuthenticatedUsers, RoleReader)
+
+	// Object creation
 	obj := bkt.Object("private")
 	w := obj.NewWriter(ctx)
-	w.PredefinedACL = "private"
-	h.mustWrite(w, []byte("private"))
+	w.PredefinedACL = "authenticatedRead"
+	h.mustWrite(w, []byte("hello"))
 	defer h.mustDeleteObject(obj)
 	checkPrefix("Object.ACL", w.Attrs().ACL, 0, "user", RoleOwner)
+	check("Object.ACL", w.Attrs().ACL, 1, AllAuthenticatedUsers, RoleReader)
 
+	// Object update
+	oattrs := h.mustUpdateObject(obj, ObjectAttrsToUpdate{PredefinedACL: "private"})
+	checkPrefix("Object.ACL update", oattrs.ACL, 0, "user", RoleOwner)
+	if got := len(oattrs.ACL); got != 1 {
+		t.Errorf("got %d ACLs, want 1", got)
+	}
+
+	// Copy
 	dst := bkt.Object("dst")
 	copier := dst.CopierFrom(obj)
 	copier.PredefinedACL = "publicRead"
@@ -2288,6 +2299,7 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 	checkPrefix("Copy dest", oattrs.ACL, 0, "user", RoleOwner)
 	check("Copy dest", oattrs.ACL, 1, AllUsers, RoleReader)
 
+	// Compose
 	comp := bkt.Object("comp")
 	composer := comp.ComposerFrom(obj, dst)
 	composer.PredefinedACL = "authenticatedRead"
@@ -2298,7 +2310,7 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 	defer h.mustDeleteObject(comp)
 	// The composed object still retains the "private" ACL.
 	checkPrefix("Copy dest", oattrs.ACL, 0, "user", RoleOwner)
-	check("Bucket.ACL", attrs.ACL, 1, AllAuthenticatedUsers, RoleReader)
+	check("Copy dest", oattrs.ACL, 1, AllAuthenticatedUsers, RoleReader)
 }
 
 type testHelper struct {
@@ -2345,6 +2357,14 @@ func (h testHelper) mustDeleteObject(o *ObjectHandle) {
 	if err := o.Delete(context.Background()); err != nil {
 		h.t.Fatalf("%s: object delete: %v", loc(), err)
 	}
+}
+
+func (h testHelper) mustUpdateObject(o *ObjectHandle, ua ObjectAttrsToUpdate) *ObjectAttrs {
+	attrs, err := o.Update(context.Background(), ua)
+	if err != nil {
+		h.t.Fatalf("%s: update: %v", loc(), err)
+	}
+	return attrs
 }
 
 func (h testHelper) mustWrite(w *Writer, data []byte) {
