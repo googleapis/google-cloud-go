@@ -41,7 +41,7 @@ type Property struct {
 	//	- string
 	//	- float64
 	//	- *Key
-	//	- time.Time
+	//	- time.Time (retrieved as local time)
 	//	- GeoPoint
 	//	- []byte (up to 1 megabyte in length)
 	//	- *Entity (representing a nested struct)
