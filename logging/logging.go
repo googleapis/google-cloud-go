@@ -794,6 +794,9 @@ func toLogEntry(e Entry) (*logpb.LogEntry, error) {
 	if err != nil {
 		return nil, err
 	}
+	if e.Trace == "" && e.HTTPRequest != nil && e.HTTPRequest.Request != nil {
+		e.Trace = e.HTTPRequest.Request.Header.Get("X-Cloud-Trace-Context")
+	}
 	ent := &logpb.LogEntry{
 		Timestamp:      ts,
 		Severity:       logtypepb.LogSeverity(e.Severity),
