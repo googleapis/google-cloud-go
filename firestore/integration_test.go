@@ -391,6 +391,17 @@ func TestIntegration_Set(t *testing.T) {
 		t.Errorf("update time did not increase: old=%s, new=%s", wr3.UpdateTime, wr4.UpdateTime)
 	}
 
+	// use firestore.Delete to delete a field.
+	_, err = doc.Set(ctx, map[string]interface{}{"str": Delete}, MergeAll)
+	ds = h.mustGet(doc)
+	want = map[string]interface{}{
+		"x": "4",
+		"y": "5",
+	}
+	if got := ds.Data(); !testEqual(got, want) {
+		t.Errorf("got %v, want %v", got, want)
+	}
+
 	// Writing an empty doc with MergeAll should create the doc.
 	doc2 := coll.NewDoc()
 	want = map[string]interface{}{}
