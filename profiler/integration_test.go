@@ -21,6 +21,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"runtime"
 	"strings"
 	"testing"
 	"text/template"
@@ -220,19 +221,9 @@ func TestAgentIntegration(t *testing.T) {
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS"},
 			goVersion:        "1.7",
 		},
-		{
-			InstanceConfig: proftest.InstanceConfig{
-				ProjectID:   projectID,
-				Zone:        zone,
-				Name:        fmt.Sprintf("profiler-test-go16-%s", runID),
-				MachineType: "n1-standard-1",
-			},
-			name:             fmt.Sprintf("profiler-test-go16-%s-gce", runID),
-			wantProfileTypes: []string{"CPU", "HEAP", "THREADS"},
-			goVersion:        "1.6",
-		},
 	}
-
+	// The number of tests run in parallel is the current value of GOMAXPROCS.
+	runtime.GOMAXPROCS(len(testcases))
 	for _, tc := range testcases {
 		tc := tc // capture range variable
 		t.Run(tc.name, func(t *testing.T) {
