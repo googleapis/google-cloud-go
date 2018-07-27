@@ -113,7 +113,7 @@ func TestRetryApply(t *testing.T) {
 	mutTrue.DeleteRow()
 	mutFalse := NewMutation()
 	mutFalse.Set("cf", "col", 1000, []byte("val"))
-	condMut := NewCondMutation(ValueFilter("."), mutTrue, mutFalse)
+	condMut := NewCondMutation(ValueFilter(".*"), mutTrue, mutFalse)
 
 	errCount = 0
 	code = codes.Unavailable // Will be retried
