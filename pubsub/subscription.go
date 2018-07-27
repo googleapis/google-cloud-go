@@ -407,7 +407,7 @@ var errReceiveInProgress = errors.New("pubsub: Receive already in progress for t
 // The context passed to f will be canceled when ctx is Done or there is a
 // fatal service error.
 //
-// Receive will automatically extend the ack deadline of all fetched Messages for the
+// Receive will automatically extend the ack deadline of all fetched Messages up to the
 // period specified by s.ReceiveSettings.MaxExtension.
 //
 // Each Subscription may have only one invocation of Receive active at a time.
