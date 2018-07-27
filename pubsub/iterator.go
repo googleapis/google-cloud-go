@@ -54,9 +54,16 @@ type streamingMessageIterator struct {
 	drained    chan struct{}    // closed when stopped && no more pending messages
 	wg         sync.WaitGroup
 
-	mu                 sync.Mutex
-	ackTimeDist        *distribution.D      // dist uses seconds
-	keepAliveDeadlines map[string]time.Time // id to expiration time
+	mu          sync.Mutex
+	ackTimeDist *distribution.D // dist uses seconds
+
+	// keepAliveDeadlines is a map of id to expiration time. This map is used in conjunction with
+	// subscription.ReceiveSettings.MaxExtension to record the maximum amount of time (the
+	// deadline, more specifically) we're willing to extend a message's ack deadline. As each
+	// message arrives, we'll record now+MaxExtension in this table; whenever we have a chance
+	// to update ack deadlines (via modack), we'll consult this table and only include IDs
+	// that are not beyond their deadline.
+	keepAliveDeadlines map[string]time.Time
 	pendingAcks        map[string]bool
 	pendingNacks       map[string]bool
 	pendingModAcks     map[string]bool // ack IDs whose ack deadline is to be modified
