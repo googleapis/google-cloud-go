@@ -80,6 +80,7 @@ func TestApplyErrors(t *testing.T) {
 }
 
 func TestClientIntegration(t *testing.T) {
+	// TODO(jba): go1.9: Use subtests.
 	start := time.Now()
 	lastCheckpoint := start
 	checkpoint := func(s string) {
@@ -238,6 +239,12 @@ func TestClientIntegration(t *testing.T) {
 			want:   "gwashington-jadams-1,jadams-tjefferson-1,tjefferson-jadams-1,wmckinley-tjefferson-1",
 		},
 		{
+			desc:   "read all, with ColumnFilter, prefix",
+			rr:     RowRange{},
+			filter: ColumnFilter("j"), // no matches
+			want:   "",
+		},
+		{
 			desc:   "read range, with ColumnRangeFilter",
 			rr:     RowRange{},
 			filter: ColumnRangeFilter("follows", "h", "k"),
@@ -260,6 +267,12 @@ func TestClientIntegration(t *testing.T) {
 			rr:     RowRange{},
 			filter: RowKeyFilter(".*wash.*"),
 			want:   "gwashington-jadams-1",
+		},
+		{
+			desc:   "read with RowKeyFilter, prefix",
+			rr:     RowRange{},
+			filter: RowKeyFilter("gwash"),
+			want:   "",
 		},
 		{
 			desc:   "read with RowKeyFilter, no matches",
@@ -369,7 +382,7 @@ func TestClientIntegration(t *testing.T) {
 			opts = append(opts, tc.limit)
 		}
 		var elt []string
-		err := tbl.ReadRows(context.Background(), tc.rr, func(r Row) bool {
+		err := tbl.ReadRows(ctx, tc.rr, func(r Row) bool {
 			for _, ris := range r {
 				for _, ri := range ris {
 					elt = append(elt, formatReadItem(ri))
@@ -385,6 +398,7 @@ func TestClientIntegration(t *testing.T) {
 			t.Errorf("%s: wrong reads.\n got %q\nwant %q", tc.desc, got, tc.want)
 		}
 	}
+
 	// Read a RowList
 	var elt []string
 	keys := RowList{"wmckinley", "gwashington", "jadams"}

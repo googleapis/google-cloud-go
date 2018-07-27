@@ -30,6 +30,7 @@ To use a Server, create it, and then connect to it with no security:
 package bttest // import "cloud.google.com/go/bigtable/bttest"
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
 	"log"
@@ -40,8 +41,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"bytes"
 
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"github.com/golang/protobuf/ptypes/wrappers"
@@ -489,7 +488,7 @@ func filterRow(f *btpb.RowFilter, r *row) bool {
 		return filterRow(f.Condition.FalseFilter, r)
 	case *btpb.RowFilter_RowKeyRegexFilter:
 		pat := string(f.RowKeyRegexFilter)
-		rx, err := regexp.Compile(pat)
+		rx, err := newRegexp(pat)
 		if err != nil {
 			log.Printf("Bad rowkey_regex_filter pattern %q: %v", pat, err)
 			return false
@@ -585,8 +584,8 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) bool {
 		log.Printf("WARNING: don't know how to handle filter of type %T (ignoring it)", f)
 		return true
 	case *btpb.RowFilter_FamilyNameRegexFilter:
-		pat := string(f.FamilyNameRegexFilter)
-		rx, err := regexp.Compile(pat)
+		pat := f.FamilyNameRegexFilter
+		rx, err := newRegexp(pat)
 		if err != nil {
 			log.Printf("Bad family_name_regex_filter pattern %q: %v", pat, err)
 			return false
@@ -594,7 +593,7 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) bool {
 		return rx.MatchString(fam)
 	case *btpb.RowFilter_ColumnQualifierRegexFilter:
 		pat := string(f.ColumnQualifierRegexFilter)
-		rx, err := regexp.Compile(pat)
+		rx, err := newRegexp(pat)
 		if err != nil {
 			log.Printf("Bad column_qualifier_regex_filter pattern %q: %v", pat, err)
 			return false
@@ -602,7 +601,7 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) bool {
 		return rx.MatchString(col)
 	case *btpb.RowFilter_ValueRegexFilter:
 		pat := string(f.ValueRegexFilter)
-		rx, err := regexp.Compile(pat)
+		rx, err := newRegexp(pat)
 		if err != nil {
 			log.Printf("Bad value_regex_filter pattern %q: %v", pat, err)
 			return false
@@ -653,6 +652,14 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) bool {
 		}
 		return inRangeStart() && inRangeEnd()
 	}
+}
+
+func newRegexp(pat string) (*regexp.Regexp, error) {
+	re, err := regexp.Compile("^" + pat + "$") // match entire target
+	if err != nil {
+		log.Printf("Bad pattern %q: %v", pat, err)
+	}
+	return re, err
 }
 
 func (s *server) MutateRow(ctx context.Context, req *btpb.MutateRowRequest) (*btpb.MutateRowResponse, error) {

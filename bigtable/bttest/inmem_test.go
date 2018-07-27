@@ -23,6 +23,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"golang.org/x/net/context"
@@ -516,8 +517,8 @@ func TestReadRowsOrder(t *testing.T) {
 
 	// Read with interleave filter
 	inter := &btpb.RowFilter_Interleave{}
-	fnr := &btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{FamilyNameRegexFilter: "1"}}
-	cqr := &btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{ColumnQualifierRegexFilter: []byte("2")}}
+	fnr := &btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{FamilyNameRegexFilter: "cf1"}}
+	cqr := &btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{ColumnQualifierRegexFilter: []byte("col2")}}
 	inter.Filters = append(inter.Filters, fnr, cqr)
 	req = &btpb.ReadRowsRequest{
 		TableName: tblInfo.Name,
@@ -897,5 +898,48 @@ func Test_Mutation_DeleteFromColumn(t *testing.T) {
 			t.Errorf("expected failure got passed for : %v", tst)
 		}
 	}
+}
 
+func TestFilterRow(t *testing.T) {
+	row := &row{
+		key: "row",
+		families: map[string]*family{
+			"fam": &family{
+				name: "fam",
+				cells: map[string][]cell{
+					"col": []cell{{ts: 100, value: []byte("val")}},
+				},
+			},
+		},
+	}
+	for _, test := range []struct {
+		filter *btpb.RowFilter
+		want   bool
+	}{
+		// The regexp-based filters perform whole-string, case-sensitive matches.
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowKeyRegexFilter{[]byte("row")}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowKeyRegexFilter{[]byte("ro")}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowKeyRegexFilter{[]byte("ROW")}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowKeyRegexFilter{[]byte("moo")}}, false},
+
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{"fam"}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{"fa"}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{"FAM"}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{"moo"}}, false},
+
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{[]byte("col")}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{[]byte("co")}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{[]byte("COL")}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{[]byte("moo")}}, false},
+
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("val")}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("va")}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("VAL")}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("moo")}}, false},
+	} {
+		got := filterRow(test.filter, row.copy())
+		if got != test.want {
+			t.Errorf("%s: got %t, want %t", proto.CompactTextString(test.filter), got, test.want)
+		}
+	}
 }
