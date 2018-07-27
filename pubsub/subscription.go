@@ -425,13 +425,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	s.mu.Unlock()
 	defer func() { s.mu.Lock(); s.receiveActive = false; s.mu.Unlock() }()
 
-	config, err := s.Config(ctx)
-	if err != nil {
-		if grpc.Code(err) == codes.Canceled {
-			return nil
-		}
-		return err
-	}
 	maxCount := s.ReceiveSettings.MaxOutstandingMessages
 	if maxCount == 0 {
 		maxCount = DefaultReceiveSettings.MaxOutstandingMessages
@@ -456,7 +449,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		minAckDeadline: minAckDeadline,
 		maxExtension:   maxExt,
 		maxPrefetch:    trunc32(int64(maxCount)),
-		ackDeadline:    config.AckDeadline,
 	}
 	fc := newFlowController(maxCount, maxBytes)
 
@@ -536,7 +528,4 @@ type pullOptions struct {
 	minAckDeadline time.Duration
 	maxExtension   time.Duration
 	maxPrefetch    int32
-	// ackDeadline is the default ack deadline for the subscription. Not
-	// configurable.
-	ackDeadline time.Duration
 }
