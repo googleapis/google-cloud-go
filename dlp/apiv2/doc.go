@@ -16,8 +16,7 @@
 
 // Package dlp is an auto-generated package for the
 // Cloud Data Loss Prevention (DLP) API.
-//
-//   NOTE: This package is in alpha. It is not stable, and is likely to change.
+
 //
 // Provides methods for detection, risk analysis, and de-identification of
 // privacy-sensitive fragments in text, images, and Google Cloud Platform

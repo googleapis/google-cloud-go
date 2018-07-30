@@ -21,8 +21,6 @@
 // Manages encryption for your cloud services the same way you do
 // on-premises.
 // You can generate, use, rotate, and destroy AES256 encryption keys.
-//
-// Use the client at cloud.google.com/go/kms in preference to this.
 package kms // import "cloud.google.com/go/kms/apiv1"
 
 import (
