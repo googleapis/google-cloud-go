@@ -136,7 +136,7 @@ func NewKeyManagementClient(ctx context.Context, opts ...option.ClientOption) (*
 
 		keyManagementClient: kmspb.NewKeyManagementServiceClient(conn),
 	}
-	c.SetGoogleClientInfo()
+	c.setGoogleClientInfo()
 	return c, nil
 }
 
@@ -151,10 +151,10 @@ func (c *KeyManagementClient) Close() error {
 	return c.conn.Close()
 }
 
-// SetGoogleClientInfo sets the name and version of the application in
+// setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *KeyManagementClient) SetGoogleClientInfo(keyval ...string) {
+func (c *KeyManagementClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", version.Go()}, keyval...)
 	kv = append(kv, "gapic", version.Repo, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
