@@ -26,6 +26,7 @@ APIS=(
 google/iam/artman_iam_admin.yaml
 google/cloud/bigquery/datatransfer/artman_bigquerydatatransfer.yaml
 google/cloud/dataproc/artman_dataproc_v1.yaml
+google/cloud/dataproc/artman_dataproc_v1beta2.yaml
 google/cloud/dialogflow/artman_dialogflow_v2.yaml
 google/cloud/kms/artman_cloudkms.yaml
 google/cloud/language/artman_language_v1.yaml
