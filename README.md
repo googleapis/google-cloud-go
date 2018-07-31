@@ -100,12 +100,12 @@ client, err := storage.NewClient(ctx)
 To authorize using a
 [JSON key file](https://cloud.google.com/iam/docs/managing-service-account-keys),
 pass
-[`option.WithServiceAccountFile`](https://godoc.org/google.golang.org/api/option#WithServiceAccountFile)
+[`option.WithCredentialsFile`](https://godoc.org/google.golang.org/api/option#WithCredentialsFile)
 to the `NewClient` function of the desired package. For example:
 
 [snip]:# (auth-JSON)
 ```go
-client, err := storage.NewClient(ctx, option.WithServiceAccountFile("path/to/keyfile.json"))
+client, err := storage.NewClient(ctx, option.WithCredentialsFile("path/to/keyfile.json"))
 ```
 
 You can exert more control over authorization by using the

@@ -52,7 +52,7 @@ func auth() {
 
 func auth2() {
 	//[ auth-JSON
-	client, err := storage.NewClient(ctx, option.WithServiceAccountFile("path/to/keyfile.json"))
+	client, err := storage.NewClient(ctx, option.WithCredentialsFile("path/to/keyfile.json"))
 	//]
 	_ = client
 	_ = err
