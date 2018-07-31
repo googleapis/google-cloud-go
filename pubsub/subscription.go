@@ -203,10 +203,6 @@ type ReceiveSettings struct {
 	// The Subscription will automatically extend the ack deadline of all
 	// fetched Messages for the duration specified. Automatic deadline
 	// extension may be disabled by specifying a duration less than 0.
-	//
-	// Connections may be terminated if they last longer than 30m, which
-	// effectively makes that the ceiling for this value. For longer message
-	// processing, see the example at https://godoc.org/cloud.google.com/go/pubsub/apiv1#example_SubscriberClient_Pull_lengthyClientProcessing
 	MaxExtension time.Duration
 
 	// MaxOutstandingMessages is the maximum number of unprocessed messages
