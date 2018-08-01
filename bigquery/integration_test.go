@@ -329,7 +329,7 @@ func TestIntegration_TableMetadata(t *testing.T) {
 		err = clusterTable.Create(context.Background(), &TableMetadata{
 			Schema:           schema2,
 			TimePartitioning: &c.timePartitioning,
-			ExpirationTime:   time.Now().Add(5 * time.Minute),
+			ExpirationTime:   testTableExpiration,
 			Clustering:       clustering,
 		})
 		clusterMD, err := clusterTable.Metadata(ctx)
@@ -358,7 +358,6 @@ func TestIntegration_TableMetadata(t *testing.T) {
 				t.Errorf("metadata.Clustering: got %v, want %v", got, want)
 			}
 		}
-
 	}
 
 }
