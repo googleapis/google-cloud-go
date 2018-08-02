@@ -25,6 +25,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	ltest "cloud.google.com/go/logging/internal/testing"
 	"cloud.google.com/go/storage"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
@@ -116,15 +117,17 @@ loop:
 func TestCreateDeleteSink(t *testing.T) {
 	ctx := context.Background()
 	sink := &Sink{
-		ID:          sinkIDs.New(),
-		Destination: testSinkDestination,
-		Filter:      testFilter,
+		ID:              sinkIDs.New(),
+		Destination:     testSinkDestination,
+		Filter:          testFilter,
+		IncludeChildren: true,
 	}
 	got, err := client.CreateSink(ctx, sink)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer client.DeleteSink(ctx, sink.ID)
+	sink.WriterIdentity = ltest.SharedServiceAccount
 	if want := sink; !testutil.Equal(got, want) {
 		t.Errorf("got %+v, want %+v", got, want)
 	}
@@ -143,37 +146,52 @@ func TestCreateDeleteSink(t *testing.T) {
 	if _, err := client.Sink(ctx, sink.ID); err == nil {
 		t.Fatal("got no error, expected one")
 	}
+
+	// UniqueWriterIdentity
+	sink.ID = sinkIDs.New()
+	got, err = client.CreateSinkOpt(ctx, sink, SinkOptions{UniqueWriterIdentity: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.DeleteSink(ctx, sink.ID)
+	// The WriterIdentity should be different.
+	if got.WriterIdentity == sink.WriterIdentity {
+		t.Errorf("got %s, want something different", got.WriterIdentity)
+	}
 }
 
 func TestUpdateSink(t *testing.T) {
 	ctx := context.Background()
 	sink := &Sink{
-		ID:          sinkIDs.New(),
-		Destination: testSinkDestination,
-		Filter:      testFilter,
+		ID:              sinkIDs.New(),
+		Destination:     testSinkDestination,
+		Filter:          testFilter,
+		IncludeChildren: true,
+		WriterIdentity:  ltest.SharedServiceAccount,
 	}
 
 	if _, err := client.CreateSink(ctx, sink); err != nil {
 		t.Fatal(err)
 	}
+	defer client.DeleteSink(ctx, sink.ID)
 	got, err := client.UpdateSink(ctx, sink)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer client.DeleteSink(ctx, sink.ID)
 	if want := sink; !testutil.Equal(got, want) {
-		t.Errorf("got %+v, want %+v", got, want)
+		t.Errorf("got\n%+v\nwant\n%+v", got, want)
 	}
 	got, err = client.Sink(ctx, sink.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if want := sink; !testutil.Equal(got, want) {
-		t.Errorf("got %+v, want %+v", got, want)
+		t.Errorf("got\n%+v\nwant\n%+v", got, want)
 	}
 
 	// Updating an existing sink changes it.
 	sink.Filter = ""
+	sink.IncludeChildren = false
 	if _, err := client.UpdateSink(ctx, sink); err != nil {
 		t.Fatal(err)
 	}
@@ -182,7 +200,59 @@ func TestUpdateSink(t *testing.T) {
 		t.Fatal(err)
 	}
 	if want := sink; !testutil.Equal(got, want) {
-		t.Errorf("got %+v, want %+v", got, want)
+		t.Errorf("got\n%+v\nwant\n%+v", got, want)
+	}
+}
+
+func TestUpdateSinkOpt(t *testing.T) {
+	ctx := context.Background()
+	id := sinkIDs.New()
+	origSink := &Sink{
+		ID:              id,
+		Destination:     testSinkDestination,
+		Filter:          testFilter,
+		IncludeChildren: true,
+		WriterIdentity:  ltest.SharedServiceAccount,
+	}
+
+	if _, err := client.CreateSink(ctx, origSink); err != nil {
+		t.Fatal(err)
+	}
+	defer client.DeleteSink(ctx, id)
+
+	// Updating with empty options is an error.
+	_, err := client.UpdateSinkOpt(ctx, &Sink{ID: id, Destination: testSinkDestination}, SinkOptions{})
+	if err == nil {
+		t.Errorf("got %v, want nil", err)
+	}
+
+	// Update selected fields.
+	got, err := client.UpdateSinkOpt(ctx, &Sink{ID: id}, SinkOptions{
+		UpdateFilter:          true,
+		UpdateIncludeChildren: true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := *origSink
+	want.Filter = ""
+	want.IncludeChildren = false
+	if !testutil.Equal(got, &want) {
+		t.Errorf("got\n%+v\nwant\n%+v", got, want)
+	}
+
+	// Update writer identity.
+	got, err = client.UpdateSinkOpt(ctx, &Sink{ID: id, Filter: "foo"},
+		SinkOptions{UniqueWriterIdentity: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.WriterIdentity == want.WriterIdentity {
+		t.Errorf("got %s, want something different", got.WriterIdentity)
+	}
+	want.WriterIdentity = got.WriterIdentity
+	if !testutil.Equal(got, &want) {
+		t.Errorf("got\n%+v\nwant\n%+v", got, want)
 	}
 }
 
@@ -192,9 +262,10 @@ func TestListSinks(t *testing.T) {
 	want := map[string]*Sink{}
 	for i := 0; i < 4; i++ {
 		s := &Sink{
-			ID:          sinkIDs.New(),
-			Destination: testSinkDestination,
-			Filter:      testFilter,
+			ID:             sinkIDs.New(),
+			Destination:    testSinkDestination,
+			Filter:         testFilter,
+			WriterIdentity: "serviceAccount:cloud-logs@system.gserviceaccount.com",
 		}
 		sinks = append(sinks, s)
 		want[s.ID] = s
