@@ -62,6 +62,8 @@ const DocumentID = "__name__"
 // to return from the result documents.
 // Each path argument can be a single field or a dot-separated sequence of
 // fields, and must not contain any of the runes "˜*/[]".
+//
+// An empty Select call will produce a query that returns only document IDs.
 func (q Query) Select(paths ...string) Query {
 	var fps []FieldPath
 	for _, s := range paths {
@@ -77,6 +79,8 @@ func (q Query) Select(paths ...string) Query {
 
 // SelectPaths returns a new Query that specifies the field paths
 // to return from the result documents.
+//
+// An empty SelectPaths call will produce a query that returns only document IDs.
 func (q Query) SelectPaths(fieldPaths ...FieldPath) Query {
 	if len(fieldPaths) == 0 {
 		q.selection = []FieldPath{{DocumentID}}
