@@ -314,4 +314,17 @@ func (clf cellsPerRowLimitFilter) proto() *btpb.RowFilter {
 	return &btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowLimitFilter{CellsPerRowLimitFilter: int32(clf)}}
 }
 
-// TODO(dsymonds): More filters: sampling
+// RowSampleFilter returns a filter that returns each row with a probability of P (must be in the interval (0, 1)).
+func RowSampleFilter(p float64) Filter {
+	return rowSampleFilter(p)
+}
+
+type rowSampleFilter float64
+
+func (rsf rowSampleFilter) String() string {
+	return fmt.Sprintf("filter(%f)", rsf)
+}
+
+func (rsf rowSampleFilter) proto() *btpb.RowFilter {
+	return &btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{RowSampleFilter: float64(rsf)}}
+}
