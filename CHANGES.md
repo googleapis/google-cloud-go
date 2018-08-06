@@ -1,5 +1,37 @@
 # Changes
 
+## v0.26.0
+
+- bigquery:
+  - Support filtering listed jobs  by min/max creation time.
+  - Support data clustering (https://godoc.org/cloud.google.com/go/bigquery#Clustering).
+  - Include job creator email in Job struct.
+- bigtable:
+  - Add `RowSampleFilter`.
+  - emulator: BREAKING BEHAVIOR CHANGE: Regexps in row, family, column and value filters
+    must match the entire target string to succeed. Previously, the emulator was
+    succeeding on  partial matches.
+    NOTE: As of this release, this change only affects the emulator when run
+    from this repo (bigtable/cmd/emulator/cbtemulator.go). The version launched
+    from `gcloud` will be updated in a subsequent `gcloud` release.
+- dataproc: Add apiv1beta2 client.
+- datastore: Save non-nil pointer fields on omitempty.
+- logging: populate Entry.Trace from the HTTP X-Cloud-Trace-Context header.
+- logging/logadmin:  Support writer_identity and include_children.
+- pubsub:
+  - Support labels on topics and subscriptions.
+  - Support message storage policy for topics.
+  - Use the distribution of ack times to determine when to extend ack deadlines.
+    The only user-visible effect of this change should be that programs that
+    call only `Subscription.Receive` need no IAM permissions other than `Pub/Sub
+    Subscriber`.
+- storage:
+  - Support predefined ACLs.
+  - Support additional ACL fields other than Entity and Role.
+  - Support bucket websites.
+  - Support bucket logging.
+
+
 ## v0.25.0
 
 - Added [Code of Conduct](https://github.com/GoogleCloudPlatform/google-cloud-go/blob/master/CODE_OF_CONDUCT.md)
