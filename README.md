@@ -449,3 +449,31 @@ for more information.
 [cloud-dlp-ref]: https://godoc.org/cloud.google.com/go/dlp/apiv2beta1
 
 [default-creds]: https://developers.google.com/identity/protocols/application-default-credentials
+
+[cloud-dataproc]: https://cloud.google.com/dataproc/
+[cloud-dataproc-docs]: https://cloud.google.com/dataproc/docs
+[cloud-dataproc-ref]: https://godoc.org/cloud.google.com/go/dataproc/apiv1
+
+[cloud-iam]: https://cloud.google.com/iam/
+[cloud-iam-docs]: https://cloud.google.com/iam/docs
+[cloud-iam-ref]: https://godoc.org/cloud.google.com/go/iam
+
+[cloud-kms]: https://cloud.google.com/kms/
+[cloud-kms-docs]: https://cloud.google.com/kms/docs
+[cloud-kms-ref]: https://godoc.org/cloud.google.com/go/kms/apiv1
+
+[cloud-natural-language]: https://cloud.google.com/natural-language/
+[cloud-natural-language-docs]: https://cloud.google.com/natural-language/docs
+[cloud-natural-language-ref]: https://godoc.org/cloud.google.com/go/language/apiv1
+
+[cloud-memorystore]: https://cloud.google.com/memorystore/
+[cloud-memorystore-docs]: https://cloud.google.com/memorystore/docs
+[cloud-memorystore-ref]: https://godoc.org/cloud.google.com/go/redis/apiv1beta1
+
+[cloud-texttospeech]: https://cloud.google.com/texttospeech/
+[cloud-texttospeech-docs]: https://cloud.google.com/texttospeech/docs
+[cloud-texttospeech-ref]: https://godoc.org/cloud.google.com/go/texttospeech/apiv1
+
+[cloud-trace]: https://cloud.google.com/trace/
+[cloud-trace-docs]: https://cloud.google.com/trace/docs
+[cloud-trace-ref]: https://godoc.org/cloud.google.com/go/trace/apiv1
