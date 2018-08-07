@@ -33,6 +33,17 @@ make backwards-incompatible changes.
 
 ## News
 
+_7 August 2018_
+
+As of November 1, the code in the repo will no longer support Go versions 1.8
+and earlier. No one other than AppEngine users should be on those old versions,
+and AppEngine
+[Standard](https://groups.google.com/forum/#!topic/google-appengine-go/e7oPNomd7ak)
+and
+Flex(https://groups.google.com/forum/#!topic/google-appengine-go/wHsYtxvEbXI)
+will stop supporting new deployments with those versions on that date.
+
+
 Changes have been moved to [CHANGES](https://github.com/GoogleCloudPlatform/google-cloud-go/blob/master/CHANGES.md).
 
 
