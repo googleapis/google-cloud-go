@@ -63,25 +63,15 @@ func dotest(self bool) bool {
 		panic("unexpected space in tempdir")
 	}
 	pclinetestBinary = filepath.Join(pclineTempDir, "pclinetest")
-	if err := buildTestProgram(true); err != nil {
-		if err = buildTestProgram(false); err != nil {
-			panic(err)
-		}
-	}
-	return true
-}
-
-func buildTestProgram(addCompressFlag bool) error {
-	var compressFlag string
-	if addCompressFlag {
-		compressFlag = "-compressdwarf=false"
-	}
-	command := fmt.Sprintf("go tool compile -o %s.6 testdata/pclinetest.go && go tool link %s -H %s -E main -o %s %s.6",
-		pclinetestBinary, compressFlag, runtime.GOOS, pclinetestBinary, pclinetestBinary)
+	command := fmt.Sprintf("go tool compile -o %s.6 testdata/pclinetest.go && go tool link -H %s -E main -o %s %s.6",
+		pclinetestBinary, runtime.GOOS, pclinetestBinary, pclinetestBinary)
 	cmd := exec.Command("sh", "-c", command)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	return cmd.Run()
+	if err := cmd.Run(); err != nil {
+		panic(err)
+	}
+	return true
 }
 
 func endtest() {
