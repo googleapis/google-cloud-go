@@ -28,7 +28,6 @@ import (
 
 	. "cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/dwarf"
 	"cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/elf"
-	"cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/macho"
 )
 
 var (
@@ -86,17 +85,6 @@ func getData(file string) (*Data, error) {
 	switch runtime.GOOS {
 	case "linux":
 		f, err := elf.Open(file)
-		if err != nil {
-			return nil, err
-		}
-		dwarf, err := f.DWARF()
-		if err != nil {
-			return nil, err
-		}
-		f.Close()
-		return dwarf, nil
-	case "darwin":
-		f, err := macho.Open(file)
 		if err != nil {
 			return nil, err
 		}
