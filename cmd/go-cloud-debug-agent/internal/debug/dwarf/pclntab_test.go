@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// +build go1.10
+
 package dwarf_test
 
 // Stripped-down, simplified version of ../../gosym/pclntab_test.go
@@ -27,7 +29,6 @@ import (
 	"testing"
 
 	. "cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/dwarf"
-	"cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/elf"
 )
 
 var (
@@ -79,23 +80,6 @@ func endtest() {
 		pclineTempDir = ""
 		pclinetestBinary = ""
 	}
-}
-
-func getData(file string) (*Data, error) {
-	switch runtime.GOOS {
-	case "linux":
-		f, err := elf.Open(file)
-		if err != nil {
-			return nil, err
-		}
-		dwarf, err := f.DWARF()
-		if err != nil {
-			return nil, err
-		}
-		f.Close()
-		return dwarf, nil
-	}
-	panic("unimplemented DWARF for GOOS=" + runtime.GOOS)
 }
 
 func TestPCAndLine(t *testing.T) {
