@@ -19,7 +19,7 @@
 /*
 Cbt is a tool for doing basic interactions with Cloud Bigtable. To learn how to
 install the cbt tool, see the
-[cbt overview](https://cloud.google.com/bigtable/docs/go/cbt-overview).
+[cbt overview](https://cloud.google.com/bigtable/docs/cbt-overview).
 
 Usage:
 
@@ -81,11 +81,13 @@ for production use. They are not subject to any SLA or deprecation policy.
 For convenience, values of the -project, -instance, -creds,
 -admin-endpoint and -data-endpoint flags may be specified in
 ~/.cbtrc in this format:
+
 	project = my-project-123
 	instance = my-instance
 	creds = path-to-account-key.json
 	admin-endpoint = hostname:port
 	data-endpoint = hostname:port
+
 All values are optional, and all will be overridden by flags.
 
 
@@ -375,10 +377,8 @@ Usage:
 Creates app profile for an instance
 
 Usage:
-	cbt createappprofile <instance-id> <profile-id> <description> <etag> <routing-policy>
-	[cluster-id=<cluster-id>] [allow-transactional-writes=<allow-transactional-writes>]
-	set multi_cluster_routing_use_any or single_cluster_routing as possible values for routing policy
-	provide cluster-id=clusterID and allow-transactional-writes=true or false in case of single_cluster_routing
+	usage: cbt createappprofile <instance-id> <profile-id> <description> (route-any | [ route-to=<cluster-id> : transactional-writes]) [optional flag]
+	optional flags may be `force`
 
 
 
@@ -402,9 +402,8 @@ Usage:
 Updates app profile for an instance
 
 Usage:
-	cbt updateappprofile  <instance-id> <profile-id> <description> <routing-policy>[cluster-id=<cluster-id>] [allow-transactional-writes=<allow-transactional-writes>]
-	set multi_cluster_routing_use_any or single_cluster_routing as possible values for routing policy
-	provide cluster-id=clusterID and allow-transactional-writes=true or false in case of single_cluster_routing
+	usage: cbt updateappprofile  <instance-id> <profile-id> <description>(route-any | [ route-to=<cluster-id> : transactional-writes]) [optional flag]
+	optional flags may be `force`
 
 
 
