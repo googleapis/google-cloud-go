@@ -192,11 +192,13 @@ for production use. They are not subject to any SLA or deprecation policy.
 For convenience, values of the -project, -instance, -creds,
 -admin-endpoint and -data-endpoint flags may be specified in
 ~/.cbtrc in this format:
+
 	project = my-project-123
 	instance = my-instance
 	creds = path-to-account-key.json
 	admin-endpoint = hostname:port
 	data-endpoint = hostname:port
+
 All values are optional, and all will be overridden by flags.
 `
 
@@ -809,7 +811,7 @@ var docTemplate = template.Must(template.New("doc").Funcs(template.FuncMap{
 /*
 Cbt is a tool for doing basic interactions with Cloud Bigtable. To learn how to
 install the cbt tool, see the
-[cbt overview](https://cloud.google.com/bigtable/docs/go/cbt-overview).
+[cbt overview](https://cloud.google.com/bigtable/docs/cbt-overview).
 
 Usage:
 
@@ -1010,7 +1012,9 @@ var mddocTemplate = template.Must(template.New("mddoc").Funcs(template.FuncMap{
 	"indent": indentLines,
 }).
 	Parse(`
-Cbt is a tool for doing basic interactions with Cloud Bigtable.
+Cbt is a tool for doing basic interactions with Cloud Bigtable. To learn how to
+install the cbt tool, see the
+[cbt overview](https://cloud.google.com/bigtable/docs/cbt-overview).
 
 Usage:
 
