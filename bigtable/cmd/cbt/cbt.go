@@ -512,6 +512,7 @@ func doCount(ctx context.Context, args ...string) {
 	if err != nil {
 		log.Fatalf("Reading rows: %v", err)
 	}
+	fmt.Println(n)
 }
 
 func doCreateTable(ctx context.Context, args ...string) {
