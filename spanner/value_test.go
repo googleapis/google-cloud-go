@@ -1078,11 +1078,11 @@ func TestDecodeStruct(t *testing.T) {
 
 	type (
 		S1 struct {
-			Id   string
+			ID   string
 			Time time.Time
 		}
 		S2 struct {
-			Id   string
+			ID   string
 			Time string
 		}
 	)
@@ -1098,7 +1098,7 @@ func TestDecodeStruct(t *testing.T) {
 	}{
 		{
 			ptr:  &s1,
-			want: &S1{Id: "id", Time: t1},
+			want: &S1{ID: "id", Time: t1},
 		},
 		{
 			ptr:  &s2,
