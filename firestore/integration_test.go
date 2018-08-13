@@ -998,21 +998,21 @@ func TestIntegration_WatchQuery(t *testing.T) {
 	defer it.Stop()
 
 	next := func() ([]*DocumentSnapshot, []DocumentChange) {
-		diter, err := it.Next()
+		qsnap, err := it.Next()
 		if err != nil {
 			t.Fatal(err)
 		}
-		if it.ReadTime.IsZero() {
+		if qsnap.ReadTime.IsZero() {
 			t.Fatal("zero time")
 		}
-		ds, err := diter.GetAll()
+		ds, err := qsnap.Documents.GetAll()
 		if err != nil {
 			t.Fatal(err)
 		}
-		if it.Size != len(ds) {
-			t.Fatalf("Size=%d but we have %d docs", it.Size, len(ds))
+		if qsnap.Size != len(ds) {
+			t.Fatalf("Size=%d but we have %d docs", qsnap.Size, len(ds))
 		}
-		return ds, it.Changes
+		return ds, qsnap.Changes
 	}
 
 	copts := append([]cmp.Option{cmpopts.IgnoreFields(DocumentSnapshot{}, "ReadTime")}, cmpOpts...)

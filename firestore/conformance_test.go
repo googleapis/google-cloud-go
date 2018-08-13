@@ -209,13 +209,13 @@ func runTest(t *testing.T, msg string, test *pb.Test) {
 func nSnapshots(iter *QuerySnapshotIterator, n int) ([]*pb.Snapshot, error) {
 	var snaps []*pb.Snapshot
 	for i := 0; i < n; i++ {
-		diter, err := iter.Next()
+		qsnap, err := iter.Next()
 		if err != nil {
 			return snaps, err
 		}
-		s := &pb.Snapshot{ReadTime: mustTimestampProto(iter.ReadTime)}
+		s := &pb.Snapshot{ReadTime: mustTimestampProto(qsnap.ReadTime)}
 		for {
-			doc, err := diter.Next()
+			doc, err := qsnap.Documents.Next()
 			if err == iterator.Done {
 				break
 			}
@@ -224,7 +224,7 @@ func nSnapshots(iter *QuerySnapshotIterator, n int) ([]*pb.Snapshot, error) {
 			}
 			s.Docs = append(s.Docs, doc.proto)
 		}
-		for _, c := range iter.Changes {
+		for _, c := range qsnap.Changes {
 			var k pb.DocChange_Kind
 			switch c.Kind {
 			case DocumentAdded:

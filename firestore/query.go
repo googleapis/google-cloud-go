@@ -705,24 +705,15 @@ type QuerySnapshotIterator struct {
 	// The Query used to construct this iterator.
 	Query Query
 
-	// The time at which the most recent snapshot was obtained from Firestore.
-	ReadTime time.Time
-
-	// The number of results in the most recent snapshot.
-	Size int
-
-	// The changes since the previous snapshot.
-	Changes []DocumentChange
-
 	ws  *watchStream
 	err error
 }
 
-// Next blocks until the query's results change, then returns a DocumentIterator for
+// Next blocks until the query's results change, then returns a QuerySnapshot for
 // the current results.
 //
 // Next never returns iterator.Done unless it is called after Stop.
-func (it *QuerySnapshotIterator) Next() (*DocumentIterator, error) {
+func (it *QuerySnapshotIterator) Next() (*QuerySnapshot, error) {
 	if it.err != nil {
 		return nil, it.err
 	}
@@ -734,11 +725,13 @@ func (it *QuerySnapshotIterator) Next() (*DocumentIterator, error) {
 		it.err = err
 		return nil, it.err
 	}
-	it.Changes = changes
-	it.ReadTime = readTime
-	it.Size = btree.Len()
-	return &DocumentIterator{
-		iter: (*btreeDocumentIterator)(btree.BeforeIndex(0)),
+	return &QuerySnapshot{
+		Documents: &DocumentIterator{
+			iter: (*btreeDocumentIterator)(btree.BeforeIndex(0)),
+		},
+		Size:     btree.Len(),
+		Changes:  changes,
+		ReadTime: readTime,
 	}, nil
 }
 
@@ -747,6 +740,23 @@ func (it *QuerySnapshotIterator) Next() (*DocumentIterator, error) {
 // concurrently with Next.
 func (it *QuerySnapshotIterator) Stop() {
 	it.ws.stop()
+}
+
+// A QuerySnapshot is a snapshot of query results. It is returned by
+// QuerySnapshotIterator.Next whenever the results of a query change.
+type QuerySnapshot struct {
+	// An iterator over the query results.
+	// It is not necessary to call Stop on this iterator.
+	Documents *DocumentIterator
+
+	// The number of results in this snapshot.
+	Size int
+
+	// The changes since the previous snapshot.
+	Changes []DocumentChange
+
+	// The time at which this snapshot was obtained from Firestore.
+	ReadTime time.Time
 }
 
 type btreeDocumentIterator btree.Iterator
