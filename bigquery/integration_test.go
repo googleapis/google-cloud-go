@@ -286,14 +286,17 @@ func TestIntegration_TableMetadata(t *testing.T) {
 		timePartitioning TimePartitioning
 		wantExpiration   time.Duration
 		wantField        string
+		wantPruneFilter  bool
 	}{
-		{TimePartitioning{}, time.Duration(0), ""},
-		{TimePartitioning{Expiration: time.Second}, time.Second, ""},
+		{TimePartitioning{}, time.Duration(0), "", false},
+		{TimePartitioning{Expiration: time.Second}, time.Second, "", false},
+		{TimePartitioning{RequirePartitionFilter: true}, time.Duration(0), "", true},
 		{
 			TimePartitioning{
-				Expiration: time.Second,
-				Field:      "date",
-			}, time.Second, "date"},
+				Expiration:             time.Second,
+				Field:                  "date",
+				RequirePartitionFilter: true,
+			}, time.Second, "date", true},
 	}
 
 	schema2 := Schema{
@@ -340,12 +343,29 @@ func TestIntegration_TableMetadata(t *testing.T) {
 		for _, v := range []*TableMetadata{md, clusterMD} {
 			got := v.TimePartitioning
 			want := &TimePartitioning{
-				Expiration: c.wantExpiration,
-				Field:      c.wantField,
+				Expiration:             c.wantExpiration,
+				Field:                  c.wantField,
+				RequirePartitionFilter: c.wantPruneFilter,
 			}
 			if !testutil.Equal(got, want) {
 				t.Errorf("metadata.TimePartitioning: got %v, want %v", got, want)
 			}
+			// check that RequirePartitionFilter can be inverted.
+			mdUpdate := TableMetadataToUpdate{
+				TimePartitioning: &TimePartitioning{
+					Expiration:             v.TimePartitioning.Expiration,
+					RequirePartitionFilter: !want.RequirePartitionFilter,
+				},
+			}
+
+			newmd, err := table.Update(ctx, mdUpdate, "")
+			if err != nil {
+				t.Errorf("failed to invert RequirePartitionFilter on %s: %v", table.FullyQualifiedName(), err)
+			}
+			if newmd.TimePartitioning.RequirePartitionFilter == want.RequirePartitionFilter {
+				t.Errorf("inverting RequirePartitionFilter on %s failed, want %t got %t", table.FullyQualifiedName(), !want.RequirePartitionFilter, newmd.TimePartitioning.RequirePartitionFilter)
+			}
+
 		}
 
 		if md.Clustering != nil {
