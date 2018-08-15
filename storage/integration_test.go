@@ -1006,7 +1006,7 @@ func TestIntegration_ValidObjectNames(t *testing.T) {
 	}
 
 	invalidNames := []string{
-		"",                        // Too short.
+		"", // Too short.
 		strings.Repeat("a", 1025), // Too long.
 		"new\nlines",
 		"bad\xffunicode",
@@ -2318,6 +2318,21 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 	// The composed object still retains the "private" ACL.
 	checkPrefix("Copy dest", oattrs.ACL, 0, "user", RoleOwner)
 	check("Copy dest", oattrs.ACL, 1, AllAuthenticatedUsers, RoleReader)
+}
+
+func TestIntegration_ServiceAccount(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+
+	s, err := client.ServiceAccount(ctx, testutil.ProjID())
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := "@gs-project-accounts.iam.gserviceaccount.com"
+	if !strings.Contains(s, want) {
+		t.Fatalf("got %v, want to contain %v", s, want)
+	}
 }
 
 type testHelper struct {
