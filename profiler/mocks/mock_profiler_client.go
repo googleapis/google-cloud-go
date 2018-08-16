@@ -19,11 +19,12 @@
 package mocks
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	context "golang.org/x/net/context"
 	v2 "google.golang.org/genproto/googleapis/devtools/cloudprofiler/v2"
 	grpc "google.golang.org/grpc"
-	reflect "reflect"
 )
 
 // MockProfilerServiceClient is a mock of ProfilerServiceClient interface

@@ -193,7 +193,7 @@ func TestEncodeStructValuePointers(t *testing.T) {
 	for _, test := range []encodeTest{
 		{
 			"Pointer to Go struct with pointers-to-(array)-struct fields.",
-			&testType{"hello", &structf{50}, []*structf{&structf{30}, &structf{40}}},
+			&testType{"hello", &structf{50}, []*structf{{30}, {40}}},
 			listProto(
 				stringProto("hello"),
 				listProto(intProto(50)),
@@ -212,8 +212,8 @@ func TestEncodeStructValuePointers(t *testing.T) {
 			"Slice of pointers to Go structs with NULL and non-NULL elements.",
 			[]*testType{
 				(*testType)(nil),
-				&testType{"hello", nil, []*structf{nil, &structf{40}}},
-				&testType{"world", &structf{70}, nil},
+				{"hello", nil, []*structf{nil, {40}}},
+				{"world", &structf{70}, nil},
 			},
 			listProto(
 				nullProto(),
@@ -312,7 +312,7 @@ func TestEncodeStructValueArrayStructFields(t *testing.T) {
 			struct {
 				Intf       int
 				ArrStructf []structf `spanner:""`
-			}{10, []structf{structf{1}, structf{2}}},
+			}{10, []structf{{1}, {2}}},
 			listProto(
 				intProto(10),
 				listProto(
@@ -351,7 +351,7 @@ func TestEncodeStructValueArrayStructFields(t *testing.T) {
 				ArrStructf []*structf
 			}{
 				10,
-				[]*structf{(*structf)(nil), &structf{1}},
+				[]*structf{(*structf)(nil), {1}},
 			},
 			listProto(
 				intProto(10),
@@ -637,14 +637,14 @@ func TestEncodeStructValueArrayFields(t *testing.T) {
 				Timef   []NullTime
 				Datef   []NullDate
 			}{
-				[]NullString{NullString{"abc", false}, NullString{"def", true}},
-				[]NullInt64{NullInt64{4, false}, NullInt64{67, true}},
-				[]NullInt64{NullInt64{5, false}, NullInt64{68, true}},
-				[]NullBool{NullBool{true, false}, NullBool{false, true}},
-				[]NullFloat64{NullFloat64{3.45, false}, NullFloat64{0.93, true}},
+				[]NullString{{"abc", false}, {"def", true}},
+				[]NullInt64{{4, false}, {67, true}},
+				[]NullInt64{{5, false}, {68, true}},
+				[]NullBool{{true, false}, {false, true}},
+				[]NullFloat64{{3.45, false}, {0.93, true}},
 				[][]byte{[]byte("foo"), nil},
-				[]NullTime{NullTime{t1, false}, NullTime{t2, true}},
-				[]NullDate{NullDate{d1, false}, NullDate{d2, true}},
+				[]NullTime{{t1, false}, {t2, true}},
+				[]NullDate{{d1, false}, {d2, true}},
 			},
 			listProto(
 				listProto(nullProto(), stringProto("def")),

@@ -16,13 +16,14 @@ package main
 
 import (
 	"bytes"
-	"cloud.google.com/go/profiler"
 	"compress/gzip"
 	"flag"
 	"log"
 	"math/rand"
 	"sync"
 	"time"
+
+	"cloud.google.com/go/profiler"
 )
 
 var (
