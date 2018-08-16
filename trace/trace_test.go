@@ -365,12 +365,12 @@ func TestNewSpan(t *testing.T) {
 						},
 						Name: "www.googleapis.com/storage/v1/b/testbucket/o",
 					},
-					&api.TraceSpan{
+					{
 						Kind:   "RPC_CLIENT",
 						Labels: nil,
 						Name:   "/google.datastore.v1.Datastore/Lookup",
 					},
-					&api.TraceSpan{
+					{
 						Kind:   "RPC_CLIENT",
 						Labels: map[string]string{"error": "rpc error: code = Unknown desc = lookup failed"},
 						Name:   "/google.datastore.v1.Datastore/Lookup",
@@ -525,12 +525,12 @@ func testTrace(t *testing.T, synchronous bool, fromRequest bool) {
 						},
 						Name: "www.googleapis.com/storage/v1/b/testbucket/o",
 					},
-					&api.TraceSpan{
+					{
 						Kind:   "RPC_CLIENT",
 						Labels: nil,
 						Name:   "/google.datastore.v1.Datastore/Lookup",
 					},
-					&api.TraceSpan{
+					{
 						Kind:   "RPC_CLIENT",
 						Labels: map[string]string{"error": "rpc error: code = Unknown desc = lookup failed"},
 						Name:   "/google.datastore.v1.Datastore/Lookup",

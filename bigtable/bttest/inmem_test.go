@@ -904,10 +904,10 @@ func TestFilterRow(t *testing.T) {
 	row := &row{
 		key: "row",
 		families: map[string]*family{
-			"fam": &family{
+			"fam": {
 				name: "fam",
 				cells: map[string][]cell{
-					"col": []cell{{ts: 100, value: []byte("val")}},
+					"col": {{ts: 100, value: []byte("val")}},
 				},
 			},
 		},
