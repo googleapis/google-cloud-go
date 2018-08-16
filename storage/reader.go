@@ -25,6 +25,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/internal/trace"
 	"golang.org/x/net/context"
@@ -175,6 +176,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		contentType:     res.Header.Get("Content-Type"),
 		contentEncoding: res.Header.Get("Content-Encoding"),
 		cacheControl:    res.Header.Get("Cache-Control"),
+		lastModified:    res.Header.Get("Last-Modified"),
 		wantCRC:         crc,
 		checkCRC:        checkCRC,
 		reopen:          reopen,
@@ -215,6 +217,7 @@ type Reader struct {
 	contentType        string
 	contentEncoding    string
 	cacheControl       string
+	lastModified       string
 	checkCRC           bool   // should we check the CRC?
 	wantCRC            uint32 // the CRC32c value the server sent in the header
 	gotCRC             uint32 // running crc
@@ -300,4 +303,12 @@ func (r *Reader) ContentEncoding() string {
 // CacheControl returns the cache control of the object.
 func (r *Reader) CacheControl() string {
 	return r.cacheControl
+}
+
+// LastModified returns the value of the Last-Modified header.
+func (r *Reader) LastModified() (time.Time, error) {
+	if r.lastModified == "" {
+		return time.Time{}, errors.New("storage: no Last-Modified header")
+	}
+	return http.ParseTime(r.lastModified)
 }

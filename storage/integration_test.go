@@ -443,6 +443,13 @@ func TestIntegration_Objects(t *testing.T) {
 		if got, want := rc.CacheControl(), "public, max-age=60"; got != want {
 			t.Errorf("CacheControl (%q) = %q; want %q", obj, got, want)
 		}
+		// We just wrote these objects, so they should have a recent last-modified time.
+		lm, err := rc.LastModified()
+		if err != nil {
+			t.Errorf("LastModified (%q): got error %v", obj, err)
+		} else if lm.Before(time.Now().Add(-time.Minute)) || lm.After(time.Now()) {
+			t.Errorf("LastModified (%q): got %s, which not in the last minute", obj, lm)
+		}
 		rc.Close()
 
 		// Check early close.
@@ -999,7 +1006,7 @@ func TestIntegration_ValidObjectNames(t *testing.T) {
 	}
 
 	invalidNames := []string{
-		"", // Too short.
+		"",                        // Too short.
 		strings.Repeat("a", 1025), // Too long.
 		"new\nlines",
 		"bad\xffunicode",
