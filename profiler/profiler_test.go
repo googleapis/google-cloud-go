@@ -31,6 +31,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/profiler/mocks"
+	"cloud.google.com/go/profiler/testdata"
 	"github.com/golang/mock/gomock"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
@@ -116,6 +117,22 @@ func TestProfileAndUpload(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	var heapCollected1, heapCollected2, heapUploaded, allocUploaded bytes.Buffer
+	testdata.HeapProfileCollected1.Write(&heapCollected1)
+	testdata.HeapProfileCollected2.Write(&heapCollected2)
+	testdata.HeapProfileUploaded.Write(&heapUploaded)
+	testdata.AllocProfileUploaded.Write(&allocUploaded)
+	callCount := 0
+	writeTwoHeapFunc := func(w io.Writer) error {
+		callCount++
+		if callCount%2 == 1 {
+			w.Write(heapCollected1.Bytes())
+			return nil
+		}
+		w.Write(heapCollected2.Bytes())
+		return nil
+	}
+
 	errFunc := func(io.Writer) error { return errors.New("") }
 	testDuration := time.Second * 5
 	tests := []struct {
@@ -157,10 +174,17 @@ func TestProfileAndUpload(t *testing.T) {
 			profileType:         pb.ProfileType_HEAP,
 			startCPUProfileFunc: errFunc,
 			writeHeapProfileFunc: func(w io.Writer) error {
-				w.Write([]byte{4})
+				w.Write(heapCollected1.Bytes())
 				return nil
 			},
-			wantBytes: []byte{4},
+			wantBytes: heapUploaded.Bytes(),
+		},
+		{
+			profileType:          pb.ProfileType_HEAP_ALLOC,
+			startCPUProfileFunc:  errFunc,
+			writeHeapProfileFunc: writeTwoHeapFunc,
+			duration:             &testDuration,
+			wantBytes:            allocUploaded.Bytes(),
 		},
 		{
 			profileType:          pb.ProfileType_HEAP,
@@ -174,10 +198,10 @@ func TestProfileAndUpload(t *testing.T) {
 				return nil
 			},
 			writeHeapProfileFunc: func(w io.Writer) error {
-				w.Write([]byte{6})
+				w.Write(heapCollected1.Bytes())
 				return nil
 			},
-			wantBytes: []byte{6},
+			wantBytes: heapUploaded.Bytes(),
 		},
 		{
 			profileType: pb.ProfileType_PROFILE_TYPE_UNSPECIFIED,
@@ -186,7 +210,7 @@ func TestProfileAndUpload(t *testing.T) {
 				return nil
 			},
 			writeHeapProfileFunc: func(w io.Writer) error {
-				w.Write([]byte{8})
+				w.Write(heapCollected1.Bytes())
 				return nil
 			},
 		},
@@ -350,43 +374,43 @@ func TestInitializeAgent(t *testing.T) {
 	}{
 		{
 			config:               Config{ServiceVersion: testSvcVersion, zone: testZone},
-			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_THREADS},
+			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_THREADS, pb.ProfileType_HEAP_ALLOC},
 			wantDeploymentLabels: map[string]string{zoneNameLabel: testZone, versionLabel: testSvcVersion, languageLabel: "go"},
 			wantProfileLabels:    map[string]string{},
 		},
 		{
 			config:               Config{zone: testZone},
-			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_THREADS},
+			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_THREADS, pb.ProfileType_HEAP_ALLOC},
 			wantDeploymentLabels: map[string]string{zoneNameLabel: testZone, languageLabel: "go"},
 			wantProfileLabels:    map[string]string{},
 		},
 		{
 			config:               Config{ServiceVersion: testSvcVersion},
-			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_THREADS},
+			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_THREADS, pb.ProfileType_HEAP_ALLOC},
 			wantDeploymentLabels: map[string]string{versionLabel: testSvcVersion, languageLabel: "go"},
 			wantProfileLabels:    map[string]string{},
 		},
 		{
 			config:               Config{instance: testInstance},
-			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_THREADS},
+			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_THREADS, pb.ProfileType_HEAP_ALLOC},
 			wantDeploymentLabels: map[string]string{languageLabel: "go"},
 			wantProfileLabels:    map[string]string{instanceLabel: testInstance},
 		},
 		{
 			config:               Config{instance: testInstance},
 			enableMutex:          true,
-			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_THREADS, pb.ProfileType_CONTENTION},
+			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_THREADS, pb.ProfileType_HEAP_ALLOC, pb.ProfileType_CONTENTION},
 			wantDeploymentLabels: map[string]string{languageLabel: "go"},
 			wantProfileLabels:    map[string]string{instanceLabel: testInstance},
 		},
 		{
 			config:               Config{NoHeapProfiling: true},
-			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_THREADS},
+			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_THREADS, pb.ProfileType_HEAP_ALLOC},
 			wantDeploymentLabels: map[string]string{languageLabel: "go"},
 			wantProfileLabels:    map[string]string{},
 		},
 		{
-			config:               Config{NoHeapProfiling: true, NoGoroutineProfiling: true},
+			config:               Config{NoHeapProfiling: true, NoGoroutineProfiling: true, NoAllocProfiling: true},
 			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_CPU},
 			wantDeploymentLabels: map[string]string{languageLabel: "go"},
 			wantProfileLabels:    map[string]string{},
