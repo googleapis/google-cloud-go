@@ -1065,5 +1065,3 @@ func setEncryptionHeaders(headers http.Header, key []byte, copySource bool) erro
 	headers.Set("x-goog-"+cs+"encryption-key-sha256", base64.StdEncoding.EncodeToString(keyHash[:]))
 	return nil
 }
-
-// TODO(jbd): Add storage.objects.watch.
