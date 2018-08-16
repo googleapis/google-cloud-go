@@ -281,6 +281,10 @@ func (tr *TestRunner) QueryProfiles(projectID, service, startTime, endTime, prof
 		return ProfileResponse{}, fmt.Errorf("failed to read response body: %v", err)
 	}
 
+	if resp.StatusCode != 200 {
+		return ProfileResponse{}, fmt.Errorf("failed to query API: status: %s, response body: %s", resp.Status, string(body))
+	}
+
 	var pr ProfileResponse
 	if err := json.Unmarshal(body, &pr); err != nil {
 		return ProfileResponse{}, err
