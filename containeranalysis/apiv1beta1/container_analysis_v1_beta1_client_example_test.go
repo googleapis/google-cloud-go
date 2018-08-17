@@ -17,7 +17,7 @@
 package containeranalysis_test
 
 import (
-	"cloud.google.com/go/devtools/containeranalysis/apiv1beta1"
+	"cloud.google.com/go/containeranalysis/apiv1beta1"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	containeranalysispb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1"
