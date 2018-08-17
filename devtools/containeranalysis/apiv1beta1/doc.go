@@ -17,7 +17,7 @@
 // Package containeranalysis is an auto-generated package for the
 // Container Analysis API.
 //
-//   NOTE: This package is in alpha. It is not stable, and is likely to change.
+//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // An implementation of the Grafeas API, which stores, and enables querying
 // and
