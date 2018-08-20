@@ -27,14 +27,14 @@ import (
 	"testing"
 	"time"
 
-	gax "github.com/googleapis/gax-go"
-
 	cinternal "cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/logging"
 	ltesting "cloud.google.com/go/logging/internal/testing"
 	"cloud.google.com/go/logging/logadmin"
+	gax "github.com/googleapis/gax-go"
+	"go.opencensus.io/trace"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/iterator"
@@ -628,5 +628,35 @@ func benchmarkConcurrentWrites(b *testing.B, c int) {
 			lg.Log(logging.Entry{Payload: payload})
 		}
 		lg.Flush()
+	}
+}
+
+func TestTraceFromContext(t *testing.T) {
+	initLogs(ctx) // Generate new testLogID
+	lg := client.Logger(testLogID)
+
+	ctx, _ := trace.StartSpanWithRemoteParent(context.Background(), "/foo", trace.SpanContext{
+		TraceID: trace.TraceID{1},
+	})
+	tests := []struct {
+		name string
+		ctx  context.Context
+		want string
+	}{
+		{
+			name: "empty",
+			ctx:  context.Background(),
+			want: "",
+		},
+		{
+			name: "not empty",
+			ctx:  ctx,
+			want: "projects/PROJECT_ID/traces/01000000000000000000000000000000",
+		},
+	}
+	for _, tt := range tests {
+		if got := lg.TraceFromContext(tt.ctx); got != tt.want {
+			t.Errorf("%v: TraceFromContext() = %v, want %v", tt.name, got, tt.want)
+		}
 	}
 }
