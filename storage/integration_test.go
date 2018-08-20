@@ -447,7 +447,7 @@ func TestIntegration_Objects(t *testing.T) {
 		lm, err := rc.LastModified()
 		if err != nil {
 			t.Errorf("LastModified (%q): got error %v", obj, err)
-		} else if lm.Before(time.Now().Add(-time.Minute)) || lm.After(time.Now()) {
+		} else if lm.Before(time.Now().Add(-5*time.Minute)) || lm.After(time.Now()) {
 			t.Errorf("LastModified (%q): got %s, which not in the last minute", obj, lm)
 		}
 		rc.Close()
