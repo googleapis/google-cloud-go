@@ -279,6 +279,62 @@ func testIAM(ctx context.Context, h *iam.Handle, permission string) (msg string,
 	return "", true
 }
 
+func TestIntegration_CancelReceive(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithCancel(context.Background())
+	client := integrationTestClient(t, ctx)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
+		t.Fatal(err)
+	}
+	defer sub.Delete(ctx)
+
+	sub.ReceiveSettings.MaxOutstandingMessages = -1
+	sub.ReceiveSettings.MaxOutstandingBytes = -1
+	sub.ReceiveSettings.NumGoroutines = 1
+
+	doneReceiving := make(chan struct{})
+
+	// Publish the messages.
+	go func() {
+		for {
+			select {
+			case <-doneReceiving:
+				return
+			default:
+				topic.Publish(ctx, &Message{Data: []byte("some msg")})
+				time.Sleep(time.Second)
+			}
+		}
+	}()
+
+	go func() {
+		defer close(doneReceiving)
+		err = sub.Receive(ctx, func(_ context.Context, msg *Message) {
+			cancel()
+			time.AfterFunc(5*time.Second, msg.Ack)
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	select {
+	case <-time.After(60 * time.Second):
+		t.Fatalf("Waited 60 seconds for Receive to finish, should have finished sooner")
+	case <-doneReceiving:
+	}
+}
+
 func TestIntegration_UpdateSubscription(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()

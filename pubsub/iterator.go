@@ -15,6 +15,7 @@
 package pubsub
 
 import (
+	"io"
 	"sync"
 	"time"
 
@@ -171,19 +172,20 @@ func (it *streamingMessageIterator) fail(err error) error {
 // receive makes a call to the stream's Recv method and returns
 // its messages.
 func (it *streamingMessageIterator) receive() ([]*Message, error) {
-	// Stop retrieving messages if the context is done, the stream
-	// failed, or the iterator's Stop method was called.
+	it.mu.Lock()
+	if it.err != nil {
+		return nil, it.err
+	}
+	it.mu.Unlock()
+
+	// Stop retrieving messages if the iterator's Stop method was called.
 	select {
-	case <-it.ctx.Done():
-		return nil, it.ctx.Err()
+	case <-it.stopped:
+		it.wg.Wait()
+		return nil, io.EOF
 	default:
 	}
-	it.mu.Lock()
-	err := it.err
-	it.mu.Unlock()
-	if err != nil {
-		return nil, err
-	}
+
 	// Receive messages from stream. This may block indefinitely.
 	res, err := it.ps.Recv()
 	// The pullStream handles retries, so any error here is fatal.

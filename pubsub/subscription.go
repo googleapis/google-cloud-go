@@ -168,7 +168,7 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		AckDeadlineSeconds:       trunc32(int64(cfg.AckDeadline.Seconds())),
 		RetainAckedMessages:      cfg.RetainAckedMessages,
 		MessageRetentionDuration: retentionDuration,
-		Labels: cfg.Labels,
+		Labels:                   cfg.Labels,
 	}
 }
 
@@ -463,9 +463,6 @@ func (s *Subscription) receive(ctx context.Context, po *pullOptions, fc *flowCon
 	// Cancel a sub-context when we return, to kick the context-aware callbacks
 	// and the goroutine below.
 	ctx2, cancel := context.WithCancel(ctx)
-	// Call stop when Receive's context is done.
-	// Stop will block until all outstanding messages have been acknowledged
-	// or there was a fatal service error.
 	// The iterator does not use the context passed to Receive. If it did, canceling
 	// that context would immediately stop the iterator without waiting for unacked
 	// messages.
@@ -480,6 +477,9 @@ func (s *Subscription) receive(ctx context.Context, po *pullOptions, fc *flowCon
 	wg.Add(1)
 	go func() {
 		<-ctx2.Done()
+		// Call stop when Receive's context is done.
+		// Stop will block until all outstanding messages have been acknowledged
+		// or there was a fatal service error.
 		iter.stop()
 		wg.Done()
 	}()
