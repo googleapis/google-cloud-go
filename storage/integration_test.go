@@ -445,10 +445,12 @@ func TestIntegration_Objects(t *testing.T) {
 		}
 		// We just wrote these objects, so they should have a recent last-modified time.
 		lm, err := rc.LastModified()
+		now := time.Now()
+		expectedVariance := -5 * time.Minute
 		if err != nil {
 			t.Errorf("LastModified (%q): got error %v", obj, err)
-		} else if lm.Before(time.Now().Add(-5*time.Minute)) || lm.After(time.Now()) {
-			t.Errorf("LastModified (%q): got %s, which not in the last minute", obj, lm)
+		} else if lm.Before(now.Add(expectedVariance)) || lm.After(now) {
+			t.Errorf("LastModified (%q): got %s, which not in the %v from now (%v)", obj, lm, expectedVariance, now)
 		}
 		rc.Close()
 
