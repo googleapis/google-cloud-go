@@ -29,7 +29,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math"
 	"net/http"
 	"strconv"
 	"strings"
@@ -774,13 +773,6 @@ func (l *Logger) writeLogEntries(entries []*logpb.LogEntry) {
 // severity level in each Logger. Callers may mutate the returned log.Logger
 // (for example by calling SetFlags or SetPrefix).
 func (l *Logger) StandardLogger(s Severity) *log.Logger { return l.stdLoggers[s] }
-
-func trunc32(i int) int32 {
-	if i > math.MaxInt32 {
-		i = math.MaxInt32
-	}
-	return int32(i)
-}
 
 func (l *Logger) toLogEntry(e Entry) (*logpb.LogEntry, error) {
 	if e.LogName != "" {

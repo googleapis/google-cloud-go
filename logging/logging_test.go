@@ -278,21 +278,6 @@ func entryForTesting(payload interface{}) *logging.Entry {
 	}
 }
 
-func countLogEntries(ctx context.Context, filter string) int {
-	it := aclient.Entries(ctx, logadmin.Filter(filter))
-	n := 0
-	for {
-		_, err := it.Next()
-		if err == iterator.Done {
-			return n
-		}
-		if err != nil {
-			log.Fatalf("counting log entries: %v", err)
-		}
-		n++
-	}
-}
-
 func allTestLogEntries(ctx context.Context) ([]*logging.Entry, error) {
 	return allEntries(ctx, aclient, testFilter)
 }
