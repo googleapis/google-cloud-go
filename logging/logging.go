@@ -44,7 +44,6 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	"go.opencensus.io/trace"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	"google.golang.org/api/support/bundler"
@@ -236,17 +235,6 @@ type Logger struct {
 	commonResource *mrpb.MonitoredResource
 	commonLabels   map[string]string
 	writeTimeout   time.Duration
-}
-
-// TraceFromContext returns the trace ID from the given context.
-// See https://cloud.google.com/trace/docs/setup/go to create traces.
-func (l *Logger) TraceFromContext(ctx context.Context) string {
-	span := trace.FromContext(ctx)
-	if span == nil {
-		return ""
-	}
-	tid := span.SpanContext().TraceID
-	return fmt.Sprintf("%s/traces/%x", l.client.parent, tid[:])
 }
 
 // A LoggerOption is a configuration option for a Logger.
@@ -589,8 +577,6 @@ type Entry struct {
 	// Trace is the resource name of the trace associated with the log entry,
 	// if any. If it contains a relative resource name, the name is assumed to
 	// be relative to //tracing.googleapis.com.
-	//
-	// OpenCensus trace names can be retrieved from (Logger).TraceFromContext.
 	Trace string
 
 	// Optional. Source code location information associated with the log entry,
