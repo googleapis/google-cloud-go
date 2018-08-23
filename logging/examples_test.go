@@ -20,7 +20,6 @@ import (
 	"os"
 
 	"cloud.google.com/go/logging"
-	"go.opencensus.io/trace"
 	"golang.org/x/net/context"
 )
 
@@ -136,25 +135,6 @@ func ExampleLogger_Log_json() {
 	lg := client.Logger("my-log")
 	j := []byte(`{"Name": "Bob", "Count": 3}`)
 	lg.Log(logging.Entry{Payload: json.RawMessage(j)})
-}
-
-func ExampleLogger_Log_trace() {
-	// import ""go.opencensus.io/trace""
-
-	ctx := context.Background()
-	client, err := logging.NewClient(ctx, "my-project")
-	if err != nil {
-		// TODO: Handle error.
-	}
-	lg := client.Logger("my-log")
-
-	ctx, span := trace.StartSpan(ctx, "/something")
-	defer span.End()
-
-	lg.Log(logging.Entry{
-		Trace:   lg.TraceFromContext(ctx),
-		Payload: "something happened",
-	})
 }
 
 func ExampleLogger_Flush() {
