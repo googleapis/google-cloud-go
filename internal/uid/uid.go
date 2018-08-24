@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
-	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -31,8 +31,7 @@ type Space struct {
 	Sep    rune      // Separates UID parts. Read-only.
 	Time   time.Time // Timestamp for UIDs. Read-only.
 	re     *regexp.Regexp
-	mu     sync.Mutex
-	count  int
+	count  int32 // atomic
 }
 
 // Options are optional values for a Space.
@@ -69,10 +68,7 @@ func NewSpace(prefix string, opts *Options) *Space {
 // Aside from the characters in the prefix, IDs contain only letters, numbers
 // and sep.
 func (s *Space) New() string {
-	s.mu.Lock()
-	c := s.count
-	s.count++
-	s.mu.Unlock()
+	c := atomic.AddInt32(&s.count, 1)
 	// Write the time as a date followed by nanoseconds from midnight of that date.
 	// That makes it easier to see the approximate time of the ID when it is displayed.
 	y, m, d := s.Time.Date()
