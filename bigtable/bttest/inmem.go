@@ -1062,7 +1062,7 @@ func newTable(ctr *btapb.CreateTableRequest) *table {
 }
 
 func (t *table) validTimestamp(ts int64) bool {
-	if ts <= minValidMilliSeconds || ts >= maxValidMilliSeconds {
+	if ts < minValidMilliSeconds || ts > maxValidMilliSeconds {
 		return false
 	}
 
