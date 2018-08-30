@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Busybench is a tool that runs a benchmark with the profiler enabled.
 package main
 
 import (
