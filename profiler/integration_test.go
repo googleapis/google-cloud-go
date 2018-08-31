@@ -183,6 +183,18 @@ func TestAgentIntegration(t *testing.T) {
 			},
 			name:             fmt.Sprintf("profiler-test-go110-%s-gce", runID),
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
+			goVersion:        "1.11",
+			mutexProfiling:   true,
+		},
+		{
+			InstanceConfig: proftest.InstanceConfig{
+				ProjectID:   projectID,
+				Zone:        zone,
+				Name:        fmt.Sprintf("profiler-test-go110-%s", runID),
+				MachineType: "n1-standard-1",
+			},
+			name:             fmt.Sprintf("profiler-test-go110-%s-gce", runID),
+			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
 			goVersion:        "1.10",
 			mutexProfiling:   true,
 		},
