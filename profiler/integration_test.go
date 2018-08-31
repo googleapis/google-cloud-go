@@ -178,10 +178,10 @@ func TestAgentIntegration(t *testing.T) {
 			InstanceConfig: proftest.InstanceConfig{
 				ProjectID:   projectID,
 				Zone:        zone,
-				Name:        fmt.Sprintf("profiler-test-go110-%s", runID),
+				Name:        fmt.Sprintf("profiler-test-go111-%s", runID),
 				MachineType: "n1-standard-1",
 			},
-			name:             fmt.Sprintf("profiler-test-go110-%s-gce", runID),
+			name:             fmt.Sprintf("profiler-test-go111-%s-gce", runID),
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
 			goVersion:        "1.11",
 			mutexProfiling:   true,
