@@ -26,7 +26,7 @@ make backwards-incompatible changes.
   * [Cloud Datastore](#cloud-datastore-)
   * [Cloud Storage](#cloud-storage-)
   * [Cloud Pub/Sub](#cloud-pub-sub-)
-  * [Cloud BigQuery](#cloud-bigquery-)
+  * [BigQuery](#cloud-bigquery-)
   * [Stackdriver Logging](#stackdriver-logging-)
   * [Cloud Spanner](#cloud-spanner-)
 
@@ -55,10 +55,10 @@ Google API                                   | Status       | Package
 [Bigtable][cloud-bigtable]                   | stable       | [`godoc.org/cloud.google.com/go/bigtable`][cloud-bigtable-ref]
 [Container][cloud-container]                 | stable       | [`godoc.org/cloud.google.com/go/container/apiv1`][cloud-container-ref]
 [ContainerAnalysis][cloud-containeranalysis] | stable       | [`godoc.org/cloud.google.com/go/devtools/containeranalysis/apiv1beta1`][cloud-containeranalysis-ref]
-[DataProc][cloud-dataproc]                   | stable       | [`godoc.org/cloud.google.com/go/dataproc/apiv1`][cloud-dataproc-ref]
+[Dataproc][cloud-dataproc]                   | stable       | [`godoc.org/cloud.google.com/go/dataproc/apiv1`][cloud-dataproc-ref]
 [Datastore][cloud-datastore]                 | stable       | [`godoc.org/cloud.google.com/go/datastore`][cloud-datastore-ref]
 [Debugger][cloud-debugger]                   | alpha        | [`godoc.org/cloud.google.com/go/debugger/apiv2`][cloud-debugger-ref]
-[DialogFlow][cloud-dialogflow]               | alpha        | [`godoc.org/cloud.google.com/go/dialogflow/apiv2`][cloud-dialogflow-ref]
+[Dialogflow][cloud-dialogflow]               | alpha        | [`godoc.org/cloud.google.com/go/dialogflow/apiv2`][cloud-dialogflow-ref]
 [Data Loss Prevention][cloud-dlp]            | alpha        | [`godoc.org/cloud.google.com/go/dlp/apiv2`][cloud-dlp-ref]
 [ErrorReporting][cloud-errors]               | alpha        | [`godoc.org/cloud.google.com/go/errorreporting`][cloud-errors-ref]
 [Firestore][cloud-firestore]                 | beta         | [`godoc.org/cloud.google.com/go/firestore`][cloud-firestore-ref]
@@ -260,9 +260,9 @@ if err != nil {
 }
 ```
 
-## Cloud BigQuery [![GoDoc](https://godoc.org/cloud.google.com/go/bigquery?status.svg)](https://godoc.org/cloud.google.com/go/bigquery)
+## BigQuery [![GoDoc](https://godoc.org/cloud.google.com/go/bigquery?status.svg)](https://godoc.org/cloud.google.com/go/bigquery)
 
-- [About Cloud BigQuery][cloud-bigquery]
+- [About BigQuery][cloud-bigquery]
 - [API documentation][cloud-bigquery-docs]
 - [Go client documentation][cloud-bigquery-ref]
 - [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/bigquery)
