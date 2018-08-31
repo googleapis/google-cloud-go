@@ -20,7 +20,6 @@ import (
 	"math"
 	"time"
 
-	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/version"
 	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go"
@@ -149,14 +148,6 @@ func (c *PublisherClient) SetGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", version.Go()}, keyval...)
 	kv = append(kv, "gapic", version.Repo, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
-}
-
-func (c *PublisherClient) SubscriptionIAM(subscription *pubsubpb.Subscription) *iam.Handle {
-	return iam.InternalNewHandle(c.Connection(), subscription.Name)
-}
-
-func (c *PublisherClient) TopicIAM(topic *pubsubpb.Topic) *iam.Handle {
-	return iam.InternalNewHandle(c.Connection(), topic.Name)
 }
 
 // CreateTopic creates the given topic with the given name. See the
