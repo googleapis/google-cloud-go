@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package testdata provides some useful data sets for testing purposes.
 package testdata
 
 import (
