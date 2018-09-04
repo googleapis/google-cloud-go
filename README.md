@@ -54,7 +54,7 @@ Google API                                   | Status       | Package
 [BigQuery][cloud-bigquery]                   | stable       | [`godoc.org/cloud.google.com/go/bigquery`][cloud-bigquery-ref]
 [Bigtable][cloud-bigtable]                   | stable       | [`godoc.org/cloud.google.com/go/bigtable`][cloud-bigtable-ref]
 [Container][cloud-container]                 | stable       | [`godoc.org/cloud.google.com/go/container/apiv1`][cloud-container-ref]
-[ContainerAnalysis][cloud-containeranalysis] | beta         | [`godoc.org/cloud.google.com/go/devtools/containeranalysis/apiv1beta1`][cloud-containeranalysis-ref]
+[ContainerAnalysis][cloud-containeranalysis] | beta         | [`godoc.org/cloud.google.com/go/containeranalysis/apiv1beta1`][cloud-containeranalysis-ref]
 [Dataproc][cloud-dataproc]                   | stable       | [`godoc.org/cloud.google.com/go/dataproc/apiv1`][cloud-dataproc-ref]
 [Datastore][cloud-datastore]                 | stable       | [`godoc.org/cloud.google.com/go/datastore`][cloud-datastore-ref]
 [Debugger][cloud-debugger]                   | alpha        | [`godoc.org/cloud.google.com/go/debugger/apiv2`][cloud-debugger-ref]
