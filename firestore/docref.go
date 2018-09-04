@@ -102,6 +102,7 @@ func (d *DocumentRef) Get(ctx context.Context) (*DocumentSnapshot, error) {
 //     "google.golang.org/genproto/googleapis/type/latlng". You should always use
 //     a pointer to a LatLng.
 //   - Slices convert to Array.
+//   - *firestore.DocumentRef converts to Reference.
 //   - Maps and structs convert to Map.
 //   - nils of any type convert to Null.
 //
