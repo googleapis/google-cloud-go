@@ -90,7 +90,7 @@ func (d *DocumentSnapshot) Data() map[string]interface{} {
 //     Overflow is detected and results in an error.
 //   - Bytes is converted to []byte.
 //   - Timestamp converts to time.Time.
-//   - GeoPoint converts to latlng.LatLng, where latlng is the package
+//   - GeoPoint converts to *latlng.LatLng, where latlng is the package
 //     "google.golang.org/genproto/googleapis/type/latlng".
 //   - Arrays convert to []interface{}. When setting a struct field, the field
 //     may be a slice or array of any type and is populated recursively.
@@ -100,7 +100,7 @@ func (d *DocumentSnapshot) Data() map[string]interface{} {
 //   - Maps convert to map[string]interface{}. When setting a struct field,
 //     maps of key type string and any value type are permitted, and are populated
 //     recursively.
-//   - References are converted to DocumentRefs.
+//   - References are converted to *firestore.DocumentRefs.
 //
 // Field names given by struct field tags are observed, as described in
 // DocumentRef.Create.
