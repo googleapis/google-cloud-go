@@ -986,6 +986,189 @@ func TestIntegration_WatchDocument(t *testing.T) {
 	}
 }
 
+func TestIntegration_ArrayUnion_Create(t *testing.T) {
+	path := "somepath"
+	data := map[string]interface{}{
+		path: ArrayUnion("a", "b"),
+	}
+
+	ctx := context.Background()
+	doc := integrationColl(t).NewDoc()
+	h := testHelper{t}
+	h.mustCreate(doc, data)
+	_, err := doc.Create(ctx, data)
+	ds := h.mustGet(doc)
+	var gotMap map[string][]string
+	err = ds.DataTo(&gotMap)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := gotMap[path]; !ok {
+		t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+	}
+
+	want := []string{"a", "b"}
+	for i, v := range gotMap[path] {
+		if v != want[i] {
+			t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
+		}
+	}
+}
+
+func TestIntegration_ArrayUnion_Update(t *testing.T) {
+	doc := integrationColl(t).NewDoc()
+	h := testHelper{t}
+	path := "somepath"
+
+	h.mustCreate(doc, map[string]interface{}{
+		path: []string{"a", "b"},
+	})
+	fpus := []Update{
+		{
+			Path:  path,
+			Value: ArrayUnion("this should be added"),
+		},
+	}
+	h.mustUpdate(doc, fpus)
+	ds := h.mustGet(doc)
+	var gotMap map[string][]string
+	err := ds.DataTo(&gotMap)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := gotMap[path]; !ok {
+		t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+	}
+
+	want := []string{"a", "b", "this should be added"}
+	for i, v := range gotMap[path] {
+		if v != want[i] {
+			t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
+		}
+	}
+}
+
+func TestIntegration_ArrayUnion_Set(t *testing.T) {
+	coll := integrationColl(t)
+	ctx := context.Background()
+	h := testHelper{t}
+	path := "somepath"
+
+	doc := coll.NewDoc()
+	newData := map[string]interface{}{
+		path: ArrayUnion("a", "b"),
+	}
+	_, err := doc.Set(ctx, newData)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ds := h.mustGet(doc)
+	var gotMap map[string][]string
+	err = ds.DataTo(&gotMap)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := gotMap[path]; !ok {
+		t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+	}
+
+	want := []string{"a", "b"}
+	for i, v := range gotMap[path] {
+		if v != want[i] {
+			t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
+		}
+	}
+}
+
+func TestIntegration_ArrayRemove_Create(t *testing.T) {
+	doc := integrationColl(t).NewDoc()
+	h := testHelper{t}
+	path := "somepath"
+
+	h.mustCreate(doc, map[string]interface{}{
+		path: ArrayRemove("a", "b"),
+	})
+
+	ds := h.mustGet(doc)
+	var gotMap map[string][]string
+	err := ds.DataTo(&gotMap)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := gotMap[path]; !ok {
+		t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+	}
+
+	// A create with arrayRemove results in an empty array.
+	want := []string(nil)
+	if !testEqual(gotMap[path], want) {
+		t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
+	}
+}
+
+func TestIntegration_ArrayRemove_Update(t *testing.T) {
+	doc := integrationColl(t).NewDoc()
+	h := testHelper{t}
+	path := "somepath"
+
+	h.mustCreate(doc, map[string]interface{}{
+		path: []string{"a", "this should be removed", "c"},
+	})
+	fpus := []Update{
+		{
+			Path:  path,
+			Value: ArrayRemove("this should be removed"),
+		},
+	}
+	h.mustUpdate(doc, fpus)
+	ds := h.mustGet(doc)
+	var gotMap map[string][]string
+	err := ds.DataTo(&gotMap)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := gotMap[path]; !ok {
+		t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+	}
+
+	want := []string{"a", "c"}
+	for i, v := range gotMap[path] {
+		if v != want[i] {
+			t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
+		}
+	}
+}
+
+func TestIntegration_ArrayRemove_Set(t *testing.T) {
+	coll := integrationColl(t)
+	ctx := context.Background()
+	h := testHelper{t}
+	path := "somepath"
+
+	doc := coll.NewDoc()
+	newData := map[string]interface{}{
+		path: ArrayRemove("a", "b"),
+	}
+	_, err := doc.Set(ctx, newData)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ds := h.mustGet(doc)
+	var gotMap map[string][]string
+	err = ds.DataTo(&gotMap)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := gotMap[path]; !ok {
+		t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+	}
+
+	want := []string(nil)
+	if !testEqual(gotMap[path], want) {
+		t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
+	}
+}
+
 type imap map[string]interface{}
 
 func TestIntegration_WatchQuery(t *testing.T) {
