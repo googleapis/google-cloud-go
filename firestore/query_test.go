@@ -446,7 +446,7 @@ func TestQueryToProtoErrors(t *testing.T) {
 		},
 	}
 	q := coll.Query
-	for _, query := range []Query{
+	for i, query := range []Query{
 		{},                                     // no collection ID
 		q.Where("x", "!=", 1),                  // invalid operator
 		q.Where("~", ">", 1),                   // invalid path
@@ -471,7 +471,7 @@ func TestQueryToProtoErrors(t *testing.T) {
 	} {
 		_, err := query.toProto()
 		if err == nil {
-			t.Errorf("%+v: got nil, want error", query)
+			t.Errorf("query %d \"%+v\": got nil, want error", i, query)
 		}
 	}
 }

@@ -298,6 +298,16 @@ func convertTestValue(v interface{}) interface{} {
 		}
 		return v
 	case []interface{}:
+		if len(v) > 0 {
+			if fv, ok := v[0].(string); ok {
+				if fv == "ArrayUnion" {
+					return ArrayUnion(convertTestValue(v[1:]).([]interface{})...)
+				}
+				if fv == "ArrayRemove" {
+					return ArrayRemove(convertTestValue(v[1:]).([]interface{})...)
+				}
+			}
+		}
 		for i, e := range v {
 			v[i] = convertTestValue(e)
 		}

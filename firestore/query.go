@@ -375,7 +375,7 @@ func (q *Query) fieldValuesToCursorValues(fieldValues []interface{}) ([]*pb.Valu
 				return nil, err
 			}
 			if sawTransform {
-				return nil, errors.New("firestore: ServerTimestamp disallowed in query value")
+				return nil, errors.New("firestore: transforms disallowed in query value")
 			}
 		}
 	}
@@ -485,7 +485,7 @@ func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 		return nil, err
 	}
 	if sawTransform {
-		return nil, errors.New("firestore: ServerTimestamp disallowed in query value")
+		return nil, errors.New("firestore: transforms disallowed in query value")
 	}
 	return &pb.StructuredQuery_Filter{
 		FilterType: &pb.StructuredQuery_Filter_FieldFilter{

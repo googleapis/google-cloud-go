@@ -554,3 +554,57 @@ func ExampleClient_RunTransaction() {
 		// TODO: Handle error.
 	}
 }
+
+func ExampleArrayUnion_create() {
+	ctx := context.Background()
+	client, err := firestore.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer client.Close()
+
+	wr, err := client.Doc("States/Colorado").Create(ctx, map[string]interface{}{
+		"cities": firestore.ArrayUnion("Denver", "Golden", "Boulder"),
+		"pop":    5.5,
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Println(wr.UpdateTime)
+}
+
+func ExampleArrayUnion_update() {
+	ctx := context.Background()
+	client, err := firestore.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer client.Close()
+
+	co := client.Doc("States/Colorado")
+	wr, err := co.Update(ctx, []firestore.Update{
+		{Path: "cities", Value: firestore.ArrayUnion("Broomfield")},
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Println(wr.UpdateTime)
+}
+
+func ExampleArrayRemove_update() {
+	ctx := context.Background()
+	client, err := firestore.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer client.Close()
+
+	co := client.Doc("States/Colorado")
+	wr, err := co.Update(ctx, []firestore.Update{
+		{Path: "cities", Value: firestore.ArrayRemove("Denver")},
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Println(wr.UpdateTime)
+}
