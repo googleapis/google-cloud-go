@@ -112,8 +112,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 //
 // Close need not be called at program exit.
 func (c *Client) Close() error {
-	// Set fields to nil so that subsequent uses
-	// will panic.
+	// Set fields to nil so that subsequent uses will panic.
 	c.hc = nil
 	c.raw = nil
 	return nil
@@ -566,7 +565,8 @@ func (o *ObjectHandle) ReadCompressed(compressed bool) *ObjectHandle {
 // attribute is specified, the content type will be automatically sniffed
 // using net/http.DetectContentType.
 //
-// It is the caller's responsibility to call Close when writing is done.
+// It is the caller's responsibility to call Close when writing is done. To
+// stop writing without saving the data, cancel the context.
 func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer {
 	return &Writer{
 		ctx:         ctx,
