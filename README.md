@@ -1,6 +1,7 @@
 # Google Cloud Client Libraries for Go
 
 [![GoDoc](https://godoc.org/cloud.google.com/go?status.svg)](https://godoc.org/cloud.google.com/go)
+[![CodeTriage](https://www.codetriage.com/googlecloudplatform/google-cloud-go/badges/users.svg)
 
 Go packages for [Google Cloud Platform](https://cloud.google.com) services.
 
