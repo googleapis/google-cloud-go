@@ -67,8 +67,8 @@ var (
 	// of numbers as during recording.
 	rng           *rand.Rand
 	newTestClient func(ctx context.Context, opts ...option.ClientOption) (*Client, error)
-
-	replaying bool
+	replaying     bool
+	testTime      time.Time
 )
 
 func TestMain(m *testing.M) {
@@ -180,6 +180,7 @@ func initUIDsAndRand(t time.Time) {
 	// random numbers from the global source and putting record and replay
 	// out of sync.
 	rng = testutil.NewRand(t)
+	testTime = t
 }
 
 // testConfig returns the Client used to access GCS. testConfig skips
@@ -445,12 +446,13 @@ func TestIntegration_Objects(t *testing.T) {
 		}
 		// We just wrote these objects, so they should have a recent last-modified time.
 		lm, err := rc.LastModified()
-		now := time.Now()
-		expectedVariance := -5 * time.Minute
+		// Accept a time within +/- of the test time, to account for natural
+		// variation and the fact that testTime is set at the start of the test run.
+		expectedVariance := 5 * time.Minute
 		if err != nil {
 			t.Errorf("LastModified (%q): got error %v", obj, err)
-		} else if lm.Before(now.Add(expectedVariance)) || lm.After(now) {
-			t.Errorf("LastModified (%q): got %s, which not in the %v from now (%v)", obj, lm, expectedVariance, now)
+		} else if lm.Before(testTime.Add(-expectedVariance)) || lm.After(testTime.Add(expectedVariance)) {
+			t.Errorf("LastModified (%q): got %s, which not the %v from now (%v)", obj, lm, expectedVariance, testTime)
 		}
 		rc.Close()
 
@@ -1008,7 +1010,7 @@ func TestIntegration_ValidObjectNames(t *testing.T) {
 	}
 
 	invalidNames := []string{
-		"", // Too short.
+		"",                        // Too short.
 		strings.Repeat("a", 1025), // Too long.
 		"new\nlines",
 		"bad\xffunicode",
