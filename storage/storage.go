@@ -485,6 +485,16 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 	return newObject(obj), nil
 }
 
+// BucketName returns the name of the bucket.
+func (o *ObjectHandle) BucketName() string {
+	return o.bucket
+}
+
+// ObjectName returns the name of the object.
+func (o *ObjectHandle) ObjectName() string {
+	return o.object
+}
+
 // ObjectAttrsToUpdate is used to update the attributes of an object.
 // Only fields set to non-nil values will be updated.
 // Set a field to its zero value to delete it.
