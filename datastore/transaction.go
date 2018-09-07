@@ -196,12 +196,12 @@ func (t *Transaction) Commit() (c *Commit, err error) {
 		Mutations:           t.mutations,
 		Mode:                pb.CommitRequest_TRANSACTIONAL,
 	}
-	t.id = nil
 	resp, err := t.client.client.Commit(t.ctx, req)
+	if grpc.Code(err) == codes.Aborted {
+		return nil, ErrConcurrentTransaction
+	}
+	t.id = nil // mark the transaction as expired
 	if err != nil {
-		if grpc.Code(err) == codes.Aborted {
-			return nil, ErrConcurrentTransaction
-		}
 		return nil, err
 	}
 
