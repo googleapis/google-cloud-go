@@ -2339,6 +2339,49 @@ func TestIntegration_ServiceAccount(t *testing.T) {
 	}
 }
 
+func TestIntegration_ReaderAttrs(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	bkt := client.Bucket(bucketName)
+
+	const defaultType = "text/plain"
+	obj := "some-object"
+	c := randomContents()
+	if err := writeObject(ctx, bkt.Object(obj), defaultType, c); err != nil {
+		t.Errorf("Write for %v failed with %v", obj, err)
+	}
+	oh := bkt.Object(obj)
+
+	rc, err := oh.NewReader(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	attrs, err := oh.Attrs(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got := rc.Attrs
+	want := ReaderObjectAttrs{
+		Size:            attrs.Size,
+		ContentType:     attrs.ContentType,
+		ContentEncoding: attrs.ContentEncoding,
+		CacheControl:    attrs.CacheControl,
+		LastModified:    got.LastModified, // ignored, tested separately
+		Generation:      attrs.Generation,
+		Metageneration:  attrs.Metageneration,
+	}
+	if got != want {
+		t.Fatalf("got %v, wanted %v", got, want)
+	}
+
+	if got.LastModified.IsZero() {
+		t.Fatal("LastModified is 0, should be >0")
+	}
+}
+
 type testHelper struct {
 	t *testing.T
 }
