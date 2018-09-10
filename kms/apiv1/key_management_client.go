@@ -77,26 +77,26 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		},
 	}
 	return &KeyManagementCallOptions{
-		ListKeyRings:           retry[[2]string{"default", "idempotent"}],
-		ListCryptoKeys:         retry[[2]string{"default", "idempotent"}],
-		ListCryptoKeyVersions:  retry[[2]string{"default", "idempotent"}],
-		GetKeyRing:             retry[[2]string{"default", "idempotent"}],
-		GetCryptoKey:           retry[[2]string{"default", "idempotent"}],
-		GetCryptoKeyVersion:    retry[[2]string{"default", "idempotent"}],
-		CreateKeyRing:          retry[[2]string{"default", "non_idempotent"}],
-		CreateCryptoKey:        retry[[2]string{"default", "non_idempotent"}],
-		CreateCryptoKeyVersion: retry[[2]string{"default", "non_idempotent"}],
-		UpdateCryptoKey:        retry[[2]string{"default", "non_idempotent"}],
-		UpdateCryptoKeyVersion: retry[[2]string{"default", "non_idempotent"}],
-		Encrypt:                retry[[2]string{"default", "non_idempotent"}],
-		Decrypt:                retry[[2]string{"default", "non_idempotent"}],
+		ListKeyRings:                  retry[[2]string{"default", "idempotent"}],
+		ListCryptoKeys:                retry[[2]string{"default", "idempotent"}],
+		ListCryptoKeyVersions:         retry[[2]string{"default", "idempotent"}],
+		GetKeyRing:                    retry[[2]string{"default", "idempotent"}],
+		GetCryptoKey:                  retry[[2]string{"default", "idempotent"}],
+		GetCryptoKeyVersion:           retry[[2]string{"default", "idempotent"}],
+		CreateKeyRing:                 retry[[2]string{"default", "non_idempotent"}],
+		CreateCryptoKey:               retry[[2]string{"default", "non_idempotent"}],
+		CreateCryptoKeyVersion:        retry[[2]string{"default", "non_idempotent"}],
+		UpdateCryptoKey:               retry[[2]string{"default", "non_idempotent"}],
+		UpdateCryptoKeyVersion:        retry[[2]string{"default", "non_idempotent"}],
+		Encrypt:                       retry[[2]string{"default", "non_idempotent"}],
+		Decrypt:                       retry[[2]string{"default", "non_idempotent"}],
 		UpdateCryptoKeyPrimaryVersion: retry[[2]string{"default", "non_idempotent"}],
 		DestroyCryptoKeyVersion:       retry[[2]string{"default", "non_idempotent"}],
 		RestoreCryptoKeyVersion:       retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 
-// KeyManagementClient is a client for interacting with Google Cloud Key Management Service (KMS) API.
+// KeyManagementClient is a client for interacting with Cloud Key Management Service (KMS) API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type KeyManagementClient struct {
@@ -125,6 +125,9 @@ type KeyManagementClient struct {
 //   [CryptoKey][google.cloud.kms.v1.CryptoKey]
 //
 //   [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion]
+//
+// If you are using manual gRPC libraries, see
+// Using gRPC with Cloud KMS (at https://cloud.google.com/kms/docs/grpc).
 func NewKeyManagementClient(ctx context.Context, opts ...option.ClientOption) (*KeyManagementClient, error) {
 	conn, err := transport.DialGRPC(ctx, append(defaultKeyManagementClientOptions(), opts...)...)
 	if err != nil {
@@ -345,7 +348,9 @@ func (c *KeyManagementClient) CreateKeyRing(ctx context.Context, req *kmspb.Crea
 
 // CreateCryptoKey create a new [CryptoKey][google.cloud.kms.v1.CryptoKey] within a [KeyRing][google.cloud.kms.v1.KeyRing].
 //
-// [CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose] is required.
+// [CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose] and
+// [CryptoKey.version_template.algorithm][google.cloud.kms.v1.CryptoKeyVersionTemplate.algorithm]
+// are required.
 func (c *KeyManagementClient) CreateCryptoKey(ctx context.Context, req *kmspb.CreateCryptoKeyRequest, opts ...gax.CallOption) (*kmspb.CryptoKey, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -424,6 +429,8 @@ func (c *KeyManagementClient) UpdateCryptoKeyVersion(ctx context.Context, req *k
 }
 
 // Encrypt encrypts data, so that it can only be recovered by a call to [Decrypt][google.cloud.kms.v1.KeyManagementService.Decrypt].
+// The [CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose] must be
+// [ENCRYPT_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ENCRYPT_DECRYPT].
 func (c *KeyManagementClient) Encrypt(ctx context.Context, req *kmspb.EncryptRequest, opts ...gax.CallOption) (*kmspb.EncryptResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -440,7 +447,8 @@ func (c *KeyManagementClient) Encrypt(ctx context.Context, req *kmspb.EncryptReq
 	return resp, nil
 }
 
-// Decrypt decrypts data that was protected by [Encrypt][google.cloud.kms.v1.KeyManagementService.Encrypt].
+// Decrypt decrypts data that was protected by [Encrypt][google.cloud.kms.v1.KeyManagementService.Encrypt]. The [CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose]
+// must be [ENCRYPT_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ENCRYPT_DECRYPT].
 func (c *KeyManagementClient) Decrypt(ctx context.Context, req *kmspb.DecryptRequest, opts ...gax.CallOption) (*kmspb.DecryptResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -457,7 +465,9 @@ func (c *KeyManagementClient) Decrypt(ctx context.Context, req *kmspb.DecryptReq
 	return resp, nil
 }
 
-// UpdateCryptoKeyPrimaryVersion update the version of a [CryptoKey][google.cloud.kms.v1.CryptoKey] that will be used in [Encrypt][google.cloud.kms.v1.KeyManagementService.Encrypt]
+// UpdateCryptoKeyPrimaryVersion update the version of a [CryptoKey][google.cloud.kms.v1.CryptoKey] that will be used in [Encrypt][google.cloud.kms.v1.KeyManagementService.Encrypt].
+//
+// Returns an error if called on an asymmetric key.
 func (c *KeyManagementClient) UpdateCryptoKeyPrimaryVersion(ctx context.Context, req *kmspb.UpdateCryptoKeyPrimaryVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKey, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -503,7 +513,7 @@ func (c *KeyManagementClient) DestroyCryptoKeyVersion(ctx context.Context, req *
 }
 
 // RestoreCryptoKeyVersion restore a [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] in the
-// [DESTROY_SCHEDULED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.DESTROY_SCHEDULED],
+// [DESTROY_SCHEDULED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.DESTROY_SCHEDULED]
 // state.
 //
 // Upon restoration of the CryptoKeyVersion, [state][google.cloud.kms.v1.CryptoKeyVersion.state]
