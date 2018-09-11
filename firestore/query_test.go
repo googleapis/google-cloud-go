@@ -88,13 +88,10 @@ func TestQueryToProto(t *testing.T) {
 	c := &Client{projectID: "P", databaseID: "DB"}
 	coll := c.Collection("C")
 	q := coll.Query
-	type S struct {
-		A int `firestore:"a"`
-	}
 	docsnap := &DocumentSnapshot{
 		Ref: coll.Doc("D"),
 		proto: &pb.Document{
-			Fields: map[string]*pb.Value{"a": intval(7), "b": intval(8)},
+			Fields: map[string]*pb.Value{"a": intval(7), "b": intval(8), "c": arrayval(intval(1), intval(2))},
 		},
 	}
 	for _, test := range []struct {
@@ -147,6 +144,11 @@ func TestQueryToProto(t *testing.T) {
 			desc: `q.Where("a", "==", NaN)`,
 			in:   q.Where("a", "==", float32(math.NaN())),
 			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "==", math.NaN())},
+		},
+		{
+			desc: `q.Where("c", "array-contains", 1)`,
+			in:   q.Where("c", "array-contains", 1),
+			want: &pb.StructuredQuery{Where: filtr([]string{"c"}, "array-contains", 1)},
 		},
 		{
 			desc: `q.Where("a", ">", 5).Where("b", "<", "foo")`,
@@ -445,27 +447,27 @@ func TestQueryToProtoErrors(t *testing.T) {
 	}
 	q := coll.Query
 	for _, query := range []Query{
-		{}, // no collection ID
+		{},                                     // no collection ID
 		q.Where("x", "!=", 1),                  // invalid operator
 		q.Where("~", ">", 1),                   // invalid path
 		q.WherePath([]string{"*", ""}, ">", 1), // invalid path
 		q.StartAt(1),                           // no OrderBy
 		q.StartAt(2).OrderBy("x", Asc).OrderBy("y", Desc), // wrong # OrderBy
-		q.Select("*"),                                     // invalid path
-		q.SelectPaths([]string{"/", "", "~"}),             // invalid path
-		q.OrderBy("[", Asc),                               // invalid path
-		q.OrderByPath([]string{""}, Desc),                 // invalid path
-		q.Where("x", "==", st),                            // ServerTimestamp in filter
-		q.OrderBy("a", Asc).StartAt(st),                   // ServerTimestamp in Start
-		q.OrderBy("a", Asc).EndAt(st),                     // ServerTimestamp in End
-		q.Where("x", "==", del),                           // Delete in filter
-		q.OrderBy("a", Asc).StartAt(del),                  // Delete in Start
-		q.OrderBy("a", Asc).EndAt(del),                    // Delete in End
-		q.OrderBy(DocumentID, Asc).StartAt(7),             // wrong type for __name__
-		q.OrderBy(DocumentID, Asc).EndAt(7),               // wrong type for __name__
-		q.OrderBy("b", Asc).StartAt(docsnap),              // doc snapshot does not have order-by field
-		q.StartAt(docsnap).EndAt("x"),                     // mixed doc snapshot and fields
-		q.StartAfter("x").EndBefore(docsnap),              // mixed doc snapshot and fields
+		q.Select("*"),                         // invalid path
+		q.SelectPaths([]string{"/", "", "~"}), // invalid path
+		q.OrderBy("[", Asc),                   // invalid path
+		q.OrderByPath([]string{""}, Desc),     // invalid path
+		q.Where("x", "==", st),                // ServerTimestamp in filter
+		q.OrderBy("a", Asc).StartAt(st),       // ServerTimestamp in Start
+		q.OrderBy("a", Asc).EndAt(st),         // ServerTimestamp in End
+		q.Where("x", "==", del),               // Delete in filter
+		q.OrderBy("a", Asc).StartAt(del),      // Delete in Start
+		q.OrderBy("a", Asc).EndAt(del),        // Delete in End
+		q.OrderBy(DocumentID, Asc).StartAt(7), // wrong type for __name__
+		q.OrderBy(DocumentID, Asc).EndAt(7),   // wrong type for __name__
+		q.OrderBy("b", Asc).StartAt(docsnap),  // doc snapshot does not have order-by field
+		q.StartAt(docsnap).EndAt("x"),         // mixed doc snapshot and fields
+		q.StartAfter("x").EndBefore(docsnap),  // mixed doc snapshot and fields
 	} {
 		_, err := query.toProto()
 		if err == nil {

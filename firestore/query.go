@@ -475,6 +475,8 @@ func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 		op = pb.StructuredQuery_FieldFilter_GREATER_THAN_OR_EQUAL
 	case "==":
 		op = pb.StructuredQuery_FieldFilter_EQUAL
+	case "array-contains":
+		op = pb.StructuredQuery_FieldFilter_ARRAY_CONTAINS
 	default:
 		return nil, fmt.Errorf("firestore: invalid operator %q", f.op)
 	}
