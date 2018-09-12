@@ -337,7 +337,7 @@ func (c *Client) SetSamplingPolicy(p SamplingPolicy) {
 // The trace information and identifiers will be read from the header value.
 // Otherwise, a new trace ID is made and the parent span ID is zero.
 // For the exact format of the header value, see
-// https://cloud.google.com/trace/docs/support#how_do_i_force_a_request_to_be_traced
+// https://cloud.google.com/trace/docs/troubleshooting#how_do_i_force_a_request_to_be_traced
 //
 // The name of the new span is provided as an argument.
 //
