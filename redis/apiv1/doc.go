@@ -16,8 +16,7 @@
 
 // Package redis is an auto-generated package for the
 // Google Cloud Memorystore for Redis API.
-//
-//   NOTE: This package is in alpha. It is not stable, and is likely to change.
+
 //
 // The Google Cloud Memorystore for Redis API is used for creating and
 // managing
