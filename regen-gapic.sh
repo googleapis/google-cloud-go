@@ -24,6 +24,7 @@ set -ex
 
 APIS=(
 google/iam/artman_iam_admin.yaml
+google/iam/credentials/artman_iamcredentials_v1.yaml
 google/cloud/bigquery/datatransfer/artman_bigquerydatatransfer.yaml
 google/cloud/dataproc/artman_dataproc_v1.yaml
 google/cloud/dataproc/artman_dataproc_v1beta2.yaml
