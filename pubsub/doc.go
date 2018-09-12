@@ -81,6 +81,11 @@ speed redelivery. For more information and configuration options, see
 Note: It is possible for Messages to be redelivered, even if Message.Ack has
 been called. Client code must be robust to multiple deliveries of messages.
 
+Note: This uses pubsub's streaming pull feature. This feature properties that
+may be surprising. Please take a look at https://cloud.google.com/pubsub/docs/pull#streamingpull
+for more details on how streaming pull behaves compared to the synchronous
+pull method.
+
 Deadlines
 
 The default pubsub deadlines are suitable for most use cases, but may be
