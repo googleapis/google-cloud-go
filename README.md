@@ -69,7 +69,7 @@ Google API                                   | Status       | Package
 [Monitoring][cloud-monitoring]               | alpha        | [`godoc.org/cloud.google.com/go/monitoring/apiv3`][cloud-monitoring-ref]
 [OS Login][cloud-oslogin]                    | alpha        | [`cloud.google.com/compute/docs/oslogin/rest`][cloud-oslogin-ref]
 [Pub/Sub][cloud-pubsub]                      | stable       | [`godoc.org/cloud.google.com/go/pubsub`][cloud-pubsub-ref]
-[Memorystore][cloud-memorystore]             | alpha        | [`godoc.org/cloud.google.com/go/redis/apiv1beta1`][cloud-memorystore-ref]
+[Memorystore][cloud-memorystore]             | stable       | [`godoc.org/cloud.google.com/go/redis/apiv1beta1`][cloud-memorystore-ref]
 [Spanner][cloud-spanner]                     | stable       | [`godoc.org/cloud.google.com/go/spanner`][cloud-spanner-ref]
 [Speech][cloud-speech]                       | stable       | [`godoc.org/cloud.google.com/go/speech/apiv1`][cloud-speech-ref]
 [Storage][cloud-storage]                     | stable       | [`godoc.org/cloud.google.com/go/storage`][cloud-storage-ref]
