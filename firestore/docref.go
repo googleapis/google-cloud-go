@@ -420,17 +420,6 @@ func (s sentinel) String() string {
 	}
 }
 
-func isStructOrStructPtr(x interface{}) bool {
-	v := reflect.ValueOf(x)
-	if v.Kind() == reflect.Struct {
-		return true
-	}
-	if v.Kind() == reflect.Ptr && v.Elem().Kind() == reflect.Struct {
-		return true
-	}
-	return false
-}
-
 // An Update describes an update to a value referred to by a path.
 // An Update should have either a non-empty Path or a non-empty FieldPath,
 // but not both.
