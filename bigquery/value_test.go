@@ -617,6 +617,14 @@ func TestStructSaver(t *testing.T) {
 			"p":       NullInt64{},
 			"rnested": []Value{map[string]Value{"b": true}, map[string]Value(nil), map[string]Value{"b": false}},
 		})
+
+	check("zero-length repeated", T{Rnested: []*N{}},
+		map[string]Value{
+			"rnested": []Value{},
+			"s":       "",
+			"t":       "00:00:00",
+			"p":       NullInt64{},
+		})
 }
 
 func TestStructSaverErrors(t *testing.T) {
@@ -632,8 +640,8 @@ func TestStructSaverErrors(t *testing.T) {
 		struct_ interface{}
 		schema  Schema
 	}{
-		{0, nil},                                              // not a struct
-		{&badField{}, nil},                                    // bad field name
+		{0, nil},           // not a struct
+		{&badField{}, nil}, // bad field name
 		{&badR{}, Schema{{Name: "r", Repeated: true}}},        // repeated field has bad type
 		{&badR{}, Schema{{Name: "r", Type: RecordFieldType}}}, // nested field has bad type
 		{&badRN{[]int{0}}, // nested repeated field has bad type
