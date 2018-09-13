@@ -235,6 +235,17 @@ func (t *Transaction) Documents(q Queryer) *DocumentIterator {
 	}
 }
 
+// DocumentRefs returns references to all the documents in the collection, including
+// missing documents. A missing document is a document that does not exist but has
+// sub-documents.
+func (t *Transaction) DocumentRefs(cr *CollectionRef) *DocumentRefIterator {
+	if len(t.writes) > 0 {
+		t.readAfterWrite = true
+		return &DocumentRefIterator{err: errReadAfterWrite}
+	}
+	return newDocumentRefIterator(t.ctx, cr, t.id)
+}
+
 // Create adds a Create operation to the Transaction.
 // See DocumentRef.Create for details.
 func (t *Transaction) Create(dr *DocumentRef, data interface{}) error {

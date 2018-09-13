@@ -1230,6 +1230,38 @@ func TestIntegration_WatchQueryCancel(t *testing.T) {
 	codeEq(t, "after cancel", codes.Canceled, err)
 }
 
+func TestIntegration_MissingDocs(t *testing.T) {
+	ctx := context.Background()
+	h := testHelper{t}
+	client := integrationClient(t)
+	coll := client.Collection(collectionIDs.New())
+	dr1 := coll.NewDoc()
+	dr2 := coll.NewDoc()
+	dr3 := dr2.Collection("sub").NewDoc()
+	h.mustCreate(dr1, integrationTestMap)
+	defer h.mustDelete(dr1)
+	h.mustCreate(dr3, integrationTestMap)
+	defer h.mustDelete(dr3)
+
+	// dr1 is a document in coll. dr2 was never created, but there are documents in
+	// its sub-collections. It is "missing".
+	// The Collection.DocumentRefs method includes missing document refs.
+	want := []string{dr1.Path, dr2.Path}
+	drs, err := coll.DocumentRefs(ctx).GetAll()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, dr := range drs {
+		got = append(got, dr.Path)
+	}
+	sort.Strings(want)
+	sort.Strings(got)
+	if !testutil.Equal(got, want) {
+		t.Errorf("got %v, want %v", got, want)
+	}
+}
+
 func codeEq(t *testing.T, msg string, code codes.Code, err error) {
 	if grpc.Code(err) != code {
 		t.Fatalf("%s:\ngot <%v>\nwant code %s", msg, err, code)
