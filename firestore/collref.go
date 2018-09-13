@@ -96,6 +96,16 @@ func (c *CollectionRef) Add(ctx context.Context, data interface{}) (*DocumentRef
 	return d, wr, nil
 }
 
+// DocumentRefs returns references to all the documents in the collection, including
+// missing documents. A missing document is a document that does not exist but has
+// sub-documents.
+func (c *CollectionRef) DocumentRefs(ctx context.Context) *DocumentRefIterator {
+	if err := checkTransaction(ctx); err != nil {
+		return &DocumentRefIterator{err: err}
+	}
+	return newDocumentRefIterator(ctx, c, nil)
+}
+
 const alphanum = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
 var (
