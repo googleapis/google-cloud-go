@@ -630,10 +630,11 @@ func structFieldToUploadValue(vfield reflect.Value, schemaField *FieldSchema) (i
 		return m, nil
 	}
 	// A repeated nested field is converted into a slice of maps.
-	if vfield.Len() == 0 {
+	// If the field is zero-length (but not nil), we return a zero-length []Value.
+	if vfield.IsNil() {
 		return nil, nil
 	}
-	var vals []Value
+	vals := []Value{}
 	for i := 0; i < vfield.Len(); i++ {
 		m, err := structToMap(vfield.Index(i), schemaField.Schema)
 		if err != nil {
