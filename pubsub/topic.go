@@ -251,7 +251,7 @@ func (tps *TopicIterator) Next() (*Topic, error) {
 	return newTopic(tps.c, topicName), nil
 }
 
-// ID returns the unique idenfier of the topic within its project.
+// ID returns the unique identifier of the topic within its project.
 func (t *Topic) ID() string {
 	slash := strings.LastIndex(t.name, "/")
 	if slash == -1 {
