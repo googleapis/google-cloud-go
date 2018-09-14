@@ -32,10 +32,11 @@ import (
 
 // IamCredentialsCallOptions contains the retry settings for each method of IamCredentialsClient.
 type IamCredentialsCallOptions struct {
-	GenerateAccessToken []gax.CallOption
-	GenerateIdToken     []gax.CallOption
-	SignBlob            []gax.CallOption
-	SignJwt             []gax.CallOption
+	GenerateAccessToken                []gax.CallOption
+	GenerateIdToken                    []gax.CallOption
+	SignBlob                           []gax.CallOption
+	SignJwt                            []gax.CallOption
+	GenerateIdentityBindingAccessToken []gax.CallOption
 }
 
 func defaultIamCredentialsClientOptions() []option.ClientOption {
@@ -61,10 +62,11 @@ func defaultIamCredentialsCallOptions() *IamCredentialsCallOptions {
 		},
 	}
 	return &IamCredentialsCallOptions{
-		GenerateAccessToken: retry[[2]string{"default", "idempotent"}],
-		GenerateIdToken:     retry[[2]string{"default", "idempotent"}],
-		SignBlob:            retry[[2]string{"default", "idempotent"}],
-		SignJwt:             retry[[2]string{"default", "idempotent"}],
+		GenerateAccessToken:                retry[[2]string{"default", "idempotent"}],
+		GenerateIdToken:                    retry[[2]string{"default", "idempotent"}],
+		SignBlob:                           retry[[2]string{"default", "idempotent"}],
+		SignJwt:                            retry[[2]string{"default", "idempotent"}],
+		GenerateIdentityBindingAccessToken: retry[[2]string{"default", "idempotent"}],
 	}
 }
 
@@ -187,6 +189,23 @@ func (c *IamCredentialsClient) SignJwt(ctx context.Context, req *credentialspb.S
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.iamCredentialsClient.SignJwt(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GenerateIdentityBindingAccessToken exchange a JWT signed by third party identity provider to an OAuth 2.0
+// access token
+func (c *IamCredentialsClient) GenerateIdentityBindingAccessToken(ctx context.Context, req *credentialspb.GenerateIdentityBindingAccessTokenRequest, opts ...gax.CallOption) (*credentialspb.GenerateIdentityBindingAccessTokenResponse, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.GenerateIdentityBindingAccessToken[0:len(c.CallOptions.GenerateIdentityBindingAccessToken):len(c.CallOptions.GenerateIdentityBindingAccessToken)], opts...)
+	var resp *credentialspb.GenerateIdentityBindingAccessTokenResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamCredentialsClient.GenerateIdentityBindingAccessToken(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

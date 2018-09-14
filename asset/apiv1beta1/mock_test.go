@@ -131,11 +131,9 @@ func TestAssetServiceExportAssets(t *testing.T) {
 	})
 
 	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
-	var contentTypes []assetpb.ContentType = nil
 	var outputConfig *assetpb.OutputConfig = &assetpb.OutputConfig{}
 	var request = &assetpb.ExportAssetsRequest{
 		Parent:       formattedParent,
-		ContentTypes: contentTypes,
 		OutputConfig: outputConfig,
 	}
 
@@ -178,11 +176,9 @@ func TestAssetServiceExportAssetsError(t *testing.T) {
 	})
 
 	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
-	var contentTypes []assetpb.ContentType = nil
 	var outputConfig *assetpb.OutputConfig = &assetpb.OutputConfig{}
 	var request = &assetpb.ExportAssetsRequest{
 		Parent:       formattedParent,
-		ContentTypes: contentTypes,
 		OutputConfig: outputConfig,
 	}
 
@@ -213,12 +209,10 @@ func TestAssetServiceBatchGetAssetsHistory(t *testing.T) {
 	mockAsset.resps = append(mockAsset.resps[:0], expectedResponse)
 
 	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
-	var assetNames []string = nil
 	var contentType assetpb.ContentType = assetpb.ContentType_CONTENT_TYPE_UNSPECIFIED
 	var readTimeWindow *assetpb.TimeWindow = &assetpb.TimeWindow{}
 	var request = &assetpb.BatchGetAssetsHistoryRequest{
 		Parent:         formattedParent,
-		AssetNames:     assetNames,
 		ContentType:    contentType,
 		ReadTimeWindow: readTimeWindow,
 	}
@@ -248,12 +242,10 @@ func TestAssetServiceBatchGetAssetsHistoryError(t *testing.T) {
 	mockAsset.err = gstatus.Error(errCode, "test error")
 
 	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
-	var assetNames []string = nil
 	var contentType assetpb.ContentType = assetpb.ContentType_CONTENT_TYPE_UNSPECIFIED
 	var readTimeWindow *assetpb.TimeWindow = &assetpb.TimeWindow{}
 	var request = &assetpb.BatchGetAssetsHistoryRequest{
 		Parent:         formattedParent,
-		AssetNames:     assetNames,
 		ContentType:    contentType,
 		ReadTimeWindow: readTimeWindow,
 	}
