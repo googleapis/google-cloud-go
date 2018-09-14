@@ -45,7 +45,6 @@ var logBuf bytes.Buffer
 // delivered to each subscription for the topic. It also tests that messages
 // are not unexpectedly redelivered.
 func TestIntegration_EndToEnd(t *testing.T) {
-	t.Parallel()
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
