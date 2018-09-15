@@ -48,38 +48,6 @@ Changes have been moved to [CHANGES](https://github.com/GoogleCloudPlatform/goog
 
 
 ## Supported APIs
-
-<<<<<<< HEAD
-Google API                                   | Status       | Package
----------------------------------------------|--------------|-----------------------------------------------------------
-[BigQuery][cloud-bigquery]                   | stable       | [`godoc.org/cloud.google.com/go/bigquery`][cloud-bigquery-ref]
-[Bigtable][cloud-bigtable]                   | stable       | [`godoc.org/cloud.google.com/go/bigtable`][cloud-bigtable-ref]
-[Container][cloud-container]                 | stable       | [`godoc.org/cloud.google.com/go/container/apiv1`][cloud-container-ref]
-[ContainerAnalysis][cloud-containeranalysis] | beta         | [`godoc.org/cloud.google.com/go/containeranalysis/apiv1beta1`][cloud-containeranalysis-ref]
-[Dataproc][cloud-dataproc]                   | stable       | [`godoc.org/cloud.google.com/go/dataproc/apiv1`][cloud-dataproc-ref]
-[Datastore][cloud-datastore]                 | stable       | [`godoc.org/cloud.google.com/go/datastore`][cloud-datastore-ref]
-[Debugger][cloud-debugger]                   | alpha        | [`godoc.org/cloud.google.com/go/debugger/apiv2`][cloud-debugger-ref]
-[Dialogflow][cloud-dialogflow]               | alpha        | [`godoc.org/cloud.google.com/go/dialogflow/apiv2`][cloud-dialogflow-ref]
-[Data Loss Prevention][cloud-dlp]            | alpha        | [`godoc.org/cloud.google.com/go/dlp/apiv2`][cloud-dlp-ref]
-[ErrorReporting][cloud-errors]               | alpha        | [`godoc.org/cloud.google.com/go/errorreporting`][cloud-errors-ref]
-[Firestore][cloud-firestore]                 | beta         | [`godoc.org/cloud.google.com/go/firestore`][cloud-firestore-ref]
-[IAM][cloud-iam]                             | stable       | [`godoc.org/cloud.google.com/go/iam`][cloud-iam-ref]
-[KMS][cloud-kms]                             | stable       | [`godoc.org/cloud.google.com/go/kms`][cloud-kms-ref]
-[Natural Language][cloud-natural-language]   | stable       | [`godoc.org/cloud.google.com/go/language/apiv1`][cloud-natural-language-ref]
-[Logging][cloud-logging]                     | stable       | [`godoc.org/cloud.google.com/go/logging`][cloud-logging-ref]
-[Monitoring][cloud-monitoring]               | alpha        | [`godoc.org/cloud.google.com/go/monitoring/apiv3`][cloud-monitoring-ref]
-[OS Login][cloud-oslogin]                    | alpha        | [`cloud.google.com/compute/docs/oslogin/rest`][cloud-oslogin-ref]
-[Pub/Sub][cloud-pubsub]                      | stable       | [`godoc.org/cloud.google.com/go/pubsub`][cloud-pubsub-ref]
-[Memorystore][cloud-memorystore]             | stable       | [`godoc.org/cloud.google.com/go/redis/apiv1beta1`][cloud-memorystore-ref]
-[Spanner][cloud-spanner]                     | stable       | [`godoc.org/cloud.google.com/go/spanner`][cloud-spanner-ref]
-[Speech][cloud-speech]                       | stable       | [`godoc.org/cloud.google.com/go/speech/apiv1`][cloud-speech-ref]
-[Storage][cloud-storage]                     | stable       | [`godoc.org/cloud.google.com/go/storage`][cloud-storage-ref]
-[Text To Speech][cloud-texttospeech]         | alpha        | [`godoc.org/cloud.google.com/go/texttospeech/apiv1`][cloud-storage-ref]
-[Trace][cloud-trace]                         | alpha        | [`godoc.org/cloud.google.com/go/trace/apiv2`][cloud-translation-ref]
-[Translation][cloud-translation]             | stable       | [`godoc.org/cloud.google.com/go/translate`][cloud-translation-ref]
-[Video Intelligence][cloud-video]            | alpha        | [`godoc.org/cloud.google.com/go/videointelligence/apiv1beta1`][cloud-video-ref]
-[Vision][cloud-vision]                       | stable       | [`godoc.org/cloud.google.com/go/vision/apiv1`][cloud-vision-ref]
-=======
 Google API                                 | Status       | Package
 -------------------------------------------|--------------|-----------------------------------------------------------
 [Asset][cloud-asset]                       | stable       | [`godoc.org/cloud.google.com/go/asset/v1beta`][cloud-asset-ref]
@@ -109,7 +77,6 @@ Google API                                 | Status       | Package
 [Translation][cloud-translation]           | stable       | [`godoc.org/cloud.google.com/go/translate`][cloud-translation-ref]
 [Video Intelligence][cloud-video]          | alpha        | [`godoc.org/cloud.google.com/go/videointelligence/apiv1beta1`][cloud-video-ref]
 [Vision][cloud-vision]                     | stable       | [`godoc.org/cloud.google.com/go/vision/apiv1`][cloud-vision-ref]
->>>>>>> DO NOT MERGE asset: add asset v1beta1
 
 
 > **Alpha status**: the API is still being actively developed. As a
