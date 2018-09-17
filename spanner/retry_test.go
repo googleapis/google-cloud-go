@@ -39,6 +39,7 @@ func TestRetry(t *testing.T) {
 	responses := []error{
 		status.Errorf(codes.Internal, "transport is closing"),
 		status.Errorf(codes.Unknown, "unexpected EOF"),
+		status.Errorf(codes.Internal, "unexpected EOF"),
 		status.Errorf(codes.Internal, "stream terminated by RST_STREAM with error code: 2"),
 		status.Errorf(codes.Unavailable, "service is currently unavailable"),
 		errRetry(fmt.Errorf("just retry it")),
