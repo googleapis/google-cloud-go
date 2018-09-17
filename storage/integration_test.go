@@ -2035,6 +2035,129 @@ func TestIntegration_UpdateCORS(t *testing.T) {
 	}
 }
 
+func TestIntegration_UpdateDefaultEventBasedHold(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	h := testHelper{t}
+
+	bkt := client.Bucket(uidSpace.New())
+	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{})
+	defer h.mustDeleteBucket(bkt)
+	attrs := h.mustBucketAttrs(bkt)
+	if attrs.DefaultEventBasedHold != false {
+		t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, false)
+	}
+
+	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{DefaultEventBasedHold: true})
+	attrs = h.mustBucketAttrs(bkt)
+	if attrs.DefaultEventBasedHold != true {
+		t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, true)
+	}
+
+	// Omitting it should leave the value unchanged.
+	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RequesterPays: true})
+	attrs = h.mustBucketAttrs(bkt)
+	if attrs.DefaultEventBasedHold != true {
+		t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, true)
+	}
+}
+
+func TestIntegration_UpdateEventBasedHold(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	h := testHelper{t}
+
+	bkt := client.Bucket(uidSpace.New())
+	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{})
+	obj := bkt.Object("some-obj")
+	h.mustWrite(obj.NewWriter(ctx), randomContents())
+
+	defer func() {
+		h.mustUpdateObject(obj, ObjectAttrsToUpdate{EventBasedHold: false})
+		h.mustDeleteObject(obj)
+		h.mustDeleteBucket(bkt)
+	}()
+
+	attrs := h.mustObjectAttrs(obj)
+	if attrs.EventBasedHold != false {
+		t.Fatalf("got=%v, want=%v", attrs.EventBasedHold, false)
+	}
+
+	h.mustUpdateObject(obj, ObjectAttrsToUpdate{EventBasedHold: true})
+	attrs = h.mustObjectAttrs(obj)
+	if attrs.EventBasedHold != true {
+		t.Fatalf("got=%v, want=%v", attrs.EventBasedHold, true)
+	}
+
+	// Omitting it should leave the value unchanged.
+	h.mustUpdateObject(obj, ObjectAttrsToUpdate{ContentType: "foo"})
+	attrs = h.mustObjectAttrs(obj)
+	if attrs.EventBasedHold != true {
+		t.Fatalf("got=%v, want=%v", attrs.EventBasedHold, true)
+	}
+}
+
+func TestIntegration_UpdateTemporaryHold(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	h := testHelper{t}
+
+	bkt := client.Bucket(uidSpace.New())
+	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{})
+	obj := bkt.Object("some-obj")
+	h.mustWrite(obj.NewWriter(ctx), randomContents())
+
+	defer func() {
+		h.mustUpdateObject(obj, ObjectAttrsToUpdate{TemporaryHold: false})
+		h.mustDeleteObject(obj)
+		h.mustDeleteBucket(bkt)
+	}()
+
+	attrs := h.mustObjectAttrs(obj)
+	if attrs.TemporaryHold != false {
+		t.Fatalf("got=%v, want=%v", attrs.TemporaryHold, false)
+	}
+
+	h.mustUpdateObject(obj, ObjectAttrsToUpdate{TemporaryHold: true})
+	attrs = h.mustObjectAttrs(obj)
+	if attrs.TemporaryHold != true {
+		t.Fatalf("got=%v, want=%v", attrs.TemporaryHold, true)
+	}
+
+	// Omitting it should leave the value unchanged.
+	h.mustUpdateObject(obj, ObjectAttrsToUpdate{ContentType: "foo"})
+	attrs = h.mustObjectAttrs(obj)
+	if attrs.TemporaryHold != true {
+		t.Fatalf("got=%v, want=%v", attrs.TemporaryHold, true)
+	}
+}
+
+func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	h := testHelper{t}
+
+	bkt := client.Bucket(uidSpace.New())
+	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour}})
+	obj := bkt.Object("some-obj")
+	h.mustWrite(obj.NewWriter(ctx), randomContents())
+
+	defer func() {
+		h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{RetentionPeriod: 0}})
+		h.mustDeleteObject(obj)
+		h.mustDeleteBucket(bkt)
+	}()
+
+	attrs := h.mustObjectAttrs(obj)
+	if attrs.RetentionExpirationTime == (time.Time{}) {
+		t.Fatalf("got=%v, wanted a non-zero value", attrs.RetentionExpirationTime)
+	}
+}
+
 func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
@@ -2116,9 +2239,17 @@ func TestIntegration_LockBucket(t *testing.T) {
 	bkt := client.Bucket(uidSpace.New())
 	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour * 25}})
 	attrs := h.mustBucketAttrs(bkt)
+	if attrs.RetentionPolicy.IsLocked {
+		t.Fatal("Expected bucket to begin unlocked, but it was not")
+	}
 	err := bkt.If(BucketConditions{MetagenerationMatch: attrs.MetaGeneration}).LockRetentionPolicy(ctx)
 	if err != nil {
 		t.Fatal("could not lock", err)
+	}
+
+	attrs = h.mustBucketAttrs(bkt)
+	if !attrs.RetentionPolicy.IsLocked {
+		t.Fatal("Expected bucket to be locked, but it was not")
 	}
 
 	_, err = bkt.Update(ctx, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour}})
