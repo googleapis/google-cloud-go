@@ -76,14 +76,15 @@ func isErrorUnexpectedEOF(err error) bool {
 	if err == nil {
 		return false
 	}
-	// Unexpected EOF is an transport layer issue that could be recovered by
+	// Unexpected EOF is a transport layer issue that could be recovered by
 	// retries. The most likely scenario is a flaky RecvMsg() call due to
 	// network issues.
-	// in https://github.com/grpc/grpc-go/releases/tag/v1.14.0, the error code is internal
+	// For grpc version >= 1.14.0, the error code is Internal.
+	// (https://github.com/grpc/grpc-go/releases/tag/v1.14.0)
 	if ErrCode(err) == codes.Internal && strings.Contains(ErrDesc(err), "unexpected EOF") {
 		return true
 	}
-	// grpc prior to 1.14.0 return it as Unknown
+	// For grpc version < 1.14.0, the error code in Unknown.
 	if ErrCode(err) == codes.Unknown && strings.Contains(ErrDesc(err), "unexpected EOF") {
 		return true
 	}
