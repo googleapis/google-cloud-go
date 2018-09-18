@@ -26,6 +26,8 @@ import (
 	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func TestTopics(t *testing.T) {
@@ -125,6 +127,49 @@ func TestSubscriptions(t *testing.T) {
 	if got, want := len(server.gServer.subs), 0; got != want {
 		t.Fatalf("got %d subscriptions, want %d", got, want)
 	}
+}
+
+func TestSubscriptionErrors(t *testing.T) {
+	_, sclient, _ := newFake(t)
+	ctx := context.Background()
+
+	// TODO(jba): Go1.9: use t.Helper()
+	checkCode := func(msg string, err error, want codes.Code) {
+		if status.Code(err) != want {
+			t.Errorf("%s: got %v, want code %s", msg, err, want)
+		}
+	}
+
+	_, err := sclient.GetSubscription(ctx, &pb.GetSubscriptionRequest{})
+	checkCode("GetSubscription", err, codes.InvalidArgument)
+	_, err = sclient.GetSubscription(ctx, &pb.GetSubscriptionRequest{Subscription: "s"})
+	checkCode("GetSubscription", err, codes.NotFound)
+	_, err = sclient.UpdateSubscription(ctx, &pb.UpdateSubscriptionRequest{})
+	checkCode("UpdateSubscription", err, codes.InvalidArgument)
+	_, err = sclient.UpdateSubscription(ctx, &pb.UpdateSubscriptionRequest{Subscription: &pb.Subscription{}})
+	checkCode("UpdateSubscription", err, codes.InvalidArgument)
+	_, err = sclient.UpdateSubscription(ctx, &pb.UpdateSubscriptionRequest{Subscription: &pb.Subscription{Name: "s"}})
+	checkCode("UpdateSubscription", err, codes.NotFound)
+	_, err = sclient.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{})
+	checkCode("DeleteSubscription", err, codes.InvalidArgument)
+	_, err = sclient.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{Subscription: "s"})
+	checkCode("DeleteSubscription", err, codes.NotFound)
+	_, err = sclient.Acknowledge(ctx, &pb.AcknowledgeRequest{})
+	checkCode("Acknowledge", err, codes.InvalidArgument)
+	_, err = sclient.Acknowledge(ctx, &pb.AcknowledgeRequest{Subscription: "s"})
+	checkCode("Acknowledge", err, codes.NotFound)
+	_, err = sclient.ModifyAckDeadline(ctx, &pb.ModifyAckDeadlineRequest{})
+	checkCode("ModifyAckDeadline", err, codes.InvalidArgument)
+	_, err = sclient.ModifyAckDeadline(ctx, &pb.ModifyAckDeadlineRequest{Subscription: "s"})
+	checkCode("ModifyAckDeadline", err, codes.NotFound)
+
+	_, err = sclient.Seek(ctx, &pb.SeekRequest{})
+	checkCode("Seek", err, codes.InvalidArgument)
+	srt := &pb.SeekRequest_Time{Time: ptypes.TimestampNow()}
+	_, err = sclient.Seek(ctx, &pb.SeekRequest{Target: srt})
+	checkCode("Seek", err, codes.InvalidArgument)
+	_, err = sclient.Seek(ctx, &pb.SeekRequest{Target: srt, Subscription: "s"})
+	checkCode("Seek", err, codes.NotFound)
 }
 
 func TestPublish(t *testing.T) {
