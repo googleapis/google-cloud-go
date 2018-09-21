@@ -276,6 +276,42 @@ func TestStreamingPullFlowControl(t *testing.T) {
 	}
 }
 
+func TestStreamingPull_ClosedClient(t *testing.T) {
+	ctx := context.Background()
+	client, server := newMock(t)
+	server.addStreamingPullMessages(testMessages)
+	sub := client.Subscription("S")
+	sub.ReceiveSettings.MaxOutstandingBytes = 1
+	recvFinished := make(chan error)
+
+	go func() {
+		err := sub.Receive(ctx, func(_ context.Context, m *Message) {
+			m.Ack()
+		})
+		recvFinished <- err
+	}()
+
+	time.Sleep(time.Second)
+
+	err := client.Close()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	select {
+	case recvErr := <-recvFinished:
+		s, ok := status.FromError(recvErr)
+		if !ok {
+			t.Fatalf("Expected a gRPC failure, got %v", err)
+		}
+		if s.Code() != codes.Canceled {
+			t.Fatalf("Expected canceled, got %v", s.Code())
+		}
+	case <-time.After(time.Second):
+		t.Fatal("Receive should have exited immediately after the client was closed, but it did not")
+	}
+}
+
 func newMock(t *testing.T) (*Client, *mockServer) {
 	srv, err := newMockServer()
 	if err != nil {
