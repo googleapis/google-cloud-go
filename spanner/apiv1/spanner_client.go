@@ -259,12 +259,12 @@ func (c *Client) DeleteSession(ctx context.Context, req *spannerpb.DeleteSession
 	return err
 }
 
-// ExecuteSql executes an SQL query, returning all rows in a single reply. This
+// ExecuteSql executes an SQL statement, returning all results in a single reply. This
 // method cannot be used to return a result set larger than 10 MiB;
 // if the query yields more data than that, the query fails with
 // a FAILED_PRECONDITION error.
 //
-// Queries inside read-write transactions might return ABORTED. If
+// Operations inside read-write transactions might return ABORTED. If
 // this occurs, the application should restart the transaction from
 // the beginning. See [Transaction][google.spanner.v1.Transaction] for more details.
 //
@@ -420,8 +420,11 @@ func (c *Client) Rollback(ctx context.Context, req *spannerpb.RollbackRequest, o
 // of the query result to read.  The same session and read-only transaction
 // must be used by the PartitionQueryRequest used to create the
 // partition tokens and the ExecuteSqlRequests that use the partition tokens.
+//
 // Partition tokens become invalid when the session used to create them
-// is deleted or begins a new transaction.
+// is deleted, is idle for too long, begins a new transaction, or becomes too
+// old.  When any of these happen, it is not possible to resume the query, and
+// the whole operation must be restarted from the beginning.
 func (c *Client) PartitionQuery(ctx context.Context, req *spannerpb.PartitionQueryRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.PartitionQuery[0:len(c.CallOptions.PartitionQuery):len(c.CallOptions.PartitionQuery)], opts...)
@@ -442,9 +445,14 @@ func (c *Client) PartitionQuery(ctx context.Context, req *spannerpb.PartitionQue
 // by [StreamingRead][google.spanner.v1.Spanner.StreamingRead] to specify a subset of the read
 // result to read.  The same session and read-only transaction must be used by
 // the PartitionReadRequest used to create the partition tokens and the
-// ReadRequests that use the partition tokens.
+// ReadRequests that use the partition tokens.  There are no ordering
+// guarantees on rows returned among the returned partition tokens, or even
+// within each individual StreamingRead call issued with a partition_token.
+//
 // Partition tokens become invalid when the session used to create them
-// is deleted or begins a new transaction.
+// is deleted, is idle for too long, begins a new transaction, or becomes too
+// old.  When any of these happen, it is not possible to resume the read, and
+// the whole operation must be restarted from the beginning.
 func (c *Client) PartitionRead(ctx context.Context, req *spannerpb.PartitionReadRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.PartitionRead[0:len(c.CallOptions.PartitionRead):len(c.CallOptions.PartitionRead)], opts...)
