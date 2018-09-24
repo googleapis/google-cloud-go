@@ -291,12 +291,16 @@ func TestStreamingPull_ClosedClient(t *testing.T) {
 		recvFinished <- err
 	}()
 
-	time.Sleep(time.Second)
+	// wait for receives to happen
+	time.Sleep(100 * time.Millisecond)
 
 	err := client.Close()
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	// wait for things to close
+	time.Sleep(100 * time.Millisecond)
 
 	select {
 	case recvErr := <-recvFinished:
