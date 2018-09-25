@@ -371,7 +371,12 @@ func (ac *AdminClient) Snapshots(ctx context.Context, cluster string) *SnapshotI
 			req.PageSize = int32(pageSize)
 		}
 
-		resp, err := ac.tClient.ListSnapshots(ctx, req)
+		var resp *btapb.ListSnapshotsResponse
+		err := gax.Invoke(ctx, func(ctx context.Context) error {
+			var err error
+			resp, err = ac.tClient.ListSnapshots(ctx, req)
+			return err
+		}, retryOptions...)
 		if err != nil {
 			return "", err
 		}
@@ -470,7 +475,12 @@ func (ac *AdminClient) SnapshotInfo(ctx context.Context, cluster, snapshot strin
 		Name: snapshotPath,
 	}
 
-	resp, err := ac.tClient.GetSnapshot(ctx, req)
+	var resp *btapb.Snapshot
+	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		var err error
+		resp, err = ac.tClient.GetSnapshot(ctx, req)
+		return err
+	}, retryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -717,7 +727,12 @@ func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo,
 	req := &btapb.ListInstancesRequest{
 		Parent: "projects/" + iac.project,
 	}
-	res, err := iac.iClient.ListInstances(ctx, req)
+	var res *btapb.ListInstancesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		var err error
+		res, err = iac.iClient.ListInstances(ctx, req)
+		return err
+	}, retryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -747,7 +762,12 @@ func (iac *InstanceAdminClient) InstanceInfo(ctx context.Context, instanceID str
 	req := &btapb.GetInstanceRequest{
 		Name: "projects/" + iac.project + "/instances/" + instanceID,
 	}
-	res, err := iac.iClient.GetInstance(ctx, req)
+	var res *btapb.Instance
+	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		var err error
+		res, err = iac.iClient.GetInstance(ctx, req)
+		return err
+	}, retryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -829,7 +849,12 @@ func (iac *InstanceAdminClient) UpdateCluster(ctx context.Context, instanceID, c
 func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string) ([]*ClusterInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.ListClustersRequest{Parent: "projects/" + iac.project + "/instances/" + instanceID}
-	res, err := iac.iClient.ListClusters(ctx, req)
+	var res *btapb.ListClustersResponse
+	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		var err error
+		res, err = iac.iClient.ListClusters(ctx, req)
+		return err
+	}, retryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -852,7 +877,12 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clusterID string) (*ClusterInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.GetClusterRequest{Name: "projects/" + iac.project + "/instances/" + instanceID + "/clusters/" + clusterID}
-	c, err := iac.iClient.GetCluster(ctx, req)
+	var c *btapb.Cluster
+	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		var err error
+		c, err = iac.iClient.GetCluster(ctx, req)
+		return err
+	}, retryOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -988,8 +1018,16 @@ func (iac *InstanceAdminClient) GetAppProfile(ctx context.Context, instanceID, n
 	profileRequest := &btapb.GetAppProfileRequest{
 		Name: "projects/" + iac.project + "/instances/" + instanceID + "/appProfiles/" + name,
 	}
-	return iac.iClient.GetAppProfile(ctx, profileRequest)
-
+	var ap *btapb.AppProfile
+	err := gax.Invoke(ctx, func(ctx context.Context) error {
+		var err error
+		ap, err = iac.iClient.GetAppProfile(ctx, profileRequest)
+		return err
+	}, retryOptions...)
+	if err != nil {
+		return nil, err
+	}
+	return ap, err
 }
 
 // ListAppProfiles lists information about app profiles in an instance.
@@ -1002,7 +1040,12 @@ func (iac *InstanceAdminClient) ListAppProfiles(ctx context.Context, instanceID 
 	pit := &ProfileIterator{}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		listRequest.PageToken = pageToken
-		profileRes, err := iac.iClient.ListAppProfiles(ctx, listRequest)
+		var profileRes *btapb.ListAppProfilesResponse
+		err := gax.Invoke(ctx, func(ctx context.Context) error {
+			var err error
+			profileRes, err = iac.iClient.ListAppProfiles(ctx, listRequest)
+			return err
+		}, retryOptions...)
 		if err != nil {
 			return "", err
 		}
