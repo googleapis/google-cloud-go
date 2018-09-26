@@ -41,4 +41,4 @@ go get -v -t ./...
 go test -race -v -short ./... 2>&1 | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt
 
 # Make sure README.md is up to date.
-make -C internal/readme test diff
+#make -C internal/readme test diff
