@@ -123,6 +123,11 @@ func TestClientMethods(t *testing.T) {
 			[]*pb.Feature{{Type: pb.Feature_CROP_HINTS, MaxResults: 0}},
 			batchResponse.Responses[0].CropHintsAnnotation,
 		},
+		{
+			func() (interface{}, error) { return c.LocalizeObjects(ctx, img, ictx) },
+			[]*pb.Feature{{Type: pb.Feature_OBJECT_LOCALIZATION, MaxResults: 0}},
+			batchResponse.Responses[0].LocalizedObjectAnnotations,
+		},
 	} {
 		mockImageAnnotator.reqs = nil
 		res, err := test.call()

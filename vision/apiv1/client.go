@@ -149,3 +149,12 @@ func (c *ImageAnnotatorClient) CropHints(ctx context.Context, img *pb.Image, ict
 	}
 	return res.CropHintsAnnotation, nil
 }
+
+// LocalizeObject runs the localizer for object detection.
+func (c *ImageAnnotatorClient) LocalizeObjects(ctx context.Context, img *pb.Image, ictx *pb.ImageContext, opts ...gax.CallOption) ([]*pb.LocalizedObjectAnnotation, error) {
+	res, err := c.annotateOne(ctx, img, ictx, pb.Feature_OBJECT_LOCALIZATION, 0, opts)
+	if err != nil {
+		return nil, err
+	}
+	return res.LocalizedObjectAnnotations, nil
+}
