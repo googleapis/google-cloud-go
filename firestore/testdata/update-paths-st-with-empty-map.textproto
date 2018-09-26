@@ -9,14 +9,8 @@ update_paths: <
   doc_ref_path: "projects/projectID/databases/(default)/documents/C/d"
   field_paths: <
     field: "a"
-    field: "b"
   >
-  field_paths: <
-    field: "a"
-    field: "c"
-  >
-  json_values: "{}"
-  json_values: "\"ServerTimestamp\""
+  json_values: "{\"b\": {}, \"c\": \"ServerTimestamp\"}"
   request: <
     database: "projects/projectID/databases/(default)"
     writes: <
@@ -38,7 +32,7 @@ update_paths: <
         >
       >
       update_mask: <
-        field_paths: "a.b"
+        field_paths: "a"
       >
       current_document: <
         exists: true

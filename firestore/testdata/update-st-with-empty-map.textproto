@@ -29,7 +29,7 @@ update: <
         >
       >
       update_mask: <
-        field_paths: "a.b"
+        field_paths: "a"
       >
       current_document: <
         exists: true
