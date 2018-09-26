@@ -26,7 +26,11 @@ type flowController struct {
 	maxCount          int
 	maxSize           int                 // max total size of messages
 	semCount, semSize *semaphore.Weighted // enforces max number and size of messages
-	count_            int64               // acquires - releases (atomic)
+	// Number of calls to acquire - number of calls to release. This can go
+	// negative if semCount == nil and a large acquire is followed by multiple
+	// small releases.
+	// Atomic.
+	count_ int64
 }
 
 // newFlowController creates a new flowController that ensures no more than
