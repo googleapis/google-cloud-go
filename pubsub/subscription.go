@@ -499,7 +499,7 @@ func (s *Subscription) receive(ctx context.Context, po *pullOptions, fc *flowCon
 	// The iterator does not use the context passed to Receive. If it did, canceling
 	// that context would immediately stop the iterator without waiting for unacked
 	// messages.
-	iter := newMessageIterator(context.Background(), s.c.subc, s.name, po)
+	iter := newMessageIterator(s.c.subc, s.name, po)
 
 	// We cannot use errgroup from Receive here. Receive might already be calling group.Wait,
 	// and group.Wait cannot be called concurrently with group.Go. We give each receive() its
