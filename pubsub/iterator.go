@@ -33,6 +33,7 @@ const gracePeriod = 5 * time.Second
 
 type messageIterator struct {
 	ctx        context.Context
+	cancel     func() // the function that will cancel ctx; called in stop
 	po         *pullOptions
 	ps         *pullStream
 	subc       *vkit.SubscriberClient
@@ -42,7 +43,6 @@ type messageIterator struct {
 	nackTicker *time.Ticker     // message nacks (more frequent than acks)
 	pingTicker *time.Ticker     //  sends to the stream to keep it open
 	failed     chan struct{}    // closed on stream error
-	stopped    chan struct{}    // closed when Stop is called
 	drained    chan struct{}    // closed when stopped && no more pending messages
 	wg         sync.WaitGroup
 
@@ -65,13 +65,13 @@ type messageIterator struct {
 }
 
 // newMessageIterator starts and returns a new messageIterator.
-// ctx is the context to use for acking messages and extending message deadlines.
 // subName is the full name of the subscription to pull messages from.
 // Stop must be called on the messageIterator when it is no longer needed.
-func newMessageIterator(ctx context.Context, subc *vkit.SubscriberClient, subName string, po *pullOptions) *messageIterator {
+// The iterator always uses the background context for acking messages and extending message deadlines.
+func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOptions) *messageIterator {
 	var ps *pullStream
 	if !po.synchronous {
-		ps = newPullStream(ctx, subc.StreamingPull, subName)
+		ps = newPullStream(context.Background(), subc.StreamingPull, subName)
 	}
 	// The period will update each tick based on the distribution of acks. We'll start by arbitrarily sending
 	// the first keepAlive halfway towards the minimum ack deadline.
@@ -81,8 +81,10 @@ func newMessageIterator(ctx context.Context, subc *vkit.SubscriberClient, subNam
 	ackTicker := time.NewTicker(100 * time.Millisecond)
 	nackTicker := time.NewTicker(100 * time.Millisecond)
 	pingTicker := time.NewTicker(30 * time.Second)
+	cctx, cancel := context.WithCancel(context.Background())
 	it := &messageIterator{
-		ctx:                ctx,
+		ctx:                cctx,
+		cancel:             cancel,
 		ps:                 ps,
 		po:                 po,
 		subc:               subc,
@@ -92,7 +94,6 @@ func newMessageIterator(ctx context.Context, subc *vkit.SubscriberClient, subNam
 		nackTicker:         nackTicker,
 		pingTicker:         pingTicker,
 		failed:             make(chan struct{}),
-		stopped:            make(chan struct{}),
 		drained:            make(chan struct{}),
 		ackTimeDist:        distribution.New(int(maxAckDeadline/time.Second) + 1),
 		keepAliveDeadlines: map[string]time.Time{},
@@ -110,12 +111,8 @@ func newMessageIterator(ctx context.Context, subc *vkit.SubscriberClient, subNam
 // returned by Next, or until the context with which the messageIterator was created
 // is cancelled or exceeds its deadline.
 func (it *messageIterator) stop() {
+	it.cancel()
 	it.mu.Lock()
-	select {
-	case <-it.stopped:
-	default:
-		close(it.stopped)
-	}
 	it.checkDrained()
 	it.mu.Unlock()
 	it.wg.Wait()
@@ -132,7 +129,7 @@ func (it *messageIterator) checkDrained() {
 	default:
 	}
 	select {
-	case <-it.stopped:
+	case <-it.ctx.Done():
 		if len(it.keepAliveDeadlines) == 0 {
 			close(it.drained)
 		}
@@ -179,7 +176,7 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 
 	// Stop retrieving messages if the iterator's Stop method was called.
 	select {
-	case <-it.stopped:
+	case <-it.ctx.Done():
 		it.wg.Wait()
 		return nil, io.EOF
 	default:
@@ -230,20 +227,9 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 // Get messages using the Pull RPC.
 // This may block indefinitely. It may also return zero messages, after some time waiting.
 func (it *messageIterator) pullMessages(maxToPull int32) ([]*pb.ReceivedMessage, error) {
-	// Use a different context so this RPC can be canceled.
-	cctx, cancel := context.WithCancel(it.ctx)
-	defer cancel()
-	go func() {
-		// Turn a stop into a cancel.
-		// TODO(jba): replace the stopped channel with a context.
-		select {
-		case <-it.stopped:
-			cancel()
-		case <-cctx.Done():
-			// We end up here when the deferred cancel runs at the end of the function.
-		}
-	}()
-	res, err := it.subc.Pull(cctx, &pb.PullRequest{
+	// Use it.ctx as the RPC context, so that if the iterator is stopped, the call
+	// will return immediately.
+	res, err := it.subc.Pull(it.ctx, &pb.PullRequest{
 		Subscription: it.subName,
 		MaxMessages:  maxToPull,
 	})
@@ -287,11 +273,6 @@ func (it *messageIterator) sender() {
 		dl := it.ackDeadline()
 
 		select {
-		case <-it.ctx.Done():
-			// Context canceled or timed out: stop immediately, without
-			// another RPC.
-			return
-
 		case <-it.failed:
 			// Stream failed: nothing to do, so stop immediately.
 			return
@@ -393,7 +374,9 @@ func (it *messageIterator) handleKeepAlives() {
 func (it *messageIterator) sendAck(m map[string]bool) bool {
 	return it.sendAckIDRPC(m, func(ids []string) error {
 		addAcks(ids)
-		return it.subc.Acknowledge(it.ctx, &pb.AcknowledgeRequest{
+		// Use context.Background() as the call's context, not it.ctx. We don't
+		// want to cancel this RPC when the iterator is stopped.
+		return it.subc.Acknowledge(context.Background(), &pb.AcknowledgeRequest{
 			Subscription: it.subName,
 			AckIds:       ids,
 		})
@@ -407,7 +390,9 @@ func (it *messageIterator) sendAck(m map[string]bool) bool {
 func (it *messageIterator) sendModAck(m map[string]bool, deadline time.Duration) bool {
 	return it.sendAckIDRPC(m, func(ids []string) error {
 		addModAcks(ids, int32(deadline/time.Second))
-		return it.subc.ModifyAckDeadline(it.ctx, &pb.ModifyAckDeadlineRequest{
+		// Use context.Background() as the call's context, not it.ctx. We don't
+		// want to cancel this RPC when the iterator is stopped.
+		return it.subc.ModifyAckDeadline(context.Background(), &pb.ModifyAckDeadlineRequest{
 			Subscription:       it.subName,
 			AckDeadlineSeconds: int32(deadline / time.Second),
 			AckIds:             ids,
