@@ -28,6 +28,8 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var (
@@ -108,7 +110,7 @@ func TestAckDistribution(t *testing.T) {
 		startSending(t, queuedMsgs, &processTimeSecs, testcase.initialProcessSecs, testcase.finalProcessSecs, recvdWg)
 
 		recvdWg.Wait()
-		time.Sleep(time.Second) // Wait a bit more for resources to clean up
+		time.Sleep(100 * time.Millisecond) // Wait a bit more for resources to clean up
 		err = client.Close()
 		if err != nil {
 			t.Fatal(err)
@@ -182,7 +184,9 @@ func startReceiving(t *testing.T, ctx context.Context, s *Subscription, recvdWg 
 		}
 	})
 	if err != nil {
-		t.Fatal(err)
+		if status.Code(err) != codes.Canceled {
+			t.Fatal(err)
+		}
 	}
 }
 
