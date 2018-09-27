@@ -61,4 +61,5 @@ func (te *TestExporter) ExportView(vd *view.Data) {
 func (te *TestExporter) Unregister() {
 	view.UnregisterExporter(te)
 	trace.UnregisterExporter(te)
+	view.SetReportingPeriod(0) // reset to default value
 }
