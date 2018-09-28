@@ -233,11 +233,12 @@ func (w *Writer) monitorCancel() {
 	select {
 	case <-w.ctx.Done():
 		w.mu.Lock()
-		w.err = w.ctx.Err()
+		werr := w.ctx.Err()
+		w.err = werr
 		w.mu.Unlock()
 
 		// Closing either the read or write causes the entire pipe to close.
-		w.CloseWithError(w.err)
+		w.CloseWithError(werr)
 	case <-w.donec:
 	}
 }
