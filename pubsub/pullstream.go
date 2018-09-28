@@ -50,12 +50,12 @@ func newPullStream(ctx context.Context, streamingPull streamingPullFunc, subName
 				recordStat(ctx, StreamRequestCount, 1)
 				log.Print("starting open")
 				err = spc.Send(&pb.StreamingPullRequest{
-					log.Printf("open returned %v", err)
 					Subscription: subName,
 					// We modack messages when we receive them, so this value doesn't matter too much.
 					StreamAckDeadlineSeconds: 60,
 				})
 			}
+			log.Printf("open returned %v", err)
 			if err != nil {
 				return nil, err
 			}
