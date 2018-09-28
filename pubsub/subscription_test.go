@@ -21,6 +21,8 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub/pstest"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"golang.org/x/net/context"
 
@@ -198,8 +200,8 @@ func testReceive(t *testing.T, synchronous bool) {
 	}
 	sub.ReceiveSettings.Synchronous = synchronous
 	msgs, err := pullN(ctx, sub, 256, func(_ context.Context, m *Message) { m.Ack() })
-	if err != nil {
-		t.Fatal(err)
+	if c := status.Convert(err); err != nil && c.Code() != codes.Canceled {
+		t.Fatalf("Pull: %v", err)
 	}
 	var seen [256]bool
 	for _, m := range msgs {

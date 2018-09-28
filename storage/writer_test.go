@@ -21,7 +21,6 @@ import (
 	"strings"
 	"testing"
 
-	"cloud.google.com/go/internal/leakcheck"
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/option"
 
@@ -140,8 +139,6 @@ func TestRaceOnCancel(t *testing.T) {
 }
 
 func TestCancelDoesNotLeak(t *testing.T) {
-	defer leakcheck.Check(t)
-
 	ctx, cancel := context.WithCancel(context.Background())
 	const contents = "hello world"
 	mt := mockTransport{}
@@ -162,8 +159,6 @@ func TestCancelDoesNotLeak(t *testing.T) {
 }
 
 func TestCloseDoesNotLeak(t *testing.T) {
-	defer leakcheck.Check(t)
-
 	ctx := context.Background()
 	const contents = "hello world"
 	mt := mockTransport{}
