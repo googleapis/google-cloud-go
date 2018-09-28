@@ -163,8 +163,10 @@ func (s *pullStream) Send(req *pb.StreamingPullRequest) error {
 		recordStat(s.ctx, NackCount, int64(zeroes))
 		recordStat(s.ctx, ModAckCount, int64(len(req.ModifyDeadlineSeconds)-zeroes))
 		recordStat(s.ctx, StreamRequestCount, 1)
-		log.Print("Send Complete")
-		return spc.Send(req)
+		log.Print("starting Send")
+		err := spc.Send(req)
+		log.Printf("Send returned %v", err)
+		return err
 	})
 }
 
