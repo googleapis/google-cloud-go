@@ -16,6 +16,7 @@ package pubsub
 
 import (
 	"io"
+	"log"
 	"sync"
 	"time"
 
@@ -47,6 +48,7 @@ func newPullStream(ctx context.Context, streamingPull streamingPullFunc, subName
 			spc, err := streamingPull(ctx, gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(maxSendRecvBytes)))
 			if err == nil {
 				recordStat(ctx, StreamRequestCount, 1)
+				log.Print("starting open")
 				err = spc.Send(&pb.StreamingPullRequest{
 					Subscription: subName,
 					// We modack messages when we receive them, so this value doesn't matter too much.
@@ -160,6 +162,7 @@ func (s *pullStream) Send(req *pb.StreamingPullRequest) error {
 		recordStat(s.ctx, NackCount, int64(zeroes))
 		recordStat(s.ctx, ModAckCount, int64(len(req.ModifyDeadlineSeconds)-zeroes))
 		recordStat(s.ctx, StreamRequestCount, 1)
+		log.Print("Send Complete")
 		return spc.Send(req)
 	})
 }
@@ -169,6 +172,7 @@ func (s *pullStream) Recv() (*pb.StreamingPullResponse, error) {
 	err := s.call(func(spc pb.Subscriber_StreamingPullClient) error {
 		var err error
 		recordStat(s.ctx, StreamResponseCount, 1)
+		log.Print("starting send")
 		res, err = spc.Recv()
 		if err == nil {
 			recordStat(s.ctx, PullCount, int64(len(res.ReceivedMessages)))
