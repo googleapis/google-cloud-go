@@ -54,8 +54,8 @@ func newPullStream(ctx context.Context, streamingPull streamingPullFunc, subName
 					// We modack messages when we receive them, so this value doesn't matter too much.
 					StreamAckDeadlineSeconds: 60,
 				})
+				log.Printf("open returned %v", err)
 			}
-			log.Printf("open returned %v", err)
 			if err != nil {
 				return nil, err
 			}
