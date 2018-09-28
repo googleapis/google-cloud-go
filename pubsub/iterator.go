@@ -169,10 +169,11 @@ func (it *messageIterator) fail(err error) error {
 // maxToPull is the maximum number of messages for the Pull RPC.
 func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	it.mu.Lock()
-	if it.err != nil {
-		return nil, it.err
-	}
+	ierr := it.err
 	it.mu.Unlock()
+	if ierr != nil {
+		return nil, ierr
+	}
 
 	// Stop retrieving messages if the iterator's Stop method was called.
 	select {
