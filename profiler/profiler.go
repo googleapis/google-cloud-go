@@ -485,16 +485,19 @@ func initializeConfig(cfg Config) error {
 		var err error
 		if config.ProjectID == "" {
 			if config.ProjectID, err = getProjectID(); err != nil {
-				return fmt.Errorf("failed to get the project ID from Compute Engine: %v", err)
+				return fmt.Errorf("failed to get the project ID from Compute Engine metadata: %v", err)
 			}
 		}
 
 		if config.zone, err = getZone(); err != nil {
-			return fmt.Errorf("failed to get zone from Compute Engine: %v", err)
+			return fmt.Errorf("failed to get zone from Compute Engine metadata: %v", err)
 		}
 
 		if config.instance, err = getInstanceName(); err != nil {
-			return fmt.Errorf("failed to get instance from Compute Engine: %v", err)
+			if _, ok := err.(gcemd.NotDefinedError); !ok {
+				return fmt.Errorf("failed to get instance name from Compute Engine metadata: %v", err)
+			}
+			debugLog("failed to get instance name from Compute Engine metadata, will use empty name: %v", err)
 		}
 
 	} else {

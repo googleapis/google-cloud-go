@@ -29,6 +29,7 @@ import (
 	"testing"
 	"time"
 
+	gcemd "cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/profiler/mocks"
 	"cloud.google.com/go/profiler/testdata"
@@ -607,50 +608,42 @@ func TestInitializeConfig(t *testing.T) {
 	}
 
 	for _, tt := range []struct {
-		wantErrorString   string
-		getProjectIDError bool
-		getZoneError      bool
-		getInstanceError  bool
+		desc              string
+		wantErr           bool
+		getProjectIDError error
+		getZoneError      error
+		getInstanceError  error
 	}{
 		{
-			wantErrorString:   "failed to get the project ID from Compute Engine:",
-			getProjectIDError: true,
+			desc:              "metadata returns error for project ID",
+			wantErr:           true,
+			getProjectIDError: errors.New("fake get project ID error"),
 		},
 		{
-			wantErrorString: "failed to get zone from Compute Engine:",
-			getZoneError:    true,
+			desc:         "metadata returns error for zone",
+			wantErr:      true,
+			getZoneError: errors.New("fake get zone error"),
 		},
 		{
-			wantErrorString:  "failed to get instance from Compute Engine:",
-			getInstanceError: true,
+			desc:             "metadata returns error for instance",
+			wantErr:          true,
+			getInstanceError: errors.New("fake get instance error"),
+		},
+		{
+			desc:             "metadata returns NotDefinedError for instance",
+			getInstanceError: gcemd.NotDefinedError("fake GCE metadata NotDefinedError error"),
 		},
 	} {
-		onGCE = func() bool { return true }
-		if tt.getProjectIDError {
-			getProjectID = func() (string, error) { return "", fmt.Errorf("test get project ID error") }
-		} else {
-			getProjectID = func() (string, error) { return testGCEProjectID, nil }
-		}
+		t.Run(tt.desc, func(t *testing.T) {
+			onGCE = func() bool { return true }
+			getProjectID = func() (string, error) { return testGCEProjectID, tt.getProjectIDError }
+			getZone = func() (string, error) { return testZone, tt.getZoneError }
+			getInstanceName = func() (string, error) { return testInstance, tt.getInstanceError }
 
-		if tt.getZoneError {
-			getZone = func() (string, error) { return "", fmt.Errorf("test get zone error") }
-		} else {
-			getZone = func() (string, error) { return testZone, nil }
-		}
-
-		if tt.getInstanceError {
-			getInstanceName = func() (string, error) { return "", fmt.Errorf("test get instance error") }
-		} else {
-			getInstanceName = func() (string, error) { return testInstance, nil }
-		}
-		errorString := ""
-		if err := initializeConfig(Config{Service: testService}); err != nil {
-			errorString = err.Error()
-		}
-
-		if !strings.Contains(errorString, tt.wantErrorString) {
-			t.Errorf("initializeConfig() got error: %v, want contain %v", errorString, tt.wantErrorString)
-		}
+			if err := initializeConfig(Config{Service: testService}); (err != nil) != tt.wantErr {
+				t.Errorf("initializeConfig() got error: %v, want error %t", err, tt.wantErr)
+			}
+		})
 	}
 }
 
