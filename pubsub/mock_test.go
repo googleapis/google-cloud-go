@@ -28,6 +28,8 @@ import (
 )
 
 type mockServer struct {
+	srv *testutil.Server
+
 	pb.SubscriberServer
 
 	Addr string
@@ -45,12 +47,13 @@ type pullResponse struct {
 	err  error
 }
 
-func newMockServer() (*mockServer, error) {
-	srv, err := testutil.NewServer()
+func newMockServer(port int) (*mockServer, error) {
+	srv, err := testutil.NewServerWithPort(port)
 	if err != nil {
 		return nil, err
 	}
 	mock := &mockServer{
+		srv:       srv,
 		Addr:      srv.Addr,
 		Acked:     map[string]bool{},
 		Deadlines: map[string]int32{},
@@ -66,11 +69,15 @@ func newMockServer() (*mockServer, error) {
 
 // Each call to addStreamingPullMessages results in one StreamingPullResponse.
 func (s *mockServer) addStreamingPullMessages(msgs []*pb.ReceivedMessage) {
+	s.mu.Lock()
 	s.pullResponses = append(s.pullResponses, &pullResponse{msgs, nil})
+	s.mu.Unlock()
 }
 
 func (s *mockServer) addStreamingPullError(err error) {
+	s.mu.Lock()
 	s.pullResponses = append(s.pullResponses, &pullResponse{nil, err})
+	s.mu.Unlock()
 }
 
 func (s *mockServer) wait() {
