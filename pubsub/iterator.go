@@ -373,6 +373,7 @@ func (it *messageIterator) handleKeepAlives() {
 
 func (it *messageIterator) sendAck(m map[string]bool) bool {
 	return it.sendAckIDRPC(m, func(ids []string) error {
+		recordStat(it.ctx, AckCount, int64(len(ids)))
 		addAcks(ids)
 		// Use context.Background() as the call's context, not it.ctx. We don't
 		// want to cancel this RPC when the iterator is stopped.
@@ -389,6 +390,11 @@ func (it *messageIterator) sendAck(m map[string]bool) bool {
 // considering 1% outliers.
 func (it *messageIterator) sendModAck(m map[string]bool, deadline time.Duration) bool {
 	return it.sendAckIDRPC(m, func(ids []string) error {
+		if deadline == 0 {
+			recordStat(it.ctx, NackCount, int64(len(ids)))
+		} else {
+			recordStat(it.ctx, ModAckCount, int64(len(ids)))
+		}
 		addModAcks(ids, int32(deadline/time.Second))
 		// Use context.Background() as the call's context, not it.ctx. We don't
 		// want to cancel this RPC when the iterator is stopped.
