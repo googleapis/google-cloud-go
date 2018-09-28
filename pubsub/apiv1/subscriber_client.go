@@ -76,7 +76,6 @@ func defaultSubscriberCallOptions() *SubscriberCallOptions {
 		{"messaging", "pull"}: {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Canceled,
 					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.ResourceExhausted,
@@ -91,7 +90,6 @@ func defaultSubscriberCallOptions() *SubscriberCallOptions {
 		{"streaming_messaging", "pull"}: {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Canceled,
 					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.ResourceExhausted,
