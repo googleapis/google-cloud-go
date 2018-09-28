@@ -26,7 +26,6 @@ import (
 	"testing"
 	"time"
 
-	"cloud.google.com/go/internal/leakcheck"
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/grpc/status"
 
@@ -50,8 +49,6 @@ var (
 )
 
 func TestStreamingPullBasic(t *testing.T) {
-	defer leakcheck.Check(t)
-
 	client, server := newMock(t)
 	defer server.srv.Close()
 	defer client.Close()
@@ -61,6 +58,8 @@ func TestStreamingPullBasic(t *testing.T) {
 
 func TestStreamingPullMultipleFetches(t *testing.T) {
 	client, server := newMock(t)
+	defer server.srv.Close()
+	defer client.Close()
 	server.addStreamingPullMessages(testMessages[:1])
 	server.addStreamingPullMessages(testMessages[1:])
 	testStreamingPullIteration(t, client, server, testMessages)
@@ -80,7 +79,7 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer
 			m.Nack()
 		}
 	})
-	if err != nil {
+	if c := status.Convert(err); err != nil && c.Code() != codes.Canceled {
 		t.Fatalf("Pull: %v", err)
 	}
 	gotMap := map[string]*Message{}
@@ -118,8 +117,6 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer
 }
 
 func TestStreamingPullError(t *testing.T) {
-	defer leakcheck.Check(t)
-
 	// If an RPC to the service returns a non-retryable error, Pull should
 	// return after all callbacks return, without waiting for messages to be
 	// acked.
@@ -152,8 +149,6 @@ func TestStreamingPullError(t *testing.T) {
 }
 
 func TestStreamingPullCancel(t *testing.T) {
-	defer leakcheck.Check(t)
-
 	// If Receive's context is canceled, it should return after all callbacks
 	// return and all messages have been acked.
 	client, server := newMock(t)
@@ -177,7 +172,6 @@ func TestStreamingPullCancel(t *testing.T) {
 	}
 }
 
-// TODO(deklerk) this test has leak issues
 func TestStreamingPullRetry(t *testing.T) {
 	// Check that we retry on io.EOF or Unavailable.
 	t.Parallel()
@@ -196,8 +190,6 @@ func TestStreamingPullRetry(t *testing.T) {
 }
 
 func TestStreamingPullOneActive(t *testing.T) {
-	defer leakcheck.Check(t)
-
 	// Only one call to Pull can be active at a time.
 	client, srv := newMock(t)
 	defer client.Close()
@@ -219,8 +211,6 @@ func TestStreamingPullOneActive(t *testing.T) {
 }
 
 func TestStreamingPullConcurrent(t *testing.T) {
-	defer leakcheck.Check(t)
-
 	newMsg := func(i int) *pb.ReceivedMessage {
 		return &pb.ReceivedMessage{
 			AckId:   strconv.Itoa(i),
@@ -242,8 +232,8 @@ func TestStreamingPullConcurrent(t *testing.T) {
 	gotMsgs, err := pullN(ctx, sub, nMessages, func(ctx context.Context, m *Message) {
 		m.Ack()
 	})
-	if err != nil {
-		t.Fatalf("Receive: %v", err)
+	if c := status.Convert(err); err != nil && c.Code() != codes.Canceled {
+		t.Fatalf("Pull: %v", err)
 	}
 	seen := map[string]bool{}
 	for _, gm := range gotMsgs {
@@ -257,7 +247,6 @@ func TestStreamingPullConcurrent(t *testing.T) {
 	}
 }
 
-// TODO(deklerk) this test has leak issues
 func TestStreamingPullFlowControl(t *testing.T) {
 	// Callback invocations should not occur if flow control limits are exceeded.
 	client, server := newMock(t)
@@ -304,11 +293,10 @@ func TestStreamingPullFlowControl(t *testing.T) {
 }
 
 func TestStreamingPull_ClosedClient(t *testing.T) {
-	defer leakcheck.Check(t)
-
 	ctx := context.Background()
 	client, server := newMock(t)
 	defer server.srv.Close()
+	defer client.Close()
 	server.addStreamingPullMessages(testMessages)
 	sub := client.Subscription("S")
 	sub.ReceiveSettings.MaxOutstandingBytes = 1
@@ -347,8 +335,6 @@ func TestStreamingPull_ClosedClient(t *testing.T) {
 }
 
 func TestStreamingPull_RetriesAfterUnavailable(t *testing.T) {
-	defer leakcheck.Check(t)
-
 	ctx := context.Background()
 	client, server := newMock(t)
 	defer server.srv.Close()
@@ -386,8 +372,6 @@ func TestStreamingPull_RetriesAfterUnavailable(t *testing.T) {
 }
 
 func TestStreamingPull_ReconnectsAfterServerDies(t *testing.T) {
-	defer leakcheck.Check(t)
-
 	ctx := context.Background()
 	client, server := newMock(t)
 	defer server.srv.Close()
@@ -467,7 +451,7 @@ func pullN(ctx context.Context, sub *Subscription, n int, f func(context.Context
 		}
 	})
 	if err != nil {
-		return nil, err
+		return msgs, err
 	}
 	return msgs, nil
 }

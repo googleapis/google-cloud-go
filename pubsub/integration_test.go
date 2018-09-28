@@ -20,6 +20,7 @@ import (
 	"time"
 
 	gax "github.com/googleapis/gax-go"
+	"google.golang.org/grpc/status"
 
 	"golang.org/x/net/context"
 
@@ -84,12 +85,6 @@ func TestIntegration_All(t *testing.T) {
 		t.Errorf("CreateTopic error: %v", err)
 	}
 	defer topic.Stop()
-
-	var sub *Subscription
-	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
-		t.Errorf("CreateSub error: %v", err)
-	}
-
 	exists, err := topic.Exists(ctx)
 	if err != nil {
 		t.Fatalf("TopicExists error: %v", err)
@@ -98,6 +93,10 @@ func TestIntegration_All(t *testing.T) {
 		t.Errorf("topic %v should exist, but it doesn't", topic)
 	}
 
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
+		t.Errorf("CreateSub error: %v", err)
+	}
 	exists, err = sub.Exists(ctx)
 	if err != nil {
 		t.Fatalf("SubExists error: %v", err)
@@ -214,14 +213,22 @@ func testPublishAndReceive(t *testing.T, topic *Topic, sub *Subscription, maxMsg
 
 	sub.ReceiveSettings.MaxOutstandingMessages = maxMsgs
 	sub.ReceiveSettings.Synchronous = synchronous
+
 	// Use a timeout to ensure that Pull does not block indefinitely if there are
 	// unexpectedly few messages available.
+	now := time.Now()
 	timeoutCtx, _ := context.WithTimeout(ctx, time.Minute)
 	gotMsgs, err := pullN(timeoutCtx, sub, len(want), func(ctx context.Context, m *Message) {
 		m.Ack()
 	})
 	if err != nil {
-		t.Fatalf("Pull: %v", err)
+		if c := status.Convert(err); c.Code() == codes.Canceled {
+			if time.Now().Sub(now) >= time.Minute {
+				t.Fatal("pullN took too long")
+			}
+		} else {
+			t.Fatalf("Pull: %v", err)
+		}
 	}
 	got := make(map[string]*messageData)
 	for _, m := range gotMsgs {
@@ -229,7 +236,7 @@ func testPublishAndReceive(t *testing.T, topic *Topic, sub *Subscription, maxMsg
 		got[md.ID] = md
 	}
 	if !testutil.Equal(got, want) {
-		t.Errorf("MaxOutstandingMessages=%d, Synchronous=%t: messages: got: %v ; want: %v",
+		t.Fatalf("MaxOutstandingMessages=%d, Synchronous=%t, messages got: %v, messages want: %v",
 			maxMsgs, synchronous, got, want)
 	}
 }
