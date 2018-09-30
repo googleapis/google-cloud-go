@@ -145,7 +145,7 @@ func ExampleClient_Buckets() {
 	if err != nil {
 		// TODO: handle error.
 	}
-	it := client.Bucket("my-bucket")
+	it := client.Buckets(ctx, "my-bucket")
 	_ = it // TODO: iterate using Next or iterator.Pager.
 }
 
