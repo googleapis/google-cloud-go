@@ -16,6 +16,7 @@ package pubsub
 
 import (
 	"io"
+	"log"
 	"sync"
 	"time"
 
@@ -159,6 +160,7 @@ func (it *messageIterator) fail(err error) error {
 	defer it.mu.Unlock()
 	if it.err == nil {
 		it.err = err
+		log.Printf("fail iterator returned %v", err)
 		close(it.failed)
 	}
 	return it.err
@@ -172,6 +174,7 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	ierr := it.err
 	it.mu.Unlock()
 	if ierr != nil {
+		log.Printf("receive head iterator returned %v", ierr)
 		return nil, ierr
 	}
 
@@ -219,6 +222,7 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	it.mu.Unlock()
 	if len(ackIDs) > 0 {
 		if !it.sendModAck(ackIDs, deadline) {
+			log.Printf("receive tail iterator returned %v", it.err)
 			return nil, it.err
 		}
 	}
@@ -247,6 +251,7 @@ func (it *messageIterator) pullMessages(maxToPull int32) ([]*pb.ReceivedMessage,
 func (it *messageIterator) recvMessages() ([]*pb.ReceivedMessage, error) {
 	res, err := it.ps.Recv()
 	if err != nil {
+		log.Printf("recvMessages iterator returned %v" ,err)
 		return nil, err
 	}
 	return res.ReceivedMessages, nil

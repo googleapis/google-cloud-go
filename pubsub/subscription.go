@@ -18,6 +18,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"strings"
 	"sync"
 	"time"
@@ -547,6 +548,7 @@ func (s *Subscription) receive(ctx context.Context, po *pullOptions, fc *flowCon
 			return nil
 		}
 		if err != nil {
+			log.Printf("subscription returned %v",err)
 			return err
 		}
 		for i, msg := range msgs {
