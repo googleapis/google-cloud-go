@@ -506,10 +506,9 @@ func filterRow(f *btpb.RowFilter, r *row) bool {
 		}
 		return filterRow(f.Condition.FalseFilter, r)
 	case *btpb.RowFilter_RowKeyRegexFilter:
-		pat := string(f.RowKeyRegexFilter)
-		rx, err := newRegexp(pat)
+		rx, err := newRegexp(f.RowKeyRegexFilter)
 		if err != nil {
-			log.Printf("Bad rowkey_regex_filter pattern %q: %v", pat, err)
+			log.Printf("Bad rowkey_regex_filter pattern %q: %v", string(f.RowKeyRegexFilter), err)
 			return false
 		}
 		if !rx.MatchString(r.key) {
@@ -603,26 +602,23 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) bool {
 		log.Printf("WARNING: don't know how to handle filter of type %T (ignoring it)", f)
 		return true
 	case *btpb.RowFilter_FamilyNameRegexFilter:
-		pat := f.FamilyNameRegexFilter
-		rx, err := newRegexp(pat)
+		rx, err := newRegexp([]byte(f.FamilyNameRegexFilter))
 		if err != nil {
-			log.Printf("Bad family_name_regex_filter pattern %q: %v", pat, err)
+			log.Printf("Bad family_name_regex_filter pattern %q: %v", f.FamilyNameRegexFilter, err)
 			return false
 		}
 		return rx.MatchString(fam)
 	case *btpb.RowFilter_ColumnQualifierRegexFilter:
-		pat := string(f.ColumnQualifierRegexFilter)
-		rx, err := newRegexp(pat)
+		rx, err := newRegexp(f.ColumnQualifierRegexFilter)
 		if err != nil {
-			log.Printf("Bad column_qualifier_regex_filter pattern %q: %v", pat, err)
+			log.Printf("Bad column_qualifier_regex_filter pattern %q: %v", string(f.ColumnQualifierRegexFilter), err)
 			return false
 		}
-		return rx.MatchString(col)
+		return rx.MatchString(toUTF8([]byte(col)))
 	case *btpb.RowFilter_ValueRegexFilter:
-		pat := string(f.ValueRegexFilter)
-		rx, err := newRegexp(pat)
+		rx, err := newRegexp(f.ValueRegexFilter)
 		if err != nil {
-			log.Printf("Bad value_regex_filter pattern %q: %v", pat, err)
+			log.Printf("Bad value_regex_filter pattern %q: %v", string(f.ValueRegexFilter), err)
 			return false
 		}
 		return rx.Match(cell.value)
@@ -673,7 +669,16 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) bool {
 	}
 }
 
-func newRegexp(pat string) (*regexp.Regexp, error) {
+func toUTF8(bs []byte) string {
+	var rs []rune
+	for _, b := range bs {
+		rs = append(rs, rune(b))
+	}
+	return string(rs)
+}
+
+func newRegexp(patBytes []byte) (*regexp.Regexp, error) {
+	pat := toUTF8(patBytes)
 	re, err := regexp.Compile("^" + pat + "$") // match entire target
 	if err != nil {
 		log.Printf("Bad pattern %q: %v", pat, err)
