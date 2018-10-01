@@ -1014,6 +1014,9 @@ func TestFilterRowWithErrors(t *testing.T) {
 				PredicateFilter: &btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("[")}},
 			},
 		}}},
+
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{0.0}}}, // 0.0 is invalid.
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{1.0}}}, // 1.0 is invalid.
 	} {
 		got, err := filterRow(test.badRegex, row.copy())
 		if got != false {
@@ -1021,6 +1024,28 @@ func TestFilterRowWithErrors(t *testing.T) {
 		}
 		if err == nil {
 			t.Errorf("%s: got no error, want error", proto.CompactTextString(test.badRegex))
+		}
+	}
+}
+
+func TestFilterRowWithRowSampleFilter(t *testing.T) {
+	prev := randFloat
+	randFloat = func() float64 { return 0.5 }
+	defer func() { randFloat = prev }()
+	for _, test := range []struct {
+		p    float64
+		want bool
+	}{
+		{0.1, false}, // Less than random float. Return no rows.
+		{0.5, false}, // Equal to random float. Return no rows.
+		{0.9, true},  // Greater than random float. Return all rows.
+	} {
+		got, err := filterRow(&btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{test.p}}, &row{})
+		if err != nil {
+			t.Fatalf("%f: %v", test.p, err)
+		}
+		if got != test.want {
+			t.Errorf("%v: got %t, want %t", test.p, got, test.want)
 		}
 	}
 }

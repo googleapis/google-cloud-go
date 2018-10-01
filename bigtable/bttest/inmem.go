@@ -557,6 +557,14 @@ func filterRow(f *btpb.RowFilter, r *row) (bool, error) {
 			}
 		}
 		return true, nil
+	case *btpb.RowFilter_RowSampleFilter:
+		// The row sample filter "matches all cells from a row with probability
+		// p, and matches no cells from the row with probability 1-p."
+		// See https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/data.proto
+		if f.RowSampleFilter <= 0.0 || f.RowSampleFilter >= 1.0 {
+			return false, status.Error(codes.InvalidArgument, "row_sample_filter argument must be between 0.0 and 1.0")
+		}
+		return randFloat() < f.RowSampleFilter, nil
 	}
 
 	// Any other case, operate on a per-cell basis.
@@ -573,6 +581,8 @@ func filterRow(f *btpb.RowFilter, r *row) (bool, error) {
 	}
 	return cellCount > 0, nil
 }
+
+var randFloat = rand.Float64
 
 func filterCells(f *btpb.RowFilter, fam, col string, cs []cell) ([]cell, error) {
 	var ret []cell
