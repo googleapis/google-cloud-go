@@ -339,9 +339,15 @@ func TestStreamingPull_RetriesAfterUnavailable(t *testing.T) {
 	client, server := newMock(t)
 	defer server.srv.Close()
 	defer client.Close()
+
+	unavail := status.Error(codes.Unavailable, "There is no connection available")
 	server.addStreamingPullMessages(testMessages)
-	server.addStreamingPullError(status.Error(codes.Unavailable, "Unavailable The service was unable to fulfill your request. Please try again. [code=8a75]"))
+	server.addStreamingPullError(unavail)
+	server.addAckResponse(unavail)
+	server.addModAckResponse(unavail)
 	server.addStreamingPullMessages(testMessages)
+	server.addStreamingPullError(unavail)
+
 	sub := client.Subscription("S")
 	sub.ReceiveSettings.MaxOutstandingBytes = 1
 	recvErr := make(chan error, 1)
@@ -358,7 +364,7 @@ func TestStreamingPull_RetriesAfterUnavailable(t *testing.T) {
 	var n int
 	for {
 		select {
-		case <-time.After(2 * time.Second):
+		case <-time.After(10 * time.Second):
 			t.Fatalf("timed out waiting for all message to arrive. got %d messages total", n)
 		case err := <-recvErr:
 			t.Fatal(err)

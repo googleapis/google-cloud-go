@@ -38,6 +38,8 @@ type mockServer struct {
 	Acked         map[string]bool  // acked message IDs
 	Deadlines     map[string]int32 // deadlines by message ID
 	pullResponses []*pullResponse
+	ackErrs       []error
+	modAckErrs    []error
 	wg            sync.WaitGroup
 	sub           *pb.Subscription
 }
@@ -77,6 +79,18 @@ func (s *mockServer) addStreamingPullMessages(msgs []*pb.ReceivedMessage) {
 func (s *mockServer) addStreamingPullError(err error) {
 	s.mu.Lock()
 	s.pullResponses = append(s.pullResponses, &pullResponse{nil, err})
+	s.mu.Unlock()
+}
+
+func (s *mockServer) addAckResponse(err error) {
+	s.mu.Lock()
+	s.ackErrs = append(s.ackErrs, err)
+	s.mu.Unlock()
+}
+
+func (s *mockServer) addModAckResponse(err error) {
+	s.mu.Lock()
+	s.modAckErrs = append(s.modAckErrs, err)
 	s.mu.Unlock()
 }
 
@@ -148,6 +162,16 @@ func (s *mockServer) StreamingPull(stream pb.Subscriber_StreamingPullServer) err
 }
 
 func (s *mockServer) Acknowledge(ctx context.Context, req *pb.AcknowledgeRequest) (*emptypb.Empty, error) {
+	var err error
+	s.mu.Lock()
+	if len(s.ackErrs) > 0 {
+		err = s.ackErrs[0]
+		s.ackErrs = s.ackErrs[1:]
+	}
+	s.mu.Unlock()
+	if err != nil {
+		return nil, err
+	}
 	for _, id := range req.AckIds {
 		s.Acked[id] = true
 	}
@@ -155,6 +179,16 @@ func (s *mockServer) Acknowledge(ctx context.Context, req *pb.AcknowledgeRequest
 }
 
 func (s *mockServer) ModifyAckDeadline(ctx context.Context, req *pb.ModifyAckDeadlineRequest) (*emptypb.Empty, error) {
+	var err error
+	s.mu.Lock()
+	if len(s.modAckErrs) > 0 {
+		err = s.modAckErrs[0]
+		s.modAckErrs = s.modAckErrs[1:]
+	}
+	s.mu.Unlock()
+	if err != nil {
+		return nil, err
+	}
 	for _, id := range req.AckIds {
 		s.Deadlines[id] = req.AckDeadlineSeconds
 	}
