@@ -923,6 +923,8 @@ func TestFilterRow(t *testing.T) {
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowKeyRegexFilter{[]byte("moo")}}, false},
 
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{"fam"}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{"f.*"}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{"[fam]+"}}, true},
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{"fa"}}, false},
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{"FAM"}}, false},
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{"moo"}}, false},
@@ -940,6 +942,36 @@ func TestFilterRow(t *testing.T) {
 		got := filterRow(test.filter, row.copy())
 		if got != test.want {
 			t.Errorf("%s: got %t, want %t", proto.CompactTextString(test.filter), got, test.want)
+		}
+	}
+}
+
+func TestFilterRowWithBinaryColumnQualifier(t *testing.T) {
+	rs := []byte{128, 128}
+	row := &row{
+		key: string(rs),
+		families: map[string]*family{
+			"fam": {
+				name: "fam",
+				cells: map[string][]cell{
+					string(rs): {{ts: 100, value: []byte("val")}},
+				},
+			},
+		},
+	}
+	for _, test := range []struct {
+		filter []byte
+		want   bool
+	}{
+		{[]byte{128, 128}, true},                          // succeeds, exact match
+		{[]byte{128, 129}, false},                         // fails
+		{[]byte{128}, false},                              // fails, because the regexp must match the entire input
+		{[]byte{128, '*'}, true},                          // succeeds: 0 or more 128s
+		{[]byte{'[', 127, 128, ']', '{', '2', '}'}, true}, // succeeds: exactly two of either 127 or 128
+	} {
+		got := filterRow(&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{test.filter}}, row.copy())
+		if got != test.want {
+			t.Errorf("%v: got %t, want %t", test.filter, got, test.want)
 		}
 	}
 }
