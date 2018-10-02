@@ -260,11 +260,6 @@ func (s *session) destroy(isExpire bool) bool {
 	// Remove s from Cloud Spanner service.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	s.delete(ctx)
-	return true
-}
-
-func (s *session) delete(ctx context.Context) {
 	// Ignore the error returned by runRetryable because even if we fail to explicitly destroy the session,
 	// it will be eventually garbage collected by Cloud Spanner.
 	err := runRetryable(ctx, func(ctx context.Context) error {
@@ -274,6 +269,7 @@ func (s *session) delete(ctx context.Context) {
 	if err != nil {
 		log.Printf("Failed to delete session %v. Error: %v", s.getID(), err)
 	}
+	return true
 }
 
 // prepareForWrite prepares the session for write if it is not already in that state.
@@ -468,35 +464,26 @@ func (p *sessionPool) createSession(ctx context.Context) (*session, error) {
 		doneCreate(false)
 		return nil, err
 	}
-	s, err := createSession(ctx, sc, p.db, p.sessionLabels, p.md)
-	if err != nil {
-		doneCreate(false)
-		// Should return error directly because of the previous retries on CreateSession RPC.
-		return nil, err
-	}
-	s.pool = p
-	p.hc.register(s)
-	doneCreate(true)
-	return s, nil
-}
-
-func createSession(ctx context.Context, sc sppb.SpannerClient, db string, labels map[string]string, md metadata.MD) (*session, error) {
 	var s *session
-	err := runRetryable(ctx, func(ctx context.Context) error {
+	err = runRetryable(ctx, func(ctx context.Context) error {
 		sid, e := sc.CreateSession(ctx, &sppb.CreateSessionRequest{
-			Database: db,
-			Session:  &sppb.Session{Labels: labels},
+			Database: p.db,
+			Session:  &sppb.Session{Labels: p.sessionLabels},
 		})
 		if e != nil {
 			return e
 		}
 		// If no error, construct the new session.
-		s = &session{valid: true, client: sc, id: sid.Name, createTime: time.Now(), md: md}
+		s = &session{valid: true, client: sc, id: sid.Name, pool: p, createTime: time.Now(), md: p.md}
+		p.hc.register(s)
 		return nil
 	})
 	if err != nil {
+		doneCreate(false)
+		// Should return error directly because of the previous retries on CreateSession RPC.
 		return nil, err
 	}
+	doneCreate(true)
 	return s, nil
 }
 
