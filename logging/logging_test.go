@@ -24,6 +24,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -222,6 +223,23 @@ func TestLogAndEntries(t *testing.T) {
 	}
 	if msg, ok := compareEntries(got, want); !ok {
 		t.Error(msg)
+	}
+}
+
+func TestContextFunc(t *testing.T) {
+	initLogs(ctx)
+	var contextFuncCalls, cleanupCalls int32 //atomic
+
+	lg := client.Logger(testLogID, logging.ContextFunc(func() (context.Context, func()) {
+		atomic.AddInt32(&contextFuncCalls, 1)
+		return context.Background(), func() { atomic.AddInt32(&cleanupCalls, 1) }
+	}))
+	lg.Log(logging.Entry{Payload: "p"})
+	lg.Flush()
+	got1 := atomic.LoadInt32(&contextFuncCalls)
+	got2 := atomic.LoadInt32(&cleanupCalls)
+	if got1 != 1 || got1 != got2 {
+		t.Errorf("got %d calls to context func, %d calls to cleanup func; want 1, 1", got1, got2)
 	}
 }
 
