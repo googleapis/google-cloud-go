@@ -18,6 +18,7 @@ package testutil
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"regexp"
 	"strconv"
@@ -78,7 +79,7 @@ func NewServerWithPort(port int, opts ...grpc.ServerOption) (*Server, error) {
 func (s *Server) Start() {
 	go func() {
 		if err := s.Gsrv.Serve(s.l); err != nil {
-			panic(err)
+			log.Printf("testutil.Server.Start: %v", err)
 		}
 	}()
 }
