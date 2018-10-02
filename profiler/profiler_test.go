@@ -634,16 +634,14 @@ func TestInitializeConfig(t *testing.T) {
 			getInstanceError: gcemd.NotDefinedError("fake GCE metadata NotDefinedError error"),
 		},
 	} {
-		t.Run(tt.desc, func(t *testing.T) {
-			onGCE = func() bool { return true }
-			getProjectID = func() (string, error) { return testGCEProjectID, tt.getProjectIDError }
-			getZone = func() (string, error) { return testZone, tt.getZoneError }
-			getInstanceName = func() (string, error) { return testInstance, tt.getInstanceError }
+		onGCE = func() bool { return true }
+		getProjectID = func() (string, error) { return testGCEProjectID, tt.getProjectIDError }
+		getZone = func() (string, error) { return testZone, tt.getZoneError }
+		getInstanceName = func() (string, error) { return testInstance, tt.getInstanceError }
 
-			if err := initializeConfig(Config{Service: testService}); (err != nil) != tt.wantErr {
-				t.Errorf("initializeConfig() got error: %v, want error %t", err, tt.wantErr)
-			}
-		})
+		if err := initializeConfig(Config{Service: testService}); (err != nil) != tt.wantErr {
+			t.Errorf("%s: initializeConfig() got error: %v, want error %t", tt.desc, err, tt.wantErr)
+		}
 	}
 }
 
