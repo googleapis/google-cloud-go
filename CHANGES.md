@@ -1,5 +1,29 @@
 # Changes
 
+## v0.29.0
+
+- bigtable:
+  - Add retry to all idempotent RPCs.
+  - cbt supports complex GC policies.
+  - Emulator supports arbitrary bytes in regex filters.
+- firestore: Add ArrayUnion and ArrayRemove.
+- logging: Add the ContextFunc option to supply the context used for
+  asynchronous RPCs.
+- profiler: Ignore NotDefinedError when fetching the instance name
+- pubsub:
+  - BEHAVIOR CHANGE: Receive doesn't retry if an RPC returns codes.Cancelled.
+  - BEHAVIOR CHANGE: Receive retries on Unavailable intead of returning.
+  - Fix deadlock.
+  - Restore Ack/Nack/Modacks metrics.
+  - Improve context handling in iterator.
+  - Implement synchronous mode for Receive.
+  - pstest: add Pull.
+- spanner: Add a metric for the number of sessions currently opened.
+- storage:
+  - Canceling the context releases all resources.
+  - Add additional RetentionPolicy attributes.
+- vision/apiv1: Add LocalizeObjects method.
+
 ## v0.28.0
 
 - bigtable:
