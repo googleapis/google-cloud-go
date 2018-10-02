@@ -63,6 +63,10 @@ var (
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	ModAckCount = stats.Int64(statsPrefix+"mod_ack_count", "Number of ack-deadlines modified", stats.UnitDimensionless)
 
+	// ModAckTimeoutCount is a measure of the number ModifyAckDeadline RPCs that timed out.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	ModAckTimeoutCount = stats.Int64(statsPrefix+"mod_ack_timeout_count", "Number of ModifyAckDeadline RPCs that timed out", stats.UnitDimensionless)
+
 	// StreamOpenCount is a measure of the number of times a streaming-pull stream was opened.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	StreamOpenCount = stats.Int64(statsPrefix+"stream_open_count", "Number of calls opening a new streaming pull", stats.UnitDimensionless)
@@ -95,6 +99,10 @@ var (
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	ModAckCountView *view.View
 
+	// ModAckTimeoutCountView is a cumulative sum of ModAckTimeoutCount.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	ModAckTimeoutCountView *view.View
+
 	// StreamOpenCountView is a cumulative sum of StreamOpenCount.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	StreamOpenCountView *view.View
@@ -117,6 +125,7 @@ func init() {
 	AckCountView = countView(AckCount)
 	NackCountView = countView(NackCount)
 	ModAckCountView = countView(ModAckCount)
+	ModAckTimeoutCountView = countView(ModAckTimeoutCount)
 	StreamOpenCountView = countView(StreamOpenCount)
 	StreamRetryCountView = countView(StreamRetryCount)
 	StreamRequestCountView = countView(StreamRequestCount)

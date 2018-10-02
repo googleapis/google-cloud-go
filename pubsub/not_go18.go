@@ -41,6 +41,8 @@ var (
 	// Not supported below Go 1.8.
 	ModAckCount dummy
 	// Not supported below Go 1.8.
+	ModAckTimeoutCount dummy
+	// Not supported below Go 1.8.
 	StreamOpenCount dummy
 	// Not supported below Go 1.8.
 	StreamRetryCount dummy

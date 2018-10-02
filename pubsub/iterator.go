@@ -21,8 +21,11 @@ import (
 
 	vkit "cloud.google.com/go/pubsub/apiv1"
 	"cloud.google.com/go/pubsub/internal/distribution"
+	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // Between message receipt and ack (that is, the time spent processing a message) we want to extend the message
@@ -397,13 +400,40 @@ func (it *messageIterator) sendModAck(m map[string]bool, deadline time.Duration)
 			recordStat(it.ctx, ModAckCount, int64(len(ids)))
 		}
 		addModAcks(ids, int32(deadline/time.Second))
-		// Use context.Background() as the call's context, not it.ctx. We don't
-		// want to cancel this RPC when the iterator is stopped.
-		return it.subc.ModifyAckDeadline(context.Background(), &pb.ModifyAckDeadlineRequest{
-			Subscription:       it.subName,
-			AckDeadlineSeconds: int32(deadline / time.Second),
-			AckIds:             ids,
-		})
+		// Retry this RPC on Unavailable for a short amount of time, then give up
+		// without returning a fatal error. The utility of this RPC is by nature
+		// transient (since the deadline is relative to the current time) and it
+		// isn't crucial for correctness (since expired messages will just be
+		// resent).
+		cctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+		bo := gax.Backoff{
+			Initial:    100 * time.Millisecond,
+			Max:        time.Second,
+			Multiplier: 2,
+		}
+		for {
+			err := it.subc.ModifyAckDeadline(cctx, &pb.ModifyAckDeadlineRequest{
+				Subscription:       it.subName,
+				AckDeadlineSeconds: int32(deadline / time.Second),
+				AckIds:             ids,
+			})
+			switch status.Code(err) {
+			case codes.Unavailable:
+				if err := gax.Sleep(cctx, bo.Pause()); err == nil {
+					continue
+				}
+				// Treat sleep timeout like RPC timeout.
+				fallthrough
+			case codes.DeadlineExceeded:
+				// Timeout. Not a fatal error, but note that it happened.
+				recordStat(it.ctx, ModAckTimeoutCount, 1)
+				return nil
+			default:
+				// Any other error is fatal.
+				return err
+			}
+		}
 	})
 }
 
