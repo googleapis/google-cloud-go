@@ -421,6 +421,45 @@ func TestReadRows(t *testing.T) {
 	}
 }
 
+func TestReadRowsError(t *testing.T) {
+	ctx := context.Background()
+	s := &server{
+		tables: make(map[string]*table),
+	}
+	newTbl := btapb.Table{
+		ColumnFamilies: map[string]*btapb.ColumnFamily{
+			"cf0": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 1}}},
+		},
+	}
+	tblInfo, err := s.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "cluster", TableId: "t", Table: &newTbl})
+	if err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+	mreq := &btpb.MutateRowRequest{
+		TableName: tblInfo.Name,
+		RowKey:    []byte("row"),
+		Mutations: []*btpb.Mutation{{
+			Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
+				FamilyName:      "cf0",
+				ColumnQualifier: []byte("col"),
+				TimestampMicros: 1000,
+				Value:           []byte{},
+			}},
+		}},
+	}
+	if _, err := s.MutateRow(ctx, mreq); err != nil {
+		t.Fatalf("Populating table: %v", err)
+	}
+
+	mock := &MockReadRowsServer{}
+	req := &btpb.ReadRowsRequest{TableName: tblInfo.Name, Filter: &btpb.RowFilter{
+		Filter: &btpb.RowFilter_RowKeyRegexFilter{RowKeyRegexFilter: []byte("[")}}, // Invalid regex.
+	}
+	if err = s.ReadRows(req, mock); err == nil {
+		t.Fatal("ReadRows got no error, want error")
+	}
+}
+
 func TestReadRowsOrder(t *testing.T) {
 	s := &server{
 		tables: make(map[string]*table),
@@ -939,9 +978,49 @@ func TestFilterRow(t *testing.T) {
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("VAL")}}, false},
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("moo")}}, false},
 	} {
-		got := filterRow(test.filter, row.copy())
+		got, _ := filterRow(test.filter, row.copy())
 		if got != test.want {
 			t.Errorf("%s: got %t, want %t", proto.CompactTextString(test.filter), got, test.want)
+		}
+	}
+}
+
+func TestFilterRowWithErrors(t *testing.T) {
+	row := &row{
+		key: "row",
+		families: map[string]*family{
+			"fam": {
+				name: "fam",
+				cells: map[string][]cell{
+					"col": {{ts: 100, value: []byte("val")}},
+				},
+			},
+		},
+	}
+	for _, test := range []struct {
+		badRegex *btpb.RowFilter
+	}{
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowKeyRegexFilter{[]byte("[")}}},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{"["}}},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{[]byte("[")}}},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("[")}}},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_Chain_{
+			Chain: &btpb.RowFilter_Chain{Filters: []*btpb.RowFilter{
+				&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("[")}}},
+			},
+		}}},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_Condition_{
+			Condition: &btpb.RowFilter_Condition{
+				PredicateFilter: &btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("[")}},
+			},
+		}}},
+	} {
+		got, err := filterRow(test.badRegex, row.copy())
+		if got != false {
+			t.Errorf("%s: got true, want false", proto.CompactTextString(test.badRegex))
+		}
+		if err == nil {
+			t.Errorf("%s: got no error, want error", proto.CompactTextString(test.badRegex))
 		}
 	}
 }
@@ -969,7 +1048,7 @@ func TestFilterRowWithBinaryColumnQualifier(t *testing.T) {
 		{[]byte{128, '*'}, true},                          // succeeds: 0 or more 128s
 		{[]byte{'[', 127, 128, ']', '{', '2', '}'}, true}, // succeeds: exactly two of either 127 or 128
 	} {
-		got := filterRow(&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{test.filter}}, row.copy())
+		got, _ := filterRow(&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{test.filter}}, row.copy())
 		if got != test.want {
 			t.Errorf("%v: got %t, want %t", test.filter, got, test.want)
 		}
