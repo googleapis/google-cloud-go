@@ -1,5 +1,11 @@
 # Changes
 
+## v0.30.0
+
+- spanner: DML support added. See https://godoc.org/cloud.google.com/go/spanner#hdr-DML_and_Partitioned_DML for more information.
+- bigtable: bttest supports row sample filter.
+- functions: metadata package added for accessing Cloud Functions resource metadata.
+
 ## v0.29.0
 
 - bigtable:
