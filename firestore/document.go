@@ -105,6 +105,9 @@ func (d *DocumentSnapshot) Data() map[string]interface{} {
 // Field names given by struct field tags are observed, as described in
 // DocumentRef.Create.
 //
+// Only the fields actually present in the document are used to populate p. Other fields
+// of p are left unchanged.
+//
 // If the document does not exist, DataTo returns a NotFound error.
 func (d *DocumentSnapshot) DataTo(p interface{}) error {
 	if !d.Exists() {
