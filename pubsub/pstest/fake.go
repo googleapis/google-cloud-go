@@ -612,6 +612,7 @@ func (s *gServer) Pull(ctx context.Context, req *pb.PullRequest) (*pb.PullRespon
 	}
 	max := int(req.MaxMessages)
 	if max < 0 {
+		s.mu.Unlock()
 		return nil, status.Error(codes.InvalidArgument, "MaxMessages cannot be negative")
 	}
 	if max == 0 { // MaxMessages not specified; use a default.
