@@ -17,6 +17,7 @@ package pstest
 import (
 	"fmt"
 	"io"
+	"sync"
 	"testing"
 	"time"
 
@@ -537,6 +538,43 @@ func TestSeek(t *testing.T) {
 	})
 	if err != nil {
 		t.Errorf("Seeking: %v", err)
+	}
+}
+
+func TestTryDeliverMessage(t *testing.T) {
+	for _, test := range []struct {
+		desc           string
+		availStreamIdx int
+		expectedOutIdx int
+	}{
+		{availStreamIdx: 0, expectedOutIdx: 0},
+		// Stream 1 will always be marked for deletion.
+		{availStreamIdx: 2, expectedOutIdx: 1}, // s0, s1 (deleted), s2, s3 becomes s0, s2, s3. So we expect outIdx=1.
+		{availStreamIdx: 3, expectedOutIdx: 2}, // s0, s1 (deleted), s2, s3 becomes s0, s2, s3. So we expect outIdx=2.
+	} {
+		top := newTopic(&pb.Topic{Name: "some-topic"})
+		sub := newSubscription(top, &sync.Mutex{}, &pb.Subscription{Name: "some-sub", Topic: "some-topic"})
+
+		done := make(chan struct{}, 1)
+		done <- struct{}{}
+		sub.streams = []*stream{{}, {done: done}, {}, {}}
+
+		msgc := make(chan *pb.ReceivedMessage, 1)
+		sub.streams[test.availStreamIdx].msgc = msgc
+
+		var d int
+		idx, ok := sub.tryDeliverMessage(&message{deliveries: &d}, 0, time.Now())
+		if !ok {
+			t.Fatalf("[avail=%d]: expected msg to be put on stream %d's channel, but it was not", test.availStreamIdx, test.expectedOutIdx)
+		}
+		if idx != test.expectedOutIdx {
+			t.Fatalf("[avail=%d]: expected msg to be put on stream %d, but it was put on %d", test.availStreamIdx, test.expectedOutIdx, idx)
+		}
+		select {
+		case <-msgc:
+		default:
+			t.Fatalf("[avail=%d]: expected msg to be put on stream %d's channel, but it was not", test.availStreamIdx, idx)
+		}
 	}
 }
 
