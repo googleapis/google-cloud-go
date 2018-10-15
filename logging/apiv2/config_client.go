@@ -103,8 +103,8 @@ type ConfigClient struct {
 
 // NewConfigClient creates a new config service v2 client.
 //
-// Service for configuring sinks used to export log entries outside of
-// Stackdriver Logging.
+// Service for configuring sinks used to export log entries out of
+// Logging.
 func NewConfigClient(ctx context.Context, opts ...option.ClientOption) (*ConfigClient, error) {
 	conn, err := transport.DialGRPC(ctx, append(defaultConfigClientOptions(), opts...)...)
 	if err != nil {

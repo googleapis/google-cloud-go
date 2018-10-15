@@ -60,6 +60,11 @@ type CallOptions struct {
 	DeleteJobTrigger         []gax.CallOption
 	UpdateJobTrigger         []gax.CallOption
 	CreateJobTrigger         []gax.CallOption
+	CreateStoredInfoType     []gax.CallOption
+	UpdateStoredInfoType     []gax.CallOption
+	GetStoredInfoType        []gax.CallOption
+	ListStoredInfoTypes      []gax.CallOption
+	DeleteStoredInfoType     []gax.CallOption
 }
 
 func defaultClientOptions() []option.ClientOption {
@@ -110,6 +115,11 @@ func defaultCallOptions() *CallOptions {
 		DeleteJobTrigger:         retry[[2]string{"default", "idempotent"}],
 		UpdateJobTrigger:         retry[[2]string{"default", "non_idempotent"}],
 		CreateJobTrigger:         retry[[2]string{"default", "non_idempotent"}],
+		CreateStoredInfoType:     retry[[2]string{"default", "non_idempotent"}],
+		UpdateStoredInfoType:     retry[[2]string{"default", "non_idempotent"}],
+		GetStoredInfoType:        retry[[2]string{"default", "idempotent"}],
+		ListStoredInfoTypes:      retry[[2]string{"default", "idempotent"}],
+		DeleteStoredInfoType:     retry[[2]string{"default", "idempotent"}],
 	}
 }
 
@@ -708,6 +718,114 @@ func (c *Client) CreateJobTrigger(ctx context.Context, req *dlppb.CreateJobTrigg
 	return resp, nil
 }
 
+// CreateStoredInfoType creates a pre-built stored infoType to be used for inspection.
+// See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
+// learn more.
+func (c *Client) CreateStoredInfoType(ctx context.Context, req *dlppb.CreateStoredInfoTypeRequest, opts ...gax.CallOption) (*dlppb.StoredInfoType, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.CreateStoredInfoType[0:len(c.CallOptions.CreateStoredInfoType):len(c.CallOptions.CreateStoredInfoType)], opts...)
+	var resp *dlppb.StoredInfoType
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateStoredInfoType(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// UpdateStoredInfoType updates the stored infoType by creating a new version. The existing version
+// will continue to be used until the new version is ready.
+// See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
+// learn more.
+func (c *Client) UpdateStoredInfoType(ctx context.Context, req *dlppb.UpdateStoredInfoTypeRequest, opts ...gax.CallOption) (*dlppb.StoredInfoType, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.UpdateStoredInfoType[0:len(c.CallOptions.UpdateStoredInfoType):len(c.CallOptions.UpdateStoredInfoType)], opts...)
+	var resp *dlppb.StoredInfoType
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateStoredInfoType(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetStoredInfoType gets a stored infoType.
+// See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
+// learn more.
+func (c *Client) GetStoredInfoType(ctx context.Context, req *dlppb.GetStoredInfoTypeRequest, opts ...gax.CallOption) (*dlppb.StoredInfoType, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.GetStoredInfoType[0:len(c.CallOptions.GetStoredInfoType):len(c.CallOptions.GetStoredInfoType)], opts...)
+	var resp *dlppb.StoredInfoType
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetStoredInfoType(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// ListStoredInfoTypes lists stored infoTypes.
+// See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
+// learn more.
+func (c *Client) ListStoredInfoTypes(ctx context.Context, req *dlppb.ListStoredInfoTypesRequest, opts ...gax.CallOption) *StoredInfoTypeIterator {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.ListStoredInfoTypes[0:len(c.CallOptions.ListStoredInfoTypes):len(c.CallOptions.ListStoredInfoTypes)], opts...)
+	it := &StoredInfoTypeIterator{}
+	req = proto.Clone(req).(*dlppb.ListStoredInfoTypesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.StoredInfoType, string, error) {
+		var resp *dlppb.ListStoredInfoTypesResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListStoredInfoTypes(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.StoredInfoTypes, resp.NextPageToken, nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.PageSize)
+	return it
+}
+
+// DeleteStoredInfoType deletes a stored infoType.
+// See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
+// learn more.
+func (c *Client) DeleteStoredInfoType(ctx context.Context, req *dlppb.DeleteStoredInfoTypeRequest, opts ...gax.CallOption) error {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.DeleteStoredInfoType[0:len(c.CallOptions.DeleteStoredInfoType):len(c.CallOptions.DeleteStoredInfoType)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteStoredInfoType(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
 // DeidentifyTemplateIterator manages a stream of *dlppb.DeidentifyTemplate.
 type DeidentifyTemplateIterator struct {
 	items    []*dlppb.DeidentifyTemplate
@@ -871,6 +989,48 @@ func (it *JobTriggerIterator) bufLen() int {
 }
 
 func (it *JobTriggerIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// StoredInfoTypeIterator manages a stream of *dlppb.StoredInfoType.
+type StoredInfoTypeIterator struct {
+	items    []*dlppb.StoredInfoType
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*dlppb.StoredInfoType, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *StoredInfoTypeIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *StoredInfoTypeIterator) Next() (*dlppb.StoredInfoType, error) {
+	var item *dlppb.StoredInfoType
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *StoredInfoTypeIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *StoredInfoTypeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
