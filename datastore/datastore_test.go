@@ -3444,6 +3444,28 @@ func TestDeferredMissing(t *testing.T) {
 	}
 }
 
+func TestDeleteWithNilKey(t *testing.T) {
+	client := &Client{}
+	err := client.Delete(context.Background(), nil)
+	if err == nil {
+		t.Error("want error, got nil")
+	}
+	if err != ErrInvalidKey {
+		t.Errorf("want ErrInvalidKey, got %v", err)
+	}
+}
+
+func TestDeleteMultiWithNilKey(t *testing.T) {
+	client := &Client{}
+	err := client.DeleteMulti(context.Background(), []*Key{nil})
+	if err == nil {
+		t.Error("want error, got nil")
+	}
+	if err != ErrInvalidKey {
+		t.Errorf("want ErrInvalidKey, got %v", err)
+	}
+}
+
 type fakeDatastoreClient struct {
 	pb.DatastoreClient
 
