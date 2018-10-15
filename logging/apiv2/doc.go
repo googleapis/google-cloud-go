@@ -19,7 +19,7 @@
 //
 //   NOTE: This package is in alpha. It is not stable, and is likely to change.
 //
-// Writes log entries and manages your Stackdriver Logging configuration.
+// Writes log entries and manages your Logging configuration.
 //
 // Use the client at cloud.google.com/go/logging in preference to this.
 package logging // import "cloud.google.com/go/logging/apiv2"

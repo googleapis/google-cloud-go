@@ -496,3 +496,97 @@ func ExampleClient_CreateJobTrigger() {
 	// TODO: Use resp.
 	_ = resp
 }
+
+func ExampleClient_CreateStoredInfoType() {
+	ctx := context.Background()
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &dlppb.CreateStoredInfoTypeRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.CreateStoredInfoType(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateStoredInfoType() {
+	ctx := context.Background()
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &dlppb.UpdateStoredInfoTypeRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.UpdateStoredInfoType(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetStoredInfoType() {
+	ctx := context.Background()
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &dlppb.GetStoredInfoTypeRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetStoredInfoType(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListStoredInfoTypes() {
+	ctx := context.Background()
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &dlppb.ListStoredInfoTypesRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListStoredInfoTypes(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_DeleteStoredInfoType() {
+	ctx := context.Background()
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &dlppb.DeleteStoredInfoTypeRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.DeleteStoredInfoType(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
