@@ -574,6 +574,9 @@ func deleteMutations(keys []*Key) ([]*pb.Mutation, error) {
 	mutations := make([]*pb.Mutation, 0, len(keys))
 	set := make(map[string]bool, len(keys))
 	for _, k := range keys {
+		if k == nil {
+			return nil, ErrInvalidKey
+		}
 		if k.Incomplete() {
 			return nil, fmt.Errorf("datastore: can't delete the incomplete key: %v", k)
 		}
