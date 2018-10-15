@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO(deklerk) Add integration tests when it's secure to do so. b/64723143
+
 # Fail on any error
 set -eo pipefail
 
