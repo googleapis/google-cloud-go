@@ -5,7 +5,7 @@ export GCLOUD_TESTS_GOLANG_PROJECT_ID=deklerk-kokoro-sandbox
 export GCLOUD_TESTS_GOLANG_KEY=$GOOGLE_APPLICATION_CREDENTIALS
 export GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID=deklerk-kokoro-firestore
 export GCLOUD_TESTS_GOLANG_FIRESTORE_KEY=$KOKORO_KEYSTORE_DIR/72523_go_firestore_integration_service_account
-export GCLOUD_TESTS_API_KEY=`cat /p/t/go_gcloud_tests_api_key`
+export GCLOUD_TESTS_API_KEY=`cat $KOKORO_KEYSTORE_DIR/72523_go_gcloud_tests_api_key`
 export GCLOUD_TESTS_GOLANG_KEYRING=projects/deklerk-kokoro-sandbox/locations/us-east1/keyRings/deklerk-kokoro-keyring
 
 # Fail on any error
