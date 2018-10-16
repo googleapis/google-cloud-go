@@ -27,7 +27,9 @@ mkdir -p $GOCLOUD_HOME
 # Move code into $GOPATH and get dependencies
 cp -R ./* $GOCLOUD_HOME
 cd $GOCLOUD_HOME
-go get -v -t ./...
+
+try3() { eval "$*" || eval "$*" || eval "$*"; }
+try3 go get -v -t ./...
 
 # Run tests and tee output to log file, to be pushed to GCS as artifact.
 go test -race -v ./... 2>&1 | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt
