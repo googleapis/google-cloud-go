@@ -358,6 +358,9 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		if !k.valid() {
 			multiErr[i] = ErrInvalidKey
 			any = true
+		} else if k.Incomplete() {
+			multiErr[i] = fmt.Errorf("datastore: can't get the incomplete key: %v", k)
+			any = true
 		} else {
 			ks := k.String()
 			if _, ok := keyMap[ks]; !ok {
@@ -573,20 +576,27 @@ func (c *Client) DeleteMulti(ctx context.Context, keys []*Key) (err error) {
 func deleteMutations(keys []*Key) ([]*pb.Mutation, error) {
 	mutations := make([]*pb.Mutation, 0, len(keys))
 	set := make(map[string]bool, len(keys))
-	for _, k := range keys {
-		if k == nil {
-			return nil, ErrInvalidKey
+	multiErr := make(MultiError, len(keys))
+	hasErr := false
+	for i, k := range keys {
+		if !k.valid() {
+			multiErr[i] = ErrInvalidKey
+			hasErr = true
+		} else if k.Incomplete() {
+			multiErr[i] = fmt.Errorf("datastore: can't delete the incomplete key: %v", k)
+			hasErr = true
+		} else {
+			ks := k.String()
+			if !set[ks] {
+				mutations = append(mutations, &pb.Mutation{
+					Operation: &pb.Mutation_Delete{Delete: keyToProto(k)},
+				})
+			}
+			set[ks] = true
 		}
-		if k.Incomplete() {
-			return nil, fmt.Errorf("datastore: can't delete the incomplete key: %v", k)
-		}
-		ks := k.String()
-		if !set[ks] {
-			mutations = append(mutations, &pb.Mutation{
-				Operation: &pb.Mutation_Delete{Delete: keyToProto(k)},
-			})
-		}
-		set[ks] = true
+	}
+	if hasErr {
+		return nil, multiErr
 	}
 	return mutations, nil
 }
