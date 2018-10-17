@@ -3443,25 +3443,77 @@ func TestDeferredMissing(t *testing.T) {
 	}
 }
 
+func TestGetWithNilKey(t *testing.T) {
+	client := &Client{}
+	err := client.Get(context.Background(), nil, []Property{})
+	if err != ErrInvalidKey {
+		t.Fatalf("want ErrInvalidKey, got %v", err)
+	}
+}
+
+func TestGetMultiWithNilKey(t *testing.T) {
+	client := &Client{}
+	dest := make([]PropertyList, 1)
+	err := client.GetMulti(context.Background(), []*Key{nil}, dest)
+	if me, ok := err.(MultiError); !ok {
+		t.Fatalf("want MultiError, got %v", err)
+	} else if len(me) != 1 || me[0] != ErrInvalidKey {
+		t.Fatalf("want MultiError{ErrInvalidKey}, got %v", me)
+	}
+}
+
+func TestGetWithIncompleteKey(t *testing.T) {
+	client := &Client{}
+	err := client.Get(context.Background(), &Key{Kind: "testKind"}, []Property{})
+	if err == nil {
+		t.Fatalf("want err, got nil")
+	}
+}
+
+func TestGetMultiWithIncompleteKey(t *testing.T) {
+	client := &Client{}
+	dest := make([]PropertyList, 1)
+	err := client.GetMulti(context.Background(), []*Key{{Kind: "testKind"}}, dest)
+	if me, ok := err.(MultiError); !ok {
+		t.Fatalf("want MultiError, got %v", err)
+	} else if len(me) != 1 || me[0] == nil {
+		t.Fatalf("want MultiError{err}, got %v", me)
+	}
+}
+
 func TestDeleteWithNilKey(t *testing.T) {
 	client := &Client{}
 	err := client.Delete(context.Background(), nil)
-	if err == nil {
-		t.Error("want error, got nil")
-	}
 	if err != ErrInvalidKey {
-		t.Errorf("want ErrInvalidKey, got %v", err)
+		t.Fatalf("want ErrInvalidKey, got %v", err)
 	}
 }
 
 func TestDeleteMultiWithNilKey(t *testing.T) {
 	client := &Client{}
 	err := client.DeleteMulti(context.Background(), []*Key{nil})
-	if err == nil {
-		t.Error("want error, got nil")
+	if me, ok := err.(MultiError); !ok {
+		t.Fatalf("want MultiError, got %v", err)
+	} else if len(me) != 1 || me[0] != ErrInvalidKey {
+		t.Fatalf("want MultiError{ErrInvalidKey}, got %v", me)
 	}
-	if err != ErrInvalidKey {
-		t.Errorf("want ErrInvalidKey, got %v", err)
+}
+
+func TestDeleteWithIncompleteKey(t *testing.T) {
+	client := &Client{}
+	err := client.Delete(context.Background(), &Key{Kind: "testKind"})
+	if err == nil {
+		t.Fatalf("want err, got nil")
+	}
+}
+
+func TestDeleteMultiWithIncompleteKey(t *testing.T) {
+	client := &Client{}
+	err := client.DeleteMulti(context.Background(), []*Key{{Kind: "testKind"}})
+	if me, ok := err.(MultiError); !ok {
+		t.Fatalf("want MultiError, got %v", err)
+	} else if len(me) != 1 || me[0] == nil {
+		t.Fatalf("want MultiError{err}, got %v", me)
 	}
 }
 
