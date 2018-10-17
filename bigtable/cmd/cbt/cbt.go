@@ -250,8 +250,9 @@ var commands = []struct {
 		Name: "createtable",
 		Desc: "Create a table",
 		do:   doCreateTable,
-		Usage: "cbt createtable <table> [families=family[:(maxage=<d> | maxversions=<n>)],...] [splits=split,...]\n" +
-			"  families: Column families and their associated GC policies. See \"setgcpolicy\".\n" +
+		Usage: "cbt createtable <table> [families=family[:gcpolicy],...] [splits=split,...]\n" +
+			"  families: Column families and their associated GC policies. For gcpolicy,\n" +
+			"                    see \"setgcpolicy\".\n" +
 			"  					 Example: families=family1:maxage=1w,family2:maxversions=1\n" +
 			"  splits:   Row key to be used to initially split the table",
 		Required: cbtconfig.ProjectAndInstanceRequired,
@@ -397,7 +398,7 @@ var commands = []struct {
 		Name: "setgcpolicy",
 		Desc: "Set the GC policy for a column family",
 		do:   doSetGCPolicy,
-		Usage: "cbt setgcpolicy <table> <family> ( maxage=<d> | maxversions=<n> | never)\n" +
+		Usage: "cbt setgcpolicy <table> <family> ((maxage=<d> | maxversions=<n>) [(and|or) (maxage=<d> | maxversions=<n>),...] | never)\n" +
 			"\n" +
 			`  maxage=<d>		Maximum timestamp age to preserve (e.g. "1h", "4d")` + "\n" +
 			"  maxversions=<n>	Maximum number of versions to preserve",
@@ -1156,7 +1157,7 @@ func doSet(ctx context.Context, args ...string) {
 
 func doSetGCPolicy(ctx context.Context, args ...string) {
 	if len(args) < 3 {
-		log.Fatalf("usage: cbt setgcpolicy <table> <family> ( maxage=<d> | maxversions=<n> | maxage=<d> (and|or) maxversions=<n> | never )")
+		log.Fatalf("usage: cbt setgcpolicy <table> <family> ((maxage=<d> | maxversions=<n>) [(and|or) (maxage=<d> | maxversions=<n>),...] | never)")
 	}
 	table := args[0]
 	fam := args[1]

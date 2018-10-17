@@ -139,8 +139,9 @@ Usage:
 Create a table
 
 Usage:
-	cbt createtable <table> [families=family[:(maxage=<d> | maxversions=<n>)],...] [splits=split,...]
-	  families: Column families and their associated GC policies. See "setgcpolicy".
+	cbt createtable <table> [families=family[:gcpolicy],...] [splits=split,...]
+	  families: Column families and their associated GC policies. For gcpolicy,
+						 see "setgcpolicy".
 	  					 Example: families=family1:maxage=1w,family2:maxversions=1
 	  splits:   Row key to be used to initially split the table
 
@@ -304,7 +305,7 @@ Usage:
 Set the GC policy for a column family
 
 Usage:
-	cbt setgcpolicy <table> <family> ( maxage=<d> | maxversions=<n> | never)
+	cbt setgcpolicy <table> <family> ((maxage=<d> | maxversions=<n>) [(and|or) (maxage=<d> | maxversions=<n>),...] | never)
 
 	  maxage=<d>		Maximum timestamp age to preserve (e.g. "1h", "4d")
 	  maxversions=<n>	Maximum number of versions to preserve
