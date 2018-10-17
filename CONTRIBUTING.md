@@ -87,6 +87,8 @@ $ gsutil acl ch -g cloud-logs@google.com:O gs://$GCLOUD_TESTS_GOLANG_PROJECT_ID
 
 # Create a PubSub topic for integration tests of storage notifications.
 $ gcloud beta pubsub topics create go-storage-notification-test
+# Next, go to the Pub/Sub dashboard in GCP console. Authorize the user
+# "service-<numberic project id>@gs-project-accounts.iam.gserviceaccount.com" as a publisher to that topic.
 
 # Create a Spanner instance for the spanner integration tests.
 $ gcloud beta spanner instances create go-integration-test --config regional-us-central1 --nodes 1 --description 'Instance for go client test'
@@ -96,7 +98,7 @@ $ gcloud beta spanner instances create go-integration-test --config regional-us-
 # For Storage integration tests:
 # Enable KMS for your project in the Cloud Console.
 $ export MY_KEYRING=some-keyring-name
-$ export MY_LOCATION=us-east1
+$ export MY_LOCATION=global
 # Create a KMS keyring, in the same location as the default location for your project's buckets.
 $ gcloud kms keyrings create $MY_KEYRING --location $MY_LOCATION
 # Create two keys in the keyring, named key1 and key2.
