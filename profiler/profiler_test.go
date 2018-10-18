@@ -498,6 +498,15 @@ func TestInitializeConfig(t *testing.T) {
 			false,
 		},
 		{
+			"requires valid service name",
+			Config{Service: "Service"},
+			Config{Service: "Service"},
+			"service name \"Service\" does not match regular expression ^[a-z]([-a-z0-9_.]{0,253}[a-z0-9])?$",
+			false,
+			true,
+			false,
+		},
+		{
 			"accepts service name from config and service version from GAE",
 			Config{Service: testService},
 			Config{Service: testService, ServiceVersion: testGAEVersion, ProjectID: testGCEProjectID, zone: testZone, instance: testInstance},
