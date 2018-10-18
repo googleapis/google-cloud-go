@@ -14,7 +14,7 @@
 
 // DO NOT EDIT. THIS IS AUTOMATICALLY GENERATED.
 // Run "go generate" to regenerate.
-//go:generate go run cbt.go -o cbtdoc.go doc
+//go:generate go run cbt.go gcpolicy.go -o cbtdoc.go doc
 
 /*
 Cbt is a tool for doing basic interactions with Cloud Bigtable. To learn how to
@@ -141,8 +141,8 @@ Create a table
 Usage:
 	cbt createtable <table> [families=family[:gcpolicy],...] [splits=split,...]
 	  families: Column families and their associated GC policies. For gcpolicy,
-						 see "setgcpolicy".
-	  					 Example: families=family1:maxage=1w,family2:maxversions=1
+	  					see "setgcpolicy".
+						Example: families=family1:maxage=1w,family2:maxversions=1
 	  splits:   Row key to be used to initially split the table
 
 

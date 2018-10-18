@@ -252,8 +252,8 @@ var commands = []struct {
 		do:   doCreateTable,
 		Usage: "cbt createtable <table> [families=family[:gcpolicy],...] [splits=split,...]\n" +
 			"  families: Column families and their associated GC policies. For gcpolicy,\n" +
-			"                    see \"setgcpolicy\".\n" +
-			"  					 Example: families=family1:maxage=1w,family2:maxversions=1\n" +
+			"  					see \"setgcpolicy\".\n" +
+			"					Example: families=family1:maxage=1w,family2:maxversions=1\n" +
 			"  splits:   Row key to be used to initially split the table",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
@@ -808,7 +808,7 @@ var docTemplate = template.Must(template.New("doc").Funcs(template.FuncMap{
 
 // DO NOT EDIT. THIS IS AUTOMATICALLY GENERATED.
 // Run "go generate" to regenerate.
-//go:generate go run cbt.go -o cbtdoc.go doc
+//go:generate go run cbt.go gcpolicy.go -o cbtdoc.go doc
 
 /*
 Cbt is a tool for doing basic interactions with Cloud Bigtable. To learn how to
