@@ -70,6 +70,13 @@ for api in "${APIS[@]}"; do
   cp -r artman-genfiles/gapi-*/cloud.google.com/go/* $GOPATH/src/cloud.google.com/go/
 done
 
+# NOTE(pongad): `sed -i` doesn't work on Macs, because -i option needs an argument.
+# `-i ''` doesn't work on GNU, since the empty string is treated as a file name.
+# So we just create the backup and delete it after.
+ver=$(date +%Y%m%d)
+find $GOPATH/src/cloud.google.com/go/ -name '*.go' -exec sed -i.backup -e "s/^const versionClient.*/const versionClient = \"$ver\"/" '{}' +
+find $GOPATH/src/cloud.google.com/go/ -name '*.backup' -delete
+
 #go list cloud.google.com/go/... | grep apiv | xargs go test
 
 #go test -short cloud.google.com/go/...
