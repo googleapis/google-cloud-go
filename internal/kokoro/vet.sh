@@ -12,7 +12,15 @@ if [[ `go version` != *"go1.11"* ]]; then
     exit 0
 fi
 
-go get -u golang.org/x/lint/golint
+go get -u \
+  golang.org/x/lint/golint \
+  golang.org/x/tools/cmd/goimports \
+  golang.org/x/lint/golint
+
+# Look at all .go files (ignoring .pb.go files) and make sure they have a Copyright. Fail if any don't.
+git ls-files "*[^.pb].go" | xargs grep -L "\(Copyright [0-9]\{4,\}\)" 2>&1 | tee /dev/stderr | (! read)
+gofmt -s -d -l . 2>&1 | tee /dev/stderr | (! read)
+goimports -l . 2>&1 | tee /dev/stderr | (! read)
 
 # Runs the linter. Regrettably the linter is very simple and does not provide the ability to exclude rules or files,
 # so we rely on inverse grepping to do this for us.
