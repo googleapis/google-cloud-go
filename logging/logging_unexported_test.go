@@ -24,7 +24,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-
 	"github.com/golang/protobuf/proto"
 	durpb "github.com/golang/protobuf/ptypes/duration"
 	structpb "github.com/golang/protobuf/ptypes/struct"

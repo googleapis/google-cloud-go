@@ -366,6 +366,7 @@ func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.Update
 	}
 }
 
+// IAM returns the subscription's IAM handle.
 func (s *Subscription) IAM() *iam.Handle {
 	return iam.InternalNewHandle(s.c.subc.Connection(), s.name)
 }

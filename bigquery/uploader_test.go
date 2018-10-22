@@ -19,10 +19,9 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
-
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -100,7 +99,7 @@ func TestNewInsertRequest(t *testing.T) {
 
 func TestNewInsertRequestErrors(t *testing.T) {
 	var u Uploader
-	_, err := u.newInsertRequest([]ValueSaver{testSaver{err: errors.New("!")}})
+	_, err := u.newInsertRequest([]ValueSaver{testSaver{err: errors.New("bang")}})
 	if err == nil {
 		t.Error("got nil, want error")
 	}

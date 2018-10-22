@@ -19,19 +19,17 @@ import (
 	"testing"
 	"time"
 
-	gax "github.com/googleapis/gax-go"
-	"google.golang.org/grpc/status"
-
-	"golang.org/x/net/context"
-
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	gax "github.com/googleapis/gax-go"
+	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var (
@@ -55,7 +53,7 @@ func extractMessageData(m *Message) *messageData {
 	}
 }
 
-func integrationTestClient(t *testing.T, ctx context.Context) *Client {
+func integrationTestClient(ctx context.Context, t *testing.T) *Client {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -77,7 +75,7 @@ func integrationTestClient(t *testing.T, ctx context.Context) *Client {
 func TestIntegration_All(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	client := integrationTestClient(t, ctx)
+	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
@@ -302,7 +300,7 @@ func testIAM(ctx context.Context, h *iam.Handle, permission string) (msg string,
 func TestIntegration_CancelReceive(t *testing.T) {
 	t.Parallel()
 	ctx, cancel := context.WithCancel(context.Background())
-	client := integrationTestClient(t, ctx)
+	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
@@ -358,7 +356,7 @@ func TestIntegration_CancelReceive(t *testing.T) {
 func TestIntegration_UpdateSubscription(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	client := integrationTestClient(t, ctx)
+	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
@@ -446,7 +444,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 func TestIntegration_UpdateTopic(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	client := integrationTestClient(t, ctx)
+	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
 	compareConfig := func(got TopicConfig, wantLabels map[string]string) bool {
@@ -497,7 +495,7 @@ func TestIntegration_UpdateTopic(t *testing.T) {
 func TestIntegration_PublicTopic(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	client := integrationTestClient(t, ctx)
+	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
 	sub, err := client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{
@@ -523,7 +521,7 @@ func TestIntegration_Errors(t *testing.T) {
 	// Test various edge conditions.
 	t.Parallel()
 	ctx := context.Background()
-	client := integrationTestClient(t, ctx)
+	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
 	topic, err := client.CreateTopic(ctx, topicIDs.New())

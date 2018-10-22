@@ -107,7 +107,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	if err != nil {
 		return nil, err
 	}
-	req = withContext(req, ctx)
+	req = withContext(ctx, req)
 	if o.userProject != "" {
 		req.Header.Set("X-Goog-User-Project", o.userProject)
 	}

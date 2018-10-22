@@ -28,10 +28,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
-	gax "github.com/googleapis/gax-go"
-
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/internal"
@@ -39,6 +35,9 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/storage"
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
+	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -1692,7 +1691,7 @@ const (
 
 // These tests exploit the fact that the two SQL versions have different syntaxes for
 // fully-qualified table names.
-var useLegacySqlTests = []struct {
+var useLegacySQLTests = []struct {
 	t           string // name of table
 	std, legacy bool   // use standard/legacy SQL
 	err         bool   // do we expect an error?
@@ -1713,7 +1712,7 @@ func TestIntegration_QueryUseLegacySQL(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	for _, test := range useLegacySqlTests {
+	for _, test := range useLegacySQLTests {
 		q := client.Query(fmt.Sprintf("select word from %s limit 1", test.t))
 		q.UseStandardSQL = test.std
 		q.UseLegacySQL = test.legacy
@@ -1735,7 +1734,7 @@ func TestIntegration_TableUseLegacySQL(t *testing.T) {
 	ctx := context.Background()
 	table := newTable(t, schema)
 	defer table.Delete(ctx)
-	for i, test := range useLegacySqlTests {
+	for i, test := range useLegacySQLTests {
 		view := dataset.Table(fmt.Sprintf("t_view_%d", i))
 		tm := &TableMetadata{
 			ViewQuery:      fmt.Sprintf("SELECT word from %s", test.t),

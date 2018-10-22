@@ -20,14 +20,13 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	"google.golang.org/grpc/status"
-
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func checkTopicListing(t *testing.T, c *Client, want []string) {

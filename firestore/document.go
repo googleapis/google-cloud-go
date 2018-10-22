@@ -20,12 +20,11 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/golang/protobuf/ptypes"
+	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	"github.com/golang/protobuf/ptypes"
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
 )
 
 // A DocumentSnapshot contains document data and metadata.

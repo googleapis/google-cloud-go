@@ -22,7 +22,6 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	"golang.org/x/net/context"

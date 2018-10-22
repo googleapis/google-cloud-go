@@ -25,11 +25,13 @@ import (
 	"go.opencensus.io/trace"
 )
 
+// TestExporter is a test utility exporter. It should be created with NewtestExporter.
 type TestExporter struct {
 	Spans []*trace.SpanData
 	Stats chan *view.Data
 }
 
+// NewTestExporter creates a TestExporter and registers it with OpenCensus.
 func NewTestExporter() *TestExporter {
 	te := &TestExporter{Stats: make(chan *view.Data)}
 
@@ -45,10 +47,12 @@ func NewTestExporter() *TestExporter {
 	return te
 }
 
+// ExportSpan exports a span.
 func (te *TestExporter) ExportSpan(s *trace.SpanData) {
 	te.Spans = append(te.Spans, s)
 }
 
+// ExportView exports a view.
 func (te *TestExporter) ExportView(vd *view.Data) {
 	if len(vd.Rows) > 0 {
 		select {
@@ -58,6 +62,7 @@ func (te *TestExporter) ExportView(vd *view.Data) {
 	}
 }
 
+// Unregister unregisters the exporter from OpenCensus.
 func (te *TestExporter) Unregister() {
 	view.UnregisterExporter(te)
 	trace.UnregisterExporter(te)

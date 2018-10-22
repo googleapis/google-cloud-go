@@ -34,11 +34,12 @@ import (
 )
 
 const (
-	// The maximum number of messages that can be in a single publish request, as
-	// determined by the PubSub service.
+	// MaxPublishRequestCount is the maximum number of messages that can be in a single publish request, as
+	// defined by the PubSub service.
 	MaxPublishRequestCount = 1000
 
-	// The maximum size of a single publish request in bytes, as determined by the PubSub service.
+	// MaxPublishRequestBytes is the maximum size of a single publish request in bytes, as defined by the PubSub
+	// service.
 	MaxPublishRequestBytes = 1e7
 
 	maxInt = int(^uint(0) >> 1)
@@ -286,6 +287,7 @@ func (t *Topic) Exists(ctx context.Context) (bool, error) {
 	return false, err
 }
 
+// IAM returns the topic's IAM handle.
 func (t *Topic) IAM() *iam.Handle {
 	return iam.InternalNewHandle(t.c.pubc.Connection(), t.name)
 }
@@ -343,7 +345,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	return r
 }
 
-// Send all remaining published messages and stop goroutines created for handling
+// Stop sends all remaining published messages and stop goroutines created for handling
 // publishing. Returns once all outstanding messages have been sent or have
 // failed to be sent.
 func (t *Topic) Stop() {

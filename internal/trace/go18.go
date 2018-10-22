@@ -24,11 +24,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// StartSpan adds a span to the trace with the given name.
 func StartSpan(ctx context.Context, name string) context.Context {
 	ctx, _ = trace.StartSpan(ctx, name)
 	return ctx
 }
 
+// EndSpan ends a span with the given error.
 func EndSpan(ctx context.Context, err error) {
 	span := trace.FromContext(ctx)
 	if err != nil {

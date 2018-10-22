@@ -19,13 +19,11 @@ import (
 	"sort"
 	"testing"
 
-	"golang.org/x/net/context"
-
 	"cloud.google.com/go/internal/pretty"
-	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
-
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/golang/protobuf/ptypes/wrappers"
+	"golang.org/x/net/context"
+	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 )
 
 func TestFilterToProto(t *testing.T) {

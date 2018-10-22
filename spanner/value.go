@@ -41,8 +41,8 @@ var (
 	// InsertStruct or InsertMap. See ExampleCommitTimestamp.
 	// This is just a placeholder and the actual value stored in this
 	// variable has no meaning.
-	CommitTimestamp time.Time = commitTimestamp
-	commitTimestamp           = time.Unix(0, 0).In(time.FixedZone("CommitTimestamp placeholder", 0xDB))
+	CommitTimestamp = commitTimestamp
+	commitTimestamp = time.Unix(0, 0).In(time.FixedZone("CommitTimestamp placeholder", 0xDB))
 )
 
 // NullInt64 represents a Cloud Spanner INT64 that may be NULL.

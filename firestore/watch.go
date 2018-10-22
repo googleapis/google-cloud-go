@@ -33,15 +33,18 @@ import (
 
 // LogWatchStreams controls whether watch stream status changes are logged.
 // This feature is EXPERIMENTAL and may disappear at any time.
-var LogWatchStreams bool = false
+var LogWatchStreams = false
 
 // DocumentChangeKind describes the kind of change to a document between
 // query snapshots.
 type DocumentChangeKind int
 
 const (
+	// DocumentAdded indicates that the document was added for the first time.
 	DocumentAdded DocumentChangeKind = iota
+	// DocumentRemoved indicates that the document was removed.
 	DocumentRemoved
+	// DocumentModified indicates that the document was modified.
 	DocumentModified
 )
 

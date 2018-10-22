@@ -17,15 +17,13 @@ package firestore
 import (
 	"testing"
 
-	"golang.org/x/net/context"
-	"google.golang.org/grpc/status"
-
-	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
-
 	"github.com/golang/protobuf/ptypes/empty"
+	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
+	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func TestRunTransaction(t *testing.T) {

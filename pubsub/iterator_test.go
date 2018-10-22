@@ -106,7 +106,7 @@ func TestAckDistribution(t *testing.T) {
 		// recvdWg increments for each message sent, and decrements for each message received.
 		recvdWg := &sync.WaitGroup{}
 
-		go startReceiving(t, ctx, s, recvdWg, &processTimeSecs)
+		go startReceiving(ctx, t, s, recvdWg, &processTimeSecs)
 		startSending(t, queuedMsgs, &processTimeSecs, testcase.initialProcessSecs, testcase.finalProcessSecs, recvdWg)
 
 		recvdWg.Wait()
@@ -156,7 +156,7 @@ func setsAreEqual(haystack, needles []int32) bool {
 
 // startReceiving pretends to be a client. It calls s.Receive and acks messages after some random delay. It also
 // looks out for dupes - any message that arrives twice will cause a failure.
-func startReceiving(t *testing.T, ctx context.Context, s *Subscription, recvdWg *sync.WaitGroup, processTimeSecs *int32) {
+func startReceiving(ctx context.Context, t *testing.T, s *Subscription, recvdWg *sync.WaitGroup, processTimeSecs *int32) {
 	t.Log("Receiving..")
 
 	var recvdMu sync.Mutex

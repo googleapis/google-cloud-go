@@ -26,7 +26,6 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
-
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"

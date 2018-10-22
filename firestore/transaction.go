@@ -17,10 +17,9 @@ package firestore
 import (
 	"errors"
 
-	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
-
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/net/context"
+	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

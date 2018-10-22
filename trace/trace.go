@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// This package is OBSOLETE. See https://cloud.google.com/trace/docs/setup/go.
+// Package trace is OBSOLETE. See https://cloud.google.com/trace/docs/setup/go.
 package trace // import "cloud.google.com/go/trace"
 
 import (
@@ -646,6 +646,7 @@ func (s *Span) SetLabel(key, value string) {
 	s.span.Labels[key] = value
 }
 
+// FinishOption allows users to specify span finalizers.
 // Deprecated: see https://cloud.google.com/trace/docs/setup/go.
 type FinishOption interface {
 	modifySpan(s *Span)

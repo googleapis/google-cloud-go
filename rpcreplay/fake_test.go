@@ -19,12 +19,11 @@ import (
 	"log"
 	"net"
 
+	pb "cloud.google.com/go/rpcreplay/proto/intstore"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	pb "cloud.google.com/go/rpcreplay/proto/intstore"
 )
 
 // intStoreServer is an in-memory implementation of IntStore.

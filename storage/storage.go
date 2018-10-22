@@ -36,19 +36,20 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"cloud.google.com/go/internal/trace"
-	"google.golang.org/api/option"
-	htransport "google.golang.org/api/transport/http"
-
 	"cloud.google.com/go/internal/optional"
+	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
 	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
+	htransport "google.golang.org/api/transport/http"
 )
 
 var (
+	// ErrBucketNotExist indicates that the bucket does not exist.
 	ErrBucketNotExist = errors.New("storage: bucket doesn't exist")
+	// ErrObjectNotExist indicates that the object does not exist.
 	ErrObjectNotExist = errors.New("storage: object doesn't exist")
 )
 

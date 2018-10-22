@@ -18,10 +18,8 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-
-	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
-
 	"golang.org/x/net/context"
+	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 )
 
 func TestDoc(t *testing.T) {
