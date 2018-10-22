@@ -26,7 +26,6 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
-
 	"golang.org/x/net/context"
 	"golang.org/x/text/language"
 	"google.golang.org/api/option"

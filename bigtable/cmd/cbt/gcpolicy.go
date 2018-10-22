@@ -110,13 +110,12 @@ func parsePolicyTerm(r io.RuneScanner) (bigtable.GCPolicy, error) {
 				return nil, err
 			}
 			return bigtable.MaxAgePolicy(dur), nil
-		} else {
-			n, err := strconv.ParseUint(tok2, 10, 16)
-			if err != nil {
-				return nil, err
-			}
-			return bigtable.MaxVersionsPolicy(int(n)), nil
 		}
+		n, err := strconv.ParseUint(tok2, 10, 16)
+		if err != nil {
+			return nil, err
+		}
+		return bigtable.MaxVersionsPolicy(int(n)), nil
 
 	case "(":
 		p, err := parsePolicyExpr(r)
@@ -149,7 +148,7 @@ const noToken = "_" // empty token is valid, so use "_" instead
 
 // If not noToken, getToken will return this instead of reading a new token
 // from the input.
-var ungotToken string = noToken
+var ungotToken = noToken
 
 // getToken extracts the first token from the input. Valid tokens include
 // any sequence of letters and digits, and these symbols: &&, ||, =, ( and ).

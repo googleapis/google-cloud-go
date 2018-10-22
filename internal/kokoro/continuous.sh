@@ -21,15 +21,18 @@ go version
 
 # Set $GOPATH
 export GOPATH="$HOME/go"
-GOCLOUD_HOME=$GOPATH/src/cloud.google.com/go
+export GOCLOUD_HOME=$GOPATH/src/cloud.google.com/go/
+export PATH="$GOPATH/bin:$PATH"
 mkdir -p $GOCLOUD_HOME
 
 # Move code into $GOPATH and get dependencies
-cp -R ./* $GOCLOUD_HOME
+git clone . $GOCLOUD_HOME
 cd $GOCLOUD_HOME
 
 try3() { eval "$*" || eval "$*" || eval "$*"; }
 try3 go get -v -t ./...
+
+./internal/kokoro/vet.sh
 
 # Run tests and tee output to log file, to be pushed to GCS as artifact.
 go test -race -v ./... 2>&1 | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt

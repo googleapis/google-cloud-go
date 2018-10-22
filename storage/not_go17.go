@@ -20,7 +20,7 @@ import (
 	"net/http"
 )
 
-func withContext(r *http.Request, _ interface{}) *http.Request {
+func withContext(_ interface{}, r *http.Request) *http.Request {
 	// In Go 1.6 and below, ignore the context.
 	return r
 }

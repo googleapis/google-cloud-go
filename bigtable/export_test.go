@@ -85,9 +85,8 @@ func NewIntegrationEnv() (IntegrationEnv, error) {
 
 	if integrationConfig.UseProd {
 		return NewProdEnv(c)
-	} else {
-		return NewEmulatedEnv(c)
 	}
+	return NewEmulatedEnv(c)
 }
 
 // EmulatedEnv encapsulates the state of an emulator

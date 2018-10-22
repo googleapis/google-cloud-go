@@ -17,9 +17,8 @@ package firestore
 import (
 	"testing"
 
-	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
-
 	"golang.org/x/net/context"
+	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 )
 
 func TestWriteBatch(t *testing.T) {

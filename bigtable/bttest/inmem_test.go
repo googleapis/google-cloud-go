@@ -1006,7 +1006,7 @@ func TestFilterRowWithErrors(t *testing.T) {
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("[")}}},
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_Chain_{
 			Chain: &btpb.RowFilter_Chain{Filters: []*btpb.RowFilter{
-				&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("[")}}},
+				{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("[")}}},
 			},
 		}}},
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_Condition_{

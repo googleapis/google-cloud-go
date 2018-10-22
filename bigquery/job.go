@@ -82,9 +82,13 @@ func (j *Job) Email() string {
 type State int
 
 const (
-	StateUnspecified State = iota // used only as a default in JobIterator
+	// StateUnspecified is the default JobIterator state.
+	StateUnspecified State = iota
+	// Pending is a state that describes that the job is pending.
 	Pending
+	// Running is a state that describes that the job is running.
 	Running
+	// Done is a state that describes that the job is done.
 	Done
 )
 
@@ -566,8 +570,12 @@ type JobIterator struct {
 	items    []*Job
 }
 
+// PageInfo is a getter for the JobIterator's PageInfo.
 func (it *JobIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 
+// Next returns the next Job. Its second return value is iterator.Done if
+// there are no more results. Once Next returns Done, all subsequent calls will
+// return Done.
 func (it *JobIterator) Next() (*Job, error) {
 	if err := it.nextFunc(); err != nil {
 		return nil, err

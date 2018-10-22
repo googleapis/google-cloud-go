@@ -24,7 +24,6 @@ import (
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
-
 	bq "google.golang.org/api/bigquery/v2"
 )
 

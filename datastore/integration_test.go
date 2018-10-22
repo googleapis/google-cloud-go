@@ -394,7 +394,7 @@ type SQTestCase struct {
 	wantSum   int
 }
 
-func testSmallQueries(t *testing.T, ctx context.Context, client *Client, parent *Key, children []*SQChild,
+func testSmallQueries(ctx context.Context, t *testing.T, client *Client, parent *Key, children []*SQChild,
 	testCases []SQTestCase, extraTests ...func()) {
 	keys := make([]*Key, len(children))
 	for i := range keys {
@@ -462,7 +462,7 @@ func TestFilters(t *testing.T) {
 		{I: 7, T: now, U: now},
 	}
 	baseQuery := NewQuery("SQChild").Ancestor(parent).Filter("T=", now)
-	testSmallQueries(t, ctx, client, parent, children, []SQTestCase{
+	testSmallQueries(ctx, t, client, parent, children, []SQTestCase{
 		{
 			"I>1",
 			baseQuery.Filter("I>", 1),
@@ -708,7 +708,7 @@ func TestEventualConsistency(t *testing.T) {
 		{I: 2, T: now, U: now},
 	}
 	query := NewQuery("SQChild").Ancestor(parent).Filter("T =", now).EventualConsistency()
-	testSmallQueries(t, ctx, client, parent, children, nil, func() {
+	testSmallQueries(ctx, t, client, parent, children, nil, func() {
 		got, err := client.Count(ctx, query)
 		if err != nil {
 			t.Fatalf("Count: %v", err)
@@ -734,7 +734,7 @@ func TestProjection(t *testing.T) {
 		{I: 1 << 4, J: 300, T: now, U: now},
 	}
 	baseQuery := NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Filter("J>", 150)
-	testSmallQueries(t, ctx, client, parent, children, []SQTestCase{
+	testSmallQueries(ctx, t, client, parent, children, []SQTestCase{
 		{
 			"project",
 			baseQuery.Project("J"),
@@ -1024,7 +1024,7 @@ func TestTransaction(t *testing.T) {
 			}
 
 			if tt.causeConflict[attempts-1] {
-				c.N += 1
+				c.N++
 				if _, err := client.Put(ctx, key, &c); err != nil {
 					return err
 				}

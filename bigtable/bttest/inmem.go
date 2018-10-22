@@ -259,9 +259,8 @@ func (s *server) DropRowRange(ctx context.Context, req *btapb.DropRowRangeReques
 			if strings.HasPrefix(r.key, prefix) {
 				rowsToDelete = append(rowsToDelete, r)
 				return true
-			} else {
-				return false // stop iteration
 			}
+			return false // stop iteration
 		})
 		for _, r := range rowsToDelete {
 			tbl.rows.Delete(r)
@@ -550,10 +549,9 @@ func filterRow(f *btpb.RowFilter, r *row) (bool, error) {
 					fam.cells[col] = cs[offset:]
 					offset = 0
 					return true, nil
-				} else {
-					fam.cells[col] = cs[:0]
-					offset -= len(cs)
 				}
+				fam.cells[col] = cs[:0]
+				offset -= len(cs)
 			}
 		}
 		return true, nil

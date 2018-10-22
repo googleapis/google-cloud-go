@@ -21,14 +21,12 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub/pstest"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-
 	"golang.org/x/net/context"
-
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // All returns the remaining subscriptions from this iterator.

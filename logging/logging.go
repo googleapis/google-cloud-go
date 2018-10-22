@@ -52,13 +52,13 @@ import (
 )
 
 const (
-	// Scope for reading from the logging service.
+	// ReadScope is the scope for reading from the logging service.
 	ReadScope = "https://www.googleapis.com/auth/logging.read"
 
-	// Scope for writing to the logging service.
+	// WriteScope is the scope for writing to the logging service.
 	WriteScope = "https://www.googleapis.com/auth/logging.write"
 
-	// Scope for administrative actions on the logging service.
+	// AdminScope is the scope for administrative actions on the logging service.
 	AdminScope = "https://www.googleapis.com/auth/logging.admin"
 )
 

@@ -57,6 +57,7 @@ func timeNow() time.Time {
 	return now.Load().(func() time.Time)()
 }
 
+// Server is a fake Pub/Sub server.
 type Server struct {
 	Addr    string // The address that the server is listening on.
 	gServer gServer
@@ -148,6 +149,7 @@ type Message struct {
 
 }
 
+// Modack represents a modack sent to the server.
 type Modack struct {
 	AckID       string
 	AckDeadline int32
@@ -326,7 +328,7 @@ func (s *gServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 // Can be set for testing.
 var minAckDeadlineSecs int32
 
-// SetMinAckDeadlineSecs changes the minack deadline to n. Must be
+// SetMinAckDeadline changes the minack deadline to n. Must be
 // greater than or equal to 1 second. Remember to reset this value
 // to the default after your test changes it. Example usage:
 // 		pstest.SetMinAckDeadlineSecs(1)
@@ -339,7 +341,7 @@ func SetMinAckDeadline(n time.Duration) {
 	minAckDeadlineSecs = int32(n / time.Second)
 }
 
-// ResetMinAckDeadlineSecs resets the minack deadline to the default.
+// ResetMinAckDeadline resets the minack deadline to the default.
 func ResetMinAckDeadline() {
 	minAckDeadlineSecs = 10
 }

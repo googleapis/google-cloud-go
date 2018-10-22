@@ -25,7 +25,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	"golang.org/x/net/context"
@@ -443,7 +442,7 @@ type PtrToStructField struct {
 	D []*Basic
 }
 
-var two int = 2
+var two = 2
 
 type EmbeddedTime struct {
 	time.Time
@@ -1997,7 +1996,7 @@ type aPtrPLS struct {
 }
 
 func (pls *aPtrPLS) Load([]Property) error {
-	pls.Count += 1
+	pls.Count++
 	return nil
 }
 
@@ -2133,7 +2132,7 @@ type Grandchild struct {
 func (c *Child) Load(props []Property) error {
 	for _, p := range props {
 		if p.Name == "I" {
-			c.I += 1
+			c.I++
 		} else if p.Name == "Grandchild.S" {
 			c.Grandchild.S = "grandchild loaded"
 		}
@@ -3186,7 +3185,7 @@ func TestPutInvalidEntity(t *testing.T) {
 			t.Errorf("tx.PutMulti returned err %v, want MulitError{ErrInvalidEntityType}", err)
 		}
 
-		return errors.New("bang!") // Return error: we don't actually want to commit.
+		return errors.New("bang") // Return error: we don't actually want to commit.
 	})
 }
 

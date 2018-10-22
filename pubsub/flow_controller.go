@@ -30,7 +30,7 @@ type flowController struct {
 	// negative if semCount == nil and a large acquire is followed by multiple
 	// small releases.
 	// Atomic.
-	count_ int64
+	countRemaining int64
 }
 
 // newFlowController creates a new flowController that ensures no more than
@@ -72,7 +72,7 @@ func (f *flowController) acquire(ctx context.Context, size int) error {
 			return err
 		}
 	}
-	atomic.AddInt64(&f.count_, 1)
+	atomic.AddInt64(&f.countRemaining, 1)
 	return nil
 }
 
@@ -95,13 +95,13 @@ func (f *flowController) tryAcquire(size int) bool {
 			return false
 		}
 	}
-	atomic.AddInt64(&f.count_, 1)
+	atomic.AddInt64(&f.countRemaining, 1)
 	return true
 }
 
 // release notes that one message of size bytes is no longer outstanding.
 func (f *flowController) release(size int) {
-	atomic.AddInt64(&f.count_, -1)
+	atomic.AddInt64(&f.countRemaining, -1)
 	if f.semCount != nil {
 		f.semCount.Release(1)
 	}
@@ -118,5 +118,5 @@ func (f *flowController) bound(size int) int64 {
 }
 
 func (f *flowController) count() int {
-	return int(atomic.LoadInt64(&f.count_))
+	return int(atomic.LoadInt64(&f.countRemaining))
 }

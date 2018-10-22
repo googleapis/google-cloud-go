@@ -85,10 +85,17 @@ type Field struct {
 	equalFold func(s, t []byte) bool
 }
 
+// ParseTagFunc is a function that accepts a struct tag and returns four values: an alternative name for the field
+// extracted from the tag, a boolean saying whether to keep the field or ignore  it, additional data that is stored
+// with the field information to avoid having to parse the tag again, and an error.
 type ParseTagFunc func(reflect.StructTag) (name string, keep bool, other interface{}, err error)
 
+// ValidateFunc is a function that accepts a reflect.Type and returns an error if the struct type is invalid in any
+// way.
 type ValidateFunc func(reflect.Type) error
 
+// LeafTypesFunc is a function that accepts a reflect.Type and returns true if the struct type a leaf, or false if not.
+// TODO(deklerk) is this description accurate?
 type LeafTypesFunc func(reflect.Type) bool
 
 // A Cache records information about the fields of struct types.

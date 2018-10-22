@@ -20,6 +20,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/csv"
 	"flag"
 	"fmt"
 	"go/format"
@@ -33,8 +34,6 @@ import (
 	"text/tabwriter"
 	"text/template"
 	"time"
-
-	"encoding/csv"
 
 	"cloud.google.com/go/bigtable"
 	"cloud.google.com/go/bigtable/internal/cbtconfig"

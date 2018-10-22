@@ -19,10 +19,9 @@ import (
 	"fmt"
 	"time"
 
+	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	"golang.org/x/net/context"
-
-	"cloud.google.com/go/internal/optional"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -143,8 +142,14 @@ const (
 type TableType string
 
 const (
-	RegularTable  TableType = "TABLE"
-	ViewTable     TableType = "VIEW"
+	// RegularTable is a regular table.
+	RegularTable TableType = "TABLE"
+	// ViewTable is a table type describing that the table is view. See more
+	// information at https://cloud.google.com/bigquery/docs/views.
+	ViewTable TableType = "VIEW"
+	// ExternalTable is a table type describing that the table is an external
+	// table (also known as a federated data source). See more information at
+	// https://cloud.google.com/bigquery/external-data-sources.
 	ExternalTable TableType = "EXTERNAL"
 )
 

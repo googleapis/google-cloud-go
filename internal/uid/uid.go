@@ -40,6 +40,7 @@ type Options struct {
 	Time time.Time // Timestamp for all UIDs made with this space. Defaults to current time.
 }
 
+// NewSpace creates a new UID space. A UID Space is used to generate unique IDs.
 func NewSpace(prefix string, opts *Options) *Space {
 	sep := '-'
 	tm := time.Now().UTC()

@@ -173,7 +173,7 @@ func TestAdminIntegration(t *testing.T) {
 
 	var gotRowCount int
 	must(tbl.ReadRows(ctx, RowRange{}, func(row Row) bool {
-		gotRowCount += 1
+		gotRowCount++
 		if !strings.HasPrefix(row.Key(), "b") {
 			t.Errorf("Invalid row after dropping range: %v", row)
 		}

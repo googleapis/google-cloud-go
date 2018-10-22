@@ -90,6 +90,7 @@ func (c *Client) CreateSinkOpt(ctx context.Context, sink *Sink, opts SinkOptions
 	return fromLogSink(ls), nil
 }
 
+// SinkOptions define options to be used when creating or updating a sink.
 type SinkOptions struct {
 	// Determines the kind of IAM identity returned as WriterIdentity in the new
 	// sink. If this value is omitted or set to false, and if the sink's parent is a
