@@ -342,7 +342,7 @@ func TestIntegration_CancelReceive(t *testing.T) {
 			time.AfterFunc(5*time.Second, msg.Ack)
 		})
 		if err != nil {
-			t.Fatal(err)
+			t.Error(err)
 		}
 	}()
 

@@ -185,7 +185,7 @@ func startReceiving(ctx context.Context, t *testing.T, s *Subscription, recvdWg 
 	})
 	if err != nil {
 		if status.Code(err) != codes.Canceled {
-			t.Fatal(err)
+			t.Error(err)
 		}
 	}
 }

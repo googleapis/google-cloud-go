@@ -12,10 +12,13 @@ if [[ `go version` != *"go1.11"* ]]; then
     exit 0
 fi
 
+pwd
+
 go get -u \
   golang.org/x/lint/golint \
   golang.org/x/tools/cmd/goimports \
-  golang.org/x/lint/golint
+  golang.org/x/lint/golint \
+  honnef.co/go/tools/cmd/staticcheck
 
 # Look at all .go files (ignoring .pb.go files) and make sure they have a Copyright. Fail if any don't.
 git ls-files "*[^.pb].go" | xargs grep -L "\(Copyright [0-9]\{4,\}\)" 2>&1 | tee /dev/stderr | (! read)
@@ -48,3 +51,15 @@ golint ./... 2>&1 | ( \
     grep -v "mock_test" | \
     grep -v "a blank import should be only in a main or test package" | \
     grep -vE "\.pb\.go:" || true) | tee /dev/stderr | (! read)
+
+# TODO(deklerk) It doesn't seem like it, but is it possible to glob both before
+# and after the colon? Then we could do *go-cloud-debug-agent*:*
+staticcheck -ignore '
+*:SA1019
+cloud.google.com/go/firestore/internal/doc-snippets.go:*
+cloud.google.com/go/cmd/go-cloud-debug-agent/internal/controller/client_test.go:*
+cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/dwarf/frame.go:*
+cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/dwarf/typeunit.go:*
+cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/elf/file.go:*
+cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/server/server.go:*
+' ./...

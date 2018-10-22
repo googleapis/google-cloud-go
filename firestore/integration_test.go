@@ -319,25 +319,19 @@ func TestIntegration_Add(t *testing.T) {
 
 func TestIntegration_Set(t *testing.T) {
 	coll := integrationColl(t)
-	ctx := context.Background()
 	h := testHelper{t}
+	ctx := context.Background()
 
 	// Set Should be able to create a new doc.
 	doc := coll.NewDoc()
-	wr1, err := doc.Set(ctx, integrationTestMap)
-	if err != nil {
-		t.Fatal(err)
-	}
+	wr1 := h.mustSet(doc, integrationTestMap)
 	// Calling Set on the doc completely replaces the contents.
 	// The update time should increase.
 	newData := map[string]interface{}{
 		"str": "change",
 		"x":   "1",
 	}
-	wr2, err := doc.Set(ctx, newData)
-	if err != nil {
-		t.Fatal(err)
-	}
+	wr2 := h.mustSet(doc, newData)
 	if !wr1.UpdateTime.Before(wr2.UpdateTime) {
 		t.Errorf("update time did not increase: old=%s, new=%s", wr1.UpdateTime, wr2.UpdateTime)
 	}
@@ -391,7 +385,11 @@ func TestIntegration_Set(t *testing.T) {
 	}
 
 	// use firestore.Delete to delete a field.
+	// TODO(deklerk) We should be able to use mustSet, but then we get a test error. We should investigate this.
 	_, err = doc.Set(ctx, map[string]interface{}{"str": Delete}, MergeAll)
+	if err != nil {
+		t.Fatal(err)
+	}
 	ds = h.mustGet(doc)
 	want = map[string]interface{}{
 		"x": "4",
@@ -404,10 +402,7 @@ func TestIntegration_Set(t *testing.T) {
 	// Writing an empty doc with MergeAll should create the doc.
 	doc2 := coll.NewDoc()
 	want = map[string]interface{}{}
-	_, err = doc2.Set(ctx, want, MergeAll)
-	if err != nil {
-		t.Fatal(err)
-	}
+	h.mustSet(doc2, want, MergeAll)
 	ds = h.mustGet(doc2)
 	if got := ds.Data(); !testEqual(got, want) {
 		t.Errorf("got %v, want %v", got, want)
@@ -419,7 +414,7 @@ func TestIntegration_Delete(t *testing.T) {
 	doc := integrationColl(t).NewDoc()
 	h := testHelper{t}
 	h.mustCreate(doc, integrationTestMap)
-	wr := h.mustDelete(doc)
+	h.mustDelete(doc)
 	// Confirm that doc doesn't exist.
 	if _, err := doc.Get(ctx); grpc.Code(err) != codes.NotFound {
 		t.Fatalf("got error <%v>, want NotFound", err)
@@ -431,7 +426,7 @@ func TestIntegration_Delete(t *testing.T) {
 		er(doc.Delete(ctx)))
 	// TODO(jba): confirm that the server should return InvalidArgument instead of
 	// FailedPrecondition.
-	wr = h.mustCreate(doc, integrationTestMap)
+	wr := h.mustCreate(doc, integrationTestMap)
 	codeEq(t, "Delete with wrong LastUpdateTime", codes.FailedPrecondition,
 		er(doc.Delete(ctx, LastUpdateTime(wr.UpdateTime.Add(-time.Millisecond)))))
 	codeEq(t, "Delete with right LastUpdateTime", codes.OK,
@@ -549,27 +544,16 @@ func TestIntegration_ServerTimestamp(t *testing.T) {
 }
 
 func TestIntegration_MergeServerTimestamp(t *testing.T) {
-	ctx := context.Background()
 	doc := integrationColl(t).NewDoc()
 	h := testHelper{t}
 
 	// Create a doc with an ordinary field "a" and a ServerTimestamp field "b".
-	_, err := doc.Set(ctx, map[string]interface{}{
-		"a": 1,
-		"b": ServerTimestamp})
-	if err != nil {
-		t.Fatal(err)
-	}
+	h.mustSet(doc, map[string]interface{}{"a": 1, "b": ServerTimestamp})
 	docSnap := h.mustGet(doc)
 	data1 := docSnap.Data()
 	// Merge with a document with a different value of "a". However,
 	// specify only "b" in the list of merge fields.
-	_, err = doc.Set(ctx,
-		map[string]interface{}{"a": 2, "b": ServerTimestamp},
-		Merge([]string{"b"}))
-	if err != nil {
-		t.Fatal(err)
-	}
+	h.mustSet(doc, map[string]interface{}{"a": 2, "b": ServerTimestamp}, Merge([]string{"b"}))
 	// The result should leave "a" unchanged, while "b" is updated.
 	docSnap = h.mustGet(doc)
 	data2 := docSnap.Data()
@@ -584,33 +568,24 @@ func TestIntegration_MergeServerTimestamp(t *testing.T) {
 }
 
 func TestIntegration_MergeNestedServerTimestamp(t *testing.T) {
-	ctx := context.Background()
 	doc := integrationColl(t).NewDoc()
 	h := testHelper{t}
 
 	// Create a doc with an ordinary field "a" a ServerTimestamp field "b",
 	// and a second ServerTimestamp field "c.d".
-	_, err := doc.Set(ctx, map[string]interface{}{
+	h.mustSet(doc, map[string]interface{}{
 		"a": 1,
 		"b": ServerTimestamp,
 		"c": map[string]interface{}{"d": ServerTimestamp},
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
 	data1 := h.mustGet(doc).Data()
 	// Merge with a document with a different value of "a". However,
 	// specify only "c.d" in the list of merge fields.
-	_, err = doc.Set(ctx,
-		map[string]interface{}{
-			"a": 2,
-			"b": ServerTimestamp,
-			"c": map[string]interface{}{"d": ServerTimestamp},
-		},
-		Merge([]string{"c", "d"}))
-	if err != nil {
-		t.Fatal(err)
-	}
+	h.mustSet(doc, map[string]interface{}{
+		"a": 2,
+		"b": ServerTimestamp,
+		"c": map[string]interface{}{"d": ServerTimestamp},
+	}, Merge([]string{"c", "d"}))
 	// The result should leave "a" and "b" unchanged, while "c.d" is updated.
 	data2 := h.mustGet(doc).Data()
 	if got, want := data2["a"], data1["a"]; got != want {
@@ -665,11 +640,9 @@ func TestIntegration_Query(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
 	h := testHelper{t}
-	var docs []*DocumentRef
 	var wants []map[string]interface{}
 	for i := 0; i < 3; i++ {
 		doc := coll.NewDoc()
-		docs = append(docs, doc)
 		// To support running this test in parallel with the others, use a field name
 		// that we don't use anywhere else.
 		h.mustCreate(doc, map[string]interface{}{"q": i, "x": 1})
@@ -991,15 +964,12 @@ func TestIntegration_ArrayUnion_Create(t *testing.T) {
 		path: ArrayUnion("a", "b"),
 	}
 
-	ctx := context.Background()
 	doc := integrationColl(t).NewDoc()
 	h := testHelper{t}
 	h.mustCreate(doc, data)
-	_, err := doc.Create(ctx, data)
 	ds := h.mustGet(doc)
 	var gotMap map[string][]string
-	err = ds.DataTo(&gotMap)
-	if err != nil {
+	if err := ds.DataTo(&gotMap); err != nil {
 		t.Fatal(err)
 	}
 	if _, ok := gotMap[path]; !ok {
@@ -1049,7 +1019,6 @@ func TestIntegration_ArrayUnion_Update(t *testing.T) {
 
 func TestIntegration_ArrayUnion_Set(t *testing.T) {
 	coll := integrationColl(t)
-	ctx := context.Background()
 	h := testHelper{t}
 	path := "somepath"
 
@@ -1057,14 +1026,10 @@ func TestIntegration_ArrayUnion_Set(t *testing.T) {
 	newData := map[string]interface{}{
 		path: ArrayUnion("a", "b"),
 	}
-	_, err := doc.Set(ctx, newData)
-	if err != nil {
-		t.Fatal(err)
-	}
+	h.mustSet(doc, newData)
 	ds := h.mustGet(doc)
 	var gotMap map[string][]string
-	err = ds.DataTo(&gotMap)
-	if err != nil {
+	if err := ds.DataTo(&gotMap); err != nil {
 		t.Fatal(err)
 	}
 	if _, ok := gotMap[path]; !ok {
@@ -1140,7 +1105,6 @@ func TestIntegration_ArrayRemove_Update(t *testing.T) {
 
 func TestIntegration_ArrayRemove_Set(t *testing.T) {
 	coll := integrationColl(t)
-	ctx := context.Background()
 	h := testHelper{t}
 	path := "somepath"
 
@@ -1148,14 +1112,10 @@ func TestIntegration_ArrayRemove_Set(t *testing.T) {
 	newData := map[string]interface{}{
 		path: ArrayRemove("a", "b"),
 	}
-	_, err := doc.Set(ctx, newData)
-	if err != nil {
-		t.Fatal(err)
-	}
+	h.mustSet(doc, newData)
 	ds := h.mustGet(doc)
 	var gotMap map[string][]string
-	err = ds.DataTo(&gotMap)
-	if err != nil {
+	if err := ds.DataTo(&gotMap); err != nil {
 		t.Fatal(err)
 	}
 	if _, ok := gotMap[path]; !ok {
@@ -1332,6 +1292,14 @@ func (h testHelper) mustGet(doc *DocumentRef) *DocumentSnapshot {
 
 func (h testHelper) mustDelete(doc *DocumentRef) *WriteResult {
 	wr, err := doc.Delete(context.Background())
+	if err != nil {
+		h.t.Fatalf("%s: updating: %v", loc(), err)
+	}
+	return wr
+}
+
+func (h testHelper) mustSet(doc *DocumentRef, data interface{}, opts ...SetOption) *WriteResult {
+	wr, err := doc.Set(context.Background(), data)
 	if err != nil {
 		h.t.Fatalf("%s: updating: %v", loc(), err)
 	}

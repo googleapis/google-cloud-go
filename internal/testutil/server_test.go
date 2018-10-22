@@ -23,16 +23,16 @@ import (
 
 func TestNewServer(t *testing.T) {
 	srv, err := NewServer()
-	defer srv.Close()
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer srv.Close()
 	srv.Start()
 	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
-	defer conn.Close()
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer conn.Close()
 }
 
 func TestPageBounds(t *testing.T) {

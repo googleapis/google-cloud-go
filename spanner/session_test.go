@@ -338,7 +338,7 @@ func TestMaxOpenedSessions(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	// Session request will timeout due to the max open sessions constraint.
-	sh2, gotErr := sp.take(ctx)
+	_, gotErr := sp.take(ctx)
 	if wantErr := errGetSessionTimeout(); !testEqual(gotErr, wantErr) {
 		t.Errorf("the second session retrival returns error %v, want %v", gotErr, wantErr)
 	}
@@ -348,7 +348,7 @@ func TestMaxOpenedSessions(t *testing.T) {
 		sh1.destroy()
 	}()
 	// Now session request can be processed because the first session will be destroyed.
-	sh2, err = sp.take(context.Background())
+	sh2, err := sp.take(context.Background())
 	if err != nil {
 		t.Errorf("after the first session is destroyed, session retrival still returns error %v, want nil", err)
 	}
@@ -414,7 +414,7 @@ func TestMaxBurst(t *testing.T) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	sh, gotErr := sp.take(ctx)
+	_, gotErr := sp.take(ctx)
 	// Since MaxBurst == 1, the second session request should block.
 	if wantErr := errGetSessionTimeout(); !testEqual(gotErr, wantErr) {
 		t.Errorf("session retrival returns error %v, want %v", gotErr, wantErr)

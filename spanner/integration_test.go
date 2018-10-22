@@ -677,7 +677,7 @@ func TestReadWriteTransaction(t *testing.T) {
 				})
 			})
 			if err != nil {
-				t.Fatalf("%d: failed to execute transaction: %v", iter, err)
+				t.Errorf("%d: failed to execute transaction: %v", iter, err)
 			}
 		}(i)
 	}
@@ -1996,6 +1996,9 @@ func TestDML(t *testing.T) {
 		count, err := tx.Update(ctx, Statement{
 			SQL: `Insert INTO Singers (SingerId, FirstName, LastName) VALUES (2, "Eduard", "Khil")`,
 		})
+		if err != nil {
+			t.Fatal(err)
+		}
 		if count != 1 {
 			t.Errorf("row count: got %d, want 1", count)
 		}

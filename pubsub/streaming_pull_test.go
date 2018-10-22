@@ -408,10 +408,10 @@ func TestStreamingPull_ReconnectsAfterServerDies(t *testing.T) {
 				// Restart the server
 				server.srv.Close()
 				server2, err := newMockServer(server.srv.Port)
-				defer server2.srv.Close()
 				if err != nil {
 					t.Fatal(err)
 				}
+				defer server2.srv.Close()
 				server2.addStreamingPullMessages(testMessages)
 			}
 

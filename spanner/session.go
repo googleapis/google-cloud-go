@@ -939,9 +939,7 @@ func (hc *healthChecker) worker(i int) {
 				}
 				select {
 				case <-time.After(time.Duration(rand.Int63n(pause) + pause/2)):
-					break
 				case <-hc.done:
-					break
 				}
 
 			}
@@ -971,7 +969,6 @@ func (hc *healthChecker) maintainer() {
 			case <-timeout:
 				return
 			default:
-				break
 			}
 
 			p := hc.pool
@@ -1012,7 +1009,6 @@ func (hc *healthChecker) maintainer() {
 			case <-timeout:
 				return
 			default:
-				break
 			}
 
 			p := hc.pool
@@ -1074,9 +1070,7 @@ func (hc *healthChecker) maintainer() {
 
 		select {
 		case <-timeout:
-			break
 		case <-hc.done:
-			break
 		}
 		iteration++
 	}
