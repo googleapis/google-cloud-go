@@ -111,12 +111,12 @@ func (s *Server) Publish(topic string, data []byte, attrs map[string]string) str
 	if !ok {
 		panic(fmt.Sprintf("topic name must be of the form %q", topicPattern))
 	}
-	_, _ = s.gServer.CreateTopic(nil, &pb.Topic{Name: topic})
+	_, _ = s.gServer.CreateTopic(context.TODO(), &pb.Topic{Name: topic})
 	req := &pb.PublishRequest{
 		Topic:    topic,
 		Messages: []*pb.PubsubMessage{{Data: data, Attributes: attrs}},
 	}
-	res, err := s.gServer.Publish(nil, req)
+	res, err := s.gServer.Publish(context.TODO(), req)
 	if err != nil {
 		panic(fmt.Sprintf("pstest.Server.Publish: %v", err))
 	}

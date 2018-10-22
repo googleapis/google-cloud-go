@@ -127,7 +127,7 @@ func testGRPCInterceptor(t *testing.T, tc *Client, parent *Span, assert func(t *
 	go func() {
 		lis, err := net.Listen("tcp", "")
 		if err != nil {
-			t.Fatalf("Failed to listen: %v", err)
+			t.Errorf("Failed to listen: %v", err)
 		}
 		addrCh <- lis.Addr()
 
@@ -139,7 +139,7 @@ func testGRPCInterceptor(t *testing.T, tc *Client, parent *Span, assert func(t *
 			},
 		})
 		if err := s.Serve(lis); err != nil {
-			t.Fatalf("Failed to serve: %v", err)
+			t.Errorf("Failed to serve: %v", err)
 		}
 	}()
 

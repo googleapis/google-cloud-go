@@ -334,6 +334,9 @@ func TestIntegration_TableMetadata(t *testing.T) {
 			ExpirationTime:   testTableExpiration,
 			Clustering:       clustering,
 		})
+		if err != nil {
+			t.Fatal(err)
+		}
 		clusterMD, err := clusterTable.Metadata(ctx)
 		if err != nil {
 			t.Fatal(err)
@@ -520,12 +523,12 @@ func TestIntegration_DatasetUpdateDefaultExpiration(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	md, err := dataset.Metadata(ctx)
+	_, err := dataset.Metadata(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
 	// Set the default expiration time.
-	md, err = dataset.Update(ctx, DatasetMetadataToUpdate{DefaultTableExpiration: time.Hour}, "")
+	md, err := dataset.Update(ctx, DatasetMetadataToUpdate{DefaultTableExpiration: time.Hour}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -587,13 +590,13 @@ func TestIntegration_DatasetUpdateLabels(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	md, err := dataset.Metadata(ctx)
+	_, err := dataset.Metadata(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
 	var dm DatasetMetadataToUpdate
 	dm.SetLabel("label", "value")
-	md, err = dataset.Update(ctx, dm, "")
+	md, err := dataset.Update(ctx, dm, "")
 	if err != nil {
 		t.Fatal(err)
 	}

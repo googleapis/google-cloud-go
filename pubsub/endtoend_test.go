@@ -165,20 +165,18 @@ loop:
 	}
 }
 
-// publish publishes n messages to topic, and returns the published message IDs.
+// publish publishes n messages to topic.
 func publish(ctx context.Context, topic *Topic, n int) error {
 	var rs []*PublishResult
 	for i := 0; i < n; i++ {
 		m := &Message{Data: []byte(fmt.Sprintf("msg %d", i))}
 		rs = append(rs, topic.Publish(ctx, m))
 	}
-	var ids []string
 	for _, r := range rs {
-		id, err := r.Get(ctx)
+		_, err := r.Get(ctx)
 		if err != nil {
 			return err
 		}
-		ids = append(ids, id)
 	}
 	return nil
 }
