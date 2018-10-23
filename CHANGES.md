@@ -1,5 +1,29 @@
 # Changes
 
+## v0.31.0
+
+- bigtable:
+    - Group mutations across multiple requests.
+- bigquery:
+    - Link to bigquery troubleshooting errors page in bigquery.Error comment.
+- cbt:
+    - Fix go generate command.
+    - Document usage of both maxage + maxversions.
+- datastore:
+    - Passing nil keys results in ErrInvalidKey.
+- firestore:
+    - Clarify what Document.DataTo does with untouched struct fields.
+- profile:
+    - Validate service name in agent.
+- pubsub:
+    - Fix deadlock with pstest and ctx.Cancel.
+    - Fix a possible deadlock in pstest.
+- trace:
+    - Update doc URL with new fragment.
+
+Special thanks to @fastest963 for going above and beyond helping us to debug
+hard-to-reproduce Pub/Sub issues.
+
 ## v0.30.0
 
 - spanner: DML support added. See https://godoc.org/cloud.google.com/go/spanner#hdr-DML_and_Partitioned_DML for more information.
