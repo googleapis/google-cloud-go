@@ -78,6 +78,10 @@ Alpha features are not currently available to most Cloud Bigtable customers. The
 features might be changed in backward-incompatible ways and are not recommended
 for production use. They are not subject to any SLA or deprecation policy.
 
+Note: cbt does not support specifying arbitrary bytes on the command line for
+any value that Bigtable otherwise supports (e.g., row key, column qualifier,
+etc.).
+
 For convenience, values of the -project, -instance, -creds,
 -admin-endpoint and -data-endpoint flags may be specified in
 ~/.cbtrc in this format:
