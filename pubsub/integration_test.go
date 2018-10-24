@@ -441,6 +441,8 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 	}
 }
 
+// NOTE: This test should be skipped by open source contributors. It requires
+// whitelisting, a (gsuite) organization project, and specific permissions.
 func TestIntegration_UpdateTopic(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
@@ -579,6 +581,11 @@ func TestIntegration_Errors(t *testing.T) {
 	}
 }
 
+// NOTE: This test should be skipped by open source contributors. It requires
+// whitelisting, a (gsuite) organization project, and specific permissions.
+//
+// Googlers, see internal bug 77920644. Furthermore, be sure to add your
+// service account as an owner of ps-geofencing-test.
 func TestIntegration_MessageStoragePolicy(t *testing.T) {
 	// Verify that the message storage policy is populated.
 	if testing.Short() {
