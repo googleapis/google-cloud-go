@@ -1299,7 +1299,7 @@ func (h testHelper) mustDelete(doc *DocumentRef) *WriteResult {
 }
 
 func (h testHelper) mustSet(doc *DocumentRef, data interface{}, opts ...SetOption) *WriteResult {
-	wr, err := doc.Set(context.Background(), data)
+	wr, err := doc.Set(context.Background(), data, opts...)
 	if err != nil {
 		h.t.Fatalf("%s: updating: %v", loc(), err)
 	}
