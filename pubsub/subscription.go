@@ -202,7 +202,7 @@ type ReceiveSettings struct {
 	// automatically extend the ack deadline for each message.
 	//
 	// The Subscription will automatically extend the ack deadline of all
-	// fetched Messages for the duration specified. Automatic deadline
+	// fetched Messages up to the duration specified. Automatic deadline
 	// extension may be disabled by specifying a duration less than 0.
 	MaxExtension time.Duration
 
