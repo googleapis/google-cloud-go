@@ -298,6 +298,12 @@ func TestTableMetadataToUpdateToBQ(t *testing.T) {
 				NullFields: []string{"Labels.D"},
 			},
 		},
+		{
+			tm: TableMetadataToUpdate{ExpirationTime: NeverExpire},
+			want: &bq.Table{
+				NullFields: []string{"ExpirationTime"},
+			},
+		},
 	} {
 		got := test.tm.toBQ()
 		if !testutil.Equal(got, test.want) {
