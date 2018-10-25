@@ -1551,7 +1551,7 @@ func isStructOrArrayOfStructValue(v interface{}) bool {
 
 func isSupportedMutationType(v interface{}) bool {
 	switch v.(type) {
-	case string, NullString, []string, []NullString,
+	case nil, string, NullString, []string, []NullString,
 		[]byte, [][]byte,
 		int, []int, int64, []int64, NullInt64, []NullInt64,
 		bool, []bool, NullBool, []NullBool,
