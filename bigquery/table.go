@@ -69,8 +69,9 @@ type TableMetadata struct {
 	// Clustering specifies the data clustering configuration for the table.
 	Clustering *Clustering
 
-	// The time when this table expires. If not set, the table will persist
-	// indefinitely. Expired tables will be deleted and their storage reclaimed.
+	// The time when this table expires. If set, this table will expire at the
+	// specified time. Expired tables will be deleted and their storage
+	// reclaimed. The zero value is ignored.
 	ExpirationTime time.Time
 
 	// User-provided labels.
@@ -278,7 +279,7 @@ func (t *Table) implicitTable() bool {
 // Create creates a table in the BigQuery service.
 // Pass in a TableMetadata value to configure the table.
 // If tm.View.Query is non-empty, the created table will be of type VIEW.
-// Expiration can only be set during table creation.
+// If no ExpirationTime is specified, the table will never expire.
 // After table creation, a view can be modified only if its table was initially created
 // with a view.
 func (t *Table) Create(ctx context.Context, tm *TableMetadata) (err error) {
@@ -443,6 +444,10 @@ func (t *Table) read(ctx context.Context, pf pageFetcher) *RowIterator {
 	return newRowIterator(ctx, t, pf)
 }
 
+// NeverExpire is a sentinel value used with TableMetadataToUpdate's
+// ExpirationTime to indicate that a table should never expire.
+var NeverExpire = time.Time{}.Add(-1)
+
 // Update modifies specific Table metadata fields.
 func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag string) (md *TableMetadata, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Table.Update")
@@ -485,7 +490,9 @@ func (tm *TableMetadataToUpdate) toBQ() *bq.Table {
 	if tm.EncryptionConfig != nil {
 		t.EncryptionConfiguration = tm.EncryptionConfig.toBQ()
 	}
-	if !tm.ExpirationTime.IsZero() {
+	if tm.ExpirationTime == NeverExpire {
+		t.NullFields = append(t.NullFields, "ExpirationTime")
+	} else if !tm.ExpirationTime.IsZero() {
 		t.ExpirationTime = tm.ExpirationTime.UnixNano() / 1e6
 		forceSend("ExpirationTime")
 	}
@@ -530,7 +537,8 @@ type TableMetadataToUpdate struct {
 	// all mutable fields of EncryptionConfig are populated.
 	EncryptionConfig *EncryptionConfig
 
-	// The time when this table expires.
+	// The time when this table expires. To remove a table's expiration,
+	// set ExpirationTime to NeverExpire. The zero value is ignored.
 	ExpirationTime time.Time
 
 	// The query to use for a view.
