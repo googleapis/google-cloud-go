@@ -331,6 +331,11 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	}
 	t.TimePartitioning = tm.TimePartitioning.toBQ()
 	t.Clustering = tm.Clustering.toBQ()
+
+	if !validExpiration(tm.ExpirationTime) {
+		return nil, fmt.Errorf("invalid expiration time: %v.\n"+
+			"Valid expiration times are after 1678 and before 2262", tm.ExpirationTime)
+	}
 	if !tm.ExpirationTime.IsZero() && tm.ExpirationTime != NeverExpire {
 		t.ExpirationTime = tm.ExpirationTime.UnixNano() / 1e6
 	}
@@ -452,7 +457,10 @@ func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag strin
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Table.Update")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	bqt := tm.toBQ()
+	bqt, err := tm.toBQ()
+	if err != nil {
+		return nil, err
+	}
 	call := t.c.bqs.Tables.Patch(t.ProjectID, t.DatasetID, t.TableID, bqt).Context(ctx)
 	setClientHeader(call.Header())
 	if etag != "" {
@@ -468,7 +476,7 @@ func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag strin
 	return bqToTableMetadata(res)
 }
 
-func (tm *TableMetadataToUpdate) toBQ() *bq.Table {
+func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 	t := &bq.Table{}
 	forceSend := func(field string) {
 		t.ForceSendFields = append(t.ForceSendFields, field)
@@ -488,6 +496,11 @@ func (tm *TableMetadataToUpdate) toBQ() *bq.Table {
 	}
 	if tm.EncryptionConfig != nil {
 		t.EncryptionConfiguration = tm.EncryptionConfig.toBQ()
+	}
+
+	if !validExpiration(tm.ExpirationTime) {
+		return nil, fmt.Errorf("invalid expiration time: %v.\n"+
+			"Valid expiration times are after 1678 and before 2262", tm.ExpirationTime)
 	}
 	if tm.ExpirationTime == NeverExpire {
 		t.NullFields = append(t.NullFields, "ExpirationTime")
@@ -516,7 +529,16 @@ func (tm *TableMetadataToUpdate) toBQ() *bq.Table {
 	t.Labels = labels
 	t.ForceSendFields = append(t.ForceSendFields, forces...)
 	t.NullFields = append(t.NullFields, nulls...)
-	return t
+	return t, nil
+}
+
+// validExpiration ensures a specified time is either the sentinel NeverExpire,
+// the zero value, or within the defined range of UnixNano. Internal
+// represetations of expiration times are based upon Time.UnixNano. Any time
+// before 1678 or after 2262 cannot be represented by an int64 and is therefore
+// undefined and invalid. See https://godoc.org/time#Time.UnixNano.
+func validExpiration(t time.Time) bool {
+	return t == NeverExpire || t.IsZero() || time.Unix(0, t.UnixNano()).Equal(t)
 }
 
 // TableMetadataToUpdate is used when updating a table's metadata.
