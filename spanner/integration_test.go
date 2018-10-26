@@ -31,7 +31,8 @@ import (
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
-	database "cloud.google.com/go/spanner/admin/database/apiv1"
+	"cloud.google.com/go/internal/uid"
+	"cloud.google.com/go/spanner/admin/database/apiv1"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -43,14 +44,21 @@ var (
 	// testProjectID specifies the project used for testing.
 	// It can be changed by setting environment variable GCLOUD_TESTS_GOLANG_PROJECT_ID.
 	testProjectID = testutil.ProjID()
+
+	dbNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
+
+	// TODO(deklerk) When we can programmatically create instances, we should use
+	// uid.New as the test instance name.
 	// testInstanceID specifies the Cloud Spanner instance used for testing.
 	testInstanceID = "go-integration-test"
 
+	testTable        = "TestTable"
+	testTableIndex   = "TestTableByValue"
+	testTableColumns = []string{"Key", "StringValue"}
+
 	// admin is a spanner.DatabaseAdminClient.
 	admin *database.DatabaseAdminClient
-)
 
-var (
 	singerDBStatements = []string{
 		`CREATE TABLE Singers (
 				SingerId	INT64 NOT NULL,
@@ -114,79 +122,11 @@ const (
 	str2 = "a@example.com"
 )
 
-type testTableRow struct{ Key, StringValue string }
-
 func TestMain(m *testing.M) {
 	initIntegrationTest()
-	os.Exit(m.Run())
-}
-
-func initIntegrationTest() {
-	flag.Parse() // needed for testing.Short()
-	if testing.Short() {
-		return
-	}
-	if testProjectID == "" {
-		log.Print("Integration tests skipped: GCLOUD_TESTS_GOLANG_PROJECT_ID is missing")
-		return
-	}
-	ctx := context.Background()
-	ts := testutil.TokenSource(ctx, AdminScope, Scope)
-	if ts == nil {
-		log.Printf("Integration test skipped: cannot get service account credential from environment variable %v", "GCLOUD_TESTS_GOLANG_KEY")
-		return
-	}
-	var err error
-	// Create Admin client and Data client.
-	admin, err = database.NewDatabaseAdminClient(ctx, option.WithTokenSource(ts), option.WithEndpoint(endpoint))
-	if err != nil {
-		log.Fatalf("cannot create admin client: %v", err)
-	}
-}
-
-var (
-	mu    sync.Mutex
-	count int
-	now   = time.Now()
-)
-
-// prepare initializes Cloud Spanner testing DB and clients.
-func prepare(ctx context.Context, t *testing.T, statements []string) (client *Client, dbPath string, cleanup func()) {
-	if admin == nil {
-		t.Skip("Integration tests skipped")
-	}
-	// Construct a unique test DB name.
-	mu.Lock()
-	dbName := fmt.Sprintf("gotest_%d_%d", now.UnixNano(), count)
-	count++
-	mu.Unlock()
-
-	dbPath = fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectID, testInstanceID, dbName)
-	// Create database and tables.
-	op, err := admin.CreateDatabase(ctx, &adminpb.CreateDatabaseRequest{
-		Parent:          fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID),
-		CreateStatement: "CREATE DATABASE " + dbName,
-		ExtraStatements: statements,
-	})
-	if err != nil {
-		t.Fatalf("cannot create testing DB %v: %v", dbPath, err)
-	}
-	if _, err := op.Wait(ctx); err != nil {
-		t.Fatalf("cannot create testing DB %v: %v", dbPath, err)
-	}
-	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{
-		SessionPoolConfig: SessionPoolConfig{WriteSessions: 0.2},
-	}, option.WithTokenSource(testutil.TokenSource(ctx, Scope)), option.WithEndpoint(endpoint))
-	if err != nil {
-		t.Fatalf("cannot create data client on DB %v: %v", dbPath, err)
-	}
-	return client, dbPath, func() {
-		client.Close()
-		if err := admin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: dbPath}); err != nil {
-			t.Logf("failed to drop database %s (error %v), might need a manual removal",
-				dbPath, err)
-		}
-	}
+	res := m.Run()
+	cleanupDatabases()
+	os.Exit(res)
 }
 
 // Test SingleUse transaction.
@@ -702,12 +642,7 @@ func TestReadWriteTransaction(t *testing.T) {
 	}
 }
 
-const (
-	testTable      = "TestTable"
-	testTableIndex = "TestTableByValue"
-)
-
-var testTableColumns = []string{"Key", "StringValue"}
+type testTableRow struct{ Key, StringValue string }
 
 func TestReads(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2120,5 +2055,98 @@ func TestPDML(t *testing.T) {
 	}
 	if !testEqual(got, want) {
 		t.Errorf("\ngot %v\nwant%v", got, want)
+	}
+}
+
+func initIntegrationTest() {
+	flag.Parse() // needed for testing.Short()
+	if testing.Short() {
+		return
+	}
+	if testProjectID == "" {
+		log.Print("Integration tests skipped: GCLOUD_TESTS_GOLANG_PROJECT_ID is missing")
+		return
+	}
+	ctx := context.Background()
+
+	ts := testutil.TokenSource(ctx, AdminScope, Scope)
+	if ts == nil {
+		log.Printf("Integration test skipped: cannot get service account credential from environment variable %v", "GCLOUD_TESTS_GOLANG_KEY")
+		return
+	}
+	var err error
+	// Create Admin client and Data client.
+	admin, err = database.NewDatabaseAdminClient(ctx, option.WithTokenSource(ts), option.WithEndpoint(endpoint))
+	if err != nil {
+		log.Fatalf("cannot create admin client: %v", err)
+	}
+}
+
+// Prepare initializes Cloud Spanner testing DB and clients.
+func prepare(ctx context.Context, t *testing.T, statements []string) (client *Client, dbPath string, cleanup func()) {
+	if admin == nil {
+		t.Skip("Integration tests skipped")
+	}
+	// Construct a unique test DB name.
+	dbName := dbNameSpace.New()
+
+	dbPath = fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectID, testInstanceID, dbName)
+	// Create database and tables.
+	op, err := admin.CreateDatabase(ctx, &adminpb.CreateDatabaseRequest{
+		Parent:          fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID),
+		CreateStatement: "CREATE DATABASE " + dbName,
+		ExtraStatements: statements,
+	})
+	if err != nil {
+		t.Fatalf("cannot create testing DB %v: %v", dbPath, err)
+	}
+	if _, err := op.Wait(ctx); err != nil {
+		t.Fatalf("cannot create testing DB %v: %v", dbPath, err)
+	}
+	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{WriteSessions: 0.2},
+	}, option.WithTokenSource(testutil.TokenSource(ctx, Scope)), option.WithEndpoint(endpoint))
+	if err != nil {
+		t.Fatalf("cannot create data client on DB %v: %v", dbPath, err)
+	}
+	return client, dbPath, func() {
+		client.Close()
+		if err := admin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: dbPath}); err != nil {
+			t.Logf("failed to drop database %s (error %v), might need a manual removal",
+				dbPath, err)
+		}
+	}
+}
+
+func cleanupDatabases() {
+	if admin == nil {
+		// Integration tests skipped.
+		return
+	}
+
+	ctx := context.Background()
+	dbsParent := fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID)
+	dbsIter := admin.ListDatabases(ctx, &adminpb.ListDatabasesRequest{Parent: dbsParent})
+	expireAge := 24 * time.Hour
+
+	for {
+		db, err := dbsIter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			panic(err)
+		}
+		// TODO(deklerk) When we have the ability to programmatically create
+		// instances, we can create an instance with uid.New and delete all
+		// tables in it. For now, we rely on matching prefixes.
+		if dbNameSpace.Older(db.Name, expireAge) {
+			log.Printf("Dropping database %s", db.Name)
+
+			if err := admin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: db.Name}); err != nil {
+				log.Printf("failed to drop database %s (error %v), might need a manual removal",
+					db.Name, err)
+			}
+		}
 	}
 }
