@@ -509,7 +509,8 @@ func TestHcHeap(t *testing.T) {
 	}
 }
 
-// TestHealthCheckScheduler tests if healthcheck workers can schedule and perform healthchecks properly.
+// TestHealthCheckScheduler tests if healthcheck workers can schedule and
+// perform healthchecks properly.
 func TestHealthCheckScheduler(t *testing.T) {
 	t.Parallel()
 	if testing.Short() {
@@ -522,24 +523,27 @@ func TestHealthCheckScheduler(t *testing.T) {
 	for i := 0; i < 50; i++ {
 		sh, err := sp.take(context.Background())
 		if err != nil {
-			t.Errorf("cannot get session from session pool: %v", err)
+			t.Fatalf("cannot get session from session pool: %v", err)
 		}
 		ss = append(ss, sh.getID())
 	}
-	// Sleep for 1s, allowing healthcheck workers to perform some session pings.
-	<-time.After(time.Second)
-	dp := sc.DumpPings()
-	gotPings := map[string]int64{}
-	for _, p := range dp {
-		gotPings[p]++
-	}
-	for _, s := range ss {
-		// The average ping interval is 50ms.
-		want := int64(time.Second) / int64(50*time.Millisecond)
-		if got := gotPings[s]; got < want/2 || got > want+want/2 {
-			t.Errorf("got %v healthchecks on session %v, want it between (%v, %v)", got, s, want/2, want+want/2)
+
+	// Wait for 10-30 pings per session.
+	waitFor(t, func() error {
+		dp := sc.DumpPings()
+		gotPings := map[string]int64{}
+		for _, p := range dp {
+			gotPings[p]++
 		}
-	}
+		for _, s := range ss {
+			want := int64(20)
+			if got := gotPings[s]; got < want/2 || got > want+want/2 {
+				// This is an unnacceptable amount of pings.
+				return fmt.Errorf("got %v healthchecks on session %v, want it between (%v, %v)", got, s, want/2, want+want/2)
+			}
+		}
+		return nil
+	})
 }
 
 // Tests that a fractions of sessions are prepared for write by health checker.
@@ -638,11 +642,14 @@ func TestSessionHealthCheck(t *testing.T) {
 	if err != nil {
 		t.Errorf("cannot get session from session pool: %v", err)
 	}
-	<-time.After(time.Second)
-	pings := sc.DumpPings()
-	if len(pings) == 0 || pings[0] != sh.getID() {
-		t.Errorf("healthchecker didn't send any ping to session %v", sh.getID())
-	}
+	// Wait for healthchecker to send pings to session.
+	waitFor(t, func() error {
+		pings := sc.DumpPings()
+		if len(pings) == 0 || pings[0] != sh.getID() {
+			return fmt.Errorf("healthchecker didn't send any ping to session %v", sh.getID())
+		}
+		return nil
+	})
 	// Test broken session detection.
 	sh, err = sp.take(context.Background())
 	if err != nil {
