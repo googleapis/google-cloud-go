@@ -300,8 +300,8 @@ func TestBindParamsDynamic(t *testing.T) {
 func TestStructParametersBind(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	client, _, tearDown := prepare(ctx, t, nil)
-	defer tearDown()
+	client, _, cleanup := prepare(ctx, t, nil)
+	defer cleanup()
 
 	type tRow []interface{}
 	type tRows []struct{ trow tRow }
