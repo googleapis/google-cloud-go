@@ -33,17 +33,21 @@ func TestStreamTimeout(t *testing.T) {
 	log.SetFlags(log.Lmicroseconds)
 	ctx := context.Background()
 	srv := pstest.NewServer()
+	defer srv.Close()
+
 	srv.SetStreamTimeout(2 * time.Second)
 	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer conn.Close()
 
 	client, err := NewClient(ctx, "P", option.WithGRPCConn(conn))
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer client.Close()
+
 	topic, err := client.CreateTopic(ctx, "T")
 	if err != nil {
 		t.Fatal(err)

@@ -59,6 +59,7 @@ func timeNow() time.Time {
 
 // Server is a fake Pub/Sub server.
 type Server struct {
+	srv     *testutil.Server
 	Addr    string // The address that the server is listening on.
 	gServer gServer
 }
@@ -84,6 +85,7 @@ func NewServer() *Server {
 		panic(fmt.Sprintf("pstest.NewServer: %v", err))
 	}
 	s := &Server{
+		srv:  srv,
 		Addr: srv.Addr,
 		gServer: gServer{
 			topics:   map[string]*topic{},
@@ -187,6 +189,17 @@ func (s *Server) Message(id string) *Message {
 // Wait blocks until all server activity has completed.
 func (s *Server) Wait() {
 	s.gServer.wg.Wait()
+}
+
+// Close shuts down the server and releases all resources.
+func (s *Server) Close() error {
+	s.srv.Close()
+	s.gServer.mu.Lock()
+	defer s.gServer.mu.Unlock()
+	for _, sub := range s.gServer.subs {
+		sub.stop()
+	}
+	return nil
 }
 
 func (s *gServer) CreateTopic(_ context.Context, t *pb.Topic) (*pb.Topic, error) {

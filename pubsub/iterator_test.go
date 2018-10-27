@@ -72,6 +72,7 @@ func TestAckDistribution(t *testing.T) {
 	minAckDeadline = 1 * time.Second
 	pstest.SetMinAckDeadline(minAckDeadline)
 	srv := pstest.NewServer()
+	defer srv.Close()
 	defer pstest.ResetMinAckDeadline()
 
 	// Create the topic via a Publish. It's convenient to do it here as opposed to client.CreateTopic because the client
