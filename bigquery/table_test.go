@@ -194,6 +194,10 @@ func TestTableMetadataToBQ(t *testing.T) {
 				},
 			},
 		},
+		{
+			&TableMetadata{ExpirationTime: NeverExpire},
+			&bq.Table{ExpirationTime: 0},
+		},
 	} {
 		got, err := test.in.toBQ()
 		if err != nil {
