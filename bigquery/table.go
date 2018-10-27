@@ -331,7 +331,7 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	}
 	t.TimePartitioning = tm.TimePartitioning.toBQ()
 	t.Clustering = tm.Clustering.toBQ()
-	if !tm.ExpirationTime.IsZero() {
+	if !tm.ExpirationTime.IsZero() && tm.ExpirationTime != NeverExpire {
 		t.ExpirationTime = tm.ExpirationTime.UnixNano() / 1e6
 	}
 	if tm.ExternalDataConfig != nil {
@@ -444,8 +444,7 @@ func (t *Table) read(ctx context.Context, pf pageFetcher) *RowIterator {
 	return newRowIterator(ctx, t, pf)
 }
 
-// NeverExpire is a sentinel value used with TableMetadataToUpdate's
-// ExpirationTime to indicate that a table should never expire.
+// NeverExpire is a sentinel value used to remove a table'e expiration time.
 var NeverExpire = time.Time{}.Add(-1)
 
 // Update modifies specific Table metadata fields.
