@@ -19,6 +19,7 @@ package spanner
 import (
 	"bytes"
 	"container/heap"
+	"fmt"
 	"math/rand"
 	"sync"
 	"testing"
@@ -822,17 +823,20 @@ func TestMaintainer(t *testing.T) {
 	)
 	sp, _, cancel := setup(t, SessionPoolConfig{MinOpened: minOpened, MaxIdle: maxIdle})
 	sampleInterval := sp.SessionPoolConfig.healthCheckSampleInterval
-	hcInterval := sp.SessionPoolConfig.HealthCheckInterval
 	defer cancel()
 
-	<-time.After(sampleInterval * 1)
-	sp.mu.Lock()
-	if sp.numOpened != 5 {
-		t.Errorf("Replenish. Expect %d open, got %d", sp.MinOpened, sp.numOpened)
-	}
-	sp.mu.Unlock()
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if sp.numOpened != 5 {
+			return fmt.Errorf("Replenish. Expect %d open, got %d", sp.MinOpened, sp.numOpened)
+		}
+		return nil
+	})
 
-	// To save test time, we are not creating many sessions, because the time to create sessions will have impact on the decision on sessionsToKeep. We also parallelize the take and recycle process.
+	// To save test time, we are not creating many sessions, because the time
+	// to create sessions will have impact on the decision on sessionsToKeep.
+	// We also parallelize the take and recycle process.
 	shs := make([]*sessionHandle, 10)
 	for i := 0; i < len(shs); i++ {
 		var err error
@@ -852,22 +856,26 @@ func TestMaintainer(t *testing.T) {
 		sh.recycle()
 	}
 
-	<-time.After(sampleInterval * 2)
-	sp.mu.Lock()
-	if sp.numOpened != 7 {
-		t.Errorf("Keep extra MaxIdle sessions. Expect %d open, got %d", 7, sp.numOpened)
-	}
-	sp.mu.Unlock()
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if sp.numOpened != 7 {
+			return fmt.Errorf("Keep extra MaxIdle sessions. Expect %d open, got %d", 7, sp.numOpened)
+		}
+		return nil
+	})
 
 	for _, sh := range shs[7:] {
 		sh.recycle()
 	}
-	<-time.After(sampleInterval*10 + hcInterval)
-	sp.mu.Lock()
-	if sp.numOpened != minOpened {
-		t.Errorf("Scale down. Expect %d open, got %d", minOpened, sp.numOpened)
-	}
-	sp.mu.Unlock()
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if sp.numOpened != minOpened {
+			return fmt.Errorf("Scale down. Expect %d open, got %d", minOpened, sp.numOpened)
+		}
+		return nil
+	})
 }
 
 func (s1 *session) Equal(s2 *session) bool {
@@ -882,4 +890,27 @@ func (s1 *session) Equal(s2 *session) bool {
 		s1.checkingHealth == s2.checkingHealth &&
 		testEqual(s1.md, s2.md) &&
 		bytes.Equal(s1.tx, s2.tx)
+}
+
+func waitFor(t *testing.T, assert func() error) {
+	timeout := time.After(5 * time.Second)
+
+	for {
+		select {
+		case <-timeout:
+			if err := assert(); err != nil {
+				t.Fatalf("after %v waiting, got %v", timeout, err)
+			}
+			return
+		default:
+		}
+
+		if err := assert(); err != nil {
+			// Fail. Let's pause and retry.
+			time.Sleep(10 * time.Millisecond)
+			continue
+		}
+
+		return
+	}
 }
