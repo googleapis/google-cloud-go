@@ -55,7 +55,10 @@ func TestSubscriptionID(t *testing.T) {
 
 func TestListProjectSubscriptions(t *testing.T) {
 	ctx := context.Background()
-	c, _ := newFake(t)
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
 	topic := mustCreateTopic(t, c, "t")
 	var want []string
 	for i := 1; i <= 2; i++ {
@@ -87,7 +90,10 @@ func getSubIDs(subs []*Subscription) []string {
 
 func TestListTopicSubscriptions(t *testing.T) {
 	ctx := context.Background()
-	c, _ := newFake(t)
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
 	topics := []*Topic{
 		mustCreateTopic(t, c, "t0"),
 		mustCreateTopic(t, c, "t1"),
@@ -118,8 +124,9 @@ const defaultRetentionDuration = 168 * time.Hour
 
 func TestUpdateSubscription(t *testing.T) {
 	ctx := context.Background()
-	client, _ := newFake(t)
+	client, srv := newFake(t)
 	defer client.Close()
+	defer srv.Close()
 
 	topic := mustCreateTopic(t, client, "t")
 	sub, err := client.CreateSubscription(ctx, "s", SubscriptionConfig{Topic: topic})
@@ -187,6 +194,7 @@ func testReceive(t *testing.T, synchronous bool) {
 	ctx := context.Background()
 	client, srv := newFake(t)
 	defer client.Close()
+	defer srv.Close()
 
 	topic := mustCreateTopic(t, client, "t")
 	sub, err := client.CreateSubscription(ctx, "s", SubscriptionConfig{Topic: topic})
@@ -222,6 +230,7 @@ func (t1 *Topic) Equal(t2 *Topic) bool {
 	return t1.c == t2.c && t1.name == t2.name
 }
 
+// Note: be sure to close client and server!
 func newFake(t *testing.T) (*Client, *pstest.Server) {
 	ctx := context.Background()
 	srv := pstest.NewServer()

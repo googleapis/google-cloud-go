@@ -32,6 +32,8 @@ import (
 
 func TestTopics(t *testing.T) {
 	pclient, _, server := newFake(t)
+	defer server.Close()
+
 	ctx := context.Background()
 	var topics []*pb.Topic
 	for i := 1; i < 3; i++ {
@@ -73,6 +75,8 @@ func TestTopics(t *testing.T) {
 
 func TestSubscriptions(t *testing.T) {
 	pclient, sclient, server := newFake(t)
+	defer server.Close()
+
 	ctx := context.Background()
 	topic := mustCreateTopic(t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
 	var subs []*pb.Subscription
@@ -130,7 +134,9 @@ func TestSubscriptions(t *testing.T) {
 }
 
 func TestSubscriptionErrors(t *testing.T) {
-	_, sclient, _ := newFake(t)
+	_, sclient, srv := newFake(t)
+	defer srv.Close()
+
 	ctx := context.Background()
 
 	// TODO(jba): Go1.9: use t.Helper()
@@ -177,6 +183,8 @@ func TestSubscriptionErrors(t *testing.T) {
 
 func TestPublish(t *testing.T) {
 	s := NewServer()
+	defer s.Close()
+
 	var ids []string
 	for i := 0; i < 3; i++ {
 		ids = append(ids, s.Publish("projects/p/topics/t", []byte("hello"), nil))
@@ -228,7 +236,9 @@ func publish(t *testing.T, pclient pb.PublisherClient, topic *pb.Topic, messages
 }
 
 func TestPull(t *testing.T) {
-	pclient, sclient, _ := newFake(t)
+	pclient, sclient, srv := newFake(t)
+	defer srv.Close()
+
 	top := mustCreateTopic(t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
 	sub := mustCreateSubscription(t, sclient, &pb.Subscription{
 		Name:               "projects/P/subscriptions/S",
@@ -257,7 +267,9 @@ func TestPull(t *testing.T) {
 
 func TestStreamingPull(t *testing.T) {
 	// A simple test of streaming pull.
-	pclient, sclient, _ := newFake(t)
+	pclient, sclient, srv := newFake(t)
+	defer srv.Close()
+
 	top := mustCreateTopic(t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
 	sub := mustCreateSubscription(t, sclient, &pb.Subscription{
 		Name:               "projects/P/subscriptions/S",
@@ -279,7 +291,9 @@ func TestStreamingPull(t *testing.T) {
 func TestStreamingPullAck(t *testing.T) {
 	// Ack each message as it arrives. Make sure we don't see dups.
 	minAckDeadlineSecs = 1
-	pclient, sclient, _ := newFake(t)
+	pclient, sclient, srv := newFake(t)
+	defer srv.Close()
+
 	top := mustCreateTopic(t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
 	sub := mustCreateSubscription(t, sclient, &pb.Subscription{
 		Name:               "projects/P/subscriptions/S",
@@ -326,6 +340,8 @@ func TestStreamingPullAck(t *testing.T) {
 func TestAcknowledge(t *testing.T) {
 	ctx := context.Background()
 	pclient, sclient, srv := newFake(t)
+	defer srv.Close()
+
 	top := mustCreateTopic(t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
 	sub := mustCreateSubscription(t, sclient, &pb.Subscription{
 		Name:               "projects/P/subscriptions/S",
@@ -362,7 +378,9 @@ func TestAcknowledge(t *testing.T) {
 
 func TestModAck(t *testing.T) {
 	ctx := context.Background()
-	pclient, sclient, _ := newFake(t)
+	pclient, sclient, srv := newFake(t)
+	defer srv.Close()
+
 	top := mustCreateTopic(t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
 	sub := mustCreateSubscription(t, sclient, &pb.Subscription{
 		Name:               "projects/P/subscriptions/S",
@@ -396,7 +414,9 @@ func TestModAck(t *testing.T) {
 
 func TestAckDeadline(t *testing.T) {
 	// Messages should be resent after they expire.
-	pclient, sclient, _ := newFake(t)
+	pclient, sclient, srv := newFake(t)
+	defer srv.Close()
+
 	minAckDeadlineSecs = 2
 	top := mustCreateTopic(t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
 	sub := mustCreateSubscription(t, sclient, &pb.Subscription{
@@ -441,7 +461,9 @@ func TestAckDeadline(t *testing.T) {
 
 func TestMultiSubs(t *testing.T) {
 	// Each subscription gets every message.
-	pclient, sclient, _ := newFake(t)
+	pclient, sclient, srv := newFake(t)
+	defer srv.Close()
+
 	top := mustCreateTopic(t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
 	sub1 := mustCreateSubscription(t, sclient, &pb.Subscription{
 		Name:               "projects/P/subscriptions/S1",
@@ -471,7 +493,9 @@ func TestMultiSubs(t *testing.T) {
 
 func TestMultiStreams(t *testing.T) {
 	// Messages are handed out to the streams of a subscription in round-robin order.
-	pclient, sclient, _ := newFake(t)
+	pclient, sclient, srv := newFake(t)
+	defer srv.Close()
+
 	top := mustCreateTopic(t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
 	sub := mustCreateSubscription(t, sclient, &pb.Subscription{
 		Name:               "projects/P/subscriptions/S",
@@ -506,6 +530,8 @@ func TestMultiStreams(t *testing.T) {
 
 func TestStreamingPullTimeout(t *testing.T) {
 	pclient, sclient, srv := newFake(t)
+	defer srv.Close()
+
 	timeout := 200 * time.Millisecond
 	srv.SetStreamTimeout(timeout)
 	top := mustCreateTopic(t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
@@ -523,7 +549,9 @@ func TestStreamingPullTimeout(t *testing.T) {
 }
 
 func TestSeek(t *testing.T) {
-	pclient, sclient, _ := newFake(t)
+	pclient, sclient, srv := newFake(t)
+	defer srv.Close()
+
 	top := mustCreateTopic(t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
 	sub := mustCreateSubscription(t, sclient, &pb.Subscription{
 		Name:               "projects/P/subscriptions/S",
@@ -649,6 +677,7 @@ func mustCreateSubscription(t *testing.T, sc pb.SubscriberClient, sub *pb.Subscr
 	return sub
 }
 
+// Note: be sure to close server!
 func newFake(t *testing.T) (pb.PublisherClient, pb.SubscriberClient, *Server) {
 	srv := NewServer()
 	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())

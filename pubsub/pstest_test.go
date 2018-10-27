@@ -30,11 +30,13 @@ func TestPSTest(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	srv := pstest.NewServer()
+	defer srv.Close()
 
 	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
 	if err != nil {
 		panic(err)
 	}
+	defer conn.Close()
 
 	client, err := pubsub.NewClient(ctx, "some-project", option.WithGRPCConn(conn))
 	if err != nil {
