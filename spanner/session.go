@@ -257,7 +257,7 @@ func (s *session) destroy(isExpire bool) bool {
 	// Unregister s from healthcheck queue.
 	s.pool.hc.unregister(s)
 	// Remove s from Cloud Spanner service.
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	s.delete(ctx)
 	return true
