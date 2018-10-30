@@ -161,6 +161,8 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.MaxBurst == 0 {
 		config.MaxBurst = 10
 	}
+	// TODO(deklerk) This should be replaced with a balancer with config.NumChannels
+	// connections, instead of config.NumChannels clientconns.
 	for i := 0; i < config.NumChannels; i++ {
 		conn, err := gtransport.Dial(ctx, allOpts...)
 		if err != nil {
