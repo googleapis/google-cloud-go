@@ -136,7 +136,7 @@ $ gcloud beta pubsub topics create go-storage-notification-test
 # as a publisher to that topic.
 
 # Creates a Spanner instance for the spanner integration tests.
-$ gcloud beta spanner instances create go-integration-test --config regional-us-central1 --nodes 1 --description 'Instance for go client test'
+$ gcloud beta spanner instances create go-integration-test --config regional-us-central1 --nodes 10 --description 'Instance for go client test'
 # NOTE: Spanner instances are priced by the node-hour, so you may want to
 # delete the instance after testing with 'gcloud beta spanner instances delete'.
 

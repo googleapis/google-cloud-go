@@ -151,7 +151,7 @@ var (
 )
 
 // prepare initializes Cloud Spanner testing DB and clients.
-func prepare(ctx context.Context, t *testing.T, statements []string) (client *Client, dbPath string, tearDown func()) {
+func prepare(ctx context.Context, t *testing.T, statements []string) (client *Client, dbPath string, cleanup func()) {
 	if admin == nil {
 		t.Skip("Integration tests skipped")
 	}
@@ -191,12 +191,11 @@ func prepare(ctx context.Context, t *testing.T, statements []string) (client *Cl
 
 // Test SingleUse transaction.
 func TestSingleUse(t *testing.T) {
-	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 	// Set up testing environment.
-	client, _, tearDown := prepare(ctx, t, singerDBStatements)
-	defer tearDown()
+	client, _, cleanup := prepare(ctx, t, singerDBStatements)
+	defer cleanup()
 
 	writes := []struct {
 		row []interface{}
@@ -402,12 +401,11 @@ func TestSingleUse(t *testing.T) {
 // Test ReadOnlyTransaction. The testsuite is mostly like SingleUse, except it
 // also tests for a single timestamp across multiple reads.
 func TestReadOnlyTransaction(t *testing.T) {
-	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up testing environment.
-	client, _, tearDown := prepare(ctx, t, singerDBStatements)
-	defer tearDown()
+	client, _, cleanup := prepare(ctx, t, singerDBStatements)
+	defer cleanup()
 
 	writes := []struct {
 		row []interface{}
@@ -586,11 +584,10 @@ func TestReadOnlyTransaction(t *testing.T) {
 
 // Test ReadOnlyTransaction with different timestamp bound when there's an update at the same time.
 func TestUpdateDuringRead(t *testing.T) {
-	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, tearDown := prepare(ctx, t, singerDBStatements)
-	defer tearDown()
+	client, _, cleanup := prepare(ctx, t, singerDBStatements)
+	defer cleanup()
 
 	for i, tb := range []TimestampBound{
 		StrongRead(),
@@ -617,12 +614,11 @@ func TestUpdateDuringRead(t *testing.T) {
 
 // Test ReadWriteTransaction.
 func TestReadWriteTransaction(t *testing.T) {
-	t.Parallel()
 	// Give a longer deadline because of transaction backoffs.
 	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
 	defer cancel()
-	client, _, tearDown := prepare(ctx, t, singerDBStatements)
-	defer tearDown()
+	client, _, cleanup := prepare(ctx, t, singerDBStatements)
+	defer cleanup()
 
 	// Set up two accounts
 	accounts := []*Mutation{
@@ -714,12 +710,11 @@ const (
 var testTableColumns = []string{"Key", "StringValue"}
 
 func TestReads(t *testing.T) {
-	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up testing environment.
-	client, _, tearDown := prepare(ctx, t, readDBStatements)
-	defer tearDown()
+	client, _, cleanup := prepare(ctx, t, readDBStatements)
+	defer cleanup()
 
 	// Includes k0..k14. Strings sort lexically, eg "k1" < "k10" < "k2".
 	var ms []*Mutation
@@ -870,14 +865,13 @@ func compareRows(iter *RowIterator, wantNums []int) (string, bool) {
 }
 
 func TestEarlyTimestamp(t *testing.T) {
-	t.Parallel()
 	// Test that we can get the timestamp from a read-only transaction as
 	// soon as we have read at least one row.
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 	// Set up testing environment.
-	client, _, tearDown := prepare(ctx, t, readDBStatements)
-	defer tearDown()
+	client, _, cleanup := prepare(ctx, t, readDBStatements)
+	defer cleanup()
 
 	var ms []*Mutation
 	for i := 0; i < 3; i++ {
@@ -917,11 +911,11 @@ func TestEarlyTimestamp(t *testing.T) {
 }
 
 func TestNestedTransaction(t *testing.T) {
-	t.Parallel()
 	// You cannot use a transaction from inside a read-write transaction.
 	ctx := context.Background()
-	client, _, tearDown := prepare(ctx, t, singerDBStatements)
-	defer tearDown()
+	client, _, cleanup := prepare(ctx, t, singerDBStatements)
+	defer cleanup()
+
 	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 		_, err := client.ReadWriteTransaction(ctx,
 			func(context.Context, *ReadWriteTransaction) error { return nil })
@@ -947,11 +941,10 @@ func TestNestedTransaction(t *testing.T) {
 
 // Test client recovery on database recreation.
 func TestDbRemovalRecovery(t *testing.T) {
-	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
 	defer cancel()
-	client, dbPath, tearDown := prepare(ctx, t, singerDBStatements)
-	defer tearDown()
+	client, dbPath, cleanup := prepare(ctx, t, singerDBStatements)
+	defer cleanup()
 
 	// Drop the testing database.
 	if err := admin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: dbPath}); err != nil {
@@ -997,11 +990,11 @@ func TestDbRemovalRecovery(t *testing.T) {
 
 // Test encoding/decoding non-struct Cloud Spanner types.
 func TestBasicTypes(t *testing.T) {
-	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, tearDown := prepare(ctx, t, singerDBStatements)
-	defer tearDown()
+	client, _, cleanup := prepare(ctx, t, singerDBStatements)
+	defer cleanup()
+
 	t1, _ := time.Parse(time.RFC3339Nano, "2016-11-15T15:04:05.999999999Z")
 	// Boundaries
 	t2, _ := time.Parse(time.RFC3339Nano, "0001-01-01T00:00:00.000000000Z")
@@ -1143,11 +1136,10 @@ func TestBasicTypes(t *testing.T) {
 
 // Test decoding Cloud Spanner STRUCT type.
 func TestStructTypes(t *testing.T) {
-	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, tearDown := prepare(ctx, t, singerDBStatements)
-	defer tearDown()
+	client, _, cleanup := prepare(ctx, t, singerDBStatements)
+	defer cleanup()
 
 	tests := []struct {
 		q    Statement
@@ -1229,10 +1221,9 @@ func TestStructTypes(t *testing.T) {
 }
 
 func TestStructParametersUnsupported(t *testing.T) {
-	t.Parallel()
 	ctx := context.Background()
-	client, _, tearDown := prepare(ctx, t, nil)
-	defer tearDown()
+	client, _, cleanup := prepare(ctx, t, nil)
+	defer cleanup()
 
 	for _, test := range []struct {
 		param       interface{}
@@ -1272,10 +1263,9 @@ func TestStructParametersUnsupported(t *testing.T) {
 
 // Test queries of the form "SELECT expr".
 func TestQueryExpressions(t *testing.T) {
-	t.Parallel()
 	ctx := context.Background()
-	client, _, tearDown := prepare(ctx, t, nil)
-	defer tearDown()
+	client, _, cleanup := prepare(ctx, t, nil)
+	defer cleanup()
 
 	newRow := func(vals []interface{}) *Row {
 		row, err := NewRow(make([]string, len(vals)), vals)
@@ -1326,10 +1316,9 @@ func TestQueryExpressions(t *testing.T) {
 }
 
 func TestQueryStats(t *testing.T) {
-	t.Parallel()
 	ctx := context.Background()
-	client, _, tearDown := prepare(ctx, t, singerDBStatements)
-	defer tearDown()
+	client, _, cleanup := prepare(ctx, t, singerDBStatements)
+	defer cleanup()
 
 	accounts := []*Mutation{
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
@@ -1376,7 +1365,6 @@ func isNaN(x interface{}) bool {
 }
 
 func TestInvalidDatabase(t *testing.T) {
-	t.Parallel()
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -1401,10 +1389,9 @@ func TestInvalidDatabase(t *testing.T) {
 }
 
 func TestReadErrors(t *testing.T) {
-	t.Parallel()
 	ctx := context.Background()
-	client, _, tearDown := prepare(ctx, t, readDBStatements)
-	defer tearDown()
+	client, _, cleanup := prepare(ctx, t, readDBStatements)
+	defer cleanup()
 
 	// Read over invalid table fails
 	_, err := client.Single().ReadRow(ctx, "badTable", Key{1}, []string{"StringValue"})
@@ -1504,11 +1491,10 @@ func readAllTestTable(iter *RowIterator) ([]testTableRow, error) {
 
 // Test TransactionRunner. Test that transactions are aborted and retried as expected.
 func TestTransactionRunner(t *testing.T) {
-	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, tearDown := prepare(ctx, t, singerDBStatements)
-	defer tearDown()
+	client, _, cleanup := prepare(ctx, t, singerDBStatements)
+	defer cleanup()
 
 	// Test 1: User error should abort the transaction.
 	_, _ = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
@@ -1660,16 +1646,16 @@ func populate(ctx context.Context, client *Client) error {
 // serialize and deserialize both transaction and partition to be used in
 // execution on another client, and compare results.
 func TestBatchQuery(t *testing.T) {
-	t.Parallel()
 	// Set up testing environment.
 	var (
 		client2 *Client
 		err     error
 	)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, dbPath, tearDown := prepare(ctx, t, simpleDBStatements)
-	defer tearDown()
+	client, dbPath, cleanup := prepare(ctx, t, simpleDBStatements)
+	defer cleanup()
+
 	if err = populate(ctx, client); err != nil {
 		t.Fatal(err)
 	}
@@ -1744,16 +1730,16 @@ func TestBatchQuery(t *testing.T) {
 
 // Test PartitionRead of BatchReadOnlyTransaction, similar to TestBatchQuery
 func TestBatchRead(t *testing.T) {
-	t.Parallel()
 	// Set up testing environment.
 	var (
 		client2 *Client
 		err     error
 	)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, dbPath, tearDown := prepare(ctx, t, simpleDBStatements)
-	defer tearDown()
+	client, dbPath, cleanup := prepare(ctx, t, simpleDBStatements)
+	defer cleanup()
+
 	if err = populate(ctx, client); err != nil {
 		t.Fatal(err)
 	}
@@ -1827,7 +1813,6 @@ func TestBatchRead(t *testing.T) {
 
 // Test normal txReadEnv method on BatchReadOnlyTransaction.
 func TestBROTNormal(t *testing.T) {
-	t.Parallel()
 	// Set up testing environment and create txn.
 	var (
 		txn *BatchReadOnlyTransaction
@@ -1835,10 +1820,10 @@ func TestBROTNormal(t *testing.T) {
 		row *Row
 		i   int64
 	)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, tearDown := prepare(ctx, t, simpleDBStatements)
-	defer tearDown()
+	client, _, cleanup := prepare(ctx, t, simpleDBStatements)
+	defer cleanup()
 
 	if txn, err = client.BatchReadOnlyTransaction(ctx, StrongRead()); err != nil {
 		t.Fatal(err)
@@ -1862,11 +1847,10 @@ func TestBROTNormal(t *testing.T) {
 }
 
 func TestCommitTimestamp(t *testing.T) {
-	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, tearDown := prepare(ctx, t, ctsDBStatements)
-	defer tearDown()
+	client, _, cleanup := prepare(ctx, t, ctsDBStatements)
+	defer cleanup()
 
 	type testTableRow struct {
 		Key string
@@ -1930,10 +1914,10 @@ func TestCommitTimestamp(t *testing.T) {
 }
 
 func TestDML(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, tearDown := prepare(ctx, t, singerDBStatements)
-	defer tearDown()
+	client, _, cleanup := prepare(ctx, t, singerDBStatements)
+	defer cleanup()
 
 	// Function that reads a single row's first name from within a transaction.
 	readFirstName := func(tx *ReadWriteTransaction, key int) (string, error) {
@@ -2095,10 +2079,10 @@ func TestDML(t *testing.T) {
 }
 
 func TestPDML(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, tearDown := prepare(ctx, t, singerDBStatements)
-	defer tearDown()
+	client, _, cleanup := prepare(ctx, t, singerDBStatements)
+	defer cleanup()
 
 	columns := []string{"SingerId", "FirstName", "LastName"}
 

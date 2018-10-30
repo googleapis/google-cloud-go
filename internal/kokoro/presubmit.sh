@@ -29,4 +29,4 @@ try3 go get -v -t ./...
 ./internal/kokoro/vet.sh
 
 # Run tests and tee output to log file, to be pushed to GCS as artifact.
-go test -race -v -short ./... 2>&1 | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt
+go test -race -v -timeout 15m -short ./... 2>&1 | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt
