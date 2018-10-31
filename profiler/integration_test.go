@@ -41,10 +41,14 @@ var (
 const (
 	cloudScope        = "https://www.googleapis.com/auth/cloud-platform"
 	benchFinishString = "busybench finished profiling"
+	errorString       = "failed to set up or run the benchmark"
 )
 
 const startupTemplate = `
 #! /bin/bash
+
+# Signal any unexpected error.
+trap 'echo "{{.ErrorString}}"' ERR
 
 (
 # Shut down the VM in 5 minutes after this script exits
@@ -118,11 +122,13 @@ func (tc *goGCETestCase) initializeStartupScript(template *template.Template) er
 			Service        string
 			GoVersion      string
 			Commit         string
+			ErrorString    string
 			MutexProfiling bool
 		}{
 			Service:        tc.name,
 			GoVersion:      tc.goVersion,
 			Commit:         *commit,
+			ErrorString:    errorString,
 			MutexProfiling: tc.mutexProfiling,
 		})
 	if err != nil {
@@ -266,7 +272,7 @@ func TestAgentIntegration(t *testing.T) {
 
 			timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute*25)
 			defer cancel()
-			if err := gceTr.PollForSerialOutput(timeoutCtx, &tc.InstanceConfig, benchFinishString); err != nil {
+			if err := gceTr.PollForSerialOutput(timeoutCtx, &tc.InstanceConfig, benchFinishString, errorString); err != nil {
 				t.Fatalf("PollForSerialOutput() got error: %v", err)
 			}
 
