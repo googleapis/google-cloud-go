@@ -288,8 +288,8 @@ func TestStreamingPull(t *testing.T) {
 	}
 }
 
+// This test acks each message as it arrives and makes sure we don't see dups.
 func TestStreamingPullAck(t *testing.T) {
-	// Ack each message as it arrives. Make sure we don't see dups.
 	minAckDeadlineSecs = 1
 	pclient, sclient, _, cleanup := newFake(context.TODO(), t)
 	defer cleanup()
@@ -308,20 +308,23 @@ func TestStreamingPullAck(t *testing.T) {
 	})
 
 	got := map[string]bool{}
-	spc := mustStartStreamingPull(context.TODO(), t, sclient, sub)
-	time.AfterFunc(time.Duration(3*minAckDeadlineSecs)*time.Second, func() {
-		if err := spc.CloseSend(); err != nil {
-			t.Errorf("CloseSend: %v", err)
-		}
-	})
+	ctx, cancel := context.WithCancel(context.Background())
+	spc := mustStartStreamingPull(ctx, t, sclient, sub)
+	time.AfterFunc(time.Duration(2*minAckDeadlineSecs)*time.Second, cancel)
 
-	for {
+	for i := 0; i < 4; i++ {
 		res, err := spc.Recv()
 		if err == io.EOF {
 			break
 		}
 		if err != nil {
+			if status.Code(err) == codes.Canceled {
+				break
+			}
 			t.Fatal(err)
+		}
+		if i == 3 {
+			t.Fatal("expected to only see 3 messages, got 4")
 		}
 		req := &pb.StreamingPullRequest{}
 		for _, m := range res.ReceivedMessages {
