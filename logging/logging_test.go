@@ -541,10 +541,10 @@ func TestNonProjectParent(t *testing.T) {
 // It returns false after a while (if it times out).
 func waitFor(f func() bool) bool {
 	// TODO(shadams): Find a better way to deflake these tests.
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 	defer cancel()
 	err := cinternal.Retry(ctx,
-		gax.Backoff{Initial: time.Second, Multiplier: 2},
+		gax.Backoff{Initial: time.Second, Multiplier: 2, Max: 30 * time.Second},
 		func() (bool, error) { return f(), nil })
 	return err == nil
 }
