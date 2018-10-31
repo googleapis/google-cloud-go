@@ -234,7 +234,7 @@ func (tr *GCETestRunner) DeleteInstance(ctx context.Context, inst *InstanceConfi
 // PollForSerialOutput polls serial port 2 of the GCE instance specified by
 // inst and returns when the finishString appears in the serial output
 // of the instance, or when the context times out.
-func (tr *GCETestRunner) PollForSerialOutput(ctx context.Context, inst *InstanceConfig, finishString string) error {
+func (tr *GCETestRunner) PollForSerialOutput(ctx context.Context, inst *InstanceConfig, finishString, errorString string) error {
 	var output string
 	defer func() {
 		log.Printf("Serial port output for %s:\n%s", inst.Name, output)
@@ -257,6 +257,9 @@ func (tr *GCETestRunner) PollForSerialOutput(ctx context.Context, inst *Instance
 			}
 			if output = resp.Contents; strings.Contains(output, finishString) {
 				return nil
+			}
+			if strings.Contains(output, errorString) {
+				return fmt.Errorf("failed to execute the prober benchmark script")
 			}
 		}
 	}
