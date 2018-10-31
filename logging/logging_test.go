@@ -202,7 +202,9 @@ func TestLogAndEntries(t *testing.T) {
 		// Use the insert ID to guarantee iteration order.
 		lg.Log(logging.Entry{Payload: p, InsertID: p})
 	}
-	lg.Flush()
+	if err := lg.Flush(); err != nil {
+		t.Fatal(err)
+	}
 	var want []*logging.Entry
 	for _, p := range payloads {
 		want = append(want, entryForTesting(p))
@@ -234,7 +236,9 @@ func TestContextFunc(t *testing.T) {
 		return context.Background(), func() { atomic.AddInt32(&cleanupCalls, 1) }
 	}))
 	lg.Log(logging.Entry{Payload: "p"})
-	lg.Flush()
+	if err := lg.Flush(); err != nil {
+		t.Fatal(err)
+	}
 	got1 := atomic.LoadInt32(&contextFuncCalls)
 	got2 := atomic.LoadInt32(&cleanupCalls)
 	if got1 != 1 || got1 != got2 {
@@ -338,7 +342,9 @@ func TestStandardLogger(t *testing.T) {
 	}
 
 	slg.Print("info")
-	lg.Flush()
+	if err := lg.Flush(); err != nil {
+		t.Fatal(err)
+	}
 	var got []*logging.Entry
 	ok := waitFor(func() bool {
 		var err error
@@ -577,7 +583,9 @@ func TestLogFlushRace(t *testing.T) {
 				case <-donec:
 					return
 				case <-time.After(time.Duration(rand.Intn(5)) * time.Millisecond):
-					lg.Flush()
+					if err := lg.Flush(); err != nil {
+						t.Error(err)
+					}
 				}
 			}
 		}()
@@ -629,6 +637,8 @@ func benchmarkConcurrentWrites(b *testing.B, c int) {
 		for j := 0; j < nEntries; j++ {
 			lg.Log(logging.Entry{Payload: payload})
 		}
-		lg.Flush()
+		if err := lg.Flush(); err != nil {
+			b.Fatal(err)
+		}
 	}
 }
