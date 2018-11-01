@@ -139,46 +139,46 @@ func TestSubscriptionErrors(t *testing.T) {
 
 	ctx := context.Background()
 
-	// TODO(jba): Go1.9: use t.Helper()
-	checkCode := func(msg string, err error, want codes.Code) {
+	checkCode := func(err error, want codes.Code) {
+		t.Helper()
 		if status.Code(err) != want {
-			t.Errorf("%s: got %v, want code %s", msg, err, want)
+			t.Errorf("got %v, want code %s", err, want)
 		}
 	}
 
 	_, err := sclient.GetSubscription(ctx, &pb.GetSubscriptionRequest{})
-	checkCode("GetSubscription", err, codes.InvalidArgument)
+	checkCode(err, codes.InvalidArgument)
 	_, err = sclient.GetSubscription(ctx, &pb.GetSubscriptionRequest{Subscription: "s"})
-	checkCode("GetSubscription", err, codes.NotFound)
+	checkCode(err, codes.NotFound)
 	_, err = sclient.UpdateSubscription(ctx, &pb.UpdateSubscriptionRequest{})
-	checkCode("UpdateSubscription", err, codes.InvalidArgument)
+	checkCode(err, codes.InvalidArgument)
 	_, err = sclient.UpdateSubscription(ctx, &pb.UpdateSubscriptionRequest{Subscription: &pb.Subscription{}})
-	checkCode("UpdateSubscription", err, codes.InvalidArgument)
+	checkCode(err, codes.InvalidArgument)
 	_, err = sclient.UpdateSubscription(ctx, &pb.UpdateSubscriptionRequest{Subscription: &pb.Subscription{Name: "s"}})
-	checkCode("UpdateSubscription", err, codes.NotFound)
+	checkCode(err, codes.NotFound)
 	_, err = sclient.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{})
-	checkCode("DeleteSubscription", err, codes.InvalidArgument)
+	checkCode(err, codes.InvalidArgument)
 	_, err = sclient.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{Subscription: "s"})
-	checkCode("DeleteSubscription", err, codes.NotFound)
+	checkCode(err, codes.NotFound)
 	_, err = sclient.Acknowledge(ctx, &pb.AcknowledgeRequest{})
-	checkCode("Acknowledge", err, codes.InvalidArgument)
+	checkCode(err, codes.InvalidArgument)
 	_, err = sclient.Acknowledge(ctx, &pb.AcknowledgeRequest{Subscription: "s"})
-	checkCode("Acknowledge", err, codes.NotFound)
+	checkCode(err, codes.NotFound)
 	_, err = sclient.ModifyAckDeadline(ctx, &pb.ModifyAckDeadlineRequest{})
-	checkCode("ModifyAckDeadline", err, codes.InvalidArgument)
+	checkCode(err, codes.InvalidArgument)
 	_, err = sclient.ModifyAckDeadline(ctx, &pb.ModifyAckDeadlineRequest{Subscription: "s"})
-	checkCode("ModifyAckDeadline", err, codes.NotFound)
+	checkCode(err, codes.NotFound)
 	_, err = sclient.Pull(ctx, &pb.PullRequest{})
-	checkCode("Pull", err, codes.InvalidArgument)
+	checkCode(err, codes.InvalidArgument)
 	_, err = sclient.Pull(ctx, &pb.PullRequest{Subscription: "s"})
-	checkCode("Pull", err, codes.NotFound)
+	checkCode(err, codes.NotFound)
 	_, err = sclient.Seek(ctx, &pb.SeekRequest{})
-	checkCode("Seek", err, codes.InvalidArgument)
+	checkCode(err, codes.InvalidArgument)
 	srt := &pb.SeekRequest_Time{Time: ptypes.TimestampNow()}
 	_, err = sclient.Seek(ctx, &pb.SeekRequest{Target: srt})
-	checkCode("Seek", err, codes.InvalidArgument)
+	checkCode(err, codes.InvalidArgument)
 	_, err = sclient.Seek(ctx, &pb.SeekRequest{Target: srt, Subscription: "s"})
-	checkCode("Seek", err, codes.NotFound)
+	checkCode(err, codes.NotFound)
 }
 
 func TestPublish(t *testing.T) {
