@@ -19,8 +19,8 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"sync"
 
-	"cloud.google.com/go/internal/atomiccache"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -222,8 +222,7 @@ func InferSchema(st interface{}) (Schema, error) {
 	return inferSchemaReflectCached(reflect.TypeOf(st))
 }
 
-// TODO(jba): replace with sync.Map for Go 1.9.
-var schemaCache atomiccache.Cache
+var schemaCache sync.Map
 
 type cacheVal struct {
 	schema Schema
@@ -231,10 +230,15 @@ type cacheVal struct {
 }
 
 func inferSchemaReflectCached(t reflect.Type) (Schema, error) {
-	cv := schemaCache.Get(t, func() interface{} {
+	var cv cacheVal
+	v, ok := schemaCache.Load(t)
+	if ok {
+		cv = v.(cacheVal)
+	} else {
 		s, err := inferSchemaReflect(t)
-		return cacheVal{s, err}
-	}).(cacheVal)
+		cv = cacheVal{s, err}
+		schemaCache.Store(t, cv)
+	}
 	return cv.schema, cv.err
 }
 
