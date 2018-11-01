@@ -74,17 +74,10 @@ func (s *pullStream) get(spc *pb.Subscriber_StreamingPullClient) (*pb.Subscriber
 		return nil, s.err
 	}
 	// If the context is done, so are we.
-	select {
-	case <-s.ctx.Done():
-		s.err = s.ctx.Err()
+	s.err = s.ctx.Err()
+	if s.err != nil {
 		return nil, s.err
-	default:
 	}
-	// TODO(jba): We can use the following instead of the above after we drop support for 1.8:
-	// s.err = s.ctx.Err()
-	// if s.err != nil {
-	// 	return nil, s.err
-	// }
 
 	// If the current and argument SPCs differ, return the current one. This subsumes two cases:
 	// 1. We have an SPC and the caller is getting the stream for the first time.
