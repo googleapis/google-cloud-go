@@ -117,6 +117,17 @@ minutes, every 3 minutes. Suppose the application crashes 5 seconds after the
 library sends such an extension: the Pub/Sub server would wait the remaining
 2m55s before re-sending the messages out to other subscribers.
 
+Please note that the client library does not use the subscription's AckDeadline
+by default. To enforce the subscription AckDeadline, set MaxExtension to
+to the subscription's AckDeadline:
+
+	cfg, err := sub.Config(ctx)
+	if err != nil {
+		// TODO handle err
+	}
+
+	sub.ReceiveSettings.MaxExtension = cfg.AckDeadline
+
 Slow Message Processing
 
 For use cases where message processing exceeds 30 minutes, we recommend using

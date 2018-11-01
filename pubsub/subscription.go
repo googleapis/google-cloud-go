@@ -203,7 +203,8 @@ type ReceiveSettings struct {
 	//
 	// The Subscription will automatically extend the ack deadline of all
 	// fetched Messages up to the duration specified. Automatic deadline
-	// extension may be disabled by specifying a duration less than 0.
+	// extension beyond the initial receipt may be disabled by specifying a
+	// duration less than 0.
 	MaxExtension time.Duration
 
 	// MaxOutstandingMessages is the maximum number of unprocessed messages
@@ -436,7 +437,8 @@ var errReceiveInProgress = errors.New("pubsub: Receive already in progress for t
 // The context passed to f will be canceled when ctx is Done or there is a
 // fatal service error.
 //
-// Receive will automatically extend the ack deadline of all fetched Messages up to the
+// Receive will send an ack deadline extension on message receipt, then
+// automatically extend the ack deadline of all fetched Messages up to the
 // period specified by s.ReceiveSettings.MaxExtension.
 //
 // Each Subscription may have only one invocation of Receive active at a time.
