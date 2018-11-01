@@ -23,6 +23,7 @@
 set -ex
 
 APIS=(
+google/api/expr/artman_cel.yaml
 google/iam/artman_iam_admin.yaml
 google/cloud/asset/artman_cloudasset_v1beta1.yaml
 google/iam/credentials/artman_iamcredentials_v1.yaml
