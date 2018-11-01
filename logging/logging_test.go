@@ -596,49 +596,28 @@ func TestLogFlushRace(t *testing.T) {
 }
 
 // Test the throughput of concurrent writers.
-// TODO(jba): when 1.8 is out, use sub-benchmarks.
-func BenchmarkConcurrentWrites1(b *testing.B) {
-	benchmarkConcurrentWrites(b, 1)
-}
-
-func BenchmarkConcurrentWrites2(b *testing.B) {
-	benchmarkConcurrentWrites(b, 2)
-}
-
-func BenchmarkConcurrentWrites4(b *testing.B) {
-	benchmarkConcurrentWrites(b, 4)
-}
-
-func BenchmarkConcurrentWrites8(b *testing.B) {
-	benchmarkConcurrentWrites(b, 8)
-}
-
-func BenchmarkConcurrentWrites16(b *testing.B) {
-	benchmarkConcurrentWrites(b, 16)
-}
-
-func BenchmarkConcurrentWrites32(b *testing.B) {
-	benchmarkConcurrentWrites(b, 32)
-}
-
-func benchmarkConcurrentWrites(b *testing.B, c int) {
+func BenchmarkConcurrentWrites(b *testing.B) {
 	if !integrationTest {
 		b.Skip("only makes sense when running against production service")
 	}
-	b.StopTimer()
-	lg := client.Logger(testLogID, logging.ConcurrentWriteLimit(c), logging.EntryCountThreshold(1000))
-	const (
-		nEntries = 1e5
-		payload  = "the quick brown fox jumps over the lazy dog"
-	)
-	b.SetBytes(int64(nEntries * len(payload)))
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		for j := 0; j < nEntries; j++ {
-			lg.Log(logging.Entry{Payload: payload})
-		}
-		if err := lg.Flush(); err != nil {
-			b.Fatal(err)
-		}
+	for n := 1; n <= 32; n *= 2 {
+		b.Run(fmt.Sprint(n), func(b *testing.B) {
+			b.StopTimer()
+			lg := client.Logger(testLogID, logging.ConcurrentWriteLimit(n), logging.EntryCountThreshold(1000))
+			const (
+				nEntries = 1e5
+				payload  = "the quick brown fox jumps over the lazy dog"
+			)
+			b.SetBytes(int64(nEntries * len(payload)))
+			b.StartTimer()
+			for i := 0; i < b.N; i++ {
+				for j := 0; j < nEntries; j++ {
+					lg.Log(logging.Entry{Payload: payload})
+				}
+				if err := lg.Flush(); err != nil {
+					b.Fatal(err)
+				}
+			}
+		})
 	}
 }
