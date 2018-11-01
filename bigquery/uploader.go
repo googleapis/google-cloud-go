@@ -24,9 +24,9 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
-// An Uploader does streaming inserts into a BigQuery table.
+// An Inserter does streaming inserts into a BigQuery table.
 // It is safe for concurrent use.
-type Uploader struct {
+type Inserter struct {
 	t *Table
 
 	// SkipInvalidRows causes rows containing invalid data to be silently
@@ -39,7 +39,7 @@ type Uploader struct {
 	// to be treated as invalid records.
 	IgnoreUnknownValues bool
 
-	// A TableTemplateSuffix allows Uploaders to create tables automatically.
+	// A TableTemplateSuffix allows Inserters to create tables automatically.
 	//
 	// Experimental: this option is experimental and may be modified or removed in future versions,
 	// regardless of any other documented package stability guarantees.
@@ -53,14 +53,18 @@ type Uploader struct {
 	TableTemplateSuffix string
 }
 
-// Uploader returns an Uploader that can be used to append rows to t.
-// The returned Uploader may optionally be further configured before its Put method is called.
+// Inserter returns an Inserter that can be used to append rows to t.
+// The returned Inserter may optionally be further configured before its Put method is called.
 //
 // To stream rows into a date-partitioned table at a particular date, add the
 // $yyyymmdd suffix to the table name when constructing the Table.
-func (t *Table) Uploader() *Uploader {
-	return &Uploader{t: t}
+func (t *Table) Inserter() *Inserter {
+	return &Inserter{t: t}
 }
+
+// Uploader calls Inserter.
+// Deprecated: use Table.Inserter instead.
+func (t *Table) Uploader() *Inserter { return t.Inserter() }
 
 // Put uploads one or more rows to the BigQuery service.
 //
@@ -81,8 +85,8 @@ func (t *Table) Uploader() *Uploader {
 // in duplicate rows if you do not use insert IDs. Also, if the error persists,
 // the call will run indefinitely. Pass a context with a timeout to prevent
 // hanging calls.
-func (u *Uploader) Put(ctx context.Context, src interface{}) (err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Uploader.Put")
+func (u *Inserter) Put(ctx context.Context, src interface{}) (err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Inserter.Put")
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	savers, err := valueSavers(src)
@@ -158,7 +162,7 @@ func toValueSaver(x interface{}) (ValueSaver, bool, error) {
 	}, true, nil
 }
 
-func (u *Uploader) putMulti(ctx context.Context, src []ValueSaver) error {
+func (u *Inserter) putMulti(ctx context.Context, src []ValueSaver) error {
 	req, err := u.newInsertRequest(src)
 	if err != nil {
 		return err
@@ -180,7 +184,7 @@ func (u *Uploader) putMulti(ctx context.Context, src []ValueSaver) error {
 	return handleInsertErrors(res.InsertErrors, req.Rows)
 }
 
-func (u *Uploader) newInsertRequest(savers []ValueSaver) (*bq.TableDataInsertAllRequest, error) {
+func (u *Inserter) newInsertRequest(savers []ValueSaver) (*bq.TableDataInsertAllRequest, error) {
 	if savers == nil { // If there are no rows, do nothing.
 		return nil, nil
 	}
@@ -229,3 +233,6 @@ func handleInsertErrors(ierrs []*bq.TableDataInsertAllResponseInsertErrors, rows
 	}
 	return errs
 }
+
+// Uploader is an obsolete name for Inserter.
+type Uploader = Inserter

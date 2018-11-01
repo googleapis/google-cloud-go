@@ -683,7 +683,7 @@ func TestIntegration_Tables(t *testing.T) {
 	}
 }
 
-func TestIntegration_UploadAndRead(t *testing.T) {
+func TestIntegration_InsertAndRead(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
@@ -692,7 +692,7 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 	defer table.Delete(ctx)
 
 	// Populate the table.
-	upl := table.Uploader()
+	ins := table.Inserter()
 	var (
 		wantRows  [][]Value
 		saverRows []*ValuesSaver
@@ -706,7 +706,7 @@ func TestIntegration_UploadAndRead(t *testing.T) {
 			Row:      row,
 		})
 	}
-	if err := upl.Put(ctx, saverRows); err != nil {
+	if err := ins.Put(ctx, saverRows); err != nil {
 		t.Fatal(putError(err))
 	}
 
@@ -844,7 +844,7 @@ type TestStruct struct {
 var roundToMicros = cmp.Transformer("RoundToMicros",
 	func(t time.Time) time.Time { return t.Round(time.Microsecond) })
 
-func TestIntegration_UploadAndReadStructs(t *testing.T) {
+func TestIntegration_InsertAndReadStructs(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
@@ -867,7 +867,7 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 	dtm2 := civil.DateTime{Date: d2, Time: tm2}
 
 	// Populate the table.
-	upl := table.Uploader()
+	ins := table.Inserter()
 	want := []*TestStruct{
 		{
 			"a",
@@ -920,7 +920,7 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 	for _, s := range want {
 		savers = append(savers, &StructSaver{Schema: schema, Struct: s})
 	}
-	if err := upl.Put(ctx, savers); err != nil {
+	if err := ins.Put(ctx, savers); err != nil {
 		t.Fatal(putError(err))
 	}
 
@@ -962,15 +962,15 @@ func (b byName) Len() int           { return len(b) }
 func (b byName) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
 func (b byName) Less(i, j int) bool { return b[i].Name < b[j].Name }
 
-func TestIntegration_UploadAndReadNullable(t *testing.T) {
+func TestIntegration_InsertAndReadNullable(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
 	ctm := civil.Time{Hour: 15, Minute: 4, Second: 5, Nanosecond: 6000}
 	cdt := civil.DateTime{Date: testDate, Time: ctm}
 	rat := big.NewRat(33, 100)
-	testUploadAndReadNullable(t, testStructNullable{}, make([]Value, len(testStructNullableSchema)))
-	testUploadAndReadNullable(t, testStructNullable{
+	testInsertAndReadNullable(t, testStructNullable{}, make([]Value, len(testStructNullableSchema)))
+	testInsertAndReadNullable(t, testStructNullable{
 		String:    NullString{"x", true},
 		Bytes:     []byte{1, 2, 3},
 		Integer:   NullInt64{1, true},
@@ -986,14 +986,14 @@ func TestIntegration_UploadAndReadNullable(t *testing.T) {
 		[]Value{"x", []byte{1, 2, 3}, int64(1), 2.3, true, testTimestamp, testDate, ctm, cdt, rat, []Value{int64(4)}})
 }
 
-func testUploadAndReadNullable(t *testing.T, ts testStructNullable, wantRow []Value) {
+func testInsertAndReadNullable(t *testing.T, ts testStructNullable, wantRow []Value) {
 	ctx := context.Background()
 	table := newTable(t, testStructNullableSchema)
 	defer table.Delete(ctx)
 
 	// Populate the table.
-	upl := table.Uploader()
-	if err := upl.Put(ctx, []*StructSaver{{Schema: testStructNullableSchema, Struct: ts}}); err != nil {
+	ins := table.Inserter()
+	if err := ins.Put(ctx, []*StructSaver{{Schema: testStructNullableSchema, Struct: ts}}); err != nil {
 		t.Fatal(putError(err))
 	}
 	// Wait until the data has been uploaded. This can take a few seconds, according
@@ -1267,8 +1267,8 @@ func TestIntegration_TimeTypes(t *testing.T) {
 	wantRows := [][]Value{
 		{d, tm, dtm, ts},
 	}
-	upl := table.Uploader()
-	if err := upl.Put(ctx, []*ValuesSaver{
+	ins := table.Inserter()
+	if err := ins.Put(ctx, []*ValuesSaver{
 		{Schema: dtSchema, Row: wantRows[0]},
 	}); err != nil {
 		t.Fatal(putError(err))
@@ -1661,12 +1661,12 @@ func TestIntegration_ReadNullIntoStruct(t *testing.T) {
 	table := newTable(t, schema)
 	defer table.Delete(ctx)
 
-	upl := table.Uploader()
+	ins := table.Inserter()
 	row := &ValuesSaver{
 		Schema: schema,
 		Row:    []Value{nil, []Value{}, []Value{nil}},
 	}
-	if err := upl.Put(ctx, []*ValuesSaver{row}); err != nil {
+	if err := ins.Put(ctx, []*ValuesSaver{row}); err != nil {
 		t.Fatal(putError(err))
 	}
 	if err := waitForRow(ctx, table); err != nil {
@@ -1911,8 +1911,8 @@ func TestIntegration_NumericErrors(t *testing.T) {
 	if _, ok := tooBigRat.SetString("1e40"); !ok {
 		t.Fatal("big.Rat.SetString failed")
 	}
-	upl := table.Uploader()
-	err := upl.Put(ctx, []*ValuesSaver{{Schema: schema, Row: []Value{tooBigRat}}})
+	ins := table.Inserter()
+	err := ins.Put(ctx, []*ValuesSaver{{Schema: schema, Row: []Value{tooBigRat}}})
 	if err == nil {
 		t.Fatal("got nil, want error")
 	}
