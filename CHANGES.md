@@ -1,5 +1,30 @@
 # Changes
 
+## v0.32.0
+
+- bigquery:
+    - Add support for removing an expiration.
+    - Ignore NeverExpire in Table.Create.
+    - Validate table expiration time.
+- cbt:
+    - Add note about not supporting arbitrary bytes.
+- datastore:
+    - Align key checks.
+- firestore:
+    - Return an error when using Start/End without providing values.
+- kms:
+    - Add IAM methods.
+- pubsub:
+    - Add pstest Close method.
+    - Clarify MaxExtension documentation.
+    - Simplify ctx.Err check.
+- securitycenter:
+    - Add v1beta1 client.
+- spanner:
+    - Allow nil in mutations.
+    - Improve doc of SessionPoolConfig.MaxOpened.
+    - Increase session deletion timeout from 5s to 15s.
+
 ## v0.31.0
 
 - bigtable:
