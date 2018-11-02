@@ -613,6 +613,78 @@ func TestReadRowsOrder(t *testing.T) {
 	testOrder(mock)
 }
 
+func TestReadRowsWithlabelTransformer(t *testing.T) {
+	ctx := context.Background()
+	s := &server{
+		tables: make(map[string]*table),
+	}
+	newTbl := btapb.Table{
+		ColumnFamilies: map[string]*btapb.ColumnFamily{
+			"cf0": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 1}}},
+		},
+	}
+	tblInfo, err := s.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "cluster", TableId: "t", Table: &newTbl})
+	if err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+	mreq := &btpb.MutateRowRequest{
+		TableName: tblInfo.Name,
+		RowKey:    []byte("row"),
+		Mutations: []*btpb.Mutation{{
+			Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
+				FamilyName:      "cf0",
+				ColumnQualifier: []byte("col"),
+				TimestampMicros: 1000,
+				Value:           []byte{},
+			}},
+		}},
+	}
+	if _, err := s.MutateRow(ctx, mreq); err != nil {
+		t.Fatalf("Populating table: %v", err)
+	}
+
+	mock := &MockReadRowsServer{}
+	req := &btpb.ReadRowsRequest{
+		TableName: tblInfo.Name,
+		Filter: &btpb.RowFilter{
+			Filter: &btpb.RowFilter_ApplyLabelTransformer{
+				ApplyLabelTransformer: "label",
+			},
+		},
+	}
+	if err = s.ReadRows(req, mock); err != nil {
+		t.Fatalf("ReadRows error: %v", err)
+	}
+
+	if got, want := len(mock.responses), 1; got != want {
+		t.Fatalf("response count: got %d, want %d", got, want)
+	}
+	resp := mock.responses[0]
+	if got, want := len(resp.Chunks), 1; got != want {
+		t.Fatalf("chunks count: got %d, want %d", got, want)
+	}
+	chunk := resp.Chunks[0]
+	if got, want := len(chunk.Labels), 1; got != want {
+		t.Fatalf("labels count: got %d, want %d", got, want)
+	}
+	if got, want := chunk.Labels[0], "label"; got != want {
+		t.Fatalf("label: got %s, want %s", got, want)
+	}
+
+	mock = &MockReadRowsServer{}
+	req = &btpb.ReadRowsRequest{
+		TableName: tblInfo.Name,
+		Filter: &btpb.RowFilter{
+			Filter: &btpb.RowFilter_ApplyLabelTransformer{
+				ApplyLabelTransformer: "", // invalid label
+			},
+		},
+	}
+	if err = s.ReadRows(req, mock); err == nil {
+		t.Fatal("ReadRows want invalid label error, got none")
+	}
+}
+
 func TestCheckAndMutateRowWithoutPredicate(t *testing.T) {
 	s := &server{
 		tables: make(map[string]*table),
