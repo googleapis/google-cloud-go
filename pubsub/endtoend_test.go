@@ -33,7 +33,7 @@ const (
 	timeout                 = time.Minute * 10
 	ackDeadline             = time.Second * 10
 	nMessages               = 1e4
-	acceptableDupPercentage = .05
+	acceptableDupPercentage = 1
 	numAcceptableDups       = int(nMessages * acceptableDupPercentage / 100)
 )
 
@@ -156,7 +156,7 @@ loop:
 			t.Errorf("Consumer %d: %d messages never arrived", i, zeroes)
 			ok = false
 		} else if numDups > numAcceptableDups {
-			t.Errorf("Consumer %d: Willing to accept %d dups (%f%% duplicated of %d messages), but got %d", i, numAcceptableDups, acceptableDupPercentage, int(nMessages), numDups)
+			t.Errorf("Consumer %d: Willing to accept %d dups (%v duplicated of %d messages), but got %d", i, numAcceptableDups, acceptableDupPercentage, int(nMessages), numDups)
 			ok = false
 		}
 	}
