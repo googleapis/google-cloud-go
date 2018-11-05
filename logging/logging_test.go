@@ -47,8 +47,6 @@ import (
 
 const testLogIDPrefix = "GO-LOGGING-CLIENT/TEST-LOG"
 
-var uids = uid.NewSpace(testLogIDPrefix, nil)
-
 var (
 	client        *logging.Client
 	aclient       *logadmin.Client
@@ -65,14 +63,16 @@ var (
 
 	// Create a new client with the given project ID.
 	newClients func(ctx context.Context, projectID string) (*logging.Client, *logadmin.Client)
+
+	uids = uid.NewSpace(testLogIDPrefix, nil)
+
+	// If true, this test is using the production service, not a fake.
+	integrationTest bool
 )
 
 func testNow() time.Time {
 	return time.Unix(1000, 0)
 }
-
-// If true, this test is using the production service, not a fake.
-var integrationTest bool
 
 func TestMain(m *testing.M) {
 	flag.Parse() // needed for testing.Short()
@@ -145,7 +145,7 @@ func TestMain(m *testing.M) {
 	os.Exit(exit)
 }
 
-func initLogs(ctx context.Context) {
+func initLogs() {
 	testLogID = uids.New()
 	testFilter = fmt.Sprintf(`logName = "projects/%s/logs/%s"`, testProjectID,
 		strings.Replace(testLogID, "/", "%2F", -1))
@@ -154,7 +154,7 @@ func initLogs(ctx context.Context) {
 // Testing of Logger.Log is done in logadmin_test.go, TestEntries.
 
 func TestLogSync(t *testing.T) {
-	initLogs(ctx) // Generate new testLogID
+	initLogs() // Generate new testLogID
 	ctx := context.Background()
 	lg := client.Logger(testLogID)
 	err := lg.LogSync(ctx, logging.Entry{Payload: "hello"})
@@ -194,7 +194,7 @@ func TestLogSync(t *testing.T) {
 }
 
 func TestLogAndEntries(t *testing.T) {
-	initLogs(ctx) // Generate new testLogID
+	initLogs() // Generate new testLogID
 	ctx := context.Background()
 	payloads := []string{"p1", "p2", "p3", "p4", "p5"}
 	lg := client.Logger(testLogID)
@@ -228,7 +228,7 @@ func TestLogAndEntries(t *testing.T) {
 }
 
 func TestContextFunc(t *testing.T) {
-	initLogs(ctx)
+	initLogs()
 	var contextFuncCalls, cleanupCalls int32 //atomic
 
 	lg := client.Logger(testLogID, logging.ContextFunc(func() (context.Context, func()) {
@@ -329,7 +329,7 @@ func cleanNext(it *logadmin.EntryIterator) (*logging.Entry, error) {
 }
 
 func TestStandardLogger(t *testing.T) {
-	initLogs(ctx) // Generate new testLogID
+	initLogs() // Generate new testLogID
 	ctx := context.Background()
 	lg := client.Logger(testLogID)
 	slg := lg.StandardLogger(logging.Info)
@@ -398,7 +398,7 @@ func TestParseSeverity(t *testing.T) {
 }
 
 func TestErrors(t *testing.T) {
-	initLogs(ctx) // Generate new testLogID
+	initLogs() // Generate new testLogID
 	// Drain errors already seen.
 loop:
 	for {
@@ -497,7 +497,7 @@ func TestLogsAndDelete(t *testing.T) {
 
 func TestNonProjectParent(t *testing.T) {
 	ctx := context.Background()
-	initLogs(ctx)
+	initLogs()
 	const orgID = "433637338589" // org ID for google.com
 	parent := "organizations/" + orgID
 	c, a := newClients(ctx, parent)
@@ -559,7 +559,7 @@ func waitFor(f func() bool) bool {
 // Run this test with:
 //   go test -run LogFlushRace -race -count 100
 func TestLogFlushRace(t *testing.T) {
-	initLogs(ctx) // Generate new testLogID
+	initLogs() // Generate new testLogID
 	lg := client.Logger(testLogID,
 		logging.ConcurrentWriteLimit(5),  // up to 5 concurrent log writes
 		logging.EntryCountThreshold(100)) // small bundle size to increase interleaving
