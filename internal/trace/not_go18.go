@@ -17,7 +17,7 @@
 package trace
 
 import (
-	"golang.org/x/net/context"
+	"context"
 )
 
 // OpenCensus only supports go 1.8 and higher.

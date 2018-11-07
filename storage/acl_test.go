@@ -18,8 +18,9 @@ import (
 	"net/http"
 	"testing"
 
+	"context"
+
 	"cloud.google.com/go/internal/testutil"
-	"golang.org/x/net/context"
 )
 
 func TestSetACL(t *testing.T) {

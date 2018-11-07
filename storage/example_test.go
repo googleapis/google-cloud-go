@@ -23,8 +23,9 @@ import (
 	"os"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/storage"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )

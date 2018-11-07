@@ -18,7 +18,7 @@ import (
 	"strings"
 	"testing"
 
-	"golang.org/x/net/context"
+	"context"
 )
 
 func TestCopyMissingFields(t *testing.T) {

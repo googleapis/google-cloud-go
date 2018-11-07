@@ -18,7 +18,8 @@ import (
 	"fmt"
 	"reflect"
 
-	"golang.org/x/net/context"
+	"context"
+
 	bq "google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/iterator"
 )

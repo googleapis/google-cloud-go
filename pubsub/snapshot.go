@@ -19,8 +19,9 @@ import (
 	"strings"
 	"time"
 
+	"context"
+
 	"github.com/golang/protobuf/ptypes"
-	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 

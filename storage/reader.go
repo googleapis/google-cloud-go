@@ -27,8 +27,9 @@ import (
 	"strings"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/internal/trace"
-	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
 )
 

@@ -21,12 +21,13 @@ import (
 	"strings"
 	"testing"
 
+	"context"
+
 	"cloud.google.com/go/internal/testutil"
 	ipb "cloud.google.com/go/rpcreplay/proto/intstore"
 	rpb "cloud.google.com/go/rpcreplay/proto/rpcreplay"
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

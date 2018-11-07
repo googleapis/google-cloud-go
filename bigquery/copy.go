@@ -15,7 +15,8 @@
 package bigquery
 
 import (
-	"golang.org/x/net/context"
+	"context"
+
 	bq "google.golang.org/api/bigquery/v2"
 )
 

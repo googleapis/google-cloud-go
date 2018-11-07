@@ -22,7 +22,8 @@ import (
 	"fmt"
 	"time"
 
-	"golang.org/x/net/context"
+	"context"
+
 	raw "google.golang.org/api/container/v1"
 	"google.golang.org/api/option"
 	htransport "google.golang.org/api/transport/http"

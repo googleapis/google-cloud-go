@@ -24,8 +24,9 @@ package iam
 import (
 	"time"
 
+	"context"
+
 	gax "github.com/googleapis/gax-go"
-	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

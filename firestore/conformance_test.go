@@ -28,12 +28,13 @@ import (
 	"testing"
 	"time"
 
+	"context"
+
 	pb "cloud.google.com/go/firestore/genproto"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	ts "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	fspb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 )

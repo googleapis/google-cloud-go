@@ -19,8 +19,9 @@ package internal
 import (
 	"fmt"
 
+	"context"
+
 	firestore "cloud.google.com/go/firestore"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 )
 

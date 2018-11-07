@@ -19,8 +19,9 @@ package storage
 import (
 	"testing"
 
+	"context"
+
 	"cloud.google.com/go/internal/testutil"
-	"golang.org/x/net/context"
 )
 
 func TestIntegration_OCTracing(t *testing.T) {

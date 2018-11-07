@@ -25,10 +25,11 @@ import (
 	"testing"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage"
-	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 )
 

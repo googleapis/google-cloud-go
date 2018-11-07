@@ -21,9 +21,10 @@ import (
 	"sync"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/internal/testutil"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
-	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 

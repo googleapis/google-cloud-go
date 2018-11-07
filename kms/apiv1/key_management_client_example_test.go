@@ -17,8 +17,9 @@
 package kms_test
 
 import (
+	"context"
+
 	"cloud.google.com/go/kms/apiv1"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
 )

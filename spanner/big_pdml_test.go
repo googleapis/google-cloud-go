@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"testing"
 
-	"golang.org/x/net/context"
+	"context"
 )
 
 func TestBigPDML(t *testing.T) {

@@ -18,9 +18,10 @@ import (
 	"errors"
 	"testing"
 
+	"context"
+
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
-	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/iterator"
 )

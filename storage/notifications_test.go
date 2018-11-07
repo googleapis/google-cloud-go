@@ -17,8 +17,9 @@ package storage
 import (
 	"testing"
 
+	"context"
+
 	"cloud.google.com/go/internal/testutil"
-	"golang.org/x/net/context"
 	raw "google.golang.org/api/storage/v1"
 )
 

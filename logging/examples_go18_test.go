@@ -17,9 +17,10 @@
 package logging_test
 
 import (
+	"context"
+
 	"cloud.google.com/go/logging"
 	"go.opencensus.io/trace"
-	"golang.org/x/net/context"
 )
 
 // This example shows how to create a Logger that disables OpenCensus tracing of the

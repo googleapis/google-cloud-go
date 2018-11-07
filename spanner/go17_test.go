@@ -21,10 +21,11 @@ import (
 	"testing"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/civil"
 	proto "github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
-	"golang.org/x/net/context"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 

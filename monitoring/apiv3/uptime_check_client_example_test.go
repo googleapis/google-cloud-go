@@ -17,8 +17,9 @@
 package monitoring_test
 
 import (
+	"context"
+
 	"cloud.google.com/go/monitoring/apiv3"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 )

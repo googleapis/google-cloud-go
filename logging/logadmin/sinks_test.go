@@ -23,11 +23,12 @@ import (
 	"testing"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	ltest "cloud.google.com/go/logging/internal/testing"
 	"cloud.google.com/go/storage"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )

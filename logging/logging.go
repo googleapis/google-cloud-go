@@ -35,6 +35,8 @@ import (
 	"sync"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/logging/apiv2"
@@ -43,7 +45,6 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	"google.golang.org/api/support/bundler"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"

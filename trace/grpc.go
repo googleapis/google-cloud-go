@@ -18,8 +18,9 @@ import (
 	"encoding/hex"
 	"fmt"
 
+	"context"
+
 	"cloud.google.com/go/internal/tracecontext"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )

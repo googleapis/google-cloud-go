@@ -26,11 +26,12 @@ import (
 	"fmt"
 	"time"
 
+	"context"
+
 	autogen "cloud.google.com/go/longrunning/autogen"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/googleapis/gax-go"
-	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

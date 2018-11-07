@@ -22,8 +22,9 @@ import (
 	"strings"
 	"testing"
 
+	"context"
+
 	pb "cloud.google.com/go/trace/testdata/helloworld"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
 

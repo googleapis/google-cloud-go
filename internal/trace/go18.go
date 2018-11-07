@@ -17,8 +17,9 @@
 package trace
 
 import (
+	"context"
+
 	"go.opencensus.io/trace"
-	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/genproto/googleapis/rpc/code"
 	"google.golang.org/grpc/status"

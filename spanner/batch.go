@@ -22,8 +22,9 @@ import (
 	"log"
 	"time"
 
+	"context"
+
 	"github.com/golang/protobuf/proto"
-	"golang.org/x/net/context"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 

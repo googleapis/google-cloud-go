@@ -24,10 +24,11 @@ import (
 	"testing"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/spanner/internal/testutil"
 	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"

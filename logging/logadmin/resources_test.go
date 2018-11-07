@@ -17,7 +17,8 @@ package logadmin
 import (
 	"testing"
 
-	"golang.org/x/net/context"
+	"context"
+
 	"google.golang.org/api/iterator"
 )
 

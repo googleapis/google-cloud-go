@@ -21,7 +21,8 @@ import (
 	"testing"
 	"time"
 
-	"golang.org/x/net/context"
+	"context"
+
 	"golang.org/x/sync/errgroup"
 )
 

@@ -18,8 +18,9 @@ import (
 	"errors"
 	"log"
 
+	"context"
+
 	"cloud.google.com/go/errorreporting"
-	"golang.org/x/net/context"
 )
 
 func Example() {

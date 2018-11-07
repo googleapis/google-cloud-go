@@ -20,7 +20,7 @@ import (
 	"sync"
 	"time"
 
-	"golang.org/x/net/context"
+	"context"
 )
 
 // A CollectionRef is a reference to Firestore collection.

@@ -17,8 +17,9 @@
 package dlp_test
 
 import (
+	"context"
+
 	"cloud.google.com/go/dlp/apiv2"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
 )

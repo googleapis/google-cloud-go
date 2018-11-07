@@ -17,7 +17,8 @@ package spanner
 import (
 	"time"
 
-	"golang.org/x/net/context"
+	"context"
+
 	"google.golang.org/api/iterator"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"

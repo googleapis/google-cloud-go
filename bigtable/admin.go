@@ -24,6 +24,8 @@ import (
 	"strings"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/bigtable/internal/gax"
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/iam"
@@ -32,7 +34,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	"github.com/golang/protobuf/ptypes"
 	durpb "github.com/golang/protobuf/ptypes/duration"
-	"golang.org/x/net/context"
 	"google.golang.org/api/cloudresourcemanager/v1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"

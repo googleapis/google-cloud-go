@@ -19,8 +19,9 @@ package bigquery
 import (
 	"testing"
 
+	"context"
+
 	"cloud.google.com/go/internal/testutil"
-	"golang.org/x/net/context"
 )
 
 func TestOCTracing(t *testing.T) {

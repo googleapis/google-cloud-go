@@ -19,9 +19,10 @@ package bigtable
 import (
 	"fmt"
 
+	"context"
+
 	"go.opencensus.io/plugin/ocgrpc"
 	"go.opencensus.io/trace"
-	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 )

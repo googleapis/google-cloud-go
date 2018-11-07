@@ -29,11 +29,12 @@ import (
 	"testing"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/spanner/admin/database/apiv1"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
