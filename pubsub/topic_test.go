@@ -19,8 +19,9 @@ import (
 	"testing"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/internal/testutil"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"

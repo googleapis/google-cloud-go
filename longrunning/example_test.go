@@ -18,10 +18,11 @@ import (
 	"fmt"
 	"time"
 
+	"context"
+
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/duration"
 	"github.com/golang/protobuf/ptypes/timestamp"
-	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/longrunning"
 )
 

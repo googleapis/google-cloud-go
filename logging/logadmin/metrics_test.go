@@ -19,9 +19,10 @@ import (
 	"testing"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 )
 

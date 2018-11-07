@@ -35,9 +35,10 @@ import (
 	"text/template"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/bigtable"
 	"cloud.google.com/go/bigtable/internal/cbtconfig"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"

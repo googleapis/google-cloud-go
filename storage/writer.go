@@ -22,7 +22,8 @@ import (
 	"sync"
 	"unicode/utf8"
 
-	"golang.org/x/net/context"
+	"context"
+
 	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/storage/v1"
 )

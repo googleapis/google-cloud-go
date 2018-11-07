@@ -21,10 +21,11 @@ import (
 	"sort"
 	"testing"
 
+	"context"
+
 	"cloud.google.com/go/internal/testutil"
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
-	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
 )

@@ -20,8 +20,9 @@ import (
 	"testing"
 	"time"
 
+	"context"
+
 	gax "github.com/googleapis/gax-go"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

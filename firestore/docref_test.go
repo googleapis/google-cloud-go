@@ -20,7 +20,8 @@ import (
 	"testing"
 	"time"
 
-	"golang.org/x/net/context"
+	"context"
+
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 	"google.golang.org/genproto/googleapis/type/latlng"
 	"google.golang.org/grpc"

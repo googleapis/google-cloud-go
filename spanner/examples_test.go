@@ -22,8 +22,9 @@ import (
 	"sync"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/spanner"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )

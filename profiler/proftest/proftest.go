@@ -16,7 +16,7 @@
 // This package is experimental.
 
 // golang.org/x/build/kubernetes/dialer.go imports "context" package (rather
-// than "golang.org/x/net/context") and that does not exist in Go 1.6 or
+// than "context") and that does not exist in Go 1.6 or
 // earlier.
 // +build go1.7
 
@@ -34,12 +34,13 @@ import (
 	"strings"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/storage"
 	gax "github.com/googleapis/gax-go"
 	"golang.org/x/build/kubernetes"
 	k8sapi "golang.org/x/build/kubernetes/api"
 	"golang.org/x/build/kubernetes/gke"
-	"golang.org/x/net/context"
 	cloudbuild "google.golang.org/api/cloudbuild/v1"
 	compute "google.golang.org/api/compute/v1"
 	container "google.golang.org/api/container/v1"

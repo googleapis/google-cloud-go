@@ -17,8 +17,9 @@ package translate_test
 import (
 	"fmt"
 
+	"context"
+
 	"cloud.google.com/go/translate"
-	"golang.org/x/net/context"
 	"golang.org/x/text/language"
 )
 

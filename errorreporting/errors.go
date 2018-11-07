@@ -27,11 +27,12 @@ import (
 	"runtime"
 	"time"
 
+	"context"
+
 	vkit "cloud.google.com/go/errorreporting/apiv1beta1"
 	"cloud.google.com/go/internal/version"
 	"github.com/golang/protobuf/ptypes"
 	gax "github.com/googleapis/gax-go"
-	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	"google.golang.org/api/support/bundler"
 	pb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"

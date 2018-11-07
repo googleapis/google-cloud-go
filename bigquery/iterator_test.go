@@ -19,8 +19,9 @@ import (
 	"fmt"
 	"testing"
 
+	"context"
+
 	"cloud.google.com/go/internal/testutil"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 )
 

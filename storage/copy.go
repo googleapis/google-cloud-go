@@ -18,8 +18,9 @@ import (
 	"errors"
 	"fmt"
 
+	"context"
+
 	"cloud.google.com/go/internal/trace"
-	"golang.org/x/net/context"
 	raw "google.golang.org/api/storage/v1"
 )
 

@@ -16,7 +16,7 @@
 
 package spanner
 
-import "golang.org/x/net/context"
+import "context"
 
 // OpenCensus only supports go 1.8 and higher.
 

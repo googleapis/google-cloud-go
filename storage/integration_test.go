@@ -38,13 +38,14 @@ import (
 	"testing"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"

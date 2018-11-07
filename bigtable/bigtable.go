@@ -23,10 +23,11 @@ import (
 	"strconv"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/bigtable/internal/gax"
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"github.com/golang/protobuf/proto"
-	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"

@@ -27,8 +27,9 @@ import (
 	"text/template"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/profiler/proftest"
-	"golang.org/x/net/context"
 	"golang.org/x/oauth2/google"
 	compute "google.golang.org/api/compute/v1"
 )

@@ -19,10 +19,11 @@ import (
 	"sort"
 	"testing"
 
+	"context"
+
 	"cloud.google.com/go/internal/pretty"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/golang/protobuf/ptypes/wrappers"
-	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 )
 

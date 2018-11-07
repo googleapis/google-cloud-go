@@ -38,8 +38,9 @@ package httpreplay
 import (
 	"net/http"
 
+	"context"
+
 	"cloud.google.com/go/httpreplay/internal/proxy"
-	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	htransport "google.golang.org/api/transport/http"
 )

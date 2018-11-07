@@ -28,6 +28,8 @@ import (
 	"testing"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/internal"
@@ -38,7 +40,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go"
-	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"

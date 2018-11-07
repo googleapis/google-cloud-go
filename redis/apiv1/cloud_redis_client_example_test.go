@@ -17,8 +17,9 @@
 package redis_test
 
 import (
+	"context"
+
 	"cloud.google.com/go/redis/apiv1"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	redispb "google.golang.org/genproto/googleapis/cloud/redis/v1"
 )

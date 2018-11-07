@@ -31,10 +31,11 @@ import (
 	"sync/atomic"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/bigtable"
 	"cloud.google.com/go/bigtable/internal/cbtconfig"
 	"cloud.google.com/go/bigtable/internal/stat"
-	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 )

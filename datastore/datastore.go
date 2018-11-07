@@ -21,8 +21,9 @@ import (
 	"os"
 	"reflect"
 
+	"context"
+
 	"cloud.google.com/go/internal/trace"
-	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"

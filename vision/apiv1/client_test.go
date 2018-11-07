@@ -19,8 +19,9 @@ import (
 	"reflect"
 	"testing"
 
+	"context"
+
 	"github.com/golang/protobuf/proto"
-	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/cloud/vision/v1"
 	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"

@@ -17,8 +17,9 @@ package firestore
 import (
 	"testing"
 
+	"context"
+
 	"github.com/golang/protobuf/proto"
-	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 )
 

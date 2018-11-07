@@ -32,11 +32,12 @@ import (
 	"sync/atomic"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/internal/testutil"
 	"github.com/golang/protobuf/ptypes"
 	durpb "github.com/golang/protobuf/ptypes/duration"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
-	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

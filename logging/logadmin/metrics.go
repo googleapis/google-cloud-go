@@ -17,8 +17,9 @@ package logadmin
 import (
 	"fmt"
 
+	"context"
+
 	vkit "cloud.google.com/go/logging/apiv2"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	logpb "google.golang.org/genproto/googleapis/logging/v2"
 )

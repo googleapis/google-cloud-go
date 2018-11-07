@@ -31,9 +31,10 @@ import (
 	"strings"
 	"testing"
 
+	"context"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
-	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"

@@ -19,8 +19,9 @@ import (
 	"fmt"
 	"os"
 
+	"context"
+
 	"cloud.google.com/go/logging"
-	"golang.org/x/net/context"
 )
 
 func ExampleNewClient() {

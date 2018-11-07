@@ -19,10 +19,11 @@ package spanner
 import (
 	"fmt"
 
+	"context"
+
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/trace"
-	"golang.org/x/net/context"
 )
 
 func traceStartSpan(ctx context.Context, name string) context.Context {

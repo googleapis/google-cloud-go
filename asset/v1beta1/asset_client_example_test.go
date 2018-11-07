@@ -17,8 +17,9 @@
 package asset_test
 
 import (
+	"context"
+
 	"cloud.google.com/go/asset/v1beta1"
-	"golang.org/x/net/context"
 	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1beta1"
 )
 

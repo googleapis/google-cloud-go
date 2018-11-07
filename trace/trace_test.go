@@ -27,10 +27,11 @@ import (
 	"testing"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/datastore"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage"
-	"golang.org/x/net/context"
 	api "google.golang.org/api/cloudtrace/v1"
 	compute "google.golang.org/api/compute/v1"
 	"google.golang.org/api/iterator"

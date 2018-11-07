@@ -17,8 +17,9 @@
 package admin_test
 
 import (
+	"context"
+
 	"cloud.google.com/go/iam/admin/apiv1"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	adminpb "google.golang.org/genproto/googleapis/iam/admin/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"

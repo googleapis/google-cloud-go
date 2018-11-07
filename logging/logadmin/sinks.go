@@ -18,8 +18,9 @@ import (
 	"errors"
 	"fmt"
 
+	"context"
+
 	vkit "cloud.google.com/go/logging/apiv2"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	logpb "google.golang.org/genproto/googleapis/logging/v2"
 	maskpb "google.golang.org/genproto/protobuf/field_mask"

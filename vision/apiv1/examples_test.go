@@ -18,8 +18,9 @@ import (
 	"fmt"
 	"os"
 
+	"context"
+
 	vision "cloud.google.com/go/vision/apiv1"
-	"golang.org/x/net/context"
 	pb "google.golang.org/genproto/googleapis/cloud/vision/v1"
 )
 

@@ -21,8 +21,9 @@ import (
 	"strings"
 	"testing"
 
+	"context"
+
 	"cloud.google.com/go/internal/testutil"
-	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 )

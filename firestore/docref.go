@@ -21,8 +21,9 @@ import (
 	"reflect"
 	"sort"
 
+	"context"
+
 	vkit "cloud.google.com/go/firestore/apiv1beta1"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 	"google.golang.org/grpc/codes"

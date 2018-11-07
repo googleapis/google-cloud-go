@@ -23,9 +23,10 @@ import (
 	"testing"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub/pstest"
-	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

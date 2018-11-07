@@ -18,8 +18,9 @@ import (
 	"fmt"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/logging/logadmin"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 )
 

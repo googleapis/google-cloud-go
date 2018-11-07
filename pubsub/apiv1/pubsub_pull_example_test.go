@@ -19,8 +19,9 @@ import (
 	"log"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/pubsub/apiv1"
-	"golang.org/x/net/context"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 

@@ -25,9 +25,10 @@ import (
 	"testing"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub"
-	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"

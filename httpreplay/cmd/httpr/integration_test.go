@@ -31,9 +31,10 @@ import (
 	"testing"
 	"time"
 
+	"context"
+
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage"
-	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/option"
 )

@@ -20,9 +20,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"context"
+
 	"cloud.google.com/go/internal/version"
 	raw "cloud.google.com/go/translate/internal/translate/v2"
-	"golang.org/x/net/context"
 	"golang.org/x/text/language"
 	"google.golang.org/api/option"
 	htransport "google.golang.org/api/transport/http"
