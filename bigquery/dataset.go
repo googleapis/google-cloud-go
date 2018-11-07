@@ -60,7 +60,7 @@ type DatasetMetadataToUpdate struct {
 	Description optional.String // The user-friendly description of this table.
 	Name        optional.String // The user-friendly name for this dataset.
 
-	// DefaultTableExpiration is the the default expiration time for new tables.
+	// DefaultTableExpiration is the default expiration time for new tables.
 	// If set to time.Duration(0), new tables never expire.
 	DefaultTableExpiration optional.Duration
 

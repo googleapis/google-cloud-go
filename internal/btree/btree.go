@@ -835,7 +835,7 @@ func (t *BTree) After(k Key) *Iterator {
 	cs, found, idx := t.root.cursorStackForKey(k, cs, t.less)
 	// If we found the key, the cursor stack is pointing to it. Since that is
 	// the first element we want, don't advance the iterator on the initial call to Next.
-	// If we haven't found the key, the the cursor stack is pointing just after the first item,
+	// If we haven't found the key, the cursor stack is pointing just after the first item,
 	// so we do want to advance.
 	return &Iterator{
 		cursors:    cs,

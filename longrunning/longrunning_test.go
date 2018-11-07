@@ -41,7 +41,7 @@ type getterService struct {
 	// It is the running sum of the of the duration we have slept.
 	clock time.Duration
 
-	// getTimes records the the times at which GetOperation is called.
+	// getTimes records the times at which GetOperation is called.
 	getTimes []time.Duration
 
 	// results are the fake results that GetOperation should return.
