@@ -90,8 +90,8 @@ func (h *loggingHandler) DeleteLog(_ context.Context, req *logpb.DeleteLogReques
 // The only IDs that WriteLogEntries will accept.
 // Important for testing Ping.
 const (
-	validProjectID = "PROJECT_ID"
-	validOrgID     = "433637338589"
+	ValidProjectID = "PROJECT_ID"
+	ValidOrgID     = "433637338589"
 
 	SharedServiceAccount = "serviceAccount:cloud-logs@system.gserviceaccount.com"
 )
@@ -99,7 +99,7 @@ const (
 // WriteLogEntries writes log entries to Stackdriver Logging. All log entries in
 // Stackdriver Logging are written by this method.
 func (h *loggingHandler) WriteLogEntries(_ context.Context, req *logpb.WriteLogEntriesRequest) (*logpb.WriteLogEntriesResponse, error) {
-	if !strings.HasPrefix(req.LogName, "projects/"+validProjectID+"/") && !strings.HasPrefix(req.LogName, "organizations/"+validOrgID+"/") {
+	if !strings.HasPrefix(req.LogName, "projects/"+ValidProjectID+"/") && !strings.HasPrefix(req.LogName, "organizations/"+ValidOrgID+"/") {
 		return nil, fmt.Errorf("bad LogName: %q", req.LogName)
 	}
 	// TODO(jba): support insertId?
@@ -171,7 +171,7 @@ func (h *loggingHandler) filterEntries(filter string) ([]*logpb.LogEntry, error)
 	return entries, nil
 }
 
-var filterRegexp = regexp.MustCompile(`^logName\s*=\s*"?([-_/.%\w]+)"?$`)
+var filterRegexp = regexp.MustCompile(`^logName\s*=\s*"?([-_/.%\w]+)"?`)
 
 // returns the log name, or "" for the empty filter
 func parseFilter(filter string) (string, error) {
@@ -180,7 +180,7 @@ func parseFilter(filter string) (string, error) {
 	}
 	subs := filterRegexp.FindStringSubmatch(filter)
 	if subs == nil {
-		return "", invalidArgument("bad filter")
+		return "", invalidArgument(fmt.Sprintf("fake.go: failed to parse filter %s", filter))
 	}
 	return subs[1], nil // cannot panic by construction of regexp
 }
