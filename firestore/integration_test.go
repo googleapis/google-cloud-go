@@ -15,6 +15,7 @@
 package firestore
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -26,8 +27,6 @@ import (
 	"sort"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"

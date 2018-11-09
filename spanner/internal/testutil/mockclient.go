@@ -17,13 +17,12 @@ limitations under the License.
 package testutil
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"sync"
 	"testing"
 	"time"
-
-	"context"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/empty"

@@ -19,9 +19,8 @@
 package httpreplay
 
 import (
-	"net/http"
-
 	"context"
+	"net/http"
 
 	"google.golang.org/api/option"
 )

@@ -15,11 +15,10 @@
 package pubsub_test
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/pubsub/apiv1"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"

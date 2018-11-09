@@ -23,6 +23,7 @@
 package pstest
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"path"
@@ -31,8 +32,6 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/golang/protobuf/ptypes"

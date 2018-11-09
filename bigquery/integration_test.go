@@ -15,6 +15,7 @@
 package bigquery
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -27,8 +28,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/httpreplay"

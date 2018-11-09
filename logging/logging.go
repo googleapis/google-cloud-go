@@ -25,6 +25,7 @@
 package logging
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -34,8 +35,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/version"

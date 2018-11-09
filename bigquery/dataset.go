@@ -15,11 +15,10 @@
 package bigquery
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"

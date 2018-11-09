@@ -17,11 +17,10 @@
 package spanner
 
 import (
+	"context"
 	"reflect"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/civil"
 	proto "github.com/golang/protobuf/proto"

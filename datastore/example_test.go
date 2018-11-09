@@ -15,11 +15,10 @@
 package datastore_test
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/datastore"
 	"google.golang.org/api/iterator"

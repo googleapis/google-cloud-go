@@ -15,10 +15,9 @@
 package spanner
 
 import (
+	"context"
 	"io"
 	"testing"
-
-	"context"
 
 	"cloud.google.com/go/spanner/internal/testutil"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"

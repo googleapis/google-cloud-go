@@ -15,9 +15,8 @@
 package internal
 
 import (
-	"time"
-
 	"context"
+	"time"
 
 	gax "github.com/googleapis/gax-go"
 )

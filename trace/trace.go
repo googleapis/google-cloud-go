@@ -16,6 +16,7 @@
 package trace // import "cloud.google.com/go/trace"
 
 import (
+	"context"
 	"crypto/rand"
 	"encoding/binary"
 	"encoding/json"
@@ -28,8 +29,6 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-
-	"context"
 
 	api "google.golang.org/api/cloudtrace/v1"
 	"google.golang.org/api/gensupport"

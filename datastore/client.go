@@ -15,9 +15,8 @@
 package datastore
 
 import (
-	"fmt"
-
 	"context"
+	"fmt"
 
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/version"

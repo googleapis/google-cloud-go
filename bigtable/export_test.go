@@ -17,13 +17,12 @@ limitations under the License.
 package bigtable
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
 	"strings"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/bigtable/bttest"
 	"google.golang.org/api/option"

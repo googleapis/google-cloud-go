@@ -15,14 +15,13 @@
 package bigtable
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"sort"
 	"strings"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/golang/protobuf/proto"

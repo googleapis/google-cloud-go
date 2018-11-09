@@ -16,12 +16,11 @@
 package testutil
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
-
-	"context"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"

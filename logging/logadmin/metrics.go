@@ -15,9 +15,8 @@
 package logadmin
 
 import (
-	"fmt"
-
 	"context"
+	"fmt"
 
 	vkit "cloud.google.com/go/logging/apiv2"
 	"google.golang.org/api/iterator"

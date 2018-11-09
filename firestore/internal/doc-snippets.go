@@ -17,9 +17,8 @@ package internal
 // TODO(deklerk) can this file and directory be deleted, or is it being used for documentation somewhere?
 
 import (
-	"fmt"
-
 	"context"
+	"fmt"
 
 	firestore "cloud.google.com/go/firestore"
 	"google.golang.org/api/iterator"

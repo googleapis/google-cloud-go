@@ -15,10 +15,9 @@
 package storage
 
 import (
+	"context"
 	"net/http"
 	"testing"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 )

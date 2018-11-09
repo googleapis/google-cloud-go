@@ -15,13 +15,12 @@
 package firestore
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
 	"strings"
 	"time"
-
-	"context"
 
 	vkit "cloud.google.com/go/firestore/apiv1beta1"
 	"cloud.google.com/go/internal/version"

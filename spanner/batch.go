@@ -18,11 +18,10 @@ package spanner
 
 import (
 	"bytes"
+	"context"
 	"encoding/gob"
 	"log"
 	"time"
-
-	"context"
 
 	"github.com/golang/protobuf/proto"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"

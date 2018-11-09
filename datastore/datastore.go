@@ -15,13 +15,12 @@
 package datastore
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
 	"os"
 	"reflect"
-
-	"context"
 
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/option"

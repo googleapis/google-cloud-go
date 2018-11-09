@@ -15,11 +15,10 @@
 package pubsub
 
 import (
+	"context"
 	"fmt"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal"

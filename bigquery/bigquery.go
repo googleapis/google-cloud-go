@@ -15,12 +15,11 @@
 package bigquery
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/version"

@@ -15,6 +15,7 @@
 package storage
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -23,8 +24,6 @@ import (
 	"strconv"
 	"strings"
 	"testing"
-
-	"context"
 
 	"google.golang.org/api/option"
 )

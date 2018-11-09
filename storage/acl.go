@@ -15,10 +15,9 @@
 package storage
 
 import (
+	"context"
 	"net/http"
 	"reflect"
-
-	"context"
 
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/googleapi"

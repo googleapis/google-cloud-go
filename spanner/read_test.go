@@ -17,14 +17,13 @@ limitations under the License.
 package spanner
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
 	"sync/atomic"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/spanner/internal/testutil"
 	"github.com/golang/protobuf/proto"

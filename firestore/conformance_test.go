@@ -17,6 +17,7 @@
 package firestore
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -27,8 +28,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-
-	"context"
 
 	pb "cloud.google.com/go/firestore/genproto"
 	"github.com/golang/protobuf/proto"

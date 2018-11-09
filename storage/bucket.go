@@ -15,12 +15,11 @@
 package storage
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"reflect"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"

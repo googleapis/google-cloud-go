@@ -22,6 +22,7 @@ import (
 )
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"io"
@@ -30,8 +31,6 @@ import (
 	"os"
 	"strings"
 	"testing"
-
-	"context"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"

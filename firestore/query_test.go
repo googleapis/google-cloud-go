@@ -15,11 +15,10 @@
 package firestore
 
 import (
+	"context"
 	"math"
 	"sort"
 	"testing"
-
-	"context"
 
 	"cloud.google.com/go/internal/pretty"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"

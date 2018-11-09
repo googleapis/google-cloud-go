@@ -17,6 +17,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -26,8 +27,6 @@ import (
 	"os"
 	"sync"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/cmd/go-cloud-debug-agent/internal/breakpoints"
 	debuglet "cloud.google.com/go/cmd/go-cloud-debug-agent/internal/controller"

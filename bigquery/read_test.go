@@ -15,10 +15,9 @@
 package bigquery
 
 import (
+	"context"
 	"errors"
 	"testing"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"

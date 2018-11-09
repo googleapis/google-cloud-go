@@ -15,9 +15,8 @@
 package pubsub
 
 import (
-	"testing"
-
 	"context"
+	"testing"
 
 	gax "github.com/googleapis/gax-go"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"

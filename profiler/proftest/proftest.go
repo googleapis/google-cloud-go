@@ -25,6 +25,7 @@ package proftest
 import (
 	"archive/zip"
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -33,8 +34,6 @@ import (
 	"net/http"
 	"strings"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/storage"
 	gax "github.com/googleapis/gax-go"

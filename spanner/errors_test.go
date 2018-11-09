@@ -17,10 +17,9 @@ limitations under the License.
 package spanner
 
 import (
+	"context"
 	"errors"
 	"testing"
-
-	"context"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

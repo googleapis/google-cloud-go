@@ -15,9 +15,8 @@
 package firestore
 
 import (
-	"testing"
-
 	"context"
+	"testing"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/iterator"

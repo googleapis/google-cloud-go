@@ -15,6 +15,7 @@
 package pubsub
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"reflect"
@@ -22,8 +23,6 @@ import (
 	"sync/atomic"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub/pstest"

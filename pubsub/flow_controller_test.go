@@ -15,13 +15,12 @@
 package pubsub
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"sync/atomic"
 	"testing"
 	"time"
-
-	"context"
 
 	"golang.org/x/sync/errgroup"
 )

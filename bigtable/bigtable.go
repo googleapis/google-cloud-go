@@ -17,13 +17,12 @@ limitations under the License.
 package bigtable // import "cloud.google.com/go/bigtable"
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
 	"strconv"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/bigtable/internal/gax"
 	btopt "cloud.google.com/go/bigtable/internal/option"

@@ -15,9 +15,8 @@
 package firestore
 
 import (
-	"errors"
-
 	"context"
+	"errors"
 
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
 )

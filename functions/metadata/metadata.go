@@ -17,9 +17,8 @@
 package metadata // import "cloud.google.com/go/functions/metadata"
 
 import (
-	"time"
-
 	"context"
+	"time"
 )
 
 type contextKey struct{}

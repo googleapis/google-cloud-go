@@ -21,13 +21,12 @@ package errorreporting // import "cloud.google.com/go/errorreporting"
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"runtime"
 	"time"
-
-	"context"
 
 	vkit "cloud.google.com/go/errorreporting/apiv1beta1"
 	"cloud.google.com/go/internal/version"

@@ -15,9 +15,8 @@
 package metadata
 
 import (
-	"testing"
-
 	"context"
+	"testing"
 )
 
 func TestMetadata(t *testing.T) {

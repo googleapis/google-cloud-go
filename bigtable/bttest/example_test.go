@@ -16,10 +16,9 @@ limitations under the License.
 package bttest_test
 
 import (
+	"context"
 	"fmt"
 	"log"
-
-	"context"
 
 	"cloud.google.com/go/bigtable"
 	"cloud.google.com/go/bigtable/bttest"

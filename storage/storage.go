@@ -16,6 +16,7 @@ package storage
 
 import (
 	"bytes"
+	"context"
 	"crypto"
 	"crypto/rand"
 	"crypto/rsa"
@@ -35,8 +36,6 @@ import (
 	"strings"
 	"time"
 	"unicode/utf8"
-
-	"context"
 
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"

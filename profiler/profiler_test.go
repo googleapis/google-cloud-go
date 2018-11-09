@@ -17,6 +17,7 @@ package profiler
 import (
 	"bytes"
 	"compress/gzip"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -28,8 +29,6 @@ import (
 	"sync"
 	"testing"
 	"time"
-
-	"context"
 
 	gcemd "cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/testutil"

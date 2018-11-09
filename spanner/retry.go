@@ -17,11 +17,10 @@ limitations under the License.
 package spanner
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
-
-	"context"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"

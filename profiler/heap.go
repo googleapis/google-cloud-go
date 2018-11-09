@@ -16,11 +16,10 @@ package profiler
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"runtime"
 	"time"
-
-	"context"
 
 	"github.com/google/pprof/profile"
 )

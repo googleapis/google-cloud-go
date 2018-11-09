@@ -17,9 +17,8 @@
 package container
 
 import (
-	"time"
-
 	"context"
+	"time"
 
 	"cloud.google.com/go/internal/version"
 	gax "github.com/googleapis/gax-go"

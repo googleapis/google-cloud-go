@@ -16,6 +16,7 @@ package rpcreplay
 
 import (
 	"bufio"
+	"context"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -23,8 +24,6 @@ import (
 	"log"
 	"os"
 	"sync"
-
-	"context"
 
 	pb "cloud.google.com/go/rpcreplay/proto/rpcreplay"
 	"github.com/golang/protobuf/proto"

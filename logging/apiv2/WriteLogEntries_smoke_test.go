@@ -21,12 +21,11 @@ import (
 )
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/iterator"

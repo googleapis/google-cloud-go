@@ -16,6 +16,7 @@ package pubsub
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"log"
 	"math/rand"
@@ -23,8 +24,6 @@ import (
 	"sync"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/option"

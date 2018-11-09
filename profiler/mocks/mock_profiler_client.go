@@ -19,9 +19,8 @@
 package mocks
 
 import (
-	reflect "reflect"
-
 	"context"
+	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
 	v2 "google.golang.org/genproto/googleapis/devtools/cloudprofiler/v2"

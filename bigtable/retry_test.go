@@ -16,11 +16,10 @@ limitations under the License.
 package bigtable
 
 import (
+	"context"
 	"strings"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/bigtable/bttest"
 	"cloud.google.com/go/bigtable/internal/gax"

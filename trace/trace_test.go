@@ -15,6 +15,7 @@
 package trace
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -26,8 +27,6 @@ import (
 	"sync"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/datastore"
 	"cloud.google.com/go/internal/testutil"

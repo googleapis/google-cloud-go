@@ -15,11 +15,10 @@
 package pubsub
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
-
-	"context"
 
 	"github.com/golang/protobuf/ptypes"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"

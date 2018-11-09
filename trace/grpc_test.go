@@ -15,14 +15,13 @@
 package trace
 
 import (
+	"context"
 	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
 	"strings"
 	"testing"
-
-	"context"
 
 	pb "cloud.google.com/go/trace/testdata/helloworld"
 	"google.golang.org/grpc"

@@ -19,10 +19,9 @@
 package spanner
 
 import (
+	"context"
 	"fmt"
 	"testing"
-
-	"context"
 )
 
 func TestBigPDML(t *testing.T) {

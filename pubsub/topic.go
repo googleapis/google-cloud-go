@@ -15,14 +15,13 @@
 package pubsub
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"runtime"
 	"strings"
 	"sync"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/iam"
 	"github.com/golang/protobuf/proto"

@@ -15,6 +15,7 @@
 package translate
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -24,8 +25,6 @@ import (
 	"strings"
 	"sync"
 	"testing"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	"golang.org/x/text/language"

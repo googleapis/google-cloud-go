@@ -31,6 +31,7 @@ package bttest // import "cloud.google.com/go/bigtable/bttest"
 
 import (
 	"bytes"
+	"context"
 	"encoding/binary"
 	"fmt"
 	"log"
@@ -41,8 +42,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"context"
 
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"github.com/golang/protobuf/ptypes/wrappers"

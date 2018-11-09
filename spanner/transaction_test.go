@@ -17,12 +17,11 @@ limitations under the License.
 package spanner
 
 import (
+	"context"
 	"errors"
 	"sync"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/spanner/internal/testutil"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"

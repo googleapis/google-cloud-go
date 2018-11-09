@@ -17,6 +17,7 @@
 package logging_test
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -27,8 +28,6 @@ import (
 	"sync/atomic"
 	"testing"
 	"time"
-
-	"context"
 
 	cinternal "cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"

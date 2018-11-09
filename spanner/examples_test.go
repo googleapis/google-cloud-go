@@ -17,12 +17,11 @@ limitations under the License.
 package spanner_test
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"sync"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/spanner"
 	"google.golang.org/api/iterator"

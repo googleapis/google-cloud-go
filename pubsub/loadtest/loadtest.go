@@ -20,6 +20,7 @@ package loadtest
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"log"
 	"runtime"
@@ -27,8 +28,6 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/pubsub"
 	pb "cloud.google.com/go/pubsub/loadtest/pb"

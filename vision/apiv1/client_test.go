@@ -15,11 +15,10 @@
 package vision
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 	"testing"
-
-	"context"
 
 	"github.com/golang/protobuf/proto"
 	pb "google.golang.org/genproto/googleapis/cloud/vision/v1"
