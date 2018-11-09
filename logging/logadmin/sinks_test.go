@@ -60,6 +60,7 @@ func initSinks(ctx context.Context) func() {
 		if err := bucket.Create(ctx, testProjectID, nil); err != nil {
 			log.Fatalf("creating storage bucket %q: %v", testBucket, err)
 		}
+		log.Printf("successfully created bucket %s", testBucket)
 		if err := bucket.ACL().Set(ctx, "group-cloud-logs@google.com", storage.RoleOwner); err != nil {
 			log.Fatalf("setting owner role: %v", err)
 		}
