@@ -34,7 +34,8 @@ import (
 
 var sinkIDs = uid.NewSpace("GO-CLIENT-TEST-SINK", nil)
 
-const testFilter = ""
+// testFilter matches no logs to avoid exporting anything into the sinks.
+const testFilter = `textPayload="/dev/null"`
 
 var testSinkDestination string
 
