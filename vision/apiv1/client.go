@@ -159,3 +159,12 @@ func (c *ImageAnnotatorClient) LocalizeObjects(ctx context.Context, img *pb.Imag
 	}
 	return res.LocalizedObjectAnnotations, nil
 }
+
+// ProductSearch searches the image for products.
+func (c *ImageAnnotatorClient) ProductSearch(ctx context.Context, img *pb.Image, ictx *pb.ImageContext, opts ...gax.CallOption) ([]*pb.LocalizedObjectAnnotation, error) {
+	res, err := c.annotateOne(ctx, img, ictx, pb.Feature_PRODUCT_SEARCH, 0, opts)
+	if err != nil {
+		return nil, err
+	}
+	return res.LocalizedObjectAnnotations, nil
+}
