@@ -15,9 +15,8 @@
 package cloud_test
 
 import (
-	"time"
-
 	"context"
+	"time"
 
 	"cloud.google.com/go/bigquery"
 )

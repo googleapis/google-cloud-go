@@ -15,10 +15,9 @@
 package errorreporting_test
 
 import (
+	"context"
 	"errors"
 	"log"
-
-	"context"
 
 	"cloud.google.com/go/errorreporting"
 )

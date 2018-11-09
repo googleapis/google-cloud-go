@@ -17,6 +17,7 @@
 package logadmin
 
 import (
+	"context"
 	"flag"
 	"log"
 	"net/http"
@@ -24,8 +25,6 @@ import (
 	"os"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/logging"

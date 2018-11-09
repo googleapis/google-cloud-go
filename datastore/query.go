@@ -15,6 +15,7 @@
 package datastore
 
 import (
+	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -22,8 +23,6 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-
-	"context"
 
 	"cloud.google.com/go/internal/trace"
 	wrapperspb "github.com/golang/protobuf/ptypes/wrappers"

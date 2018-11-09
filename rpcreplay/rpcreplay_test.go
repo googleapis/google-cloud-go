@@ -16,12 +16,11 @@ package rpcreplay
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"io"
 	"strings"
 	"testing"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	ipb "cloud.google.com/go/rpcreplay/proto/intstore"

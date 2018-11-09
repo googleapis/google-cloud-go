@@ -15,6 +15,7 @@
 package datastore
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -23,8 +24,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/golang/protobuf/proto"

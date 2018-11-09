@@ -15,6 +15,7 @@
 package datastore
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -28,8 +29,6 @@ import (
 	"sync"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/rpcreplay"

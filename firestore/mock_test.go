@@ -17,11 +17,10 @@ package firestore
 // A simple mock server.
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"strings"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/golang/protobuf/proto"

@@ -19,13 +19,12 @@ package loadtest
 //   go test -bench . -cpu 1
 
 import (
+	"context"
 	"log"
 	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub"

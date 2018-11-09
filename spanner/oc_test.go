@@ -17,10 +17,9 @@
 package spanner
 
 import (
+	"context"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	stestutil "cloud.google.com/go/spanner/internal/testutil"

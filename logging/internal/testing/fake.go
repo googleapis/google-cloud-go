@@ -18,6 +18,7 @@ limitations under the License.
 package testing
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"regexp"
@@ -25,8 +26,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	emptypb "github.com/golang/protobuf/ptypes/empty"

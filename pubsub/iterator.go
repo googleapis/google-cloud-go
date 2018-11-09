@@ -15,11 +15,10 @@
 package pubsub
 
 import (
+	"context"
 	"io"
 	"sync"
 	"time"
-
-	"context"
 
 	vkit "cloud.google.com/go/pubsub/apiv1"
 	"cloud.google.com/go/pubsub/internal/distribution"

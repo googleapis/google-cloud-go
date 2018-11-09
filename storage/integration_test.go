@@ -17,6 +17,7 @@ package storage
 import (
 	"bytes"
 	"compress/gzip"
+	"context"
 	"crypto/md5"
 	"crypto/sha256"
 	"encoding/base64"
@@ -37,8 +38,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/iam"

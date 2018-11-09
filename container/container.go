@@ -18,11 +18,10 @@
 package container // import "cloud.google.com/go/container"
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
-
-	"context"
 
 	raw "google.golang.org/api/container/v1"
 	"google.golang.org/api/option"

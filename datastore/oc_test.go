@@ -17,9 +17,8 @@
 package datastore
 
 import (
-	"testing"
-
 	"context"
+	"testing"
 
 	"cloud.google.com/go/internal/testutil"
 )

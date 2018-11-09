@@ -17,10 +17,9 @@
 package translate
 
 import (
+	"context"
 	"fmt"
 	"net/http"
-
-	"context"
 
 	"cloud.google.com/go/internal/version"
 	raw "cloud.google.com/go/translate/internal/translate/v2"

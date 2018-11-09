@@ -18,14 +18,13 @@ package httpreplay_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/internal/testutil"

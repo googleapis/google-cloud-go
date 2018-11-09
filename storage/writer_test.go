@@ -15,13 +15,12 @@
 package storage
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/base64"
 	"net/http"
 	"strings"
 	"testing"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/googleapi"

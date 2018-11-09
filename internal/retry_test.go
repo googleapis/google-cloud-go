@@ -15,12 +15,11 @@
 package internal
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"testing"
 	"time"
-
-	"context"
 
 	gax "github.com/googleapis/gax-go"
 	"google.golang.org/grpc/codes"

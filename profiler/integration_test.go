@@ -18,6 +18,7 @@ package profiler
 
 import (
 	"bytes"
+	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -26,8 +27,6 @@ import (
 	"testing"
 	"text/template"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/profiler/proftest"
 	"golang.org/x/oauth2/google"

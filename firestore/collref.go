@@ -15,12 +15,11 @@
 package firestore
 
 import (
+	"context"
 	"math/rand"
 	"os"
 	"sync"
 	"time"
-
-	"context"
 )
 
 // A CollectionRef is a reference to Firestore collection.

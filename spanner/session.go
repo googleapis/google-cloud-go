@@ -19,14 +19,13 @@ package spanner
 import (
 	"container/heap"
 	"container/list"
+	"context"
 	"fmt"
 	"log"
 	"math/rand"
 	"strings"
 	"sync"
 	"time"
-
-	"context"
 
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"

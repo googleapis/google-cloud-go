@@ -15,11 +15,10 @@
 package pubsub
 
 import (
+	"context"
 	"io"
 	"sync"
 	"time"
-
-	"context"
 
 	gax "github.com/googleapis/gax-go"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"

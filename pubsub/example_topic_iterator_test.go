@@ -15,9 +15,8 @@
 package pubsub_test
 
 import (
-	"fmt"
-
 	"context"
+	"fmt"
 
 	"cloud.google.com/go/pubsub"
 	"google.golang.org/api/iterator"

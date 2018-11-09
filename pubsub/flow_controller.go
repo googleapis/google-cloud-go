@@ -15,9 +15,8 @@
 package pubsub
 
 import (
-	"sync/atomic"
-
 	"context"
+	"sync/atomic"
 
 	"golang.org/x/sync/semaphore"
 )

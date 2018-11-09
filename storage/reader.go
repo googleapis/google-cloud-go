@@ -15,6 +15,7 @@
 package storage
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"hash/crc32"
@@ -26,8 +27,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/googleapi"

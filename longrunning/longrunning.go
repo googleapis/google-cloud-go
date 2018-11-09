@@ -22,11 +22,10 @@
 package longrunning // import "cloud.google.com/go/longrunning"
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
-
-	"context"
 
 	autogen "cloud.google.com/go/longrunning/autogen"
 	"github.com/golang/protobuf/proto"

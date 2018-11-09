@@ -17,9 +17,8 @@
 package bigtable
 
 import (
-	"fmt"
-
 	"context"
+	"fmt"
 
 	"go.opencensus.io/plugin/ocgrpc"
 	"go.opencensus.io/trace"

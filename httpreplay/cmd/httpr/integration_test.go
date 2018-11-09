@@ -17,6 +17,7 @@
 package main_test
 
 import (
+	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
@@ -30,8 +31,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage"

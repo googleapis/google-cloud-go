@@ -17,9 +17,8 @@
 package spanner
 
 import (
-	"fmt"
-
 	"context"
+	"fmt"
 
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"

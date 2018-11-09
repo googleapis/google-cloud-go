@@ -15,14 +15,13 @@
 package storage
 
 import (
+	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
 	"sync"
 	"unicode/utf8"
-
-	"context"
 
 	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/storage/v1"

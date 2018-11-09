@@ -15,11 +15,10 @@
 package logadmin
 
 import (
+	"context"
 	"log"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"

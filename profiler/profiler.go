@@ -38,6 +38,7 @@ package profiler
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -47,8 +48,6 @@ import (
 	"runtime/pprof"
 	"sync"
 	"time"
-
-	"context"
 
 	gcemd "cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/version"

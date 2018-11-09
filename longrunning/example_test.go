@@ -15,10 +15,9 @@
 package longrunning
 
 import (
+	"context"
 	"fmt"
 	"time"
-
-	"context"
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/duration"

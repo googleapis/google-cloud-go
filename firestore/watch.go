@@ -15,14 +15,13 @@
 package firestore
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
 	"log"
 	"sort"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/btree"
 	"github.com/golang/protobuf/ptypes"

@@ -18,12 +18,11 @@ package spanner
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"log"
 	"sync/atomic"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/protostruct"
 	proto "github.com/golang/protobuf/proto"

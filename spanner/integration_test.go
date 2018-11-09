@@ -17,6 +17,7 @@ limitations under the License.
 package spanner
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -28,8 +29,6 @@ import (
 	"sync"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"

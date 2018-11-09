@@ -15,10 +15,9 @@
 package trace
 
 import (
+	"context"
 	"encoding/hex"
 	"fmt"
-
-	"context"
 
 	"cloud.google.com/go/internal/tracecontext"
 	"google.golang.org/grpc"

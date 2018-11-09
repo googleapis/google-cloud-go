@@ -17,9 +17,8 @@ limitations under the License.
 package spanner
 
 import (
-	"fmt"
-
 	"context"
+	"fmt"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

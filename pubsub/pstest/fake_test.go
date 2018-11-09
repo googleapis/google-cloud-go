@@ -15,13 +15,12 @@
 package pstest
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"sync"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/golang/protobuf/ptypes"

@@ -16,13 +16,12 @@ package logadmin_test
 
 import (
 	"bytes"
+	"context"
 	"flag"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
-
-	"context"
 
 	"cloud.google.com/go/logging"
 	"cloud.google.com/go/logging/logadmin"

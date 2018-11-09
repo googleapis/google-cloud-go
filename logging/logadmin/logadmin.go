@@ -26,14 +26,13 @@
 package logadmin // import "cloud.google.com/go/logging/logadmin"
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/version"
 	"cloud.google.com/go/logging"

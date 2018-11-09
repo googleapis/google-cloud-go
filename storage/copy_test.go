@@ -15,10 +15,9 @@
 package storage
 
 import (
+	"context"
 	"strings"
 	"testing"
-
-	"context"
 )
 
 func TestCopyMissingFields(t *testing.T) {

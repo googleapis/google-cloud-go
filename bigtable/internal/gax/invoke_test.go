@@ -16,10 +16,9 @@ limitations under the License.
 package gax
 
 import (
+	"context"
 	"testing"
 	"time"
-
-	"context"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

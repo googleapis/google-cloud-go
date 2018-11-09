@@ -18,11 +18,10 @@
 package longrunning
 
 import (
+	"context"
 	"errors"
 	"testing"
 	"time"
-
-	"context"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"

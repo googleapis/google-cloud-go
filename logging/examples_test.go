@@ -15,11 +15,10 @@
 package logging_test
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
-
-	"context"
 
 	"cloud.google.com/go/logging"
 )

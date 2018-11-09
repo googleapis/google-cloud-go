@@ -15,14 +15,13 @@
 package bigquery
 
 import (
+	"context"
 	"errors"
 	"math"
 	"math/big"
 	"reflect"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"

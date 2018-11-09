@@ -17,10 +17,9 @@
 package pubsub
 
 import (
+	"context"
 	"log"
 	"sync"
-
-	"context"
 
 	"go.opencensus.io/plugin/ocgrpc"
 	"go.opencensus.io/stats"

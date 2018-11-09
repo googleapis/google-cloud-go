@@ -15,11 +15,10 @@
 package pubsub_test
 
 import (
+	"context"
 	"strconv"
 	"sync"
 	"testing"
-
-	"context"
 
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsub/pstest"

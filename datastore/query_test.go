@@ -15,13 +15,12 @@
 package datastore
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"reflect"
 	"sort"
 	"testing"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/golang/protobuf/proto"

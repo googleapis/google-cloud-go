@@ -15,6 +15,7 @@
 package storage_test
 
 import (
+	"context"
 	"fmt"
 	"hash/crc32"
 	"io"
@@ -22,8 +23,6 @@ import (
 	"log"
 	"os"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/iterator"

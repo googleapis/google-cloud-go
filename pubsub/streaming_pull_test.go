@@ -19,14 +19,13 @@ package pubsub
 // TODO(jba): test that when all messages expire, Stop returns.
 
 import (
+	"context"
 	"io"
 	"strconv"
 	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"

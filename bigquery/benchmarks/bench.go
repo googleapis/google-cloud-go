@@ -17,13 +17,12 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"io/ioutil"
 	"log"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/bigquery"
 	"google.golang.org/api/iterator"

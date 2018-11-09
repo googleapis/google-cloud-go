@@ -15,6 +15,7 @@
 package storage
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -22,8 +23,6 @@ import (
 	"net/http"
 	"strings"
 	"testing"
-
-	"context"
 
 	"google.golang.org/api/option"
 )

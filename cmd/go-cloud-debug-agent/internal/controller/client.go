@@ -16,14 +16,13 @@
 package controller
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 	"sync"
-
-	"context"
 
 	"golang.org/x/oauth2"
 	cd "google.golang.org/api/clouddebugger/v2"

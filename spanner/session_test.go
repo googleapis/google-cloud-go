@@ -19,13 +19,12 @@ package spanner
 import (
 	"bytes"
 	"container/heap"
+	"context"
 	"fmt"
 	"math/rand"
 	"sync"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/spanner/internal/testutil"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"

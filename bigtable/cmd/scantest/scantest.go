@@ -22,6 +22,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -31,8 +32,6 @@ import (
 	"sync/atomic"
 	"text/tabwriter"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/bigtable"
 	"cloud.google.com/go/bigtable/internal/cbtconfig"

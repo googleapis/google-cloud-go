@@ -15,9 +15,8 @@
 package spanner
 
 import (
-	"time"
-
 	"context"
+	"time"
 
 	"google.golang.org/api/iterator"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"

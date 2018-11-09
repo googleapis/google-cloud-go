@@ -15,14 +15,13 @@
 package pubsub
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
 	"strings"
 	"sync"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/optional"

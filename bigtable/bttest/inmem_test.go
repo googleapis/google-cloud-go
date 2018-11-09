@@ -15,6 +15,7 @@
 package bttest
 
 import (
+	"context"
 	"fmt"
 	"math/rand"
 	"strconv"
@@ -22,8 +23,6 @@ import (
 	"sync/atomic"
 	"testing"
 	"time"
-
-	"context"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"

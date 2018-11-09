@@ -15,9 +15,8 @@
 package bigquery
 
 import (
-	"io"
-
 	"context"
+	"io"
 
 	"cloud.google.com/go/internal/trace"
 	bq "google.golang.org/api/bigquery/v2"

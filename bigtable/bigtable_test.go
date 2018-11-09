@@ -17,14 +17,13 @@ limitations under the License.
 package bigtable
 
 import (
+	"context"
 	"fmt"
 	"math/rand"
 	"strings"
 	"sync"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"

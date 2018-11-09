@@ -15,9 +15,8 @@
 package datastore
 
 import (
-	"testing"
-
 	"context"
+	"testing"
 
 	"github.com/golang/protobuf/proto"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"

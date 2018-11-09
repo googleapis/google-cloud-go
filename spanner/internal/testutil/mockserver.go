@@ -17,6 +17,7 @@ limitations under the License.
 package testutil
 
 import (
+	"context"
 	"encoding/binary"
 	"fmt"
 	"io"
@@ -24,8 +25,6 @@ import (
 	"sync"
 	"testing"
 	"time"
-
-	"context"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	proto3 "github.com/golang/protobuf/ptypes/struct"

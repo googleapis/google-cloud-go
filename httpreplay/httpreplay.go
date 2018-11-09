@@ -36,9 +36,8 @@ package httpreplay
 // TODO(jba): add examples.
 
 import (
-	"net/http"
-
 	"context"
+	"net/http"
 
 	"cloud.google.com/go/httpreplay/internal/proxy"
 	"google.golang.org/api/option"

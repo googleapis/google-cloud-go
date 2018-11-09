@@ -25,6 +25,7 @@ package translate // import "cloud.google.com/go/translate/internal/translate/v2
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -33,8 +34,6 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-
-	"context"
 
 	gensupport "google.golang.org/api/gensupport"
 	googleapi "google.golang.org/api/googleapi"

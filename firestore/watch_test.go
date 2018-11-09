@@ -15,11 +15,10 @@
 package firestore
 
 import (
+	"context"
 	"sort"
 	"testing"
 	"time"
-
-	"context"
 
 	"cloud.google.com/go/internal/btree"
 	"github.com/golang/protobuf/proto"
