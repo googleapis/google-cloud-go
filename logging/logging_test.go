@@ -85,7 +85,7 @@ func TestMain(m *testing.M) {
 		if testProjectID != "" {
 			log.Print("Integration tests skipped in short mode (using fake instead)")
 		}
-		testProjectID = "PROJECT_ID"
+		testProjectID = ltesting.ValidProjectID
 		clean = func(e *logging.Entry) {
 			// Remove the insert ID for consistency with the integration test.
 			e.InsertID = ""
@@ -148,8 +148,10 @@ func TestMain(m *testing.M) {
 
 func initLogs() {
 	testLogID = uids.New()
-	testFilter = fmt.Sprintf(`logName = "projects/%s/logs/%s"`, testProjectID,
-		strings.Replace(testLogID, "/", "%2F", -1))
+	hourAgo := time.Now().Add(-1 * time.Hour).UTC()
+	testFilter = fmt.Sprintf(`logName = "projects/%s/logs/%s" AND
+timestamp >= "%s"`,
+		testProjectID, strings.Replace(testLogID, "/", "%2F", -1), hourAgo.Format(time.RFC3339))
 }
 
 // Testing of Logger.Log is done in logadmin_test.go, TestEntries.
@@ -499,8 +501,7 @@ func TestLogsAndDelete(t *testing.T) {
 func TestNonProjectParent(t *testing.T) {
 	ctx := context.Background()
 	initLogs()
-	const orgID = "433637338589" // org ID for google.com
-	parent := "organizations/" + orgID
+	parent := "organizations/" + ltesting.ValidOrgID
 	c, a := newClients(ctx, parent)
 	defer c.Close()
 	defer a.Close()
@@ -523,7 +524,7 @@ func TestNonProjectParent(t *testing.T) {
 		LogName:   parent + "/logs/" + testLogID,
 		Resource: &mrpb.MonitoredResource{
 			Type:   "organization",
-			Labels: map[string]string{"organization_id": orgID},
+			Labels: map[string]string{"organization_id": ltesting.ValidOrgID},
 		},
 	}}
 	var got []*logging.Entry
