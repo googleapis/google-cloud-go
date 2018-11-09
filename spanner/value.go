@@ -1487,7 +1487,7 @@ func encodeStruct(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			continue
 		}
 
-		fname, ok := structTagLookup(sf.Tag, "spanner")
+		fname, ok := sf.Tag.Lookup("spanner")
 		if !ok {
 			fname = sf.Name
 		}

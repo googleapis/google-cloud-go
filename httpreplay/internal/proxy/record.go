@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// +build go1.8
-
 // Package proxy provides a record/replay HTTP proxy. It is designed to support
 // both an in-memory API (cloud.google.com/go/httpreplay) and a standalone server
 // (cloud.google.com/go/httpreplay/cmd/httpr).

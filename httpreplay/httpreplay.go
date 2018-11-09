@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// +build go1.8
-
 // Package httpreplay provides an API for recording and replaying traffic
 // from HTTP-based Google API clients.
 //

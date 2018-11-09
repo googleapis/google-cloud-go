@@ -15,11 +15,6 @@
 // Package proftest contains test helpers for profiler agent integration tests.
 // This package is experimental.
 
-// golang.org/x/build/kubernetes/dialer.go imports "context" package (rather
-// than "context") and that does not exist in Go 1.6 or
-// earlier.
-// +build go1.7
-
 package proftest
 
 import (
