@@ -129,6 +129,11 @@ func TestClientMethods(t *testing.T) {
 			[]*pb.Feature{{Type: pb.Feature_OBJECT_LOCALIZATION, MaxResults: 0}},
 			batchResponse.Responses[0].LocalizedObjectAnnotations,
 		},
+		{
+			func() (interface{}, error) { return c.ProductSearch(ctx, img, ictx) },
+			[]*pb.Feature{{Type: pb.Feature_PRODUCT_SEARCH, MaxResults: 0}},
+			batchResponse.Responses[0].LocalizedObjectAnnotations,
+		},
 	} {
 		mockImageAnnotator.reqs = nil
 		res, err := test.call()
