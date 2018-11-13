@@ -1,5 +1,23 @@
 # Changes
 
+## v0.33.0
+
+- bttest:
+  - Add support for apply_label_transformer.
+- expr:
+  - Add expr library.
+- firestore:
+  - Support retrieval of missing documents.
+- kms:
+  - Add IAM methods.
+- pubsub:
+  - Clarify extension documentation.
+- scheduler:
+  - Add v1beta1 client.
+- vision:
+  - Add product search helper.
+  - Add new product search client.
+
 ## v0.32.0
 
 Note: This release is the last to support Go 1.6 and 1.8.
