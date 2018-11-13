@@ -123,7 +123,30 @@ const (
 )
 
 func TestMain(m *testing.M) {
-	initIntegrationTest()
+	flag.Parse() // needed for testing.Short()
+	if testing.Short() {
+		log.Println("Integration tests skipped in -short mode.")
+		return
+	}
+	if testProjectID == "" {
+		log.Println("Integration tests skipped: GCLOUD_TESTS_GOLANG_PROJECT_ID is missing")
+		return
+	}
+	ctx := context.Background()
+
+	ts := testutil.TokenSource(ctx, AdminScope, Scope)
+	if ts == nil {
+		log.Printf("Integration test skipped: cannot get service account credential from environment variable %v", "GCLOUD_TESTS_GOLANG_KEY")
+		return
+	}
+	var err error
+
+	// Create Admin client and Data client.
+	admin, err = database.NewDatabaseAdminClient(ctx, option.WithTokenSource(ts), option.WithEndpoint(endpoint))
+	if err != nil {
+		log.Fatalf("cannot create admin client: %v", err)
+	}
+
 	res := m.Run()
 	cleanupDatabases()
 	os.Exit(res)
@@ -642,8 +665,6 @@ func TestReadWriteTransaction(t *testing.T) {
 	}
 }
 
-type testTableRow struct{ Key, StringValue string }
-
 func TestReads(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -706,97 +727,6 @@ func TestReads(t *testing.T) {
 
 	rangeReads(ctx, t, client)
 	indexRangeReads(ctx, t, client)
-}
-
-func rangeReads(ctx context.Context, t *testing.T, client *Client) {
-	checkRange := func(ks KeySet, wantNums ...int) {
-		if msg, ok := compareRows(client.Single().Read(ctx, testTable, ks, testTableColumns), wantNums); !ok {
-			t.Errorf("key set %+v: %s", ks, msg)
-		}
-	}
-
-	checkRange(Key{"k1"}, 1)
-	checkRange(KeyRange{Key{"k3"}, Key{"k5"}, ClosedOpen}, 3, 4)
-	checkRange(KeyRange{Key{"k3"}, Key{"k5"}, ClosedClosed}, 3, 4, 5)
-	checkRange(KeyRange{Key{"k3"}, Key{"k5"}, OpenClosed}, 4, 5)
-	checkRange(KeyRange{Key{"k3"}, Key{"k5"}, OpenOpen}, 4)
-
-	// Partial key specification.
-	checkRange(KeyRange{Key{"k7"}, Key{}, ClosedClosed}, 7, 8, 9)
-	checkRange(KeyRange{Key{"k7"}, Key{}, OpenClosed}, 8, 9)
-	checkRange(KeyRange{Key{}, Key{"k11"}, ClosedOpen}, 0, 1, 10)
-	checkRange(KeyRange{Key{}, Key{"k11"}, ClosedClosed}, 0, 1, 10, 11)
-
-	// The following produce empty ranges.
-	// TODO(jba): Consider a multi-part key to illustrate partial key behavior.
-	// checkRange(KeyRange{Key{"k7"}, Key{}, ClosedOpen})
-	// checkRange(KeyRange{Key{"k7"}, Key{}, OpenOpen})
-	// checkRange(KeyRange{Key{}, Key{"k11"}, OpenOpen})
-	// checkRange(KeyRange{Key{}, Key{"k11"}, OpenClosed})
-
-	// Prefix is component-wise, not string prefix.
-	checkRange(Key{"k1"}.AsPrefix(), 1)
-	checkRange(KeyRange{Key{"k1"}, Key{"k2"}, ClosedOpen}, 1, 10, 11, 12, 13, 14)
-
-	checkRange(AllKeys(), 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
-}
-
-func indexRangeReads(ctx context.Context, t *testing.T, client *Client) {
-	checkRange := func(ks KeySet, wantNums ...int) {
-		if msg, ok := compareRows(client.Single().ReadUsingIndex(ctx, testTable, testTableIndex, ks, testTableColumns),
-			wantNums); !ok {
-			t.Errorf("key set %+v: %s", ks, msg)
-		}
-	}
-
-	checkRange(Key{"v1"}, 1)
-	checkRange(KeyRange{Key{"v3"}, Key{"v5"}, ClosedOpen}, 3, 4)
-	checkRange(KeyRange{Key{"v3"}, Key{"v5"}, ClosedClosed}, 3, 4, 5)
-	checkRange(KeyRange{Key{"v3"}, Key{"v5"}, OpenClosed}, 4, 5)
-	checkRange(KeyRange{Key{"v3"}, Key{"v5"}, OpenOpen}, 4)
-
-	// // Partial key specification.
-	checkRange(KeyRange{Key{"v7"}, Key{}, ClosedClosed}, 7, 8, 9)
-	checkRange(KeyRange{Key{"v7"}, Key{}, OpenClosed}, 8, 9)
-	checkRange(KeyRange{Key{}, Key{"v11"}, ClosedOpen}, 0, 1, 10)
-	checkRange(KeyRange{Key{}, Key{"v11"}, ClosedClosed}, 0, 1, 10, 11)
-
-	// // The following produce empty ranges.
-	// checkRange(KeyRange{Key{"v7"}, Key{}, ClosedOpen})
-	// checkRange(KeyRange{Key{"v7"}, Key{}, OpenOpen})
-	// checkRange(KeyRange{Key{}, Key{"v11"}, OpenOpen})
-	// checkRange(KeyRange{Key{}, Key{"v11"}, OpenClosed})
-
-	// // Prefix is component-wise, not string prefix.
-	checkRange(Key{"v1"}.AsPrefix(), 1)
-	checkRange(KeyRange{Key{"v1"}, Key{"v2"}, ClosedOpen}, 1, 10, 11, 12, 13, 14)
-	checkRange(AllKeys(), 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
-
-	// Read from an index with DESC ordering.
-	wantNums := []int{14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0}
-	if msg, ok := compareRows(client.Single().ReadUsingIndex(ctx, testTable, "TestTableByValueDesc", AllKeys(), testTableColumns),
-		wantNums); !ok {
-		t.Errorf("desc: %s", msg)
-	}
-}
-
-func compareRows(iter *RowIterator, wantNums []int) (string, bool) {
-	rows, err := readAllTestTable(iter)
-	if err != nil {
-		return err.Error(), false
-	}
-	want := map[string]string{}
-	for _, n := range wantNums {
-		want[fmt.Sprintf("k%d", n)] = fmt.Sprintf("v%d", n)
-	}
-	got := map[string]string{}
-	for _, r := range rows {
-		got[r.Key] = r.StringValue
-	}
-	if !testEqual(got, want) {
-		return fmt.Sprintf("got %v, want %v", got, want), false
-	}
-	return "", true
 }
 
 func TestEarlyTimestamp(t *testing.T) {
@@ -1291,28 +1221,13 @@ func TestQueryStats(t *testing.T) {
 	}
 }
 
-func isNaN(x interface{}) bool {
-	f, ok := x.(float64)
-	if !ok {
-		return false
-	}
-	return math.IsNaN(f)
-}
-
 func TestInvalidDatabase(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Integration tests skipped in short mode")
-	}
 	if testProjectID == "" {
 		t.Skip("Integration tests skipped: GCLOUD_TESTS_GOLANG_PROJECT_ID is missing")
 	}
 	ctx := context.Background()
-	ts := testutil.TokenSource(ctx, Scope)
-	if ts == nil {
-		t.Skip("Integration test skipped: cannot get service account credential from environment variable GCLOUD_TESTS_GOLANG_KEY")
-	}
-	db := fmt.Sprintf("projects/%v/instances/%v/databases/invalid", testProjectID, testInstanceID)
-	c, err := NewClient(ctx, db, option.WithTokenSource(ts))
+	dbPath := fmt.Sprintf("projects/%v/instances/%v/databases/invalid", testProjectID, testInstanceID)
+	c, err := createClient(ctx, dbPath)
 	// Client creation should succeed even if the database is invalid.
 	if err != nil {
 		t.Fatal(err)
@@ -1361,66 +1276,6 @@ func TestReadErrors(t *testing.T) {
 	_, err = client.Single().ReadRow(dctx, "TestTable", Key{1}, []string{"StringValue"})
 	if msg, ok := matchError(err, codes.DeadlineExceeded, ""); !ok {
 		t.Error(msg)
-	}
-}
-
-func matchError(got error, wantCode codes.Code, wantMsgPart string) (string, bool) {
-	if ErrCode(got) != wantCode || !strings.Contains(strings.ToLower(ErrDesc(got)), strings.ToLower(wantMsgPart)) {
-		return fmt.Sprintf("got error <%v>\n"+`want <code = %q, "...%s...">`, got, wantCode, wantMsgPart), false
-	}
-	return "", true
-}
-
-func rowToValues(r *Row) ([]interface{}, error) {
-	var x int64
-	var y, z string
-	if err := r.Column(0, &x); err != nil {
-		return nil, err
-	}
-	if err := r.Column(1, &y); err != nil {
-		return nil, err
-	}
-	if err := r.Column(2, &z); err != nil {
-		return nil, err
-	}
-	return []interface{}{x, y, z}, nil
-}
-
-func readAll(iter *RowIterator) ([][]interface{}, error) {
-	defer iter.Stop()
-	var vals [][]interface{}
-	for {
-		row, err := iter.Next()
-		if err == iterator.Done {
-			return vals, nil
-		}
-		if err != nil {
-			return nil, err
-		}
-		v, err := rowToValues(row)
-		if err != nil {
-			return nil, err
-		}
-		vals = append(vals, v)
-	}
-}
-
-func readAllTestTable(iter *RowIterator) ([]testTableRow, error) {
-	defer iter.Stop()
-	var vals []testTableRow
-	for {
-		row, err := iter.Next()
-		if err == iterator.Done {
-			return vals, nil
-		}
-		if err != nil {
-			return nil, err
-		}
-		var ttr testTableRow
-		if err := row.ToStruct(&ttr); err != nil {
-			return nil, err
-		}
-		vals = append(vals, ttr)
 	}
 }
 
@@ -1552,29 +1407,6 @@ func TestTransactionRunner(t *testing.T) {
 			t.Errorf("Balance for key %d, got %d, want %d.", i, b, i)
 		}
 	}
-}
-
-// createClient creates Cloud Spanner data client.
-func createClient(ctx context.Context, dbPath string) (client *Client, err error) {
-	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{
-		SessionPoolConfig: SessionPoolConfig{WriteSessions: 0.2},
-	}, option.WithTokenSource(testutil.TokenSource(ctx, Scope)), option.WithEndpoint(endpoint))
-	if err != nil {
-		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
-	}
-	return client, nil
-}
-
-// populate prepares the database with some data.
-func populate(ctx context.Context, client *Client) error {
-	// Populate data
-	var err error
-	m := InsertMap("test", map[string]interface{}{
-		"a": str1,
-		"b": str2,
-	})
-	_, err = client.Apply(ctx, []*Mutation{m})
-	return err
 }
 
 // Test PartitionQuery of BatchReadOnlyTransaction, create partitions then
@@ -2058,39 +1890,15 @@ func TestPDML(t *testing.T) {
 	}
 }
 
-func initIntegrationTest() {
-	flag.Parse() // needed for testing.Short()
-	if testing.Short() {
-		return
-	}
-	if testProjectID == "" {
-		log.Print("Integration tests skipped: GCLOUD_TESTS_GOLANG_PROJECT_ID is missing")
-		return
-	}
-	ctx := context.Background()
-
-	ts := testutil.TokenSource(ctx, AdminScope, Scope)
-	if ts == nil {
-		log.Printf("Integration test skipped: cannot get service account credential from environment variable %v", "GCLOUD_TESTS_GOLANG_KEY")
-		return
-	}
-	var err error
-	// Create Admin client and Data client.
-	admin, err = database.NewDatabaseAdminClient(ctx, option.WithTokenSource(ts), option.WithEndpoint(endpoint))
-	if err != nil {
-		log.Fatalf("cannot create admin client: %v", err)
-	}
-}
-
 // Prepare initializes Cloud Spanner testing DB and clients.
-func prepare(ctx context.Context, t *testing.T, statements []string) (client *Client, dbPath string, cleanup func()) {
+func prepare(ctx context.Context, t *testing.T, statements []string) (*Client, string, func()) {
 	if admin == nil {
 		t.Skip("Integration tests skipped")
 	}
 	// Construct a unique test DB name.
 	dbName := dbNameSpace.New()
 
-	dbPath = fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectID, testInstanceID, dbName)
+	dbPath := fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectID, testInstanceID, dbName)
 	// Create database and tables.
 	op, err := admin.CreateDatabase(ctx, &adminpb.CreateDatabaseRequest{
 		Parent:          fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID),
@@ -2103,9 +1911,7 @@ func prepare(ctx context.Context, t *testing.T, statements []string) (client *Cl
 	if _, err := op.Wait(ctx); err != nil {
 		t.Fatalf("cannot create testing DB %v: %v", dbPath, err)
 	}
-	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{
-		SessionPoolConfig: SessionPoolConfig{WriteSessions: 0.2},
-	}, option.WithTokenSource(testutil.TokenSource(ctx, Scope)), option.WithEndpoint(endpoint))
+	client, err := createClient(ctx, dbPath)
 	if err != nil {
 		t.Fatalf("cannot create data client on DB %v: %v", dbPath, err)
 	}
@@ -2148,5 +1954,189 @@ func cleanupDatabases() {
 					db.Name, err)
 			}
 		}
+	}
+}
+
+func rangeReads(ctx context.Context, t *testing.T, client *Client) {
+	checkRange := func(ks KeySet, wantNums ...int) {
+		if msg, ok := compareRows(client.Single().Read(ctx, testTable, ks, testTableColumns), wantNums); !ok {
+			t.Errorf("key set %+v: %s", ks, msg)
+		}
+	}
+
+	checkRange(Key{"k1"}, 1)
+	checkRange(KeyRange{Key{"k3"}, Key{"k5"}, ClosedOpen}, 3, 4)
+	checkRange(KeyRange{Key{"k3"}, Key{"k5"}, ClosedClosed}, 3, 4, 5)
+	checkRange(KeyRange{Key{"k3"}, Key{"k5"}, OpenClosed}, 4, 5)
+	checkRange(KeyRange{Key{"k3"}, Key{"k5"}, OpenOpen}, 4)
+
+	// Partial key specification.
+	checkRange(KeyRange{Key{"k7"}, Key{}, ClosedClosed}, 7, 8, 9)
+	checkRange(KeyRange{Key{"k7"}, Key{}, OpenClosed}, 8, 9)
+	checkRange(KeyRange{Key{}, Key{"k11"}, ClosedOpen}, 0, 1, 10)
+	checkRange(KeyRange{Key{}, Key{"k11"}, ClosedClosed}, 0, 1, 10, 11)
+
+	// The following produce empty ranges.
+	// TODO(jba): Consider a multi-part key to illustrate partial key behavior.
+	// checkRange(KeyRange{Key{"k7"}, Key{}, ClosedOpen})
+	// checkRange(KeyRange{Key{"k7"}, Key{}, OpenOpen})
+	// checkRange(KeyRange{Key{}, Key{"k11"}, OpenOpen})
+	// checkRange(KeyRange{Key{}, Key{"k11"}, OpenClosed})
+
+	// Prefix is component-wise, not string prefix.
+	checkRange(Key{"k1"}.AsPrefix(), 1)
+	checkRange(KeyRange{Key{"k1"}, Key{"k2"}, ClosedOpen}, 1, 10, 11, 12, 13, 14)
+
+	checkRange(AllKeys(), 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+}
+
+func indexRangeReads(ctx context.Context, t *testing.T, client *Client) {
+	checkRange := func(ks KeySet, wantNums ...int) {
+		if msg, ok := compareRows(client.Single().ReadUsingIndex(ctx, testTable, testTableIndex, ks, testTableColumns),
+			wantNums); !ok {
+			t.Errorf("key set %+v: %s", ks, msg)
+		}
+	}
+
+	checkRange(Key{"v1"}, 1)
+	checkRange(KeyRange{Key{"v3"}, Key{"v5"}, ClosedOpen}, 3, 4)
+	checkRange(KeyRange{Key{"v3"}, Key{"v5"}, ClosedClosed}, 3, 4, 5)
+	checkRange(KeyRange{Key{"v3"}, Key{"v5"}, OpenClosed}, 4, 5)
+	checkRange(KeyRange{Key{"v3"}, Key{"v5"}, OpenOpen}, 4)
+
+	// // Partial key specification.
+	checkRange(KeyRange{Key{"v7"}, Key{}, ClosedClosed}, 7, 8, 9)
+	checkRange(KeyRange{Key{"v7"}, Key{}, OpenClosed}, 8, 9)
+	checkRange(KeyRange{Key{}, Key{"v11"}, ClosedOpen}, 0, 1, 10)
+	checkRange(KeyRange{Key{}, Key{"v11"}, ClosedClosed}, 0, 1, 10, 11)
+
+	// // The following produce empty ranges.
+	// checkRange(KeyRange{Key{"v7"}, Key{}, ClosedOpen})
+	// checkRange(KeyRange{Key{"v7"}, Key{}, OpenOpen})
+	// checkRange(KeyRange{Key{}, Key{"v11"}, OpenOpen})
+	// checkRange(KeyRange{Key{}, Key{"v11"}, OpenClosed})
+
+	// // Prefix is component-wise, not string prefix.
+	checkRange(Key{"v1"}.AsPrefix(), 1)
+	checkRange(KeyRange{Key{"v1"}, Key{"v2"}, ClosedOpen}, 1, 10, 11, 12, 13, 14)
+	checkRange(AllKeys(), 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+
+	// Read from an index with DESC ordering.
+	wantNums := []int{14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0}
+	if msg, ok := compareRows(client.Single().ReadUsingIndex(ctx, testTable, "TestTableByValueDesc", AllKeys(), testTableColumns),
+		wantNums); !ok {
+		t.Errorf("desc: %s", msg)
+	}
+}
+
+type testTableRow struct{ Key, StringValue string }
+
+func compareRows(iter *RowIterator, wantNums []int) (string, bool) {
+	rows, err := readAllTestTable(iter)
+	if err != nil {
+		return err.Error(), false
+	}
+	want := map[string]string{}
+	for _, n := range wantNums {
+		want[fmt.Sprintf("k%d", n)] = fmt.Sprintf("v%d", n)
+	}
+	got := map[string]string{}
+	for _, r := range rows {
+		got[r.Key] = r.StringValue
+	}
+	if !testEqual(got, want) {
+		return fmt.Sprintf("got %v, want %v", got, want), false
+	}
+	return "", true
+}
+
+func isNaN(x interface{}) bool {
+	f, ok := x.(float64)
+	if !ok {
+		return false
+	}
+	return math.IsNaN(f)
+}
+
+// createClient creates Cloud Spanner data client.
+func createClient(ctx context.Context, dbPath string) (client *Client, err error) {
+	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{WriteSessions: 0.2},
+	}, option.WithTokenSource(testutil.TokenSource(ctx, Scope)), option.WithEndpoint(endpoint))
+	if err != nil {
+		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
+	}
+	return client, nil
+}
+
+// populate prepares the database with some data.
+func populate(ctx context.Context, client *Client) error {
+	// Populate data
+	var err error
+	m := InsertMap("test", map[string]interface{}{
+		"a": str1,
+		"b": str2,
+	})
+	_, err = client.Apply(ctx, []*Mutation{m})
+	return err
+}
+
+func matchError(got error, wantCode codes.Code, wantMsgPart string) (string, bool) {
+	if ErrCode(got) != wantCode || !strings.Contains(strings.ToLower(ErrDesc(got)), strings.ToLower(wantMsgPart)) {
+		return fmt.Sprintf("got error <%v>\n"+`want <code = %q, "...%s...">`, got, wantCode, wantMsgPart), false
+	}
+	return "", true
+}
+
+func rowToValues(r *Row) ([]interface{}, error) {
+	var x int64
+	var y, z string
+	if err := r.Column(0, &x); err != nil {
+		return nil, err
+	}
+	if err := r.Column(1, &y); err != nil {
+		return nil, err
+	}
+	if err := r.Column(2, &z); err != nil {
+		return nil, err
+	}
+	return []interface{}{x, y, z}, nil
+}
+
+func readAll(iter *RowIterator) ([][]interface{}, error) {
+	defer iter.Stop()
+	var vals [][]interface{}
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			return vals, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+		v, err := rowToValues(row)
+		if err != nil {
+			return nil, err
+		}
+		vals = append(vals, v)
+	}
+}
+
+func readAllTestTable(iter *RowIterator) ([]testTableRow, error) {
+	defer iter.Stop()
+	var vals []testTableRow
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			return vals, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+		var ttr testTableRow
+		if err := row.ToStruct(&ttr); err != nil {
+			return nil, err
+		}
+		vals = append(vals, ttr)
 	}
 }
