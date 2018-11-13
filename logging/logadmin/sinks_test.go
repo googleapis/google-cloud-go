@@ -115,7 +115,7 @@ loop:
 	return names
 }
 
-func TestCreateDeleteSink(t *testing.T) {
+func TestCreateSink(t *testing.T) {
 	ctx := context.Background()
 	sink := &Sink{
 		ID:              sinkIDs.New(),
@@ -127,7 +127,6 @@ func TestCreateDeleteSink(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer client.DeleteSink(ctx, sink.ID)
 	sink.WriterIdentity = ltest.SharedServiceAccount
 	if want := sink; !testutil.Equal(got, want) {
 		t.Errorf("got %+v, want %+v", got, want)
@@ -140,21 +139,12 @@ func TestCreateDeleteSink(t *testing.T) {
 		t.Errorf("got %+v, want %+v", got, want)
 	}
 
-	if err := client.DeleteSink(ctx, sink.ID); err != nil {
-		t.Fatal(err)
-	}
-
-	if _, err := client.Sink(ctx, sink.ID); err == nil {
-		t.Fatal("got no error, expected one")
-	}
-
 	// UniqueWriterIdentity
 	sink.ID = sinkIDs.New()
 	got, err = client.CreateSinkOpt(ctx, sink, SinkOptions{UniqueWriterIdentity: true})
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer client.DeleteSink(ctx, sink.ID)
 	// The WriterIdentity should be different.
 	if got.WriterIdentity == sink.WriterIdentity {
 		t.Errorf("got %s, want something different", got.WriterIdentity)
@@ -174,7 +164,6 @@ func TestUpdateSink(t *testing.T) {
 	if _, err := client.CreateSink(ctx, sink); err != nil {
 		t.Fatal(err)
 	}
-	defer client.DeleteSink(ctx, sink.ID)
 	got, err := client.UpdateSink(ctx, sink)
 	if err != nil {
 		t.Fatal(err)
@@ -219,7 +208,6 @@ func TestUpdateSinkOpt(t *testing.T) {
 	if _, err := client.CreateSink(ctx, origSink); err != nil {
 		t.Fatal(err)
 	}
-	defer client.DeleteSink(ctx, id)
 
 	// Updating with empty options is an error.
 	_, err := client.UpdateSinkOpt(ctx, &Sink{ID: id, Destination: testSinkDestination}, SinkOptions{})
@@ -275,7 +263,6 @@ func TestListSinks(t *testing.T) {
 		if _, err := client.CreateSink(ctx, s); err != nil {
 			t.Fatalf("Create(%q): %v", s.ID, err)
 		}
-		defer client.DeleteSink(ctx, s.ID)
 	}
 
 	got := map[string]*Sink{}

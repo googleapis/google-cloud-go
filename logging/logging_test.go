@@ -153,9 +153,10 @@ timestamp >= "%s"`,
 		testProjectID, strings.Replace(testLogID, "/", "%2F", -1), hourAgo.Format(time.RFC3339))
 }
 
-// Testing of Logger.Log is done in logadmin_test.go, TestEntries.
-
 func TestLogSync(t *testing.T) {
+	// TODO(deklerk) Un-flake and re-enable
+	t.Skip("Inherently flaky")
+
 	initLogs() // Generate new testLogID
 	ctx := context.Background()
 	lg := client.Logger(testLogID)
@@ -196,6 +197,9 @@ func TestLogSync(t *testing.T) {
 }
 
 func TestLogAndEntries(t *testing.T) {
+	// TODO(deklerk) Un-flake and re-enable
+	t.Skip("Inherently flaky")
+
 	initLogs() // Generate new testLogID
 	ctx := context.Background()
 	payloads := []string{"p1", "p2", "p3", "p4", "p5"}
@@ -331,6 +335,9 @@ func cleanNext(it *logadmin.EntryIterator) (*logging.Entry, error) {
 }
 
 func TestStandardLogger(t *testing.T) {
+	// TODO(deklerk) Un-flake and re-enable
+	t.Skip("Inherently flaky")
+
 	initLogs() // Generate new testLogID
 	ctx := context.Background()
 	lg := client.Logger(testLogID)
