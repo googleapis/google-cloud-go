@@ -14,7 +14,9 @@ fi
 
 pwd
 
-go get -u \
+try3() { eval "$*" || eval "$*" || eval "$*"; }
+
+try3 go get -u \
   golang.org/x/lint/golint \
   golang.org/x/tools/cmd/goimports \
   golang.org/x/lint/golint \
