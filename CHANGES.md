@@ -1,5 +1,12 @@
 # Changes
 
+## v0.33.1
+
+all: release v0.33.1
+
+- compute: Removes an erroneously added go.mod.
+- logging: Populate source location in fromLogEntry.
+
 ## v0.33.0
 
 - bttest:
