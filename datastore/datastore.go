@@ -258,10 +258,9 @@ func multiValid(key []*Key) error {
 // that represents S, I or P.
 //
 // As a special case, PropertyList is an invalid type for v.
-//
-// TODO(djd): multiArg is very confusing. Fold this logic into the
-// relevant Put/Get methods to make the logic less opaque.
 func checkMultiArg(v reflect.Value) (m multiArgType, elemType reflect.Type) {
+	// TODO(djd): multiArg is very confusing. Fold this logic into the
+	// relevant Put/Get methods to make the logic less opaque.
 	if v.Kind() != reflect.Slice {
 		return multiArgTypeInvalid, nil
 	}
@@ -327,6 +326,8 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error)
 // As a special case, PropertyList is an invalid type for dst, even though a
 // PropertyList is a slice of structs. It is treated as invalid to avoid being
 // mistakenly passed when []PropertyList was intended.
+//
+// err may be a MultiError. See ExampleMultiError to check it.
 func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.GetMulti")
 	defer func() { trace.EndSpan(ctx, err) }()
@@ -462,8 +463,9 @@ func (c *Client) Put(ctx context.Context, key *Key, src interface{}) (*Key, erro
 // PutMulti is a batch version of Put.
 //
 // src must satisfy the same conditions as the dst argument to GetMulti.
-// TODO(jba): rewrite in terms of Mutate.
+// err may be a MultiError. See ExampleMultiError to check it.
 func (c *Client) PutMulti(ctx context.Context, keys []*Key, src interface{}) (ret []*Key, err error) {
+	// TODO(jba): rewrite in terms of Mutate.
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.PutMulti")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -554,8 +556,10 @@ func (c *Client) Delete(ctx context.Context, key *Key) error {
 }
 
 // DeleteMulti is a batch version of Delete.
-// TODO(jba): rewrite in terms of Mutate.
+//
+// err may be a MultiError. See ExampleMultiError to check it.
 func (c *Client) DeleteMulti(ctx context.Context, keys []*Key) (err error) {
+	// TODO(jba): rewrite in terms of Mutate.
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.DeleteMulti")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -606,6 +610,7 @@ func deleteMutations(keys []*Key) ([]*pb.Mutation, error) {
 //
 // If any of the mutations are invalid, Mutate returns a MultiError with the errors.
 // Mutate returns a MultiError in this case even if there is only one Mutation.
+// See ExampleMultiError to check it.
 func (c *Client) Mutate(ctx context.Context, muts ...*Mutation) (ret []*Key, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Mutate")
 	defer func() { trace.EndSpan(ctx, err) }()
