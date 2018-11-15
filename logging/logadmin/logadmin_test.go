@@ -145,6 +145,11 @@ func TestFromLogEntry(t *testing.T) {
 			"b": "two",
 			"c": "true",
 		},
+		SourceLocation: &logpb.LogEntrySourceLocation{
+			File:     "some_file.go",
+			Line:     1,
+			Function: "someFunction",
+		},
 	}
 	u, err := url.Parse("http:://example.com/path?q=1")
 	if err != nil {
@@ -178,6 +183,11 @@ func TestFromLogEntry(t *testing.T) {
 			RemoteIP:                       "127.0.0.1",
 			CacheHit:                       true,
 			CacheValidatedWithOriginServer: true,
+		},
+		SourceLocation: &logpb.LogEntrySourceLocation{
+			File:     "some_file.go",
+			Line:     1,
+			Function: "someFunction",
 		},
 	}
 	got, err := fromLogEntry(&logEntry)
