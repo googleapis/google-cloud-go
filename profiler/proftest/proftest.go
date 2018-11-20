@@ -75,17 +75,21 @@ type ProfileResponse struct {
 
 // ProfileData has data of a single profile.
 type ProfileData struct {
-	Samples           []int32       `json:"samples"`
-	SampleMetrics     interface{}   `json:"sampleMetrics"`
-	DefaultMetricType string        `json:"defaultMetricType"`
-	TreeNodes         interface{}   `json:"treeNodes"`
-	Functions         functionArray `json:"functions"`
-	SourceFiles       interface{}   `json:"sourceFiles"`
+	Samples           []int32         `json:"samples"`
+	SampleMetrics     interface{}     `json:"sampleMetrics"`
+	DefaultMetricType string          `json:"defaultMetricType"`
+	TreeNodes         interface{}     `json:"treeNodes"`
+	Functions         functionArray   `json:"functions"`
+	SourceFiles       sourceFileArray `json:"sourceFiles"`
 }
 
 type functionArray struct {
 	Name       []string `json:"name"`
 	Sourcefile []int32  `json:"sourceFile"`
+}
+
+type sourceFileArray struct {
+	Name []string `json:"name"`
 }
 
 // InstanceConfig is configuration for starting single GCE instance for
@@ -111,26 +115,46 @@ type ClusterConfig struct {
 	Dockerfile      string
 }
 
+// CheckNonEmpty returns nil if the profile has a profiles and deployments
+// associated. Otherwise, returns a desciptive error.
+func (pr *ProfileResponse) CheckNonEmpty() error {
+	if pr.NumProfiles == 0 {
+		return fmt.Errorf("profile response contains zero profiles: %v", pr)
+	}
+	if len(pr.Deployments) == 0 {
+		return fmt.Errorf("profile response contains zero deployments: %v", pr)
+	}
+	return nil
+}
+
 // HasFunction returns nil if the function is present, or, if the function is
 // not present, and error providing more details why the function is not
 // present.
 func (pr *ProfileResponse) HasFunction(functionName string) error {
-	if pr.NumProfiles == 0 {
-		return fmt.Errorf("failed to find function name %s in profile: profile response contains zero profiles: %v", functionName, pr)
+	if err := pr.CheckNonEmpty(); err != nil {
+		return fmt.Errorf("failed to find function name %s in profile: %v", functionName, err)
 	}
-	if len(pr.Deployments) == 0 {
-		return fmt.Errorf("failed to find function name %s in profile: profile response contains zero deployments: %v", functionName, pr)
-	}
-	if len(pr.Profile.Functions.Name) == 0 {
-		return fmt.Errorf("failed to find function name %s in profile: profile does not have function data", functionName)
-	}
-
 	for _, name := range pr.Profile.Functions.Name {
 		if strings.Contains(name, functionName) {
 			return nil
 		}
 	}
 	return fmt.Errorf("failed to find function name %s in profile", functionName)
+}
+
+// HasSourceFile returns nil if the file (or file where the end of the file path
+// matches the filename) is present in the profile. Or, if the filename is not
+// present, an error is returned.
+func (pr *ProfileResponse) HasSourceFile(filename string) error {
+	if err := pr.CheckNonEmpty(); err != nil {
+		return fmt.Errorf("failed to find filename %s in profile: %v", filename, err)
+	}
+	for _, name := range pr.Profile.SourceFiles.Name {
+		if strings.HasSuffix(name, filename) {
+			return nil
+		}
+	}
+	return fmt.Errorf("failed to find filename %s in profile", filename)
 }
 
 // StartInstance starts a GCE Instance with name, zone, and projectId specified
