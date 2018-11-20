@@ -75,7 +75,7 @@ func initSinks(ctx context.Context) func() {
 			log.Printf("listing sinks: %v", err)
 			break
 		}
-		if sinkIDs.Older(s.ID, 24*time.Hour) {
+		if sinkIDs.Older(s.ID, time.Hour) {
 			client.DeleteSink(ctx, s.ID) // ignore error
 		}
 	}
