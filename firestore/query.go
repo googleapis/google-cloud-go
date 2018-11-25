@@ -749,7 +749,9 @@ func (it *QuerySnapshotIterator) Next() (*QuerySnapshot, error) {
 // a QuerySnapshotIterator, to free up resources. It is not safe to call Stop
 // concurrently with Next.
 func (it *QuerySnapshotIterator) Stop() {
-	it.ws.stop()
+	if it.ws != nil {
+		it.ws.stop()	
+	}
 }
 
 // A QuerySnapshot is a snapshot of query results. It is returned by
