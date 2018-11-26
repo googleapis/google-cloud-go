@@ -102,9 +102,7 @@ for updates on these packages.
 ## Go Versions Supported
 
 We support the two most recent major versions of Go. If Google App Engine uses
-an older version, we support that as well. You can see which versions are
-currently supported by looking at the lines following `go:` in
-[`.travis.yml`](.travis.yml).
+an older version, we support that as well.
 
 ## Authorization
 
