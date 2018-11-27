@@ -1334,7 +1334,7 @@ func TestBindParamsDynamic(t *testing.T) {
 	dynamicStructArrayVal.Index(0).Set(s3)
 	dynamicStructArrayVal.Index(1).Set(s4)
 
-	for i, test := range []struct {
+	for _, test := range []struct {
 		val       interface{}
 		wantField *proto3.Value
 		wantType  *sppb.Type
@@ -1375,13 +1375,22 @@ func TestBindParamsDynamic(t *testing.T) {
 		st.Params["var"] = test.val
 		want.Params.Fields["var"] = test.wantField
 		want.ParamTypes["var"] = test.wantType
-		got := &sppb.ExecuteSqlRequest{}
-		if err := st.bindParams(got); err != nil || !proto.Equal(got, want) {
+		gotParams, gotParamTypes, gotErr := st.convertParams()
+		if gotErr != nil {
+			t.Error(gotErr)
+			continue
+		}
+		gotParamField := gotParams.Fields["var"]
+		if !proto.Equal(gotParamField, test.wantField) {
 			// handle NaN
-			if test.wantType.Code == floatType().Code && proto.MarshalTextString(got) == proto.MarshalTextString(want) {
+			if test.wantType.Code == floatType().Code && proto.MarshalTextString(gotParamField) == proto.MarshalTextString(test.wantField) {
 				continue
 			}
-			t.Errorf("#%d: bind result: \n(%v, %v)\nwant\n(%v, %v)\n", i, got, err, want, nil)
+			t.Errorf("%#v: got %v, want %v\n", test.val, gotParamField, test.wantField)
+		}
+		gotParamType := gotParamTypes["var"]
+		if !proto.Equal(gotParamType, test.wantType) {
+			t.Errorf("%#v: got %v, want %v\n", test.val, gotParamType, test.wantField)
 		}
 	}
 }

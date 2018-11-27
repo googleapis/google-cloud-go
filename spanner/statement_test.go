@@ -27,18 +27,10 @@ import (
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
-// Test Statement.bindParams.
-func TestBindParams(t *testing.T) {
-	// Verify Statement.bindParams generates correct values and types.
+func TestConvertParams(t *testing.T) {
 	st := Statement{
 		SQL:    "SELECT id from t_foo WHERE col = @var",
 		Params: map[string]interface{}{"var": nil},
-	}
-	want := &sppb.ExecuteSqlRequest{
-		Params: &proto3.Struct{
-			Fields: map[string]*proto3.Value{"var": nil},
-		},
-		ParamTypes: map[string]*sppb.Type{"var": nil},
 	}
 	var (
 		t1, _ = time.Parse(time.RFC3339Nano, "2016-11-15T15:04:05.999999999Z")
@@ -159,15 +151,22 @@ func TestBindParams(t *testing.T) {
 		},
 	} {
 		st.Params["var"] = test.val
-		want.Params.Fields["var"] = test.wantField
-		want.ParamTypes["var"] = test.wantType
-		got := &sppb.ExecuteSqlRequest{}
-		if err := st.bindParams(got); err != nil || !proto.Equal(got, want) {
+		gotParams, gotParamTypes, gotErr := st.convertParams()
+		if gotErr != nil {
+			t.Error(gotErr)
+			continue
+		}
+		gotParamField := gotParams.Fields["var"]
+		if !proto.Equal(gotParamField, test.wantField) {
 			// handle NaN
-			if test.wantType.Code == floatType().Code && proto.MarshalTextString(got) == proto.MarshalTextString(want) {
+			if test.wantType.Code == floatType().Code && proto.MarshalTextString(gotParamField) == proto.MarshalTextString(test.wantField) {
 				continue
 			}
-			t.Errorf("%#v: bind result: \n(%v, %v)\nwant\n(%v, %v)\n", test.val, got, err, want, nil)
+			t.Errorf("%#v: got %v, want %v\n", test.val, gotParamField, test.wantField)
+		}
+		gotParamType := gotParamTypes["var"]
+		if !proto.Equal(gotParamType, test.wantType) {
+			t.Errorf("%#v: got %v, want %v\n", test.val, gotParamType, test.wantField)
 		}
 	}
 
@@ -182,9 +181,9 @@ func TestBindParams(t *testing.T) {
 		},
 	} {
 		st.Params["var"] = test.val
-		var got sppb.ExecuteSqlRequest
-		if err := st.bindParams(&got); !testEqual(err, test.wantErr) {
-			t.Errorf("value %#v:\ngot:  %v\nwant: %v", test.val, err, test.wantErr)
+		_, _, gotErr := st.convertParams()
+		if !testEqual(gotErr, test.wantErr) {
+			t.Errorf("value %#v:\ngot:  %v\nwant: %v", test.val, gotErr, test.wantErr)
 		}
 	}
 }
