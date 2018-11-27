@@ -86,9 +86,6 @@ func initSinks(ctx context.Context) func() {
 			}
 		}
 		return func() {
-			if err := storageClient.Bucket(testBucket).Delete(ctx); err != nil {
-				log.Printf("deleting %q: %v", testBucket, err)
-			}
 			storageClient.Close()
 		}
 	}
