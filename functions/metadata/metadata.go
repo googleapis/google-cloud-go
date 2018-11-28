@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package metadata provides methods for creating and accessing context.Context objects
-// with Google Cloud Functions metadata.
-package metadata // import "cloud.google.com/go/functions/metadata"
+package metadata
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
 	"time"
 )
-
-type contextKey struct{}
 
 // Metadata holds Google Cloud Functions metadata.
 type Metadata struct {
@@ -32,7 +31,7 @@ type Metadata struct {
 	// EventType is the type of the event. For example: "google.pubsub.topic.publish".
 	EventType string `json:"eventType"`
 	// Resource is the resource that triggered the event.
-	Resource Resource `json:"resource"`
+	Resource *Resource `json:"resource"`
 }
 
 // Resource holds Google Cloud Functions resource metadata.
@@ -46,16 +45,43 @@ type Resource struct {
 	Type string `json:"type"`
 }
 
-// NewContext returns a new Context carrying m.
-func NewContext(ctx context.Context, m Metadata) context.Context {
-	return context.WithValue(ctx, contextKey{}, m)
+// wrapper wraps Metadata to make nil serialization work nicely.
+type wrapper struct {
+	M *Metadata `json:"m,omitempty"`
 }
 
+type contextKey string
+
+// GCFContextKey satisfies an interface to be able to use contextKey to read
+// metadata from a Cloud Functions context.Context.
+func (k contextKey) GCFContextKey() string {
+	return string(k)
+}
+
+const metadataContextKey = contextKey("metadata")
+
 // FromContext extracts the Metadata from the Context, if present.
-func FromContext(ctx context.Context) (Metadata, bool) {
+func FromContext(ctx context.Context) (*Metadata, error) {
 	if ctx == nil {
-		return Metadata{}, false
+		return nil, errors.New("nil ctx")
 	}
-	m, ok := ctx.Value(contextKey{}).(Metadata)
-	return m, ok
+	b, ok := ctx.Value(metadataContextKey).(json.RawMessage)
+	if !ok {
+		return nil, errors.New("unable to find metadata")
+	}
+	w := &wrapper{}
+	if err := json.Unmarshal(b, w); err != nil {
+		return nil, fmt.Errorf("json.Unmarshal: %v", err)
+	}
+	return w.M, nil
+}
+
+// NewContext returns a new Context carrying m. NewContext is useful for
+// writing tests which rely on Metadata.
+func NewContext(ctx context.Context, m *Metadata) context.Context {
+	b, err := json.Marshal(&wrapper{M: m})
+	if err != nil {
+		return ctx
+	}
+	return context.WithValue(ctx, metadataContextKey, json.RawMessage(b))
 }

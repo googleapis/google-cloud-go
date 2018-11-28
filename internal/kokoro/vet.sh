@@ -59,6 +59,7 @@ golint ./... 2>&1 | ( \
 staticcheck -ignore '
 *:SA1019
 cloud.google.com/go/firestore/internal/doc-snippets.go:*
+cloud.google.com/go/functions/metadata/metadata_test.go:SA1012
 cloud.google.com/go/cmd/go-cloud-debug-agent/internal/controller/client_test.go:*
 cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/dwarf/frame.go:*
 cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/dwarf/typeunit.go:*
