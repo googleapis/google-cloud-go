@@ -370,7 +370,7 @@ func (c *Client) ListAssets(ctx context.Context, req *securitycenterpb.ListAsset
 	return it
 }
 
-// ListFindings lists an organization or source's assets.
+// ListFindings lists an organization or source's findings.
 //
 // To list across all sources provide a - as the source id.
 // Example: /v1beta1/organizations/123/sources/-/findings

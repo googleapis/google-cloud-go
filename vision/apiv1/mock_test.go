@@ -758,7 +758,7 @@ func TestProductSearchGetReferenceImage(t *testing.T) {
 
 	mockProductSearch.resps = append(mockProductSearch.resps[:0], expectedResponse)
 
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/products/%s/referenceImages/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]", "[IMAGE]")
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/products/%s/referenceImages/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]", "[REFERENCE_IMAGE]")
 	var request = &visionpb.GetReferenceImageRequest{
 		Name: formattedName,
 	}
@@ -787,7 +787,7 @@ func TestProductSearchGetReferenceImageError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockProductSearch.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/products/%s/referenceImages/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]", "[IMAGE]")
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/products/%s/referenceImages/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]", "[REFERENCE_IMAGE]")
 	var request = &visionpb.GetReferenceImageRequest{
 		Name: formattedName,
 	}
@@ -814,7 +814,7 @@ func TestProductSearchDeleteReferenceImage(t *testing.T) {
 
 	mockProductSearch.resps = append(mockProductSearch.resps[:0], expectedResponse)
 
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/products/%s/referenceImages/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]", "[IMAGE]")
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/products/%s/referenceImages/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]", "[REFERENCE_IMAGE]")
 	var request = &visionpb.DeleteReferenceImageRequest{
 		Name: formattedName,
 	}
@@ -840,7 +840,7 @@ func TestProductSearchDeleteReferenceImageError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockProductSearch.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/products/%s/referenceImages/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]", "[IMAGE]")
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/products/%s/referenceImages/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]", "[REFERENCE_IMAGE]")
 	var request = &visionpb.DeleteReferenceImageRequest{
 		Name: formattedName,
 	}

@@ -14,19 +14,13 @@
 
 // AUTO-GENERATED CODE. DO NOT EDIT.
 
-// Package trace is an auto-generated package for the
-// Stackdriver Trace API.
+// Package asset is an auto-generated package for the
+// Cloud Asset API.
 //
 //   NOTE: This package is in alpha. It is not stable, and is likely to change.
 //
-// Sends application trace data to Stackdriver Trace for viewing. Trace data
-// is
-// collected for all App Engine applications by default. Trace data from
-// other
-// applications can be provided using this API.
-//
-// Use the client at cloud.google.com/go/trace in preference to this.
-package trace // import "cloud.google.com/go/trace/apiv1"
+// The cloud asset API manages the history and inventory of cloud resources.
+package asset // import "cloud.google.com/go/asset/apiv1beta1"
 
 import (
 	"context"
@@ -52,8 +46,6 @@ func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 func DefaultAuthScopes() []string {
 	return []string{
 		"https://www.googleapis.com/auth/cloud-platform",
-		"https://www.googleapis.com/auth/trace.append",
-		"https://www.googleapis.com/auth/trace.readonly",
 	}
 }
 

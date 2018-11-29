@@ -55,6 +55,18 @@ func defaultJobControllerCallOptions() *JobControllerCallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.3,
+				})
+			}),
+		},
+		{"default", "non_idempotent"}: {
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -69,8 +81,8 @@ func defaultJobControllerCallOptions() *JobControllerCallOptions {
 		GetJob:    retry[[2]string{"default", "idempotent"}],
 		ListJobs:  retry[[2]string{"default", "idempotent"}],
 		UpdateJob: retry[[2]string{"default", "non_idempotent"}],
-		CancelJob: retry[[2]string{"default", "non_idempotent"}],
-		DeleteJob: retry[[2]string{"default", "idempotent"}],
+		CancelJob: retry[[2]string{"default", "idempotent"}],
+		DeleteJob: retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 

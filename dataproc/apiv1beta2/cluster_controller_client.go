@@ -58,6 +58,18 @@ func defaultClusterControllerCallOptions() *ClusterControllerCallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.3,
+				})
+			}),
+		},
+		{"default", "non_idempotent"}: {
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -70,7 +82,7 @@ func defaultClusterControllerCallOptions() *ClusterControllerCallOptions {
 	return &ClusterControllerCallOptions{
 		CreateCluster:   retry[[2]string{"default", "non_idempotent"}],
 		UpdateCluster:   retry[[2]string{"default", "non_idempotent"}],
-		DeleteCluster:   retry[[2]string{"default", "idempotent"}],
+		DeleteCluster:   retry[[2]string{"default", "non_idempotent"}],
 		GetCluster:      retry[[2]string{"default", "idempotent"}],
 		ListClusters:    retry[[2]string{"default", "idempotent"}],
 		DiagnoseCluster: retry[[2]string{"default", "non_idempotent"}],

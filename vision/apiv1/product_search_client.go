@@ -554,8 +554,8 @@ func (c *ProductSearchClient) UpdateProductSet(ctx context.Context, req *visionp
 	return resp, nil
 }
 
-// DeleteProductSet permanently deletes a ProductSet. All Products and ReferenceImages in the
-// ProductSet will be deleted.
+// DeleteProductSet permanently deletes a ProductSet. Products and ReferenceImages in the
+// ProductSet are not deleted.
 //
 // The actual image files are not deleted from Google Cloud Storage.
 //
