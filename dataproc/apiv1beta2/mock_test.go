@@ -273,6 +273,18 @@ func (s *mockWorkflowTemplateServer) InstantiateWorkflowTemplate(ctx context.Con
 	return s.resps[0].(*longrunningpb.Operation), nil
 }
 
+func (s *mockWorkflowTemplateServer) InstantiateInlineWorkflowTemplate(ctx context.Context, req *dataprocpb.InstantiateInlineWorkflowTemplateRequest) (*longrunningpb.Operation, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*longrunningpb.Operation), nil
+}
+
 func (s *mockWorkflowTemplateServer) UpdateWorkflowTemplate(ctx context.Context, req *dataprocpb.UpdateWorkflowTemplateRequest) (*dataprocpb.WorkflowTemplate, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
@@ -864,11 +876,15 @@ func TestClusterControllerDiagnoseClusterError(t *testing.T) {
 	}
 }
 func TestJobControllerSubmitJob(t *testing.T) {
+	var submittedBy string = "submittedBy-2047729125"
 	var driverOutputResourceUri string = "driverOutputResourceUri-542229086"
 	var driverControlFilesUri string = "driverControlFilesUri207057643"
+	var jobUuid string = "jobUuid-1615012099"
 	var expectedResponse = &dataprocpb.Job{
+		SubmittedBy:             submittedBy,
 		DriverOutputResourceUri: driverOutputResourceUri,
 		DriverControlFilesUri:   driverControlFilesUri,
+		JobUuid:                 jobUuid,
 	}
 
 	mockJobController.err = nil
@@ -933,11 +949,15 @@ func TestJobControllerSubmitJobError(t *testing.T) {
 	_ = resp
 }
 func TestJobControllerGetJob(t *testing.T) {
+	var submittedBy string = "submittedBy-2047729125"
 	var driverOutputResourceUri string = "driverOutputResourceUri-542229086"
 	var driverControlFilesUri string = "driverControlFilesUri207057643"
+	var jobUuid string = "jobUuid-1615012099"
 	var expectedResponse = &dataprocpb.Job{
+		SubmittedBy:             submittedBy,
 		DriverOutputResourceUri: driverOutputResourceUri,
 		DriverControlFilesUri:   driverControlFilesUri,
+		JobUuid:                 jobUuid,
 	}
 
 	mockJobController.err = nil
@@ -1078,11 +1098,15 @@ func TestJobControllerListJobsError(t *testing.T) {
 	_ = resp
 }
 func TestJobControllerUpdateJob(t *testing.T) {
+	var submittedBy string = "submittedBy-2047729125"
 	var driverOutputResourceUri string = "driverOutputResourceUri-542229086"
 	var driverControlFilesUri string = "driverControlFilesUri207057643"
+	var jobUuid string = "jobUuid-1615012099"
 	var expectedResponse = &dataprocpb.Job{
+		SubmittedBy:             submittedBy,
 		DriverOutputResourceUri: driverOutputResourceUri,
 		DriverControlFilesUri:   driverControlFilesUri,
+		JobUuid:                 jobUuid,
 	}
 
 	mockJobController.err = nil
@@ -1155,11 +1179,15 @@ func TestJobControllerUpdateJobError(t *testing.T) {
 	_ = resp
 }
 func TestJobControllerCancelJob(t *testing.T) {
+	var submittedBy string = "submittedBy-2047729125"
 	var driverOutputResourceUri string = "driverOutputResourceUri-542229086"
 	var driverControlFilesUri string = "driverControlFilesUri207057643"
+	var jobUuid string = "jobUuid-1615012099"
 	var expectedResponse = &dataprocpb.Job{
+		SubmittedBy:             submittedBy,
 		DriverOutputResourceUri: driverOutputResourceUri,
 		DriverControlFilesUri:   driverControlFilesUri,
+		JobUuid:                 jobUuid,
 	}
 
 	mockJobController.err = nil
@@ -1480,6 +1508,88 @@ func TestWorkflowTemplateServiceInstantiateWorkflowTemplateError(t *testing.T) {
 	}
 
 	respLRO, err := c.InstantiateWorkflowTemplate(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = respLRO.Wait(context.Background())
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
+func TestWorkflowTemplateServiceInstantiateInlineWorkflowTemplate(t *testing.T) {
+	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
+
+	mockWorkflowTemplate.err = nil
+	mockWorkflowTemplate.reqs = nil
+
+	any, err := ptypes.MarshalAny(expectedResponse)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mockWorkflowTemplate.resps = append(mockWorkflowTemplate.resps[:0], &longrunningpb.Operation{
+		Name:   "longrunning-test",
+		Done:   true,
+		Result: &longrunningpb.Operation_Response{Response: any},
+	})
+
+	var formattedParent string = fmt.Sprintf("projects/%s/regions/%s", "[PROJECT]", "[REGION]")
+	var template *dataprocpb.WorkflowTemplate = &dataprocpb.WorkflowTemplate{}
+	var request = &dataprocpb.InstantiateInlineWorkflowTemplateRequest{
+		Parent:   formattedParent,
+		Template: template,
+	}
+
+	c, err := NewWorkflowTemplateClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	respLRO, err := c.InstantiateInlineWorkflowTemplate(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = respLRO.Wait(context.Background())
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockWorkflowTemplate.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestWorkflowTemplateServiceInstantiateInlineWorkflowTemplateError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockWorkflowTemplate.err = nil
+	mockWorkflowTemplate.resps = append(mockWorkflowTemplate.resps[:0], &longrunningpb.Operation{
+		Name: "longrunning-test",
+		Done: true,
+		Result: &longrunningpb.Operation_Error{
+			Error: &status.Status{
+				Code:    int32(errCode),
+				Message: "test error",
+			},
+		},
+	})
+
+	var formattedParent string = fmt.Sprintf("projects/%s/regions/%s", "[PROJECT]", "[REGION]")
+	var template *dataprocpb.WorkflowTemplate = &dataprocpb.WorkflowTemplate{}
+	var request = &dataprocpb.InstantiateInlineWorkflowTemplateRequest{
+		Parent:   formattedParent,
+		Template: template,
+	}
+
+	c, err := NewWorkflowTemplateClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	respLRO, err := c.InstantiateInlineWorkflowTemplate(context.Background(), request)
 	if err != nil {
 		t.Fatal(err)
 	}

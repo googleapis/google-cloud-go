@@ -28,7 +28,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
-	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1beta2"
+	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -211,7 +211,7 @@ func (c *WorkflowTemplateClient) GetWorkflowTemplate(ctx context.Context, req *d
 // clusters to be deleted.
 //
 // The [Operation.metadata][google.longrunning.Operation.metadata] will be
-// [WorkflowMetadata][google.cloud.dataproc.v1beta2.WorkflowMetadata].
+// [WorkflowMetadata][google.cloud.dataproc.v1.WorkflowMetadata].
 //
 // On successful completion,
 // [Operation.response][google.longrunning.Operation.response] will be
@@ -236,8 +236,8 @@ func (c *WorkflowTemplateClient) InstantiateWorkflowTemplate(ctx context.Context
 // InstantiateInlineWorkflowTemplate instantiates a template and begins execution.
 //
 // This method is equivalent to executing the sequence
-// [CreateWorkflowTemplate][google.cloud.dataproc.v1beta2.WorkflowTemplateService.CreateWorkflowTemplate], [InstantiateWorkflowTemplate][google.cloud.dataproc.v1beta2.WorkflowTemplateService.InstantiateWorkflowTemplate],
-// [DeleteWorkflowTemplate][google.cloud.dataproc.v1beta2.WorkflowTemplateService.DeleteWorkflowTemplate].
+// [CreateWorkflowTemplate][google.cloud.dataproc.v1.WorkflowTemplateService.CreateWorkflowTemplate], [InstantiateWorkflowTemplate][google.cloud.dataproc.v1.WorkflowTemplateService.InstantiateWorkflowTemplate],
+// [DeleteWorkflowTemplate][google.cloud.dataproc.v1.WorkflowTemplateService.DeleteWorkflowTemplate].
 //
 // The returned Operation can be used to track execution of
 // workflow by polling
@@ -250,7 +250,7 @@ func (c *WorkflowTemplateClient) InstantiateWorkflowTemplate(ctx context.Context
 // clusters to be deleted.
 //
 // The [Operation.metadata][google.longrunning.Operation.metadata] will be
-// [WorkflowMetadata][google.cloud.dataproc.v1beta2.WorkflowMetadata].
+// [WorkflowMetadata][google.cloud.dataproc.v1.WorkflowMetadata].
 //
 // On successful completion,
 // [Operation.response][google.longrunning.Operation.response] will be

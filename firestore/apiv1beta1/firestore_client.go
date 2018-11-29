@@ -93,7 +93,7 @@ func defaultCallOptions() *CallOptions {
 		BeginTransaction:  retry[[2]string{"default", "idempotent"}],
 		Commit:            retry[[2]string{"default", "non_idempotent"}],
 		Rollback:          retry[[2]string{"default", "idempotent"}],
-		RunQuery:          retry[[2]string{"default", "idempotent"}],
+		RunQuery:          retry[[2]string{"streaming", "idempotent"}],
 		Write:             retry[[2]string{"streaming", "non_idempotent"}],
 		Listen:            retry[[2]string{"streaming", "idempotent"}],
 		ListCollectionIds: retry[[2]string{"default", "idempotent"}],
