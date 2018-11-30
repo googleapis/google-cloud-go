@@ -35,7 +35,8 @@ import (
 // a new Query; it does not modify the old.
 type Query struct {
 	c                      *Client
-	parentPath             string // path of the collection's parent
+	path                   string // path to query (collection)
+	parentPath             string // path of the collection's parent (document)
 	collectionID           string
 	selection              []FieldPath
 	filters                []filter
@@ -46,10 +47,6 @@ type Query struct {
 	startDoc, endDoc       *DocumentSnapshot
 	startBefore, endBefore bool
 	err                    error
-}
-
-func (q *Query) collectionPath() string {
-	return q.parentPath + "/documents/" + q.collectionID
 }
 
 // DocumentID is the special field name representing the ID of a document
@@ -169,8 +166,10 @@ func (q Query) Limit(n int) Query {
 // StartAt returns a new Query that specifies that results should start at
 // the document with the given field values.
 //
-// If StartAt is called with a single DocumentSnapshot, its field values are used.
-// The DocumentSnapshot must have all the fields mentioned in the OrderBy clauses.
+// StartAt may be called with a single DocumentSnapshot, representing an
+// existing document within the query. The document must be a direct child of
+// the location being queried (not a parent document, or document in a
+// different collection, or a grandchild document, for example).
 //
 // Otherwise, StartAt should be called with one field value for each OrderBy clause,
 // in the order that they appear. For example, in
@@ -375,7 +374,7 @@ func (q *Query) fieldValuesToCursorValues(fieldValues []interface{}) ([]*pb.Valu
 			if !ok {
 				return nil, fmt.Errorf("firestore: expected doc ID for DocumentID field, got %T", fval)
 			}
-			vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{q.collectionPath() + "/" + docID}}
+			vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{q.path + "/" + docID}}
 		} else {
 			var sawTransform bool
 			vals[i], sawTransform, err = toProtoValue(reflect.ValueOf(fval))
@@ -395,7 +394,7 @@ func (q *Query) docSnapshotToCursorValues(ds *DocumentSnapshot, orders []order) 
 	vals := make([]*pb.Value, len(orders))
 	for i, ord := range orders {
 		if ord.isDocumentID() {
-			dp, qp := ds.Ref.Parent.Path, q.collectionPath()
+			dp, qp := ds.Ref.Parent.Path, q.path
 			if dp != qp {
 				return nil, fmt.Errorf("firestore: document snapshot for %s passed to query on %s", dp, qp)
 			}

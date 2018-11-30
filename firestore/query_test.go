@@ -545,18 +545,19 @@ func TestQueryMethodsDoNotModifyReceiver(t *testing.T) {
 }
 
 func TestQueryFromCollectionRef(t *testing.T) {
-	c := &Client{}
+	c := &Client{projectID: "P", databaseID: "D"}
 	coll := c.Collection("C")
 	got := coll.Select("x").Offset(8)
 	want := Query{
 		c:            c,
 		parentPath:   c.path(),
+		path:         "projects/P/databases/D/documents/C",
 		collectionID: "C",
 		selection:    []FieldPath{{"x"}},
 		offset:       8,
 	}
 	if !testEqual(got, want) {
-		t.Fatalf("got %+v, want %+v", got, want)
+		t.Fatalf("\ngot  %+v, \nwant %+v", got, want)
 	}
 }
 
@@ -698,6 +699,138 @@ func TestQueryCompareFunc(t *testing.T) {
 	s := snap(doc1, mv("foo", intval(1)))
 	if _, err := cf(s, s); err == nil {
 		t.Error("got nil, want error")
+	}
+}
+
+func TestQuerySubCollections(t *testing.T) {
+	c := &Client{projectID: "P", databaseID: "DB"}
+
+	/*
+		        parent-collection
+			+---------+  +---------+
+			|                      |
+			|                      |
+		parent-doc			some-other-parent-doc
+			|
+			|
+		sub-collection
+			|
+			|
+		sub-doc
+			|
+			|
+		sub-sub-collection
+			|
+			|
+		sub-sub-doc
+	*/
+	parentColl := c.Collection("parent-collection")
+	parentDoc := parentColl.Doc("parent-doc")
+	someOtherParentDoc := parentColl.Doc("some-other-parent-doc")
+	subColl := parentDoc.Collection("sub-collection")
+	subDoc := subColl.Doc("sub-doc")
+	subSubColl := subDoc.Collection("sub-sub-collection")
+	subSubDoc := subSubColl.Doc("sub-sub-doc")
+
+	testCases := []struct {
+		queryColl      *CollectionRef
+		queryFilterDoc *DocumentRef // startAt or endBefore
+		wantColl       string
+		wantRef        string
+		wantErr        bool
+	}{
+		// Queries are allowed at depth 0.
+		{parentColl, parentDoc, "parent-collection", "projects/P/databases/DB/documents/parent-collection/parent-doc", false},
+		// Queries are allowed at any depth.
+		{subColl, subDoc, "sub-collection", "projects/P/databases/DB/documents/parent-collection/parent-doc/sub-collection/sub-doc", false},
+		// Queries must be on immediate children (not allowed on grandchildren).
+		{subColl, someOtherParentDoc, "", "", true},
+		// Queries must be on immediate children (not allowed on siblings).
+		{subColl, subSubDoc, "", "", true},
+	}
+
+	// startAt
+	for _, testCase := range testCases {
+		// Query a child within the document.
+		q := testCase.queryColl.StartAt(&DocumentSnapshot{
+			Ref: testCase.queryFilterDoc,
+			proto: &pb.Document{
+				Fields: map[string]*pb.Value{"a": intval(7)},
+			},
+		}).OrderBy("a", Asc)
+		got, err := q.toProto()
+		if testCase.wantErr {
+			if err == nil {
+				t.Fatal("expected err, got nil")
+			}
+			continue
+		}
+
+		if err != nil {
+			t.Fatal(err)
+		}
+		want := &pb.StructuredQuery{
+			From: []*pb.StructuredQuery_CollectionSelector{
+				{CollectionId: testCase.wantColl},
+			},
+			OrderBy: []*pb.StructuredQuery_Order{
+				{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
+				{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
+			},
+			StartAt: &pb.Cursor{
+				Values: []*pb.Value{
+					intval(7),
+					// This is the only part of the assertion we really care about.
+					refval(testCase.wantRef),
+				},
+				Before: true,
+			},
+		}
+		if !testEqual(got, want) {
+			t.Fatalf("got\n%v\nwant\n%v", pretty.Value(got), pretty.Value(want))
+		}
+	}
+
+	// endBefore
+	for _, testCase := range testCases {
+		// Query a child within the document.
+		q := testCase.queryColl.EndBefore(&DocumentSnapshot{
+			Ref: testCase.queryFilterDoc,
+			proto: &pb.Document{
+				Fields: map[string]*pb.Value{"a": intval(7)},
+			},
+		}).OrderBy("a", Asc)
+		got, err := q.toProto()
+		if testCase.wantErr {
+			if err == nil {
+				t.Fatal("expected err, got nil")
+			}
+			continue
+		}
+
+		if err != nil {
+			t.Fatal(err)
+		}
+		want := &pb.StructuredQuery{
+			From: []*pb.StructuredQuery_CollectionSelector{
+				{CollectionId: testCase.wantColl},
+			},
+			OrderBy: []*pb.StructuredQuery_Order{
+				{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
+				{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
+			},
+			EndAt: &pb.Cursor{
+				Values: []*pb.Value{
+					intval(7),
+					// This is the only part of the assertion we really care about.
+					refval(testCase.wantRef),
+				},
+				Before: true,
+			},
+		}
+		if !testEqual(got, want) {
+			t.Fatalf("got\n%v\nwant\n%v", pretty.Value(got), pretty.Value(want))
+		}
 	}
 }
 

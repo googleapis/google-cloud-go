@@ -35,19 +35,26 @@ func TestClientCollectionAndDoc(t *testing.T) {
 	wantc1 := &CollectionRef{
 		c:          testClient,
 		parentPath: db,
+		selfPath:   "X",
 		Parent:     nil,
 		ID:         "X",
 		Path:       "projects/projectID/databases/(default)/documents/X",
-		Query:      Query{c: testClient, collectionID: "X", parentPath: db},
+		Query: Query{
+			c:            testClient,
+			collectionID: "X",
+			path:         "projects/projectID/databases/(default)/documents/X",
+			parentPath:   db,
+		},
 	}
 	if !testEqual(coll1, wantc1) {
 		t.Fatalf("got\n%+v\nwant\n%+v", coll1, wantc1)
 	}
 	doc1 := testClient.Doc("X/a")
 	wantd1 := &DocumentRef{
-		Parent: coll1,
-		ID:     "a",
-		Path:   "projects/projectID/databases/(default)/documents/X/a",
+		Parent:    coll1,
+		ID:        "a",
+		Path:      "projects/projectID/databases/(default)/documents/X/a",
+		shortPath: "X/a",
 	}
 
 	if !testEqual(doc1, wantd1) {
@@ -58,19 +65,26 @@ func TestClientCollectionAndDoc(t *testing.T) {
 	wantc2 := &CollectionRef{
 		c:          testClient,
 		parentPath: parentPath,
+		selfPath:   "X/a/Y",
 		Parent:     doc1,
 		ID:         "Y",
 		Path:       "projects/projectID/databases/(default)/documents/X/a/Y",
-		Query:      Query{c: testClient, collectionID: "Y", parentPath: parentPath},
+		Query: Query{
+			c:            testClient,
+			collectionID: "Y",
+			parentPath:   parentPath,
+			path:         "projects/projectID/databases/(default)/documents/X/a/Y",
+		},
 	}
 	if !testEqual(coll2, wantc2) {
 		t.Fatalf("\ngot  %+v\nwant %+v", coll2, wantc2)
 	}
 	doc2 := testClient.Doc("X/a/Y/b")
 	wantd2 := &DocumentRef{
-		Parent: coll2,
-		ID:     "b",
-		Path:   "projects/projectID/databases/(default)/documents/X/a/Y/b",
+		Parent:    coll2,
+		ID:        "b",
+		Path:      "projects/projectID/databases/(default)/documents/X/a/Y/b",
+		shortPath: "X/a/Y/b",
 	}
 	if !testEqual(doc2, wantd2) {
 		t.Fatalf("got %+v, want %+v", doc2, wantd2)

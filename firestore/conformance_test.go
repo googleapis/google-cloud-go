@@ -75,10 +75,10 @@ func runTestFromFile(t *testing.T, filename string) {
 func runTest(t *testing.T, msg string, test *pb.Test) {
 	check := func(gotErr error, wantErr bool) bool {
 		if wantErr && gotErr == nil {
-			t.Errorf("%s: got nil, want error", msg)
+			t.Fatalf("%s: got nil, want error", msg)
 			return false
 		} else if !wantErr && gotErr != nil {
-			t.Errorf("%s: %v", msg, gotErr)
+			t.Fatalf("%s: %v", msg, gotErr)
 			return false
 		}
 		return true
@@ -105,7 +105,7 @@ func runTest(t *testing.T, msg string, test *pb.Test) {
 		ref := docRefFromPath(tt.Get.DocRefPath, c)
 		_, err := ref.Get(ctx)
 		if err != nil {
-			t.Errorf("%s: %v", msg, err)
+			t.Fatalf("%s: %v", msg, err)
 			return
 		}
 		// Checking response would just be testing the function converting a Document
@@ -116,7 +116,7 @@ func runTest(t *testing.T, msg string, test *pb.Test) {
 		ref := docRefFromPath(tt.Create.DocRefPath, c)
 		data, err := convertData(tt.Create.JsonData)
 		if err != nil {
-			t.Errorf("%s: %v", msg, err)
+			t.Fatalf("%s: %v", msg, err)
 			return
 		}
 		_, err = ref.Create(ctx, data)
@@ -127,7 +127,7 @@ func runTest(t *testing.T, msg string, test *pb.Test) {
 		ref := docRefFromPath(tt.Set.DocRefPath, c)
 		data, err := convertData(tt.Set.JsonData)
 		if err != nil {
-			t.Errorf("%s: %v", msg, err)
+			t.Fatalf("%s: %v", msg, err)
 			return
 		}
 		var opts []SetOption
@@ -172,7 +172,7 @@ func runTest(t *testing.T, msg string, test *pb.Test) {
 		got, err := q.toProto()
 		if check(err, tt.Query.IsError) && err == nil {
 			if want := tt.Query.Query; !proto.Equal(got, want) {
-				t.Errorf("%s\ngot:  %s\nwant: %s", msg, proto.MarshalTextString(got), proto.MarshalTextString(want))
+				t.Fatalf("%s\ngot:  %s\nwant: %s", msg, proto.MarshalTextString(got), proto.MarshalTextString(want))
 			}
 		}
 
@@ -190,14 +190,14 @@ func runTest(t *testing.T, msg string, test *pb.Test) {
 		}, rs)
 		got, err := nSnapshots(iter, len(tt.Listen.Snapshots))
 		if err != nil {
-			t.Errorf("%s: %v", msg, err)
+			t.Fatalf("%s: %v", msg, err)
 		} else if diff := cmp.Diff(got, tt.Listen.Snapshots); diff != "" {
-			t.Errorf("%s:\n%s", msg, diff)
+			t.Fatalf("%s:\n%s", msg, diff)
 		}
 		if tt.Listen.IsError {
 			_, err := iter.Next()
 			if err == nil {
-				t.Errorf("%s: got nil, want error", msg)
+				t.Fatalf("%s: got nil, want error", msg)
 			}
 		}
 
@@ -359,6 +359,7 @@ func convertQuery(t *testing.T, qt *pb.QueryTest) Query {
 	q := Query{
 		parentPath:   strings.Join(parts[:len(parts)-2], "/"),
 		collectionID: parts[len(parts)-1],
+		path:         qt.CollPath,
 	}
 	for _, c := range qt.Clauses {
 		switch c := c.Clause.(type) {

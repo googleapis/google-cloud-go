@@ -36,8 +36,13 @@ type DocumentRef struct {
 	// The CollectionRef that this document is a part of. Never nil.
 	Parent *CollectionRef
 
-	// The full resource path of the document: "projects/P/databases/D/documents..."
+	// The full resource path of the document. A document "doc-1" in collection
+	// "coll-1" would be: "projects/P/databases/D/documents/coll-1/doc-1".
 	Path string
+
+	// The shorter resource path of the document. A document "doc-1" in
+	// collection "coll-1" would be: "coll-1/doc-1".
+	shortPath string
 
 	// The ID of the document: the last component of the resource path.
 	ID string
@@ -45,9 +50,10 @@ type DocumentRef struct {
 
 func newDocRef(parent *CollectionRef, id string) *DocumentRef {
 	return &DocumentRef{
-		Parent: parent,
-		ID:     id,
-		Path:   parent.Path + "/" + id,
+		Parent:    parent,
+		ID:        id,
+		Path:      parent.Path + "/" + id,
+		shortPath: parent.selfPath + "/" + id,
 	}
 }
 
