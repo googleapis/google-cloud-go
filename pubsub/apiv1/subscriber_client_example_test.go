@@ -20,7 +20,7 @@ import (
 	"context"
 	"io"
 
-	"cloud.google.com/go/pubsub/apiv1"
+	pubsub "cloud.google.com/go/pubsub/apiv1"
 	"google.golang.org/api/iterator"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 )

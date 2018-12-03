@@ -19,7 +19,7 @@ package cloudtasks_test
 import (
 	"context"
 
-	"cloud.google.com/go/cloudtasks/apiv2beta3"
+	cloudtasks "cloud.google.com/go/cloudtasks/apiv2beta3"
 	"google.golang.org/api/iterator"
 	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta3"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"

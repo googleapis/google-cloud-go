@@ -19,7 +19,7 @@ package database_test
 import (
 	"context"
 
-	"cloud.google.com/go/spanner/admin/database/apiv1"
+	database "cloud.google.com/go/spanner/admin/database/apiv1"
 	"google.golang.org/api/iterator"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"

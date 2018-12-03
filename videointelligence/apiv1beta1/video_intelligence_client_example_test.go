@@ -19,7 +19,7 @@ package videointelligence_test
 import (
 	"context"
 
-	"cloud.google.com/go/videointelligence/apiv1beta1"
+	videointelligence "cloud.google.com/go/videointelligence/apiv1beta1"
 	videointelligencepb "google.golang.org/genproto/googleapis/cloud/videointelligence/v1beta1"
 )
 

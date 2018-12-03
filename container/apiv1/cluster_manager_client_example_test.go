@@ -19,7 +19,7 @@ package container_test
 import (
 	"context"
 
-	"cloud.google.com/go/container/apiv1"
+	container "cloud.google.com/go/container/apiv1"
 	containerpb "google.golang.org/genproto/googleapis/container/v1"
 )
 
