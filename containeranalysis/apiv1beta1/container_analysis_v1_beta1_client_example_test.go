@@ -19,7 +19,7 @@ package containeranalysis_test
 import (
 	"context"
 
-	"cloud.google.com/go/containeranalysis/apiv1beta1"
+	containeranalysis "cloud.google.com/go/containeranalysis/apiv1beta1"
 	"google.golang.org/api/iterator"
 	containeranalysispb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"

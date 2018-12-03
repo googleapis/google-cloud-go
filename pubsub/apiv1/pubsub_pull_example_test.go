@@ -20,7 +20,7 @@ import (
 	"log"
 	"time"
 
-	"cloud.google.com/go/pubsub/apiv1"
+	pubsub "cloud.google.com/go/pubsub/apiv1"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 

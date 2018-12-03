@@ -19,7 +19,7 @@ package dataproc_test
 import (
 	"context"
 
-	"cloud.google.com/go/dataproc/apiv1beta2"
+	dataproc "cloud.google.com/go/dataproc/apiv1beta2"
 	"google.golang.org/api/iterator"
 	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1beta2"
 )

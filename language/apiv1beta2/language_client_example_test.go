@@ -19,7 +19,7 @@ package language_test
 import (
 	"context"
 
-	"cloud.google.com/go/language/apiv1beta2"
+	language "cloud.google.com/go/language/apiv1beta2"
 	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta2"
 )
 

@@ -20,8 +20,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/golang/protobuf/ptypes/struct"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 )
