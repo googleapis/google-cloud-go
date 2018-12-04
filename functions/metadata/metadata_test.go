@@ -27,7 +27,6 @@ func TestMetadata(t *testing.T) {
 		{
 			&Metadata{EventID: "test event ID"},
 		},
-		{},
 	}
 	for _, test := range tests {
 		ctx := NewContext(context.Background(), test.meta)
@@ -46,6 +45,9 @@ func TestMetadataError(t *testing.T) {
 		t.Errorf("FromContext got no error, wanted an error")
 	}
 	if _, err := FromContext(context.Background()); err == nil {
+		t.Errorf("FromContext got no error, wanted an error")
+	}
+	if _, err := FromContext(NewContext(context.Background(), nil)); err == nil {
 		t.Errorf("FromContext got no error, wanted an error")
 	}
 }
