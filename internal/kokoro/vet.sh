@@ -41,6 +41,7 @@ golint ./... 2>&1 | ( \
     grep -vE "exported const AllUsers|AllAuthenticatedUsers|RoleOwner|SSD|HDD|PRODUCTION|DEVELOPMENT should have comment" | \
     grep -v "exported func Value returns unexported type pretty.val, which can be annoying to use" | \
     grep -v "ExecuteStreamingSql" | \
+    grep -vE "pubsub\/pstest\/fake\.go.+should have comment or be unexported" | \
     grep -v "ClusterId" | \
     grep -v "InstanceId" | \
     grep -v "firestore.arrayUnion" | \

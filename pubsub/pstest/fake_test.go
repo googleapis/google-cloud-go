@@ -42,7 +42,7 @@ func TestTopics(t *testing.T) {
 			Labels: map[string]string{"num": fmt.Sprintf("%d", i)},
 		}))
 	}
-	if got, want := len(server.gServer.topics), len(topics); got != want {
+	if got, want := len(server.GServer.topics), len(topics); got != want {
 		t.Fatalf("got %d topics, want %d", got, want)
 	}
 	for _, top := range topics {
@@ -68,7 +68,7 @@ func TestTopics(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	if got, want := len(server.gServer.topics), 0; got != want {
+	if got, want := len(server.GServer.topics), 0; got != want {
 		t.Fatalf("got %d topics, want %d", got, want)
 	}
 }
@@ -88,7 +88,7 @@ func TestSubscriptions(t *testing.T) {
 		}))
 	}
 
-	if got, want := len(server.gServer.subs), len(subs); got != want {
+	if got, want := len(server.GServer.subs), len(subs); got != want {
 		t.Fatalf("got %d subscriptions, want %d", got, want)
 	}
 	for _, s := range subs {
@@ -128,7 +128,7 @@ func TestSubscriptions(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	if got, want := len(server.gServer.subs), 0; got != want {
+	if got, want := len(server.GServer.subs), 0; got != want {
 		t.Fatalf("got %d subscriptions, want %d", got, want)
 	}
 }
