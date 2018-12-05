@@ -460,6 +460,46 @@ func TestReadRowsError(t *testing.T) {
 	}
 }
 
+func TestReadRowsAfterDeletion(t *testing.T) {
+	ctx := context.Background()
+	s := &server{
+		tables: make(map[string]*table),
+	}
+	newTbl := btapb.Table{
+		ColumnFamilies: map[string]*btapb.ColumnFamily{
+			"cf0": {},
+		},
+	}
+	tblInfo, err := s.CreateTable(ctx, &btapb.CreateTableRequest{
+		Parent: "cluster", TableId: "t", Table: &newTbl,
+	})
+	if err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+	populateTable(ctx, s)
+	dreq := &btpb.MutateRowRequest{
+		TableName: tblInfo.Name,
+		RowKey:    []byte("row"),
+		Mutations: []*btpb.Mutation{{
+			Mutation: &btpb.Mutation_DeleteFromRow_{
+				DeleteFromRow: &btpb.Mutation_DeleteFromRow{},
+			},
+		}},
+	}
+	if _, err := s.MutateRow(ctx, dreq); err != nil {
+		t.Fatalf("Deleting from table: %v", err)
+	}
+
+	mock := &MockReadRowsServer{}
+	req := &btpb.ReadRowsRequest{TableName: tblInfo.Name}
+	if err = s.ReadRows(req, mock); err != nil {
+		t.Fatalf("ReadRows error: %v", err)
+	}
+	if got, want := len(mock.responses), 0; got != want {
+		t.Errorf("response count: got %d, want %d", got, want)
+	}
+}
+
 func TestReadRowsOrder(t *testing.T) {
 	s := &server{
 		tables: make(map[string]*table),
