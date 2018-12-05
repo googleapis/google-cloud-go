@@ -392,3 +392,77 @@ func TestTransactionGetAll(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+// Each retry attempt has the same amount of commit writes.
+func TestRunTransaction_Retries(t *testing.T) {
+	ctx := context.Background()
+	const db = "projects/projectID/databases/(default)"
+	tid := []byte{1}
+	c, srv := newMock(t)
+
+	srv.addRPC(
+		&pb.BeginTransactionRequest{Database: db},
+		&pb.BeginTransactionResponse{Transaction: tid},
+	)
+
+	aDoc := &pb.Document{
+		Name:       db + "/documents/C/a",
+		CreateTime: aTimestamp,
+		UpdateTime: aTimestamp2,
+		Fields:     map[string]*pb.Value{"count": intval(1)},
+	}
+	aDoc2 := &pb.Document{
+		Name:   aDoc.Name,
+		Fields: map[string]*pb.Value{"count": intval(7)},
+	}
+
+	srv.addRPC(
+		&pb.CommitRequest{
+			Database:    db,
+			Transaction: tid,
+			Writes: []*pb.Write{{
+				Operation:  &pb.Write_Update{aDoc2},
+				UpdateMask: &pb.DocumentMask{FieldPaths: []string{"count"}},
+				CurrentDocument: &pb.Precondition{
+					ConditionType: &pb.Precondition_Exists{true},
+				},
+			}},
+		},
+		status.Errorf(codes.Aborted, "something failed! please retry me!"),
+	)
+
+	srv.addRPC(
+		&pb.BeginTransactionRequest{
+			Database: db,
+			Options: &pb.TransactionOptions{
+				Mode: &pb.TransactionOptions_ReadWrite_{
+					&pb.TransactionOptions_ReadWrite{RetryTransaction: tid},
+				},
+			},
+		},
+		&pb.BeginTransactionResponse{Transaction: tid},
+	)
+
+	srv.addRPC(
+		&pb.CommitRequest{
+			Database:    db,
+			Transaction: tid,
+			Writes: []*pb.Write{{
+				Operation:  &pb.Write_Update{aDoc2},
+				UpdateMask: &pb.DocumentMask{FieldPaths: []string{"count"}},
+				CurrentDocument: &pb.Precondition{
+					ConditionType: &pb.Precondition_Exists{true},
+				},
+			}},
+		},
+		&pb.CommitResponse{CommitTime: aTimestamp3},
+	)
+
+	err := c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
+		docref := c.Collection("C").Doc("a")
+		return tx.Update(docref, []Update{{Path: "count", Value: 7}})
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
