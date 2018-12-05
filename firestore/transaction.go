@@ -172,6 +172,9 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 			err = cerr
 			break
 		}
+
+		// Reset state for the next attempt.
+		t.writes = nil
 	}
 	// If we run out of retries, return the last error we saw (which should
 	// be the Aborted from Commit, or a context error).
