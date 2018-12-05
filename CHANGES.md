@@ -1,8 +1,14 @@
 # Changes
 
-## v0.33.1
+## v0.34.0
 
-all: release v0.33.1
+- functions/metadata:
+  - Switch to using JSON in context.
+  - Make Resource a value.
+- vision: Fix ProductSearch return type.
+- datastore: Add an example for how to handle MultiError.
+
+## v0.33.1
 
 - compute: Removes an erroneously added go.mod.
 - logging: Populate source location in fromLogEntry.
