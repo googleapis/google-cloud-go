@@ -342,15 +342,18 @@ func checkNestedTxn(ctx context.Context) error {
 // The function f will be called one or more times. It must not maintain
 // any state between calls.
 //
-// If the transaction cannot be committed or if f returns an IsAborted error,
+// If the transaction cannot be committed or if f returns an ABORTED error,
 // ReadWriteTransaction will call f again. It will continue to call f until the
 // transaction can be committed or the Context times out or is cancelled.  If f
-// returns an error other than IsAborted, ReadWriteTransaction will abort the
+// returns an error other than ABORTED, ReadWriteTransaction will abort the
 // transaction and return the error.
 //
 // To limit the number of retries, set a deadline on the Context rather than
 // using a fixed limit on the number of attempts. ReadWriteTransaction will
 // retry as needed until that deadline is met.
+//
+// See https://godoc.org/cloud.google.com/go/spanner#ReadWriteTransaction for
+// more details.
 func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error) (commitTimestamp time.Time, err error) {
 	ctx = traceStartSpan(ctx, "cloud.google.com/go/spanner.ReadWriteTransaction")
 	defer func() { traceEndSpan(ctx, err) }()
