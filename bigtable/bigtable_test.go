@@ -806,7 +806,7 @@ func TestClientIntegration(t *testing.T) {
 		},
 	}
 	if !testutil.Equal(r, wantRow) {
-		t.Errorf("Column family was deleted unexpectly.\n got %v\n want %v", r, wantRow)
+		t.Errorf("Column family was deleted unexpectedly.\n got %v\n want %v", r, wantRow)
 	}
 	checkpoint("tested family delete")
 
