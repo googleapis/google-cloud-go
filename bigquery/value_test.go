@@ -730,7 +730,7 @@ func TestValueList(t *testing.T) {
 	}
 
 	// Load truncates, not appends.
-	// https://github.com/GoogleCloudPlatform/google-cloud-go/issues/437
+	// https://github.com/googleapis/google-cloud-go/issues/437
 	if err := vl.Load(want, schema); err != nil {
 		t.Fatal(err)
 	}

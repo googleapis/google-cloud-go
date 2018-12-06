@@ -137,7 +137,7 @@ func testOnGCE() bool {
 	resc := make(chan bool, 2)
 
 	// Try two strategies in parallel.
-	// See https://github.com/GoogleCloudPlatform/google-cloud-go/issues/194
+	// See https://github.com/googleapis/google-cloud-go/issues/194
 	go func() {
 		req, _ := http.NewRequest("GET", "http://"+metadataIP, nil)
 		req.Header.Set("User-Agent", userAgent)

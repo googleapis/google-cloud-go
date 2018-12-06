@@ -185,7 +185,7 @@ hard-to-reproduce Pub/Sub issues.
 
 ## v0.25.0
 
-- Added [Code of Conduct](https://github.com/GoogleCloudPlatform/google-cloud-go/blob/master/CODE_OF_CONDUCT.md)
+- Added [Code of Conduct](https://github.com/googleapis/google-cloud-go/blob/master/CODE_OF_CONDUCT.md)
 - bigtable:
   - cbt: Support a GC policy of "never".
 - errorreporting:
