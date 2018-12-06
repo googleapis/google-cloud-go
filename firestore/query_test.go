@@ -701,6 +701,12 @@ func TestQueryCompareFunc(t *testing.T) {
 	}
 }
 
+// Stop should be callable on an uninitialized QuerySnapshotIterator.
+func TestStop_Uninitialized(t *testing.T) {
+	i := &QuerySnapshotIterator{}
+	i.Stop()
+}
+
 type byQuery struct {
 	compare func(d1, d2 *DocumentSnapshot) (int, error)
 	docs    []*DocumentSnapshot
