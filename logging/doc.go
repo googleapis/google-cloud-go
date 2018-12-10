@@ -65,7 +65,10 @@ For critical errors, you may want to send your log entries immediately.
 LogSync is slow and will block until the log entry has been sent, so it is
 not recommended for normal use.
 
-	lg.LogSync(ctx, logging.Entry{Payload: "ALERT! Something critical happened!"})
+	err = lg.LogSync(ctx, logging.Entry{Payload: "ALERT! Something critical happened!"})
+	if err != nil {
+		// TODO: Handle error.
+	}
 
 
 Payloads
