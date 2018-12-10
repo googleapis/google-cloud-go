@@ -21,9 +21,6 @@ This client uses Logging API v2.
 See https://cloud.google.com/logging/docs/api/v2/ for an introduction to the API.
 
 
-Note: This package is in beta.  Some backwards-incompatible changes may occur.
-
-
 Creating a Client
 
 Use a Client to interact with the Stackdriver Logging API.
