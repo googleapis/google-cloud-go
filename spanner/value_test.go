@@ -17,14 +17,13 @@ limitations under the License.
 package spanner
 
 import (
-	"context"
 	"math"
 	"reflect"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/civil"
-	proto "github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
@@ -1391,174 +1390,6 @@ func TestBindParamsDynamic(t *testing.T) {
 		gotParamType := gotParamTypes["var"]
 		if !proto.Equal(gotParamType, test.wantType) {
 			t.Errorf("%#v: got %v, want %v\n", test.val, gotParamType, test.wantField)
-		}
-	}
-}
-
-func TestStructParametersBind(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-	client, _, cleanup := prepare(ctx, t, nil)
-	defer cleanup()
-
-	type tRow []interface{}
-	type tRows []struct{ trow tRow }
-
-	type allFields struct {
-		Stringf string
-		Intf    int
-		Boolf   bool
-		Floatf  float64
-		Bytef   []byte
-		Timef   time.Time
-		Datef   civil.Date
-	}
-	allColumns := []string{
-		"Stringf",
-		"Intf",
-		"Boolf",
-		"Floatf",
-		"Bytef",
-		"Timef",
-		"Datef",
-	}
-	s1 := allFields{"abc", 300, false, 3.45, []byte("foo"), t1, d1}
-	s2 := allFields{"def", -300, false, -3.45, []byte("bar"), t2, d2}
-
-	dynamicStructType := reflect.StructOf([]reflect.StructField{
-		{Name: "A", Type: reflect.TypeOf(t1), Tag: `spanner:"ff1"`},
-	})
-	s3 := reflect.New(dynamicStructType)
-	s3.Elem().Field(0).Set(reflect.ValueOf(t1))
-
-	for i, test := range []struct {
-		param interface{}
-		sql   string
-		cols  []string
-		trows tRows
-	}{
-		// Struct value.
-		{
-			s1,
-			"SELECT" +
-				" @p.Stringf," +
-				" @p.Intf," +
-				" @p.Boolf," +
-				" @p.Floatf," +
-				" @p.Bytef," +
-				" @p.Timef," +
-				" @p.Datef",
-			allColumns,
-			tRows{
-				{tRow{"abc", 300, false, 3.45, []byte("foo"), t1, d1}},
-			},
-		},
-		// Array of struct value.
-		{
-			[]allFields{s1, s2},
-			"SELECT * FROM UNNEST(@p)",
-			allColumns,
-			tRows{
-				{tRow{"abc", 300, false, 3.45, []byte("foo"), t1, d1}},
-				{tRow{"def", -300, false, -3.45, []byte("bar"), t2, d2}},
-			},
-		},
-		// Null struct.
-		{
-			(*allFields)(nil),
-			"SELECT @p IS NULL",
-			[]string{""},
-			tRows{
-				{tRow{true}},
-			},
-		},
-		// Null Array of struct.
-		{
-			[]allFields(nil),
-			"SELECT @p IS NULL",
-			[]string{""},
-			tRows{
-				{tRow{true}},
-			},
-		},
-		// Empty struct.
-		{
-			struct{}{},
-			"SELECT @p IS NULL ",
-			[]string{""},
-			tRows{
-				{tRow{false}},
-			},
-		},
-		// Empty array of struct.
-		{
-			[]allFields{},
-			"SELECT * FROM UNNEST(@p) ",
-			allColumns,
-			tRows{},
-		},
-		// Struct with duplicate fields.
-		{
-			struct {
-				A int `spanner:"field"`
-				B int `spanner:"field"`
-			}{10, 20},
-			"SELECT * FROM UNNEST([@p]) ",
-			[]string{"field", "field"},
-			tRows{
-				{tRow{10, 20}},
-			},
-		},
-		// Struct with unnamed fields.
-		{
-			struct {
-				A string `spanner:""`
-			}{"hello"},
-			"SELECT * FROM UNNEST([@p]) ",
-			[]string{""},
-			tRows{
-				{tRow{"hello"}},
-			},
-		},
-		// Mixed struct.
-		{
-			struct {
-				DynamicStructField interface{}  `spanner:"f1"`
-				ArrayStructField   []*allFields `spanner:"f2"`
-			}{
-				DynamicStructField: s3.Interface(),
-				ArrayStructField:   []*allFields{nil},
-			},
-			"SELECT @p.f1.ff1, ARRAY_LENGTH(@p.f2), @p.f2[OFFSET(0)] IS NULL ",
-			[]string{"ff1", "", ""},
-			tRows{
-				{tRow{t1, 1, true}},
-			},
-		},
-	} {
-		iter := client.Single().Query(ctx, Statement{
-			SQL:    test.sql,
-			Params: map[string]interface{}{"p": test.param},
-		})
-		var gotRows []*Row
-		err := iter.Do(func(r *Row) error {
-			gotRows = append(gotRows, r)
-			return nil
-		})
-		if err != nil {
-			t.Errorf("Failed to execute test case %d, error: %v", i, err)
-		}
-
-		var wantRows []*Row
-		for j, row := range test.trows {
-			r, err := NewRow(test.cols, row.trow)
-			if err != nil {
-				t.Errorf("Invalid row %d in test case %d", j, i)
-			}
-			wantRows = append(wantRows, r)
-		}
-		if !testEqual(gotRows, wantRows) {
-			t.Errorf("%d: Want result %v, got result %v", i, wantRows, gotRows)
 		}
 	}
 }
