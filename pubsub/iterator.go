@@ -214,7 +214,7 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 		it.keepAliveDeadlines[m.ackID] = maxExt
 		// Don't change the mod-ack if the message is going to be nacked. This is
 		// possible if there are retries.
-		if !it.pendingNacks[m.ackID] && !it.po.synchronous {
+		if !it.pendingNacks[m.ackID] {
 			ackIDs[m.ackID] = true
 		}
 	}
