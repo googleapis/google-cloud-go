@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package pubsub
+package longtest
 
 import (
 	"bytes"
@@ -26,6 +26,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/pubsub"
 	"google.golang.org/api/option"
 )
 
@@ -49,7 +50,7 @@ func TestIntegration_EndToEnd(t *testing.T) {
 	}
 	log.SetOutput(&logBuf)
 	ctx := context.Background()
-	ts := testutil.TokenSource(ctx, ScopePubSub, ScopeCloudPlatform)
+	ts := testutil.TokenSource(ctx, pubsub.ScopePubSub, pubsub.ScopeCloudPlatform)
 	if ts == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
@@ -58,21 +59,21 @@ func TestIntegration_EndToEnd(t *testing.T) {
 	topicName := fmt.Sprintf("endtoend-%d", now.UnixNano())
 	subPrefix := fmt.Sprintf("endtoend-%d", now.UnixNano())
 
-	client, err := NewClient(ctx, testutil.ProjID(), option.WithTokenSource(ts))
+	client, err := pubsub.NewClient(ctx, testutil.ProjID(), option.WithTokenSource(ts))
 	if err != nil {
 		t.Fatalf("Creating client error: %v", err)
 	}
 
-	var topic *Topic
+	var topic *pubsub.Topic
 	if topic, err = client.CreateTopic(ctx, topicName); err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
 	defer topic.Delete(ctx)
 
 	// Two subscriptions to the same topic.
-	var subs [2]*Subscription
+	var subs [2]*pubsub.Subscription
 	for i := 0; i < len(subs); i++ {
-		subs[i], err = client.CreateSubscription(ctx, fmt.Sprintf("%s-%d", subPrefix, i), SubscriptionConfig{
+		subs[i], err = client.CreateSubscription(ctx, fmt.Sprintf("%s-%d", subPrefix, i), pubsub.SubscriptionConfig{
 			Topic:       topic,
 			AckDeadline: ackDeadline,
 		})
@@ -166,10 +167,10 @@ loop:
 }
 
 // publish publishes n messages to topic.
-func publish(ctx context.Context, topic *Topic, n int) error {
-	var rs []*PublishResult
+func publish(ctx context.Context, topic *pubsub.Topic, n int) error {
+	var rs []*pubsub.PublishResult
 	for i := 0; i < n; i++ {
-		m := &Message{Data: []byte(fmt.Sprintf("msg %d", i))}
+		m := &pubsub.Message{Data: []byte(fmt.Sprintf("msg %d", i))}
 		rs = append(rs, topic.Publish(ctx, m))
 	}
 	for _, r := range rs {
@@ -195,11 +196,11 @@ type consumer struct {
 
 // consume reads messages from a subscription, and keeps track of what it receives in mc.
 // After consume returns, the caller should wait on wg to ensure that no more updates to mc will be made.
-func (c *consumer) consume(ctx context.Context, t *testing.T, sub *Subscription) {
+func (c *consumer) consume(ctx context.Context, t *testing.T, sub *pubsub.Subscription) {
 	for _, dur := range c.durations {
 		ctx2, cancel := context.WithTimeout(ctx, dur)
 		defer cancel()
-		id := sub.name[len(sub.name)-1:]
+		id := sub.String()[len(sub.String())-1:]
 		log.Printf("%s: start receive", id)
 		prev := c.total
 		err := sub.Receive(ctx2, c.process)
@@ -217,7 +218,7 @@ func (c *consumer) consume(ctx context.Context, t *testing.T, sub *Subscription)
 }
 
 // process handles a message and records it in mc.
-func (c *consumer) process(_ context.Context, m *Message) {
+func (c *consumer) process(_ context.Context, m *pubsub.Message) {
 	c.mu.Lock()
 	c.counts[m.ID]++
 	c.total++
