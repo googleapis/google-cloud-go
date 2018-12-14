@@ -530,28 +530,28 @@ func (tr *GKETestRunner) DeleteClusterAndImage(ctx context.Context, cfg *Cluster
 
 // StartAndDeployCluster creates image needed for cluster, then starts and
 // deploys to cluster.
-func (tr *GKETestRunner) StartAndDeployCluster(ctx context.Context, cfg *ClusterConfig) error {
+func (tr *GKETestRunner) StartAndDeployCluster(ctx context.Context, cfg *ClusterConfig) (*kubernetes.Client, error) {
 	if err := tr.uploadImageSource(ctx, cfg.Bucket, cfg.ImageSourceName, cfg.Dockerfile); err != nil {
-		return fmt.Errorf("failed to upload image source: %v", err)
+		return nil, fmt.Errorf("failed to upload image source: %v", err)
 	}
 
 	createImageCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
 	defer cancel()
 	if err := tr.createAndPublishDockerImage(createImageCtx, cfg.ProjectID, cfg.Bucket, cfg.ImageSourceName, fmt.Sprintf("gcr.io/%s", cfg.ImageName)); err != nil {
-		return fmt.Errorf("failed to create and publish docker image %s: %v", cfg.ImageName, err)
+		return nil, fmt.Errorf("failed to create and publish docker image %s: %v", cfg.ImageName, err)
 	}
 
 	kubernetesClient, err := gke.NewClient(ctx, cfg.ClusterName, gke.OptZone(cfg.Zone), gke.OptProject(cfg.ProjectID))
 	if err != nil {
-		return fmt.Errorf("failed to create new GKE client: %v", err)
+		return nil, fmt.Errorf("failed to create new GKE client: %v", err)
 	}
 
 	deployContainerCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
 	defer cancel()
 	if err := tr.deployContainer(deployContainerCtx, kubernetesClient, cfg.PodName, cfg.ImageName); err != nil {
-		return fmt.Errorf("failed to deploy image %q to pod %q: %v", cfg.PodName, cfg.ImageName, err)
+		return nil, fmt.Errorf("failed to deploy image %q to pod %q: %v", cfg.PodName, cfg.ImageName, err)
 	}
-	return nil
+	return kubernetesClient, nil
 }
 
 // uploadImageSource uploads source code for building docker image to GCS.
