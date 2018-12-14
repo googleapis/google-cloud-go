@@ -39,7 +39,7 @@ import (
 	vkit "cloud.google.com/go/logging/apiv2"
 	"cloud.google.com/go/logging/internal"
 	"github.com/golang/protobuf/ptypes"
-	gax "github.com/googleapis/gax-go"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	_ "google.golang.org/genproto/googleapis/appengine/logging/v1" // Import the following so EntryIterator can unmarshal log protos.

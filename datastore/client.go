@@ -20,7 +20,7 @@ import (
 
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/version"
-	gax "github.com/googleapis/gax-go"
+	gax "github.com/googleapis/gax-go/v2"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

@@ -157,7 +157,7 @@ func extractRetryDelay(err error) (time.Duration, bool) {
 // runRetryable keeps attempting to run f until one of the following happens:
 //     1) f returns nil error or an unretryable error;
 //     2) context is cancelled or timeout.
-// TODO: consider using https://github.com/googleapis/gax-go once it
+// TODO: consider using https://github.com/googleapis/gax-go/v2 once it
 // becomes available internally.
 func runRetryable(ctx context.Context, f func(context.Context) error) error {
 	return toSpannerError(runRetryableNoWrap(ctx, f))
