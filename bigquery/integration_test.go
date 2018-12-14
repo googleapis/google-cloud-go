@@ -1605,7 +1605,12 @@ func TestIntegration_ExtractExternal(t *testing.T) {
 		SourceFormat: CSV,
 		SourceURIs:   []string{uri},
 		Schema:       schema,
-		Options:      &CSVOptions{SkipLeadingRows: 1},
+		Options: &CSVOptions{
+			SkipLeadingRows: 1,
+			// This is the default. Since we use edc as an expectation later on,
+			// let's just be explicit.
+			FieldDelimiter: ",",
+		},
 	}
 	// Query that CSV file directly.
 	q := client.Query("SELECT * FROM csv")
