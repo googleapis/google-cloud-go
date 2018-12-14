@@ -25,7 +25,7 @@ import (
 	vkit "cloud.google.com/go/firestore/apiv1beta1"
 	"cloud.google.com/go/internal/version"
 	"github.com/golang/protobuf/ptypes"
-	gax "github.com/googleapis/gax-go"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
