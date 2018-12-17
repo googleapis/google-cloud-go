@@ -267,7 +267,7 @@ func (c *consumer) consume(ctx context.Context, t *testing.T, sub *pubsub.Subscr
 		prev := c.totalRecvd
 		err := sub.Receive(ctx2, c.process)
 		t.Logf("%s: end receive; read %d", id, c.totalRecvd-prev)
-		if serr, _ := status.FromError(err); serr.Code() != codes.Canceled {
+		if serr, _ := status.FromError(err); err != nil && serr.Code() != codes.Canceled {
 			panic(err)
 		}
 		select {
