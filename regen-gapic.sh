@@ -76,9 +76,12 @@ done
 # NOTE(pongad): `sed -i` doesn't work on Macs, because -i option needs an argument.
 # `-i ''` doesn't work on GNU, since the empty string is treated as a file name.
 # So we just create the backup and delete it after.
+cur=$(pwd)
 ver=$(date +%Y%m%d)
-find $GOPATH/src/cloud.google.com/go/ -name '*.go' -exec sed -i.backup -e "s/^const versionClient.*/const versionClient = \"$ver\"/" '{}' +
+cd $GOPATH/src/cloud.google.com/go/; git ls-files -mo | while read modified; \
+do dir=${modified%/*.*}; find . -path "*/$dir/doc.go" -exec sed -i.backup -e "s/^const versionClient.*/const versionClient = \"$ver\"/" '{}' +; done;
 find $GOPATH/src/cloud.google.com/go/ -name '*.backup' -delete
+cd $cur
 
 #go list cloud.google.com/go/... | grep apiv | xargs go test
 
