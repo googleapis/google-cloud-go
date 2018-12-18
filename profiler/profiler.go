@@ -264,6 +264,7 @@ func (r *retryer) Retry(err error) (time.Duration, bool) {
 // increasing value, bounded by maxBackoff.
 func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 	req := pb.CreateProfileRequest{
+		Parent:      "projects/" + a.deployment.ProjectId,
 		Deployment:  a.deployment,
 		ProfileType: a.profileTypes,
 	}

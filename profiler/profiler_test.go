@@ -95,6 +95,7 @@ func TestCreateProfile(t *testing.T) {
 	a := createTestAgent(mpc)
 	p := &pb.Profile{Name: "test_profile"}
 	wantRequest := pb.CreateProfileRequest{
+		Parent:      "projects/" + a.deployment.ProjectId,
 		Deployment:  a.deployment,
 		ProfileType: a.profileTypes,
 	}
