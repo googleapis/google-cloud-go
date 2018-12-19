@@ -31,8 +31,7 @@ type Metadata struct {
 	// EventType is the type of the event. For example: "google.pubsub.topic.publish".
 	EventType string `json:"eventType"`
 	// Resource is the resource that triggered the event.
-	// TODO(tbp): Make this a pointer.
-	Resource Resource `json:"resource"`
+	Resource *Resource `json:"resource"`
 }
 
 // Resource holds Google Cloud Functions resource metadata.
