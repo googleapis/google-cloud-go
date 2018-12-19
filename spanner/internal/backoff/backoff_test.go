@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package spanner
+package backoff
 
 import (
 	"math"
@@ -25,7 +25,7 @@ import (
 // Test if exponential backoff helper can produce correct series of
 // retry delays.
 func TestBackoff(t *testing.T) {
-	b := exponentialBackoff{minBackoff, maxBackoff}
+	b := ExponentialBackoff{minBackoff, maxBackoff}
 	tests := []struct {
 		retries int
 		min     time.Duration
@@ -53,7 +53,7 @@ func TestBackoff(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		got := b.delay(test.retries)
+		got := b.Delay(test.retries)
 		if float64(got) < float64(test.min) || float64(got) > float64(test.max) {
 			t.Errorf("delay(%v) = %v, want in range [%v, %v]", test.retries, got, test.min, test.max)
 		}
