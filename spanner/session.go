@@ -27,6 +27,7 @@ import (
 	"sync"
 	"time"
 
+	"cloud.google.com/go/spanner/internal/trace"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -450,13 +451,13 @@ func (p *sessionPool) shouldPrepareWrite() bool {
 }
 
 func (p *sessionPool) createSession(ctx context.Context) (*session, error) {
-	tracePrintf(ctx, nil, "Creating a new session")
+	trace.Printf(ctx, nil, "Creating a new session")
 	doneCreate := func(done bool) {
 		p.mu.Lock()
 		if !done {
 			// Session creation failed, give budget back.
 			p.numOpened--
-			recordStat(ctx, OpenSessionCount, int64(p.numOpened))
+			trace.RecordStat(ctx, trace.OpenSessionCount, int64(p.numOpened))
 		}
 		p.createReqs--
 		// Notify other waiters blocking on session creation.
@@ -517,7 +518,7 @@ func (p *sessionPool) isHealthy(s *session) bool {
 // take returns a cached session if there are available ones; if there isn't any, it tries to allocate a new one.
 // Session returned by take should be used for read operations.
 func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
-	tracePrintf(ctx, nil, "Acquiring a read-only session")
+	trace.Printf(ctx, nil, "Acquiring a read-only session")
 	ctx = contextWithOutgoingMetadata(ctx, p.md)
 	for {
 		var (
@@ -533,11 +534,11 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 		if p.idleList.Len() > 0 {
 			// Idle sessions are available, get one from the top of the idle list.
 			s = p.idleList.Remove(p.idleList.Front()).(*session)
-			tracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
+			trace.Printf(ctx, map[string]interface{}{"sessionID": s.getID()},
 				"Acquired read-only session")
 		} else if p.idleWriteList.Len() > 0 {
 			s = p.idleWriteList.Remove(p.idleWriteList.Front()).(*session)
-			tracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
+			trace.Printf(ctx, map[string]interface{}{"sessionID": s.getID()},
 				"Acquired read-write session")
 		}
 		if s != nil {
@@ -555,10 +556,10 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 		if (p.MaxOpened > 0 && p.numOpened >= p.MaxOpened) || (p.MaxBurst > 0 && p.createReqs >= p.MaxBurst) {
 			mayGetSession := p.mayGetSession
 			p.mu.Unlock()
-			tracePrintf(ctx, nil, "Waiting for read-only session to become available")
+			trace.Printf(ctx, nil, "Waiting for read-only session to become available")
 			select {
 			case <-ctx.Done():
-				tracePrintf(ctx, nil, "Context done waiting for session")
+				trace.Printf(ctx, nil, "Context done waiting for session")
 				return nil, errGetSessionTimeout()
 			case <-mayGetSession:
 			}
@@ -566,14 +567,14 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 		}
 		// Take budget before the actual session creation.
 		p.numOpened++
-		recordStat(ctx, OpenSessionCount, int64(p.numOpened))
+		trace.RecordStat(ctx, trace.OpenSessionCount, int64(p.numOpened))
 		p.createReqs++
 		p.mu.Unlock()
 		if s, err = p.createSession(ctx); err != nil {
-			tracePrintf(ctx, nil, "Error creating session: %v", err)
+			trace.Printf(ctx, nil, "Error creating session: %v", err)
 			return nil, toSpannerError(err)
 		}
-		tracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
+		trace.Printf(ctx, map[string]interface{}{"sessionID": s.getID()},
 			"Created session")
 		return &sessionHandle{session: s}, nil
 	}
@@ -582,7 +583,7 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 // takeWriteSession returns a write prepared cached session if there are available ones; if there isn't any, it tries to allocate a new one.
 // Session returned should be used for read write transactions.
 func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, error) {
-	tracePrintf(ctx, nil, "Acquiring a read-write session")
+	trace.Printf(ctx, nil, "Acquiring a read-write session")
 	ctx = contextWithOutgoingMetadata(ctx, p.md)
 	for {
 		var (
@@ -598,10 +599,10 @@ func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, err
 		if p.idleWriteList.Len() > 0 {
 			// Idle sessions are available, get one from the top of the idle list.
 			s = p.idleWriteList.Remove(p.idleWriteList.Front()).(*session)
-			tracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()}, "Acquired read-write session")
+			trace.Printf(ctx, map[string]interface{}{"sessionID": s.getID()}, "Acquired read-write session")
 		} else if p.idleList.Len() > 0 {
 			s = p.idleList.Remove(p.idleList.Front()).(*session)
-			tracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()}, "Acquired read-only session")
+			trace.Printf(ctx, map[string]interface{}{"sessionID": s.getID()}, "Acquired read-only session")
 		}
 		if s != nil {
 			s.setIdleList(nil)
@@ -617,10 +618,10 @@ func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, err
 			if (p.MaxOpened > 0 && p.numOpened >= p.MaxOpened) || (p.MaxBurst > 0 && p.createReqs >= p.MaxBurst) {
 				mayGetSession := p.mayGetSession
 				p.mu.Unlock()
-				tracePrintf(ctx, nil, "Waiting for read-write session to become available")
+				trace.Printf(ctx, nil, "Waiting for read-write session to become available")
 				select {
 				case <-ctx.Done():
-					tracePrintf(ctx, nil, "Context done waiting for session")
+					trace.Printf(ctx, nil, "Context done waiting for session")
 					return nil, errGetSessionTimeout()
 				case <-mayGetSession:
 				}
@@ -629,20 +630,20 @@ func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, err
 
 			// Take budget before the actual session creation.
 			p.numOpened++
-			recordStat(ctx, OpenSessionCount, int64(p.numOpened))
+			trace.RecordStat(ctx, trace.OpenSessionCount, int64(p.numOpened))
 			p.createReqs++
 			p.mu.Unlock()
 			if s, err = p.createSession(ctx); err != nil {
-				tracePrintf(ctx, nil, "Error creating session: %v", err)
+				trace.Printf(ctx, nil, "Error creating session: %v", err)
 				return nil, toSpannerError(err)
 			}
-			tracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
+			trace.Printf(ctx, map[string]interface{}{"sessionID": s.getID()},
 				"Created session")
 		}
 		if !s.isWritePrepared() {
 			if err = s.prepareForWrite(ctx); err != nil {
 				s.recycle()
-				tracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
+				trace.Printf(ctx, map[string]interface{}{"sessionID": s.getID()},
 					"Error preparing session for write")
 				return nil, toSpannerError(err)
 			}
@@ -690,7 +691,7 @@ func (p *sessionPool) remove(s *session, isExpire bool) bool {
 	if s.invalidate() {
 		// Decrease the number of opened sessions.
 		p.numOpened--
-		recordStat(context.Background(), OpenSessionCount, int64(p.numOpened))
+		trace.RecordStat(context.Background(), trace.OpenSessionCount, int64(p.numOpened))
 		// Broadcast that a session has been destroyed.
 		close(p.mayGetSession)
 		p.mayGetSession = make(chan struct{})
@@ -981,7 +982,7 @@ func (hc *healthChecker) maintainer() {
 				break
 			}
 			p.numOpened++
-			recordStat(ctx, OpenSessionCount, int64(p.numOpened))
+			trace.RecordStat(ctx, trace.OpenSessionCount, int64(p.numOpened))
 			p.createReqs++
 			shouldPrepareWrite := p.shouldPrepareWrite()
 			p.mu.Unlock()
@@ -1090,4 +1091,20 @@ func shouldDropSession(err error) bool {
 		return true
 	}
 	return false
+}
+
+// maxUint64 returns the maximum of two uint64
+func maxUint64(a, b uint64) uint64 {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+// minUint64 returns the minimum of two uint64
+func minUint64(a, b uint64) uint64 {
+	if a > b {
+		return b
+	}
+	return a
 }

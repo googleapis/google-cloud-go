@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package spanner
+package backoff
 
 import (
 	"math/rand"
@@ -32,16 +32,16 @@ const (
 	rate = 1.3
 )
 
-var defaultBackoff = exponentialBackoff{minBackoff, maxBackoff}
+var DefaultBackoff = ExponentialBackoff{minBackoff, maxBackoff}
 
-type exponentialBackoff struct {
-	min, max time.Duration
+type ExponentialBackoff struct {
+	Min, Max time.Duration
 }
 
 // delay calculates the delay that should happen at n-th
 // exponential backoff in a series.
-func (b exponentialBackoff) delay(retries int) time.Duration {
-	min, max := float64(b.min), float64(b.max)
+func (b ExponentialBackoff) Delay(retries int) time.Duration {
+	min, max := float64(b.Min), float64(b.Max)
 	delay := min
 	for delay < max && retries > 0 {
 		delay *= rate

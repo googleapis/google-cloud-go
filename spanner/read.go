@@ -25,6 +25,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/protostruct"
+	"cloud.google.com/go/spanner/internal/backoff"
+	"cloud.google.com/go/spanner/internal/trace"
 	proto "github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/api/iterator"
@@ -47,7 +49,7 @@ func errEarlyReadEnd() error {
 // Cloud Spanner.
 func stream(ctx context.Context, rpc func(ct context.Context, resumeToken []byte) (streamingReceiver, error), setTimestamp func(time.Time), release func(error)) *RowIterator {
 	ctx, cancel := context.WithCancel(ctx)
-	ctx = traceStartSpan(ctx, "cloud.google.com/go/spanner.RowIterator")
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.RowIterator")
 	return &RowIterator{
 		streamd:      newResumableStreamDecoder(ctx, rpc),
 		rowd:         &partialResultSetDecoder{},
@@ -167,7 +169,7 @@ func (r *RowIterator) Do(f func(r *Row) error) error {
 // Stop terminates the iteration. It should be called after you finish using the iterator.
 func (r *RowIterator) Stop() {
 	if r.streamd != nil {
-		defer traceEndSpan(r.streamd.ctx, r.err)
+		defer trace.EndSpan(r.streamd.ctx, r.err)
 	}
 	if r.cancel != nil {
 		r.cancel()
@@ -309,7 +311,7 @@ type resumableStreamDecoder struct {
 	// err is the last error resumableStreamDecoder has encountered so far.
 	err error
 	// backoff to compute delays between retries.
-	backoff exponentialBackoff
+	backoff backoff.ExponentialBackoff
 }
 
 // newResumableStreamDecoder creates a new resumeableStreamDecoder instance.
@@ -320,7 +322,7 @@ func newResumableStreamDecoder(ctx context.Context, rpc func(ct context.Context,
 		ctx:                         ctx,
 		rpc:                         rpc,
 		maxBytesBetweenResumeTokens: atomic.LoadInt32(&maxBytesBetweenResumeTokens),
-		backoff:                     defaultBackoff,
+		backoff:                     backoff.DefaultBackoff,
 	}
 }
 
@@ -530,8 +532,8 @@ func (d *resumableStreamDecoder) resetBackOff() {
 
 // doBackoff does an exponential backoff sleep.
 func (d *resumableStreamDecoder) doBackOff() {
-	delay := d.backoff.delay(d.retryCount)
-	tracePrintf(d.ctx, nil, "Backing off stream read for %s", delay)
+	delay := d.backoff.Delay(d.retryCount)
+	trace.Printf(d.ctx, nil, "Backing off stream read for %s", delay)
 	ticker := time.NewTicker(delay)
 	defer ticker.Stop()
 	d.retryCount++

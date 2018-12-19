@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package spanner
+package trace
 
 import (
 	"context"
@@ -23,12 +23,12 @@ import (
 	"go.opencensus.io/trace"
 )
 
-func traceStartSpan(ctx context.Context, name string) context.Context {
+func StartSpan(ctx context.Context, name string) context.Context {
 	ctx, _ = trace.StartSpan(ctx, name)
 	return ctx
 }
 
-func traceEndSpan(ctx context.Context, err error) {
+func EndSpan(ctx context.Context, err error) {
 	span := trace.FromContext(ctx)
 	if err != nil {
 		// TODO(jba): Add error code to the status.
@@ -37,7 +37,7 @@ func traceEndSpan(ctx context.Context, err error) {
 	span.End()
 }
 
-func tracePrintf(ctx context.Context, attrMap map[string]interface{}, format string, args ...interface{}) {
+func Printf(ctx context.Context, attrMap map[string]interface{}, format string, args ...interface{}) {
 	var attrs []trace.Attribute
 	for k, v := range attrMap {
 		var a trace.Attribute
@@ -60,7 +60,7 @@ func tracePrintf(ctx context.Context, attrMap map[string]interface{}, format str
 
 const statsPrefix = "cloud.google.com/go/spanner/"
 
-func recordStat(ctx context.Context, m *stats.Int64Measure, n int64) {
+func RecordStat(ctx context.Context, m *stats.Int64Measure, n int64) {
 	stats.Record(ctx, m.M(n))
 }
 

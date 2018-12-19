@@ -53,6 +53,8 @@ golint ./... 2>&1 | ( \
     grep -v "go-cloud-debug-agent" | \
     grep -v "mock_test" | \
     grep -v "internal/testutil/funcmock.go" | \
+    grep -v "internal/backoff" | \
+    grep -v "internal/trace" | \
     grep -v "a blank import should be only in a main or test package" | \
     grep -vE "\.pb\.go:" || true) | tee /dev/stderr | (! read)
 
