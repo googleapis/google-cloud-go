@@ -84,11 +84,20 @@ pushd $GOPATH/src/cloud.google.com/go/
     dir=${modified%/*.*}
     find . -path "*/$dir/doc.go" -exec sed -i.backup -e "s/^const versionClient.*/const versionClient = \"$ver\"/" '{}' +
   done
-  find $GOPATH/src/cloud.google.com/go/ -name '*.backup' -delete
 popd
 
-#go list cloud.google.com/go/... | grep apiv | xargs go test
 
-#go test -short cloud.google.com/go/...
+HASMANUAL=(
+errorreporting/apiv1beta1
+firestore/apiv1beta1
+logging/apiv2
+longrunning/autogen
+pubsub/apiv1
+spanner/apiv1
+trace/apiv1
+)
+for dir in "${HASMANUAL[@]}"; do
+	find "$GOPATH/src/cloud.google.com/go/$dir" -name '*.go' -exec sed -i.backup -e 's/setGoogleClientInfo/SetGoogleClientInfo/g' '{}' '+'
+done
 
-#echo "googleapis version: $(git rev-parse HEAD)"
+find $GOPATH/src/cloud.google.com/go/ -name '*.backup' -delete
