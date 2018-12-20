@@ -961,82 +961,7 @@ func (hc *healthChecker) maintainer() {
 	var (
 		windowSize uint64 = 10
 		iteration  uint64
-		timeout    <-chan time.Time
 	)
-
-	// replenishPool is run if numOpened is less than sessionsToKeep, timeouts on sampleInterval.
-	replenishPool := func(sessionsToKeep uint64) {
-		ctx, _ := context.WithTimeout(context.Background(), hc.sampleInterval)
-		for {
-			select {
-			case <-timeout:
-				return
-			default:
-			}
-
-			p := hc.pool
-			p.mu.Lock()
-			// Take budget before the actual session creation.
-			if sessionsToKeep <= p.numOpened {
-				p.mu.Unlock()
-				break
-			}
-			p.numOpened++
-			trace.RecordStat(ctx, trace.OpenSessionCount, int64(p.numOpened))
-			p.createReqs++
-			shouldPrepareWrite := p.shouldPrepareWrite()
-			p.mu.Unlock()
-			var (
-				s   *session
-				err error
-			)
-			if s, err = p.createSession(ctx); err != nil {
-				log.Printf("Failed to create session, error: %v", toSpannerError(err))
-				continue
-			}
-			if shouldPrepareWrite {
-				if err = s.prepareForWrite(ctx); err != nil {
-					p.recycle(s)
-					log.Printf("Failed to prepare session, error: %v", toSpannerError(err))
-					continue
-				}
-			}
-			p.recycle(s)
-		}
-	}
-
-	// shrinkPool, scales down the session pool.
-	shrinkPool := func(sessionsToKeep uint64) {
-		for {
-			select {
-			case <-timeout:
-				return
-			default:
-			}
-
-			p := hc.pool
-			p.mu.Lock()
-
-			if sessionsToKeep >= p.numOpened {
-				p.mu.Unlock()
-				break
-			}
-
-			var s *session
-			if p.idleList.Len() > 0 {
-				s = p.idleList.Front().Value.(*session)
-			} else if p.idleWriteList.Len() > 0 {
-				s = p.idleWriteList.Front().Value.(*session)
-			}
-			p.mu.Unlock()
-			if s != nil {
-				// destroy session as expire.
-				s.destroy(true)
-			} else {
-				break
-			}
-		}
-	}
 
 	for {
 		if hc.isClosing() {
@@ -1061,21 +986,92 @@ func (hc *healthChecker) maintainer() {
 			minUint64(currSessionsOpened, hc.pool.MaxIdle+maxSessionsInUse))
 		hc.mu.Unlock()
 
-		timeout = time.After(hc.sampleInterval)
+		ctx, cancel := context.WithTimeout(context.Background(), hc.sampleInterval)
+
 		// Replenish or Shrink pool if needed.
 		// Note: we don't need to worry about pending create session requests, we only need to sample the current sessions in use.
 		// the routines will not try to create extra / delete creating sessions.
 		if sessionsToKeep > currSessionsOpened {
-			replenishPool(sessionsToKeep)
+			hc.replenishPool(ctx, sessionsToKeep)
 		} else {
-			shrinkPool(sessionsToKeep)
+			hc.shrinkPool(ctx, sessionsToKeep)
 		}
 
 		select {
-		case <-timeout:
+		case <-ctx.Done():
 		case <-hc.done:
+			cancel()
 		}
 		iteration++
+	}
+}
+
+// replenishPool is run if numOpened is less than sessionsToKeep, timeouts on sampleInterval.
+func (hc *healthChecker) replenishPool(ctx context.Context, sessionsToKeep uint64) {
+	for {
+		if ctx.Err() != nil {
+			return
+		}
+
+		p := hc.pool
+		p.mu.Lock()
+		// Take budget before the actual session creation.
+		if sessionsToKeep <= p.numOpened {
+			p.mu.Unlock()
+			break
+		}
+		p.numOpened++
+		trace.RecordStat(ctx, trace.OpenSessionCount, int64(p.numOpened))
+		p.createReqs++
+		shouldPrepareWrite := p.shouldPrepareWrite()
+		p.mu.Unlock()
+		var (
+			s   *session
+			err error
+		)
+		if s, err = p.createSession(ctx); err != nil {
+			log.Printf("Failed to create session, error: %v", toSpannerError(err))
+			continue
+		}
+		if shouldPrepareWrite {
+			if err = s.prepareForWrite(ctx); err != nil {
+				p.recycle(s)
+				log.Printf("Failed to prepare session, error: %v", toSpannerError(err))
+				continue
+			}
+		}
+		p.recycle(s)
+	}
+}
+
+// shrinkPool, scales down the session pool.
+func (hc *healthChecker) shrinkPool(ctx context.Context, sessionsToKeep uint64) {
+	for {
+		if ctx.Err() != nil {
+			return
+		}
+
+		p := hc.pool
+		p.mu.Lock()
+
+		if sessionsToKeep >= p.numOpened {
+			p.mu.Unlock()
+			break
+		}
+
+		var s *session
+		if p.idleList.Len() > 0 {
+			s = p.idleList.Front().Value.(*session)
+		} else if p.idleWriteList.Len() > 0 {
+			s = p.idleWriteList.Front().Value.(*session)
+		}
+		p.mu.Unlock()
+		if s != nil {
+			// destroy session as expire.
+			s.destroy(true)
+		} else {
+			break
+		}
 	}
 }
 

@@ -980,6 +980,61 @@ func TestMaintainer(t *testing.T) {
 	})
 }
 
+// Tests that maintainer creates up to MinOpened connections.
+//
+// Historical context: This test also checks that a low healthCheckSampleInterval
+// does not prevent it from opening connections. See: https://github.com/googleapis/google-cloud-go/issues/1259
+func TestMaintainer_CreatesSessions(t *testing.T) {
+	t.Parallel()
+
+	rawServerStub := testutil.NewMockCloudSpannerClient(t)
+	serverClientMock := testutil.FuncMock{MockCloudSpannerClient: rawServerStub}
+	serverClientMock.CreateSessionFn = func(c context.Context, r *sppb.CreateSessionRequest, opts ...grpc.CallOption) (*sppb.Session, error) {
+		time.Sleep(10 * time.Millisecond)
+		return rawServerStub.CreateSession(c, r, opts...)
+	}
+	spc := SessionPoolConfig{
+		MinOpened:                 10,
+		MaxIdle:                   10,
+		healthCheckSampleInterval: time.Millisecond,
+		getRPCClient: func() (sppb.SpannerClient, error) {
+			return &serverClientMock, nil
+		},
+	}
+	db := "mockdb"
+	sp, err := newSessionPool(db, spc, nil)
+	if err != nil {
+		t.Fatalf("cannot create session pool: %v", err)
+	}
+	client := Client{
+		database:     db,
+		idleSessions: sp,
+	}
+	defer func() {
+		client.Close()
+		sp.hc.close()
+		sp.close()
+	}()
+
+	timeoutAmt := 2 * time.Second
+	timeout := time.After(timeoutAmt)
+	var numOpened uint64
+loop:
+	for {
+		select {
+		case <-timeout:
+			t.Fatalf("timed out after %v, got %d session(s), want %d", timeoutAmt, numOpened, spc.MinOpened)
+		default:
+			sp.mu.Lock()
+			numOpened = sp.numOpened
+			sp.mu.Unlock()
+			if numOpened == 10 {
+				break loop
+			}
+		}
+	}
+}
+
 func (s1 *session) Equal(s2 *session) bool {
 	return s1.client == s2.client &&
 		s1.id == s2.id &&
