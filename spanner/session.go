@@ -760,7 +760,8 @@ type healthChecker struct {
 	// done is used to signal that health checker should be closed.
 	done chan struct{}
 	// once is used for closing channel done only once.
-	once sync.Once
+	once             sync.Once
+	maintainerCancel func()
 }
 
 // newHealthChecker initializes new instance of healthChecker.
@@ -769,12 +770,13 @@ func newHealthChecker(interval time.Duration, workers int, sampleInterval time.D
 		workers = 1
 	}
 	hc := &healthChecker{
-		interval:       interval,
-		workers:        workers,
-		pool:           pool,
-		sampleInterval: sampleInterval,
-		ready:          make(chan struct{}),
-		done:           make(chan struct{}),
+		interval:         interval,
+		workers:          workers,
+		pool:             pool,
+		sampleInterval:   sampleInterval,
+		ready:            make(chan struct{}),
+		done:             make(chan struct{}),
+		maintainerCancel: func() {},
 	}
 	hc.waitWorkers.Add(1)
 	go hc.maintainer()
@@ -787,6 +789,9 @@ func newHealthChecker(interval time.Duration, workers int, sampleInterval time.D
 
 // close closes the healthChecker and waits for all healthcheck workers to exit.
 func (hc *healthChecker) close() {
+	hc.mu.Lock()
+	hc.maintainerCancel()
+	hc.mu.Unlock()
 	hc.once.Do(func() { close(hc.done) })
 	hc.waitWorkers.Wait()
 }
@@ -984,9 +989,9 @@ func (hc *healthChecker) maintainer() {
 		}
 		sessionsToKeep := maxUint64(hc.pool.MinOpened,
 			minUint64(currSessionsOpened, hc.pool.MaxIdle+maxSessionsInUse))
-		hc.mu.Unlock()
-
 		ctx, cancel := context.WithTimeout(context.Background(), hc.sampleInterval)
+		hc.maintainerCancel = cancel
+		hc.mu.Unlock()
 
 		// Replenish or Shrink pool if needed.
 		// Note: we don't need to worry about pending create session requests, we only need to sample the current sessions in use.
