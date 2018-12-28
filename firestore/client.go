@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 	"time"
 
@@ -29,6 +30,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -47,7 +49,18 @@ type Client struct {
 
 // NewClient creates a new Firestore client that uses the given project.
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
-	vc, err := vkit.NewClient(ctx, opts...)
+	var o []option.ClientOption
+	// Environment variables for gcloud emulator:
+	// https://cloud.google.com/sdk/gcloud/reference/beta/emulators/firestore/
+	if addr := os.Getenv("FIRESTORE_EMULATOR_HOST"); addr != "" {
+		conn, err := grpc.Dial(addr, grpc.WithInsecure())
+		if err != nil {
+			return nil, fmt.Errorf("firestore: dialing address from env var FIRESTORE_EMULATOR_HOST: %v", err)
+		}
+		o = []option.ClientOption{option.WithGRPCConn(conn)}
+	}
+	o = append(o, opts...)
+	vc, err := vkit.NewClient(ctx, o...)
 	if err != nil {
 		return nil, err
 	}
