@@ -96,9 +96,9 @@ func (d *DocumentRef) Get(ctx context.Context) (*DocumentSnapshot, error) {
 //   - bool converts to Bool.
 //   - string converts to String.
 //   - int, int8, int16, int32 and int64 convert to Integer.
-//   - uint8, uint16 and uint32 convert to Integer. uint64 is disallowed,
-//     because it can represent values that cannot be represented in an int64, which
-//     is the underlying type of a Integer.
+//   - uint8, uint16 and uint32 convert to Integer. uint, uint64 and uintptr are disallowed,
+//     because they may be able to represent values that cannot be represented in an int64,
+//     which is the underlying type of a Integer.
 //   - float32 and float64 convert to Double.
 //   - []byte converts to Bytes.
 //   - time.Time and *ts.Timestamp convert to Timestamp. ts is the package
