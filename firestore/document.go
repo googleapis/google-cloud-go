@@ -83,8 +83,8 @@ func (d *DocumentSnapshot) Data() map[string]interface{} {
 //   - Bool converts to bool.
 //   - String converts to string.
 //   - Integer converts int64. When setting a struct field, any signed or unsigned
-//     integer type is permitted except uint64. Overflow is detected and results in
-//     an error.
+//     integer type is permitted except uint, uint64 or uintptr. Overflow is detected
+//     and results in an error.
 //   - Double converts to float64. When setting a struct field, float32 is permitted.
 //     Overflow is detected and results in an error.
 //   - Bytes is converted to []byte.
