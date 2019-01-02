@@ -18,7 +18,6 @@ try3() { eval "$*" || eval "$*" || eval "$*"; }
 
 try3 go get -u \
   golang.org/x/tools/cmd/goimports \
-  golang.org/x/lint/golint \
   honnef.co/go/tools/cmd/staticcheck
 
 # Look at all .go files (ignoring .pb.go files) and make sure they have a Copyright. Fail if any don't.
