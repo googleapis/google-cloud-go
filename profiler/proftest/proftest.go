@@ -142,6 +142,21 @@ func (pr *ProfileResponse) HasFunction(functionName string) error {
 	return fmt.Errorf("failed to find function name %s in profile", functionName)
 }
 
+// HasFunctionInFile returns nil if function is present in the specifed file, and an
+// error if the function/file combination is not present in the profile.
+func (pr *ProfileResponse) HasFunctionInFile(functionName string, filename string) error {
+	if err := pr.CheckNonEmpty(); err != nil {
+		return fmt.Errorf("failed to find function name %s in file %s in profile: %v", functionName, filename, err)
+	}
+	for i, name := range pr.Profile.Functions.Name {
+		file := pr.Profile.SourceFiles.Name[pr.Profile.Functions.Sourcefile[i]]
+		if strings.Contains(name, functionName) && strings.HasSuffix(file, filename) {
+			return nil
+		}
+	}
+	return fmt.Errorf("failed to find function name %s in file %s in profile", functionName, filename)
+}
+
 // HasSourceFile returns nil if the file (or file where the end of the file path
 // matches the filename) is present in the profile. Or, if the filename is not
 // present, an error is returned.
