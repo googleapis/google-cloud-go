@@ -68,9 +68,6 @@ func (d *DocumentRef) Collection(id string) *CollectionRef {
 // In that case, Get returns a non-nil DocumentSnapshot whose Exists method return false and whose
 // ReadTime is the time of the failed read operation.
 func (d *DocumentRef) Get(ctx context.Context) (*DocumentSnapshot, error) {
-	if err := checkTransaction(ctx); err != nil {
-		return nil, err
-	}
 	if d == nil {
 		return nil, errNilDocRef
 	}
@@ -535,7 +532,6 @@ func (d *DocumentRef) Update(ctx context.Context, updates []Update, preconds ...
 func (d *DocumentRef) Collections(ctx context.Context) *CollectionIterator {
 	client := d.Parent.c
 	it := &CollectionIterator{
-		err:    checkTransaction(ctx),
 		client: client,
 		parent: d,
 		it: client.c.ListCollectionIds(

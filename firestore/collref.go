@@ -118,9 +118,6 @@ func (c *CollectionRef) Add(ctx context.Context, data interface{}) (*DocumentRef
 // missing documents. A missing document is a document that does not exist but has
 // sub-documents.
 func (c *CollectionRef) DocumentRefs(ctx context.Context) *DocumentRefIterator {
-	if err := checkTransaction(ctx); err != nil {
-		return &DocumentRefIterator{err: err}
-	}
 	return newDocumentRefIterator(ctx, c, nil)
 }
 

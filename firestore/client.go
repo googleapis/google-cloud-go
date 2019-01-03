@@ -125,9 +125,6 @@ func (c *Client) idsToRef(IDs []string, dbPath string) (*CollectionRef, *Documen
 //
 // If a document is not present, the corresponding DocumentSnapshot's Exists method will return false.
 func (c *Client) GetAll(ctx context.Context, docRefs []*DocumentRef) ([]*DocumentSnapshot, error) {
-	if err := checkTransaction(ctx); err != nil {
-		return nil, err
-	}
 	return c.getAll(ctx, docRefs, nil)
 }
 
@@ -198,7 +195,6 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte)
 // Collections returns an interator over the top-level collections.
 func (c *Client) Collections(ctx context.Context) *CollectionIterator {
 	it := &CollectionIterator{
-		err:    checkTransaction(ctx),
 		client: c,
 		it: c.c.ListCollectionIds(
 			withResourceHeader(ctx, c.path()),
@@ -218,9 +214,6 @@ func (c *Client) Batch() *WriteBatch {
 
 // commit calls the Commit RPC outside of a transaction.
 func (c *Client) commit(ctx context.Context, ws []*pb.Write) ([]*WriteResult, error) {
-	if err := checkTransaction(ctx); err != nil {
-		return nil, err
-	}
 	req := &pb.CommitRequest{
 		Database: c.path(),
 		Writes:   ws,
