@@ -499,7 +499,7 @@ func TestMaxBurst(t *testing.T) {
 func TestSessionRecycle(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	_, sp, _, cleanup := serverClientMock(t, SessionPoolConfig{MinOpened: 1, MaxIdle: 2})
+	_, sp, _, cleanup := serverClientMock(t, SessionPoolConfig{MinOpened: 1, MaxIdle: 5})
 	defer cleanup()
 
 	// Test session is correctly recycled and reused.
@@ -510,8 +510,17 @@ func TestSessionRecycle(t *testing.T) {
 		}
 		s.recycle()
 	}
-	if sp.numOpened != 1 {
-		t.Fatalf("Expect session pool size %d, got %d", 1, sp.numOpened)
+
+	sp.mu.Lock()
+	defer sp.mu.Unlock()
+	// Ideally it should only be 1, because the session should be recycled and
+	// re-used each time. However, sometimes the pool maintainer might increase
+	// the pool size by 1 right around the time we take (which also increases
+	// the pool size by 1), so this assertion is OK with either 1 or 2. We
+	// expect never to see more than 2, though, even when MaxIdle is quite high:
+	// each session should be recycled and re-used.
+	if sp.numOpened != 1 && sp.numOpened != 2 {
+		t.Fatalf("Expect session pool size 1 or 2, got %d", sp.numOpened)
 	}
 }
 
