@@ -561,7 +561,6 @@ func trunc32(i int) int32 {
 func (q Query) Documents(ctx context.Context) *DocumentIterator {
 	return &DocumentIterator{
 		iter: newQueryDocumentIterator(withResourceHeader(ctx, q.c.path()), &q, nil),
-		err:  checkTransaction(ctx),
 	}
 }
 

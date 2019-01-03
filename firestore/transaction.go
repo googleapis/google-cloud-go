@@ -62,20 +62,12 @@ func (ro) config(t *Transaction) { t.readOnly = true }
 
 var (
 	// Defined here for testing.
-	errReadAfterWrite     = errors.New("firestore: read after write in transaction")
-	errWriteReadOnly      = errors.New("firestore: write in read-only transaction")
-	errNonTransactionalOp = errors.New("firestore: non-transactional operation inside a transaction")
-	errNestedTransaction  = errors.New("firestore: nested transaction")
+	errReadAfterWrite    = errors.New("firestore: read after write in transaction")
+	errWriteReadOnly     = errors.New("firestore: write in read-only transaction")
+	errNestedTransaction = errors.New("firestore: nested transaction")
 )
 
 type transactionInProgressKey struct{}
-
-func checkTransaction(ctx context.Context) error {
-	if ctx.Value(transactionInProgressKey{}) != nil {
-		return errNonTransactionalOp
-	}
-	return nil
-}
 
 // RunTransaction runs f in a transaction. f should use the transaction it is given
 // for all Firestore operations. For any operation requiring a context, f should use
@@ -118,7 +110,8 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 	}
 	var backoff gax.Backoff
 	// TODO(jba): use other than the standard backoff parameters?
-	// TODO(jba): get backoff time from gRPC trailer metadata? See extractRetryDelay in https://code.googlesource.com/gocloud/+/master/spanner/retry.go.
+	// TODO(jba): get backoff time from gRPC trailer metadata? See
+	// extractRetryDelay in https://code.googlesource.com/gocloud/+/master/spanner/retry.go.
 	var err error
 	for i := 0; i < t.maxAttempts; i++ {
 		var res *pb.BeginTransactionResponse

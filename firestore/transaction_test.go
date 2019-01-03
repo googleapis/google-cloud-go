@@ -323,44 +323,6 @@ func TestTransactionErrors(t *testing.T) {
 	if got, want := err, errNestedTransaction; got != want {
 		t.Errorf("got <%v>, want <%v>", got, want)
 	}
-
-	// Non-transactional operation.
-	dr := c.Doc("C/d")
-
-	for i, op := range []func(ctx context.Context) error{
-		func(ctx context.Context) error { _, err := c.GetAll(ctx, []*DocumentRef{dr}); return err },
-		func(ctx context.Context) error { _, _, err := c.Collection("C").Add(ctx, testData); return err },
-		func(ctx context.Context) error { _, err := dr.Get(ctx); return err },
-		func(ctx context.Context) error { _, err := dr.Create(ctx, testData); return err },
-		func(ctx context.Context) error { _, err := dr.Set(ctx, testData); return err },
-		func(ctx context.Context) error { _, err := dr.Delete(ctx); return err },
-		func(ctx context.Context) error {
-			_, err := dr.Update(ctx, []Update{{FieldPath: []string{"*"}, Value: 1}})
-			return err
-		},
-		func(ctx context.Context) error { it := c.Collections(ctx); _, err := it.Next(); return err },
-		func(ctx context.Context) error { it := dr.Collections(ctx); _, err := it.Next(); return err },
-		func(ctx context.Context) error {
-			_, err := c.Batch().Set(dr, testData).Commit(ctx)
-			return err
-		},
-		func(ctx context.Context) error {
-			it := c.Collection("C").Documents(ctx)
-			defer it.Stop()
-			_, err := it.Next()
-			return err
-		},
-	} {
-		srv.reset()
-		srv.addRPC(beginReq, beginRes)
-		srv.addRPC(rollbackReq, &empty.Empty{})
-		err = c.RunTransaction(ctx, func(ctx context.Context, _ *Transaction) error {
-			return op(ctx)
-		})
-		if got, want := err, errNonTransactionalOp; got != want {
-			t.Errorf("#%d: got <%v>, want <%v>", i, got, want)
-		}
-	}
 }
 
 func TestTransactionGetAll(t *testing.T) {
@@ -463,6 +425,54 @@ func TestRunTransaction_Retries(t *testing.T) {
 		return tx.Update(docref, []Update{{Path: "count", Value: 7}})
 	})
 	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+// Non-transactional operations are allowed in transactions (although
+// discouraged).
+func TestRunTransaction_NonTransactionalOp(t *testing.T) {
+	ctx := context.Background()
+	const db = "projects/projectID/databases/(default)"
+	tid := []byte{1}
+	c, srv := newMock(t)
+
+	beginReq := &pb.BeginTransactionRequest{Database: db}
+	beginRes := &pb.BeginTransactionResponse{Transaction: tid}
+
+	srv.reset()
+	srv.addRPC(beginReq, beginRes)
+	aDoc := &pb.Document{
+		Name:       db + "/documents/C/a",
+		CreateTime: aTimestamp,
+		UpdateTime: aTimestamp2,
+		Fields:     map[string]*pb.Value{"count": intval(1)},
+	}
+	srv.addRPC(
+		&pb.BatchGetDocumentsRequest{
+			Database:  c.path(),
+			Documents: []string{db + "/documents/C/a"},
+		}, []interface{}{
+			&pb.BatchGetDocumentsResponse{
+				Result:   &pb.BatchGetDocumentsResponse_Found{aDoc},
+				ReadTime: aTimestamp2,
+			},
+		})
+	srv.addRPC(
+		&pb.CommitRequest{
+			Database:    db,
+			Transaction: tid,
+		},
+		&pb.CommitResponse{CommitTime: aTimestamp3},
+	)
+
+	if err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+		docref := c.Collection("C").Doc("a")
+		if _, err := c.GetAll(ctx2, []*DocumentRef{docref}); err != nil {
+			t.Fatal(err)
+		}
+		return nil
+	}); err != nil {
 		t.Fatal(err)
 	}
 }
