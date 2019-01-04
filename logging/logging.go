@@ -233,7 +233,6 @@ type Logger struct {
 	// Options
 	commonResource *mrpb.MonitoredResource
 	commonLabels   map[string]string
-	writeTimeout   time.Duration
 	ctxFunc        func() (context.Context, func())
 }
 

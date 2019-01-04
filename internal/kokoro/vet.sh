@@ -61,12 +61,33 @@ golint ./... 2>&1 | ( \
 # TODO(deklerk) It doesn't seem like it, but is it possible to glob both before
 # and after the colon? Then we could do *go-cloud-debug-agent*:*
 staticcheck -ignore '
+*:S1007
 *:SA1019
 cloud.google.com/go/firestore/internal/doc-snippets.go:*
 cloud.google.com/go/functions/metadata/metadata_test.go:SA1012
 cloud.google.com/go/cmd/go-cloud-debug-agent/internal/controller/client_test.go:*
 cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/dwarf/frame.go:*
 cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/dwarf/typeunit.go:*
-cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/elf/file.go:*
+cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/dwarf/const.go:*
+cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/dwarf/line.go:*
 cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/server/server.go:*
+cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/server/dwarf.go:*
+cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/server/eval.go:*
+cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/server/value.go:*
+cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/elf/file.go:*
+cloud.google.com/go/cmd/go-cloud-debug-agent/internal/breakpoints/breakpoints_test.go:*
+cloud.google.com/go/cmd/go-cloud-debug-agent/internal/debug/gosym/pclntab_test.go:*
+cloud.google.com/go/cmd/go-cloud-debug-agent/debuglet.go:*
+cloud.google.com/go/translate/internal/translate/v2/translate-nov2016-gen.go:*
+cloud.google.com/go/storage/bucket.go:S1002
+cloud.google.com/go/spanner/value.go:S1025
+cloud.google.com/go/pubsub/integration_test.go:S1012
+cloud.google.com/go/internal/fields/fold.go:S1008
+cloud.google.com/go/httpreplay/internal/proxy/debug.go:*
+cloud.google.com/go/bigtable/internal/cbtconfig/cbtconfig.go:ST1005
+cloud.google.com/go/bigtable/cmd/cbt/cbt.go:ST1005
+cloud.google.com/go/asset/v1beta1/doc.go:*
+cloud.google.com/go/spanner/value_test.go:S1019
+cloud.google.com/go/bigtable/reader.go:S1002
+cloud.google.com/go/internal/btree/btree.go:U1000
 ' ./...

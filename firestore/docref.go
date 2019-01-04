@@ -228,22 +228,6 @@ func fpvsFromData(v reflect.Value, prefix FieldPath, fpvs *[]fpv) {
 	}
 }
 
-// removePathsIf creates a new slice of FieldPaths that contains
-// exactly those elements of fps for which pred returns false.
-func removePathsIf(fps []FieldPath, pred func(FieldPath) bool) []FieldPath {
-	// Return fps if it's empty to preserve the distinction betweeen nil and zero-length.
-	if len(fps) == 0 {
-		return fps
-	}
-	var result []FieldPath
-	for _, fp := range fps {
-		if !pred(fp) {
-			result = append(result, fp)
-		}
-	}
-	return result
-}
-
 // Delete deletes the document. If the document doesn't exist, it does nothing
 // and returns no error.
 func (d *DocumentRef) Delete(ctx context.Context, preconds ...Precondition) (*WriteResult, error) {
@@ -389,25 +373,6 @@ func (d *DocumentRef) newUpdateWithTransform(doc *pb.Document, updatePaths []Fie
 		})
 	}
 	return ws
-}
-
-// This helper turns server timestamp fields into a transform proto.
-func (d *DocumentRef) newServerTimestampTransform(serverTimestampFieldPaths []FieldPath, pc *pb.Precondition) *pb.Write {
-	sort.Sort(byPath(serverTimestampFieldPaths)) // TODO(jba): make tests pass without this
-	var fts []*pb.DocumentTransform_FieldTransform
-	for _, p := range serverTimestampFieldPaths {
-		fts = append(fts, serverTimestamp(p.toServiceFieldPath()))
-	}
-	return &pb.Write{
-		Operation: &pb.Write_Transform{
-			&pb.DocumentTransform{
-				Document:        d.Path,
-				FieldTransforms: fts,
-				// TODO(jba): should the transform have the same preconditions as the write?
-			},
-		},
-		CurrentDocument: pc,
-	}
 }
 
 // arrayUnion is a special type in firestore. It instructs the server to add its

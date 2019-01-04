@@ -43,7 +43,6 @@ import (
 
 const (
 	monitorWriteScope = "https://www.googleapis.com/auth/monitoring.write"
-	storageReadScope  = "https://www.googleapis.com/auth/devstorage.read_only"
 )
 
 // TestRunner has common elements used for testing profiling agents on a range
@@ -372,7 +371,7 @@ func (tr *GKETestRunner) createAndPublishDockerImage(ctx context.Context, projec
 				log.Printf("Transient error getting operation (will retry): %v", err)
 				break
 			}
-			if op.Done == true {
+			if op.Done {
 				log.Printf("Published image %s to Google Container Registry.", ImageName)
 				return nil
 			}
@@ -434,45 +433,6 @@ func deleteDockerImageResource(client *http.Client, url string) error {
 		return fmt.Errorf("failed to delete resource: status code = %d", resp.StatusCode)
 	}
 	return nil
-}
-
-func (tr *GKETestRunner) createCluster(ctx context.Context, client *http.Client, projectID, zone, ClusterName string) error {
-	request := &container.CreateClusterRequest{Cluster: &container.Cluster{
-		Name:             ClusterName,
-		InitialNodeCount: 3,
-		NodeConfig: &container.NodeConfig{
-			OauthScopes: []string{
-				storageReadScope,
-			},
-		},
-	}}
-	op, err := tr.ContainerService.Projects.Zones.Clusters.Create(projectID, zone, request).Context(ctx).Do()
-	if err != nil {
-		return fmt.Errorf("failed to create cluster %s: %v", ClusterName, err)
-	}
-	opID := op.Name
-
-	// Wait for creating cluster.
-	for {
-		select {
-		case <-ctx.Done():
-			return fmt.Errorf("timed out waiting creating cluster")
-
-		case <-time.After(10 * time.Second):
-			op, err := tr.ContainerService.Projects.Zones.Operations.Get(projectID, zone, opID).Context(ctx).Do()
-			if err != nil {
-				log.Printf("Transient error getting operation (will retry): %v", err)
-				break
-			}
-			if op.Status == "DONE" {
-				log.Printf("Created cluster %s.", ClusterName)
-				return nil
-			}
-			if op.Status == "ABORTING" {
-				return fmt.Errorf("create cluster operation is aborted")
-			}
-		}
-	}
 }
 
 func (tr *GKETestRunner) deployContainer(ctx context.Context, kubernetesClient *kubernetes.Client, podName, ImageName string) error {

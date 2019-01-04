@@ -88,7 +88,6 @@ type ClientConfig struct {
 	// NumChannels is the number of gRPC channels.
 	// If zero, a reasonable default is used based on the execution environment.
 	NumChannels int
-	co          []option.ClientOption
 	// SessionPoolConfig is the configuration for session pool.
 	SessionPoolConfig
 	// SessionLabels for the sessions created by this client.

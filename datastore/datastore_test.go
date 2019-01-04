@@ -240,7 +240,6 @@ type X1 struct {
 
 type X2 struct {
 	Z string
-	i int
 }
 
 type X3 struct {
@@ -416,8 +415,6 @@ type EntityWithKey struct {
 	K *Key `datastore:"__key__"`
 }
 
-type EntityWithKey2 EntityWithKey
-
 type WithNestedEntityWithKey struct {
 	N EntityWithKey
 }
@@ -441,8 +438,6 @@ type PtrToStructField struct {
 	*Basic
 	D []*Basic
 }
-
-var two = 2
 
 type EmbeddedTime struct {
 	time.Time
@@ -1949,7 +1944,7 @@ var testCases = []testCase{
 func checkErr(want string, err error) string {
 	if err != nil {
 		got := err.Error()
-		if want == "" || strings.Index(got, want) == -1 {
+		if want == "" || !strings.Contains(got, want) {
 			return got
 		}
 	} else if want != "" {

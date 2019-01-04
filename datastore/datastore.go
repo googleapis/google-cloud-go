@@ -43,10 +43,9 @@ const resourcePrefixHeader = "google-cloud-resource-prefix"
 
 // Client is a client for reading and writing data in a datastore dataset.
 type Client struct {
-	conn     *grpc.ClientConn
-	client   pb.DatastoreClient
-	endpoint string
-	dataset  string // Called dataset by the datastore API, synonym for project ID.
+	conn    *grpc.ClientConn
+	client  pb.DatastoreClient
+	dataset string // Called dataset by the datastore API, synonym for project ID.
 }
 
 // NewClient creates a new Client for a given dataset.

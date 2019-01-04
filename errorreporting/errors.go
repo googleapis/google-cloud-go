@@ -37,10 +37,6 @@ import (
 	pb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
 )
 
-const (
-	userAgent = `gcloud-golang-errorreporting/20160701`
-)
-
 // Config is additional configuration for Client.
 type Config struct {
 	// ServiceName identifies the running program and is included in the error reports.

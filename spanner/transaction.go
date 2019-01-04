@@ -253,11 +253,6 @@ func errRtsUnavailable() error {
 	return spannerErrorf(codes.Internal, "read timestamp is unavailable")
 }
 
-// errTxNotInitialized returns error for using an uninitialized transaction.
-func errTxNotInitialized() error {
-	return spannerErrorf(codes.InvalidArgument, "cannot use a uninitialized transaction")
-}
-
 // errTxClosed returns error for using a closed transaction.
 func errTxClosed() error {
 	return spannerErrorf(codes.InvalidArgument, "cannot use a closed transaction")
@@ -810,7 +805,6 @@ func (t *ReadWriteTransaction) rollback(ctx context.Context) {
 	if shouldDropSession(err) {
 		t.sh.destroy()
 	}
-	return
 }
 
 // runInTransaction executes f under a read-write transaction context.

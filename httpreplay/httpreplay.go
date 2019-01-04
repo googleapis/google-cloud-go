@@ -44,8 +44,7 @@ import (
 
 // A Recorder records HTTP interactions.
 type Recorder struct {
-	filename string
-	proxy    *proxy.Proxy
+	proxy *proxy.Proxy
 }
 
 // NewRecorder creates a recorder that writes to filename. The file will

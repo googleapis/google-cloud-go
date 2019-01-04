@@ -129,7 +129,7 @@ type NullTime struct {
 // String implements Stringer.String for NullTime
 func (n NullTime) String() string {
 	if !n.Valid {
-		return fmt.Sprintf("%s", "<null>")
+		return "<null>"
 	}
 	return fmt.Sprintf("%q", n.Time.Format(time.RFC3339Nano))
 }
@@ -143,7 +143,7 @@ type NullDate struct {
 // String implements Stringer.String for NullDate
 func (n NullDate) String() string {
 	if !n.Valid {
-		return fmt.Sprintf("%s", "<null>")
+		return "<null>"
 	}
 	return fmt.Sprintf("%q", n.Date)
 }

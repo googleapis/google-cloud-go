@@ -592,7 +592,6 @@ func TestSeek(t *testing.T) {
 
 func TestTryDeliverMessage(t *testing.T) {
 	for _, test := range []struct {
-		desc           string
 		availStreamIdx int
 		expectedOutIdx int
 	}{

@@ -250,17 +250,3 @@ func findLinear(k Key, s []item) (int, bool) {
 	}
 	return i, false
 }
-
-type byInts []item
-
-func (a byInts) Len() int {
-	return len(a)
-}
-
-func (a byInts) Less(i, j int) bool {
-	return a[i].key.(int) < a[j].key.(int)
-}
-
-func (a byInts) Swap(i, j int) {
-	a[i], a[j] = a[j], a[i]
-}
