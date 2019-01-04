@@ -345,7 +345,7 @@ func (d *resumableStreamDecoder) isNewResumeToken(rt []byte) bool {
 	if rt == nil {
 		return false
 	}
-	if bytes.Compare(rt, d.resumeToken) == 0 {
+	if bytes.Equal(rt, d.resumeToken) {
 		return false
 	}
 	return true

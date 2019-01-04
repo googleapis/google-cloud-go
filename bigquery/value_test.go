@@ -834,7 +834,6 @@ type testStruct1 struct {
 	S      string
 	S2     String
 	By     []byte
-	s      string
 	F      float64
 	N      *big.Rat
 	Nested nested
@@ -1164,7 +1163,6 @@ func TestStructLoaderErrors(t *testing.T) {
 		I int
 		times
 		S    string
-		s    string
 		Nums []int
 	}
 

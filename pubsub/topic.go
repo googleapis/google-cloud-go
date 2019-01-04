@@ -63,8 +63,6 @@ type Topic struct {
 	mu      sync.RWMutex
 	stopped bool
 	bundler *bundler.Bundler
-
-	wg sync.WaitGroup
 }
 
 // PublishSettings control the bundling of published messages.

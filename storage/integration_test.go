@@ -1826,9 +1826,8 @@ func TestIntegration_ReadCRC(t *testing.T) {
 		uncompressedBucket = "gcp-public-data-landsat"
 		uncompressedObject = "LC08/PRE/044/034/LC80440342016259LGN00/LC80440342016259LGN00_MTL.txt"
 
-		gzippedBucket   = "storage-library-test-bucket"
-		gzippedObject   = "gzipped-text.txt"
-		gzippedContents = "hello world" // uncompressed contents of the file
+		gzippedBucket = "storage-library-test-bucket"
+		gzippedObject = "gzipped-text.txt"
 	)
 	ctx := context.Background()
 	client, err := newTestClient(ctx, option.WithoutAuthentication())

@@ -92,7 +92,7 @@ func processPreconditionsForUpdate(preconds []Precondition) (*pb.Precondition, e
 		return exists(true).preconditionProto()
 	case 1:
 		if _, ok := preconds[0].(exists); ok {
-			return nil, errors.New("Cannot use Exists with Update")
+			return nil, errors.New("cannot use Exists with Update")
 		}
 		return preconds[0].preconditionProto()
 	default:

@@ -63,8 +63,6 @@ type messageIterator struct {
 	pendingNacks       map[string]bool
 	pendingModAcks     map[string]bool // ack IDs whose ack deadline is to be modified
 	err                error           // error from stream failure
-
-	minAckDeadline time.Duration
 }
 
 // newMessageIterator starts and returns a new messageIterator.

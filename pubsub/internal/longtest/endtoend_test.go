@@ -276,7 +276,6 @@ func (c *consumer) consume(ctx context.Context, t *testing.T, sub *pubsub.Subscr
 		default:
 		}
 	}
-	return
 }
 
 // process handles a message and records it in mc.

@@ -497,7 +497,7 @@ func (vls *ValuesSaver) Save() (map[string]Value, string, error) {
 
 func valuesToMap(vs []Value, schema Schema) (map[string]Value, error) {
 	if len(vs) != len(schema) {
-		return nil, errors.New("Schema does not match length of row to be inserted")
+		return nil, errors.New("schema does not match length of row to be inserted")
 	}
 
 	m := make(map[string]Value)

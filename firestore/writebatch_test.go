@@ -22,8 +22,6 @@ import (
 )
 
 func TestWriteBatch(t *testing.T) {
-	type update struct{ A int }
-
 	c, srv := newMock(t)
 	docPrefix := c.Collection("C").Path + "/"
 	srv.addRPC(

@@ -61,7 +61,6 @@ type (
 	}
 	S2 struct {
 		D string
-		e int
 	}
 )
 
