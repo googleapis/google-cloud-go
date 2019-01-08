@@ -73,15 +73,19 @@ for api in "${APIS[@]}"; do
   cp -r artman-genfiles/gapi-*/cloud.google.com/go/* $GOPATH/src/cloud.google.com/go/
 done
 
-# NOTE(pongad): `sed -i` doesn't work on Macs, because -i option needs an argument.
-# `-i ''` doesn't work on GNU, since the empty string is treated as a file name.
-# So we just create the backup and delete it after.
-cur=$(pwd)
-ver=$(date +%Y%m%d)
-cd $GOPATH/src/cloud.google.com/go/; git ls-files -mo | while read modified; \
-do dir=${modified%/*.*}; find . -path "*/$dir/doc.go" -exec sed -i.backup -e "s/^const versionClient.*/const versionClient = \"$ver\"/" '{}' +; done;
-find $GOPATH/src/cloud.google.com/go/ -name '*.backup' -delete
-cd $cur
+pushd $GOPATH/src/cloud.google.com/go/
+  gofmt -s -d -l -w . && goimports -w .
+
+  # NOTE(pongad): `sed -i` doesn't work on Macs, because -i option needs an argument.
+  # `-i ''` doesn't work on GNU, since the empty string is treated as a file name.
+  # So we just create the backup and delete it after.
+  ver=$(date +%Y%m%d)
+  git ls-files -mo | while read modified; do
+    dir=${modified%/*.*}
+    find . -path "*/$dir/doc.go" -exec sed -i.backup -e "s/^const versionClient.*/const versionClient = \"$ver\"/" '{}' +
+  done
+  find $GOPATH/src/cloud.google.com/go/ -name '*.backup' -delete
+popd
 
 #go list cloud.google.com/go/... | grep apiv | xargs go test
 
