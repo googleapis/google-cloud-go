@@ -28,7 +28,7 @@ func shouldRetry(err error) bool {
 	case *googleapi.Error:
 		// Retry on 429 and 5xx, according to
 		// https://cloud.google.com/storage/docs/exponential-backoff.
-		return e.Code == 429 || (e.Code >= 500 && e.Code < 600)
+		return e.Code == 0 || e.Code == 429 || (e.Code >= 500 && e.Code < 600)
 	case *url.Error:
 		// Retry on REFUSED_STREAM.
 		// Unfortunately the error type is unexported, so we resort to string
