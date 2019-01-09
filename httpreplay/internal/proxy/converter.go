@@ -16,8 +16,11 @@ package proxy
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"io/ioutil"
+	"mime"
+	"mime/multipart"
 	"net/http"
 	"regexp"
 	"strings"
@@ -33,9 +36,10 @@ type converter struct {
 }
 
 var defaultRemoveRequestHeaders = []string{
-	"Authorization",
+	"Authorization", // not only is it secret, but it is probably missing on replay
 	"Proxy-Authorization",
 	"Connection",
+	"Content-Type", // because it may contain a random multipart boundary
 	"Date",
 	"Host",
 	"Transfer-Encoding",
@@ -82,18 +86,60 @@ func pattern(p string) *regexp.Regexp {
 }
 
 func (c *converter) convertRequest(req *http.Request) (*Request, error) {
-	data, err := snapshotBody(&req.Body)
+	body, err := snapshotBody(&req.Body)
+	if err != nil {
+		return nil, err
+	}
+	mediaType, parts, err := parseRequestBody(req.Header.Get("Content-Type"), body)
 	if err != nil {
 		return nil, err
 	}
 	return &Request{
-		Method:  req.Method,
-		URL:     req.URL.String(),
-		Proto:   req.Proto,
-		Header:  scrubHeaders(req.Header, c.redactHeaders, c.removeRequestHeaders),
-		Body:    data,
-		Trailer: scrubHeaders(req.Trailer, c.redactHeaders, c.removeRequestHeaders),
+		Method:    req.Method,
+		URL:       req.URL.String(),
+		Header:    scrubHeaders(req.Header, c.redactHeaders, c.removeRequestHeaders),
+		MediaType: mediaType,
+		BodyParts: parts,
+		Trailer:   scrubHeaders(req.Trailer, c.redactHeaders, c.removeRequestHeaders),
 	}, nil
+}
+
+// parseRequestBody parses the Content-Type header, reads the body, and splits it into
+// parts if necessary. It returns the media type and the body parts.
+func parseRequestBody(contentType string, body []byte) (string, [][]byte, error) {
+	if contentType == "" {
+		// No content-type header. There should not be a body.
+		if len(body) != 0 {
+			return "", nil, errors.New("no Content-Type, but body")
+		}
+		return "", nil, nil
+	}
+	mediaType, params, err := mime.ParseMediaType(contentType)
+	if err != nil {
+		return "", nil, err
+	}
+	var parts [][]byte
+	if strings.HasPrefix(mediaType, "multipart/") {
+		mr := multipart.NewReader(bytes.NewReader(body), params["boundary"])
+		for {
+			p, err := mr.NextPart()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				return "", nil, err
+			}
+			part, err := ioutil.ReadAll(p)
+			if err != nil {
+				return "", nil, err
+			}
+			// TODO(jba): care about part headers?
+			parts = append(parts, part)
+		}
+	} else {
+		parts = [][]byte{body}
+	}
+	return mediaType, parts, nil
 }
 
 func (c *converter) convertResponse(res *http.Response) (*Response, error) {

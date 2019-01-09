@@ -118,16 +118,12 @@ func newProxy(filename string) (*Proxy, error) {
 		return nil, err
 	}
 	mproxy.SetMITM(mc)
-	ih := map[string]bool{}
-	for k, v := range ignoreHeaders {
-		ih[k] = v
-	}
 	return &Proxy{
 		mproxy:        mproxy,
 		CACert:        x509c,
 		filename:      filename,
 		conv:          defaultConverter(),
-		ignoreHeaders: ih,
+		ignoreHeaders: map[string]bool{},
 	}, nil
 }
 

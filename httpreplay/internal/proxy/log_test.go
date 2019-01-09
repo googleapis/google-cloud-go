@@ -34,7 +34,7 @@ func TestLogger(t *testing.T) {
 			Host:   "example.com",
 			Path:   "a/b/c",
 		},
-		Header:  http.Header{"H1": {"v1", "v2"}},
+		Header:  http.Header{"H1": {"v1", "v2"}, "Content-Type": {"text/plain"}},
 		Body:    ioutil.NopCloser(strings.NewReader("hello")),
 		Trailer: http.Header{"T1": {"v3", "v4"}},
 	}
@@ -62,11 +62,12 @@ func TestLogger(t *testing.T) {
 		{
 			ID: lg.Entries[0].ID,
 			Request: &Request{
-				Method:  "POST",
-				URL:     "https://example.com/a/b/c",
-				Header:  http.Header{"H1": {"v1", "v2"}},
-				Body:    []byte("hello"),
-				Trailer: http.Header{"T1": {"v3", "v4"}},
+				Method:    "POST",
+				URL:       "https://example.com/a/b/c",
+				Header:    http.Header{"H1": {"v1", "v2"}},
+				MediaType: "text/plain",
+				BodyParts: [][]byte{[]byte("hello")},
+				Trailer:   http.Header{"T1": {"v3", "v4"}},
 			},
 			Response: &Response{
 				StatusCode: 204,
