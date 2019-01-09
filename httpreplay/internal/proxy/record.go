@@ -53,6 +53,7 @@ type Proxy struct {
 	filename      string          // for log
 	logger        *Logger         // for recording only
 	ignoreHeaders map[string]bool // headers the user has asked to ignore
+	conv          *converter      // convert incoming requests and responses
 }
 
 // ForRecording returns a Proxy configured to record.
@@ -73,7 +74,7 @@ func ForRecording(filename string, port int) (*Proxy, error) {
 	skipAuth := skipLoggingByHost("accounts.google.com")
 	logGroup.AddRequestModifier(skipAuth)
 	logGroup.AddResponseModifier(skipAuth)
-	p.logger = NewLogger()
+	p.logger = newLogger(p.conv)
 	logGroup.AddRequestModifier(p.logger)
 	logGroup.AddResponseModifier(p.logger)
 
@@ -125,6 +126,7 @@ func newProxy(filename string) (*Proxy, error) {
 		mproxy:        mproxy,
 		CACert:        x509c,
 		filename:      filename,
+		conv:          defaultConverter(),
 		ignoreHeaders: ih,
 	}, nil
 }
