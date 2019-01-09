@@ -66,7 +66,7 @@ golint ./... 2>&1 | ( \
 
 # TODO(deklerk) It doesn't seem like it, but is it possible to glob both before
 # and after the colon? Then we could do *go-cloud-debug-agent*:*
-staticcheck -ignore '
+staticcheck -go 1.9 -ignore '
 *:S1007
 *:SA1019
 cloud.google.com/go/firestore/internal/doc-snippets.go:*
