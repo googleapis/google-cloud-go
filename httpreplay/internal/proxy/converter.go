@@ -26,51 +26,82 @@ import (
 	"strings"
 )
 
-// A converter converts HTTP requests and responses to the Request and Response types
+// A Converter converts HTTP requests and responses to the Request and Response types
 // of this package, while removing or redacting information.
-type converter struct {
+type Converter struct {
 	// These all apply to both headers and trailers.
-	redactHeaders         []*regexp.Regexp // replace matching headers with "REDACTED"
-	removeRequestHeaders  []*regexp.Regexp // remove matching headers in requests
-	removeResponseHeaders []*regexp.Regexp // remove matching headers in responses
+	RedactHeaders         []tRegexp // replace matching headers with "REDACTED"
+	RemoveRequestHeaders  []tRegexp // remove matching headers in requests
+	RemoveResponseHeaders []tRegexp // remove matching headers in responses
 }
 
-var defaultRemoveRequestHeaders = []string{
-	"Authorization", // not only is it secret, but it is probably missing on replay
-	"Proxy-Authorization",
-	"Connection",
-	"Content-Type", // because it may contain a random multipart boundary
-	"Date",
-	"Host",
-	"Transfer-Encoding",
-	"Via",
-	"X-Forwarded-*",
-	"X-Cloud-Trace-Context", // OpenCensus traces have a random ID
-	"X-Goog-Api-Client",     // can differ for, e.g., different Go versions
+// A regexp that can be marshaled to and from text.
+type tRegexp struct {
+	*regexp.Regexp
 }
 
-var defaultRemoveBothHeaders = []string{
-	// GFEs scrub X-Google- and X-GFE- headers from requests and responses.
-	// Drop them from recordings made by users inside Google.
-	// http://g3doc/gfe/g3doc/gfe3/design/http_filters/google_header_filter
-	// (internal Google documentation).
-	"X-Google-*",
-	"X-Gfe-*",
+func (r tRegexp) MarshalText() ([]byte, error) {
+	return []byte(r.String()), nil
 }
 
-func defaultConverter() *converter {
-	c := &converter{
-		// X-Goog-...Encryption-Key used by Cloud Storage for customer-supplied encryption.
-		// We don't want to record the secret, but we do want to preserve the existence
-		// of the header to verify that it was sent.
-		redactHeaders: []*regexp.Regexp{pattern("X-Goog-*Encryption-Key")},
+func (r *tRegexp) UnmarshalText(b []byte) error {
+	var err error
+	r.Regexp, err = regexp.Compile(string(b))
+	return err
+}
+
+func (c *Converter) registerRemoveRequestHeaders(pat string) {
+	c.RemoveRequestHeaders = append(c.RemoveRequestHeaders, pattern(pat))
+}
+
+func (c *Converter) registerRedactHeaders(pat string) {
+	c.RedactHeaders = append(c.RedactHeaders, pattern(pat))
+}
+
+var (
+	defaultRemoveRequestHeaders = []string{
+		"Authorization", // not only is it secret, but it is probably missing on replay
+		"Proxy-Authorization",
+		"Connection",
+		"Content-Type", // because it may contain a random multipart boundary
+		"Date",
+		"Host",
+		"Transfer-Encoding",
+		"Via",
+		"X-Forwarded-*",
+		// Google-specific
+		"X-Cloud-Trace-Context", // OpenCensus traces have a random ID
+		"X-Goog-Api-Client",     // can differ for, e.g., different Go versions
+	}
+
+	defaultRemoveBothHeaders = []string{
+		// Google-specific
+		// GFEs scrub X-Google- and X-GFE- headers from requests and responses.
+		// Drop them from recordings made by users inside Google.
+		// http://g3doc/gfe/g3doc/gfe3/design/http_filters/google_header_filter
+		// (internal Google documentation).
+		"X-Google-*",
+		"X-Gfe-*",
+	}
+
+	defaultRedactHeaders = []string{
+		// Google-specific
+		// Used by Cloud Storage for customer-supplied encryption.
+		"X-Goog-*Encryption-Key",
+	}
+)
+
+func defaultConverter() *Converter {
+	c := &Converter{}
+	for _, h := range defaultRedactHeaders {
+		c.registerRedactHeaders(h)
 	}
 	for _, h := range defaultRemoveRequestHeaders {
-		c.removeRequestHeaders = append(c.removeRequestHeaders, pattern(h))
+		c.registerRemoveRequestHeaders(h)
 	}
 	for _, h := range defaultRemoveBothHeaders {
-		c.removeRequestHeaders = append(c.removeRequestHeaders, pattern(h))
-		c.removeResponseHeaders = append(c.removeResponseHeaders, pattern(h))
+		c.registerRemoveRequestHeaders(h)
+		c.RemoveResponseHeaders = append(c.RemoveResponseHeaders, pattern(h))
 	}
 	return c
 }
@@ -78,14 +109,14 @@ func defaultConverter() *converter {
 // Convert a pattern into a regexp.
 // A pattern is like a literal regexp anchored on both ends, with only one
 // non-literal character: "*", which matches zero or more characters.
-func pattern(p string) *regexp.Regexp {
+func pattern(p string) tRegexp {
 	q := regexp.QuoteMeta(p)
 	q = "^" + strings.Replace(q, `\*`, `.*`, -1) + "$"
 	// q must be a legal regexp.
-	return regexp.MustCompile(q)
+	return tRegexp{regexp.MustCompile(q)}
 }
 
-func (c *converter) convertRequest(req *http.Request) (*Request, error) {
+func (c *Converter) convertRequest(req *http.Request) (*Request, error) {
 	body, err := snapshotBody(&req.Body)
 	if err != nil {
 		return nil, err
@@ -97,10 +128,10 @@ func (c *converter) convertRequest(req *http.Request) (*Request, error) {
 	return &Request{
 		Method:    req.Method,
 		URL:       req.URL.String(),
-		Header:    scrubHeaders(req.Header, c.redactHeaders, c.removeRequestHeaders),
+		Header:    scrubHeaders(req.Header, c.RedactHeaders, c.RemoveRequestHeaders),
 		MediaType: mediaType,
 		BodyParts: parts,
-		Trailer:   scrubHeaders(req.Trailer, c.redactHeaders, c.removeRequestHeaders),
+		Trailer:   scrubHeaders(req.Trailer, c.RedactHeaders, c.RemoveRequestHeaders),
 	}, nil
 }
 
@@ -142,7 +173,7 @@ func parseRequestBody(contentType string, body []byte) (string, [][]byte, error)
 	return mediaType, parts, nil
 }
 
-func (c *converter) convertResponse(res *http.Response) (*Response, error) {
+func (c *Converter) convertResponse(res *http.Response) (*Response, error) {
 	data, err := snapshotBody(&res.Body)
 	if err != nil {
 		return nil, err
@@ -152,9 +183,9 @@ func (c *converter) convertResponse(res *http.Response) (*Response, error) {
 		Proto:      res.Proto,
 		ProtoMajor: res.ProtoMajor,
 		ProtoMinor: res.ProtoMinor,
-		Header:     scrubHeaders(res.Header, c.redactHeaders, c.removeResponseHeaders),
+		Header:     scrubHeaders(res.Header, c.RedactHeaders, c.RemoveResponseHeaders),
 		Body:       data,
-		Trailer:    scrubHeaders(res.Trailer, c.redactHeaders, c.removeResponseHeaders),
+		Trailer:    scrubHeaders(res.Trailer, c.RedactHeaders, c.RemoveResponseHeaders),
 	}, nil
 }
 
@@ -169,7 +200,7 @@ func snapshotBody(body *io.ReadCloser) ([]byte, error) {
 }
 
 // Copy headers, redacting some and removing others.
-func scrubHeaders(hs http.Header, redact, remove []*regexp.Regexp) http.Header {
+func scrubHeaders(hs http.Header, redact, remove []tRegexp) http.Header {
 	rh := http.Header{}
 	for k, v := range hs {
 		switch {
@@ -184,7 +215,7 @@ func scrubHeaders(hs http.Header, redact, remove []*regexp.Regexp) http.Header {
 	return rh
 }
 
-func match(s string, res []*regexp.Regexp) bool {
+func match(s string, res []tRegexp) bool {
 	for _, re := range res {
 		if re.MatchString(s) {
 			return true

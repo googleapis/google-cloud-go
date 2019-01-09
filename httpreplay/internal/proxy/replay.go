@@ -34,16 +34,20 @@ func ForReplaying(filename string, port int) (*Proxy, error) {
 	if err != nil {
 		return nil, err
 	}
-	calls, initial, err := readLog(filename)
+	lg, err := readLog(filename)
 	if err != nil {
 		return nil, err
 	}
+	calls, err := constructCalls(lg)
+	if err != nil {
+		return nil, err
+	}
+	p.Initial = lg.Initial
 	p.mproxy.SetRoundTripper(&replayRoundTripper{
 		calls:         calls,
 		ignoreHeaders: p.ignoreHeaders,
-		conv:          p.conv,
+		conv:          lg.Converter,
 	})
-	p.Initial = initial
 
 	// Debug logging.
 	// TODO(jba): factor out from here and ForRecording.
@@ -58,25 +62,30 @@ func ForReplaying(filename string, port int) (*Proxy, error) {
 	return p, nil
 }
 
+func readLog(filename string) (*Log, error) {
+	bytes, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	var lg Log
+	if err := json.Unmarshal(bytes, &lg); err != nil {
+		return nil, fmt.Errorf("%s: %v", filename, err)
+	}
+	if lg.Version != LogVersion {
+		return nil, fmt.Errorf(
+			"httpreplay: read log version %s but current version is %s; re-record the log",
+			lg.Version, LogVersion)
+	}
+	return &lg, nil
+}
+
 // A call is an HTTP request and its matching response.
 type call struct {
 	req *Request
 	res *Response
 }
 
-func readLog(filename string) ([]*call, []byte, error) {
-	bytes, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, nil, err
-	}
-	var lg Log
-	if err := json.Unmarshal(bytes, &lg); err != nil {
-		return nil, nil, fmt.Errorf("%s: %v", filename, err)
-	}
-	if lg.Version != LogVersion {
-		return nil, nil, fmt.Errorf("httpreplay proxy: read log version %s but current version is %s",
-			lg.Version, LogVersion)
-	}
+func constructCalls(lg *Log) ([]*call, error) {
 	ignoreIDs := map[string]bool{} // IDs of requests to ignore
 	callsByID := map[string]*call{}
 	var calls []*call
@@ -88,7 +97,7 @@ func readLog(filename string) ([]*call, []byte, error) {
 		switch {
 		case !ok:
 			if e.Request == nil {
-				return nil, nil, fmt.Errorf("first entry for ID %s does not have a request", e.ID)
+				return nil, fmt.Errorf("first entry for ID %s does not have a request", e.ID)
 			}
 			if e.Request.Method == "CONNECT" {
 				// Ignore CONNECT methods.
@@ -100,28 +109,28 @@ func readLog(filename string) ([]*call, []byte, error) {
 			}
 		case e.Request != nil:
 			if e.Response != nil {
-				return nil, nil, errors.New("HAR entry has both request and response")
+				return nil, errors.New("entry has both request and response")
 			}
 			c.req = e.Request
 		case e.Response != nil:
 			c.res = e.Response
 		default:
-			return nil, nil, errors.New("HAR entry has neither request nor response")
+			return nil, errors.New("entry has neither request nor response")
 		}
 	}
 	for _, c := range calls {
 		if c.req == nil || c.res == nil {
-			return nil, nil, fmt.Errorf("missing request or response: %+v", c)
+			return nil, fmt.Errorf("missing request or response: %+v", c)
 		}
 	}
-	return calls, lg.Initial, nil
+	return calls, nil
 }
 
 type replayRoundTripper struct {
 	mu            sync.Mutex
 	calls         []*call
 	ignoreHeaders map[string]bool
-	conv          *converter
+	conv          *Converter
 }
 
 func (r *replayRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {

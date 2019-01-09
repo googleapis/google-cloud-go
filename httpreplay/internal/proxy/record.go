@@ -53,7 +53,6 @@ type Proxy struct {
 	filename      string          // for log
 	logger        *Logger         // for recording only
 	ignoreHeaders map[string]bool // headers the user has asked to ignore
-	conv          *converter      // convert incoming requests and responses
 }
 
 // ForRecording returns a Proxy configured to record.
@@ -74,7 +73,7 @@ func ForRecording(filename string, port int) (*Proxy, error) {
 	skipAuth := skipLoggingByHost("accounts.google.com")
 	logGroup.AddRequestModifier(skipAuth)
 	logGroup.AddResponseModifier(skipAuth)
-	p.logger = newLogger(p.conv)
+	p.logger = newLogger()
 	logGroup.AddRequestModifier(p.logger)
 	logGroup.AddResponseModifier(p.logger)
 
@@ -122,7 +121,6 @@ func newProxy(filename string) (*Proxy, error) {
 		mproxy:        mproxy,
 		CACert:        x509c,
 		filename:      filename,
-		conv:          defaultConverter(),
 		ignoreHeaders: map[string]bool{},
 	}, nil
 }
@@ -147,7 +145,30 @@ func (p *Proxy) Transport() *http.Transport {
 	}
 }
 
+// RemoveRequestHeaders will remove request headers matching patterns from the log,
+// and skip matching them. Pattern is taken literally except for *, which matches any
+// sequence of characters.
+//
+// This only needs to be called during recording; the patterns will be saved to the
+// log for replay.
+func (p *Proxy) RemoveRequestHeaders(patterns []string) {
+	for _, pat := range patterns {
+		p.logger.log.Converter.registerRemoveRequestHeaders(pat)
+	}
+}
+
+// RedactHeaders will replace headers with REDACTED.
+//
+// This only needs to be called during recording; the patterns will be saved to the
+// log for replay.
+func (p *Proxy) RedactHeaders(patterns []string) {
+	for _, pat := range patterns {
+		p.logger.log.Converter.registerRedactHeaders(pat)
+	}
+}
+
 // IgnoreHeader will cause h to be ignored during matching on replay.
+// Deprecated: use RemoveRequestHeaders instead.
 func (p *Proxy) IgnoreHeader(h string) {
 	p.ignoreHeaders[http.CanonicalHeaderKey(h)] = true
 }

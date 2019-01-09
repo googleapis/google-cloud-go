@@ -45,7 +45,7 @@ func TestLogger(t *testing.T) {
 		Header:     http.Header{"H2": {"v5"}},
 		Trailer:    http.Header{"T2": {"v6", "v7"}},
 	}
-	l := newLogger(defaultConverter())
+	l := newLogger()
 	_, remove, err := martian.TestContext(req, nil, nil)
 	if err != nil {
 		t.Fatal(err)
