@@ -36,9 +36,10 @@ const LogVersion = "0.2"
 
 // A Log is a record of HTTP interactions, suitable for replay. It can be serialized to JSON.
 type Log struct {
-	Initial []byte // initial data for replay
-	Version string // version of this log format
-	Entries []*Entry
+	Initial   []byte // initial data for replay
+	Version   string // version of this log format
+	Converter *Converter
+	Entries   []*Entry
 }
 
 // An Entry  single request-response pair.
@@ -75,16 +76,17 @@ type Response struct {
 type Logger struct {
 	mu      sync.Mutex
 	entries map[string]*Entry // from ID
-	conv    *converter
 	log     *Log
 }
 
 // newLogger creates a new logger.
-func newLogger(c *converter) *Logger {
+func newLogger() *Logger {
 	return &Logger{
-		log:     &Log{Version: LogVersion},
+		log: &Log{
+			Version:   LogVersion,
+			Converter: defaultConverter(),
+		},
 		entries: map[string]*Entry{},
-		conv:    c,
 	}
 }
 
@@ -97,7 +99,7 @@ func (l *Logger) ModifyRequest(req *http.Request) error {
 	if ctx.SkippingLogging() {
 		return nil
 	}
-	lreq, err := l.conv.convertRequest(req)
+	lreq, err := l.log.Converter.convertRequest(req)
 	if err != nil {
 		return err
 	}
@@ -122,7 +124,7 @@ func (l *Logger) ModifyResponse(res *http.Response) error {
 		return nil
 	}
 	id := ctx.ID()
-	lres, err := l.conv.convertResponse(res)
+	lres, err := l.log.Converter.convertResponse(res)
 	if err != nil {
 		return err
 	}

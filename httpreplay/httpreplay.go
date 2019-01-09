@@ -60,6 +60,24 @@ func NewRecorder(filename string, initial []byte) (*Recorder, error) {
 	return &Recorder{proxy: p}, nil
 }
 
+// RemoveRequestHeaders will remove request headers matching patterns from the log,
+// and skip matching them during replay.
+//
+// Pattern is taken literally except for *, which matches any sequence of characters.
+func (r *Recorder) RemoveRequestHeaders(patterns ...string) {
+	r.proxy.RemoveRequestHeaders(patterns)
+}
+
+// RedactHeaders will replace the value of request and response headers that match
+// any of the patterns with REDACTED, on both recording and replay.
+// Use RedactHeaders when the header information is secret or may change from run to
+// run, but you still want to verify that the headers are being sent and received.
+//
+// Pattern is taken literally except for *, which matches any sequence of characters.
+func (r *Recorder) RedactHeaders(patterns ...string) {
+	r.proxy.RedactHeaders(patterns)
+}
+
 // Client returns an http.Client to be used for recording. Provide authentication options
 // like option.WithTokenSource as you normally would, or omit them to use Application Default
 // Credentials.

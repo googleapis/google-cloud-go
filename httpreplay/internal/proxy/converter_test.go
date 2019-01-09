@@ -41,7 +41,6 @@ func TestConvertRequest(t *testing.T) {
 	in := &http.Request{
 		Method: "GET",
 		URL:    &url.URL{Scheme: "https", Host: "www.example.com"},
-		Proto:  "HTTP/1.1",
 		Body:   ioutil.NopCloser(bytes.NewReader(body)),
 		Header: http.Header{
 			"Content-Type":                      {"text/plain"},
