@@ -32,7 +32,7 @@ import (
 
 // LogVersion is the current version of the log format. It can be used to
 // support changes to the format over time, so newer code can read older files.
-const LogVersion = "0.1"
+const LogVersion = "0.2"
 
 // A Log is a record of HTTP interactions, suitable for replay. It can be serialized to JSON.
 type Log struct {
@@ -50,12 +50,14 @@ type Entry struct {
 
 // A Request represents an http.Request in the log.
 type Request struct {
-	Method  string      // http.Request.Method
-	URL     string      // http.Request.URL, as a string
-	Proto   string      // http.Request.Proto
-	Header  http.Header // http.Request.Header
-	Body    []byte      // http.Request.Body, read to completion
-	Trailer http.Header `json:",omitempty"` // http.Request.Trailer
+	Method string      // http.Request.Method
+	URL    string      // http.Request.URL, as a string
+	Header http.Header // http.Request.Header
+	// We need to understand multipart bodies because the boundaries are
+	// generated randomly, so we can't just compare the entire bodies for equality.
+	MediaType string      // the media type part of the Content-Type header
+	BodyParts [][]byte    // http.Request.Body, read to completion and split for multipart
+	Trailer   http.Header `json:",omitempty"` // http.Request.Trailer
 }
 
 // A Response represents an http.Response in the log.

@@ -57,12 +57,11 @@ func TestConvertRequest(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := &Request{
-		Method: "GET",
-		URL:    "https://www.example.com",
-		Proto:  "HTTP/1.1",
-		Body:   body,
+		Method:    "GET",
+		URL:       "https://www.example.com",
+		MediaType: "text/plain",
+		BodyParts: [][]byte{body},
 		Header: http.Header{
-			"Content-Type":                      {"text/plain"},
 			"X-Goog-Encryption-Key":             {"REDACTED"},
 			"X-Goog-Copy-Source-Encryption-Key": {"REDACTED"},
 		},
