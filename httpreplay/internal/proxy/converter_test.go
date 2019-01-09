@@ -37,10 +37,15 @@ func TestConvertRequest(t *testing.T) {
 	body := []byte("hello")
 
 	conv := defaultConverter()
-
+	conv.registerClearParams("secret")
+	conv.registerRemoveParams("rm*")
+	url, err := url.Parse("https://www.example.com?a=1&rmx=x&secret=2&c=3&rmy=4")
+	if err != nil {
+		t.Fatal(err)
+	}
 	in := &http.Request{
 		Method: "GET",
-		URL:    &url.URL{Scheme: "https", Host: "www.example.com"},
+		URL:    url,
 		Body:   ioutil.NopCloser(bytes.NewReader(body)),
 		Header: http.Header{
 			"Content-Type":                      {"text/plain"},
@@ -57,12 +62,12 @@ func TestConvertRequest(t *testing.T) {
 	}
 	want := &Request{
 		Method:    "GET",
-		URL:       "https://www.example.com",
+		URL:       "https://www.example.com?a=1&secret=CLEARED&c=3",
 		MediaType: "text/plain",
 		BodyParts: [][]byte{body},
 		Header: http.Header{
-			"X-Goog-Encryption-Key":             {"REDACTED"},
-			"X-Goog-Copy-Source-Encryption-Key": {"REDACTED"},
+			"X-Goog-Encryption-Key":             {"CLEARED"},
+			"X-Goog-Copy-Source-Encryption-Key": {"CLEARED"},
 		},
 		Trailer: http.Header{},
 	}
@@ -88,6 +93,26 @@ func TestPattern(t *testing.T) {
 		got := pattern(test.in).String()
 		if got != test.want {
 			t.Errorf("%q: got %s, want %s", test.in, got, test.want)
+		}
+	}
+}
+
+func TestScrubQuery(t *testing.T) {
+	clear := []tRegexp{pattern("c*")}
+	remove := []tRegexp{pattern("r*")}
+	for _, test := range []struct {
+		in, want string
+	}{
+		{"", ""},
+		{"a=1", "a=1"},
+		{"a=1&b=2;g=3", "a=1&b=2;g=3"},
+		{"a=1&r=2;c=3", "a=1&c=CLEARED"},
+		{"ra=1&rb=2&rc=3", ""},
+		{"a=1&%Z=2&r=3&c=4", "a=1&%Z=2&c=CLEARED"},
+	} {
+		got := scrubQuery(test.in, clear, remove)
+		if got != test.want {
+			t.Errorf("%s: got %q, want %q", test.in, got, test.want)
 		}
 	}
 }

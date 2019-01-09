@@ -22,6 +22,7 @@ import (
 	"mime"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"regexp"
 	"strings"
 )
@@ -30,9 +31,11 @@ import (
 // of this package, while removing or redacting information.
 type Converter struct {
 	// These all apply to both headers and trailers.
-	RedactHeaders         []tRegexp // replace matching headers with "REDACTED"
+	ClearHeaders          []tRegexp // replace matching headers with "CLEARED"
 	RemoveRequestHeaders  []tRegexp // remove matching headers in requests
 	RemoveResponseHeaders []tRegexp // remove matching headers in responses
+	ClearParams           []tRegexp // replace matching query params with "CLEARED"
+	RemoveParams          []tRegexp // remove matching query params
 }
 
 // A regexp that can be marshaled to and from text.
@@ -54,8 +57,16 @@ func (c *Converter) registerRemoveRequestHeaders(pat string) {
 	c.RemoveRequestHeaders = append(c.RemoveRequestHeaders, pattern(pat))
 }
 
-func (c *Converter) registerRedactHeaders(pat string) {
-	c.RedactHeaders = append(c.RedactHeaders, pattern(pat))
+func (c *Converter) registerClearHeaders(pat string) {
+	c.ClearHeaders = append(c.ClearHeaders, pattern(pat))
+}
+
+func (c *Converter) registerRemoveParams(pat string) {
+	c.RemoveParams = append(c.RemoveParams, pattern(pat))
+}
+
+func (c *Converter) registerClearParams(pat string) {
+	c.ClearParams = append(c.ClearParams, pattern(pat))
 }
 
 var (
@@ -84,7 +95,7 @@ var (
 		"X-Gfe-*",
 	}
 
-	defaultRedactHeaders = []string{
+	defaultClearHeaders = []string{
 		// Google-specific
 		// Used by Cloud Storage for customer-supplied encryption.
 		"X-Goog-*Encryption-Key",
@@ -93,8 +104,8 @@ var (
 
 func defaultConverter() *Converter {
 	c := &Converter{}
-	for _, h := range defaultRedactHeaders {
-		c.registerRedactHeaders(h)
+	for _, h := range defaultClearHeaders {
+		c.registerClearHeaders(h)
 	}
 	for _, h := range defaultRemoveRequestHeaders {
 		c.registerRemoveRequestHeaders(h)
@@ -125,13 +136,15 @@ func (c *Converter) convertRequest(req *http.Request) (*Request, error) {
 	if err != nil {
 		return nil, err
 	}
+	url2 := *req.URL
+	url2.RawQuery = scrubQuery(url2.RawQuery, c.ClearParams, c.RemoveParams)
 	return &Request{
 		Method:    req.Method,
-		URL:       req.URL.String(),
-		Header:    scrubHeaders(req.Header, c.RedactHeaders, c.RemoveRequestHeaders),
+		URL:       url2.String(),
+		Header:    scrubHeaders(req.Header, c.ClearHeaders, c.RemoveRequestHeaders),
 		MediaType: mediaType,
 		BodyParts: parts,
-		Trailer:   scrubHeaders(req.Trailer, c.RedactHeaders, c.RemoveRequestHeaders),
+		Trailer:   scrubHeaders(req.Trailer, c.ClearHeaders, c.RemoveRequestHeaders),
 	}, nil
 }
 
@@ -183,9 +196,9 @@ func (c *Converter) convertResponse(res *http.Response) (*Response, error) {
 		Proto:      res.Proto,
 		ProtoMajor: res.ProtoMajor,
 		ProtoMinor: res.ProtoMinor,
-		Header:     scrubHeaders(res.Header, c.RedactHeaders, c.RemoveResponseHeaders),
+		Header:     scrubHeaders(res.Header, c.ClearHeaders, c.RemoveResponseHeaders),
 		Body:       data,
-		Trailer:    scrubHeaders(res.Trailer, c.RedactHeaders, c.RemoveResponseHeaders),
+		Trailer:    scrubHeaders(res.Trailer, c.ClearHeaders, c.RemoveResponseHeaders),
 	}, nil
 }
 
@@ -199,13 +212,13 @@ func snapshotBody(body *io.ReadCloser) ([]byte, error) {
 	return data, nil
 }
 
-// Copy headers, redacting some and removing others.
-func scrubHeaders(hs http.Header, redact, remove []tRegexp) http.Header {
+// Copy headers, clearing some and removing others.
+func scrubHeaders(hs http.Header, clear, remove []tRegexp) http.Header {
 	rh := http.Header{}
 	for k, v := range hs {
 		switch {
-		case match(k, redact):
-			rh.Set(k, "REDACTED")
+		case match(k, clear):
+			rh.Set(k, "CLEARED")
 		case match(k, remove):
 			// skip
 		default:
@@ -213,6 +226,59 @@ func scrubHeaders(hs http.Header, redact, remove []tRegexp) http.Header {
 		}
 	}
 	return rh
+}
+
+// Copy the query string, clearing some query params and removing others.
+// Preserve the order of the string.
+func scrubQuery(query string, clear, remove []tRegexp) string {
+	// We can't use url.ParseQuery because it doesn't preserve order.
+	var buf bytes.Buffer
+	for {
+		if i := strings.IndexAny(query, "&;"); i >= 0 {
+			scrubParam(&buf, query[:i], query[i], clear, remove)
+			query = query[i+1:]
+		} else {
+			scrubParam(&buf, query, 0, clear, remove)
+			break
+		}
+	}
+	s := buf.String()
+	if strings.HasSuffix(s, "&") {
+		return s[:len(s)-1]
+	}
+	return s
+}
+
+func scrubParam(buf *bytes.Buffer, param string, sep byte, clear, remove []tRegexp) {
+	if param == "" {
+		return
+	}
+	key := param
+	value := ""
+	if i := strings.Index(param, "="); i >= 0 {
+		key, value = key[:i], key[i+1:]
+	}
+	ukey, err := url.QueryUnescape(key)
+	// If the key is bad, just pass it and the value through.
+	if err != nil {
+		buf.WriteString(param)
+		if sep != 0 {
+			buf.WriteByte(sep)
+		}
+		return
+	}
+	if match(ukey, remove) {
+		return
+	}
+	if match(ukey, clear) && value != "" {
+		value = "CLEARED"
+	}
+	buf.WriteString(key)
+	buf.WriteByte('=')
+	buf.WriteString(value)
+	if sep != 0 {
+		buf.WriteByte(sep)
+	}
 }
 
 func match(s string, res []tRegexp) bool {

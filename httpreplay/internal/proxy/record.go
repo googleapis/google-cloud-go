@@ -157,13 +157,35 @@ func (p *Proxy) RemoveRequestHeaders(patterns []string) {
 	}
 }
 
-// RedactHeaders will replace headers with REDACTED.
+// ClearHeaders will replace matching headers with CLEARED.
 //
 // This only needs to be called during recording; the patterns will be saved to the
 // log for replay.
-func (p *Proxy) RedactHeaders(patterns []string) {
+func (p *Proxy) ClearHeaders(patterns []string) {
 	for _, pat := range patterns {
-		p.logger.log.Converter.registerRedactHeaders(pat)
+		p.logger.log.Converter.registerClearHeaders(pat)
+	}
+}
+
+// RemoveQueryParams will remove query parameters matching patterns from the request
+// URL before logging, and skip matching them. Pattern is taken literally except for
+// *, which matches any sequence of characters.
+//
+// This only needs to be called during recording; the patterns will be saved to the
+// log for replay.
+func (p *Proxy) RemoveQueryParams(patterns []string) {
+	for _, pat := range patterns {
+		p.logger.log.Converter.registerRemoveParams(pat)
+	}
+}
+
+// ClearQueryParams will replace matching query params in the request URL with CLEARED.
+//
+// This only needs to be called during recording; the patterns will be saved to the
+// log for replay.
+func (p *Proxy) ClearQueryParams(patterns []string) {
+	for _, pat := range patterns {
+		p.logger.log.Converter.registerClearParams(pat)
 	}
 }
 
