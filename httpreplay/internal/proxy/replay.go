@@ -45,6 +45,7 @@ func ForReplaying(filename string, port int) (*Proxy, error) {
 	p.mproxy.SetRoundTripper(&replayRoundTripper{
 		calls:         calls,
 		ignoreHeaders: p.ignoreHeaders,
+		conv:          p.conv,
 	})
 	p.Initial = initial
 
@@ -129,10 +130,18 @@ type replayRoundTripper struct {
 	mu            sync.Mutex
 	calls         []*call
 	ignoreHeaders map[string]bool
+	conv          *converter
 }
 
 func (r *replayRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
-	reqBody, err := newRequestBodyFromHTTP(req)
+	if req.Body != nil {
+		defer req.Body.Close()
+	}
+	creq, err := r.conv.convertRequest(req)
+	if err != nil {
+		return nil, err
+	}
+	reqBody, err := newRequestBodyFromLog(creq)
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +151,7 @@ func (r *replayRoundTripper) RoundTrip(req *http.Request) (*http.Response, error
 		if call == nil {
 			continue
 		}
-		if requestsMatch(req, reqBody, call.req, call.reqBody, r.ignoreHeaders) {
+		if requestsMatch(creq, reqBody, call.req, call.reqBody, r.ignoreHeaders) {
 			r.calls[i] = nil // nil out this call so we don't reuse it
 			return toHTTPResponse(call.res, req), nil
 		}
@@ -150,39 +159,18 @@ func (r *replayRoundTripper) RoundTrip(req *http.Request) (*http.Response, error
 	return nil, fmt.Errorf("no matching request for %+v", req)
 }
 
-// Headers that shouldn't be compared, because they may differ on different executions
-// of the same code, or may not be present during record or replay.
-var ignoreHeaders = map[string]bool{}
-
-func init() {
-	// Sensitive headers are redacted in the log, so they won't be equal to incoming values.
-	for h := range sensitiveHeaders {
-		ignoreHeaders[h] = true
-	}
-	for _, h := range []string{
-		"Content-Type", // handled by requestBody
-		"Connection",
-		"Date",
-		"Host",
-		"Transfer-Encoding",
-		"Via",
-		"X-Forwarded-For",
-		"X-Forwarded-Host",
-		"X-Forwarded-Proto",
-		"X-Forwarded-Url",
-		"X-Cloud-Trace-Context", // OpenCensus traces have a random ID
-		"X-Goog-Api-Client",     // can differ for, e.g., different Go versions
-	} {
-		ignoreHeaders[h] = true
-	}
+var ignoreHeaders = map[string]bool{
+	// Content-Type may have a random boundary string for multipart bodies.
+	// TODO(jba): save parsed request bodies in the log with their media type, and remove this.
+	"Content-Type": true, // handled by requestBody
 }
 
 // Report whether the incoming request in matches the candidate request cand.
-func requestsMatch(in *http.Request, inBody *requestBody, cand *Request, candBody *requestBody, ignoreHeaders map[string]bool) bool {
+func requestsMatch(in *Request, inBody *requestBody, cand *Request, candBody *requestBody, ignoreHeaders map[string]bool) bool {
 	if in.Method != cand.Method {
 		return false
 	}
-	if in.URL.String() != cand.URL {
+	if in.URL != cand.URL {
 		return false
 	}
 	if !inBody.equal(candBody) {

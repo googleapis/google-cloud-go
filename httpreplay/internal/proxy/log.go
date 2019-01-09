@@ -17,7 +17,6 @@ package proxy
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -74,14 +73,16 @@ type Response struct {
 type Logger struct {
 	mu      sync.Mutex
 	entries map[string]*Entry // from ID
+	conv    *converter
 	log     *Log
 }
 
-// NewLogger creates a new logger.
-func NewLogger() *Logger {
+// newLogger creates a new logger.
+func newLogger(c *converter) *Logger {
 	return &Logger{
 		log:     &Log{Version: LogVersion},
 		entries: map[string]*Entry{},
+		conv:    c,
 	}
 }
 
@@ -94,7 +95,7 @@ func (l *Logger) ModifyRequest(req *http.Request) error {
 	if ctx.SkippingLogging() {
 		return nil
 	}
-	lreq, err := fromHTTPRequest(req)
+	lreq, err := l.conv.convertRequest(req)
 	if err != nil {
 		return err
 	}
@@ -119,7 +120,7 @@ func (l *Logger) ModifyResponse(res *http.Response) error {
 		return nil
 	}
 	id := ctx.ID()
-	lres, err := fromHTTPResponse(res)
+	lres, err := l.conv.convertResponse(res)
 	if err != nil {
 		return err
 	}
@@ -145,37 +146,6 @@ func (l *Logger) Extract() *Log {
 	return r
 }
 
-func fromHTTPRequest(req *http.Request) (*Request, error) {
-	data, err := snapshotBody(&req.Body)
-	if err != nil {
-		return nil, err
-	}
-	return &Request{
-		Method:  req.Method,
-		URL:     req.URL.String(),
-		Proto:   req.Proto,
-		Header:  redactHeaders(req.Header),
-		Body:    data,
-		Trailer: req.Trailer,
-	}, nil
-}
-
-func fromHTTPResponse(res *http.Response) (*Response, error) {
-	data, err := snapshotBody(&res.Body)
-	if err != nil {
-		return nil, err
-	}
-	return &Response{
-		StatusCode: res.StatusCode,
-		Proto:      res.Proto,
-		ProtoMajor: res.ProtoMajor,
-		ProtoMinor: res.ProtoMinor,
-		Header:     res.Header,
-		Body:       data,
-		Trailer:    res.Trailer,
-	}, nil
-}
-
 func toHTTPResponse(lr *Response, req *http.Request) *http.Response {
 	res := &http.Response{
 		StatusCode:    lr.StatusCode,
@@ -198,35 +168,4 @@ func toHTTPResponse(lr *Response, req *http.Request) *http.Response {
 		}
 	}
 	return res
-}
-
-func snapshotBody(body *io.ReadCloser) ([]byte, error) {
-	data, err := ioutil.ReadAll(*body)
-	if err != nil {
-		return nil, err
-	}
-	(*body).Close()
-	*body = ioutil.NopCloser(bytes.NewReader(data))
-	return data, nil
-}
-
-// Headers that may contain sensitive data (auth tokens, keys).
-var sensitiveHeaders = map[string]bool{
-	"Authorization":                     true,
-	"Proxy-Authorization":               true,
-	"X-Goog-Encryption-Key":             true, // used by Cloud Storage for customer-supplied encryption
-	"X-Goog-Copy-Source-Encryption-Key": true, // ditto
-}
-
-// Copy headers, redacting sensitive ones.
-func redactHeaders(hs http.Header) http.Header {
-	rh := http.Header{}
-	for k, v := range hs {
-		if sensitiveHeaders[k] {
-			rh.Set(k, "REDACTED")
-		} else {
-			rh[k] = v
-		}
-	}
-	return rh
 }
