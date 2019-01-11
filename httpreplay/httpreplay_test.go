@@ -261,9 +261,6 @@ func testReadCRC(t *testing.T, hc *http.Client, mode string) {
 }
 
 func TestRemoveAndClear(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Integration tests skipped in short mode")
-	}
 	// Disable logging for this test, since it generates a lot.
 	log.SetOutput(ioutil.Discard)
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -284,7 +281,7 @@ func TestRemoveAndClear(t *testing.T) {
 	rec.RemoveRequestHeaders("Rem*")
 	rec.ClearQueryParams("c")
 	rec.RemoveQueryParams("r")
-	hc, err := rec.Client(ctx)
+	hc, err := rec.Client(ctx, option.WithoutAuthentication())
 	if err != nil {
 		t.Fatal(err)
 	}
