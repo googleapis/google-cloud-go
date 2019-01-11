@@ -510,7 +510,10 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 	}
 	if tm.TimePartitioning != nil {
 		t.TimePartitioning = tm.TimePartitioning.toBQ()
-		t.TimePartitioning.ForceSendFields = []string{"Expiration", "RequirePartitionFilter"}
+		t.TimePartitioning.ForceSendFields = []string{"RequirePartitionFilter"}
+		if tm.TimePartitioning.Expiration == 0 {
+			t.TimePartitioning.NullFields = []string{"ExpirationMs"}
+		}
 	}
 	if tm.ViewQuery != nil {
 		t.View = &bq.ViewDefinition{

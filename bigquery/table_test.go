@@ -312,6 +312,26 @@ func TestTableMetadataToUpdateToBQ(t *testing.T) {
 				NullFields: []string{"ExpirationTime"},
 			},
 		},
+		{
+			tm: TableMetadataToUpdate{TimePartitioning: &TimePartitioning{Expiration: 0}},
+			want: &bq.Table{
+				TimePartitioning: &bq.TimePartitioning{
+					Type:            "DAY",
+					ForceSendFields: []string{"RequirePartitionFilter"},
+					NullFields:      []string{"ExpirationMs"},
+				},
+			},
+		},
+		{
+			tm: TableMetadataToUpdate{TimePartitioning: &TimePartitioning{Expiration: time.Duration(time.Hour)}},
+			want: &bq.Table{
+				TimePartitioning: &bq.TimePartitioning{
+					ExpirationMs:    3600000,
+					Type:            "DAY",
+					ForceSendFields: []string{"RequirePartitionFilter"},
+				},
+			},
+		},
 	} {
 		got, _ := test.tm.toBQ()
 		if !testutil.Equal(got, test.want) {

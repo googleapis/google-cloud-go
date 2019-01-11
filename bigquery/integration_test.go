@@ -384,6 +384,46 @@ func TestIntegration_TableMetadata(t *testing.T) {
 
 }
 
+func TestIntegration_RemoveTimePartitioning(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := dataset.Table(tableIDs.New())
+	want := 24 * time.Hour
+	err := table.Create(ctx, &TableMetadata{
+		ExpirationTime: testTableExpiration,
+		TimePartitioning: &TimePartitioning{
+			Expiration: want,
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer table.Delete(ctx)
+
+	md, err := table.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := md.TimePartitioning.Expiration; got != want {
+		t.Fatalf("TimeParitioning expiration want = %v, got = %v", want, got)
+	}
+
+	// Remove time partitioning expiration
+	md, err = table.Update(context.Background(), TableMetadataToUpdate{
+		TimePartitioning: &TimePartitioning{Expiration: 0},
+	}, md.ETag)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want = time.Duration(0)
+	if got := md.TimePartitioning.Expiration; got != want {
+		t.Fatalf("TimeParitioning expiration want = %v, got = %v", want, got)
+	}
+}
+
 func TestIntegration_DatasetCreate(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
