@@ -92,6 +92,7 @@ popd
 HASMANUAL=(
 errorreporting/apiv1beta1
 firestore/apiv1beta1
+firestore/apiv1
 logging/apiv2
 longrunning/autogen
 pubsub/apiv1

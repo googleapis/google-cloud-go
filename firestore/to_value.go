@@ -23,7 +23,7 @@ import (
 	"cloud.google.com/go/internal/fields"
 	"github.com/golang/protobuf/ptypes"
 	ts "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
+	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/genproto/googleapis/type/latlng"
 )
 

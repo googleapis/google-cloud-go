@@ -25,7 +25,7 @@ import (
 	"time"
 
 	ts "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
+	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/genproto/googleapis/type/latlng"
 )
 
@@ -78,12 +78,12 @@ func TestCreateFromProtoValue(t *testing.T) {
 				shortPath: "c/d",
 				Parent: &CollectionRef{
 					ID:         "c",
-					parentPath: "projects/P/databases/D",
+					parentPath: "projects/P/databases/D/documents",
 					selfPath:   "c",
 					Path:       "projects/P/databases/D/documents/c",
 					Query: Query{
 						collectionID: "c",
-						parentPath:   "projects/P/databases/D",
+						parentPath:   "projects/P/databases/D/documents",
 						path:         "projects/P/databases/D/documents/c",
 					},
 				},
@@ -525,14 +525,14 @@ func TestPathToDoc(t *testing.T) {
 				Parent: &CollectionRef{
 					ID:         "c1",
 					c:          c,
-					parentPath: "projects/P/databases/D",
+					parentPath: "projects/P/databases/D/documents",
 					Path:       "projects/P/databases/D/documents/c1",
 					selfPath:   "c1",
 					Parent:     nil,
 					Query: Query{
 						c:            c,
 						collectionID: "c1",
-						parentPath:   "projects/P/databases/D",
+						parentPath:   "projects/P/databases/D/documents",
 						path:         "projects/P/databases/D/documents/c1",
 					},
 				},

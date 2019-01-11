@@ -23,7 +23,7 @@ import (
 	"cloud.google.com/go/internal/pretty"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/golang/protobuf/ptypes/wrappers"
-	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
+	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 func TestFilterToProto(t *testing.T) {
@@ -255,11 +255,11 @@ func TestQueryToProto(t *testing.T) {
 					{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
 				},
 				StartAt: &pb.Cursor{
-					Values: []*pb.Value{refval(coll.parentPath + "/documents/C/foo")},
+					Values: []*pb.Value{refval(coll.parentPath + "/C/foo")},
 					Before: false,
 				},
 				EndAt: &pb.Cursor{
-					Values: []*pb.Value{refval(coll.parentPath + "/documents/C/bar")},
+					Values: []*pb.Value{refval(coll.parentPath + "/C/bar")},
 					Before: true,
 				},
 			},
@@ -312,7 +312,7 @@ func TestQueryToProto(t *testing.T) {
 					{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
 				},
 				StartAt: &pb.Cursor{
-					Values: []*pb.Value{refval(coll.parentPath + "/documents/C/D")},
+					Values: []*pb.Value{refval(coll.parentPath + "/C/D")},
 					Before: true,
 				},
 			},
@@ -326,7 +326,7 @@ func TestQueryToProto(t *testing.T) {
 					{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
 				},
 				StartAt: &pb.Cursor{
-					Values: []*pb.Value{intval(7), refval(coll.parentPath + "/documents/C/D")},
+					Values: []*pb.Value{intval(7), refval(coll.parentPath + "/C/D")},
 					Before: true,
 				},
 			},
@@ -341,7 +341,7 @@ func TestQueryToProto(t *testing.T) {
 					{Field: fref1("__name__"), Direction: pb.StructuredQuery_DESCENDING},
 				},
 				StartAt: &pb.Cursor{
-					Values: []*pb.Value{intval(7), refval(coll.parentPath + "/documents/C/D")},
+					Values: []*pb.Value{intval(7), refval(coll.parentPath + "/C/D")},
 					Before: true,
 				},
 			},
@@ -356,7 +356,7 @@ func TestQueryToProto(t *testing.T) {
 					{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
 				},
 				StartAt: &pb.Cursor{
-					Values: []*pb.Value{intval(7), intval(8), refval(coll.parentPath + "/documents/C/D")},
+					Values: []*pb.Value{intval(7), intval(8), refval(coll.parentPath + "/C/D")},
 					Before: true,
 				},
 			},
@@ -370,7 +370,7 @@ func TestQueryToProto(t *testing.T) {
 					{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
 				},
 				StartAt: &pb.Cursor{
-					Values: []*pb.Value{refval(coll.parentPath + "/documents/C/D")},
+					Values: []*pb.Value{refval(coll.parentPath + "/C/D")},
 					Before: true,
 				},
 			},
@@ -385,7 +385,7 @@ func TestQueryToProto(t *testing.T) {
 					{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
 				},
 				StartAt: &pb.Cursor{
-					Values: []*pb.Value{intval(7), refval(coll.parentPath + "/documents/C/D")},
+					Values: []*pb.Value{intval(7), refval(coll.parentPath + "/C/D")},
 					Before: true,
 				},
 			},
@@ -410,7 +410,7 @@ func TestQueryToProto(t *testing.T) {
 					{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
 				},
 				StartAt: &pb.Cursor{
-					Values: []*pb.Value{intval(7), refval(coll.parentPath + "/documents/C/D")},
+					Values: []*pb.Value{intval(7), refval(coll.parentPath + "/C/D")},
 					Before: true,
 				},
 			},
@@ -418,12 +418,12 @@ func TestQueryToProto(t *testing.T) {
 	} {
 		got, err := test.in.toProto()
 		if err != nil {
-			t.Errorf("%s: %v", test.desc, err)
+			t.Fatalf("%s: %v", test.desc, err)
 			continue
 		}
 		test.want.From = []*pb.StructuredQuery_CollectionSelector{{CollectionId: "C"}}
 		if !testEqual(got, test.want) {
-			t.Errorf("%s:\ngot\n%v\nwant\n%v", test.desc, pretty.Value(got), pretty.Value(test.want))
+			t.Fatalf("%s:\ngot\n%v\nwant\n%v", test.desc, pretty.Value(got), pretty.Value(test.want))
 		}
 	}
 }
@@ -550,7 +550,7 @@ func TestQueryFromCollectionRef(t *testing.T) {
 	got := coll.Select("x").Offset(8)
 	want := Query{
 		c:            c,
-		parentPath:   c.path(),
+		parentPath:   c.path() + "/documents",
 		path:         "projects/P/databases/D/documents/C",
 		collectionID: "C",
 		selection:    []FieldPath{{"x"}},

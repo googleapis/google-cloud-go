@@ -23,13 +23,13 @@ import (
 	"strings"
 	"time"
 
-	vkit "cloud.google.com/go/firestore/apiv1beta1"
+	vkit "cloud.google.com/go/firestore/apiv1"
 	"cloud.google.com/go/internal/version"
 	"github.com/golang/protobuf/ptypes"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
+	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -211,7 +211,7 @@ func (c *Client) Collections(ctx context.Context) *CollectionIterator {
 		client: c,
 		it: c.c.ListCollectionIds(
 			withResourceHeader(ctx, c.path()),
-			&pb.ListCollectionIdsRequest{Parent: c.path()}),
+			&pb.ListCollectionIdsRequest{Parent: c.path() + "/documents"}),
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,

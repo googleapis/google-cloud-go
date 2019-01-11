@@ -25,7 +25,7 @@ import (
 	"sync"
 
 	"cloud.google.com/go/internal/fields"
-	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
+	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 // A FieldPath is a non-empty sequence of non-empty fields that reference a value.

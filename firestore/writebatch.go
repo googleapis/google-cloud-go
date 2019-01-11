@@ -18,7 +18,7 @@ import (
 	"context"
 	"errors"
 
-	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
+	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 // A WriteBatch holds multiple database updates. Build a batch with the Create, Set,
