@@ -20,7 +20,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/iterator"
-	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
+	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -101,7 +101,7 @@ func TestRunTransaction(t *testing.T) {
 	srv.addRPC(beginReq, beginRes)
 	srv.addRPC(
 		&pb.RunQueryRequest{
-			Parent: db,
+			Parent: db + "/documents",
 			QueryType: &pb.RunQueryRequest_StructuredQuery{
 				&pb.StructuredQuery{
 					From: []*pb.StructuredQuery_CollectionSelector{{CollectionId: "C"}},

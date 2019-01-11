@@ -19,7 +19,7 @@ import (
 	"testing"
 
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
+	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -34,7 +34,7 @@ func TestClientCollectionAndDoc(t *testing.T) {
 	db := "projects/projectID/databases/(default)"
 	wantc1 := &CollectionRef{
 		c:          testClient,
-		parentPath: db,
+		parentPath: db + "/documents",
 		selfPath:   "X",
 		Parent:     nil,
 		ID:         "X",
@@ -43,7 +43,7 @@ func TestClientCollectionAndDoc(t *testing.T) {
 			c:            testClient,
 			collectionID: "X",
 			path:         "projects/projectID/databases/(default)/documents/X",
-			parentPath:   db,
+			parentPath:   db + "/documents",
 		},
 	}
 	if !testEqual(coll1, wantc1) {

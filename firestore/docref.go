@@ -22,9 +22,9 @@ import (
 	"reflect"
 	"sort"
 
-	vkit "cloud.google.com/go/firestore/apiv1beta1"
+	vkit "cloud.google.com/go/firestore/apiv1"
 	"google.golang.org/api/iterator"
-	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
+	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

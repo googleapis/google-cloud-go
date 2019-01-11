@@ -21,7 +21,7 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/ptypes"
-	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
+	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 func setFromProtoValue(x interface{}, vproto *pb.Value, c *Client) error {
@@ -342,7 +342,6 @@ func createFromProtoValue(vproto *pb.Value, c *Client) (interface{}, error) {
 		return pathToDoc(v.ReferenceValue, c)
 	case *pb.Value_GeoPointValue:
 		return v.GeoPointValue, nil
-
 	case *pb.Value_ArrayValue:
 		vals := v.ArrayValue.Values
 		ret := make([]interface{}, len(vals))

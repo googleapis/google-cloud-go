@@ -35,7 +35,7 @@ import (
 	ts "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
-	fspb "google.golang.org/genproto/googleapis/firestore/v1beta1"
+	fspb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 const conformanceTestWatchTargetID = 1
