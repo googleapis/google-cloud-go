@@ -94,6 +94,11 @@ type TableMetadata struct {
 	// This does not include data that is being buffered during a streaming insert.
 	NumBytes int64
 
+	// The number of bytes in the table considered "long-term storage" for reduced
+	// billing purposes.  See https://cloud.google.com/bigquery/pricing#long-term-storage
+	// for more information.
+	NumLongTermBytes int64
+
 	// The number of rows of data in this table.
 	// This does not include data that is being buffered during a streaming insert.
 	NumRows uint64
@@ -359,6 +364,9 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	if tm.NumBytes != 0 {
 		return nil, errors.New("cannot set NumBytes on create")
 	}
+	if tm.NumLongTermBytes != 0 {
+		return nil, errors.New("cannot set NumLongTermBytes on create")
+	}
 	if tm.NumRows != 0 {
 		return nil, errors.New("cannot set NumRows on create")
 	}
@@ -397,6 +405,7 @@ func bqToTableMetadata(t *bq.Table) (*TableMetadata, error) {
 		FullID:           t.Id,
 		Labels:           t.Labels,
 		NumBytes:         t.NumBytes,
+		NumLongTermBytes: t.NumLongTermBytes,
 		NumRows:          t.NumRows,
 		ExpirationTime:   unixMillisToTime(t.ExpirationTime),
 		CreationTime:     unixMillisToTime(t.CreationTime),
