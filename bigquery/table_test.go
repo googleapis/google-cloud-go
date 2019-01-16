@@ -76,6 +76,7 @@ func TestBQToTableMetadata(t *testing.T) {
 				CreationTime:       aTime.Truncate(time.Millisecond),
 				LastModifiedTime:   aTime.Truncate(time.Millisecond),
 				NumBytes:           123,
+				NumLongTermBytes:   23,
 				NumRows:            7,
 				TimePartitioning: &TimePartitioning{
 					Expiration: 7890 * time.Millisecond,
@@ -219,6 +220,7 @@ func TestTableMetadataToBQ(t *testing.T) {
 		{CreationTime: aTime},
 		{LastModifiedTime: aTime},
 		{NumBytes: 1},
+		{NumLongTermBytes: 1},
 		{NumRows: 1},
 		{StreamingBuffer: &StreamingBuffer{}},
 		{ETag: "x"},
