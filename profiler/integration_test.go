@@ -65,6 +65,17 @@ set -x
 retry apt-get update >/dev/null
 retry apt-get -y -q install git >/dev/null
 
+# $GOCACHE is required from Go 1.12. See https://golang.org/doc/go1.11#gocache
+# $GOCACHE is explicitly set becasue $HOME is not set when this code runs
+mkdir -p /tmp/gocache
+export GOCACHE=/tmp/gocache
+
+# Install gcc, needed to install go master
+if [ "{{.GoVersion}}" = "master" ]
+then
+retry apt-get -y -q install gcc >/dev/null
+fi
+
 # Install desired Go version
 mkdir -p /tmp/bin
 retry curl -sL -o /tmp/bin/gimme https://raw.githubusercontent.com/travis-ci/gimme/master/gimme
@@ -127,6 +138,9 @@ func (tc *goGCETestCase) initializeStartupScript(template *template.Template, co
 }
 
 func TestAgentIntegration(t *testing.T) {
+	// Testing against master requires building go code and may take up to 10 minutes.
+	// Allow this test to run in parallel with other top level tests to avoid timeouts.
+	t.Parallel()
 	if testing.Short() {
 		t.Skip("skipping profiler integration test in short mode")
 	}
@@ -186,6 +200,18 @@ func TestAgentIntegration(t *testing.T) {
 	}
 
 	testcases := []goGCETestCase{
+		{
+			InstanceConfig: proftest.InstanceConfig{
+				ProjectID:   projectID,
+				Zone:        zone,
+				Name:        fmt.Sprintf("profiler-test-gomaster-%s", runID),
+				MachineType: "n1-standard-1",
+			},
+			name:             fmt.Sprintf("profiler-test-gomaster-%s-gce", runID),
+			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
+			goVersion:        "master",
+			mutexProfiling:   true,
+		},
 		{
 			InstanceConfig: proftest.InstanceConfig{
 				ProjectID:   projectID,
