@@ -1589,6 +1589,9 @@ func TestIntegration_QueryDryRun(t *testing.T) {
 	if s.Statistics.Details.(*QueryStatistics).Schema == nil {
 		t.Fatal("no schema")
 	}
+	if s.Statistics.Details.(*QueryStatistics).TotalBytesProcessedAccuracy == "" {
+		t.Fatal("no cost accuracy")
+	}
 }
 
 func TestIntegration_ExtractExternal(t *testing.T) {
