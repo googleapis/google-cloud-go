@@ -83,6 +83,29 @@ for api in "${APIS[@]}"; do
   cp -r artman-genfiles/gapi-*/cloud.google.com/go/* $GOPATH/src/cloud.google.com/go/
 done
 
+microgen() {
+  input=$1
+  options="${@:2}"
+
+  # see https://github.com/googleapis/gapic-generator-go/blob/master/README.md#docker-wrapper for details
+  docker run \
+    --mount type=bind,source=$(pwd),destination=/conf,readonly \
+    --mount type=bind,source=$(pwd)/$input,destination=/in/$input,readonly \
+    --mount type=bind,source=$GOPATH/src,destination=/out \
+    --rm \
+    gcr.io/gapic-images/gapic-generator-go:latest \
+    $options
+}
+
+MICROAPIS=(
+  # input proto directory  |  gapic-generator-go flag  | gapic-service-config flag
+  # "google/cloud/language/v1 --go-gapic-package cloud.google.com/go/language/apiv1;language --gapic-service-config google/cloud/language/language_v1.yaml"
+)
+
+for api in "${MICROAPIS[@]}"; do
+  microgen $api
+done
+
 pushd $GOPATH/src/cloud.google.com/go/
   gofmt -s -d -l -w . && goimports -w .
 
