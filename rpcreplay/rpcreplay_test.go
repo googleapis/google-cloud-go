@@ -243,6 +243,7 @@ func TestRecord(t *testing.T) {
 }
 
 func TestReplay(t *testing.T) {
+	t.Skip("skipping until listening on loopback doesn't timeout on Kokoro.")
 	srv := newIntStoreServer()
 	defer srv.stop()
 
