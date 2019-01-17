@@ -306,7 +306,15 @@ func (tr *TestRunner) QueryProfiles(projectID, service, startTime, endTime, prof
 
 	queryRequest := fmt.Sprintf(queryJSONFmt, endTime, profileType, startTime, service)
 
-	resp, err := tr.Client.Post(queryURL, "application/json", strings.NewReader(queryRequest))
+	req, err := http.NewRequest("POST", queryURL, strings.NewReader(queryRequest))
+	if err != nil {
+		return ProfileResponse{}, fmt.Errorf("failed to create an API request: %v", err)
+	}
+	req.Header = map[string][]string{
+		"X-Goog-User-Project": {projectID},
+	}
+
+	resp, err := tr.Client.Do(req)
 	if err != nil {
 		return ProfileResponse{}, fmt.Errorf("failed to query API: %v", err)
 	}

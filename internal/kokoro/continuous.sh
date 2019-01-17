@@ -1,12 +1,16 @@
 #!/bin/bash
 
 export GOOGLE_APPLICATION_CREDENTIALS=$KOKORO_KEYSTORE_DIR/72523_go_integration_service_account
+# Removing the GCLOUD_TESTS_GOLANG_PROJECT_ID setting may make some integration
+# tests (like profiler's) silently skipped, so make sure you know what you are
+# doing when changing / removing the next line.
 export GCLOUD_TESTS_GOLANG_PROJECT_ID=dulcet-port-762
 export GCLOUD_TESTS_GOLANG_KEY=$GOOGLE_APPLICATION_CREDENTIALS
 export GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID=gcloud-golang-firestore-tests
 export GCLOUD_TESTS_GOLANG_FIRESTORE_KEY=$KOKORO_KEYSTORE_DIR/72523_go_firestore_integration_service_account
 export GCLOUD_TESTS_API_KEY=`cat $KOKORO_KEYSTORE_DIR/72523_go_gcloud_tests_api_key`
 export GCLOUD_TESTS_GOLANG_KEYRING=projects/dulcet-port-762/locations/global/keyRings/go-integration-test
+export GCLOUD_TESTS_GOLANG_PROFILER_ZONE="us-west1-b"
 
 # Fail on any error
 set -eo pipefail
@@ -40,4 +44,4 @@ fi
 ./internal/kokoro/vet.sh
 
 # Run tests and tee output to log file, to be pushed to GCS as artifact.
-go test -race -v -timeout 15m ./... 2>&1 | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt
+go test -race -v -timeout 30m ./... 2>&1 | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt
