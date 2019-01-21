@@ -1,4 +1,4 @@
-// Copyright 2018 Google LLC
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -190,14 +190,15 @@ func (c *SubscriberClient) SetGoogleClientInfo(keyval ...string) {
 }
 
 // CreateSubscription creates a subscription to a given topic. See the
-// <a href="/pubsub/docs/admin#resource_names"> resource name rules</a>.
+// <a href="https://cloud.google.com/pubsub/docs/admin#resource_names">
+// resource name rules</a>.
 // If the subscription already exists, returns ALREADY_EXISTS.
 // If the corresponding topic doesn't exist, returns NOT_FOUND.
 //
 // If the name is not provided in the request, the server will assign a random
 // name for this subscription on the same project as the topic, conforming
 // to the
-// resource name format (at https://cloud.google.com/pubsub/docs/overview#names).
+// resource name format (at https://cloud.google.com/pubsub/docs/admin#resource_names).
 // The generated name is populated in the returned Subscription object.
 // Note that for REST API requests, you must specify a name in the request.
 func (c *SubscriberClient) CreateSubscription(ctx context.Context, req *pubsubpb.Subscription, opts ...gax.CallOption) (*pubsubpb.Subscription, error) {
@@ -392,8 +393,13 @@ func (c *SubscriberClient) ModifyPushConfig(ctx context.Context, req *pubsubpb.M
 	return err
 }
 
-// ListSnapshots lists the existing snapshots.<br><br>
-// <b>ALPHA:</b> This feature is part of an alpha release. This API might be
+// ListSnapshots lists the existing snapshots. Snapshots are used in
+// <a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+// operations, which allow
+// you to manage message acknowledgments in bulk. That is, you can set the
+// acknowledgment state of messages in an existing subscription to the state
+// captured by a snapshot.<br><br>
+// <b>BETA:</b> This feature is part of a beta release. This API might be
 // changed in backward-incompatible ways and is not recommended for production
 // use. It is not subject to any SLA or deprecation policy.
 func (c *SubscriberClient) ListSnapshots(ctx context.Context, req *pubsubpb.ListSnapshotsRequest, opts ...gax.CallOption) *SnapshotIterator {
@@ -432,8 +438,14 @@ func (c *SubscriberClient) ListSnapshots(ctx context.Context, req *pubsubpb.List
 	return it
 }
 
-// CreateSnapshot creates a snapshot from the requested subscription.<br><br>
-// <b>ALPHA:</b> This feature is part of an alpha release. This API might be
+// CreateSnapshot creates a snapshot from the requested subscription. Snapshots are used in
+// <a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+// operations, which allow
+// you to manage message acknowledgments in bulk. That is, you can set the
+// acknowledgment state of messages in an existing subscription to the state
+// captured by a snapshot.
+// <br><br>
+// <b>BETA:</b> This feature is part of a beta release. This API might be
 // changed in backward-incompatible ways and is not recommended for production
 // use. It is not subject to any SLA or deprecation policy.<br><br>
 // If the snapshot already exists, returns ALREADY_EXISTS.
@@ -443,10 +455,10 @@ func (c *SubscriberClient) ListSnapshots(ctx context.Context, req *pubsubpb.List
 // See also the Snapshot.expire_time field. If the name is not provided in
 // the request, the server will assign a random
 // name for this snapshot on the same project as the subscription, conforming
-// to the resource name format (at https://cloud.google.com/pubsub/docs/overview#names).
-// The generated
-// name is populated in the returned Snapshot object. Note that for REST API
-// requests, you must specify a name in the request.
+// to the
+// resource name format (at https://cloud.google.com/pubsub/docs/admin#resource_names).
+// The generated name is populated in the returned Snapshot object. Note that
+// for REST API requests, you must specify a name in the request.
 func (c *SubscriberClient) CreateSnapshot(ctx context.Context, req *pubsubpb.CreateSnapshotRequest, opts ...gax.CallOption) (*pubsubpb.Snapshot, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.CreateSnapshot[0:len(c.CallOptions.CreateSnapshot):len(c.CallOptions.CreateSnapshot)], opts...)
@@ -462,8 +474,13 @@ func (c *SubscriberClient) CreateSnapshot(ctx context.Context, req *pubsubpb.Cre
 	return resp, nil
 }
 
-// UpdateSnapshot updates an existing snapshot.<br><br>
-// <b>ALPHA:</b> This feature is part of an alpha release. This API might be
+// UpdateSnapshot updates an existing snapshot. Snapshots are used in
+// <a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+// operations, which allow
+// you to manage message acknowledgments in bulk. That is, you can set the
+// acknowledgment state of messages in an existing subscription to the state
+// captured by a snapshot.<br><br>
+// <b>BETA:</b> This feature is part of a beta release. This API might be
 // changed in backward-incompatible ways and is not recommended for production
 // use. It is not subject to any SLA or deprecation policy.
 // Note that certain properties of a snapshot are not modifiable.
@@ -482,8 +499,13 @@ func (c *SubscriberClient) UpdateSnapshot(ctx context.Context, req *pubsubpb.Upd
 	return resp, nil
 }
 
-// DeleteSnapshot removes an existing snapshot. <br><br>
-// <b>ALPHA:</b> This feature is part of an alpha release. This API might be
+// DeleteSnapshot removes an existing snapshot. Snapshots are used in
+// <a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+// operations, which allow
+// you to manage message acknowledgments in bulk. That is, you can set the
+// acknowledgment state of messages in an existing subscription to the state
+// captured by a snapshot.<br><br>
+// <b>BETA:</b> This feature is part of a beta release. This API might be
 // changed in backward-incompatible ways and is not recommended for production
 // use. It is not subject to any SLA or deprecation policy.
 // When the snapshot is deleted, all messages retained in the snapshot
@@ -502,8 +524,14 @@ func (c *SubscriberClient) DeleteSnapshot(ctx context.Context, req *pubsubpb.Del
 }
 
 // Seek seeks an existing subscription to a point in time or to a given snapshot,
-// whichever is provided in the request.<br><br>
-// <b>ALPHA:</b> This feature is part of an alpha release. This API might be
+// whichever is provided in the request. Snapshots are used in
+// <a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+// operations, which allow
+// you to manage message acknowledgments in bulk. That is, you can set the
+// acknowledgment state of messages in an existing subscription to the state
+// captured by a snapshot. Note that both the subscription and the snapshot
+// must be on the same topic.<br><br>
+// <b>BETA:</b> This feature is part of a beta release. This API might be
 // changed in backward-incompatible ways and is not recommended for production
 // use. It is not subject to any SLA or deprecation policy.
 func (c *SubscriberClient) Seek(ctx context.Context, req *pubsubpb.SeekRequest, opts ...gax.CallOption) (*pubsubpb.SeekResponse, error) {
