@@ -1,4 +1,4 @@
-// Copyright 2018 Google LLC
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,8 +16,7 @@
 
 // Package pubsub is an auto-generated package for the
 // Google Cloud Pub/Sub API.
-//
-//   NOTE: This package is in alpha. It is not stable, and is likely to change.
+
 //
 // Provides reliable, many-to-many, asynchronous messaging between
 // applications.
@@ -90,4 +89,4 @@ func versionGo() string {
 	return "UNKNOWN"
 }
 
-const versionClient = "20181219"
+const versionClient = "20190121"

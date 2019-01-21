@@ -1,4 +1,4 @@
-// Copyright 2018 Google LLC
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ func defaultCallOptions() *CallOptions {
 	}
 	return &CallOptions{
 		DeleteLog:                        retry[[2]string{"default", "idempotent"}],
-		WriteLogEntries:                  retry[[2]string{"default", "non_idempotent"}],
+		WriteLogEntries:                  retry[[2]string{"default", "idempotent"}],
 		ListLogEntries:                   retry[[2]string{"default", "idempotent"}],
 		ListMonitoredResourceDescriptors: retry[[2]string{"default", "idempotent"}],
 		ListLogs:                         retry[[2]string{"default", "idempotent"}],

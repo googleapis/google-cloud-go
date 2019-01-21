@@ -1,4 +1,4 @@
-// Copyright 2018 Google LLC
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,8 @@
 //
 //   NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
-// The public Cloud Security Command Center API.
+// Cloud Security Command Center API provides access to temporal views of
+// assets and findings within an organization.
 package securitycenter // import "cloud.google.com/go/securitycenter/apiv1beta1"
 
 import (
@@ -86,4 +87,4 @@ func versionGo() string {
 	return "UNKNOWN"
 }
 
-const versionClient = "20181219"
+const versionClient = "20190121"

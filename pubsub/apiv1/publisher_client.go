@@ -1,4 +1,4 @@
-// Copyright 2018 Google LLC
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -150,7 +150,8 @@ func (c *PublisherClient) SetGoogleClientInfo(keyval ...string) {
 }
 
 // CreateTopic creates the given topic with the given name. See the
-// <a href="/pubsub/docs/admin#resource_names"> resource name rules</a>.
+// <a href="https://cloud.google.com/pubsub/docs/admin#resource_names">
+// resource name rules</a>.
 func (c *PublisherClient) CreateTopic(ctx context.Context, req *pubsubpb.Topic, opts ...gax.CallOption) (*pubsubpb.Topic, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.CreateTopic[0:len(c.CallOptions.CreateTopic):len(c.CallOptions.CreateTopic)], opts...)
