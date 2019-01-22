@@ -17,14 +17,20 @@ go version
 export GOPATH="$HOME/go"
 export GOCLOUD_HOME=$GOPATH/src/cloud.google.com/go/
 export PATH="$GOPATH/bin:$PATH"
-mkdir -p $GOCLOUD_HOME
 
 # Move code into $GOPATH and get dependencies
+mkdir -p $GOCLOUD_HOME
 git clone . $GOCLOUD_HOME
 cd $GOCLOUD_HOME
 
 try3() { eval "$*" || eval "$*" || eval "$*"; }
-try3 go get -v -t ./...
+
+if [[ `go version` == *"go1.11"* ]]; then
+    export GO111MODULE=on
+    try3 go get .
+else
+    try3 go get -v -t ./...
+fi
 
 ./internal/kokoro/vet.sh
 
