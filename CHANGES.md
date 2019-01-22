@@ -1,5 +1,44 @@
 # Changes
 
+## v0.35.0
+
+- all:
+  - Add go.mod and go.sum.
+  - Switch usage of gax-go to gax-go/v2.
+- bigquery:
+  - Fix bug where time partitioning could not be removed from a table.
+  - Fix panic that occurred with empty query parameters.
+- bttest:
+  - Fix bug where deleted rows were returned by ReadRows.
+- bigtable/emulator:
+  - Configure max message size to 256 MiB.
+- firestore:
+  - Allow non-transactional queries in transactions.
+  - Allow StartAt/EndBefore on direct children at any depth.
+  - QuerySnapshotIterator.Stop may be called in an error state.
+  - Fix bug the prevented reset of transaction write state in between retries.
+- functions/metadata:
+  - Make Metadata.Resource a pointer.
+- logging:
+  - Make SpanID available in logging.Entry.
+- metadata:
+  - Wrap !200 error code in a typed err.
+- profiler:
+  - Add function to check if function name is within a particular file in the
+    profile.
+  - Set parent field in create profile request.
+  - Return kubernetes client to start cluster, so client can be used to poll
+    cluster.
+  - Add function for checking if filename is in profile.
+- pubsub:
+  - Fix bug where messages expired without an initial modack in
+    synchronous=true mode.
+  - Receive does not retry ResourceExhausted errors.
+- spanner:
+  - client.Close now cancels existing requests and should be much faster for
+    large amounts of sessions.
+  - Correctly allow MinOpened sessions to be spun up.
+
 ## v0.34.0
 
 - functions/metadata:
