@@ -12,9 +12,11 @@ if [[ `go version` != *"go1.11"* ]]; then
     exit 0
 fi
 
+export GO111MODULE=on
+
 # Fail if a dependency was added without the necessary go.mod/go.sum change
 # being part of the commit.
-GO111MODULE=on go mod tidy
+go mod tidy
 git diff go.mod | tee /dev/stderr | (! read)
 git diff go.sum | tee /dev/stderr | (! read)
 
