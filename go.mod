@@ -11,6 +11,7 @@ require (
 	github.com/jstemmer/go-junit-report v0.0.0-20190106144839-af01ea7f8024
 	go.opencensus.io v0.19.1
 	golang.org/x/build v0.0.0-20190314133821-5284462c4bec
+	golang.org/x/exp v0.0.0-20190121172915-509febef88a4
 	golang.org/x/lint v0.0.0-20190301231843-5614ed5bae6f
 	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421
 	golang.org/x/sync v0.0.0-20190227155943-e225da77a7e6

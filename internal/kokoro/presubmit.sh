@@ -42,6 +42,7 @@ download_deps() {
 download_deps
 go install github.com/jstemmer/go-junit-report
 ./internal/kokoro/vet.sh
+./internal/kokoro/check_incompat_changes.sh
 
 mkdir $KOKORO_ARTIFACTS_DIR/tests
 
