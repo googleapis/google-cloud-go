@@ -22,7 +22,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"cloud.google.com/go/spanner/internal/trace"
 	"google.golang.org/api/iterator"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
@@ -81,8 +80,8 @@ type ReadOptions struct {
 // ReadWithOptions returns a RowIterator for reading multiple rows from the database.
 // Pass a ReadOptions to modify the read operation.
 func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys KeySet, columns []string, opts *ReadOptions) (ri *RowIterator) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.Read")
-	defer func() { trace.EndSpan(ctx, ri.err) }()
+	ctx = startSpan(ctx, "cloud.google.com/go/spanner.Read")
+	defer func() { endSpan(ctx, ri.err) }()
 	var (
 		sh  *sessionHandle
 		ts  *sppb.TransactionSelector
@@ -189,8 +188,8 @@ func (t *txReadOnly) AnalyzeQuery(ctx context.Context, statement Statement) (*sp
 }
 
 func (t *txReadOnly) query(ctx context.Context, statement Statement, mode sppb.ExecuteSqlRequest_QueryMode) (ri *RowIterator) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.Query")
-	defer func() { trace.EndSpan(ctx, ri.err) }()
+	ctx = startSpan(ctx, "cloud.google.com/go/spanner.Query")
+	defer func() { endSpan(ctx, ri.err) }()
 	req, sh, err := t.prepareExecuteSQL(ctx, statement, mode)
 	if err != nil {
 		return &RowIterator{err: err}
@@ -661,8 +660,8 @@ func (t *ReadWriteTransaction) BufferWrite(ms []*Mutation) error {
 // Update returns an error if the statement is a query. However, the
 // query is executed, and any data read will be validated upon commit.
 func (t *ReadWriteTransaction) Update(ctx context.Context, stmt Statement) (rowCount int64, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.Update")
-	defer func() { trace.EndSpan(ctx, err) }()
+	ctx = startSpan(ctx, "cloud.google.com/go/spanner.Update")
+	defer func() { endSpan(ctx, err) }()
 	req, sh, err := t.prepareExecuteSQL(ctx, stmt, sppb.ExecuteSqlRequest_NORMAL)
 	if err != nil {
 		return 0, err
