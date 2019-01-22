@@ -1,5 +1,10 @@
 # Changes
 
+## 0.35.1
+
+- spanner:
+  - Adds OpenCensus views back to public API.
+
 ## v0.35.0
 
 - all:
