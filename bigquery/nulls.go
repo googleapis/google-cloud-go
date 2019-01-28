@@ -41,6 +41,14 @@ type NullString struct {
 
 func (n NullString) String() string { return nullstr(n.Valid, n.StringVal) }
 
+// NullGeography represents a BigQuery GEOGRAPHY string that may be NULL.
+type NullGeography struct {
+	GeographyVal string
+	Valid        bool // Valid is true if GeographyVal is not NULL.
+}
+
+func (n NullGeography) String() string { return nullstr(n.Valid, n.GeographyVal) }
+
 // NullFloat64 represents a BigQuery FLOAT64 that may be NULL.
 type NullFloat64 struct {
 	Float64 float64
@@ -110,6 +118,9 @@ func (n NullBool) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.Boo
 
 // MarshalJSON converts the NullString to JSON.
 func (n NullString) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.StringVal) }
+
+// MarshalJSON converts the NullGeography to JSON.
+func (n NullGeography) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.GeographyVal) }
 
 // MarshalJSON converts the NullTimestamp to JSON.
 func (n NullTimestamp) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.Timestamp) }
@@ -209,6 +220,20 @@ func (n *NullString) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// UnmarshalJSON converts JSON into a NullGeography.
+func (n *NullGeography) UnmarshalJSON(b []byte) error {
+	n.Valid = false
+	n.GeographyVal = ""
+	if bytes.Equal(b, jsonNull) {
+		return nil
+	}
+	if err := json.Unmarshal(b, &n.GeographyVal); err != nil {
+		return err
+	}
+	n.Valid = true
+	return nil
+}
+
 // UnmarshalJSON converts JSON into a NullTimestamp.
 func (n *NullTimestamp) UnmarshalJSON(b []byte) error {
 	n.Valid = false
@@ -290,6 +315,7 @@ var (
 	typeOfNullFloat64   = reflect.TypeOf(NullFloat64{})
 	typeOfNullBool      = reflect.TypeOf(NullBool{})
 	typeOfNullString    = reflect.TypeOf(NullString{})
+	typeOfNullGeography = reflect.TypeOf(NullGeography{})
 	typeOfNullTimestamp = reflect.TypeOf(NullTimestamp{})
 	typeOfNullDate      = reflect.TypeOf(NullDate{})
 	typeOfNullTime      = reflect.TypeOf(NullTime{})
@@ -306,6 +332,8 @@ func nullableFieldType(t reflect.Type) FieldType {
 		return BooleanFieldType
 	case typeOfNullString:
 		return StringFieldType
+	case typeOfNullGeography:
+		return GeographyFieldType
 	case typeOfNullTimestamp:
 		return TimestampFieldType
 	case typeOfNullDate:

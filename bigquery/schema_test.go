@@ -170,6 +170,16 @@ func TestSchemaConversion(t *testing.T) {
 			},
 		},
 		{
+			bqSchema: &bq.TableSchema{
+				Fields: []*bq.TableFieldSchema{
+					bqTableFieldSchema("geo", "g", "GEOGRAPHY", ""),
+				},
+			},
+			schema: Schema{
+				fieldSchema("geo", "g", "GEOGRAPHY", false, false),
+			},
+		},
+		{
 			// nested
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{
@@ -527,6 +537,7 @@ type allNulls struct {
 	F NullTime
 	G NullDate
 	H NullDateTime
+	I NullGeography
 }
 
 func TestNullInference(t *testing.T) {
@@ -543,6 +554,7 @@ func TestNullInference(t *testing.T) {
 		optField("F", "TIME"),
 		optField("G", "DATE"),
 		optField("H", "DATETIME"),
+		optField("I", "GEOGRAPHY"),
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Error(diff)
@@ -935,7 +947,8 @@ func TestSchemaFromJSON(t *testing.T) {
 	{"name":"flat_date","type":"DATE","mode":"NULLABLE","description":"Flat required DATE"},
 	{"name":"flat_time","type":"TIME","mode":"REQUIRED","description":"Flat nullable TIME"},
 	{"name":"flat_datetime","type":"DATETIME","mode":"NULLABLE","description":"Flat required DATETIME"},
-	{"name":"flat_numeric","type":"NUMERIC","mode":"REQUIRED","description":"Flat nullable NUMERIC"}
+	{"name":"flat_numeric","type":"NUMERIC","mode":"REQUIRED","description":"Flat nullable NUMERIC"},
+	{"name":"flat_geography","type":"GEOGRAPHY","mode":"REQUIRED","description":"Flat required GEOGRAPHY"}
 ]`),
 			expectedSchema: Schema{
 				fieldSchema("Flat nullable string", "flat_string", "STRING", false, false),
@@ -948,6 +961,7 @@ func TestSchemaFromJSON(t *testing.T) {
 				fieldSchema("Flat nullable TIME", "flat_time", "TIME", false, true),
 				fieldSchema("Flat required DATETIME", "flat_datetime", "DATETIME", false, false),
 				fieldSchema("Flat nullable NUMERIC", "flat_numeric", "NUMERIC", false, true),
+				fieldSchema("Flat required GEOGRAPHY", "flat_geography", "GEOGRAPHY", false, true),
 			},
 		},
 		{

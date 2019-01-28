@@ -865,6 +865,7 @@ type TestStruct struct {
 	Time      civil.Time
 	DateTime  civil.DateTime
 	Numeric   *big.Rat
+	Geography string
 
 	StringArray    []string
 	IntegerArray   []int64
@@ -875,6 +876,7 @@ type TestStruct struct {
 	TimeArray      []civil.Time
 	DateTimeArray  []civil.DateTime
 	NumericArray   []*big.Rat
+	GeographyArray []string
 
 	Record      SubTestStruct
 	RecordArray []SubTestStruct
@@ -905,6 +907,8 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 	tm2 := civil.Time{Hour: 1, Minute: 2, Second: 4, Nanosecond: 0}
 	ts2 := time.Date(1994, 5, 15, 1, 2, 4, 0, time.UTC)
 	dtm2 := civil.DateTime{Date: d2, Time: tm2}
+	g := "POINT(-122.350220 47.649154)"
+	g2 := "POINT(-122.0836791 37.421827)"
 
 	// Populate the table.
 	ins := table.Inserter()
@@ -920,6 +924,7 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 			tm,
 			dtm,
 			big.NewRat(57, 100),
+			g,
 			[]string{"a", "b"},
 			[]int64{1, 2},
 			[]float64{1, 1.41},
@@ -929,6 +934,7 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 			[]civil.Time{tm, tm2},
 			[]civil.DateTime{dtm, dtm2},
 			[]*big.Rat{big.NewRat(1, 2), big.NewRat(3, 5)},
+			[]string{g, g2},
 			SubTestStruct{
 				"string",
 				SubSubTestStruct{24},
@@ -1009,7 +1015,26 @@ func TestIntegration_InsertAndReadNullable(t *testing.T) {
 	ctm := civil.Time{Hour: 15, Minute: 4, Second: 5, Nanosecond: 6000}
 	cdt := civil.DateTime{Date: testDate, Time: ctm}
 	rat := big.NewRat(33, 100)
+	geo := "POINT(-122.198939 47.669865)"
+
+	// Nil fields in the struct.
 	testInsertAndReadNullable(t, testStructNullable{}, make([]Value, len(testStructNullableSchema)))
+
+	// Explicitly invalidate the Null* types within the struct.
+	testInsertAndReadNullable(t, testStructNullable{
+		String:    NullString{Valid: false},
+		Integer:   NullInt64{Valid: false},
+		Float:     NullFloat64{Valid: false},
+		Boolean:   NullBool{Valid: false},
+		Timestamp: NullTimestamp{Valid: false},
+		Date:      NullDate{Valid: false},
+		Time:      NullTime{Valid: false},
+		DateTime:  NullDateTime{Valid: false},
+		Geography: NullGeography{Valid: false},
+	},
+		make([]Value, len(testStructNullableSchema)))
+
+	// Populate the struct with values.
 	testInsertAndReadNullable(t, testStructNullable{
 		String:    NullString{"x", true},
 		Bytes:     []byte{1, 2, 3},
@@ -1021,9 +1046,10 @@ func TestIntegration_InsertAndReadNullable(t *testing.T) {
 		Time:      NullTime{ctm, true},
 		DateTime:  NullDateTime{cdt, true},
 		Numeric:   rat,
+		Geography: NullGeography{geo, true},
 		Record:    &subNullable{X: NullInt64{4, true}},
 	},
-		[]Value{"x", []byte{1, 2, 3}, int64(1), 2.3, true, testTimestamp, testDate, ctm, cdt, rat, []Value{int64(4)}})
+		[]Value{"x", []byte{1, 2, 3}, int64(1), 2.3, true, testTimestamp, testDate, ctm, cdt, rat, geo, []Value{int64(4)}})
 }
 
 func testInsertAndReadNullable(t *testing.T, ts testStructNullable, wantRow []Value) {
