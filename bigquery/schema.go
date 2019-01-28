@@ -131,6 +131,9 @@ const (
 	// NumericFieldType is a numeric field type. Numeric types include integer types, floating point types and the
 	// NUMERIC data type.
 	NumericFieldType FieldType = "NUMERIC"
+	// GeographyFieldType is a string field type.  Geography types represent a set of points
+	// on the Earth's surface, represented in Well Known Text (WKT) format.
+	GeographyFieldType FieldType = "GEOGRAPHY"
 )
 
 var (
@@ -151,6 +154,7 @@ var (
 		TimeFieldType:      true,
 		DateTimeFieldType:  true,
 		NumericFieldType:   true,
+		GeographyFieldType: true,
 	}
 )
 
@@ -182,6 +186,9 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 // A Go slice or array type is inferred to be a BigQuery repeated field of the
 // element type. The element type must be one of the above listed types.
 //
+// Due to lack of unique native Go type for GEOGRAPHY, there is no schema
+// inference to GEOGRAPHY at this time.
+//
 // Nullable fields are inferred from the NullXXX types, declared in this package:
 //
 //   STRING      NullString
@@ -192,6 +199,7 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 //   DATE        NullDate
 //   TIME        NullTime
 //   DATETIME    NullDateTime
+//   GEOGRAPHY	 NullGeography
 //
 // For a nullable BYTES field, use the type []byte and tag the field "nullable" (see below).
 // For a nullable NUMERIC field, use the type *big.Rat and tag the field "nullable".

@@ -101,6 +101,10 @@ type QueryParameter struct {
 	// Arrays and slices of the above.
 	// Structs of the above. Only the exported fields are used.
 	//
+	// BigQuery does not support params of type GEOGRAPHY.  For users wishing
+	// to parameterize Geography values, use string parameters and cast in the
+	// SQL query, e.g. `SELECT ST_GeogFromText(@string_param) as geo`
+	//
 	// When a QueryParameter is returned inside a QueryConfig from a call to
 	// Job.Config:
 	// Integers are of type int64.
