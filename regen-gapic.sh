@@ -32,6 +32,7 @@ google/cloud/bigquery/storage/artman_bigquerystorage_v1beta1.yaml
 google/cloud/dataproc/artman_dataproc_v1.yaml
 google/cloud/dataproc/artman_dataproc_v1beta2.yaml
 google/cloud/dialogflow/artman_dialogflow_v2.yaml
+google/cloud/irm/artman_irm_v1alpha2.yaml
 google/cloud/kms/artman_cloudkms.yaml
 google/cloud/language/artman_language_v1.yaml
 google/cloud/language/artman_language_v1beta2.yaml
