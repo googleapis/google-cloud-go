@@ -34,5 +34,13 @@ fi
 
 ./internal/kokoro/vet.sh
 
+# TODO(deklerk): Remove once tools are installed via tools.go.
+go get github.com/jstemmer/go-junit-report
+
 # Run tests and tee output to log file, to be pushed to GCS as artifact.
-go test -race -v -timeout 15m -short ./... 2>&1 | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt
+# Also generate test summary in xUnit format to summarize the test execution.
+mkdir $KOKORO_ARTIFACTS_DIR/tests
+go test -race -v -timeout 15m -short ./... 2>&1 \
+  | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt \
+  | go-junit-report >$KOKORO_ARTIFACTS_DIR/tests/sponge_log.xml
+
