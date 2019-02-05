@@ -20,11 +20,21 @@ import (
 )
 
 // KeyRingIAM returns a handle to inspect and change permissions of a KeyRing.
+//
+// Deprecated: Please use ResourceIAM and provide the KeyRing.Name as input.
 func (c *KeyManagementClient) KeyRingIAM(keyRing *kmspb.KeyRing) *iam.Handle {
 	return iam.InternalNewHandle(c.Connection(), keyRing.Name)
 }
 
 // CryptoKeyIAM returns a handle to inspect and change permissions of a CryptoKey.
+//
+// Deprecated: Please use ResourceIAM and provide the CryptoKey.Name as input.
 func (c *KeyManagementClient) CryptoKeyIAM(cryptoKey *kmspb.CryptoKey) *iam.Handle {
 	return iam.InternalNewHandle(c.Connection(), cryptoKey.Name)
+}
+
+// ResourceIAM returns a handle to inspect and change permissions of the resource
+// indicated by the given resource path.
+func (c *KeyManagementClient) ResourceIAM(resourcePath string) *iam.Handle {
+	return iam.InternalNewHandle(c.Connection(), resourcePath)
 }
