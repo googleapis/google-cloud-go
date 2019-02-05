@@ -16,16 +16,16 @@
 // from HTTP-based Google API clients.
 //
 // To record:
-// 1.  Call NewRecorder to get a Recorder.
-// 2.  Use its Client method to obtain an HTTP client to use when making API calls.
-// 3.  Close the Recorder when you're done. That will save the
-//     log of interactions to the file you provided to NewRecorder.
+//  1.  Call NewRecorder to get a Recorder.
+//  2.  Use its Client method to obtain an HTTP client to use when making API calls.
+//  3.  Close the Recorder when you're done. That will save the log of interactions
+//      to the file you provided to NewRecorder.
 //
 // To replay:
-// 1.  Call NewReplayer with the same filename you used to record to get a Replayer.
-// 2.  Call its Client method and use the client to make the same API calls.
-//     You will get back the recorded responses.
-// 3.  Close the Replayer when you're done.
+//  1.  Call NewReplayer with the same filename you used to record to get a Replayer.
+//  2.  Call its Client method and use the client to make the same API calls.
+//      You will get back the recorded responses.
+//  3.  Close the Replayer when you're done.
 //
 // This package is EXPERIMENTAL and is subject to change or removal without notice.
 // It requires Go version 1.8 or higher.
