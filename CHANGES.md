@@ -1,5 +1,30 @@
 # Changes
 
+## 0.36.0
+
+- spanner:
+  - Reduce minimum retry backoff from 1s to 100ms. This makes time between
+    retries much faster and should improve latency.
+- storage:
+  - Add support for Bucket Policy Only.
+- kms:
+  - Add ResourceIAM helper method.
+  - Deprecate KeyRingIAM and CryptoKeyIAM. Please use ResourceIAM.
+- firestore:
+  - Switch from v1beta1 API to v1 API.
+  - Allow emulator with FIRESTORE_EMULATOR_HOST.
+- bigquery:
+  - Add NumLongTermBytes to Table.
+  - Add TotalBytesProcessedAccuracy to QueryStatistics.
+- irm:
+  - Add new v1alpha2 client.
+- talent:
+  - Add new v4beta1 client.
+- rpcreplay:
+  - Fix connection to work with grpc >= 1.17.
+  - It is now required for an actual gRPC server to be running for Dial to
+    succeed.
+
 ## 0.35.1
 
 - spanner:
