@@ -121,7 +121,7 @@ $ gcloud config set project $GCLOUD_TESTS_GOLANG_PROJECT_ID
 $ gcloud auth login
 
 # Create the indexes used in the datastore integration tests.
-$ gcloud datastore create-indexes datastore/testdata/index.yaml
+$ gcloud datastore indexes create datastore/testdata/index.yaml
 
 # Creates a Google Cloud storage bucket with the same name as your test project,
 # and with the Stackdriver Logging service account as owner, for the sink
