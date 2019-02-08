@@ -23,7 +23,7 @@ import (
 
 const (
 	// minBackoff is the minimum backoff used by default.
-	minBackoff = 100 * time.Millisecond
+	minBackoff = 20 * time.Millisecond
 	// maxBackoff is the maximum backoff used by default.
 	maxBackoff = 32 * time.Second
 	// jitter is the jitter factor.
