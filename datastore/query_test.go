@@ -545,3 +545,26 @@ func TestReadOptions(t *testing.T) {
 		}
 	}
 }
+
+func TestInvalidFilters(t *testing.T) {
+	client := &Client{
+		client: &fakeClient{
+			queryFn: func(req *pb.RunQueryRequest) (*pb.RunQueryResponse, error) {
+				return fakeRunQuery(req)
+			},
+		},
+	}
+
+	// Used for an invalid type
+	type MyType int
+	var v MyType = 1
+
+	for _, q := range []*Query{
+		NewQuery("SomeKey").Filter("", 0),
+		NewQuery("SomeKey").Filter("fld=", v),
+	} {
+		if _, err := client.Count(context.Background(), q); err == nil {
+			t.Errorf("%+v: got nil, wanted error", q)
+		}
+	}
+}

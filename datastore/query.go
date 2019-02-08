@@ -670,6 +670,10 @@ func (t *Iterator) next() (*Key, *pb.Entity, error) {
 
 // nextBatch makes a single call to the server for a batch of results.
 func (t *Iterator) nextBatch() error {
+	if t.err != nil {
+		return t.err
+	}
+
 	if t.limit == 0 {
 		return iterator.Done // Short-circuits the zero-item response.
 	}
