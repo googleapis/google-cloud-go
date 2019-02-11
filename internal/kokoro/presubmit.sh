@@ -52,6 +52,8 @@ fi
 # Also generate test summary in xUnit format to summarize the test execution.
 mkdir $KOKORO_ARTIFACTS_DIR/tests
 go test -race -v -timeout 15m -short ./... 2>&1 \
-  | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt \
-  | go-junit-report >$KOKORO_ARTIFACTS_DIR/tests/sponge_log.xml
+  | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt
+
+cat $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt \
+  | go-junit-report > $KOKORO_ARTIFACTS_DIR/tests/sponge_log.xml
 

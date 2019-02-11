@@ -61,7 +61,9 @@ fi
 # Run tests and tee output to log file, to be pushed to GCS as artifact.
 # Also generate test summary in xUnit format to summarize the test execution.
 mkdir $KOKORO_ARTIFACTS_DIR/tests
-go test -race -v -timeout 30m ./... 2>&1 \
-  | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt \
-  | go-junit-report >$KOKORO_ARTIFACTS_DIR/tests/sponge_log.xml
+go test -race -v -timeout 30m -short ./... 2>&1 \
+  | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt
+
+cat $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt \
+  | go-junit-report > $KOKORO_ARTIFACTS_DIR/tests/sponge_log.xml)
 
