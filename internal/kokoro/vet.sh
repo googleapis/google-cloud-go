@@ -23,9 +23,8 @@ git diff go.sum | tee /dev/stderr | (! read)
 # Easier to debug CI.
 pwd
 
-try3() { eval "$*" || eval "$*" || eval "$*"; }
-
-try3 go get -u \
+# Should be downloaded in continuous.sh/presubmit.sh already.
+go install \
   golang.org/x/tools/cmd/goimports \
   golang.org/x/lint/golint \
   honnef.co/go/tools/cmd/staticcheck
