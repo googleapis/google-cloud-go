@@ -65,5 +65,5 @@ go test -race -v -timeout 30m -short ./... 2>&1 \
   | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt
 
 cat $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt \
-  | go-junit-report > $KOKORO_ARTIFACTS_DIR/tests/sponge_log.xml)
+  | go-junit-report > $KOKORO_ARTIFACTS_DIR/tests/sponge_log.xml
 
