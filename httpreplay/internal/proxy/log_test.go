@@ -148,3 +148,29 @@ func TestToHTTPResponse(t *testing.T) {
 		}
 	}
 }
+
+func TestEmptyBody(t *testing.T) {
+	// Verify that a zero-length body is nil after logging.
+	// That will ensure that net/http sends a "Content-Length: 0" header.
+	req := &http.Request{
+		Method: "POST",
+		URL: &url.URL{
+			Scheme: "https",
+			Host:   "example.com",
+			Path:   "a/b/c",
+		},
+		Body: ioutil.NopCloser(strings.NewReader("")),
+	}
+	l := newLogger()
+	_, remove, err := martian.TestContext(req, nil, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer remove()
+	if err := l.ModifyRequest(req); err != nil {
+		t.Fatal(err)
+	}
+	if req.Body != nil {
+		t.Error("got non-nil req.Body, want nil")
+	}
+}
