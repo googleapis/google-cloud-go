@@ -367,8 +367,7 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 	bkt := client.Bucket(bucketName)
 
 	// Insert an object with custom ACL.
-	objName := fmt.Sprintf("object-%d.txt", time.Now().Unix())
-	o := bkt.Object(objName)
+	o := bkt.Object("bucketPolicyOnly")
 	defer func() {
 		if err := o.Delete(ctx); err != nil {
 			log.Printf("failed to delete test object: %v", err)

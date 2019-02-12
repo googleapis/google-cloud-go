@@ -132,6 +132,11 @@ func (c *Converter) convertRequest(req *http.Request) (*Request, error) {
 	if err != nil {
 		return nil, err
 	}
+	// If the body is empty, set it to nil to make sure the proxy sends a
+	// Content-Length header.
+	if len(body) == 0 {
+		req.Body = nil
+	}
 	mediaType, parts, err := parseRequestBody(req.Header.Get("Content-Type"), body)
 	if err != nil {
 		return nil, err
