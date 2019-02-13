@@ -58,6 +58,7 @@ const (
 
 var (
 	record = flag.Bool("record", false, "record RPCs")
+	runningInVpcsc = strings.ToLower(os.Getenv("GOOGLE_CLOUD_TESTS_IN_VPCSC")) == "true"
 
 	uidSpace   *uid.Space
 	bucketName string
@@ -1402,6 +1403,11 @@ func TestIntegration_BucketInCopyAttrs(t *testing.T) {
 }
 
 func TestIntegration_NoUnicodeNormalization(t *testing.T) {
+	// We can't access a public bucket in a VPCSC perimeter.
+	if runningInVpcsc {
+		t.Skip("Test skipped due to incompatibility with VPCSC")
+	}
+
 	t.Parallel()
 	ctx := context.Background()
 	client := testConfig(ctx, t)
@@ -1826,6 +1832,10 @@ func TestIntegration_PublicBucket(t *testing.T) {
 	if testing.Short() && !replaying {
 		t.Skip("Integration tests skipped in short mode")
 	}
+	// We can't access a public bucket in a VPCSC perimeter.
+	if runningInVpcsc {
+		t.Skip("Test skipped due to incompatibility with VPCSC")
+	}
 
 	const landsatBucket = "gcp-public-data-landsat"
 	const landsatPrefix = "LC08/PRE/044/034/LC80440342016259LGN00/"
@@ -1893,6 +1903,10 @@ func TestIntegration_ReadCRC(t *testing.T) {
 	// For gzipped files, see https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/1641.
 	if testing.Short() && !replaying {
 		t.Skip("Integration tests skipped in short mode")
+	}
+	// We can't access a public bucket in a VPCSC perimeter.
+	if runningInVpcsc {
+		t.Skip("Test skipped due to incompatibility with VPCSC")
 	}
 
 	const (
