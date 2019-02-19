@@ -463,7 +463,7 @@ func ExampleQuery_Snapshots() {
 	}
 	defer client.Close()
 
-	q := client.Collection("States").Select("pop").
+	q := client.Collection("States").
 		Where("pop", ">", 10).
 		OrderBy("pop", firestore.Desc).
 		Limit(10)
