@@ -63,7 +63,19 @@ func defaultSubscriberCallOptions() *SubscriberCallOptions {
 		{"default", "idempotent"}: {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
+					codes.Aborted,
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.3,
+				})
+			}),
+		},
+		{"default", "non_idempotent"}: {
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -75,8 +87,9 @@ func defaultSubscriberCallOptions() *SubscriberCallOptions {
 		{"messaging", "idempotent"}: {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
+					codes.Aborted,
 					codes.Unavailable,
+					codes.Unknown,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -84,26 +97,9 @@ func defaultSubscriberCallOptions() *SubscriberCallOptions {
 				})
 			}),
 		},
-		{"messaging", "pull"}: {
+		{"messaging", "non_idempotent"}: {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
-					codes.Internal,
-					codes.ResourceExhausted,
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.3,
-				})
-			}),
-		},
-		{"streaming_messaging", "pull"}: {
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
-					codes.Internal,
-					codes.ResourceExhausted,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -116,19 +112,19 @@ func defaultSubscriberCallOptions() *SubscriberCallOptions {
 	return &SubscriberCallOptions{
 		CreateSubscription: retry[[2]string{"default", "idempotent"}],
 		GetSubscription:    retry[[2]string{"default", "idempotent"}],
-		UpdateSubscription: retry[[2]string{"default", "idempotent"}],
+		UpdateSubscription: retry[[2]string{"default", "non_idempotent"}],
 		ListSubscriptions:  retry[[2]string{"default", "idempotent"}],
-		DeleteSubscription: retry[[2]string{"default", "idempotent"}],
+		DeleteSubscription: retry[[2]string{"default", "non_idempotent"}],
 		ModifyAckDeadline:  retry[[2]string{"default", "non_idempotent"}],
-		Acknowledge:        retry[[2]string{"messaging", "idempotent"}],
-		Pull:               retry[[2]string{"messaging", "pull"}],
-		StreamingPull:      retry[[2]string{"streaming_messaging", "pull"}],
+		Acknowledge:        retry[[2]string{"messaging", "non_idempotent"}],
+		Pull:               retry[[2]string{"messaging", "idempotent"}],
+		StreamingPull:      retry[[2]string{"streaming_messaging", "none"}],
 		ModifyPushConfig:   retry[[2]string{"default", "non_idempotent"}],
 		ListSnapshots:      retry[[2]string{"default", "idempotent"}],
-		CreateSnapshot:     retry[[2]string{"default", "idempotent"}],
-		UpdateSnapshot:     retry[[2]string{"default", "idempotent"}],
-		DeleteSnapshot:     retry[[2]string{"default", "idempotent"}],
-		Seek:               retry[[2]string{"default", "non_idempotent"}],
+		CreateSnapshot:     retry[[2]string{"default", "non_idempotent"}],
+		UpdateSnapshot:     retry[[2]string{"default", "non_idempotent"}],
+		DeleteSnapshot:     retry[[2]string{"default", "non_idempotent"}],
+		Seek:               retry[[2]string{"default", "idempotent"}],
 	}
 }
 
