@@ -363,7 +363,8 @@ type OuterFlatten struct {
 	I      []Inner1 `datastore:",flatten"`
 	J      Inner2   `datastore:",flatten,noindex"`
 	Inner3 `datastore:",flatten"`
-	K      Inner4 `datastore:",flatten"`
+	K      Inner4  `datastore:",flatten"`
+	L      *Inner2 `datastore:",flatten"`
 }
 
 type OuterEquivalent struct {
@@ -1116,6 +1117,9 @@ var testCases = []testCase{
 					WW: 12,
 				},
 			},
+			L: &Inner2{
+				Y: 2.71,
+			},
 		},
 		&PropertyList{
 			Property{Name: "A", Value: int64(1), NoIndex: false},
@@ -1123,6 +1127,7 @@ var testCases = []testCase{
 			Property{Name: "I.X", Value: []interface{}{"ten", "twenty", "thirty"}, NoIndex: false},
 			Property{Name: "J.Y", Value: float64(3.14), NoIndex: true},
 			Property{Name: "K.X.WW", Value: int64(12), NoIndex: false},
+			Property{Name: "L.Y", Value: float64(2.71), NoIndex: false},
 			Property{Name: "Z", Value: true, NoIndex: false},
 		},
 		"",
@@ -1135,6 +1140,7 @@ var testCases = []testCase{
 			Property{Name: "I.W", Value: []interface{}{int64(10), int64(20), int64(30)}, NoIndex: false},
 			Property{Name: "I.X", Value: []interface{}{"ten", "twenty", "thirty"}, NoIndex: false},
 			Property{Name: "J.Y", Value: float64(3.14), NoIndex: true},
+			Property{Name: "L.Y", Value: float64(2.71), NoIndex: false},
 			Property{Name: "Z", Value: true, NoIndex: false},
 		},
 		&OuterFlatten{
@@ -1149,6 +1155,9 @@ var testCases = []testCase{
 			},
 			Inner3: Inner3{
 				Z: true,
+			},
+			L: &Inner2{
+				Y: 2.71,
 			},
 		},
 		"",
