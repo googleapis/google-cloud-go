@@ -136,6 +136,19 @@ func (l *propertyLoader) loadOneElement(codec fields.List, structValue reflect.V
 			return ""
 		}
 
+		if field.Type.Kind() == reflect.Ptr && field.Type.Elem().Kind() == reflect.Struct {
+			codec, err = structCache.Fields(field.Type.Elem())
+			if err != nil {
+				return err.Error()
+			}
+
+			// Init value if its nil
+			if v.IsNil() {
+				v.Set(reflect.New(field.Type.Elem()))
+			}
+			structValue = v.Elem()
+		}
+
 		if field.Type.Kind() == reflect.Struct {
 			codec, err = structCache.Fields(field.Type)
 			if err != nil {
