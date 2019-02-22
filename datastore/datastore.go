@@ -24,6 +24,7 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
 	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
@@ -37,6 +38,15 @@ const (
 // ScopeDatastore grants permissions to view and/or manage datastore entities
 const ScopeDatastore = "https://www.googleapis.com/auth/datastore"
 
+// DetectProjectID is a sentinel value that instructs NewClient to detect the
+// project ID. It is given in place of the projectID argument. NewClient will
+// use the project ID from the given credentials or the default credentials
+// (https://developers.google.com/accounts/docs/application-default-credentials)
+// if no credentials were provided. When providing credentials, not all
+// options will allow NewClient to extract the project ID. Specifically a JWT
+// does not have the project ID encoded.
+const DetectProjectID = "*detect-project-id*"
+
 // resourcePrefixHeader is the name of the metadata header used to indicate
 // the resource being operated on.
 const resourcePrefixHeader = "google-cloud-resource-prefix"
@@ -48,10 +58,12 @@ type Client struct {
 	dataset string // Called dataset by the datastore API, synonym for project ID.
 }
 
-// NewClient creates a new Client for a given dataset.
-// If the project ID is empty, it is derived from the DATASTORE_PROJECT_ID environment variable.
-// If the DATASTORE_EMULATOR_HOST environment variable is set, client will use its value
-// to connect to a locally-running datastore emulator.
+// NewClient creates a new Client for a given dataset.  If the project ID is
+// empty, it is derived from the DATASTORE_PROJECT_ID environment variable.
+// If the DATASTORE_EMULATOR_HOST environment variable is set, client will use
+// its value to connect to a locally-running datastore emulator.
+// DetectProjectID can be passed as the projectID argument to instruct
+// NewClient to detect the project ID from the credentials.
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
 	var o []option.ClientOption
 	// Environment variables for gcd emulator:
@@ -80,10 +92,25 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	if projectID == "" {
 		projectID = os.Getenv("DATASTORE_PROJECT_ID")
 	}
+
+	o = append(o, opts...)
+
+	if projectID == DetectProjectID {
+		creds, err := transport.Creds(ctx, o...)
+		if err != nil {
+			return nil, fmt.Errorf("fetching creds: %v", err)
+		}
+
+		if creds.ProjectID == "" {
+			return nil, errors.New("datastore: see the docs on DetectProjectID")
+		}
+
+		projectID = creds.ProjectID
+	}
+
 	if projectID == "" {
 		return nil, errors.New("datastore: missing project/dataset id")
 	}
-	o = append(o, opts...)
 	conn, err := gtransport.Dial(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
@@ -93,7 +120,6 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		client:  newDatastoreClient(conn, projectID),
 		dataset: projectID,
 	}, nil
-
 }
 
 var (
