@@ -213,7 +213,7 @@ func LoadGcloudConfig(gcloudCmd string, gcloudCmdArgs []string) (*GcloudConfig, 
 }
 
 // SetFromGcloud retrieves and sets any missing config values from the gcloud
-// configuration if possible possible
+// configuration if possible
 func (c *Config) SetFromGcloud() error {
 
 	if c.Creds == "" {
