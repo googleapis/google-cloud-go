@@ -127,7 +127,7 @@ func (c *ResumeClient) setGoogleClientInfo(keyval ...string) {
 // resume, clients need to call the CreateProfile method again with the
 // profile returned.
 //
-// This API supports the following list of formats:
+// The following list of formats are supported:
 //
 //   PDF
 //
@@ -139,7 +139,8 @@ func (c *ResumeClient) setGoogleClientInfo(keyval ...string) {
 //
 //   DOCX
 //
-// An error is thrown if the input format is not supported.
+//   PNG (only when [ParseResumeRequest.enable_ocr][] is set to true,
+//   otherwise an error is thrown)
 func (c *ResumeClient) ParseResume(ctx context.Context, req *talentpb.ParseResumeRequest, opts ...gax.CallOption) (*talentpb.ParseResumeResponse, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ParseResume[0:len(c.CallOptions.ParseResume):len(c.CallOptions.ParseResume)], opts...)

@@ -41,23 +41,21 @@ type IncidentCallOptions struct {
 	SearchSimilarIncidents       []gax.CallOption
 	CreateAnnotation             []gax.CallOption
 	ListAnnotations              []gax.CallOption
-	UpdateAnnotation             []gax.CallOption
 	CreateTag                    []gax.CallOption
 	DeleteTag                    []gax.CallOption
 	ListTags                     []gax.CallOption
 	CreateSignal                 []gax.CallOption
-	ListSignals                  []gax.CallOption
+	SearchSignals                []gax.CallOption
 	GetSignal                    []gax.CallOption
 	UpdateSignal                 []gax.CallOption
-	AcknowledgeSignal            []gax.CallOption
 	EscalateIncident             []gax.CallOption
 	CreateArtifact               []gax.CallOption
 	ListArtifacts                []gax.CallOption
 	UpdateArtifact               []gax.CallOption
 	DeleteArtifact               []gax.CallOption
-	GetShiftHandoffPresets       []gax.CallOption
 	SendShiftHandoff             []gax.CallOption
 	CreateSubscription           []gax.CallOption
+	UpdateSubscription           []gax.CallOption
 	ListSubscriptions            []gax.CallOption
 	DeleteSubscription           []gax.CallOption
 	CreateIncidentRoleAssignment []gax.CallOption
@@ -99,23 +97,21 @@ func defaultIncidentCallOptions() *IncidentCallOptions {
 		SearchSimilarIncidents:       retry[[2]string{"default", "idempotent"}],
 		CreateAnnotation:             retry[[2]string{"default", "non_idempotent"}],
 		ListAnnotations:              retry[[2]string{"default", "idempotent"}],
-		UpdateAnnotation:             retry[[2]string{"default", "non_idempotent"}],
 		CreateTag:                    retry[[2]string{"default", "non_idempotent"}],
 		DeleteTag:                    retry[[2]string{"default", "idempotent"}],
 		ListTags:                     retry[[2]string{"default", "idempotent"}],
 		CreateSignal:                 retry[[2]string{"default", "non_idempotent"}],
-		ListSignals:                  retry[[2]string{"default", "idempotent"}],
+		SearchSignals:                retry[[2]string{"default", "idempotent"}],
 		GetSignal:                    retry[[2]string{"default", "idempotent"}],
 		UpdateSignal:                 retry[[2]string{"default", "non_idempotent"}],
-		AcknowledgeSignal:            retry[[2]string{"default", "non_idempotent"}],
 		EscalateIncident:             retry[[2]string{"default", "non_idempotent"}],
 		CreateArtifact:               retry[[2]string{"default", "non_idempotent"}],
 		ListArtifacts:                retry[[2]string{"default", "idempotent"}],
 		UpdateArtifact:               retry[[2]string{"default", "non_idempotent"}],
 		DeleteArtifact:               retry[[2]string{"default", "idempotent"}],
-		GetShiftHandoffPresets:       retry[[2]string{"default", "idempotent"}],
 		SendShiftHandoff:             retry[[2]string{"default", "non_idempotent"}],
 		CreateSubscription:           retry[[2]string{"default", "non_idempotent"}],
+		UpdateSubscription:           retry[[2]string{"default", "non_idempotent"}],
 		ListSubscriptions:            retry[[2]string{"default", "idempotent"}],
 		DeleteSubscription:           retry[[2]string{"default", "idempotent"}],
 		CreateIncidentRoleAssignment: retry[[2]string{"default", "non_idempotent"}],
@@ -363,22 +359,6 @@ func (c *IncidentClient) ListAnnotations(ctx context.Context, req *irmpb.ListAnn
 	return it
 }
 
-// UpdateAnnotation updates an annotation on an existing incident.
-func (c *IncidentClient) UpdateAnnotation(ctx context.Context, req *irmpb.UpdateAnnotationRequest, opts ...gax.CallOption) (*irmpb.Annotation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.UpdateAnnotation[0:len(c.CallOptions.UpdateAnnotation):len(c.CallOptions.UpdateAnnotation)], opts...)
-	var resp *irmpb.Annotation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.incidentClient.UpdateAnnotation(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
 // CreateTag creates a tag on an existing incident.
 func (c *IncidentClient) CreateTag(ctx context.Context, req *irmpb.CreateTagRequest, opts ...gax.CallOption) (*irmpb.Tag, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
@@ -460,15 +440,15 @@ func (c *IncidentClient) CreateSignal(ctx context.Context, req *irmpb.CreateSign
 	return resp, nil
 }
 
-// ListSignals lists signals that are part of an incident.
+// SearchSignals lists signals that are part of an incident.
 // Signals are returned in reverse chronological order.
-func (c *IncidentClient) ListSignals(ctx context.Context, req *irmpb.ListSignalsRequest, opts ...gax.CallOption) *SignalIterator {
+func (c *IncidentClient) SearchSignals(ctx context.Context, req *irmpb.SearchSignalsRequest, opts ...gax.CallOption) *SignalIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.ListSignals[0:len(c.CallOptions.ListSignals):len(c.CallOptions.ListSignals)], opts...)
+	opts = append(c.CallOptions.SearchSignals[0:len(c.CallOptions.SearchSignals):len(c.CallOptions.SearchSignals)], opts...)
 	it := &SignalIterator{}
-	req = proto.Clone(req).(*irmpb.ListSignalsRequest)
+	req = proto.Clone(req).(*irmpb.SearchSignalsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*irmpb.Signal, string, error) {
-		var resp *irmpb.ListSignalsResponse
+		var resp *irmpb.SearchSignalsResponse
 		req.PageToken = pageToken
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
@@ -477,7 +457,7 @@ func (c *IncidentClient) ListSignals(ctx context.Context, req *irmpb.ListSignals
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.incidentClient.ListSignals(ctx, req, settings.GRPC...)
+			resp, err = c.incidentClient.SearchSignals(ctx, req, settings.GRPC...)
 			return err
 		}, opts...)
 		if err != nil {
@@ -514,7 +494,7 @@ func (c *IncidentClient) GetSignal(ctx context.Context, req *irmpb.GetSignalRequ
 	return resp, nil
 }
 
-// UpdateSignal updates an existing signal (e.g. to assign/unassign it to an
+// UpdateSignal updates an existing signal (for example, to assign/unassign it to an
 // incident).
 func (c *IncidentClient) UpdateSignal(ctx context.Context, req *irmpb.UpdateSignalRequest, opts ...gax.CallOption) (*irmpb.Signal, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
@@ -523,23 +503,6 @@ func (c *IncidentClient) UpdateSignal(ctx context.Context, req *irmpb.UpdateSign
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.incidentClient.UpdateSignal(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// AcknowledgeSignal acks a signal. This acknowledges the signal in the underlying system,
-// indicating that the caller takes responsibility for looking into this.
-func (c *IncidentClient) AcknowledgeSignal(ctx context.Context, req *irmpb.AcknowledgeSignalRequest, opts ...gax.CallOption) (*irmpb.AcknowledgeSignalResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.AcknowledgeSignal[0:len(c.CallOptions.AcknowledgeSignal):len(c.CallOptions.AcknowledgeSignal)], opts...)
-	var resp *irmpb.AcknowledgeSignalResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.incidentClient.AcknowledgeSignal(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -645,23 +608,6 @@ func (c *IncidentClient) DeleteArtifact(ctx context.Context, req *irmpb.DeleteAr
 	return err
 }
 
-// GetShiftHandoffPresets returns "presets" specific to shift handoff (see SendShiftHandoff), e.g.
-// default values for handoff message fields.
-func (c *IncidentClient) GetShiftHandoffPresets(ctx context.Context, req *irmpb.GetShiftHandoffPresetsRequest, opts ...gax.CallOption) (*irmpb.ShiftHandoffPresets, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.GetShiftHandoffPresets[0:len(c.CallOptions.GetShiftHandoffPresets):len(c.CallOptions.GetShiftHandoffPresets)], opts...)
-	var resp *irmpb.ShiftHandoffPresets
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.incidentClient.GetShiftHandoffPresets(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
 // SendShiftHandoff sends a summary of the shift for oncall handoff.
 func (c *IncidentClient) SendShiftHandoff(ctx context.Context, req *irmpb.SendShiftHandoffRequest, opts ...gax.CallOption) (*irmpb.SendShiftHandoffResponse, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
@@ -689,6 +635,22 @@ func (c *IncidentClient) CreateSubscription(ctx context.Context, req *irmpb.Crea
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.incidentClient.CreateSubscription(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// UpdateSubscription updates a subscription.
+func (c *IncidentClient) UpdateSubscription(ctx context.Context, req *irmpb.UpdateSubscriptionRequest, opts ...gax.CallOption) (*irmpb.Subscription, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.UpdateSubscription[0:len(c.CallOptions.UpdateSubscription):len(c.CallOptions.UpdateSubscription)], opts...)
+	var resp *irmpb.Subscription
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.incidentClient.UpdateSubscription(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

@@ -178,24 +178,6 @@ func ExampleIncidentClient_ListAnnotations() {
 	}
 }
 
-func ExampleIncidentClient_UpdateAnnotation() {
-	ctx := context.Background()
-	c, err := irm.NewIncidentClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &irmpb.UpdateAnnotationRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.UpdateAnnotation(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleIncidentClient_CreateTag() {
 	ctx := context.Background()
 	c, err := irm.NewIncidentClient(ctx)
@@ -272,17 +254,17 @@ func ExampleIncidentClient_CreateSignal() {
 	_ = resp
 }
 
-func ExampleIncidentClient_ListSignals() {
+func ExampleIncidentClient_SearchSignals() {
 	ctx := context.Background()
 	c, err := irm.NewIncidentClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &irmpb.ListSignalsRequest{
+	req := &irmpb.SearchSignalsRequest{
 		// TODO: Fill request struct fields.
 	}
-	it := c.ListSignals(ctx, req)
+	it := c.SearchSignals(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -325,24 +307,6 @@ func ExampleIncidentClient_UpdateSignal() {
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.UpdateSignal(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleIncidentClient_AcknowledgeSignal() {
-	ctx := context.Background()
-	c, err := irm.NewIncidentClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &irmpb.AcknowledgeSignalRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.AcknowledgeSignal(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -444,24 +408,6 @@ func ExampleIncidentClient_DeleteArtifact() {
 	}
 }
 
-func ExampleIncidentClient_GetShiftHandoffPresets() {
-	ctx := context.Background()
-	c, err := irm.NewIncidentClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &irmpb.GetShiftHandoffPresetsRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.GetShiftHandoffPresets(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleIncidentClient_SendShiftHandoff() {
 	ctx := context.Background()
 	c, err := irm.NewIncidentClient(ctx)
@@ -491,6 +437,24 @@ func ExampleIncidentClient_CreateSubscription() {
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.CreateSubscription(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleIncidentClient_UpdateSubscription() {
+	ctx := context.Background()
+	c, err := irm.NewIncidentClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &irmpb.UpdateSubscriptionRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.UpdateSubscription(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
