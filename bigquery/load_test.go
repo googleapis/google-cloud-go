@@ -237,6 +237,41 @@ func TestLoad(t *testing.T) {
 				return j
 			}(),
 		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *GCSReference {
+				g := NewGCSReference("uri")
+				g.SourceFormat = Avro
+				return g
+			}(),
+			config: LoadConfig{
+				UseAvroLogicalTypes: true,
+			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.SourceFormat = "AVRO"
+				j.Configuration.Load.UseAvroLogicalTypes = true
+				return j
+			}(),
+		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *ReaderSource {
+				r := NewReaderSource(strings.NewReader("foo"))
+				r.SourceFormat = Avro
+				return r
+			}(),
+			config: LoadConfig{
+				UseAvroLogicalTypes: true,
+			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.SourceUris = nil
+				j.Configuration.Load.SourceFormat = "AVRO"
+				j.Configuration.Load.UseAvroLogicalTypes = true
+				return j
+			}(),
+		},
 	}
 
 	for i, tc := range testCases {
