@@ -227,7 +227,7 @@ func (c *ProfileClient) DeleteProfile(ctx context.Context, req *talentpb.DeleteP
 	return err
 }
 
-// SearchProfiles searches for profiles within a company.
+// SearchProfiles searches for profiles within a tenant.
 //
 // For example, search by raw queries "software engineer in Mountain View" or
 // search by structured filters (location filter, education filter, etc.).

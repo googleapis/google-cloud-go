@@ -178,7 +178,7 @@ func TestClientIntegration(t *testing.T) {
 		timeout = 10 * time.Minute
 		t.Logf("Running test against production")
 	} else {
-		timeout = 1 * time.Minute
+		timeout = 5 * time.Minute
 		t.Logf("bttest.Server running on %s", testEnv.Config().AdminEndpoint)
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)

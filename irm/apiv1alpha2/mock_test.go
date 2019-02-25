@@ -145,18 +145,6 @@ func (s *mockIncidentServer) ListAnnotations(ctx context.Context, req *irmpb.Lis
 	return s.resps[0].(*irmpb.ListAnnotationsResponse), nil
 }
 
-func (s *mockIncidentServer) UpdateAnnotation(ctx context.Context, req *irmpb.UpdateAnnotationRequest) (*irmpb.Annotation, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*irmpb.Annotation), nil
-}
-
 func (s *mockIncidentServer) CreateTag(ctx context.Context, req *irmpb.CreateTagRequest) (*irmpb.Tag, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
@@ -205,7 +193,7 @@ func (s *mockIncidentServer) CreateSignal(ctx context.Context, req *irmpb.Create
 	return s.resps[0].(*irmpb.Signal), nil
 }
 
-func (s *mockIncidentServer) ListSignals(ctx context.Context, req *irmpb.ListSignalsRequest) (*irmpb.ListSignalsResponse, error) {
+func (s *mockIncidentServer) SearchSignals(ctx context.Context, req *irmpb.SearchSignalsRequest) (*irmpb.SearchSignalsResponse, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
 		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
@@ -214,7 +202,7 @@ func (s *mockIncidentServer) ListSignals(ctx context.Context, req *irmpb.ListSig
 	if s.err != nil {
 		return nil, s.err
 	}
-	return s.resps[0].(*irmpb.ListSignalsResponse), nil
+	return s.resps[0].(*irmpb.SearchSignalsResponse), nil
 }
 
 func (s *mockIncidentServer) GetSignal(ctx context.Context, req *irmpb.GetSignalRequest) (*irmpb.Signal, error) {
@@ -239,18 +227,6 @@ func (s *mockIncidentServer) UpdateSignal(ctx context.Context, req *irmpb.Update
 		return nil, s.err
 	}
 	return s.resps[0].(*irmpb.Signal), nil
-}
-
-func (s *mockIncidentServer) AcknowledgeSignal(ctx context.Context, req *irmpb.AcknowledgeSignalRequest) (*irmpb.AcknowledgeSignalResponse, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*irmpb.AcknowledgeSignalResponse), nil
 }
 
 func (s *mockIncidentServer) EscalateIncident(ctx context.Context, req *irmpb.EscalateIncidentRequest) (*irmpb.EscalateIncidentResponse, error) {
@@ -313,18 +289,6 @@ func (s *mockIncidentServer) DeleteArtifact(ctx context.Context, req *irmpb.Dele
 	return s.resps[0].(*emptypb.Empty), nil
 }
 
-func (s *mockIncidentServer) GetShiftHandoffPresets(ctx context.Context, req *irmpb.GetShiftHandoffPresetsRequest) (*irmpb.ShiftHandoffPresets, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*irmpb.ShiftHandoffPresets), nil
-}
-
 func (s *mockIncidentServer) SendShiftHandoff(ctx context.Context, req *irmpb.SendShiftHandoffRequest) (*irmpb.SendShiftHandoffResponse, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
@@ -338,6 +302,18 @@ func (s *mockIncidentServer) SendShiftHandoff(ctx context.Context, req *irmpb.Se
 }
 
 func (s *mockIncidentServer) CreateSubscription(ctx context.Context, req *irmpb.CreateSubscriptionRequest) (*irmpb.Subscription, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*irmpb.Subscription), nil
+}
+
+func (s *mockIncidentServer) UpdateSubscription(ctx context.Context, req *irmpb.UpdateSubscriptionRequest) (*irmpb.Subscription, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
 		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
@@ -490,10 +466,12 @@ func TestIncidentServiceCreateIncident(t *testing.T) {
 	var name string = "name3373707"
 	var title string = "title110371416"
 	var etag string = "etag3123477"
+	var duplicateIncident string = "duplicateIncident-316496506"
 	var expectedResponse = &irmpb.Incident{
-		Name:  name,
-		Title: title,
-		Etag:  etag,
+		Name:              name,
+		Title:             title,
+		Etag:              etag,
+		DuplicateIncident: duplicateIncident,
 	}
 
 	mockIncident.err = nil
@@ -557,10 +535,12 @@ func TestIncidentServiceGetIncident(t *testing.T) {
 	var name2 string = "name2-1052831874"
 	var title string = "title110371416"
 	var etag string = "etag3123477"
+	var duplicateIncident string = "duplicateIncident-316496506"
 	var expectedResponse = &irmpb.Incident{
-		Name:  name2,
-		Title: title,
-		Etag:  etag,
+		Name:              name2,
+		Title:             title,
+		Etag:              etag,
+		DuplicateIncident: duplicateIncident,
 	}
 
 	mockIncident.err = nil
@@ -692,10 +672,12 @@ func TestIncidentServiceUpdateIncident(t *testing.T) {
 	var name string = "name3373707"
 	var title string = "title110371416"
 	var etag string = "etag3123477"
+	var duplicateIncident string = "duplicateIncident-316496506"
 	var expectedResponse = &irmpb.Incident{
-		Name:  name,
-		Title: title,
-		Etag:  etag,
+		Name:              name,
+		Title:             title,
+		Etag:              etag,
+		DuplicateIncident: duplicateIncident,
 	}
 
 	mockIncident.err = nil
@@ -960,75 +942,12 @@ func TestIncidentServiceListAnnotationsError(t *testing.T) {
 	}
 	_ = resp
 }
-func TestIncidentServiceUpdateAnnotation(t *testing.T) {
-	var name string = "name3373707"
-	var content string = "content951530617"
-	var expectedResponse = &irmpb.Annotation{
-		Name:    name,
-		Content: content,
-	}
-
-	mockIncident.err = nil
-	mockIncident.reqs = nil
-
-	mockIncident.resps = append(mockIncident.resps[:0], expectedResponse)
-
-	var annotation *irmpb.Annotation = &irmpb.Annotation{}
-	var request = &irmpb.UpdateAnnotationRequest{
-		Annotation: annotation,
-	}
-
-	c, err := NewIncidentClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.UpdateAnnotation(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockIncident.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestIncidentServiceUpdateAnnotationError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockIncident.err = gstatus.Error(errCode, "test error")
-
-	var annotation *irmpb.Annotation = &irmpb.Annotation{}
-	var request = &irmpb.UpdateAnnotationRequest{
-		Annotation: annotation,
-	}
-
-	c, err := NewIncidentClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.UpdateAnnotation(context.Background(), request)
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
 func TestIncidentServiceCreateTag(t *testing.T) {
 	var name string = "name3373707"
 	var displayName string = "displayName1615086568"
-	var url string = "url116079"
 	var expectedResponse = &irmpb.Tag{
 		Name:        name,
 		DisplayName: displayName,
-		Url:         url,
 	}
 
 	mockIncident.err = nil
@@ -1285,11 +1204,11 @@ func TestIncidentServiceCreateSignalError(t *testing.T) {
 	}
 	_ = resp
 }
-func TestIncidentServiceListSignals(t *testing.T) {
+func TestIncidentServiceSearchSignals(t *testing.T) {
 	var nextPageToken string = ""
 	var signalsElement *irmpb.Signal = &irmpb.Signal{}
 	var signals = []*irmpb.Signal{signalsElement}
-	var expectedResponse = &irmpb.ListSignalsResponse{
+	var expectedResponse = &irmpb.SearchSignalsResponse{
 		NextPageToken: nextPageToken,
 		Signals:       signals,
 	}
@@ -1300,7 +1219,7 @@ func TestIncidentServiceListSignals(t *testing.T) {
 	mockIncident.resps = append(mockIncident.resps[:0], expectedResponse)
 
 	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
-	var request = &irmpb.ListSignalsRequest{
+	var request = &irmpb.SearchSignalsRequest{
 		Parent: formattedParent,
 	}
 
@@ -1309,7 +1228,7 @@ func TestIncidentServiceListSignals(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	resp, err := c.ListSignals(context.Background(), request).Next()
+	resp, err := c.SearchSignals(context.Background(), request).Next()
 
 	if err != nil {
 		t.Fatal(err)
@@ -1334,12 +1253,12 @@ func TestIncidentServiceListSignals(t *testing.T) {
 	}
 }
 
-func TestIncidentServiceListSignalsError(t *testing.T) {
+func TestIncidentServiceSearchSignalsError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockIncident.err = gstatus.Error(errCode, "test error")
 
 	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
-	var request = &irmpb.ListSignalsRequest{
+	var request = &irmpb.SearchSignalsRequest{
 		Parent: formattedParent,
 	}
 
@@ -1348,7 +1267,7 @@ func TestIncidentServiceListSignalsError(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	resp, err := c.ListSignals(context.Background(), request).Next()
+	resp, err := c.SearchSignals(context.Background(), request).Next()
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)
@@ -1487,62 +1406,6 @@ func TestIncidentServiceUpdateSignalError(t *testing.T) {
 	}
 
 	resp, err := c.UpdateSignal(context.Background(), request)
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
-func TestIncidentServiceAcknowledgeSignal(t *testing.T) {
-	var expectedResponse *irmpb.AcknowledgeSignalResponse = &irmpb.AcknowledgeSignalResponse{}
-
-	mockIncident.err = nil
-	mockIncident.reqs = nil
-
-	mockIncident.resps = append(mockIncident.resps[:0], expectedResponse)
-
-	var formattedName string = fmt.Sprintf("projects/%s/signals/%s", "[PROJECT]", "[SIGNAL]")
-	var request = &irmpb.AcknowledgeSignalRequest{
-		Name: formattedName,
-	}
-
-	c, err := NewIncidentClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.AcknowledgeSignal(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockIncident.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestIncidentServiceAcknowledgeSignalError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockIncident.err = gstatus.Error(errCode, "test error")
-
-	var formattedName string = fmt.Sprintf("projects/%s/signals/%s", "[PROJECT]", "[SIGNAL]")
-	var request = &irmpb.AcknowledgeSignalRequest{
-		Name: formattedName,
-	}
-
-	c, err := NewIncidentClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.AcknowledgeSignal(context.Background(), request)
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)
@@ -1865,65 +1728,6 @@ func TestIncidentServiceDeleteArtifactError(t *testing.T) {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
 }
-func TestIncidentServiceGetShiftHandoffPresets(t *testing.T) {
-	var subject string = "subject-1867885268"
-	var expectedResponse = &irmpb.ShiftHandoffPresets{
-		Subject: subject,
-	}
-
-	mockIncident.err = nil
-	mockIncident.reqs = nil
-
-	mockIncident.resps = append(mockIncident.resps[:0], expectedResponse)
-
-	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
-	var request = &irmpb.GetShiftHandoffPresetsRequest{
-		Parent: formattedParent,
-	}
-
-	c, err := NewIncidentClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.GetShiftHandoffPresets(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockIncident.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestIncidentServiceGetShiftHandoffPresetsError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockIncident.err = gstatus.Error(errCode, "test error")
-
-	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
-	var request = &irmpb.GetShiftHandoffPresetsRequest{
-		Parent: formattedParent,
-	}
-
-	c, err := NewIncidentClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.GetShiftHandoffPresets(context.Background(), request)
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
 func TestIncidentServiceSendShiftHandoff(t *testing.T) {
 	var contentType string = "contentType831846208"
 	var content string = "content951530617"
@@ -2050,6 +1854,67 @@ func TestIncidentServiceCreateSubscriptionError(t *testing.T) {
 	}
 
 	resp, err := c.CreateSubscription(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestIncidentServiceUpdateSubscription(t *testing.T) {
+	var name string = "name3373707"
+	var etag string = "etag3123477"
+	var expectedResponse = &irmpb.Subscription{
+		Name: name,
+		Etag: etag,
+	}
+
+	mockIncident.err = nil
+	mockIncident.reqs = nil
+
+	mockIncident.resps = append(mockIncident.resps[:0], expectedResponse)
+
+	var subscription *irmpb.Subscription = &irmpb.Subscription{}
+	var request = &irmpb.UpdateSubscriptionRequest{
+		Subscription: subscription,
+	}
+
+	c, err := NewIncidentClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateSubscription(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockIncident.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestIncidentServiceUpdateSubscriptionError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockIncident.err = gstatus.Error(errCode, "test error")
+
+	var subscription *irmpb.Subscription = &irmpb.Subscription{}
+	var request = &irmpb.UpdateSubscriptionRequest{
+		Subscription: subscription,
+	}
+
+	c, err := NewIncidentClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateSubscription(context.Background(), request)
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)

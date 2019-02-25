@@ -32,23 +32,23 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-// CompanyCallOptions contains the retry settings for each method of CompanyClient.
-type CompanyCallOptions struct {
-	CreateCompany []gax.CallOption
-	GetCompany    []gax.CallOption
-	UpdateCompany []gax.CallOption
-	DeleteCompany []gax.CallOption
-	ListCompanies []gax.CallOption
+// TenantCallOptions contains the retry settings for each method of TenantClient.
+type TenantCallOptions struct {
+	CreateTenant []gax.CallOption
+	GetTenant    []gax.CallOption
+	UpdateTenant []gax.CallOption
+	DeleteTenant []gax.CallOption
+	ListTenants  []gax.CallOption
 }
 
-func defaultCompanyClientOptions() []option.ClientOption {
+func defaultTenantClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("jobs.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
 	}
 }
 
-func defaultCompanyCallOptions() *CompanyCallOptions {
+func defaultTenantCallOptions() *TenantCallOptions {
 	retry := map[[2]string][]gax.CallOption{
 		{"default", "idempotent"}: {
 			gax.WithRetry(func() gax.Retryer {
@@ -63,78 +63,78 @@ func defaultCompanyCallOptions() *CompanyCallOptions {
 			}),
 		},
 	}
-	return &CompanyCallOptions{
-		CreateCompany: retry[[2]string{"default", "non_idempotent"}],
-		GetCompany:    retry[[2]string{"default", "idempotent"}],
-		UpdateCompany: retry[[2]string{"default", "non_idempotent"}],
-		DeleteCompany: retry[[2]string{"default", "idempotent"}],
-		ListCompanies: retry[[2]string{"default", "idempotent"}],
+	return &TenantCallOptions{
+		CreateTenant: retry[[2]string{"default", "non_idempotent"}],
+		GetTenant:    retry[[2]string{"default", "idempotent"}],
+		UpdateTenant: retry[[2]string{"default", "non_idempotent"}],
+		DeleteTenant: retry[[2]string{"default", "idempotent"}],
+		ListTenants:  retry[[2]string{"default", "idempotent"}],
 	}
 }
 
-// CompanyClient is a client for interacting with Cloud Talent Solution API.
+// TenantClient is a client for interacting with Cloud Talent Solution API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type CompanyClient struct {
+type TenantClient struct {
 	// The connection to the service.
 	conn *grpc.ClientConn
 
 	// The gRPC API client.
-	companyClient talentpb.CompanyServiceClient
+	tenantClient talentpb.TenantServiceClient
 
 	// The call options for this service.
-	CallOptions *CompanyCallOptions
+	CallOptions *TenantCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewCompanyClient creates a new company service client.
+// NewTenantClient creates a new tenant service client.
 //
-// A service that handles company management, including CRUD and enumeration.
-func NewCompanyClient(ctx context.Context, opts ...option.ClientOption) (*CompanyClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultCompanyClientOptions(), opts...)...)
+// A service that handles tenant management, including CRUD and enumeration.
+func NewTenantClient(ctx context.Context, opts ...option.ClientOption) (*TenantClient, error) {
+	conn, err := transport.DialGRPC(ctx, append(defaultTenantClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
-	c := &CompanyClient{
+	c := &TenantClient{
 		conn:        conn,
-		CallOptions: defaultCompanyCallOptions(),
+		CallOptions: defaultTenantCallOptions(),
 
-		companyClient: talentpb.NewCompanyServiceClient(conn),
+		tenantClient: talentpb.NewTenantServiceClient(conn),
 	}
 	c.setGoogleClientInfo()
 	return c, nil
 }
 
 // Connection returns the client's connection to the API service.
-func (c *CompanyClient) Connection() *grpc.ClientConn {
+func (c *TenantClient) Connection() *grpc.ClientConn {
 	return c.conn
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *CompanyClient) Close() error {
+func (c *TenantClient) Close() error {
 	return c.conn.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *CompanyClient) setGoogleClientInfo(keyval ...string) {
+func (c *TenantClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateCompany creates a new company entity.
-func (c *CompanyClient) CreateCompany(ctx context.Context, req *talentpb.CreateCompanyRequest, opts ...gax.CallOption) (*talentpb.Company, error) {
+// CreateTenant creates a new tenant entity.
+func (c *TenantClient) CreateTenant(ctx context.Context, req *talentpb.CreateTenantRequest, opts ...gax.CallOption) (*talentpb.Tenant, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.CreateCompany[0:len(c.CallOptions.CreateCompany):len(c.CallOptions.CreateCompany)], opts...)
-	var resp *talentpb.Company
+	opts = append(c.CallOptions.CreateTenant[0:len(c.CallOptions.CreateTenant):len(c.CallOptions.CreateTenant)], opts...)
+	var resp *talentpb.Tenant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.companyClient.CreateCompany(ctx, req, settings.GRPC...)
+		resp, err = c.tenantClient.CreateTenant(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -143,14 +143,14 @@ func (c *CompanyClient) CreateCompany(ctx context.Context, req *talentpb.CreateC
 	return resp, nil
 }
 
-// GetCompany retrieves specified company.
-func (c *CompanyClient) GetCompany(ctx context.Context, req *talentpb.GetCompanyRequest, opts ...gax.CallOption) (*talentpb.Company, error) {
+// GetTenant retrieves specified tenant.
+func (c *TenantClient) GetTenant(ctx context.Context, req *talentpb.GetTenantRequest, opts ...gax.CallOption) (*talentpb.Tenant, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.GetCompany[0:len(c.CallOptions.GetCompany):len(c.CallOptions.GetCompany)], opts...)
-	var resp *talentpb.Company
+	opts = append(c.CallOptions.GetTenant[0:len(c.CallOptions.GetTenant):len(c.CallOptions.GetTenant)], opts...)
+	var resp *talentpb.Tenant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.companyClient.GetCompany(ctx, req, settings.GRPC...)
+		resp, err = c.tenantClient.GetTenant(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -159,14 +159,14 @@ func (c *CompanyClient) GetCompany(ctx context.Context, req *talentpb.GetCompany
 	return resp, nil
 }
 
-// UpdateCompany updates specified company.
-func (c *CompanyClient) UpdateCompany(ctx context.Context, req *talentpb.UpdateCompanyRequest, opts ...gax.CallOption) (*talentpb.Company, error) {
+// UpdateTenant updates specified tenant.
+func (c *TenantClient) UpdateTenant(ctx context.Context, req *talentpb.UpdateTenantRequest, opts ...gax.CallOption) (*talentpb.Tenant, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.UpdateCompany[0:len(c.CallOptions.UpdateCompany):len(c.CallOptions.UpdateCompany)], opts...)
-	var resp *talentpb.Company
+	opts = append(c.CallOptions.UpdateTenant[0:len(c.CallOptions.UpdateTenant):len(c.CallOptions.UpdateTenant)], opts...)
+	var resp *talentpb.Tenant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.companyClient.UpdateCompany(ctx, req, settings.GRPC...)
+		resp, err = c.tenantClient.UpdateTenant(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -175,27 +175,26 @@ func (c *CompanyClient) UpdateCompany(ctx context.Context, req *talentpb.UpdateC
 	return resp, nil
 }
 
-// DeleteCompany deletes specified company.
-// Prerequisite: The company has no jobs associated with it.
-func (c *CompanyClient) DeleteCompany(ctx context.Context, req *talentpb.DeleteCompanyRequest, opts ...gax.CallOption) error {
+// DeleteTenant deletes specified tenant.
+func (c *TenantClient) DeleteTenant(ctx context.Context, req *talentpb.DeleteTenantRequest, opts ...gax.CallOption) error {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.DeleteCompany[0:len(c.CallOptions.DeleteCompany):len(c.CallOptions.DeleteCompany)], opts...)
+	opts = append(c.CallOptions.DeleteTenant[0:len(c.CallOptions.DeleteTenant):len(c.CallOptions.DeleteTenant)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.companyClient.DeleteCompany(ctx, req, settings.GRPC...)
+		_, err = c.tenantClient.DeleteTenant(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	return err
 }
 
-// ListCompanies lists all companies associated with the project.
-func (c *CompanyClient) ListCompanies(ctx context.Context, req *talentpb.ListCompaniesRequest, opts ...gax.CallOption) *CompanyIterator {
+// ListTenants lists all tenants associated with the project.
+func (c *TenantClient) ListTenants(ctx context.Context, req *talentpb.ListTenantsRequest, opts ...gax.CallOption) *TenantIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.ListCompanies[0:len(c.CallOptions.ListCompanies):len(c.CallOptions.ListCompanies)], opts...)
-	it := &CompanyIterator{}
-	req = proto.Clone(req).(*talentpb.ListCompaniesRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*talentpb.Company, string, error) {
-		var resp *talentpb.ListCompaniesResponse
+	opts = append(c.CallOptions.ListTenants[0:len(c.CallOptions.ListTenants):len(c.CallOptions.ListTenants)], opts...)
+	it := &TenantIterator{}
+	req = proto.Clone(req).(*talentpb.ListTenantsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*talentpb.Tenant, string, error) {
+		var resp *talentpb.ListTenantsResponse
 		req.PageToken = pageToken
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
@@ -204,13 +203,13 @@ func (c *CompanyClient) ListCompanies(ctx context.Context, req *talentpb.ListCom
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.companyClient.ListCompanies(ctx, req, settings.GRPC...)
+			resp, err = c.tenantClient.ListTenants(ctx, req, settings.GRPC...)
 			return err
 		}, opts...)
 		if err != nil {
 			return nil, "", err
 		}
-		return resp.Companies, resp.NextPageToken, nil
+		return resp.Tenants, resp.NextPageToken, nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -225,9 +224,9 @@ func (c *CompanyClient) ListCompanies(ctx context.Context, req *talentpb.ListCom
 	return it
 }
 
-// CompanyIterator manages a stream of *talentpb.Company.
-type CompanyIterator struct {
-	items    []*talentpb.Company
+// TenantIterator manages a stream of *talentpb.Tenant.
+type TenantIterator struct {
+	items    []*talentpb.Tenant
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 
@@ -237,18 +236,18 @@ type CompanyIterator struct {
 	// InternalFetch returns results from a single call to the underlying RPC.
 	// The number of results is no greater than pageSize.
 	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*talentpb.Company, nextPageToken string, err error)
+	InternalFetch func(pageSize int, pageToken string) (results []*talentpb.Tenant, nextPageToken string, err error)
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CompanyIterator) PageInfo() *iterator.PageInfo {
+func (it *TenantIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
 
 // Next returns the next result. Its second return value is iterator.Done if there are no more
 // results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CompanyIterator) Next() (*talentpb.Company, error) {
-	var item *talentpb.Company
+func (it *TenantIterator) Next() (*talentpb.Tenant, error) {
+	var item *talentpb.Tenant
 	if err := it.nextFunc(); err != nil {
 		return item, err
 	}
@@ -257,11 +256,11 @@ func (it *CompanyIterator) Next() (*talentpb.Company, error) {
 	return item, nil
 }
 
-func (it *CompanyIterator) bufLen() int {
+func (it *TenantIterator) bufLen() int {
 	return len(it.items)
 }
 
-func (it *CompanyIterator) takeBuf() interface{} {
+func (it *TenantIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
