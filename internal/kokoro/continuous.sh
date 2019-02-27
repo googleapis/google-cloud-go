@@ -34,28 +34,23 @@ git clone . $GOCLOUD_HOME
 cd $GOCLOUD_HOME
 
 try3() { eval "$*" || eval "$*" || eval "$*"; }
-if [[ `go version` == *"go1.11"* ]]; then
-    export GO111MODULE=on
-    # All packages, including +build tools, are fetched.
-    try3 go mod download
 
-    go install github.com/jstemmer/go-junit-report
-else
-    # Because we don't provide -tags tools, the +build tools dependencies
-    # aren't fetched.
-    try3 go get -v -t ./...
+download_deps() {
+    if [[ `go version` == *"go1.11"* ]] || [[ `go version` == *"go1.12"* ]]; then
+        export GO111MODULE=on
+        # All packages, including +build tools, are fetched.
+        try3 go mod download
+    else
+        # Because we don't provide -tags tools, the +build tools
+        # dependencies aren't fetched.
+        try3 go get -v -t ./...
 
-    # go get -tags tools ./... would fail with "[...]" is a program, not an
-    # importable package. So, we manually go get them in pre-module
-    # environments.
-    try3 go get -u \
-      github.com/golang/protobuf/protoc-gen-go \
-      github.com/jstemmer/go-junit-report \
-      golang.org/x/lint/golint \
-      golang.org/x/tools/cmd/goimports \
-      honnef.co/go/tools/cmd/staticcheck
-fi
+        go get github.com/jstemmer/go-junit-report
+    fi
+}
 
+download_deps
+go install github.com/jstemmer/go-junit-report
 ./internal/kokoro/vet.sh
 
 # Run tests and tee output to log file, to be pushed to GCS as artifact.
