@@ -6,13 +6,19 @@ set -eo pipefail
 # Display commands being run
 set -x
 
-# Only run the linter on go1.11, since it needs type aliases (and we only care about its output once).
-# TODO(deklerk) We should pass an environment variable from kokoro to decide this logic instead.
+# Only run the linter on go1.11, because:
+# - It needs type aliases (so we can't use anything less than 1.9).
+# - It only has to run once per CI (so we just have to pick 1 version).
+# - It runs out of memory in go 1.12 https://github.com/dominikh/go-tools/issues/419.
 if [[ `go version` != *"go1.11"* ]]; then
     exit 0
 fi
 
-export GO111MODULE=on
+go install \
+  github.com/golang/protobuf/protoc-gen-go \
+  golang.org/x/lint/golint \
+  golang.org/x/tools/cmd/goimports \
+  honnef.co/go/tools/cmd/staticcheck
 
 # Fail if a dependency was added without the necessary go.mod/go.sum change
 # being part of the commit.
@@ -22,12 +28,6 @@ git diff go.sum | tee /dev/stderr | (! read)
 
 # Easier to debug CI.
 pwd
-
-# Should be downloaded in continuous.sh/presubmit.sh already.
-go install \
-  golang.org/x/tools/cmd/goimports \
-  golang.org/x/lint/golint \
-  honnef.co/go/tools/cmd/staticcheck
 
 # Look at all .go files (ignoring .pb.go files) and make sure they have a Copyright. Fail if any don't.
 git ls-files "*[^.pb].go" | xargs grep -L "\(Copyright [0-9]\{4,\}\)" 2>&1 | tee /dev/stderr | (! read)
