@@ -72,6 +72,7 @@ Google API                                   | Status       | Package
 [OS Login][cloud-oslogin]                    | alpha        | [`cloud.google.com/compute/docs/oslogin/rest`][cloud-oslogin-ref]
 [Pub/Sub][cloud-pubsub]                      | stable       | [`cloud.google.com/go/pubsub`][cloud-pubsub-ref]
 [Memorystore][cloud-memorystore]             | stable       | [`cloud.google.com/go/redis/apiv1beta1`][cloud-memorystore-ref]
+[Scheduler][cloud-scheduler]                 | beta         | [`cloud.google.com/go/scheduler/apiv1beta1`][cloud-scheduler]
 [Spanner][cloud-spanner]                     | stable       | [`cloud.google.com/go/spanner`][cloud-spanner-ref]
 [Speech][cloud-speech]                       | stable       | [`cloud.google.com/go/speech/apiv1`][cloud-speech-ref]
 [Storage][cloud-storage]                     | stable       | [`cloud.google.com/go/storage`][cloud-storage-ref]
