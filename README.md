@@ -75,8 +75,8 @@ Google API                                   | Status       | Package
 [Spanner][cloud-spanner]                     | stable       | [`cloud.google.com/go/spanner`][cloud-spanner-ref]
 [Speech][cloud-speech]                       | stable       | [`cloud.google.com/go/speech/apiv1`][cloud-speech-ref]
 [Storage][cloud-storage]                     | stable       | [`cloud.google.com/go/storage`][cloud-storage-ref]
-[Text To Speech][cloud-texttospeech]         | alpha        | [`cloud.google.com/go/texttospeech/apiv1`][cloud-storage-ref]
-[Trace][cloud-trace]                         | alpha        | [`cloud.google.com/go/trace/apiv2`][cloud-translation-ref]
+[Text To Speech][cloud-texttospeech]         | alpha        | [`cloud.google.com/go/texttospeech/apiv1`][cloud-texttospeech-ref]
+[Trace][cloud-trace]                         | alpha        | [`cloud.google.com/go/trace/apiv2`][cloud-trace-ref]
 [Translation][cloud-translation]             | stable       | [`cloud.google.com/go/translate`][cloud-translation-ref]
 [Video Intelligence][cloud-video]            | alpha        | [`cloud.google.com/go/videointelligence/apiv1beta1`][cloud-video-ref]
 [Vision][cloud-vision]                       | stable       | [`cloud.google.com/go/vision/apiv1`][cloud-vision-ref]
@@ -487,7 +487,7 @@ for more information.
 
 [cloud-trace]: https://cloud.google.com/trace/
 [cloud-trace-docs]: https://cloud.google.com/trace/docs
-[cloud-trace-ref]: https://godoc.org/cloud.google.com/go/trace/apiv1
+[cloud-trace-ref]: https://godoc.org/cloud.google.com/go/trace/apiv2
 
 [cloud-dialogflow]: https://cloud.google.com/dialogflow-enterprise/
 [cloud-dialogflow-docs]: https://cloud.google.com/dialogflow-enterprise/docs/
