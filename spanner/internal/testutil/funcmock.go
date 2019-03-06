@@ -29,32 +29,32 @@ import (
 // Note: if you overload a method, you're in charge of making sure
 // MockCloudSpannerClient.ReceivedRequests receives the request appropriately.
 type FuncMock struct {
-	CommitFn           func(c context.Context, r *sppb.CommitRequest, opts ...grpc.CallOption) (*sppb.CommitResponse, error)
-	BeginTransactionFn func(c context.Context, r *sppb.BeginTransactionRequest, opts ...grpc.CallOption) (*sppb.Transaction, error)
-	GetSessionFn       func(c context.Context, r *sppb.GetSessionRequest, opts ...grpc.CallOption) (*sppb.Session, error)
-	CreateSessionFn    func(c context.Context, r *sppb.CreateSessionRequest, opts ...grpc.CallOption) (*sppb.Session, error)
+	CommitFn           func(ctx context.Context, r *sppb.CommitRequest, opts ...grpc.CallOption) (*sppb.CommitResponse, error)
+	BeginTransactionFn func(ctx context.Context, r *sppb.BeginTransactionRequest, opts ...grpc.CallOption) (*sppb.Transaction, error)
+	GetSessionFn       func(ctx context.Context, r *sppb.GetSessionRequest, opts ...grpc.CallOption) (*sppb.Session, error)
+	CreateSessionFn    func(ctx context.Context, r *sppb.CreateSessionRequest, opts ...grpc.CallOption) (*sppb.Session, error)
 	*MockCloudSpannerClient
 }
 
-func (s FuncMock) Commit(c context.Context, r *sppb.CommitRequest, opts ...grpc.CallOption) (*sppb.CommitResponse, error) {
+func (s FuncMock) Commit(ctx context.Context, r *sppb.CommitRequest, opts ...grpc.CallOption) (*sppb.CommitResponse, error) {
 	if s.CommitFn == nil {
-		return s.MockCloudSpannerClient.Commit(c, r, opts...)
+		return s.MockCloudSpannerClient.Commit(ctx, r, opts...)
 	}
-	return s.CommitFn(c, r, opts...)
+	return s.CommitFn(ctx, r, opts...)
 }
 
-func (s FuncMock) BeginTransaction(c context.Context, r *sppb.BeginTransactionRequest, opts ...grpc.CallOption) (*sppb.Transaction, error) {
+func (s FuncMock) BeginTransaction(ctx context.Context, r *sppb.BeginTransactionRequest, opts ...grpc.CallOption) (*sppb.Transaction, error) {
 	if s.BeginTransactionFn == nil {
-		return s.MockCloudSpannerClient.BeginTransaction(c, r, opts...)
+		return s.MockCloudSpannerClient.BeginTransaction(ctx, r, opts...)
 	}
-	return s.BeginTransactionFn(c, r, opts...)
+	return s.BeginTransactionFn(ctx, r, opts...)
 }
 
-func (s *FuncMock) GetSession(c context.Context, r *sppb.GetSessionRequest, opts ...grpc.CallOption) (*sppb.Session, error) {
+func (s *FuncMock) GetSession(ctx context.Context, r *sppb.GetSessionRequest, opts ...grpc.CallOption) (*sppb.Session, error) {
 	if s.GetSessionFn == nil {
-		return s.MockCloudSpannerClient.GetSession(c, r, opts...)
+		return s.MockCloudSpannerClient.GetSession(ctx, r, opts...)
 	}
-	return s.GetSessionFn(c, r, opts...)
+	return s.GetSessionFn(ctx, r, opts...)
 }
 
 func (s *FuncMock) CreateSession(c context.Context, r *sppb.CreateSessionRequest, opts ...grpc.CallOption) (*sppb.Session, error) {
