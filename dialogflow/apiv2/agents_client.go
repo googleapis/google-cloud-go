@@ -107,18 +107,22 @@ type AgentsClient struct {
 // in your app, product, or service to determine user intent and respond to the
 // user in a natural way.
 //
-// After you create an agent, you can add [Intents][google.cloud.dialogflow.v2.Intents], [Contexts][google.cloud.dialogflow.v2.Contexts],
-// [Entity Types][google.cloud.dialogflow.v2.EntityTypes], [Webhooks][google.cloud.dialogflow.v2.WebhookRequest], and so on to
-// manage the flow of a conversation and match user input to predefined intents
-// and actions.
+// After you create an agent, you can add
+// [Intents][google.cloud.dialogflow.v2.Intents],
+// [Contexts][google.cloud.dialogflow.v2.Contexts], [Entity
+// Types][google.cloud.dialogflow.v2.EntityTypes],
+// [Webhooks][google.cloud.dialogflow.v2.WebhookRequest], and so on to manage
+// the flow of a conversation and match user input to predefined intents and
+// actions.
 //
 // You can create an agent using both Dialogflow Standard Edition and
 // Dialogflow Enterprise Edition. For details, see
 // Dialogflow Editions (at /dialogflow-enterprise/docs/editions).
 //
 // You can save your agent for backup or versioning by exporting the agent by
-// using the [ExportAgent][google.cloud.dialogflow.v2.Agents.ExportAgent] method. You can import a saved
-// agent by using the [ImportAgent][google.cloud.dialogflow.v2.Agents.ImportAgent] method.
+// using the [ExportAgent][google.cloud.dialogflow.v2.Agents.ExportAgent]
+// method. You can import a saved agent by using the
+// [ImportAgent][google.cloud.dialogflow.v2.Agents.ImportAgent] method.
 //
 // Dialogflow provides several
 // prebuilt agents (at https://dialogflow.com/docs/prebuilt-agents) for common
@@ -255,7 +259,8 @@ func (c *AgentsClient) TrainAgent(ctx context.Context, req *dialogflowpb.TrainAg
 
 // ExportAgent exports the specified agent to a ZIP file.
 //
-// Operation <response: [ExportAgentResponse][google.cloud.dialogflow.v2.ExportAgentResponse],
+// Operation <response:
+// [ExportAgentResponse][google.cloud.dialogflow.v2.ExportAgentResponse],
 // metadata: [google.protobuf.Struct][google.protobuf.Struct]>
 func (c *AgentsClient) ExportAgent(ctx context.Context, req *dialogflowpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)

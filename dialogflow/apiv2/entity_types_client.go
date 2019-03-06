@@ -133,7 +133,8 @@ type EntityTypesClient struct {
 //
 // *   **User** - entities that are built for an individual user such as
 //     favorites, preferences, playlists, and so on. A user entity is
-//     represented by the [SessionEntityType][google.cloud.dialogflow.v2.SessionEntityType] type.
+//     represented by the
+//     [SessionEntityType][google.cloud.dialogflow.v2.SessionEntityType] type.
 //
 // For more information about entity types, see the
 // [Dialogflow documentation](https://dialogflow.com/docs/entities).
@@ -282,7 +283,8 @@ func (c *EntityTypesClient) DeleteEntityType(ctx context.Context, req *dialogflo
 
 // BatchUpdateEntityTypes updates/Creates multiple entity types in the specified agent.
 //
-// Operation <response: [BatchUpdateEntityTypesResponse][google.cloud.dialogflow.v2.BatchUpdateEntityTypesResponse],
+// Operation <response:
+// [BatchUpdateEntityTypesResponse][google.cloud.dialogflow.v2.BatchUpdateEntityTypesResponse],
 // metadata: [google.protobuf.Struct][google.protobuf.Struct]>
 func (c *EntityTypesClient) BatchUpdateEntityTypes(ctx context.Context, req *dialogflowpb.BatchUpdateEntityTypesRequest, opts ...gax.CallOption) (*BatchUpdateEntityTypesOperation, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)

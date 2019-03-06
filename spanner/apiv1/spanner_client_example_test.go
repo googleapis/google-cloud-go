@@ -156,6 +156,24 @@ func ExampleClient_ExecuteStreamingSql() {
 	}
 }
 
+func ExampleClient_ExecuteBatchDml() {
+	ctx := context.Background()
+	c, err := spanner.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &spannerpb.ExecuteBatchDmlRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.ExecuteBatchDml(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_Read() {
 	ctx := context.Background()
 	c, err := spanner.NewClient(ctx)

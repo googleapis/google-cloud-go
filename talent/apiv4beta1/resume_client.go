@@ -101,8 +101,9 @@ func (c *ResumeClient) setGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ParseResume parses a resume into a [Profile][google.cloud.talent.v4beta1.Profile]. The API attempts to fill out the
-// following profile fields if present within the resume:
+// ParseResume parses a resume into a [Profile][google.cloud.talent.v4beta1.Profile]. The
+// API attempts to fill out the following profile fields if present within the
+// resume:
 //
 //   personNames
 //

@@ -353,9 +353,9 @@ func (c *InstanceAdminClient) CreateInstance(ctx context.Context, req *instancep
 // Until completion of the returned operation:
 //
 //   Cancelling the operation sets its metadata's
-//   [cancel_time][google.spanner.admin.instance.v1.UpdateInstanceMetadata.cancel_time], and begins
-//   restoring resources to their pre-request values. The operation
-//   is guaranteed to succeed at undoing all resource changes,
+//   [cancel_time][google.spanner.admin.instance.v1.UpdateInstanceMetadata.cancel_time],
+//   and begins restoring resources to their pre-request values. The
+//   operation is guaranteed to succeed at undoing all resource changes,
 //   after which point it terminates with a CANCELLED status.
 //
 //   All other attempts to modify the instance are rejected.
