@@ -28,6 +28,7 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	pbt "github.com/golang/protobuf/ptypes/timestamp"
+	pbs "google.golang.org/genproto/googleapis/rpc/status"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -87,7 +88,7 @@ func (m *MockCloudSpannerClient) DumpSessions() map[string]bool {
 }
 
 // CreateSession is a placeholder for SpannerClient.CreateSession.
-func (m *MockCloudSpannerClient) CreateSession(c context.Context, r *sppb.CreateSessionRequest, opts ...grpc.CallOption) (*sppb.Session, error) {
+func (m *MockCloudSpannerClient) CreateSession(ctx context.Context, r *sppb.CreateSessionRequest, opts ...grpc.CallOption) (*sppb.Session, error) {
 	m.ready()
 	m.ReceivedRequests <- r
 
@@ -105,7 +106,7 @@ func (m *MockCloudSpannerClient) CreateSession(c context.Context, r *sppb.Create
 }
 
 // GetSession is a placeholder for SpannerClient.GetSession.
-func (m *MockCloudSpannerClient) GetSession(c context.Context, r *sppb.GetSessionRequest, opts ...grpc.CallOption) (*sppb.Session, error) {
+func (m *MockCloudSpannerClient) GetSession(ctx context.Context, r *sppb.GetSessionRequest, opts ...grpc.CallOption) (*sppb.Session, error) {
 	m.ready()
 	m.ReceivedRequests <- r
 
@@ -119,7 +120,7 @@ func (m *MockCloudSpannerClient) GetSession(c context.Context, r *sppb.GetSessio
 }
 
 // DeleteSession is a placeholder for SpannerClient.DeleteSession.
-func (m *MockCloudSpannerClient) DeleteSession(c context.Context, r *sppb.DeleteSessionRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (m *MockCloudSpannerClient) DeleteSession(ctx context.Context, r *sppb.DeleteSessionRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	m.ready()
 	m.ReceivedRequests <- r
 
@@ -134,8 +135,28 @@ func (m *MockCloudSpannerClient) DeleteSession(c context.Context, r *sppb.Delete
 	return &empty.Empty{}, nil
 }
 
+// ExecuteSql is a placeholder for SpannerClient.ExecuteSql.
+func (m *MockCloudSpannerClient) ExecuteSql(ctx context.Context, r *sppb.ExecuteSqlRequest, opts ...grpc.CallOption) (*sppb.ResultSet, error) {
+	m.ready()
+	m.ReceivedRequests <- r
+
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return &sppb.ResultSet{Stats: &sppb.ResultSetStats{RowCount: &sppb.ResultSetStats_RowCountExact{7}}}, nil
+}
+
+// ExecuteBatchDml is a placeholder for SpannerClient.ExecuteBatchDml.
+func (m *MockCloudSpannerClient) ExecuteBatchDml(ctx context.Context, r *sppb.ExecuteBatchDmlRequest, opts ...grpc.CallOption) (*sppb.ExecuteBatchDmlResponse, error) {
+	m.ready()
+	m.ReceivedRequests <- r
+
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return &sppb.ExecuteBatchDmlResponse{Status: &pbs.Status{Code: 0}, ResultSets: []*sppb.ResultSet{}}, nil
+}
+
 // ExecuteStreamingSql is a mock implementation of SpannerClient.ExecuteStreamingSql.
-func (m *MockCloudSpannerClient) ExecuteStreamingSql(c context.Context, r *sppb.ExecuteSqlRequest, opts ...grpc.CallOption) (sppb.Spanner_ExecuteStreamingSqlClient, error) {
+func (m *MockCloudSpannerClient) ExecuteStreamingSql(ctx context.Context, r *sppb.ExecuteSqlRequest, opts ...grpc.CallOption) (sppb.Spanner_ExecuteStreamingSqlClient, error) {
 	m.ready()
 	m.ReceivedRequests <- r
 
@@ -170,7 +191,7 @@ func (m *MockCloudSpannerClient) ExecuteStreamingSql(c context.Context, r *sppb.
 }
 
 // StreamingRead is a placeholder for SpannerClient.StreamingRead.
-func (m *MockCloudSpannerClient) StreamingRead(c context.Context, r *sppb.ReadRequest, opts ...grpc.CallOption) (sppb.Spanner_StreamingReadClient, error) {
+func (m *MockCloudSpannerClient) StreamingRead(ctx context.Context, r *sppb.ReadRequest, opts ...grpc.CallOption) (sppb.Spanner_StreamingReadClient, error) {
 	m.ready()
 	m.ReceivedRequests <- r
 
@@ -213,7 +234,7 @@ func (m *MockCloudSpannerClient) StreamingRead(c context.Context, r *sppb.ReadRe
 }
 
 // BeginTransaction is a placeholder for SpannerClient.BeginTransaction.
-func (m *MockCloudSpannerClient) BeginTransaction(c context.Context, r *sppb.BeginTransactionRequest, opts ...grpc.CallOption) (*sppb.Transaction, error) {
+func (m *MockCloudSpannerClient) BeginTransaction(ctx context.Context, r *sppb.BeginTransactionRequest, opts ...grpc.CallOption) (*sppb.Transaction, error) {
 	m.ready()
 	m.ReceivedRequests <- r
 
@@ -227,7 +248,7 @@ func (m *MockCloudSpannerClient) BeginTransaction(c context.Context, r *sppb.Beg
 }
 
 // Commit is a placeholder for SpannerClient.Commit.
-func (m *MockCloudSpannerClient) Commit(c context.Context, r *sppb.CommitRequest, opts ...grpc.CallOption) (*sppb.CommitResponse, error) {
+func (m *MockCloudSpannerClient) Commit(ctx context.Context, r *sppb.CommitRequest, opts ...grpc.CallOption) (*sppb.CommitResponse, error) {
 	m.ready()
 	m.ReceivedRequests <- r
 
@@ -237,7 +258,7 @@ func (m *MockCloudSpannerClient) Commit(c context.Context, r *sppb.CommitRequest
 }
 
 // Rollback is a placeholder for SpannerClient.Rollback.
-func (m *MockCloudSpannerClient) Rollback(c context.Context, r *sppb.RollbackRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (m *MockCloudSpannerClient) Rollback(ctx context.Context, r *sppb.RollbackRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	m.ready()
 	m.ReceivedRequests <- r
 

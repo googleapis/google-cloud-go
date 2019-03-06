@@ -205,8 +205,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, mode sppb.E
 		t.release)
 }
 
-func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, mode sppb.ExecuteSqlRequest_QueryMode) (
-	*sppb.ExecuteSqlRequest, *sessionHandle, error) {
+func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, mode sppb.ExecuteSqlRequest_QueryMode) (*sppb.ExecuteSqlRequest, *sessionHandle, error) {
 	sh, ts, err := t.acquire(ctx)
 	if err != nil {
 		return nil, nil, err
@@ -558,9 +557,9 @@ func (t *ReadOnlyTransaction) WithTimestampBound(tb TimestampBound) *ReadOnlyTra
 // ReadWriteTransaction provides a locking read-write transaction.
 //
 // This type of transaction is the only way to write data into Cloud Spanner;
-// (*Client).Apply and (*Client).ApplyAtLeastOnce use transactions
-// internally. These transactions rely on pessimistic locking and, if
-// necessary, two-phase commit. Locking read-write transactions may abort,
+// (*Client).Apply, (*Client).ApplyAtLeastOnce, (*Client).PartitionedUpdate use
+// transactions internally. These transactions rely on pessimistic locking and,
+// if necessary, two-phase commit. Locking read-write transactions may abort,
 // requiring the application to retry. However, the interface exposed by
 // (*Client).ReadWriteTransaction eliminates the need for applications to write
 // retry loops explicitly.
@@ -674,6 +673,64 @@ func (t *ReadWriteTransaction) Update(ctx context.Context, stmt Statement) (rowC
 		return 0, spannerErrorf(codes.InvalidArgument, "query passed to Update: %q", stmt.SQL)
 	}
 	return extractRowCount(resultSet.Stats)
+}
+
+// BatchUpdate groups one or more DML statements and sends them to Spanner in a
+// single RPC. This is an efficient way to execute multiple DML statements.
+//
+// A slice of counts is returned, where each count represents the number of
+// affected rows for the given query at the same index. If an error occurs,
+// counts will be returned up to the query that encountered the error.
+func (t *ReadWriteTransaction) BatchUpdate(ctx context.Context, stmts []Statement) (_ []int64, err error) {
+	ctx = startSpan(ctx, "cloud.google.com/go/spanner.BatchUpdate")
+	defer func() { endSpan(ctx, err) }()
+
+	sh, ts, err := t.acquire(ctx)
+	if err != nil {
+		return nil, err
+	}
+	// Cloud Spanner will return "Session not found" on bad sessions.
+	sid := sh.getID()
+	if sid == "" {
+		// Might happen if transaction is closed in the middle of a API call.
+		return nil, errSessionClosed(sh)
+	}
+
+	var sppbStmts []*sppb.ExecuteBatchDmlRequest_Statement
+	for _, st := range stmts {
+		params, paramTypes, err := st.convertParams()
+		if err != nil {
+			return nil, err
+		}
+		sppbStmts = append(sppbStmts, &sppb.ExecuteBatchDmlRequest_Statement{
+			Sql:        st.SQL,
+			Params:     params,
+			ParamTypes: paramTypes,
+		})
+	}
+
+	resp, err := sh.getClient().ExecuteBatchDml(ctx, &sppb.ExecuteBatchDmlRequest{
+		Session:     sh.getID(),
+		Transaction: ts,
+		Statements:  sppbStmts,
+		Seqno:       atomic.AddInt64(&t.sequenceNumber, 1),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var counts []int64
+	for _, rs := range resp.ResultSets {
+		count, err := extractRowCount(rs.Stats)
+		if err != nil {
+			return nil, err
+		}
+		counts = append(counts, count)
+	}
+	if resp.Status.Code != 0 {
+		return counts, spannerErrorf(codes.Code(uint32(resp.Status.Code)), resp.Status.Message)
+	}
+	return counts, nil
 }
 
 // acquire implements txReadEnv.acquire.
