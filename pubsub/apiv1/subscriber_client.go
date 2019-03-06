@@ -194,9 +194,10 @@ func (c *SubscriberClient) SetGoogleClientInfo(keyval ...string) {
 // If the name is not provided in the request, the server will assign a random
 // name for this subscription on the same project as the topic, conforming
 // to the
-// resource name format (at https://cloud.google.com/pubsub/docs/admin#resource_names).
-// The generated name is populated in the returned Subscription object.
-// Note that for REST API requests, you must specify a name in the request.
+// resource name
+// format (at https://cloud.google.com/pubsub/docs/admin#resource_names). The
+// generated name is populated in the returned Subscription object. Note that
+// for REST API requests, you must specify a name in the request.
 func (c *SubscriberClient) CreateSubscription(ctx context.Context, req *pubsubpb.Subscription, opts ...gax.CallOption) (*pubsubpb.Subscription, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.CreateSubscription[0:len(c.CallOptions.CreateSubscription):len(c.CallOptions.CreateSubscription)], opts...)
@@ -452,9 +453,10 @@ func (c *SubscriberClient) ListSnapshots(ctx context.Context, req *pubsubpb.List
 // the request, the server will assign a random
 // name for this snapshot on the same project as the subscription, conforming
 // to the
-// resource name format (at https://cloud.google.com/pubsub/docs/admin#resource_names).
-// The generated name is populated in the returned Snapshot object. Note that
-// for REST API requests, you must specify a name in the request.
+// resource name
+// format (at https://cloud.google.com/pubsub/docs/admin#resource_names). The
+// generated name is populated in the returned Snapshot object. Note that for
+// REST API requests, you must specify a name in the request.
 func (c *SubscriberClient) CreateSnapshot(ctx context.Context, req *pubsubpb.CreateSnapshotRequest, opts ...gax.CallOption) (*pubsubpb.Snapshot, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.CreateSnapshot[0:len(c.CallOptions.CreateSnapshot):len(c.CallOptions.CreateSnapshot)], opts...)
