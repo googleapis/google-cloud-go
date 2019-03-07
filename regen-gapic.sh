@@ -44,6 +44,7 @@ google/cloud/redis/artman_redis_v1.yaml
 google/cloud/scheduler/artman_cloudscheduler_v1beta1.yaml
 google/cloud/scheduler/artman_cloudscheduler_v1.yaml
 google/cloud/securitycenter/artman_securitycenter_v1beta1.yaml
+google/cloud/securitycenter/artman_securitycenter_v1.yaml
 google/cloud/speech/artman_speech_v1.yaml
 google/cloud/speech/artman_speech_v1p1beta1.yaml
 google/cloud/talent/artman_talent_v4beta1.yaml
