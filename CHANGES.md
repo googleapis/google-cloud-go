@@ -1,5 +1,34 @@
 # Changes
 
+## 0.37.0
+
+- spanner:
+  - Add BatchDML method.
+  - Reduced initial time between retries.
+- bigquery:
+  - Produce better error messages for InferSchema.
+  - Add logical type control for avro loads.
+  - Add support for the GEOGRAPHY type.
+- datastore:
+  - Add sentinel value DetectProjectID for auto-detecting project ID.
+  - Allow flatten tag on struct pointers.
+  - Fixed a bug that caused queries to panic with invalid queries. Instead they
+    will now return an error.
+- profiler:
+  - Add ability to override GCE zone and instance.
+- pubsub:
+  - BEHAVIOR CHANGE: Refactor error code retry logic. RPCs should now more
+    consistently retry specific error codes based on whether they're idempotent
+    or non-idempotent.
+- httpreplay: Fixed a bug when a non-GET request had a zero-length body causing
+  the Content-Length header to be dropped.
+- iot:
+  - Add new apiv1 client.
+- securitycenter:
+  - Add new apiv1 client.
+- cloudscheduler:
+  - Add new apiv1 client.
+
 ## 0.36.0
 
 - spanner:
