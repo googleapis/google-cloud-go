@@ -1,5 +1,10 @@
 # Changes
 
+## 0.37.1
+
+Small go.mod version bumps to bring in v0.2.0 of google.golang.org/api, which
+introduces a new oauth2 url.
+
 ## 0.37.0
 
 - spanner:
