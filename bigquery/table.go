@@ -508,8 +508,7 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 	}
 
 	if !validExpiration(tm.ExpirationTime) {
-		return nil, fmt.Errorf("invalid expiration time: %v.\n"+
-			"Valid expiration times are after 1678 and before 2262", tm.ExpirationTime)
+		return nil, invalidTimeError(tm.ExpirationTime)
 	}
 	if tm.ExpirationTime == NeverExpire {
 		t.NullFields = append(t.NullFields, "ExpirationTime")
@@ -551,6 +550,13 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 // undefined and invalid. See https://godoc.org/time#Time.UnixNano.
 func validExpiration(t time.Time) bool {
 	return t == NeverExpire || t.IsZero() || time.Unix(0, t.UnixNano()).Equal(t)
+}
+
+// invalidTimeError emits a consistent error message for failures of the
+// validExpiration function.
+func invalidTimeError(t time.Time) error {
+	return fmt.Errorf("invalid expiration time %v. "+
+		"Valid expiration times are after 1678 and before 2262", t)
 }
 
 // TableMetadataToUpdate is used when updating a table's metadata.
