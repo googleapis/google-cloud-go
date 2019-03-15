@@ -71,7 +71,7 @@ Google API                                   | Status       | Package
 [Monitoring][cloud-monitoring]               | alpha        | [`cloud.google.com/go/monitoring/apiv3`][cloud-monitoring-ref]
 [OS Login][cloud-oslogin]                    | alpha        | [`cloud.google.com/compute/docs/oslogin/rest`][cloud-oslogin-ref]
 [Pub/Sub][cloud-pubsub]                      | stable       | [`cloud.google.com/go/pubsub`][cloud-pubsub-ref]
-[Memorystore][cloud-memorystore]             | stable       | [`cloud.google.com/go/redis/apiv1beta1`][cloud-memorystore-ref]
+[Memorystore][cloud-memorystore]             | alpha        | [`cloud.google.com/go/redis/apiv1`][cloud-memorystore-ref]
 [Spanner][cloud-spanner]                     | stable       | [`cloud.google.com/go/spanner`][cloud-spanner-ref]
 [Speech][cloud-speech]                       | stable       | [`cloud.google.com/go/speech/apiv1`][cloud-speech-ref]
 [Storage][cloud-storage]                     | stable       | [`cloud.google.com/go/storage`][cloud-storage-ref]
@@ -479,7 +479,7 @@ for more information.
 
 [cloud-memorystore]: https://cloud.google.com/memorystore/
 [cloud-memorystore-docs]: https://cloud.google.com/memorystore/docs
-[cloud-memorystore-ref]: https://godoc.org/cloud.google.com/go/redis/apiv1beta1
+[cloud-memorystore-ref]: https://godoc.org/cloud.google.com/go/redis/apiv1
 
 [cloud-texttospeech]: https://cloud.google.com/texttospeech/
 [cloud-texttospeech-docs]: https://cloud.google.com/texttospeech/docs
