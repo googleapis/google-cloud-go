@@ -61,14 +61,24 @@ set -eo pipefail
 # Display commands being run.
 set -x
 
+# Suppress debconf warnings to minimize noise in logs
+export DEBIAN_FRONTEND="noninteractive"
+
+# Building go from master will fail without $HOME set.
+# Set $HOME becasue it is not automatically set when this script runs.
+# If $HOME is unset, $GOCACHE must be set for Go 1.12+
+cd /root
+export HOME=$PWD
+
 # Install git
 retry apt-get update >/dev/null
 retry apt-get -y -q install git >/dev/null
 
-# $GOCACHE is required from Go 1.12. See https://golang.org/doc/go1.11#gocache
-# $GOCACHE is explicitly set becasue $HOME is not set when this code runs
-mkdir -p /tmp/gocache
-export GOCACHE=/tmp/gocache
+# Set $GOPATH
+export GOPATH="$HOME/go"
+
+export GOCLOUD_HOME=$GOPATH/src/cloud.google.com/go
+mkdir -p $GOCLOUD_HOME
 
 # Install gcc, needed to install go master
 if [ "{{.GoVersion}}" = "master" ]
@@ -82,13 +92,8 @@ retry curl -sL -o /tmp/bin/gimme https://raw.githubusercontent.com/travis-ci/gim
 chmod +x /tmp/bin/gimme
 export PATH=$PATH:/tmp/bin
 
-retry eval "$(gimme {{.GoVersion}})"
-
-# Set $GOPATH
-export GOPATH="$HOME/go"
-
-export GOCLOUD_HOME=$GOPATH/src/cloud.google.com/go
-mkdir -p $GOCLOUD_HOME
+retry gimme {{.GoVersion}} > out.gimme
+eval "$(cat out.gimme)"
 
 # Install agent
 retry git clone https://code.googlesource.com/gocloud $GOCLOUD_HOME >/dev/null
@@ -138,8 +143,6 @@ func (tc *goGCETestCase) initializeStartupScript(template *template.Template, co
 }
 
 func TestAgentIntegration(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1366")
-
 	// Testing against master requires building go code and may take up to 10 minutes.
 	// Allow this test to run in parallel with other top level tests to avoid timeouts.
 	t.Parallel()
