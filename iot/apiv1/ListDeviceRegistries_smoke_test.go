@@ -38,6 +38,8 @@ var _ = strconv.FormatUint
 var _ = time.Now
 
 func TestDeviceManagerSmoke(t *testing.T) {
+	t.Skip("Internal bug 128672764")
+
 	if testing.Short() {
 		t.Skip("skipping smoke test in short mode")
 	}
