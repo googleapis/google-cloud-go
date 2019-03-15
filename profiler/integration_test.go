@@ -138,6 +138,8 @@ func (tc *goGCETestCase) initializeStartupScript(template *template.Template, co
 }
 
 func TestAgentIntegration(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1366")
+
 	// Testing against master requires building go code and may take up to 10 minutes.
 	// Allow this test to run in parallel with other top level tests to avoid timeouts.
 	t.Parallel()

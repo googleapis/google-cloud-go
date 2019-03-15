@@ -253,6 +253,8 @@ func TestIntegration_TableCreateView(t *testing.T) {
 }
 
 func TestIntegration_TableMetadata(t *testing.T) {
+	t.Skip("Internal bug 128670231")
+
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
