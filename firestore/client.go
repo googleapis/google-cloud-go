@@ -133,6 +133,19 @@ func (c *Client) Doc(path string) *DocumentRef {
 	return doc
 }
 
+// CollectionGroup creates a reference to a group of collections that include
+// the given ID, regardless of parent document.
+//
+// For example, consider:
+// France/Cities/Paris = {population: 100}
+// Canada/Cities/Montreal = {population: 90}
+//
+// CollectionGroup can be used to query across all "Cities" regardless of
+// its parent "Countries". See ExampleCollectionGroup for a complete example.
+func (c *Client) CollectionGroup(collectionID string) *CollectionGroupRef {
+	return newCollectionGroupRef(c, c.path(), collectionID)
+}
+
 func (c *Client) idsToRef(IDs []string, dbPath string) (*CollectionRef, *DocumentRef) {
 	if len(IDs) == 0 {
 		return nil, nil

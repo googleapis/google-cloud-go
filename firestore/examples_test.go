@@ -607,3 +607,29 @@ func ExampleArrayRemove_update() {
 	}
 	fmt.Println(wr.UpdateTime)
 }
+
+func ExampleCollectionGroup() {
+	// Given:
+	// France/Cities/Paris = {population: 100}
+	// Canada/Cities/Montreal = {population: 95}
+
+	ctx := context.Background()
+	client, err := firestore.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer client.Close()
+
+	// Query for ANY city with >95 pop, regardless of country.
+	docs, err := client.CollectionGroup("Cities").
+		Where("pop", ">", 95).
+		OrderBy("pop", firestore.Desc).
+		Limit(10).
+		Documents(ctx).
+		GetAll()
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	_ = docs // TODO: Use docs.
+}
