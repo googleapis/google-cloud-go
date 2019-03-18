@@ -1262,6 +1262,44 @@ func TestIntegration_MissingDocs(t *testing.T) {
 	}
 }
 
+func TestIntegration_CollectionGroupQueries(t *testing.T) {
+	shouldBeFoundID := collectionIDs.New()
+	shouldNotBeFoundID := collectionIDs.New()
+
+	ctx := context.Background()
+	h := testHelper{t}
+	client := integrationClient(t)
+	cr1 := client.Collection(shouldBeFoundID)
+	dr1 := cr1.Doc("should-be-found-1")
+	h.mustCreate(dr1, map[string]string{"some-key": "should-be-found"})
+	defer h.mustDelete(dr1)
+
+	dr1.Collection(shouldBeFoundID)
+	dr2 := cr1.Doc("should-be-found-2")
+	h.mustCreate(dr2, map[string]string{"some-key": "should-be-found"})
+	defer h.mustDelete(dr2)
+
+	cr3 := client.Collection(shouldNotBeFoundID)
+	dr3 := cr3.Doc("should-not-be-found")
+	h.mustCreate(dr3, map[string]string{"some-key": "should-NOT-be-found"})
+	defer h.mustDelete(dr3)
+
+	cg := client.CollectionGroup(shouldBeFoundID)
+	snaps, err := cg.Documents(ctx).GetAll()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(snaps) != 2 {
+		t.Fatalf("expected 2 snapshots but got %d", len(snaps))
+	}
+	if snaps[0].Ref.ID != "should-be-found-1" {
+		t.Fatalf("expected ID 'should-be-found-1', got %s", snaps[0].Ref.ID)
+	}
+	if snaps[1].Ref.ID != "should-be-found-2" {
+		t.Fatalf("expected ID 'should-be-found-2', got %s", snaps[1].Ref.ID)
+	}
+}
+
 func codeEq(t *testing.T, msg string, code codes.Code, err error) {
 	if grpc.Code(err) != code {
 		t.Fatalf("%s:\ngot <%v>\nwant code %s", msg, err, code)
