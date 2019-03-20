@@ -325,6 +325,10 @@ func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRo
 		return status.Errorf(codes.NotFound, "table %q not found", req.TableName)
 	}
 
+	if err := validateRowRanges(req); err != nil {
+		return err
+	}
+
 	// Rows to read can be specified by a set of row keys and/or a set of row ranges.
 	// Output is a stream of sorted, de-duped rows.
 	tbl.mu.RLock()
