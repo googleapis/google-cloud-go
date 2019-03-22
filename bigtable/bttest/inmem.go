@@ -81,12 +81,14 @@ type Server struct {
 // It is a separate and unexported type so the API won't be cluttered with
 // methods that are only relevant to the fake's implementation.
 type server struct {
-	mu     sync.Mutex
-	tables map[string]*table // keyed by fully qualified name
-	gcc    chan int          // set when gcloop starts, closed when server shuts down
+	mu        sync.Mutex
+	tables    map[string]*table          // keyed by fully qualified name
+	instances map[string]*btapb.Instance // keyed by fully qualified name
+	gcc       chan int                   // set when gcloop starts, closed when server shuts down
 
 	// Any unimplemented methods will cause a panic.
 	btapb.BigtableTableAdminServer
+	btapb.BigtableInstanceAdminServer
 	btpb.BigtableServer
 }
 
@@ -104,9 +106,11 @@ func NewServer(laddr string, opt ...grpc.ServerOption) (*Server, error) {
 		l:    l,
 		srv:  grpc.NewServer(opt...),
 		s: &server{
-			tables: make(map[string]*table),
+			tables:    make(map[string]*table),
+			instances: make(map[string]*btapb.Instance),
 		},
 	}
+	btapb.RegisterBigtableInstanceAdminServer(s.srv, s.s)
 	btapb.RegisterBigtableTableAdminServer(s.srv, s.s)
 	btpb.RegisterBigtableServer(s.srv, s.s)
 
