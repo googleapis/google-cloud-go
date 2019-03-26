@@ -894,11 +894,13 @@ func TestSubscriberCreateSubscription(t *testing.T) {
 	var topic2 string = "topic2-1139259102"
 	var ackDeadlineSeconds int32 = 2135351438
 	var retainAckedMessages bool = false
+	var enableMessageOrdering bool = true
 	var expectedResponse = &pubsubpb.Subscription{
-		Name:                name2,
-		Topic:               topic2,
-		AckDeadlineSeconds:  ackDeadlineSeconds,
-		RetainAckedMessages: retainAckedMessages,
+		Name:                  name2,
+		Topic:                 topic2,
+		AckDeadlineSeconds:    ackDeadlineSeconds,
+		RetainAckedMessages:   retainAckedMessages,
+		EnableMessageOrdering: enableMessageOrdering,
 	}
 
 	mockSubscriber.err = nil
@@ -963,11 +965,13 @@ func TestSubscriberGetSubscription(t *testing.T) {
 	var topic string = "topic110546223"
 	var ackDeadlineSeconds int32 = 2135351438
 	var retainAckedMessages bool = false
+	var enableMessageOrdering bool = true
 	var expectedResponse = &pubsubpb.Subscription{
-		Name:                name,
-		Topic:               topic,
-		AckDeadlineSeconds:  ackDeadlineSeconds,
-		RetainAckedMessages: retainAckedMessages,
+		Name:                  name,
+		Topic:                 topic,
+		AckDeadlineSeconds:    ackDeadlineSeconds,
+		RetainAckedMessages:   retainAckedMessages,
+		EnableMessageOrdering: enableMessageOrdering,
 	}
 
 	mockSubscriber.err = nil
@@ -1028,11 +1032,13 @@ func TestSubscriberUpdateSubscription(t *testing.T) {
 	var topic string = "topic110546223"
 	var ackDeadlineSeconds2 int32 = 921632575
 	var retainAckedMessages bool = false
+	var enableMessageOrdering bool = true
 	var expectedResponse = &pubsubpb.Subscription{
-		Name:                name,
-		Topic:               topic,
-		AckDeadlineSeconds:  ackDeadlineSeconds2,
-		RetainAckedMessages: retainAckedMessages,
+		Name:                  name,
+		Topic:                 topic,
+		AckDeadlineSeconds:    ackDeadlineSeconds2,
+		RetainAckedMessages:   retainAckedMessages,
+		EnableMessageOrdering: enableMessageOrdering,
 	}
 
 	mockSubscriber.err = nil
