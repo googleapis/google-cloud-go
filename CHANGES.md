@@ -1,5 +1,17 @@
 # Changes
 
+## 0.37.2
+
+This patch release is mostly intended to bring in v0.3.0 of
+google.golang.org/api, which fixes a GCF deployment issue.
+
+Note: we had to-date accidentally marked Redis as stable. In this release, we've
+fixed it by downgrading its documentation to alpha, as it is in other languages
+and docs.
+
+- all:
+  - Document context in generated libraries.
+
 ## 0.37.1
 
 Small go.mod version bumps to bring in v0.2.0 of google.golang.org/api, which
