@@ -20,9 +20,9 @@ go install golang.org/x/exp/cmd/apidiff
 # Thankfully the fix is quite simple: rebase your branch.
 git clone https://code.googlesource.com/gocloud /tmp/gocloud
 
-V1_DIRS=`find . -type d -regex '.*v1$'`
-V1_SUBDIRS=`find . -type d -regex '.*v1\/.*'`
-for dir in $V1_DIRS $V1_SUBDIRS; do
+MANUALS="bigquery bigtable datastore firestore pubsub spanner storage logging"
+STABLE_GAPICS="container/apiv1 dataproc/apiv1 iam iam/admin/apiv1 iam/credentials/apiv1 kms/apiv1 language/apiv1 logging/apiv2 logging/logadmin pubsub/apiv1 spanner/apiv1 translate/apiv1 vision/apiv1"
+for dir in $MANUALS $STABLE_GAPICS; do
   # turns things like ./foo/bar into foo/bar
   dir_without_junk=`echo $dir | sed -n "s#\(\.\/\)\(.*\)#\2#p"`
   pkg="cloud.google.com/go/$dir_without_junk"
