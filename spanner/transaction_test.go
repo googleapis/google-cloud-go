@@ -267,7 +267,17 @@ func TestReadWriteTransaction_ErrorReturned(t *testing.T) {
 		&sppb.BeginTransactionRequest{},
 		&sppb.RollbackRequest{},
 	}); err != nil {
-		t.Fatal(err)
+		// If we failed to get 3, it might have because - due to timing - we got
+		// a fourth request. If this request is DeleteSession, that's OK and
+		// expected.
+		if _, err := shouldHaveReceived(mock, []interface{}{
+			&sppb.CreateSessionRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.RollbackRequest{},
+			&sppb.DeleteSessionRequest{},
+		}); err != nil {
+			t.Fatal(err)
+		}
 	}
 }
 
