@@ -26,6 +26,7 @@ import (
 
 	"cloud.google.com/go/bigtable/internal/gax"
 	btopt "cloud.google.com/go/bigtable/internal/option"
+	"cloud.google.com/go/internal/trace"
 	"github.com/golang/protobuf/proto"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -147,8 +148,8 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 
 	var prevRowKey string
 	var err error
-	ctx = traceStartSpan(ctx, "cloud.google.com/go/bigtable.ReadRows")
-	defer func() { traceEndSpan(ctx, err) }()
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable.ReadRows")
+	defer func() { trace.EndSpan(ctx, err) }()
 	attrMap := make(map[string]interface{})
 	err = gax.Invoke(ctx, func(ctx context.Context) error {
 		if !arg.valid() {
@@ -185,12 +186,12 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 				attrMap["rowKey"] = prevRowKey
 				attrMap["error"] = err.Error()
 				attrMap["time_secs"] = time.Since(startTime).Seconds()
-				tracePrintf(ctx, attrMap, "Retry details in ReadRows")
+				trace.TracePrintf(ctx, attrMap, "Retry details in ReadRows")
 				return err
 			}
 			attrMap["time_secs"] = time.Since(startTime).Seconds()
 			attrMap["rowCount"] = len(res.Chunks)
-			tracePrintf(ctx, attrMap, "Details in ReadRows")
+			trace.TracePrintf(ctx, attrMap, "Details in ReadRows")
 
 			for _, cc := range res.Chunks {
 				row, err := cr.Process(cc)
@@ -477,8 +478,8 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 	}
 
 	var err error
-	ctx = traceStartSpan(ctx, "cloud.google.com/go/bigtable/Apply")
-	defer func() { traceEndSpan(ctx, err) }()
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable/Apply")
+	defer func() { trace.EndSpan(ctx, err) }()
 	var callOptions []gax.CallOption
 	if m.cond == nil {
 		req := &btpb.MutateRowRequest{
@@ -657,14 +658,14 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 	}
 
 	var err error
-	ctx = traceStartSpan(ctx, "cloud.google.com/go/bigtable/ApplyBulk")
-	defer func() { traceEndSpan(ctx, err) }()
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable/ApplyBulk")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	for _, group := range groupEntries(origEntries, maxMutations) {
 		attrMap := make(map[string]interface{})
 		err = gax.Invoke(ctx, func(ctx context.Context) error {
 			attrMap["rowCount"] = len(group)
-			tracePrintf(ctx, attrMap, "Row count in ApplyBulk")
+			trace.TracePrintf(ctx, attrMap, "Row count in ApplyBulk")
 			err := t.doApplyBulk(ctx, group, opts...)
 			if err != nil {
 				// We want to retry the entire request with the current group
