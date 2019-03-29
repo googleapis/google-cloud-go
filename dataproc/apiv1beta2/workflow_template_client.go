@@ -437,22 +437,6 @@ func (op *InstantiateInlineWorkflowTemplateOperation) Name() string {
 	return op.lro.Name()
 }
 
-// Cancel starts asynchronous cancellation on a long-running operation.
-// The server makes a best effort to cancel the operation, but success is not guaranteed.
-// Clients can use Poll or other methods to check whether the cancellation succeeded or whether the operation
-// completed despite cancellation. On successful cancellation, the operation is not deleted;
-// instead, op.Poll returns an error with code Canceled.
-func (op *InstantiateInlineWorkflowTemplateOperation) Cancel(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Cancel(ctx, opts...)
-}
-
-// Delete deletes a long-running operation.
-// This method indicates that the client is no longer interested in the operation result.
-// It does not cancel the operation.
-func (op *InstantiateInlineWorkflowTemplateOperation) Delete(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Delete(ctx, opts...)
-}
-
 // InstantiateWorkflowTemplateOperation manages a long-running operation from InstantiateWorkflowTemplate.
 type InstantiateWorkflowTemplateOperation struct {
 	lro *longrunning.Operation
@@ -507,20 +491,4 @@ func (op *InstantiateWorkflowTemplateOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *InstantiateWorkflowTemplateOperation) Name() string {
 	return op.lro.Name()
-}
-
-// Cancel starts asynchronous cancellation on a long-running operation.
-// The server makes a best effort to cancel the operation, but success is not guaranteed.
-// Clients can use Poll or other methods to check whether the cancellation succeeded or whether the operation
-// completed despite cancellation. On successful cancellation, the operation is not deleted;
-// instead, op.Poll returns an error with code Canceled.
-func (op *InstantiateWorkflowTemplateOperation) Cancel(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Cancel(ctx, opts...)
-}
-
-// Delete deletes a long-running operation.
-// This method indicates that the client is no longer interested in the operation result.
-// It does not cancel the operation.
-func (op *InstantiateWorkflowTemplateOperation) Delete(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Delete(ctx, opts...)
 }
