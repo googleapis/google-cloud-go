@@ -19,7 +19,6 @@ package pubsub
 import (
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	timestamppb "github.com/golang/protobuf/ptypes/timestamp"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 	field_maskpb "google.golang.org/genproto/protobuf/field_mask"
 )
@@ -146,57 +145,6 @@ func (s *mockPublisherServer) DeleteTopic(ctx context.Context, req *pubsubpb.Del
 		return nil, s.err
 	}
 	return s.resps[0].(*emptypb.Empty), nil
-}
-
-type mockIamPolicyServer struct {
-	// Embed for forward compatibility.
-	// Tests will keep working if more methods are added
-	// in the future.
-	iampb.IAMPolicyServer
-
-	reqs []proto.Message
-
-	// If set, all calls return this error.
-	err error
-
-	// responses to return if err == nil
-	resps []proto.Message
-}
-
-func (s *mockIamPolicyServer) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*iampb.Policy), nil
-}
-
-func (s *mockIamPolicyServer) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*iampb.Policy), nil
-}
-
-func (s *mockIamPolicyServer) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*iampb.TestIamPermissionsResponse), nil
 }
 
 type mockSubscriberServer struct {
@@ -413,7 +361,6 @@ var clientOpt option.ClientOption
 
 var (
 	mockPublisher  mockPublisherServer
-	mockIamPolicy  mockIamPolicyServer
 	mockSubscriber mockSubscriberServer
 )
 
@@ -422,7 +369,6 @@ func TestMain(m *testing.M) {
 
 	serv := grpc.NewServer()
 	pubsubpb.RegisterPublisherServer(serv, &mockPublisher)
-	iampb.RegisterIAMPolicyServer(serv, &mockIamPolicy)
 	pubsubpb.RegisterSubscriberServer(serv, &mockSubscriber)
 
 	lis, err := net.Listen("tcp", "localhost:0")

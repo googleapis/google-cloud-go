@@ -3003,8 +3003,10 @@ func TestSessionEntityTypesDeleteSessionEntityTypeError(t *testing.T) {
 }
 func TestSessionsDetectIntent(t *testing.T) {
 	var responseId string = "responseId1847552473"
+	var outputAudio []byte = []byte("24")
 	var expectedResponse = &dialogflowpb.DetectIntentResponse{
-		ResponseId: responseId,
+		ResponseId:  responseId,
+		OutputAudio: outputAudio,
 	}
 
 	mockSessions.err = nil
@@ -3066,8 +3068,10 @@ func TestSessionsDetectIntentError(t *testing.T) {
 }
 func TestSessionsStreamingDetectIntent(t *testing.T) {
 	var responseId string = "responseId1847552473"
+	var outputAudio []byte = []byte("24")
 	var expectedResponse = &dialogflowpb.StreamingDetectIntentResponse{
-		ResponseId: responseId,
+		ResponseId:  responseId,
+		OutputAudio: outputAudio,
 	}
 
 	mockSessions.err = nil
