@@ -63,7 +63,7 @@ Google API                                   | Status       | Package
 [Dialogflow][cloud-dialogflow]               | alpha        | [`cloud.google.com/go/dialogflow/apiv2`][cloud-dialogflow-ref]
 [Data Loss Prevention][cloud-dlp]            | alpha        | [`cloud.google.com/go/dlp/apiv2`][cloud-dlp-ref]
 [ErrorReporting][cloud-errors]               | alpha        | [`cloud.google.com/go/errorreporting`][cloud-errors-ref]
-[Firestore][cloud-firestore]                 | beta         | [`cloud.google.com/go/firestore`][cloud-firestore-ref]
+[Firestore][cloud-firestore]                 | stable       | [`cloud.google.com/go/firestore`][cloud-firestore-ref]
 [IAM][cloud-iam]                             | stable       | [`cloud.google.com/go/iam`][cloud-iam-ref]
 [KMS][cloud-kms]                             | stable       | [`cloud.google.com/go/kms`][cloud-kms-ref]
 [Natural Language][cloud-natural-language]   | stable       | [`cloud.google.com/go/language/apiv1`][cloud-natural-language-ref]
