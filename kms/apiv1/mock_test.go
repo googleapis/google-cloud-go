@@ -20,7 +20,6 @@ import (
 	durationpb "github.com/golang/protobuf/ptypes/duration"
 	timestamppb "github.com/golang/protobuf/ptypes/timestamp"
 	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	field_maskpb "google.golang.org/genproto/protobuf/field_mask"
 )
 
@@ -292,64 +291,12 @@ func (s *mockKeyManagementServer) RestoreCryptoKeyVersion(ctx context.Context, r
 	return s.resps[0].(*kmspb.CryptoKeyVersion), nil
 }
 
-type mockIamPolicyServer struct {
-	// Embed for forward compatibility.
-	// Tests will keep working if more methods are added
-	// in the future.
-	iampb.IAMPolicyServer
-
-	reqs []proto.Message
-
-	// If set, all calls return this error.
-	err error
-
-	// responses to return if err == nil
-	resps []proto.Message
-}
-
-func (s *mockIamPolicyServer) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*iampb.Policy), nil
-}
-
-func (s *mockIamPolicyServer) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*iampb.Policy), nil
-}
-
-func (s *mockIamPolicyServer) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*iampb.TestIamPermissionsResponse), nil
-}
-
 // clientOpt is the option tests should use to connect to the test server.
 // It is initialized by TestMain.
 var clientOpt option.ClientOption
 
 var (
 	mockKeyManagement mockKeyManagementServer
-	mockIamPolicy     mockIamPolicyServer
 )
 
 func TestMain(m *testing.M) {
@@ -357,7 +304,6 @@ func TestMain(m *testing.M) {
 
 	serv := grpc.NewServer()
 	kmspb.RegisterKeyManagementServiceServer(serv, &mockKeyManagement)
-	iampb.RegisterIAMPolicyServer(serv, &mockIamPolicy)
 
 	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
