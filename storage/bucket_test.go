@@ -33,6 +33,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		ACL:  []ACLRule{{Entity: "bob@example.com", Role: RoleOwner, Domain: "d", Email: "e"}},
 		DefaultObjectACL: []ACLRule{{Entity: AllUsers, Role: RoleReader, EntityID: "eid",
 			ProjectTeam: &ProjectTeam{ProjectNumber: "17", Team: "t"}}},
+		Etag:         "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
 		Location:     "loc",
 		StorageClass: "class",
 		RetentionPolicy: &RetentionPolicy{
@@ -365,6 +366,7 @@ func TestNewBucket(t *testing.T) {
 		Versioning:            &raw.BucketVersioning{Enabled: true},
 		Labels:                labels,
 		Billing:               &raw.BucketBilling{RequesterPays: true},
+		Etag:                  "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
 		Lifecycle: &raw.BucketLifecycle{
 			Rule: []*raw.BucketLifecycleRule{{
 				Action: &raw.BucketLifecycleRuleAction{
@@ -414,6 +416,7 @@ func TestNewBucket(t *testing.T) {
 		Created:               time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
 		VersioningEnabled:     true,
 		Labels:                labels,
+		Etag:                  "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
 		RequesterPays:         true,
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{

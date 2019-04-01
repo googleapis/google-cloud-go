@@ -812,3 +812,98 @@ func newTestServer(handler func(w http.ResponseWriter, r *http.Request)) (*http.
 		ts.Close()
 	}
 }
+
+func TestRawObjectToObjectAttrs(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		in   *raw.Object
+		want *ObjectAttrs
+	}{
+		{in: nil, want: nil},
+		{
+			in: &raw.Object{
+				Bucket:                  "Test",
+				ContentLanguage:         "en-us",
+				ContentType:             "video/mpeg",
+				EventBasedHold:          false,
+				Etag:                    "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
+				Generation:              7,
+				Md5Hash:                 "MTQ2ODNjYmE0NDRkYmNjNmRiMjk3NjQ1ZTY4M2Y1YzE=",
+				Name:                    "foo.mp4",
+				RetentionExpirationTime: "2019-03-31T19:33:36Z",
+				Size:                    1 << 20,
+				TimeCreated:             "2019-03-31T19:32:10Z",
+				TimeDeleted:             "2019-03-31T19:33:39Z",
+				TemporaryHold:           true,
+			},
+			want: &ObjectAttrs{
+				Bucket:                  "Test",
+				Created:                 time.Date(2019, 3, 31, 19, 32, 10, 0, time.UTC),
+				ContentLanguage:         "en-us",
+				ContentType:             "video/mpeg",
+				Deleted:                 time.Date(2019, 3, 31, 19, 33, 39, 0, time.UTC),
+				EventBasedHold:          false,
+				Etag:                    "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
+				Generation:              7,
+				MD5:                     []byte("14683cba444dbcc6db297645e683f5c1"),
+				Name:                    "foo.mp4",
+				RetentionExpirationTime: time.Date(2019, 3, 31, 19, 33, 36, 0, time.UTC),
+				Size:                    1 << 20,
+				TemporaryHold:           true,
+			},
+		},
+	}
+
+	for i, tt := range tests {
+		got := newObject(tt.in)
+		if diff := testutil.Diff(got, tt.want); diff != "" {
+			t.Errorf("#%d: newObject mismatches:\ngot=-, want=+:\n%s", i, diff)
+		}
+	}
+}
+
+func TestObjectAttrsToRawObject(t *testing.T) {
+	t.Parallel()
+	bucketName := "the-bucket"
+	tests := []struct {
+		in   *ObjectAttrs
+		want *raw.Object
+	}{
+		{
+
+			in: &ObjectAttrs{
+				Bucket:                  "Test",
+				Created:                 time.Date(2019, 3, 31, 19, 32, 10, 0, time.UTC),
+				ContentLanguage:         "en-us",
+				ContentType:             "video/mpeg",
+				Deleted:                 time.Date(2019, 3, 31, 19, 33, 39, 0, time.UTC),
+				EventBasedHold:          false,
+				Etag:                    "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
+				Generation:              7,
+				MD5:                     []byte("14683cba444dbcc6db297645e683f5c1"),
+				Name:                    "foo.mp4",
+				RetentionExpirationTime: time.Date(2019, 3, 31, 19, 33, 36, 0, time.UTC),
+				Size:                    1 << 20,
+				TemporaryHold:           true,
+			},
+			want: &raw.Object{
+				Bucket:                  bucketName,
+				ContentLanguage:         "en-us",
+				ContentType:             "video/mpeg",
+				EventBasedHold:          false,
+				Name:                    "foo.mp4",
+				RetentionExpirationTime: "2019-03-31T19:33:36Z",
+				TemporaryHold:           true,
+			},
+		},
+	}
+
+	for i, tt := range tests {
+		got := tt.in.toRawObject(bucketName)
+		if !testutil.Equal(got, tt.want) {
+			if diff := testutil.Diff(got, tt.want); diff != "" {
+				t.Errorf("#%d: toRawObject mismatches:\ngot=-, want=+:\n%s", i, diff)
+			}
+		}
+	}
+}
