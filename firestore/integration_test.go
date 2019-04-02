@@ -1337,3 +1337,27 @@ func (h testHelper) mustSet(doc *DocumentRef, data interface{}, opts ...SetOptio
 	}
 	return wr
 }
+
+func TestDetectProjectID(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	ctx := context.Background()
+
+	creds := testutil.Credentials(ctx)
+	if creds == nil {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
+
+	// Use creds with project ID.
+	if _, err := NewClient(ctx, DetectProjectID, option.WithCredentials(creds)); err != nil {
+		t.Errorf("NewClient: %v", err)
+	}
+
+	ts := testutil.ErroringTokenSource{}
+	// Try to use creds without project ID.
+	_, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(ts))
+	if err == nil || err.Error() != "firestore: see the docs on DetectProjectID" {
+		t.Errorf("expected an error while using TokenSource that does not have a project ID")
+	}
+}
