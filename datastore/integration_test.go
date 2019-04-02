@@ -31,7 +31,6 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/rpcreplay"
-	"golang.org/x/oauth2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -1265,7 +1264,6 @@ func TestDetectProjectID(t *testing.T) {
 	ctx := context.Background()
 
 	creds := testutil.Credentials(ctx, ScopeDatastore)
-	ts := fakets{}
 	if creds == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
@@ -1275,15 +1273,10 @@ func TestDetectProjectID(t *testing.T) {
 		t.Errorf("NewClient: %v", err)
 	}
 
+	ts := testutil.ErroringTokenSource{}
 	// Try to use creds without project ID.
 	_, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(ts))
-	if err == nil && err.Error() != "datastore: see the docs on DetectProjectID" {
+	if err == nil || err.Error() != "datastore: see the docs on DetectProjectID" {
 		t.Errorf("expected an error while using TokenSource that does not have a project ID")
 	}
-}
-
-type fakets struct{}
-
-func (f fakets) Token() (*oauth2.Token, error) {
-	return nil, errors.New("shouldn't see this")
 }
