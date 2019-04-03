@@ -24,6 +24,7 @@ import (
 	"time"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
+	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
 	"github.com/golang/protobuf/ptypes"
 	gax "github.com/googleapis/gax-go/v2"
@@ -137,7 +138,10 @@ func (c *Client) idsToRef(IDs []string, dbPath string) (*CollectionRef, *Documen
 // returned in the order of the given DocumentRefs.
 //
 // If a document is not present, the corresponding DocumentSnapshot's Exists method will return false.
-func (c *Client) GetAll(ctx context.Context, docRefs []*DocumentRef) ([]*DocumentSnapshot, error) {
+func (c *Client) GetAll(ctx context.Context, docRefs []*DocumentRef) (_ []*DocumentSnapshot, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.GetAll")
+	defer func() { trace.EndSpan(ctx, err) }()
+
 	return c.getAll(ctx, docRefs, nil)
 }
 
