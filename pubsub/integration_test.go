@@ -17,6 +17,7 @@ package pubsub
 import (
 	"context"
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -105,8 +106,11 @@ func TestIntegration_All(t *testing.T) {
 
 	for _, sync := range []bool{false, true} {
 		for _, maxMsgs := range []int{0, 3, -1} { // MaxOutstandingMessages = default, 3, unlimited
-			testPublishAndReceive(t, topic, sub, maxMsgs, sync)
+			testPublishAndReceive(t, topic, sub, maxMsgs, sync, 10, 0)
 		}
+
+		// Tests for large messages (larger than the 4MB gRPC limit).
+		testPublishAndReceive(t, topic, sub, 0, sync, 1, 5*1024*1024)
 	}
 	if msg, ok := testIAM(ctx, topic.IAM(), "pubsub.topics.get"); !ok {
 		t.Errorf("topic IAM: %s", msg)
@@ -175,11 +179,11 @@ func TestIntegration_All(t *testing.T) {
 	}
 }
 
-func testPublishAndReceive(t *testing.T, topic *Topic, sub *Subscription, maxMsgs int, synchronous bool) {
+func testPublishAndReceive(t *testing.T, topic *Topic, sub *Subscription, maxMsgs int, synchronous bool, numMsgs, extraBytes int) {
 	ctx := context.Background()
 	var msgs []*Message
-	for i := 0; i < 10; i++ {
-		text := fmt.Sprintf("a message with an index %d", i)
+	for i := 0; i < numMsgs; i++ {
+		text := fmt.Sprintf("a message with an index %d - %s", i, strings.Repeat(".", extraBytes))
 		attrs := make(map[string]string)
 		attrs["foo"] = "bar"
 		msgs = append(msgs, &Message{
