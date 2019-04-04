@@ -54,7 +54,9 @@ func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 
 // DefaultAuthScopes reports the default set of authentication scopes to use with this package.
 func DefaultAuthScopes() []string {
-	return []string{}
+	return []string{
+		"https://www.googleapis.com/auth/cloud-platform",
+	}
 }
 
 // versionGo returns the Go runtime version. The returned string
@@ -94,4 +96,4 @@ func versionGo() string {
 	return "UNKNOWN"
 }
 
-const versionClient = "20190401"
+const versionClient = "20190404"

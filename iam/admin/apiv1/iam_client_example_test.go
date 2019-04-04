@@ -270,3 +270,141 @@ func ExampleIamClient_SignJwt() {
 	// TODO: Use resp.
 	_ = resp
 }
+
+func ExampleIamClient_ListRoles() {
+	ctx := context.Background()
+	c, err := admin.NewIamClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &adminpb.ListRolesRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListRoles(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleIamClient_GetRole() {
+	ctx := context.Background()
+	c, err := admin.NewIamClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &adminpb.GetRoleRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetRole(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleIamClient_CreateRole() {
+	ctx := context.Background()
+	c, err := admin.NewIamClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &adminpb.CreateRoleRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.CreateRole(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleIamClient_UpdateRole() {
+	ctx := context.Background()
+	c, err := admin.NewIamClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &adminpb.UpdateRoleRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.UpdateRole(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleIamClient_DeleteRole() {
+	ctx := context.Background()
+	c, err := admin.NewIamClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &adminpb.DeleteRoleRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.DeleteRole(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleIamClient_UndeleteRole() {
+	ctx := context.Background()
+	c, err := admin.NewIamClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &adminpb.UndeleteRoleRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.UndeleteRole(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleIamClient_QueryTestablePermissions() {
+	ctx := context.Background()
+	c, err := admin.NewIamClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &adminpb.QueryTestablePermissionsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.QueryTestablePermissions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
