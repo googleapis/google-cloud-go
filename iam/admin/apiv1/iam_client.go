@@ -36,21 +36,28 @@ import (
 
 // IamCallOptions contains the retry settings for each method of IamClient.
 type IamCallOptions struct {
-	ListServiceAccounts     []gax.CallOption
-	GetServiceAccount       []gax.CallOption
-	CreateServiceAccount    []gax.CallOption
-	UpdateServiceAccount    []gax.CallOption
-	DeleteServiceAccount    []gax.CallOption
-	ListServiceAccountKeys  []gax.CallOption
-	GetServiceAccountKey    []gax.CallOption
-	CreateServiceAccountKey []gax.CallOption
-	DeleteServiceAccountKey []gax.CallOption
-	SignBlob                []gax.CallOption
-	GetIamPolicy            []gax.CallOption
-	SetIamPolicy            []gax.CallOption
-	TestIamPermissions      []gax.CallOption
-	QueryGrantableRoles     []gax.CallOption
-	SignJwt                 []gax.CallOption
+	ListServiceAccounts      []gax.CallOption
+	GetServiceAccount        []gax.CallOption
+	CreateServiceAccount     []gax.CallOption
+	UpdateServiceAccount     []gax.CallOption
+	DeleteServiceAccount     []gax.CallOption
+	ListServiceAccountKeys   []gax.CallOption
+	GetServiceAccountKey     []gax.CallOption
+	CreateServiceAccountKey  []gax.CallOption
+	DeleteServiceAccountKey  []gax.CallOption
+	SignBlob                 []gax.CallOption
+	GetIamPolicy             []gax.CallOption
+	SetIamPolicy             []gax.CallOption
+	TestIamPermissions       []gax.CallOption
+	QueryGrantableRoles      []gax.CallOption
+	SignJwt                  []gax.CallOption
+	ListRoles                []gax.CallOption
+	GetRole                  []gax.CallOption
+	CreateRole               []gax.CallOption
+	UpdateRole               []gax.CallOption
+	DeleteRole               []gax.CallOption
+	UndeleteRole             []gax.CallOption
+	QueryTestablePermissions []gax.CallOption
 }
 
 func defaultIamClientOptions() []option.ClientOption {
@@ -76,21 +83,28 @@ func defaultIamCallOptions() *IamCallOptions {
 		},
 	}
 	return &IamCallOptions{
-		ListServiceAccounts:     retry[[2]string{"default", "idempotent"}],
-		GetServiceAccount:       retry[[2]string{"default", "idempotent"}],
-		CreateServiceAccount:    retry[[2]string{"default", "non_idempotent"}],
-		UpdateServiceAccount:    retry[[2]string{"default", "idempotent"}],
-		DeleteServiceAccount:    retry[[2]string{"default", "idempotent"}],
-		ListServiceAccountKeys:  retry[[2]string{"default", "idempotent"}],
-		GetServiceAccountKey:    retry[[2]string{"default", "idempotent"}],
-		CreateServiceAccountKey: retry[[2]string{"default", "non_idempotent"}],
-		DeleteServiceAccountKey: retry[[2]string{"default", "idempotent"}],
-		SignBlob:                retry[[2]string{"default", "non_idempotent"}],
-		GetIamPolicy:            retry[[2]string{"default", "non_idempotent"}],
-		SetIamPolicy:            retry[[2]string{"default", "non_idempotent"}],
-		TestIamPermissions:      retry[[2]string{"default", "non_idempotent"}],
-		QueryGrantableRoles:     retry[[2]string{"default", "non_idempotent"}],
-		SignJwt:                 retry[[2]string{"default", "non_idempotent"}],
+		ListServiceAccounts:      retry[[2]string{"default", "idempotent"}],
+		GetServiceAccount:        retry[[2]string{"default", "idempotent"}],
+		CreateServiceAccount:     retry[[2]string{"default", "non_idempotent"}],
+		UpdateServiceAccount:     retry[[2]string{"default", "idempotent"}],
+		DeleteServiceAccount:     retry[[2]string{"default", "idempotent"}],
+		ListServiceAccountKeys:   retry[[2]string{"default", "idempotent"}],
+		GetServiceAccountKey:     retry[[2]string{"default", "idempotent"}],
+		CreateServiceAccountKey:  retry[[2]string{"default", "non_idempotent"}],
+		DeleteServiceAccountKey:  retry[[2]string{"default", "idempotent"}],
+		SignBlob:                 retry[[2]string{"default", "non_idempotent"}],
+		GetIamPolicy:             retry[[2]string{"default", "non_idempotent"}],
+		SetIamPolicy:             retry[[2]string{"default", "non_idempotent"}],
+		TestIamPermissions:       retry[[2]string{"default", "non_idempotent"}],
+		QueryGrantableRoles:      retry[[2]string{"default", "non_idempotent"}],
+		SignJwt:                  retry[[2]string{"default", "non_idempotent"}],
+		ListRoles:                retry[[2]string{"default", "idempotent"}],
+		GetRole:                  retry[[2]string{"default", "idempotent"}],
+		CreateRole:               retry[[2]string{"default", "non_idempotent"}],
+		UpdateRole:               retry[[2]string{"default", "non_idempotent"}],
+		DeleteRole:               retry[[2]string{"default", "non_idempotent"}],
+		UndeleteRole:             retry[[2]string{"default", "non_idempotent"}],
+		QueryTestablePermissions: retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 
@@ -445,6 +459,256 @@ func (c *IamClient) SignJwt(ctx context.Context, req *adminpb.SignJwtRequest, op
 		return nil, err
 	}
 	return resp, nil
+}
+
+// ListRoles lists the Roles defined on a resource.
+func (c *IamClient) ListRoles(ctx context.Context, req *adminpb.ListRolesRequest, opts ...gax.CallOption) *RoleIterator {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.ListRoles[0:len(c.CallOptions.ListRoles):len(c.CallOptions.ListRoles)], opts...)
+	it := &RoleIterator{}
+	req = proto.Clone(req).(*adminpb.ListRolesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Role, string, error) {
+		var resp *adminpb.ListRolesResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.iamClient.ListRoles(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.Roles, resp.NextPageToken, nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.PageSize)
+	return it
+}
+
+// GetRole gets a Role definition.
+func (c *IamClient) GetRole(ctx context.Context, req *adminpb.GetRoleRequest, opts ...gax.CallOption) (*adminpb.Role, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetRole[0:len(c.CallOptions.GetRole):len(c.CallOptions.GetRole)], opts...)
+	var resp *adminpb.Role
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamClient.GetRole(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// CreateRole creates a new Role.
+func (c *IamClient) CreateRole(ctx context.Context, req *adminpb.CreateRoleRequest, opts ...gax.CallOption) (*adminpb.Role, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.CreateRole[0:len(c.CallOptions.CreateRole):len(c.CallOptions.CreateRole)], opts...)
+	var resp *adminpb.Role
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamClient.CreateRole(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// UpdateRole updates a Role definition.
+func (c *IamClient) UpdateRole(ctx context.Context, req *adminpb.UpdateRoleRequest, opts ...gax.CallOption) (*adminpb.Role, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UpdateRole[0:len(c.CallOptions.UpdateRole):len(c.CallOptions.UpdateRole)], opts...)
+	var resp *adminpb.Role
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamClient.UpdateRole(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// DeleteRole soft deletes a role. The role is suspended and cannot be used to create new
+// IAM Policy Bindings.
+// The Role will not be included in ListRoles() unless show_deleted is set
+// in the ListRolesRequest. The Role contains the deleted boolean set.
+// Existing Bindings remains, but are inactive. The Role can be undeleted
+// within 7 days. After 7 days the Role is deleted and all Bindings associated
+// with the role are removed.
+func (c *IamClient) DeleteRole(ctx context.Context, req *adminpb.DeleteRoleRequest, opts ...gax.CallOption) (*adminpb.Role, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.DeleteRole[0:len(c.CallOptions.DeleteRole):len(c.CallOptions.DeleteRole)], opts...)
+	var resp *adminpb.Role
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamClient.DeleteRole(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// UndeleteRole undelete a Role, bringing it back in its previous state.
+func (c *IamClient) UndeleteRole(ctx context.Context, req *adminpb.UndeleteRoleRequest, opts ...gax.CallOption) (*adminpb.Role, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UndeleteRole[0:len(c.CallOptions.UndeleteRole):len(c.CallOptions.UndeleteRole)], opts...)
+	var resp *adminpb.Role
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamClient.UndeleteRole(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// QueryTestablePermissions lists the permissions testable on a resource.
+// A permission is testable if it can be tested for an identity on a resource.
+func (c *IamClient) QueryTestablePermissions(ctx context.Context, req *adminpb.QueryTestablePermissionsRequest, opts ...gax.CallOption) *PermissionIterator {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.QueryTestablePermissions[0:len(c.CallOptions.QueryTestablePermissions):len(c.CallOptions.QueryTestablePermissions)], opts...)
+	it := &PermissionIterator{}
+	req = proto.Clone(req).(*adminpb.QueryTestablePermissionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Permission, string, error) {
+		var resp *adminpb.QueryTestablePermissionsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.iamClient.QueryTestablePermissions(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.Permissions, resp.NextPageToken, nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.PageSize)
+	return it
+}
+
+// PermissionIterator manages a stream of *adminpb.Permission.
+type PermissionIterator struct {
+	items    []*adminpb.Permission
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.Permission, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *PermissionIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *PermissionIterator) Next() (*adminpb.Permission, error) {
+	var item *adminpb.Permission
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *PermissionIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *PermissionIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// RoleIterator manages a stream of *adminpb.Role.
+type RoleIterator struct {
+	items    []*adminpb.Role
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.Role, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *RoleIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *RoleIterator) Next() (*adminpb.Role, error) {
+	var item *adminpb.Role
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *RoleIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *RoleIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // ServiceAccountIterator manages a stream of *adminpb.ServiceAccount.

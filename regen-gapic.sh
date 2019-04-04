@@ -58,7 +58,7 @@ google/cloud/videointelligence/artman_videointelligence_v1beta1.yaml
 google/cloud/videointelligence/artman_videointelligence_v1beta2.yaml
 google/cloud/vision/artman_vision_v1.yaml
 google/cloud/vision/artman_vision_v1p1beta1.yaml
-google/cloud/webrisk/artman_webrisk.yaml
+google/cloud/webrisk/artman_webrisk_v1beta1.yaml
 google/devtools/artman_clouddebugger.yaml
 google/devtools/clouderrorreporting/artman_errorreporting.yaml
 google/devtools/cloudtrace/artman_cloudtrace_v1.yaml

@@ -242,6 +242,90 @@ func (s *mockIamServer) QueryGrantableRoles(ctx context.Context, req *adminpb.Qu
 	return s.resps[0].(*adminpb.QueryGrantableRolesResponse), nil
 }
 
+func (s *mockIamServer) ListRoles(ctx context.Context, req *adminpb.ListRolesRequest) (*adminpb.ListRolesResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*adminpb.ListRolesResponse), nil
+}
+
+func (s *mockIamServer) GetRole(ctx context.Context, req *adminpb.GetRoleRequest) (*adminpb.Role, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*adminpb.Role), nil
+}
+
+func (s *mockIamServer) CreateRole(ctx context.Context, req *adminpb.CreateRoleRequest) (*adminpb.Role, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*adminpb.Role), nil
+}
+
+func (s *mockIamServer) UpdateRole(ctx context.Context, req *adminpb.UpdateRoleRequest) (*adminpb.Role, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*adminpb.Role), nil
+}
+
+func (s *mockIamServer) DeleteRole(ctx context.Context, req *adminpb.DeleteRoleRequest) (*adminpb.Role, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*adminpb.Role), nil
+}
+
+func (s *mockIamServer) UndeleteRole(ctx context.Context, req *adminpb.UndeleteRoleRequest) (*adminpb.Role, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*adminpb.Role), nil
+}
+
+func (s *mockIamServer) QueryTestablePermissions(ctx context.Context, req *adminpb.QueryTestablePermissionsRequest) (*adminpb.QueryTestablePermissionsResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*adminpb.QueryTestablePermissionsResponse), nil
+}
+
 // clientOpt is the option tests should use to connect to the test server.
 // It is initialized by TestMain.
 var clientOpt option.ClientOption
@@ -1213,6 +1297,443 @@ func TestIamSignJwtError(t *testing.T) {
 	}
 
 	resp, err := c.SignJwt(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestIamListRoles(t *testing.T) {
+	var nextPageToken string = ""
+	var rolesElement *adminpb.Role = &adminpb.Role{}
+	var roles = []*adminpb.Role{rolesElement}
+	var expectedResponse = &adminpb.ListRolesResponse{
+		NextPageToken: nextPageToken,
+		Roles:         roles,
+	}
+
+	mockIam.err = nil
+	mockIam.reqs = nil
+
+	mockIam.resps = append(mockIam.resps[:0], expectedResponse)
+
+	var request *adminpb.ListRolesRequest = &adminpb.ListRolesRequest{}
+
+	c, err := NewIamClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListRoles(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockIam.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.Roles[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestIamListRolesError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockIam.err = gstatus.Error(errCode, "test error")
+
+	var request *adminpb.ListRolesRequest = &adminpb.ListRolesRequest{}
+
+	c, err := NewIamClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListRoles(context.Background(), request).Next()
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestIamGetRole(t *testing.T) {
+	var name string = "name3373707"
+	var title string = "title110371416"
+	var description string = "description-1724546052"
+	var etag []byte = []byte("21")
+	var deleted bool = false
+	var expectedResponse = &adminpb.Role{
+		Name:        name,
+		Title:       title,
+		Description: description,
+		Etag:        etag,
+		Deleted:     deleted,
+	}
+
+	mockIam.err = nil
+	mockIam.reqs = nil
+
+	mockIam.resps = append(mockIam.resps[:0], expectedResponse)
+
+	var request *adminpb.GetRoleRequest = &adminpb.GetRoleRequest{}
+
+	c, err := NewIamClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetRole(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockIam.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestIamGetRoleError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockIam.err = gstatus.Error(errCode, "test error")
+
+	var request *adminpb.GetRoleRequest = &adminpb.GetRoleRequest{}
+
+	c, err := NewIamClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetRole(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestIamCreateRole(t *testing.T) {
+	var name string = "name3373707"
+	var title string = "title110371416"
+	var description string = "description-1724546052"
+	var etag []byte = []byte("21")
+	var deleted bool = false
+	var expectedResponse = &adminpb.Role{
+		Name:        name,
+		Title:       title,
+		Description: description,
+		Etag:        etag,
+		Deleted:     deleted,
+	}
+
+	mockIam.err = nil
+	mockIam.reqs = nil
+
+	mockIam.resps = append(mockIam.resps[:0], expectedResponse)
+
+	var request *adminpb.CreateRoleRequest = &adminpb.CreateRoleRequest{}
+
+	c, err := NewIamClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateRole(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockIam.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestIamCreateRoleError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockIam.err = gstatus.Error(errCode, "test error")
+
+	var request *adminpb.CreateRoleRequest = &adminpb.CreateRoleRequest{}
+
+	c, err := NewIamClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateRole(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestIamUpdateRole(t *testing.T) {
+	var name string = "name3373707"
+	var title string = "title110371416"
+	var description string = "description-1724546052"
+	var etag []byte = []byte("21")
+	var deleted bool = false
+	var expectedResponse = &adminpb.Role{
+		Name:        name,
+		Title:       title,
+		Description: description,
+		Etag:        etag,
+		Deleted:     deleted,
+	}
+
+	mockIam.err = nil
+	mockIam.reqs = nil
+
+	mockIam.resps = append(mockIam.resps[:0], expectedResponse)
+
+	var request *adminpb.UpdateRoleRequest = &adminpb.UpdateRoleRequest{}
+
+	c, err := NewIamClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateRole(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockIam.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestIamUpdateRoleError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockIam.err = gstatus.Error(errCode, "test error")
+
+	var request *adminpb.UpdateRoleRequest = &adminpb.UpdateRoleRequest{}
+
+	c, err := NewIamClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateRole(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestIamDeleteRole(t *testing.T) {
+	var name string = "name3373707"
+	var title string = "title110371416"
+	var description string = "description-1724546052"
+	var etag []byte = []byte("21")
+	var deleted bool = false
+	var expectedResponse = &adminpb.Role{
+		Name:        name,
+		Title:       title,
+		Description: description,
+		Etag:        etag,
+		Deleted:     deleted,
+	}
+
+	mockIam.err = nil
+	mockIam.reqs = nil
+
+	mockIam.resps = append(mockIam.resps[:0], expectedResponse)
+
+	var request *adminpb.DeleteRoleRequest = &adminpb.DeleteRoleRequest{}
+
+	c, err := NewIamClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.DeleteRole(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockIam.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestIamDeleteRoleError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockIam.err = gstatus.Error(errCode, "test error")
+
+	var request *adminpb.DeleteRoleRequest = &adminpb.DeleteRoleRequest{}
+
+	c, err := NewIamClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.DeleteRole(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestIamUndeleteRole(t *testing.T) {
+	var name string = "name3373707"
+	var title string = "title110371416"
+	var description string = "description-1724546052"
+	var etag []byte = []byte("21")
+	var deleted bool = false
+	var expectedResponse = &adminpb.Role{
+		Name:        name,
+		Title:       title,
+		Description: description,
+		Etag:        etag,
+		Deleted:     deleted,
+	}
+
+	mockIam.err = nil
+	mockIam.reqs = nil
+
+	mockIam.resps = append(mockIam.resps[:0], expectedResponse)
+
+	var request *adminpb.UndeleteRoleRequest = &adminpb.UndeleteRoleRequest{}
+
+	c, err := NewIamClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UndeleteRole(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockIam.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestIamUndeleteRoleError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockIam.err = gstatus.Error(errCode, "test error")
+
+	var request *adminpb.UndeleteRoleRequest = &adminpb.UndeleteRoleRequest{}
+
+	c, err := NewIamClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UndeleteRole(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestIamQueryTestablePermissions(t *testing.T) {
+	var nextPageToken string = ""
+	var permissionsElement *adminpb.Permission = &adminpb.Permission{}
+	var permissions = []*adminpb.Permission{permissionsElement}
+	var expectedResponse = &adminpb.QueryTestablePermissionsResponse{
+		NextPageToken: nextPageToken,
+		Permissions:   permissions,
+	}
+
+	mockIam.err = nil
+	mockIam.reqs = nil
+
+	mockIam.resps = append(mockIam.resps[:0], expectedResponse)
+
+	var request *adminpb.QueryTestablePermissionsRequest = &adminpb.QueryTestablePermissionsRequest{}
+
+	c, err := NewIamClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.QueryTestablePermissions(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockIam.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.Permissions[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestIamQueryTestablePermissionsError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockIam.err = gstatus.Error(errCode, "test error")
+
+	var request *adminpb.QueryTestablePermissionsRequest = &adminpb.QueryTestablePermissionsRequest{}
+
+	c, err := NewIamClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.QueryTestablePermissions(context.Background(), request).Next()
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)
