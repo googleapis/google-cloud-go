@@ -919,6 +919,8 @@ func hog(dt time.Duration, hogger func(mu1, mu2 *sync.Mutex, start time.Time, dt
 }
 
 func TestAgentWithServer(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1343")
+
 	oldDialGRPC, oldConfig := dialGRPC, config
 	defer func() {
 		dialGRPC, config = oldDialGRPC, oldConfig
