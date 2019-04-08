@@ -1,5 +1,17 @@
 # Changes
 
+## 0.37.4
+
+This patch releases re-builds the go.sum. This was not possible in the
+previous release.
+
+## 0.37.3
+
+This patch release removes github.com/golang/lint from the transitive
+dependency list, resolving `go get -u` problems.
+
+Note: this release intentionally has a broken go.sum. Please use v0.37.4.
+
 ## 0.37.2
 
 This patch release is mostly intended to bring in v0.3.0 of
