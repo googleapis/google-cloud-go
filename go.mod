@@ -18,7 +18,7 @@ require (
 	golang.org/x/time v0.0.0-20181108054448-85acf8d2951c
 	golang.org/x/tools v0.0.0-20190312170243-e65039ee4138
 	google.golang.org/api v0.3.1
-	google.golang.org/genproto v0.0.0-20190404172233-64821d5d2107
+	google.golang.org/genproto v0.0.0-20190415143225-d1146b9035b9
 	google.golang.org/grpc v1.19.0
 	honnef.co/go/tools v0.0.0-20190106161140-3f1c8253044a
 )

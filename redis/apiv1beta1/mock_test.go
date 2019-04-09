@@ -111,6 +111,18 @@ func (s *mockCloudRedisServer) UpdateInstance(ctx context.Context, req *redispb.
 	return s.resps[0].(*longrunningpb.Operation), nil
 }
 
+func (s *mockCloudRedisServer) FailoverInstance(ctx context.Context, req *redispb.FailoverInstanceRequest) (*longrunningpb.Operation, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*longrunningpb.Operation), nil
+}
+
 func (s *mockCloudRedisServer) DeleteInstance(ctx context.Context, req *redispb.DeleteInstanceRequest) (*longrunningpb.Operation, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
@@ -638,4 +650,115 @@ func TestCloudRedisDeleteInstanceError(t *testing.T) {
 	} else if c := st.Code(); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+}
+func TestCloudRedisFailoverInstance(t *testing.T) {
+	var name2 string = "name2-1052831874"
+	var displayName string = "displayName1615086568"
+	var locationId string = "locationId552319461"
+	var alternativeLocationId string = "alternativeLocationId-718920621"
+	var redisVersion string = "redisVersion-685310444"
+	var reservedIpRange string = "reservedIpRange-1082940580"
+	var host string = "host3208616"
+	var port int32 = 3446913
+	var currentLocationId string = "currentLocationId1312712735"
+	var statusMessage string = "statusMessage-239442758"
+	var memorySizeGb int32 = 34199707
+	var authorizedNetwork string = "authorizedNetwork-1733809270"
+	var expectedResponse = &redispb.Instance{
+		Name:                  name2,
+		DisplayName:           displayName,
+		LocationId:            locationId,
+		AlternativeLocationId: alternativeLocationId,
+		RedisVersion:          redisVersion,
+		ReservedIpRange:       reservedIpRange,
+		Host:                  host,
+		Port:                  port,
+		CurrentLocationId:     currentLocationId,
+		StatusMessage:         statusMessage,
+		MemorySizeGb:          memorySizeGb,
+		AuthorizedNetwork:     authorizedNetwork,
+	}
+
+	mockCloudRedis.err = nil
+	mockCloudRedis.reqs = nil
+
+	any, err := ptypes.MarshalAny(expectedResponse)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mockCloudRedis.resps = append(mockCloudRedis.resps[:0], &longrunningpb.Operation{
+		Name:   "longrunning-test",
+		Done:   true,
+		Result: &longrunningpb.Operation_Response{Response: any},
+	})
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/instances/%s", "[PROJECT]", "[LOCATION]", "[INSTANCE]")
+	var dataProtectionMode redispb.FailoverInstanceRequest_DataProtectionMode = redispb.FailoverInstanceRequest_DATA_PROTECTION_MODE_UNSPECIFIED
+	var request = &redispb.FailoverInstanceRequest{
+		Name:               formattedName,
+		DataProtectionMode: dataProtectionMode,
+	}
+
+	c, err := NewCloudRedisClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	respLRO, err := c.FailoverInstance(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := respLRO.Wait(context.Background())
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockCloudRedis.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestCloudRedisFailoverInstanceError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockCloudRedis.err = nil
+	mockCloudRedis.resps = append(mockCloudRedis.resps[:0], &longrunningpb.Operation{
+		Name: "longrunning-test",
+		Done: true,
+		Result: &longrunningpb.Operation_Error{
+			Error: &status.Status{
+				Code:    int32(errCode),
+				Message: "test error",
+			},
+		},
+	})
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/instances/%s", "[PROJECT]", "[LOCATION]", "[INSTANCE]")
+	var dataProtectionMode redispb.FailoverInstanceRequest_DataProtectionMode = redispb.FailoverInstanceRequest_DATA_PROTECTION_MODE_UNSPECIFIED
+	var request = &redispb.FailoverInstanceRequest{
+		Name:               formattedName,
+		DataProtectionMode: dataProtectionMode,
+	}
+
+	c, err := NewCloudRedisClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	respLRO, err := c.FailoverInstance(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := respLRO.Wait(context.Background())
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
 }

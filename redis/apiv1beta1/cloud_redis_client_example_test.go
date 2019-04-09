@@ -140,3 +140,26 @@ func ExampleCloudRedisClient_DeleteInstance() {
 	err = op.Wait(ctx)
 	// TODO: Handle error.
 }
+
+func ExampleCloudRedisClient_FailoverInstance() {
+	ctx := context.Background()
+	c, err := redis.NewCloudRedisClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &redispb.FailoverInstanceRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.FailoverInstance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}

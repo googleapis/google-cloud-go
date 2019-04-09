@@ -357,8 +357,10 @@ func TestCloudTasksListQueuesError(t *testing.T) {
 }
 func TestCloudTasksGetQueue(t *testing.T) {
 	var name2 string = "name2-1052831874"
+	var logSamplingRatio float64 = -1.25350193E8
 	var expectedResponse = &taskspb.Queue{
-		Name: name2,
+		Name:             name2,
+		LogSamplingRatio: logSamplingRatio,
 	}
 
 	mockCloudTasks.err = nil
@@ -416,8 +418,10 @@ func TestCloudTasksGetQueueError(t *testing.T) {
 }
 func TestCloudTasksCreateQueue(t *testing.T) {
 	var name string = "name3373707"
+	var logSamplingRatio float64 = -1.25350193E8
 	var expectedResponse = &taskspb.Queue{
-		Name: name,
+		Name:             name,
+		LogSamplingRatio: logSamplingRatio,
 	}
 
 	mockCloudTasks.err = nil
@@ -479,8 +483,10 @@ func TestCloudTasksCreateQueueError(t *testing.T) {
 }
 func TestCloudTasksUpdateQueue(t *testing.T) {
 	var name string = "name3373707"
+	var logSamplingRatio float64 = -1.25350193E8
 	var expectedResponse = &taskspb.Queue{
-		Name: name,
+		Name:             name,
+		LogSamplingRatio: logSamplingRatio,
 	}
 
 	mockCloudTasks.err = nil
@@ -590,8 +596,10 @@ func TestCloudTasksDeleteQueueError(t *testing.T) {
 }
 func TestCloudTasksPurgeQueue(t *testing.T) {
 	var name2 string = "name2-1052831874"
+	var logSamplingRatio float64 = -1.25350193E8
 	var expectedResponse = &taskspb.Queue{
-		Name: name2,
+		Name:             name2,
+		LogSamplingRatio: logSamplingRatio,
 	}
 
 	mockCloudTasks.err = nil
@@ -649,8 +657,10 @@ func TestCloudTasksPurgeQueueError(t *testing.T) {
 }
 func TestCloudTasksPauseQueue(t *testing.T) {
 	var name2 string = "name2-1052831874"
+	var logSamplingRatio float64 = -1.25350193E8
 	var expectedResponse = &taskspb.Queue{
-		Name: name2,
+		Name:             name2,
+		LogSamplingRatio: logSamplingRatio,
 	}
 
 	mockCloudTasks.err = nil
@@ -708,8 +718,10 @@ func TestCloudTasksPauseQueueError(t *testing.T) {
 }
 func TestCloudTasksResumeQueue(t *testing.T) {
 	var name2 string = "name2-1052831874"
+	var logSamplingRatio float64 = -1.25350193E8
 	var expectedResponse = &taskspb.Queue{
-		Name: name2,
+		Name:             name2,
+		LogSamplingRatio: logSamplingRatio,
 	}
 
 	mockCloudTasks.err = nil
