@@ -259,13 +259,11 @@ func (c *JobClient) BatchDeleteJobs(ctx context.Context, req *talentpb.BatchDele
 	return err
 }
 
-// SearchJobs searches for jobs using the provided
-// [SearchJobsRequest][google.cloud.talent.v4beta1.SearchJobsRequest].
+// SearchJobs searches for jobs using the provided [SearchJobsRequest][google.cloud.talent.v4beta1.SearchJobsRequest].
 //
-// This call constrains the
-// [visibility][google.cloud.talent.v4beta1.Job.visibility] of jobs present in
-// the database, and only returns jobs that the caller has permission to
-// search against.
+// This call constrains the [visibility][google.cloud.talent.v4beta1.Job.visibility] of jobs
+// present in the database, and only returns jobs that the caller has
+// permission to search against.
 func (c *JobClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) *SearchJobsResponse_MatchingJobIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -303,18 +301,16 @@ func (c *JobClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobsRequ
 	return it
 }
 
-// SearchJobsForAlert searches for jobs using the provided
-// [SearchJobsRequest][google.cloud.talent.v4beta1.SearchJobsRequest].
+// SearchJobsForAlert searches for jobs using the provided [SearchJobsRequest][google.cloud.talent.v4beta1.SearchJobsRequest].
 //
 // This API call is intended for the use case of targeting passive job
 // seekers (for example, job seekers who have signed up to receive email
 // alerts about potential job opportunities), and has different algorithmic
 // adjustments that are targeted to passive job seekers.
 //
-// This call constrains the
-// [visibility][google.cloud.talent.v4beta1.Job.visibility] of jobs present in
-// the database, and only returns jobs the caller has permission to search
-// against.
+// This call constrains the [visibility][google.cloud.talent.v4beta1.Job.visibility] of jobs
+// present in the database, and only returns jobs the caller has
+// permission to search against.
 func (c *JobClient) SearchJobsForAlert(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) *SearchJobsResponse_MatchingJobIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
