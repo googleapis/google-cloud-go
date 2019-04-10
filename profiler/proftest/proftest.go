@@ -93,6 +93,8 @@ type InstanceConfig struct {
 	Name          string
 	StartupScript string
 	MachineType   string
+	ImageProject  string
+	ImageFamily   string
 }
 
 // ClusterConfig is configuration for starting single GKE cluster for profiling
@@ -165,12 +167,21 @@ func (pr *ProfileResponse) HasSourceFile(filename string) error {
 	return fmt.Errorf("failed to find filename %s in profile", filename)
 }
 
-// StartInstance starts a GCE Instance with name, zone, and projectId specified
-// by the inst, and which runs the startup script specified in inst.
+// StartInstance starts a GCE Instance with configs specified by inst,
+// and which runs the startup script specified in inst. If image project
+// is not specified, it defaults to "debian-cloud". If image family is
+// not specified, it defaults to "debian-9".
 func (tr *GCETestRunner) StartInstance(ctx context.Context, inst *InstanceConfig) error {
-	img, err := tr.ComputeService.Images.GetFromFamily("debian-cloud", "debian-9").Context(ctx).Do()
+	imageProject, imageFamily := inst.ImageProject, inst.ImageFamily
+	if imageProject == "" {
+		imageProject = "debian-cloud"
+	}
+	if imageFamily == "" {
+		imageFamily = "debian-9"
+	}
+	img, err := tr.ComputeService.Images.GetFromFamily(imageProject, imageFamily).Context(ctx).Do()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get image from family %q in project %q: %v", imageFamily, imageProject, err)
 	}
 
 	op, err := tr.ComputeService.Instances.Insert(inst.ProjectID, inst.Zone, &compute.Instance{
