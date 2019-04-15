@@ -15,11 +15,11 @@
 package bigquery
 
 import (
+	"cloud.google.com/go/internal/trace"
 	"context"
 	"errors"
-
-	"cloud.google.com/go/internal/trace"
 	bq "google.golang.org/api/bigquery/v2"
+	"time"
 )
 
 // QueryConfig holds the configuration for a query job.
@@ -126,6 +126,9 @@ type QueryConfig struct {
 	// Allows the schema of the destination table to be updated as a side effect of
 	// the query job.
 	SchemaUpdateOptions []string
+
+	// Job timeout. If this time limit is exceeded, BigQuery may attempt to terminate the job.
+	JobTimeout time.Duration
 }
 
 func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
@@ -189,9 +192,10 @@ func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
 		qconf.QueryParameters = append(qconf.QueryParameters, qp)
 	}
 	return &bq.JobConfiguration{
-		Labels: qc.Labels,
-		DryRun: qc.DryRun,
-		Query:  qconf,
+		Labels:       qc.Labels,
+		DryRun:       qc.DryRun,
+		Query:        qconf,
+		JobTimeoutMs: qc.JobTimeout.Nanoseconds() / time.Millisecond.Nanoseconds(),
 	}, nil
 }
 
@@ -211,6 +215,7 @@ func bqToQueryConfig(q *bq.JobConfiguration, c *Client) (*QueryConfig, error) {
 		Clustering:                  bqToClustering(qq.Clustering),
 		DestinationEncryptionConfig: bqToEncryptionConfig(qq.DestinationEncryptionConfiguration),
 		SchemaUpdateOptions:         qq.SchemaUpdateOptions,
+		JobTimeout:                  time.Duration(q.JobTimeoutMs) * time.Millisecond,
 	}
 	qc.UseStandardSQL = !qc.UseLegacySQL
 
