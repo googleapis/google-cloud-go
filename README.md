@@ -77,7 +77,7 @@ Google API                                   | Status       | Package
 [Storage][cloud-storage]                     | stable       | [`cloud.google.com/go/storage`][cloud-storage-ref]
 [Text To Speech][cloud-texttospeech]         | alpha        | [`cloud.google.com/go/texttospeech/apiv1`][cloud-texttospeech-ref]
 [Trace][cloud-trace]                         | alpha        | [`cloud.google.com/go/trace/apiv2`][cloud-trace-ref]
-[Translation][cloud-translation]             | stable       | [`cloud.google.com/go/translate`][cloud-translation-ref]
+[Translate][cloud-translate]                 | stable       | [`cloud.google.com/go/translate`][cloud-translate-ref]
 [Video Intelligence][cloud-video]            | alpha        | [`cloud.google.com/go/videointelligence/apiv1beta1`][cloud-video-ref]
 [Vision][cloud-vision]                       | stable       | [`cloud.google.com/go/vision/apiv1`][cloud-vision-ref]
 
@@ -441,8 +441,8 @@ for more information.
 [cloud-spanner-ref]: https://godoc.org/cloud.google.com/go/spanner
 [cloud-spanner-docs]: https://cloud.google.com/spanner/docs
 
-[cloud-translation]: https://cloud.google.com/translation
-[cloud-translation-ref]: https://godoc.org/cloud.google.com/go/translation
+[cloud-translate]: https://cloud.google.com/translate
+[cloud-translate-ref]: https://godoc.org/cloud.google.com/go/translate
 
 [cloud-video]: https://cloud.google.com/video-intelligence/
 [cloud-video-ref]: https://godoc.org/cloud.google.com/go/videointelligence/apiv1beta1
