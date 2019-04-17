@@ -286,7 +286,8 @@ func TestToLogEntryTrace(t *testing.T) {
 }
 
 func TestFromHTTPRequest(t *testing.T) {
-	const testURL = "http:://example.com/path?q=1"
+	// The test URL has invalid UTF-8 runes.
+	const testURL = "http://example.com/path?q=1&name=\xfe\xff"
 	u, err := url.Parse(testURL)
 	if err != nil {
 		t.Fatal(err)
@@ -311,8 +312,12 @@ func TestFromHTTPRequest(t *testing.T) {
 	}
 	got := fromHTTPRequest(req)
 	want := &logtypepb.HttpRequest{
-		RequestMethod:                  "GET",
-		RequestUrl:                     testURL,
+		RequestMethod: "GET",
+
+		// RequestUrl should have its invalid utf-8 runes replaced by the Unicode replacement character U+FFFD.
+		// See Issue https://github.com/googleapis/google-cloud-go/issues/1383
+		RequestUrl: "http://example.com/path?q=1&name=" + string('\ufffd') + string('\ufffd'),
+
 		RequestSize:                    100,
 		Status:                         200,
 		ResponseSize:                   25,
@@ -326,6 +331,13 @@ func TestFromHTTPRequest(t *testing.T) {
 	}
 	if !proto.Equal(got, want) {
 		t.Errorf("got  %+v\nwant %+v", got, want)
+	}
+
+	// And finally checks directly that the error that was
+	// in https://github.com/googleapis/google-cloud-go/issues/1383
+	// doesn't not regress.
+	if _, err := proto.Marshal(got); err != nil {
+		t.Fatalf("Unexpected proto.Marshal error: %v", err)
 	}
 }
 
