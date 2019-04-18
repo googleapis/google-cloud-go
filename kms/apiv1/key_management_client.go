@@ -90,14 +90,14 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		CreateCryptoKeyVersion:        retry[[2]string{"default", "non_idempotent"}],
 		UpdateCryptoKey:               retry[[2]string{"default", "non_idempotent"}],
 		UpdateCryptoKeyVersion:        retry[[2]string{"default", "non_idempotent"}],
-		Encrypt:                       retry[[2]string{"default", "non_idempotent"}],
-		Decrypt:                       retry[[2]string{"default", "non_idempotent"}],
+		Encrypt:                       retry[[2]string{"default", "idempotent"}],
+		Decrypt:                       retry[[2]string{"default", "idempotent"}],
 		UpdateCryptoKeyPrimaryVersion: retry[[2]string{"default", "non_idempotent"}],
 		DestroyCryptoKeyVersion:       retry[[2]string{"default", "non_idempotent"}],
 		RestoreCryptoKeyVersion:       retry[[2]string{"default", "non_idempotent"}],
 		GetPublicKey:                  retry[[2]string{"default", "idempotent"}],
-		AsymmetricDecrypt:             retry[[2]string{"default", "non_idempotent"}],
-		AsymmetricSign:                retry[[2]string{"default", "non_idempotent"}],
+		AsymmetricDecrypt:             retry[[2]string{"default", "idempotent"}],
+		AsymmetricSign:                retry[[2]string{"default", "idempotent"}],
 	}
 }
 
