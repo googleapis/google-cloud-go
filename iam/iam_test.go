@@ -85,3 +85,31 @@ func checkMembers(p *Policy, role RoleName, wantMembers []string) (string, bool)
 	}
 	return "", true
 }
+
+func TestNormalizedMember(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		in, exp string
+	}{
+		{"user:foo@gmail.com", "user:foo@gmail.com"},
+		{"user:foo.bar@gmail.com", "user:foobar@gmail.com"},
+		{"user:foo..bar@gmail.com", "user:foobar@gmail.com"},
+		{"user:foo..b.a.r@gmail.com", "user:foobar@gmail.com"},
+		{"user:foo..b.a.r+baz@gmail.com", "user:foobar@gmail.com"},
+		{"user:foo..b.a.r+baz@gmail.co.uk", "user:foobar@gmail.co.uk"},
+	}
+
+	for _, tc := range cases {
+		tc := tc
+
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+
+			act, exp := normalizedMember(tc.in), tc.exp
+			if act != exp {
+				t.Errorf("expected %q to be %q", act, exp)
+			}
+		})
+	}
+}

@@ -24,6 +24,7 @@ package iam
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
@@ -295,11 +296,46 @@ func memberIndex(m string, b *pb.Binding) int {
 		return -1
 	}
 	for i, mm := range b.Members {
-		if mm == m {
+		if normalizedMember(mm) == normalizedMember(m) {
 			return i
 		}
 	}
 	return -1
+}
+
+// normalizedMember normalizes a user IAM entry. Because user email addresses
+// can contain arbitrary numbers of dots and plus-signs, failing to normalize
+// will result in a failed index search.
+func normalizedMember(m string) string {
+	// Ignore non-user entities
+	if !strings.HasPrefix(m, "user:") {
+		return m
+	}
+
+	// user:foo.bar+baz@gmail.com -> foo.bar+baz@gmail.com
+	email := strings.TrimPrefix(m, "user:")
+
+	// foo.bar+baz@gmail.com -> [foo.bar+baz, gmail.com]
+	parts := strings.SplitN(email, "@", 2)
+	if len(parts) < 2 {
+		return m
+	}
+
+	// foo.bar+baz
+	local := parts[0]
+	domain := parts[1]
+
+	// foo.bar+baz -> foobar+baz
+	local = strings.Replace(local, ".", "", -1)
+
+	// foobar+baz -> [foobar, baz]
+	localParts := strings.SplitN(local, "+", 2)
+
+	// foobar
+	local = localParts[0]
+
+	// foobar@gmail.com
+	return fmt.Sprintf("user:%s@%s", local, domain)
 }
 
 // insertMetadata inserts metadata into the given context
