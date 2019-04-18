@@ -22,7 +22,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigtable/bttest"
-	"cloud.google.com/go/bigtable/internal/gax"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/go-cmp/cmp"
@@ -70,7 +69,6 @@ func setupFakeServer(opt ...grpc.ServerOption) (tbl *Table, cleanup func(), err 
 }
 
 func TestRetryApply(t *testing.T) {
-	gax.Logger = nil
 	ctx := context.Background()
 
 	errCount := 0
@@ -137,7 +135,6 @@ func TestRetryApply(t *testing.T) {
 
 func TestRetryApplyBulk(t *testing.T) {
 	ctx := context.Background()
-	gax.Logger = nil
 
 	// Intercept requests and delegate to an interceptor defined by the test case
 	errCount := 0
@@ -300,7 +297,6 @@ func TestRetainRowsAfter(t *testing.T) {
 
 func TestRetryReadRows(t *testing.T) {
 	ctx := context.Background()
-	gax.Logger = nil
 
 	// Intercept requests and delegate to an interceptor defined by the test case
 	errCount := 0
