@@ -761,7 +761,6 @@ func (fs *fakeProfilerServer) UpdateProfile(ctx context.Context, in *pb.UpdatePr
 		fs.gotProfiles["HEAP"] = in.Profile.ProfileBytes
 		fs.done <- true
 	}
-
 	return in.Profile, nil
 }
 
@@ -781,7 +780,7 @@ func profileeLoop(quit chan bool) {
 }
 
 func profileeWork() {
-	data := make([]byte, 1024*1024)
+	data := make([]byte, 10*1024*1024)
 	rand.Read(data)
 
 	var b bytes.Buffer
@@ -919,8 +918,6 @@ func hog(dt time.Duration, hogger func(mu1, mu2 *sync.Mutex, start time.Time, dt
 }
 
 func TestAgentWithServer(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1343")
-
 	oldDialGRPC, oldConfig := dialGRPC, config
 	defer func() {
 		dialGRPC, config = oldDialGRPC, oldConfig
