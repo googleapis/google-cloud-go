@@ -21,6 +21,7 @@ import (
 	"container/heap"
 	"context"
 	"fmt"
+	"math"
 	"math/rand"
 	"testing"
 	"time"
@@ -474,10 +475,18 @@ func TestMinOpenedSessions(t *testing.T) {
 
 	sp.mu.Lock()
 	defer sp.mu.Unlock()
-	// There should be still one session left in idle list due to the min open
-	// sessions constraint.
-	if sp.idleList.Len() != int(sp.MinOpened) {
-		t.Fatalf("got %v sessions in idle list, want %d", sp.idleList.Len(), sp.MinOpened)
+	// There should be still one session left in either the idle list or in one
+	// of the other opened states due to the min open sessions constraint.
+	if (sp.idleList.Len() +
+		sp.idleWriteList.Len() +
+		int(sp.prepareReqs) +
+		int(sp.createReqs)) != 1 {
+		t.Fatalf(
+			"got %v sessions in idle lists, want 1. Opened: %d, read: %d, "+
+				"write: %d, in preparation: %d, in creation: %d",
+			sp.idleList.Len()+sp.idleWriteList.Len(), sp.numOpened,
+			sp.idleList.Len(), sp.idleWriteList.Len(), sp.prepareReqs,
+			sp.createReqs)
 	}
 }
 
@@ -547,11 +556,14 @@ func TestMaxBurst(t *testing.T) {
 func TestSessionRecycle(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
+	// Set MaxBurst=MinOpened to prevent additional sessions to be created
+	// while session pool initialization is still running.
 	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
 				MinOpened: 1,
 				MaxIdle:   5,
+				MaxBurst:  1,
 			},
 		})
 	defer teardown()
@@ -568,14 +580,13 @@ func TestSessionRecycle(t *testing.T) {
 
 	sp.mu.Lock()
 	defer sp.mu.Unlock()
-	// Ideally it should only be 1, because the session should be recycled and
-	// re-used each time. However, sometimes the pool maintainer might increase
-	// the pool size by 1 right around the time we take (which also increases
-	// the pool size by 1), so this assertion is OK with either 1 or 2. We
-	// expect never to see more than 2, though, even when MaxIdle is quite high:
-	// each session should be recycled and re-used.
-	if sp.numOpened != 1 && sp.numOpened != 2 {
-		t.Fatalf("Expect session pool size 1 or 2, got %d", sp.numOpened)
+	// The session pool should only contain 1 session, as there is no minimum
+	// configured. In addition, there has never been more than one session in
+	// use at any time, so there's no need for the session pool to create a
+	// second session. The session has also been in use all the time, so there
+	// also no reason for the session pool to delete the session.
+	if sp.numOpened != 1 {
+		t.Fatalf("Expect session pool size 1, got %d", sp.numOpened)
 	}
 }
 
@@ -1238,5 +1249,142 @@ func waitFor(t *testing.T, assert func() error) {
 		}
 
 		return
+	}
+}
+
+// Tests that maintainer only deletes sessions after a full maintenance window
+// of 10 cycles has finished.
+func TestMaintainer_DeletesSessions(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	const sampleInterval = time.Millisecond * 10
+	const windowDuration = sampleInterval * maintenanceWindowSize
+	_, client, teardown := setupMockedTestServerWithConfig(t,
+		ClientConfig{
+			SessionPoolConfig: SessionPoolConfig{healthCheckSampleInterval: sampleInterval},
+		})
+	defer teardown()
+	sp := client.idleSessions
+
+	// Take two sessions from the pool.
+	// This will cause max sessions in use to be 2 during this window.
+	sh1 := takeSession(ctx, t, sp)
+	sh2 := takeSession(ctx, t, sp)
+	wantSessions := map[string]bool{}
+	wantSessions[sh1.getID()] = true
+	wantSessions[sh2.getID()] = true
+	// Return the sessions to the pool and then assure that they
+	// are not deleted while still within the maintenance window.
+	sh1.recycle()
+	sh2.recycle()
+	// Wait for 20 milliseconds, i.e. approx 2 iterations of the
+	// maintainer. The sessions should still be in the pool.
+	<-time.After(sampleInterval * 2)
+	sh3 := takeSession(ctx, t, sp)
+	sh4 := takeSession(ctx, t, sp)
+	// Check that the returned sessions are equal to the sessions that we got
+	// the first time from the session pool.
+	gotSessions := map[string]bool{}
+	gotSessions[sh3.getID()] = true
+	gotSessions[sh4.getID()] = true
+	testEqual(wantSessions, gotSessions)
+
+	// Now wait for another 100 milliseconds. This will cause the maintainer
+	// to enter a new window and reset the max number of sessions in use to
+	// the currently number of checked out sessions. That is 0, as all sessions
+	// have been returned to the pool. That again will cause the maintainer to
+	// delete these sessions at the next iteration, unless we checkout new
+	// sessions during the first iteration.
+	<-time.After(windowDuration)
+	sh5 := takeSession(ctx, t, sp)
+	sh6 := takeSession(ctx, t, sp)
+	// Assure that these sessions are new sessions.
+	if gotSessions[sh5.getID()] || gotSessions[sh6.getID()] {
+		t.Fatal("got unexpected existing session from pool")
+	}
+}
+
+func takeSession(ctx context.Context, t *testing.T, sp *sessionPool) *sessionHandle {
+	sh, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get session from session pool: %v", err)
+	}
+	return sh
+}
+
+func TestMaintenanceWindow_CycleAndUpdateMaxCheckedOut(t *testing.T) {
+	t.Parallel()
+
+	mw := newMaintenanceWindow()
+	for _, m := range mw.maxSessionsCheckedOut {
+		if m < math.MaxUint64 {
+			t.Fatalf("Max sessions checked out mismatch.\nGot: %v\nWant: %v", m, uint64(math.MaxUint64))
+		}
+	}
+	// Do one cycle and simulate that there are currently no sessions checked
+	// out of the pool.
+	mw.startNewCycle(0)
+	if g, w := mw.maxSessionsCheckedOut[0], uint64(0); g != w {
+		t.Fatalf("Max sessions checked out mismatch.\nGot: %d\nWant: %d", g, w)
+	}
+	for _, m := range mw.maxSessionsCheckedOut[1:] {
+		if m < math.MaxUint64 {
+			t.Fatalf("Max sessions checked out mismatch.\nGot: %v\nWant: %v", m, uint64(math.MaxUint64))
+		}
+	}
+	// Check that the max checked out during the entire window is still
+	// math.MaxUint64.
+	if g, w := mw.maxSessionsCheckedOutDuringWindow(), uint64(math.MaxUint64); g != w {
+		t.Fatalf("Max sessions checked out during window mismatch.\nGot: %d\nWant: %d", g, w)
+	}
+	// Update the max number checked out for the current cycle.
+	mw.updateMaxSessionsCheckedOutDuringWindow(uint64(10))
+	if g, w := mw.maxSessionsCheckedOut[0], uint64(10); g != w {
+		t.Fatalf("Max sessions checked out mismatch.\nGot: %d\nWant: %d", g, w)
+	}
+	// The max of the entire window should still not change.
+	if g, w := mw.maxSessionsCheckedOutDuringWindow(), uint64(math.MaxUint64); g != w {
+		t.Fatalf("Max sessions checked out during window mismatch.\nGot: %d\nWant: %d", g, w)
+	}
+	// Now pass enough cycles to complete a maintenance window. Each cycle has
+	// no sessions checked out. We start at 1, as we have already passed one
+	// cycle. This should then be the last cycle still in the maintenance
+	// window, and the only one with a maxSessionsCheckedOut greater than 0.
+	for i := 1; i < maintenanceWindowSize; i++ {
+		mw.startNewCycle(0)
+	}
+	for _, m := range mw.maxSessionsCheckedOut[:9] {
+		if m != 0 {
+			t.Fatalf("Max sessions checked out mismatch.\nGot: %v\nWant: %v", m, 0)
+		}
+	}
+	// The oldest cycle in the window should have max=10.
+	if g, w := mw.maxSessionsCheckedOut[maintenanceWindowSize-1], uint64(10); g != w {
+		t.Fatalf("Max sessions checked out mismatch.\nGot: %d\nWant: %d", g, w)
+	}
+	// The max of the entire window should now be 10.
+	if g, w := mw.maxSessionsCheckedOutDuringWindow(), uint64(10); g != w {
+		t.Fatalf("Max sessions checked out during window mismatch.\nGot: %d\nWant: %d", g, w)
+	}
+	// Do another cycle with max=0.
+	mw.startNewCycle(0)
+	// The max of the entire window should now be 0.
+	if g, w := mw.maxSessionsCheckedOutDuringWindow(), uint64(0); g != w {
+		t.Fatalf("Max sessions checked out during window mismatch.\nGot: %d\nWant: %d", g, w)
+	}
+	// Do another cycle with 5 sessions as max. This should now be the new
+	// window max.
+	mw.startNewCycle(5)
+	if g, w := mw.maxSessionsCheckedOutDuringWindow(), uint64(5); g != w {
+		t.Fatalf("Max sessions checked out during window mismatch.\nGot: %d\nWant: %d", g, w)
+	}
+	// Do a couple of cycles so that the only non-zero value is in the middle.
+	// The max for the entire window should still be 5.
+	for i := 0; i < maintenanceWindowSize/2; i++ {
+		mw.startNewCycle(0)
+	}
+	if g, w := mw.maxSessionsCheckedOutDuringWindow(), uint64(5); g != w {
+		t.Fatalf("Max sessions checked out during window mismatch.\nGot: %d\nWant: %d", g, w)
 	}
 }
