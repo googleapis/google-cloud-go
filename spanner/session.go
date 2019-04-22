@@ -963,12 +963,9 @@ func (hc *healthChecker) maintainer() {
 	// Wait so that pool is ready.
 	<-hc.ready
 
-	var (
-		windowSize uint64 = 10
-		iteration  uint64
-	)
+	windowSize := uint64(10)
 
-	for {
+	for iteration := uint64(0); ; iteration++ {
 		if hc.isClosing() {
 			hc.waitWorkers.Done()
 			return
@@ -1007,7 +1004,6 @@ func (hc *healthChecker) maintainer() {
 		case <-hc.done:
 			cancel()
 		}
-		iteration++
 	}
 }
 
