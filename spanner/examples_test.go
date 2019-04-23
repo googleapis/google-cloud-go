@@ -666,3 +666,15 @@ func ExampleCommitTimestamp() {
 		_ = got // TODO: Process row.
 	}
 }
+
+func ExampleStatement_regexpContains() {
+	// Search for accounts with valid emails using regexp as per:
+	//   https://cloud.google.com/spanner/docs/functions-and-operators#regexp_contains
+	stmt := spanner.Statement{
+		SQL: `SELECT * FROM users WHERE REGEXP_CONTAINS(email, @valid_email)`,
+		Params: map[string]interface{}{
+			"valid_email": `\Q@\E`,
+		},
+	}
+	_ = stmt // TODO: Use stmt in a query.
+}
