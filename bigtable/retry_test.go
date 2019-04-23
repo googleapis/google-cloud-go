@@ -276,7 +276,7 @@ func TestRetainRowsAfter(t *testing.T) {
 	prevRowRange := NewRange("a", "z")
 	prevRowKey := "m"
 	want := NewRange("m\x00", "z")
-	got := prevRowRange.retainRowsAfter(prevRowKey)
+	got := prevRowRange.RetainRowsAfter(prevRowKey)
 	if !testutil.Equal(want, got, cmp.AllowUnexported(RowRange{})) {
 		t.Errorf("range retry: got %v, want %v", got, want)
 	}
@@ -284,7 +284,7 @@ func TestRetainRowsAfter(t *testing.T) {
 	prevRowRangeList := RowRangeList{NewRange("a", "d"), NewRange("e", "g"), NewRange("h", "l")}
 	prevRowKey = "f"
 	wantRowRangeList := RowRangeList{NewRange("f\x00", "g"), NewRange("h", "l")}
-	got = prevRowRangeList.retainRowsAfter(prevRowKey)
+	got = prevRowRangeList.RetainRowsAfter(prevRowKey)
 	if !testutil.Equal(wantRowRangeList, got, cmp.AllowUnexported(RowRange{})) {
 		t.Errorf("range list retry: got %v, want %v", got, wantRowRangeList)
 	}
@@ -292,7 +292,7 @@ func TestRetainRowsAfter(t *testing.T) {
 	prevRowList := RowList{"a", "b", "c", "d", "e", "f"}
 	prevRowKey = "b"
 	wantList := RowList{"c", "d", "e", "f"}
-	got = prevRowList.retainRowsAfter(prevRowKey)
+	got = prevRowList.RetainRowsAfter(prevRowKey)
 	if !testutil.Equal(wantList, got) {
 		t.Errorf("list retry: got %v, want %v", got, wantList)
 	}
