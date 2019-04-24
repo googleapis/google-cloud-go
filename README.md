@@ -73,7 +73,7 @@ Google API                                      | Status       | Package
 [OS Login][cloud-oslogin]                       | alpha        | [`cloud.google.com/go/oslogin/apiv1`][cloud-oslogin-ref]
 [Pub/Sub][cloud-pubsub]                         | stable       | [`cloud.google.com/go/pubsub`][cloud-pubsub-ref]
 [Phishing Protection][cloud-phishingprotection] | alpha        | [`cloud.google.com/go/phishingprotection/apiv1betad1`][cloud-phishingprotection-ref]
-[reCAPTCHA Enterprise][cloud-recaptcha]         | alpha        | [`cloud.google.com/go/recaptchaenterprise/apiv1betad1`][cloud-recaptchaenterprise-ref]
+[reCAPTCHA Enterprise][cloud-recaptcha]         | alpha        | [`cloud.google.com/go/recaptchaenterprise/apiv1betad1`][cloud-recaptcha-ref]
 [Memorystore][cloud-memorystore]                | alpha        | [`cloud.google.com/go/redis/apiv1`][cloud-memorystore-ref]
 [Scheduler][cloud-scheduler]                    | stable       | [`cloud.google.com/go/scheduler/apiv1`][cloud-scheduler-ref]
 [Spanner][cloud-spanner]                        | stable       | [`cloud.google.com/go/spanner`][cloud-spanner-ref]
@@ -518,8 +518,8 @@ for more information.
 [cloud-phishingprotection]: https://cloud.google.com/phishing-protection/
 [cloud-phishingprotection-ref]: https://cloud.google.com/go/phishingprotection/apiv1beta1
 
-[cloud-recaptchaenterprise]: https://cloud.google.com/recaptcha-enterprise/
-[cloud-recaptchaenterprise-ref]: https://cloud.google.com/go/recaptchaenterprise/apiv1beta1
+[cloud-recaptcha]: https://cloud.google.com/recaptcha-enterprise/
+[cloud-recaptcha-ref]: https://cloud.google.com/go/recaptchaenterprise/apiv1beta1
 
 [cloud-talent]: https://cloud.google.com/solutions/talent-solution/
 [cloud-talent-ref]: https://godoc.org/cloud.google.com/go/talent/apiv4beta1
