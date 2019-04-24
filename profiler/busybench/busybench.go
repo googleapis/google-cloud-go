@@ -21,6 +21,7 @@ import (
 	"flag"
 	"log"
 	"math/rand"
+	"runtime"
 	"sync"
 	"time"
 
@@ -62,10 +63,14 @@ func busyworkOnce() {
 		log.Printf("Failed to write to gzip stream: %v", err)
 		return
 	}
+	// Sleep to increase contention.
+	time.Sleep(time.Millisecond)
 	if err := gz.Flush(); err != nil {
 		log.Printf("Failed to flush to gzip stream: %v", err)
 		return
 	}
+	// Sleep to increase contention.
+	time.Sleep(time.Millisecond)
 	if err := gz.Close(); err != nil {
 		log.Printf("Failed to close gzip stream: %v", err)
 	}
@@ -90,12 +95,17 @@ func main() {
 	}
 	mu := new(sync.Mutex)
 	var wg sync.WaitGroup
-	wg.Add(5)
-	for i := 0; i < 5; i++ {
+	wg.Add(10)
+	// Increse number of concurrent threads to increase contention.
+	// Save current value.
+	np := runtime.GOMAXPROCS(10)
+	for i := 0; i < 10; i++ {
 		go func() {
 			defer wg.Done()
 			busywork(mu)
 		}()
 	}
 	wg.Wait()
+	// Reset concurrent thread count.
+	runtime.GOMAXPROCS(np)
 }
