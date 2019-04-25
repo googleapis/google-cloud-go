@@ -25,6 +25,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
@@ -1189,5 +1190,114 @@ func TestFilterRowWithBinaryColumnQualifier(t *testing.T) {
 		if got != test.want {
 			t.Errorf("%v: got %t, want %t", test.filter, got, test.want)
 		}
+	}
+}
+
+// Test that a single column qualifier with the interleave filter returns
+// the correct result and not return every single row.
+// See Issue https://github.com/googleapis/google-cloud-go/issues/1399
+func TestFilterRowWithSingleColumnQualifier(t *testing.T) {
+	ctx := context.Background()
+	srv := &server{tables: make(map[string]*table)}
+
+	tblReq := &btapb.CreateTableRequest{
+		Parent:  "issue-1399",
+		TableId: "table_id",
+		Table: &btapb.Table{
+			ColumnFamilies: map[string]*btapb.ColumnFamily{
+				"cf": {},
+			},
+		},
+	}
+	tbl, err := srv.CreateTable(ctx, tblReq)
+	if err != nil {
+		t.Fatalf("Failed to create the table: %v", err)
+	}
+
+	entries := []struct {
+		row   string
+		value []byte
+	}{
+		{"row1", []byte{0x11}},
+		{"row2", []byte{0x1a}},
+		{"row3", []byte{'a'}},
+		{"row4", []byte{'b'}},
+	}
+
+	for _, entry := range entries {
+		req := &btpb.MutateRowRequest{
+			TableName: tbl.Name,
+			RowKey:    []byte(entry.row),
+			Mutations: []*btpb.Mutation{{
+				Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
+					FamilyName:      "cf",
+					ColumnQualifier: []byte("cq"),
+					TimestampMicros: 1000,
+					Value:           entry.value,
+				}},
+			}},
+		}
+		if _, err := srv.MutateRow(ctx, req); err != nil {
+			t.Fatalf("Failed to insert entry %v into server: %v", entry, err)
+		}
+	}
+
+	// After insertion now it is time for querying.
+	req := &btpb.ReadRowsRequest{
+		TableName: tbl.Name,
+		Filter: &btpb.RowFilter{Filter: &btpb.RowFilter_Chain_{
+			Chain: &btpb.RowFilter_Chain{Filters: []*btpb.RowFilter{{
+				Filter: &btpb.RowFilter_Interleave_{
+					Interleave: &btpb.RowFilter_Interleave{
+						Filters: []*btpb.RowFilter{{Filter: &btpb.RowFilter_Condition_{
+							Condition: &btpb.RowFilter_Condition{
+								PredicateFilter: &btpb.RowFilter{Filter: &btpb.RowFilter_Chain_{
+									Chain: &btpb.RowFilter_Chain{Filters: []*btpb.RowFilter{
+										{
+											Filter: &btpb.RowFilter_ValueRangeFilter{ValueRangeFilter: &btpb.ValueRange{
+												StartValue: &btpb.ValueRange_StartValueClosed{
+													StartValueClosed: []byte("a"),
+												},
+												EndValue: &btpb.ValueRange_EndValueClosed{EndValueClosed: []byte("a")},
+											}},
+										},
+									}},
+								}},
+								TrueFilter: &btpb.RowFilter{Filter: &btpb.RowFilter_PassAllFilter{PassAllFilter: true}},
+							},
+						}}},
+					},
+				},
+			}}},
+		}},
+	}
+
+	rrss := new(MockReadRowsServer)
+	if err := srv.ReadRows(req, rrss); err != nil {
+		t.Fatalf("Failed to read rows: %v", err)
+	}
+
+	if g, w := len(rrss.responses), 1; g != w {
+		t.Fatalf("Results/Streamed chunks mismatch:: got %d want %d", g, w)
+	}
+
+	got := rrss.responses[0]
+	// Only row3 should be matched.
+	want := &btpb.ReadRowsResponse{
+		Chunks: []*btpb.ReadRowsResponse_CellChunk{
+			{
+				RowKey:          []byte("row3"),
+				FamilyName:      &wrappers.StringValue{Value: "cf"},
+				Qualifier:       &wrappers.BytesValue{Value: []byte("cq")},
+				TimestampMicros: 1000,
+				Value:           []byte("a"),
+				RowStatus: &btpb.ReadRowsResponse_CellChunk_CommitRow{
+					CommitRow: true,
+				},
+			},
+		},
+	}
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Fatalf("Response mismatch: got: + want -\n%s", diff)
 	}
 }
