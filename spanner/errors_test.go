@@ -40,5 +40,9 @@ func TestToSpannerError(t *testing.T) {
 		if got, want := err.(*Error).Code, test.wantCode; got != want {
 			t.Errorf("%v: got %s, want %s", test.err, got, want)
 		}
+		converted := status.Convert(err)
+		if converted.Code() != test.wantCode {
+			t.Errorf("%v: got status %v, want status %v", test.err, converted.Code(), test.wantCode)
+		}
 	}
 }
