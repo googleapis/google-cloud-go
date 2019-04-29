@@ -23,6 +23,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 // Error is the structured error returned by Cloud Spanner client.
@@ -42,6 +43,13 @@ func (e *Error) Error() string {
 		return fmt.Sprintf("spanner: OK")
 	}
 	return fmt.Sprintf("spanner: code = %q, desc = %q", e.Code, e.Desc)
+}
+
+// GRPCStatus returns the corresponding gRPC Status of this Spanner error.
+// This allows the error to be converted to a gRPC status using
+// `status.Convert(error)`.
+func (e *Error) GRPCStatus() *status.Status {
+	return status.New(e.Code, e.Desc)
 }
 
 // decorate decorates an existing spanner.Error with more information.
