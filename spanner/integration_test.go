@@ -42,8 +42,8 @@ import (
 )
 
 var (
-	// testProjectID specifies the project used for testing.
-	// It can be changed by setting environment variable GCLOUD_TESTS_GOLANG_PROJECT_ID.
+	// testProjectID specifies the project used for testing. It can be changed
+	// by setting environment variable GCLOUD_TESTS_GOLANG_PROJECT_ID.
 	testProjectID = testutil.ProjID()
 
 	dbNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
@@ -132,7 +132,7 @@ func TestMain(m *testing.M) {
 
 func initIntegrationTests() func() {
 	ctx := context.Background()
-	flag.Parse() // needed for testing.Short()
+	flag.Parse() // Needed for testing.Short().
 	noop := func() {}
 
 	if testing.Short() {
@@ -196,6 +196,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 	<-time.After(time.Second)
 
 	// Test reading rows with different timestamp bounds.
+	// TODO(deklerk) use subtests
 	for i, test := range []struct {
 		want    [][]interface{}
 		tb      TimestampBound
@@ -206,7 +207,8 @@ func TestIntegration_SingleUse(t *testing.T) {
 			[][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}},
 			StrongRead(),
 			func(ts time.Time) error {
-				// writes[3] is the last write, all subsequent strong read should have a timestamp larger than that.
+				// writes[3] is the last write, all subsequent strong read
+				// should have a timestamp larger than that.
 				if ts.Before(writes[3].ts) {
 					return fmt.Errorf("read got timestamp %v, want it to be no later than %v", ts, writes[3].ts)
 				}
@@ -411,8 +413,8 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 		tb      TimestampBound
 		checkTs func(time.Time) error
 	}{
-		// Note: min_read_timestamp and max_staleness are not supported by ReadOnlyTransaction. See
-		// API document for more details.
+		// Note: min_read_timestamp and max_staleness are not supported by
+		// ReadOnlyTransaction. See API document for more details.
 		{
 			// strong
 			[][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}},
@@ -438,8 +440,8 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 		{
 			// exact_staleness
 			nil,
-			// Specify a staleness which should be already before this test because
-			// context timeout is set to be 10s.
+			// Specify a staleness which should be already before this test
+			// because context timeout is set to be 10s.
 			ExactStaleness(11 * time.Second),
 			func(ts time.Time) error {
 				if ts.After(writes[0].ts) {
@@ -520,7 +522,8 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 		if err != nil {
 			t.Errorf("%d: ReadOnlyTransaction.ReadUsingIndex returns error %v, want nil", i, err)
 		}
-		// The results from ReadUsingIndex is sorted by the index rather than primary key.
+		// The results from ReadUsingIndex is sorted by the index rather than
+		// primary key.
 		if len(got) != len(test.want) {
 			t.Errorf("%d: got unexpected result from ReadOnlyTransaction.ReadUsingIndex: %v, want %v", i, got, test.want)
 		}
@@ -557,7 +560,8 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 	}
 }
 
-// Test ReadOnlyTransaction with different timestamp bound when there's an update at the same time.
+// Test ReadOnlyTransaction with different timestamp bound when there's an
+// update at the same time.
 func TestIntegration_UpdateDuringRead(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -763,7 +767,7 @@ func TestIntegration_EarlyTimestamp(t *testing.T) {
 	txn := client.Single()
 	iter := txn.Read(ctx, testTable, AllKeys(), testTableColumns)
 	defer iter.Stop()
-	// In  single-use transaction, we should get an error before reading anything.
+	// In single-use transaction, we should get an error before reading anything.
 	if _, err := txn.Timestamp(); err == nil {
 		t.Error("wanted error, got nil")
 	}
@@ -1291,7 +1295,8 @@ func TestIntegration_ReadErrors(t *testing.T) {
 	}
 }
 
-// Test TransactionRunner. Test that transactions are aborted and retried as expected.
+// Test TransactionRunner. Test that transactions are aborted and retried as
+// expected.
 func TestIntegration_TransactionRunner(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -1314,8 +1319,9 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 	}
 
 	// Test 2: Expect abort and retry.
-	// We run two ReadWriteTransactions concurrently and make txn1 abort txn2 by committing writes to the column txn2 have read,
-	// and expect the following read to abort and txn2 retries.
+	// We run two ReadWriteTransactions concurrently and make txn1 abort txn2 by
+	// committing writes to the column txn2 have read, and expect the following
+	// read to abort and txn2 retries.
 
 	// Set up two accounts
 	accounts := []*Mutation{
@@ -1361,7 +1367,8 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 			if e != nil {
 				return e
 			}
-			// txn 1 can abort, in that case we skip closing the channel on retry.
+			// txn 1 can abort, in that case we skip closing the channel on
+			// retry.
 			once.Do(func() { close(cTxn1Start) })
 			e = tx.BufferWrite([]*Mutation{
 				Update("Accounts", []string{"AccountId", "Balance"}, []interface{}{int64(1), int64(b + 1)})})
@@ -1396,10 +1403,10 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 			once.Do(func() { close(cTxn2Start) })
 			// Wait until txn 1 successfully commits.
 			<-cTxn1Commit
-			// Txn1 has committed and written a balance to the account.
-			// Now this transaction (txn2) reads and re-writes the balance.
-			// The first time through, it will abort because it overlaps with txn1.
-			// Then it will retry after txn1 commits, and succeed.
+			// Txn1 has committed and written a balance to the account. Now this
+			// transaction (txn2) reads and re-writes the balance. The first
+			// time through, it will abort because it overlaps with txn1. Then
+			// it will retry after txn1 commits, and succeed.
 			if b2, e = readBalance(tx, 2, true); e != nil {
 				return e
 			}
@@ -1541,7 +1548,7 @@ func TestIntegration_BatchRead(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Reconstruct BatchReadOnlyTransactionID and execute partitions
+	// Reconstruct BatchReadOnlyTransactionID and execute partitions.
 	var (
 		tid2      BatchReadOnlyTransactionID
 		data      []byte
@@ -1555,7 +1562,7 @@ func TestIntegration_BatchRead(t *testing.T) {
 	}
 	txn2 := client2.BatchReadOnlyTransactionFromID(tid2)
 
-	// Execute Partitions and compare results
+	// Execute Partitions and compare results.
 	for i, p := range partitions {
 		iter := txn.Execute(ctx, p)
 		defer iter.Stop()
@@ -1611,7 +1618,7 @@ func TestIntegration_BROTNormal(t *testing.T) {
 	if _, err := txn.PartitionRead(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}); err != nil {
 		t.Fatal(err)
 	}
-	// Normal query should work with BatchReadOnlyTransaction
+	// Normal query should work with BatchReadOnlyTransaction.
 	stmt2 := Statement{SQL: "SELECT 1"}
 	iter := txn.Query(ctx, stmt2)
 	defer iter.Stop()
@@ -1641,7 +1648,8 @@ func TestIntegration_CommitTimestamp(t *testing.T) {
 		err                  error
 	)
 
-	// Apply mutation in sequence, expect to see commit timestamp in good order, check also the commit timestamp returned
+	// Apply mutation in sequence, expect to see commit timestamp in good order,
+	// check also the commit timestamp returned
 	for _, it := range []struct {
 		k string
 		t *time.Time
@@ -1685,7 +1693,7 @@ func TestIntegration_CommitTimestamp(t *testing.T) {
 		t.Errorf("Expect commit timestamp returned and read to match for txn2, got %v and %v.", cts2, ts2)
 	}
 
-	// Try writing a timestamp in the future to commit timestamp, expect error
+	// Try writing a timestamp in the future to commit timestamp, expect error.
 	_, err = client.Apply(ctx, []*Mutation{InsertOrUpdate("TestTable", []string{"Key", "Ts"}, []interface{}{"a", time.Now().Add(time.Hour)})}, ApplyAtLeastOnce())
 	if msg, ok := matchError(err, codes.FailedPrecondition, "Cannot write timestamps in the future"); !ok {
 		t.Error(msg)
@@ -1711,7 +1719,8 @@ func TestIntegration_DML(t *testing.T) {
 		return fn, nil
 	}
 
-	// Function that reads multiple rows' first names from outside a read/write transaction.
+	// Function that reads multiple rows' first names from outside a read/write
+	// transaction.
 	readFirstNames := func(keys ...int) []string {
 		var ks []KeySet
 		for _, k := range keys {
@@ -1832,11 +1841,10 @@ func TestIntegration_DML(t *testing.T) {
 		if err != nil {
 			return err
 		}
-		tx.BufferWrite([]*Mutation{
+		return tx.BufferWrite([]*Mutation{
 			Insert("Singers", []string{"SingerId", "FirstName", "LastName"},
 				[]interface{}{4, "Andy", "Irvine"}),
 		})
-		return nil
 	})
 	if err != nil {
 		t.Fatal(err)

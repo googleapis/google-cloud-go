@@ -71,8 +71,10 @@ func toSpannerError(err error) error {
 	return toSpannerErrorWithMetadata(err, nil)
 }
 
-// toSpannerErrorWithMetadata converts general Go error and grpc trailers to *spanner.Error.
-// Note: modifies original error if trailers aren't nil
+// toSpannerErrorWithMetadata converts general Go error and grpc trailers to
+// *spanner.Error.
+//
+// Note: modifies original error if trailers aren't nil.
 func toSpannerErrorWithMetadata(err error, trailers metadata.MD) error {
 	if err == nil {
 		return nil
