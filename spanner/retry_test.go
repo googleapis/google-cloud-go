@@ -73,7 +73,7 @@ func TestRetry(t *testing.T) {
 		// Let retryable runner to retry so that timeout will eventually happen.
 		return retryErr
 	})
-	// Check error code and error message
+	// Check error code and error message.
 	if wantErrCode, wantErr := codes.DeadlineExceeded, errContextCanceled(ctx, retryErr); ErrCode(err) != wantErrCode || !testEqual(err, wantErr) {
 		t.Errorf("<err code, err>=\n<%v, %v>, want:\n<%v, %v>", ErrCode(err), err, wantErrCode, wantErr)
 	}
@@ -88,7 +88,7 @@ func TestRetry(t *testing.T) {
 		}
 		return retryErr
 	})
-	// Check error code, error message, retry count
+	// Check error code, error message, retry count.
 	if wantErrCode, wantErr := codes.Canceled, errContextCanceled(ctx, retryErr); ErrCode(err) != wantErrCode || !testEqual(err, wantErr) || retries != 0 {
 		t.Errorf("<err code, err, retries>=\n<%v, %v, %v>, want:\n<%v, %v, %v>", ErrCode(err), err, retries, wantErrCode, wantErr, 0)
 	}

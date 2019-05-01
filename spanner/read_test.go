@@ -39,7 +39,8 @@ import (
 var (
 	// Mocked transaction timestamp.
 	trxTs = time.Unix(1, 2)
-	// Metadata for mocked KV table, its rows are returned by SingleUse transactions.
+	// Metadata for mocked KV table, its rows are returned by SingleUse
+	// transactions.
 	kvMeta = func() *sppb.ResultSetMetadata {
 		meta := testutil.KvMeta
 		meta.Transaction = &sppb.Transaction{
@@ -48,7 +49,8 @@ var (
 		return &meta
 	}()
 	// Metadata for mocked ListKV table, which uses List for its key and value.
-	// Its rows are returned by snapshot readonly transactions, as indicated in the transaction metadata.
+	// Its rows are returned by snapshot readonly transactions, as indicated in
+	// the transaction metadata.
 	kvListMeta = &sppb.ResultSetMetadata{
 		RowType: &sppb.StructType{
 			Fields: []*sppb.StructType_Field{
@@ -86,7 +88,8 @@ var (
 	//		LIST<STRING>
 	//	}
 	//
-	// Its rows are returned in readwrite transaction, as indicated in the transaction metadata.
+	// Its rows are returned in readwrite transaction, as indicated in the
+	// transaction metadata.
 	kvObjectMeta = &sppb.ResultSetMetadata{
 		RowType: &sppb.StructType{
 			Fields: []*sppb.StructType_Field{
@@ -166,8 +169,8 @@ func describeRows(l []*Row) string {
 	return s
 }
 
-// Helper for generating proto3 Value_ListValue instances, making
-// test code shorter and readable.
+// Helper for generating proto3 Value_ListValue instances, making test code
+// shorter and readable.
 func genProtoListValue(v ...string) *proto3.Value_ListValue {
 	r := &proto3.Value_ListValue{
 		ListValue: &proto3.ListValue{
@@ -600,12 +603,13 @@ nextTest:
 }
 
 const (
-	maxBuffers = 16 // max number of PartialResultSets that will be buffered in tests.
+	// max number of PartialResultSets that will be buffered in tests.
+	maxBuffers = 16
 )
 
-// setMaxBytesBetweenResumeTokens sets the global maxBytesBetweenResumeTokens to a smaller
-// value more suitable for tests. It returns a function which should be called to restore
-// the maxBytesBetweenResumeTokens to its old value
+// setMaxBytesBetweenResumeTokens sets the global maxBytesBetweenResumeTokens to
+// a smaller value more suitable for tests. It returns a function which should
+// be called to restore the maxBytesBetweenResumeTokens to its old value.
 func setMaxBytesBetweenResumeTokens() func() {
 	o := atomic.LoadInt32(&maxBytesBetweenResumeTokens)
 	atomic.StoreInt32(&maxBytesBetweenResumeTokens, int32(maxBuffers*proto.Size(&sppb.PartialResultSet{
@@ -630,9 +634,9 @@ func valStr(i int) string {
 	return fmt.Sprintf("bar-%02d", i)
 }
 
-// Test state transitions of resumableStreamDecoder where state machine
-// ends up to a non-blocking state(resumableStreamDecoder.Next returns
-// on non-blocking state).
+// Test state transitions of resumableStreamDecoder where state machine ends up
+// to a non-blocking state(resumableStreamDecoder.Next returns on non-blocking
+// state).
 func TestRsdNonblockingStates(t *testing.T) {
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
@@ -848,7 +852,8 @@ nextTest:
 				if !testEqual(rs, test.want) {
 					t.Errorf("%v: received PartialResultSets: \n%v\n, want \n%v\n", test.name, rs, test.want)
 				}
-				// Verify that resumableStreamDecoder's internal buffering is also correct.
+				// Verify that resumableStreamDecoder's internal buffering is
+				// also correct.
 				var q []*sppb.PartialResultSet
 				for {
 					item := r.q.pop()
@@ -1009,8 +1014,9 @@ func TestRsdBlockingStates(t *testing.T) {
 					s = append(s, queueingRetryable) // internal queue of resumableStreamDecoder filles up
 				}
 				for i := maxBuffers - 1; i < maxBuffers+1; i++ {
-					// the first item fills up the queue and triggers state change;
-					// the second item is received under queueingUnretryable state.
+					// the first item fills up the queue and triggers state
+					// change; the second item is received under
+					// queueingUnretryable state.
 					s = append(s, queueingUnretryable)
 				}
 				s = append(s, queueingUnretryable) // got (maxBuffers+1)th row under Unretryable state
@@ -1059,7 +1065,8 @@ func TestRsdBlockingStates(t *testing.T) {
 		cc := dialMock(t, ms)
 		mc := sppb.NewSpannerClient(cc)
 		if test.rpc == nil {
-			// Avoid using test.sql directly in closure because for loop changes test.
+			// Avoid using test.sql directly in closure because for loop changes
+			// test.
 			sql := test.sql
 			test.rpc = func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 				return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
@@ -1081,11 +1088,12 @@ func TestRsdBlockingStates(t *testing.T) {
 		}
 		// st is the set of observed state transitions.
 		st := []resumableStreamDecoderState{}
-		// q is the content of the decoder's partial result queue when expected number of state transitions are done.
+		// q is the content of the decoder's partial result queue when expected
+		// number of state transitions are done.
 		q := []*sppb.PartialResultSet{}
 		var lastErr error
-		// Once the expected number of state transitions are observed,
-		// send a signal to channel stateDone.
+		// Once the expected number of state transitions are observed, send a
+		// signal to channel stateDone.
 		stateDone := make(chan int)
 		// Set stateWitness to listen to state changes.
 		hl := len(test.stateHistory) // To avoid data race on test.
@@ -1119,9 +1127,9 @@ func TestRsdBlockingStates(t *testing.T) {
 		}()
 		// Verify that resumableStreamDecoder reaches expected state.
 		select {
-		case <-stateDone: // Note that at this point, receiver is still blocking on r.next().
-			// Check if resumableStreamDecoder carried out expected
-			// state transitions.
+		case <-stateDone: // Note that at this point, receiver is still blockingon r.next().
+			// Check if resumableStreamDecoder carried out expected state
+			// transitions.
 			if !testEqual(st, test.stateHistory) {
 				t.Errorf("%v: observed state transitions: \n%v\n, want \n%v\n",
 					test.name, st, test.stateHistory)
@@ -1131,7 +1139,8 @@ func TestRsdBlockingStates(t *testing.T) {
 			if !testEqual(rs, test.want) {
 				t.Errorf("%v: received PartialResultSets: \n%v\n, want \n%v\n", test.name, rs, test.want)
 			}
-			// Verify that resumableStreamDecoder's internal buffering is also correct.
+			// Verify that resumableStreamDecoder's internal buffering is also
+			// correct.
 			if !testEqual(q, test.queue) {
 				t.Errorf("%v: PartialResultSets still queued: \n%v\n, want \n%v\n", test.name, q, test.queue)
 			}
@@ -1151,9 +1160,9 @@ func TestRsdBlockingStates(t *testing.T) {
 	}
 }
 
-// sReceiver signals every receiving attempt through a channel,
-// used by TestResumeToken to determine if the receiving of a certain
-// PartialResultSet will be attempted next.
+// sReceiver signals every receiving attempt through a channel, used by
+// TestResumeToken to determine if the receiving of a certain PartialResultSet
+// will be attempted next.
 type sReceiver struct {
 	c           chan int
 	rpcReceiver sppb.Spanner_ExecuteStreamingSqlClient
@@ -1165,11 +1174,11 @@ func (sr *sReceiver) Recv() (*sppb.PartialResultSet, error) {
 	return sr.rpcReceiver.Recv()
 }
 
-// waitn waits for nth receiving attempt from now on, until
-// the signal for nth Recv() attempts is received or timeout.
-// Note that because the way stream() works, the signal for the
-// nth Recv() means that the previous n - 1 PartialResultSets
-// has already been returned to caller or queued, if no error happened.
+// waitn waits for nth receiving attempt from now on, until the signal for nth
+// Recv() attempts is received or timeout. Note that because the way stream()
+// works, the signal for the nth Recv() means that the previous n - 1
+// PartialResultSets has already been returned to caller or queued, if no error
+// happened.
 func (sr *sReceiver) waitn(n int) error {
 	for i := 0; i < n; i++ {
 		select {
@@ -1387,8 +1396,8 @@ func TestResumeToken(t *testing.T) {
 	if err := sr.waitn(1); err != nil {
 		t.Fatalf("failed to wait for row %v: %v", maxBuffers+2, err)
 	}
-	// Client should yield row 3rd - (maxBuffers+2)th to application. Therefore, application should
-	// see row 0 - (maxBuffers+2)th so far.
+	// Client should yield row 3rd - (maxBuffers+2)th to application. Therefore,
+	// application should see row 0 - (maxBuffers+2)th so far.
 	for i := 3; i < maxBuffers+3; i++ {
 		want = append(want, &Row{
 			fields: kvMeta.RowType.Fields,
@@ -1401,8 +1410,8 @@ func TestResumeToken(t *testing.T) {
 	if !testEqual(rows, want) {
 		t.Errorf("received rows: \n%v\n; want\n%v\n", rows, want)
 	}
-	// Inject resumable error, but since resumableStreamDecoder is already at queueingUnretryable
-	// state, query will just fail.
+	// Inject resumable error, but since resumableStreamDecoder is already at
+	// queueingUnretryable state, query will just fail.
 	ms.AddMsg(
 		status.Errorf(codes.Unavailable, "mock server wants some sleep"),
 		false,
@@ -1462,7 +1471,8 @@ func TestResumeToken(t *testing.T) {
 	}
 }
 
-// Verify that streaming query get retried upon real gRPC server transport failures.
+// Verify that streaming query get retried upon real gRPC server transport
+// failures.
 func TestGrpcReconnect(t *testing.T) {
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
@@ -1710,7 +1720,8 @@ func TestIteratorStopEarly(t *testing.T) {
 	}
 	iter.Stop()
 	// Stop sets r.err to the FailedPrecondition error "Next called after Stop".
-	// Override that here so this test can observe the Canceled error from the stream.
+	// Override that here so this test can observe the Canceled error from the
+	// stream.
 	iter.err = nil
 	iter.Next()
 	if ErrCode(iter.streamd.lastErr()) != codes.Canceled {

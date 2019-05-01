@@ -229,7 +229,8 @@ func TestTransaction_NotFound(t *testing.T) {
 		t.Fatalf("Expect acquire to fail, got %v, want %v.", got, wantErr)
 	}
 
-	// The failure should recycle the session, we expect it to be used in following requests.
+	// The failure should recycle the session, we expect it to be used in
+	// following requests.
 	if got := txn.Query(ctx, NewStatement("SELECT 1")); !testEqual(wantErr, got.err) {
 		t.Fatalf("Expect Query to fail, got %v, want %v.", got.err, wantErr)
 	}
