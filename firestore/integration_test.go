@@ -385,7 +385,7 @@ func TestIntegration_Set(t *testing.T) {
 	}
 
 	// use firestore.Delete to delete a field.
-	// TODO(deklerk) We should be able to use mustSet, but then we get a test error. We should investigate this.
+	// TODO(deklerk): We should be able to use mustSet, but then we get a test error. We should investigate this.
 	_, err = doc.Set(ctx, map[string]interface{}{"str": Delete}, MergeAll)
 	if err != nil {
 		t.Fatal(err)

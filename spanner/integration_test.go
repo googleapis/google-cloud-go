@@ -48,7 +48,7 @@ var (
 
 	dbNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 
-	// TODO(deklerk) When we can programmatically create instances, we should use
+	// TODO(deklerk): When we can programmatically create instances, we should use
 	// uid.New as the test instance name.
 	// testInstanceID specifies the Cloud Spanner instance used for testing.
 	testInstanceID = "go-integration-test"
@@ -196,7 +196,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 	<-time.After(time.Second)
 
 	// Test reading rows with different timestamp bounds.
-	// TODO(deklerk) use subtests
+	// TODO(deklerk): use subtests
 	for i, test := range []struct {
 		want    [][]interface{}
 		tb      TimestampBound
@@ -2198,7 +2198,7 @@ func TestBatchDML_TwoStatements(t *testing.T) {
 	}
 }
 
-// TODO(deklerk) this currently does not work because the transaction appears to
+// TODO(deklerk): this currently does not work because the transaction appears to
 // get rolled back after a single statement fails. b/120158761
 func TestBatchDML_Error(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2307,7 +2307,7 @@ func cleanupDatabases() {
 		if err != nil {
 			panic(err)
 		}
-		// TODO(deklerk) When we have the ability to programmatically create
+		// TODO(deklerk): When we have the ability to programmatically create
 		// instances, we can create an instance with uid.New and delete all
 		// tables in it. For now, we rely on matching prefixes.
 		if dbNameSpace.Older(db.Name, expireAge) {

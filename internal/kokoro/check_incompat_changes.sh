@@ -32,7 +32,7 @@ for dir in $MANUALS $STABLE_GAPICS; do
   apidiff -w /tmp/pkg.master $pkg
   cd - > /dev/null
 
-  # TODO(deklerk) there's probably a nicer way to do this that doesn't require
+  # TODO(deklerk): there's probably a nicer way to do this that doesn't require
   # two invocations
   if ! apidiff -incompatible /tmp/pkg.master $pkg | (! read); then
     apidiff -incompatible /tmp/pkg.master $pkg

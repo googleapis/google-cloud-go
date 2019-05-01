@@ -21,7 +21,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-// TODO(deklerk) move this to internal/testutil
+// TODO(deklerk): move this to internal/testutil
 func testEqual(a, b interface{}) bool {
 	return testutil.Equal(a, b,
 		cmp.AllowUnexported(TimestampBound{}, Error{}, Mutation{}, Row{},
