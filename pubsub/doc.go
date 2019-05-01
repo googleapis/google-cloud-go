@@ -123,7 +123,7 @@ subscription's AckDeadline:
 
 	cfg, err := sub.Config(ctx)
 	if err != nil {
-		// TODO handle err
+		// TODO: handle err
 	}
 
 	sub.ReceiveSettings.MaxExtension = cfg.AckDeadline

@@ -168,7 +168,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.MaxBurst = 10
 	}
 
-	// TODO(deklerk) This should be replaced with a balancer with
+	// TODO(deklerk): This should be replaced with a balancer with
 	// config.NumChannels connections, instead of config.NumChannels
 	// clientconns.
 	for i := 0; i < config.NumChannels; i++ {

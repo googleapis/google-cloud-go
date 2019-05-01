@@ -233,7 +233,7 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 	wantSid := sh.getID()
 	sh.recycle()
 
-	// TODO(deklerk) get rid of this
+	// TODO(deklerk): get rid of this
 	<-time.After(time.Second)
 
 	// Two back-to-back session requests, both of them should return the same
@@ -266,7 +266,7 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 	}
 
 	// Delay to trigger sessionPool.Take to ping the session.
-	// TODO(deklerk) get rid of this
+	// TODO(deklerk): get rid of this
 	<-time.After(time.Second)
 
 	// take will take the idle session. Then it will send a GetSession request
@@ -314,7 +314,7 @@ func TestTakeFromIdleWriteListChecked(t *testing.T) {
 	<-time.After(sp.SessionPoolConfig.healthCheckSampleInterval)
 	sh.recycle()
 
-	// TODO(deklerk) get rid of this
+	// TODO(deklerk): get rid of this
 	<-time.After(time.Second)
 
 	// Two back-to-back session requests, both of them should return the same
@@ -382,7 +382,7 @@ func TestMaxOpenedSessions(t *testing.T) {
 	}
 
 	go func() {
-		// TODO(deklerk) remove this
+		// TODO(deklerk): remove this
 		<-time.After(time.Second)
 		// Destroy the first session to allow the next session request to
 		// proceed.
@@ -524,7 +524,7 @@ func TestSessionRecycle(t *testing.T) {
 	}
 }
 
-// TODO(deklerk) Investigate why s.destroy(true) is flakey.
+// TODO(deklerk): Investigate why s.destroy(true) is flakey.
 // TestSessionDestroy tests destroying sessions.
 func TestSessionDestroy(t *testing.T) {
 	t.Skip("s.destroy(true) is flakey")
@@ -642,7 +642,7 @@ func TestWriteSessionsPrepared(t *testing.T) {
 	}
 
 	// Sleep for 1s, allowing healthcheck workers to invoke begin transaction.
-	// TODO(deklerk) get rid of this
+	// TODO(deklerk): get rid of this
 	<-time.After(time.Second)
 	wshs := make([]*sessionHandle, 5)
 	for i := 0; i < 5; i++ {
@@ -658,7 +658,7 @@ func TestWriteSessionsPrepared(t *testing.T) {
 		sh.recycle()
 	}
 
-	// TODO(deklerk) get rid of this
+	// TODO(deklerk): get rid of this
 	<-time.After(time.Second)
 
 	// Now force creation of 10 more sessions.
@@ -675,7 +675,7 @@ func TestWriteSessionsPrepared(t *testing.T) {
 		sh.recycle()
 	}
 
-	// TODO(deklerk) get rid of this
+	// TODO(deklerk): get rid of this
 	<-time.After(time.Second)
 
 	if sp.idleWriteList.Len() != 10 {
@@ -697,7 +697,7 @@ func TestTakeFromWriteQueue(t *testing.T) {
 	}
 	sh.recycle()
 
-	// TODO(deklerk) get rid of this
+	// TODO(deklerk): get rid of this
 	<-time.After(time.Second)
 
 	// The session should now be in write queue but take should also return it.
@@ -756,7 +756,7 @@ func TestSessionHealthCheck(t *testing.T) {
 	atomic.SwapInt64(&requestShouldErr, 1)
 
 	// Wait for healthcheck workers to find the broken session and tear it down.
-	// TODO(deklerk) get rid of this
+	// TODO(deklerk): get rid of this
 	<-time.After(1 * time.Second)
 
 	s := sh.session
@@ -923,7 +923,7 @@ func TestStressSessionPool(t *testing.T) {
 	}
 }
 
-// TODO(deklerk) Investigate why this test is flakey, even with waitFor. Example
+// TODO(deklerk): Investigate why this test is flakey, even with waitFor. Example
 // flakey failure: session_test.go:946: after 15s waiting, got Scale down.
 // Expect 5 open, got 6
 //

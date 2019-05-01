@@ -154,7 +154,7 @@ timestamp >= "%s"`,
 }
 
 func TestLogSync(t *testing.T) {
-	// TODO(deklerk) Un-flake and re-enable
+	// TODO(deklerk): Un-flake and re-enable
 	t.Skip("Inherently flaky")
 
 	initLogs() // Generate new testLogID
@@ -197,7 +197,7 @@ func TestLogSync(t *testing.T) {
 }
 
 func TestLogAndEntries(t *testing.T) {
-	// TODO(deklerk) Un-flake and re-enable
+	// TODO(deklerk): Un-flake and re-enable
 	t.Skip("Inherently flaky")
 
 	initLogs() // Generate new testLogID
@@ -335,7 +335,7 @@ func cleanNext(it *logadmin.EntryIterator) (*logging.Entry, error) {
 }
 
 func TestStandardLogger(t *testing.T) {
-	// TODO(deklerk) Un-flake and re-enable
+	// TODO(deklerk): Un-flake and re-enable
 	t.Skip("Inherently flaky")
 
 	initLogs() // Generate new testLogID
