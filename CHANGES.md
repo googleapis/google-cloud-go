@@ -1,5 +1,24 @@
 # Changes
 
+## 0.38.0
+
+This update includes a substantial reduction in our transitive dependency list
+by way of updating to opencensus@v0.21.0.
+
+- spanner:
+  - Error implements GRPCStatus, allowing status.Convert.
+- bigtable:
+  - Fix a bug in bttest that prevents single column queries returning results
+  that match other filters.
+  - Remove verbose retry logging.
+- logging:
+  - Ensure RequestUrl has proper UTF-8, removing the need for users to wrap and
+  rune replace manually.
+- recaptchaenterprise:
+  - Add v1beta1 client.
+- phishingprotection:
+  - Add v1beta1 client.
+
 ## 0.37.4
 
 This patch releases re-builds the go.sum. This was not possible in the
