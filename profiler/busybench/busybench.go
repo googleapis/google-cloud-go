@@ -46,31 +46,30 @@ func busywork(mu *sync.Mutex) {
 		case <-ticker.C:
 			return
 		default:
-			mu.Lock()
-			busyworkOnce()
-			mu.Unlock()
+			busyworkOnce(mu)
 		}
 	}
 }
 
-func busyworkOnce() {
-	data := make([]byte, 1024*1024)
+func busyworkOnce(mu *sync.Mutex) {
+	data := make([]byte, 128*1024)
 	rand.Read(data)
 
+	// Grab the mutex after the allocation above is done so that
+	// there are a number of outstanding allocations. This makes
+	// the live heap profiles consistently non-empty.
+	mu.Lock()
+	defer mu.Unlock()
 	var b bytes.Buffer
 	gz := gzip.NewWriter(&b)
 	if _, err := gz.Write(data); err != nil {
 		log.Printf("Failed to write to gzip stream: %v", err)
 		return
 	}
-	// Sleep to increase contention.
-	time.Sleep(time.Millisecond)
 	if err := gz.Flush(); err != nil {
 		log.Printf("Failed to flush to gzip stream: %v", err)
 		return
 	}
-	// Sleep to increase contention.
-	time.Sleep(time.Millisecond)
 	if err := gz.Close(); err != nil {
 		log.Printf("Failed to close gzip stream: %v", err)
 	}
@@ -79,6 +78,7 @@ func busyworkOnce() {
 
 func main() {
 	flag.Parse()
+	log.Printf("busybench using %s.", runtime.Version())
 	defer log.Printf("busybench finished profiling.")
 
 	if *service == "" {
@@ -93,19 +93,18 @@ func main() {
 		log.Printf("Failed to start the profiler: %v", err)
 		return
 	}
-	mu := new(sync.Mutex)
+
+	var mu sync.Mutex
 	var wg sync.WaitGroup
-	wg.Add(10)
-	// Increse number of concurrent threads to increase contention.
-	// Save current value.
-	np := runtime.GOMAXPROCS(10)
-	for i := 0; i < 10; i++ {
+	const numBusyworkers = 20
+	wg.Add(numBusyworkers)
+	runtime.GOMAXPROCS(numBusyworkers)
+
+	for i := 0; i < numBusyworkers; i++ {
 		go func() {
 			defer wg.Done()
-			busywork(mu)
+			busywork(&mu)
 		}()
 	}
 	wg.Wait()
-	// Reset concurrent thread count.
-	runtime.GOMAXPROCS(np)
 }
