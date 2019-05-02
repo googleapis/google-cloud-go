@@ -225,6 +225,7 @@ func (c *Client) ListDocuments(ctx context.Context, req *firestorepb.ListDocumen
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
@@ -425,6 +426,7 @@ func (c *Client) ListCollectionIds(ctx context.Context, req *firestorepb.ListCol
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 

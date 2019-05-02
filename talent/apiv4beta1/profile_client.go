@@ -166,6 +166,7 @@ func (c *ProfileClient) ListProfiles(ctx context.Context, req *talentpb.ListProf
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
@@ -275,6 +276,7 @@ func (c *ProfileClient) SearchProfiles(ctx context.Context, req *talentpb.Search
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 

@@ -213,6 +213,7 @@ func (c *InstanceAdminClient) ListInstanceConfigs(ctx context.Context, req *inst
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
@@ -268,6 +269,7 @@ func (c *InstanceAdminClient) ListInstances(ctx context.Context, req *instancepb
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 

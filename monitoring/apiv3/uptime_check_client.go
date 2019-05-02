@@ -173,6 +173,7 @@ func (c *UptimeCheckClient) ListUptimeCheckConfigs(ctx context.Context, req *mon
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
@@ -279,6 +280,7 @@ func (c *UptimeCheckClient) ListUptimeCheckIps(ctx context.Context, req *monitor
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 

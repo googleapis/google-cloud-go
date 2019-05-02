@@ -281,18 +281,12 @@ func ExampleIamClient_ListRoles() {
 	req := &adminpb.ListRolesRequest{
 		// TODO: Fill request struct fields.
 	}
-	it := c.ListRoles(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
+	resp, err := c.ListRoles(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleIamClient_GetRole() {
@@ -395,16 +389,10 @@ func ExampleIamClient_QueryTestablePermissions() {
 	req := &adminpb.QueryTestablePermissionsRequest{
 		// TODO: Fill request struct fields.
 	}
-	it := c.QueryTestablePermissions(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
+	resp, err := c.QueryTestablePermissions(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }

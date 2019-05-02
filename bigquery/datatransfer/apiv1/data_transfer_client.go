@@ -201,6 +201,7 @@ func (c *Client) ListDataSources(ctx context.Context, req *datatransferpb.ListDa
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
@@ -305,6 +306,7 @@ func (c *Client) ListTransferConfigs(ctx context.Context, req *datatransferpb.Li
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
@@ -393,6 +395,7 @@ func (c *Client) ListTransferRuns(ctx context.Context, req *datatransferpb.ListT
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
@@ -431,6 +434,7 @@ func (c *Client) ListTransferLogs(ctx context.Context, req *datatransferpb.ListT
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 

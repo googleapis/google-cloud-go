@@ -203,6 +203,7 @@ func (c *KeyManagementClient) ListKeyRings(ctx context.Context, req *kmspb.ListK
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
@@ -241,6 +242,7 @@ func (c *KeyManagementClient) ListCryptoKeys(ctx context.Context, req *kmspb.Lis
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
@@ -279,6 +281,7 @@ func (c *KeyManagementClient) ListCryptoKeyVersions(ctx context.Context, req *km
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
