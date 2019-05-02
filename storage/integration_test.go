@@ -911,7 +911,11 @@ func TestIntegration_SignedURL(t *testing.T) {
 		fail    bool
 	}{
 		{
-			desc: "basic",
+			desc: "basic v2",
+		},
+		{
+			desc: "basic v4",
+			opts: SignedURLOptions{Scheme: SigningSchemeV4},
 		},
 		{
 			desc:    "MD5 sent and matches",
@@ -969,9 +973,166 @@ func TestIntegration_SignedURL(t *testing.T) {
 	}
 }
 
+func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
+	t.Skip("Internal bug 128647687")
+
+	if testing.Short() { // do not test during replay
+		t.Skip("Integration tests skipped in short mode")
+	}
+	// To test SignedURL, we need a real user email and private key. Extract
+	// them from the JSON key file.
+	jwtConf, err := testutil.JWTConfig()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if jwtConf == nil {
+		t.Skip("JSON key file is not present")
+	}
+
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+
+	// TODO(deklerk): document how these were generated and their significance
+	encryptionKey := "AAryxNglNkXQY0Wa+h9+7BLSFMhCzPo22MtXUWjOBbI="
+	encryptionKeySha256 := "QlCdVONb17U1aCTAjrFvMbnxW/Oul8VAvnG1875WJ3k="
+	headers := map[string][]string{
+		"x-goog-encryption-algorithm":  {"AES256"},
+		"x-goog-encryption-key":        {encryptionKey},
+		"x-goog-encryption-key-sha256": {encryptionKeySha256},
+	}
+	contents := []byte(`{"message":"encryption with csek works"}`)
+	tests := []struct {
+		desc string
+		opts *SignedURLOptions
+	}{
+		{
+			desc: "v4 URL with customer supplied encryption keys for PUT",
+			opts: &SignedURLOptions{
+				Method: "PUT",
+				Headers: []string{
+					"x-goog-encryption-algorithm:AES256",
+					"x-goog-encryption-key:AAryxNglNkXQY0Wa+h9+7BLSFMhCzPo22MtXUWjOBbI=",
+					"x-goog-encryption-key-sha256:QlCdVONb17U1aCTAjrFvMbnxW/Oul8VAvnG1875WJ3k=",
+				},
+				Scheme: SigningSchemeV4,
+			},
+		},
+		{
+			desc: "v4 URL with customer supplied encryption keys for GET",
+			opts: &SignedURLOptions{
+				Method: "GET",
+				Headers: []string{
+					"x-goog-encryption-algorithm:AES256",
+					fmt.Sprintf("x-goog-encryption-key:%s", encryptionKey),
+					fmt.Sprintf("x-goog-encryption-key-sha256:%s", encryptionKeySha256),
+				},
+				Scheme: SigningSchemeV4,
+			},
+		},
+	}
+	defer func() {
+		// Delete encrypted object.
+		bkt := client.Bucket(bucketName)
+		err := bkt.Object("csek.json").Delete(ctx)
+		if err != nil {
+			log.Printf("failed to deleted encrypted file: %v", err)
+		}
+	}()
+
+	for _, test := range tests {
+		opts := test.opts
+		opts.GoogleAccessID = jwtConf.Email
+		opts.PrivateKey = jwtConf.PrivateKey
+		opts.Expires = time.Now().Add(time.Hour)
+
+		u, err := SignedURL(bucketName, "csek.json", test.opts)
+		if err != nil {
+			t.Fatalf("%s: %v", test.desc, err)
+		}
+
+		if test.opts.Method == "PUT" {
+			if _, err := putURL(u, headers, bytes.NewReader(contents)); err != nil {
+				t.Fatalf("%s: %v", test.desc, err)
+			}
+		}
+
+		if test.opts.Method == "GET" {
+			got, err := getURL(u, headers)
+			if err != nil {
+				t.Fatalf("%s: %v", test.desc, err)
+			}
+			if !bytes.Equal(got, contents) {
+				t.Fatalf("%s: got %q, want %q", test.desc, got, contents)
+			}
+		}
+	}
+}
+
+func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
+	if testing.Short() { // do not test during replay
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	// To test SignedURL, we need a real user email and private key. Extract them
+	// from the JSON key file.
+	jwtConf, err := testutil.JWTConfig()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if jwtConf == nil {
+		t.Skip("JSON key file is not present")
+	}
+
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+
+	opts := &SignedURLOptions{
+		Scheme:         SigningSchemeV4,
+		Method:         "GET",
+		GoogleAccessID: jwtConf.Email,
+		PrivateKey:     jwtConf.PrivateKey,
+		Expires:        time.Now().Add(time.Hour),
+	}
+
+	u, err := SignedURL(bucketName, "", opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Should be some ListBucketResult response.
+	_, err = getURL(u, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 // Make a GET request to a URL using an unauthenticated client, and return its contents.
 func getURL(url string, headers map[string][]string) ([]byte, error) {
 	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = headers
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+	bytes, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	if res.StatusCode != 200 {
+		return nil, fmt.Errorf("code=%d, body=%s", res.StatusCode, string(bytes))
+	}
+	return bytes, nil
+}
+
+// Make a PUT request to a URL using an unauthenticated client, and return its contents.
+func putURL(url string, headers map[string][]string, payload io.Reader) ([]byte, error) {
+	req, err := http.NewRequest("PUT", url, payload)
 	if err != nil {
 		return nil, err
 	}
