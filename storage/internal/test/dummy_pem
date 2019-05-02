@@ -1,6 +1,6 @@
 Bag Attributes
     friendlyName: privatekey
-    localKeyID: 54 69 6D 65 20 31 34 31 36 38 35 32 30 30 34 37 37 32 
+    localKeyID: 54 69 6D 65 20 31 34 31 36 38 35 32 30 30 34 37 37 32
 Key Attributes: <No Attributes>
 -----BEGIN RSA PRIVATE KEY-----
 MIICXQIBAAKBgQCtCWMoJ2Bok2QoGFyU7A6IlGprO9QfUTT0jNrLkIbM5OWNIuDx
@@ -19,7 +19,7 @@ TAM9vnYtSkKK/V56kEDNBO5LwiRsir95IUNclqqMKR1C
 -----END RSA PRIVATE KEY-----
 Bag Attributes
     friendlyName: privatekey
-    localKeyID: 54 69 6D 65 20 31 34 31 36 38 35 32 30 30 34 37 37 32 
+    localKeyID: 54 69 6D 65 20 31 34 31 36 38 35 32 30 30 34 37 37 32
 subject=/CN=1079432350659-nvog0vmn9s6pqr3kr4v2avbc7nkhoa11.apps.googleusercontent.com
 issuer=/CN=1079432350659-nvog0vmn9s6pqr3kr4v2avbc7nkhoa11.apps.googleusercontent.com
 -----BEGIN CERTIFICATE-----
