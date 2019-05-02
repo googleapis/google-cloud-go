@@ -269,6 +269,7 @@ func (c *DeviceManagerClient) ListDeviceRegistries(ctx context.Context, req *iot
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
@@ -371,6 +372,7 @@ func (c *DeviceManagerClient) ListDevices(ctx context.Context, req *iotpb.ListDe
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 

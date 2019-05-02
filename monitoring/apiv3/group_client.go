@@ -177,6 +177,7 @@ func (c *GroupClient) ListGroups(ctx context.Context, req *monitoringpb.ListGrou
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
@@ -280,6 +281,7 @@ func (c *GroupClient) ListGroupMembers(ctx context.Context, req *monitoringpb.Li
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 

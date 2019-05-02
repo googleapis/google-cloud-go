@@ -213,6 +213,7 @@ func (c *IamClient) ListServiceAccounts(ctx context.Context, req *adminpb.ListSe
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
@@ -462,40 +463,19 @@ func (c *IamClient) SignJwt(ctx context.Context, req *adminpb.SignJwtRequest, op
 }
 
 // ListRoles lists the Roles defined on a resource.
-func (c *IamClient) ListRoles(ctx context.Context, req *adminpb.ListRolesRequest, opts ...gax.CallOption) *RoleIterator {
+func (c *IamClient) ListRoles(ctx context.Context, req *adminpb.ListRolesRequest, opts ...gax.CallOption) (*adminpb.ListRolesResponse, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListRoles[0:len(c.CallOptions.ListRoles):len(c.CallOptions.ListRoles)], opts...)
-	it := &RoleIterator{}
-	req = proto.Clone(req).(*adminpb.ListRolesRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Role, string, error) {
-		var resp *adminpb.ListRolesResponse
-		req.PageToken = pageToken
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.iamClient.ListRoles(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-		return resp.Roles, resp.NextPageToken, nil
+	var resp *adminpb.ListRolesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamClient.ListRoles(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
 	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	return it
+	return resp, nil
 }
 
 // GetRole gets a Role definition.
@@ -591,124 +571,19 @@ func (c *IamClient) UndeleteRole(ctx context.Context, req *adminpb.UndeleteRoleR
 
 // QueryTestablePermissions lists the permissions testable on a resource.
 // A permission is testable if it can be tested for an identity on a resource.
-func (c *IamClient) QueryTestablePermissions(ctx context.Context, req *adminpb.QueryTestablePermissionsRequest, opts ...gax.CallOption) *PermissionIterator {
+func (c *IamClient) QueryTestablePermissions(ctx context.Context, req *adminpb.QueryTestablePermissionsRequest, opts ...gax.CallOption) (*adminpb.QueryTestablePermissionsResponse, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.QueryTestablePermissions[0:len(c.CallOptions.QueryTestablePermissions):len(c.CallOptions.QueryTestablePermissions)], opts...)
-	it := &PermissionIterator{}
-	req = proto.Clone(req).(*adminpb.QueryTestablePermissionsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Permission, string, error) {
-		var resp *adminpb.QueryTestablePermissionsResponse
-		req.PageToken = pageToken
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.iamClient.QueryTestablePermissions(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-		return resp.Permissions, resp.NextPageToken, nil
+	var resp *adminpb.QueryTestablePermissionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamClient.QueryTestablePermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
 	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	return it
-}
-
-// PermissionIterator manages a stream of *adminpb.Permission.
-type PermissionIterator struct {
-	items    []*adminpb.Permission
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.Permission, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PermissionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PermissionIterator) Next() (*adminpb.Permission, error) {
-	var item *adminpb.Permission
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *PermissionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PermissionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// RoleIterator manages a stream of *adminpb.Role.
-type RoleIterator struct {
-	items    []*adminpb.Role
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.Role, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RoleIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RoleIterator) Next() (*adminpb.Role, error) {
-	var item *adminpb.Role
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RoleIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RoleIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
+	return resp, nil
 }
 
 // ServiceAccountIterator manages a stream of *adminpb.ServiceAccount.

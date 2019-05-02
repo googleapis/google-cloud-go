@@ -171,6 +171,7 @@ func (c *AlertPolicyClient) ListAlertPolicies(ctx context.Context, req *monitori
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 

@@ -228,6 +228,7 @@ func (c *ApplicationClient) ListApplications(ctx context.Context, req *talentpb.
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 

@@ -1306,12 +1306,9 @@ func TestIamSignJwtError(t *testing.T) {
 	_ = resp
 }
 func TestIamListRoles(t *testing.T) {
-	var nextPageToken string = ""
-	var rolesElement *adminpb.Role = &adminpb.Role{}
-	var roles = []*adminpb.Role{rolesElement}
+	var nextPageToken string = "nextPageToken-1530815211"
 	var expectedResponse = &adminpb.ListRolesResponse{
 		NextPageToken: nextPageToken,
-		Roles:         roles,
 	}
 
 	mockIam.err = nil
@@ -1326,7 +1323,7 @@ func TestIamListRoles(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	resp, err := c.ListRoles(context.Background(), request).Next()
+	resp, err := c.ListRoles(context.Background(), request)
 
 	if err != nil {
 		t.Fatal(err)
@@ -1336,17 +1333,7 @@ func TestIamListRoles(t *testing.T) {
 		t.Errorf("wrong request %q, want %q", got, want)
 	}
 
-	want := (interface{})(expectedResponse.Roles[0])
-	got := (interface{})(resp)
-	var ok bool
-
-	switch want := (want).(type) {
-	case proto.Message:
-		ok = proto.Equal(want, got.(proto.Message))
-	default:
-		ok = want == got
-	}
-	if !ok {
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
 		t.Errorf("wrong response %q, want %q)", got, want)
 	}
 }
@@ -1362,7 +1349,7 @@ func TestIamListRolesError(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	resp, err := c.ListRoles(context.Background(), request).Next()
+	resp, err := c.ListRoles(context.Background(), request)
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)
@@ -1677,12 +1664,9 @@ func TestIamUndeleteRoleError(t *testing.T) {
 	_ = resp
 }
 func TestIamQueryTestablePermissions(t *testing.T) {
-	var nextPageToken string = ""
-	var permissionsElement *adminpb.Permission = &adminpb.Permission{}
-	var permissions = []*adminpb.Permission{permissionsElement}
+	var nextPageToken string = "nextPageToken-1530815211"
 	var expectedResponse = &adminpb.QueryTestablePermissionsResponse{
 		NextPageToken: nextPageToken,
-		Permissions:   permissions,
 	}
 
 	mockIam.err = nil
@@ -1697,7 +1681,7 @@ func TestIamQueryTestablePermissions(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	resp, err := c.QueryTestablePermissions(context.Background(), request).Next()
+	resp, err := c.QueryTestablePermissions(context.Background(), request)
 
 	if err != nil {
 		t.Fatal(err)
@@ -1707,17 +1691,7 @@ func TestIamQueryTestablePermissions(t *testing.T) {
 		t.Errorf("wrong request %q, want %q", got, want)
 	}
 
-	want := (interface{})(expectedResponse.Permissions[0])
-	got := (interface{})(resp)
-	var ok bool
-
-	switch want := (want).(type) {
-	case proto.Message:
-		ok = proto.Equal(want, got.(proto.Message))
-	default:
-		ok = want == got
-	}
-	if !ok {
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
 		t.Errorf("wrong response %q, want %q)", got, want)
 	}
 }
@@ -1733,7 +1707,7 @@ func TestIamQueryTestablePermissionsError(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	resp, err := c.QueryTestablePermissions(context.Background(), request).Next()
+	resp, err := c.QueryTestablePermissions(context.Background(), request)
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)

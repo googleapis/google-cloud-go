@@ -220,6 +220,7 @@ func (c *EntityTypesClient) ListEntityTypes(ctx context.Context, req *dialogflow
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 

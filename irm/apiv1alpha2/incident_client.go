@@ -250,6 +250,7 @@ func (c *IncidentClient) SearchIncidents(ctx context.Context, req *irmpb.SearchI
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
@@ -307,6 +308,7 @@ func (c *IncidentClient) SearchSimilarIncidents(ctx context.Context, req *irmpb.
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
@@ -364,6 +366,7 @@ func (c *IncidentClient) ListAnnotations(ctx context.Context, req *irmpb.ListAnn
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
@@ -432,6 +435,7 @@ func (c *IncidentClient) ListTags(ctx context.Context, req *irmpb.ListTagsReques
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
@@ -488,6 +492,7 @@ func (c *IncidentClient) SearchSignals(ctx context.Context, req *irmpb.SearchSig
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
@@ -595,6 +600,7 @@ func (c *IncidentClient) ListArtifacts(ctx context.Context, req *irmpb.ListArtif
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
@@ -717,6 +723,7 @@ func (c *IncidentClient) ListSubscriptions(ctx context.Context, req *irmpb.ListS
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
@@ -802,6 +809,7 @@ func (c *IncidentClient) ListIncidentRoleAssignments(ctx context.Context, req *i
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
 	return it
 }
 
