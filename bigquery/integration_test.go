@@ -254,7 +254,6 @@ func TestIntegration_TableCreateView(t *testing.T) {
 }
 
 func TestIntegration_TableMetadata(t *testing.T) {
-	t.Skip("Internal bug 128670231")
 
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -355,20 +354,21 @@ func TestIntegration_TableMetadata(t *testing.T) {
 			if !testutil.Equal(got, want) {
 				t.Errorf("metadata.TimePartitioning: got %v, want %v", got, want)
 			}
-			// check that RequirePartitionFilter can be inverted.
+			// Manipulate RequirePartitionFilter at the table level.
 			mdUpdate := TableMetadataToUpdate{
-				TimePartitioning: &TimePartitioning{
-					Expiration:             v.TimePartitioning.Expiration,
-					RequirePartitionFilter: !want.RequirePartitionFilter,
-				},
+				RequirePartitionFilter: !want.RequirePartitionFilter,
 			}
 
 			newmd, err := table.Update(ctx, mdUpdate, "")
 			if err != nil {
 				t.Errorf("failed to invert RequirePartitionFilter on %s: %v", table.FullyQualifiedName(), err)
 			}
-			if newmd.TimePartitioning.RequirePartitionFilter == want.RequirePartitionFilter {
-				t.Errorf("inverting RequirePartitionFilter on %s failed, want %t got %t", table.FullyQualifiedName(), !want.RequirePartitionFilter, newmd.TimePartitioning.RequirePartitionFilter)
+			if newmd.RequirePartitionFilter == want.RequirePartitionFilter {
+				t.Errorf("inverting table-level RequirePartitionFilter on %s failed, want %t got %t", table.FullyQualifiedName(), !want.RequirePartitionFilter, newmd.RequirePartitionFilter)
+			}
+			// Also verify that the clone of RequirePartitionFilter in the TimePartitioning message is consistent.
+			if newmd.RequirePartitionFilter != newmd.TimePartitioning.RequirePartitionFilter {
+				t.Errorf("inconsistent RequirePartitionFilter.  Table: %t, TimePartitioning: %t", newmd.RequirePartitionFilter, newmd.TimePartitioning.RequirePartitionFilter)
 			}
 
 		}
