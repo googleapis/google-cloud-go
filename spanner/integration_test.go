@@ -192,21 +192,18 @@ func TestIntegration_SingleUse(t *testing.T) {
 		}
 	}
 
-	// For testing timestamp bound staleness.
-	<-time.After(time.Second)
-
 	// Test reading rows with different timestamp bounds.
-	// TODO(deklerk): use subtests
 	for i, test := range []struct {
+		name    string
 		want    [][]interface{}
 		tb      TimestampBound
 		checkTs func(time.Time) error
 	}{
 		{
-			// strong
-			[][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}},
-			StrongRead(),
-			func(ts time.Time) error {
+			name: "strong",
+			want: [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}},
+			tb:   StrongRead(),
+			checkTs: func(ts time.Time) error {
 				// writes[3] is the last write, all subsequent strong read
 				// should have a timestamp larger than that.
 				if ts.Before(writes[3].ts) {
@@ -216,10 +213,10 @@ func TestIntegration_SingleUse(t *testing.T) {
 			},
 		},
 		{
-			// min_read_timestamp
-			[][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}},
-			MinReadTimestamp(writes[3].ts),
-			func(ts time.Time) error {
+			name: "min_read_timestamp",
+			want: [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}},
+			tb:   MinReadTimestamp(writes[3].ts),
+			checkTs: func(ts time.Time) error {
 				if ts.Before(writes[3].ts) {
 					return fmt.Errorf("read got timestamp %v, want it to be no later than %v", ts, writes[3].ts)
 				}
@@ -227,10 +224,10 @@ func TestIntegration_SingleUse(t *testing.T) {
 			},
 		},
 		{
-			// max_staleness
-			[][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}},
-			MaxStaleness(time.Second),
-			func(ts time.Time) error {
+			name: "max_staleness",
+			want: [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}},
+			tb:   MaxStaleness(time.Second),
+			checkTs: func(ts time.Time) error {
 				if ts.Before(writes[3].ts) {
 					return fmt.Errorf("read got timestamp %v, want it to be no later than %v", ts, writes[3].ts)
 				}
@@ -238,10 +235,10 @@ func TestIntegration_SingleUse(t *testing.T) {
 			},
 		},
 		{
-			// read_timestamp
-			[][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}},
-			ReadTimestamp(writes[2].ts),
-			func(ts time.Time) error {
+			name: "read_timestamp",
+			want: [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}},
+			tb:   ReadTimestamp(writes[2].ts),
+			checkTs: func(ts time.Time) error {
 				if ts != writes[2].ts {
 					return fmt.Errorf("read got timestamp %v, want %v", ts, writes[2].ts)
 				}
@@ -249,12 +246,12 @@ func TestIntegration_SingleUse(t *testing.T) {
 			},
 		},
 		{
-			// exact_staleness
-			nil,
+			name: "exact_staleness",
+			want: nil,
 			// Specify a staleness which should be already before this test because
 			// context timeout is set to be 10s.
-			ExactStaleness(11 * time.Second),
-			func(ts time.Time) error {
+			tb: ExactStaleness(11 * time.Second),
+			checkTs: func(ts time.Time) error {
 				if ts.After(writes[0].ts) {
 					return fmt.Errorf("read got timestamp %v, want it to be no earlier than %v", ts, writes[0].ts)
 				}
@@ -262,104 +259,114 @@ func TestIntegration_SingleUse(t *testing.T) {
 			},
 		},
 	} {
-		// SingleUse.Query
-		su := client.Single().WithTimestampBound(test.tb)
-		got, err := readAll(su.Query(
-			ctx,
-			Statement{
-				"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4)",
-				map[string]interface{}{"id1": int64(1), "id3": int64(3), "id4": int64(4)},
-			}))
-		if err != nil {
-			t.Errorf("%d: SingleUse.Query returns error %v, want nil", i, err)
-		}
-		if !testEqual(got, test.want) {
-			t.Errorf("%d: got unexpected result from SingleUse.Query: %v, want %v", i, got, test.want)
-		}
-		rts, err := su.Timestamp()
-		if err != nil {
-			t.Errorf("%d: SingleUse.Query doesn't return a timestamp, error: %v", i, err)
-		}
-		if err := test.checkTs(rts); err != nil {
-			t.Errorf("%d: SingleUse.Query doesn't return expected timestamp: %v", i, err)
-		}
-		// SingleUse.Read
-		su = client.Single().WithTimestampBound(test.tb)
-		got, err = readAll(su.Read(ctx, "Singers", KeySets(Key{1}, Key{3}, Key{4}), []string{"SingerId", "FirstName", "LastName"}))
-		if err != nil {
-			t.Errorf("%d: SingleUse.Read returns error %v, want nil", i, err)
-		}
-		if !testEqual(got, test.want) {
-			t.Errorf("%d: got unexpected result from SingleUse.Read: %v, want %v", i, got, test.want)
-		}
-		rts, err = su.Timestamp()
-		if err != nil {
-			t.Errorf("%d: SingleUse.Read doesn't return a timestamp, error: %v", i, err)
-		}
-		if err := test.checkTs(rts); err != nil {
-			t.Errorf("%d: SingleUse.Read doesn't return expected timestamp: %v", i, err)
-		}
-		// SingleUse.ReadRow
-		got = nil
-		for _, k := range []Key{{1}, {3}, {4}} {
-			su = client.Single().WithTimestampBound(test.tb)
-			r, err := su.ReadRow(ctx, "Singers", k, []string{"SingerId", "FirstName", "LastName"})
+		t.Run(test.name, func(t *testing.T) {
+			// SingleUse.Query
+			su := client.Single().WithTimestampBound(test.tb)
+			got, err := readAll(su.Query(
+				ctx,
+				Statement{
+					"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4)",
+					map[string]interface{}{"id1": int64(1), "id3": int64(3), "id4": int64(4)},
+				}))
 			if err != nil {
-				continue
+				t.Fatalf("%d: SingleUse.Query returns error %v, want nil", i, err)
 			}
-			v, err := rowToValues(r)
-			if err != nil {
-				continue
+			if !testEqual(got, test.want) {
+				t.Fatalf("%d: got unexpected result from SingleUse.Query: %v, want %v", i, got, test.want)
 			}
-			got = append(got, v)
-			rts, err = su.Timestamp()
+			rts, err := su.Timestamp()
 			if err != nil {
-				t.Errorf("%d: SingleUse.ReadRow(%v) doesn't return a timestamp, error: %v", i, k, err)
+				t.Fatalf("%d: SingleUse.Query doesn't return a timestamp, error: %v", i, err)
 			}
 			if err := test.checkTs(rts); err != nil {
-				t.Errorf("%d: SingleUse.ReadRow(%v) doesn't return expected timestamp: %v", i, k, err)
+				t.Fatalf("%d: SingleUse.Query doesn't return expected timestamp: %v", i, err)
 			}
-		}
-		if !testEqual(got, test.want) {
-			t.Errorf("%d: got unexpected results from SingleUse.ReadRow: %v, want %v", i, got, test.want)
-		}
-		// SingleUse.ReadUsingIndex
-		su = client.Single().WithTimestampBound(test.tb)
-		got, err = readAll(su.ReadUsingIndex(ctx, "Singers", "SingerByName", KeySets(Key{"Marc", "Foo"}, Key{"Alpha", "Beta"}, Key{"Last", "End"}), []string{"SingerId", "FirstName", "LastName"}))
-		if err != nil {
-			t.Errorf("%d: SingleUse.ReadUsingIndex returns error %v, want nil", i, err)
-		}
-		// The results from ReadUsingIndex is sorted by the index rather than primary key.
-		if len(got) != len(test.want) {
-			t.Errorf("%d: got unexpected result from SingleUse.ReadUsingIndex: %v, want %v", i, got, test.want)
-		}
-		for j, g := range got {
-			if j > 0 {
-				prev := got[j-1][1].(string) + got[j-1][2].(string)
-				curr := got[j][1].(string) + got[j][2].(string)
-				if strings.Compare(prev, curr) > 0 {
-					t.Errorf("%d: SingleUse.ReadUsingIndex fails to order rows by index keys, %v should be after %v", i, got[j-1], got[j])
+			// SingleUse.Read
+			su = client.Single().WithTimestampBound(test.tb)
+			got, err = readAll(su.Read(ctx, "Singers", KeySets(Key{1}, Key{3}, Key{4}), []string{"SingerId", "FirstName", "LastName"}))
+			if err != nil {
+				t.Fatalf("%d: SingleUse.Read returns error %v, want nil", i, err)
+			}
+			if !testEqual(got, test.want) {
+				t.Fatalf("%d: got unexpected result from SingleUse.Read: %v, want %v", i, got, test.want)
+			}
+			rts, err = su.Timestamp()
+			if err != nil {
+				t.Fatalf("%d: SingleUse.Read doesn't return a timestamp, error: %v", i, err)
+			}
+			if err := test.checkTs(rts); err != nil {
+				t.Fatalf("%d: SingleUse.Read doesn't return expected timestamp: %v", i, err)
+			}
+			// SingleUse.ReadRow
+			got = nil
+			for _, k := range []Key{{1}, {3}, {4}} {
+				su = client.Single().WithTimestampBound(test.tb)
+				r, err := su.ReadRow(ctx, "Singers", k, []string{"SingerId", "FirstName", "LastName"})
+				if err != nil {
+					continue
+				}
+				v, err := rowToValues(r)
+				if err != nil {
+					continue
+				}
+				got = append(got, v)
+				rts, err = su.Timestamp()
+				if err != nil {
+					t.Fatalf("%d: SingleUse.ReadRow(%v) doesn't return a timestamp, error: %v", i, k, err)
+				}
+				if err := test.checkTs(rts); err != nil {
+					t.Fatalf("%d: SingleUse.ReadRow(%v) doesn't return expected timestamp: %v", i, k, err)
 				}
 			}
-			found := false
-			for _, w := range test.want {
-				if testEqual(g, w) {
-					found = true
+			if !testEqual(got, test.want) {
+				t.Fatalf("%d: got unexpected results from SingleUse.ReadRow: %v, want %v", i, got, test.want)
+			}
+			// SingleUse.ReadUsingIndex
+			su = client.Single().WithTimestampBound(test.tb)
+			got, err = readAll(su.ReadUsingIndex(ctx, "Singers", "SingerByName", KeySets(Key{"Marc", "Foo"}, Key{"Alpha", "Beta"}, Key{"Last", "End"}), []string{"SingerId", "FirstName", "LastName"}))
+			if err != nil {
+				t.Fatalf("%d: SingleUse.ReadUsingIndex returns error %v, want nil", i, err)
+			}
+			// The results from ReadUsingIndex is sorted by the index rather than primary key.
+			if len(got) != len(test.want) {
+				t.Fatalf("%d: got unexpected result from SingleUse.ReadUsingIndex: %v, want %v", i, got, test.want)
+			}
+			for j, g := range got {
+				if j > 0 {
+					prev := got[j-1][1].(string) + got[j-1][2].(string)
+					curr := got[j][1].(string) + got[j][2].(string)
+					if strings.Compare(prev, curr) > 0 {
+						t.Fatalf("%d: SingleUse.ReadUsingIndex fails to order rows by index keys, %v should be after %v", i, got[j-1], got[j])
+					}
+				}
+				found := false
+				for _, w := range test.want {
+					if testEqual(g, w) {
+						found = true
+					}
+				}
+				if !found {
+					t.Fatalf("%d: got unexpected result from SingleUse.ReadUsingIndex: %v, want %v", i, got, test.want)
+					break
 				}
 			}
-			if !found {
-				t.Errorf("%d: got unexpected result from SingleUse.ReadUsingIndex: %v, want %v", i, got, test.want)
-				break
+			rts, err = su.Timestamp()
+			if err != nil {
+				t.Fatalf("%d: SingleUse.ReadUsingIndex doesn't return a timestamp, error: %v", i, err)
 			}
-		}
-		rts, err = su.Timestamp()
-		if err != nil {
-			t.Errorf("%d: SingleUse.ReadUsingIndex doesn't return a timestamp, error: %v", i, err)
-		}
-		if err := test.checkTs(rts); err != nil {
-			t.Errorf("%d: SingleUse.ReadUsingIndex doesn't return expected timestamp: %v", i, err)
-		}
+			if err := test.checkTs(rts); err != nil {
+				t.Fatalf("%d: SingleUse.ReadUsingIndex doesn't return expected timestamp: %v", i, err)
+			}
+		})
 	}
+}
+
+func TestIntegration_SingleUse_ReadingWithLimit(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+	// Set up testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
+	defer cleanup()
 
 	// Reading with limit.
 	su := client.Single()
@@ -372,7 +379,6 @@ func TestIntegration_SingleUse(t *testing.T) {
 	if got, want := len(gotRows), limit; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-
 }
 
 // Test ReadOnlyTransaction. The testsuite is mostly like SingleUse, except it

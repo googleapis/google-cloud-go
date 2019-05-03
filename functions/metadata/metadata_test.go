@@ -21,22 +21,14 @@ import (
 )
 
 func TestMetadata(t *testing.T) {
-	tests := []struct {
-		meta *Metadata
-	}{
-		{
-			&Metadata{EventID: "test event ID"},
-		},
+	md := &Metadata{EventID: "test event ID"}
+	ctx := NewContext(context.Background(), md)
+	got, err := FromContext(ctx)
+	if err != nil {
+		t.Fatalf("FromContext error: %v", err)
 	}
-	for _, test := range tests {
-		ctx := NewContext(context.Background(), test.meta)
-		got, err := FromContext(ctx)
-		if err != nil {
-			t.Fatalf("FromContext error: %v", err)
-		}
-		if !reflect.DeepEqual(got, test.meta) {
-			t.Fatalf("FromContext\nGot %v\nWant %v", got, test.meta)
-		}
+	if !reflect.DeepEqual(got, md) {
+		t.Fatalf("FromContext\nGot %v\nWant %v", got, md)
 	}
 }
 

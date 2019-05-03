@@ -792,95 +792,93 @@ func TestRsdNonblockingStates(t *testing.T) {
 			wantErr: status.Errorf(codes.Unknown, "Just Abort It"),
 		},
 	}
-nextTest:
 	for _, test := range tests {
-		ms := testutil.NewMockCloudSpanner(t, trxTs)
-		ms.Serve()
-		mc := sppb.NewSpannerClient(dialMock(t, ms))
-		if test.rpc == nil {
-			test.rpc = func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
-				return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
-					Sql:         test.sql,
-					ResumeToken: resumeToken,
-				})
-			}
-		}
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-		r := newResumableStreamDecoder(
-			ctx,
-			test.rpc,
-		)
-		st := []resumableStreamDecoderState{}
-		var lastErr error
-		// Once the expected number of state transitions are observed,
-		// send a signal by setting stateDone = true.
-		stateDone := false
-		// Set stateWitness to listen to state changes.
-		hl := len(test.stateHistory) // To avoid data race on test.
-		r.stateWitness = func(rs resumableStreamDecoderState) {
-			if !stateDone {
-				// Record state transitions.
-				st = append(st, rs)
-				if len(st) == hl {
-					lastErr = r.lastErr()
-					stateDone = true
+		t.Run(test.name, func(t *testing.T) {
+			ms := testutil.NewMockCloudSpanner(t, trxTs)
+			ms.Serve()
+			mc := sppb.NewSpannerClient(dialMock(t, ms))
+			if test.rpc == nil {
+				test.rpc = func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+					return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
+						Sql:         test.sql,
+						ResumeToken: resumeToken,
+					})
 				}
 			}
-		}
-		// Let mock server stream given messages to resumableStreamDecoder.
-		for _, m := range test.msgs {
-			ms.AddMsg(m.Err, m.ResumeToken)
-		}
-		var rs []*sppb.PartialResultSet
-		for {
-			select {
-			case <-ctx.Done():
-				t.Errorf("context cancelled or timeout during test")
-				continue nextTest
-			default:
-			}
-			if stateDone {
-				// Check if resumableStreamDecoder carried out expected
-				// state transitions.
-				if !testEqual(st, test.stateHistory) {
-					t.Errorf("%v: observed state transitions: \n%v\n, want \n%v\n",
-						test.name, st, test.stateHistory)
-				}
-				// Check if resumableStreamDecoder returns expected array of
-				// PartialResultSets.
-				if !testEqual(rs, test.want) {
-					t.Errorf("%v: received PartialResultSets: \n%v\n, want \n%v\n", test.name, rs, test.want)
-				}
-				// Verify that resumableStreamDecoder's internal buffering is
-				// also correct.
-				var q []*sppb.PartialResultSet
-				for {
-					item := r.q.pop()
-					if item == nil {
-						break
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+			r := newResumableStreamDecoder(
+				ctx,
+				test.rpc,
+			)
+			st := []resumableStreamDecoderState{}
+			var lastErr error
+			// Once the expected number of state transitions are observed,
+			// send a signal by setting stateDone = true.
+			stateDone := false
+			// Set stateWitness to listen to state changes.
+			hl := len(test.stateHistory) // To avoid data race on test.
+			r.stateWitness = func(rs resumableStreamDecoderState) {
+				if !stateDone {
+					// Record state transitions.
+					st = append(st, rs)
+					if len(st) == hl {
+						lastErr = r.lastErr()
+						stateDone = true
 					}
-					q = append(q, item)
 				}
-				if !testEqual(q, test.queue) {
-					t.Errorf("%v: PartialResultSets still queued: \n%v\n, want \n%v\n", test.name, q, test.queue)
-				}
-				// Verify resume token.
-				if test.resumeToken != nil && !testEqual(r.resumeToken, test.resumeToken) {
-					t.Errorf("%v: Resume token is %v, want %v\n", test.name, r.resumeToken, test.resumeToken)
-				}
-				// Verify error message.
-				if !testEqual(lastErr, test.wantErr) {
-					t.Errorf("%v: got error %v, want %v", test.name, lastErr, test.wantErr)
-				}
-				// Proceed to next test
-				continue nextTest
 			}
-			// Receive next decoded item.
-			if r.next() {
-				rs = append(rs, r.get())
+			// Let mock server stream given messages to resumableStreamDecoder.
+			for _, m := range test.msgs {
+				ms.AddMsg(m.Err, m.ResumeToken)
 			}
-		}
+			var rs []*sppb.PartialResultSet
+			for {
+				select {
+				case <-ctx.Done():
+					t.Fatal("context cancelled or timeout during test")
+				default:
+				}
+				if stateDone {
+					// Check if resumableStreamDecoder carried out expected
+					// state transitions.
+					if !testEqual(st, test.stateHistory) {
+						t.Fatalf("observed state transitions: \n%v\n, want \n%v\n", st, test.stateHistory)
+					}
+					// Check if resumableStreamDecoder returns expected array of
+					// PartialResultSets.
+					if !testEqual(rs, test.want) {
+						t.Fatalf("received PartialResultSets: \n%v\n, want \n%v\n", rs, test.want)
+					}
+					// Verify that resumableStreamDecoder's internal buffering is
+					// also correct.
+					var q []*sppb.PartialResultSet
+					for {
+						item := r.q.pop()
+						if item == nil {
+							break
+						}
+						q = append(q, item)
+					}
+					if !testEqual(q, test.queue) {
+						t.Fatalf("PartialResultSets still queued: \n%v\n, want \n%v\n", q, test.queue)
+					}
+					// Verify resume token.
+					if test.resumeToken != nil && !testEqual(r.resumeToken, test.resumeToken) {
+						t.Fatalf("Resume token is %v, want %v\n", r.resumeToken, test.resumeToken)
+					}
+					// Verify error message.
+					if !testEqual(lastErr, test.wantErr) {
+						t.Fatalf("got error %v, want %v", lastErr, test.wantErr)
+					}
+					return
+				}
+				// Receive next decoded item.
+				if r.next() {
+					rs = append(rs, r.get())
+				}
+			}
+		})
 	}
 }
 
@@ -890,7 +888,7 @@ nextTest:
 func TestRsdBlockingStates(t *testing.T) {
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
-	tests := []struct {
+	for _, test := range []struct {
 		name string
 		msgs []testutil.MockCtlMsg
 		rpc  func(ct context.Context, resumeToken []byte) (streamingReceiver, error)
@@ -1058,105 +1056,107 @@ func TestRsdBlockingStates(t *testing.T) {
 				return s
 			}(),
 		},
-	}
-	for _, test := range tests {
-		ms := testutil.NewMockCloudSpanner(t, trxTs)
-		ms.Serve()
-		cc := dialMock(t, ms)
-		mc := sppb.NewSpannerClient(cc)
-		if test.rpc == nil {
-			// Avoid using test.sql directly in closure because for loop changes
-			// test.
-			sql := test.sql
-			test.rpc = func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
-				return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
-					Sql:         sql,
-					ResumeToken: resumeToken,
-				})
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			ms := testutil.NewMockCloudSpanner(t, trxTs)
+			ms.Serve()
+			cc := dialMock(t, ms)
+			mc := sppb.NewSpannerClient(cc)
+			if test.rpc == nil {
+				// Avoid using test.sql directly in closure because for loop changes
+				// test.
+				sql := test.sql
+				test.rpc = func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+					return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
+						Sql:         sql,
+						ResumeToken: resumeToken,
+					})
+				}
 			}
-		}
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
-		r := newResumableStreamDecoder(
-			ctx,
-			test.rpc,
-		)
-		// Override backoff to make the test run faster.
-		r.backoff = backoff.ExponentialBackoff{
-			Min: 1 * time.Nanosecond,
-			Max: 1 * time.Nanosecond,
-		}
-		// st is the set of observed state transitions.
-		st := []resumableStreamDecoderState{}
-		// q is the content of the decoder's partial result queue when expected
-		// number of state transitions are done.
-		q := []*sppb.PartialResultSet{}
-		var lastErr error
-		// Once the expected number of state transitions are observed, send a
-		// signal to channel stateDone.
-		stateDone := make(chan int)
-		// Set stateWitness to listen to state changes.
-		hl := len(test.stateHistory) // To avoid data race on test.
-		r.stateWitness = func(rs resumableStreamDecoderState) {
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			r := newResumableStreamDecoder(
+				ctx,
+				test.rpc,
+			)
+			// Override backoff to make the test run faster.
+			r.backoff = backoff.ExponentialBackoff{
+				Min: 1 * time.Nanosecond,
+				Max: 1 * time.Nanosecond,
+			}
+			// st is the set of observed state transitions.
+			st := []resumableStreamDecoderState{}
+			// q is the content of the decoder's partial result queue when expected
+			// number of state transitions are done.
+			q := []*sppb.PartialResultSet{}
+			var lastErr error
+			// Once the expected number of state transitions are observed, send a
+			// signal to channel stateDone.
+			stateDone := make(chan int)
+			// Set stateWitness to listen to state changes.
+			hl := len(test.stateHistory) // To avoid data race on test.
+			r.stateWitness = func(rs resumableStreamDecoderState) {
+				select {
+				case <-stateDone:
+					// Noop after expected number of state transitions
+				default:
+					// Record state transitions.
+					st = append(st, rs)
+					if len(st) == hl {
+						lastErr = r.lastErr()
+						q = r.q.dump()
+						close(stateDone)
+					}
+				}
+			}
+			// Let mock server stream given messages to resumableStreamDecoder.
+			for _, m := range test.msgs {
+				ms.AddMsg(m.Err, m.ResumeToken)
+			}
+			var rs []*sppb.PartialResultSet
+			go func() {
+				for {
+					if !r.next() {
+						// Note that r.Next also exits on context cancel/timeout.
+						return
+					}
+					rs = append(rs, r.get())
+				}
+			}()
+			// Verify that resumableStreamDecoder reaches expected state.
 			select {
-			case <-stateDone:
-				// Noop after expected number of state transitions
-			default:
-				// Record state transitions.
-				st = append(st, rs)
-				if len(st) == hl {
-					lastErr = r.lastErr()
-					q = r.q.dump()
-					close(stateDone)
+			case <-stateDone: // Note that at this point, receiver is still blockingon r.next().
+				// Check if resumableStreamDecoder carried out expected state
+				// transitions.
+				if !testEqual(st, test.stateHistory) {
+					t.Fatalf("observed state transitions: \n%v\n, want \n%v\n", st, test.stateHistory)
 				}
-			}
-		}
-		// Let mock server stream given messages to resumableStreamDecoder.
-		for _, m := range test.msgs {
-			ms.AddMsg(m.Err, m.ResumeToken)
-		}
-		var rs []*sppb.PartialResultSet
-		go func() {
-			for {
-				if !r.next() {
-					// Note that r.Next also exits on context cancel/timeout.
-					return
+				// Check if resumableStreamDecoder returns expected array of
+				// PartialResultSets.
+				if !testEqual(rs, test.want) {
+					t.Fatalf("received PartialResultSets: \n%v\n, want \n%v\n", rs, test.want)
 				}
-				rs = append(rs, r.get())
+				// Verify that resumableStreamDecoder's internal buffering is also
+				// correct.
+				if !testEqual(q, test.queue) {
+					t.Fatalf("PartialResultSets still queued: \n%v\n, want \n%v\n", q, test.queue)
+				}
+				// Verify resume token.
+				if test.resumeToken != nil && !testEqual(r.resumeToken, test.resumeToken) {
+					t.Fatalf("Resume token is %v, want %v\n", r.resumeToken, test.resumeToken)
+				}
+				// Verify error message.
+				if !testEqual(lastErr, test.wantErr) {
+					t.Fatalf("got error %v, want %v", lastErr, test.wantErr)
+				}
+			case <-time.After(1 * time.Second):
+				t.Fatal("Timeout in waiting for state change")
 			}
-		}()
-		// Verify that resumableStreamDecoder reaches expected state.
-		select {
-		case <-stateDone: // Note that at this point, receiver is still blockingon r.next().
-			// Check if resumableStreamDecoder carried out expected state
-			// transitions.
-			if !testEqual(st, test.stateHistory) {
-				t.Errorf("%v: observed state transitions: \n%v\n, want \n%v\n",
-					test.name, st, test.stateHistory)
+			ms.Stop()
+			if err := cc.Close(); err != nil {
+				t.Fatal(err)
 			}
-			// Check if resumableStreamDecoder returns expected array of
-			// PartialResultSets.
-			if !testEqual(rs, test.want) {
-				t.Errorf("%v: received PartialResultSets: \n%v\n, want \n%v\n", test.name, rs, test.want)
-			}
-			// Verify that resumableStreamDecoder's internal buffering is also
-			// correct.
-			if !testEqual(q, test.queue) {
-				t.Errorf("%v: PartialResultSets still queued: \n%v\n, want \n%v\n", test.name, q, test.queue)
-			}
-			// Verify resume token.
-			if test.resumeToken != nil && !testEqual(r.resumeToken, test.resumeToken) {
-				t.Errorf("%v: Resume token is %v, want %v\n", test.name, r.resumeToken, test.resumeToken)
-			}
-			// Verify error message.
-			if !testEqual(lastErr, test.wantErr) {
-				t.Errorf("%v: got error %v, want %v", test.name, lastErr, test.wantErr)
-			}
-		case <-time.After(1 * time.Second):
-			t.Errorf("%v: Timeout in waiting for state change", test.name)
-		}
-		ms.Stop()
-		cc.Close()
+		})
 	}
 }
 
