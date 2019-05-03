@@ -361,25 +361,15 @@ func paramRoundTrip(c *Client, x interface{}) (data Value, param interface{}, er
 }
 
 func TestQueryParameter_toBQ(t *testing.T) {
-	tests := []struct {
-		in   QueryParameter
-		want []string
-	}{
-		{
-			in:   QueryParameter{Name: "name", Value: ""},
-			want: []string{"Value"},
-		},
+	in := QueryParameter{Name: "name", Value: ""}
+	want := []string{"Value"}
+	q, err := in.toBQ()
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
 	}
 
-	for _, test := range tests {
-		q, err := test.in.toBQ()
-		if err != nil {
-			t.Fatalf("expected no error, got %v", err)
-		}
-
-		got := q.ParameterValue.ForceSendFields
-		if !cmp.Equal(test.want, got) {
-			t.Fatalf("want %v, got %v", test.want, got)
-		}
+	got := q.ParameterValue.ForceSendFields
+	if !cmp.Equal(want, got) {
+		t.Fatalf("want %v, got %v", want, got)
 	}
 }

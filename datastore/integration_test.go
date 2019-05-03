@@ -971,63 +971,61 @@ func TestTransaction(t *testing.T) {
 			wantErr:       ErrConcurrentTransaction,
 		},
 	}
-
-	for i, tt := range tests {
-		// Put a new counter.
-		c := &Counter{N: 10, T: timeNow}
-		key, err := client.Put(ctx, IncompleteKey("TransCounter", nil), c)
-		if err != nil {
-			t.Errorf("%s: client.Put: %v", tt.desc, err)
-			continue
-		}
-		defer client.Delete(ctx, key)
-
-		// Increment the counter in a transaction.
-		// The test case can manually cause a conflict or return an
-		// error at each attempt.
-		var attempts int
-		_, err = client.RunInTransaction(ctx, func(tx *Transaction) error {
-			attempts++
-			if attempts > len(tt.causeConflict) {
-				return fmt.Errorf("too many attempts. Got %d, max %d", attempts, len(tt.causeConflict))
+	for i, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			// Put a new counter.
+			c := &Counter{N: 10, T: timeNow}
+			key, err := client.Put(ctx, IncompleteKey("TransCounter", nil), c)
+			if err != nil {
+				t.Fatal(err)
 			}
+			defer client.Delete(ctx, key)
 
-			var c Counter
-			if err := tx.Get(key, &c); err != nil {
-				return err
-			}
-			c.N++
-			if _, err := tx.Put(key, &c); err != nil {
-				return err
-			}
+			// Increment the counter in a transaction.
+			// The test case can manually cause a conflict or return an
+			// error at each attempt.
+			var attempts int
+			_, err = client.RunInTransaction(ctx, func(tx *Transaction) error {
+				attempts++
+				if attempts > len(test.causeConflict) {
+					return fmt.Errorf("too many attempts. Got %d, max %d", attempts, len(test.causeConflict))
+				}
 
-			if tt.causeConflict[attempts-1] {
-				c.N++
-				if _, err := client.Put(ctx, key, &c); err != nil {
+				var c Counter
+				if err := tx.Get(key, &c); err != nil {
 					return err
 				}
+				c.N++
+				if _, err := tx.Put(key, &c); err != nil {
+					return err
+				}
+
+				if test.causeConflict[attempts-1] {
+					c.N++
+					if _, err := client.Put(ctx, key, &c); err != nil {
+						return err
+					}
+				}
+
+				return test.retErr[attempts-1]
+			}, MaxAttempts(i))
+
+			// Check the error returned by RunInTransaction.
+			if err != test.wantErr {
+				t.Fatalf("got err %v, want %v", err, test.wantErr)
+			}
+			if err != nil {
+				t.Fatal(err)
 			}
 
-			return tt.retErr[attempts-1]
-		}, MaxAttempts(i))
-
-		// Check the error returned by RunInTransaction.
-		if err != tt.wantErr {
-			t.Errorf("%s: got err %v, want %v", tt.desc, err, tt.wantErr)
-			continue
-		}
-		if err != nil {
-			continue
-		}
-
-		// Check the final value of the counter.
-		if err := client.Get(ctx, key, c); err != nil {
-			t.Errorf("%s: client.Get: %v", tt.desc, err)
-			continue
-		}
-		if c.N != tt.want {
-			t.Errorf("%s: counter N=%d, want N=%d", tt.desc, c.N, tt.want)
-		}
+			// Check the final value of the counter.
+			if err := client.Get(ctx, key, c); err != nil {
+				t.Fatal(err)
+			}
+			if c.N != test.want {
+				t.Fatalf("counter N=%d, want N=%d", c.N, test.want)
+			}
+		})
 	}
 }
 
