@@ -79,10 +79,12 @@ func (s *intStoreServer) Get(_ context.Context, req *pb.GetRequest) (*pb.Item, e
 	return &pb.Item{Name: req.Name, Value: val}, nil
 }
 
-func (s *intStoreServer) ListItems(_ *pb.ListItemsRequest, ss pb.IntStore_ListItemsServer) error {
+func (s *intStoreServer) ListItems(req *pb.ListItemsRequest, ss pb.IntStore_ListItemsServer) error {
 	for name, val := range s.items {
-		if err := ss.Send(&pb.Item{Name: name, Value: val}); err != nil {
-			return err
+		if val > req.GreaterThan {
+			if err := ss.Send(&pb.Item{Name: name, Value: val}); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
