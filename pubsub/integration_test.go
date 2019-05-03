@@ -413,7 +413,18 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 	defer topic.Stop()
 
 	var sub *Subscription
-	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
+	projID := testutil.ProjID()
+	sCfg := SubscriptionConfig{
+		Topic: topic,
+		PushConfig: PushConfig{
+			Endpoint: "https://" + projID + ".appspot.com/_ah/push-handlers/push",
+			AuthenticationMethod: &OIDCToken{
+				Audience:            "client-12345",
+				ServiceAccountEmail: "foo@example.com",
+			},
+		},
+	}
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), sCfg); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}
 	defer sub.Delete(ctx)
@@ -433,10 +444,13 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 	// Add a PushConfig and change other fields.
-	projID := testutil.ProjID()
 	pc := PushConfig{
 		Endpoint:   "https://" + projID + ".appspot.com/_ah/push-handlers/push",
 		Attributes: map[string]string{"x-goog-version": "v1"},
+		AuthenticationMethod: &OIDCToken{
+			Audience:            "client-12345",
+			ServiceAccountEmail: "foo@example.com",
+		},
 	}
 	got, err = sub.Update(ctx, SubscriptionConfigToUpdate{
 		PushConfig:          &pc,

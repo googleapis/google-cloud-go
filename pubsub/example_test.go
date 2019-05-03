@@ -309,6 +309,28 @@ func ExampleSubscription_Update() {
 	_ = subConfig // TODO: Use SubscriptionConfig.
 }
 
+func ExampleSubscription_Update_pushConfigAuthenticationMethod() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	sub := client.Subscription("subName")
+	subConfig, err := sub.Update(ctx, pubsub.SubscriptionConfigToUpdate{
+		PushConfig: &pubsub.PushConfig{
+			Endpoint: "https://example.com/push",
+			AuthenticationMethod: &pubsub.OIDCToken{
+				ServiceAccountEmail: "foo@example.com",
+				Audience:            "client-12345",
+			},
+		},
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+	_ = subConfig // TODO: Use SubscriptionConfig.
+}
+
 func ExampleSubscription_CreateSnapshot() {
 	ctx := context.Background()
 	client, err := pubsub.NewClient(ctx, "project-id")
