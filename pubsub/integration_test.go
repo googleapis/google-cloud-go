@@ -371,8 +371,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 	defer topic.Delete(ctx)
 
 	var sub *Subscription
-	sCfg := SubscriptionConfig{Topic: topic, ExpirationPolicy: 27 * time.Hour}
-	if sub, err = client.CreateSubscription(ctx, subIDs.New(), sCfg); err != nil {
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}
 	defer sub.Delete(ctx)
@@ -387,8 +386,8 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 		RetainAckedMessages: false,
 		RetentionDuration:   defaultRetentionDuration,
 	}
-	if diff := testutil.Diff(got, want); diff != "" {
-		t.Fatalf("got: - want: +\n%s", diff)
+	if !testutil.Equal(got, want) {
+		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
 	}
 	// Add a PushConfig and change other fields.
 	projID := testutil.ProjID()
