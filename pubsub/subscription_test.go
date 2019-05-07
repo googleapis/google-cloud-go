@@ -129,10 +129,7 @@ func TestUpdateSubscription(t *testing.T) {
 	defer srv.Close()
 
 	topic := mustCreateTopic(t, client, "t")
-	sub, err := client.CreateSubscription(ctx, "s", SubscriptionConfig{
-		Topic:            topic,
-		ExpirationPolicy: 30 * time.Hour,
-	})
+	sub, err := client.CreateSubscription(ctx, "s", SubscriptionConfig{Topic: topic})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -145,7 +142,6 @@ func TestUpdateSubscription(t *testing.T) {
 		AckDeadline:         10 * time.Second,
 		RetainAckedMessages: false,
 		RetentionDuration:   defaultRetentionDuration,
-		ExpirationPolicy:    30 * time.Hour,
 	}
 	if !testutil.Equal(cfg, want) {
 		t.Fatalf("\ngot  %+v\nwant %+v", cfg, want)
@@ -155,7 +151,6 @@ func TestUpdateSubscription(t *testing.T) {
 		AckDeadline:         20 * time.Second,
 		RetainAckedMessages: true,
 		Labels:              map[string]string{"label": "value"},
-		ExpirationPolicy:    72 * time.Hour,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -165,7 +160,6 @@ func TestUpdateSubscription(t *testing.T) {
 		AckDeadline:         20 * time.Second,
 		RetainAckedMessages: true,
 		RetentionDuration:   defaultRetentionDuration,
-		ExpirationPolicy:    72 * time.Hour,
 		Labels:              map[string]string{"label": "value"},
 	}
 	if !testutil.Equal(got, want) {

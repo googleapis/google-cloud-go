@@ -146,16 +146,6 @@ type SubscriptionConfig struct {
 	// Defaults to 7 days. Cannot be longer than 7 days or shorter than 10 minutes.
 	RetentionDuration time.Duration
 
-	// Expiration policy specifies the conditions for a subscription's expiration.
-	// A subscription is considered active as long as any connected subscriber is
-	// successfully consuming messages from the subscription or is issuing
-	// operations on the subscription. If `expiration_policy` is not set, a
-	// *default policy* with `ttl` of 31 days will be used. The minimum allowed
-	// value for `expiration_policy.ttl` is 1 day.
-	//
-	// It is EXPERIMENTAL and subject to change or removal without notice.
-	ExpirationPolicy time.Duration
-
 	// The set of labels for the subscription.
 	Labels map[string]string
 }
@@ -180,7 +170,6 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		RetainAckedMessages:      cfg.RetainAckedMessages,
 		MessageRetentionDuration: retentionDuration,
 		Labels:                   cfg.Labels,
-		ExpirationPolicy:         expirationPolicyToProto(cfg.ExpirationPolicy),
 	}
 }
 
@@ -189,13 +178,6 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 	var err error
 	if pbSub.MessageRetentionDuration != nil {
 		rd, err = ptypes.Duration(pbSub.MessageRetentionDuration)
-		if err != nil {
-			return SubscriptionConfig{}, err
-		}
-	}
-	var expirationPolicy time.Duration
-	if ttl := pbSub.ExpirationPolicy.GetTtl(); ttl != nil {
-		expirationPolicy, err = ptypes.Duration(ttl)
 		if err != nil {
 			return SubscriptionConfig{}, err
 		}
@@ -210,7 +192,6 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 		RetainAckedMessages: pbSub.RetainAckedMessages,
 		RetentionDuration:   rd,
 		Labels:              pbSub.Labels,
-		ExpirationPolicy:    expirationPolicy,
 	}, nil
 }
 
@@ -334,9 +315,6 @@ type SubscriptionConfigToUpdate struct {
 	// If non-zero, RetentionDuration is changed.
 	RetentionDuration time.Duration
 
-	// If non-zero, ExpirationPolicy is changed.
-	ExpirationPolicy time.Duration
-
 	// If non-nil, the current set of labels is completely
 	// replaced by the new set.
 	// This field has beta status. It is not subject to the stability guarantee
@@ -350,9 +328,6 @@ type SubscriptionConfigToUpdate struct {
 // Update returns an error if no fields were modified.
 func (s *Subscription) Update(ctx context.Context, cfg SubscriptionConfigToUpdate) (SubscriptionConfig, error) {
 	req := s.updateRequest(&cfg)
-	if err := cfg.validate(); err != nil {
-		return SubscriptionConfig{}, fmt.Errorf("pubsubs: UpdateSubscription %v", err)
-	}
 	if len(req.UpdateMask.Paths) == 0 {
 		return SubscriptionConfig{}, errors.New("pubsub: UpdateSubscription call with nothing to update")
 	}
@@ -382,10 +357,6 @@ func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.Update
 		psub.MessageRetentionDuration = ptypes.DurationProto(cfg.RetentionDuration)
 		paths = append(paths, "message_retention_duration")
 	}
-	if cfg.ExpirationPolicy != 0 {
-		psub.ExpirationPolicy = expirationPolicyToProto(cfg.ExpirationPolicy)
-		paths = append(paths, "expiration_policy")
-	}
 	if cfg.Labels != nil {
 		psub.Labels = cfg.Labels
 		paths = append(paths, "labels")
@@ -393,31 +364,6 @@ func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.Update
 	return &pb.UpdateSubscriptionRequest{
 		Subscription: psub,
 		UpdateMask:   &fmpb.FieldMask{Paths: paths},
-	}
-}
-
-// The minimum expiration policy is 1 day.
-const minExpirationPolicy = 24 * time.Hour
-
-func (cfg *SubscriptionConfigToUpdate) validate() error {
-	if cfg == nil {
-		return nil
-	}
-	if cfg.ExpirationPolicy == 0 {
-		return nil
-	}
-	if got, want := cfg.ExpirationPolicy, minExpirationPolicy; got < want {
-		return fmt.Errorf("invalid expiration policy(%q) < minimum(%q)", got, want)
-	}
-	return nil
-}
-
-func expirationPolicyToProto(expirationPolicy time.Duration) *pb.ExpirationPolicy {
-	if expirationPolicy == 0 {
-		return nil
-	}
-	return &pb.ExpirationPolicy{
-		Ttl: ptypes.DurationProto(expirationPolicy),
 	}
 }
 

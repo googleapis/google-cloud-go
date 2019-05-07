@@ -428,9 +428,6 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 		case "labels":
 			sub.proto.Labels = req.Subscription.Labels
 
-		case "expiration_policy":
-			sub.proto.ExpirationPolicy = req.Subscription.ExpirationPolicy
-
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unknown field name %q", path)
 		}
