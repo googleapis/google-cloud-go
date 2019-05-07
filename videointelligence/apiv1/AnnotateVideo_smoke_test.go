@@ -38,6 +38,7 @@ var _ = strconv.FormatUint
 var _ = time.Now
 
 func TestVideoIntelligenceServiceSmoke(t *testing.T) {
+	t.Skip("Internal bug 131890421")
 	if testing.Short() {
 		t.Skip("skipping smoke test in short mode")
 	}
