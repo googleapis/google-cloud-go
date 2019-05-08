@@ -61,6 +61,96 @@ func fieldSchema(desc, name, typ string, repeated, required bool) *FieldSchema {
 	}
 }
 
+func TestRelaxSchema(t *testing.T) {
+	testCases := []struct {
+		in       Schema
+		expected Schema
+	}{
+		{
+			Schema{
+				&FieldSchema{
+					Description: "a relaxed schema",
+					Required:    false,
+					Type:        StringFieldType,
+				},
+			},
+			Schema{
+				&FieldSchema{
+					Description: "a relaxed schema",
+					Required:    false,
+					Type:        StringFieldType,
+				},
+			},
+		},
+		{
+			Schema{
+				&FieldSchema{
+					Description: "a required string",
+					Required:    true,
+					Type:        StringFieldType,
+				},
+				&FieldSchema{
+					Description: "a required integer",
+					Required:    true,
+					Type:        IntegerFieldType,
+				},
+			},
+			Schema{
+				&FieldSchema{
+					Description: "a required string",
+					Required:    false,
+					Type:        StringFieldType,
+				},
+				&FieldSchema{
+					Description: "a required integer",
+					Required:    false,
+					Type:        IntegerFieldType,
+				},
+			},
+		},
+		{
+			Schema{
+				&FieldSchema{
+					Description: "An outer schema wrapping a nested schema",
+					Name:        "outer",
+					Required:    true,
+					Type:        RecordFieldType,
+					Schema: Schema{
+						{
+							Description: "inner field",
+							Name:        "inner",
+							Type:        StringFieldType,
+							Required:    true,
+						},
+					},
+				},
+			},
+			Schema{
+				&FieldSchema{
+					Description: "An outer schema wrapping a nested schema",
+					Name:        "outer",
+					Required:    false,
+					Type:        "RECORD",
+					Schema: Schema{
+						{
+							Description: "inner field",
+							Name:        "inner",
+							Type:        "STRING",
+							Required:    false,
+						},
+					},
+				},
+			},
+		},
+	}
+	for _, tc := range testCases {
+		converted := tc.in.Relax()
+		if !testutil.Equal(converted, tc.expected) {
+			t.Errorf("relaxing schema: got:\n%v\nwant:\n%v",
+				pretty.Value(converted), pretty.Value(tc.expected))
+		}
+	}
+}
 func TestSchemaConversion(t *testing.T) {
 	testCases := []struct {
 		schema   Schema
