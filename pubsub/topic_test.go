@@ -112,6 +112,7 @@ func TestPublishTimeout(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	serv.Start()
 	pubsubpb.RegisterPublisherServer(serv.Gsrv, &alwaysFailPublish{})
 	conn, err := grpc.Dial(serv.Addr, grpc.WithInsecure())
 	if err != nil {
