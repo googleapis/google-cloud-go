@@ -1014,8 +1014,9 @@ func TestTransaction(t *testing.T) {
 			if err != test.wantErr {
 				t.Fatalf("got err %v, want %v", err, test.wantErr)
 			}
-			if err != nil {
-				t.Fatal(err)
+			if test.wantErr != nil {
+				// If we were expecting an error, this is where the test ends.
+				return
 			}
 
 			// Check the final value of the counter.
