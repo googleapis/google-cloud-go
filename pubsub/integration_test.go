@@ -385,9 +385,10 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 		AckDeadline:         10 * time.Second,
 		RetainAckedMessages: false,
 		RetentionDuration:   defaultRetentionDuration,
+		ExpirationPolicy:    defaultExpirationPolicy,
 	}
-	if !testutil.Equal(got, want) {
-		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 	// Add a PushConfig and change other fields.
 	projID := testutil.ProjID()
@@ -401,6 +402,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 		RetainAckedMessages: true,
 		RetentionDuration:   2 * time.Hour,
 		Labels:              map[string]string{"label": "value"},
+		ExpirationPolicy:    25 * time.Hour,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -412,6 +414,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 		RetainAckedMessages: true,
 		RetentionDuration:   2 * time.Hour,
 		Labels:              map[string]string{"label": "value"},
+		ExpirationPolicy:    25 * time.Hour,
 	}
 
 	if !testutil.Equal(got, want) {
