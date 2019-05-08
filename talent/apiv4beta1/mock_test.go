@@ -2068,7 +2068,6 @@ func TestProfileServiceCreateProfile(t *testing.T) {
 	var source string = "source-896505829"
 	var uri string = "uri116076"
 	var groupId string = "groupId506361563"
-	var resumeHrxml string = "resumeHrxml1834730555"
 	var processed bool = true
 	var keywordSnippet string = "keywordSnippet1325317319"
 	var expectedResponse = &talentpb.Profile{
@@ -2077,7 +2076,6 @@ func TestProfileServiceCreateProfile(t *testing.T) {
 		Source:         source,
 		Uri:            uri,
 		GroupId:        groupId,
-		ResumeHrxml:    resumeHrxml,
 		Processed:      processed,
 		KeywordSnippet: keywordSnippet,
 	}
@@ -2145,7 +2143,6 @@ func TestProfileServiceGetProfile(t *testing.T) {
 	var source string = "source-896505829"
 	var uri string = "uri116076"
 	var groupId string = "groupId506361563"
-	var resumeHrxml string = "resumeHrxml1834730555"
 	var processed bool = true
 	var keywordSnippet string = "keywordSnippet1325317319"
 	var expectedResponse = &talentpb.Profile{
@@ -2154,7 +2151,6 @@ func TestProfileServiceGetProfile(t *testing.T) {
 		Source:         source,
 		Uri:            uri,
 		GroupId:        groupId,
-		ResumeHrxml:    resumeHrxml,
 		Processed:      processed,
 		KeywordSnippet: keywordSnippet,
 	}
@@ -2218,7 +2214,6 @@ func TestProfileServiceUpdateProfile(t *testing.T) {
 	var source string = "source-896505829"
 	var uri string = "uri116076"
 	var groupId string = "groupId506361563"
-	var resumeHrxml string = "resumeHrxml1834730555"
 	var processed bool = true
 	var keywordSnippet string = "keywordSnippet1325317319"
 	var expectedResponse = &talentpb.Profile{
@@ -2227,7 +2222,6 @@ func TestProfileServiceUpdateProfile(t *testing.T) {
 		Source:         source,
 		Uri:            uri,
 		GroupId:        groupId,
-		ResumeHrxml:    resumeHrxml,
 		Processed:      processed,
 		KeywordSnippet: keywordSnippet,
 	}

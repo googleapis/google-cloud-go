@@ -17,7 +17,6 @@
 package securitycenter
 
 import (
-	emptypb "github.com/golang/protobuf/ptypes/empty"
 	timestamppb "github.com/golang/protobuf/ptypes/timestamp"
 	securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
@@ -1013,7 +1012,7 @@ func TestSecurityCenterListSourcesError(t *testing.T) {
 	_ = resp
 }
 func TestSecurityCenterRunAssetDiscovery(t *testing.T) {
-	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
+	var expectedResponse *securitycenterpb.RunAssetDiscoveryResponse = &securitycenterpb.RunAssetDiscoveryResponse{}
 
 	mockSecurityCenter.err = nil
 	mockSecurityCenter.reqs = nil
@@ -1042,7 +1041,7 @@ func TestSecurityCenterRunAssetDiscovery(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = respLRO.Wait(context.Background())
+	resp, err := respLRO.Wait(context.Background())
 
 	if err != nil {
 		t.Fatal(err)
@@ -1052,6 +1051,9 @@ func TestSecurityCenterRunAssetDiscovery(t *testing.T) {
 		t.Errorf("wrong request %q, want %q", got, want)
 	}
 
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
 }
 
 func TestSecurityCenterRunAssetDiscoveryError(t *testing.T) {
@@ -1082,13 +1084,14 @@ func TestSecurityCenterRunAssetDiscoveryError(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = respLRO.Wait(context.Background())
+	resp, err := respLRO.Wait(context.Background())
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)
 	} else if c := st.Code(); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+	_ = resp
 }
 func TestSecurityCenterSetFindingState(t *testing.T) {
 	var name2 string = "name2-1052831874"

@@ -56,7 +56,6 @@ func defaultNotificationChannelCallOptions() *NotificationChannelCallOptions {
 		{"default", "idempotent"}: {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
