@@ -33,37 +33,38 @@ import (
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 )
 
-// TODO: this should be further split up
-func TestIntegration_Client(t *testing.T) {
-	ctx := context.Background()
-	_, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer cleanup()
+var presidentsSocialGraph = map[string][]string{
+	"wmckinley":   {"tjefferson"},
+	"gwashington": {"jadams"},
+	"tjefferson":  {"gwashington", "jadams"},
+	"jadams":      {"gwashington", "tjefferson"},
+}
 
-	// Insert some data.
-	initialData := map[string][]string{
-		"wmckinley":   {"tjefferson"},
-		"gwashington": {"jadams"},
-		"tjefferson":  {"gwashington", "jadams"}, // wmckinley set conditionally below
-		"jadams":      {"gwashington", "tjefferson"},
-	}
-	for row, ss := range initialData {
+func populatePresidentsGraph(table *Table) error {
+	ctx := context.Background()
+	for row, ss := range presidentsSocialGraph {
 		mut := NewMutation()
 		for _, name := range ss {
 			mut.Set("follows", name, 1000, []byte("1"))
 		}
 		if err := table.Apply(ctx, row, mut); err != nil {
-			t.Fatalf("Mutating row %q: %v", row, err)
+			return fmt.Errorf("Mutating row %q: %v", row, err)
 		}
 	}
+	return nil
+}
 
-	// TODO(igorbernstein): re-enable this when ready
-	//if err := adminClient.WaitForReplication(ctx, table); err != nil {
-	//	t.Fatalf("Waiting for replication for table %q: %v", table, err)
-	//}
-	//checkpoint("waited for replication")
+func TestIntegration_ConditionalMutations(t *testing.T) {
+	ctx := context.Background()
+	_, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if err := populatePresidentsGraph(table); err != nil {
+		t.Fatal(err)
+	}
 
 	// Do a conditional mutation with a complex filter.
 	mutTrue := NewMutation()
@@ -97,6 +98,50 @@ func TestIntegration_Client(t *testing.T) {
 	if !testutil.Equal(row, wantRow) {
 		t.Fatalf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
 	}
+}
+
+func TestIntegration_PartialReadRows(t *testing.T) {
+	ctx := context.Background()
+	_, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if err := populatePresidentsGraph(table); err != nil {
+		t.Fatal(err)
+	}
+
+	// Do a scan and stop part way through.
+	// Verify that the ReadRows callback doesn't keep running.
+	stopped := false
+	err = table.ReadRows(ctx, InfiniteRange(""), func(r Row) bool {
+		if r.Key() < "h" {
+			return true
+		}
+		if !stopped {
+			stopped = true
+			return false
+		}
+		t.Fatalf("ReadRows kept scanning to row %q after being told to stop", r.Key())
+		return false
+	})
+	if err != nil {
+		t.Fatalf("Partial ReadRows: %v", err)
+	}
+}
+
+func TestIntegration_ReadRowList(t *testing.T) {
+	ctx := context.Background()
+	_, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if err := populatePresidentsGraph(table); err != nil {
+		t.Fatal(err)
+	}
 
 	// Read a RowList
 	var elt []string
@@ -117,40 +162,46 @@ func TestIntegration_Client(t *testing.T) {
 	if got := strings.Join(elt, ","); got != want {
 		t.Fatalf("bulk read: wrong reads.\n got %q\nwant %q", got, want)
 	}
+}
 
-	// Do a scan and stop part way through.
-	// Verify that the ReadRows callback doesn't keep running.
-	stopped := false
-	err = table.ReadRows(ctx, InfiniteRange(""), func(r Row) bool {
-		if r.Key() < "h" {
-			return true
-		}
-		if !stopped {
-			stopped = true
-			return false
-		}
-		t.Fatalf("ReadRows kept scanning to row %q after being told to stop", r.Key())
-		return false
-	})
+func TestIntegration_DeleteRow(t *testing.T) {
+	ctx := context.Background()
+	_, _, table, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
-		t.Fatalf("Partial ReadRows: %v", err)
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if err := populatePresidentsGraph(table); err != nil {
+		t.Fatal(err)
 	}
 
 	// Delete a row and check it goes away.
-	mut = NewMutation()
+	mut := NewMutation()
 	mut.DeleteRow()
 	if err := table.Apply(ctx, "wmckinley", mut); err != nil {
 		t.Fatalf("Apply DeleteRow: %v", err)
 	}
-	row, err = table.ReadRow(ctx, "wmckinley")
+	row, err := table.ReadRow(ctx, "wmckinley")
 	if err != nil {
 		t.Fatalf("Reading a row after DeleteRow: %v", err)
 	}
 	if len(row) != 0 {
 		t.Fatalf("Read non-zero row after DeleteRow: %v", row)
 	}
+}
 
-	// Check ReadModifyWrite.
+func TestIntegration_ReadModifyWrite(t *testing.T) {
+	ctx := context.Background()
+	_, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if err := populatePresidentsGraph(table); err != nil {
+		t.Fatal(err)
+	}
 
 	if err := adminClient.CreateColumnFamily(ctx, tableName, "counter"); err != nil {
 		t.Fatalf("Creating column family: %v", err)
@@ -220,13 +271,22 @@ func TestIntegration_Client(t *testing.T) {
 	if r.Key() != "issue-723-1" {
 		t.Fatalf("ApplyReadModifyWrite: incorrect read after RMW,\n got %v\nwant %v", r.Key(), "issue-723-1")
 	}
+}
+
+func TestIntegration_ArbitraryTimestamps(t *testing.T) {
+	ctx := context.Background()
+	_, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
 
 	// Test arbitrary timestamps more thoroughly.
 	if err := adminClient.CreateColumnFamily(ctx, tableName, "ts"); err != nil {
 		t.Fatalf("Creating column family: %v", err)
 	}
 	const numVersions = 4
-	mut = NewMutation()
+	mut := NewMutation()
 	for i := 1; i < numVersions; i++ {
 		// Timestamps are used in thousands because the server
 		// only permits that granularity.
@@ -236,11 +296,11 @@ func TestIntegration_Client(t *testing.T) {
 	if err := table.Apply(ctx, "testrow", mut); err != nil {
 		t.Fatalf("Mutating row: %v", err)
 	}
-	r, err = table.ReadRow(ctx, "testrow")
+	r, err := table.ReadRow(ctx, "testrow")
 	if err != nil {
 		t.Fatalf("Reading row: %v", err)
 	}
-	wantRow = Row{"ts": []ReadItem{
+	wantRow := Row{"ts": []ReadItem{
 		// These should be returned in descending timestamp order.
 		{Row: "testrow", Column: "ts:col", Timestamp: 3000, Value: []byte("val-3")},
 		{Row: "testrow", Column: "ts:col", Timestamp: 2000, Value: []byte("val-2")},
@@ -493,6 +553,23 @@ func TestIntegration_Client(t *testing.T) {
 	if !testutil.Equal(r, wantRow) {
 		t.Fatalf("Column was not deleted correctly.\n got %v\n want %v", r, wantRow)
 	}
+}
+
+func TestIntegration_HighlyConcurrentReadsAndWrites(t *testing.T) {
+	ctx := context.Background()
+	_, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if err := populatePresidentsGraph(table); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := adminClient.CreateColumnFamily(ctx, tableName, "ts"); err != nil {
+		t.Fatalf("Creating column family: %v", err)
+	}
 
 	// Do highly concurrent reads/writes.
 	const maxConcurrency = 1000
@@ -519,26 +596,40 @@ func TestIntegration_Client(t *testing.T) {
 		}()
 	}
 	wg.Wait()
+}
 
-	// Large reads, writes and scans.
+func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
+	ctx := context.Background()
+	_, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if err := adminClient.CreateColumnFamily(ctx, tableName, "ts"); err != nil {
+		t.Fatalf("Creating column family: %v", err)
+	}
+
 	bigBytes := make([]byte, 5<<20) // 5 MB is larger than current default gRPC max of 4 MB, but less than the max we set.
 	nonsense := []byte("lorem ipsum dolor sit amet, ")
 	fill(bigBytes, nonsense)
-	mut = NewMutation()
+	mut := NewMutation()
 	mut.Set("ts", "col", 1000, bigBytes)
 	if err := table.Apply(ctx, "bigrow", mut); err != nil {
 		t.Fatalf("Big write: %v", err)
 	}
-	r, err = table.ReadRow(ctx, "bigrow")
+	r, err := table.ReadRow(ctx, "bigrow")
 	if err != nil {
 		t.Fatalf("Big read: %v", err)
 	}
-	wantRow = Row{"ts": []ReadItem{
+	wantRow := Row{"ts": []ReadItem{
 		{Row: "bigrow", Column: "ts:col", Timestamp: 1000, Value: bigBytes},
 	}}
 	if !testutil.Equal(r, wantRow) {
 		t.Fatalf("Big read returned incorrect bytes: %v", r)
 	}
+
+	var wg sync.WaitGroup
 	// Now write 1000 rows, each with 82 KB values, then scan them all.
 	medBytes := make([]byte, 82<<10)
 	fill(medBytes, nonsense)
