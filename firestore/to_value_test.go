@@ -214,6 +214,11 @@ func TestToProtoValue_Conversions(t *testing.T) {
 			want: mapVal1,
 		},
 		{
+			desc: "array",
+			in:   [1]int{7},
+			want: arrayval(intval(7)),
+		},
+		{
 			desc: "pointer to docref",
 			in: &DocumentRef{
 				ID:   "d",
