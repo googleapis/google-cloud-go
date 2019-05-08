@@ -406,10 +406,7 @@ func (c *SubscriberClient) ModifyPushConfig(ctx context.Context, req *pubsubpb.M
 // operations, which allow
 // you to manage message acknowledgments in bulk. That is, you can set the
 // acknowledgment state of messages in an existing subscription to the state
-// captured by a snapshot.<br><br>
-// <b>BETA:</b> This feature is part of a beta release. This API might be
-// changed in backward-incompatible ways and is not recommended for production
-// use. It is not subject to any SLA or deprecation policy.
+// captured by a snapshot.
 func (c *SubscriberClient) ListSnapshots(ctx context.Context, req *pubsubpb.ListSnapshotsRequest, opts ...gax.CallOption) *SnapshotIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", req.GetProject()))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -454,11 +451,7 @@ func (c *SubscriberClient) ListSnapshots(ctx context.Context, req *pubsubpb.List
 // you to manage message acknowledgments in bulk. That is, you can set the
 // acknowledgment state of messages in an existing subscription to the state
 // captured by a snapshot.
-// <br><br>
-// <b>BETA:</b> This feature is part of a beta release. This API might be
-// changed in backward-incompatible ways and is not recommended for production
-// use. It is not subject to any SLA or deprecation policy.<br><br>
-// If the snapshot already exists, returns ALREADY_EXISTS.
+// <br><br>If the snapshot already exists, returns ALREADY_EXISTS.
 // If the requested subscription doesn't exist, returns NOT_FOUND.
 // If the backlog in the subscription is too old -- and the resulting snapshot
 // would expire in less than 1 hour -- then FAILED_PRECONDITION is returned.
@@ -491,11 +484,7 @@ func (c *SubscriberClient) CreateSnapshot(ctx context.Context, req *pubsubpb.Cre
 // operations, which allow
 // you to manage message acknowledgments in bulk. That is, you can set the
 // acknowledgment state of messages in an existing subscription to the state
-// captured by a snapshot.<br><br>
-// <b>BETA:</b> This feature is part of a beta release. This API might be
-// changed in backward-incompatible ways and is not recommended for production
-// use. It is not subject to any SLA or deprecation policy.
-// Note that certain properties of a snapshot are not modifiable.
+// captured by a snapshot.
 func (c *SubscriberClient) UpdateSnapshot(ctx context.Context, req *pubsubpb.UpdateSnapshotRequest, opts ...gax.CallOption) (*pubsubpb.Snapshot, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "snapshot.name", req.GetSnapshot().GetName()))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -518,9 +507,6 @@ func (c *SubscriberClient) UpdateSnapshot(ctx context.Context, req *pubsubpb.Upd
 // you to manage message acknowledgments in bulk. That is, you can set the
 // acknowledgment state of messages in an existing subscription to the state
 // captured by a snapshot.<br><br>
-// <b>BETA:</b> This feature is part of a beta release. This API might be
-// changed in backward-incompatible ways and is not recommended for production
-// use. It is not subject to any SLA or deprecation policy.
 // When the snapshot is deleted, all messages retained in the snapshot
 // are immediately dropped. After a snapshot is deleted, a new one may be
 // created with the same name, but the new one has no association with the old
@@ -544,10 +530,7 @@ func (c *SubscriberClient) DeleteSnapshot(ctx context.Context, req *pubsubpb.Del
 // you to manage message acknowledgments in bulk. That is, you can set the
 // acknowledgment state of messages in an existing subscription to the state
 // captured by a snapshot. Note that both the subscription and the snapshot
-// must be on the same topic.<br><br>
-// <b>BETA:</b> This feature is part of a beta release. This API might be
-// changed in backward-incompatible ways and is not recommended for production
-// use. It is not subject to any SLA or deprecation policy.
+// must be on the same topic.
 func (c *SubscriberClient) Seek(ctx context.Context, req *pubsubpb.SeekRequest, opts ...gax.CallOption) (*pubsubpb.SeekResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription", req.GetSubscription()))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

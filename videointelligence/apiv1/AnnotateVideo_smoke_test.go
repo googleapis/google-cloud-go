@@ -38,7 +38,6 @@ var _ = strconv.FormatUint
 var _ = time.Now
 
 func TestVideoIntelligenceServiceSmoke(t *testing.T) {
-	t.Skip("Internal bug 131890421")
 	if testing.Short() {
 		t.Skip("skipping smoke test in short mode")
 	}
@@ -56,7 +55,7 @@ func TestVideoIntelligenceServiceSmoke(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var inputUri string = "gs://demomaker/cat.mp4"
+	var inputUri string = "gs://videodemomaker/cat.mp4"
 	var featuresElement videointelligencepb.Feature = videointelligencepb.Feature_LABEL_DETECTION
 	var features = []videointelligencepb.Feature{featuresElement}
 	var request = &videointelligencepb.AnnotateVideoRequest{
