@@ -151,7 +151,7 @@ func newClient(ctx context.Context, t *testing.T, dialOpts []grpc.DialOption) *C
 	return client
 }
 
-func TestBasics(t *testing.T) {
+func TestIntegration_Basics(t *testing.T) {
 	ctx, _ := context.WithTimeout(context.Background(), time.Second*20)
 	client := newTestClient(ctx, t)
 	defer client.Close()
@@ -181,7 +181,7 @@ func TestBasics(t *testing.T) {
 	}
 }
 
-func TestTopLevelKeyLoaded(t *testing.T) {
+func TestIntegration_TopLevelKeyLoaded(t *testing.T) {
 	ctx, _ := context.WithTimeout(context.Background(), time.Second*20)
 	client := newTestClient(ctx, t)
 	defer client.Close()
@@ -217,7 +217,7 @@ func TestTopLevelKeyLoaded(t *testing.T) {
 
 }
 
-func TestListValues(t *testing.T) {
+func TestIntegration_ListValues(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
@@ -241,7 +241,7 @@ func TestListValues(t *testing.T) {
 	}
 }
 
-func TestGetMulti(t *testing.T) {
+func TestIntegration_GetMulti(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
@@ -312,7 +312,7 @@ func (z Z) String() string {
 	return fmt.Sprintf("Z{ %s }", strings.Join(lens, ","))
 }
 
-func TestUnindexableValues(t *testing.T) {
+func TestIntegration_UnindexableValues(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
@@ -340,7 +340,7 @@ func TestUnindexableValues(t *testing.T) {
 	}
 }
 
-func TestNilKey(t *testing.T) {
+func TestIntegration_NilKey(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
@@ -422,12 +422,12 @@ func testSmallQueries(ctx context.Context, t *testing.T, client *Client, parent 
 	}
 }
 
-func TestFilters(t *testing.T) {
+func TestIntegration_Filters(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
-	parent := NameKey("SQParent", "TestFilters"+suffix, nil)
+	parent := NameKey("SQParent", "TestIntegration_Filters"+suffix, nil)
 	now := timeNow.Truncate(time.Millisecond).Unix()
 	children := []*SQChild{
 		{I: 0, T: now, U: now},
@@ -508,12 +508,12 @@ func TestFilters(t *testing.T) {
 
 type ckey struct{}
 
-func TestLargeQuery(t *testing.T) {
+func TestIntegration_LargeQuery(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
-	parent := NameKey("LQParent", "TestFilters"+suffix, nil)
+	parent := NameKey("LQParent", "TestIntegration_LargeQuery"+suffix, nil)
 	now := timeNow.Truncate(time.Millisecond).Unix()
 
 	// Make a large number of children entities.
@@ -670,7 +670,7 @@ func TestLargeQuery(t *testing.T) {
 	wg.Wait()
 }
 
-func TestEventualConsistency(t *testing.T) {
+func TestIntegration_EventualConsistency(t *testing.T) {
 	// TODO(jba): either make this actually test eventual consistency, or
 	// delete it. Currently it behaves the same with or without the
 	// EventualConsistency call.
@@ -678,7 +678,7 @@ func TestEventualConsistency(t *testing.T) {
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
-	parent := NameKey("SQParent", "TestEventualConsistency"+suffix, nil)
+	parent := NameKey("SQParent", "TestIntegration_EventualConsistency"+suffix, nil)
 	now := timeNow.Truncate(time.Millisecond).Unix()
 	children := []*SQChild{
 		{I: 0, T: now, U: now},
@@ -697,12 +697,12 @@ func TestEventualConsistency(t *testing.T) {
 	})
 }
 
-func TestProjection(t *testing.T) {
+func TestIntegration_Projection(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
-	parent := NameKey("SQParent", "TestProjection"+suffix, nil)
+	parent := NameKey("SQParent", "TestIntegration_Projection"+suffix, nil)
 	now := timeNow.Truncate(time.Millisecond).Unix()
 	children := []*SQChild{
 		{I: 1 << 0, J: 100, T: now, U: now},
@@ -740,7 +740,7 @@ func TestProjection(t *testing.T) {
 	})
 }
 
-func TestAllocateIDs(t *testing.T) {
+func TestIntegration_AllocateIDs(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
@@ -763,7 +763,7 @@ func TestAllocateIDs(t *testing.T) {
 	}
 }
 
-func TestGetAllWithFieldMismatch(t *testing.T) {
+func TestIntegration_GetAllWithFieldMismatch(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
@@ -779,7 +779,7 @@ func TestGetAllWithFieldMismatch(t *testing.T) {
 	// by default, which prevents a test from being flaky.
 	// See https://cloud.google.com/appengine/docs/go/datastore/queries#Go_Data_consistency
 	// for more information.
-	parent := NameKey("SQParent", "TestGetAllWithFieldMismatch"+suffix, nil)
+	parent := NameKey("SQParent", "TestIntegration_GetAllWithFieldMismatch"+suffix, nil)
 	putKeys := make([]*Key, 3)
 	for i := range putKeys {
 		putKeys[i] = IDKey("GetAllThing", int64(10+i), parent)
@@ -807,7 +807,7 @@ func TestGetAllWithFieldMismatch(t *testing.T) {
 	}
 }
 
-func TestKindlessQueries(t *testing.T) {
+func TestIntegration_KindlessQueries(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
@@ -886,49 +886,46 @@ func TestKindlessQueries(t *testing.T) {
 			wantErr: "kind is required for all orders except __key__ ascending",
 		},
 	}
-loop:
-	for _, tc := range testCases {
-		q := tc.query.Ancestor(parent)
-		gotCount, err := client.Count(ctx, q)
-		if err != nil {
-			if tc.wantErr == "" || !strings.Contains(err.Error(), tc.wantErr) {
-				t.Errorf("count %q: err %v, want err %q", tc.desc, err, tc.wantErr)
-			}
-			continue
-		}
-		if tc.wantErr != "" {
-			t.Errorf("count %q: want err %q", tc.desc, tc.wantErr)
-			continue
-		}
-		if gotCount != len(tc.want) {
-			t.Errorf("count %q: got %d want %d", tc.desc, gotCount, len(tc.want))
-			continue
-		}
-		var got []int
-		for iter := client.Run(ctx, q); ; {
-			var dst struct {
-				I          int
-				Why, Pling string
-			}
-			_, err := iter.Next(&dst)
-			if err == iterator.Done {
-				break
-			}
+	for _, test := range testCases {
+		t.Run(test.desc, func(t *testing.T) {
+			q := test.query.Ancestor(parent)
+			gotCount, err := client.Count(ctx, q)
 			if err != nil {
-				t.Errorf("iter.Next %q: %v", tc.desc, err)
-				continue loop
+				if test.wantErr == "" || !strings.Contains(err.Error(), test.wantErr) {
+					t.Fatalf("count %q: err %v, want err %q", test.desc, err, test.wantErr)
+				}
+				return
 			}
-			got = append(got, dst.I)
-		}
-		sort.Ints(got)
-		if !testutil.Equal(got, tc.want) {
-			t.Errorf("elems %q: got %+v want %+v", tc.desc, got, tc.want)
-			continue
-		}
+			if test.wantErr != "" {
+				t.Fatalf("count %q: want err %q", test.desc, test.wantErr)
+			}
+			if gotCount != len(test.want) {
+				t.Fatalf("count %q: got %d want %d", test.desc, gotCount, len(test.want))
+			}
+			var got []int
+			for iter := client.Run(ctx, q); ; {
+				var dst struct {
+					I          int
+					Why, Pling string
+				}
+				_, err := iter.Next(&dst)
+				if err == iterator.Done {
+					break
+				}
+				if err != nil {
+					t.Fatalf("iter.Next %q: %v", test.desc, err)
+				}
+				got = append(got, dst.I)
+			}
+			sort.Ints(got)
+			if !testutil.Equal(got, test.want) {
+				t.Fatalf("elems %q: got %+v want %+v", test.desc, got, test.want)
+			}
+		})
 	}
 }
 
-func TestTransaction(t *testing.T) {
+func TestIntegration_Transaction(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
@@ -1030,7 +1027,7 @@ func TestTransaction(t *testing.T) {
 	}
 }
 
-func TestReadOnlyTransaction(t *testing.T) {
+func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -1075,7 +1072,7 @@ func TestReadOnlyTransaction(t *testing.T) {
 	}
 }
 
-func TestNilPointers(t *testing.T) {
+func TestIntegration_NilPointers(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
@@ -1112,7 +1109,7 @@ func TestNilPointers(t *testing.T) {
 	}
 }
 
-func TestNestedRepeatedElementNoIndex(t *testing.T) {
+func TestIntegration_NestedRepeatedElementNoIndex(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
@@ -1140,7 +1137,7 @@ func TestNestedRepeatedElementNoIndex(t *testing.T) {
 	}
 }
 
-func TestPointerFields(t *testing.T) {
+func TestIntegration_PointerFields(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
@@ -1174,7 +1171,7 @@ func TestPointerFields(t *testing.T) {
 	}
 }
 
-func TestMutate(t *testing.T) {
+func TestIntegration_Mutate(t *testing.T) {
 	// test Client.Mutate
 	testMutate(t, func(ctx context.Context, client *Client, muts ...*Mutation) ([]*Key, error) {
 		return client.Mutate(ctx, muts...)
@@ -1256,7 +1253,7 @@ func testMutate(t *testing.T, mutate func(ctx context.Context, client *Client, m
 	}
 }
 
-func TestDetectProjectID(t *testing.T) {
+func TestIntegration_DetectProjectID(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
