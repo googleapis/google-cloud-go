@@ -77,8 +77,9 @@ func ExampleClient_CreateSubscription() {
 	// Create a new subscription to the previously created topic
 	// with the given name.
 	sub, err := client.CreateSubscription(ctx, "subName", pubsub.SubscriptionConfig{
-		Topic:       topic,
-		AckDeadline: 10 * time.Second,
+		Topic:            topic,
+		AckDeadline:      10 * time.Second,
+		ExpirationPolicy: 25 * time.Hour,
 	})
 	if err != nil {
 		// TODO: Handle error.
