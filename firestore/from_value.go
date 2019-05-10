@@ -100,7 +100,9 @@ func setReflectFromProtoValue(v reflect.Value, vproto *pb.Value, c *Client) erro
 		}
 		v.Set(reflect.ValueOf(dr))
 		return nil
-	case typeOfTextUnmarshaler:
+	}
+
+	if v.Type().Implements(typeOfTextUnmarshaler) {
 		x, ok := val.(*pb.Value_StringValue)
 		if !ok {
 			return typeErr()
