@@ -219,6 +219,11 @@ func TestToProtoValue_Conversions(t *testing.T) {
 			want: arrayval(intval(7)),
 		},
 		{
+			desc: "encodingText",
+			in:   encodingText{},
+			want: strval("encodingText"),
+		},
+		{
 			desc: "pointer to docref",
 			in: &DocumentRef{
 				ID:   "d",
@@ -311,6 +316,14 @@ func TestToProtoValue_Conversions(t *testing.T) {
 type stringy struct{}
 
 func (stringy) String() string { return "stringy" }
+
+type encodingText struct {
+	text string
+}
+
+func (_ encodingText) MarshalText() ([]byte, error) {
+	return []byte(`encodingText`), nil
+}
 
 func TestToProtoValue_Errors(t *testing.T) {
 	for _, in := range []interface{}{

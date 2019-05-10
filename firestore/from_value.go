@@ -102,13 +102,16 @@ func setReflectFromProtoValue(v reflect.Value, vproto *pb.Value, c *Client) erro
 		return nil
 	}
 
-	if pt := v.Addr(); pt.Type().Implements(typeOfTextUnmarshaler) {
-		x, ok := val.(*pb.Value_StringValue)
-		if !ok {
-			return typeErr()
+	// Check if type implement encoding
+	if v.CanAddr() {
+		switch e := v.Addr().Interface().(type) {
+		case encoding.TextUnmarshaler:
+			x, ok := val.(*pb.Value_StringValue)
+			if !ok {
+				return typeErr()
+			}
+			return e.UnmarshalText([]byte(x.StringValue))
 		}
-		tu, _ := pt.Interface().(encoding.TextUnmarshaler)
-		return tu.UnmarshalText([]byte(x.StringValue))
 	}
 
 	switch v.Kind() {
