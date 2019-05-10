@@ -15,6 +15,7 @@
 package firestore
 
 import (
+	"encoding"
 	"errors"
 	"fmt"
 	"reflect"
@@ -99,6 +100,13 @@ func setReflectFromProtoValue(v reflect.Value, vproto *pb.Value, c *Client) erro
 		}
 		v.Set(reflect.ValueOf(dr))
 		return nil
+	case typeOfTextUnmarshaler:
+		x, ok := val.(*pb.Value_StringValue)
+		if !ok {
+			return typeErr()
+		}
+		tu, _ := v.Interface().(encoding.TextUnmarshaler)
+		return tu.UnmarshalText([]byte(x.StringValue))
 	}
 
 	switch v.Kind() {

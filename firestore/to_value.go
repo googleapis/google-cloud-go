@@ -15,6 +15,7 @@
 package firestore
 
 import (
+	"encoding"
 	"errors"
 	"fmt"
 	"reflect"
@@ -30,11 +31,12 @@ import (
 var nullValue = &pb.Value{ValueType: &pb.Value_NullValue{}}
 
 var (
-	typeOfByteSlice      = reflect.TypeOf([]byte{})
-	typeOfGoTime         = reflect.TypeOf(time.Time{})
-	typeOfLatLng         = reflect.TypeOf((*latlng.LatLng)(nil))
-	typeOfDocumentRef    = reflect.TypeOf((*DocumentRef)(nil))
-	typeOfProtoTimestamp = reflect.TypeOf((*ts.Timestamp)(nil))
+	typeOfByteSlice       = reflect.TypeOf([]byte{})
+	typeOfGoTime          = reflect.TypeOf(time.Time{})
+	typeOfLatLng          = reflect.TypeOf((*latlng.LatLng)(nil))
+	typeOfDocumentRef     = reflect.TypeOf((*DocumentRef)(nil))
+	typeOfProtoTimestamp  = reflect.TypeOf((*ts.Timestamp)(nil))
+	typeOfTextUnmarshaler = reflect.TypeOf(new(encoding.TextUnmarshaler)).Elem()
 )
 
 // toProtoValue converts a Go value to a Firestore Value protobuf.
@@ -91,6 +93,12 @@ func toProtoValue(v reflect.Value) (pbv *pb.Value, sawTransform bool, err error)
 		// types whose underlying types are those primitives.
 		// E.g. Given "type mybool bool", an ordinary type switch on bool will
 		// not catch a mybool, but the reflect.Kind of a mybool is reflect.Bool.
+	case encoding.TextMarshaler:
+		text, err := x.MarshalText()
+		if err != nil {
+			return nil, false, err
+		}
+		return &pb.Value{ValueType: &pb.Value_StringValue{string(text)}}, false, nil
 	}
 	switch v.Kind() {
 	case reflect.Bool:
