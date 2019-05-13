@@ -328,3 +328,14 @@ func (rsf rowSampleFilter) String() string {
 func (rsf rowSampleFilter) proto() *btpb.RowFilter {
 	return &btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{RowSampleFilter: float64(rsf)}}
 }
+
+// PassAllFilter returns a filter that matches everything.
+func PassAllFilter() Filter { return passAllFilter{} }
+
+type passAllFilter struct{}
+
+func (paf passAllFilter) String() string { return "passAllFilter()" }
+
+func (paf passAllFilter) proto() *btpb.RowFilter {
+	return &btpb.RowFilter{Filter: &btpb.RowFilter_PassAllFilter{PassAllFilter: true}}
+}
