@@ -1,5 +1,32 @@
 # Changes
 
+## 0.39.0
+
+- bigtable:
+  - Implement DeleteInstance in bttest.
+  - Return an error on invalid ReadRowsRequest.RowRange key ranges in bttest.
+- bigquery:
+  - Move RequirePartitionFilter outside of TimePartioning.
+  - Expose models API.
+- firestore:
+  - Allow array values in create and update calls.
+  - Add CollectionGroup method.
+- pubsub:
+  - Add ExpirationPolicy to Subscription.
+- storage:
+  - Add V4 signing.
+- rpcreplay:
+  - Match streams by first sent request. This further improves rpcreplay's
+  ability to distinguish streams.
+- httpreplay:
+  - Set up Man-In-The-Middle config only once. This should improve proxy
+  creation when multiple proxies are used in a single process.
+  - Remove error on empty Content-Type, allowing requests with no Content-Type
+  header but a non-empty body.
+- all:
+  - Fix an edge case bug in auto-generated library pagination by properly
+  propagating pagetoken.
+
 ## 0.38.0
 
 This update includes a substantial reduction in our transitive dependency list
