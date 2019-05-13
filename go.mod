@@ -19,7 +19,7 @@ require (
 	golang.org/x/time v0.0.0-20181108054448-85acf8d2951c
 	golang.org/x/tools v0.0.0-20190312170243-e65039ee4138
 	google.golang.org/api v0.5.0
-	google.golang.org/genproto v0.0.0-20190515205254-4d01c0f80cb4
+	google.golang.org/genproto v0.0.0-20190516172635-bb713bdc0e52
 	google.golang.org/grpc v1.19.0
 	honnef.co/go/tools v0.0.0-20190106161140-3f1c8253044a
 )
