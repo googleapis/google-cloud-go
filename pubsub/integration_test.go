@@ -358,6 +358,45 @@ func TestIntegration_CancelReceive(t *testing.T) {
 	}
 }
 
+func TestIntegration_CreateSubscription_neverExpire(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	cfg := SubscriptionConfig{
+		Topic:            topic,
+		ExpirationPolicy: time.Duration(0),
+	}
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), cfg); err != nil {
+		t.Fatalf("CreateSub error: %v", err)
+	}
+	defer sub.Delete(ctx)
+
+	got, err := sub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := SubscriptionConfig{
+		Topic:               topic,
+		AckDeadline:         10 * time.Second,
+		RetainAckedMessages: false,
+		RetentionDuration:   defaultRetentionDuration,
+		ExpirationPolicy:    time.Duration(0),
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("\ngot: - want: +\n%s", diff)
+	}
+}
+
 func TestIntegration_UpdateSubscription(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
@@ -422,6 +461,19 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
 	}
 
+	// Update ExpirationPolicy to never expire.
+	got, err = sub.Update(ctx, SubscriptionConfigToUpdate{
+		ExpirationPolicy: time.Duration(0),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want.ExpirationPolicy = time.Duration(0)
+
+	if !testutil.Equal(got, want) {
+		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
+	}
+
 	// Remove the PushConfig, turning the subscription back into pull mode.
 	// Change AckDeadline, remove labels.
 	pc = PushConfig{}
@@ -446,6 +498,83 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 	_, err = sub.Update(ctx, SubscriptionConfigToUpdate{})
 	if err == nil {
 		t.Fatal("got nil, wanted error")
+	}
+}
+
+func TestIntegration_UpdateSubscription_expirationPolicy(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
+		t.Fatalf("CreateSub error: %v", err)
+	}
+	defer sub.Delete(ctx)
+
+	// Set ExpirationPolicy within the valid range.
+	got, err := sub.Update(ctx, SubscriptionConfigToUpdate{
+		RetentionDuration: 2 * time.Hour,
+		ExpirationPolicy:  25 * time.Hour,
+		AckDeadline:       2 * time.Minute,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := SubscriptionConfig{
+		Topic:             topic,
+		AckDeadline:       2 * time.Minute,
+		RetentionDuration: 2 * time.Hour,
+		ExpirationPolicy:  25 * time.Hour,
+	}
+	// Pubsub service issue: PushConfig attributes are not removed.
+	// TODO(jba): remove when issue resolved.
+	want.PushConfig.Attributes = map[string]string{"x-goog-version": "v1"}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("\ngot: - want: +\n%s", diff)
+	}
+
+	// ExpirationPolicy to never expire.
+	got, err = sub.Update(ctx, SubscriptionConfigToUpdate{
+		ExpirationPolicy: time.Duration(0),
+	})
+	if err != nil {
+		t.Fatalf("Unexpected error: %v\n", err)
+	}
+	want.ExpirationPolicy = time.Duration(0)
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("\ngot: - want: +\n%s", diff)
+	}
+
+	// ExpirationPolicy when nil is passed in, should not cause any updates.
+	got, err = sub.Update(ctx, SubscriptionConfigToUpdate{
+		ExpirationPolicy: nil,
+	})
+	if err == nil || err.Error() != "pubsub: UpdateSubscription call with nothing to update" {
+		t.Fatalf("Expected no attributes to be updated, error: %v", err)
+	}
+
+	// ExpirationPolicy of nil, with the previous value having been a non-zero value.
+	_, err = sub.Update(ctx, SubscriptionConfigToUpdate{
+		ExpirationPolicy: 26 * time.Hour,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Now examine what setting it to nil produces.
+	_, err = sub.Update(ctx, SubscriptionConfigToUpdate{
+		ExpirationPolicy: nil,
+	})
+	if err == nil || err.Error() != "pubsub: UpdateSubscription call with nothing to update" {
+		t.Fatalf("Expected no attributes to be updated, error: %v", err)
 	}
 }
 
