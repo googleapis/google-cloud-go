@@ -72,6 +72,18 @@ func defaultIamCallOptions() *IamCallOptions {
 		{"default", "idempotent"}: {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.3,
+				})
+			}),
+		},
+		{"default", "idempotent2"}: {
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -97,8 +109,8 @@ func defaultIamCallOptions() *IamCallOptions {
 		TestIamPermissions:       retry[[2]string{"default", "non_idempotent"}],
 		QueryGrantableRoles:      retry[[2]string{"default", "non_idempotent"}],
 		SignJwt:                  retry[[2]string{"default", "non_idempotent"}],
-		ListRoles:                retry[[2]string{"default", "idempotent"}],
-		GetRole:                  retry[[2]string{"default", "idempotent"}],
+		ListRoles:                retry[[2]string{"default", "idempotent2"}],
+		GetRole:                  retry[[2]string{"default", "idempotent2"}],
 		CreateRole:               retry[[2]string{"default", "non_idempotent"}],
 		UpdateRole:               retry[[2]string{"default", "non_idempotent"}],
 		DeleteRole:               retry[[2]string{"default", "non_idempotent"}],

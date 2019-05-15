@@ -2334,12 +2334,12 @@ func TestProfileServiceDeleteProfileError(t *testing.T) {
 func TestProfileServiceSearchProfiles(t *testing.T) {
 	var estimatedTotalSize int64 = 1882144769
 	var nextPageToken string = ""
-	var histogramQueryResultsElement *talentpb.HistogramQueryResult = &talentpb.HistogramQueryResult{}
-	var histogramQueryResults = []*talentpb.HistogramQueryResult{histogramQueryResultsElement}
+	var summarizedProfilesElement *talentpb.SummarizedProfile = &talentpb.SummarizedProfile{}
+	var summarizedProfiles = []*talentpb.SummarizedProfile{summarizedProfilesElement}
 	var expectedResponse = &talentpb.SearchProfilesResponse{
-		EstimatedTotalSize:    estimatedTotalSize,
-		NextPageToken:         nextPageToken,
-		HistogramQueryResults: histogramQueryResults,
+		EstimatedTotalSize: estimatedTotalSize,
+		NextPageToken:      nextPageToken,
+		SummarizedProfiles: summarizedProfiles,
 	}
 
 	mockProfile.err = nil
@@ -2369,7 +2369,7 @@ func TestProfileServiceSearchProfiles(t *testing.T) {
 		t.Errorf("wrong request %q, want %q", got, want)
 	}
 
-	want := (interface{})(expectedResponse.HistogramQueryResults[0])
+	want := (interface{})(expectedResponse.SummarizedProfiles[0])
 	got := (interface{})(resp)
 	var ok bool
 

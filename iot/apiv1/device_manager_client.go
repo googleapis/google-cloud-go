@@ -69,6 +69,7 @@ func defaultDeviceManagerCallOptions() *DeviceManagerCallOptions {
 		{"default", "idempotent"}: {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -80,6 +81,7 @@ func defaultDeviceManagerCallOptions() *DeviceManagerCallOptions {
 		{"rate_limited_aware", "rate_limited_aware"}: {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
 					codes.ResourceExhausted,
 					codes.Unavailable,
 				}, gax.Backoff{

@@ -55,7 +55,7 @@ func TestVideoIntelligenceServiceSmoke(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var inputUri string = "gs://videodemomaker/cat.mp4"
+	var inputUri string = "gs://cloud-samples-data/video/cat.mp4"
 	var featuresElement videointelligencepb.Feature = videointelligencepb.Feature_LABEL_DETECTION
 	var features = []videointelligencepb.Feature{featuresElement}
 	var request = &videointelligencepb.AnnotateVideoRequest{

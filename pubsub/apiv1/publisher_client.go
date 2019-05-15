@@ -82,6 +82,7 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
 					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.ResourceExhausted,
 					codes.Unavailable,
