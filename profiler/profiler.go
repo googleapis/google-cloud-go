@@ -47,7 +47,6 @@ import (
 	"runtime"
 	"runtime/pprof"
 	"sync"
-	"sync/atomic"
 	"time"
 
 	gcemd "cloud.google.com/go/compute/metadata"
@@ -170,10 +169,6 @@ type Config struct {
 	Zone string
 }
 
-// startError represents the error occurred during the
-// initializating and starting of the agent.
-var startError error
-
 // allowUntilSuccess is an object that will perform action till
 // it succeeds once.
 // This is a modified form of Go's sync.Once
@@ -186,17 +181,15 @@ type allowUntilSuccess struct {
 // Once f returns nil, do will not call function f any more.
 // This is a modified form of Go's sync.Once.Do
 func (o *allowUntilSuccess) do(f func() error) (err error) {
-	if atomic.LoadUint32(&o.done) == 1 {
-		log.Printf("profiler.Start() called again after it was previously called")
-		return nil
-	}
-	// Slow-path.
 	o.m.Lock()
 	defer o.m.Unlock()
 	if o.done == 0 {
 		if err = f(); err == nil {
-			atomic.StoreUint32(&o.done, 1)
+			o.done = 1
 		}
+	} else {
+		log.Printf("profiler.Start() called again after it was previously called")
+		err = nil
 	}
 	return err
 }
@@ -206,7 +199,7 @@ func (o *allowUntilSuccess) do(f func() error) (err error) {
 // Config for details. Start should only be called once. Any
 // additional calls will be ignored.
 func Start(cfg Config, options ...option.ClientOption) error {
-	startError = startOnce.do(func() error {
+	startError := startOnce.do(func() error {
 		return start(cfg, options...)
 	})
 	return startError
