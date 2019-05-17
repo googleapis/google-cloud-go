@@ -27,7 +27,7 @@ import (
 // A Filter represents a row filter.
 type Filter interface {
 	String() string
-	proto() *btpb.RowFilter
+	Proto() *btpb.RowFilter
 }
 
 // ChainFilters returns a filter that applies a sequence of filters.
@@ -45,10 +45,10 @@ func (cf chainFilter) String() string {
 	return "(" + strings.Join(ss, " | ") + ")"
 }
 
-func (cf chainFilter) proto() *btpb.RowFilter {
+func (cf chainFilter) Proto() *btpb.RowFilter {
 	chain := &btpb.RowFilter_Chain{}
 	for _, sf := range cf.sub {
-		chain.Filters = append(chain.Filters, sf.proto())
+		chain.Filters = append(chain.Filters, sf.Proto())
 	}
 	return &btpb.RowFilter{
 		Filter: &btpb.RowFilter_Chain_{Chain: chain},
@@ -71,10 +71,10 @@ func (ilf interleaveFilter) String() string {
 	return "(" + strings.Join(ss, " + ") + ")"
 }
 
-func (ilf interleaveFilter) proto() *btpb.RowFilter {
+func (ilf interleaveFilter) Proto() *btpb.RowFilter {
 	inter := &btpb.RowFilter_Interleave{}
 	for _, sf := range ilf.sub {
-		inter.Filters = append(inter.Filters, sf.proto())
+		inter.Filters = append(inter.Filters, sf.Proto())
 	}
 	return &btpb.RowFilter{
 		Filter: &btpb.RowFilter_Interleave_{Interleave: inter},
@@ -90,7 +90,7 @@ type rowKeyFilter string
 
 func (rkf rowKeyFilter) String() string { return fmt.Sprintf("row(%s)", string(rkf)) }
 
-func (rkf rowKeyFilter) proto() *btpb.RowFilter {
+func (rkf rowKeyFilter) Proto() *btpb.RowFilter {
 	return &btpb.RowFilter{Filter: &btpb.RowFilter_RowKeyRegexFilter{RowKeyRegexFilter: []byte(rkf)}}
 }
 
@@ -103,7 +103,7 @@ type familyFilter string
 
 func (ff familyFilter) String() string { return fmt.Sprintf("col(%s:)", string(ff)) }
 
-func (ff familyFilter) proto() *btpb.RowFilter {
+func (ff familyFilter) Proto() *btpb.RowFilter {
 	return &btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{FamilyNameRegexFilter: string(ff)}}
 }
 
@@ -116,7 +116,7 @@ type columnFilter string
 
 func (cf columnFilter) String() string { return fmt.Sprintf("col(.*:%s)", string(cf)) }
 
-func (cf columnFilter) proto() *btpb.RowFilter {
+func (cf columnFilter) Proto() *btpb.RowFilter {
 	return &btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{ColumnQualifierRegexFilter: []byte(cf)}}
 }
 
@@ -129,7 +129,7 @@ type valueFilter string
 
 func (vf valueFilter) String() string { return fmt.Sprintf("value_match(%s)", string(vf)) }
 
-func (vf valueFilter) proto() *btpb.RowFilter {
+func (vf valueFilter) Proto() *btpb.RowFilter {
 	return &btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{ValueRegexFilter: []byte(vf)}}
 }
 
@@ -140,7 +140,7 @@ type latestNFilter int32
 
 func (lnf latestNFilter) String() string { return fmt.Sprintf("col(*,%d)", lnf) }
 
-func (lnf latestNFilter) proto() *btpb.RowFilter {
+func (lnf latestNFilter) Proto() *btpb.RowFilter {
 	return &btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerColumnLimitFilter{CellsPerColumnLimitFilter: int32(lnf)}}
 }
 
@@ -150,7 +150,7 @@ func StripValueFilter() Filter { return stripValueFilter{} }
 type stripValueFilter struct{}
 
 func (stripValueFilter) String() string { return "strip_value()" }
-func (stripValueFilter) proto() *btpb.RowFilter {
+func (stripValueFilter) Proto() *btpb.RowFilter {
 	return &btpb.RowFilter{Filter: &btpb.RowFilter_StripValueTransformer{StripValueTransformer: true}}
 }
 
@@ -184,7 +184,7 @@ func (trf timestampRangeFilter) String() string {
 	return fmt.Sprintf("timestamp_range(%v,%v)", trf.startTime, trf.endTime)
 }
 
-func (trf timestampRangeFilter) proto() *btpb.RowFilter {
+func (trf timestampRangeFilter) Proto() *btpb.RowFilter {
 	return &btpb.RowFilter{
 		Filter: &btpb.RowFilter_TimestampRangeFilter{TimestampRangeFilter: &btpb.TimestampRange{
 			StartTimestampMicros: int64(trf.startTime.TruncateToMilliseconds()),
@@ -209,7 +209,7 @@ func (crf columnRangeFilter) String() string {
 	return fmt.Sprintf("columnRangeFilter(%s,%s,%s)", crf.family, crf.start, crf.end)
 }
 
-func (crf columnRangeFilter) proto() *btpb.RowFilter {
+func (crf columnRangeFilter) Proto() *btpb.RowFilter {
 	r := &btpb.ColumnRange{FamilyName: crf.family}
 	if crf.start != "" {
 		r.StartQualifier = &btpb.ColumnRange_StartQualifierClosed{StartQualifierClosed: []byte(crf.start)}
@@ -235,7 +235,7 @@ func (vrf valueRangeFilter) String() string {
 	return fmt.Sprintf("valueRangeFilter(%s,%s)", vrf.start, vrf.end)
 }
 
-func (vrf valueRangeFilter) proto() *btpb.RowFilter {
+func (vrf valueRangeFilter) Proto() *btpb.RowFilter {
 	r := &btpb.ValueRange{}
 	if vrf.start != nil {
 		r.StartValue = &btpb.ValueRange_StartValueClosed{StartValueClosed: vrf.start}
@@ -267,18 +267,18 @@ func (cf conditionFilter) String() string {
 	return fmt.Sprintf("conditionFilter(%s,%s,%s)", cf.predicateFilter, cf.trueFilter, cf.falseFilter)
 }
 
-func (cf conditionFilter) proto() *btpb.RowFilter {
+func (cf conditionFilter) Proto() *btpb.RowFilter {
 	var tf *btpb.RowFilter
 	var ff *btpb.RowFilter
 	if cf.trueFilter != nil {
-		tf = cf.trueFilter.proto()
+		tf = cf.trueFilter.Proto()
 	}
 	if cf.falseFilter != nil {
-		ff = cf.falseFilter.proto()
+		ff = cf.falseFilter.Proto()
 	}
 	return &btpb.RowFilter{
 		Filter: &btpb.RowFilter_Condition_{Condition: &btpb.RowFilter_Condition{
-			PredicateFilter: cf.predicateFilter.proto(),
+			PredicateFilter: cf.predicateFilter.Proto(),
 			TrueFilter:      tf,
 			FalseFilter:     ff,
 		}}}
@@ -295,7 +295,7 @@ func (cof cellsPerRowOffsetFilter) String() string {
 	return fmt.Sprintf("cells_per_row_offset(%d)", cof)
 }
 
-func (cof cellsPerRowOffsetFilter) proto() *btpb.RowFilter {
+func (cof cellsPerRowOffsetFilter) Proto() *btpb.RowFilter {
 	return &btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{CellsPerRowOffsetFilter: int32(cof)}}
 }
 
@@ -310,7 +310,7 @@ func (clf cellsPerRowLimitFilter) String() string {
 	return fmt.Sprintf("cells_per_row_limit(%d)", clf)
 }
 
-func (clf cellsPerRowLimitFilter) proto() *btpb.RowFilter {
+func (clf cellsPerRowLimitFilter) Proto() *btpb.RowFilter {
 	return &btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowLimitFilter{CellsPerRowLimitFilter: int32(clf)}}
 }
 
@@ -325,6 +325,6 @@ func (rsf rowSampleFilter) String() string {
 	return fmt.Sprintf("filter(%f)", rsf)
 }
 
-func (rsf rowSampleFilter) proto() *btpb.RowFilter {
+func (rsf rowSampleFilter) Proto() *btpb.RowFilter {
 	return &btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{RowSampleFilter: float64(rsf)}}
 }

@@ -441,7 +441,7 @@ func RowFilter(f Filter) ReadOption { return rowFilter{f} }
 
 type rowFilter struct{ f Filter }
 
-func (rf rowFilter) set(req *btpb.ReadRowsRequest) { req.Filter = rf.f.proto() }
+func (rf rowFilter) set(req *btpb.ReadRowsRequest) { req.Filter = rf.f.Proto() }
 
 // LimitRows returns a ReadOption that will limit the number of rows to be read.
 func LimitRows(limit int64) ReadOption { return limitRows{limit} }
@@ -505,7 +505,7 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 		TableName:       t.c.fullTableName(t.table),
 		AppProfileId:    t.c.appProfile,
 		RowKey:          []byte(row),
-		PredicateFilter: m.cond.proto(),
+		PredicateFilter: m.cond.Proto(),
 	}
 	if m.mtrue != nil {
 		if m.mtrue.cond != nil {
