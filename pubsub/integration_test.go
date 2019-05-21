@@ -367,8 +367,8 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
-	defer topic.Stop()
 	defer topic.Delete(ctx)
+	defer topic.Stop()
 
 	var sub *Subscription
 	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
@@ -472,8 +472,8 @@ func TestIntegration_UpdateTopic(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
-	defer topic.Stop()
 	defer topic.Delete(ctx)
+	defer topic.Stop()
 
 	got, err := topic.Config(ctx)
 	if err != nil {
@@ -537,8 +537,8 @@ func TestIntegration_Errors(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
-	defer topic.Stop()
 	defer topic.Delete(ctx)
+	defer topic.Stop()
 
 	// Out-of-range retention duration.
 	sub, err := client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{
@@ -619,8 +619,8 @@ func TestIntegration_MessageStoragePolicy(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
-	defer topic.Stop()
 	defer topic.Delete(ctx)
+	defer topic.Stop()
 
 	config, err := topic.Config(ctx)
 	if err != nil {
