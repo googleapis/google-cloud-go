@@ -22,4 +22,7 @@ require (
 	google.golang.org/genproto v0.0.0-20190516172635-bb713bdc0e52
 	google.golang.org/grpc v1.19.0
 	honnef.co/go/tools v0.0.0-20190106161140-3f1c8253044a
+	rsc.io/binaryregexp v0.1.0
 )
+
+go 1.11
