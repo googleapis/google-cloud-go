@@ -1,5 +1,7 @@
 module cloud.google.com/go
 
+go 1.9
+
 require (
 	github.com/golang/mock v1.2.0
 	github.com/golang/protobuf v1.3.1
@@ -22,4 +24,5 @@ require (
 	google.golang.org/genproto v0.0.0-20190522204451-c2c4e71fbf69
 	google.golang.org/grpc v1.19.0
 	honnef.co/go/tools v0.0.0-20190106161140-3f1c8253044a
+	rsc.io/binaryregexp v0.2.0
 )

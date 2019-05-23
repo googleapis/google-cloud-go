@@ -53,6 +53,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"rsc.io/binaryregexp"
 )
 
 const (
@@ -677,7 +678,7 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) (bool, error) {
 		if err != nil {
 			return false, status.Errorf(codes.InvalidArgument, "Error in field 'column_qualifier_regex_filter' : %v", err)
 		}
-		return rx.MatchString(toUTF8([]byte(col))), nil
+		return rx.MatchString(col), nil
 	case *btpb.RowFilter_ValueRegexFilter:
 		rx, err := newRegexp(f.ValueRegexFilter)
 		if err != nil {
@@ -731,17 +732,8 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) (bool, error) {
 	}
 }
 
-func toUTF8(bs []byte) string {
-	var rs []rune
-	for _, b := range bs {
-		rs = append(rs, rune(b))
-	}
-	return string(rs)
-}
-
-func newRegexp(patBytes []byte) (*regexp.Regexp, error) {
-	pat := toUTF8(patBytes)
-	re, err := regexp.Compile("^" + pat + "$") // match entire target
+func newRegexp(pat []byte) (*binaryregexp.Regexp, error) {
+	re, err := binaryregexp.Compile("^" + string(pat) + "$") // match entire target
 	if err != nil {
 		log.Printf("Bad pattern %q: %v", pat, err)
 	}

@@ -1180,16 +1180,17 @@ func TestFilterRowWithBinaryColumnQualifier(t *testing.T) {
 		},
 	}
 	for _, test := range []struct {
-		filter []byte
+		filter string
 		want   bool
 	}{
-		{[]byte{128, 128}, true},                          // succeeds, exact match
-		{[]byte{128, 129}, false},                         // fails
-		{[]byte{128}, false},                              // fails, because the regexp must match the entire input
-		{[]byte{128, '*'}, true},                          // succeeds: 0 or more 128s
-		{[]byte{'[', 127, 128, ']', '{', '2', '}'}, true}, // succeeds: exactly two of either 127 or 128
+		{`\x80\x80`, true},      // succeeds, exact match
+		{`\x80\x81`, false},     // fails
+		{`\x80`, false},         // fails, because the regexp must match the entire input
+		{`\x80*`, true},         // succeeds: 0 or more 128s
+		{`[\x7f\x80]{2}`, true}, // succeeds: exactly two of either 127 or 128
+		{`\C{2}`, true},         // succeeds: two bytes
 	} {
-		got, _ := filterRow(&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{test.filter}}, row.copy())
+		got, _ := filterRow(&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{[]byte(test.filter)}}, row.copy())
 		if got != test.want {
 			t.Errorf("%v: got %t, want %t", test.filter, got, test.want)
 		}
