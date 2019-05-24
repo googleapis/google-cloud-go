@@ -804,8 +804,11 @@ func (s *server) CheckAndMutateRow(ctx context.Context, req *btpb.CheckAndMutate
 		// Use true_mutations iff any cells in the row match the filter.
 		// TODO(dsymonds): This could be cheaper.
 		nr := r.copy()
-		filterRow(req.PredicateFilter, nr)
-		whichMut = !nr.isEmpty()
+		ok, err := filterRow(req.PredicateFilter, nr)
+		if err != nil {
+			return nil, err
+		}
+		whichMut = ok && !nr.isEmpty()
 	}
 	res.PredicateMatched = whichMut
 	muts := req.FalseMutations
