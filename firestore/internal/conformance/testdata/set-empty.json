@@ -1,0 +1,18 @@
+{
+  "description": "set: creating or setting an empty map",
+  "set": {
+    "docRefPath": "projects/projectID/databases/(default)/documents/C/d",
+    "jsonData": "{}",
+    "request": {
+      "database": "projects/projectID/databases/(default)",
+      "writes": [
+        {
+          "update": {
+            "name": "projects/projectID/databases/(default)/documents/C/d",
+            "fields": {}
+          }
+        }
+      ]
+    }
+  }
+}

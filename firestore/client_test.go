@@ -107,8 +107,9 @@ func TestClientCollDocErrors(t *testing.T) {
 }
 
 func TestGetAll(t *testing.T) {
-	c, srv := newMock(t)
-	defer c.Close()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
 	const dbPath = "projects/projectID/databases/(default)"
 	req := &pb.BatchGetDocumentsRequest{
 		Database: dbPath,
@@ -181,8 +182,9 @@ func testGetAll(t *testing.T, c *Client, srv *mockServer, dbPath string, getAll 
 }
 
 func TestGetAllWithEqualRefs(t *testing.T) {
-	c, srv := newMock(t)
-	defer c.Close()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
 	const dbPath = "projects/projectID/databases/(default)"
 	req := &pb.BatchGetDocumentsRequest{
 		Database: dbPath,
@@ -265,11 +267,11 @@ func testGetAllWithEqualRefs(t *testing.T, c *Client, srv *mockServer, dbPath st
 
 func TestGetAllErrors(t *testing.T) {
 	ctx := context.Background()
-	const (
-		dbPath  = "projects/projectID/databases/(default)"
-		docPath = dbPath + "/documents/C/a"
-	)
-	c, srv := newMock(t)
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const dbPath = "projects/projectID/databases/(default)"
+	const docPath = dbPath + "/documents/C/a"
 	if _, err := c.GetAll(ctx, []*DocumentRef{nil}); err != errNilDocRef {
 		t.Errorf("got %v, want errNilDocRef", err)
 	}
