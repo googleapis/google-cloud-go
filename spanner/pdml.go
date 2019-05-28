@@ -69,12 +69,20 @@ func (c *Client) PartitionedUpdate(ctx context.Context, statement Statement) (co
 	if err != nil {
 		return 0, toSpannerError(err)
 	}
+
+	params, paramTypes, err := statement.convertParams()
+	if err != nil {
+		return 0, toSpannerError(err)
+	}
+
 	req := &sppb.ExecuteSqlRequest{
 		Session: sh.getID(),
 		Transaction: &sppb.TransactionSelector{
 			Selector: &sppb.TransactionSelector_Id{Id: tx},
 		},
-		Sql: statement.SQL,
+		Sql:        statement.SQL,
+		Params:     params,
+		ParamTypes: paramTypes,
 	}
 	rpc := func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 		req.ResumeToken = resumeToken
