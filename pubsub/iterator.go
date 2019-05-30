@@ -443,7 +443,7 @@ func (it *messageIterator) sendAckIDRPC(ackIDSet map[string]bool, call func([]st
 	}
 	var toSend []string
 	for len(ackIDs) > 0 {
-		toSend, ackIDs = splitRequestIDs(ackIDs, maxPayload)
+		toSend, ackIDs = splitRequestIDs(ackIDs, len(it.subName), maxPayload)
 		if err := call(toSend); err != nil {
 			// The underlying client handles retries, so any error is fatal to the
 			// iterator.
@@ -465,8 +465,8 @@ func (it *messageIterator) pingStream() {
 	_ = it.ps.Send(&pb.StreamingPullRequest{})
 }
 
-func splitRequestIDs(ids []string, maxSize int) (prefix, remainder []string) {
-	size := reqFixedOverhead
+func splitRequestIDs(ids []string, subNameSize, maxSize int) (prefix, remainder []string) {
+	size := subNameSize
 	i := 0
 	for size < maxSize && i < len(ids) {
 		size += overheadPerID + len(ids[i])
