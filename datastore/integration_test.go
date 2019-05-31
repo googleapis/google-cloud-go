@@ -1276,3 +1276,34 @@ func TestIntegration_DetectProjectID(t *testing.T) {
 		t.Errorf("expected an error while using TokenSource that does not have a project ID")
 	}
 }
+
+func TestIntegration_Project_TimestampStoreAndRetrieve(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	type T struct{ Created time.Time }
+
+	now := time.Now()
+	k, err := client.Put(ctx, IncompleteKey("foo", nil), &T{Created: now})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := client.Delete(ctx, k); err != nil {
+			log.Println(err)
+		}
+	}()
+
+	q := NewQuery("foo").Order("Created").Project("Created")
+	res := []T{}
+	if _, err := client.GetAll(ctx, q, &res); err != nil {
+		t.Fatal(err)
+	}
+	if len(res) != 1 {
+		t.Fatalf("expected 1 result, got %d", len(res))
+	}
+	if got, want := res[0].Created.Unix(), now.Unix(); got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+}
