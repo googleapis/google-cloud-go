@@ -38,28 +38,7 @@ const (
 )
 
 const startupTemplate = `
-#! /bin/bash
-
-# Signal any unexpected error.
-trap 'echo "{{.ErrorString}}"' ERR
-
-(
-# Shut down the VM in 5 minutes after this script exits
-# to stop accounting the VM for billing and cores quota.
-trap "sleep 300 && poweroff" EXIT
-
-retry() {
-  for i in {1..3}; do
-    "${@}" && return 0
-  done
-  return 1
-}
-
-# Fail on any error.
-set -eo pipefail
-
-# Display commands being run.
-set -x
+{{- template "prologue" . }}
 
 # Install git
 retry apt-get update >/dev/null
@@ -102,8 +81,7 @@ retry go get >/dev/null
 # Run benchmark with agent
 go run busybench.go --service="{{.Service}}" --mutex_profiling="{{.MutexProfiling}}"
 
-# Write output to serial port 2 with timestamp.
-) 2>&1 | while read line; do echo "$(date): ${line}"; done >/dev/ttyS1
+{{ template "epilogue" . -}}
 `
 
 type goGCETestCase struct {
@@ -185,7 +163,7 @@ func TestAgentIntegration(t *testing.T) {
 		t.Fatalf("failed to initialize compute service: %v", err)
 	}
 
-	template, err := template.New("startupScript").Parse(startupTemplate)
+	template, err := proftest.BaseStartupTmpl.Parse(startupTemplate)
 	if err != nil {
 		t.Fatalf("failed to parse startup script template: %v", err)
 	}
