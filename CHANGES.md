@@ -1,5 +1,29 @@
 # Changes
 
+## v0.40.0
+
+- all:
+  - Update to protobuf-golang v1.3.1.
+- datastore:
+  - Attempt to decode GAE-encoded keys if initial decoding attempt fails.
+  - Support integer time conversion.
+- pubsub:
+  - Add PublishSettings.BundlerByteLimit. If users receive pubsub.ErrOverflow,
+  this value should be adjusted higher.
+  - Use IPv6 compatible target in testutil.
+- bigtable:
+  - Fix Latin-1 regexp filters in bttest, allowing \C.
+  - Expose PassAllFilter.
+- profiler:
+  - Add log messages for slow path in start.
+  - Fix start to allow retry until success.
+- firestore:
+  - Add admin client.
+- containeranalysis:
+  - Add apiv1 client.
+- grafeas:
+  - Add apiv1 client.
+
 ## 0.39.0
 
 - bigtable:
