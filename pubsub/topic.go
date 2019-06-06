@@ -77,6 +77,7 @@ type PublishSettings struct {
 	ByteThreshold int
 
 	// The number of goroutines that invoke the Publish RPC concurrently.
+	//
 	// Defaults to a multiple of GOMAXPROCS.
 	NumGoroutines int
 
@@ -85,6 +86,8 @@ type PublishSettings struct {
 
 	// The maximum number of bytes that the Bundler will keep in memory before
 	// returning ErrOverflow.
+	//
+	// Defaults to DefaultPublishSettings.BufferedByteLimit.
 	BufferedByteLimit int
 }
 
@@ -431,7 +434,11 @@ func (t *Topic) initBundler() {
 	}
 	t.bundler.BundleByteThreshold = t.PublishSettings.ByteThreshold
 
-	t.bundler.BufferedByteLimit = t.PublishSettings.BufferedByteLimit
+	bufferedByteLimit := DefaultPublishSettings.BufferedByteLimit
+	if t.PublishSettings.BufferedByteLimit > 0 {
+		bufferedByteLimit = t.PublishSettings.BufferedByteLimit
+	}
+	t.bundler.BufferedByteLimit = bufferedByteLimit
 
 	t.bundler.BundleByteLimit = MaxPublishRequestBytes
 	// Unless overridden, allow many goroutines per CPU to call the Publish RPC concurrently.
