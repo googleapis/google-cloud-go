@@ -23,23 +23,25 @@ import (
 
 // Message represents a Pub/Sub message.
 type Message struct {
-	// ID identifies this message.
-	// This ID is assigned by the server and is populated for Messages obtained from a subscription.
+	// ID identifies this message. This ID is assigned by the server and is
+	// populated for Messages obtained from a subscription.
+	//
 	// This field is read-only.
 	ID string
 
 	// Data is the actual data in the message.
 	Data []byte
 
-	// Attributes represents the key-value pairs the current message
-	// is labelled with.
+	// Attributes represents the key-value pairs the current message is
+	// labelled with.
 	Attributes map[string]string
 
 	// ackID is the identifier to acknowledge this message.
 	ackID string
 
-	// The time at which the message was published.
-	// This is populated by the server for Messages obtained from a subscription.
+	// PublishTime is the time at which the message was published. This is
+	// populated by the server for Messages obtained from a subscription.
+	//
 	// This field is read-only.
 	PublishTime time.Time
 
@@ -65,6 +67,10 @@ type Message struct {
 
 	// The done method of the iterator that created this Message.
 	doneFunc func(string, bool, time.Time)
+
+	// OrderingKey identifies related messages for which publish order should
+	// be respected. If empty string is used, message will be sent unordered.
+	OrderingKey string
 }
 
 func toMessage(resp *pb.ReceivedMessage) (*Message, error) {
@@ -90,6 +96,7 @@ func toMessage(resp *pb.ReceivedMessage) (*Message, error) {
 		ID:              resp.Message.MessageId,
 		PublishTime:     pubTime,
 		DeliveryAttempt: deliveryAttempt,
+		OrderingKey:     resp.Message.OrderingKey,
 	}, nil
 }
 
