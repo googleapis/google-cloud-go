@@ -15,10 +15,13 @@
 package pubsub
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"fmt"
+	"os"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -28,6 +31,7 @@ import (
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/internal/version"
 	kms "cloud.google.com/go/kms/apiv1"
+	testutil2 "cloud.google.com/go/pubsub/internal/testutil"
 	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
@@ -1079,5 +1083,193 @@ func TestIntegration_CreateTopic_MessageStoragePolicy(t *testing.T) {
 	want := tc
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Fatalf("\ngot: - want: +\n%s", diff)
+	}
+}
+
+func TestIntegration_OrderedKeys_Basic(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer topic.Stop()
+	exists, err := topic.Exists(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !exists {
+		t.Fatalf("topic %v should exist, but it doesn't", topic)
+	}
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{
+		Topic:                 topic,
+		EnableMessageOrdering: true,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	_ = sub
+	exists, err = sub.Exists(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !exists {
+		t.Fatalf("subscription %s should exist, but it doesn't", sub.ID())
+	}
+
+	topic.PublishSettings.DelayThreshold = time.Second
+	topic.EnableMessageOrdering = true
+
+	orderingKey := "some-ordering-key"
+	numItems := 1000
+	for i := 0; i < numItems; i++ {
+		r := topic.Publish(ctx, &Message{
+			ID:          fmt.Sprintf("id-%d", i),
+			Data:        []byte(fmt.Sprintf("item-%d", i)),
+			OrderingKey: orderingKey,
+		})
+		go func() {
+			<-r.ready
+			if r.err != nil {
+				t.Error(r.err)
+			}
+		}()
+	}
+
+	received := make(chan string, numItems)
+	go func() {
+		if err := sub.Receive(ctx, func(ctx context.Context, msg *Message) {
+			defer msg.Ack()
+			if msg.OrderingKey != orderingKey {
+				t.Errorf("got ordering key %s, expected %s", msg.OrderingKey, orderingKey)
+			}
+
+			received <- string(msg.Data)
+		}); err != nil {
+			if c := status.Code(err); c != codes.Canceled {
+				t.Error(err)
+			}
+		}
+	}()
+
+	for i := 0; i < numItems; i++ {
+		select {
+		case r := <-received:
+			if got, want := r, fmt.Sprintf("item-%d", i); got != want {
+				t.Fatalf("%d: got %s, want %s", i, got, want)
+			}
+		case <-time.After(5 * time.Second):
+			t.Fatalf("timed out after 5s waiting for item %d", i)
+		}
+	}
+}
+
+func TestIntegration_OrderedKeys_JSON(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer topic.Stop()
+	exists, err := topic.Exists(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !exists {
+		t.Fatalf("topic %v should exist, but it doesn't", topic)
+	}
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{
+		Topic:                 topic,
+		EnableMessageOrdering: true,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	_ = sub
+	exists, err = sub.Exists(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !exists {
+		t.Fatalf("subscription %s should exist, but it doesn't", sub.ID())
+	}
+
+	topic.PublishSettings.DelayThreshold = time.Second
+	topic.EnableMessageOrdering = true
+
+	inFile, err := os.Open("testdata/publish.csv")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer inFile.Close()
+
+	mu := sync.Mutex{}
+	var publishData []testutil2.OrderedKeyMsg
+	var receiveData []testutil2.OrderedKeyMsg
+
+	wg := sync.WaitGroup{}
+	scanner := bufio.NewScanner(inFile)
+	for scanner.Scan() {
+		line := scanner.Text()
+		// TODO: use strings.ReplaceAll once we only support 1.11+.
+		line = strings.Replace(line, "\"", "", -1)
+		parts := strings.Split(line, ",")
+		key := parts[0]
+		msg := parts[1]
+		publishData = append(publishData, testutil2.OrderedKeyMsg{Key: key, Data: msg})
+		topic.Publish(ctx, &Message{
+			ID:          msg,
+			Data:        []byte(msg),
+			OrderingKey: key,
+		})
+		wg.Add(1)
+	}
+	if err := scanner.Err(); err != nil {
+		t.Fatal(err)
+	}
+
+	go func() {
+		if err := sub.Receive(ctx, func(ctx context.Context, msg *Message) {
+			defer msg.Ack()
+			mu.Lock()
+			receiveData = append(receiveData, testutil2.OrderedKeyMsg{Key: msg.OrderingKey, Data: string(msg.Data)})
+			mu.Unlock()
+			wg.Done()
+		}); err != nil {
+			if c := status.Code(err); c != codes.Canceled {
+				t.Error(err)
+			}
+		}
+	}()
+
+	done := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+	case <-time.After(15 * time.Second):
+		t.Fatal("timed out after 15s waiting for all messages to be received")
+	}
+
+	mu.Lock()
+	defer mu.Unlock()
+	if err := testutil2.VerifyKeyOrdering(publishData, receiveData); err != nil {
+		t.Fatal(err)
 	}
 }

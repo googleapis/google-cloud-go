@@ -25,6 +25,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/iam"
+	"cloud.google.com/go/pubsub/internal/scheduler"
 	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats"
@@ -62,9 +63,12 @@ type Topic struct {
 	// first call to Publish. The default is DefaultPublishSettings.
 	PublishSettings PublishSettings
 
-	mu      sync.RWMutex
-	stopped bool
-	bundler *bundler.Bundler
+	mu        sync.RWMutex
+	stopped   bool
+	scheduler *scheduler.PublishScheduler
+
+	// EnableMessageOrdering enables delivery of ordered keys.
+	EnableMessageOrdering bool
 }
 
 // PublishSettings control the bundling of published messages.
@@ -80,7 +84,9 @@ type PublishSettings struct {
 	// Publish a batch when its size in bytes reaches this value.
 	ByteThreshold int
 
-	// The number of goroutines that invoke the Publish RPC concurrently.
+	// The number of goroutines used in each of the data structures that are
+	// involved along the the Publish path. Adjusting this value adjusts
+	// concurrency along the publish path.
 	//
 	// Defaults to a multiple of GOMAXPROCS.
 	NumGoroutines int
@@ -386,6 +392,10 @@ var errTopicStopped = errors.New("pubsub: Stop has been called for this topic")
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
+	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
+		return &PublishResult{err: errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering")}
+	}
+
 	// Use a PublishRequest with only the Messages field to calculate the size
 	// of an individual message. This accurately calculates the size of the
 	// encoded proto message by accounting for the length of an individual
@@ -394,8 +404,9 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	msg.size = proto.Size(&pb.PublishRequest{
 		Messages: []*pb.PubsubMessage{
 			{
-				Data:       msg.Data,
-				Attributes: msg.Attributes,
+				Data:        msg.Data,
+				Attributes:  msg.Attributes,
+				OrderingKey: msg.OrderingKey,
 			},
 		},
 	})
@@ -411,7 +422,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 
 	// TODO(jba) [from bcmills] consider using a shared channel per bundle
 	// (requires Bundler API changes; would reduce allocations)
-	err := t.bundler.Add(&bundledMessage{msg, r}, msg.size)
+	err := t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r}, msg.size)
 	if err != nil {
 		r.set("", err)
 	}
@@ -423,13 +434,13 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 // failed to be sent.
 func (t *Topic) Stop() {
 	t.mu.Lock()
-	noop := t.stopped || t.bundler == nil
+	noop := t.stopped || t.scheduler == nil
 	t.stopped = true
 	t.mu.Unlock()
 	if noop {
 		return
 	}
-	t.bundler.Flush()
+	t.scheduler.FlushAndStop()
 }
 
 // A PublishResult holds the result from a call to Publish.
@@ -473,7 +484,7 @@ type bundledMessage struct {
 
 func (t *Topic) initBundler() {
 	t.mu.RLock()
-	noop := t.stopped || t.bundler != nil
+	noop := t.stopped || t.scheduler != nil
 	t.mu.RUnlock()
 	if noop {
 		return
@@ -481,12 +492,21 @@ func (t *Topic) initBundler() {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	// Must re-check, since we released the lock.
-	if t.stopped || t.bundler != nil {
+	if t.stopped || t.scheduler != nil {
 		return
 	}
 
 	timeout := t.PublishSettings.Timeout
-	t.bundler = bundler.NewBundler(&bundledMessage{}, func(items interface{}) {
+
+	workers := t.PublishSettings.NumGoroutines
+	// Unless overridden, allow many goroutines per CPU to call the Publish RPC
+	// concurrently. The default value was determined via extensive load
+	// testing (see the loadtest subdirectory).
+	if t.PublishSettings.NumGoroutines == 0 {
+		workers = 25 * runtime.GOMAXPROCS(0)
+	}
+
+	t.scheduler = scheduler.NewPublishScheduler(workers, func(bundle interface{}) {
 		// TODO(jba): use a context detached from the one passed to NewClient.
 		ctx := context.TODO()
 		if timeout != 0 {
@@ -494,30 +514,22 @@ func (t *Topic) initBundler() {
 			ctx, cancel = context.WithTimeout(ctx, timeout)
 			defer cancel()
 		}
-		t.publishMessageBundle(ctx, items.([]*bundledMessage))
+		t.publishMessageBundle(ctx, bundle.([]*bundledMessage))
 	})
-	t.bundler.DelayThreshold = t.PublishSettings.DelayThreshold
-	t.bundler.BundleCountThreshold = t.PublishSettings.CountThreshold
-	if t.bundler.BundleCountThreshold > MaxPublishRequestCount {
-		t.bundler.BundleCountThreshold = MaxPublishRequestCount
+	t.scheduler.DelayThreshold = t.PublishSettings.DelayThreshold
+	t.scheduler.BundleCountThreshold = t.PublishSettings.CountThreshold
+	if t.scheduler.BundleCountThreshold > MaxPublishRequestCount {
+		t.scheduler.BundleCountThreshold = MaxPublishRequestCount
 	}
-	t.bundler.BundleByteThreshold = t.PublishSettings.ByteThreshold
+	t.scheduler.BundleByteThreshold = t.PublishSettings.ByteThreshold
 
 	bufferedByteLimit := DefaultPublishSettings.BufferedByteLimit
 	if t.PublishSettings.BufferedByteLimit > 0 {
 		bufferedByteLimit = t.PublishSettings.BufferedByteLimit
 	}
-	t.bundler.BufferedByteLimit = bufferedByteLimit
+	t.scheduler.BufferedByteLimit = bufferedByteLimit
 
-	// Set the bundler's max size per payload, accounting for topic name's overhead.
-	t.bundler.BundleByteLimit = MaxPublishRequestBytes - calcFieldSizeString(t.name)
-	// Unless overridden, allow many goroutines per CPU to call the Publish RPC concurrently.
-	// The default value was determined via extensive load testing (see the loadtest subdirectory).
-	if t.PublishSettings.NumGoroutines > 0 {
-		t.bundler.HandlerLimit = t.PublishSettings.NumGoroutines
-	} else {
-		t.bundler.HandlerLimit = 25 * runtime.GOMAXPROCS(0)
-	}
+	t.scheduler.BundleByteLimit = MaxPublishRequestBytes - calcFieldSizeString(t.name)
 }
 
 func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage) {
@@ -528,8 +540,9 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	pbMsgs := make([]*pb.PubsubMessage, len(bms))
 	for i, bm := range bms {
 		pbMsgs[i] = &pb.PubsubMessage{
-			Data:       bm.msg.Data,
-			Attributes: bm.msg.Attributes,
+			Data:        bm.msg.Data,
+			Attributes:  bm.msg.Attributes,
+			OrderingKey: bm.msg.OrderingKey,
 		}
 		bm.msg = nil // release bm.msg for GC
 	}
