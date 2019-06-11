@@ -21,7 +21,7 @@ require (
 	golang.org/x/time v0.0.0-20181108054448-85acf8d2951c
 	golang.org/x/tools v0.0.0-20190506145303-2d16b83fe98c
 	google.golang.org/api v0.6.0
-	google.golang.org/genproto v0.0.0-20190530194941-fb225487d101
+	google.golang.org/genproto v0.0.0-20190611190212-a7e196e89fd3
 	google.golang.org/grpc v1.20.1
 	honnef.co/go/tools v0.0.0-20190418001031-e561f6794a2a
 	rsc.io/binaryregexp v0.2.0
