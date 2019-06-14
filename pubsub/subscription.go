@@ -184,6 +184,17 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 	}
 }
 
+func (cfg *SubscriptionConfig) ToUpdate() *SubscriptionConfigToUpdate {
+	return 	&SubscriptionConfigToUpdate{
+		PushConfig:          &cfg.PushConfig
+		AckDeadline:         cfg.AckDeadline
+		RetainAckedMessages: cfg.RetainAckedMessages
+		RetentionDuration:   cfg.RetentionDuration
+		ExpirationPolicy:    cfg.ExpirationPolicy
+		Labels:              cfg.Labels
+	}
+}
+
 func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionConfig, error) {
 	rd := time.Hour * 24 * 7
 	var err error
