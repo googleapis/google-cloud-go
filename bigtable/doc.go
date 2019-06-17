@@ -98,8 +98,15 @@ For instance, to set a couple of cells in a table:
 
 	tbl := client.Open("mytable")
 	mut := bigtable.NewMutation()
-	mut.Set("links", "maps.google.com", bigtable.Now(), []byte("1"))
-	mut.Set("links", "golang.org", bigtable.Now(), []byte("1"))
+	// To use numeric values that will later be incremented,
+	// they need to be big-endian encoded as 64-bit integers.
+        buf := new(bytes.Buffer)
+        initialLinkCount := 1 // The initial number of links.
+        if err := binary.Write(buf, binary.BigEndian, initialLinkCount); err != nil {
+		// TODO: handle err.
+        }
+	mut.Set("links", "maps.google.com", bigtable.Now(), buf.Bytes())
+	mut.Set("links", "golang.org", bigtable.Now(), buf.Bytes())
 	err := tbl.Apply(ctx, "com.google.cloud", mut)
 	if err != nil {
 		// TODO: handle err.
