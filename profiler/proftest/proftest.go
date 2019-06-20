@@ -129,6 +129,7 @@ type InstanceConfig struct {
 	MachineType   string
 	ImageProject  string
 	ImageFamily   string
+	Scopes        []string
 }
 
 // ClusterConfig is configuration for starting single GKE cluster for profiling
@@ -244,10 +245,8 @@ func (tr *GCETestRunner) StartInstance(ctx context.Context, inst *InstanceConfig
 			}},
 		},
 		ServiceAccounts: []*compute.ServiceAccount{{
-			Email: "default",
-			Scopes: []string{
-				monitorWriteScope,
-			},
+			Email:  "default",
+			Scopes: append(inst.Scopes, monitorWriteScope),
 		}},
 	}).Do()
 
