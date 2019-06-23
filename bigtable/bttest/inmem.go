@@ -810,10 +810,11 @@ func (s *server) CheckAndMutateRow(ctx context.Context, req *btpb.CheckAndMutate
 		// TODO(dsymonds): This could be cheaper.
 		nr := r.copy()
 
-		// TODO(dsymonds, odeke-em): examine if filterRow here should be checked:
-		// with: match, err := filterRow(req.PredicateFilter, nr)
-		filterRow(req.PredicateFilter, nr)
-		whichMut = !nr.isEmpty()
+		match, err := filterRow(req.PredicateFilter, nr)
+		if err != nil {
+			return nil, err
+		}
+		whichMut = match && !nr.isEmpty()
 	}
 	res.PredicateMatched = whichMut
 	muts := req.FalseMutations
