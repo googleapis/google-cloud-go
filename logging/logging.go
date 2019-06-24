@@ -608,6 +608,9 @@ type Entry struct {
 	// The ID is a 16-character hexadecimal encoding of an 8-byte array.
 	SpanID string
 
+	// If set, symbolizes that this request was sampled.
+	TraceSampled bool
+
 	// Optional. Source code location information associated with the log entry,
 	// if any.
 	SourceLocation *logpb.LogEntrySourceLocation
@@ -877,13 +880,18 @@ func (l *Logger) toLogEntry(e Entry) (*logpb.LogEntry, error) {
 		if traceHeader != "" {
 			// Set to a relative resource name, as described at
 			// https://cloud.google.com/appengine/docs/flexible/go/writing-application-logs.
-			traceID, spanID, _ := deconstructXCloudTraceContext(traceHeader)
+			traceID, spanID, traceSampled := deconstructXCloudTraceContext(traceHeader)
 			if traceID != "" {
 				e.Trace = fmt.Sprintf("%s/traces/%s", l.client.parent, traceID)
 			}
 			if e.SpanID == "" {
 				e.SpanID = spanID
 			}
+
+			// If we previously hadn't set TraceSampled, let's retrieve it
+			// from the HTTP request's header, as per:
+			//   https://cloud.google.com/trace/docs/troubleshooting#force-trace
+			e.TraceSampled = e.TraceSampled || traceSampled
 		}
 	}
 	ent := &logpb.LogEntry{
@@ -897,6 +905,7 @@ func (l *Logger) toLogEntry(e Entry) (*logpb.LogEntry, error) {
 		SpanId:         e.SpanID,
 		Resource:       e.Resource,
 		SourceLocation: e.SourceLocation,
+		TraceSampled:   e.TraceSampled,
 	}
 	switch p := e.Payload.(type) {
 	case string:
