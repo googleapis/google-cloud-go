@@ -1278,6 +1278,7 @@ func TestIntegration_DetectProjectID(t *testing.T) {
 }
 
 func TestIntegration_Project_TimestampStoreAndRetrieve(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1479")
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
