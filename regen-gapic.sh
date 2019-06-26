@@ -139,7 +139,9 @@ done
 
 # These have manual edits and should not be auto-generated blindly. See jskeet@
 # for details.
-git checkout grafeas
-git checkout containeranalysis/v1
+pushd $GOPATH/src/cloud.google.com/go
+  git checkout grafeas
+  git checkout containeranalysis/apiv1
+popd
 
 find $GOPATH/src/cloud.google.com/go/ -name '*.backup' -delete

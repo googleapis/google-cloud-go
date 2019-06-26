@@ -35,22 +35,20 @@ import (
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	GetDataSource                []gax.CallOption
-	ListDataSources              []gax.CallOption
-	CreateTransferConfig         []gax.CallOption
-	UpdateTransferConfig         []gax.CallOption
-	DeleteTransferConfig         []gax.CallOption
-	GetTransferConfig            []gax.CallOption
-	ListTransferConfigs          []gax.CallOption
-	ScheduleTransferRuns         []gax.CallOption
-	GetTransferRun               []gax.CallOption
-	DeleteTransferRun            []gax.CallOption
-	ListTransferRuns             []gax.CallOption
-	ListTransferLogs             []gax.CallOption
-	CheckValidCreds              []gax.CallOption
-	StartManualTransferRuns      []gax.CallOption
-	EnableDataTransferService    []gax.CallOption
-	IsDataTransferServiceEnabled []gax.CallOption
+	GetDataSource           []gax.CallOption
+	ListDataSources         []gax.CallOption
+	CreateTransferConfig    []gax.CallOption
+	UpdateTransferConfig    []gax.CallOption
+	DeleteTransferConfig    []gax.CallOption
+	GetTransferConfig       []gax.CallOption
+	ListTransferConfigs     []gax.CallOption
+	ScheduleTransferRuns    []gax.CallOption
+	GetTransferRun          []gax.CallOption
+	DeleteTransferRun       []gax.CallOption
+	ListTransferRuns        []gax.CallOption
+	ListTransferLogs        []gax.CallOption
+	CheckValidCreds         []gax.CallOption
+	StartManualTransferRuns []gax.CallOption
 }
 
 func defaultClientOptions() []option.ClientOption {
@@ -76,22 +74,20 @@ func defaultCallOptions() *CallOptions {
 		},
 	}
 	return &CallOptions{
-		GetDataSource:                retry[[2]string{"default", "idempotent"}],
-		ListDataSources:              retry[[2]string{"default", "idempotent"}],
-		CreateTransferConfig:         retry[[2]string{"default", "non_idempotent"}],
-		UpdateTransferConfig:         retry[[2]string{"default", "non_idempotent"}],
-		DeleteTransferConfig:         retry[[2]string{"default", "idempotent"}],
-		GetTransferConfig:            retry[[2]string{"default", "idempotent"}],
-		ListTransferConfigs:          retry[[2]string{"default", "idempotent"}],
-		ScheduleTransferRuns:         retry[[2]string{"default", "non_idempotent"}],
-		GetTransferRun:               retry[[2]string{"default", "idempotent"}],
-		DeleteTransferRun:            retry[[2]string{"default", "idempotent"}],
-		ListTransferRuns:             retry[[2]string{"default", "idempotent"}],
-		ListTransferLogs:             retry[[2]string{"default", "idempotent"}],
-		CheckValidCreds:              retry[[2]string{"default", "idempotent"}],
-		StartManualTransferRuns:      retry[[2]string{"default", "non_idempotent"}],
-		EnableDataTransferService:    retry[[2]string{"default", "non_idempotent"}],
-		IsDataTransferServiceEnabled: retry[[2]string{"default", "non_idempotent"}],
+		GetDataSource:           retry[[2]string{"default", "idempotent"}],
+		ListDataSources:         retry[[2]string{"default", "idempotent"}],
+		CreateTransferConfig:    retry[[2]string{"default", "non_idempotent"}],
+		UpdateTransferConfig:    retry[[2]string{"default", "non_idempotent"}],
+		DeleteTransferConfig:    retry[[2]string{"default", "idempotent"}],
+		GetTransferConfig:       retry[[2]string{"default", "idempotent"}],
+		ListTransferConfigs:     retry[[2]string{"default", "idempotent"}],
+		ScheduleTransferRuns:    retry[[2]string{"default", "non_idempotent"}],
+		GetTransferRun:          retry[[2]string{"default", "idempotent"}],
+		DeleteTransferRun:       retry[[2]string{"default", "idempotent"}],
+		ListTransferRuns:        retry[[2]string{"default", "idempotent"}],
+		ListTransferLogs:        retry[[2]string{"default", "idempotent"}],
+		CheckValidCreds:         retry[[2]string{"default", "idempotent"}],
+		StartManualTransferRuns: retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 
@@ -479,39 +475,6 @@ func (c *Client) StartManualTransferRuns(ctx context.Context, req *datatransferp
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.StartManualTransferRuns(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// EnableDataTransferService enables data transfer service for a given project. This
-// method requires the additional scope of
-// 'https://www.googleapis.com/auth/cloudplatformprojects'
-// to manage the cloud project permissions.
-func (c *Client) EnableDataTransferService(ctx context.Context, req *datatransferpb.EnableDataTransferServiceRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.EnableDataTransferService[0:len(c.CallOptions.EnableDataTransferService):len(c.CallOptions.EnableDataTransferService)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.client.EnableDataTransferService(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
-}
-
-// IsDataTransferServiceEnabled returns true if data transfer is enabled for a project.
-func (c *Client) IsDataTransferServiceEnabled(ctx context.Context, req *datatransferpb.IsDataTransferServiceEnabledRequest, opts ...gax.CallOption) (*datatransferpb.IsDataTransferServiceEnabledResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.IsDataTransferServiceEnabled[0:len(c.CallOptions.IsDataTransferServiceEnabled):len(c.CallOptions.IsDataTransferServiceEnabled)], opts...)
-	var resp *datatransferpb.IsDataTransferServiceEnabledResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.IsDataTransferServiceEnabled(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

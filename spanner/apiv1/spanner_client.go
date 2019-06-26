@@ -65,7 +65,7 @@ func defaultCallOptions() *CallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.3,
 				})
@@ -76,7 +76,7 @@ func defaultCallOptions() *CallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.3,
 				})

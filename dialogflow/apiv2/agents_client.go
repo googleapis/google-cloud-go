@@ -45,6 +45,8 @@ type AgentsCallOptions struct {
 	ExportAgent  []gax.CallOption
 	ImportAgent  []gax.CallOption
 	RestoreAgent []gax.CallOption
+	SetAgent     []gax.CallOption
+	DeleteAgent  []gax.CallOption
 }
 
 func defaultAgentsClientOptions() []option.ClientOption {
@@ -76,6 +78,8 @@ func defaultAgentsCallOptions() *AgentsCallOptions {
 		ExportAgent:  retry[[2]string{"default", "idempotent"}],
 		ImportAgent:  retry[[2]string{"default", "non_idempotent"}],
 		RestoreAgent: retry[[2]string{"default", "idempotent"}],
+		SetAgent:     retry[[2]string{"default", "non_idempotent"}],
+		DeleteAgent:  retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 
@@ -116,7 +120,7 @@ type AgentsClient struct {
 // You can create an agent using both Dialogflow Standard Edition and
 // Dialogflow Enterprise Edition. For details, see
 // Dialogflow
-// Editions (at https://cloud.google.com/dialogflow-enterprise/docs/editions).
+// Editions (at https://cloud.google.com/dialogflow/docs/editions).
 //
 // You can save your agent for backup or versioning by exporting the agent by
 // using the [ExportAgent][google.cloud.dialogflow.v2.Agents.ExportAgent] method. You can import a saved
@@ -124,13 +128,13 @@ type AgentsClient struct {
 //
 // Dialogflow provides several
 // prebuilt
-// agents (at https://cloud.google.com/dialogflow-enterprise/docs/agents-prebuilt)
+// agents (at https://cloud.google.com/dialogflow/docs/agents-prebuilt)
 // for common conversation scenarios such as determining a date and time,
 // converting currency, and so on.
 //
 // For more information about agents, see the
 // Dialogflow
-// documentation (at https://cloud.google.com/dialogflow-enterprise/docs/agents-overview).
+// documentation (at https://cloud.google.com/dialogflow/docs/agents-overview).
 func NewAgentsClient(ctx context.Context, opts ...option.ClientOption) (*AgentsClient, error) {
 	conn, err := transport.DialGRPC(ctx, append(defaultAgentsClientOptions(), opts...)...)
 	if err != nil {
@@ -328,6 +332,36 @@ func (c *AgentsClient) RestoreAgent(ctx context.Context, req *dialogflowpb.Resto
 	return &RestoreAgentOperation{
 		lro: longrunning.InternalNewOperation(c.LROClient, resp),
 	}, nil
+}
+
+// SetAgent creates/updates the specified agent.
+func (c *AgentsClient) SetAgent(ctx context.Context, req *dialogflowpb.SetAgentRequest, opts ...gax.CallOption) (*dialogflowpb.Agent, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "agent.parent", req.GetAgent().GetParent()))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.SetAgent[0:len(c.CallOptions.SetAgent):len(c.CallOptions.SetAgent)], opts...)
+	var resp *dialogflowpb.Agent
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.agentsClient.SetAgent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// DeleteAgent deletes the specified agent.
+func (c *AgentsClient) DeleteAgent(ctx context.Context, req *dialogflowpb.DeleteAgentRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.DeleteAgent[0:len(c.CallOptions.DeleteAgent):len(c.CallOptions.DeleteAgent)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.agentsClient.DeleteAgent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
 }
 
 // AgentIterator manages a stream of *dialogflowpb.Agent.
