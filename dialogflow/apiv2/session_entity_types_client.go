@@ -104,7 +104,7 @@ type SessionEntityTypesClient struct {
 //
 // For more information about entity types, see the
 // [Dialogflow
-// documentation](https://cloud.google.com/dialogflow-enterprise/docs/entities-overview).
+// documentation](https://cloud.google.com/dialogflow/docs/entities-overview).
 func NewSessionEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*SessionEntityTypesClient, error) {
 	conn, err := transport.DialGRPC(ctx, append(defaultSessionEntityTypesClientOptions(), opts...)...)
 	if err != nil {
