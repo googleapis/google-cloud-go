@@ -69,6 +69,6 @@ create_junit_xml() {
 trap create_junit_xml EXIT ERR
 
 # Run tests and tee output to log file, to be pushed to GCS as artifact.
-go test -race -v -timeout 45m ./... 2>&1 \
+go test -race -v -timeout 30m ./... 2>&1 \
   | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt
 
