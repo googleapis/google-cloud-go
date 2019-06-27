@@ -463,6 +463,8 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 }
 
 func TestIntegration_Objects(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1482")
+
 	// TODO(jba): Use subtests (Go 1.7).
 	ctx := context.Background()
 	client := testConfig(ctx, t)
