@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"net/url"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -178,7 +179,7 @@ func (c *KeyManagementClient) setGoogleClientInfo(keyval ...string) {
 
 // ListKeyRings lists [KeyRings][google.cloud.kms.v1.KeyRing].
 func (c *KeyManagementClient) ListKeyRings(ctx context.Context, req *kmspb.ListKeyRingsRequest, opts ...gax.CallOption) *KeyRingIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListKeyRings[0:len(c.CallOptions.ListKeyRings):len(c.CallOptions.ListKeyRings)], opts...)
 	it := &KeyRingIterator{}
@@ -217,7 +218,7 @@ func (c *KeyManagementClient) ListKeyRings(ctx context.Context, req *kmspb.ListK
 
 // ListImportJobs lists [ImportJobs][google.cloud.kms.v1.ImportJob].
 func (c *KeyManagementClient) ListImportJobs(ctx context.Context, req *kmspb.ListImportJobsRequest, opts ...gax.CallOption) *ImportJobIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListImportJobs[0:len(c.CallOptions.ListImportJobs):len(c.CallOptions.ListImportJobs)], opts...)
 	it := &ImportJobIterator{}
@@ -256,7 +257,7 @@ func (c *KeyManagementClient) ListImportJobs(ctx context.Context, req *kmspb.Lis
 
 // ListCryptoKeys lists [CryptoKeys][google.cloud.kms.v1.CryptoKey].
 func (c *KeyManagementClient) ListCryptoKeys(ctx context.Context, req *kmspb.ListCryptoKeysRequest, opts ...gax.CallOption) *CryptoKeyIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListCryptoKeys[0:len(c.CallOptions.ListCryptoKeys):len(c.CallOptions.ListCryptoKeys)], opts...)
 	it := &CryptoKeyIterator{}
@@ -295,7 +296,7 @@ func (c *KeyManagementClient) ListCryptoKeys(ctx context.Context, req *kmspb.Lis
 
 // ListCryptoKeyVersions lists [CryptoKeyVersions][google.cloud.kms.v1.CryptoKeyVersion].
 func (c *KeyManagementClient) ListCryptoKeyVersions(ctx context.Context, req *kmspb.ListCryptoKeyVersionsRequest, opts ...gax.CallOption) *CryptoKeyVersionIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListCryptoKeyVersions[0:len(c.CallOptions.ListCryptoKeyVersions):len(c.CallOptions.ListCryptoKeyVersions)], opts...)
 	it := &CryptoKeyVersionIterator{}
@@ -334,7 +335,7 @@ func (c *KeyManagementClient) ListCryptoKeyVersions(ctx context.Context, req *km
 
 // GetKeyRing returns metadata for a given [KeyRing][google.cloud.kms.v1.KeyRing].
 func (c *KeyManagementClient) GetKeyRing(ctx context.Context, req *kmspb.GetKeyRingRequest, opts ...gax.CallOption) (*kmspb.KeyRing, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetKeyRing[0:len(c.CallOptions.GetKeyRing):len(c.CallOptions.GetKeyRing)], opts...)
 	var resp *kmspb.KeyRing
@@ -351,7 +352,7 @@ func (c *KeyManagementClient) GetKeyRing(ctx context.Context, req *kmspb.GetKeyR
 
 // GetImportJob returns metadata for a given [ImportJob][google.cloud.kms.v1.ImportJob].
 func (c *KeyManagementClient) GetImportJob(ctx context.Context, req *kmspb.GetImportJobRequest, opts ...gax.CallOption) (*kmspb.ImportJob, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetImportJob[0:len(c.CallOptions.GetImportJob):len(c.CallOptions.GetImportJob)], opts...)
 	var resp *kmspb.ImportJob
@@ -369,7 +370,7 @@ func (c *KeyManagementClient) GetImportJob(ctx context.Context, req *kmspb.GetIm
 // GetCryptoKey returns metadata for a given [CryptoKey][google.cloud.kms.v1.CryptoKey], as well as its
 // [primary][google.cloud.kms.v1.CryptoKey.primary] [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion].
 func (c *KeyManagementClient) GetCryptoKey(ctx context.Context, req *kmspb.GetCryptoKeyRequest, opts ...gax.CallOption) (*kmspb.CryptoKey, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetCryptoKey[0:len(c.CallOptions.GetCryptoKey):len(c.CallOptions.GetCryptoKey)], opts...)
 	var resp *kmspb.CryptoKey
@@ -386,7 +387,7 @@ func (c *KeyManagementClient) GetCryptoKey(ctx context.Context, req *kmspb.GetCr
 
 // GetCryptoKeyVersion returns metadata for a given [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion].
 func (c *KeyManagementClient) GetCryptoKeyVersion(ctx context.Context, req *kmspb.GetCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetCryptoKeyVersion[0:len(c.CallOptions.GetCryptoKeyVersion):len(c.CallOptions.GetCryptoKeyVersion)], opts...)
 	var resp *kmspb.CryptoKeyVersion
@@ -403,7 +404,7 @@ func (c *KeyManagementClient) GetCryptoKeyVersion(ctx context.Context, req *kmsp
 
 // CreateKeyRing create a new [KeyRing][google.cloud.kms.v1.KeyRing] in a given Project and Location.
 func (c *KeyManagementClient) CreateKeyRing(ctx context.Context, req *kmspb.CreateKeyRingRequest, opts ...gax.CallOption) (*kmspb.KeyRing, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateKeyRing[0:len(c.CallOptions.CreateKeyRing):len(c.CallOptions.CreateKeyRing)], opts...)
 	var resp *kmspb.KeyRing
@@ -422,7 +423,7 @@ func (c *KeyManagementClient) CreateKeyRing(ctx context.Context, req *kmspb.Crea
 //
 // [ImportJob.import_method][google.cloud.kms.v1.ImportJob.import_method] is required.
 func (c *KeyManagementClient) CreateImportJob(ctx context.Context, req *kmspb.CreateImportJobRequest, opts ...gax.CallOption) (*kmspb.ImportJob, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateImportJob[0:len(c.CallOptions.CreateImportJob):len(c.CallOptions.CreateImportJob)], opts...)
 	var resp *kmspb.ImportJob
@@ -443,7 +444,7 @@ func (c *KeyManagementClient) CreateImportJob(ctx context.Context, req *kmspb.Cr
 // [CryptoKey.version_template.algorithm][google.cloud.kms.v1.CryptoKeyVersionTemplate.algorithm]
 // are required.
 func (c *KeyManagementClient) CreateCryptoKey(ctx context.Context, req *kmspb.CreateCryptoKeyRequest, opts ...gax.CallOption) (*kmspb.CryptoKey, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateCryptoKey[0:len(c.CallOptions.CreateCryptoKey):len(c.CallOptions.CreateCryptoKey)], opts...)
 	var resp *kmspb.CryptoKey
@@ -464,7 +465,7 @@ func (c *KeyManagementClient) CreateCryptoKey(ctx context.Context, req *kmspb.Cr
 // [state][google.cloud.kms.v1.CryptoKeyVersion.state] will be set to
 // [ENABLED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.ENABLED].
 func (c *KeyManagementClient) CreateCryptoKeyVersion(ctx context.Context, req *kmspb.CreateCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateCryptoKeyVersion[0:len(c.CallOptions.CreateCryptoKeyVersion):len(c.CallOptions.CreateCryptoKeyVersion)], opts...)
 	var resp *kmspb.CryptoKeyVersion
@@ -485,7 +486,7 @@ func (c *KeyManagementClient) CreateCryptoKeyVersion(ctx context.Context, req *k
 // The version ID will be assigned the next sequential id within the
 // [CryptoKey][google.cloud.kms.v1.CryptoKey].
 func (c *KeyManagementClient) ImportCryptoKeyVersion(ctx context.Context, req *kmspb.ImportCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ImportCryptoKeyVersion[0:len(c.CallOptions.ImportCryptoKeyVersion):len(c.CallOptions.ImportCryptoKeyVersion)], opts...)
 	var resp *kmspb.CryptoKeyVersion
@@ -502,7 +503,7 @@ func (c *KeyManagementClient) ImportCryptoKeyVersion(ctx context.Context, req *k
 
 // UpdateCryptoKey update a [CryptoKey][google.cloud.kms.v1.CryptoKey].
 func (c *KeyManagementClient) UpdateCryptoKey(ctx context.Context, req *kmspb.UpdateCryptoKeyRequest, opts ...gax.CallOption) (*kmspb.CryptoKey, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "crypto_key.name", req.GetCryptoKey().GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "crypto_key.name", url.QueryEscape(req.GetCryptoKey().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateCryptoKey[0:len(c.CallOptions.UpdateCryptoKey):len(c.CallOptions.UpdateCryptoKey)], opts...)
 	var resp *kmspb.CryptoKey
@@ -525,7 +526,7 @@ func (c *KeyManagementClient) UpdateCryptoKey(ctx context.Context, req *kmspb.Up
 // method. See [DestroyCryptoKeyVersion][google.cloud.kms.v1.KeyManagementService.DestroyCryptoKeyVersion] and [RestoreCryptoKeyVersion][google.cloud.kms.v1.KeyManagementService.RestoreCryptoKeyVersion] to
 // move between other states.
 func (c *KeyManagementClient) UpdateCryptoKeyVersion(ctx context.Context, req *kmspb.UpdateCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "crypto_key_version.name", req.GetCryptoKeyVersion().GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "crypto_key_version.name", url.QueryEscape(req.GetCryptoKeyVersion().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateCryptoKeyVersion[0:len(c.CallOptions.UpdateCryptoKeyVersion):len(c.CallOptions.UpdateCryptoKeyVersion)], opts...)
 	var resp *kmspb.CryptoKeyVersion
@@ -544,7 +545,7 @@ func (c *KeyManagementClient) UpdateCryptoKeyVersion(ctx context.Context, req *k
 // The [CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose] must be
 // [ENCRYPT_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ENCRYPT_DECRYPT].
 func (c *KeyManagementClient) Encrypt(ctx context.Context, req *kmspb.EncryptRequest, opts ...gax.CallOption) (*kmspb.EncryptResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.Encrypt[0:len(c.CallOptions.Encrypt):len(c.CallOptions.Encrypt)], opts...)
 	var resp *kmspb.EncryptResponse
@@ -562,7 +563,7 @@ func (c *KeyManagementClient) Encrypt(ctx context.Context, req *kmspb.EncryptReq
 // Decrypt decrypts data that was protected by [Encrypt][google.cloud.kms.v1.KeyManagementService.Encrypt]. The [CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose]
 // must be [ENCRYPT_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ENCRYPT_DECRYPT].
 func (c *KeyManagementClient) Decrypt(ctx context.Context, req *kmspb.DecryptRequest, opts ...gax.CallOption) (*kmspb.DecryptResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.Decrypt[0:len(c.CallOptions.Decrypt):len(c.CallOptions.Decrypt)], opts...)
 	var resp *kmspb.DecryptResponse
@@ -581,7 +582,7 @@ func (c *KeyManagementClient) Decrypt(ctx context.Context, req *kmspb.DecryptReq
 //
 // Returns an error if called on an asymmetric key.
 func (c *KeyManagementClient) UpdateCryptoKeyPrimaryVersion(ctx context.Context, req *kmspb.UpdateCryptoKeyPrimaryVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKey, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateCryptoKeyPrimaryVersion[0:len(c.CallOptions.UpdateCryptoKeyPrimaryVersion):len(c.CallOptions.UpdateCryptoKeyPrimaryVersion)], opts...)
 	var resp *kmspb.CryptoKey
@@ -609,7 +610,7 @@ func (c *KeyManagementClient) UpdateCryptoKeyPrimaryVersion(ctx context.Context,
 // Before the [destroy_time][google.cloud.kms.v1.CryptoKeyVersion.destroy_time] is reached,
 // [RestoreCryptoKeyVersion][google.cloud.kms.v1.KeyManagementService.RestoreCryptoKeyVersion] may be called to reverse the process.
 func (c *KeyManagementClient) DestroyCryptoKeyVersion(ctx context.Context, req *kmspb.DestroyCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DestroyCryptoKeyVersion[0:len(c.CallOptions.DestroyCryptoKeyVersion):len(c.CallOptions.DestroyCryptoKeyVersion)], opts...)
 	var resp *kmspb.CryptoKeyVersion
@@ -632,7 +633,7 @@ func (c *KeyManagementClient) DestroyCryptoKeyVersion(ctx context.Context, req *
 // will be set to [DISABLED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.DISABLED],
 // and [destroy_time][google.cloud.kms.v1.CryptoKeyVersion.destroy_time] will be cleared.
 func (c *KeyManagementClient) RestoreCryptoKeyVersion(ctx context.Context, req *kmspb.RestoreCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.RestoreCryptoKeyVersion[0:len(c.CallOptions.RestoreCryptoKeyVersion):len(c.CallOptions.RestoreCryptoKeyVersion)], opts...)
 	var resp *kmspb.CryptoKeyVersion
@@ -652,7 +653,7 @@ func (c *KeyManagementClient) RestoreCryptoKeyVersion(ctx context.Context, req *
 // [ASYMMETRIC_SIGN][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ASYMMETRIC_SIGN] or
 // [ASYMMETRIC_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ASYMMETRIC_DECRYPT].
 func (c *KeyManagementClient) GetPublicKey(ctx context.Context, req *kmspb.GetPublicKeyRequest, opts ...gax.CallOption) (*kmspb.PublicKey, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetPublicKey[0:len(c.CallOptions.GetPublicKey):len(c.CallOptions.GetPublicKey)], opts...)
 	var resp *kmspb.PublicKey
@@ -671,7 +672,7 @@ func (c *KeyManagementClient) GetPublicKey(ctx context.Context, req *kmspb.GetPu
 // [GetPublicKey][google.cloud.kms.v1.KeyManagementService.GetPublicKey] corresponding to a [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] with
 // [CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose] ASYMMETRIC_DECRYPT.
 func (c *KeyManagementClient) AsymmetricDecrypt(ctx context.Context, req *kmspb.AsymmetricDecryptRequest, opts ...gax.CallOption) (*kmspb.AsymmetricDecryptResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.AsymmetricDecrypt[0:len(c.CallOptions.AsymmetricDecrypt):len(c.CallOptions.AsymmetricDecrypt)], opts...)
 	var resp *kmspb.AsymmetricDecryptResponse
@@ -690,7 +691,7 @@ func (c *KeyManagementClient) AsymmetricDecrypt(ctx context.Context, req *kmspb.
 // ASYMMETRIC_SIGN, producing a signature that can be verified with the public
 // key retrieved from [GetPublicKey][google.cloud.kms.v1.KeyManagementService.GetPublicKey].
 func (c *KeyManagementClient) AsymmetricSign(ctx context.Context, req *kmspb.AsymmetricSignRequest, opts ...gax.CallOption) (*kmspb.AsymmetricSignResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.AsymmetricSign[0:len(c.CallOptions.AsymmetricSign):len(c.CallOptions.AsymmetricSign)], opts...)
 	var resp *kmspb.AsymmetricSignResponse

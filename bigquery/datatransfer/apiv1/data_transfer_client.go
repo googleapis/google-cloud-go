@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"net/url"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -152,7 +153,7 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 // GetDataSource retrieves a supported data source and returns its settings,
 // which can be used for UI rendering.
 func (c *Client) GetDataSource(ctx context.Context, req *datatransferpb.GetDataSourceRequest, opts ...gax.CallOption) (*datatransferpb.DataSource, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetDataSource[0:len(c.CallOptions.GetDataSource):len(c.CallOptions.GetDataSource)], opts...)
 	var resp *datatransferpb.DataSource
@@ -170,7 +171,7 @@ func (c *Client) GetDataSource(ctx context.Context, req *datatransferpb.GetDataS
 // ListDataSources lists supported data sources and returns their settings,
 // which can be used for UI rendering.
 func (c *Client) ListDataSources(ctx context.Context, req *datatransferpb.ListDataSourcesRequest, opts ...gax.CallOption) *DataSourceIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListDataSources[0:len(c.CallOptions.ListDataSources):len(c.CallOptions.ListDataSources)], opts...)
 	it := &DataSourceIterator{}
@@ -209,7 +210,7 @@ func (c *Client) ListDataSources(ctx context.Context, req *datatransferpb.ListDa
 
 // CreateTransferConfig creates a new data transfer configuration.
 func (c *Client) CreateTransferConfig(ctx context.Context, req *datatransferpb.CreateTransferConfigRequest, opts ...gax.CallOption) (*datatransferpb.TransferConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateTransferConfig[0:len(c.CallOptions.CreateTransferConfig):len(c.CallOptions.CreateTransferConfig)], opts...)
 	var resp *datatransferpb.TransferConfig
@@ -227,7 +228,7 @@ func (c *Client) CreateTransferConfig(ctx context.Context, req *datatransferpb.C
 // UpdateTransferConfig updates a data transfer configuration.
 // All fields must be set, even if they are not updated.
 func (c *Client) UpdateTransferConfig(ctx context.Context, req *datatransferpb.UpdateTransferConfigRequest, opts ...gax.CallOption) (*datatransferpb.TransferConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "transfer_config.name", req.GetTransferConfig().GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "transfer_config.name", url.QueryEscape(req.GetTransferConfig().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateTransferConfig[0:len(c.CallOptions.UpdateTransferConfig):len(c.CallOptions.UpdateTransferConfig)], opts...)
 	var resp *datatransferpb.TransferConfig
@@ -245,7 +246,7 @@ func (c *Client) UpdateTransferConfig(ctx context.Context, req *datatransferpb.U
 // DeleteTransferConfig deletes a data transfer configuration,
 // including any associated transfer runs and logs.
 func (c *Client) DeleteTransferConfig(ctx context.Context, req *datatransferpb.DeleteTransferConfigRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteTransferConfig[0:len(c.CallOptions.DeleteTransferConfig):len(c.CallOptions.DeleteTransferConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -258,7 +259,7 @@ func (c *Client) DeleteTransferConfig(ctx context.Context, req *datatransferpb.D
 
 // GetTransferConfig returns information about a data transfer config.
 func (c *Client) GetTransferConfig(ctx context.Context, req *datatransferpb.GetTransferConfigRequest, opts ...gax.CallOption) (*datatransferpb.TransferConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetTransferConfig[0:len(c.CallOptions.GetTransferConfig):len(c.CallOptions.GetTransferConfig)], opts...)
 	var resp *datatransferpb.TransferConfig
@@ -275,7 +276,7 @@ func (c *Client) GetTransferConfig(ctx context.Context, req *datatransferpb.GetT
 
 // ListTransferConfigs returns information about all data transfers in the project.
 func (c *Client) ListTransferConfigs(ctx context.Context, req *datatransferpb.ListTransferConfigsRequest, opts ...gax.CallOption) *TransferConfigIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListTransferConfigs[0:len(c.CallOptions.ListTransferConfigs):len(c.CallOptions.ListTransferConfigs)], opts...)
 	it := &TransferConfigIterator{}
@@ -318,7 +319,7 @@ func (c *Client) ListTransferConfigs(ctx context.Context, req *datatransferpb.Li
 // Note that runs are created per UTC time in the time range.
 // DEPRECATED: use StartManualTransferRuns instead.
 func (c *Client) ScheduleTransferRuns(ctx context.Context, req *datatransferpb.ScheduleTransferRunsRequest, opts ...gax.CallOption) (*datatransferpb.ScheduleTransferRunsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ScheduleTransferRuns[0:len(c.CallOptions.ScheduleTransferRuns):len(c.CallOptions.ScheduleTransferRuns)], opts...)
 	var resp *datatransferpb.ScheduleTransferRunsResponse
@@ -335,7 +336,7 @@ func (c *Client) ScheduleTransferRuns(ctx context.Context, req *datatransferpb.S
 
 // GetTransferRun returns information about the particular transfer run.
 func (c *Client) GetTransferRun(ctx context.Context, req *datatransferpb.GetTransferRunRequest, opts ...gax.CallOption) (*datatransferpb.TransferRun, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetTransferRun[0:len(c.CallOptions.GetTransferRun):len(c.CallOptions.GetTransferRun)], opts...)
 	var resp *datatransferpb.TransferRun
@@ -352,7 +353,7 @@ func (c *Client) GetTransferRun(ctx context.Context, req *datatransferpb.GetTran
 
 // DeleteTransferRun deletes the specified transfer run.
 func (c *Client) DeleteTransferRun(ctx context.Context, req *datatransferpb.DeleteTransferRunRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteTransferRun[0:len(c.CallOptions.DeleteTransferRun):len(c.CallOptions.DeleteTransferRun)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -365,7 +366,7 @@ func (c *Client) DeleteTransferRun(ctx context.Context, req *datatransferpb.Dele
 
 // ListTransferRuns returns information about running and completed jobs.
 func (c *Client) ListTransferRuns(ctx context.Context, req *datatransferpb.ListTransferRunsRequest, opts ...gax.CallOption) *TransferRunIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListTransferRuns[0:len(c.CallOptions.ListTransferRuns):len(c.CallOptions.ListTransferRuns)], opts...)
 	it := &TransferRunIterator{}
@@ -404,7 +405,7 @@ func (c *Client) ListTransferRuns(ctx context.Context, req *datatransferpb.ListT
 
 // ListTransferLogs returns user facing log messages for the data transfer run.
 func (c *Client) ListTransferLogs(ctx context.Context, req *datatransferpb.ListTransferLogsRequest, opts ...gax.CallOption) *TransferMessageIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListTransferLogs[0:len(c.CallOptions.ListTransferLogs):len(c.CallOptions.ListTransferLogs)], opts...)
 	it := &TransferMessageIterator{}
@@ -448,7 +449,7 @@ func (c *Client) ListTransferLogs(ctx context.Context, req *datatransferpb.ListT
 // token for the particular user, which is a pre-requisite before user can
 // create a transfer config.
 func (c *Client) CheckValidCreds(ctx context.Context, req *datatransferpb.CheckValidCredsRequest, opts ...gax.CallOption) (*datatransferpb.CheckValidCredsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CheckValidCreds[0:len(c.CallOptions.CheckValidCreds):len(c.CallOptions.CheckValidCreds)], opts...)
 	var resp *datatransferpb.CheckValidCredsResponse
@@ -468,7 +469,7 @@ func (c *Client) CheckValidCreds(ctx context.Context, req *datatransferpb.CheckV
 // run_time is between start_time (inclusive) and end_time (exclusive), or for
 // a specific run_time.
 func (c *Client) StartManualTransferRuns(ctx context.Context, req *datatransferpb.StartManualTransferRunsRequest, opts ...gax.CallOption) (*datatransferpb.StartManualTransferRunsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.StartManualTransferRuns[0:len(c.CallOptions.StartManualTransferRuns):len(c.CallOptions.StartManualTransferRuns)], opts...)
 	var resp *datatransferpb.StartManualTransferRunsResponse
