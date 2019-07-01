@@ -1,5 +1,21 @@
 # Changes
 
+## v0.41.0
+
+- bigtable:
+  - Check results from PredicateFilter in bttest, which fixes certain false matches.
+- profiler:
+  - debugLog checks user defined logging options before logging.
+- spanner:
+  - PartitionedUpdates respect query parameters.
+  - StartInstance allows specifying cloud API access scopes.
+- bigquery:
+  - Use empty slice instead of nil for ValueSaver, fixing an issue with zero-length, repeated, nested fields causing panics.
+- firestore:
+  - Return same number of snapshots as doc refs (in the form of duplicate records) during GetAll.
+- replay:
+  - Change references to IPv4 addresses to localhost, making replay compatible with IPv6.
+
 ## v0.40.0
 
 - all:
