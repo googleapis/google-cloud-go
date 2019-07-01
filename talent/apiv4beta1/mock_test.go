@@ -2531,11 +2531,13 @@ func TestProfileServiceDeleteProfileError(t *testing.T) {
 func TestProfileServiceSearchProfiles(t *testing.T) {
 	var estimatedTotalSize int64 = 1882144769
 	var nextPageToken string = ""
+	var resultSetId string = "resultSetId-770306950"
 	var summarizedProfilesElement *talentpb.SummarizedProfile = &talentpb.SummarizedProfile{}
 	var summarizedProfiles = []*talentpb.SummarizedProfile{summarizedProfilesElement}
 	var expectedResponse = &talentpb.SearchProfilesResponse{
 		EstimatedTotalSize: estimatedTotalSize,
 		NextPageToken:      nextPageToken,
+		ResultSetId:        resultSetId,
 		SummarizedProfiles: summarizedProfiles,
 	}
 
