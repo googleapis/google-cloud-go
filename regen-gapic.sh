@@ -28,6 +28,7 @@ google/iam/artman_iam_admin.yaml
 google/cloud/asset/artman_cloudasset_v1beta1.yaml
 google/cloud/asset/artman_cloudasset_v1.yaml
 google/iam/credentials/artman_iamcredentials_v1.yaml
+google/cloud/automl/artman_automl_v1beta1.yaml
 google/cloud/bigquery/datatransfer/artman_bigquerydatatransfer.yaml
 google/cloud/bigquery/storage/artman_bigquerystorage_v1beta1.yaml
 google/cloud/dataproc/artman_dataproc_v1.yaml
