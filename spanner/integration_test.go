@@ -42,13 +42,13 @@ import (
 )
 
 var (
-	// testProjectID specifies the project used for testing.
-	// It can be changed by setting environment variable GCLOUD_TESTS_GOLANG_PROJECT_ID.
+	// testProjectID specifies the project used for testing. It can be changed
+	// by setting environment variable GCLOUD_TESTS_GOLANG_PROJECT_ID.
 	testProjectID = testutil.ProjID()
 
 	dbNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 
-	// TODO(deklerk) When we can programmatically create instances, we should use
+	// TODO(deklerk): When we can programmatically create instances, we should use
 	// uid.New as the test instance name.
 	// testInstanceID specifies the Cloud Spanner instance used for testing.
 	testInstanceID = "go-integration-test"
@@ -132,7 +132,7 @@ func TestMain(m *testing.M) {
 
 func initIntegrationTests() func() {
 	ctx := context.Background()
-	flag.Parse() // needed for testing.Short()
+	flag.Parse() // Needed for testing.Short().
 	noop := func() {}
 
 	if testing.Short() {
@@ -192,21 +192,20 @@ func TestIntegration_SingleUse(t *testing.T) {
 		}
 	}
 
-	// For testing timestamp bound staleness.
-	<-time.After(time.Second)
-
 	// Test reading rows with different timestamp bounds.
 	for i, test := range []struct {
+		name    string
 		want    [][]interface{}
 		tb      TimestampBound
 		checkTs func(time.Time) error
 	}{
 		{
-			// strong
-			[][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}},
-			StrongRead(),
-			func(ts time.Time) error {
-				// writes[3] is the last write, all subsequent strong read should have a timestamp larger than that.
+			name: "strong",
+			want: [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}},
+			tb:   StrongRead(),
+			checkTs: func(ts time.Time) error {
+				// writes[3] is the last write, all subsequent strong read
+				// should have a timestamp larger than that.
 				if ts.Before(writes[3].ts) {
 					return fmt.Errorf("read got timestamp %v, want it to be no later than %v", ts, writes[3].ts)
 				}
@@ -214,10 +213,10 @@ func TestIntegration_SingleUse(t *testing.T) {
 			},
 		},
 		{
-			// min_read_timestamp
-			[][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}},
-			MinReadTimestamp(writes[3].ts),
-			func(ts time.Time) error {
+			name: "min_read_timestamp",
+			want: [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}},
+			tb:   MinReadTimestamp(writes[3].ts),
+			checkTs: func(ts time.Time) error {
 				if ts.Before(writes[3].ts) {
 					return fmt.Errorf("read got timestamp %v, want it to be no later than %v", ts, writes[3].ts)
 				}
@@ -225,10 +224,10 @@ func TestIntegration_SingleUse(t *testing.T) {
 			},
 		},
 		{
-			// max_staleness
-			[][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}},
-			MaxStaleness(time.Second),
-			func(ts time.Time) error {
+			name: "max_staleness",
+			want: [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}},
+			tb:   MaxStaleness(time.Second),
+			checkTs: func(ts time.Time) error {
 				if ts.Before(writes[3].ts) {
 					return fmt.Errorf("read got timestamp %v, want it to be no later than %v", ts, writes[3].ts)
 				}
@@ -236,10 +235,10 @@ func TestIntegration_SingleUse(t *testing.T) {
 			},
 		},
 		{
-			// read_timestamp
-			[][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}},
-			ReadTimestamp(writes[2].ts),
-			func(ts time.Time) error {
+			name: "read_timestamp",
+			want: [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}},
+			tb:   ReadTimestamp(writes[2].ts),
+			checkTs: func(ts time.Time) error {
 				if ts != writes[2].ts {
 					return fmt.Errorf("read got timestamp %v, want %v", ts, writes[2].ts)
 				}
@@ -247,12 +246,12 @@ func TestIntegration_SingleUse(t *testing.T) {
 			},
 		},
 		{
-			// exact_staleness
-			nil,
+			name: "exact_staleness",
+			want: nil,
 			// Specify a staleness which should be already before this test because
 			// context timeout is set to be 10s.
-			ExactStaleness(11 * time.Second),
-			func(ts time.Time) error {
+			tb: ExactStaleness(11 * time.Second),
+			checkTs: func(ts time.Time) error {
 				if ts.After(writes[0].ts) {
 					return fmt.Errorf("read got timestamp %v, want it to be no earlier than %v", ts, writes[0].ts)
 				}
@@ -260,106 +259,135 @@ func TestIntegration_SingleUse(t *testing.T) {
 			},
 		},
 	} {
-		// SingleUse.Query
-		su := client.Single().WithTimestampBound(test.tb)
-		got, err := readAll(su.Query(
-			ctx,
-			Statement{
-				"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4)",
-				map[string]interface{}{"id1": int64(1), "id3": int64(3), "id4": int64(4)},
-			}))
-		if err != nil {
-			t.Errorf("%d: SingleUse.Query returns error %v, want nil", i, err)
-		}
-		if !testEqual(got, test.want) {
-			t.Errorf("%d: got unexpected result from SingleUse.Query: %v, want %v", i, got, test.want)
-		}
-		rts, err := su.Timestamp()
-		if err != nil {
-			t.Errorf("%d: SingleUse.Query doesn't return a timestamp, error: %v", i, err)
-		}
-		if err := test.checkTs(rts); err != nil {
-			t.Errorf("%d: SingleUse.Query doesn't return expected timestamp: %v", i, err)
-		}
-		// SingleUse.Read
-		su = client.Single().WithTimestampBound(test.tb)
-		got, err = readAll(su.Read(ctx, "Singers", KeySets(Key{1}, Key{3}, Key{4}), []string{"SingerId", "FirstName", "LastName"}))
-		if err != nil {
-			t.Errorf("%d: SingleUse.Read returns error %v, want nil", i, err)
-		}
-		if !testEqual(got, test.want) {
-			t.Errorf("%d: got unexpected result from SingleUse.Read: %v, want %v", i, got, test.want)
-		}
-		rts, err = su.Timestamp()
-		if err != nil {
-			t.Errorf("%d: SingleUse.Read doesn't return a timestamp, error: %v", i, err)
-		}
-		if err := test.checkTs(rts); err != nil {
-			t.Errorf("%d: SingleUse.Read doesn't return expected timestamp: %v", i, err)
-		}
-		// SingleUse.ReadRow
-		got = nil
-		for _, k := range []Key{{1}, {3}, {4}} {
-			su = client.Single().WithTimestampBound(test.tb)
-			r, err := su.ReadRow(ctx, "Singers", k, []string{"SingerId", "FirstName", "LastName"})
+		t.Run(test.name, func(t *testing.T) {
+			// SingleUse.Query
+			su := client.Single().WithTimestampBound(test.tb)
+			got, err := readAll(su.Query(
+				ctx,
+				Statement{
+					"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4)",
+					map[string]interface{}{"id1": int64(1), "id3": int64(3), "id4": int64(4)},
+				}))
 			if err != nil {
-				continue
+				t.Fatalf("%d: SingleUse.Query returns error %v, want nil", i, err)
 			}
-			v, err := rowToValues(r)
-			if err != nil {
-				continue
+			if !testEqual(got, test.want) {
+				t.Fatalf("%d: got unexpected result from SingleUse.Query: %v, want %v", i, got, test.want)
 			}
-			got = append(got, v)
-			rts, err = su.Timestamp()
+			rts, err := su.Timestamp()
 			if err != nil {
-				t.Errorf("%d: SingleUse.ReadRow(%v) doesn't return a timestamp, error: %v", i, k, err)
+				t.Fatalf("%d: SingleUse.Query doesn't return a timestamp, error: %v", i, err)
 			}
 			if err := test.checkTs(rts); err != nil {
-				t.Errorf("%d: SingleUse.ReadRow(%v) doesn't return expected timestamp: %v", i, k, err)
+				t.Fatalf("%d: SingleUse.Query doesn't return expected timestamp: %v", i, err)
 			}
-		}
-		if !testEqual(got, test.want) {
-			t.Errorf("%d: got unexpected results from SingleUse.ReadRow: %v, want %v", i, got, test.want)
-		}
-		// SingleUse.ReadUsingIndex
-		su = client.Single().WithTimestampBound(test.tb)
-		got, err = readAll(su.ReadUsingIndex(ctx, "Singers", "SingerByName", KeySets(Key{"Marc", "Foo"}, Key{"Alpha", "Beta"}, Key{"Last", "End"}), []string{"SingerId", "FirstName", "LastName"}))
-		if err != nil {
-			t.Errorf("%d: SingleUse.ReadUsingIndex returns error %v, want nil", i, err)
-		}
-		// The results from ReadUsingIndex is sorted by the index rather than primary key.
-		if len(got) != len(test.want) {
-			t.Errorf("%d: got unexpected result from SingleUse.ReadUsingIndex: %v, want %v", i, got, test.want)
-		}
-		for j, g := range got {
-			if j > 0 {
-				prev := got[j-1][1].(string) + got[j-1][2].(string)
-				curr := got[j][1].(string) + got[j][2].(string)
-				if strings.Compare(prev, curr) > 0 {
-					t.Errorf("%d: SingleUse.ReadUsingIndex fails to order rows by index keys, %v should be after %v", i, got[j-1], got[j])
+			// SingleUse.Read
+			su = client.Single().WithTimestampBound(test.tb)
+			got, err = readAll(su.Read(ctx, "Singers", KeySets(Key{1}, Key{3}, Key{4}), []string{"SingerId", "FirstName", "LastName"}))
+			if err != nil {
+				t.Fatalf("%d: SingleUse.Read returns error %v, want nil", i, err)
+			}
+			if !testEqual(got, test.want) {
+				t.Fatalf("%d: got unexpected result from SingleUse.Read: %v, want %v", i, got, test.want)
+			}
+			rts, err = su.Timestamp()
+			if err != nil {
+				t.Fatalf("%d: SingleUse.Read doesn't return a timestamp, error: %v", i, err)
+			}
+			if err := test.checkTs(rts); err != nil {
+				t.Fatalf("%d: SingleUse.Read doesn't return expected timestamp: %v", i, err)
+			}
+			// SingleUse.ReadRow
+			got = nil
+			for _, k := range []Key{{1}, {3}, {4}} {
+				su = client.Single().WithTimestampBound(test.tb)
+				r, err := su.ReadRow(ctx, "Singers", k, []string{"SingerId", "FirstName", "LastName"})
+				if err != nil {
+					continue
+				}
+				v, err := rowToValues(r)
+				if err != nil {
+					continue
+				}
+				got = append(got, v)
+				rts, err = su.Timestamp()
+				if err != nil {
+					t.Fatalf("%d: SingleUse.ReadRow(%v) doesn't return a timestamp, error: %v", i, k, err)
+				}
+				if err := test.checkTs(rts); err != nil {
+					t.Fatalf("%d: SingleUse.ReadRow(%v) doesn't return expected timestamp: %v", i, k, err)
 				}
 			}
-			found := false
-			for _, w := range test.want {
-				if testEqual(g, w) {
-					found = true
+			if !testEqual(got, test.want) {
+				t.Fatalf("%d: got unexpected results from SingleUse.ReadRow: %v, want %v", i, got, test.want)
+			}
+			// SingleUse.ReadUsingIndex
+			su = client.Single().WithTimestampBound(test.tb)
+			got, err = readAll(su.ReadUsingIndex(ctx, "Singers", "SingerByName", KeySets(Key{"Marc", "Foo"}, Key{"Alpha", "Beta"}, Key{"Last", "End"}), []string{"SingerId", "FirstName", "LastName"}))
+			if err != nil {
+				t.Fatalf("%d: SingleUse.ReadUsingIndex returns error %v, want nil", i, err)
+			}
+			// The results from ReadUsingIndex is sorted by the index rather than primary key.
+			if len(got) != len(test.want) {
+				t.Fatalf("%d: got unexpected result from SingleUse.ReadUsingIndex: %v, want %v", i, got, test.want)
+			}
+			for j, g := range got {
+				if j > 0 {
+					prev := got[j-1][1].(string) + got[j-1][2].(string)
+					curr := got[j][1].(string) + got[j][2].(string)
+					if strings.Compare(prev, curr) > 0 {
+						t.Fatalf("%d: SingleUse.ReadUsingIndex fails to order rows by index keys, %v should be after %v", i, got[j-1], got[j])
+					}
+				}
+				found := false
+				for _, w := range test.want {
+					if testEqual(g, w) {
+						found = true
+					}
+				}
+				if !found {
+					t.Fatalf("%d: got unexpected result from SingleUse.ReadUsingIndex: %v, want %v", i, got, test.want)
+					break
 				}
 			}
-			if !found {
-				t.Errorf("%d: got unexpected result from SingleUse.ReadUsingIndex: %v, want %v", i, got, test.want)
-				break
+			rts, err = su.Timestamp()
+			if err != nil {
+				t.Fatalf("%d: SingleUse.ReadUsingIndex doesn't return a timestamp, error: %v", i, err)
 			}
-		}
-		rts, err = su.Timestamp()
-		if err != nil {
-			t.Errorf("%d: SingleUse.ReadUsingIndex doesn't return a timestamp, error: %v", i, err)
-		}
-		if err := test.checkTs(rts); err != nil {
-			t.Errorf("%d: SingleUse.ReadUsingIndex doesn't return expected timestamp: %v", i, err)
+			if err := test.checkTs(rts); err != nil {
+				t.Fatalf("%d: SingleUse.ReadUsingIndex doesn't return expected timestamp: %v", i, err)
+			}
+		})
+	}
+}
+
+func TestIntegration_SingleUse_ReadingWithLimit(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+	// Set up testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
+	defer cleanup()
+
+	writes := []struct {
+		row []interface{}
+		ts  time.Time
+	}{
+		{row: []interface{}{1, "Marc", "Foo"}},
+		{row: []interface{}{2, "Tars", "Bar"}},
+		{row: []interface{}{3, "Alpha", "Beta"}},
+		{row: []interface{}{4, "Last", "End"}},
+	}
+	// Try to write four rows through the Apply API.
+	for i, w := range writes {
+		var err error
+		m := InsertOrUpdate("Singers",
+			[]string{"SingerId", "FirstName", "LastName"},
+			w.row)
+		if writes[i].ts, err = client.Apply(ctx, []*Mutation{m}, ApplyAtLeastOnce()); err != nil {
+			t.Fatal(err)
 		}
 	}
 
-	// Reading with limit.
 	su := client.Single()
 	const limit = 1
 	gotRows, err := readAll(su.ReadWithOptions(ctx, "Singers", KeySets(Key{1}, Key{3}, Key{4}),
@@ -370,7 +398,6 @@ func TestIntegration_SingleUse(t *testing.T) {
 	if got, want := len(gotRows), limit; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-
 }
 
 // Test ReadOnlyTransaction. The testsuite is mostly like SingleUse, except it
@@ -411,8 +438,8 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 		tb      TimestampBound
 		checkTs func(time.Time) error
 	}{
-		// Note: min_read_timestamp and max_staleness are not supported by ReadOnlyTransaction. See
-		// API document for more details.
+		// Note: min_read_timestamp and max_staleness are not supported by
+		// ReadOnlyTransaction. See API document for more details.
 		{
 			// strong
 			[][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}},
@@ -438,8 +465,8 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 		{
 			// exact_staleness
 			nil,
-			// Specify a staleness which should be already before this test because
-			// context timeout is set to be 10s.
+			// Specify a staleness which should be already before this test
+			// because context timeout is set to be 10s.
 			ExactStaleness(11 * time.Second),
 			func(ts time.Time) error {
 				if ts.After(writes[0].ts) {
@@ -520,7 +547,8 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 		if err != nil {
 			t.Errorf("%d: ReadOnlyTransaction.ReadUsingIndex returns error %v, want nil", i, err)
 		}
-		// The results from ReadUsingIndex is sorted by the index rather than primary key.
+		// The results from ReadUsingIndex is sorted by the index rather than
+		// primary key.
 		if len(got) != len(test.want) {
 			t.Errorf("%d: got unexpected result from ReadOnlyTransaction.ReadUsingIndex: %v, want %v", i, got, test.want)
 		}
@@ -557,7 +585,8 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 	}
 }
 
-// Test ReadOnlyTransaction with different timestamp bound when there's an update at the same time.
+// Test ReadOnlyTransaction with different timestamp bound when there's an
+// update at the same time.
 func TestIntegration_UpdateDuringRead(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -763,7 +792,7 @@ func TestIntegration_EarlyTimestamp(t *testing.T) {
 	txn := client.Single()
 	iter := txn.Read(ctx, testTable, AllKeys(), testTableColumns)
 	defer iter.Stop()
-	// In  single-use transaction, we should get an error before reading anything.
+	// In single-use transaction, we should get an error before reading anything.
 	if _, err := txn.Timestamp(); err == nil {
 		t.Error("wanted error, got nil")
 	}
@@ -1291,7 +1320,8 @@ func TestIntegration_ReadErrors(t *testing.T) {
 	}
 }
 
-// Test TransactionRunner. Test that transactions are aborted and retried as expected.
+// Test TransactionRunner. Test that transactions are aborted and retried as
+// expected.
 func TestIntegration_TransactionRunner(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -1314,8 +1344,9 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 	}
 
 	// Test 2: Expect abort and retry.
-	// We run two ReadWriteTransactions concurrently and make txn1 abort txn2 by committing writes to the column txn2 have read,
-	// and expect the following read to abort and txn2 retries.
+	// We run two ReadWriteTransactions concurrently and make txn1 abort txn2 by
+	// committing writes to the column txn2 have read, and expect the following
+	// read to abort and txn2 retries.
 
 	// Set up two accounts
 	accounts := []*Mutation{
@@ -1361,7 +1392,8 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 			if e != nil {
 				return e
 			}
-			// txn 1 can abort, in that case we skip closing the channel on retry.
+			// txn 1 can abort, in that case we skip closing the channel on
+			// retry.
 			once.Do(func() { close(cTxn1Start) })
 			e = tx.BufferWrite([]*Mutation{
 				Update("Accounts", []string{"AccountId", "Balance"}, []interface{}{int64(1), int64(b + 1)})})
@@ -1396,10 +1428,10 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 			once.Do(func() { close(cTxn2Start) })
 			// Wait until txn 1 successfully commits.
 			<-cTxn1Commit
-			// Txn1 has committed and written a balance to the account.
-			// Now this transaction (txn2) reads and re-writes the balance.
-			// The first time through, it will abort because it overlaps with txn1.
-			// Then it will retry after txn1 commits, and succeed.
+			// Txn1 has committed and written a balance to the account. Now this
+			// transaction (txn2) reads and re-writes the balance. The first
+			// time through, it will abort because it overlaps with txn1. Then
+			// it will retry after txn1 commits, and succeed.
 			if b2, e = readBalance(tx, 2, true); e != nil {
 				return e
 			}
@@ -1541,7 +1573,7 @@ func TestIntegration_BatchRead(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Reconstruct BatchReadOnlyTransactionID and execute partitions
+	// Reconstruct BatchReadOnlyTransactionID and execute partitions.
 	var (
 		tid2      BatchReadOnlyTransactionID
 		data      []byte
@@ -1555,7 +1587,7 @@ func TestIntegration_BatchRead(t *testing.T) {
 	}
 	txn2 := client2.BatchReadOnlyTransactionFromID(tid2)
 
-	// Execute Partitions and compare results
+	// Execute Partitions and compare results.
 	for i, p := range partitions {
 		iter := txn.Execute(ctx, p)
 		defer iter.Stop()
@@ -1611,7 +1643,7 @@ func TestIntegration_BROTNormal(t *testing.T) {
 	if _, err := txn.PartitionRead(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}); err != nil {
 		t.Fatal(err)
 	}
-	// Normal query should work with BatchReadOnlyTransaction
+	// Normal query should work with BatchReadOnlyTransaction.
 	stmt2 := Statement{SQL: "SELECT 1"}
 	iter := txn.Query(ctx, stmt2)
 	defer iter.Stop()
@@ -1641,7 +1673,8 @@ func TestIntegration_CommitTimestamp(t *testing.T) {
 		err                  error
 	)
 
-	// Apply mutation in sequence, expect to see commit timestamp in good order, check also the commit timestamp returned
+	// Apply mutation in sequence, expect to see commit timestamp in good order,
+	// check also the commit timestamp returned
 	for _, it := range []struct {
 		k string
 		t *time.Time
@@ -1685,7 +1718,7 @@ func TestIntegration_CommitTimestamp(t *testing.T) {
 		t.Errorf("Expect commit timestamp returned and read to match for txn2, got %v and %v.", cts2, ts2)
 	}
 
-	// Try writing a timestamp in the future to commit timestamp, expect error
+	// Try writing a timestamp in the future to commit timestamp, expect error.
 	_, err = client.Apply(ctx, []*Mutation{InsertOrUpdate("TestTable", []string{"Key", "Ts"}, []interface{}{"a", time.Now().Add(time.Hour)})}, ApplyAtLeastOnce())
 	if msg, ok := matchError(err, codes.FailedPrecondition, "Cannot write timestamps in the future"); !ok {
 		t.Error(msg)
@@ -1711,7 +1744,8 @@ func TestIntegration_DML(t *testing.T) {
 		return fn, nil
 	}
 
-	// Function that reads multiple rows' first names from outside a read/write transaction.
+	// Function that reads multiple rows' first names from outside a read/write
+	// transaction.
 	readFirstNames := func(keys ...int) []string {
 		var ks []KeySet
 		for _, k := range keys {
@@ -1832,11 +1866,10 @@ func TestIntegration_DML(t *testing.T) {
 		if err != nil {
 			return err
 		}
-		tx.BufferWrite([]*Mutation{
+		return tx.BufferWrite([]*Mutation{
 			Insert("Singers", []string{"SingerId", "FirstName", "LastName"},
 				[]interface{}{4, "Andy", "Irvine"}),
 		})
-		return nil
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -2039,6 +2072,8 @@ func TestIntegration_PDML(t *testing.T) {
 		{1, "Umm", "Kulthum"},
 		{2, "Eduard", "Khil"},
 		{3, "Audra", "McDonald"},
+		{4, "Enrique", "Iglesias"},
+		{5, "Shakira", "Ripoll"},
 	} {
 		muts = append(muts, Insert("Singers", columns, row))
 	}
@@ -2048,13 +2083,16 @@ func TestIntegration_PDML(t *testing.T) {
 	// Identifiers in PDML statements must be fully qualified.
 	// TODO(jba): revisit the above.
 	count, err := client.PartitionedUpdate(ctx, Statement{
-		SQL: `UPDATE Singers SET Singers.FirstName = "changed" WHERE Singers.SingerId >= 1 AND Singers.SingerId <= 3`,
+		SQL: `UPDATE Singers SET Singers.FirstName = "changed" WHERE Singers.SingerId >= 1 AND Singers.SingerId <= @end`,
+		Params: map[string]interface{}{
+			"end": 3,
+		},
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if want := int64(3); count != want {
-		t.Errorf("got %d, want %d", count, want)
+		t.Fatalf("got %d, want %d", count, want)
 	}
 	got, err := readAll(client.Single().Read(ctx, "Singers", AllKeys(), columns))
 	if err != nil {
@@ -2064,6 +2102,8 @@ func TestIntegration_PDML(t *testing.T) {
 		{int64(1), "changed", "Kulthum"},
 		{int64(2), "changed", "Khil"},
 		{int64(3), "changed", "McDonald"},
+		{int64(4), "Enrique", "Iglesias"},
+		{int64(5), "Shakira", "Ripoll"},
 	}
 	if !testEqual(got, want) {
 		t.Errorf("\ngot %v\nwant%v", got, want)
@@ -2190,7 +2230,7 @@ func TestBatchDML_TwoStatements(t *testing.T) {
 	}
 }
 
-// TODO(deklerk) this currently does not work because the transaction appears to
+// TODO(deklerk): this currently does not work because the transaction appears to
 // get rolled back after a single statement fails. b/120158761
 func TestBatchDML_Error(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2299,7 +2339,7 @@ func cleanupDatabases() {
 		if err != nil {
 			panic(err)
 		}
-		// TODO(deklerk) When we have the ability to programmatically create
+		// TODO(deklerk): When we have the ability to programmatically create
 		// instances, we can create an instance with uid.New and delete all
 		// tables in it. For now, we rely on matching prefixes.
 		if dbNameSpace.Older(db.Name, expireAge) {

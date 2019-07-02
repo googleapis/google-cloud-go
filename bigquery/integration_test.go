@@ -59,8 +59,8 @@ var (
 			{Name: "bool", Type: BooleanFieldType},
 		}},
 	}
-	testTableExpiration  time.Time
-	datasetIDs, tableIDs *uid.Space
+	testTableExpiration            time.Time
+	datasetIDs, tableIDs, modelIDs *uid.Space
 )
 
 // Note: integration tests cannot be run in parallel, because TestIntegration_Location
@@ -192,6 +192,7 @@ func initTestState(client *Client, t time.Time) func() {
 	opts := &uid.Options{Sep: '_', Time: t}
 	datasetIDs = uid.NewSpace("dataset", opts)
 	tableIDs = uid.NewSpace("table", opts)
+	modelIDs = uid.NewSpace("model", opts)
 	testTableExpiration = t.Add(10 * time.Minute).Round(time.Second)
 	// For replayability, seed the random source with t.
 	Seed(t.UnixNano())
@@ -253,7 +254,6 @@ func TestIntegration_TableCreateView(t *testing.T) {
 }
 
 func TestIntegration_TableMetadata(t *testing.T) {
-	t.Skip("Internal bug 128670231")
 
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -354,20 +354,21 @@ func TestIntegration_TableMetadata(t *testing.T) {
 			if !testutil.Equal(got, want) {
 				t.Errorf("metadata.TimePartitioning: got %v, want %v", got, want)
 			}
-			// check that RequirePartitionFilter can be inverted.
+			// Manipulate RequirePartitionFilter at the table level.
 			mdUpdate := TableMetadataToUpdate{
-				TimePartitioning: &TimePartitioning{
-					Expiration:             v.TimePartitioning.Expiration,
-					RequirePartitionFilter: !want.RequirePartitionFilter,
-				},
+				RequirePartitionFilter: !want.RequirePartitionFilter,
 			}
 
 			newmd, err := table.Update(ctx, mdUpdate, "")
 			if err != nil {
 				t.Errorf("failed to invert RequirePartitionFilter on %s: %v", table.FullyQualifiedName(), err)
 			}
-			if newmd.TimePartitioning.RequirePartitionFilter == want.RequirePartitionFilter {
-				t.Errorf("inverting RequirePartitionFilter on %s failed, want %t got %t", table.FullyQualifiedName(), !want.RequirePartitionFilter, newmd.TimePartitioning.RequirePartitionFilter)
+			if newmd.RequirePartitionFilter == want.RequirePartitionFilter {
+				t.Errorf("inverting table-level RequirePartitionFilter on %s failed, want %t got %t", table.FullyQualifiedName(), !want.RequirePartitionFilter, newmd.RequirePartitionFilter)
+			}
+			// Also verify that the clone of RequirePartitionFilter in the TimePartitioning message is consistent.
+			if newmd.RequirePartitionFilter != newmd.TimePartitioning.RequirePartitionFilter {
+				t.Errorf("inconsistent RequirePartitionFilter.  Table: %t, TimePartitioning: %t", newmd.RequirePartitionFilter, newmd.TimePartitioning.RequirePartitionFilter)
 			}
 
 		}
@@ -2008,71 +2009,107 @@ func TestIntegration_QueryErrors(t *testing.T) {
 	}
 }
 
-func TestIntegration_Model(t *testing.T) {
-	// Create an ML model.
+func TestIntegration_ModelLifecycle(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	schema := Schema{
-		{Name: "input", Type: IntegerFieldType},
-		{Name: "label", Type: IntegerFieldType},
-	}
-	table := newTable(t, schema)
-	defer table.Delete(ctx)
 
-	// Insert table data.
-	tableName := fmt.Sprintf("%s.%s", table.DatasetID, table.TableID)
-	sql := fmt.Sprintf(`INSERT %s (input, label)
-		                VALUES (1, 0), (2, 1), (3, 0), (4, 1)`,
-		tableName)
-	wantNumRows := 4
+	// Create a model via a CREATE MODEL query
+	modelID := modelIDs.New()
+	model := dataset.Model(modelID)
+	modelRef := fmt.Sprintf("%s.%s.%s", dataset.ProjectID, dataset.DatasetID, modelID)
 
-	if err := runDML(ctx, sql); err != nil {
-		t.Fatal(err)
-	}
-
-	model := dataset.Table("my_model")
-	modelName := fmt.Sprintf("%s.%s", model.DatasetID, model.TableID)
-	sql = fmt.Sprintf(`CREATE MODEL %s OPTIONS (model_type='logistic_reg') AS SELECT input, label FROM %s`,
-		modelName, tableName)
+	sql := fmt.Sprintf(`
+		CREATE MODEL `+"`%s`"+`
+		OPTIONS (
+			model_type='linear_reg',
+			max_iteration=1,
+			learn_rate=0.4,
+			learn_rate_strategy='constant'
+		) AS (
+			SELECT 'a' AS f1, 2.0 AS label
+			UNION ALL
+			SELECT 'b' AS f1, 3.8 AS label
+		)`, modelRef)
 	if err := runDML(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	defer model.Delete(ctx)
 
-	sql = fmt.Sprintf(`SELECT * FROM ml.PREDICT(MODEL %s, TABLE %s)`, modelName, tableName)
-	q := client.Query(sql)
-	ri, err := q.Read(ctx)
+	// Get the model metadata.
+	curMeta, err := model.Metadata(ctx)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("couldn't get metadata: %v", err)
 	}
-	rows, _, _, err := readAll(ri)
+
+	want := "LINEAR_REGRESSION"
+	if curMeta.Type != want {
+		t.Errorf("Model type mismatch.  Want %s got %s", curMeta.Type, want)
+	}
+
+	// Ensure training metadata is available.
+	runs := curMeta.RawTrainingRuns()
+	if runs == nil {
+		t.Errorf("training runs unpopulated.")
+	}
+	labelCols := curMeta.RawLabelColumns()
+	if labelCols == nil {
+		t.Errorf("label column information unpopulated.")
+	}
+	featureCols := curMeta.RawFeatureColumns()
+	if featureCols == nil {
+		t.Errorf("feature column information unpopulated.")
+	}
+
+	// Update mutable fields via API.
+	expiry := time.Now().Add(24 * time.Hour).Truncate(time.Millisecond)
+
+	upd := ModelMetadataToUpdate{
+		Description:    "new",
+		Name:           "friendly",
+		ExpirationTime: expiry,
+	}
+
+	newMeta, err := model.Update(ctx, upd, curMeta.ETag)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("failed to update: %v", err)
 	}
-	if got := len(rows); got != wantNumRows {
-		t.Fatalf("got %d rows in prediction table, want %d", got, wantNumRows)
+
+	want = "new"
+	if newMeta.Description != want {
+		t.Fatalf("Description not updated. got %s want %s", newMeta.Description, want)
 	}
-	iter := dataset.Tables(ctx)
+	want = "friendly"
+	if newMeta.Name != want {
+		t.Fatalf("Description not updated. got %s want %s", newMeta.Description, want)
+	}
+	if newMeta.ExpirationTime != expiry {
+		t.Fatalf("ExpirationTime not updated.  got %v want %v", newMeta.ExpirationTime, expiry)
+	}
+
+	// Ensure presence when enumerating the model list.
+	it := dataset.Models(ctx)
 	seen := false
 	for {
-		tbl, err := iter.Next()
+		mdl, err := it.Next()
 		if err == iterator.Done {
 			break
 		}
 		if err != nil {
 			t.Fatal(err)
 		}
-		if tbl.TableID == "my_model" {
+		if mdl.ModelID == modelID {
 			seen = true
 		}
 	}
 	if !seen {
 		t.Fatal("model not listed in dataset")
 	}
+
+	// Delete the model.
 	if err := model.Delete(ctx); err != nil {
-		t.Fatal(err)
+		t.Fatalf("failed to delete model: %v", err)
 	}
 }
 

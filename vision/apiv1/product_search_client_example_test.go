@@ -34,6 +34,100 @@ func ExampleNewProductSearchClient() {
 	_ = c
 }
 
+func ExampleProductSearchClient_CreateProductSet() {
+	ctx := context.Background()
+	c, err := vision.NewProductSearchClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &visionpb.CreateProductSetRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.CreateProductSet(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleProductSearchClient_ListProductSets() {
+	ctx := context.Background()
+	c, err := vision.NewProductSearchClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &visionpb.ListProductSetsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListProductSets(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleProductSearchClient_GetProductSet() {
+	ctx := context.Background()
+	c, err := vision.NewProductSearchClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &visionpb.GetProductSetRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetProductSet(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleProductSearchClient_UpdateProductSet() {
+	ctx := context.Background()
+	c, err := vision.NewProductSearchClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &visionpb.UpdateProductSetRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.UpdateProductSet(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleProductSearchClient_DeleteProductSet() {
+	ctx := context.Background()
+	c, err := vision.NewProductSearchClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &visionpb.DeleteProductSetRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.DeleteProductSet(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleProductSearchClient_CreateProduct() {
 	ctx := context.Background()
 	c, err := vision.NewProductSearchClient(ctx)
@@ -128,6 +222,40 @@ func ExampleProductSearchClient_DeleteProduct() {
 	}
 }
 
+func ExampleProductSearchClient_CreateReferenceImage() {
+	ctx := context.Background()
+	c, err := vision.NewProductSearchClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &visionpb.CreateReferenceImageRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.CreateReferenceImage(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleProductSearchClient_DeleteReferenceImage() {
+	ctx := context.Background()
+	c, err := vision.NewProductSearchClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &visionpb.DeleteReferenceImageRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.DeleteReferenceImage(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleProductSearchClient_ListReferenceImages() {
 	ctx := context.Background()
 	c, err := vision.NewProductSearchClient(ctx)
@@ -168,134 +296,6 @@ func ExampleProductSearchClient_GetReferenceImage() {
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleProductSearchClient_DeleteReferenceImage() {
-	ctx := context.Background()
-	c, err := vision.NewProductSearchClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &visionpb.DeleteReferenceImageRequest{
-		// TODO: Fill request struct fields.
-	}
-	err = c.DeleteReferenceImage(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleProductSearchClient_CreateReferenceImage() {
-	ctx := context.Background()
-	c, err := vision.NewProductSearchClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &visionpb.CreateReferenceImageRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.CreateReferenceImage(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleProductSearchClient_CreateProductSet() {
-	ctx := context.Background()
-	c, err := vision.NewProductSearchClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &visionpb.CreateProductSetRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.CreateProductSet(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleProductSearchClient_ListProductSets() {
-	ctx := context.Background()
-	c, err := vision.NewProductSearchClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &visionpb.ListProductSetsRequest{
-		// TODO: Fill request struct fields.
-	}
-	it := c.ListProductSets(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleProductSearchClient_GetProductSet() {
-	ctx := context.Background()
-	c, err := vision.NewProductSearchClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &visionpb.GetProductSetRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.GetProductSet(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleProductSearchClient_UpdateProductSet() {
-	ctx := context.Background()
-	c, err := vision.NewProductSearchClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &visionpb.UpdateProductSetRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.UpdateProductSet(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleProductSearchClient_DeleteProductSet() {
-	ctx := context.Background()
-	c, err := vision.NewProductSearchClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &visionpb.DeleteProductSetRequest{
-		// TODO: Fill request struct fields.
-	}
-	err = c.DeleteProductSet(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
 }
 
 func ExampleProductSearchClient_AddProductToProductSet() {

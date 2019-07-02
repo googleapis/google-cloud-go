@@ -388,8 +388,10 @@ func TestMain(m *testing.M) {
 
 func TestPublisherCreateTopic(t *testing.T) {
 	var name2 string = "name2-1052831874"
+	var kmsKeyName string = "kmsKeyName2094986649"
 	var expectedResponse = &pubsubpb.Topic{
-		Name: name2,
+		Name:       name2,
+		KmsKeyName: kmsKeyName,
 	}
 
 	mockPublisher.err = nil
@@ -447,8 +449,10 @@ func TestPublisherCreateTopicError(t *testing.T) {
 }
 func TestPublisherUpdateTopic(t *testing.T) {
 	var name string = "name3373707"
+	var kmsKeyName string = "kmsKeyName2094986649"
 	var expectedResponse = &pubsubpb.Topic{
-		Name: name,
+		Name:       name,
+		KmsKeyName: kmsKeyName,
 	}
 
 	mockPublisher.err = nil
@@ -582,8 +586,10 @@ func TestPublisherPublishError(t *testing.T) {
 }
 func TestPublisherGetTopic(t *testing.T) {
 	var name string = "name3373707"
+	var kmsKeyName string = "kmsKeyName2094986649"
 	var expectedResponse = &pubsubpb.Topic{
-		Name: name,
+		Name:       name,
+		KmsKeyName: kmsKeyName,
 	}
 
 	mockPublisher.err = nil

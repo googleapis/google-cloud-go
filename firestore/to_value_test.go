@@ -74,43 +74,153 @@ var (
 	})
 )
 
-func TestToProtoValue(t *testing.T) {
+// TODO descriptions
+// TODO cause the array failure
+func TestToProtoValue_Conversions(t *testing.T) {
 	*p = 8
 	for _, test := range []struct {
+		desc string
 		in   interface{}
 		want *pb.Value
 	}{
-		{nil, nullValue},
-		{[]int(nil), nullValue},
-		{map[string]int(nil), nullValue},
-		{(*testStruct1)(nil), nullValue},
-		{(*ts.Timestamp)(nil), nullValue},
-		{(*latlng.LatLng)(nil), nullValue},
-		{(*DocumentRef)(nil), nullValue},
-		{true, boolval(true)},
-		{3, intval(3)},
-		{uint32(3), intval(3)},
-		{1.5, floatval(1.5)},
-		{"str", strval("str")},
-		{[]byte{1, 2}, bytesval([]byte{1, 2})},
-		{tm, tsval(tm)},
-		{ptm, &pb.Value{ValueType: &pb.Value_TimestampValue{ptm}}},
-		{ll, geoval(ll)},
-		{[]int{1, 2}, arrayval(intval(1), intval(2))},
-		{&[]int{1, 2}, arrayval(intval(1), intval(2))},
-		{[]int{}, arrayval()},
-		{map[string]int{"a": 1, "b": 2},
-			mapval(map[string]*pb.Value{"a": intval(1), "b": intval(2)})},
-		{map[string]int{}, mapval(map[string]*pb.Value{})},
-		{p, intval(8)},
-		{&p, intval(8)},
-		{map[string]interface{}{"a": 1, "p": p, "s": "str"},
-			mapval(map[string]*pb.Value{"a": intval(1), "p": intval(8), "s": strval("str")})},
-		{map[string]fmt.Stringer{"a": tm},
-			mapval(map[string]*pb.Value{"a": tsval(tm)})},
-		{testVal1, mapVal1},
 		{
-			&DocumentRef{
+			desc: "nil",
+			in:   nil,
+			want: nullValue,
+		},
+		{
+			desc: "nil slice",
+			in:   []int(nil),
+			want: nullValue,
+		},
+		{
+			desc: "nil map",
+			in:   map[string]int(nil),
+			want: nullValue,
+		},
+		{
+			desc: "nil struct",
+			in:   (*testStruct1)(nil),
+			want: nullValue,
+		},
+		{
+			desc: "nil timestamp",
+			in:   (*ts.Timestamp)(nil),
+			want: nullValue,
+		},
+		{
+			desc: "nil latlng",
+			in:   (*latlng.LatLng)(nil),
+			want: nullValue,
+		},
+		{
+			desc: "nil docref",
+			in:   (*DocumentRef)(nil),
+			want: nullValue,
+		},
+		{
+			desc: "bool",
+			in:   true,
+			want: boolval(true),
+		},
+		{
+			desc: "int",
+			in:   3,
+			want: intval(3),
+		},
+		{
+			desc: "uint32",
+			in:   uint32(3),
+			want: intval(3),
+		},
+		{
+			desc: "float",
+			in:   1.5,
+			want: floatval(1.5),
+		},
+		{
+			desc: "string",
+			in:   "str",
+			want: strval("str"),
+		},
+		{
+			desc: "byte slice",
+			in:   []byte{1, 2},
+			want: bytesval([]byte{1, 2}),
+		},
+		{
+			desc: "date time",
+			in:   tm,
+			want: tsval(tm),
+		},
+		{
+			desc: "pointer to timestamp",
+			in:   ptm,
+			want: &pb.Value{ValueType: &pb.Value_TimestampValue{ptm}},
+		},
+		{
+			desc: "pointer to latlng",
+			in:   ll,
+			want: geoval(ll),
+		},
+		{
+			desc: "populated slice",
+			in:   []int{1, 2},
+			want: arrayval(intval(1), intval(2)),
+		},
+		{
+			desc: "pointer to populated slice",
+			in:   &[]int{1, 2},
+			want: arrayval(intval(1), intval(2)),
+		},
+		{
+			desc: "empty slice",
+			in:   []int{},
+			want: arrayval(),
+		},
+		{
+			desc: "populated map",
+			in:   map[string]int{"a": 1, "b": 2},
+			want: mapval(map[string]*pb.Value{"a": intval(1), "b": intval(2)}),
+		},
+		{
+			desc: "empty map",
+			in:   map[string]int{},
+			want: mapval(map[string]*pb.Value{}),
+		},
+		{
+			desc: "int",
+			in:   p,
+			want: intval(8),
+		},
+		{
+			desc: "pointer to int",
+			in:   &p,
+			want: intval(8),
+		},
+		{
+			desc: "populated map",
+			in:   map[string]interface{}{"a": 1, "p": p, "s": "str"},
+			want: mapval(map[string]*pb.Value{"a": intval(1), "p": intval(8), "s": strval("str")}),
+		},
+		{
+			desc: "map with timestamp",
+			in:   map[string]fmt.Stringer{"a": tm},
+			want: mapval(map[string]*pb.Value{"a": tsval(tm)}),
+		},
+		{
+			desc: "struct",
+			in:   testVal1,
+			want: mapVal1,
+		},
+		{
+			desc: "array",
+			in:   [1]int{7},
+			want: arrayval(intval(7)),
+		},
+		{
+			desc: "pointer to docref",
+			in: &DocumentRef{
 				ID:   "d",
 				Path: "projects/P/databases/D/documents/c/d",
 				Parent: &CollectionRef{
@@ -120,22 +230,27 @@ func TestToProtoValue(t *testing.T) {
 					Query:      Query{collectionID: "c", parentPath: "projects/P/databases/D"},
 				},
 			},
-			refval("projects/P/databases/D/documents/c/d"),
+			want: refval("projects/P/databases/D/documents/c/d"),
 		},
-		// ServerTimestamps are removed, possibly leaving nil.
-		{map[string]interface{}{"a": ServerTimestamp}, nil},
 		{
-			map[string]interface{}{
+			desc: "Transforms are removed, which can lead to leaving nil",
+			in:   map[string]interface{}{"a": ServerTimestamp},
+			want: nil,
+		},
+		{
+			desc: "Transform nested in map is ignored",
+			in: map[string]interface{}{
 				"a": map[string]interface{}{
 					"b": map[string]interface{}{
 						"c": ServerTimestamp,
 					},
 				},
 			},
-			nil,
+			want: nil,
 		},
 		{
-			map[string]interface{}{
+			desc: "Transforms nested in map are ignored",
+			in: map[string]interface{}{
 				"a": map[string]interface{}{
 					"b": map[string]interface{}{
 						"c": ServerTimestamp,
@@ -143,10 +258,11 @@ func TestToProtoValue(t *testing.T) {
 					},
 				},
 			},
-			nil,
+			want: nil,
 		},
 		{
-			map[string]interface{}{
+			desc: "int nested in map is kept whilst Transforms are ignored",
+			in: map[string]interface{}{
 				"a": map[string]interface{}{
 					"b": map[string]interface{}{
 						"c": ServerTimestamp,
@@ -155,7 +271,7 @@ func TestToProtoValue(t *testing.T) {
 					},
 				},
 			},
-			mapval(map[string]*pb.Value{
+			want: mapval(map[string]*pb.Value{
 				"a": mapval(map[string]*pb.Value{
 					"b": mapval(map[string]*pb.Value{"e": intval(1)}),
 				}),
@@ -164,18 +280,31 @@ func TestToProtoValue(t *testing.T) {
 
 		// Transforms are allowed in maps, but won't show up in the returned proto. Instead, we rely
 		// on seeing sawTransforms=true and a call to extractTransforms.
-		{map[string]interface{}{"a": ServerTimestamp, "b": 5}, mapval(map[string]*pb.Value{"b": intval(5)})},
-		{map[string]interface{}{"a": ArrayUnion(1, 2, 3), "b": 5}, mapval(map[string]*pb.Value{"b": intval(5)})},
-		{map[string]interface{}{"a": ArrayRemove(1, 2, 3), "b": 5}, mapval(map[string]*pb.Value{"b": intval(5)})},
+		{
+			desc: "Transforms in map are ignored, other values are kept (ServerTimestamp)",
+			in:   map[string]interface{}{"a": ServerTimestamp, "b": 5},
+			want: mapval(map[string]*pb.Value{"b": intval(5)}),
+		},
+		{
+			desc: "Transforms in map are ignored, other values are kept (ArrayUnion)",
+			in:   map[string]interface{}{"a": ArrayUnion(1, 2, 3), "b": 5},
+			want: mapval(map[string]*pb.Value{"b": intval(5)}),
+		},
+		{
+			desc: "Transforms in map are ignored, other values are kept (ArrayRemove)",
+			in:   map[string]interface{}{"a": ArrayRemove(1, 2, 3), "b": 5},
+			want: mapval(map[string]*pb.Value{"b": intval(5)}),
+		},
 	} {
-		got, _, err := toProtoValue(reflect.ValueOf(test.in))
-		if err != nil {
-			t.Errorf("%v (%T): %v", test.in, test.in, err)
-			continue
-		}
-		if !testEqual(got, test.want) {
-			t.Errorf("%+v (%T):\ngot\n%+v\nwant\n%+v", test.in, test.in, got, test.want)
-		}
+		t.Run(test.desc, func(t *testing.T) {
+			got, _, err := toProtoValue(reflect.ValueOf(test.in))
+			if err != nil {
+				t.Fatalf("%v (%T): %v", test.in, test.in, err)
+			}
+			if !testEqual(got, test.want) {
+				t.Fatalf("%+v (%T):\ngot\n%+v\nwant\n%+v", test.in, test.in, got, test.want)
+			}
+		})
 	}
 }
 
@@ -183,7 +312,7 @@ type stringy struct{}
 
 func (stringy) String() string { return "stringy" }
 
-func TestToProtoValueErrors(t *testing.T) {
+func TestToProtoValue_Errors(t *testing.T) {
 	for _, in := range []interface{}{
 		uint64(0),                               // a bad fit for int64
 		map[int]bool{},                          // map key type is not string
@@ -240,7 +369,7 @@ type testStruct2 struct {
 	OmitEmptyTime time.Time `firestore:",omitempty"`
 }
 
-func TestToProtoValueTags(t *testing.T) {
+func TestToProtoValue_Tags(t *testing.T) {
 	in := &testStruct2{
 		Ignore:        1,
 		Rename:        2,
@@ -270,7 +399,7 @@ func TestToProtoValueTags(t *testing.T) {
 	}
 }
 
-func TestToProtoValueEmbedded(t *testing.T) {
+func TestToProtoValue_Embedded(t *testing.T) {
 	// Embedded time.Time, LatLng, or Timestamp should behave like non-embedded.
 	type embed struct {
 		time.Time

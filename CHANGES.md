@@ -1,5 +1,91 @@
 # Changes
 
+## v0.41.0
+
+- bigtable:
+  - Check results from PredicateFilter in bttest, which fixes certain false matches.
+- profiler:
+  - debugLog checks user defined logging options before logging.
+- spanner:
+  - PartitionedUpdates respect query parameters.
+  - StartInstance allows specifying cloud API access scopes.
+- bigquery:
+  - Use empty slice instead of nil for ValueSaver, fixing an issue with zero-length, repeated, nested fields causing panics.
+- firestore:
+  - Return same number of snapshots as doc refs (in the form of duplicate records) during GetAll.
+- replay:
+  - Change references to IPv4 addresses to localhost, making replay compatible with IPv6.
+
+## v0.40.0
+
+- all:
+  - Update to protobuf-golang v1.3.1.
+- datastore:
+  - Attempt to decode GAE-encoded keys if initial decoding attempt fails.
+  - Support integer time conversion.
+- pubsub:
+  - Add PublishSettings.BundlerByteLimit. If users receive pubsub.ErrOverflow,
+  this value should be adjusted higher.
+  - Use IPv6 compatible target in testutil.
+- bigtable:
+  - Fix Latin-1 regexp filters in bttest, allowing \C.
+  - Expose PassAllFilter.
+- profiler:
+  - Add log messages for slow path in start.
+  - Fix start to allow retry until success.
+- firestore:
+  - Add admin client.
+- containeranalysis:
+  - Add apiv1 client.
+- grafeas:
+  - Add apiv1 client.
+
+## 0.39.0
+
+- bigtable:
+  - Implement DeleteInstance in bttest.
+  - Return an error on invalid ReadRowsRequest.RowRange key ranges in bttest.
+- bigquery:
+  - Move RequirePartitionFilter outside of TimePartioning.
+  - Expose models API.
+- firestore:
+  - Allow array values in create and update calls.
+  - Add CollectionGroup method.
+- pubsub:
+  - Add ExpirationPolicy to Subscription.
+- storage:
+  - Add V4 signing.
+- rpcreplay:
+  - Match streams by first sent request. This further improves rpcreplay's
+  ability to distinguish streams.
+- httpreplay:
+  - Set up Man-In-The-Middle config only once. This should improve proxy
+  creation when multiple proxies are used in a single process.
+  - Remove error on empty Content-Type, allowing requests with no Content-Type
+  header but a non-empty body.
+- all:
+  - Fix an edge case bug in auto-generated library pagination by properly
+  propagating pagetoken.
+
+## 0.38.0
+
+This update includes a substantial reduction in our transitive dependency list
+by way of updating to opencensus@v0.21.0.
+
+- spanner:
+  - Error implements GRPCStatus, allowing status.Convert.
+- bigtable:
+  - Fix a bug in bttest that prevents single column queries returning results
+  that match other filters.
+  - Remove verbose retry logging.
+- logging:
+  - Ensure RequestUrl has proper UTF-8, removing the need for users to wrap and
+  rune replace manually.
+- recaptchaenterprise:
+  - Add v1beta1 client.
+- phishingprotection:
+  - Add v1beta1 client.
+
 ## 0.37.4
 
 This patch releases re-builds the go.sum. This was not possible in the

@@ -219,7 +219,8 @@ func testPublishAndReceive(t *testing.T, topic *Topic, sub *Subscription, maxMsg
 	// Use a timeout to ensure that Pull does not block indefinitely if there are
 	// unexpectedly few messages available.
 	now := time.Now()
-	timeoutCtx, _ := context.WithTimeout(ctx, time.Minute)
+	timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute)
+	defer cancel()
 	gotMsgs, err := pullN(timeoutCtx, sub, len(want), func(ctx context.Context, m *Message) {
 		m.Ack()
 	})
@@ -367,8 +368,8 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
-	defer topic.Stop()
 	defer topic.Delete(ctx)
+	defer topic.Stop()
 
 	var sub *Subscription
 	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
@@ -385,9 +386,10 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 		AckDeadline:         10 * time.Second,
 		RetainAckedMessages: false,
 		RetentionDuration:   defaultRetentionDuration,
+		ExpirationPolicy:    defaultExpirationPolicy,
 	}
-	if !testutil.Equal(got, want) {
-		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 	// Add a PushConfig and change other fields.
 	projID := testutil.ProjID()
@@ -401,6 +403,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 		RetainAckedMessages: true,
 		RetentionDuration:   2 * time.Hour,
 		Labels:              map[string]string{"label": "value"},
+		ExpirationPolicy:    25 * time.Hour,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -412,6 +415,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 		RetainAckedMessages: true,
 		RetentionDuration:   2 * time.Hour,
 		Labels:              map[string]string{"label": "value"},
+		ExpirationPolicy:    25 * time.Hour,
 	}
 
 	if !testutil.Equal(got, want) {
@@ -469,8 +473,8 @@ func TestIntegration_UpdateTopic(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
-	defer topic.Stop()
 	defer topic.Delete(ctx)
+	defer topic.Stop()
 
 	got, err := topic.Config(ctx)
 	if err != nil {
@@ -534,8 +538,8 @@ func TestIntegration_Errors(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
-	defer topic.Stop()
 	defer topic.Delete(ctx)
+	defer topic.Stop()
 
 	// Out-of-range retention duration.
 	sub, err := client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{
@@ -616,8 +620,8 @@ func TestIntegration_MessageStoragePolicy(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
-	defer topic.Stop()
 	defer topic.Delete(ctx)
+	defer topic.Stop()
 
 	config, err := topic.Config(ctx)
 	if err != nil {

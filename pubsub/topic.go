@@ -77,11 +77,18 @@ type PublishSettings struct {
 	ByteThreshold int
 
 	// The number of goroutines that invoke the Publish RPC concurrently.
+	//
 	// Defaults to a multiple of GOMAXPROCS.
 	NumGoroutines int
 
 	// The maximum time that the client will attempt to publish a bundle of messages.
 	Timeout time.Duration
+
+	// The maximum number of bytes that the Bundler will keep in memory before
+	// returning ErrOverflow.
+	//
+	// Defaults to DefaultPublishSettings.BufferedByteLimit.
+	BufferedByteLimit int
 }
 
 // DefaultPublishSettings holds the default values for topics' PublishSettings.
@@ -90,6 +97,10 @@ var DefaultPublishSettings = PublishSettings{
 	CountThreshold: 100,
 	ByteThreshold:  1e6,
 	Timeout:        60 * time.Second,
+	// By default, limit the bundler to 10 times the max message size. The number 10 is
+	// chosen as a reasonable amount of messages in the worst case whilst still
+	// capping the number to a low enough value to not OOM users.
+	BufferedByteLimit: 10 * MaxPublishRequestBytes,
 }
 
 // CreateTopic creates a new topic.
@@ -331,9 +342,6 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 
 	// TODO(jba) [from bcmills] consider using a shared channel per bundle
 	// (requires Bundler API changes; would reduce allocations)
-	// The call to Add should never return an error because the bundler's
-	// BufferedByteLimit is set to maxInt; we do not perform any flow
-	// control in the client.
 	err := t.bundler.Add(&bundledMessage{msg, r}, msg.size)
 	if err != nil {
 		r.set("", err)
@@ -426,10 +434,12 @@ func (t *Topic) initBundler() {
 	}
 	t.bundler.BundleByteThreshold = t.PublishSettings.ByteThreshold
 
-	// Limit the bundler to 10 times the max message size. The number 10 is
-	// chosen as a reasonable amount of messages in the worst case whilst still
-	// capping the number to a low enough value to not OOM users.
-	t.bundler.BufferedByteLimit = 10 * MaxPublishRequestBytes
+	bufferedByteLimit := DefaultPublishSettings.BufferedByteLimit
+	if t.PublishSettings.BufferedByteLimit > 0 {
+		bufferedByteLimit = t.PublishSettings.BufferedByteLimit
+	}
+	t.bundler.BufferedByteLimit = bufferedByteLimit
+
 	t.bundler.BundleByteLimit = MaxPublishRequestBytes
 	// Unless overridden, allow many goroutines per CPU to call the Publish RPC concurrently.
 	// The default value was determined via extensive load testing (see the loadtest subdirectory).

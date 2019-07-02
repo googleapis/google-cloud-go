@@ -26,6 +26,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"text/template"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -38,6 +39,39 @@ import (
 const (
 	monitorWriteScope = "https://www.googleapis.com/auth/monitoring.write"
 )
+
+// BaseStartupTmpl is the common part of the startup script that
+// can be shared by multiple tests.
+var BaseStartupTmpl = template.Must(template.New("startupScript").Parse(`
+{{ define "prologue" -}}
+#! /bin/bash
+(
+# Signal any unexpected error.
+trap 'echo "{{.ErrorString}}"' ERR
+
+# Shut down the VM in 5 minutes after this script exits
+# to stop accounting the VM for billing and cores quota.
+trap "sleep 300 && poweroff" EXIT
+
+retry() {
+  for i in {1..3}; do
+    "${@}" && return 0
+  done
+  return 1
+}
+
+# Fail on any error.
+set -eo pipefail
+
+# Display commands being run
+set -x
+{{- end }}
+
+{{ define "epilogue" -}}
+# Write output to serial port 2 with timestamp.
+) 2>&1 | while read line; do echo "$(date): ${line}"; done >/dev/ttyS1
+{{- end }}
+`))
 
 // TestRunner has common elements used for testing profiling agents on a range
 // of environments.
@@ -95,6 +129,7 @@ type InstanceConfig struct {
 	MachineType   string
 	ImageProject  string
 	ImageFamily   string
+	Scopes        []string
 }
 
 // ClusterConfig is configuration for starting single GKE cluster for profiling
@@ -210,10 +245,8 @@ func (tr *GCETestRunner) StartInstance(ctx context.Context, inst *InstanceConfig
 			}},
 		},
 		ServiceAccounts: []*compute.ServiceAccount{{
-			Email: "default",
-			Scopes: []string{
-				monitorWriteScope,
-			},
+			Email:  "default",
+			Scopes: append(inst.Scopes, monitorWriteScope),
 		}},
 	}).Do()
 

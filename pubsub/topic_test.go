@@ -15,6 +15,7 @@
 package pubsub
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"testing"
@@ -23,6 +24,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/support/bundler"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -113,6 +115,7 @@ func TestPublishTimeout(t *testing.T) {
 		t.Fatal(err)
 	}
 	pubsubpb.RegisterPublisherServer(serv.Gsrv, &alwaysFailPublish{})
+	serv.Start()
 	conn, err := grpc.Dial(serv.Addr, grpc.WithInsecure())
 	if err != nil {
 		t.Fatal(err)
@@ -133,6 +136,29 @@ func TestPublishTimeout(t *testing.T) {
 		}
 	case <-time.After(2 * topic.PublishSettings.Timeout):
 		t.Fatal("timed out")
+	}
+}
+
+func TestPublishBufferedByteLimit(t *testing.T) {
+	ctx := context.Background()
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "topic-small-buffered-byte-limit")
+	defer topic.Stop()
+
+	// Test setting BufferedByteLimit to small number of bytes that should fail.
+	topic.PublishSettings.BufferedByteLimit = 100
+
+	const messageSizeBytes = 1000
+
+	msg := &Message{Data: bytes.Repeat([]byte{'A'}, int(messageSizeBytes))}
+	res := topic.Publish(ctx, msg)
+
+	_, err := res.Get(ctx)
+	if err != bundler.ErrOverflow {
+		t.Errorf("got %v, want ErrOverflow", err)
 	}
 }
 

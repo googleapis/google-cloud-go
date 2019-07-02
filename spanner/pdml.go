@@ -24,14 +24,14 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
-// PartitionedUpdate executes a DML statement in parallel across the database, using
-// separate, internal transactions that commit independently. The DML statement must
-// be fully partitionable: it must be expressible as the union of many statements
-// each of which accesses only a single row of the table. The statement should also be
-// idempotent, because it may be applied more than once.
+// PartitionedUpdate executes a DML statement in parallel across the database,
+// using separate, internal transactions that commit independently. The DML
+// statement must be fully partitionable: it must be expressible as the union
+// of many statements each of which accesses only a single row of the table. The
+// statement should also be idempotent, because it may be applied more than once.
 //
-// PartitionedUpdate returns an estimated count of the number of rows affected. The actual
-// number of affected rows may be greater than the estimate.
+// PartitionedUpdate returns an estimated count of the number of rows affected.
+// The actual number of affected rows may be greater than the estimate.
 func (c *Client) PartitionedUpdate(ctx context.Context, statement Statement) (count int64, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.PartitionedUpdate")
 	defer func() { trace.EndSpan(ctx, err) }()
@@ -44,7 +44,7 @@ func (c *Client) PartitionedUpdate(ctx context.Context, statement Statement) (co
 		s  *session
 		sh *sessionHandle
 	)
-	// create session
+	// Create session.
 	sc := c.rrNext()
 	s, err = createSession(ctx, sc, c.database, c.sessionLabels, c.md)
 	if err != nil {
@@ -52,7 +52,7 @@ func (c *Client) PartitionedUpdate(ctx context.Context, statement Statement) (co
 	}
 	defer s.delete(ctx)
 	sh = &sessionHandle{session: s}
-	// begin transaction
+	// Begin transaction.
 	err = runRetryable(contextWithOutgoingMetadata(ctx, sh.getMetadata()), func(ctx context.Context) error {
 		res, e := sc.BeginTransaction(ctx, &sppb.BeginTransactionRequest{
 			Session: sh.getID(),
@@ -69,12 +69,20 @@ func (c *Client) PartitionedUpdate(ctx context.Context, statement Statement) (co
 	if err != nil {
 		return 0, toSpannerError(err)
 	}
+
+	params, paramTypes, err := statement.convertParams()
+	if err != nil {
+		return 0, toSpannerError(err)
+	}
+
 	req := &sppb.ExecuteSqlRequest{
 		Session: sh.getID(),
 		Transaction: &sppb.TransactionSelector{
 			Selector: &sppb.TransactionSelector_Id{Id: tx},
 		},
-		Sql: statement.SQL,
+		Sql:        statement.SQL,
+		Params:     params,
+		ParamTypes: paramTypes,
 	}
 	rpc := func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 		req.ResumeToken = resumeToken

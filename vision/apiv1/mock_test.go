@@ -47,6 +47,69 @@ var _ = io.EOF
 var _ = ptypes.MarshalAny
 var _ status.Status
 
+type mockImageAnnotatorServer struct {
+	// Embed for forward compatibility.
+	// Tests will keep working if more methods are added
+	// in the future.
+	visionpb.ImageAnnotatorServer
+
+	reqs []proto.Message
+
+	// If set, all calls return this error.
+	err error
+
+	// responses to return if err == nil
+	resps []proto.Message
+}
+
+func (s *mockImageAnnotatorServer) BatchAnnotateImages(ctx context.Context, req *visionpb.BatchAnnotateImagesRequest) (*visionpb.BatchAnnotateImagesResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*visionpb.BatchAnnotateImagesResponse), nil
+}
+
+func (s *mockImageAnnotatorServer) BatchAnnotateFiles(ctx context.Context, req *visionpb.BatchAnnotateFilesRequest) (*visionpb.BatchAnnotateFilesResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*visionpb.BatchAnnotateFilesResponse), nil
+}
+
+func (s *mockImageAnnotatorServer) AsyncBatchAnnotateImages(ctx context.Context, req *visionpb.AsyncBatchAnnotateImagesRequest) (*longrunningpb.Operation, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*longrunningpb.Operation), nil
+}
+
+func (s *mockImageAnnotatorServer) AsyncBatchAnnotateFiles(ctx context.Context, req *visionpb.AsyncBatchAnnotateFilesRequest) (*longrunningpb.Operation, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*longrunningpb.Operation), nil
+}
+
 type mockProductSearchServer struct {
 	// Embed for forward compatibility.
 	// Tests will keep working if more methods are added
@@ -278,60 +341,21 @@ func (s *mockProductSearchServer) ImportProductSets(ctx context.Context, req *vi
 	return s.resps[0].(*longrunningpb.Operation), nil
 }
 
-type mockImageAnnotatorServer struct {
-	// Embed for forward compatibility.
-	// Tests will keep working if more methods are added
-	// in the future.
-	visionpb.ImageAnnotatorServer
-
-	reqs []proto.Message
-
-	// If set, all calls return this error.
-	err error
-
-	// responses to return if err == nil
-	resps []proto.Message
-}
-
-func (s *mockImageAnnotatorServer) BatchAnnotateImages(ctx context.Context, req *visionpb.BatchAnnotateImagesRequest) (*visionpb.BatchAnnotateImagesResponse, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*visionpb.BatchAnnotateImagesResponse), nil
-}
-
-func (s *mockImageAnnotatorServer) AsyncBatchAnnotateFiles(ctx context.Context, req *visionpb.AsyncBatchAnnotateFilesRequest) (*longrunningpb.Operation, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*longrunningpb.Operation), nil
-}
-
 // clientOpt is the option tests should use to connect to the test server.
 // It is initialized by TestMain.
 var clientOpt option.ClientOption
 
 var (
-	mockProductSearch  mockProductSearchServer
 	mockImageAnnotator mockImageAnnotatorServer
+	mockProductSearch  mockProductSearchServer
 )
 
 func TestMain(m *testing.M) {
 	flag.Parse()
 
 	serv := grpc.NewServer()
-	visionpb.RegisterProductSearchServer(serv, &mockProductSearch)
 	visionpb.RegisterImageAnnotatorServer(serv, &mockImageAnnotator)
+	visionpb.RegisterProductSearchServer(serv, &mockProductSearch)
 
 	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
@@ -348,6 +372,597 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func TestImageAnnotatorBatchAnnotateImages(t *testing.T) {
+	var expectedResponse *visionpb.BatchAnnotateImagesResponse = &visionpb.BatchAnnotateImagesResponse{}
+
+	mockImageAnnotator.err = nil
+	mockImageAnnotator.reqs = nil
+
+	mockImageAnnotator.resps = append(mockImageAnnotator.resps[:0], expectedResponse)
+
+	var requests []*visionpb.AnnotateImageRequest = nil
+	var request = &visionpb.BatchAnnotateImagesRequest{
+		Requests: requests,
+	}
+
+	c, err := NewImageAnnotatorClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.BatchAnnotateImages(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockImageAnnotator.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestImageAnnotatorBatchAnnotateImagesError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockImageAnnotator.err = gstatus.Error(errCode, "test error")
+
+	var requests []*visionpb.AnnotateImageRequest = nil
+	var request = &visionpb.BatchAnnotateImagesRequest{
+		Requests: requests,
+	}
+
+	c, err := NewImageAnnotatorClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.BatchAnnotateImages(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestImageAnnotatorBatchAnnotateFiles(t *testing.T) {
+	var expectedResponse *visionpb.BatchAnnotateFilesResponse = &visionpb.BatchAnnotateFilesResponse{}
+
+	mockImageAnnotator.err = nil
+	mockImageAnnotator.reqs = nil
+
+	mockImageAnnotator.resps = append(mockImageAnnotator.resps[:0], expectedResponse)
+
+	var requests []*visionpb.AnnotateFileRequest = nil
+	var request = &visionpb.BatchAnnotateFilesRequest{
+		Requests: requests,
+	}
+
+	c, err := NewImageAnnotatorClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.BatchAnnotateFiles(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockImageAnnotator.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestImageAnnotatorBatchAnnotateFilesError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockImageAnnotator.err = gstatus.Error(errCode, "test error")
+
+	var requests []*visionpb.AnnotateFileRequest = nil
+	var request = &visionpb.BatchAnnotateFilesRequest{
+		Requests: requests,
+	}
+
+	c, err := NewImageAnnotatorClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.BatchAnnotateFiles(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestImageAnnotatorAsyncBatchAnnotateImages(t *testing.T) {
+	var expectedResponse *visionpb.AsyncBatchAnnotateImagesResponse = &visionpb.AsyncBatchAnnotateImagesResponse{}
+
+	mockImageAnnotator.err = nil
+	mockImageAnnotator.reqs = nil
+
+	any, err := ptypes.MarshalAny(expectedResponse)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mockImageAnnotator.resps = append(mockImageAnnotator.resps[:0], &longrunningpb.Operation{
+		Name:   "longrunning-test",
+		Done:   true,
+		Result: &longrunningpb.Operation_Response{Response: any},
+	})
+
+	var requests []*visionpb.AnnotateImageRequest = nil
+	var outputConfig *visionpb.OutputConfig = &visionpb.OutputConfig{}
+	var request = &visionpb.AsyncBatchAnnotateImagesRequest{
+		Requests:     requests,
+		OutputConfig: outputConfig,
+	}
+
+	c, err := NewImageAnnotatorClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	respLRO, err := c.AsyncBatchAnnotateImages(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := respLRO.Wait(context.Background())
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockImageAnnotator.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestImageAnnotatorAsyncBatchAnnotateImagesError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockImageAnnotator.err = nil
+	mockImageAnnotator.resps = append(mockImageAnnotator.resps[:0], &longrunningpb.Operation{
+		Name: "longrunning-test",
+		Done: true,
+		Result: &longrunningpb.Operation_Error{
+			Error: &status.Status{
+				Code:    int32(errCode),
+				Message: "test error",
+			},
+		},
+	})
+
+	var requests []*visionpb.AnnotateImageRequest = nil
+	var outputConfig *visionpb.OutputConfig = &visionpb.OutputConfig{}
+	var request = &visionpb.AsyncBatchAnnotateImagesRequest{
+		Requests:     requests,
+		OutputConfig: outputConfig,
+	}
+
+	c, err := NewImageAnnotatorClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	respLRO, err := c.AsyncBatchAnnotateImages(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := respLRO.Wait(context.Background())
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestImageAnnotatorAsyncBatchAnnotateFiles(t *testing.T) {
+	var expectedResponse *visionpb.AsyncBatchAnnotateFilesResponse = &visionpb.AsyncBatchAnnotateFilesResponse{}
+
+	mockImageAnnotator.err = nil
+	mockImageAnnotator.reqs = nil
+
+	any, err := ptypes.MarshalAny(expectedResponse)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mockImageAnnotator.resps = append(mockImageAnnotator.resps[:0], &longrunningpb.Operation{
+		Name:   "longrunning-test",
+		Done:   true,
+		Result: &longrunningpb.Operation_Response{Response: any},
+	})
+
+	var requests []*visionpb.AsyncAnnotateFileRequest = nil
+	var request = &visionpb.AsyncBatchAnnotateFilesRequest{
+		Requests: requests,
+	}
+
+	c, err := NewImageAnnotatorClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	respLRO, err := c.AsyncBatchAnnotateFiles(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := respLRO.Wait(context.Background())
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockImageAnnotator.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestImageAnnotatorAsyncBatchAnnotateFilesError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockImageAnnotator.err = nil
+	mockImageAnnotator.resps = append(mockImageAnnotator.resps[:0], &longrunningpb.Operation{
+		Name: "longrunning-test",
+		Done: true,
+		Result: &longrunningpb.Operation_Error{
+			Error: &status.Status{
+				Code:    int32(errCode),
+				Message: "test error",
+			},
+		},
+	})
+
+	var requests []*visionpb.AsyncAnnotateFileRequest = nil
+	var request = &visionpb.AsyncBatchAnnotateFilesRequest{
+		Requests: requests,
+	}
+
+	c, err := NewImageAnnotatorClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	respLRO, err := c.AsyncBatchAnnotateFiles(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := respLRO.Wait(context.Background())
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestProductSearchCreateProductSet(t *testing.T) {
+	var name string = "name3373707"
+	var displayName string = "displayName1615086568"
+	var expectedResponse = &visionpb.ProductSet{
+		Name:        name,
+		DisplayName: displayName,
+	}
+
+	mockProductSearch.err = nil
+	mockProductSearch.reqs = nil
+
+	mockProductSearch.resps = append(mockProductSearch.resps[:0], expectedResponse)
+
+	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s", "[PROJECT]", "[LOCATION]")
+	var productSet *visionpb.ProductSet = &visionpb.ProductSet{}
+	var request = &visionpb.CreateProductSetRequest{
+		Parent:     formattedParent,
+		ProductSet: productSet,
+	}
+
+	c, err := NewProductSearchClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateProductSet(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockProductSearch.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestProductSearchCreateProductSetError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockProductSearch.err = gstatus.Error(errCode, "test error")
+
+	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s", "[PROJECT]", "[LOCATION]")
+	var productSet *visionpb.ProductSet = &visionpb.ProductSet{}
+	var request = &visionpb.CreateProductSetRequest{
+		Parent:     formattedParent,
+		ProductSet: productSet,
+	}
+
+	c, err := NewProductSearchClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateProductSet(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestProductSearchListProductSets(t *testing.T) {
+	var nextPageToken string = ""
+	var productSetsElement *visionpb.ProductSet = &visionpb.ProductSet{}
+	var productSets = []*visionpb.ProductSet{productSetsElement}
+	var expectedResponse = &visionpb.ListProductSetsResponse{
+		NextPageToken: nextPageToken,
+		ProductSets:   productSets,
+	}
+
+	mockProductSearch.err = nil
+	mockProductSearch.reqs = nil
+
+	mockProductSearch.resps = append(mockProductSearch.resps[:0], expectedResponse)
+
+	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s", "[PROJECT]", "[LOCATION]")
+	var request = &visionpb.ListProductSetsRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewProductSearchClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListProductSets(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockProductSearch.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.ProductSets[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestProductSearchListProductSetsError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockProductSearch.err = gstatus.Error(errCode, "test error")
+
+	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s", "[PROJECT]", "[LOCATION]")
+	var request = &visionpb.ListProductSetsRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewProductSearchClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListProductSets(context.Background(), request).Next()
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestProductSearchGetProductSet(t *testing.T) {
+	var name2 string = "name2-1052831874"
+	var displayName string = "displayName1615086568"
+	var expectedResponse = &visionpb.ProductSet{
+		Name:        name2,
+		DisplayName: displayName,
+	}
+
+	mockProductSearch.err = nil
+	mockProductSearch.reqs = nil
+
+	mockProductSearch.resps = append(mockProductSearch.resps[:0], expectedResponse)
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/productSets/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT_SET]")
+	var request = &visionpb.GetProductSetRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewProductSearchClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetProductSet(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockProductSearch.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestProductSearchGetProductSetError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockProductSearch.err = gstatus.Error(errCode, "test error")
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/productSets/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT_SET]")
+	var request = &visionpb.GetProductSetRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewProductSearchClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetProductSet(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestProductSearchUpdateProductSet(t *testing.T) {
+	var name string = "name3373707"
+	var displayName string = "displayName1615086568"
+	var expectedResponse = &visionpb.ProductSet{
+		Name:        name,
+		DisplayName: displayName,
+	}
+
+	mockProductSearch.err = nil
+	mockProductSearch.reqs = nil
+
+	mockProductSearch.resps = append(mockProductSearch.resps[:0], expectedResponse)
+
+	var productSet *visionpb.ProductSet = &visionpb.ProductSet{}
+	var request = &visionpb.UpdateProductSetRequest{
+		ProductSet: productSet,
+	}
+
+	c, err := NewProductSearchClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateProductSet(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockProductSearch.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestProductSearchUpdateProductSetError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockProductSearch.err = gstatus.Error(errCode, "test error")
+
+	var productSet *visionpb.ProductSet = &visionpb.ProductSet{}
+	var request = &visionpb.UpdateProductSetRequest{
+		ProductSet: productSet,
+	}
+
+	c, err := NewProductSearchClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateProductSet(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestProductSearchDeleteProductSet(t *testing.T) {
+	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
+
+	mockProductSearch.err = nil
+	mockProductSearch.reqs = nil
+
+	mockProductSearch.resps = append(mockProductSearch.resps[:0], expectedResponse)
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/productSets/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT_SET]")
+	var request = &visionpb.DeleteProductSetRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewProductSearchClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteProductSet(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockProductSearch.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestProductSearchDeleteProductSetError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockProductSearch.err = gstatus.Error(errCode, "test error")
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/productSets/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT_SET]")
+	var request = &visionpb.DeleteProductSetRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewProductSearchClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteProductSet(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
 func TestProductSearchCreateProduct(t *testing.T) {
 	var name string = "name3373707"
 	var displayName string = "displayName1615086568"
@@ -671,6 +1286,123 @@ func TestProductSearchDeleteProductError(t *testing.T) {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
 }
+func TestProductSearchCreateReferenceImage(t *testing.T) {
+	var name string = "name3373707"
+	var uri string = "uri116076"
+	var expectedResponse = &visionpb.ReferenceImage{
+		Name: name,
+		Uri:  uri,
+	}
+
+	mockProductSearch.err = nil
+	mockProductSearch.reqs = nil
+
+	mockProductSearch.resps = append(mockProductSearch.resps[:0], expectedResponse)
+
+	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s/products/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]")
+	var referenceImage *visionpb.ReferenceImage = &visionpb.ReferenceImage{}
+	var request = &visionpb.CreateReferenceImageRequest{
+		Parent:         formattedParent,
+		ReferenceImage: referenceImage,
+	}
+
+	c, err := NewProductSearchClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateReferenceImage(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockProductSearch.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestProductSearchCreateReferenceImageError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockProductSearch.err = gstatus.Error(errCode, "test error")
+
+	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s/products/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]")
+	var referenceImage *visionpb.ReferenceImage = &visionpb.ReferenceImage{}
+	var request = &visionpb.CreateReferenceImageRequest{
+		Parent:         formattedParent,
+		ReferenceImage: referenceImage,
+	}
+
+	c, err := NewProductSearchClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateReferenceImage(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestProductSearchDeleteReferenceImage(t *testing.T) {
+	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
+
+	mockProductSearch.err = nil
+	mockProductSearch.reqs = nil
+
+	mockProductSearch.resps = append(mockProductSearch.resps[:0], expectedResponse)
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/products/%s/referenceImages/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]", "[REFERENCE_IMAGE]")
+	var request = &visionpb.DeleteReferenceImageRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewProductSearchClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteReferenceImage(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockProductSearch.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestProductSearchDeleteReferenceImageError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockProductSearch.err = gstatus.Error(errCode, "test error")
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/products/%s/referenceImages/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]", "[REFERENCE_IMAGE]")
+	var request = &visionpb.DeleteReferenceImageRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewProductSearchClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteReferenceImage(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
 func TestProductSearchListReferenceImages(t *testing.T) {
 	var pageSize int32 = 883849137
 	var nextPageToken string = ""
@@ -806,434 +1538,6 @@ func TestProductSearchGetReferenceImageError(t *testing.T) {
 	}
 	_ = resp
 }
-func TestProductSearchDeleteReferenceImage(t *testing.T) {
-	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
-
-	mockProductSearch.err = nil
-	mockProductSearch.reqs = nil
-
-	mockProductSearch.resps = append(mockProductSearch.resps[:0], expectedResponse)
-
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/products/%s/referenceImages/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]", "[REFERENCE_IMAGE]")
-	var request = &visionpb.DeleteReferenceImageRequest{
-		Name: formattedName,
-	}
-
-	c, err := NewProductSearchClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = c.DeleteReferenceImage(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockProductSearch.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-}
-
-func TestProductSearchDeleteReferenceImageError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockProductSearch.err = gstatus.Error(errCode, "test error")
-
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/products/%s/referenceImages/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]", "[REFERENCE_IMAGE]")
-	var request = &visionpb.DeleteReferenceImageRequest{
-		Name: formattedName,
-	}
-
-	c, err := NewProductSearchClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = c.DeleteReferenceImage(context.Background(), request)
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-}
-func TestProductSearchCreateReferenceImage(t *testing.T) {
-	var name string = "name3373707"
-	var uri string = "uri116076"
-	var expectedResponse = &visionpb.ReferenceImage{
-		Name: name,
-		Uri:  uri,
-	}
-
-	mockProductSearch.err = nil
-	mockProductSearch.reqs = nil
-
-	mockProductSearch.resps = append(mockProductSearch.resps[:0], expectedResponse)
-
-	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s/products/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]")
-	var referenceImage *visionpb.ReferenceImage = &visionpb.ReferenceImage{}
-	var request = &visionpb.CreateReferenceImageRequest{
-		Parent:         formattedParent,
-		ReferenceImage: referenceImage,
-	}
-
-	c, err := NewProductSearchClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.CreateReferenceImage(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockProductSearch.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestProductSearchCreateReferenceImageError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockProductSearch.err = gstatus.Error(errCode, "test error")
-
-	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s/products/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]")
-	var referenceImage *visionpb.ReferenceImage = &visionpb.ReferenceImage{}
-	var request = &visionpb.CreateReferenceImageRequest{
-		Parent:         formattedParent,
-		ReferenceImage: referenceImage,
-	}
-
-	c, err := NewProductSearchClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.CreateReferenceImage(context.Background(), request)
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
-func TestProductSearchCreateProductSet(t *testing.T) {
-	var name string = "name3373707"
-	var displayName string = "displayName1615086568"
-	var expectedResponse = &visionpb.ProductSet{
-		Name:        name,
-		DisplayName: displayName,
-	}
-
-	mockProductSearch.err = nil
-	mockProductSearch.reqs = nil
-
-	mockProductSearch.resps = append(mockProductSearch.resps[:0], expectedResponse)
-
-	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s", "[PROJECT]", "[LOCATION]")
-	var productSet *visionpb.ProductSet = &visionpb.ProductSet{}
-	var request = &visionpb.CreateProductSetRequest{
-		Parent:     formattedParent,
-		ProductSet: productSet,
-	}
-
-	c, err := NewProductSearchClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.CreateProductSet(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockProductSearch.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestProductSearchCreateProductSetError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockProductSearch.err = gstatus.Error(errCode, "test error")
-
-	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s", "[PROJECT]", "[LOCATION]")
-	var productSet *visionpb.ProductSet = &visionpb.ProductSet{}
-	var request = &visionpb.CreateProductSetRequest{
-		Parent:     formattedParent,
-		ProductSet: productSet,
-	}
-
-	c, err := NewProductSearchClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.CreateProductSet(context.Background(), request)
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
-func TestProductSearchListProductSets(t *testing.T) {
-	var nextPageToken string = ""
-	var productSetsElement *visionpb.ProductSet = &visionpb.ProductSet{}
-	var productSets = []*visionpb.ProductSet{productSetsElement}
-	var expectedResponse = &visionpb.ListProductSetsResponse{
-		NextPageToken: nextPageToken,
-		ProductSets:   productSets,
-	}
-
-	mockProductSearch.err = nil
-	mockProductSearch.reqs = nil
-
-	mockProductSearch.resps = append(mockProductSearch.resps[:0], expectedResponse)
-
-	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s", "[PROJECT]", "[LOCATION]")
-	var request = &visionpb.ListProductSetsRequest{
-		Parent: formattedParent,
-	}
-
-	c, err := NewProductSearchClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.ListProductSets(context.Background(), request).Next()
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockProductSearch.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	want := (interface{})(expectedResponse.ProductSets[0])
-	got := (interface{})(resp)
-	var ok bool
-
-	switch want := (want).(type) {
-	case proto.Message:
-		ok = proto.Equal(want, got.(proto.Message))
-	default:
-		ok = want == got
-	}
-	if !ok {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestProductSearchListProductSetsError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockProductSearch.err = gstatus.Error(errCode, "test error")
-
-	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s", "[PROJECT]", "[LOCATION]")
-	var request = &visionpb.ListProductSetsRequest{
-		Parent: formattedParent,
-	}
-
-	c, err := NewProductSearchClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.ListProductSets(context.Background(), request).Next()
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
-func TestProductSearchGetProductSet(t *testing.T) {
-	var name2 string = "name2-1052831874"
-	var displayName string = "displayName1615086568"
-	var expectedResponse = &visionpb.ProductSet{
-		Name:        name2,
-		DisplayName: displayName,
-	}
-
-	mockProductSearch.err = nil
-	mockProductSearch.reqs = nil
-
-	mockProductSearch.resps = append(mockProductSearch.resps[:0], expectedResponse)
-
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/productSets/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT_SET]")
-	var request = &visionpb.GetProductSetRequest{
-		Name: formattedName,
-	}
-
-	c, err := NewProductSearchClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.GetProductSet(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockProductSearch.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestProductSearchGetProductSetError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockProductSearch.err = gstatus.Error(errCode, "test error")
-
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/productSets/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT_SET]")
-	var request = &visionpb.GetProductSetRequest{
-		Name: formattedName,
-	}
-
-	c, err := NewProductSearchClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.GetProductSet(context.Background(), request)
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
-func TestProductSearchUpdateProductSet(t *testing.T) {
-	var name string = "name3373707"
-	var displayName string = "displayName1615086568"
-	var expectedResponse = &visionpb.ProductSet{
-		Name:        name,
-		DisplayName: displayName,
-	}
-
-	mockProductSearch.err = nil
-	mockProductSearch.reqs = nil
-
-	mockProductSearch.resps = append(mockProductSearch.resps[:0], expectedResponse)
-
-	var productSet *visionpb.ProductSet = &visionpb.ProductSet{}
-	var request = &visionpb.UpdateProductSetRequest{
-		ProductSet: productSet,
-	}
-
-	c, err := NewProductSearchClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.UpdateProductSet(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockProductSearch.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestProductSearchUpdateProductSetError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockProductSearch.err = gstatus.Error(errCode, "test error")
-
-	var productSet *visionpb.ProductSet = &visionpb.ProductSet{}
-	var request = &visionpb.UpdateProductSetRequest{
-		ProductSet: productSet,
-	}
-
-	c, err := NewProductSearchClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.UpdateProductSet(context.Background(), request)
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
-func TestProductSearchDeleteProductSet(t *testing.T) {
-	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
-
-	mockProductSearch.err = nil
-	mockProductSearch.reqs = nil
-
-	mockProductSearch.resps = append(mockProductSearch.resps[:0], expectedResponse)
-
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/productSets/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT_SET]")
-	var request = &visionpb.DeleteProductSetRequest{
-		Name: formattedName,
-	}
-
-	c, err := NewProductSearchClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = c.DeleteProductSet(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockProductSearch.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-}
-
-func TestProductSearchDeleteProductSetError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockProductSearch.err = gstatus.Error(errCode, "test error")
-
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/productSets/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT_SET]")
-	var request = &visionpb.DeleteProductSetRequest{
-		Name: formattedName,
-	}
-
-	c, err := NewProductSearchClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = c.DeleteProductSet(context.Background(), request)
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-}
 func TestProductSearchAddProductToProductSet(t *testing.T) {
 	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
 
@@ -1243,10 +1547,10 @@ func TestProductSearchAddProductToProductSet(t *testing.T) {
 	mockProductSearch.resps = append(mockProductSearch.resps[:0], expectedResponse)
 
 	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/productSets/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT_SET]")
-	var product string = "product-309474065"
+	var formattedProduct string = fmt.Sprintf("projects/%s/locations/%s/products/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]")
 	var request = &visionpb.AddProductToProductSetRequest{
 		Name:    formattedName,
-		Product: product,
+		Product: formattedProduct,
 	}
 
 	c, err := NewProductSearchClient(context.Background(), clientOpt)
@@ -1271,10 +1575,10 @@ func TestProductSearchAddProductToProductSetError(t *testing.T) {
 	mockProductSearch.err = gstatus.Error(errCode, "test error")
 
 	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/productSets/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT_SET]")
-	var product string = "product-309474065"
+	var formattedProduct string = fmt.Sprintf("projects/%s/locations/%s/products/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]")
 	var request = &visionpb.AddProductToProductSetRequest{
 		Name:    formattedName,
-		Product: product,
+		Product: formattedProduct,
 	}
 
 	c, err := NewProductSearchClient(context.Background(), clientOpt)
@@ -1299,10 +1603,10 @@ func TestProductSearchRemoveProductFromProductSet(t *testing.T) {
 	mockProductSearch.resps = append(mockProductSearch.resps[:0], expectedResponse)
 
 	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/productSets/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT_SET]")
-	var product string = "product-309474065"
+	var formattedProduct string = fmt.Sprintf("projects/%s/locations/%s/products/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]")
 	var request = &visionpb.RemoveProductFromProductSetRequest{
 		Name:    formattedName,
-		Product: product,
+		Product: formattedProduct,
 	}
 
 	c, err := NewProductSearchClient(context.Background(), clientOpt)
@@ -1327,10 +1631,10 @@ func TestProductSearchRemoveProductFromProductSetError(t *testing.T) {
 	mockProductSearch.err = gstatus.Error(errCode, "test error")
 
 	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/productSets/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT_SET]")
-	var product string = "product-309474065"
+	var formattedProduct string = fmt.Sprintf("projects/%s/locations/%s/products/%s", "[PROJECT]", "[LOCATION]", "[PRODUCT]")
 	var request = &visionpb.RemoveProductFromProductSetRequest{
 		Name:    formattedName,
-		Product: product,
+		Product: formattedProduct,
 	}
 
 	c, err := NewProductSearchClient(context.Background(), clientOpt)
@@ -1492,144 +1796,6 @@ func TestProductSearchImportProductSetsError(t *testing.T) {
 	}
 
 	respLRO, err := c.ImportProductSets(context.Background(), request)
-	if err != nil {
-		t.Fatal(err)
-	}
-	resp, err := respLRO.Wait(context.Background())
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
-func TestImageAnnotatorBatchAnnotateImages(t *testing.T) {
-	var expectedResponse *visionpb.BatchAnnotateImagesResponse = &visionpb.BatchAnnotateImagesResponse{}
-
-	mockImageAnnotator.err = nil
-	mockImageAnnotator.reqs = nil
-
-	mockImageAnnotator.resps = append(mockImageAnnotator.resps[:0], expectedResponse)
-
-	var requests []*visionpb.AnnotateImageRequest = nil
-	var request = &visionpb.BatchAnnotateImagesRequest{
-		Requests: requests,
-	}
-
-	c, err := NewImageAnnotatorClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.BatchAnnotateImages(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockImageAnnotator.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestImageAnnotatorBatchAnnotateImagesError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockImageAnnotator.err = gstatus.Error(errCode, "test error")
-
-	var requests []*visionpb.AnnotateImageRequest = nil
-	var request = &visionpb.BatchAnnotateImagesRequest{
-		Requests: requests,
-	}
-
-	c, err := NewImageAnnotatorClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.BatchAnnotateImages(context.Background(), request)
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
-func TestImageAnnotatorAsyncBatchAnnotateFiles(t *testing.T) {
-	var expectedResponse *visionpb.AsyncBatchAnnotateFilesResponse = &visionpb.AsyncBatchAnnotateFilesResponse{}
-
-	mockImageAnnotator.err = nil
-	mockImageAnnotator.reqs = nil
-
-	any, err := ptypes.MarshalAny(expectedResponse)
-	if err != nil {
-		t.Fatal(err)
-	}
-	mockImageAnnotator.resps = append(mockImageAnnotator.resps[:0], &longrunningpb.Operation{
-		Name:   "longrunning-test",
-		Done:   true,
-		Result: &longrunningpb.Operation_Response{Response: any},
-	})
-
-	var requests []*visionpb.AsyncAnnotateFileRequest = nil
-	var request = &visionpb.AsyncBatchAnnotateFilesRequest{
-		Requests: requests,
-	}
-
-	c, err := NewImageAnnotatorClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	respLRO, err := c.AsyncBatchAnnotateFiles(context.Background(), request)
-	if err != nil {
-		t.Fatal(err)
-	}
-	resp, err := respLRO.Wait(context.Background())
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockImageAnnotator.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestImageAnnotatorAsyncBatchAnnotateFilesError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockImageAnnotator.err = nil
-	mockImageAnnotator.resps = append(mockImageAnnotator.resps[:0], &longrunningpb.Operation{
-		Name: "longrunning-test",
-		Done: true,
-		Result: &longrunningpb.Operation_Error{
-			Error: &status.Status{
-				Code:    int32(errCode),
-				Message: "test error",
-			},
-		},
-	})
-
-	var requests []*visionpb.AsyncAnnotateFileRequest = nil
-	var request = &visionpb.AsyncBatchAnnotateFilesRequest{
-		Requests: requests,
-	}
-
-	c, err := NewImageAnnotatorClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	respLRO, err := c.AsyncBatchAnnotateFiles(context.Background(), request)
 	if err != nil {
 		t.Fatal(err)
 	}

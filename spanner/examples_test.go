@@ -84,8 +84,7 @@ func ExampleClient_ReadWriteTransaction() {
 		var balance int64
 		row, err := txn.ReadRow(ctx, "Accounts", spanner.Key{"alice"}, []string{"balance"})
 		if err != nil {
-			// This function will be called again if this is an
-			// IsAborted error.
+			// This function will be called again if this is an IsAborted error.
 			return err
 		}
 		if err := row.Column(0, &balance); err != nil {
@@ -98,9 +97,8 @@ func ExampleClient_ReadWriteTransaction() {
 		balance -= 10
 		m := spanner.Update("Accounts", []string{"user", "balance"}, []interface{}{"alice", balance})
 		return txn.BufferWrite([]*spanner.Mutation{m})
-		// The buffered mutation will be committed.  If the commit
-		// fails with an IsAborted error, this function will be called
-		// again.
+		// The buffered mutation will be committed. If the commit fails with an
+		// IsAborted error, this function will be called again.
 	})
 	if err != nil {
 		// TODO: Handle error.
@@ -159,7 +157,8 @@ func ExampleUpdateMap() {
 	}
 }
 
-// This example is the same as the one for Update, except for the use of UpdateStruct.
+// This example is the same as the one for Update, except for the use of
+// UpdateStruct.
 func ExampleUpdateStruct() {
 	ctx := context.Background()
 	client, err := spanner.NewClient(ctx, myDB)
@@ -299,7 +298,7 @@ func ExampleRow_Size() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	fmt.Println(row.Size()) // size is 2
+	fmt.Println(row.Size()) // 2
 }
 
 func ExampleRow_ColumnName() {
@@ -312,7 +311,7 @@ func ExampleRow_ColumnName() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	fmt.Println(row.ColumnName(1)) // prints "balance"
+	fmt.Println(row.ColumnName(1)) // "balance"
 }
 
 func ExampleRow_ColumnIndex() {
@@ -608,7 +607,8 @@ func ExampleClient_BatchReadOnlyTransaction() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// Note: here we use multiple goroutines, but you should use separate processes/machines.
+	// Note: here we use multiple goroutines, but you should use separate
+	// processes/machines.
 	wg := sync.WaitGroup{}
 	for i, p := range partitions {
 		wg.Add(1)
@@ -643,7 +643,7 @@ func ExampleCommitTimestamp() {
 
 	type account struct {
 		User     string
-		Creation spanner.NullTime // time.Time can also be used if column is NOT NULL
+		Creation spanner.NullTime // time.Time can also be used if column isNOT NULL
 	}
 
 	a := account{User: "Joe", Creation: spanner.NullTime{spanner.CommitTimestamp, true}}
@@ -665,4 +665,48 @@ func ExampleCommitTimestamp() {
 		}
 		_ = got // TODO: Process row.
 	}
+}
+
+func ExampleStatement_regexpContains() {
+	// Search for accounts with valid emails using regexp as per:
+	//   https://cloud.google.com/spanner/docs/functions-and-operators#regexp_contains
+	stmt := spanner.Statement{
+		SQL: `SELECT * FROM users WHERE REGEXP_CONTAINS(email, @valid_email)`,
+		Params: map[string]interface{}{
+			"valid_email": `\Q@\E`,
+		},
+	}
+	_ = stmt // TODO: Use stmt in a query.
+}
+
+func ExampleKeySets() {
+	ctx := context.Background()
+	client, err := spanner.NewClient(ctx, myDB)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// Get some rows from the Accounts table using a secondary index. In this case we get all users who are in Georgia.
+	iter := client.Single().ReadUsingIndex(context.Background(), "Accounts", "idx_state", spanner.Key{"GA"}, []string{"state"})
+
+	// Create a empty KeySet by calling the KeySets function with no parameters.
+	ks := spanner.KeySets()
+
+	// Loop the results of a previous query iterator.
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			break
+		} else if err != nil {
+			// TODO: Handle error.
+		}
+		var id string
+		err = row.ColumnByName("User", &id)
+		if err != nil {
+			// TODO: Handle error.
+		}
+		ks = spanner.KeySets(spanner.KeySets(spanner.Key{id}, ks))
+	}
+
+	_ = ks //TODO: Go use the KeySet in another query.
+
 }

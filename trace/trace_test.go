@@ -248,7 +248,7 @@ func TestHeader(t *testing.T) {
 func TestOutgoingReqHeader(t *testing.T) {
 	all, _ := NewLimitedSampler(1, 1<<16) // trace every request
 
-	tests := []struct {
+	for _, test := range []struct {
 		desc           string
 		traceHeader    string
 		samplingPolicy SamplingPolicy
@@ -279,19 +279,19 @@ func TestOutgoingReqHeader(t *testing.T) {
 			samplingPolicy: nil,
 			wantHeaderRe:   regexp.MustCompile("0123456789ABCDEF0123456789ABCDEF/\\d+;o=0"),
 		},
-	}
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			tc := newTestClient(nil)
+			tc.SetSamplingPolicy(test.samplingPolicy)
+			span := tc.SpanFromHeader("/foo", test.traceHeader)
 
-	tc := newTestClient(nil)
-	for _, tt := range tests {
-		tc.SetSamplingPolicy(tt.samplingPolicy)
-		span := tc.SpanFromHeader("/foo", tt.traceHeader)
+			req, _ := http.NewRequest("GET", "http://localhost", nil)
+			span.NewRemoteChild(req)
 
-		req, _ := http.NewRequest("GET", "http://localhost", nil)
-		span.NewRemoteChild(req)
-
-		if got, re := req.Header.Get(httpHeader), tt.wantHeaderRe; !re.MatchString(got) {
-			t.Errorf("%v (parent=%q): got header %q; want in format %q", tt.desc, tt.traceHeader, got, re)
-		}
+			if got, re := req.Header.Get(httpHeader), test.wantHeaderRe; !re.MatchString(got) {
+				t.Errorf("%v (parent=%q): got header %q; want in format %q", test.desc, test.traceHeader, got, re)
+			}
+		})
 	}
 }
 

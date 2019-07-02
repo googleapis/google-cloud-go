@@ -56,6 +56,7 @@ func TestBQToTableMetadata(t *testing.T) {
 				Clustering: &bq.Clustering{
 					Fields: []string{"cfield1", "cfield2"},
 				},
+				RequirePartitionFilter:  true,
 				EncryptionConfiguration: &bq.EncryptionConfiguration{KmsKeyName: "keyName"},
 				Type:                    "EXTERNAL",
 				View:                    &bq.ViewDefinition{Query: "view-query"},
@@ -85,6 +86,7 @@ func TestBQToTableMetadata(t *testing.T) {
 				Clustering: &Clustering{
 					Fields: []string{"cfield1", "cfield2"},
 				},
+				RequirePartitionFilter: true,
 				StreamingBuffer: &StreamingBuffer{
 					EstimatedBytes:  11,
 					EstimatedRows:   3,
@@ -152,9 +154,10 @@ func TestTableMetadataToBQ(t *testing.T) {
 		},
 		{
 			&TableMetadata{
-				ViewQuery:        "q",
-				UseLegacySQL:     true,
-				TimePartitioning: &TimePartitioning{},
+				ViewQuery:              "q",
+				UseLegacySQL:           true,
+				TimePartitioning:       &TimePartitioning{},
+				RequirePartitionFilter: true,
 			},
 			&bq.Table{
 				View: &bq.ViewDefinition{
@@ -165,6 +168,7 @@ func TestTableMetadataToBQ(t *testing.T) {
 					Type:         "DAY",
 					ExpirationMs: 0,
 				},
+				RequirePartitionFilter: true,
 			},
 		},
 		{
@@ -332,6 +336,20 @@ func TestTableMetadataToUpdateToBQ(t *testing.T) {
 					Type:            "DAY",
 					ForceSendFields: []string{"RequirePartitionFilter"},
 				},
+			},
+		},
+		{
+			tm: TableMetadataToUpdate{RequirePartitionFilter: false},
+			want: &bq.Table{
+				RequirePartitionFilter: false,
+				ForceSendFields:        []string{"RequirePartitionFilter"},
+			},
+		},
+		{
+			tm: TableMetadataToUpdate{RequirePartitionFilter: true},
+			want: &bq.Table{
+				RequirePartitionFilter: true,
+				ForceSendFields:        []string{"RequirePartitionFilter"},
 			},
 		},
 	} {

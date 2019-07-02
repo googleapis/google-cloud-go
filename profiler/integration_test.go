@@ -38,28 +38,7 @@ const (
 )
 
 const startupTemplate = `
-#! /bin/bash
-
-# Signal any unexpected error.
-trap 'echo "{{.ErrorString}}"' ERR
-
-(
-# Shut down the VM in 5 minutes after this script exits
-# to stop accounting the VM for billing and cores quota.
-trap "sleep 300 && poweroff" EXIT
-
-retry() {
-  for i in {1..3}; do
-    "${@}" && return 0
-  done
-  return 1
-}
-
-# Fail on any error.
-set -eo pipefail
-
-# Display commands being run.
-set -x
+{{- template "prologue" . }}
 
 # Install git
 retry apt-get update >/dev/null
@@ -102,8 +81,7 @@ retry go get >/dev/null
 # Run benchmark with agent
 go run busybench.go --service="{{.Service}}" --mutex_profiling="{{.MutexProfiling}}"
 
-# Write output to serial port 2 with timestamp.
-) 2>&1 | while read line; do echo "$(date): ${line}"; done >/dev/ttyS1
+{{ template "epilogue" . -}}
 `
 
 type goGCETestCase struct {
@@ -138,8 +116,6 @@ func (tc *goGCETestCase) initializeStartupScript(template *template.Template, co
 }
 
 func TestAgentIntegration(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1366")
-
 	// Testing against master requires building go code and may take up to 10 minutes.
 	// Allow this test to run in parallel with other top level tests to avoid timeouts.
 	t.Parallel()
@@ -187,7 +163,7 @@ func TestAgentIntegration(t *testing.T) {
 		t.Fatalf("failed to initialize compute service: %v", err)
 	}
 
-	template, err := template.New("startupScript").Parse(startupTemplate)
+	template, err := proftest.BaseStartupTmpl.Parse(startupTemplate)
 	if err != nil {
 		t.Fatalf("failed to parse startup script template: %v", err)
 	}
@@ -200,6 +176,10 @@ func TestAgentIntegration(t *testing.T) {
 		TestRunner:     tr,
 		ComputeService: computeService,
 	}
+
+	// Determine go version used by current test run
+	goVersion := strings.TrimPrefix(runtime.Version(), "go")
+	goVersionName := strings.Replace(goVersion, ".", "", -1)
 
 	testcases := []goGCETestCase{
 		{
@@ -218,36 +198,12 @@ func TestAgentIntegration(t *testing.T) {
 			InstanceConfig: proftest.InstanceConfig{
 				ProjectID:   projectID,
 				Zone:        zone,
-				Name:        fmt.Sprintf("profiler-test-go111-%s", runID),
+				Name:        fmt.Sprintf("profiler-test-go%s-%s", goVersionName, runID),
 				MachineType: "n1-standard-1",
 			},
-			name:             fmt.Sprintf("profiler-test-go111-%s-gce", runID),
+			name:             fmt.Sprintf("profiler-test-go%s-%s-gce", goVersionName, runID),
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
-			goVersion:        "1.11",
-			mutexProfiling:   true,
-		},
-		{
-			InstanceConfig: proftest.InstanceConfig{
-				ProjectID:   projectID,
-				Zone:        zone,
-				Name:        fmt.Sprintf("profiler-test-go110-%s", runID),
-				MachineType: "n1-standard-1",
-			},
-			name:             fmt.Sprintf("profiler-test-go110-%s-gce", runID),
-			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
-			goVersion:        "1.10",
-			mutexProfiling:   true,
-		},
-		{
-			InstanceConfig: proftest.InstanceConfig{
-				ProjectID:   projectID,
-				Zone:        zone,
-				Name:        fmt.Sprintf("profiler-test-go19-%s", runID),
-				MachineType: "n1-standard-1",
-			},
-			name:             fmt.Sprintf("profiler-test-go19-%s-gce", runID),
-			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
-			goVersion:        "1.9",
+			goVersion:        goVersion,
 			mutexProfiling:   true,
 		},
 	}
@@ -286,7 +242,7 @@ func TestAgentIntegration(t *testing.T) {
 					continue
 				}
 				if err := pr.HasFunction("busywork"); err != nil {
-					t.Error(err)
+					t.Errorf("HasFunction(%s, %s, %s, %s, %s) got error: %v", tc.ProjectID, tc.name, startTime, endTime, pType, err)
 				}
 			}
 		})

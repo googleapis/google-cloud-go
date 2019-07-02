@@ -401,7 +401,7 @@ type QueryStatistics struct {
 	// Describes a timeline of job execution.
 	Timeline []*QueryTimelineSample
 
-	// ReferencedTables: [Output-only, Experimental] Referenced tables for
+	// ReferencedTables: [Output-only] Referenced tables for
 	// the job. Queries that reference more than 50 tables will not have a
 	// complete list.
 	ReferencedTables []*Table

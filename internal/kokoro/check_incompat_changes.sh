@@ -23,16 +23,14 @@ git clone https://code.googlesource.com/gocloud /tmp/gocloud
 MANUALS="bigquery bigtable datastore firestore pubsub spanner storage logging"
 STABLE_GAPICS="container/apiv1 dataproc/apiv1 iam iam/admin/apiv1 iam/credentials/apiv1 kms/apiv1 language/apiv1 logging/apiv2 logging/logadmin pubsub/apiv1 spanner/apiv1 translate/apiv1 vision/apiv1"
 for dir in $MANUALS $STABLE_GAPICS; do
-  # turns things like ./foo/bar into foo/bar
-  dir_without_junk=`echo $dir | sed -n "s#\(\.\/\)\(.*\)#\2#p"`
-  pkg="cloud.google.com/go/$dir_without_junk"
+  pkg="cloud.google.com/go/$dir"
   echo "Testing $pkg"
 
   cd /tmp/gocloud
   apidiff -w /tmp/pkg.master $pkg
   cd - > /dev/null
 
-  # TODO(deklerk) there's probably a nicer way to do this that doesn't require
+  # TODO(deklerk): there's probably a nicer way to do this that doesn't require
   # two invocations
   if ! apidiff -incompatible /tmp/pkg.master $pkg | (! read); then
     apidiff -incompatible /tmp/pkg.master $pkg

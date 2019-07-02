@@ -233,7 +233,7 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 	wantSid := sh.getID()
 	sh.recycle()
 
-	// TODO(deklerk) get rid of this
+	// TODO(deklerk): get rid of this
 	<-time.After(time.Second)
 
 	// Two back-to-back session requests, both of them should return the same
@@ -266,7 +266,7 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 	}
 
 	// Delay to trigger sessionPool.Take to ping the session.
-	// TODO(deklerk) get rid of this
+	// TODO(deklerk): get rid of this
 	<-time.After(time.Second)
 
 	// take will take the idle session. Then it will send a GetSession request
@@ -314,7 +314,7 @@ func TestTakeFromIdleWriteListChecked(t *testing.T) {
 	<-time.After(sp.SessionPoolConfig.healthCheckSampleInterval)
 	sh.recycle()
 
-	// TODO(deklerk) get rid of this
+	// TODO(deklerk): get rid of this
 	<-time.After(time.Second)
 
 	// Two back-to-back session requests, both of them should return the same
@@ -382,7 +382,7 @@ func TestMaxOpenedSessions(t *testing.T) {
 	}
 
 	go func() {
-		// TODO(deklerk) remove this
+		// TODO(deklerk): remove this
 		<-time.After(time.Second)
 		// Destroy the first session to allow the next session request to
 		// proceed.
@@ -524,7 +524,7 @@ func TestSessionRecycle(t *testing.T) {
 	}
 }
 
-// TODO(deklerk) Investigate why s.destroy(true) is flakey.
+// TODO(deklerk): Investigate why s.destroy(true) is flakey.
 // TestSessionDestroy tests destroying sessions.
 func TestSessionDestroy(t *testing.T) {
 	t.Skip("s.destroy(true) is flakey")
@@ -642,7 +642,7 @@ func TestWriteSessionsPrepared(t *testing.T) {
 	}
 
 	// Sleep for 1s, allowing healthcheck workers to invoke begin transaction.
-	// TODO(deklerk) get rid of this
+	// TODO(deklerk): get rid of this
 	<-time.After(time.Second)
 	wshs := make([]*sessionHandle, 5)
 	for i := 0; i < 5; i++ {
@@ -658,7 +658,7 @@ func TestWriteSessionsPrepared(t *testing.T) {
 		sh.recycle()
 	}
 
-	// TODO(deklerk) get rid of this
+	// TODO(deklerk): get rid of this
 	<-time.After(time.Second)
 
 	// Now force creation of 10 more sessions.
@@ -675,7 +675,7 @@ func TestWriteSessionsPrepared(t *testing.T) {
 		sh.recycle()
 	}
 
-	// TODO(deklerk) get rid of this
+	// TODO(deklerk): get rid of this
 	<-time.After(time.Second)
 
 	if sp.idleWriteList.Len() != 10 {
@@ -683,7 +683,8 @@ func TestWriteSessionsPrepared(t *testing.T) {
 	}
 }
 
-// TestTakeFromWriteQueue tests that sessionPool.take() returns write prepared sessions as well.
+// TestTakeFromWriteQueue tests that sessionPool.take() returns write prepared
+// sessions as well.
 func TestTakeFromWriteQueue(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
@@ -696,7 +697,7 @@ func TestTakeFromWriteQueue(t *testing.T) {
 	}
 	sh.recycle()
 
-	// TODO(deklerk) get rid of this
+	// TODO(deklerk): get rid of this
 	<-time.After(time.Second)
 
 	// The session should now be in write queue but take should also return it.
@@ -755,7 +756,7 @@ func TestSessionHealthCheck(t *testing.T) {
 	atomic.SwapInt64(&requestShouldErr, 1)
 
 	// Wait for healthcheck workers to find the broken session and tear it down.
-	// TODO(deklerk) get rid of this
+	// TODO(deklerk): get rid of this
 	<-time.After(1 * time.Second)
 
 	s := sh.session
@@ -817,10 +818,12 @@ func TestStressSessionPool(t *testing.T) {
 			// Schedule a test worker.
 			go func(idx int, pool *sessionPool, client sppb.SpannerClient) {
 				defer wg.Done()
-				// Test worker iterates 1K times and tries different session / session pool operations.
+				// Test worker iterates 1K times and tries different
+				// session / session pool operations.
 				for j := 0; j < 1000; j++ {
 					if idx%10 == 0 && j >= 900 {
-						// Close the pool in selected set of workers during the middle of the test.
+						// Close the pool in selected set of workers during the
+						// middle of the test.
 						pool.close()
 					}
 					// Take a write sessions ~ 20% of the times.
@@ -843,7 +846,8 @@ func TestStressSessionPool(t *testing.T) {
 						}
 						continue
 					}
-					// Verify if session is valid when session pool is valid. Note that if session pool is invalid after sh is taken,
+					// Verify if session is valid when session pool is valid.
+					// Note that if session pool is invalid after sh is taken,
 					// then sh might be invalidated by healthcheck workers.
 					if (sh.getID() == "" || sh.session == nil || !sh.session.isValid()) && pool.isValid() {
 						t.Errorf("%v.%v.%v: pool.take returns invalid session %v", ti, idx, takeWrite, sh.session)
@@ -852,7 +856,8 @@ func TestStressSessionPool(t *testing.T) {
 						t.Errorf("%v.%v: pool.takeWriteSession returns session %v without transaction", ti, idx, sh.session)
 					}
 					if rand.Intn(100) < idx {
-						// Random sleep before destroying/recycling the session, to give healthcheck worker a chance to step in.
+						// Random sleep before destroying/recycling the session,
+						// to give healthcheck worker a chance to step in.
 						<-time.After(time.Duration(rand.Int63n(int64(cfg.HealthCheckInterval))))
 					}
 					if rand.Intn(100) < idx {
@@ -867,7 +872,8 @@ func TestStressSessionPool(t *testing.T) {
 		}
 		wg.Wait()
 		sp.hc.close()
-		// Here the states of healthchecker, session pool and mockclient are stable.
+		// Here the states of healthchecker, session pool and mockclient are
+		// stable.
 		idleSessions := map[string]bool{}
 		hcSessions := map[string]bool{}
 		mockSessions := sc.DumpSessions()
@@ -917,11 +923,15 @@ func TestStressSessionPool(t *testing.T) {
 	}
 }
 
-// TODO(deklerk) Investigate why this test is flakey, even with waitFor. Example
-// flakey failure: session_test.go:946: after 15s waiting, got Scale down. Expect 5 open, got 6
+// TODO(deklerk): Investigate why this test is flakey, even with waitFor. Example
+// flakey failure: session_test.go:946: after 15s waiting, got Scale down.
+// Expect 5 open, got 6
 //
-// TestMaintainer checks the session pool maintainer maintains the number of sessions in the following cases
-// 1. On initialization of session pool, replenish session pool to meet MinOpened or MaxIdle.
+// TestMaintainer checks the session pool maintainer maintains the number of
+// sessions in the following cases:
+//
+// 1. On initialization of session pool, replenish session pool to meet
+//    MinOpened or MaxIdle.
 // 2. On increased session usage, provision extra MaxIdle sessions.
 // 3. After the surge passes, scale down the session pool accordingly.
 func TestMaintainer(t *testing.T) {
@@ -991,8 +1001,9 @@ func TestMaintainer(t *testing.T) {
 
 // Tests that maintainer creates up to MinOpened connections.
 //
-// Historical context: This test also checks that a low healthCheckSampleInterval
-// does not prevent it from opening connections. See: https://github.com/googleapis/google-cloud-go/issues/1259
+// Historical context: This test also checks that a low
+// healthCheckSampleInterval does not prevent it from opening connections.
+// See: https://github.com/googleapis/google-cloud-go/issues/1259
 func TestMaintainer_CreatesSessions(t *testing.T) {
 	t.Parallel()
 

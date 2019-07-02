@@ -28,6 +28,7 @@ google/iam/artman_iam_admin.yaml
 google/cloud/asset/artman_cloudasset_v1beta1.yaml
 google/cloud/asset/artman_cloudasset_v1.yaml
 google/iam/credentials/artman_iamcredentials_v1.yaml
+google/cloud/automl/artman_automl_v1beta1.yaml
 google/cloud/bigquery/datatransfer/artman_bigquerydatatransfer.yaml
 google/cloud/bigquery/storage/artman_bigquerystorage_v1beta1.yaml
 google/cloud/dataproc/artman_dataproc_v1.yaml
@@ -65,8 +66,11 @@ google/devtools/artman_clouddebugger.yaml
 google/devtools/clouderrorreporting/artman_errorreporting.yaml
 google/devtools/cloudtrace/artman_cloudtrace_v1.yaml
 google/devtools/cloudtrace/artman_cloudtrace_v2.yaml
+google/devtools/containeranalysis/artman_containeranalysis_v1.yaml
 google/devtools/containeranalysis/artman_containeranalysis_v1beta1.yaml
 google/firestore/artman_firestore.yaml
+google/firestore/admin/artman_firestore_v1.yaml
+grafeas/artman_grafeas_v1.yaml
 google/logging/artman_logging.yaml
 google/longrunning/artman_longrunning.yaml
 google/monitoring/artman_monitoring.yaml
@@ -81,6 +85,29 @@ for api in "${APIS[@]}"; do
   rm -rf artman-genfiles/*
   artman --config "$api" generate go_gapic
   cp -r artman-genfiles/gapi-*/cloud.google.com/go/* $GOPATH/src/cloud.google.com/go/
+done
+
+microgen() {
+  input=$1
+  options="${@:2}"
+
+  # see https://github.com/googleapis/gapic-generator-go/blob/master/README.md#docker-wrapper for details
+  docker run \
+    --mount type=bind,source=$(pwd),destination=/conf,readonly \
+    --mount type=bind,source=$(pwd)/$input,destination=/in/$input,readonly \
+    --mount type=bind,source=$GOPATH/src,destination=/out \
+    --rm \
+    gcr.io/gapic-images/gapic-generator-go:latest \
+    $options
+}
+
+MICROAPIS=(
+  # input proto directory  |  gapic-generator-go flag  | gapic-service-config flag
+  # "google/cloud/language/v1 --go-gapic-package cloud.google.com/go/language/apiv1;language --gapic-service-config google/cloud/language/language_v1.yaml"
+)
+
+for api in "${MICROAPIS[@]}"; do
+  microgen $api
 done
 
 pushd $GOPATH/src/cloud.google.com/go/
@@ -110,5 +137,13 @@ trace/apiv1
 for dir in "${HASMANUAL[@]}"; do
 	find "$GOPATH/src/cloud.google.com/go/$dir" -name '*.go' -exec sed -i.backup -e 's/setGoogleClientInfo/SetGoogleClientInfo/g' '{}' '+'
 done
+
+# These have manual edits and should not be auto-generated blindly.
+pushd $GOPATH/src/cloud.google.com/go
+  for d in "grafeas" "containeranalysis/apiv1"; do
+    git checkout $d
+    git clean -df $d
+  done
+popd
 
 find $GOPATH/src/cloud.google.com/go/ -name '*.backup' -delete

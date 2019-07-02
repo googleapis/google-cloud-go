@@ -66,7 +66,7 @@ golint ./... 2>&1 | ( \
     grep -v "method ExecuteSql should be ExecuteSQL" | \
     grep -vE "\.pb\.go:" || true) | tee /dev/stderr | (! read)
 
-# TODO(deklerk) It doesn't seem like it, but is it possible to glob both before
+# TODO(deklerk): It doesn't seem like it, but is it possible to glob both before
 # and after the colon? Then we could do *go-cloud-debug-agent*:*
 staticcheck -go 1.9 -ignore '
 *:S1007
@@ -95,7 +95,9 @@ cloud.google.com/go/httpreplay/internal/proxy/debug.go:*
 cloud.google.com/go/bigtable/internal/cbtconfig/cbtconfig.go:ST1005
 cloud.google.com/go/bigtable/cmd/cbt/cbt.go:ST1005
 cloud.google.com/go/asset/v1beta1/doc.go:*
+cloud.google.com/go/asset/v1beta1/mock_test.go:*
 cloud.google.com/go/spanner/value_test.go:S1019
 cloud.google.com/go/bigtable/reader.go:S1002
 cloud.google.com/go/internal/btree/btree.go:U1000
+cloud.google.com/go/container/apiv1/mock_test.go:*
 ' ./...
