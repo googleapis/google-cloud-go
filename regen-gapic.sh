@@ -66,11 +66,19 @@ google/devtools/artman_clouddebugger.yaml
 google/devtools/clouderrorreporting/artman_errorreporting.yaml
 google/devtools/cloudtrace/artman_cloudtrace_v1.yaml
 google/devtools/cloudtrace/artman_cloudtrace_v2.yaml
-google/devtools/containeranalysis/artman_containeranalysis_v1.yaml
+
+# The containeranalysis team wants manual changes in the auto-generated gapic.
+# So, let's remove it from the autogen list until we're ready to spend energy
+# generating and manually updating it.
+# google/devtools/containeranalysis/artman_containeranalysis_v1.yaml
+
 google/devtools/containeranalysis/artman_containeranalysis_v1beta1.yaml
 google/firestore/artman_firestore.yaml
 google/firestore/admin/artman_firestore_v1.yaml
-grafeas/artman_grafeas_v1.yaml
+
+# See containeranalysis note above.
+# grafeas/artman_grafeas_v1.yaml
+
 google/logging/artman_logging.yaml
 google/longrunning/artman_longrunning.yaml
 google/monitoring/artman_monitoring.yaml
@@ -137,13 +145,5 @@ trace/apiv1
 for dir in "${HASMANUAL[@]}"; do
 	find "$GOPATH/src/cloud.google.com/go/$dir" -name '*.go' -exec sed -i.backup -e 's/setGoogleClientInfo/SetGoogleClientInfo/g' '{}' '+'
 done
-
-# These have manual edits and should not be auto-generated blindly.
-pushd $GOPATH/src/cloud.google.com/go
-  for d in "grafeas" "containeranalysis/apiv1"; do
-    git checkout $d
-    git clean -df $d
-  done
-popd
 
 find $GOPATH/src/cloud.google.com/go/ -name '*.backup' -delete
