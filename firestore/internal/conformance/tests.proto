@@ -17,12 +17,12 @@
 
 syntax = "proto3";
 
-package tests;
+package google.cloud.conformance.firestore.v1;
 
 option php_namespace = "Google\\Cloud\\Firestore\\Tests\\Conformance";
 option csharp_namespace = "Google.Cloud.Firestore.Tests.Proto";
 option java_outer_classname = "TestDefinition";
-option java_package = "com.google.cloud.firestore.conformance";
+option java_package = "com.google.cloud.conformance.firestore.v1";
 
 import "google/firestore/v1/common.proto";
 import "google/firestore/v1/document.proto";
@@ -31,7 +31,7 @@ import "google/firestore/v1/query.proto";
 import "google/protobuf/timestamp.proto";
 
 // A collection of tests.
-message TestSuite {
+message TestFile {
   repeated Test tests = 1;
 }
 
