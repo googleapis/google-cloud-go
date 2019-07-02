@@ -336,6 +336,6 @@ type passAllFilter struct{}
 
 func (paf passAllFilter) String() string { return "passAllFilter()" }
 
-func (paf passAllFilter) proto() *btpb.RowFilter {
+func (paf passAllFilter) Proto() *btpb.RowFilter {
 	return &btpb.RowFilter{Filter: &btpb.RowFilter_PassAllFilter{PassAllFilter: true}}
 }
