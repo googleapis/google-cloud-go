@@ -1,27 +1,31 @@
 {
-  "description": "query: ArrayRemove in cursor method",
-  "comment": "ArrayRemove is not permitted in queries.",
-  "query": {
-    "collPath": "projects/projectID/databases/(default)/documents/C",
-    "clauses": [
-      {
-        "orderBy": {
-          "path": {
-            "field": [
-              "a"
-            ]
+  "tests": [
+    {
+      "description": "query: ArrayRemove in cursor method",
+      "comment": "ArrayRemove is not permitted in queries.",
+      "query": {
+        "collPath": "projects/projectID/databases/(default)/documents/C",
+        "clauses": [
+          {
+            "orderBy": {
+              "path": {
+                "field": [
+                  "a"
+                ]
+              },
+              "direction": "asc"
+            }
           },
-          "direction": "asc"
-        }
-      },
-      {
-        "endBefore": {
-          "jsonValues": [
-            "[\"ArrayRemove\", 1, 2, 3]"
-          ]
-        }
+          {
+            "endBefore": {
+              "jsonValues": [
+                "[\"ArrayRemove\", 1, 2, 3]"
+              ]
+            }
+          }
+        ],
+        "isError": true
       }
-    ],
-    "isError": true
-  }
+    }
+  ]
 }

@@ -1,23 +1,27 @@
 {
-  "description": "query: StartAt with empty values",
-  "comment": "Cursor methods are not allowed to use empty values with StartAt. It should result in an error.",
-  "query": {
-    "collPath": "projects/projectID/databases/(default)/documents/C",
-    "clauses": [
-      {
-        "orderBy": {
-          "path": {
-            "field": [
-              "a"
-            ]
+  "tests": [
+    {
+      "description": "query: StartAt with empty values",
+      "comment": "Cursor methods are not allowed to use empty values with StartAt. It should result in an error.",
+      "query": {
+        "collPath": "projects/projectID/databases/(default)/documents/C",
+        "clauses": [
+          {
+            "orderBy": {
+              "path": {
+                "field": [
+                  "a"
+                ]
+              },
+              "direction": "asc"
+            }
           },
-          "direction": "asc"
-        }
-      },
-      {
-        "startAt": {}
+          {
+            "startAt": {}
+          }
+        ],
+        "isError": true
       }
-    ],
-    "isError": true
-  }
+    }
+  ]
 }
