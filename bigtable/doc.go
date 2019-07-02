@@ -23,41 +23,6 @@ See https://godoc.org/cloud.google.com/go for authentication, timeouts,
 connection pooling and similar aspects of this package.
 
 
-Setup and Credentials
-
-Use NewClient or NewAdminClient to create a client that can be used to access
-the data or admin APIs respectively. Both require credentials that have
-permission to access the Cloud Bigtable API.
-
-If your program is run on Google App Engine or Google Compute Engine, using the
-Application Default Credentials
-(https://developers.google.com/accounts/docs/application-default-credentials)
-is the simplest option. Those credentials will be used by default when NewClient
-or NewAdminClient are called.
-
-To use alternate credentials, pass them to NewClient or NewAdminClient using
-option.WithTokenSource. For instance, you can use service account credentials
-by visiting https://cloud.google.com/console/project/_/apiui/credential,
-creating a new OAuth "Client ID", storing the JSON key somewhere accessible,
-and writing
-
-	jsonKey, err := ioutil.ReadFile(pathToKeyFile)
-	if err != nil {
-		// TODO: handle err.
-	}
-	config, err := google.JWTConfigFromJSON(jsonKey, bigtable.Scope) // or bigtable.AdminScope, etc.
-	if err != nil {
-		// TODO: handle err.
-	}
-	client, err := bigtable.NewClient(ctx, project, instance, option.WithTokenSource(config.TokenSource(ctx)))
-	if err != nil {
-		// TODO: handle err.
-	}
-	_ = client // TODO: use client.
-
-Here, `google` means the golang.org/x/oauth2/google package
-and `option` means the google.golang.org/api/option package.
-
 Reading
 
 The principal way to read from a Bigtable is to use the ReadRows method on
@@ -65,7 +30,6 @@ The principal way to read from a Bigtable is to use the ReadRows method on
 provided through RowFilter to limit or transform the data that is returned.
 
 	tbl := client.Open("mytable")
-
 	// Read all the rows starting with "com.google.", but only fetch the columns
 	// in the "links" family.
 	rr := bigtable.PrefixRange("com.google.")
@@ -85,6 +49,7 @@ To read a single row, use the ReadRow helper method:
 	}
 	// TODO: use r.
 
+
 Writing
 
 This API exposes two distinct forms of writing to a Bigtable: a Mutation and a
@@ -100,11 +65,11 @@ For instance, to set a couple of cells in a table:
 	mut := bigtable.NewMutation()
 	// To use numeric values that will later be incremented,
 	// they need to be big-endian encoded as 64-bit integers.
-        buf := new(bytes.Buffer)
-        initialLinkCount := 1 // The initial number of links.
-        if err := binary.Write(buf, binary.BigEndian, initialLinkCount); err != nil {
-		// TODO: handle err.
-        }
+	buf := new(bytes.Buffer)
+	initialLinkCount := 1 // The initial number of links.
+	if err := binary.Write(buf, binary.BigEndian, initialLinkCount); err != nil {
+	// TODO: handle err.
+	}
 	mut.Set("links", "maps.google.com", bigtable.Now(), buf.Bytes())
 	mut.Set("links", "golang.org", bigtable.Now(), buf.Bytes())
 	err := tbl.Apply(ctx, "com.google.cloud", mut)
@@ -122,6 +87,7 @@ To increment an encoded value in one cell:
 		// TODO: handle err.
 	}
 	// TODO: use r.
+
 
 Retries
 
