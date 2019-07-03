@@ -25,9 +25,11 @@ import (
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	kms "cloud.google.com/go/kms/apiv1"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -760,5 +762,80 @@ func TestIntegration_MessageStoragePolicy(t *testing.T) {
 	want := []string{"us-east1"}
 	if !testutil.Equal(got, want) {
 		t.Errorf("got %v, want %v", got, want)
+	}
+}
+
+func TestIntegration_CreateTopicWithKMS(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	kmsClient, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	keyRingID := "test-key-ring"
+	want := "test-key2"
+
+	// Get the test KMS key ring, optionally creating it if it doesn't exist.
+	keyRing, err := kmsClient.GetKeyRing(ctx, &kmspb.GetKeyRingRequest{
+		Name: fmt.Sprintf("projects/%s/locations/global/keyRings/%s", testutil.ProjID(), keyRingID),
+	})
+	if err != nil {
+		if status.Code(err) != codes.NotFound {
+			t.Fatal(err)
+		}
+		createKeyRingReq := &kmspb.CreateKeyRingRequest{
+			Parent:    fmt.Sprintf("projects/%s/locations/global", testutil.ProjID()),
+			KeyRingId: keyRingID,
+		}
+		keyRing, err = kmsClient.CreateKeyRing(ctx, createKeyRingReq)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	// Get the test KMS crypto key, optionally creating it if it doesn't exist.
+	key, err := kmsClient.GetCryptoKey(ctx, &kmspb.GetCryptoKeyRequest{
+		Name: fmt.Sprintf("%s/cryptoKeys/%s", keyRing.GetName(), want),
+	})
+	if err != nil {
+		if status.Code(err) != codes.NotFound {
+			t.Fatal(err)
+		}
+		createKeyReq := &kmspb.CreateCryptoKeyRequest{
+			Parent:      keyRing.GetName(),
+			CryptoKeyId: want,
+			CryptoKey: &kmspb.CryptoKey{
+				Purpose: 1, // ENCRYPT_DECRYPT purpose
+			},
+		}
+		key, err = kmsClient.CreateCryptoKey(ctx, createKeyReq)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	tc := TopicConfig{
+		KMSKeyName: key.GetName(),
+	}
+
+	topic, err := client.CreateTopicWithConfig(ctx, topicIDs.New(), &tc)
+	if err != nil {
+		t.Fatalf("CreateTopicWithConfig error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	cfg, err := topic.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := cfg.KMSKeyName
+
+	if got != key.GetName() {
+		t.Errorf("got %v, want %v", got, key.GetName())
 	}
 }
