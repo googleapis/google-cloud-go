@@ -2760,6 +2760,94 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 	}
 }
 
+func TestIntegration_HMACKey_Update(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+
+	projectID := testutil.ProjID()
+	serviceAccountEmail, err := client.ServiceAccount(ctx, projectID)
+	if err != nil {
+		t.Fatalf("Failed to get service account: %v", err)
+	}
+	hmacKey, err := client.CreateHMACKey(ctx, projectID, serviceAccountEmail)
+	if err != nil {
+		t.Fatalf("Failed to create HMACKey: %v", err)
+	}
+	if hmacKey == nil {
+		t.Fatal("Unexpectedly got back a nil HMAC key")
+	}
+
+	if hmacKey.State != Active {
+		t.Fatalf("Unexpected state %q, expected %q", hmacKey.State, Active)
+	}
+
+	hkh := client.HMACKeyHandle(projectID, hmacKey.AccessID)
+	// 1. Ensure that we CANNOT delete an ACTIVE key.
+	if err := hkh.Delete(ctx); err == nil {
+		t.Fatalf("Unexpectedly deleted key whose state is ACTIVE: %v", err)
+	}
+
+	invalidStates := []HMACState{"", Deleted, "active", "inactive", "foo_bar"}
+	for _, invalidState := range invalidStates {
+		t.Run("invalid-"+string(invalidState), func(t *testing.T) {
+			_, err := hkh.Update(ctx, HMACKeyAttrsToUpdate{
+				State: invalidState,
+			})
+			if err == nil {
+				t.Fatal("Unexpectedly succeeded")
+			}
+			invalidStateMsg := fmt.Sprintf(`storage: invalid state %q for update, must be either "ACTIVE" or "INACTIVE"`, invalidState)
+			if err.Error() != invalidStateMsg {
+				t.Fatalf("Mismatched error: got:  %q\nwant: %q", err, invalidStateMsg)
+			}
+		})
+	}
+
+	// 2.1. Setting the State to Inactive should succeed.
+	hu, err := hkh.Update(ctx, HMACKeyAttrsToUpdate{
+		State: Inactive,
+	})
+	if err != nil {
+		t.Fatalf("Unexpected Update failure: %v", err)
+	}
+	if got, want := hu.State, Inactive; got != want {
+		t.Fatalf("Unexpected updated state %q, expected %q", got, want)
+	}
+
+	// 2.2. Setting the State back to Active should succeed.
+	hu, err = hkh.Update(ctx, HMACKeyAttrsToUpdate{
+		State: Active,
+	})
+	if err != nil {
+		t.Fatalf("Unexpected Update failure: %v", err)
+	}
+	if got, want := hu.State, Active; got != want {
+		t.Fatalf("Unexpected updated state %q, expected %q", got, want)
+	}
+
+	// 3. Finally set it to back to Inactive and
+	// then retry the deletion which should now succeed.
+	_, _ = hkh.Update(ctx, HMACKeyAttrsToUpdate{
+		State: Inactive,
+	})
+	if err := hkh.Delete(ctx); err != nil {
+		t.Fatalf("Unexpected deletion failure: %v", err)
+	}
+
+	hk, err := hkh.Get(ctx)
+	switch {
+	case err == nil:
+		// If the err == nil, then the returned HMACKey's state MUST be Deleted.
+		if hk == nil || hk.State != Deleted {
+			t.Fatalf("After deletion\nGot %#v\nWanted state %q", hk, Deleted)
+		}
+
+	case err.Error() != "foo":
+		t.Fatalf("Unexpected error: %v", err)
+	}
+}
+
 type testHelper struct {
 	t *testing.T
 }
