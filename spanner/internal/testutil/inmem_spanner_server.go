@@ -244,19 +244,27 @@ func (s *inMemSpannerServer) SetError(err error) {
 
 // Registers a mocked result for a SQL statement on the server.
 func (s *inMemSpannerServer) PutStatementResult(sql string, result *StatementResult) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.statementResults[sql] = result
 	return nil
 }
 
 func (s *inMemSpannerServer) RemoveStatementResult(sql string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	delete(s.statementResults, sql)
 }
 
 func (s *inMemSpannerServer) AbortTransaction(id []byte) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.abortedTransactions[string(id)] = true
 }
 
 func (s *inMemSpannerServer) PutExecutionTime(method string, executionTime SimulatedExecutionTime) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.executionTimes[method] = &executionTime
 }
 
@@ -284,10 +292,14 @@ func (s *inMemSpannerServer) ready() {
 }
 
 func (s *inMemSpannerServer) TotalSessionsCreated() uint {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	return s.totalSessionsCreated
 }
 
 func (s *inMemSpannerServer) TotalSessionsDeleted() uint {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	return s.totalSessionsDeleted
 }
 
@@ -412,6 +424,8 @@ func (s *inMemSpannerServer) removeTransaction(tx *spannerpb.Transaction) {
 }
 
 func (s *inMemSpannerServer) getStatementResult(sql string) (*StatementResult, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	result, ok := s.statementResults[sql]
 	if !ok {
 		return nil, gstatus.Error(codes.Internal, fmt.Sprintf("No result found for statement %v", sql))
@@ -422,12 +436,15 @@ func (s *inMemSpannerServer) getStatementResult(sql string) (*StatementResult, e
 func (s *inMemSpannerServer) simulateExecutionTime(method string, req interface{}) error {
 	s.receivedRequests <- req
 	s.ready()
+	s.mu.Lock()
 	if s.err != nil {
 		err := s.err
 		s.err = nil
+		s.mu.Unlock()
 		return err
 	}
 	executionTime, ok := s.executionTimes[method]
+	s.mu.Unlock()
 	if ok {
 		var randTime int64
 		if executionTime.RandomExecutionTime > 0 {
@@ -539,13 +556,16 @@ func (s *inMemSpannerServer) ExecuteSql(ctx context.Context, req *spannerpb.Exec
 	if err != nil {
 		return nil, err
 	}
+	s.mu.Lock()
+	isPartitionedDml := s.partitionedDmlTransactions[string(id)]
+	s.mu.Unlock()
 	switch statementResult.Type {
 	case StatementResultError:
 		return nil, statementResult.Err
 	case StatementResultResultSet:
 		return statementResult.ResultSet, nil
 	case StatementResultUpdateCount:
-		return statementResult.convertUpdateCountToResultSet(!s.partitionedDmlTransactions[string(id)]), nil
+		return statementResult.convertUpdateCountToResultSet(!isPartitionedDml), nil
 	}
 	return nil, gstatus.Error(codes.Internal, "Unknown result type")
 }
@@ -573,6 +593,9 @@ func (s *inMemSpannerServer) ExecuteStreamingSql(req *spannerpb.ExecuteSqlReques
 	if err != nil {
 		return err
 	}
+	s.mu.Lock()
+	isPartitionedDml := s.partitionedDmlTransactions[string(id)]
+	s.mu.Unlock()
 	switch statementResult.Type {
 	case StatementResultError:
 		return statementResult.Err
@@ -583,7 +606,7 @@ func (s *inMemSpannerServer) ExecuteStreamingSql(req *spannerpb.ExecuteSqlReques
 		}
 		return nil
 	case StatementResultUpdateCount:
-		part := statementResult.updateCountToPartialResultSet(!s.partitionedDmlTransactions[string(id)])
+		part := statementResult.updateCountToPartialResultSet(!isPartitionedDml)
 		if err := stream.Send(part); err != nil {
 			return err
 		}
@@ -609,6 +632,9 @@ func (s *inMemSpannerServer) ExecuteBatchDml(ctx context.Context, req *spannerpb
 			return nil, err
 		}
 	}
+	s.mu.Lock()
+	isPartitionedDml := s.partitionedDmlTransactions[string(id)]
+	s.mu.Unlock()
 	resp := &spannerpb.ExecuteBatchDmlResponse{}
 	resp.ResultSets = make([]*spannerpb.ResultSet, len(req.Statements))
 	for idx, batchStatement := range req.Statements {
@@ -622,7 +648,7 @@ func (s *inMemSpannerServer) ExecuteBatchDml(ctx context.Context, req *spannerpb
 		case StatementResultResultSet:
 			return nil, gstatus.Error(codes.InvalidArgument, fmt.Sprintf("Not an update statement: %v", batchStatement.Sql))
 		case StatementResultUpdateCount:
-			resp.ResultSets[idx] = statementResult.convertUpdateCountToResultSet(!s.partitionedDmlTransactions[string(id)])
+			resp.ResultSets[idx] = statementResult.convertUpdateCountToResultSet(!isPartitionedDml)
 			resp.Status = &status.Status{Code: int32(codes.OK)}
 		}
 	}
