@@ -92,7 +92,7 @@ func runReadRowsTest(ctx context.Context, t *testing.T, tc *pb.ReadRowsTest, c *
 	// We perform a SingleRow here, but that arg is basically nonsense since
 	// the server is hard-coded to return a specific response. As in, we could
 	// pass RowRange, ListRows, etc and the result would all be the same.
-	c.Open("some-table").ReadRows(ctx, SingleRow("some-row"), func(r Row) bool {
+	err := c.Open("some-table").ReadRows(ctx, SingleRow("some-row"), func(r Row) bool {
 		type rowElem struct {
 			family    string
 			readItems []ReadItem
@@ -141,7 +141,25 @@ func runReadRowsTest(ctx context.Context, t *testing.T, tc *pb.ReadRowsTest, c *
 		return true
 	})
 
-	// if got, want := resIndex, len(tc.GetResults()); got != want {
-	// 	t.Fatalf("got %d results, want %d", got, want)
-	// }
+	wantNumResults := len(tc.GetResults())
+
+	if wantNumResults == 0 {
+		return
+	}
+
+	if tc.GetResults()[wantNumResults-1].GetError() {
+		// Last expected result is an error, which means we wouldn't
+		// count it with gotRowIndex.
+		wantNumResults--
+
+		if err == nil {
+			t.Fatal("expected err, got nil")
+		}
+	} else if err != nil {
+		t.Fatal(err)
+	}
+
+	if got, want := resIndex, wantNumResults; got != want {
+		t.Fatalf("got %d results, want %d", got, want)
+	}
 }
