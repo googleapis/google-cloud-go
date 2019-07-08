@@ -23,7 +23,7 @@ require (
 	golang.org/x/tools v0.0.0-20190628153133-6cdbf07be9d0
 	google.golang.org/api v0.7.0
 	google.golang.org/appengine v1.6.1 // indirect
-	google.golang.org/genproto v0.0.0-20190701230453-710ae3a149df
+	google.golang.org/genproto v0.0.0-20190708153700-3bdd9d9f5532
 	google.golang.org/grpc v1.21.1
 	honnef.co/go/tools v0.0.0-20190418001031-e561f6794a2a
 	rsc.io/binaryregexp v0.2.0
