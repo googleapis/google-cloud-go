@@ -531,3 +531,44 @@ func propToValue(v *pb.Value) (interface{}, error) {
 		return nil, nil
 	}
 }
+
+// EntityToStruct will load the given Entity to Go struct.
+func EntityToStruct(dst interface{}, ent *Entity) error {
+	pls, err := newStructPLS(dst)
+	if err != nil {
+		return err
+	}
+
+	// Try and load key.
+	keyField := pls.codec.Match(keyFieldName)
+	if keyField != nil && ent.Key != nil {
+		pls.v.FieldByIndex(keyField.Index).Set(reflect.ValueOf(ent.Key))
+	}
+
+	// Load properties.
+	return pls.Load(ent.Properties)
+}
+
+// ProtoToEntity will convert the Entity from low level datastore Entity to Entity defined in this sdk.
+func ProtoToEntity(src *pb.Entity) (*Entity, error) {
+	props := make([]Property, 0, len(src.Properties))
+	for name, val := range src.Properties {
+		v, err := propToValue(val)
+		if err != nil {
+			return nil, err
+		}
+		props = append(props, Property{
+			Name:    name,
+			Value:   v,
+			NoIndex: val.ExcludeFromIndexes,
+		})
+	}
+	var key *Key
+	if src.Key != nil {
+		// Ignore any error, since nested entity values
+		// are allowed to have an invalid key.
+		key, _ = protoToKey(src.Key)
+	}
+
+	return &Entity{key, props}, nil
+}
