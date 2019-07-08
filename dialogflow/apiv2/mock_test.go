@@ -645,6 +645,131 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func TestAgentsSetAgent(t *testing.T) {
+	var parent string = "parent-995424086"
+	var displayName string = "displayName1615086568"
+	var defaultLanguageCode string = "defaultLanguageCode856575222"
+	var timeZone string = "timeZone36848094"
+	var description string = "description-1724546052"
+	var avatarUri string = "avatarUri-402824826"
+	var enableLogging bool = false
+	var classificationThreshold float32 = 1.11581064E8
+	var expectedResponse = &dialogflowpb.Agent{
+		Parent:                  parent,
+		DisplayName:             displayName,
+		DefaultLanguageCode:     defaultLanguageCode,
+		TimeZone:                timeZone,
+		Description:             description,
+		AvatarUri:               avatarUri,
+		EnableLogging:           enableLogging,
+		ClassificationThreshold: classificationThreshold,
+	}
+
+	mockAgents.err = nil
+	mockAgents.reqs = nil
+
+	mockAgents.resps = append(mockAgents.resps[:0], expectedResponse)
+
+	var agent *dialogflowpb.Agent = &dialogflowpb.Agent{}
+	var request = &dialogflowpb.SetAgentRequest{
+		Agent: agent,
+	}
+
+	c, err := NewAgentsClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.SetAgent(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockAgents.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestAgentsSetAgentError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockAgents.err = gstatus.Error(errCode, "test error")
+
+	var agent *dialogflowpb.Agent = &dialogflowpb.Agent{}
+	var request = &dialogflowpb.SetAgentRequest{
+		Agent: agent,
+	}
+
+	c, err := NewAgentsClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.SetAgent(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestAgentsDeleteAgent(t *testing.T) {
+	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
+
+	mockAgents.err = nil
+	mockAgents.reqs = nil
+
+	mockAgents.resps = append(mockAgents.resps[:0], expectedResponse)
+
+	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
+	var request = &dialogflowpb.DeleteAgentRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewAgentsClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteAgent(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockAgents.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestAgentsDeleteAgentError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockAgents.err = gstatus.Error(errCode, "test error")
+
+	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
+	var request = &dialogflowpb.DeleteAgentRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewAgentsClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteAgent(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
 func TestAgentsGetAgent(t *testing.T) {
 	var parent2 string = "parent21175163357"
 	var displayName string = "displayName1615086568"
@@ -1104,119 +1229,6 @@ func TestAgentsRestoreAgentError(t *testing.T) {
 		t.Fatal(err)
 	}
 	err = respLRO.Wait(context.Background())
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-}
-func TestAgentsSetAgent(t *testing.T) {
-	var parent string = "parent-995424086"
-	var displayName string = "displayName1615086568"
-	var defaultLanguageCode string = "defaultLanguageCode856575222"
-	var timeZone string = "timeZone36848094"
-	var description string = "description-1724546052"
-	var avatarUri string = "avatarUri-402824826"
-	var enableLogging bool = false
-	var classificationThreshold float32 = 1.11581064E8
-	var expectedResponse = &dialogflowpb.Agent{
-		Parent:                  parent,
-		DisplayName:             displayName,
-		DefaultLanguageCode:     defaultLanguageCode,
-		TimeZone:                timeZone,
-		Description:             description,
-		AvatarUri:               avatarUri,
-		EnableLogging:           enableLogging,
-		ClassificationThreshold: classificationThreshold,
-	}
-
-	mockAgents.err = nil
-	mockAgents.reqs = nil
-
-	mockAgents.resps = append(mockAgents.resps[:0], expectedResponse)
-
-	var request *dialogflowpb.SetAgentRequest = &dialogflowpb.SetAgentRequest{}
-
-	c, err := NewAgentsClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.SetAgent(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockAgents.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestAgentsSetAgentError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockAgents.err = gstatus.Error(errCode, "test error")
-
-	var request *dialogflowpb.SetAgentRequest = &dialogflowpb.SetAgentRequest{}
-
-	c, err := NewAgentsClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.SetAgent(context.Background(), request)
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
-func TestAgentsDeleteAgent(t *testing.T) {
-	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
-
-	mockAgents.err = nil
-	mockAgents.reqs = nil
-
-	mockAgents.resps = append(mockAgents.resps[:0], expectedResponse)
-
-	var request *dialogflowpb.DeleteAgentRequest = &dialogflowpb.DeleteAgentRequest{}
-
-	c, err := NewAgentsClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = c.DeleteAgent(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockAgents.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-}
-
-func TestAgentsDeleteAgentError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockAgents.err = gstatus.Error(errCode, "test error")
-
-	var request *dialogflowpb.DeleteAgentRequest = &dialogflowpb.DeleteAgentRequest{}
-
-	c, err := NewAgentsClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = c.DeleteAgent(context.Background(), request)
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)
