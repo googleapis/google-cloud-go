@@ -341,14 +341,15 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error)
 	return err
 }
 
-func (c *Client) GetEntity(ctx context.Context, key *Key) (entity *pb.Entity, err error) {
+// GetEntity gets the low level google.golang.org/genproto/googleapis/datastore/v1 for the given Key.
+func (c *Client) GetEntity(ctx context.Context, key *pb.Key) (entity *pb.Entity, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Get")
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	var pbKey *pb.Key
 	if !key.valid() {
 		return nil, ErrInvalidKey
-	} else if key.Incomplete(){
+	} else if key.Incomplete() {
 		return nil, fmt.Errorf("datastore: can't get the incomplete key: %v", key)
 	} else {
 		pbKey = keyToProto(key)
@@ -392,10 +393,10 @@ func (c *Client) GetEntity(ctx context.Context, key *Key) (entity *pb.Entity, er
 			return nil, errors.New("datastore: internal error: server returned an invalid key")
 		}
 		return e.Entity, nil
-	} else if len(missing) > 0{
+	} else if len(missing) > 0 {
 		return nil, ErrNoSuchEntity
 	}
-	return nil , errors.New("datastore: internal error: server returned the wrong number of entities")
+	return nil, errors.New("datastore: internal error: server returned the wrong number of entities")
 }
 
 // GetMulti is a batch version of Get.
@@ -542,6 +543,7 @@ func (c *Client) Put(ctx context.Context, key *Key, src interface{}) (*Key, erro
 	return k[0], nil
 }
 
+// PutEntity saves the low level google.golang.org/genproto/googleapis/datastore/v1 into the datastore with the given Key.
 func (c *Client) PutEntity(ctx context.Context, key *Key, entity *pb.Entity) (*Key, error) {
 	log.Println("received values are")
 	log.Println(entity.Properties)
@@ -563,7 +565,7 @@ func (c *Client) PutEntity(ctx context.Context, key *Key, entity *pb.Entity) (*K
 	if err != nil {
 		return nil, err
 	}
-	retKey := make([]*Key,1)
+	retKey := make([]*Key, 1)
 	if key.Incomplete() {
 		retKey[0], err = protoToKey(resp.MutationResults[0].Key)
 		if err != nil {
