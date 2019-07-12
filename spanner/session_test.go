@@ -643,23 +643,24 @@ func TestHealthCheckScheduler(t *testing.T) {
 	sp := client.idleSessions
 
 	// Create 50 sessions.
-	ss := []string{}
 	for i := 0; i < 50; i++ {
-		sh, err := sp.take(ctx)
+		_, err := sp.take(ctx)
 		if err != nil {
 			t.Fatalf("cannot get session from session pool: %v", err)
 		}
-		ss = append(ss, sh.getID())
 	}
 
 	// Wait for 10-30 pings per session.
 	waitFor(t, func() error {
+		// Only check actually live sessions and ignore any sessions the
+		// session pool may have deleted in the meantime.
+		liveSessions := server.testSpanner.DumpSessions()
 		dp := server.testSpanner.DumpPings()
 		gotPings := map[string]int64{}
 		for _, p := range dp {
 			gotPings[p]++
 		}
-		for _, s := range ss {
+		for s := range liveSessions {
 			want := int64(20)
 			if got := gotPings[s]; got < want/2 || got > want+want/2 {
 				// This is an unnacceptable amount of pings.
