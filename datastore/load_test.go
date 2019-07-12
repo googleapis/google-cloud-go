@@ -15,6 +15,7 @@
 package datastore
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -425,6 +426,83 @@ type NestedStructPtrs struct {
 type NestedSimple2 struct {
 	A *Simple
 	I int
+	U interface{}
+}
+
+type withTypedInterface struct {
+	Field fmt.Stringer
+}
+
+type withUntypedInterface struct {
+	Field interface{}
+}
+
+func TestLoadToInterface(t *testing.T) {
+	testCases := []struct {
+		name    string
+		src     *pb.Entity
+		dst     interface{}
+		want    interface{}
+		wantErr string
+	}{
+		{
+			name: "Typed interface",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Field": {ValueType: &pb.Value_StringValue{
+						StringValue: "Foo",
+					}},
+				},
+			},
+			dst:     &withTypedInterface{},
+			wantErr: `datastore: cannot load field "Field" into a "datastore.withTypedInterface": "string" is not assignable to "fmt.Stringer"`,
+		},
+		{
+			name: "Untyped interface, fresh struct",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Field": {ValueType: &pb.Value_StringValue{
+						StringValue: "Foo",
+					}},
+				},
+			},
+			dst:  &withUntypedInterface{},
+			want: &withUntypedInterface{Field: "Foo"},
+		},
+		{
+			name: "Untyped interface, already set",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Field": {ValueType: &pb.Value_StringValue{
+						StringValue: "Newly set",
+					}},
+				},
+			},
+			dst:  &withUntypedInterface{Field: 1e9},
+			want: &withUntypedInterface{Field: "Newly set"},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := loadEntityProto(tc.dst, tc.src)
+			if tc.wantErr != "" {
+				if err == nil || err.Error() != tc.wantErr {
+					t.Fatalf("Error mismatch\nGot:  %s\nWant: %s", err, tc.wantErr)
+				}
+			} else {
+				if err != nil {
+					t.Fatalf("loadEntityProto: %v", err)
+				}
+				if diff := testutil.Diff(tc.dst, tc.want); diff != "" {
+					t.Fatalf("Mismatch: got - want +\n%s", diff)
+				}
+			}
+		})
+	}
 }
 
 func TestAlreadyPopulatedDst(t *testing.T) {
@@ -471,6 +549,7 @@ func TestAlreadyPopulatedDst(t *testing.T) {
 							Properties: map[string]*pb.Value{
 								"A": {ValueType: &pb.Value_NullValue{}},
 								"I": {ValueType: &pb.Value_IntegerValue{IntegerValue: 2}},
+								"U": {ValueType: &pb.Value_StringValue{StringValue: "replaced"}},
 							},
 						},
 					}},
@@ -483,6 +562,7 @@ func TestAlreadyPopulatedDst(t *testing.T) {
 				&NestedSimple2{
 					A: &Simple{I: 2},
 					/* I: 0 */
+					U: 1e9,
 				},
 				0,
 			},
@@ -492,6 +572,7 @@ func TestAlreadyPopulatedDst(t *testing.T) {
 				&NestedSimple2{
 					/* A: nil, */
 					I: 2,
+					U: "replaced",
 				},
 				5,
 			},
