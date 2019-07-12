@@ -161,9 +161,10 @@ func TestIntegration_Basics(t *testing.T) {
 		I int
 		S string
 		T time.Time
+		U interface{}
 	}
 
-	x0 := X{66, "99", timeNow.Truncate(time.Millisecond)}
+	x0 := X{66, "99", timeNow.Truncate(time.Millisecond), "X"}
 	k, err := client.Put(ctx, IncompleteKey("BasicsX", nil), &x0)
 	if err != nil {
 		t.Fatalf("client.Put: %v", err)
