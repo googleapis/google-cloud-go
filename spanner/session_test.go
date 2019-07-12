@@ -22,7 +22,6 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
-	"sync"
 	"testing"
 	"time"
 
@@ -859,7 +858,6 @@ func TestSessionHealthCheck(t *testing.T) {
 // and healthchecker should be in consistent state.
 func TestStressSessionPool(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
 
 	// Use concurrent workers to test different session pool built from different configurations.
 	for ti, cfg := range []SessionPoolConfig{
@@ -869,7 +867,6 @@ func TestStressSessionPool(t *testing.T) {
 		{MinOpened: 10, MaxOpened: 200, MaxBurst: 5},
 		{MinOpened: 10, MaxOpened: 200, MaxBurst: 5, WriteSessions: 0.2},
 	} {
-		var wg sync.WaitGroup
 		// Create a more aggressive session healthchecker to increase test concurrency.
 		cfg.HealthCheckInterval = 50 * time.Millisecond
 		cfg.healthCheckSampleInterval = 10 * time.Millisecond
@@ -881,64 +878,17 @@ func TestStressSessionPool(t *testing.T) {
 			})
 		sp := client.idleSessions
 
-		for i := 0; i < 100; i++ {
-			wg.Add(1)
-			// Schedule a test worker.
-			go func(idx int, pool *sessionPool, client *Client) {
-				defer wg.Done()
-				// Test worker iterates 1K times and tries different
-				// session / session pool operations.
-				for j := 0; j < 1000; j++ {
-					if idx%10 == 0 && j >= 900 {
-						// Close the pool in selected set of workers during the
-						// middle of the test.
-						pool.close()
-					}
-					// Take a write sessions ~ 20% of the times.
-					takeWrite := rand.Intn(5) == 4
-					var (
-						sh     *sessionHandle
-						gotErr error
-					)
-					if takeWrite {
-						sh, gotErr = pool.takeWriteSession(ctx)
-					} else {
-						sh, gotErr = pool.take(ctx)
-					}
-					if gotErr != nil {
-						if pool.isValid() {
-							t.Errorf("%v.%v: pool.take returns error when pool is still valid: %v", ti, idx, gotErr)
-						}
-						if wantErr := errInvalidSessionPool(); !testEqual(gotErr, wantErr) {
-							t.Errorf("%v.%v: got error when pool is closed: %v, want %v", ti, idx, gotErr, wantErr)
-						}
-						continue
-					}
-					// Verify if session is valid when session pool is valid.
-					// Note that if session pool is invalid after sh is taken,
-					// then sh might be invalidated by healthcheck workers.
-					if (sh.getID() == "" || sh.session == nil || !sh.session.isValid()) && pool.isValid() {
-						t.Errorf("%v.%v.%v: pool.take returns invalid session %v", ti, idx, takeWrite, sh.session)
-					}
-					if takeWrite && sh.getTransactionID() == nil {
-						t.Errorf("%v.%v: pool.takeWriteSession returns session %v without transaction", ti, idx, sh.session)
-					}
-					if rand.Intn(100) < idx {
-						// Random sleep before destroying/recycling the session,
-						// to give healthcheck worker a chance to step in.
-						<-time.After(time.Duration(rand.Int63n(int64(cfg.HealthCheckInterval))))
-					}
-					if rand.Intn(100) < idx {
-						// destroy the session.
-						sh.destroy()
-						continue
-					}
-					// recycle the session.
-					sh.recycle()
-				}
-			}(i, sp, client)
-		}
-		wg.Wait()
+		// Create a test group for this configuration and schedule 100 sub
+		// sub tests within the group.
+		t.Run(fmt.Sprintf("TestStressSessionPoolGroup%v", ti), func(t *testing.T) {
+			for i := 0; i < 100; i++ {
+				idx := i
+				t.Run(fmt.Sprintf("TestStressSessionPoolWithCfg%dWorker%03d", ti, idx),
+					func(t *testing.T) {
+						testStressSessionPool(t, cfg, ti, idx, sp, client)
+					})
+			}
+		})
 		sp.hc.close()
 		// Here the states of healthchecker, session pool and mockclient are
 		// stable.
@@ -997,6 +947,68 @@ func TestStressSessionPool(t *testing.T) {
 			}
 		}
 		server.teardown(client)
+	}
+}
+
+func testStressSessionPool(t *testing.T, cfg SessionPoolConfig, ti int, idx int, pool *sessionPool, client *Client) {
+	t.Parallel()
+	ctx := context.Background()
+	// Test worker iterates 1K times and tries different
+	// session / session pool operations.
+	for j := 0; j < 1000; j++ {
+		if idx%10 == 0 && j >= 900 {
+			// Close the pool in selected set of workers during the
+			// middle of the test.
+			pool.close()
+		}
+		// Take a write sessions ~ 20% of the times.
+		takeWrite := rand.Intn(5) == 4
+		var (
+			sh     *sessionHandle
+			gotErr error
+		)
+		wasValid := pool.isValid()
+		if takeWrite {
+			sh, gotErr = pool.takeWriteSession(ctx)
+		} else {
+			sh, gotErr = pool.take(ctx)
+		}
+		if gotErr != nil {
+			if pool.isValid() {
+				t.Fatalf("%v.%v: pool.take returns error when pool is still valid: %v", ti, idx, gotErr)
+			}
+			// If the session pool was closed when we tried to take a session
+			// from the pool, then we should have gotten a specific error.
+			// If the session pool was closed between the take() and now (or
+			// even during a take()) then an error is ok.
+			if !wasValid {
+				if wantErr := errInvalidSessionPool(); !testEqual(gotErr, wantErr) {
+					t.Fatalf("%v.%v: got error when pool is closed: %v, want %v", ti, idx, gotErr, wantErr)
+				}
+			}
+			continue
+		}
+		// Verify if session is valid when session pool is valid.
+		// Note that if session pool is invalid after sh is taken,
+		// then sh might be invalidated by healthcheck workers.
+		if (sh.getID() == "" || sh.session == nil || !sh.session.isValid()) && pool.isValid() {
+			t.Fatalf("%v.%v.%v: pool.take returns invalid session %v", ti, idx, takeWrite, sh.session)
+		}
+		if takeWrite && sh.getTransactionID() == nil {
+			t.Fatalf("%v.%v: pool.takeWriteSession returns session %v without transaction", ti, idx, sh.session)
+		}
+		if rand.Intn(100) < idx {
+			// Random sleep before destroying/recycling the session,
+			// to give healthcheck worker a chance to step in.
+			<-time.After(time.Duration(rand.Int63n(int64(cfg.HealthCheckInterval))))
+		}
+		if rand.Intn(100) < idx {
+			// destroy the session.
+			sh.destroy()
+			continue
+		}
+		// recycle the session.
+		sh.recycle()
 	}
 }
 
