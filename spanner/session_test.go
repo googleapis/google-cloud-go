@@ -649,6 +649,10 @@ func TestHealthCheckScheduler(t *testing.T) {
 		}
 	}
 
+	// Make sure we start with a ping history to avoid that the first
+	// sessions that were created have not already exceeded the maximum
+	// number of pings.
+	server.testSpanner.ClearPings()
 	// Wait for 10-30 pings per session.
 	waitFor(t, func() error {
 		// Only check actually live sessions and ignore any sessions the
