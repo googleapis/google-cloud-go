@@ -168,6 +168,7 @@ type InMemSpannerServer interface {
 
 	ReceivedRequests() chan interface{}
 	DumpSessions() map[string]bool
+	ClearPings()
 	DumpPings() []string
 }
 
@@ -305,6 +306,13 @@ func (s *inMemSpannerServer) TotalSessionsDeleted() uint {
 
 func (s *inMemSpannerServer) ReceivedRequests() chan interface{} {
 	return s.receivedRequests
+}
+
+// ClearPings clears the ping history from the server.
+func (s *inMemSpannerServer) ClearPings() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.pings = nil
 }
 
 // DumpPings dumps the ping history.
