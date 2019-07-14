@@ -1559,3 +1559,100 @@ func TestFilterRowWithSingleColumnQualifier(t *testing.T) {
 		t.Fatalf("Response mismatch: got: + want -\n%s", diff)
 	}
 }
+
+func TestValueFilterRowWithAlternationInRegex(t *testing.T) {
+	// Test that regex alternation is applied properly.
+	// See Issue https://github.com/googleapis/google-cloud-go/issues/1499
+	ctx := context.Background()
+	srv := &server{tables: make(map[string]*table)}
+
+	tblReq := &btapb.CreateTableRequest{
+		Parent:  "issue-1499",
+		TableId: "table_id",
+		Table: &btapb.Table{
+			ColumnFamilies: map[string]*btapb.ColumnFamily{
+				"cf": {},
+			},
+		},
+	}
+	tbl, err := srv.CreateTable(ctx, tblReq)
+	if err != nil {
+		t.Fatalf("Failed to create the table: %v", err)
+	}
+
+	entries := []struct {
+		row   string
+		value []byte
+	}{
+		{"row1", []byte("")},
+		{"row2", []byte{'x'}},
+		{"row3", []byte{'a'}},
+		{"row4", []byte{'m'}},
+	}
+
+	for _, entry := range entries {
+		req := &btpb.MutateRowRequest{
+			TableName: tbl.Name,
+			RowKey:    []byte(entry.row),
+			Mutations: []*btpb.Mutation{{
+				Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
+					FamilyName:      "cf",
+					ColumnQualifier: []byte("cq"),
+					TimestampMicros: 1000,
+					Value:           entry.value,
+				}},
+			}},
+		}
+		if _, err := srv.MutateRow(ctx, req); err != nil {
+			t.Fatalf("Failed to insert entry %v into server: %v", entry, err)
+		}
+	}
+
+	// After insertion now it is time for querying.
+	req := &btpb.ReadRowsRequest{
+		TableName: tbl.Name,
+		Rows:      &btpb.RowSet{},
+		Filter: &btpb.RowFilter{
+			Filter: &btpb.RowFilter_ValueRegexFilter{
+				ValueRegexFilter: []byte("|a"),
+			},
+		},
+	}
+
+	rrss := new(MockReadRowsServer)
+	if err := srv.ReadRows(req, rrss); err != nil {
+		t.Fatalf("Failed to read rows: %v", err)
+	}
+
+	var gotChunks []*btpb.ReadRowsResponse_CellChunk
+	for _, res := range rrss.responses {
+		gotChunks = append(gotChunks, res.Chunks...)
+	}
+
+	// Only row1 "" and row3 "a" should be matched.
+	wantChunks := []*btpb.ReadRowsResponse_CellChunk{
+		{
+			RowKey:          []byte("row1"),
+			FamilyName:      &wrappers.StringValue{Value: "cf"},
+			Qualifier:       &wrappers.BytesValue{Value: []byte("cq")},
+			TimestampMicros: 1000,
+			Value:           []byte(""),
+			RowStatus: &btpb.ReadRowsResponse_CellChunk_CommitRow{
+				CommitRow: true,
+			},
+		},
+		{
+			RowKey:          []byte("row3"),
+			FamilyName:      &wrappers.StringValue{Value: "cf"},
+			Qualifier:       &wrappers.BytesValue{Value: []byte("cq")},
+			TimestampMicros: 1000,
+			Value:           []byte("a"),
+			RowStatus: &btpb.ReadRowsResponse_CellChunk_CommitRow{
+				CommitRow: true,
+			},
+		},
+	}
+	if diff := cmp.Diff(gotChunks, wantChunks); diff != "" {
+		t.Fatalf("Response chunks mismatch: got: + want -\n%s", diff)
+	}
+}

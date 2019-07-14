@@ -733,7 +733,7 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) (bool, error) {
 }
 
 func newRegexp(pat []byte) (*binaryregexp.Regexp, error) {
-	re, err := binaryregexp.Compile("^" + string(pat) + "$") // match entire target
+	re, err := binaryregexp.Compile("^(?:" + string(pat) + ")$") // match entire target
 	if err != nil {
 		log.Printf("Bad pattern %q: %v", pat, err)
 	}
