@@ -77,9 +77,18 @@ func TestEndToEnd_Dupes(t *testing.T) {
 	defer cancel()
 
 	consumers := []*consumer{
-		{counts: make(map[string]int), recv: recv, durations: []time.Duration{time.Hour}},
-		{counts: make(map[string]int), recv: recv,
-			durations: []time.Duration{ackDeadline, ackDeadline, ackDeadline / 2, ackDeadline / 2, time.Hour}},
+		{
+			counts:    make(map[string]int),
+			recv:      recv,
+			durations: []time.Duration{time.Hour},
+			done:      make(chan struct{}),
+		},
+		{
+			counts:    make(map[string]int),
+			recv:      recv,
+			durations: []time.Duration{ackDeadline, ackDeadline, ackDeadline / 2, ackDeadline / 2, time.Hour},
+			done:      make(chan struct{}),
+		},
 	}
 	for i, con := range consumers {
 		con := con
