@@ -4,7 +4,7 @@ go 1.9
 
 require (
 	github.com/golang/mock v1.3.1
-	github.com/golang/protobuf v1.3.1
+	github.com/golang/protobuf v1.3.2
 	github.com/google/btree v1.0.0
 	github.com/google/go-cmp v0.3.0
 	github.com/google/martian v2.1.0+incompatible
@@ -23,7 +23,7 @@ require (
 	golang.org/x/tools v0.0.0-20190628153133-6cdbf07be9d0
 	google.golang.org/api v0.7.0
 	google.golang.org/appengine v1.6.1 // indirect
-	google.golang.org/genproto v0.0.0-20190708153700-3bdd9d9f5532
+	google.golang.org/genproto v0.0.0-20190716160619-c506a9f90610
 	google.golang.org/grpc v1.21.1
 	honnef.co/go/tools v0.0.0-20190418001031-e561f6794a2a
 	rsc.io/binaryregexp v0.2.0
