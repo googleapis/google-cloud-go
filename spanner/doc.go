@@ -334,15 +334,65 @@ NULL-able STRUCT values.
 
 DML and Partitioned DML
 
-Spanner supports DML statements like INSERT, UPDATE and DELETE. Use
-ReadWriteTransaction.Update to run DML statements. It returns the number of rows
-affected. (You can call use ReadWriteTransaction.Query with a DML statement. The
-first call to Next on the resulting RowIterator will return iterator.Done, and
-the RowCount field of the iterator will hold the number of affected rows.)
+Spanner supports Data Manipulation Language (DML) statements like INSERT,
+UPDATE and DELETE. Use ReadWriteTransaction.Update to run DML statements.
+It returns the number of rows affected. (You can call use
+ReadWriteTransaction.Query with a DML statement. The first call to Next
+on the resulting RowIterator will return iterator.Done, and the RowCount
+field of the iterator will hold the number of affected rows.)
+
+Perform a DML INSERT in a read-write transaction using the
+ReadWriteTransaction.Update() method:
+
+    func insertUsingDML(ctx context.Context, w io.Writer, client *spanner.Client) error {
+            _, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, txn *spanner.ReadWriteTransaction) error {
+                    stmt := spanner.Statement{
+                            SQL: `INSERT Singers (SingerId, FirstName, LastName)
+                                            VALUES (10, 'Virginia', 'Watson')`,
+                    }
+                    rowCount, err := txn.Update(ctx, stmt)
+                    if err != nil {
+                            return err
+                    }
+                    fmt.Fprintf(w, "%d record(s) inserted.\n", rowCount)
+                    return nil
+            })
+            return err
+    }
+
+Perform a DML UPDATE in a read-write transaction using the
+ReadWriteTransaction.Update() method:
+
+    func updateUsingDML(ctx context.Context, w io.Writer, client *spanner.Client) error {
+            _, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, txn *spanner.ReadWriteTransaction) error {
+                    stmt := spanner.Statement{
+                            SQL: `UPDATE Albums
+                                    SET MarketingBudget = MarketingBudget * 2
+                                    WHERE SingerId = 1 and AlbumId = 1`,
+                    }
+                    rowCount, err := txn.Update(ctx, stmt)
+                    if err != nil {
+                            return err
+                    }
+                    fmt.Fprintf(w, "%d record(s) updated.\n", rowCount)
+                    return nil
+            })
+            return err
+    }
 
 For large databases, it may be more efficient to partition the DML statement.
 Use client.PartitionedUpdate to run a DML statement in this way. Not all DML
 statements can be partitioned.
+
+    func updateUsingPartitionedDML(ctx context.Context, w io.Writer, client *spanner.Client) error {
+            stmt := spanner.Statement{SQL: "UPDATE Albums SET MarketingBudget = 100000 WHERE SingerId > 1"}
+            rowCount, err := client.PartitionedUpdate(ctx, stmt)
+            if err != nil {
+                    return err
+            }
+            fmt.Fprintf(w, "%d record(s) updated.\n", rowCount)
+            return nil
+    }
 
 
 Tracing
