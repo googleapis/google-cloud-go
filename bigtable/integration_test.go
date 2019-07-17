@@ -18,6 +18,7 @@ package bigtable
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"math"
 	"math/rand"
@@ -52,6 +53,17 @@ func populatePresidentsGraph(table *Table) error {
 		}
 	}
 	return nil
+}
+
+var instanceToCreate string
+var instanceToCreateZone string
+
+func init() {
+	// Don't test instance creation by default, as quota is necessary and aborted tests could strand resources.
+	flag.StringVar(&instanceToCreate, "it.instance-to-create", "",
+		"The id of an instance to create, update and delete. Requires sufficient Cloud Bigtable quota. Requires that it.use-prod is true.")
+	flag.StringVar(&instanceToCreateZone, "it.instance-to-create-zone", "us-central1-b",
+		"The zone in which to create the new test instance.")
 }
 
 func TestIntegration_ConditionalMutations(t *testing.T) {
@@ -1151,6 +1163,90 @@ func TestIntegration_Admin(t *testing.T) {
 	}))
 	if gotRowCount != 5 {
 		t.Errorf("Invalid row count after dropping range: got %v, want %v", gotRowCount, 5)
+	}
+}
+
+func TestIntegration_AdminCreateInstance(t *testing.T) {
+	if instanceToCreate == "" {
+		t.Skip("instanceToCreate not set, skipping instance creation testing")
+	}
+
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support instance creation")
+	}
+
+	timeout := 5 * time.Minute
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+
+	clusterId := instanceToCreate + "-cluster"
+
+	// Create a development instance
+	conf := &InstanceConf{
+		InstanceId:   instanceToCreate,
+		ClusterId:    clusterId,
+		DisplayName:  "test instance",
+		Zone:         instanceToCreateZone,
+		InstanceType: DEVELOPMENT,
+	}
+	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+		t.Fatalf("CreateInstance: %v", err)
+	}
+	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
+
+	iInfo, err := iAdminClient.InstanceInfo(ctx, instanceToCreate)
+	if err != nil {
+		t.Fatalf("InstanceInfo: %v", err)
+	}
+
+	// Basic return values are tested elsewhere, check instance type
+	if iInfo.InstanceType != DEVELOPMENT {
+		t.Fatalf("Instance is not DEVELOPMENT: %v", err)
+	}
+
+	// Update everything we can about the instance in one call.
+	confWithClusters := &InstanceWithClustersConfig{
+		InstanceID:   instanceToCreate,
+		DisplayName:  "new display name",
+		InstanceType: PRODUCTION,
+		Clusters: []ClusterConfig{
+			{ClusterID: clusterId, NumNodes: 5}},
+	}
+
+	if err = iAdminClient.UpdateInstanceWithClusters(ctx, confWithClusters); err != nil {
+		t.Fatalf("UpdateInstanceWithClusters: %v", err)
+	}
+
+	iInfo, err = iAdminClient.InstanceInfo(ctx, instanceToCreate)
+	if err != nil {
+		t.Fatalf("InstanceInfo: %v", err)
+	}
+
+	if iInfo.InstanceType != PRODUCTION {
+		t.Fatalf("Instance type is not PRODUCTION: %v", err)
+	}
+	if got, want := iInfo.DisplayName, confWithClusters.DisplayName; got != want {
+		t.Fatalf("Display name: %q, want: %q", got, want)
+	}
+
+	cInfo, err := iAdminClient.GetCluster(ctx, instanceToCreate, clusterId)
+	if err != nil {
+		t.Fatalf("GetCluster: %v", err)
+	}
+
+	if cInfo.ServeNodes != 5 {
+		t.Fatalf("NumNodes: %v, want: %v", cInfo.ServeNodes, 5)
 	}
 }
 
