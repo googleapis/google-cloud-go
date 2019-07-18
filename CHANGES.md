@@ -1,5 +1,26 @@
 # Changes
 
+## v0.42.0
+
+- bigtable:
+  - Add an admin method to update an instance and clusters.
+  - Fix bttest regex matching behavior for alternations (things like `|a`).
+  - Expose BlockAllFilter filter.
+- bigquery:
+  - Add Routines API support.
+- storage:
+  - Add read-only Bucket.LocationType.
+- logging:
+  - Add TraceSampled to Entry.
+  - Fix to properly extract {Trace, Span}Id from X-Cloud-Trace-Context.
+- pubsub:
+  - Add Cloud Key Management to TopicConfig.
+  - Change ExpirationPolicy to optional.Duration.
+- automl:
+  - Add apiv1beta1 client.
+- iam:
+  - Fix compilation problem with iam/credentials/apiv1.
+
 ## v0.41.0
 
 - bigtable:
