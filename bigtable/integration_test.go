@@ -1190,12 +1190,12 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	}
 	defer iAdminClient.Close()
 
-	clusterId := instanceToCreate + "-cluster"
+	clusterID := instanceToCreate + "-cluster"
 
 	// Create a development instance
 	conf := &InstanceConf{
 		InstanceId:   instanceToCreate,
-		ClusterId:    clusterId,
+		ClusterId:    clusterID,
 		DisplayName:  "test instance",
 		Zone:         instanceToCreateZone,
 		InstanceType: DEVELOPMENT,
@@ -1221,7 +1221,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		DisplayName:  "new display name",
 		InstanceType: PRODUCTION,
 		Clusters: []ClusterConfig{
-			{ClusterID: clusterId, NumNodes: 5}},
+			{ClusterID: clusterID, NumNodes: 5}},
 	}
 
 	if err = iAdminClient.UpdateInstanceWithClusters(ctx, confWithClusters); err != nil {
@@ -1240,7 +1240,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		t.Fatalf("Display name: %q, want: %q", got, want)
 	}
 
-	cInfo, err := iAdminClient.GetCluster(ctx, instanceToCreate, clusterId)
+	cInfo, err := iAdminClient.GetCluster(ctx, instanceToCreate, clusterID)
 	if err != nil {
 		t.Fatalf("GetCluster: %v", err)
 	}
