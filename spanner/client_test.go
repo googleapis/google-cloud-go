@@ -19,9 +19,11 @@ package spanner
 import (
 	"context"
 	"io"
+	"os"
 	"strings"
 	"testing"
 
+	"cloud.google.com/go/spanner/internal/benchserver"
 	"cloud.google.com/go/spanner/internal/testutil"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
@@ -405,5 +407,31 @@ func TestReadWriteTransaction_ErrUnexpectedEOF(t *testing.T) {
 	}
 	if attempts != 1 {
 		t.Fatalf("unexpected number of attempts: %d, expected %d", attempts, 1)
+	}
+}
+
+func TestNewClient_ConnectToEmulator(t *testing.T) {
+	ctx := context.Background()
+
+	s, err := benchserver.NewMockCloudSpanner()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer s.Stop()
+	go s.Serve()
+
+	oldEnv := os.Getenv("SPANNER_EMULATOR_HOST")
+	os.Setenv("SPANNER_EMULATOR_HOST", s.Addr())
+	defer os.Setenv("SPANNER_EMULATOR_HOST", oldEnv)
+
+	c, err := NewClient(ctx, "some-db")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer c.Close()
+
+	_, err = c.Single().ReadRow(ctx, "Accounts", Key{"alice"}, []string{"balance"})
+	if err != nil {
+		t.Fatal(err)
 	}
 }
