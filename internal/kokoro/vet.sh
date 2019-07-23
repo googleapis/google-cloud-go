@@ -64,6 +64,7 @@ golint ./... 2>&1 | ( \
     grep -v "internal/trace" | \
     grep -v "a blank import should be only in a main or test package" | \
     grep -v "method ExecuteSql should be ExecuteSQL" | \
+    grep -vE "spanner/spansql/(sql|types).go:.*should have comment" | \
     grep -vE "\.pb\.go:" || true) | tee /dev/stderr | (! read)
 
 # TODO(deklerk): It doesn't seem like it, but is it possible to glob both before
