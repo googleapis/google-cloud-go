@@ -26,6 +26,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/internal/testutil"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/go-cmp/cmp"
@@ -133,6 +134,42 @@ func TestConcurrentMutationsReadModifyAndGC(t *testing.T) {
 	case <-done:
 	case <-time.After(1 * time.Second):
 		t.Error("Concurrent mutations and GCs haven't completed after 1s")
+	}
+}
+
+func TestCreateTableResponse(t *testing.T) {
+	// We need to ensure that invoking CreateTable returns
+	// the  ColumnFamilies as well as Granularity.
+	// See issue https://github.com/googleapis/google-cloud-go/issues/1512.
+	s := &server{
+		tables: make(map[string]*table),
+	}
+	ctx := context.Background()
+	got, err := s.CreateTable(ctx, &btapb.CreateTableRequest{
+		Parent:  "projects/issue-1512/instances/instance",
+		TableId: "table",
+		Table: &btapb.Table{
+			ColumnFamilies: map[string]*btapb.ColumnFamily{
+				"cf1": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 123}}},
+				"cf2": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 456}}},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+
+	want := &btapb.Table{
+		Name: "projects/issue-1512/instances/instance/tables/table",
+		// If no Granularity was specified, we should get back "MILLIS".
+		Granularity: btapb.Table_MILLIS,
+		ColumnFamilies: map[string]*btapb.ColumnFamily{
+			"cf1": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 123}}},
+			"cf2": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 456}}},
+		},
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("Response mismatch: got - want +\n%s", diff)
 	}
 }
 
