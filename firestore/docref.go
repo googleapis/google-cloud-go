@@ -65,7 +65,7 @@ func (d *DocumentRef) Collection(id string) *CollectionRef {
 
 // Get retrieves the document. If the document does not exist, Get return a NotFound error, which
 // can be checked with
-//    grpc.Code(err) == codes.NotFound
+//    status.Code(err) == codes.NotFound
 // In that case, Get returns a non-nil DocumentSnapshot whose Exists method return false and whose
 // ReadTime is the time of the failed read operation.
 func (d *DocumentRef) Get(ctx context.Context) (_ *DocumentSnapshot, err error) {
