@@ -140,7 +140,7 @@ func TestStreamingPullError(t *testing.T) {
 	default:
 		t.Fatal("Receive returned but callback was not done")
 	}
-	if want := codes.Unknown; grpc.Code(err) != want {
+	if want := codes.Unknown; status.Code(err) != want {
 		t.Fatalf("got <%v>, want code %v", err, want)
 	}
 }

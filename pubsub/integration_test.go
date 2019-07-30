@@ -31,7 +31,6 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -724,7 +723,7 @@ func TestIntegration_Errors(t *testing.T) {
 		Topic:             topic,
 		RetentionDuration: 1 * time.Second,
 	})
-	if want := codes.InvalidArgument; grpc.Code(err) != want {
+	if want := codes.InvalidArgument; status.Code(err) != want {
 		t.Errorf("got <%v>, want %s", err, want)
 	}
 	if err == nil {
@@ -736,7 +735,7 @@ func TestIntegration_Errors(t *testing.T) {
 		Topic:       topic,
 		AckDeadline: 5 * time.Second,
 	})
-	if want := codes.Unknown; grpc.Code(err) != want {
+	if want := codes.Unknown; status.Code(err) != want {
 		t.Errorf("got <%v>, want %s", err, want)
 	}
 	if err == nil {
@@ -746,12 +745,12 @@ func TestIntegration_Errors(t *testing.T) {
 	// Updating a non-existent subscription.
 	sub = client.Subscription(subIDs.New())
 	_, err = sub.Update(ctx, SubscriptionConfigToUpdate{AckDeadline: 20 * time.Second})
-	if want := codes.NotFound; grpc.Code(err) != want {
+	if want := codes.NotFound; status.Code(err) != want {
 		t.Errorf("got <%v>, want %s", err, want)
 	}
 	// Deleting a non-existent subscription.
 	err = sub.Delete(ctx)
-	if want := codes.NotFound; grpc.Code(err) != want {
+	if want := codes.NotFound; status.Code(err) != want {
 		t.Errorf("got <%v>, want %s", err, want)
 	}
 
@@ -762,7 +761,7 @@ func TestIntegration_Errors(t *testing.T) {
 	}
 	defer sub.Delete(ctx)
 	_, err = sub.Update(ctx, SubscriptionConfigToUpdate{RetentionDuration: 1000 * time.Hour})
-	if want := codes.InvalidArgument; grpc.Code(err) != want {
+	if want := codes.InvalidArgument; status.Code(err) != want {
 		t.Errorf("got <%v>, want %s", err, want)
 	}
 }

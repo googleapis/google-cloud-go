@@ -21,8 +21,8 @@ import (
 	"context"
 	"time"
 
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // APICall is a user defined call stub.
@@ -46,7 +46,7 @@ func invokeWithRetry(ctx context.Context, stub APICall, callSettings CallSetting
 			return ctx.Err()
 		}
 		err := stub(ctx)
-		code := grpc.Code(err)
+		code := status.Code(err)
 		if code == codes.OK {
 			return nil
 		}

@@ -38,6 +38,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 func TestMain(m *testing.M) {
@@ -416,7 +417,7 @@ func TestIntegration_Delete(t *testing.T) {
 	h.mustCreate(doc, integrationTestMap)
 	h.mustDelete(doc)
 	// Confirm that doc doesn't exist.
-	if _, err := doc.Get(ctx); grpc.Code(err) != codes.NotFound {
+	if _, err := doc.Get(ctx); status.Code(err) != codes.NotFound {
 		t.Fatalf("got error <%v>, want NotFound", err)
 	}
 
@@ -1301,7 +1302,7 @@ func TestIntegration_CollectionGroupQueries(t *testing.T) {
 }
 
 func codeEq(t *testing.T, msg string, code codes.Code, err error) {
-	if grpc.Code(err) != code {
+	if status.Code(err) != code {
 		t.Fatalf("%s:\ngot <%v>\nwant code %s", msg, err, code)
 	}
 }

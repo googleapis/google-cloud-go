@@ -23,8 +23,8 @@ import (
 
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/genproto/googleapis/type/latlng"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var (
@@ -84,7 +84,7 @@ func TestDocGet(t *testing.T) {
 			},
 		})
 	_, err = c.Collection("C").Doc("b").Get(ctx)
-	if grpc.Code(err) != codes.NotFound {
+	if status.Code(err) != codes.NotFound {
 		t.Errorf("got %v, want NotFound", err)
 	}
 }
