@@ -21,7 +21,6 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/iterator"
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -175,7 +174,7 @@ func TestTransactionErrors(t *testing.T) {
 	// BeginTransaction has a permanent error.
 	srv.addRPC(beginReq, internalErr)
 	err := c.RunTransaction(ctx, func(context.Context, *Transaction) error { return nil })
-	if grpc.Code(err) != codes.Internal {
+	if status.Code(err) != codes.Internal {
 		t.Errorf("got <%v>, want Internal", err)
 	}
 
@@ -189,7 +188,7 @@ func TestTransactionErrors(t *testing.T) {
 	srv.addRPC(getReq, internalErr)
 	srv.addRPC(rollbackReq, &empty.Empty{})
 	err = c.RunTransaction(ctx, get)
-	if grpc.Code(err) != codes.Internal {
+	if status.Code(err) != codes.Internal {
 		t.Errorf("got <%v>, want Internal", err)
 	}
 
@@ -200,7 +199,7 @@ func TestTransactionErrors(t *testing.T) {
 	srv.addRPC(getReq, internalErr)
 	srv.addRPC(rollbackReq, status.Errorf(codes.FailedPrecondition, ""))
 	err = c.RunTransaction(ctx, get)
-	if grpc.Code(err) != codes.Internal {
+	if status.Code(err) != codes.Internal {
 		t.Errorf("got <%v>, want Internal", err)
 	}
 
@@ -219,7 +218,7 @@ func TestTransactionErrors(t *testing.T) {
 	})
 	srv.addRPC(commitReq, internalErr)
 	err = c.RunTransaction(ctx, get)
-	if grpc.Code(err) != codes.Internal {
+	if status.Code(err) != codes.Internal {
 		t.Errorf("got <%v>, want Internal", err)
 	}
 
@@ -314,7 +313,7 @@ func TestTransactionErrors(t *testing.T) {
 	srv.addRPC(rollbackReq, &empty.Empty{})
 	err = c.RunTransaction(ctx, func(context.Context, *Transaction) error { return nil },
 		MaxAttempts(2))
-	if grpc.Code(err) != codes.Aborted {
+	if status.Code(err) != codes.Aborted {
 		t.Errorf("got <%v>, want Aborted", err)
 	}
 

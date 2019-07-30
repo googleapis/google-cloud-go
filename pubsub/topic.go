@@ -34,6 +34,7 @@ import (
 	fmpb "google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -330,7 +331,7 @@ func (t *Topic) Exists(ctx context.Context) (bool, error) {
 	if err == nil {
 		return true, nil
 	}
-	if grpc.Code(err) == codes.NotFound {
+	if status.Code(err) == codes.NotFound {
 		return false, nil
 	}
 	return false, err

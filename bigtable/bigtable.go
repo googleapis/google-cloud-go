@@ -701,7 +701,7 @@ func (t *Table) getApplyBulkRetries(entries []*entryErr) []*entryErr {
 	var retryEntries []*entryErr
 	for _, entry := range entries {
 		err := entry.Err
-		if err != nil && isIdempotentRetryCode[grpc.Code(err)] && mutationsAreRetryable(entry.Entry.Mutations) {
+		if err != nil && isIdempotentRetryCode[status.Code(err)] && mutationsAreRetryable(entry.Entry.Mutations) {
 			// There was an error and the entry is retryable.
 			retryEntries = append(retryEntries, entry)
 		}
