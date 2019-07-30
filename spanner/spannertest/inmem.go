@@ -31,6 +31,14 @@ create a Server, and then connect to it with no security:
 	client, err := spanner.NewClient(ctx, db, option.WithGRPCConn(conn))
 	...
 
+Alternatively, create a Server, then set the SPANNER_EMULATOR_HOST environment
+variable and use the regular spanner.NewClient:
+	srv, err := spannertest.NewServer("localhost:0")
+	...
+	os.Setenv("SPANNER_EMULATOR_HOST", srv.Addr)
+	client, err := spanner.NewClient(ctx, db)
+	...
+
 The same server also supports database admin operations for use with
 the cloud.google.com/go/spanner/admin/database/apiv1 package.
 */

@@ -69,11 +69,8 @@ func makeClient(t *testing.T) (*spanner.Client, *dbadmin.DatabaseAdminClient, fu
 		return client, adminClient, func() { client.Close(); adminClient.Close() }
 	}
 
-	// Unfortunately the Spanner client library does not permit insecure connections
-	// like other client libraries (providing an endpoint and grpc.WithInsecure fails
-	// because it uses transport.DialGRPC directly), so we need to manually construct the
-	// gRPC connection and provide it to the client library. This may bypass our ability
-	// to check some aspects of the connection pooling.
+	// Don't use SPANNER_EMULATOR_HOST because we need the raw connection for
+	// the database admin client anyway.
 
 	t.Logf("Using in-memory fake Spanner DB")
 	srv, err := NewServer("localhost:0")
