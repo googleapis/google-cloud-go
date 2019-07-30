@@ -474,25 +474,13 @@ func (s *server) readStream(ctx context.Context, tx *transaction, send func(*spa
 		// TODO: transaction info?
 	}
 	for _, ci := range ri.Cols {
-		// TODO: array types
-		var code spannerpb.TypeCode
-		switch ci.Type.Base {
-		case spansql.Bool:
-			code = spannerpb.TypeCode_BOOL
-		case spansql.Int64:
-			code = spannerpb.TypeCode_INT64
-		case spansql.Float64:
-			code = spannerpb.TypeCode_FLOAT64
-		case spansql.String:
-			code = spannerpb.TypeCode_STRING
-		case spansql.Bytes:
-			code = spannerpb.TypeCode_BYTES
-		default:
-			return fmt.Errorf("unhandled base type %d", ci.Type.Base)
+		st, err := spannerTypeFromType(ci.Type)
+		if err != nil {
+			return err
 		}
 		rsm.RowType.Fields = append(rsm.RowType.Fields, &spannerpb.StructType_Field{
 			Name: ci.Name,
-			Type: &spannerpb.Type{Code: code},
+			Type: st,
 		})
 	}
 
@@ -504,20 +492,11 @@ func (s *server) readStream(ctx context.Context, tx *transaction, send func(*spa
 
 		values := make([]*structpb.Value, len(row))
 		for i, x := range row {
-			switch x := x.(type) {
-			default:
-				return fmt.Errorf("unhandled database type %T", x)
-			case int64:
-				// The Spanner int64 is actually a decimal string.
-				s := strconv.FormatInt(x, 10)
-				values[i] = &structpb.Value{Kind: &structpb.Value_StringValue{s}}
-			case float64:
-				values[i] = &structpb.Value{Kind: &structpb.Value_NumberValue{x}}
-			case string:
-				values[i] = &structpb.Value{Kind: &structpb.Value_StringValue{x}}
-			case nil:
-				values[i] = &structpb.Value{Kind: &structpb.Value_NullValue{}}
+			v, err := spannerValueFromValue(x)
+			if err != nil {
+				return err
 			}
+			values[i] = v
 		}
 
 		prs := &spannerpb.PartialResultSet{
@@ -626,3 +605,40 @@ func (s *server) Rollback(ctx context.Context, req *spannerpb.RollbackRequest) (
 }
 
 // TODO: PartitionQuery, PartitionRead
+
+func spannerTypeFromType(typ spansql.Type) (*spannerpb.Type, error) {
+	// TODO: array types
+	var code spannerpb.TypeCode
+	switch typ.Base {
+	default:
+		return nil, fmt.Errorf("unhandled base type %d", typ.Base)
+	case spansql.Bool:
+		code = spannerpb.TypeCode_BOOL
+	case spansql.Int64:
+		code = spannerpb.TypeCode_INT64
+	case spansql.Float64:
+		code = spannerpb.TypeCode_FLOAT64
+	case spansql.String:
+		code = spannerpb.TypeCode_STRING
+	case spansql.Bytes:
+		code = spannerpb.TypeCode_BYTES
+	}
+	return &spannerpb.Type{Code: code}, nil
+}
+
+func spannerValueFromValue(x interface{}) (*structpb.Value, error) {
+	switch x := x.(type) {
+	default:
+		return nil, fmt.Errorf("unhandled database value type %T", x)
+	case int64:
+		// The Spanner int64 is actually a decimal string.
+		s := strconv.FormatInt(x, 10)
+		return &structpb.Value{Kind: &structpb.Value_StringValue{s}}, nil
+	case float64:
+		return &structpb.Value{Kind: &structpb.Value_NumberValue{x}}, nil
+	case string:
+		return &structpb.Value{Kind: &structpb.Value_StringValue{x}}, nil
+	case nil:
+		return &structpb.Value{Kind: &structpb.Value_NullValue{}}, nil
+	}
+}
