@@ -149,15 +149,15 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.MaxBurst = 10
 	}
 
+	// Validate database path.
+	if err := validDatabaseName(database); err != nil {
+		return nil, err
+	}
+
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.NewClient")
+	defer func() { trace.EndSpan(ctx, err) }()
+
 	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr == "" {
-		// Validate database path.
-		if err := validDatabaseName(database); err != nil {
-			return nil, err
-		}
-
-		ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.NewClient")
-		defer func() { trace.EndSpan(ctx, err) }()
-
 		// gRPC options.
 		allOpts := []option.ClientOption{
 			option.WithEndpoint(endpoint),
