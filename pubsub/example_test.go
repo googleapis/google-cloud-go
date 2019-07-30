@@ -320,7 +320,7 @@ func ExampleSubscription_Update_pushConfigAuthenticationMethod() {
 		PushConfig: &pubsub.PushConfig{
 			Endpoint: "https://example.com/push",
 			AuthenticationMethod: &pubsub.OIDCToken{
-				ServiceAccountEmail: "foo@example.com",
+				ServiceAccountEmail: "service-account-email",
 				Audience:            "client-12345",
 			},
 		},
