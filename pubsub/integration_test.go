@@ -416,7 +416,7 @@ func findServiceAccountEmail(ctx context.Context, t *testing.T) string {
 		t.Skip("No JWTConfig JSON was present so can't get serviceAccountEmail")
 	}
 	jwtConf, err = google.JWTConfigFromJSON(creds.JSON)
-	if err == nil {
+	if err != nil {
 		t.Fatalf("Failed to parse Google JWTConfig from JSON: %v", err)
 	}
 	return jwtConf.Email
