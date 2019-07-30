@@ -255,7 +255,27 @@ func (d *database) Update(tbl string, cols []string, values []*structpb.ListValu
 	})
 }
 
-// TODO: InsertOrUpdate, Replace
+func (d *database) InsertOrUpdate(tbl string, cols []string, values []*structpb.ListValue) error {
+	return d.writeValues(tbl, cols, values, func(t *table, colIndexes, pkIndexes []int, r row) error {
+		var pk []interface{}
+		for _, i := range pkIndexes {
+			pk = append(pk, r[i])
+		}
+		rowNum := t.rowForPK(pk)
+		if rowNum < 0 {
+			// New row; do an insert.
+			t.rows = append(t.rows, r)
+		} else {
+			// Existing row; do an update.
+			for _, i := range colIndexes {
+				t.rows[rowNum][i] = r[i]
+			}
+		}
+		return nil
+	})
+}
+
+// TODO: Replace
 
 func (d *database) Delete(table string, keys []*structpb.ListValue, all bool) error {
 	t, err := d.table(table)
