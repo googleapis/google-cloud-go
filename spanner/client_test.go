@@ -424,7 +424,7 @@ func TestNewClient_ConnectToEmulator(t *testing.T) {
 	os.Setenv("SPANNER_EMULATOR_HOST", s.Addr())
 	defer os.Setenv("SPANNER_EMULATOR_HOST", oldEnv)
 
-	c, err := NewClient(ctx, "some-db")
+	c, err := NewClient(ctx, "projects/some-proj/instances/some-inst/databases/some-db")
 	if err != nil {
 		t.Fatal(err)
 	}
