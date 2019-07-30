@@ -27,6 +27,7 @@ import (
 	"cloud.google.com/go/internal/uid"
 	kms "cloud.google.com/go/kms/apiv1"
 	gax "github.com/googleapis/gax-go/v2"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
@@ -399,9 +400,34 @@ func TestIntegration_CreateSubscription_neverExpire(t *testing.T) {
 	}
 }
 
+// findServiceAccountEmail tries to find the service account using testutil
+// JWTConfig as well as the ADC credentials. It will only invoke t.Skip if
+// it successfully retrieves credentials but finds a blank JWTConfig JSON blob.
+// For all other errors, it will invoke t.Fatal.
+func findServiceAccountEmail(ctx context.Context, t *testing.T) string {
+	jwtConf, err := testutil.JWTConfig()
+	if err == nil && jwtConf != nil {
+		return jwtConf.Email
+	}
+	creds := testutil.Credentials(ctx, ScopePubSub, ScopeCloudPlatform)
+	if creds == nil {
+		t.Fatal("Failed to retrieve credentials")
+	}
+	if len(creds.JSON) == 0 {
+		t.Skip("No JWTConfig JSON was present so can't get serviceAccountEmail")
+	}
+	jwtConf, err = google.JWTConfigFromJSON(creds.JSON)
+	if err == nil {
+		t.Fatalf("Failed to parse Google JWTConfig from JSON: %v", err)
+	}
+	return jwtConf.Email
+}
+
 func TestIntegration_UpdateSubscription(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
+	serviceAccountEmail := findServiceAccountEmail(ctx, t)
+
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
@@ -420,7 +446,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 			Endpoint: "https://" + projID + ".appspot.com/_ah/push-handlers/push",
 			AuthenticationMethod: &OIDCToken{
 				Audience:            "client-12345",
-				ServiceAccountEmail: "foo@example.com",
+				ServiceAccountEmail: serviceAccountEmail,
 			},
 		},
 	}
@@ -439,6 +465,13 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 		RetainAckedMessages: false,
 		RetentionDuration:   defaultRetentionDuration,
 		ExpirationPolicy:    defaultExpirationPolicy,
+		PushConfig: PushConfig{
+			Endpoint: "https://" + projID + ".appspot.com/_ah/push-handlers/push",
+			AuthenticationMethod: &OIDCToken{
+				Audience:            "client-12345",
+				ServiceAccountEmail: serviceAccountEmail,
+			},
+		},
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Fatalf("\ngot: - want: +\n%s", diff)
@@ -448,8 +481,8 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 		Endpoint:   "https://" + projID + ".appspot.com/_ah/push-handlers/push",
 		Attributes: map[string]string{"x-goog-version": "v1"},
 		AuthenticationMethod: &OIDCToken{
-			Audience:            "client-12345",
-			ServiceAccountEmail: "foo@example.com",
+			Audience:            "client-updated-54321",
+			ServiceAccountEmail: serviceAccountEmail,
 		},
 	}
 	got, err = sub.Update(ctx, SubscriptionConfigToUpdate{
