@@ -566,6 +566,12 @@ func (s *server) Commit(ctx context.Context, req *spannerpb.CommitRequest) (*spa
 			if err != nil {
 				return nil, err
 			}
+		case *spannerpb.Mutation_InsertOrUpdate:
+			iou := op.InsertOrUpdate
+			err := s.db.InsertOrUpdate(iou.Table, iou.Columns, iou.Values)
+			if err != nil {
+				return nil, err
+			}
 		case *spannerpb.Mutation_Delete_:
 			del := op.Delete
 			ks := del.KeySet
