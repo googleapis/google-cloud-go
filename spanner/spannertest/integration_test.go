@@ -14,11 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// This file holds tests for the in-memory fake
-// for comparing it against a real Cloud Spanner.
-// By default it uses the Spanner client against the in-memory fake;
-// set the -test_db flag to "projects/P/instances/I/databases/D" to
-// make it use a real Cloud Spanner database instead.
+/*
+This file holds tests for the in-memory fake for comparing it against a real Cloud Spanner.
+
+By default it uses the Spanner client against the in-memory fake; set the
+-test_db flag to "projects/P/instances/I/databases/D" to make it use a real
+Cloud Spanner database instead. You may need to provide -timeout=5m too.
+*/
 
 package spannertest
 
@@ -107,7 +109,7 @@ func TestSpannerBasics(t *testing.T) {
 	client, adminClient, cleanup := makeClient(t)
 	defer cleanup()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	// Do a trivial query to verify the connection works.
@@ -298,6 +300,44 @@ func TestSpannerBasics(t *testing.T) {
 	}
 	if nullPeters != 2 {
 		t.Errorf("Found %d Peters with NULL Ages, want 2", nullPeters)
+	}
+
+	// Check handling of array types.
+	err = updateDDL(t, adminClient, `ALTER TABLE `+tableName+` ADD COLUMN Allies ARRAY<STRING(20)>`)
+	if err != nil {
+		t.Fatalf("Adding new array-typed column: %v", err)
+	}
+	_, err = client.Apply(ctx, []*spanner.Mutation{
+		spanner.Update(tableName,
+			[]string{"FirstName", "LastName", "Allies"},
+			[]interface{}{"Steve", "Rogers", []string{}}),
+		spanner.Update(tableName,
+			[]string{"FirstName", "LastName", "Allies"},
+			[]interface{}{"Tony", "Stark", []string{"Black Widow", "Spider-Man"}}),
+	})
+	if err != nil {
+		t.Fatalf("Applying mutations: %v", err)
+	}
+	row, err = client.Single().ReadRow(ctx, tableName, spanner.Key{"Tony", "Stark"}, []string{"Allies"})
+	if err != nil {
+		t.Fatalf("Reading row with array value: %v", err)
+	}
+	var names []string
+	if err := row.Column(0, &names); err != nil {
+		t.Fatalf("Unpacking array value: %v", err)
+	}
+	if want := []string{"Black Widow", "Spider-Man"}; !reflect.DeepEqual(names, want) {
+		t.Errorf("Read array value: got %q, want %q", names, want)
+	}
+	row, err = client.Single().ReadRow(ctx, tableName, spanner.Key{"Steve", "Rogers"}, []string{"Allies"})
+	if err != nil {
+		t.Fatalf("Reading row with empty array value: %v", err)
+	}
+	if err := row.Column(0, &names); err != nil {
+		t.Fatalf("Unpacking empty array value: %v", err)
+	}
+	if len(names) > 0 {
+		t.Errorf("Read empty array value: got %q", names)
 	}
 }
 

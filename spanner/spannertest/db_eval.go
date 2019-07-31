@@ -259,7 +259,7 @@ func (ec evalContext) evalID(id spansql.ID) (interface{}, error) {
 	if !ok {
 		return nil, fmt.Errorf("couldn't resolve identifier %s", string(id))
 	}
-	return ec.row[i], nil
+	return ec.row.copyDataElem(i), nil
 }
 
 func evalLimit(lim spansql.Limit, params queryParams) (int64, error) {

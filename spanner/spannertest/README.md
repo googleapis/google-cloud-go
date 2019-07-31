@@ -15,7 +15,6 @@ should use the production Cloud Spanner instead.
 Here's a list of features that are missing or incomplete. It is roughly ordered
 by ascending esotericism:
 
-- ARRAY types
 - SELECT GROUP BY
 - SELECT HAVING
 - arithmetic expressions (operators, parens)

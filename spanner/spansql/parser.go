@@ -447,7 +447,7 @@ func (p *parser) advance() {
 
 	// Look for operator (two or one bytes).
 	for i := 2; i >= 1; i-- {
-		if i < len(p.s) && operators[p.s[:i]] {
+		if i <= len(p.s) && operators[p.s[:i]] {
 			p.cur.value, p.s = p.s[:i], p.s[i:]
 			return
 		}
