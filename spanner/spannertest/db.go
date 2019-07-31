@@ -148,6 +148,9 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 		default:
 			return status.Newf(codes.Unimplemented, "unhandled DDL table alteration type %T", alt)
 		case spansql.AddColumn:
+			if alt.Def.NotNull {
+				return status.Newf(codes.InvalidArgument, "new non-key columns cannot be NOT NULL")
+			}
 			t.addColumn(alt.Def)
 			return nil
 		}
@@ -450,8 +453,13 @@ func (t *table) addColumn(cd spansql.ColumnDef) *status.Status {
 	defer t.mu.Unlock()
 
 	if len(t.rows) > 0 {
-		// TODO: fill with placeholder data instead
-		return status.Newf(codes.Unimplemented, "can't add columns to non-empty tables")
+		if cd.NotNull {
+			// TODO: what happens in this case?
+			return status.Newf(codes.Unimplemented, "can't add NOT NULL columns to non-empty tables yet")
+		}
+		for i := range t.rows {
+			t.rows[i] = append(t.rows[i], nil)
+		}
 	}
 
 	t.cols = append(t.cols, colInfo{
