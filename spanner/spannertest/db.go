@@ -61,6 +61,15 @@ type colInfo struct {
 
 type row []interface{}
 
+func (r row) copyDataElem(index int) interface{} {
+	v := r[index]
+	if is, ok := v.([]interface{}); ok {
+		// Deep-copy array values.
+		v = append([]interface{}(nil), is...)
+	}
+	return v
+}
+
 // copyData returns a copy of a subset of a row.
 func (r row) copyData(indexes []int) row {
 	if len(indexes) == 0 {
@@ -68,7 +77,7 @@ func (r row) copyData(indexes []int) row {
 	}
 	dst := make(row, 0, len(indexes))
 	for _, i := range indexes {
-		dst = append(dst, r[i])
+		dst = append(dst, r.copyDataElem(i))
 	}
 	return dst
 }
@@ -516,11 +525,16 @@ func (t *table) rowForPK(pk []interface{}) int {
 	return -1
 }
 
+// rowEqual reports whether two rows have the same values.
+// This is used by rowForPK and so doesn't support array/struct types.
 func rowEqual(a, b []interface{}) bool {
 	if len(a) != len(b) {
 		return false
 	}
 	for i := 0; i < len(a); i++ {
+		// The only value key column types are represented internally
+		// as Go types comparable with == and !=.
+		// TODO: DATE, TIMESTAMP might violate this.
 		if a[i] != b[i] {
 			return false
 		}
@@ -529,11 +543,25 @@ func rowEqual(a, b []interface{}) bool {
 }
 
 func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
-	// TODO: array types.
-
 	if _, ok := v.Kind.(*structpb.Value_NullValue); ok {
 		// TODO: enforce NOT NULL constraints?
 		return nil, nil
+	}
+
+	if lv, ok := v.Kind.(*structpb.Value_ListValue); ok && t.Array {
+		et := t // element type
+		et.Array = false
+
+		// Construct the non-nil slice for the list.
+		arr := make([]interface{}, 0, len(lv.ListValue.Values))
+		for _, v := range lv.ListValue.Values {
+			x, err := valForType(v, et)
+			if err != nil {
+				return nil, err
+			}
+			arr = append(arr, x)
+		}
+		return arr, nil
 	}
 
 	switch t.Base {

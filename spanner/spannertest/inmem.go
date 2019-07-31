@@ -613,7 +613,6 @@ func (s *server) Rollback(ctx context.Context, req *spannerpb.RollbackRequest) (
 // TODO: PartitionQuery, PartitionRead
 
 func spannerTypeFromType(typ spansql.Type) (*spannerpb.Type, error) {
-	// TODO: array types
 	var code spannerpb.TypeCode
 	switch typ.Base {
 	default:
@@ -629,7 +628,14 @@ func spannerTypeFromType(typ spansql.Type) (*spannerpb.Type, error) {
 	case spansql.Bytes:
 		code = spannerpb.TypeCode_BYTES
 	}
-	return &spannerpb.Type{Code: code}, nil
+	st := &spannerpb.Type{Code: code}
+	if typ.Array {
+		st = &spannerpb.Type{
+			Code:             spannerpb.TypeCode_ARRAY,
+			ArrayElementType: st,
+		}
+	}
+	return st, nil
 }
 
 func spannerValueFromValue(x interface{}) (*structpb.Value, error) {
@@ -646,5 +652,17 @@ func spannerValueFromValue(x interface{}) (*structpb.Value, error) {
 		return &structpb.Value{Kind: &structpb.Value_StringValue{x}}, nil
 	case nil:
 		return &structpb.Value{Kind: &structpb.Value_NullValue{}}, nil
+	case []interface{}:
+		var vs []*structpb.Value
+		for _, elem := range x {
+			v, err := spannerValueFromValue(elem)
+			if err != nil {
+				return nil, err
+			}
+			vs = append(vs, v)
+		}
+		return &structpb.Value{Kind: &structpb.Value_ListValue{
+			&structpb.ListValue{Values: vs},
+		}}, nil
 	}
 }
