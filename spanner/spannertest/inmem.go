@@ -515,7 +515,7 @@ func (s *server) readStream(ctx context.Context, tx *transaction, send func(*spa
 }
 
 func (s *server) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest) (*spannerpb.Transaction, error) {
-	s.logf("BeginTransaction(%v)", req)
+	//s.logf("BeginTransaction(%v)", req)
 
 	s.mu.Lock()
 	sess, ok := s.sessions[req.Session]
@@ -536,7 +536,7 @@ func (s *server) BeginTransaction(ctx context.Context, req *spannerpb.BeginTrans
 }
 
 func (s *server) Commit(ctx context.Context, req *spannerpb.CommitRequest) (*spannerpb.CommitResponse, error) {
-	s.logf("Commit(%q, %q)", req.Session, req.Transaction)
+	//s.logf("Commit(%q, %q)", req.Session, req.Transaction)
 
 	obj, ok := req.Transaction.(*spannerpb.CommitRequest_TransactionId)
 	if !ok {

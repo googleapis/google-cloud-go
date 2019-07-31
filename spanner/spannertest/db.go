@@ -120,7 +120,9 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 			pkCols:   len(pk),
 		}
 		for _, cd := range stmt.Columns {
-			t.addColumn(cd)
+			if st := t.addColumn(cd); st.Code() != codes.OK {
+				return st
+			}
 		}
 		for col := range pk {
 			if _, ok := t.colIndex[col]; !ok {
@@ -160,7 +162,9 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 			if alt.Def.NotNull {
 				return status.Newf(codes.InvalidArgument, "new non-key columns cannot be NOT NULL")
 			}
-			t.addColumn(alt.Def)
+			if st := t.addColumn(alt.Def); st.Code() != codes.OK {
+				return st
+			}
 			return nil
 		}
 	}
