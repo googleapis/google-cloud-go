@@ -169,3 +169,55 @@ func ExampleNotificationChannelClient_DeleteNotificationChannel() {
 		// TODO: Handle error.
 	}
 }
+
+func ExampleNotificationChannelClient_SendNotificationChannelVerificationCode() {
+	ctx := context.Background()
+	c, err := monitoring.NewNotificationChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &monitoringpb.SendNotificationChannelVerificationCodeRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.SendNotificationChannelVerificationCode(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleNotificationChannelClient_GetNotificationChannelVerificationCode() {
+	ctx := context.Background()
+	c, err := monitoring.NewNotificationChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &monitoringpb.GetNotificationChannelVerificationCodeRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetNotificationChannelVerificationCode(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleNotificationChannelClient_VerifyNotificationChannel() {
+	ctx := context.Background()
+	c, err := monitoring.NewNotificationChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &monitoringpb.VerifyNotificationChannelRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.VerifyNotificationChannel(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
