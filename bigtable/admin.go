@@ -25,7 +25,6 @@ import (
 	"strings"
 	"time"
 
-	"cloud.google.com/go/bigtable/internal/gax"
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/optional"
@@ -33,6 +32,7 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	"github.com/golang/protobuf/ptypes"
 	durpb "github.com/golang/protobuf/ptypes/duration"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/cloudresourcemanager/v1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -112,7 +112,7 @@ func (ac *AdminClient) Tables(ctx context.Context) ([]string, error) {
 	}
 
 	var res *btapb.ListTablesResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 		var err error
 		res, err = ac.tClient.ListTables(ctx, req)
 		return err
@@ -241,7 +241,7 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 
 	var res *btapb.Table
 
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 		var err error
 		res, err = ac.tClient.GetTable(ctx, req)
 		return err
@@ -374,7 +374,7 @@ func (ac *AdminClient) Snapshots(ctx context.Context, cluster string) *SnapshotI
 		}
 
 		var resp *btapb.ListSnapshotsResponse
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 			var err error
 			resp, err = ac.tClient.ListSnapshots(ctx, req)
 			return err
@@ -479,7 +479,7 @@ func (ac *AdminClient) SnapshotInfo(ctx context.Context, cluster, snapshot strin
 	}
 
 	var resp *btapb.Snapshot
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 		var err error
 		resp, err = ac.tClient.GetSnapshot(ctx, req)
 		return err
@@ -531,7 +531,7 @@ func (ac *AdminClient) isConsistent(ctx context.Context, tableName, token string
 	var resp *btapb.CheckConsistencyResponse
 
 	// Retry calls on retryable errors to avoid losing the token gathered before.
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 		var err error
 		resp, err = ac.tClient.CheckConsistency(ctx, req)
 		return err
@@ -801,7 +801,7 @@ func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo,
 		Parent: "projects/" + iac.project,
 	}
 	var res *btapb.ListInstancesResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 		var err error
 		res, err = iac.iClient.ListInstances(ctx, req)
 		return err
@@ -837,7 +837,7 @@ func (iac *InstanceAdminClient) InstanceInfo(ctx context.Context, instanceID str
 		Name: "projects/" + iac.project + "/instances/" + instanceID,
 	}
 	var res *btapb.Instance
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 		var err error
 		res, err = iac.iClient.GetInstance(ctx, req)
 		return err
@@ -925,7 +925,7 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.ListClustersRequest{Parent: "projects/" + iac.project + "/instances/" + instanceID}
 	var res *btapb.ListClustersResponse
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 		var err error
 		res, err = iac.iClient.ListClusters(ctx, req)
 		return err
@@ -953,7 +953,7 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.GetClusterRequest{Name: "projects/" + iac.project + "/instances/" + instanceID + "/clusters/" + clusterID}
 	var c *btapb.Cluster
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 		var err error
 		c, err = iac.iClient.GetCluster(ctx, req)
 		return err
@@ -1105,7 +1105,7 @@ func (iac *InstanceAdminClient) GetAppProfile(ctx context.Context, instanceID, n
 		Name: "projects/" + iac.project + "/instances/" + instanceID + "/appProfiles/" + name,
 	}
 	var ap *btapb.AppProfile
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 		var err error
 		ap, err = iac.iClient.GetAppProfile(ctx, profileRequest)
 		return err
@@ -1127,7 +1127,7 @@ func (iac *InstanceAdminClient) ListAppProfiles(ctx context.Context, instanceID 
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		listRequest.PageToken = pageToken
 		var profileRes *btapb.ListAppProfilesResponse
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 			var err error
 			profileRes, err = iac.iClient.ListAppProfiles(ctx, listRequest)
 			return err
