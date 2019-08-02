@@ -314,7 +314,8 @@ func TestRetryApplyBulk_IndividualErrorsAndDeadlineExceeded(t *testing.T) {
 	m3 := NewMutation()
 	m3.Set("cf", "col3", 1, []byte{})
 
-	ctx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
+	// This should cause a deadline exceeded error.
+	ctx, cancel := context.WithTimeout(ctx, -10*time.Millisecond)
 	defer cancel()
 	errors, err := tbl.ApplyBulk(ctx, []string{"row1", "row2", "row3"}, []*Mutation{m1, m2, m3})
 	wantErr := context.DeadlineExceeded

@@ -24,10 +24,10 @@ import (
 	"strconv"
 	"time"
 
-	"cloud.google.com/go/bigtable/internal/gax"
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/internal/trace"
 	"github.com/golang/protobuf/proto"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
@@ -100,8 +100,13 @@ var (
 	idempotentRetryCodes  = []codes.Code{codes.DeadlineExceeded, codes.Unavailable, codes.Aborted}
 	isIdempotentRetryCode = make(map[codes.Code]bool)
 	retryOptions          = []gax.CallOption{
-		gax.WithDelayTimeoutSettings(100*time.Millisecond, 2000*time.Millisecond, 1.2),
-		gax.WithRetryCodes(idempotentRetryCodes),
+		gax.WithRetry(func() gax.Retryer {
+			return gax.OnCodes(idempotentRetryCodes, gax.Backoff{
+				Initial:    100 * time.Millisecond,
+				Max:        2 * time.Second,
+				Multiplier: 1.2,
+			})
+		}),
 	}
 )
 
@@ -150,7 +155,7 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 
 	var prevRowKey string
 	attrMap := make(map[string]interface{})
-	err = gax.Invoke(ctx, func(ctx context.Context) error {
+	err = gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 		if !arg.valid() {
 			// Empty row set, no need to make an API call.
 			// NOTE: we must return early if arg == RowList{} because reading
@@ -490,7 +495,7 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 			callOptions = retryOptions
 		}
 		var res *btpb.MutateRowResponse
-		err := gax.Invoke(ctx, func(ctx context.Context) error {
+		err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 			var err error
 			res, err = t.c.client.MutateRow(ctx, req)
 			return err
@@ -523,7 +528,7 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 		callOptions = retryOptions
 	}
 	var cmRes *btpb.CheckAndMutateRowResponse
-	err = gax.Invoke(ctx, func(ctx context.Context) error {
+	err = gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 		var err error
 		cmRes, err = t.c.client.CheckAndMutateRow(ctx, req)
 		return err
@@ -660,7 +665,7 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 
 	for _, group := range groupEntries(origEntries, maxMutations) {
 		attrMap := make(map[string]interface{})
-		err = gax.Invoke(ctx, func(ctx context.Context) error {
+		err = gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 			attrMap["rowCount"] = len(group)
 			trace.TracePrintf(ctx, attrMap, "Row count in ApplyBulk")
 			err := t.doApplyBulk(ctx, group, opts...)
@@ -876,7 +881,7 @@ func mergeOutgoingMetadata(ctx context.Context, md metadata.MD) context.Context 
 func (t *Table) SampleRowKeys(ctx context.Context) ([]string, error) {
 	ctx = mergeOutgoingMetadata(ctx, t.md)
 	var sampledRowKeys []string
-	err := gax.Invoke(ctx, func(ctx context.Context) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 		sampledRowKeys = nil
 		req := &btpb.SampleRowKeysRequest{
 			TableName:    t.c.fullTableName(t.table),
