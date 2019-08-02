@@ -20,6 +20,7 @@ package spannertest
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -180,7 +181,7 @@ func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (bool, error) {
 		if err != nil {
 			return false, err
 		}
-		switch be.Op { // TODO: Like, NotLike
+		switch be.Op {
 		default:
 			return false, fmt.Errorf("TODO: ComparisonOp %d", be.Op)
 		case spansql.Lt:
@@ -195,6 +196,23 @@ func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (bool, error) {
 			return compareVals(lhs, rhs) == 0, nil
 		case spansql.Ne:
 			return compareVals(lhs, rhs) != 0, nil
+		case spansql.Like, spansql.NotLike:
+			left, ok := lhs.(string)
+			if !ok {
+				// TODO: byte works here too?
+				return false, fmt.Errorf("LHS of LIKE is %T, not string", lhs)
+			}
+			right, ok := rhs.(string)
+			if !ok {
+				// TODO: byte works here too?
+				return false, fmt.Errorf("RHS of LIKE is %T, not string", rhs)
+			}
+
+			match := evalLike(left, right)
+			if be.Op == spansql.NotLike {
+				match = !match
+			}
+			return match, nil
 		}
 	case spansql.IsOp:
 		lhs, err := ec.evalExpr(be.LHS)
@@ -367,4 +385,22 @@ func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 		return colInfo{Type: spansql.Type{Base: spansql.Int64}}, nil
 	}
 	return colInfo{}, fmt.Errorf("can't deduce column type from expression [%s]", e.SQL())
+}
+
+func evalLike(str, pat string) bool {
+	/*
+		% matches any number of chars.
+		_ matches a single char.
+		TODO: handle escaping
+	*/
+
+	// Lean on regexp for simplicity.
+	pat = regexp.QuoteMeta(pat)
+	pat = strings.Replace(pat, "%", ".*", -1)
+	pat = strings.Replace(pat, "_", ".", -1)
+	match, err := regexp.MatchString(pat, str)
+	if err != nil {
+		panic(fmt.Sprintf("internal error: constructed bad regexp /%s/: %v", pat, err))
+	}
+	return match
 }
