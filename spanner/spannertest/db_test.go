@@ -212,6 +212,14 @@ func TestTableData(t *testing.T) {
 				{"Jack", 1.85},
 			},
 		},
+		{
+			`SELECT Name FROM Staff WHERE Name LIKE "J%k" OR Name LIKE "_am"`,
+			nil,
+			[][]interface{}{
+				{"Jack"},
+				{"Sam"},
+			},
+		},
 	}
 	for _, test := range tests {
 		q, err := spansql.ParseQuery(test.q)

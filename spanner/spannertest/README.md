@@ -18,7 +18,6 @@ by ascending esotericism:
 - SELECT GROUP BY
 - SELECT HAVING
 - arithmetic expressions (operators, parens)
-- LIKE operator
 - transaction simulation
 - DML statements
 - case insensitivity
