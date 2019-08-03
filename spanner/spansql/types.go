@@ -180,7 +180,9 @@ type ComparisonOp struct {
 	LHS, RHS Expr
 	Op       ComparisonOperator
 
-	// TODO: BETWEEN; it needs a third operand.
+	// RHS2 is the third operand for BETWEEN.
+	// "<LHS> BETWEEN <RHS> AND <RHS2>".
+	RHS2 Expr
 }
 
 func (ComparisonOp) isBoolExpr() {}
@@ -197,6 +199,8 @@ const (
 	Ne // both "!=" and "<>"
 	Like
 	NotLike
+	Between
+	NotBetween
 )
 
 type IsOp struct {

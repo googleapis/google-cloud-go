@@ -213,6 +213,16 @@ func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (bool, error) {
 				match = !match
 			}
 			return match, nil
+		case spansql.Between, spansql.NotBetween:
+			rhs2, err := ec.evalExpr(be.RHS2)
+			if err != nil {
+				return false, err
+			}
+			b := compareVals(rhs, lhs) <= 0 && compareVals(lhs, rhs2) <= 0
+			if be.Op == spansql.NotBetween {
+				b = !b
+			}
+			return b, nil
 		}
 	case spansql.IsOp:
 		lhs, err := ec.evalExpr(be.LHS)

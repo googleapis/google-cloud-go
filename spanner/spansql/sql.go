@@ -196,14 +196,16 @@ func (lo LogicalOp) SQL() string {
 }
 
 var compOps = map[ComparisonOperator]string{
-	Lt:      "<",
-	Le:      "<=",
-	Gt:      ">",
-	Ge:      ">=",
-	Eq:      "=",
-	Ne:      "!=",
-	Like:    "LIKE",
-	NotLike: "NOT LIKE",
+	Lt:         "<",
+	Le:         "<=",
+	Gt:         ">",
+	Ge:         ">=",
+	Eq:         "=",
+	Ne:         "!=",
+	Like:       "LIKE",
+	NotLike:    "NOT LIKE",
+	Between:    "BETWEEN",
+	NotBetween: "NOT BETWEEN",
 }
 
 func (co ComparisonOp) SQL() string {
@@ -211,7 +213,11 @@ func (co ComparisonOp) SQL() string {
 	if !ok {
 		panic("unknown ComparisonOp")
 	}
-	return co.LHS.SQL() + " " + op + " " + co.RHS.SQL()
+	s := co.LHS.SQL() + " " + op + " " + co.RHS.SQL()
+	if co.Op == Between || co.Op == NotBetween {
+		s += " AND " + co.RHS2.SQL()
+	}
+	return s
 }
 
 func (io IsOp) SQL() string {

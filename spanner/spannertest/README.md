@@ -32,7 +32,6 @@ by ascending esotericism:
 - subselects
 - set operations (UNION, INTERSECT, EXCEPT)
 - SELECT star expressions
-- BETWEEN
 - partition support
 - conditional expressions
 - table sampling
