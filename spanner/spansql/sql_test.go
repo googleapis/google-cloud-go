@@ -30,6 +30,10 @@ func TestSQL(t *testing.T) {
 		q, err := ParseQuery(s)
 		return q, err
 	}
+	reparseExpr := func(s string) (interface{}, error) {
+		e, err := newParser(s).parseExpr()
+		return e, err
+	}
 
 	tests := []struct {
 		data    interface{ SQL() string }
@@ -163,6 +167,11 @@ func TestSQL(t *testing.T) {
 			},
 			`SELECT 7`,
 			reparseQuery,
+		},
+		{
+			ComparisonOp{LHS: ID("X"), Op: NotBetween, RHS: ID("Y"), RHS2: ID("Z")},
+			`X NOT BETWEEN Y AND Z`,
+			reparseExpr,
 		},
 	}
 	for _, test := range tests {

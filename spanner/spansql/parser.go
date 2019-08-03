@@ -1255,15 +1255,25 @@ func (p *parser) parseComparisonOp() (Expr, error) {
 			break
 		}
 		var op ComparisonOperator
-		var ok bool
+		var ok, rhs2 bool
 		if tok.value == "NOT" {
-			if err := p.expect("LIKE"); err != nil {
+			tok := p.next()
+			switch {
+			case tok.err != nil:
 				// TODO: Does this need to push back two?
 				return nil, err
+			case tok.value == "LIKE":
+				op, ok = NotLike, true
+			case tok.value == "BETWEEN":
+				op, ok, rhs2 = NotBetween, true, true
+			default:
+				// TODO: Does this need to push back two?
+				return nil, p.errorf("got %q, want LIKE or BETWEEN", tok.value)
 			}
-			op, ok = NotLike, true
 		} else if tok.value == "LIKE" {
 			op, ok = Like, true
+		} else if tok.value == "BETWEEN" {
+			op, ok, rhs2 = Between, true, true
 		} else {
 			op, ok = symbolicOperators[tok.value]
 		}
@@ -1276,7 +1286,20 @@ func (p *parser) parseComparisonOp() (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		expr = ComparisonOp{LHS: expr, Op: op, RHS: rhs}
+		co := ComparisonOp{LHS: expr, Op: op, RHS: rhs}
+
+		if rhs2 {
+			if err := p.expect("AND"); err != nil {
+				return nil, err
+			}
+			rhs2, err := p.parseLit()
+			if err != nil {
+				return nil, err
+			}
+			co.RHS2 = rhs2
+		}
+
+		expr = co
 	}
 	return expr, nil
 }

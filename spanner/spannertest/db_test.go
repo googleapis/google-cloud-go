@@ -220,6 +220,15 @@ func TestTableData(t *testing.T) {
 				{"Sam"},
 			},
 		},
+		{
+			`SELECT Name, Height FROM Staff WHERE Height BETWEEN @min AND @max ORDER BY Height DESC`,
+			queryParams{"min": 1.75, "max": 1.85},
+			[][]interface{}{
+				{"Jack", 1.85},
+				{"Daniel", 1.83},
+				{"Sam", 1.75},
+			},
+		},
 	}
 	for _, test := range tests {
 		q, err := spansql.ParseQuery(test.q)
