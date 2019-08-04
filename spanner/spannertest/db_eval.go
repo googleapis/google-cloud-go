@@ -134,8 +134,8 @@ func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (bool, error) {
 		return false, fmt.Errorf("unhandled BoolExpr %T", be)
 	case spansql.BoolLiteral:
 		return bool(be), nil
-	case spansql.ID:
-		e, err := ec.evalID(be)
+	case spansql.ID, spansql.Paren:
+		e, err := ec.evalExpr(be)
 		if err != nil {
 			return false, err
 		}
@@ -271,6 +271,8 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 		return nil, nil
 	case spansql.BoolLiteral:
 		return bool(e), nil
+	case spansql.Paren:
+		return ec.evalExpr(e.Expr)
 	case spansql.LogicalOp:
 		return ec.evalBoolExpr(e)
 	case spansql.IsOp:
@@ -389,6 +391,8 @@ func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 				return ec.table.cols[i], nil
 			}
 		}
+	case spansql.Paren:
+		return ec.colInfo(e.Expr)
 	case spansql.NullLiteral:
 		// There isn't necessarily something sensible here.
 		// Empirically, though, the real Spanner returns Int64.

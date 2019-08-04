@@ -90,6 +90,8 @@ func TestParseExpr(t *testing.T) {
 		// OR is lower precedence than AND.
 		{`A AND B OR C`, LogicalOp{LHS: LogicalOp{LHS: ID("A"), Op: And, RHS: ID("B")}, Op: Or, RHS: ID("C")}},
 		{`A OR B AND C`, LogicalOp{LHS: ID("A"), Op: Or, RHS: LogicalOp{LHS: ID("B"), Op: And, RHS: ID("C")}}},
+		// Parens to override normal precedence.
+		{`A OR (B AND C)`, LogicalOp{LHS: ID("A"), Op: Or, RHS: Paren{Expr: LogicalOp{LHS: ID("B"), Op: And, RHS: ID("C")}}}},
 
 		// This is the same as the WHERE clause from the test in ParseQuery.
 		{`Age < @ageLimit AND Alias IS NOT NULL`,
