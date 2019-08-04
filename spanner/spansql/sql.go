@@ -243,6 +243,8 @@ func (io IsOp) SQL() string {
 	return str
 }
 
+func (p Paren) SQL() string { return "(" + p.Expr.SQL() + ")" }
+
 func (id ID) SQL() string   { return string(id) }
 func (p Param) SQL() string { return "@" + string(p) }
 

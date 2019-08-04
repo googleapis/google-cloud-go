@@ -229,6 +229,14 @@ type IsExpr interface {
 	SQL() string
 }
 
+// Paren represents a parenthesised expression.
+type Paren struct {
+	Expr Expr
+}
+
+func (Paren) isBoolExpr() {} // possibly bool
+func (Paren) isExpr()     {}
+
 // ID represents an identifier.
 type ID string
 

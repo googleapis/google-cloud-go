@@ -1135,9 +1135,10 @@ ascending order of precedence:
 	andParser
 	parseIsOp
 	parseComparisonOp
+	parseArithOp
 	parseLit
 
-TODO: there are more levels to break out.
+TODO: there are more levels to break out, esp. in parseArithOp
 */
 
 func (p *parser) parseExpr() (Expr, error) {
@@ -1279,9 +1280,7 @@ var symbolicOperators = map[string]ComparisonOperator{
 func (p *parser) parseComparisonOp() (Expr, error) {
 	debugf("parseComparisonOp: %v", p)
 
-	// TODO: this should be parsing bitwise/arithmetic subexpressions.
-
-	expr, err := p.parseLit()
+	expr, err := p.parseArithOp()
 	if err != nil {
 		return nil, err
 	}
@@ -1320,7 +1319,7 @@ func (p *parser) parseComparisonOp() (Expr, error) {
 			break
 		}
 
-		rhs, err := p.parseLit()
+		rhs, err := p.parseArithOp()
 		if err != nil {
 			return nil, err
 		}
@@ -1330,7 +1329,7 @@ func (p *parser) parseComparisonOp() (Expr, error) {
 			if err := p.expect("AND"); err != nil {
 				return nil, err
 			}
-			rhs2, err := p.parseLit()
+			rhs2, err := p.parseArithOp()
 			if err != nil {
 				return nil, err
 			}
@@ -1340,6 +1339,24 @@ func (p *parser) parseComparisonOp() (Expr, error) {
 		expr = co
 	}
 	return expr, nil
+}
+
+func (p *parser) parseArithOp() (Expr, error) {
+	// TODO: actually parse arithmetic operations.
+
+	if p.sniff("(") {
+		p.expect("(")
+		e, err := p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+		if err := p.expect(")"); err != nil {
+			return nil, err
+		}
+		return Paren{Expr: e}, nil
+	}
+
+	return p.parseLit()
 }
 
 func (p *parser) parseLit() (Expr, error) {
