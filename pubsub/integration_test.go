@@ -360,7 +360,7 @@ func TestIntegration_CancelReceive(t *testing.T) {
 	}
 }
 
-func TestIntegration_CreateSubscription_neverExpire(t *testing.T) {
+func TestIntegration_CreateSubscription_NeverExpire(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
@@ -550,7 +550,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 	}
 }
 
-func TestIntegration_UpdateSubscription_expirationPolicy(t *testing.T) {
+func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
@@ -629,7 +629,7 @@ func TestIntegration_UpdateSubscription_expirationPolicy(t *testing.T) {
 
 // NOTE: This test should be skipped by open source contributors. It requires
 // whitelisting, a (gsuite) organization project, and specific permissions.
-func TestIntegration_UpdateTopic(t *testing.T) {
+func TestIntegration_UpdateTopicLabels(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
@@ -767,21 +767,85 @@ func TestIntegration_Errors(t *testing.T) {
 	}
 }
 
+func TestIntegration_MessageStoragePolicy_TopicLevel(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	// Initially the message storage policy should just be non-empty
+	got, err := topic.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(got.MessageStoragePolicy.AllowedPersistenceRegions) == 0 {
+		t.Fatalf("Empty AllowedPersistenceRegions in :\n%+v", got)
+	}
+
+	// Specify some regions to set.
+	regions := []string{"asia-east1", "us-east1"}
+	got, err = topic.Update(ctx, TopicConfigToUpdate{
+		MessageStoragePolicy: &MessageStoragePolicy{
+			AllowedPersistenceRegions: regions,
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := TopicConfig{
+		MessageStoragePolicy: MessageStoragePolicy{
+			AllowedPersistenceRegions: regions,
+		},
+	}
+	if !testutil.Equal(got, want) {
+		t.Fatalf("\ngot  %+v\nwant regions%+v", got, want)
+	}
+
+	// Reset all allowed regions to project default.
+	got, err = topic.Update(ctx, TopicConfigToUpdate{
+		MessageStoragePolicy: &MessageStoragePolicy{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(got.MessageStoragePolicy.AllowedPersistenceRegions) == 0 {
+		t.Fatalf("Unexpectedly got empty MessageStoragePolicy.AllowedPersistenceRegions in:\n%+v", got)
+	}
+
+	// Removing all regions should fail
+	updateCfg := TopicConfigToUpdate{
+		MessageStoragePolicy: &MessageStoragePolicy{
+			AllowedPersistenceRegions: []string{},
+		},
+	}
+	if _, err = topic.Update(ctx, updateCfg); err == nil {
+		t.Fatalf("Unexpected succeeded in removing all regions\n%+v\n", got)
+	}
+}
+
 // NOTE: This test should be skipped by open source contributors. It requires
-// whitelisting, a (gsuite) organization project, and specific permissions.
+// a (gsuite) organization project, and specific permissions. The test for MessageStoragePolicy
+// on a topic level can be run on any topic and is covered by the previous test.
 //
 // Googlers, see internal bug 77920644. Furthermore, be sure to add your
 // service account as an owner of ps-geofencing-test.
-func TestIntegration_MessageStoragePolicy(t *testing.T) {
+func TestIntegration_MessageStoragePolicy_ProjectLevel(t *testing.T) {
 	// Verify that the message storage policy is populated.
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
 	ctx := context.Background()
-	// The message storage policy depends on the Resource Location Restriction org policy.
-	// The usual testing project is in the google.com org, which has no resource location restrictions,
-	// so we will always see an empty MessageStoragePolicy. Use a project in another org that does
-	// have a restriction set ("us-east1").
+	// If a message storage policy is not set on a topic, the policy depends on the Resource Location
+	// Restriction which is specified on an organization level. The usual testing project is in the
+	// google.com org, which has no resource location restrictions. Use a project in another org that
+	// does have a restriction set ("us-east1").
 	projID := "ps-geofencing-test"
 	// We can use the same creds as always because the service account of the default testing project
 	// has permission to use the above project. This test will fail if a different service account
@@ -812,7 +876,7 @@ func TestIntegration_MessageStoragePolicy(t *testing.T) {
 	}
 }
 
-func TestIntegration_CreateTopicWithKMS(t *testing.T) {
+func TestIntegration_CreateTopic_KMS(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
@@ -868,7 +932,6 @@ func TestIntegration_CreateTopicWithKMS(t *testing.T) {
 	tc := TopicConfig{
 		KMSKeyName: key.GetName(),
 	}
-
 	topic, err := client.CreateTopicWithConfig(ctx, topicIDs.New(), &tc)
 	if err != nil {
 		t.Fatalf("CreateTopicWithConfig error: %v", err)
@@ -884,5 +947,33 @@ func TestIntegration_CreateTopicWithKMS(t *testing.T) {
 
 	if got != key.GetName() {
 		t.Errorf("got %v, want %v", got, key.GetName())
+	}
+}
+
+func TestIntegration_CreateTopic_MessageStoragePolicy(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	tc := TopicConfig{
+		MessageStoragePolicy: MessageStoragePolicy{
+			AllowedPersistenceRegions: []string{"us-east1"},
+		},
+	}
+	topic, err := client.CreateTopicWithConfig(ctx, topicIDs.New(), &tc)
+	if err != nil {
+		t.Fatalf("CreateTopicWithConfig error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	got, err := topic.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := tc
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 }

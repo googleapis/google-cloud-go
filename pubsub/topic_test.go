@@ -79,9 +79,11 @@ func TestCreateTopicWithConfig(t *testing.T) {
 
 	id := "test-topic"
 	want := TopicConfig{
-		Labels:               map[string]string{"label": "value"},
-		MessageStoragePolicy: MessageStoragePolicy{},
-		KMSKeyName:           "projects/P/locations/L/keyRings/R/cryptoKeys/K",
+		Labels: map[string]string{"label": "value"},
+		MessageStoragePolicy: MessageStoragePolicy{
+			AllowedPersistenceRegions: []string{"us-east1"},
+		},
+		KMSKeyName: "projects/P/locations/L/keyRings/R/cryptoKeys/K",
 	}
 
 	topic := mustCreateTopicWithConfig(t, c, id, &want)
@@ -185,7 +187,7 @@ func TestPublishBufferedByteLimit(t *testing.T) {
 	}
 }
 
-func TestUpdateTopic(t *testing.T) {
+func TestUpdateTopic_Label(t *testing.T) {
 	ctx := context.Background()
 	client, srv := newFake(t)
 	defer client.Close()
@@ -203,13 +205,14 @@ func TestUpdateTopic(t *testing.T) {
 
 	// replace labels
 	labels := map[string]string{"label": "value"}
-	config2, err := topic.Update(ctx, TopicConfigToUpdate{Labels: labels})
+	config2, err := topic.Update(ctx, TopicConfigToUpdate{
+		Labels: labels,
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
 	want = TopicConfig{
-		Labels:               labels,
-		MessageStoragePolicy: MessageStoragePolicy{[]string{"US"}},
+		Labels: labels,
 	}
 	if !testutil.Equal(config2, want) {
 		t.Errorf("got %+v, want %+v", config2, want)
@@ -224,6 +227,38 @@ func TestUpdateTopic(t *testing.T) {
 	want.Labels = nil
 	if !testutil.Equal(config3, want) {
 		t.Errorf("got %+v, want %+v", config3, want)
+	}
+}
+
+func TestUpdateTopic_MessageStoragePolicy(t *testing.T) {
+	ctx := context.Background()
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "T")
+	config, err := topic.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := TopicConfig{}
+	if !testutil.Equal(config, want) {
+		t.Errorf("\ngot  %+v\nwant %+v", config, want)
+	}
+
+	// Update message storage policy.
+	msp := &MessageStoragePolicy{
+		AllowedPersistenceRegions: []string{"us-east1"},
+	}
+	config2, err := topic.Update(ctx, TopicConfigToUpdate{MessageStoragePolicy: msp})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want.MessageStoragePolicy = MessageStoragePolicy{
+		AllowedPersistenceRegions: []string{"us-east1"},
+	}
+	if !testutil.Equal(config2, want) {
+		t.Errorf("\ngot  %+v\nwant %+v", config2, want)
 	}
 }
 

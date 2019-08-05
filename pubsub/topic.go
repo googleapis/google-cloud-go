@@ -185,7 +185,8 @@ type TopicConfig struct {
 	MessageStoragePolicy MessageStoragePolicy
 
 	// The name of the the Cloud KMS key to be used to protect access to messages
-	// published to this topic, in the format "projects/P/locations/L/keyRings/R/cryptoKeys/K".
+	// published to this topic, in the format
+	// "projects/P/locations/L/keyRings/R/cryptoKeys/K".
 	KMSKeyName string
 }
 
@@ -193,9 +194,19 @@ type TopicConfig struct {
 type TopicConfigToUpdate struct {
 	// If non-nil, the current set of labels is completely
 	// replaced by the new set.
+	Labels map[string]string
+
+	// If non-nil, the existing policy (containing the list of regions)
+	// is completely replaced by the new policy.
+	//
+	// Use the zero value &MessageStoragePolicy{} to reset the topic back to
+	// using the organization's Resource Location Restriction policy.
+	//
+	// If nil, the policy remains unchanged.
+	//
 	// This field has beta status. It is not subject to the stability guarantee
 	// and may change.
-	Labels map[string]string
+	MessageStoragePolicy *MessageStoragePolicy
 }
 
 func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
@@ -210,12 +221,19 @@ func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
 // is determined when the topic is created based on the policy configured at
 // the project level.
 type MessageStoragePolicy struct {
-	// The list of GCP regions where messages that are published to the topic may
-	// be persisted in storage. Messages published by publishers running in
+	// AllowedPersistenceRegions is the list of GCP regions where messages that are published
+	// to the topic may be persisted in storage. Messages published by publishers running in
 	// non-allowed GCP regions (or running outside of GCP altogether) will be
-	// routed for storage in one of the allowed regions. An empty list indicates a
-	// misconfiguration at the project or organization level, which will result in
-	// all Publish operations failing.
+	// routed for storage in one of the allowed regions.
+	//
+	// If empty, it indicates a misconfiguration at the project or organization level, which
+	// will result in all Publish operations failing. This field cannot be empty in updates.
+	//
+	// If nil, then the policy is not defined on a topic level. When used in updates, it resets
+	// the regions back to the organization level Resource Location Restriction policy.
+	//
+	// For more information, see
+	// https://cloud.google.com/pubsub/docs/resource-location-restriction#pubsub-storage-locations.
 	AllowedPersistenceRegions []string
 }
 
@@ -227,7 +245,7 @@ func protoToMessageStoragePolicy(msp *pb.MessageStoragePolicy) MessageStoragePol
 }
 
 func messageStoragePolicyToProto(msp *MessageStoragePolicy) *pb.MessageStoragePolicy {
-	if msp == nil || len(msp.AllowedPersistenceRegions) <= 0 {
+	if msp == nil || msp.AllowedPersistenceRegions == nil {
 		return nil
 	}
 	return &pb.MessageStoragePolicy{AllowedPersistenceRegions: msp.AllowedPersistenceRegions}
@@ -244,9 +262,6 @@ func (t *Topic) Config(ctx context.Context) (TopicConfig, error) {
 
 // Update changes an existing topic according to the fields set in cfg. It returns
 // the new TopicConfig.
-//
-// Any call to Update (even with an empty TopicConfigToUpdate) will update the
-// MessageStoragePolicy for the topic from the organization's settings.
 func (t *Topic) Update(ctx context.Context, cfg TopicConfigToUpdate) (TopicConfig, error) {
 	req := t.updateRequest(cfg)
 	if len(req.UpdateMask.Paths) == 0 {
@@ -261,10 +276,14 @@ func (t *Topic) Update(ctx context.Context, cfg TopicConfigToUpdate) (TopicConfi
 
 func (t *Topic) updateRequest(cfg TopicConfigToUpdate) *pb.UpdateTopicRequest {
 	pt := &pb.Topic{Name: t.name}
-	paths := []string{"message_storage_policy"} // always fetch
+	var paths []string
 	if cfg.Labels != nil {
 		pt.Labels = cfg.Labels
 		paths = append(paths, "labels")
+	}
+	if cfg.MessageStoragePolicy != nil {
+		pt.MessageStoragePolicy = messageStoragePolicyToProto(cfg.MessageStoragePolicy)
+		paths = append(paths, "message_storage_policy")
 	}
 	return &pb.UpdateTopicRequest{
 		Topic:      pt,
