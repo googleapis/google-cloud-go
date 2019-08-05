@@ -34,7 +34,7 @@ type evalContext struct {
 	params queryParams
 }
 
-func (d *database) evalSelect(sel spansql.Select, params queryParams, aux []spansql.Expr) (*resultIter, error) {
+func (d *database) evalSelect(sel spansql.Select, params queryParams, aux []spansql.Expr) (ri *resultIter, evalErr error) {
 	// TODO: weave this in below.
 	if len(sel.From) == 0 && sel.Where == nil {
 		// Simple expressions.
@@ -70,6 +70,24 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams, aux []span
 		return nil, err
 	}
 
+	ri = &resultIter{}
+
+	// Handle COUNT(*) specially.
+	// TODO: Handle aggregation more generally.
+	if len(sel.List) == 1 && isCountStar(sel.List[0]) {
+		// Replace the `COUNT(*)` with `1`, then aggregate on the way out.
+		sel.List[0] = spansql.IntegerLiteral(1)
+		defer func() {
+			if evalErr != nil {
+				return
+			}
+			count := int64(len(ri.rows))
+			ri.rows = []resultRow{
+				{data: []interface{}{count}},
+			}
+		}()
+	}
+
 	// TODO: Support table sampling.
 
 	t.mu.Lock()
@@ -79,7 +97,6 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams, aux []span
 		params: params,
 	}
 
-	ri := &resultIter{}
 	for _, e := range sel.List {
 		ci, err := ec.colInfo(e)
 		if err != nil {
@@ -419,4 +436,15 @@ func evalLike(str, pat string) bool {
 		panic(fmt.Sprintf("internal error: constructed bad regexp /%s/: %v", pat, err))
 	}
 	return match
+}
+
+func isCountStar(e spansql.Expr) bool {
+	f, ok := e.(spansql.Func)
+	if !ok {
+		return false
+	}
+	if f.Name != "COUNT" || len(f.Args) != 1 {
+		return false
+	}
+	return f.Args[0] == spansql.Star
 }

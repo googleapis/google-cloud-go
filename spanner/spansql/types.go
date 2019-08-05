@@ -250,6 +250,17 @@ type IsExpr interface {
 	SQL() string
 }
 
+// Func represents a function call.
+type Func struct {
+	Name string
+	Args []Expr
+
+	// TODO: various functions permit as-expressions, which might warrant different types in here.
+}
+
+func (Func) isBoolExpr() {} // possibly bool
+func (Func) isExpr()     {}
+
 // Paren represents a parenthesised expression.
 type Paren struct {
 	Expr Expr
@@ -307,6 +318,13 @@ func (FloatLiteral) isExpr() {}
 type StringLiteral string
 
 func (StringLiteral) isExpr() {}
+
+type StarExpr int
+
+// Star represents a "*" in an expression.
+const Star = StarExpr(0)
+
+func (StarExpr) isExpr() {}
 
 // DDL
 // https://cloud.google.com/spanner/docs/data-definition-language#ddl_syntax

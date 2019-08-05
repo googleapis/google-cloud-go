@@ -55,6 +55,19 @@ func TestParseQuery(t *testing.T) {
 				Limit: Param("limit"),
 			},
 		},
+		{`SELECT COUNT(*) FROM Packages`,
+			Query{
+				Select: Select{
+					List: []Expr{
+						Func{
+							Name: "COUNT",
+							Args: []Expr{Star},
+						},
+					},
+					From: []SelectFrom{{Table: "Packages"}},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseQuery(test.in)

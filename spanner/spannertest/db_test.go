@@ -229,6 +229,13 @@ func TestTableData(t *testing.T) {
 				{"Sam", 1.75},
 			},
 		},
+		{
+			`SELECT COUNT(*) FROM Staff WHERE Name < "T"`,
+			nil,
+			[][]interface{}{
+				{int64(4)},
+			},
+		},
 	}
 	for _, test := range tests {
 		q, err := spansql.ParseQuery(test.q)
