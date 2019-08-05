@@ -34,5 +34,5 @@ by ascending esotericism:
 - SELECT star expressions
 - partition support
 - conditional expressions
-- table sampling
+- table sampling (implementation)
 - hints for table/joins

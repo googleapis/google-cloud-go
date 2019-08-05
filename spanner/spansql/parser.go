@@ -1050,7 +1050,15 @@ func (p *parser) parseSelect() (Select, error) {
 			if err != nil {
 				return Select{}, err
 			}
+			if p.sniff("TABLESAMPLE") {
+				ts, err := p.parseTableSample()
+				if err != nil {
+					return Select{}, err
+				}
+				from.TableSample = &ts
+			}
 			sel.From = append(sel.From, from)
+
 			if p.sniff(",") {
 				p.expect(",")
 				continue
@@ -1077,6 +1085,56 @@ func (p *parser) parseSelectFrom() (SelectFrom, error) {
 	// TODO: support more than a single table name.
 	tname, err := p.parseTableOrIndexOrColumnName()
 	return SelectFrom{Table: tname}, err
+}
+
+func (p *parser) parseTableSample() (TableSample, error) {
+	var ts TableSample
+
+	if err := p.expect("TABLESAMPLE"); err != nil {
+		return ts, err
+	}
+
+	tok := p.next()
+	switch {
+	case tok.err != nil:
+		return ts, tok.err
+	case tok.value == "BERNOULLI":
+		ts.Method = Bernoulli
+	case tok.value == "RESERVOIR":
+		ts.Method = Reservoir
+	default:
+		return ts, p.errorf("got %q, want BERNOULLI or RESERVOIR", tok.value)
+	}
+
+	if err := p.expect("("); err != nil {
+		return ts, err
+	}
+
+	// The docs say "numeric_value_expression" here,
+	// but that doesn't appear to be defined anywhere.
+	size, err := p.parseExpr()
+	if err != nil {
+		return ts, err
+	}
+	ts.Size = size
+
+	tok = p.next()
+	switch {
+	case tok.err != nil:
+		return ts, tok.err
+	case tok.value == "PERCENT":
+		ts.SizeType = PercentTableSample
+	case tok.value == "ROWS":
+		ts.SizeType = RowsTableSample
+	default:
+		return ts, p.errorf("got %q, want PERCENT or ROWS", tok.value)
+	}
+
+	if err := p.expect(")"); err != nil {
+		return ts, err
+	}
+
+	return ts, nil
 }
 
 func (p *parser) parseOrder() (Order, error) {

@@ -70,6 +70,8 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams, aux []span
 		return nil, err
 	}
 
+	// TODO: Support table sampling.
+
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	ec := evalContext{
