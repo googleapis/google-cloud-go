@@ -148,13 +148,34 @@ type Select struct {
 
 type SelectFrom struct {
 	// This only supports a FROM clause directly from a table.
-	Table string
+	Table       string
+	TableSample *TableSample
 }
 
 type Order struct {
 	Expr Expr
 	Desc bool
 }
+
+type TableSample struct {
+	Method   TableSampleMethod
+	Size     Expr
+	SizeType TableSampleSizeType
+}
+
+type TableSampleMethod int
+
+const (
+	Bernoulli TableSampleMethod = iota
+	Reservoir
+)
+
+type TableSampleSizeType int
+
+const (
+	PercentTableSample TableSampleSizeType = iota
+	RowsTableSample
+)
 
 type BoolExpr interface {
 	isBoolExpr()
