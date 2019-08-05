@@ -44,7 +44,10 @@ type CreateIndex struct {
 	Table   string
 	Columns []KeyPart
 
-	// TODO: UNIQUE, NULL_FILTERED, storing_clause, interleave_clause
+	Unique       bool
+	NullFiltered bool
+
+	// TODO: storing_clause, interleave_clause
 }
 
 // DropTable represents a DROP TABLE statement.
