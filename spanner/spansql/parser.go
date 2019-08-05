@@ -410,7 +410,7 @@ func (p *parser) advance() {
 	// TODO: backtick (`) for quoted identifiers.
 	// TODO: array, struct, date, timestamp literals
 	switch p.s[0] {
-	case ',', ';', '(', ')':
+	case ',', ';', '(', ')', '*':
 		// Single character symbol.
 		p.cur.value, p.s = p.s[:1], p.s[1:]
 		return
@@ -1178,6 +1178,39 @@ func (p *parser) parseLimitCount() (Limit, error) {
 	return nil, p.errorf("got %q, want literal or parameter", tok.value)
 }
 
+func (p *parser) parseExprList() ([]Expr, error) {
+	if err := p.expect("("); err != nil {
+		return nil, err
+	}
+	var list []Expr
+	for {
+		if err := p.expect(")"); err == nil {
+			break
+		}
+		p.back()
+
+		e, err := p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+		list = append(list, e)
+
+		// ")" or "," should be next.
+		tok := p.next()
+		if tok.err != nil {
+			return nil, err
+		}
+		if tok.value == ")" {
+			break
+		} else if tok.value == "," {
+			continue
+		} else {
+			return nil, p.errorf(`got %q, want ")" or ","`, tok.value)
+		}
+	}
+	return list, nil
+}
+
 /*
 Expressions
 
@@ -1414,7 +1447,25 @@ func (p *parser) parseArithOp() (Expr, error) {
 		return Paren{Expr: e}, nil
 	}
 
-	return p.parseLit()
+	lit, err := p.parseLit()
+	if err != nil {
+		return nil, err
+	}
+
+	// If the literal was an identifier, and there's an open paren next,
+	// this is a function invocation.
+	if id, ok := lit.(ID); ok && p.sniff("(") {
+		list, err := p.parseExprList()
+		if err != nil {
+			return nil, err
+		}
+		return Func{
+			Name: string(id),
+			Args: list,
+		}, nil
+	}
+
+	return lit, nil
 }
 
 func (p *parser) parseLit() (Expr, error) {
@@ -1432,7 +1483,7 @@ func (p *parser) parseLit() (Expr, error) {
 		return StringLiteral(tok.string), nil
 	}
 
-	// Handle some reserved keywords that become specific values.
+	// Handle some reserved keywords and special tokens that become specific values.
 	// TODO: Handle the other 92 keywords.
 	switch tok.value {
 	case "TRUE":
@@ -1441,6 +1492,8 @@ func (p *parser) parseLit() (Expr, error) {
 		return False, nil
 	case "NULL":
 		return Null, nil
+	case "*":
+		return Star, nil
 	}
 
 	// TODO: more types of literals (array, struct, date, timestamp).

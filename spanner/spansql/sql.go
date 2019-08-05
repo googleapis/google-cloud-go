@@ -243,6 +243,18 @@ func (io IsOp) SQL() string {
 	return str
 }
 
+func (f Func) SQL() string {
+	str := f.Name + "("
+	for i, e := range f.Args {
+		if i > 0 {
+			str += ", "
+		}
+		str += e.SQL()
+	}
+	str += ")"
+	return str
+}
+
 func (p Paren) SQL() string { return "(" + p.Expr.SQL() + ")" }
 
 func (id ID) SQL() string   { return string(id) }
@@ -256,6 +268,7 @@ func (b BoolLiteral) SQL() string {
 }
 
 func (n NullLiteral) SQL() string { return "NULL" }
+func (StarExpr) SQL() string      { return "*" }
 
 func (il IntegerLiteral) SQL() string { return strconv.Itoa(int(il)) }
 func (fl FloatLiteral) SQL() string   { return strconv.FormatFloat(float64(fl), 'g', -1, 64) }
