@@ -23,6 +23,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"sort"
 	"testing"
@@ -974,7 +975,7 @@ func TestIntegration_WatchDocument(t *testing.T) {
 }
 
 func TestIntegration_ArrayUnion_Create(t *testing.T) {
-	path := "somepath"
+	path := "somePath"
 	data := map[string]interface{}{
 		path: ArrayUnion("a", "b"),
 	}
@@ -1002,7 +1003,7 @@ func TestIntegration_ArrayUnion_Create(t *testing.T) {
 func TestIntegration_ArrayUnion_Update(t *testing.T) {
 	doc := integrationColl(t).NewDoc()
 	h := testHelper{t}
-	path := "somepath"
+	path := "somePath"
 
 	h.mustCreate(doc, map[string]interface{}{
 		path: []string{"a", "b"},
@@ -1016,8 +1017,7 @@ func TestIntegration_ArrayUnion_Update(t *testing.T) {
 	h.mustUpdate(doc, fpus)
 	ds := h.mustGet(doc)
 	var gotMap map[string][]string
-	err := ds.DataTo(&gotMap)
-	if err != nil {
+	if err := ds.DataTo(&gotMap); err != nil {
 		t.Fatal(err)
 	}
 	if _, ok := gotMap[path]; !ok {
@@ -1035,7 +1035,7 @@ func TestIntegration_ArrayUnion_Update(t *testing.T) {
 func TestIntegration_ArrayUnion_Set(t *testing.T) {
 	coll := integrationColl(t)
 	h := testHelper{t}
-	path := "somepath"
+	path := "somePath"
 
 	doc := coll.NewDoc()
 	newData := map[string]interface{}{
@@ -1062,7 +1062,7 @@ func TestIntegration_ArrayUnion_Set(t *testing.T) {
 func TestIntegration_ArrayRemove_Create(t *testing.T) {
 	doc := integrationColl(t).NewDoc()
 	h := testHelper{t}
-	path := "somepath"
+	path := "somePath"
 
 	h.mustCreate(doc, map[string]interface{}{
 		path: ArrayRemove("a", "b"),
@@ -1070,8 +1070,7 @@ func TestIntegration_ArrayRemove_Create(t *testing.T) {
 
 	ds := h.mustGet(doc)
 	var gotMap map[string][]string
-	err := ds.DataTo(&gotMap)
-	if err != nil {
+	if err := ds.DataTo(&gotMap); err != nil {
 		t.Fatal(err)
 	}
 	if _, ok := gotMap[path]; !ok {
@@ -1088,7 +1087,7 @@ func TestIntegration_ArrayRemove_Create(t *testing.T) {
 func TestIntegration_ArrayRemove_Update(t *testing.T) {
 	doc := integrationColl(t).NewDoc()
 	h := testHelper{t}
-	path := "somepath"
+	path := "somePath"
 
 	h.mustCreate(doc, map[string]interface{}{
 		path: []string{"a", "this should be removed", "c"},
@@ -1102,8 +1101,7 @@ func TestIntegration_ArrayRemove_Update(t *testing.T) {
 	h.mustUpdate(doc, fpus)
 	ds := h.mustGet(doc)
 	var gotMap map[string][]string
-	err := ds.DataTo(&gotMap)
-	if err != nil {
+	if err := ds.DataTo(&gotMap); err != nil {
 		t.Fatal(err)
 	}
 	if _, ok := gotMap[path]; !ok {
@@ -1121,7 +1119,7 @@ func TestIntegration_ArrayRemove_Update(t *testing.T) {
 func TestIntegration_ArrayRemove_Set(t *testing.T) {
 	coll := integrationColl(t)
 	h := testHelper{t}
-	path := "somepath"
+	path := "somePath"
 
 	doc := coll.NewDoc()
 	newData := map[string]interface{}{
@@ -1140,6 +1138,142 @@ func TestIntegration_ArrayRemove_Set(t *testing.T) {
 	want := []string(nil)
 	if !testEqual(gotMap[path], want) {
 		t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
+	}
+}
+
+func TestIntegration_Increment_Create(t *testing.T) {
+	doc := integrationColl(t).NewDoc()
+	h := testHelper{t}
+	path := "somePath"
+	want := 7
+
+	h.mustCreate(doc, map[string]interface{}{
+		path: Increment(want),
+	})
+
+	ds := h.mustGet(doc)
+	var gotMap map[string]int
+	if err := ds.DataTo(&gotMap); err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := gotMap[path]; !ok {
+		t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+	}
+
+	if gotMap[path] != want {
+		t.Fatalf("want %d, got %d", want, gotMap[path])
+	}
+}
+
+// Also checks that all appropriate types are supported.
+func TestIntegration_Increment_Update(t *testing.T) {
+	type MyInt = int // Test a custom type.
+	for _, tc := range []struct {
+		// All three should be same type.
+		start interface{}
+		inc   interface{}
+		want  interface{}
+
+		wantErr bool
+	}{
+		{start: int(7), inc: int(4), want: int(11)},
+		{start: int8(7), inc: int8(4), want: int8(11)},
+		{start: int16(7), inc: int16(4), want: int16(11)},
+		{start: int32(7), inc: int32(4), want: int32(11)},
+		{start: int64(7), inc: int64(4), want: int64(11)},
+		{start: uint8(7), inc: uint8(4), want: uint8(11)},
+		{start: uint16(7), inc: uint16(4), want: uint16(11)},
+		{start: uint32(7), inc: uint32(4), want: uint32(11)},
+		{start: float32(7.7), inc: float32(4.1), want: float32(11.8)},
+		{start: float64(7.7), inc: float64(4.1), want: float64(11.8)},
+		{start: MyInt(7), inc: MyInt(4), want: MyInt(11)},
+		{start: 7, inc: "strings are not allowed", wantErr: true},
+		{start: 7, inc: uint(3), wantErr: true},
+		{start: 7, inc: uint64(3), wantErr: true},
+	} {
+		typeStr := reflect.TypeOf(tc.inc).String()
+		t.Run(typeStr, func(t *testing.T) {
+			doc := integrationColl(t).NewDoc()
+			h := testHelper{t}
+			path := "somePath"
+
+			h.mustCreate(doc, map[string]interface{}{
+				path: tc.start,
+			})
+			fpus := []Update{
+				{
+					Path:  path,
+					Value: Increment(tc.inc),
+				},
+			}
+			_, err := doc.Update(context.Background(), fpus)
+			if err != nil {
+				if tc.wantErr {
+					return
+				}
+				h.t.Fatalf("%s: updating: %v", loc(), err)
+			}
+			ds := h.mustGet(doc)
+			var gotMap map[string]interface{}
+			if err := ds.DataTo(&gotMap); err != nil {
+				t.Fatal(err)
+			}
+
+			switch tc.want.(type) {
+			case int, int8, int16, int32, int64:
+				if _, ok := gotMap[path]; !ok {
+					t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+				}
+				if got, want := reflect.ValueOf(gotMap[path]).Int(), reflect.ValueOf(tc.want).Int(); got != want {
+					t.Fatalf("want %v, got %v", want, got)
+				}
+			case uint8, uint16, uint32:
+				if _, ok := gotMap[path]; !ok {
+					t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+				}
+				if got, want := uint64(reflect.ValueOf(gotMap[path]).Int()), reflect.ValueOf(tc.want).Uint(); got != want {
+					t.Fatalf("want %v, got %v", want, got)
+				}
+			case float32, float64:
+				if _, ok := gotMap[path]; !ok {
+					t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+				}
+				const precision = 1e-6 // Floats are never precisely comparable.
+				if got, want := reflect.ValueOf(gotMap[path]).Float(), reflect.ValueOf(tc.want).Float(); math.Abs(got-want) > precision {
+					t.Fatalf("want %v, got %v", want, got)
+				}
+			default:
+				// Either some unsupported type was added without specifying
+				// wantErr, or a supported type needs to be added to this
+				// switch statement.
+				t.Fatalf("unsupported type %T", tc.want)
+			}
+		})
+	}
+}
+
+func TestIntegration_Increment_Set(t *testing.T) {
+	coll := integrationColl(t)
+	h := testHelper{t}
+	path := "somePath"
+	want := 9
+
+	doc := coll.NewDoc()
+	newData := map[string]interface{}{
+		path: Increment(want),
+	}
+	h.mustSet(doc, newData)
+	ds := h.mustGet(doc)
+	var gotMap map[string]int
+	if err := ds.DataTo(&gotMap); err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := gotMap[path]; !ok {
+		t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+	}
+
+	if gotMap[path] != want {
+		t.Fatalf("want %d, got %d", want, gotMap[path])
 	}
 }
 
