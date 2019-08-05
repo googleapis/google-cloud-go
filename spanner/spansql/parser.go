@@ -565,6 +565,9 @@ func (p *parser) parseCreateTable() (CreateTable, error) {
 
 		primary_key:
 			PRIMARY KEY ( [key_part, ...] )
+
+		cluster:
+			INTERLEAVE IN PARENT table_name [ ON DELETE { CASCADE | NO ACTION } ]
 	*/
 
 	if err := p.expect("CREATE"); err != nil {
@@ -618,6 +621,36 @@ func (p *parser) parseCreateTable() (CreateTable, error) {
 	if err != nil {
 		return CreateTable{}, err
 	}
+
+	if p.sniff(",", "INTERLEAVE") {
+		p.expect(",")
+		p.expect("INTERLEAVE")
+		if err := p.expect("IN"); err != nil {
+			return CreateTable{}, err
+		}
+		if err := p.expect("PARENT"); err != nil {
+			return CreateTable{}, err
+		}
+		pname, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return CreateTable{}, err
+		}
+		ct.Interleave = &Interleave{
+			Parent:   pname,
+			OnDelete: NoActionOnDelete,
+		}
+		// The ON DELETE clause is optional; it defaults to NoActionOnDelete.
+		if p.sniff("ON", "DELETE") {
+			p.expect("ON")
+			p.expect("DELETE")
+			od, err := p.parseOnDelete()
+			if err != nil {
+				return CreateTable{}, err
+			}
+			ct.Interleave.OnDelete = od
+		}
+	}
+
 	return ct, nil
 }
 
@@ -719,21 +752,11 @@ func (p *parser) parseAlterTable() (AlterTable, error) {
 		if err := p.expect("DELETE"); err != nil {
 			return AlterTable{}, err
 		}
-		tok := p.next()
-		if tok.err != nil {
-			return AlterTable{}, tok.err
-		}
-		if tok.value == "CASCADE" {
-			a.Alteration = CascadeOnDelete
-			return a, nil
-		}
-		if tok.value != "NO" {
-			return AlterTable{}, p.errorf("got %q, want NO or CASCADE", tok.value)
-		}
-		if err := p.expect("ACTION"); err != nil {
+		od, err := p.parseOnDelete()
+		if err != nil {
 			return AlterTable{}, err
 		}
-		a.Alteration = NoActionOnDelete
+		a.Alteration = SetOnDelete{Action: od}
 		return a, nil
 	}
 	// TODO: "ALTER"
@@ -1364,4 +1387,26 @@ func (p *parser) parseTableOrIndexOrColumnName() (string, error) {
 	}
 	// TODO: enforce restrictions
 	return tok.value, nil
+}
+
+func (p *parser) parseOnDelete() (OnDelete, error) {
+	/*
+		CASCADE
+		NO ACTION
+	*/
+
+	tok := p.next()
+	if tok.err != nil {
+		return 0, tok.err
+	}
+	if tok.value == "CASCADE" {
+		return CascadeOnDelete, nil
+	}
+	if tok.value != "NO" {
+		return 0, p.errorf("got %q, want NO or CASCADE", tok.value)
+	}
+	if err := p.expect("ACTION"); err != nil {
+		return 0, err
+	}
+	return NoActionOnDelete, nil
 }

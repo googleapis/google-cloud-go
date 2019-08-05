@@ -34,6 +34,9 @@ func (ct CreateTable) SQL() string {
 		str += c.SQL()
 	}
 	str += ")"
+	if il := ct.Interleave; il != nil {
+		str += ",\n  INTERLEAVE IN PARENT " + il.Parent + " ON DELETE " + il.OnDelete.SQL()
+	}
 	return str
 }
 
@@ -70,13 +73,17 @@ func (dc DropColumn) SQL() string {
 }
 
 func (sod SetOnDelete) SQL() string {
-	switch sod {
+	return "SET ON DELETE " + sod.Action.SQL()
+}
+
+func (od OnDelete) SQL() string {
+	switch od {
 	case NoActionOnDelete:
-		return "SET ON DELETE NO ACTION"
+		return "NO ACTION"
 	case CascadeOnDelete:
-		return "SET ON DELETE CASCADE"
+		return "CASCADE"
 	}
-	panic("unknown SetOnDelete")
+	panic("unknown OnDelete")
 }
 
 // TODO func (ac AlterColumn) SQL() string { }

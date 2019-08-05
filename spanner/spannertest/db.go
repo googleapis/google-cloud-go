@@ -102,6 +102,8 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 			return status.Newf(codes.AlreadyExists, "table %s already exists", stmt.Name)
 		}
 
+		// TODO: check stmt.Interleave details.
+
 		// Move primary keys first, preserving their order.
 		pk := make(map[string]int)
 		for i, kp := range stmt.PrimaryKey {

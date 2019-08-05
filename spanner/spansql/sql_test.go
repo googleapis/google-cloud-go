@@ -77,6 +77,29 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			CreateTable{
+				Name: "Tsub",
+				Columns: []ColumnDef{
+					{Name: "SomeId", Type: Type{Base: Int64}, NotNull: true},
+					{Name: "OtherId", Type: Type{Base: Int64}, NotNull: true},
+				},
+				PrimaryKey: []KeyPart{
+					{Column: "SomeId"},
+					{Column: "OtherId"},
+				},
+				Interleave: &Interleave{
+					Parent:   "Ta",
+					OnDelete: CascadeOnDelete,
+				},
+			},
+			`CREATE TABLE Tsub (
+  SomeId INT64 NOT NULL,
+  OtherId INT64 NOT NULL,
+) PRIMARY KEY(SomeId, OtherId),
+  INTERLEAVE IN PARENT Ta ON DELETE CASCADE`,
+			reparseDDL,
+		},
+		{
 			DropTable{
 				Name: "Ta",
 			},
@@ -121,7 +144,7 @@ func TestSQL(t *testing.T) {
 		{
 			AlterTable{
 				Name:       "Ta",
-				Alteration: NoActionOnDelete,
+				Alteration: SetOnDelete{Action: NoActionOnDelete},
 			},
 			"ALTER TABLE Ta SET ON DELETE NO ACTION",
 			reparseDDL,
@@ -129,7 +152,7 @@ func TestSQL(t *testing.T) {
 		{
 			AlterTable{
 				Name:       "Ta",
-				Alteration: CascadeOnDelete,
+				Alteration: SetOnDelete{Action: CascadeOnDelete},
 			},
 			"ALTER TABLE Ta SET ON DELETE CASCADE",
 			reparseDDL,
