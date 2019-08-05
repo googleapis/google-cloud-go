@@ -41,7 +41,14 @@ func (ct CreateTable) SQL() string {
 }
 
 func (ci CreateIndex) SQL() string {
-	str := "CREATE INDEX " + ci.Name + " ON " + ci.Table + "("
+	str := "CREATE"
+	if ci.Unique {
+		str += " UNIQUE"
+	}
+	if ci.NullFiltered {
+		str += " NULL_FILTERED"
+	}
+	str += " INDEX " + ci.Name + " ON " + ci.Table + "("
 	for i, c := range ci.Columns {
 		if i > 0 {
 			str += ", "

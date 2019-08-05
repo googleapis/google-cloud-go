@@ -665,10 +665,19 @@ func (p *parser) parseCreateIndex() (CreateIndex, error) {
 			{a—z|A—Z}[{a—z|A—Z|0—9|_}+]
 	*/
 
+	var unique, nullFiltered bool
+
 	if err := p.expect("CREATE"); err != nil {
 		return CreateIndex{}, err
 	}
-	// TODO: UNIQUE, NULL_FILTERED
+	if p.sniff("UNIQUE") {
+		p.expect("UNIQUE")
+		unique = true
+	}
+	if p.sniff("NULL_FILTERED") {
+		p.expect("NULL_FILTERED")
+		nullFiltered = true
+	}
 	if err := p.expect("INDEX"); err != nil {
 		return CreateIndex{}, err
 	}
@@ -683,7 +692,13 @@ func (p *parser) parseCreateIndex() (CreateIndex, error) {
 	if err != nil {
 		return CreateIndex{}, err
 	}
-	ci := CreateIndex{Name: iname, Table: tname}
+	ci := CreateIndex{
+		Name:  iname,
+		Table: tname,
+
+		Unique:       unique,
+		NullFiltered: nullFiltered,
+	}
 	ci.Columns, err = p.parseKeyPartList()
 	if err != nil {
 		return CreateIndex{}, err
