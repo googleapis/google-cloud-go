@@ -205,9 +205,10 @@ func TestExtractTransforms(t *testing.T) {
 	}
 
 	m := map[string]interface{}{
-		"ar": map[string]interface{}{"k2": ArrayRemove("e", "f", "g")},
-		"au": map[string]interface{}{"k1": ArrayUnion("a", "b", "c")},
-		"x":  1,
+		"ar":  map[string]interface{}{"k2": ArrayRemove("e", "f", "g")},
+		"au":  map[string]interface{}{"k1": ArrayUnion("a", "b", "c")},
+		"inc": map[string]interface{}{"k3": Increment(7)},
+		"x":   1,
 		"y": &S{
 			// A is a zero time: included
 			B: aTime, // not a zero time: excluded
@@ -242,6 +243,12 @@ func TestExtractTransforms(t *testing.T) {
 					{ValueType: &pb.Value_StringValue{"b"}},
 					{ValueType: &pb.Value_StringValue{"c"}},
 				}},
+			},
+		},
+		{
+			FieldPath: "inc.k3",
+			TransformType: &pb.DocumentTransform_FieldTransform_Increment{
+				Increment: &pb.Value{ValueType: &pb.Value_IntegerValue{7}},
 			},
 		},
 		{
