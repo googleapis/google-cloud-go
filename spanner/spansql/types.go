@@ -28,6 +28,13 @@ type CreateTable struct {
 	Name       string
 	Columns    []ColumnDef
 	PrimaryKey []KeyPart
+	Interleave *Interleave
+}
+
+// Interleave represents an interleave clause of a CREATE TABLE statement.
+type Interleave struct {
+	Parent   string
+	OnDelete OnDelete
 }
 
 // CreateIndex represents a CREATE INDEX statement.
@@ -69,11 +76,12 @@ func (SetOnDelete) isTableAlteration() {}
 
 type AddColumn struct{ Def ColumnDef }
 type DropColumn struct{ Name string }
+type SetOnDelete struct{ Action OnDelete }
 
-type SetOnDelete int
+type OnDelete int
 
 const (
-	NoActionOnDelete SetOnDelete = iota
+	NoActionOnDelete OnDelete = iota
 	CascadeOnDelete
 )
 

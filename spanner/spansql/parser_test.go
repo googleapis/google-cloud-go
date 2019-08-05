@@ -143,6 +143,12 @@ func TestParseDDL(t *testing.T) {
 		CREATE INDEX MyFirstIndex ON FooBar (
 			Count DESC
 		);
+		CREATE TABLE FooBarAux (
+			System STRING(MAX) NOT NULL,
+			RepoPath STRING(MAX) NOT NULL,
+			Author STRING(MAX) NOT NULL,
+		) PRIMARY KEY(System, RepoPath, Author),
+		  INTERLEAVE IN PARENT FooBar ON DELETE CASCADE;
 
 		ALTER TABLE FooBar ADD COLUMN TZ BYTES(20);
 		ALTER TABLE FooBar DROP COLUMN TZ;
@@ -174,11 +180,28 @@ func TestParseDDL(t *testing.T) {
 				Table:   "FooBar",
 				Columns: []KeyPart{{Column: "Count", Desc: true}},
 			},
+			CreateTable{
+				Name: "FooBarAux",
+				Columns: []ColumnDef{
+					{Name: "System", Type: Type{Base: String, Len: MaxLen}, NotNull: true},
+					{Name: "RepoPath", Type: Type{Base: String, Len: MaxLen}, NotNull: true},
+					{Name: "Author", Type: Type{Base: String, Len: MaxLen}, NotNull: true},
+				},
+				PrimaryKey: []KeyPart{
+					{Column: "System"},
+					{Column: "RepoPath"},
+					{Column: "Author"},
+				},
+				Interleave: &Interleave{
+					Parent:   "FooBar",
+					OnDelete: CascadeOnDelete,
+				},
+			},
 			AlterTable{Name: "FooBar", Alteration: AddColumn{
 				Def: ColumnDef{Name: "TZ", Type: Type{Base: Bytes, Len: 20}},
 			}},
 			AlterTable{Name: "FooBar", Alteration: DropColumn{Name: "TZ"}},
-			AlterTable{Name: "FooBar", Alteration: NoActionOnDelete},
+			AlterTable{Name: "FooBar", Alteration: SetOnDelete{Action: NoActionOnDelete}},
 			DropIndex{Name: "MyFirstIndex"},
 			DropTable{Name: "FooBar"},
 			CreateTable{
