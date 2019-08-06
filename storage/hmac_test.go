@@ -24,6 +24,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/api/iterator"
 )
 
 func TestHMACKeyHandle_GetParsing(t *testing.T) {
@@ -355,7 +356,6 @@ func TestHMACKey_UpdateState(t *testing.T) {
                                     "timeCreated": "2019-07-11T12:11:33+00:00",
                                     "projectId": "project-id",
                                     "updated": "2019-07-11T12:13:33+00:00"
-                                }
                             }`, validState)
 			mt.addResult(&http.Response{
 				ProtoMajor:    1,
@@ -376,5 +376,91 @@ func TestHMACKey_UpdateState(t *testing.T) {
 				t.Fatalf("Unexpected updated state %q, expected %q", hu.State, validState)
 			}
 		})
+	}
+}
+
+func TestHMACKey_ListFull(t *testing.T) {
+	mt := &mockTransport{}
+	client := mockClient(t, mt)
+	projectID := "hmackey-project-id"
+	ctx := context.Background()
+
+	maxPages := 2
+	page := 0
+	mockResponse := func() {
+		defer func() {
+			page++
+		}()
+
+		var body string
+		if page >= maxPages {
+			body = `{"kind":"storage#hmacKeysMetadata","items":[]}`
+		} else {
+			offset := page * 2
+			body = fmt.Sprintf(`
+                        {
+                            "kind": "storage#hmacKeysMetadata",
+                            "items": [{
+                                "accessId": "accessid-%d",
+                                "timeCreated": "2019-08-05T12:11:10+00:00",
+                                "state": "ACTIVE"
+                            }, {
+                                "accessId": "accessid-%d",
+                                "timeCreated": "2019-08-05T13:12:11+00:00",
+                                "state": "INACTIVE"
+                            }],
+                            "nextPageToken": "pageToken"
+                        }`, offset+1, offset+2)
+		}
+
+		mt.addResult(&http.Response{
+			ProtoMajor: 2,
+			ProtoMinor: 0,
+			Status:     "OK",
+			StatusCode: 200,
+			Body:       bodyReader(body),
+		}, nil)
+	}
+
+	iter := client.ListHMACKeys(ctx, projectID)
+
+	var gotKeys []*HMACKey
+	for {
+		mockResponse()
+		key, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+		gotKeys = append(gotKeys, key)
+	}
+
+	wantKeys := []*HMACKey{
+		{
+			AccessID:    "accessid-1",
+			CreatedTime: time.Date(2019, time.August, 5, 12, 11, 10, 0, time.UTC),
+			State:       Active,
+		},
+		{
+			AccessID:    "accessid-2",
+			CreatedTime: time.Date(2019, time.August, 5, 13, 12, 11, 0, time.UTC),
+			State:       Inactive,
+		},
+		{
+			AccessID:    "accessid-3",
+			CreatedTime: time.Date(2019, time.August, 5, 12, 11, 10, 0, time.UTC),
+			State:       Active,
+		},
+		{
+			AccessID:    "accessid-4",
+			CreatedTime: time.Date(2019, time.August, 5, 13, 12, 11, 0, time.UTC),
+			State:       Inactive,
+		},
+	}
+
+	if diff := testutil.Diff(gotKeys, wantKeys); diff != "" {
+		t.Fatalf("Response mismatch: got - want +\n%s", diff)
 	}
 }

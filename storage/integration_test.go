@@ -2760,7 +2760,7 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 	}
 }
 
-func TestIntegration_HMACKey_Update(t *testing.T) {
+func TestIntegration_HMACKey(t *testing.T) {
 	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1526")
 
 	ctx := context.Background()
@@ -2847,6 +2847,23 @@ func TestIntegration_HMACKey_Update(t *testing.T) {
 
 	case err.Error() != "foo":
 		t.Fatalf("Unexpected error: %v", err)
+	}
+
+	// 4. Perform some iterations.
+	iter := client.ListHMACKeys(ctx, projectID)
+	var gotKeys []*HMACKey
+	for {
+		key, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("Failed to ListHMACKeys: %v", err)
+		}
+		gotKeys = append(gotKeys, key)
+	}
+	if len(gotKeys) == 0 {
+		t.Fatal("Failed to list any HMACKeys")
 	}
 }
 
