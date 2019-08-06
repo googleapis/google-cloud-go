@@ -723,3 +723,23 @@ func ExampleHMACKeyHandle_Update() {
 	}
 	_ = ukey // TODO: Use the HMAC Key.
 }
+
+func ExampleClient_ListHMACKeys() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	iter := client.ListHMACKeys(ctx, "project-id")
+	for {
+		key, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: handle error.
+		}
+		_ = key // TODO: Use the key.
+	}
+}

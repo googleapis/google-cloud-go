@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"time"
 
+	"google.golang.org/api/iterator"
 	raw "google.golang.org/api/storage/v1"
 )
 
@@ -133,7 +134,7 @@ func (hkh *HMACKeyHandle) Delete(ctx context.Context) error {
 	})
 }
 
-func pbHmacKeyToHMACKey(pb *raw.HmacKey, isCreate bool) (*HMACKey, error) {
+func pbHmacKeyToHMACKey(pb *raw.HmacKey, updatedTimeCanBeNil bool) (*HMACKey, error) {
 	pbmd := pb.Metadata
 	if pbmd == nil {
 		return nil, errors.New("field Metadata cannot be nil")
@@ -143,7 +144,7 @@ func pbHmacKeyToHMACKey(pb *raw.HmacKey, isCreate bool) (*HMACKey, error) {
 		return nil, fmt.Errorf("field CreatedTime: %v", err)
 	}
 	updatedTime, err := time.Parse(time.RFC3339, pbmd.Updated)
-	if err != nil && !isCreate {
+	if err != nil && !updatedTimeCanBeNil {
 		return nil, fmt.Errorf("field UpdatedTime: %v", err)
 	}
 
@@ -224,4 +225,86 @@ func (h *HMACKeyHandle) Update(ctx context.Context, au HMACKeyAttrsToUpdate) (*H
 		Metadata: metadata,
 	}
 	return pbHmacKeyToHMACKey(hkPb, false)
+}
+
+// An HMACKeysIterator is an iterator over HMACKeys.
+type HMACKeysIterator struct {
+	ctx       context.Context
+	raw       *raw.ProjectsHmacKeysService
+	projectID string
+	hmacKeys  []*HMACKey
+	pageInfo  *iterator.PageInfo
+	nextFunc  func() error
+	index     int
+}
+
+// ListHMACKeys returns an iterator for listing HMACKeys.
+func (c *Client) ListHMACKeys(ctx context.Context, projectID string) *HMACKeysIterator {
+	it := &HMACKeysIterator{
+		ctx:       ctx,
+		raw:       raw.NewProjectsHmacKeysService(c.raw),
+		projectID: projectID,
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
+		it.fetch,
+		func() int { return len(it.hmacKeys) - it.index },
+		func() interface{} {
+			prev := it.hmacKeys
+			it.hmacKeys = it.hmacKeys[:0]
+			it.index = 0
+			return prev
+		})
+	return it
+}
+
+// Next returns the next result. Its second return value is iterator.Done if
+// there are no more results. Once Next returns iterator.Done, all subsequent
+// calls will return iterator.Done.
+func (it *HMACKeysIterator) Next() (*HMACKey, error) {
+	if err := it.nextFunc(); err != nil {
+		return nil, err
+	}
+
+	key := it.hmacKeys[it.index]
+	it.index++
+
+	return key, nil
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *HMACKeysIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
+
+func (it *HMACKeysIterator) fetch(pageSize int, pageToken string) (token string, err error) {
+	call := it.raw.List(it.projectID)
+	setClientHeader(call.Header())
+	call = call.PageToken(pageToken)
+	// By default we'll also show deleted keys and then
+	// let users filter on their own.
+	call = call.ShowDeletedKeys(true)
+	if pageSize > 0 {
+		call = call.MaxResults(int64(pageSize))
+	}
+
+	ctx := it.ctx
+	var resp *raw.HmacKeysMetadata
+	err = runWithRetry(it.ctx, func() error {
+		resp, err = call.Context(ctx).Do()
+		return err
+	})
+	if err != nil {
+		return "", err
+	}
+
+	for _, metadata := range resp.Items {
+		hkPb := &raw.HmacKey{
+			Metadata: metadata,
+		}
+		hkey, err := pbHmacKeyToHMACKey(hkPb, true)
+		if err != nil {
+			return "", err
+		}
+		it.hmacKeys = append(it.hmacKeys, hkey)
+	}
+	return resp.NextPageToken, nil
 }
