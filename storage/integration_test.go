@@ -2761,6 +2761,8 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 }
 
 func TestIntegration_HMACKey_Update(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1526")
+
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
