@@ -55,6 +55,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -62,6 +63,7 @@ import (
 	anypb "github.com/golang/protobuf/ptypes/any"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	structpb "github.com/golang/protobuf/ptypes/struct"
+	timestamppb "github.com/golang/protobuf/ptypes/timestamp"
 	lropb "google.golang.org/genproto/googleapis/longrunning"
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
@@ -99,13 +101,41 @@ type server struct {
 }
 
 type session struct {
+	name     string
+	creation time.Time
+
 	// This context tracks the lifetime of this session.
 	// It is canceled in DeleteSession.
 	ctx    context.Context
 	cancel func()
 
 	mu           sync.Mutex
+	lastUse      time.Time
 	transactions map[string]*transaction
+}
+
+func (s *session) Proto() *spannerpb.Session {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	m := &spannerpb.Session{
+		Name:                   s.name,
+		CreateTime:             timestampProto(s.creation),
+		ApproximateLastUseTime: timestampProto(s.lastUse),
+	}
+	return m
+}
+
+// timestampProto returns a valid timestamp.Timestamp,
+// or nil if the given time is zero or isn't representable.
+func timestampProto(t time.Time) *timestamppb.Timestamp {
+	if t.IsZero() {
+		return nil
+	}
+	ts, err := ptypes.TimestampProto(t)
+	if err != nil {
+		return nil
+	}
+	return ts
 }
 
 type transaction struct {
@@ -279,7 +309,11 @@ func (s *server) CreateSession(ctx context.Context, req *spannerpb.CreateSession
 	s.logf("CreateSession(%q)", req.Database)
 
 	id := genRandomSession()
+	now := time.Now()
 	sess := &session{
+		name:         id,
+		creation:     now,
+		lastUse:      now,
 		transactions: make(map[string]*transaction),
 	}
 	sess.ctx, sess.cancel = context.WithCancel(context.Background())
@@ -288,12 +322,23 @@ func (s *server) CreateSession(ctx context.Context, req *spannerpb.CreateSession
 	s.sessions[id] = sess
 	s.mu.Unlock()
 
-	// TODO: do we need to track creation/use times? labels?
-
-	return &spannerpb.Session{Name: id}, nil
+	return sess.Proto(), nil
 }
 
-// TODO: GetSession, ListSessions
+func (s *server) GetSession(ctx context.Context, req *spannerpb.GetSessionRequest) (*spannerpb.Session, error) {
+	s.mu.Lock()
+	sess, ok := s.sessions[req.Name]
+	s.mu.Unlock()
+
+	if !ok {
+		// TODO: what error does the real Spanner return?
+		return nil, status.Errorf(codes.NotFound, "unknown session %q", req.Name)
+	}
+
+	return sess.Proto(), nil
+}
+
+// TODO: ListSessions
 
 func (s *server) DeleteSession(ctx context.Context, req *spannerpb.DeleteSessionRequest) (*emptypb.Empty, error) {
 	s.logf("DeleteSession(%q)", req.Name)
@@ -326,6 +371,7 @@ func (s *server) popTx(sessionID, tid string) (tx *transaction, cleanup func(), 
 	}
 
 	sess.mu.Lock()
+	sess.lastUse = time.Now()
 	tx, ok = sess.transactions[tid]
 	if ok {
 		delete(sess.transactions, tid)
@@ -342,12 +388,16 @@ func (s *server) popTx(sessionID, tid string) (tx *transaction, cleanup func(), 
 // It is used by read/query operations (ExecuteStreamingSql, StreamingRead).
 func (s *server) readTx(ctx context.Context, session string, tsel *spannerpb.TransactionSelector) (tx *transaction, cleanup func(), err error) {
 	s.mu.Lock()
-	_, ok := s.sessions[session]
+	sess, ok := s.sessions[session]
 	s.mu.Unlock()
 	if !ok {
 		// TODO: what error does the real Spanner return?
 		return nil, nil, status.Errorf(codes.NotFound, "unknown session %q", session)
 	}
+
+	sess.mu.Lock()
+	sess.lastUse = time.Now()
+	sess.mu.Unlock()
 
 	singleUse := func() (*transaction, func(), error) {
 		tx := &transaction{}
@@ -529,6 +579,7 @@ func (s *server) BeginTransaction(ctx context.Context, req *spannerpb.BeginTrans
 	tx := &transaction{}
 
 	sess.mu.Lock()
+	sess.lastUse = time.Now()
 	sess.transactions[id] = tx
 	sess.mu.Unlock()
 
