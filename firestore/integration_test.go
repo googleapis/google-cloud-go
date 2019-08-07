@@ -174,30 +174,44 @@ var (
 
 	// Use this when writing a doc.
 	integrationTestMap = map[string]interface{}{
-		"int":   1,
-		"str":   "two",
-		"bool":  true,
-		"float": 3.14,
-		"null":  nil,
-		"bytes": []byte("bytes"),
-		"*":     map[string]interface{}{"`": 4},
-		"time":  integrationTime,
-		"geo":   integrationGeo,
-		"ref":   nil, // populated by initIntegrationTest
+		"int":    1,
+		"int8":   int8(2),
+		"int16":  int16(3),
+		"int32":  int32(4),
+		"int64":  int64(5),
+		"uint8":  uint8(6),
+		"uint16": uint16(7),
+		"uint32": uint32(8),
+		"str":    "two",
+		"bool":   true,
+		"float":  3.14,
+		"null":   nil,
+		"bytes":  []byte("bytes"),
+		"*":      map[string]interface{}{"`": 4},
+		"time":   integrationTime,
+		"geo":    integrationGeo,
+		"ref":    nil, // populated by initIntegrationTest
 	}
 
 	// The returned data is slightly different.
 	wantIntegrationTestMap = map[string]interface{}{
-		"int":   int64(1),
-		"str":   "two",
-		"bool":  true,
-		"float": 3.14,
-		"null":  nil,
-		"bytes": []byte("bytes"),
-		"*":     map[string]interface{}{"`": int64(4)},
-		"time":  wantIntegrationTime,
-		"geo":   integrationGeo,
-		"ref":   nil, // populated by initIntegrationTest
+		"int":    int64(1),
+		"int8":   int64(2),
+		"int16":  int64(3),
+		"int32":  int64(4),
+		"int64":  int64(5),
+		"uint8":  int64(6),
+		"uint16": int64(7),
+		"uint32": int64(8),
+		"str":    "two",
+		"bool":   true,
+		"float":  3.14,
+		"null":   nil,
+		"bytes":  []byte("bytes"),
+		"*":      map[string]interface{}{"`": int64(4)},
+		"time":   wantIntegrationTime,
+		"geo":    integrationGeo,
+		"ref":    nil, // populated by initIntegrationTest
 	}
 
 	integrationTestStruct = integrationTestStructType{
@@ -257,7 +271,7 @@ func TestIntegration_Get(t *testing.T) {
 	ds, err := integrationColl(t).NewDoc().Get(ctx)
 	codeEq(t, "Get on a missing doc", codes.NotFound, err)
 	if ds == nil || ds.Exists() {
-		t.Fatal("got nil or existing doc snapshot, want !ds.Exists")
+		t.Error("got nil or existing doc snapshot, want !ds.Exists")
 	}
 	if ds.ReadTime.IsZero() {
 		t.Error("got zero read time")
