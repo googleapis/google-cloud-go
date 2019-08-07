@@ -25,7 +25,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/trace"
-	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/internal/backoff"
 	"google.golang.org/api/option"
@@ -41,10 +40,6 @@ const (
 	// resourcePrefixHeader is the name of the metadata header used to indicate
 	// the resource being operated on.
 	resourcePrefixHeader = "google-cloud-resource-prefix"
-
-	// xGoogHeaderKey is the name of the metadata header used to indicate client
-	// information.
-	xGoogHeaderKey = "x-goog-api-client"
 )
 
 const (
@@ -57,7 +52,6 @@ const (
 
 var (
 	validDBPattern = regexp.MustCompile("^projects/[^/]+/instances/[^/]+/databases/[^/]+$")
-	xGoogHeaderVal = fmt.Sprintf("gl-go/%s gccl/%s grpc/%s", version.Go(), version.Repo, grpc.Version)
 )
 
 func validDatabaseName(db string) error {
@@ -125,9 +119,7 @@ func NewClient(ctx context.Context, database string, opts ...option.ClientOption
 func NewClientWithConfig(ctx context.Context, database string, config ClientConfig, opts ...option.ClientOption) (c *Client, err error) {
 	c = &Client{
 		database: database,
-		md: metadata.Pairs(
-			resourcePrefixHeader, database,
-			xGoogHeaderKey, xGoogHeaderVal),
+		md:       metadata.Pairs(resourcePrefixHeader, database),
 	}
 
 	// Make a copy of labels.
