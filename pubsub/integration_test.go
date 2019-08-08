@@ -425,10 +425,11 @@ func findServiceAccountEmail(ctx context.Context, t *testing.T) string {
 func TestIntegration_UpdateSubscription(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	serviceAccountEmail := findServiceAccountEmail(ctx, t)
 
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
+
+	serviceAccountEmail := findServiceAccountEmail(ctx, t)
 
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
 	if err != nil {
