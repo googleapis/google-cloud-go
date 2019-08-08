@@ -16,7 +16,7 @@
 // the resultant binary.
 // +build modhack
 
-package logging
+package datastore
 
 // Necessary for safely adding multi-module repo. See: https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository
 import _ "cloud.google.com/go"
