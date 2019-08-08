@@ -157,6 +157,26 @@ func TestTableData(t *testing.T) {
 		t.Errorf("ReadAll data wrong.\n got %v\nwant %v", all, wantAll)
 	}
 
+	// Add a DATE column, populate it with some data.
+	st = db.ApplyDDL(spansql.AlterTable{
+		Name: "Staff",
+		Alteration: spansql.AddColumn{Def: spansql.ColumnDef{
+			Name: "FirstSeen",
+			Type: spansql.Type{Base: spansql.Date},
+		}},
+	})
+	if st.Code() != codes.OK {
+		t.Fatalf("Adding column: %v", st.Err())
+	}
+	err = db.Update("Staff", []string{"Name", "ID", "FirstSeen"}, []*structpb.ListValue{
+		listV(stringV("Jack"), stringV("1"), stringV("1994-10-28")),
+		listV(stringV("Daniel"), stringV("2"), stringV("1994-10-28")),
+		listV(stringV("George"), stringV("5"), stringV("1997-07-27")),
+	})
+	if err != nil {
+		t.Fatalf("Updating rows: %v", err)
+	}
+
 	// Do some complex queries.
 	tests := []struct {
 		q      string
@@ -234,6 +254,13 @@ func TestTableData(t *testing.T) {
 			nil,
 			[][]interface{}{
 				{int64(4)},
+			},
+		},
+		{
+			`SELECT Name FROM Staff WHERE FirstSeen >= @min`,
+			queryParams{"min": "1996-01-01"},
+			[][]interface{}{
+				{"George"},
 			},
 		},
 	}

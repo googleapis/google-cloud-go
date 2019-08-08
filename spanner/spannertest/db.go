@@ -26,6 +26,7 @@ import (
 	"sort"
 	"strconv"
 	"sync"
+	"time"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -59,6 +60,20 @@ type colInfo struct {
 	Type spansql.Type
 }
 
+/*
+row represents a list of data elements.
+
+The mapping between Spanner types and Go types internal to this package are:
+	BOOL		bool
+	INT64		int64
+	FLOAT64		float64
+	STRING		string
+	BYTES		TODO
+	DATE		string (RFC 3339 date; "YYYY-MM-DD")
+	TIMESTAMP	TODO
+	ARRAY<T>	[]T
+	STRUCT		TODO
+*/
 type row []interface{}
 
 func (r row) copyDataElem(index int) interface{} {
@@ -540,7 +555,7 @@ func rowEqual(a, b []interface{}) bool {
 	for i := 0; i < len(a); i++ {
 		// The only value key column types are represented internally
 		// as Go types comparable with == and !=.
-		// TODO: DATE, TIMESTAMP might violate this.
+		// TODO: TIMESTAMP might violate this.
 		if a[i] != b[i] {
 			return false
 		}
@@ -595,6 +610,17 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 		sv, ok := v.Kind.(*structpb.Value_StringValue)
 		if ok {
 			return sv.StringValue, nil
+		}
+	case spansql.Date:
+		// The Spanner protocol encodes DATE in RFC 3339 date format.
+		sv, ok := v.Kind.(*structpb.Value_StringValue)
+		if ok {
+			// Store it internally as a string, but validate its value.
+			s := sv.StringValue
+			if _, err := time.Parse("2006-01-02", s); err != nil {
+				return nil, fmt.Errorf("bad DATE string %q: %v", s, err)
+			}
+			return s, nil
 		}
 	}
 	return nil, fmt.Errorf("unsupported inserting value kind %T into column of type %s", v.Kind, t.SQL())

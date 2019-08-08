@@ -389,6 +389,7 @@ func compareVals(x, y interface{}) int {
 		}
 		return 0
 	case string:
+		// This handles DATE too.
 		return strings.Compare(x, y.(string))
 	}
 }

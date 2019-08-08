@@ -22,7 +22,7 @@ by ascending esotericism:
 - DML statements
 - case insensitivity
 - alternate literal types (esp. strings)
-- DATE, TIMESTAMP types
+- TIMESTAMP types
 - STRUCT types
 - expression functions
 - expression type casting, coercion
