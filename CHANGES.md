@@ -1,5 +1,28 @@
 # Changes
 
+## v0.44.0
+
+- datastore:
+  - Interface elements whose underlying types are supported, are now supported.
+  - Reduce time to initial retry from 1s to 100ms.
+- firestore:
+  - Add Increment transformation.
+- storage:
+  - Allow emulator with STORAGE_EMULATOR_HOST.
+  - Add methods for HMAC key management.
+- pubsub:
+  - Add PublishCount and PublishLatency measurements.
+  - Add DefaultPublishViews and DefaultSubscribeViews for convenience of
+  importing all views.
+  - Add add Subscription.PushConfig.AuthenticationMethod.
+- spanner:
+  - Allow emulator usage with SPANNER_EMULATOR_HOST.
+  - Add cloud.google.com/go/spanner/spannertest, a spanner emulator.
+  - Add cloud.google.com/go/spanner/spansql which contains types and a parser
+  for the Cloud Spanner SQL dialect.
+- asset:
+  - Add apiv1p2beta1 client.
+
 ## v0.43.0
 
 This is an empty release that was created solely to aid in logging's module
