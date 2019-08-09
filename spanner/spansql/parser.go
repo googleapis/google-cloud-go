@@ -523,7 +523,9 @@ func (p *parser) parseDDLStmt() (DDLStmt, error) {
 	if p.sniff("CREATE", "TABLE") {
 		ct, err := p.parseCreateTable()
 		return ct, err
-	} else if p.sniff("CREATE", "INDEX") {
+	} else if p.sniff("CREATE") {
+		// The only other statement starting with CREATE is CREATE INDEX,
+		// which can have UNIQUE or NULL_FILTERED as the token after CREATE.
 		ci, err := p.parseCreateIndex()
 		return ci, err
 	} else if p.sniff("ALTER", "TABLE") {
