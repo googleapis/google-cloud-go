@@ -155,7 +155,7 @@ func TestParseDDL(t *testing.T) {
 			Count INT64, /* This is a
 			              * multiline comment. */
 		) PRIMARY KEY(System, RepoPath);
-		CREATE INDEX MyFirstIndex ON FooBar (
+		CREATE UNIQUE INDEX MyFirstIndex ON FooBar (
 			Count DESC
 		);
 		CREATE TABLE FooBarAux (
@@ -194,6 +194,7 @@ func TestParseDDL(t *testing.T) {
 				Name:    "MyFirstIndex",
 				Table:   "FooBar",
 				Columns: []KeyPart{{Column: "Count", Desc: true}},
+				Unique:  true,
 			},
 			CreateTable{
 				Name: "FooBarAux",
