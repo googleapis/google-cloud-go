@@ -1,5 +1,15 @@
 # Changes
 
+## v0.44.2
+
+This is an empty release that was created solely to aid in bigquery's module
+carve-out. See: https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
+
+## v0.44.1
+
+This is an empty release that was created solely to aid in datastore's module
+carve-out. See: https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
+
 ## v0.44.0
 
 - datastore:
