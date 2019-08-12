@@ -665,6 +665,12 @@ func (p *parser) parseCreateIndex() (CreateIndex, error) {
 
 		index_name:
 			{a—z|A—Z}[{a—z|A—Z|0—9|_}+]
+
+		storing_clause:
+			STORING ( column_name [, ...] )
+
+		interleave_clause:
+			INTERLEAVE IN table_name
 	*/
 
 	var unique, nullFiltered bool
@@ -705,6 +711,25 @@ func (p *parser) parseCreateIndex() (CreateIndex, error) {
 	if err != nil {
 		return CreateIndex{}, err
 	}
+
+	if p.sniff("STORING") {
+		p.expect("STORING")
+		ci.Storing, err = p.parseColumnNameList()
+		if err != nil {
+			return CreateIndex{}, err
+		}
+	}
+
+	if p.sniff(",", "INTERLEAVE", "IN") {
+		p.expect(",")
+		p.expect("INTERLEAVE")
+		p.expect("IN")
+		ci.Interleave, err = p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return CreateIndex{}, err
+		}
+	}
+
 	return ci, nil
 }
 
@@ -876,6 +901,41 @@ func (p *parser) parseKeyPart() (KeyPart, error) {
 	}
 
 	return kp, nil
+}
+
+func (p *parser) parseColumnNameList() ([]string, error) {
+	// TODO: This is very similar to parseKeyPartList and parseExprList. Refactor.
+
+	if err := p.expect("("); err != nil {
+		return nil, err
+	}
+	var list []string
+	for {
+		if err := p.expect(")"); err == nil {
+			break
+		}
+		p.back()
+
+		n, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		list = append(list, n)
+
+		// ")" or "," should be next.
+		tok := p.next()
+		if tok.err != nil {
+			return nil, err
+		}
+		if tok.value == ")" {
+			break
+		} else if tok.value == "," {
+			continue
+		} else {
+			return nil, p.errorf(`got %q, want ")" or ","`, tok.value)
+		}
+	}
+	return list, nil
 }
 
 var baseTypes = map[string]TypeBase{

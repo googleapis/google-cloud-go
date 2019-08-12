@@ -20,6 +20,7 @@ package spansql
 // as the SQL dialect that this package parses.
 
 import "strconv"
+import "strings"
 
 func (ct CreateTable) SQL() string {
 	str := "CREATE TABLE " + ct.Name + " (\n"
@@ -56,6 +57,14 @@ func (ci CreateIndex) SQL() string {
 		str += c.SQL()
 	}
 	str += ")"
+	if len(ci.Storing) > 0 {
+		str += " STORING ("
+		str += strings.Join(ci.Storing, ", ")
+		str += ")"
+	}
+	if ci.Interleave != "" {
+		str += ", INTERLEAVE IN " + ci.Interleave
+	}
 	return str
 }
 

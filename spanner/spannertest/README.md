@@ -32,7 +32,6 @@ by ascending esotericism:
 - subselects
 - set operations (UNION, INTERSECT, EXCEPT)
 - SELECT star expressions
-- STORING and INTERLEAVE IN clauses for CREATE INDEX
 - partition support
 - conditional expressions
 - table sampling (implementation)
