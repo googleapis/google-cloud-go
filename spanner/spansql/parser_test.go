@@ -157,7 +157,7 @@ func TestParseDDL(t *testing.T) {
 		) PRIMARY KEY(System, RepoPath);
 		CREATE UNIQUE INDEX MyFirstIndex ON FooBar (
 			Count DESC
-		);
+		) STORING (Count), INTERLEAVE IN SomeTable;
 		CREATE TABLE FooBarAux (
 			System STRING(MAX) NOT NULL,
 			RepoPath STRING(MAX) NOT NULL,
@@ -191,10 +191,12 @@ func TestParseDDL(t *testing.T) {
 				},
 			},
 			CreateIndex{
-				Name:    "MyFirstIndex",
-				Table:   "FooBar",
-				Columns: []KeyPart{{Column: "Count", Desc: true}},
-				Unique:  true,
+				Name:       "MyFirstIndex",
+				Table:      "FooBar",
+				Columns:    []KeyPart{{Column: "Count", Desc: true}},
+				Unique:     true,
+				Storing:    []string{"Count"},
+				Interleave: "SomeTable",
 			},
 			CreateTable{
 				Name: "FooBarAux",

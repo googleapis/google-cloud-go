@@ -47,7 +47,8 @@ type CreateIndex struct {
 	Unique       bool
 	NullFiltered bool
 
-	// TODO: storing_clause, interleave_clause
+	Storing    []string
+	Interleave string
 }
 
 // DropTable represents a DROP TABLE statement.
