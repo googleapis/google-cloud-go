@@ -36,7 +36,7 @@ This file is structured as follows:
 - The token and parser types are defined. These constitute the lexical token
   and parser machinery. parser.next is the main way that other functions get
   the next token, with parser.back providing a single token rewind, and
-  parser.sniff and parser.expect providing lookahead helpers.
+  parser.sniff, parser.eat and parser.expect providing lookahead helpers.
 - The parseFoo methods are defined, matching the SQL grammar. Each consumes its
   namesake production from the parser. There are also some fooParser helper vars
   defined that abbreviate the parsing of some of the regular productions.
@@ -499,6 +499,23 @@ func (p *parser) sniff(want ...string) bool {
 	return true
 }
 
+// eat reports whether the next N tokens are as specified,
+// then consumes them.
+func (p *parser) eat(want ...string) bool {
+	// Store current parser state so we can restore if we get a failure.
+	orig := *p
+
+	for _, w := range want {
+		tok := p.next()
+		if tok.err != nil || tok.value != w {
+			// Mismatch.
+			*p = orig
+			return false
+		}
+	}
+	return true
+}
+
 func (p *parser) expect(want string) error {
 	tok := p.next()
 	if tok.err != nil {
@@ -531,11 +548,10 @@ func (p *parser) parseDDLStmt() (DDLStmt, error) {
 	} else if p.sniff("ALTER", "TABLE") {
 		a, err := p.parseAlterTable()
 		return a, err
-	} else if p.sniff("DROP") {
+	} else if p.eat("DROP") {
 		// These statements are simple.
 		//	DROP TABLE table_name
 		//	DROP INDEX index_name
-		p.expect("DROP")
 		tok := p.next()
 		if tok.err != nil {
 			return nil, tok.err
@@ -582,35 +598,18 @@ func (p *parser) parseCreateTable() (CreateTable, error) {
 	if err != nil {
 		return CreateTable{}, err
 	}
-	if err := p.expect("("); err != nil {
-		return CreateTable{}, err
-	}
 
 	ct := CreateTable{Name: tname}
-	for {
-		if err := p.expect(")"); err == nil {
-			break
-		}
-		p.back()
-
+	err = p.parseCommaList(func(p *parser) error {
 		cd, err := p.parseColumnDef()
 		if err != nil {
-			return CreateTable{}, err
+			return err
 		}
 		ct.Columns = append(ct.Columns, cd)
-
-		// ")" or "," should be next.
-		tok := p.next()
-		if tok.err != nil {
-			return CreateTable{}, err
-		}
-		if tok.value == ")" {
-			break
-		} else if tok.value == "," {
-			continue
-		} else {
-			return CreateTable{}, p.errorf(`got %q, want ")" or ","`, tok.value)
-		}
+		return nil
+	})
+	if err != nil {
+		return CreateTable{}, err
 	}
 
 	if err := p.expect("PRIMARY"); err != nil {
@@ -624,9 +623,7 @@ func (p *parser) parseCreateTable() (CreateTable, error) {
 		return CreateTable{}, err
 	}
 
-	if p.sniff(",", "INTERLEAVE") {
-		p.expect(",")
-		p.expect("INTERLEAVE")
+	if p.eat(",", "INTERLEAVE") {
 		if err := p.expect("IN"); err != nil {
 			return CreateTable{}, err
 		}
@@ -642,9 +639,7 @@ func (p *parser) parseCreateTable() (CreateTable, error) {
 			OnDelete: NoActionOnDelete,
 		}
 		// The ON DELETE clause is optional; it defaults to NoActionOnDelete.
-		if p.sniff("ON", "DELETE") {
-			p.expect("ON")
-			p.expect("DELETE")
+		if p.eat("ON", "DELETE") {
 			od, err := p.parseOnDelete()
 			if err != nil {
 				return CreateTable{}, err
@@ -678,12 +673,10 @@ func (p *parser) parseCreateIndex() (CreateIndex, error) {
 	if err := p.expect("CREATE"); err != nil {
 		return CreateIndex{}, err
 	}
-	if p.sniff("UNIQUE") {
-		p.expect("UNIQUE")
+	if p.eat("UNIQUE") {
 		unique = true
 	}
-	if p.sniff("NULL_FILTERED") {
-		p.expect("NULL_FILTERED")
+	if p.eat("NULL_FILTERED") {
 		nullFiltered = true
 	}
 	if err := p.expect("INDEX"); err != nil {
@@ -712,18 +705,14 @@ func (p *parser) parseCreateIndex() (CreateIndex, error) {
 		return CreateIndex{}, err
 	}
 
-	if p.sniff("STORING") {
-		p.expect("STORING")
+	if p.eat("STORING") {
 		ci.Storing, err = p.parseColumnNameList()
 		if err != nil {
 			return CreateIndex{}, err
 		}
 	}
 
-	if p.sniff(",", "INTERLEAVE", "IN") {
-		p.expect(",")
-		p.expect("INTERLEAVE")
-		p.expect("IN")
+	if p.eat(",", "INTERLEAVE", "IN") {
 		ci.Interleave, err = p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return CreateIndex{}, err
@@ -839,36 +828,16 @@ func (p *parser) parseColumnDef() (ColumnDef, error) {
 }
 
 func (p *parser) parseKeyPartList() ([]KeyPart, error) {
-	if err := p.expect("("); err != nil {
-		return nil, err
-	}
 	var list []KeyPart
-	for {
-		if err := p.expect(")"); err == nil {
-			break
-		}
-		p.back()
-
+	err := p.parseCommaList(func(p *parser) error {
 		kp, err := p.parseKeyPart()
 		if err != nil {
-			return nil, err
+			return err
 		}
 		list = append(list, kp)
-
-		// ")" or "," should be next.
-		tok := p.next()
-		if tok.err != nil {
-			return nil, err
-		}
-		if tok.value == ")" {
-			break
-		} else if tok.value == "," {
-			continue
-		} else {
-			return nil, p.errorf(`got %q, want ")" or ","`, tok.value)
-		}
-	}
-	return list, nil
+		return nil
+	})
+	return list, err
 }
 
 func (p *parser) parseKeyPart() (KeyPart, error) {
@@ -904,38 +873,16 @@ func (p *parser) parseKeyPart() (KeyPart, error) {
 }
 
 func (p *parser) parseColumnNameList() ([]string, error) {
-	// TODO: This is very similar to parseKeyPartList and parseExprList. Refactor.
-
-	if err := p.expect("("); err != nil {
-		return nil, err
-	}
 	var list []string
-	for {
-		if err := p.expect(")"); err == nil {
-			break
-		}
-		p.back()
-
+	err := p.parseCommaList(func(p *parser) error {
 		n, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
-			return nil, err
+			return err
 		}
 		list = append(list, n)
-
-		// ")" or "," should be next.
-		tok := p.next()
-		if tok.err != nil {
-			return nil, err
-		}
-		if tok.value == ")" {
-			break
-		} else if tok.value == "," {
-			continue
-		} else {
-			return nil, p.errorf(`got %q, want ")" or ","`, tok.value)
-		}
-	}
-	return list, nil
+		return nil
+	})
+	return list, err
 }
 
 var baseTypes = map[string]TypeBase{
@@ -1041,9 +988,7 @@ func (p *parser) parseQuery() (Query, error) {
 	}
 	q := Query{Select: sel}
 
-	if p.sniff("ORDER", "BY") {
-		p.expect("ORDER")
-		p.expect("BY")
+	if p.eat("ORDER", "BY") {
 		for {
 			o, err := p.parseOrder()
 			if err != nil {
@@ -1051,15 +996,13 @@ func (p *parser) parseQuery() (Query, error) {
 			}
 			q.Order = append(q.Order, o)
 
-			if !p.sniff(",") {
+			if !p.eat(",") {
 				break
 			}
-			p.expect(",")
 		}
 	}
 
-	if p.sniff("LIMIT") {
-		p.expect("LIMIT")
+	if p.eat("LIMIT") {
 		lim, err := p.parseLimitCount()
 		if err != nil {
 			return Query{}, err
@@ -1098,15 +1041,13 @@ func (p *parser) parseSelect() (Select, error) {
 		}
 		sel.List = append(sel.List, expr)
 
-		if p.sniff(",") {
-			p.expect(",")
+		if p.eat(",") {
 			continue
 		}
 		break
 	}
 
-	if p.sniff("FROM") {
-		p.expect("FROM")
+	if p.eat("FROM") {
 		for {
 			from, err := p.parseSelectFrom()
 			if err != nil {
@@ -1121,16 +1062,14 @@ func (p *parser) parseSelect() (Select, error) {
 			}
 			sel.From = append(sel.From, from)
 
-			if p.sniff(",") {
-				p.expect(",")
+			if p.eat(",") {
 				continue
 			}
 			break
 		}
 	}
 
-	if p.sniff("WHERE") {
-		p.expect("WHERE")
+	if p.eat("WHERE") {
 		where, err := p.parseBoolExpr()
 		if err != nil {
 			return Select{}, err
@@ -1241,36 +1180,16 @@ func (p *parser) parseLimitCount() (Limit, error) {
 }
 
 func (p *parser) parseExprList() ([]Expr, error) {
-	if err := p.expect("("); err != nil {
-		return nil, err
-	}
 	var list []Expr
-	for {
-		if err := p.expect(")"); err == nil {
-			break
-		}
-		p.back()
-
+	err := p.parseCommaList(func(p *parser) error {
 		e, err := p.parseExpr()
 		if err != nil {
-			return nil, err
+			return err
 		}
 		list = append(list, e)
-
-		// ")" or "," should be next.
-		tok := p.next()
-		if tok.err != nil {
-			return nil, err
-		}
-		if tok.value == ")" {
-			break
-		} else if tok.value == "," {
-			continue
-		} else {
-			return nil, p.errorf(`got %q, want ")" or ","`, tok.value)
-		}
-	}
-	return list, nil
+		return nil
+	})
+	return list, err
 }
 
 /*
@@ -1316,10 +1235,9 @@ func (bin binOpParser) parse(p *parser) (Expr, error) {
 	}
 
 	for {
-		if !p.sniff(bin.Op) {
+		if !p.eat(bin.Op) {
 			break
 		}
-		p.expect(bin.Op)
 		rhs, err := bin.RHS(p)
 		if err != nil {
 			return nil, err
@@ -1371,10 +1289,9 @@ var (
 )
 
 func (p *parser) parseLogicalNot() (Expr, error) {
-	if !p.sniff("NOT") {
+	if !p.eat("NOT") {
 		return p.parseIsOp()
 	}
-	p.expect("NOT")
 	be, err := p.parseBoolExpr()
 	if err != nil {
 		return nil, err
@@ -1397,8 +1314,7 @@ func (p *parser) parseIsOp() (Expr, error) {
 	}
 
 	isOp := IsOp{LHS: expr}
-	if p.sniff("NOT") {
-		p.expect("NOT")
+	if p.eat("NOT") {
 		isOp.Neg = true
 	}
 
@@ -1497,8 +1413,7 @@ func (p *parser) parseComparisonOp() (Expr, error) {
 func (p *parser) parseArithOp() (Expr, error) {
 	// TODO: actually parse arithmetic operations.
 
-	if p.sniff("(") {
-		p.expect("(")
+	if p.eat("(") {
 		e, err := p.parseExpr()
 		if err != nil {
 			return nil, err
@@ -1614,4 +1529,35 @@ func (p *parser) parseOnDelete() (OnDelete, error) {
 		return 0, err
 	}
 	return NoActionOnDelete, nil
+}
+
+// parseCommaList parses a parenthesized comma-separated list,
+// delegating to f for the individual element parsing.
+func (p *parser) parseCommaList(f func(*parser) error) error {
+	if err := p.expect("("); err != nil {
+		return err
+	}
+	for {
+		if p.eat(")") {
+			return nil
+		}
+
+		err := f(p)
+		if err != nil {
+			return err
+		}
+
+		// ")" or "," should be next.
+		tok := p.next()
+		if tok.err != nil {
+			return err
+		}
+		if tok.value == ")" {
+			return nil
+		} else if tok.value == "," {
+			continue
+		} else {
+			return p.errorf(`got %q, want ")" or ","`, tok.value)
+		}
+	}
 }
