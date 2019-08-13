@@ -3,10 +3,10 @@ module cloud.google.com/go
 go 1.9
 
 require (
+	cloud.google.com/go/bigquery v1.0.1
 	cloud.google.com/go/datastore v1.0.0
 	github.com/golang/mock v1.3.1
 	github.com/golang/protobuf v1.3.2
-	github.com/google/btree v1.0.0
 	github.com/google/go-cmp v0.3.0
 	github.com/google/martian v2.1.0+incompatible
 	github.com/google/pprof v0.0.0-20190515194954-54271f7e092f
@@ -25,5 +25,4 @@ require (
 	google.golang.org/genproto v0.0.0-20190801165951-fa694d86fc64
 	google.golang.org/grpc v1.21.1
 	honnef.co/go/tools v0.0.0-20190418001031-e561f6794a2a
-	rsc.io/binaryregexp v0.2.0
 )
