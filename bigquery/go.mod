@@ -3,7 +3,7 @@ module cloud.google.com/go/bigquery
 go 1.9
 
 require (
-	cloud.google.com/go v0.44.1
+	cloud.google.com/go v0.44.2
 	github.com/golang/protobuf v1.3.2
 	github.com/google/go-cmp v0.3.0
 	github.com/googleapis/gax-go/v2 v2.0.5
