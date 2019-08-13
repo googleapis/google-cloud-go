@@ -232,9 +232,17 @@ type BucketAttrs struct {
 	// ACL is the list of access control rules on the bucket.
 	ACL []ACLRule
 
-	// BucketPolicyOnly configures access checks to use only bucket-level IAM
-	// policies.
+	// BucketPolicyOnly is an alias for UniformBucketLevelAccess. Use of
+	// UniformBucketLevelAccess is recommended above the use of this field.
+	// Setting BucketPolicyOnly.Enabled OR UniformBucketLevelAccess.Enabled to
+	// true, will enable UniformBucketLevelAccess.
 	BucketPolicyOnly BucketPolicyOnly
+
+	// UniformBucketLevelAccess configures access checks to use only bucket-level IAM
+	// policies and ignore any ACL rules for the bucket.
+	// See https://cloud.google.com/storage/docs/uniform-bucket-level-access
+	// for more information.
+	UniformBucketLevelAccess UniformBucketLevelAccess
 
 	// DefaultObjectACL is the list of access controls to
 	// apply to new objects when no object ACL is provided.
@@ -321,9 +329,20 @@ type BucketAttrs struct {
 	LocationType string
 }
 
-// BucketPolicyOnly configures access checks to use only bucket-level IAM
-// policies.
+// BucketPolicyOnly is an alias for UniformBucketLevelAccess.
+// Use of UniformBucketLevelAccess is preferred above BucketPolicyOnly.
 type BucketPolicyOnly struct {
+	// Enabled specifies whether access checks use only bucket-level IAM
+	// policies. Enabled may be disabled until the locked time.
+	Enabled bool
+	// LockedTime specifies the deadline for changing Enabled from true to
+	// false.
+	LockedTime time.Time
+}
+
+// UniformBucketLevelAccess configures access checks to use only bucket-level IAM
+// policies.
+type UniformBucketLevelAccess struct {
 	// Enabled specifies whether access checks use only bucket-level IAM
 	// policies. Enabled may be disabled until the locked time.
 	Enabled bool
@@ -488,26 +507,27 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		return nil, err
 	}
 	return &BucketAttrs{
-		Name:                  b.Name,
-		Location:              b.Location,
-		MetaGeneration:        b.Metageneration,
-		DefaultEventBasedHold: b.DefaultEventBasedHold,
-		StorageClass:          b.StorageClass,
-		Created:               convertTime(b.TimeCreated),
-		VersioningEnabled:     b.Versioning != nil && b.Versioning.Enabled,
-		ACL:                   toBucketACLRules(b.Acl),
-		DefaultObjectACL:      toObjectACLRules(b.DefaultObjectAcl),
-		Labels:                b.Labels,
-		RequesterPays:         b.Billing != nil && b.Billing.RequesterPays,
-		Lifecycle:             toLifecycle(b.Lifecycle),
-		RetentionPolicy:       rp,
-		CORS:                  toCORS(b.Cors),
-		Encryption:            toBucketEncryption(b.Encryption),
-		Logging:               toBucketLogging(b.Logging),
-		Website:               toBucketWebsite(b.Website),
-		BucketPolicyOnly:      toBucketPolicyOnly(b.IamConfiguration),
-		Etag:                  b.Etag,
-		LocationType:          b.LocationType,
+		Name:                     b.Name,
+		Location:                 b.Location,
+		MetaGeneration:           b.Metageneration,
+		DefaultEventBasedHold:    b.DefaultEventBasedHold,
+		StorageClass:             b.StorageClass,
+		Created:                  convertTime(b.TimeCreated),
+		VersioningEnabled:        b.Versioning != nil && b.Versioning.Enabled,
+		ACL:                      toBucketACLRules(b.Acl),
+		DefaultObjectACL:         toObjectACLRules(b.DefaultObjectAcl),
+		Labels:                   b.Labels,
+		RequesterPays:            b.Billing != nil && b.Billing.RequesterPays,
+		Lifecycle:                toLifecycle(b.Lifecycle),
+		RetentionPolicy:          rp,
+		CORS:                     toCORS(b.Cors),
+		Encryption:               toBucketEncryption(b.Encryption),
+		Logging:                  toBucketLogging(b.Logging),
+		Website:                  toBucketWebsite(b.Website),
+		BucketPolicyOnly:         toBucketPolicyOnly(b.IamConfiguration),
+		UniformBucketLevelAccess: toUniformBucketLevelAccess(b.IamConfiguration),
+		Etag:                     b.Etag,
+		LocationType:             b.LocationType,
 	}, nil
 }
 
@@ -533,9 +553,9 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		bb = &raw.BucketBilling{RequesterPays: true}
 	}
 	var bktIAM *raw.BucketIamConfiguration
-	if b.BucketPolicyOnly.Enabled {
+	if b.UniformBucketLevelAccess.Enabled || b.BucketPolicyOnly.Enabled {
 		bktIAM = &raw.BucketIamConfiguration{
-			BucketPolicyOnly: &raw.BucketIamConfigurationBucketPolicyOnly{
+			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
 				Enabled: true,
 			},
 		}
@@ -602,9 +622,19 @@ type BucketAttrsToUpdate struct {
 	// newly created objects in this bucket.
 	DefaultEventBasedHold optional.Bool
 
-	// BucketPolicyOnly configures access checks to use only bucket-level IAM
-	// policies.
+	// BucketPolicyOnly is an alias for UniformBucketLevelAccess. Use of
+	// UniformBucketLevelAccess is recommended above the use of this field.
+	// Setting BucketPolicyOnly.Enabled OR UniformBucketLevelAccess.Enabled to
+	// true, will enable UniformBucketLevelAccess. If both BucketPolicyOnly and
+	// UniformBucketLevelAccess are set, the value of UniformBucketLevelAccess
+	// will take precedence.
 	BucketPolicyOnly *BucketPolicyOnly
+
+	// UniformBucketLevelAccess configures access checks to use only bucket-level IAM
+	// policies and ignore any ACL rules for the bucket.
+	// See https://cloud.google.com/storage/docs/uniform-bucket-level-access
+	// for more information.
+	UniformBucketLevelAccess *UniformBucketLevelAccess
 
 	// If set, updates the retention policy of the bucket. Using
 	// RetentionPolicy.RetentionPeriod = 0 will delete the existing policy.
@@ -694,9 +724,15 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 	}
 	if ua.BucketPolicyOnly != nil {
 		rb.IamConfiguration = &raw.BucketIamConfiguration{
-			BucketPolicyOnly: &raw.BucketIamConfigurationBucketPolicyOnly{
-				Enabled:         ua.BucketPolicyOnly.Enabled,
-				ForceSendFields: []string{"Enabled"},
+			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
+				Enabled: ua.BucketPolicyOnly.Enabled,
+			},
+		}
+	}
+	if ua.UniformBucketLevelAccess != nil {
+		rb.IamConfiguration = &raw.BucketIamConfiguration{
+			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
+				Enabled: ua.UniformBucketLevelAccess.Enabled,
 			},
 		}
 	}
@@ -1030,6 +1066,22 @@ func toBucketPolicyOnly(b *raw.BucketIamConfiguration) BucketPolicyOnly {
 		}
 	}
 	return BucketPolicyOnly{
+		Enabled:    true,
+		LockedTime: lt,
+	}
+}
+
+func toUniformBucketLevelAccess(b *raw.BucketIamConfiguration) UniformBucketLevelAccess {
+	if b == nil || b.UniformBucketLevelAccess == nil || !b.UniformBucketLevelAccess.Enabled {
+		return UniformBucketLevelAccess{}
+	}
+	lt, err := time.Parse(time.RFC3339, b.UniformBucketLevelAccess.LockedTime)
+	if err != nil {
+		return UniformBucketLevelAccess{
+			Enabled: true,
+		}
+	}
+	return UniformBucketLevelAccess{
 		Enabled:    true,
 		LockedTime: lt,
 	}
