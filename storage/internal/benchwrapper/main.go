@@ -44,7 +44,7 @@ func main() {
 	}
 
 	if os.Getenv("STORAGE_EMULATOR_HOST") == "" {
-		log.Print("This benchmarking server only works when connected to an emulator. Please set STORAGE_EMULATOR_HOST.")
+		log.Fatal("This benchmarking server only works when connected to an emulator. Please set STORAGE_EMULATOR_HOST.")
 	}
 
 	ctx := context.Background()
