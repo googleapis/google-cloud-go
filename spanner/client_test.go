@@ -112,14 +112,20 @@ func TestClient_Single_InvalidArgument(t *testing.T) {
 }
 
 func testSingleQuery(t *testing.T, serverError error) error {
-	ctx := context.Background()
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
 	if serverError != nil {
 		server.TestSpanner.SetError(serverError)
 	}
-	iter := client.Single().Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+	tx := client.Single()
+	return executeTestQuery(t, tx)
+}
+
+func executeTestQuery(t *testing.T, tx *ReadOnlyTransaction) error {
+	ctx := context.Background()
+	iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
 	defer iter.Stop()
+	var rowCount int64
 	for {
 		row, err := iter.Next()
 		if err == iterator.Done {
@@ -133,6 +139,10 @@ func testSingleQuery(t *testing.T, serverError error) error {
 		if err := row.Columns(&singerID, &albumID, &albumTitle); err != nil {
 			return err
 		}
+		rowCount++
+	}
+	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		t.Fatalf("Row count mismatch\ngot: %v\nwant: %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
 	}
 	return nil
 }
@@ -200,6 +210,16 @@ func TestClient_ReadOnlyTransaction_UnavailableOnCreateSessionAndInvalidArgument
 	}
 }
 
+func TestClient_ReadOnlyTransaction_SessionNotFoundOnBeginTransaction(t *testing.T) {
+	t.Parallel()
+	exec := map[string]SimulatedExecutionTime{
+		MethodBeginTransaction: {Errors: []error{gstatus.Error(codes.NotFound, "Session not found")}},
+	}
+	if err := testReadOnlyTransaction(t, exec); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func testReadOnlyTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime) error {
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
@@ -208,24 +228,7 @@ func testReadOnlyTransaction(t *testing.T, executionTimes map[string]SimulatedEx
 	}
 	tx := client.ReadOnlyTransaction()
 	defer tx.Close()
-	ctx := context.Background()
-	iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
-	defer iter.Stop()
-	for {
-		row, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			return err
-		}
-		var singerID, albumID int64
-		var albumTitle string
-		if err := row.Columns(&singerID, &albumID, &albumTitle); err != nil {
-			return err
-		}
-	}
-	return nil
+	return executeTestQuery(t, tx)
 }
 
 func TestClient_ReadWriteTransaction(t *testing.T) {
