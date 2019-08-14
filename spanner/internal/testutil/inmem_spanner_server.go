@@ -59,6 +59,7 @@ const (
 	MethodGetSession          string = "GET_SESSION"
 	MethodExecuteSql          string = "EXECUTE_SQL"
 	MethodExecuteStreamingSql string = "EXECUTE_STREAMING_SQL"
+	MethodStreamingRead       string = "EXECUTE_STREAMING_READ"
 )
 
 // StatementResult represents a mocked result on the test server. Th result can
@@ -703,13 +704,9 @@ func (s *inMemSpannerServer) Read(ctx context.Context, req *spannerpb.ReadReques
 }
 
 func (s *inMemSpannerServer) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Spanner_StreamingReadServer) error {
-	s.mu.Lock()
-	if s.stopped {
-		s.mu.Unlock()
-		return gstatus.Error(codes.Unavailable, "server has been stopped")
+	if err := s.simulateExecutionTime(MethodStreamingRead, req); err != nil {
+		return err
 	}
-	s.receivedRequests <- req
-	s.mu.Unlock()
 	return gstatus.Error(codes.Unimplemented, "Method not yet implemented")
 }
 

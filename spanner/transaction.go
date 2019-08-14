@@ -363,18 +363,41 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 			sh.recycle()
 		}
 	}()
-	sh, err = t.sp.take(ctx)
-	if err != nil {
-		return err
-	}
-	res, err := sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.BeginTransactionRequest{
-		Session: sh.getID(),
-		Options: &sppb.TransactionOptions{
-			Mode: &sppb.TransactionOptions_ReadOnly_{
-				ReadOnly: buildTransactionOptionsReadOnly(t.getTimestampBound(), true),
-			},
+
+	// Create transaction options.
+	readOnlyOptions := buildTransactionOptionsReadOnly(t.getTimestampBound(), true)
+	transactionOptions := &sppb.TransactionOptions{
+		Mode: &sppb.TransactionOptions_ReadOnly_{
+			ReadOnly: readOnlyOptions,
 		},
-	})
+	}
+	// Retry TakeSession and BeginTransaction on Session not found.
+	retryOnNotFound := gax.OnCodes([]codes.Code{codes.NotFound}, gax.Backoff{})
+	beginTxWithRetry := func(ctx context.Context) (*sppb.Transaction, error) {
+		for {
+			sh, err = t.sp.take(ctx)
+			if err != nil {
+				return nil, err
+			}
+			client := sh.getClient()
+			ctx := contextWithOutgoingMetadata(ctx, sh.getMetadata())
+			res, err := client.BeginTransaction(ctx, &sppb.BeginTransactionRequest{
+				Session: sh.getID(),
+				Options: transactionOptions,
+			})
+			if err == nil {
+				return res, nil
+			}
+			// We should not wait before retrying.
+			if _, shouldRetry := retryOnNotFound.Retry(err); !shouldRetry {
+				return nil, err
+			}
+			// Delete session and then retry with a new one.
+			sh.destroy()
+		}
+	}
+
+	res, err := beginTxWithRetry(ctx)
 	if err == nil {
 		tx = res.Id
 		if res.ReadTimestamp != nil {
