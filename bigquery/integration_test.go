@@ -1622,6 +1622,89 @@ func TestIntegration_QueryDryRun(t *testing.T) {
 	}
 }
 
+func TestIntegration_Scripting(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	sql := `
+	-- Declare a variable to hold names as an array.
+	DECLARE top_names ARRAY<STRING>;
+	-- Build an array of the top 100 names from the year 2017.
+	SET top_names = (
+	  SELECT ARRAY_AGG(name ORDER BY number DESC LIMIT 100)
+	  FROM ` + "`bigquery-public-data`" + `.usa_names.usa_1910_current
+	  WHERE year = 2017
+	);
+	-- Which names appear as words in Shakespeare's plays?
+	SELECT
+	  name AS shakespeare_name
+	FROM UNNEST(top_names) AS name
+	WHERE name IN (
+	  SELECT word
+	  FROM ` + "`bigquery-public-data`" + `.samples.shakespeare
+	);
+	`
+	q := client.Query(sql)
+	job, err := q.Run(ctx)
+	if err != nil {
+		t.Fatalf("failed to run parent job: %v", err)
+	}
+	status, err := job.Wait(ctx)
+	if err != nil {
+		t.Fatalf("failed to wait for completion: %v", err)
+	}
+	if status.Err() != nil {
+		t.Fatalf("job terminated with error: %v", err)
+	}
+
+	queryStats, ok := status.Statistics.Details.(*QueryStatistics)
+	if !ok {
+		t.Fatalf("failed to fetch query statistics")
+	}
+
+	want := "SCRIPT"
+	if queryStats.StatementType != want {
+		t.Errorf("statement type mismatch. got %s want %s", queryStats.StatementType, want)
+	}
+
+	if status.Statistics.NumChildJobs <= 0 {
+		t.Errorf("expected script to indicate nonzero child jobs, got %d", status.Statistics.NumChildJobs)
+	}
+
+	// Ensure child jobs are present.
+	var childJobs []*Job
+
+	it := job.Children(ctx)
+	for {
+		job, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		childJobs = append(childJobs, job)
+	}
+	if len(childJobs) == 0 {
+		t.Fatal("Script had no child jobs.")
+	}
+
+	for _, cj := range childJobs {
+		cStatus := cj.LastStatus()
+		if cStatus.Statistics.ParentJobID != job.ID() {
+			t.Errorf("child job %q doesn't indicate parent.  got %q, want %q", cj.ID(), cStatus.Statistics.ParentJobID, job.ID())
+		}
+		if cStatus.Statistics.ScriptStatistics == nil {
+			t.Errorf("child job %q doesn't have script statistics present", cj.ID())
+		}
+		if cStatus.Statistics.ScriptStatistics.EvaluationKind == "" {
+			t.Errorf("child job %q didn't indicate evaluation kind", cj.ID())
+		}
+	}
+
+}
+
 func TestIntegration_ExtractExternal(t *testing.T) {
 	// Create a table, extract it to GCS, then query it externally.
 	if client == nil {
