@@ -678,6 +678,8 @@ func spannerTypeFromType(typ spansql.Type) (*spannerpb.Type, error) {
 		code = spannerpb.TypeCode_STRING
 	case spansql.Bytes:
 		code = spannerpb.TypeCode_BYTES
+	case spansql.Date:
+		code = spannerpb.TypeCode_DATE
 	}
 	st := &spannerpb.Type{Code: code}
 	if typ.Array {
