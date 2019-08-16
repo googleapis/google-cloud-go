@@ -24,12 +24,10 @@ import (
 	"log"
 	"net"
 	"os"
-	"path/filepath"
 
 	"cloud.google.com/go/storage"
 	pb "cloud.google.com/go/storage/internal/benchwrapper/proto"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 )
 
 var port = flag.String("port", "", "specify a port to run on")
@@ -56,19 +54,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	certificate, err := filepath.Abs("cert/server.pem")
-	if err != nil {
-		log.Fatal(err)
-	}
-	key, err := filepath.Abs("cert/server.key")
-	if err != nil {
-		log.Fatal(err)
-	}
-	creds, err := credentials.NewServerTLSFromFile(certificate, key)
-	if err != nil {
-		log.Fatal(err)
-	}
-	s := grpc.NewServer(grpc.Creds(creds))
+	s := grpc.NewServer()
 	pb.RegisterStorageBenchWrapperServer(s, &server{
 		c: c,
 	})
