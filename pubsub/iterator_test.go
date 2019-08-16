@@ -41,6 +41,7 @@ var (
 func TestSplitRequestIDs(t *testing.T) {
 	t.Parallel()
 	ids := []string{"aaaa", "bbbb", "cccc", "dddd", "eeee"}
+	subName := "s"
 	for _, test := range []struct {
 		ids        []string
 		splitIndex int
@@ -49,7 +50,7 @@ func TestSplitRequestIDs(t *testing.T) {
 		{ids, 2},
 		{ids[:2], 2},
 	} {
-		got1, got2 := splitRequestIDs(test.ids, reqFixedOverhead+20)
+		got1, got2 := splitRequestIDs(test.ids, len(subName), 15)
 		want1, want2 := test.ids[:test.splitIndex], test.ids[test.splitIndex:]
 		if !testutil.Equal(got1, want1) {
 			t.Errorf("%v, 1: got %v, want %v", test, got1, want1)
