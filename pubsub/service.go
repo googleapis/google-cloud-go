@@ -39,8 +39,7 @@ import (
 // it 512K.
 const (
 	maxPayload       = 512 * 1024
-	reqFixedOverhead = 100
-	overheadPerID    = 3
+	overheadPerID    = 3                //3 bytes per ID (a tag byte and two size bytes)
 	maxSendRecvBytes = 20 * 1024 * 1024 // 20M
 )
 
