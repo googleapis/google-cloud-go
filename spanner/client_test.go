@@ -383,26 +383,6 @@ func TestClient_ApplyAtLeastOnce(t *testing.T) {
 	}
 }
 
-// PartitionedUpdate should not retry on aborted.
-func TestClient_PartitionedUpdate(t *testing.T) {
-	t.Parallel()
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-	// PartitionedDML transactions are not committed.
-	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
-		SimulatedExecutionTime{
-			Errors: []error{gstatus.Error(codes.Aborted, "Transaction aborted")},
-		})
-	_, err := client.PartitionedUpdate(context.Background(), NewStatement(UpdateBarSetFoo))
-	if err == nil {
-		t.Fatalf("Missing expected Aborted exception")
-	} else {
-		if gstatus.Code(err) != codes.Aborted {
-			t.Fatalf("Got unexpected error %v, expected Aborted", err)
-		}
-	}
-}
-
 func TestReadWriteTransaction_ErrUnexpectedEOF(t *testing.T) {
 	_, client, teardown := setupMockedTestServer(t)
 	defer teardown()
