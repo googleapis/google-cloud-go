@@ -57,6 +57,7 @@ const (
 	MethodCreateSession       string = "CREATE_SESSION"
 	MethodDeleteSession       string = "DELETE_SESSION"
 	MethodGetSession          string = "GET_SESSION"
+	MethodExecuteSql          string = "EXECUTE_SQL"
 	MethodExecuteStreamingSql string = "EXECUTE_STREAMING_SQL"
 )
 
@@ -563,13 +564,9 @@ func (s *inMemSpannerServer) DeleteSession(ctx context.Context, req *spannerpb.D
 }
 
 func (s *inMemSpannerServer) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest) (*spannerpb.ResultSet, error) {
-	s.mu.Lock()
-	if s.stopped {
-		s.mu.Unlock()
-		return nil, gstatus.Error(codes.Unavailable, "server has been stopped")
+	if err := s.simulateExecutionTime(MethodExecuteSql, req); err != nil {
+		return nil, err
 	}
-	s.receivedRequests <- req
-	s.mu.Unlock()
 	if req.Session == "" {
 		return nil, gstatus.Error(codes.InvalidArgument, "Missing session name")
 	}
