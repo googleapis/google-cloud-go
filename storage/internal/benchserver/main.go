@@ -21,7 +21,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -32,24 +31,18 @@ import (
 
 var (
 	port  = flag.String("port", "", "specify a port to run on")
-	files = map[string][]byte{} // objectName -> contents
+	files = map[string]io.Reader{
+		"oneMB":     io.LimitReader(rand.Reader, 10000000),
+		"tenMB":     io.LimitReader(rand.Reader, 100000000),
+		"hundredMB": io.LimitReader(rand.Reader, 1000000000),
+		"oneGB":     io.LimitReader(rand.Reader, 10000000000),
+	}
 )
 
-func init() {
-	oneMB, err := ioutil.ReadAll(io.LimitReader(rand.Reader, 1000000))
-	if err != nil {
-		log.Fatal(err)
-	}
-	files["oneMB"] = oneMB
-
-	oneHundredMB, err := ioutil.ReadAll(io.LimitReader(rand.Reader, 100000000))
-	if err != nil {
-		log.Fatal(err)
-	}
-	files["oneHundredMB"] = oneHundredMB
-}
-
 func main() {
+	// Enable line numbers for easier debugging.
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
 	flag.Parse()
 	if *port == "" {
 		log.Fatalf("usage: %s --port=8080", os.Args[0])
@@ -57,20 +50,23 @@ func main() {
 
 	// Read.
 	for objectName, contents := range files {
+		objectName := objectName
 		contents := contents
 
 		// Go: Download object.
 		http.HandleFunc("/some-bucket-name/"+objectName, func(resp http.ResponseWriter, req *http.Request) {
-			if _, err := resp.Write(contents); err != nil {
-				log.Fatal(err)
+			if _, err := io.Copy(resp, contents); err != nil {
+				log.Println(err)
+				return
 			}
 		})
 
 		// Node: Download object.
 		http.HandleFunc("/b/some-bucket-name/o/"+objectName, func(resp http.ResponseWriter, req *http.Request) {
 			fmt.Println("emulator read <<NODE>> called")
-			if _, err := resp.Write(contents); err != nil {
-				log.Fatal(err)
+			if _, err := io.Copy(resp, contents); err != nil {
+				log.Println(err)
+				return
 			}
 		})
 
@@ -83,15 +79,17 @@ func main() {
 	"bucket": "some-bucket-name-download",
 	"generation": "1"
 }`, objectName); err != nil {
-				log.Fatal(err)
+				log.Println(err)
+				return
 			}
 		})
 
 		// Java: Download object.
 		http.HandleFunc(fmt.Sprintf("/download/storage/v1/b/some-bucket-name-download/o/%s-download", objectName), func(resp http.ResponseWriter, req *http.Request) {
 			fmt.Println("emulator read <<JAVA>> called")
-			if _, err := resp.Write(contents); err != nil {
-				log.Fatal(err)
+			if _, err := io.Copy(resp, contents); err != nil {
+				log.Println(err)
+				return
 			}
 		})
 	}
