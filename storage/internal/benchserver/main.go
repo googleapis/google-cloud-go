@@ -31,11 +31,11 @@ import (
 
 var (
 	port  = flag.String("port", "", "specify a port to run on")
-	files = map[string]io.Reader{
-		"oneMB":     io.LimitReader(rand.Reader, 10000000),
-		"tenMB":     io.LimitReader(rand.Reader, 100000000),
-		"hundredMB": io.LimitReader(rand.Reader, 1000000000),
-		"oneGB":     io.LimitReader(rand.Reader, 10000000000),
+	files = map[string]int64{
+		"oneMB":     10000000,
+		"tenMB":     100000000,
+		"hundredMB": 1000000000,
+		"oneGB":     10000000000,
 	}
 )
 
@@ -49,12 +49,13 @@ func main() {
 	}
 
 	// Read.
-	for objectName, contents := range files {
+	for objectName, size := range files {
 		objectName := objectName
-		contents := contents
+		size := size
 
 		// Go: Download object.
 		http.HandleFunc("/some-bucket-name/"+objectName, func(resp http.ResponseWriter, req *http.Request) {
+			contents := io.LimitReader(rand.Reader, size)
 			if _, err := io.Copy(resp, contents); err != nil {
 				log.Println(err)
 				return
@@ -64,6 +65,7 @@ func main() {
 		// Node: Download object.
 		http.HandleFunc("/b/some-bucket-name/o/"+objectName, func(resp http.ResponseWriter, req *http.Request) {
 			fmt.Println("emulator read <<NODE>> called")
+			contents := io.LimitReader(rand.Reader, size)
 			if _, err := io.Copy(resp, contents); err != nil {
 				log.Println(err)
 				return
@@ -73,6 +75,7 @@ func main() {
 		// Java: Download metadata (pointing to download link for object).
 		http.HandleFunc("/storage/v1/b/some-bucket-name/o/"+objectName, func(resp http.ResponseWriter, req *http.Request) {
 			fmt.Println("emulator metadata read <<JAVA>> called")
+
 			resp.Header().Set("Content-Type", "application/json")
 			if _, err := fmt.Fprintf(resp, `{
 	"name": "%s-download",
@@ -87,6 +90,7 @@ func main() {
 		// Java: Download object.
 		http.HandleFunc(fmt.Sprintf("/download/storage/v1/b/some-bucket-name-download/o/%s-download", objectName), func(resp http.ResponseWriter, req *http.Request) {
 			fmt.Println("emulator read <<JAVA>> called")
+			contents := io.LimitReader(rand.Reader, size)
 			if _, err := io.Copy(resp, contents); err != nil {
 				log.Println(err)
 				return
