@@ -26,9 +26,9 @@ import (
 
 	"cloud.google.com/go/internal/protostruct"
 	"cloud.google.com/go/internal/trace"
-	"cloud.google.com/go/spanner/internal/backoff"
-	proto "github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
@@ -320,14 +320,11 @@ type resumableStreamDecoder struct {
 	// last revealed to caller.
 	resumeToken []byte
 
-	// retryCount is the number of retries that have been carried out so far
-	retryCount int
-
 	// err is the last error resumableStreamDecoder has encountered so far.
 	err error
 
-	// backoff to compute delays between retries.
-	backoff backoff.ExponentialBackoff
+	// backoff is used for the retry settings
+	backoff gax.Backoff
 }
 
 // newResumableStreamDecoder creates a new resumeableStreamDecoder instance.
@@ -338,7 +335,7 @@ func newResumableStreamDecoder(ctx context.Context, rpc func(ct context.Context,
 		ctx:                         ctx,
 		rpc:                         rpc,
 		maxBytesBetweenResumeTokens: atomic.LoadInt32(&maxBytesBetweenResumeTokens),
-		backoff:                     backoff.DefaultBackoff,
+		backoff:                     DefaultRetryBackoff,
 	}
 }
 
@@ -421,35 +418,34 @@ var (
 )
 
 func (d *resumableStreamDecoder) next() bool {
+	retryer := gax.OnCodes([]codes.Code{codes.Unavailable, codes.Internal}, d.backoff)
 	for {
-		select {
-		case <-d.ctx.Done():
-			// Do context check here so that even gRPC failed to do
-			// so, resumableStreamDecoder can still break the loop
-			// as expected.
-			d.err = errContextCanceled(d.ctx, d.err)
-			d.changeState(aborted)
-		default:
-		}
 		switch d.state {
 		case unConnected:
 			// If no gRPC stream is available, try to initiate one.
-			if d.stream, d.err = d.rpc(d.ctx, d.resumeToken); d.err != nil {
-				if isRetryable(d.err) {
-					d.doBackOff()
-					// Be explicit about state transition, although the
-					// state doesn't actually change. State transition
-					// will be triggered only by RPC activity, regardless of
-					// whether there is an actual state change or not.
-					d.changeState(unConnected)
-					continue
-				}
+			d.stream, d.err = d.rpc(d.ctx, d.resumeToken)
+			if d.err == nil {
+				d.changeState(queueingRetryable)
+				continue
+			}
+			delay, shouldRetry := retryer.Retry(d.err)
+			if !shouldRetry {
 				d.changeState(aborted)
 				continue
 			}
-			d.resetBackOff()
-			d.changeState(queueingRetryable)
+			trace.TracePrintf(d.ctx, nil, "Backing off stream read for %s", delay)
+			if err := gax.Sleep(d.ctx, delay); err == nil {
+				// Be explicit about state transition, although the
+				// state doesn't actually change. State transition
+				// will be triggered only by RPC activity, regardless of
+				// whether there is an actual state change or not.
+				d.changeState(unConnected)
+			} else {
+				d.err = err
+				d.changeState(aborted)
+			}
 			continue
+
 		case queueingRetryable:
 			fallthrough
 		case queueingUnretryable:
@@ -459,7 +455,7 @@ func (d *resumableStreamDecoder) next() bool {
 				// Only the case that receiving queue is empty could cause
 				// peekLast to return error and in such case, we should try to
 				// receive from stream.
-				d.tryRecv()
+				d.tryRecv(retryer)
 				continue
 			}
 			if d.isNewResumeToken(last.ResumeToken) {
@@ -488,7 +484,7 @@ func (d *resumableStreamDecoder) next() bool {
 			}
 			// Needs to receive more from gRPC stream till a new resume token
 			// is observed.
-			d.tryRecv()
+			d.tryRecv(retryer)
 			continue
 		case aborted:
 			// Discard all pending items because none of them should be yield
@@ -514,51 +510,38 @@ func (d *resumableStreamDecoder) next() bool {
 }
 
 // tryRecv attempts to receive a PartialResultSet from gRPC stream.
-func (d *resumableStreamDecoder) tryRecv() {
+func (d *resumableStreamDecoder) tryRecv(retryer gax.Retryer) {
 	var res *sppb.PartialResultSet
-	if res, d.err = d.stream.Recv(); d.err != nil {
-		if d.err == io.EOF {
-			d.err = nil
-			d.changeState(finished)
-			return
+	res, d.err = d.stream.Recv()
+	if d.err == nil {
+		d.q.push(res)
+		if d.state == queueingRetryable && !d.isNewResumeToken(res.ResumeToken) {
+			d.bytesBetweenResumeTokens += int32(proto.Size(res))
 		}
-		if isRetryable(d.err) && d.state == queueingRetryable {
-			d.err = nil
-			// Discard all queue items (none have resume tokens).
-			d.q.clear()
-			d.stream = nil
-			d.changeState(unConnected)
-			d.doBackOff()
-			return
-		}
+		d.changeState(d.state)
+		return
+	}
+	if d.err == io.EOF {
+		d.err = nil
+		d.changeState(finished)
+		return
+	}
+	delay, shouldRetry := retryer.Retry(d.err)
+	if !shouldRetry || d.state != queueingRetryable {
 		d.changeState(aborted)
 		return
 	}
-	d.q.push(res)
-	if d.state == queueingRetryable && !d.isNewResumeToken(res.ResumeToken) {
-		d.bytesBetweenResumeTokens += int32(proto.Size(res))
+	if err := gax.Sleep(d.ctx, delay); err != nil {
+		d.err = err
+		d.changeState(aborted)
+		return
 	}
-	d.resetBackOff()
-	d.changeState(d.state)
-}
-
-// resetBackOff clears the internal retry counter of resumableStreamDecoder so
-// that the next exponential backoff will start at a fresh state.
-func (d *resumableStreamDecoder) resetBackOff() {
-	d.retryCount = 0
-}
-
-// doBackoff does an exponential backoff sleep.
-func (d *resumableStreamDecoder) doBackOff() {
-	delay := d.backoff.Delay(d.retryCount)
-	trace.TracePrintf(d.ctx, nil, "Backing off stream read for %s", delay)
-	ticker := time.NewTicker(delay)
-	defer ticker.Stop()
-	d.retryCount++
-	select {
-	case <-d.ctx.Done():
-	case <-ticker.C:
-	}
+	// Clear error and retry the stream.
+	d.err = nil
+	// Discard all queue items (none have resume tokens).
+	d.q.clear()
+	d.stream = nil
+	d.changeState(unConnected)
 }
 
 // get returns the most recent PartialResultSet generated by a call to next.
