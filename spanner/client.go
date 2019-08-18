@@ -26,7 +26,6 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	vkit "cloud.google.com/go/spanner/apiv1"
-	"cloud.google.com/go/spanner/internal/backoff"
 	"google.golang.org/api/option"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
@@ -408,43 +407,6 @@ func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Contex
 		sh.recycle()
 	}
 	return ts, err
-}
-
-func runWithRetryOnAborted(ctx context.Context, f func(context.Context) error) error {
-	var funcErr error
-	retryCount := 0
-	for {
-		select {
-		case <-ctx.Done():
-			// Do context check here so that even f() failed to do so (for
-			// example, gRPC implementation bug), the loop can still have a
-			// chance to exit as expected.
-			return errContextCanceled(ctx, funcErr)
-		default:
-		}
-		funcErr = f(ctx)
-		if funcErr == nil {
-			return nil
-		}
-		// Only retry on ABORTED.
-		if isAbortErr(funcErr) {
-			// Aborted, do exponential backoff and continue.
-			b, ok := extractRetryDelay(funcErr)
-			if !ok {
-				b = backoff.DefaultBackoff.Delay(retryCount)
-			}
-			trace.TracePrintf(ctx, nil, "Backing off after ABORTED for %s, then retrying", b)
-			select {
-			case <-ctx.Done():
-				return errContextCanceled(ctx, funcErr)
-			case <-time.After(b):
-			}
-			retryCount++
-			continue
-		}
-		// Error isn't ABORTED / no error, return immediately.
-		return funcErr
-	}
 }
 
 // applyOption controls the behavior of Client.Apply.
