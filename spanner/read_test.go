@@ -25,10 +25,10 @@ import (
 	"testing"
 	"time"
 
-	"cloud.google.com/go/spanner/internal/backoff"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
@@ -1080,9 +1080,10 @@ func TestRsdBlockingStates(t *testing.T) {
 				test.rpc,
 			)
 			// Override backoff to make the test run faster.
-			r.backoff = backoff.ExponentialBackoff{
-				Min: 1 * time.Nanosecond,
-				Max: 1 * time.Nanosecond,
+			r.backoff = gax.Backoff{
+				Initial:    1 * time.Nanosecond,
+				Max:        1 * time.Nanosecond,
+				Multiplier: 1.3,
 			}
 			// st is the set of observed state transitions.
 			st := []resumableStreamDecoderState{}
@@ -1720,12 +1721,9 @@ func TestIteratorStopEarly(t *testing.T) {
 	}
 	iter.Stop()
 	// Stop sets r.err to the FailedPrecondition error "Next called after Stop".
-	// Override that here so this test can observe the Canceled error from the
-	// stream.
-	iter.err = nil
-	iter.Next()
-	if ErrCode(iter.streamd.lastErr()) != codes.Canceled {
-		t.Errorf("after Stop: got %v, wanted Canceled", err)
+	_, err = iter.Next()
+	if g, w := ErrCode(err), codes.FailedPrecondition; g != w {
+		t.Errorf("after Stop: got: %v, want: %v", g, w)
 	}
 }
 
