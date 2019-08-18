@@ -425,6 +425,11 @@ func (s *server) readTx(ctx context.Context, session string, tsel *spannerpb.Tra
 		default:
 			return nil, nil, fmt.Errorf("single use transaction in mode %T not supported", mode)
 		}
+	case *spannerpb.TransactionSelector_Id:
+		id := sel.Id // []byte
+		_ = id       // TODO: lookup an existing transaction by ID.
+		tx := &transaction{}
+		return tx, tx.finish, nil
 	}
 }
 
