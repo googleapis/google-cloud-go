@@ -22,6 +22,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	"github.com/googleapis/gax-go/v2"
 	edpb "google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -38,5 +39,25 @@ func TestRetryInfo(t *testing.T) {
 	gotDelay, ok := extractRetryDelay(toSpannerErrorWithMetadata(status.Errorf(codes.Aborted, ""), metadata.New(trailers)))
 	if !ok || !testEqual(time.Second, gotDelay) {
 		t.Errorf("<ok, retryDelay> = <%t, %v>, want <true, %v>", ok, gotDelay, time.Second)
+	}
+}
+
+func TestRetryerRespectsServerDelay(t *testing.T) {
+	t.Parallel()
+	serverDelay := 50 * time.Millisecond
+	b, _ := proto.Marshal(&edpb.RetryInfo{
+		RetryDelay: ptypes.DurationProto(serverDelay),
+	})
+	trailers := map[string]string{
+		retryInfoKey: string(b),
+	}
+	retryer := onCodes(gax.Backoff{}, codes.Aborted)
+	err := toSpannerErrorWithMetadata(spannerErrorf(codes.Aborted, "transaction was aborted"), metadata.New(trailers))
+	maxSeenDelay, shouldRetry := retryer.Retry(err)
+	if !shouldRetry {
+		t.Fatalf("expected shouldRetry to be true")
+	}
+	if maxSeenDelay != serverDelay {
+		t.Fatalf("Retry delay mismatch:\ngot: %v\nwant: %v", maxSeenDelay, serverDelay)
 	}
 }
