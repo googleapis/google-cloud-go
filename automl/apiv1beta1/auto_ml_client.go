@@ -69,6 +69,8 @@ func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("automl.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
@@ -470,8 +472,7 @@ func (c *Client) DeleteModel(ctx context.Context, req *automlpb.DeleteModelReque
 // [node_number][google.cloud.automl.v1beta1.ImageObjectDetectionModelDeploymentMetadata.node_number])
 // will reset the deployment state without pausing the model's availability.
 //
-// Only applicable for Text Classification, Image Object Detection and Tables;
-// all other domains manage deployment automatically.
+// Only applicable for Text Classification, Image Object Detection and Tables; all other domains manage deployment automatically.
 //
 // Returns an empty response in the
 // [response][google.longrunning.Operation.response] field when it completes.

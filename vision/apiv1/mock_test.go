@@ -341,6 +341,18 @@ func (s *mockProductSearchServer) ImportProductSets(ctx context.Context, req *vi
 	return s.resps[0].(*longrunningpb.Operation), nil
 }
 
+func (s *mockProductSearchServer) PurgeProducts(ctx context.Context, req *visionpb.PurgeProductsRequest) (*longrunningpb.Operation, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*longrunningpb.Operation), nil
+}
+
 // clientOpt is the option tests should use to connect to the test server.
 // It is initialized by TestMain.
 var clientOpt option.ClientOption
@@ -1807,4 +1819,82 @@ func TestProductSearchImportProductSetsError(t *testing.T) {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
 	_ = resp
+}
+func TestProductSearchPurgeProducts(t *testing.T) {
+	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
+
+	mockProductSearch.err = nil
+	mockProductSearch.reqs = nil
+
+	any, err := ptypes.MarshalAny(expectedResponse)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mockProductSearch.resps = append(mockProductSearch.resps[:0], &longrunningpb.Operation{
+		Name:   "longrunning-test",
+		Done:   true,
+		Result: &longrunningpb.Operation_Response{Response: any},
+	})
+
+	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s", "[PROJECT]", "[LOCATION]")
+	var request = &visionpb.PurgeProductsRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewProductSearchClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	respLRO, err := c.PurgeProducts(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = respLRO.Wait(context.Background())
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockProductSearch.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestProductSearchPurgeProductsError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockProductSearch.err = nil
+	mockProductSearch.resps = append(mockProductSearch.resps[:0], &longrunningpb.Operation{
+		Name: "longrunning-test",
+		Done: true,
+		Result: &longrunningpb.Operation_Error{
+			Error: &status.Status{
+				Code:    int32(errCode),
+				Message: "test error",
+			},
+		},
+	})
+
+	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s", "[PROJECT]", "[LOCATION]")
+	var request = &visionpb.PurgeProductsRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewProductSearchClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	respLRO, err := c.PurgeProducts(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = respLRO.Wait(context.Background())
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
 }

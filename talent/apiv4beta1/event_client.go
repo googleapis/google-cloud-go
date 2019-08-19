@@ -19,6 +19,7 @@ package talent
 import (
 	"context"
 	"fmt"
+	"math"
 	"net/url"
 
 	gax "github.com/googleapis/gax-go/v2"
@@ -38,6 +39,8 @@ func defaultEventClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("jobs.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 

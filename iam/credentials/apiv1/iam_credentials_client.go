@@ -19,6 +19,7 @@ package credentials
 import (
 	"context"
 	"fmt"
+	"math"
 	"net/url"
 	"time"
 
@@ -43,6 +44,8 @@ func defaultIamCredentialsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("iamcredentials.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 

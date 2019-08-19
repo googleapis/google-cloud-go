@@ -18,6 +18,7 @@ package webrisk
 
 import (
 	"context"
+	"math"
 	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
@@ -40,6 +41,8 @@ func defaultWebRiskServiceV1Beta1ClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("webrisk.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
