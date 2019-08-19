@@ -92,3 +92,25 @@ func TestRace(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkDistribution(b *testing.B) {
+	const N int = 1e3
+
+	d := New(N)
+	for i := 0; i < N; i++ {
+		d.Record(i)
+	}
+
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	var index int
+	for i := 0; i < b.N; i++ {
+		if index = d.Percentile(0.5); index < 0 {
+			b.Fatalf("Invalid index: %d", index)
+		}
+	}
+	if index == 0 {
+		b.Fatal("Benchmark did not run")
+	}
+}
