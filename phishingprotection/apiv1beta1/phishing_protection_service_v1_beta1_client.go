@@ -19,6 +19,7 @@ package phishingprotection
 import (
 	"context"
 	"fmt"
+	"math"
 	"net/url"
 
 	gax "github.com/googleapis/gax-go/v2"
@@ -38,6 +39,8 @@ func defaultPhishingProtectionServiceV1Beta1ClientOptions() []option.ClientOptio
 	return []option.ClientOption{
 		option.WithEndpoint("phishingprotection.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 

@@ -18,6 +18,7 @@ package texttospeech
 
 import (
 	"context"
+	"math"
 	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
@@ -39,6 +40,8 @@ func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("texttospeech.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 

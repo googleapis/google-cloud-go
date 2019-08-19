@@ -1769,12 +1769,14 @@ func TestAutoMlGetTableSpec(t *testing.T) {
 	var name2 string = "name2-1052831874"
 	var timeColumnSpecId string = "timeColumnSpecId1558734824"
 	var rowCount int64 = 1340416618
+	var validRowCount int64 = 406068761
 	var columnCount int64 = 122671386
 	var etag string = "etag3123477"
 	var expectedResponse = &automlpb.TableSpec{
 		Name:             name2,
 		TimeColumnSpecId: timeColumnSpecId,
 		RowCount:         rowCount,
+		ValidRowCount:    validRowCount,
 		ColumnCount:      columnCount,
 		Etag:             etag,
 	}
@@ -1908,12 +1910,14 @@ func TestAutoMlUpdateTableSpec(t *testing.T) {
 	var name string = "name3373707"
 	var timeColumnSpecId string = "timeColumnSpecId1558734824"
 	var rowCount int64 = 1340416618
+	var validRowCount int64 = 406068761
 	var columnCount int64 = 122671386
 	var etag string = "etag3123477"
 	var expectedResponse = &automlpb.TableSpec{
 		Name:             name,
 		TimeColumnSpecId: timeColumnSpecId,
 		RowCount:         rowCount,
+		ValidRowCount:    validRowCount,
 		ColumnCount:      columnCount,
 		Etag:             etag,
 	}

@@ -18,6 +18,7 @@ package videointelligence
 
 import (
 	"context"
+	"math"
 	"time"
 
 	"cloud.google.com/go/longrunning"
@@ -41,6 +42,8 @@ func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("videointelligence.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 

@@ -19,6 +19,7 @@ package recaptchaenterprise
 import (
 	"context"
 	"fmt"
+	"math"
 	"net/url"
 
 	gax "github.com/googleapis/gax-go/v2"
@@ -39,6 +40,8 @@ func defaultRecaptchaEnterpriseServiceV1Beta1ClientOptions() []option.ClientOpti
 	return []option.ClientOption{
 		option.WithEndpoint("recaptchaenterprise.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
