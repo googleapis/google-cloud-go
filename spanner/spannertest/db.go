@@ -327,27 +327,17 @@ func (d *database) Delete(table string, keys []*structpb.ListValue, keyRanges ke
 	}
 
 	for _, r := range keyRanges {
-		// TODO: support key range bounds that are primary key prefixes.
-		start, err := t.primaryKey(r.start.Values)
+		r.startKey, err = t.primaryKeyPrefix(r.start.Values)
 		if err != nil {
 			return err
 		}
-		end, err := t.primaryKey(r.end.Values)
+		r.endKey, err = t.primaryKeyPrefix(r.end.Values)
 		if err != nil {
 			return err
 		}
 		for rowNum := 0; rowNum < len(t.rows); {
 			rowPK := t.rows[rowNum][:t.pkCols]
-
-			cmp := rowCmp(rowPK, start)
-			if cmp < 0 || (cmp == 0 && !r.startClosed) {
-				// Row is before range.
-				rowNum++
-				continue
-			}
-			cmp = rowCmp(end, rowPK)
-			if cmp < 0 || (cmp == 0 && !r.endClosed) {
-				// Row is after range.
+			if !r.includePK(rowPK) {
 				rowNum++
 				continue
 			}
@@ -541,6 +531,14 @@ func (t *table) primaryKey(values []*structpb.Value) ([]interface{}, error) {
 	if len(values) != t.pkCols {
 		return nil, status.Errorf(codes.InvalidArgument, "primary key length mismatch: got %d values, table has %d", len(values), t.pkCols)
 	}
+	return t.primaryKeyPrefix(values)
+}
+
+// primaryKeyPrefix constructs the internal representation of a primary key prefix.
+func (t *table) primaryKeyPrefix(values []*structpb.Value) ([]interface{}, error) {
+	if len(values) > t.pkCols {
+		return nil, status.Errorf(codes.InvalidArgument, "primary key length too long: got %d values, table has %d", len(values), t.pkCols)
+	}
 
 	var pk []interface{}
 	for i, value := range values {
@@ -569,6 +567,7 @@ func (t *table) rowForPK(pk []interface{}) int {
 
 // rowCmp compares two rows, returning -1/0/+1.
 // This is used for primary key matching and so doesn't support array/struct types.
+// a is permitted to be shorter than b.
 func rowCmp(a, b []interface{}) int {
 	for i := 0; i < len(a); i++ {
 		x, y := a[i], b[i]
@@ -669,6 +668,30 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 type keyRange struct {
 	start, end             *structpb.ListValue
 	startClosed, endClosed bool
+
+	// These are populated during an operation
+	// when we know what table this keyRange applies to.
+	startKey, endKey []interface{}
 }
 
-type keyRangeList []keyRange
+type keyRangeList []*keyRange
+
+func (kr *keyRange) includePK(pk []interface{}) bool {
+	// rowCmp permits its first argument to be a prefix,
+	// so the calls to it below use kr.fooKey as the first arg.
+
+	// TODO: This is incorrect for primary keys with descending order.
+	// It might be sufficient for the caller to switch start/end in that case.
+
+	cmp := rowCmp(kr.startKey, pk)
+	if cmp > 0 || (cmp == 0 && !kr.startClosed) {
+		// Row is before range.
+		return false
+	}
+	cmp = rowCmp(kr.endKey, pk)
+	if cmp < 0 || (cmp == 0 && !kr.endClosed) {
+		// Row is after range.
+		return false
+	}
+	return true
+}

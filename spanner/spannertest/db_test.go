@@ -190,7 +190,7 @@ func TestTableData(t *testing.T) {
 	err = db.Delete("Staff", nil, keyRangeList{{
 		start:       listV(stringV("01"), stringV("1")),
 		startClosed: true,
-		end:         listV(stringV("9"), stringV("0")),
+		end:         listV(stringV("9")),
 	}}, false)
 	if err != nil {
 		t.Fatalf("Deleting key range: %v", err)
@@ -316,3 +316,125 @@ func stringV(s string) *structpb.Value                { return &structpb.Value{K
 func floatV(f float64) *structpb.Value                { return &structpb.Value{Kind: &structpb.Value_NumberValue{f}} }
 func boolV(b bool) *structpb.Value                    { return &structpb.Value{Kind: &structpb.Value_BoolValue{b}} }
 func nullV() *structpb.Value                          { return &structpb.Value{Kind: &structpb.Value_NullValue{}} }
+
+func TestRowCmp(t *testing.T) {
+	r := func(x ...interface{}) []interface{} { return x }
+	tests := []struct {
+		a, b []interface{}
+		want int
+	}{
+		{r(int64(1), "foo", 1.6), r(int64(1), "foo", 1.6), 0},
+		{r(int64(1), "foo"), r(int64(1), "foo", 1.6), 0}, // first is shorter
+
+		{r(int64(1), "bar", 1.8), r(int64(1), "foo", 1.6), -1},
+		{r(int64(1), "foo", 1.6), r(int64(1), "bar", 1.8), 1},
+	}
+	for _, test := range tests {
+		if got := rowCmp(test.a, test.b); got != test.want {
+			t.Errorf("rowCmp(%v, %v) = %d, want %d", test.a, test.b, got, test.want)
+		}
+	}
+}
+
+func TestKeyRangeInclude(t *testing.T) {
+	r := func(x ...interface{}) []interface{} { return x }
+	closedClosed := func(start, end []interface{}) *keyRange {
+		return &keyRange{
+			startKey:    start,
+			endKey:      end,
+			startClosed: true,
+			endClosed:   true,
+		}
+	}
+	halfOpen := func(start, end []interface{}) *keyRange {
+		return &keyRange{
+			startKey:    start,
+			endKey:      end,
+			startClosed: true,
+		}
+	}
+	tests := []struct {
+		kr      *keyRange
+		include [][]interface{}
+		exclude [][]interface{}
+	}{
+		// Examples from google/spanner/v1/keys.proto.
+		{
+			kr: closedClosed(r("Bob", "2015-01-01"), r("Bob", "2015-12-31")),
+			include: [][]interface{}{
+				r("Bob", "2015-01-01"),
+				r("Bob", "2015-07-07"),
+				r("Bob", "2015-12-31"),
+			},
+			exclude: [][]interface{}{
+				r("Alice", "2015-07-07"),
+				r("Bob", "2014-12-31"),
+				r("Bob", "2016-01-01"),
+			},
+		},
+		{
+			kr: closedClosed(r("Bob", "2000-01-01"), r("Bob")),
+			include: [][]interface{}{
+				r("Bob", "2000-01-01"),
+				r("Bob", "2022-07-07"),
+			},
+			exclude: [][]interface{}{
+				r("Alice", "2015-07-07"),
+				r("Bob", "1999-11-07"),
+			},
+		},
+		{
+			kr: closedClosed(r("Bob"), r("Bob")),
+			include: [][]interface{}{
+				r("Bob", "2000-01-01"),
+			},
+			exclude: [][]interface{}{
+				r("Alice", "2015-07-07"),
+				r("Charlie", "1999-11-07"),
+			},
+		},
+		{
+			kr: halfOpen(r("Bob"), r("Bob", "2000-01-01")),
+			include: [][]interface{}{
+				r("Bob", "1999-11-07"),
+			},
+			exclude: [][]interface{}{
+				r("Alice", "1999-11-07"),
+				r("Bob", "2004-07-07"),
+				r("Charlie", "1999-11-07"),
+			},
+		},
+		{
+			kr: closedClosed(r(), r()),
+			include: [][]interface{}{
+				r("Alice", "1999-11-07"),
+				r("Bob", "1999-11-07"),
+				r("Charlie", "1999-11-07"),
+			},
+		},
+		{
+			kr: halfOpen(r("A"), r("D")),
+			include: [][]interface{}{
+				r("Alice", "1999-11-07"),
+				r("Bob", "1999-11-07"),
+				r("Charlie", "1999-11-07"),
+			},
+			exclude: [][]interface{}{
+				r("0day", "1999-11-07"),
+				r("Doris", "1999-11-07"),
+			},
+		},
+	}
+	for _, test := range tests {
+		for _, pk := range test.include {
+			if !test.kr.includePK(pk) {
+				t.Errorf("(%v).includePK(%v) = false, want true", test.kr, pk)
+			}
+		}
+		for _, pk := range test.exclude {
+			if test.kr.includePK(pk) {
+				t.Errorf("(%v).includePK(%v) = true, want false", test.kr, pk)
+			}
+		}
+	}
+}
