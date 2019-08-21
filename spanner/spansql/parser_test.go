@@ -17,6 +17,8 @@ limitations under the License.
 package spansql
 
 import (
+	"fmt"
+	"math"
 	"reflect"
 	"testing"
 )
@@ -88,9 +90,14 @@ func TestParseExpr(t *testing.T) {
 	}{
 		{`17`, IntegerLiteral(17)},
 		{`-1`, IntegerLiteral(-1)},
+		{fmt.Sprintf(`%d`, math.MaxInt64), IntegerLiteral(math.MaxInt64)},
+		{fmt.Sprintf(`%d`, math.MinInt64), IntegerLiteral(math.MinInt64)},
+		{"1.797693134862315708145274237317043567981e+308", FloatLiteral(math.MaxFloat64)},
+		{`4.940656458412465441765687928682213723651e-324`, FloatLiteral(math.SmallestNonzeroFloat64)},
 		{`0xf00d`, IntegerLiteral(0xf00d)},
 		{`-0xbeef`, IntegerLiteral(-0xbeef)},
 		{`123.456e-67`, FloatLiteral(123.456e-67)},
+		{`-123.456e-67`, FloatLiteral(-123.456e-67)},
 		{`.1E4`, FloatLiteral(0.1e4)},
 		{`58.`, FloatLiteral(58)},
 		{`4e2`, FloatLiteral(4e2)},
