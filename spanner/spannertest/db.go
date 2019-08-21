@@ -200,7 +200,7 @@ func (d *database) table(tbl string) (*table, error) {
 }
 
 // writeValues executes a write option (Insert, Update, etc.).
-func (d *database) writeValues(tbl string, cols []string, values []*structpb.ListValue, f func(t *table, colIndexes, pkIndexes []int, r row) error) error {
+func (d *database) writeValues(tbl string, cols []string, values []*structpb.ListValue, f func(t *table, colIndexes []int, r row) error) error {
 	t, err := d.table(tbl)
 	if err != nil {
 		return err
@@ -218,13 +218,11 @@ func (d *database) writeValues(tbl string, cols []string, values []*structpb.Lis
 		revIndex[i] = j
 	}
 
-	var pkIndexes []int
 	for pki := 0; pki < t.pkCols; pki++ {
-		i, ok := revIndex[pki]
+		_, ok := revIndex[pki]
 		if !ok {
 			return status.Errorf(codes.InvalidArgument, "primary key column %s not included in write", t.cols[pki].Name)
 		}
-		pkIndexes = append(pkIndexes, i)
 	}
 
 	for _, vs := range values {
@@ -245,7 +243,7 @@ func (d *database) writeValues(tbl string, cols []string, values []*structpb.Lis
 		}
 		// TODO: enforce NOT NULL?
 
-		if err := f(t, colIndexes, pkIndexes, r); err != nil {
+		if err := f(t, colIndexes, r); err != nil {
 			return err
 		}
 	}
@@ -254,11 +252,8 @@ func (d *database) writeValues(tbl string, cols []string, values []*structpb.Lis
 }
 
 func (d *database) Insert(tbl string, cols []string, values []*structpb.ListValue) error {
-	return d.writeValues(tbl, cols, values, func(t *table, colIndexes, pkIndexes []int, r row) error {
-		var pk []interface{}
-		for _, i := range pkIndexes {
-			pk = append(pk, r[i])
-		}
+	return d.writeValues(tbl, cols, values, func(t *table, colIndexes []int, r row) error {
+		pk := r[:t.pkCols]
 		if t.rowForPK(pk) >= 0 {
 			// TODO: how do we return `ALREADY_EXISTS`?
 			return status.Errorf(codes.Unknown, "row already in table")
@@ -270,11 +265,8 @@ func (d *database) Insert(tbl string, cols []string, values []*structpb.ListValu
 }
 
 func (d *database) Update(tbl string, cols []string, values []*structpb.ListValue) error {
-	return d.writeValues(tbl, cols, values, func(t *table, colIndexes, pkIndexes []int, r row) error {
-		var pk []interface{}
-		for _, i := range pkIndexes {
-			pk = append(pk, r[i])
-		}
+	return d.writeValues(tbl, cols, values, func(t *table, colIndexes []int, r row) error {
+		pk := r[:t.pkCols]
 		rowNum := t.rowForPK(pk)
 		if rowNum < 0 {
 			// TODO: is this the right way to return `NOT_FOUND`?
@@ -289,11 +281,8 @@ func (d *database) Update(tbl string, cols []string, values []*structpb.ListValu
 }
 
 func (d *database) InsertOrUpdate(tbl string, cols []string, values []*structpb.ListValue) error {
-	return d.writeValues(tbl, cols, values, func(t *table, colIndexes, pkIndexes []int, r row) error {
-		var pk []interface{}
-		for _, i := range pkIndexes {
-			pk = append(pk, r[i])
-		}
+	return d.writeValues(tbl, cols, values, func(t *table, colIndexes []int, r row) error {
+		pk := r[:t.pkCols]
 		rowNum := t.rowForPK(pk)
 		if rowNum < 0 {
 			// New row; do an insert.
