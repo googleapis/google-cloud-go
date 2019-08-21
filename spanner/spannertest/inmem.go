@@ -698,6 +698,8 @@ func spannerValueFromValue(x interface{}) (*structpb.Value, error) {
 	switch x := x.(type) {
 	default:
 		return nil, fmt.Errorf("unhandled database value type %T", x)
+	case bool:
+		return &structpb.Value{Kind: &structpb.Value_BoolValue{x}}, nil
 	case int64:
 		// The Spanner int64 is actually a decimal string.
 		s := strconv.FormatInt(x, 10)
