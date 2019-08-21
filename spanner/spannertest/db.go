@@ -49,7 +49,7 @@ type table struct {
 	// They are reordered on table creation so the primary key columns come first.
 	cols     []colInfo
 	colIndex map[string]int // col name to index
-	pkCols   int            // number of primary key columns
+	pkCols   int            // number of primary key columns (may be 0)
 
 	rows []row
 }
@@ -123,9 +123,6 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 		pk := make(map[string]int)
 		for i, kp := range stmt.PrimaryKey {
 			pk[kp.Column] = -1000 + i
-		}
-		if len(pk) == 0 {
-			return status.Newf(codes.InvalidArgument, "missing primary key")
 		}
 		sort.SliceStable(stmt.Columns, func(i, j int) bool {
 			a, b := pk[stmt.Columns[i].Name], pk[stmt.Columns[j].Name]
@@ -266,6 +263,9 @@ func (d *database) Insert(tbl string, cols []string, values []*structpb.ListValu
 
 func (d *database) Update(tbl string, cols []string, values []*structpb.ListValue) error {
 	return d.writeValues(tbl, cols, values, func(t *table, colIndexes []int, r row) error {
+		if t.pkCols == 0 {
+			return status.Errorf(codes.InvalidArgument, "cannot update table %s with no columns in primary key", tbl)
+		}
 		pk := r[:t.pkCols]
 		rowNum := t.rowForPK(pk)
 		if rowNum < 0 {
@@ -552,7 +552,7 @@ func (t *table) primaryKeyPrefix(values []*structpb.Value) ([]interface{}, error
 }
 
 // rowForPK returns the index of t.rows that holds the row for the given primary key.
-// It returns -1 if it isn't found.
+// It returns -1 if it isn't found, including when the table's primary key has no columns.
 func (t *table) rowForPK(pk []interface{}) int {
 	if len(pk) != t.pkCols {
 		panic(fmt.Sprintf("primary key length mismatch: got %d values, table has %d", len(pk), t.pkCols))
