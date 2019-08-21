@@ -299,7 +299,7 @@ func (d *database) InsertOrUpdate(tbl string, cols []string, values []*structpb.
 
 // TODO: Replace
 
-func (d *database) Delete(table string, keys []*structpb.ListValue, all bool) error {
+func (d *database) Delete(table string, keys []*structpb.ListValue, keyRanges keyRangeList, all bool) error {
 	t, err := d.table(table)
 	if err != nil {
 		return err
@@ -321,6 +321,38 @@ func (d *database) Delete(table string, keys []*structpb.ListValue, all bool) er
 		// Not an error if the key does not exist.
 		rowNum := t.rowForPK(pk)
 		if rowNum >= 0 {
+			copy(t.rows[rowNum:], t.rows[rowNum+1:])
+			t.rows = t.rows[:len(t.rows)-1]
+		}
+	}
+
+	for _, r := range keyRanges {
+		// TODO: support key range bounds that are primary key prefixes.
+		start, err := t.primaryKey(r.start.Values)
+		if err != nil {
+			return err
+		}
+		end, err := t.primaryKey(r.end.Values)
+		if err != nil {
+			return err
+		}
+		for rowNum := 0; rowNum < len(t.rows); {
+			rowPK := t.rows[rowNum][:t.pkCols]
+
+			cmp := rowCmp(rowPK, start)
+			if cmp < 0 || (cmp == 0 && !r.startClosed) {
+				// Row is before range.
+				rowNum++
+				continue
+			}
+			cmp = rowCmp(end, rowPK)
+			if cmp < 0 || (cmp == 0 && !r.endClosed) {
+				// Row is after range.
+				rowNum++
+				continue
+			}
+
+			// Row is in range.
 			copy(t.rows[rowNum:], t.rows[rowNum+1:])
 			t.rows = t.rows[:len(t.rows)-1]
 		}
@@ -528,28 +560,47 @@ func (t *table) rowForPK(pk []interface{}) int {
 		panic(fmt.Sprintf("primary key length mismatch: got %d values, table has %d", len(pk), t.pkCols))
 	}
 	for i, row := range t.rows {
-		if rowEqual(pk, row[:t.pkCols]) {
+		if rowCmp(pk, row[:t.pkCols]) == 0 {
 			return i
 		}
 	}
 	return -1
 }
 
-// rowEqual reports whether two rows have the same values.
-// This is used by rowForPK and so doesn't support array/struct types.
-func rowEqual(a, b []interface{}) bool {
-	if len(a) != len(b) {
-		return false
-	}
+// rowCmp compares two rows, returning -1/0/+1.
+// This is used for primary key matching and so doesn't support array/struct types.
+func rowCmp(a, b []interface{}) int {
 	for i := 0; i < len(a); i++ {
-		// The only value key column types are represented internally
-		// as Go types comparable with == and !=.
-		// TODO: TIMESTAMP might violate this.
-		if a[i] != b[i] {
-			return false
+		x, y := a[i], b[i]
+
+		// TODO: handle BOOL and TIMESTAMP.
+		switch x := x.(type) {
+		default:
+			panic(fmt.Sprintf("internal error: can't rowCmp %T", x))
+		case int64:
+			y := y.(int64)
+			if x < y {
+				return -1
+			} else if x > y {
+				return 1
+			}
+		case float64:
+			y := y.(float64)
+			if x < y {
+				return -1
+			} else if x > y {
+				return 1
+			}
+		case string:
+			y := y.(string)
+			if x < y {
+				return -1
+			} else if x > y {
+				return 1
+			}
 		}
 	}
-	return true
+	return 0
 }
 
 func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
@@ -614,3 +665,10 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 	}
 	return nil, fmt.Errorf("unsupported inserting value kind %T into column of type %s", v.Kind, t.SQL())
 }
+
+type keyRange struct {
+	start, end             *structpb.ListValue
+	startClosed, endClosed bool
+}
+
+type keyRangeList []keyRange

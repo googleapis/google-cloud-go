@@ -102,7 +102,7 @@ func TestTableData(t *testing.T) {
 		t.Fatalf("Inserting more data: %v", err)
 	}
 	// Delete that last one.
-	err = db.Delete("Staff", []*structpb.ListValue{listV(stringV("Harry"), stringV("6"))}, false)
+	err = db.Delete("Staff", []*structpb.ListValue{listV(stringV("Harry"), stringV("6"))}, nil, false)
 	if err != nil {
 		t.Fatalf("Deleting a row: %v", err)
 	}
@@ -175,6 +175,25 @@ func TestTableData(t *testing.T) {
 	})
 	if err != nil {
 		t.Fatalf("Updating rows: %v", err)
+	}
+
+	// Add some more data, then delete it with a KeyRange.
+	// The queries below ensure that this was all deleted.
+	err = db.Insert("Staff", []string{"Name", "ID"}, []*structpb.ListValue{
+		listV(stringV("01"), stringV("1")),
+		listV(stringV("03"), stringV("3")),
+		listV(stringV("06"), stringV("6")),
+	})
+	if err != nil {
+		t.Fatalf("Inserting data: %v", err)
+	}
+	err = db.Delete("Staff", nil, keyRangeList{{
+		start:       listV(stringV("01"), stringV("1")),
+		startClosed: true,
+		end:         listV(stringV("9"), stringV("0")),
+	}}, false)
+	if err != nil {
+		t.Fatalf("Deleting key range: %v", err)
 	}
 
 	// Do some complex queries.
