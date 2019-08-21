@@ -18,21 +18,22 @@ import (
 	"context"
 	"testing"
 
+	. "cloud.google.com/go/spanner/internal/testutil"
 	"google.golang.org/grpc/codes"
 )
 
 func TestMockPartitionedUpdate(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	server, client := newSpannerInMemTestServer(t)
-	defer server.teardown(client)
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
 
-	stmt := NewStatement(updateBarSetFoo)
+	stmt := NewStatement(UpdateBarSetFoo)
 	rowCount, err := client.PartitionedUpdate(ctx, stmt)
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := int64(updateBarSetFooRowCount)
+	want := int64(UpdateBarSetFooRowCount)
 	if rowCount != want {
 		t.Errorf("got %d, want %d", rowCount, want)
 	}
@@ -41,10 +42,10 @@ func TestMockPartitionedUpdate(t *testing.T) {
 func TestMockPartitionedUpdateWithQuery(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	server, client := newSpannerInMemTestServer(t)
-	defer server.teardown(client)
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
 
-	stmt := NewStatement(selectFooFromBar)
+	stmt := NewStatement(SelectFooFromBar)
 	_, err := client.PartitionedUpdate(ctx, stmt)
 	wantCode := codes.InvalidArgument
 	if serr, ok := err.(*Error); !ok || serr.Code != wantCode {

@@ -26,7 +26,7 @@ import (
 	"time"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
-	"cloud.google.com/go/spanner/internal/testutil"
+	. "cloud.google.com/go/spanner/internal/testutil"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -34,8 +34,8 @@ import (
 // TestSessionPoolConfigValidation tests session pool config validation.
 func TestSessionPoolConfigValidation(t *testing.T) {
 	t.Parallel()
-	server, client := newSpannerInMemTestServer(t)
-	defer server.teardown(client)
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
 
 	for _, test := range []struct {
 		spc SessionPoolConfig
@@ -66,8 +66,8 @@ func TestSessionPoolConfigValidation(t *testing.T) {
 func TestSessionCreation(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	server, client := newSpannerInMemTestServer(t)
-	defer server.teardown(client)
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
 	sp := client.idleSessions
 
 	// Take three sessions from session pool, this should trigger session pool
@@ -86,7 +86,7 @@ func TestSessionCreation(t *testing.T) {
 	if len(gotDs) != len(shs) {
 		t.Fatalf("session pool created %v sessions, want %v", len(gotDs), len(shs))
 	}
-	if wantDs := server.testSpanner.DumpSessions(); !testEqual(gotDs, wantDs) {
+	if wantDs := server.TestSpanner.DumpSessions(); !testEqual(gotDs, wantDs) {
 		t.Fatalf("session pool creates sessions %v, want %v", gotDs, wantDs)
 	}
 	// Verify that created sessions are recorded correctly in session pool.
@@ -118,11 +118,11 @@ func TestTakeFromIdleList(t *testing.T) {
 	ctx := context.Background()
 
 	// Make sure maintainer keeps the idle sessions.
-	server, client := newSpannerInMemTestServerWithConfig(t,
+	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{MaxIdle: 10},
 		})
-	defer server.teardown(client)
+	defer teardown()
 	sp := client.idleSessions
 
 	// Take ten sessions from session pool and recycle them.
@@ -142,7 +142,7 @@ func TestTakeFromIdleList(t *testing.T) {
 	}
 	// Further session requests from session pool won't cause mockclient to
 	// create more sessions.
-	wantSessions := server.testSpanner.DumpSessions()
+	wantSessions := server.TestSpanner.DumpSessions()
 	// Take ten sessions from session pool again, this time all sessions should
 	// come from idle list.
 	gotSessions := map[string]bool{}
@@ -168,11 +168,11 @@ func TestTakeWriteSessionFromIdleList(t *testing.T) {
 	ctx := context.Background()
 
 	// Make sure maintainer keeps the idle sessions.
-	server, client := newSpannerInMemTestServerWithConfig(t,
+	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{MaxIdle: 20},
 		})
-	defer server.teardown(client)
+	defer teardown()
 	sp := client.idleSessions
 
 	// Take ten sessions from session pool and recycle them.
@@ -192,7 +192,7 @@ func TestTakeWriteSessionFromIdleList(t *testing.T) {
 	}
 	// Further session requests from session pool won't cause mockclient to
 	// create more sessions.
-	wantSessions := server.testSpanner.DumpSessions()
+	wantSessions := server.TestSpanner.DumpSessions()
 	// Take ten sessions from session pool again, this time all sessions should
 	// come from idle list.
 	gotSessions := map[string]bool{}
@@ -218,7 +218,7 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 	ctx := context.Background()
 
 	// Make sure maintainer keeps the idle sessions.
-	server, client := newSpannerInMemTestServerWithConfig(t,
+	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
 				MaxIdle:                   1,
@@ -226,7 +226,7 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 				healthCheckSampleInterval: 10 * time.Millisecond,
 			},
 		})
-	defer server.teardown(client)
+	defer teardown()
 	sp := client.idleSessions
 
 	// Stop healthcheck workers to simulate slow pings.
@@ -262,7 +262,7 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 		// The two back-to-back session requests shouldn't trigger any session
 		// pings because sessionPool.Take
 		// reschedules the next healthcheck.
-		if got, want := server.testSpanner.DumpPings(), ([]string{wantSid}); !testEqual(got, want) {
+		if got, want := server.TestSpanner.DumpPings(), ([]string{wantSid}); !testEqual(got, want) {
 			t.Fatalf("%v - got ping session requests: %v, want %v", i, got, want)
 		}
 		sh.recycle()
@@ -271,8 +271,8 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 	// Inject session error to server stub, and take the session from the
 	// session pool, the old session should be destroyed and the session pool
 	// will create a new session.
-	server.testSpanner.PutExecutionTime(testutil.MethodGetSession,
-		testutil.SimulatedExecutionTime{
+	server.TestSpanner.PutExecutionTime(MethodGetSession,
+		SimulatedExecutionTime{
 			Errors: []error{status.Errorf(codes.NotFound, "Session not found")},
 		})
 
@@ -287,7 +287,7 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get session: %v", err)
 	}
-	ds := server.testSpanner.DumpSessions()
+	ds := server.TestSpanner.DumpSessions()
 	if len(ds) != 1 {
 		t.Fatalf("dumped sessions from mockclient: %v, want %v", ds, sh.getID())
 	}
@@ -303,7 +303,7 @@ func TestTakeFromIdleWriteListChecked(t *testing.T) {
 	ctx := context.Background()
 
 	// Make sure maintainer keeps the idle sessions.
-	server, client := newSpannerInMemTestServerWithConfig(t,
+	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
 				MaxIdle:                   1,
@@ -311,7 +311,7 @@ func TestTakeFromIdleWriteListChecked(t *testing.T) {
 				healthCheckSampleInterval: 10 * time.Millisecond,
 			},
 		})
-	defer server.teardown(client)
+	defer teardown()
 	sp := client.idleSessions
 
 	// Stop healthcheck workers to simulate slow pings.
@@ -345,7 +345,7 @@ func TestTakeFromIdleWriteListChecked(t *testing.T) {
 		}
 		// The two back-to-back session requests shouldn't trigger any session
 		// pings because sessionPool.Take reschedules the next healthcheck.
-		if got, want := server.testSpanner.DumpPings(), ([]string{wantSid}); !testEqual(got, want) {
+		if got, want := server.TestSpanner.DumpPings(), ([]string{wantSid}); !testEqual(got, want) {
 			t.Fatalf("%v - got ping session requests: %v, want %v", i, got, want)
 		}
 		sh.recycle()
@@ -354,8 +354,8 @@ func TestTakeFromIdleWriteListChecked(t *testing.T) {
 	// Inject session error to mockclient, and take the session from the
 	// session pool, the old session should be destroyed and the session pool
 	// will create a new session.
-	server.testSpanner.PutExecutionTime(testutil.MethodGetSession,
-		testutil.SimulatedExecutionTime{
+	server.TestSpanner.PutExecutionTime(MethodGetSession,
+		SimulatedExecutionTime{
 			Errors: []error{status.Errorf(codes.NotFound, "Session not found")},
 		})
 
@@ -367,7 +367,7 @@ func TestTakeFromIdleWriteListChecked(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get session: %v", err)
 	}
-	ds := server.testSpanner.DumpSessions()
+	ds := server.TestSpanner.DumpSessions()
 	if len(ds) != 1 {
 		t.Fatalf("dumped sessions from mockclient: %v, want %v", ds, sh.getID())
 	}
@@ -380,13 +380,13 @@ func TestTakeFromIdleWriteListChecked(t *testing.T) {
 func TestMaxOpenedSessions(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	server, client := newSpannerInMemTestServerWithConfig(t,
+	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
 				MaxOpened: 1,
 			},
 		})
-	defer server.teardown(client)
+	defer teardown()
 	sp := client.idleSessions
 
 	sh1, err := sp.take(ctx)
@@ -425,13 +425,13 @@ func TestMaxOpenedSessions(t *testing.T) {
 func TestMinOpenedSessions(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	server, client := newSpannerInMemTestServerWithConfig(t,
+	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
 				MinOpened: 1,
 			},
 		})
-	defer server.teardown(client)
+	defer teardown()
 	sp := client.idleSessions
 
 	// Take ten sessions from session pool and recycle them.
@@ -468,18 +468,18 @@ func TestMinOpenedSessions(t *testing.T) {
 func TestMaxBurst(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	server, client := newSpannerInMemTestServerWithConfig(t,
+	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
 				MaxBurst: 1,
 			},
 		})
-	defer server.teardown(client)
+	defer teardown()
 	sp := client.idleSessions
 
 	// Will cause session creation RPC to be retried forever.
-	server.testSpanner.PutExecutionTime(testutil.MethodCreateSession,
-		testutil.SimulatedExecutionTime{
+	server.TestSpanner.PutExecutionTime(MethodCreateSession,
+		SimulatedExecutionTime{
 			Errors:    []error{status.Errorf(codes.Unavailable, "try later")},
 			KeepError: true,
 		})
@@ -511,10 +511,10 @@ func TestMaxBurst(t *testing.T) {
 	}
 
 	// Let the first session request succeed.
-	server.testSpanner.Freeze()
-	server.testSpanner.PutExecutionTime(testutil.MethodCreateSession, testutil.SimulatedExecutionTime{})
+	server.TestSpanner.Freeze()
+	server.TestSpanner.PutExecutionTime(MethodCreateSession, SimulatedExecutionTime{})
 	//close(allowRequests)
-	server.testSpanner.Unfreeze()
+	server.TestSpanner.Unfreeze()
 
 	// Now new session request can proceed because the first session request will eventually succeed.
 	sh, err := sp.take(ctx)
@@ -530,14 +530,14 @@ func TestMaxBurst(t *testing.T) {
 func TestSessionRecycle(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	server, client := newSpannerInMemTestServerWithConfig(t,
+	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
 				MinOpened: 1,
 				MaxIdle:   5,
 			},
 		})
-	defer server.teardown(client)
+	defer teardown()
 	sp := client.idleSessions
 
 	// Test session is correctly recycled and reused.
@@ -568,13 +568,13 @@ func TestSessionDestroy(t *testing.T) {
 	t.Skip("s.destroy(true) is flakey")
 	t.Parallel()
 	ctx := context.Background()
-	server, client := newSpannerInMemTestServerWithConfig(t,
+	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
 				MinOpened: 1,
 			},
 		})
-	defer server.teardown(client)
+	defer teardown()
 	sp := client.idleSessions
 
 	<-time.After(10 * time.Millisecond) // maintainer will create one session, we wait for it create session to avoid flakiness in test
@@ -631,14 +631,14 @@ func TestHcHeap(t *testing.T) {
 func TestHealthCheckScheduler(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	server, client := newSpannerInMemTestServerWithConfig(t,
+	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
 				HealthCheckInterval:       50 * time.Millisecond,
 				healthCheckSampleInterval: 10 * time.Millisecond,
 			},
 		})
-	defer server.teardown(client)
+	defer teardown()
 	sp := client.idleSessions
 
 	// Create 50 sessions.
@@ -652,13 +652,13 @@ func TestHealthCheckScheduler(t *testing.T) {
 	// Make sure we start with a ping history to avoid that the first
 	// sessions that were created have not already exceeded the maximum
 	// number of pings.
-	server.testSpanner.ClearPings()
+	server.TestSpanner.ClearPings()
 	// Wait for 10-30 pings per session.
 	waitFor(t, func() error {
 		// Only check actually live sessions and ignore any sessions the
 		// session pool may have deleted in the meantime.
-		liveSessions := server.testSpanner.DumpSessions()
-		dp := server.testSpanner.DumpPings()
+		liveSessions := server.TestSpanner.DumpSessions()
+		dp := server.TestSpanner.DumpPings()
 		gotPings := map[string]int64{}
 		for _, p := range dp {
 			gotPings[p]++
@@ -678,14 +678,14 @@ func TestHealthCheckScheduler(t *testing.T) {
 func TestWriteSessionsPrepared(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	server, client := newSpannerInMemTestServerWithConfig(t,
+	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
 				WriteSessions: 0.5,
 				MaxIdle:       20,
 			},
 		})
-	defer server.teardown(client)
+	defer teardown()
 	sp := client.idleSessions
 
 	shs := make([]*sessionHandle, 10)
@@ -748,7 +748,7 @@ func TestWriteSessionsPrepared(t *testing.T) {
 func TestTakeFromWriteQueue(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	server, client := newSpannerInMemTestServerWithConfig(t,
+	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
 				MaxOpened:     1,
@@ -756,7 +756,7 @@ func TestTakeFromWriteQueue(t *testing.T) {
 				MaxIdle:       1,
 			},
 		})
-	defer server.teardown(client)
+	defer teardown()
 	sp := client.idleSessions
 
 	sh, err := sp.take(ctx)
@@ -786,14 +786,14 @@ func TestTakeFromWriteQueue(t *testing.T) {
 func TestSessionHealthCheck(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	server, client := newSpannerInMemTestServerWithConfig(t,
+	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
 				HealthCheckInterval:       50 * time.Millisecond,
 				healthCheckSampleInterval: 10 * time.Millisecond,
 			},
 		})
-	defer server.teardown(client)
+	defer teardown()
 	sp := client.idleSessions
 
 	// Test pinging sessions.
@@ -804,7 +804,7 @@ func TestSessionHealthCheck(t *testing.T) {
 
 	// Wait for healthchecker to send pings to session.
 	waitFor(t, func() error {
-		pings := server.testSpanner.DumpPings()
+		pings := server.TestSpanner.DumpPings()
 		if len(pings) == 0 || pings[0] != sh.getID() {
 			return fmt.Errorf("healthchecker didn't send any ping to session %v", sh.getID())
 		}
@@ -816,13 +816,13 @@ func TestSessionHealthCheck(t *testing.T) {
 		t.Fatalf("cannot get session from session pool: %v", err)
 	}
 
-	server.testSpanner.Freeze()
-	server.testSpanner.PutExecutionTime(testutil.MethodGetSession,
-		testutil.SimulatedExecutionTime{
+	server.TestSpanner.Freeze()
+	server.TestSpanner.PutExecutionTime(MethodGetSession,
+		SimulatedExecutionTime{
 			Errors:    []error{status.Errorf(codes.NotFound, "Session not found")},
 			KeepError: true,
 		})
-	server.testSpanner.Unfreeze()
+	server.TestSpanner.Unfreeze()
 	//atomic.SwapInt64(&requestShouldErr, 1)
 
 	// Wait for healthcheck workers to find the broken session and tear it down.
@@ -834,9 +834,9 @@ func TestSessionHealthCheck(t *testing.T) {
 		t.Fatalf("session(%v) is still alive, want it to be dropped by healthcheck workers", s)
 	}
 
-	server.testSpanner.Freeze()
-	server.testSpanner.PutExecutionTime(testutil.MethodGetSession, testutil.SimulatedExecutionTime{})
-	server.testSpanner.Unfreeze()
+	server.TestSpanner.Freeze()
+	server.TestSpanner.PutExecutionTime(MethodGetSession, SimulatedExecutionTime{})
+	server.TestSpanner.Unfreeze()
 
 	// Test garbage collection.
 	sh, err = sp.take(ctx)
@@ -876,10 +876,9 @@ func TestStressSessionPool(t *testing.T) {
 		cfg.healthCheckSampleInterval = 10 * time.Millisecond
 		cfg.HealthCheckWorkers = 50
 
-		server, client := newSpannerInMemTestServerWithConfig(t,
-			ClientConfig{
-				SessionPoolConfig: cfg,
-			})
+		server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+			SessionPoolConfig: cfg,
+		})
 		sp := client.idleSessions
 
 		// Create a test group for this configuration and schedule 100 sub
@@ -898,7 +897,7 @@ func TestStressSessionPool(t *testing.T) {
 		// stable.
 		idleSessions := map[string]bool{}
 		hcSessions := map[string]bool{}
-		mockSessions := server.testSpanner.DumpSessions()
+		mockSessions := server.TestSpanner.DumpSessions()
 		// Dump session pool's idle list.
 		for sl := sp.idleList.Front(); sl != nil; sl = sl.Next() {
 			s := sl.Value.(*session)
@@ -944,13 +943,13 @@ func TestStressSessionPool(t *testing.T) {
 			}
 		}
 		sp.close()
-		mockSessions = server.testSpanner.DumpSessions()
+		mockSessions = server.TestSpanner.DumpSessions()
 		for id, b := range hcSessions {
 			if b && mockSessions[id] {
 				t.Fatalf("Found session from pool still live on server: %v", id)
 			}
 		}
-		server.teardown(client)
+		teardown()
 	}
 }
 
@@ -1034,14 +1033,14 @@ func TestMaintainer(t *testing.T) {
 
 	minOpened := uint64(5)
 	maxIdle := uint64(4)
-	server, client := newSpannerInMemTestServerWithConfig(t,
+	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
 				MinOpened: minOpened,
 				MaxIdle:   maxIdle,
 			},
 		})
-	defer server.teardown(client)
+	defer teardown()
 	sp := client.idleSessions
 
 	sampleInterval := sp.SessionPoolConfig.healthCheckSampleInterval
@@ -1114,11 +1113,11 @@ func TestMaintainer_CreatesSessions(t *testing.T) {
 		MaxIdle:                   10,
 		healthCheckSampleInterval: 20 * time.Millisecond,
 	}
-	server, client := newSpannerInMemTestServerWithConfig(t,
+	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: spc,
 		})
-	defer server.teardown(client)
+	defer teardown()
 	sp := client.idleSessions
 
 	timeoutAmt := 4 * time.Second

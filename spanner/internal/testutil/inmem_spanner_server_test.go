@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package testutil
+package testutil_test_test
 
 import (
 	"strconv"
+
+	. "cloud.google.com/go/spanner/internal/testutil"
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
