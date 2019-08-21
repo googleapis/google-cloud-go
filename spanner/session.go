@@ -1115,16 +1115,22 @@ func (hc *healthChecker) replenishPool(ctx context.Context, sessionsToKeep uint6
 			s   *session
 			err error
 		)
-		if s, err = p.createSession(ctx); err != nil {
+		createContext, cancel := context.WithTimeout(context.Background(), time.Minute)
+		if s, err = p.createSession(createContext); err != nil {
+			cancel()
 			log.Printf("Failed to create session, error: %v", toSpannerError(err))
 			continue
 		}
+		cancel()
 		if shouldPrepareWrite {
-			if err = s.prepareForWrite(ctx); err != nil {
+			prepareContext, cancel := context.WithTimeout(context.Background(), time.Minute)
+			if err = s.prepareForWrite(prepareContext); err != nil {
+				cancel()
 				p.recycle(s)
 				log.Printf("Failed to prepare session, error: %v", toSpannerError(err))
 				continue
 			}
+			cancel()
 		}
 		p.recycle(s)
 	}
