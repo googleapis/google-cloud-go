@@ -731,7 +731,7 @@ func makeKeyRangeList(ranges []*spannerpb.KeyRange) keyRangeList {
 	return krl
 }
 
-func makeKeyRange(r *spannerpb.KeyRange) keyRange {
+func makeKeyRange(r *spannerpb.KeyRange) *keyRange {
 	var kr keyRange
 	switch s := r.StartKeyType.(type) {
 	case *spannerpb.KeyRange_StartClosed:
@@ -747,5 +747,5 @@ func makeKeyRange(r *spannerpb.KeyRange) keyRange {
 	case *spannerpb.KeyRange_EndOpen:
 		kr.end = e.EndOpen
 	}
-	return kr
+	return &kr
 }
