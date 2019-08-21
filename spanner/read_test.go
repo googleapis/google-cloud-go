@@ -26,7 +26,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/spanner/internal/backoff"
-	"cloud.google.com/go/spanner/internal/testutil"
+	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/api/iterator"
@@ -42,7 +42,7 @@ var (
 	// Metadata for mocked KV table, its rows are returned by SingleUse
 	// transactions.
 	kvMeta = func() *sppb.ResultSetMetadata {
-		meta := testutil.KvMeta
+		meta := KvMeta
 		meta.Transaction = &sppb.Transaction{
 			ReadTimestamp: timestampProto(trxTs),
 		}
@@ -642,7 +642,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 	defer restore()
 	tests := []struct {
 		name string
-		msgs []testutil.MockCtlMsg
+		msgs []MockCtlMsg
 		rpc  func(ct context.Context, resumeToken []byte) (streamingReceiver, error)
 		sql  string
 		// Expected values
@@ -655,7 +655,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 		{
 			// unConnected->queueingRetryable->finished
 			name: "unConnected->queueingRetryable->finished",
-			msgs: []testutil.MockCtlMsg{
+			msgs: []MockCtlMsg{
 				{},
 				{},
 				{Err: io.EOF, ResumeToken: false},
@@ -689,7 +689,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 		{
 			// unConnected->queueingRetryable->aborted
 			name: "unConnected->queueingRetryable->aborted",
-			msgs: []testutil.MockCtlMsg{
+			msgs: []MockCtlMsg{
 				{},
 				{Err: nil, ResumeToken: true},
 				{},
@@ -710,7 +710,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 						{Kind: &proto3.Value_StringValue{StringValue: keyStr(1)}},
 						{Kind: &proto3.Value_StringValue{StringValue: valStr(1)}},
 					},
-					ResumeToken: testutil.EncodeResumeToken(1),
+					ResumeToken: EncodeResumeToken(1),
 				},
 			},
 			stateHistory: []resumableStreamDecoderState{
@@ -726,9 +726,9 @@ func TestRsdNonblockingStates(t *testing.T) {
 		{
 			// unConnected->queueingRetryable->queueingUnretryable->queueingUnretryable
 			name: "unConnected->queueingRetryable->queueingUnretryable->queueingUnretryable",
-			msgs: func() (m []testutil.MockCtlMsg) {
+			msgs: func() (m []MockCtlMsg) {
 				for i := 0; i < maxBuffers+1; i++ {
-					m = append(m, testutil.MockCtlMsg{})
+					m = append(m, MockCtlMsg{})
 				}
 				return m
 			}(),
@@ -760,11 +760,11 @@ func TestRsdNonblockingStates(t *testing.T) {
 		{
 			// unConnected->queueingRetryable->queueingUnretryable->aborted
 			name: "unConnected->queueingRetryable->queueingUnretryable->aborted",
-			msgs: func() (m []testutil.MockCtlMsg) {
+			msgs: func() (m []MockCtlMsg) {
 				for i := 0; i < maxBuffers; i++ {
-					m = append(m, testutil.MockCtlMsg{})
+					m = append(m, MockCtlMsg{})
 				}
-				m = append(m, testutil.MockCtlMsg{Err: errors.New("Just Abort It"), ResumeToken: false})
+				m = append(m, MockCtlMsg{Err: errors.New("Just Abort It"), ResumeToken: false})
 				return m
 			}(),
 			sql: "SELECT t.key key, t.value value FROM t_mock t",
@@ -794,7 +794,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			ms := testutil.NewMockCloudSpanner(t, trxTs)
+			ms := NewMockCloudSpanner(t, trxTs)
 			ms.Serve()
 			mc := sppb.NewSpannerClient(dialMock(t, ms))
 			if test.rpc == nil {
@@ -890,7 +890,7 @@ func TestRsdBlockingStates(t *testing.T) {
 	defer restore()
 	for _, test := range []struct {
 		name string
-		msgs []testutil.MockCtlMsg
+		msgs []MockCtlMsg
 		rpc  func(ct context.Context, resumeToken []byte) (streamingReceiver, error)
 		sql  string
 		// Expected values
@@ -919,7 +919,7 @@ func TestRsdBlockingStates(t *testing.T) {
 		{
 			// unConnected->queueingRetryable->queueingRetryable
 			name: "unConnected->queueingRetryable->queueingRetryable",
-			msgs: []testutil.MockCtlMsg{
+			msgs: []MockCtlMsg{
 				{},
 				{Err: nil, ResumeToken: true},
 				{Err: nil, ResumeToken: true},
@@ -940,7 +940,7 @@ func TestRsdBlockingStates(t *testing.T) {
 						{Kind: &proto3.Value_StringValue{StringValue: keyStr(1)}},
 						{Kind: &proto3.Value_StringValue{StringValue: valStr(1)}},
 					},
-					ResumeToken: testutil.EncodeResumeToken(1),
+					ResumeToken: EncodeResumeToken(1),
 				},
 				{
 					Metadata: kvMeta,
@@ -948,7 +948,7 @@ func TestRsdBlockingStates(t *testing.T) {
 						{Kind: &proto3.Value_StringValue{StringValue: keyStr(2)}},
 						{Kind: &proto3.Value_StringValue{StringValue: valStr(2)}},
 					},
-					ResumeToken: testutil.EncodeResumeToken(2),
+					ResumeToken: EncodeResumeToken(2),
 				},
 			},
 			queue: []*sppb.PartialResultSet{
@@ -960,7 +960,7 @@ func TestRsdBlockingStates(t *testing.T) {
 					},
 				},
 			},
-			resumeToken: testutil.EncodeResumeToken(2),
+			resumeToken: EncodeResumeToken(2),
 			stateHistory: []resumableStreamDecoderState{
 				queueingRetryable, // do RPC
 				queueingRetryable, // got foo-00
@@ -974,12 +974,12 @@ func TestRsdBlockingStates(t *testing.T) {
 		{
 			// unConnected->queueingRetryable->queueingUnretryable->queueingRetryable->queueingRetryable
 			name: "unConnected->queueingRetryable->queueingUnretryable->queueingRetryable->queueingRetryable",
-			msgs: func() (m []testutil.MockCtlMsg) {
+			msgs: func() (m []MockCtlMsg) {
 				for i := 0; i < maxBuffers+1; i++ {
-					m = append(m, testutil.MockCtlMsg{})
+					m = append(m, MockCtlMsg{})
 				}
-				m = append(m, testutil.MockCtlMsg{Err: nil, ResumeToken: true})
-				m = append(m, testutil.MockCtlMsg{})
+				m = append(m, MockCtlMsg{Err: nil, ResumeToken: true})
+				m = append(m, MockCtlMsg{})
 				return m
 			}(),
 			sql: "SELECT t.key key, t.value value FROM t_mock t",
@@ -993,10 +993,10 @@ func TestRsdBlockingStates(t *testing.T) {
 						},
 					})
 				}
-				s[maxBuffers+1].ResumeToken = testutil.EncodeResumeToken(maxBuffers + 1)
+				s[maxBuffers+1].ResumeToken = EncodeResumeToken(maxBuffers + 1)
 				return s
 			}(),
-			resumeToken: testutil.EncodeResumeToken(maxBuffers + 1),
+			resumeToken: EncodeResumeToken(maxBuffers + 1),
 			queue: []*sppb.PartialResultSet{
 				{
 					Metadata: kvMeta,
@@ -1026,11 +1026,11 @@ func TestRsdBlockingStates(t *testing.T) {
 		{
 			// unConnected->queueingRetryable->queueingUnretryable->finished
 			name: "unConnected->queueingRetryable->queueingUnretryable->finished",
-			msgs: func() (m []testutil.MockCtlMsg) {
+			msgs: func() (m []MockCtlMsg) {
 				for i := 0; i < maxBuffers; i++ {
-					m = append(m, testutil.MockCtlMsg{})
+					m = append(m, MockCtlMsg{})
 				}
-				m = append(m, testutil.MockCtlMsg{Err: io.EOF, ResumeToken: false})
+				m = append(m, MockCtlMsg{Err: io.EOF, ResumeToken: false})
 				return m
 			}(),
 			sql: "SELECT t.key key, t.value value FROM t_mock t",
@@ -1058,7 +1058,7 @@ func TestRsdBlockingStates(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			ms := testutil.NewMockCloudSpanner(t, trxTs)
+			ms := NewMockCloudSpanner(t, trxTs)
 			ms.Serve()
 			cc := dialMock(t, ms)
 			mc := sppb.NewSpannerClient(cc)
@@ -1194,7 +1194,7 @@ func (sr *sReceiver) waitn(n int) error {
 func TestQueueBytes(t *testing.T) {
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
-	ms := testutil.NewMockCloudSpanner(t, trxTs)
+	ms := NewMockCloudSpanner(t, trxTs)
 	ms.Serve()
 	defer ms.Stop()
 	cc := dialMock(t, ms)
@@ -1279,7 +1279,7 @@ func TestQueueBytes(t *testing.T) {
 func TestResumeToken(t *testing.T) {
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
-	ms := testutil.NewMockCloudSpanner(t, trxTs)
+	ms := NewMockCloudSpanner(t, trxTs)
 	ms.Serve()
 	defer ms.Stop()
 	cc := dialMock(t, ms)
@@ -1476,7 +1476,7 @@ func TestResumeToken(t *testing.T) {
 func TestGrpcReconnect(t *testing.T) {
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
-	ms := testutil.NewMockCloudSpanner(t, trxTs)
+	ms := NewMockCloudSpanner(t, trxTs)
 	ms.Serve()
 	defer ms.Stop()
 	cc := dialMock(t, ms)
@@ -1543,7 +1543,7 @@ func TestGrpcReconnect(t *testing.T) {
 func TestCancelTimeout(t *testing.T) {
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
-	ms := testutil.NewMockCloudSpanner(t, trxTs)
+	ms := NewMockCloudSpanner(t, trxTs)
 	ms.Serve()
 	defer ms.Stop()
 	cc := dialMock(t, ms)
@@ -1630,7 +1630,7 @@ func TestCancelTimeout(t *testing.T) {
 func TestRowIteratorDo(t *testing.T) {
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
-	ms := testutil.NewMockCloudSpanner(t, trxTs)
+	ms := NewMockCloudSpanner(t, trxTs)
 	ms.Serve()
 	defer ms.Stop()
 	cc := dialMock(t, ms)
@@ -1663,7 +1663,7 @@ func TestRowIteratorDo(t *testing.T) {
 func TestRowIteratorDoWithError(t *testing.T) {
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
-	ms := testutil.NewMockCloudSpanner(t, trxTs)
+	ms := NewMockCloudSpanner(t, trxTs)
 	ms.Serve()
 	defer ms.Stop()
 	cc := dialMock(t, ms)
@@ -1694,7 +1694,7 @@ func TestIteratorStopEarly(t *testing.T) {
 	ctx := context.Background()
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
-	ms := testutil.NewMockCloudSpanner(t, trxTs)
+	ms := NewMockCloudSpanner(t, trxTs)
 	ms.Serve()
 	defer ms.Stop()
 	cc := dialMock(t, ms)
@@ -1738,7 +1738,7 @@ func TestIteratorWithError(t *testing.T) {
 	}
 }
 
-func dialMock(t *testing.T, ms *testutil.MockCloudSpanner) *grpc.ClientConn {
+func dialMock(t *testing.T, ms *MockCloudSpanner) *grpc.ClientConn {
 	cc, err := grpc.Dial(ms.Addr(), grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		t.Fatalf("Dial(%q) = %v", ms.Addr(), err)

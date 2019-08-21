@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package testutil
+package testutil_test
 
 import (
 	emptypb "github.com/golang/protobuf/ptypes/empty"
@@ -179,7 +179,9 @@ type inMemSpannerServer struct {
 	spannerpb.SpannerServer
 
 	mu sync.Mutex
-
+	// Set to true when this server been stopped. This is the end state of a
+	// server, a stopped server cannot be restarted.
+	stopped bool
 	// If set, all calls return this error.
 	err error
 	// The mock server creates session IDs using this counter.
@@ -188,7 +190,6 @@ type inMemSpannerServer struct {
 	sessions map[string]*spannerpb.Session
 	// Last use times per session.
 	sessionLastUseTime map[string]time.Time
-
 	// The mock server creates transaction IDs per session using these
 	// counters.
 	transactionCounters map[string]*uint64
@@ -198,19 +199,18 @@ type inMemSpannerServer struct {
 	abortedTransactions map[string]bool
 	// The transactions that are marked as PartitionedDMLTransaction
 	partitionedDmlTransactions map[string]bool
-
 	// The mocked results for this server.
 	statementResults map[string]*StatementResult
 	// The simulated execution times per method.
-	executionTimes map[string]*SimulatedExecutionTime
-	// Server will stall on any requests.
-	freezed chan struct{}
-
+	executionTimes       map[string]*SimulatedExecutionTime
 	totalSessionsCreated uint
 	totalSessionsDeleted uint
 	receivedRequests     chan interface{}
 	// Session ping history.
 	pings []string
+
+	// Server will stall on any requests.
+	freezed chan struct{}
 }
 
 // NewInMemSpannerServer creates a new in-mem test server.
@@ -227,6 +227,9 @@ func NewInMemSpannerServer() InMemSpannerServer {
 }
 
 func (s *inMemSpannerServer) Stop() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.stopped = true
 	close(s.receivedRequests)
 }
 
@@ -234,12 +237,16 @@ func (s *inMemSpannerServer) Stop() {
 // transactions that have been created on the server. This method will not
 // remove mocked results.
 func (s *inMemSpannerServer) Reset() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	close(s.receivedRequests)
 	s.receivedRequests = make(chan interface{}, 1000000)
 	s.initDefaults()
 }
 
 func (s *inMemSpannerServer) SetError(err error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.err = err
 }
 
@@ -442,7 +449,13 @@ func (s *inMemSpannerServer) getStatementResult(sql string) (*StatementResult, e
 }
 
 func (s *inMemSpannerServer) simulateExecutionTime(method string, req interface{}) error {
+	s.mu.Lock()
+	if s.stopped {
+		s.mu.Unlock()
+		return gstatus.Error(codes.Unavailable, "server has been stopped")
+	}
 	s.receivedRequests <- req
+	s.mu.Unlock()
 	s.ready()
 	s.mu.Lock()
 	if s.err != nil {
@@ -506,7 +519,13 @@ func (s *inMemSpannerServer) GetSession(ctx context.Context, req *spannerpb.GetS
 }
 
 func (s *inMemSpannerServer) ListSessions(ctx context.Context, req *spannerpb.ListSessionsRequest) (*spannerpb.ListSessionsResponse, error) {
+	s.mu.Lock()
+	if s.stopped {
+		s.mu.Unlock()
+		return nil, gstatus.Error(codes.Unavailable, "server has been stopped")
+	}
 	s.receivedRequests <- req
+	s.mu.Unlock()
 	if req.Database == "" {
 		return nil, gstatus.Error(codes.InvalidArgument, "Missing database")
 	}
@@ -544,7 +563,13 @@ func (s *inMemSpannerServer) DeleteSession(ctx context.Context, req *spannerpb.D
 }
 
 func (s *inMemSpannerServer) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest) (*spannerpb.ResultSet, error) {
+	s.mu.Lock()
+	if s.stopped {
+		s.mu.Unlock()
+		return nil, gstatus.Error(codes.Unavailable, "server has been stopped")
+	}
 	s.receivedRequests <- req
+	s.mu.Unlock()
 	if req.Session == "" {
 		return nil, gstatus.Error(codes.InvalidArgument, "Missing session name")
 	}
@@ -624,7 +649,13 @@ func (s *inMemSpannerServer) ExecuteStreamingSql(req *spannerpb.ExecuteSqlReques
 }
 
 func (s *inMemSpannerServer) ExecuteBatchDml(ctx context.Context, req *spannerpb.ExecuteBatchDmlRequest) (*spannerpb.ExecuteBatchDmlResponse, error) {
+	s.mu.Lock()
+	if s.stopped {
+		s.mu.Unlock()
+		return nil, gstatus.Error(codes.Unavailable, "server has been stopped")
+	}
 	s.receivedRequests <- req
+	s.mu.Unlock()
 	if req.Session == "" {
 		return nil, gstatus.Error(codes.InvalidArgument, "Missing session name")
 	}
@@ -664,12 +695,24 @@ func (s *inMemSpannerServer) ExecuteBatchDml(ctx context.Context, req *spannerpb
 }
 
 func (s *inMemSpannerServer) Read(ctx context.Context, req *spannerpb.ReadRequest) (*spannerpb.ResultSet, error) {
+	s.mu.Lock()
+	if s.stopped {
+		s.mu.Unlock()
+		return nil, gstatus.Error(codes.Unavailable, "server has been stopped")
+	}
 	s.receivedRequests <- req
+	s.mu.Unlock()
 	return nil, gstatus.Error(codes.Unimplemented, "Method not yet implemented")
 }
 
 func (s *inMemSpannerServer) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Spanner_StreamingReadServer) error {
+	s.mu.Lock()
+	if s.stopped {
+		s.mu.Unlock()
+		return gstatus.Error(codes.Unavailable, "server has been stopped")
+	}
 	s.receivedRequests <- req
+	s.mu.Unlock()
 	return gstatus.Error(codes.Unimplemented, "Method not yet implemented")
 }
 
@@ -717,7 +760,13 @@ func (s *inMemSpannerServer) Commit(ctx context.Context, req *spannerpb.CommitRe
 }
 
 func (s *inMemSpannerServer) Rollback(ctx context.Context, req *spannerpb.RollbackRequest) (*emptypb.Empty, error) {
+	s.mu.Lock()
+	if s.stopped {
+		s.mu.Unlock()
+		return nil, gstatus.Error(codes.Unavailable, "server has been stopped")
+	}
 	s.receivedRequests <- req
+	s.mu.Unlock()
 	if req.Session == "" {
 		return nil, gstatus.Error(codes.InvalidArgument, "Missing session name")
 	}
@@ -735,11 +784,23 @@ func (s *inMemSpannerServer) Rollback(ctx context.Context, req *spannerpb.Rollba
 }
 
 func (s *inMemSpannerServer) PartitionQuery(ctx context.Context, req *spannerpb.PartitionQueryRequest) (*spannerpb.PartitionResponse, error) {
+	s.mu.Lock()
+	if s.stopped {
+		s.mu.Unlock()
+		return nil, gstatus.Error(codes.Unavailable, "server has been stopped")
+	}
 	s.receivedRequests <- req
+	s.mu.Unlock()
 	return nil, gstatus.Error(codes.Unimplemented, "Method not yet implemented")
 }
 
 func (s *inMemSpannerServer) PartitionRead(ctx context.Context, req *spannerpb.PartitionReadRequest) (*spannerpb.PartitionResponse, error) {
+	s.mu.Lock()
+	if s.stopped {
+		s.mu.Unlock()
+		return nil, gstatus.Error(codes.Unavailable, "server has been stopped")
+	}
 	s.receivedRequests <- req
+	s.mu.Unlock()
 	return nil, gstatus.Error(codes.Unimplemented, "Method not yet implemented")
 }

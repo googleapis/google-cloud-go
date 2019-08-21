@@ -18,19 +18,44 @@ package spanner
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"strings"
 	"testing"
 
 	"cloud.google.com/go/spanner/internal/benchserver"
-	"cloud.google.com/go/spanner/internal/testutil"
+	. "cloud.google.com/go/spanner/internal/testutil"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	gstatus "google.golang.org/grpc/status"
 )
+
+func setupMockedTestServer(t *testing.T) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
+	return setupMockedTestServerWithConfig(t, ClientConfig{})
+}
+
+func setupMockedTestServerWithConfig(t *testing.T, config ClientConfig) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
+	return setupMockedTestServerWithConfigAndClientOptions(t, config, []option.ClientOption{})
+}
+
+func setupMockedTestServerWithConfigAndClientOptions(t *testing.T, config ClientConfig, clientOptions []option.ClientOption) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
+	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+	opts = append(opts, clientOptions...)
+	ctx := context.Background()
+	var formattedDatabase = fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
+	client, err := NewClientWithConfig(ctx, formattedDatabase, config, opts...)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return server, client, func() {
+		client.Close()
+		serverTeardown()
+	}
+}
 
 // Test validDatabaseName()
 func TestValidDatabaseName(t *testing.T) {
@@ -87,14 +112,13 @@ func TestClient_Single_InvalidArgument(t *testing.T) {
 }
 
 func testSingleQuery(t *testing.T, serverError error) error {
-	config := ClientConfig{}
-	server, client := newSpannerInMemTestServerWithConfig(t, config)
-	defer server.teardown(client)
-	if serverError != nil {
-		server.testSpanner.SetError(serverError)
-	}
 	ctx := context.Background()
-	iter := client.Single().Query(ctx, NewStatement(selectSingerIDAlbumIDAlbumTitleFromAlbums))
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	if serverError != nil {
+		server.TestSpanner.SetError(serverError)
+	}
+	iter := client.Single().Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
 	defer iter.Stop()
 	for {
 		row, err := iter.Next()
@@ -113,12 +137,12 @@ func testSingleQuery(t *testing.T, serverError error) error {
 	return nil
 }
 
-func createSimulatedExecutionTimeWithTwoUnavailableErrors(method string) map[string]testutil.SimulatedExecutionTime {
+func createSimulatedExecutionTimeWithTwoUnavailableErrors(method string) map[string]SimulatedExecutionTime {
 	errors := make([]error, 2)
 	errors[0] = gstatus.Error(codes.Unavailable, "Temporary unavailable")
 	errors[1] = gstatus.Error(codes.Unavailable, "Temporary unavailable")
-	executionTimes := make(map[string]testutil.SimulatedExecutionTime)
-	executionTimes[method] = testutil.SimulatedExecutionTime{
+	executionTimes := make(map[string]SimulatedExecutionTime)
+	executionTimes[method] = SimulatedExecutionTime{
 		Errors: errors,
 	}
 	return executionTimes
@@ -126,37 +150,37 @@ func createSimulatedExecutionTimeWithTwoUnavailableErrors(method string) map[str
 
 func TestClient_ReadOnlyTransaction(t *testing.T) {
 	t.Parallel()
-	if err := testReadOnlyTransaction(t, make(map[string]testutil.SimulatedExecutionTime)); err != nil {
+	if err := testReadOnlyTransaction(t, make(map[string]SimulatedExecutionTime)); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestClient_ReadOnlyTransaction_UnavailableOnSessionCreate(t *testing.T) {
 	t.Parallel()
-	if err := testReadOnlyTransaction(t, createSimulatedExecutionTimeWithTwoUnavailableErrors(testutil.MethodCreateSession)); err != nil {
+	if err := testReadOnlyTransaction(t, createSimulatedExecutionTimeWithTwoUnavailableErrors(MethodCreateSession)); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestClient_ReadOnlyTransaction_UnavailableOnBeginTransaction(t *testing.T) {
 	t.Parallel()
-	if err := testReadOnlyTransaction(t, createSimulatedExecutionTimeWithTwoUnavailableErrors(testutil.MethodBeginTransaction)); err != nil {
+	if err := testReadOnlyTransaction(t, createSimulatedExecutionTimeWithTwoUnavailableErrors(MethodBeginTransaction)); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestClient_ReadOnlyTransaction_UnavailableOnExecuteStreamingSql(t *testing.T) {
 	t.Parallel()
-	if err := testReadOnlyTransaction(t, createSimulatedExecutionTimeWithTwoUnavailableErrors(testutil.MethodExecuteStreamingSql)); err != nil {
+	if err := testReadOnlyTransaction(t, createSimulatedExecutionTimeWithTwoUnavailableErrors(MethodExecuteStreamingSql)); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestClient_ReadOnlyTransaction_UnavailableOnCreateSessionAndBeginTransaction(t *testing.T) {
 	t.Parallel()
-	exec := map[string]testutil.SimulatedExecutionTime{
-		testutil.MethodCreateSession:    {Errors: []error{gstatus.Error(codes.Unavailable, "Temporary unavailable")}},
-		testutil.MethodBeginTransaction: {Errors: []error{gstatus.Error(codes.Unavailable, "Temporary unavailable")}},
+	exec := map[string]SimulatedExecutionTime{
+		MethodCreateSession:    {Errors: []error{gstatus.Error(codes.Unavailable, "Temporary unavailable")}},
+		MethodBeginTransaction: {Errors: []error{gstatus.Error(codes.Unavailable, "Temporary unavailable")}},
 	}
 	if err := testReadOnlyTransaction(t, exec); err != nil {
 		t.Fatal(err)
@@ -165,9 +189,9 @@ func TestClient_ReadOnlyTransaction_UnavailableOnCreateSessionAndBeginTransactio
 
 func TestClient_ReadOnlyTransaction_UnavailableOnCreateSessionAndInvalidArgumentOnBeginTransaction(t *testing.T) {
 	t.Parallel()
-	exec := map[string]testutil.SimulatedExecutionTime{
-		testutil.MethodCreateSession:    {Errors: []error{gstatus.Error(codes.Unavailable, "Temporary unavailable")}},
-		testutil.MethodBeginTransaction: {Errors: []error{gstatus.Error(codes.InvalidArgument, "Invalid argument")}},
+	exec := map[string]SimulatedExecutionTime{
+		MethodCreateSession:    {Errors: []error{gstatus.Error(codes.Unavailable, "Temporary unavailable")}},
+		MethodBeginTransaction: {Errors: []error{gstatus.Error(codes.InvalidArgument, "Invalid argument")}},
 	}
 	if err := testReadOnlyTransaction(t, exec); err == nil {
 		t.Fatalf("Missing expected exception")
@@ -176,16 +200,16 @@ func TestClient_ReadOnlyTransaction_UnavailableOnCreateSessionAndInvalidArgument
 	}
 }
 
-func testReadOnlyTransaction(t *testing.T, executionTimes map[string]testutil.SimulatedExecutionTime) error {
-	server, client := newSpannerInMemTestServer(t)
-	defer server.teardown(client)
+func testReadOnlyTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime) error {
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
 	for method, exec := range executionTimes {
-		server.testSpanner.PutExecutionTime(method, exec)
+		server.TestSpanner.PutExecutionTime(method, exec)
 	}
-	ctx := context.Background()
 	tx := client.ReadOnlyTransaction()
 	defer tx.Close()
-	iter := tx.Query(ctx, NewStatement(selectSingerIDAlbumIDAlbumTitleFromAlbums))
+	ctx := context.Background()
+	iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
 	defer iter.Stop()
 	for {
 		row, err := iter.Next()
@@ -206,15 +230,15 @@ func testReadOnlyTransaction(t *testing.T, executionTimes map[string]testutil.Si
 
 func TestClient_ReadWriteTransaction(t *testing.T) {
 	t.Parallel()
-	if err := testReadWriteTransaction(t, make(map[string]testutil.SimulatedExecutionTime), 1); err != nil {
+	if err := testReadWriteTransaction(t, make(map[string]SimulatedExecutionTime), 1); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestClient_ReadWriteTransactionCommitAborted(t *testing.T) {
 	t.Parallel()
-	if err := testReadWriteTransaction(t, map[string]testutil.SimulatedExecutionTime{
-		testutil.MethodCommitTransaction: {Errors: []error{gstatus.Error(codes.Aborted, "Transaction aborted")}},
+	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
+		MethodCommitTransaction: {Errors: []error{gstatus.Error(codes.Aborted, "Transaction aborted")}},
 	}, 2); err != nil {
 		t.Fatal(err)
 	}
@@ -222,8 +246,8 @@ func TestClient_ReadWriteTransactionCommitAborted(t *testing.T) {
 
 func TestClient_ReadWriteTransactionExecuteStreamingSqlAborted(t *testing.T) {
 	t.Parallel()
-	if err := testReadWriteTransaction(t, map[string]testutil.SimulatedExecutionTime{
-		testutil.MethodExecuteStreamingSql: {Errors: []error{gstatus.Error(codes.Aborted, "Transaction aborted")}},
+	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
+		MethodExecuteStreamingSql: {Errors: []error{gstatus.Error(codes.Aborted, "Transaction aborted")}},
 	}, 2); err != nil {
 		t.Fatal(err)
 	}
@@ -231,17 +255,17 @@ func TestClient_ReadWriteTransactionExecuteStreamingSqlAborted(t *testing.T) {
 
 func TestClient_ReadWriteTransaction_UnavailableOnBeginTransaction(t *testing.T) {
 	t.Parallel()
-	if err := testReadWriteTransaction(t, map[string]testutil.SimulatedExecutionTime{
-		testutil.MethodBeginTransaction: {Errors: []error{gstatus.Error(codes.Unavailable, "Unavailable")}},
+	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
+		MethodBeginTransaction: {Errors: []error{gstatus.Error(codes.Unavailable, "Unavailable")}},
 	}, 1); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestClient_ReadWriteTransaction_UnavailableOnBeginAndAbortOnCommit(t *testing.T) {
-	if err := testReadWriteTransaction(t, map[string]testutil.SimulatedExecutionTime{
-		testutil.MethodBeginTransaction:  {Errors: []error{gstatus.Error(codes.Unavailable, "Unavailable")}},
-		testutil.MethodCommitTransaction: {Errors: []error{gstatus.Error(codes.Aborted, "Aborted")}},
+	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
+		MethodBeginTransaction:  {Errors: []error{gstatus.Error(codes.Unavailable, "Unavailable")}},
+		MethodCommitTransaction: {Errors: []error{gstatus.Error(codes.Aborted, "Aborted")}},
 	}, 2); err != nil {
 		t.Fatal(err)
 	}
@@ -249,8 +273,8 @@ func TestClient_ReadWriteTransaction_UnavailableOnBeginAndAbortOnCommit(t *testi
 
 func TestClient_ReadWriteTransaction_UnavailableOnExecuteStreamingSql(t *testing.T) {
 	t.Parallel()
-	if err := testReadWriteTransaction(t, map[string]testutil.SimulatedExecutionTime{
-		testutil.MethodExecuteStreamingSql: {Errors: []error{gstatus.Error(codes.Unavailable, "Unavailable")}},
+	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
+		MethodExecuteStreamingSql: {Errors: []error{gstatus.Error(codes.Unavailable, "Unavailable")}},
 	}, 1); err != nil {
 		t.Fatal(err)
 	}
@@ -258,10 +282,10 @@ func TestClient_ReadWriteTransaction_UnavailableOnExecuteStreamingSql(t *testing
 
 func TestClient_ReadWriteTransaction_UnavailableOnBeginAndExecuteStreamingSqlAndTwiceAbortOnCommit(t *testing.T) {
 	t.Parallel()
-	if err := testReadWriteTransaction(t, map[string]testutil.SimulatedExecutionTime{
-		testutil.MethodBeginTransaction:    {Errors: []error{gstatus.Error(codes.Unavailable, "Unavailable")}},
-		testutil.MethodExecuteStreamingSql: {Errors: []error{gstatus.Error(codes.Unavailable, "Unavailable")}},
-		testutil.MethodCommitTransaction:   {Errors: []error{gstatus.Error(codes.Aborted, "Aborted"), gstatus.Error(codes.Aborted, "Aborted")}},
+	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
+		MethodBeginTransaction:    {Errors: []error{gstatus.Error(codes.Unavailable, "Unavailable")}},
+		MethodExecuteStreamingSql: {Errors: []error{gstatus.Error(codes.Unavailable, "Unavailable")}},
+		MethodCommitTransaction:   {Errors: []error{gstatus.Error(codes.Aborted, "Aborted"), gstatus.Error(codes.Aborted, "Aborted")}},
 	}, 3); err != nil {
 		t.Fatal(err)
 	}
@@ -269,9 +293,9 @@ func TestClient_ReadWriteTransaction_UnavailableOnBeginAndExecuteStreamingSqlAnd
 
 func TestClient_ReadWriteTransaction_AbortedOnExecuteStreamingSqlAndCommit(t *testing.T) {
 	t.Parallel()
-	if err := testReadWriteTransaction(t, map[string]testutil.SimulatedExecutionTime{
-		testutil.MethodExecuteStreamingSql: {Errors: []error{gstatus.Error(codes.Aborted, "Aborted")}},
-		testutil.MethodCommitTransaction:   {Errors: []error{gstatus.Error(codes.Aborted, "Aborted"), gstatus.Error(codes.Aborted, "Aborted")}},
+	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
+		MethodExecuteStreamingSql: {Errors: []error{gstatus.Error(codes.Aborted, "Aborted")}},
+		MethodCommitTransaction:   {Errors: []error{gstatus.Error(codes.Aborted, "Aborted"), gstatus.Error(codes.Aborted, "Aborted")}},
 	}, 4); err != nil {
 		t.Fatal(err)
 	}
@@ -279,8 +303,8 @@ func TestClient_ReadWriteTransaction_AbortedOnExecuteStreamingSqlAndCommit(t *te
 
 func TestClient_ReadWriteTransactionCommitAbortedAndUnavailable(t *testing.T) {
 	t.Parallel()
-	if err := testReadWriteTransaction(t, map[string]testutil.SimulatedExecutionTime{
-		testutil.MethodCommitTransaction: {
+	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
+		MethodCommitTransaction: {
 			Errors: []error{
 				gstatus.Error(codes.Aborted, "Transaction aborted"),
 				gstatus.Error(codes.Unavailable, "Unavailable"),
@@ -293,8 +317,8 @@ func TestClient_ReadWriteTransactionCommitAbortedAndUnavailable(t *testing.T) {
 
 func TestClient_ReadWriteTransactionCommitAlreadyExists(t *testing.T) {
 	t.Parallel()
-	if err := testReadWriteTransaction(t, map[string]testutil.SimulatedExecutionTime{
-		testutil.MethodCommitTransaction: {Errors: []error{gstatus.Error(codes.AlreadyExists, "A row with this key already exists")}},
+	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
+		MethodCommitTransaction: {Errors: []error{gstatus.Error(codes.AlreadyExists, "A row with this key already exists")}},
 	}, 1); err != nil {
 		if gstatus.Code(err) != codes.AlreadyExists {
 			t.Fatalf("Got unexpected error %v, expected %v", err, codes.AlreadyExists)
@@ -304,17 +328,17 @@ func TestClient_ReadWriteTransactionCommitAlreadyExists(t *testing.T) {
 	}
 }
 
-func testReadWriteTransaction(t *testing.T, executionTimes map[string]testutil.SimulatedExecutionTime, expectedAttempts int) error {
-	server, client := newSpannerInMemTestServer(t)
-	defer server.teardown(client)
+func testReadWriteTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime, expectedAttempts int) error {
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
 	for method, exec := range executionTimes {
-		server.testSpanner.PutExecutionTime(method, exec)
+		server.TestSpanner.PutExecutionTime(method, exec)
 	}
-	var attempts int
 	ctx := context.Background()
+	var attempts int
 	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 		attempts++
-		iter := tx.Query(ctx, NewStatement(selectSingerIDAlbumIDAlbumTitleFromAlbums))
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
 		defer iter.Stop()
 		for {
 			row, err := iter.Next()
@@ -343,14 +367,14 @@ func testReadWriteTransaction(t *testing.T, executionTimes map[string]testutil.S
 
 func TestClient_ApplyAtLeastOnce(t *testing.T) {
 	t.Parallel()
-	server, client := newSpannerInMemTestServer(t)
-	defer server.teardown(client)
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
 	ms := []*Mutation{
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
 	}
-	server.testSpanner.PutExecutionTime(testutil.MethodCommitTransaction,
-		testutil.SimulatedExecutionTime{
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
 			Errors: []error{gstatus.Error(codes.Aborted, "Transaction aborted")},
 		})
 	_, err := client.Apply(context.Background(), ms, ApplyAtLeastOnce())
@@ -362,14 +386,14 @@ func TestClient_ApplyAtLeastOnce(t *testing.T) {
 // PartitionedUpdate should not retry on aborted.
 func TestClient_PartitionedUpdate(t *testing.T) {
 	t.Parallel()
-	server, client := newSpannerInMemTestServer(t)
-	defer server.teardown(client)
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
 	// PartitionedDML transactions are not committed.
-	server.testSpanner.PutExecutionTime(testutil.MethodExecuteStreamingSql,
-		testutil.SimulatedExecutionTime{
+	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
+		SimulatedExecutionTime{
 			Errors: []error{gstatus.Error(codes.Aborted, "Transaction aborted")},
 		})
-	_, err := client.PartitionedUpdate(context.Background(), NewStatement(updateBarSetFoo))
+	_, err := client.PartitionedUpdate(context.Background(), NewStatement(UpdateBarSetFoo))
 	if err == nil {
 		t.Fatalf("Missing expected Aborted exception")
 	} else {
@@ -380,13 +404,13 @@ func TestClient_PartitionedUpdate(t *testing.T) {
 }
 
 func TestReadWriteTransaction_ErrUnexpectedEOF(t *testing.T) {
-	server, client := newSpannerInMemTestServer(t)
-	defer server.teardown(client)
-	var attempts int
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
 	ctx := context.Background()
+	var attempts int
 	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 		attempts++
-		iter := tx.Query(ctx, NewStatement(selectSingerIDAlbumIDAlbumTitleFromAlbums))
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
 		defer iter.Stop()
 		for {
 			row, err := iter.Next()
@@ -440,7 +464,7 @@ func TestNewClient_ConnectToEmulator(t *testing.T) {
 
 func TestClient_ApiClientHeader(t *testing.T) {
 	t.Parallel()
-	server, client := newSpannerInMemTestServerWithInterceptor(t, func(
+	interceptor := func(
 		ctx context.Context,
 		method string,
 		req interface{},
@@ -468,11 +492,12 @@ func TestClient_ApiClientHeader(t *testing.T) {
 			return spannerErrorf(codes.Internal, "unexpected api client token: %v", token[0])
 		}
 		return invoker(ctx, method, req, reply, cc, opts...)
-	},
-	)
-	defer server.teardown(client)
+	}
+	opts := []option.ClientOption{option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptor))}
+	_, client, teardown := setupMockedTestServerWithConfigAndClientOptions(t, ClientConfig{}, opts)
+	defer teardown()
 	ctx := context.Background()
-	iter := client.Single().Query(ctx, NewStatement(selectSingerIDAlbumIDAlbumTitleFromAlbums))
+	iter := client.Single().Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
 	defer iter.Stop()
 	for {
 		_, err := iter.Next()
