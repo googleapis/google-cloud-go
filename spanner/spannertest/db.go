@@ -570,33 +570,8 @@ func (t *table) rowForPK(pk []interface{}) int {
 // a is permitted to be shorter than b.
 func rowCmp(a, b []interface{}) int {
 	for i := 0; i < len(a); i++ {
-		x, y := a[i], b[i]
-
-		// TODO: handle BOOL and TIMESTAMP.
-		switch x := x.(type) {
-		default:
-			panic(fmt.Sprintf("internal error: can't rowCmp %T", x))
-		case int64:
-			y := y.(int64)
-			if x < y {
-				return -1
-			} else if x > y {
-				return 1
-			}
-		case float64:
-			y := y.(float64)
-			if x < y {
-				return -1
-			} else if x > y {
-				return 1
-			}
-		case string:
-			y := y.(string)
-			if x < y {
-				return -1
-			} else if x > y {
-				return 1
-			}
+		if cmp := compareVals(a[i], b[i]); cmp != 0 {
+			return cmp
 		}
 	}
 	return 0
