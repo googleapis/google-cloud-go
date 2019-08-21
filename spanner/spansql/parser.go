@@ -289,18 +289,18 @@ digitLoop:
 		p.errorf("no digits in numeric literal")
 		return
 	}
+	sign := ""
+	if neg {
+		sign = "-"
+	}
 	p.cur.value, p.s = p.s[:i], p.s[i:]
 	var err error
 	if float {
 		p.cur.typ = float64Token
-		p.cur.float64, err = strconv.ParseFloat(p.cur.value[d0:], 64)
+		p.cur.float64, err = strconv.ParseFloat(sign+p.cur.value[d0:], 64)
 	} else {
 		p.cur.typ = int64Token
-		p.cur.int64, err = strconv.ParseInt(p.cur.value[d0:], base, 64)
-	}
-	if neg {
-		p.cur.float64 = -p.cur.float64
-		p.cur.int64 = -p.cur.int64
+		p.cur.int64, err = strconv.ParseInt(sign+p.cur.value[d0:], base, 64)
 	}
 	if err != nil {
 		p.errorf("bad numeric literal %q: %v", p.cur.value, err)
