@@ -148,10 +148,11 @@ func TestTableData(t *testing.T) {
 	}
 	all = slurp(ri)
 	wantAll = [][]interface{}{
-		{int64(10), "Jack", 1.85},
+		// Primary key is (Name, ID), so results should come back sorted by Name then ID.
 		{int64(11), "Daniel", 1.83},
+		{int64(6), "George", 1.73},
+		{int64(10), "Jack", 1.85},
 		{int64(9), "Sam", 1.75},
-		{int64(8), "Teal'c", 1.91},
 	}
 	if !reflect.DeepEqual(all, wantAll) {
 		t.Errorf("ReadAll data wrong.\n got %v\nwant %v", all, wantAll)
@@ -336,7 +337,7 @@ func TestRowCmp(t *testing.T) {
 	}
 }
 
-func TestKeyRangeInclude(t *testing.T) {
+func TestKeyRange(t *testing.T) {
 	r := func(x ...interface{}) []interface{} { return x }
 	closedClosed := func(start, end []interface{}) *keyRange {
 		return &keyRange{
@@ -351,6 +352,12 @@ func TestKeyRangeInclude(t *testing.T) {
 			startKey:    start,
 			endKey:      end,
 			startClosed: true,
+		}
+	}
+	openOpen := func(start, end []interface{}) *keyRange {
+		return &keyRange{
+			startKey: start,
+			endKey:   end,
 		}
 	}
 	tests := []struct {
@@ -400,6 +407,20 @@ func TestKeyRangeInclude(t *testing.T) {
 			},
 			exclude: [][]interface{}{
 				r("Alice", "1999-11-07"),
+				r("Bob", "2000-01-01"),
+				r("Bob", "2004-07-07"),
+				r("Charlie", "1999-11-07"),
+			},
+		},
+		{
+			kr: openOpen(r("Bob", "1999-11-06"), r("Bob", "2000-01-01")),
+			include: [][]interface{}{
+				r("Bob", "1999-11-07"),
+			},
+			exclude: [][]interface{}{
+				r("Alice", "1999-11-07"),
+				r("Bob", "1999-11-06"),
+				r("Bob", "2000-01-01"),
 				r("Bob", "2004-07-07"),
 				r("Charlie", "1999-11-07"),
 			},
@@ -426,14 +447,26 @@ func TestKeyRangeInclude(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
+		tbl := &table{
+			pkCols: 2,
+		}
+		for _, pk := range append(test.include, test.exclude...) {
+			rowNum, _ := tbl.rowForPK(pk)
+			tbl.insertRow(rowNum, pk)
+		}
+		start, end := tbl.findRange(test.kr)
+		has := func(pk []interface{}) bool {
+			n, _ := tbl.rowForPK(pk)
+			return start <= n && n < end
+		}
 		for _, pk := range test.include {
-			if !test.kr.includePK(pk) {
-				t.Errorf("(%v).includePK(%v) = false, want true", test.kr, pk)
+			if !has(pk) {
+				t.Errorf("keyRange %v does not include %v", test.kr, pk)
 			}
 		}
 		for _, pk := range test.exclude {
-			if test.kr.includePK(pk) {
-				t.Errorf("(%v).includePK(%v) = true, want false", test.kr, pk)
+			if has(pk) {
+				t.Errorf("keyRange %v includes %v", test.kr, pk)
 			}
 		}
 	}
