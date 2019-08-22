@@ -237,7 +237,7 @@ func (p *parser) consumeNumber() {
 			[-]0—9+
 
 		hex_value:
-			[-]0x{0—9|a—f|A—F}+
+			[-]0[xX]{0—9|a—f|A—F}+
 
 		(float64_value is not formally specified)
 
@@ -257,7 +257,7 @@ func (p *parser) consumeNumber() {
 		// https://cloud.google.com/spanner/docs/lexical#integer-literals
 		i++
 	}
-	if strings.HasPrefix(p.s[i:], "0x") {
+	if strings.HasPrefix(p.s[i:], "0x") || strings.HasPrefix(p.s[i:], "0X") {
 		base = 16
 		i += 2
 	}
