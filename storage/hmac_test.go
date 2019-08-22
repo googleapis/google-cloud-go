@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 	"testing"
 	"time"
@@ -462,5 +463,88 @@ func TestHMACKey_ListFull(t *testing.T) {
 
 	if diff := testutil.Diff(gotKeys, wantKeys); diff != "" {
 		t.Fatalf("Response mismatch: got - want +\n%s", diff)
+	}
+}
+
+func TestHMACKey_List_Options(t *testing.T) {
+	mt := &mockTransport{}
+	client := mockClient(t, mt)
+	projectID := "hmackey-project-id"
+
+	// Our goal is just to examine the issued HTTP request's URL's
+	// Path and Query to ensure that we have the appropriate paramters.
+	tests := []struct {
+		name      string
+		opts      []HMACKeyOption
+		wantQuery url.Values
+	}{
+		{
+			name: "defaults",
+			wantQuery: url.Values{
+				"alt":         {"json"},
+				"prettyPrint": {"false"},
+			},
+		},
+		{
+			name:      "show deleted keys",
+			opts:      []HMACKeyOption{ShowDeletedHMACKeys()},
+			wantQuery: url.Values{"alt": {"json"}, "prettyPrint": {"false"}, "showDeletedKeys": {"true"}},
+		},
+		{
+			name: "for service account",
+			opts: []HMACKeyOption{ForHMACKeyServiceAccountEmail("foo@example.org")},
+			wantQuery: url.Values{
+				"alt":                 {"json"},
+				"prettyPrint":         {"false"},
+				"serviceAccountEmail": {"foo@example.org"},
+			},
+		},
+		{
+			name: "for userProjectID",
+			opts: []HMACKeyOption{HMACKeysForUserProject("project-x")},
+			wantQuery: url.Values{
+				"alt":         {"json"},
+				"prettyPrint": {"false"},
+				"userProject": {"project-x"},
+			},
+		},
+		{
+			name: "all options",
+			opts: []HMACKeyOption{
+				ForHMACKeyServiceAccountEmail("foo@example.org"),
+				HMACKeysForUserProject("project-x"),
+				ShowDeletedHMACKeys(),
+			},
+			wantQuery: url.Values{
+				"alt":                 {"json"},
+				"prettyPrint":         {"false"},
+				"serviceAccountEmail": {"foo@example.org"},
+				"showDeletedKeys":     {"true"},
+				"userProject":         {"project-x"},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			body := `{"kind":"storage#hmacKeysMetadata","items":[]}`
+			mt.addResult(&http.Response{
+				ProtoMajor:    2,
+				ProtoMinor:    0,
+				ContentLength: int64(len(body)),
+				Status:        "OK",
+				StatusCode:    200,
+				Body:          bodyReader(body),
+			}, nil)
+			ctx, cancel := context.WithCancel(context.Background())
+			iter := client.ListHMACKeys(ctx, projectID, tt.opts...)
+			_, _ = iter.Next()
+			cancel()
+
+			gotQuery := mt.gotReq.URL.Query()
+			if diff := testutil.Diff(gotQuery, tt.wantQuery); diff != "" {
+				t.Errorf("Query mismatch: got - want +\n%s", diff)
+			}
+		})
 	}
 }
