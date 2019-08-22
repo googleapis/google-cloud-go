@@ -223,12 +223,13 @@ var commands = []struct {
 		Desc: "Create an instance with an initial cluster",
 		do:   doCreateInstance,
 		Usage: "cbt createinstance <instance-id> <display-name> <cluster-id> <zone> <num-nodes> <storage type>\n" +
-			"  instance-id					Permanent, unique id for the instance\n" +
+			"  instance-id				Permanent, unique id for the instance\n" +
 			"  display-name	  			Description of the instance\n" +
-			"  cluster-id						Permanent, unique id for the cluster in the instance\n" +
-			"  zone				  				The zone in which to create the cluster\n" +
-			"  num-nodes	  				The number of nodes to create\n" +
-			"  storage-type					SSD or HDD\n",
+			"  cluster-id				Permanent, unique id for the cluster in the instance\n" +
+			"  zone				  		The zone in which to create the cluster\n" +
+			"  num-nodes	  			The number of nodes to create\n" +
+			"  storage-type				SSD or HDD\n" +
+			"	Example: ",
 		Required: cbtconfig.ProjectRequired,
 	},
 	{
@@ -237,9 +238,9 @@ var commands = []struct {
 		do:   doCreateCluster,
 		Usage: "cbt createcluster <cluster-id> <zone> <num-nodes> <storage type>\n" +
 			"  cluster-id		Permanent, unique id for the cluster in the instance\n" +
-			"  zone				  The zone in which to create the cluster\n" +
-			"  num-nodes	  The number of nodes to create\n" +
-			"  storage-type	SSD or HDD\n",
+			"  zone				The zone in which to create the cluster\n" +
+			"  num-nodes	  	The number of nodes to create\n" +
+			"  storage-type		SSD or HDD\n",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
@@ -254,10 +255,10 @@ var commands = []struct {
 		Desc: "Create a table",
 		do:   doCreateTable,
 		Usage: "cbt createtable <table> [families=family[:gcpolicy],...] [splits=split,...]\n" +
-			"  families: Column families and their associated GC policies. For gcpolicy,\n" +
-			"  					see \"setgcpolicy\".\n" +
-			"					Example: families=family1:maxage=1w,family2:maxversions=1\n" +
-			"  splits:   Row key to be used to initially split the table",
+			"  families 	Column families and their associated GC policies. For gcpolicy,\n" +
+			"  				see \"setgcpolicy\".\n" +
+			"				Example: families=family1:maxage=30s,family2:maxversions=1\n" +
+			"  splits   	Row key to be used to initially split the table",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
@@ -265,8 +266,8 @@ var commands = []struct {
 		Desc: "Update a cluster in the configured instance",
 		do:   doUpdateCluster,
 		Usage: "cbt updatecluster <cluster-id> [num-nodes=num-nodes]\n" +
-			"  cluster-id		Permanent, unique id for the cluster in the instance\n" +
-			"  num-nodes		The number of nodes to update to",
+			"  cluster-id	Permanent, unique id for the cluster in the instance\n" +
+			"  num-nodes	The number of nodes to update to",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
@@ -346,17 +347,18 @@ var commands = []struct {
 		Desc: "Read from a single row",
 		do:   doLookup,
 		Usage: "cbt lookup <table> <row> [columns=[family]:[qualifier],...] [cells-per-column=<n>] " +
-			"[app-profile=<app profile id>]\n" +
+			" [app-profile=<app profile id>]\n" +
 			"  columns=[family]:[qualifier],...	Read only these columns, comma-separated\n" +
 			"  cells-per-column=<n> 			Read only this many cells per column\n" +
-			"  app-profile=<app profile id>		The app profile id to use for the request\n",
+			"  app-profile=<app profile id>		The app profile id to use for the request\n" +
+			" Example: cbt -instance=<instance> lookup mytable myrow columns=cf:mycolumn1,mycolumn2 cells-per-column-1",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
 		Name: "ls",
 		Desc: "List tables and column families",
 		do:   doLS,
-		Usage: "cbt ls			List tables\n" +
+		Usage: "cbt ls				List tables\n" +
 			"cbt ls <table>		List column families in <table>",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
@@ -374,19 +376,22 @@ var commands = []struct {
 		Usage: "cbt read <table> [start=<row>] [end=<row>] [prefix=<prefix>]" +
 			" [regex=<regex>] [columns=[family]:[qualifier],...] [count=<n>] [cells-per-column=<n>]" +
 			" [app-profile=<app profile id>]\n" +
-			"  start=<row>				Start reading at this row\n" +
-			"  end=<row>				Stop reading before this row\n" +
-			"  prefix=<prefix>			Read rows with this prefix\n" +
-			"  regex=<regex> 			Read rows with keys matching this regex\n" +
+			"  start=<row>					Start reading at this row\n" +
+			"  end=<row>					Stop reading before this row\n" +
+			"  prefix=<prefix>				Read rows with this prefix\n" +
+			"  regex=<regex> 				Read rows with keys matching this regex\n" +
 			"  columns=[family]:[qualifier],...	Read only these columns, comma-separated\n" +
-			"  count=<n>				Read only this many rows\n" +
+			"  count=<n>					Read only this many rows\n" +
 			"  cells-per-column=<n>			Read only this many cells per column\n" +
-			"  app-profile=<app profile id>		The app profile id to use for the request\n",
+			"  app-profile=<app profile id>		The app profile id to use for the request\n" +
+			" Example of writing a row, then reading it by using a regex to find the suffix:\n" +
+			"		cbt -instance $bt_instance set $bt_table greeting1 cf1:greeting=Hello Mercury\n" +
+			"  		cbt -instance $bt_instance read $bt_table regex=\".*1\"",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
 		Name: "set",
-		Desc: "Set value of a cell",
+		Desc: "Set value of a cell (write)",
 		do:   doSet,
 		Usage: "cbt set <table> <row> [app-profile=<app profile id>] family:column=val[@ts] ...\n" +
 			"  app-profile=<app profile id>		The app profile id to use for the request\n" +
@@ -399,7 +404,7 @@ var commands = []struct {
 	},
 	{
 		Name: "setgcpolicy",
-		Desc: "Set the GC policy for a column family",
+		Desc: "Set the garbage-collection policy (age, versions) for a column family",
 		do:   doSetGCPolicy,
 		Usage: "cbt setgcpolicy <table> <family> ((maxage=<d> | maxversions=<n>) [(and|or) (maxage=<d> | maxversions=<n>),...] | never)\n" +
 			"\n" +
@@ -419,9 +424,9 @@ var commands = []struct {
 		Desc: "Create a table from a snapshot (snapshots alpha)",
 		do:   doCreateTableFromSnapshot,
 		Usage: "cbt createtablefromsnapshot <table> <cluster> <snapshot>\n" +
-			"  table	The name of the table to create\n" +
-			"  cluster	The cluster where the snapshot is located\n" +
-			"  snapshot	The snapshot to restore",
+			"  table		The name of the table to create\n" +
+			"  cluster		The cluster where the snapshot is located\n" +
+			"  snapshot		The snapshot to restore",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
@@ -826,7 +831,7 @@ The commands are:
 {{range .Commands}}
 	{{printf "%-25s %s" .Name .Desc}}{{end}}
 
-Use "cbt help <command>" for more information about a command.
+Use "cbt help \<command>" for more information about a command.
 
 The options are:
 {{range .Flags}}
