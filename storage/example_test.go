@@ -784,3 +784,43 @@ func ExampleClient_ListHMACKeys() {
 		_ = key // TODO: Use the key.
 	}
 }
+
+func ExampleClient_ListHMACKeys_showDeletedKeys() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	iter := client.ListHMACKeys(ctx, "project-id", storage.ShowDeletedHMACKeys())
+	for {
+		key, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: handle error.
+		}
+		_ = key // TODO: Use the key.
+	}
+}
+
+func ExampleClient_ListHMACKeys_forServiceAccountEmail() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	iter := client.ListHMACKeys(ctx, "project-id", storage.ForHMACKeyServiceAccountEmail("service@account.email"))
+	for {
+		key, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: handle error.
+		}
+		_ = key // TODO: Use the key.
+	}
+}
