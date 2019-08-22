@@ -96,6 +96,8 @@ func TestParseExpr(t *testing.T) {
 		{`4.940656458412465441765687928682213723651e-324`, FloatLiteral(math.SmallestNonzeroFloat64)},
 		{`0xf00d`, IntegerLiteral(0xf00d)},
 		{`-0xbeef`, IntegerLiteral(-0xbeef)},
+		{`0XabCD`, IntegerLiteral(0xabcd)},
+		{`-0XBEEF`, IntegerLiteral(-0xbeef)},
 		{`123.456e-67`, FloatLiteral(123.456e-67)},
 		{`-123.456e-67`, FloatLiteral(-123.456e-67)},
 		{`.1E4`, FloatLiteral(0.1e4)},
