@@ -102,7 +102,7 @@ func (tc *goGCETestCase) initializeStartupScript(template *template.Template, co
 			ErrorString    string
 			MutexProfiling bool
 		}{
-			Service:        tc.name,
+			Service:        tc.InstanceConfig.Name,
 			GoVersion:      tc.goVersion,
 			Commit:         commit,
 			ErrorString:    errorString,
@@ -189,7 +189,7 @@ func TestAgentIntegration(t *testing.T) {
 				Name:        fmt.Sprintf("profiler-test-gomaster-%s", runID),
 				MachineType: "n1-standard-1",
 			},
-			name:             fmt.Sprintf("profiler-test-gomaster-%s-gce", runID),
+			name:             fmt.Sprintf("profiler-test-gomaster"),
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
 			goVersion:        "master",
 			mutexProfiling:   true,
@@ -201,7 +201,7 @@ func TestAgentIntegration(t *testing.T) {
 				Name:        fmt.Sprintf("profiler-test-go%s-%s", goVersionName, runID),
 				MachineType: "n1-standard-1",
 			},
-			name:             fmt.Sprintf("profiler-test-go%s-%s-gce", goVersionName, runID),
+			name:             fmt.Sprintf("profiler-test-go%s", goVersionName),
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
 			goVersion:        goVersion,
 			mutexProfiling:   true,
@@ -236,13 +236,13 @@ func TestAgentIntegration(t *testing.T) {
 			endTime := timeNow.Format(time.RFC3339)
 			startTime := timeNow.Add(-1 * time.Hour).Format(time.RFC3339)
 			for _, pType := range tc.wantProfileTypes {
-				pr, err := tr.QueryProfilesWithZone(tc.ProjectID, tc.name, startTime, endTime, pType, tc.Zone)
+				pr, err := tr.QueryProfilesWithZone(tc.ProjectID, tc.InstanceConfig.Name, startTime, endTime, pType, tc.Zone)
 				if err != nil {
-					t.Errorf("QueryProfilesWithZone(%s, %s, %s, %s, %s, %s) got error: %v", tc.ProjectID, tc.name, startTime, endTime, pType, tc.Zone, err)
+					t.Errorf("QueryProfilesWithZone(%s, %s, %s, %s, %s, %s) got error: %v", tc.ProjectID, tc.InstanceConfig.Name, startTime, endTime, pType, tc.Zone, err)
 					continue
 				}
 				if err := pr.HasFunction("busywork"); err != nil {
-					t.Errorf("HasFunction(%s, %s, %s, %s, %s) got error: %v", tc.ProjectID, tc.name, startTime, endTime, pType, err)
+					t.Errorf("HasFunction(%s, %s, %s, %s, %s) got error: %v", tc.ProjectID, tc.InstanceConfig.Name, startTime, endTime, pType, err)
 				}
 			}
 		})
