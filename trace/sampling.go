@@ -69,7 +69,7 @@ func (s *sampler) Sample(p Parameters) Decision {
 	return d
 }
 
-// sample contains the a deterministic, time-independent logic of Sample.
+// sample contains a deterministic, time-independent logic of Sample.
 func (s *sampler) sample(p Parameters, now time.Time, x float64) (d Decision) {
 	d.Sample = x < s.fraction
 	d.Trace = p.HasTraceHeader || d.Sample

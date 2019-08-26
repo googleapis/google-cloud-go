@@ -184,7 +184,7 @@ type TopicConfig struct {
 	// The topic's message storage policy.
 	MessageStoragePolicy MessageStoragePolicy
 
-	// The name of the the Cloud KMS key to be used to protect access to messages
+	// The name of the Cloud KMS key to be used to protect access to messages
 	// published to this topic, in the format
 	// "projects/P/locations/L/keyRings/R/cryptoKeys/K".
 	KMSKeyName string
