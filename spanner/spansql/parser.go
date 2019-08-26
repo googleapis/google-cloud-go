@@ -48,6 +48,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
 const debug = false
@@ -137,6 +138,7 @@ const (
 	int64Token
 	float64Token
 	stringToken
+	bytesToken
 )
 
 func (t *token) String() string {
@@ -216,6 +218,14 @@ func isIdentifierChar(c byte) bool {
 		return true
 	}
 	return false
+}
+
+func isHexDigit(c byte) bool {
+	return '0' <= c && c <= '9' || 'a' <= c && c <= 'f' || 'A' <= c && c <= 'F'
+}
+
+func isOctalDigit(c byte) bool {
+	return '0' <= c && c <= '7'
 }
 
 func (p *parser) consumeNumber() {
@@ -308,39 +318,214 @@ digitLoop:
 }
 
 func (p *parser) consumeString() {
-	// TODO: support all the other string literal types.
 	// https://cloud.google.com/spanner/docs/lexical#string-and-bytes-literals
 
-	i := 0
-	if p.s[i] != '"' {
-		p.errorf("invalid string literal")
+	delim := p.stringDelimiter()
+	if p.cur.err != nil {
 		return
 	}
-	i++
+
+	p.cur.string, p.cur.err = p.consumeStringContent(delim, false, true, "string literal")
+	p.cur.typ = stringToken
+}
+
+func (p *parser) consumeRawString() {
+	// https://cloud.google.com/spanner/docs/lexical#string-and-bytes-literals
+
+	p.s = p.s[1:] // consume 'R'
+	delim := p.stringDelimiter()
+	if p.cur.err != nil {
+		return
+	}
+
+	p.cur.string, p.cur.err = p.consumeStringContent(delim, true, true, "raw string literal")
+	p.cur.typ = stringToken
+}
+
+func (p *parser) consumeBytes() {
+	// https://cloud.google.com/spanner/docs/lexical#string-and-bytes-literals
+
+	p.s = p.s[1:] // consume 'B'
+	delim := p.stringDelimiter()
+	if p.cur.err != nil {
+		return
+	}
+
+	p.cur.string, p.cur.err = p.consumeStringContent(delim, false, false, "bytes literal")
+	p.cur.typ = bytesToken
+}
+
+func (p *parser) consumeRawBytes() {
+	// https://cloud.google.com/spanner/docs/lexical#string-and-bytes-literals
+
+	p.s = p.s[2:] // consume 'RB'
+	delim := p.stringDelimiter()
+	if p.cur.err != nil {
+		return
+	}
+
+	p.cur.string, p.cur.err = p.consumeStringContent(delim, true, false, "raw bytes literal")
+	p.cur.typ = bytesToken
+}
+
+// stringDelimiter returns the opening string delimiter.
+func (p *parser) stringDelimiter() string {
+	c := p.s[0]
+	if c != '"' && c != '\'' {
+		p.errorf("invalid string literal")
+		return ""
+	}
+	// Look for triple.
+	if len(p.s) >= 3 && p.s[1] == c && p.s[2] == c {
+		return p.s[:3]
+	}
+	return p.s[:1]
+}
+
+// consumeStringContent consumes a string-like literal, including its delimiters.
+//
+//   - delim is opening delimiter.
+//   - raw is true on consuming raw string, otherwise it is false.
+//   - unicode is true if unicode escape sequence (\uXXXX or \UXXXXXXXX), otherwise it is false.
+//   - name is current consuming token name.
+//
+// It is designed for consuming string, bytes literals, and also backquoted identifiers.
+func (p *parser) consumeStringContent(delim string, raw, unicode bool, name string) (string, error) {
+	// https://cloud.google.com/spanner/docs/lexical#string-and-bytes-literals
+
+	if len(delim) == 3 {
+		name = "triple-quoted " + name
+	}
+
+	i := len(delim)
+	var content []byte
 
 	for i < len(p.s) {
-		c := p.s[i]
-		i++
-		if c == '"' {
-			break
+		if strings.HasPrefix(p.s[i:], delim) {
+			i += len(delim)
+			p.s = p.s[i:]
+			return string(content), nil
 		}
-		if c == '\\' && i < len(p.s) {
-			i++
-		}
-	}
-	if i > len(p.s) {
-		p.errorf("unterminated string literal")
-		return
-	}
-	p.cur.value, p.s = p.s[:i], p.s[i:]
-	p.cur.typ = stringToken
 
-	// TODO: this unescaping isn't entirely correct.
-	var err error
-	p.cur.string, err = strconv.Unquote(p.cur.value)
-	if err != nil {
-		p.errorf("invalid string literal [%s]: %v", p.cur.value, err)
+		if p.s[i] == '\\' {
+			i++
+			if i >= len(p.s) {
+				return "", p.errorf("unclosed %s", name)
+			}
+
+			if raw {
+				content = append(content, '\\', p.s[i])
+				i++
+				continue
+			}
+
+			switch p.s[i] {
+			case 'a':
+				i++
+				content = append(content, '\a')
+			case 'b':
+				i++
+				content = append(content, '\b')
+			case 'f':
+				i++
+				content = append(content, '\f')
+			case 'n':
+				i++
+				content = append(content, '\n')
+			case 'r':
+				i++
+				content = append(content, '\r')
+			case 't':
+				i++
+				content = append(content, '\t')
+			case 'v':
+				i++
+				content = append(content, '\v')
+			case '\\':
+				i++
+				content = append(content, '\\')
+			case '?':
+				i++
+				content = append(content, '?')
+			case '"':
+				i++
+				content = append(content, '"')
+			case '\'':
+				i++
+				content = append(content, '\'')
+			case '`':
+				i++
+				content = append(content, '`')
+			case 'x', 'X':
+				i++
+				if !(i+1 < len(p.s) && isHexDigit(p.s[i]) && isHexDigit(p.s[i+1])) {
+					return "", p.errorf("illegal escape sequence: hex escape sequence must be followed by 2 hex digits")
+				}
+				c, err := strconv.ParseUint(p.s[i:i+2], 16, 64)
+				if err != nil {
+					return "", p.errorf("illegal escape sequence: invalid hex digits: %q: %v", p.s[i:i+2], err)
+				}
+				content = append(content, byte(c))
+				i += 2
+			case 'u', 'U':
+				t := p.s[i]
+				if !unicode {
+					return "", p.errorf("illegal escape sequence: \\%c", t)
+				}
+
+				i++
+				size := 4
+				if t == 'U' {
+					size = 8
+				}
+				if i+size-1 >= len(p.s) {
+					return "", p.errorf("illegal escape sequence: \\%c escape sequence must be followed by %d hex digits", t, size)
+				}
+				for j := 0; j < size; j++ {
+					if !isHexDigit(p.s[i+j]) {
+						return "", p.errorf("illegal escape sequence: \\%c escape sequence must be followed by %d hex digits", t, size)
+					}
+				}
+				c, err := strconv.ParseUint(p.s[i:i+size], 16, 64)
+				if err != nil {
+					return "", p.errorf("illegal escape sequence: invalid \\%c digits: %q: %v", t, p.s[i:i+size], err)
+				}
+				if 0xD800 <= c && c <= 0xDFFF || 0x10FFFF < c {
+					return "", p.errorf("illegal escape sequence: invalid codepoint: %x", c)
+				}
+				var buf [utf8.UTFMax]byte
+				n := utf8.EncodeRune(buf[:], rune(c))
+				content = append(content, buf[:n]...)
+				i += size
+			case '0', '1', '2', '3', '4', '5', '6', '7':
+				if !(i+2 < len(p.s) && isOctalDigit(p.s[i+1]) && isOctalDigit(p.s[i+2])) {
+					return "", p.errorf("illegal escape sequence: octal escape sequence must be followed by 3 octal digits")
+				}
+				c, err := strconv.ParseUint(p.s[i:i+3], 8, 64)
+				if err != nil {
+					return "", p.errorf("illegal escape sequence: invalid octal digits: %q: %v", p.s[i:i+3], err)
+				}
+				if c >= 256 {
+					return "", p.errorf("illegal escape sequence: octal digits overflow: %q (%d)", p.s[i:i+3], c)
+				}
+				content = append(content, byte(c))
+				i += 3
+			default:
+				return "", p.errorf("illegal escape sequence: \\%c", p.s[i])
+			}
+
+			continue
+		}
+
+		if p.s[i] == '\n' && len(delim) != 3 { // newline is only allowed inside triple-quoted.
+			return "", p.errorf("newline forbidden in %s", name)
+		}
+
+		content = append(content, p.s[i])
+		i++
 	}
+
+	return "", p.errorf("unclosed %s", name)
 }
 
 var operators = map[string]bool{
@@ -414,6 +599,33 @@ func (p *parser) advance() {
 		// Single character symbol.
 		p.cur.value, p.s = p.s[:1], p.s[1:]
 		return
+	// String literal prefix.
+	case 'B', 'b', 'R', 'r', '"', '\'':
+		// "B", "b", "BR", "Rb" etc are valid string literal prefix, however "BB", "rR" etc are not.
+		raw, bytes := false, false
+		for i := 0; i < 4 && i < len(p.s); i++ {
+			switch {
+			case !raw && (p.s[i] == 'R' || p.s[i] == 'r'):
+				raw = true
+				continue
+			case !bytes && (p.s[i] == 'B' || p.s[i] == 'b'):
+				bytes = true
+				continue
+			case p.s[i] == '"' || p.s[i] == '\'':
+				switch {
+				case raw && bytes:
+					p.consumeRawBytes()
+				case raw:
+					p.consumeRawString()
+				case bytes:
+					p.consumeBytes()
+				default:
+					p.consumeString()
+				}
+				return
+			}
+			break
+		}
 	}
 	if p.s[0] == '@' || isInitialIdentifierChar(p.s[0]) {
 		// Start consuming identifier.
@@ -438,10 +650,6 @@ func (p *parser) advance() {
 	switch p.s[0] {
 	case '-', '+':
 		p.cur.value, p.s = p.s[:1], p.s[1:]
-		return
-	}
-	if p.s[0] == '"' {
-		p.consumeString()
 		return
 	}
 
@@ -1458,6 +1666,8 @@ func (p *parser) parseLit() (Expr, error) {
 		return FloatLiteral(tok.float64), nil
 	case stringToken:
 		return StringLiteral(tok.string), nil
+	case bytesToken:
+		return BytesLiteral(tok.string), nil
 	}
 
 	// Handle some reserved keywords and special tokens that become specific values.

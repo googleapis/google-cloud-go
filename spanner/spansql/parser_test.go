@@ -107,6 +107,55 @@ func TestParseExpr(t *testing.T) {
 		{`A AND NOT B`, LogicalOp{LHS: ID("A"), Op: And, RHS: LogicalOp{Op: Not, RHS: ID("B")}}},
 		{`X BETWEEN Y AND Z`, ComparisonOp{LHS: ID("X"), Op: Between, RHS: ID("Y"), RHS2: ID("Z")}},
 
+		// String literal:
+		// Accept double quote and single quote.
+		{`"hello"`, StringLiteral("hello")},
+		{`'hello'`, StringLiteral("hello")},
+		// Accept triple-quote.
+		{`""" "hello" "world" """`, StringLiteral(` "hello" "world" `)},
+		{"''' 'hello'\n'world' '''", StringLiteral(" 'hello'\n'world' ")},
+		// Simple escape sequence
+		{`"\a\b\f\n\r\t\v\\\?\"\'"`, StringLiteral("\a\b\f\n\r\t\v\\?\"'")},
+		{`'\a\b\f\n\r\t\v\\\?\"\''`, StringLiteral("\a\b\f\n\r\t\v\\?\"'")},
+		{"'\\`'", StringLiteral("`")},
+		// Hex and unicode escape sequence
+		{`"\060\x30\X30\u0030\U00000030"`, StringLiteral("00000")},
+		{`'\060\x30\X30\u0030\U00000030'`, StringLiteral("00000")},
+		{`"\uBEAF\ubeaf"`, StringLiteral("\ubeaf\ubeaf")},
+		{`'\uBEAF\ubeaf'`, StringLiteral("\ubeaf\ubeaf")},
+		// Escape sequence in triple quote is allowed.
+		{`"""\u0030"""`, StringLiteral("0")},
+		{`'''\u0030'''`, StringLiteral("0")},
+		// Raw string literal
+		{`R"\\"`, StringLiteral("\\\\")},
+		{`R'\\'`, StringLiteral("\\\\")},
+		{`r"\\"`, StringLiteral("\\\\")},
+		{`r'\\'`, StringLiteral("\\\\")},
+		{`R"\\\""`, StringLiteral("\\\\\\\"")},
+		{`R"""\\//\\//"""`, StringLiteral("\\\\//\\\\//")},
+		{"R'''\\\\//\n\\\\//'''", StringLiteral("\\\\//\n\\\\//")},
+
+		// Bytes literal:
+		{`B"hello"`, BytesLiteral("hello")},
+		{`B'hello'`, BytesLiteral("hello")},
+		{`b"hello"`, BytesLiteral("hello")},
+		{`b'hello'`, BytesLiteral("hello")},
+		{`B""" "hello" "world" """`, BytesLiteral(` "hello" "world" `)},
+		{`B''' 'hello' 'world' '''`, BytesLiteral(` 'hello' 'world' `)},
+		{`B"\a\b\f\n\r\t\v\\\?\"\'"`, BytesLiteral("\a\b\f\n\r\t\v\\?\"'")},
+		{`B'\a\b\f\n\r\t\v\\\?\"\''`, BytesLiteral("\a\b\f\n\r\t\v\\?\"'")},
+		{"B'''\n'''", BytesLiteral("\n")},
+		{`br"\\"`, BytesLiteral("\\\\")},
+		{`br'\\'`, BytesLiteral("\\\\")},
+		{`rb"\\"`, BytesLiteral("\\\\")},
+		{`rb'\\'`, BytesLiteral("\\\\")},
+		{`RB"\\"`, BytesLiteral("\\\\")},
+		{`RB'\\'`, BytesLiteral("\\\\")},
+		{`BR"\\"`, BytesLiteral("\\\\")},
+		{`BR'\\'`, BytesLiteral("\\\\")},
+		{`RB"""\\//\\//"""`, BytesLiteral("\\\\//\\\\//")},
+		{"RB'''\\\\//\n\\\\//'''", BytesLiteral("\\\\//\n\\\\//")},
+
 		// OR is lower precedence than AND.
 		{`A AND B OR C`, LogicalOp{LHS: LogicalOp{LHS: ID("A"), Op: And, RHS: ID("B")}, Op: Or, RHS: ID("C")}},
 		{`A OR B AND C`, LogicalOp{LHS: ID("A"), Op: Or, RHS: LogicalOp{LHS: ID("B"), Op: And, RHS: ID("C")}}},
@@ -271,6 +320,30 @@ func TestParseFailures(t *testing.T) {
 	}{
 		{expr, `0b337`, "binary literal"},
 		{expr, `"foo\`, "unterminated string"},
+		{expr, `"\i"`, "invalid escape sequence"},
+		{expr, `"\0"`, "invalid escape sequence"},
+		{expr, `"\099"`, "invalid escape sequence"},
+		{expr, `"\400"`, "invalid escape sequence: octal digits overflow"},
+		{expr, `"\x"`, "invalid escape sequence"},
+		{expr, `"\xFZ"`, "invalid escape sequence"},
+		{expr, `"\u"`, "invalid escape sequence"},
+		{expr, `"\uFFFZ"`, "invalid escape sequence"},
+		{expr, `"\uD800"`, "invalid unicode character (surrogate)"},
+		{expr, `"\U"`, "invalid escape sequence"},
+		{expr, `"\UFFFFFFFZ"`, "invalid escape sequence"},
+		{expr, `"\U00110000"`, "invalid unicode character (out of range)"},
+		{expr, "\"\n\"", "unterminated string by newline (double quote)"},
+		{expr, "'\n'", "unterminated string by newline (single quote)"},
+		{expr, "R\"\n\"", "unterminated raw string by newline (double quote)"},
+		{expr, "R'\n'", "unterminated raw string by newline (single quote)"},
+		{expr, `B"\u0030"`, "\\uXXXX sequence is not supported in bytes literal (double quote)"},
+		{expr, `B'\u0030'`, "\\uXXXX sequence is not supported in bytes literal (double quote)"},
+		{expr, `B"\U00000030"`, "\\UXXXXXXXX sequence is not supported in bytes literal (double quote)"},
+		{expr, `B'\U00000030'`, "\\UXXXXXXXX sequence is not supported in bytes literal (double quote)"},
+		{expr, `BB""`, "invalid string-like literal prefix"},
+		{expr, `rr""`, "invalid string-like literal prefix"},
+		{expr, `"""\"""`, "unterminated triple-quoted string by last backslash (double quote)"},
+		{expr, `'''\'''`, "unterminated triple-quoted string by last backslash (single quote)"},
 		{expr, `"foo" AND "bar"`, "logical operation on string literals"},
 	}
 	for _, test := range tests {

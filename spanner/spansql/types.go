@@ -320,6 +320,12 @@ type StringLiteral string
 
 func (StringLiteral) isExpr() {}
 
+// BytesLiteral represents a bytes literal.
+// https://cloud.google.com/spanner/docs/lexical#string-and-bytes-literals
+type BytesLiteral string
+
+func (BytesLiteral) isExpr() {}
+
 type StarExpr int
 
 // Star represents a "*" in an expression.
