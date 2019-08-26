@@ -43,7 +43,10 @@ func TestExternalDataConfig(t *testing.T) {
 		},
 		{
 			SourceFormat: GoogleSheets,
-			Options:      &GoogleSheetsOptions{SkipLeadingRows: 4},
+			Options: &GoogleSheetsOptions{
+				SkipLeadingRows: 4,
+				Range:           "sheet1!A1:Z10",
+			},
 		},
 		{
 			SourceFormat: Bigtable,
