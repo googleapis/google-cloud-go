@@ -70,7 +70,7 @@ The mapping between Spanner types and Go types internal to this package are:
 	INT64		int64
 	FLOAT64		float64
 	STRING		string
-	BYTES		TODO
+	BYTES		[]byte
 	DATE		string (RFC 3339 date; "YYYY-MM-DD")
 	TIMESTAMP	TODO
 	ARRAY<T>	[]T

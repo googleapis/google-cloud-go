@@ -281,4 +281,8 @@ func (StarExpr) SQL() string      { return "*" }
 
 func (il IntegerLiteral) SQL() string { return strconv.Itoa(int(il)) }
 func (fl FloatLiteral) SQL() string   { return strconv.FormatFloat(float64(fl), 'g', -1, 64) }
-func (sl StringLiteral) SQL() string  { return strconv.Quote(string(sl)) }
+
+// TODO: provide correct string quote method and use it.
+
+func (sl StringLiteral) SQL() string { return strconv.Quote(string(sl)) }
+func (bl BytesLiteral) SQL() string  { return "B" + strconv.Quote(string(bl)) }

@@ -286,6 +286,8 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 		return float64(e), nil
 	case spansql.StringLiteral:
 		return string(e), nil
+	case spansql.BytesLiteral:
+		return []byte(e), nil
 	case spansql.NullLiteral:
 		return nil, nil
 	case spansql.BoolLiteral:
@@ -401,6 +403,8 @@ func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 		return colInfo{Type: spansql.Type{Base: spansql.Int64}}, nil
 	case spansql.StringLiteral:
 		return colInfo{Type: spansql.Type{Base: spansql.String}}, nil
+	case spansql.BytesLiteral:
+		return colInfo{Type: spansql.Type{Base: spansql.Bytes}}, nil
 	case spansql.LogicalOp, spansql.ComparisonOp, spansql.IsOp:
 		return colInfo{Type: spansql.Type{Base: spansql.Bool}}, nil
 	case spansql.ID:

@@ -204,9 +204,9 @@ func TestTableData(t *testing.T) {
 		want   [][]interface{}
 	}{
 		{
-			`SELECT 17, "sweet", TRUE AND FALSE, NULL`,
+			`SELECT 17, "sweet", TRUE AND FALSE, NULL, B"hello"`,
 			nil,
-			[][]interface{}{{int64(17), "sweet", false, nil}},
+			[][]interface{}{{int64(17), "sweet", false, nil, []byte("hello")}},
 		},
 		{
 			`SELECT Name FROM Staff WHERE Cool`,

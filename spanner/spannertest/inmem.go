@@ -46,6 +46,7 @@ package spannertest
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"log"
 	"math/rand"
@@ -708,6 +709,8 @@ func spannerValueFromValue(x interface{}) (*structpb.Value, error) {
 		return &structpb.Value{Kind: &structpb.Value_NumberValue{x}}, nil
 	case string:
 		return &structpb.Value{Kind: &structpb.Value_StringValue{x}}, nil
+	case []byte:
+		return &structpb.Value{Kind: &structpb.Value_StringValue{base64.StdEncoding.EncodeToString(x)}}, nil
 	case nil:
 		return &structpb.Value{Kind: &structpb.Value_NullValue{}}, nil
 	case []interface{}:
