@@ -93,6 +93,23 @@ func TestExtract(t *testing.T) {
 				return j
 			}(),
 		},
+		{
+			dst: func() *GCSReference {
+				g := NewGCSReference("uri")
+				g.DestinationFormat = Avro
+				return g
+			}(),
+			src: c.Dataset("dataset-id").Table("table-id"),
+			config: ExtractConfig{
+				UseAvroLogicalTypes: true,
+			},
+			want: func() *bq.Job {
+				j := defaultExtractJob()
+				j.Configuration.Extract.UseAvroLogicalTypes = true
+				j.Configuration.Extract.DestinationFormat = "AVRO"
+				return j
+			}(),
+		},
 	}
 
 	for i, tc := range testCases {

@@ -34,6 +34,13 @@ type ExtractConfig struct {
 
 	// The labels associated with this job.
 	Labels map[string]string
+
+	// For Avro-based extracts, controls whether logical type annotations are generated.
+	//
+	// Example:  With this enabled, writing a BigQuery TIMESTAMP column will result in
+	// an integer column annotated with the appropriate timestamp-micros/millis annotation
+	// in the resulting Avro files.
+	UseAvroLogicalTypes bool
 }
 
 func (e *ExtractConfig) toBQ() *bq.JobConfiguration {
@@ -45,12 +52,13 @@ func (e *ExtractConfig) toBQ() *bq.JobConfiguration {
 	return &bq.JobConfiguration{
 		Labels: e.Labels,
 		Extract: &bq.JobConfigurationExtract{
-			DestinationUris:   append([]string{}, e.Dst.URIs...),
-			Compression:       string(e.Dst.Compression),
-			DestinationFormat: string(e.Dst.DestinationFormat),
-			FieldDelimiter:    e.Dst.FieldDelimiter,
-			SourceTable:       e.Src.toBQ(),
-			PrintHeader:       printHeader,
+			DestinationUris:     append([]string{}, e.Dst.URIs...),
+			Compression:         string(e.Dst.Compression),
+			DestinationFormat:   string(e.Dst.DestinationFormat),
+			FieldDelimiter:      e.Dst.FieldDelimiter,
+			SourceTable:         e.Src.toBQ(),
+			PrintHeader:         printHeader,
+			UseAvroLogicalTypes: e.UseAvroLogicalTypes,
 		},
 	}
 }
@@ -69,8 +77,9 @@ func bqToExtractConfig(q *bq.JobConfiguration, c *Client) *ExtractConfig {
 				},
 			},
 		},
-		DisableHeader: qe.PrintHeader != nil && !*qe.PrintHeader,
-		Src:           bqToTable(qe.SourceTable, c),
+		DisableHeader:       qe.PrintHeader != nil && !*qe.PrintHeader,
+		Src:                 bqToTable(qe.SourceTable, c),
+		UseAvroLogicalTypes: qe.UseAvroLogicalTypes,
 	}
 }
 
