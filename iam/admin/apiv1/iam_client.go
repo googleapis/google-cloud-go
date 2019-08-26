@@ -447,7 +447,7 @@ func (c *IamClient) QueryGrantableRoles(ctx context.Context, req *adminpb.QueryG
 // SignJwt signs a JWT using a service account's system-managed private key.
 //
 // If no expiry time (exp) is provided in the SignJwtRequest, IAM sets an
-// an expiry time of one hour by default. If you request an expiry time of
+// expiry time of one hour by default. If you request an expiry time of
 // more than one hour, the request will fail.
 func (c *IamClient) SignJwt(ctx context.Context, req *adminpb.SignJwtRequest, opts ...gax.CallOption) (*adminpb.SignJwtResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))

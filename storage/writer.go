@@ -231,7 +231,7 @@ func (w *Writer) Close() error {
 }
 
 // monitorCancel is intended to be used as a background goroutine. It monitors the
-// the context, and when it observes that the context has been canceled, it manually
+// context, and when it observes that the context has been canceled, it manually
 // closes things that do not take a context.
 func (w *Writer) monitorCancel() {
 	select {
