@@ -43,6 +43,11 @@ type ReaderObjectAttrs struct {
 	// Size is the length of the object's content.
 	Size int64
 
+	// StartOffset is the byte offset within the object
+	// from which reading begins.
+	// This value is only non-zero for range requests.
+	StartOffset int64
+
 	// ContentType is the MIME type of the object's content.
 	ContentType string
 
@@ -181,19 +186,27 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		return nil, err
 	}
 	var (
-		size     int64 // total size of object, even if a range was requested.
-		checkCRC bool
-		crc      uint32
+		size        int64 // total size of object, even if a range was requested.
+		checkCRC    bool
+		crc         uint32
+		startOffset int64 // non-zero if range request.
 	)
 	if res.StatusCode == http.StatusPartialContent {
 		cr := strings.TrimSpace(res.Header.Get("Content-Range"))
 		if !strings.HasPrefix(cr, "bytes ") || !strings.Contains(cr, "/") {
-
 			return nil, fmt.Errorf("storage: invalid Content-Range %q", cr)
 		}
 		size, err = strconv.ParseInt(cr[strings.LastIndex(cr, "/")+1:], 10, 64)
 		if err != nil {
 			return nil, fmt.Errorf("storage: invalid Content-Range %q", cr)
+		}
+
+		dashIndex := strings.Index(cr, "-")
+		if dashIndex >= 0 {
+			startOffset, err = strconv.ParseInt(cr[len("bytes="):dashIndex], 10, 64)
+			if err != nil {
+				return nil, fmt.Errorf("storage: invalid Content-Range %q: %v", cr, err)
+			}
 		}
 	} else {
 		size = res.ContentLength
@@ -240,6 +253,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		ContentEncoding: res.Header.Get("Content-Encoding"),
 		CacheControl:    res.Header.Get("Cache-Control"),
 		LastModified:    lm,
+		StartOffset:     startOffset,
 		Generation:      gen,
 		Metageneration:  metaGen,
 	}

@@ -365,12 +365,53 @@ func ExampleObjectHandle_NewRangeReader() {
 	if err != nil {
 		// TODO: handle error.
 	}
+	defer rc.Close()
+
 	slurp, err := ioutil.ReadAll(rc)
-	rc.Close()
 	if err != nil {
 		// TODO: handle error.
 	}
-	fmt.Println("first 64K of file contents:", slurp)
+	fmt.Printf("first 64K of file contents:\n%s\n", slurp)
+}
+
+func ExampleObjectHandle_NewRangeReader_lastNBytes() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// Read only the last 10 bytes until the end of the file.
+	rc, err := client.Bucket("bucketname").Object("filename1").NewRangeReader(ctx, -10, -1)
+	if err != nil {
+		// TODO: handle error.
+	}
+	defer rc.Close()
+
+	slurp, err := ioutil.ReadAll(rc)
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Printf("Last 10 bytes from the end of the file:\n%s\n", slurp)
+}
+
+func ExampleObjectHandle_NewRangeReader_untilEnd() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// Read from the 101st byte until the end of the file.
+	rc, err := client.Bucket("bucketname").Object("filename1").NewRangeReader(ctx, 100, -1)
+	if err != nil {
+		// TODO: handle error.
+	}
+	defer rc.Close()
+
+	slurp, err := ioutil.ReadAll(rc)
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Printf("From 101st byte until the end:\n%s\n", slurp)
 }
 
 func ExampleObjectHandle_NewWriter() {
