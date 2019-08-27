@@ -251,6 +251,19 @@ func TestRangeReaderRetry(t *testing.T) {
 		if got := string(gotb); got != test.want {
 			t.Errorf("#%d: got %q, want %q", i, got, test.want)
 		}
+		if r.Attrs.Size != int64(len(readData)) {
+			t.Errorf("#%d: got Attrs.Size=%q, want %q", i, r.Attrs.Size, len(readData))
+		}
+		wantOffset := test.offset
+		if wantOffset < 0 {
+			wantOffset += int64(len(readData))
+			if wantOffset < 0 {
+				wantOffset = 0
+			}
+		}
+		if got := r.Attrs.StartOffset; got != wantOffset {
+			t.Errorf("#%d: got Attrs.Offset=%q, want %q", i, got, wantOffset)
+		}
 	}
 	r, err := obj.NewRangeReader(ctx, -100, 10)
 	if err == nil {

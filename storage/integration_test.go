@@ -468,6 +468,54 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 	}
 }
 
+func TestIntegration_ObjectsRangeReader(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	bkt := client.Bucket(bucketName)
+
+	objName := uidSpace.New()
+	obj := bkt.Object(objName)
+	w := obj.NewWriter(ctx)
+
+	contents := []byte("Hello, world this is a range request")
+	if _, err := w.Write(contents); err != nil {
+		t.Fatalf("Failed to write contents: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatalf("Failed to close writer: %v", err)
+	}
+
+	last5s := []struct {
+		name   string
+		start  int64
+		length int64
+	}{
+		{name: "negative offset", start: -5, length: -1},
+		{name: "offset with specified length", start: int64(len(contents)) - 5, length: 5},
+		{name: "offset and read till end", start: int64(len(contents)) - 5, length: -1},
+	}
+
+	for _, last5 := range last5s {
+		t.Run(last5.name, func(t *testing.T) {
+			r, err := obj.NewRangeReader(ctx, last5.start, last5.length)
+			if err != nil {
+				t.Fatalf("Failed to make range read: %v", err)
+			}
+			defer r.Close()
+
+			if got, want := r.Attrs.StartOffset, int64(len(contents))-5; got != want {
+				t.Fatalf("StartOffset mismatch, got %d want %d", got, want)
+			}
+
+			nr, _ := io.Copy(ioutil.Discard, r)
+			if got, want := nr, int64(5); got != want {
+				t.Fatalf("Body length mismatch, got %d want %d", got, want)
+			}
+		})
+	}
+}
+
 func TestIntegration_Objects(t *testing.T) {
 	// TODO(jba): Use subtests (Go 1.7).
 	ctx := context.Background()
@@ -566,6 +614,9 @@ func TestIntegration_Objects(t *testing.T) {
 		{objlen / 2, 0, 0},
 		{objlen / 2, -1, objlen / 2},
 		{0, objlen * 2, objlen},
+		{-2, -1, 2},
+		{-objlen, -1, objlen},
+		{-(objlen / 2), -1, objlen / 2},
 	} {
 		rc, err := bkt.Object(obj).NewRangeReader(ctx, r.offset, r.length)
 		if err != nil {
@@ -587,8 +638,18 @@ func TestIntegration_Objects(t *testing.T) {
 			t.Errorf("%+v: RangeReader (%d, %d): Read %d bytes, wanted %d bytes", i, r.offset, r.length, len(slurp), r.want)
 			continue
 		}
-		if got, want := slurp, contents[obj][r.offset:r.offset+r.want]; !bytes.Equal(got, want) {
-			t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+
+		switch {
+		case r.offset < 0: // The case of reading the last N bytes.
+			start := objlen + r.offset
+			if got, want := slurp, contents[obj][start:]; !bytes.Equal(got, want) {
+				t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+			}
+
+		default:
+			if got, want := slurp, contents[obj][r.offset:r.offset+r.want]; !bytes.Equal(got, want) {
+				t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+			}
 		}
 		rc.Close()
 	}
