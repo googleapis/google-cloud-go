@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"math"
 	"reflect"
 	"strconv"
 	"time"
@@ -111,7 +112,20 @@ func (n NullDateTime) String() string {
 func (n NullInt64) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.Int64) }
 
 // MarshalJSON converts the NullFloat64 to JSON.
-func (n NullFloat64) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.Float64) }
+func (n NullFloat64) MarshalJSON() ([]byte, error) {
+	switch {
+	case !n.Valid:
+		return jsonNull, nil
+	case math.IsNaN(n.Float64):
+		return []byte(`"NaN"`), nil
+	case math.IsInf(n.Float64, 1):
+		return []byte(`"Infinity"`), nil
+	case math.IsInf(n.Float64, -1):
+		return []byte(`"-Infinity"`), nil
+	default:
+		return json.Marshal(n.Float64)
+	}
+}
 
 // MarshalJSON converts the NullBool to JSON.
 func (n NullBool) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.Bool) }
@@ -183,9 +197,19 @@ func (n *NullFloat64) UnmarshalJSON(b []byte) error {
 		return nil
 	}
 
-	if err := json.Unmarshal(b, &n.Float64); err != nil {
-		return err
+	switch string(b) {
+	case `"NaN"`:
+		n.Float64 = math.NaN()
+	case `"Infinity"`:
+		n.Float64 = math.Inf(1)
+	case `"-Infinity"`:
+		n.Float64 = math.Inf(-1)
+	default:
+		if err := json.Unmarshal(b, &n.Float64); err != nil {
+			return err
+		}
 	}
+
 	n.Valid = true
 	return nil
 }

@@ -16,6 +16,7 @@ package bigquery
 
 import (
 	"encoding/json"
+	"math"
 	"reflect"
 	"testing"
 
@@ -35,6 +36,9 @@ func TestNullsJSON(t *testing.T) {
 	}{
 		{&NullInt64{Valid: true, Int64: 3}, `3`},
 		{&NullFloat64{Valid: true, Float64: 3.14}, `3.14`},
+		{&NullFloat64{Valid: true, Float64: math.NaN()}, `"NaN"`},
+		{&NullFloat64{Valid: true, Float64: math.Inf(1)}, `"Infinity"`},
+		{&NullFloat64{Valid: true, Float64: math.Inf(-1)}, `"-Infinity"`},
 		{&NullBool{Valid: true, Bool: true}, `true`},
 		{&NullString{Valid: true, StringVal: "foo"}, `"foo"`},
 		{&NullGeography{Valid: true, GeographyVal: "ST_GEOPOINT(47.649154, -122.350220)"}, `"ST_GEOPOINT(47.649154, -122.350220)"`},
