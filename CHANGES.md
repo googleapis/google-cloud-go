@@ -1,5 +1,31 @@
 # Changes
 
+## v0.45.0
+
+- compute/metadata:
+  - Add Email method.
+- storage:
+  - Fix duplicated retry logic.
+  - Add ReaderObjectAttrs.StartOffset.
+  - Support reading last N bytes of a file when a negative range is given, such
+    as `obj.NewRangeReader(ctx, -10, -1)`.
+  - Add HMACKey listing functionality.
+- spanner/spannertest:
+  - Support primary keys with no columns.
+  - Fix MinInt64 parsing.
+  - Implement deletion of key ranges.
+  - Handle reads during a read-write transaction.
+  - Handle returning DATE values.
+- pubsub:
+  - Fix Ack/Modack request size calculation.
+- logging:
+  - Add auto-detection of monitored resources on GAE Standard.
+
+## v0.44.3
+
+This is an empty release that was created solely to aid in bigtable's module
+carve-out. See: https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
+
 ## v0.44.2
 
 This is an empty release that was created solely to aid in bigquery's module
