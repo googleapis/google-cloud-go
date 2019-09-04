@@ -1,5 +1,10 @@
 # Changes
 
+## v0.45.1
+
+This is an empty release that was created solely to aid in pubsub's module
+carve-out. See: https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
+
 ## v0.45.0
 
 - compute/metadata:
