@@ -15,8 +15,6 @@
 /*
 Package bigquery provides a client for the BigQuery service.
 
-Note: This package is in beta.  Some backwards-incompatible changes may occur.
-
 The following assumes a basic familiarity with BigQuery concepts.
 See https://cloud.google.com/bigquery/docs.
 
