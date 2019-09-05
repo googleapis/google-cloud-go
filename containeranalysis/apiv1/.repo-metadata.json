@@ -6,7 +6,7 @@
   "release_level": "beta",
   "language": "go",
   "repo": "googleapis/google-cloud-go",
-  "distribution_name": "cloud.google.com/go/containeranalysis",
+  "distribution_name": "cloud.google.com/go",
   "api_id": "containeranalysis.googleapis.com",
   "requires_billing": true
 }
