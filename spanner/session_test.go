@@ -25,8 +25,8 @@ import (
 	"testing"
 	"time"
 
-	vkit "cloud.google.com/go/spanner/apiv1"
 	. "cloud.google.com/go/spanner/internal/testutil"
+	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -42,21 +42,38 @@ func TestSessionPoolConfigValidation(t *testing.T) {
 		err error
 	}{
 		{
-			SessionPoolConfig{},
-			errNoRPCGetter(),
-		},
-		{
 			SessionPoolConfig{
-				getRPCClient: func() (*vkit.Client, error) {
-					return client.clients[0], nil
-				},
 				MinOpened: 10,
 				MaxOpened: 5,
 			},
 			errMinOpenedGTMaxOpened(5, 10),
 		},
+		{
+			SessionPoolConfig{
+				WriteSessions: -0.1,
+			},
+			errWriteFractionOutOfRange(-0.1),
+		},
+		{
+			SessionPoolConfig{
+				WriteSessions: 2.0,
+			},
+			errWriteFractionOutOfRange(2.0),
+		},
+		{
+			SessionPoolConfig{
+				HealthCheckWorkers: -1,
+			},
+			errHealthCheckWorkersNegative(-1),
+		},
+		{
+			SessionPoolConfig{
+				HealthCheckInterval: -time.Second,
+			},
+			errHealthCheckIntervalNegative(-time.Second),
+		},
 	} {
-		if _, err := newSessionPool("mockdb", test.spc, nil); !testEqual(err, test.err) {
+		if _, err := newSessionPool(client.sc, test.spc); !testEqual(err, test.err) {
 			t.Fatalf("want %v, got %v", test.err, err)
 		}
 	}
@@ -459,8 +476,8 @@ func TestMinOpenedSessions(t *testing.T) {
 	defer sp.mu.Unlock()
 	// There should be still one session left in idle list due to the min open
 	// sessions constraint.
-	if sp.idleList.Len() != 1 {
-		t.Fatalf("got %v sessions in idle list, want 1 %d", sp.idleList.Len(), sp.numOpened)
+	if sp.idleList.Len() != int(sp.MinOpened) {
+		t.Fatalf("got %v sessions in idle list, want %d", sp.idleList.Len(), sp.MinOpened)
 	}
 }
 
@@ -1100,7 +1117,7 @@ func TestMaintainer(t *testing.T) {
 	})
 }
 
-// Tests that maintainer creates up to MinOpened connections.
+// Tests that the session pool creates up to MinOpened connections.
 //
 // Historical context: This test also checks that a low
 // healthCheckSampleInterval does not prevent it from opening connections.
@@ -1108,11 +1125,57 @@ func TestMaintainer(t *testing.T) {
 // creations to time out. That should not be considered a problem, but it
 // could cause the test case to fail if it happens too often.
 // See: https://github.com/googleapis/google-cloud-go/issues/1259
-func TestMaintainer_CreatesSessions(t *testing.T) {
+func TestInit_CreatesSessions(t *testing.T) {
 	t.Parallel()
 	spc := SessionPoolConfig{
 		MinOpened:                 10,
 		MaxIdle:                   10,
+		WriteSessions:             0.0,
+		healthCheckSampleInterval: 20 * time.Millisecond,
+	}
+	server, client, teardown := setupMockedTestServerWithConfig(t,
+		ClientConfig{
+			SessionPoolConfig: spc,
+			NumChannels:       4,
+		})
+	defer teardown()
+	sp := client.idleSessions
+
+	timeout := time.After(4 * time.Second)
+	var numOpened int
+loop:
+	for {
+		select {
+		case <-timeout:
+			t.Fatalf("timed out, got %d session(s), want %d", numOpened, spc.MinOpened)
+		default:
+			sp.mu.Lock()
+			numOpened = sp.idleList.Len() + sp.idleWriteList.Len()
+			sp.mu.Unlock()
+			if numOpened == 10 {
+				break loop
+			}
+		}
+	}
+	_, err := shouldHaveReceived(server.TestSpanner, []interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BatchCreateSessionsRequest{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+// Tests that the session pool with a MinSessions>0 also prepares WriteSessions
+// sessions.
+func TestInit_PreparesSessions(t *testing.T) {
+	t.Parallel()
+	spc := SessionPoolConfig{
+		MinOpened:                 10,
+		MaxIdle:                   10,
+		WriteSessions:             0.5,
 		healthCheckSampleInterval: 20 * time.Millisecond,
 	}
 	_, client, teardown := setupMockedTestServerWithConfig(t,
@@ -1124,17 +1187,18 @@ func TestMaintainer_CreatesSessions(t *testing.T) {
 
 	timeoutAmt := 4 * time.Second
 	timeout := time.After(timeoutAmt)
-	var numOpened uint64
+	var numPrepared int
+	want := int(spc.WriteSessions * float64(spc.MinOpened))
 loop:
 	for {
 		select {
 		case <-timeout:
-			t.Fatalf("timed out after %v, got %d session(s), want %d", timeoutAmt, numOpened, spc.MinOpened)
+			t.Fatalf("timed out after %v, got %d write-prepared session(s), want %d", timeoutAmt, numPrepared, want)
 		default:
 			sp.mu.Lock()
-			numOpened = sp.numOpened
+			numPrepared = sp.idleWriteList.Len()
 			sp.mu.Unlock()
-			if numOpened == 10 {
+			if numPrepared == want {
 				break loop
 			}
 		}

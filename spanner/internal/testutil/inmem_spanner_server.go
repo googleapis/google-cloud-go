@@ -56,6 +56,7 @@ const (
 const (
 	MethodBeginTransaction    string = "BEGIN_TRANSACTION"
 	MethodCommitTransaction   string = "COMMIT_TRANSACTION"
+	MethodBatchCreateSession  string = "BATCH_CREATE_SESSION"
 	MethodCreateSession       string = "CREATE_SESSION"
 	MethodDeleteSession       string = "DELETE_SESSION"
 	MethodGetSession          string = "GET_SESSION"
@@ -206,6 +207,8 @@ type InMemSpannerServer interface {
 
 	TotalSessionsCreated() uint
 	TotalSessionsDeleted() uint
+	SetMaxSessionsReturnedByServerPerBatchRequest(sessionCount int32)
+	SetMaxSessionsReturnedByServerInTotal(sessionCount int32)
 
 	ReceivedRequests() chan interface{}
 	DumpSessions() map[string]bool
@@ -249,7 +252,10 @@ type inMemSpannerServer struct {
 
 	totalSessionsCreated uint
 	totalSessionsDeleted uint
-	receivedRequests     chan interface{}
+	// The maximum number of sessions that will be created per batch request.
+	maxSessionsReturnedByServerPerBatchRequest int32
+	maxSessionsReturnedByServerInTotal         int32
+	receivedRequests                           chan interface{}
 	// Session ping history.
 	pings []string
 
@@ -362,6 +368,18 @@ func (s *inMemSpannerServer) TotalSessionsDeleted() uint {
 	return s.totalSessionsDeleted
 }
 
+func (s *inMemSpannerServer) SetMaxSessionsReturnedByServerPerBatchRequest(sessionCount int32) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.maxSessionsReturnedByServerPerBatchRequest = sessionCount
+}
+
+func (s *inMemSpannerServer) SetMaxSessionsReturnedByServerInTotal(sessionCount int32) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.maxSessionsReturnedByServerInTotal = sessionCount
+}
+
 func (s *inMemSpannerServer) ReceivedRequests() chan interface{} {
 	return s.receivedRequests
 }
@@ -393,6 +411,7 @@ func (s *inMemSpannerServer) DumpSessions() map[string]bool {
 
 func (s *inMemSpannerServer) initDefaults() {
 	s.sessionCounter = 0
+	s.maxSessionsReturnedByServerPerBatchRequest = 100
 	s.sessions = make(map[string]*spannerpb.Session)
 	s.sessionLastUseTime = make(map[string]time.Time)
 	s.transactions = make(map[string]*spannerpb.Transaction)
@@ -401,9 +420,7 @@ func (s *inMemSpannerServer) initDefaults() {
 	s.transactionCounters = make(map[string]*uint64)
 }
 
-func (s *inMemSpannerServer) generateSessionName(database string) string {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+func (s *inMemSpannerServer) generateSessionNameLocked(database string) string {
 	s.sessionCounter++
 	return fmt.Sprintf("%s/sessions/%d", database, s.sessionCounter)
 }
@@ -524,13 +541,16 @@ func (s *inMemSpannerServer) simulateExecutionTime(method string, req interface{
 		}
 		totalExecutionTime := time.Duration(int64(executionTime.MinimumExecutionTime) + randTime)
 		<-time.After(totalExecutionTime)
+		s.mu.Lock()
 		if executionTime.Errors != nil && len(executionTime.Errors) > 0 {
 			err := executionTime.Errors[0]
 			if !executionTime.KeepError {
 				executionTime.Errors = executionTime.Errors[1:]
 			}
+			s.mu.Unlock()
 			return err
 		}
+		s.mu.Unlock()
 	}
 	return nil
 }
@@ -542,14 +562,50 @@ func (s *inMemSpannerServer) CreateSession(ctx context.Context, req *spannerpb.C
 	if req.Database == "" {
 		return nil, gstatus.Error(codes.InvalidArgument, "Missing database")
 	}
-	sessionName := s.generateSessionName(req.Database)
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.maxSessionsReturnedByServerInTotal > int32(0) && int32(len(s.sessions)) == s.maxSessionsReturnedByServerInTotal {
+		return nil, gstatus.Error(codes.ResourceExhausted, "No more sessions available")
+	}
+	sessionName := s.generateSessionNameLocked(req.Database)
 	ts := getCurrentTimestamp()
 	session := &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts}
-	s.mu.Lock()
 	s.totalSessionsCreated++
 	s.sessions[sessionName] = session
-	s.mu.Unlock()
 	return session, nil
+}
+
+func (s *inMemSpannerServer) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCreateSessionsRequest) (*spannerpb.BatchCreateSessionsResponse, error) {
+	if err := s.simulateExecutionTime(MethodBatchCreateSession, req); err != nil {
+		return nil, err
+	}
+	if req.Database == "" {
+		return nil, gstatus.Error(codes.InvalidArgument, "Missing database")
+	}
+	if req.SessionCount <= 0 {
+		return nil, gstatus.Error(codes.InvalidArgument, "Session count must be >= 0")
+	}
+	sessionsToCreate := req.SessionCount
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.maxSessionsReturnedByServerInTotal > int32(0) && int32(len(s.sessions)) >= s.maxSessionsReturnedByServerInTotal {
+		return nil, gstatus.Error(codes.ResourceExhausted, "No more sessions available")
+	}
+	if sessionsToCreate > s.maxSessionsReturnedByServerPerBatchRequest {
+		sessionsToCreate = s.maxSessionsReturnedByServerPerBatchRequest
+	}
+	if s.maxSessionsReturnedByServerInTotal > int32(0) && (sessionsToCreate+int32(len(s.sessions))) > s.maxSessionsReturnedByServerInTotal {
+		sessionsToCreate = s.maxSessionsReturnedByServerInTotal - int32(len(s.sessions))
+	}
+	sessions := make([]*spannerpb.Session, sessionsToCreate)
+	for i := int32(0); i < sessionsToCreate; i++ {
+		sessionName := s.generateSessionNameLocked(req.Database)
+		ts := getCurrentTimestamp()
+		sessions[i] = &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts}
+		s.totalSessionsCreated++
+		s.sessions[sessionName] = sessions[i]
+	}
+	return &spannerpb.BatchCreateSessionsResponse{Session: sessions}, nil
 }
 
 func (s *inMemSpannerServer) GetSession(ctx context.Context, req *spannerpb.GetSessionRequest) (*spannerpb.Session, error) {

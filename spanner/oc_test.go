@@ -33,7 +33,10 @@ func TestOCStats(t *testing.T) {
 	ms := stestutil.NewMockCloudSpanner(t, trxTs)
 	ms.Serve()
 	ctx := context.Background()
-	c, err := NewClient(ctx, "projects/P/instances/I/databases/D",
+	c, err := NewClientWithConfig(ctx, "projects/P/instances/I/databases/D",
+		ClientConfig{SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 0,
+		}},
 		option.WithEndpoint(ms.Addr()),
 		option.WithGRPCDialOption(grpc.WithInsecure()),
 		option.WithoutAuthentication())
