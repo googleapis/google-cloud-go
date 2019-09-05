@@ -22,6 +22,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math"
 	"math/rand"
 	"strings"
 	"sync"
@@ -185,7 +186,7 @@ func (s *session) ping() error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	// s.getID is safe even when s is invalid.
-	_, err := s.client.GetSession(contextWithOutgoingMetadata(ctx, s.pool.md), &sppb.GetSessionRequest{Name: s.getID()})
+	_, err := s.client.GetSession(contextWithOutgoingMetadata(ctx, s.md), &sppb.GetSessionRequest{Name: s.getID()})
 	return err
 }
 
@@ -303,7 +304,7 @@ func (s *session) prepareForWrite(ctx context.Context) error {
 	if s.isWritePrepared() {
 		return nil
 	}
-	tx, err := beginTransaction(ctx, s.getID(), s.client)
+	tx, err := beginTransaction(contextWithOutgoingMetadata(ctx, s.md), s.getID(), s.client)
 	if err != nil {
 		return err
 	}
@@ -313,10 +314,6 @@ func (s *session) prepareForWrite(ctx context.Context) error {
 
 // SessionPoolConfig stores configurations of a session pool.
 type SessionPoolConfig struct {
-	// getRPCClient is the caller supplied method for getting a gRPC client to
-	// Cloud Spanner, this makes session pool able to use client pooling.
-	getRPCClient func() (*vkit.Client, error)
-
 	// MaxOpened is the maximum number of opened sessions allowed by the session
 	// pool. If the client tries to open a session and there are already
 	// MaxOpened sessions, it will block until one becomes available or the
@@ -332,7 +329,7 @@ type SessionPoolConfig struct {
 	// therefore it is posssible that the number of opened sessions drops below
 	// MinOpened.
 	//
-	// Defaults to 0.
+	// Defaults to 100.
 	MinOpened uint64
 
 	// MaxIdle is the maximum number of idle sessions, pool is allowed to keep.
@@ -348,7 +345,7 @@ type SessionPoolConfig struct {
 	// WriteSessions is the fraction of sessions we try to keep prepared for
 	// write.
 	//
-	// Defaults to 0.
+	// Defaults to 0.2.
 	WriteSessions float64
 
 	// HealthCheckWorkers is number of workers used by health checker for this
@@ -372,24 +369,58 @@ type SessionPoolConfig struct {
 	sessionLabels map[string]string
 }
 
-// errNoRPCGetter returns error for SessionPoolConfig missing getRPCClient method.
-func errNoRPCGetter() error {
-	return spannerErrorf(codes.InvalidArgument, "require SessionPoolConfig.getRPCClient != nil, got nil")
+// DefaultSessionPoolConfig is the default configuration for the session pool
+// that will be used for a Spanner client, unless the user supplies a specific
+// session pool config.
+var DefaultSessionPoolConfig = SessionPoolConfig{
+	MinOpened:           100,
+	MaxOpened:           numChannels * 100,
+	MaxBurst:            10,
+	WriteSessions:       0.2,
+	HealthCheckWorkers:  10,
+	HealthCheckInterval: 5 * time.Minute,
 }
 
 // errMinOpenedGTMapOpened returns error for SessionPoolConfig.MaxOpened < SessionPoolConfig.MinOpened when SessionPoolConfig.MaxOpened is set.
 func errMinOpenedGTMaxOpened(maxOpened, minOpened uint64) error {
 	return spannerErrorf(codes.InvalidArgument,
-		"require SessionPoolConfig.MaxOpened >= SessionPoolConfig.MinOpened, got %v and %v", maxOpened, minOpened)
+		"require SessionPoolConfig.MaxOpened >= SessionPoolConfig.MinOpened, got %d and %d", maxOpened, minOpened)
+}
+
+// errWriteFractionOutOfRange returns error for
+// SessionPoolConfig.WriteFraction < 0 or SessionPoolConfig.WriteFraction > 1
+func errWriteFractionOutOfRange(writeFraction float64) error {
+	return spannerErrorf(codes.InvalidArgument,
+		"require SessionPoolConfig.WriteSessions >= 0.0 && SessionPoolConfig.WriteSessions <= 1.0, got %.2f", writeFraction)
+}
+
+// errHealthCheckWorkersNegative returns error for
+// SessionPoolConfig.HealthCheckWorkers < 0
+func errHealthCheckWorkersNegative(workers int) error {
+	return spannerErrorf(codes.InvalidArgument,
+		"require SessionPoolConfig.HealthCheckWorkers >= 0, got %d", workers)
+}
+
+// errHealthCheckIntervalNegative returns error for
+// SessionPoolConfig.HealthCheckInterval < 0
+func errHealthCheckIntervalNegative(interval time.Duration) error {
+	return spannerErrorf(codes.InvalidArgument,
+		"require SessionPoolConfig.HealthCheckInterval >= 0, got %v", interval)
 }
 
 // validate verifies that the SessionPoolConfig is good for use.
 func (spc *SessionPoolConfig) validate() error {
-	if spc.getRPCClient == nil {
-		return errNoRPCGetter()
-	}
 	if spc.MinOpened > spc.MaxOpened && spc.MaxOpened > 0 {
 		return errMinOpenedGTMaxOpened(spc.MaxOpened, spc.MinOpened)
+	}
+	if spc.WriteSessions < 0.0 || spc.WriteSessions > 1.0 {
+		return errWriteFractionOutOfRange(spc.WriteSessions)
+	}
+	if spc.HealthCheckWorkers < 0 {
+		return errHealthCheckWorkersNegative(spc.HealthCheckWorkers)
+	}
+	if spc.HealthCheckInterval < 0 {
+		return errHealthCheckIntervalNegative(spc.HealthCheckInterval)
 	}
 	return nil
 }
@@ -400,8 +431,8 @@ type sessionPool struct {
 	mu sync.Mutex
 	// valid marks the validity of the session pool.
 	valid bool
-	// db is the database name that all sessions in the pool are associated with.
-	db string
+	// sc is used to create the sessions for the pool.
+	sc *sessionClient
 	// idleList caches idle session IDs. Session IDs in this list can be
 	// allocated for use.
 	idleList list.List
@@ -418,23 +449,20 @@ type sessionPool struct {
 	prepareReqs uint64
 	// configuration of the session pool.
 	SessionPoolConfig
-	// Metadata to be sent with each request
-	md metadata.MD
 	// hc is the health checker
 	hc *healthChecker
 }
 
 // newSessionPool creates a new session pool.
-func newSessionPool(db string, config SessionPoolConfig, md metadata.MD) (*sessionPool, error) {
+func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, error) {
 	if err := config.validate(); err != nil {
 		return nil, err
 	}
 	pool := &sessionPool{
-		db:                db,
+		sc:                sc,
 		valid:             true,
 		mayGetSession:     make(chan struct{}),
 		SessionPoolConfig: config,
-		md:                md,
 	}
 	if config.HealthCheckWorkers == 0 {
 		// With 10 workers and assuming average latency of 5ms for
@@ -456,8 +484,74 @@ func newSessionPool(db string, config SessionPoolConfig, md metadata.MD) (*sessi
 	// healthChecker can effectively mantain
 	// 100 checks_per_worker/sec * 10 workers * 300 seconds = 300K sessions.
 	pool.hc = newHealthChecker(config.HealthCheckInterval, config.HealthCheckWorkers, config.healthCheckSampleInterval, pool)
+
+	// First initialize the pool before we indicate that the healthchecker is
+	// ready. This prevents the maintainer from starting before the pool has
+	// been initialized, which means that we guarantee that the initial
+	// sessions are created using BatchCreateSessions.
+	if config.MinOpened > 0 {
+		numSessions := minUint64(config.MinOpened, math.MaxInt32)
+		if err := pool.initPool(int32(numSessions)); err != nil {
+			return nil, err
+		}
+	}
 	close(pool.hc.ready)
 	return pool, nil
+}
+
+func (p *sessionPool) initPool(numSessions int32) error {
+	p.mu.Lock()
+	// Take budget before the actual session creation.
+	p.numOpened += uint64(numSessions)
+	recordStat(context.Background(), OpenSessionCount, int64(p.numOpened))
+	p.createReqs += uint64(numSessions)
+	p.mu.Unlock()
+	// Asynchronously create the initial sessions for the pool.
+	return p.sc.batchCreateSessions(numSessions, p)
+}
+
+// sessionReady is executed by the SessionClient when a session has been
+// created and is ready to use. This method will add the new session to the
+// pool and decrease the number of sessions that is being created.
+func (p *sessionPool) sessionReady(s *session) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	// Set this pool as the home pool of the session and register it with the
+	// health checker.
+	s.pool = p
+	p.hc.register(s)
+	p.createReqs--
+	// Insert the session at a random position in the pool to prevent all
+	// sessions affiliated with a channel to be placed at sequentially in the
+	// pool.
+	if p.idleList.Len() > 0 {
+		pos := rand.Intn(p.idleList.Len())
+		before := p.idleList.Front()
+		for i := 0; i < pos; i++ {
+			before = before.Next()
+		}
+		s.setIdleList(p.idleList.InsertBefore(s, before))
+	} else {
+		s.setIdleList(p.idleList.PushBack(s))
+	}
+	// Notify other waiters blocking on session creation.
+	close(p.mayGetSession)
+	p.mayGetSession = make(chan struct{})
+}
+
+// sessionCreationFailed is called by the SessionClient when the creation of one
+// or more requested sessions finished with an error. sessionCreationFailed will
+// decrease the number of sessions being created and notify any waiters that
+// the session creation failed.
+func (p *sessionPool) sessionCreationFailed(err error, numSessions int32) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.createReqs -= uint64(numSessions)
+	p.numOpened -= uint64(numSessions)
+	recordStat(context.Background(), OpenSessionCount, int64(p.numOpened))
+	// Notify other waiters blocking on session creation.
+	close(p.mayGetSession)
+	p.mayGetSession = make(chan struct{})
 }
 
 // isValid checks if the session pool is still valid.
@@ -524,12 +618,7 @@ func (p *sessionPool) createSession(ctx context.Context) (*session, error) {
 		p.mayGetSession = make(chan struct{})
 		p.mu.Unlock()
 	}
-	sc, err := p.getRPCClient()
-	if err != nil {
-		doneCreate(false)
-		return nil, err
-	}
-	s, err := createSession(ctx, sc, p.db, p.sessionLabels, p.md)
+	s, err := p.sc.createSession(ctx)
 	if err != nil {
 		doneCreate(false)
 		// Should return error directly because of the previous retries on
@@ -542,20 +631,6 @@ func (p *sessionPool) createSession(ctx context.Context) (*session, error) {
 	s.pool = p
 	p.hc.register(s)
 	doneCreate(true)
-	return s, nil
-}
-
-func createSession(ctx context.Context, sc *vkit.Client, db string, labels map[string]string, md metadata.MD) (*session, error) {
-	var s *session
-	sid, e := sc.CreateSession(ctx, &sppb.CreateSessionRequest{
-		Database: db,
-		Session:  &sppb.Session{Labels: labels},
-	})
-	if e != nil {
-		return nil, toSpannerError(e)
-	}
-	// If no error, construct the new session.
-	s = &session{valid: true, client: sc, id: sid.Name, createTime: time.Now(), md: md}
 	return s, nil
 }
 
@@ -577,7 +652,6 @@ func (p *sessionPool) isHealthy(s *session) bool {
 // for read operations.
 func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 	trace.TracePrintf(ctx, nil, "Acquiring a read-only session")
-	ctx = contextWithOutgoingMetadata(ctx, p.md)
 	for {
 		var (
 			s   *session
@@ -649,7 +723,6 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 // returned should be used for read write transactions.
 func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, error) {
 	trace.TracePrintf(ctx, nil, "Acquiring a read-write session")
-	ctx = contextWithOutgoingMetadata(ctx, p.md)
 	for {
 		var (
 			s   *session
@@ -1004,7 +1077,7 @@ func (hc *healthChecker) worker(i int) {
 		ws := getNextForTx()
 		if ws != nil {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-			err := ws.prepareForWrite(contextWithOutgoingMetadata(ctx, hc.pool.md))
+			err := ws.prepareForWrite(ctx)
 			cancel()
 			if err != nil {
 				// Skip handling prepare error, session can be prepared in next
@@ -1044,6 +1117,9 @@ func (hc *healthChecker) maintainer() {
 	// Wait so that pool is ready.
 	<-hc.ready
 
+	// A maintenance window is 10 iterations. The maintainer executes a loop
+	// every hc.sampleInterval, which defaults to 1 minute, which means that
+	// the default maintenance window is 10 minutes.
 	windowSize := uint64(10)
 
 	for iteration := uint64(0); ; iteration++ {
