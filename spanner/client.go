@@ -149,38 +149,36 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.NewClient")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr == "" {
-		// gRPC options.
-		allOpts := []option.ClientOption{
-			option.WithEndpoint(endpoint),
-			option.WithScopes(Scope),
-			option.WithGRPCDialOption(
-				grpc.WithDefaultCallOptions(
-					grpc.MaxCallSendMsgSize(100<<20),
-					grpc.MaxCallRecvMsgSize(100<<20),
-				),
-			),
+	// Append emulator options if SPANNER_EMULATOR_HOST has been set.
+	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
+		emulatorOpts := []option.ClientOption{
+			option.WithEndpoint(emulatorAddr),
+			option.WithGRPCDialOption(grpc.WithInsecure()),
+			option.WithoutAuthentication(),
 		}
-		allOpts = append(allOpts, opts...)
+		opts = append(opts, emulatorOpts...)
+	}
 
-		// TODO(deklerk): This should be replaced with a balancer with
-		// config.NumChannels connections, instead of config.NumChannels
-		// clients.
-		for i := 0; i < config.NumChannels; i++ {
-			client, err := vkit.NewClient(ctx, allOpts...)
-			if err != nil {
-				return nil, errDial(i, err)
-			}
-			c.clients = append(c.clients, client)
-		}
-	} else {
-		conn, err := grpc.Dial(emulatorAddr, grpc.WithInsecure())
+	// gRPC options.
+	allOpts := []option.ClientOption{
+		option.WithEndpoint(endpoint),
+		option.WithScopes(Scope),
+		option.WithGRPCDialOption(
+			grpc.WithDefaultCallOptions(
+				grpc.MaxCallSendMsgSize(100<<20),
+				grpc.MaxCallRecvMsgSize(100<<20),
+			),
+		),
+	}
+	allOpts = append(allOpts, opts...)
+
+	// TODO(deklerk): This should be replaced with a balancer with
+	// config.NumChannels connections, instead of config.NumChannels
+	// clients.
+	for i := 0; i < config.NumChannels; i++ {
+		client, err := vkit.NewClient(ctx, allOpts...)
 		if err != nil {
-			return nil, errDial(0, err)
-		}
-		client, err := vkit.NewClient(ctx, option.WithGRPCConn(conn))
-		if err != nil {
-			return nil, errDial(0, err)
+			return nil, errDial(i, err)
 		}
 		c.clients = append(c.clients, client)
 	}
