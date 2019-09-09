@@ -544,6 +544,7 @@ func (ac *AdminClient) isConsistent(ctx context.Context, tableName, token string
 
 // WaitForReplication waits until all the writes committed before the call started have been propagated to all the clusters in the instance via replication.
 func (ac *AdminClient) WaitForReplication(ctx context.Context, table string) error {
+	ctx = mergeOutgoingMetadata(ctx, withGoogleClientInfo(), ac.md)
 	// Get the token.
 	prefix := ac.instancePrefix()
 	tableName := prefix + "/tables/" + table
