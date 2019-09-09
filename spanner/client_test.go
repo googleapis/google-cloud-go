@@ -24,13 +24,12 @@ import (
 	"strings"
 	"testing"
 
+	itestutil "cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/spanner/internal/benchserver"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	gstatus "google.golang.org/grpc/status"
 )
 
@@ -43,6 +42,24 @@ func setupMockedTestServerWithConfig(t *testing.T, config ClientConfig) (server 
 }
 
 func setupMockedTestServerWithConfigAndClientOptions(t *testing.T, config ClientConfig, clientOptions []option.ClientOption) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
+	grpcHeaderChecker := &itestutil.HeadersEnforcer{
+		OnFailure: t.Fatalf,
+		Checkers: []*itestutil.HeaderChecker{
+			{
+				Key: "x-goog-api-client",
+				ValuesValidator: func(token ...string) error {
+					if len(token) != 1 {
+						return spannerErrorf(codes.Internal, "unexpected number of api client token headers: %v", len(token))
+					}
+					if !strings.HasPrefix(token[0], "gl-go/") {
+						return spannerErrorf(codes.Internal, "unexpected api client token: %v", token[0])
+					}
+					return nil
+				},
+			},
+		},
+	}
+	clientOptions = append(clientOptions, grpcHeaderChecker.CallOptions()...)
 	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
 	opts = append(opts, clientOptions...)
 	ctx := context.Background()
@@ -439,53 +456,5 @@ func TestNewClient_ConnectToEmulator(t *testing.T) {
 	_, err = c.Single().ReadRow(ctx, "Accounts", Key{"alice"}, []string{"balance"})
 	if err != nil {
 		t.Fatal(err)
-	}
-}
-
-func TestClient_ApiClientHeader(t *testing.T) {
-	t.Parallel()
-	interceptor := func(
-		ctx context.Context,
-		method string,
-		req interface{},
-		reply interface{},
-		cc *grpc.ClientConn,
-		invoker grpc.UnaryInvoker,
-		opts ...grpc.CallOption,
-	) error {
-		// Check that the x-goog-api-client is set.
-		headers, ok := metadata.FromOutgoingContext(ctx)
-		if !ok {
-			return spannerErrorf(codes.Internal, "could not get outgoing metadata")
-		}
-		token, ok := headers["x-goog-api-client"]
-		if !ok {
-			return spannerErrorf(codes.Internal, "could not get api client token")
-		}
-		if token == nil {
-			return spannerErrorf(codes.Internal, "nil-value for outgoing api client token")
-		}
-		if len(token) != 1 {
-			return spannerErrorf(codes.Internal, "unexpected number of api client token headers: %v", len(token))
-		}
-		if !strings.HasPrefix(token[0], "gl-go/") {
-			return spannerErrorf(codes.Internal, "unexpected api client token: %v", token[0])
-		}
-		return invoker(ctx, method, req, reply, cc, opts...)
-	}
-	opts := []option.ClientOption{option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptor))}
-	_, client, teardown := setupMockedTestServerWithConfigAndClientOptions(t, ClientConfig{}, opts)
-	defer teardown()
-	ctx := context.Background()
-	iter := client.Single().Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
-	defer iter.Stop()
-	for {
-		_, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatal(err)
-		}
 	}
 }

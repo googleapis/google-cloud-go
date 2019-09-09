@@ -130,6 +130,8 @@ func TestMain(m *testing.M) {
 	os.Exit(res)
 }
 
+var grpcHeaderChecker = testutil.DefaultHeadersEnforcer()
+
 func initIntegrationTests() func() {
 	ctx := context.Background()
 	flag.Parse() // Needed for testing.Short().
@@ -152,8 +154,9 @@ func initIntegrationTests() func() {
 	}
 	var err error
 
+	opts := append(grpcHeaderChecker.CallOptions(), option.WithTokenSource(ts), option.WithEndpoint(endpoint))
 	// Create Admin client and Data client.
-	admin, err = database.NewDatabaseAdminClient(ctx, option.WithTokenSource(ts), option.WithEndpoint(endpoint))
+	admin, err = database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		log.Fatalf("cannot create admin client: %v", err)
 	}

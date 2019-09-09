@@ -80,6 +80,8 @@ func getClient(t *testing.T) *Client {
 	return client
 }
 
+var grpcHeadersChecker = testutil.DefaultHeadersEnforcer()
+
 // If integration tests will be run, create a unique dataset for them.
 // Return a cleanup function.
 func initIntegrationTest() func() {
@@ -108,11 +110,12 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		client, err = NewClient(ctx, projID, option.WithHTTPClient(hc))
+		copts := append(grpcHeadersChecker.CallOptions(), option.WithHTTPClient(hc))
+		client, err = NewClient(ctx, projID, copts...)
 		if err != nil {
 			log.Fatal(err)
 		}
-		storageClient, err = storage.NewClient(ctx, option.WithHTTPClient(hc))
+		storageClient, err = storage.NewClient(ctx, copts...)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -137,8 +140,8 @@ func initIntegrationTest() func() {
 			log.Println("Integration tests skipped. See CONTRIBUTING.md for details")
 			return func() {}
 		}
-		bqOpt := option.WithTokenSource(ts)
-		sOpt := option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl))
+		bqOpts := append(grpcHeadersChecker.CallOptions(), option.WithTokenSource(ts))
+		sOpts := append(grpcHeadersChecker.CallOptions(), option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl)))
 		cleanup := func() {}
 		now := time.Now().UTC()
 		if *record {
@@ -154,16 +157,16 @@ func initIntegrationTest() func() {
 					log.Fatalf("could not record: %v", err)
 				}
 				log.Printf("recording to %s", replayFilename)
-				hc, err := recorder.Client(ctx, bqOpt)
+				hc, err := recorder.Client(ctx, bqOpts...)
 				if err != nil {
 					log.Fatal(err)
 				}
-				bqOpt = option.WithHTTPClient(hc)
-				hc, err = recorder.Client(ctx, sOpt)
+				bqOpts = append(grpcHeadersChecker.CallOptions(), option.WithHTTPClient(hc))
+				hc, err = recorder.Client(ctx, sOpts...)
 				if err != nil {
 					log.Fatal(err)
 				}
-				sOpt = option.WithHTTPClient(hc)
+				sOpts = append(grpcHeadersChecker.CallOptions(), option.WithHTTPClient(hc))
 				cleanup = func() {
 					if err := recorder.Close(); err != nil {
 						log.Printf("saving recording: %v", err)
@@ -172,11 +175,11 @@ func initIntegrationTest() func() {
 			}
 		}
 		var err error
-		client, err = NewClient(ctx, projID, bqOpt)
+		client, err = NewClient(ctx, projID, bqOpts...)
 		if err != nil {
 			log.Fatalf("NewClient: %v", err)
 		}
-		storageClient, err = storage.NewClient(ctx, sOpt)
+		storageClient, err = storage.NewClient(ctx, sOpts...)
 		if err != nil {
 			log.Fatalf("storage.NewClient: %v", err)
 		}

@@ -1379,6 +1379,7 @@ func TestIntegration_Granularity(t *testing.T) {
 		timeout = 5 * time.Minute
 	}
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx = mergeOutgoingMetadata(ctx, withGoogleClientInfo())
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {

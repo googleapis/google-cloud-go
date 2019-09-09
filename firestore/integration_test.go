@@ -36,9 +36,7 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/option"
 	"google.golang.org/genproto/googleapis/type/latlng"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -77,12 +75,28 @@ func initIntegrationTest() {
 	if ts == nil {
 		log.Fatal("The project key must be set. See CONTRIBUTING.md for details")
 	}
-	ti := &testInterceptor{dbPath: "projects/" + testProjectID + "/databases/(default)"}
-	c, err := NewClient(ctx, testProjectID,
-		option.WithTokenSource(ts),
-		option.WithGRPCDialOption(grpc.WithUnaryInterceptor(ti.interceptUnary)),
-		option.WithGRPCDialOption(grpc.WithStreamInterceptor(ti.interceptStream)),
-	)
+	wantDBPath := "projects/" + testProjectID + "/databases/(default)"
+
+	ti := &testutil.HeadersEnforcer{
+		Checkers: []*testutil.HeaderChecker{
+			testutil.XGoogClientHeaderChecker,
+
+			{
+				Key: "google-cloud-resource-prefix",
+				ValuesValidator: func(values ...string) error {
+					if len(values) == 0 {
+						return errors.New("expected non-blank header")
+					}
+					if values[0] != wantDBPath {
+						return fmt.Errorf("resource prefix mismatch; got %q want %q", values[0], wantDBPath)
+					}
+					return nil
+				},
+			},
+		},
+	}
+	copts := append(ti.CallOptions(), option.WithTokenSource(ts))
+	c, err := NewClient(ctx, testProjectID, copts...)
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)
 	}
@@ -92,40 +106,6 @@ func initIntegrationTest() {
 	integrationTestMap["ref"] = refDoc
 	wantIntegrationTestMap["ref"] = refDoc
 	integrationTestStruct.Ref = refDoc
-}
-
-type testInterceptor struct {
-	dbPath string
-}
-
-func (ti *testInterceptor) interceptUnary(ctx context.Context, method string, req, res interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-	ti.checkMetadata(ctx, method)
-	return invoker(ctx, method, req, res, cc, opts...)
-}
-
-func (ti *testInterceptor) interceptStream(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	ti.checkMetadata(ctx, method)
-	return streamer(ctx, desc, cc, method, opts...)
-}
-
-func (ti *testInterceptor) checkMetadata(ctx context.Context, method string) {
-	md, ok := metadata.FromOutgoingContext(ctx)
-	if !ok {
-		log.Fatalf("method %s: bad metadata", method)
-	}
-	for _, h := range []string{"google-cloud-resource-prefix", "x-goog-api-client"} {
-		v, ok := md[h]
-		if !ok {
-			log.Fatalf("method %s, header %s missing", method, h)
-		}
-		if len(v) != 1 {
-			log.Fatalf("method %s, header %s: bad value %v", method, h, v)
-		}
-	}
-	v := md["google-cloud-resource-prefix"][0]
-	if v != ti.dbPath {
-		log.Fatalf("method %s: bad resource prefix header:  %q", method, v)
-	}
 }
 
 func cleanupIntegrationTest() {
