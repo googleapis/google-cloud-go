@@ -1182,6 +1182,48 @@ func TestIntegration_Admin(t *testing.T) {
 	}
 }
 
+func TestIntegration_TableIam(t *testing.T) {
+	// TODO(alexoneill): Fix this issue in the client tests, then re-enable this test.
+	t.Skip("test doesn't work without expected client header")
+
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support IAM Policy creation")
+	}
+
+	timeout := 5 * time.Minute
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	defer adminClient.DeleteTable(ctx, "mytable")
+	if err := adminClient.CreateTable(ctx, "mytable"); err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+
+	// Verify that the IAM Controls work for Tables.
+	iamHandle := adminClient.TableIAM("mytable")
+	p, err := iamHandle.Policy(ctx)
+	if err != nil {
+		t.Errorf("Iam GetPolicy mytable: %v", err)
+	}
+	if err = iamHandle.SetPolicy(ctx, p); err != nil {
+		t.Errorf("Iam SetPolicy mytable: %v", err)
+	}
+	if _, err = iamHandle.TestPermissions(ctx, []string{"bigtable.tables.get"}); err != nil {
+		t.Errorf("Iam TestPermissions mytable: %v", err)
+	}
+}
+
 func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if instanceToCreate == "" {
 		t.Skip("instanceToCreate not set, skipping instance creation testing")

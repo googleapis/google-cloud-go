@@ -586,6 +586,12 @@ func (ac *AdminClient) WaitForReplication(ctx context.Context, table string) err
 	}
 }
 
+// TableIAM creates an IAM client specific to a given Instance and Table within the configured project.
+func (ac *AdminClient) TableIAM(tableID string) *iam.Handle {
+	return iam.InternalNewHandleGRPCClient(ac.tClient,
+		"projects/"+ac.project+"/instances/"+ac.instance+"/tables/"+tableID)
+}
+
 const instanceAdminAddr = "bigtableadmin.googleapis.com:443"
 
 // InstanceAdminClient is a client type for performing admin operations on instances.
@@ -1016,12 +1022,6 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 // InstanceIAM returns the instance's IAM handle.
 func (iac *InstanceAdminClient) InstanceIAM(instanceID string) *iam.Handle {
 	return iam.InternalNewHandleGRPCClient(iac.iClient, "projects/"+iac.project+"/instances/"+instanceID)
-}
-
-// TableIAM creates an IAM client specific to a given Instance and Table within the configured project.
-func (iac *InstanceAdminClient) TableIAM(instanceID, tableID string) *iam.Handle {
-	return iam.InternalNewHandleGRPCClient(iac.iClient,
-		"projects/"+iac.project+"/instances/"+instanceID+"/tables/"+tableID)
 }
 
 // Routing policies.
