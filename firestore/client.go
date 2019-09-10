@@ -24,6 +24,7 @@ import (
 	"time"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
+	"cloud.google.com/go/firestore/emulator"
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
 	"github.com/golang/protobuf/ptypes"
@@ -63,8 +64,8 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	var o []option.ClientOption
 	// Environment variables for gcloud emulator:
 	// https://cloud.google.com/sdk/gcloud/reference/beta/emulators/firestore/
-	if addr := os.Getenv("FIRESTORE_EMULATOR_HOST"); addr != "" {
-		conn, err := grpc.Dial(addr, grpc.WithInsecure(), grpc.WithPerRPCCredentials(emulatorCreds{}))
+	if addr := os.Getenv(emulator.AddressEnvVar); addr != "" {
+		conn, err := grpc.Dial(addr, grpc.WithInsecure(), grpc.WithPerRPCCredentials(emulator.AdminCreds))
 		if err != nil {
 			return nil, fmt.Errorf("firestore: dialing address from env var FIRESTORE_EMULATOR_HOST: %v", err)
 		}
@@ -331,15 +332,4 @@ func sleep(ctx context.Context, dur time.Duration) error {
 	default:
 		return err
 	}
-}
-
-// Fake admin credentials for the Firestore emulator.
-// Always hardcodes an "authorization" header with value "Bearer owner".
-// The Firestore emulator is configured to accept this as valid admin credentials.
-type emulatorCreds struct{}
-func (ec emulatorCreds) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
-  return map[string]string{ "authorization": "Bearer owner" }, nil
-}
-func (ec emulatorCreds) RequireTransportSecurity() bool {
-  return false
 }
