@@ -19,8 +19,10 @@ package spansql
 // This file holds SQL methods for rendering the types in types.go
 // as the SQL dialect that this package parses.
 
-import "strconv"
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
 func (ct CreateTable) SQL() string {
 	str := "CREATE TABLE " + ct.Name + " (\n"

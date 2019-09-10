@@ -24,12 +24,13 @@ It has these top-level messages:
 */
 package helloworld
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
-
 import (
+	fmt "fmt"
+
+	proto "github.com/golang/protobuf/proto"
+
 	"context"
+	math "math"
 
 	grpc "google.golang.org/grpc"
 )

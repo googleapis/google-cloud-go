@@ -19,12 +19,6 @@ import (
 
 	. "cloud.google.com/go/spanner/internal/testutil"
 
-	structpb "github.com/golang/protobuf/ptypes/struct"
-	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
-	"google.golang.org/grpc/codes"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -34,10 +28,15 @@ import (
 	"strings"
 	"testing"
 
+	structpb "github.com/golang/protobuf/ptypes/struct"
+	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
+	"google.golang.org/grpc/codes"
+
 	apiv1 "cloud.google.com/go/spanner/apiv1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+
 	gstatus "google.golang.org/grpc/status"
 )
 

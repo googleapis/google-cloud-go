@@ -17,13 +17,6 @@
 package kms
 
 import (
-	durationpb "github.com/golang/protobuf/ptypes/duration"
-	timestamppb "github.com/golang/protobuf/ptypes/timestamp"
-	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
-	field_maskpb "google.golang.org/genproto/protobuf/field_mask"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -36,11 +29,17 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	durationpb "github.com/golang/protobuf/ptypes/duration"
+	timestamppb "github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/api/option"
+	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
+	field_maskpb "google.golang.org/genproto/protobuf/field_mask"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 

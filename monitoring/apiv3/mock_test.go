@@ -17,13 +17,6 @@
 package monitoring
 
 import (
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	metricpb "google.golang.org/genproto/googleapis/api/metric"
-	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
-	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -36,11 +29,17 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
+	metricpb "google.golang.org/genproto/googleapis/api/metric"
+	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
+	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 
@@ -1922,7 +1921,7 @@ func TestNotificationChannelServiceGetNotificationChannelDescriptor(t *testing.T
 
 	mockNotificationChannel.resps = append(mockNotificationChannel.resps[:0], expectedResponse)
 
-	var formattedName string = fmt.Sprintf("projects/%s/notificationChannelDescriptors/%s", "[PROJECT]", "[CHANNEL_DESCRIPTOR]")
+	var formattedName string = fmt.Sprintf("projects/%s/notificationChannelDescriptors/%s", "[PROJECT]", "[NOTIFICATION_CHANNEL_DESCRIPTOR]")
 	var request = &monitoringpb.GetNotificationChannelDescriptorRequest{
 		Name: formattedName,
 	}
@@ -1951,7 +1950,7 @@ func TestNotificationChannelServiceGetNotificationChannelDescriptorError(t *test
 	errCode := codes.PermissionDenied
 	mockNotificationChannel.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = fmt.Sprintf("projects/%s/notificationChannelDescriptors/%s", "[PROJECT]", "[CHANNEL_DESCRIPTOR]")
+	var formattedName string = fmt.Sprintf("projects/%s/notificationChannelDescriptors/%s", "[PROJECT]", "[NOTIFICATION_CHANNEL_DESCRIPTOR]")
 	var request = &monitoringpb.GetNotificationChannelDescriptorRequest{
 		Name: formattedName,
 	}
@@ -2550,11 +2549,9 @@ func TestUptimeCheckServiceListUptimeCheckConfigsError(t *testing.T) {
 func TestUptimeCheckServiceGetUptimeCheckConfig(t *testing.T) {
 	var name2 string = "name2-1052831874"
 	var displayName string = "displayName1615086568"
-	var isInternal bool = true
 	var expectedResponse = &monitoringpb.UptimeCheckConfig{
 		Name:        name2,
 		DisplayName: displayName,
-		IsInternal:  isInternal,
 	}
 
 	mockUptimeCheck.err = nil
@@ -2613,11 +2610,9 @@ func TestUptimeCheckServiceGetUptimeCheckConfigError(t *testing.T) {
 func TestUptimeCheckServiceCreateUptimeCheckConfig(t *testing.T) {
 	var name string = "name3373707"
 	var displayName string = "displayName1615086568"
-	var isInternal bool = true
 	var expectedResponse = &monitoringpb.UptimeCheckConfig{
 		Name:        name,
 		DisplayName: displayName,
-		IsInternal:  isInternal,
 	}
 
 	mockUptimeCheck.err = nil
@@ -2680,11 +2675,9 @@ func TestUptimeCheckServiceCreateUptimeCheckConfigError(t *testing.T) {
 func TestUptimeCheckServiceUpdateUptimeCheckConfig(t *testing.T) {
 	var name string = "name3373707"
 	var displayName string = "displayName1615086568"
-	var isInternal bool = true
 	var expectedResponse = &monitoringpb.UptimeCheckConfig{
 		Name:        name,
 		DisplayName: displayName,
-		IsInternal:  isInternal,
 	}
 
 	mockUptimeCheck.err = nil

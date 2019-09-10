@@ -17,12 +17,6 @@
 package cloudtasks
 
 import (
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta3"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -35,11 +29,16 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
+	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta3"
+	iampb "google.golang.org/genproto/googleapis/iam/v1"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 

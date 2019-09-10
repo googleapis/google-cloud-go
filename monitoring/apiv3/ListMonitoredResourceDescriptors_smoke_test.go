@@ -17,10 +17,6 @@
 package monitoring
 
 import (
-	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-)
-
-import (
 	"context"
 	"fmt"
 	"strconv"
@@ -30,6 +26,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 )
 
 var _ = fmt.Sprintf

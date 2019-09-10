@@ -15,12 +15,6 @@
 package testutil_test
 
 import (
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	structpb "github.com/golang/protobuf/ptypes/struct"
-	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
-)
-
-import (
 	"context"
 	"fmt"
 	"math/rand"
@@ -29,9 +23,13 @@ import (
 	"sync"
 	"time"
 
+	emptypb "github.com/golang/protobuf/ptypes/empty"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/genproto/googleapis/rpc/status"
+	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
+
 	gstatus "google.golang.org/grpc/status"
 )
 

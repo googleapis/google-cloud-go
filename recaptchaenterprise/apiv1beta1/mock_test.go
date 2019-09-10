@@ -17,10 +17,6 @@
 package recaptchaenterprise
 
 import (
-	recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -34,10 +30,13 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/api/option"
+	recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 
@@ -115,7 +114,7 @@ func TestMain(m *testing.M) {
 
 func TestRecaptchaEnterpriseServiceV1Beta1CreateAssessment(t *testing.T) {
 	var name string = "name3373707"
-	var score float32 = 1.0926453E7
+	var score float32 = 1.0926453e7
 	var expectedResponse = &recaptchaenterprisepb.Assessment{
 		Name:  name,
 		Score: score,
