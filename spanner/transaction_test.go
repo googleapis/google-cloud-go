@@ -195,64 +195,46 @@ func TestApply_RetryOnAbort(t *testing.T) {
 	}
 }
 
-// Tests that NotFound errors cause failures, and aren't retried, except for
-// BeginTransaction.
+// Tests that NotFound errors cause failures, and aren't retried.
 func TestTransaction_NotFound(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
 
-	errSessionNotFound := spannerErrorf(codes.NotFound, "Session not found")
-	// BeginTransaction should retry automatically.
+	wantErr := spannerErrorf(codes.NotFound, "Session not found")
 	server.TestSpanner.PutExecutionTime(MethodBeginTransaction,
 		SimulatedExecutionTime{
-			Errors: []error{errSessionNotFound},
+			Errors: []error{wantErr, wantErr, wantErr},
 		})
-	txn := client.ReadOnlyTransaction()
-	if _, _, got := txn.acquire(ctx); got != nil {
-		t.Fatalf("Expect acquire to succeed, got %v, want nil.", got)
-	}
-	txn.Close()
-
-	// Query should fail with Session not found.
-	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
-		SimulatedExecutionTime{
-			Errors: []error{errSessionNotFound},
-		})
-	txn = client.ReadOnlyTransaction()
-	iter := txn.Query(ctx, NewStatement("SELECT 1"))
-	_, got := iter.Next()
-	if !testEqual(errSessionNotFound, got) {
-		t.Fatalf("Expect Query to fail\ngot: %v\nwant: %v", got, errSessionNotFound)
-	}
-	iter.Stop()
-
-	// Read should fail with Session not found.
-	server.TestSpanner.PutExecutionTime(MethodStreamingRead,
-		SimulatedExecutionTime{
-			Errors: []error{errSessionNotFound},
-		})
-	txn = client.ReadOnlyTransaction()
-	iter = txn.Read(ctx, "Users", KeySets(Key{"alice"}, Key{"bob"}), []string{"name", "email"})
-	_, got = iter.Next()
-	if !testEqual(errSessionNotFound, got) {
-		t.Fatalf("Expect Read to fail\ngot: %v\nwant: %v", got, errSessionNotFound)
-	}
-	iter.Stop()
-
-	// Commit should fail with Session not found.
 	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
 		SimulatedExecutionTime{
-			Errors: []error{errSessionNotFound},
+			Errors: []error{wantErr, wantErr, wantErr},
 		})
+
+	txn := client.ReadOnlyTransaction()
+	defer txn.Close()
+
+	if _, _, got := txn.acquire(ctx); !testEqual(wantErr, got) {
+		t.Fatalf("Expect acquire to fail, got %v, want %v.", got, wantErr)
+	}
+
+	// The failure should recycle the session, we expect it to be used in
+	// following requests.
+	if got := txn.Query(ctx, NewStatement("SELECT 1")); !testEqual(wantErr, got.err) {
+		t.Fatalf("Expect Query to fail, got %v, want %v.", got.err, wantErr)
+	}
+
+	if got := txn.Read(ctx, "Users", KeySets(Key{"alice"}, Key{"bob"}), []string{"name", "email"}); !testEqual(wantErr, got.err) {
+		t.Fatalf("Expect Read to fail, got %v, want %v.", got.err, wantErr)
+	}
 
 	ms := []*Mutation{
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
 	}
-	if _, got := client.Apply(ctx, ms, ApplyAtLeastOnce()); !testEqual(errSessionNotFound, got) {
-		t.Fatalf("Expect Apply to fail\ngot: %v\nwant: %v", got, errSessionNotFound)
+	if _, got := client.Apply(ctx, ms, ApplyAtLeastOnce()); !testEqual(wantErr, got) {
+		t.Fatalf("Expect Apply to fail, got %v, want %v.", got, wantErr)
 	}
 }
 
