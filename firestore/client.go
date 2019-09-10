@@ -62,12 +62,11 @@ type Client struct {
 // NewClient creates a new Firestore client that uses the given project.
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
 	var o []option.ClientOption
-	// Environment variables for gcloud emulator:
-	// https://cloud.google.com/sdk/gcloud/reference/beta/emulators/firestore/
+	// If this environment variable is defined, configure the client to talk to the emulator.
 	if addr := os.Getenv(emulator.AddressEnvVar); addr != "" {
 		conn, err := grpc.Dial(addr, grpc.WithInsecure(), grpc.WithPerRPCCredentials(emulator.AdminCreds))
 		if err != nil {
-			return nil, fmt.Errorf("firestore: dialing address from env var FIRESTORE_EMULATOR_HOST: %v", err)
+			return nil, fmt.Errorf("firestore: dialing address from env var %s: %v", emulator.AddressEnvVar, err)
 		}
 		o = []option.ClientOption{option.WithGRPCConn(conn)}
 	}
