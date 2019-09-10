@@ -254,7 +254,7 @@ func TestIntegration_BucketMethods(t *testing.T) {
 					AgeInDays:             10,
 					Liveness:              Archived,
 					CreatedBefore:         time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
-					MatchesStorageClasses: []string{"MULTI_REGIONAL", "STANDARD"},
+					MatchesStorageClasses: []string{"STANDARD"},
 					NumNewerVersions:      3,
 				},
 			}, {
@@ -1559,7 +1559,7 @@ func TestIntegration_NonexistentBucket(t *testing.T) {
 func TestIntegration_PerObjectStorageClass(t *testing.T) {
 	const (
 		defaultStorageClass = "STANDARD"
-		newStorageClass     = "MULTI_REGIONAL"
+		newStorageClass     = "NEARLINE"
 	)
 	ctx := context.Background()
 	client := testConfig(ctx, t)
