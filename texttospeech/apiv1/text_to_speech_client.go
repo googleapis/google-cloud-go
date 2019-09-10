@@ -62,7 +62,7 @@ func defaultCallOptions() *CallOptions {
 	}
 	return &CallOptions{
 		ListVoices:       retry[[2]string{"default", "idempotent"}],
-		SynthesizeSpeech: retry[[2]string{"default", "idempotent"}],
+		SynthesizeSpeech: retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 

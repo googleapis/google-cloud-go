@@ -3,11 +3,17 @@
 
 package tests
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
-import timestamp "github.com/golang/protobuf/ptypes/timestamp"
-import v1 "google.golang.org/genproto/googleapis/firestore/v1"
+import (
+	fmt "fmt"
+
+	proto "github.com/golang/protobuf/proto"
+
+	math "math"
+
+	timestamp "github.com/golang/protobuf/ptypes/timestamp"
+
+	v1 "google.golang.org/genproto/googleapis/firestore/v1"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
