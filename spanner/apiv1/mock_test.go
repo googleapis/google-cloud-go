@@ -17,6 +17,11 @@
 package spanner
 
 import (
+	emptypb "github.com/golang/protobuf/ptypes/empty"
+	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
+)
+
+import (
 	"context"
 	"flag"
 	"fmt"
@@ -29,15 +34,11 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
-	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
-	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
-
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
-
 	gstatus "google.golang.org/grpc/status"
 )
 

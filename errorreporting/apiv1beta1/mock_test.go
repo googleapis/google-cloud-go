@@ -17,6 +17,10 @@
 package errorreporting
 
 import (
+	clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
+)
+
+import (
 	"context"
 	"flag"
 	"fmt"
@@ -30,13 +34,10 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/api/option"
-	clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
-
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
-
 	gstatus "google.golang.org/grpc/status"
 )
 

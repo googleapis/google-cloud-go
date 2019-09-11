@@ -17,6 +17,14 @@
 package instance
 
 import (
+	emptypb "github.com/golang/protobuf/ptypes/empty"
+	iampb "google.golang.org/genproto/googleapis/iam/v1"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
+	field_maskpb "google.golang.org/genproto/protobuf/field_mask"
+)
+
+import (
 	"context"
 	"flag"
 	"fmt"
@@ -29,18 +37,11 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
-	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
-	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
-	field_maskpb "google.golang.org/genproto/protobuf/field_mask"
-
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
-
 	gstatus "google.golang.org/grpc/status"
 )
 
