@@ -58,7 +58,7 @@ type TableMetadata struct {
 	// At most one of UseLegacySQL and UseStandardSQL can be true.
 	UseLegacySQL bool
 
-	// Use Legacy SQL for the view query. The default.
+	// Use Standard SQL for the view query. The default.
 	// At most one of UseLegacySQL and UseStandardSQL can be true.
 	// Deprecated: use UseLegacySQL.
 	UseStandardSQL bool
