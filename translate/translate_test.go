@@ -94,29 +94,34 @@ func TestTranslateURL(t *testing.T) {
 		want   url.Values
 	}{
 		{language.Spanish, []string{"text"}, nil, url.Values{
-			"q":      []string{"text"},
-			"target": []string{"es"},
+			"q":           []string{"text"},
+			"target":      []string{"es"},
+			"prettyPrint": []string{"false"},
 		}},
 		{language.English, []string{"text"}, &Options{}, url.Values{
-			"q":      []string{"text"},
-			"target": []string{"en"},
+			"q":           []string{"text"},
+			"target":      []string{"en"},
+			"prettyPrint": []string{"false"},
 		}},
 		{language.Turkish, []string{"t1", "t2"}, nil, url.Values{
-			"q":      []string{"t1", "t2"},
-			"target": []string{"tr"},
+			"q":           []string{"t1", "t2"},
+			"target":      []string{"tr"},
+			"prettyPrint": []string{"false"},
 		}},
 		{language.English, []string{"text"}, &Options{Source: language.French},
 			url.Values{
-				"q":      []string{"text"},
-				"source": []string{"fr"},
-				"target": []string{"en"},
+				"q":           []string{"text"},
+				"source":      []string{"fr"},
+				"target":      []string{"en"},
+				"prettyPrint": []string{"false"},
 			},
 		},
 		{language.English, []string{"text"}, &Options{Source: language.French, Format: HTML}, url.Values{
-			"q":      []string{"text"},
-			"source": []string{"fr"},
-			"format": []string{"html"},
-			"target": []string{"en"},
+			"q":           []string{"text"},
+			"source":      []string{"fr"},
+			"format":      []string{"html"},
+			"target":      []string{"en"},
+			"prettyPrint": []string{"false"},
 		}},
 	} {
 		_, err = c.Translate(ctx, test.inputs, test.target, test.opts)
