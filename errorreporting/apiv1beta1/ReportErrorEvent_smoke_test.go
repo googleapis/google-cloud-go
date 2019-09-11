@@ -17,6 +17,10 @@
 package errorreporting
 
 import (
+	clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
+)
+
+import (
 	"context"
 	"fmt"
 	"strconv"
@@ -26,7 +30,6 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
 )
 
 var _ = fmt.Sprintf

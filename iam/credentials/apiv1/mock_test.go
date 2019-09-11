@@ -17,6 +17,10 @@
 package credentials
 
 import (
+	credentialspb "google.golang.org/genproto/googleapis/iam/credentials/v1"
+)
+
+import (
 	"context"
 	"flag"
 	"fmt"
@@ -30,13 +34,10 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/api/option"
-	credentialspb "google.golang.org/genproto/googleapis/iam/credentials/v1"
-
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
-
 	gstatus "google.golang.org/grpc/status"
 )
 

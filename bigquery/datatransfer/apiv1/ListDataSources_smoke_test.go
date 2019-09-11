@@ -17,6 +17,10 @@
 package datatransfer
 
 import (
+	datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
+)
+
+import (
 	"context"
 	"fmt"
 	"strconv"
@@ -26,7 +30,6 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
 )
 
 var _ = fmt.Sprintf

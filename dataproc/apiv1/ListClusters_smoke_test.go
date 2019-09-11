@@ -17,6 +17,10 @@
 package dataproc
 
 import (
+	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
+)
+
+import (
 	"context"
 	"fmt"
 	"strconv"
@@ -26,7 +30,6 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
 )
 
 var _ = fmt.Sprintf

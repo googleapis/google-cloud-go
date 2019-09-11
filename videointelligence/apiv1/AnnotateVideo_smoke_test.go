@@ -17,6 +17,10 @@
 package videointelligence
 
 import (
+	videointelligencepb "google.golang.org/genproto/googleapis/cloud/videointelligence/v1"
+)
+
+import (
 	"context"
 	"fmt"
 	"strconv"
@@ -26,7 +30,6 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	videointelligencepb "google.golang.org/genproto/googleapis/cloud/videointelligence/v1"
 )
 
 var _ = fmt.Sprintf

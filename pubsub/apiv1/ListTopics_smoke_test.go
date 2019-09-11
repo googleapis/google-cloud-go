@@ -17,6 +17,10 @@
 package pubsub
 
 import (
+	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
+)
+
+import (
 	"context"
 	"fmt"
 	"strconv"
@@ -26,7 +30,6 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
 var _ = fmt.Sprintf
