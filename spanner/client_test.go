@@ -432,29 +432,3 @@ func TestReadWriteTransaction_ErrUnexpectedEOF(t *testing.T) {
 		t.Fatalf("unexpected number of attempts: %d, expected %d", attempts, 1)
 	}
 }
-
-func TestNewClient_ConnectToEmulator(t *testing.T) {
-	ctx := context.Background()
-
-	s, err := benchserver.NewMockCloudSpanner()
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer s.Stop()
-	go s.Serve()
-
-	oldEnv := os.Getenv("SPANNER_EMULATOR_HOST")
-	os.Setenv("SPANNER_EMULATOR_HOST", s.Addr())
-	defer os.Setenv("SPANNER_EMULATOR_HOST", oldEnv)
-
-	c, err := NewClient(ctx, "projects/some-proj/instances/some-inst/databases/some-db")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer c.Close()
-
-	_, err = c.Single().ReadRow(ctx, "Accounts", Key{"alice"}, []string{"balance"})
-	if err != nil {
-		t.Fatal(err)
-	}
-}
