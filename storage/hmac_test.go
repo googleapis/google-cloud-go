@@ -501,7 +501,7 @@ func TestHMACKey_List_Options(t *testing.T) {
 		},
 		{
 			name: "for userProjectID",
-			opts: []HMACKeyOption{HMACKeysForUserProject("project-x")},
+			opts: []HMACKeyOption{UserProjectForHMACKeys("project-x")},
 			wantQuery: url.Values{
 				"alt":         {"json"},
 				"prettyPrint": {"false"},
@@ -512,7 +512,7 @@ func TestHMACKey_List_Options(t *testing.T) {
 			name: "all options",
 			opts: []HMACKeyOption{
 				ForHMACKeyServiceAccountEmail("foo@example.org"),
-				HMACKeysForUserProject("project-x"),
+				UserProjectForHMACKeys("project-x"),
 				ShowDeletedHMACKeys(),
 			},
 			wantQuery: url.Values{
