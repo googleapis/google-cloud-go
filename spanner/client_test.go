@@ -20,12 +20,10 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 	"testing"
 
 	itestutil "cloud.google.com/go/internal/testutil"
-	"cloud.google.com/go/spanner/internal/benchserver"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
