@@ -125,6 +125,9 @@ type ModelMetadata struct {
 	// inherited from the encapsulating dataset.
 	Location string
 
+	// Custom encryption configuration (e.g., Cloud KMS keys).
+	EncryptionConfig *EncryptionConfig
+
 	// The input feature columns used to train the model.
 	featureColumns []*bq.StandardSqlField
 
@@ -201,6 +204,7 @@ func bqToModelMetadata(m *bq.Model) (*ModelMetadata, error) {
 		ExpirationTime:   unixMillisToTime(m.ExpirationTime),
 		CreationTime:     unixMillisToTime(m.CreationTime),
 		LastModifiedTime: unixMillisToTime(m.LastModifiedTime),
+		EncryptionConfig: bqToEncryptionConfig(m.EncryptionConfiguration),
 		featureColumns:   m.FeatureColumns,
 		labelColumns:     m.LabelColumns,
 		trainingRuns:     m.TrainingRuns,
@@ -222,6 +226,9 @@ type ModelMetadataToUpdate struct {
 	// set ExpirationTime to NeverExpire.  The zero value is ignored.
 	ExpirationTime time.Time
 
+	// The model's encryption configuration.
+	EncryptionConfig *EncryptionConfig
+
 	labelUpdater
 }
 
@@ -239,6 +246,10 @@ func (mm *ModelMetadataToUpdate) toBQ() (*bq.Model, error) {
 	if mm.Name != nil {
 		m.FriendlyName = optional.ToString(mm.Name)
 		forceSend("FriendlyName")
+	}
+
+	if mm.EncryptionConfig != nil {
+		m.EncryptionConfiguration = mm.EncryptionConfig.toBQ()
 	}
 
 	if !validExpiration(mm.ExpirationTime) {
