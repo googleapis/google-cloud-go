@@ -1044,7 +1044,12 @@ func (b *BucketHandle) Objects(ctx context.Context, q *Query) *ObjectIterator {
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
 		func() int { return len(it.items) },
-		func() interface{} { b := it.items; it.items = nil; return b })
+		func() interface{} {
+			b := it.items
+			it.items = nil
+			it.index = 0
+			return b
+		})
 	if q != nil {
 		it.query = *q
 	}
@@ -1059,6 +1064,7 @@ type ObjectIterator struct {
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 	items    []*ObjectAttrs
+	index    int
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
@@ -1075,8 +1081,10 @@ func (it *ObjectIterator) Next() (*ObjectAttrs, error) {
 	if err := it.nextFunc(); err != nil {
 		return nil, err
 	}
-	item := it.items[0]
-	it.items = it.items[1:]
+
+	item := it.items[it.index]
+	it.index++
+
 	return item, nil
 }
 
@@ -1127,8 +1135,13 @@ func (c *Client) Buckets(ctx context.Context, projectID string) *BucketIterator 
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
-		func() int { return len(it.buckets) },
-		func() interface{} { b := it.buckets; it.buckets = nil; return b })
+		func() int { return len(it.buckets) - it.index },
+		func() interface{} {
+			b := it.buckets
+			it.buckets = nil
+			it.index = 0
+			return b
+		})
 	return it
 }
 
@@ -1143,6 +1156,7 @@ type BucketIterator struct {
 	buckets   []*BucketAttrs
 	pageInfo  *iterator.PageInfo
 	nextFunc  func() error
+	index     int
 }
 
 // Next returns the next result. Its second return value is iterator.Done if
@@ -1152,8 +1166,10 @@ func (it *BucketIterator) Next() (*BucketAttrs, error) {
 	if err := it.nextFunc(); err != nil {
 		return nil, err
 	}
-	b := it.buckets[0]
-	it.buckets = it.buckets[1:]
+
+	b := it.buckets[it.index]
+	it.index++
+
 	return b, nil
 }
 
