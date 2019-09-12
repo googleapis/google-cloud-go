@@ -17,13 +17,6 @@
 package containeranalysis
 
 import (
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	containeranalysispb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1"
-	grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -36,11 +29,17 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
+	containeranalysispb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1"
+	grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
+	iampb "google.golang.org/genproto/googleapis/iam/v1"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 

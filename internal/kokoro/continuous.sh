@@ -49,7 +49,7 @@ cd $GOCLOUD_HOME
 try3() { eval "$*" || eval "$*" || eval "$*"; }
 
 download_deps() {
-    if [[ `go version` == *"go1.11"* ]] || [[ `go version` == *"go1.12"* ]]; then
+    if [[ `go version` == *"go1.11"* ]] || [[ `go version` == *"go1.12"* ]] || [[ `go version` == *"go1.13"* ]]; then
         export GO111MODULE=on
         # All packages, including +build tools, are fetched.
         try3 go mod download
