@@ -1,5 +1,23 @@
 # Changes
 
+## v0.46.0
+
+- spanner:
+  - Retry "Session not found" for read-only transactions.
+  - Retry aborted PDMLs.
+- spanner/spannertest:
+  - Fix a bug that was causing 0X-prefixed number to be parsed incorrectly.
+- storage:
+  - Add HMACKeyOptions.
+  - Remove *REGIONAL from StorageClass. MULTI_REGIONAL,
+    DURABLE_REDUCED_AVAILABILITY, and REGIONAL are no longer StorageClasses but
+    they are still LocationTypes.
+- trace:
+  - Remove cloud.google.com/go/trace. Package cloud.google.com/go/trace has been
+    marked OBSOLETE for several years: it is now no longer provided. If you
+    relied on this package, please vendor it or switch to using
+    https://cloud.google.com/trace/docs/setup/go (which obsoleted it).
+
 ## v0.45.1
 
 This is an empty release that was created solely to aid in pubsub's module
