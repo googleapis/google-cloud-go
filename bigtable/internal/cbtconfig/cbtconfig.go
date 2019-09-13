@@ -68,9 +68,9 @@ const (
 // RegisterFlags registers a set of standard flags for this config.
 // It should be called before flag.Parse.
 func (c *Config) RegisterFlags() {
-	flag.StringVar(&c.Project, "project", c.Project, "project ID, if unset uses gcloud configured project")
+	flag.StringVar(&c.Project, "project", c.Project, "project ID. If unset uses gcloud configured project")
 	flag.StringVar(&c.Instance, "instance", c.Instance, "Cloud Bigtable instance")
-	flag.StringVar(&c.Creds, "creds", c.Creds, "if set, use application credentials in this file")
+	flag.StringVar(&c.Creds, "creds", c.Creds, "Path to the credentials file. If set, uses the application credentials in this file")
 	flag.StringVar(&c.AdminEndpoint, "admin-endpoint", c.AdminEndpoint, "Override the admin api endpoint")
 	flag.StringVar(&c.DataEndpoint, "data-endpoint", c.DataEndpoint, "Override the data api endpoint")
 	flag.StringVar(&c.CertFile, "cert-file", c.CertFile, "Override the TLS certificates file")
