@@ -19,12 +19,15 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"strconv"
+	"strings"
 	"sync"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -346,6 +349,14 @@ func prepareEndToEndTest(ctx context.Context, t *testing.T) (*pubsub.Client, *pu
 		t.Fatalf("Creating client error: %v", err)
 	}
 
+	// Don't stop the test if cleanup failed.
+	if err := cleanupSubscription(ctx, client); err != nil {
+		t.Logf("Pre-test subscription cleanup failed: %v", err)
+	}
+	if err := cleanupTopic(ctx, client); err != nil {
+		t.Logf("Pre-test topic cleanup failed: %v", err)
+	}
+
 	var topic *pubsub.Topic
 	if topic, err = client.CreateTopic(ctx, topicName); err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
@@ -355,4 +366,75 @@ func prepareEndToEndTest(ctx context.Context, t *testing.T) (*pubsub.Client, *pu
 		topic.Delete(ctx)
 		client.Close()
 	}
+}
+
+// cleanupTopic deletes stale testing topics.
+func cleanupTopic(ctx context.Context, client *pubsub.Client) error {
+	if testing.Short() {
+		return nil // Don't clean up in short mode.
+	}
+	// Delete topics which were	created a while ago.
+	const expireAge = 24 * time.Hour
+
+	it := client.Topics(ctx)
+	for {
+		t, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		// Take timestamp from id.
+		tID := t.ID()
+		p := strings.Split(tID, "-")
+		tCreated := p[len(p)-1]
+		timestamp, err := strconv.ParseInt(tCreated, 10, 64)
+		if err != nil {
+			continue
+		}
+		timeTCreated := time.Unix(0, timestamp)
+		if time.Since(timeTCreated) > expireAge {
+			log.Printf("deleting topic %q", tID)
+			if err := t.Delete(ctx); err != nil {
+				return fmt.Errorf("Delete topic: %v: %v", t.String(), err)
+			}
+		}
+	}
+	return nil
+}
+
+// cleanupSubscription deletes stale testing subscriptions.
+func cleanupSubscription(ctx context.Context, client *pubsub.Client) error {
+	if testing.Short() {
+		return nil // Don't clean up in short mode.
+	}
+	// Delete subscriptions which were created a while ago.
+	const expireAge = 24 * time.Hour
+
+	it := client.Subscriptions(ctx)
+	for {
+		s, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		sID := s.ID()
+		p := strings.Split(sID, "-")
+		sCreated := p[len(p)-2]
+		timestamp, err := strconv.ParseInt(sCreated, 10, 64)
+		if err != nil {
+			continue
+		}
+		timeSCreated := time.Unix(0, timestamp)
+		if time.Since(timeSCreated) > expireAge {
+			log.Printf("deleting subscription %q", sID)
+			if err := s.Delete(ctx); err != nil {
+				return fmt.Errorf("Delete subscription: %v: %v", s.String(), err)
+			}
+		}
+	}
+	return nil
 }
