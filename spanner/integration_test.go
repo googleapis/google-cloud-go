@@ -34,9 +34,11 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	database "cloud.google.com/go/spanner/admin/database/apiv1"
+	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
+	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -46,19 +48,16 @@ var (
 	// by setting environment variable GCLOUD_TESTS_GOLANG_PROJECT_ID.
 	testProjectID = testutil.ProjID()
 
-	dbNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
-
-	// TODO(deklerk): When we can programmatically create instances, we should use
-	// uid.New as the test instance name.
-	// testInstanceID specifies the Cloud Spanner instance used for testing.
-	testInstanceID = "go-integration-test"
+	dbNameSpace       = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
+	instanceNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '-', Short: true})
+	testInstanceID    = instanceNameSpace.New()
 
 	testTable        = "TestTable"
 	testTableIndex   = "TestTableByValue"
 	testTableColumns = []string{"Key", "StringValue"}
 
-	// admin is a spanner.DatabaseAdminClient.
-	admin *database.DatabaseAdminClient
+	databaseAdmin *database.DatabaseAdminClient
+	instanceAdmin *instance.InstanceAdminClient
 
 	singerDBStatements = []string{
 		`CREATE TABLE Singers (
@@ -132,7 +131,7 @@ func TestMain(m *testing.M) {
 
 var grpcHeaderChecker = testutil.DefaultHeadersEnforcer()
 
-func initIntegrationTests() func() {
+func initIntegrationTests() (cleanup func()) {
 	ctx := context.Background()
 	flag.Parse() // Needed for testing.Short().
 	noop := func() {}
@@ -155,15 +154,62 @@ func initIntegrationTests() func() {
 	var err error
 
 	opts := append(grpcHeaderChecker.CallOptions(), option.WithTokenSource(ts), option.WithEndpoint(endpoint))
-	// Create Admin client and Data client.
-	admin, err = database.NewDatabaseAdminClient(ctx, opts...)
+	// Create InstanceAdmin and DatabaseAdmin clients.
+	instanceAdmin, err = instance.NewInstanceAdminClient(ctx, opts...)
 	if err != nil {
-		log.Fatalf("cannot create admin client: %v", err)
+		log.Fatalf("cannot create instance databaseAdmin client: %v", err)
+	}
+	databaseAdmin, err = database.NewDatabaseAdminClient(ctx, opts...)
+	if err != nil {
+		log.Fatalf("cannot create databaseAdmin client: %v", err)
+	}
+	// Get the list of supported instance configs for the project that is used
+	// for the integration tests. The supported instance configs can differ per
+	// project. The integration tests will use the first instance config that
+	// is returned by Cloud Spanner. This will normally be the regional config
+	// that is physically the closest to where the request is coming from.
+	configIterator := instanceAdmin.ListInstanceConfigs(ctx, &instancepb.ListInstanceConfigsRequest{
+		Parent: fmt.Sprintf("projects/%s", testProjectID),
+	})
+	config, err := configIterator.Next()
+	if err != nil {
+		log.Fatalf("Cannot get any instance configurations.\nPlease make sure the Cloud Spanner API is enabled for the test project.\nGet error: %v", err)
+	}
+	// Create a test instance to use for this test run.
+	op, err := instanceAdmin.CreateInstance(ctx, &instancepb.CreateInstanceRequest{
+		Parent:     fmt.Sprintf("projects/%s", testProjectID),
+		InstanceId: testInstanceID,
+		Instance: &instancepb.Instance{
+			Config:      config.Name,
+			DisplayName: testInstanceID,
+			NodeCount:   1,
+		},
+	})
+	if err != nil {
+		log.Fatalf("could not create instance with id %s: %v", fmt.Sprintf("projects/%s/instances/%s", testProjectID, testInstanceID), err)
+	}
+	// Wait for the instance creation to finish.
+	i, err := op.Wait(ctx)
+	if err != nil {
+		log.Fatalf("waiting for instance creation to finish failed: %v", err)
+	}
+	if i.State != instancepb.Instance_READY {
+		log.Printf("instance state is not READY, it might be that the test instance will cause problems during tests. Got state %v\n", i.State)
 	}
 
 	return func() {
-		cleanupDatabases()
-		admin.Close()
+		// Delete this test instance.
+		instanceName := fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID)
+		if err = instanceAdmin.DeleteInstance(ctx, &instancepb.DeleteInstanceRequest{
+			Name: instanceName,
+		}); err != nil {
+			log.Printf("failed to drop instance %s (error %v), might need a manual removal",
+				instanceName, err)
+		}
+		// Delete other test instances that may be lingering around.
+		cleanupInstances()
+		databaseAdmin.Close()
+		instanceAdmin.Close()
 	}
 }
 
@@ -857,7 +903,7 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	defer cleanup()
 
 	// Drop the testing database.
-	if err := admin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: dbPath}); err != nil {
+	if err := databaseAdmin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: dbPath}); err != nil {
 		t.Fatalf("failed to drop testing database %v: %v", dbPath, err)
 	}
 
@@ -870,7 +916,7 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 
 	// Recreate database and table.
 	dbName := dbPath[strings.LastIndex(dbPath, "/")+1:]
-	op, err := admin.CreateDatabase(ctx, &adminpb.CreateDatabaseRequest{
+	op, err := databaseAdmin.CreateDatabase(ctx, &adminpb.CreateDatabaseRequest{
 		Parent:          fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID),
 		CreateStatement: "CREATE DATABASE " + dbName,
 		ExtraStatements: []string{
@@ -2296,7 +2342,7 @@ func TestBatchDML_Error(t *testing.T) {
 
 // Prepare initializes Cloud Spanner testing DB and clients.
 func prepareIntegrationTest(ctx context.Context, t *testing.T, statements []string) (*Client, string, func()) {
-	if admin == nil {
+	if databaseAdmin == nil {
 		t.Skip("Integration tests skipped")
 	}
 	// Construct a unique test DB name.
@@ -2304,7 +2350,7 @@ func prepareIntegrationTest(ctx context.Context, t *testing.T, statements []stri
 
 	dbPath := fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectID, testInstanceID, dbName)
 	// Create database and tables.
-	op, err := admin.CreateDatabase(ctx, &adminpb.CreateDatabaseRequest{
+	op, err := databaseAdmin.CreateDatabase(ctx, &adminpb.CreateDatabaseRequest{
 		Parent:          fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID),
 		CreateStatement: "CREATE DATABASE " + dbName,
 		ExtraStatements: statements,
@@ -2321,41 +2367,37 @@ func prepareIntegrationTest(ctx context.Context, t *testing.T, statements []stri
 	}
 	return client, dbPath, func() {
 		client.Close()
-		if err := admin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: dbPath}); err != nil {
-			t.Logf("failed to drop database %s (error %v), might need a manual removal",
-				dbPath, err)
-		}
 	}
 }
 
-func cleanupDatabases() {
-	if admin == nil {
+func cleanupInstances() {
+	if instanceAdmin == nil {
 		// Integration tests skipped.
 		return
 	}
 
 	ctx := context.Background()
-	dbsParent := fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID)
-	dbsIter := admin.ListDatabases(ctx, &adminpb.ListDatabasesRequest{Parent: dbsParent})
+	parent := fmt.Sprintf("projects/%v", testProjectID)
+	iter := instanceAdmin.ListInstances(ctx, &instancepb.ListInstancesRequest{
+		Parent: parent,
+		Filter: "name:gotest-",
+	})
 	expireAge := 24 * time.Hour
 
 	for {
-		db, err := dbsIter.Next()
+		inst, err := iter.Next()
 		if err == iterator.Done {
 			break
 		}
 		if err != nil {
 			panic(err)
 		}
-		// TODO(deklerk): When we have the ability to programmatically create
-		// instances, we can create an instance with uid.New and delete all
-		// tables in it. For now, we rely on matching prefixes.
-		if dbNameSpace.Older(db.Name, expireAge) {
-			log.Printf("Dropping database %s", db.Name)
+		if instanceNameSpace.Older(inst.Name, expireAge) {
+			log.Printf("Deleting instance %s", inst.Name)
 
-			if err := admin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: db.Name}); err != nil {
-				log.Printf("failed to drop database %s (error %v), might need a manual removal",
-					db.Name, err)
+			if err := instanceAdmin.DeleteInstance(ctx, &instancepb.DeleteInstanceRequest{Name: inst.Name}); err != nil {
+				log.Printf("failed to delete instance %s (error %v), might need a manual removal",
+					inst.Name, err)
 			}
 		}
 	}
