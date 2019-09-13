@@ -169,7 +169,7 @@ func initIntegrationTests() func() {
 
 // Test SingleUse transaction.
 func TestIntegration_SingleUse(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up testing environment.
 	client, _, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
@@ -365,7 +365,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 }
 
 func TestIntegration_SingleUse_ReadingWithLimit(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up testing environment.
 	client, _, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
@@ -622,7 +622,7 @@ func TestIntegration_UpdateDuringRead(t *testing.T) {
 // Test ReadWriteTransaction.
 func TestIntegration_ReadWriteTransaction(t *testing.T) {
 	// Give a longer deadline because of transaction backoffs.
-	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
 	defer cleanup()
@@ -776,7 +776,7 @@ func TestIntegration_Reads(t *testing.T) {
 func TestIntegration_EarlyTimestamp(t *testing.T) {
 	// Test that we can get the timestamp from a read-only transaction as
 	// soon as we have read at least one row.
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up testing environment.
 	client, _, cleanup := prepareIntegrationTest(ctx, t, readDBStatements)
@@ -821,7 +821,8 @@ func TestIntegration_EarlyTimestamp(t *testing.T) {
 
 func TestIntegration_NestedTransaction(t *testing.T) {
 	// You cannot use a transaction from inside a read-write transaction.
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
 	defer cleanup()
 
@@ -850,7 +851,7 @@ func TestIntegration_NestedTransaction(t *testing.T) {
 
 // Test client recovery on database recreation.
 func TestIntegration_DbRemovalRecovery(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
 	defer cleanup()
@@ -1130,7 +1131,8 @@ func TestIntegration_StructTypes(t *testing.T) {
 }
 
 func TestIntegration_StructParametersUnsupported(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, nil)
 	defer cleanup()
 
@@ -1172,7 +1174,8 @@ func TestIntegration_StructParametersUnsupported(t *testing.T) {
 
 // Test queries of the form "SELECT expr".
 func TestIntegration_QueryExpressions(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, nil)
 	defer cleanup()
 
@@ -1225,7 +1228,8 @@ func TestIntegration_QueryExpressions(t *testing.T) {
 }
 
 func TestIntegration_QueryStats(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
 	defer cleanup()
 
@@ -1283,7 +1287,8 @@ func TestIntegration_InvalidDatabase(t *testing.T) {
 }
 
 func TestIntegration_ReadErrors(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, readDBStatements)
 	defer cleanup()
 
@@ -1894,8 +1899,8 @@ func TestIntegration_DML(t *testing.T) {
 }
 
 func TestIntegration_StructParametersBind(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, nil)
 	defer cleanup()
 
