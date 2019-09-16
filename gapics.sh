@@ -37,6 +37,7 @@ google/cloud/oslogin/artman_oslogin_v1.yaml
 google/cloud/oslogin/artman_oslogin_v1beta.yaml
 google/cloud/phishingprotection/artman_phishingprotection_v1beta1.yaml
 google/cloud/recaptchaenterprise/artman_recaptchaenterprise_v1beta1.yaml
+google/cloud/recommender/artman_recommender_v1beta1.yaml
 google/cloud/redis/artman_redis_v1beta1.yaml
 google/cloud/redis/artman_redis_v1.yaml
 google/cloud/scheduler/artman_cloudscheduler_v1beta1.yaml
