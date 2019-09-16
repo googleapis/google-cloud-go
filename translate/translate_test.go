@@ -216,7 +216,7 @@ func TestTranslateModel(t *testing.T) {
 	c := initTest(ctx, t)
 	defer c.Close()
 
-	trs, err := c.Translate(ctx, []string{"Hello"}, language.French, &Options{Model: "nmt"})
+	trs, err := c.Translate(ctx, []string{"Thanks"}, language.French, &Options{Model: "nmt"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -224,7 +224,7 @@ func TestTranslateModel(t *testing.T) {
 		t.Fatalf("wanted one Translation, got %d", len(trs))
 	}
 	tr := trs[0]
-	if got, want := tr.Text, "Bonjour"; got != want {
+	if got, want := tr.Text, "Merci"; got != want {
 		t.Errorf("text: got %q, want %q", got, want)
 	}
 	if got, want := tr.Model, "nmt"; got != want {
