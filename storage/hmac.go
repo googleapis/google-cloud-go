@@ -241,6 +241,8 @@ func (h *HMACKeyHandle) Update(ctx context.Context, au HMACKeyAttrsToUpdate) (*H
 
 // An HMACKeysIterator is an iterator over HMACKeys.
 //
+// Note: This iterator is not safe for concurrent operations without explicit synchronization.
+//
 // This type is EXPERIMENTAL and subject to change or removal without notice.
 type HMACKeysIterator struct {
 	ctx       context.Context
@@ -254,6 +256,8 @@ type HMACKeysIterator struct {
 }
 
 // ListHMACKeys returns an iterator for listing HMACKeys.
+//
+// Note: This iterator is not safe for concurrent operations without explicit synchronization.
 //
 // This method is EXPERIMENTAL and subject to change or removal without notice.
 func (c *Client) ListHMACKeys(ctx context.Context, projectID string, opts ...HMACKeyOption) *HMACKeysIterator {
@@ -283,6 +287,8 @@ func (c *Client) ListHMACKeys(ctx context.Context, projectID string, opts ...HMA
 // there are no more results. Once Next returns iterator.Done, all subsequent
 // calls will return iterator.Done.
 //
+// Note: This iterator is not safe for concurrent operations without explicit synchronization.
+//
 // This method is EXPERIMENTAL and subject to change or removal without notice.
 func (it *HMACKeysIterator) Next() (*HMACKey, error) {
 	if err := it.nextFunc(); err != nil {
@@ -296,6 +302,8 @@ func (it *HMACKeysIterator) Next() (*HMACKey, error) {
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+//
+// Note: This iterator is not safe for concurrent operations without explicit synchronization.
 //
 // This method is EXPERIMENTAL and subject to change or removal without notice.
 func (it *HMACKeysIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
