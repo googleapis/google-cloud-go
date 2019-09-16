@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go/bigquery v1.0.1
 	cloud.google.com/go/datastore v1.0.0
 	cloud.google.com/go/pubsub v1.0.1
+	cloud.google.com/go/storage v1.0.0
 	github.com/golang/mock v1.3.1
 	github.com/golang/protobuf v1.3.2
 	github.com/google/go-cmp v0.3.0
