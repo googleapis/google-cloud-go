@@ -110,12 +110,11 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		copts := append(grpcHeadersChecker.CallOptions(), option.WithHTTPClient(hc))
-		client, err = NewClient(ctx, projID, copts...)
+		client, err = NewClient(ctx, projID, option.WithHTTPClient(hc))
 		if err != nil {
 			log.Fatal(err)
 		}
-		storageClient, err = storage.NewClient(ctx, copts...)
+		storageClient, err = storage.NewClient(ctx, option.WithHTTPClient(hc))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -140,8 +139,8 @@ func initIntegrationTest() func() {
 			log.Println("Integration tests skipped. See CONTRIBUTING.md for details")
 			return func() {}
 		}
-		bqOpts := append(grpcHeadersChecker.CallOptions(), option.WithTokenSource(ts))
-		sOpts := append(grpcHeadersChecker.CallOptions(), option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl)))
+		bqOpts := []option.ClientOption{option.WithTokenSource(ts)}
+		sOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl))}
 		cleanup := func() {}
 		now := time.Now().UTC()
 		if *record {
@@ -161,18 +160,24 @@ func initIntegrationTest() func() {
 				if err != nil {
 					log.Fatal(err)
 				}
-				bqOpts = append(grpcHeadersChecker.CallOptions(), option.WithHTTPClient(hc))
+				bqOpts = append(bqOpts, option.WithHTTPClient(hc))
 				hc, err = recorder.Client(ctx, sOpts...)
 				if err != nil {
 					log.Fatal(err)
 				}
-				sOpts = append(grpcHeadersChecker.CallOptions(), option.WithHTTPClient(hc))
+				sOpts = append(sOpts, option.WithHTTPClient(hc))
 				cleanup = func() {
 					if err := recorder.Close(); err != nil {
 						log.Printf("saving recording: %v", err)
 					}
 				}
 			}
+		} else {
+			// When we're not recording, do http header checking.
+			// We can't check universally because option.WithHTTPClient is
+			// incompatible with gRPC options.
+			bqOpts = append(bqOpts, grpcHeadersChecker.CallOptions()...)
+			sOpts = append(sOpts, grpcHeadersChecker.CallOptions()...)
 		}
 		var err error
 		client, err = NewClient(ctx, projID, bqOpts...)
