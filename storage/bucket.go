@@ -1045,7 +1045,7 @@ func (b *BucketHandle) Objects(ctx context.Context, q *Query) *ObjectIterator {
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
-		func() int { return len(it.items) },
+		func() int { return len(it.items) - it.index },
 		func() interface{} {
 			b := it.items
 			it.items = nil
