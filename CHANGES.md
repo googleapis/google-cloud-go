@@ -24,9 +24,9 @@ carve-out. See: https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-
   - Fix a bug that was causing 0X-prefixed number to be parsed incorrectly.
 - storage:
   - Add HMACKeyOptions.
-  - Remove *REGIONAL from StorageClass. MULTI_REGIONAL,
-    DURABLE_REDUCED_AVAILABILITY, and REGIONAL are no longer StorageClasses but
-    they are still LocationTypes.
+  - Remove *REGIONAL from StorageClass documentation. Using MULTI_REGIONAL,
+    DURABLE_REDUCED_AVAILABILITY, and REGIONAL are no longer best practice
+    StorageClasses but they are still acceptable values.
 - trace:
   - Remove cloud.google.com/go/trace. Package cloud.google.com/go/trace has been
     marked OBSOLETE for several years: it is now no longer provided. If you
