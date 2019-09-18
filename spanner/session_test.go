@@ -769,12 +769,14 @@ func TestTakeFromWriteQueue(t *testing.T) {
 	<-time.After(time.Second)
 
 	// The session should now be in write queue but take should also return it.
+	sp.mu.Lock()
 	if sp.idleWriteList.Len() == 0 {
 		t.Fatalf("write queue unexpectedly empty")
 	}
 	if sp.idleList.Len() != 0 {
 		t.Fatalf("read queue not empty")
 	}
+	sp.mu.Unlock()
 	sh, err = sp.take(ctx)
 	if err != nil {
 		t.Fatalf("cannot get session from session pool: %v", err)
