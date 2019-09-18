@@ -688,6 +688,110 @@ func (kl *KeyLoader4) LoadKey(k *Key) error {
 	return nil
 }
 
+type PLS1 struct {
+	A string
+}
+
+func (p *PLS1) Load(props []Property) error {
+	for _, pp := range props {
+		if pp.Name == "A" {
+			p.A = pp.Value.(string)
+		}
+	}
+	return nil
+}
+
+func (p *PLS1) Save() (props []Property, err error) {
+	return []Property{{Name: "A", Value: p.A}}, nil
+}
+
+type KeyLoader6 struct {
+	A string
+	B string
+	K *Key
+}
+
+func (kl *KeyLoader6) Load(props []Property) error {
+	for _, pp := range props {
+		if pp.Name == "A" {
+			kl.A = pp.Value.(string)
+		}
+	}
+	return &ErrFieldMismatch{
+		StructType: reflect.TypeOf(kl),
+		FieldName:  "B",
+		Reason:     "no value found",
+	}
+}
+
+func (kl *KeyLoader6) LoadKey(k *Key) error {
+	kl.K = k
+	return nil
+}
+
+func (kl *KeyLoader6) Save() (props []Property, err error) {
+	return []Property{{}}, nil
+}
+
+type KeyLoader7 struct {
+	A string
+	K *Key
+}
+
+func (kl *KeyLoader7) Load(props []Property) error {
+	for _, pp := range props {
+		if pp.Name == "A" {
+			kl.A = pp.Value.(string)
+		}
+	}
+	return nil
+}
+
+func (kl *KeyLoader7) LoadKey(k *Key) error {
+	return &ErrFieldMismatch{
+		StructType: reflect.TypeOf(kl),
+		FieldName:  "key",
+		Reason:     "no value found",
+	}
+}
+
+func (kl *KeyLoader7) Save() (props []Property, err error) {
+	return []Property{{}}, nil
+}
+
+type KeyLoader8 struct {
+	A string
+	B string
+	K *Key
+}
+
+type customLoadError struct{}
+
+func (e *customLoadError) Error() string {
+	return "custom load error"
+}
+
+func (kl *KeyLoader8) Load(props []Property) error {
+	for _, pp := range props {
+		if pp.Name == "A" {
+			kl.A = pp.Value.(string)
+		}
+	}
+	return &customLoadError{}
+}
+
+func (kl *KeyLoader8) LoadKey(k *Key) error {
+	return &ErrFieldMismatch{
+		StructType: reflect.TypeOf(kl),
+		FieldName:  "key",
+		Reason:     "no value found",
+	}
+}
+
+func (kl *KeyLoader8) Save() (props []Property, err error) {
+	return []Property{{}}, nil
+}
+
 type NotKeyLoader struct {
 	A string
 	K *Key
@@ -840,6 +944,50 @@ func TestKeyLoader(t *testing.T) {
 					K:    testKey2a,
 				},
 				PLS: &NotKeyLoader{A: "something"},
+			},
+		},
+		{
+			desc: "simple key loader with ErrFieldMismatch error",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"A": {ValueType: &pb.Value_StringValue{StringValue: "hello"}},
+				},
+			},
+			dst: &KeyLoader6{},
+			want: &KeyLoader6{
+				A: "hello",
+				B: "",
+				K: testKey0,
+			},
+		},
+		{
+			desc: "simple key loader with ErrFieldMismatch during key load",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"A": {ValueType: &pb.Value_StringValue{StringValue: "hello"}},
+				},
+			},
+			dst: &KeyLoader7{},
+			want: &KeyLoader7{
+				A: "hello",
+				K: nil,
+			},
+		},
+		{
+			desc: "simple key loader with other error during Load and ErrFieldMismatch during KeyLoad",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"A": {ValueType: &pb.Value_StringValue{StringValue: "hello"}},
+				},
+			},
+			dst: &KeyLoader8{},
+			want: &KeyLoader8{
+				A: "hello",
+				B: "",
+				K: nil,
 			},
 		},
 	}
