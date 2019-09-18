@@ -215,6 +215,8 @@ func initIntegrationTests() (cleanup func()) {
 
 // Test SingleUse transaction.
 func TestIntegration_SingleUse(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up testing environment.
@@ -411,6 +413,8 @@ func TestIntegration_SingleUse(t *testing.T) {
 }
 
 func TestIntegration_SingleUse_ReadingWithLimit(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up testing environment.
@@ -452,6 +456,8 @@ func TestIntegration_SingleUse_ReadingWithLimit(t *testing.T) {
 // Test ReadOnlyTransaction. The testsuite is mostly like SingleUse, except it
 // also tests for a single timestamp across multiple reads.
 func TestIntegration_ReadOnlyTransaction(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up testing environment.
@@ -637,6 +643,8 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 // Test ReadOnlyTransaction with different timestamp bound when there's an
 // update at the same time.
 func TestIntegration_UpdateDuringRead(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
@@ -667,6 +675,8 @@ func TestIntegration_UpdateDuringRead(t *testing.T) {
 
 // Test ReadWriteTransaction.
 func TestIntegration_ReadWriteTransaction(t *testing.T) {
+	t.Parallel()
+
 	// Give a longer deadline because of transaction backoffs.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -756,6 +766,8 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 }
 
 func TestIntegration_Reads(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up testing environment.
@@ -820,6 +832,8 @@ func TestIntegration_Reads(t *testing.T) {
 }
 
 func TestIntegration_EarlyTimestamp(t *testing.T) {
+	t.Parallel()
+
 	// Test that we can get the timestamp from a read-only transaction as
 	// soon as we have read at least one row.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -866,6 +880,8 @@ func TestIntegration_EarlyTimestamp(t *testing.T) {
 }
 
 func TestIntegration_NestedTransaction(t *testing.T) {
+	t.Parallel()
+
 	// You cannot use a transaction from inside a read-write transaction.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -897,6 +913,8 @@ func TestIntegration_NestedTransaction(t *testing.T) {
 
 // Test client recovery on database recreation.
 func TestIntegration_DbRemovalRecovery(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
@@ -946,6 +964,8 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 
 // Test encoding/decoding non-struct Cloud Spanner types.
 func TestIntegration_BasicTypes(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
@@ -1092,6 +1112,8 @@ func TestIntegration_BasicTypes(t *testing.T) {
 
 // Test decoding Cloud Spanner STRUCT type.
 func TestIntegration_StructTypes(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
@@ -1177,6 +1199,8 @@ func TestIntegration_StructTypes(t *testing.T) {
 }
 
 func TestIntegration_StructParametersUnsupported(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, nil)
@@ -1220,6 +1244,8 @@ func TestIntegration_StructParametersUnsupported(t *testing.T) {
 
 // Test queries of the form "SELECT expr".
 func TestIntegration_QueryExpressions(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, nil)
@@ -1274,6 +1300,8 @@ func TestIntegration_QueryExpressions(t *testing.T) {
 }
 
 func TestIntegration_QueryStats(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
@@ -1316,6 +1344,8 @@ func TestIntegration_QueryStats(t *testing.T) {
 }
 
 func TestIntegration_InvalidDatabase(t *testing.T) {
+	t.Parallel()
+
 	if testProjectID == "" {
 		t.Skip("Integration tests skipped: GCLOUD_TESTS_GOLANG_PROJECT_ID is missing")
 	}
@@ -1333,6 +1363,8 @@ func TestIntegration_InvalidDatabase(t *testing.T) {
 }
 
 func TestIntegration_ReadErrors(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, readDBStatements)
@@ -1377,6 +1409,8 @@ func TestIntegration_ReadErrors(t *testing.T) {
 // Test TransactionRunner. Test that transactions are aborted and retried as
 // expected.
 func TestIntegration_TransactionRunner(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
@@ -1511,6 +1545,8 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 // serialize and deserialize both transaction and partition to be used in
 // execution on another client, and compare results.
 func TestIntegration_BatchQuery(t *testing.T) {
+	t.Parallel()
+
 	// Set up testing environment.
 	var (
 		client2 *Client
@@ -1595,6 +1631,8 @@ func TestIntegration_BatchQuery(t *testing.T) {
 
 // Test PartitionRead of BatchReadOnlyTransaction, similar to TestBatchQuery
 func TestIntegration_BatchRead(t *testing.T) {
+	t.Parallel()
+
 	// Set up testing environment.
 	var (
 		client2 *Client
@@ -1678,6 +1716,8 @@ func TestIntegration_BatchRead(t *testing.T) {
 
 // Test normal txReadEnv method on BatchReadOnlyTransaction.
 func TestIntegration_BROTNormal(t *testing.T) {
+	t.Parallel()
+
 	// Set up testing environment and create txn.
 	var (
 		txn *BatchReadOnlyTransaction
@@ -1712,6 +1752,8 @@ func TestIntegration_BROTNormal(t *testing.T) {
 }
 
 func TestIntegration_CommitTimestamp(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, ctsDBStatements)
@@ -1780,6 +1822,8 @@ func TestIntegration_CommitTimestamp(t *testing.T) {
 }
 
 func TestIntegration_DML(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
@@ -1945,6 +1989,8 @@ func TestIntegration_DML(t *testing.T) {
 }
 
 func TestIntegration_StructParametersBind(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, nil)
@@ -2113,6 +2159,8 @@ func TestIntegration_StructParametersBind(t *testing.T) {
 }
 
 func TestIntegration_PDML(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
@@ -2165,6 +2213,8 @@ func TestIntegration_PDML(t *testing.T) {
 }
 
 func TestBatchDML(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
@@ -2216,6 +2266,8 @@ func TestBatchDML(t *testing.T) {
 }
 
 func TestBatchDML_NoStatements(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
@@ -2238,6 +2290,8 @@ func TestBatchDML_NoStatements(t *testing.T) {
 }
 
 func TestBatchDML_TwoStatements(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
@@ -2287,6 +2341,8 @@ func TestBatchDML_TwoStatements(t *testing.T) {
 // TODO(deklerk): this currently does not work because the transaction appears to
 // get rolled back after a single statement fails. b/120158761
 func TestBatchDML_Error(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, singerDBStatements)
