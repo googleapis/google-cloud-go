@@ -41,6 +41,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 var (
@@ -150,6 +151,10 @@ func main() {
 	}
 
 	ctx := context.Background()
+	if config.AuthToken != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "x-goog-iam-authorization-token", config.AuthToken)
+	}
+
 	for _, cmd := range commands {
 		if cmd.Name == flag.Arg(0) {
 			if err := config.CheckFlags(cmd.Required); err != nil {
@@ -193,7 +198,7 @@ any value that Cloud Bigtable otherwise supports (for example, the row key and
 column qualifier).
 
 For convenience, values of the -project, -instance, -creds,
--admin-endpoint and -data-endpoint flags may be specified in
+-admin-endpoint, -data-endpoint and -auth-token flags may be specified in
 ~/.cbtrc in this format:
 
 	project = my-project-123
@@ -201,6 +206,7 @@ For convenience, values of the -project, -instance, -creds,
 	creds = path-to-account-key.json
 	admin-endpoint = hostname:port
 	data-endpoint = hostname:port
+	auth-token = AJP...
 
 All values are optional, and all will be overridden by flags.
 `

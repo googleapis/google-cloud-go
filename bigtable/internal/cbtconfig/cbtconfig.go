@@ -46,6 +46,7 @@ type Config struct {
 	DataEndpoint      string                           // optional
 	CertFile          string                           // optional
 	UserAgent         string                           // optional
+	AuthToken         string                           // optional
 	TokenSource       oauth2.TokenSource               // derived
 	TLSCreds          credentials.TransportCredentials // derived
 }
@@ -74,6 +75,7 @@ func (c *Config) RegisterFlags() {
 	flag.StringVar(&c.DataEndpoint, "data-endpoint", c.DataEndpoint, "Override the data api endpoint")
 	flag.StringVar(&c.CertFile, "cert-file", c.CertFile, "Override the TLS certificates file")
 	flag.StringVar(&c.UserAgent, "user-agent", c.UserAgent, "Override the user agent string")
+	flag.StringVar(&c.AuthToken, "auth-token", c.AuthToken, "if set, use IAM Auth Token for requests")
 }
 
 // CheckFlags checks that the required config values are set.
@@ -151,6 +153,8 @@ func Load() (*Config, error) {
 			c.CertFile = val
 		case "user-agent":
 			c.UserAgent = val
+		case "auth-token":
+			c.AuthToken = val
 		}
 
 	}
