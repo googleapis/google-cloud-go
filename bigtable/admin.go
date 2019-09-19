@@ -641,6 +641,14 @@ func (st StorageType) proto() btapb.StorageType {
 	return btapb.StorageType_SSD
 }
 
+func storageTypeFromProto(st btapb.StorageType) StorageType {
+	if st == btapb.StorageType_HDD {
+		return HDD
+	}
+
+	return SSD
+}
+
 // InstanceType is the type of the instance
 type InstanceType int32
 
@@ -876,10 +884,11 @@ func (cc *ClusterConfig) proto(project string) *btapb.Cluster {
 
 // ClusterInfo represents information about a cluster.
 type ClusterInfo struct {
-	Name       string // name of the cluster
-	Zone       string // GCP zone of the cluster (e.g. "us-central1-a")
-	ServeNodes int    // number of allocated serve nodes
-	State      string // state of the cluster
+	Name        string      // name of the cluster
+	Zone        string      // GCP zone of the cluster (e.g. "us-central1-a")
+	ServeNodes  int         // number of allocated serve nodes
+	State       string      // state of the cluster
+	StorageType StorageType // the storage type of the cluster
 }
 
 // CreateCluster creates a new cluster in an instance.
@@ -941,10 +950,11 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 		nameParts := strings.Split(c.Name, "/")
 		locParts := strings.Split(c.Location, "/")
 		cis = append(cis, &ClusterInfo{
-			Name:       nameParts[len(nameParts)-1],
-			Zone:       locParts[len(locParts)-1],
-			ServeNodes: int(c.ServeNodes),
-			State:      c.State.String(),
+			Name:        nameParts[len(nameParts)-1],
+			Zone:        locParts[len(locParts)-1],
+			ServeNodes:  int(c.ServeNodes),
+			State:       c.State.String(),
+			StorageType: storageTypeFromProto(c.DefaultStorageType),
 		})
 	}
 	return cis, nil
@@ -967,10 +977,11 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 	nameParts := strings.Split(c.Name, "/")
 	locParts := strings.Split(c.Location, "/")
 	cis := &ClusterInfo{
-		Name:       nameParts[len(nameParts)-1],
-		Zone:       locParts[len(locParts)-1],
-		ServeNodes: int(c.ServeNodes),
-		State:      c.State.String(),
+		Name:        nameParts[len(nameParts)-1],
+		Zone:        locParts[len(locParts)-1],
+		ServeNodes:  int(c.ServeNodes),
+		State:       c.State.String(),
+		StorageType: storageTypeFromProto(c.DefaultStorageType),
 	}
 	return cis, nil
 }
