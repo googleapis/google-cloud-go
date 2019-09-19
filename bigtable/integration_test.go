@@ -1221,7 +1221,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		DisplayName:  "new display name",
 		InstanceType: PRODUCTION,
 		Clusters: []ClusterConfig{
-			{ClusterID: clusterID, NumNodes: 5}},
+			{ClusterID: clusterID, NumNodes: 5, StorageType: HDD}},
 	}
 
 	if err = iAdminClient.UpdateInstanceWithClusters(ctx, confWithClusters); err != nil {
@@ -1247,6 +1247,10 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 
 	if cInfo.ServeNodes != 5 {
 		t.Fatalf("NumNodes: %v, want: %v", cInfo.ServeNodes, 5)
+	}
+
+	if cInfo.StorageType != HDD {
+		t.Fatalf("StorageType: %v, want: %v", cInfo.StorageType, HDD)
 	}
 }
 
