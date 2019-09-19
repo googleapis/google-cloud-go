@@ -19,13 +19,38 @@
 set -ex
 
 GOCLOUD_DIR="$(dirname "$0")"
-source "$GOCLOUD_DIR/gapics.sh"
 
-for api in "${APIS[@]}"; do
+microgen() {
+  input=$1
+  options="${@:2}"
+
+  # see https://github.com/googleapis/gapic-generator-go/blob/master/README.md#docker-wrapper for details
+  docker run \
+    --user $UID \
+    --mount type=bind,source=$PWD,destination=/conf,readonly \
+    --mount type=bind,source=$PWD/$input,destination=/in/$input,readonly \
+    --mount type=bind,source=/tmp,destination=/out \
+    --rm \
+    gcr.io/gapic-images/gapic-generator-go:0.7.0 \
+    $options
+}
+
+for gencfg in $(cat $GOCLOUD_DIR/gapics.txt); do
   rm -rf artman-genfiles/*
-  artman --config "$api" generate go_gapic
+  artman --config "$gencfg" generate go_gapic
   cp -r artman-genfiles/gapi-*/cloud.google.com/go/* $GOCLOUD_DIR
 done
+
+rm -rf /tmp/cloud.google.com
+{
+  # skip the first line with column titles
+  read -r
+  while IFS=, read -r input mod retrycfg apicfg
+  do
+    microgen $input "$mod" "$retrycfg" "$apicfg"
+  done
+} < $GOCLOUD_DIR/microgens.csv
+cp -r /tmp/cloud.google.com/go/* $GOCLOUD_DIR
 
 pushd $GOCLOUD_DIR
   gofmt -s -d -l -w . && goimports -w .
@@ -40,8 +65,8 @@ pushd $GOCLOUD_DIR
   done
 popd
 
-for dir in "${HAS_MANUAL[@]}"; do
-	find "$GOCLOUD_DIR/$dir" -name '*.go' -exec sed -i.backup -e 's/setGoogleClientInfo/SetGoogleClientInfo/g' '{}' '+'
+for manualdir in $(cat $GOCLOUD_DIR/manuals.txt); do
+  find "$GOCLOUD_DIR/$manualdir" -name '*.go' -exec sed -i.backup -e 's/setGoogleClientInfo/SetGoogleClientInfo/g' '{}' '+'
 done
 
 find $GOCLOUD_DIR -name '*.backup' -delete
