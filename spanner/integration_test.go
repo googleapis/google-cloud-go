@@ -299,9 +299,8 @@ func TestIntegration_SingleUse(t *testing.T) {
 		{
 			name: "exact_staleness",
 			want: nil,
-			// Specify a staleness which should be already before this test because
-			// context timeout is set to be 10s.
-			tb: ExactStaleness(11 * time.Second),
+			// Specify a staleness which should be already before this test.
+			tb: ExactStaleness(time.Now().Sub(writes[0].ts) + 10*time.Second),
 			checkTs: func(ts time.Time) error {
 				if ts.After(writes[0].ts) {
 					return fmt.Errorf("read got timestamp %v, want it to be no earlier than %v", ts, writes[0].ts)
