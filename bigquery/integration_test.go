@@ -396,6 +396,65 @@ func TestIntegration_TableMetadata(t *testing.T) {
 
 }
 
+func TestIntegration_RangePartitioning(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := dataset.Table(tableIDs.New())
+
+	schema := Schema{
+		{Name: "name", Type: StringFieldType},
+		{Name: "somevalue", Type: IntegerFieldType},
+	}
+
+	wantedRange := &RangePartitioningRange{
+		Start:    10,
+		End:      135,
+		Interval: 25,
+	}
+
+	wantedPartitioning := &RangePartitioning{
+		Field: "somevalue",
+		Range: wantedRange,
+	}
+
+	err := table.Create(context.Background(), &TableMetadata{
+		Schema:            schema,
+		RangePartitioning: wantedPartitioning,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer table.Delete(ctx)
+	md, err := table.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if md.RangePartitioning == nil {
+		t.Fatal("expected range partitioning, got nil")
+	}
+	got := md.RangePartitioning.Field
+	if wantedPartitioning.Field != got {
+		t.Errorf("RangePartitioning Field: got %v, want %v", got, wantedPartitioning.Field)
+	}
+	if md.RangePartitioning.Range == nil {
+		t.Fatal("expected a range definition, got nil")
+	}
+	gotInt64 := md.RangePartitioning.Range.Start
+	if gotInt64 != wantedRange.Start {
+		t.Errorf("Range.Start: got %v, wanted %v", gotInt64, wantedRange.Start)
+	}
+	gotInt64 = md.RangePartitioning.Range.End
+	if gotInt64 != wantedRange.End {
+		t.Errorf("Range.End: got %v, wanted %v", gotInt64, wantedRange.End)
+	}
+	gotInt64 = md.RangePartitioning.Range.Interval
+	if gotInt64 != wantedRange.Interval {
+		t.Errorf("Range.Interval: got %v, wanted %v", gotInt64, wantedRange.Interval)
+	}
+}
 func TestIntegration_RemoveTimePartitioning(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
