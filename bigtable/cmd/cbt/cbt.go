@@ -206,7 +206,7 @@ For convenience, values of the -project, -instance, -creds,
     creds = path-to-account-key.json
     admin-endpoint = hostname:port
     data-endpoint = hostname:port
-	auth-token = AJP...
+    auth-token = AJAvW039NO1nDcijk_J6_rFXG_...
 
 All values are optional, and all will be overridden by flags.
 `
