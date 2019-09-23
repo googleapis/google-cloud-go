@@ -44,6 +44,9 @@ type LoadConfig struct {
 	// If non-nil, the destination table is partitioned by time.
 	TimePartitioning *TimePartitioning
 
+	// If non-nil, the destination table is partitioned by integer range.
+	RangePartitioning *RangePartitioning
+
 	// Clustering specifies the data clustering configuration for the destination table.
 	Clustering *Clustering
 
@@ -68,6 +71,7 @@ func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
 			WriteDisposition:                   string(l.WriteDisposition),
 			DestinationTable:                   l.Dst.toBQ(),
 			TimePartitioning:                   l.TimePartitioning.toBQ(),
+			RangePartitioning:                  l.RangePartitioning.toBQ(),
 			Clustering:                         l.Clustering.toBQ(),
 			DestinationEncryptionConfiguration: l.DestinationEncryptionConfig.toBQ(),
 			SchemaUpdateOptions:                l.SchemaUpdateOptions,
@@ -85,6 +89,7 @@ func bqToLoadConfig(q *bq.JobConfiguration, c *Client) *LoadConfig {
 		WriteDisposition:            TableWriteDisposition(q.Load.WriteDisposition),
 		Dst:                         bqToTable(q.Load.DestinationTable, c),
 		TimePartitioning:            bqToTimePartitioning(q.Load.TimePartitioning),
+		RangePartitioning:           bqToRangePartitioning(q.Load.RangePartitioning),
 		Clustering:                  bqToClustering(q.Load.Clustering),
 		DestinationEncryptionConfig: bqToEncryptionConfig(q.Load.DestinationEncryptionConfiguration),
 		SchemaUpdateOptions:         q.Load.SchemaUpdateOptions,

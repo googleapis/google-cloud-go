@@ -272,6 +272,57 @@ func TestLoad(t *testing.T) {
 				return j
 			}(),
 		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *ReaderSource {
+				r := NewReaderSource(strings.NewReader("foo"))
+				return r
+			}(),
+			config: LoadConfig{
+				TimePartitioning: &TimePartitioning{
+					Field: "somefield",
+				},
+			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.SourceUris = nil
+				j.Configuration.Load.TimePartitioning = &bq.TimePartitioning{
+					Field: "somefield",
+					Type:  "DAY",
+				}
+				return j
+			}(),
+		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *ReaderSource {
+				r := NewReaderSource(strings.NewReader("foo"))
+				return r
+			}(),
+			config: LoadConfig{
+				RangePartitioning: &RangePartitioning{
+					Field: "somefield",
+					Range: &RangePartitioningRange{
+						Start:    1,
+						End:      2,
+						Interval: 3,
+					},
+				},
+			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.SourceUris = nil
+				j.Configuration.Load.RangePartitioning = &bq.RangePartitioning{
+					Field: "somefield",
+					Range: &bq.RangePartitioningRange{
+						Start:    1,
+						End:      2,
+						Interval: 3,
+					},
+				}
+				return j
+			}(),
+		},
 	}
 
 	for i, tc := range testCases {
