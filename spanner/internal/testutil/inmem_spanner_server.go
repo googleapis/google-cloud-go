@@ -431,7 +431,7 @@ func (s *inMemSpannerServer) findSession(name string) (*spannerpb.Session, error
 	defer s.mu.Unlock()
 	session := s.sessions[name]
 	if session == nil {
-		return nil, gstatus.Error(codes.NotFound, fmt.Sprintf("Session %s not found", name))
+		return nil, gstatus.Error(codes.NotFound, fmt.Sprintf("Session not found: %s", name))
 	}
 	return session, nil
 }

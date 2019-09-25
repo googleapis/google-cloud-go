@@ -435,7 +435,7 @@ func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Contex
 		ts time.Time
 		sh *sessionHandle
 	)
-	err = runWithRetryOnAborted(ctx, func(ctx context.Context) error {
+	err = runWithRetryOnAbortedOrSessionNotFound(ctx, func(ctx context.Context) error {
 		var (
 			err error
 			t   *ReadWriteTransaction

@@ -357,7 +357,7 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 		if err != nil && sh != nil {
 			// Got a valid session handle, but failed to initialize transaction=
 			// on Cloud Spanner.
-			if shouldDropSession(err) {
+			if isSessionNotFoundError(err) {
 				sh.destroy()
 			}
 			// If sh.destroy was already executed, this becomes a noop.
@@ -527,7 +527,7 @@ func (t *ReadOnlyTransaction) release(err error) {
 	sh := t.sh
 	t.mu.Unlock()
 	if sh != nil { // sh could be nil if t.acquire() fails.
-		if shouldDropSession(err) {
+		if isSessionNotFoundError(err) {
 			sh.destroy()
 		}
 		if t.singleUse {
@@ -795,7 +795,7 @@ func (t *ReadWriteTransaction) release(err error) {
 	t.mu.Lock()
 	sh := t.sh
 	t.mu.Unlock()
-	if sh != nil && shouldDropSession(err) {
+	if sh != nil && isSessionNotFoundError(err) {
 		sh.destroy()
 	}
 }
@@ -831,7 +831,7 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 		t.state = txActive
 		return nil
 	}
-	if shouldDropSession(err) {
+	if isSessionNotFoundError(err) {
 		t.sh.destroy()
 	}
 	return err
@@ -869,7 +869,7 @@ func (t *ReadWriteTransaction) commit(ctx context.Context) (time.Time, error) {
 	if tstamp := res.GetCommitTimestamp(); tstamp != nil {
 		ts = time.Unix(tstamp.Seconds, int64(tstamp.Nanos))
 	}
-	if shouldDropSession(err) {
+	if isSessionNotFoundError(err) {
 		t.sh.destroy()
 	}
 	return ts, err
@@ -892,7 +892,7 @@ func (t *ReadWriteTransaction) rollback(ctx context.Context) {
 		Session:       sid,
 		TransactionId: t.tx,
 	})
-	if shouldDropSession(err) {
+	if isSessionNotFoundError(err) {
 		t.sh.destroy()
 	}
 }
@@ -912,6 +912,10 @@ func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(cont
 			// Retry the transaction using the same session on ABORT error.
 			// Cloud Spanner will create the new transaction with the previous
 			// one's wound-wait priority.
+			return ts, err
+		}
+		if isSessionNotFoundError(err) {
+			t.sh.destroy()
 			return ts, err
 		}
 		// Not going to commit, according to API spec, should rollback the
@@ -973,7 +977,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 			Mutations: mPb,
 		}, gax.WithGRPCOptions(grpc.Trailer(&trailers)))
 		if err != nil && !isAbortErr(err) {
-			if shouldDropSession(err) {
+			if isSessionNotFoundError(err) {
 				// Discard the bad session.
 				sh.destroy()
 			}
