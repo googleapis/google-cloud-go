@@ -45,6 +45,7 @@ import (
 	"cloud.google.com/go/internal/uid"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
@@ -2822,17 +2823,30 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 }
 
 func TestIntegration_HMACKey(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1526")
-
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
 
 	projectID := testutil.ProjID()
-	serviceAccountEmail, err := client.ServiceAccount(ctx, projectID)
-	if err != nil {
-		t.Fatalf("Failed to get service account: %v", err)
+
+	// Use the service account email from the user's credentials. Requires that the
+	// credentials are set via a JSON credentials file.
+	// Note that a service account may only have up to 5 active HMAC keys at once; if
+	// we see flakes because of this, we should consider switching to using a project
+	// pool.
+	credentials := testutil.CredentialsEnv(ctx, "GCLOUD_TESTS_GOLANG_KEY")
+	if credentials == nil {
+		t.Fatal("credentials could not be determined, is GCLOUD_TESTS_GOLANG_KEY set correctly?")
 	}
+	if credentials.JSON == nil {
+		t.Fatal("could not read the JSON key file, is GCLOUD_TESTS_GOLANG_KEY set correctly?")
+	}
+	conf, err := google.JWTConfigFromJSON(credentials.JSON)
+	if err != nil {
+		t.Fatal(err)
+	}
+	serviceAccountEmail := conf.Email
+
 	hmacKey, err := client.CreateHMACKey(ctx, projectID, serviceAccountEmail)
 	if err != nil {
 		t.Fatalf("Failed to create HMACKey: %v", err)
@@ -2848,7 +2862,7 @@ func TestIntegration_HMACKey(t *testing.T) {
 	hkh := client.HMACKeyHandle(projectID, hmacKey.AccessID)
 	// 1. Ensure that we CANNOT delete an ACTIVE key.
 	if err := hkh.Delete(ctx); err == nil {
-		t.Fatalf("Unexpectedly deleted key whose state is ACTIVE: %v", err)
+		t.Fatal("Unexpectedly deleted key whose state is ACTIVE: No error from Delete.")
 	}
 
 	invalidStates := []HMACState{"", Deleted, "active", "inactive", "foo_bar"}
@@ -2889,7 +2903,23 @@ func TestIntegration_HMACKey(t *testing.T) {
 		t.Fatalf("Unexpected updated state %q, expected %q", got, want)
 	}
 
-	// 3. Finally set it to back to Inactive and
+	// 3. Verify that keys are listed as expected.
+	iter := client.ListHMACKeys(ctx, projectID)
+	count := 0
+	for ; ; count++ {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("Failed to ListHMACKeys: %v", err)
+		}
+	}
+	if count == 0 {
+		t.Fatal("Failed to list any HMACKeys")
+	}
+
+	// 4. Finally set it to back to Inactive and
 	// then retry the deletion which should now succeed.
 	_, _ = hkh.Update(ctx, HMACKeyAttrsToUpdate{
 		State: Inactive,
@@ -2910,22 +2940,6 @@ func TestIntegration_HMACKey(t *testing.T) {
 		t.Fatalf("Unexpected error: %v", err)
 	}
 
-	// 4. Perform some iterations.
-	iter := client.ListHMACKeys(ctx, projectID)
-	var gotKeys []*HMACKey
-	for {
-		key, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatalf("Failed to ListHMACKeys: %v", err)
-		}
-		gotKeys = append(gotKeys, key)
-	}
-	if len(gotKeys) == 0 {
-		t.Fatal("Failed to list any HMACKeys")
-	}
 }
 
 type testHelper struct {
