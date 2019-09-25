@@ -1673,9 +1673,11 @@ func TestEntityTypesListEntityTypesError(t *testing.T) {
 func TestEntityTypesGetEntityType(t *testing.T) {
 	var name2 string = "name2-1052831874"
 	var displayName string = "displayName1615086568"
+	var enableFuzzyExtraction bool = true
 	var expectedResponse = &dialogflowpb.EntityType{
-		Name:        name2,
-		DisplayName: displayName,
+		Name:                  name2,
+		DisplayName:           displayName,
+		EnableFuzzyExtraction: enableFuzzyExtraction,
 	}
 
 	mockEntityTypes.err = nil
@@ -1734,9 +1736,11 @@ func TestEntityTypesGetEntityTypeError(t *testing.T) {
 func TestEntityTypesCreateEntityType(t *testing.T) {
 	var name string = "name3373707"
 	var displayName string = "displayName1615086568"
+	var enableFuzzyExtraction bool = true
 	var expectedResponse = &dialogflowpb.EntityType{
-		Name:        name,
-		DisplayName: displayName,
+		Name:                  name,
+		DisplayName:           displayName,
+		EnableFuzzyExtraction: enableFuzzyExtraction,
 	}
 
 	mockEntityTypes.err = nil
@@ -1799,9 +1803,11 @@ func TestEntityTypesCreateEntityTypeError(t *testing.T) {
 func TestEntityTypesUpdateEntityType(t *testing.T) {
 	var name string = "name3373707"
 	var displayName string = "displayName1615086568"
+	var enableFuzzyExtraction bool = true
 	var expectedResponse = &dialogflowpb.EntityType{
-		Name:        name,
-		DisplayName: displayName,
+		Name:                  name,
+		DisplayName:           displayName,
+		EnableFuzzyExtraction: enableFuzzyExtraction,
 	}
 
 	mockEntityTypes.err = nil
