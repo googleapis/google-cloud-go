@@ -320,16 +320,22 @@ func TestDatasetToBQ(t *testing.T) {
 			Name:                   "name",
 			Description:            "desc",
 			DefaultTableExpiration: time.Hour,
-			Location:               "EU",
-			Labels:                 map[string]string{"x": "y"},
-			Access:                 []*AccessEntry{{Role: OwnerRole, Entity: "example.com", EntityType: DomainEntity}},
+			DefaultEncryptionConfig: &EncryptionConfig{
+				KMSKeyName: "some_key",
+			},
+			Location: "EU",
+			Labels:   map[string]string{"x": "y"},
+			Access:   []*AccessEntry{{Role: OwnerRole, Entity: "example.com", EntityType: DomainEntity}},
 		}, &bq.Dataset{
 			FriendlyName:             "name",
 			Description:              "desc",
 			DefaultTableExpirationMs: 60 * 60 * 1000,
-			Location:                 "EU",
-			Labels:                   map[string]string{"x": "y"},
-			Access:                   []*bq.DatasetAccess{{Role: "OWNER", Domain: "example.com"}},
+			DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{
+				KmsKeyName: "some_key",
+			},
+			Location: "EU",
+			Labels:   map[string]string{"x": "y"},
+			Access:   []*bq.DatasetAccess{{Role: "OWNER", Domain: "example.com"}},
 		}},
 	} {
 		got, err := test.in.toBQ()
@@ -366,8 +372,11 @@ func TestBQToDatasetMetadata(t *testing.T) {
 		FriendlyName:             "name",
 		Description:              "desc",
 		DefaultTableExpirationMs: 60 * 60 * 1000,
-		Location:                 "EU",
-		Labels:                   map[string]string{"x": "y"},
+		DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{
+			KmsKeyName: "some_key",
+		},
+		Location: "EU",
+		Labels:   map[string]string{"x": "y"},
 		Access: []*bq.DatasetAccess{
 			{Role: "READER", UserByEmail: "joe@example.com"},
 			{Role: "WRITER", GroupByEmail: "users@example.com"},
@@ -380,8 +389,11 @@ func TestBQToDatasetMetadata(t *testing.T) {
 		Name:                   "name",
 		Description:            "desc",
 		DefaultTableExpiration: time.Hour,
-		Location:               "EU",
-		Labels:                 map[string]string{"x": "y"},
+		DefaultEncryptionConfig: &EncryptionConfig{
+			KMSKeyName: "some_key",
+		},
+		Location: "EU",
+		Labels:   map[string]string{"x": "y"},
 		Access: []*AccessEntry{
 			{Role: ReaderRole, Entity: "joe@example.com", EntityType: UserEmailEntity},
 			{Role: WriterRole, Entity: "users@example.com", EntityType: GroupEmailEntity},
@@ -402,6 +414,9 @@ func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 		Description:            "desc",
 		Name:                   "name",
 		DefaultTableExpiration: time.Hour,
+		DefaultEncryptionConfig: &EncryptionConfig{
+			KMSKeyName: "some_key",
+		},
 	}
 	dm.SetLabel("label", "value")
 	dm.DeleteLabel("del")
@@ -414,9 +429,13 @@ func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 		Description:              "desc",
 		FriendlyName:             "name",
 		DefaultTableExpirationMs: 60 * 60 * 1000,
-		Labels:                   map[string]string{"label": "value"},
-		ForceSendFields:          []string{"Description", "FriendlyName"},
-		NullFields:               []string{"Labels.del"},
+		DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{
+			KmsKeyName:      "some_key",
+			ForceSendFields: []string{"KmsKeyName"},
+		},
+		Labels:          map[string]string{"label": "value"},
+		ForceSendFields: []string{"Description", "FriendlyName"},
+		NullFields:      []string{"Labels.del"},
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Errorf("-got, +want:\n%s", diff)

@@ -36,12 +36,13 @@ type Dataset struct {
 // DatasetMetadata contains information about a BigQuery dataset.
 type DatasetMetadata struct {
 	// These fields can be set when creating a dataset.
-	Name                   string            // The user-friendly name for this dataset.
-	Description            string            // The user-friendly description of this dataset.
-	Location               string            // The geo location of the dataset.
-	DefaultTableExpiration time.Duration     // The default expiration time for new tables.
-	Labels                 map[string]string // User-provided labels.
-	Access                 []*AccessEntry    // Access permissions.
+	Name                    string            // The user-friendly name for this dataset.
+	Description             string            // The user-friendly description of this dataset.
+	Location                string            // The geo location of the dataset.
+	DefaultTableExpiration  time.Duration     // The default expiration time for new tables.
+	Labels                  map[string]string // User-provided labels.
+	Access                  []*AccessEntry    // Access permissions.
+	DefaultEncryptionConfig *EncryptionConfig
 
 	// These fields are read-only.
 	CreationTime     time.Time
@@ -62,6 +63,10 @@ type DatasetMetadataToUpdate struct {
 	// DefaultTableExpiration is the default expiration time for new tables.
 	// If set to time.Duration(0), new tables never expire.
 	DefaultTableExpiration optional.Duration
+
+	// DefaultEncryptionConfig defines CMEK settings for new resources created
+	// in the dataset.
+	DefaultEncryptionConfig *EncryptionConfig
 
 	// The entire access list. It is not possible to replace individual entries.
 	Access []*AccessEntry
@@ -131,6 +136,9 @@ func (dm *DatasetMetadata) toBQ() (*bq.Dataset, error) {
 	if dm.ETag != "" {
 		return nil, errors.New("bigquery: Dataset.ETag is not writable")
 	}
+	if dm.DefaultEncryptionConfig != nil {
+		ds.DefaultEncryptionConfiguration = dm.DefaultEncryptionConfig.toBQ()
+	}
 	return ds, nil
 }
 
@@ -184,15 +192,16 @@ func (d *Dataset) Metadata(ctx context.Context) (md *DatasetMetadata, err error)
 
 func bqToDatasetMetadata(d *bq.Dataset) (*DatasetMetadata, error) {
 	dm := &DatasetMetadata{
-		CreationTime:           unixMillisToTime(d.CreationTime),
-		LastModifiedTime:       unixMillisToTime(d.LastModifiedTime),
-		DefaultTableExpiration: time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
-		Description:            d.Description,
-		Name:                   d.FriendlyName,
-		FullID:                 d.Id,
-		Location:               d.Location,
-		Labels:                 d.Labels,
-		ETag:                   d.Etag,
+		CreationTime:            unixMillisToTime(d.CreationTime),
+		LastModifiedTime:        unixMillisToTime(d.LastModifiedTime),
+		DefaultTableExpiration:  time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
+		DefaultEncryptionConfig: bqToEncryptionConfig(d.DefaultEncryptionConfiguration),
+		Description:             d.Description,
+		Name:                    d.FriendlyName,
+		FullID:                  d.Id,
+		Location:                d.Location,
+		Labels:                  d.Labels,
+		ETag:                    d.Etag,
 	}
 	for _, a := range d.Access {
 		e, err := bqToAccessEntry(a, nil)
@@ -253,6 +262,10 @@ func (dm *DatasetMetadataToUpdate) toBQ() (*bq.Dataset, error) {
 		} else {
 			ds.DefaultTableExpirationMs = int64(dur / time.Millisecond)
 		}
+	}
+	if dm.DefaultEncryptionConfig != nil {
+		ds.DefaultEncryptionConfiguration = dm.DefaultEncryptionConfig.toBQ()
+		ds.DefaultEncryptionConfiguration.ForceSendFields = []string{"KmsKeyName"}
 	}
 	if dm.Access != nil {
 		var err error
