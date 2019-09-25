@@ -347,8 +347,10 @@ func TestSpannerBatchCreateSessions(t *testing.T) {
 	mockSpanner.resps = append(mockSpanner.resps[:0], expectedResponse)
 
 	var formattedDatabase string = fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
+	var sessionCount int32 = 185691686
 	var request = &spannerpb.BatchCreateSessionsRequest{
-		Database: formattedDatabase,
+		Database:     formattedDatabase,
+		SessionCount: sessionCount,
 	}
 
 	c, err := NewClient(context.Background(), clientOpt)
@@ -376,8 +378,10 @@ func TestSpannerBatchCreateSessionsError(t *testing.T) {
 	mockSpanner.err = gstatus.Error(errCode, "test error")
 
 	var formattedDatabase string = fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
+	var sessionCount int32 = 185691686
 	var request = &spannerpb.BatchCreateSessionsRequest{
-		Database: formattedDatabase,
+		Database:     formattedDatabase,
+		SessionCount: sessionCount,
 	}
 
 	c, err := NewClient(context.Background(), clientOpt)

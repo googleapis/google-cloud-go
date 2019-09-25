@@ -107,11 +107,12 @@ func (c *PhishingProtectionServiceV1Beta1Client) setGoogleClientInfo(keyval ...s
 }
 
 // ReportPhishing reports a URI suspected of containing phishing content to be reviewed. Once
-// the report review is completed, if its result verifies the existince of
-// malicious phishing content, the site will be added the to Google's Social
-// Engineering lists (at https://support.google.com/webmasters/answer/6350487/)
-// in order to protect users that could get exposed to this threat in
-// the future.
+// the report review is complete, its result can be found in the Cloud
+// Security Command Center findings dashboard for Phishing Protection. If the
+// result verifies the existence of malicious phishing content, the site will
+// be added the to Google's Social Engineering
+// lists (at https://support.google.com/webmasters/answer/6350487/) in order to
+// protect users that could get exposed to this threat in the future.
 func (c *PhishingProtectionServiceV1Beta1Client) ReportPhishing(ctx context.Context, req *phishingprotectionpb.ReportPhishingRequest, opts ...gax.CallOption) (*phishingprotectionpb.ReportPhishingResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

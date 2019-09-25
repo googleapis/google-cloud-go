@@ -1921,7 +1921,7 @@ func TestNotificationChannelServiceGetNotificationChannelDescriptor(t *testing.T
 
 	mockNotificationChannel.resps = append(mockNotificationChannel.resps[:0], expectedResponse)
 
-	var formattedName string = fmt.Sprintf("projects/%s/notificationChannelDescriptors/%s", "[PROJECT]", "[NOTIFICATION_CHANNEL_DESCRIPTOR]")
+	var formattedName string = fmt.Sprintf("projects/%s/notificationChannelDescriptors/%s", "[PROJECT]", "[CHANNEL_DESCRIPTOR]")
 	var request = &monitoringpb.GetNotificationChannelDescriptorRequest{
 		Name: formattedName,
 	}
@@ -1950,7 +1950,7 @@ func TestNotificationChannelServiceGetNotificationChannelDescriptorError(t *test
 	errCode := codes.PermissionDenied
 	mockNotificationChannel.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = fmt.Sprintf("projects/%s/notificationChannelDescriptors/%s", "[PROJECT]", "[NOTIFICATION_CHANNEL_DESCRIPTOR]")
+	var formattedName string = fmt.Sprintf("projects/%s/notificationChannelDescriptors/%s", "[PROJECT]", "[CHANNEL_DESCRIPTOR]")
 	var request = &monitoringpb.GetNotificationChannelDescriptorRequest{
 		Name: formattedName,
 	}

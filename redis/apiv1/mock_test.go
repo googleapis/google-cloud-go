@@ -187,161 +187,6 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestCloudRedisListInstances(t *testing.T) {
-	var nextPageToken string = ""
-	var instancesElement *redispb.Instance = &redispb.Instance{}
-	var instances = []*redispb.Instance{instancesElement}
-	var expectedResponse = &redispb.ListInstancesResponse{
-		NextPageToken: nextPageToken,
-		Instances:     instances,
-	}
-
-	mockCloudRedis.err = nil
-	mockCloudRedis.reqs = nil
-
-	mockCloudRedis.resps = append(mockCloudRedis.resps[:0], expectedResponse)
-
-	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s", "[PROJECT]", "[LOCATION]")
-	var request = &redispb.ListInstancesRequest{
-		Parent: formattedParent,
-	}
-
-	c, err := NewCloudRedisClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.ListInstances(context.Background(), request).Next()
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockCloudRedis.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	want := (interface{})(expectedResponse.Instances[0])
-	got := (interface{})(resp)
-	var ok bool
-
-	switch want := (want).(type) {
-	case proto.Message:
-		ok = proto.Equal(want, got.(proto.Message))
-	default:
-		ok = want == got
-	}
-	if !ok {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestCloudRedisListInstancesError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockCloudRedis.err = gstatus.Error(errCode, "test error")
-
-	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s", "[PROJECT]", "[LOCATION]")
-	var request = &redispb.ListInstancesRequest{
-		Parent: formattedParent,
-	}
-
-	c, err := NewCloudRedisClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.ListInstances(context.Background(), request).Next()
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
-func TestCloudRedisGetInstance(t *testing.T) {
-	var name2 string = "name2-1052831874"
-	var displayName string = "displayName1615086568"
-	var locationId string = "locationId552319461"
-	var alternativeLocationId string = "alternativeLocationId-718920621"
-	var redisVersion string = "redisVersion-685310444"
-	var reservedIpRange string = "reservedIpRange-1082940580"
-	var host string = "host3208616"
-	var port int32 = 3446913
-	var currentLocationId string = "currentLocationId1312712735"
-	var statusMessage string = "statusMessage-239442758"
-	var memorySizeGb int32 = 34199707
-	var authorizedNetwork string = "authorizedNetwork-1733809270"
-	var persistenceIamIdentity string = "persistenceIamIdentity1061944584"
-	var expectedResponse = &redispb.Instance{
-		Name:                   name2,
-		DisplayName:            displayName,
-		LocationId:             locationId,
-		AlternativeLocationId:  alternativeLocationId,
-		RedisVersion:           redisVersion,
-		ReservedIpRange:        reservedIpRange,
-		Host:                   host,
-		Port:                   port,
-		CurrentLocationId:      currentLocationId,
-		StatusMessage:          statusMessage,
-		MemorySizeGb:           memorySizeGb,
-		AuthorizedNetwork:      authorizedNetwork,
-		PersistenceIamIdentity: persistenceIamIdentity,
-	}
-
-	mockCloudRedis.err = nil
-	mockCloudRedis.reqs = nil
-
-	mockCloudRedis.resps = append(mockCloudRedis.resps[:0], expectedResponse)
-
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/instances/%s", "[PROJECT]", "[LOCATION]", "[INSTANCE]")
-	var request = &redispb.GetInstanceRequest{
-		Name: formattedName,
-	}
-
-	c, err := NewCloudRedisClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.GetInstance(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockCloudRedis.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestCloudRedisGetInstanceError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockCloudRedis.err = gstatus.Error(errCode, "test error")
-
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/instances/%s", "[PROJECT]", "[LOCATION]", "[INSTANCE]")
-	var request = &redispb.GetInstanceRequest{
-		Name: formattedName,
-	}
-
-	c, err := NewCloudRedisClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.GetInstance(context.Background(), request)
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
 func TestCloudRedisCreateInstance(t *testing.T) {
 	var name string = "name3373707"
 	var displayName string = "displayName1615086568"
@@ -518,7 +363,7 @@ func TestCloudRedisUpdateInstance(t *testing.T) {
 	var updateMask = &field_maskpb.FieldMask{
 		Paths: paths,
 	}
-	var displayName string = " instance.memory_size_gb=4"
+	var displayName string = "￼ instance.memory_size_gb=4"
 	var instance = &redispb.Instance{
 		DisplayName: displayName,
 	}
@@ -571,7 +416,7 @@ func TestCloudRedisUpdateInstanceError(t *testing.T) {
 	var updateMask = &field_maskpb.FieldMask{
 		Paths: paths,
 	}
-	var displayName string = " instance.memory_size_gb=4"
+	var displayName string = "￼ instance.memory_size_gb=4"
 	var instance = &redispb.Instance{
 		DisplayName: displayName,
 	}
@@ -590,6 +435,161 @@ func TestCloudRedisUpdateInstanceError(t *testing.T) {
 		t.Fatal(err)
 	}
 	resp, err := respLRO.Wait(context.Background())
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestCloudRedisListInstances(t *testing.T) {
+	var nextPageToken string = ""
+	var instancesElement *redispb.Instance = &redispb.Instance{}
+	var instances = []*redispb.Instance{instancesElement}
+	var expectedResponse = &redispb.ListInstancesResponse{
+		NextPageToken: nextPageToken,
+		Instances:     instances,
+	}
+
+	mockCloudRedis.err = nil
+	mockCloudRedis.reqs = nil
+
+	mockCloudRedis.resps = append(mockCloudRedis.resps[:0], expectedResponse)
+
+	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s", "[PROJECT]", "[LOCATION]")
+	var request = &redispb.ListInstancesRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewCloudRedisClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListInstances(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockCloudRedis.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.Instances[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestCloudRedisListInstancesError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockCloudRedis.err = gstatus.Error(errCode, "test error")
+
+	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s", "[PROJECT]", "[LOCATION]")
+	var request = &redispb.ListInstancesRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewCloudRedisClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListInstances(context.Background(), request).Next()
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestCloudRedisGetInstance(t *testing.T) {
+	var name2 string = "name2-1052831874"
+	var displayName string = "displayName1615086568"
+	var locationId string = "locationId552319461"
+	var alternativeLocationId string = "alternativeLocationId-718920621"
+	var redisVersion string = "redisVersion-685310444"
+	var reservedIpRange string = "reservedIpRange-1082940580"
+	var host string = "host3208616"
+	var port int32 = 3446913
+	var currentLocationId string = "currentLocationId1312712735"
+	var statusMessage string = "statusMessage-239442758"
+	var memorySizeGb int32 = 34199707
+	var authorizedNetwork string = "authorizedNetwork-1733809270"
+	var persistenceIamIdentity string = "persistenceIamIdentity1061944584"
+	var expectedResponse = &redispb.Instance{
+		Name:                   name2,
+		DisplayName:            displayName,
+		LocationId:             locationId,
+		AlternativeLocationId:  alternativeLocationId,
+		RedisVersion:           redisVersion,
+		ReservedIpRange:        reservedIpRange,
+		Host:                   host,
+		Port:                   port,
+		CurrentLocationId:      currentLocationId,
+		StatusMessage:          statusMessage,
+		MemorySizeGb:           memorySizeGb,
+		AuthorizedNetwork:      authorizedNetwork,
+		PersistenceIamIdentity: persistenceIamIdentity,
+	}
+
+	mockCloudRedis.err = nil
+	mockCloudRedis.reqs = nil
+
+	mockCloudRedis.resps = append(mockCloudRedis.resps[:0], expectedResponse)
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/instances/%s", "[PROJECT]", "[LOCATION]", "[INSTANCE]")
+	var request = &redispb.GetInstanceRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewCloudRedisClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetInstance(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockCloudRedis.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestCloudRedisGetInstanceError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockCloudRedis.err = gstatus.Error(errCode, "test error")
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/instances/%s", "[PROJECT]", "[LOCATION]", "[INSTANCE]")
+	var request = &redispb.GetInstanceRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewCloudRedisClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetInstance(context.Background(), request)
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)
@@ -641,10 +641,10 @@ func TestCloudRedisImportInstance(t *testing.T) {
 		Result: &longrunningpb.Operation_Response{Response: any},
 	})
 
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/instances/%s", "[PROJECT]", "[LOCATION]", "[INSTANCE]")
+	var name string = "name3373707"
 	var inputConfig *redispb.InputConfig = &redispb.InputConfig{}
 	var request = &redispb.ImportInstanceRequest{
-		Name:        formattedName,
+		Name:        name,
 		InputConfig: inputConfig,
 	}
 
@@ -686,10 +686,10 @@ func TestCloudRedisImportInstanceError(t *testing.T) {
 		},
 	})
 
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/instances/%s", "[PROJECT]", "[LOCATION]", "[INSTANCE]")
+	var name string = "name3373707"
 	var inputConfig *redispb.InputConfig = &redispb.InputConfig{}
 	var request = &redispb.ImportInstanceRequest{
-		Name:        formattedName,
+		Name:        name,
 		InputConfig: inputConfig,
 	}
 
@@ -754,10 +754,10 @@ func TestCloudRedisExportInstance(t *testing.T) {
 		Result: &longrunningpb.Operation_Response{Response: any},
 	})
 
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/instances/%s", "[PROJECT]", "[LOCATION]", "[INSTANCE]")
+	var name string = "name3373707"
 	var outputConfig *redispb.OutputConfig = &redispb.OutputConfig{}
 	var request = &redispb.ExportInstanceRequest{
-		Name:         formattedName,
+		Name:         name,
 		OutputConfig: outputConfig,
 	}
 
@@ -799,10 +799,10 @@ func TestCloudRedisExportInstanceError(t *testing.T) {
 		},
 	})
 
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/instances/%s", "[PROJECT]", "[LOCATION]", "[INSTANCE]")
+	var name string = "name3373707"
 	var outputConfig *redispb.OutputConfig = &redispb.OutputConfig{}
 	var request = &redispb.ExportInstanceRequest{
-		Name:         formattedName,
+		Name:         name,
 		OutputConfig: outputConfig,
 	}
 
@@ -868,10 +868,8 @@ func TestCloudRedisFailoverInstance(t *testing.T) {
 	})
 
 	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/instances/%s", "[PROJECT]", "[LOCATION]", "[INSTANCE]")
-	var dataProtectionMode redispb.FailoverInstanceRequest_DataProtectionMode = redispb.FailoverInstanceRequest_DATA_PROTECTION_MODE_UNSPECIFIED
 	var request = &redispb.FailoverInstanceRequest{
-		Name:               formattedName,
-		DataProtectionMode: dataProtectionMode,
+		Name: formattedName,
 	}
 
 	c, err := NewCloudRedisClient(context.Background(), clientOpt)
@@ -913,10 +911,8 @@ func TestCloudRedisFailoverInstanceError(t *testing.T) {
 	})
 
 	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/instances/%s", "[PROJECT]", "[LOCATION]", "[INSTANCE]")
-	var dataProtectionMode redispb.FailoverInstanceRequest_DataProtectionMode = redispb.FailoverInstanceRequest_DATA_PROTECTION_MODE_UNSPECIFIED
 	var request = &redispb.FailoverInstanceRequest{
-		Name:               formattedName,
-		DataProtectionMode: dataProtectionMode,
+		Name: formattedName,
 	}
 
 	c, err := NewCloudRedisClient(context.Background(), clientOpt)

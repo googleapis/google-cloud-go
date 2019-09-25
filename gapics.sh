@@ -27,7 +27,7 @@ google/cloud/bigquery/datatransfer/artman_bigquerydatatransfer.yaml
 google/cloud/bigquery/storage/artman_bigquerystorage_v1beta1.yaml
 google/cloud/dataproc/artman_dataproc_v1.yaml
 google/cloud/dataproc/artman_dataproc_v1beta2.yaml
-google/cloud/dialogflow/artman_dialogflow_v2.yaml
+google/cloud/dialogflow/v2/artman_dialogflow_v2.yaml
 google/cloud/iot/artman_cloudiot.yaml
 google/cloud/irm/artman_irm_v1alpha2.yaml
 google/cloud/kms/artman_cloudkms.yaml
