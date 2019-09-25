@@ -68,7 +68,7 @@ func setupMockedTestServerWithConfigAndClientOptions(t *testing.T, config Client
 	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
 	opts = append(opts, clientOptions...)
 	ctx := context.Background()
-	var formattedDatabase = fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
+	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
 	client, err := NewClientWithConfig(ctx, formattedDatabase, config, opts...)
 	if err != nil {
 		t.Fatal(err)
@@ -609,6 +609,165 @@ func TestClient_ReadWriteTransactionCommitAborted(t *testing.T) {
 	}
 }
 
+func TestClient_ReadWriteTransaction_SessionNotFoundOnCommit(t *testing.T) {
+	t.Parallel()
+	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
+		MethodCommitTransaction: {Errors: []error{status.Error(codes.NotFound, "Session not found")}},
+	}, 2); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_ReadWriteTransaction_SessionNotFoundOnBeginTransaction(t *testing.T) {
+	t.Parallel()
+	// We expect only 1 attempt, as the 'Session not found' error is already
+	//handled in the session pool where the session is prepared.
+	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
+		MethodBeginTransaction: {Errors: []error{status.Error(codes.NotFound, "Session not found")}},
+	}, 1); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_ReadWriteTransaction_SessionNotFoundOnBeginTransactionWithEmptySessionPool(t *testing.T) {
+	t.Parallel()
+	// There will be no prepared sessions in the pool, so the error will occur
+	// when the transaction tries to get a session from the pool. This will
+	// also be handled by the session pool, so the transaction itself does not
+	// need to retry, hence the expectedAttempts == 1.
+	if err := testReadWriteTransactionWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{WriteSessions: 0.0},
+	}, map[string]SimulatedExecutionTime{
+		MethodBeginTransaction: {Errors: []error{status.Error(codes.NotFound, "Session not found")}},
+	}, 1); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteStreamingSql(t *testing.T) {
+	t.Parallel()
+	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
+		MethodExecuteStreamingSql: {Errors: []error{status.Error(codes.NotFound, "Session not found")}},
+	}, 2); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteUpdate(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodExecuteSql,
+		SimulatedExecutionTime{Errors: []error{status.Error(codes.NotFound, "Session not found")}},
+	)
+	ctx := context.Background()
+	var attempts int
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		rowCount, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		if err != nil {
+			return err
+		}
+		if g, w := rowCount, int64(UpdateBarSetFooRowCount); g != w {
+			return status.Errorf(codes.FailedPrecondition, "Row count mismatch\nGot: %v\nWant: %v", g, w)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+	}
+}
+
+func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteBatchUpdate(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodExecuteBatchDml,
+		SimulatedExecutionTime{Errors: []error{status.Error(codes.NotFound, "Session not found")}},
+	)
+	ctx := context.Background()
+	var attempts int
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		rowCounts, err := tx.BatchUpdate(ctx, []Statement{NewStatement(UpdateBarSetFoo)})
+		if err != nil {
+			return err
+		}
+		if g, w := len(rowCounts), 1; g != w {
+			return status.Errorf(codes.FailedPrecondition, "Row counts length mismatch\nGot: %v\nWant: %v", g, w)
+		}
+		if g, w := rowCounts[0], int64(UpdateBarSetFooRowCount); g != w {
+			return status.Errorf(codes.FailedPrecondition, "Row count mismatch\nGot: %v\nWant: %v", g, w)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+	}
+}
+
+func TestClient_SessionNotFound(t *testing.T) {
+	// Ensure we always have at least one session in the pool.
+	sc := SessionPoolConfig{
+		MinOpened: 1,
+	}
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: sc})
+	defer teardown()
+	ctx := context.Background()
+	for {
+		client.idleSessions.mu.Lock()
+		numSessions := client.idleSessions.idleList.Len()
+		client.idleSessions.mu.Unlock()
+		if numSessions > 0 {
+			break
+		}
+		time.After(time.Millisecond)
+	}
+	// Remove the session from the server without the pool knowing it.
+	_, err := server.TestSpanner.DeleteSession(ctx, &sppb.DeleteSessionRequest{Name: client.idleSessions.idleList.Front().Value.(*session).id})
+	if err != nil {
+		t.Fatalf("Failed to delete session unexpectedly: %v", err)
+	}
+
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		rowCount := int64(0)
+		for {
+			row, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return err
+			}
+			var singerID, albumID int64
+			var albumTitle string
+			if err := row.Columns(&singerID, &albumID, &albumTitle); err != nil {
+				return err
+			}
+			rowCount++
+		}
+		if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+			return spannerErrorf(codes.FailedPrecondition, "Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("Unexpected error during transaction: %v", err)
+	}
+}
+
 func TestClient_ReadWriteTransactionExecuteStreamingSqlAborted(t *testing.T) {
 	t.Parallel()
 	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
@@ -801,6 +960,10 @@ func TestClient_ReadWriteTransactionCommitAlreadyExists(t *testing.T) {
 }
 
 func testReadWriteTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime, expectedAttempts int) error {
+	return testReadWriteTransactionWithConfig(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig}, executionTimes, expectedAttempts)
+}
+
+func testReadWriteTransactionWithConfig(t *testing.T, config ClientConfig, executionTimes map[string]SimulatedExecutionTime, expectedAttempts int) error {
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
 	for method, exec := range executionTimes {
@@ -964,5 +1127,52 @@ func TestReadWriteTransaction_WrapError(t *testing.T) {
 	})
 	if err == nil || err.Error() != msg {
 		t.Fatalf("Unexpected error\nGot: %v\nWant: %v", err, msg)
+	}
+}
+
+func TestReadWriteTransaction_WrapSessionNotFoundError(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodBeginTransaction,
+		SimulatedExecutionTime{
+			Errors: []error{status.Error(codes.NotFound, "Session not found")},
+		})
+	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
+		SimulatedExecutionTime{
+			Errors: []error{status.Error(codes.NotFound, "Session not found")},
+		})
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
+			Errors: []error{status.Error(codes.NotFound, "Session not found")},
+		})
+	msg := "query failed"
+	numAttempts := 0
+	ctx := context.Background()
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		numAttempts++
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		for {
+			_, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				// Wrap the error in another error that implements the
+				// (xerrors|errors).Wrapper interface.
+				return &wrappedTestError{err, msg}
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("Unexpected error\nGot: %v\nWant: nil", err)
+	}
+	// We want 3 attempts. The 'Session not found' error on BeginTransaction
+	// will not retry the entire transaction, which means that we will have two
+	// failed attempts and then a successful attempt.
+	if g, w := numAttempts, 3; g != w {
+		t.Fatalf("Number of transaction attempts mismatch\nGot: %d\nWant: %d", g, w)
 	}
 }

@@ -130,21 +130,22 @@ func (sh *sessionHandle) getTransactionID() transactionID {
 func (sh *sessionHandle) destroy() {
 	sh.mu.Lock()
 	s := sh.session
-	p := s.pool
 	tracked := sh.trackedSessionHandle
 	sh.session = nil
 	sh.trackedSessionHandle = nil
 	sh.checkoutTime = time.Time{}
 	sh.stack = nil
 	sh.mu.Unlock()
-	if tracked != nil {
-		p.mu.Lock()
-		p.trackedSessionHandles.Remove(tracked)
-		p.mu.Unlock()
-	}
+
 	if s == nil {
 		// sessionHandle has already been destroyed..
 		return
+	}
+	if tracked != nil {
+		p := s.pool
+		p.mu.Lock()
+		p.trackedSessionHandles.Remove(tracked)
+		p.mu.Unlock()
 	}
 	s.destroy(false)
 }
@@ -764,7 +765,7 @@ func (p *sessionPool) createSession(ctx context.Context) (*session, error) {
 func (p *sessionPool) isHealthy(s *session) bool {
 	if s.getNextCheck().Add(2 * p.hc.getInterval()).Before(time.Now()) {
 		// TODO: figure out if we need to schedule a new healthcheck worker here.
-		if err := s.ping(); shouldDropSession(err) {
+		if err := s.ping(); isSessionNotFoundError(err) {
 			// The session is already bad, continue to fetch/create a new one.
 			s.destroy(false)
 			return false
@@ -923,6 +924,13 @@ func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, err
 		}
 		if !s.isWritePrepared() {
 			if err = s.prepareForWrite(ctx); err != nil {
+				if isSessionNotFoundError(err) {
+					s.destroy(false)
+					trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
+						"Session not found for write")
+					return nil, toSpannerError(err)
+				}
+
 				s.recycle()
 				trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
 					"Error preparing session for write")
@@ -1230,7 +1238,7 @@ func (hc *healthChecker) healthCheck(s *session) {
 		s.destroy(false)
 		return
 	}
-	if err := s.ping(); shouldDropSession(err) {
+	if err := s.ping(); isSessionNotFoundError(err) {
 		// Ping failed, destroy the session.
 		s.destroy(false)
 	}
@@ -1497,23 +1505,6 @@ func (hc *healthChecker) shrinkPool(ctx context.Context, shrinkToNumSessions uin
 	}
 }
 
-// shouldDropSession returns true if a particular error leads to the removal of
-// a session
-func shouldDropSession(err error) bool {
-	if err == nil {
-		return false
-	}
-	// If a Cloud Spanner can no longer locate the session (for example, if
-	// session is garbage collected), then caller should not try to return the
-	// session back into the session pool.
-	//
-	// TODO: once gRPC can return auxiliary error information, stop parsing the error message.
-	if ErrCode(err) == codes.NotFound && strings.Contains(ErrDesc(err), "Session not found") {
-		return true
-	}
-	return false
-}
-
 // maxUint64 returns the maximum of two uint64.
 func maxUint64(a, b uint64) uint64 {
 	if a > b {
@@ -1533,9 +1524,13 @@ func minUint64(a, b uint64) uint64 {
 // isSessionNotFoundError returns true if the given error is a
 // `Session not found` error.
 func isSessionNotFoundError(err error) bool {
+	if err == nil {
+		return false
+	}
 	// We are checking specifically for the error message `Session not found`,
 	// as the error could also be a `Database not found`. The latter should
 	// cause the session pool to stop preparing sessions for read/write
 	// transactions, while the former should not.
+	// TODO: once gRPC can return auxiliary error information, stop parsing the error message.
 	return ErrCode(err) == codes.NotFound && strings.Contains(err.Error(), "Session not found")
 }
