@@ -40,6 +40,8 @@ go version
 export GOPATH="$HOME/go"
 export GOCLOUD_HOME=$GOPATH/src/cloud.google.com/go/
 export PATH="$GOPATH/bin:$PATH"
+export GO111MODULE=on
+
 
 # Move code into $GOPATH and get dependencies
 mkdir -p $GOCLOUD_HOME
@@ -48,21 +50,8 @@ cd $GOCLOUD_HOME
 
 try3() { eval "$*" || eval "$*" || eval "$*"; }
 
-download_deps() {
-    if [[ `go version` == *"go1.11"* ]] || [[ `go version` == *"go1.12"* ]] || [[ `go version` == *"go1.13"* ]]; then
-        export GO111MODULE=on
-        # All packages, including +build tools, are fetched.
-        try3 go mod download
-    else
-        # Because we don't provide -tags tools, the +build tools
-        # dependencies aren't fetched.
-        try3 go get -v -t ./...
-
-        go get github.com/jstemmer/go-junit-report
-    fi
-}
-
-download_deps
+# All packages, including +build tools, are fetched.
+try3 go mod download
 go install github.com/jstemmer/go-junit-report
 ./internal/kokoro/vet.sh
 
