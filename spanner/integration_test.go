@@ -242,6 +242,9 @@ func TestIntegration_SingleUse(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+	// Calculate time difference between Cloud Spanner server and localhost to
+	// use to determine the exact staleness value to use.
+	timeDiff := maxDuration(time.Now().Sub(writes[0].ts), 0)
 
 	// Test reading rows with different timestamp bounds.
 	for i, test := range []struct {
@@ -300,10 +303,10 @@ func TestIntegration_SingleUse(t *testing.T) {
 			name: "exact_staleness",
 			want: nil,
 			// Specify a staleness which should be already before this test.
-			tb: ExactStaleness(time.Now().Sub(writes[0].ts) + 10*time.Second),
+			tb: ExactStaleness(time.Now().Sub(writes[0].ts) + timeDiff + 30*time.Second),
 			checkTs: func(ts time.Time) error {
-				if ts.After(writes[0].ts) {
-					return fmt.Errorf("read got timestamp %v, want it to be no earlier than %v", ts, writes[0].ts)
+				if !ts.Before(writes[0].ts) {
+					return fmt.Errorf("read got timestamp %v, want it to be earlier than %v", ts, writes[0].ts)
 				}
 				return nil
 			},
@@ -321,9 +324,6 @@ func TestIntegration_SingleUse(t *testing.T) {
 			if err != nil {
 				t.Fatalf("%d: SingleUse.Query returns error %v, want nil", i, err)
 			}
-			if !testEqual(got, test.want) {
-				t.Fatalf("%d: got unexpected result from SingleUse.Query: %v, want %v", i, got, test.want)
-			}
 			rts, err := su.Timestamp()
 			if err != nil {
 				t.Fatalf("%d: SingleUse.Query doesn't return a timestamp, error: %v", i, err)
@@ -331,14 +331,14 @@ func TestIntegration_SingleUse(t *testing.T) {
 			if err := test.checkTs(rts); err != nil {
 				t.Fatalf("%d: SingleUse.Query doesn't return expected timestamp: %v", i, err)
 			}
+			if !testEqual(got, test.want) {
+				t.Fatalf("%d: got unexpected result from SingleUse.Query: %v, want %v", i, got, test.want)
+			}
 			// SingleUse.Read
 			su = client.Single().WithTimestampBound(test.tb)
 			got, err = readAll(su.Read(ctx, "Singers", KeySets(Key{1}, Key{3}, Key{4}), []string{"SingerId", "FirstName", "LastName"}))
 			if err != nil {
 				t.Fatalf("%d: SingleUse.Read returns error %v, want nil", i, err)
-			}
-			if !testEqual(got, test.want) {
-				t.Fatalf("%d: got unexpected result from SingleUse.Read: %v, want %v", i, got, test.want)
 			}
 			rts, err = su.Timestamp()
 			if err != nil {
@@ -346,6 +346,9 @@ func TestIntegration_SingleUse(t *testing.T) {
 			}
 			if err := test.checkTs(rts); err != nil {
 				t.Fatalf("%d: SingleUse.Read doesn't return expected timestamp: %v", i, err)
+			}
+			if !testEqual(got, test.want) {
+				t.Fatalf("%d: got unexpected result from SingleUse.Read: %v, want %v", i, got, test.want)
 			}
 			// SingleUse.ReadRow
 			got = nil
@@ -2640,4 +2643,11 @@ func readAllTestTable(iter *RowIterator) ([]testTableRow, error) {
 		}
 		vals = append(vals, ttr)
 	}
+}
+
+func maxDuration(a, b time.Duration) time.Duration {
+	if a > b {
+		return a
+	}
+	return b
 }
