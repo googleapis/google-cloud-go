@@ -94,6 +94,11 @@ change:
     message to cause the detector not to be run and to make it clear why that is
     acceptable.
 
+1. Finally, add reviewers to your CL when it's ready for review. Reviewers will
+not be added automatically. If you're not sure who to add for your code review,
+add deklerk@, tbp@, cbro@, and codyoss@.
+
+
 ## Integration Tests
 
 In addition to the unit tests, you may run the integration test suite. These
