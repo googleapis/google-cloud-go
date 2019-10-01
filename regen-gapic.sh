@@ -50,7 +50,9 @@ rm -rf /tmp/cloud.google.com
     microgen $input "$mod" "$retrycfg" "$apicfg"
   done
 } < $GOCLOUD_DIR/microgens.csv
-cp -r /tmp/cloud.google.com/go/* $GOCLOUD_DIR
+
+# copy generated code if any was created
+[ -d "/tmp/cloud.google.com/go" ] && cp -r /tmp/cloud.google.com/go/* $GOCLOUD_DIR
 
 pushd $GOCLOUD_DIR
   gofmt -s -d -l -w . && goimports -w .
