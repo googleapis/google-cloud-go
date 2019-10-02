@@ -36,6 +36,11 @@ go install \
 # Fail if a dependency was added without the necessary go.mod/go.sum change
 # being part of the commit.
 go mod tidy
+for i in `find . -name go.mod`; do
+  pushd `dirname $i`;
+    go mod tidy;
+  popd;
+done
 git diff go.mod | tee /dev/stderr | (! read)
 git diff go.sum | tee /dev/stderr | (! read)
 
