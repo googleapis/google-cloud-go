@@ -25,13 +25,16 @@ import (
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	"cloud.google.com/go/internal/version"
 	kms "cloud.google.com/go/kms/apiv1"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -56,6 +59,16 @@ func extractMessageData(m *Message) *messageData {
 	}
 }
 
+func withGRPCHeadersAssertion(t *testing.T, opts ...option.ClientOption) []option.ClientOption {
+	grpcHeadersEnforcer := &testutil.HeadersEnforcer{
+		OnFailure: t.Errorf,
+		Checkers: []*testutil.HeaderChecker{
+			testutil.XGoogClientHeaderChecker,
+		},
+	}
+	return append(grpcHeadersEnforcer.CallOptions(), opts...)
+}
+
 func integrationTestClient(ctx context.Context, t *testing.T) *Client {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
@@ -68,7 +81,8 @@ func integrationTestClient(ctx context.Context, t *testing.T) *Client {
 	if ts == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
-	client, err := NewClient(ctx, projID, option.WithTokenSource(ts))
+	opts := withGRPCHeadersAssertion(t, option.WithTokenSource(ts))
+	client, err := NewClient(ctx, projID, opts...)
 	if err != nil {
 		t.Fatalf("Creating client error: %v", err)
 	}
@@ -181,6 +195,24 @@ func TestIntegration_All(t *testing.T) {
 	}
 }
 
+// withGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request and returns the
+// updated context.
+func withGoogleClientInfo(ctx context.Context) context.Context {
+	ctxMD, _ := metadata.FromOutgoingContext(ctx)
+	kv := []string{
+		"gl-go",
+		version.Go(),
+		"gax",
+		gax.Version,
+		"grpc",
+		grpc.Version,
+	}
+
+	allMDs := append([]metadata.MD{ctxMD}, metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...)))
+	return metadata.NewOutgoingContext(ctx, metadata.Join(allMDs...))
+}
+
 func testPublishAndReceive(t *testing.T, topic *Topic, sub *Subscription, maxMsgs int, synchronous bool, numMsgs, extraBytes int) {
 	ctx := context.Background()
 	var msgs []*Message
@@ -252,6 +284,11 @@ func testPublishAndReceive(t *testing.T, topic *Topic, sub *Subscription, maxMsg
 // menu, choose the account, click the Roles dropdown, and select "Pub/Sub > Pub/Sub Admin".
 // TODO(jba): move this to a testing package within cloud.google.com/iam, so we can re-use it.
 func testIAM(ctx context.Context, h *iam.Handle, permission string) (msg string, ok bool) {
+	// Manually adding withGoogleClientInfo here because this code only takes
+	// a handle with a grpc.ClientConn that has the "x-goog-api-client" header enforcer,
+	// but unfortunately not the underlying infrastructure that takes pre-set headers.
+	ctx = withGoogleClientInfo(ctx)
+
 	// Attempting to add an non-existent identity  (e.g. "alice@example.com") causes the service
 	// to return an internal error, so use a real identity.
 	const member = "domain:google.com"
@@ -854,7 +891,8 @@ func TestIntegration_MessageStoragePolicy_ProjectLevel(t *testing.T) {
 	if ts == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
-	client, err := NewClient(ctx, projID, option.WithTokenSource(ts))
+	opts := withGRPCHeadersAssertion(t, option.WithTokenSource(ts))
+	client, err := NewClient(ctx, projID, opts...)
 	if err != nil {
 		t.Fatalf("Creating client error: %v", err)
 	}
