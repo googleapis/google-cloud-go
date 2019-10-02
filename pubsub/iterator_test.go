@@ -309,7 +309,9 @@ func initConn(ctx context.Context, addr string) (*Subscription, *Client, error) 
 	if err != nil {
 		return nil, nil, err
 	}
-	client, err := NewClient(ctx, projName, option.WithGRPCConn(conn))
+	e := testutil.DefaultHeadersEnforcer()
+	opts := append(e.CallOptions(), option.WithGRPCConn(conn))
+	client, err := NewClient(ctx, projName, opts...)
 	if err != nil {
 		return nil, nil, err
 	}

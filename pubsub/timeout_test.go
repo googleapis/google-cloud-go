@@ -42,7 +42,8 @@ func TestStreamTimeout(t *testing.T) {
 	}
 	defer conn.Close()
 
-	client, err := NewClient(ctx, "P", option.WithGRPCConn(conn))
+	opts := withGRPCHeadersAssertion(t, option.WithGRPCConn(conn))
+	client, err := NewClient(ctx, "P", opts...)
 	if err != nil {
 		t.Fatal(err)
 	}

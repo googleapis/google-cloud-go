@@ -145,7 +145,8 @@ func TestPublishTimeout(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	c, err := NewClient(ctx, "projectID", option.WithGRPCConn(conn))
+	opts := withGRPCHeadersAssertion(t, option.WithGRPCConn(conn))
+	c, err := NewClient(ctx, "projectID", opts...)
 	if err != nil {
 		t.Fatal(err)
 	}
