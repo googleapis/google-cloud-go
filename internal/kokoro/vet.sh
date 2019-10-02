@@ -81,7 +81,7 @@ golint ./... 2>&1 | ( \
   grep -vE "\.pb\.go:") | \
   tee /dev/stderr | (! read)
 
-staticcheck -go 1.9 ./... 2>&1 | ( \
+staticcheck -go 1.11 ./... 2>&1 | ( \
   grep -v S1007 | \
   grep -v SA1019 | \
   grep -v firestore/internal/doc-snippets.go | \
