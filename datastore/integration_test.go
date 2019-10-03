@@ -1298,16 +1298,12 @@ func TestIntegration_DetectProjectID(t *testing.T) {
 var genKeyName = uid.NewSpace("datastore-integration", nil)
 
 func TestIntegration_Project_TimestampStoreAndRetrieve(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1479")
-
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
 	type T struct{ Created time.Time }
 
-	// We need to generate a new key to prevent any clashes with concurrent test runs,
-	// as per:  https://github.com/googleapis/google-cloud-go/issues/1479
 	keyName := genKeyName.New()
 
 	now := time.Now()
@@ -1321,14 +1317,25 @@ func TestIntegration_Project_TimestampStoreAndRetrieve(t *testing.T) {
 		}
 	}()
 
-	q := NewQuery(keyName).Order("Created").Project("Created")
 	res := []T{}
-	if _, err := client.GetAll(ctx, q, &res); err != nil {
-		t.Fatal(err)
+	// Datastore has eventual consistency, meaning we can't trust the key to
+	// be immediately queryable after the Put call. So, we'll try a few times
+	// to get the key. See: https://cloud.google.com/datastore/docs/articles/balancing-strong-and-eventual-consistency-with-google-cloud-datastore/.
+	for i := 0; i < 10; i++ {
+		q := NewQuery(k.Kind)
+		if _, err := client.GetAll(ctx, q, &res); err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 1 {
+			time.Sleep(500 * time.Millisecond)
+			continue
+		}
+		break
 	}
 	if len(res) != 1 {
 		t.Fatalf("expected 1 result, got %d", len(res))
 	}
+
 	if got, want := res[0].Created.Unix(), now.Unix(); got != want {
 		t.Fatalf("got %v, want %v", got, want)
 	}
