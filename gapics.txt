@@ -32,7 +32,6 @@ google/cloud/talent/artman_talent_v4beta1.yaml
 google/cloud/tasks/artman_cloudtasks_v2beta2.yaml
 google/cloud/tasks/artman_cloudtasks_v2beta3.yaml
 google/cloud/tasks/artman_cloudtasks_v2.yaml
-google/cloud/texttospeech/artman_texttospeech_v1.yaml
 google/cloud/videointelligence/artman_videointelligence_v1.yaml
 google/cloud/videointelligence/artman_videointelligence_v1beta1.yaml
 google/cloud/videointelligence/artman_videointelligence_v1beta2.yaml
