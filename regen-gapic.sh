@@ -31,7 +31,7 @@ microgen() {
     --mount type=bind,source=$PWD/$input,destination=/in/$input,readonly \
     --mount type=bind,source=/tmp,destination=/out \
     --rm \
-    gcr.io/gapic-images/gapic-generator-go:0.7.0 \
+    gcr.io/gapic-images/gapic-generator-go:0.8.1 \
     $options
 }
 
@@ -45,9 +45,9 @@ rm -rf /tmp/cloud.google.com
 {
   # skip the first line with column titles
   read -r
-  while IFS=, read -r input mod retrycfg apicfg
+  while IFS=, read -r input mod retrycfg apicfg release
   do
-    microgen $input "$mod" "$retrycfg" "$apicfg"
+    microgen $input "$mod" "$retrycfg" "$apicfg" "$release"
   done
 } < $GOCLOUD_DIR/microgens.csv
 
