@@ -64,34 +64,6 @@ func errInvdKeyPartType(part interface{}) error {
 	return spannerErrorf(codes.InvalidArgument, "key part has unsupported type %T", part)
 }
 
-// keyPartValue converts a part of the Key (which is a valid Cloud Spanner type)
-// into a proto3.Value. Used for encoding Key type into protobuf.
-func keyPartValue(part interface{}) (pb *proto3.Value, err error) {
-	switch v := part.(type) {
-	case int:
-		pb, _, err = encodeValue(int64(v))
-	case int8:
-		pb, _, err = encodeValue(int64(v))
-	case int16:
-		pb, _, err = encodeValue(int64(v))
-	case int32:
-		pb, _, err = encodeValue(int64(v))
-	case uint8:
-		pb, _, err = encodeValue(int64(v))
-	case uint16:
-		pb, _, err = encodeValue(int64(v))
-	case uint32:
-		pb, _, err = encodeValue(int64(v))
-	case float32:
-		pb, _, err = encodeValue(float64(v))
-	case int64, float64, NullInt64, NullFloat64, bool, NullBool, []byte, string, NullString, time.Time, civil.Date, NullTime, NullDate:
-		pb, _, err = encodeValue(v)
-	default:
-		return nil, errInvdKeyPartType(v)
-	}
-	return pb, err
-}
-
 // proto converts a spanner.Key into a proto3.ListValue.
 func (key Key) proto() (*proto3.ListValue, error) {
 	lv := &proto3.ListValue{}

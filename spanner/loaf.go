@@ -3,6 +3,8 @@ package spanner
 import (
 	"strings"
 
+	"github.com/golang/protobuf/proto"
+
 	"golang.org/x/net/context"
 
 	"encoding/base64"
@@ -88,6 +90,38 @@ func (d distinct) keySetProto() (*sppb.KeySet, error) {
 		upb.Keys[j] = pb
 	}
 	return upb, nil
+}
+
+// keyPartValue converts a part of the Key (which is a valid Cloud Spanner type)
+// into a proto3.Value. Used for encoding Key type into protobuf.
+func keyPartValue(part interface{}) (pb *proto3.Value, err error) {
+	switch v := part.(type) {
+	case *proto3.Value:
+		pb = proto.Clone(v).(*proto3.Value)
+	case GenericColumnValue:
+		pb, _, err = encodeValue(v)
+	case int:
+		pb, _, err = encodeValue(int64(v))
+	case int8:
+		pb, _, err = encodeValue(int64(v))
+	case int16:
+		pb, _, err = encodeValue(int64(v))
+	case int32:
+		pb, _, err = encodeValue(int64(v))
+	case uint8:
+		pb, _, err = encodeValue(int64(v))
+	case uint16:
+		pb, _, err = encodeValue(int64(v))
+	case uint32:
+		pb, _, err = encodeValue(int64(v))
+	case float32:
+		pb, _, err = encodeValue(float64(v))
+	case int64, float64, NullInt64, NullFloat64, bool, NullBool, []byte, string, NullString, time.Time, civil.Date, NullTime, NullDate:
+		pb, _, err = encodeValue(v)
+	default:
+		return nil, errInvdKeyPartType(v)
+	}
+	return pb, err
 }
 
 // decodeValue decodes a protobuf Value into a pointer to a Go value, as
