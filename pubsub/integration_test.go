@@ -15,6 +15,7 @@
 package pubsub
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"strings"
@@ -27,11 +28,13 @@ import (
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/internal/version"
 	kms "cloud.google.com/go/kms/apiv1"
+	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
+	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -339,6 +342,69 @@ func testIAM(ctx context.Context, h *iam.Handle, permission string) (msg string,
 		return fmt.Sprintf("TestPermissions: got %v, want %v", gotPerms, wantPerms), false
 	}
 	return "", true
+}
+
+func TestIntegration_LargePublishSize(t *testing.T) {
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	// Calculate the largest possible message length that is still valid.
+	// First, calculate the max length of the encoded message accounting for the topic name.
+	length := MaxPublishRequestBytes - calcFieldSizeString(topic.String())
+	// Next, account for the overhead from encoding an individual PubsubMessage,
+	// and the inner PubsubMessage.Data field.
+	pbMsgOverhead := 1 + proto.SizeVarint(uint64(length))
+	dataOverhead := 1 + proto.SizeVarint(uint64(length-pbMsgOverhead))
+	maxLengthSingleMessage := length - pbMsgOverhead - dataOverhead
+
+	publishReq := &pb.PublishRequest{
+		Topic: topic.String(),
+		Messages: []*pb.PubsubMessage{
+			{
+				Data: bytes.Repeat([]byte{'A'}, maxLengthSingleMessage),
+			},
+		},
+	}
+
+	if got := proto.Size(publishReq); got != MaxPublishRequestBytes {
+		t.Fatalf("Created request size of %d bytes,\nwant %f bytes", got, MaxPublishRequestBytes)
+	}
+
+	// Publishing the max length message by itself should succeed.
+	msg := &Message{
+		Data: bytes.Repeat([]byte{'A'}, maxLengthSingleMessage),
+	}
+	r := topic.Publish(ctx, msg)
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("Failed to publish max length message: %v", err)
+	}
+
+	// Publish a small message first and make sure the max length message
+	// is added to its own bundle.
+	smallMsg := &Message{
+		Data: []byte{'A'},
+	}
+	topic.Publish(ctx, smallMsg)
+	r = topic.Publish(ctx, msg)
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("Failed to publish max length message after a small message: %v", err)
+	}
+
+	// Increase the data byte string by 1 byte, which should cause the request to fail,
+	// specifically due to exceeding the bundle byte limit.
+	msg.Data = append(msg.Data, 'A')
+	r = topic.Publish(ctx, msg)
+	if _, err := r.Get(ctx); err != ErrOversizedMessage {
+		t.Fatalf("Should throw item size too large error, got %v", err)
+	}
 }
 
 func TestIntegration_CancelReceive(t *testing.T) {
