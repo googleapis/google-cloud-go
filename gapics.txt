@@ -4,6 +4,7 @@ google/cloud/asset/artman_cloudasset_v1beta1.yaml
 google/cloud/asset/artman_cloudasset_v1p2beta1.yaml
 google/cloud/asset/artman_cloudasset_v1.yaml
 google/iam/credentials/artman_iamcredentials_v1.yaml
+google/cloud/automl/artman_automl_v1.yaml
 google/cloud/automl/artman_automl_v1beta1.yaml
 google/cloud/bigquery/datatransfer/artman_bigquerydatatransfer.yaml
 google/cloud/bigquery/storage/artman_bigquerystorage_v1beta1.yaml
@@ -32,6 +33,7 @@ google/cloud/talent/artman_talent_v4beta1.yaml
 google/cloud/tasks/artman_cloudtasks_v2beta2.yaml
 google/cloud/tasks/artman_cloudtasks_v2beta3.yaml
 google/cloud/tasks/artman_cloudtasks_v2.yaml
+google/cloud/translate/artman_translate_v3.yaml
 google/cloud/videointelligence/artman_videointelligence_v1.yaml
 google/cloud/videointelligence/artman_videointelligence_v1beta1.yaml
 google/cloud/videointelligence/artman_videointelligence_v1beta2.yaml
