@@ -198,6 +198,7 @@ that you must put quotes around values that contain spaces or operators. It also
 if a value is arbitrary bytes, you need to prefix it with a dollar sign and use single quotes.
 
 Example:
+
 cbt -project my-project -instance my-instance lookup my-table $'\224\257\312W\365:\205d\333\2471\315\'
 
 
@@ -232,9 +233,7 @@ The options are:
     -{{.Name}} string
         {{.Usage}}{{end}}
 
-Examples:
-  cbt -instance=my-instance ls
-  cbt -project=my-project listinstances
+Example:  cbt -instance=my-instance ls
 
 Use "cbt help \<command>" for more information about a command.
 
