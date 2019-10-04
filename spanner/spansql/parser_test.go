@@ -219,7 +219,8 @@ func TestParseDDL(t *testing.T) {
 			System STRING(MAX) NOT NULL,  # This is a comment.
 			RepoPath STRING(MAX) NOT NULL,  -- This is another comment.
 			Count INT64, /* This is a
-			              * multiline comment. */
+						  * multiline comment. */
+			UpdatedAt TIMESTAMP OPTIONS (allow_commit_timestamp = true),
 		) PRIMARY KEY(System, RepoPath);
 		CREATE UNIQUE INDEX MyFirstIndex ON FooBar (
 			Count DESC
@@ -250,6 +251,7 @@ func TestParseDDL(t *testing.T) {
 					{Name: "System", Type: Type{Base: String, Len: MaxLen}, NotNull: true},
 					{Name: "RepoPath", Type: Type{Base: String, Len: MaxLen}, NotNull: true},
 					{Name: "Count", Type: Type{Base: Int64}},
+					{Name: "UpdatedAt", Type: Type{Base: Timestamp}, AllowCommitTimestamp: boolAddr(true)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "System"},
