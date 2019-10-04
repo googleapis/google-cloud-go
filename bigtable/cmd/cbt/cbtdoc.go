@@ -87,7 +87,7 @@ that you must put quotes around values that contain spaces or operators. It also
 if a value is arbitrary bytes, you need to prefix it with a dollar sign and use single quotes.
 
 Example:
-   cbt -project my-bigtable-project -instance my-instance lookup my-table $'\224\257\312W\365:\205d\333\2471\315\'
+cbt -project my-project -instance my-instance lookup my-table $'\224\257\312W\365:\205d\333\2471\315\'
 
 
 For convenience, you can add values for the -project, -instance, -creds, -admin-endpoint and -data-endpoint
@@ -317,9 +317,7 @@ Usage:
 	  end=<row-row>                       Stop reading before this row
 	  prefix=<row-key-prefix>             Read rows with this prefix
 	  regex=<regex>                       Read rows with keys matching this regex
-	                                      Note: Using a regex to read rows results in a full
-	                                      table scan, which can be slow
-	  columns=[family]:[qualifier],...    Read only these columns, comma-separated
+	  columns=<family>:<qualifier>,...    Read only these columns, comma-separated
 	  count=<n>                           Read only this many rows
 	  cells-per-column=<n>                Read only this many cells per column
 	  app-profile=<app-profile-id>        The app profile ID to use for the request
@@ -328,6 +326,9 @@ Usage:
 	      cbt read mobile-time-series prefix=phone columns=stats_summary:os_build,os_name count=10
 	      cbt read mobile-time-series start=phone#4c410523#20190501 end=phone#4c410523#20190601
 	      cbt read mobile-time-series regex="phone.*" cells-per-column=1
+
+	   Note: Using a regex without also specifying start, end, prefix, or count results in a full
+	   table scan, which can be slow.
 
 
 

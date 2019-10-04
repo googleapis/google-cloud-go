@@ -198,7 +198,7 @@ that you must put quotes around values that contain spaces or operators. It also
 if a value is arbitrary bytes, you need to prefix it with a dollar sign and use single quotes.
 
 Example:
-   cbt -project my-bigtable-project -instance my-instance lookup my-table $'\224\257\312W\365:\205d\333\2471\315\'
+cbt -project my-project -instance my-instance lookup my-table $'\224\257\312W\365:\205d\333\2471\315\'
 
 
 For convenience, you can add values for the -project, -instance, -creds, -admin-endpoint and -data-endpoint
@@ -429,16 +429,16 @@ var commands = []struct {
 			"  end=<row-row>                       Stop reading before this row\n" +
 			"  prefix=<row-key-prefix>             Read rows with this prefix\n" +
 			"  regex=<regex>                       Read rows with keys matching this regex\n" +
-			"                                      Note: Using a regex to read rows results in a full\n" +
-			"                                      table scan, which can be slow\n" +
-			"  columns=[family]:[qualifier],...    Read only these columns, comma-separated\n" +
+			"  columns=<family>:<qualifier>,...    Read only these columns, comma-separated\n" +
 			"  count=<n>                           Read only this many rows\n" +
 			"  cells-per-column=<n>                Read only this many cells per column\n" +
 			"  app-profile=<app-profile-id>        The app profile ID to use for the request\n\n" +
 			"    Examples: (see 'set' examples to create data to read)\n" +
 			"      cbt read mobile-time-series prefix=phone columns=stats_summary:os_build,os_name count=10\n" +
 			"      cbt read mobile-time-series start=phone#4c410523#20190501 end=phone#4c410523#20190601\n" +
-			"      cbt read mobile-time-series regex=\"phone.*\" cells-per-column=1\n",
+			"      cbt read mobile-time-series regex=\"phone.*\" cells-per-column=1\n\n" +
+			"   Note: Using a regex without also specifying start, end, prefix, or count results in a full\n" +
+			"   table scan, which can be slow.\n",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
