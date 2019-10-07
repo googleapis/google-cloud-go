@@ -182,7 +182,7 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 }
 
 // CreateDataset creates a dataset.
-func (c *Client) CreateDataset(ctx context.Context, req *automlpb.CreateDatasetRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *Client) CreateDataset(ctx context.Context, req *automlpb.CreateDatasetRequest, opts ...gax.CallOption) (*CreateDatasetOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateDataset[0:len(c.CallOptions.CreateDataset):len(c.CallOptions.CreateDataset)], opts...)
@@ -195,7 +195,9 @@ func (c *Client) CreateDataset(ctx context.Context, req *automlpb.CreateDatasetR
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	return &CreateDatasetOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
 }
 
 // UpdateDataset updates a dataset.
@@ -633,6 +635,75 @@ func (it *ModelIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// CreateDatasetOperation manages a long-running operation from CreateDataset.
+type CreateDatasetOperation struct {
+	lro *longrunning.Operation
+}
+
+// CreateDatasetOperation returns a new CreateDatasetOperation from a given name.
+// The name must be that of a previously created CreateDatasetOperation, possibly from a different process.
+func (c *Client) CreateDatasetOperation(name string) *CreateDatasetOperation {
+	return &CreateDatasetOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateDatasetOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*automlpb.Dataset, error) {
+	var resp automlpb.Dataset
+	if err := op.lro.WaitWithInterval(ctx, &resp, 5000*time.Millisecond, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateDatasetOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*automlpb.Dataset, error) {
+	var resp automlpb.Dataset
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateDatasetOperation) Metadata() (*automlpb.OperationMetadata, error) {
+	var meta automlpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateDatasetOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateDatasetOperation) Name() string {
+	return op.lro.Name()
 }
 
 // CreateModelOperation manages a long-running operation from CreateModel.

@@ -44,7 +44,12 @@ func ExampleClient_CreateDataset() {
 	req := &automlpb.CreateDatasetRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.CreateDataset(ctx, req)
+	op, err := c.CreateDataset(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
