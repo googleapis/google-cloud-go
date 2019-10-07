@@ -16,8 +16,7 @@
 
 // Package automl is an auto-generated package for the
 // Cloud AutoML API.
-//
-//   NOTE: This package is in alpha. It is not stable, and is likely to change.
+
 //
 // Train high-quality custom machine learning models with minimum effort and
 // machine learning expertise.
@@ -98,4 +97,4 @@ func versionGo() string {
 	return "UNKNOWN"
 }
 
-const versionClient = "20191004"
+const versionClient = "20191007"

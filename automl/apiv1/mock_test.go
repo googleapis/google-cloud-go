@@ -290,16 +290,30 @@ func TestMain(m *testing.M) {
 
 func TestAutoMlCreateDataset(t *testing.T) {
 	var name string = "name3373707"
-	var done bool = true
-	var expectedResponse = &longrunningpb.Operation{
-		Name: name,
-		Done: done,
+	var displayName string = "displayName1615086568"
+	var description string = "description-1724546052"
+	var exampleCount int32 = 1517063674
+	var etag string = "etag3123477"
+	var expectedResponse = &automlpb.Dataset{
+		Name:         name,
+		DisplayName:  displayName,
+		Description:  description,
+		ExampleCount: exampleCount,
+		Etag:         etag,
 	}
 
 	mockAutoMl.err = nil
 	mockAutoMl.reqs = nil
 
-	mockAutoMl.resps = append(mockAutoMl.resps[:0], expectedResponse)
+	any, err := ptypes.MarshalAny(expectedResponse)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mockAutoMl.resps = append(mockAutoMl.resps[:0], &longrunningpb.Operation{
+		Name:   "longrunning-test",
+		Done:   true,
+		Result: &longrunningpb.Operation_Response{Response: any},
+	})
 
 	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s", "[PROJECT]", "[LOCATION]")
 	var dataset *automlpb.Dataset = &automlpb.Dataset{}
@@ -313,7 +327,11 @@ func TestAutoMlCreateDataset(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	resp, err := c.CreateDataset(context.Background(), request)
+	respLRO, err := c.CreateDataset(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := respLRO.Wait(context.Background())
 
 	if err != nil {
 		t.Fatal(err)
@@ -330,7 +348,17 @@ func TestAutoMlCreateDataset(t *testing.T) {
 
 func TestAutoMlCreateDatasetError(t *testing.T) {
 	errCode := codes.PermissionDenied
-	mockAutoMl.err = gstatus.Error(errCode, "test error")
+	mockAutoMl.err = nil
+	mockAutoMl.resps = append(mockAutoMl.resps[:0], &longrunningpb.Operation{
+		Name: "longrunning-test",
+		Done: true,
+		Result: &longrunningpb.Operation_Error{
+			Error: &status.Status{
+				Code:    int32(errCode),
+				Message: "test error",
+			},
+		},
+	})
 
 	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s", "[PROJECT]", "[LOCATION]")
 	var dataset *automlpb.Dataset = &automlpb.Dataset{}
@@ -344,7 +372,11 @@ func TestAutoMlCreateDatasetError(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	resp, err := c.CreateDataset(context.Background(), request)
+	respLRO, err := c.CreateDataset(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := respLRO.Wait(context.Background())
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)

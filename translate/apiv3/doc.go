@@ -16,8 +16,7 @@
 
 // Package translate is an auto-generated package for the
 // Cloud Translation API.
-//
-//   NOTE: This package is in alpha. It is not stable, and is likely to change.
+
 //
 // Integrates text translation into your website or application.
 //
@@ -98,4 +97,4 @@ func versionGo() string {
 	return "UNKNOWN"
 }
 
-const versionClient = "20191004"
+const versionClient = "20191007"
