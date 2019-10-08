@@ -76,51 +76,6 @@ func (t *txReadOnly) ReadUsingIndex(ctx context.Context, table, index string, ke
 	return t.ReadWithOptions(ctx, table, keys, columns, &ReadOptions{Index: index})
 }
 
-// ReadUsingIndexLimit returns a RowIterator for reading multiple rows from the database
-// using an index. Returns a limited number of results, or infinite if limit is zero.
-//
-// Currently, this function can only read columns that are part of the index
-// key, part of the primary key, or stored in the index due to a STORING clause
-// in the index definition.
-func (t *txReadOnly) ReadUsingIndexLimit(ctx context.Context, table, index string, keys KeySet, columns []string, limit int64) *RowIterator {
-	var (
-		sh  *sessionHandle
-		ts  *sppb.TransactionSelector
-		err error
-	)
-	kset, err := keys.keySetProto()
-	if err != nil {
-		return &RowIterator{err: err}
-	}
-	if sh, ts, err = t.acquire(ctx); err != nil {
-		return &RowIterator{err: err}
-	}
-	// Cloud Spanner will return "Session not found" on bad sessions.
-	sid, client := sh.getID(), sh.getClient()
-	if sid == "" || client == nil {
-		// Might happen if transaction is closed in the middle of a API call.
-		return &RowIterator{err: errSessionClosed(sh)}
-	}
-	return stream(
-		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
-		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
-			return client.StreamingRead(ctx,
-				&sppb.ReadRequest{
-					Session:     sid,
-					Transaction: ts,
-					Table:       table,
-					Index:       index,
-					Columns:     columns,
-					KeySet:      kset,
-					ResumeToken: resumeToken,
-					Limit:       limit,
-				})
-		},
-		t.setTimestamp,
-		t.release,
-	)
-}
-
 // ReadOptions provides options for reading rows from a database.
 type ReadOptions struct {
 	// The index to use for reading. If non-empty, you can only read columns
