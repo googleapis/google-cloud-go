@@ -36,8 +36,8 @@ const (
 // DefaultRetryBackoff is used for retryers as a fallback value when the server
 // did not return any retry information.
 var DefaultRetryBackoff = gax.Backoff{
-	Initial:    20 * time.Millisecond,
-	Max:        32 * time.Second,
+	Initial:    50 * time.Millisecond,
+	Max:        10 * time.Second,
 	Multiplier: 1.3,
 }
 
