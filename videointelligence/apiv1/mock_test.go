@@ -117,12 +117,12 @@ func TestVideoIntelligenceServiceAnnotateVideo(t *testing.T) {
 		Result: &longrunningpb.Operation_Response{Response: any},
 	})
 
-	var inputUri string = "gs://cloud-samples-data/video/cat.mp4"
 	var featuresElement videointelligencepb.Feature = videointelligencepb.Feature_LABEL_DETECTION
 	var features = []videointelligencepb.Feature{featuresElement}
+	var inputUri string = "gs://cloud-samples-data/video/cat.mp4"
 	var request = &videointelligencepb.AnnotateVideoRequest{
-		InputUri: inputUri,
 		Features: features,
+		InputUri: inputUri,
 	}
 
 	c, err := NewClient(context.Background(), clientOpt)
@@ -163,12 +163,12 @@ func TestVideoIntelligenceServiceAnnotateVideoError(t *testing.T) {
 		},
 	})
 
-	var inputUri string = "gs://cloud-samples-data/video/cat.mp4"
 	var featuresElement videointelligencepb.Feature = videointelligencepb.Feature_LABEL_DETECTION
 	var features = []videointelligencepb.Feature{featuresElement}
+	var inputUri string = "gs://cloud-samples-data/video/cat.mp4"
 	var request = &videointelligencepb.AnnotateVideoRequest{
-		InputUri: inputUri,
 		Features: features,
+		InputUri: inputUri,
 	}
 
 	c, err := NewClient(context.Background(), clientOpt)

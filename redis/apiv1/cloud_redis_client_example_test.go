@@ -34,6 +34,48 @@ func ExampleNewCloudRedisClient() {
 	_ = c
 }
 
+func ExampleCloudRedisClient_ListInstances() {
+	ctx := context.Background()
+	c, err := redis.NewCloudRedisClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &redispb.ListInstancesRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListInstances(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleCloudRedisClient_GetInstance() {
+	ctx := context.Background()
+	c, err := redis.NewCloudRedisClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &redispb.GetInstanceRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetInstance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleCloudRedisClient_CreateInstance() {
 	ctx := context.Background()
 	c, err := redis.NewCloudRedisClient(ctx)
@@ -73,48 +115,6 @@ func ExampleCloudRedisClient_UpdateInstance() {
 	}
 
 	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleCloudRedisClient_ListInstances() {
-	ctx := context.Background()
-	c, err := redis.NewCloudRedisClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &redispb.ListInstancesRequest{
-		// TODO: Fill request struct fields.
-	}
-	it := c.ListInstances(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleCloudRedisClient_GetInstance() {
-	ctx := context.Background()
-	c, err := redis.NewCloudRedisClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &redispb.GetInstanceRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.GetInstance(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

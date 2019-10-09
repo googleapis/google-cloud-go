@@ -29,7 +29,6 @@ import (
 	videointelligencepb "google.golang.org/genproto/googleapis/cloud/videointelligence/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -48,22 +47,9 @@ func defaultClientOptions() []option.ClientOption {
 }
 
 func defaultCallOptions() *CallOptions {
-	retry := map[[2]string][]gax.CallOption{
-		{"default", "idempotent"}: {
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        120000 * time.Millisecond,
-					Multiplier: 2.5,
-				})
-			}),
-		},
-	}
+	retry := map[[2]string][]gax.CallOption{}
 	return &CallOptions{
-		AnnotateVideo: retry[[2]string{"default", "idempotent"}],
+		AnnotateVideo: retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 

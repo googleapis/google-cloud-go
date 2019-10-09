@@ -34,16 +34,15 @@ import (
 	redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
 
 // CloudRedisCallOptions contains the retry settings for each method of CloudRedisClient.
 type CloudRedisCallOptions struct {
-	CreateInstance   []gax.CallOption
-	UpdateInstance   []gax.CallOption
 	ListInstances    []gax.CallOption
 	GetInstance      []gax.CallOption
+	CreateInstance   []gax.CallOption
+	UpdateInstance   []gax.CallOption
 	ImportInstance   []gax.CallOption
 	ExportInstance   []gax.CallOption
 	FailoverInstance []gax.CallOption
@@ -60,25 +59,12 @@ func defaultCloudRedisClientOptions() []option.ClientOption {
 }
 
 func defaultCloudRedisCallOptions() *CloudRedisCallOptions {
-	retry := map[[2]string][]gax.CallOption{
-		{"default", "idempotent"}: {
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.3,
-				})
-			}),
-		},
-	}
+	retry := map[[2]string][]gax.CallOption{}
 	return &CloudRedisCallOptions{
+		ListInstances:    retry[[2]string{"default", "non_idempotent"}],
+		GetInstance:      retry[[2]string{"default", "non_idempotent"}],
 		CreateInstance:   retry[[2]string{"default", "non_idempotent"}],
 		UpdateInstance:   retry[[2]string{"default", "non_idempotent"}],
-		ListInstances:    retry[[2]string{"default", "idempotent"}],
-		GetInstance:      retry[[2]string{"default", "idempotent"}],
 		ImportInstance:   retry[[2]string{"default", "non_idempotent"}],
 		ExportInstance:   retry[[2]string{"default", "non_idempotent"}],
 		FailoverInstance: retry[[2]string{"default", "non_idempotent"}],
@@ -176,59 +162,6 @@ func (c *CloudRedisClient) setGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateInstance creates a Redis instance based on the specified tier and memory size.
-//
-// By default, the instance is accessible from the project's
-// default network (at /compute/docs/networks-and-firewalls#networks).
-//
-// The creation is executed asynchronously and callers may check the returned
-// operation to track its progress. Once the operation is completed the Redis
-// instance will be fully functional. Completed longrunning.Operation will
-// contain the new instance object in the response field.
-//
-// The returned operation is automatically deleted after a few hours, so there
-// is no need to call DeleteOperation.
-func (c *CloudRedisClient) CreateInstance(ctx context.Context, req *redispb.CreateInstanceRequest, opts ...gax.CallOption) (*CreateInstanceOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateInstance[0:len(c.CallOptions.CreateInstance):len(c.CallOptions.CreateInstance)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.cloudRedisClient.CreateInstance(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
-	}, nil
-}
-
-// UpdateInstance updates the metadata and configuration of a specific Redis instance.
-//
-// Completed longrunning.Operation will contain the new instance object
-// in the response field. The returned operation is automatically deleted
-// after a few hours, so there is no need to call DeleteOperation.
-func (c *CloudRedisClient) UpdateInstance(ctx context.Context, req *redispb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateInstance[0:len(c.CallOptions.UpdateInstance):len(c.CallOptions.UpdateInstance)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.cloudRedisClient.UpdateInstance(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
-	}, nil
-}
-
 // ListInstances lists all Redis instances owned by a project in either the specified
 // location (region) or all locations.
 //
@@ -291,6 +224,59 @@ func (c *CloudRedisClient) GetInstance(ctx context.Context, req *redispb.GetInst
 		return nil, err
 	}
 	return resp, nil
+}
+
+// CreateInstance creates a Redis instance based on the specified tier and memory size.
+//
+// By default, the instance is accessible from the project's
+// default network (at /compute/docs/networks-and-firewalls#networks).
+//
+// The creation is executed asynchronously and callers may check the returned
+// operation to track its progress. Once the operation is completed the Redis
+// instance will be fully functional. Completed longrunning.Operation will
+// contain the new instance object in the response field.
+//
+// The returned operation is automatically deleted after a few hours, so there
+// is no need to call DeleteOperation.
+func (c *CloudRedisClient) CreateInstance(ctx context.Context, req *redispb.CreateInstanceRequest, opts ...gax.CallOption) (*CreateInstanceOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.CreateInstance[0:len(c.CallOptions.CreateInstance):len(c.CallOptions.CreateInstance)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudRedisClient.CreateInstance(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateInstanceOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
+}
+
+// UpdateInstance updates the metadata and configuration of a specific Redis instance.
+//
+// Completed longrunning.Operation will contain the new instance object
+// in the response field. The returned operation is automatically deleted
+// after a few hours, so there is no need to call DeleteOperation.
+func (c *CloudRedisClient) UpdateInstance(ctx context.Context, req *redispb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UpdateInstance[0:len(c.CallOptions.UpdateInstance):len(c.CallOptions.UpdateInstance)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudRedisClient.UpdateInstance(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateInstanceOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
 }
 
 // ImportInstance import a Redis RDB snapshot file from Cloud Storage into a Redis instance.
@@ -443,7 +429,7 @@ func (c *CloudRedisClient) CreateInstanceOperation(name string) *CreateInstanceO
 // See documentation of Poll for error-handling information.
 func (op *CreateInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*redispb.Instance, error) {
 	var resp redispb.Instance
-	if err := op.lro.WaitWithInterval(ctx, &resp, 5000*time.Millisecond, opts...); err != nil {
+	if err := op.lro.WaitWithInterval(ctx, &resp, 360000*time.Millisecond, opts...); err != nil {
 		return nil, err
 	}
 	return &resp, nil
@@ -511,7 +497,7 @@ func (c *CloudRedisClient) DeleteInstanceOperation(name string) *DeleteInstanceO
 //
 // See documentation of Poll for error-handling information.
 func (op *DeleteInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, 5000*time.Millisecond, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, 360000*time.Millisecond, opts...)
 }
 
 // Poll fetches the latest state of the long-running operation.
@@ -568,7 +554,7 @@ func (c *CloudRedisClient) ExportInstanceOperation(name string) *ExportInstanceO
 // See documentation of Poll for error-handling information.
 func (op *ExportInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*redispb.Instance, error) {
 	var resp redispb.Instance
-	if err := op.lro.WaitWithInterval(ctx, &resp, 5000*time.Millisecond, opts...); err != nil {
+	if err := op.lro.WaitWithInterval(ctx, &resp, 360000*time.Millisecond, opts...); err != nil {
 		return nil, err
 	}
 	return &resp, nil
@@ -637,7 +623,7 @@ func (c *CloudRedisClient) FailoverInstanceOperation(name string) *FailoverInsta
 // See documentation of Poll for error-handling information.
 func (op *FailoverInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*redispb.Instance, error) {
 	var resp redispb.Instance
-	if err := op.lro.WaitWithInterval(ctx, &resp, 5000*time.Millisecond, opts...); err != nil {
+	if err := op.lro.WaitWithInterval(ctx, &resp, 360000*time.Millisecond, opts...); err != nil {
 		return nil, err
 	}
 	return &resp, nil
@@ -706,7 +692,7 @@ func (c *CloudRedisClient) ImportInstanceOperation(name string) *ImportInstanceO
 // See documentation of Poll for error-handling information.
 func (op *ImportInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*redispb.Instance, error) {
 	var resp redispb.Instance
-	if err := op.lro.WaitWithInterval(ctx, &resp, 5000*time.Millisecond, opts...); err != nil {
+	if err := op.lro.WaitWithInterval(ctx, &resp, 360000*time.Millisecond, opts...); err != nil {
 		return nil, err
 	}
 	return &resp, nil
@@ -775,7 +761,7 @@ func (c *CloudRedisClient) UpdateInstanceOperation(name string) *UpdateInstanceO
 // See documentation of Poll for error-handling information.
 func (op *UpdateInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*redispb.Instance, error) {
 	var resp redispb.Instance
-	if err := op.lro.WaitWithInterval(ctx, &resp, 5000*time.Millisecond, opts...); err != nil {
+	if err := op.lro.WaitWithInterval(ctx, &resp, 360000*time.Millisecond, opts...); err != nil {
 		return nil, err
 	}
 	return &resp, nil
