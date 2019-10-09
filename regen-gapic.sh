@@ -19,6 +19,13 @@
 set -ex
 
 GOCLOUD_DIR="$(dirname "$0")"
+HOST_MOUNT="$PWD"
+
+# need to mount the /var/folders properly for macos
+# https://stackoverflow.com/questions/45122459/docker-mounts-denied-the-paths-are-not-shared-from-os-x-and-are-not-known/45123074
+if [[ "$OSTYPE" == "darwin"* ]] && [[ "$HOST_MOUNT" == "/var/folders"* ]]; then
+  HOST_MOUNT=/private$HOST_MOUNT
+fi
 
 microgen() {
   input=$1
@@ -27,8 +34,8 @@ microgen() {
   # see https://github.com/googleapis/gapic-generator-go/blob/master/README.md#docker-wrapper for details
   docker run \
     --user $UID \
-    --mount type=bind,source=$PWD,destination=/conf,readonly \
-    --mount type=bind,source=$PWD/$input,destination=/in/$input,readonly \
+    --mount type=bind,source=$HOST_MOUNT,destination=/conf,readonly \
+    --mount type=bind,source=$HOST_MOUNT/$input,destination=/in/$input,readonly \
     --mount type=bind,source=/tmp,destination=/out \
     --rm \
     gcr.io/gapic-images/gapic-generator-go:0.8.1 \
