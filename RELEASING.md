@@ -1,3 +1,19 @@
+# Expectations
+
+In CONTRIBUTING.md, we expect users to have a remote called `origin` that points
+to the `https://code.googlesource.com/gocloud` repository.  For releasing, we
+also use a `github` remote, setup to point to the replica repository hosted
+on github at `https://github.com/googleapis/google-cloud-go`
+
+If you don't already have an 'origin' remote from cloning the master repository,
+you can add it:
+
+`git remote add origin https://code.googlesource.com/gocloud`
+
+Add the github remote as well, using the name `github`:
+
+`git remote add github https://github.com/googleapis/google-cloud-go`
+
 # How to release `cloud.google.com/go`
 
 1. Navigate `google-cloud-go/` and switch to master.
@@ -16,7 +32,9 @@
    a. Switch to master.
    b. `git pull`
    c. Tag the repo with the next version: `git tag $NV`.
-   d. Push the tag: `git push origin $NV`.
+   d. Push the tag to both the googlesource and github repositories:
+      `git push origin $NV`
+      `git push github $NV`
 1. Update [the releases page](https://github.com/googleapis/google-cloud-go/releases)
    with the new release, copying the contents of `CHANGES.md`.
 
@@ -46,7 +64,9 @@ To release a submodule:
    a. Switch to master.
    b. `git pull`
    c. Tag the repo with the next version: `git tag $NV`.
-   d. Push the tag: `git push origin $NV`.
+   d. Push the tag to both the googlesource and github repositories:
+      `git push origin $NV`
+      `git push github $NV`
 1. Update [the releases page](https://github.com/googleapis/google-cloud-go/releases)
    with the new release, copying the contents of `datastore/CHANGES.md`.
 
