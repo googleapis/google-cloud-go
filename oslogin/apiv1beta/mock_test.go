@@ -331,10 +331,12 @@ func TestOsLoginServiceGetSshPublicKey(t *testing.T) {
 	var key string = "key106079"
 	var expirationTimeUsec int64 = 2058878882
 	var fingerprint string = "fingerprint-1375934236"
+	var name2 string = "name2-1052831874"
 	var expectedResponse = &commonpb.SshPublicKey{
 		Key:                key,
 		ExpirationTimeUsec: expirationTimeUsec,
 		Fingerprint:        fingerprint,
+		Name:               name2,
 	}
 
 	mockOsLogin.err = nil
@@ -454,10 +456,12 @@ func TestOsLoginServiceUpdateSshPublicKey(t *testing.T) {
 	var key string = "key106079"
 	var expirationTimeUsec int64 = 2058878882
 	var fingerprint string = "fingerprint-1375934236"
+	var name2 string = "name2-1052831874"
 	var expectedResponse = &commonpb.SshPublicKey{
 		Key:                key,
 		ExpirationTimeUsec: expirationTimeUsec,
 		Fingerprint:        fingerprint,
+		Name:               name2,
 	}
 
 	mockOsLogin.err = nil
