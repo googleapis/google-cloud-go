@@ -31,7 +31,7 @@
 //
 // For information about setting deadlines, reusing contexts, and more
 // please visit godoc.org/cloud.google.com/go.
-package cloudbuild // import "cloud.google.com/go/devtools/cloudbuild/apiv1"
+package cloudbuild // import "cloud.google.com/go/cloudbuild/apiv1"
 
 import (
 	"context"
