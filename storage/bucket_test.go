@@ -211,7 +211,8 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		RetentionPolicy:       &raw.BucketRetentionPolicy{RetentionPeriod: 3600},
 		IamConfiguration: &raw.BucketIamConfiguration{
 			BucketPolicyOnly: &raw.BucketIamConfigurationBucketPolicyOnly{
-				Enabled: false,
+				Enabled:         false,
+				ForceSendFields: []string{"Enabled"},
 			},
 		},
 		Encryption: &raw.BucketEncryption{DefaultKmsKeyName: "key2"},
