@@ -1317,25 +1317,17 @@ func TestIntegration_Project_TimestampStoreAndRetrieve(t *testing.T) {
 		}
 	}()
 
+	// Without .Ancestor, this query is eventually consistent (so this test
+	// would be flakey). Ancestor queries, however, are strongly consistent.
+	// See more at https://cloud.google.com/datastore/docs/articles/balancing-strong-and-eventual-consistency-with-google-cloud-datastore/.
+	q := NewQuery(k.Kind).Ancestor(k)
 	res := []T{}
-	// Datastore has eventual consistency, meaning we can't trust the key to
-	// be immediately queryable after the Put call. So, we'll try a few times
-	// to get the key. See: https://cloud.google.com/datastore/docs/articles/balancing-strong-and-eventual-consistency-with-google-cloud-datastore/.
-	for i := 0; i < 10; i++ {
-		q := NewQuery(k.Kind)
-		if _, err := client.GetAll(ctx, q, &res); err != nil {
-			t.Fatal(err)
-		}
-		if len(res) != 1 {
-			time.Sleep(500 * time.Millisecond)
-			continue
-		}
-		break
+	if _, err := client.GetAll(ctx, q, &res); err != nil {
+		t.Fatal(err)
 	}
 	if len(res) != 1 {
 		t.Fatalf("expected 1 result, got %d", len(res))
 	}
-
 	if got, want := res[0].Created.Unix(), now.Unix(); got != want {
 		t.Fatalf("got %v, want %v", got, want)
 	}
