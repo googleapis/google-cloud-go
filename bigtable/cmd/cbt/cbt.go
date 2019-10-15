@@ -353,6 +353,14 @@ var commands = []struct {
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
+		Name: "deleteallrows",
+		Desc: "Delete all rows",
+		do:   doDeleteAllRows,
+		Usage: "cbt deleteallrows <table-id>\n\n" +
+			"    Example: cbt deleteallrows  mobile-time-series",
+		Required: cbtconfig.ProjectAndInstanceRequired,
+	},
+	{
 		Name: "deletetable",
 		Desc: "Delete a table",
 		do:   doDeleteTable,
@@ -788,6 +796,16 @@ func doDeleteRow(ctx context.Context, args ...string) {
 	mut.DeleteRow()
 	if err := tbl.Apply(ctx, args[1], mut); err != nil {
 		log.Fatalf("Deleting row: %v", err)
+	}
+}
+
+func doDeleteAllRows(ctx context.Context, args ...string) {
+	if len(args) != 1 {
+		log.Fatalf("Can't do `cbt deleteallrows %s`", args)
+	}
+	err := getAdminClient().DropAllRows(ctx, args[0])
+	if err != nil {
+		log.Fatalf("Deleting all rows: %v", err)
 	}
 }
 

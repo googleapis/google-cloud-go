@@ -1167,6 +1167,19 @@ func TestIntegration_Admin(t *testing.T) {
 	if gotRowCount != 5 {
 		t.Errorf("Invalid row count after dropping range: got %v, want %v", gotRowCount, 5)
 	}
+
+	if err = adminClient.DropAllRows(ctx, "mytable"); err != nil {
+		t.Errorf("DropAllRows mytable: %v", err)
+	}
+
+	gotRowCount = 0
+	must(tbl.ReadRows(ctx, RowRange{}, func(row Row) bool {
+		gotRowCount++
+		return true
+	}))
+	if gotRowCount != 0 {
+		t.Errorf("Invalid row count after truncating table: got %v, want %v", gotRowCount, 0)
+	}
 }
 
 func TestIntegration_AdminCreateInstance(t *testing.T) {
