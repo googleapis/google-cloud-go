@@ -288,6 +288,18 @@ func (ac *AdminClient) DropRowRange(ctx context.Context, table, rowKeyPrefix str
 	return err
 }
 
+// DropAllRows permanently deletes all rows from the specified table.
+func (ac *AdminClient) DropAllRows(ctx context.Context, table string) error {
+	ctx = mergeOutgoingMetadata(ctx, withGoogleClientInfo(), ac.md)
+	prefix := ac.instancePrefix()
+	req := &btapb.DropRowRangeRequest{
+		Name:   prefix + "/tables/" + table,
+		Target: &btapb.DropRowRangeRequest_DeleteAllDataFromTable{DeleteAllDataFromTable: true},
+	}
+	_, err := ac.tClient.DropRowRange(ctx, req)
+	return err
+}
+
 // CreateTableFromSnapshot creates a table from snapshot.
 // The table will be created in the same cluster as the snapshot.
 //
