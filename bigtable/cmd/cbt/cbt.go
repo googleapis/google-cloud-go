@@ -403,10 +403,12 @@ var commands = []struct {
 		do:   doLookup,
 		Usage: "cbt lookup <table-id> <row-key> [columns=<family>:<qualifier>,...] [cells-per-column=<n>] " +
 			" [app-profile=<app profile id>]\n" +
+			"  row-key                             String value of key, raw bytes are supported but need to be prefixed with a dollar sign and use single quotes\n" +
 			"  columns=<family>:<qualifier>,...    Read only these columns, comma-separated\n" +
 			"  cells-per-column=<n>                Read only this number of cells per column\n" +
 			"  app-profile=<app-profile-id>        The app profile ID to use for the request\n\n" +
-			" Example: cbt lookup mobile-time-series phone#4c410523#20190501 columns=stats_summary:os_build,os_name cells-per-column=1",
+			" Example: cbt lookup mobile-time-series phone#4c410523#20190501 columns=stats_summary:os_build,os_name cells-per-column=1\n" +
+			" Example: cbt lookup mobile-time-series $'\\x41\\x42'",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{

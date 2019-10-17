@@ -38,6 +38,7 @@ The commands are:
     deletecolumn              Delete all cells in a column
     deletefamily              Delete a column family
     deleterow                 Delete a row
+    deleteallrows             Delete all rows
     deletetable               Delete a table
     doc                       Print godoc-suitable documentation for cbt
     help                      Print help text
@@ -232,6 +233,16 @@ Usage:
 
 
 
+Delete all rows
+
+Usage:
+	cbt deleteallrows <table-id>
+
+	    Example: cbt deleteallrows  mobile-time-series
+
+
+
+
 Delete a table
 
 Usage:
@@ -280,11 +291,13 @@ Read from a single row
 
 Usage:
 	cbt lookup <table-id> <row-key> [columns=<family>:<qualifier>,...] [cells-per-column=<n>]  [app-profile=<app profile id>]
+	  row-key                             String value of key, raw bytes are supported but need to be prefixed with a dollar sign and use single quotes
 	  columns=<family>:<qualifier>,...    Read only these columns, comma-separated
 	  cells-per-column=<n>                Read only this number of cells per column
 	  app-profile=<app-profile-id>        The app profile ID to use for the request
 
 	 Example: cbt lookup mobile-time-series phone#4c410523#20190501 columns=stats_summary:os_build,os_name cells-per-column=1
+	 Example: cbt lookup mobile-time-series $'\x41\x42'
 
 
 
