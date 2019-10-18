@@ -24,6 +24,7 @@ import (
 	"log"
 	"math"
 	"math/rand"
+	"runtime/debug"
 	"strings"
 	"sync"
 	"time"
@@ -44,19 +45,39 @@ type sessionHandle struct {
 	// session is a pointer to a session object. Transactions never need to
 	// access it directly.
 	session *session
+	// checkoutTime is the time the session was checked out of the pool.
+	checkoutTime time.Time
+	// trackedSessionHandle is the linked list node which links the session to
+	// the list of tracked session handles. trackedSessionHandle is only set if
+	// TrackSessionHandles has been enabled in the session pool configuration.
+	trackedSessionHandle *list.Element
+	// stack is the call stack of the goroutine that checked out the session
+	// from the pool. This can be used to track down session leak problems.
+	stack []byte
 }
 
 // recycle gives the inner session object back to its home session pool. It is
 // safe to call recycle multiple times but only the first one would take effect.
 func (sh *sessionHandle) recycle() {
 	sh.mu.Lock()
-	defer sh.mu.Unlock()
 	if sh.session == nil {
 		// sessionHandle has already been recycled.
+		sh.mu.Unlock()
 		return
 	}
+	p := sh.session.pool
+	tracked := sh.trackedSessionHandle
 	sh.session.recycle()
 	sh.session = nil
+	sh.trackedSessionHandle = nil
+	sh.checkoutTime = time.Time{}
+	sh.stack = nil
+	sh.mu.Unlock()
+	if tracked != nil {
+		p.mu.Lock()
+		p.trackedSessionHandles.Remove(tracked)
+		p.mu.Unlock()
+	}
 }
 
 // getID gets the Cloud Spanner session ID from the internal session object.
@@ -109,8 +130,18 @@ func (sh *sessionHandle) getTransactionID() transactionID {
 func (sh *sessionHandle) destroy() {
 	sh.mu.Lock()
 	s := sh.session
+	p := s.pool
+	tracked := sh.trackedSessionHandle
 	sh.session = nil
+	sh.trackedSessionHandle = nil
+	sh.checkoutTime = time.Time{}
+	sh.stack = nil
 	sh.mu.Unlock()
+	if tracked != nil {
+		p.mu.Lock()
+		p.trackedSessionHandles.Remove(tracked)
+		p.mu.Unlock()
+	}
 	if s == nil {
 		// sessionHandle has already been destroyed..
 		return
@@ -376,6 +407,13 @@ type SessionPoolConfig struct {
 	// Defaults to 5m.
 	HealthCheckInterval time.Duration
 
+	// TrackSessionHandles determines whether the session pool will keep track
+	// of the stacktrace of the goroutines that take sessions from the pool.
+	// This setting can be used to track down session leak problems.
+	//
+	// Defaults to false.
+	TrackSessionHandles bool
+
 	// healthCheckSampleInterval is how often the health checker samples live
 	// session (for use in maintaining session pool size).
 	//
@@ -450,6 +488,10 @@ type sessionPool struct {
 	valid bool
 	// sc is used to create the sessions for the pool.
 	sc *sessionClient
+	// trackedSessionHandles contains all sessions handles that have been
+	// checked out of the pool. The list is only filled if TrackSessionHandles
+	// has been enabled.
+	trackedSessionHandles list.List
 	// idleList caches idle session IDs. Session IDs in this list can be
 	// allocated for use.
 	idleList list.List
@@ -621,6 +663,68 @@ var errInvalidSessionPool = spannerErrorf(codes.InvalidArgument, "invalid sessio
 // sessionPool.take().
 var errGetSessionTimeout = spannerErrorf(codes.Canceled, "timeout / context canceled during getting session")
 
+// newSessionHandle creates a new session handle for the given session for this
+// session pool. The session handle will also hold a copy of the current call
+// stack if the session pool has been configured to track the call stacks of
+// sessions being checked out of the pool.
+func (p *sessionPool) newSessionHandle(s *session) (sh *sessionHandle) {
+	sh = &sessionHandle{session: s, checkoutTime: time.Now()}
+	if p.TrackSessionHandles {
+		p.mu.Lock()
+		sh.trackedSessionHandle = p.trackedSessionHandles.PushBack(sh)
+		p.mu.Unlock()
+		sh.stack = debug.Stack()
+	}
+	return sh
+}
+
+// errGetSessionTimeout returns error for context timeout during
+// sessionPool.take().
+func (p *sessionPool) errGetSessionTimeout() error {
+	if p.TrackSessionHandles {
+		return p.errGetSessionTimeoutWithTrackedSessionHandles()
+	}
+	return p.errGetBasicSessionTimeout()
+}
+
+// errGetBasicSessionTimeout returns error for context timout during
+// sessionPool.take() without any tracked sessionHandles.
+func (p *sessionPool) errGetBasicSessionTimeout() error {
+	return spannerErrorf(codes.Canceled, "timeout / context canceled during getting session.\n"+
+		"Enable SessionPoolConfig.TrackSessionHandles if you suspect a session leak to get more information about the checked out sessions.")
+}
+
+// errGetSessionTimeoutWithTrackedSessionHandles returns error for context
+// timout during sessionPool.take() including a stacktrace of each checked out
+// session handle.
+func (p *sessionPool) errGetSessionTimeoutWithTrackedSessionHandles() error {
+	err := spannerErrorf(codes.Canceled, "timeout / context canceled during getting session.")
+	err.(*Error).additionalInformation = p.getTrackedSessionHandleStacksLocked()
+	return err
+}
+
+// getTrackedSessionHandleStacksLocked returns a string containing the
+// stacktrace of all currently checked out sessions of the pool. This method
+// requires the caller to have locked p.mu.
+func (p *sessionPool) getTrackedSessionHandleStacksLocked() string {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	stackTraces := ""
+	i := 1
+	element := p.trackedSessionHandles.Front()
+	for element != nil {
+		sh := element.Value.(*sessionHandle)
+		sh.mu.Lock()
+		if sh.stack != nil {
+			stackTraces = fmt.Sprintf("%s\n\nSession %d checked out of pool at %s by goroutine:\n%s", stackTraces, i, sh.checkoutTime.Format(time.RFC3339), sh.stack)
+		}
+		sh.mu.Unlock()
+		element = element.Next()
+		i++
+	}
+	return stackTraces
+}
+
 // shouldPrepareWriteLocked returns true if we should prepare more sessions for write.
 func (p *sessionPool) shouldPrepareWriteLocked() bool {
 	return !p.disableBackgroundPrepareSessions && float64(p.numOpened)*p.WriteSessions > float64(p.idleWriteList.Len()+int(p.prepareReqs))
@@ -710,7 +814,7 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 			if !p.isHealthy(s) {
 				continue
 			}
-			return &sessionHandle{session: s}, nil
+			return p.newSessionHandle(s), nil
 		}
 
 		// Idle list is empty, block if session pool has reached max session
@@ -722,7 +826,7 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 			select {
 			case <-ctx.Done():
 				trace.TracePrintf(ctx, nil, "Context done waiting for session")
-				return nil, errGetSessionTimeout
+				return nil, p.errGetSessionTimeout()
 			case <-mayGetSession:
 			}
 			continue
@@ -743,7 +847,7 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 		}
 		trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
 			"Created session")
-		return &sessionHandle{session: s}, nil
+		return p.newSessionHandle(s), nil
 	}
 }
 
@@ -795,7 +899,7 @@ func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, err
 				select {
 				case <-ctx.Done():
 					trace.TracePrintf(ctx, nil, "Context done waiting for session")
-					return nil, errGetSessionTimeout
+					return nil, p.errGetSessionTimeout()
 				case <-mayGetSession:
 				}
 				continue
@@ -825,7 +929,7 @@ func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, err
 				return nil, toSpannerError(err)
 			}
 		}
-		return &sessionHandle{session: s}, nil
+		return p.newSessionHandle(s), nil
 	}
 }
 
