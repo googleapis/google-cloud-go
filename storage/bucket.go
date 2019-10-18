@@ -1168,9 +1168,9 @@ func (it *BucketIterator) Next() (*BucketAttrs, error) {
 	if err := it.nextFunc(); err != nil {
 		return nil, err
 	}
-	item := it.items[0]
-	it.items = it.items[1:]
-	return item, nil
+	b := it.buckets[0]
+	it.buckets = it.buckets[1:]
+	return b, nil
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
