@@ -25,10 +25,12 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
 	. "cloud.google.com/go/spanner/internal/testutil"
+	"google.golang.org/api/iterator"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -464,6 +466,86 @@ func TestTakeFromIdleWriteListChecked(t *testing.T) {
 	}
 }
 
+// TestSessionLeak tests leaking a session and getting the stack of the
+// goroutine that leaked it.
+func TestSessionLeak(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			TrackSessionHandles: true,
+			MinOpened:           0,
+			MaxOpened:           1,
+		},
+	})
+	defer teardown()
+
+	// Execute a query without calling rowIterator.Stop. This will cause the
+	// session not to be returned to the pool.
+	single := client.Single()
+	iter := single.Query(ctx, NewStatement(SelectFooFromBar))
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("Got unexpected error while iterating results: %v\n", err)
+		}
+	}
+	// The session should not have been returned to the pool.
+	if g, w := client.idleSessions.idleList.Len(), 0; g != w {
+		t.Fatalf("Idle sessions count mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	// The checked out session should contain a stack trace.
+	if single.sh.stack == nil {
+		t.Fatalf("Missing stacktrace from session handle")
+	}
+	stack := fmt.Sprintf("%s", single.sh.stack)
+	testMethod := "TestSessionLeak"
+	if !strings.Contains(stack, testMethod) {
+		t.Fatalf("Stacktrace does not contain '%s'\nGot: %s", testMethod, stack)
+	}
+	// Return the session to the pool.
+	iter.Stop()
+	// The stack should now have been removed from the session handle.
+	if single.sh.stack != nil {
+		t.Fatalf("Got unexpected stacktrace in session handle: %s", single.sh.stack)
+	}
+
+	// Do another query and hold on to the session.
+	single = client.Single()
+	iter = single.Query(ctx, NewStatement(SelectFooFromBar))
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("Got unexpected error while iterating results: %v\n", err)
+		}
+	}
+	// Try to do another query. This will fail as MaxOpened=1.
+	ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Millisecond*10)
+	defer cancel()
+	single2 := client.Single()
+	iter2 := single2.Query(ctxWithTimeout, NewStatement(SelectFooFromBar))
+	_, gotErr := iter2.Next()
+	wantErr := client.idleSessions.errGetSessionTimeoutWithTrackedSessionHandles()
+	// The error should contain the stacktraces of all the checked out
+	// sessions.
+	if !testEqual(gotErr, wantErr) {
+		t.Fatalf("Error mismatch on iterating result set.\nGot: %v\nWant: %v\n", gotErr, wantErr)
+	}
+	if !strings.Contains(gotErr.Error(), testMethod) {
+		t.Fatalf("Error does not contain '%s'\nGot: %s", testMethod, gotErr.Error())
+	}
+	// Close iterators to check sessions back into the pool before closing.
+	iter2.Stop()
+	iter.Stop()
+}
+
 // TestMaxOpenedSessions tests max open sessions constraint.
 func TestMaxOpenedSessions(t *testing.T) {
 	t.Parallel()
@@ -486,7 +568,7 @@ func TestMaxOpenedSessions(t *testing.T) {
 	ctx2, cancel := context.WithTimeout(ctx, 10*time.Millisecond)
 	defer cancel()
 	_, gotErr := sp.take(ctx2)
-	if wantErr := errGetSessionTimeout; gotErr != wantErr {
+	if wantErr := sp.errGetBasicSessionTimeout(); !testEqual(gotErr, wantErr) {
 		t.Fatalf("the second session retrival returns error %v, want %v", gotErr, wantErr)
 	}
 	doneWaiting := make(chan struct{})
@@ -619,7 +701,7 @@ func TestMaxBurst(t *testing.T) {
 	_, gotErr := sp.take(ctx2)
 
 	// Since MaxBurst == 1, the second session request should block.
-	if wantErr := errGetSessionTimeout; gotErr != wantErr {
+	if wantErr := sp.errGetBasicSessionTimeout(); !testEqual(gotErr, wantErr) {
 		t.Fatalf("session retrival returns error %v, want %v", gotErr, wantErr)
 	}
 

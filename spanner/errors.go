@@ -41,6 +41,9 @@ type Error struct {
 	Desc string
 	// trailers are the trailers returned in the response, if any.
 	trailers metadata.MD
+	// additionalInformation optionally contains any additional information
+	// about the error.
+	additionalInformation string
 }
 
 // Error implements error.Error.
@@ -49,7 +52,10 @@ func (e *Error) Error() string {
 		return fmt.Sprintf("spanner: OK")
 	}
 	code := ErrCode(e)
-	return fmt.Sprintf("spanner: code = %q, desc = %q", code, e.Desc)
+	if e.additionalInformation == "" {
+		return fmt.Sprintf("spanner: code = %q, desc = %q", code, e.Desc)
+	}
+	return fmt.Sprintf("spanner: code = %q, desc = %q, additional information = %s", code, e.Desc, e.additionalInformation)
 }
 
 // Unwrap returns the wrapped error (if any).
@@ -115,11 +121,11 @@ func toSpannerErrorWithMetadata(err error, trailers metadata.MD) error {
 	}
 	switch {
 	case err == context.DeadlineExceeded || err == context.Canceled:
-		return &Error{status.FromContextError(err).Code(), status.FromContextError(err).Err(), err.Error(), trailers}
+		return &Error{status.FromContextError(err).Code(), status.FromContextError(err).Err(), err.Error(), trailers, ""}
 	case status.Code(err) == codes.Unknown:
-		return &Error{codes.Unknown, err, err.Error(), trailers}
+		return &Error{codes.Unknown, err, err.Error(), trailers, ""}
 	default:
-		return &Error{status.Convert(err).Code(), err, status.Convert(err).Message(), trailers}
+		return &Error{status.Convert(err).Code(), err, status.Convert(err).Message(), trailers, ""}
 	}
 }
 
