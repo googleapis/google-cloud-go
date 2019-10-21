@@ -242,6 +242,20 @@ func TestFromLogEntry(t *testing.T) {
 	if !ltesting.PayloadEqual(got.Payload, jstruct) {
 		t.Errorf("got %+v, want %+v", got.Payload, jstruct)
 	}
+
+	// No payload.
+	logEntry = logpb.LogEntry{
+		LogName:   "projects/PROJECT_ID/logs/LOG_ID",
+		Resource:  res,
+		Timestamp: ts,
+	}
+	got, err = fromLogEntry(&logEntry)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ltesting.PayloadEqual(got.Payload, nil) {
+		t.Errorf("got %+v, want %+v", got.Payload, nil)
+	}
 }
 
 func TestListLogEntriesRequest(t *testing.T) {
