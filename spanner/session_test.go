@@ -905,10 +905,8 @@ func TestStressSessionPool(t *testing.T) {
 		t.Run(fmt.Sprintf("TestStressSessionPoolGroup%v", ti), func(t *testing.T) {
 			for i := 0; i < 100; i++ {
 				idx := i
-				t.Run(fmt.Sprintf("TestStressSessionPoolWithCfg%dWorker%03d", ti, idx),
-					func(t *testing.T) {
-						testStressSessionPool(t, cfg, ti, idx, sp, client)
-					})
+				t.Logf("TestStressSessionPoolWithCfg%dWorker%03d", ti, idx)
+				testStressSessionPool(t, cfg, ti, idx, sp, client)
 			}
 		})
 		sp.hc.close()
@@ -973,7 +971,6 @@ func TestStressSessionPool(t *testing.T) {
 }
 
 func testStressSessionPool(t *testing.T, cfg SessionPoolConfig, ti int, idx int, pool *sessionPool, client *Client) {
-	t.Parallel()
 	ctx := context.Background()
 	// Test worker iterates 1K times and tries different
 	// session / session pool operations.
