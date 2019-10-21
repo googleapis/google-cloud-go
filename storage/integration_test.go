@@ -470,6 +470,8 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 }
 
 func TestIntegration_ObjectsRangeReader(t *testing.T) {
+	t.Skip("b/142814558")
+
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
