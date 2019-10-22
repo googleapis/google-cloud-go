@@ -32,6 +32,9 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
+// nullString is returned by the String methods of NullableValues when the
+// underlying database value is null.
+const nullString = "<null>"
 const commitTimestampPlaceholderString = "spanner.commit_timestamp()"
 
 var (
@@ -44,16 +47,27 @@ var (
 	commitTimestamp = time.Unix(0, 0).In(time.FixedZone("CommitTimestamp placeholder", 0xDB))
 )
 
+// NullableValue is the interface implemented by all null value wrapper types.
+type NullableValue interface {
+	// IsNull returns true if the underlying database value is null.
+	IsNull() bool
+}
+
 // NullInt64 represents a Cloud Spanner INT64 that may be NULL.
 type NullInt64 struct {
 	Int64 int64
 	Valid bool // Valid is true if Int64 is not NULL.
 }
 
+// IsNull implements NullableValue.IsNull for NullInt64.
+func (n NullInt64) IsNull() bool {
+	return !n.Valid
+}
+
 // String implements Stringer.String for NullInt64
 func (n NullInt64) String() string {
 	if !n.Valid {
-		return fmt.Sprintf("%v", "<null>")
+		return nullString
 	}
 	return fmt.Sprintf("%v", n.Int64)
 }
@@ -64,12 +78,17 @@ type NullString struct {
 	Valid     bool // Valid is true if StringVal is not NULL.
 }
 
+// IsNull implements NullableValue.IsNull for NullString.
+func (n NullString) IsNull() bool {
+	return !n.Valid
+}
+
 // String implements Stringer.String for NullString
 func (n NullString) String() string {
 	if !n.Valid {
-		return fmt.Sprintf("%v", "<null>")
+		return nullString
 	}
-	return fmt.Sprintf("%q", n.StringVal)
+	return n.StringVal
 }
 
 // NullFloat64 represents a Cloud Spanner FLOAT64 that may be NULL.
@@ -78,10 +97,15 @@ type NullFloat64 struct {
 	Valid   bool // Valid is true if Float64 is not NULL.
 }
 
+// IsNull implements NullableValue.IsNull for NullFloat64.
+func (n NullFloat64) IsNull() bool {
+	return !n.Valid
+}
+
 // String implements Stringer.String for NullFloat64
 func (n NullFloat64) String() string {
 	if !n.Valid {
-		return fmt.Sprintf("%v", "<null>")
+		return nullString
 	}
 	return fmt.Sprintf("%v", n.Float64)
 }
@@ -92,10 +116,15 @@ type NullBool struct {
 	Valid bool // Valid is true if Bool is not NULL.
 }
 
+// IsNull implements NullableValue.IsNull for NullBool.
+func (n NullBool) IsNull() bool {
+	return !n.Valid
+}
+
 // String implements Stringer.String for NullBool
 func (n NullBool) String() string {
 	if !n.Valid {
-		return fmt.Sprintf("%v", "<null>")
+		return nullString
 	}
 	return fmt.Sprintf("%v", n.Bool)
 }
@@ -106,12 +135,17 @@ type NullTime struct {
 	Valid bool // Valid is true if Time is not NULL.
 }
 
+// IsNull implements NullableValue.IsNull for NullTime.
+func (n NullTime) IsNull() bool {
+	return !n.Valid
+}
+
 // String implements Stringer.String for NullTime
 func (n NullTime) String() string {
 	if !n.Valid {
-		return "<null>"
+		return nullString
 	}
-	return fmt.Sprintf("%q", n.Time.Format(time.RFC3339Nano))
+	return n.Time.Format(time.RFC3339Nano)
 }
 
 // NullDate represents a Cloud Spanner DATE that may be null.
@@ -120,12 +154,17 @@ type NullDate struct {
 	Valid bool // Valid is true if Date is not NULL.
 }
 
+// IsNull implements NullableValue.IsNull for NullDate.
+func (n NullDate) IsNull() bool {
+	return !n.Valid
+}
+
 // String implements Stringer.String for NullDate
 func (n NullDate) String() string {
 	if !n.Valid {
-		return "<null>"
+		return nullString
 	}
-	return fmt.Sprintf("%q", n.Date)
+	return n.Date.String()
 }
 
 // NullRow represents a Cloud Spanner STRUCT that may be NULL.
