@@ -1,5 +1,9 @@
 # Changes
 
+## v1.1.2
+
+- Fix memory leak in BucketIterator and ObjectIterator.
+
 ## v1.1.1
 
 - Send BucketPolicyOnly even when it's disabled.
