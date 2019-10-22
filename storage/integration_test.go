@@ -470,8 +470,6 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 }
 
 func TestIntegration_ObjectsRangeReader(t *testing.T) {
-	t.Skip("b/142814558")
-
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -520,6 +518,8 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 }
 
 func TestIntegration_Objects(t *testing.T) {
+	t.Skip("b/142814558")
+
 	// TODO(jba): Use subtests (Go 1.7).
 	ctx := context.Background()
 	client := testConfig(ctx, t)
