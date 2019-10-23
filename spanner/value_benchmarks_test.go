@@ -98,6 +98,27 @@ func BenchmarkDecodeGeneric(b *testing.B) {
 	}
 }
 
+func BenchmarkDecodeString(b *testing.B) {
+	v := stringProto("test")
+	t := stringType()
+	var s string
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		decodeValue(v, t, &s)
+	}
+}
+
+func BenchmarkDecodeCustomString(b *testing.B) {
+	v := stringProto("test")
+	t := stringType()
+	type CustomString string
+	var s CustomString
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		decodeValue(v, t, &s)
+	}
+}
+
 func BenchmarkDecodeArray(b *testing.B) {
 	for _, size := range []int{1, 10, 100, 1000} {
 		vals := make([]*proto3.Value, size)

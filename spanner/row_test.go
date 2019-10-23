@@ -25,8 +25,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/civil"
+	"cloud.google.com/go/internal/testutil"
 	proto "github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
+	"github.com/google/go-cmp/cmp"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
@@ -1510,6 +1512,134 @@ func TestToStruct(t *testing.T) {
 	if err != nil {
 		t.Errorf("row.ToStruct() returns error: %v, want nil", err)
 	} else if !testEqual(s[0], s[1]) {
+		t.Errorf("row.ToStruct() fetches struct %v, want %v", s[0], s[1])
+	}
+}
+
+// Test Row.ToStruct() with custom types.
+func TestToStructWithCustomTypes(t *testing.T) {
+	type CustomString string
+	type CustomNullString NullString
+	type CustomBytes []byte
+	type CustomInt64 int64
+	type CustomNullInt64 NullInt64
+	type CustomBool bool
+	type CustomNullBool NullBool
+	type CustomFloat64 float64
+	type CustomNullFloat64 NullFloat64
+	type CustomTime time.Time
+	type CustomNullTime NullTime
+	type CustomDate civil.Date
+	type CustomNullDate NullDate
+
+	s := []struct {
+		// STRING / STRING ARRAY
+		PrimaryKey      CustomString       `spanner:"STRING"`
+		NullString      CustomNullString   `spanner:"NULL_STRING"`
+		StringArray     []CustomNullString `spanner:"STRING_ARRAY"`
+		NullStringArray []CustomNullString `spanner:"NULL_STRING_ARRAY"`
+		// BYTES / BYTES ARRAY
+		Bytes          CustomBytes   `spanner:"BYTES"`
+		NullBytes      CustomBytes   `spanner:"NULL_BYTES"`
+		BytesArray     []CustomBytes `spanner:"BYTES_ARRAY"`
+		NullBytesArray []CustomBytes `spanner:"NULL_BYTES_ARRAY"`
+		// INT64 / INT64 ARRAY
+		Int64          CustomInt64       `spanner:"INT64"`
+		NullInt64      CustomNullInt64   `spanner:"NULL_INT64"`
+		Int64Array     []CustomNullInt64 `spanner:"INT64_ARRAY"`
+		NullInt64Array []CustomNullInt64 `spanner:"NULL_INT64_ARRAY"`
+		// BOOL / BOOL ARRAY
+		Bool          CustomBool       `spanner:"BOOL"`
+		NullBool      CustomNullBool   `spanner:"NULL_BOOL"`
+		BoolArray     []CustomNullBool `spanner:"BOOL_ARRAY"`
+		NullBoolArray []CustomNullBool `spanner:"NULL_BOOL_ARRAY"`
+		// FLOAT64 / FLOAT64 ARRAY
+		Float64          CustomFloat64       `spanner:"FLOAT64"`
+		NullFloat64      CustomNullFloat64   `spanner:"NULL_FLOAT64"`
+		Float64Array     []CustomNullFloat64 `spanner:"FLOAT64_ARRAY"`
+		NullFloat64Array []CustomNullFloat64 `spanner:"NULL_FLOAT64_ARRAY"`
+		// TIMESTAMP / TIMESTAMP ARRAY
+		Timestamp          CustomTime       `spanner:"TIMESTAMP"`
+		NullTimestamp      CustomNullTime   `spanner:"NULL_TIMESTAMP"`
+		TimestampArray     []CustomNullTime `spanner:"TIMESTAMP_ARRAY"`
+		NullTimestampArray []CustomNullTime `spanner:"NULL_TIMESTAMP_ARRAY"`
+		// DATE / DATE ARRAY
+		Date          CustomDate       `spanner:"DATE"`
+		NullDate      CustomNullDate   `spanner:"NULL_DATE"`
+		DateArray     []CustomNullDate `spanner:"DATE_ARRAY"`
+		NullDateArray []CustomNullDate `spanner:"NULL_DATE_ARRAY"`
+
+		// STRUCT ARRAY
+		StructArray []*struct {
+			Col1 CustomInt64
+			Col2 CustomFloat64
+			Col3 CustomString
+		} `spanner:"STRUCT_ARRAY"`
+		NullStructArray []*struct {
+			Col1 CustomInt64
+			Col2 CustomFloat64
+			Col3 CustomString
+		} `spanner:"NULL_STRUCT_ARRAY"`
+	}{
+		{}, // got
+		{
+			// STRING / STRING ARRAY
+			"value",
+			CustomNullString{},
+			[]CustomNullString{{"value1", true}, {}, {"value3", true}},
+			[]CustomNullString(nil),
+			// BYTES / BYTES ARRAY
+			CustomBytes("value"),
+			CustomBytes(nil),
+			[]CustomBytes{[]byte("value1"), nil, []byte("value3")},
+			[]CustomBytes(nil),
+			// INT64 / INT64 ARRAY
+			CustomInt64(17),
+			CustomNullInt64{},
+			[]CustomNullInt64{{int64(1), true}, {int64(2), true}, {}},
+			[]CustomNullInt64(nil),
+			// BOOL / BOOL ARRAY
+			true,
+			CustomNullBool{},
+			[]CustomNullBool{{}, {true, true}, {false, true}},
+			[]CustomNullBool(nil),
+			// FLOAT64 / FLOAT64 ARRAY
+			1.7,
+			CustomNullFloat64{},
+			[]CustomNullFloat64{{}, {}, {1.7, true}},
+			[]CustomNullFloat64(nil),
+			// TIMESTAMP / TIMESTAMP ARRAY
+			CustomTime(tm),
+			CustomNullTime{},
+			[]CustomNullTime{{}, {tm, true}},
+			[]CustomNullTime(nil),
+			// DATE / DATE ARRAY
+			CustomDate(dt),
+			CustomNullDate{},
+			[]CustomNullDate{{}, {dt, true}},
+			[]CustomNullDate(nil),
+			// STRUCT ARRAY
+			[]*struct {
+				Col1 CustomInt64
+				Col2 CustomFloat64
+				Col3 CustomString
+			}{
+				nil,
+
+				{3, 33.3, "three"},
+				nil,
+			},
+			[]*struct {
+				Col1 CustomInt64
+				Col2 CustomFloat64
+				Col3 CustomString
+			}(nil),
+		}, // want
+	}
+	err := row.ToStruct(&s[0])
+	if err != nil {
+		t.Errorf("row.ToStruct() returns error: %v, want nil", err)
+	} else if !testutil.Equal(s[0], s[1], cmp.AllowUnexported(CustomTime{})) {
 		t.Errorf("row.ToStruct() fetches struct %v, want %v", s[0], s[1])
 	}
 }
