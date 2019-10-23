@@ -255,8 +255,7 @@ func (d *database) Insert(tbl string, cols []string, values []*structpb.ListValu
 		pk := r[:t.pkCols]
 		rowNum, found := t.rowForPK(pk)
 		if found {
-			// TODO: how do we return `ALREADY_EXISTS`?
-			return status.Errorf(codes.Unknown, "row already in table")
+			return status.Errorf(codes.AlreadyExists, "row already in table")
 		}
 		t.insertRow(rowNum, r)
 		return nil
