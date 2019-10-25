@@ -62,12 +62,38 @@ type HeadersEnforcer struct {
 	OnFailure func(fmt_ string, args ...interface{})
 }
 
+// StreamInterceptors returns a list of StreamClientInterceptor functions which
+// enforce the presence and validity of expected headers during streaming RPCs.
+//
+// For client implementations which provide their own StreamClientInterceptor(s)
+// these interceptors should be specified as the final elements to
+// WithChainStreamInterceptor.
+//
+// Alternatively, users may apply gPRC options produced from DialOptions to
+// apply all applicable gRPC interceptors.
+func (h *HeadersEnforcer) StreamInterceptors() []grpc.StreamClientInterceptor {
+	return []grpc.StreamClientInterceptor{h.interceptStream}
+}
+
+// UnaryInterceptors returns a list of UnaryClientInterceptor functions which
+// enforce the presence and validity of expected headers during unary RPCs.
+//
+// For client implementations which provide their own UnaryClientInterceptor(s)
+// these interceptors should be specified as the final elements to
+// WithChainUnaryInterceptor.
+//
+// Alternatively, users may apply gPRC options produced from DialOptions to
+// apply all applicable gRPC interceptors.
+func (h *HeadersEnforcer) UnaryInterceptors() []grpc.UnaryClientInterceptor {
+	return []grpc.UnaryClientInterceptor{h.interceptUnary}
+}
+
 // DialOptions returns gRPC DialOptions consisting of unary and stream interceptors
 // to enforce the presence and validity of expected headers.
 func (h *HeadersEnforcer) DialOptions() []grpc.DialOption {
 	return []grpc.DialOption{
-		grpc.WithUnaryInterceptor(h.interceptUnary),
 		grpc.WithStreamInterceptor(h.interceptStream),
+		grpc.WithUnaryInterceptor(h.interceptUnary),
 	}
 }
 
