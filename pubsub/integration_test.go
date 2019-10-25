@@ -346,6 +346,7 @@ func testIAM(ctx context.Context, h *iam.Handle, permission string) (msg string,
 }
 
 func TestIntegration_LargePublishSize(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1636")
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
