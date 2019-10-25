@@ -1,2 +1,3 @@
 input directory path, go module;package flag, gRPC ServiceConfig path flag, API service config path flag, release level
 google/cloud/texttospeech/v1, --go-gapic-package cloud.google.com/go/texttospeech/apiv1;texttospeech, --grpc-service-config google/cloud/texttospeech/v1/texttospeech_grpc_service_config.json, --gapic-service-config google/cloud/texttospeech/v1/texttospeech_v1.yaml, --release-level alpha
+google/cloud/asset/v1, --go-gapic-package cloud.google.com/go/asset/apiv1;asset, --grpc-service-config google/cloud/asset/v1/cloudasset_grpc_service_config.json, --gapic-service-config google/cloud/asset/v1/cloudasset_v1.yaml, --release-level alpha
