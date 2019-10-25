@@ -1183,9 +1183,6 @@ func TestIntegration_Admin(t *testing.T) {
 }
 
 func TestIntegration_TableIam(t *testing.T) {
-	// TODO(alexoneill): Fix this issue in the client tests, then re-enable this test.
-	t.Skip("test doesn't work without expected client header")
-
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -1599,7 +1596,6 @@ func TestIntegration_Granularity(t *testing.T) {
 		timeout = 5 * time.Minute
 	}
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
-	ctx = mergeOutgoingMetadata(ctx, withGoogleClientInfo())
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
