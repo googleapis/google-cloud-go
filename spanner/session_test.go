@@ -446,7 +446,8 @@ func TestMinOpenedSessions(t *testing.T) {
 	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
-				MinOpened: 1,
+				MinOpened:                 1,
+				healthCheckSampleInterval: time.Millisecond,
 			},
 		})
 	defer teardown()
@@ -473,6 +474,16 @@ func TestMinOpenedSessions(t *testing.T) {
 		s.destroy(true)
 	}
 
+	// Wait until the maintainer has had a chance to replenish the pool.
+	for i := 0; i < 10; i++ {
+		sp.mu.Lock()
+		if sp.numOpened > 0 {
+			sp.mu.Unlock()
+			break
+		}
+		sp.mu.Unlock()
+		<-time.After(sp.healthCheckSampleInterval)
+	}
 	sp.mu.Lock()
 	defer sp.mu.Unlock()
 	// There should be still one session left in either the idle list or in one
