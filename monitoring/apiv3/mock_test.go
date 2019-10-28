@@ -2549,9 +2549,11 @@ func TestUptimeCheckServiceListUptimeCheckConfigsError(t *testing.T) {
 func TestUptimeCheckServiceGetUptimeCheckConfig(t *testing.T) {
 	var name2 string = "name2-1052831874"
 	var displayName string = "displayName1615086568"
+	var isInternal bool = true
 	var expectedResponse = &monitoringpb.UptimeCheckConfig{
 		Name:        name2,
 		DisplayName: displayName,
+		IsInternal:  isInternal,
 	}
 
 	mockUptimeCheck.err = nil
@@ -2610,9 +2612,11 @@ func TestUptimeCheckServiceGetUptimeCheckConfigError(t *testing.T) {
 func TestUptimeCheckServiceCreateUptimeCheckConfig(t *testing.T) {
 	var name string = "name3373707"
 	var displayName string = "displayName1615086568"
+	var isInternal bool = true
 	var expectedResponse = &monitoringpb.UptimeCheckConfig{
 		Name:        name,
 		DisplayName: displayName,
+		IsInternal:  isInternal,
 	}
 
 	mockUptimeCheck.err = nil
@@ -2675,9 +2679,11 @@ func TestUptimeCheckServiceCreateUptimeCheckConfigError(t *testing.T) {
 func TestUptimeCheckServiceUpdateUptimeCheckConfig(t *testing.T) {
 	var name string = "name3373707"
 	var displayName string = "displayName1615086568"
+	var isInternal bool = true
 	var expectedResponse = &monitoringpb.UptimeCheckConfig{
 		Name:        name,
 		DisplayName: displayName,
+		IsInternal:  isInternal,
 	}
 
 	mockUptimeCheck.err = nil

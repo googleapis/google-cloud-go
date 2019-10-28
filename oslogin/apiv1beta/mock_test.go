@@ -268,10 +268,8 @@ func TestOsLoginServiceDeleteSshPublicKeyError(t *testing.T) {
 }
 func TestOsLoginServiceGetLoginProfile(t *testing.T) {
 	var name2 string = "name2-1052831874"
-	var suspended bool = false
 	var expectedResponse = &osloginpb.LoginProfile{
-		Name:      name2,
-		Suspended: suspended,
+		Name: name2,
 	}
 
 	mockOsLogin.err = nil

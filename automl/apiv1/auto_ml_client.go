@@ -46,11 +46,15 @@ type CallOptions struct {
 	DeleteDataset        []gax.CallOption
 	ImportData           []gax.CallOption
 	ExportData           []gax.CallOption
+	GetAnnotationSpec    []gax.CallOption
 	CreateModel          []gax.CallOption
 	GetModel             []gax.CallOption
 	UpdateModel          []gax.CallOption
 	ListModels           []gax.CallOption
 	DeleteModel          []gax.CallOption
+	DeployModel          []gax.CallOption
+	UndeployModel        []gax.CallOption
+	ExportModel          []gax.CallOption
 	GetModelEvaluation   []gax.CallOption
 	ListModelEvaluations []gax.CallOption
 }
@@ -87,11 +91,15 @@ func defaultCallOptions() *CallOptions {
 		DeleteDataset:        retry[[2]string{"default", "idempotent"}],
 		ImportData:           retry[[2]string{"default", "non_idempotent"}],
 		ExportData:           retry[[2]string{"default", "non_idempotent"}],
+		GetAnnotationSpec:    retry[[2]string{"default", "idempotent"}],
 		CreateModel:          retry[[2]string{"default", "non_idempotent"}],
 		GetModel:             retry[[2]string{"default", "idempotent"}],
 		UpdateModel:          retry[[2]string{"default", "non_idempotent"}],
 		ListModels:           retry[[2]string{"default", "idempotent"}],
 		DeleteModel:          retry[[2]string{"default", "idempotent"}],
+		DeployModel:          retry[[2]string{"default", "non_idempotent"}],
+		UndeployModel:        retry[[2]string{"default", "non_idempotent"}],
+		ExportModel:          retry[[2]string{"default", "non_idempotent"}],
 		GetModelEvaluation:   retry[[2]string{"default", "idempotent"}],
 		ListModelEvaluations: retry[[2]string{"default", "idempotent"}],
 	}
@@ -336,6 +344,23 @@ func (c *Client) ExportData(ctx context.Context, req *automlpb.ExportDataRequest
 	}, nil
 }
 
+// GetAnnotationSpec gets an annotation spec.
+func (c *Client) GetAnnotationSpec(ctx context.Context, req *automlpb.GetAnnotationSpecRequest, opts ...gax.CallOption) (*automlpb.AnnotationSpec, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetAnnotationSpec[0:len(c.CallOptions.GetAnnotationSpec):len(c.CallOptions.GetAnnotationSpec)], opts...)
+	var resp *automlpb.AnnotationSpec
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetAnnotationSpec(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // CreateModel creates a model.
 // Returns a Model in the [response][google.longrunning.Operation.response]
 // field when it completes.
@@ -451,6 +476,86 @@ func (c *Client) DeleteModel(ctx context.Context, req *automlpb.DeleteModelReque
 		return nil, err
 	}
 	return &DeleteModelOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
+}
+
+// DeployModel deploys a model. If a model is already deployed, deploying it with the
+// same parameters has no effect. Deploying with different parametrs
+// (as e.g. changing
+//
+// [node_number][google.cloud.automl.v1p1beta.ImageObjectDetectionModelDeploymentMetadata.node_number])
+// will reset the deployment state without pausing the model's availability.
+//
+// Only applicable for Text Classification, Image Object Detection; all other
+// domains manage deployment automatically.
+//
+// Returns an empty response in the
+// [response][google.longrunning.Operation.response] field when it completes.
+func (c *Client) DeployModel(ctx context.Context, req *automlpb.DeployModelRequest, opts ...gax.CallOption) (*DeployModelOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.DeployModel[0:len(c.CallOptions.DeployModel):len(c.CallOptions.DeployModel)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.DeployModel(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeployModelOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
+}
+
+// UndeployModel undeploys a model. If the model is not deployed this method has no effect.
+//
+// Only applicable for Text Classification, Image Object Detection;
+// all other domains manage deployment automatically.
+//
+// Returns an empty response in the
+// [response][google.longrunning.Operation.response] field when it completes.
+func (c *Client) UndeployModel(ctx context.Context, req *automlpb.UndeployModelRequest, opts ...gax.CallOption) (*UndeployModelOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UndeployModel[0:len(c.CallOptions.UndeployModel):len(c.CallOptions.UndeployModel)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UndeployModel(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UndeployModelOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
+}
+
+// ExportModel exports a trained, "export-able", model to a user specified Google Cloud
+// Storage location. A model is considered export-able if and only if it has
+// an export format defined for it in
+// [ModelExportOutputConfig][google.cloud.automl.v1.ModelExportOutputConfig].
+//
+// Returns an empty response in the
+// [response][google.longrunning.Operation.response] field when it completes.
+func (c *Client) ExportModel(ctx context.Context, req *automlpb.ExportModelRequest, opts ...gax.CallOption) (*ExportModelOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ExportModel[0:len(c.CallOptions.ExportModel):len(c.CallOptions.ExportModel)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ExportModel(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ExportModelOperation{
 		lro: longrunning.InternalNewOperation(c.LROClient, resp),
 	}, nil
 }
@@ -887,6 +992,62 @@ func (op *DeleteModelOperation) Name() string {
 	return op.lro.Name()
 }
 
+// DeployModelOperation manages a long-running operation from DeployModel.
+type DeployModelOperation struct {
+	lro *longrunning.Operation
+}
+
+// DeployModelOperation returns a new DeployModelOperation from a given name.
+// The name must be that of a previously created DeployModelOperation, possibly from a different process.
+func (c *Client) DeployModelOperation(name string) *DeployModelOperation {
+	return &DeployModelOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning any error encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeployModelOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, 5000*time.Millisecond, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully, op.Done will return true.
+func (op *DeployModelOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeployModelOperation) Metadata() (*automlpb.OperationMetadata, error) {
+	var meta automlpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeployModelOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeployModelOperation) Name() string {
+	return op.lro.Name()
+}
+
 // ExportDataOperation manages a long-running operation from ExportData.
 type ExportDataOperation struct {
 	lro *longrunning.Operation
@@ -943,6 +1104,62 @@ func (op *ExportDataOperation) Name() string {
 	return op.lro.Name()
 }
 
+// ExportModelOperation manages a long-running operation from ExportModel.
+type ExportModelOperation struct {
+	lro *longrunning.Operation
+}
+
+// ExportModelOperation returns a new ExportModelOperation from a given name.
+// The name must be that of a previously created ExportModelOperation, possibly from a different process.
+func (c *Client) ExportModelOperation(name string) *ExportModelOperation {
+	return &ExportModelOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning any error encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ExportModelOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, 5000*time.Millisecond, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully, op.Done will return true.
+func (op *ExportModelOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ExportModelOperation) Metadata() (*automlpb.OperationMetadata, error) {
+	var meta automlpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ExportModelOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ExportModelOperation) Name() string {
+	return op.lro.Name()
+}
+
 // ImportDataOperation manages a long-running operation from ImportData.
 type ImportDataOperation struct {
 	lro *longrunning.Operation
@@ -996,5 +1213,61 @@ func (op *ImportDataOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *ImportDataOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UndeployModelOperation manages a long-running operation from UndeployModel.
+type UndeployModelOperation struct {
+	lro *longrunning.Operation
+}
+
+// UndeployModelOperation returns a new UndeployModelOperation from a given name.
+// The name must be that of a previously created UndeployModelOperation, possibly from a different process.
+func (c *Client) UndeployModelOperation(name string) *UndeployModelOperation {
+	return &UndeployModelOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning any error encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UndeployModelOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, 5000*time.Millisecond, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully, op.Done will return true.
+func (op *UndeployModelOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UndeployModelOperation) Metadata() (*automlpb.OperationMetadata, error) {
+	var meta automlpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UndeployModelOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UndeployModelOperation) Name() string {
 	return op.lro.Name()
 }

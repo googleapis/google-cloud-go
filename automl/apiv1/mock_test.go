@@ -146,6 +146,18 @@ func (s *mockAutoMlServer) ExportData(ctx context.Context, req *automlpb.ExportD
 	return s.resps[0].(*longrunningpb.Operation), nil
 }
 
+func (s *mockAutoMlServer) GetAnnotationSpec(ctx context.Context, req *automlpb.GetAnnotationSpecRequest) (*automlpb.AnnotationSpec, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*automlpb.AnnotationSpec), nil
+}
+
 func (s *mockAutoMlServer) CreateModel(ctx context.Context, req *automlpb.CreateModelRequest) (*longrunningpb.Operation, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
@@ -206,6 +218,42 @@ func (s *mockAutoMlServer) UpdateModel(ctx context.Context, req *automlpb.Update
 	return s.resps[0].(*automlpb.Model), nil
 }
 
+func (s *mockAutoMlServer) DeployModel(ctx context.Context, req *automlpb.DeployModelRequest) (*longrunningpb.Operation, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*longrunningpb.Operation), nil
+}
+
+func (s *mockAutoMlServer) UndeployModel(ctx context.Context, req *automlpb.UndeployModelRequest) (*longrunningpb.Operation, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*longrunningpb.Operation), nil
+}
+
+func (s *mockAutoMlServer) ExportModel(ctx context.Context, req *automlpb.ExportModelRequest) (*longrunningpb.Operation, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*longrunningpb.Operation), nil
+}
+
 func (s *mockAutoMlServer) GetModelEvaluation(ctx context.Context, req *automlpb.GetModelEvaluationRequest) (*automlpb.ModelEvaluation, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
@@ -255,6 +303,18 @@ func (s *mockPredictionServer) Predict(ctx context.Context, req *automlpb.Predic
 		return nil, s.err
 	}
 	return s.resps[0].(*automlpb.PredictResponse), nil
+}
+
+func (s *mockPredictionServer) BatchPredict(ctx context.Context, req *automlpb.BatchPredictRequest) (*longrunningpb.Operation, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*longrunningpb.Operation), nil
 }
 
 // clientOpt is the option tests should use to connect to the test server.
@@ -837,14 +897,79 @@ func TestAutoMlExportDataError(t *testing.T) {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
 }
+func TestAutoMlGetAnnotationSpec(t *testing.T) {
+	var name2 string = "name2-1052831874"
+	var displayName string = "displayName1615086568"
+	var exampleCount int32 = 1517063674
+	var expectedResponse = &automlpb.AnnotationSpec{
+		Name:         name2,
+		DisplayName:  displayName,
+		ExampleCount: exampleCount,
+	}
+
+	mockAutoMl.err = nil
+	mockAutoMl.reqs = nil
+
+	mockAutoMl.resps = append(mockAutoMl.resps[:0], expectedResponse)
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/datasets/%s/annotationSpecs/%s", "[PROJECT]", "[LOCATION]", "[DATASET]", "[ANNOTATION_SPEC]")
+	var request = &automlpb.GetAnnotationSpecRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetAnnotationSpec(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockAutoMl.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestAutoMlGetAnnotationSpecError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockAutoMl.err = gstatus.Error(errCode, "test error")
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/datasets/%s/annotationSpecs/%s", "[PROJECT]", "[LOCATION]", "[DATASET]", "[ANNOTATION_SPEC]")
+	var request = &automlpb.GetAnnotationSpecRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetAnnotationSpec(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
 func TestAutoMlCreateModel(t *testing.T) {
 	var name string = "name3373707"
 	var displayName string = "displayName1615086568"
 	var datasetId string = "datasetId-2115646910"
+	var etag string = "etag3123477"
 	var expectedResponse = &automlpb.Model{
 		Name:        name,
 		DisplayName: displayName,
 		DatasetId:   datasetId,
+		Etag:        etag,
 	}
 
 	mockAutoMl.err = nil
@@ -934,10 +1059,12 @@ func TestAutoMlGetModel(t *testing.T) {
 	var name2 string = "name2-1052831874"
 	var displayName string = "displayName1615086568"
 	var datasetId string = "datasetId-2115646910"
+	var etag string = "etag3123477"
 	var expectedResponse = &automlpb.Model{
 		Name:        name2,
 		DisplayName: displayName,
 		DatasetId:   datasetId,
+		Etag:        etag,
 	}
 
 	mockAutoMl.err = nil
@@ -997,10 +1124,12 @@ func TestAutoMlUpdateModel(t *testing.T) {
 	var name string = "name3373707"
 	var displayName string = "displayName1615086568"
 	var datasetId string = "datasetId-2115646910"
+	var etag string = "etag3123477"
 	var expectedResponse = &automlpb.Model{
 		Name:        name,
 		DisplayName: displayName,
 		DatasetId:   datasetId,
+		Etag:        etag,
 	}
 
 	mockAutoMl.err = nil
@@ -1210,13 +1339,253 @@ func TestAutoMlDeleteModelError(t *testing.T) {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
 }
+func TestAutoMlDeployModel(t *testing.T) {
+	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
+
+	mockAutoMl.err = nil
+	mockAutoMl.reqs = nil
+
+	any, err := ptypes.MarshalAny(expectedResponse)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mockAutoMl.resps = append(mockAutoMl.resps[:0], &longrunningpb.Operation{
+		Name:   "longrunning-test",
+		Done:   true,
+		Result: &longrunningpb.Operation_Response{Response: any},
+	})
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/models/%s", "[PROJECT]", "[LOCATION]", "[MODEL]")
+	var request = &automlpb.DeployModelRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	respLRO, err := c.DeployModel(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = respLRO.Wait(context.Background())
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockAutoMl.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestAutoMlDeployModelError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockAutoMl.err = nil
+	mockAutoMl.resps = append(mockAutoMl.resps[:0], &longrunningpb.Operation{
+		Name: "longrunning-test",
+		Done: true,
+		Result: &longrunningpb.Operation_Error{
+			Error: &status.Status{
+				Code:    int32(errCode),
+				Message: "test error",
+			},
+		},
+	})
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/models/%s", "[PROJECT]", "[LOCATION]", "[MODEL]")
+	var request = &automlpb.DeployModelRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	respLRO, err := c.DeployModel(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = respLRO.Wait(context.Background())
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
+func TestAutoMlUndeployModel(t *testing.T) {
+	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
+
+	mockAutoMl.err = nil
+	mockAutoMl.reqs = nil
+
+	any, err := ptypes.MarshalAny(expectedResponse)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mockAutoMl.resps = append(mockAutoMl.resps[:0], &longrunningpb.Operation{
+		Name:   "longrunning-test",
+		Done:   true,
+		Result: &longrunningpb.Operation_Response{Response: any},
+	})
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/models/%s", "[PROJECT]", "[LOCATION]", "[MODEL]")
+	var request = &automlpb.UndeployModelRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	respLRO, err := c.UndeployModel(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = respLRO.Wait(context.Background())
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockAutoMl.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestAutoMlUndeployModelError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockAutoMl.err = nil
+	mockAutoMl.resps = append(mockAutoMl.resps[:0], &longrunningpb.Operation{
+		Name: "longrunning-test",
+		Done: true,
+		Result: &longrunningpb.Operation_Error{
+			Error: &status.Status{
+				Code:    int32(errCode),
+				Message: "test error",
+			},
+		},
+	})
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/models/%s", "[PROJECT]", "[LOCATION]", "[MODEL]")
+	var request = &automlpb.UndeployModelRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	respLRO, err := c.UndeployModel(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = respLRO.Wait(context.Background())
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
+func TestAutoMlExportModel(t *testing.T) {
+	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
+
+	mockAutoMl.err = nil
+	mockAutoMl.reqs = nil
+
+	any, err := ptypes.MarshalAny(expectedResponse)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mockAutoMl.resps = append(mockAutoMl.resps[:0], &longrunningpb.Operation{
+		Name:   "longrunning-test",
+		Done:   true,
+		Result: &longrunningpb.Operation_Response{Response: any},
+	})
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/models/%s", "[PROJECT]", "[LOCATION]", "[MODEL]")
+	var outputConfig *automlpb.ModelExportOutputConfig = &automlpb.ModelExportOutputConfig{}
+	var request = &automlpb.ExportModelRequest{
+		Name:         formattedName,
+		OutputConfig: outputConfig,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	respLRO, err := c.ExportModel(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = respLRO.Wait(context.Background())
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockAutoMl.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestAutoMlExportModelError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockAutoMl.err = nil
+	mockAutoMl.resps = append(mockAutoMl.resps[:0], &longrunningpb.Operation{
+		Name: "longrunning-test",
+		Done: true,
+		Result: &longrunningpb.Operation_Error{
+			Error: &status.Status{
+				Code:    int32(errCode),
+				Message: "test error",
+			},
+		},
+	})
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/models/%s", "[PROJECT]", "[LOCATION]", "[MODEL]")
+	var outputConfig *automlpb.ModelExportOutputConfig = &automlpb.ModelExportOutputConfig{}
+	var request = &automlpb.ExportModelRequest{
+		Name:         formattedName,
+		OutputConfig: outputConfig,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	respLRO, err := c.ExportModel(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = respLRO.Wait(context.Background())
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
 func TestAutoMlGetModelEvaluation(t *testing.T) {
 	var name2 string = "name2-1052831874"
 	var annotationSpecId string = "annotationSpecId60690191"
+	var displayName string = "displayName1615086568"
 	var evaluatedExampleCount int32 = 277565350
 	var expectedResponse = &automlpb.ModelEvaluation{
 		Name:                  name2,
 		AnnotationSpecId:      annotationSpecId,
+		DisplayName:           displayName,
 		EvaluatedExampleCount: evaluatedExampleCount,
 	}
 
@@ -1401,6 +1770,96 @@ func TestPredictionServicePredictError(t *testing.T) {
 	}
 
 	resp, err := c.Predict(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestPredictionServiceBatchPredict(t *testing.T) {
+	var expectedResponse *automlpb.BatchPredictResult = &automlpb.BatchPredictResult{}
+
+	mockPrediction.err = nil
+	mockPrediction.reqs = nil
+
+	any, err := ptypes.MarshalAny(expectedResponse)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mockPrediction.resps = append(mockPrediction.resps[:0], &longrunningpb.Operation{
+		Name:   "longrunning-test",
+		Done:   true,
+		Result: &longrunningpb.Operation_Response{Response: any},
+	})
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/models/%s", "[PROJECT]", "[LOCATION]", "[MODEL]")
+	var inputConfig *automlpb.BatchPredictInputConfig = &automlpb.BatchPredictInputConfig{}
+	var outputConfig *automlpb.BatchPredictOutputConfig = &automlpb.BatchPredictOutputConfig{}
+	var request = &automlpb.BatchPredictRequest{
+		Name:         formattedName,
+		InputConfig:  inputConfig,
+		OutputConfig: outputConfig,
+	}
+
+	c, err := NewPredictionClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	respLRO, err := c.BatchPredict(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := respLRO.Wait(context.Background())
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockPrediction.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestPredictionServiceBatchPredictError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockPrediction.err = nil
+	mockPrediction.resps = append(mockPrediction.resps[:0], &longrunningpb.Operation{
+		Name: "longrunning-test",
+		Done: true,
+		Result: &longrunningpb.Operation_Error{
+			Error: &status.Status{
+				Code:    int32(errCode),
+				Message: "test error",
+			},
+		},
+	})
+
+	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/models/%s", "[PROJECT]", "[LOCATION]", "[MODEL]")
+	var inputConfig *automlpb.BatchPredictInputConfig = &automlpb.BatchPredictInputConfig{}
+	var outputConfig *automlpb.BatchPredictOutputConfig = &automlpb.BatchPredictOutputConfig{}
+	var request = &automlpb.BatchPredictRequest{
+		Name:         formattedName,
+		InputConfig:  inputConfig,
+		OutputConfig: outputConfig,
+	}
+
+	c, err := NewPredictionClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	respLRO, err := c.BatchPredict(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := respLRO.Wait(context.Background())
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)

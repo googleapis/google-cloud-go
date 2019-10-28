@@ -174,6 +174,24 @@ func ExampleClient_ExportData() {
 	// TODO: Handle error.
 }
 
+func ExampleClient_GetAnnotationSpec() {
+	ctx := context.Background()
+	c, err := automl.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &automlpb.GetAnnotationSpecRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetAnnotationSpec(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_CreateModel() {
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
@@ -268,6 +286,63 @@ func ExampleClient_DeleteModel() {
 		// TODO: Fill request struct fields.
 	}
 	op, err := c.DeleteModel(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	// TODO: Handle error.
+}
+
+func ExampleClient_DeployModel() {
+	ctx := context.Background()
+	c, err := automl.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &automlpb.DeployModelRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.DeployModel(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	// TODO: Handle error.
+}
+
+func ExampleClient_UndeployModel() {
+	ctx := context.Background()
+	c, err := automl.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &automlpb.UndeployModelRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.UndeployModel(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	// TODO: Handle error.
+}
+
+func ExampleClient_ExportModel() {
+	ctx := context.Background()
+	c, err := automl.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &automlpb.ExportModelRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.ExportModel(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

@@ -118,7 +118,7 @@ func NewFirestoreAdminClient(ctx context.Context, opts ...option.ClientOption) (
 
 		firestoreAdminClient: adminpb.NewFirestoreAdminClient(conn),
 	}
-	c.setGoogleClientInfo()
+	c.SetGoogleClientInfo()
 	return c, nil
 }
 
@@ -133,10 +133,10 @@ func (c *FirestoreAdminClient) Close() error {
 	return c.conn.Close()
 }
 
-// setGoogleClientInfo sets the name and version of the application in
+// SetGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *FirestoreAdminClient) setGoogleClientInfo(keyval ...string) {
+func (c *FirestoreAdminClient) SetGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
