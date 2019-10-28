@@ -37,6 +37,7 @@ import (
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
 	CreateSession       []gax.CallOption
+	BatchCreateSessions []gax.CallOption
 	GetSession          []gax.CallOption
 	ListSessions        []gax.CallOption
 	DeleteSession       []gax.CallOption
@@ -56,6 +57,8 @@ func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("spanner.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
@@ -86,6 +89,7 @@ func defaultCallOptions() *CallOptions {
 	}
 	return &CallOptions{
 		CreateSession:       retry[[2]string{"default", "idempotent"}],
+		BatchCreateSessions: retry[[2]string{"default", "idempotent"}],
 		GetSession:          retry[[2]string{"default", "idempotent"}],
 		ListSessions:        retry[[2]string{"default", "idempotent"}],
 		DeleteSession:       retry[[2]string{"default", "idempotent"}],
@@ -187,6 +191,26 @@ func (c *Client) CreateSession(ctx context.Context, req *spannerpb.CreateSession
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.CreateSession(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// BatchCreateSessions creates multiple new sessions.
+//
+// This API can be used to initialize a session cache on the clients.
+// See https://goo.gl/TgSFN2 for best practices on session cache management.
+func (c *Client) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCreateSessionsRequest, opts ...gax.CallOption) (*spannerpb.BatchCreateSessionsResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.BatchCreateSessions[0:len(c.CallOptions.BatchCreateSessions):len(c.CallOptions.BatchCreateSessions)], opts...)
+	var resp *spannerpb.BatchCreateSessionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.BatchCreateSessions(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -324,8 +348,9 @@ func (c *Client) ExecuteStreamingSql(ctx context.Context, req *spannerpb.Execute
 //
 // Statements are executed in order, sequentially.
 // [ExecuteBatchDmlResponse][Spanner.ExecuteBatchDmlResponse] will contain a
-// [ResultSet][google.spanner.v1.ResultSet] for each DML statement that has successfully executed. If a
-// statement fails, its error status will be returned as part of the
+// [ResultSet][google.spanner.v1.ResultSet] for each DML statement that has
+// successfully executed. If a statement fails, its error status will be
+// returned as part of the
 // [ExecuteBatchDmlResponse][Spanner.ExecuteBatchDmlResponse]. Execution will
 // stop at the first failed statement; the remaining statements will not run.
 //

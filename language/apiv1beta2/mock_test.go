@@ -17,10 +17,6 @@
 package language
 
 import (
-	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta2"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -34,10 +30,13 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/api/option"
+	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta2"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 

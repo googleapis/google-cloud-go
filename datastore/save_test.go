@@ -287,3 +287,88 @@ func TestSaveEmptySlice(t *testing.T) {
 		}
 	}
 }
+
+func TestSaveFieldsWithInterface(t *testing.T) {
+	// We should be able to extract the underlying value behind an interface.
+	// See issue https://github.com/googleapis/google-cloud-go/issues/1474.
+
+	type n1 struct {
+		Inner interface{}
+	}
+
+	type n2 struct {
+		Inner2 *n1
+	}
+	type n3 struct {
+		N2 interface{}
+	}
+
+	cases := []struct {
+		name string
+		in   interface{}
+		want []Property
+	}{
+		{
+			name: "Non-Nil value",
+			in: &struct {
+				Value interface{}
+				ID    int
+				key   interface{}
+			}{
+				Value: "this is a string",
+				ID:    17,
+				key:   "key1",
+			},
+			want: []Property{
+				{Name: "Value", Value: "this is a string"},
+				{Name: "ID", Value: int64(17)},
+			},
+		},
+		{
+			name: "Nil value",
+			in: &struct {
+				foo interface{}
+			}{
+				foo: (*string)(nil),
+			},
+			want: nil,
+		},
+		{
+			name: "Nested",
+			in: &n3{
+				N2: &n2{
+					Inner2: &n1{
+						Inner: "Innest",
+					},
+				},
+			},
+			want: []Property{
+				{
+					Name: "N2",
+					Value: &Entity{
+						Properties: []Property{{
+							Name: "Inner2",
+							Value: &Entity{
+								Properties: []Property{{
+									Name: "Inner", Value: "Innest",
+								}},
+							},
+						}},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := SaveStruct(tt.in)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if diff := testutil.Diff(got, tt.want); diff != "" {
+				t.Fatalf("got - want +\n%s", diff)
+			}
+		})
+	}
+}

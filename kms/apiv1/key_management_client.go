@@ -65,15 +65,18 @@ func defaultKeyManagementClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("cloudkms.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
 func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 	retry := map[[2]string][]gax.CallOption{
-		{"default", "idempotent"}: {
+		{"default", "retryable"}: {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
+					codes.Internal,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -84,29 +87,29 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		},
 	}
 	return &KeyManagementCallOptions{
-		ListKeyRings:                  retry[[2]string{"default", "idempotent"}],
-		ListImportJobs:                retry[[2]string{"default", "idempotent"}],
-		ListCryptoKeys:                retry[[2]string{"default", "idempotent"}],
-		ListCryptoKeyVersions:         retry[[2]string{"default", "idempotent"}],
-		GetKeyRing:                    retry[[2]string{"default", "idempotent"}],
-		GetImportJob:                  retry[[2]string{"default", "idempotent"}],
-		GetCryptoKey:                  retry[[2]string{"default", "idempotent"}],
-		GetCryptoKeyVersion:           retry[[2]string{"default", "idempotent"}],
-		CreateKeyRing:                 retry[[2]string{"default", "non_idempotent"}],
-		CreateImportJob:               retry[[2]string{"default", "non_idempotent"}],
-		CreateCryptoKey:               retry[[2]string{"default", "non_idempotent"}],
-		CreateCryptoKeyVersion:        retry[[2]string{"default", "non_idempotent"}],
-		ImportCryptoKeyVersion:        retry[[2]string{"default", "non_idempotent"}],
-		UpdateCryptoKey:               retry[[2]string{"default", "non_idempotent"}],
-		UpdateCryptoKeyVersion:        retry[[2]string{"default", "non_idempotent"}],
-		Encrypt:                       retry[[2]string{"default", "idempotent"}],
-		Decrypt:                       retry[[2]string{"default", "idempotent"}],
-		UpdateCryptoKeyPrimaryVersion: retry[[2]string{"default", "non_idempotent"}],
-		DestroyCryptoKeyVersion:       retry[[2]string{"default", "non_idempotent"}],
-		RestoreCryptoKeyVersion:       retry[[2]string{"default", "non_idempotent"}],
-		GetPublicKey:                  retry[[2]string{"default", "idempotent"}],
-		AsymmetricDecrypt:             retry[[2]string{"default", "idempotent"}],
-		AsymmetricSign:                retry[[2]string{"default", "idempotent"}],
+		ListKeyRings:                  retry[[2]string{"default", "retryable"}],
+		ListImportJobs:                retry[[2]string{"default", "retryable"}],
+		ListCryptoKeys:                retry[[2]string{"default", "retryable"}],
+		ListCryptoKeyVersions:         retry[[2]string{"default", "retryable"}],
+		GetKeyRing:                    retry[[2]string{"default", "retryable"}],
+		GetImportJob:                  retry[[2]string{"default", "retryable"}],
+		GetCryptoKey:                  retry[[2]string{"default", "retryable"}],
+		GetCryptoKeyVersion:           retry[[2]string{"default", "retryable"}],
+		CreateKeyRing:                 retry[[2]string{"default", "retryable"}],
+		CreateImportJob:               retry[[2]string{"default", "retryable"}],
+		CreateCryptoKey:               retry[[2]string{"default", "retryable"}],
+		CreateCryptoKeyVersion:        retry[[2]string{"default", "non_retryable"}],
+		ImportCryptoKeyVersion:        retry[[2]string{"default", "non_retryable"}],
+		UpdateCryptoKey:               retry[[2]string{"default", "retryable"}],
+		UpdateCryptoKeyVersion:        retry[[2]string{"default", "retryable"}],
+		Encrypt:                       retry[[2]string{"default", "retryable"}],
+		Decrypt:                       retry[[2]string{"default", "retryable"}],
+		UpdateCryptoKeyPrimaryVersion: retry[[2]string{"default", "retryable"}],
+		DestroyCryptoKeyVersion:       retry[[2]string{"default", "retryable"}],
+		RestoreCryptoKeyVersion:       retry[[2]string{"default", "retryable"}],
+		GetPublicKey:                  retry[[2]string{"default", "retryable"}],
+		AsymmetricDecrypt:             retry[[2]string{"default", "retryable"}],
+		AsymmetricSign:                retry[[2]string{"default", "retryable"}],
 	}
 }
 

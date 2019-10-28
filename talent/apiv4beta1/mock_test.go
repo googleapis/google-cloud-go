@@ -17,12 +17,6 @@
 package talent
 
 import (
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -35,11 +29,16 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
+	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 
@@ -278,6 +277,18 @@ func (s *mockJobServer) CreateJob(ctx context.Context, req *talentpb.CreateJobRe
 	return s.resps[0].(*talentpb.Job), nil
 }
 
+func (s *mockJobServer) BatchCreateJobs(ctx context.Context, req *talentpb.BatchCreateJobsRequest) (*longrunningpb.Operation, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*longrunningpb.Operation), nil
+}
+
 func (s *mockJobServer) GetJob(ctx context.Context, req *talentpb.GetJobRequest) (*talentpb.Job, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
@@ -302,7 +313,31 @@ func (s *mockJobServer) UpdateJob(ctx context.Context, req *talentpb.UpdateJobRe
 	return s.resps[0].(*talentpb.Job), nil
 }
 
+func (s *mockJobServer) BatchUpdateJobs(ctx context.Context, req *talentpb.BatchUpdateJobsRequest) (*longrunningpb.Operation, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*longrunningpb.Operation), nil
+}
+
 func (s *mockJobServer) DeleteJob(ctx context.Context, req *talentpb.DeleteJobRequest) (*emptypb.Empty, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*emptypb.Empty), nil
+}
+
+func (s *mockJobServer) BatchDeleteJobs(ctx context.Context, req *talentpb.BatchDeleteJobsRequest) (*emptypb.Empty, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
 		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
@@ -324,18 +359,6 @@ func (s *mockJobServer) ListJobs(ctx context.Context, req *talentpb.ListJobsRequ
 		return nil, s.err
 	}
 	return s.resps[0].(*talentpb.ListJobsResponse), nil
-}
-
-func (s *mockJobServer) BatchDeleteJobs(ctx context.Context, req *talentpb.BatchDeleteJobsRequest) (*emptypb.Empty, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*emptypb.Empty), nil
 }
 
 func (s *mockJobServer) SearchJobs(ctx context.Context, req *talentpb.SearchJobsRequest) (*talentpb.SearchJobsResponse, error) {
@@ -360,30 +383,6 @@ func (s *mockJobServer) SearchJobsForAlert(ctx context.Context, req *talentpb.Se
 		return nil, s.err
 	}
 	return s.resps[0].(*talentpb.SearchJobsResponse), nil
-}
-
-func (s *mockJobServer) BatchCreateJobs(ctx context.Context, req *talentpb.BatchCreateJobsRequest) (*longrunningpb.Operation, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*longrunningpb.Operation), nil
-}
-
-func (s *mockJobServer) BatchUpdateJobs(ctx context.Context, req *talentpb.BatchUpdateJobsRequest) (*longrunningpb.Operation, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*longrunningpb.Operation), nil
 }
 
 type mockProfileServer struct {

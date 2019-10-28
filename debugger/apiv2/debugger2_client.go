@@ -19,6 +19,7 @@ package debugger
 import (
 	"context"
 	"fmt"
+	"math"
 	"net/url"
 	"time"
 
@@ -33,9 +34,9 @@ import (
 
 // Debugger2CallOptions contains the retry settings for each method of Debugger2Client.
 type Debugger2CallOptions struct {
+	DeleteBreakpoint []gax.CallOption
 	SetBreakpoint    []gax.CallOption
 	GetBreakpoint    []gax.CallOption
-	DeleteBreakpoint []gax.CallOption
 	ListBreakpoints  []gax.CallOption
 	ListDebuggees    []gax.CallOption
 }
@@ -44,6 +45,8 @@ func defaultDebugger2ClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("clouddebugger.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
@@ -63,9 +66,9 @@ func defaultDebugger2CallOptions() *Debugger2CallOptions {
 		},
 	}
 	return &Debugger2CallOptions{
+		DeleteBreakpoint: retry[[2]string{"default", "idempotent"}],
 		SetBreakpoint:    retry[[2]string{"default", "non_idempotent"}],
 		GetBreakpoint:    retry[[2]string{"default", "idempotent"}],
-		DeleteBreakpoint: retry[[2]string{"default", "idempotent"}],
 		ListBreakpoints:  retry[[2]string{"default", "idempotent"}],
 		ListDebuggees:    retry[[2]string{"default", "idempotent"}],
 	}
@@ -137,6 +140,18 @@ func (c *Debugger2Client) SetGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
+// DeleteBreakpoint deletes the breakpoint from the debuggee.
+func (c *Debugger2Client) DeleteBreakpoint(ctx context.Context, req *clouddebuggerpb.DeleteBreakpointRequest, opts ...gax.CallOption) error {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.DeleteBreakpoint[0:len(c.CallOptions.DeleteBreakpoint):len(c.CallOptions.DeleteBreakpoint)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.debugger2Client.DeleteBreakpoint(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
 // SetBreakpoint sets the breakpoint to the debuggee.
 func (c *Debugger2Client) SetBreakpoint(ctx context.Context, req *clouddebuggerpb.SetBreakpointRequest, opts ...gax.CallOption) (*clouddebuggerpb.SetBreakpointResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId())))
@@ -168,18 +183,6 @@ func (c *Debugger2Client) GetBreakpoint(ctx context.Context, req *clouddebuggerp
 		return nil, err
 	}
 	return resp, nil
-}
-
-// DeleteBreakpoint deletes the breakpoint from the debuggee.
-func (c *Debugger2Client) DeleteBreakpoint(ctx context.Context, req *clouddebuggerpb.DeleteBreakpointRequest, opts ...gax.CallOption) error {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.DeleteBreakpoint[0:len(c.CallOptions.DeleteBreakpoint):len(c.CallOptions.DeleteBreakpoint)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.debugger2Client.DeleteBreakpoint(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
 }
 
 // ListBreakpoints lists all breakpoints for the debuggee.

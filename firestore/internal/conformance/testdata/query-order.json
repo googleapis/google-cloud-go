@@ -1,50 +1,54 @@
 {
-  "description": "query: basic OrderBy clauses",
-  "comment": "Multiple OrderBy clauses combine.",
-  "query": {
-    "collPath": "projects/projectID/databases/(default)/documents/C",
-    "clauses": [
-      {
-        "orderBy": {
-          "path": {
-            "field": [
-              "b"
-            ]
+  "tests": [
+    {
+      "description": "query: basic OrderBy clauses",
+      "comment": "Multiple OrderBy clauses combine.",
+      "query": {
+        "collPath": "projects/projectID/databases/(default)/documents/C",
+        "clauses": [
+          {
+            "orderBy": {
+              "path": {
+                "field": [
+                  "b"
+                ]
+              },
+              "direction": "asc"
+            }
           },
-          "direction": "asc"
-        }
-      },
-      {
-        "orderBy": {
-          "path": {
-            "field": [
-              "a"
-            ]
-          },
-          "direction": "desc"
+          {
+            "orderBy": {
+              "path": {
+                "field": [
+                  "a"
+                ]
+              },
+              "direction": "desc"
+            }
+          }
+        ],
+        "query": {
+          "from": [
+            {
+              "collectionId": "C"
+            }
+          ],
+          "orderBy": [
+            {
+              "field": {
+                "fieldPath": "b"
+              },
+              "direction": "ASCENDING"
+            },
+            {
+              "field": {
+                "fieldPath": "a"
+              },
+              "direction": "DESCENDING"
+            }
+          ]
         }
       }
-    ],
-    "query": {
-      "from": [
-        {
-          "collectionId": "C"
-        }
-      ],
-      "orderBy": [
-        {
-          "field": {
-            "fieldPath": "b"
-          },
-          "direction": "ASCENDING"
-        },
-        {
-          "field": {
-            "fieldPath": "a"
-          },
-          "direction": "DESCENDING"
-        }
-      ]
     }
-  }
+  ]
 }

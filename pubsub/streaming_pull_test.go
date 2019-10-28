@@ -140,7 +140,7 @@ func TestStreamingPullError(t *testing.T) {
 	default:
 		t.Fatal("Receive returned but callback was not done")
 	}
-	if want := codes.Unknown; grpc.Code(err) != want {
+	if want := codes.Unknown; status.Code(err) != want {
 		t.Fatalf("got <%v>, want code %v", err, want)
 	}
 }
@@ -430,7 +430,8 @@ func newMock(t *testing.T) (*Client, *mockServer) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	client, err := NewClient(context.Background(), "P", option.WithGRPCConn(conn))
+	opts := withGRPCHeadersAssertion(t, option.WithGRPCConn(conn))
+	client, err := NewClient(context.Background(), "P", opts...)
 	if err != nil {
 		t.Fatal(err)
 	}

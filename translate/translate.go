@@ -12,7 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package translate is a client for the Google Translation API.
+// Package translate is the v2 client for the Google Translation API.
+//
+// PLEASE NOTE: We recommend using the new v3 client for new projects:
+// https://cloud.google.com/go/translate/apiv3.
+//
 // See https://cloud.google.com/translation for details.
 package translate
 
@@ -22,9 +26,9 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/internal/version"
-	raw "cloud.google.com/go/translate/internal/translate/v2"
 	"golang.org/x/text/language"
 	"google.golang.org/api/option"
+	raw "google.golang.org/api/translate/v2"
 	htransport "google.golang.org/api/transport/http"
 )
 

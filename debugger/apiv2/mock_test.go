@@ -17,11 +17,6 @@
 package debugger
 
 import (
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -34,68 +29,21 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
+	clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 
 var _ = io.EOF
 var _ = ptypes.MarshalAny
 var _ status.Status
-
-type mockController2Server struct {
-	// Embed for forward compatibility.
-	// Tests will keep working if more methods are added
-	// in the future.
-	clouddebuggerpb.Controller2Server
-
-	reqs []proto.Message
-
-	// If set, all calls return this error.
-	err error
-
-	// responses to return if err == nil
-	resps []proto.Message
-}
-
-func (s *mockController2Server) RegisterDebuggee(ctx context.Context, req *clouddebuggerpb.RegisterDebuggeeRequest) (*clouddebuggerpb.RegisterDebuggeeResponse, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*clouddebuggerpb.RegisterDebuggeeResponse), nil
-}
-
-func (s *mockController2Server) ListActiveBreakpoints(ctx context.Context, req *clouddebuggerpb.ListActiveBreakpointsRequest) (*clouddebuggerpb.ListActiveBreakpointsResponse, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*clouddebuggerpb.ListActiveBreakpointsResponse), nil
-}
-
-func (s *mockController2Server) UpdateActiveBreakpoint(ctx context.Context, req *clouddebuggerpb.UpdateActiveBreakpointRequest) (*clouddebuggerpb.UpdateActiveBreakpointResponse, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*clouddebuggerpb.UpdateActiveBreakpointResponse), nil
-}
 
 type mockDebugger2Server struct {
 	// Embed for forward compatibility.
@@ -172,21 +120,72 @@ func (s *mockDebugger2Server) ListDebuggees(ctx context.Context, req *clouddebug
 	return s.resps[0].(*clouddebuggerpb.ListDebuggeesResponse), nil
 }
 
+type mockController2Server struct {
+	// Embed for forward compatibility.
+	// Tests will keep working if more methods are added
+	// in the future.
+	clouddebuggerpb.Controller2Server
+
+	reqs []proto.Message
+
+	// If set, all calls return this error.
+	err error
+
+	// responses to return if err == nil
+	resps []proto.Message
+}
+
+func (s *mockController2Server) RegisterDebuggee(ctx context.Context, req *clouddebuggerpb.RegisterDebuggeeRequest) (*clouddebuggerpb.RegisterDebuggeeResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*clouddebuggerpb.RegisterDebuggeeResponse), nil
+}
+
+func (s *mockController2Server) ListActiveBreakpoints(ctx context.Context, req *clouddebuggerpb.ListActiveBreakpointsRequest) (*clouddebuggerpb.ListActiveBreakpointsResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*clouddebuggerpb.ListActiveBreakpointsResponse), nil
+}
+
+func (s *mockController2Server) UpdateActiveBreakpoint(ctx context.Context, req *clouddebuggerpb.UpdateActiveBreakpointRequest) (*clouddebuggerpb.UpdateActiveBreakpointResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*clouddebuggerpb.UpdateActiveBreakpointResponse), nil
+}
+
 // clientOpt is the option tests should use to connect to the test server.
 // It is initialized by TestMain.
 var clientOpt option.ClientOption
 
 var (
-	mockController2 mockController2Server
 	mockDebugger2   mockDebugger2Server
+	mockController2 mockController2Server
 )
 
 func TestMain(m *testing.M) {
 	flag.Parse()
 
 	serv := grpc.NewServer()
-	clouddebuggerpb.RegisterController2Server(serv, &mockController2)
 	clouddebuggerpb.RegisterDebugger2Server(serv, &mockDebugger2)
+	clouddebuggerpb.RegisterController2Server(serv, &mockController2)
 
 	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
@@ -203,182 +202,65 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestController2RegisterDebuggee(t *testing.T) {
-	var expectedResponse *clouddebuggerpb.RegisterDebuggeeResponse = &clouddebuggerpb.RegisterDebuggeeResponse{}
+func TestDebugger2DeleteBreakpoint(t *testing.T) {
+	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
 
-	mockController2.err = nil
-	mockController2.reqs = nil
+	mockDebugger2.err = nil
+	mockDebugger2.reqs = nil
 
-	mockController2.resps = append(mockController2.resps[:0], expectedResponse)
+	mockDebugger2.resps = append(mockDebugger2.resps[:0], expectedResponse)
 
-	var debuggee *clouddebuggerpb.Debuggee = &clouddebuggerpb.Debuggee{}
-	var request = &clouddebuggerpb.RegisterDebuggeeRequest{
-		Debuggee: debuggee,
+	var debuggeeId string = "debuggeeId-997255898"
+	var breakpointId string = "breakpointId498424873"
+	var clientVersion string = "clientVersion-1506231196"
+	var request = &clouddebuggerpb.DeleteBreakpointRequest{
+		DebuggeeId:    debuggeeId,
+		BreakpointId:  breakpointId,
+		ClientVersion: clientVersion,
 	}
 
-	c, err := NewController2Client(context.Background(), clientOpt)
+	c, err := NewDebugger2Client(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	resp, err := c.RegisterDebuggee(context.Background(), request)
+	err = c.DeleteBreakpoint(context.Background(), request)
 
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if want, got := request, mockController2.reqs[0]; !proto.Equal(want, got) {
+	if want, got := request, mockDebugger2.reqs[0]; !proto.Equal(want, got) {
 		t.Errorf("wrong request %q, want %q", got, want)
 	}
 
-	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
 }
 
-func TestController2RegisterDebuggeeError(t *testing.T) {
+func TestDebugger2DeleteBreakpointError(t *testing.T) {
 	errCode := codes.PermissionDenied
-	mockController2.err = gstatus.Error(errCode, "test error")
+	mockDebugger2.err = gstatus.Error(errCode, "test error")
 
-	var debuggee *clouddebuggerpb.Debuggee = &clouddebuggerpb.Debuggee{}
-	var request = &clouddebuggerpb.RegisterDebuggeeRequest{
-		Debuggee: debuggee,
+	var debuggeeId string = "debuggeeId-997255898"
+	var breakpointId string = "breakpointId498424873"
+	var clientVersion string = "clientVersion-1506231196"
+	var request = &clouddebuggerpb.DeleteBreakpointRequest{
+		DebuggeeId:    debuggeeId,
+		BreakpointId:  breakpointId,
+		ClientVersion: clientVersion,
 	}
 
-	c, err := NewController2Client(context.Background(), clientOpt)
+	c, err := NewDebugger2Client(context.Background(), clientOpt)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	resp, err := c.RegisterDebuggee(context.Background(), request)
+	err = c.DeleteBreakpoint(context.Background(), request)
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)
 	} else if c := st.Code(); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
-	_ = resp
-}
-func TestController2ListActiveBreakpoints(t *testing.T) {
-	var nextWaitToken string = "nextWaitToken1006864251"
-	var waitExpired bool = false
-	var expectedResponse = &clouddebuggerpb.ListActiveBreakpointsResponse{
-		NextWaitToken: nextWaitToken,
-		WaitExpired:   waitExpired,
-	}
-
-	mockController2.err = nil
-	mockController2.reqs = nil
-
-	mockController2.resps = append(mockController2.resps[:0], expectedResponse)
-
-	var debuggeeId string = "debuggeeId-997255898"
-	var request = &clouddebuggerpb.ListActiveBreakpointsRequest{
-		DebuggeeId: debuggeeId,
-	}
-
-	c, err := NewController2Client(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.ListActiveBreakpoints(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockController2.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestController2ListActiveBreakpointsError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockController2.err = gstatus.Error(errCode, "test error")
-
-	var debuggeeId string = "debuggeeId-997255898"
-	var request = &clouddebuggerpb.ListActiveBreakpointsRequest{
-		DebuggeeId: debuggeeId,
-	}
-
-	c, err := NewController2Client(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.ListActiveBreakpoints(context.Background(), request)
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
-func TestController2UpdateActiveBreakpoint(t *testing.T) {
-	var expectedResponse *clouddebuggerpb.UpdateActiveBreakpointResponse = &clouddebuggerpb.UpdateActiveBreakpointResponse{}
-
-	mockController2.err = nil
-	mockController2.reqs = nil
-
-	mockController2.resps = append(mockController2.resps[:0], expectedResponse)
-
-	var debuggeeId string = "debuggeeId-997255898"
-	var breakpoint *clouddebuggerpb.Breakpoint = &clouddebuggerpb.Breakpoint{}
-	var request = &clouddebuggerpb.UpdateActiveBreakpointRequest{
-		DebuggeeId: debuggeeId,
-		Breakpoint: breakpoint,
-	}
-
-	c, err := NewController2Client(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.UpdateActiveBreakpoint(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockController2.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestController2UpdateActiveBreakpointError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockController2.err = gstatus.Error(errCode, "test error")
-
-	var debuggeeId string = "debuggeeId-997255898"
-	var breakpoint *clouddebuggerpb.Breakpoint = &clouddebuggerpb.Breakpoint{}
-	var request = &clouddebuggerpb.UpdateActiveBreakpointRequest{
-		DebuggeeId: debuggeeId,
-		Breakpoint: breakpoint,
-	}
-
-	c, err := NewController2Client(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.UpdateActiveBreakpoint(context.Background(), request)
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
 }
 func TestDebugger2SetBreakpoint(t *testing.T) {
 	var expectedResponse *clouddebuggerpb.SetBreakpointResponse = &clouddebuggerpb.SetBreakpointResponse{}
@@ -508,66 +390,6 @@ func TestDebugger2GetBreakpointError(t *testing.T) {
 	}
 	_ = resp
 }
-func TestDebugger2DeleteBreakpoint(t *testing.T) {
-	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
-
-	mockDebugger2.err = nil
-	mockDebugger2.reqs = nil
-
-	mockDebugger2.resps = append(mockDebugger2.resps[:0], expectedResponse)
-
-	var debuggeeId string = "debuggeeId-997255898"
-	var breakpointId string = "breakpointId498424873"
-	var clientVersion string = "clientVersion-1506231196"
-	var request = &clouddebuggerpb.DeleteBreakpointRequest{
-		DebuggeeId:    debuggeeId,
-		BreakpointId:  breakpointId,
-		ClientVersion: clientVersion,
-	}
-
-	c, err := NewDebugger2Client(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = c.DeleteBreakpoint(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockDebugger2.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-}
-
-func TestDebugger2DeleteBreakpointError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockDebugger2.err = gstatus.Error(errCode, "test error")
-
-	var debuggeeId string = "debuggeeId-997255898"
-	var breakpointId string = "breakpointId498424873"
-	var clientVersion string = "clientVersion-1506231196"
-	var request = &clouddebuggerpb.DeleteBreakpointRequest{
-		DebuggeeId:    debuggeeId,
-		BreakpointId:  breakpointId,
-		ClientVersion: clientVersion,
-	}
-
-	c, err := NewDebugger2Client(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = c.DeleteBreakpoint(context.Background(), request)
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-}
 func TestDebugger2ListBreakpoints(t *testing.T) {
 	var nextWaitToken string = "nextWaitToken1006864251"
 	var expectedResponse = &clouddebuggerpb.ListBreakpointsResponse{
@@ -683,6 +505,183 @@ func TestDebugger2ListDebuggeesError(t *testing.T) {
 	}
 
 	resp, err := c.ListDebuggees(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestController2UpdateActiveBreakpoint(t *testing.T) {
+	var expectedResponse *clouddebuggerpb.UpdateActiveBreakpointResponse = &clouddebuggerpb.UpdateActiveBreakpointResponse{}
+
+	mockController2.err = nil
+	mockController2.reqs = nil
+
+	mockController2.resps = append(mockController2.resps[:0], expectedResponse)
+
+	var debuggeeId string = "debuggeeId-997255898"
+	var breakpoint *clouddebuggerpb.Breakpoint = &clouddebuggerpb.Breakpoint{}
+	var request = &clouddebuggerpb.UpdateActiveBreakpointRequest{
+		DebuggeeId: debuggeeId,
+		Breakpoint: breakpoint,
+	}
+
+	c, err := NewController2Client(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateActiveBreakpoint(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockController2.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestController2UpdateActiveBreakpointError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockController2.err = gstatus.Error(errCode, "test error")
+
+	var debuggeeId string = "debuggeeId-997255898"
+	var breakpoint *clouddebuggerpb.Breakpoint = &clouddebuggerpb.Breakpoint{}
+	var request = &clouddebuggerpb.UpdateActiveBreakpointRequest{
+		DebuggeeId: debuggeeId,
+		Breakpoint: breakpoint,
+	}
+
+	c, err := NewController2Client(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateActiveBreakpoint(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestController2RegisterDebuggee(t *testing.T) {
+	var expectedResponse *clouddebuggerpb.RegisterDebuggeeResponse = &clouddebuggerpb.RegisterDebuggeeResponse{}
+
+	mockController2.err = nil
+	mockController2.reqs = nil
+
+	mockController2.resps = append(mockController2.resps[:0], expectedResponse)
+
+	var debuggee *clouddebuggerpb.Debuggee = &clouddebuggerpb.Debuggee{}
+	var request = &clouddebuggerpb.RegisterDebuggeeRequest{
+		Debuggee: debuggee,
+	}
+
+	c, err := NewController2Client(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.RegisterDebuggee(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockController2.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestController2RegisterDebuggeeError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockController2.err = gstatus.Error(errCode, "test error")
+
+	var debuggee *clouddebuggerpb.Debuggee = &clouddebuggerpb.Debuggee{}
+	var request = &clouddebuggerpb.RegisterDebuggeeRequest{
+		Debuggee: debuggee,
+	}
+
+	c, err := NewController2Client(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.RegisterDebuggee(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestController2ListActiveBreakpoints(t *testing.T) {
+	var nextWaitToken string = "nextWaitToken1006864251"
+	var waitExpired bool = false
+	var expectedResponse = &clouddebuggerpb.ListActiveBreakpointsResponse{
+		NextWaitToken: nextWaitToken,
+		WaitExpired:   waitExpired,
+	}
+
+	mockController2.err = nil
+	mockController2.reqs = nil
+
+	mockController2.resps = append(mockController2.resps[:0], expectedResponse)
+
+	var debuggeeId string = "debuggeeId-997255898"
+	var request = &clouddebuggerpb.ListActiveBreakpointsRequest{
+		DebuggeeId: debuggeeId,
+	}
+
+	c, err := NewController2Client(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListActiveBreakpoints(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockController2.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestController2ListActiveBreakpointsError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockController2.err = gstatus.Error(errCode, "test error")
+
+	var debuggeeId string = "debuggeeId-997255898"
+	var request = &clouddebuggerpb.ListActiveBreakpointsRequest{
+		DebuggeeId: debuggeeId,
+	}
+
+	c, err := NewController2Client(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListActiveBreakpoints(context.Background(), request)
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)

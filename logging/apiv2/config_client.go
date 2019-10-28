@@ -52,6 +52,8 @@ func defaultConfigClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("logging.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
@@ -104,8 +106,7 @@ type ConfigClient struct {
 
 // NewConfigClient creates a new config service v2 client.
 //
-// Service for configuring sinks used to export log entries out of
-// Logging.
+// Service for configuring sinks used to route log entries.
 func NewConfigClient(ctx context.Context, opts ...option.ClientOption) (*ConfigClient, error) {
 	conn, err := transport.DialGRPC(ctx, append(defaultConfigClientOptions(), opts...)...)
 	if err != nil {
@@ -197,9 +198,9 @@ func (c *ConfigClient) GetSink(ctx context.Context, req *loggingpb.GetSinkReques
 	return resp, nil
 }
 
-// CreateSink creates a sink that exports specified log entries to a destination.  The
+// CreateSink creates a sink that exports specified log entries to a destination. The
 // export of newly-ingested log entries begins immediately, unless the sink's
-// writer_identity is not permitted to write to the destination.  A sink can
+// writer_identity is not permitted to write to the destination. A sink can
 // export log entries only from the resource owning the sink.
 func (c *ConfigClient) CreateSink(ctx context.Context, req *loggingpb.CreateSinkRequest, opts ...gax.CallOption) (*loggingpb.LogSink, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -217,8 +218,9 @@ func (c *ConfigClient) CreateSink(ctx context.Context, req *loggingpb.CreateSink
 	return resp, nil
 }
 
-// UpdateSink updates a sink.  This method replaces the following fields in the existing
+// UpdateSink updates a sink. This method replaces the following fields in the existing
 // sink with values from the new sink: destination, and filter.
+//
 // The updated sink might also have a new writer_identity; see the
 // unique_writer_identity field.
 func (c *ConfigClient) UpdateSink(ctx context.Context, req *loggingpb.UpdateSinkRequest, opts ...gax.CallOption) (*loggingpb.LogSink, error) {

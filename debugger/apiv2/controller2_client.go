@@ -19,6 +19,7 @@ package debugger
 import (
 	"context"
 	"fmt"
+	"math"
 	"net/url"
 	"time"
 
@@ -33,15 +34,17 @@ import (
 
 // Controller2CallOptions contains the retry settings for each method of Controller2Client.
 type Controller2CallOptions struct {
+	UpdateActiveBreakpoint []gax.CallOption
 	RegisterDebuggee       []gax.CallOption
 	ListActiveBreakpoints  []gax.CallOption
-	UpdateActiveBreakpoint []gax.CallOption
 }
 
 func defaultController2ClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("clouddebugger.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
@@ -61,9 +64,9 @@ func defaultController2CallOptions() *Controller2CallOptions {
 		},
 	}
 	return &Controller2CallOptions{
+		UpdateActiveBreakpoint: retry[[2]string{"default", "idempotent"}],
 		RegisterDebuggee:       retry[[2]string{"default", "non_idempotent"}],
 		ListActiveBreakpoints:  retry[[2]string{"default", "idempotent"}],
-		UpdateActiveBreakpoint: retry[[2]string{"default", "idempotent"}],
 	}
 }
 
@@ -141,6 +144,29 @@ func (c *Controller2Client) SetGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
+// UpdateActiveBreakpoint updates the breakpoint state or mutable fields.
+// The entire Breakpoint message must be sent back to the controller service.
+//
+// Updates to active breakpoint fields are only allowed if the new value
+// does not change the breakpoint specification. Updates to the location,
+// condition and expressions fields should not alter the breakpoint
+// semantics. These may only make changes such as canonicalizing a value
+// or snapping the location to the correct line of code.
+func (c *Controller2Client) UpdateActiveBreakpoint(ctx context.Context, req *clouddebuggerpb.UpdateActiveBreakpointRequest, opts ...gax.CallOption) (*clouddebuggerpb.UpdateActiveBreakpointResponse, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.UpdateActiveBreakpoint[0:len(c.CallOptions.UpdateActiveBreakpoint):len(c.CallOptions.UpdateActiveBreakpoint)], opts...)
+	var resp *clouddebuggerpb.UpdateActiveBreakpointResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.controller2Client.UpdateActiveBreakpoint(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // RegisterDebuggee registers the debuggee with the controller service.
 //
 // All agents attached to the same application must call this method with
@@ -187,29 +213,6 @@ func (c *Controller2Client) ListActiveBreakpoints(ctx context.Context, req *clou
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.controller2Client.ListActiveBreakpoints(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// UpdateActiveBreakpoint updates the breakpoint state or mutable fields.
-// The entire Breakpoint message must be sent back to the controller service.
-//
-// Updates to active breakpoint fields are only allowed if the new value
-// does not change the breakpoint specification. Updates to the location,
-// condition and expressions fields should not alter the breakpoint
-// semantics. These may only make changes such as canonicalizing a value
-// or snapping the location to the correct line of code.
-func (c *Controller2Client) UpdateActiveBreakpoint(ctx context.Context, req *clouddebuggerpb.UpdateActiveBreakpointRequest, opts ...gax.CallOption) (*clouddebuggerpb.UpdateActiveBreakpointResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.UpdateActiveBreakpoint[0:len(c.CallOptions.UpdateActiveBreakpoint):len(c.CallOptions.UpdateActiveBreakpoint)], opts...)
-	var resp *clouddebuggerpb.UpdateActiveBreakpointResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.controller2Client.UpdateActiveBreakpoint(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

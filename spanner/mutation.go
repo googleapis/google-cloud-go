@@ -191,7 +191,7 @@ func structToMutationParams(in interface{}) ([]string, []interface{}, error) {
 }
 
 // Insert returns a Mutation to insert a row into a table. If the row already
-// exists, the write or transaction fails.
+// exists, the write or transaction fails with codes.AlreadyExists.
 func Insert(table string, cols []string, vals []interface{}) *Mutation {
 	return &Mutation{
 		op:      opInsert,
@@ -203,14 +203,15 @@ func Insert(table string, cols []string, vals []interface{}) *Mutation {
 
 // InsertMap returns a Mutation to insert a row into a table, specified by
 // a map of column name to value. If the row already exists, the write or
-// transaction fails.
+// transaction fails with codes.AlreadyExists.
 func InsertMap(table string, in map[string]interface{}) *Mutation {
 	cols, vals := mapToMutationParams(in)
 	return Insert(table, cols, vals)
 }
 
 // InsertStruct returns a Mutation to insert a row into a table, specified by
-// a Go struct.  If the row already exists, the write or transaction fails.
+// a Go struct.  If the row already exists, the write or transaction fails with
+// codes.AlreadyExists.
 //
 // The in argument must be a struct or a pointer to a struct. Its exported
 // fields specify the column names and values. Use a field tag like "spanner:name"

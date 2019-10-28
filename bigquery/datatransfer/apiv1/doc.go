@@ -19,8 +19,9 @@
 //
 //   NOTE: This package is in alpha. It is not stable, and is likely to change.
 //
-// Transfers data from partner SaaS applications to Google BigQuery on a
-// scheduled, managed basis.
+// Schedule queries or transfer external data from SaaS applications to
+// Google
+// BigQuery on a regular basis.
 //
 // Use of Context
 //
@@ -98,4 +99,4 @@ func versionGo() string {
 	return "UNKNOWN"
 }
 
-const versionClient = "20190701"
+const versionClient = "UNKNOWN"

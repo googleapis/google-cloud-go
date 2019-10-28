@@ -221,6 +221,7 @@ func start(cfg Config, options ...option.ClientOption) error {
 	opts := []option.ClientOption{
 		option.WithEndpoint(config.APIAddr),
 		option.WithScopes(scope),
+		option.WithUserAgent(fmt.Sprintf("gcloud-go-profiler/%s", version.Repo)),
 	}
 	opts = append(opts, options...)
 
@@ -565,6 +566,7 @@ func initializeConfig(cfg Config) error {
 // server for instructions, and collects and uploads profiles as
 // requested.
 func pollProfilerService(ctx context.Context, a *agent) {
+	debugLog("Stackdriver Profiler Go Agent version: %s", version.Repo)
 	debugLog("profiler has started")
 	for {
 		p := a.createProfile(ctx)

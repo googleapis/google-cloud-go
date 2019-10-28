@@ -1,4 +1,17 @@
 #!/bin/bash
+# Copyright 2019 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 export GOOGLE_APPLICATION_CREDENTIALS=$KOKORO_KEYSTORE_DIR/72523_go_integration_service_account
 # Removing the GCLOUD_TESTS_GOLANG_PROJECT_ID setting may make some integration
@@ -27,6 +40,8 @@ go version
 export GOPATH="$HOME/go"
 export GOCLOUD_HOME=$GOPATH/src/cloud.google.com/go/
 export PATH="$GOPATH/bin:$PATH"
+export GO111MODULE=on
+
 
 # Move code into $GOPATH and get dependencies
 mkdir -p $GOCLOUD_HOME
@@ -35,21 +50,8 @@ cd $GOCLOUD_HOME
 
 try3() { eval "$*" || eval "$*" || eval "$*"; }
 
-download_deps() {
-    if [[ `go version` == *"go1.11"* ]] || [[ `go version` == *"go1.12"* ]]; then
-        export GO111MODULE=on
-        # All packages, including +build tools, are fetched.
-        try3 go mod download
-    else
-        # Because we don't provide -tags tools, the +build tools
-        # dependencies aren't fetched.
-        try3 go get -v -t ./...
-
-        go get github.com/jstemmer/go-junit-report
-    fi
-}
-
-download_deps
+# All packages, including +build tools, are fetched.
+try3 go mod download
 go install github.com/jstemmer/go-junit-report
 ./internal/kokoro/vet.sh
 
@@ -69,6 +71,9 @@ create_junit_xml() {
 trap create_junit_xml EXIT ERR
 
 # Run tests and tee output to log file, to be pushed to GCS as artifact.
-go test -race -v -timeout 30m ./... 2>&1 \
-  | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt
-
+for i in `find . -name go.mod`; do
+  pushd `dirname $i`;
+    go test -race -v -timeout 30m ./... 2>&1 \
+      | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt
+  popd;
+done

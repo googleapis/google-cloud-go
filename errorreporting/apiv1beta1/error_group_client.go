@@ -19,6 +19,7 @@ package errorreporting
 import (
 	"context"
 	"fmt"
+	"math"
 	"net/url"
 	"time"
 
@@ -41,6 +42,8 @@ func defaultErrorGroupClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("clouderrorreporting.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 

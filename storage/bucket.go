@@ -267,11 +267,8 @@ type BucketAttrs struct {
 
 	// StorageClass is the default storage class of the bucket. This defines
 	// how objects in the bucket are stored and determines the SLA
-	// and the cost of storage. Typical values are "MULTI_REGIONAL",
-	// "REGIONAL", "NEARLINE", "COLDLINE", "STANDARD" and
-	// "DURABLE_REDUCED_AVAILABILITY". Defaults to "STANDARD", which
-	// is equivalent to "MULTI_REGIONAL" or "REGIONAL" depending on
-	// the bucket's location settings.
+	// and the cost of storage. Typical values are "NEARLINE", "COLDLINE" and
+	// "STANDARD". Defaults to "STANDARD".
 	StorageClass string
 
 	// Created is the creation time of the bucket.
@@ -317,6 +314,11 @@ type BucketAttrs struct {
 	// Etag is the HTTP/1.1 Entity tag for the bucket.
 	// This field is read-only.
 	Etag string
+
+	// LocationType describes how data is stored and replicated.
+	// Typical values are "multi-region", "region" and "dual-region".
+	// This field is read-only.
+	LocationType string
 }
 
 // BucketPolicyOnly configures access checks to use only bucket-level IAM
@@ -438,8 +440,7 @@ type LifecycleCondition struct {
 	// MatchesStorageClasses is the condition matching the object's storage
 	// class.
 	//
-	// Values include "MULTI_REGIONAL", "REGIONAL", "NEARLINE", "COLDLINE",
-	// "STANDARD", and "DURABLE_REDUCED_AVAILABILITY".
+	// Values include "NEARLINE", "COLDLINE" and "STANDARD".
 	MatchesStorageClasses []string
 
 	// NumNewerVersions is the condition matching objects with a number of newer versions.
@@ -506,6 +507,7 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		Website:               toBucketWebsite(b.Website),
 		BucketPolicyOnly:      toBucketPolicyOnly(b.IamConfiguration),
 		Etag:                  b.Etag,
+		LocationType:          b.LocationType,
 	}, nil
 }
 
@@ -693,7 +695,8 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 	if ua.BucketPolicyOnly != nil {
 		rb.IamConfiguration = &raw.BucketIamConfiguration{
 			BucketPolicyOnly: &raw.BucketIamConfigurationBucketPolicyOnly{
-				Enabled: ua.BucketPolicyOnly.Enabled,
+				Enabled:         ua.BucketPolicyOnly.Enabled,
+				ForceSendFields: []string{"Enabled"},
 			},
 		}
 	}
@@ -1034,6 +1037,8 @@ func toBucketPolicyOnly(b *raw.BucketIamConfiguration) BucketPolicyOnly {
 
 // Objects returns an iterator over the objects in the bucket that match the Query q.
 // If q is nil, no filtering is done.
+//
+// Note: The returned iterator is not safe for concurrent operations without explicit synchronization.
 func (b *BucketHandle) Objects(ctx context.Context, q *Query) *ObjectIterator {
 	it := &ObjectIterator{
 		ctx:    ctx,
@@ -1050,6 +1055,8 @@ func (b *BucketHandle) Objects(ctx context.Context, q *Query) *ObjectIterator {
 }
 
 // An ObjectIterator is an iterator over ObjectAttrs.
+//
+// Note: This iterator is not safe for concurrent operations without explicit synchronization.
 type ObjectIterator struct {
 	ctx      context.Context
 	bucket   *BucketHandle
@@ -1060,6 +1067,8 @@ type ObjectIterator struct {
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+//
+// Note: This method is not safe for concurrent operations without explicit synchronization.
 func (it *ObjectIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 
 // Next returns the next result. Its second return value is iterator.Done if
@@ -1069,6 +1078,8 @@ func (it *ObjectIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 // If Query.Delimiter is non-empty, some of the ObjectAttrs returned by Next will
 // have a non-empty Prefix field, and a zero value for all other fields. These
 // represent prefixes.
+//
+// Note: This method is not safe for concurrent operations without explicit synchronization.
 func (it *ObjectIterator) Next() (*ObjectAttrs, error) {
 	if err := it.nextFunc(); err != nil {
 		return nil, err
@@ -1117,6 +1128,8 @@ func (it *ObjectIterator) fetch(pageSize int, pageToken string) (string, error) 
 // optionally set the iterator's Prefix field to restrict the list to buckets
 // whose names begin with the prefix. By default, all buckets in the project
 // are returned.
+//
+// Note: The returned iterator is not safe for concurrent operations without explicit synchronization.
 func (c *Client) Buckets(ctx context.Context, projectID string) *BucketIterator {
 	it := &BucketIterator{
 		ctx:       ctx,
@@ -1127,10 +1140,13 @@ func (c *Client) Buckets(ctx context.Context, projectID string) *BucketIterator 
 		it.fetch,
 		func() int { return len(it.buckets) },
 		func() interface{} { b := it.buckets; it.buckets = nil; return b })
+
 	return it
 }
 
 // A BucketIterator is an iterator over BucketAttrs.
+//
+// Note: This iterator is not safe for concurrent operations without explicit synchronization.
 type BucketIterator struct {
 	// Prefix restricts the iterator to buckets whose names begin with it.
 	Prefix string
@@ -1146,6 +1162,8 @@ type BucketIterator struct {
 // Next returns the next result. Its second return value is iterator.Done if
 // there are no more results. Once Next returns iterator.Done, all subsequent
 // calls will return iterator.Done.
+//
+// Note: This method is not safe for concurrent operations without explicit synchronization.
 func (it *BucketIterator) Next() (*BucketAttrs, error) {
 	if err := it.nextFunc(); err != nil {
 		return nil, err
@@ -1156,6 +1174,8 @@ func (it *BucketIterator) Next() (*BucketAttrs, error) {
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+//
+// Note: This method is not safe for concurrent operations without explicit synchronization.
 func (it *BucketIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 
 func (it *BucketIterator) fetch(pageSize int, pageToken string) (token string, err error) {

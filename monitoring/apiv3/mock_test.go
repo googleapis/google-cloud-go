@@ -17,13 +17,6 @@
 package monitoring
 
 import (
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	metricpb "google.golang.org/genproto/googleapis/api/metric"
-	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
-	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -36,11 +29,17 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
+	metricpb "google.golang.org/genproto/googleapis/api/metric"
+	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
+	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 
@@ -418,6 +417,42 @@ func (s *mockNotificationChannelServer) DeleteNotificationChannel(ctx context.Co
 		return nil, s.err
 	}
 	return s.resps[0].(*emptypb.Empty), nil
+}
+
+func (s *mockNotificationChannelServer) SendNotificationChannelVerificationCode(ctx context.Context, req *monitoringpb.SendNotificationChannelVerificationCodeRequest) (*emptypb.Empty, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*emptypb.Empty), nil
+}
+
+func (s *mockNotificationChannelServer) GetNotificationChannelVerificationCode(ctx context.Context, req *monitoringpb.GetNotificationChannelVerificationCodeRequest) (*monitoringpb.GetNotificationChannelVerificationCodeResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*monitoringpb.GetNotificationChannelVerificationCodeResponse), nil
+}
+
+func (s *mockNotificationChannelServer) VerifyNotificationChannel(ctx context.Context, req *monitoringpb.VerifyNotificationChannelRequest) (*monitoringpb.NotificationChannel, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*monitoringpb.NotificationChannel), nil
 }
 
 type mockUptimeCheckServer struct {
@@ -2256,6 +2291,186 @@ func TestNotificationChannelServiceDeleteNotificationChannelError(t *testing.T) 
 	} else if c := st.Code(); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+}
+func TestNotificationChannelServiceSendNotificationChannelVerificationCode(t *testing.T) {
+	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
+
+	mockNotificationChannel.err = nil
+	mockNotificationChannel.reqs = nil
+
+	mockNotificationChannel.resps = append(mockNotificationChannel.resps[:0], expectedResponse)
+
+	var formattedName string = fmt.Sprintf("projects/%s/notificationChannels/%s", "[PROJECT]", "[NOTIFICATION_CHANNEL]")
+	var request = &monitoringpb.SendNotificationChannelVerificationCodeRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewNotificationChannelClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.SendNotificationChannelVerificationCode(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockNotificationChannel.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestNotificationChannelServiceSendNotificationChannelVerificationCodeError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockNotificationChannel.err = gstatus.Error(errCode, "test error")
+
+	var formattedName string = fmt.Sprintf("projects/%s/notificationChannels/%s", "[PROJECT]", "[NOTIFICATION_CHANNEL]")
+	var request = &monitoringpb.SendNotificationChannelVerificationCodeRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewNotificationChannelClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.SendNotificationChannelVerificationCode(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
+func TestNotificationChannelServiceGetNotificationChannelVerificationCode(t *testing.T) {
+	var code string = "code3059181"
+	var expectedResponse = &monitoringpb.GetNotificationChannelVerificationCodeResponse{
+		Code: code,
+	}
+
+	mockNotificationChannel.err = nil
+	mockNotificationChannel.reqs = nil
+
+	mockNotificationChannel.resps = append(mockNotificationChannel.resps[:0], expectedResponse)
+
+	var formattedName string = fmt.Sprintf("projects/%s/notificationChannels/%s", "[PROJECT]", "[NOTIFICATION_CHANNEL]")
+	var request = &monitoringpb.GetNotificationChannelVerificationCodeRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewNotificationChannelClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetNotificationChannelVerificationCode(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockNotificationChannel.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestNotificationChannelServiceGetNotificationChannelVerificationCodeError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockNotificationChannel.err = gstatus.Error(errCode, "test error")
+
+	var formattedName string = fmt.Sprintf("projects/%s/notificationChannels/%s", "[PROJECT]", "[NOTIFICATION_CHANNEL]")
+	var request = &monitoringpb.GetNotificationChannelVerificationCodeRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewNotificationChannelClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetNotificationChannelVerificationCode(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestNotificationChannelServiceVerifyNotificationChannel(t *testing.T) {
+	var type_ string = "type3575610"
+	var name2 string = "name2-1052831874"
+	var displayName string = "displayName1615086568"
+	var description string = "description-1724546052"
+	var expectedResponse = &monitoringpb.NotificationChannel{
+		Type:        type_,
+		Name:        name2,
+		DisplayName: displayName,
+		Description: description,
+	}
+
+	mockNotificationChannel.err = nil
+	mockNotificationChannel.reqs = nil
+
+	mockNotificationChannel.resps = append(mockNotificationChannel.resps[:0], expectedResponse)
+
+	var formattedName string = fmt.Sprintf("projects/%s/notificationChannels/%s", "[PROJECT]", "[NOTIFICATION_CHANNEL]")
+	var code string = "code3059181"
+	var request = &monitoringpb.VerifyNotificationChannelRequest{
+		Name: formattedName,
+		Code: code,
+	}
+
+	c, err := NewNotificationChannelClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.VerifyNotificationChannel(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockNotificationChannel.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestNotificationChannelServiceVerifyNotificationChannelError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockNotificationChannel.err = gstatus.Error(errCode, "test error")
+
+	var formattedName string = fmt.Sprintf("projects/%s/notificationChannels/%s", "[PROJECT]", "[NOTIFICATION_CHANNEL]")
+	var code string = "code3059181"
+	var request = &monitoringpb.VerifyNotificationChannelRequest{
+		Name: formattedName,
+		Code: code,
+	}
+
+	c, err := NewNotificationChannelClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.VerifyNotificationChannel(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
 }
 func TestUptimeCheckServiceListUptimeCheckConfigs(t *testing.T) {
 	var nextPageToken string = ""

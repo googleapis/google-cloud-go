@@ -133,15 +133,21 @@ func TestRetryApply(t *testing.T) {
 	}
 }
 
-func TestRetryApplyBulk(t *testing.T) {
+// Test overall request failure and retries.
+func TestRetryApplyBulk_OverallRequestFailure(t *testing.T) {
 	ctx := context.Background()
 
 	// Intercept requests and delegate to an interceptor defined by the test case
 	errCount := 0
-	var f func(grpc.ServerStream) error
 	errInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		if strings.HasSuffix(info.FullMethod, "MutateRows") {
-			return f(ss)
+			return func() error {
+				if errCount < 3 {
+					errCount++
+					return status.Errorf(codes.Aborted, "")
+				}
+				return nil
+			}()
 		}
 		return handler(ctx, ss)
 	}
@@ -153,22 +159,64 @@ func TestRetryApplyBulk(t *testing.T) {
 	}
 
 	errCount = 0
-	// Test overall request failure and retries
-	f = func(ss grpc.ServerStream) error {
-		if errCount < 3 {
-			errCount++
-			return status.Errorf(codes.Aborted, "")
-		}
-		return nil
-	}
+
 	mut := NewMutation()
 	mut.Set("cf", "col", 1, []byte{})
 	errors, err := tbl.ApplyBulk(ctx, []string{"row2"}, []*Mutation{mut})
 	if errors != nil || err != nil {
 		t.Errorf("bulk with request failure: got: %v, %v, want: nil", errors, err)
 	}
+}
 
-	// Test failures and retries in one request
+func TestRetryApplyBulk_FailuresAndRetriesInOneRequest(t *testing.T) {
+	ctx := context.Background()
+
+	// Intercept requests and delegate to an interceptor defined by the test case
+	errCount := 0
+	errInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if strings.HasSuffix(info.FullMethod, "MutateRows") {
+			return func(ss grpc.ServerStream) error {
+				var err error
+				req := new(btpb.MutateRowsRequest)
+				must(ss.RecvMsg(req))
+				switch errCount {
+				case 0:
+					// Retryable request failure
+					err = status.Errorf(codes.Unavailable, "")
+				case 1:
+					// Two mutations fail
+					must(writeMutateRowsResponse(ss, codes.Unavailable, codes.OK, codes.Aborted))
+					err = nil
+				case 2:
+					// Two failures were retried. One will succeed.
+					if want, got := 2, len(req.Entries); want != got {
+						t.Fatalf("2 bulk retries, got: %d, want %d", got, want)
+					}
+					must(writeMutateRowsResponse(ss, codes.OK, codes.Aborted))
+					err = nil
+				case 3:
+					// One failure was retried and will succeed.
+					if want, got := 1, len(req.Entries); want != got {
+						t.Fatalf("1 bulk retry, got: %d, want %d", got, want)
+					}
+					must(writeMutateRowsResponse(ss, codes.OK))
+					err = nil
+				}
+				errCount++
+				return err
+			}(ss)
+		}
+		return handler(ctx, ss)
+	}
+
+	tbl, cleanup, err := setupFakeServer(grpc.StreamInterceptor(errInjector))
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("fake server setup: %v", err)
+	}
+
+	errCount = 0
+
 	errCount = 0
 	m1 := NewMutation()
 	m1.Set("cf", "col", 1, []byte{})
@@ -176,64 +224,60 @@ func TestRetryApplyBulk(t *testing.T) {
 	m2.Set("cf", "col2", 1, []byte{})
 	m3 := NewMutation()
 	m3.Set("cf", "col3", 1, []byte{})
-	f = func(ss grpc.ServerStream) error {
-		var err error
-		req := new(btpb.MutateRowsRequest)
-		must(ss.RecvMsg(req))
-		switch errCount {
-		case 0:
-			// Retryable request failure
-			err = status.Errorf(codes.Unavailable, "")
-		case 1:
-			// Two mutations fail
-			must(writeMutateRowsResponse(ss, codes.Unavailable, codes.OK, codes.Aborted))
-			err = nil
-		case 2:
-			// Two failures were retried. One will succeed.
-			if want, got := 2, len(req.Entries); want != got {
-				t.Errorf("2 bulk retries, got: %d, want %d", got, want)
-			}
-			must(writeMutateRowsResponse(ss, codes.OK, codes.Aborted))
-			err = nil
-		case 3:
-			// One failure was retried and will succeed.
-			if want, got := 1, len(req.Entries); want != got {
-				t.Errorf("1 bulk retry, got: %d, want %d", got, want)
-			}
-			must(writeMutateRowsResponse(ss, codes.OK))
-			err = nil
-		}
-		errCount++
-		return err
-	}
-	errors, err = tbl.ApplyBulk(ctx, []string{"row1", "row2", "row3"}, []*Mutation{m1, m2, m3})
+	errors, err := tbl.ApplyBulk(ctx, []string{"row1", "row2", "row3"}, []*Mutation{m1, m2, m3})
 	if errors != nil || err != nil {
 		t.Errorf("bulk with retries: got: %v, %v, want: nil", errors, err)
 	}
+}
 
-	// Test unretryable errors
+func TestRetryApplyBulk_UnretryableErrors(t *testing.T) {
+	ctx := context.Background()
+
+	// Intercept requests and delegate to an interceptor defined by the test case
+	errCount := 0
+	errInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if strings.HasSuffix(info.FullMethod, "MutateRows") {
+			return func(ss grpc.ServerStream) error {
+				var err error
+				req := new(btpb.MutateRowsRequest)
+				must(ss.RecvMsg(req))
+				switch errCount {
+				case 0:
+					// Give non-idempotent mutation a retryable error code.
+					// Nothing should be retried.
+					must(writeMutateRowsResponse(ss, codes.FailedPrecondition, codes.Aborted))
+					err = nil
+				case 1:
+					t.Fatalf("unretryable errors: got one retry, want no retries")
+				}
+				errCount++
+				return err
+			}(ss)
+		}
+		return handler(ctx, ss)
+	}
+
+	tbl, cleanup, err := setupFakeServer(grpc.StreamInterceptor(errInjector))
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("fake server setup: %v", err)
+	}
+
+	errCount = 0
+
+	m1 := NewMutation()
+	m1.Set("cf", "col", 1, []byte{})
+	m2 := NewMutation()
+	m2.Set("cf", "col2", 1, []byte{})
+	m3 := NewMutation()
+	m3.Set("cf", "col3", 1, []byte{})
+
 	niMut := NewMutation()
 	niMut.Set("cf", "col", ServerTime, []byte{}) // Non-idempotent
 	errCount = 0
-	f = func(ss grpc.ServerStream) error {
-		var err error
-		req := new(btpb.MutateRowsRequest)
-		must(ss.RecvMsg(req))
-		switch errCount {
-		case 0:
-			// Give non-idempotent mutation a retryable error code.
-			// Nothing should be retried.
-			must(writeMutateRowsResponse(ss, codes.FailedPrecondition, codes.Aborted))
-			err = nil
-		case 1:
-			t.Errorf("unretryable errors: got one retry, want no retries")
-		}
-		errCount++
-		return err
-	}
-	errors, err = tbl.ApplyBulk(ctx, []string{"row1", "row2"}, []*Mutation{m1, niMut})
+	errors, err := tbl.ApplyBulk(ctx, []string{"row1", "row2"}, []*Mutation{m1, niMut})
 	if err != nil {
-		t.Errorf("unretryable errors: request failed %v", err)
+		t.Fatalf("unretryable errors: request failed %v", err)
 	}
 	want := []error{
 		status.Errorf(codes.FailedPrecondition, ""),
@@ -242,16 +286,41 @@ func TestRetryApplyBulk(t *testing.T) {
 	if !testutil.Equal(want, errors) {
 		t.Errorf("unretryable errors: got: %v, want: %v", errors, want)
 	}
+}
 
-	// Test individual errors and a deadline exceeded
-	f = func(ss grpc.ServerStream) error {
-		return writeMutateRowsResponse(ss, codes.FailedPrecondition, codes.OK, codes.Aborted)
+func TestRetryApplyBulk_IndividualErrorsAndDeadlineExceeded(t *testing.T) {
+	ctx := context.Background()
+
+	// Intercept requests and delegate to an interceptor defined by the test case
+	errInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if strings.HasSuffix(info.FullMethod, "MutateRows") {
+			return func(ss grpc.ServerStream) error {
+				return writeMutateRowsResponse(ss, codes.FailedPrecondition, codes.OK, codes.Aborted)
+			}(ss)
+		}
+		return handler(ctx, ss)
 	}
-	ctx, _ = context.WithTimeout(ctx, 100*time.Millisecond)
-	errors, err = tbl.ApplyBulk(ctx, []string{"row1", "row2", "row3"}, []*Mutation{m1, m2, m3})
+
+	tbl, cleanup, err := setupFakeServer(grpc.StreamInterceptor(errInjector))
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("fake server setup: %v", err)
+	}
+
+	m1 := NewMutation()
+	m1.Set("cf", "col", 1, []byte{})
+	m2 := NewMutation()
+	m2.Set("cf", "col2", 1, []byte{})
+	m3 := NewMutation()
+	m3.Set("cf", "col3", 1, []byte{})
+
+	// This should cause a deadline exceeded error.
+	ctx, cancel := context.WithTimeout(ctx, -10*time.Millisecond)
+	defer cancel()
+	errors, err := tbl.ApplyBulk(ctx, []string{"row1", "row2", "row3"}, []*Mutation{m1, m2, m3})
 	wantErr := context.DeadlineExceeded
 	if wantErr != err {
-		t.Errorf("deadline exceeded error: got: %v, want: %v", err, wantErr)
+		t.Fatalf("deadline exceeded error: got: %v, want: %v", err, wantErr)
 	}
 	if errors != nil {
 		t.Errorf("deadline exceeded errors: got: %v, want: nil", err)

@@ -17,12 +17,6 @@
 package oslogin
 
 import (
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	commonpb "google.golang.org/genproto/googleapis/cloud/oslogin/common"
-	osloginpb "google.golang.org/genproto/googleapis/cloud/oslogin/v1beta"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -35,11 +29,16 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
+	commonpb "google.golang.org/genproto/googleapis/cloud/oslogin/common"
+	osloginpb "google.golang.org/genproto/googleapis/cloud/oslogin/v1beta"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 
@@ -269,10 +268,8 @@ func TestOsLoginServiceDeleteSshPublicKeyError(t *testing.T) {
 }
 func TestOsLoginServiceGetLoginProfile(t *testing.T) {
 	var name2 string = "name2-1052831874"
-	var suspended bool = false
 	var expectedResponse = &osloginpb.LoginProfile{
-		Name:      name2,
-		Suspended: suspended,
+		Name: name2,
 	}
 
 	mockOsLogin.err = nil
@@ -332,10 +329,12 @@ func TestOsLoginServiceGetSshPublicKey(t *testing.T) {
 	var key string = "key106079"
 	var expirationTimeUsec int64 = 2058878882
 	var fingerprint string = "fingerprint-1375934236"
+	var name2 string = "name2-1052831874"
 	var expectedResponse = &commonpb.SshPublicKey{
 		Key:                key,
 		ExpirationTimeUsec: expirationTimeUsec,
 		Fingerprint:        fingerprint,
+		Name:               name2,
 	}
 
 	mockOsLogin.err = nil
@@ -455,10 +454,12 @@ func TestOsLoginServiceUpdateSshPublicKey(t *testing.T) {
 	var key string = "key106079"
 	var expirationTimeUsec int64 = 2058878882
 	var fingerprint string = "fingerprint-1375934236"
+	var name2 string = "name2-1052831874"
 	var expectedResponse = &commonpb.SshPublicKey{
 		Key:                key,
 		ExpirationTimeUsec: expirationTimeUsec,
 		Fingerprint:        fingerprint,
+		Name:               name2,
 	}
 
 	mockOsLogin.err = nil

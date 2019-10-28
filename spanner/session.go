@@ -22,12 +22,14 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math"
 	"math/rand"
 	"strings"
 	"sync"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
+	vkit "cloud.google.com/go/spanner/apiv1"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -72,7 +74,7 @@ func (sh *sessionHandle) getID() string {
 
 // getClient gets the Cloud Spanner RPC client associated with the session ID
 // in sessionHandle.
-func (sh *sessionHandle) getClient() sppb.SpannerClient {
+func (sh *sessionHandle) getClient() *vkit.Client {
 	sh.mu.Lock()
 	defer sh.mu.Unlock()
 	if sh.session == nil {
@@ -121,7 +123,7 @@ func (sh *sessionHandle) destroy() {
 type session struct {
 	// client is the RPC channel to Cloud Spanner. It is set only once during
 	// session's creation.
-	client sppb.SpannerClient
+	client *vkit.Client
 	// id is the unique id of the session in Cloud Spanner. It is set only once
 	// during session's creation.
 	id string
@@ -183,11 +185,9 @@ func (s *session) String() string {
 func (s *session) ping() error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	return runRetryable(ctx, func(ctx context.Context) error {
-		// s.getID is safe even when s is invalid.
-		_, err := s.client.GetSession(contextWithOutgoingMetadata(ctx, s.pool.md), &sppb.GetSessionRequest{Name: s.getID()})
-		return err
-	})
+	// s.getID is safe even when s is invalid.
+	_, err := s.client.GetSession(contextWithOutgoingMetadata(ctx, s.md), &sppb.GetSessionRequest{Name: s.getID()})
+	return err
 }
 
 // setHcIndex atomically sets the session's index in the healthcheck queue and
@@ -290,13 +290,9 @@ func (s *session) destroy(isExpire bool) bool {
 }
 
 func (s *session) delete(ctx context.Context) {
-	// Ignore the error returned by runRetryable because even if we fail to
-	// explicitly destroy the session, it will be eventually garbage collected
-	// by Cloud Spanner.
-	err := runRetryable(ctx, func(ctx context.Context) error {
-		_, e := s.client.DeleteSession(ctx, &sppb.DeleteSessionRequest{Name: s.getID()})
-		return e
-	})
+	// Ignore the error because even if we fail to explicitly destroy the
+	// session, it will be eventually garbage collected by Cloud Spanner.
+	err := s.client.DeleteSession(ctx, &sppb.DeleteSessionRequest{Name: s.getID()})
 	if err != nil {
 		log.Printf("Failed to delete session %v. Error: %v", s.getID(), err)
 	}
@@ -308,7 +304,7 @@ func (s *session) prepareForWrite(ctx context.Context) error {
 	if s.isWritePrepared() {
 		return nil
 	}
-	tx, err := beginTransaction(ctx, s.getID(), s.client)
+	tx, err := beginTransaction(contextWithOutgoingMetadata(ctx, s.md), s.getID(), s.client)
 	if err != nil {
 		return err
 	}
@@ -318,10 +314,6 @@ func (s *session) prepareForWrite(ctx context.Context) error {
 
 // SessionPoolConfig stores configurations of a session pool.
 type SessionPoolConfig struct {
-	// getRPCClient is the caller supplied method for getting a gRPC client to
-	// Cloud Spanner, this makes session pool able to use client pooling.
-	getRPCClient func() (sppb.SpannerClient, error)
-
 	// MaxOpened is the maximum number of opened sessions allowed by the session
 	// pool. If the client tries to open a session and there are already
 	// MaxOpened sessions, it will block until one becomes available or the
@@ -337,7 +329,7 @@ type SessionPoolConfig struct {
 	// therefore it is posssible that the number of opened sessions drops below
 	// MinOpened.
 	//
-	// Defaults to 0.
+	// Defaults to 100.
 	MinOpened uint64
 
 	// MaxIdle is the maximum number of idle sessions, pool is allowed to keep.
@@ -353,7 +345,7 @@ type SessionPoolConfig struct {
 	// WriteSessions is the fraction of sessions we try to keep prepared for
 	// write.
 	//
-	// Defaults to 0.
+	// Defaults to 0.2.
 	WriteSessions float64
 
 	// HealthCheckWorkers is number of workers used by health checker for this
@@ -377,24 +369,58 @@ type SessionPoolConfig struct {
 	sessionLabels map[string]string
 }
 
-// errNoRPCGetter returns error for SessionPoolConfig missing getRPCClient method.
-func errNoRPCGetter() error {
-	return spannerErrorf(codes.InvalidArgument, "require SessionPoolConfig.getRPCClient != nil, got nil")
+// DefaultSessionPoolConfig is the default configuration for the session pool
+// that will be used for a Spanner client, unless the user supplies a specific
+// session pool config.
+var DefaultSessionPoolConfig = SessionPoolConfig{
+	MinOpened:           100,
+	MaxOpened:           numChannels * 100,
+	MaxBurst:            10,
+	WriteSessions:       0.2,
+	HealthCheckWorkers:  10,
+	HealthCheckInterval: 5 * time.Minute,
 }
 
 // errMinOpenedGTMapOpened returns error for SessionPoolConfig.MaxOpened < SessionPoolConfig.MinOpened when SessionPoolConfig.MaxOpened is set.
 func errMinOpenedGTMaxOpened(maxOpened, minOpened uint64) error {
 	return spannerErrorf(codes.InvalidArgument,
-		"require SessionPoolConfig.MaxOpened >= SessionPoolConfig.MinOpened, got %v and %v", maxOpened, minOpened)
+		"require SessionPoolConfig.MaxOpened >= SessionPoolConfig.MinOpened, got %d and %d", maxOpened, minOpened)
+}
+
+// errWriteFractionOutOfRange returns error for
+// SessionPoolConfig.WriteFraction < 0 or SessionPoolConfig.WriteFraction > 1
+func errWriteFractionOutOfRange(writeFraction float64) error {
+	return spannerErrorf(codes.InvalidArgument,
+		"require SessionPoolConfig.WriteSessions >= 0.0 && SessionPoolConfig.WriteSessions <= 1.0, got %.2f", writeFraction)
+}
+
+// errHealthCheckWorkersNegative returns error for
+// SessionPoolConfig.HealthCheckWorkers < 0
+func errHealthCheckWorkersNegative(workers int) error {
+	return spannerErrorf(codes.InvalidArgument,
+		"require SessionPoolConfig.HealthCheckWorkers >= 0, got %d", workers)
+}
+
+// errHealthCheckIntervalNegative returns error for
+// SessionPoolConfig.HealthCheckInterval < 0
+func errHealthCheckIntervalNegative(interval time.Duration) error {
+	return spannerErrorf(codes.InvalidArgument,
+		"require SessionPoolConfig.HealthCheckInterval >= 0, got %v", interval)
 }
 
 // validate verifies that the SessionPoolConfig is good for use.
 func (spc *SessionPoolConfig) validate() error {
-	if spc.getRPCClient == nil {
-		return errNoRPCGetter()
-	}
 	if spc.MinOpened > spc.MaxOpened && spc.MaxOpened > 0 {
 		return errMinOpenedGTMaxOpened(spc.MaxOpened, spc.MinOpened)
+	}
+	if spc.WriteSessions < 0.0 || spc.WriteSessions > 1.0 {
+		return errWriteFractionOutOfRange(spc.WriteSessions)
+	}
+	if spc.HealthCheckWorkers < 0 {
+		return errHealthCheckWorkersNegative(spc.HealthCheckWorkers)
+	}
+	if spc.HealthCheckInterval < 0 {
+		return errHealthCheckIntervalNegative(spc.HealthCheckInterval)
 	}
 	return nil
 }
@@ -405,8 +431,8 @@ type sessionPool struct {
 	mu sync.Mutex
 	// valid marks the validity of the session pool.
 	valid bool
-	// db is the database name that all sessions in the pool are associated with.
-	db string
+	// sc is used to create the sessions for the pool.
+	sc *sessionClient
 	// idleList caches idle session IDs. Session IDs in this list can be
 	// allocated for use.
 	idleList list.List
@@ -423,23 +449,25 @@ type sessionPool struct {
 	prepareReqs uint64
 	// configuration of the session pool.
 	SessionPoolConfig
-	// Metadata to be sent with each request
-	md metadata.MD
 	// hc is the health checker
 	hc *healthChecker
+
+	// mw is the maintenance window containing statistics for the max number of
+	// sessions checked out of the pool during the last 10 minutes.
+	mw *maintenanceWindow
 }
 
 // newSessionPool creates a new session pool.
-func newSessionPool(db string, config SessionPoolConfig, md metadata.MD) (*sessionPool, error) {
+func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, error) {
 	if err := config.validate(); err != nil {
 		return nil, err
 	}
 	pool := &sessionPool{
-		db:                db,
+		sc:                sc,
 		valid:             true,
 		mayGetSession:     make(chan struct{}),
 		SessionPoolConfig: config,
-		md:                md,
+		mw:                newMaintenanceWindow(),
 	}
 	if config.HealthCheckWorkers == 0 {
 		// With 10 workers and assuming average latency of 5ms for
@@ -461,8 +489,74 @@ func newSessionPool(db string, config SessionPoolConfig, md metadata.MD) (*sessi
 	// healthChecker can effectively mantain
 	// 100 checks_per_worker/sec * 10 workers * 300 seconds = 300K sessions.
 	pool.hc = newHealthChecker(config.HealthCheckInterval, config.HealthCheckWorkers, config.healthCheckSampleInterval, pool)
+
+	// First initialize the pool before we indicate that the healthchecker is
+	// ready. This prevents the maintainer from starting before the pool has
+	// been initialized, which means that we guarantee that the initial
+	// sessions are created using BatchCreateSessions.
+	if config.MinOpened > 0 {
+		numSessions := minUint64(config.MinOpened, math.MaxInt32)
+		if err := pool.initPool(int32(numSessions)); err != nil {
+			return nil, err
+		}
+	}
 	close(pool.hc.ready)
 	return pool, nil
+}
+
+func (p *sessionPool) initPool(numSessions int32) error {
+	p.mu.Lock()
+	// Take budget before the actual session creation.
+	p.numOpened += uint64(numSessions)
+	recordStat(context.Background(), OpenSessionCount, int64(p.numOpened))
+	p.createReqs += uint64(numSessions)
+	p.mu.Unlock()
+	// Asynchronously create the initial sessions for the pool.
+	return p.sc.batchCreateSessions(numSessions, p)
+}
+
+// sessionReady is executed by the SessionClient when a session has been
+// created and is ready to use. This method will add the new session to the
+// pool and decrease the number of sessions that is being created.
+func (p *sessionPool) sessionReady(s *session) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	// Set this pool as the home pool of the session and register it with the
+	// health checker.
+	s.pool = p
+	p.hc.register(s)
+	p.createReqs--
+	// Insert the session at a random position in the pool to prevent all
+	// sessions affiliated with a channel to be placed at sequentially in the
+	// pool.
+	if p.idleList.Len() > 0 {
+		pos := rand.Intn(p.idleList.Len())
+		before := p.idleList.Front()
+		for i := 0; i < pos; i++ {
+			before = before.Next()
+		}
+		s.setIdleList(p.idleList.InsertBefore(s, before))
+	} else {
+		s.setIdleList(p.idleList.PushBack(s))
+	}
+	// Notify other waiters blocking on session creation.
+	close(p.mayGetSession)
+	p.mayGetSession = make(chan struct{})
+}
+
+// sessionCreationFailed is called by the SessionClient when the creation of one
+// or more requested sessions finished with an error. sessionCreationFailed will
+// decrease the number of sessions being created and notify any waiters that
+// the session creation failed.
+func (p *sessionPool) sessionCreationFailed(err error, numSessions int32) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.createReqs -= uint64(numSessions)
+	p.numOpened -= uint64(numSessions)
+	recordStat(context.Background(), OpenSessionCount, int64(p.numOpened))
+	// Notify other waiters blocking on session creation.
+	close(p.mayGetSession)
+	p.mayGetSession = make(chan struct{})
 }
 
 // isValid checks if the session pool is still valid.
@@ -509,8 +603,8 @@ func errGetSessionTimeout() error {
 	return spannerErrorf(codes.Canceled, "timeout / context canceled during getting session")
 }
 
-// shouldPrepareWrite returns true if we should prepare more sessions for write.
-func (p *sessionPool) shouldPrepareWrite() bool {
+// shouldPrepareWriteLocked returns true if we should prepare more sessions for write.
+func (p *sessionPool) shouldPrepareWriteLocked() bool {
 	return float64(p.numOpened)*p.WriteSessions > float64(p.idleWriteList.Len()+int(p.prepareReqs))
 }
 
@@ -529,41 +623,19 @@ func (p *sessionPool) createSession(ctx context.Context) (*session, error) {
 		p.mayGetSession = make(chan struct{})
 		p.mu.Unlock()
 	}
-	sc, err := p.getRPCClient()
-	if err != nil {
-		doneCreate(false)
-		return nil, err
-	}
-	s, err := createSession(ctx, sc, p.db, p.sessionLabels, p.md)
+	s, err := p.sc.createSession(ctx)
 	if err != nil {
 		doneCreate(false)
 		// Should return error directly because of the previous retries on
 		// CreateSession RPC.
+		// If the error is a timeout, there is a chance that the session was
+		// created on the server but is not known to the session pool. This
+		// session will then be garbage collected by the server after 1 hour.
 		return nil, err
 	}
 	s.pool = p
 	p.hc.register(s)
 	doneCreate(true)
-	return s, nil
-}
-
-func createSession(ctx context.Context, sc sppb.SpannerClient, db string, labels map[string]string, md metadata.MD) (*session, error) {
-	var s *session
-	err := runRetryable(ctx, func(ctx context.Context) error {
-		sid, e := sc.CreateSession(ctx, &sppb.CreateSessionRequest{
-			Database: db,
-			Session:  &sppb.Session{Labels: labels},
-		})
-		if e != nil {
-			return e
-		}
-		// If no error, construct the new session.
-		s = &session{valid: true, client: sc, id: sid.Name, createTime: time.Now(), md: md}
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
 	return s, nil
 }
 
@@ -585,7 +657,6 @@ func (p *sessionPool) isHealthy(s *session) bool {
 // for read operations.
 func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 	trace.TracePrintf(ctx, nil, "Acquiring a read-only session")
-	ctx = contextWithOutgoingMetadata(ctx, p.md)
 	for {
 		var (
 			s   *session
@@ -610,7 +681,9 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 		}
 		if s != nil {
 			s.setIdleList(nil)
+			numCheckedOut := p.currSessionsCheckedOutLocked()
 			p.mu.Unlock()
+			p.mw.updateMaxSessionsCheckedOutDuringWindow(numCheckedOut)
 			// From here, session is no longer in idle list, so healthcheck
 			// workers won't destroy it. If healthcheck workers failed to
 			// schedule healthcheck for the session timely, do the check here.
@@ -639,9 +712,13 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 
 		// Take budget before the actual session creation.
 		p.numOpened++
+		// Creating a new session that will be returned directly to the client
+		// means that the max number of sessions in use also increases.
+		numCheckedOut := p.currSessionsCheckedOutLocked()
 		recordStat(ctx, OpenSessionCount, int64(p.numOpened))
 		p.createReqs++
 		p.mu.Unlock()
+		p.mw.updateMaxSessionsCheckedOutDuringWindow(numCheckedOut)
 		if s, err = p.createSession(ctx); err != nil {
 			trace.TracePrintf(ctx, nil, "Error creating session: %v", err)
 			return nil, toSpannerError(err)
@@ -657,7 +734,6 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 // returned should be used for read write transactions.
 func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, error) {
 	trace.TracePrintf(ctx, nil, "Acquiring a read-write session")
-	ctx = contextWithOutgoingMetadata(ctx, p.md)
 	for {
 		var (
 			s   *session
@@ -680,7 +756,9 @@ func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, err
 		}
 		if s != nil {
 			s.setIdleList(nil)
+			numCheckedOut := p.currSessionsCheckedOutLocked()
 			p.mu.Unlock()
+			p.mw.updateMaxSessionsCheckedOutDuringWindow(numCheckedOut)
 			// From here, session is no longer in idle list, so healthcheck
 			// workers won't destroy it. If healthcheck workers failed to
 			// schedule healthcheck for the session timely, do the check here.
@@ -707,9 +785,13 @@ func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, err
 
 			// Take budget before the actual session creation.
 			p.numOpened++
+			// Creating a new session that will be returned directly to the client
+			// means that the max number of sessions in use also increases.
+			numCheckedOut := p.currSessionsCheckedOutLocked()
 			recordStat(ctx, OpenSessionCount, int64(p.numOpened))
 			p.createReqs++
 			p.mu.Unlock()
+			p.mw.updateMaxSessionsCheckedOutDuringWindow(numCheckedOut)
 			if s, err = p.createSession(ctx); err != nil {
 				trace.TracePrintf(ctx, nil, "Error creating session: %v", err)
 				return nil, toSpannerError(err)
@@ -781,13 +863,17 @@ func (p *sessionPool) remove(s *session, isExpire bool) bool {
 	return false
 }
 
+func (p *sessionPool) currSessionsCheckedOutLocked() uint64 {
+	return p.numOpened - uint64(p.idleList.Len()) - uint64(p.idleWriteList.Len())
+}
+
 // hcHeap implements heap.Interface. It is used to create the priority queue for
 // session healthchecks.
 type hcHeap struct {
 	sessions []*session
 }
 
-// Len impelemnts heap.Interface.Len.
+// Len implements heap.Interface.Len.
 func (h hcHeap) Len() int {
 	return len(h.sessions)
 }
@@ -819,6 +905,78 @@ func (h *hcHeap) Pop() interface{} {
 	h.sessions = old[:n-1]
 	s.setHcIndex(-1)
 	return s
+}
+
+// maintenanceWindowSize specifies the number of health check cycles that
+// defines a maintenance window. The maintenance window keeps track of a
+// rolling set of numbers for the number of maximum checked out sessions during
+// the maintenance window. This is used by the maintainer to determine the
+// number of sessions to create or delete at the end of each health check
+// cycle.
+const maintenanceWindowSize = 10
+
+// maintenanceWindow contains the statistics that are gathered during a health
+// check maintenance window.
+type maintenanceWindow struct {
+	mu sync.Mutex
+	// maxSessionsCheckedOut contains the maximum number of sessions that was
+	// checked out of the session pool during a health check cycle. This number
+	// indicates the number of sessions that was actually needed by the pool to
+	// serve the load during that cycle. The values are kept as a rolling set
+	// containing the values for the past 10 cycles (minutes). The maintainer
+	// uses these values to determine the number of sessions to keep at the end
+	// of each cycle.
+	maxSessionsCheckedOut [maintenanceWindowSize]uint64
+}
+
+// maxSessionsCheckedOutDuringWindow returns the maximum number of sessions
+// that has been checked out during the last maintenance window of 10 cycles
+// (minutes).
+func (mw *maintenanceWindow) maxSessionsCheckedOutDuringWindow() uint64 {
+	mw.mu.Lock()
+	defer mw.mu.Unlock()
+	var max uint64
+	for _, cycleMax := range mw.maxSessionsCheckedOut {
+		max = maxUint64(max, cycleMax)
+	}
+	return max
+}
+
+// updateMaxSessionsCheckedOutDuringWindow updates the maximum number of
+// sessions that has been checked out of the pool during the current
+// cycle of the maintenance window. A maintenance window consists of 10
+// maintenance cycles. Each cycle keeps track of the max number of sessions in
+// use during that cycle. The rolling maintenance window of 10 cycles is used
+// to determine the number of sessions to keep at the end of a cycle by
+// calculating the max in use during the last 10 cycles.
+func (mw *maintenanceWindow) updateMaxSessionsCheckedOutDuringWindow(currNumSessionsCheckedOut uint64) {
+	mw.mu.Lock()
+	defer mw.mu.Unlock()
+	mw.maxSessionsCheckedOut[0] = maxUint64(currNumSessionsCheckedOut, mw.maxSessionsCheckedOut[0])
+}
+
+// startNewCycle starts a new health check cycle with the specified number of
+// checked out sessions as its initial value.
+func (mw *maintenanceWindow) startNewCycle(currNumSessionsCheckedOut uint64) {
+	mw.mu.Lock()
+	defer mw.mu.Unlock()
+	copy(mw.maxSessionsCheckedOut[1:], mw.maxSessionsCheckedOut[:9])
+	mw.maxSessionsCheckedOut[0] = currNumSessionsCheckedOut
+}
+
+// newMaintenanceWindow creates a new maintenance window with all values for
+// maxSessionsCheckedOut set to math.MaxUint64. This ensures that a complete
+// maintenance window must pass before the maintainer will start to delete any
+// sessions.
+func newMaintenanceWindow() *maintenanceWindow {
+	mw := &maintenanceWindow{}
+	// Initialize the rolling window with max values to prevent the maintainer
+	// from deleting sessions before a complete window of 10 cycles has
+	// finished.
+	for i := 0; i < maintenanceWindowSize; i++ {
+		mw.maxSessionsCheckedOut[i] = math.MaxUint64
+	}
+	return mw
 }
 
 // healthChecker performs periodical healthchecks on registered sessions.
@@ -986,7 +1144,7 @@ func (hc *healthChecker) worker(i int) {
 	getNextForTx := func() *session {
 		hc.pool.mu.Lock()
 		defer hc.pool.mu.Unlock()
-		if hc.pool.shouldPrepareWrite() {
+		if hc.pool.shouldPrepareWriteLocked() {
 			if hc.pool.idleList.Len() > 0 && hc.pool.valid {
 				hc.mu.Lock()
 				defer hc.mu.Unlock()
@@ -1012,7 +1170,7 @@ func (hc *healthChecker) worker(i int) {
 		ws := getNextForTx()
 		if ws != nil {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-			err := ws.prepareForWrite(contextWithOutgoingMetadata(ctx, hc.pool.md))
+			err := ws.prepareForWrite(ctx)
 			cancel()
 			if err != nil {
 				// Skip handling prepare error, session can be prepared in next
@@ -1045,14 +1203,17 @@ func (hc *healthChecker) worker(i int) {
 	}
 }
 
-// maintainer maintains the maxSessionsInUse by a window of
-// kWindowSize * sampleInterval. Based on this information, health checker will
-// try to maintain the number of sessions by hc.
+// maintainer maintains the number of sessions in the pool based on the session
+// pool configuration and the current and historical number of sessions checked
+// out of the pool. The maintainer will:
+// 1. Ensure that the session pool contains at least MinOpened sessions.
+// 2. If the current number of sessions in the pool exceeds the greatest number
+//    of checked out sessions (=sessions in use) during the last 10 minutes,
+//    and the delta is larger than MaxIdleSessions, the maintainer will reduce
+//    the number of sessions to maxSessionsInUseDuringWindow+MaxIdleSessions.
 func (hc *healthChecker) maintainer() {
-	// Wait so that pool is ready.
+	// Wait until the pool is ready.
 	<-hc.ready
-
-	windowSize := uint64(10)
 
 	for iteration := uint64(0); ; iteration++ {
 		if hc.isClosing() {
@@ -1060,35 +1221,26 @@ func (hc *healthChecker) maintainer() {
 			return
 		}
 
-		// maxSessionsInUse is the maximum number of sessions in use
-		// concurrently over a period of time.
-		var maxSessionsInUse uint64
-
-		// Updates metrics.
 		hc.pool.mu.Lock()
-		currSessionsInUse := hc.pool.numOpened - uint64(hc.pool.idleList.Len()) - uint64(hc.pool.idleWriteList.Len())
 		currSessionsOpened := hc.pool.numOpened
+		maxIdle := hc.pool.MaxIdle
+		minOpened := hc.pool.MinOpened
 		hc.pool.mu.Unlock()
-
+		// Get the maximum number of sessions in use during the current
+		// maintenance window.
+		maxSessionsInUseDuringWindow := hc.pool.mw.maxSessionsCheckedOutDuringWindow()
 		hc.mu.Lock()
-		if iteration%windowSize == 0 || maxSessionsInUse < currSessionsInUse {
-			maxSessionsInUse = currSessionsInUse
-		}
-		sessionsToKeep := maxUint64(hc.pool.MinOpened,
-			minUint64(currSessionsOpened, hc.pool.MaxIdle+maxSessionsInUse))
 		ctx, cancel := context.WithTimeout(context.Background(), hc.sampleInterval)
 		hc.maintainerCancel = cancel
 		hc.mu.Unlock()
 
-		// Replenish or Shrink pool if needed.
-		//
-		// Note: we don't need to worry about pending create session requests,
-		// we only need to sample the current sessions in use. The routines will
-		// not try to create extra / delete creating sessions.
-		if sessionsToKeep > currSessionsOpened {
-			hc.replenishPool(ctx, sessionsToKeep)
-		} else {
-			hc.shrinkPool(ctx, sessionsToKeep)
+		// Grow or shrink pool if needed.
+		// The number of sessions in the pool should be in the range
+		// [Config.MinOpened, Config.MaxIdle+maxSessionsInUseDuringWindow]
+		if currSessionsOpened < minOpened {
+			hc.growPool(ctx, minOpened)
+		} else if maxIdle+maxSessionsInUseDuringWindow > currSessionsOpened {
+			hc.shrinkPool(ctx, maxIdle+maxSessionsInUseDuringWindow)
 		}
 
 		select {
@@ -1096,12 +1248,27 @@ func (hc *healthChecker) maintainer() {
 		case <-hc.done:
 			cancel()
 		}
+		// Cycle the maintenance window. This will remove the oldest cycle and
+		// add a new cycle at the beginning of the maintenance window with the
+		// currently checked out number of sessions as the max number of
+		// sessions in use in this cycle. This value will be increased during
+		// the next cycle if it increases.
+		hc.pool.mu.Lock()
+		currSessionsInUse := hc.pool.currSessionsCheckedOutLocked()
+		hc.pool.mu.Unlock()
+		hc.pool.mw.startNewCycle(currSessionsInUse)
 	}
 }
 
-// replenishPool is run if numOpened is less than sessionsToKeep, timeouts on
-// sampleInterval.
-func (hc *healthChecker) replenishPool(ctx context.Context, sessionsToKeep uint64) {
+// growPool grows the number of sessions in the pool to the specified number of
+// sessions. It timeouts on sampleInterval.
+func (hc *healthChecker) growPool(ctx context.Context, growToNumSessions uint64) {
+	// Calculate the max number of sessions to create as a safeguard against
+	// other processes that could be deleting sessions concurrently.
+	hc.pool.mu.Lock()
+	maxSessionsToCreate := int(growToNumSessions - hc.pool.numOpened)
+	hc.pool.mu.Unlock()
+	var created int
 	for {
 		if ctx.Err() != nil {
 			return
@@ -1110,36 +1277,52 @@ func (hc *healthChecker) replenishPool(ctx context.Context, sessionsToKeep uint6
 		p := hc.pool
 		p.mu.Lock()
 		// Take budget before the actual session creation.
-		if sessionsToKeep <= p.numOpened {
+		if growToNumSessions <= p.numOpened || created >= maxSessionsToCreate {
 			p.mu.Unlock()
 			break
 		}
 		p.numOpened++
 		recordStat(ctx, OpenSessionCount, int64(p.numOpened))
 		p.createReqs++
-		shouldPrepareWrite := p.shouldPrepareWrite()
+		shouldPrepareWrite := p.shouldPrepareWriteLocked()
 		p.mu.Unlock()
 		var (
 			s   *session
 			err error
 		)
-		if s, err = p.createSession(ctx); err != nil {
+		createContext, cancel := context.WithTimeout(context.Background(), time.Minute)
+		if s, err = p.createSession(createContext); err != nil {
+			cancel()
 			log.Printf("Failed to create session, error: %v", toSpannerError(err))
 			continue
 		}
+		cancel()
+		created++
 		if shouldPrepareWrite {
-			if err = s.prepareForWrite(ctx); err != nil {
+			prepareContext, cancel := context.WithTimeout(context.Background(), time.Minute)
+			if err = s.prepareForWrite(prepareContext); err != nil {
+				cancel()
 				p.recycle(s)
 				log.Printf("Failed to prepare session, error: %v", toSpannerError(err))
 				continue
 			}
+			cancel()
 		}
 		p.recycle(s)
 	}
 }
 
-// shrinkPool, scales down the session pool.
-func (hc *healthChecker) shrinkPool(ctx context.Context, sessionsToKeep uint64) {
+// shrinkPool scales down the session pool. The method will stop deleting
+// sessions when shrinkToNumSessions number of sessions in the pool has
+// been reached. The method will also stop deleting sessions if it detects that
+// another process has started creating sessions for the pool again, for
+// example through the take() method.
+func (hc *healthChecker) shrinkPool(ctx context.Context, shrinkToNumSessions uint64) {
+	hc.pool.mu.Lock()
+	maxSessionsToDelete := int(hc.pool.numOpened - shrinkToNumSessions)
+	hc.pool.mu.Unlock()
+	var deleted int
+	var prevNumOpened uint64 = math.MaxUint64
 	for {
 		if ctx.Err() != nil {
 			return
@@ -1147,8 +1330,19 @@ func (hc *healthChecker) shrinkPool(ctx context.Context, sessionsToKeep uint64) 
 
 		p := hc.pool
 		p.mu.Lock()
+		// Check if the number of open sessions has increased. If it has, we
+		// should stop deleting sessions, as the load has increased and
+		// additional sessions are needed.
+		if p.numOpened >= prevNumOpened {
+			break
+		}
+		prevNumOpened = p.numOpened
 
-		if sessionsToKeep >= p.numOpened {
+		// Check on both whether we have reached the number of open sessions as
+		// well as the number of sessions to delete, in case sessions have been
+		// deleted by other methods because they have expired or deemed
+		// invalid.
+		if shrinkToNumSessions >= p.numOpened || deleted >= maxSessionsToDelete {
 			p.mu.Unlock()
 			break
 		}
@@ -1161,6 +1355,7 @@ func (hc *healthChecker) shrinkPool(ctx context.Context, sessionsToKeep uint64) 
 		}
 		p.mu.Unlock()
 		if s != nil {
+			deleted++
 			// destroy session as expire.
 			s.destroy(true)
 		} else {

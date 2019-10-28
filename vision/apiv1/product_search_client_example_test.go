@@ -376,3 +376,22 @@ func ExampleProductSearchClient_ImportProductSets() {
 	// TODO: Use resp.
 	_ = resp
 }
+
+func ExampleProductSearchClient_PurgeProducts() {
+	ctx := context.Background()
+	c, err := vision.NewProductSearchClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &visionpb.PurgeProductsRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.PurgeProducts(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	// TODO: Handle error.
+}

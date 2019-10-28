@@ -49,6 +49,8 @@ func TestRangeReader(t *testing.T) {
 		{1, 3, readData[1:4]},
 		{6, -1, readData[6:]},
 		{4, 20, readData[4:]},
+		{-20, -1, readData},
+		{-6, -1, readData[4:]},
 	} {
 		r, err := obj.NewRangeReader(ctx, test.offset, test.length)
 		if err != nil {
@@ -74,17 +76,26 @@ func handleRangeRead(w http.ResponseWriter, r *http.Request) {
 		from = 0
 		to = len(data)
 	} else {
-		// assume "bytes=N-" or "bytes=N-M"
+		// assume "bytes=N-", "bytes=-N" or "bytes=N-M"
 		var err error
 		i := strings.IndexRune(rh, '=')
 		j := strings.IndexRune(rh, '-')
-		from, err = strconv.Atoi(rh[i+1 : j])
+		hasPositiveStartOffset := i+1 != j
+		if hasPositiveStartOffset { // The case of "bytes=N-"
+			from, err = strconv.Atoi(rh[i+1 : j])
+		} else { // The case of "bytes=-N"
+			from, err = strconv.Atoi(rh[i+1:])
+			from += len(data)
+			if from < 0 {
+				from = 0
+			}
+		}
 		if err != nil {
 			w.WriteHeader(500)
 			return
 		}
 		to = len(data)
-		if j+1 < len(rh) {
+		if hasPositiveStartOffset && j+1 < len(rh) { // The case of "bytes=N-M"
 			to, err = strconv.Atoi(rh[j+1:])
 			if err != nil {
 				w.WriteHeader(500)
@@ -200,6 +211,15 @@ func TestRangeReaderRetry(t *testing.T) {
 			},
 			want: readData[4:],
 		},
+		{
+			offset: -4,
+			length: -1,
+			bodies: []fakeReadCloser{
+				{data: readBytes[6:], counts: []int{1}, err: retryErr},
+				{data: readBytes[7:], counts: []int{3}, err: io.EOF},
+			},
+			want: readData[6:],
+		},
 	} {
 		r, err := obj.NewRangeReader(ctx, test.offset, test.length)
 		if err != nil {
@@ -231,6 +251,28 @@ func TestRangeReaderRetry(t *testing.T) {
 		if got := string(gotb); got != test.want {
 			t.Errorf("#%d: got %q, want %q", i, got, test.want)
 		}
+		if r.Attrs.Size != int64(len(readData)) {
+			t.Errorf("#%d: got Attrs.Size=%q, want %q", i, r.Attrs.Size, len(readData))
+		}
+		wantOffset := test.offset
+		if wantOffset < 0 {
+			wantOffset += int64(len(readData))
+			if wantOffset < 0 {
+				wantOffset = 0
+			}
+		}
+		if got := r.Attrs.StartOffset; got != wantOffset {
+			t.Errorf("#%d: got Attrs.Offset=%q, want %q", i, got, wantOffset)
+		}
+	}
+	r, err := obj.NewRangeReader(ctx, -100, 10)
+	if err == nil {
+		t.Fatal("Expected a non-nil error with negative offset and positive length")
+	} else if want := "storage: invalid offset"; !strings.HasPrefix(err.Error(), want) {
+		t.Errorf("Error mismatch\nGot:  %q\nWant prefix: %q\n", err.Error(), want)
+	}
+	if r != nil {
+		t.Errorf("Expected nil reader")
 	}
 }
 

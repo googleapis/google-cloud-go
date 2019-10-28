@@ -52,6 +52,8 @@ func defaultCloudRedisClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("redis.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 

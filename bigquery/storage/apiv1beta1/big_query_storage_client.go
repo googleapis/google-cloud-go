@@ -19,6 +19,7 @@ package storage
 import (
 	"context"
 	"fmt"
+	"math"
 	"net/url"
 	"time"
 
@@ -44,6 +45,8 @@ func defaultBigQueryStorageClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("bigquerystorage.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 

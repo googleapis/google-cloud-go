@@ -15,6 +15,7 @@
 package pubsub
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"strings"
@@ -25,11 +26,18 @@ import (
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	"cloud.google.com/go/internal/version"
+	kms "cloud.google.com/go/kms/apiv1"
+	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
+	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -54,6 +62,16 @@ func extractMessageData(m *Message) *messageData {
 	}
 }
 
+func withGRPCHeadersAssertion(t *testing.T, opts ...option.ClientOption) []option.ClientOption {
+	grpcHeadersEnforcer := &testutil.HeadersEnforcer{
+		OnFailure: t.Errorf,
+		Checkers: []*testutil.HeaderChecker{
+			testutil.XGoogClientHeaderChecker,
+		},
+	}
+	return append(grpcHeadersEnforcer.CallOptions(), opts...)
+}
+
 func integrationTestClient(ctx context.Context, t *testing.T) *Client {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
@@ -66,7 +84,8 @@ func integrationTestClient(ctx context.Context, t *testing.T) *Client {
 	if ts == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
-	client, err := NewClient(ctx, projID, option.WithTokenSource(ts))
+	opts := withGRPCHeadersAssertion(t, option.WithTokenSource(ts))
+	client, err := NewClient(ctx, projID, opts...)
 	if err != nil {
 		t.Fatalf("Creating client error: %v", err)
 	}
@@ -74,6 +93,7 @@ func integrationTestClient(ctx context.Context, t *testing.T) *Client {
 }
 
 func TestIntegration_All(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1633")
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
@@ -179,6 +199,24 @@ func TestIntegration_All(t *testing.T) {
 	}
 }
 
+// withGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request and returns the
+// updated context.
+func withGoogleClientInfo(ctx context.Context) context.Context {
+	ctxMD, _ := metadata.FromOutgoingContext(ctx)
+	kv := []string{
+		"gl-go",
+		version.Go(),
+		"gax",
+		gax.Version,
+		"grpc",
+		grpc.Version,
+	}
+
+	allMDs := append([]metadata.MD{ctxMD}, metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...)))
+	return metadata.NewOutgoingContext(ctx, metadata.Join(allMDs...))
+}
+
 func testPublishAndReceive(t *testing.T, topic *Topic, sub *Subscription, maxMsgs int, synchronous bool, numMsgs, extraBytes int) {
 	ctx := context.Background()
 	var msgs []*Message
@@ -250,6 +288,11 @@ func testPublishAndReceive(t *testing.T, topic *Topic, sub *Subscription, maxMsg
 // menu, choose the account, click the Roles dropdown, and select "Pub/Sub > Pub/Sub Admin".
 // TODO(jba): move this to a testing package within cloud.google.com/iam, so we can re-use it.
 func testIAM(ctx context.Context, h *iam.Handle, permission string) (msg string, ok bool) {
+	// Manually adding withGoogleClientInfo here because this code only takes
+	// a handle with a grpc.ClientConn that has the "x-goog-api-client" header enforcer,
+	// but unfortunately not the underlying infrastructure that takes pre-set headers.
+	ctx = withGoogleClientInfo(ctx)
+
 	// Attempting to add an non-existent identity  (e.g. "alice@example.com") causes the service
 	// to return an internal error, so use a real identity.
 	const member = "domain:google.com"
@@ -300,6 +343,70 @@ func testIAM(ctx context.Context, h *iam.Handle, permission string) (msg string,
 		return fmt.Sprintf("TestPermissions: got %v, want %v", gotPerms, wantPerms), false
 	}
 	return "", true
+}
+
+func TestIntegration_LargePublishSize(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1636")
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	// Calculate the largest possible message length that is still valid.
+	// First, calculate the max length of the encoded message accounting for the topic name.
+	length := MaxPublishRequestBytes - calcFieldSizeString(topic.String())
+	// Next, account for the overhead from encoding an individual PubsubMessage,
+	// and the inner PubsubMessage.Data field.
+	pbMsgOverhead := 1 + proto.SizeVarint(uint64(length))
+	dataOverhead := 1 + proto.SizeVarint(uint64(length-pbMsgOverhead))
+	maxLengthSingleMessage := length - pbMsgOverhead - dataOverhead
+
+	publishReq := &pb.PublishRequest{
+		Topic: topic.String(),
+		Messages: []*pb.PubsubMessage{
+			{
+				Data: bytes.Repeat([]byte{'A'}, maxLengthSingleMessage),
+			},
+		},
+	}
+
+	if got := proto.Size(publishReq); got != MaxPublishRequestBytes {
+		t.Fatalf("Created request size of %d bytes,\nwant %f bytes", got, MaxPublishRequestBytes)
+	}
+
+	// Publishing the max length message by itself should succeed.
+	msg := &Message{
+		Data: bytes.Repeat([]byte{'A'}, maxLengthSingleMessage),
+	}
+	r := topic.Publish(ctx, msg)
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("Failed to publish max length message: %v", err)
+	}
+
+	// Publish a small message first and make sure the max length message
+	// is added to its own bundle.
+	smallMsg := &Message{
+		Data: []byte{'A'},
+	}
+	topic.Publish(ctx, smallMsg)
+	r = topic.Publish(ctx, msg)
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("Failed to publish max length message after a small message: %v", err)
+	}
+
+	// Increase the data byte string by 1 byte, which should cause the request to fail,
+	// specifically due to exceeding the bundle byte limit.
+	msg.Data = append(msg.Data, 'A')
+	r = topic.Publish(ctx, msg)
+	if _, err := r.Get(ctx); err != ErrOversizedMessage {
+		t.Fatalf("Should throw item size too large error, got %v", err)
+	}
 }
 
 func TestIntegration_CancelReceive(t *testing.T) {
@@ -358,7 +465,7 @@ func TestIntegration_CancelReceive(t *testing.T) {
 	}
 }
 
-func TestIntegration_UpdateSubscription(t *testing.T) {
+func TestIntegration_CreateSubscription_NeverExpire(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
@@ -371,8 +478,84 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 	defer topic.Delete(ctx)
 	defer topic.Stop()
 
+	cfg := SubscriptionConfig{
+		Topic:            topic,
+		ExpirationPolicy: time.Duration(0),
+	}
 	var sub *Subscription
-	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), cfg); err != nil {
+		t.Fatalf("CreateSub error: %v", err)
+	}
+	defer sub.Delete(ctx)
+
+	got, err := sub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := SubscriptionConfig{
+		Topic:               topic,
+		AckDeadline:         10 * time.Second,
+		RetainAckedMessages: false,
+		RetentionDuration:   defaultRetentionDuration,
+		ExpirationPolicy:    time.Duration(0),
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("\ngot: - want: +\n%s", diff)
+	}
+}
+
+// findServiceAccountEmail tries to find the service account using testutil
+// JWTConfig as well as the ADC credentials. It will only invoke t.Skip if
+// it successfully retrieves credentials but finds a blank JWTConfig JSON blob.
+// For all other errors, it will invoke t.Fatal.
+func findServiceAccountEmail(ctx context.Context, t *testing.T) string {
+	jwtConf, err := testutil.JWTConfig()
+	if err == nil && jwtConf != nil {
+		return jwtConf.Email
+	}
+	creds := testutil.Credentials(ctx, ScopePubSub, ScopeCloudPlatform)
+	if creds == nil {
+		t.Fatal("Failed to retrieve credentials")
+	}
+	if len(creds.JSON) == 0 {
+		t.Skip("No JWTConfig JSON was present so can't get serviceAccountEmail")
+	}
+	jwtConf, err = google.JWTConfigFromJSON(creds.JSON)
+	if err != nil {
+		t.Fatalf("Failed to parse Google JWTConfig from JSON: %v", err)
+	}
+	return jwtConf.Email
+}
+
+func TestIntegration_UpdateSubscription(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	serviceAccountEmail := findServiceAccountEmail(ctx, t)
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	var sub *Subscription
+	projID := testutil.ProjID()
+	sCfg := SubscriptionConfig{
+		Topic: topic,
+		PushConfig: PushConfig{
+			Endpoint: "https://" + projID + ".appspot.com/_ah/push-handlers/push",
+			AuthenticationMethod: &OIDCToken{
+				Audience:            "client-12345",
+				ServiceAccountEmail: serviceAccountEmail,
+			},
+		},
+	}
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), sCfg); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}
 	defer sub.Delete(ctx)
@@ -387,15 +570,25 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 		RetainAckedMessages: false,
 		RetentionDuration:   defaultRetentionDuration,
 		ExpirationPolicy:    defaultExpirationPolicy,
+		PushConfig: PushConfig{
+			Endpoint: "https://" + projID + ".appspot.com/_ah/push-handlers/push",
+			AuthenticationMethod: &OIDCToken{
+				Audience:            "client-12345",
+				ServiceAccountEmail: serviceAccountEmail,
+			},
+		},
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 	// Add a PushConfig and change other fields.
-	projID := testutil.ProjID()
 	pc := PushConfig{
 		Endpoint:   "https://" + projID + ".appspot.com/_ah/push-handlers/push",
 		Attributes: map[string]string{"x-goog-version": "v1"},
+		AuthenticationMethod: &OIDCToken{
+			Audience:            "client-updated-54321",
+			ServiceAccountEmail: serviceAccountEmail,
+		},
 	}
 	got, err = sub.Update(ctx, SubscriptionConfigToUpdate{
 		PushConfig:          &pc,
@@ -417,6 +610,19 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 		Labels:              map[string]string{"label": "value"},
 		ExpirationPolicy:    25 * time.Hour,
 	}
+
+	if !testutil.Equal(got, want) {
+		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
+	}
+
+	// Update ExpirationPolicy to never expire.
+	got, err = sub.Update(ctx, SubscriptionConfigToUpdate{
+		ExpirationPolicy: time.Duration(0),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want.ExpirationPolicy = time.Duration(0)
 
 	if !testutil.Equal(got, want) {
 		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
@@ -449,9 +655,86 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 	}
 }
 
+func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
+		t.Fatalf("CreateSub error: %v", err)
+	}
+	defer sub.Delete(ctx)
+
+	// Set ExpirationPolicy within the valid range.
+	got, err := sub.Update(ctx, SubscriptionConfigToUpdate{
+		RetentionDuration: 2 * time.Hour,
+		ExpirationPolicy:  25 * time.Hour,
+		AckDeadline:       2 * time.Minute,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := SubscriptionConfig{
+		Topic:             topic,
+		AckDeadline:       2 * time.Minute,
+		RetentionDuration: 2 * time.Hour,
+		ExpirationPolicy:  25 * time.Hour,
+	}
+	// Pubsub service issue: PushConfig attributes are not removed.
+	// TODO(jba): remove when issue resolved.
+	want.PushConfig.Attributes = map[string]string{"x-goog-version": "v1"}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("\ngot: - want: +\n%s", diff)
+	}
+
+	// ExpirationPolicy to never expire.
+	got, err = sub.Update(ctx, SubscriptionConfigToUpdate{
+		ExpirationPolicy: time.Duration(0),
+	})
+	if err != nil {
+		t.Fatalf("Unexpected error: %v\n", err)
+	}
+	want.ExpirationPolicy = time.Duration(0)
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("\ngot: - want: +\n%s", diff)
+	}
+
+	// ExpirationPolicy when nil is passed in, should not cause any updates.
+	got, err = sub.Update(ctx, SubscriptionConfigToUpdate{
+		ExpirationPolicy: nil,
+	})
+	if err == nil || err.Error() != "pubsub: UpdateSubscription call with nothing to update" {
+		t.Fatalf("Expected no attributes to be updated, error: %v", err)
+	}
+
+	// ExpirationPolicy of nil, with the previous value having been a non-zero value.
+	_, err = sub.Update(ctx, SubscriptionConfigToUpdate{
+		ExpirationPolicy: 26 * time.Hour,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Now examine what setting it to nil produces.
+	_, err = sub.Update(ctx, SubscriptionConfigToUpdate{
+		ExpirationPolicy: nil,
+	})
+	if err == nil || err.Error() != "pubsub: UpdateSubscription call with nothing to update" {
+		t.Fatalf("Expected no attributes to be updated, error: %v", err)
+	}
+}
+
 // NOTE: This test should be skipped by open source contributors. It requires
 // whitelisting, a (gsuite) organization project, and specific permissions.
-func TestIntegration_UpdateTopic(t *testing.T) {
+func TestIntegration_UpdateTopicLabels(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
@@ -546,7 +829,7 @@ func TestIntegration_Errors(t *testing.T) {
 		Topic:             topic,
 		RetentionDuration: 1 * time.Second,
 	})
-	if want := codes.InvalidArgument; grpc.Code(err) != want {
+	if want := codes.InvalidArgument; status.Code(err) != want {
 		t.Errorf("got <%v>, want %s", err, want)
 	}
 	if err == nil {
@@ -558,7 +841,7 @@ func TestIntegration_Errors(t *testing.T) {
 		Topic:       topic,
 		AckDeadline: 5 * time.Second,
 	})
-	if want := codes.Unknown; grpc.Code(err) != want {
+	if want := codes.Unknown; status.Code(err) != want {
 		t.Errorf("got <%v>, want %s", err, want)
 	}
 	if err == nil {
@@ -568,12 +851,12 @@ func TestIntegration_Errors(t *testing.T) {
 	// Updating a non-existent subscription.
 	sub = client.Subscription(subIDs.New())
 	_, err = sub.Update(ctx, SubscriptionConfigToUpdate{AckDeadline: 20 * time.Second})
-	if want := codes.NotFound; grpc.Code(err) != want {
+	if want := codes.NotFound; status.Code(err) != want {
 		t.Errorf("got <%v>, want %s", err, want)
 	}
 	// Deleting a non-existent subscription.
 	err = sub.Delete(ctx)
-	if want := codes.NotFound; grpc.Code(err) != want {
+	if want := codes.NotFound; status.Code(err) != want {
 		t.Errorf("got <%v>, want %s", err, want)
 	}
 
@@ -584,26 +867,90 @@ func TestIntegration_Errors(t *testing.T) {
 	}
 	defer sub.Delete(ctx)
 	_, err = sub.Update(ctx, SubscriptionConfigToUpdate{RetentionDuration: 1000 * time.Hour})
-	if want := codes.InvalidArgument; grpc.Code(err) != want {
+	if want := codes.InvalidArgument; status.Code(err) != want {
 		t.Errorf("got <%v>, want %s", err, want)
 	}
 }
 
+func TestIntegration_MessageStoragePolicy_TopicLevel(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	// Initially the message storage policy should just be non-empty
+	got, err := topic.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(got.MessageStoragePolicy.AllowedPersistenceRegions) == 0 {
+		t.Fatalf("Empty AllowedPersistenceRegions in :\n%+v", got)
+	}
+
+	// Specify some regions to set.
+	regions := []string{"asia-east1", "us-east1"}
+	got, err = topic.Update(ctx, TopicConfigToUpdate{
+		MessageStoragePolicy: &MessageStoragePolicy{
+			AllowedPersistenceRegions: regions,
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := TopicConfig{
+		MessageStoragePolicy: MessageStoragePolicy{
+			AllowedPersistenceRegions: regions,
+		},
+	}
+	if !testutil.Equal(got, want) {
+		t.Fatalf("\ngot  %+v\nwant regions%+v", got, want)
+	}
+
+	// Reset all allowed regions to project default.
+	got, err = topic.Update(ctx, TopicConfigToUpdate{
+		MessageStoragePolicy: &MessageStoragePolicy{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(got.MessageStoragePolicy.AllowedPersistenceRegions) == 0 {
+		t.Fatalf("Unexpectedly got empty MessageStoragePolicy.AllowedPersistenceRegions in:\n%+v", got)
+	}
+
+	// Removing all regions should fail
+	updateCfg := TopicConfigToUpdate{
+		MessageStoragePolicy: &MessageStoragePolicy{
+			AllowedPersistenceRegions: []string{},
+		},
+	}
+	if _, err = topic.Update(ctx, updateCfg); err == nil {
+		t.Fatalf("Unexpected succeeded in removing all regions\n%+v\n", got)
+	}
+}
+
 // NOTE: This test should be skipped by open source contributors. It requires
-// whitelisting, a (gsuite) organization project, and specific permissions.
+// a (gsuite) organization project, and specific permissions. The test for MessageStoragePolicy
+// on a topic level can be run on any topic and is covered by the previous test.
 //
 // Googlers, see internal bug 77920644. Furthermore, be sure to add your
 // service account as an owner of ps-geofencing-test.
-func TestIntegration_MessageStoragePolicy(t *testing.T) {
+func TestIntegration_MessageStoragePolicy_ProjectLevel(t *testing.T) {
 	// Verify that the message storage policy is populated.
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
 	ctx := context.Background()
-	// The message storage policy depends on the Resource Location Restriction org policy.
-	// The usual testing project is in the google.com org, which has no resource location restrictions,
-	// so we will always see an empty MessageStoragePolicy. Use a project in another org that does
-	// have a restriction set ("us-east1").
+	// If a message storage policy is not set on a topic, the policy depends on the Resource Location
+	// Restriction which is specified on an organization level. The usual testing project is in the
+	// google.com org, which has no resource location restrictions. Use a project in another org that
+	// does have a restriction set ("us-east1").
 	projID := "ps-geofencing-test"
 	// We can use the same creds as always because the service account of the default testing project
 	// has permission to use the above project. This test will fail if a different service account
@@ -612,7 +959,8 @@ func TestIntegration_MessageStoragePolicy(t *testing.T) {
 	if ts == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
-	client, err := NewClient(ctx, projID, option.WithTokenSource(ts))
+	opts := withGRPCHeadersAssertion(t, option.WithTokenSource(ts))
+	client, err := NewClient(ctx, projID, opts...)
 	if err != nil {
 		t.Fatalf("Creating client error: %v", err)
 	}
@@ -631,5 +979,107 @@ func TestIntegration_MessageStoragePolicy(t *testing.T) {
 	want := []string{"us-east1"}
 	if !testutil.Equal(got, want) {
 		t.Errorf("got %v, want %v", got, want)
+	}
+}
+
+func TestIntegration_CreateTopic_KMS(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	kmsClient, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	keyRingID := "test-key-ring"
+	want := "test-key2"
+
+	// Get the test KMS key ring, optionally creating it if it doesn't exist.
+	keyRing, err := kmsClient.GetKeyRing(ctx, &kmspb.GetKeyRingRequest{
+		Name: fmt.Sprintf("projects/%s/locations/global/keyRings/%s", testutil.ProjID(), keyRingID),
+	})
+	if err != nil {
+		if status.Code(err) != codes.NotFound {
+			t.Fatal(err)
+		}
+		createKeyRingReq := &kmspb.CreateKeyRingRequest{
+			Parent:    fmt.Sprintf("projects/%s/locations/global", testutil.ProjID()),
+			KeyRingId: keyRingID,
+		}
+		keyRing, err = kmsClient.CreateKeyRing(ctx, createKeyRingReq)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	// Get the test KMS crypto key, optionally creating it if it doesn't exist.
+	key, err := kmsClient.GetCryptoKey(ctx, &kmspb.GetCryptoKeyRequest{
+		Name: fmt.Sprintf("%s/cryptoKeys/%s", keyRing.GetName(), want),
+	})
+	if err != nil {
+		if status.Code(err) != codes.NotFound {
+			t.Fatal(err)
+		}
+		createKeyReq := &kmspb.CreateCryptoKeyRequest{
+			Parent:      keyRing.GetName(),
+			CryptoKeyId: want,
+			CryptoKey: &kmspb.CryptoKey{
+				Purpose: 1, // ENCRYPT_DECRYPT purpose
+			},
+		}
+		key, err = kmsClient.CreateCryptoKey(ctx, createKeyReq)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	tc := TopicConfig{
+		KMSKeyName: key.GetName(),
+	}
+	topic, err := client.CreateTopicWithConfig(ctx, topicIDs.New(), &tc)
+	if err != nil {
+		t.Fatalf("CreateTopicWithConfig error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	cfg, err := topic.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := cfg.KMSKeyName
+
+	if got != key.GetName() {
+		t.Errorf("got %v, want %v", got, key.GetName())
+	}
+}
+
+func TestIntegration_CreateTopic_MessageStoragePolicy(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	tc := TopicConfig{
+		MessageStoragePolicy: MessageStoragePolicy{
+			AllowedPersistenceRegions: []string{"us-east1"},
+		},
+	}
+	topic, err := client.CreateTopicWithConfig(ctx, topicIDs.New(), &tc)
+	if err != nil {
+		t.Fatalf("CreateTopicWithConfig error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	got, err := topic.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := tc
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 }

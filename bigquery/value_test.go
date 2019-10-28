@@ -106,6 +106,44 @@ func TestConvertSmallTimes(t *testing.T) {
 	}
 }
 
+func TestConvertTimePrecision(t *testing.T) {
+	tcs := []struct {
+		// Internally, BigQuery stores timestamps as microsecond-precision
+		// floats.
+		bq   float64
+		want time.Time
+	}{
+		{
+			bq:   1555593697.154358,
+			want: time.Unix(1555593697, 154358*1000),
+		},
+		{
+			bq:   1555593697.154359,
+			want: time.Unix(1555593697, 154359*1000),
+		},
+		{
+			bq:   1555593697.154360,
+			want: time.Unix(1555593697, 154360*1000),
+		},
+	}
+	for _, tc := range tcs {
+		bqS := fmt.Sprintf("%.6f", tc.bq)
+		t.Run(bqS, func(t *testing.T) {
+			got, err := convertBasicType(bqS, TimestampFieldType)
+			if err != nil {
+				t.Fatalf("convertBasicType failed: %v", err)
+			}
+			gotT, ok := got.(time.Time)
+			if !ok {
+				t.Fatalf("got a %T from convertBasicType, want a time.Time; got = %v", got, got)
+			}
+			if !gotT.Equal(tc.want) {
+				t.Errorf("got %v from convertBasicType, want %v", gotT, tc.want)
+			}
+		})
+	}
+}
+
 func TestConvertNullValues(t *testing.T) {
 	schema := Schema{{Type: StringFieldType}}
 	row := &bq.TableRow{

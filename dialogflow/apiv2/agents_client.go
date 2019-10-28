@@ -40,20 +40,22 @@ import (
 
 // AgentsCallOptions contains the retry settings for each method of AgentsClient.
 type AgentsCallOptions struct {
+	SetAgent     []gax.CallOption
+	DeleteAgent  []gax.CallOption
 	GetAgent     []gax.CallOption
 	SearchAgents []gax.CallOption
 	TrainAgent   []gax.CallOption
 	ExportAgent  []gax.CallOption
 	ImportAgent  []gax.CallOption
 	RestoreAgent []gax.CallOption
-	SetAgent     []gax.CallOption
-	DeleteAgent  []gax.CallOption
 }
 
 func defaultAgentsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("dialogflow.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
@@ -73,14 +75,14 @@ func defaultAgentsCallOptions() *AgentsCallOptions {
 		},
 	}
 	return &AgentsCallOptions{
+		SetAgent:     retry[[2]string{"default", "idempotent"}],
+		DeleteAgent:  retry[[2]string{"default", "idempotent"}],
 		GetAgent:     retry[[2]string{"default", "idempotent"}],
 		SearchAgents: retry[[2]string{"default", "idempotent"}],
 		TrainAgent:   retry[[2]string{"default", "idempotent"}],
 		ExportAgent:  retry[[2]string{"default", "idempotent"}],
 		ImportAgent:  retry[[2]string{"default", "non_idempotent"}],
 		RestoreAgent: retry[[2]string{"default", "idempotent"}],
-		SetAgent:     retry[[2]string{"default", "non_idempotent"}],
-		DeleteAgent:  retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 
@@ -180,6 +182,36 @@ func (c *AgentsClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// SetAgent creates/updates the specified agent.
+func (c *AgentsClient) SetAgent(ctx context.Context, req *dialogflowpb.SetAgentRequest, opts ...gax.CallOption) (*dialogflowpb.Agent, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "agent.parent", url.QueryEscape(req.GetAgent().GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.SetAgent[0:len(c.CallOptions.SetAgent):len(c.CallOptions.SetAgent)], opts...)
+	var resp *dialogflowpb.Agent
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.agentsClient.SetAgent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// DeleteAgent deletes the specified agent.
+func (c *AgentsClient) DeleteAgent(ctx context.Context, req *dialogflowpb.DeleteAgentRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.DeleteAgent[0:len(c.CallOptions.DeleteAgent):len(c.CallOptions.DeleteAgent)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.agentsClient.DeleteAgent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
 }
 
 // GetAgent retrieves the specified agent.
@@ -333,36 +365,6 @@ func (c *AgentsClient) RestoreAgent(ctx context.Context, req *dialogflowpb.Resto
 	return &RestoreAgentOperation{
 		lro: longrunning.InternalNewOperation(c.LROClient, resp),
 	}, nil
-}
-
-// SetAgent creates/updates the specified agent.
-func (c *AgentsClient) SetAgent(ctx context.Context, req *dialogflowpb.SetAgentRequest, opts ...gax.CallOption) (*dialogflowpb.Agent, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "agent.parent", url.QueryEscape(req.GetAgent().GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetAgent[0:len(c.CallOptions.SetAgent):len(c.CallOptions.SetAgent)], opts...)
-	var resp *dialogflowpb.Agent
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.agentsClient.SetAgent(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// DeleteAgent deletes the specified agent.
-func (c *AgentsClient) DeleteAgent(ctx context.Context, req *dialogflowpb.DeleteAgentRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteAgent[0:len(c.CallOptions.DeleteAgent):len(c.CallOptions.DeleteAgent)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.agentsClient.DeleteAgent(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
 }
 
 // AgentIterator manages a stream of *dialogflowpb.Agent.

@@ -19,6 +19,7 @@ package automl
 import (
 	"context"
 	"fmt"
+	"math"
 	"net/url"
 	"time"
 
@@ -43,6 +44,8 @@ func defaultPredictionClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("automl.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
@@ -151,6 +154,9 @@ func (c *PredictionClient) setGoogleClientInfo(keyval ...string) {
 //   up to 5MB. Not available for FORECASTING
 //
 // [prediction_type][google.cloud.automl.v1beta1.TablesModelMetadata.prediction_type].
+//
+//   Text Sentiment - TextSnippet, content up 500 characters, UTF-8
+//   encoded.
 func (c *PredictionClient) Predict(ctx context.Context, req *automlpb.PredictRequest, opts ...gax.CallOption) (*automlpb.PredictResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -167,19 +173,23 @@ func (c *PredictionClient) Predict(ctx context.Context, req *automlpb.PredictReq
 	return resp, nil
 }
 
-// BatchPredict perform a batch prediction. Unlike the online [Predict][google.cloud.automl.v1beta1.PredictionService.Predict], batch
+// BatchPredict perform a batch prediction. Unlike the online
+// [Predict][google.cloud.automl.v1beta1.PredictionService.Predict], batch
 // prediction result won't be immediately available in the response. Instead,
 // a long running operation object is returned. User can poll the operation
 // result via [GetOperation][google.longrunning.Operations.GetOperation]
-// method. Once the operation is done, [BatchPredictResult][google.cloud.automl.v1beta1.BatchPredictResult] is returned in
-// the [response][google.longrunning.Operation.response] field.
+// method. Once the operation is done,
+// [BatchPredictResult][google.cloud.automl.v1beta1.BatchPredictResult] is
+// returned in the [response][google.longrunning.Operation.response] field.
 // Available for following ML problems:
+//
+//   Image Classification
+//
+//   Image Object Detection
 //
 //   Video Classification
 //
-//   Video Object Tracking
-//
-//   Text Extraction
+//   Video Object Tracking * Text Extraction
 //
 //   Tables
 func (c *PredictionClient) BatchPredict(ctx context.Context, req *automlpb.BatchPredictRequest, opts ...gax.CallOption) (*BatchPredictOperation, error) {

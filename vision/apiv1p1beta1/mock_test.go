@@ -17,10 +17,6 @@
 package vision
 
 import (
-	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1p1beta1"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -34,10 +30,13 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/api/option"
+	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1p1beta1"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 

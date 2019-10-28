@@ -66,7 +66,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 					AgeInDays:             10,
 					Liveness:              Live,
 					CreatedBefore:         time.Date(2017, 1, 2, 3, 4, 5, 6, time.UTC),
-					MatchesStorageClasses: []string{"MULTI_REGIONAL", "REGIONAL", "STANDARD"},
+					MatchesStorageClasses: []string{"STANDARD"},
 					NumNewerVersions:      3,
 				},
 			}, {
@@ -132,7 +132,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 					Age:                 10,
 					IsLive:              googleapi.Bool(true),
 					CreatedBefore:       "2017-01-02",
-					MatchesStorageClass: []string{"MULTI_REGIONAL", "REGIONAL", "STANDARD"},
+					MatchesStorageClass: []string{"STANDARD"},
 					NumNewerVersions:    3,
 				},
 			}, {
@@ -211,7 +211,8 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		RetentionPolicy:       &raw.BucketRetentionPolicy{RetentionPeriod: 3600},
 		IamConfiguration: &raw.BucketIamConfiguration{
 			BucketPolicyOnly: &raw.BucketIamConfigurationBucketPolicyOnly{
-				Enabled: false,
+				Enabled:         false,
+				ForceSendFields: []string{"Enabled"},
 			},
 		},
 		Encryption: &raw.BucketEncryption{DefaultKmsKeyName: "key2"},
@@ -354,7 +355,7 @@ func TestCallBuilders(t *testing.T) {
 
 func TestNewBucket(t *testing.T) {
 	labels := map[string]string{"a": "b"}
-	matchClasses := []string{"MULTI_REGIONAL", "REGIONAL", "STANDARD"}
+	matchClasses := []string{"STANDARD"}
 	aTime := time.Date(2017, 1, 2, 0, 0, 0, 0, time.UTC)
 	rb := &raw.Bucket{
 		Name:                  "name",
@@ -403,9 +404,10 @@ func TestNewBucket(t *testing.T) {
 		Acl: []*raw.BucketAccessControl{
 			{Bucket: "name", Role: "READER", Email: "joe@example.com", Entity: "allUsers"},
 		},
-		Encryption: &raw.BucketEncryption{DefaultKmsKeyName: "key"},
-		Logging:    &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
-		Website:    &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		LocationType: "dual-region",
+		Encryption:   &raw.BucketEncryption{DefaultKmsKeyName: "key"},
+		Logging:      &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:      &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 	}
 	want := &BucketAttrs{
 		Name:                  "name",
@@ -453,6 +455,7 @@ func TestNewBucket(t *testing.T) {
 		Website:          &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		ACL:              []ACLRule{{Entity: "allUsers", Role: RoleReader, Email: "joe@example.com"}},
 		DefaultObjectACL: nil,
+		LocationType:     "dual-region",
 	}
 	got, err := newBucket(rb)
 	if err != nil {

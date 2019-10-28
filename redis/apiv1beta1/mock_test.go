@@ -17,13 +17,6 @@
 package redis
 
 import (
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
-	field_maskpb "google.golang.org/genproto/protobuf/field_mask"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -36,11 +29,17 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
+	redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	field_maskpb "google.golang.org/genproto/protobuf/field_mask"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 
@@ -646,10 +645,10 @@ func TestCloudRedisImportInstance(t *testing.T) {
 		Result: &longrunningpb.Operation_Response{Response: any},
 	})
 
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/instances/%s", "[PROJECT]", "[LOCATION]", "[INSTANCE]")
+	var name string = "name3373707"
 	var inputConfig *redispb.InputConfig = &redispb.InputConfig{}
 	var request = &redispb.ImportInstanceRequest{
-		Name:        formattedName,
+		Name:        name,
 		InputConfig: inputConfig,
 	}
 
@@ -691,10 +690,10 @@ func TestCloudRedisImportInstanceError(t *testing.T) {
 		},
 	})
 
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/instances/%s", "[PROJECT]", "[LOCATION]", "[INSTANCE]")
+	var name string = "name3373707"
 	var inputConfig *redispb.InputConfig = &redispb.InputConfig{}
 	var request = &redispb.ImportInstanceRequest{
-		Name:        formattedName,
+		Name:        name,
 		InputConfig: inputConfig,
 	}
 
@@ -759,10 +758,10 @@ func TestCloudRedisExportInstance(t *testing.T) {
 		Result: &longrunningpb.Operation_Response{Response: any},
 	})
 
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/instances/%s", "[PROJECT]", "[LOCATION]", "[INSTANCE]")
+	var name string = "name3373707"
 	var outputConfig *redispb.OutputConfig = &redispb.OutputConfig{}
 	var request = &redispb.ExportInstanceRequest{
-		Name:         formattedName,
+		Name:         name,
 		OutputConfig: outputConfig,
 	}
 
@@ -804,10 +803,10 @@ func TestCloudRedisExportInstanceError(t *testing.T) {
 		},
 	})
 
-	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/instances/%s", "[PROJECT]", "[LOCATION]", "[INSTANCE]")
+	var name string = "name3373707"
 	var outputConfig *redispb.OutputConfig = &redispb.OutputConfig{}
 	var request = &redispb.ExportInstanceRequest{
-		Name:         formattedName,
+		Name:         name,
 		OutputConfig: outputConfig,
 	}
 
@@ -873,10 +872,8 @@ func TestCloudRedisFailoverInstance(t *testing.T) {
 	})
 
 	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/instances/%s", "[PROJECT]", "[LOCATION]", "[INSTANCE]")
-	var dataProtectionMode redispb.FailoverInstanceRequest_DataProtectionMode = redispb.FailoverInstanceRequest_DATA_PROTECTION_MODE_UNSPECIFIED
 	var request = &redispb.FailoverInstanceRequest{
-		Name:               formattedName,
-		DataProtectionMode: dataProtectionMode,
+		Name: formattedName,
 	}
 
 	c, err := NewCloudRedisClient(context.Background(), clientOpt)
@@ -918,10 +915,8 @@ func TestCloudRedisFailoverInstanceError(t *testing.T) {
 	})
 
 	var formattedName string = fmt.Sprintf("projects/%s/locations/%s/instances/%s", "[PROJECT]", "[LOCATION]", "[INSTANCE]")
-	var dataProtectionMode redispb.FailoverInstanceRequest_DataProtectionMode = redispb.FailoverInstanceRequest_DATA_PROTECTION_MODE_UNSPECIFIED
 	var request = &redispb.FailoverInstanceRequest{
-		Name:               formattedName,
-		DataProtectionMode: dataProtectionMode,
+		Name: formattedName,
 	}
 
 	c, err := NewCloudRedisClient(context.Background(), clientOpt)

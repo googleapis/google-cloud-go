@@ -58,7 +58,7 @@ type TableMetadata struct {
 	// At most one of UseLegacySQL and UseStandardSQL can be true.
 	UseLegacySQL bool
 
-	// Use Legacy SQL for the view query. The default.
+	// Use Standard SQL for the view query. The default.
 	// At most one of UseLegacySQL and UseStandardSQL can be true.
 	// Deprecated: use UseLegacySQL.
 	UseStandardSQL bool
@@ -232,7 +232,7 @@ func bqToClustering(q *bq.Clustering) *Clustering {
 	}
 }
 
-// EncryptionConfig configures customer-managed encryption on tables.
+// EncryptionConfig configures customer-managed encryption on tables and ML models.
 type EncryptionConfig struct {
 	// Describes the Cloud KMS encryption key that will be used to protect
 	// destination BigQuery table. The BigQuery Service Account associated with your
@@ -587,8 +587,7 @@ type TableMetadataToUpdate struct {
 	// When updating a schema, you can add columns but not remove them.
 	Schema Schema
 
-	// The table's encryption configuration.  When calling Update, ensure that
-	// all mutable fields of EncryptionConfig are populated.
+	// The table's encryption configuration.
 	EncryptionConfig *EncryptionConfig
 
 	// The time when this table expires. To remove a table's expiration,
