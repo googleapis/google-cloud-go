@@ -235,3 +235,91 @@ func ExampleClient_RetryBuild() {
 	// TODO: Use resp.
 	_ = resp
 }
+
+func ExampleClient_CreateWorkerPool() {
+	ctx := context.Background()
+	c, err := cloudbuild.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &cloudbuildpb.CreateWorkerPoolRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.CreateWorkerPool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetWorkerPool() {
+	ctx := context.Background()
+	c, err := cloudbuild.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &cloudbuildpb.GetWorkerPoolRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetWorkerPool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DeleteWorkerPool() {
+	ctx := context.Background()
+	c, err := cloudbuild.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &cloudbuildpb.DeleteWorkerPoolRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.DeleteWorkerPool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_UpdateWorkerPool() {
+	ctx := context.Background()
+	c, err := cloudbuild.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &cloudbuildpb.UpdateWorkerPoolRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.UpdateWorkerPool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListWorkerPools() {
+	ctx := context.Background()
+	c, err := cloudbuild.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &cloudbuildpb.ListWorkerPoolsRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.ListWorkerPools(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}

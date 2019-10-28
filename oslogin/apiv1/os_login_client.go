@@ -68,12 +68,12 @@ func defaultCallOptions() *CallOptions {
 		},
 	}
 	return &CallOptions{
-		DeletePosixAccount: retry[[2]string{"default", "idempotent"}],
-		DeleteSshPublicKey: retry[[2]string{"default", "idempotent"}],
+		DeletePosixAccount: retry[[2]string{"default", "non_idempotent"}],
+		DeleteSshPublicKey: retry[[2]string{"default", "non_idempotent"}],
 		GetLoginProfile:    retry[[2]string{"default", "idempotent"}],
 		GetSshPublicKey:    retry[[2]string{"default", "idempotent"}],
-		ImportSshPublicKey: retry[[2]string{"default", "idempotent"}],
-		UpdateSshPublicKey: retry[[2]string{"default", "idempotent"}],
+		ImportSshPublicKey: retry[[2]string{"default", "non_idempotent"}],
+		UpdateSshPublicKey: retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 

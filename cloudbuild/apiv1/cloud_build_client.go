@@ -48,6 +48,11 @@ type CallOptions struct {
 	UpdateBuildTrigger []gax.CallOption
 	RunBuildTrigger    []gax.CallOption
 	RetryBuild         []gax.CallOption
+	CreateWorkerPool   []gax.CallOption
+	GetWorkerPool      []gax.CallOption
+	DeleteWorkerPool   []gax.CallOption
+	UpdateWorkerPool   []gax.CallOption
+	ListWorkerPools    []gax.CallOption
 }
 
 func defaultClientOptions() []option.ClientOption {
@@ -86,6 +91,11 @@ func defaultCallOptions() *CallOptions {
 		UpdateBuildTrigger: retry[[2]string{"default", "non_idempotent"}],
 		RunBuildTrigger:    retry[[2]string{"default", "non_idempotent"}],
 		RetryBuild:         retry[[2]string{"default", "non_idempotent"}],
+		CreateWorkerPool:   retry[[2]string{"default", "non_idempotent"}],
+		GetWorkerPool:      retry[[2]string{"default", "non_idempotent"}],
+		DeleteWorkerPool:   retry[[2]string{"default", "non_idempotent"}],
+		UpdateWorkerPool:   retry[[2]string{"default", "non_idempotent"}],
+		ListWorkerPools:    retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 
@@ -389,6 +399,92 @@ func (c *Client) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuildReq
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.RetryBuild(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// CreateWorkerPool creates a WorkerPool to run the builds, and returns the new worker pool.
+//
+// This API is experimental.
+func (c *Client) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.CreateWorkerPoolRequest, opts ...gax.CallOption) (*cloudbuildpb.WorkerPool, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.CreateWorkerPool[0:len(c.CallOptions.CreateWorkerPool):len(c.CallOptions.CreateWorkerPool)], opts...)
+	var resp *cloudbuildpb.WorkerPool
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateWorkerPool(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetWorkerPool returns information about a WorkerPool.
+//
+// This API is experimental.
+func (c *Client) GetWorkerPool(ctx context.Context, req *cloudbuildpb.GetWorkerPoolRequest, opts ...gax.CallOption) (*cloudbuildpb.WorkerPool, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.GetWorkerPool[0:len(c.CallOptions.GetWorkerPool):len(c.CallOptions.GetWorkerPool)], opts...)
+	var resp *cloudbuildpb.WorkerPool
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetWorkerPool(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// DeleteWorkerPool deletes a WorkerPool by its project ID and WorkerPool name.
+//
+// This API is experimental.
+func (c *Client) DeleteWorkerPool(ctx context.Context, req *cloudbuildpb.DeleteWorkerPoolRequest, opts ...gax.CallOption) error {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.DeleteWorkerPool[0:len(c.CallOptions.DeleteWorkerPool):len(c.CallOptions.DeleteWorkerPool)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteWorkerPool(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+// UpdateWorkerPool update a WorkerPool.
+//
+// This API is experimental.
+func (c *Client) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.UpdateWorkerPoolRequest, opts ...gax.CallOption) (*cloudbuildpb.WorkerPool, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.UpdateWorkerPool[0:len(c.CallOptions.UpdateWorkerPool):len(c.CallOptions.UpdateWorkerPool)], opts...)
+	var resp *cloudbuildpb.WorkerPool
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateWorkerPool(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// ListWorkerPools list project's WorkerPools.
+//
+// This API is experimental.
+func (c *Client) ListWorkerPools(ctx context.Context, req *cloudbuildpb.ListWorkerPoolsRequest, opts ...gax.CallOption) (*cloudbuildpb.ListWorkerPoolsResponse, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.ListWorkerPools[0:len(c.CallOptions.ListWorkerPools):len(c.CallOptions.ListWorkerPools)], opts...)
+	var resp *cloudbuildpb.ListWorkerPoolsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ListWorkerPools(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

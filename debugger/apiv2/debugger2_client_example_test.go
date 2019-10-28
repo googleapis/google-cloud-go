@@ -33,6 +33,22 @@ func ExampleNewDebugger2Client() {
 	_ = c
 }
 
+func ExampleDebugger2Client_DeleteBreakpoint() {
+	ctx := context.Background()
+	c, err := debugger.NewDebugger2Client(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &clouddebuggerpb.DeleteBreakpointRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.DeleteBreakpoint(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleDebugger2Client_SetBreakpoint() {
 	ctx := context.Background()
 	c, err := debugger.NewDebugger2Client(ctx)
@@ -67,22 +83,6 @@ func ExampleDebugger2Client_GetBreakpoint() {
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleDebugger2Client_DeleteBreakpoint() {
-	ctx := context.Background()
-	c, err := debugger.NewDebugger2Client(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &clouddebuggerpb.DeleteBreakpointRequest{
-		// TODO: Fill request struct fields.
-	}
-	err = c.DeleteBreakpoint(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
 }
 
 func ExampleDebugger2Client_ListBreakpoints() {

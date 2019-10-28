@@ -50,3 +50,26 @@ func ExamplePredictionClient_Predict() {
 	// TODO: Use resp.
 	_ = resp
 }
+
+func ExamplePredictionClient_BatchPredict() {
+	ctx := context.Background()
+	c, err := automl.NewPredictionClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &automlpb.BatchPredictRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.BatchPredict(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}

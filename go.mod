@@ -15,14 +15,14 @@ require (
 	github.com/googleapis/gax-go/v2 v2.0.5
 	github.com/jstemmer/go-junit-report v0.0.0-20190106144839-af01ea7f8024
 	go.opencensus.io v0.22.0
-	golang.org/x/exp v0.0.0-20191014171548-69215a2ee97e
+	golang.org/x/exp v0.0.0-20191024150812-c286b889502e
 	golang.org/x/lint v0.0.0-20190930215403-16217165b5de
 	golang.org/x/net v0.0.0-20190620200207-3b0461eec859
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/text v0.3.2
-	golang.org/x/tools v0.0.0-20191022210528-83d82311fd1f
+	golang.org/x/tools v0.0.0-20191028173913-b394bd8bba1d
 	google.golang.org/api v0.11.0
-	google.golang.org/genproto v0.0.0-20191009194640-548a555dbc03
+	google.golang.org/genproto v0.0.0-20191028173616-919d9bdd9fe6
 	google.golang.org/grpc v1.21.1
 	honnef.co/go/tools v0.0.1-2019.2.3
 )

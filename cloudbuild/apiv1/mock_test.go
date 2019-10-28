@@ -193,6 +193,66 @@ func (s *mockCloudBuildServer) RunBuildTrigger(ctx context.Context, req *cloudbu
 	return s.resps[0].(*longrunningpb.Operation), nil
 }
 
+func (s *mockCloudBuildServer) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.CreateWorkerPoolRequest) (*cloudbuildpb.WorkerPool, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*cloudbuildpb.WorkerPool), nil
+}
+
+func (s *mockCloudBuildServer) GetWorkerPool(ctx context.Context, req *cloudbuildpb.GetWorkerPoolRequest) (*cloudbuildpb.WorkerPool, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*cloudbuildpb.WorkerPool), nil
+}
+
+func (s *mockCloudBuildServer) DeleteWorkerPool(ctx context.Context, req *cloudbuildpb.DeleteWorkerPoolRequest) (*emptypb.Empty, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*emptypb.Empty), nil
+}
+
+func (s *mockCloudBuildServer) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.UpdateWorkerPoolRequest) (*cloudbuildpb.WorkerPool, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*cloudbuildpb.WorkerPool), nil
+}
+
+func (s *mockCloudBuildServer) ListWorkerPools(ctx context.Context, req *cloudbuildpb.ListWorkerPoolsRequest) (*cloudbuildpb.ListWorkerPoolsResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*cloudbuildpb.ListWorkerPoolsResponse), nil
+}
+
 // clientOpt is the option tests should use to connect to the test server.
 // It is initialized by TestMain.
 var clientOpt option.ClientOption
@@ -508,11 +568,13 @@ func TestCloudBuildCancelBuildError(t *testing.T) {
 func TestCloudBuildCreateBuildTrigger(t *testing.T) {
 	var id string = "id3355"
 	var description string = "description-1724546052"
+	var name string = "name3373707"
 	var filename string = "filename-734768633"
 	var disabled bool = true
 	var expectedResponse = &cloudbuildpb.BuildTrigger{
 		Id:          id,
 		Description: description,
+		Name:        name,
 		BuildTemplate: &cloudbuildpb.BuildTrigger_Filename{
 			Filename: filename,
 		},
@@ -579,11 +641,13 @@ func TestCloudBuildCreateBuildTriggerError(t *testing.T) {
 func TestCloudBuildGetBuildTrigger(t *testing.T) {
 	var id string = "id3355"
 	var description string = "description-1724546052"
+	var name string = "name3373707"
 	var filename string = "filename-734768633"
 	var disabled bool = true
 	var expectedResponse = &cloudbuildpb.BuildTrigger{
 		Id:          id,
 		Description: description,
+		Name:        name,
 		BuildTemplate: &cloudbuildpb.BuildTrigger_Filename{
 			Filename: filename,
 		},
@@ -648,7 +712,10 @@ func TestCloudBuildGetBuildTriggerError(t *testing.T) {
 	_ = resp
 }
 func TestCloudBuildListBuildTriggers(t *testing.T) {
-	var expectedResponse *cloudbuildpb.ListBuildTriggersResponse = &cloudbuildpb.ListBuildTriggersResponse{}
+	var nextPageToken string = "nextPageToken-1530815211"
+	var expectedResponse = &cloudbuildpb.ListBuildTriggersResponse{
+		NextPageToken: nextPageToken,
+	}
 
 	mockCloudBuild.err = nil
 	mockCloudBuild.reqs = nil
@@ -762,11 +829,13 @@ func TestCloudBuildDeleteBuildTriggerError(t *testing.T) {
 func TestCloudBuildUpdateBuildTrigger(t *testing.T) {
 	var id string = "id3355"
 	var description string = "description-1724546052"
+	var name string = "name3373707"
 	var filename string = "filename-734768633"
 	var disabled bool = true
 	var expectedResponse = &cloudbuildpb.BuildTrigger{
 		Id:          id,
 		Description: description,
+		Name:        name,
 		BuildTemplate: &cloudbuildpb.BuildTrigger_Filename{
 			Filename: filename,
 		},
@@ -960,6 +1029,279 @@ func TestCloudBuildRetryBuildError(t *testing.T) {
 	}
 
 	resp, err := c.RetryBuild(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestCloudBuildCreateWorkerPool(t *testing.T) {
+	var name string = "name3373707"
+	var projectId string = "projectId-1969970175"
+	var serviceAccountEmail string = "serviceAccountEmail-1300473088"
+	var workerCount int64 = 372044046
+	var expectedResponse = &cloudbuildpb.WorkerPool{
+		Name:                name,
+		ProjectId:           projectId,
+		ServiceAccountEmail: serviceAccountEmail,
+		WorkerCount:         workerCount,
+	}
+
+	mockCloudBuild.err = nil
+	mockCloudBuild.reqs = nil
+
+	mockCloudBuild.resps = append(mockCloudBuild.resps[:0], expectedResponse)
+
+	var request *cloudbuildpb.CreateWorkerPoolRequest = &cloudbuildpb.CreateWorkerPoolRequest{}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateWorkerPool(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockCloudBuild.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestCloudBuildCreateWorkerPoolError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockCloudBuild.err = gstatus.Error(errCode, "test error")
+
+	var request *cloudbuildpb.CreateWorkerPoolRequest = &cloudbuildpb.CreateWorkerPoolRequest{}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateWorkerPool(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestCloudBuildGetWorkerPool(t *testing.T) {
+	var name string = "name3373707"
+	var projectId string = "projectId-1969970175"
+	var serviceAccountEmail string = "serviceAccountEmail-1300473088"
+	var workerCount int64 = 372044046
+	var expectedResponse = &cloudbuildpb.WorkerPool{
+		Name:                name,
+		ProjectId:           projectId,
+		ServiceAccountEmail: serviceAccountEmail,
+		WorkerCount:         workerCount,
+	}
+
+	mockCloudBuild.err = nil
+	mockCloudBuild.reqs = nil
+
+	mockCloudBuild.resps = append(mockCloudBuild.resps[:0], expectedResponse)
+
+	var request *cloudbuildpb.GetWorkerPoolRequest = &cloudbuildpb.GetWorkerPoolRequest{}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetWorkerPool(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockCloudBuild.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestCloudBuildGetWorkerPoolError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockCloudBuild.err = gstatus.Error(errCode, "test error")
+
+	var request *cloudbuildpb.GetWorkerPoolRequest = &cloudbuildpb.GetWorkerPoolRequest{}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetWorkerPool(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestCloudBuildDeleteWorkerPool(t *testing.T) {
+	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
+
+	mockCloudBuild.err = nil
+	mockCloudBuild.reqs = nil
+
+	mockCloudBuild.resps = append(mockCloudBuild.resps[:0], expectedResponse)
+
+	var request *cloudbuildpb.DeleteWorkerPoolRequest = &cloudbuildpb.DeleteWorkerPoolRequest{}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteWorkerPool(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockCloudBuild.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestCloudBuildDeleteWorkerPoolError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockCloudBuild.err = gstatus.Error(errCode, "test error")
+
+	var request *cloudbuildpb.DeleteWorkerPoolRequest = &cloudbuildpb.DeleteWorkerPoolRequest{}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteWorkerPool(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
+func TestCloudBuildUpdateWorkerPool(t *testing.T) {
+	var name string = "name3373707"
+	var projectId string = "projectId-1969970175"
+	var serviceAccountEmail string = "serviceAccountEmail-1300473088"
+	var workerCount int64 = 372044046
+	var expectedResponse = &cloudbuildpb.WorkerPool{
+		Name:                name,
+		ProjectId:           projectId,
+		ServiceAccountEmail: serviceAccountEmail,
+		WorkerCount:         workerCount,
+	}
+
+	mockCloudBuild.err = nil
+	mockCloudBuild.reqs = nil
+
+	mockCloudBuild.resps = append(mockCloudBuild.resps[:0], expectedResponse)
+
+	var request *cloudbuildpb.UpdateWorkerPoolRequest = &cloudbuildpb.UpdateWorkerPoolRequest{}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateWorkerPool(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockCloudBuild.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestCloudBuildUpdateWorkerPoolError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockCloudBuild.err = gstatus.Error(errCode, "test error")
+
+	var request *cloudbuildpb.UpdateWorkerPoolRequest = &cloudbuildpb.UpdateWorkerPoolRequest{}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateWorkerPool(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestCloudBuildListWorkerPools(t *testing.T) {
+	var expectedResponse *cloudbuildpb.ListWorkerPoolsResponse = &cloudbuildpb.ListWorkerPoolsResponse{}
+
+	mockCloudBuild.err = nil
+	mockCloudBuild.reqs = nil
+
+	mockCloudBuild.resps = append(mockCloudBuild.resps[:0], expectedResponse)
+
+	var request *cloudbuildpb.ListWorkerPoolsRequest = &cloudbuildpb.ListWorkerPoolsRequest{}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListWorkerPools(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockCloudBuild.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestCloudBuildListWorkerPoolsError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockCloudBuild.err = gstatus.Error(errCode, "test error")
+
+	var request *cloudbuildpb.ListWorkerPoolsRequest = &cloudbuildpb.ListWorkerPoolsRequest{}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListWorkerPools(context.Background(), request)
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)
