@@ -20,8 +20,8 @@ require (
 	golang.org/x/net v0.0.0-20190620200207-3b0461eec859
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/text v0.3.2
-	golang.org/x/tools v0.0.0-20191028173913-b394bd8bba1d
-	google.golang.org/api v0.11.0
+	golang.org/x/tools v0.0.0-20191028194131-d78a1f2664a0
+	google.golang.org/api v0.13.0
 	google.golang.org/genproto v0.0.0-20191028173616-919d9bdd9fe6
 	google.golang.org/grpc v1.21.1
 	honnef.co/go/tools v0.0.1-2019.2.3
