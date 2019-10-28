@@ -62,6 +62,8 @@ func defaultDeviceManagerClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("cloudiot.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
@@ -79,38 +81,25 @@ func defaultDeviceManagerCallOptions() *DeviceManagerCallOptions {
 				})
 			}),
 		},
-		{"rate_limited_aware", "rate_limited_aware"}: {
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
-					codes.ResourceExhausted,
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.3,
-				})
-			}),
-		},
 	}
 	return &DeviceManagerCallOptions{
 		CreateDeviceRegistry:      retry[[2]string{"default", "non_idempotent"}],
 		GetDeviceRegistry:         retry[[2]string{"default", "idempotent"}],
 		UpdateDeviceRegistry:      retry[[2]string{"default", "non_idempotent"}],
-		DeleteDeviceRegistry:      retry[[2]string{"default", "idempotent"}],
+		DeleteDeviceRegistry:      retry[[2]string{"default", "non_idempotent"}],
 		ListDeviceRegistries:      retry[[2]string{"default", "idempotent"}],
 		CreateDevice:              retry[[2]string{"default", "non_idempotent"}],
 		GetDevice:                 retry[[2]string{"default", "idempotent"}],
 		UpdateDevice:              retry[[2]string{"default", "non_idempotent"}],
-		DeleteDevice:              retry[[2]string{"default", "idempotent"}],
+		DeleteDevice:              retry[[2]string{"default", "non_idempotent"}],
 		ListDevices:               retry[[2]string{"default", "idempotent"}],
-		ModifyCloudToDeviceConfig: retry[[2]string{"rate_limited_aware", "rate_limited_aware"}],
+		ModifyCloudToDeviceConfig: retry[[2]string{"default", "non_idempotent"}],
 		ListDeviceConfigVersions:  retry[[2]string{"default", "idempotent"}],
 		ListDeviceStates:          retry[[2]string{"default", "idempotent"}],
 		SetIamPolicy:              retry[[2]string{"default", "non_idempotent"}],
 		GetIamPolicy:              retry[[2]string{"default", "non_idempotent"}],
 		TestIamPermissions:        retry[[2]string{"default", "non_idempotent"}],
-		SendCommandToDevice:       retry[[2]string{"rate_limited_aware", "rate_limited_aware"}],
+		SendCommandToDevice:       retry[[2]string{"default", "non_idempotent"}],
 		BindDeviceToGateway:       retry[[2]string{"default", "non_idempotent"}],
 		UnbindDeviceFromGateway:   retry[[2]string{"default", "non_idempotent"}],
 	}

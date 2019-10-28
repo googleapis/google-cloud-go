@@ -608,7 +608,43 @@ func ExampleArrayRemove_update() {
 	fmt.Println(wr.UpdateTime)
 }
 
-func ExampleCollectionGroup() {
+func ExampleIncrement_create() {
+	ctx := context.Background()
+	client, err := firestore.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer client.Close()
+
+	wr, err := client.Doc("States/Colorado").Create(ctx, map[string]interface{}{
+		"cities": []string{"Denver", "Golden", "Boulder"},
+		"pop":    firestore.Increment(7), // "pop" will be set to 7.
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Println(wr.UpdateTime)
+}
+
+func ExampleIncrement_update() {
+	ctx := context.Background()
+	client, err := firestore.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer client.Close()
+
+	co := client.Doc("States/Colorado")
+	wr, err := co.Update(ctx, []firestore.Update{
+		{Path: "pop", Value: firestore.Increment(7)}, // "pop" will incremented by 7.
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Println(wr.UpdateTime)
+}
+
+func ExampleClient_CollectionGroup() {
 	// Given:
 	// France/Cities/Paris = {population: 100}
 	// Canada/Cities/Montreal = {population: 95}

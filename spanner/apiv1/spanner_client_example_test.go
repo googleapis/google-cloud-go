@@ -53,6 +53,24 @@ func ExampleClient_CreateSession() {
 	_ = resp
 }
 
+func ExampleClient_BatchCreateSessions() {
+	ctx := context.Background()
+	c, err := spanner.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &spannerpb.BatchCreateSessionsRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.BatchCreateSessions(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_GetSession() {
 	ctx := context.Background()
 	c, err := spanner.NewClient(ctx)

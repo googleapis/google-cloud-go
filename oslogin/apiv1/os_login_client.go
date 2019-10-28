@@ -19,6 +19,7 @@ package oslogin
 import (
 	"context"
 	"fmt"
+	"math"
 	"net/url"
 	"time"
 
@@ -46,6 +47,8 @@ func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("oslogin.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
@@ -65,16 +68,16 @@ func defaultCallOptions() *CallOptions {
 		},
 	}
 	return &CallOptions{
-		DeletePosixAccount: retry[[2]string{"default", "idempotent"}],
-		DeleteSshPublicKey: retry[[2]string{"default", "idempotent"}],
+		DeletePosixAccount: retry[[2]string{"default", "non_idempotent"}],
+		DeleteSshPublicKey: retry[[2]string{"default", "non_idempotent"}],
 		GetLoginProfile:    retry[[2]string{"default", "idempotent"}],
 		GetSshPublicKey:    retry[[2]string{"default", "idempotent"}],
-		ImportSshPublicKey: retry[[2]string{"default", "idempotent"}],
-		UpdateSshPublicKey: retry[[2]string{"default", "idempotent"}],
+		ImportSshPublicKey: retry[[2]string{"default", "non_idempotent"}],
+		UpdateSshPublicKey: retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 
-// Client is a client for interacting with Google Cloud OS Login API.
+// Client is a client for interacting with Cloud OS Login API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type Client struct {

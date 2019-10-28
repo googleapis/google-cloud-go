@@ -292,6 +292,18 @@ func setVal(v reflect.Value, p Property) (s string) {
 			return overflowReason(x, v)
 		}
 		v.SetFloat(x)
+
+	case reflect.Interface:
+		if !v.CanSet() {
+			return fmt.Sprintf("%v is unsettable", v.Type())
+		}
+
+		rpValue := reflect.ValueOf(pValue)
+		if !rpValue.Type().AssignableTo(v.Type()) {
+			return fmt.Sprintf("%q is not assignable to %q", rpValue.Type(), v.Type())
+		}
+		v.Set(rpValue)
+
 	case reflect.Ptr:
 		// v must be a pointer to either a Key, an Entity, or one of the supported basic types.
 		if v.Type() != typeOfKeyPtr && v.Type().Elem().Kind() != reflect.Struct && !isValidPointerType(v.Type().Elem()) {
@@ -419,14 +431,19 @@ func loadEntityProto(dst interface{}, src *pb.Entity) error {
 
 func loadEntity(dst interface{}, ent *Entity) error {
 	if pls, ok := dst.(PropertyLoadSaver); ok {
-		err := pls.Load(ent.Properties)
-		if err != nil {
-			return err
-		}
+		// Load both key and properties. Try to load as much as possible, even
+		// if an error occurs during loading loading either the key or the
+		// properties.
+		var keyLoadErr error
 		if e, ok := dst.(KeyLoader); ok {
-			err = e.LoadKey(ent.Key)
+			keyLoadErr = e.LoadKey(ent.Key)
 		}
-		return err
+		loadErr := pls.Load(ent.Properties)
+		// Let any error returned by LoadKey prevail above any error from Load.
+		if keyLoadErr != nil {
+			return keyLoadErr
+		}
+		return loadErr
 	}
 	return loadEntityToStruct(dst, ent)
 }

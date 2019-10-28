@@ -52,6 +52,8 @@ func defaultWorkflowTemplateClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("dataproc.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
@@ -215,7 +217,9 @@ func (c *WorkflowTemplateClient) GetWorkflowTemplate(ctx context.Context, req *d
 // clusters to be deleted.
 //
 // The [Operation.metadata][google.longrunning.Operation.metadata] will be
-// [WorkflowMetadata][google.cloud.dataproc.v1beta2.WorkflowMetadata].
+// WorkflowMetadata (at /dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#workflowmetadata).
+// Also see Using
+// WorkflowMetadata (at /dataproc/docs/concepts/workflows/debugging#using_workflowmetadata).
 //
 // On successful completion,
 // [Operation.response][google.longrunning.Operation.response] will be
@@ -255,7 +259,9 @@ func (c *WorkflowTemplateClient) InstantiateWorkflowTemplate(ctx context.Context
 // clusters to be deleted.
 //
 // The [Operation.metadata][google.longrunning.Operation.metadata] will be
-// [WorkflowMetadata][google.cloud.dataproc.v1beta2.WorkflowMetadata].
+// WorkflowMetadata (at /dataproc/docs/reference/rpc/google.cloud.dataproc.v1#workflowmetadata).
+// Also see Using
+// WorkflowMetadata (at /dataproc/docs/concepts/workflows/debugging#using_workflowmetadata).
 //
 // On successful completion,
 // [Operation.response][google.longrunning.Operation.response] will be

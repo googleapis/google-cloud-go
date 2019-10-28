@@ -59,8 +59,8 @@ var (
 			{Name: "bool", Type: BooleanFieldType},
 		}},
 	}
-	testTableExpiration            time.Time
-	datasetIDs, tableIDs, modelIDs *uid.Space
+	testTableExpiration                        time.Time
+	datasetIDs, tableIDs, modelIDs, routineIDs *uid.Space
 )
 
 // Note: integration tests cannot be run in parallel, because TestIntegration_Location
@@ -79,6 +79,8 @@ func getClient(t *testing.T) *Client {
 	}
 	return client
 }
+
+var grpcHeadersChecker = testutil.DefaultHeadersEnforcer()
 
 // If integration tests will be run, create a unique dataset for them.
 // Return a cleanup function.
@@ -137,8 +139,8 @@ func initIntegrationTest() func() {
 			log.Println("Integration tests skipped. See CONTRIBUTING.md for details")
 			return func() {}
 		}
-		bqOpt := option.WithTokenSource(ts)
-		sOpt := option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl))
+		bqOpts := []option.ClientOption{option.WithTokenSource(ts)}
+		sOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl))}
 		cleanup := func() {}
 		now := time.Now().UTC()
 		if *record {
@@ -154,29 +156,35 @@ func initIntegrationTest() func() {
 					log.Fatalf("could not record: %v", err)
 				}
 				log.Printf("recording to %s", replayFilename)
-				hc, err := recorder.Client(ctx, bqOpt)
+				hc, err := recorder.Client(ctx, bqOpts...)
 				if err != nil {
 					log.Fatal(err)
 				}
-				bqOpt = option.WithHTTPClient(hc)
-				hc, err = recorder.Client(ctx, sOpt)
+				bqOpts = append(bqOpts, option.WithHTTPClient(hc))
+				hc, err = recorder.Client(ctx, sOpts...)
 				if err != nil {
 					log.Fatal(err)
 				}
-				sOpt = option.WithHTTPClient(hc)
+				sOpts = append(sOpts, option.WithHTTPClient(hc))
 				cleanup = func() {
 					if err := recorder.Close(); err != nil {
 						log.Printf("saving recording: %v", err)
 					}
 				}
 			}
+		} else {
+			// When we're not recording, do http header checking.
+			// We can't check universally because option.WithHTTPClient is
+			// incompatible with gRPC options.
+			bqOpts = append(bqOpts, grpcHeadersChecker.CallOptions()...)
+			sOpts = append(sOpts, grpcHeadersChecker.CallOptions()...)
 		}
 		var err error
-		client, err = NewClient(ctx, projID, bqOpt)
+		client, err = NewClient(ctx, projID, bqOpts...)
 		if err != nil {
 			log.Fatalf("NewClient: %v", err)
 		}
-		storageClient, err = storage.NewClient(ctx, sOpt)
+		storageClient, err = storage.NewClient(ctx, sOpts...)
 		if err != nil {
 			log.Fatalf("storage.NewClient: %v", err)
 		}
@@ -193,6 +201,7 @@ func initTestState(client *Client, t time.Time) func() {
 	datasetIDs = uid.NewSpace("dataset", opts)
 	tableIDs = uid.NewSpace("table", opts)
 	modelIDs = uid.NewSpace("model", opts)
+	routineIDs = uid.NewSpace("routine", opts)
 	testTableExpiration = t.Add(10 * time.Minute).Round(time.Second)
 	// For replayability, seed the random source with t.
 	Seed(t.UnixNano())
@@ -1278,7 +1287,7 @@ func TestIntegration_DML(t *testing.T) {
 							   ('b', [1], STRUCT<BOOL>(FALSE)),
 							   ('c', [2], STRUCT<BOOL>(TRUE))`,
 		table.DatasetID, table.TableID)
-	if err := runDML(ctx, sql); err != nil {
+	if err := runQueryJob(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	wantRows := [][]Value{
@@ -1289,29 +1298,24 @@ func TestIntegration_DML(t *testing.T) {
 	checkRead(t, "DML", table.Read(ctx), wantRows)
 }
 
-func runDML(ctx context.Context, sql string) error {
-	// Retry insert; sometimes it fails with INTERNAL.
+// runQueryJob is useful for running queries where no row data is returned (DDL/DML).
+func runQueryJob(ctx context.Context, sql string) error {
 	return internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
-		ri, err := client.Query(sql).Read(ctx)
+		job, err := client.Query(sql).Run(ctx)
 		if err != nil {
 			if e, ok := err.(*googleapi.Error); ok && e.Code < 500 {
 				return true, err // fail on 4xx
 			}
 			return false, err
 		}
-		// It is OK to try to iterate over DML results. The first call to Next
-		// will return iterator.Done.
-		err = ri.Next(nil)
-		if err == nil {
-			return true, errors.New("want iterator.Done on the first call, got nil")
+		_, err = job.Wait(ctx)
+		if err != nil {
+			if e, ok := err.(*googleapi.Error); ok && e.Code < 500 {
+				return true, err // fail on 4xx
+			}
+			return false, err
 		}
-		if err == iterator.Done {
-			return true, nil
-		}
-		if e, ok := err.(*googleapi.Error); ok && e.Code < 500 {
-			return true, err // fail on 4xx
-		}
-		return false, err
+		return true, nil
 	})
 }
 
@@ -1352,7 +1356,7 @@ func TestIntegration_TimeTypes(t *testing.T) {
 		"VALUES ('%s', '%s', '%s', '%s')",
 		table.DatasetID, table.TableID,
 		d, CivilTimeString(tm), CivilDateTimeString(dtm), ts.Format("2006-01-02 15:04:05"))
-	if err := runDML(ctx, query); err != nil {
+	if err := runQueryJob(ctx, query); err != nil {
 		t.Fatal(err)
 	}
 	wantRows = append(wantRows, wantRows[0])
@@ -1623,6 +1627,89 @@ func TestIntegration_QueryDryRun(t *testing.T) {
 	}
 }
 
+func TestIntegration_Scripting(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	sql := `
+	-- Declare a variable to hold names as an array.
+	DECLARE top_names ARRAY<STRING>;
+	-- Build an array of the top 100 names from the year 2017.
+	SET top_names = (
+	  SELECT ARRAY_AGG(name ORDER BY number DESC LIMIT 100)
+	  FROM ` + "`bigquery-public-data`" + `.usa_names.usa_1910_current
+	  WHERE year = 2017
+	);
+	-- Which names appear as words in Shakespeare's plays?
+	SELECT
+	  name AS shakespeare_name
+	FROM UNNEST(top_names) AS name
+	WHERE name IN (
+	  SELECT word
+	  FROM ` + "`bigquery-public-data`" + `.samples.shakespeare
+	);
+	`
+	q := client.Query(sql)
+	job, err := q.Run(ctx)
+	if err != nil {
+		t.Fatalf("failed to run parent job: %v", err)
+	}
+	status, err := job.Wait(ctx)
+	if err != nil {
+		t.Fatalf("failed to wait for completion: %v", err)
+	}
+	if status.Err() != nil {
+		t.Fatalf("job terminated with error: %v", err)
+	}
+
+	queryStats, ok := status.Statistics.Details.(*QueryStatistics)
+	if !ok {
+		t.Fatalf("failed to fetch query statistics")
+	}
+
+	want := "SCRIPT"
+	if queryStats.StatementType != want {
+		t.Errorf("statement type mismatch. got %s want %s", queryStats.StatementType, want)
+	}
+
+	if status.Statistics.NumChildJobs <= 0 {
+		t.Errorf("expected script to indicate nonzero child jobs, got %d", status.Statistics.NumChildJobs)
+	}
+
+	// Ensure child jobs are present.
+	var childJobs []*Job
+
+	it := job.Children(ctx)
+	for {
+		job, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		childJobs = append(childJobs, job)
+	}
+	if len(childJobs) == 0 {
+		t.Fatal("Script had no child jobs.")
+	}
+
+	for _, cj := range childJobs {
+		cStatus := cj.LastStatus()
+		if cStatus.Statistics.ParentJobID != job.ID() {
+			t.Errorf("child job %q doesn't indicate parent.  got %q, want %q", cj.ID(), cStatus.Statistics.ParentJobID, job.ID())
+		}
+		if cStatus.Statistics.ScriptStatistics == nil {
+			t.Errorf("child job %q doesn't have script statistics present", cj.ID())
+		}
+		if cStatus.Statistics.ScriptStatistics.EvaluationKind == "" {
+			t.Errorf("child job %q didn't indicate evaluation kind", cj.ID())
+		}
+	}
+
+}
+
 func TestIntegration_ExtractExternal(t *testing.T) {
 	// Create a table, extract it to GCS, then query it externally.
 	if client == nil {
@@ -1640,7 +1727,7 @@ func TestIntegration_ExtractExternal(t *testing.T) {
 	sql := fmt.Sprintf(`INSERT %s.%s (name, num)
 		                VALUES ('a', 1), ('b', 2), ('c', 3)`,
 		table.DatasetID, table.TableID)
-	if err := runDML(ctx, sql); err != nil {
+	if err := runQueryJob(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	// Extract to a GCS object as CSV.
@@ -2032,7 +2119,7 @@ func TestIntegration_ModelLifecycle(t *testing.T) {
 			UNION ALL
 			SELECT 'b' AS f1, 3.8 AS label
 		)`, modelRef)
-	if err := runDML(ctx, sql); err != nil {
+	if err := runQueryJob(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	defer model.Delete(ctx)
@@ -2053,11 +2140,17 @@ func TestIntegration_ModelLifecycle(t *testing.T) {
 	if runs == nil {
 		t.Errorf("training runs unpopulated.")
 	}
-	labelCols := curMeta.RawLabelColumns()
+	labelCols, err := curMeta.RawLabelColumns()
+	if err != nil {
+		t.Fatalf("failed to get label cols: %v", err)
+	}
 	if labelCols == nil {
 		t.Errorf("label column information unpopulated.")
 	}
-	featureCols := curMeta.RawFeatureColumns()
+	featureCols, err := curMeta.RawFeatureColumns()
+	if err != nil {
+		t.Fatalf("failed to get feature cols: %v", err)
+	}
 	if featureCols == nil {
 		t.Errorf("feature column information unpopulated.")
 	}
@@ -2110,6 +2203,170 @@ func TestIntegration_ModelLifecycle(t *testing.T) {
 	// Delete the model.
 	if err := model.Delete(ctx); err != nil {
 		t.Fatalf("failed to delete model: %v", err)
+	}
+}
+
+func TestIntegration_RoutineScalarUDF(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	// Create a scalar UDF routine via API.
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+	err := routine.Create(ctx, &RoutineMetadata{
+		Type:     "SCALAR_FUNCTION",
+		Language: "SQL",
+		Body:     "x * 3",
+		Arguments: []*RoutineArgument{
+			{
+				Name: "x",
+				DataType: &StandardSQLDataType{
+					TypeKind: "INT64",
+				},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+}
+
+func TestIntegration_RoutineComplexTypes(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+	sql := fmt.Sprintf(`
+		CREATE FUNCTION `+"`%s`("+`
+			arr ARRAY<STRUCT<name STRING, val INT64>>
+		  ) AS (
+			  (SELECT SUM(IF(elem.name = "foo",elem.val,null)) FROM UNNEST(arr) AS elem)
+		  )`,
+		routine.FullyQualifiedName())
+	if err := runQueryJob(ctx, sql); err != nil {
+		t.Fatal(err)
+	}
+	defer routine.Delete(ctx)
+
+	meta, err := routine.Metadata(ctx)
+	if err != nil {
+		t.Fatalf("Metadata: %v", err)
+	}
+	if meta.Type != "SCALAR_FUNCTION" {
+		t.Fatalf("routine type mismatch, got %s want SCALAR_FUNCTION", meta.Type)
+	}
+	if meta.Language != "SQL" {
+		t.Fatalf("language type mismatch, got  %s want SQL", meta.Language)
+	}
+	want := []*RoutineArgument{
+		{
+			Name: "arr",
+			DataType: &StandardSQLDataType{
+				TypeKind: "ARRAY",
+				ArrayElementType: &StandardSQLDataType{
+					TypeKind: "STRUCT",
+					StructType: &StandardSQLStructType{
+						Fields: []*StandardSQLField{
+							{
+								Name: "name",
+								Type: &StandardSQLDataType{
+									TypeKind: "STRING",
+								},
+							},
+							{
+								Name: "val",
+								Type: &StandardSQLDataType{
+									TypeKind: "INT64",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	if diff := testutil.Diff(meta.Arguments, want); diff != "" {
+		t.Fatalf("%+v: -got, +want:\n%s", meta.Arguments, diff)
+	}
+}
+
+func TestIntegration_RoutineLifecycle(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	// Create a scalar UDF routine via a CREATE FUNCTION query
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+
+	sql := fmt.Sprintf(`
+		CREATE FUNCTION `+"`%s`"+`(x INT64) AS (x * 3);`,
+		routine.FullyQualifiedName())
+	if err := runQueryJob(ctx, sql); err != nil {
+		t.Fatal(err)
+	}
+	defer routine.Delete(ctx)
+
+	// Get the routine metadata.
+	curMeta, err := routine.Metadata(ctx)
+	if err != nil {
+		t.Fatalf("couldn't get metadata: %v", err)
+	}
+
+	want := "SCALAR_FUNCTION"
+	if curMeta.Type != want {
+		t.Errorf("Routine type mismatch.  got %s want %s", curMeta.Type, want)
+	}
+
+	want = "SQL"
+	if curMeta.Language != want {
+		t.Errorf("Language mismatch. got %s want %s", curMeta.Language, want)
+	}
+
+	// Perform an update to change the routine body.
+	want = "x * 4"
+	// during beta, update doesn't allow partial updates.  Provide all fields.
+	newMeta, err := routine.Update(ctx, &RoutineMetadataToUpdate{
+		Body:       want,
+		Arguments:  curMeta.Arguments,
+		ReturnType: curMeta.ReturnType,
+		Type:       curMeta.Type,
+	}, curMeta.ETag)
+	if err != nil {
+		t.Fatalf("Update: %v", err)
+	}
+	if newMeta.Body != want {
+		t.Fatalf("Update failed.  want %s got %s", want, newMeta.Body)
+	}
+
+	// Ensure presence when enumerating the model list.
+	it := dataset.Routines(ctx)
+	seen := false
+	for {
+		r, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		if r.RoutineID == routineID {
+			seen = true
+		}
+	}
+	if !seen {
+		t.Fatal("routine not listed in dataset")
+	}
+
+	// Delete the model.
+	if err := routine.Delete(ctx); err != nil {
+		t.Fatalf("failed to delete routine: %v", err)
 	}
 }
 

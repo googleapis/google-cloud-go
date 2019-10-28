@@ -12,19 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package longtest
+package longtest_test
 
 import (
 	"context"
 	"fmt"
 	"log"
 	"math/rand"
+	"strconv"
+	"strings"
 	"sync"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -77,9 +80,18 @@ func TestEndToEnd_Dupes(t *testing.T) {
 	defer cancel()
 
 	consumers := []*consumer{
-		{counts: make(map[string]int), recv: recv, durations: []time.Duration{time.Hour}},
-		{counts: make(map[string]int), recv: recv,
-			durations: []time.Duration{ackDeadline, ackDeadline, ackDeadline / 2, ackDeadline / 2, time.Hour}},
+		{
+			counts:    make(map[string]int),
+			recv:      recv,
+			durations: []time.Duration{time.Hour},
+			done:      make(chan struct{}),
+		},
+		{
+			counts:    make(map[string]int),
+			recv:      recv,
+			durations: []time.Duration{ackDeadline, ackDeadline, ackDeadline / 2, ackDeadline / 2, time.Hour},
+			done:      make(chan struct{}),
+		},
 	}
 	for i, con := range consumers {
 		con := con
@@ -137,6 +149,14 @@ loop:
 			t.Errorf("Consumer %d: Willing to accept %d dups (%v duplicated of %d messages), but got %d", i, numAcceptableDups, acceptableDupPercentage, int(nMessages), numDups)
 		}
 	}
+
+	for i, con := range consumers {
+		select {
+		case <-con.done:
+		case <-time.After(15 * time.Second):
+			t.Fatalf("timed out waiting for consumer %d to finish", i)
+		}
+	}
 }
 
 func TestEndToEnd_LongProcessingTime(t *testing.T) {
@@ -175,6 +195,7 @@ func TestEndToEnd_LongProcessingTime(t *testing.T) {
 		processingDelay: func() time.Duration {
 			return time.Duration(1+rand.Int63n(120)) * time.Second
 		},
+		done: make(chan struct{}),
 	}
 	go consumer.consume(ctx, t, sub)
 	// Wait for a while after the last message before declaring quiescence.
@@ -220,6 +241,12 @@ loop:
 	} else if numDups > numAcceptableDups {
 		t.Errorf("Willing to accept %d dups (%v duplicated of %d messages), but got %d", numAcceptableDups, acceptableDupPercentage, int(nMessages), numDups)
 	}
+
+	select {
+	case <-consumer.done:
+	case <-time.After(15 * time.Second):
+		t.Fatal("timed out waiting for consumer to finish")
+	}
 }
 
 // publish publishes n messages to topic.
@@ -254,11 +281,15 @@ type consumer struct {
 	mu         sync.Mutex
 	counts     map[string]int // msgID: recvdAmt
 	totalRecvd int
+
+	// Done consuming.
+	done chan struct{}
 }
 
 // consume reads messages from a subscription, and keeps track of what it receives in mc.
 // After consume returns, the caller should wait on wg to ensure that no more updates to mc will be made.
 func (c *consumer) consume(ctx context.Context, t *testing.T, sub *pubsub.Subscription) {
+	defer close(c.done)
 	for _, dur := range c.durations {
 		ctx2, cancel := context.WithTimeout(ctx, dur)
 		defer cancel()
@@ -318,6 +349,14 @@ func prepareEndToEndTest(ctx context.Context, t *testing.T) (*pubsub.Client, *pu
 		t.Fatalf("Creating client error: %v", err)
 	}
 
+	// Don't stop the test if cleanup failed.
+	if err := cleanupSubscription(ctx, client); err != nil {
+		t.Logf("Pre-test subscription cleanup failed: %v", err)
+	}
+	if err := cleanupTopic(ctx, client); err != nil {
+		t.Logf("Pre-test topic cleanup failed: %v", err)
+	}
+
 	var topic *pubsub.Topic
 	if topic, err = client.CreateTopic(ctx, topicName); err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
@@ -327,4 +366,75 @@ func prepareEndToEndTest(ctx context.Context, t *testing.T) (*pubsub.Client, *pu
 		topic.Delete(ctx)
 		client.Close()
 	}
+}
+
+// cleanupTopic deletes stale testing topics.
+func cleanupTopic(ctx context.Context, client *pubsub.Client) error {
+	if testing.Short() {
+		return nil // Don't clean up in short mode.
+	}
+	// Delete topics which were	created a while ago.
+	const expireAge = 24 * time.Hour
+
+	it := client.Topics(ctx)
+	for {
+		t, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		// Take timestamp from id.
+		tID := t.ID()
+		p := strings.Split(tID, "-")
+		tCreated := p[len(p)-1]
+		timestamp, err := strconv.ParseInt(tCreated, 10, 64)
+		if err != nil {
+			continue
+		}
+		timeTCreated := time.Unix(0, timestamp)
+		if time.Since(timeTCreated) > expireAge {
+			log.Printf("deleting topic %q", tID)
+			if err := t.Delete(ctx); err != nil {
+				return fmt.Errorf("Delete topic: %v: %v", t.String(), err)
+			}
+		}
+	}
+	return nil
+}
+
+// cleanupSubscription deletes stale testing subscriptions.
+func cleanupSubscription(ctx context.Context, client *pubsub.Client) error {
+	if testing.Short() {
+		return nil // Don't clean up in short mode.
+	}
+	// Delete subscriptions which were created a while ago.
+	const expireAge = 24 * time.Hour
+
+	it := client.Subscriptions(ctx)
+	for {
+		s, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		sID := s.ID()
+		p := strings.Split(sID, "-")
+		sCreated := p[len(p)-2]
+		timestamp, err := strconv.ParseInt(sCreated, 10, 64)
+		if err != nil {
+			continue
+		}
+		timeSCreated := time.Unix(0, timestamp)
+		if time.Since(timeSCreated) > expireAge {
+			log.Printf("deleting subscription %q", sID)
+			if err := s.Delete(ctx); err != nil {
+				return fmt.Errorf("Delete subscription: %v: %v", s.String(), err)
+			}
+		}
+	}
+	return nil
 }

@@ -17,13 +17,6 @@
 package datatransfer
 
 import (
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	timestamppb "github.com/golang/protobuf/ptypes/timestamp"
-	datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
-	field_maskpb "google.golang.org/genproto/protobuf/field_mask"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -36,11 +29,17 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	emptypb "github.com/golang/protobuf/ptypes/empty"
+	timestamppb "github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/api/option"
+	datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
+	field_maskpb "google.golang.org/genproto/protobuf/field_mask"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 
@@ -424,8 +423,10 @@ func TestDataTransferServiceCreateTransferConfig(t *testing.T) {
 	var userId int64 = 147132913
 	var datasetRegion string = "datasetRegion959248539"
 	var expectedResponse = &datatransferpb.TransferConfig{
-		Name:                  name,
-		DestinationDatasetId:  destinationDatasetId,
+		Name: name,
+		Destination: &datatransferpb.TransferConfig_DestinationDatasetId{
+			DestinationDatasetId: destinationDatasetId,
+		},
 		DisplayName:           displayName,
 		DataSourceId:          dataSourceId,
 		Schedule:              schedule,
@@ -503,8 +504,10 @@ func TestDataTransferServiceUpdateTransferConfig(t *testing.T) {
 	var userId int64 = 147132913
 	var datasetRegion string = "datasetRegion959248539"
 	var expectedResponse = &datatransferpb.TransferConfig{
-		Name:                  name,
-		DestinationDatasetId:  destinationDatasetId,
+		Name: name,
+		Destination: &datatransferpb.TransferConfig_DestinationDatasetId{
+			DestinationDatasetId: destinationDatasetId,
+		},
 		DisplayName:           displayName,
 		DataSourceId:          dataSourceId,
 		Schedule:              schedule,
@@ -634,8 +637,10 @@ func TestDataTransferServiceGetTransferConfig(t *testing.T) {
 	var userId int64 = 147132913
 	var datasetRegion string = "datasetRegion959248539"
 	var expectedResponse = &datatransferpb.TransferConfig{
-		Name:                  name2,
-		DestinationDatasetId:  destinationDatasetId,
+		Name: name2,
+		Destination: &datatransferpb.TransferConfig_DestinationDatasetId{
+			DestinationDatasetId: destinationDatasetId,
+		},
 		DisplayName:           displayName,
 		DataSourceId:          dataSourceId,
 		Schedule:              schedule,
@@ -841,11 +846,13 @@ func TestDataTransferServiceGetTransferRun(t *testing.T) {
 	var userId int64 = 147132913
 	var schedule string = "schedule-697920873"
 	var expectedResponse = &datatransferpb.TransferRun{
-		Name:                 name2,
-		DestinationDatasetId: destinationDatasetId,
-		DataSourceId:         dataSourceId,
-		UserId:               userId,
-		Schedule:             schedule,
+		Name: name2,
+		Destination: &datatransferpb.TransferRun_DestinationDatasetId{
+			DestinationDatasetId: destinationDatasetId,
+		},
+		DataSourceId: dataSourceId,
+		UserId:       userId,
+		Schedule:     schedule,
 	}
 
 	mockDataTransfer.err = nil

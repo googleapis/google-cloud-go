@@ -206,6 +206,25 @@ func TestPublish(t *testing.T) {
 	}
 }
 
+func TestClearMessages(t *testing.T) {
+	s := NewServer()
+	defer s.Close()
+
+	for i := 0; i < 3; i++ {
+		s.Publish("projects/p/topics/t", []byte("hello"), nil)
+	}
+	s.Wait()
+	msgs := s.Messages()
+	if got, want := len(msgs), 3; got != want {
+		t.Errorf("got %d messages, want %d", got, want)
+	}
+	s.ClearMessages()
+	msgs = s.Messages()
+	if got, want := len(msgs), 0; got != want {
+		t.Errorf("got %d messages, want %d", got, want)
+	}
+}
+
 // Note: this sets the fake's "now" time, so it is sensitive to concurrent changes to "now".
 func publish(t *testing.T, pclient pb.PublisherClient, topic *pb.Topic, messages []*pb.PubsubMessage) map[string]*pb.PubsubMessage {
 	pubTime := time.Now()

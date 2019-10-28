@@ -1,10 +1,14 @@
 {
-  "description": "get: get a document",
-  "comment": "A call to DocumentRef.Get",
-  "get": {
-    "docRefPath": "projects/projectID/databases/(default)/documents/C/d",
-    "request": {
-      "name": "projects/projectID/databases/(default)/documents/C/d"
+  "tests": [
+    {
+      "description": "get: get a document",
+      "comment": "A call to DocumentRef.Get",
+      "get": {
+        "docRefPath": "projects/projectID/databases/(default)/documents/C/d",
+        "request": {
+          "name": "projects/projectID/databases/(default)/documents/C/d"
+        }
+      }
     }
-  }
+  ]
 }

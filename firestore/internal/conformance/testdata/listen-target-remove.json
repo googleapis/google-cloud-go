@@ -1,41 +1,45 @@
 {
-  "description": "listen: TargetChange_REMOVE should not appear",
-  "comment": "A TargetChange_REMOVE response should never be sent.",
-  "listen": {
-    "responses": [
-      {
-        "documentChange": {
-          "document": {
-            "name": "projects/projectID/databases/(default)/documents/C/d1",
-            "fields": {
-              "a": {
-                "integerValue": "3"
-              }
-            },
-            "createTime": "1970-01-01T00:00:01Z",
-            "updateTime": "1970-01-01T00:00:01Z"
+  "tests": [
+    {
+      "description": "listen: TargetChange_REMOVE should not appear",
+      "comment": "A TargetChange_REMOVE response should never be sent.",
+      "listen": {
+        "responses": [
+          {
+            "documentChange": {
+              "document": {
+                "name": "projects/projectID/databases/(default)/documents/C/d1",
+                "fields": {
+                  "a": {
+                    "integerValue": "3"
+                  }
+                },
+                "createTime": "1970-01-01T00:00:01Z",
+                "updateTime": "1970-01-01T00:00:01Z"
+              },
+              "targetIds": [
+                1
+              ]
+            }
           },
-          "targetIds": [
-            1
-          ]
-        }
-      },
-      {
-        "targetChange": {
-          "targetChangeType": "CURRENT"
-        }
-      },
-      {
-        "targetChange": {
-          "targetChangeType": "REMOVE"
-        }
-      },
-      {
-        "targetChange": {
-          "readTime": "1970-01-01T00:00:01Z"
-        }
+          {
+            "targetChange": {
+              "targetChangeType": "CURRENT"
+            }
+          },
+          {
+            "targetChange": {
+              "targetChangeType": "REMOVE"
+            }
+          },
+          {
+            "targetChange": {
+              "readTime": "1970-01-01T00:00:01Z"
+            }
+          }
+        ],
+        "isError": true
       }
-    ],
-    "isError": true
-  }
+    }
+  ]
 }

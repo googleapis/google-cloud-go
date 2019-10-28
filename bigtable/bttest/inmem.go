@@ -143,7 +143,15 @@ func (s *server) CreateTable(ctx context.Context, req *btapb.CreateTableRequest)
 	s.tables[tbl] = newTable(req)
 	s.mu.Unlock()
 
-	return &btapb.Table{Name: tbl}, nil
+	ct := &btapb.Table{
+		Name:           tbl,
+		ColumnFamilies: req.GetTable().GetColumnFamilies(),
+		Granularity:    req.GetTable().GetGranularity(),
+	}
+	if ct.Granularity == 0 {
+		ct.Granularity = btapb.Table_MILLIS
+	}
+	return ct, nil
 }
 
 func (s *server) CreateTableFromSnapshot(context.Context, *btapb.CreateTableFromSnapshotRequest) (*longrunning.Operation, error) {
@@ -733,7 +741,7 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) (bool, error) {
 }
 
 func newRegexp(pat []byte) (*binaryregexp.Regexp, error) {
-	re, err := binaryregexp.Compile("^" + string(pat) + "$") // match entire target
+	re, err := binaryregexp.Compile("^(?:" + string(pat) + ")$") // match entire target
 	if err != nil {
 		log.Printf("Bad pattern %q: %v", pat, err)
 	}

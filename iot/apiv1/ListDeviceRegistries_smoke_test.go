@@ -17,10 +17,6 @@
 package iot
 
 import (
-	iotpb "google.golang.org/genproto/googleapis/cloud/iot/v1"
-)
-
-import (
 	"context"
 	"fmt"
 	"strconv"
@@ -30,6 +26,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	iotpb "google.golang.org/genproto/googleapis/cloud/iot/v1"
 )
 
 var _ = fmt.Sprintf

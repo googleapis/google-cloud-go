@@ -36,12 +36,13 @@ type Dataset struct {
 // DatasetMetadata contains information about a BigQuery dataset.
 type DatasetMetadata struct {
 	// These fields can be set when creating a dataset.
-	Name                   string            // The user-friendly name for this dataset.
-	Description            string            // The user-friendly description of this dataset.
-	Location               string            // The geo location of the dataset.
-	DefaultTableExpiration time.Duration     // The default expiration time for new tables.
-	Labels                 map[string]string // User-provided labels.
-	Access                 []*AccessEntry    // Access permissions.
+	Name                    string            // The user-friendly name for this dataset.
+	Description             string            // The user-friendly description of this dataset.
+	Location                string            // The geo location of the dataset.
+	DefaultTableExpiration  time.Duration     // The default expiration time for new tables.
+	Labels                  map[string]string // User-provided labels.
+	Access                  []*AccessEntry    // Access permissions.
+	DefaultEncryptionConfig *EncryptionConfig
 
 	// These fields are read-only.
 	CreationTime     time.Time
@@ -62,6 +63,10 @@ type DatasetMetadataToUpdate struct {
 	// DefaultTableExpiration is the default expiration time for new tables.
 	// If set to time.Duration(0), new tables never expire.
 	DefaultTableExpiration optional.Duration
+
+	// DefaultEncryptionConfig defines CMEK settings for new resources created
+	// in the dataset.
+	DefaultEncryptionConfig *EncryptionConfig
 
 	// The entire access list. It is not possible to replace individual entries.
 	Access []*AccessEntry
@@ -131,6 +136,9 @@ func (dm *DatasetMetadata) toBQ() (*bq.Dataset, error) {
 	if dm.ETag != "" {
 		return nil, errors.New("bigquery: Dataset.ETag is not writable")
 	}
+	if dm.DefaultEncryptionConfig != nil {
+		ds.DefaultEncryptionConfiguration = dm.DefaultEncryptionConfig.toBQ()
+	}
 	return ds, nil
 }
 
@@ -184,15 +192,16 @@ func (d *Dataset) Metadata(ctx context.Context) (md *DatasetMetadata, err error)
 
 func bqToDatasetMetadata(d *bq.Dataset) (*DatasetMetadata, error) {
 	dm := &DatasetMetadata{
-		CreationTime:           unixMillisToTime(d.CreationTime),
-		LastModifiedTime:       unixMillisToTime(d.LastModifiedTime),
-		DefaultTableExpiration: time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
-		Description:            d.Description,
-		Name:                   d.FriendlyName,
-		FullID:                 d.Id,
-		Location:               d.Location,
-		Labels:                 d.Labels,
-		ETag:                   d.Etag,
+		CreationTime:            unixMillisToTime(d.CreationTime),
+		LastModifiedTime:        unixMillisToTime(d.LastModifiedTime),
+		DefaultTableExpiration:  time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
+		DefaultEncryptionConfig: bqToEncryptionConfig(d.DefaultEncryptionConfiguration),
+		Description:             d.Description,
+		Name:                    d.FriendlyName,
+		FullID:                  d.Id,
+		Location:                d.Location,
+		Labels:                  d.Labels,
+		ETag:                    d.Etag,
 	}
 	for _, a := range d.Access {
 		e, err := bqToAccessEntry(a, nil)
@@ -253,6 +262,10 @@ func (dm *DatasetMetadataToUpdate) toBQ() (*bq.Dataset, error) {
 		} else {
 			ds.DefaultTableExpirationMs = int64(dur / time.Millisecond)
 		}
+	}
+	if dm.DefaultEncryptionConfig != nil {
+		ds.DefaultEncryptionConfiguration = dm.DefaultEncryptionConfig.toBQ()
+		ds.DefaultEncryptionConfiguration.ForceSendFields = []string{"KmsKeyName"}
 	}
 	if dm.Access != nil {
 		var err error
@@ -436,6 +449,93 @@ func bqToModel(mr *bq.ModelReference, c *Client) *Model {
 		ProjectID: mr.ProjectId,
 		DatasetID: mr.DatasetId,
 		ModelID:   mr.ModelId,
+		c:         c,
+	}
+}
+
+// Routine creates a handle to a BigQuery routine in the dataset.
+// To determine if a routine exists, call Routine.Metadata.
+func (d *Dataset) Routine(routineID string) *Routine {
+	return &Routine{
+		ProjectID: d.ProjectID,
+		DatasetID: d.DatasetID,
+		RoutineID: routineID,
+		c:         d.c}
+}
+
+// Routines returns an iterator over the routines in the Dataset.
+func (d *Dataset) Routines(ctx context.Context) *RoutineIterator {
+	it := &RoutineIterator{
+		ctx:     ctx,
+		dataset: d,
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
+		it.fetch,
+		func() int { return len(it.routines) },
+		func() interface{} { b := it.routines; it.routines = nil; return b })
+	return it
+}
+
+// A RoutineIterator is an iterator over Routines.
+type RoutineIterator struct {
+	ctx      context.Context
+	dataset  *Dataset
+	routines []*Routine
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+}
+
+// Next returns the next result. Its second return value is Done if there are
+// no more results. Once Next returns Done, all subsequent calls will return
+// Done.
+func (it *RoutineIterator) Next() (*Routine, error) {
+	if err := it.nextFunc(); err != nil {
+		return nil, err
+	}
+	t := it.routines[0]
+	it.routines = it.routines[1:]
+	return t, nil
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *RoutineIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
+
+// listRoutines exists to aid testing.
+var listRoutines = func(it *RoutineIterator, pageSize int, pageToken string) (*bq.ListRoutinesResponse, error) {
+	call := it.dataset.c.bqs.Routines.List(it.dataset.ProjectID, it.dataset.DatasetID).
+		PageToken(pageToken).
+		Context(it.ctx)
+	setClientHeader(call.Header())
+	if pageSize > 0 {
+		call.MaxResults(int64(pageSize))
+	}
+	var res *bq.ListRoutinesResponse
+	err := runWithRetry(it.ctx, func() (err error) {
+		res, err = call.Do()
+		return err
+	})
+	return res, err
+}
+
+func (it *RoutineIterator) fetch(pageSize int, pageToken string) (string, error) {
+	res, err := listRoutines(it, pageSize, pageToken)
+	if err != nil {
+		return "", err
+	}
+	for _, t := range res.Routines {
+		it.routines = append(it.routines, bqToRoutine(t.RoutineReference, it.dataset.c))
+	}
+	return res.NextPageToken, nil
+}
+
+func bqToRoutine(mr *bq.RoutineReference, c *Client) *Routine {
+	if mr == nil {
+		return nil
+	}
+	return &Routine{
+		ProjectID: mr.ProjectId,
+		DatasetID: mr.DatasetId,
+		RoutineID: mr.RoutineId,
 		c:         c,
 	}
 }

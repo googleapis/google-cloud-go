@@ -57,12 +57,15 @@ type ProductSearchCallOptions struct {
 	RemoveProductFromProductSet []gax.CallOption
 	ListProductsInProductSet    []gax.CallOption
 	ImportProductSets           []gax.CallOption
+	PurgeProducts               []gax.CallOption
 }
 
 func defaultProductSearchClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("vision.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
@@ -100,6 +103,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 		RemoveProductFromProductSet: retry[[2]string{"default", "idempotent"}],
 		ListProductsInProductSet:    retry[[2]string{"default", "idempotent"}],
 		ImportProductSets:           retry[[2]string{"default", "non_idempotent"}],
+		PurgeProducts:               retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 
@@ -130,18 +134,16 @@ type ProductSearchClient struct {
 // Manages Products and ProductSets of reference images for use in product
 // search. It uses the following resource model:
 //
-//   The API has a collection of [ProductSet][google.cloud.vision.v1.ProductSet]
-//   resources, named projects/*/locations/*/productSets/*, which acts as a way
-//   to put different products into groups to limit identification.
+//   The API has a collection of [ProductSet][google.cloud.vision.v1.ProductSet] resources, named
+//   projects/*/locations/*/productSets/*, which acts as a way to put different
+//   products into groups to limit identification.
 //
 // In parallel,
 //
-//   The API has a collection of [Product][google.cloud.vision.v1.Product]
-//   resources, named
+//   The API has a collection of [Product][google.cloud.vision.v1.Product] resources, named
 //   projects/*/locations/*/products/*
 //
-//   Each [Product][google.cloud.vision.v1.Product] has a collection of
-//   [ReferenceImage][google.cloud.vision.v1.ReferenceImage] resources, named
+//   Each [Product][google.cloud.vision.v1.Product] has a collection of [ReferenceImage][google.cloud.vision.v1.ReferenceImage] resources, named
 //   projects/*/locations/*/products/*/referenceImages/*
 func NewProductSearchClient(ctx context.Context, opts ...option.ClientOption) (*ProductSearchClient, error) {
 	conn, err := transport.DialGRPC(ctx, append(defaultProductSearchClientOptions(), opts...)...)
@@ -663,8 +665,8 @@ func (c *ProductSearchClient) ListProductsInProductSet(ctx context.Context, req 
 // ImportProductSets asynchronous API that imports a list of reference images to specified
 // product sets based on a list of image information.
 //
-// The [google.longrunning.Operation][google.longrunning.Operation] API can be
-// used to keep track of the progress and results of the request.
+// The [google.longrunning.Operation][google.longrunning.Operation] API can be used to keep track of the
+// progress and results of the request.
 // Operation.metadata contains BatchOperationMetadata. (progress)
 // Operation.response contains ImportProductSetsResponse. (results)
 //
@@ -685,6 +687,48 @@ func (c *ProductSearchClient) ImportProductSets(ctx context.Context, req *vision
 		return nil, err
 	}
 	return &ImportProductSetsOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
+}
+
+// PurgeProducts asynchronous API to delete all Products in a ProductSet or all Products
+// that are in no ProductSet.
+//
+// If a Product is a member of the specified ProductSet in addition to other
+// ProductSets, the Product will still be deleted.
+//
+// It is recommended to not delete the specified ProductSet until after this
+// operation has completed. It is also recommended to not add any of the
+// Products involved in the batch delete to a new ProductSet while this
+// operation is running because those Products may still end up deleted.
+//
+// It's not possible to undo the PurgeProducts operation. Therefore, it is
+// recommended to keep the csv files used in ImportProductSets (if that was
+// how you originally built the Product Set) before starting PurgeProducts, in
+// case you need to re-import the data after deletion.
+//
+// If the plan is to purge all of the Products from a ProductSet and then
+// re-use the empty ProductSet to re-import new Products into the empty
+// ProductSet, you must wait until the PurgeProducts operation has finished
+// for that ProductSet.
+//
+// The [google.longrunning.Operation][google.longrunning.Operation] API can be used to keep track of the
+// progress and results of the request.
+// Operation.metadata contains BatchOperationMetadata. (progress)
+func (c *ProductSearchClient) PurgeProducts(ctx context.Context, req *visionpb.PurgeProductsRequest, opts ...gax.CallOption) (*PurgeProductsOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.PurgeProducts[0:len(c.CallOptions.PurgeProducts):len(c.CallOptions.PurgeProducts)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.productSearchClient.PurgeProducts(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &PurgeProductsOperation{
 		lro: longrunning.InternalNewOperation(c.LROClient, resp),
 	}, nil
 }
@@ -881,5 +925,61 @@ func (op *ImportProductSetsOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *ImportProductSetsOperation) Name() string {
+	return op.lro.Name()
+}
+
+// PurgeProductsOperation manages a long-running operation from PurgeProducts.
+type PurgeProductsOperation struct {
+	lro *longrunning.Operation
+}
+
+// PurgeProductsOperation returns a new PurgeProductsOperation from a given name.
+// The name must be that of a previously created PurgeProductsOperation, possibly from a different process.
+func (c *ProductSearchClient) PurgeProductsOperation(name string) *PurgeProductsOperation {
+	return &PurgeProductsOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning any error encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *PurgeProductsOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, 45000*time.Millisecond, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully, op.Done will return true.
+func (op *PurgeProductsOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *PurgeProductsOperation) Metadata() (*visionpb.BatchOperationMetadata, error) {
+	var meta visionpb.BatchOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *PurgeProductsOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *PurgeProductsOperation) Name() string {
 	return op.lro.Name()
 }

@@ -18,6 +18,7 @@ package speech
 
 import (
 	"context"
+	"math"
 	"time"
 
 	"cloud.google.com/go/longrunning"
@@ -28,7 +29,6 @@ import (
 	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -43,32 +43,21 @@ func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("speech.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
 func defaultCallOptions() *CallOptions {
-	retry := map[[2]string][]gax.CallOption{
-		{"default", "idempotent"}: {
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.3,
-				})
-			}),
-		},
-	}
+	retry := map[[2]string][]gax.CallOption{}
 	return &CallOptions{
-		Recognize:            retry[[2]string{"default", "idempotent"}],
+		Recognize:            retry[[2]string{"default", "non_idempotent"}],
 		LongRunningRecognize: retry[[2]string{"default", "non_idempotent"}],
-		StreamingRecognize:   retry[[2]string{"default", "idempotent"}],
+		StreamingRecognize:   retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 
-// Client is a client for interacting with Cloud Speech API.
+// Client is a client for interacting with Cloud Speech-to-Text API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type Client struct {
@@ -160,6 +149,8 @@ func (c *Client) Recognize(ctx context.Context, req *speechpb.RecognizeRequest, 
 // google.longrunning.Operations interface. Returns either an
 // Operation.error or an Operation.response which contains
 // a LongRunningRecognizeResponse message.
+// For more information on asynchronous speech recognition, see the
+// how-to (at https://cloud.google.com/speech-to-text/docs/async-recognize).
 func (c *Client) LongRunningRecognize(ctx context.Context, req *speechpb.LongRunningRecognizeRequest, opts ...gax.CallOption) (*LongRunningRecognizeOperation, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.LongRunningRecognize[0:len(c.CallOptions.LongRunningRecognize):len(c.CallOptions.LongRunningRecognize)], opts...)
@@ -212,7 +203,7 @@ func (c *Client) LongRunningRecognizeOperation(name string) *LongRunningRecogniz
 // See documentation of Poll for error-handling information.
 func (op *LongRunningRecognizeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*speechpb.LongRunningRecognizeResponse, error) {
 	var resp speechpb.LongRunningRecognizeResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, 45000*time.Millisecond, opts...); err != nil {
+	if err := op.lro.WaitWithInterval(ctx, &resp, 5000*time.Millisecond, opts...); err != nil {
 		return nil, err
 	}
 	return &resp, nil

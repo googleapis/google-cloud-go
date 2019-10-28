@@ -48,6 +48,8 @@ func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("logging.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
@@ -169,9 +171,9 @@ func (c *Client) WriteLogEntries(ctx context.Context, req *loggingpb.WriteLogEnt
 	return resp, nil
 }
 
-// ListLogEntries lists log entries.  Use this method to retrieve log entries from
-// Logging.  For ways to export log entries, see
-// Exporting Logs (at /logging/docs/export).
+// ListLogEntries lists log entries.  Use this method to retrieve log entries that originated
+// from a project/folder/organization/billing account.  For ways to export log
+// entries, see Exporting Logs (at /logging/docs/export).
 func (c *Client) ListLogEntries(ctx context.Context, req *loggingpb.ListLogEntriesRequest, opts ...gax.CallOption) *LogEntryIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListLogEntries[0:len(c.CallOptions.ListLogEntries):len(c.CallOptions.ListLogEntries)], opts...)

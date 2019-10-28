@@ -50,6 +50,8 @@ func defaultCloudSchedulerClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("cloudscheduler.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
@@ -73,9 +75,9 @@ func defaultCloudSchedulerCallOptions() *CloudSchedulerCallOptions {
 		GetJob:    retry[[2]string{"default", "idempotent"}],
 		CreateJob: retry[[2]string{"default", "non_idempotent"}],
 		UpdateJob: retry[[2]string{"default", "non_idempotent"}],
-		DeleteJob: retry[[2]string{"default", "idempotent"}],
-		PauseJob:  retry[[2]string{"default", "idempotent"}],
-		ResumeJob: retry[[2]string{"default", "idempotent"}],
+		DeleteJob: retry[[2]string{"default", "non_idempotent"}],
+		PauseJob:  retry[[2]string{"default", "non_idempotent"}],
+		ResumeJob: retry[[2]string{"default", "non_idempotent"}],
 		RunJob:    retry[[2]string{"default", "non_idempotent"}],
 	}
 }

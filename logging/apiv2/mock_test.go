@@ -17,13 +17,6 @@
 package logging
 
 import (
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
-	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
-	field_maskpb "google.golang.org/genproto/protobuf/field_mask"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -36,92 +29,23 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
+	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
+	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
+	field_maskpb "google.golang.org/genproto/protobuf/field_mask"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 
 var _ = io.EOF
 var _ = ptypes.MarshalAny
 var _ status.Status
-
-type mockLoggingServer struct {
-	// Embed for forward compatibility.
-	// Tests will keep working if more methods are added
-	// in the future.
-	loggingpb.LoggingServiceV2Server
-
-	reqs []proto.Message
-
-	// If set, all calls return this error.
-	err error
-
-	// responses to return if err == nil
-	resps []proto.Message
-}
-
-func (s *mockLoggingServer) DeleteLog(ctx context.Context, req *loggingpb.DeleteLogRequest) (*emptypb.Empty, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*emptypb.Empty), nil
-}
-
-func (s *mockLoggingServer) WriteLogEntries(ctx context.Context, req *loggingpb.WriteLogEntriesRequest) (*loggingpb.WriteLogEntriesResponse, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*loggingpb.WriteLogEntriesResponse), nil
-}
-
-func (s *mockLoggingServer) ListLogEntries(ctx context.Context, req *loggingpb.ListLogEntriesRequest) (*loggingpb.ListLogEntriesResponse, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*loggingpb.ListLogEntriesResponse), nil
-}
-
-func (s *mockLoggingServer) ListMonitoredResourceDescriptors(ctx context.Context, req *loggingpb.ListMonitoredResourceDescriptorsRequest) (*loggingpb.ListMonitoredResourceDescriptorsResponse, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*loggingpb.ListMonitoredResourceDescriptorsResponse), nil
-}
-
-func (s *mockLoggingServer) ListLogs(ctx context.Context, req *loggingpb.ListLogsRequest) (*loggingpb.ListLogsResponse, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*loggingpb.ListLogsResponse), nil
-}
 
 type mockConfigServer struct {
 	// Embed for forward compatibility.
@@ -258,6 +182,81 @@ func (s *mockConfigServer) DeleteExclusion(ctx context.Context, req *loggingpb.D
 	return s.resps[0].(*emptypb.Empty), nil
 }
 
+type mockLoggingServer struct {
+	// Embed for forward compatibility.
+	// Tests will keep working if more methods are added
+	// in the future.
+	loggingpb.LoggingServiceV2Server
+
+	reqs []proto.Message
+
+	// If set, all calls return this error.
+	err error
+
+	// responses to return if err == nil
+	resps []proto.Message
+}
+
+func (s *mockLoggingServer) DeleteLog(ctx context.Context, req *loggingpb.DeleteLogRequest) (*emptypb.Empty, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*emptypb.Empty), nil
+}
+
+func (s *mockLoggingServer) WriteLogEntries(ctx context.Context, req *loggingpb.WriteLogEntriesRequest) (*loggingpb.WriteLogEntriesResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*loggingpb.WriteLogEntriesResponse), nil
+}
+
+func (s *mockLoggingServer) ListLogEntries(ctx context.Context, req *loggingpb.ListLogEntriesRequest) (*loggingpb.ListLogEntriesResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*loggingpb.ListLogEntriesResponse), nil
+}
+
+func (s *mockLoggingServer) ListMonitoredResourceDescriptors(ctx context.Context, req *loggingpb.ListMonitoredResourceDescriptorsRequest) (*loggingpb.ListMonitoredResourceDescriptorsResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*loggingpb.ListMonitoredResourceDescriptorsResponse), nil
+}
+
+func (s *mockLoggingServer) ListLogs(ctx context.Context, req *loggingpb.ListLogsRequest) (*loggingpb.ListLogsResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*loggingpb.ListLogsResponse), nil
+}
+
 type mockMetricsServer struct {
 	// Embed for forward compatibility.
 	// Tests will keep working if more methods are added
@@ -338,8 +337,8 @@ func (s *mockMetricsServer) DeleteLogMetric(ctx context.Context, req *loggingpb.
 var clientOpt option.ClientOption
 
 var (
-	mockLogging mockLoggingServer
 	mockConfig  mockConfigServer
+	mockLogging mockLoggingServer
 	mockMetrics mockMetricsServer
 )
 
@@ -347,8 +346,8 @@ func TestMain(m *testing.M) {
 	flag.Parse()
 
 	serv := grpc.NewServer()
-	loggingpb.RegisterLoggingServiceV2Server(serv, &mockLogging)
 	loggingpb.RegisterConfigServiceV2Server(serv, &mockConfig)
+	loggingpb.RegisterLoggingServiceV2Server(serv, &mockLogging)
 	loggingpb.RegisterMetricsServiceV2Server(serv, &mockMetrics)
 
 	lis, err := net.Listen("tcp", "localhost:0")
@@ -366,324 +365,6 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestLoggingServiceV2DeleteLog(t *testing.T) {
-	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
-
-	mockLogging.err = nil
-	mockLogging.reqs = nil
-
-	mockLogging.resps = append(mockLogging.resps[:0], expectedResponse)
-
-	var formattedLogName string = fmt.Sprintf("projects/%s/logs/%s", "[PROJECT]", "[LOG]")
-	var request = &loggingpb.DeleteLogRequest{
-		LogName: formattedLogName,
-	}
-
-	c, err := NewClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = c.DeleteLog(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockLogging.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-}
-
-func TestLoggingServiceV2DeleteLogError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockLogging.err = gstatus.Error(errCode, "test error")
-
-	var formattedLogName string = fmt.Sprintf("projects/%s/logs/%s", "[PROJECT]", "[LOG]")
-	var request = &loggingpb.DeleteLogRequest{
-		LogName: formattedLogName,
-	}
-
-	c, err := NewClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = c.DeleteLog(context.Background(), request)
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-}
-func TestLoggingServiceV2WriteLogEntries(t *testing.T) {
-	var expectedResponse *loggingpb.WriteLogEntriesResponse = &loggingpb.WriteLogEntriesResponse{}
-
-	mockLogging.err = nil
-	mockLogging.reqs = nil
-
-	mockLogging.resps = append(mockLogging.resps[:0], expectedResponse)
-
-	var entries []*loggingpb.LogEntry = nil
-	var request = &loggingpb.WriteLogEntriesRequest{
-		Entries: entries,
-	}
-
-	c, err := NewClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.WriteLogEntries(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockLogging.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestLoggingServiceV2WriteLogEntriesError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockLogging.err = gstatus.Error(errCode, "test error")
-
-	var entries []*loggingpb.LogEntry = nil
-	var request = &loggingpb.WriteLogEntriesRequest{
-		Entries: entries,
-	}
-
-	c, err := NewClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.WriteLogEntries(context.Background(), request)
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
-func TestLoggingServiceV2ListLogEntries(t *testing.T) {
-	var nextPageToken string = ""
-	var entriesElement *loggingpb.LogEntry = &loggingpb.LogEntry{}
-	var entries = []*loggingpb.LogEntry{entriesElement}
-	var expectedResponse = &loggingpb.ListLogEntriesResponse{
-		NextPageToken: nextPageToken,
-		Entries:       entries,
-	}
-
-	mockLogging.err = nil
-	mockLogging.reqs = nil
-
-	mockLogging.resps = append(mockLogging.resps[:0], expectedResponse)
-
-	var formattedResourceNames []string = nil
-	var request = &loggingpb.ListLogEntriesRequest{
-		ResourceNames: formattedResourceNames,
-	}
-
-	c, err := NewClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.ListLogEntries(context.Background(), request).Next()
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockLogging.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	want := (interface{})(expectedResponse.Entries[0])
-	got := (interface{})(resp)
-	var ok bool
-
-	switch want := (want).(type) {
-	case proto.Message:
-		ok = proto.Equal(want, got.(proto.Message))
-	default:
-		ok = want == got
-	}
-	if !ok {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestLoggingServiceV2ListLogEntriesError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockLogging.err = gstatus.Error(errCode, "test error")
-
-	var formattedResourceNames []string = nil
-	var request = &loggingpb.ListLogEntriesRequest{
-		ResourceNames: formattedResourceNames,
-	}
-
-	c, err := NewClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.ListLogEntries(context.Background(), request).Next()
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
-func TestLoggingServiceV2ListMonitoredResourceDescriptors(t *testing.T) {
-	var nextPageToken string = ""
-	var resourceDescriptorsElement *monitoredrespb.MonitoredResourceDescriptor = &monitoredrespb.MonitoredResourceDescriptor{}
-	var resourceDescriptors = []*monitoredrespb.MonitoredResourceDescriptor{resourceDescriptorsElement}
-	var expectedResponse = &loggingpb.ListMonitoredResourceDescriptorsResponse{
-		NextPageToken:       nextPageToken,
-		ResourceDescriptors: resourceDescriptors,
-	}
-
-	mockLogging.err = nil
-	mockLogging.reqs = nil
-
-	mockLogging.resps = append(mockLogging.resps[:0], expectedResponse)
-
-	var request *loggingpb.ListMonitoredResourceDescriptorsRequest = &loggingpb.ListMonitoredResourceDescriptorsRequest{}
-
-	c, err := NewClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.ListMonitoredResourceDescriptors(context.Background(), request).Next()
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockLogging.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	want := (interface{})(expectedResponse.ResourceDescriptors[0])
-	got := (interface{})(resp)
-	var ok bool
-
-	switch want := (want).(type) {
-	case proto.Message:
-		ok = proto.Equal(want, got.(proto.Message))
-	default:
-		ok = want == got
-	}
-	if !ok {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestLoggingServiceV2ListMonitoredResourceDescriptorsError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockLogging.err = gstatus.Error(errCode, "test error")
-
-	var request *loggingpb.ListMonitoredResourceDescriptorsRequest = &loggingpb.ListMonitoredResourceDescriptorsRequest{}
-
-	c, err := NewClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.ListMonitoredResourceDescriptors(context.Background(), request).Next()
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
-func TestLoggingServiceV2ListLogs(t *testing.T) {
-	var nextPageToken string = ""
-	var logNamesElement string = "logNamesElement-1079688374"
-	var logNames = []string{logNamesElement}
-	var expectedResponse = &loggingpb.ListLogsResponse{
-		NextPageToken: nextPageToken,
-		LogNames:      logNames,
-	}
-
-	mockLogging.err = nil
-	mockLogging.reqs = nil
-
-	mockLogging.resps = append(mockLogging.resps[:0], expectedResponse)
-
-	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
-	var request = &loggingpb.ListLogsRequest{
-		Parent: formattedParent,
-	}
-
-	c, err := NewClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.ListLogs(context.Background(), request).Next()
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockLogging.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	want := (interface{})(expectedResponse.LogNames[0])
-	got := (interface{})(resp)
-	var ok bool
-
-	switch want := (want).(type) {
-	case proto.Message:
-		ok = proto.Equal(want, got.(proto.Message))
-	default:
-		ok = want == got
-	}
-	if !ok {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestLoggingServiceV2ListLogsError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockLogging.err = gstatus.Error(errCode, "test error")
-
-	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
-	var request = &loggingpb.ListLogsRequest{
-		Parent: formattedParent,
-	}
-
-	c, err := NewClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.ListLogs(context.Background(), request).Next()
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
 func TestConfigServiceV2ListSinks(t *testing.T) {
 	var nextPageToken string = ""
 	var sinksElement *loggingpb.LogSink = &loggingpb.LogSink{}
@@ -1347,6 +1028,324 @@ func TestConfigServiceV2DeleteExclusionError(t *testing.T) {
 	} else if c := st.Code(); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+}
+func TestLoggingServiceV2DeleteLog(t *testing.T) {
+	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
+
+	mockLogging.err = nil
+	mockLogging.reqs = nil
+
+	mockLogging.resps = append(mockLogging.resps[:0], expectedResponse)
+
+	var formattedLogName string = fmt.Sprintf("projects/%s/logs/%s", "[PROJECT]", "[LOG]")
+	var request = &loggingpb.DeleteLogRequest{
+		LogName: formattedLogName,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteLog(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockLogging.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestLoggingServiceV2DeleteLogError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockLogging.err = gstatus.Error(errCode, "test error")
+
+	var formattedLogName string = fmt.Sprintf("projects/%s/logs/%s", "[PROJECT]", "[LOG]")
+	var request = &loggingpb.DeleteLogRequest{
+		LogName: formattedLogName,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteLog(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
+func TestLoggingServiceV2WriteLogEntries(t *testing.T) {
+	var expectedResponse *loggingpb.WriteLogEntriesResponse = &loggingpb.WriteLogEntriesResponse{}
+
+	mockLogging.err = nil
+	mockLogging.reqs = nil
+
+	mockLogging.resps = append(mockLogging.resps[:0], expectedResponse)
+
+	var entries []*loggingpb.LogEntry = nil
+	var request = &loggingpb.WriteLogEntriesRequest{
+		Entries: entries,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.WriteLogEntries(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockLogging.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestLoggingServiceV2WriteLogEntriesError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockLogging.err = gstatus.Error(errCode, "test error")
+
+	var entries []*loggingpb.LogEntry = nil
+	var request = &loggingpb.WriteLogEntriesRequest{
+		Entries: entries,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.WriteLogEntries(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestLoggingServiceV2ListLogEntries(t *testing.T) {
+	var nextPageToken string = ""
+	var entriesElement *loggingpb.LogEntry = &loggingpb.LogEntry{}
+	var entries = []*loggingpb.LogEntry{entriesElement}
+	var expectedResponse = &loggingpb.ListLogEntriesResponse{
+		NextPageToken: nextPageToken,
+		Entries:       entries,
+	}
+
+	mockLogging.err = nil
+	mockLogging.reqs = nil
+
+	mockLogging.resps = append(mockLogging.resps[:0], expectedResponse)
+
+	var formattedResourceNames []string = nil
+	var request = &loggingpb.ListLogEntriesRequest{
+		ResourceNames: formattedResourceNames,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListLogEntries(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockLogging.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.Entries[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestLoggingServiceV2ListLogEntriesError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockLogging.err = gstatus.Error(errCode, "test error")
+
+	var formattedResourceNames []string = nil
+	var request = &loggingpb.ListLogEntriesRequest{
+		ResourceNames: formattedResourceNames,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListLogEntries(context.Background(), request).Next()
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestLoggingServiceV2ListMonitoredResourceDescriptors(t *testing.T) {
+	var nextPageToken string = ""
+	var resourceDescriptorsElement *monitoredrespb.MonitoredResourceDescriptor = &monitoredrespb.MonitoredResourceDescriptor{}
+	var resourceDescriptors = []*monitoredrespb.MonitoredResourceDescriptor{resourceDescriptorsElement}
+	var expectedResponse = &loggingpb.ListMonitoredResourceDescriptorsResponse{
+		NextPageToken:       nextPageToken,
+		ResourceDescriptors: resourceDescriptors,
+	}
+
+	mockLogging.err = nil
+	mockLogging.reqs = nil
+
+	mockLogging.resps = append(mockLogging.resps[:0], expectedResponse)
+
+	var request *loggingpb.ListMonitoredResourceDescriptorsRequest = &loggingpb.ListMonitoredResourceDescriptorsRequest{}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListMonitoredResourceDescriptors(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockLogging.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.ResourceDescriptors[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestLoggingServiceV2ListMonitoredResourceDescriptorsError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockLogging.err = gstatus.Error(errCode, "test error")
+
+	var request *loggingpb.ListMonitoredResourceDescriptorsRequest = &loggingpb.ListMonitoredResourceDescriptorsRequest{}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListMonitoredResourceDescriptors(context.Background(), request).Next()
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestLoggingServiceV2ListLogs(t *testing.T) {
+	var nextPageToken string = ""
+	var logNamesElement string = "logNamesElement-1079688374"
+	var logNames = []string{logNamesElement}
+	var expectedResponse = &loggingpb.ListLogsResponse{
+		NextPageToken: nextPageToken,
+		LogNames:      logNames,
+	}
+
+	mockLogging.err = nil
+	mockLogging.reqs = nil
+
+	mockLogging.resps = append(mockLogging.resps[:0], expectedResponse)
+
+	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
+	var request = &loggingpb.ListLogsRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListLogs(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockLogging.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.LogNames[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestLoggingServiceV2ListLogsError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockLogging.err = gstatus.Error(errCode, "test error")
+
+	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
+	var request = &loggingpb.ListLogsRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListLogs(context.Background(), request).Next()
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
 }
 func TestMetricsServiceV2ListLogMetrics(t *testing.T) {
 	var nextPageToken string = ""

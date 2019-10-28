@@ -33,6 +33,24 @@ func ExampleNewController2Client() {
 	_ = c
 }
 
+func ExampleController2Client_UpdateActiveBreakpoint() {
+	ctx := context.Background()
+	c, err := debugger.NewController2Client(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &clouddebuggerpb.UpdateActiveBreakpointRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.UpdateActiveBreakpoint(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleController2Client_RegisterDebuggee() {
 	ctx := context.Background()
 	c, err := debugger.NewController2Client(ctx)
@@ -62,24 +80,6 @@ func ExampleController2Client_ListActiveBreakpoints() {
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.ListActiveBreakpoints(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleController2Client_UpdateActiveBreakpoint() {
-	ctx := context.Background()
-	c, err := debugger.NewController2Client(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &clouddebuggerpb.UpdateActiveBreakpointRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.UpdateActiveBreakpoint(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

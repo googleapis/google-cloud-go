@@ -15,6 +15,7 @@
 package pubsub
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -27,6 +28,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub/pstest"
 	"google.golang.org/api/option"
+	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -49,7 +51,7 @@ func TestSplitRequestIDs(t *testing.T) {
 		{ids, 2},
 		{ids[:2], 2},
 	} {
-		got1, got2 := splitRequestIDs(test.ids, reqFixedOverhead+20)
+		got1, got2 := splitRequestIDs(test.ids, 15)
 		want1, want2 := test.ids[:test.splitIndex], test.ids[test.splitIndex:]
 		if !testutil.Equal(got1, want1) {
 			t.Errorf("%v, 1: got %v, want %v", test, got1, want1)
@@ -57,6 +59,51 @@ func TestSplitRequestIDs(t *testing.T) {
 		if !testutil.Equal(got2, want2) {
 			t.Errorf("%v, 2: got %v, want %v", test, got2, want2)
 		}
+	}
+}
+
+func TestCalcFieldSize(t *testing.T) {
+	t.Parallel()
+	// Create a mock ack request to test.
+	req := &pb.AcknowledgeRequest{
+		Subscription: "sub",
+		AckIds:       []string{"aaa", "bbb", "ccc", "ddd", "eee"},
+	}
+	size := calcFieldSizeString(req.Subscription) + calcFieldSizeString(req.AckIds...)
+
+	// Proto encoding is calculated from 1 tag byte and 1 size byte for each string.
+	want := (1 + 1) + len(req.Subscription) + // subscription field: 1 tag byte + 1 size byte
+		5*(1+1+3) // ackID size: 5 * [1 (tag byte) + 1 (size byte) + 3 (length of ackID)]
+	if size != want {
+		t.Errorf("pubsub: calculated ack req size of %d bytes, want %d", size, want)
+	}
+
+	req.Subscription = string(bytes.Repeat([]byte{'A'}, 300))
+	size = calcFieldSizeString(req.Subscription) + calcFieldSizeString(req.AckIds...)
+
+	// With a longer subscription name, we use an extra size byte.
+	want = (1 + 2) + len(req.Subscription) + // subscription field: 1 tag byte + 2 size bytes
+		5*(1+1+3) // ackID size: 5 * [1 (tag byte) + 1 (size byte) + 3 (length of ackID)]
+	if size != want {
+		t.Errorf("pubsub: calculated ack req size of %d bytes, want %d", size, want)
+	}
+
+	// Create a mock modack request to test.
+	modAckReq := &pb.ModifyAckDeadlineRequest{
+		Subscription:       "sub",
+		AckIds:             []string{"aaa", "bbb", "ccc", "ddd", "eee"},
+		AckDeadlineSeconds: 300,
+	}
+
+	size = calcFieldSizeString(modAckReq.Subscription) +
+		calcFieldSizeString(modAckReq.AckIds...) +
+		calcFieldSizeInt(int(modAckReq.AckDeadlineSeconds))
+
+	want = (1 + 1) + len(modAckReq.Subscription) + // subscription field: 1 tag byte + 1 size byte
+		5*(1+1+3) + // ackID size: 5 * [1 (tag byte) + 1 (size byte) + 3 (length of ackID)]
+		(1 + 2) // ackDeadline: 1 tag byte + 2 size bytes
+	if size != want {
+		t.Errorf("pubsub: calculated modAck req size of %d bytes, want %d", size, want)
 	}
 }
 
@@ -262,7 +309,9 @@ func initConn(ctx context.Context, addr string) (*Subscription, *Client, error) 
 	if err != nil {
 		return nil, nil, err
 	}
-	client, err := NewClient(ctx, projName, option.WithGRPCConn(conn))
+	e := testutil.DefaultHeadersEnforcer()
+	opts := append(e.CallOptions(), option.WithGRPCConn(conn))
+	client, err := NewClient(ctx, projName, opts...)
 	if err != nil {
 		return nil, nil, err
 	}

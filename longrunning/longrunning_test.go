@@ -28,9 +28,10 @@ import (
 	"github.com/golang/protobuf/ptypes/duration"
 	gax "github.com/googleapis/gax-go/v2"
 	pb "google.golang.org/genproto/googleapis/longrunning"
-	status "google.golang.org/genproto/googleapis/rpc/status"
+	rpcstatus "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type getterService struct {
@@ -154,7 +155,7 @@ func TestPollErrorResult(t *testing.T) {
 			Name: "foo",
 			Done: true,
 			Result: &pb.Operation_Error{
-				Error: &status.Status{
+				Error: &rpcstatus.Status{
 					Code:    int32(errCode),
 					Message: errMsg,
 				},
@@ -162,7 +163,7 @@ func TestPollErrorResult(t *testing.T) {
 		},
 	}
 	err := op.Poll(context.Background(), nil)
-	if got := grpc.Code(err); got != errCode {
+	if got := status.Code(err); got != errCode {
 		t.Errorf("error code, want %s, got %s", errCode, got)
 	}
 	if got := grpc.ErrorDesc(err); got != errMsg {

@@ -27,6 +27,24 @@ import (
 // Schema describes the fields in a table or query result.
 type Schema []*FieldSchema
 
+// Relax returns a version of the schema where no fields are marked
+// as Required.
+func (s Schema) Relax() Schema {
+	var out Schema
+	for _, v := range s {
+		relaxed := &FieldSchema{
+			Name:        v.Name,
+			Description: v.Description,
+			Repeated:    v.Repeated,
+			Required:    false,
+			Type:        v.Type,
+			Schema:      v.Schema.Relax(),
+		}
+		out = append(out, relaxed)
+	}
+	return out
+}
+
 // FieldSchema describes a single field.
 type FieldSchema struct {
 	// The field name.

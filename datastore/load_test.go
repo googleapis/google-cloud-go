@@ -15,6 +15,7 @@
 package datastore
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -425,6 +426,83 @@ type NestedStructPtrs struct {
 type NestedSimple2 struct {
 	A *Simple
 	I int
+	U interface{}
+}
+
+type withTypedInterface struct {
+	Field fmt.Stringer
+}
+
+type withUntypedInterface struct {
+	Field interface{}
+}
+
+func TestLoadToInterface(t *testing.T) {
+	testCases := []struct {
+		name    string
+		src     *pb.Entity
+		dst     interface{}
+		want    interface{}
+		wantErr string
+	}{
+		{
+			name: "Typed interface",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Field": {ValueType: &pb.Value_StringValue{
+						StringValue: "Foo",
+					}},
+				},
+			},
+			dst:     &withTypedInterface{},
+			wantErr: `datastore: cannot load field "Field" into a "datastore.withTypedInterface": "string" is not assignable to "fmt.Stringer"`,
+		},
+		{
+			name: "Untyped interface, fresh struct",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Field": {ValueType: &pb.Value_StringValue{
+						StringValue: "Foo",
+					}},
+				},
+			},
+			dst:  &withUntypedInterface{},
+			want: &withUntypedInterface{Field: "Foo"},
+		},
+		{
+			name: "Untyped interface, already set",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Field": {ValueType: &pb.Value_StringValue{
+						StringValue: "Newly set",
+					}},
+				},
+			},
+			dst:  &withUntypedInterface{Field: 1e9},
+			want: &withUntypedInterface{Field: "Newly set"},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := loadEntityProto(tc.dst, tc.src)
+			if tc.wantErr != "" {
+				if err == nil || err.Error() != tc.wantErr {
+					t.Fatalf("Error mismatch\nGot:  %s\nWant: %s", err, tc.wantErr)
+				}
+			} else {
+				if err != nil {
+					t.Fatalf("loadEntityProto: %v", err)
+				}
+				if diff := testutil.Diff(tc.dst, tc.want); diff != "" {
+					t.Fatalf("Mismatch: got - want +\n%s", diff)
+				}
+			}
+		})
+	}
 }
 
 func TestAlreadyPopulatedDst(t *testing.T) {
@@ -471,6 +549,7 @@ func TestAlreadyPopulatedDst(t *testing.T) {
 							Properties: map[string]*pb.Value{
 								"A": {ValueType: &pb.Value_NullValue{}},
 								"I": {ValueType: &pb.Value_IntegerValue{IntegerValue: 2}},
+								"U": {ValueType: &pb.Value_StringValue{StringValue: "replaced"}},
 							},
 						},
 					}},
@@ -483,6 +562,7 @@ func TestAlreadyPopulatedDst(t *testing.T) {
 				&NestedSimple2{
 					A: &Simple{I: 2},
 					/* I: 0 */
+					U: 1e9,
 				},
 				0,
 			},
@@ -492,6 +572,7 @@ func TestAlreadyPopulatedDst(t *testing.T) {
 				&NestedSimple2{
 					/* A: nil, */
 					I: 2,
+					U: "replaced",
 				},
 				5,
 			},
@@ -605,6 +686,110 @@ type KeyLoader4 struct {
 func (kl *KeyLoader4) LoadKey(k *Key) error {
 	kl.K = k
 	return nil
+}
+
+type PLS1 struct {
+	A string
+}
+
+func (p *PLS1) Load(props []Property) error {
+	for _, pp := range props {
+		if pp.Name == "A" {
+			p.A = pp.Value.(string)
+		}
+	}
+	return nil
+}
+
+func (p *PLS1) Save() (props []Property, err error) {
+	return []Property{{Name: "A", Value: p.A}}, nil
+}
+
+type KeyLoader6 struct {
+	A string
+	B string
+	K *Key
+}
+
+func (kl *KeyLoader6) Load(props []Property) error {
+	for _, pp := range props {
+		if pp.Name == "A" {
+			kl.A = pp.Value.(string)
+		}
+	}
+	return &ErrFieldMismatch{
+		StructType: reflect.TypeOf(kl),
+		FieldName:  "B",
+		Reason:     "no value found",
+	}
+}
+
+func (kl *KeyLoader6) LoadKey(k *Key) error {
+	kl.K = k
+	return nil
+}
+
+func (kl *KeyLoader6) Save() (props []Property, err error) {
+	return []Property{{}}, nil
+}
+
+type KeyLoader7 struct {
+	A string
+	K *Key
+}
+
+func (kl *KeyLoader7) Load(props []Property) error {
+	for _, pp := range props {
+		if pp.Name == "A" {
+			kl.A = pp.Value.(string)
+		}
+	}
+	return nil
+}
+
+func (kl *KeyLoader7) LoadKey(k *Key) error {
+	return &ErrFieldMismatch{
+		StructType: reflect.TypeOf(kl),
+		FieldName:  "key",
+		Reason:     "no value found",
+	}
+}
+
+func (kl *KeyLoader7) Save() (props []Property, err error) {
+	return []Property{{}}, nil
+}
+
+type KeyLoader8 struct {
+	A string
+	B string
+	K *Key
+}
+
+type customLoadError struct{}
+
+func (e *customLoadError) Error() string {
+	return "custom load error"
+}
+
+func (kl *KeyLoader8) Load(props []Property) error {
+	for _, pp := range props {
+		if pp.Name == "A" {
+			kl.A = pp.Value.(string)
+		}
+	}
+	return &customLoadError{}
+}
+
+func (kl *KeyLoader8) LoadKey(k *Key) error {
+	return &ErrFieldMismatch{
+		StructType: reflect.TypeOf(kl),
+		FieldName:  "key",
+		Reason:     "no value found",
+	}
+}
+
+func (kl *KeyLoader8) Save() (props []Property, err error) {
+	return []Property{{}}, nil
 }
 
 type NotKeyLoader struct {
@@ -759,6 +944,50 @@ func TestKeyLoader(t *testing.T) {
 					K:    testKey2a,
 				},
 				PLS: &NotKeyLoader{A: "something"},
+			},
+		},
+		{
+			desc: "simple key loader with ErrFieldMismatch error",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"A": {ValueType: &pb.Value_StringValue{StringValue: "hello"}},
+				},
+			},
+			dst: &KeyLoader6{},
+			want: &KeyLoader6{
+				A: "hello",
+				B: "",
+				K: testKey0,
+			},
+		},
+		{
+			desc: "simple key loader with ErrFieldMismatch during key load",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"A": {ValueType: &pb.Value_StringValue{StringValue: "hello"}},
+				},
+			},
+			dst: &KeyLoader7{},
+			want: &KeyLoader7{
+				A: "hello",
+				K: nil,
+			},
+		},
+		{
+			desc: "simple key loader with other error during Load and ErrFieldMismatch during KeyLoad",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"A": {ValueType: &pb.Value_StringValue{StringValue: "hello"}},
+				},
+			},
+			dst: &KeyLoader8{},
+			want: &KeyLoader8{
+				A: "hello",
+				B: "",
+				K: nil,
 			},
 		},
 	}

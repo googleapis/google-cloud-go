@@ -365,12 +365,53 @@ func ExampleObjectHandle_NewRangeReader() {
 	if err != nil {
 		// TODO: handle error.
 	}
+	defer rc.Close()
+
 	slurp, err := ioutil.ReadAll(rc)
-	rc.Close()
 	if err != nil {
 		// TODO: handle error.
 	}
-	fmt.Println("first 64K of file contents:", slurp)
+	fmt.Printf("first 64K of file contents:\n%s\n", slurp)
+}
+
+func ExampleObjectHandle_NewRangeReader_lastNBytes() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// Read only the last 10 bytes until the end of the file.
+	rc, err := client.Bucket("bucketname").Object("filename1").NewRangeReader(ctx, -10, -1)
+	if err != nil {
+		// TODO: handle error.
+	}
+	defer rc.Close()
+
+	slurp, err := ioutil.ReadAll(rc)
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Printf("Last 10 bytes from the end of the file:\n%s\n", slurp)
+}
+
+func ExampleObjectHandle_NewRangeReader_untilEnd() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// Read from the 101st byte until the end of the file.
+	rc, err := client.Bucket("bucketname").Object("filename1").NewRangeReader(ctx, 100, -1)
+	if err != nil {
+		// TODO: handle error.
+	}
+	defer rc.Close()
+
+	slurp, err := ioutil.ReadAll(rc)
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Printf("From 101st byte until the end:\n%s\n", slurp)
 }
 
 func ExampleObjectHandle_NewWriter() {
@@ -661,5 +702,125 @@ func ExampleObjectHandle_Key() {
 	}
 	if err := w.Close(); err != nil {
 		// TODO: handle error.
+	}
+}
+
+func ExampleClient_CreateHMACKey() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	hkey, err := client.CreateHMACKey(ctx, "project-id", "service-account-email")
+	if err != nil {
+		// TODO: handle error.
+	}
+	_ = hkey // TODO: Use the HMAC Key.
+}
+
+func ExampleHMACKeyHandle_Delete() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	hkh := client.HMACKeyHandle("project-id", "access-key-id")
+	// Make sure that the HMACKey being deleted has a status of inactive.
+	if err := hkh.Delete(ctx); err != nil {
+		// TODO: handle error.
+	}
+}
+
+func ExampleHMACKeyHandle_Get() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	hkh := client.HMACKeyHandle("project-id", "access-key-id")
+	hkey, err := hkh.Get(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	_ = hkey // TODO: Use the HMAC Key.
+}
+
+func ExampleHMACKeyHandle_Update() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	hkh := client.HMACKeyHandle("project-id", "access-key-id")
+	ukey, err := hkh.Update(ctx, storage.HMACKeyAttrsToUpdate{
+		State: storage.Inactive,
+	})
+	if err != nil {
+		// TODO: handle error.
+	}
+	_ = ukey // TODO: Use the HMAC Key.
+}
+
+func ExampleClient_ListHMACKeys() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	iter := client.ListHMACKeys(ctx, "project-id")
+	for {
+		key, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: handle error.
+		}
+		_ = key // TODO: Use the key.
+	}
+}
+
+func ExampleClient_ListHMACKeys_showDeletedKeys() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	iter := client.ListHMACKeys(ctx, "project-id", storage.ShowDeletedHMACKeys())
+	for {
+		key, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: handle error.
+		}
+		_ = key // TODO: Use the key.
+	}
+}
+
+func ExampleClient_ListHMACKeys_forServiceAccountEmail() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	iter := client.ListHMACKeys(ctx, "project-id", storage.ForHMACKeyServiceAccountEmail("service@account.email"))
+	for {
+		key, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: handle error.
+		}
+		_ = key // TODO: Use the key.
 	}
 }

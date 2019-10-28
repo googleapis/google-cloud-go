@@ -17,10 +17,6 @@
 package language
 
 import (
-	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta2"
-)
-
-import (
 	"context"
 	"fmt"
 	"strconv"
@@ -30,6 +26,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta2"
 )
 
 var _ = fmt.Sprintf

@@ -773,6 +773,7 @@ func TestDecodeValue(t *testing.T) {
 		{timeProto(t1), timeType(), t1, false},
 		{timeProto(t1), timeType(), NullTime{t1, true}, false},
 		{nullProto(), timeType(), NullTime{}, false},
+		{intProto(7), timeType(), time.Time{}, true},
 		// TIMESTAMP ARRAY with []NullTime
 		{listProto(timeProto(t1), timeProto(t2), timeProto(t3), nullProto()), listType(timeType()), []NullTime{{t1, true}, {t2, true}, {t3, true}, {}}, false},
 		{nullProto(), listType(timeType()), []NullTime(nil), false},
