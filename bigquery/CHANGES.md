@@ -1,5 +1,13 @@
 # Changes
 
+## v1.2.0
+
+* Adds support for scripting feature, which includes script statistics
+  and the ability to list jobs run as part of a script query.
+
+* Updates default endpoint for BigQuery from www.googleapis.com
+  to bigquery.googleapis.com.
+
 ## v1.1.0
 
 * Added support for specifying default `EncryptionConfig` settings on the
