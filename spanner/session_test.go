@@ -784,9 +784,10 @@ func TestTakeFromWriteQueue(t *testing.T) {
 	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
-				MaxOpened:     1,
-				WriteSessions: 1.0,
-				MaxIdle:       1,
+				MaxOpened:           1,
+				WriteSessions:       1.0,
+				MaxIdle:             1,
+				HealthCheckInterval: time.Nanosecond,
 			},
 		})
 	defer teardown()
@@ -798,8 +799,19 @@ func TestTakeFromWriteQueue(t *testing.T) {
 	}
 	sh.recycle()
 
-	// TODO(deklerk): get rid of this
-	<-time.After(time.Second)
+	// Wait until the health checker has write-prepared the session.
+	waitUntil := time.After(time.Second)
+	var numWritePrepared int
+	for numWritePrepared == 0 {
+		select {
+		case <-waitUntil:
+			break
+		default:
+		}
+		sp.mu.Lock()
+		numWritePrepared = sp.idleWriteList.Len()
+		sp.mu.Unlock()
+	}
 
 	// The session should now be in write queue but take should also return it.
 	sp.mu.Lock()
