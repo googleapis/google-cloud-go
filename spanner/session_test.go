@@ -129,6 +129,81 @@ func TestSessionCreation(t *testing.T) {
 	hc.mu.Unlock()
 }
 
+// TestLIFOSessionOrder tests if session pool hand out sessions in LIFO order.
+func TestLIFOSessionOrder(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	_, client, teardown := setupMockedTestServerWithConfig(t,
+		ClientConfig{
+			SessionPoolConfig: SessionPoolConfig{
+				MaxOpened: 3,
+				MinOpened: 3,
+			},
+		})
+	defer teardown()
+	sp := client.idleSessions
+	// Create/take three sessions and recycle them.
+	shs, shsIDs := make([]*sessionHandle, 3), make([]string, 3)
+	for i := 0; i < len(shs); i++ {
+		var err error
+		if shs[i], err = sp.take(ctx); err != nil {
+			t.Fatalf("failed to take session(%v): %v", i, err)
+		}
+		shsIDs[i] = shs[i].getID()
+	}
+	for i := 0; i < len(shs); i++ {
+		shs[i].recycle()
+	}
+	for i := 2; i >= 0; i-- {
+		sh, err := sp.take(ctx)
+		if err != nil {
+			t.Fatalf("cannot take session from session pool: %v", err)
+		}
+		// check, if sessions returned in LIFO order.
+		if wantID, gotID := shsIDs[i], sh.getID(); wantID != gotID {
+			t.Fatalf("got session with id: %v, want: %v", gotID, wantID)
+		}
+	}
+}
+
+// TestLIFOTakeWriteSessionOrder tests if write session pool hand out sessions in LIFO order.
+func TestLIFOTakeWriteSessionOrder(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	_, client, teardown := setupMockedTestServerWithConfig(t,
+		ClientConfig{
+			SessionPoolConfig: SessionPoolConfig{
+				MaxOpened:     3,
+				MinOpened:     3,
+				WriteSessions: 1,
+			},
+		})
+	defer teardown()
+	sp := client.idleSessions
+	// Create/take three sessions and recycle them.
+	shs, shsIDs := make([]*sessionHandle, 3), make([]string, 3)
+	for i := 0; i < len(shs); i++ {
+		var err error
+		if shs[i], err = sp.takeWriteSession(ctx); err != nil {
+			t.Fatalf("failed to take session(%v): %v", i, err)
+		}
+		shsIDs[i] = shs[i].getID()
+	}
+	for i := 0; i < len(shs); i++ {
+		shs[i].recycle()
+	}
+	for i := 2; i >= 0; i-- {
+		ws, err := sp.takeWriteSession(ctx)
+		if err != nil {
+			t.Fatalf("cannot take session from session pool: %v", err)
+		}
+		// check, if write sessions returned in LIFO order.
+		if wantID, gotID := shsIDs[i], ws.getID(); wantID != gotID {
+			t.Fatalf("got session with id: %v, want: %v", gotID, wantID)
+		}
+	}
+}
+
 // TestTakeFromIdleList tests taking sessions from session pool's idle list.
 func TestTakeFromIdleList(t *testing.T) {
 	t.Parallel()

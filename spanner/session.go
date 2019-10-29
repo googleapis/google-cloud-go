@@ -828,12 +828,12 @@ func (p *sessionPool) recycle(s *session) bool {
 		// Reject the session if session is invalid or pool itself is invalid.
 		return false
 	}
-	// Put session at the back of the list to round robin for load balancing
+	// Put session at the top of the list to be handed out in LIFO order for load balancing
 	// across channels.
 	if s.isWritePrepared() {
-		s.setIdleList(p.idleWriteList.PushBack(s))
+		s.setIdleList(p.idleWriteList.PushFront(s))
 	} else {
-		s.setIdleList(p.idleList.PushBack(s))
+		s.setIdleList(p.idleList.PushFront(s))
 	}
 	// Broadcast that a session has been returned to idle list.
 	close(p.mayGetSession)
