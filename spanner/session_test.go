@@ -601,22 +601,24 @@ func TestSessionRecycle(t *testing.T) {
 	}
 }
 
-// TODO(deklerk): Investigate why s.destroy(true) is flakey.
 // TestSessionDestroy tests destroying sessions.
 func TestSessionDestroy(t *testing.T) {
-	t.Skip("s.destroy(true) is flakey")
 	t.Parallel()
 	ctx := context.Background()
 	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
 				MinOpened: 1,
+				MaxBurst:  1,
 			},
 		})
 	defer teardown()
 	sp := client.idleSessions
 
-	<-time.After(10 * time.Millisecond) // maintainer will create one session, we wait for it create session to avoid flakiness in test
+	// Creating a session pool with MinSessions=1 will automatically start the
+	// creation of 1 session when the session pool is created. As MaxBurst=1,
+	// the session pool will never create more than 1 session at a time, so the
+	// take() method will wait if the initial session has not yet been created.
 	sh, err := sp.take(ctx)
 	if err != nil {
 		t.Fatalf("cannot get session from session pool: %v", err)
