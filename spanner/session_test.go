@@ -830,7 +830,7 @@ func TestSessionHealthCheck(t *testing.T) {
 	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
-				HealthCheckInterval:       50 * time.Millisecond,
+				HealthCheckInterval:       time.Nanosecond,
 				healthCheckSampleInterval: 10 * time.Millisecond,
 			},
 		})
@@ -864,16 +864,14 @@ func TestSessionHealthCheck(t *testing.T) {
 			KeepError: true,
 		})
 	server.TestSpanner.Unfreeze()
-	//atomic.SwapInt64(&requestShouldErr, 1)
-
-	// Wait for healthcheck workers to find the broken session and tear it down.
-	// TODO(deklerk): get rid of this
-	<-time.After(1 * time.Second)
 
 	s := sh.session
-	if sh.session.isValid() {
-		t.Fatalf("session(%v) is still alive, want it to be dropped by healthcheck workers", s)
-	}
+	waitFor(t, func() error {
+		if sh.session.isValid() {
+			return fmt.Errorf("session(%v) is still alive, want it to be dropped by healthcheck workers", s)
+		}
+		return nil
+	})
 
 	server.TestSpanner.Freeze()
 	server.TestSpanner.PutExecutionTime(MethodGetSession, SimulatedExecutionTime{})
