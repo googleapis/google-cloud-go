@@ -467,7 +467,7 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 		valid:             true,
 		mayGetSession:     make(chan struct{}),
 		SessionPoolConfig: config,
-		mw:                newMaintenanceWindow(),
+		mw:                newMaintenanceWindow(config.MaxOpened),
 	}
 	if config.HealthCheckWorkers == 0 {
 		// With 10 workers and assuming average latency of 5ms for
@@ -965,16 +965,16 @@ func (mw *maintenanceWindow) startNewCycle(currNumSessionsCheckedOut uint64) {
 }
 
 // newMaintenanceWindow creates a new maintenance window with all values for
-// maxSessionsCheckedOut set to math.MaxUint64. This ensures that a complete
+// maxSessionsCheckedOut set to maxOpened. This ensures that a complete
 // maintenance window must pass before the maintainer will start to delete any
 // sessions.
-func newMaintenanceWindow() *maintenanceWindow {
+func newMaintenanceWindow(maxOpened uint64) *maintenanceWindow {
 	mw := &maintenanceWindow{}
 	// Initialize the rolling window with max values to prevent the maintainer
 	// from deleting sessions before a complete window of 10 cycles has
 	// finished.
 	for i := 0; i < maintenanceWindowSize; i++ {
-		mw.maxSessionsCheckedOut[i] = math.MaxUint64
+		mw.maxSessionsCheckedOut[i] = maxOpened
 	}
 	return mw
 }
@@ -1239,7 +1239,7 @@ func (hc *healthChecker) maintainer() {
 		// [Config.MinOpened, Config.MaxIdle+maxSessionsInUseDuringWindow]
 		if currSessionsOpened < minOpened {
 			hc.growPool(ctx, minOpened)
-		} else if maxIdle+maxSessionsInUseDuringWindow > currSessionsOpened {
+		} else if maxIdle+maxSessionsInUseDuringWindow < currSessionsOpened {
 			hc.shrinkPool(ctx, maxIdle+maxSessionsInUseDuringWindow)
 		}
 
@@ -1334,6 +1334,7 @@ func (hc *healthChecker) shrinkPool(ctx context.Context, shrinkToNumSessions uin
 		// should stop deleting sessions, as the load has increased and
 		// additional sessions are needed.
 		if p.numOpened >= prevNumOpened {
+			p.mu.Unlock()
 			break
 		}
 		prevNumOpened = p.numOpened
