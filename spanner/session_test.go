@@ -21,7 +21,6 @@ import (
 	"container/heap"
 	"context"
 	"fmt"
-	"math"
 	"math/rand"
 	"testing"
 	"time"
@@ -1075,10 +1074,6 @@ func testStressSessionPool(t *testing.T, cfg SessionPoolConfig, ti int, idx int,
 	}
 }
 
-// TODO(deklerk): Investigate why this test is flakey, even with waitFor. Example
-// flakey failure: session_test.go:946: after 15s waiting, got Scale down.
-// Expect 5 open, got 6
-//
 // TestMaintainer checks the session pool maintainer maintains the number of
 // sessions in the following cases:
 //
@@ -1087,7 +1082,6 @@ func testStressSessionPool(t *testing.T, cfg SessionPoolConfig, ti int, idx int,
 // 2. On increased session usage, provision extra MaxIdle sessions.
 // 3. After the surge passes, scale down the session pool accordingly.
 func TestMaintainer(t *testing.T) {
-	t.Skip("asserting session state seems flakey")
 	t.Parallel()
 	ctx := context.Background()
 
@@ -1096,14 +1090,13 @@ func TestMaintainer(t *testing.T) {
 	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
-				MinOpened: minOpened,
-				MaxIdle:   maxIdle,
+				MinOpened:                 minOpened,
+				MaxIdle:                   maxIdle,
+				healthCheckSampleInterval: time.Millisecond,
 			},
 		})
 	defer teardown()
 	sp := client.idleSessions
-
-	sampleInterval := sp.SessionPoolConfig.healthCheckSampleInterval
 
 	waitFor(t, func() error {
 		sp.mu.Lock()
@@ -1117,7 +1110,7 @@ func TestMaintainer(t *testing.T) {
 	// To save test time, we are not creating many sessions, because the time
 	// to create sessions will have impact on the decision on sessionsToKeep.
 	// We also parallelize the take and recycle process.
-	shs := make([]*sessionHandle, 10)
+	shs := make([]*sessionHandle, 20)
 	for i := 0; i < len(shs); i++ {
 		var err error
 		shs[i], err = sp.take(ctx)
@@ -1126,33 +1119,36 @@ func TestMaintainer(t *testing.T) {
 		}
 	}
 	sp.mu.Lock()
-	if sp.numOpened != 10 {
-		t.Fatalf("Scale out from normal use. Expect %d open, got %d", 10, sp.numOpened)
+	if sp.numOpened != 20 {
+		t.Fatalf("Scale out from normal use. Expect %d open, got %d", 20, sp.numOpened)
 	}
 	sp.mu.Unlock()
 
-	<-time.After(sampleInterval)
-	for _, sh := range shs[:7] {
+	// Return 14 sessions to the pool. There are still 6 sessions checked out.
+	for _, sh := range shs[:14] {
 		sh.recycle()
 	}
 
+	// The pool should scale down to sessionsInUse + MaxIdle = 6 + 4 = 10.
 	waitFor(t, func() error {
 		sp.mu.Lock()
 		defer sp.mu.Unlock()
-		if sp.numOpened != 7 {
-			return fmt.Errorf("Keep extra MaxIdle sessions. Expect %d open, got %d", 7, sp.numOpened)
+		if sp.numOpened != 10 {
+			return fmt.Errorf("Keep extra MaxIdle sessions. Expect %d open, got %d", 10, sp.numOpened)
 		}
 		return nil
 	})
 
-	for _, sh := range shs[7:] {
+	// Return the remaining 6 sessions.
+	// The pool should now scale down to minOpened + maxIdle.
+	for _, sh := range shs[14:] {
 		sh.recycle()
 	}
 	waitFor(t, func() error {
 		sp.mu.Lock()
 		defer sp.mu.Unlock()
 		if sp.numOpened != minOpened {
-			return fmt.Errorf("Scale down. Expect %d open, got %d", minOpened, sp.numOpened)
+			return fmt.Errorf("Scale down. Expect %d open, got %d", minOpened+maxIdle, sp.numOpened)
 		}
 		return nil
 	})
@@ -1292,7 +1288,6 @@ func TestMaintainer_DeletesSessions(t *testing.T) {
 
 	ctx := context.Background()
 	const sampleInterval = time.Millisecond * 10
-	const windowDuration = sampleInterval * maintenanceWindowSize
 	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{healthCheckSampleInterval: sampleInterval},
@@ -1322,14 +1317,24 @@ func TestMaintainer_DeletesSessions(t *testing.T) {
 	gotSessions[sh3.getID()] = true
 	gotSessions[sh4.getID()] = true
 	testEqual(wantSessions, gotSessions)
+	// Return the sessions to the pool.
+	sh3.recycle()
+	sh4.recycle()
 
-	// Now wait for another 100 milliseconds. This will cause the maintainer
-	// to enter a new window and reset the max number of sessions in use to
-	// the currently number of checked out sessions. That is 0, as all sessions
-	// have been returned to the pool. That again will cause the maintainer to
-	// delete these sessions at the next iteration, unless we checkout new
-	// sessions during the first iteration.
-	<-time.After(windowDuration)
+	// Now wait for the maintenance window to finish. This will cause the
+	// maintainer to enter a new window and reset the max number of sessions in
+	// use to the currently number of checked out sessions. That is 0, as all
+	// sessions have been returned to the pool. That again will cause the
+	// maintainer to delete these sessions at the next iteration, unless we
+	// checkout new sessions during the first iteration.
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if sp.numOpened > 0 {
+			return fmt.Errorf("session pool still contains more than 0 sessions")
+		}
+		return nil
+	})
 	sh5 := takeSession(ctx, t, sp)
 	sh6 := takeSession(ctx, t, sp)
 	// Assure that these sessions are new sessions.
@@ -1349,10 +1354,11 @@ func takeSession(ctx context.Context, t *testing.T, sp *sessionPool) *sessionHan
 func TestMaintenanceWindow_CycleAndUpdateMaxCheckedOut(t *testing.T) {
 	t.Parallel()
 
-	mw := newMaintenanceWindow()
+	maxOpened := uint64(1000)
+	mw := newMaintenanceWindow(maxOpened)
 	for _, m := range mw.maxSessionsCheckedOut {
-		if m < math.MaxUint64 {
-			t.Fatalf("Max sessions checked out mismatch.\nGot: %v\nWant: %v", m, uint64(math.MaxUint64))
+		if m < maxOpened {
+			t.Fatalf("Max sessions checked out mismatch.\nGot: %v\nWant: %v", m, maxOpened)
 		}
 	}
 	// Do one cycle and simulate that there are currently no sessions checked
@@ -1362,13 +1368,13 @@ func TestMaintenanceWindow_CycleAndUpdateMaxCheckedOut(t *testing.T) {
 		t.Fatalf("Max sessions checked out mismatch.\nGot: %d\nWant: %d", g, w)
 	}
 	for _, m := range mw.maxSessionsCheckedOut[1:] {
-		if m < math.MaxUint64 {
-			t.Fatalf("Max sessions checked out mismatch.\nGot: %v\nWant: %v", m, uint64(math.MaxUint64))
+		if m < maxOpened {
+			t.Fatalf("Max sessions checked out mismatch.\nGot: %v\nWant: %v", m, maxOpened)
 		}
 	}
 	// Check that the max checked out during the entire window is still
-	// math.MaxUint64.
-	if g, w := mw.maxSessionsCheckedOutDuringWindow(), uint64(math.MaxUint64); g != w {
+	// maxOpened.
+	if g, w := mw.maxSessionsCheckedOutDuringWindow(), maxOpened; g != w {
 		t.Fatalf("Max sessions checked out during window mismatch.\nGot: %d\nWant: %d", g, w)
 	}
 	// Update the max number checked out for the current cycle.
@@ -1377,7 +1383,7 @@ func TestMaintenanceWindow_CycleAndUpdateMaxCheckedOut(t *testing.T) {
 		t.Fatalf("Max sessions checked out mismatch.\nGot: %d\nWant: %d", g, w)
 	}
 	// The max of the entire window should still not change.
-	if g, w := mw.maxSessionsCheckedOutDuringWindow(), uint64(math.MaxUint64); g != w {
+	if g, w := mw.maxSessionsCheckedOutDuringWindow(), maxOpened; g != w {
 		t.Fatalf("Max sessions checked out during window mismatch.\nGot: %d\nWant: %d", g, w)
 	}
 	// Now pass enough cycles to complete a maintenance window. Each cycle has
