@@ -298,9 +298,6 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 		return nil, errors.New("bigquery: query job missing destination table")
 	}
 	dt := bqToTable(destTable, j.c)
-	if totalRows == 0 {
-		pf = nil
-	}
 	it := newRowIterator(ctx, dt, pf)
 	it.Schema = schema
 	it.TotalRows = totalRows

@@ -794,6 +794,50 @@ func TestIntegration_Tables(t *testing.T) {
 	}
 }
 
+func TestIntegration_SimpleRowResults(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	testCases := []struct {
+		description string
+		query       string
+		want        [][]Value
+	}{
+		{
+			description: "literals",
+			query:       "select 17 as foo",
+			want:        [][]Value{{int64(17)}},
+		},
+		{
+			description: "empty results",
+			query:       "SELECT * FROM (select 17 as foo) where false",
+			want:        [][]Value{},
+		},
+		{
+			// Note: currently CTAS returns the rows due to the destination table reference,
+			// but it's not clear that it should.
+			// https://github.com/googleapis/google-cloud-go/issues/1467 for followup.
+			description: "ctas ddl",
+			query:       fmt.Sprintf("CREATE TABLE %s.%s AS SELECT 17 as foo", dataset.DatasetID, tableIDs.New()),
+			want:        [][]Value{{int64(17)}},
+		},
+	}
+	for _, tc := range testCases {
+		curCase := tc
+		t.Run(curCase.description, func(t *testing.T) {
+			t.Parallel()
+			q := client.Query(curCase.query)
+			it, err := q.Read(ctx)
+			if err != nil {
+				t.Fatalf("%s read error: %v", curCase.description, err)
+			}
+			checkReadAndTotalRows(t, curCase.description, it, curCase.want)
+		})
+	}
+}
+
 func TestIntegration_InsertAndRead(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
