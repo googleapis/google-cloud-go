@@ -714,8 +714,9 @@ func TestWriteSessionsPrepared(t *testing.T) {
 	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
-				WriteSessions: 0.5,
-				MaxIdle:       20,
+				WriteSessions:       0.5,
+				MaxIdle:             20,
+				HealthCheckInterval: time.Nanosecond,
 			},
 		})
 	defer teardown()
@@ -734,9 +735,9 @@ func TestWriteSessionsPrepared(t *testing.T) {
 		sh.recycle()
 	}
 
-	// Sleep for 1s, allowing healthcheck workers to invoke begin transaction.
-	// TODO(deklerk): get rid of this
-	<-time.After(time.Second)
+	// Take 5 write sessions. The write sessions will be taken from either the
+	// list of prepared sessions (idleWriteList), or they will be prepared
+	// during the takeWriteSession method.
 	wshs := make([]*sessionHandle, 5)
 	for i := 0; i < 5; i++ {
 		wshs[i], err = sp.takeWriteSession(ctx)
@@ -747,12 +748,10 @@ func TestWriteSessionsPrepared(t *testing.T) {
 			t.Fatalf("got nil transaction id from session pool")
 		}
 	}
+	// Return the session to the pool.
 	for _, sh := range wshs {
 		sh.recycle()
 	}
-
-	// TODO(deklerk): get rid of this
-	<-time.After(time.Second)
 
 	// Now force creation of 10 more sessions.
 	shs = make([]*sessionHandle, 20)
@@ -767,10 +766,23 @@ func TestWriteSessionsPrepared(t *testing.T) {
 	for _, sh := range shs {
 		sh.recycle()
 	}
+	// The health checker should eventually prepare 10 of the 20 sessions with
+	// a r/w tx.
+	waitUntil := time.After(time.Second)
+	var numWritePrepared int
+	for numWritePrepared < 10 {
+		select {
+		case <-waitUntil:
+			break
+		default:
+		}
+		sp.mu.Lock()
+		numWritePrepared = sp.idleWriteList.Len()
+		sp.mu.Unlock()
+	}
 
-	// TODO(deklerk): get rid of this
-	<-time.After(time.Second)
-
+	sp.mu.Lock()
+	defer sp.mu.Unlock()
 	if sp.idleWriteList.Len() != 10 {
 		t.Fatalf("Expect 10 write prepared session, got: %d", sp.idleWriteList.Len())
 	}
