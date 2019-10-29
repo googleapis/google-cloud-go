@@ -54,7 +54,7 @@ var (
 	ErrObjectNotExist = errors.New("storage: object doesn't exist")
 )
 
-const userAgent = "gcloud-golang-storage/20151204"
+var userAgent = fmt.Sprintf("gcloud-golang-storage/%s", version.Repo)
 
 const (
 	// ScopeFullControl grants permissions to manage your
