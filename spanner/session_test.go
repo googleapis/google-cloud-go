@@ -256,17 +256,13 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 		t.Fatalf("failed to get session: %v", err)
 	}
 
-	// Make sure it's sampled once before recycling, otherwise it will be
-	// cleaned up.
-	<-time.After(sp.SessionPoolConfig.healthCheckSampleInterval)
+	// Force ping during the first take() by setting check time to the past.
+	sh.session.nextCheck = time.Now().Add(-time.Minute)
 	wantSid := sh.getID()
 	sh.recycle()
 
-	// TODO(deklerk): get rid of this
-	<-time.After(time.Second)
-
 	// Two back-to-back session requests, both of them should return the same
-	// session created before and none of them should trigger a session ping.
+	// session created before, but only the first of them should trigger a session ping.
 	for i := 0; i < 2; i++ {
 		// Take the session from the idle list and recycle it.
 		sh, err = sp.take(ctx)
@@ -278,8 +274,7 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 		}
 
 		// The two back-to-back session requests shouldn't trigger any session
-		// pings because sessionPool.Take
-		// reschedules the next healthcheck.
+		// pings because sessionPool.Take reschedules the next healthcheck.
 		if got, want := server.TestSpanner.DumpPings(), ([]string{wantSid}); !testEqual(got, want) {
 			t.Fatalf("%v - got ping session requests: %v, want %v", i, got, want)
 		}
@@ -294,9 +289,9 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 			Errors: []error{status.Errorf(codes.NotFound, "Session not found")},
 		})
 
-	// Delay to trigger sessionPool.Take to ping the session.
-	// TODO(deklerk): get rid of this
-	<-time.After(time.Second)
+	// Force ping by setting check time in the past.
+	s := sp.idleList.Front().Value.(*session)
+	s.nextCheck = time.Now().Add(-time.Minute)
 
 	// take will take the idle session. Then it will send a GetSession request
 	// to check if it's healthy. It'll discover that it's not healthy
