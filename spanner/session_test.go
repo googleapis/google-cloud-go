@@ -336,17 +336,14 @@ func TestTakeFromIdleWriteListChecked(t *testing.T) {
 		t.Fatalf("failed to get session: %v", err)
 	}
 	wantSid := sh.getID()
-
-	// Make sure it's sampled once before recycling, otherwise it will be
-	// cleaned up.
-	<-time.After(sp.SessionPoolConfig.healthCheckSampleInterval)
+	// Set the next check in the past to ensure the next take() call will
+	// trigger a health check.
+	sh.session.nextCheck = time.Now().Add(-time.Minute)
 	sh.recycle()
 
-	// TODO(deklerk): get rid of this
-	<-time.After(time.Second)
-
 	// Two back-to-back session requests, both of them should return the same
-	// session created before and none of them should trigger a session ping.
+	// session created before and only the first of them should trigger a
+	// session ping.
 	for i := 0; i < 2; i++ {
 		// Take the session from the idle list and recycle it.
 		sh, err = sp.takeWriteSession(ctx)
@@ -372,9 +369,9 @@ func TestTakeFromIdleWriteListChecked(t *testing.T) {
 			Errors: []error{status.Errorf(codes.NotFound, "Session not found")},
 		})
 
-	// Delay to trigger sessionPool.Take to ping the session.
-	// TOOD(deklerk) get rid of this
-	<-time.After(time.Second)
+	// Force ping by setting check time in the past.
+	s := sp.idleList.Front().Value.(*session)
+	s.nextCheck = time.Now().Add(-time.Minute)
 
 	sh, err = sp.takeWriteSession(ctx)
 	if err != nil {
