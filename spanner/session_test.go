@@ -405,24 +405,30 @@ func TestMaxOpenedSessions(t *testing.T) {
 	}
 
 	// Session request will timeout due to the max open sessions constraint.
-	ctx2, cancel := context.WithTimeout(ctx, time.Second)
+	ctx2, cancel := context.WithTimeout(ctx, 10*time.Millisecond)
 	defer cancel()
 	_, gotErr := sp.take(ctx2)
 	if wantErr := errGetSessionTimeout(); !testEqual(gotErr, wantErr) {
 		t.Fatalf("the second session retrival returns error %v, want %v", gotErr, wantErr)
 	}
-
+	doneWaiting := make(chan struct{})
 	go func() {
-		// TODO(deklerk): remove this
-		<-time.After(time.Second)
 		// Destroy the first session to allow the next session request to
 		// proceed.
+		<-doneWaiting
 		sh1.destroy()
 	}()
 
+	go func() {
+		// Wait a short random time before destroying the session handle.
+		<-time.After(10 * time.Millisecond)
+		close(doneWaiting)
+	}()
 	// Now session request can be processed because the first session will be
 	// destroyed.
-	sh2, err := sp.take(ctx)
+	ctx3, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	sh2, err := sp.take(ctx3)
 	if err != nil {
 		t.Fatalf("after the first session is destroyed, session retrival still returns error %v, want nil", err)
 	}
