@@ -298,7 +298,10 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 	defer client.Close()
 	h := testHelper{t}
 
-	b := client.Bucket(bucketName)
+	b := client.Bucket(uidSpace.New())
+	h.mustCreate(b, testutil.ProjID(), nil)
+	defer h.mustDeleteBucket(b)
+
 	attrs := h.mustBucketAttrs(b)
 	if attrs.VersioningEnabled {
 		t.Fatal("bucket should not have versioning by default")
@@ -522,9 +525,19 @@ func TestIntegration_Objects(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
+	// Reset testTime, 'cause object last modification time should be within 5 min
+	// from test (test iteration if -count passed) start time.
+	testTime = time.Now().UTC()
+	newBucketName := uidSpace.New()
 	h := testHelper{t}
-	bkt := client.Bucket(bucketName)
+	bkt := client.Bucket(newBucketName)
 
+	h.mustCreate(bkt, testutil.ProjID(), nil)
+	defer func() {
+		if err := killBucket(ctx, client, newBucketName); err != nil {
+			log.Printf("deleting %q: %v", newBucketName, err)
+		}
+	}()
 	const defaultType = "text/plain"
 
 	// Populate object names and make a map for their contents.
@@ -695,9 +708,9 @@ func TestIntegration_Objects(t *testing.T) {
 	copyObj, err := bkt.Object(copyName).CopierFrom(bkt.Object(objName)).Run(ctx)
 	if err != nil {
 		t.Errorf("Copier.Run failed with %v", err)
-	} else if !namesEqual(copyObj, bucketName, copyName) {
+	} else if !namesEqual(copyObj, newBucketName, copyName) {
 		t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
-			copyObj.Bucket, copyObj.Name, bucketName, copyName)
+			copyObj.Bucket, copyObj.Name, newBucketName, copyName)
 	}
 
 	// Copying with attributes.
@@ -708,9 +721,9 @@ func TestIntegration_Objects(t *testing.T) {
 	if err != nil {
 		t.Errorf("Copier.Run failed with %v", err)
 	} else {
-		if !namesEqual(copyObj, bucketName, copyName) {
+		if !namesEqual(copyObj, newBucketName, copyName) {
 			t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
-				copyObj.Bucket, copyObj.Name, bucketName, copyName)
+				copyObj.Bucket, copyObj.Name, newBucketName, copyName)
 		}
 		if copyObj.ContentEncoding != contentEncoding {
 			t.Errorf("Copy ContentEncoding: got %q, want %q", copyObj.ContentEncoding, contentEncoding)
@@ -818,13 +831,13 @@ func TestIntegration_Objects(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	slurp := h.mustRead(publicClient.Bucket(bucketName).Object(publicObj))
+	slurp := h.mustRead(publicClient.Bucket(newBucketName).Object(publicObj))
 	if !bytes.Equal(slurp, contents[publicObj]) {
 		t.Errorf("Public object's content: got %q, want %q", slurp, contents[publicObj])
 	}
 
 	// Test writer error handling.
-	wc := publicClient.Bucket(bucketName).Object(publicObj).NewWriter(ctx)
+	wc := publicClient.Bucket(newBucketName).Object(publicObj).NewWriter(ctx)
 	if _, err := wc.Write([]byte("hello")); err != nil {
 		t.Errorf("Write unexpectedly failed with %v", err)
 	}
@@ -1715,9 +1728,10 @@ func TestIntegration_BucketIAM(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
-
-	bkt := client.Bucket(bucketName)
-
+	h := testHelper{t}
+	bkt := client.Bucket(uidSpace.New())
+	h.mustCreate(bkt, testutil.ProjID(), nil)
+	defer h.mustDeleteBucket(bkt)
 	// This bucket is unique to this test run. So we don't have
 	// to worry about other runs interfering with our IAM policy
 	// changes.
