@@ -528,6 +528,8 @@ func findServiceAccountEmail(ctx context.Context, t *testing.T) string {
 }
 
 func TestIntegration_UpdateSubscription(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1643")
+
 	t.Parallel()
 	ctx := context.Background()
 
