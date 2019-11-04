@@ -77,6 +77,7 @@ golint ./... 2>&1 | ( \
   grep -v "internal/testutil/funcmock.go" | \
   grep -v "internal/backoff" | \
   grep -v "internal/trace" | \
+  grep -v "internal/gapicgen/generator" | \
   grep -v "a blank import should be only in a main or test package" | \
   grep -v "method ExecuteSql should be ExecuteSQL" | \
   grep -vE "spanner/spansql/(sql|types).go:.*should have comment" | \
