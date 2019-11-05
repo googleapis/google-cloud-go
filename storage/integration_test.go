@@ -639,6 +639,7 @@ func TestIntegration_Objects(t *testing.T) {
 	}
 
 	testObjectIterator(t, bkt, objects)
+	testObjectsIterateSelectedAttrs(t, bkt, objects)
 
 	// Test Reader.
 	for _, obj := range objects {
@@ -1039,6 +1040,39 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 		t.Errorf("ObjectIterator.Next: %s", msg)
 	}
 	// TODO(jba): test query.Delimiter != ""
+}
+
+func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
+	// Create a query that will only select the "Name" attr of objects, and
+	// invoke object listing.
+	query := &Query{Prefix: ""}
+	query.SetAttrSelection([]string{"Name"})
+
+	var gotNames []string
+	it := bkt.Objects(context.Background(), query)
+	for {
+		attrs, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		gotNames = append(gotNames, attrs.Name)
+
+		if len(attrs.Bucket) > 0 {
+			t.Errorf("Bucket field not selected, want empty, got = %v", attrs.Bucket)
+		}
+	}
+
+	sortedNames := make([]string, len(objects))
+	copy(sortedNames, objects)
+	sort.Strings(sortedNames)
+	sort.Strings(gotNames)
+
+	if !cmp.Equal(sortedNames, gotNames) {
+		t.Errorf("names = %v, want %v", gotNames, sortedNames)
+	}
 }
 
 func TestIntegration_SignedURL(t *testing.T) {
