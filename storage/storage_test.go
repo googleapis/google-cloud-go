@@ -26,6 +26,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"reflect"
 	"regexp"
 	"sort"
 	"strings"
@@ -1109,6 +1110,36 @@ func TestObjectAttrsToRawObject(t *testing.T) {
 	if !testutil.Equal(got, want) {
 		if diff := testutil.Diff(got, want); diff != "" {
 			t.Errorf("toRawObject mismatches:\ngot=-, want=+:\n%s", diff)
+		}
+	}
+}
+
+func TestAttrToFieldMapCoverage(t *testing.T) {
+	t.Parallel()
+
+	oa := reflect.TypeOf((*ObjectAttrs)(nil)).Elem()
+	oaFields := make(map[string]bool)
+
+	for i := 0; i < oa.NumField(); i++ {
+		fieldName := oa.Field(i).Name
+		oaFields[fieldName] = true
+	}
+
+	// Check that all fields of attrToFieldMap exist in ObjectAttrs.
+	for k := range attrToFieldMap {
+		if _, ok := oaFields[k]; !ok {
+			t.Errorf("%v is not an ObjectAttrs field", k)
+		}
+	}
+
+	// Check that all fields of ObjectAttrs exist in attrToFieldMap, with
+	// known exceptions which aren't sent over the wire but are settable by
+	// the user.
+	for k := range oaFields {
+		if _, ok := attrToFieldMap[k]; !ok {
+			if k != "Prefix" && k != "PredefinedACL" {
+				t.Errorf("ObjectAttrs.%v is not in attrToFieldMap", k)
+			}
 		}
 	}
 }
