@@ -94,11 +94,20 @@ type Client struct {
 // NewClient creates a new Google Cloud Storage client.
 // The default scope is ScopeFullControl. To use a different scope, like ScopeReadOnly, use option.WithScopes.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	o := []option.ClientOption{
-		option.WithScopes(ScopeFullControl),
-		option.WithUserAgent(userAgent),
+	var host, readHost, scheme string
+
+	if host = os.Getenv("STORAGE_EMULATOR_HOST"); host == "" {
+		scheme = "https"
+		readHost = "storage.googleapis.com"
+
+		opts = append(opts, option.WithScopes(ScopeFullControl), option.WithUserAgent(userAgent))
+	} else {
+		scheme = "http"
+		readHost = host
+
+		opts = append(opts, option.WithoutAuthentication())
 	}
-	opts = append(o, opts...)
+
 	hc, ep, err := htransport.NewClient(ctx, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
@@ -110,14 +119,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if ep != "" {
 		rawService.BasePath = ep
 	}
-	scheme := "https"
-	var host, readHost string
-	if host = os.Getenv("STORAGE_EMULATOR_HOST"); host != "" {
-		scheme = "http"
-		readHost = host
-	} else {
-		readHost = "storage.googleapis.com"
-	}
+
 	return &Client{
 		hc:       hc,
 		raw:      rawService,
