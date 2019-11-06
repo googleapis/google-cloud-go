@@ -370,6 +370,8 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 }
 
 func TestIntegration_BucketPolicyOnly(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1480")
+
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
