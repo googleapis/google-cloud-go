@@ -370,7 +370,6 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 }
 
 func TestIntegration_BucketPolicyOnly(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1652")
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -436,7 +435,6 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 }
 
 func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1652")
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -1301,7 +1299,6 @@ func putURL(url string, headers map[string][]string, payload io.Reader) ([]byte,
 }
 
 func TestIntegration_ACL(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1652")
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
