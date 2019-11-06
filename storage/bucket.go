@@ -725,14 +725,16 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 	if ua.BucketPolicyOnly != nil {
 		rb.IamConfiguration = &raw.BucketIamConfiguration{
 			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
-				Enabled: ua.BucketPolicyOnly.Enabled,
+				Enabled:         ua.BucketPolicyOnly.Enabled,
+				ForceSendFields: []string{"Enabled"},
 			},
 		}
 	}
 	if ua.UniformBucketLevelAccess != nil {
 		rb.IamConfiguration = &raw.BucketIamConfiguration{
 			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
-				Enabled: ua.UniformBucketLevelAccess.Enabled,
+				Enabled:         ua.UniformBucketLevelAccess.Enabled,
+				ForceSendFields: []string{"Enabled"},
 			},
 		}
 	}

@@ -267,7 +267,8 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		RetentionPolicy:       &raw.BucketRetentionPolicy{RetentionPeriod: 3600},
 		IamConfiguration: &raw.BucketIamConfiguration{
 			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
-				Enabled: false,
+				Enabled:         false,
+				ForceSendFields: []string{"Enabled"},
 			},
 		},
 		Encryption: &raw.BucketEncryption{DefaultKmsKeyName: "key2"},
@@ -325,7 +326,8 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	want = &raw.Bucket{
 		IamConfiguration: &raw.BucketIamConfiguration{
 			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
-				Enabled: true,
+				Enabled:         true,
+				ForceSendFields: []string{"Enabled"},
 			},
 		},
 	}
@@ -342,7 +344,8 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	want = &raw.Bucket{
 		IamConfiguration: &raw.BucketIamConfiguration{
 			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
-				Enabled: true,
+				Enabled:         true,
+				ForceSendFields: []string{"Enabled"},
 			},
 		},
 	}
@@ -361,7 +364,8 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	want = &raw.Bucket{
 		IamConfiguration: &raw.BucketIamConfiguration{
 			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
-				Enabled: true,
+				Enabled:         true,
+				ForceSendFields: []string{"Enabled"},
 			},
 		},
 	}
@@ -379,7 +383,8 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	want = &raw.Bucket{
 		IamConfiguration: &raw.BucketIamConfiguration{
 			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
-				Enabled: false,
+				Enabled:         false,
+				ForceSendFields: []string{"Enabled"},
 			},
 		},
 	}
@@ -397,7 +402,8 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	want = &raw.Bucket{
 		IamConfiguration: &raw.BucketIamConfiguration{
 			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
-				Enabled: false,
+				Enabled:         false,
+				ForceSendFields: []string{"Enabled"},
 			},
 		},
 	}
