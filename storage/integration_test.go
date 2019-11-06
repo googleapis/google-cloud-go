@@ -370,8 +370,6 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 }
 
 func TestIntegration_BucketPolicyOnly(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1480")
-
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -425,15 +423,27 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 	}
 
 	// Check that the object ACLs are the same.
-	acls, err := o.ACL().List(ctx)
-	if err != nil {
-		t.Fatalf("object ACL list failed: %v", err)
+	// The update to BucketPolicyOnly may be delayed in propagation, so retry
+	// for up to 11 seconds before failing.
+	timeout := time.After(11 * time.Second)
+	var acls []ACLRule
+	for {
+		select {
+		case <-timeout:
+			t.Fatalf("object ACL list failed: %v", err)
+		default:
+		}
+		acls, err = o.ACL().List(ctx)
+		if err == nil {
+			// Check that ACL rules contain custom ACL from above.
+			if !containsACL(acls, aclEntity, RoleReader) {
+				t.Fatalf("expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
+			}
+			break
+		}
+		time.Sleep(200 * time.Millisecond)
 	}
 
-	// Check that ACL rules contain custom ACL from above.
-	if !containsACL(acls, aclEntity, RoleReader) {
-		t.Fatalf("expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
-	}
 }
 
 func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
