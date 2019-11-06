@@ -1,5 +1,10 @@
 # Changes
 
+## v1.2.1
+
+- Fixed a bug where UniformBucketLevelAccess and BucketPolicyOnly were not
+  being sent in all cases.
+
 ## v1.2.0
 
 - Add support for UniformBucketLevelAccess. This configures access checks
