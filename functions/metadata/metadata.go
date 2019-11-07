@@ -43,6 +43,31 @@ type Resource struct {
 	Name string `json:"name"`
 	// Type is the type of event.
 	Type string `json:"type"`
+	// Topic is the topic name of the event (legacy).
+	Topic string `json:"-"`
+}
+
+// UnmarshalJSON specializes the Resource unmarshalling to handle the case where the
+// value is a string instead of a map.
+func (r *Resource) UnmarshalJSON(data []byte) error {
+	// Try to unmarshal the resource into a string.
+	var topic string
+	if err := json.Unmarshal(data, &topic); err == nil {
+		r.Topic = topic
+		return nil
+	}
+
+	// // Otherwise, accept whatever the result of the normal unmarshal would be.
+	type _resource Resource
+	var res _resource
+	if err := json.Unmarshal(data, &res); err != nil {
+		return err
+	}
+
+	r.Service = res.Service
+	r.Name = res.Name
+	r.Type = res.Type
+	return nil
 }
 
 type contextKey string
