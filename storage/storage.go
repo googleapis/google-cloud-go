@@ -116,7 +116,11 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, fmt.Errorf("storage client: %v", err)
 	}
-	if ep != "" {
+	if ep == "" {
+		// Override the default value for BasePath from the raw client.
+		// TODO: remove when the raw client uses this endpoint as its default (~end of 2020)
+		rawService.BasePath = "https://storage.googleapis.com/storage/v1/"
+	} else {
 		rawService.BasePath = ep
 	}
 
