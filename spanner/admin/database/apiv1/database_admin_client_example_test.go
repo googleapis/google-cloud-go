@@ -35,30 +35,6 @@ func ExampleNewDatabaseAdminClient() {
 	_ = c
 }
 
-func ExampleDatabaseAdminClient_ListDatabases() {
-	ctx := context.Background()
-	c, err := database.NewDatabaseAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &databasepb.ListDatabasesRequest{
-		// TODO: Fill request struct fields.
-	}
-	it := c.ListDatabases(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
 func ExampleDatabaseAdminClient_CreateDatabase() {
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)
@@ -205,4 +181,28 @@ func ExampleDatabaseAdminClient_TestIamPermissions() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleDatabaseAdminClient_ListDatabases() {
+	ctx := context.Background()
+	c, err := database.NewDatabaseAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &databasepb.ListDatabasesRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListDatabases(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }

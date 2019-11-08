@@ -52,7 +52,7 @@ func TestImageAnnotatorSmoke(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var gcsImageUri string = "gs://gapic-toolkit/President_Barack_Obama.jpg"
+	var gcsImageUri string = "gs://cloud-samples-data/vision/face_detection/celebrity_recognition/sergey.jpg"
 	var source = &visionpb.ImageSource{
 		GcsImageUri: gcsImageUri,
 	}
