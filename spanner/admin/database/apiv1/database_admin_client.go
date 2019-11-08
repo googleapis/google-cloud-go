@@ -40,7 +40,6 @@ import (
 
 // DatabaseAdminCallOptions contains the retry settings for each method of DatabaseAdminClient.
 type DatabaseAdminCallOptions struct {
-	ListDatabases      []gax.CallOption
 	CreateDatabase     []gax.CallOption
 	GetDatabase        []gax.CallOption
 	UpdateDatabaseDdl  []gax.CallOption
@@ -49,6 +48,7 @@ type DatabaseAdminCallOptions struct {
 	SetIamPolicy       []gax.CallOption
 	GetIamPolicy       []gax.CallOption
 	TestIamPermissions []gax.CallOption
+	ListDatabases      []gax.CallOption
 }
 
 func defaultDatabaseAdminClientOptions() []option.ClientOption {
@@ -76,7 +76,6 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 		},
 	}
 	return &DatabaseAdminCallOptions{
-		ListDatabases:      retry[[2]string{"default", "idempotent"}],
 		CreateDatabase:     retry[[2]string{"default", "non_idempotent"}],
 		GetDatabase:        retry[[2]string{"default", "idempotent"}],
 		UpdateDatabaseDdl:  retry[[2]string{"default", "idempotent"}],
@@ -85,6 +84,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 		SetIamPolicy:       retry[[2]string{"default", "non_idempotent"}],
 		GetIamPolicy:       retry[[2]string{"default", "idempotent"}],
 		TestIamPermissions: retry[[2]string{"default", "non_idempotent"}],
+		ListDatabases:      retry[[2]string{"default", "idempotent"}],
 	}
 }
 
@@ -161,45 +161,6 @@ func (c *DatabaseAdminClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
-}
-
-// ListDatabases lists Cloud Spanner databases.
-func (c *DatabaseAdminClient) ListDatabases(ctx context.Context, req *databasepb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListDatabases[0:len(c.CallOptions.ListDatabases):len(c.CallOptions.ListDatabases)], opts...)
-	it := &DatabaseIterator{}
-	req = proto.Clone(req).(*databasepb.ListDatabasesRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*databasepb.Database, string, error) {
-		var resp *databasepb.ListDatabasesResponse
-		req.PageToken = pageToken
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.databaseAdminClient.ListDatabases(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-		return resp.Databases, resp.NextPageToken, nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
-	return it
 }
 
 // CreateDatabase creates a new Cloud Spanner database and starts to prepare it for serving.
@@ -303,11 +264,11 @@ func (c *DatabaseAdminClient) GetDatabaseDdl(ctx context.Context, req *databasep
 	return resp, nil
 }
 
-// SetIamPolicy sets the access control policy on a database resource. Replaces any
-// existing policy.
+// SetIamPolicy sets the access control policy on a database resource.
+// Replaces any existing policy.
 //
-// Authorization requires spanner.databases.setIamPolicy permission on
-// [resource][google.iam.v1.SetIamPolicyRequest.resource].
+// Authorization requires spanner.databases.setIamPolicy
+// permission on [resource][google.iam.v1.SetIamPolicyRequest.resource].
 func (c *DatabaseAdminClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -324,8 +285,9 @@ func (c *DatabaseAdminClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a database resource. Returns an empty
-// policy if a database exists but does not have a policy set.
+// GetIamPolicy gets the access control policy for a database resource.
+// Returns an empty policy if a database exists but does
+// not have a policy set.
 //
 // Authorization requires spanner.databases.getIamPolicy permission on
 // [resource][google.iam.v1.GetIamPolicyRequest.resource].
@@ -347,10 +309,10 @@ func (c *DatabaseAdminClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 
 // TestIamPermissions returns permissions that the caller has on the specified database resource.
 //
-// Attempting this RPC on a non-existent Cloud Spanner database will result in
-// a NOT_FOUND error if the user has spanner.databases.list permission on
-// the containing Cloud Spanner instance. Otherwise returns an empty set of
-// permissions.
+// Attempting this RPC on a non-existent Cloud Spanner database will
+// result in a NOT_FOUND error if the user has
+// spanner.databases.list permission on the containing Cloud
+// Spanner instance. Otherwise returns an empty set of permissions.
 func (c *DatabaseAdminClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -365,6 +327,45 @@ func (c *DatabaseAdminClient) TestIamPermissions(ctx context.Context, req *iampb
 		return nil, err
 	}
 	return resp, nil
+}
+
+// ListDatabases lists Cloud Spanner databases.
+func (c *DatabaseAdminClient) ListDatabases(ctx context.Context, req *databasepb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ListDatabases[0:len(c.CallOptions.ListDatabases):len(c.CallOptions.ListDatabases)], opts...)
+	it := &DatabaseIterator{}
+	req = proto.Clone(req).(*databasepb.ListDatabasesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*databasepb.Database, string, error) {
+		var resp *databasepb.ListDatabasesResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.databaseAdminClient.ListDatabases(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.Databases, resp.NextPageToken, nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
+	return it
 }
 
 // DatabaseIterator manages a stream of *databasepb.Database.
