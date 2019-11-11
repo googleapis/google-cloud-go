@@ -145,6 +145,16 @@ func errRowNotFound(table string, key Key) error {
 	return spannerErrorf(codes.NotFound, "row not found(Table: %v, PrimaryKey: %v)", table, key)
 }
 
+// errRowNotFoundByIndex returns error for not being able to read the row by index.
+func errRowNotFoundByIndex(table string, key Key, index string) error {
+	return spannerErrorf(codes.NotFound, "row not found(Table: %v, IndexKey: %v, Index: %v)", table, key, index)
+}
+
+// errMultipleRowsFound returns error for receiving more than one row when reading a single row using an index.
+func errMultipleRowsFound(table string, key Key, index string) error {
+	return spannerErrorf(codes.FailedPrecondition, "more than one row found by index(Table: %v, IndexKey: %v, Index: %v)", table, key, index)
+}
+
 // ReadRow reads a single row from the database.
 //
 // If no row is present with the given key, then ReadRow returns an error where
@@ -158,6 +168,36 @@ func (t *txReadOnly) ReadRow(ctx context.Context, table string, key Key, columns
 		return nil, errRowNotFound(table, key)
 	case nil:
 		return row, nil
+	default:
+		return nil, err
+	}
+}
+
+// ReadRowUsingIndex reads a single row from the database using an index.
+//
+// If no row is present with the given index, then ReadRowUsingIndex returns an
+// error where spanner.ErrCode(err) is codes.NotFound.
+//
+// If more than one row received with the given index, then ReadRowUsingIndex
+// returns an error where spanner.ErrCode(err) is codes.FailedPrecondition.
+func (t *txReadOnly) ReadRowUsingIndex(ctx context.Context, table string, index string, key Key, columns []string) (*Row, error) {
+	iter := t.ReadUsingIndex(ctx, table, index, key, columns)
+	defer iter.Stop()
+	row, err := iter.Next()
+	switch err {
+	case iterator.Done:
+		return nil, errRowNotFoundByIndex(table, key, index)
+	case nil:
+		// If more than one row found, return an error.
+		_, err := iter.Next()
+		switch err {
+		case iterator.Done:
+			return row, nil
+		case nil:
+			return nil, errMultipleRowsFound(table, key, index)
+		default:
+			return nil, err
+		}
 	default:
 		return nil, err
 	}
