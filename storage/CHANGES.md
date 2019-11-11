@@ -1,5 +1,10 @@
 # Changes
 
+## v1.3.0
+
+- Use `storage.googleapis.com/storage/v1` by default for GCS requests
+  instead of `www.googleapis.com/storage/v1`.
+
 ## v1.2.1
 
 - Fixed a bug where UniformBucketLevelAccess and BucketPolicyOnly were not
