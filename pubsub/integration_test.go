@@ -875,6 +875,7 @@ func TestIntegration_Errors(t *testing.T) {
 }
 
 func TestIntegration_MessageStoragePolicy_TopicLevel(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1599")
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
