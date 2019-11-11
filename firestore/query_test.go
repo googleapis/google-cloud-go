@@ -144,9 +144,19 @@ func TestQueryToProto(t *testing.T) {
 			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "==", math.NaN())},
 		},
 		{
+			desc: `q.Where("a", "in", []int{7, 8})`,
+			in:   q.Where("a", "in", []int{7, 8}),
+			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "in", []int{7, 8})},
+		},
+		{
 			desc: `q.Where("c", "array-contains", 1)`,
 			in:   q.Where("c", "array-contains", 1),
 			want: &pb.StructuredQuery{Where: filtr([]string{"c"}, "array-contains", 1)},
+		},
+		{
+			desc: `q.Where("c", "array-contains-any", []int{1, 2})`,
+			in:   q.Where("c", "array-contains-any", []int{1, 2}),
+			want: &pb.StructuredQuery{Where: filtr([]string{"c"}, "array-contains-any", []int{1, 2})},
 		},
 		{
 			desc: `q.Where("a", ">", 5).Where("b", "<", "foo")`,
