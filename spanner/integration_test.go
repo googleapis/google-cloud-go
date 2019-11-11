@@ -451,6 +451,30 @@ func TestIntegration_SingleUse(t *testing.T) {
 			if err := test.checkTs(rts); err != nil {
 				t.Fatalf("%d: SingleUse.ReadUsingIndex doesn't return expected timestamp: %v", i, err)
 			}
+			// SingleUse.ReadRowUsingIndex
+			got = nil
+			for _, k := range []Key{{"Marc", "Foo"}, {"Alpha", "Beta"}, {"Last", "End"}} {
+				su = client.Single().WithTimestampBound(test.tb)
+				r, err := su.ReadRowUsingIndex(ctx, "Singers", "SingerByName", k, []string{"SingerId", "FirstName", "LastName"})
+				if err != nil {
+					continue
+				}
+				v, err := rowToValues(r)
+				if err != nil {
+					continue
+				}
+				got = append(got, v)
+				rts, err = su.Timestamp()
+				if err != nil {
+					t.Fatalf("%d: SingleUse.ReadRowUsingIndex(%v) doesn't return a timestamp, error: %v", i, k, err)
+				}
+				if err := test.checkTs(rts); err != nil {
+					t.Fatalf("%d: SingleUse.ReadRowUsingIndex(%v) doesn't return expected timestamp: %v", i, k, err)
+				}
+			}
+			if !testEqual(got, test.want) {
+				t.Fatalf("%d: got unexpected results from SingleUse.ReadRowUsingIndex: %v, want %v", i, got, test.want)
+			}
 		})
 	}
 }
@@ -723,6 +747,32 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 		if roTs != rts {
 			t.Errorf("%d: got two read timestamps: %v, %v, want ReadOnlyTransaction to return always the same read timestamp", i, roTs, rts)
 		}
+		// ReadOnlyTransaction.ReadRowUsingIndex
+		got = nil
+		for _, k := range []Key{{"Marc", "Foo"}, {"Alpha", "Beta"}, {"Last", "End"}} {
+			r, err := ro.ReadRowUsingIndex(ctx, "Singers", "SingerByName", k, []string{"SingerId", "FirstName", "LastName"})
+			if err != nil {
+				continue
+			}
+			v, err := rowToValues(r)
+			if err != nil {
+				continue
+			}
+			got = append(got, v)
+			rts, err = ro.Timestamp()
+			if err != nil {
+				t.Errorf("%d: ReadOnlyTransaction.ReadRowUsingIndex(%v) doesn't return a timestamp, error: %v", i, k, err)
+			}
+			if err := test.checkTs(rts); err != nil {
+				t.Errorf("%d: ReadOnlyTransaction.ReadRowUsingIndex(%v) doesn't return expected timestamp: %v", i, k, err)
+			}
+			if roTs != rts {
+				t.Errorf("%d: got two read timestamps: %v, %v, want ReadOnlyTransaction to return always the same read timestamp", i, roTs, rts)
+			}
+		}
+		if !testEqual(got, test.want) {
+			t.Errorf("%d: got unexpected results from ReadOnlyTransaction.ReadRowUsingIndex: %v, want %v", i, got, test.want)
+		}
 		ro.Close()
 	}
 }
@@ -912,8 +962,23 @@ func TestIntegration_Reads(t *testing.T) {
 		t.Fatalf("got %v, want NotFound", err)
 	}
 
-	// No index point read not found, because Go does not have ReadRowUsingIndex.
-
+	// Index point read.
+	rowIndex, err := client.Single().ReadRowUsingIndex(ctx, testTable, testTableIndex, Key{"v1"}, testTableColumns)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var gotIndex testTableRow
+	if err := rowIndex.ToStruct(&gotIndex); err != nil {
+		t.Fatal(err)
+	}
+	if wantIndex := (testTableRow{"k1", "v1"}); gotIndex != wantIndex {
+		t.Errorf("got %v, want %v", gotIndex, wantIndex)
+	}
+	// Index point read not found.
+	_, err = client.Single().ReadRowUsingIndex(ctx, testTable, testTableIndex, Key{"v999"}, testTableColumns)
+	if ErrCode(err) != codes.NotFound {
+		t.Fatalf("got %v, want NotFound", err)
+	}
 	rangeReads(ctx, t, client)
 	indexRangeReads(ctx, t, client)
 }
@@ -1460,6 +1525,16 @@ func TestIntegration_ReadErrors(t *testing.T) {
 	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, readDBStatements)
 	defer cleanup()
 
+	var ms []*Mutation
+	for i := 0; i < 2; i++ {
+		ms = append(ms, InsertOrUpdate(testTable,
+			testTableColumns,
+			[]interface{}{fmt.Sprintf("k%d", i), fmt.Sprintf("v")}))
+	}
+	if _, err := client.Apply(ctx, ms); err != nil {
+		t.Fatal(err)
+	}
+
 	// Read over invalid table fails
 	_, err := client.Single().ReadRow(ctx, "badTable", Key{1}, []string{"StringValue"})
 	if msg, ok := matchError(err, codes.NotFound, "badTable"); !ok {
@@ -1492,6 +1567,12 @@ func TestIntegration_ReadErrors(t *testing.T) {
 	<-dctx.Done()
 	_, err = client.Single().ReadRow(dctx, "TestTable", Key{1}, []string{"StringValue"})
 	if msg, ok := matchError(err, codes.DeadlineExceeded, ""); !ok {
+		t.Error(msg)
+	}
+	// Read should fail if there are multiple rows returned.
+	_, err = client.Single().ReadRowUsingIndex(ctx, testTable, testTableIndex, Key{"v"}, testTableColumns)
+	wantMsgPart := fmt.Sprintf("more than one row found by index(Table: %v, IndexKey: %v, Index: %v)", testTable, Key{"v"}, testTableIndex)
+	if msg, ok := matchError(err, codes.FailedPrecondition, wantMsgPart); !ok {
 		t.Error(msg)
 	}
 }
