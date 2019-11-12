@@ -78,6 +78,7 @@ func TestRoutineTypeConversions(t *testing.T) {
 				CreationTime:     aTimeMillis,
 				LastModifiedTime: aTimeMillis,
 				DefinitionBody:   "body",
+				Description:      "desc",
 				Etag:             "etag",
 				RoutineType:      "type",
 				Language:         "lang",
@@ -85,6 +86,7 @@ func TestRoutineTypeConversions(t *testing.T) {
 			&RoutineMetadata{
 				CreationTime:     aTime,
 				LastModifiedTime: aTime,
+				Description:      "desc",
 				Body:             "body",
 				ETag:             "etag",
 				Type:             "type",
