@@ -2472,20 +2472,25 @@ func TestIntegration_RoutineLifecycle(t *testing.T) {
 		t.Errorf("Language mismatch. got %s want %s", curMeta.Language, want)
 	}
 
-	// Perform an update to change the routine body.
+	// Perform an update to change the routine body and description.
 	want = "x * 4"
+	wantDescription := "an updated description"
 	// during beta, update doesn't allow partial updates.  Provide all fields.
 	newMeta, err := routine.Update(ctx, &RoutineMetadataToUpdate{
-		Body:       want,
-		Arguments:  curMeta.Arguments,
-		ReturnType: curMeta.ReturnType,
-		Type:       curMeta.Type,
+		Body:        want,
+		Arguments:   curMeta.Arguments,
+		Description: wantDescription,
+		ReturnType:  curMeta.ReturnType,
+		Type:        curMeta.Type,
 	}, curMeta.ETag)
 	if err != nil {
 		t.Fatalf("Update: %v", err)
 	}
 	if newMeta.Body != want {
-		t.Fatalf("Update failed.  want %s got %s", want, newMeta.Body)
+		t.Fatalf("Update body failed. want %s got %s", want, newMeta.Body)
+	}
+	if newMeta.Description != wantDescription {
+		t.Fatalf("Update description failed. want %s got %s", wantDescription, newMeta.Description)
 	}
 
 	// Ensure presence when enumerating the model list.
