@@ -674,12 +674,20 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	origAccess := append([]*AccessEntry(nil), md.Access...)
-	newEntry := &AccessEntry{
-		Role:       ReaderRole,
-		Entity:     "Joe@example.com",
-		EntityType: UserEmailEntity,
+	newEntries := []*AccessEntry{
+		{
+			Role:       ReaderRole,
+			Entity:     "Joe@example.com",
+			EntityType: UserEmailEntity,
+		},
+		{
+			Role:       ReaderRole,
+			Entity:     "allUsers",
+			EntityType: IAMMemberEntity,
+		},
 	}
-	newAccess := append(md.Access, newEntry)
+
+	newAccess := append(md.Access, newEntries...)
 	dm := DatasetMetadataToUpdate{Access: newAccess}
 	md, err = dataset.Update(ctx, dm, md.ETag)
 	if err != nil {
@@ -691,9 +699,41 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 			t.Log("could not restore dataset access list")
 		}
 	}()
-	if diff := testutil.Diff(md.Access, newAccess); diff != "" {
+	for _, v := range md.Access {
+		fmt.Printf("md %+v\n", v)
+	}
+	for _, v := range newAccess {
+		fmt.Printf("newAccess %+v\n", v)
+	}
+	if diff := testutil.Diff(md.Access, newAccess, cmpopts.SortSlices(lessAccessEntries)); diff != "" {
 		t.Fatalf("got=-, want=+:\n%s", diff)
 	}
+}
+
+// Comparison function for AccessEntries to enable order insensitive equality checking.
+func lessAccessEntries(x, y *AccessEntry) bool {
+	if x.Entity < y.Entity {
+		return true
+	}
+	if x.Entity > y.Entity {
+		return false
+	}
+	if x.EntityType < y.EntityType {
+		return true
+	}
+	if x.EntityType > y.EntityType {
+		return false
+	}
+	if x.Role < y.Role {
+		return true
+	}
+	if x.Role > y.Role {
+		return false
+	}
+	if x.View == nil {
+		return y.View != nil
+	}
+	return false
 }
 
 func TestIntegration_DatasetUpdateLabels(t *testing.T) {

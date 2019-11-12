@@ -449,6 +449,7 @@ func TestConvertAccessEntry(t *testing.T) {
 		{Role: WriterRole, Entity: "e", EntityType: GroupEmailEntity},
 		{Role: OwnerRole, Entity: "e", EntityType: UserEmailEntity},
 		{Role: ReaderRole, Entity: "e", EntityType: SpecialGroupEntity},
+		{Role: ReaderRole, Entity: "e", EntityType: IAMMemberEntity},
 		{Role: ReaderRole, EntityType: ViewEntity,
 			View: &Table{ProjectID: "p", DatasetID: "d", TableID: "t", c: c}},
 	} {
