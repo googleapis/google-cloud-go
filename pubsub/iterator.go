@@ -197,6 +197,7 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	if err != nil {
 		return nil, it.fail(err)
 	}
+	recordStat(it.ctx, PullCount, int64(len(rmsgs)))
 	msgs, err := convertMessages(rmsgs)
 	if err != nil {
 		return nil, it.fail(err)
