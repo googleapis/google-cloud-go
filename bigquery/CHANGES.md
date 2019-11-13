@@ -1,5 +1,20 @@
 # Changes
 
+## v1.3.0
+
+* Add Description field for Routine entities.
+
+* Add support for iamMember entities on dataset ACLs.
+
+* Address issue when constructing a Pager from a RowIterator
+  that referenced a result with zero result rows.
+
+* Add support for integer range partitioning, which affects
+  table creation directly and via query/load jobs.
+
+* Add opt-out support for streaming inserts via experimental
+  `NoDedupeID` sentinel.
+
 ## v1.2.0
 
 * Adds support for scripting feature, which includes script statistics
