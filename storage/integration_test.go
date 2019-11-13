@@ -451,7 +451,9 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 	client := testConfig(ctx, t)
 	defer client.Close()
 	h := testHelper{t}
-	bkt := client.Bucket(bucketName)
+	bkt := client.Bucket(uidSpace.New())
+	h.mustCreate(bkt, testutil.ProjID(), nil)
+	defer h.mustDeleteBucket(bkt)
 
 	// Insert an object with custom ACL.
 	o := bkt.Object("uniformBucketLevelAccess")
