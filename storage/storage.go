@@ -1002,11 +1002,12 @@ type ObjectAttrs struct {
 	// of a particular object. This field is read-only.
 	Metageneration int64
 
-	// StorageClass is the storage class of the object.
-	// This value defines how objects in the bucket are stored and
-	// determines the SLA and the cost of storage. Typical values are
-	// "NEARLINE", "COLDLINE" and "STANDARD".
-	// It defaults to "STANDARD".
+	// StorageClass is the storage class of the object. This defines
+	// how objects are stored and determines the SLA and the cost of storage.
+	// Typical values are "STANDARD", "NEARLINE", "COLDLINE" and "ARCHIVE".
+	// Defaults to "STANDARD".
+	// See https://cloud.google.com/storage/docs/storage-classes for all
+	// valid values.
 	StorageClass string
 
 	// Created is the time the object was created. This field is read-only.
