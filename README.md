@@ -32,7 +32,7 @@ make backwards-incompatible changes.
 Google API                                      | Status       | Package
 ------------------------------------------------|--------------|-----------------------------------------------------------
 [Asset][cloud-asset]                            | alpha        | [`cloud.google.com/go/asset/v1beta`](https://godoc.org/cloud.google.com/go/asset/v1beta)
-[Automl][cloud-automl]                          | stable       | [`cloud.google.com/go/automl/apiv1`][https://godoc.org/cloud.google.com/go/automl/apiv1]
+[Automl][cloud-automl]                          | stable       | [`cloud.google.com/go/automl/apiv1`](https://godoc.org/cloud.google.com/go/automl/apiv1)
 [BigQuery][cloud-bigquery]                      | stable       | [`cloud.google.com/go/bigquery`](https://godoc.org/cloud.google.com/go/bigquery)
 [Bigtable][cloud-bigtable]                      | stable       | [`cloud.google.com/go/bigtable`](https://godoc.org/cloud.google.com/go/bigtable)
 [Cloudbuild][cloud-build]                       | alpha        | [`cloud.google.com/go/cloudbuild/apiv1`](https://godoc.org/cloud.google.com/go/cloudbuild/apiv1)
@@ -162,6 +162,7 @@ for more information.
 [cloud-monitoring]: https://cloud.google.com/monitoring/
 [cloud-oslogin]: https://cloud.google.com/compute/docs/oslogin/rest
 [cloud-phishingprotection]: https://cloud.google.com/phishing-protection/
+[cloud-securitycenter]: https://cloud.google.com/security-command-center/
 [cloud-scheduler]: https://cloud.google.com/scheduler
 [cloud-spanner]: https://cloud.google.com/spanner/
 [cloud-speech]: https://cloud.google.com/speech
