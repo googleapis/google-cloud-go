@@ -846,6 +846,106 @@ func TestTakeFromWriteQueue(t *testing.T) {
 	sh.recycle()
 }
 
+// The session pool should stop trying to create write-prepared sessions if a
+// permanent error occurs while trying to begin a transaction. Possible
+// permanent errors are PermissionDenied or `Database not found`.
+func TestPermanentErrorOnPrepareSession(t *testing.T) {
+	t.Parallel()
+
+	permanentErrors := []error{
+		status.Errorf(codes.PermissionDenied, "Caller is missing IAM permission spanner.databases.beginOrRollbackReadWriteTransaction on resource"),
+		status.Errorf(codes.NotFound, `Database not found: projects/<project>/instances/<instance>/databases/<database> resource_type: "type.googleapis.com/google.spanner.admin.database.v1.Database" resource_name: "projects/<project>/instances/<instance>/databases/<database>" description: "Database does not exist."`),
+	}
+	for _, permanentError := range permanentErrors {
+		ctx := context.Background()
+		server, client, teardown := setupMockedTestServerWithConfig(t,
+			ClientConfig{
+				SessionPoolConfig: SessionPoolConfig{
+					MinOpened:           10,
+					MaxOpened:           10,
+					WriteSessions:       0.5,
+					HealthCheckInterval: time.Millisecond,
+				},
+			})
+		defer teardown()
+		server.TestSpanner.PutExecutionTime(MethodBeginTransaction, SimulatedExecutionTime{
+			Errors:    []error{permanentError},
+			KeepError: true,
+		})
+		sp := client.idleSessions
+
+		// Wait until the health checker has tried to write-prepare a session.
+		// This will cause the session pool to write some errors to the log that
+		// preparing sessions failed.
+		waitUntil := time.After(time.Second)
+		var prepareDisabled bool
+		var numOpened int
+		for !prepareDisabled || numOpened < 10 {
+			select {
+			case <-waitUntil:
+				break
+			default:
+			}
+			sp.mu.Lock()
+			prepareDisabled = sp.disableBackgroundPrepareSessions
+			numOpened = sp.idleList.Len()
+			sp.mu.Unlock()
+		}
+
+		// There should be no write-prepared sessions.
+		sp.mu.Lock()
+		if sp.idleWriteList.Len() != 0 {
+			sp.mu.Unlock()
+			t.Fatalf("write queue unexpectedly not empty")
+		}
+		// All sessions should be in the read idle list.
+		if g, w := sp.idleList.Len(), 10; g != w {
+			sp.mu.Unlock()
+			t.Fatalf("session count mismatch:\nWant: %v\nGot: %v", w, g)
+		}
+		sp.mu.Unlock()
+		// Take a read session should succeed.
+		sh, err := sp.take(ctx)
+		if err != nil {
+			t.Fatalf("cannot get session from session pool: %v", err)
+		}
+		sh.recycle()
+		// Take a write session should fail with the permanent error.
+		_, err = sp.takeWriteSession(ctx)
+		if ErrCode(err) != ErrCode(permanentError) {
+			t.Fatalf("take write session failed with unexpected error.\nGot: %v\nWant: %v\n", err, permanentError)
+		}
+
+		// Clearing the error on the server (or granting the permission to the
+		// credentials in use) should allow us to take a write session.
+		server.TestSpanner.PutExecutionTime(MethodBeginTransaction, SimulatedExecutionTime{})
+		sh, err = sp.takeWriteSession(ctx)
+		if err != nil {
+			t.Fatalf("cannot get write session from session pool: %v", err)
+		}
+		sh.recycle()
+		// The maintainer should also pick this up and prepare 50% of the sessions.
+		waitUntil = time.After(time.Second)
+		var numPrepared int
+		for numPrepared < 5 {
+			select {
+			case <-waitUntil:
+				break
+			default:
+			}
+			sp.mu.Lock()
+			numPrepared = sp.idleWriteList.Len()
+			sp.mu.Unlock()
+		}
+		sp.mu.Lock()
+		if g, w := sp.idleWriteList.Len(), 5; g != w {
+			sp.mu.Unlock()
+			t.Fatalf("write session count mismatch:\nWant: %v\nGot: %v", w, g)
+		}
+		sp.mu.Unlock()
+	}
+}
+
 // TestSessionHealthCheck tests healthchecking cases.
 func TestSessionHealthCheck(t *testing.T) {
 	t.Parallel()

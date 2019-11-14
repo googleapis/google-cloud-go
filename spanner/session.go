@@ -305,6 +305,9 @@ func (s *session) prepareForWrite(ctx context.Context) error {
 		return nil
 	}
 	tx, err := beginTransaction(contextWithOutgoingMetadata(ctx, s.md), s.getID(), s.client)
+	s.pool.mu.Lock()
+	s.pool.disableBackgroundPrepareSessions = isPermissionDeniedError(err) || isDatabaseNotFoundError(err)
+	s.pool.mu.Unlock()
 	if err != nil {
 		return err
 	}
@@ -447,6 +450,11 @@ type sessionPool struct {
 	createReqs uint64
 	// prepareReqs is the number of ongoing session preparation request.
 	prepareReqs uint64
+	// disableBackgroundPrepareSessions indicates that the BeginTransaction
+	// call for a read/write transaction failed with a permanent error, such as
+	// PermissionDenied or `Database not found`. Further background calls to
+	// prepare sessions will be disabled.
+	disableBackgroundPrepareSessions bool
 	// configuration of the session pool.
 	SessionPoolConfig
 	// hc is the health checker
@@ -605,7 +613,7 @@ func errGetSessionTimeout() error {
 
 // shouldPrepareWriteLocked returns true if we should prepare more sessions for write.
 func (p *sessionPool) shouldPrepareWriteLocked() bool {
-	return float64(p.numOpened)*p.WriteSessions > float64(p.idleWriteList.Len()+int(p.prepareReqs))
+	return !p.disableBackgroundPrepareSessions && float64(p.numOpened)*p.WriteSessions > float64(p.idleWriteList.Len()+int(p.prepareReqs))
 }
 
 func (p *sessionPool) createSession(ctx context.Context) (*session, error) {
@@ -1396,4 +1404,20 @@ func minUint64(a, b uint64) uint64 {
 		return b
 	}
 	return a
+}
+
+// isPermissionDeniedError returns true if the given error has code
+// PermissionDenied.
+func isPermissionDeniedError(err error) bool {
+	return ErrCode(err) == codes.PermissionDenied
+}
+
+// isDatabaseNotFoundError returns true if the given error is a
+// `Database not found` error.
+func isDatabaseNotFoundError(err error) bool {
+	// We are checking specifically for the error message `Database not found`,
+	// as the error could also be a `Session not found`. The former should
+	// cause the session pool to stop preparing sessions for read/write
+	// transactions, while the latter should not.
+	return ErrCode(err) == codes.NotFound && strings.Contains(err.Error(), "Database not found")
 }
