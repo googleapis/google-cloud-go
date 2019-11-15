@@ -410,6 +410,7 @@ func TestIntegration_LargePublishSize(t *testing.T) {
 }
 
 func TestIntegration_CancelReceive(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1666")
 	t.Parallel()
 	ctx, cancel := context.WithCancel(context.Background())
 	client := integrationTestClient(ctx, t)
