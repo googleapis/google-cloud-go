@@ -93,8 +93,6 @@ func integrationTestClient(ctx context.Context, t *testing.T) *Client {
 }
 
 func TestIntegration_All(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1633")
-	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -411,7 +409,6 @@ func TestIntegration_LargePublishSize(t *testing.T) {
 
 func TestIntegration_CancelReceive(t *testing.T) {
 	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1666")
-	t.Parallel()
 	ctx, cancel := context.WithCancel(context.Background())
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -468,7 +465,6 @@ func TestIntegration_CancelReceive(t *testing.T) {
 
 func TestIntegration_CreateSubscription_NeverExpire(t *testing.T) {
 	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1637")
-	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -531,8 +527,6 @@ func findServiceAccountEmail(ctx context.Context, t *testing.T) string {
 
 func TestIntegration_UpdateSubscription(t *testing.T) {
 	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1643")
-
-	t.Parallel()
 	ctx := context.Background()
 
 	client := integrationTestClient(ctx, t)
@@ -660,7 +654,6 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 }
 
 func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
-	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -740,7 +733,6 @@ func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
 // whitelisting, a (gsuite) organization project, and specific permissions.
 func TestIntegration_UpdateTopicLabels(t *testing.T) {
 	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1669")
-	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -791,7 +783,6 @@ func TestIntegration_UpdateTopicLabels(t *testing.T) {
 }
 
 func TestIntegration_PublicTopic(t *testing.T) {
-	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -817,7 +808,6 @@ func TestIntegration_PublicTopic(t *testing.T) {
 
 func TestIntegration_Errors(t *testing.T) {
 	// Test various edge conditions.
-	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -879,7 +869,6 @@ func TestIntegration_Errors(t *testing.T) {
 
 func TestIntegration_MessageStoragePolicy_TopicLevel(t *testing.T) {
 	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1599")
-	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -989,7 +978,6 @@ func TestIntegration_MessageStoragePolicy_ProjectLevel(t *testing.T) {
 }
 
 func TestIntegration_CreateTopic_KMS(t *testing.T) {
-	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -1063,7 +1051,6 @@ func TestIntegration_CreateTopic_KMS(t *testing.T) {
 }
 
 func TestIntegration_CreateTopic_MessageStoragePolicy(t *testing.T) {
-	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
