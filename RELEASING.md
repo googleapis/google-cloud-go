@@ -105,8 +105,7 @@ They are released entirely independently.
    to be part of your release).
 1. Edit `CHANGES.md` to include a summary of the changes.
 1. `cd internal/version && go generate && cd -`
-1. `./tidyall.sh`
-1. Mail the CL: `git add -A && git change && git mail`
+1. Mail the CL: `git add -A && git change <branch name> && git mail`
 1. Wait for the CL to be submitted. Once it's submitted, and without submitting
    any other CLs in the meantime:
    a. Switch to master.
@@ -136,9 +135,8 @@ To release a submodule:
 1. On master, run `git log $CV.. -- datastore/` to list all the changes to the
    submodule directory since the last release.
 1. Edit `datastore/CHANGES.md` to include a summary of the changes.
-1. `./tidyall.sh`
 1. `cd internal/version && go generate && cd -`
-1. Mail the CL: `git add -A && git change && git mail`
+1. Mail the CL: `git add -A && git change <branch name> && git mail`
 1. Wait for the CL to be submitted. Once it's submitted, and without submitting
    any other CLs in the meantime:
    a. Switch to master.
