@@ -672,8 +672,10 @@ func TestDatabaseAdminTestIamPermissions(t *testing.T) {
 	mockDatabaseAdmin.resps = append(mockDatabaseAdmin.resps[:0], expectedResponse)
 
 	var resource string = "resource-341064690"
+	var permissions []string = nil
 	var request = &iampb.TestIamPermissionsRequest{
-		Resource: resource,
+		Resource:    resource,
+		Permissions: permissions,
 	}
 
 	c, err := NewDatabaseAdminClient(context.Background(), clientOpt)
@@ -701,8 +703,10 @@ func TestDatabaseAdminTestIamPermissionsError(t *testing.T) {
 	mockDatabaseAdmin.err = gstatus.Error(errCode, "test error")
 
 	var resource string = "resource-341064690"
+	var permissions []string = nil
 	var request = &iampb.TestIamPermissionsRequest{
-		Resource: resource,
+		Resource:    resource,
+		Permissions: permissions,
 	}
 
 	c, err := NewDatabaseAdminClient(context.Background(), clientOpt)

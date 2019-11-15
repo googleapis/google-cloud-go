@@ -863,8 +863,10 @@ func TestInstanceAdminTestIamPermissions(t *testing.T) {
 	mockInstanceAdmin.resps = append(mockInstanceAdmin.resps[:0], expectedResponse)
 
 	var resource string = "resource-341064690"
+	var permissions []string = nil
 	var request = &iampb.TestIamPermissionsRequest{
-		Resource: resource,
+		Resource:    resource,
+		Permissions: permissions,
 	}
 
 	c, err := NewInstanceAdminClient(context.Background(), clientOpt)
@@ -892,8 +894,10 @@ func TestInstanceAdminTestIamPermissionsError(t *testing.T) {
 	mockInstanceAdmin.err = gstatus.Error(errCode, "test error")
 
 	var resource string = "resource-341064690"
+	var permissions []string = nil
 	var request = &iampb.TestIamPermissionsRequest{
-		Resource: resource,
+		Resource:    resource,
+		Permissions: permissions,
 	}
 
 	c, err := NewInstanceAdminClient(context.Background(), clientOpt)

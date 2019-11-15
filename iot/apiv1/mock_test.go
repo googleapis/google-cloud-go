@@ -1273,8 +1273,10 @@ func TestDeviceManagerTestIamPermissions(t *testing.T) {
 	mockDeviceManager.resps = append(mockDeviceManager.resps[:0], expectedResponse)
 
 	var resource string = "resource-341064690"
+	var permissions []string = nil
 	var request = &iampb.TestIamPermissionsRequest{
-		Resource: resource,
+		Resource:    resource,
+		Permissions: permissions,
 	}
 
 	c, err := NewDeviceManagerClient(context.Background(), clientOpt)
@@ -1302,8 +1304,10 @@ func TestDeviceManagerTestIamPermissionsError(t *testing.T) {
 	mockDeviceManager.err = gstatus.Error(errCode, "test error")
 
 	var resource string = "resource-341064690"
+	var permissions []string = nil
 	var request = &iampb.TestIamPermissionsRequest{
-		Resource: resource,
+		Resource:    resource,
+		Permissions: permissions,
 	}
 
 	c, err := NewDeviceManagerClient(context.Background(), clientOpt)
