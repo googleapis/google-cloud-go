@@ -16,6 +16,13 @@
   session will normally not have to be created as part of the transaction.
   Spanner clients that are created with the NewClientWithConfig method are
   not affected by this change.
+- Spanner clients that are created with the NewClient method will now default
+  to a write sessions fraction of 0.2 in the pool
+  (i.e. SessionPoolConfig.WriteSessions=0.2). Creating Spanner clients for
+  read-only purposes should be done using NewClientWithConfig with
+  SessionPoolConfig.WriteSessions=0.0.
+  Spanner clients that are created with the NewClientWithConfig method are
+  not affected by this change.
 - The session pool maintenance worker has been improved so it keeps better
   track of the actual number of sessions needed. It will now less often delete
   and re-create sessions. This can improve the overall performance of
