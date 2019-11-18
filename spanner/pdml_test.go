@@ -17,6 +17,9 @@ package spanner
 import (
 	"bytes"
 	"context"
+	"io/ioutil"
+	"log"
+	"os"
 	"testing"
 	"time"
 
@@ -100,7 +103,11 @@ func TestPartitionedUpdate_Aborted(t *testing.T) {
 // created is also deleted, even though the update timed out.
 func TestPartitionedUpdate_WithDeadline(t *testing.T) {
 	t.Parallel()
-	server, client, teardown := setupMockedTestServer(t)
+	logger := log.New(os.Stderr, "", log.LstdFlags)
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: DefaultSessionPoolConfig,
+		logger:            logger,
+	})
 	defer teardown()
 
 	ctx := context.Background()
@@ -112,10 +119,11 @@ func TestPartitionedUpdate_WithDeadline(t *testing.T) {
 		})
 	stmt := NewStatement(UpdateBarSetFoo)
 	// The following update will cause a 'Failed to delete session' warning to
-	// be logged. This is expected. Once each client has its own logger, we
-	// should temporarily turn off logging to prevent this warning to be
-	// logged.
+	// be logged. This is expected. To avoid spamming the log, we temporarily
+	// set the output to be discarded.
+	logger.SetOutput(ioutil.Discard)
 	_, err := client.PartitionedUpdate(ctx, stmt)
+	logger.SetOutput(os.Stderr)
 	if err == nil {
 		t.Fatalf("missing expected error")
 	}

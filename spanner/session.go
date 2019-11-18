@@ -133,6 +133,9 @@ type session struct {
 	// createTime is the timestamp of the session's creation. It is set only
 	// once during session's creation.
 	createTime time.Time
+	// logger is the logger configured for the Spanner client that created the
+	// session. If nil, logging will be directed to the standard logger.
+	logger *log.Logger
 
 	// mu protects the following fields from concurrent access: both
 	// healthcheck workers and transactions can modify them.
@@ -294,7 +297,7 @@ func (s *session) delete(ctx context.Context) {
 	// session, it will be eventually garbage collected by Cloud Spanner.
 	err := s.client.DeleteSession(ctx, &sppb.DeleteSessionRequest{Name: s.getID()})
 	if err != nil {
-		log.Printf("Failed to delete session %v. Error: %v", s.getID(), err)
+		logf(s.logger, "Failed to delete session %v. Error: %v", s.getID(), err)
 	}
 }
 
@@ -1183,7 +1186,7 @@ func (hc *healthChecker) worker(i int) {
 			if err != nil {
 				// Skip handling prepare error, session can be prepared in next
 				// cycle.
-				log.Printf("Failed to prepare session, error: %v", toSpannerError(err))
+				logf(hc.pool.sc.logger, "Failed to prepare session, error: %v", toSpannerError(err))
 			}
 			hc.pool.recycle(ws)
 			hc.pool.mu.Lock()
@@ -1301,7 +1304,7 @@ func (hc *healthChecker) growPool(ctx context.Context, growToNumSessions uint64)
 		createContext, cancel := context.WithTimeout(context.Background(), time.Minute)
 		if s, err = p.createSession(createContext); err != nil {
 			cancel()
-			log.Printf("Failed to create session, error: %v", toSpannerError(err))
+			logf(p.sc.logger, "Failed to create session, error: %v", toSpannerError(err))
 			continue
 		}
 		cancel()
@@ -1311,7 +1314,7 @@ func (hc *healthChecker) growPool(ctx context.Context, growToNumSessions uint64)
 			if err = s.prepareForWrite(prepareContext); err != nil {
 				cancel()
 				p.recycle(s)
-				log.Printf("Failed to prepare session, error: %v", toSpannerError(err))
+				logf(p.sc.logger, "Failed to prepare session, error: %v", toSpannerError(err))
 				continue
 			}
 			cancel()

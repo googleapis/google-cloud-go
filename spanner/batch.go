@@ -223,7 +223,11 @@ func (t *BatchReadOnlyTransaction) Cleanup(ctx context.Context) {
 	sid, client := sh.getID(), sh.getClient()
 	err := client.DeleteSession(ctx, &sppb.DeleteSessionRequest{Name: sid})
 	if err != nil {
-		log.Printf("Failed to delete session %v. Error: %v", sid, err)
+		var logger *log.Logger
+		if sh.session != nil {
+			logger = sh.session.logger
+		}
+		logf(logger, "Failed to delete session %v. Error: %v", sid, err)
 	}
 }
 
@@ -259,6 +263,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 	}
 	return stream(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
+		sh.session.logger,
 		rpc,
 		t.setTimestamp,
 		t.release)
