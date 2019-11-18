@@ -80,6 +80,11 @@ var (
 	dialGRPC         = gtransport.Dial
 	onGCE            = gcemd.OnGCE
 	serviceRegexp    = regexp.MustCompile(`^[a-z]([-a-z0-9_.]{0,253}[a-z0-9])?$`)
+
+	// For testing only.
+	// When the profiling loop has exited without error and this channel is
+	// non-nil, "true" will be sent to this channel.
+	profilingDone chan bool
 )
 
 const (
@@ -167,6 +172,11 @@ type Config struct {
 	// and doesn't need to be initialized. It needs to be set in rare cases where
 	// the metadata server is present but is flaky or otherwise misbehave.
 	Zone string
+
+	// numProfiles is the number of profiles which should be collected before
+	// the profile collection loop exits.When numProfiles is 0, profiles will
+	// be collected for the duration of the program. For testing only.
+	numProfiles int
 }
 
 // allowUntilSuccess is an object that will perform action till
@@ -304,10 +314,11 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 	md := grpcmd.New(map[string]string{})
 
 	gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		debugLog("creating a new profile via profiler service")
 		var err error
 		p, err = a.client.CreateProfile(ctx, &req, grpc.Trailer(&md))
 		if err != nil {
-			debugLog("failed to create a profile, will retry: %v", err)
+			debugLog("failed to create profile, will retry: %v", err)
 		}
 		return err
 	}, gax.WithRetry(func() gax.Retryer {
@@ -568,8 +579,12 @@ func initializeConfig(cfg Config) error {
 func pollProfilerService(ctx context.Context, a *agent) {
 	debugLog("Stackdriver Profiler Go Agent version: %s", version.Repo)
 	debugLog("profiler has started")
-	for {
+	for i := 0; config.numProfiles == 0 || i < config.numProfiles; i++ {
 		p := a.createProfile(ctx)
 		a.profileAndUpload(ctx, p)
+	}
+
+	if profilingDone != nil {
+		profilingDone <- true
 	}
 }
