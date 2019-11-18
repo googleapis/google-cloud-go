@@ -738,6 +738,7 @@ func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
 // NOTE: This test should be skipped by open source contributors. It requires
 // whitelisting, a (gsuite) organization project, and specific permissions.
 func TestIntegration_UpdateTopicLabels(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1669")
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
