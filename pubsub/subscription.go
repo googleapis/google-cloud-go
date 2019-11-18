@@ -312,6 +312,16 @@ type ReceiveSettings struct {
 	// duration less than 0.
 	MaxExtension time.Duration
 
+	// MaxExtensionPeriod is the maximum duration by which to extend the ack
+	// deadline at a time. The ack deadline will continue to be extended by up
+	// to this duration until MaxExtension is reached. Setting MaxExtensionPeriod
+	// bounds the maximum amount of time before a message redelivery in the
+	// event the subscriber fails to extend the deadline.
+	//
+	// MaxExtensionPeriod configuration can be disabled by specifying a
+	// duration less than (or equal to) 0.
+	MaxExtensionPeriod time.Duration
+
 	// MaxOutstandingMessages is the maximum number of unprocessed messages
 	// (unacknowledged but not yet expired). If MaxOutstandingMessages is 0, it
 	// will be treated as if it were DefaultReceiveSettings.MaxOutstandingMessages.
@@ -371,6 +381,7 @@ var minAckDeadline = 10 * time.Second
 // DefaultReceiveSettings holds the default values for ReceiveSettings.
 var DefaultReceiveSettings = ReceiveSettings{
 	MaxExtension:           10 * time.Minute,
+	MaxExtensionPeriod:     -1,
 	MaxOutstandingMessages: 1000,
 	MaxOutstandingBytes:    1e9, // 1G
 	NumGoroutines:          1,
@@ -656,7 +667,7 @@ func (s *Subscription) receive(ctx context.Context, po *pullOptions, fc *flowCon
 	// The iterator does not use the context passed to Receive. If it did, canceling
 	// that context would immediately stop the iterator without waiting for unacked
 	// messages.
-	iter := newMessageIterator(s.c.subc, s.name, po)
+	iter := newMessageIterator(s.c.subc, s.name, &s.ReceiveSettings.MaxExtensionPeriod, po)
 
 	// We cannot use errgroup from Receive here. Receive might already be calling group.Wait,
 	// and group.Wait cannot be called concurrently with group.Go. We give each receive() its
