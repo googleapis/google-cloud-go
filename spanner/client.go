@@ -19,6 +19,7 @@ package spanner
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"regexp"
 	"time"
@@ -65,6 +66,7 @@ func validDatabaseName(db string) error {
 type Client struct {
 	sc           *sessionClient
 	idleSessions *sessionPool
+	logger       *log.Logger
 }
 
 // ClientConfig has configurations for the client.
@@ -80,6 +82,10 @@ type ClientConfig struct {
 	// See https://cloud.google.com/spanner/docs/reference/rpc/google.spanner.v1#session
 	// for more info.
 	SessionLabels map[string]string
+
+	// logger is the logger to use for this client. If it is nil, all logging
+	// will be directed to the standard logger.
+	logger *log.Logger
 }
 
 // errDial returns error for dialing to Cloud Spanner.
@@ -171,7 +177,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		sessionLabels[k] = v
 	}
 	// Create a session client.
-	sc := newSessionClient(clients, database, sessionLabels, metadata.Pairs(resourcePrefixHeader, database))
+	sc := newSessionClient(clients, database, sessionLabels, metadata.Pairs(resourcePrefixHeader, database), config.logger)
 	// Create a session pool.
 	config.SessionPoolConfig.sessionLabels = sessionLabels
 	sp, err := newSessionPool(sc, config.SessionPoolConfig)
@@ -182,6 +188,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	c = &Client{
 		sc:           sc,
 		idleSessions: sp,
+		logger:       config.logger,
 	}
 	return c, nil
 }
@@ -431,4 +438,14 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 	defer func() { trace.EndSpan(ctx, err) }()
 	t := &writeOnlyTransaction{c.idleSessions}
 	return t.applyAtLeastOnce(ctx, ms...)
+}
+
+// logf logs the given message to the given logger, or the standard logger if
+// the given logger is nil.
+func logf(logger *log.Logger, format string, v ...interface{}) {
+	if logger == nil {
+		log.Printf(format, v...)
+	} else {
+		logger.Printf(format, v...)
+	}
 }
