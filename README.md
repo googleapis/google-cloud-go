@@ -41,7 +41,7 @@ Google API                                      | Status       | Package
 [ContainerAnalysis][cloud-containeranalysis]    | beta         | [`cloud.google.com/go/containeranalysis/apiv1`](https://godoc.org/cloud.google.com/go/containeranalysis/apiv1)
 [Dataproc][cloud-dataproc]                      | stable       | [`cloud.google.com/go/dataproc/apiv1`](https://godoc.org/cloud.google.com/go/dataproc/apiv1)
 [Datastore][cloud-datastore]                    | stable       | [`cloud.google.com/go/datastore`](https://godoc.org/cloud.google.com/go/datastore)
-[Debugger][cloud-debugger]                      | alpha        | [`cloud.google.com/go/debugger/apiv2`](https://godoc.org/cloud.google.com/go/debugger/apiv2)
+[Debugger][cloud-debugger]                      | stable       | [`cloud.google.com/go/debugger/apiv2`](https://godoc.org/cloud.google.com/go/debugger/apiv2)
 [Dialogflow][cloud-dialogflow]                  | alpha        | [`cloud.google.com/go/dialogflow/apiv2`](https://godoc.org/cloud.google.com/go/dialogflow/apiv2)
 [Data Loss Prevention][cloud-dlp]               | alpha        | [`cloud.google.com/go/dlp/apiv2`](https://godoc.org/cloud.google.com/go/dlp/apiv2)
 [ErrorReporting][cloud-errors]                  | alpha        | [`cloud.google.com/go/errorreporting`](https://godoc.org/cloud.google.com/go/errorreporting)
