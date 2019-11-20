@@ -17,8 +17,6 @@
 // Package debugger is an auto-generated package for the
 // Stackdriver Debugger API.
 //
-//   NOTE: This package is in alpha. It is not stable, and is likely to change.
-//
 // Examines the call stack and variables of a running application without
 // stopping or slowing it down.
 //
