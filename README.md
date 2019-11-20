@@ -35,7 +35,7 @@ Google API                                      | Status       | Package
 [Automl][cloud-automl]                          | stable       | [`cloud.google.com/go/automl/apiv1`](https://godoc.org/cloud.google.com/go/automl/apiv1)
 [BigQuery][cloud-bigquery]                      | stable       | [`cloud.google.com/go/bigquery`](https://godoc.org/cloud.google.com/go/bigquery)
 [Bigtable][cloud-bigtable]                      | stable       | [`cloud.google.com/go/bigtable`](https://godoc.org/cloud.google.com/go/bigtable)
-[Cloudbuild][cloud-build]                       | alpha        | [`cloud.google.com/go/cloudbuild/apiv1`](https://godoc.org/cloud.google.com/go/cloudbuild/apiv1)
+[Cloudbuild][cloud-build]                       | stable       | [`cloud.google.com/go/cloudbuild/apiv1`](https://godoc.org/cloud.google.com/go/cloudbuild/apiv1)
 [Cloudtasks][cloud-tasks]                       | stable       | [`cloud.google.com/go/cloudtasks/apiv2`](https://godoc.org/cloud.google.com/go/cloudtasks/apiv2)
 [Container][cloud-container]                    | stable       | [`cloud.google.com/go/container/apiv1`](https://godoc.org/cloud.google.com/go/container/apiv1)
 [ContainerAnalysis][cloud-containeranalysis]    | beta         | [`cloud.google.com/go/containeranalysis/apiv1`](https://godoc.org/cloud.google.com/go/containeranalysis/apiv1)
