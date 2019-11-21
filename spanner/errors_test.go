@@ -25,24 +25,49 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+type wrappedTestError struct {
+	wrapped error
+	msg     string
+}
+
+func (w *wrappedTestError) Error() string {
+	return w.msg
+}
+
+func (w *wrappedTestError) Unwrap() error {
+	return w.wrapped
+}
+
 func TestToSpannerError(t *testing.T) {
 	for _, test := range []struct {
 		err      error
 		wantCode codes.Code
+		wantMsg  string
 	}{
-		{errors.New("wha?"), codes.Unknown},
-		{context.Canceled, codes.Canceled},
-		{context.DeadlineExceeded, codes.DeadlineExceeded},
-		{status.Errorf(codes.ResourceExhausted, "so tired"), codes.ResourceExhausted},
-		{spannerErrorf(codes.InvalidArgument, "bad"), codes.InvalidArgument},
+		{errors.New("wha?"), codes.Unknown, `spanner: code = "Unknown", desc = "wha?"`},
+		{context.Canceled, codes.Canceled, `spanner: code = "Canceled", desc = "context canceled"`},
+		{context.DeadlineExceeded, codes.DeadlineExceeded, `spanner: code = "DeadlineExceeded", desc = "context deadline exceeded"`},
+		{status.Errorf(codes.ResourceExhausted, "so tired"), codes.ResourceExhausted, `spanner: code = "ResourceExhausted", desc = "so tired"`},
+		{spannerErrorf(codes.InvalidArgument, "bad"), codes.InvalidArgument, `spanner: code = "InvalidArgument", desc = "bad"`},
+		{&wrappedTestError{
+			wrapped: spannerErrorf(codes.Aborted, "Transaction aborted"),
+			msg:     "error with wrapped Spanner error",
+		}, codes.Aborted, `spanner: code = "Aborted", desc = "Transaction aborted"`},
+		{&wrappedTestError{
+			wrapped: errors.New("wha?"),
+			msg:     "error with wrapped non-gRPC and non-Spanner error",
+		}, codes.Unknown, `spanner: code = "Unknown", desc = "error with wrapped non-gRPC and non-Spanner error"`},
 	} {
 		err := toSpannerError(test.err)
-		if got, want := err.(*Error).Code, test.wantCode; got != want {
+		if got, want := ErrCode(err), test.wantCode; got != want {
 			t.Errorf("%v: got %s, want %s", test.err, got, want)
 		}
 		converted := status.Convert(err)
 		if converted.Code() != test.wantCode {
 			t.Errorf("%v: got status %v, want status %v", test.err, converted.Code(), test.wantCode)
+		}
+		if got, want := err.Error(), test.wantMsg; got != want {
+			t.Errorf("%v: got msg %s, want mgs %s", test.err, got, want)
 		}
 	}
 }

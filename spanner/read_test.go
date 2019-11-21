@@ -1426,7 +1426,7 @@ func TestResumeToken(t *testing.T) {
 	case <-time.After(10 * time.Second):
 		t.Fatalf("timeout in waiting for failed query to return.")
 	}
-	if wantErr := toSpannerError(status.Errorf(codes.Unavailable, "mock server wants some sleep")); !testEqual(gotErr, wantErr) {
+	if wantErr := spannerErrorf(codes.Unavailable, "mock server wants some sleep"); !testEqual(gotErr, wantErr) {
 		t.Fatalf("stream() returns error: %v, but want error: %v", gotErr, wantErr)
 	}
 

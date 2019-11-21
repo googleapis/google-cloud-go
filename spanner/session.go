@@ -614,16 +614,12 @@ func (p *sessionPool) close() {
 	}
 }
 
-// errInvalidSessionPool returns error for using an invalid session pool.
-func errInvalidSessionPool() error {
-	return spannerErrorf(codes.InvalidArgument, "invalid session pool")
-}
+// errInvalidSessionPool is the error for using an invalid session pool.
+var errInvalidSessionPool = spannerErrorf(codes.InvalidArgument, "invalid session pool")
 
 // errGetSessionTimeout returns error for context timeout during
 // sessionPool.take().
-func errGetSessionTimeout() error {
-	return spannerErrorf(codes.Canceled, "timeout / context canceled during getting session")
-}
+var errGetSessionTimeout = spannerErrorf(codes.Canceled, "timeout / context canceled during getting session")
 
 // shouldPrepareWriteLocked returns true if we should prepare more sessions for write.
 func (p *sessionPool) shouldPrepareWriteLocked() bool {
@@ -688,7 +684,7 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 		p.mu.Lock()
 		if !p.valid {
 			p.mu.Unlock()
-			return nil, errInvalidSessionPool()
+			return nil, errInvalidSessionPool
 		}
 		if p.idleList.Len() > 0 {
 			// Idle sessions are available, get one from the top of the idle
@@ -726,7 +722,7 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 			select {
 			case <-ctx.Done():
 				trace.TracePrintf(ctx, nil, "Context done waiting for session")
-				return nil, errGetSessionTimeout()
+				return nil, errGetSessionTimeout
 			case <-mayGetSession:
 			}
 			continue
@@ -765,7 +761,7 @@ func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, err
 		p.mu.Lock()
 		if !p.valid {
 			p.mu.Unlock()
-			return nil, errInvalidSessionPool()
+			return nil, errInvalidSessionPool
 		}
 		if p.idleWriteList.Len() > 0 {
 			// Idle sessions are available, get one from the top of the idle
@@ -799,7 +795,7 @@ func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, err
 				select {
 				case <-ctx.Done():
 					trace.TracePrintf(ctx, nil, "Context done waiting for session")
-					return nil, errGetSessionTimeout()
+					return nil, errGetSessionTimeout
 				case <-mayGetSession:
 				}
 				continue

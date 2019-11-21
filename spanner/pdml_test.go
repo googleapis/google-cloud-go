@@ -55,8 +55,12 @@ func TestMockPartitionedUpdateWithQuery(t *testing.T) {
 	stmt := NewStatement(SelectFooFromBar)
 	_, err := client.PartitionedUpdate(ctx, stmt)
 	wantCode := codes.InvalidArgument
-	if serr, ok := err.(*Error); !ok || serr.Code != wantCode {
-		t.Errorf("got error %v, want code %s", err, wantCode)
+	var serr *Error
+	if !errorAs(err, &serr) {
+		t.Errorf("got error %v, want spanner.Error", err)
+	}
+	if ErrCode(serr) != wantCode {
+		t.Errorf("got error %v, want code %s", serr, wantCode)
 	}
 }
 

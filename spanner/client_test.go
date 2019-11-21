@@ -48,10 +48,10 @@ func setupMockedTestServerWithConfigAndClientOptions(t *testing.T, config Client
 				Key: "x-goog-api-client",
 				ValuesValidator: func(token ...string) error {
 					if len(token) != 1 {
-						return spannerErrorf(codes.Internal, "unexpected number of api client token headers: %v", len(token))
+						return status.Errorf(codes.Internal, "unexpected number of api client token headers: %v", len(token))
 					}
 					if !strings.HasPrefix(token[0], "gl-go/") {
-						return spannerErrorf(codes.Internal, "unexpected api client token: %v", token[0])
+						return status.Errorf(codes.Internal, "unexpected api client token: %v", token[0])
 					}
 					return nil
 				},
@@ -144,7 +144,7 @@ func TestClient_Single_RetryableErrorOnPartialResultSet(t *testing.T) {
 		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 		PartialResultSetExecutionTime{
 			ResumeToken: EncodeResumeToken(2),
-			Err:         spannerErrorf(codes.Internal, "stream terminated by RST_STREAM"),
+			Err:         status.Errorf(codes.Internal, "stream terminated by RST_STREAM"),
 		},
 	)
 	// When the client is fetching the partial result set with resume token 3,
@@ -154,7 +154,7 @@ func TestClient_Single_RetryableErrorOnPartialResultSet(t *testing.T) {
 		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 		PartialResultSetExecutionTime{
 			ResumeToken: EncodeResumeToken(3),
-			Err:         spannerErrorf(codes.Unavailable, "server is unavailable"),
+			Err:         status.Errorf(codes.Unavailable, "server is unavailable"),
 		},
 	)
 	ctx := context.Background()
@@ -177,7 +177,7 @@ func TestClient_Single_NonRetryableErrorOnPartialResultSet(t *testing.T) {
 		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 		PartialResultSetExecutionTime{
 			ResumeToken: EncodeResumeToken(2),
-			Err:         spannerErrorf(codes.Internal, "stream terminated by RST_STREAM"),
+			Err:         status.Errorf(codes.Internal, "stream terminated by RST_STREAM"),
 		},
 	)
 	// 'Session not found' is not retryable and the error will be returned to
@@ -186,7 +186,7 @@ func TestClient_Single_NonRetryableErrorOnPartialResultSet(t *testing.T) {
 		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 		PartialResultSetExecutionTime{
 			ResumeToken: EncodeResumeToken(3),
-			Err:         spannerErrorf(codes.NotFound, "Session not found"),
+			Err:         status.Errorf(codes.NotFound, "Session not found"),
 		},
 	)
 	ctx := context.Background()
@@ -221,14 +221,14 @@ func TestClient_Single_DeadlineExceeded_WithErrors(t *testing.T) {
 		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 		PartialResultSetExecutionTime{
 			ResumeToken: EncodeResumeToken(2),
-			Err:         spannerErrorf(codes.Internal, "stream terminated by RST_STREAM"),
+			Err:         status.Errorf(codes.Internal, "stream terminated by RST_STREAM"),
 		},
 	)
 	server.TestSpanner.AddPartialResultSetError(
 		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 		PartialResultSetExecutionTime{
 			ResumeToken:   EncodeResumeToken(3),
-			Err:           spannerErrorf(codes.Unavailable, "server is unavailable"),
+			Err:           status.Errorf(codes.Unavailable, "server is unavailable"),
 			ExecutionTime: 50 * time.Millisecond,
 		},
 	)
@@ -262,14 +262,14 @@ func TestClient_Single_ContextCanceled_withDeclaredServerErrors(t *testing.T) {
 		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 		PartialResultSetExecutionTime{
 			ResumeToken: EncodeResumeToken(2),
-			Err:         spannerErrorf(codes.Internal, "stream terminated by RST_STREAM"),
+			Err:         status.Errorf(codes.Internal, "stream terminated by RST_STREAM"),
 		},
 	)
 	server.TestSpanner.AddPartialResultSetError(
 		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 		PartialResultSetExecutionTime{
 			ResumeToken: EncodeResumeToken(3),
-			Err:         spannerErrorf(codes.Unavailable, "server is unavailable"),
+			Err:         status.Errorf(codes.Unavailable, "server is unavailable"),
 		},
 	)
 	ctx := context.Background()
@@ -328,7 +328,7 @@ func executeSingerQueryWithRowFunc(ctx context.Context, tx *ReadOnlyTransaction,
 		}
 	}
 	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
-		return spannerErrorf(codes.Internal, "Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+		return status.Errorf(codes.Internal, "Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
 	}
 	return nil
 }
@@ -537,7 +537,7 @@ func testReadWriteTransaction(t *testing.T, executionTimes map[string]SimulatedE
 			rowCount++
 		}
 		if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
-			return spannerErrorf(codes.FailedPrecondition, "Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+			return status.Errorf(codes.FailedPrecondition, "Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
 		}
 		return nil
 	})
@@ -569,6 +569,7 @@ func TestClient_ApplyAtLeastOnce(t *testing.T) {
 }
 
 func TestReadWriteTransaction_ErrUnexpectedEOF(t *testing.T) {
+	t.Parallel()
 	_, client, teardown := setupMockedTestServer(t)
 	defer teardown()
 	ctx := context.Background()
@@ -598,5 +599,78 @@ func TestReadWriteTransaction_ErrUnexpectedEOF(t *testing.T) {
 	}
 	if attempts != 1 {
 		t.Fatalf("unexpected number of attempts: %d, expected %d", attempts, 1)
+	}
+}
+
+func TestReadWriteTransaction_WrapError(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	// Abort the transaction on both the query as well as commit.
+	// The first abort error will be wrapped. The client will unwrap the cause
+	// of the error and retry the transaction. The aborted error on commit
+	// will not be wrapped, but will also be recognized by the client as an
+	// abort that should be retried.
+	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
+		SimulatedExecutionTime{
+			Errors: []error{status.Error(codes.Aborted, "Transaction aborted")},
+		})
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
+			Errors: []error{status.Error(codes.Aborted, "Transaction aborted")},
+		})
+	msg := "query failed"
+	numAttempts := 0
+	ctx := context.Background()
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		numAttempts++
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		for {
+			_, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				// Wrap the error in another error that implements the
+				// (xerrors|errors).Wrapper interface.
+				return &wrappedTestError{err, msg}
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("Unexpected error\nGot: %v\nWant: nil", err)
+	}
+	if g, w := numAttempts, 3; g != w {
+		t.Fatalf("Number of transaction attempts mismatch\nGot: %d\nWant: %d", w, w)
+	}
+
+	// Execute a transaction that returns a non-retryable error that is
+	// wrapped in a custom error. The transaction should return the custom
+	// error.
+	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
+		SimulatedExecutionTime{
+			Errors: []error{status.Error(codes.NotFound, "Table not found")},
+		})
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		numAttempts++
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		for {
+			_, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				// Wrap the error in another error that implements the
+				// (xerrors|errors).Wrapper interface.
+				return &wrappedTestError{err, msg}
+			}
+		}
+		return nil
+	})
+	if err == nil || err.Error() != msg {
+		t.Fatalf("Unexpected error\nGot: %v\nWant: %v", err, msg)
 	}
 }
