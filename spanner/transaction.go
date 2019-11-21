@@ -22,10 +22,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/googleapis/gax-go/v2"
-
 	"cloud.google.com/go/internal/trace"
 	vkit "cloud.google.com/go/spanner/apiv1"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"

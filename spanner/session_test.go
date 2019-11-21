@@ -483,7 +483,7 @@ func TestMaxOpenedSessions(t *testing.T) {
 	ctx2, cancel := context.WithTimeout(ctx, 10*time.Millisecond)
 	defer cancel()
 	_, gotErr := sp.take(ctx2)
-	if wantErr := errGetSessionTimeout(); !testEqual(gotErr, wantErr) {
+	if wantErr := errGetSessionTimeout; gotErr != wantErr {
 		t.Fatalf("the second session retrival returns error %v, want %v", gotErr, wantErr)
 	}
 	doneWaiting := make(chan struct{})
@@ -616,7 +616,7 @@ func TestMaxBurst(t *testing.T) {
 	_, gotErr := sp.take(ctx2)
 
 	// Since MaxBurst == 1, the second session request should block.
-	if wantErr := errGetSessionTimeout(); !testEqual(gotErr, wantErr) {
+	if wantErr := errGetSessionTimeout; gotErr != wantErr {
 		t.Fatalf("session retrival returns error %v, want %v", gotErr, wantErr)
 	}
 
@@ -1305,7 +1305,7 @@ func testStressSessionPool(t *testing.T, cfg SessionPoolConfig, ti int, idx int,
 			// If the session pool was closed between the take() and now (or
 			// even during a take()) then an error is ok.
 			if !wasValid {
-				if wantErr := errInvalidSessionPool(); !testEqual(gotErr, wantErr) {
+				if wantErr := errInvalidSessionPool; gotErr != wantErr {
 					t.Fatalf("%v.%v: got error when pool is closed: %v, want %v", ti, idx, gotErr, wantErr)
 				}
 			}

@@ -80,7 +80,12 @@ func runWithRetryOnAborted(ctx context.Context, f func(context.Context) error) e
 			if err == nil {
 				return nil
 			}
-			delay, shouldRetry := retryer.Retry(err)
+			// Get Spanner error.
+			var se *Error
+			if !errorAs(err, &se) {
+				return err
+			}
+			delay, shouldRetry := retryer.Retry(se)
 			if !shouldRetry {
 				return err
 			}
