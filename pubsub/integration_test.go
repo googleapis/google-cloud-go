@@ -1078,3 +1078,81 @@ func TestIntegration_CreateTopic_MessageStoragePolicy(t *testing.T) {
 		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 }
+
+func TestIntegration_CreateSubscription_DeadLetterPolicy(t *testing.T) {
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	deadLetterTopic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer deadLetterTopic.Delete(ctx)
+	defer deadLetterTopic.Stop()
+
+	// We don't set MaxDeliveryAttempts in DeadLetterPolicy so that we can test
+	// that MaxDeliveryAttempts defaults properly to 5 if not set.
+	cfg := SubscriptionConfig{
+		Topic: topic,
+		DeadLetterPolicy: &DeadLetterPolicy{
+			DeadLetterTopic: deadLetterTopic.String(),
+		},
+	}
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), cfg); err != nil {
+		t.Fatalf("CreateSub error: %v", err)
+	}
+	defer sub.Delete(ctx)
+
+	got, err := sub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := SubscriptionConfig{
+		Topic:               topic,
+		AckDeadline:         10 * time.Second,
+		RetainAckedMessages: false,
+		RetentionDuration:   defaultRetentionDuration,
+		ExpirationPolicy:    defaultExpirationPolicy,
+		DeadLetterPolicy: &DeadLetterPolicy{
+			DeadLetterTopic:     deadLetterTopic.String(),
+			MaxDeliveryAttempts: 5,
+		},
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("\ngot: - want: +\n%s", diff)
+	}
+
+	res := topic.Publish(ctx, &Message{
+		Data: []byte("failed message"),
+	})
+	if _, err := res.Get(ctx); err != nil {
+		t.Fatalf("Publish message error: %v", err)
+	}
+
+	ctx2, cancel := context.WithCancel(ctx)
+	numAttempts := 1
+	err = sub.Receive(ctx2, func(_ context.Context, m *Message) {
+		if numAttempts >= 5 {
+			cancel()
+			m.Ack()
+			return
+		}
+		if m.DeliveryAttempt != numAttempts {
+			t.Fatalf("Message delivery attempt: %d does not match numAttempts: %d\n", m.DeliveryAttempt, numAttempts)
+		}
+		numAttempts++
+		m.Nack()
+	})
+	if err != nil {
+		t.Fatalf("Streaming pull error: %v\n", err)
+	}
+}
