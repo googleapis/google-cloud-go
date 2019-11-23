@@ -221,6 +221,14 @@ type SubscriptionConfig struct {
 
 	// The set of labels for the subscription.
 	Labels map[string]string
+
+	// DeadLetterPolicy specifies the conditions for dead lettering messages in
+	// a subscription. If not set, dead lettering is disabled.
+	//
+	// It is EXPERIMENTAL and a part of a closed alpha that may not be
+	// accessible to all users. This field is subject to change or removal
+	// without notice.
+	DeadLetterPolicy *DeadLetterPolicy
 }
 
 func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
@@ -232,6 +240,10 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 	if cfg.RetentionDuration != 0 {
 		retentionDuration = ptypes.DurationProto(cfg.RetentionDuration)
 	}
+	var pbDeadLetter *pb.DeadLetterPolicy
+	if cfg.DeadLetterPolicy != nil {
+		pbDeadLetter = cfg.DeadLetterPolicy.toProto()
+	}
 	return &pb.Subscription{
 		Name:                     name,
 		Topic:                    cfg.Topic.name,
@@ -241,6 +253,7 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		MessageRetentionDuration: retentionDuration,
 		Labels:                   cfg.Labels,
 		ExpirationPolicy:         expirationPolicyToProto(cfg.ExpirationPolicy),
+		DeadLetterPolicy:         pbDeadLetter,
 	}
 }
 
@@ -260,6 +273,7 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 			return SubscriptionConfig{}, err
 		}
 	}
+	dlp := protoToDLP(pbSub.DeadLetterPolicy)
 	subC := SubscriptionConfig{
 		Topic:               newTopic(c, pbSub.Topic),
 		AckDeadline:         time.Second * time.Duration(pbSub.AckDeadlineSeconds),
@@ -267,6 +281,7 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 		RetentionDuration:   rd,
 		Labels:              pbSub.Labels,
 		ExpirationPolicy:    expirationPolicy,
+		DeadLetterPolicy:    dlp,
 	}
 	pc := protoToPushConfig(pbSub.PushConfig)
 	if pc != nil {
@@ -292,6 +307,35 @@ func protoToPushConfig(pbPc *pb.PushConfig) *PushConfig {
 		}
 	}
 	return pc
+}
+
+// DeadLetterPolicy specifies the conditions for dead lettering messages in
+// a subscription.
+//
+// It is EXPERIMENTAL and a part of a closed alpha that may not be
+// accessible to all users.
+type DeadLetterPolicy struct {
+	DeadLetterTopic     string
+	MaxDeliveryAttempts int
+}
+
+func (dlp *DeadLetterPolicy) toProto() *pb.DeadLetterPolicy {
+	if dlp == nil {
+		return nil
+	}
+	return &pb.DeadLetterPolicy{
+		DeadLetterTopic:     dlp.DeadLetterTopic,
+		MaxDeliveryAttempts: int32(dlp.MaxDeliveryAttempts),
+	}
+}
+func protoToDLP(pbDLP *pb.DeadLetterPolicy) *DeadLetterPolicy {
+	if pbDLP == nil {
+		return nil
+	}
+	return &DeadLetterPolicy{
+		DeadLetterTopic:     pbDLP.GetDeadLetterTopic(),
+		MaxDeliveryAttempts: int(pbDLP.MaxDeliveryAttempts),
+	}
 }
 
 // ReceiveSettings configure the Receive method.
@@ -428,6 +472,12 @@ type SubscriptionConfigToUpdate struct {
 	// If non-zero, Expiration is changed.
 	ExpirationPolicy optional.Duration
 
+	// If non-nil, DeadLetterPolicy is changed.
+	//
+	// It is EXPERIMENTAL and a part of a closed alpha that may not be
+	// accessible to all users.
+	DeadLetterPolicy *DeadLetterPolicy
+
 	// If non-nil, the current set of labels is completely
 	// replaced by the new set.
 	// This field has beta status. It is not subject to the stability guarantee
@@ -476,6 +526,10 @@ func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.Update
 	if cfg.ExpirationPolicy != nil {
 		psub.ExpirationPolicy = expirationPolicyToProto(cfg.ExpirationPolicy)
 		paths = append(paths, "expiration_policy")
+	}
+	if cfg.DeadLetterPolicy != nil {
+		psub.DeadLetterPolicy = cfg.DeadLetterPolicy.toProto()
+		paths = append(paths, "dead_letter_policy")
 	}
 	if cfg.Labels != nil {
 		psub.Labels = cfg.Labels
