@@ -1367,7 +1367,7 @@ func TestFilterRow(t *testing.T) {
 			"fam": {
 				name: "fam",
 				cells: map[string][]cell{
-					"col": {{ts: 100, value: []byte("val")}},
+					"col": {{ts: 1000, value: []byte("val")}},
 				},
 			},
 		},
@@ -1398,8 +1398,14 @@ func TestFilterRow(t *testing.T) {
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("va")}}, false},
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("VAL")}}, false},
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("moo")}}, false},
+
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_TimestampRangeFilter{&btpb.TimestampRange{StartTimestampMicros: int64(0), EndTimestampMicros: int64(1000)}}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_TimestampRangeFilter{&btpb.TimestampRange{StartTimestampMicros: int64(1000), EndTimestampMicros: int64(2000)}}}, true},
 	} {
-		got, _ := filterRow(test.filter, row.copy())
+		got, err := filterRow(test.filter, row.copy())
+		if err != nil {
+			t.Errorf("%s: got unexpected error: %v", proto.CompactTextString(test.filter), err)
+		}
 		if got != test.want {
 			t.Errorf("%s: got %t, want %t", proto.CompactTextString(test.filter), got, test.want)
 		}
@@ -1413,7 +1419,7 @@ func TestFilterRowWithErrors(t *testing.T) {
 			"fam": {
 				name: "fam",
 				cells: map[string][]cell{
-					"col": {{ts: 100, value: []byte("val")}},
+					"col": {{ts: 1000, value: []byte("val")}},
 				},
 			},
 		},
@@ -1436,8 +1442,10 @@ func TestFilterRowWithErrors(t *testing.T) {
 			},
 		}}},
 
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{0.0}}}, // 0.0 is invalid.
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{1.0}}}, // 1.0 is invalid.
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{0.0}}},                                                                                        // 0.0 is invalid.
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{1.0}}},                                                                                        // 1.0 is invalid.
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_TimestampRangeFilter{&btpb.TimestampRange{StartTimestampMicros: int64(1), EndTimestampMicros: int64(1000)}}}}, // Server only supports millisecond precision.
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_TimestampRangeFilter{&btpb.TimestampRange{StartTimestampMicros: int64(1000), EndTimestampMicros: int64(1)}}}}, // Server only supports millisecond precision.
 	} {
 		got, err := filterRow(test.badRegex, row.copy())
 		if got != false {
@@ -1479,7 +1487,7 @@ func TestFilterRowWithBinaryColumnQualifier(t *testing.T) {
 			"fam": {
 				name: "fam",
 				cells: map[string][]cell{
-					string(rs): {{ts: 100, value: []byte("val")}},
+					string(rs): {{ts: 1000, value: []byte("val")}},
 				},
 			},
 		},
