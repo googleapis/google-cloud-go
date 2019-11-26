@@ -467,6 +467,7 @@ func TestIntegration_CancelReceive(t *testing.T) {
 }
 
 func TestIntegration_CreateSubscription_NeverExpire(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1637")
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
