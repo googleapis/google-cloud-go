@@ -134,6 +134,9 @@ type Config struct {
 	// than Go 1.8.
 	MutexProfiling bool
 
+	// When true, collecting the CPU profiles is disabled.
+	NoCPUProfiling bool
+
 	// When true, collecting the allocation profiles is disabled.
 	NoAllocProfiling bool
 
@@ -241,7 +244,11 @@ func start(cfg Config, options ...option.ClientOption) error {
 		return err
 	}
 
-	a := initializeAgent(pb.NewProfilerServiceClient(conn))
+	a, err := initializeAgent(pb.NewProfilerServiceClient(conn))
+	if err != nil {
+		debugLog("failed to start the profiling agent: %v", err)
+		return err
+	}
 	go pollProfilerService(withXGoogHeader(ctx), a)
 	return nil
 }
@@ -461,7 +468,10 @@ func withXGoogHeader(ctx context.Context, keyval ...string) context.Context {
 	return grpcmd.NewOutgoingContext(ctx, md)
 }
 
-func initializeAgent(c pb.ProfilerServiceClient) *agent {
+// initializeAgent initializes the profiling agent. It returns an error if
+// profile collection should not be started because collection is disabled
+// for all profile types.
+func initializeAgent(c pb.ProfilerServiceClient) (*agent, error) {
 	labels := map[string]string{languageLabel: "go"}
 	if config.Zone != "" {
 		labels[zoneNameLabel] = config.Zone
@@ -481,7 +491,10 @@ func initializeAgent(c pb.ProfilerServiceClient) *agent {
 		profileLabels[instanceLabel] = config.Instance
 	}
 
-	profileTypes := []pb.ProfileType{pb.ProfileType_CPU}
+	var profileTypes []pb.ProfileType
+	if !config.NoCPUProfiling {
+		profileTypes = append(profileTypes, pb.ProfileType_CPU)
+	}
 	if !config.NoHeapProfiling {
 		profileTypes = append(profileTypes, pb.ProfileType_HEAP)
 	}
@@ -495,12 +508,16 @@ func initializeAgent(c pb.ProfilerServiceClient) *agent {
 		profileTypes = append(profileTypes, pb.ProfileType_CONTENTION)
 	}
 
+	if len(profileTypes) == 0 {
+		return nil, fmt.Errorf("collection is not enabled for any profile types")
+	}
+
 	return &agent{
 		client:        c,
 		deployment:    d,
 		profileLabels: profileLabels,
 		profileTypes:  profileTypes,
-	}
+	}, nil
 }
 
 func initializeConfig(cfg Config) error {
