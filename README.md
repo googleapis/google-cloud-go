@@ -43,7 +43,7 @@ Google API                                      | Status       | Package
 [Datastore][cloud-datastore]                    | stable       | [`cloud.google.com/go/datastore`](https://godoc.org/cloud.google.com/go/datastore)
 [Debugger][cloud-debugger]                      | stable       | [`cloud.google.com/go/debugger/apiv2`](https://godoc.org/cloud.google.com/go/debugger/apiv2)
 [Dialogflow][cloud-dialogflow]                  | stable       | [`cloud.google.com/go/dialogflow/apiv2`](https://godoc.org/cloud.google.com/go/dialogflow/apiv2)
-[Data Loss Prevention][cloud-dlp]               | alpha        | [`cloud.google.com/go/dlp/apiv2`](https://godoc.org/cloud.google.com/go/dlp/apiv2)
+[Data Loss Prevention][cloud-dlp]               | stable       | [`cloud.google.com/go/dlp/apiv2`](https://godoc.org/cloud.google.com/go/dlp/apiv2)
 [ErrorReporting][cloud-errors]                  | alpha        | [`cloud.google.com/go/errorreporting`](https://godoc.org/cloud.google.com/go/errorreporting)
 [Firestore][cloud-firestore]                    | stable       | [`cloud.google.com/go/firestore`](https://godoc.org/cloud.google.com/go/firestore)
 [IAM][cloud-iam]                                | stable       | [`cloud.google.com/go/iam`](https://godoc.org/cloud.google.com/go/iam)
