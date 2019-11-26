@@ -210,7 +210,7 @@ func runTest(test *pb.Test, c *Client, srv *mockServer) error {
 		got, err := nSnapshots(iter, len(typedTestcase.Listen.Snapshots))
 		if err != nil {
 			return err
-		} else if diff := cmp.Diff(got, typedTestcase.Listen.Snapshots); diff != "" {
+		} else if diff := cmp.Diff(got, typedTestcase.Listen.Snapshots, cmp.Comparer(proto.Equal)); diff != "" {
 			return errors.New(diff)
 		}
 		if typedTestcase.Listen.IsError {
