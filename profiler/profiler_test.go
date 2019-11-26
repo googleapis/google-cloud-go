@@ -370,6 +370,7 @@ func TestInitializeAgent(t *testing.T) {
 	for _, tt := range []struct {
 		config               Config
 		enableMutex          bool
+		wantErr              bool
 		wantProfileTypes     []pb.ProfileType
 		wantDeploymentLabels map[string]string
 		wantProfileLabels    map[string]string
@@ -417,13 +418,29 @@ func TestInitializeAgent(t *testing.T) {
 			wantDeploymentLabels: map[string]string{languageLabel: "go"},
 			wantProfileLabels:    map[string]string{},
 		},
+		{
+			config:               Config{NoCPUProfiling: true},
+			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_HEAP, pb.ProfileType_THREADS, pb.ProfileType_HEAP_ALLOC},
+			wantDeploymentLabels: map[string]string{languageLabel: "go"},
+			wantProfileLabels:    map[string]string{},
+		},
+		{
+			config:  Config{NoCPUProfiling: true, NoHeapProfiling: true, NoGoroutineProfiling: true, NoAllocProfiling: true},
+			wantErr: true,
+		},
 	} {
 
 		config = tt.config
 		config.ProjectID = testProjectID
 		config.Service = testService
 		mutexEnabled = tt.enableMutex
-		a := initializeAgent(nil)
+		a, err := initializeAgent(nil)
+		if err != nil {
+			if !tt.wantErr {
+				t.Fatalf("initializeAgent() got error: %v, want no error", err)
+			}
+			continue
+		}
 
 		wantDeployment := &pb.Deployment{
 			ProjectId: testProjectID,
