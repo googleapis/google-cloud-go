@@ -30,7 +30,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
@@ -1050,8 +1049,13 @@ func TestCheckAndMutateRowWithPredicate(t *testing.T) {
 			// bttest for some reason undeterministically returns:
 			//      RowStatus: &bigtable.ReadRowsResponse_CellChunk_CommitRow{CommitRow: true},
 			// so we'll ignore that field during comparison.
-			ignore := cmpopts.IgnoreFields(btpb.ReadRowsResponse_CellChunk{}, "RowStatus")
-			diff := cmp.Diff(gotCellChunks, wantCellChunks, ignore)
+			scrubRowStatus := func(cs []*btpb.ReadRowsResponse_CellChunk) []*btpb.ReadRowsResponse_CellChunk {
+				for _, c := range cs {
+					c.RowStatus = nil
+				}
+				return cs
+			}
+			diff := cmp.Diff(scrubRowStatus(gotCellChunks), scrubRowStatus(wantCellChunks), cmp.Comparer(proto.Equal))
 			if diff != "" {
 				t.Fatalf("unexpected response: %s", diff)
 			}
@@ -1146,7 +1150,17 @@ func TestServer_ReadModifyWriteRow(t *testing.T) {
 		},
 	}
 
-	diff := cmp.Diff(got, want, cmpopts.IgnoreFields(btpb.Cell{}, "TimestampMicros"))
+	scrubTimestamp := func(resp *btpb.ReadModifyWriteRowResponse) *btpb.ReadModifyWriteRowResponse {
+		for _, fam := range resp.GetRow().GetFamilies() {
+			for _, col := range fam.GetColumns() {
+				for _, cell := range col.GetCells() {
+					cell.TimestampMicros = 0
+				}
+			}
+		}
+		return resp
+	}
+	diff := cmp.Diff(scrubTimestamp(got), scrubTimestamp(want), cmp.Comparer(proto.Equal))
 	if diff != "" {
 		t.Errorf("unexpected response: %s", diff)
 	}
@@ -1592,7 +1606,7 @@ func TestFilterRowWithSingleColumnQualifier(t *testing.T) {
 			},
 		},
 	}
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want, cmp.Comparer(proto.Equal)); diff != "" {
 		t.Fatalf("Response mismatch: got: + want -\n%s", diff)
 	}
 }
@@ -1689,7 +1703,7 @@ func TestValueFilterRowWithAlternationInRegex(t *testing.T) {
 			},
 		},
 	}
-	if diff := cmp.Diff(gotChunks, wantChunks); diff != "" {
+	if diff := cmp.Diff(gotChunks, wantChunks, cmp.Comparer(proto.Equal)); diff != "" {
 		t.Fatalf("Response chunks mismatch: got: + want -\n%s", diff)
 	}
 }
