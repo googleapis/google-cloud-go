@@ -17,8 +17,6 @@
 // Package iot is an auto-generated package for the
 // Cloud IoT API.
 //
-//   NOTE: This package is in alpha. It is not stable, and is likely to change.
-//
 // Registers and manages IoT (Internet of Things) devices that connect to the
 // Google Cloud Platform.
 //
