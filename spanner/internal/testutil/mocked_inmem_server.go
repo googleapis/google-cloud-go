@@ -22,6 +22,7 @@ import (
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/api/option"
+	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
 	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
 )
@@ -58,29 +59,41 @@ const UpdateBarSetFooRowCount = 5
 // MockedSpannerInMemTestServer is an InMemSpannerServer with results for a
 // number of SQL statements readily mocked.
 type MockedSpannerInMemTestServer struct {
-	TestSpanner InMemSpannerServer
-	server      *grpc.Server
+	TestSpanner       InMemSpannerServer
+	TestInstanceAdmin InMemInstanceAdminServer
+	server            *grpc.Server
 }
 
-// NewMockedSpannerInMemTestServer creates a MockedSpannerInMemTestServer and
-// returns client options that can be used to connect to it.
+// NewMockedSpannerInMemTestServer creates a MockedSpannerInMemTestServer at
+// localhost with a random port and returns client options that can be used
+// to connect to it.
 func NewMockedSpannerInMemTestServer(t *testing.T) (mockedServer *MockedSpannerInMemTestServer, opts []option.ClientOption, teardown func()) {
+	return NewMockedSpannerInMemTestServerWithAddr(t, "localhost:0")
+}
+
+// NewMockedSpannerInMemTestServerWithAddr creates a MockedSpannerInMemTestServer
+// at a given listening address and returns client options that can be used
+// to connect to it.
+func NewMockedSpannerInMemTestServerWithAddr(t *testing.T, addr string) (mockedServer *MockedSpannerInMemTestServer, opts []option.ClientOption, teardown func()) {
 	mockedServer = &MockedSpannerInMemTestServer{}
-	opts = mockedServer.setupMockedServer(t)
+	opts = mockedServer.setupMockedServerWithAddr(t, addr)
 	return mockedServer, opts, func() {
 		mockedServer.TestSpanner.Stop()
+		mockedServer.TestInstanceAdmin.Stop()
 		mockedServer.server.Stop()
 	}
 }
 
-func (s *MockedSpannerInMemTestServer) setupMockedServer(t *testing.T) []option.ClientOption {
+func (s *MockedSpannerInMemTestServer) setupMockedServerWithAddr(t *testing.T, addr string) []option.ClientOption {
 	s.TestSpanner = NewInMemSpannerServer()
+	s.TestInstanceAdmin = NewInMemInstanceAdminServer()
 	s.setupFooResults()
 	s.setupSingersResults()
 	s.server = grpc.NewServer()
 	spannerpb.RegisterSpannerServer(s.server, s.TestSpanner)
+	instancepb.RegisterInstanceAdminServer(s.server, s.TestInstanceAdmin)
 
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		t.Fatal(err)
 	}

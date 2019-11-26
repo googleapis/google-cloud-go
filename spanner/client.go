@@ -25,12 +25,16 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/trace"
+	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"google.golang.org/api/option"
+	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
+	field_mask "google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -50,7 +54,8 @@ const (
 )
 
 var (
-	validDBPattern = regexp.MustCompile("^projects/[^/]+/instances/[^/]+/databases/[^/]+$")
+	validDBPattern       = regexp.MustCompile("^projects/[^/]+/instances/[^/]+/databases/[^/]+$")
+	validInstancePattern = regexp.MustCompile("^projects/[^/]+/instances/[^/]+")
 )
 
 func validDatabaseName(db string) error {
@@ -59,6 +64,15 @@ func validDatabaseName(db string) error {
 			db, validDBPattern.String())
 	}
 	return nil
+}
+
+func getInstanceName(db string) (string, error) {
+	matches := validInstancePattern.FindStringSubmatch(db)
+	if len(matches) == 0 {
+		return "", fmt.Errorf("Failed to retrieve instance name from %q according to pattern %q",
+			db, validInstancePattern.String())
+	}
+	return matches[0], nil
 }
 
 // Client is a client for reading and writing data to a Cloud Spanner database.
@@ -103,6 +117,42 @@ func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD) context.Co
 	return metadata.NewOutgoingContext(ctx, md)
 }
 
+// getInstanceEndpoint returns an instance-specific endpoint if one exists. If
+// multiple endpoints exist, it returns the first one.
+func getInstanceEndpoint(ctx context.Context, database string, opts ...option.ClientOption) (string, error) {
+	instanceName, err := getInstanceName(database)
+	if err != nil {
+		return "", fmt.Errorf("Failed to resolve endpoint: %v", err)
+	}
+
+	c, err := instance.NewInstanceAdminClient(ctx, opts...)
+	if err != nil {
+		return "", err
+	}
+	defer c.Close()
+
+	req := &instancepb.GetInstanceRequest{
+		Name: instanceName,
+		FieldMask: &field_mask.FieldMask{
+			Paths: []string{"endpoint_uris"},
+		},
+	}
+
+	resp, err := c.GetInstance(ctx, req)
+	if err != nil {
+		return "", err
+	}
+
+	endpointURIs := resp.GetEndpointUris()
+
+	if len(endpointURIs) > 0 {
+		return endpointURIs[0], nil
+	}
+
+	// Return empty string when no endpoints exist.
+	return "", nil
+}
+
 // NewClient creates a client to a database. A valid database name has the
 // form projects/PROJECT_ID/instances/INSTANCE_ID/databases/DATABASE_ID. It uses
 // a default configuration.
@@ -142,6 +192,32 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 			option.WithoutAuthentication(),
 		}
 		opts = append(opts, emulatorOpts...)
+	} else if os.Getenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING") == "true" {
+		// Fetch the instance-specific endpoint.
+		reqOpts := []option.ClientOption{option.WithEndpoint(endpoint)}
+		reqOpts = append(reqOpts, opts...)
+		instanceEndpoint, err := getInstanceEndpoint(ctx, database, reqOpts...)
+
+		if err != nil {
+			// If there is a PermissionDenied error, fall back to use the global endpoint
+			// or the user-specified endpoint.
+			if status.Code(err) == codes.PermissionDenied {
+				logf(config.logger, `
+Warning: The client library attempted to connect to an endpoint closer to your
+Cloud Spanner data but was unable to do so. The client library will fall back
+and route requests to the global Spanner endpoint (spanner.googleapis.com),
+which may result in increased latency. We recommend including the scope
+https://www.googleapis.com/auth/spanner.admin so that the client library can
+get an instance-specific endpoint and efficiently route requests.
+`)
+			} else {
+				return nil, err
+			}
+		}
+
+		if instanceEndpoint != "" {
+			opts = append(opts, option.WithEndpoint(instanceEndpoint))
+		}
 	}
 
 	// gRPC options.
