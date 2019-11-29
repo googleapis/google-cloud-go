@@ -308,8 +308,19 @@ func (s *session) prepareForWrite(ctx context.Context) error {
 		return nil
 	}
 	tx, err := beginTransaction(contextWithOutgoingMetadata(ctx, s.md), s.getID(), s.client)
+	// Session not found should cause the session to be removed from the pool.
+	if isSessionNotFoundError(err) {
+		s.pool.remove(s, false)
+		s.pool.hc.unregister(s)
+		return err
+	}
+	// Enable/disable background preparing of write sessions depending on
+	// whether the BeginTransaction call succeeded. This will prevent the
+	// session pool workers from going into an infinite loop of trying to
+	// prepare sessions. Any subsequent successful BeginTransaction call from
+	// for example takeWriteSession will re-enable the background process.
 	s.pool.mu.Lock()
-	s.pool.disableBackgroundPrepareSessions = isPermissionDeniedError(err) || isDatabaseNotFoundError(err)
+	s.pool.disableBackgroundPrepareSessions = err != nil
 	s.pool.mu.Unlock()
 	if err != nil {
 		return err
@@ -1419,18 +1430,12 @@ func minUint64(a, b uint64) uint64 {
 	return a
 }
 
-// isPermissionDeniedError returns true if the given error has code
-// PermissionDenied.
-func isPermissionDeniedError(err error) bool {
-	return ErrCode(err) == codes.PermissionDenied
-}
-
-// isDatabaseNotFoundError returns true if the given error is a
-// `Database not found` error.
-func isDatabaseNotFoundError(err error) bool {
-	// We are checking specifically for the error message `Database not found`,
-	// as the error could also be a `Session not found`. The former should
+// isSessionNotFoundError returns true if the given error is a
+// `Session not found` error.
+func isSessionNotFoundError(err error) bool {
+	// We are checking specifically for the error message `Session not found`,
+	// as the error could also be a `Database not found`. The latter should
 	// cause the session pool to stop preparing sessions for read/write
-	// transactions, while the latter should not.
-	return ErrCode(err) == codes.NotFound && strings.Contains(err.Error(), "Database not found")
+	// transactions, while the former should not.
+	return ErrCode(err) == codes.NotFound && strings.Contains(err.Error(), "Session not found")
 }
