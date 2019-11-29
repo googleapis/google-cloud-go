@@ -813,6 +813,9 @@ func beginTransaction(ctx context.Context, sid string, client *vkit.Client) (tra
 	if err != nil {
 		return nil, err
 	}
+	if res.Id == nil {
+		return nil, spannerErrorf(codes.Unknown, "BeginTransaction returned a transaction with a nil ID.")
+	}
 	return res.Id, nil
 }
 
