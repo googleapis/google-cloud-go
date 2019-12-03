@@ -38,7 +38,7 @@ microgen() {
     --mount type=bind,source=$HOST_MOUNT/$input,destination=/in/$input,readonly \
     --mount type=bind,source=/tmp,destination=/out \
     --rm \
-    gcr.io/gapic-images/gapic-generator-go:0.9.3 \
+    gcr.io/gapic-images/gapic-generator-go:0.9.5 \
     $options
 }
 
