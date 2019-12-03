@@ -68,7 +68,7 @@ func defaultErrorStatsCallOptions() *ErrorStatsCallOptions {
 	return &ErrorStatsCallOptions{
 		ListGroupStats: retry[[2]string{"default", "idempotent"}],
 		ListEvents:     retry[[2]string{"default", "idempotent"}],
-		DeleteEvents:   retry[[2]string{"default", "idempotent"}],
+		DeleteEvents:   retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 

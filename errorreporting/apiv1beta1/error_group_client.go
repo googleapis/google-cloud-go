@@ -64,7 +64,7 @@ func defaultErrorGroupCallOptions() *ErrorGroupCallOptions {
 	}
 	return &ErrorGroupCallOptions{
 		GetGroup:    retry[[2]string{"default", "idempotent"}],
-		UpdateGroup: retry[[2]string{"default", "idempotent"}],
+		UpdateGroup: retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 
