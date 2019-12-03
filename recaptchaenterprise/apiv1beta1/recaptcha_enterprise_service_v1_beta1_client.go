@@ -21,12 +21,16 @@ import (
 	"fmt"
 	"math"
 	"net/url"
+	"time"
 
+	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
 	recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -34,6 +38,11 @@ import (
 type RecaptchaEnterpriseServiceV1Beta1CallOptions struct {
 	CreateAssessment   []gax.CallOption
 	AnnotateAssessment []gax.CallOption
+	CreateKey          []gax.CallOption
+	ListKeys           []gax.CallOption
+	GetKey             []gax.CallOption
+	UpdateKey          []gax.CallOption
+	DeleteKey          []gax.CallOption
 }
 
 func defaultRecaptchaEnterpriseServiceV1Beta1ClientOptions() []option.ClientOption {
@@ -46,10 +55,28 @@ func defaultRecaptchaEnterpriseServiceV1Beta1ClientOptions() []option.ClientOpti
 }
 
 func defaultRecaptchaEnterpriseServiceV1Beta1CallOptions() *RecaptchaEnterpriseServiceV1Beta1CallOptions {
-	retry := map[[2]string][]gax.CallOption{}
+	retry := map[[2]string][]gax.CallOption{
+		{"default", "idempotent"}: {
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.3,
+				})
+			}),
+		},
+	}
 	return &RecaptchaEnterpriseServiceV1Beta1CallOptions{
 		CreateAssessment:   retry[[2]string{"default", "non_idempotent"}],
 		AnnotateAssessment: retry[[2]string{"default", "non_idempotent"}],
+		CreateKey:          retry[[2]string{"default", "non_idempotent"}],
+		ListKeys:           retry[[2]string{"default", "idempotent"}],
+		GetKey:             retry[[2]string{"default", "idempotent"}],
+		UpdateKey:          retry[[2]string{"default", "non_idempotent"}],
+		DeleteKey:          retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 
@@ -141,4 +168,149 @@ func (c *RecaptchaEnterpriseServiceV1Beta1Client) AnnotateAssessment(ctx context
 		return nil, err
 	}
 	return resp, nil
+}
+
+// CreateKey creates a new reCAPTCHA Enterprise key.
+func (c *RecaptchaEnterpriseServiceV1Beta1Client) CreateKey(ctx context.Context, req *recaptchaenterprisepb.CreateKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.CreateKey[0:len(c.CallOptions.CreateKey):len(c.CallOptions.CreateKey)], opts...)
+	var resp *recaptchaenterprisepb.Key
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.recaptchaEnterpriseServiceV1Beta1Client.CreateKey(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// ListKeys returns the list of all keys that belong to a project.
+func (c *RecaptchaEnterpriseServiceV1Beta1Client) ListKeys(ctx context.Context, req *recaptchaenterprisepb.ListKeysRequest, opts ...gax.CallOption) *KeyIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ListKeys[0:len(c.CallOptions.ListKeys):len(c.CallOptions.ListKeys)], opts...)
+	it := &KeyIterator{}
+	req = proto.Clone(req).(*recaptchaenterprisepb.ListKeysRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*recaptchaenterprisepb.Key, string, error) {
+		var resp *recaptchaenterprisepb.ListKeysResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.recaptchaEnterpriseServiceV1Beta1Client.ListKeys(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+		return resp.Keys, resp.NextPageToken, nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
+	return it
+}
+
+// GetKey returns the specified key.
+func (c *RecaptchaEnterpriseServiceV1Beta1Client) GetKey(ctx context.Context, req *recaptchaenterprisepb.GetKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetKey[0:len(c.CallOptions.GetKey):len(c.CallOptions.GetKey)], opts...)
+	var resp *recaptchaenterprisepb.Key
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.recaptchaEnterpriseServiceV1Beta1Client.GetKey(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// UpdateKey updates the specified key.
+func (c *RecaptchaEnterpriseServiceV1Beta1Client) UpdateKey(ctx context.Context, req *recaptchaenterprisepb.UpdateKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "key.name", url.QueryEscape(req.GetKey().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UpdateKey[0:len(c.CallOptions.UpdateKey):len(c.CallOptions.UpdateKey)], opts...)
+	var resp *recaptchaenterprisepb.Key
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.recaptchaEnterpriseServiceV1Beta1Client.UpdateKey(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// DeleteKey deletes the specified key.
+func (c *RecaptchaEnterpriseServiceV1Beta1Client) DeleteKey(ctx context.Context, req *recaptchaenterprisepb.DeleteKeyRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.DeleteKey[0:len(c.CallOptions.DeleteKey):len(c.CallOptions.DeleteKey)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.recaptchaEnterpriseServiceV1Beta1Client.DeleteKey(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+// KeyIterator manages a stream of *recaptchaenterprisepb.Key.
+type KeyIterator struct {
+	items    []*recaptchaenterprisepb.Key
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*recaptchaenterprisepb.Key, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *KeyIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *KeyIterator) Next() (*recaptchaenterprisepb.Key, error) {
+	var item *recaptchaenterprisepb.Key
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *KeyIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *KeyIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }

@@ -19,9 +19,9 @@
 //
 //   NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
-// Stackdriver Error Reporting groups and counts similar errors from cloud
-// services. The Stackdriver Error Reporting API provides a way to report new
-// errors and read access to error groups and their associated errors.
+// Groups and counts similar errors from cloud services and applications,
+// reports new errors, and provides access to error groups and their
+// associated errors.
 //
 // Use of Context
 //
@@ -101,4 +101,4 @@ func versionGo() string {
 	return "UNKNOWN"
 }
 
-const versionClient = "20191115"
+const versionClient = "20191203"

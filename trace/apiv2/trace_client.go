@@ -21,14 +21,12 @@ import (
 	"fmt"
 	"math"
 	"net/url"
-	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
 	cloudtracepb "google.golang.org/genproto/googleapis/devtools/cloudtrace/v2"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -48,23 +46,10 @@ func defaultClientOptions() []option.ClientOption {
 }
 
 func defaultCallOptions() *CallOptions {
-	retry := map[[2]string][]gax.CallOption{
-		{"default", "idempotent"}: {
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        1000 * time.Millisecond,
-					Multiplier: 1.2,
-				})
-			}),
-		},
-	}
+	retry := map[[2]string][]gax.CallOption{}
 	return &CallOptions{
 		BatchWriteSpans: retry[[2]string{"default", "non_idempotent"}],
-		CreateSpan:      retry[[2]string{"default", "idempotent"}],
+		CreateSpan:      retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 

@@ -108,12 +108,13 @@ func (c *ReportErrorsClient) SetGoogleClientInfo(keyval ...string) {
 
 // ReportErrorEvent report an individual error event.
 //
-// This endpoint accepts <strong>either</strong> an OAuth token,
-// <strong>or</strong> an
-// <a href="https://support.google.com/cloud/answer/6158862">API key</a>
+// This endpoint accepts **either** an OAuth token,
+// **or** an [API key](https://support.google.com/cloud/answer/6158862)
 // for authentication. To use an API key, append it to the URL as the value of
-// a key parameter. For example:<pre>POST
-// https://clouderrorreporting.googleapis.com/v1beta1/projects/example-project/events:report?key=123ABC456</pre>
+// a `key` parameter. For example:
+//
+// `POST
+// https://clouderrorreporting.googleapis.com/v1beta1/projects/example-project/events:report?key=123ABC456`
 func (c *ReportErrorsClient) ReportErrorEvent(ctx context.Context, req *clouderrorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ReportErrorEventResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
