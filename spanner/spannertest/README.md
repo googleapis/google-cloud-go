@@ -31,7 +31,6 @@ by ascending esotericism:
 - SELECT aliases
 - subselects
 - set operations (UNION, INTERSECT, EXCEPT)
-- SELECT star expressions
 - partition support
 - conditional expressions
 - table sampling (implementation)

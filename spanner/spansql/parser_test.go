@@ -70,6 +70,14 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
+		{`SELECT * FROM Packages`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{{Table: "Packages"}},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseQuery(test.in)
