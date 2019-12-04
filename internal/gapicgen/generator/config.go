@@ -176,15 +176,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/videointelligence/v1/videointelligence_v1.yaml",
 		releaseLevel:          "alpha",
 	},
-	// TODO(ndietz): Microgen for this gapic is currently broken. Investigating.
-	// {
-	// 	inputDirectoryPath:    "google/cloud/vision/v1",
-	// 	pkg:                   "vision",
-	// 	importPath:            "cloud.google.com/go/vision/apiv1",
-	// 	gRPCServiceConfigPath: "google/cloud/vision/v1/vision_grpc_service_config.json",
-	// 	apiServiceConfigPath:  "google/cloud/vision/v1/vision_v1.yaml",
-	// 	releaseLevel:          "ga",
-	// },
+	{
+		inputDirectoryPath:    "google/cloud/vision/v1",
+		pkg:                   "vision",
+		importPath:            "cloud.google.com/go/vision/apiv1",
+		gRPCServiceConfigPath: "google/cloud/vision/v1/vision_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/vision/v1/vision_v1.yaml",
+		releaseLevel:          "ga",
+	},
 	{
 		inputDirectoryPath:    "google/cloud/webrisk/v1beta1",
 		pkg:                   "webrisk",
