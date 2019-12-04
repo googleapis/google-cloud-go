@@ -277,6 +277,15 @@ func TestTableData(t *testing.T) {
 			},
 		},
 		{
+			`SELECT * FROM Staff WHERE Name LIKE "S%"`,
+			nil,
+			[][]interface{}{
+				// These are returned in table column order.
+				// Note that the primary key columns get sorted first.
+				{"Sam", int64(3), int64(9), false, 1.75, nil},
+			},
+		},
+		{
 			`SELECT Name FROM Staff WHERE FirstSeen >= @min`,
 			queryParams{"min": "1996-01-01"},
 			[][]interface{}{
