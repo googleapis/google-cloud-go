@@ -192,6 +192,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/webrisk/v1beta1/webrisk_v1beta1.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/secrets/v1beta1",
+		pkg:                   "secretmanager",
+		importPath:            "cloud.google.com/go/secretmanager/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/secrets/v1beta1/secretmanager_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/secrets/v1beta1/secretmanager_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
 }
 
 // Relative to gocloud dir.
