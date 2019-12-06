@@ -33,7 +33,7 @@ import (
 var port = flag.String("port", "", "specify a port to run on")
 
 // minRead respresents the number of bytes to read at a time.
-const minRead = 1024 * 1024
+const minRead = 10000
 
 func main() {
 	flag.Parse()
