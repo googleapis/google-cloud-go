@@ -42,7 +42,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-const versionClient = "20191203"
+const versionClient = "20191206"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
