@@ -26,6 +26,7 @@ CL once the corresponding genproto PR is submitted.
 Note: this may change your ~/.gitconfig and ~/.gitcookies.
 
 ```
+cd /path/to/internal/gapicgen
 go run cloud.google.com/go/internal/gapicgen/genmgr \
     --accessToken=11223344556677889900aabbccddeeff11223344 \
     --githubName="Jean de Klerk" \

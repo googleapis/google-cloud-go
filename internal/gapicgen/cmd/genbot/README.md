@@ -19,6 +19,7 @@ amounts of space on your computer.
 1. Run:
 
 ```
+cd /path/to/internal/gapicgen
 go run cloud.google.com/go/internal/gapicgen/genbot \
     --accessToken=11223344556677889900aabbccddeeff11223344 \
     --githubUsername=jadekler \
