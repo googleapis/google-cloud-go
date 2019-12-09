@@ -26,5 +26,6 @@ run generators against googleapis-private, and various other local tasks.
 ## Running
 
 ```
+cd /path/to/internal/gapicgen
 go run cloud.google.com/go/internal/gapicgen/genlocal
 ```
