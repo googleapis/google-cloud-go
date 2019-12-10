@@ -36,6 +36,8 @@ type GCSReference struct {
 	// Compression specifies the type of compression to apply when writing data
 	// to Google Cloud Storage, or using this GCSReference as an ExternalData
 	// source with CSV or JSON SourceFormat. Default is None.
+	//
+	// Avro files allow additional compression types: DEFLATE and SNAPPY.
 	Compression Compression
 }
 
@@ -57,6 +59,10 @@ const (
 	None Compression = "NONE"
 	// Gzip specifies gzip compression.
 	Gzip Compression = "GZIP"
+	// Deflate specifies DEFLATE compression for Avro files.
+	Deflate Compression = "DEFLATE"
+	// Snappy specifies SNAPPY compression for Avro files.
+	Snappy Compression = "SNAPPY"
 )
 
 func (gcs *GCSReference) populateLoadConfig(lc *bq.JobConfigurationLoad) io.Reader {
