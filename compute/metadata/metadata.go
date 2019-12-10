@@ -407,11 +407,7 @@ func (c *Client) InstanceTags() ([]string, error) {
 
 // InstanceName returns the current VM's instance ID string.
 func (c *Client) InstanceName() (string, error) {
-	host, err := c.Hostname()
-	if err != nil {
-		return "", err
-	}
-	return strings.Split(host, ".")[0], nil
+	return c.getTrimmed("instance/name")
 }
 
 // Zone returns the current VM's zone, such as "us-central1-b".
