@@ -17,6 +17,7 @@ package profiler
 import (
 	"bytes"
 	"context"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -31,15 +32,27 @@ import (
 	compute "google.golang.org/api/compute/v1"
 )
 
+var runBackoffTest = flag.Bool("run_profiler_backoff_test", false, "Enables the backoff integration test. This integration test requires over 45 mins to run, so it is not run by default.")
+
 const (
 	cloudScope        = "https://www.googleapis.com/auth/cloud-platform"
-	benchFinishString = "busybench finished profiling"
+	benchFinishString = "benchmark application(s) complete"
 	errorString       = "failed to set up or run the benchmark"
+	gceBenchDuration  = 200 * time.Second
+	gceTestTimeout    = 25 * time.Minute
+
+	// For any agents to receive backoff, there must be more than 32 agents in
+	// the deployment. The initial backoff received will be 33 minutes; each
+	// subsequent backoff will be one minute longer. Running 45 benchmarks for
+	// 45 minutes will ensure that several agents receive backoff responses and
+	// are able to wait for the backoff duration then send another request.
+	numBackoffBenchmarks = 45
+	backoffBenchDuration = 45 * time.Minute
+	backoffTestTimeout   = 60 * time.Minute
 )
 
 const startupTemplate = `
-{{- template "prologue" . }}
-
+{{ define "setup"}}
 # Install git
 retry apt-get update >/dev/null
 retry apt-get -y -q install git >/dev/null
@@ -77,37 +90,89 @@ git reset --hard {{.Commit}}
 
 cd $GOCLOUD_HOME/profiler/busybench
 retry go get >/dev/null
+{{- end }}
 
-# Run benchmark with agent
-go run busybench.go --service="{{.Service}}" --mutex_profiling="{{.MutexProfiling}}"
+{{ define "integration" -}}
+{{- template "prologue" . }}
+{{- template "setup" . }}
+
+# Run benchmark with agent.
+go run busybench.go --service="{{.Service}}" --duration={{.DurationSec}} --mutex_profiling="{{.MutexProfiling}}"
+
+echo "{{.FinishString}}"
 
 {{ template "epilogue" . -}}
+{{ end }}
+
+{{ define "integration_backoff" -}}
+{{- template "prologue" . }}
+{{- template "setup" . }}
+# Do not display commands being run to simplify logging output.
+set +x
+
+# Run benchmarks with agent.
+echo "Starting {{.NumBackoffBenchmarks}} benchmarks."
+for (( i = 0; i < {{.NumBackoffBenchmarks}}; i++ )); do
+	(go run busybench.go --service="{{.Service}}" --duration={{.DurationSec}} \
+		--num_busyworkers=1) |& while read line; \
+		do echo "benchmark $i: ${line}"; done &
+done
+echo "Successfully started {{.NumBackoffBenchmarks}} benchmarks."
+
+wait
+
+# Continue displaying commands being run.
+set -x
+
+echo "{{.FinishString}}"
+
+{{ template "epilogue" . -}}
+{{ end }}
 `
 
 type goGCETestCase struct {
 	proftest.InstanceConfig
-	name             string
-	goVersion        string
+	name          string
+	goVersion     string
+	benchDuration time.Duration
+	timeout       time.Duration
+
+	backoffTest bool
+
+	// mutexProfiling and wantProfileTypes will not be used when the test
+	// is a backoff integration test.
 	mutexProfiling   bool
 	wantProfileTypes []string
 }
 
 func (tc *goGCETestCase) initializeStartupScript(template *template.Template, commit string) error {
+	params := struct {
+		Service              string
+		GoVersion            string
+		Commit               string
+		ErrorString          string
+		FinishString         string
+		MutexProfiling       bool
+		DurationSec          int
+		NumBackoffBenchmarks int
+	}{
+		Service:        tc.InstanceConfig.Name,
+		GoVersion:      tc.goVersion,
+		Commit:         commit,
+		ErrorString:    errorString,
+		FinishString:   benchFinishString,
+		MutexProfiling: tc.mutexProfiling,
+		DurationSec:    int(tc.benchDuration.Seconds()),
+	}
+
+	testTemplate := "integration"
+	if tc.backoffTest {
+		testTemplate = "integration_backoff"
+		params.DurationSec = int(backoffBenchDuration.Seconds())
+		params.NumBackoffBenchmarks = numBackoffBenchmarks
+	}
 	var buf bytes.Buffer
-	err := template.Execute(&buf,
-		struct {
-			Service        string
-			GoVersion      string
-			Commit         string
-			ErrorString    string
-			MutexProfiling bool
-		}{
-			Service:        tc.InstanceConfig.Name,
-			GoVersion:      tc.goVersion,
-			Commit:         commit,
-			ErrorString:    errorString,
-			MutexProfiling: tc.mutexProfiling,
-		})
+	err := template.Lookup(testTemplate).Execute(&buf, params)
 	if err != nil {
 		return fmt.Errorf("failed to render startup script for %s: %v", tc.name, err)
 	}
@@ -141,8 +206,9 @@ func TestAgentIntegration(t *testing.T) {
 	// Testing against master requires building go code and may take up to 10 minutes.
 	// Allow this test to run in parallel with other top level tests to avoid timeouts.
 	t.Parallel()
+
 	if testing.Short() {
-		t.Skip("skipping profiler integration test in short mode")
+		t.Skip("skipping profiler integration tests in short mode")
 	}
 
 	projectID := os.Getenv("GCLOUD_TESTS_GOLANG_PROJECT_ID")
@@ -184,7 +250,6 @@ func TestAgentIntegration(t *testing.T) {
 	tr := proftest.TestRunner{
 		Client: client,
 	}
-
 	gceTr := proftest.GCETestRunner{
 		TestRunner:     tr,
 		ComputeService: computeService,
@@ -205,6 +270,8 @@ func TestAgentIntegration(t *testing.T) {
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
 			goVersion:        "master",
 			mutexProfiling:   true,
+			timeout:          gceTestTimeout,
+			benchDuration:    gceBenchDuration,
 		},
 		{
 			InstanceConfig: proftest.InstanceConfig{
@@ -216,7 +283,29 @@ func TestAgentIntegration(t *testing.T) {
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
 			goVersion:        goVersion,
 			mutexProfiling:   true,
+			timeout:          gceTestTimeout,
+			benchDuration:    gceBenchDuration,
 		},
+	}
+
+	if *runBackoffTest {
+		testcases = append(testcases,
+			goGCETestCase{
+				InstanceConfig: proftest.InstanceConfig{
+					ProjectID: projectID,
+					Name:      fmt.Sprintf("profiler-backoff-test-go%s-%s", goVersionName, runID),
+
+					// Running many copies of the benchmark requires more
+					// memory than is available on an n1-standard-1. Use a
+					// machine type with more memory for backoff test.
+					MachineType: "n1-highmem-2",
+				},
+				name:          fmt.Sprintf("profiler-backoff-test-go%s", goVersionName),
+				goVersion:     goVersion,
+				backoffTest:   true,
+				timeout:       backoffTestTimeout,
+				benchDuration: backoffBenchDuration,
+			})
 	}
 	// The number of tests run in parallel is the current value of GOMAXPROCS.
 	runtime.GOMAXPROCS(len(testcases))
@@ -240,15 +329,22 @@ func TestAgentIntegration(t *testing.T) {
 				break
 			}
 			defer func() {
-				if gceTr.DeleteInstance(ctx, &tc.InstanceConfig); err != nil {
+				if err := gceTr.DeleteInstance(ctx, &tc.InstanceConfig); err != nil {
 					t.Fatal(err)
 				}
 			}()
 
-			timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute*25)
+			timeoutCtx, cancel := context.WithTimeout(ctx, tc.timeout)
 			defer cancel()
-			if err := gceTr.PollForSerialOutput(timeoutCtx, &tc.InstanceConfig, benchFinishString, errorString); err != nil {
+			output, err := gceTr.PollForAndReturnSerialOutput(timeoutCtx, &tc.InstanceConfig, benchFinishString, errorString)
+			if err != nil {
 				t.Fatalf("PollForSerialOutput() got error: %v", err)
+			}
+
+			if tc.backoffTest {
+				if err := proftest.CheckSerialOutputForBackoffs(output, numBackoffBenchmarks, "action throttled, backoff", "creating a new profile via profiler service", "benchmark"); err != nil {
+					t.Errorf("failed to check serial output for backoffs: %v", err)
+				}
 			}
 
 			timeNow := time.Now()
