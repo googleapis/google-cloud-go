@@ -168,6 +168,7 @@ func TestLIFOSessionOrder(t *testing.T) {
 
 // TestLIFOTakeWriteSessionOrder tests if write session pool hand out sessions in LIFO order.
 func TestLIFOTakeWriteSessionOrder(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1704")
 	t.Parallel()
 	ctx := context.Background()
 	_, client, teardown := setupMockedTestServerWithConfig(t,
