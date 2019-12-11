@@ -72,6 +72,7 @@ RUN which artman
 
 RUN echo -e '#!/bin/bash\n\
 set -ex\n\
+echo "https://$GITHUB_USERNAME:$GITHUB_ACCESS_TOKEN@github.com" > ~/.git-credentials \n\
 dockerd-entrypoint.sh &\n\
 unset DOCKER_HOST\n\
 go mod download & # download deps whilst we wait for dockerd to start \n\
@@ -79,11 +80,10 @@ sleep 15 # wait for docker to start\n\
 docker ps\n\
 docker pull googleapis/artman:latest & # download latest artman whilst we wait for genbot to start \n\
 go run cloud.google.com/go/internal/gapicgen/cmd/genbot \
-    --accessToken=$ACCESS_TOKEN \
+    --githubAccessToken=$GITHUB_ACCESS_TOKEN \
     --githubUsername=$GITHUB_USERNAME \
     --githubName="$GITHUB_NAME" \
     --githubEmail=$GITHUB_EMAIL \
-    --githubSSHKeyPath=$GITHUB_SSH_KEY_PATH \
     --gerritCookieName=$GERRIT_COOKIE_NAME \
     --gerritCookieValue=$GERRIT_COOKIE_VALUE \n\
 ' >> /run.sh

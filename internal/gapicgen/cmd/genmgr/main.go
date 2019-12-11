@@ -38,7 +38,7 @@ var (
 
 	gocloudReviewers = []string{"codyoss@google.com", "deklerk@google.com", "tbp@google.com", "cbro@google.com", "hongalex@google.com", "ndietz@google.com", "cjcotter@google.com"}
 
-	accessToken       = flag.String("accessToken", "", "Get an access token at https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line")
+	githubAccessToken = flag.String("githubAccessToken", "", "Get an access token at https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line")
 	githubName        = flag.String("githubName", "", "ex -githubName=\"Jean de Klerk\"")
 	githubEmail       = flag.String("githubEmail", "", "ex -githubEmail=deklerk@google.com")
 	gerritCookieName  = flag.String("gerritCookieName", "", "ex: -gerritCookieName=o")
@@ -46,11 +46,11 @@ var (
 
 	usage = func() {
 		fmt.Fprintln(os.Stderr, `genmgr \
-	-accessToken=11223344556677889900aabbccddeeff11223344 \
+	-githubAccessToken=11223344556677889900aabbccddeeff11223344 \
 	-gerritCookieName=o \
 	-gerritCookieValue=git-your@email.com=SomeHash....
 
--accessToken
+-githubAccessToken
 	The access token to authenticate to github. Get this at https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line.
 
 -githubName
@@ -75,7 +75,7 @@ func main() {
 	flag.Parse()
 
 	for k, v := range map[string]string{
-		"accessToken":       *accessToken,
+		"githubAccessToken": *githubAccessToken,
 		"githubName":        *githubName,
 		"githubEmail":       *githubEmail,
 		"gerritCookieName":  *gerritCookieName,
@@ -100,7 +100,7 @@ func main() {
 	}
 
 	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: *accessToken},
+		&oauth2.Token{AccessToken: *githubAccessToken},
 	)
 	tc := oauth2.NewClient(ctx, ts)
 	githubClient := github.NewClient(tc)

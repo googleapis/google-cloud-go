@@ -23,12 +23,12 @@ CL once the corresponding genproto PR is submitted.
 
 ## Running locally
 
-Note: this may change your ~/.gitconfig and ~/.gitcookies.
+Note: this may change your `~/.gitconfig` and `~/.gitcookies`.
 
 ```
 cd /path/to/internal/gapicgen
 go run cloud.google.com/go/internal/gapicgen/cmd/genmgr \
-    --accessToken=11223344556677889900aabbccddeeff11223344 \
+    --githubAccessToken=11223344556677889900aabbccddeeff11223344 \
     --githubName="Jean de Klerk" \
     --githubEmail=deklerk@google.com \
     --gerritCookieName=o \
@@ -45,8 +45,7 @@ cd /path/to/internal/gapicgen/cmd/genmgr
 docker build . -t genmgr
 docker run -t --rm --privileged \
     -v `pwd`/../..:/gapicgen \
-    -v /path/to/your/ssh/key/directory:/.ssh \
-    -e "ACCESS_TOKEN=11223344556677889900aabbccddeeff11223344" \
+    -e "GITHUB_ACCESS_TOKEN=11223344556677889900aabbccddeeff11223344" \
     -e "GITHUB_NAME=\"Jean de Klerk\"" \
     -e "GITHUB_EMAIL=deklerk@google.com" \
     -e "GERRIT_COOKIE_NAME=o" \
