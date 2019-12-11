@@ -121,7 +121,14 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		// TODO: remove when the raw client uses this endpoint as its default (~end of 2020)
 		rawService.BasePath = "https://storage.googleapis.com/storage/v1/"
 	} else {
+		// If the endpoint has been set explicitly, use this for the BasePath
+		// as well as readHost
 		rawService.BasePath = ep
+		u, err := url.Parse(ep)
+		if err != nil {
+			return nil, fmt.Errorf("supplied endpoint %v is not valid: %v", ep, err)
+		}
+		readHost = u.Hostname()
 	}
 
 	return &Client{
