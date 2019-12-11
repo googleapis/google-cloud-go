@@ -475,7 +475,7 @@ var commands = []struct {
 			"  Put garbage collection policies in quotes when they include shell operators && and ||.\n\n" +
 			"    Examples:\n" +
 			"      cbt setgcpolicy mobile-time-series stats_detail maxage=10d\n" +
-			"      cbt setgcpolicy mobile-time-series stats_summary maxage=10d or maxversion=1\n",
+			"      cbt setgcpolicy mobile-time-series stats_summary maxage=10d or maxversions=1\n",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
