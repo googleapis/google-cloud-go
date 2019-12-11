@@ -200,6 +200,22 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/secrets/v1beta1/secretmanager_v1beta1.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/osconfig/v1beta",
+		pkg:                   "osconfig",
+		importPath:            "cloud.google.com/go/osconfig/apiv1beta",
+		gRPCServiceConfigPath: "google/cloud/osconfig/v1beta/osconfig_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/osconfig/v1beta/osconfig_v1beta.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/osconfig/agentendpoint/v1beta",
+		pkg:                   "agentendpoint",
+		importPath:            "cloud.google.com/go/osconfig/agentendpoint/apiv1beta",
+		gRPCServiceConfigPath: "google/cloud/osconfig/agentendpoint/v1beta/agentendpoint_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/osconfig/agentendpoint/v1beta/osconfig_v1beta.yaml",
+		releaseLevel:          "beta",
+	},
 }
 
 // Relative to gocloud dir.
