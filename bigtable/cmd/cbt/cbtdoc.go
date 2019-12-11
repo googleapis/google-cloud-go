@@ -374,7 +374,7 @@ Usage:
 
 	    Examples:
 	      cbt setgcpolicy mobile-time-series stats_detail maxage=10d
-	      cbt setgcpolicy mobile-time-series stats_summary maxage=10d or maxversion=1
+	      cbt setgcpolicy mobile-time-series stats_summary maxage=10d or maxversions=1
 
 
 
