@@ -1186,7 +1186,12 @@ func (hc *healthChecker) worker(i int) {
 			if err != nil {
 				// Skip handling prepare error, session can be prepared in next
 				// cycle.
-				logf(hc.pool.sc.logger, "Failed to prepare session, error: %v", toSpannerError(err))
+				// Don't log about permission errors, which may be expected
+				// (e.g. using read-only auth).
+				serr := toSpannerError(err).(*Error)
+				if serr.Code != codes.PermissionDenied {
+					logf(hc.pool.sc.logger, "Failed to prepare session, error: %v", serr)
+				}
 			}
 			hc.pool.recycle(ws)
 			hc.pool.mu.Lock()
@@ -1314,7 +1319,12 @@ func (hc *healthChecker) growPool(ctx context.Context, growToNumSessions uint64)
 			if err = s.prepareForWrite(prepareContext); err != nil {
 				cancel()
 				p.recycle(s)
-				logf(p.sc.logger, "Failed to prepare session, error: %v", toSpannerError(err))
+				// Don't log about permission errors, which may be expected
+				// (e.g. using read-only auth).
+				serr := toSpannerError(err).(*Error)
+				if serr.Code != codes.PermissionDenied {
+					logf(p.sc.logger, "Failed to prepare session, error: %v", serr)
+				}
 				continue
 			}
 			cancel()
