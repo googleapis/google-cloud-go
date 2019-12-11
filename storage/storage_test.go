@@ -1143,3 +1143,23 @@ func TestAttrToFieldMapCoverage(t *testing.T) {
 		}
 	}
 }
+
+// Create a client using a custom endpoint, and verify that raw.BasePath (used
+// for writes) and readHost (used for reads) are both set correctly.
+func TestWithEndpoint(t *testing.T) {
+	ctx := context.Background()
+	endpoint := "https://fake.gcs.com/storage/v1"
+	c, err := NewClient(ctx, option.WithEndpoint(endpoint))
+	if err != nil {
+		t.Fatalf("error creating client: %v", err)
+	}
+
+	if c.raw.BasePath != endpoint {
+		t.Errorf("raw.BasePath not set correctly: got %v, want %v", c.raw.BasePath, endpoint)
+	}
+
+	want := "fake.gcs.com"
+	if c.readHost != want {
+		t.Errorf("readHost not set correctly: got %v, want %v", c.readHost, want)
+	}
+}
