@@ -655,6 +655,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 }
 
 func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1702")
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
