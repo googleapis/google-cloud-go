@@ -59,21 +59,15 @@ func prGenproto(ctx context.Context, githubClient *github.Client, genprotoDir st
 	c := exec.Command("/bin/bash", "-c", `
 set -ex
 
-git remote -v
-
-eval $(ssh-agent)
-ssh-add $GITHUB_KEY
-
-git remote add regen_remote $FORK_URL
-git checkout master
+git config credential.helper store # cache creds from ~/.git-credentials
 
 git branch -D $BRANCH_NAME || true
-git push -d regen_remote $BRANCH_NAME || true
+git push -d origin $BRANCH_NAME || true
 
 git add -A
 git checkout -b $BRANCH_NAME
 git commit -m "$COMMIT_TITLE" -m "$COMMIT_BODY"
-git push regen_remote $BRANCH_NAME
+git push origin $BRANCH_NAME
 `)
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
@@ -81,18 +75,16 @@ git push regen_remote $BRANCH_NAME
 	c.Env = []string{
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
-		fmt.Sprintf("FORK_URL=%s", fmt.Sprintf("git@github.com:%s/go-genproto.git", *githubUsername)),
 		fmt.Sprintf("COMMIT_TITLE=%s", genprotoCommitTitle),
 		fmt.Sprintf("COMMIT_BODY=%s", genprotoCommitBody),
 		fmt.Sprintf("BRANCH_NAME=%s", genprotoBranchName),
-		fmt.Sprintf("GITHUB_KEY=%s", *githubSSHKeyPath),
 	}
 	c.Dir = genprotoDir
 	if err := c.Run(); err != nil {
 		return 0, err
 	}
 
-	head := fmt.Sprintf("%s:%s", *githubUsername, genprotoBranchName)
+	head := fmt.Sprintf("googleapis:" + genprotoBranchName)
 	base := "master"
 	t := genprotoCommitTitle // Because we have to take the address.
 	b := genprotoCommitBody  // Because we have to take the address.
@@ -136,13 +128,11 @@ Corresponding gocloud CL: %s
 	c := exec.Command("/bin/bash", "-c", `
 set -ex
 
-eval $(ssh-agent)
-ssh-add $GITHUB_KEY
+git config credential.helper store # cache creds from ~/.git-credentials
 
-git remote add amend_remote $FORK_URL
 git checkout $BRANCH_NAME
 git commit --amend -m "$COMMIT_TITLE" -m "$COMMIT_BODY"
-git push -f amend_remote $BRANCH_NAME
+git push -f origin $BRANCH_NAME
 `)
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
@@ -150,11 +140,9 @@ git push -f amend_remote $BRANCH_NAME
 	c.Env = []string{
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
-		fmt.Sprintf("FORK_URL=%s", fmt.Sprintf("git@github.com:%s/go-genproto.git", *githubUsername)),
 		fmt.Sprintf("COMMIT_TITLE=%s", genprotoCommitTitle),
 		fmt.Sprintf("COMMIT_BODY=%s", newBody),
 		fmt.Sprintf("BRANCH_NAME=%s", genprotoBranchName),
-		fmt.Sprintf("GITHUB_KEY=%s", *githubSSHKeyPath),
 	}
 	c.Dir = genprotoDir
 	if err := c.Run(); err != nil {

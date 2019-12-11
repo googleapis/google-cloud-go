@@ -38,25 +38,23 @@ import (
 var (
 	toolsNeeded = []string{"git", "pip", "virtualenv", "python", "go", "protoc", "docker", "artman"}
 
-	accessToken       = flag.String("accessToken", "", "Get an access token at https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line")
+	githubAccessToken = flag.String("githubAccessToken", "", "Get an access token at https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line")
 	githubUsername    = flag.String("githubUsername", "", "ex -githubUsername=jadekler")
 	githubName        = flag.String("githubName", "", "ex -githubName=\"Jean de Klerk\"")
 	githubEmail       = flag.String("githubEmail", "", "ex -githubEmail=deklerk@google.com")
-	githubSSHKeyPath  = flag.String("githubSSHKeyPath", "", "ex -githubSSHKeyPath=/Users/deklerk/.ssh/github_rsa")
 	gerritCookieName  = flag.String("gerritCookieName", "", "ex: -gerritCookieName=o")
 	gerritCookieValue = flag.String("gerritCookieValue", "", "ex: -gerritCookieValue=git-your@email.com=SomeHash....")
 
 	usage = func() {
 		fmt.Fprintln(os.Stderr, `genbot \
-	-accessToken=11223344556677889900aabbccddeeff11223344 \
+	-githubAccessToken=11223344556677889900aabbccddeeff11223344 \
 	-githubUsername=jadekler \
 	-githubEmail=deklerk@google.com \
 	-githubName="Jean de Klerk" \
-	-githubSSHKeyPath=/Users/deklerk/.ssh/github_rsa \
 	-gerritCookieName=o \
 	-gerritCookieValue=git-your@email.com=SomeHash....
 
--accessToken
+-githubAccessToken
 	The access token to authenticate to github. Get this at https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line.
 
 -githubUsername
@@ -67,9 +65,6 @@ var (
 
 -githubEmail
 	The email to use in the github commit.
-
--githubSSHKeyPath
-	The ssh key to use in the github commit.
 
 -gerritCookieName
 	The name of the cookie. Almost certainly "o".
@@ -87,11 +82,10 @@ func main() {
 	flag.Parse()
 
 	for k, v := range map[string]string{
-		"accessToken":       *accessToken,
+		"accessToken":       *githubAccessToken,
 		"githubUsername":    *githubUsername,
 		"githubName":        *githubName,
 		"githubEmail":       *githubEmail,
-		"githubSSHKeyPath":  *githubSSHKeyPath,
 		"gerritCookieName":  *gerritCookieName,
 		"gerritCookieValue": *gerritCookieValue,
 	} {
@@ -114,7 +108,7 @@ func main() {
 	}
 
 	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: *accessToken},
+		&oauth2.Token{AccessToken: *githubAccessToken},
 	)
 	tc := oauth2.NewClient(ctx, ts)
 	githubClient := github.NewClient(tc)
