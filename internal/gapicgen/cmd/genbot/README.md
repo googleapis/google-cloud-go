@@ -50,3 +50,14 @@ docker run -t --rm --privileged \
     -e "GERRIT_COOKIE_VALUE=<cookie>" \
     genbot
 ```
+
+## FAQ
+
+#### How do I bump to a later version of the microgenerator?
+
+```
+cd /path/to/internal/gapicgen
+go get -u github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
+```
+
+(it's just based on the go.mod entry)

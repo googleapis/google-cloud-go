@@ -54,7 +54,6 @@ RUN go get \
   golang.org/x/lint/golint \
   golang.org/x/tools/cmd/goimports \
   honnef.co/go/tools/cmd/staticcheck \
-  github.com/golang/protobuf/protoc-gen-go \
   github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic \
   golang.org/x/review/git-codereview
 ENV PATH="${PATH}:/root/go/bin"
