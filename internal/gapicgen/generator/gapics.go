@@ -80,36 +80,6 @@ func generateGapics(ctx context.Context, googleapisDir, protoDir, gocloudDir, ge
 	return nil
 }
 
-// installMicrogen installs the microgen gapic protoc plugin.
-//
-// The installation could happen during the docker build phase, but it would
-// mean needing to rebuild the docker image each time a new version of the
-// plugin is available.
-//
-// The plugin version could be specified in genbot's go.mod, but since there's
-// a mandatory copy phase it seems reasonable to just do it all inline.
-func installMicrogen() error {
-	c := exec.Command("go", "get", "-u", "github.com/golang/protobuf/protoc-gen-go")
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Env = []string{
-		fmt.Sprintf("GOPATH=%s", os.Getenv("GOPATH")),
-		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
-		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
-	}
-	if err := c.Run(); err != nil {
-		return err
-	}
-
-	c = exec.Command("cp", "$GOPATH/protoc-gen-go", "/export/bin/protoc-gen-go")
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Env = []string{
-		fmt.Sprintf("GOPATH=%s", os.Getenv("GOPATH")),
-	}
-	return c.Run()
-}
-
 // addModReplaceGenproto adds a genproto replace statement that points genproto
 // to the local copy. This is necessary since the remote genproto may not have
 // changes that are necessary for the in-flight regen.
