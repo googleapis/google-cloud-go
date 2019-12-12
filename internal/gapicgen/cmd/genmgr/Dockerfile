@@ -16,7 +16,7 @@ ENV PATH="${PATH}:/root/go/bin"
 RUN echo -e '#!/bin/bash\n\
 set -ex\n\
 go run cloud.google.com/go/internal/gapicgen/cmd/genmgr \
-    --accessToken=$ACCESS_TOKEN \
+    --githubAccessToken=$ACCESS_TOKEN \
     --githubName="$GITHUB_NAME" \
     --githubEmail=$GITHUB_EMAIL \
     --gerritCookieName=$GERRIT_COOKIE_NAME \

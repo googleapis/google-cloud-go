@@ -82,7 +82,7 @@ func main() {
 	flag.Parse()
 
 	for k, v := range map[string]string{
-		"accessToken":       *githubAccessToken,
+		"githubAccessToken": *githubAccessToken,
 		"githubUsername":    *githubUsername,
 		"githubName":        *githubName,
 		"githubEmail":       *githubEmail,
