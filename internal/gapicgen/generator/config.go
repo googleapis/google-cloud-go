@@ -384,7 +384,10 @@ var gapicsWithManual = []string{
 
 // Relative to googleapis dir.
 var artmanGapicConfigPaths = []string{
-	"google/api/expr/artman_cel.yaml",
+	// TODO: Add back in after https://github.com/googleapis/artman/issues/775
+	// is fixed.
+	// "google/api/expr/artman_cel.yaml",
+
 	"google/cloud/asset/artman_cloudasset_v1beta1.yaml",
 	"google/cloud/asset/artman_cloudasset_v1p2beta1.yaml",
 	"google/iam/credentials/artman_iamcredentials_v1.yaml",
