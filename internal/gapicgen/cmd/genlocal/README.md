@@ -9,9 +9,8 @@ run generators against googleapis-private, and various other local tasks.
 1. Install [docker](https://www.docker.com/get-started)
 1. Install [protoc](https://github.com/protocolbuffers/protobuf/releases)
 1. Install [Go](http://golang.org/dl)
-1. Install python2.7, pip
-1. Install virtualenv `pip install virtualenv`
-1. Install artman `pip install googleapis-artman`
+1. Install python3, pip3
+1. Install virtualenv `pip3 install virtualenv`
 1. Install Go tools:
 
     ```
