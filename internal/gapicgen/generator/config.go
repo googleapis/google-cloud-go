@@ -392,6 +392,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/firestore/v1beta1/firestore_v1beta1.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:    "google/devtools/cloudbuild/v1",
+		pkg:                   "cloudbuild",
+		importPath:            "cloud.google.com/go/cloudbuild/apiv1/v2",
+		gRPCServiceConfigPath: "google/devtools/cloudbuild/v1/cloudbuild_grpc_service_config.json",
+		apiServiceConfigPath:  "google/devtools/cloudbuild/v1/cloudbuild_v1.yaml",
+		releaseLevel:          "ga",
+	},
 }
 
 // Relative to gocloud dir.
@@ -419,7 +427,6 @@ var artmanGapicConfigPaths = []string{
 	"google/cloud/talent/artman_talent_v4beta1.yaml",
 	"google/cloud/videointelligence/artman_videointelligence_v1beta2.yaml",
 	"google/cloud/vision/artman_vision_v1p1beta1.yaml",
-	"google/devtools/cloudbuild/artman_cloudbuild.yaml",
 	"google/devtools/containeranalysis/artman_containeranalysis_v1beta1.yaml",
 	"google/firestore/artman_firestore_v1.yaml",
 	"google/firestore/admin/artman_firestore_v1.yaml",
