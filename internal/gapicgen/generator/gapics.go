@@ -31,10 +31,8 @@ var dockerPullRegex = regexp.MustCompile("(googleapis/artman:[0-9]+.[0-9]+.[0-9]
 
 // generateGapics generates gapics.
 func generateGapics(ctx context.Context, googleapisDir, protoDir, gocloudDir, genprotoDir string) error {
-	for _, c := range artmanGapicConfigPaths {
-		if err := artman(c, googleapisDir); err != nil {
-			return err
-		}
+	if err := artman(artmanGapicConfigPaths, googleapisDir); err != nil {
+		return err
 	}
 
 	if err := copyArtmanFiles(googleapisDir, gocloudDir); err != nil {
@@ -157,22 +155,51 @@ find . -name '*.backup' -delete
 }
 
 // artman runs artman on a single artman gapic config path.
-func artman(gapicConfigPath, googleapisDir string) error {
-	log.Println("artman generating", gapicConfigPath)
+func artman(gapicConfigPaths []string, googleapisDir string) error {
+	// Prepare virtualenv.
+	//
+	// TODO(deklerk): Why do we have to install cachetools at a specific
+	// version - doesn't virtualenv solve the diamond dependency issues?
+	//
+	// TODO(deklerk): Why do we have to create artman-genfiles?
+	// (pip install googleapis-artman fails with an "lstat file not found"
+	// without doing so)
+	c := exec.Command("bash", "-c", `
+set -ex
 
-	// Write command output to both os.Stderr and local, so that we can check
-	// for `Cannot find artman Docker image. Run `docker pull googleapis/artman:0.41.0` to pull the image.`.
-	inmem := bytes.NewBuffer([]byte{})
-	w := io.MultiWriter(os.Stderr, inmem)
-
-	c := exec.Command("artman", "--config", gapicConfigPath, "generate", "go_gapic")
+python3 -m venv artman-venv
+source ./artman-venv/bin/activate
+mkdir artman-genfiles
+pip3 install cachetools==2.0.0
+pip3 install googleapis-artman`)
 	c.Stdout = os.Stdout
-	c.Stderr = w
+	c.Stderr = os.Stderr
 	c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
 	c.Dir = googleapisDir
-	if err := c.Run(); err == nil {
+	if err := c.Run(); err != nil {
 		return nil
-	} else {
+	}
+
+	for _, config := range gapicConfigPaths {
+		log.Println("artman generating", config)
+
+		// Write command output to both os.Stderr and local, so that we can check
+		// for `Cannot find artman Docker image. Run `docker pull googleapis/artman:0.41.0` to pull the image.`.
+		inmem := bytes.NewBuffer([]byte{})
+		w := io.MultiWriter(os.Stderr, inmem)
+
+		c := exec.Command("bash", "-c", "./artman-venv/bin/artman --config "+config+" generate go_gapic")
+		c.Stdout = os.Stdout
+		c.Stderr = w
+		c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
+		c.Dir = googleapisDir
+		err := c.Run()
+		if err == nil {
+			continue
+		}
+
+		// We got an error. Check if it's a need-to-docker-pull error (which we
+		// can fix here), or something else (which we'll need to panic on).
 		stderr := inmem.Bytes()
 		if dockerPullRegex.Match(stderr) {
 			artmanImg := dockerPullRegex.FindString(string(stderr))
@@ -186,17 +213,21 @@ func artman(gapicConfigPath, googleapisDir string) error {
 		} else {
 			return err
 		}
+
+		// If the last command failed, and we were able to fix it with `docker pull`,
+		// then let's try regenerating. When https://github.com/googleapis/artman/issues/732
+		// is solved, we won't have to do this.
+		c = exec.Command("bash", "-c", "./artman-venv/bin/artman --config "+config+" generate go_gapic")
+		c.Stdout = os.Stdout
+		c.Stderr = os.Stderr
+		c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
+		c.Dir = googleapisDir
+		if err := c.Run(); err != nil {
+			return err
+		}
 	}
 
-	// If the last command failed, and we were able to fix it with `docker pull`,
-	// then let's try regenerating. When https://github.com/googleapis/artman/issues/732
-	// is solved, we won't have to do this.
-	c = exec.Command("artman", "--config", gapicConfigPath, "generate", "go_gapic")
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
-	c.Dir = googleapisDir
-	return c.Run()
+	return nil
 }
 
 // microgen runs the microgenerator on a single microgen config.

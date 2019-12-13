@@ -36,7 +36,7 @@ import (
 )
 
 var (
-	toolsNeeded = []string{"git", "pip", "virtualenv", "python", "go", "protoc", "docker", "artman"}
+	toolsNeeded = []string{"git", "pip3", "virtualenv", "python3", "go", "protoc", "docker"}
 
 	githubAccessToken = flag.String("githubAccessToken", "", "Get an access token at https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line")
 	githubUsername    = flag.String("githubUsername", "", "ex -githubUsername=jadekler")

@@ -66,8 +66,6 @@ RUN which bash
 # Install tools necessary for artman.
 RUN apk add alpine-sdk build-base openssl-dev
 RUN which gcc
-RUN pip install googleapis-artman
-RUN which artman
 
 RUN echo -e '#!/bin/bash\n\
 set -ex\n\
