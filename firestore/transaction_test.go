@@ -157,9 +157,9 @@ func TestTransactionErrors(t *testing.T) {
 	defer cleanup()
 
 	var (
-		tid         = []byte{1}
-		internalErr = status.Errorf(codes.Internal, "so sad")
-		beginReq    = &pb.BeginTransactionRequest{
+		tid        = []byte{1}
+		unknownErr = status.Errorf(codes.Unknown, "so sad")
+		beginReq   = &pb.BeginTransactionRequest{
 			Database: db,
 		}
 		beginRes = &pb.BeginTransactionResponse{Transaction: tid}
@@ -173,10 +173,10 @@ func TestTransactionErrors(t *testing.T) {
 	)
 
 	// BeginTransaction has a permanent error.
-	srv.addRPC(beginReq, internalErr)
+	srv.addRPC(beginReq, unknownErr)
 	err := c.RunTransaction(ctx, func(context.Context, *Transaction) error { return nil })
-	if status.Code(err) != codes.Internal {
-		t.Errorf("got <%v>, want Internal", err)
+	if status.Code(err) != codes.Unknown {
+		t.Errorf("got <%v>, want Unknown", err)
 	}
 
 	// Get has a permanent error.
@@ -186,22 +186,22 @@ func TestTransactionErrors(t *testing.T) {
 	}
 	srv.reset()
 	srv.addRPC(beginReq, beginRes)
-	srv.addRPC(getReq, internalErr)
+	srv.addRPC(getReq, unknownErr)
 	srv.addRPC(rollbackReq, &empty.Empty{})
 	err = c.RunTransaction(ctx, get)
-	if status.Code(err) != codes.Internal {
-		t.Errorf("got <%v>, want Internal", err)
+	if status.Code(err) != codes.Unknown {
+		t.Errorf("got <%v>, want Unknown", err)
 	}
 
 	// Get has a permanent error, but the rollback fails. We still
 	// return Get's error.
 	srv.reset()
 	srv.addRPC(beginReq, beginRes)
-	srv.addRPC(getReq, internalErr)
+	srv.addRPC(getReq, unknownErr)
 	srv.addRPC(rollbackReq, status.Errorf(codes.FailedPrecondition, ""))
 	err = c.RunTransaction(ctx, get)
-	if status.Code(err) != codes.Internal {
-		t.Errorf("got <%v>, want Internal", err)
+	if status.Code(err) != codes.Unknown {
+		t.Errorf("got <%v>, want Unknown", err)
 	}
 
 	// Commit has a permanent error.
@@ -217,10 +217,10 @@ func TestTransactionErrors(t *testing.T) {
 			ReadTime: aTimestamp2,
 		},
 	})
-	srv.addRPC(commitReq, internalErr)
+	srv.addRPC(commitReq, unknownErr)
 	err = c.RunTransaction(ctx, get)
-	if status.Code(err) != codes.Internal {
-		t.Errorf("got <%v>, want Internal", err)
+	if status.Code(err) != codes.Unknown {
+		t.Errorf("got <%v>, want Unknown", err)
 	}
 
 	// Read after write.

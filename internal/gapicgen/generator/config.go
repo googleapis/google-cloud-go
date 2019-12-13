@@ -376,6 +376,22 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/firestore/admin/firestore_admin_v1.yaml",
 		releaseLevel:          "alpha",
 	},
+	{
+		inputDirectoryPath:    "google/firestore/v1",
+		pkg:                   "firestore",
+		importPath:            "cloud.google.com/go/firestore/apiv1",
+		gRPCServiceConfigPath: "google/firestore/v1/firestore_grpc_service_config.json",
+		apiServiceConfigPath:  "google/firestore/v1/firestore_v1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/firestore/v1beta1",
+		pkg:                   "firestore",
+		importPath:            "cloud.google.com/go/firestore/apiv1beta1",
+		gRPCServiceConfigPath: "google/firestore/v1beta1/firestore_grpc_service_config.json",
+		apiServiceConfigPath:  "google/firestore/v1beta1/firestore_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
 }
 
 // Relative to gocloud dir.
@@ -406,6 +422,7 @@ var artmanGapicConfigPaths = []string{
 	"google/devtools/cloudbuild/artman_cloudbuild.yaml",
 	"google/devtools/containeranalysis/artman_containeranalysis_v1beta1.yaml",
 	"google/firestore/artman_firestore_v1.yaml",
+	"google/firestore/admin/artman_firestore_v1.yaml",
 	"google/logging/artman_logging.yaml",
 	"google/longrunning/artman_longrunning.yaml",
 	"google/monitoring/artman_monitoring.yaml",
