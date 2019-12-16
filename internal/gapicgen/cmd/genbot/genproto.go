@@ -28,18 +28,19 @@ const (
 	genprotoBranchName  = "regen_genproto"
 	genprotoCommitTitle = "auto-regenerate .pb.go files"
 	genprotoCommitBody  = `
-This is an auto-generated regeneration of the .pb.go files by autogogen. Once
-this PR is submitted, autotogen will update the corresponding CL at gocloud
-to depend on the newer version of go-genproto, and assign reviewers. Whilst this
-or any regen PR is open in go-genproto, autogogen will not create any more
-regeneration PRs or CLs. If all regen PRs are closed, autogogen will create a
-new set of regeneration PRs and CLs once per night.
+This is an auto-generated regeneration of the .pb.go files by
+cloud.google.com/go/internal/gapicgen. Once this PR is submitted, autotogen will
+update the corresponding CL at gocloud to depend on the newer version of
+go-genproto, and assign reviewers. Whilst this or any regen PR is open in
+go-genproto, gapicgen will not create any more regeneration PRs or CLs. If all
+regen PRs are closed, gapicgen will create a new set of regeneration PRs and
+CLs once per night.
 
 If you have been assigned to review this CL, please:
 
 - Ensure that CI is passin If it's failing, it requires your manual attention.
 - Approve and submit this PR if you believe it's ready to ship. That will prompt
-  autogogen to assign reviewers to the gocloud CL.
+  gapicgen to assign reviewers to the gocloud CL.
 `
 )
 
