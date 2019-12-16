@@ -150,6 +150,7 @@ func TestRunTransaction(t *testing.T) {
 }
 
 func TestTransactionErrors(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1708")
 	ctx := context.Background()
 	const db = "projects/projectID/databases/(default)"
 	c, srv, cleanup := newMock(t)
