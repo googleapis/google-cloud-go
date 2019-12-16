@@ -7,10 +7,13 @@ require (
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/googleapis/gapic-generator-go v0.9.7
+	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550 // indirect
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 	golang.org/x/sys v0.0.0-20191210023423-ac6580df4449 // indirect
 	google.golang.org/appengine v1.5.0 // indirect
+	google.golang.org/genproto v0.0.0-20191216164720-4f79533eabd1 // indirect
+	google.golang.org/grpc v1.20.1 // indirect
 	gopkg.in/src-d/go-git.v4 v4.13.1
 )
