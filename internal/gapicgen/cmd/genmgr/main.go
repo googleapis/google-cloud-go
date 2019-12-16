@@ -153,7 +153,7 @@ func main() {
 			author = parts[0]
 		}
 
-		// If the CL author does not belong to the person running autogogen,
+		// If the CL author does not belong to the person running gapicgen,
 		// we can't action on it. So: no-op.
 		//
 		// If the CL has reviewers, it must have already had its go.mod
