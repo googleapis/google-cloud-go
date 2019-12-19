@@ -369,6 +369,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "alpha",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/securitycenter/v1beta1",
+		pkg:                   "securitycenter",
+		importPath:            "cloud.google.com/go/securitycenter/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/securitycenter/v1beta1/securitycenter_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/securitycenter/v1beta1/securitycenter_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
 		inputDirectoryPath:    "google/firestore/admin/v1",
 		pkg:                   "apiv1",
 		importPath:            "cloud.google.com/go/firestore/apiv1/admin",
@@ -400,6 +408,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/devtools/cloudbuild/v1/cloudbuild_v1.yaml",
 		releaseLevel:          "ga",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/dialogflow/v2",
+		pkg:                   "dialogflow",
+		importPath:            "cloud.google.com/go/dialogflow/apiv2",
+		gRPCServiceConfigPath: "google/cloud/dialogflow/v2/dialogflow_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/dialogflow/v2/dialogflow_v2.yaml",
+		releaseLevel:          "ga",
+	},
 }
 
 // Relative to gocloud dir.
@@ -422,8 +438,6 @@ var artmanGapicConfigPaths = []string{
 	"google/iam/credentials/artman_iamcredentials_v1.yaml",
 	"google/cloud/automl/artman_automl_v1.yaml",
 	"google/cloud/automl/artman_automl_v1beta1.yaml",
-	"google/cloud/dialogflow/v2/artman_dialogflow_v2.yaml",
-	"google/cloud/securitycenter/artman_securitycenter_v1beta1.yaml",
 	"google/cloud/talent/artman_talent_v4beta1.yaml",
 	"google/cloud/videointelligence/artman_videointelligence_v1beta2.yaml",
 	"google/cloud/vision/artman_vision_v1p1beta1.yaml",
