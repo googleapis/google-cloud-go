@@ -23,6 +23,7 @@ package spannertest
 
 import (
 	"bytes"
+	"encoding/base64"
 	"fmt"
 	"sort"
 	"strconv"
@@ -656,6 +657,12 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 		sv, ok := v.Kind.(*structpb.Value_StringValue)
 		if ok {
 			return sv.StringValue, nil
+		}
+	case spansql.Bytes:
+		sv, ok := v.Kind.(*structpb.Value_StringValue)
+		if ok {
+			// The Spanner protocol encodes BYTES in base64.
+			return base64.StdEncoding.DecodeString(sv.StringValue)
 		}
 	case spansql.Date:
 		// The Spanner protocol encodes DATE in RFC 3339 date format.
