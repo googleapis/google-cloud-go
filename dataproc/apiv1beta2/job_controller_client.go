@@ -18,9 +18,7 @@ package dataproc
 
 import (
 	"context"
-	"fmt"
 	"math"
-	"net/url"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -189,8 +187,7 @@ func (c *JobControllerClient) setGoogleClientInfo(keyval ...string) {
 
 // SubmitJob submits a job to a cluster.
 func (c *JobControllerClient) SubmitJob(ctx context.Context, req *dataprocpb.SubmitJobRequest, opts ...gax.CallOption) (*dataprocpb.Job, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.SubmitJob[0:len(c.CallOptions.SubmitJob):len(c.CallOptions.SubmitJob)], opts...)
 	var resp *dataprocpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -206,8 +203,7 @@ func (c *JobControllerClient) SubmitJob(ctx context.Context, req *dataprocpb.Sub
 
 // GetJob gets the resource representation for a job in a project.
 func (c *JobControllerClient) GetJob(ctx context.Context, req *dataprocpb.GetJobRequest, opts ...gax.CallOption) (*dataprocpb.Job, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "job_id", url.QueryEscape(req.GetJobId())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.GetJob[0:len(c.CallOptions.GetJob):len(c.CallOptions.GetJob)], opts...)
 	var resp *dataprocpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -223,8 +219,7 @@ func (c *JobControllerClient) GetJob(ctx context.Context, req *dataprocpb.GetJob
 
 // ListJobs lists regions/{region}/jobs in a project.
 func (c *JobControllerClient) ListJobs(ctx context.Context, req *dataprocpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListJobs[0:len(c.CallOptions.ListJobs):len(c.CallOptions.ListJobs)], opts...)
 	it := &JobIterator{}
 	req = proto.Clone(req).(*dataprocpb.ListJobsRequest)
@@ -264,8 +259,7 @@ func (c *JobControllerClient) ListJobs(ctx context.Context, req *dataprocpb.List
 
 // UpdateJob updates a job in a project.
 func (c *JobControllerClient) UpdateJob(ctx context.Context, req *dataprocpb.UpdateJobRequest, opts ...gax.CallOption) (*dataprocpb.Job, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "job_id", url.QueryEscape(req.GetJobId())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.UpdateJob[0:len(c.CallOptions.UpdateJob):len(c.CallOptions.UpdateJob)], opts...)
 	var resp *dataprocpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -285,8 +279,7 @@ func (c *JobControllerClient) UpdateJob(ctx context.Context, req *dataprocpb.Upd
 // or
 // regions/{region}/jobs.get (at /dataproc/docs/reference/rest/v1beta2/projects.regions.jobs/get).
 func (c *JobControllerClient) CancelJob(ctx context.Context, req *dataprocpb.CancelJobRequest, opts ...gax.CallOption) (*dataprocpb.Job, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "job_id", url.QueryEscape(req.GetJobId())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.CancelJob[0:len(c.CallOptions.CancelJob):len(c.CallOptions.CancelJob)], opts...)
 	var resp *dataprocpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -303,8 +296,7 @@ func (c *JobControllerClient) CancelJob(ctx context.Context, req *dataprocpb.Can
 // DeleteJob deletes the job from the project. If the job is active, the delete fails,
 // and the response returns FAILED_PRECONDITION.
 func (c *JobControllerClient) DeleteJob(ctx context.Context, req *dataprocpb.DeleteJobRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "job_id", url.QueryEscape(req.GetJobId())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.DeleteJob[0:len(c.CallOptions.DeleteJob):len(c.CallOptions.DeleteJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

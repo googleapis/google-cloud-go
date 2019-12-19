@@ -21,7 +21,7 @@ import (
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1beta1"
 	"google.golang.org/api/iterator"
-	secretspb "google.golang.org/genproto/googleapis/cloud/secrets/v1beta1"
+	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -36,7 +36,7 @@ func ExampleNewClient() {
 }
 
 func ExampleClient_ListSecrets() {
-	// import secretspb "google.golang.org/genproto/googleapis/cloud/secrets/v1beta1"
+	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
 	// import "google.golang.org/api/iterator"
 
 	ctx := context.Background()
@@ -45,7 +45,7 @@ func ExampleClient_ListSecrets() {
 		// TODO: Handle error.
 	}
 
-	req := &secretspb.ListSecretsRequest{
+	req := &secretmanagerpb.ListSecretsRequest{
 		// TODO: Fill request struct fields.
 	}
 	it := c.ListSecrets(ctx, req)
@@ -63,7 +63,7 @@ func ExampleClient_ListSecrets() {
 }
 
 func ExampleClient_CreateSecret() {
-	// import secretspb "google.golang.org/genproto/googleapis/cloud/secrets/v1beta1"
+	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
 
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
@@ -71,7 +71,7 @@ func ExampleClient_CreateSecret() {
 		// TODO: Handle error.
 	}
 
-	req := &secretspb.CreateSecretRequest{
+	req := &secretmanagerpb.CreateSecretRequest{
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.CreateSecret(ctx, req)
@@ -83,7 +83,7 @@ func ExampleClient_CreateSecret() {
 }
 
 func ExampleClient_AddSecretVersion() {
-	// import secretspb "google.golang.org/genproto/googleapis/cloud/secrets/v1beta1"
+	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
 
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
@@ -91,7 +91,7 @@ func ExampleClient_AddSecretVersion() {
 		// TODO: Handle error.
 	}
 
-	req := &secretspb.AddSecretVersionRequest{
+	req := &secretmanagerpb.AddSecretVersionRequest{
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.AddSecretVersion(ctx, req)
@@ -103,7 +103,7 @@ func ExampleClient_AddSecretVersion() {
 }
 
 func ExampleClient_GetSecret() {
-	// import secretspb "google.golang.org/genproto/googleapis/cloud/secrets/v1beta1"
+	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
 
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
@@ -111,7 +111,7 @@ func ExampleClient_GetSecret() {
 		// TODO: Handle error.
 	}
 
-	req := &secretspb.GetSecretRequest{
+	req := &secretmanagerpb.GetSecretRequest{
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetSecret(ctx, req)
@@ -123,7 +123,7 @@ func ExampleClient_GetSecret() {
 }
 
 func ExampleClient_UpdateSecret() {
-	// import secretspb "google.golang.org/genproto/googleapis/cloud/secrets/v1beta1"
+	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
 
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
@@ -131,7 +131,7 @@ func ExampleClient_UpdateSecret() {
 		// TODO: Handle error.
 	}
 
-	req := &secretspb.UpdateSecretRequest{
+	req := &secretmanagerpb.UpdateSecretRequest{
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.UpdateSecret(ctx, req)
@@ -149,7 +149,7 @@ func ExampleClient_DeleteSecret() {
 		// TODO: Handle error.
 	}
 
-	req := &secretspb.DeleteSecretRequest{
+	req := &secretmanagerpb.DeleteSecretRequest{
 		// TODO: Fill request struct fields.
 	}
 	err = c.DeleteSecret(ctx, req)
@@ -159,7 +159,7 @@ func ExampleClient_DeleteSecret() {
 }
 
 func ExampleClient_ListSecretVersions() {
-	// import secretspb "google.golang.org/genproto/googleapis/cloud/secrets/v1beta1"
+	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
 	// import "google.golang.org/api/iterator"
 
 	ctx := context.Background()
@@ -168,7 +168,7 @@ func ExampleClient_ListSecretVersions() {
 		// TODO: Handle error.
 	}
 
-	req := &secretspb.ListSecretVersionsRequest{
+	req := &secretmanagerpb.ListSecretVersionsRequest{
 		// TODO: Fill request struct fields.
 	}
 	it := c.ListSecretVersions(ctx, req)
@@ -186,7 +186,7 @@ func ExampleClient_ListSecretVersions() {
 }
 
 func ExampleClient_GetSecretVersion() {
-	// import secretspb "google.golang.org/genproto/googleapis/cloud/secrets/v1beta1"
+	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
 
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
@@ -194,7 +194,7 @@ func ExampleClient_GetSecretVersion() {
 		// TODO: Handle error.
 	}
 
-	req := &secretspb.GetSecretVersionRequest{
+	req := &secretmanagerpb.GetSecretVersionRequest{
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetSecretVersion(ctx, req)
@@ -206,7 +206,7 @@ func ExampleClient_GetSecretVersion() {
 }
 
 func ExampleClient_AccessSecretVersion() {
-	// import secretspb "google.golang.org/genproto/googleapis/cloud/secrets/v1beta1"
+	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
 
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
@@ -214,7 +214,7 @@ func ExampleClient_AccessSecretVersion() {
 		// TODO: Handle error.
 	}
 
-	req := &secretspb.AccessSecretVersionRequest{
+	req := &secretmanagerpb.AccessSecretVersionRequest{
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.AccessSecretVersion(ctx, req)
@@ -226,7 +226,7 @@ func ExampleClient_AccessSecretVersion() {
 }
 
 func ExampleClient_DisableSecretVersion() {
-	// import secretspb "google.golang.org/genproto/googleapis/cloud/secrets/v1beta1"
+	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
 
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
@@ -234,7 +234,7 @@ func ExampleClient_DisableSecretVersion() {
 		// TODO: Handle error.
 	}
 
-	req := &secretspb.DisableSecretVersionRequest{
+	req := &secretmanagerpb.DisableSecretVersionRequest{
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.DisableSecretVersion(ctx, req)
@@ -246,7 +246,7 @@ func ExampleClient_DisableSecretVersion() {
 }
 
 func ExampleClient_EnableSecretVersion() {
-	// import secretspb "google.golang.org/genproto/googleapis/cloud/secrets/v1beta1"
+	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
 
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
@@ -254,7 +254,7 @@ func ExampleClient_EnableSecretVersion() {
 		// TODO: Handle error.
 	}
 
-	req := &secretspb.EnableSecretVersionRequest{
+	req := &secretmanagerpb.EnableSecretVersionRequest{
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.EnableSecretVersion(ctx, req)
@@ -266,7 +266,7 @@ func ExampleClient_EnableSecretVersion() {
 }
 
 func ExampleClient_DestroySecretVersion() {
-	// import secretspb "google.golang.org/genproto/googleapis/cloud/secrets/v1beta1"
+	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
 
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
@@ -274,7 +274,7 @@ func ExampleClient_DestroySecretVersion() {
 		// TODO: Handle error.
 	}
 
-	req := &secretspb.DestroySecretVersionRequest{
+	req := &secretmanagerpb.DestroySecretVersionRequest{
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.DestroySecretVersion(ctx, req)

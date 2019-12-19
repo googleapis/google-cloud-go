@@ -22,9 +22,9 @@ require (
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
 	golang.org/x/sys v0.0.0-20190726091711-fc99dfbffb4e // indirect
 	golang.org/x/text v0.3.2
-	golang.org/x/tools v0.0.0-20191216173652-a0e659d51361
-	google.golang.org/api v0.14.0
-	google.golang.org/genproto v0.0.0-20191216164720-4f79533eabd1
+	golang.org/x/tools v0.0.0-20191219230827-5e752206af05
+	google.golang.org/api v0.15.0
+	google.golang.org/genproto v0.0.0-20191220162840-803ea799ed88
 	google.golang.org/grpc v1.21.1
 	honnef.co/go/tools v0.0.1-2019.2.3
 )
