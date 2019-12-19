@@ -28,7 +28,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
-	secretspb "google.golang.org/genproto/googleapis/cloud/secrets/v1beta1"
+	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -103,7 +103,7 @@ type Client struct {
 	conn *grpc.ClientConn
 
 	// The gRPC API client.
-	client secretspb.SecretManagerServiceClient
+	client secretmanagerpb.SecretManagerServiceClient
 
 	// The call options for this service.
 	CallOptions *CallOptions
@@ -131,7 +131,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		conn:        conn,
 		CallOptions: defaultCallOptions(),
 
-		client: secretspb.NewSecretManagerServiceClient(conn),
+		client: secretmanagerpb.NewSecretManagerServiceClient(conn),
 	}
 	c.setGoogleClientInfo()
 
@@ -159,14 +159,14 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 }
 
 // ListSecrets lists [Secrets][google.cloud.secrets.v1beta1.Secret].
-func (c *Client) ListSecrets(ctx context.Context, req *secretspb.ListSecretsRequest, opts ...gax.CallOption) *SecretIterator {
+func (c *Client) ListSecrets(ctx context.Context, req *secretmanagerpb.ListSecretsRequest, opts ...gax.CallOption) *SecretIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListSecrets[0:len(c.CallOptions.ListSecrets):len(c.CallOptions.ListSecrets)], opts...)
 	it := &SecretIterator{}
-	req = proto.Clone(req).(*secretspb.ListSecretsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*secretspb.Secret, string, error) {
-		var resp *secretspb.ListSecretsResponse
+	req = proto.Clone(req).(*secretmanagerpb.ListSecretsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*secretmanagerpb.Secret, string, error) {
+		var resp *secretmanagerpb.ListSecretsResponse
 		req.PageToken = pageToken
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
@@ -200,11 +200,11 @@ func (c *Client) ListSecrets(ctx context.Context, req *secretspb.ListSecretsRequ
 }
 
 // CreateSecret creates a new [Secret][google.cloud.secrets.v1beta1.Secret] containing no [SecretVersions][google.cloud.secrets.v1beta1.SecretVersion].
-func (c *Client) CreateSecret(ctx context.Context, req *secretspb.CreateSecretRequest, opts ...gax.CallOption) (*secretspb.Secret, error) {
+func (c *Client) CreateSecret(ctx context.Context, req *secretmanagerpb.CreateSecretRequest, opts ...gax.CallOption) (*secretmanagerpb.Secret, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateSecret[0:len(c.CallOptions.CreateSecret):len(c.CallOptions.CreateSecret)], opts...)
-	var resp *secretspb.Secret
+	var resp *secretmanagerpb.Secret
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.CreateSecret(ctx, req, settings.GRPC...)
@@ -218,11 +218,11 @@ func (c *Client) CreateSecret(ctx context.Context, req *secretspb.CreateSecretRe
 
 // AddSecretVersion creates a new [SecretVersion][google.cloud.secrets.v1beta1.SecretVersion] containing secret data and attaches
 // it to an existing [Secret][google.cloud.secrets.v1beta1.Secret].
-func (c *Client) AddSecretVersion(ctx context.Context, req *secretspb.AddSecretVersionRequest, opts ...gax.CallOption) (*secretspb.SecretVersion, error) {
+func (c *Client) AddSecretVersion(ctx context.Context, req *secretmanagerpb.AddSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.AddSecretVersion[0:len(c.CallOptions.AddSecretVersion):len(c.CallOptions.AddSecretVersion)], opts...)
-	var resp *secretspb.SecretVersion
+	var resp *secretmanagerpb.SecretVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.AddSecretVersion(ctx, req, settings.GRPC...)
@@ -235,11 +235,11 @@ func (c *Client) AddSecretVersion(ctx context.Context, req *secretspb.AddSecretV
 }
 
 // GetSecret gets metadata for a given [Secret][google.cloud.secrets.v1beta1.Secret].
-func (c *Client) GetSecret(ctx context.Context, req *secretspb.GetSecretRequest, opts ...gax.CallOption) (*secretspb.Secret, error) {
+func (c *Client) GetSecret(ctx context.Context, req *secretmanagerpb.GetSecretRequest, opts ...gax.CallOption) (*secretmanagerpb.Secret, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetSecret[0:len(c.CallOptions.GetSecret):len(c.CallOptions.GetSecret)], opts...)
-	var resp *secretspb.Secret
+	var resp *secretmanagerpb.Secret
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.GetSecret(ctx, req, settings.GRPC...)
@@ -252,11 +252,11 @@ func (c *Client) GetSecret(ctx context.Context, req *secretspb.GetSecretRequest,
 }
 
 // UpdateSecret updates metadata of an existing [Secret][google.cloud.secrets.v1beta1.Secret].
-func (c *Client) UpdateSecret(ctx context.Context, req *secretspb.UpdateSecretRequest, opts ...gax.CallOption) (*secretspb.Secret, error) {
+func (c *Client) UpdateSecret(ctx context.Context, req *secretmanagerpb.UpdateSecretRequest, opts ...gax.CallOption) (*secretmanagerpb.Secret, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "secret.name", url.QueryEscape(req.GetSecret().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateSecret[0:len(c.CallOptions.UpdateSecret):len(c.CallOptions.UpdateSecret)], opts...)
-	var resp *secretspb.Secret
+	var resp *secretmanagerpb.Secret
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.UpdateSecret(ctx, req, settings.GRPC...)
@@ -269,7 +269,7 @@ func (c *Client) UpdateSecret(ctx context.Context, req *secretspb.UpdateSecretRe
 }
 
 // DeleteSecret deletes a [Secret][google.cloud.secrets.v1beta1.Secret].
-func (c *Client) DeleteSecret(ctx context.Context, req *secretspb.DeleteSecretRequest, opts ...gax.CallOption) error {
+func (c *Client) DeleteSecret(ctx context.Context, req *secretmanagerpb.DeleteSecretRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteSecret[0:len(c.CallOptions.DeleteSecret):len(c.CallOptions.DeleteSecret)], opts...)
@@ -283,14 +283,14 @@ func (c *Client) DeleteSecret(ctx context.Context, req *secretspb.DeleteSecretRe
 
 // ListSecretVersions lists [SecretVersions][google.cloud.secrets.v1beta1.SecretVersion]. This call does not return secret
 // data.
-func (c *Client) ListSecretVersions(ctx context.Context, req *secretspb.ListSecretVersionsRequest, opts ...gax.CallOption) *SecretVersionIterator {
+func (c *Client) ListSecretVersions(ctx context.Context, req *secretmanagerpb.ListSecretVersionsRequest, opts ...gax.CallOption) *SecretVersionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListSecretVersions[0:len(c.CallOptions.ListSecretVersions):len(c.CallOptions.ListSecretVersions)], opts...)
 	it := &SecretVersionIterator{}
-	req = proto.Clone(req).(*secretspb.ListSecretVersionsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*secretspb.SecretVersion, string, error) {
-		var resp *secretspb.ListSecretVersionsResponse
+	req = proto.Clone(req).(*secretmanagerpb.ListSecretVersionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*secretmanagerpb.SecretVersion, string, error) {
+		var resp *secretmanagerpb.ListSecretVersionsResponse
 		req.PageToken = pageToken
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
@@ -327,11 +327,11 @@ func (c *Client) ListSecretVersions(ctx context.Context, req *secretspb.ListSecr
 //
 // projects/*/secrets/*/versions/latest is an alias to the latest
 // [SecretVersion][google.cloud.secrets.v1beta1.SecretVersion].
-func (c *Client) GetSecretVersion(ctx context.Context, req *secretspb.GetSecretVersionRequest, opts ...gax.CallOption) (*secretspb.SecretVersion, error) {
+func (c *Client) GetSecretVersion(ctx context.Context, req *secretmanagerpb.GetSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetSecretVersion[0:len(c.CallOptions.GetSecretVersion):len(c.CallOptions.GetSecretVersion)], opts...)
-	var resp *secretspb.SecretVersion
+	var resp *secretmanagerpb.SecretVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.GetSecretVersion(ctx, req, settings.GRPC...)
@@ -347,11 +347,11 @@ func (c *Client) GetSecretVersion(ctx context.Context, req *secretspb.GetSecretV
 //
 // projects/*/secrets/*/versions/latest is an alias to the latest
 // [SecretVersion][google.cloud.secrets.v1beta1.SecretVersion].
-func (c *Client) AccessSecretVersion(ctx context.Context, req *secretspb.AccessSecretVersionRequest, opts ...gax.CallOption) (*secretspb.AccessSecretVersionResponse, error) {
+func (c *Client) AccessSecretVersion(ctx context.Context, req *secretmanagerpb.AccessSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.AccessSecretVersionResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.AccessSecretVersion[0:len(c.CallOptions.AccessSecretVersion):len(c.CallOptions.AccessSecretVersion)], opts...)
-	var resp *secretspb.AccessSecretVersionResponse
+	var resp *secretmanagerpb.AccessSecretVersionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.AccessSecretVersion(ctx, req, settings.GRPC...)
@@ -367,11 +367,11 @@ func (c *Client) AccessSecretVersion(ctx context.Context, req *secretspb.AccessS
 //
 // Sets the [state][google.cloud.secrets.v1beta1.SecretVersion.state] of the [SecretVersion][google.cloud.secrets.v1beta1.SecretVersion] to
 // [DISABLED][google.cloud.secrets.v1beta1.SecretVersion.State.DISABLED].
-func (c *Client) DisableSecretVersion(ctx context.Context, req *secretspb.DisableSecretVersionRequest, opts ...gax.CallOption) (*secretspb.SecretVersion, error) {
+func (c *Client) DisableSecretVersion(ctx context.Context, req *secretmanagerpb.DisableSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DisableSecretVersion[0:len(c.CallOptions.DisableSecretVersion):len(c.CallOptions.DisableSecretVersion)], opts...)
-	var resp *secretspb.SecretVersion
+	var resp *secretmanagerpb.SecretVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.DisableSecretVersion(ctx, req, settings.GRPC...)
@@ -387,11 +387,11 @@ func (c *Client) DisableSecretVersion(ctx context.Context, req *secretspb.Disabl
 //
 // Sets the [state][google.cloud.secrets.v1beta1.SecretVersion.state] of the [SecretVersion][google.cloud.secrets.v1beta1.SecretVersion] to
 // [ENABLED][google.cloud.secrets.v1beta1.SecretVersion.State.ENABLED].
-func (c *Client) EnableSecretVersion(ctx context.Context, req *secretspb.EnableSecretVersionRequest, opts ...gax.CallOption) (*secretspb.SecretVersion, error) {
+func (c *Client) EnableSecretVersion(ctx context.Context, req *secretmanagerpb.EnableSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.EnableSecretVersion[0:len(c.CallOptions.EnableSecretVersion):len(c.CallOptions.EnableSecretVersion)], opts...)
-	var resp *secretspb.SecretVersion
+	var resp *secretmanagerpb.SecretVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.EnableSecretVersion(ctx, req, settings.GRPC...)
@@ -408,11 +408,11 @@ func (c *Client) EnableSecretVersion(ctx context.Context, req *secretspb.EnableS
 // Sets the [state][google.cloud.secrets.v1beta1.SecretVersion.state] of the [SecretVersion][google.cloud.secrets.v1beta1.SecretVersion] to
 // [DESTROYED][google.cloud.secrets.v1beta1.SecretVersion.State.DESTROYED] and irrevocably destroys the
 // secret data.
-func (c *Client) DestroySecretVersion(ctx context.Context, req *secretspb.DestroySecretVersionRequest, opts ...gax.CallOption) (*secretspb.SecretVersion, error) {
+func (c *Client) DestroySecretVersion(ctx context.Context, req *secretmanagerpb.DestroySecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DestroySecretVersion[0:len(c.CallOptions.DestroySecretVersion):len(c.CallOptions.DestroySecretVersion)], opts...)
-	var resp *secretspb.SecretVersion
+	var resp *secretmanagerpb.SecretVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.DestroySecretVersion(ctx, req, settings.GRPC...)
@@ -486,9 +486,9 @@ func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermi
 	return resp, nil
 }
 
-// SecretIterator manages a stream of *secretspb.Secret.
+// SecretIterator manages a stream of *secretmanagerpb.Secret.
 type SecretIterator struct {
-	items    []*secretspb.Secret
+	items    []*secretmanagerpb.Secret
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 
@@ -503,7 +503,7 @@ type SecretIterator struct {
 	// InternalFetch returns results from a single call to the underlying RPC.
 	// The number of results is no greater than pageSize.
 	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*secretspb.Secret, nextPageToken string, err error)
+	InternalFetch func(pageSize int, pageToken string) (results []*secretmanagerpb.Secret, nextPageToken string, err error)
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
@@ -513,8 +513,8 @@ func (it *SecretIterator) PageInfo() *iterator.PageInfo {
 
 // Next returns the next result. Its second return value is iterator.Done if there are no more
 // results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SecretIterator) Next() (*secretspb.Secret, error) {
-	var item *secretspb.Secret
+func (it *SecretIterator) Next() (*secretmanagerpb.Secret, error) {
+	var item *secretmanagerpb.Secret
 	if err := it.nextFunc(); err != nil {
 		return item, err
 	}
@@ -533,9 +533,9 @@ func (it *SecretIterator) takeBuf() interface{} {
 	return b
 }
 
-// SecretVersionIterator manages a stream of *secretspb.SecretVersion.
+// SecretVersionIterator manages a stream of *secretmanagerpb.SecretVersion.
 type SecretVersionIterator struct {
-	items    []*secretspb.SecretVersion
+	items    []*secretmanagerpb.SecretVersion
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 
@@ -550,7 +550,7 @@ type SecretVersionIterator struct {
 	// InternalFetch returns results from a single call to the underlying RPC.
 	// The number of results is no greater than pageSize.
 	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*secretspb.SecretVersion, nextPageToken string, err error)
+	InternalFetch func(pageSize int, pageToken string) (results []*secretmanagerpb.SecretVersion, nextPageToken string, err error)
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
@@ -560,8 +560,8 @@ func (it *SecretVersionIterator) PageInfo() *iterator.PageInfo {
 
 // Next returns the next result. Its second return value is iterator.Done if there are no more
 // results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SecretVersionIterator) Next() (*secretspb.SecretVersion, error) {
-	var item *secretspb.SecretVersion
+func (it *SecretVersionIterator) Next() (*secretmanagerpb.SecretVersion, error) {
+	var item *secretmanagerpb.SecretVersion
 	if err := it.nextFunc(); err != nil {
 		return item, err
 	}

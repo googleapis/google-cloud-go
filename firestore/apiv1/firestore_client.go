@@ -69,7 +69,16 @@ func defaultCallOptions() *CallOptions {
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
-					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListDocuments: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -88,7 +97,16 @@ func defaultCallOptions() *CallOptions {
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
-					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		BatchGetDocuments: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,

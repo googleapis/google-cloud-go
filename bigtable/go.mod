@@ -15,10 +15,10 @@ require (
 	golang.org/x/net v0.0.0-20191028085509-fe3aa8a45271 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sys v0.0.0-20191029155521-f43be2a4598c // indirect
-	golang.org/x/tools v0.0.0-20191216173652-a0e659d51361 // indirect
-	google.golang.org/api v0.14.0
+	golang.org/x/tools v0.0.0-20191219230827-5e752206af05 // indirect
+	google.golang.org/api v0.15.0
 	google.golang.org/appengine v1.6.5 // indirect
-	google.golang.org/genproto v0.0.0-20191216164720-4f79533eabd1
+	google.golang.org/genproto v0.0.0-20191220162840-803ea799ed88
 	google.golang.org/grpc v1.24.0
 	rsc.io/binaryregexp v0.2.0
 )
