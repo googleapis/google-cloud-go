@@ -428,8 +428,6 @@ var artmanGapicConfigPaths = []string{
 	"google/cloud/videointelligence/artman_videointelligence_v1beta2.yaml",
 	"google/cloud/vision/artman_vision_v1p1beta1.yaml",
 	"google/devtools/containeranalysis/artman_containeranalysis_v1beta1.yaml",
-	"google/firestore/artman_firestore_v1.yaml",
-	"google/firestore/admin/artman_firestore_v1.yaml",
 	"google/logging/artman_logging.yaml",
 	"google/longrunning/artman_longrunning.yaml",
 	"google/monitoring/artman_monitoring.yaml",
