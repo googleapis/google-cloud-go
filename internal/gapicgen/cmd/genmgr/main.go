@@ -143,6 +143,12 @@ func main() {
 			log.Fatal(err)
 		}
 
+		// If the CL has reviewers, it must have already had its go.mod
+		// updated. So: no-op.
+		if hasReviewers {
+			log.Fatalf("there's an open CL (%s) but it has reviewers already\n", cl.URL())
+		}
+
 		// The gerrit cookie encodes username as foo.google.com instead of
 		// foo@google.com. So, if the author is an email, let's strip out
 		// the username part of the email and user that to check for
@@ -155,20 +161,16 @@ func main() {
 
 		// If the CL author does not belong to the person running gapicgen,
 		// we can't action on it. So: no-op.
-		//
-		// If the CL has reviewers, it must have already had its go.mod
-		// updated. So: no-op.
-		if strings.Contains(*gerritCookieValue, author) && !hasReviewers {
-			log.Printf("it's time to update the regen gocloud CL! (%s)\n", cl.URL())
-
-			if err := finalizeGerritCL(gerritClient, *gerritCookieValue, gerritRA.ChangeID); err != nil {
-				log.Fatal(err)
-			}
-
-			log.Printf("done updating gocloud CL (%s)!\n", cl.URL())
-		} else {
+		if !strings.Contains(*gerritCookieValue, author) {
 			log.Printf("there's an open CL (%s) but it doesn't belong to the author running this program\n", cl.URL())
 		}
+
+		log.Printf("it's time to update the regen gocloud CL! (%s)\n", cl.URL())
+		if err := finalizeGerritCL(gerritClient, *gerritCookieValue, gerritRA.ChangeID); err != nil {
+			log.Fatal(err)
+		}
+
+		log.Printf("done updating gocloud CL (%s)!\n", cl.URL())
 	} else {
 		log.Println("there are no open CLs - no work to do!")
 	}
