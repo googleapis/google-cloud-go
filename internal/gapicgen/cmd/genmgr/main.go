@@ -131,49 +131,68 @@ func main() {
 		return
 	}
 
-	// If there's an open CL, let's try working on it.
-	if cl, ok := db.FirstOpen(cls); ok {
-		gerritRA, ok := cl.(*db.GerritRegenAttempt)
-		if !ok {
-			log.Fatalf("got %T, expected GerritRegenAttempt", cl)
-		}
-
-		hasReviewers, err := hasReviewers(gerritClient, gerritRA.ChangeID)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// If the CL has reviewers, it must have already had its go.mod
-		// updated. So: no-op.
-		if hasReviewers {
-			log.Fatalf("there's an open CL (%s) but it has reviewers already\n", cl.URL())
-		}
-
-		// The gerrit cookie encodes username as foo.google.com instead of
-		// foo@google.com. So, if the author is an email, let's strip out
-		// the username part of the email and user that to check for
-		// existence in the cookie.
-		author := cl.Author()
-		if strings.Contains(author, "@") {
-			parts := strings.Split(author, "@")
-			author = parts[0]
-		}
-
-		// If the CL author does not belong to the person running gapicgen,
-		// we can't action on it. So: no-op.
-		if !strings.Contains(*gerritCookieValue, author) {
-			log.Printf("there's an open CL (%s) but it doesn't belong to the author running this program\n", cl.URL())
-		}
-
-		log.Printf("it's time to update the regen gocloud CL! (%s)\n", cl.URL())
-		if err := finalizeGerritCL(gerritClient, *gerritCookieValue, gerritRA.ChangeID); err != nil {
-			log.Fatal(err)
-		}
-
-		log.Printf("done updating gocloud CL (%s)!\n", cl.URL())
-	} else {
+	cl, ok := db.FirstOpen(cls)
+	if !ok {
 		log.Println("there are no open CLs - no work to do!")
+		return
 	}
+
+	gerritRA, ok := cl.(*db.GerritRegenAttempt)
+	if !ok {
+		log.Fatalf("got %T, expected GerritRegenAttempt", cl)
+	}
+
+	// The gerrit cookie encodes username as foo.google.com instead of
+	// foo@google.com. So, if the author is an email, let's strip out
+	// the username part of the email and user that to check for
+	// existence in the cookie.
+	author := cl.Author()
+	if strings.Contains(author, "@") {
+		parts := strings.Split(author, "@")
+		author = parts[0]
+	}
+
+	// If the CL author does not belong to the person running gapicgen,
+	// we can't action on it. So: no-op.
+	if !strings.Contains(*gerritCookieValue, author) {
+		log.Printf("there's an open CL (%s) but it doesn't belong to the author running this program\n", cl.URL())
+		return
+	}
+
+	// Update go.mod.
+
+	ci, _, err := gerritClient.Changes.GetChange(gerritRA.ChangeID, &gerrit.ChangeOptions{
+		AdditionalFields: []string{"CURRENT_REVISION"}, // Required to have the CurrentRevision field populated.
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cr, ok := ci.Revisions[ci.CurrentRevision]
+	if !ok {
+		log.Fatalf("couldn't find current revision %q", ci.CurrentRevision)
+	}
+
+	if err := updateGocloudGoMod(cr.Ref); err != nil {
+		log.Fatal(err)
+	}
+
+	// If the CL has no reviewers, add them.
+
+	hasReviewers, err := hasReviewers(gerritClient, gerritRA.ChangeID)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if !hasReviewers {
+		if err := addGocloudReviewers(gerritClient, gerritRA.ChangeID); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	// Done!
+
+	log.Printf("done updating gocloud CL (%s)!\n", cl.URL())
 }
 
 // hasReviewers checks if a given CL has reviewers.
@@ -198,28 +217,6 @@ func hasReviewers(gerritClient *gerrit.Client, changeID string) (bool, error) {
 	}
 
 	return len(reviewersExcludingKokoro) > 0, nil
-}
-
-// updateAndAddReviewers updates the given CL's go.mod with latest genproto
-// version and adds reviewers.
-func finalizeGerritCL(gerritClient *gerrit.Client, gerritCookieValue, changeID string) error {
-	ci, _, err := gerritClient.Changes.GetChange(changeID, &gerrit.ChangeOptions{
-		AdditionalFields: []string{"CURRENT_REVISION"}, // Required to have the CurrentRevision field populated.
-	})
-	if err != nil {
-		return err
-	}
-
-	cr, ok := ci.Revisions[ci.CurrentRevision]
-	if !ok {
-		return fmt.Errorf("couldn't find current revision %q", ci.CurrentRevision)
-	}
-
-	if err := updateGocloudGoMod(cr.Ref); err != nil {
-		return err
-	}
-
-	return addGocloudReviewers(gerritClient, changeID)
 }
 
 // updateGocloudGoMod updates the go.mod to include latest version of genproto
