@@ -33,7 +33,6 @@
 //
 // For information about setting deadlines, reusing contexts, and more
 // please visit godoc.org/cloud.google.com/go.
-
 package errorreporting // import "cloud.google.com/go/errorreporting/apiv1beta1"
 
 import (
@@ -45,7 +44,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-const versionClient = "20191219"
+const versionClient = "20191220"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
