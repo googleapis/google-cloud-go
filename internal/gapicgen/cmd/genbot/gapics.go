@@ -47,13 +47,17 @@ If you have been assigned to review this CL, please:
 
 // clGocloud creates a CL for the given gocloud change (including a link to
 // the given genproto PR).
+//
+// genprotoPRNum may be -1 to indicate there is no corresponding genproto PR.
 func clGocloud(ctx context.Context, gocloudDir string, genprotoPRNum int) (url string, _ error) {
 	log.Println("creating gocloud CL")
 
-	newBody := fmt.Sprintf(`%s
-
-Corresponding genproto PR: https://github.com/googleapis/go-genproto/pull/%d
-`, gerritCommitBody, genprotoPRNum)
+	var newBody string
+	if genprotoPRNum > 0 {
+		newBody = gerritCommitBody + fmt.Sprintf("\n\nCorresponding genproto PR: https://github.com/googleapis/go-genproto/pull/%d\n", genprotoPRNum)
+	} else {
+		newBody = gerritCommitBody + "\n\nThere is no corresponding genproto PR.\n"
+	}
 
 	// Write command output to both os.Stderr and local, so that we can check
 	// for gerrit URL.

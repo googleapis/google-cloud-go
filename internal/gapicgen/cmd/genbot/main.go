@@ -17,12 +17,15 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	"cloud.google.com/go/internal/gapicgen"
@@ -188,25 +191,63 @@ func main() {
 
 	// Create PRs/CLs.
 
-	genprotoPRNum, err := prGenproto(ctx, githubClient, genprotoDir)
+	genprotoHasChanges, err := hasChanges(genprotoDir)
 	if err != nil {
-		log.Fatalf("error creating PR for genproto (may need to check logs for more errors): %v", err)
+		log.Fatal(err)
 	}
 
-	gocloudCL, err := clGocloud(ctx, gocloudDir, genprotoPRNum)
+	gocloudHasChanges, err := hasChanges(gocloudDir)
 	if err != nil {
-		log.Fatalf("error creating CL for veneers (may need to check logs for more errors): %v", err)
+		log.Fatal(err)
 	}
 
-	if err := amendPRWithCLURL(ctx, githubClient, genprotoPRNum, genprotoDir, gocloudCL); err != nil {
-		log.Fatalf("error amending genproto PR: %v", err)
+	switch {
+	case genprotoHasChanges && gocloudHasChanges:
+		// Both have changes.
+
+		genprotoPRNum, err := prGenproto(ctx, githubClient, genprotoDir, true)
+		if err != nil {
+			log.Fatalf("error creating PR for genproto (may need to check logs for more errors): %v", err)
+		}
+
+		gocloudCL, err := clGocloud(ctx, gocloudDir, genprotoPRNum)
+		if err != nil {
+			log.Fatalf("error creating CL for veneers (may need to check logs for more errors): %v", err)
+		}
+
+		if err := amendPRWithCLURL(ctx, githubClient, genprotoPRNum, genprotoDir, gocloudCL); err != nil {
+			log.Fatalf("error amending genproto PR: %v", err)
+		}
+
+		genprotoPRURL := fmt.Sprintf("https://github.com/googleapis/go-genproto/pull/%d", genprotoPRNum)
+		log.Println(genprotoPRURL)
+		log.Println(gocloudCL)
+	case genprotoHasChanges:
+		// Only genproto has changes.
+
+		genprotoPRNum, err := prGenproto(ctx, githubClient, genprotoDir, false)
+		if err != nil {
+			log.Fatalf("error creating PR for genproto (may need to check logs for more errors): %v", err)
+		}
+
+		genprotoPRURL := fmt.Sprintf("https://github.com/googleapis/go-genproto/pull/%d", genprotoPRNum)
+		log.Println(genprotoPRURL)
+		log.Println("gocloud had no changes")
+	case gocloudHasChanges:
+		// Only gocloud has changes.
+
+		gocloudCL, err := clGocloud(ctx, gocloudDir, -1)
+		if err != nil {
+			log.Fatalf("error creating CL for veneers (may need to check logs for more errors): %v", err)
+		}
+
+		log.Println("genproto had no changes")
+		log.Println(gocloudCL)
+	default:
+		// Neither have changes.
+
+		log.Println("Neither genproto nor gocloud had changes")
 	}
-
-	// Log results.
-
-	genprotoPRURL := fmt.Sprintf("https://github.com/googleapis/go-genproto/pull/%d", genprotoPRNum)
-	log.Println(genprotoPRURL)
-	log.Println(gocloudCL)
 }
 
 // gitClone clones a repository in the given directory.
@@ -218,4 +259,19 @@ func gitClone(repo, dir string) error {
 		Progress: os.Stdout,
 	})
 	return err
+}
+
+// hasChanges reports whether the given directory has uncommitted git changes.
+func hasChanges(dir string) (bool, error) {
+	// Write command output to both os.Stderr and local, so that we can check
+	// whether there are modified files.
+	inmem := bytes.NewBuffer([]byte{}) // TODO(deklerk): Try `var inmem bytes.Buffer`.
+	w := io.MultiWriter(os.Stderr, inmem)
+
+	c := exec.Command("bash", "-c", "git status --short")
+	c.Stdout = w
+	c.Stderr = os.Stderr
+	c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
+
+	return inmem.Len() > 0, nil
 }
