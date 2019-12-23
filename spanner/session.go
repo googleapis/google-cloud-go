@@ -1187,7 +1187,7 @@ func (hc *healthChecker) worker(i int) {
 		}
 		ws := getNextForTx()
 		if ws != nil {
-			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+			ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 			err := ws.prepareForWrite(ctx)
 			cancel()
 			if err != nil {
