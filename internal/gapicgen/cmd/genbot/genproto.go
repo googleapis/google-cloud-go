@@ -54,8 +54,15 @@ If you have been assigned to review this CL, please:
 var genprotoReviewers = []string{"jadekler", "hongalex", "broady", "noahdietz", "tritone", "codyoss", "tbpg"}
 
 // prGenproto creates a PR for a given genproto change.
-func prGenproto(ctx context.Context, githubClient *github.Client, genprotoDir string) (prNumber int, _ error) {
+//
+// hasCorrespondingCL indicates that there is a corresponding gocloud CL.
+func prGenproto(ctx context.Context, githubClient *github.Client, genprotoDir string, hasCorrespondingCL bool) (prNumber int, _ error) {
 	log.Println("creating genproto PR")
+
+	body := genprotoCommitBody
+	if !hasCorrespondingCL {
+		body += "\n\nThere is no corresponding gocloud CL.\n"
+	}
 
 	c := exec.Command("/bin/bash", "-c", `
 set -ex
@@ -77,7 +84,7 @@ git push origin $BRANCH_NAME
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("COMMIT_TITLE=%s", genprotoCommitTitle),
-		fmt.Sprintf("COMMIT_BODY=%s", genprotoCommitBody),
+		fmt.Sprintf("COMMIT_BODY=%s", body),
 		fmt.Sprintf("BRANCH_NAME=%s", genprotoBranchName),
 	}
 	c.Dir = genprotoDir
@@ -88,10 +95,9 @@ git push origin $BRANCH_NAME
 	head := fmt.Sprintf("googleapis:" + genprotoBranchName)
 	base := "master"
 	t := genprotoCommitTitle // Because we have to take the address.
-	b := genprotoCommitBody  // Because we have to take the address.
 	pr, _, err := githubClient.PullRequests.Create(ctx, "googleapis", "go-genproto", &github.NewPullRequest{
 		Title: &t,
-		Body:  &b,
+		Body:  &body,
 		Head:  &head,
 		Base:  &base,
 	})
@@ -121,10 +127,7 @@ git push origin $BRANCH_NAME
 // amendPRWithCLURL amends the given genproto PR with a link to the given
 // gocloud CL.
 func amendPRWithCLURL(ctx context.Context, githubClient *github.Client, genprotoPRNum int, genprotoDir, gocloudCL string) error {
-	newBody := fmt.Sprintf(`%s
-
-Corresponding gocloud CL: %s
-`, genprotoCommitBody, gocloudCL)
+	newBody := genprotoCommitBody + fmt.Sprintf("\n\nCorresponding gocloud CL: %s\n", gocloudCL)
 
 	c := exec.Command("/bin/bash", "-c", `
 set -ex
