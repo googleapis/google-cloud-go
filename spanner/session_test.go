@@ -21,7 +21,10 @@ import (
 	"container/heap"
 	"context"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"math/rand"
+	"os"
 	"testing"
 	"time"
 
@@ -939,6 +942,7 @@ func TestErrorOnPrepareSession(t *testing.T) {
 		status.Errorf(codes.FailedPrecondition, "Invalid transaction option"),
 		status.Errorf(codes.Internal, "Unknown server error"),
 	}
+	logger := log.New(os.Stderr, "", log.LstdFlags)
 	for _, serverErr := range serverErrors {
 		ctx := context.Background()
 		server, client, teardown := setupMockedTestServerWithConfig(t,
@@ -949,8 +953,11 @@ func TestErrorOnPrepareSession(t *testing.T) {
 					WriteSessions:       0.5,
 					HealthCheckInterval: time.Millisecond,
 				},
+				logger: logger,
 			})
 		defer teardown()
+		// Discard logging until trying to prepare sessions has stopped.
+		logger.SetOutput(ioutil.Discard)
 		server.TestSpanner.PutExecutionTime(MethodBeginTransaction, SimulatedExecutionTime{
 			Errors:    []error{serverErr},
 			KeepError: true,
@@ -975,6 +982,8 @@ func TestErrorOnPrepareSession(t *testing.T) {
 			numOpened = sp.idleList.Len()
 			sp.mu.Unlock()
 		}
+		// Re-enable logging.
+		logger.SetOutput(os.Stderr)
 
 		// There should be no write-prepared sessions.
 		sp.mu.Lock()
@@ -1046,6 +1055,7 @@ func TestSessionNotFoundOnPrepareSession(t *testing.T) {
 		serverErrors[i] = sessionNotFoundErr
 	}
 	ctx := context.Background()
+	logger := log.New(os.Stderr, "", log.LstdFlags)
 	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
@@ -1055,8 +1065,11 @@ func TestSessionNotFoundOnPrepareSession(t *testing.T) {
 				HealthCheckInterval:       time.Millisecond,
 				healthCheckSampleInterval: time.Millisecond,
 			},
+			logger: logger,
 		})
 	defer teardown()
+	// Discard logging until trying to prepare sessions has stopped.
+	logger.SetOutput(ioutil.Discard)
 	server.TestSpanner.PutExecutionTime(MethodBeginTransaction, SimulatedExecutionTime{
 		Errors: serverErrors,
 	})
@@ -1080,6 +1093,8 @@ waitForPrepare:
 		numWriteSessions = sp.idleWriteList.Len()
 		sp.mu.Unlock()
 	}
+	// Re-enable logging.
+	logger.SetOutput(os.Stderr)
 
 	// There should be at least 5 write-prepared sessions.
 	sp.mu.Lock()
