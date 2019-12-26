@@ -1899,6 +1899,16 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 	case []GenericColumnValue:
 		return nil, nil, errEncoderUnsupportedType(v)
 	default:
+		// Check if the value is a variant of a base type.
+		decodableType := getDecodableSpannerType(v)
+		if decodableType != spannerTypeUnknown && decodableType != spannerTypeInvalid {
+			converted, err := convertCustomTypeValue(decodableType, v)
+			if err != nil {
+				return nil, nil, err
+			}
+			return encodeValue(converted)
+		}
+
 		if !isStructOrArrayOfStructValue(v) {
 			return nil, nil, errEncoderUnsupportedType(v)
 		}
@@ -1916,6 +1926,130 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		}
 	}
 	return pb, pt, nil
+}
+
+func convertCustomTypeValue(sourceType decodableSpannerType, v interface{}) (interface{}, error) {
+	// destination will be initialized to a base type. The input value will be
+	// converted to this type and copied to destination.
+	var destination reflect.Value
+	switch sourceType {
+	case spannerTypeInvalid:
+		return nil, fmt.Errorf("cannot encode a value to type spannerTypeInvalid")
+	case spannerTypeNonNullString:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf("")))
+	case spannerTypeNullString:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(NullString{})))
+	case spannerTypeByteArray:
+		// Return a nil array directly if the input value is nil instead of
+		// creating an empty slice and returning that.
+		if reflect.ValueOf(v).IsNil() {
+			return []byte(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]byte{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeNonNullInt64:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(int64(0))))
+	case spannerTypeNullInt64:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(NullInt64{})))
+	case spannerTypeNonNullBool:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(false)))
+	case spannerTypeNullBool:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(NullBool{})))
+	case spannerTypeNonNullFloat64:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(float64(0.0))))
+	case spannerTypeNullFloat64:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(NullFloat64{})))
+	case spannerTypeNonNullTime:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(time.Time{})))
+	case spannerTypeNullTime:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(NullTime{})))
+	case spannerTypeNonNullDate:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(civil.Date{})))
+	case spannerTypeNullDate:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(NullDate{})))
+	case spannerTypeArrayOfNonNullString:
+		if reflect.ValueOf(v).IsNil() {
+			return []string(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]string{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeArrayOfNullString:
+		if reflect.ValueOf(v).IsNil() {
+			return []NullString(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]NullString{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeArrayOfByteArray:
+		if reflect.ValueOf(v).IsNil() {
+			return [][]byte(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([][]byte{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeArrayOfNonNullInt64:
+		if reflect.ValueOf(v).IsNil() {
+			return []int64(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]int64{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeArrayOfNullInt64:
+		if reflect.ValueOf(v).IsNil() {
+			return []NullInt64(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]NullInt64{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeArrayOfNonNullBool:
+		if reflect.ValueOf(v).IsNil() {
+			return []bool(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]bool{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeArrayOfNullBool:
+		if reflect.ValueOf(v).IsNil() {
+			return []NullBool(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]NullBool{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeArrayOfNonNullFloat64:
+		if reflect.ValueOf(v).IsNil() {
+			return []float64(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]float64{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeArrayOfNullFloat64:
+		if reflect.ValueOf(v).IsNil() {
+			return []NullFloat64(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]NullFloat64{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeArrayOfNonNullTime:
+		if reflect.ValueOf(v).IsNil() {
+			return []time.Time(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]time.Time{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeArrayOfNullTime:
+		if reflect.ValueOf(v).IsNil() {
+			return []NullTime(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]NullTime{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeArrayOfNonNullDate:
+		if reflect.ValueOf(v).IsNil() {
+			return []civil.Date(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]civil.Date{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeArrayOfNullDate:
+		if reflect.ValueOf(v).IsNil() {
+			return []NullDate(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]NullDate{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	default:
+		// This should not be possible.
+		return nil, fmt.Errorf("unknown decodable type found: %v", sourceType)
+	}
+	// destination has been initialized. Convert and copy the input value to
+	// destination. That must be done per element if the input type is a slice
+	// or an array.
+	if destination.Kind() == reflect.Slice || destination.Kind() == reflect.Array {
+		sourceSlice := reflect.ValueOf(v)
+		for i := 0; i < destination.Len(); i++ {
+			source := reflect.Indirect(sourceSlice.Index(i))
+			destination.Index(i).Set(source.Convert(destination.Type().Elem()))
+		}
+	} else {
+		source := reflect.Indirect(reflect.ValueOf(v))
+		destination.Set(source.Convert(destination.Type()))
+	}
+	// Return the converted value.
+	return destination.Interface(), nil
 }
 
 // Encodes a Go struct value/ptr in v to the spanner Value and Type protos. v
