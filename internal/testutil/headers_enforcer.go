@@ -92,8 +92,8 @@ func (h *HeadersEnforcer) UnaryInterceptors() []grpc.UnaryClientInterceptor {
 // to enforce the presence and validity of expected headers.
 func (h *HeadersEnforcer) DialOptions() []grpc.DialOption {
 	return []grpc.DialOption{
-		grpc.WithStreamInterceptor(h.interceptStream),
-		grpc.WithUnaryInterceptor(h.interceptUnary),
+		grpc.WithChainStreamInterceptor(h.interceptStream),
+		grpc.WithChainUnaryInterceptor(h.interceptUnary),
 	}
 }
 
