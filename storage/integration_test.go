@@ -55,6 +55,9 @@ import (
 const (
 	testPrefix     = "go-integration-test"
 	replayFilename = "storage.replay"
+	// TODO(jba): move to testutil, factor out from firestore/integration_test.go.
+	envFirestoreProjID     = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
+	envFirestorePrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
 )
 
 var (
@@ -404,15 +407,31 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 	}
 
 	// Confirm BucketAccessControl returns error.
-	_, err = bkt.ACL().List(ctx)
-	if err == nil {
-		t.Fatal("expected Bucket ACL list to fail")
+	err = retry(ctx, func() error {
+		_, err = bkt.ACL().List(ctx)
+		return nil
+	}, func() error {
+		if err == nil {
+			return fmt.Errorf("ACL.List: expected bucket ACL list to fail")
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	// Confirm ObjectAccessControl returns error.
-	_, err = o.ACL().List(ctx)
-	if err == nil {
-		t.Fatal("expected Object ACL list to fail")
+	err = retry(ctx, func() error {
+		_, err = o.ACL().List(ctx)
+		return nil
+	}, func() error {
+		if err == nil {
+			return fmt.Errorf("ACL.List: expected object ACL list to fail")
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	// Disable BucketPolicyOnly.
@@ -423,32 +442,25 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 	}
 
 	// Check that the object ACLs are the same.
-	// The update to BucketPolicyOnly may be delayed in propagation, so retry
-	// for up to 11 seconds before failing.
-	timeout := time.After(11 * time.Second)
 	var acls []ACLRule
-	for {
-		select {
-		case <-timeout:
-			t.Fatalf("object ACL list failed: %v", err)
-		default:
-		}
+	err = retry(ctx, func() error {
 		acls, err = o.ACL().List(ctx)
-		if err == nil {
-			// Check that ACL rules contain custom ACL from above.
-			if !containsACL(acls, aclEntity, RoleReader) {
-				t.Fatalf("expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
-			}
-			break
+		if err != nil {
+			return fmt.Errorf("ACL.List: object ACL list failed: %v", err)
 		}
-		time.Sleep(200 * time.Millisecond)
+		return nil
+	}, func() error {
+		if !containsACL(acls, aclEntity, RoleReader) {
+			return fmt.Errorf("containsACL: expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
 	}
-
 }
 
 func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1652")
-
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -485,15 +497,31 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 	}
 
 	// Confirm BucketAccessControl returns error.
-	_, err = bkt.ACL().List(ctx)
-	if err == nil {
-		t.Fatal("expected Bucket ACL list to fail")
+	err = retry(ctx, func() error {
+		_, err = bkt.ACL().List(ctx)
+		return nil
+	}, func() error {
+		if err == nil {
+			return fmt.Errorf("ACL.List: expected bucket ACL list to fail")
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	// Confirm ObjectAccessControl returns error.
-	_, err = o.ACL().List(ctx)
-	if err == nil {
-		t.Fatal("expected Object ACL list to fail")
+	err = retry(ctx, func() error {
+		_, err = o.ACL().List(ctx)
+		return nil
+	}, func() error {
+		if err == nil {
+			return fmt.Errorf("ACL.List: expected object ACL list to fail")
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	// Disable UniformBucketLevelAccess.
@@ -504,24 +532,22 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 	}
 
 	// Check that the object ACLs are the same.
-	acls, err := o.ACL().List(ctx)
-	if err != nil {
-		t.Fatalf("object ACL list failed: %v", err)
-	}
-
-	// Check that ACL rules contain custom ACL from above.
-	if !containsACL(acls, aclEntity, RoleReader) {
-		t.Fatalf("expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
-	}
-}
-
-func containsACL(acls []ACLRule, e ACLEntity, r ACLRole) bool {
-	for _, a := range acls {
-		if a.Entity == e && a.Role == r {
-			return true
+	var acls []ACLRule
+	err = retry(ctx, func() error {
+		acls, err = o.ACL().List(ctx)
+		if err != nil {
+			return fmt.Errorf("ACL.List: object ACL list failed: %v", err)
 		}
+		return nil
+	}, func() error {
+		if !containsACL(acls, aclEntity, RoleReader) {
+			return fmt.Errorf("containsACL: expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
 	}
-	return false
 }
 
 func TestIntegration_ConditionalDelete(t *testing.T) {
@@ -1019,10 +1045,6 @@ func TestIntegration_Encoding(t *testing.T) {
 	}
 }
 
-func namesEqual(obj *ObjectAttrs, bucketName, objectName string) bool {
-	return obj.Bucket == bucketName && obj.Name == objectName
-}
-
 func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 	ctx := context.Background()
 	h := testHelper{t}
@@ -1333,52 +1355,7 @@ func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
 	}
 }
 
-// Make a GET request to a URL using an unauthenticated client, and return its contents.
-func getURL(url string, headers map[string][]string) ([]byte, error) {
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header = headers
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-	bytes, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-	if res.StatusCode != 200 {
-		return nil, fmt.Errorf("code=%d, body=%s", res.StatusCode, string(bytes))
-	}
-	return bytes, nil
-}
-
-// Make a PUT request to a URL using an unauthenticated client, and return its contents.
-func putURL(url string, headers map[string][]string, payload io.Reader) ([]byte, error) {
-	req, err := http.NewRequest("PUT", url, payload)
-	if err != nil {
-		return nil, err
-	}
-	req.Header = headers
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-	bytes, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-	if res.StatusCode != 200 {
-		return nil, fmt.Errorf("code=%d, body=%s", res.StatusCode, string(bytes))
-	}
-	return bytes, nil
-}
-
 func TestIntegration_ACL(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1652")
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -1406,11 +1383,20 @@ func TestIntegration_ACL(t *testing.T) {
 	}
 	name := aclObjects[0]
 	o := bkt.Object(name)
-	acl, err = o.ACL().List(ctx)
+	err = retry(ctx, func() error {
+		acl, err = o.ACL().List(ctx)
+		if err != nil {
+			return fmt.Errorf("ACL.List: can't retrieve ACL of %v", name)
+		}
+		return nil
+	}, func() error {
+		if !hasRule(acl, rule) {
+			return fmt.Errorf("hasRule: object ACL missing %+v", rule)
+		}
+		return nil
+	})
 	if err != nil {
-		t.Errorf("Can't retrieve ACL of %v", name)
-	} else if !hasRule(acl, rule) {
-		t.Errorf("object ACL missing %+v", rule)
+		t.Error(err)
 	}
 	if err := o.ACL().Delete(ctx, entity); err != nil {
 		t.Errorf("object ACL: could not delete entity %s", entity)
@@ -1427,25 +1413,26 @@ func TestIntegration_ACL(t *testing.T) {
 	if err := bkt.ACL().Set(ctx, entity2, RoleReader); err != nil {
 		t.Errorf("Error while putting bucket ACL rule: %v", err)
 	}
-	bACL, err := bkt.ACL().List(ctx)
+	var bACL []ACLRule
+	err = retry(ctx, func() error {
+		bACL, err = bkt.ACL().List(ctx)
+		if err != nil {
+			return fmt.Errorf("ACL.List: error while getting the ACL of the bucket: %v", err)
+		}
+		return nil
+	}, func() error {
+		if !hasRule(bACL, rule2) {
+			return fmt.Errorf("hasRule: bucket ACL missing %+v", rule2)
+		}
+		return nil
+	})
 	if err != nil {
-		t.Errorf("Error while getting the ACL of the bucket: %v", err)
-	} else if !hasRule(bACL, rule2) {
-		t.Errorf("bucket ACL missing %+v", rule2)
+		t.Error(err)
 	}
 	if err := bkt.ACL().Delete(ctx, entity2); err != nil {
 		t.Errorf("Error while deleting bucket ACL rule: %v", err)
 	}
 
-}
-
-func hasRule(acl []ACLRule, rule ACLRule) bool {
-	for _, r := range acl {
-		if cmp.Equal(r, rule) {
-			return true
-		}
-	}
-	return false
 }
 
 func TestIntegration_ValidObjectNames(t *testing.T) {
@@ -2149,26 +2136,6 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	}
 
 	h.mustDeleteBucket(b1)
-}
-
-// TODO(jba): move to testutil, factor out from firestore/integration_test.go.
-const (
-	envFirestoreProjID     = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
-	envFirestorePrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
-)
-
-func keyFileEmail(filename string) (string, error) {
-	bytes, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return "", err
-	}
-	var v struct {
-		ClientEmail string `json:"client_email"`
-	}
-	if err := json.Unmarshal(bytes, &v); err != nil {
-		return "", err
-	}
-	return v.ClientEmail, nil
 }
 
 func TestIntegration_Notifications(t *testing.T) {
@@ -3334,3 +3301,108 @@ func randomContents() []byte {
 type zeros struct{}
 
 func (zeros) Read(p []byte) (int, error) { return len(p), nil }
+
+// Make a GET request to a URL using an unauthenticated client, and return its contents.
+func getURL(url string, headers map[string][]string) ([]byte, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = headers
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+	bytes, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	if res.StatusCode != 200 {
+		return nil, fmt.Errorf("code=%d, body=%s", res.StatusCode, string(bytes))
+	}
+	return bytes, nil
+}
+
+// Make a PUT request to a URL using an unauthenticated client, and return its contents.
+func putURL(url string, headers map[string][]string, payload io.Reader) ([]byte, error) {
+	req, err := http.NewRequest("PUT", url, payload)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = headers
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+	bytes, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	if res.StatusCode != 200 {
+		return nil, fmt.Errorf("code=%d, body=%s", res.StatusCode, string(bytes))
+	}
+	return bytes, nil
+}
+
+func namesEqual(obj *ObjectAttrs, bucketName, objectName string) bool {
+	return obj.Bucket == bucketName && obj.Name == objectName
+}
+
+func keyFileEmail(filename string) (string, error) {
+	bytes, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return "", err
+	}
+	var v struct {
+		ClientEmail string `json:"client_email"`
+	}
+	if err := json.Unmarshal(bytes, &v); err != nil {
+		return "", err
+	}
+	return v.ClientEmail, nil
+}
+
+func containsACL(acls []ACLRule, e ACLEntity, r ACLRole) bool {
+	for _, a := range acls {
+		if a.Entity == e && a.Role == r {
+			return true
+		}
+	}
+	return false
+}
+
+func hasRule(acl []ACLRule, rule ACLRule) bool {
+	for _, r := range acl {
+		if cmp.Equal(r, rule) {
+			return true
+		}
+	}
+	return false
+}
+
+// retry retries a function call as well as an (optional) correctness check for up
+// to 11 seconds. Both call and check must run without error in order to succeed.
+// If the timeout is hit, the most recent error from call or check will be returned.
+// This function should be used to wrap calls that might cause integration test
+// flakes due to delays in propagation (for example, metadata updates).
+func retry(ctx context.Context, call func() error, check func() error) error {
+	timeout := time.After(11 * time.Second)
+	var err error
+	for {
+		select {
+		case <-timeout:
+			return err
+		default:
+		}
+		err = call()
+		if err == nil {
+			if check() == nil {
+				return nil
+			}
+			err = check()
+		}
+		time.Sleep(200 * time.Millisecond)
+	}
+}
