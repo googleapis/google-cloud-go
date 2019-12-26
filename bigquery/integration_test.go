@@ -2134,6 +2134,18 @@ func testLocation(t *testing.T, loc string) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	tableMetadata, err := table.Metadata(ctx)
+	if err != nil {
+		t.Fatalf("failed to get table metadata: %v", err)
+	}
+	wantLoc := loc
+	if loc == "" && client.Location != "" {
+		wantLoc = client.Location
+	}
+	if tableMetadata.Location != wantLoc {
+		t.Errorf("Location on table doesn't match.  Got %s want %s", tableMetadata.Location, wantLoc)
+	}
 	defer table.Delete(ctx)
 	loader := table.LoaderFrom(NewReaderSource(strings.NewReader("a,0\nb,1\nc,2\n")))
 	loader.Location = loc

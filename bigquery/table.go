@@ -45,6 +45,9 @@ type TableMetadata struct {
 	// The user-friendly name for the table.
 	Name string
 
+	// Output-only location of the table, based on the encapsulating dataset.
+	Location string
+
 	// The user-friendly description of the table.
 	Description string
 
@@ -479,6 +482,7 @@ func bqToTableMetadata(t *bq.Table) (*TableMetadata, error) {
 	md := &TableMetadata{
 		Description:            t.Description,
 		Name:                   t.FriendlyName,
+		Location:               t.Location,
 		Type:                   TableType(t.Type),
 		FullID:                 t.Id,
 		Labels:                 t.Labels,
