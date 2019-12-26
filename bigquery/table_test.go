@@ -68,6 +68,7 @@ func TestBQToTableMetadata(t *testing.T) {
 			&TableMetadata{
 				Description:        "desc",
 				Name:               "fname",
+				Location:           "loc",
 				ViewQuery:          "view-query",
 				FullID:             "id",
 				Type:               ExternalTable,
