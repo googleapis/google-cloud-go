@@ -1543,3 +1543,76 @@ func TestFailedUpdate_ShouldRollback(t *testing.T) {
 		t.Fatalf("Received RPCs mismatch: %v", err)
 	}
 }
+
+func TestClient_NumChannels(t *testing.T) {
+	t.Parallel()
+
+	configuredNumChannels := 8
+	_, client, teardown := setupMockedTestServerWithConfig(
+		t,
+		ClientConfig{NumChannels: configuredNumChannels},
+	)
+	defer teardown()
+	if g, w := client.sc.connPool.Num(), configuredNumChannels; g != w {
+		t.Fatalf("NumChannels mismatch\nGot: %v\nWant: %v", g, w)
+	}
+}
+
+func TestClient_WithGRPCConnectionPool(t *testing.T) {
+	t.Parallel()
+
+	configuredConnPool := 8
+	_, client, teardown := setupMockedTestServerWithConfigAndClientOptions(
+		t,
+		ClientConfig{},
+		[]option.ClientOption{option.WithGRPCConnectionPool(configuredConnPool)},
+	)
+	defer teardown()
+	if g, w := client.sc.connPool.Num(), configuredConnPool; g != w {
+		t.Fatalf("NumChannels mismatch\nGot: %v\nWant: %v", g, w)
+	}
+}
+
+func TestClient_WithGRPCConnectionPoolAndNumChannels(t *testing.T) {
+	t.Parallel()
+
+	configuredNumChannels := 8
+	configuredConnPool := 8
+	_, client, teardown := setupMockedTestServerWithConfigAndClientOptions(
+		t,
+		ClientConfig{NumChannels: configuredNumChannels},
+		[]option.ClientOption{option.WithGRPCConnectionPool(configuredConnPool)},
+	)
+	defer teardown()
+	if g, w := client.sc.connPool.Num(), configuredConnPool; g != w {
+		t.Fatalf("NumChannels mismatch\nGot: %v\nWant: %v", g, w)
+	}
+}
+
+func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T) {
+	t.Parallel()
+
+	// Deliberately misconfigure NumChannels and ConnPool.
+	configuredNumChannels := 8
+	configuredConnPool := 16
+	_, err := NewClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{NumChannels: configuredNumChannels},
+		option.WithGRPCConnectionPool(configuredConnPool),
+	)
+	msg := "Connection pool mismatch:"
+	if err == nil {
+		t.Fatalf("Error mismatch\nGot: nil\nWant: %s", msg)
+	}
+	var se *Error
+	if ok := errorAs(err, &se); !ok {
+		t.Fatalf("Error mismatch\nGot: %v\nWant: An instance of a Spanner error", err)
+	}
+	if g, w := se.GRPCStatus().Code(), codes.InvalidArgument; g != w {
+		t.Fatalf("Error code mismatch\nGot: %v\nWant: %v", g, w)
+	}
+	if !strings.Contains(se.Error(), msg) {
+		t.Fatalf("Error message mismatch\nGot: %s\nWant: %s", se.Error(), msg)
+	}
+}

@@ -24,6 +24,7 @@ import (
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	. "cloud.google.com/go/spanner/internal/testutil"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -72,6 +73,49 @@ func newTestConsumer(numExpected int32) *testConsumer {
 	return &testConsumer{
 		numExpected: numExpected,
 		receivedAll: make(chan struct{}),
+	}
+}
+
+func TestNextClient(t *testing.T) {
+	t.Parallel()
+
+	n := 4
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		NumChannels: n,
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 0,
+			MaxOpened: 100,
+		},
+	})
+	defer teardown()
+	sc := client.idleSessions.sc
+	connections := make(map[*grpc.ClientConn]int)
+	for i := 0; i < n; i++ {
+		client, err := sc.nextClient()
+		if err != nil {
+			t.Fatalf("Error getting a gapic client from the session client\nGot: %v", err)
+		}
+		conn1 := client.Connection()
+		conn2 := client.Connection()
+		if conn1 != conn2 {
+			t.Fatalf("Client connection mismatch. Expected to get two equal connections.\nGot: %v and %v", conn1, conn2)
+		}
+		if index, ok := connections[conn1]; ok {
+			t.Fatalf("Same connection used multiple times for different clients.\nClient 1: %v\nClient 2: %v", index, i)
+		}
+		connections[conn1] = i
+	}
+	// Pass through all the clients once more. This time the exact same
+	// connections should be found.
+	for i := 0; i < n; i++ {
+		client, err := sc.nextClient()
+		if err != nil {
+			t.Fatalf("Error getting a gapic client from the session client\nGot: %v", err)
+		}
+		conn := client.Connection()
+		if _, ok := connections[conn]; !ok {
+			t.Fatalf("Connection not found for index %v", i)
+		}
 	}
 }
 
