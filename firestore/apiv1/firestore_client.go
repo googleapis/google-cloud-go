@@ -66,6 +66,7 @@ func defaultCallOptions() *CallOptions {
 		GetDocument: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -79,6 +80,7 @@ func defaultCallOptions() *CallOptions {
 		ListDocuments: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -94,6 +96,7 @@ func defaultCallOptions() *CallOptions {
 		DeleteDocument: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -107,6 +110,7 @@ func defaultCallOptions() *CallOptions {
 		BatchGetDocuments: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -120,6 +124,7 @@ func defaultCallOptions() *CallOptions {
 		BeginTransaction: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -134,6 +139,7 @@ func defaultCallOptions() *CallOptions {
 		Rollback: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -147,6 +153,7 @@ func defaultCallOptions() *CallOptions {
 		RunQuery: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -161,6 +168,7 @@ func defaultCallOptions() *CallOptions {
 		Listen: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -174,6 +182,7 @@ func defaultCallOptions() *CallOptions {
 		ListCollectionIds: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -208,23 +217,12 @@ type Client struct {
 //
 // The Cloud Firestore service.
 //
-// This service exposes several types of comparable timestamps:
-//
-//   create_time - The time at which a document was created. Changes only
-//   when a document is deleted, then re-created. Increases in a strict
-//   monotonic fashion.
-//
-//   update_time - The time at which a document was last updated. Changes
-//   every time a document is modified. Does not change when a write results
-//   in no modifications. Increases in a strict monotonic fashion.
-//
-//   read_time - The time at which a particular state was observed. Used
-//   to denote a consistent snapshot of the database or the time at which a
-//   Document was observed to not exist.
-//
-//   commit_time - The time at which the writes in a transaction were
-//   committed. Any read with an equal or greater read_time is guaranteed
-//   to see the effects of the transaction.
+// Cloud Firestore is a fast, fully managed, serverless, cloud-native NoSQL
+// document database that simplifies storing, syncing, and querying data for
+// your mobile, web, and IoT apps at global scale. Its client libraries provide
+// live synchronization and offline support, while its security features and
+// integrations with Firebase and Google Cloud Platform (GCP) accelerate
+// building truly serverless apps.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	conn, err := transport.DialGRPC(ctx, append(defaultClientOptions(), opts...)...)
 	if err != nil {
