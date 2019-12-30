@@ -1163,7 +1163,7 @@ var attrToFieldMap = map[string]string{
 	"ContentEncoding":         "contentEncoding",
 	"ContentDisposition":      "contentDisposition",
 	"Size":                    "size",
-	"MD5":                     "md5hash",
+	"MD5":                     "md5Hash",
 	"CRC32C":                  "crc32c",
 	"MediaLink":               "mediaLink",
 	"Metadata":                "metadata",
@@ -1174,7 +1174,7 @@ var attrToFieldMap = map[string]string{
 	"KMSKeyName":              "kmsKeyName",
 	"Created":                 "timeCreated",
 	"Deleted":                 "timeDeleted",
-	"Updated":                 "timeUpdated",
+	"Updated":                 "updated",
 	"Etag":                    "etag",
 }
 
