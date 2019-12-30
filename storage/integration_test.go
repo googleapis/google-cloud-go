@@ -640,6 +640,7 @@ func TestIntegration_Objects(t *testing.T) {
 
 	testObjectIterator(t, bkt, objects)
 	testObjectsIterateSelectedAttrs(t, bkt, objects)
+	testObjectsIterateAllSelectedAttrs(t, bkt, objects)
 
 	// Test Reader.
 	for _, obj := range objects {
@@ -1072,6 +1073,34 @@ func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []
 
 	if !cmp.Equal(sortedNames, gotNames) {
 		t.Errorf("names = %v, want %v", gotNames, sortedNames)
+	}
+}
+
+func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
+	// Tests that all selected attributes work - query succeeds (without actually
+	// verifying the returned results).
+	query := &Query{Prefix: ""}
+	var selectedAttrs []string
+	for k := range attrToFieldMap {
+		selectedAttrs = append(selectedAttrs, k)
+	}
+	query.SetAttrSelection(selectedAttrs)
+
+	count := 0
+	it := bkt.Objects(context.Background(), query)
+	for {
+		_, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		count++
+	}
+
+	if count != len(objects) {
+		t.Errorf("count = %v, want %v", count, len(objects))
 	}
 }
 
