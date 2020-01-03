@@ -123,10 +123,6 @@ type PushConfig struct {
 	// allow requests only from the Cloud Pub/Sub system, for example.
 	// This field is optional and should be set only by users interested in
 	// authenticated push.
-	//
-	// It is EXPERIMENTAL and a part of a closed alpha that may not be
-	// accessible to all users. This field is subject to change or removal
-	// without notice.
 	AuthenticationMethod AuthenticationMethod
 }
 
@@ -221,8 +217,6 @@ type SubscriptionConfig struct {
 	// value for `expiration_policy.ttl` is 1 day.
 	//
 	// Use time.Duration(0) to indicate that the subscription should never expire.
-	//
-	// It is EXPERIMENTAL and subject to change or removal without notice.
 	ExpirationPolicy optional.Duration
 
 	// The set of labels for the subscription.
