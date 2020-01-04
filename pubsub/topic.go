@@ -97,7 +97,7 @@ type PublishSettings struct {
 
 // DefaultPublishSettings holds the default values for topics' PublishSettings.
 var DefaultPublishSettings = PublishSettings{
-	DelayThreshold: 1 * time.Millisecond,
+	DelayThreshold: 10 * time.Millisecond,
 	CountThreshold: 100,
 	ByteThreshold:  1e6,
 	Timeout:        60 * time.Second,
