@@ -287,7 +287,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 				// writes[3] is the last write, all subsequent strong read
 				// should have a timestamp larger than that.
 				if ts.Before(writes[3].ts) {
-					return fmt.Errorf("read got timestamp %v, want it to be no later than %v", ts, writes[3].ts)
+					return fmt.Errorf("read got timestamp %v, want it to be no earlier than %v", ts, writes[3].ts)
 				}
 				return nil
 			},
@@ -298,7 +298,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 			tb:   MinReadTimestamp(writes[3].ts),
 			checkTs: func(ts time.Time) error {
 				if ts.Before(writes[3].ts) {
-					return fmt.Errorf("read got timestamp %v, want it to be no later than %v", ts, writes[3].ts)
+					return fmt.Errorf("read got timestamp %v, want it to be no earlier than %v", ts, writes[3].ts)
 				}
 				return nil
 			},
@@ -309,7 +309,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 			tb:   MaxStaleness(time.Second),
 			checkTs: func(ts time.Time) error {
 				if ts.Before(writes[3].ts) {
-					return fmt.Errorf("read got timestamp %v, want it to be no later than %v", ts, writes[3].ts)
+					return fmt.Errorf("read got timestamp %v, want it to be no earlier than %v", ts, writes[3].ts)
 				}
 				return nil
 			},
