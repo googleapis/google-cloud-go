@@ -253,7 +253,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "kms",
 		importPath:            "cloud.google.com/go/kms/apiv1",
 		gRPCServiceConfigPath: "google/cloud/kms/v1/cloudkms_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/kms/cloudkms.yaml",
+		apiServiceConfigPath:  "google/cloud/kms/v1/cloudkms_v1.yaml",
 		releaseLevel:          "ga",
 	},
 	{
