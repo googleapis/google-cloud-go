@@ -269,6 +269,7 @@ func hasChanges(dir string) (bool, error) {
 	w := io.MultiWriter(os.Stderr, inmem)
 
 	c := exec.Command("bash", "-c", "git status --short")
+	c.Dir = dir
 	c.Stdout = w
 	c.Stderr = os.Stderr
 	c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
