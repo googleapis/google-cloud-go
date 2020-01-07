@@ -416,6 +416,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/dialogflow/v2/dialogflow_v2.yaml",
 		releaseLevel:          "ga",
 	},
+	{
+		inputDirectoryPath:    "google/iam/credentials/v1",
+		pkg:                   "credentials",
+		importPath:            "cloud.google.com/go/iam/credentials/apiv1",
+		gRPCServiceConfigPath: "google/iam/credentials/v1/iamcredentials_grpc_service_config.json",
+		apiServiceConfigPath:  "google/iam/credentials/v1/iamcredentials_v1.yaml",
+		releaseLevel:          "alpha",
+	},
 }
 
 // Relative to gocloud dir.
@@ -435,7 +443,6 @@ var artmanGapicConfigPaths = []string{
 	"google/api/expr/artman_cel.yaml",
 	"google/cloud/asset/artman_cloudasset_v1beta1.yaml",
 	"google/cloud/asset/artman_cloudasset_v1p2beta1.yaml",
-	"google/iam/credentials/artman_iamcredentials_v1.yaml",
 	"google/cloud/automl/artman_automl_v1.yaml",
 	"google/cloud/automl/artman_automl_v1beta1.yaml",
 	"google/cloud/talent/artman_talent_v4beta1.yaml",
