@@ -39,6 +39,7 @@ import (
 	"google.golang.org/api/option"
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -154,6 +155,20 @@ func initIntegrationTests() (cleanup func()) {
 	var err error
 
 	opts := append(grpcHeaderChecker.CallOptions(), option.WithTokenSource(ts), option.WithEndpoint(endpoint))
+
+	// Run integration tests against the given emulator. Currently, the database and
+	// instance admin clients are auto-generated, which do not support to configure
+	// SPANNER_EMULATOR_HOST.
+	emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST")
+	if emulatorAddr != "" {
+		opts = append(
+			grpcHeaderChecker.CallOptions(),
+			option.WithEndpoint(emulatorAddr),
+			option.WithGRPCDialOption(grpc.WithInsecure()),
+			option.WithoutAuthentication(),
+		)
+	}
+
 	// Create InstanceAdmin and DatabaseAdmin clients.
 	instanceAdmin, err = instance.NewInstanceAdminClient(ctx, opts...)
 	if err != nil {
@@ -1374,6 +1389,7 @@ func TestIntegration_QueryExpressions(t *testing.T) {
 }
 
 func TestIntegration_QueryStats(t *testing.T) {
+	skipEmulatorTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2233,6 +2249,7 @@ func TestIntegration_StructParametersBind(t *testing.T) {
 }
 
 func TestIntegration_PDML(t *testing.T) {
+	skipEmulatorTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2636,9 +2653,17 @@ func isNaN(x interface{}) bool {
 
 // createClient creates Cloud Spanner data client.
 func createClient(ctx context.Context, dbPath string, spc SessionPoolConfig) (client *Client, err error) {
-	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{
-		SessionPoolConfig: spc,
-	}, option.WithTokenSource(testutil.TokenSource(ctx, Scope, AdminScope)), option.WithEndpoint(endpoint))
+	if os.Getenv("SPANNER_EMULATOR_HOST") == "" {
+		client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{
+			SessionPoolConfig: spc,
+		}, option.WithTokenSource(testutil.TokenSource(ctx, Scope, AdminScope)), option.WithEndpoint(endpoint))
+	} else {
+		// When the emulator is enabled, option.WithoutAuthentication()
+		// will be added automatically which is incompatible with
+		// option.WithTokenSource(testutil.TokenSource(ctx, Scope)).
+		client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc})
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
 	}
@@ -2722,4 +2747,10 @@ func maxDuration(a, b time.Duration) time.Duration {
 		return a
 	}
 	return b
+}
+
+func skipEmulatorTest(t *testing.T) {
+	if os.Getenv("SPANNER_EMULATOR_HOST") != "" {
+		t.Skip("Skipping testing against the emulator.")
+	}
 }
