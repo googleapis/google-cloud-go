@@ -706,7 +706,7 @@ func (t *ReadWriteTransaction) Update(ctx context.Context, stmt Statement) (rowC
 	}
 	resultSet, err := sh.getClient().ExecuteSql(ctx, req)
 	if err != nil {
-		return 0, err
+		return 0, toSpannerError(err)
 	}
 	if resultSet.Stats == nil {
 		return 0, spannerErrorf(codes.InvalidArgument, "query passed to Update: %q", stmt.SQL)
@@ -755,7 +755,7 @@ func (t *ReadWriteTransaction) BatchUpdate(ctx context.Context, stmts []Statemen
 		Seqno:       atomic.AddInt64(&t.sequenceNumber, 1),
 	})
 	if err != nil {
-		return nil, err
+		return nil, toSpannerError(err)
 	}
 
 	var counts []int64
