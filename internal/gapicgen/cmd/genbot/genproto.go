@@ -51,7 +51,7 @@ If you have been assigned to review this CL, please:
 // username of the reviewer.
 //
 // TODO(ndietz): Can we use github teams?
-var genprotoReviewers = []string{"jadekler", "hongalex", "broady", "noahdietz", "tritone", "codyoss", "tbpg"}
+var genprotoReviewers = []string{"hongalex", "broady", "noahdietz", "tritone", "codyoss", "tbpg"}
 
 // prGenproto creates a PR for a given genproto change.
 //
