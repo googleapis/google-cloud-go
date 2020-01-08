@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 // Cloud OS Login API.
 //
 // You can use OS Login to manage access to your VM instances using IAM
-// roles. For more information, read [OS Login](/compute/docs/oslogin/).
+// roles.
 //
 //   NOTE: This package is in alpha. It is not stable, and is likely to change.
 //
@@ -43,7 +43,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-const versionClient = "20191229"
+const versionClient = "20200108"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ func defaultCallOptions() *CallOptions {
 					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -73,39 +73,15 @@ func defaultCallOptions() *CallOptions {
 					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
 		},
-		MarkRecommendationClaimed: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		MarkRecommendationSucceeded: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		MarkRecommendationFailed: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
+		MarkRecommendationClaimed:   []gax.CallOption{},
+		MarkRecommendationSucceeded: []gax.CallOption{},
+		MarkRecommendationFailed:    []gax.CallOption{},
 	}
 }
 
