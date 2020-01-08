@@ -308,7 +308,7 @@ func TestBatchCreateSessions_WithTimeout(t *testing.T) {
 	}
 	for _, e := range consumer.errors {
 		if g, w := status.Code(e.err), codes.DeadlineExceeded; g != w {
-			t.Fatalf("Error code mismatch\ngot: %v\nwant: %v", g, w)
+			t.Fatalf("Error code mismatch\ngot: %v (%s)\nwant: %v", g, e.err, w)
 		}
 	}
 	client.Close()

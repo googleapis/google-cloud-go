@@ -191,7 +191,7 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 		}
 		if ctx.Err() != nil {
 			trace.TracePrintf(ctx, nil, "Context error while creating a batch of %d sessions: %v", createCount, ctx.Err())
-			consumer.sessionCreationFailed(ctx.Err(), remainingCreateCount)
+			consumer.sessionCreationFailed(toSpannerError(ctx.Err()), remainingCreateCount)
 			break
 		}
 		response, err := client.BatchCreateSessions(ctx, &sppb.BatchCreateSessionsRequest{
@@ -201,7 +201,7 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 		})
 		if err != nil {
 			trace.TracePrintf(ctx, nil, "Error creating a batch of %d sessions: %v", remainingCreateCount, err)
-			consumer.sessionCreationFailed(err, remainingCreateCount)
+			consumer.sessionCreationFailed(toSpannerError(err), remainingCreateCount)
 			break
 		}
 		actuallyCreated := int32(len(response.Session))
