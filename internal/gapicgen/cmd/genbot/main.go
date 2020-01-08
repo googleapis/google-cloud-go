@@ -273,6 +273,7 @@ func hasChanges(dir string) (bool, error) {
 	c.Stdout = w
 	c.Stderr = os.Stderr
 	c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
+	err := c.Run()
 
-	return inmem.Len() > 0, nil
+	return inmem.Len() > 0, err
 }
