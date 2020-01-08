@@ -36,7 +36,7 @@ import (
 var (
 	toolsNeeded = []string{"git", "go"}
 
-	gocloudReviewers = []string{"codyoss@google.com", "deklerk@google.com", "tbp@google.com", "cbro@google.com", "hongalex@google.com", "ndietz@google.com", "cjcotter@google.com"}
+	gocloudReviewers = []string{"codyoss@google.com", "tbp@google.com", "cbro@google.com", "hongalex@google.com", "ndietz@google.com", "cjcotter@google.com"}
 
 	githubAccessToken = flag.String("githubAccessToken", "", "Get an access token at https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line")
 	githubName        = flag.String("githubName", "", "ex -githubName=\"Jean de Klerk\"")
