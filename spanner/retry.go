@@ -27,6 +27,7 @@ import (
 	edpb "google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -80,12 +81,25 @@ func runWithRetryOnAborted(ctx context.Context, f func(context.Context) error) e
 			if err == nil {
 				return nil
 			}
-			// Get Spanner error.
+			// Get Spanner or GRPC status error.
+			// TODO(loite): Refactor to unwrap Status error instead of Spanner
+			// error when statusError implements the (errors|xerrors).Wrapper
+			// interface.
+			var retryErr error
 			var se *Error
-			if !errorAs(err, &se) {
-				return err
+			if errorAs(err, &se) {
+				// It is a (wrapped) Spanner error. Use that to check whether
+				// we should retry.
+				retryErr = se
+			} else {
+				// It's not a Spanner error, check if it is a status error.
+				_, ok := status.FromError(err)
+				if !ok {
+					return err
+				}
+				retryErr = err
 			}
-			delay, shouldRetry := retryer.Retry(se)
+			delay, shouldRetry := retryer.Retry(retryErr)
 			if !shouldRetry {
 				return err
 			}
