@@ -879,12 +879,7 @@ const (
 // supportsNull returns true for the Go types that can hold a null value from
 // Spanner.
 func (d decodableSpannerType) supportsNull() bool {
-	switch d {
-	case spannerTypeNonNullString, spannerTypeNonNullInt64, spannerTypeNonNullBool, spannerTypeNonNullFloat64, spannerTypeNonNullTime, spannerTypeNonNullDate:
-		return false
-	default:
-		return true
-	}
+	return true
 }
 
 // The following list of types represent the struct types that represent a
@@ -1021,7 +1016,11 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
-			result = &NullString{}
+			if dsc == spannerTypeNonNullString {
+				result = ""
+			} else {
+				result = &NullString{}
+			}
 			break
 		}
 		x, err := getStringValue(v)
@@ -1055,7 +1054,11 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
-			result = &NullInt64{}
+			if dsc == spannerTypeNonNullInt64 {
+				result = int64(0)
+			} else {
+				result = &NullInt64{}
+			}
 			break
 		}
 		x, err := getStringValue(v)
@@ -1076,7 +1079,11 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
-			result = &NullBool{}
+			if dsc == spannerTypeNonNullBool {
+				result = false
+			} else {
+				result = &NullBool{}
+			}
 			break
 		}
 		x, err := getBoolValue(v)
@@ -1093,7 +1100,11 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
-			result = &NullFloat64{}
+			if dsc == spannerTypeNonNullFloat64 {
+				result = float64(0)
+			} else {
+				result = &NullFloat64{}
+			}
 			break
 		}
 		x, err := getFloat64Value(v)
@@ -1121,7 +1132,11 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
-			result = &NullDate{}
+			if dsc == spannerTypeNonNullDate {
+				result = &civil.Date{}
+			} else {
+				result = &NullDate{}
+			}
 			break
 		}
 		x, err := getStringValue(v)
