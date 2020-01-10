@@ -968,7 +968,7 @@ func TestDecodeValue(t *testing.T) {
 	}{
 		// STRING
 		{desc: "decode STRING to string", proto: stringProto("abc"), protoType: stringType(), want: "abc"},
-		{desc: "decode NULL to string", proto: nullProto(), protoType: stringType(), want: "abc", wantErr: true},
+		{desc: "decode NULL to string", proto: nullProto(), protoType: stringType(), want: ""},
 		{desc: "decode STRING to NullString", proto: stringProto("abc"), protoType: stringType(), want: NullString{"abc", true}},
 		{desc: "decode NULL to NullString", proto: nullProto(), protoType: stringType(), want: NullString{}},
 		// STRING ARRAY with []NullString
@@ -984,7 +984,7 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL to [][]byte", proto: nullProto(), protoType: listType(bytesType()), want: [][]byte(nil)},
 		//INT64
 		{desc: "decode INT64 to int64", proto: intProto(15), protoType: intType(), want: int64(15)},
-		{desc: "decode NULL to int64", proto: nullProto(), protoType: intType(), want: int64(0), wantErr: true},
+		{desc: "decode NULL to int64", proto: nullProto(), protoType: intType(), want: int64(0)},
 		{desc: "decode INT64 to NullInt64", proto: intProto(15), protoType: intType(), want: NullInt64{15, true}},
 		{desc: "decode NULL to NullInt64", proto: nullProto(), protoType: intType(), want: NullInt64{}},
 		// INT64 ARRAY with []NullInt64
@@ -994,7 +994,7 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode ARRAY<INT64> to []int64", proto: listProto(intProto(91), intProto(87)), protoType: listType(intType()), want: []int64{91, 87}},
 		// BOOL
 		{desc: "decode BOOL to bool", proto: boolProto(true), protoType: boolType(), want: true},
-		{desc: "decode NULL to bool", proto: nullProto(), protoType: boolType(), want: true, wantErr: true},
+		{desc: "decode NULL to bool", proto: nullProto(), protoType: boolType(), want: false},
 		{desc: "decode BOOL to NullBool", proto: boolProto(true), protoType: boolType(), want: NullBool{true, true}},
 		{desc: "decode BOOL to NullBool", proto: nullProto(), protoType: boolType(), want: NullBool{}},
 		// BOOL ARRAY with []NullBool
@@ -1004,7 +1004,7 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode ARRAY<BOOL> to []bool", proto: listProto(boolProto(true), boolProto(false)), protoType: listType(boolType()), want: []bool{true, false}},
 		// FLOAT64
 		{desc: "decode FLOAT64 to float64", proto: floatProto(3.14), protoType: floatType(), want: 3.14},
-		{desc: "decode NULL to float64", proto: nullProto(), protoType: floatType(), want: 0.00, wantErr: true},
+		{desc: "decode NULL to float64", proto: nullProto(), protoType: floatType(), want: 0.00},
 		{desc: "decode FLOAT64 to NullFloat64", proto: floatProto(3.14), protoType: floatType(), want: NullFloat64{3.14, true}},
 		{desc: "decode NULL to NullFloat64", proto: nullProto(), protoType: floatType(), want: NullFloat64{}},
 		// FLOAT64 ARRAY with []NullFloat64
