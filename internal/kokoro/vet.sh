@@ -36,11 +36,13 @@ go install \
 # Fail if a dependency was added without the necessary go.mod/go.sum change
 # being part of the commit.
 go mod tidy
+for i in `find . -name go.mod`; do
+  pushd `dirname $i`;
+    go mod tidy;
+  popd;
+done
 git diff go.mod | tee /dev/stderr | (! read)
 git diff go.sum | tee /dev/stderr | (! read)
-
-# Look at all .go files (ignoring .pb.go files) and make sure they have a Copyright. Fail if any don't.
-find . -type f -name "*.go" ! -name "*.pb.go" -exec grep -L "\(Copyright [0-9]\{4,\}\)" {} \; 2>&1 | tee /dev/stderr | (! read)
 
 gofmt -s -d -l . 2>&1 | tee /dev/stderr | (! read)
 goimports -l . 2>&1 | tee /dev/stderr | (! read)
@@ -75,13 +77,14 @@ golint ./... 2>&1 | ( \
   grep -v "internal/testutil/funcmock.go" | \
   grep -v "internal/backoff" | \
   grep -v "internal/trace" | \
+  grep -v "internal/gapicgen/generator" | \
   grep -v "a blank import should be only in a main or test package" | \
   grep -v "method ExecuteSql should be ExecuteSQL" | \
   grep -vE "spanner/spansql/(sql|types).go:.*should have comment" | \
   grep -vE "\.pb\.go:") | \
   tee /dev/stderr | (! read)
 
-staticcheck -go 1.9 ./... 2>&1 | ( \
+staticcheck -go 1.11 ./... 2>&1 | ( \
   grep -v S1007 | \
   grep -v SA1019 | \
   grep -v firestore/internal/doc-snippets.go | \

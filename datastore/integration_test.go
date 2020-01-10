@@ -1298,16 +1298,12 @@ func TestIntegration_DetectProjectID(t *testing.T) {
 var genKeyName = uid.NewSpace("datastore-integration", nil)
 
 func TestIntegration_Project_TimestampStoreAndRetrieve(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1479")
-
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
 	type T struct{ Created time.Time }
 
-	// We need to generate a new key to prevent any clashes with concurrent test runs,
-	// as per:  https://github.com/googleapis/google-cloud-go/issues/1479
 	keyName := genKeyName.New()
 
 	now := time.Now()
@@ -1321,7 +1317,10 @@ func TestIntegration_Project_TimestampStoreAndRetrieve(t *testing.T) {
 		}
 	}()
 
-	q := NewQuery(keyName).Order("Created").Project("Created")
+	// Without .Ancestor, this query is eventually consistent (so this test
+	// would be flakey). Ancestor queries, however, are strongly consistent.
+	// See more at https://cloud.google.com/datastore/docs/articles/balancing-strong-and-eventual-consistency-with-google-cloud-datastore/.
+	q := NewQuery(k.Kind).Ancestor(k)
 	res := []T{}
 	if _, err := client.GetAll(ctx, q, &res); err != nil {
 		t.Fatal(err)

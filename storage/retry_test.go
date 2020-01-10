@@ -33,6 +33,8 @@ import (
 )
 
 func TestIndefiniteRetries(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1641")
+
 	if testing.Short() {
 		t.Skip("A long running test for retries")
 	}

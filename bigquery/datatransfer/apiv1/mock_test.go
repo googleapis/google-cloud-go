@@ -423,8 +423,10 @@ func TestDataTransferServiceCreateTransferConfig(t *testing.T) {
 	var userId int64 = 147132913
 	var datasetRegion string = "datasetRegion959248539"
 	var expectedResponse = &datatransferpb.TransferConfig{
-		Name:                  name,
-		DestinationDatasetId:  destinationDatasetId,
+		Name: name,
+		Destination: &datatransferpb.TransferConfig_DestinationDatasetId{
+			DestinationDatasetId: destinationDatasetId,
+		},
 		DisplayName:           displayName,
 		DataSourceId:          dataSourceId,
 		Schedule:              schedule,
@@ -502,8 +504,10 @@ func TestDataTransferServiceUpdateTransferConfig(t *testing.T) {
 	var userId int64 = 147132913
 	var datasetRegion string = "datasetRegion959248539"
 	var expectedResponse = &datatransferpb.TransferConfig{
-		Name:                  name,
-		DestinationDatasetId:  destinationDatasetId,
+		Name: name,
+		Destination: &datatransferpb.TransferConfig_DestinationDatasetId{
+			DestinationDatasetId: destinationDatasetId,
+		},
 		DisplayName:           displayName,
 		DataSourceId:          dataSourceId,
 		Schedule:              schedule,
@@ -633,8 +637,10 @@ func TestDataTransferServiceGetTransferConfig(t *testing.T) {
 	var userId int64 = 147132913
 	var datasetRegion string = "datasetRegion959248539"
 	var expectedResponse = &datatransferpb.TransferConfig{
-		Name:                  name2,
-		DestinationDatasetId:  destinationDatasetId,
+		Name: name2,
+		Destination: &datatransferpb.TransferConfig_DestinationDatasetId{
+			DestinationDatasetId: destinationDatasetId,
+		},
 		DisplayName:           displayName,
 		DataSourceId:          dataSourceId,
 		Schedule:              schedule,
@@ -840,11 +846,13 @@ func TestDataTransferServiceGetTransferRun(t *testing.T) {
 	var userId int64 = 147132913
 	var schedule string = "schedule-697920873"
 	var expectedResponse = &datatransferpb.TransferRun{
-		Name:                 name2,
-		DestinationDatasetId: destinationDatasetId,
-		DataSourceId:         dataSourceId,
-		UserId:               userId,
-		Schedule:             schedule,
+		Name: name2,
+		Destination: &datatransferpb.TransferRun_DestinationDatasetId{
+			DestinationDatasetId: destinationDatasetId,
+		},
+		DataSourceId: dataSourceId,
+		UserId:       userId,
+		Schedule:     schedule,
 	}
 
 	mockDataTransfer.err = nil

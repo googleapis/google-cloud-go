@@ -56,11 +56,13 @@ func TestNewInsertRequest(t *testing.T) {
 			savers: []ValueSaver{
 				testSaver{row: map[string]Value{"one": 1}},
 				testSaver{row: map[string]Value{"two": 2}},
+				testSaver{insertID: NoDedupeID, row: map[string]Value{"three": 3}},
 			},
 			req: &bq.TableDataInsertAllRequest{
 				Rows: []*bq.TableDataInsertAllRequestRows{
 					{InsertId: "1", Json: map[string]bq.JsonValue{"one": 1}},
 					{InsertId: "2", Json: map[string]bq.JsonValue{"two": 2}},
+					{InsertId: "", Json: map[string]bq.JsonValue{"three": 3}},
 				},
 			},
 		},

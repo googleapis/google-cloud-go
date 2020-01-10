@@ -23,6 +23,7 @@ package spannertest
 
 import (
 	"bytes"
+	"encoding/base64"
 	"fmt"
 	"sort"
 	"strconv"
@@ -255,8 +256,7 @@ func (d *database) Insert(tbl string, cols []string, values []*structpb.ListValu
 		pk := r[:t.pkCols]
 		rowNum, found := t.rowForPK(pk)
 		if found {
-			// TODO: how do we return `ALREADY_EXISTS`?
-			return status.Errorf(codes.Unknown, "row already in table")
+			return status.Errorf(codes.AlreadyExists, "row already in table")
 		}
 		t.insertRow(rowNum, r)
 		return nil
@@ -657,6 +657,12 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 		sv, ok := v.Kind.(*structpb.Value_StringValue)
 		if ok {
 			return sv.StringValue, nil
+		}
+	case spansql.Bytes:
+		sv, ok := v.Kind.(*structpb.Value_StringValue)
+		if ok {
+			// The Spanner protocol encodes BYTES in base64.
+			return base64.StdEncoding.DecodeString(sv.StringValue)
 		}
 	case spansql.Date:
 		// The Spanner protocol encodes DATE in RFC 3339 date format.

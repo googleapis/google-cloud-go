@@ -107,6 +107,28 @@ func TestCalcFieldSize(t *testing.T) {
 	}
 }
 
+func TestMaxExtensionPeriod(t *testing.T) {
+	srv := pstest.NewServer()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	srv.Publish(fullyQualifiedTopicName, []byte("creating a topic"), nil)
+
+	_, client, err := initConn(ctx, srv.Addr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := time.Duration(1) * time.Second
+	iter := newMessageIterator(client.subc, fullyQualifiedTopicName, &want, &pullOptions{})
+
+	receiveTime := time.Now().Add(time.Duration(-3) * time.Second)
+	iter.ackTimeDist.Record(int(time.Since(receiveTime) / time.Second))
+
+	if got := iter.ackDeadline(); got != want {
+		t.Fatalf("deadline got = %v, want %v", got, want)
+	}
+}
+
 func TestAckDistribution(t *testing.T) {
 	if testing.Short() {
 		t.SkipNow()
@@ -309,7 +331,9 @@ func initConn(ctx context.Context, addr string) (*Subscription, *Client, error) 
 	if err != nil {
 		return nil, nil, err
 	}
-	client, err := NewClient(ctx, projName, option.WithGRPCConn(conn))
+	e := testutil.DefaultHeadersEnforcer()
+	opts := append(e.CallOptions(), option.WithGRPCConn(conn))
+	client, err := NewClient(ctx, projName, opts...)
 	if err != nil {
 		return nil, nil, err
 	}

@@ -22,10 +22,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/googleapis/gax-go/v2"
-
 	"cloud.google.com/go/internal/trace"
 	vkit "cloud.google.com/go/spanner/apiv1"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
@@ -121,6 +120,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	}
 	return stream(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
+		sh.session.logger,
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			return client.StreamingRead(ctx,
 				&sppb.ReadRequest{
@@ -209,6 +209,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, mode sppb.E
 	client := sh.getClient()
 	return stream(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
+		sh.session.logger,
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			req.ResumeToken = resumeToken
 			return client.ExecuteStreamingSql(ctx, req)
@@ -705,7 +706,7 @@ func (t *ReadWriteTransaction) Update(ctx context.Context, stmt Statement) (rowC
 	}
 	resultSet, err := sh.getClient().ExecuteSql(ctx, req)
 	if err != nil {
-		return 0, err
+		return 0, toSpannerError(err)
 	}
 	if resultSet.Stats == nil {
 		return 0, spannerErrorf(codes.InvalidArgument, "query passed to Update: %q", stmt.SQL)
@@ -754,7 +755,7 @@ func (t *ReadWriteTransaction) BatchUpdate(ctx context.Context, stmts []Statemen
 		Seqno:       atomic.AddInt64(&t.sequenceNumber, 1),
 	})
 	if err != nil {
-		return nil, err
+		return nil, toSpannerError(err)
 	}
 
 	var counts []int64
@@ -810,6 +811,9 @@ func beginTransaction(ctx context.Context, sid string, client *vkit.Client) (tra
 	})
 	if err != nil {
 		return nil, err
+	}
+	if res.Id == nil {
+		return nil, spannerErrorf(codes.Unknown, "BeginTransaction returned a transaction with a nil ID.")
 	}
 	return res.Id, nil
 }

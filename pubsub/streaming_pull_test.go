@@ -430,7 +430,8 @@ func newMock(t *testing.T) (*Client, *mockServer) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	client, err := NewClient(context.Background(), "P", option.WithGRPCConn(conn))
+	opts := withGRPCHeadersAssertion(t, option.WithGRPCConn(conn))
+	client, err := NewClient(context.Background(), "P", opts...)
 	if err != nil {
 		t.Fatal(err)
 	}

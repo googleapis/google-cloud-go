@@ -93,7 +93,8 @@ func (q Query) SelectPaths(fieldPaths ...FieldPath) Query {
 // A Query can have multiple filters.
 // The path argument can be a single field or a dot-separated sequence of
 // fields, and must not contain any of the runes "˜*/[]".
-// The op argument must be one of "==", "<", "<=", ">" or ">=".
+// The op argument must be one of "==", "<", "<=", ">", ">=", "array-contains",
+// "array-contains-any" or "in".
 func (q Query) Where(path, op string, value interface{}) Query {
 	fp, err := parseDotSeparatedString(path)
 	if err != nil {
@@ -106,7 +107,8 @@ func (q Query) Where(path, op string, value interface{}) Query {
 
 // WherePath returns a new Query that filters the set of results.
 // A Query can have multiple filters.
-// The op argument must be one of "==", "<", "<=", ">" or ">=".
+// The op argument must be one of "==", "<", "<=", ">", ">=", "array-contains",
+// "array-contains-any" or "in".
 func (q Query) WherePath(fp FieldPath, op string, value interface{}) Query {
 	q.filters = append(append([]filter(nil), q.filters...), filter{fp, op, value})
 	return q
@@ -397,12 +399,11 @@ func (q *Query) fieldValuesToCursorValues(fieldValues []interface{}) ([]*pb.Valu
 }
 
 func (q *Query) docSnapshotToCursorValues(ds *DocumentSnapshot, orders []order) ([]*pb.Value, error) {
-	// TODO(jba): error if doc snap does not belong to the right collection.
 	vals := make([]*pb.Value, len(orders))
 	for i, ord := range orders {
 		if ord.isDocumentID() {
 			dp, qp := ds.Ref.Parent.Path, q.path
-			if dp != qp {
+			if !q.allDescendants && dp != qp {
 				return nil, fmt.Errorf("firestore: document snapshot for %s passed to query on %s", dp, qp)
 			}
 			vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{ds.Ref.Path}}
@@ -489,8 +490,12 @@ func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 		op = pb.StructuredQuery_FieldFilter_GREATER_THAN_OR_EQUAL
 	case "==":
 		op = pb.StructuredQuery_FieldFilter_EQUAL
+	case "in":
+		op = pb.StructuredQuery_FieldFilter_IN
 	case "array-contains":
 		op = pb.StructuredQuery_FieldFilter_ARRAY_CONTAINS
+	case "array-contains-any":
+		op = pb.StructuredQuery_FieldFilter_ARRAY_CONTAINS_ANY
 	default:
 		return nil, fmt.Errorf("firestore: invalid operator %q", f.op)
 	}

@@ -790,7 +790,6 @@ func jsonValueToStructValue(v interface{}) *structpb.Value {
 // LogSync logs the Entry synchronously without any buffering. Because LogSync is slow
 // and will block, it is intended primarily for debugging or critical errors.
 // Prefer Log for most uses.
-// TODO(jba): come up with a better name (LogNow?) or eliminate.
 func (l *Logger) LogSync(ctx context.Context, e Entry) error {
 	ent, err := l.toLogEntry(e)
 	if err != nil {

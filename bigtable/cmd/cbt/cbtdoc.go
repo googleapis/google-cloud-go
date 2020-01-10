@@ -17,13 +17,13 @@
 //go:generate go run cbt.go gcpolicy.go -o cbtdoc.go doc
 
 /*
-Cbt is a command-line tool that allows you to interact with Cloud Bigtable.
-The `cbt` tool is a component of the Cloud SDK. You need to [install the Cloud SDK](https://cloud.google.com/bigtable/docs/cbt-overview)
-and the `cbt` tool to use the following commands:
+The `cbt` tool is a command-line tool that allows you to interact with Cloud Bigtable.
+See the [cbt overview](https://cloud.google.com/bigtable/docs/cbt-overview) to learn how to install the `cbt` tool.
 
 Usage:
 
-    cbt [<var>option</var>] command <var>required-argument</var> [<var>optional-argument</var>]
+	cbt [-<option> <option-argument>] <command> <required-argument> [optional-argument]
+
 
 The commands are:
 
@@ -38,6 +38,7 @@ The commands are:
     deletecolumn              Delete all cells in a column
     deletefamily              Delete a column family
     deleterow                 Delete a row
+    deleteallrows             Delete all rows
     deletetable               Delete a table
     doc                       Print godoc-suitable documentation for cbt
     help                      Print help text
@@ -56,11 +57,11 @@ The commands are:
     getsnapshot               Get snapshot info (snapshots alpha)
     deletesnapshot            Delete snapshot in a cluster (snapshots alpha)
     version                   Print the current cbt version
-    createappprofile          Creates app profile for an instance
-    getappprofile             Reads app profile for an instance
+    createappprofile          Create app profile for an instance
+    getappprofile             Read app profile for an instance
     listappprofile            Lists app profile for an instance
-    updateappprofile          Updates app profile for an instance
-    deleteappprofile          Deletes app profile for an instance
+    updateappprofile          Update app profile for an instance
+    deleteappprofile          Delete app profile for an instance
 
 The options are:
 
@@ -71,28 +72,36 @@ The options are:
     -creds string
         Path to the credentials file. If set, uses the application credentials in this file
 
+Example:  cbt -instance=my-instance ls
+
 Use "cbt help \<command>" for more information about a command.
 
 
-Alpha features are not currently available to most Cloud Bigtable customers. The
+Alpha features are not currently available to most Cloud Bigtable customers. Alpha
 features might be changed in backward-incompatible ways and are not recommended
 for production use. They are not subject to any SLA or deprecation policy.
 
-Note: cbt does not support specifying arbitrary bytes on the command line for
-any value that Cloud Bigtable otherwise supports (for example, the row key and
-column qualifier).
+Syntax rules for the Bash shell apply to the `cbt` tool. This means, for example,
+that you must put quotes around values that contain spaces or operators. It also means that
+if a value is arbitrary bytes, you need to prefix it with a dollar sign and use single quotes.
 
-For convenience, values of the -project, -instance, -creds,
--admin-endpoint and -data-endpoint flags may be specified in
-~/.cbtrc in this format:
+Example:
+
+cbt -project my-project -instance my-instance lookup my-table $'\224\257\312W\365:\205d\333\2471\315\'
+
+
+For convenience, you can add values for the -project, -instance, -creds, -admin-endpoint and -data-endpoint
+options to your ~/.cbtrc file in the following format:
+
 
     project = my-project-123
     instance = my-instance
     creds = path-to-account-key.json
     admin-endpoint = hostname:port
     data-endpoint = hostname:port
+    auth-token = AJAvW039NO1nDcijk_J6_rFXG_...
 
-All values are optional, and all will be overridden by flags.
+All values are optional and can be overridden at the command prompt.
 
 
 
@@ -100,7 +109,7 @@ All values are optional, and all will be overridden by flags.
 Count rows in a table
 
 Usage:
-	cbt count <table>
+	cbt count <table-id>
 
 
 
@@ -108,10 +117,10 @@ Usage:
 Create an instance with an initial cluster
 
 Usage:
-	cbt createinstance <instance-id> <display-name> <cluster-id> <zone> <num-nodes> <storage type>
-	  instance-id      Permanent, unique id for the instance
+	cbt createinstance <instance-id> <display-name> <cluster-id> <zone> <num-nodes> <storage-type>
+	  instance-id      Permanent, unique ID for the instance
 	  display-name     Description of the instance
-	  cluster-id       Permanent, unique id for the cluster in the instance
+	  cluster-id       Permanent, unique ID for the cluster in the instance
 	  zone             The zone in which to create the cluster
 	  num-nodes        The number of nodes to create
 	  storage-type     SSD or HDD
@@ -124,8 +133,8 @@ Usage:
 Create a cluster in the configured instance
 
 Usage:
-	cbt createcluster <cluster-id> <zone> <num-nodes> <storage type>
-	  cluster-id       Permanent, unique id for the cluster in the instance
+	cbt createcluster <cluster-id> <zone> <num-nodes> <storage-type>
+	  cluster-id       Permanent, unique ID for the cluster in the instance
 	  zone             The zone in which to create the cluster
 	  num-nodes        The number of nodes to create
 	  storage-type     SSD or HDD
@@ -138,9 +147,9 @@ Usage:
 Create a column family
 
 Usage:
-	cbt createfamily <table> <family>
+	cbt createfamily <table-id> <family>
 
-	    Example cbt createfamily mobile-time-series stats_summary
+	    Example: cbt createfamily mobile-time-series stats_summary
 
 
 
@@ -148,11 +157,12 @@ Usage:
 Create a table
 
 Usage:
-	cbt createtable <table> [families=family[:gcpolicy],...] [splits=split,...]
-	  families     Column families and their associated GC policies. Make sure to quote
-	               this if using shell operators && and ||. For gcpolicy,
+	cbt createtable <table-id> [families=<family>:gcpolicy=<gcpolicy-expression>,...]
+	   [splits=<split-row-key-1>,<split-row-key-2>,...]
+	  families     Column families and their associated garbage collection (gc) policies.
+	               Put gc policies in quotes when they include shell operators && and ||. For gcpolicy,
 	               see "setgcpolicy".
-	  splits       Row key to be used to initially split the table
+	  splits       Row key(s) where the table should initially be split
 
 	    Example: cbt createtable mobile-time-series "families=stats_summary:maxage=10d||maxversions=1,stats_detail:maxage=10d||maxversions=1" splits=tablet,phone
 
@@ -162,8 +172,8 @@ Usage:
 Update a cluster in the configured instance
 
 Usage:
-	cbt updatecluster <cluster-id> [num-nodes=num-nodes]
-	  cluster-id    Permanent, unique id for the cluster in the instance
+	cbt updatecluster <cluster-id> [num-nodes=<num-nodes>]
+	  cluster-id    Permanent, unique ID for the cluster in the instance
 	  num-nodes     The new number of nodes
 
 	    Example: cbt updatecluster my-instance-c1 num-nodes=5
@@ -174,7 +184,7 @@ Usage:
 Delete an instance
 
 Usage:
-	cbt deleteinstance <instance>
+	cbt deleteinstance <instance-id>
 
 	    Example: cbt deleteinstance my-instance
 
@@ -184,7 +194,7 @@ Usage:
 Delete a cluster from the configured instance
 
 Usage:
-	cbt deletecluster <cluster>
+	cbt deletecluster <cluster-id>
 
 	    Example: cbt deletecluster my-instance-c2
 
@@ -194,8 +204,8 @@ Usage:
 Delete all cells in a column
 
 Usage:
-	cbt deletecolumn <table> <row> <family> <column> [app-profile=<app profile id>]
-	  app-profile=<app profile id>        The app profile id to use for the request
+	cbt deletecolumn <table-id> <row-key> <family> <column> [app-profile=<app-profile-id>]
+	  app-profile=<app-profile-id>        The app profile ID to use for the request
 
 	    Example: cbt deletecolumn mobile-time-series phone#4c410523#20190501 stats_summary os_name
 
@@ -205,7 +215,7 @@ Usage:
 Delete a column family
 
 Usage:
-	cbt deletefamily <table> <family>
+	cbt deletefamily <table-id> <family>
 
 	    Example: cbt deletefamily mobile-time-series stats_summary
 
@@ -215,10 +225,20 @@ Usage:
 Delete a row
 
 Usage:
-	cbt deleterow <table> <row> [app-profile=<app profile id>]
-	  app-profile=<app profile id>        The app profile id to use for the request
+	cbt deleterow <table-id> <row-key> [app-profile=<app-profile-id>]
+	  app-profile=<app-profile-id>        The app profile ID to use for the request
 
 	    Example: cbt deleterow mobile-time-series phone#4c410523#20190501
+
+
+
+
+Delete all rows
+
+Usage:
+	cbt deleteallrows <table-id>
+
+	    Example: cbt deleteallrows  mobile-time-series
 
 
 
@@ -226,7 +246,7 @@ Usage:
 Delete a table
 
 Usage:
-	cbt deletetable <table>
+	cbt deletetable <table-id>
 
 	    Example: cbt deletetable mobile-time-series
 
@@ -244,7 +264,7 @@ Usage:
 Print help text
 
 Usage:
-	cbt help [command]
+	cbt help <command>
 
 	    Example: cbt help createtable
 
@@ -270,12 +290,14 @@ Usage:
 Read from a single row
 
 Usage:
-	cbt lookup <table> <row> [columns=[family]:[qualifier],...] [cells-per-column=<n>]  [app-profile=<app profile id>]
-	  columns=[family]:[qualifier],...    Read only these columns, comma-separated
-	  cells-per-column=<n>                Read only this many cells per column
-	  app-profile=<app profile id>        The app profile id to use for the request
+	cbt lookup <table-id> <row-key> [columns=<family>:<qualifier>,...] [cells-per-column=<n>]  [app-profile=<app profile id>]
+	  row-key                             String or raw bytes. Raw bytes must be enclosed in single quotes and have a dollar-sign prefix
+	  columns=<family>:<qualifier>,...    Read only these columns, comma-separated
+	  cells-per-column=<n>                Read only this number of cells per column
+	  app-profile=<app-profile-id>        The app profile ID to use for the request
 
 	 Example: cbt lookup mobile-time-series phone#4c410523#20190501 columns=stats_summary:os_build,os_name cells-per-column=1
+	 Example: cbt lookup mobile-time-series $'\x41\x42'
 
 
 
@@ -284,7 +306,7 @@ List tables and column families
 
 Usage:
 	cbt ls                List tables
-	cbt ls <table>        List column families in <table>
+	cbt ls <table-id>     List column families in a table
 
 	    Example: cbt ls mobile-time-series
 
@@ -302,20 +324,23 @@ Usage:
 Read rows
 
 Usage:
-	cbt read <table> [start=<row>] [end=<row>] [prefix=<prefix>] [regex=<regex>] [columns=[family]:[qualifier],...] [count=<n>] [cells-per-column=<n>] [app-profile=<app profile id>]
-	  start=<row>                         Start reading at this row
-	  end=<row>                           Stop reading before this row
-	  prefix=<prefix>                     Read rows with this prefix
+	cbt read <table-id> [start=<row-key>] [end=<row-key>] [prefix=<row-key-prefix>] [regex=<regex>] [columns=<family>:<qualifier>,...] [count=<n>] [cells-per-column=<n>] [app-profile=<app-profile-id>]
+	  start=<row-key>                     Start reading at this row
+	  end=<row-row>                       Stop reading before this row
+	  prefix=<row-key-prefix>             Read rows with this prefix
 	  regex=<regex>                       Read rows with keys matching this regex
-	  columns=[family]:[qualifier],...    Read only these columns, comma-separated
+	  columns=<family>:<qualifier>,...    Read only these columns, comma-separated
 	  count=<n>                           Read only this many rows
 	  cells-per-column=<n>                Read only this many cells per column
-	  app-profile=<app profile id>        The app profile id to use for the request
+	  app-profile=<app-profile-id>        The app profile ID to use for the request
 
-	    Examples (see write row, to have data to read):
+	    Examples: (see 'set' examples to create data to read)
 	      cbt read mobile-time-series prefix=phone columns=stats_summary:os_build,os_name count=10
 	      cbt read mobile-time-series start=phone#4c410523#20190501 end=phone#4c410523#20190601
 	      cbt read mobile-time-series regex="phone.*" cells-per-column=1
+
+	   Note: Using a regex without also specifying start, end, prefix, or count results in a full
+	   table scan, which can be slow.
 
 
 
@@ -324,16 +349,16 @@ Usage:
 Set value of a cell (write)
 
 Usage:
-	cbt set <table> <row> [app-profile=<app profile id>] family:column=val[@ts] ...
-	  app-profile=<app profile id>        The app profile id to use for the request
-	  family:column=val[@ts] may be repeated to set multiple cells.
+	cbt set <table-id> <row-key> [app-profile=<app-profile-id>] <family>:<column>=<val>[@<timestamp>] ...
+	  app-profile=<app profile id>          The app profile ID to use for the request
+	  <family>:<column>=<val>[@<timestamp>] may be repeated to set multiple cells.
 
-	    ts is an optional integer timestamp.
-	    If it cannot be parsed, the `@ts` part will be
-	    interpreted as part of the value.
+	    timestamp is an optional integer.
+	    If the timestamp cannot be parsed, '@<timestamp>' will be interpreted as part of the value.
+	    For most uses, a timestamp is the number of microseconds since 1970-01-01 00:00:00 UTC.
 
 	    Examples:
-	      cbt set mobile-time-series phone#4c410523#20190501 stats_summary:connected_cell=1@12345 stats_summary:connected_cell=0@54321
+	      cbt set mobile-time-series phone#4c410523#20190501 stats_summary:connected_cell=1@12345 stats_summary:connected_cell=0@1570041766
 	      cbt set mobile-time-series phone#4c410523#20190501 stats_summary:os_build=PQ2A.190405.003 stats_summary:os_name=android
 
 
@@ -343,12 +368,13 @@ Set the garbage-collection policy (age, versions) for a column family
 
 Usage:
 	cbt setgcpolicy <table> <family> ((maxage=<d> | maxversions=<n>) [(and|or) (maxage=<d> | maxversions=<n>),...] | never)
-	  maxage=<d>         Maximum timestamp age to preserve (e.g. "1h", "4d")
+	  maxage=<d>         Maximum timestamp age to preserve. Acceptable units: ms, s, m, h, d
 	  maxversions=<n>    Maximum number of versions to preserve
+	  Put garbage collection policies in quotes when they include shell operators && and ||.
 
 	    Examples:
 	      cbt setgcpolicy mobile-time-series stats_detail maxage=10d
-	      cbt setgcpolicy mobile-time-series stats_summary maxage=10d or maxversion=1
+	      cbt setgcpolicy mobile-time-series stats_summary maxage=10d or maxversions=1
 
 
 
@@ -357,7 +383,8 @@ Usage:
 Block until all the completed writes have been replicated to all the clusters
 
 Usage:
-	cbt waitforreplication <table>
+	cbt waitforreplication <table-id>
+
 
 
 
@@ -415,11 +442,11 @@ Usage:
 
 
 
-Creates app profile for an instance
+Create app profile for an instance
 
 Usage:
-	usage: cbt createappprofile <instance-id> <profile-id> <description> (route-any | [ route-to=<cluster-id> : transactional-writes]) [optional flag]
-	optional flags may be `force`
+	cbt createappprofile <instance-id> <app-profile-id> <description> (route-any | [ route-to=<cluster-id> : transactional-writes]) [-force]
+	  force:  Optional flag to override any warnings causing the command to fail
 
 	    Examples:
 	      cbt createappprofile my-instance multi-cluster "Routes to nearest available cluster" route-any
@@ -428,7 +455,7 @@ Usage:
 
 
 
-Reads app profile for an instance
+Read app profile for an instance
 
 Usage:
 	cbt getappprofile <instance-id> <profile-id>
@@ -444,18 +471,18 @@ Usage:
 
 
 
-Updates app profile for an instance
+Update app profile for an instance
 
 Usage:
-	usage: cbt updateappprofile  <instance-id> <profile-id> <description>(route-any | [ route-to=<cluster-id> : transactional-writes]) [optional flag]
-	optional flags may be `force`
+	cbt updateappprofile  <instance-id> <profile-id> <description>(route-any | [ route-to=<cluster-id> : transactional-writes]) [-force]
+	  force:  Optional flag to override any warnings causing the command to fail
 
 	    Example: cbt updateappprofile my-instance multi-cluster "Use this one." route-any
 
 
 
 
-Deletes app profile for an instance
+Delete app profile for an instance
 
 Usage:
 	cbt deleteappprofile <instance-id> <profile-id>

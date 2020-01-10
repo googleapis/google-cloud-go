@@ -52,7 +52,7 @@ func TestRetryerRespectsServerDelay(t *testing.T) {
 		retryInfoKey: string(b),
 	}
 	retryer := onCodes(gax.Backoff{}, codes.Aborted)
-	err := toSpannerErrorWithMetadata(spannerErrorf(codes.Aborted, "transaction was aborted"), metadata.New(trailers))
+	err := toSpannerErrorWithMetadata(status.Errorf(codes.Aborted, "transaction was aborted"), metadata.New(trailers))
 	maxSeenDelay, shouldRetry := retryer.Retry(err)
 	if !shouldRetry {
 		t.Fatalf("expected shouldRetry to be true")

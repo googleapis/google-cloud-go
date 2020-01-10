@@ -308,6 +308,9 @@ func fromLogEntry(le *logpb.LogEntry) (*logging.Entry, error) {
 		// TODO(jba): convert to map[string]interface{}?
 		payload = x.JsonPayload
 
+	case nil:
+		payload = nil
+
 	default:
 		return nil, fmt.Errorf("logging: unknown payload type: %T", le.Payload)
 	}

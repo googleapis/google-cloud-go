@@ -24,6 +24,11 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
+// NoDedupeID indicates a streaming insert row wants to opt out of best-effort
+// deduplication.
+// It is EXPERIMENTAL and subject to change or removal without notice.
+const NoDedupeID = "NoDedupeID"
+
 // An Inserter does streaming inserts into a BigQuery table.
 // It is safe for concurrent use.
 type Inserter struct {
@@ -200,7 +205,9 @@ func (u *Inserter) newInsertRequest(savers []ValueSaver) (*bq.TableDataInsertAll
 		if err != nil {
 			return nil, err
 		}
-		if insertID == "" {
+		if insertID == NoDedupeID {
+			insertID = ""
+		} else if insertID == "" {
 			insertID = randomIDFn()
 		}
 		m := make(map[string]bq.JsonValue)

@@ -20,14 +20,20 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"log"
+	"os"
 	"strings"
 	"testing"
 	"time"
 
 	itestutil "cloud.google.com/go/internal/testutil"
 	. "cloud.google.com/go/spanner/internal/testutil"
+	"github.com/golang/protobuf/proto"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
+	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -48,10 +54,10 @@ func setupMockedTestServerWithConfigAndClientOptions(t *testing.T, config Client
 				Key: "x-goog-api-client",
 				ValuesValidator: func(token ...string) error {
 					if len(token) != 1 {
-						return spannerErrorf(codes.Internal, "unexpected number of api client token headers: %v", len(token))
+						return status.Errorf(codes.Internal, "unexpected number of api client token headers: %v", len(token))
 					}
 					if !strings.HasPrefix(token[0], "gl-go/") {
-						return spannerErrorf(codes.Internal, "unexpected api client token: %v", token[0])
+						return status.Errorf(codes.Internal, "unexpected api client token: %v", token[0])
 					}
 					return nil
 				},
@@ -94,6 +100,34 @@ func TestValidDatabaseName(t *testing.T) {
 	}
 }
 
+// Test getInstanceName()
+func TestGetInstanceName(t *testing.T) {
+	validDbURI := "projects/spanner-cloud-test/instances/foo/databases/foodb"
+	invalidDbUris := []string{
+		// Completely wrong DB URI.
+		"foobarDB",
+		// Project ID contains "/".
+		"projects/spanner-cloud/test/instances/foo/databases/foodb",
+		// No instance ID.
+		"projects/spanner-cloud-test/instances//databases/foodb",
+	}
+	want := "projects/spanner-cloud-test/instances/foo"
+	got, err := getInstanceName(validDbURI)
+	if err != nil {
+		t.Errorf("getInstanceName(%q) has an error: %q, want nil", validDbURI, err)
+	}
+	if got != want {
+		t.Errorf("getInstanceName(%q) = %q, want %q", validDbURI, got, want)
+	}
+	for _, d := range invalidDbUris {
+		wantErr := "Failed to retrieve instance name"
+		_, err = getInstanceName(d)
+		if !strings.Contains(err.Error(), wantErr) {
+			t.Errorf("getInstanceName(%q) has an error: %q, want error pattern %q", validDbURI, err, wantErr)
+		}
+	}
+}
+
 func TestReadOnlyTransactionClose(t *testing.T) {
 	// Closing a ReadOnlyTransaction shouldn't panic.
 	c := &Client{}
@@ -121,7 +155,7 @@ func TestClient_Single_InvalidArgument(t *testing.T) {
 	t.Parallel()
 	err := testSingleQuery(t, status.Error(codes.InvalidArgument, "Invalid argument"))
 	if status.Code(err) != codes.InvalidArgument {
-		t.Fatalf("got unexpected exception %v, expected InvalidArgument", err)
+		t.Fatalf("got: %v, want: %v", err, codes.InvalidArgument)
 	}
 }
 
@@ -144,7 +178,7 @@ func TestClient_Single_RetryableErrorOnPartialResultSet(t *testing.T) {
 		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 		PartialResultSetExecutionTime{
 			ResumeToken: EncodeResumeToken(2),
-			Err:         spannerErrorf(codes.Internal, "stream terminated by RST_STREAM"),
+			Err:         status.Errorf(codes.Internal, "stream terminated by RST_STREAM"),
 		},
 	)
 	// When the client is fetching the partial result set with resume token 3,
@@ -154,7 +188,7 @@ func TestClient_Single_RetryableErrorOnPartialResultSet(t *testing.T) {
 		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 		PartialResultSetExecutionTime{
 			ResumeToken: EncodeResumeToken(3),
-			Err:         spannerErrorf(codes.Unavailable, "server is unavailable"),
+			Err:         status.Errorf(codes.Unavailable, "server is unavailable"),
 		},
 	)
 	ctx := context.Background()
@@ -177,7 +211,7 @@ func TestClient_Single_NonRetryableErrorOnPartialResultSet(t *testing.T) {
 		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 		PartialResultSetExecutionTime{
 			ResumeToken: EncodeResumeToken(2),
-			Err:         spannerErrorf(codes.Internal, "stream terminated by RST_STREAM"),
+			Err:         status.Errorf(codes.Internal, "stream terminated by RST_STREAM"),
 		},
 	)
 	// 'Session not found' is not retryable and the error will be returned to
@@ -186,7 +220,7 @@ func TestClient_Single_NonRetryableErrorOnPartialResultSet(t *testing.T) {
 		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 		PartialResultSetExecutionTime{
 			ResumeToken: EncodeResumeToken(3),
-			Err:         spannerErrorf(codes.NotFound, "Session not found"),
+			Err:         status.Errorf(codes.NotFound, "Session not found"),
 		},
 	)
 	ctx := context.Background()
@@ -221,14 +255,14 @@ func TestClient_Single_DeadlineExceeded_WithErrors(t *testing.T) {
 		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 		PartialResultSetExecutionTime{
 			ResumeToken: EncodeResumeToken(2),
-			Err:         spannerErrorf(codes.Internal, "stream terminated by RST_STREAM"),
+			Err:         status.Errorf(codes.Internal, "stream terminated by RST_STREAM"),
 		},
 	)
 	server.TestSpanner.AddPartialResultSetError(
 		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 		PartialResultSetExecutionTime{
 			ResumeToken:   EncodeResumeToken(3),
-			Err:           spannerErrorf(codes.Unavailable, "server is unavailable"),
+			Err:           status.Errorf(codes.Unavailable, "server is unavailable"),
 			ExecutionTime: 50 * time.Millisecond,
 		},
 	)
@@ -262,14 +296,14 @@ func TestClient_Single_ContextCanceled_withDeclaredServerErrors(t *testing.T) {
 		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 		PartialResultSetExecutionTime{
 			ResumeToken: EncodeResumeToken(2),
-			Err:         spannerErrorf(codes.Internal, "stream terminated by RST_STREAM"),
+			Err:         status.Errorf(codes.Internal, "stream terminated by RST_STREAM"),
 		},
 	)
 	server.TestSpanner.AddPartialResultSetError(
 		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 		PartialResultSetExecutionTime{
 			ResumeToken: EncodeResumeToken(3),
-			Err:         spannerErrorf(codes.Unavailable, "server is unavailable"),
+			Err:         status.Errorf(codes.Unavailable, "server is unavailable"),
 		},
 	)
 	ctx := context.Background()
@@ -286,6 +320,157 @@ func TestClient_Single_ContextCanceled_withDeclaredServerErrors(t *testing.T) {
 	err := executeSingerQueryWithRowFunc(ctx, client.Single(), f)
 	if status.Code(err) != codes.Canceled {
 		t.Fatalf("got unexpected error %v, expected Canceled", err)
+	}
+}
+
+func TestClient_ResourceBasedRouting_WithEndpointsReturned(t *testing.T) {
+	os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "true")
+	defer os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "")
+
+	// Create two servers. The base server receives the GetInstance request and
+	// returns the instance endpoint of the target server. The client should contact
+	// the target server after getting the instance endpoint.
+	serverBase, optsBase, serverTeardownBase := NewMockedSpannerInMemTestServerWithAddr(t, "localhost:8081")
+	defer serverTeardownBase()
+	serverTarget, optsTarget, serverTeardownTarget := NewMockedSpannerInMemTestServerWithAddr(t, "localhost:8082")
+	defer serverTeardownTarget()
+
+	// Return the instance endpoint.
+	instanceEndpoint := fmt.Sprintf("%s", optsTarget[0])
+	resps := []proto.Message{&instancepb.Instance{
+		EndpointUris: []string{instanceEndpoint},
+	}}
+	serverBase.TestInstanceAdmin.SetResps(resps)
+
+	ctx := context.Background()
+	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "some-project", "some-instance", "some-database")
+	client, err := NewClientWithConfig(ctx, formattedDatabase, ClientConfig{}, optsBase...)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := executeSingerQuery(ctx, client.Single()); err != nil {
+		t.Fatal(err)
+	}
+
+	// The base server should not receive any requests.
+	if _, err := shouldHaveReceived(serverBase.TestSpanner, []interface{}{}); err != nil {
+		t.Fatal(err)
+	}
+
+	// The target server should receive requests.
+	if _, err = shouldHaveReceived(serverTarget.TestSpanner, []interface{}{
+		&sppb.CreateSessionRequest{},
+		&sppb.ExecuteSqlRequest{},
+	}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_ResourceBasedRouting_WithoutEndpointsReturned(t *testing.T) {
+	os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "true")
+	defer os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "")
+
+	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+	defer serverTeardown()
+
+	// Return an empty list of endpoints.
+	resps := []proto.Message{&instancepb.Instance{
+		EndpointUris: []string{},
+	}}
+	server.TestInstanceAdmin.SetResps(resps)
+
+	ctx := context.Background()
+	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "some-project", "some-instance", "some-database")
+	client, err := NewClientWithConfig(ctx, formattedDatabase, ClientConfig{}, opts...)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := executeSingerQuery(ctx, client.Single()); err != nil {
+		t.Fatal(err)
+	}
+
+	// Check if the request goes to the default endpoint.
+	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
+		&sppb.CreateSessionRequest{},
+		&sppb.ExecuteSqlRequest{},
+	}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_ResourceBasedRouting_WithPermissionDeniedError(t *testing.T) {
+	os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "true")
+	defer os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "")
+
+	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+	defer serverTeardown()
+
+	server.TestInstanceAdmin.SetErr(status.Error(codes.PermissionDenied, "Permission Denied"))
+
+	ctx := context.Background()
+	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "some-project", "some-instance", "some-database")
+	// `PermissionDeniedError` causes a warning message to be logged, which is expected.
+	// We set the output to be discarded to avoid spamming the log.
+	logger := log.New(ioutil.Discard, "", log.LstdFlags)
+	client, err := NewClientWithConfig(ctx, formattedDatabase, ClientConfig{logger: logger}, opts...)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := executeSingerQuery(ctx, client.Single()); err != nil {
+		t.Fatal(err)
+	}
+
+	// Fallback to use the default endpoint when calling GetInstance() returns
+	// a PermissionDenied error.
+	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
+		&sppb.CreateSessionRequest{},
+		&sppb.ExecuteSqlRequest{},
+	}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_ResourceBasedRouting_WithUnavailableError(t *testing.T) {
+	os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "true")
+	defer os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "")
+
+	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+	defer serverTeardown()
+
+	resps := []proto.Message{&instancepb.Instance{
+		EndpointUris: []string{},
+	}}
+	server.TestInstanceAdmin.SetResps(resps)
+	server.TestInstanceAdmin.SetErr(status.Error(codes.Unavailable, "Temporary unavailable"))
+
+	ctx := context.Background()
+	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "some-project", "some-instance", "some-database")
+	_, err := NewClientWithConfig(ctx, formattedDatabase, ClientConfig{}, opts...)
+	// The first request will get an error and the server resets the error to nil,
+	// so the next request will be fine. Due to retrying, there is no errors.
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_ResourceBasedRouting_WithInvalidArgumentError(t *testing.T) {
+	os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "true")
+	defer os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "")
+
+	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+	defer serverTeardown()
+
+	server.TestInstanceAdmin.SetErr(status.Error(codes.InvalidArgument, "Invalid argument"))
+
+	ctx := context.Background()
+	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "some-project", "some-instance", "some-database")
+	_, err := NewClientWithConfig(ctx, formattedDatabase, ClientConfig{}, opts...)
+
+	if status.Code(err) != codes.InvalidArgument {
+		t.Fatalf("got unexpected exception %v, expected InvalidArgument", err)
 	}
 }
 
@@ -328,7 +513,7 @@ func executeSingerQueryWithRowFunc(ctx context.Context, tx *ReadOnlyTransaction,
 		}
 	}
 	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
-		return spannerErrorf(codes.Internal, "Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+		return status.Errorf(codes.Internal, "Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
 	}
 	return nil
 }
@@ -471,6 +656,113 @@ func TestClient_ReadWriteTransaction_UnavailableOnBeginAndExecuteStreamingSqlAnd
 	}
 }
 
+func TestClient_ReadWriteTransaction_CommitAborted(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction, SimulatedExecutionTime{
+		Errors: []error{status.Error(codes.Aborted, "Aborted")},
+	})
+	defer teardown()
+	ctx := context.Background()
+	attempts := 0
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		_, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("attempt count mismatch:\nWant: %v\nGot: %v", w, g)
+	}
+}
+
+func TestClient_ReadWriteTransaction_DMLAborted(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	server.TestSpanner.PutExecutionTime(MethodExecuteSql, SimulatedExecutionTime{
+		Errors: []error{status.Error(codes.Aborted, "Aborted")},
+	})
+	defer teardown()
+	ctx := context.Background()
+	attempts := 0
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		_, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("attempt count mismatch:\nWant: %v\nGot: %v", w, g)
+	}
+}
+
+func TestClient_ReadWriteTransaction_BatchDMLAborted(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	server.TestSpanner.PutExecutionTime(MethodExecuteBatchDml, SimulatedExecutionTime{
+		Errors: []error{status.Error(codes.Aborted, "Aborted")},
+	})
+	defer teardown()
+	ctx := context.Background()
+	attempts := 0
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		_, err := tx.BatchUpdate(ctx, []Statement{{SQL: UpdateBarSetFoo}})
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("attempt count mismatch:\nWant: %v\nGot: %v", w, g)
+	}
+}
+
+func TestClient_ReadWriteTransaction_QueryAborted(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql, SimulatedExecutionTime{
+		Errors: []error{status.Error(codes.Aborted, "Aborted")},
+	})
+	defer teardown()
+	ctx := context.Background()
+	attempts := 0
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		iter := tx.Query(ctx, Statement{SQL: SelectFooFromBar})
+		defer iter.Stop()
+		for {
+			_, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("attempt count mismatch:\nWant: %v\nGot: %v", w, g)
+	}
+}
+
 func TestClient_ReadWriteTransaction_AbortedOnExecuteStreamingSqlAndCommit(t *testing.T) {
 	t.Parallel()
 	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
@@ -537,7 +829,7 @@ func testReadWriteTransaction(t *testing.T, executionTimes map[string]SimulatedE
 			rowCount++
 		}
 		if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
-			return spannerErrorf(codes.FailedPrecondition, "Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+			return status.Errorf(codes.FailedPrecondition, "Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
 		}
 		return nil
 	})
@@ -569,6 +861,7 @@ func TestClient_ApplyAtLeastOnce(t *testing.T) {
 }
 
 func TestReadWriteTransaction_ErrUnexpectedEOF(t *testing.T) {
+	t.Parallel()
 	_, client, teardown := setupMockedTestServer(t)
 	defer teardown()
 	ctx := context.Background()
@@ -598,5 +891,78 @@ func TestReadWriteTransaction_ErrUnexpectedEOF(t *testing.T) {
 	}
 	if attempts != 1 {
 		t.Fatalf("unexpected number of attempts: %d, expected %d", attempts, 1)
+	}
+}
+
+func TestReadWriteTransaction_WrapError(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	// Abort the transaction on both the query as well as commit.
+	// The first abort error will be wrapped. The client will unwrap the cause
+	// of the error and retry the transaction. The aborted error on commit
+	// will not be wrapped, but will also be recognized by the client as an
+	// abort that should be retried.
+	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
+		SimulatedExecutionTime{
+			Errors: []error{status.Error(codes.Aborted, "Transaction aborted")},
+		})
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
+			Errors: []error{status.Error(codes.Aborted, "Transaction aborted")},
+		})
+	msg := "query failed"
+	numAttempts := 0
+	ctx := context.Background()
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		numAttempts++
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		for {
+			_, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				// Wrap the error in another error that implements the
+				// (xerrors|errors).Wrapper interface.
+				return &wrappedTestError{err, msg}
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("Unexpected error\nGot: %v\nWant: nil", err)
+	}
+	if g, w := numAttempts, 3; g != w {
+		t.Fatalf("Number of transaction attempts mismatch\nGot: %d\nWant: %d", w, w)
+	}
+
+	// Execute a transaction that returns a non-retryable error that is
+	// wrapped in a custom error. The transaction should return the custom
+	// error.
+	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
+		SimulatedExecutionTime{
+			Errors: []error{status.Error(codes.NotFound, "Table not found")},
+		})
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		numAttempts++
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		for {
+			_, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				// Wrap the error in another error that implements the
+				// (xerrors|errors).Wrapper interface.
+				return &wrappedTestError{err, msg}
+			}
+		}
+		return nil
+	})
+	if err == nil || err.Error() != msg {
+		t.Fatalf("Unexpected error\nGot: %v\nWant: %v", err, msg)
 	}
 }

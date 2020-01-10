@@ -1,5 +1,12 @@
 # Changes
 
+## v1.1.0
+
+- Limit default grpc connections to 4.
+- Fix issues with OpenCensus metric for pull count not including synchronous pull messages.
+- Fix issue with publish bundle size calculations.
+- Add ClearMessages method to pstest server.
+
 ## v1.0.1
 
 Small fix to a package name.

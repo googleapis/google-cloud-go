@@ -122,6 +122,15 @@ func (j *Job) Config() (JobConfig, error) {
 	return bqToJobConfig(j.config, j.c)
 }
 
+// Children returns a job iterator for enumerating child jobs
+// of the current job.  Currently only scripts, a form of query job,
+// will create child jobs.
+func (j *Job) Children(ctx context.Context) *JobIterator {
+	it := j.c.Jobs(ctx)
+	it.ParentJobID = j.ID()
+	return it
+}
+
 func bqToJobConfig(q *bq.JobConfiguration, c *Client) (JobConfig, error) {
 	switch {
 	case q == nil:
@@ -289,9 +298,6 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 		return nil, errors.New("bigquery: query job missing destination table")
 	}
 	dt := bqToTable(destTable, j.c)
-	if totalRows == 0 {
-		pf = nil
-	}
 	it := newRowIterator(ctx, dt, pf)
 	it.Schema = schema
 	it.TotalRows = totalRows
@@ -334,6 +340,16 @@ type JobStatistics struct {
 	TotalBytesProcessed int64
 
 	Details Statistics
+
+	// NumChildJobs indicates the number of child jobs run as part of a script.
+	NumChildJobs int64
+
+	// ParentJobID indicates the origin job for jobs run as part of a script.
+	ParentJobID string
+
+	// ScriptStatistics includes information run as part of a child job within
+	// a script.
+	ScriptStatistics *ScriptStatistics
 }
 
 // Statistics is one of ExtractStatistics, LoadStatistics or QueryStatistics.
@@ -548,6 +564,66 @@ type QueryTimelineSample struct {
 	SlotMillis int64
 }
 
+// ScriptStatistics report information about script-based query jobs.
+type ScriptStatistics struct {
+	EvaluationKind string
+	StackFrames    []*ScriptStackFrame
+}
+
+func bqToScriptStatistics(bs *bq.ScriptStatistics) *ScriptStatistics {
+	if bs == nil {
+		return nil
+	}
+	ss := &ScriptStatistics{
+		EvaluationKind: bs.EvaluationKind,
+	}
+	for _, f := range bs.StackFrames {
+		ss.StackFrames = append(ss.StackFrames, bqToScriptStackFrame(f))
+	}
+	return ss
+}
+
+// ScriptStackFrame represents the location of the statement/expression being evaluated.
+//
+// Line and column numbers are defined as follows:
+//
+// - Line and column numbers start with one.  That is, line 1 column 1 denotes
+//   the start of the script.
+// - When inside a stored procedure, all line/column numbers are relative
+//   to the procedure body, not the script in which the procedure was defined.
+// - Start/end positions exclude leading/trailing comments and whitespace.
+//   The end position always ends with a ";", when present.
+// - Multi-byte Unicode characters are treated as just one column.
+// - If the original script (or procedure definition) contains TAB characters,
+//   a tab "snaps" the indentation forward to the nearest multiple of 8
+//   characters, plus 1. For example, a TAB on column 1, 2, 3, 4, 5, 6 , or 8
+//   will advance the next character to column 9.  A TAB on column 9, 10, 11,
+//   12, 13, 14, 15, or 16 will advance the next character to column 17.
+type ScriptStackFrame struct {
+	StartLine   int64
+	StartColumn int64
+	EndLine     int64
+	EndColumn   int64
+	// Name of the active procedure.  Empty if in a top-level script.
+	ProcedureID string
+	// Text of the current statement/expression.
+	Text string
+}
+
+func bqToScriptStackFrame(bsf *bq.ScriptStackFrame) *ScriptStackFrame {
+	if bsf == nil {
+		return nil
+	}
+	return &ScriptStackFrame{
+		StartLine:   bsf.StartLine,
+		StartColumn: bsf.StartColumn,
+		EndLine:     bsf.EndLine,
+		EndColumn:   bsf.EndColumn,
+		ProcedureID: bsf.ProcedureId,
+		Text:        bsf.Text,
+	}
+}
+
 func (*ExtractStatistics) implementsStatistics() {}
 func (*LoadStatistics) implementsStatistics()    {}
 func (*QueryStatistics) implementsStatistics()   {}
@@ -573,6 +649,7 @@ type JobIterator struct {
 	State           State     // List only jobs in the given state. Defaults to all states.
 	MinCreationTime time.Time // List only jobs created after this time.
 	MaxCreationTime time.Time // List only jobs created before this time.
+	ParentJobID     string    // List only jobs that are children of a given scripting job.
 
 	ctx      context.Context
 	c        *Client
@@ -628,6 +705,9 @@ func (it *JobIterator) fetch(pageSize int, pageToken string) (string, error) {
 	setClientHeader(req.Header())
 	if pageSize > 0 {
 		req.MaxResults(int64(pageSize))
+	}
+	if it.ParentJobID != "" {
+		req.ParentJobId(it.ParentJobID)
 	}
 	res, err := req.Do()
 	if err != nil {
@@ -730,6 +810,9 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 		StartTime:           unixMillisToTime(s.StartTime),
 		EndTime:             unixMillisToTime(s.EndTime),
 		TotalBytesProcessed: s.TotalBytesProcessed,
+		NumChildJobs:        s.NumChildJobs,
+		ParentJobID:         s.ParentJobId,
+		ScriptStatistics:    bqToScriptStatistics(s.ScriptStatistics),
 	}
 	switch {
 	case s.Extract != nil:
