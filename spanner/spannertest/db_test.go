@@ -197,6 +197,25 @@ func TestTableData(t *testing.T) {
 		t.Fatalf("Deleting key range: %v", err)
 	}
 
+	// Add a BYTES column, and populate it with some data.
+	st = db.ApplyDDL(spansql.AlterTable{
+		Name: "Staff",
+		Alteration: spansql.AddColumn{Def: spansql.ColumnDef{
+			Name: "RawBytes",
+			Type: spansql.Type{Base: spansql.Bytes, Len: spansql.MaxLen},
+		}},
+	})
+	if st.Code() != codes.OK {
+		t.Fatalf("Adding column: %v", st.Err())
+	}
+	err = db.Update("Staff", []string{"Name", "ID", "RawBytes"}, []*structpb.ListValue{
+		// bytes {0x01 0x00 0x01} encode as base-64 AQAB.
+		listV(stringV("Jack"), stringV("1"), stringV("AQAB")),
+	})
+	if err != nil {
+		t.Fatalf("Updating rows: %v", err)
+	}
+
 	// Do some complex queries.
 	tests := []struct {
 		q      string
@@ -277,10 +296,26 @@ func TestTableData(t *testing.T) {
 			},
 		},
 		{
+			`SELECT * FROM Staff WHERE Name LIKE "S%"`,
+			nil,
+			[][]interface{}{
+				// These are returned in table column order.
+				// Note that the primary key columns get sorted first.
+				{"Sam", int64(3), int64(9), false, 1.75, nil, nil},
+			},
+		},
+		{
 			`SELECT Name FROM Staff WHERE FirstSeen >= @min`,
 			queryParams{"min": "1996-01-01"},
 			[][]interface{}{
 				{"George"},
+			},
+		},
+		{
+			`SELECT RawBytes FROM Staff WHERE RawBytes IS NOT NULL`,
+			nil,
+			[][]interface{}{
+				{[]byte("\x01\x00\x01")},
 			},
 		},
 	}

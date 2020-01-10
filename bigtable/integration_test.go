@@ -57,6 +57,7 @@ func populatePresidentsGraph(table *Table) error {
 
 var instanceToCreate string
 var instanceToCreateZone string
+var instanceToCreateZone2 string
 
 func init() {
 	// Don't test instance creation by default, as quota is necessary and aborted tests could strand resources.
@@ -64,6 +65,8 @@ func init() {
 		"The id of an instance to create, update and delete. Requires sufficient Cloud Bigtable quota. Requires that it.use-prod is true.")
 	flag.StringVar(&instanceToCreateZone, "it.instance-to-create-zone", "us-central1-b",
 		"The zone in which to create the new test instance.")
+	flag.StringVar(&instanceToCreateZone2, "it.instance-to-create-zone2", "us-east1-c",
+		"The zone in which to create a second cluster in the test instance.")
 }
 
 func TestIntegration_ConditionalMutations(t *testing.T) {
@@ -1164,6 +1167,58 @@ func TestIntegration_Admin(t *testing.T) {
 	if gotRowCount != 5 {
 		t.Errorf("Invalid row count after dropping range: got %v, want %v", gotRowCount, 5)
 	}
+
+	if err = adminClient.DropAllRows(ctx, "mytable"); err != nil {
+		t.Errorf("DropAllRows mytable: %v", err)
+	}
+
+	gotRowCount = 0
+	must(tbl.ReadRows(ctx, RowRange{}, func(row Row) bool {
+		gotRowCount++
+		return true
+	}))
+	if gotRowCount != 0 {
+		t.Errorf("Invalid row count after truncating table: got %v, want %v", gotRowCount, 0)
+	}
+}
+
+func TestIntegration_TableIam(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support IAM Policy creation")
+	}
+
+	timeout := 5 * time.Minute
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	defer adminClient.DeleteTable(ctx, "mytable")
+	if err := adminClient.CreateTable(ctx, "mytable"); err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+
+	// Verify that the IAM Controls work for Tables.
+	iamHandle := adminClient.TableIAM("mytable")
+	p, err := iamHandle.Policy(ctx)
+	if err != nil {
+		t.Errorf("Iam GetPolicy mytable: %v", err)
+	}
+	if err = iamHandle.SetPolicy(ctx, p); err != nil {
+		t.Errorf("Iam SetPolicy mytable: %v", err)
+	}
+	if _, err = iamHandle.TestPermissions(ctx, []string{"bigtable.tables.get"}); err != nil {
+		t.Errorf("Iam TestPermissions mytable: %v", err)
+	}
 }
 
 func TestIntegration_AdminCreateInstance(t *testing.T) {
@@ -1221,7 +1276,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		DisplayName:  "new display name",
 		InstanceType: PRODUCTION,
 		Clusters: []ClusterConfig{
-			{ClusterID: clusterID, NumNodes: 5}},
+			{ClusterID: clusterID, NumNodes: 5, StorageType: HDD}},
 	}
 
 	if err = iAdminClient.UpdateInstanceWithClusters(ctx, confWithClusters); err != nil {
@@ -1247,6 +1302,168 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 
 	if cInfo.ServeNodes != 5 {
 		t.Fatalf("NumNodes: %v, want: %v", cInfo.ServeNodes, 5)
+	}
+
+	if cInfo.StorageType != HDD {
+		t.Fatalf("StorageType: %v, want: %v", cInfo.StorageType, HDD)
+	}
+}
+
+func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
+	if instanceToCreate == "" {
+		t.Skip("instanceToCreate not set, skipping instance update testing")
+	}
+
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support instance creation")
+	}
+
+	timeout := 5 * time.Minute
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+
+	clusterID := instanceToCreate + "-cluster"
+
+	// Create a development instance
+	conf := &InstanceConf{
+		InstanceId:   instanceToCreate,
+		ClusterId:    clusterID,
+		DisplayName:  "test instance",
+		Zone:         instanceToCreateZone,
+		InstanceType: DEVELOPMENT,
+	}
+	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+		t.Fatalf("CreateInstance: %v", err)
+	}
+	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
+
+	iInfo, err := iAdminClient.InstanceInfo(ctx, instanceToCreate)
+	if err != nil {
+		t.Fatalf("InstanceInfo: %v", err)
+	}
+
+	// Basic return values are tested elsewhere, check instance type
+	if iInfo.InstanceType != DEVELOPMENT {
+		t.Fatalf("Instance is not DEVELOPMENT: %v", err)
+	}
+
+	// Update everything we can about the instance in one call.
+	confWithClusters := &InstanceWithClustersConfig{
+		InstanceID:   instanceToCreate,
+		DisplayName:  "new display name",
+		InstanceType: PRODUCTION,
+		Clusters: []ClusterConfig{
+			{ClusterID: clusterID, NumNodes: 5}},
+	}
+
+	results, err := UpdateInstanceAndSyncClusters(ctx, iAdminClient, confWithClusters)
+	if err != nil {
+		t.Fatalf("UpdateInstanceAndSyncClusters: %v", err)
+	}
+
+	wantResults := UpdateInstanceResults{
+		InstanceUpdated: true,
+		UpdatedClusters: []string{clusterID},
+	}
+	if diff := testutil.Diff(*results, wantResults); diff != "" {
+		t.Fatalf("UpdateInstanceResults: got - want +\n%s", diff)
+	}
+
+	iInfo, err = iAdminClient.InstanceInfo(ctx, instanceToCreate)
+	if err != nil {
+		t.Fatalf("InstanceInfo: %v", err)
+	}
+
+	if iInfo.InstanceType != PRODUCTION {
+		t.Fatalf("Instance type is not PRODUCTION: %v", err)
+	}
+	if got, want := iInfo.DisplayName, confWithClusters.DisplayName; got != want {
+		t.Fatalf("Display name: %q, want: %q", got, want)
+	}
+
+	cInfo, err := iAdminClient.GetCluster(ctx, instanceToCreate, clusterID)
+	if err != nil {
+		t.Fatalf("GetCluster: %v", err)
+	}
+
+	if cInfo.ServeNodes != 5 {
+		t.Fatalf("NumNodes: %v, want: %v", cInfo.ServeNodes, 5)
+	}
+
+	// Now add a second cluster as the only change. The first cluster must also be provided so
+	// it is not removed.
+	clusterID2 := clusterID + "-2"
+	confWithClusters = &InstanceWithClustersConfig{
+		InstanceID: instanceToCreate,
+		Clusters: []ClusterConfig{
+			{ClusterID: clusterID},
+			{ClusterID: clusterID2, NumNodes: 3, StorageType: SSD, Zone: instanceToCreateZone2}},
+	}
+
+	results, err = UpdateInstanceAndSyncClusters(ctx, iAdminClient, confWithClusters)
+	if err != nil {
+		t.Fatalf("UpdateInstanceAndSyncClusters: %v %v", confWithClusters, err)
+	}
+
+	wantResults = UpdateInstanceResults{
+		InstanceUpdated: false,
+		CreatedClusters: []string{clusterID2},
+	}
+	if diff := testutil.Diff(*results, wantResults); diff != "" {
+		t.Fatalf("UpdateInstanceResults: got - want +\n%s", diff)
+	}
+
+	// Now update one cluster and delete the other
+	confWithClusters = &InstanceWithClustersConfig{
+		InstanceID: instanceToCreate,
+		Clusters: []ClusterConfig{
+			{ClusterID: clusterID, NumNodes: 4}},
+	}
+
+	results, err = UpdateInstanceAndSyncClusters(ctx, iAdminClient, confWithClusters)
+	if err != nil {
+		t.Fatalf("UpdateInstanceAndSyncClusters: %v %v", confWithClusters, err)
+	}
+
+	wantResults = UpdateInstanceResults{
+		InstanceUpdated: false,
+		UpdatedClusters: []string{clusterID},
+		DeletedClusters: []string{clusterID2},
+	}
+
+	if diff := testutil.Diff(*results, wantResults); diff != "" {
+		t.Fatalf("UpdateInstanceResults: got - want +\n%s", diff)
+	}
+
+	// Make sure the instance looks as we would expect
+	clusters, err := iAdminClient.Clusters(ctx, conf.InstanceId)
+	if err != nil {
+		t.Fatalf("Clusters: %v", err)
+	}
+
+	if len(clusters) != 1 {
+		t.Fatalf("Clusters length %v, want: 1", len(clusters))
+	}
+
+	wantCluster := &ClusterInfo{
+		Name:       clusterID,
+		Zone:       instanceToCreateZone,
+		ServeNodes: 4,
+		State:      "READY",
+	}
+	if diff := testutil.Diff(clusters[0], wantCluster); diff != "" {
+		t.Fatalf("InstanceEquality: got - want +\n%s", diff)
 	}
 }
 
@@ -1379,7 +1596,6 @@ func TestIntegration_Granularity(t *testing.T) {
 		timeout = 5 * time.Minute
 	}
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
-	ctx = mergeOutgoingMetadata(ctx, withGoogleClientInfo())
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {

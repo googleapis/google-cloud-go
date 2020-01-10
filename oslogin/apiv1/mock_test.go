@@ -268,10 +268,8 @@ func TestOsLoginServiceDeleteSshPublicKeyError(t *testing.T) {
 }
 func TestOsLoginServiceGetLoginProfile(t *testing.T) {
 	var name2 string = "name2-1052831874"
-	var suspended bool = false
 	var expectedResponse = &osloginpb.LoginProfile{
-		Name:      name2,
-		Suspended: suspended,
+		Name: name2,
 	}
 
 	mockOsLogin.err = nil
@@ -331,10 +329,12 @@ func TestOsLoginServiceGetSshPublicKey(t *testing.T) {
 	var key string = "key106079"
 	var expirationTimeUsec int64 = 2058878882
 	var fingerprint string = "fingerprint-1375934236"
+	var name2 string = "name2-1052831874"
 	var expectedResponse = &commonpb.SshPublicKey{
 		Key:                key,
 		ExpirationTimeUsec: expirationTimeUsec,
 		Fingerprint:        fingerprint,
+		Name:               name2,
 	}
 
 	mockOsLogin.err = nil
@@ -399,10 +399,8 @@ func TestOsLoginServiceImportSshPublicKey(t *testing.T) {
 	mockOsLogin.resps = append(mockOsLogin.resps[:0], expectedResponse)
 
 	var formattedParent string = fmt.Sprintf("users/%s", "[USER]")
-	var sshPublicKey *commonpb.SshPublicKey = &commonpb.SshPublicKey{}
 	var request = &osloginpb.ImportSshPublicKeyRequest{
-		Parent:       formattedParent,
-		SshPublicKey: sshPublicKey,
+		Parent: formattedParent,
 	}
 
 	c, err := NewClient(context.Background(), clientOpt)
@@ -430,10 +428,8 @@ func TestOsLoginServiceImportSshPublicKeyError(t *testing.T) {
 	mockOsLogin.err = gstatus.Error(errCode, "test error")
 
 	var formattedParent string = fmt.Sprintf("users/%s", "[USER]")
-	var sshPublicKey *commonpb.SshPublicKey = &commonpb.SshPublicKey{}
 	var request = &osloginpb.ImportSshPublicKeyRequest{
-		Parent:       formattedParent,
-		SshPublicKey: sshPublicKey,
+		Parent: formattedParent,
 	}
 
 	c, err := NewClient(context.Background(), clientOpt)
@@ -454,10 +450,12 @@ func TestOsLoginServiceUpdateSshPublicKey(t *testing.T) {
 	var key string = "key106079"
 	var expirationTimeUsec int64 = 2058878882
 	var fingerprint string = "fingerprint-1375934236"
+	var name2 string = "name2-1052831874"
 	var expectedResponse = &commonpb.SshPublicKey{
 		Key:                key,
 		ExpirationTimeUsec: expirationTimeUsec,
 		Fingerprint:        fingerprint,
+		Name:               name2,
 	}
 
 	mockOsLogin.err = nil

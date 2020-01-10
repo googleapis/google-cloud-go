@@ -110,12 +110,11 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		copts := append(grpcHeadersChecker.CallOptions(), option.WithHTTPClient(hc))
-		client, err = NewClient(ctx, projID, copts...)
+		client, err = NewClient(ctx, projID, option.WithHTTPClient(hc))
 		if err != nil {
 			log.Fatal(err)
 		}
-		storageClient, err = storage.NewClient(ctx, copts...)
+		storageClient, err = storage.NewClient(ctx, option.WithHTTPClient(hc))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -140,8 +139,8 @@ func initIntegrationTest() func() {
 			log.Println("Integration tests skipped. See CONTRIBUTING.md for details")
 			return func() {}
 		}
-		bqOpts := append(grpcHeadersChecker.CallOptions(), option.WithTokenSource(ts))
-		sOpts := append(grpcHeadersChecker.CallOptions(), option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl)))
+		bqOpts := []option.ClientOption{option.WithTokenSource(ts)}
+		sOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl))}
 		cleanup := func() {}
 		now := time.Now().UTC()
 		if *record {
@@ -161,18 +160,24 @@ func initIntegrationTest() func() {
 				if err != nil {
 					log.Fatal(err)
 				}
-				bqOpts = append(grpcHeadersChecker.CallOptions(), option.WithHTTPClient(hc))
+				bqOpts = append(bqOpts, option.WithHTTPClient(hc))
 				hc, err = recorder.Client(ctx, sOpts...)
 				if err != nil {
 					log.Fatal(err)
 				}
-				sOpts = append(grpcHeadersChecker.CallOptions(), option.WithHTTPClient(hc))
+				sOpts = append(sOpts, option.WithHTTPClient(hc))
 				cleanup = func() {
 					if err := recorder.Close(); err != nil {
 						log.Printf("saving recording: %v", err)
 					}
 				}
 			}
+		} else {
+			// When we're not recording, do http header checking.
+			// We can't check universally because option.WithHTTPClient is
+			// incompatible with gRPC options.
+			bqOpts = append(bqOpts, grpcHeadersChecker.CallOptions()...)
+			sOpts = append(sOpts, grpcHeadersChecker.CallOptions()...)
 		}
 		var err error
 		client, err = NewClient(ctx, projID, bqOpts...)
@@ -391,6 +396,65 @@ func TestIntegration_TableMetadata(t *testing.T) {
 
 }
 
+func TestIntegration_RangePartitioning(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := dataset.Table(tableIDs.New())
+
+	schema := Schema{
+		{Name: "name", Type: StringFieldType},
+		{Name: "somevalue", Type: IntegerFieldType},
+	}
+
+	wantedRange := &RangePartitioningRange{
+		Start:    10,
+		End:      135,
+		Interval: 25,
+	}
+
+	wantedPartitioning := &RangePartitioning{
+		Field: "somevalue",
+		Range: wantedRange,
+	}
+
+	err := table.Create(context.Background(), &TableMetadata{
+		Schema:            schema,
+		RangePartitioning: wantedPartitioning,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer table.Delete(ctx)
+	md, err := table.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if md.RangePartitioning == nil {
+		t.Fatal("expected range partitioning, got nil")
+	}
+	got := md.RangePartitioning.Field
+	if wantedPartitioning.Field != got {
+		t.Errorf("RangePartitioning Field: got %v, want %v", got, wantedPartitioning.Field)
+	}
+	if md.RangePartitioning.Range == nil {
+		t.Fatal("expected a range definition, got nil")
+	}
+	gotInt64 := md.RangePartitioning.Range.Start
+	if gotInt64 != wantedRange.Start {
+		t.Errorf("Range.Start: got %v, wanted %v", gotInt64, wantedRange.Start)
+	}
+	gotInt64 = md.RangePartitioning.Range.End
+	if gotInt64 != wantedRange.End {
+		t.Errorf("Range.End: got %v, wanted %v", gotInt64, wantedRange.End)
+	}
+	gotInt64 = md.RangePartitioning.Range.Interval
+	if gotInt64 != wantedRange.Interval {
+		t.Errorf("Range.Interval: got %v, wanted %v", gotInt64, wantedRange.Interval)
+	}
+}
 func TestIntegration_RemoveTimePartitioning(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -610,12 +674,20 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	origAccess := append([]*AccessEntry(nil), md.Access...)
-	newEntry := &AccessEntry{
-		Role:       ReaderRole,
-		Entity:     "Joe@example.com",
-		EntityType: UserEmailEntity,
+	newEntries := []*AccessEntry{
+		{
+			Role:       ReaderRole,
+			Entity:     "Joe@example.com",
+			EntityType: UserEmailEntity,
+		},
+		{
+			Role:       ReaderRole,
+			Entity:     "allUsers",
+			EntityType: IAMMemberEntity,
+		},
 	}
-	newAccess := append(md.Access, newEntry)
+
+	newAccess := append(md.Access, newEntries...)
 	dm := DatasetMetadataToUpdate{Access: newAccess}
 	md, err = dataset.Update(ctx, dm, md.ETag)
 	if err != nil {
@@ -627,9 +699,41 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 			t.Log("could not restore dataset access list")
 		}
 	}()
-	if diff := testutil.Diff(md.Access, newAccess); diff != "" {
+	for _, v := range md.Access {
+		fmt.Printf("md %+v\n", v)
+	}
+	for _, v := range newAccess {
+		fmt.Printf("newAccess %+v\n", v)
+	}
+	if diff := testutil.Diff(md.Access, newAccess, cmpopts.SortSlices(lessAccessEntries)); diff != "" {
 		t.Fatalf("got=-, want=+:\n%s", diff)
 	}
+}
+
+// Comparison function for AccessEntries to enable order insensitive equality checking.
+func lessAccessEntries(x, y *AccessEntry) bool {
+	if x.Entity < y.Entity {
+		return true
+	}
+	if x.Entity > y.Entity {
+		return false
+	}
+	if x.EntityType < y.EntityType {
+		return true
+	}
+	if x.EntityType > y.EntityType {
+		return false
+	}
+	if x.Role < y.Role {
+		return true
+	}
+	if x.Role > y.Role {
+		return false
+	}
+	if x.View == nil {
+		return y.View != nil
+	}
+	return false
 }
 
 func TestIntegration_DatasetUpdateLabels(t *testing.T) {
@@ -727,6 +831,50 @@ func TestIntegration_Tables(t *testing.T) {
 	})
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestIntegration_SimpleRowResults(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	testCases := []struct {
+		description string
+		query       string
+		want        [][]Value
+	}{
+		{
+			description: "literals",
+			query:       "select 17 as foo",
+			want:        [][]Value{{int64(17)}},
+		},
+		{
+			description: "empty results",
+			query:       "SELECT * FROM (select 17 as foo) where false",
+			want:        [][]Value{},
+		},
+		{
+			// Note: currently CTAS returns the rows due to the destination table reference,
+			// but it's not clear that it should.
+			// https://github.com/googleapis/google-cloud-go/issues/1467 for followup.
+			description: "ctas ddl",
+			query:       fmt.Sprintf("CREATE TABLE %s.%s AS SELECT 17 as foo", dataset.DatasetID, tableIDs.New()),
+			want:        [][]Value{{int64(17)}},
+		},
+	}
+	for _, tc := range testCases {
+		curCase := tc
+		t.Run(curCase.description, func(t *testing.T) {
+			t.Parallel()
+			q := client.Query(curCase.query)
+			it, err := q.Read(ctx)
+			if err != nil {
+				t.Fatalf("%s read error: %v", curCase.description, err)
+			}
+			checkReadAndTotalRows(t, curCase.description, it, curCase.want)
+		})
 	}
 }
 
@@ -1622,6 +1770,89 @@ func TestIntegration_QueryDryRun(t *testing.T) {
 	}
 }
 
+func TestIntegration_Scripting(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	sql := `
+	-- Declare a variable to hold names as an array.
+	DECLARE top_names ARRAY<STRING>;
+	-- Build an array of the top 100 names from the year 2017.
+	SET top_names = (
+	  SELECT ARRAY_AGG(name ORDER BY number DESC LIMIT 100)
+	  FROM ` + "`bigquery-public-data`" + `.usa_names.usa_1910_current
+	  WHERE year = 2017
+	);
+	-- Which names appear as words in Shakespeare's plays?
+	SELECT
+	  name AS shakespeare_name
+	FROM UNNEST(top_names) AS name
+	WHERE name IN (
+	  SELECT word
+	  FROM ` + "`bigquery-public-data`" + `.samples.shakespeare
+	);
+	`
+	q := client.Query(sql)
+	job, err := q.Run(ctx)
+	if err != nil {
+		t.Fatalf("failed to run parent job: %v", err)
+	}
+	status, err := job.Wait(ctx)
+	if err != nil {
+		t.Fatalf("failed to wait for completion: %v", err)
+	}
+	if status.Err() != nil {
+		t.Fatalf("job terminated with error: %v", err)
+	}
+
+	queryStats, ok := status.Statistics.Details.(*QueryStatistics)
+	if !ok {
+		t.Fatalf("failed to fetch query statistics")
+	}
+
+	want := "SCRIPT"
+	if queryStats.StatementType != want {
+		t.Errorf("statement type mismatch. got %s want %s", queryStats.StatementType, want)
+	}
+
+	if status.Statistics.NumChildJobs <= 0 {
+		t.Errorf("expected script to indicate nonzero child jobs, got %d", status.Statistics.NumChildJobs)
+	}
+
+	// Ensure child jobs are present.
+	var childJobs []*Job
+
+	it := job.Children(ctx)
+	for {
+		job, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		childJobs = append(childJobs, job)
+	}
+	if len(childJobs) == 0 {
+		t.Fatal("Script had no child jobs.")
+	}
+
+	for _, cj := range childJobs {
+		cStatus := cj.LastStatus()
+		if cStatus.Statistics.ParentJobID != job.ID() {
+			t.Errorf("child job %q doesn't indicate parent.  got %q, want %q", cj.ID(), cStatus.Statistics.ParentJobID, job.ID())
+		}
+		if cStatus.Statistics.ScriptStatistics == nil {
+			t.Errorf("child job %q doesn't have script statistics present", cj.ID())
+		}
+		if cStatus.Statistics.ScriptStatistics.EvaluationKind == "" {
+			t.Errorf("child job %q didn't indicate evaluation kind", cj.ID())
+		}
+	}
+
+}
+
 func TestIntegration_ExtractExternal(t *testing.T) {
 	// Create a table, extract it to GCS, then query it externally.
 	if client == nil {
@@ -1902,6 +2133,18 @@ func testLocation(t *testing.T, loc string) {
 	})
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	tableMetadata, err := table.Metadata(ctx)
+	if err != nil {
+		t.Fatalf("failed to get table metadata: %v", err)
+	}
+	wantLoc := loc
+	if loc == "" && client.Location != "" {
+		wantLoc = client.Location
+	}
+	if tableMetadata.Location != wantLoc {
+		t.Errorf("Location on table doesn't match.  Got %s want %s", tableMetadata.Location, wantLoc)
 	}
 	defer table.Delete(ctx)
 	loader := table.LoaderFrom(NewReaderSource(strings.NewReader("a,0\nb,1\nc,2\n")))
@@ -2241,20 +2484,25 @@ func TestIntegration_RoutineLifecycle(t *testing.T) {
 		t.Errorf("Language mismatch. got %s want %s", curMeta.Language, want)
 	}
 
-	// Perform an update to change the routine body.
+	// Perform an update to change the routine body and description.
 	want = "x * 4"
+	wantDescription := "an updated description"
 	// during beta, update doesn't allow partial updates.  Provide all fields.
 	newMeta, err := routine.Update(ctx, &RoutineMetadataToUpdate{
-		Body:       want,
-		Arguments:  curMeta.Arguments,
-		ReturnType: curMeta.ReturnType,
-		Type:       curMeta.Type,
+		Body:        want,
+		Arguments:   curMeta.Arguments,
+		Description: wantDescription,
+		ReturnType:  curMeta.ReturnType,
+		Type:        curMeta.Type,
 	}, curMeta.ETag)
 	if err != nil {
 		t.Fatalf("Update: %v", err)
 	}
 	if newMeta.Body != want {
-		t.Fatalf("Update failed.  want %s got %s", want, newMeta.Body)
+		t.Fatalf("Update body failed. want %s got %s", want, newMeta.Body)
+	}
+	if newMeta.Description != wantDescription {
+		t.Fatalf("Update description failed. want %s got %s", wantDescription, newMeta.Description)
 	}
 
 	// Ensure presence when enumerating the model list.

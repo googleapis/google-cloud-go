@@ -111,6 +111,13 @@ func (cd ColumnDef) SQL() string {
 	if cd.NotNull {
 		str += " NOT NULL"
 	}
+	if cd.Type.Base == Timestamp && cd.AllowCommitTimestamp != nil {
+		if *cd.AllowCommitTimestamp {
+			str += " OPTIONS (allow_commit_timestamp = true)"
+		} else {
+			str += " OPTIONS (allow_commit_timestamp = null)"
+		}
+	}
 	return str
 }
 

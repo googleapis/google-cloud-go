@@ -19,18 +19,22 @@ package spanner
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"regexp"
-	"sync/atomic"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
+	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"google.golang.org/api/option"
+	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
+	field_mask "google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -50,7 +54,8 @@ const (
 )
 
 var (
-	validDBPattern = regexp.MustCompile("^projects/[^/]+/instances/[^/]+/databases/[^/]+$")
+	validDBPattern       = regexp.MustCompile("^projects/[^/]+/instances/[^/]+/databases/[^/]+$")
+	validInstancePattern = regexp.MustCompile("^projects/[^/]+/instances/[^/]+")
 )
 
 func validDatabaseName(db string) error {
@@ -61,19 +66,21 @@ func validDatabaseName(db string) error {
 	return nil
 }
 
+func getInstanceName(db string) (string, error) {
+	matches := validInstancePattern.FindStringSubmatch(db)
+	if len(matches) == 0 {
+		return "", fmt.Errorf("Failed to retrieve instance name from %q according to pattern %q",
+			db, validInstancePattern.String())
+	}
+	return matches[0], nil
+}
+
 // Client is a client for reading and writing data to a Cloud Spanner database.
 // A client is safe to use concurrently, except for its Close method.
 type Client struct {
-	// rr must be accessed through atomic operations.
-	rr      uint32
-	clients []*vkit.Client
-
-	database string
-	// Metadata to be sent with each request.
-	md           metadata.MD
+	sc           *sessionClient
 	idleSessions *sessionPool
-	// sessionLabels for the sessions created by this client.
-	sessionLabels map[string]string
+	logger       *log.Logger
 }
 
 // ClientConfig has configurations for the client.
@@ -89,6 +96,10 @@ type ClientConfig struct {
 	// See https://cloud.google.com/spanner/docs/reference/rpc/google.spanner.v1#session
 	// for more info.
 	SessionLabels map[string]string
+
+	// logger is the logger to use for this client. If it is nil, all logging
+	// will be directed to the standard logger.
+	logger *log.Logger
 }
 
 // errDial returns error for dialing to Cloud Spanner.
@@ -106,27 +117,52 @@ func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD) context.Co
 	return metadata.NewOutgoingContext(ctx, md)
 }
 
+// getInstanceEndpoint returns an instance-specific endpoint if one exists. If
+// multiple endpoints exist, it returns the first one.
+func getInstanceEndpoint(ctx context.Context, database string, opts ...option.ClientOption) (string, error) {
+	instanceName, err := getInstanceName(database)
+	if err != nil {
+		return "", fmt.Errorf("Failed to resolve endpoint: %v", err)
+	}
+
+	c, err := instance.NewInstanceAdminClient(ctx, opts...)
+	if err != nil {
+		return "", err
+	}
+	defer c.Close()
+
+	req := &instancepb.GetInstanceRequest{
+		Name: instanceName,
+		FieldMask: &field_mask.FieldMask{
+			Paths: []string{"endpoint_uris"},
+		},
+	}
+
+	resp, err := c.GetInstance(ctx, req)
+	if err != nil {
+		return "", err
+	}
+
+	endpointURIs := resp.GetEndpointUris()
+
+	if len(endpointURIs) > 0 {
+		return endpointURIs[0], nil
+	}
+
+	// Return empty string when no endpoints exist.
+	return "", nil
+}
+
 // NewClient creates a client to a database. A valid database name has the
 // form projects/PROJECT_ID/instances/INSTANCE_ID/databases/DATABASE_ID. It uses
 // a default configuration.
 func NewClient(ctx context.Context, database string, opts ...option.ClientOption) (*Client, error) {
-	return NewClientWithConfig(ctx, database, ClientConfig{}, opts...)
+	return NewClientWithConfig(ctx, database, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig}, opts...)
 }
 
 // NewClientWithConfig creates a client to a database. A valid database name has
 // the form projects/PROJECT_ID/instances/INSTANCE_ID/databases/DATABASE_ID.
 func NewClientWithConfig(ctx context.Context, database string, config ClientConfig, opts ...option.ClientOption) (c *Client, err error) {
-	c = &Client{
-		database: database,
-		md:       metadata.Pairs(resourcePrefixHeader, database),
-	}
-
-	// Make a copy of labels.
-	c.sessionLabels = make(map[string]string)
-	for k, v := range config.SessionLabels {
-		c.sessionLabels[k] = v
-	}
-
 	// Prepare gRPC channels.
 	if config.NumChannels == 0 {
 		config.NumChannels = numChannels
@@ -137,7 +173,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.MaxOpened = uint64(config.NumChannels * 100)
 	}
 	if config.MaxBurst == 0 {
-		config.MaxBurst = 10
+		config.MaxBurst = DefaultSessionPoolConfig.MaxBurst
 	}
 
 	// Validate database path.
@@ -156,6 +192,32 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 			option.WithoutAuthentication(),
 		}
 		opts = append(opts, emulatorOpts...)
+	} else if os.Getenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING") == "true" {
+		// Fetch the instance-specific endpoint.
+		reqOpts := []option.ClientOption{option.WithEndpoint(endpoint)}
+		reqOpts = append(reqOpts, opts...)
+		instanceEndpoint, err := getInstanceEndpoint(ctx, database, reqOpts...)
+
+		if err != nil {
+			// If there is a PermissionDenied error, fall back to use the global endpoint
+			// or the user-specified endpoint.
+			if status.Code(err) == codes.PermissionDenied {
+				logf(config.logger, `
+Warning: The client library attempted to connect to an endpoint closer to your
+Cloud Spanner data but was unable to do so. The client library will fall back
+and route requests to the global Spanner endpoint (spanner.googleapis.com),
+which may result in increased latency. We recommend including the scope
+https://www.googleapis.com/auth/spanner.admin so that the client library can
+get an instance-specific endpoint and efficiently route requests.
+`)
+			} else {
+				return nil, err
+			}
+		}
+
+		if instanceEndpoint != "" {
+			opts = append(opts, option.WithEndpoint(instanceEndpoint))
+		}
 	}
 
 	// gRPC options.
@@ -174,33 +236,37 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	// TODO(deklerk): This should be replaced with a balancer with
 	// config.NumChannels connections, instead of config.NumChannels
 	// clients.
+	var clients []*vkit.Client
 	for i := 0; i < config.NumChannels; i++ {
 		client, err := vkit.NewClient(ctx, allOpts...)
 		if err != nil {
 			return nil, errDial(i, err)
 		}
-		c.clients = append(c.clients, client)
+		clients = append(clients, client)
 	}
 
-	// Prepare session pool.
-	// TODO: support more loadbalancing options.
-	config.SessionPoolConfig.getRPCClient = func() (*vkit.Client, error) {
-		return c.rrNext(), nil
+	// TODO(loite): Remove as the original map cannot be changed by the user
+	// anyways, and the client library is also not changing it.
+	// Make a copy of labels.
+	sessionLabels := make(map[string]string)
+	for k, v := range config.SessionLabels {
+		sessionLabels[k] = v
 	}
-	config.SessionPoolConfig.sessionLabels = c.sessionLabels
-	sp, err := newSessionPool(database, config.SessionPoolConfig, c.md)
+	// Create a session client.
+	sc := newSessionClient(clients, database, sessionLabels, metadata.Pairs(resourcePrefixHeader, database), config.logger)
+	// Create a session pool.
+	config.SessionPoolConfig.sessionLabels = sessionLabels
+	sp, err := newSessionPool(sc, config.SessionPoolConfig)
 	if err != nil {
-		c.Close()
+		sc.close()
 		return nil, err
 	}
-	c.idleSessions = sp
+	c = &Client{
+		sc:           sc,
+		idleSessions: sp,
+		logger:       config.logger,
+	}
 	return c, nil
-}
-
-// rrNext returns the next available vkit Cloud Spanner RPC client in a
-// round-robin manner.
-func (c *Client) rrNext() *vkit.Client {
-	return c.clients[atomic.AddUint32(&c.rr, 1)%uint32(len(c.clients))]
 }
 
 // Close closes the client.
@@ -208,9 +274,7 @@ func (c *Client) Close() {
 	if c.idleSessions != nil {
 		c.idleSessions.close()
 	}
-	for _, gpc := range c.clients {
-		gpc.Close()
-	}
+	c.sc.close()
 }
 
 // Single provides a read-only snapshot transaction optimized for the case
@@ -273,8 +337,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	}()
 
 	// Create session.
-	sc := c.rrNext()
-	s, err = createSession(ctx, sc, c.database, c.sessionLabels, c.md)
+	s, err = c.sc.createSession(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -318,8 +381,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 // BatchReadOnlyTransactionFromID reconstruct a BatchReadOnlyTransaction from
 // BatchReadOnlyTransactionID
 func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) *BatchReadOnlyTransaction {
-	sc := c.rrNext()
-	s := &session{valid: true, client: sc, id: tid.sid, createTime: time.Now(), md: c.md}
+	s := c.sc.sessionWithID(tid.sid)
 	sh := &sessionHandle{session: s}
 
 	t := &BatchReadOnlyTransaction{
@@ -452,4 +514,14 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 	defer func() { trace.EndSpan(ctx, err) }()
 	t := &writeOnlyTransaction{c.idleSessions}
 	return t.applyAtLeastOnce(ctx, ms...)
+}
+
+// logf logs the given message to the given logger, or the standard logger if
+// the given logger is nil.
+func logf(logger *log.Logger, format string, v ...interface{}) {
+	if logger == nil {
+		log.Printf(format, v...)
+	} else {
+		logger.Printf(format, v...)
+	}
 }

@@ -105,7 +105,7 @@ func makeClient(t *testing.T) (*spanner.Client, *dbadmin.DatabaseAdminClient, fu
 	}
 }
 
-func TestSpannerBasics(t *testing.T) {
+func TestIntegration_SpannerBasics(t *testing.T) {
 	client, adminClient, cleanup := makeClient(t)
 	defer cleanup()
 

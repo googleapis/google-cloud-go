@@ -1,2 +1,0 @@
-input directory path, go module;package flag, gRPC ServiceConfig path flag, API service config path flag
-google/cloud/texttospeech/v1, --go-gapic-package cloud.google.com/go/texttospeech/apiv1;texttospeech, --grpc-service-config google/cloud/texttospeech/v1/texttospeech_grpc_service_config.json, --gapic-service-config google/cloud/texttospeech/v1/texttospeech_v1.yaml

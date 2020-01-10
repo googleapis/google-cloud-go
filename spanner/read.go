@@ -48,11 +48,11 @@ func errEarlyReadEnd() error {
 
 // stream is the internal fault tolerant method for streaming data from Cloud
 // Spanner.
-func stream(ctx context.Context, rpc func(ct context.Context, resumeToken []byte) (streamingReceiver, error), setTimestamp func(time.Time), release func(error)) *RowIterator {
+func stream(ctx context.Context, logger *log.Logger, rpc func(ct context.Context, resumeToken []byte) (streamingReceiver, error), setTimestamp func(time.Time), release func(error)) *RowIterator {
 	ctx, cancel := context.WithCancel(ctx)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.RowIterator")
 	return &RowIterator{
-		streamd:      newResumableStreamDecoder(ctx, rpc),
+		streamd:      newResumableStreamDecoder(ctx, logger, rpc),
 		rowd:         &partialResultSetDecoder{},
 		setTimestamp: setTimestamp,
 		release:      release,
@@ -295,6 +295,9 @@ type resumableStreamDecoder struct {
 	// resumable.
 	rpc func(ctx context.Context, restartToken []byte) (streamingReceiver, error)
 
+	// logger is the logger to use.
+	logger *log.Logger
+
 	// stream is the current RPC streaming receiver.
 	stream streamingReceiver
 
@@ -330,9 +333,10 @@ type resumableStreamDecoder struct {
 // newResumableStreamDecoder creates a new resumeableStreamDecoder instance.
 // Parameter rpc should be a function that creates a new stream beginning at the
 // restartToken if non-nil.
-func newResumableStreamDecoder(ctx context.Context, rpc func(ct context.Context, restartToken []byte) (streamingReceiver, error)) *resumableStreamDecoder {
+func newResumableStreamDecoder(ctx context.Context, logger *log.Logger, rpc func(ct context.Context, restartToken []byte) (streamingReceiver, error)) *resumableStreamDecoder {
 	return &resumableStreamDecoder{
 		ctx:                         ctx,
+		logger:                      logger,
 		rpc:                         rpc,
 		maxBytesBetweenResumeTokens: atomic.LoadInt32(&maxBytesBetweenResumeTokens),
 		backoff:                     DefaultRetryBackoff,
@@ -503,7 +507,7 @@ func (d *resumableStreamDecoder) next() bool {
 			return true
 
 		default:
-			log.Printf("Unexpected resumableStreamDecoder.state: %v", d.state)
+			logf(d.logger, "Unexpected resumableStreamDecoder.state: %v", d.state)
 			return false
 		}
 	}

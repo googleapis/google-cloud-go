@@ -307,8 +307,11 @@ func (s *server) runOneDDL(ctx context.Context, stmt spansql.DDLStmt) *status.St
 }
 
 func (s *server) CreateSession(ctx context.Context, req *spannerpb.CreateSessionRequest) (*spannerpb.Session, error) {
-	s.logf("CreateSession(%q)", req.Database)
+	//s.logf("CreateSession(%q)", req.Database)
+	return s.newSession(), nil
+}
 
+func (s *server) newSession() *spannerpb.Session {
 	id := genRandomSession()
 	now := time.Now()
 	sess := &session{
@@ -323,7 +326,18 @@ func (s *server) CreateSession(ctx context.Context, req *spannerpb.CreateSession
 	s.sessions[id] = sess
 	s.mu.Unlock()
 
-	return sess.Proto(), nil
+	return sess.Proto()
+}
+
+func (s *server) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCreateSessionsRequest) (*spannerpb.BatchCreateSessionsResponse, error) {
+	//s.logf("BatchCreateSessions(%q)", req.Database)
+
+	var sessions []*spannerpb.Session
+	for i := int32(0); i < req.GetSessionCount(); i++ {
+		sessions = append(sessions, s.newSession())
+	}
+
+	return &spannerpb.BatchCreateSessionsResponse{Session: sessions}, nil
 }
 
 func (s *server) GetSession(ctx context.Context, req *spannerpb.GetSessionRequest) (*spannerpb.Session, error) {
@@ -342,7 +356,7 @@ func (s *server) GetSession(ctx context.Context, req *spannerpb.GetSessionReques
 // TODO: ListSessions
 
 func (s *server) DeleteSession(ctx context.Context, req *spannerpb.DeleteSessionRequest) (*emptypb.Empty, error) {
-	s.logf("DeleteSession(%q)", req.Name)
+	//s.logf("DeleteSession(%q)", req.Name)
 
 	s.mu.Lock()
 	sess, ok := s.sessions[req.Name]

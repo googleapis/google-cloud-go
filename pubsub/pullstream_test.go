@@ -92,10 +92,11 @@ func TestPullStreamGet_ResourceUnavailable(t *testing.T) {
 	pb.RegisterSubscriberServer(srv.Gsrv, &s)
 	srv.Start()
 
-	client, err := NewClient(ctx, "P",
+	opts := withGRPCHeadersAssertion(t,
 		option.WithEndpoint(srv.Addr),
 		option.WithoutAuthentication(),
 		option.WithGRPCDialOption(grpc.WithInsecure()))
+	client, err := NewClient(ctx, "P", opts...)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -185,13 +185,13 @@ func TestTraceServiceCreateSpan(t *testing.T) {
 
 	mockTrace.resps = append(mockTrace.resps[:0], expectedResponse)
 
-	var formattedName string = fmt.Sprintf("projects/%s/traces/%s/spans/%s", "[PROJECT]", "[TRACE]", "[SPAN]")
+	var name string = "name3373707"
 	var spanId string = "spanId-2011840976"
 	var displayName *cloudtracepb.TruncatableString = &cloudtracepb.TruncatableString{}
 	var startTime *timestamppb.Timestamp = &timestamppb.Timestamp{}
 	var endTime *timestamppb.Timestamp = &timestamppb.Timestamp{}
 	var request = &cloudtracepb.Span{
-		Name:        formattedName,
+		Name:        name,
 		SpanId:      spanId,
 		DisplayName: displayName,
 		StartTime:   startTime,
@@ -222,13 +222,13 @@ func TestTraceServiceCreateSpanError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockTrace.err = gstatus.Error(errCode, "test error")
 
-	var formattedName string = fmt.Sprintf("projects/%s/traces/%s/spans/%s", "[PROJECT]", "[TRACE]", "[SPAN]")
+	var name string = "name3373707"
 	var spanId string = "spanId-2011840976"
 	var displayName *cloudtracepb.TruncatableString = &cloudtracepb.TruncatableString{}
 	var startTime *timestamppb.Timestamp = &timestamppb.Timestamp{}
 	var endTime *timestamppb.Timestamp = &timestamppb.Timestamp{}
 	var request = &cloudtracepb.Span{
-		Name:        formattedName,
+		Name:        name,
 		SpanId:      spanId,
 		DisplayName: displayName,
 		StartTime:   startTime,

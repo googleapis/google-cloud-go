@@ -15,6 +15,7 @@
 package pubsub
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"strings"
@@ -25,13 +26,18 @@ import (
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	"cloud.google.com/go/internal/version"
 	kms "cloud.google.com/go/kms/apiv1"
+	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
+	pb "google.golang.org/genproto/googleapis/pubsub/v1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -56,6 +62,16 @@ func extractMessageData(m *Message) *messageData {
 	}
 }
 
+func withGRPCHeadersAssertion(t *testing.T, opts ...option.ClientOption) []option.ClientOption {
+	grpcHeadersEnforcer := &testutil.HeadersEnforcer{
+		OnFailure: t.Errorf,
+		Checkers: []*testutil.HeaderChecker{
+			testutil.XGoogClientHeaderChecker,
+		},
+	}
+	return append(grpcHeadersEnforcer.CallOptions(), opts...)
+}
+
 func integrationTestClient(ctx context.Context, t *testing.T) *Client {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
@@ -68,7 +84,8 @@ func integrationTestClient(ctx context.Context, t *testing.T) *Client {
 	if ts == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
-	client, err := NewClient(ctx, projID, option.WithTokenSource(ts))
+	opts := withGRPCHeadersAssertion(t, option.WithTokenSource(ts))
+	client, err := NewClient(ctx, projID, opts...)
 	if err != nil {
 		t.Fatalf("Creating client error: %v", err)
 	}
@@ -76,7 +93,7 @@ func integrationTestClient(ctx context.Context, t *testing.T) *Client {
 }
 
 func TestIntegration_All(t *testing.T) {
-	t.Parallel()
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1633")
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -181,6 +198,24 @@ func TestIntegration_All(t *testing.T) {
 	}
 }
 
+// withGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request and returns the
+// updated context.
+func withGoogleClientInfo(ctx context.Context) context.Context {
+	ctxMD, _ := metadata.FromOutgoingContext(ctx)
+	kv := []string{
+		"gl-go",
+		version.Go(),
+		"gax",
+		gax.Version,
+		"grpc",
+		grpc.Version,
+	}
+
+	allMDs := append([]metadata.MD{ctxMD}, metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...)))
+	return metadata.NewOutgoingContext(ctx, metadata.Join(allMDs...))
+}
+
 func testPublishAndReceive(t *testing.T, topic *Topic, sub *Subscription, maxMsgs int, synchronous bool, numMsgs, extraBytes int) {
 	ctx := context.Background()
 	var msgs []*Message
@@ -252,6 +287,11 @@ func testPublishAndReceive(t *testing.T, topic *Topic, sub *Subscription, maxMsg
 // menu, choose the account, click the Roles dropdown, and select "Pub/Sub > Pub/Sub Admin".
 // TODO(jba): move this to a testing package within cloud.google.com/iam, so we can re-use it.
 func testIAM(ctx context.Context, h *iam.Handle, permission string) (msg string, ok bool) {
+	// Manually adding withGoogleClientInfo here because this code only takes
+	// a handle with a grpc.ClientConn that has the "x-goog-api-client" header enforcer,
+	// but unfortunately not the underlying infrastructure that takes pre-set headers.
+	ctx = withGoogleClientInfo(ctx)
+
 	// Attempting to add an non-existent identity  (e.g. "alice@example.com") causes the service
 	// to return an internal error, so use a real identity.
 	const member = "domain:google.com"
@@ -304,8 +344,72 @@ func testIAM(ctx context.Context, h *iam.Handle, permission string) (msg string,
 	return "", true
 }
 
+func TestIntegration_LargePublishSize(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1636")
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	// Calculate the largest possible message length that is still valid.
+	// First, calculate the max length of the encoded message accounting for the topic name.
+	length := MaxPublishRequestBytes - calcFieldSizeString(topic.String())
+	// Next, account for the overhead from encoding an individual PubsubMessage,
+	// and the inner PubsubMessage.Data field.
+	pbMsgOverhead := 1 + proto.SizeVarint(uint64(length))
+	dataOverhead := 1 + proto.SizeVarint(uint64(length-pbMsgOverhead))
+	maxLengthSingleMessage := length - pbMsgOverhead - dataOverhead
+
+	publishReq := &pb.PublishRequest{
+		Topic: topic.String(),
+		Messages: []*pb.PubsubMessage{
+			{
+				Data: bytes.Repeat([]byte{'A'}, maxLengthSingleMessage),
+			},
+		},
+	}
+
+	if got := proto.Size(publishReq); got != MaxPublishRequestBytes {
+		t.Fatalf("Created request size of %d bytes,\nwant %f bytes", got, MaxPublishRequestBytes)
+	}
+
+	// Publishing the max length message by itself should succeed.
+	msg := &Message{
+		Data: bytes.Repeat([]byte{'A'}, maxLengthSingleMessage),
+	}
+	r := topic.Publish(ctx, msg)
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("Failed to publish max length message: %v", err)
+	}
+
+	// Publish a small message first and make sure the max length message
+	// is added to its own bundle.
+	smallMsg := &Message{
+		Data: []byte{'A'},
+	}
+	topic.Publish(ctx, smallMsg)
+	r = topic.Publish(ctx, msg)
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("Failed to publish max length message after a small message: %v", err)
+	}
+
+	// Increase the data byte string by 1 byte, which should cause the request to fail,
+	// specifically due to exceeding the bundle byte limit.
+	msg.Data = append(msg.Data, 'A')
+	r = topic.Publish(ctx, msg)
+	if _, err := r.Get(ctx); err != ErrOversizedMessage {
+		t.Fatalf("Should throw item size too large error, got %v", err)
+	}
+}
+
 func TestIntegration_CancelReceive(t *testing.T) {
-	t.Parallel()
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1666")
 	ctx, cancel := context.WithCancel(context.Background())
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -361,7 +465,7 @@ func TestIntegration_CancelReceive(t *testing.T) {
 }
 
 func TestIntegration_CreateSubscription_NeverExpire(t *testing.T) {
-	t.Parallel()
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1637")
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -423,7 +527,7 @@ func findServiceAccountEmail(ctx context.Context, t *testing.T) string {
 }
 
 func TestIntegration_UpdateSubscription(t *testing.T) {
-	t.Parallel()
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1643")
 	ctx := context.Background()
 
 	client := integrationTestClient(ctx, t)
@@ -551,7 +655,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 }
 
 func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
-	t.Parallel()
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1702")
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -630,7 +734,7 @@ func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
 // NOTE: This test should be skipped by open source contributors. It requires
 // whitelisting, a (gsuite) organization project, and specific permissions.
 func TestIntegration_UpdateTopicLabels(t *testing.T) {
-	t.Parallel()
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1669")
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -681,7 +785,6 @@ func TestIntegration_UpdateTopicLabels(t *testing.T) {
 }
 
 func TestIntegration_PublicTopic(t *testing.T) {
-	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -707,7 +810,6 @@ func TestIntegration_PublicTopic(t *testing.T) {
 
 func TestIntegration_Errors(t *testing.T) {
 	// Test various edge conditions.
-	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -768,7 +870,7 @@ func TestIntegration_Errors(t *testing.T) {
 }
 
 func TestIntegration_MessageStoragePolicy_TopicLevel(t *testing.T) {
-	t.Parallel()
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1599")
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -854,7 +956,8 @@ func TestIntegration_MessageStoragePolicy_ProjectLevel(t *testing.T) {
 	if ts == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
-	client, err := NewClient(ctx, projID, option.WithTokenSource(ts))
+	opts := withGRPCHeadersAssertion(t, option.WithTokenSource(ts))
+	client, err := NewClient(ctx, projID, opts...)
 	if err != nil {
 		t.Fatalf("Creating client error: %v", err)
 	}
@@ -877,7 +980,6 @@ func TestIntegration_MessageStoragePolicy_ProjectLevel(t *testing.T) {
 }
 
 func TestIntegration_CreateTopic_KMS(t *testing.T) {
-	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -951,7 +1053,6 @@ func TestIntegration_CreateTopic_KMS(t *testing.T) {
 }
 
 func TestIntegration_CreateTopic_MessageStoragePolicy(t *testing.T) {
-	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -975,5 +1076,83 @@ func TestIntegration_CreateTopic_MessageStoragePolicy(t *testing.T) {
 	want := tc
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Fatalf("\ngot: - want: +\n%s", diff)
+	}
+}
+
+func TestIntegration_CreateSubscription_DeadLetterPolicy(t *testing.T) {
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	deadLetterTopic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer deadLetterTopic.Delete(ctx)
+	defer deadLetterTopic.Stop()
+
+	// We don't set MaxDeliveryAttempts in DeadLetterPolicy so that we can test
+	// that MaxDeliveryAttempts defaults properly to 5 if not set.
+	cfg := SubscriptionConfig{
+		Topic: topic,
+		DeadLetterPolicy: &DeadLetterPolicy{
+			DeadLetterTopic: deadLetterTopic.String(),
+		},
+	}
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), cfg); err != nil {
+		t.Fatalf("CreateSub error: %v", err)
+	}
+	defer sub.Delete(ctx)
+
+	got, err := sub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := SubscriptionConfig{
+		Topic:               topic,
+		AckDeadline:         10 * time.Second,
+		RetainAckedMessages: false,
+		RetentionDuration:   defaultRetentionDuration,
+		ExpirationPolicy:    defaultExpirationPolicy,
+		DeadLetterPolicy: &DeadLetterPolicy{
+			DeadLetterTopic:     deadLetterTopic.String(),
+			MaxDeliveryAttempts: 5,
+		},
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("\ngot: - want: +\n%s", diff)
+	}
+
+	res := topic.Publish(ctx, &Message{
+		Data: []byte("failed message"),
+	})
+	if _, err := res.Get(ctx); err != nil {
+		t.Fatalf("Publish message error: %v", err)
+	}
+
+	ctx2, cancel := context.WithCancel(ctx)
+	numAttempts := 1
+	err = sub.Receive(ctx2, func(_ context.Context, m *Message) {
+		if numAttempts >= 5 {
+			cancel()
+			m.Ack()
+			return
+		}
+		if m.DeliveryAttempt != numAttempts {
+			t.Fatalf("Message delivery attempt: %d does not match numAttempts: %d\n", m.DeliveryAttempt, numAttempts)
+		}
+		numAttempts++
+		m.Nack()
+	})
+	if err != nil {
+		t.Fatalf("Streaming pull error: %v\n", err)
 	}
 }

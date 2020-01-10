@@ -675,6 +675,10 @@ const (
 
 	// ViewEntity is a BigQuery view.
 	ViewEntity
+
+	// IAMMemberEntity represents entities present in IAM but not represented using
+	// the other entity types.
+	IAMMemberEntity
 )
 
 func (e *AccessEntry) toBQ() (*bq.DatasetAccess, error) {
@@ -690,6 +694,8 @@ func (e *AccessEntry) toBQ() (*bq.DatasetAccess, error) {
 		q.SpecialGroup = e.Entity
 	case ViewEntity:
 		q.View = e.View.toBQ()
+	case IAMMemberEntity:
+		q.IamMember = e.Entity
 	default:
 		return nil, fmt.Errorf("bigquery: unknown entity type %d", e.EntityType)
 	}
@@ -714,6 +720,9 @@ func bqToAccessEntry(q *bq.DatasetAccess, c *Client) (*AccessEntry, error) {
 	case q.View != nil:
 		e.View = c.DatasetInProject(q.View.ProjectId, q.View.DatasetId).Table(q.View.TableId)
 		e.EntityType = ViewEntity
+	case q.IamMember != "":
+		e.Entity = q.IamMember
+		e.EntityType = IAMMemberEntity
 	default:
 		return nil, errors.New("bigquery: invalid access value")
 	}

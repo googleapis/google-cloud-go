@@ -45,6 +45,7 @@ import (
 	"cloud.google.com/go/internal/uid"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
@@ -297,7 +298,10 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 	defer client.Close()
 	h := testHelper{t}
 
-	b := client.Bucket(bucketName)
+	b := client.Bucket(uidSpace.New())
+	h.mustCreate(b, testutil.ProjID(), nil)
+	defer h.mustDeleteBucket(b)
+
 	attrs := h.mustBucketAttrs(b)
 	if attrs.VersioningEnabled {
 		t.Fatal("bucket should not have versioning by default")
@@ -366,7 +370,6 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 }
 
 func TestIntegration_BucketPolicyOnly(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1480")
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -416,6 +419,87 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 	ua = BucketAttrsToUpdate{BucketPolicyOnly: &BucketPolicyOnly{Enabled: false}}
 	attrs = h.mustUpdateBucket(bkt, ua)
 	if got, want := attrs.BucketPolicyOnly.Enabled, false; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+
+	// Check that the object ACLs are the same.
+	// The update to BucketPolicyOnly may be delayed in propagation, so retry
+	// for up to 11 seconds before failing.
+	timeout := time.After(11 * time.Second)
+	var acls []ACLRule
+	for {
+		select {
+		case <-timeout:
+			t.Fatalf("object ACL list failed: %v", err)
+		default:
+		}
+		acls, err = o.ACL().List(ctx)
+		if err == nil {
+			// Check that ACL rules contain custom ACL from above.
+			if !containsACL(acls, aclEntity, RoleReader) {
+				t.Fatalf("expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
+			}
+			break
+		}
+		time.Sleep(200 * time.Millisecond)
+	}
+
+}
+
+func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1652")
+
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	h := testHelper{t}
+	bkt := client.Bucket(uidSpace.New())
+	h.mustCreate(bkt, testutil.ProjID(), nil)
+	defer h.mustDeleteBucket(bkt)
+
+	// Insert an object with custom ACL.
+	o := bkt.Object("uniformBucketLevelAccess")
+	defer func() {
+		if err := o.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
+	wc := o.NewWriter(ctx)
+	wc.ContentType = "text/plain"
+	h.mustWrite(wc, []byte("test"))
+	a := o.ACL()
+	aclEntity := ACLEntity("user-test@example.com")
+	err := a.Set(ctx, aclEntity, RoleReader)
+	if err != nil {
+		t.Fatalf("set ACL failed: %v", err)
+	}
+
+	// Enable UniformBucketLevelAccess.
+	ua := BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}}
+	attrs := h.mustUpdateBucket(bkt, ua)
+	if got, want := attrs.UniformBucketLevelAccess.Enabled, true; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+	if got := attrs.UniformBucketLevelAccess.LockedTime; got.IsZero() {
+		t.Fatal("got a zero time value, want a populated value")
+	}
+
+	// Confirm BucketAccessControl returns error.
+	_, err = bkt.ACL().List(ctx)
+	if err == nil {
+		t.Fatal("expected Bucket ACL list to fail")
+	}
+
+	// Confirm ObjectAccessControl returns error.
+	_, err = o.ACL().List(ctx)
+	if err == nil {
+		t.Fatal("expected Object ACL list to fail")
+	}
+
+	// Disable UniformBucketLevelAccess.
+	ua = BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: false}}
+	attrs = h.mustUpdateBucket(bkt, ua)
+	if got, want := attrs.UniformBucketLevelAccess.Enabled, false; got != want {
 		t.Fatalf("got %v, want %v", got, want)
 	}
 
@@ -522,9 +606,19 @@ func TestIntegration_Objects(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
+	// Reset testTime, 'cause object last modification time should be within 5 min
+	// from test (test iteration if -count passed) start time.
+	testTime = time.Now().UTC()
+	newBucketName := uidSpace.New()
 	h := testHelper{t}
-	bkt := client.Bucket(bucketName)
+	bkt := client.Bucket(newBucketName)
 
+	h.mustCreate(bkt, testutil.ProjID(), nil)
+	defer func() {
+		if err := killBucket(ctx, client, newBucketName); err != nil {
+			log.Printf("deleting %q: %v", newBucketName, err)
+		}
+	}()
 	const defaultType = "text/plain"
 
 	// Populate object names and make a map for their contents.
@@ -545,6 +639,8 @@ func TestIntegration_Objects(t *testing.T) {
 	}
 
 	testObjectIterator(t, bkt, objects)
+	testObjectsIterateSelectedAttrs(t, bkt, objects)
+	testObjectsIterateAllSelectedAttrs(t, bkt, objects)
 
 	// Test Reader.
 	for _, obj := range objects {
@@ -695,9 +791,9 @@ func TestIntegration_Objects(t *testing.T) {
 	copyObj, err := bkt.Object(copyName).CopierFrom(bkt.Object(objName)).Run(ctx)
 	if err != nil {
 		t.Errorf("Copier.Run failed with %v", err)
-	} else if !namesEqual(copyObj, bucketName, copyName) {
+	} else if !namesEqual(copyObj, newBucketName, copyName) {
 		t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
-			copyObj.Bucket, copyObj.Name, bucketName, copyName)
+			copyObj.Bucket, copyObj.Name, newBucketName, copyName)
 	}
 
 	// Copying with attributes.
@@ -708,9 +804,9 @@ func TestIntegration_Objects(t *testing.T) {
 	if err != nil {
 		t.Errorf("Copier.Run failed with %v", err)
 	} else {
-		if !namesEqual(copyObj, bucketName, copyName) {
+		if !namesEqual(copyObj, newBucketName, copyName) {
 			t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
-				copyObj.Bucket, copyObj.Name, bucketName, copyName)
+				copyObj.Bucket, copyObj.Name, newBucketName, copyName)
 		}
 		if copyObj.ContentEncoding != contentEncoding {
 			t.Errorf("Copy ContentEncoding: got %q, want %q", copyObj.ContentEncoding, contentEncoding)
@@ -818,13 +914,13 @@ func TestIntegration_Objects(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	slurp := h.mustRead(publicClient.Bucket(bucketName).Object(publicObj))
+	slurp := h.mustRead(publicClient.Bucket(newBucketName).Object(publicObj))
 	if !bytes.Equal(slurp, contents[publicObj]) {
 		t.Errorf("Public object's content: got %q, want %q", slurp, contents[publicObj])
 	}
 
 	// Test writer error handling.
-	wc := publicClient.Bucket(bucketName).Object(publicObj).NewWriter(ctx)
+	wc := publicClient.Bucket(newBucketName).Object(publicObj).NewWriter(ctx)
 	if _, err := wc.Write([]byte("hello")); err != nil {
 		t.Errorf("Write unexpectedly failed with %v", err)
 	}
@@ -945,6 +1041,67 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 		t.Errorf("ObjectIterator.Next: %s", msg)
 	}
 	// TODO(jba): test query.Delimiter != ""
+}
+
+func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
+	// Create a query that will only select the "Name" attr of objects, and
+	// invoke object listing.
+	query := &Query{Prefix: ""}
+	query.SetAttrSelection([]string{"Name"})
+
+	var gotNames []string
+	it := bkt.Objects(context.Background(), query)
+	for {
+		attrs, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		gotNames = append(gotNames, attrs.Name)
+
+		if len(attrs.Bucket) > 0 {
+			t.Errorf("Bucket field not selected, want empty, got = %v", attrs.Bucket)
+		}
+	}
+
+	sortedNames := make([]string, len(objects))
+	copy(sortedNames, objects)
+	sort.Strings(sortedNames)
+	sort.Strings(gotNames)
+
+	if !cmp.Equal(sortedNames, gotNames) {
+		t.Errorf("names = %v, want %v", gotNames, sortedNames)
+	}
+}
+
+func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
+	// Tests that all selected attributes work - query succeeds (without actually
+	// verifying the returned results).
+	query := &Query{Prefix: ""}
+	var selectedAttrs []string
+	for k := range attrToFieldMap {
+		selectedAttrs = append(selectedAttrs, k)
+	}
+	query.SetAttrSelection(selectedAttrs)
+
+	count := 0
+	it := bkt.Objects(context.Background(), query)
+	for {
+		_, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		count++
+	}
+
+	if count != len(objects) {
+		t.Errorf("count = %v, want %v", count, len(objects))
+	}
 }
 
 func TestIntegration_SignedURL(t *testing.T) {
@@ -1221,6 +1378,7 @@ func putURL(url string, headers map[string][]string, payload io.Reader) ([]byte,
 }
 
 func TestIntegration_ACL(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1652")
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -1715,9 +1873,10 @@ func TestIntegration_BucketIAM(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
-
-	bkt := client.Bucket(bucketName)
-
+	h := testHelper{t}
+	bkt := client.Bucket(uidSpace.New())
+	h.mustCreate(bkt, testutil.ProjID(), nil)
+	defer h.mustDeleteBucket(bkt)
 	// This bucket is unique to this test run. So we don't have
 	// to worry about other runs interfering with our IAM policy
 	// changes.
@@ -2468,6 +2627,7 @@ func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
 }
 
 func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1632")
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -2516,6 +2676,7 @@ func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
 }
 
 func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1565")
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -2823,17 +2984,30 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 }
 
 func TestIntegration_HMACKey(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1526")
-
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
 
 	projectID := testutil.ProjID()
-	serviceAccountEmail, err := client.ServiceAccount(ctx, projectID)
-	if err != nil {
-		t.Fatalf("Failed to get service account: %v", err)
+
+	// Use the service account email from the user's credentials. Requires that the
+	// credentials are set via a JSON credentials file.
+	// Note that a service account may only have up to 5 active HMAC keys at once; if
+	// we see flakes because of this, we should consider switching to using a project
+	// pool.
+	credentials := testutil.CredentialsEnv(ctx, "GCLOUD_TESTS_GOLANG_KEY")
+	if credentials == nil {
+		t.Fatal("credentials could not be determined, is GCLOUD_TESTS_GOLANG_KEY set correctly?")
 	}
+	if credentials.JSON == nil {
+		t.Fatal("could not read the JSON key file, is GCLOUD_TESTS_GOLANG_KEY set correctly?")
+	}
+	conf, err := google.JWTConfigFromJSON(credentials.JSON)
+	if err != nil {
+		t.Fatal(err)
+	}
+	serviceAccountEmail := conf.Email
+
 	hmacKey, err := client.CreateHMACKey(ctx, projectID, serviceAccountEmail)
 	if err != nil {
 		t.Fatalf("Failed to create HMACKey: %v", err)
@@ -2849,7 +3023,7 @@ func TestIntegration_HMACKey(t *testing.T) {
 	hkh := client.HMACKeyHandle(projectID, hmacKey.AccessID)
 	// 1. Ensure that we CANNOT delete an ACTIVE key.
 	if err := hkh.Delete(ctx); err == nil {
-		t.Fatalf("Unexpectedly deleted key whose state is ACTIVE: %v", err)
+		t.Fatal("Unexpectedly deleted key whose state is ACTIVE: No error from Delete.")
 	}
 
 	invalidStates := []HMACState{"", Deleted, "active", "inactive", "foo_bar"}
@@ -2890,7 +3064,23 @@ func TestIntegration_HMACKey(t *testing.T) {
 		t.Fatalf("Unexpected updated state %q, expected %q", got, want)
 	}
 
-	// 3. Finally set it to back to Inactive and
+	// 3. Verify that keys are listed as expected.
+	iter := client.ListHMACKeys(ctx, projectID)
+	count := 0
+	for ; ; count++ {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("Failed to ListHMACKeys: %v", err)
+		}
+	}
+	if count == 0 {
+		t.Fatal("Failed to list any HMACKeys")
+	}
+
+	// 4. Finally set it to back to Inactive and
 	// then retry the deletion which should now succeed.
 	_, _ = hkh.Update(ctx, HMACKeyAttrsToUpdate{
 		State: Inactive,
@@ -2911,22 +3101,6 @@ func TestIntegration_HMACKey(t *testing.T) {
 		t.Fatalf("Unexpected error: %v", err)
 	}
 
-	// 4. Perform some iterations.
-	iter := client.ListHMACKeys(ctx, projectID)
-	var gotKeys []*HMACKey
-	for {
-		key, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatalf("Failed to ListHMACKeys: %v", err)
-		}
-		gotKeys = append(gotKeys, key)
-	}
-	if len(gotKeys) == 0 {
-		t.Fatal("Failed to list any HMACKeys")
-	}
 }
 
 type testHelper struct {
@@ -3096,6 +3270,13 @@ func killBucket(ctx context.Context, client *Client, bucketName string) error {
 		}
 		if err != nil {
 			return err
+		}
+		// Objects with a hold must have the hold released.
+		if objAttrs.EventBasedHold || objAttrs.TemporaryHold {
+			obj := bkt.Object(objAttrs.Name)
+			if _, err := obj.Update(ctx, ObjectAttrsToUpdate{EventBasedHold: false, TemporaryHold: false}); err != nil {
+				fmt.Errorf("removing hold from %q: %v", bucketName+"/"+objAttrs.Name, err)
+			}
 		}
 		if err := bkt.Object(objAttrs.Name).Delete(ctx); err != nil {
 			return fmt.Errorf("deleting %q: %v", bucketName+"/"+objAttrs.Name, err)

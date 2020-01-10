@@ -80,6 +80,11 @@ var (
 	dialGRPC         = gtransport.Dial
 	onGCE            = gcemd.OnGCE
 	serviceRegexp    = regexp.MustCompile(`^[a-z]([-a-z0-9_.]{0,253}[a-z0-9])?$`)
+
+	// For testing only.
+	// When the profiling loop has exited without error and this channel is
+	// non-nil, "true" will be sent to this channel.
+	profilingDone chan bool
 )
 
 const (
@@ -129,6 +134,9 @@ type Config struct {
 	// than Go 1.8.
 	MutexProfiling bool
 
+	// When true, collecting the CPU profiles is disabled.
+	NoCPUProfiling bool
+
 	// When true, collecting the allocation profiles is disabled.
 	NoAllocProfiling bool
 
@@ -167,6 +175,11 @@ type Config struct {
 	// and doesn't need to be initialized. It needs to be set in rare cases where
 	// the metadata server is present but is flaky or otherwise misbehave.
 	Zone string
+
+	// numProfiles is the number of profiles which should be collected before
+	// the profile collection loop exits.When numProfiles is 0, profiles will
+	// be collected for the duration of the program. For testing only.
+	numProfiles int
 }
 
 // allowUntilSuccess is an object that will perform action till
@@ -231,7 +244,11 @@ func start(cfg Config, options ...option.ClientOption) error {
 		return err
 	}
 
-	a := initializeAgent(pb.NewProfilerServiceClient(conn))
+	a, err := initializeAgent(pb.NewProfilerServiceClient(conn))
+	if err != nil {
+		debugLog("failed to start the profiling agent: %v", err)
+		return err
+	}
 	go pollProfilerService(withXGoogHeader(ctx), a)
 	return nil
 }
@@ -304,10 +321,11 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 	md := grpcmd.New(map[string]string{})
 
 	gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		debugLog("creating a new profile via profiler service")
 		var err error
 		p, err = a.client.CreateProfile(ctx, &req, grpc.Trailer(&md))
 		if err != nil {
-			debugLog("failed to create a profile, will retry: %v", err)
+			debugLog("failed to create profile, will retry: %v", err)
 		}
 		return err
 	}, gax.WithRetry(func() gax.Retryer {
@@ -450,7 +468,10 @@ func withXGoogHeader(ctx context.Context, keyval ...string) context.Context {
 	return grpcmd.NewOutgoingContext(ctx, md)
 }
 
-func initializeAgent(c pb.ProfilerServiceClient) *agent {
+// initializeAgent initializes the profiling agent. It returns an error if
+// profile collection should not be started because collection is disabled
+// for all profile types.
+func initializeAgent(c pb.ProfilerServiceClient) (*agent, error) {
 	labels := map[string]string{languageLabel: "go"}
 	if config.Zone != "" {
 		labels[zoneNameLabel] = config.Zone
@@ -470,7 +491,10 @@ func initializeAgent(c pb.ProfilerServiceClient) *agent {
 		profileLabels[instanceLabel] = config.Instance
 	}
 
-	profileTypes := []pb.ProfileType{pb.ProfileType_CPU}
+	var profileTypes []pb.ProfileType
+	if !config.NoCPUProfiling {
+		profileTypes = append(profileTypes, pb.ProfileType_CPU)
+	}
 	if !config.NoHeapProfiling {
 		profileTypes = append(profileTypes, pb.ProfileType_HEAP)
 	}
@@ -484,12 +508,16 @@ func initializeAgent(c pb.ProfilerServiceClient) *agent {
 		profileTypes = append(profileTypes, pb.ProfileType_CONTENTION)
 	}
 
+	if len(profileTypes) == 0 {
+		return nil, fmt.Errorf("collection is not enabled for any profile types")
+	}
+
 	return &agent{
 		client:        c,
 		deployment:    d,
 		profileLabels: profileLabels,
 		profileTypes:  profileTypes,
-	}
+	}, nil
 }
 
 func initializeConfig(cfg Config) error {
@@ -568,8 +596,12 @@ func initializeConfig(cfg Config) error {
 func pollProfilerService(ctx context.Context, a *agent) {
 	debugLog("Stackdriver Profiler Go Agent version: %s", version.Repo)
 	debugLog("profiler has started")
-	for {
+	for i := 0; config.numProfiles == 0 || i < config.numProfiles; i++ {
 		p := a.createProfile(ctx)
 		a.profileAndUpload(ctx, p)
+	}
+
+	if profilingDone != nil {
+		profilingDone <- true
 	}
 }

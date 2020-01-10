@@ -41,9 +41,8 @@ func (c *Client) PartitionedUpdate(ctx context.Context, statement Statement) (co
 		s  *session
 		sh *sessionHandle
 	)
-	// Create a session that will be used only for this request.
-	sc := c.rrNext()
-	s, err = createSession(ctx, sc, c.database, c.sessionLabels, c.md)
+	// Create session.
+	s, err = c.sc.createSession(ctx)
 	if err != nil {
 		return 0, toSpannerError(err)
 	}

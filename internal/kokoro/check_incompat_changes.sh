@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Skipped until https://github.com/golang/go/issues/34849 is resolved.
+exit 0
+
 # Display commands being run
 set -x
 

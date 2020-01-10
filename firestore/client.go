@@ -61,12 +61,11 @@ type Client struct {
 // NewClient creates a new Firestore client that uses the given project.
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
 	var o []option.ClientOption
-	// Environment variables for gcloud emulator:
-	// https://cloud.google.com/sdk/gcloud/reference/beta/emulators/firestore/
+	// If this environment variable is defined, configure the client to talk to the emulator.
 	if addr := os.Getenv("FIRESTORE_EMULATOR_HOST"); addr != "" {
-		conn, err := grpc.Dial(addr, grpc.WithInsecure(), grpc.WithAuthority("owner"))
+		conn, err := grpc.Dial(addr, grpc.WithInsecure(), grpc.WithPerRPCCredentials(emulatorCreds{}))
 		if err != nil {
-			return nil, fmt.Errorf("firestore: dialing address from env var FIRESTORE_EMULATOR_HOST: %v", err)
+			return nil, fmt.Errorf("firestore: dialing address from env var FIRESTORE_EMULATOR_HOST: %s", err)
 		}
 		o = []option.ClientOption{option.WithGRPCConn(conn)}
 	}
@@ -253,7 +252,7 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte)
 	return docs, nil
 }
 
-// Collections returns an interator over the top-level collections.
+// Collections returns an iterator over the top-level collections.
 func (c *Client) Collections(ctx context.Context) *CollectionIterator {
 	it := &CollectionIterator{
 		client: c,
@@ -331,4 +330,17 @@ func sleep(ctx context.Context, dur time.Duration) error {
 	default:
 		return err
 	}
+}
+
+// emulatorCreds is an instance of grpc.PerRPCCredentials that will configure a
+// client to act as an admin for the Firestore emulator. It always hardcodes
+// the "authorization" metadata field to contain "Bearer owner", which the
+// Firestore emulator accepts as valid admin credentials.
+type emulatorCreds struct{}
+
+func (ec emulatorCreds) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+	return map[string]string{"authorization": "Bearer owner"}, nil
+}
+func (ec emulatorCreds) RequireTransportSecurity() bool {
+	return false
 }

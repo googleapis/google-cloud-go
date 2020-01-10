@@ -1151,10 +1151,10 @@ func TestDeviceManagerSetIamPolicy(t *testing.T) {
 
 	mockDeviceManager.resps = append(mockDeviceManager.resps[:0], expectedResponse)
 
-	var formattedResource string = fmt.Sprintf("projects/%s/locations/%s/registries/%s", "[PROJECT]", "[LOCATION]", "[REGISTRY]")
+	var resource string = "resource-341064690"
 	var policy *iampb.Policy = &iampb.Policy{}
 	var request = &iampb.SetIamPolicyRequest{
-		Resource: formattedResource,
+		Resource: resource,
 		Policy:   policy,
 	}
 
@@ -1182,10 +1182,10 @@ func TestDeviceManagerSetIamPolicyError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockDeviceManager.err = gstatus.Error(errCode, "test error")
 
-	var formattedResource string = fmt.Sprintf("projects/%s/locations/%s/registries/%s", "[PROJECT]", "[LOCATION]", "[REGISTRY]")
+	var resource string = "resource-341064690"
 	var policy *iampb.Policy = &iampb.Policy{}
 	var request = &iampb.SetIamPolicyRequest{
-		Resource: formattedResource,
+		Resource: resource,
 		Policy:   policy,
 	}
 
@@ -1216,9 +1216,9 @@ func TestDeviceManagerGetIamPolicy(t *testing.T) {
 
 	mockDeviceManager.resps = append(mockDeviceManager.resps[:0], expectedResponse)
 
-	var formattedResource string = fmt.Sprintf("projects/%s/locations/%s/registries/%s", "[PROJECT]", "[LOCATION]", "[REGISTRY]")
+	var resource string = "resource-341064690"
 	var request = &iampb.GetIamPolicyRequest{
-		Resource: formattedResource,
+		Resource: resource,
 	}
 
 	c, err := NewDeviceManagerClient(context.Background(), clientOpt)
@@ -1245,9 +1245,9 @@ func TestDeviceManagerGetIamPolicyError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockDeviceManager.err = gstatus.Error(errCode, "test error")
 
-	var formattedResource string = fmt.Sprintf("projects/%s/locations/%s/registries/%s", "[PROJECT]", "[LOCATION]", "[REGISTRY]")
+	var resource string = "resource-341064690"
 	var request = &iampb.GetIamPolicyRequest{
-		Resource: formattedResource,
+		Resource: resource,
 	}
 
 	c, err := NewDeviceManagerClient(context.Background(), clientOpt)
@@ -1272,10 +1272,10 @@ func TestDeviceManagerTestIamPermissions(t *testing.T) {
 
 	mockDeviceManager.resps = append(mockDeviceManager.resps[:0], expectedResponse)
 
-	var formattedResource string = fmt.Sprintf("projects/%s/locations/%s/registries/%s", "[PROJECT]", "[LOCATION]", "[REGISTRY]")
+	var resource string = "resource-341064690"
 	var permissions []string = nil
 	var request = &iampb.TestIamPermissionsRequest{
-		Resource:    formattedResource,
+		Resource:    resource,
 		Permissions: permissions,
 	}
 
@@ -1303,10 +1303,10 @@ func TestDeviceManagerTestIamPermissionsError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockDeviceManager.err = gstatus.Error(errCode, "test error")
 
-	var formattedResource string = fmt.Sprintf("projects/%s/locations/%s/registries/%s", "[PROJECT]", "[LOCATION]", "[REGISTRY]")
+	var resource string = "resource-341064690"
 	var permissions []string = nil
 	var request = &iampb.TestIamPermissionsRequest{
-		Resource:    formattedResource,
+		Resource:    resource,
 		Permissions: permissions,
 	}
 

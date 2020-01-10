@@ -170,7 +170,7 @@ func TestApply_RetryOnAbort(t *testing.T) {
 	defer teardown()
 
 	// First commit will fail, and the retry will begin a new transaction.
-	errAbrt := spannerErrorf(codes.Aborted, "")
+	errAbrt := gstatus.Errorf(codes.Aborted, "")
 	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
 		SimulatedExecutionTime{
 			Errors: []error{errAbrt},
@@ -202,15 +202,16 @@ func TestTransaction_NotFound(t *testing.T) {
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
 
-	wantErr := spannerErrorf(codes.NotFound, "Session not found")
+	serverErr := gstatus.Errorf(codes.NotFound, "Session not found")
 	server.TestSpanner.PutExecutionTime(MethodBeginTransaction,
 		SimulatedExecutionTime{
-			Errors: []error{wantErr, wantErr, wantErr},
+			Errors: []error{serverErr, serverErr, serverErr},
 		})
 	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
 		SimulatedExecutionTime{
-			Errors: []error{wantErr, wantErr, wantErr},
+			Errors: []error{serverErr, serverErr, serverErr},
 		})
+	wantErr := toSpannerError(serverErr)
 
 	txn := client.ReadOnlyTransaction()
 	defer txn.Close()

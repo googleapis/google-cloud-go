@@ -100,6 +100,12 @@ type ColumnDef struct {
 	Name    string
 	Type    Type
 	NotNull bool
+
+	// AllowCommitTimestamp represents a column OPTIONS.
+	// `true` if query is `OPTIONS (allow_commit_timestamp = true)`
+	// `false` if query is `OPTIONS (allow_commit_timestamp = null)`
+	// `nil` if there are no OPTIONS
+	AllowCommitTimestamp *bool
 }
 
 // Type represents a column type.

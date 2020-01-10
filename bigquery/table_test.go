@@ -68,6 +68,7 @@ func TestBQToTableMetadata(t *testing.T) {
 			&TableMetadata{
 				Description:        "desc",
 				Name:               "fname",
+				Location:           "loc",
 				ViewQuery:          "view-query",
 				FullID:             "id",
 				Type:               ExternalTable,
@@ -193,6 +194,35 @@ func TestTableMetadataToBQ(t *testing.T) {
 					Type:         "DAY",
 					ExpirationMs: 1000,
 					Field:        "ofDreams",
+				},
+				Clustering: &bq.Clustering{
+					Fields: []string{"cfield1"},
+				},
+			},
+		},
+		{
+			&TableMetadata{
+				RangePartitioning: &RangePartitioning{
+					Field: "ofNumbers",
+					Range: &RangePartitioningRange{
+						Start:    1,
+						End:      100,
+						Interval: 5,
+					},
+				},
+				Clustering: &Clustering{
+					Fields: []string{"cfield1"},
+				},
+			},
+			&bq.Table{
+
+				RangePartitioning: &bq.RangePartitioning{
+					Field: "ofNumbers",
+					Range: &bq.RangePartitioningRange{
+						Start:    1,
+						End:      100,
+						Interval: 5,
+					},
 				},
 				Clustering: &bq.Clustering{
 					Fields: []string{"cfield1"},
