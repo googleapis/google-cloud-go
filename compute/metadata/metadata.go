@@ -476,7 +476,7 @@ func (c *Client) Scopes(serviceAccount string) ([]string, error) {
 // is deleted. Subscribe returns the error value returned from the last call to
 // fn, which may be nil when ok == false.
 func (c *Client) Subscribe(suffix string, fn func(v string, ok bool) error) error {
-	const failedSubscribeSleep = time.Second * 5
+	const failedSubscribeSleep = 5 * time.Second
 
 	// First check to see if the metadata value exists at all.
 	val, lastETag, err := c.getETag(suffix)
