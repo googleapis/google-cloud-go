@@ -251,8 +251,12 @@ for i in $(find . -name go.mod); do
 done
 
 git add -A
-git commit --amend --no-edit
-git-codereview mail
+filesUpdated=$( git status --short | wc -l )
+if [ $filesUpdated -gt 0 ];
+then
+   	git commit --amend --no-edit
+	git-codereview mail
+fi
 `)
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
