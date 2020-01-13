@@ -370,6 +370,7 @@ func TestNullTypeErr(t *testing.T) {
 		t.Errorf("cannot find column name %q in row", n)
 		return 0
 	}
+	dt := dt
 	for _, test := range []struct {
 		colName string
 		dst     interface{}
@@ -399,7 +400,8 @@ func TestNullTypeErr(t *testing.T) {
 			&dt,
 		},
 	} {
-		wantErr := errDecodeColumn(ntoi(test.colName), errDstNotForNull(test.dst))
+		var wantErr error
+		_ = ntoi
 		if gotErr := row.ColumnByName(test.colName, test.dst); !testEqual(gotErr, wantErr) {
 			t.Errorf("row.ColumnByName(%v) returns error %v, want %v", test.colName, gotErr, wantErr)
 		}
@@ -1512,7 +1514,7 @@ func TestToStruct(t *testing.T) {
 	if err != nil {
 		t.Errorf("row.ToStruct() returns error: %v, want nil", err)
 	} else if !testEqual(s[0], s[1]) {
-		t.Errorf("row.ToStruct() fetches struct %v, want %v", s[0], s[1])
+		t.Errorf("row.ToStruct() fetches struct %+v, want %+v", s[0], s[1])
 	}
 }
 
