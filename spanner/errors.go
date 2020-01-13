@@ -242,3 +242,9 @@ func (e *Error) ErrCode() codes.Code {
 	}
 	return e.Code
 }
+
+// Errorf generates a *spanner.Error with the given description and a
+// status error with the given error code as its wrapped error.
+func Errorf(code codes.Code, format string, args ...interface{}) error {
+	return spannerErrorf(code, format, args...)
+}
