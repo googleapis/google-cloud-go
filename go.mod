@@ -18,15 +18,15 @@ require (
 	go.opencensus.io v0.22.2
 	golang.org/x/exp v0.0.0-20191227195350-da58074b4299
 	golang.org/x/lint v0.0.0-20191125180803-fdd1cda4f05f
-	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553
+	golang.org/x/net v0.0.0-20200114155413-6afb5195e5aa
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
 	golang.org/x/sys v0.0.0-20200113162924-86b910548bc1 // indirect
 	golang.org/x/text v0.3.2
-	golang.org/x/tools v0.0.0-20200113154838-30cae5f2fb06
+	golang.org/x/tools v0.0.0-20200115192306-3ded1b734dda
 	google.golang.org/api v0.15.0
 	google.golang.org/appengine v1.6.5 // indirect
-	google.golang.org/genproto v0.0.0-20200113173426-e1de0a7b01eb
+	google.golang.org/genproto v0.0.0-20200115191322-ca5a22157cba
 	google.golang.org/grpc v1.26.0
 	honnef.co/go/tools v0.0.1-2019.2.3
 )
