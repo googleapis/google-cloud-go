@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -96,4 +96,4 @@ func versionGo() string {
 	return "UNKNOWN"
 }
 
-const versionClient = "20200112"
+const versionClient = "20200114"

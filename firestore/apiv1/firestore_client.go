@@ -66,7 +66,6 @@ func defaultCallOptions() *CallOptions {
 		GetDocument: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Aborted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -80,7 +79,6 @@ func defaultCallOptions() *CallOptions {
 		ListDocuments: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Aborted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -96,7 +94,6 @@ func defaultCallOptions() *CallOptions {
 		DeleteDocument: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Aborted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -110,7 +107,6 @@ func defaultCallOptions() *CallOptions {
 		BatchGetDocuments: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Aborted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -124,7 +120,6 @@ func defaultCallOptions() *CallOptions {
 		BeginTransaction: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Aborted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -139,7 +134,6 @@ func defaultCallOptions() *CallOptions {
 		Rollback: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Aborted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -153,7 +147,6 @@ func defaultCallOptions() *CallOptions {
 		RunQuery: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Aborted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -168,7 +161,6 @@ func defaultCallOptions() *CallOptions {
 		Listen: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Aborted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -182,7 +174,6 @@ func defaultCallOptions() *CallOptions {
 		ListCollectionIds: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Aborted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
