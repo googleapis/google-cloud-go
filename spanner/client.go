@@ -287,8 +287,24 @@ func (c *Client) Close() {
 // "time-travel" to prior versions of the database, see the documentation of
 // TimestampBound for details.
 func (c *Client) Single() *ReadOnlyTransaction {
-	t := &ReadOnlyTransaction{singleUse: true, sp: c.idleSessions}
+	t := &ReadOnlyTransaction{singleUse: true}
+	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.txReadEnv = t
+	t.txReadOnly.replaceSessionFunc = func(ctx context.Context) error {
+		if t.sh == nil {
+			return spannerErrorf(codes.InvalidArgument, "missing session handle on transaction")
+		}
+		// Remove the session that returned 'Session not found' from the pool.
+		t.sh.destroy()
+		// Reset the transaction, acquire a new session and retry.
+		t.state = txNew
+		sh, _, err := t.acquire(ctx)
+		if err != nil {
+			return err
+		}
+		t.sh = sh
+		return nil
+	}
 	return t
 }
 
@@ -304,9 +320,9 @@ func (c *Client) Single() *ReadOnlyTransaction {
 func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t := &ReadOnlyTransaction{
 		singleUse:       false,
-		sp:              c.idleSessions,
 		txReadyOrClosed: make(chan struct{}),
 	}
+	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.txReadEnv = t
 	return t
 }
@@ -365,7 +381,6 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 			tx:              tx,
 			txReadyOrClosed: make(chan struct{}),
 			state:           txActive,
-			sh:              sh,
 			rts:             rts,
 		},
 		ID: BatchReadOnlyTransactionID{
@@ -374,6 +389,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 			rts: rts,
 		},
 	}
+	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	return t, nil
 }
@@ -389,11 +405,11 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 			tx:              tid.tid,
 			txReadyOrClosed: make(chan struct{}),
 			state:           txActive,
-			sh:              sh,
 			rts:             tid.rts,
 		},
 		ID: tid,
 	}
+	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	return t
 }
@@ -448,14 +464,12 @@ func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Contex
 				return err
 			}
 			t = &ReadWriteTransaction{
-				sh: sh,
 				tx: sh.getTransactionID(),
 			}
 		} else {
-			t = &ReadWriteTransaction{
-				sh: sh,
-			}
+			t = &ReadWriteTransaction{}
 		}
+		t.txReadOnly.sh = sh
 		t.txReadOnly.txReadEnv = t
 		trace.TracePrintf(ctx, map[string]interface{}{"transactionID": string(sh.getTransactionID())},
 			"Starting transaction attempt")

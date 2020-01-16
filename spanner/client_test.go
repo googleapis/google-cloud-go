@@ -159,6 +159,34 @@ func TestClient_Single_InvalidArgument(t *testing.T) {
 	}
 }
 
+func TestClient_Single_SessionNotFound(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodExecuteStreamingSql,
+		SimulatedExecutionTime{Errors: []error{status.Errorf(codes.NotFound, "Session not found")}},
+	)
+	ctx := context.Background()
+	iter := client.Single().Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+	defer iter.Stop()
+	rowCount := int64(0)
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		rowCount++
+	}
+	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		t.Fatalf("row count mismatch\nGot: %v\nWant: %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+}
+
 func TestClient_Single_RetryableErrorOnPartialResultSet(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServer(t)
@@ -554,6 +582,23 @@ func TestClient_ReadOnlyTransaction_UnavailableOnExecuteStreamingSql(t *testing.
 	t.Parallel()
 	if err := testReadOnlyTransaction(t, createSimulatedExecutionTimeWithTwoUnavailableErrors(MethodExecuteStreamingSql)); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestClient_ReadOnlyTransaction_SessionNotFoundOnExecuteStreamingSql(t *testing.T) {
+	t.Parallel()
+	// Session not found is not retryable for a query on a multi-use read-only
+	// transaction, as we would need to start a new transaction on a new
+	// session.
+	err := testReadOnlyTransaction(t, map[string]SimulatedExecutionTime{
+		MethodExecuteStreamingSql: {Errors: []error{status.Errorf(codes.NotFound, "Session not found")}},
+	})
+	want := spannerErrorf(codes.NotFound, "Session not found")
+	if err == nil {
+		t.Fatalf("missing expected error\nGot: nil\nWant: %v", want)
+	}
+	if status.Code(err) != status.Code(want) || !strings.Contains(err.Error(), want.Error()) {
+		t.Fatalf("error mismatch\nGot: %v\nWant: %v", err, want)
 	}
 }
 
