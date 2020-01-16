@@ -170,11 +170,11 @@ type EntityTypesClient struct {
 //   data types such as date, time, currency, and so on. A system entity is
 //   represented by the EntityType type.
 //
-//   Developer - entities that are defined by you that represent
+//   Custom - entities that are defined by you that represent
 //   actionable data that is meaningful to your application. For example,
 //   you could define a pizza.sauce entity for red or white pizza sauce,
 //   a pizza.cheese entity for the different types of cheese on a pizza,
-//   a pizza.topping entity for different toppings, and so on. A developer
+//   a pizza.topping entity for different toppings, and so on. A custom
 //   entity is represented by the EntityType type.
 //
 //   User - entities that are built for an individual user such as

@@ -23,7 +23,7 @@ require (
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
 	golang.org/x/sys v0.0.0-20200113162924-86b910548bc1 // indirect
 	golang.org/x/text v0.3.2
-	golang.org/x/tools v0.0.0-20200115192306-3ded1b734dda
+	golang.org/x/tools v0.0.0-20200117161641-43d50277825c
 	google.golang.org/api v0.15.0
 	google.golang.org/appengine v1.6.5 // indirect
 	google.golang.org/genproto v0.0.0-20200115191322-ca5a22157cba
