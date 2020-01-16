@@ -117,6 +117,7 @@ You can exert more control over authorization by using the
 create an `oauth2.TokenSource`. Then pass
 [`option.WithTokenSource`](https://godoc.org/google.golang.org/api/option#WithTokenSource)
 to the `NewClient` function:
+
 [snip]:# (auth-ts)
 ```go
 tokenSource := ...
