@@ -57,6 +57,19 @@ type txReadOnly struct {
 
 	// Atomic. Only needed for DML statements, but used forall.
 	sequenceNumber int64
+
+	// replaceSessionFunc is a function that can be called to replace the
+	// session that is used by the transaction. This function should only be
+	// defined for single-use transactions that can safely be retried on a
+	// different session. All other transactions will set this function to nil.
+	replaceSessionFunc func(ctx context.Context) error
+
+	// sp is the session pool for allocating a session to execute the read-only
+	// transaction. It is set only once during initialization of the
+	// txReadOnly.
+	sp *sessionPool
+	// sh is the sessionHandle allocated from sp.
+	sh *sessionHandle
 }
 
 // errSessionClosed returns error for using a recycled/destroyed session
@@ -247,13 +260,15 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, mode sppb.E
 		return &RowIterator{err: err}
 	}
 	client := sh.getClient()
-	return stream(
+	return streamWithReplaceSessionFunc(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
 		sh.session.logger,
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			req.ResumeToken = resumeToken
+			req.Session = t.sh.getID()
 			return client.ExecuteStreamingSql(ctx, req)
 		},
+		t.replaceSessionFunc,
 		t.setTimestamp,
 		t.release)
 }
@@ -338,10 +353,6 @@ type ReadOnlyTransaction struct {
 	txReadOnly
 	// singleUse indicates that the transaction can be used for only one read.
 	singleUse bool
-	// sp is the session pool for allocating a session to execute the read-only
-	// transaction. It is set only once during initialization of the
-	// ReadOnlyTransaction.
-	sp *sessionPool
 	// tx is the transaction ID in Cloud Spanner that uniquely identifies the
 	// ReadOnlyTransaction.
 	tx transactionID
@@ -350,8 +361,6 @@ type ReadOnlyTransaction struct {
 	txReadyOrClosed chan struct{}
 	// state is the current transaction status of the ReadOnly transaction.
 	state txState
-	// sh is the sessionHandle allocated from sp.
-	sh *sessionHandle
 	// rts is the read timestamp returned by transactional reads.
 	rts time.Time
 	// tb is the read staleness bound specification for transactional reads.
@@ -705,9 +714,6 @@ func (t *ReadOnlyTransaction) WithTimestampBound(tb TimestampBound) *ReadOnlyTra
 type ReadWriteTransaction struct {
 	// txReadOnly contains methods for performing transactional reads.
 	txReadOnly
-	// sh is the sessionHandle allocated from sp. It is set only once during the
-	// initialization of ReadWriteTransaction.
-	sh *sessionHandle
 	// tx is the transaction ID in Cloud Spanner that uniquely identifies the
 	// ReadWriteTransaction. It is set only once in ReadWriteTransaction.begin()
 	// during the initialization of ReadWriteTransaction.
