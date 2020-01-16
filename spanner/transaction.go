@@ -380,6 +380,7 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 		rts    time.Time
 		sh     *sessionHandle
 		err    error
+		res    *sppb.Transaction
 	)
 	defer func() {
 		if !locked {
@@ -404,25 +405,32 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 			sh.recycle()
 		}
 	}()
-	sh, err = t.sp.take(ctx)
-	if err != nil {
-		return err
-	}
-	res, err := sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.BeginTransactionRequest{
-		Session: sh.getID(),
-		Options: &sppb.TransactionOptions{
-			Mode: &sppb.TransactionOptions_ReadOnly_{
-				ReadOnly: buildTransactionOptionsReadOnly(t.getTimestampBound(), true),
-			},
-		},
-	})
-	if err == nil {
-		tx = res.Id
-		if res.ReadTimestamp != nil {
-			rts = time.Unix(res.ReadTimestamp.Seconds, int64(res.ReadTimestamp.Nanos))
+	// Retry the BeginTransaction call if a 'Session not found' is returned.
+	for {
+		sh, err = t.sp.take(ctx)
+		if err != nil {
+			return err
 		}
-	} else {
-		err = toSpannerError(err)
+		res, err = sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.BeginTransactionRequest{
+			Session: sh.getID(),
+			Options: &sppb.TransactionOptions{
+				Mode: &sppb.TransactionOptions_ReadOnly_{
+					ReadOnly: buildTransactionOptionsReadOnly(t.getTimestampBound(), true),
+				},
+			},
+		})
+		if isSessionNotFoundError(err) {
+			sh.destroy()
+			continue
+		} else if err == nil {
+			tx = res.Id
+			if res.ReadTimestamp != nil {
+				rts = time.Unix(res.ReadTimestamp.Seconds, int64(res.ReadTimestamp.Nanos))
+			}
+		} else {
+			err = toSpannerError(err)
+		}
+		break
 	}
 	t.mu.Lock()
 
