@@ -432,6 +432,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/iam/credentials/v1/iamcredentials_v1.yaml",
 		releaseLevel:          "alpha",
 	},
+	{
+		inputDirectoryPath:    "google/longrunning",
+		pkg:                   "longrunning",
+		importPath:            "cloud.google.com/go/longrunning/autogen",
+		gRPCServiceConfigPath: "google/longrunning/longrunning_grpc_service_config.json",
+		apiServiceConfigPath:  "google/longrunning/longrunning.yaml",
+		releaseLevel:          "alpha",
+	},
 }
 
 // Relative to gocloud dir.
@@ -458,7 +466,6 @@ var artmanGapicConfigPaths = []string{
 	"google/cloud/vision/artman_vision_v1p1beta1.yaml",
 	"google/devtools/containeranalysis/artman_containeranalysis_v1beta1.yaml",
 	"google/logging/artman_logging.yaml",
-	"google/longrunning/artman_longrunning.yaml",
 	"google/monitoring/artman_monitoring.yaml",
 	"google/pubsub/artman_pubsub.yaml",
 }
