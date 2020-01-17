@@ -56,6 +56,7 @@ github.com/google/go-querystring v1.0.0 h1:Xkwi/a1rcvNg1PPYe5vI8GbeBY/jrVuDX5ASu
 github.com/google/go-querystring v1.0.0/go.mod h1:odCYkC5MyYFN7vkCjXpyrEuKhc/BUO6wN/zVPAxq5ck=
 github.com/googleapis/gapic-generator-go v0.9.9 h1:VoqkO6pAORaM/0EJuGSu0yjkriKHK8YRCGA1IOLC/kQ=
 github.com/googleapis/gapic-generator-go v0.9.9/go.mod h1:xSV5wdZHDFuGBD2x2pg/l3EmZFWm5RQLjag1D2tHhZU=
+github.com/googleapis/gapic-generator-go v0.10.0/go.mod h1:Z5U2mmu++2TpmDNPEBXiwht2Og6Xdlup5T6mSZtXfuU=
 github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 h1:BQSFePA1RWJOlocH6Fxy8MmwDt+yVQYULKfN0RoTN8A=
 github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99/go.mod h1:1lJo3i6rXxKeerYnT8Nvf0QmHCRC1n8sfWVwXF2Frvo=
 github.com/jessevdk/go-flags v1.4.0/go.mod h1:4FA24M0QyGHXBuZZK/XkWh8h0e1EYbRYJSGM75WSRxI=
