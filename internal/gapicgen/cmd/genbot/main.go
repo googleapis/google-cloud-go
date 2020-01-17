@@ -45,7 +45,7 @@ var (
 	githubUsername    = flag.String("githubUsername", "", "ex -githubUsername=jadekler")
 	githubName        = flag.String("githubName", "", "ex -githubName=\"Jean de Klerk\"")
 	githubEmail       = flag.String("githubEmail", "", "ex -githubEmail=deklerk@google.com")
-	gerritCookieName  = flag.String("gerritCookieName", "", "ex: -gerritCookieName=o")
+	gerritCookieName  = flag.String("gerritCookieName", "o", "ex: -gerritCookieName=o")
 	gerritCookieValue = flag.String("gerritCookieValue", "", "ex: -gerritCookieValue=git-your@email.com=SomeHash....")
 
 	usage = func() {
@@ -54,7 +54,6 @@ var (
 	-githubUsername=jadekler \
 	-githubEmail=deklerk@google.com \
 	-githubName="Jean de Klerk" \
-	-gerritCookieName=o \
 	-gerritCookieValue=git-your@email.com=SomeHash....
 
 -githubAccessToken
@@ -70,7 +69,7 @@ var (
 	The email to use in the github commit.
 
 -gerritCookieName
-	The name of the cookie. Almost certainly "o".
+	The name of the cookie. Almost certainly "o" (the default).
 
 -gerritCookieValue
 	The value of the gerrit cookie. Probably looks like "git-your@email.com=SomeHash....". Get this at https://code-review.googlesource.com/settings/#HTTPCredentials > Obtain password > "git-your@email.com=SomeHash....".`)
