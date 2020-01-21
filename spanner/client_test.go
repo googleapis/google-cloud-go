@@ -661,22 +661,6 @@ func TestClient_ReadOnlyTransaction_SessionNotFoundOnBeginTransaction_WithMaxOne
 	}
 }
 
-func TestClient_ReadOnlyTransaction_SessionNotFoundOnExecuteStreamingSql(t *testing.T) {
-	t.Parallel()
-	// 'Session not found' is not retryable for a query in the middle of a
-	// read-only transaction, as it would require restarting a new transaction
-	// on a new session, and thereby breaking transaction atomicity.
-	err := testReadOnlyTransaction(
-		t,
-		map[string]SimulatedExecutionTime{
-			MethodExecuteStreamingSql: {Errors: []error{status.Error(codes.NotFound, "Session not found")}},
-		},
-	)
-	if !isSessionNotFoundError(err) {
-		t.Fatalf("error mismatch\nWant: %v\nGot: %v", status.Errorf(codes.NotFound, "Session not found"), err)
-	}
-}
-
 func testReadOnlyTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime) error {
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
