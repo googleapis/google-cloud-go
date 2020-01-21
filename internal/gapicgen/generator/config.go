@@ -129,6 +129,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "alpha",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/bigquery/storage/v1alpha2",
+		pkg:                   "storage",
+		importPath:            "cloud.google.com/go/bigquery/storage/apiv1alpha2",
+		gRPCServiceConfigPath: "google/cloud/bigquery/storage/v1alpha2/bigquerystorage_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/bigquery/storage/v1alpha2/bigquerystorage_v1alpha2.yaml",
+		releaseLevel:          "alpha",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/bigquery/storage/v1beta1",
 		pkg:                   "storage",
 		importPath:            "cloud.google.com/go/bigquery/storage/apiv1beta1",
@@ -230,6 +238,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/osconfig/agentendpoint/apiv1beta",
 		gRPCServiceConfigPath: "google/cloud/osconfig/agentendpoint/v1beta/agentendpoint_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/osconfig/agentendpoint/v1beta/osconfig_v1beta.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/datacatalog/v1beta1",
+		pkg:                   "datacatalog",
+		importPath:            "cloud.google.com/go/datacatalog/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/datacatalog/v1beta1/datacatalog_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/datacatalog/v1beta1/datacatalog_v1beta1.yaml",
 		releaseLevel:          "beta",
 	},
 	{
