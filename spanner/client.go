@@ -205,8 +205,8 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 				logf(config.logger, `
 Warning: The client library attempted to connect to an endpoint closer to your
 Cloud Spanner data but was unable to do so. The client library will fall back
-and route requests to the global Spanner endpoint (spanner.googleapis.com),
-which may result in increased latency. We recommend including the scope
+and route requests to the endpoint given in the client options, which may
+result in increased latency. We recommend including the scope
 https://www.googleapis.com/auth/spanner.admin so that the client library can
 get an instance-specific endpoint and efficiently route requests.
 `)
