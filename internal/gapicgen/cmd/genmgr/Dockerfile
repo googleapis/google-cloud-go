@@ -19,7 +19,6 @@ go run cloud.google.com/go/internal/gapicgen/cmd/genmgr \
     --githubAccessToken=$GITHUB_ACCESS_TOKEN \
     --githubName="$GITHUB_NAME" \
     --githubEmail=$GITHUB_EMAIL \
-    --gerritCookieName=$GERRIT_COOKIE_NAME \
     --gerritCookieValue=$GERRIT_COOKIE_VALUE \n\
 ' >> /run.sh
 RUN chmod a+x /run.sh

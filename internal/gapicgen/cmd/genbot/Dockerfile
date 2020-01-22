@@ -5,11 +5,11 @@ FROM golang:1.8.3-alpine3.6 as protoc-builder
 RUN apk update && apk add git curl build-base autoconf automake libtool
 
 # Install protoc
-ENV PROTOBUF_URL https://github.com/google/protobuf/releases/download/v3.6.1/protobuf-cpp-3.6.1.tar.gz
+ENV PROTOBUF_URL https://github.com/google/protobuf/releases/download/v3.11.2/protobuf-cpp-3.11.2.tar.gz
 RUN curl -L -o /tmp/protobuf.tar.gz $PROTOBUF_URL
 WORKDIR /tmp/
 RUN tar xvzf protobuf.tar.gz
-WORKDIR /tmp/protobuf-3.6.1
+WORKDIR /tmp/protobuf-3.11.2
 RUN mkdir /export
 RUN ./autogen.sh && \
     ./configure --prefix=/export && \
@@ -81,7 +81,6 @@ go run cloud.google.com/go/internal/gapicgen/cmd/genbot \
     --githubUsername=$GITHUB_USERNAME \
     --githubName="$GITHUB_NAME" \
     --githubEmail=$GITHUB_EMAIL \
-    --gerritCookieName=$GERRIT_COOKIE_NAME \
     --gerritCookieValue=$GERRIT_COOKIE_VALUE \n\
 ' >> /run.sh
 RUN chmod a+x /run.sh
