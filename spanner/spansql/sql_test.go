@@ -35,8 +35,11 @@ func TestSQL(t *testing.T) {
 		return q, err
 	}
 	reparseExpr := func(s string) (interface{}, error) {
-		e, err := newParser(s).parseExpr()
-		return e, err
+		e, pe := newParser("f-expr", s).parseExpr()
+		if pe != nil {
+			return nil, pe
+		}
+		return e, nil
 	}
 
 	tests := []struct {
