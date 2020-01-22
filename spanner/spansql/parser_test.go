@@ -195,7 +195,7 @@ func TestParseExpr(t *testing.T) {
 		{`NULL`, Null},
 	}
 	for _, test := range tests {
-		p := newParser(test.in)
+		p := newParser("test-file", test.in)
 		got, err := p.parseExpr()
 		if err != nil {
 			t.Errorf("[%s]: %v", test.in, err)
@@ -359,8 +359,9 @@ func TestParseFailures(t *testing.T) {
 		{expr, `"foo" AND "bar"`, "logical operation on string literals"},
 	}
 	for _, test := range tests {
-		p := newParser(test.in)
-		if test.f(p) == nil && p.Rem() == "" {
+		p := newParser("f", test.in)
+		err := test.f(p)
+		if err == nil && p.Rem() == "" {
 			t.Errorf("%s: parsing [%s] succeeded, should have failed", test.desc, test.in)
 		}
 	}

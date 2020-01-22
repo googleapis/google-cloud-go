@@ -44,7 +44,6 @@ This file is structured as follows:
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -62,7 +61,7 @@ func debugf(format string, args ...interface{}) {
 
 // ParseDDL parses a DDL file.
 func ParseDDL(s string) (DDL, error) {
-	p := newParser(s)
+	p := newParser("-", s) // TODO: take filename as an argument
 
 	var ddl DDL
 	for {
@@ -78,7 +77,7 @@ func ParseDDL(s string) (DDL, error) {
 		ddl.List = append(ddl.List, stmt)
 
 		tok := p.next()
-		if tok.err == io.EOF {
+		if tok.err == eof {
 			break
 		} else if tok.err != nil {
 			return DDL{}, tok.err
@@ -97,7 +96,7 @@ func ParseDDL(s string) (DDL, error) {
 
 // ParseDDLStmt parses a single DDL statement.
 func ParseDDLStmt(s string) (DDLStmt, error) {
-	p := newParser(s)
+	p := newParser("-", s)
 	stmt, err := p.parseDDLStmt()
 	if err != nil {
 		return nil, err
@@ -110,7 +109,7 @@ func ParseDDLStmt(s string) (DDLStmt, error) {
 
 // ParseQuery parses a query string.
 func ParseQuery(s string) (Query, error) {
-	p := newParser(s)
+	p := newParser("-", s)
 	q, err := p.parseQuery()
 	if err != nil {
 		return Query{}, err
@@ -122,8 +121,9 @@ func ParseQuery(s string) (Query, error) {
 }
 
 type token struct {
-	value string
-	err   error
+	value        string
+	err          *parseError
+	line, offset int
 
 	typ     tokenType
 	int64   int64
@@ -148,16 +148,43 @@ func (t *token) String() string {
 	return strconv.Quote(t.value)
 }
 
+type parseError struct {
+	message  string
+	filename string
+	line     int // 1-based line number
+	offset   int // 0-based byte offset from start of input
+}
+
+func (pe *parseError) Error() string {
+	if pe == nil {
+		return "<nil>"
+	}
+	if pe.line == 1 {
+		return fmt.Sprintf("%s:1.%d: %v", pe.filename, pe.offset, pe.message)
+	}
+	return fmt.Sprintf("%s:%d: %v", pe.filename, pe.line, pe.message)
+}
+
+var eof = &parseError{message: "EOF"}
+
 type parser struct {
 	s      string // Remaining input.
 	done   bool   // Whether the parsing is finished (success or error).
 	backed bool   // Whether back() was called.
 	cur    token
+
+	filename     string
+	line, offset int // updated by places that shrink s
 }
 
-func newParser(s string) *parser {
+func newParser(filename, s string) *parser {
 	return &parser{
 		s: s,
+
+		cur: token{line: 1},
+
+		filename: filename,
+		line:     1,
 	}
 }
 
@@ -183,11 +210,16 @@ func (p *parser) String() string {
 	return fmt.Sprintf("rem: %q", p.s)
 }
 
-func (p *parser) errorf(format string, args ...interface{}) error {
-	err := fmt.Errorf(format, args...)
-	p.cur.err = err
+func (p *parser) errorf(format string, args ...interface{}) *parseError {
+	pe := &parseError{
+		message:  fmt.Sprintf(format, args...),
+		filename: p.filename,
+		line:     p.cur.line,
+		offset:   p.cur.offset,
+	}
+	p.cur.err = pe
 	p.done = true
-	return err
+	return pe
 }
 
 func isInitialIdentifierChar(c byte) bool {
@@ -304,6 +336,7 @@ digitLoop:
 		sign = "-"
 	}
 	p.cur.value, p.s = p.s[:i], p.s[i:]
+	p.offset += i
 	var err error
 	if float {
 		p.cur.typ = float64Token
@@ -390,7 +423,7 @@ func (p *parser) stringDelimiter() string {
 //   - name is current consuming token name.
 //
 // It is designed for consuming string, bytes literals, and also backquoted identifiers.
-func (p *parser) consumeStringContent(delim string, raw, unicode bool, name string) (string, error) {
+func (p *parser) consumeStringContent(delim string, raw, unicode bool, name string) (string, *parseError) {
 	// https://cloud.google.com/spanner/docs/lexical#string-and-bytes-literals
 
 	if len(delim) == 3 {
@@ -404,6 +437,7 @@ func (p *parser) consumeStringContent(delim string, raw, unicode bool, name stri
 		if strings.HasPrefix(p.s[i:], delim) {
 			i += len(delim)
 			p.s = p.s[i:]
+			p.offset += i
 			return string(content), nil
 		}
 
@@ -517,8 +551,11 @@ func (p *parser) consumeStringContent(delim string, raw, unicode bool, name stri
 			continue
 		}
 
-		if p.s[i] == '\n' && len(delim) != 3 { // newline is only allowed inside triple-quoted.
-			return "", p.errorf("newline forbidden in %s", name)
+		if p.s[i] == '\n' {
+			if len(delim) != 3 { // newline is only allowed inside triple-quoted.
+				return "", p.errorf("newline forbidden in %s", name)
+			}
+			p.line++
 		}
 
 		content = append(content, p.s[i])
@@ -555,10 +592,14 @@ func (p *parser) skipSpace() bool {
 	i := 0
 	for i < len(p.s) {
 		if isSpace(p.s[i]) {
+			if p.s[i] == '\n' {
+				p.line++
+			}
 			i++
 			continue
 		}
 		// Comments.
+		// TODO: capture these.
 		term := ""
 		if p.s[i] == '#' {
 			term = "\n"
@@ -575,9 +616,11 @@ func (p *parser) skipSpace() bool {
 			p.errorf("unterminated comment")
 			return false
 		}
+		p.line += strings.Count(p.s[i:i+ti+len(term)], "\n")
 		i += ti + len(term)
 	}
 	p.s = p.s[i:]
+	p.offset += i
 	if p.s == "" {
 		p.done = true
 	}
@@ -591,6 +634,7 @@ func (p *parser) advance() {
 		return
 	}
 	p.cur.err = nil
+	p.cur.line, p.cur.offset = p.line, p.offset
 	p.cur.typ = unknownToken
 	// TODO: backtick (`) for quoted identifiers.
 	// TODO: array, struct, date, timestamp literals
@@ -598,6 +642,7 @@ func (p *parser) advance() {
 	case ',', ';', '(', ')', '*':
 		// Single character symbol.
 		p.cur.value, p.s = p.s[:1], p.s[1:]
+		p.offset++
 		return
 	// String literal prefix.
 	case 'B', 'b', 'R', 'r', '"', '\'':
@@ -634,6 +679,7 @@ func (p *parser) advance() {
 			i++
 		}
 		p.cur.value, p.s = p.s[:i], p.s[i:]
+		p.offset += i
 		return
 	}
 	if len(p.s) >= 2 && (p.s[0] == '+' || p.s[0] == '-' || p.s[0] == '.') && ('0' <= p.s[1] && p.s[1] <= '9') {
@@ -650,6 +696,7 @@ func (p *parser) advance() {
 	switch p.s[0] {
 	case '-', '+':
 		p.cur.value, p.s = p.s[:1], p.s[1:]
+		p.offset++
 		return
 	}
 
@@ -657,6 +704,7 @@ func (p *parser) advance() {
 	for i := 2; i >= 1; i-- {
 		if i <= len(p.s) && operators[p.s[:i]] {
 			p.cur.value, p.s = p.s[:i], p.s[i:]
+			p.offset += i
 			return
 		}
 	}
@@ -672,8 +720,8 @@ func (p *parser) back() {
 	p.done = false
 	p.backed = true
 	// If an error was being recovered, we wish to ignore the error.
-	// Don't do that for io.EOF since that'll be returned next.
-	if p.cur.err != io.EOF {
+	// Don't do that for eof since that'll be returned next.
+	if p.cur.err != eof {
 		p.cur.err = nil
 	}
 }
@@ -687,8 +735,9 @@ func (p *parser) next() *token {
 	p.advance()
 	if p.done && p.cur.err == nil {
 		p.cur.value = ""
-		p.cur.err = io.EOF
+		p.cur.err = eof
 	}
+	debugf("parser·next(): returning [%v] [err: %v] @l%d,o%d", p.cur.value, p.cur.err, p.cur.line, p.cur.offset)
 	return &p.cur
 }
 
@@ -724,7 +773,7 @@ func (p *parser) eat(want ...string) bool {
 	return true
 }
 
-func (p *parser) expect(want string) error {
+func (p *parser) expect(want string) *parseError {
 	tok := p.next()
 	if tok.err != nil {
 		return tok.err
@@ -735,7 +784,7 @@ func (p *parser) expect(want string) error {
 	return nil
 }
 
-func (p *parser) parseDDLStmt() (DDLStmt, error) {
+func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 	debugf("parseDDLStmt: %v", p)
 
 	/*
@@ -781,7 +830,7 @@ func (p *parser) parseDDLStmt() (DDLStmt, error) {
 	return nil, p.errorf("unknown DDL statement")
 }
 
-func (p *parser) parseCreateTable() (CreateTable, error) {
+func (p *parser) parseCreateTable() (CreateTable, *parseError) {
 	debugf("parseCreateTable: %v", p)
 
 	/*
@@ -808,7 +857,7 @@ func (p *parser) parseCreateTable() (CreateTable, error) {
 	}
 
 	ct := CreateTable{Name: tname}
-	err = p.parseCommaList(func(p *parser) error {
+	err = p.parseCommaList(func(p *parser) *parseError {
 		cd, err := p.parseColumnDef()
 		if err != nil {
 			return err
@@ -859,7 +908,7 @@ func (p *parser) parseCreateTable() (CreateTable, error) {
 	return ct, nil
 }
 
-func (p *parser) parseCreateIndex() (CreateIndex, error) {
+func (p *parser) parseCreateIndex() (CreateIndex, *parseError) {
 	debugf("parseCreateIndex: %v", p)
 
 	/*
@@ -930,7 +979,7 @@ func (p *parser) parseCreateIndex() (CreateIndex, error) {
 	return ci, nil
 }
 
-func (p *parser) parseAlterTable() (AlterTable, error) {
+func (p *parser) parseAlterTable() (AlterTable, *parseError) {
 	debugf("parseAlterTable: %v", p)
 
 	/*
@@ -1001,7 +1050,7 @@ func (p *parser) parseAlterTable() (AlterTable, error) {
 	// TODO: "ALTER"
 }
 
-func (p *parser) parseColumnDef() (ColumnDef, error) {
+func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 	debugf("parseColumnDef: %v", p)
 
 	/*
@@ -1035,7 +1084,7 @@ func (p *parser) parseColumnDef() (ColumnDef, error) {
 }
 
 // parseColumnOptions returns allow_commit_timestamp.
-func (p *parser) parseColumnOptions() (allowCommitTimestamp *bool, err error) {
+func (p *parser) parseColumnOptions() (allowCommitTimestamp *bool, err *parseError) {
 	debugf("parseColumnOptions: %v", p)
 	/*
 		options_def:
@@ -1069,9 +1118,9 @@ func (p *parser) parseColumnOptions() (allowCommitTimestamp *bool, err error) {
 	return
 }
 
-func (p *parser) parseKeyPartList() ([]KeyPart, error) {
+func (p *parser) parseKeyPartList() ([]KeyPart, *parseError) {
 	var list []KeyPart
-	err := p.parseCommaList(func(p *parser) error {
+	err := p.parseCommaList(func(p *parser) *parseError {
 		kp, err := p.parseKeyPart()
 		if err != nil {
 			return err
@@ -1082,7 +1131,7 @@ func (p *parser) parseKeyPartList() ([]KeyPart, error) {
 	return list, err
 }
 
-func (p *parser) parseKeyPart() (KeyPart, error) {
+func (p *parser) parseKeyPart() (KeyPart, *parseError) {
 	debugf("parseKeyPart: %v", p)
 
 	/*
@@ -1114,9 +1163,9 @@ func (p *parser) parseKeyPart() (KeyPart, error) {
 	return kp, nil
 }
 
-func (p *parser) parseColumnNameList() ([]string, error) {
+func (p *parser) parseColumnNameList() ([]string, *parseError) {
 	var list []string
-	err := p.parseCommaList(func(p *parser) error {
+	err := p.parseCommaList(func(p *parser) *parseError {
 		n, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return err
@@ -1137,7 +1186,7 @@ var baseTypes = map[string]TypeBase{
 	"TIMESTAMP": Timestamp,
 }
 
-func (p *parser) parseType() (Type, error) {
+func (p *parser) parseType() (Type, *parseError) {
 	debugf("parseType: %v", p)
 
 	/*
@@ -1203,7 +1252,7 @@ func (p *parser) parseType() (Type, error) {
 	return t, nil
 }
 
-func (p *parser) parseQuery() (Query, error) {
+func (p *parser) parseQuery() (Query, *parseError) {
 	debugf("parseQuery: %v", p)
 
 	/*
@@ -1255,7 +1304,7 @@ func (p *parser) parseQuery() (Query, error) {
 	return q, nil
 }
 
-func (p *parser) parseSelect() (Select, error) {
+func (p *parser) parseSelect() (Select, *parseError) {
 	debugf("parseSelect: %v", p)
 
 	/*
@@ -1324,13 +1373,13 @@ func (p *parser) parseSelect() (Select, error) {
 	return sel, nil
 }
 
-func (p *parser) parseSelectFrom() (SelectFrom, error) {
+func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 	// TODO: support more than a single table name.
 	tname, err := p.parseTableOrIndexOrColumnName()
 	return SelectFrom{Table: tname}, err
 }
 
-func (p *parser) parseTableSample() (TableSample, error) {
+func (p *parser) parseTableSample() (TableSample, *parseError) {
 	var ts TableSample
 
 	if err := p.expect("TABLESAMPLE"); err != nil {
@@ -1380,7 +1429,7 @@ func (p *parser) parseTableSample() (TableSample, error) {
 	return ts, nil
 }
 
-func (p *parser) parseOrder() (Order, error) {
+func (p *parser) parseOrder() (Order, *parseError) {
 	/*
 		expression [{ ASC | DESC }]
 	*/
@@ -1403,7 +1452,7 @@ func (p *parser) parseOrder() (Order, error) {
 	return o, nil
 }
 
-func (p *parser) parseLimitCount() (Limit, error) {
+func (p *parser) parseLimitCount() (Limit, *parseError) {
 	// "only literal or parameter values"
 	// https://cloud.google.com/spanner/docs/query-syntax#limit-clause-and-offset-clause
 
@@ -1421,9 +1470,9 @@ func (p *parser) parseLimitCount() (Limit, error) {
 	return nil, p.errorf("got %q, want literal or parameter", tok.value)
 }
 
-func (p *parser) parseExprList() ([]Expr, error) {
+func (p *parser) parseExprList() ([]Expr, *parseError) {
 	var list []Expr
-	err := p.parseCommaList(func(p *parser) error {
+	err := p.parseCommaList(func(p *parser) *parseError {
 		e, err := p.parseExpr()
 		if err != nil {
 			return err
@@ -1455,7 +1504,7 @@ ascending order of precedence:
 TODO: there are more levels to break out, esp. in parseArithOp
 */
 
-func (p *parser) parseExpr() (Expr, error) {
+func (p *parser) parseExpr() (Expr, *parseError) {
 	debugf("parseExpr: %v", p)
 
 	return orParser.parse(p)
@@ -1464,13 +1513,13 @@ func (p *parser) parseExpr() (Expr, error) {
 // binOpParser is a generic meta-parser for binary operations.
 // It assumes the operation is left associative.
 type binOpParser struct {
-	LHS, RHS func(*parser) (Expr, error)
+	LHS, RHS func(*parser) (Expr, *parseError)
 	Op       string
 	ArgCheck func(Expr) error
 	Combiner func(lhs, rhs Expr) Expr
 }
 
-func (bin binOpParser) parse(p *parser) (Expr, error) {
+func (bin binOpParser) parse(p *parser) (Expr, *parseError) {
 	expr, err := bin.LHS(p)
 	if err != nil {
 		return nil, err
@@ -1530,7 +1579,7 @@ var (
 	}
 )
 
-func (p *parser) parseLogicalNot() (Expr, error) {
+func (p *parser) parseLogicalNot() (Expr, *parseError) {
 	if !p.eat("NOT") {
 		return p.parseIsOp()
 	}
@@ -1541,7 +1590,7 @@ func (p *parser) parseLogicalNot() (Expr, error) {
 	return LogicalOp{Op: Not, RHS: be}, nil
 }
 
-func (p *parser) parseIsOp() (Expr, error) {
+func (p *parser) parseIsOp() (Expr, *parseError) {
 	debugf("parseIsOp: %v", p)
 
 	expr, err := p.parseComparisonOp()
@@ -1588,7 +1637,7 @@ var symbolicOperators = map[string]ComparisonOperator{
 	"<>": Ne,
 }
 
-func (p *parser) parseComparisonOp() (Expr, error) {
+func (p *parser) parseComparisonOp() (Expr, *parseError) {
 	debugf("parseComparisonOp: %v", p)
 
 	expr, err := p.parseArithOp()
@@ -1652,7 +1701,7 @@ func (p *parser) parseComparisonOp() (Expr, error) {
 	return expr, nil
 }
 
-func (p *parser) parseArithOp() (Expr, error) {
+func (p *parser) parseArithOp() (Expr, *parseError) {
 	// TODO: actually parse arithmetic operations.
 
 	if p.eat("(") {
@@ -1687,7 +1736,7 @@ func (p *parser) parseArithOp() (Expr, error) {
 	return lit, nil
 }
 
-func (p *parser) parseLit() (Expr, error) {
+func (p *parser) parseLit() (Expr, *parseError) {
 	tok := p.next()
 	if tok.err != nil {
 		return nil, tok.err
@@ -1727,7 +1776,7 @@ func (p *parser) parseLit() (Expr, error) {
 	return ID(tok.value), nil
 }
 
-func (p *parser) parseBoolExpr() (BoolExpr, error) {
+func (p *parser) parseBoolExpr() (BoolExpr, *parseError) {
 	expr, err := p.parseExpr()
 	if err != nil {
 		return nil, err
@@ -1739,7 +1788,7 @@ func (p *parser) parseBoolExpr() (BoolExpr, error) {
 	return be, nil
 }
 
-func (p *parser) parseTableOrIndexOrColumnName() (string, error) {
+func (p *parser) parseTableOrIndexOrColumnName() (string, *parseError) {
 	/*
 		table_name and column_name and index_name:
 				{a—z|A—Z}[{a—z|A—Z|0—9|_}+]
@@ -1753,7 +1802,7 @@ func (p *parser) parseTableOrIndexOrColumnName() (string, error) {
 	return tok.value, nil
 }
 
-func (p *parser) parseOnDelete() (OnDelete, error) {
+func (p *parser) parseOnDelete() (OnDelete, *parseError) {
 	/*
 		CASCADE
 		NO ACTION
@@ -1777,7 +1826,7 @@ func (p *parser) parseOnDelete() (OnDelete, error) {
 
 // parseCommaList parses a parenthesized comma-separated list,
 // delegating to f for the individual element parsing.
-func (p *parser) parseCommaList(f func(*parser) error) error {
+func (p *parser) parseCommaList(f func(*parser) *parseError) *parseError {
 	if err := p.expect("("); err != nil {
 		return err
 	}
