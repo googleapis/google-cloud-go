@@ -456,6 +456,40 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/longrunning/longrunning.yaml",
 		releaseLevel:          "alpha",
 	},
+	{
+		inputDirectoryPath:    "google/api/expr/v1alpha1",
+		pkg:                   "expr",
+		importPath:            "cloud.google.com/go/expr/apiv1alpha1",
+		gRPCServiceConfigPath: "google/api/expr/v1alpha1/cel_grpc_service_config.json",
+		apiServiceConfigPath:  "google/api/expr/v1alpha1/cel.yaml",
+		releaseLevel:          "alpha",
+	},
+	{
+		inputDirectoryPath:    "google/devtools/containeranalysis/v1beta1",
+		pkg:                   "containeranalysis",
+		importPath:            "cloud.google.com/go/containeranalysis/apiv1beta1",
+		gRPCServiceConfigPath: "google/devtools/containeranalysis/v1beta1/containeranalysis_grpc_service_config.json",
+		apiServiceConfigPath:  "google/devtools/containeranalysis/v1beta1/containeranalysis_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		// The grafeas v1beta1 client must be generated in the same package as containeranalysis v1beta1,
+		// but the proto is in a sub-directory of the containeranalysis v1beta1 protos.
+		inputDirectoryPath:    "google/devtools/containeranalysis/v1beta1/grafeas",
+		pkg:                   "containeranalysis",
+		importPath:            "cloud.google.com/go/containeranalysis/apiv1beta1",
+		gRPCServiceConfigPath: "google/devtools/containeranalysis/v1beta1/containeranalysis_grpc_service_config.json",
+		apiServiceConfigPath:  "google/devtools/containeranalysis/v1beta1/containeranalysis_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/recommender/v1",
+		pkg:                   "recommender",
+		importPath:            "cloud.google.com/go/recommender/apiv1",
+		gRPCServiceConfigPath: "google/cloud/recommender/v1/recommender_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/recommender/v1/recommender_v1.yaml",
+		releaseLevel:          "alpha",
+	},
 }
 
 // Relative to gocloud dir.
@@ -472,7 +506,6 @@ var gapicsWithManual = []string{
 
 // Relative to googleapis dir.
 var artmanGapicConfigPaths = []string{
-	"google/api/expr/artman_cel.yaml",
 	"google/cloud/asset/artman_cloudasset_v1beta1.yaml",
 	"google/cloud/asset/artman_cloudasset_v1p2beta1.yaml",
 	"google/cloud/automl/artman_automl_v1.yaml",
@@ -480,7 +513,6 @@ var artmanGapicConfigPaths = []string{
 	"google/cloud/talent/artman_talent_v4beta1.yaml",
 	"google/cloud/videointelligence/artman_videointelligence_v1beta2.yaml",
 	"google/cloud/vision/artman_vision_v1p1beta1.yaml",
-	"google/devtools/containeranalysis/artman_containeranalysis_v1beta1.yaml",
 	"google/logging/artman_logging.yaml",
 	"google/monitoring/artman_monitoring.yaml",
 	"google/pubsub/artman_pubsub.yaml",
