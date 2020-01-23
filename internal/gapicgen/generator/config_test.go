@@ -15,8 +15,6 @@
 package generator
 
 import (
-	"bytes"
-	"fmt"
 	"testing"
 )
 
@@ -35,42 +33,30 @@ var allowedReleaseLevels = map[string]bool{
 // to ensure referenced entries are present.
 func TestMicrogenConfigs(t *testing.T) {
 	for k, entry := range microgenGapicConfigs {
-		// Collect all the problems for a given entry and report them once.
-		var errors []error
-
 		if entry.importPath == "" {
-			errors = append(errors, fmt.Errorf("expected non-empty import field"))
+			t.Errorf("config %q (#%d) expected non-empty importPath", entry.inputDirectoryPath, k)
 		}
 		if entry.inputDirectoryPath == "" {
-			errors = append(errors, fmt.Errorf("expected non-empty inputDirectoryPath field"))
+			t.Errorf("config %q (#%d) expected non-empty inputDirectoryPath field", entry.importPath, k)
 		}
 		if entry.pkg == "" {
-			errors = append(errors, fmt.Errorf("expected non-empty pkg field"))
+			t.Errorf("config %q (#%d) expected non-empty pkg field", entry.importPath, k)
 		}
 		// TODO: Consider if we want to allow this at a later point in time.  If this
 		// isn't supplied the config is technically valid, but the generated library
 		// won't include features such as retry policies.
 		if entry.gRPCServiceConfigPath == "" {
-			errors = append(errors, fmt.Errorf("expected non-empty gRPCServiceConfigPath"))
+			t.Errorf("config %q (#%d) expected non-empty gRPCServiceConfigPath", entry.importPath, k)
 		}
 		if entry.apiServiceConfigPath == "" {
-			errors = append(errors, fmt.Errorf("expected non-empty apiServiceConfigPath"))
+			t.Errorf("config %q (#%d) expected non-empty apiServiceConfigPath", entry.importPath, k)
 		}
 		// Internally, an empty release level means "ga" to the underlying tool, but we
 		// want to be explicit in this configuration.
 		if entry.releaseLevel == "" {
-			errors = append(errors, fmt.Errorf("expected non-empty releaseLevel field"))
-		} else if _, ok := allowedReleaseLevels[entry.releaseLevel]; !ok {
-			errors = append(errors, fmt.Errorf("invalid release level: %s", entry.releaseLevel))
-		}
-
-		if len(errors) > 0 {
-			var b bytes.Buffer
-			fmt.Fprintf(&b, "errors with entry #%d (importPath: %s)\n", k, entry.importPath)
-			for _, v := range errors {
-				fmt.Fprintf(&b, "\t%v\n", v)
-			}
-			t.Errorf(b.String())
+			t.Errorf("config %q (#%d) expected non-empty releaseLevel field", entry.importPath, k)
+		} else if !allowedReleaseLevels[entry.releaseLevel] {
+			t.Errorf("config %q (#%d) invalid releaseLevel: %q", entry.importPath, k, entry.releaseLevel)
 		}
 	}
 }
