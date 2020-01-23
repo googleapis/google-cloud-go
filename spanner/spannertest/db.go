@@ -73,7 +73,7 @@ The mapping between Spanner types and Go types internal to this package are:
 	STRING		string
 	BYTES		[]byte
 	DATE		string (RFC 3339 date; "YYYY-MM-DD")
-	TIMESTAMP	TODO
+	TIMESTAMP	string (RFC 3339 timestamp with zone; "YYYY-MM-DDTHH:MM:SSZ")
 	ARRAY<T>	[]T
 	STRUCT		TODO
 */
@@ -672,6 +672,17 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 			s := sv.StringValue
 			if _, err := time.Parse("2006-01-02", s); err != nil {
 				return nil, fmt.Errorf("bad DATE string %q: %v", s, err)
+			}
+			return s, nil
+		}
+	case spansql.Timestamp:
+		// The Spanner protocol encodes TIMESTAMP in RFC 3339 timestamp format with zone Z.
+		sv, ok := v.Kind.(*structpb.Value_StringValue)
+		if ok {
+			// Store it internally as a string, but validate its value.
+			s := sv.StringValue
+			if _, err := time.Parse("2006-01-02T15:04:05Z", s); err != nil {
+				return nil, fmt.Errorf("bad TIMESTAMP string %q: %v", s, err)
 			}
 			return s, nil
 		}

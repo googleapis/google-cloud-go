@@ -22,7 +22,7 @@ by ascending esotericism:
 - DML statements
 - case insensitivity
 - alternate literal types (esp. strings)
-- TIMESTAMP types
+- allow_commit_timestamp
 - STRUCT types
 - expression functions
 - expression type casting, coercion
