@@ -28,7 +28,11 @@ func boolAddr(b bool) *bool {
 func TestSQL(t *testing.T) {
 	reparseDDL := func(s string) (interface{}, error) {
 		ddl, err := ParseDDLStmt(s)
-		return ddl, err
+		if err != nil {
+			return nil, err
+		}
+		ddl.clearOffset()
+		return ddl, nil
 	}
 	reparseQuery := func(s string) (interface{}, error) {
 		q, err := ParseQuery(s)
@@ -48,7 +52,7 @@ func TestSQL(t *testing.T) {
 		reparse func(string) (interface{}, error)
 	}{
 		{
-			CreateTable{
+			&CreateTable{
 				Name: "Ta",
 				Columns: []ColumnDef{
 					{Name: "Ca", Type: Type{Base: Bool}, NotNull: true},
@@ -68,6 +72,7 @@ func TestSQL(t *testing.T) {
 					{Column: "Ca"},
 					{Column: "Cb", Desc: true},
 				},
+				Position: Position{Line: 1},
 			},
 			`CREATE TABLE Ta (
   Ca BOOL NOT NULL,
@@ -86,7 +91,7 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
-			CreateTable{
+			&CreateTable{
 				Name: "Tsub",
 				Columns: []ColumnDef{
 					{Name: "SomeId", Type: Type{Base: Int64}, NotNull: true},
@@ -100,6 +105,7 @@ func TestSQL(t *testing.T) {
 					Parent:   "Ta",
 					OnDelete: CascadeOnDelete,
 				},
+				Position: Position{Line: 1},
 			},
 			`CREATE TABLE Tsub (
   SomeId INT64 NOT NULL,
@@ -109,59 +115,66 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
-			DropTable{
-				Name: "Ta",
+			&DropTable{
+				Name:     "Ta",
+				Position: Position{Line: 1},
 			},
 			"DROP TABLE Ta",
 			reparseDDL,
 		},
 		{
-			CreateIndex{
+			&CreateIndex{
 				Name:  "Ia",
 				Table: "Ta",
 				Columns: []KeyPart{
 					{Column: "Ca"},
 					{Column: "Cb", Desc: true},
 				},
+				Position: Position{Line: 1},
 			},
 			"CREATE INDEX Ia ON Ta(Ca, Cb DESC)",
 			reparseDDL,
 		},
 		{
-			DropIndex{
-				Name: "Ia",
+			&DropIndex{
+				Name:     "Ia",
+				Position: Position{Line: 1},
 			},
 			"DROP INDEX Ia",
 			reparseDDL,
 		},
 		{
-			AlterTable{
+			&AlterTable{
 				Name:       "Ta",
 				Alteration: AddColumn{Def: ColumnDef{Name: "Ca", Type: Type{Base: Bool}}},
+				Position:   Position{Line: 1},
 			},
 			"ALTER TABLE Ta ADD COLUMN Ca BOOL",
 			reparseDDL,
 		},
 		{
-			AlterTable{
+			&AlterTable{
 				Name:       "Ta",
 				Alteration: DropColumn{Name: "Ca"},
+				Position:   Position{Line: 1},
 			},
 			"ALTER TABLE Ta DROP COLUMN Ca",
 			reparseDDL,
 		},
 		{
-			AlterTable{
+			&AlterTable{
 				Name:       "Ta",
 				Alteration: SetOnDelete{Action: NoActionOnDelete},
+				Position:   Position{Line: 1},
 			},
 			"ALTER TABLE Ta SET ON DELETE NO ACTION",
 			reparseDDL,
 		},
 		{
-			AlterTable{
+			&AlterTable{
 				Name:       "Ta",
 				Alteration: SetOnDelete{Action: CascadeOnDelete},
+				Position:   Position{Line: 1},
 			},
 			"ALTER TABLE Ta SET ON DELETE CASCADE",
 			reparseDDL,

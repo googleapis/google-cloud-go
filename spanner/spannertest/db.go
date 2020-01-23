@@ -115,7 +115,7 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 	switch stmt := stmt.(type) {
 	default:
 		return status.Newf(codes.Unimplemented, "unhandled DDL statement type %T", stmt)
-	case spansql.CreateTable:
+	case *spansql.CreateTable:
 		if _, ok := d.tables[stmt.Name]; ok {
 			return status.Newf(codes.AlreadyExists, "table %s already exists", stmt.Name)
 		}
@@ -148,26 +148,26 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 		}
 		d.tables[stmt.Name] = t
 		return nil
-	case spansql.CreateIndex:
+	case *spansql.CreateIndex:
 		if _, ok := d.indexes[stmt.Name]; ok {
 			return status.Newf(codes.AlreadyExists, "index %s already exists", stmt.Name)
 		}
 		d.indexes[stmt.Name] = struct{}{}
 		return nil
-	case spansql.DropTable:
+	case *spansql.DropTable:
 		if _, ok := d.tables[stmt.Name]; !ok {
 			return status.Newf(codes.NotFound, "no table named %s", stmt.Name)
 		}
 		// TODO: check for indexes on this table.
 		delete(d.tables, stmt.Name)
 		return nil
-	case spansql.DropIndex:
+	case *spansql.DropIndex:
 		if _, ok := d.indexes[stmt.Name]; !ok {
 			return status.Newf(codes.NotFound, "no index named %s", stmt.Name)
 		}
 		delete(d.indexes, stmt.Name)
 		return nil
-	case spansql.AlterTable:
+	case *spansql.AlterTable:
 		t, ok := d.tables[stmt.Name]
 		if !ok {
 			return status.Newf(codes.NotFound, "no table named %s", stmt.Name)
