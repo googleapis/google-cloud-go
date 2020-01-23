@@ -213,7 +213,7 @@ func TestParseExpr(t *testing.T) {
 func TestParseDDL(t *testing.T) {
 	tests := []struct {
 		in   string
-		want DDL
+		want *DDL
 	}{
 		{`CREATE TABLE FooBar (
 			System STRING(MAX) NOT NULL,  # This is a comment.
@@ -244,8 +244,8 @@ func TestParseDDL(t *testing.T) {
 			Ids ARRAY<INT64>,
 			Names ARRAY<STRING(MAX)>,
 		) PRIMARY KEY (Dummy);
-		`, DDL{List: []DDLStmt{
-			CreateTable{
+		`, &DDL{Filename: "filename", List: []DDLStmt{
+			&CreateTable{
 				Name: "FooBar",
 				Columns: []ColumnDef{
 					{Name: "System", Type: Type{Base: String, Len: MaxLen}, NotNull: true},
@@ -257,16 +257,18 @@ func TestParseDDL(t *testing.T) {
 					{Column: "System"},
 					{Column: "RepoPath"},
 				},
+				Position: Position{Line: 1},
 			},
-			CreateIndex{
+			&CreateIndex{
 				Name:       "MyFirstIndex",
 				Table:      "FooBar",
 				Columns:    []KeyPart{{Column: "Count", Desc: true}},
 				Unique:     true,
 				Storing:    []string{"Count"},
 				Interleave: "SomeTable",
+				Position:   Position{Line: 8},
 			},
-			CreateTable{
+			&CreateTable{
 				Name: "FooBarAux",
 				Columns: []ColumnDef{
 					{Name: "System", Type: Type{Base: String, Len: MaxLen}, NotNull: true},
@@ -282,15 +284,26 @@ func TestParseDDL(t *testing.T) {
 					Parent:   "FooBar",
 					OnDelete: CascadeOnDelete,
 				},
+				Position: Position{Line: 11},
 			},
-			AlterTable{Name: "FooBar", Alteration: AddColumn{
-				Def: ColumnDef{Name: "TZ", Type: Type{Base: Bytes, Len: 20}},
-			}},
-			AlterTable{Name: "FooBar", Alteration: DropColumn{Name: "TZ"}},
-			AlterTable{Name: "FooBar", Alteration: SetOnDelete{Action: NoActionOnDelete}},
-			DropIndex{Name: "MyFirstIndex"},
-			DropTable{Name: "FooBar"},
-			CreateTable{
+			&AlterTable{
+				Name:       "FooBar",
+				Alteration: AddColumn{Def: ColumnDef{Name: "TZ", Type: Type{Base: Bytes, Len: 20}}},
+				Position:   Position{Line: 18},
+			},
+			&AlterTable{
+				Name:       "FooBar",
+				Alteration: DropColumn{Name: "TZ"},
+				Position:   Position{Line: 19},
+			},
+			&AlterTable{
+				Name:       "FooBar",
+				Alteration: SetOnDelete{Action: NoActionOnDelete},
+				Position:   Position{Line: 20},
+			},
+			&DropIndex{Name: "MyFirstIndex", Position: Position{Line: 22}},
+			&DropTable{Name: "FooBar", Position: Position{Line: 23}},
+			&CreateTable{
 				Name: "NonScalars",
 				Columns: []ColumnDef{
 					{Name: "Dummy", Type: Type{Base: Int64}, NotNull: true},
@@ -298,21 +311,25 @@ func TestParseDDL(t *testing.T) {
 					{Name: "Names", Type: Type{Array: true, Base: String, Len: MaxLen}},
 				},
 				PrimaryKey: []KeyPart{{Column: "Dummy"}},
+				Position:   Position{Line: 25},
 			},
 		}}},
 		// No trailing comma:
-		{`ALTER TABLE T ADD COLUMN C2 INT64`, DDL{List: []DDLStmt{
-			AlterTable{Name: "T", Alteration: AddColumn{
-				Def: ColumnDef{Name: "C2", Type: Type{Base: Int64}},
-			}},
+		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name:       "T",
+				Alteration: AddColumn{Def: ColumnDef{Name: "C2", Type: Type{Base: Int64}}},
+				Position:   Position{Line: 1},
+			},
 		}}},
 	}
 	for _, test := range tests {
-		got, err := ParseDDL(test.in)
+		got, err := ParseDDL("filename", test.in)
 		if err != nil {
 			t.Errorf("ParseDDL(%q): %v", test.in, err)
 			continue
 		}
+		got.clearOffset()
 		if !reflect.DeepEqual(got, test.want) {
 			t.Errorf("ParseDDL(%q) incorrect.\n got %v\nwant %v", test.in, got, test.want)
 		}

@@ -60,10 +60,15 @@ func debugf(format string, args ...interface{}) {
 }
 
 // ParseDDL parses a DDL file.
-func ParseDDL(s string) (DDL, error) {
-	p := newParser("-", s) // TODO: take filename as an argument
+//
+// The provided filename is used for error reporting and will
+// appear in the returned structure.
+func ParseDDL(filename, s string) (*DDL, error) {
+	p := newParser(filename, s)
 
-	var ddl DDL
+	ddl := &DDL{
+		Filename: filename,
+	}
 	for {
 		p.skipSpace()
 		if p.done {
@@ -72,7 +77,7 @@ func ParseDDL(s string) (DDL, error) {
 
 		stmt, err := p.parseDDLStmt()
 		if err != nil {
-			return DDL{}, err
+			return nil, err
 		}
 		ddl.List = append(ddl.List, stmt)
 
@@ -80,16 +85,16 @@ func ParseDDL(s string) (DDL, error) {
 		if tok.err == eof {
 			break
 		} else if tok.err != nil {
-			return DDL{}, tok.err
+			return nil, tok.err
 		}
 		if tok.value == ";" {
 			continue
 		} else {
-			return DDL{}, p.errorf("unexpected token %q", tok.value)
+			return nil, p.errorf("unexpected token %q", tok.value)
 		}
 	}
 	if p.Rem() != "" {
-		return DDL{}, fmt.Errorf("unexpected trailing contents %q", p.Rem())
+		return nil, fmt.Errorf("unexpected trailing contents %q", p.Rem())
 	}
 	return ddl, nil
 }
@@ -176,6 +181,9 @@ type parser struct {
 	filename     string
 	line, offset int // updated by places that shrink s
 }
+
+// Pos reports the position of the current token.
+func (p *parser) Pos() Position { return Position{Line: p.cur.line, Offset: p.cur.offset} }
 
 func newParser(filename, s string) *parser {
 	return &parser{
@@ -806,6 +814,7 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 		a, err := p.parseAlterTable()
 		return a, err
 	} else if p.eat("DROP") {
+		pos := p.Pos()
 		// These statements are simple.
 		//	DROP TABLE table_name
 		//	DROP INDEX index_name
@@ -822,15 +831,15 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 			return nil, err
 		}
 		if kind == "TABLE" {
-			return DropTable{Name: name}, nil
+			return &DropTable{Name: name, Position: pos}, nil
 		}
-		return DropIndex{Name: name}, nil
+		return &DropIndex{Name: name, Position: pos}, nil
 	}
 
 	return nil, p.errorf("unknown DDL statement")
 }
 
-func (p *parser) parseCreateTable() (CreateTable, *parseError) {
+func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 	debugf("parseCreateTable: %v", p)
 
 	/*
@@ -846,17 +855,18 @@ func (p *parser) parseCreateTable() (CreateTable, *parseError) {
 	*/
 
 	if err := p.expect("CREATE"); err != nil {
-		return CreateTable{}, err
+		return nil, err
 	}
+	pos := p.Pos()
 	if err := p.expect("TABLE"); err != nil {
-		return CreateTable{}, err
+		return nil, err
 	}
 	tname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
-		return CreateTable{}, err
+		return nil, err
 	}
 
-	ct := CreateTable{Name: tname}
+	ct := &CreateTable{Name: tname, Position: pos}
 	err = p.parseCommaList(func(p *parser) *parseError {
 		cd, err := p.parseColumnDef()
 		if err != nil {
@@ -866,30 +876,30 @@ func (p *parser) parseCreateTable() (CreateTable, *parseError) {
 		return nil
 	})
 	if err != nil {
-		return CreateTable{}, err
+		return nil, err
 	}
 
 	if err := p.expect("PRIMARY"); err != nil {
-		return CreateTable{}, err
+		return nil, err
 	}
 	if err := p.expect("KEY"); err != nil {
-		return CreateTable{}, err
+		return nil, err
 	}
 	ct.PrimaryKey, err = p.parseKeyPartList()
 	if err != nil {
-		return CreateTable{}, err
+		return nil, err
 	}
 
 	if p.eat(",", "INTERLEAVE") {
 		if err := p.expect("IN"); err != nil {
-			return CreateTable{}, err
+			return nil, err
 		}
 		if err := p.expect("PARENT"); err != nil {
-			return CreateTable{}, err
+			return nil, err
 		}
 		pname, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
-			return CreateTable{}, err
+			return nil, err
 		}
 		ct.Interleave = &Interleave{
 			Parent:   pname,
@@ -899,7 +909,7 @@ func (p *parser) parseCreateTable() (CreateTable, *parseError) {
 		if p.eat("ON", "DELETE") {
 			od, err := p.parseOnDelete()
 			if err != nil {
-				return CreateTable{}, err
+				return nil, err
 			}
 			ct.Interleave.OnDelete = od
 		}
@@ -908,7 +918,7 @@ func (p *parser) parseCreateTable() (CreateTable, *parseError) {
 	return ct, nil
 }
 
-func (p *parser) parseCreateIndex() (CreateIndex, *parseError) {
+func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
 	debugf("parseCreateIndex: %v", p)
 
 	/*
@@ -928,8 +938,9 @@ func (p *parser) parseCreateIndex() (CreateIndex, *parseError) {
 	var unique, nullFiltered bool
 
 	if err := p.expect("CREATE"); err != nil {
-		return CreateIndex{}, err
+		return nil, err
 	}
+	pos := p.Pos()
 	if p.eat("UNIQUE") {
 		unique = true
 	}
@@ -937,49 +948,51 @@ func (p *parser) parseCreateIndex() (CreateIndex, *parseError) {
 		nullFiltered = true
 	}
 	if err := p.expect("INDEX"); err != nil {
-		return CreateIndex{}, err
+		return nil, err
 	}
 	iname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
-		return CreateIndex{}, err
+		return nil, err
 	}
 	if err := p.expect("ON"); err != nil {
-		return CreateIndex{}, err
+		return nil, err
 	}
 	tname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
-		return CreateIndex{}, err
+		return nil, err
 	}
-	ci := CreateIndex{
+	ci := &CreateIndex{
 		Name:  iname,
 		Table: tname,
 
 		Unique:       unique,
 		NullFiltered: nullFiltered,
+
+		Position: pos,
 	}
 	ci.Columns, err = p.parseKeyPartList()
 	if err != nil {
-		return CreateIndex{}, err
+		return nil, err
 	}
 
 	if p.eat("STORING") {
 		ci.Storing, err = p.parseColumnNameList()
 		if err != nil {
-			return CreateIndex{}, err
+			return nil, err
 		}
 	}
 
 	if p.eat(",", "INTERLEAVE", "IN") {
 		ci.Interleave, err = p.parseTableOrIndexOrColumnName()
 		if err != nil {
-			return CreateIndex{}, err
+			return nil, err
 		}
 	}
 
 	return ci, nil
 }
 
-func (p *parser) parseAlterTable() (AlterTable, *parseError) {
+func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 	debugf("parseAlterTable: %v", p)
 
 	/*
@@ -995,54 +1008,55 @@ func (p *parser) parseAlterTable() (AlterTable, *parseError) {
 	*/
 
 	if err := p.expect("ALTER"); err != nil {
-		return AlterTable{}, err
+		return nil, err
 	}
+	pos := p.Pos()
 	if err := p.expect("TABLE"); err != nil {
-		return AlterTable{}, err
+		return nil, err
 	}
 	tname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
-		return AlterTable{}, err
+		return nil, err
 	}
-	a := AlterTable{Name: tname}
+	a := &AlterTable{Name: tname, Position: pos}
 
 	tok := p.next()
 	if tok.err != nil {
-		return AlterTable{}, tok.err
+		return nil, tok.err
 	}
 	switch tok.value {
 	default:
-		return AlterTable{}, p.errorf("got %q, expected ADD or DROP or SET or ALTER", tok.value)
+		return nil, p.errorf("got %q, expected ADD or DROP or SET or ALTER", tok.value)
 	case "ADD":
 		if err := p.expect("COLUMN"); err != nil {
-			return AlterTable{}, err
+			return nil, err
 		}
 		cd, err := p.parseColumnDef()
 		if err != nil {
-			return AlterTable{}, err
+			return nil, err
 		}
 		a.Alteration = AddColumn{Def: cd}
 		return a, nil
 	case "DROP":
 		if err := p.expect("COLUMN"); err != nil {
-			return AlterTable{}, err
+			return nil, err
 		}
 		name, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
-			return AlterTable{}, err
+			return nil, err
 		}
 		a.Alteration = DropColumn{Name: name}
 		return a, nil
 	case "SET":
 		if err := p.expect("ON"); err != nil {
-			return AlterTable{}, err
+			return nil, err
 		}
 		if err := p.expect("DELETE"); err != nil {
-			return AlterTable{}, err
+			return nil, err
 		}
 		od, err := p.parseOnDelete()
 		if err != nil {
-			return AlterTable{}, err
+			return nil, err
 		}
 		a.Alteration = SetOnDelete{Action: od}
 		return a, nil

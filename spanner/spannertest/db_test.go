@@ -27,7 +27,7 @@ import (
 	"cloud.google.com/go/spanner/spansql"
 )
 
-var stdTestTable = spansql.CreateTable{
+var stdTestTable = &spansql.CreateTable{
 	Name: "Staff",
 	Columns: []spansql.ColumnDef{
 		{Name: "Tenure", Type: spansql.Type{Base: spansql.Int64}},
@@ -159,7 +159,7 @@ func TestTableData(t *testing.T) {
 	}
 
 	// Add DATE and TIMESTAMP columns, and populate them with some data.
-	st = db.ApplyDDL(spansql.AlterTable{
+	st = db.ApplyDDL(&spansql.AlterTable{
 		Name: "Staff",
 		Alteration: spansql.AddColumn{Def: spansql.ColumnDef{
 			Name: "FirstSeen",
@@ -169,7 +169,7 @@ func TestTableData(t *testing.T) {
 	if st.Code() != codes.OK {
 		t.Fatalf("Adding column: %v", st.Err())
 	}
-	st = db.ApplyDDL(spansql.AlterTable{
+	st = db.ApplyDDL(&spansql.AlterTable{
 		Name: "Staff",
 		Alteration: spansql.AddColumn{Def: spansql.ColumnDef{
 			Name: "LastSeen",
@@ -208,7 +208,7 @@ func TestTableData(t *testing.T) {
 	}
 
 	// Add a BYTES column, and populate it with some data.
-	st = db.ApplyDDL(spansql.AlterTable{
+	st = db.ApplyDDL(&spansql.AlterTable{
 		Name: "Staff",
 		Alteration: spansql.AddColumn{Def: spansql.ColumnDef{
 			Name: "RawBytes",

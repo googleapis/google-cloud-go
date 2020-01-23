@@ -19,8 +19,11 @@ package spansql
 // This file holds the type definitions for the SQL dialect.
 
 import (
+	"fmt"
 	"math"
 )
+
+// TODO: More Position fields throughout; maybe in Query/Select.
 
 // CreateTable represents a CREATE TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#create_table
@@ -29,7 +32,14 @@ type CreateTable struct {
 	Columns    []ColumnDef
 	PrimaryKey []KeyPart
 	Interleave *Interleave
+
+	Position Position // position of the "CREATE" token
 }
+
+func (ct *CreateTable) String() string { return fmt.Sprintf("%#v", ct) }
+func (*CreateTable) isDDLStmt()        {}
+func (ct *CreateTable) Pos() Position  { return ct.Position }
+func (ct *CreateTable) clearOffset()   { ct.Position.Offset = 0 }
 
 // Interleave represents an interleave clause of a CREATE TABLE statement.
 type Interleave struct {
@@ -49,22 +59,54 @@ type CreateIndex struct {
 
 	Storing    []string
 	Interleave string
+
+	Position Position // position of the "CREATE" token
 }
+
+func (ci *CreateIndex) String() string { return fmt.Sprintf("%#v", ci) }
+func (*CreateIndex) isDDLStmt()        {}
+func (ci *CreateIndex) Pos() Position  { return ci.Position }
+func (ci *CreateIndex) clearOffset()   { ci.Position.Offset = 0 }
 
 // DropTable represents a DROP TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop_table
-type DropTable struct{ Name string }
+type DropTable struct {
+	Name string
+
+	Position Position // position of the "DROP" token
+}
+
+func (dt *DropTable) String() string { return fmt.Sprintf("%#v", dt) }
+func (*DropTable) isDDLStmt()        {}
+func (dt *DropTable) Pos() Position  { return dt.Position }
+func (dt *DropTable) clearOffset()   { dt.Position.Offset = 0 }
 
 // DropIndex represents a DROP INDEX statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop-index
-type DropIndex struct{ Name string }
+type DropIndex struct {
+	Name string
+
+	Position Position // position of the "DROP" token
+}
+
+func (di *DropIndex) String() string { return fmt.Sprintf("%#v", di) }
+func (*DropIndex) isDDLStmt()        {}
+func (di *DropIndex) Pos() Position  { return di.Position }
+func (di *DropIndex) clearOffset()   { di.Position.Offset = 0 }
 
 // AlterTable represents an ALTER TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#alter_table
 type AlterTable struct {
 	Name       string
 	Alteration TableAlteration
+
+	Position Position // position of the "ALTER" token
 }
+
+func (at *AlterTable) String() string { return fmt.Sprintf("%#v", at) }
+func (*AlterTable) isDDLStmt()        {}
+func (at *AlterTable) Pos() Position  { return at.Position }
+func (at *AlterTable) clearOffset()   { at.Position.Offset = 0 }
 
 // TableAlteration is satisfied by AddColumn, DropColumn and SetOnDelete.
 type TableAlteration interface {
@@ -346,16 +388,43 @@ func (StarExpr) isExpr() {}
 // DDL represents a Data Definition Language (DDL) file.
 type DDL struct {
 	List []DDLStmt
+
+	Filename string // if known at parse time
+
+	// TODO(dsymonds): comments
+}
+
+func (d *DDL) clearOffset() {
+	for _, stmt := range d.List {
+		stmt.clearOffset()
+	}
 }
 
 // DDLStmt is satisfied by a type that can appear in a DDL.
 type DDLStmt interface {
 	isDDLStmt()
 	SQL() string
+	Node
 }
 
-func (CreateTable) isDDLStmt() {}
-func (CreateIndex) isDDLStmt() {}
-func (AlterTable) isDDLStmt()  {}
-func (DropTable) isDDLStmt()   {}
-func (DropIndex) isDDLStmt()   {}
+// Node is implemented by concrete types in this package that represent things
+// appearing in a DDL file.
+type Node interface {
+	Pos() Position
+	clearOffset()
+}
+
+// Position describes a source position in an input DDL file.
+// It is only valid if the line number is positive.
+type Position struct {
+	Line   int // 1-based line number
+	Offset int // 0-based byte offset
+}
+
+func (pos Position) IsValid() bool { return pos.Line > 0 }
+func (pos Position) String() string {
+	if pos.Line == 0 {
+		return ":<invalid>"
+	}
+	return fmt.Sprintf(":%d", pos.Line)
+}
