@@ -410,7 +410,7 @@ func compareVals(x, y interface{}) int {
 		}
 		return 0
 	case string:
-		// This handles DATE too.
+		// This handles DATE and TIMESTAMP too.
 		return strings.Compare(x, y.(string))
 	}
 }

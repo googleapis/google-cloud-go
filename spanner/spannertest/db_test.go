@@ -158,7 +158,7 @@ func TestTableData(t *testing.T) {
 		t.Errorf("ReadAll data wrong.\n got %v\nwant %v", all, wantAll)
 	}
 
-	// Add a DATE column, populate it with some data.
+	// Add DATE and TIMESTAMP columns, and populate them with some data.
 	st = db.ApplyDDL(spansql.AlterTable{
 		Name: "Staff",
 		Alteration: spansql.AddColumn{Def: spansql.ColumnDef{
@@ -169,10 +169,20 @@ func TestTableData(t *testing.T) {
 	if st.Code() != codes.OK {
 		t.Fatalf("Adding column: %v", st.Err())
 	}
-	err = db.Update("Staff", []string{"Name", "ID", "FirstSeen"}, []*structpb.ListValue{
-		listV(stringV("Jack"), stringV("1"), stringV("1994-10-28")),
-		listV(stringV("Daniel"), stringV("2"), stringV("1994-10-28")),
-		listV(stringV("George"), stringV("5"), stringV("1997-07-27")),
+	st = db.ApplyDDL(spansql.AlterTable{
+		Name: "Staff",
+		Alteration: spansql.AddColumn{Def: spansql.ColumnDef{
+			Name: "LastSeen",
+			Type: spansql.Type{Base: spansql.Timestamp},
+		}},
+	})
+	if st.Code() != codes.OK {
+		t.Fatalf("Adding column: %v", st.Err())
+	}
+	err = db.Update("Staff", []string{"Name", "ID", "FirstSeen", "LastSeen"}, []*structpb.ListValue{
+		listV(stringV("Jack"), stringV("1"), stringV("1994-10-28"), nullV()),
+		listV(stringV("Daniel"), stringV("2"), stringV("1994-10-28"), nullV()),
+		listV(stringV("George"), stringV("5"), stringV("1997-07-27"), stringV("2008-07-29T11:22:43Z")),
 	})
 	if err != nil {
 		t.Fatalf("Updating rows: %v", err)
@@ -301,7 +311,7 @@ func TestTableData(t *testing.T) {
 			[][]interface{}{
 				// These are returned in table column order.
 				// Note that the primary key columns get sorted first.
-				{"Sam", int64(3), int64(9), false, 1.75, nil, nil},
+				{"Sam", int64(3), int64(9), false, 1.75, nil, nil, nil},
 			},
 		},
 		{
