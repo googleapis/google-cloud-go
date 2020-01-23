@@ -1,5 +1,11 @@
 # Changes
 
+## v1.4.0
+
+* Add v1beta2, v1alpha2 endpoints for bigquerystorage API.
+
+* Location is now reported as part of TableMetadata.
+
 ## v1.3.0
 
 * Add Description field for Routine entities.
