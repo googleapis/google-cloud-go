@@ -33,7 +33,7 @@ import (
 var (
 	t1 = mustParseTime("2016-11-15T15:04:05.999999999Z")
 	// Boundaries
-	t2 = mustParseTime("0000-01-01T00:00:00.000000000Z")
+	t2 = mustParseTime("0001-01-01T00:00:00.000000000Z")
 	t3 = mustParseTime("9999-12-31T23:59:59.999999999Z")
 	// Local timezone
 	t4 = time.Now()
