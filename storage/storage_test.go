@@ -1148,7 +1148,7 @@ func TestAttrToFieldMapCoverage(t *testing.T) {
 // for writes) and readHost (used for reads) are both set correctly.
 func TestWithEndpoint(t *testing.T) {
 	ctx := context.Background()
-	endpoint := "https://fake.gcs.com/storage/v1"
+	endpoint := "https://fake.gcs.com:8080/storage/v1"
 	c, err := NewClient(ctx, option.WithEndpoint(endpoint))
 	if err != nil {
 		t.Fatalf("error creating client: %v", err)
@@ -1158,7 +1158,7 @@ func TestWithEndpoint(t *testing.T) {
 		t.Errorf("raw.BasePath not set correctly: got %v, want %v", c.raw.BasePath, endpoint)
 	}
 
-	want := "fake.gcs.com"
+	want := "fake.gcs.com:8080"
 	if c.readHost != want {
 		t.Errorf("readHost not set correctly: got %v, want %v", c.readHost, want)
 	}
