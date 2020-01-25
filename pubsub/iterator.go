@@ -317,7 +317,7 @@ func (it *messageIterator) sender() {
 		case <-it.pingTicker.C:
 			it.mu.Lock()
 			// Ping only if we are processing messages via streaming.
-			sendPing = !it.po.synchronous && (len(it.keepAliveDeadlines) > 0)
+			sendPing = !it.po.synchronous
 		}
 		// Lock is held here.
 		var acks, nacks, modAcks map[string]bool
