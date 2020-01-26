@@ -10,9 +10,9 @@ require (
 	github.com/google/go-cmp v0.4.0
 	github.com/googleapis/gax-go/v2 v2.0.5
 	golang.org/x/exp v0.0.0-20200119233911-0405dc783f0a // indirect
-	golang.org/x/sys v0.0.0-20200122134326-e047566fdf82 // indirect
-	golang.org/x/tools v0.0.0-20200122220014-bf1340f18c4a // indirect
+	golang.org/x/sys v0.0.0-20200124204421-9fbb57f87de9 // indirect
+	golang.org/x/tools v0.0.0-20200125223703-d33eef8e6825 // indirect
 	google.golang.org/api v0.15.0
-	google.golang.org/genproto v0.0.0-20200122232147-0452cf42e150
+	google.golang.org/genproto v0.0.0-20200127141224-2548664c049f
 	google.golang.org/grpc v1.26.0
 )
