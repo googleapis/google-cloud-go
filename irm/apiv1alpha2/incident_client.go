@@ -624,6 +624,9 @@ func (c *IncidentClient) CreateSignal(ctx context.Context, req *irmpb.CreateSign
 
 // SearchSignals lists signals that are part of an incident.
 // Signals are returned in reverse chronological order.
+// Note that search should not be relied on for critical functionality.  It
+// has lower availability guarantees and might fail to return valid results.
+// Returned results might include stale or extraneous entries.
 func (c *IncidentClient) SearchSignals(ctx context.Context, req *irmpb.SearchSignalsRequest, opts ...gax.CallOption) *SignalIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1006,6 +1009,8 @@ func (c *IncidentClient) ListIncidentRoleAssignments(ctx context.Context, req *i
 // RequestIncidentRoleHandover starts a role handover. The proposed assignee will receive an email
 // notifying them of the assignment. This will fail if a role handover is
 // already pending.
+// Handover to an oncall ladder is not permitted. Use
+// CreateIncidentRoleAssignment instead.
 func (c *IncidentClient) RequestIncidentRoleHandover(ctx context.Context, req *irmpb.RequestIncidentRoleHandoverRequest, opts ...gax.CallOption) (*irmpb.IncidentRoleAssignment, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
