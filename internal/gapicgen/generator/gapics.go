@@ -17,6 +17,7 @@ package generator
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -25,6 +26,8 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"gopkg.in/yaml.v2"
 )
 
 var dockerPullRegex = regexp.MustCompile("(googleapis/artman:[0-9]+.[0-9]+.[0-9]+)")
@@ -46,6 +49,10 @@ func generateGapics(ctx context.Context, googleapisDir, protoDir, gocloudDir, ge
 	}
 
 	if err := copyMicrogenFiles(gocloudDir); err != nil {
+		return err
+	}
+
+	if err := manifest(microgenGapicConfigs, googleapisDir, gocloudDir); err != nil {
 		return err
 	}
 
@@ -260,6 +267,53 @@ func microgen(conf *microgenConfig, googleapisDir, protoDir, gocloudDir string) 
 	c.Stderr = os.Stderr
 	c.Dir = googleapisDir
 	return c.Run()
+}
+
+// manifestEntry is used for JSON marshaling in manifest.
+type manifestEntry struct {
+	PkgName           string `json:"pkg_name"`
+	Description       string `json:"description"`
+	Language          string `json:"language"`
+	ClientLibraryType string `json:"client_library_type"`
+	DocsURL           string `json:"docs_url"`
+	ReleaseLevel      string `json:"release_level"`
+}
+
+// manifest writes a manifest file with info about all of the confs.
+//
+// TODO: there are some libraries that aren't listed in a config (manual,
+// not-microgen). We should add them to the output somehow. See
+// gapicsWithManual.
+func manifest(confs []*microgenConfig, googleapisDir, gocloudDir string) error {
+	var entries []manifestEntry
+	f, err := os.Create(filepath.Join(gocloudDir, "internal", ".repo-metadata-full.json"))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	for _, conf := range confs {
+		yamlPath := filepath.Join(googleapisDir, conf.apiServiceConfigPath)
+		yamlFile, err := os.Open(yamlPath)
+		if err != nil {
+			return err
+		}
+		yamlConfig := struct {
+			Title string `yaml:"title"` // We only need the title field.
+		}{}
+		if err := yaml.NewDecoder(yamlFile).Decode(&yamlConfig); err != nil {
+			return fmt.Errorf("Decode: %v", err)
+		}
+		entry := manifestEntry{
+			PkgName:           conf.importPath,
+			Description:       yamlConfig.Title,
+			Language:          "Go",
+			ClientLibraryType: "generated",
+			DocsURL:           "https://pkg.go.dev/" + conf.importPath,
+			ReleaseLevel:      conf.releaseLevel,
+		}
+		entries = append(entries, entry)
+	}
+	return json.NewEncoder(f).Encode(entries)
 }
 
 // copyMicrogenFiles takes microgen files from gocloudDir/cloud.google.com/go
