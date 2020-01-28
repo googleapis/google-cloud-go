@@ -113,7 +113,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
-	rawService, err := raw.New(hc)
+	rawService, err := raw.NewService(ctx, option.WithHTTPClient(hc))
 	if err != nil {
 		return nil, fmt.Errorf("storage client: %v", err)
 	}

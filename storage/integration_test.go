@@ -3307,7 +3307,7 @@ func killBucket(ctx context.Context, client *Client, bucketName string) error {
 		if objAttrs.EventBasedHold || objAttrs.TemporaryHold {
 			obj := bkt.Object(objAttrs.Name)
 			if _, err := obj.Update(ctx, ObjectAttrsToUpdate{EventBasedHold: false, TemporaryHold: false}); err != nil {
-				fmt.Errorf("removing hold from %q: %v", bucketName+"/"+objAttrs.Name, err)
+				return fmt.Errorf("removing hold from %q: %v", bucketName+"/"+objAttrs.Name, err)
 			}
 		}
 		if err := bkt.Object(objAttrs.Name).Delete(ctx); err != nil {
