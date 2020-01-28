@@ -1322,7 +1322,11 @@ func (p *parser) parseSelect() (Select, *parseError) {
 
 	var sel Select
 
-	// TODO: ALL|DISTINCT
+	if p.eat("ALL") {
+		// Nothing to do; this is the default.
+	} else if p.eat("DISTINCT") {
+		sel.Distinct = true
+	}
 
 	// Read expressions for the SELECT list.
 	for {

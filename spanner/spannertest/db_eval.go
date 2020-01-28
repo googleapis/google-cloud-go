@@ -72,6 +72,30 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams, aux []span
 
 	ri = &resultIter{}
 
+	// Handle SELECT DISTINCT on the way out.
+	if sel.Distinct {
+		defer func() {
+			if evalErr != nil {
+				return
+			}
+			// This is hilariously inefficient; O(N^2) in the number of returned rows.
+			// Some sort of hashing could be done to deduplicate instead.
+			// This also breaks on array/struct types.
+			for i := 0; i < len(ri.rows); i++ {
+				for j := i + 1; j < len(ri.rows); {
+					if rowCmp(ri.rows[i].data, ri.rows[j].data) != 0 {
+						// Distinct rows.
+						j++
+						continue
+					}
+					// Non-distinct rows.
+					copy(ri.rows[j:], ri.rows[j+1:])
+					ri.rows = ri.rows[:len(ri.rows)-1]
+				}
+			}
+		}()
+	}
+
 	// Handle COUNT(*) specially.
 	// TODO: Handle aggregation more generally.
 	if len(sel.List) == 1 && isCountStar(sel.List[0]) {
@@ -314,6 +338,8 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 	case spansql.Paren:
 		return ec.evalExpr(e.Expr)
 	case spansql.LogicalOp:
+		return ec.evalBoolExpr(e)
+	case spansql.ComparisonOp:
 		return ec.evalBoolExpr(e)
 	case spansql.IsOp:
 		return ec.evalBoolExpr(e)

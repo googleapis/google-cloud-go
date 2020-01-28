@@ -185,6 +185,9 @@ func (q Query) SQL() string {
 
 func (sel Select) SQL() string {
 	str := "SELECT "
+	if sel.Distinct {
+		str += "DISTINCT "
+	}
 	for i, e := range sel.List {
 		if i > 0 {
 			str += ", "
