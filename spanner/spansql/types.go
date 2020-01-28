@@ -147,9 +147,10 @@ type Query struct {
 // Select represents a SELECT statement.
 // https://cloud.google.com/spanner/docs/query-syntax#select-list
 type Select struct {
-	List  []Expr
-	From  []SelectFrom
-	Where BoolExpr
+	Distinct bool
+	List     []Expr
+	From     []SelectFrom
+	Where    BoolExpr
 	// TODO: GroupBy, Having
 }
 

@@ -328,6 +328,18 @@ func TestTableData(t *testing.T) {
 				{[]byte("\x01\x00\x01")},
 			},
 		},
+		{
+			`SELECT DISTINCT Cool, Tenure > 8 FROM Staff`,
+			nil,
+			[][]interface{}{
+				// The non-distinct results are be
+				//          [[false true] [<nil> false] [<nil> true] [false true] [true false]]
+				{false, true},
+				{nil, false},
+				{nil, true},
+				{true, false},
+			},
+		},
 	}
 	for _, test := range tests {
 		q, err := spansql.ParseQuery(test.q)
