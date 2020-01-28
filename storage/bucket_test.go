@@ -15,6 +15,7 @@
 package storage
 
 import (
+	"context"
 	"net/http"
 	"reflect"
 	"testing"
@@ -413,7 +414,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 }
 
 func TestCallBuilders(t *testing.T) {
-	rc, err := raw.New(&http.Client{})
+	rc, err := raw.NewService(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
