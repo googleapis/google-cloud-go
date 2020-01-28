@@ -490,6 +490,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/recommender/v1/recommender_v1.yaml",
 		releaseLevel:          "alpha",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/videointelligence/v1beta2",
+		pkg:                   "videointelligence",
+		importPath:            "cloud.google.com/go/videointelligence/apiv1beta2",
+		gRPCServiceConfigPath: "google/cloud/videointelligence/v1beta2/videointelligence_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/videointelligence/videointelligence_v1beta2.yaml",
+		releaseLevel:          "beta",
+	},
 }
 
 // Relative to gocloud dir.
@@ -511,7 +519,6 @@ var artmanGapicConfigPaths = []string{
 	"google/cloud/automl/artman_automl_v1.yaml",
 	"google/cloud/automl/artman_automl_v1beta1.yaml",
 	"google/cloud/talent/artman_talent_v4beta1.yaml",
-	"google/cloud/videointelligence/artman_videointelligence_v1beta2.yaml",
 	"google/cloud/vision/artman_vision_v1p1beta1.yaml",
 	"google/logging/artman_logging.yaml",
 	"google/monitoring/artman_monitoring.yaml",
