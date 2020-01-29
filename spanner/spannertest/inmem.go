@@ -244,7 +244,7 @@ func (s *server) GetOperation(ctx context.Context, req *lropb.GetOperationReques
 // This is a convenience method for tests that may assume an existing schema.
 // The more general approach is to dial this server using an admin client, and
 // use the UpdateDatabaseDdl RPC method.
-func (s *Server) UpdateDDL(ddl spansql.DDL) error {
+func (s *Server) UpdateDDL(ddl *spansql.DDL) error {
 	ctx := context.Background()
 	for _, stmt := range ddl.List {
 		if st := s.s.runOneDDL(ctx, stmt); st.Code() != codes.OK {
