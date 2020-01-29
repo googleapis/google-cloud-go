@@ -100,12 +100,13 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		scheme = "https"
 		readHost = "storage.googleapis.com"
 
-		opts = append(opts, option.WithScopes(ScopeFullControl), option.WithUserAgent(userAgent))
+		// Prepend default options to avoid overriding options passed by the user.
+		opts = append([]option.ClientOption{option.WithScopes(ScopeFullControl), option.WithUserAgent(userAgent)}, opts...)
 	} else {
 		scheme = "http"
 		readHost = host
 
-		opts = append(opts, option.WithoutAuthentication())
+		opts = append([]option.ClientOption{option.WithoutAuthentication()}, opts...)
 	}
 
 	hc, ep, err := htransport.NewClient(ctx, opts...)

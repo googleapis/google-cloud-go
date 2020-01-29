@@ -3103,6 +3103,38 @@ func TestIntegration_HMACKey(t *testing.T) {
 
 }
 
+// Verify that custom scopes passed in by the user are applied correctly.
+func TestIntegration_Scopes(t *testing.T) {
+	// A default client should be able to write objects since it has scope of
+	// FullControl
+	ctx := context.Background()
+	clientFullControl := testConfig(ctx, t)
+	defer clientFullControl.Close()
+
+	bkt := clientFullControl.Bucket(bucketName)
+	obj := "FakeObj1"
+	contents := []byte("This object should be written successfully\n")
+	if err := writeObject(ctx, bkt.Object(obj), "text/plain", contents); err != nil {
+		t.Fatalf("writing: %v", err)
+	}
+
+	// A client with ReadOnly scope should not be able to write successfully.
+	clientReadOnly, err := NewClient(ctx, option.WithScopes(ScopeReadOnly))
+	defer clientReadOnly.Close()
+	if err != nil {
+		t.Fatalf("error creating client: %v", err)
+	}
+
+	bkt = clientReadOnly.Bucket(bucketName)
+	obj = "FakeObj2"
+	contents = []byte("This object should not be written.\n")
+
+	if err := writeObject(ctx, bkt.Object(obj), "text/plain", contents); err == nil {
+		t.Fatal("client with ScopeReadOnly was able to write an object unexpectedly.")
+	}
+
+}
+
 type testHelper struct {
 	t *testing.T
 }
