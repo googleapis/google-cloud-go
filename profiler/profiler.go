@@ -395,15 +395,6 @@ func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
 		return
 	}
 
-	// Starting Go 1.9 the profiles are symbolized by runtime/pprof.
-	// TODO(jianqiaoli): Remove the symbolization code when we decide to
-	// stop supporting Go 1.8.
-	if !shouldAssumeSymbolized && pt != pb.ProfileType_CONTENTION {
-		if err := parseAndSymbolize(&prof); err != nil {
-			debugLog("failed to symbolize profile: %v", err)
-		}
-	}
-
 	p.ProfileBytes = prof.Bytes()
 	p.Labels = a.profileLabels
 	req := pb.UpdateProfileRequest{Profile: p}
@@ -437,9 +428,6 @@ func deltaMutexProfile(ctx context.Context, duration time.Duration, prof *bytes.
 		return err
 	}
 
-	// The mutex profile is not symbolized by runtime.pprof until
-	// golang.org/issue/21474 is fixed in go1.10.
-	symbolize(p)
 	return p.Write(prof)
 }
 
