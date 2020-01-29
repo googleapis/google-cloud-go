@@ -11,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
 package storage_test
 
 import (
@@ -136,9 +135,7 @@ func TestIndefiniteRetries(t *testing.T) {
 	w := obj.NewWriter(ctx)
 
 	maxFileSize := 1 << 20
-	chunkSize := maxFileSize / 4
-
-	w.ChunkSize = chunkSize
+	w.ChunkSize = maxFileSize / 4
 
 	for i := 0; i < maxFileSize; {
 		nowStr := time.Now().Format(time.RFC3339Nano)
@@ -188,19 +185,18 @@ func parseContentRange(hdr http.Header) (start string, completed, spamThem bool)
 	cRange := strings.TrimPrefix(hdr.Get("Content-Range"), "bytes ")
 	rangeSplits := strings.Split(cRange, "/")
 	prelude := rangeSplits[0]
-	if len(prelude) == 0 || prelude == "*" {
-		// Completed the upload.
-		completed = true
-		return
-	}
-
-	startEndSplit := strings.Split(prelude, "-")
-	start = startEndSplit[0]
 
 	if rangeSplits[1] != "*" { // They've uploaded the last byte.
 		// Reproduce https://github.com/googleapis/google-cloud-go/issues/1507
 		// by sending then a retryable error on the last byte.
 		spamThem = true
 	}
+	if len(prelude) == 0 || prelude == "*" {
+		// Completed the upload.
+		completed = true
+		return
+	}
+	startEndSplit := strings.Split(prelude, "-")
+	start = startEndSplit[0]
 	return
 }
