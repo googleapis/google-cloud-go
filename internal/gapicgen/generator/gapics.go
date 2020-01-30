@@ -271,7 +271,7 @@ func microgen(conf *microgenConfig, googleapisDir, protoDir, gocloudDir string) 
 
 // manifestEntry is used for JSON marshaling in manifest.
 type manifestEntry struct {
-	PkgName           string `json:"pkg_name"`
+	DistributionName  string `json:"distribution_name"`
 	Description       string `json:"description"`
 	Language          string `json:"language"`
 	ClientLibraryType string `json:"client_library_type"`
@@ -285,7 +285,7 @@ type manifestEntry struct {
 // not-microgen). We should add them to the output somehow. See
 // gapicsWithManual.
 func manifest(confs []*microgenConfig, googleapisDir, gocloudDir string) error {
-	var entries []manifestEntry
+	entries := map[string]manifestEntry{} // Key is the package name.
 	f, err := os.Create(filepath.Join(gocloudDir, "internal", ".repo-metadata-full.json"))
 	if err != nil {
 		return err
@@ -304,16 +304,18 @@ func manifest(confs []*microgenConfig, googleapisDir, gocloudDir string) error {
 			return fmt.Errorf("Decode: %v", err)
 		}
 		entry := manifestEntry{
-			PkgName:           conf.importPath,
+			DistributionName:  conf.importPath,
 			Description:       yamlConfig.Title,
 			Language:          "Go",
 			ClientLibraryType: "generated",
 			DocsURL:           "https://pkg.go.dev/" + conf.importPath,
 			ReleaseLevel:      conf.releaseLevel,
 		}
-		entries = append(entries, entry)
+		entries[conf.importPath] = entry
 	}
-	return json.NewEncoder(f).Encode(entries)
+	enc := json.NewEncoder(f)
+	enc.SetIndent("", "  ")
+	return enc.Encode(entries)
 }
 
 // copyMicrogenFiles takes microgen files from gocloudDir/cloud.google.com/go
