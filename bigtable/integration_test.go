@@ -1871,11 +1871,10 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ *Client, _ *AdminCli
 		timeout = 10 * time.Minute
 		t.Logf("Running test against production")
 	} else {
-		timeout = 1 * time.Minute
+		timeout = 5 * time.Minute
 		t.Logf("bttest.Server running on %s", testEnv.Config().AdminEndpoint)
 	}
 	ctx, cancel := context.WithTimeout(ctx, timeout)
-	defer cancel()
 
 	client, err := testEnv.NewClient()
 	if err != nil {
@@ -1889,14 +1888,19 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ *Client, _ *AdminCli
 
 	tableName = testEnv.Config().Table
 	if err := adminClient.CreateTable(ctx, tableName); err != nil {
+		cancel()
 		return nil, nil, nil, "", nil, err
 	}
 	if err := adminClient.CreateColumnFamily(ctx, tableName, "follows"); err != nil {
+		cancel()
 		return nil, nil, nil, "", nil, err
 	}
 
 	return client, adminClient, client.Open(tableName), tableName, func() {
-		adminClient.DeleteTable(ctx, tableName)
+		if err := adminClient.DeleteTable(ctx, tableName); err != nil {
+			t.Errorf("DeleteTable got error %v", err)
+		}
+		cancel()
 		client.Close()
 		adminClient.Close()
 	}, nil
