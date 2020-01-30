@@ -89,7 +89,6 @@ staticcheck -go 1.11 ./... 2>&1 | ( \
   grep -v SA1019 | \
   grep -v firestore/internal/doc-snippets.go | \
   grep -v functions/metadata/metadata_test.go | \
-  grep -v storage/bucket.go | \
   grep -v spanner/value.go | \
   grep -v go-cloud-debug-agent | \
   grep -v pubsub/integration_test.go | \
