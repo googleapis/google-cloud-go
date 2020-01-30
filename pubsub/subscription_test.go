@@ -346,8 +346,8 @@ func TestDeadLettering_toMessage(t *testing.T) {
 	if err != nil {
 		t.Errorf("toMessage failed: %v", err)
 	}
-	if got.DeliveryAttempt != 0 {
-		t.Errorf("toMessage with dead-lettering disabled failed\ngot: %d, want 0", got.DeliveryAttempt)
+	if got.DeliveryAttempt != nil {
+		t.Errorf("toMessage with dead-lettering disabled failed\ngot: %d, want nil", *got.DeliveryAttempt)
 	}
 
 	// If dead lettering is enabled, toMessage should properly pass through the DeliveryAttempt field.
@@ -356,7 +356,7 @@ func TestDeadLettering_toMessage(t *testing.T) {
 	if err != nil {
 		t.Errorf("toMessage failed: %v", err)
 	}
-	if got.DeliveryAttempt != int(receivedMsg.DeliveryAttempt) {
-		t.Errorf("toMessage with dead-lettered enabled failed\ngot: %d, want %d", got.DeliveryAttempt, receivedMsg.DeliveryAttempt)
+	if *got.DeliveryAttempt != int(receivedMsg.DeliveryAttempt) {
+		t.Errorf("toMessage with dead-lettered enabled failed\ngot: %d, want %d", *got.DeliveryAttempt, receivedMsg.DeliveryAttempt)
 	}
 }

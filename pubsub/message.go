@@ -49,14 +49,14 @@ type Message struct {
 	// DeliveryAttempt is the number of times a message has been delivered.
 	// This is part of the dead lettering feature that forwards messages that
 	// fail to be processed (from nack/ack deadline timeout) to a dead letter topic.
-	// If dead lettering is enabled, this will be set on all attempts starting
-	// value 1. Otherwise, the value will be 0.
+	// If dead lettering is enabled, this will be set on all attempts, starting
+	// with value 1. Otherwise, the value will be nil.
 	// This field is read-only.
 	//
 	// It is EXPERIMENTAL and a part of a closed alpha that may not be
 	// accessible to all users. This field is subject to change or removal
 	// without notice.
-	DeliveryAttempt int
+	DeliveryAttempt *int
 
 	// size is the approximate size of the message's data and attributes.
 	size int
@@ -77,13 +77,19 @@ func toMessage(resp *pb.ReceivedMessage) (*Message, error) {
 		return nil, err
 	}
 
+	var deliveryAttempt *int
+	if resp.DeliveryAttempt > 0 {
+		da := int(resp.DeliveryAttempt)
+		deliveryAttempt = &da
+	}
+
 	return &Message{
 		ackID:           resp.AckId,
 		Data:            resp.Message.Data,
 		Attributes:      resp.Message.Attributes,
 		ID:              resp.Message.MessageId,
 		PublishTime:     pubTime,
-		DeliveryAttempt: int(resp.DeliveryAttempt),
+		DeliveryAttempt: deliveryAttempt,
 	}, nil
 }
 
