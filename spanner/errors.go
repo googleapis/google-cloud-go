@@ -69,10 +69,9 @@ func (e *Error) Unwrap() error {
 func (e *Error) GRPCStatus() *status.Status {
 	err := unwrap(e)
 	for {
-		// No gRPC Status found in the chain of errors. Return 'Unknown' with
-		// the message of the original error.
+		// If the base error is nil, return status created from e.Code and e.Desc.
 		if err == nil {
-			return status.New(codes.Unknown, e.Desc)
+			return status.New(e.Code, e.Desc)
 		}
 		code := status.Code(err)
 		if code != codes.Unknown {
