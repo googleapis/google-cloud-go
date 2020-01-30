@@ -1133,7 +1133,7 @@ func TestIntegration_CreateSubscription_DeadLetterPolicy(t *testing.T) {
 		},
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
-		t.Fatalf("\ngot: - want: +\n%s", diff)
+		t.Fatalf("SubsciptionConfig; got: - want: +\n%s", diff)
 	}
 
 	res := topic.Publish(ctx, &Message{
@@ -1151,11 +1151,69 @@ func TestIntegration_CreateSubscription_DeadLetterPolicy(t *testing.T) {
 			m.Ack()
 			return
 		}
-		if m.DeliveryAttempt != numAttempts {
+		if *m.DeliveryAttempt != numAttempts {
 			t.Fatalf("Message delivery attempt: %d does not match numAttempts: %d\n", m.DeliveryAttempt, numAttempts)
 		}
 		numAttempts++
 		m.Nack()
+	})
+	if err != nil {
+		t.Fatalf("Streaming pull error: %v\n", err)
+	}
+}
+
+// Test that the DeliveryAttempt field is nil when dead lettering is not enabled.
+func TestIntegration_DeadLetterPolicy_DeliveryAttempt(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	cfg := SubscriptionConfig{
+		Topic: topic,
+	}
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), cfg); err != nil {
+		t.Fatalf("CreateSub error: %v", err)
+	}
+	defer sub.Delete(ctx)
+
+	got, err := sub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := SubscriptionConfig{
+		Topic:               topic,
+		AckDeadline:         10 * time.Second,
+		RetainAckedMessages: false,
+		RetentionDuration:   defaultRetentionDuration,
+		ExpirationPolicy:    defaultExpirationPolicy,
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("SubsciptionConfig; got: - want: +\n%s", diff)
+	}
+
+	res := topic.Publish(ctx, &Message{
+		Data: []byte("failed message"),
+	})
+	if _, err := res.Get(ctx); err != nil {
+		t.Fatalf("Publish message error: %v", err)
+	}
+
+	ctx2, cancel := context.WithCancel(ctx)
+	err = sub.Receive(ctx2, func(_ context.Context, m *Message) {
+		defer m.Ack()
+		defer cancel()
+		if m.DeliveryAttempt != nil {
+			t.Fatalf("DeliveryAttempt should be nil when dead lettering is disabled")
+		}
 	})
 	if err != nil {
 		t.Fatalf("Streaming pull error: %v\n", err)
