@@ -1945,6 +1945,8 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	// - (1b) must have serviceusage.services.use permission (Editor role) on (3b).
 	// - (1b) must NOT have that permission on (3a).
 	// - (1a) must NOT have that permission on (3b).
+
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1753")
 	const wantErrorCode = 400
 
 	ctx := context.Background()
