@@ -716,3 +716,41 @@ func (r *keyRange) String() string {
 }
 
 type keyRangeList []*keyRange
+
+// Execute runs a DML statement.
+// It returns the number of affected rows.
+func (d *database) Execute(stmt spansql.DMLStmt, params queryParams) (int, error) { // TODO: return *status.Status instead?
+	switch stmt := stmt.(type) {
+	default:
+		return 0, status.Errorf(codes.Unimplemented, "unhandled DML statement type %T", stmt)
+	case *spansql.Delete:
+		t, err := d.table(stmt.Table)
+		if err != nil {
+			return 0, err
+		}
+
+		t.mu.Lock()
+		defer t.mu.Unlock()
+
+		n := 0
+		for i := 0; i < len(t.rows); {
+			ec := evalContext{
+				table:  t,
+				row:    t.rows[i],
+				params: params,
+			}
+			b, err := ec.evalBoolExpr(stmt.Where)
+			if err != nil {
+				return 0, err
+			}
+			if b {
+				copy(t.rows[i:], t.rows[i+1:])
+				t.rows = t.rows[:len(t.rows)-1]
+				n++
+				continue
+			}
+			i++
+		}
+		return n, nil
+	}
+}

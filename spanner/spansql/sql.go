@@ -106,6 +106,10 @@ func (od OnDelete) SQL() string {
 
 // TODO func (ac AlterColumn) SQL() string { }
 
+func (d *Delete) SQL() string {
+	return "DELETE FROM " + d.Table + " WHERE " + d.Where.SQL()
+}
+
 func (cd ColumnDef) SQL() string {
 	str := cd.Name + " " + cd.Type.SQL()
 	if cd.NotNull {

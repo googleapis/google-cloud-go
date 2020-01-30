@@ -19,7 +19,7 @@ by ascending esotericism:
 - SELECT HAVING
 - arithmetic expressions (operators, parens)
 - transaction simulation
-- DML statements
+- INSERT/UPDATE DML statements
 - case insensitivity
 - alternate literal types (esp. strings)
 - allow_commit_timestamp

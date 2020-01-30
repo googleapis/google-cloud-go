@@ -136,6 +136,20 @@ type AlterColumn struct {
 }
 */
 
+// Delete represents a DELETE statement.
+// https://cloud.google.com/spanner/docs/dml-syntax#delete-statement
+type Delete struct {
+	Table string
+	Where BoolExpr
+
+	// TODO: Alias
+}
+
+func (d *Delete) String() string { return fmt.Sprintf("%#v", d) }
+func (*Delete) isDMLStmt()       {}
+
+// TODO: Insert, Update.
+
 // ColumnDef represents a column definition as part of a CREATE TABLE
 // or ALTER TABLE statement.
 type ColumnDef struct {
@@ -405,6 +419,12 @@ type DDLStmt interface {
 	isDDLStmt()
 	SQL() string
 	Node
+}
+
+// DMLStmt is satisfied by a type that is a DML statement.
+type DMLStmt interface {
+	isDMLStmt()
+	SQL() string
 }
 
 // Node is implemented by concrete types in this package that represent things

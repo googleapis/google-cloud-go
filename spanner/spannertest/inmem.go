@@ -449,7 +449,39 @@ func (s *server) readTx(ctx context.Context, session string, tsel *spannerpb.Tra
 }
 
 func (s *server) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest) (*spannerpb.ResultSet, error) {
-	return nil, status.Errorf(codes.Unimplemented, "ExecuteSql not implemented yet")
+	// Assume this is probably a DML statement. Queries tend to use ExecuteStreamingSql.
+	// TODO: Expand this to support more things.
+
+	obj, ok := req.Transaction.Selector.(*spannerpb.TransactionSelector_Id)
+	if !ok {
+		return nil, fmt.Errorf("unsupported transaction type %T", req.Transaction.Selector)
+	}
+	tid := string(obj.Id)
+	_ = tid // TODO: lookup an existing transaction by ID.
+
+	stmt, err := spansql.ParseDMLStmt(req.Sql)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "bad DML: %v", err)
+	}
+	params, err := parseQueryParams(req.GetParams())
+	if err != nil {
+		return nil, err
+	}
+
+	s.logf("Executing: %s", stmt.SQL())
+	if len(params) > 0 {
+		s.logf("        ▹ %v", params)
+	}
+
+	n, err := s.db.Execute(stmt, params)
+	if err != nil {
+		return nil, err
+	}
+	return &spannerpb.ResultSet{
+		Stats: &spannerpb.ResultSetStats{
+			RowCount: &spannerpb.ResultSetStats_RowCountExact{int64(n)},
+		},
+	}, nil
 }
 
 func (s *server) ExecuteStreamingSql(req *spannerpb.ExecuteSqlRequest, stream spannerpb.Spanner_ExecuteStreamingSqlServer) error {
@@ -465,19 +497,9 @@ func (s *server) ExecuteStreamingSql(req *spannerpb.ExecuteSqlRequest, stream sp
 		return status.Errorf(codes.InvalidArgument, "bad query: %v", err)
 	}
 
-	params := make(queryParams)
-	for k, v := range req.GetParams().GetFields() {
-		switch v := v.Kind.(type) {
-		default:
-			return fmt.Errorf("unsupported well-known type value kind %T", v)
-		case *structpb.Value_NullValue:
-			params[k] = nil
-		case *structpb.Value_NumberValue:
-			params[k] = v.NumberValue
-		case *structpb.Value_StringValue:
-			params[k] = v.StringValue
-		}
-
+	params, err := parseQueryParams(req.GetParams())
+	if err != nil {
+		return err
 	}
 
 	s.logf("Querying: %s", q.SQL())
@@ -680,6 +702,23 @@ func (s *server) Rollback(ctx context.Context, req *spannerpb.RollbackRequest) (
 }
 
 // TODO: PartitionQuery, PartitionRead
+
+func parseQueryParams(p *structpb.Struct) (queryParams, error) {
+	params := make(queryParams)
+	for k, v := range p.GetFields() {
+		switch v := v.Kind.(type) {
+		default:
+			return nil, fmt.Errorf("unsupported well-known type value kind %T", v)
+		case *structpb.Value_NullValue:
+			params[k] = nil
+		case *structpb.Value_NumberValue:
+			params[k] = v.NumberValue
+		case *structpb.Value_StringValue:
+			params[k] = v.StringValue
+		}
+	}
+	return params, nil
+}
 
 func spannerTypeFromType(typ spansql.Type) (*spannerpb.Type, error) {
 	var code spannerpb.TypeCode
