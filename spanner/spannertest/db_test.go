@@ -206,6 +206,40 @@ func TestTableData(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Deleting key range: %v", err)
 	}
+	// Re-add the data and delete with DML.
+	err = db.Insert("Staff", []string{"Name", "ID"}, []*structpb.ListValue{
+		listV(stringV("01"), stringV("1")),
+		listV(stringV("03"), stringV("3")),
+		listV(stringV("06"), stringV("6")),
+	})
+	if err != nil {
+		t.Fatalf("Inserting data: %v", err)
+	}
+	n, err := db.Execute(&spansql.Delete{
+		Table: "Staff",
+		Where: spansql.LogicalOp{
+			LHS: spansql.ComparisonOp{
+				LHS: spansql.ID("Name"),
+				Op:  spansql.Ge,
+				RHS: spansql.Param("min"),
+			},
+			Op: spansql.And,
+			RHS: spansql.ComparisonOp{
+				LHS: spansql.ID("Name"),
+				Op:  spansql.Lt,
+				RHS: spansql.Param("max"),
+			},
+		},
+	}, queryParams{
+		"min": "01",
+		"max": "07",
+	})
+	if err != nil {
+		t.Fatalf("Deleting with DML: %v", err)
+	}
+	if n != 3 {
+		t.Errorf("Deleting with DML affected %d rows, want 3", n)
+	}
 
 	// Add a BYTES column, and populate it with some data.
 	st = db.ApplyDDL(&spansql.AlterTable{

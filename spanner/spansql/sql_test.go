@@ -34,6 +34,13 @@ func TestSQL(t *testing.T) {
 		ddl.clearOffset()
 		return ddl, nil
 	}
+	reparseDML := func(s string) (interface{}, error) {
+		dml, err := ParseDMLStmt(s)
+		if err != nil {
+			return nil, err
+		}
+		return dml, nil
+	}
 	reparseQuery := func(s string) (interface{}, error) {
 		q, err := ParseQuery(s)
 		return q, err
@@ -178,6 +185,18 @@ func TestSQL(t *testing.T) {
 			},
 			"ALTER TABLE Ta SET ON DELETE CASCADE",
 			reparseDDL,
+		},
+		{
+			&Delete{
+				Table: "Ta",
+				Where: ComparisonOp{
+					LHS: ID("C"),
+					Op:  Gt,
+					RHS: IntegerLiteral(2),
+				},
+			},
+			"DELETE FROM Ta WHERE C > 2",
+			reparseDML,
 		},
 		{
 			Query{

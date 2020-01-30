@@ -112,6 +112,19 @@ func ParseDDLStmt(s string) (DDLStmt, error) {
 	return stmt, nil
 }
 
+// ParseDMLStmt parses a single DML statement.
+func ParseDMLStmt(s string) (DMLStmt, error) {
+	p := newParser("-", s)
+	stmt, err := p.parseDMLStmt()
+	if err != nil {
+		return nil, err
+	}
+	if p.Rem() != "" {
+		return nil, fmt.Errorf("unexpected trailing contents %q", p.Rem())
+	}
+	return stmt, nil
+}
+
 // ParseQuery parses a query string.
 func ParseQuery(s string) (Query, error) {
 	p := newParser("-", s)
@@ -1062,6 +1075,39 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 		return a, nil
 	}
 	// TODO: "ALTER"
+}
+
+func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
+	debugf("parseDMLStmt: %v", p)
+
+	/*
+		DELETE [FROM] target_name [[AS] alias]
+		WHERE condition
+
+		TODO: Insert, Update.
+	*/
+
+	if p.eat("DELETE") {
+		p.eat("FROM") // optional
+		tname, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		// TODO: parse alias.
+		if err := p.expect("WHERE"); err != nil {
+			return nil, err
+		}
+		where, err := p.parseBoolExpr()
+		if err != nil {
+			return nil, err
+		}
+		return &Delete{
+			Table: tname,
+			Where: where,
+		}, nil
+	}
+
+	return nil, p.errorf("unknown DML statement")
 }
 
 func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
