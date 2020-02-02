@@ -21,6 +21,7 @@ package spansql
 import (
 	"fmt"
 	"math"
+	"sort"
 )
 
 // TODO: More Position fields throughout; maybe in Query/Select.
@@ -405,12 +406,15 @@ type DDL struct {
 
 	Filename string // if known at parse time
 
-	// TODO(dsymonds): comments
+	Comments []*Comment // all comments, sorted by position
 }
 
 func (d *DDL) clearOffset() {
 	for _, stmt := range d.List {
 		stmt.clearOffset()
+	}
+	for _, c := range d.Comments {
+		c.clearOffset()
 	}
 }
 
@@ -426,6 +430,18 @@ type DMLStmt interface {
 	isDMLStmt()
 	SQL() string
 }
+
+// Comment represents a comment.
+type Comment struct {
+	Marker string // opening marker; one of "#", "--", "/*"
+	// Start and End are the position of the opening and terminating marker.
+	Start, End Position
+	Text       []string
+}
+
+func (c *Comment) String() string { return fmt.Sprintf("%#v", c) }
+func (c *Comment) Pos() Position  { return c.Start }
+func (c *Comment) clearOffset()   { c.Start.Offset, c.End.Offset = 0, 0 }
 
 // Node is implemented by concrete types in this package that represent things
 // appearing in a DDL file.
@@ -447,4 +463,44 @@ func (pos Position) String() string {
 		return ":<invalid>"
 	}
 	return fmt.Sprintf(":%d", pos.Line)
+}
+
+// LeadingComment returns the comment that immediately precedes a node,
+// or nil if there's no such comment.
+func (ddl *DDL) LeadingComment(n Node) *Comment {
+	// Get the comment whose End position is on the previous line.
+	lineEnd := n.Pos().Line - 1
+	ci := sort.Search(len(ddl.Comments), func(i int) bool {
+		return ddl.Comments[i].End.Line >= lineEnd
+	})
+	if ci >= len(ddl.Comments) || ddl.Comments[ci].End.Line != lineEnd {
+		return nil
+	}
+	return ddl.Comments[ci]
+}
+
+// InlineComment returns the comment on the same line as a node,
+// or nil if there's no inline comment.
+// The returned comment is guaranteed to be a single line.
+func (ddl *DDL) InlineComment(n Node) *Comment {
+	// TODO: Do we care about comments like this?
+	// 	string name = 1; /* foo
+	// 	bar */
+
+	pos := n.Pos()
+	ci := sort.Search(len(ddl.Comments), func(i int) bool {
+		return ddl.Comments[i].Start.Line >= pos.Line
+	})
+	if ci >= len(ddl.Comments) {
+		return nil
+	}
+	c := ddl.Comments[ci]
+	if c.Start.Line != pos.Line {
+		return nil
+	}
+	if c.Start != c.End || len(c.Text) != 1 {
+		// Multi-line comment; don't return it.
+		return nil
+	}
+	return c
 }

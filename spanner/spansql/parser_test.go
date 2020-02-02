@@ -239,6 +239,8 @@ func TestParseDDL(t *testing.T) {
 		DROP INDEX MyFirstIndex;
 		DROP TABLE FooBar;
 
+		-- This table has some commentary
+		-- that spans multiple lines.
 		CREATE TABLE NonScalars (
 			Dummy INT64 NOT NULL,
 			Ids ARRAY<INT64>,
@@ -311,8 +313,17 @@ func TestParseDDL(t *testing.T) {
 					{Name: "Names", Type: Type{Array: true, Base: String, Len: MaxLen}},
 				},
 				PrimaryKey: []KeyPart{{Column: "Dummy"}},
-				Position:   Position{Line: 25},
+				Position:   Position{Line: 27},
 			},
+		}, Comments: []*Comment{
+			{Marker: "#", Start: Position{Line: 2}, End: Position{Line: 2},
+				Text: []string{"This is a comment."}},
+			{Marker: "--", Start: Position{Line: 3}, End: Position{Line: 3},
+				Text: []string{"This is another comment."}},
+			{Marker: "/*", Start: Position{Line: 4}, End: Position{Line: 5},
+				Text: []string{" This is a", "\t\t\t\t\t\t  * multiline comment."}},
+			{Marker: "--", Start: Position{Line: 25}, End: Position{Line: 26},
+				Text: []string{"This table has some commentary", "that spans multiple lines."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -334,6 +345,29 @@ func TestParseDDL(t *testing.T) {
 			t.Errorf("ParseDDL(%q) incorrect.\n got %v\nwant %v", test.in, got, test.want)
 		}
 	}
+
+	// Check the comment discovey helpers on the first DDL.
+	ddl := tests[0].want
+	// The CreateTable for NonScalars has a leading comment.
+	found := false
+	for _, stmt := range ddl.List {
+		ct, ok := stmt.(*CreateTable)
+		if !ok || ct.Name != "NonScalars" {
+			continue
+		}
+		found = true
+		com := ddl.LeadingComment(ct)
+		if com == nil {
+			t.Errorf("No leading comment found for NonScalars")
+		} else if com.Text[0] != "This table has some commentary" {
+			t.Errorf("LeadingComment returned the wrong comment for NonScalars")
+		}
+	}
+	if !found {
+		t.Errorf("Test error: didn't find NonScalars node in DDL")
+	}
+	// Second field of FooBar (RepoPath) has an inline comment.
+	// TODO: Check this when more source positions are recorded.
 }
 
 func TestParseFailures(t *testing.T) {

@@ -96,6 +96,58 @@ func ParseDDL(filename, s string) (*DDL, error) {
 	if p.Rem() != "" {
 		return nil, fmt.Errorf("unexpected trailing contents %q", p.Rem())
 	}
+
+	// Handle comments.
+	for len(p.comments) > 0 {
+		// Build up a single Comment covering adjacent comments.
+		n := 1
+		for ; n < len(p.comments); n++ {
+			if p.comments[n].start.Line != p.comments[n-1].end.Line+1 {
+				break
+			}
+			if p.comments[n].marker != p.comments[n-1].marker {
+				break
+			}
+		}
+		c := &Comment{
+			Marker: p.comments[0].marker,
+			Start:  p.comments[0].start,
+			End:    p.comments[n-1].end,
+		}
+		for _, comm := range p.comments[:n] {
+			c.Text = append(c.Text, strings.Split(comm.text, "\n")...)
+		}
+		p.comments = p.comments[n:]
+
+		// Strip common whitespace prefix and any whitespace suffix.
+		// TODO: This is a bodgy implementation of Longest Common Prefix,
+		// and also doesn't do tabs vs. spaces well.
+		var prefix string
+		for i, line := range c.Text {
+			line = strings.TrimRight(line, " \b\t")
+			c.Text[i] = line
+			trim := len(line) - len(strings.TrimLeft(line, " \b\t"))
+			if i == 0 {
+				prefix = line[:trim]
+			} else {
+				// Check how much of prefix is in common.
+				for !strings.HasPrefix(line, prefix) {
+					prefix = prefix[:len(prefix)-1]
+				}
+			}
+			if prefix == "" {
+				break
+			}
+		}
+		if prefix != "" {
+			for i, line := range c.Text {
+				c.Text[i] = strings.TrimPrefix(line, prefix)
+			}
+		}
+
+		ddl.Comments = append(ddl.Comments, c)
+	}
+
 	return ddl, nil
 }
 
@@ -193,6 +245,14 @@ type parser struct {
 
 	filename     string
 	line, offset int // updated by places that shrink s
+
+	comments []comment // accumulated during parse
+}
+
+type comment struct {
+	marker     string // "#" or "--" or "/*"
+	text       string // may have \n chars
+	start, end Position
 }
 
 // Pos reports the position of the current token.
@@ -620,14 +680,13 @@ func (p *parser) skipSpace() bool {
 			continue
 		}
 		// Comments.
-		// TODO: capture these.
-		term := ""
+		marker, term := "", ""
 		if p.s[i] == '#' {
-			term = "\n"
+			marker, term = "#", "\n"
 		} else if i+1 < len(p.s) && p.s[i] == '-' && p.s[i+1] == '-' {
-			term = "\n"
+			marker, term = "--", "\n"
 		} else if i+1 < len(p.s) && p.s[i] == '/' && p.s[i+1] == '*' {
-			term = "*/"
+			marker, term = "/*", "*/"
 		}
 		if term == "" {
 			break
@@ -637,8 +696,24 @@ func (p *parser) skipSpace() bool {
 			p.errorf("unterminated comment")
 			return false
 		}
-		p.line += strings.Count(p.s[i:i+ti+len(term)], "\n")
-		i += ti + len(term)
+		c := comment{
+			marker: marker,
+			text:   p.s[i+len(marker) : i+ti],
+			start: Position{
+				Line:   p.line,
+				Offset: p.offset + i,
+			},
+		}
+		c.end = Position{
+			Line:   p.line + strings.Count(c.text, "\n"),
+			Offset: i + ti,
+		}
+		p.comments = append(p.comments, c)
+		p.line = c.end.Line
+		if term == "\n" {
+			p.line++
+		}
+		i = c.end.Offset + len(term)
 	}
 	p.s = p.s[i:]
 	p.offset += i
