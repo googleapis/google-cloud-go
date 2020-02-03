@@ -54,7 +54,10 @@ type TableMetadata struct {
 	// The table schema. If provided on create, ViewQuery must be empty.
 	Schema Schema
 
-	// The query to use for a view. If provided on create, Schema must be nil.
+	// If non-nil, this table is a materialized view.
+	MaterializedView *MaterializedViewDefinition
+
+	// The query to use for a logical view. If provided on create, Schema must be nil.
 	ViewQuery string
 
 	// Use Legacy SQL for the view query.
@@ -164,14 +167,61 @@ type TableType string
 const (
 	// RegularTable is a regular table.
 	RegularTable TableType = "TABLE"
-	// ViewTable is a table type describing that the table is view. See more
-	// information at https://cloud.google.com/bigquery/docs/views.
+	// ViewTable is a table type describing that the table is a logical view.
+	// See more information at https://cloud.google.com/bigquery/docs/views.
 	ViewTable TableType = "VIEW"
 	// ExternalTable is a table type describing that the table is an external
 	// table (also known as a federated data source). See more information at
 	// https://cloud.google.com/bigquery/external-data-sources.
 	ExternalTable TableType = "EXTERNAL"
+	// MaterializedView represents a managed storage table that's derived from
+	// a base table.
+	MaterializedView TableType = "MATERIALIZED_VIEW"
 )
+
+// MaterializedViewDefinition contains information for materialized views.
+type MaterializedViewDefinition struct {
+	// EnableRefresh governs whether the derived view is updated to reflect
+	// changes in the base table.
+	EnableRefresh bool
+
+	// LastRefreshTime reports the time, in millisecond precision, that the
+	// materialized view was last updated.
+	LastRefreshTime time.Time
+
+	// Query contains the SQL query used to define the materialized view.
+	Query string
+
+	// RefreshInterval defines the maximum frequency, in millisecond precision,
+	// at which this this materialized view will be refreshed.
+	RefreshInterval time.Duration
+}
+
+func (mvd *MaterializedViewDefinition) toBQ() *bq.MaterializedViewDefinition {
+	if mvd == nil {
+		return nil
+	}
+	return &bq.MaterializedViewDefinition{
+		EnableRefresh:     mvd.EnableRefresh,
+		Query:             mvd.Query,
+		LastRefreshTime:   mvd.LastRefreshTime.UnixNano() / 1e6,
+		RefreshIntervalMs: int64(mvd.RefreshInterval) / 1e6,
+		// force sending the bool in all cases due to how Go handles false.
+		ForceSendFields: []string{"EnableRefresh"},
+	}
+}
+
+func bqToMaterializedViewDefinition(q *bq.MaterializedViewDefinition) *MaterializedViewDefinition {
+	if q == nil {
+		return nil
+	}
+	return &MaterializedViewDefinition{
+		EnableRefresh:   q.EnableRefresh,
+		Query:           q.Query,
+		LastRefreshTime: unixMillisToTime(q.LastRefreshTime),
+		RefreshInterval: time.Duration(q.RefreshIntervalMs) * time.Millisecond,
+	}
+}
 
 // TimePartitioning describes the time-based date partitioning on a table.
 // For more information see: https://cloud.google.com/bigquery/docs/creating-partitioned-tables.
@@ -413,6 +463,7 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	} else if tm.UseLegacySQL || tm.UseStandardSQL {
 		return nil, errors.New("bigquery: UseLegacy/StandardSQL requires ViewQuery")
 	}
+	t.MaterializedView = tm.MaterializedView.toBQ()
 	t.TimePartitioning = tm.TimePartitioning.toBQ()
 	t.RangePartitioning = tm.RangePartitioning.toBQ()
 	t.Clustering = tm.Clustering.toBQ()
@@ -495,6 +546,9 @@ func bqToTableMetadata(t *bq.Table) (*TableMetadata, error) {
 		ETag:                   t.Etag,
 		EncryptionConfig:       bqToEncryptionConfig(t.EncryptionConfiguration),
 		RequirePartitionFilter: t.RequirePartitionFilter,
+	}
+	if t.MaterializedView != nil {
+		md.MaterializedView = bqToMaterializedViewDefinition(t.MaterializedView)
 	}
 	if t.Schema != nil {
 		md.Schema = bqToSchema(t.Schema)
@@ -582,6 +636,10 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 	if tm.Name != nil {
 		t.FriendlyName = optional.ToString(tm.Name)
 		forceSend("FriendlyName")
+	}
+	if tm.MaterializedView != nil {
+		t.MaterializedView = tm.MaterializedView.toBQ()
+		forceSend("MaterializedView")
 	}
 	if tm.Schema != nil {
 		t.Schema = tm.Schema.toBQ()
@@ -672,6 +730,11 @@ type TableMetadataToUpdate struct {
 
 	// Use Legacy SQL for the view query.
 	UseLegacySQL optional.Bool
+
+	// MaterializedView allows changes to the underlying materialized view
+	// definition. When calling Update, ensure that all mutable fields of
+	// MaterializedViewDefinition are populated.
+	MaterializedView *MaterializedViewDefinition
 
 	// TimePartitioning allows modification of certain aspects of partition
 	// configuration such as partition expiration and whether partition

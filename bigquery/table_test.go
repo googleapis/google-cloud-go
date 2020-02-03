@@ -25,6 +25,8 @@ import (
 func TestBQToTableMetadata(t *testing.T) {
 	aTime := time.Date(2017, 1, 26, 0, 0, 0, 0, time.Local)
 	aTimeMillis := aTime.UnixNano() / 1e6
+	aDurationMillis := int64(1800000)
+	aDuration := time.Duration(aDurationMillis) * time.Millisecond
 	for _, test := range []struct {
 		in   *bq.Table
 		want *TableMetadata
@@ -47,6 +49,12 @@ func TestBQToTableMetadata(t *testing.T) {
 					EstimatedBytes:  11,
 					EstimatedRows:   3,
 					OldestEntryTime: uint64(aTimeMillis),
+				},
+				MaterializedView: &bq.MaterializedViewDefinition{
+					EnableRefresh:     true,
+					Query:             "mat view query",
+					LastRefreshTime:   aTimeMillis,
+					RefreshIntervalMs: aDurationMillis,
 				},
 				TimePartitioning: &bq.TimePartitioning{
 					ExpirationMs: 7890,
@@ -80,6 +88,12 @@ func TestBQToTableMetadata(t *testing.T) {
 				NumBytes:           123,
 				NumLongTermBytes:   23,
 				NumRows:            7,
+				MaterializedView: &MaterializedViewDefinition{
+					EnableRefresh:   true,
+					Query:           "mat view query",
+					LastRefreshTime: aTime,
+					RefreshInterval: aDuration,
+				},
 				TimePartitioning: &TimePartitioning{
 					Expiration: 7890 * time.Millisecond,
 					Field:      "pfield",
