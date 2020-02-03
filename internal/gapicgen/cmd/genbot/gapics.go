@@ -34,7 +34,7 @@ const (
 	gerritCommitBody  = `
 This is an auto-generated regeneration of the gapic clients by
 cloud.google.com/go/internal/gapicgen. Once the corresponding genproto PR is
-submitted, autotogen will update this CL with a newer dependency to the newer
+submitted, genmgr will update this CL with a newer dependency to the newer
 version of genproto and assign reviewers to this CL.
 
 If you have been assigned to review this CL, please:
