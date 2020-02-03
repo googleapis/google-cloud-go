@@ -2251,6 +2251,133 @@ func TestIntegration_QueryErrors(t *testing.T) {
 	}
 }
 
+func TestIntegration_MaterializedViewLifecycle(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	// instantiate a base table via a CTAS
+	baseTableID := tableIDs.New()
+	qualified := fmt.Sprintf("`%s`.%s.%s", testutil.ProjID(), dataset.DatasetID, baseTableID)
+	sql := fmt.Sprintf(`
+	CREATE TABLE %s
+	(
+		sample_value INT64,
+		groupid STRING,
+	)
+	AS
+	SELECT
+	  CAST(RAND() * 100 AS INT64),
+	  CONCAT("group", CAST(CAST(RAND()*10 AS INT64) AS STRING))
+	FROM
+	  UNNEST(GENERATE_ARRAY(0,999))
+	`, qualified)
+	if err := runQueryJob(ctx, sql); err != nil {
+		t.Fatalf("couldn't instantiate base table: %v", err)
+	}
+
+	// Define the SELECT aggregation to become a mat view
+	sql = fmt.Sprintf(`
+	SELECT
+	  SUM(sample_value) as total,
+	  groupid
+	FROM
+	  %s
+	GROUP BY groupid
+	`, qualified)
+
+	// Create materialized view
+
+	wantRefresh := 6 * time.Hour
+	matViewID := tableIDs.New()
+	view := dataset.Table(matViewID)
+	if err := view.Create(ctx, &TableMetadata{
+		MaterializedView: &MaterializedViewDefinition{
+			Query:           sql,
+			RefreshInterval: wantRefresh,
+		}}); err != nil {
+		t.Fatal(err)
+	}
+
+	// Get metadata
+	curMeta, err := view.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if curMeta.MaterializedView == nil {
+		t.Fatal("expected materialized view definition, was null")
+	}
+
+	if curMeta.MaterializedView.Query != sql {
+		t.Errorf("mismatch on view sql.  Got %s want %s", curMeta.MaterializedView.Query, sql)
+	}
+
+	if curMeta.MaterializedView.RefreshInterval != wantRefresh {
+		t.Errorf("mismatch on refresh time: got %d usec want %d usec", 1000*curMeta.MaterializedView.RefreshInterval.Nanoseconds(), 1000*wantRefresh.Nanoseconds())
+	}
+
+	// MaterializedView is a TableType constant
+	want := MaterializedView
+	if curMeta.Type != want {
+		t.Errorf("mismatch on table type.  got %s want %s", curMeta.Type, want)
+	}
+
+	// Update metadata
+	wantRefresh = time.Hour // 6hr -> 1hr
+	upd := TableMetadataToUpdate{
+		MaterializedView: &MaterializedViewDefinition{
+			Query:           sql,
+			RefreshInterval: wantRefresh,
+		},
+	}
+
+	newMeta, err := view.Update(ctx, upd, curMeta.ETag)
+	if err != nil {
+		t.Fatalf("failed to update view definition: %v", err)
+	}
+
+	if newMeta.MaterializedView == nil {
+		t.Error("MaterializeView missing in updated metadata")
+	}
+
+	if newMeta.MaterializedView.RefreshInterval != wantRefresh {
+		t.Errorf("mismatch on updated refresh time: got %d usec want %d usec", 1000*curMeta.MaterializedView.RefreshInterval.Nanoseconds(), 1000*wantRefresh.Nanoseconds())
+	}
+
+	// verify implicit setting of false due to partial population of update.
+	if newMeta.MaterializedView.EnableRefresh {
+		t.Error("expected EnableRefresh to be false, is true")
+	}
+
+	// Verify list
+
+	it := dataset.Tables(ctx)
+	seen := false
+	for {
+		tbl, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		if tbl.TableID == matViewID {
+			seen = true
+		}
+	}
+	if !seen {
+		t.Error("materialized view not listed in dataset")
+	}
+
+	// Verify deletion
+	if err := view.Delete(ctx); err != nil {
+		t.Errorf("failed to delete materialized view: %v", err)
+	}
+
+}
+
 func TestIntegration_ModelLifecycle(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")

@@ -673,7 +673,7 @@ const (
 	// allAuthenticatedUsers.
 	SpecialGroupEntity
 
-	// ViewEntity is a BigQuery view.
+	// ViewEntity is a BigQuery logical view.
 	ViewEntity
 
 	// IAMMemberEntity represents entities present in IAM but not represented using
