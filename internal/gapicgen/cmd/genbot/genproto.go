@@ -29,7 +29,7 @@ const (
 	genprotoCommitTitle = "auto-regenerate .pb.go files"
 	genprotoCommitBody  = `
 This is an auto-generated regeneration of the .pb.go files by
-cloud.google.com/go/internal/gapicgen. Once this PR is submitted, autotogen will
+cloud.google.com/go/internal/gapicgen. Once this PR is submitted, genmgr will
 update the corresponding CL at gocloud to depend on the newer version of
 go-genproto, and assign reviewers. Whilst this or any regen PR is open in
 go-genproto, gapicgen will not create any more regeneration PRs or CLs. If all
@@ -38,9 +38,9 @@ CLs once per night.
 
 If you have been assigned to review this CL, please:
 
-- Ensure that CI is passin If it's failing, it requires your manual attention.
+- Ensure that CI is passing. If it's failing, it requires your manual attention.
 - Approve and submit this PR if you believe it's ready to ship. That will prompt
-  gapicgen to assign reviewers to the gocloud CL.
+  genmgr to assign reviewers to the gocloud CL.
 `
 )
 

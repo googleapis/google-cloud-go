@@ -21,7 +21,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -52,7 +51,7 @@ func regenGenproto(ctx context.Context, genprotoDir, googleapisDir, protoDir str
 	protoDir += "/src"
 
 	// Create space to put generated .pb.go's.
-	c := exec.Command("mkdir", "generated")
+	c := command("mkdir", "generated")
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	c.Dir = genprotoDir
@@ -118,7 +117,7 @@ func regenGenproto(ctx context.Context, genprotoDir, googleapisDir, protoDir str
 	// because protoc puts it in a folder called generated/.
 
 	// The period at the end is analagous to * (copy everything in this dir).
-	c = exec.Command("cp", "-R", "generated/google.golang.org/genproto/.", ".")
+	c = command("cp", "-R", "generated/google.golang.org/genproto/.", ".")
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	c.Dir = genprotoDir
@@ -126,7 +125,7 @@ func regenGenproto(ctx context.Context, genprotoDir, googleapisDir, protoDir str
 		return err
 	}
 
-	c = exec.Command("rm", "-rf", "generated")
+	c = command("rm", "-rf", "generated")
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	c.Dir = genprotoDir
@@ -136,7 +135,7 @@ func regenGenproto(ctx context.Context, genprotoDir, googleapisDir, protoDir str
 
 	// Throw away changes to some special libs.
 	for _, lib := range []string{"googleapis/grafeas/v1", "googleapis/devtools/containeranalysis/v1"} {
-		c = exec.Command("git", "checkout", lib)
+		c = command("git", "checkout", lib)
 		c.Stdout = os.Stdout
 		c.Stderr = os.Stderr
 		c.Dir = genprotoDir
@@ -144,7 +143,7 @@ func regenGenproto(ctx context.Context, genprotoDir, googleapisDir, protoDir str
 			return err
 		}
 
-		c = exec.Command("git", "clean", "-df", lib)
+		c = command("git", "clean", "-df", lib)
 		c.Stdout = os.Stdout
 		c.Stderr = os.Stderr
 		c.Dir = genprotoDir
@@ -192,7 +191,7 @@ func goPkg(fname string) (string, error) {
 func protoc(genprotoDir, googleapisDir, protoDir string, fnames []string) error {
 	args := []string{fmt.Sprintf("--go_out=plugins=grpc:%s/generated", genprotoDir), "-I", googleapisDir, "-I", protoDir}
 	args = append(args, fnames...)
-	c := exec.Command("protoc", args...)
+	c := command("protoc", args...)
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	c.Dir = genprotoDir

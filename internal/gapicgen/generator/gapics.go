@@ -22,7 +22,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -89,7 +88,7 @@ func generateGapics(ctx context.Context, googleapisDir, protoDir, gocloudDir, ge
 // to the local copy. This is necessary since the remote genproto may not have
 // changes that are necessary for the in-flight regen.
 func addModReplaceGenproto(gocloudDir, genprotoDir string) error {
-	c := exec.Command("bash", "-c", `
+	c := command("bash", "-c", `
 set -ex
 
 GENPROTO_VERSION=$(cat go.mod | cat go.mod | grep genproto | awk '{print $2}')
@@ -109,7 +108,7 @@ go mod edit -replace "google.golang.org/genproto@$GENPROTO_VERSION=$GENPROTO_DIR
 // dropModReplaceGenproto drops the genproto replace statement. It is intended
 // to be run after addModReplaceGenproto.
 func dropModReplaceGenproto(gocloudDir string) error {
-	c := exec.Command("bash", "-c", `
+	c := command("bash", "-c", `
 set -ex
 
 GENPROTO_VERSION=$(cat go.mod | cat go.mod | grep genproto | grep -v replace | awk '{print $2}')
@@ -131,7 +130,7 @@ go mod edit -dropreplace "google.golang.org/genproto@$GENPROTO_VERSION"
 func setGoogleClientInfo(manualDir string) error {
 	// TODO(deklerk): Migrate this all to Go instead of using bash.
 
-	c := exec.Command("bash", "-c", `
+	c := command("bash", "-c", `
 find . -name '*.go' -exec sed -i.backup -e 's/setGoogleClientInfo/SetGoogleClientInfo/g' '{}' '+'
 find . -name '*.backup' -delete
 `)
@@ -147,7 +146,7 @@ find . -name '*.backup' -delete
 func setVersion(gocloudDir string) error {
 	// TODO(deklerk): Migrate this all to Go instead of using bash.
 
-	c := exec.Command("bash", "-c", `
+	c := command("bash", "-c", `
 ver=$(date +%Y%m%d)
 git ls-files -mo | while read modified; do
 	dir=${modified%/*.*}
@@ -171,7 +170,7 @@ func artman(gapicConfigPaths []string, googleapisDir string) error {
 	// TODO(deklerk): Why do we have to create artman-genfiles?
 	// (pip install googleapis-artman fails with an "lstat file not found"
 	// without doing so)
-	c := exec.Command("bash", "-c", `
+	c := command("bash", "-c", `
 set -ex
 
 python3 -m venv artman-venv
@@ -195,7 +194,7 @@ pip3 install googleapis-artman`)
 		inmem := bytes.NewBuffer([]byte{})
 		w := io.MultiWriter(os.Stderr, inmem)
 
-		c := exec.Command("bash", "-c", "./artman-venv/bin/artman --config "+config+" generate go_gapic")
+		c := command("bash", "-c", "./artman-venv/bin/artman --config "+config+" generate go_gapic")
 		c.Stdout = os.Stdout
 		c.Stderr = w
 		c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
@@ -210,7 +209,7 @@ pip3 install googleapis-artman`)
 		stderr := inmem.Bytes()
 		if dockerPullRegex.Match(stderr) {
 			artmanImg := dockerPullRegex.FindString(string(stderr))
-			c := exec.Command("docker", "pull", artmanImg)
+			c := command("docker", "pull", artmanImg)
 			c.Stdout = os.Stdout
 			c.Stderr = os.Stderr
 			c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
@@ -224,7 +223,7 @@ pip3 install googleapis-artman`)
 		// If the last command failed, and we were able to fix it with `docker pull`,
 		// then let's try regenerating. When https://github.com/googleapis/artman/issues/732
 		// is solved, we won't have to do this.
-		c = exec.Command("bash", "-c", "./artman-venv/bin/artman --config "+config+" generate go_gapic")
+		c = command("bash", "-c", "./artman-venv/bin/artman --config "+config+" generate go_gapic")
 		c.Stdout = os.Stdout
 		c.Stderr = os.Stderr
 		c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
@@ -262,7 +261,7 @@ func microgen(conf *microgenConfig, googleapisDir, protoDir, gocloudDir string) 
 		"--go_gapic_opt", fmt.Sprintf("gapic-service-config=%s", conf.apiServiceConfigPath),
 		"--go_gapic_opt", fmt.Sprintf("release-level=%s", conf.releaseLevel)}
 	args = append(args, protoFiles...)
-	c := exec.Command("protoc", args...)
+	c := command("protoc", args...)
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	c.Dir = googleapisDir
@@ -322,7 +321,7 @@ func manifest(confs []*microgenConfig, googleapisDir, gocloudDir string) error {
 // and places them in gocloudDir.
 func copyMicrogenFiles(gocloudDir string) error {
 	// The period at the end is analagous to * (copy everything in this dir).
-	c := exec.Command("cp", "-R", gocloudDir+"/cloud.google.com/go/.", ".")
+	c := command("cp", "-R", gocloudDir+"/cloud.google.com/go/.", ".")
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	c.Dir = gocloudDir
@@ -330,7 +329,7 @@ func copyMicrogenFiles(gocloudDir string) error {
 		return err
 	}
 
-	c = exec.Command("rm", "-rf", "cloud.google.com")
+	c = command("rm", "-rf", "cloud.google.com")
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	c.Dir = gocloudDir
@@ -367,7 +366,7 @@ func copyArtmanFiles(googleapisDir, gocloudDir string) error {
 	}
 
 	for f := range gapiFolders {
-		c := exec.Command("cp", "-R", f, gocloudDir)
+		c := command("cp", "-R", f, gocloudDir)
 		c.Stdout = os.Stdout
 		c.Stderr = os.Stderr
 		c.Dir = googleapisDir

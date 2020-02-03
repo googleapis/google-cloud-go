@@ -18,8 +18,10 @@ package generator
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 // Generate generates genproto and gapics.
@@ -37,7 +39,7 @@ func Generate(ctx context.Context, googleapisDir, genprotoDir, gocloudDir, proto
 
 // build attemps to build all packages recursively from the given directory.
 func build(dir string) error {
-	c := exec.Command("go", "build", "./...")
+	c := command("go", "build", "./...")
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	c.Dir = dir
@@ -46,7 +48,7 @@ func build(dir string) error {
 
 // vet runs linters on all .go files recursively from the given directory.
 func vet(dir string) error {
-	c := exec.Command("goimports", "-w", ".")
+	c := command("goimports", "-w", ".")
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	c.Dir = dir
@@ -54,9 +56,22 @@ func vet(dir string) error {
 		return err
 	}
 
-	c = exec.Command("gofmt", "-s", "-d", "-w", "-l", ".")
+	c = command("gofmt", "-s", "-d", "-w", "-l", ".")
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	c.Dir = dir
 	return c.Run()
+}
+
+type cmdWrapper struct {
+	*exec.Cmd
+}
+
+func command(name string, arg ...string) *cmdWrapper {
+	return &cmdWrapper{exec.Command(name, arg...)}
+}
+
+func (cw *cmdWrapper) Run() error {
+	log.Printf(">>>> %v <<<<", strings.Join(cw.Cmd.Args, " ")) // NOTE: we have some multi-line commands, make it clear where the command starts and ends
+	return cw.Cmd.Run()
 }
