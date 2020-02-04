@@ -271,6 +271,15 @@ func TestTableData(t *testing.T) {
 			nil,
 			[][]interface{}{{int64(17), "sweet", false, nil, []byte("hello")}},
 		},
+		// Check handling of NULL values for the IS operator.
+		// There was a bug that returned errors for some of these cases.
+		{
+			`SELECT @x IS TRUE, @x IS NOT TRUE, @x IS FALSE, @x IS NOT FALSE, @x IS NULL, @x IS NOT NULL`,
+			queryParams{"x": nil},
+			[][]interface{}{
+				{false, true, false, true, true, false},
+			},
+		},
 		{
 			`SELECT Name FROM Staff WHERE Cool`,
 			nil,
