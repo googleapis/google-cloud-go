@@ -43,6 +43,7 @@ type CloudRedisCallOptions struct {
 	GetInstance      []gax.CallOption
 	CreateInstance   []gax.CallOption
 	UpdateInstance   []gax.CallOption
+	UpgradeInstance  []gax.CallOption
 	ImportInstance   []gax.CallOption
 	ExportInstance   []gax.CallOption
 	FailoverInstance []gax.CallOption
@@ -65,6 +66,7 @@ func defaultCloudRedisCallOptions() *CloudRedisCallOptions {
 		GetInstance:      []gax.CallOption{},
 		CreateInstance:   []gax.CallOption{},
 		UpdateInstance:   []gax.CallOption{},
+		UpgradeInstance:  []gax.CallOption{},
 		ImportInstance:   []gax.CallOption{},
 		ExportInstance:   []gax.CallOption{},
 		FailoverInstance: []gax.CallOption{},
@@ -277,6 +279,26 @@ func (c *CloudRedisClient) UpdateInstance(ctx context.Context, req *redispb.Upda
 		return nil, err
 	}
 	return &UpdateInstanceOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
+}
+
+// UpgradeInstance upgrades Redis instance to the newer Redis version specified in the
+// request.
+func (c *CloudRedisClient) UpgradeInstance(ctx context.Context, req *redispb.UpgradeInstanceRequest, opts ...gax.CallOption) (*UpgradeInstanceOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UpgradeInstance[0:len(c.CallOptions.UpgradeInstance):len(c.CallOptions.UpgradeInstance)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudRedisClient.UpgradeInstance(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpgradeInstanceOperation{
 		lro: longrunning.InternalNewOperation(c.LROClient, resp),
 	}, nil
 }
@@ -771,6 +793,75 @@ func (op *UpdateInstanceOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdateInstanceOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpgradeInstanceOperation manages a long-running operation from UpgradeInstance.
+type UpgradeInstanceOperation struct {
+	lro *longrunning.Operation
+}
+
+// UpgradeInstanceOperation returns a new UpgradeInstanceOperation from a given name.
+// The name must be that of a previously created UpgradeInstanceOperation, possibly from a different process.
+func (c *CloudRedisClient) UpgradeInstanceOperation(name string) *UpgradeInstanceOperation {
+	return &UpgradeInstanceOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpgradeInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*redispb.Instance, error) {
+	var resp redispb.Instance
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpgradeInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*redispb.Instance, error) {
+	var resp redispb.Instance
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpgradeInstanceOperation) Metadata() (*anypb.Any, error) {
+	var meta anypb.Any
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpgradeInstanceOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpgradeInstanceOperation) Name() string {
 	return op.lro.Name()
 }
 
