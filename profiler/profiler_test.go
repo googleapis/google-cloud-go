@@ -39,9 +39,11 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/pprof/profile"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/devtools/cloudprofiler/v2"
 	edpb "google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	grpcmd "google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -946,7 +948,13 @@ func TestAgentWithServer(t *testing.T) {
 	pb.RegisterProfilerServiceServer(srv.Gsrv, fakeServer)
 	srv.Start()
 
-	dialGRPC = gtransport.DialInsecure
+	dialGRPC = func(ctx context.Context, opts ...option.ClientOption) (gtransport.ConnPool, error) {
+		conn, err := gtransport.DialInsecure(ctx, opts...)
+		if err != nil {
+			return nil, err
+		}
+		return testConnPool{conn}, nil
+	}
 	if err := Start(Config{
 		Service:     testService,
 		ProjectID:   testProjectID,
@@ -976,3 +984,9 @@ func TestAgentWithServer(t *testing.T) {
 		}
 	}
 }
+
+// testConnPool is a gtransport.ConnPool used for testing.
+type testConnPool struct{ *grpc.ClientConn }
+
+func (p testConnPool) Num() int               { return 1 }
+func (p testConnPool) Conn() *grpc.ClientConn { return p.ClientConn }

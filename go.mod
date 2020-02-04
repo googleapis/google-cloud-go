@@ -3,10 +3,10 @@ module cloud.google.com/go
 go 1.11
 
 require (
-	cloud.google.com/go/bigquery v1.0.1
+	cloud.google.com/go/bigquery v1.3.0
 	cloud.google.com/go/datastore v1.0.0
-	cloud.google.com/go/pubsub v1.0.1
-	cloud.google.com/go/storage v1.0.0
+	cloud.google.com/go/pubsub v1.1.0
+	cloud.google.com/go/storage v1.5.0
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/mock v1.4.0
 	github.com/golang/protobuf v1.3.3
@@ -21,12 +21,10 @@ require (
 	golang.org/x/mod v0.2.0 // indirect
 	golang.org/x/net v0.0.0-20200202094626-16171245cfb2
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
 	golang.org/x/sys v0.0.0-20200202164722-d101bd2416d5 // indirect
 	golang.org/x/text v0.3.2
-	golang.org/x/tools v0.0.0-20200205141839-4abfd4a1628e
-	google.golang.org/api v0.16.0
-	google.golang.org/appengine v1.6.5 // indirect
+	golang.org/x/tools v0.0.0-20200204074204-1cc6d1ef6c74
+	google.golang.org/api v0.17.0
 	google.golang.org/genproto v0.0.0-20200205142000-a86caf926a67
 	google.golang.org/grpc v1.27.0
 	honnef.co/go/tools v0.0.1-2019.2.3
