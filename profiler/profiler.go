@@ -77,7 +77,7 @@ var (
 	stopCPUProfile   = pprof.StopCPUProfile
 	writeHeapProfile = pprof.WriteHeapProfile
 	sleep            = gax.Sleep
-	dialGRPC         = gtransport.Dial
+	dialGRPC         = gtransport.DialPool
 	onGCE            = gcemd.OnGCE
 	serviceRegexp    = regexp.MustCompile(`^[a-z]([-a-z0-9_.]{0,253}[a-z0-9])?$`)
 
@@ -238,13 +238,13 @@ func start(cfg Config, options ...option.ClientOption) error {
 	}
 	opts = append(opts, options...)
 
-	conn, err := dialGRPC(ctx, opts...)
+	connPool, err := dialGRPC(ctx, opts...)
 	if err != nil {
 		debugLog("failed to dial GRPC: %v", err)
 		return err
 	}
 
-	a, err := initializeAgent(pb.NewProfilerServiceClient(conn))
+	a, err := initializeAgent(pb.NewProfilerServiceClient(connPool))
 	if err != nil {
 		debugLog("failed to start the profiling agent: %v", err)
 		return err

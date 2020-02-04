@@ -40,7 +40,7 @@ type datastoreClient struct {
 	md metadata.MD
 }
 
-func newDatastoreClient(conn *grpc.ClientConn, projectID string) pb.DatastoreClient {
+func newDatastoreClient(conn grpc.ClientConnInterface, projectID string) pb.DatastoreClient {
 	return &datastoreClient{
 		c: pb.NewDatastoreClient(conn),
 		md: metadata.Pairs(
