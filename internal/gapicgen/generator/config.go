@@ -153,6 +153,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "beta",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/bigquery/storage/v1",
+		pkg:                   "storage",
+		importPath:            "cloud.google.com/go/bigquery/storage/apiv1",
+		gRPCServiceConfigPath: "google/cloud/bigquery/storage/v1/bigquerystorage_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/bigquery/storage/v1/bigquerystorage_v1.yaml",
+		releaseLevel:          "alpha",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/iot/v1",
 		pkg:                   "iot",
 		importPath:            "cloud.google.com/go/iot/apiv1",
