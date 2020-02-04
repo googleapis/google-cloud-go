@@ -1,5 +1,15 @@
 # Changes
 
+## v1.2.0
+
+- Add support for upcoming dead letter topics feature
+- Expose Subscription.ReceiveSettings.MaxExtensionPeriod setting
+- Standardize default settings with other client libraries
+  - Increase publish delay threshold from 1ms to 10ms
+  - Increase subscription MaxExtension from 10m to 60m
+- Always send keepalive/heartbeat ping on StreamingPull streams to minimize
+  stream reopen requests
+
 ## v1.1.0
 
 - Limit default grpc connections to 4.
