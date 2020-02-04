@@ -296,6 +296,11 @@ func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (bool, error) {
 		default:
 			return false, fmt.Errorf("unhandled IsOp %T", rhs)
 		case spansql.BoolLiteral:
+			if lhs == nil {
+				// For `X IS TRUE`, X being NULL is okay, and this evaluates
+				// to false. Same goes for `X IS FALSE`.
+				lhs = !bool(rhs)
+			}
 			lhsBool, ok := lhs.(bool)
 			if !ok {
 				return false, fmt.Errorf("non-bool value %T on LHS for %s", lhs, be.SQL())
