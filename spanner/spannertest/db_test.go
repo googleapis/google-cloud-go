@@ -172,14 +172,14 @@ func TestTableData(t *testing.T) {
 	st = db.ApplyDDL(&spansql.AlterTable{
 		Name: "Staff",
 		Alteration: spansql.AddColumn{Def: spansql.ColumnDef{
-			Name: "LastSeen",
+			Name: "To", // keyword; will need quoting in queries
 			Type: spansql.Type{Base: spansql.Timestamp},
 		}},
 	})
 	if st.Code() != codes.OK {
 		t.Fatalf("Adding column: %v", st.Err())
 	}
-	err = db.Update("Staff", []string{"Name", "ID", "FirstSeen", "LastSeen"}, []*structpb.ListValue{
+	err = db.Update("Staff", []string{"Name", "ID", "FirstSeen", "To"}, []*structpb.ListValue{
 		listV(stringV("Jack"), stringV("1"), stringV("1994-10-28"), nullV()),
 		listV(stringV("Daniel"), stringV("2"), stringV("1994-10-28"), nullV()),
 		listV(stringV("George"), stringV("5"), stringV("1997-07-27"), stringV("2008-07-29T11:22:43Z")),
@@ -360,6 +360,14 @@ func TestTableData(t *testing.T) {
 			nil,
 			[][]interface{}{
 				{[]byte("\x01\x00\x01")},
+			},
+		},
+		{
+			// The keyword "To" needs quoting in queries.
+			"SELECT COUNT(*) FROM Staff WHERE `To` IS NOT NULL",
+			nil,
+			[][]interface{}{
+				{int64(1)},
 			},
 		},
 		{

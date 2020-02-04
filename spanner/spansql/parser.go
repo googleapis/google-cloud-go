@@ -198,7 +198,7 @@ type token struct {
 	typ     tokenType
 	int64   int64
 	float64 float64
-	string  string // unquoted form
+	string  string // unquoted form for stringToken/bytesToken/quotedID
 }
 
 type tokenType int
@@ -209,6 +209,7 @@ const (
 	float64Token
 	stringToken
 	bytesToken
+	quotedID
 )
 
 func (t *token) String() string {
@@ -498,10 +499,10 @@ func (p *parser) stringDelimiter() string {
 
 // consumeStringContent consumes a string-like literal, including its delimiters.
 //
-//   - delim is opening delimiter.
-//   - raw is true on consuming raw string, otherwise it is false.
-//   - unicode is true if unicode escape sequence (\uXXXX or \UXXXXXXXX), otherwise it is false.
-//   - name is current consuming token name.
+//   - delim is the opening/closing delimiter.
+//   - raw is true if consuming a raw string.
+//   - unicode is true if unicode escape sequence (\uXXXX or \UXXXXXXXX) are permitted.
+//   - name identifies the name of the consuming token.
 //
 // It is designed for consuming string, bytes literals, and also backquoted identifiers.
 func (p *parser) consumeStringContent(delim string, raw, unicode bool, name string) (string, *parseError) {
@@ -732,7 +733,6 @@ func (p *parser) advance() {
 	p.cur.err = nil
 	p.cur.line, p.cur.offset = p.line, p.offset
 	p.cur.typ = unknownToken
-	// TODO: backtick (`) for quoted identifiers.
 	// TODO: array, struct, date, timestamp literals
 	switch p.s[0] {
 	case ',', ';', '(', ')', '*':
@@ -767,6 +767,11 @@ func (p *parser) advance() {
 			}
 			break
 		}
+	case '`':
+		// Quoted identifier.
+		p.cur.string, p.cur.err = p.consumeStringContent("`", false, true, "quoted identifier")
+		p.cur.typ = quotedID
+		return
 	}
 	if p.s[0] == '@' || isInitialIdentifierChar(p.s[0]) {
 		// Start consuming identifier.
@@ -1890,10 +1895,11 @@ func (p *parser) parseLit() (Expr, *parseError) {
 		return StringLiteral(tok.string), nil
 	case bytesToken:
 		return BytesLiteral(tok.string), nil
+	case quotedID: // Unquoted identifers are handled below.
+		return ID(tok.string), nil
 	}
 
 	// Handle some reserved keywords and special tokens that become specific values.
-	// TODO: Handle the other 92 keywords.
 	switch tok.value {
 	case "TRUE":
 		return True, nil
@@ -1903,6 +1909,10 @@ func (p *parser) parseLit() (Expr, *parseError) {
 		return Null, nil
 	case "*":
 		return Star, nil
+	default:
+		// TODO: Check IsKeyWord(tok.value), and return a distinguished type,
+		// then only accept that when parsing. That will also permit
+		// case insensitivity for keywords.
 	}
 
 	// TODO: more types of literals (array, struct, date, timestamp).
@@ -1936,6 +1946,9 @@ func (p *parser) parseTableOrIndexOrColumnName() (string, *parseError) {
 	tok := p.next()
 	if tok.err != nil {
 		return "", tok.err
+	}
+	if tok.typ == quotedID {
+		return tok.string, nil
 	}
 	// TODO: enforce restrictions
 	return tok.value, nil

@@ -333,6 +333,22 @@ func TestParseDDL(t *testing.T) {
 				Position:   Position{Line: 1},
 			},
 		}}},
+		// Table and column names using reserved keywords.
+		{`CREATE TABLE ` + "`enum`" + ` (
+			` + "`With`" + ` STRING(MAX) NOT NULL,
+		) PRIMARY KEY(` + "`With`" + `);
+		`, &DDL{Filename: "filename", List: []DDLStmt{
+			&CreateTable{
+				Name: "enum",
+				Columns: []ColumnDef{
+					{Name: "With", Type: Type{Base: String, Len: MaxLen}, NotNull: true},
+				},
+				PrimaryKey: []KeyPart{
+					{Column: "With"},
+				},
+				Position: Position{Line: 1},
+			},
+		}}},
 	}
 	for _, test := range tests {
 		got, err := ParseDDL("filename", test.in)

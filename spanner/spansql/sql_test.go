@@ -237,6 +237,17 @@ func TestSQL(t *testing.T) {
 			`X NOT BETWEEN Y AND Z`,
 			reparseExpr,
 		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						ID("Desc"),
+					},
+				},
+			},
+			"SELECT `Desc`",
+			reparseQuery,
+		},
 	}
 	for _, test := range tests {
 		sql := test.data.SQL()

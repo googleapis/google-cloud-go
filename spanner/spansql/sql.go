@@ -282,7 +282,19 @@ func (f Func) SQL() string {
 
 func (p Paren) SQL() string { return "(" + p.Expr.SQL() + ")" }
 
-func (id ID) SQL() string   { return string(id) }
+func (id ID) SQL() string {
+	// https://cloud.google.com/spanner/docs/lexical#identifiers
+
+	// TODO: If there are non-letters/numbers/underscores then this also needs quoting.
+
+	if IsKeyword(string(id)) {
+		// TODO: Escaping may be needed here.
+		return "`" + string(id) + "`"
+	}
+
+	return string(id)
+}
+
 func (p Param) SQL() string { return "@" + string(p) }
 
 func (b BoolLiteral) SQL() string {
