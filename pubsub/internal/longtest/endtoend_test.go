@@ -46,6 +46,8 @@ const (
 // delivered to each subscription for the topic. It also tests that messages
 // are not unexpectedly redelivered.
 func TestEndToEnd_Dupes(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1752")
+
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	client, topic, cleanup := prepareEndToEndTest(ctx, t)
