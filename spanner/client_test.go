@@ -27,9 +27,11 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/civil"
 	itestutil "cloud.google.com/go/internal/testutil"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/golang/protobuf/proto"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
@@ -1254,5 +1256,122 @@ func TestReadWriteTransaction_WrapSessionNotFoundError(t *testing.T) {
 	// failed attempts and then a successful attempt.
 	if g, w := numAttempts, 3; g != w {
 		t.Fatalf("Number of transaction attempts mismatch\nGot: %d\nWant: %d", g, w)
+	}
+}
+
+func TestClient_WriteStructWithPointers(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	type T struct {
+		ID    int64
+		Col1  *string
+		Col2  []*string
+		Col3  *bool
+		Col4  []*bool
+		Col5  *int64
+		Col6  []*int64
+		Col7  *float64
+		Col8  []*float64
+		Col9  *time.Time
+		Col10 []*time.Time
+		Col11 *civil.Date
+		Col12 []*civil.Date
+	}
+	t1 := T{
+		ID:    1,
+		Col2:  []*string{nil},
+		Col4:  []*bool{nil},
+		Col6:  []*int64{nil},
+		Col8:  []*float64{nil},
+		Col10: []*time.Time{nil},
+		Col12: []*civil.Date{nil},
+	}
+	s := "foo"
+	b := true
+	i := int64(100)
+	f := 3.14
+	tm := time.Now()
+	d := civil.DateOf(time.Now())
+	t2 := T{
+		ID:    2,
+		Col1:  &s,
+		Col2:  []*string{&s},
+		Col3:  &b,
+		Col4:  []*bool{&b},
+		Col5:  &i,
+		Col6:  []*int64{&i},
+		Col7:  &f,
+		Col8:  []*float64{&f},
+		Col9:  &tm,
+		Col10: []*time.Time{&tm},
+		Col11: &d,
+		Col12: []*civil.Date{&d},
+	}
+	m1, err := InsertStruct("Tab", &t1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	m2, err := InsertStruct("Tab", &t2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = client.Apply(context.Background(), []*Mutation{m1, m2})
+	if err != nil {
+		t.Fatal(err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	for _, req := range requests {
+		if commit, ok := req.(*sppb.CommitRequest); ok {
+			if g, w := len(commit.Mutations), 2; w != g {
+				t.Fatalf("mutation count mismatch\nGot: %v\nWant: %v", g, w)
+			}
+			insert := commit.Mutations[0].GetInsert()
+			// The first insert should contain NULL values and arrays
+			// containing exactly one NULL element.
+			for i := 1; i < len(insert.Values[0].Values); i += 2 {
+				// The non-array columns should contain NULL values.
+				g, w := insert.Values[0].Values[i].GetKind(), &structpb.Value_NullValue{}
+				if _, ok := g.(*structpb.Value_NullValue); !ok {
+					t.Fatalf("type mismatch\nGot: %v\nWant: %v", g, w)
+				}
+				// The array columns should not be NULL.
+				g, wList := insert.Values[0].Values[i+1].GetKind(), &structpb.Value_ListValue{}
+				if _, ok := g.(*structpb.Value_ListValue); !ok {
+					t.Fatalf("type mismatch\nGot: %v\nWant: %v", g, wList)
+				}
+				// The array should contain 1 NULL value.
+				if gLength, wLength := len(insert.Values[0].Values[i+1].GetListValue().Values), 1; gLength != wLength {
+					t.Fatalf("list value length mismatch\nGot: %v\nWant: %v", gLength, wLength)
+				}
+				g, w = insert.Values[0].Values[i+1].GetListValue().Values[0].GetKind(), &structpb.Value_NullValue{}
+				if _, ok := g.(*structpb.Value_NullValue); !ok {
+					t.Fatalf("type mismatch\nGot: %v\nWant: %v", g, w)
+				}
+			}
+
+			// The second insert should contain all non-NULL values.
+			insert = commit.Mutations[1].GetInsert()
+			for i := 1; i < len(insert.Values[0].Values); i += 2 {
+				// The non-array columns should contain non-NULL values.
+				g := insert.Values[0].Values[i].GetKind()
+				if _, ok := g.(*structpb.Value_NullValue); ok {
+					t.Fatalf("type mismatch\nGot: %v\nWant: non-NULL value", g)
+				}
+				// The array columns should also be non-NULL.
+				g, wList := insert.Values[0].Values[i+1].GetKind(), &structpb.Value_ListValue{}
+				if _, ok := g.(*structpb.Value_ListValue); !ok {
+					t.Fatalf("type mismatch\nGot: %v\nWant: %v", g, wList)
+				}
+				// The array should contain exactly 1 non-NULL value.
+				if gLength, wLength := len(insert.Values[0].Values[i+1].GetListValue().Values), 1; gLength != wLength {
+					t.Fatalf("list value length mismatch\nGot: %v\nWant: %v", gLength, wLength)
+				}
+				g = insert.Values[0].Values[i+1].GetListValue().Values[0].GetKind()
+				if _, ok := g.(*structpb.Value_NullValue); ok {
+					t.Fatalf("type mismatch\nGot: %v\nWant: non-NULL value", g)
+				}
+			}
+		}
 	}
 }

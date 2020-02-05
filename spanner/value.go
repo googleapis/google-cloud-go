@@ -2467,13 +2467,13 @@ func isStructOrArrayOfStructValue(v interface{}) bool {
 
 func isSupportedMutationType(v interface{}) bool {
 	switch v.(type) {
-	case nil, string, NullString, []string, []NullString,
+	case nil, string, *string, NullString, []string, []*string, []NullString,
 		[]byte, [][]byte,
-		int, []int, int64, []int64, NullInt64, []NullInt64,
-		bool, []bool, NullBool, []NullBool,
-		float64, []float64, NullFloat64, []NullFloat64,
-		time.Time, []time.Time, NullTime, []NullTime,
-		civil.Date, []civil.Date, NullDate, []NullDate,
+		int, []int, int64, *int64, []int64, []*int64, NullInt64, []NullInt64,
+		bool, *bool, []bool, []*bool, NullBool, []NullBool,
+		float64, *float64, []float64, []*float64, NullFloat64, []NullFloat64,
+		time.Time, *time.Time, []time.Time, []*time.Time, NullTime, []NullTime,
+		civil.Date, *civil.Date, []civil.Date, []*civil.Date, NullDate, []NullDate,
 		GenericColumnValue:
 		return true
 	default:
