@@ -23,6 +23,30 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/asset/apiv1p2beta1",
     "release_level": "beta"
   },
+  "cloud.google.com/go/automl/apiv1": {
+    "distribution_name": "cloud.google.com/go/automl/apiv1",
+    "description": "Cloud AutoML API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/loud.google.com/go/automl/apiv1",
+    "release_level": "ga"
+  },
+  "cloud.google.com/go/automl/apiv1beta1": {
+    "distribution_name": "cloud.google.com/go/automl/apiv1beta1",
+    "description": "Cloud AutoML API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/loud.google.com/go/automl/apiv1beta1",
+    "release_level": "beta"
+  },
+  "cloud.google.com/go/bigquery": {
+    "distribution_name": "cloud.google.com/go/bigquery",
+    "description": "BigQuery",
+    "language": "Go",
+    "client_library_type": "manual",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/bigquery",
+    "release_level": "ga"
+  },
   "cloud.google.com/go/bigquery/datatransfer/apiv1": {
     "distribution_name": "cloud.google.com/go/bigquery/datatransfer/apiv1",
     "description": "BigQuery Data Transfer API",
@@ -70,6 +94,14 @@
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/bigquery/storage/apiv1beta2",
     "release_level": "beta"
+  },
+  "cloud.google.com/go/bigtable": {
+    "distribution_name": "cloud.google.com/go/bigtable",
+    "description": "Cloud BigTable",
+    "language": "Go",
+    "client_library_type": "manual",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/bigtable",
+    "release_level": "ga"
   },
   "cloud.google.com/go/cloudbuild/apiv1/v2": {
     "distribution_name": "cloud.google.com/go/cloudbuild/apiv1/v2",
@@ -135,6 +167,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1beta2",
     "release_level": "beta"
   },
+  "cloud.google.com/go/datastore": {
+    "distribution_name": "cloud.google.com/go/datastore",
+    "description": "Cloud Datastore",
+    "language": "Go",
+    "client_library_type": "manual",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/datastore",
+    "release_level": "ga"
+  },
   "cloud.google.com/go/debugger/apiv2": {
     "distribution_name": "cloud.google.com/go/debugger/apiv2",
     "description": "Stackdriver Debugger API",
@@ -159,6 +199,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/dlp/apiv2",
     "release_level": "ga"
   },
+  "cloud.google.com/go/errorreporting": {
+    "distribution_name": "cloud.google.com/go/errorreporting",
+    "description": "Stackdriver Error Reporting API",
+    "language": "Go",
+    "client_library_type": "manual",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/errorreporting",
+    "release_level": "ga"
+  },
   "cloud.google.com/go/errorreporting/apiv1beta1": {
     "distribution_name": "cloud.google.com/go/errorreporting/apiv1beta1",
     "description": "Stackdriver Error Reporting API",
@@ -174,6 +222,14 @@
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/expr/apiv1alpha1",
     "release_level": "alpha"
+  },
+  "cloud.google.com/go/firestore": {
+    "distribution_name": "cloud.google.com/go/firestore",
+    "description": "Cloud Firestore API",
+    "language": "Go",
+    "client_library_type": "manual",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/firestore",
+    "release_level": "ga"
   },
   "cloud.google.com/go/firestore/apiv1": {
     "distribution_name": "cloud.google.com/go/firestore/apiv1",
@@ -198,6 +254,14 @@
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/firestore/apiv1beta1",
     "release_level": "beta"
+  },
+  "cloud.google.com/go/iam": {
+    "distribution_name": "cloud.google.com/go/iam",
+    "description": "Cloud IAM",
+    "language": "Go",
+    "client_library_type": "manual",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/iam",
+    "release_level": "ga"
   },
   "cloud.google.com/go/iam/credentials/apiv1": {
     "distribution_name": "cloud.google.com/go/iam/credentials/apiv1",
@@ -246,6 +310,14 @@
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/language/apiv1beta2",
     "release_level": "beta"
+  },
+  "cloud.google.com/go/logging": {
+    "distribution_name": "cloud.google.com/go/logging",
+    "description": "Stackdriver Logging API",
+    "language": "Go",
+    "client_library_type": "manual",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/logging",
+    "release_level": "ga"
   },
   "cloud.google.com/go/longrunning/autogen": {
     "distribution_name": "cloud.google.com/go/longrunning/autogen",
@@ -302,6 +374,14 @@
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/phishingprotection/apiv1beta1",
     "release_level": "beta"
+  },
+  "cloud.google.com/go/pubsub": {
+    "distribution_name": "cloud.google.com/go/pubsub",
+    "description": "Cloud PubSub",
+    "language": "Go",
+    "client_library_type": "manual",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/pubsub",
+    "release_level": "ga"
   },
   "cloud.google.com/go/recaptchaenterprise/apiv1beta1": {
     "distribution_name": "cloud.google.com/go/recaptchaenterprise/apiv1beta1",
@@ -383,6 +463,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1beta1",
     "release_level": "beta"
   },
+  "cloud.google.com/go/spanner": {
+    "distribution_name": "cloud.google.com/go/spanner",
+    "description": "Cloud Spanner",
+    "language": "Go",
+    "client_library_type": "manual",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/spanner",
+    "release_level": "ga"
+  },
   "cloud.google.com/go/spanner/admin/database/apiv1": {
     "distribution_name": "cloud.google.com/go/spanner/admin/database/apiv1",
     "description": "Cloud Spanner Database Admin API",
@@ -423,6 +511,22 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/speech/apiv1p1beta1",
     "release_level": "beta"
   },
+  "cloud.google.com/go/storage": {
+    "distribution_name": "cloud.google.com/go/storage",
+    "description": "Cloud Storage (GCS)",
+    "language": "Go",
+    "client_library_type": "manual",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/storage",
+    "release_level": "ga"
+  },
+  "cloud.google.com/go/talent/apiv4beta1": {
+    "distribution_name": "cloud.google.com/go/talent/apiv4beta1",
+    "description": "Cloud Talent Solution API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/loud.google.com/go/talent/apiv4beta1",
+    "release_level": "beta"
+  },
   "cloud.google.com/go/texttospeech/apiv1": {
     "distribution_name": "cloud.google.com/go/texttospeech/apiv1",
     "description": "Cloud Text-to-Speech API",
@@ -430,6 +534,14 @@
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/texttospeech/apiv1",
     "release_level": "alpha"
+  },
+  "cloud.google.com/go/trace": {
+    "distribution_name": "cloud.google.com/go/trace",
+    "description": "Stackdriver Trace",
+    "language": "Go",
+    "client_library_type": "manual",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/trace",
+    "release_level": "ga"
   },
   "cloud.google.com/go/trace/apiv1": {
     "distribution_name": "cloud.google.com/go/trace/apiv1",

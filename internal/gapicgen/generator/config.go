@@ -568,3 +568,31 @@ var artmanGapicConfigPaths = []string{
 	"google/logging/artman_logging.yaml",
 	"google/pubsub/artman_pubsub.yaml",
 }
+
+var artmanGapicManifestEntries = []manifestEntry{
+	{
+		DistributionName:  "cloud.google.com/go/automl/apiv1",
+		Description:       "Cloud AutoML API",
+		Language:          "Go",
+		ClientLibraryType: "generated",
+		DocsURL:           "https://pkg.go.dev/loud.google.com/go/automl/apiv1",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/automl/apiv1beta1",
+		Description:       "Cloud AutoML API",
+		Language:          "Go",
+		ClientLibraryType: "generated",
+		DocsURL:           "https://pkg.go.dev/loud.google.com/go/automl/apiv1beta1",
+		ReleaseLevel:      "beta",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/talent/apiv4beta1",
+		Description:       "Cloud Talent Solution API",
+		Language:          "Go",
+		ClientLibraryType: "generated",
+		DocsURL:           "https://pkg.go.dev/loud.google.com/go/talent/apiv4beta1",
+		ReleaseLevel:      "beta",
+	},
+	// Logging and Pubsub are defined in manualEntries.
+}
