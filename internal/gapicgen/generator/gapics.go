@@ -278,11 +278,101 @@ type manifestEntry struct {
 	ReleaseLevel      string `json:"release_level"`
 }
 
+// TODO: consider getting Description from the gapic, if there is one.
+var manualEntries = []manifestEntry{
+	// Pure manual clients.
+	{
+		DistributionName:  "cloud.google.com/go/bigquery",
+		Description:       "BigQuery",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/bigquery",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/bigtable",
+		Description:       "Cloud BigTable",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/bigtable",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/datastore",
+		Description:       "Cloud Datastore",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/datastore",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/iam",
+		Description:       "Cloud IAM",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/iam",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/storage",
+		Description:       "Cloud Storage (GCS)",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/storage",
+		ReleaseLevel:      "ga",
+	},
+	// Manuals with a GAPIC.
+	{
+		DistributionName:  "cloud.google.com/go/errorreporting",
+		Description:       "Stackdriver Error Reporting API",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/errorreporting",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/firestore",
+		Description:       "Cloud Firestore API",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/firestore",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/logging",
+		Description:       "Stackdriver Logging API",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/logging",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/pubsub",
+		Description:       "Cloud PubSub",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/pubsub",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/spanner",
+		Description:       "Cloud Spanner",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/spanner",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/trace",
+		Description:       "Stackdriver Trace",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/trace",
+		ReleaseLevel:      "ga",
+	},
+}
+
 // manifest writes a manifest file with info about all of the confs.
-//
-// TODO: there are some libraries that aren't listed in a config (manual,
-// not-microgen). We should add them to the output somehow. See
-// gapicsWithManual.
 func manifest(confs []*microgenConfig, googleapisDir, gocloudDir string) error {
 	entries := map[string]manifestEntry{} // Key is the package name.
 	f, err := os.Create(filepath.Join(gocloudDir, "internal", ".repo-metadata-full.json"))
@@ -290,6 +380,12 @@ func manifest(confs []*microgenConfig, googleapisDir, gocloudDir string) error {
 		return err
 	}
 	defer f.Close()
+	for _, manual := range manualEntries {
+		entries[manual.DistributionName] = manual
+	}
+	for _, artman := range artmanGapicManifestEntries {
+		entries[artman.DistributionName] = artman
+	}
 	for _, conf := range confs {
 		yamlPath := filepath.Join(googleapisDir, conf.apiServiceConfigPath)
 		yamlFile, err := os.Open(yamlPath)
