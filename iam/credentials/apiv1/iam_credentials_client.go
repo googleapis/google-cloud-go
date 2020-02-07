@@ -25,7 +25,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	credentialspb "google.golang.org/genproto/googleapis/iam/credentials/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -107,8 +107,8 @@ func defaultIamCredentialsCallOptions() *IamCredentialsCallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type IamCredentialsClient struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	iamCredentialsClient credentialspb.IAMCredentialsClient
@@ -132,30 +132,32 @@ type IamCredentialsClient struct {
 // tokens, OpenID Connect ID tokens, self-signed JSON Web Tokens (JWTs), and
 // more.
 func NewIamCredentialsClient(ctx context.Context, opts ...option.ClientOption) (*IamCredentialsClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultIamCredentialsClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultIamCredentialsClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &IamCredentialsClient{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultIamCredentialsCallOptions(),
 
-		iamCredentialsClient: credentialspb.NewIAMCredentialsClient(conn),
+		iamCredentialsClient: credentialspb.NewIAMCredentialsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *IamCredentialsClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *IamCredentialsClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

@@ -82,6 +82,26 @@ func ExampleClient_CreateEntryGroup() {
 	_ = resp
 }
 
+func ExampleClient_UpdateEntryGroup() {
+	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
+
+	ctx := context.Background()
+	c, err := datacatalog.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &datacatalogpb.UpdateEntryGroupRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.UpdateEntryGroup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_GetEntryGroup() {
 	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
 
@@ -115,6 +135,33 @@ func ExampleClient_DeleteEntryGroup() {
 	err = c.DeleteEntryGroup(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_ListEntryGroups() {
+	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := datacatalog.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &datacatalogpb.ListEntryGroupsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListEntryGroups(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
 }
 
@@ -212,6 +259,33 @@ func ExampleClient_LookupEntry() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleClient_ListEntries() {
+	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := datacatalog.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &datacatalogpb.ListEntriesRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListEntries(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }
 
 func ExampleClient_CreateTagTemplate() {

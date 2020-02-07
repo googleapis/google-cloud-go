@@ -27,7 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -195,8 +195,8 @@ func defaultCallOptions() *CallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type Client struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	client datatransferpb.DataTransferServiceClient
@@ -215,30 +215,32 @@ type Client struct {
 // BigQuery. This service contains methods that are end user exposed. It backs
 // up the frontend.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultCallOptions(),
 
-		client: datatransferpb.NewDataTransferServiceClient(conn),
+		client: datatransferpb.NewDataTransferServiceClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *Client) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *Client) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

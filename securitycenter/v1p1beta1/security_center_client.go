@@ -31,7 +31,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
-	securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
+	securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
@@ -43,19 +43,24 @@ import (
 type CallOptions struct {
 	CreateSource               []gax.CallOption
 	CreateFinding              []gax.CallOption
+	CreateNotificationConfig   []gax.CallOption
+	DeleteNotificationConfig   []gax.CallOption
 	GetIamPolicy               []gax.CallOption
+	GetNotificationConfig      []gax.CallOption
 	GetOrganizationSettings    []gax.CallOption
 	GetSource                  []gax.CallOption
 	GroupAssets                []gax.CallOption
 	GroupFindings              []gax.CallOption
 	ListAssets                 []gax.CallOption
 	ListFindings               []gax.CallOption
+	ListNotificationConfigs    []gax.CallOption
 	ListSources                []gax.CallOption
 	RunAssetDiscovery          []gax.CallOption
 	SetFindingState            []gax.CallOption
 	SetIamPolicy               []gax.CallOption
 	TestIamPermissions         []gax.CallOption
 	UpdateFinding              []gax.CallOption
+	UpdateNotificationConfig   []gax.CallOption
 	UpdateOrganizationSettings []gax.CallOption
 	UpdateSource               []gax.CallOption
 	UpdateSecurityMarks        []gax.CallOption
@@ -73,9 +78,23 @@ func defaultClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		CreateSource:  []gax.CallOption{},
-		CreateFinding: []gax.CallOption{},
+		CreateSource:             []gax.CallOption{},
+		CreateFinding:            []gax.CallOption{},
+		CreateNotificationConfig: []gax.CallOption{},
+		DeleteNotificationConfig: []gax.CallOption{},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetNotificationConfig: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -159,6 +178,18 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		ListNotificationConfigs: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ListSources: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -187,6 +218,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdateFinding:              []gax.CallOption{},
+		UpdateNotificationConfig:   []gax.CallOption{},
 		UpdateOrganizationSettings: []gax.CallOption{},
 		UpdateSource:               []gax.CallOption{},
 		UpdateSecurityMarks:        []gax.CallOption{},
@@ -217,7 +249,7 @@ type Client struct {
 
 // NewClient creates a new security center client.
 //
-// V1 APIs for Security Center service.
+// V1p1Beta1 APIs for Security Center service.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	connPool, err := gtransport.DialPool(ctx, append(defaultClientOptions(), opts...)...)
 	if err != nil {
@@ -283,8 +315,8 @@ func (c *Client) CreateSource(ctx context.Context, req *securitycenterpb.CreateS
 	return resp, nil
 }
 
-// CreateFinding creates a finding. The corresponding source must exist for finding creation
-// to succeed.
+// CreateFinding creates a finding. The corresponding source must exist for finding
+// creation to succeed.
 func (c *Client) CreateFinding(ctx context.Context, req *securitycenterpb.CreateFindingRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -301,6 +333,36 @@ func (c *Client) CreateFinding(ctx context.Context, req *securitycenterpb.Create
 	return resp, nil
 }
 
+// CreateNotificationConfig creates a notification config.
+func (c *Client) CreateNotificationConfig(ctx context.Context, req *securitycenterpb.CreateNotificationConfigRequest, opts ...gax.CallOption) (*securitycenterpb.NotificationConfig, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.CreateNotificationConfig[0:len(c.CallOptions.CreateNotificationConfig):len(c.CallOptions.CreateNotificationConfig)], opts...)
+	var resp *securitycenterpb.NotificationConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateNotificationConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// DeleteNotificationConfig deletes a notification config.
+func (c *Client) DeleteNotificationConfig(ctx context.Context, req *securitycenterpb.DeleteNotificationConfigRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.DeleteNotificationConfig[0:len(c.CallOptions.DeleteNotificationConfig):len(c.CallOptions.DeleteNotificationConfig)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteNotificationConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
 // GetIamPolicy gets the access control policy on the specified Source.
 func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
@@ -310,6 +372,23 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.GetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetNotificationConfig gets a notification config.
+func (c *Client) GetNotificationConfig(ctx context.Context, req *securitycenterpb.GetNotificationConfigRequest, opts ...gax.CallOption) (*securitycenterpb.NotificationConfig, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetNotificationConfig[0:len(c.CallOptions.GetNotificationConfig):len(c.CallOptions.GetNotificationConfig)], opts...)
+	var resp *securitycenterpb.NotificationConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetNotificationConfig(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -398,7 +477,7 @@ func (c *Client) GroupAssets(ctx context.Context, req *securitycenterpb.GroupAss
 // specified properties.
 //
 // To group across all sources provide a - as the source id.
-// Example: /v1/organizations/{organization_id}/sources/-/findings
+// Example: /v1p1beta1/organizations/{organization_id}/sources/-/findings
 func (c *Client) GroupFindings(ctx context.Context, req *securitycenterpb.GroupFindingsRequest, opts ...gax.CallOption) *GroupResultIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -483,7 +562,7 @@ func (c *Client) ListAssets(ctx context.Context, req *securitycenterpb.ListAsset
 // ListFindings lists an organization or source’s findings.
 //
 // To list across all sources provide a - as the source id.
-// Example: /v1/organizations/{organization_id}/sources/-/findings
+// Example: /v1p1beta1/organizations/{organization_id}/sources/-/findings
 func (c *Client) ListFindings(ctx context.Context, req *securitycenterpb.ListFindingsRequest, opts ...gax.CallOption) *ListFindingsResponse_ListFindingsResultIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -509,6 +588,47 @@ func (c *Client) ListFindings(ctx context.Context, req *securitycenterpb.ListFin
 
 		it.Response = resp
 		return resp.ListFindingsResults, resp.NextPageToken, nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
+	return it
+}
+
+// ListNotificationConfigs lists notification configs.
+func (c *Client) ListNotificationConfigs(ctx context.Context, req *securitycenterpb.ListNotificationConfigsRequest, opts ...gax.CallOption) *NotificationConfigIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ListNotificationConfigs[0:len(c.CallOptions.ListNotificationConfigs):len(c.CallOptions.ListNotificationConfigs)], opts...)
+	it := &NotificationConfigIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListNotificationConfigsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.NotificationConfig, string, error) {
+		var resp *securitycenterpb.ListNotificationConfigsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListNotificationConfigs(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.NotificationConfigs, resp.NextPageToken, nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -650,6 +770,23 @@ func (c *Client) UpdateFinding(ctx context.Context, req *securitycenterpb.Update
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.UpdateFinding(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// UpdateNotificationConfig updates a notification config.
+func (c *Client) UpdateNotificationConfig(ctx context.Context, req *securitycenterpb.UpdateNotificationConfigRequest, opts ...gax.CallOption) (*securitycenterpb.NotificationConfig, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "notification_config.name", url.QueryEscape(req.GetNotificationConfig().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UpdateNotificationConfig[0:len(c.CallOptions.UpdateNotificationConfig):len(c.CallOptions.UpdateNotificationConfig)], opts...)
+	var resp *securitycenterpb.NotificationConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateNotificationConfig(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -914,6 +1051,53 @@ func (it *ListFindingsResponse_ListFindingsResultIterator) bufLen() int {
 }
 
 func (it *ListFindingsResponse_ListFindingsResultIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// NotificationConfigIterator manages a stream of *securitycenterpb.NotificationConfig.
+type NotificationConfigIterator struct {
+	items    []*securitycenterpb.NotificationConfig
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.NotificationConfig, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *NotificationConfigIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *NotificationConfigIterator) Next() (*securitycenterpb.NotificationConfig, error) {
+	var item *securitycenterpb.NotificationConfig
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *NotificationConfigIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *NotificationConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

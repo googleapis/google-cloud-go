@@ -23,7 +23,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -92,8 +92,8 @@ func defaultWebRiskServiceV1Beta1CallOptions() *WebRiskServiceV1Beta1CallOptions
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type WebRiskServiceV1Beta1Client struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	webRiskServiceV1Beta1Client webriskpb.WebRiskServiceV1Beta1Client
@@ -110,30 +110,32 @@ type WebRiskServiceV1Beta1Client struct {
 // Web Risk v1beta1 API defines an interface to detect malicious URLs on your
 // website and in client applications.
 func NewWebRiskServiceV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (*WebRiskServiceV1Beta1Client, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultWebRiskServiceV1Beta1ClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultWebRiskServiceV1Beta1ClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &WebRiskServiceV1Beta1Client{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultWebRiskServiceV1Beta1CallOptions(),
 
-		webRiskServiceV1Beta1Client: webriskpb.NewWebRiskServiceV1Beta1Client(conn),
+		webRiskServiceV1Beta1Client: webriskpb.NewWebRiskServiceV1Beta1Client(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *WebRiskServiceV1Beta1Client) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *WebRiskServiceV1Beta1Client) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

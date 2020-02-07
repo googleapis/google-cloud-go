@@ -22,7 +22,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -57,8 +57,8 @@ func defaultCelCallOptions() *CelCallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type CelClient struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	celClient exprpb.CelServiceClient
@@ -78,30 +78,32 @@ type CelClient struct {
 // a server for this API.  The API will be used for conformance testing,
 // utilities, and execution as a service.
 func NewCelClient(ctx context.Context, opts ...option.ClientOption) (*CelClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultCelClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultCelClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &CelClient{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultCelCallOptions(),
 
-		celClient: exprpb.NewCelServiceClient(conn),
+		celClient: exprpb.NewCelServiceClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *CelClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *CelClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

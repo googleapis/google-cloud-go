@@ -29,7 +29,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
@@ -292,8 +292,8 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type ProductSearchClient struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	productSearchClient visionpb.ProductSearchClient
@@ -327,40 +327,42 @@ type ProductSearchClient struct {
 //   Each [Product][google.cloud.vision.v1.Product] has a collection of [ReferenceImage][google.cloud.vision.v1.ReferenceImage] resources, named
 //   projects/*/locations/*/products/*/referenceImages/*
 func NewProductSearchClient(ctx context.Context, opts ...option.ClientOption) (*ProductSearchClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultProductSearchClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultProductSearchClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &ProductSearchClient{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultProductSearchCallOptions(),
 
-		productSearchClient: visionpb.NewProductSearchClient(conn),
+		productSearchClient: visionpb.NewProductSearchClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, option.WithGRPCConn(conn))
+	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
-		// This error "should not happen", since we are just reusing old connection
+		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
-		// If this does happen, we could leak conn. However, we cannot close conn:
-		// If the user invoked the function with option.WithGRPCConn,
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
 		// we would close a connection that's still in use.
-		// TODO(pongad): investigate error conditions.
+		// TODO: investigate error conditions.
 		return nil, err
 	}
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *ProductSearchClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *ProductSearchClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

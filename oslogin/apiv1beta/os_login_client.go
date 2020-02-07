@@ -25,7 +25,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	commonpb "google.golang.org/genproto/googleapis/cloud/oslogin/common"
 	osloginpb "google.golang.org/genproto/googleapis/cloud/oslogin/v1beta"
 	"google.golang.org/grpc"
@@ -134,8 +134,8 @@ func defaultCallOptions() *CallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type Client struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	client osloginpb.OsLoginServiceClient
@@ -154,30 +154,32 @@ type Client struct {
 // The Cloud OS Login API allows you to manage users and their associated SSH
 // public keys for logging into virtual machines on Google Cloud Platform.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultCallOptions(),
 
-		client: osloginpb.NewOsLoginServiceClient(conn),
+		client: osloginpb.NewOsLoginServiceClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *Client) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *Client) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

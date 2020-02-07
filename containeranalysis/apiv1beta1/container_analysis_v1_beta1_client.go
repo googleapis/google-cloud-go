@@ -27,7 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	containeranalysispb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
@@ -92,8 +92,8 @@ func defaultContainerAnalysisV1Beta1CallOptions() *ContainerAnalysisV1Beta1CallO
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type ContainerAnalysisV1Beta1Client struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	containerAnalysisV1Beta1Client containeranalysispb.ContainerAnalysisV1Beta1Client
@@ -121,30 +121,32 @@ type ContainerAnalysisV1Beta1Client struct {
 // there would be one note for the vulnerability and an occurrence for each
 // image with the vulnerability referring to that note.
 func NewContainerAnalysisV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (*ContainerAnalysisV1Beta1Client, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultContainerAnalysisV1Beta1ClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultContainerAnalysisV1Beta1ClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &ContainerAnalysisV1Beta1Client{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultContainerAnalysisV1Beta1CallOptions(),
 
-		containerAnalysisV1Beta1Client: containeranalysispb.NewContainerAnalysisV1Beta1Client(conn),
+		containerAnalysisV1Beta1Client: containeranalysispb.NewContainerAnalysisV1Beta1Client(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *ContainerAnalysisV1Beta1Client) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *ContainerAnalysisV1Beta1Client) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

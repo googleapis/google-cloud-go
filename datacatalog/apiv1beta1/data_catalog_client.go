@@ -27,7 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
@@ -39,13 +39,16 @@ import (
 type CallOptions struct {
 	SearchCatalog          []gax.CallOption
 	CreateEntryGroup       []gax.CallOption
+	UpdateEntryGroup       []gax.CallOption
 	GetEntryGroup          []gax.CallOption
 	DeleteEntryGroup       []gax.CallOption
+	ListEntryGroups        []gax.CallOption
 	CreateEntry            []gax.CallOption
 	UpdateEntry            []gax.CallOption
 	DeleteEntry            []gax.CallOption
 	GetEntry               []gax.CallOption
 	LookupEntry            []gax.CallOption
+	ListEntries            []gax.CallOption
 	CreateTagTemplate      []gax.CallOption
 	GetTagTemplate         []gax.CallOption
 	UpdateTagTemplate      []gax.CallOption
@@ -77,6 +80,7 @@ func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		SearchCatalog:    []gax.CallOption{},
 		CreateEntryGroup: []gax.CallOption{},
+		UpdateEntryGroup: []gax.CallOption{},
 		GetEntryGroup: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -101,8 +105,9 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateEntry: []gax.CallOption{},
-		UpdateEntry: []gax.CallOption{},
+		ListEntryGroups: []gax.CallOption{},
+		CreateEntry:     []gax.CallOption{},
+		UpdateEntry:     []gax.CallOption{},
 		DeleteEntry: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -139,6 +144,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		ListEntries:       []gax.CallOption{},
 		CreateTagTemplate: []gax.CallOption{},
 		GetTagTemplate: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
@@ -216,8 +222,8 @@ func defaultCallOptions() *CallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type Client struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	client datacatalogpb.DataCatalogClient
@@ -234,30 +240,32 @@ type Client struct {
 // Data Catalog API service allows clients to discover, understand, and manage
 // their data.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultCallOptions(),
 
-		client: datacatalogpb.NewDataCatalogClient(conn),
+		client: datacatalogpb.NewDataCatalogClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *Client) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *Client) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
@@ -277,10 +285,10 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 // the complete resource, only the resource identifier and high level
 // fields. Clients can subsequentally call Get methods.
 //
-// Note that searches do not have full recall. There may be results that match
-// your query but are not returned, even in subsequent pages of results. These
-// missing results may vary across repeated calls to search. Do not rely on
-// this method if you need to guarantee full recall.
+// Note that Data Catalog search queries do not guarantee full recall. Query
+// results that match your query may not be returned, even in subsequent
+// result pages. Also note that results returned (and not returned) can vary
+// across repeated search queries.
 //
 // See Data Catalog Search
 // Syntax (at /data-catalog/docs/how-to/search-reference) for more information.
@@ -323,9 +331,22 @@ func (c *Client) SearchCatalog(ctx context.Context, req *datacatalogpb.SearchCat
 	return it
 }
 
-// CreateEntryGroup alpha feature.
-// Creates an EntryGroup.
-// The user should enable the Data Catalog API in the project identified by
+// CreateEntryGroup creates an EntryGroup.
+//
+// An entry group contains logically related entries together with Cloud
+// Identity and Access Management policies that specify the users who can
+// create, edit, and view entries within the entry group.
+//
+// Data Catalog automatically creates an entry group for BigQuery entries
+// (“@bigquery”) and Pub/Sub topics ("@pubsub"). Users create their own entry
+// group to contain Cloud Storage fileset entries or custom type entries,
+// and the IAM policies associated with those entries. Entry groups, like
+// entries, can be searched.
+//
+// A maximum of 10,000 entry groups may be created per organization across all
+// locations.
+//
+// Users should enable the Data Catalog API in the project identified by
 // the parent parameter (see [Data Catalog Resource Project]
 // (/data-catalog/docs/concepts/resource-project) for more information).
 func (c *Client) CreateEntryGroup(ctx context.Context, req *datacatalogpb.CreateEntryGroupRequest, opts ...gax.CallOption) (*datacatalogpb.EntryGroup, error) {
@@ -344,8 +365,27 @@ func (c *Client) CreateEntryGroup(ctx context.Context, req *datacatalogpb.Create
 	return resp, nil
 }
 
-// GetEntryGroup alpha feature.
-// Gets an EntryGroup.
+// UpdateEntryGroup updates an EntryGroup. The user should enable the Data Catalog API in the
+// project identified by the entry_group.name parameter (see [Data Catalog
+// Resource Project] (/data-catalog/docs/concepts/resource-project) for more
+// information).
+func (c *Client) UpdateEntryGroup(ctx context.Context, req *datacatalogpb.UpdateEntryGroupRequest, opts ...gax.CallOption) (*datacatalogpb.EntryGroup, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entry_group.name", url.QueryEscape(req.GetEntryGroup().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UpdateEntryGroup[0:len(c.CallOptions.UpdateEntryGroup):len(c.CallOptions.UpdateEntryGroup)], opts...)
+	var resp *datacatalogpb.EntryGroup
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateEntryGroup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetEntryGroup gets an EntryGroup.
 func (c *Client) GetEntryGroup(ctx context.Context, req *datacatalogpb.GetEntryGroupRequest, opts ...gax.CallOption) (*datacatalogpb.EntryGroup, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -362,9 +402,8 @@ func (c *Client) GetEntryGroup(ctx context.Context, req *datacatalogpb.GetEntryG
 	return resp, nil
 }
 
-// DeleteEntryGroup alpha feature.
-// Deletes an EntryGroup. Only entry groups that do not contain entries can be
-// deleted. The user should enable the Data Catalog API in the project
+// DeleteEntryGroup deletes an EntryGroup. Only entry groups that do not contain entries can be
+// deleted. Users should enable the Data Catalog API in the project
 // identified by the name parameter (see [Data Catalog Resource Project]
 // (/data-catalog/docs/concepts/resource-project) for more information).
 func (c *Client) DeleteEntryGroup(ctx context.Context, req *datacatalogpb.DeleteEntryGroupRequest, opts ...gax.CallOption) error {
@@ -379,11 +418,55 @@ func (c *Client) DeleteEntryGroup(ctx context.Context, req *datacatalogpb.Delete
 	return err
 }
 
-// CreateEntry alpha feature.
-// Creates an entry. Currently only entries of ‘FILESET’ type can be created.
-// The user should enable the Data Catalog API in the project identified by
+// ListEntryGroups lists entry groups.
+func (c *Client) ListEntryGroups(ctx context.Context, req *datacatalogpb.ListEntryGroupsRequest, opts ...gax.CallOption) *EntryGroupIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ListEntryGroups[0:len(c.CallOptions.ListEntryGroups):len(c.CallOptions.ListEntryGroups)], opts...)
+	it := &EntryGroupIterator{}
+	req = proto.Clone(req).(*datacatalogpb.ListEntryGroupsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.EntryGroup, string, error) {
+		var resp *datacatalogpb.ListEntryGroupsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListEntryGroups(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.EntryGroups, resp.NextPageToken, nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
+	return it
+}
+
+// CreateEntry creates an entry. Only entries of ‘FILESET’ type or user-specified type can
+// be created.
+//
+// Users should enable the Data Catalog API in the project identified by
 // the parent parameter (see [Data Catalog Resource Project]
 // (/data-catalog/docs/concepts/resource-project) for more information).
+//
+// A maximum of 100,000 entries may be created per entry group.
 func (c *Client) CreateEntry(ctx context.Context, req *datacatalogpb.CreateEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -401,7 +484,7 @@ func (c *Client) CreateEntry(ctx context.Context, req *datacatalogpb.CreateEntry
 }
 
 // UpdateEntry updates an existing entry.
-// The user should enable the Data Catalog API in the project identified by
+// Users should enable the Data Catalog API in the project identified by
 // the entry.name parameter (see [Data Catalog Resource Project]
 // (/data-catalog/docs/concepts/resource-project) for more information).
 func (c *Client) UpdateEntry(ctx context.Context, req *datacatalogpb.UpdateEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
@@ -420,11 +503,10 @@ func (c *Client) UpdateEntry(ctx context.Context, req *datacatalogpb.UpdateEntry
 	return resp, nil
 }
 
-// DeleteEntry alpha feature.
-// Deletes an existing entry. Only entries created through
+// DeleteEntry deletes an existing entry. Only entries created through
 // [CreateEntry][google.cloud.datacatalog.v1beta1.DataCatalog.CreateEntry]
 // method can be deleted.
-// The user should enable the Data Catalog API in the project identified by
+// Users should enable the Data Catalog API in the project identified by
 // the name parameter (see [Data Catalog Resource Project]
 // (/data-catalog/docs/concepts/resource-project) for more information).
 func (c *Client) DeleteEntry(ctx context.Context, req *datacatalogpb.DeleteEntryRequest, opts ...gax.CallOption) error {
@@ -474,6 +556,47 @@ func (c *Client) LookupEntry(ctx context.Context, req *datacatalogpb.LookupEntry
 	return resp, nil
 }
 
+// ListEntries lists entries.
+func (c *Client) ListEntries(ctx context.Context, req *datacatalogpb.ListEntriesRequest, opts ...gax.CallOption) *EntryIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ListEntries[0:len(c.CallOptions.ListEntries):len(c.CallOptions.ListEntries)], opts...)
+	it := &EntryIterator{}
+	req = proto.Clone(req).(*datacatalogpb.ListEntriesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.Entry, string, error) {
+		var resp *datacatalogpb.ListEntriesResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListEntries(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.Entries, resp.NextPageToken, nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
+	return it
+}
+
 // CreateTagTemplate creates a tag template. The user should enable the Data Catalog API in
 // the project identified by the parent parameter (see Data Catalog
 // Resource Project (at /data-catalog/docs/concepts/resource-project) for more
@@ -514,7 +637,7 @@ func (c *Client) GetTagTemplate(ctx context.Context, req *datacatalogpb.GetTagTe
 // UpdateTagTemplate updates a tag template. This method cannot be used to update the fields of
 // a template. The tag template fields are represented as separate resources
 // and should be updated using their own create/update/delete methods.
-// The user should enable the Data Catalog API in the project identified by
+// Users should enable the Data Catalog API in the project identified by
 // the tag_template.name parameter (see [Data Catalog Resource Project]
 // (/data-catalog/docs/concepts/resource-project) for more information).
 func (c *Client) UpdateTagTemplate(ctx context.Context, req *datacatalogpb.UpdateTagTemplateRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplate, error) {
@@ -534,7 +657,7 @@ func (c *Client) UpdateTagTemplate(ctx context.Context, req *datacatalogpb.Updat
 }
 
 // DeleteTagTemplate deletes a tag template and all tags using the template.
-// The user should enable the Data Catalog API in the project identified by
+// Users should enable the Data Catalog API in the project identified by
 // the name parameter (see [Data Catalog Resource Project]
 // (/data-catalog/docs/concepts/resource-project) for more information).
 func (c *Client) DeleteTagTemplate(ctx context.Context, req *datacatalogpb.DeleteTagTemplateRequest, opts ...gax.CallOption) error {
@@ -571,7 +694,7 @@ func (c *Client) CreateTagTemplateField(ctx context.Context, req *datacatalogpb.
 }
 
 // UpdateTagTemplateField updates a field in a tag template. This method cannot be used to update the
-// field type. The user should enable the Data Catalog API in the project
+// field type. Users should enable the Data Catalog API in the project
 // identified by the name parameter (see [Data Catalog Resource Project]
 // (/data-catalog/docs/concepts/resource-project) for more information).
 func (c *Client) UpdateTagTemplateField(ctx context.Context, req *datacatalogpb.UpdateTagTemplateFieldRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
@@ -611,7 +734,7 @@ func (c *Client) RenameTagTemplateField(ctx context.Context, req *datacatalogpb.
 }
 
 // DeleteTagTemplateField deletes a field in a tag template and all uses of that field.
-// The user should enable the Data Catalog API in the project identified by
+// Users should enable the Data Catalog API in the project identified by
 // the name parameter (see [Data Catalog Resource Project]
 // (/data-catalog/docs/concepts/resource-project) for more information).
 func (c *Client) DeleteTagTemplateField(ctx context.Context, req *datacatalogpb.DeleteTagTemplateFieldRequest, opts ...gax.CallOption) error {
@@ -827,6 +950,100 @@ func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermi
 		return nil, err
 	}
 	return resp, nil
+}
+
+// EntryGroupIterator manages a stream of *datacatalogpb.EntryGroup.
+type EntryGroupIterator struct {
+	items    []*datacatalogpb.EntryGroup
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*datacatalogpb.EntryGroup, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *EntryGroupIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *EntryGroupIterator) Next() (*datacatalogpb.EntryGroup, error) {
+	var item *datacatalogpb.EntryGroup
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *EntryGroupIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *EntryGroupIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// EntryIterator manages a stream of *datacatalogpb.Entry.
+type EntryIterator struct {
+	items    []*datacatalogpb.Entry
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*datacatalogpb.Entry, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *EntryIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *EntryIterator) Next() (*datacatalogpb.Entry, error) {
+	var item *datacatalogpb.Entry
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *EntryIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *EntryIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // SearchCatalogResultIterator manages a stream of *datacatalogpb.SearchCatalogResult.

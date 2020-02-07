@@ -23,7 +23,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1p1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -66,8 +66,8 @@ func defaultImageAnnotatorCallOptions() *ImageAnnotatorCallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type ImageAnnotatorClient struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	imageAnnotatorClient visionpb.ImageAnnotatorClient
@@ -85,30 +85,32 @@ type ImageAnnotatorClient struct {
 // images, such as face, landmark, logo, label, and text detection. The
 // ImageAnnotator service returns detected entities from the images.
 func NewImageAnnotatorClient(ctx context.Context, opts ...option.ClientOption) (*ImageAnnotatorClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultImageAnnotatorClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultImageAnnotatorClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &ImageAnnotatorClient{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultImageAnnotatorCallOptions(),
 
-		imageAnnotatorClient: visionpb.NewImageAnnotatorClient(conn),
+		imageAnnotatorClient: visionpb.NewImageAnnotatorClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *ImageAnnotatorClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *ImageAnnotatorClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

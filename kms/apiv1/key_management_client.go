@@ -27,7 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -355,8 +355,8 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type KeyManagementClient struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	keyManagementClient kmspb.KeyManagementServiceClient
@@ -386,30 +386,32 @@ type KeyManagementClient struct {
 // If you are using manual gRPC libraries, see
 // Using gRPC with Cloud KMS (at https://cloud.google.com/kms/docs/grpc).
 func NewKeyManagementClient(ctx context.Context, opts ...option.ClientOption) (*KeyManagementClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultKeyManagementClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultKeyManagementClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &KeyManagementClient{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultKeyManagementCallOptions(),
 
-		keyManagementClient: kmspb.NewKeyManagementServiceClient(conn),
+		keyManagementClient: kmspb.NewKeyManagementServiceClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *KeyManagementClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *KeyManagementClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

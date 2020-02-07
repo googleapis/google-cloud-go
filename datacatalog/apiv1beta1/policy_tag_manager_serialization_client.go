@@ -24,7 +24,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -57,8 +57,8 @@ func defaultPolicyTagManagerSerializationCallOptions() *PolicyTagManagerSerializ
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type PolicyTagManagerSerializationClient struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	policyTagManagerSerializationClient datacatalogpb.PolicyTagManagerSerializationClient
@@ -75,30 +75,32 @@ type PolicyTagManagerSerializationClient struct {
 // Policy tag manager serialization API service allows clients to manipulate
 // their taxonomies and policy tags data with serialized format.
 func NewPolicyTagManagerSerializationClient(ctx context.Context, opts ...option.ClientOption) (*PolicyTagManagerSerializationClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultPolicyTagManagerSerializationClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultPolicyTagManagerSerializationClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &PolicyTagManagerSerializationClient{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultPolicyTagManagerSerializationCallOptions(),
 
-		policyTagManagerSerializationClient: datacatalogpb.NewPolicyTagManagerSerializationClient(conn),
+		policyTagManagerSerializationClient: datacatalogpb.NewPolicyTagManagerSerializationClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *PolicyTagManagerSerializationClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *PolicyTagManagerSerializationClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
