@@ -22,7 +22,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -57,8 +57,8 @@ func defaultConformanceCallOptions() *ConformanceCallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type ConformanceClient struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	conformanceClient exprpb.ConformanceServiceClient
@@ -78,30 +78,32 @@ type ConformanceClient struct {
 // a server for this API.  The API will be used for conformance testing
 // and other utilities.
 func NewConformanceClient(ctx context.Context, opts ...option.ClientOption) (*ConformanceClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultConformanceClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultConformanceClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &ConformanceClient{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultConformanceCallOptions(),
 
-		conformanceClient: exprpb.NewConformanceServiceClient(conn),
+		conformanceClient: exprpb.NewConformanceServiceClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *ConformanceClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *ConformanceClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

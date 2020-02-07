@@ -27,7 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	irmpb "google.golang.org/genproto/googleapis/cloud/irm/v1alpha2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -286,8 +286,8 @@ func defaultIncidentCallOptions() *IncidentCallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type IncidentClient struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	incidentClient irmpb.IncidentServiceClient
@@ -303,30 +303,32 @@ type IncidentClient struct {
 //
 // The Incident API for Incident Response & Management.
 func NewIncidentClient(ctx context.Context, opts ...option.ClientOption) (*IncidentClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultIncidentClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultIncidentClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &IncidentClient{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultIncidentCallOptions(),
 
-		incidentClient: irmpb.NewIncidentServiceClient(conn),
+		incidentClient: irmpb.NewIncidentServiceClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *IncidentClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *IncidentClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

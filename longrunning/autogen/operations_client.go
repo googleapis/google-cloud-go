@@ -27,7 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -107,8 +107,8 @@ func defaultOperationsCallOptions() *OperationsCallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type OperationsClient struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	operationsClient longrunningpb.OperationsClient
@@ -132,30 +132,32 @@ type OperationsClient struct {
 // returns long-running operations should implement the Operations interface
 // so developers can have a consistent client experience.
 func NewOperationsClient(ctx context.Context, opts ...option.ClientOption) (*OperationsClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultOperationsClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultOperationsClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &OperationsClient{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultOperationsCallOptions(),
 
-		operationsClient: longrunningpb.NewOperationsClient(conn),
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.SetGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *OperationsClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *OperationsClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // SetGoogleClientInfo sets the name and version of the application in

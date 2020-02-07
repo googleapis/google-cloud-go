@@ -27,7 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	iotpb "google.golang.org/genproto/googleapis/cloud/iot/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
@@ -208,8 +208,8 @@ func defaultDeviceManagerCallOptions() *DeviceManagerCallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type DeviceManagerClient struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	deviceManagerClient iotpb.DeviceManagerClient
@@ -225,30 +225,32 @@ type DeviceManagerClient struct {
 //
 // Internet of Things (IoT) service. Securely connect and manage IoT devices.
 func NewDeviceManagerClient(ctx context.Context, opts ...option.ClientOption) (*DeviceManagerClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultDeviceManagerClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultDeviceManagerClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &DeviceManagerClient{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultDeviceManagerCallOptions(),
 
-		deviceManagerClient: iotpb.NewDeviceManagerClient(conn),
+		deviceManagerClient: iotpb.NewDeviceManagerClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *DeviceManagerClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *DeviceManagerClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

@@ -25,7 +25,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -93,8 +93,8 @@ func defaultBigQueryReadCallOptions() *BigQueryReadCallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type BigQueryReadClient struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	bigQueryReadClient storagepb.BigQueryReadClient
@@ -112,30 +112,32 @@ type BigQueryReadClient struct {
 //
 // The Read API can be used to read data from BigQuery.
 func NewBigQueryReadClient(ctx context.Context, opts ...option.ClientOption) (*BigQueryReadClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultBigQueryReadClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultBigQueryReadClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &BigQueryReadClient{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultBigQueryReadCallOptions(),
 
-		bigQueryReadClient: storagepb.NewBigQueryReadClient(conn),
+		bigQueryReadClient: storagepb.NewBigQueryReadClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *BigQueryReadClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *BigQueryReadClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

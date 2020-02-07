@@ -24,7 +24,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	phishingprotectionpb "google.golang.org/genproto/googleapis/cloud/phishingprotection/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -55,8 +55,8 @@ func defaultPhishingProtectionServiceV1Beta1CallOptions() *PhishingProtectionSer
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type PhishingProtectionServiceV1Beta1Client struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	phishingProtectionServiceV1Beta1Client phishingprotectionpb.PhishingProtectionServiceV1Beta1Client
@@ -72,30 +72,32 @@ type PhishingProtectionServiceV1Beta1Client struct {
 //
 // Service to report phishing URIs.
 func NewPhishingProtectionServiceV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (*PhishingProtectionServiceV1Beta1Client, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultPhishingProtectionServiceV1Beta1ClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultPhishingProtectionServiceV1Beta1ClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &PhishingProtectionServiceV1Beta1Client{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultPhishingProtectionServiceV1Beta1CallOptions(),
 
-		phishingProtectionServiceV1Beta1Client: phishingprotectionpb.NewPhishingProtectionServiceV1Beta1Client(conn),
+		phishingProtectionServiceV1Beta1Client: phishingprotectionpb.NewPhishingProtectionServiceV1Beta1Client(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *PhishingProtectionServiceV1Beta1Client) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *PhishingProtectionServiceV1Beta1Client) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

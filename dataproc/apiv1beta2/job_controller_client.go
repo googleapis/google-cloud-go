@@ -25,7 +25,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1beta2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -133,8 +133,8 @@ func defaultJobControllerCallOptions() *JobControllerCallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type JobControllerClient struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	jobControllerClient dataprocpb.JobControllerClient
@@ -150,30 +150,32 @@ type JobControllerClient struct {
 //
 // The JobController provides methods to manage jobs.
 func NewJobControllerClient(ctx context.Context, opts ...option.ClientOption) (*JobControllerClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultJobControllerClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultJobControllerClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &JobControllerClient{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultJobControllerCallOptions(),
 
-		jobControllerClient: dataprocpb.NewJobControllerClient(conn),
+		jobControllerClient: dataprocpb.NewJobControllerClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *JobControllerClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *JobControllerClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

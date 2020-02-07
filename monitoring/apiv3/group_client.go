@@ -27,7 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
 	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 	"google.golang.org/grpc"
@@ -125,8 +125,8 @@ func defaultGroupCallOptions() *GroupCallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type GroupClient struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	groupClient monitoringpb.GroupServiceClient
@@ -153,30 +153,32 @@ type GroupClient struct {
 // updated automatically as monitored resources are added and removed
 // from the infrastructure.
 func NewGroupClient(ctx context.Context, opts ...option.ClientOption) (*GroupClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultGroupClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultGroupClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &GroupClient{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultGroupCallOptions(),
 
-		groupClient: monitoringpb.NewGroupServiceClient(conn),
+		groupClient: monitoringpb.NewGroupServiceClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *GroupClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *GroupClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

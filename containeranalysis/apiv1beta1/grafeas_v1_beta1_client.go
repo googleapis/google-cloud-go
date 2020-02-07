@@ -27,7 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -186,8 +186,8 @@ func defaultGrafeasV1Beta1CallOptions() *GrafeasV1Beta1CallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type GrafeasV1Beta1Client struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	grafeasV1Beta1Client grafeaspb.GrafeasV1Beta1Client
@@ -216,30 +216,32 @@ type GrafeasV1Beta1Client struct {
 // there would be one note for the vulnerability and an occurrence for each
 // image with the vulnerability referring to that note.
 func NewGrafeasV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (*GrafeasV1Beta1Client, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultGrafeasV1Beta1ClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultGrafeasV1Beta1ClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &GrafeasV1Beta1Client{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultGrafeasV1Beta1CallOptions(),
 
-		grafeasV1Beta1Client: grafeaspb.NewGrafeasV1Beta1Client(conn),
+		grafeasV1Beta1Client: grafeaspb.NewGrafeasV1Beta1Client(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *GrafeasV1Beta1Client) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *GrafeasV1Beta1Client) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

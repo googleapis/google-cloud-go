@@ -463,6 +463,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1beta1",
     "release_level": "beta"
   },
+  "cloud.google.com/go/securitycenter/v1p1beta1": {
+    "distribution_name": "cloud.google.com/go/securitycenter/v1p1beta1",
+    "description": "Cloud Security Command Center API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/securitycenter/v1p1beta1",
+    "release_level": "beta"
+  },
   "cloud.google.com/go/spanner": {
     "distribution_name": "cloud.google.com/go/spanner",
     "description": "Cloud Spanner",

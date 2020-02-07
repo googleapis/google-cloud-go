@@ -27,7 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -96,8 +96,8 @@ func defaultErrorStatsCallOptions() *ErrorStatsCallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type ErrorStatsClient struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	errorStatsClient clouderrorreportingpb.ErrorStatsServiceClient
@@ -114,30 +114,32 @@ type ErrorStatsClient struct {
 // An API for retrieving and managing error statistics as well as data for
 // individual events.
 func NewErrorStatsClient(ctx context.Context, opts ...option.ClientOption) (*ErrorStatsClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultErrorStatsClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultErrorStatsClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &ErrorStatsClient{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultErrorStatsCallOptions(),
 
-		errorStatsClient: clouderrorreportingpb.NewErrorStatsServiceClient(conn),
+		errorStatsClient: clouderrorreportingpb.NewErrorStatsServiceClient(connPool),
 	}
 	c.SetGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *ErrorStatsClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *ErrorStatsClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // SetGoogleClientInfo sets the name and version of the application in
