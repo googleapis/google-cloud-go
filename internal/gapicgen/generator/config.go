@@ -554,6 +554,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/vision/v1p1beta1/vision_v1p1beta1.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:    "google/logging/v2",
+		pkg:                   "logging",
+		importPath:            "cloud.google.com/go/logging/apiv2",
+		gRPCServiceConfigPath: "google/logging/v2/logging_grpc_service_config.json",
+		apiServiceConfigPath:  "google/logging/v2/logging.yaml",
+		releaseLevel:          "alpha",
+	},
 }
 
 // Relative to gocloud dir.
@@ -573,7 +581,6 @@ var artmanGapicConfigPaths = []string{
 	"google/cloud/automl/artman_automl_v1.yaml",
 	"google/cloud/automl/artman_automl_v1beta1.yaml",
 	"google/cloud/talent/artman_talent_v4beta1.yaml",
-	"google/logging/artman_logging.yaml",
 	"google/pubsub/artman_pubsub.yaml",
 }
 
