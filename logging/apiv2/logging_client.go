@@ -133,10 +133,10 @@ func (c *Client) SetGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// DeleteLog deletes all the log entries in a log.
-// The log reappears if it receives new entries.
-// Log entries written shortly before the delete operation might not be
-// deleted.
+// DeleteLog deletes all the log entries in a log. The log reappears if it receives new
+// entries. Log entries written shortly before the delete operation might not
+// be deleted. Entries received after the delete operation with a timestamp
+// before the operation will be deleted.
 func (c *Client) DeleteLog(ctx context.Context, req *loggingpb.DeleteLogRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "log_name", url.QueryEscape(req.GetLogName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

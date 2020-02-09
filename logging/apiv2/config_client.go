@@ -36,16 +36,18 @@ import (
 
 // ConfigCallOptions contains the retry settings for each method of ConfigClient.
 type ConfigCallOptions struct {
-	ListSinks       []gax.CallOption
-	GetSink         []gax.CallOption
-	CreateSink      []gax.CallOption
-	UpdateSink      []gax.CallOption
-	DeleteSink      []gax.CallOption
-	ListExclusions  []gax.CallOption
-	GetExclusion    []gax.CallOption
-	CreateExclusion []gax.CallOption
-	UpdateExclusion []gax.CallOption
-	DeleteExclusion []gax.CallOption
+	ListSinks          []gax.CallOption
+	GetSink            []gax.CallOption
+	CreateSink         []gax.CallOption
+	UpdateSink         []gax.CallOption
+	DeleteSink         []gax.CallOption
+	ListExclusions     []gax.CallOption
+	GetExclusion       []gax.CallOption
+	CreateExclusion    []gax.CallOption
+	UpdateExclusion    []gax.CallOption
+	DeleteExclusion    []gax.CallOption
+	GetCmekSettings    []gax.CallOption
+	UpdateCmekSettings []gax.CallOption
 }
 
 func defaultConfigClientOptions() []option.ClientOption {
@@ -72,18 +74,32 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 				})
 			}),
 		},
+		{"default", "idempotent2"}: {
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.3,
+				})
+			}),
+		},
 	}
 	return &ConfigCallOptions{
-		ListSinks:       retry[[2]string{"default", "idempotent"}],
-		GetSink:         retry[[2]string{"default", "idempotent"}],
-		CreateSink:      retry[[2]string{"default", "non_idempotent"}],
-		UpdateSink:      retry[[2]string{"default", "idempotent"}],
-		DeleteSink:      retry[[2]string{"default", "idempotent"}],
-		ListExclusions:  retry[[2]string{"default", "idempotent"}],
-		GetExclusion:    retry[[2]string{"default", "idempotent"}],
-		CreateExclusion: retry[[2]string{"default", "non_idempotent"}],
-		UpdateExclusion: retry[[2]string{"default", "non_idempotent"}],
-		DeleteExclusion: retry[[2]string{"default", "idempotent"}],
+		ListSinks:          retry[[2]string{"default", "idempotent"}],
+		GetSink:            retry[[2]string{"default", "idempotent"}],
+		CreateSink:         retry[[2]string{"default", "non_idempotent"}],
+		UpdateSink:         retry[[2]string{"default", "idempotent"}],
+		DeleteSink:         retry[[2]string{"default", "idempotent"}],
+		ListExclusions:     retry[[2]string{"default", "idempotent"}],
+		GetExclusion:       retry[[2]string{"default", "idempotent"}],
+		CreateExclusion:    retry[[2]string{"default", "non_idempotent"}],
+		UpdateExclusion:    retry[[2]string{"default", "non_idempotent"}],
+		DeleteExclusion:    retry[[2]string{"default", "idempotent"}],
+		GetCmekSettings:    retry[[2]string{"default", "idempotent2"}],
+		UpdateCmekSettings: retry[[2]string{"default", "non_idempotent"}],
 	}
 }
 
@@ -356,6 +372,60 @@ func (c *ConfigClient) DeleteExclusion(ctx context.Context, req *loggingpb.Delet
 		return err
 	}, opts...)
 	return err
+}
+
+// GetCmekSettings gets the Logs Router CMEK settings for the given resource.
+//
+// Note: CMEK for the Logs Router can currently only be configured for GCP
+// organizations. Once configured, it applies to all projects and folders in
+// the GCP organization.
+//
+// See Enabling CMEK for Logs
+// Router (at /logging/docs/routing/managed-encryption) for more information.
+func (c *ConfigClient) GetCmekSettings(ctx context.Context, req *loggingpb.GetCmekSettingsRequest, opts ...gax.CallOption) (*loggingpb.CmekSettings, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetCmekSettings[0:len(c.CallOptions.GetCmekSettings):len(c.CallOptions.GetCmekSettings)], opts...)
+	var resp *loggingpb.CmekSettings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.configClient.GetCmekSettings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// UpdateCmekSettings updates the Logs Router CMEK settings for the given resource.
+//
+// Note: CMEK for the Logs Router can currently only be configured for GCP
+// organizations. Once configured, it applies to all projects and folders in
+// the GCP organization.
+//
+// [UpdateCmekSettings][google.logging.v2.ConfigServiceV2.UpdateCmekSettings]
+// will fail if 1) kms_key_name is invalid, or 2) the associated service
+// account does not have the required
+// roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or
+// 3) access to the key is disabled.
+//
+// See Enabling CMEK for Logs
+// Router (at /logging/docs/routing/managed-encryption) for more information.
+func (c *ConfigClient) UpdateCmekSettings(ctx context.Context, req *loggingpb.UpdateCmekSettingsRequest, opts ...gax.CallOption) (*loggingpb.CmekSettings, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UpdateCmekSettings[0:len(c.CallOptions.UpdateCmekSettings):len(c.CallOptions.UpdateCmekSettings)], opts...)
+	var resp *loggingpb.CmekSettings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.configClient.UpdateCmekSettings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // LogExclusionIterator manages a stream of *loggingpb.LogExclusion.
