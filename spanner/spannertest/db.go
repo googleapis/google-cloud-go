@@ -27,6 +27,7 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -40,6 +41,7 @@ import (
 
 type database struct {
 	mu      sync.Mutex
+	lastTS  time.Time // last commit timestamp
 	tables  map[string]*table
 	indexes map[string]struct{} // only record their existence
 }
@@ -61,6 +63,42 @@ type table struct {
 type colInfo struct {
 	Name string
 	Type spansql.Type
+}
+
+// commitTimestampSentinel is a sentinel value for TIMESTAMP fields with allow_commit_timestamp=true.
+// It is accepted, but never stored.
+var commitTimestampSentinel = &struct{}{}
+
+// transaction records information about a running transaction.
+type transaction struct {
+	commitTimestamp time.Time
+}
+
+func (d *database) startTransaction() *transaction {
+	// Commit timestamps are only guaranteed to be unique
+	// when transactions write to overlapping sets of fields.
+	// This simulated database exceeds that guarantee.
+	d.mu.Lock()
+	defer d.mu.Unlock()
+
+	const tsRes = 1 * time.Microsecond
+	now := time.Now().UTC().Truncate(tsRes)
+	if now.Equal(d.lastTS) {
+		now = now.Add(tsRes)
+	}
+	d.lastTS = now
+
+	return &transaction{
+		commitTimestamp: now,
+	}
+}
+
+func (tx *transaction) Commit() (time.Time, error) {
+	return tx.commitTimestamp, nil
+}
+
+func (tx *transaction) Rollback() {
+	// TODO: actually rollback
 }
 
 /*
@@ -200,7 +238,7 @@ func (d *database) table(tbl string) (*table, error) {
 }
 
 // writeValues executes a write option (Insert, Update, etc.).
-func (d *database) writeValues(tbl string, cols []string, values []*structpb.ListValue, f func(t *table, colIndexes []int, r row) error) error {
+func (d *database) writeValues(tx *transaction, tbl string, cols []string, values []*structpb.ListValue, f func(t *table, colIndexes []int, r row) error) error {
 	t, err := d.table(tbl)
 	if err != nil {
 		return err
@@ -238,10 +276,16 @@ func (d *database) writeValues(tbl string, cols []string, values []*structpb.Lis
 			if err != nil {
 				return err
 			}
+			if x == commitTimestampSentinel {
+				// Cloud Spanner commit timestamps have microsecond granularity.
+				x = tx.commitTimestamp.Format("2006-01-02T15:04:05.999999Z")
+			}
 
 			r[i] = x
 		}
 		// TODO: enforce NOT NULL?
+		// TODO: enforce that provided timestamp for commit_timestamp=true columns
+		// are not ahead of the transaction's commit timestamp.
 
 		if err := f(t, colIndexes, r); err != nil {
 			return err
@@ -251,8 +295,8 @@ func (d *database) writeValues(tbl string, cols []string, values []*structpb.Lis
 	return nil
 }
 
-func (d *database) Insert(tbl string, cols []string, values []*structpb.ListValue) error {
-	return d.writeValues(tbl, cols, values, func(t *table, colIndexes []int, r row) error {
+func (d *database) Insert(tx *transaction, tbl string, cols []string, values []*structpb.ListValue) error {
+	return d.writeValues(tx, tbl, cols, values, func(t *table, colIndexes []int, r row) error {
 		pk := r[:t.pkCols]
 		rowNum, found := t.rowForPK(pk)
 		if found {
@@ -263,8 +307,8 @@ func (d *database) Insert(tbl string, cols []string, values []*structpb.ListValu
 	})
 }
 
-func (d *database) Update(tbl string, cols []string, values []*structpb.ListValue) error {
-	return d.writeValues(tbl, cols, values, func(t *table, colIndexes []int, r row) error {
+func (d *database) Update(tx *transaction, tbl string, cols []string, values []*structpb.ListValue) error {
+	return d.writeValues(tx, tbl, cols, values, func(t *table, colIndexes []int, r row) error {
 		if t.pkCols == 0 {
 			return status.Errorf(codes.InvalidArgument, "cannot update table %s with no columns in primary key", tbl)
 		}
@@ -282,8 +326,8 @@ func (d *database) Update(tbl string, cols []string, values []*structpb.ListValu
 	})
 }
 
-func (d *database) InsertOrUpdate(tbl string, cols []string, values []*structpb.ListValue) error {
-	return d.writeValues(tbl, cols, values, func(t *table, colIndexes []int, r row) error {
+func (d *database) InsertOrUpdate(tx *transaction, tbl string, cols []string, values []*structpb.ListValue) error {
+	return d.writeValues(tx, tbl, cols, values, func(t *table, colIndexes []int, r row) error {
 		pk := r[:t.pkCols]
 		rowNum, found := t.rowForPK(pk)
 		if !found {
@@ -301,7 +345,7 @@ func (d *database) InsertOrUpdate(tbl string, cols []string, values []*structpb.
 
 // TODO: Replace
 
-func (d *database) Delete(table string, keys []*structpb.ListValue, keyRanges keyRangeList, all bool) error {
+func (d *database) Delete(tx *transaction, table string, keys []*structpb.ListValue, keyRanges keyRangeList, all bool) error {
 	t, err := d.table(table)
 	if err != nil {
 		return err
@@ -679,9 +723,12 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 		// The Spanner protocol encodes TIMESTAMP in RFC 3339 timestamp format with zone Z.
 		sv, ok := v.Kind.(*structpb.Value_StringValue)
 		if ok {
-			// Store it internally as a string, but validate its value.
 			s := sv.StringValue
-			if _, err := time.Parse("2006-01-02T15:04:05Z", s); err != nil {
+			if strings.ToLower(s) == "spanner.commit_timestamp()" {
+				return commitTimestampSentinel, nil
+			}
+			// Store it internally as a string, but validate its value.
+			if _, err := time.Parse("2006-01-02T15:04:05.999999999Z", s); err != nil {
 				return nil, fmt.Errorf("bad TIMESTAMP string %q: %v", s, err)
 			}
 			return s, nil

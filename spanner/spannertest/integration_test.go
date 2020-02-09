@@ -339,6 +339,40 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 	if len(names) > 0 {
 		t.Errorf("Read empty array value: got %q", names)
 	}
+
+	// Exercise commit timestamp.
+	err = updateDDL(t, adminClient, `ALTER TABLE `+tableName+` ADD COLUMN Updated TIMESTAMP OPTIONS (allow_commit_timestamp=true)`)
+	if err != nil {
+		t.Fatalf("Adding new timestamp column: %v", err)
+	}
+	cts, err := client.Apply(ctx, []*spanner.Mutation{
+		// Update one row in place.
+		spanner.Update(tableName,
+			[]string{"FirstName", "LastName", "Allies", "Updated"},
+			[]interface{}{"Tony", "Stark", []string{"Spider-Man", "Professor Hulk"}, spanner.CommitTimestamp}),
+	})
+	if err != nil {
+		t.Fatalf("Applying mutations: %v", err)
+	}
+	cts = cts.In(time.UTC)
+	if d := time.Since(cts); d < 0 || d > 10*time.Second {
+		t.Errorf("Commit timestamp %v not in the last 10s", cts)
+	}
+	row, err = client.Single().ReadRow(ctx, tableName, spanner.Key{"Tony", "Stark"}, []string{"Allies", "Updated"})
+	if err != nil {
+		t.Fatalf("Reading single row: %v", err)
+	}
+	var gotAllies []string
+	var gotUpdated time.Time
+	if err := row.Columns(&gotAllies, &gotUpdated); err != nil {
+		t.Fatalf("Decoding single row: %v", err)
+	}
+	if want := []string{"Spider-Man", "Professor Hulk"}; !reflect.DeepEqual(gotAllies, want) {
+		t.Errorf("After updating Iron Man, allies = %+v, want %+v", gotAllies, want)
+	}
+	if !gotUpdated.Equal(cts) {
+		t.Errorf("After updating Iron Man, updated = %v, want %v", gotUpdated, cts)
+	}
 }
 
 func updateDDL(t *testing.T, adminClient *dbadmin.DatabaseAdminClient, statements ...string) error {

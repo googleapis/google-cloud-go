@@ -83,7 +83,8 @@ func TestTableData(t *testing.T) {
 	}
 
 	// Insert a subset of columns.
-	err := db.Insert("Staff", []string{"ID", "Name", "Tenure", "Height"}, []*structpb.ListValue{
+	tx := db.startTransaction()
+	err := db.Insert(tx, "Staff", []string{"ID", "Name", "Tenure", "Height"}, []*structpb.ListValue{
 		// int64 arrives as a decimal string.
 		listV(stringV("1"), stringV("Jack"), stringV("10"), floatV(1.85)),
 		listV(stringV("2"), stringV("Daniel"), stringV("11"), floatV(1.83)),
@@ -92,7 +93,7 @@ func TestTableData(t *testing.T) {
 		t.Fatalf("Inserting data: %v", err)
 	}
 	// Insert a different set of columns.
-	err = db.Insert("Staff", []string{"Name", "ID", "Cool", "Tenure", "Height"}, []*structpb.ListValue{
+	err = db.Insert(tx, "Staff", []string{"Name", "ID", "Cool", "Tenure", "Height"}, []*structpb.ListValue{
 		listV(stringV("Sam"), stringV("3"), boolV(false), stringV("9"), floatV(1.75)),
 		listV(stringV("Teal'c"), stringV("4"), boolV(true), stringV("8"), floatV(1.91)),
 		listV(stringV("George"), stringV("5"), nullV(), stringV("6"), floatV(1.73)),
@@ -102,17 +103,20 @@ func TestTableData(t *testing.T) {
 		t.Fatalf("Inserting more data: %v", err)
 	}
 	// Delete that last one.
-	err = db.Delete("Staff", []*structpb.ListValue{listV(stringV("Harry"), stringV("6"))}, nil, false)
+	err = db.Delete(tx, "Staff", []*structpb.ListValue{listV(stringV("Harry"), stringV("6"))}, nil, false)
 	if err != nil {
 		t.Fatalf("Deleting a row: %v", err)
 	}
 	// Turns out this guy isn't cool after all.
-	err = db.Update("Staff", []string{"Name", "ID", "Cool"}, []*structpb.ListValue{
+	err = db.Update(tx, "Staff", []string{"Name", "ID", "Cool"}, []*structpb.ListValue{
 		// Missing columns should be left alone.
 		listV(stringV("Daniel"), stringV("2"), boolV(false)),
 	})
 	if err != nil {
 		t.Fatalf("Updating a row: %v", err)
+	}
+	if _, err := tx.Commit(); err != nil {
+		t.Fatalf("Commiting changes: %v", err)
 	}
 
 	// Read some specific keys.
@@ -179,7 +183,8 @@ func TestTableData(t *testing.T) {
 	if st.Code() != codes.OK {
 		t.Fatalf("Adding column: %v", st.Err())
 	}
-	err = db.Update("Staff", []string{"Name", "ID", "FirstSeen", "To"}, []*structpb.ListValue{
+	tx = db.startTransaction()
+	err = db.Update(tx, "Staff", []string{"Name", "ID", "FirstSeen", "To"}, []*structpb.ListValue{
 		listV(stringV("Jack"), stringV("1"), stringV("1994-10-28"), nullV()),
 		listV(stringV("Daniel"), stringV("2"), stringV("1994-10-28"), nullV()),
 		listV(stringV("George"), stringV("5"), stringV("1997-07-27"), stringV("2008-07-29T11:22:43Z")),
@@ -187,10 +192,14 @@ func TestTableData(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Updating rows: %v", err)
 	}
+	if _, err := tx.Commit(); err != nil {
+		t.Fatalf("Commiting changes: %v", err)
+	}
 
 	// Add some more data, then delete it with a KeyRange.
 	// The queries below ensure that this was all deleted.
-	err = db.Insert("Staff", []string{"Name", "ID"}, []*structpb.ListValue{
+	tx = db.startTransaction()
+	err = db.Insert(tx, "Staff", []string{"Name", "ID"}, []*structpb.ListValue{
 		listV(stringV("01"), stringV("1")),
 		listV(stringV("03"), stringV("3")),
 		listV(stringV("06"), stringV("6")),
@@ -198,7 +207,7 @@ func TestTableData(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Inserting data: %v", err)
 	}
-	err = db.Delete("Staff", nil, keyRangeList{{
+	err = db.Delete(tx, "Staff", nil, keyRangeList{{
 		start:       listV(stringV("01"), stringV("1")),
 		startClosed: true,
 		end:         listV(stringV("9")),
@@ -206,8 +215,11 @@ func TestTableData(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Deleting key range: %v", err)
 	}
+	if _, err := tx.Commit(); err != nil {
+		t.Fatalf("Commiting changes: %v", err)
+	}
 	// Re-add the data and delete with DML.
-	err = db.Insert("Staff", []string{"Name", "ID"}, []*structpb.ListValue{
+	err = db.Insert(tx, "Staff", []string{"Name", "ID"}, []*structpb.ListValue{
 		listV(stringV("01"), stringV("1")),
 		listV(stringV("03"), stringV("3")),
 		listV(stringV("06"), stringV("6")),
@@ -252,12 +264,16 @@ func TestTableData(t *testing.T) {
 	if st.Code() != codes.OK {
 		t.Fatalf("Adding column: %v", st.Err())
 	}
-	err = db.Update("Staff", []string{"Name", "ID", "RawBytes"}, []*structpb.ListValue{
+	tx = db.startTransaction()
+	err = db.Update(tx, "Staff", []string{"Name", "ID", "RawBytes"}, []*structpb.ListValue{
 		// bytes {0x01 0x00 0x01} encode as base-64 AQAB.
 		listV(stringV("Jack"), stringV("1"), stringV("AQAB")),
 	})
 	if err != nil {
 		t.Fatalf("Updating rows: %v", err)
+	}
+	if _, err := tx.Commit(); err != nil {
+		t.Fatalf("Commiting changes: %v", err)
 	}
 
 	// Do some complex queries.
