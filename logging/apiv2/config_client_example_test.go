@@ -221,3 +221,39 @@ func ExampleConfigClient_DeleteExclusion() {
 		// TODO: Handle error.
 	}
 }
+
+func ExampleConfigClient_GetCmekSettings() {
+	ctx := context.Background()
+	c, err := logging.NewConfigClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &loggingpb.GetCmekSettingsRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetCmekSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleConfigClient_UpdateCmekSettings() {
+	ctx := context.Background()
+	c, err := logging.NewConfigClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &loggingpb.UpdateCmekSettingsRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.UpdateCmekSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
