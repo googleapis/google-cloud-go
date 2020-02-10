@@ -1158,9 +1158,7 @@ func TestSessionNotFoundOnPrepareSession(t *testing.T) {
 	sp := client.idleSessions
 
 	// Wait until the health checker has tried to write-prepare the sessions.
-	// This will cause the session pool to write some errors to the log that
-	// preparing sessions failed.
-	waitUntil := time.After(time.Second)
+	waitUntil := time.After(5 * time.Second)
 	var numWriteSessions int
 	var numReadSessions int
 waitForPrepare:
