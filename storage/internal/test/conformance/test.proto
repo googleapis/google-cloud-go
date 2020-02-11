@@ -14,22 +14,71 @@
 
 syntax = "proto3";
 
-package storage.v1.tests;
+package google.cloud.conformance.storage.v1;
 
 import "google/protobuf/timestamp.proto";
 
+option csharp_namespace = "Google.Cloud.Storage.V1.Tests.Conformance";
+option java_package = "com.google.cloud.conformance.storage.v1";
+option java_multiple_files = true;
+
 message TestFile {
-    repeated SigningV4Test signing_v4_tests = 1;
+  repeated SigningV4Test signing_v4_tests = 1;
+  repeated PostPolicyV4Test post_policy_v4_tests = 2;
 }
 
 message SigningV4Test {
-    string fileName = 1;
-    string description = 2;
-    string bucket = 3;
-    string object = 4;
-    string method = 5;
-    int64 expiration = 6;
-    google.protobuf.Timestamp timestamp = 7;
-    string expectedUrl = 8;
-    map<string, string> headers = 9;
+  string fileName = 1;
+  string description = 2;
+  string bucket = 3;
+  string object = 4;
+  string method = 5;
+  int64 expiration = 6;
+  google.protobuf.Timestamp timestamp = 7;
+  string expectedUrl = 8;
+  map<string, string> headers = 9;
+  map<string, string> query_parameters = 10;
+  string scheme = 11;
+  enum UrlStyle {
+    PATH_STYLE = 0;
+    VIRTUAL_HOSTED_STYLE = 1;
+    BUCKET_BOUND_DOMAIN = 2;
+  }
+  UrlStyle urlStyle = 12;
+  string bucketBoundDomain = 13;
+  string expectedCanonicalRequest = 14;
+  string expectedStringToSign = 15;
+}
+
+message ConditionalMatches {
+  repeated string expression = 1;
+}
+
+message PolicyConditions {
+  string successActionStatus = 1;
+  string successActionRedirect = 2;
+  repeated ConditionalMatches matches = 3;
+}
+
+message PolicyInput {
+  string scheme = 1;
+  string bucket = 2;
+  string object = 3;
+  int64 expiration = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  map<string, string> headers = 6;
+  PolicyConditions conditions = 7;
+}
+
+message PolicyOutput {
+  string url = 1;
+  string key = 2;
+  map<string, string> fields = 3;
+  string expectedDecodedPolicy = 4;
+}
+
+message PostPolicyV4Test {
+  string description = 1;
+  PolicyInput policyInput = 2;
+  PolicyOutput policyOutput = 3;
 }
