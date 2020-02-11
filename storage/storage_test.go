@@ -487,6 +487,31 @@ func TestSignedURL_MissingOptions(t *testing.T) {
 	}
 }
 
+func TestPathEncodeV4(t *testing.T) {
+	tests := []struct {
+		input string
+		want  string
+	}{
+		{
+			"path/with/slashes",
+			"path/with/slashes",
+		},
+		{
+			"path/with/speci@lchar$&",
+			"path/with/speci%40lchar%24%26",
+		},
+		{
+			"path/with/un_ersc_re/~tilde/sp  ace/",
+			"path/with/un_ersc_re/~tilde/sp%20%20ace/",
+		},
+	}
+	for _, test := range tests {
+		if got := pathEncodeV4(test.input); got != test.want {
+			t.Errorf("pathEncodeV4(%q) =  %q, want %q", test.input, got, test.want)
+		}
+	}
+}
+
 func dummyKey(kind string) []byte {
 	slurp, err := ioutil.ReadFile(fmt.Sprintf("./internal/test/dummy_%s", kind))
 	if err != nil {

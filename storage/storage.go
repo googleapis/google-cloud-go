@@ -226,9 +226,17 @@ type SignedURLOptions struct {
 	ContentType string
 
 	// Headers is a list of extension headers the client must provide
-	// in order to use the generated signed URL.
+	// in order to use the generated signed URL. Each must be a string of the
+	// form "key:values", with multiple values separated by a semicolon.
 	// Optional.
 	Headers []string
+
+	// QueryParameters is a map of additional query parameters. When
+	// SigningScheme is V4, this is used in computing the signature, and the
+	// client must use the same query parameters when using the generated signed
+	// URL.
+	// Optional.
+	QueryParameters url.Values
 
 	// MD5 is the base64 encoded MD5 checksum of the file.
 	// If provided, the client should provide the exact value on the request
@@ -431,6 +439,21 @@ func extractHeaderNames(kvs []string) []string {
 	return res
 }
 
+// pathEncodeV4 creates an encoded string that matches the v4 signature spec.
+// Following the spec precisely is necessary in order to ensure that the URL
+// and signing string are correctly formed, and Go's url.PathEncode and
+// url.QueryEncode don't generate an exact match without some additional logic.
+func pathEncodeV4(path string) string {
+	segments := strings.Split(path, "/")
+	var encodedSegments []string
+	for _, s := range segments {
+		encodedSegments = append(encodedSegments, url.QueryEscape(s))
+	}
+	encodedStr := strings.Join(encodedSegments, "/")
+	encodedStr = strings.Replace(encodedStr, "+", "%20", -1)
+	return encodedStr
+}
+
 // signedURLV4 creates a signed URL using the sigV4 algorithm.
 func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (string, error) {
 	buf := &bytes.Buffer{}
@@ -439,11 +462,12 @@ func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (st
 	if name != "" {
 		u.Path += "/" + name
 	}
+	u.RawPath = pathEncodeV4(u.Path)
 
 	// Note: we have to add a / here because GCS does so auto-magically, despite
-	// Go's EscapedPath not doing so (and we have to exactly match their
+	// our encoding not doing so (and we have to exactly match their
 	// canonical query).
-	fmt.Fprintf(buf, "/%s\n", u.EscapedPath())
+	fmt.Fprintf(buf, "/%s\n", u.RawPath)
 
 	headerNames := append(extractHeaderNames(opts.Headers), "host")
 	if opts.ContentType != "" {
@@ -463,6 +487,12 @@ func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (st
 		"X-Goog-Expires":       {fmt.Sprintf("%d", int(opts.Expires.Sub(now).Seconds()))},
 		"X-Goog-SignedHeaders": {signedHeaders},
 	}
+	// Add user-supplied query parameters to the canonical query string. For V4,
+	// it's necessary to include these.
+	for k, v := range opts.QueryParameters {
+		canonicalQueryString[k] = append(canonicalQueryString[k], v...)
+	}
+
 	fmt.Fprintf(buf, "%s\n", canonicalQueryString.Encode())
 
 	u.Host = "storage.googleapis.com"
@@ -471,15 +501,33 @@ func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (st
 	headersWithValue = append(headersWithValue, "host:"+u.Host)
 	headersWithValue = append(headersWithValue, opts.Headers...)
 	if opts.ContentType != "" {
-		headersWithValue = append(headersWithValue, "content-type:"+strings.TrimSpace(opts.ContentType))
+		headersWithValue = append(headersWithValue, "content-type:"+opts.ContentType)
 	}
 	if opts.MD5 != "" {
-		headersWithValue = append(headersWithValue, "content-md5:"+strings.TrimSpace(opts.MD5))
+		headersWithValue = append(headersWithValue, "content-md5:"+opts.MD5)
 	}
-	canonicalHeaders := strings.Join(sortHeadersByKey(headersWithValue), "\n")
+	// Trim extra whitespace from headers and replace with a single space.
+	var trimmedHeaders []string
+	for _, h := range headersWithValue {
+		trimmedHeaders = append(trimmedHeaders, strings.Join(strings.Fields(h), " "))
+	}
+	canonicalHeaders := strings.Join(sortHeadersByKey(trimmedHeaders), "\n")
 	fmt.Fprintf(buf, "%s\n\n", canonicalHeaders)
 	fmt.Fprintf(buf, "%s\n", signedHeaders)
-	fmt.Fprint(buf, "UNSIGNED-PAYLOAD")
+
+	// If the user provides a value for X-Goog-Content-SHA256, we must use
+	// that value in the request string. If not, we use UNSIGNED-PAYLOAD.
+	sha256Header := false
+	for _, h := range trimmedHeaders {
+		if strings.HasPrefix(strings.ToLower(h), "x-goog-content-sha256") && strings.Contains(h, ":") {
+			sha256Header = true
+			fmt.Fprintf(buf, "%s", strings.SplitN(h, ":", 2)[1])
+			break
+		}
+	}
+	if !sha256Header {
+		fmt.Fprint(buf, "UNSIGNED-PAYLOAD")
+	}
 
 	sum := sha256.Sum256(buf.Bytes())
 	hexDigest := hex.EncodeToString(sum[:])
