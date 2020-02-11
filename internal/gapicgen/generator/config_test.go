@@ -15,6 +15,7 @@
 package generator
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -22,6 +23,12 @@ var allowedReleaseLevels = map[string]bool{
 	"alpha": true,
 	"beta":  true,
 	"ga":    true,
+}
+
+var apivExceptions = map[string]bool{
+	"cloud.google.com/go/longrunning/autogen":   true,
+	"cloud.google.com/go/firestore/apiv1/admin": true,
+	"cloud.google.com/go/cloudbuild/apiv1/v2":   true,
 }
 
 // TestMicrogenConfigs validates config entries.
@@ -35,6 +42,11 @@ func TestMicrogenConfigs(t *testing.T) {
 	for k, entry := range microgenGapicConfigs {
 		if entry.importPath == "" {
 			t.Errorf("config %q (#%d) expected non-empty importPath", entry.inputDirectoryPath, k)
+		}
+		importParts := strings.Split(entry.importPath, "/")
+		v := importParts[len(importParts)-1]
+		if !strings.HasPrefix(v, "apiv") && !apivExceptions[entry.importPath] {
+			t.Errorf("config %q (#%d) expected the last part of import path %q to start with \"apiv\"", entry.inputDirectoryPath, k, entry.importPath)
 		}
 		if entry.inputDirectoryPath == "" {
 			t.Errorf("config %q (#%d) expected non-empty inputDirectoryPath field", entry.importPath, k)
