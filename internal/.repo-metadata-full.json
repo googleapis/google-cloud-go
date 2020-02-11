@@ -319,6 +319,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/logging",
     "release_level": "ga"
   },
+  "cloud.google.com/go/logging/apiv2": {
+    "distribution_name": "cloud.google.com/go/logging/apiv2",
+    "description": "Stackdriver Logging API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/logging/apiv2",
+    "release_level": "alpha"
+  },
   "cloud.google.com/go/longrunning/autogen": {
     "distribution_name": "cloud.google.com/go/longrunning/autogen",
     "description": "Long Running Operations API",
