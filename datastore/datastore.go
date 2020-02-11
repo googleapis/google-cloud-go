@@ -630,7 +630,8 @@ func deleteMutations(keys []*Key) ([]*pb.Mutation, error) {
 	return mutations, nil
 }
 
-// Mutate applies one or more mutations atomically.
+// Mutate applies one or more mutations. Mutations are applied in
+// non-transactional mode. If you need atomicity, use Transaction.Mutate.
 // It returns the keys of the argument Mutations, in the same order.
 //
 // If any of the mutations are invalid, Mutate returns a MultiError with the errors.
