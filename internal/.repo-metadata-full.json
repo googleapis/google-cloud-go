@@ -103,6 +103,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/bigtable",
     "release_level": "ga"
   },
+  "cloud.google.com/go/billing/apiv1": {
+    "distribution_name": "cloud.google.com/go/billing/apiv1",
+    "description": "Cloud Billing API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/billing/apiv1",
+    "release_level": "beta"
+  },
   "cloud.google.com/go/cloudbuild/apiv1/v2": {
     "distribution_name": "cloud.google.com/go/cloudbuild/apiv1/v2",
     "description": "Cloud Build API",
