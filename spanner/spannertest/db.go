@@ -44,6 +44,8 @@ type database struct {
 	lastTS  time.Time // last commit timestamp
 	tables  map[string]*table
 	indexes map[string]struct{} // only record their existence
+
+	rwMu sync.Mutex // held by read-write transactions
 }
 
 type table struct {
@@ -71,34 +73,75 @@ type colInfo struct {
 var commitTimestampSentinel = &struct{}{}
 
 // transaction records information about a running transaction.
+// This is not safe for concurrent use.
 type transaction struct {
-	commitTimestamp time.Time
+	// readOnly is whether this transaction was constructed
+	// for read-only use, and should yield errors if used
+	// to perform a mutation.
+	readOnly bool
+
+	d               *database
+	commitTimestamp time.Time // not set if readOnly
+	unlock          func()    // may be nil
 }
 
-func (d *database) startTransaction() *transaction {
+func (d *database) NewReadOnlyTransaction() *transaction {
+	return &transaction{
+		readOnly: true,
+	}
+}
+
+func (d *database) NewTransaction() *transaction {
+	return &transaction{
+		d: d,
+	}
+}
+
+// Start starts the transaction and commits to a specific commit timestamp.
+// This also locks out any other read-write transaction on this database
+// until Commit/Rollback are called.
+func (tx *transaction) Start() {
 	// Commit timestamps are only guaranteed to be unique
 	// when transactions write to overlapping sets of fields.
 	// This simulated database exceeds that guarantee.
-	d.mu.Lock()
-	defer d.mu.Unlock()
 
+	// Grab rwMu for the duration of this transaction.
+	// Take it before d.mu so we don't hold that lock
+	// while waiting for d.rwMu, which is held for longer.
+	tx.d.rwMu.Lock()
+
+	tx.d.mu.Lock()
 	const tsRes = 1 * time.Microsecond
 	now := time.Now().UTC().Truncate(tsRes)
-	if now.Equal(d.lastTS) {
-		now = now.Add(tsRes)
+	if !now.After(tx.d.lastTS) {
+		now = tx.d.lastTS.Add(tsRes)
 	}
-	d.lastTS = now
+	tx.d.lastTS = now
+	tx.d.mu.Unlock()
 
-	return &transaction{
-		commitTimestamp: now,
+	tx.commitTimestamp = now
+	tx.unlock = tx.d.rwMu.Unlock
+}
+
+func (tx *transaction) checkMutable() error {
+	if tx.readOnly {
+		// TODO: is this the right status?
+		return status.Errorf(codes.InvalidArgument, "transaction is read-only")
 	}
+	return nil
 }
 
 func (tx *transaction) Commit() (time.Time, error) {
+	if tx.unlock != nil {
+		tx.unlock()
+	}
 	return tx.commitTimestamp, nil
 }
 
 func (tx *transaction) Rollback() {
+	if tx.unlock != nil {
+		tx.unlock()
+	}
 	// TODO: actually rollback
 }
 
@@ -243,6 +286,10 @@ func (d *database) table(tbl string) (*table, error) {
 
 // writeValues executes a write option (Insert, Update, etc.).
 func (d *database) writeValues(tx *transaction, tbl string, cols []string, values []*structpb.ListValue, f func(t *table, colIndexes []int, r row) error) error {
+	if err := tx.checkMutable(); err != nil {
+		return err
+	}
+
 	t, err := d.table(tbl)
 	if err != nil {
 		return err
@@ -350,6 +397,10 @@ func (d *database) InsertOrUpdate(tx *transaction, tbl string, cols []string, va
 // TODO: Replace
 
 func (d *database) Delete(tx *transaction, table string, keys []*structpb.ListValue, keyRanges keyRangeList, all bool) error {
+	if err := tx.checkMutable(); err != nil {
+		return err
+	}
+
 	t, err := d.table(table)
 	if err != nil {
 		return err

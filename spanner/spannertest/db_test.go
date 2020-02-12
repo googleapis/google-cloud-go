@@ -83,7 +83,8 @@ func TestTableData(t *testing.T) {
 	}
 
 	// Insert a subset of columns.
-	tx := db.startTransaction()
+	tx := db.NewTransaction()
+	tx.Start()
 	err := db.Insert(tx, "Staff", []string{"ID", "Name", "Tenure", "Height"}, []*structpb.ListValue{
 		// int64 arrives as a decimal string.
 		listV(stringV("1"), stringV("Jack"), stringV("10"), floatV(1.85)),
@@ -202,7 +203,8 @@ func TestTableData(t *testing.T) {
 	if st.Code() != codes.OK {
 		t.Fatalf("Adding column: %v", st.Err())
 	}
-	tx = db.startTransaction()
+	tx = db.NewTransaction()
+	tx.Start()
 	err = db.Update(tx, "Staff", []string{"Name", "ID", "FirstSeen", "To"}, []*structpb.ListValue{
 		listV(stringV("Jack"), stringV("1"), stringV("1994-10-28"), nullV()),
 		listV(stringV("Daniel"), stringV("2"), stringV("1994-10-28"), nullV()),
@@ -217,7 +219,8 @@ func TestTableData(t *testing.T) {
 
 	// Add some more data, then delete it with a KeyRange.
 	// The queries below ensure that this was all deleted.
-	tx = db.startTransaction()
+	tx = db.NewTransaction()
+	tx.Start()
 	err = db.Insert(tx, "Staff", []string{"Name", "ID"}, []*structpb.ListValue{
 		listV(stringV("01"), stringV("1")),
 		listV(stringV("03"), stringV("3")),
@@ -283,7 +286,8 @@ func TestTableData(t *testing.T) {
 	if st.Code() != codes.OK {
 		t.Fatalf("Adding column: %v", st.Err())
 	}
-	tx = db.startTransaction()
+	tx = db.NewTransaction()
+	tx.Start()
 	err = db.Update(tx, "Staff", []string{"Name", "ID", "RawBytes"}, []*structpb.ListValue{
 		// bytes {0x01 0x00 0x01} encode as base-64 AQAB.
 		listV(stringV("Jack"), stringV("1"), stringV("AQAB")),
@@ -461,7 +465,8 @@ func TestTableDescendingKey(t *testing.T) {
 		t.Fatalf("Creating table: %v", st.Err())
 	}
 
-	tx := db.startTransaction()
+	tx := db.NewTransaction()
+	tx.Start()
 	err := db.Insert(tx, "Timeseries", []string{"Name", "Observed", "Value"}, []*structpb.ListValue{
 		listV(stringV("box"), stringV("1"), floatV(1.1)),
 		listV(stringV("cupcake"), stringV("1"), floatV(6)),
