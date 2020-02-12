@@ -130,6 +130,11 @@ func (sh *sessionHandle) getTransactionID() transactionID {
 func (sh *sessionHandle) destroy() {
 	sh.mu.Lock()
 	s := sh.session
+	if s == nil {
+		// sessionHandle has already been recycled.
+		sh.mu.Unlock()
+		return
+	}
 	tracked := sh.trackedSessionHandle
 	sh.session = nil
 	sh.trackedSessionHandle = nil
@@ -137,10 +142,6 @@ func (sh *sessionHandle) destroy() {
 	sh.stack = nil
 	sh.mu.Unlock()
 
-	if s == nil {
-		// sessionHandle has already been destroyed..
-		return
-	}
 	if tracked != nil {
 		p := s.pool
 		p.mu.Lock()

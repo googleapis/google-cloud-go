@@ -1018,6 +1018,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 				// creations/retrivals.
 				return ts, err
 			}
+			defer sh.recycle()
 		}
 		res, err := sh.getClient().Commit(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.CommitRequest{
 			Session: sh.getID(),
@@ -1042,9 +1043,6 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 			}
 			break
 		}
-	}
-	if sh != nil {
-		sh.recycle()
 	}
 	return ts, toSpannerError(err)
 }
