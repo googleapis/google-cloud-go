@@ -386,50 +386,52 @@ func (s *server) popTx(sessionID, tid string) (tx *transaction, err error) {
 
 // readTx returns a transaction for the given session and transaction selector.
 // It is used by read/query operations (ExecuteStreamingSql, StreamingRead).
-func (s *server) readTx(ctx context.Context, session string, tsel *spannerpb.TransactionSelector) (tx *transaction, err error) {
+func (s *server) readTx(ctx context.Context, session string, tsel *spannerpb.TransactionSelector) (tx *transaction, cleanup func(), err error) {
 	s.mu.Lock()
 	sess, ok := s.sessions[session]
 	s.mu.Unlock()
 	if !ok {
 		// TODO: what error does the real Spanner return?
-		return nil, status.Errorf(codes.NotFound, "unknown session %q", session)
+		return nil, nil, status.Errorf(codes.NotFound, "unknown session %q", session)
 	}
 
 	sess.mu.Lock()
 	sess.lastUse = time.Now()
 	sess.mu.Unlock()
 
-	singleUse := func() (*transaction, error) {
-		tx := s.db.startTransaction()
-		return tx, nil
-	}
-	singleUseReadOnly := func() (*transaction, error) {
-		// TODO: figure out a way to make this read-only.
-		return singleUse()
+	// Only give a read-only transaction regardless of whether the selector
+	// is requesting a read-write or read-only one, since this is in readTx
+	// and so shouldn't be mutating anyway.
+	singleUse := func() (*transaction, func(), error) {
+		tx := s.db.NewReadOnlyTransaction()
+		return tx, tx.Rollback, nil
 	}
 
 	if tsel.GetSelector() == nil {
-		return singleUseReadOnly()
+		return singleUse()
 	}
 
 	switch sel := tsel.Selector.(type) {
 	default:
-		return nil, fmt.Errorf("TransactionSelector type %T not supported", sel)
+		return nil, nil, fmt.Errorf("TransactionSelector type %T not supported", sel)
 	case *spannerpb.TransactionSelector_SingleUse:
 		// Ignore options (e.g. timestamps).
 		switch mode := sel.SingleUse.Mode.(type) {
 		case *spannerpb.TransactionOptions_ReadOnly_:
-			return singleUseReadOnly()
+			return singleUse()
 		case *spannerpb.TransactionOptions_ReadWrite_:
 			return singleUse()
 		default:
-			return nil, fmt.Errorf("single use transaction in mode %T not supported", mode)
+			return nil, nil, fmt.Errorf("single use transaction in mode %T not supported", mode)
 		}
 	case *spannerpb.TransactionSelector_Id:
-		id := sel.Id // []byte
-		_ = id       // TODO: lookup an existing transaction by ID.
-		tx := s.db.startTransaction()
-		return tx, nil
+		sess.mu.Lock()
+		tx, ok := sess.transactions[string(sel.Id)]
+		sess.mu.Unlock()
+		if !ok {
+			return nil, nil, fmt.Errorf("no transaction with id %q", sel.Id)
+		}
+		return tx, func() {}, nil
 	}
 }
 
@@ -470,11 +472,11 @@ func (s *server) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlReques
 }
 
 func (s *server) ExecuteStreamingSql(req *spannerpb.ExecuteSqlRequest, stream spannerpb.Spanner_ExecuteStreamingSqlServer) error {
-	tx, err := s.readTx(stream.Context(), req.Session, req.Transaction)
+	tx, cleanup, err := s.readTx(stream.Context(), req.Session, req.Transaction)
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback()
+	defer cleanup()
 
 	q, err := spansql.ParseQuery(req.Sql)
 	if err != nil {
@@ -502,11 +504,11 @@ func (s *server) ExecuteStreamingSql(req *spannerpb.ExecuteSqlRequest, stream sp
 // TODO: Read
 
 func (s *server) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Spanner_StreamingReadServer) error {
-	tx, err := s.readTx(stream.Context(), req.Session, req.Transaction)
+	tx, cleanup, err := s.readTx(stream.Context(), req.Session, req.Transaction)
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback()
+	defer cleanup()
 
 	// Bail out if various advanced features are being used.
 	if req.Index != "" {
@@ -598,7 +600,7 @@ func (s *server) BeginTransaction(ctx context.Context, req *spannerpb.BeginTrans
 	}
 
 	id := genRandomTransaction()
-	tx := s.db.startTransaction()
+	tx := s.db.NewTransaction()
 
 	sess.mu.Lock()
 	sess.lastUse = time.Now()
@@ -626,6 +628,7 @@ func (s *server) Commit(ctx context.Context, req *spannerpb.CommitRequest) (resp
 			tx.Rollback()
 		}
 	}()
+	tx.Start()
 
 	for _, m := range req.Mutations {
 		switch op := m.Operation.(type) {

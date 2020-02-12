@@ -22,7 +22,6 @@ by ascending esotericism:
 - INSERT/UPDATE DML statements
 - case insensitivity
 - alternate literal types (esp. strings)
-- allow_commit_timestamp
 - STRUCT types
 - expression functions
 - expression type casting, coercion
