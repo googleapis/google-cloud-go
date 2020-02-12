@@ -57,6 +57,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "alpha",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/billing/v1",
+		pkg:                   "billing",
+		importPath:            "cloud.google.com/go/billing/apiv1",
+		gRPCServiceConfigPath: "google/cloud/billing/v1/cloud_billing_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/billing/v1/cloudbilling.yaml",
+		releaseLevel:          "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/language/v1",
 		pkg:                   "language",
 		importPath:            "cloud.google.com/go/language/apiv1",
