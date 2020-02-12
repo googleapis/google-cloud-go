@@ -12,7 +12,7 @@ require (
 	github.com/golang/protobuf v1.3.3
 	github.com/google/go-cmp v0.4.0
 	github.com/google/martian v2.1.0+incompatible
-	github.com/google/pprof v0.0.0-20200210173600-2827a3cc57bf
+	github.com/google/pprof v0.0.0-20200212024743-f11f1df84d12
 	github.com/googleapis/gax-go/v2 v2.0.5
 	github.com/jstemmer/go-junit-report v0.9.1
 	go.opencensus.io v0.22.3
@@ -21,11 +21,11 @@ require (
 	golang.org/x/mod v0.2.0 // indirect
 	golang.org/x/net v0.0.0-20200202094626-16171245cfb2
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sys v0.0.0-20200202164722-d101bd2416d5 // indirect
+	golang.org/x/sys v0.0.0-20200212091648-12a6c2dcc1e4 // indirect
 	golang.org/x/text v0.3.2
-	golang.org/x/tools v0.0.0-20200211045251-2de505fc5306
+	golang.org/x/tools v0.0.0-20200211205636-11eff242d136
 	google.golang.org/api v0.17.0
-	google.golang.org/genproto v0.0.0-20200211111953-2dc5924e3898
+	google.golang.org/genproto v0.0.0-20200212121238-0849286c0f0e
 	google.golang.org/grpc v1.27.1
 	honnef.co/go/tools v0.0.1-2019.2.3
 )

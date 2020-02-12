@@ -15,10 +15,10 @@ require (
 	golang.org/x/net v0.0.0-20200202094626-16171245cfb2 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/sys v0.0.0-20200202164722-d101bd2416d5 // indirect
+	golang.org/x/sys v0.0.0-20200212091648-12a6c2dcc1e4 // indirect
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0
-	golang.org/x/tools v0.0.0-20200211045251-2de505fc5306 // indirect
+	golang.org/x/tools v0.0.0-20200211205636-11eff242d136 // indirect
 	google.golang.org/api v0.17.0
-	google.golang.org/genproto v0.0.0-20200211111953-2dc5924e3898
+	google.golang.org/genproto v0.0.0-20200212121238-0849286c0f0e
 	google.golang.org/grpc v1.27.1
 )
