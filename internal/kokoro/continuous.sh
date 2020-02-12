@@ -41,7 +41,7 @@ export GOPATH="$HOME/go"
 export GOCLOUD_HOME=$GOPATH/src/cloud.google.com/go/
 export PATH="$GOPATH/bin:$PATH"
 export GO111MODULE=on
-
+export GOPROXY=https://proxy.golang.org
 
 # Move code into $GOPATH and get dependencies
 mkdir -p $GOCLOUD_HOME
