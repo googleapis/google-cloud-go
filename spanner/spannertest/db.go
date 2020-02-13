@@ -446,8 +446,15 @@ func (d *database) readTable(table string, cols []string, f func(*table, *result
 	return ri, f(t, ri, colIndexes)
 }
 
-func (d *database) Read(tbl string, cols []string, keys []*structpb.ListValue, limit int64) (*resultIter, error) {
+func (d *database) Read(tbl string, cols []string, keys []*structpb.ListValue, keyRanges keyRangeList, limit int64) (*resultIter, error) {
 	return d.readTable(tbl, cols, func(t *table, ri *resultIter, colIndexes []int) error {
+		// "If the same key is specified multiple times in the set (for
+		// example if two ranges, two keys, or a key and a range
+		// overlap), Cloud Spanner behaves as if the key were only
+		// specified once."
+		done := make(map[int]bool) // row numbers we've included in ri.
+
+		// Specific keys.
 		for _, key := range keys {
 			pk, err := t.primaryKey(key.Values)
 			if err != nil {
@@ -458,11 +465,40 @@ func (d *database) Read(tbl string, cols []string, keys []*structpb.ListValue, l
 			if !found {
 				continue
 			}
+			if done[rowNum] {
+				continue
+			}
+			done[rowNum] = true
 			ri.add(t.rows[rowNum], colIndexes)
 			if limit > 0 && len(ri.rows) >= int(limit) {
-				break
+				return nil
 			}
 		}
+
+		// Key ranges.
+		for _, r := range keyRanges {
+			var err error
+			r.startKey, err = t.primaryKeyPrefix(r.start.Values)
+			if err != nil {
+				return err
+			}
+			r.endKey, err = t.primaryKeyPrefix(r.end.Values)
+			if err != nil {
+				return err
+			}
+			startRow, endRow := t.findRange(r)
+			for rowNum := startRow; rowNum < endRow; rowNum++ {
+				if done[rowNum] {
+					continue
+				}
+				done[rowNum] = true
+				ri.add(t.rows[rowNum], colIndexes)
+				if limit > 0 && len(ri.rows) >= int(limit) {
+					return nil
+				}
+			}
+		}
+
 		return nil
 	})
 }

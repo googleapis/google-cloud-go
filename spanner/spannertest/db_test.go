@@ -122,9 +122,10 @@ func TestTableData(t *testing.T) {
 	// Read some specific keys.
 	ri, err := db.Read("Staff", []string{"Name", "Tenure"}, []*structpb.ListValue{
 		listV(stringV("George"), stringV("5")),
-		listV(stringV("Harry"), stringV("6")), // should be silently ignored.
+		listV(stringV("Harry"), stringV("6")), // Missing key should be silently ignored.
 		listV(stringV("Sam"), stringV("3")),
-	}, 0)
+		listV(stringV("George"), stringV("5")), // Duplicate key should be silently ignored.
+	}, nil, 0)
 	if err != nil {
 		t.Fatalf("Reading keys: %v", err)
 	}
@@ -134,7 +135,25 @@ func TestTableData(t *testing.T) {
 		{"Sam", int64(9)},
 	}
 	if !reflect.DeepEqual(all, wantAll) {
-		t.Errorf("Read data wrong.\n got %v\nwant %v", all, wantAll)
+		t.Errorf("Read data by keys wrong.\n got %v\nwant %v", all, wantAll)
+	}
+	// Read the same, but by key range.
+	ri, err = db.Read("Staff", []string{"Name", "Tenure"}, nil, keyRangeList{
+		{start: listV(stringV("Gabriel")), end: listV(stringV("Harpo"))}, // open/open
+		{
+			// closed/open
+			start:       listV(stringV("Sam"), stringV("3")),
+			startClosed: true,
+			end: listV(stringV("Teal'c"),
+				stringV("4")),
+		},
+	}, 0)
+	if err != nil {
+		t.Fatalf("Reading key ranges: %v", err)
+	}
+	all = slurp(ri)
+	if !reflect.DeepEqual(all, wantAll) {
+		t.Errorf("Read data by key ranges wrong.\n got %v\nwant %v", all, wantAll)
 	}
 
 	// Read a subset of all rows, with a limit.
