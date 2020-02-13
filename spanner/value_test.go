@@ -17,6 +17,8 @@ limitations under the License.
 package spanner
 
 import (
+	"encoding/json"
+	"fmt"
 	"math"
 	"reflect"
 	"testing"
@@ -2126,5 +2128,207 @@ func TestBindParamsDynamic(t *testing.T) {
 		if !proto.Equal(gotParamType, test.wantType) {
 			t.Errorf("%#v: got %v, want %v\n", test.val, gotParamType, test.wantField)
 		}
+	}
+}
+
+// Test converting nullable types to json strings.
+func TestJSONMarshal_NullTypes(t *testing.T) {
+	type testcase struct {
+		input  interface{}
+		expect string
+	}
+
+	for _, test := range []struct {
+		name  string
+		cases []testcase
+	}{
+		{
+			"NullString",
+			[]testcase{
+				{input: NullString{"this is a test string", true}, expect: `"this is a test string"`},
+				{input: &NullString{"this is a test string", true}, expect: `"this is a test string"`},
+				{input: &NullString{"this is a test string", false}, expect: "null"},
+				{input: NullString{}, expect: "null"},
+			},
+		},
+		{
+			"NullInt64",
+			[]testcase{
+				{input: NullInt64{int64(123), true}, expect: "123"},
+				{input: &NullInt64{int64(123), true}, expect: "123"},
+				{input: &NullInt64{int64(123), false}, expect: "null"},
+				{input: NullInt64{}, expect: "null"},
+			},
+		},
+		{
+			"NullFloat64",
+			[]testcase{
+				{input: NullFloat64{float64(123.123), true}, expect: "123.123"},
+				{input: &NullFloat64{float64(123.123), true}, expect: "123.123"},
+				{input: &NullFloat64{float64(123.123), false}, expect: "null"},
+				{input: NullFloat64{}, expect: "null"},
+			},
+		},
+		{
+			"NullBool",
+			[]testcase{
+				{input: NullBool{true, true}, expect: "true"},
+				{input: &NullBool{true, true}, expect: "true"},
+				{input: &NullBool{true, false}, expect: "null"},
+				{input: NullBool{}, expect: "null"},
+			},
+		},
+		{
+			"NullTime",
+			[]testcase{
+				{input: NullTime{time.Date(2009, 11, 17, 20, 34, 58, 651387237, time.UTC), true}, expect: `"2009-11-17T20:34:58.651387237Z"`},
+				{input: &NullTime{time.Date(2009, 11, 17, 20, 34, 58, 651387237, time.UTC), true}, expect: `"2009-11-17T20:34:58.651387237Z"`},
+				{input: &NullTime{time.Date(2009, 11, 17, 20, 34, 58, 651387237, time.UTC), false}, expect: "null"},
+				{input: NullTime{}, expect: "null"},
+			},
+		},
+		{
+			"NullDate",
+			[]testcase{
+				{input: NullDate{civil.Date{Year: 2009, Month: time.November, Day: 17}, true}, expect: `"2009-11-17"`},
+				{input: &NullDate{civil.Date{Year: 2009, Month: time.November, Day: 17}, true}, expect: `"2009-11-17"`},
+				{input: &NullDate{civil.Date{Year: 2009, Month: time.November, Day: 17}, false}, expect: "null"},
+				{input: NullDate{}, expect: "null"},
+			},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			for _, tc := range test.cases {
+				bytes, _ := json.Marshal(tc.input)
+				got := string(bytes)
+				if got != tc.expect {
+					t.Fatalf("Incorrect marshalling to json strings: got %v, want %v", got, tc.expect)
+				}
+			}
+		})
+	}
+}
+
+// Test converting json strings to nullable types.
+func TestJSONUnmarshal_NullTypes(t *testing.T) {
+	type testcase struct {
+		input       []byte
+		got         interface{}
+		isNull      bool
+		expect      string
+		expectError bool
+	}
+
+	for _, test := range []struct {
+		name  string
+		cases []testcase
+	}{
+		{
+			"NullString",
+			[]testcase{
+				{input: []byte(`"this is a test string"`), got: NullString{}, isNull: false, expect: "this is a test string", expectError: false},
+				{input: []byte(`""`), got: NullString{}, isNull: false, expect: "", expectError: false},
+				{input: []byte("null"), got: NullString{}, isNull: true, expect: nullString, expectError: false},
+				{input: nil, got: NullString{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(""), got: NullString{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(`"hello`), got: NullString{}, isNull: true, expect: nullString, expectError: true},
+			},
+		},
+		{
+			"NullInt64",
+			[]testcase{
+				{input: []byte("123"), got: NullInt64{}, isNull: false, expect: "123", expectError: false},
+				{input: []byte("null"), got: NullInt64{}, isNull: true, expect: nullString, expectError: false},
+				{input: nil, got: NullInt64{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(""), got: NullInt64{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(`"hello`), got: NullInt64{}, isNull: true, expect: nullString, expectError: true},
+			},
+		},
+		{
+			"NullFloat64",
+			[]testcase{
+				{input: []byte("123.123"), got: NullFloat64{}, isNull: false, expect: "123.123", expectError: false},
+				{input: []byte("null"), got: NullFloat64{}, isNull: true, expect: nullString, expectError: false},
+				{input: nil, got: NullFloat64{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(""), got: NullFloat64{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(`"hello`), got: NullFloat64{}, isNull: true, expect: nullString, expectError: true},
+			},
+		},
+		{
+			"NullBool",
+			[]testcase{
+				{input: []byte("true"), got: NullBool{}, isNull: false, expect: "true", expectError: false},
+				{input: []byte("null"), got: NullBool{}, isNull: true, expect: nullString, expectError: false},
+				{input: nil, got: NullBool{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(""), got: NullBool{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(`"hello`), got: NullBool{}, isNull: true, expect: nullString, expectError: true},
+			},
+		},
+		{
+			"NullTime",
+			[]testcase{
+				{input: []byte(`"2009-11-17T20:34:58.651387237Z"`), got: NullTime{}, isNull: false, expect: "2009-11-17T20:34:58.651387237Z", expectError: false},
+				{input: []byte("null"), got: NullTime{}, isNull: true, expect: nullString, expectError: false},
+				{input: nil, got: NullTime{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(""), got: NullTime{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(`"hello`), got: NullTime{}, isNull: true, expect: nullString, expectError: true},
+			},
+		},
+		{
+			"NullDate",
+			[]testcase{
+				{input: []byte(`"2009-11-17"`), got: NullDate{}, isNull: false, expect: "2009-11-17", expectError: false},
+				{input: []byte("null"), got: NullDate{}, isNull: true, expect: nullString, expectError: false},
+				{input: nil, got: NullDate{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(""), got: NullDate{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(`"hello`), got: NullDate{}, isNull: true, expect: nullString, expectError: true},
+			},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			for _, tc := range test.cases {
+				switch v := tc.got.(type) {
+				case NullString:
+					err := json.Unmarshal(tc.input, &v)
+					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
+				case NullInt64:
+					err := json.Unmarshal(tc.input, &v)
+					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
+				case NullFloat64:
+					err := json.Unmarshal(tc.input, &v)
+					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
+				case NullBool:
+					err := json.Unmarshal(tc.input, &v)
+					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
+				case NullTime:
+					err := json.Unmarshal(tc.input, &v)
+					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
+				case NullDate:
+					err := json.Unmarshal(tc.input, &v)
+					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
+				default:
+					t.Fatalf("Unknown type: %T", v)
+				}
+			}
+		})
+	}
+}
+
+func expectUnmarshalNullableTypes(t *testing.T, err error, v interface{}, isNull bool, expect string, expectError bool) {
+	if expectError {
+		if err == nil {
+			t.Fatalf("Expect to get an error, but got a nil")
+		}
+		return
+	}
+
+	if err != nil {
+		t.Fatalf("Got an error when unmarshalling a valid json string: %q", err)
+	}
+	if s, ok := v.(NullableValue); !ok || s.IsNull() != isNull {
+		t.Fatalf("Incorrect unmarshalling a json string to nullable types: got %q, want %q", v, expect)
+	}
+	if s, ok := v.(fmt.Stringer); !ok || s.String() != expect {
+		t.Fatalf("Incorrect unmarshalling a json string to nullable types: got %q, want %q", v, expect)
 	}
 }
