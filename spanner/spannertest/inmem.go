@@ -520,18 +520,13 @@ func (s *server) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Span
 		return fmt.Errorf("partition restrictions not supported")
 	}
 
-	// TODO: other KeySet types.
-	if len(req.KeySet.Ranges) > 0 {
-		return fmt.Errorf("reading with ranges not supported")
-	}
-
 	var ri *resultIter
 	if req.KeySet.All {
 		s.logf("Reading all from %s (cols: %v)", req.Table, req.Columns)
 		ri, err = s.db.ReadAll(req.Table, req.Columns, req.Limit)
 	} else {
-		s.logf("Reading %d rows from from %s (cols: %v)", len(req.KeySet.Keys), req.Table, req.Columns)
-		ri, err = s.db.Read(req.Table, req.Columns, req.KeySet.Keys, req.Limit)
+		s.logf("Reading rows from %d keys and %d ranges from %s (cols: %v)", len(req.KeySet.Keys), len(req.KeySet.Ranges), req.Table, req.Columns)
+		ri, err = s.db.Read(req.Table, req.Columns, req.KeySet.Keys, makeKeyRangeList(req.KeySet.Ranges), req.Limit)
 	}
 	if err != nil {
 		return err
