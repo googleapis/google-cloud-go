@@ -1105,6 +1105,80 @@ func TestClient_ApplyAtLeastOnce(t *testing.T) {
 	}
 }
 
+func TestClient_ApplyAtLeastOnceReuseSession(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:           0,
+			WriteSessions:       0.0,
+			TrackSessionHandles: true,
+		},
+	})
+	defer teardown()
+	ms := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+	for i := 0; i < 10; i++ {
+		_, err := client.Apply(context.Background(), ms, ApplyAtLeastOnce())
+		if err != nil {
+			t.Fatal(err)
+		}
+		if g, w := client.idleSessions.idleList.Len(), 1; g != w {
+			t.Fatalf("idle session count mismatch:\nGot: %v\nWant: %v", g, w)
+		}
+		if g, w := len(server.TestSpanner.DumpSessions()), 1; g != w {
+			t.Fatalf("server session count mismatch:\nGot: %v\nWant: %v", g, w)
+		}
+	}
+	// There should be no sessions marked as checked out.
+	client.idleSessions.mu.Lock()
+	g, w := client.idleSessions.trackedSessionHandles.Len(), 0
+	client.idleSessions.mu.Unlock()
+	if g != w {
+		t.Fatalf("checked out sessions count mismatch:\nGot: %v\nWant: %v", g, w)
+	}
+}
+
+func TestClient_ApplyAtLeastOnceInvalidArgument(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:           0,
+			WriteSessions:       0.0,
+			TrackSessionHandles: true,
+		},
+	})
+	defer teardown()
+	ms := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+	for i := 0; i < 10; i++ {
+		server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+			SimulatedExecutionTime{
+				Errors: []error{status.Error(codes.InvalidArgument, "Invalid data")},
+			})
+		_, err := client.Apply(context.Background(), ms, ApplyAtLeastOnce())
+		if status.Code(err) != codes.InvalidArgument {
+			t.Fatal(err)
+		}
+		if g, w := client.idleSessions.idleList.Len(), 1; g != w {
+			t.Fatalf("idle session count mismatch:\nGot: %v\nWant: %v", g, w)
+		}
+		if g, w := len(server.TestSpanner.DumpSessions()), 1; g != w {
+			t.Fatalf("server session count mismatch:\nGot: %v\nWant: %v", g, w)
+		}
+	}
+	// There should be no sessions marked as checked out.
+	client.idleSessions.mu.Lock()
+	g, w := client.idleSessions.trackedSessionHandles.Len(), 0
+	client.idleSessions.mu.Unlock()
+	if g != w {
+		t.Fatalf("checked out sessions count mismatch:\nGot: %v\nWant: %v", g, w)
+	}
+}
+
 func TestReadWriteTransaction_ErrUnexpectedEOF(t *testing.T) {
 	t.Parallel()
 	_, client, teardown := setupMockedTestServer(t)
