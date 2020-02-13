@@ -17,6 +17,7 @@ limitations under the License.
 package spanner
 
 import (
+	"bytes"
 	"encoding/base64"
 	"fmt"
 	"math"
@@ -45,6 +46,8 @@ var (
 	// stored in this variable has no meaning.
 	CommitTimestamp = commitTimestamp
 	commitTimestamp = time.Unix(0, 0).In(time.FixedZone("CommitTimestamp placeholder", 0xDB))
+
+	jsonNullBytes = []byte("null")
 )
 
 // NullableValue is the interface implemented by all null value wrapper types.
@@ -72,6 +75,33 @@ func (n NullInt64) String() string {
 	return fmt.Sprintf("%v", n.Int64)
 }
 
+// MarshalJSON implements json.Marshaler.MarshalJSON for NullInt64.
+func (n NullInt64) MarshalJSON() ([]byte, error) {
+	if n.Valid {
+		return []byte(fmt.Sprintf("%v", n.Int64)), nil
+	}
+	return jsonNullBytes, nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullInt64.
+func (n *NullInt64) UnmarshalJSON(payload []byte) error {
+	if payload == nil {
+		return fmt.Errorf("payload should not be nil")
+	}
+	if bytes.Equal(payload, jsonNullBytes) {
+		n.Int64 = int64(0)
+		n.Valid = false
+		return nil
+	}
+	num, err := strconv.ParseInt(string(payload), 10, 64)
+	if err != nil {
+		return fmt.Errorf("payload cannot be converted to int64: got %v", string(payload))
+	}
+	n.Int64 = num
+	n.Valid = true
+	return nil
+}
+
 // NullString represents a Cloud Spanner STRING that may be NULL.
 type NullString struct {
 	StringVal string
@@ -89,6 +119,33 @@ func (n NullString) String() string {
 		return nullString
 	}
 	return n.StringVal
+}
+
+// MarshalJSON implements json.Marshaler.MarshalJSON for NullString.
+func (n NullString) MarshalJSON() ([]byte, error) {
+	if n.Valid {
+		return []byte(fmt.Sprintf("%q", n.StringVal)), nil
+	}
+	return jsonNullBytes, nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullString.
+func (n *NullString) UnmarshalJSON(payload []byte) error {
+	if payload == nil {
+		return fmt.Errorf("payload should not be nil")
+	}
+	if bytes.Equal(payload, jsonNullBytes) {
+		n.StringVal = ""
+		n.Valid = false
+		return nil
+	}
+	payload, err := trimDoubleQuotes(payload)
+	if err != nil {
+		return err
+	}
+	n.StringVal = string(payload)
+	n.Valid = true
+	return nil
 }
 
 // NullFloat64 represents a Cloud Spanner FLOAT64 that may be NULL.
@@ -110,6 +167,33 @@ func (n NullFloat64) String() string {
 	return fmt.Sprintf("%v", n.Float64)
 }
 
+// MarshalJSON implements json.Marshaler.MarshalJSON for NullFloat64.
+func (n NullFloat64) MarshalJSON() ([]byte, error) {
+	if n.Valid {
+		return []byte(fmt.Sprintf("%v", n.Float64)), nil
+	}
+	return jsonNullBytes, nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullFloat64.
+func (n *NullFloat64) UnmarshalJSON(payload []byte) error {
+	if payload == nil {
+		return fmt.Errorf("payload should not be nil")
+	}
+	if bytes.Equal(payload, jsonNullBytes) {
+		n.Float64 = float64(0)
+		n.Valid = false
+		return nil
+	}
+	num, err := strconv.ParseFloat(string(payload), 64)
+	if err != nil {
+		return fmt.Errorf("payload cannot be converted to float64: got %v", string(payload))
+	}
+	n.Float64 = num
+	n.Valid = true
+	return nil
+}
+
 // NullBool represents a Cloud Spanner BOOL that may be NULL.
 type NullBool struct {
 	Bool  bool
@@ -127,6 +211,33 @@ func (n NullBool) String() string {
 		return nullString
 	}
 	return fmt.Sprintf("%v", n.Bool)
+}
+
+// MarshalJSON implements json.Marshaler.MarshalJSON for NullBool.
+func (n NullBool) MarshalJSON() ([]byte, error) {
+	if n.Valid {
+		return []byte(fmt.Sprintf("%v", n.Bool)), nil
+	}
+	return jsonNullBytes, nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullBool.
+func (n *NullBool) UnmarshalJSON(payload []byte) error {
+	if payload == nil {
+		return fmt.Errorf("payload should not be nil")
+	}
+	if bytes.Equal(payload, jsonNullBytes) {
+		n.Bool = false
+		n.Valid = false
+		return nil
+	}
+	b, err := strconv.ParseBool(string(payload))
+	if err != nil {
+		return fmt.Errorf("payload cannot be converted to bool: got %v", string(payload))
+	}
+	n.Bool = b
+	n.Valid = true
+	return nil
 }
 
 // NullTime represents a Cloud Spanner TIMESTAMP that may be null.
@@ -148,6 +259,38 @@ func (n NullTime) String() string {
 	return n.Time.Format(time.RFC3339Nano)
 }
 
+// MarshalJSON implements json.Marshaler.MarshalJSON for NullTime.
+func (n NullTime) MarshalJSON() ([]byte, error) {
+	if n.Valid {
+		return []byte(fmt.Sprintf("%q", n.String())), nil
+	}
+	return jsonNullBytes, nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullTime.
+func (n *NullTime) UnmarshalJSON(payload []byte) error {
+	if payload == nil {
+		return fmt.Errorf("payload should not be nil")
+	}
+	if bytes.Equal(payload, jsonNullBytes) {
+		n.Time = time.Time{}
+		n.Valid = false
+		return nil
+	}
+	payload, err := trimDoubleQuotes(payload)
+	if err != nil {
+		return err
+	}
+	s := string(payload)
+	t, err := time.Parse(time.RFC3339Nano, s)
+	if err != nil {
+		return fmt.Errorf("payload cannot be converted to time.Time: got %v", string(payload))
+	}
+	n.Time = t
+	n.Valid = true
+	return nil
+}
+
 // NullDate represents a Cloud Spanner DATE that may be null.
 type NullDate struct {
 	Date  civil.Date
@@ -165,6 +308,38 @@ func (n NullDate) String() string {
 		return nullString
 	}
 	return n.Date.String()
+}
+
+// MarshalJSON implements json.Marshaler.MarshalJSON for NullDate.
+func (n NullDate) MarshalJSON() ([]byte, error) {
+	if n.Valid {
+		return []byte(fmt.Sprintf("%q", n.String())), nil
+	}
+	return jsonNullBytes, nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullDate.
+func (n *NullDate) UnmarshalJSON(payload []byte) error {
+	if payload == nil {
+		return fmt.Errorf("payload should not be nil")
+	}
+	if bytes.Equal(payload, jsonNullBytes) {
+		n.Date = civil.Date{}
+		n.Valid = false
+		return nil
+	}
+	payload, err := trimDoubleQuotes(payload)
+	if err != nil {
+		return err
+	}
+	s := string(payload)
+	t, err := civil.ParseDate(s)
+	if err != nil {
+		return fmt.Errorf("payload cannot be converted to civil.Date: got %v", string(payload))
+	}
+	n.Date = t
+	n.Valid = true
+	return nil
 }
 
 // NullRow represents a Cloud Spanner STRUCT that may be NULL.
@@ -2523,3 +2698,11 @@ func spannerTagParser(t reflect.StructTag) (name string, keep bool, other interf
 }
 
 var fieldCache = fields.NewCache(spannerTagParser, nil, nil)
+
+func trimDoubleQuotes(payload []byte) ([]byte, error) {
+	if len(payload) <= 1 || payload[0] != '"' || payload[len(payload)-1] != '"' {
+		return nil, fmt.Errorf("payload is too short or not wrapped with double quotes: got %q", string(payload))
+	}
+	// Remove the double quotes at the beginning and the end.
+	return payload[1 : len(payload)-1], nil
+}
