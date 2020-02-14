@@ -53,6 +53,7 @@ func TestSQL(t *testing.T) {
 		return e, nil
 	}
 
+	line := func(n int) Position { return Position{Line: n} }
 	tests := []struct {
 		data    interface{ SQL() string }
 		sql     string
@@ -62,24 +63,24 @@ func TestSQL(t *testing.T) {
 			&CreateTable{
 				Name: "Ta",
 				Columns: []ColumnDef{
-					{Name: "Ca", Type: Type{Base: Bool}, NotNull: true},
-					{Name: "Cb", Type: Type{Base: Int64}},
-					{Name: "Cc", Type: Type{Base: Float64}},
-					{Name: "Cd", Type: Type{Base: String, Len: 17}},
-					{Name: "Ce", Type: Type{Base: String, Len: MaxLen}},
-					{Name: "Cf", Type: Type{Base: Bytes, Len: 4711}},
-					{Name: "Cg", Type: Type{Base: Bytes, Len: MaxLen}},
-					{Name: "Ch", Type: Type{Base: Date}},
-					{Name: "Ci", Type: Type{Base: Timestamp}, AllowCommitTimestamp: boolAddr(true)},
-					{Name: "Cj", Type: Type{Array: true, Base: Int64}},
-					{Name: "Ck", Type: Type{Array: true, Base: String, Len: MaxLen}},
-					{Name: "Cl", Type: Type{Base: Timestamp}, AllowCommitTimestamp: boolAddr(false)},
+					{Name: "Ca", Type: Type{Base: Bool}, NotNull: true, Position: line(2)},
+					{Name: "Cb", Type: Type{Base: Int64}, Position: line(3)},
+					{Name: "Cc", Type: Type{Base: Float64}, Position: line(4)},
+					{Name: "Cd", Type: Type{Base: String, Len: 17}, Position: line(5)},
+					{Name: "Ce", Type: Type{Base: String, Len: MaxLen}, Position: line(6)},
+					{Name: "Cf", Type: Type{Base: Bytes, Len: 4711}, Position: line(7)},
+					{Name: "Cg", Type: Type{Base: Bytes, Len: MaxLen}, Position: line(8)},
+					{Name: "Ch", Type: Type{Base: Date}, Position: line(9)},
+					{Name: "Ci", Type: Type{Base: Timestamp}, AllowCommitTimestamp: boolAddr(true), Position: line(10)},
+					{Name: "Cj", Type: Type{Array: true, Base: Int64}, Position: line(11)},
+					{Name: "Ck", Type: Type{Array: true, Base: String, Len: MaxLen}, Position: line(12)},
+					{Name: "Cl", Type: Type{Base: Timestamp}, AllowCommitTimestamp: boolAddr(false), Position: line(13)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "Ca"},
 					{Column: "Cb", Desc: true},
 				},
-				Position: Position{Line: 1},
+				Position: line(1),
 			},
 			`CREATE TABLE Ta (
   Ca BOOL NOT NULL,
@@ -101,8 +102,8 @@ func TestSQL(t *testing.T) {
 			&CreateTable{
 				Name: "Tsub",
 				Columns: []ColumnDef{
-					{Name: "SomeId", Type: Type{Base: Int64}, NotNull: true},
-					{Name: "OtherId", Type: Type{Base: Int64}, NotNull: true},
+					{Name: "SomeId", Type: Type{Base: Int64}, NotNull: true, Position: line(2)},
+					{Name: "OtherId", Type: Type{Base: Int64}, NotNull: true, Position: line(3)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "SomeId"},
@@ -112,7 +113,7 @@ func TestSQL(t *testing.T) {
 					Parent:   "Ta",
 					OnDelete: CascadeOnDelete,
 				},
-				Position: Position{Line: 1},
+				Position: line(1),
 			},
 			`CREATE TABLE Tsub (
   SomeId INT64 NOT NULL,
@@ -124,7 +125,7 @@ func TestSQL(t *testing.T) {
 		{
 			&DropTable{
 				Name:     "Ta",
-				Position: Position{Line: 1},
+				Position: line(1),
 			},
 			"DROP TABLE Ta",
 			reparseDDL,
@@ -137,7 +138,7 @@ func TestSQL(t *testing.T) {
 					{Column: "Ca"},
 					{Column: "Cb", Desc: true},
 				},
-				Position: Position{Line: 1},
+				Position: line(1),
 			},
 			"CREATE INDEX Ia ON Ta(Ca, Cb DESC)",
 			reparseDDL,
@@ -145,7 +146,7 @@ func TestSQL(t *testing.T) {
 		{
 			&DropIndex{
 				Name:     "Ia",
-				Position: Position{Line: 1},
+				Position: line(1),
 			},
 			"DROP INDEX Ia",
 			reparseDDL,
@@ -153,8 +154,8 @@ func TestSQL(t *testing.T) {
 		{
 			&AlterTable{
 				Name:       "Ta",
-				Alteration: AddColumn{Def: ColumnDef{Name: "Ca", Type: Type{Base: Bool}}},
-				Position:   Position{Line: 1},
+				Alteration: AddColumn{Def: ColumnDef{Name: "Ca", Type: Type{Base: Bool}, Position: line(1)}},
+				Position:   line(1),
 			},
 			"ALTER TABLE Ta ADD COLUMN Ca BOOL",
 			reparseDDL,
@@ -163,7 +164,7 @@ func TestSQL(t *testing.T) {
 			&AlterTable{
 				Name:       "Ta",
 				Alteration: DropColumn{Name: "Ca"},
-				Position:   Position{Line: 1},
+				Position:   line(1),
 			},
 			"ALTER TABLE Ta DROP COLUMN Ca",
 			reparseDDL,
@@ -172,7 +173,7 @@ func TestSQL(t *testing.T) {
 			&AlterTable{
 				Name:       "Ta",
 				Alteration: SetOnDelete{Action: NoActionOnDelete},
-				Position:   Position{Line: 1},
+				Position:   line(1),
 			},
 			"ALTER TABLE Ta SET ON DELETE NO ACTION",
 			reparseDDL,
@@ -181,7 +182,7 @@ func TestSQL(t *testing.T) {
 			&AlterTable{
 				Name:       "Ta",
 				Alteration: SetOnDelete{Action: CascadeOnDelete},
-				Position:   Position{Line: 1},
+				Position:   line(1),
 			},
 			"ALTER TABLE Ta SET ON DELETE CASCADE",
 			reparseDDL,
