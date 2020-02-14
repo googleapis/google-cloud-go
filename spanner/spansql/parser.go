@@ -1203,7 +1203,7 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 		return ColumnDef{}, err
 	}
 
-	cd := ColumnDef{Name: name}
+	cd := ColumnDef{Name: name, Position: p.Pos()}
 
 	cd.Type, err = p.parseType()
 	if err != nil {

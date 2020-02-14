@@ -211,6 +211,7 @@ func TestParseExpr(t *testing.T) {
 }
 
 func TestParseDDL(t *testing.T) {
+	line := func(n int) Position { return Position{Line: n} }
 	tests := []struct {
 		in   string
 		want *DDL
@@ -250,16 +251,16 @@ func TestParseDDL(t *testing.T) {
 			&CreateTable{
 				Name: "FooBar",
 				Columns: []ColumnDef{
-					{Name: "System", Type: Type{Base: String, Len: MaxLen}, NotNull: true},
-					{Name: "RepoPath", Type: Type{Base: String, Len: MaxLen}, NotNull: true},
-					{Name: "Count", Type: Type{Base: Int64}},
-					{Name: "UpdatedAt", Type: Type{Base: Timestamp}, AllowCommitTimestamp: boolAddr(true)},
+					{Name: "System", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(2)},
+					{Name: "RepoPath", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(3)},
+					{Name: "Count", Type: Type{Base: Int64}, Position: line(4)},
+					{Name: "UpdatedAt", Type: Type{Base: Timestamp}, AllowCommitTimestamp: boolAddr(true), Position: line(6)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "System"},
 					{Column: "RepoPath"},
 				},
-				Position: Position{Line: 1},
+				Position: line(1),
 			},
 			&CreateIndex{
 				Name:       "MyFirstIndex",
@@ -268,14 +269,14 @@ func TestParseDDL(t *testing.T) {
 				Unique:     true,
 				Storing:    []string{"Count"},
 				Interleave: "SomeTable",
-				Position:   Position{Line: 8},
+				Position:   line(8),
 			},
 			&CreateTable{
 				Name: "FooBarAux",
 				Columns: []ColumnDef{
-					{Name: "System", Type: Type{Base: String, Len: MaxLen}, NotNull: true},
-					{Name: "RepoPath", Type: Type{Base: String, Len: MaxLen}, NotNull: true},
-					{Name: "Author", Type: Type{Base: String, Len: MaxLen}, NotNull: true},
+					{Name: "System", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(12)},
+					{Name: "RepoPath", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(13)},
+					{Name: "Author", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(14)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "System"},
@@ -286,51 +287,51 @@ func TestParseDDL(t *testing.T) {
 					Parent:   "FooBar",
 					OnDelete: CascadeOnDelete,
 				},
-				Position: Position{Line: 11},
+				Position: line(11),
 			},
 			&AlterTable{
 				Name:       "FooBar",
-				Alteration: AddColumn{Def: ColumnDef{Name: "TZ", Type: Type{Base: Bytes, Len: 20}}},
-				Position:   Position{Line: 18},
+				Alteration: AddColumn{Def: ColumnDef{Name: "TZ", Type: Type{Base: Bytes, Len: 20}, Position: line(18)}},
+				Position:   line(18),
 			},
 			&AlterTable{
 				Name:       "FooBar",
 				Alteration: DropColumn{Name: "TZ"},
-				Position:   Position{Line: 19},
+				Position:   line(19),
 			},
 			&AlterTable{
 				Name:       "FooBar",
 				Alteration: SetOnDelete{Action: NoActionOnDelete},
-				Position:   Position{Line: 20},
+				Position:   line(20),
 			},
-			&DropIndex{Name: "MyFirstIndex", Position: Position{Line: 22}},
-			&DropTable{Name: "FooBar", Position: Position{Line: 23}},
+			&DropIndex{Name: "MyFirstIndex", Position: line(22)},
+			&DropTable{Name: "FooBar", Position: line(23)},
 			&CreateTable{
 				Name: "NonScalars",
 				Columns: []ColumnDef{
-					{Name: "Dummy", Type: Type{Base: Int64}, NotNull: true},
-					{Name: "Ids", Type: Type{Array: true, Base: Int64}},
-					{Name: "Names", Type: Type{Array: true, Base: String, Len: MaxLen}},
+					{Name: "Dummy", Type: Type{Base: Int64}, NotNull: true, Position: line(28)},
+					{Name: "Ids", Type: Type{Array: true, Base: Int64}, Position: line(29)},
+					{Name: "Names", Type: Type{Array: true, Base: String, Len: MaxLen}, Position: line(30)},
 				},
 				PrimaryKey: []KeyPart{{Column: "Dummy"}},
-				Position:   Position{Line: 27},
+				Position:   line(27),
 			},
 		}, Comments: []*Comment{
-			{Marker: "#", Start: Position{Line: 2}, End: Position{Line: 2},
+			{Marker: "#", Start: line(2), End: line(2),
 				Text: []string{"This is a comment."}},
-			{Marker: "--", Start: Position{Line: 3}, End: Position{Line: 3},
+			{Marker: "--", Start: line(3), End: line(3),
 				Text: []string{"This is another comment."}},
-			{Marker: "/*", Start: Position{Line: 4}, End: Position{Line: 5},
+			{Marker: "/*", Start: line(4), End: line(5),
 				Text: []string{" This is a", "\t\t\t\t\t\t  * multiline comment."}},
-			{Marker: "--", Start: Position{Line: 25}, End: Position{Line: 26},
+			{Marker: "--", Start: line(25), End: line(26),
 				Text: []string{"This table has some commentary", "that spans multiple lines."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
 			&AlterTable{
 				Name:       "T",
-				Alteration: AddColumn{Def: ColumnDef{Name: "C2", Type: Type{Base: Int64}}},
-				Position:   Position{Line: 1},
+				Alteration: AddColumn{Def: ColumnDef{Name: "C2", Type: Type{Base: Int64}, Position: line(1)}},
+				Position:   line(1),
 			},
 		}}},
 		// Table and column names using reserved keywords.
@@ -341,12 +342,12 @@ func TestParseDDL(t *testing.T) {
 			&CreateTable{
 				Name: "enum",
 				Columns: []ColumnDef{
-					{Name: "With", Type: Type{Base: String, Len: MaxLen}, NotNull: true},
+					{Name: "With", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(2)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "With"},
 				},
-				Position: Position{Line: 1},
+				Position: line(1),
 			},
 		}}},
 	}
@@ -383,7 +384,12 @@ func TestParseDDL(t *testing.T) {
 		t.Errorf("Test error: didn't find NonScalars node in DDL")
 	}
 	// Second field of FooBar (RepoPath) has an inline comment.
-	// TODO: Check this when more source positions are recorded.
+	cd := tests[0].want.List[0].(*CreateTable).Columns[1]
+	if com := ddl.InlineComment(cd); com == nil {
+		t.Errorf("No inline comment found for FooBar.RepoPath")
+	} else if com.Text[0] != "This is another comment." {
+		t.Errorf("InlineComment returned the wrong comment (%q) for FooBar.RepoPath", com.Text[0])
+	}
 }
 
 func TestParseFailures(t *testing.T) {
