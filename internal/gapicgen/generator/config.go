@@ -586,6 +586,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/talent/v4beta1/jobs_v4beta1.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:    "google/pubsub/v1",
+		pkg:                   "pubsub",
+		importPath:            "cloud.google.com/go/pubsub/apiv1",
+		gRPCServiceConfigPath: "google/pubsub/v1/pubsub_grpc_service_config.json",
+		apiServiceConfigPath:  "google/pubsub/v1/pubsub_v1.yaml",
+		releaseLevel:          "ga",
+	},
 }
 
 // Relative to gocloud dir.
@@ -604,7 +612,6 @@ var gapicsWithManual = []string{
 var artmanGapicConfigPaths = []string{
 	"google/cloud/automl/artman_automl_v1.yaml",
 	"google/cloud/automl/artman_automl_v1beta1.yaml",
-	"google/pubsub/artman_pubsub.yaml",
 }
 
 var artmanGapicManifestEntries = []manifestEntry{
