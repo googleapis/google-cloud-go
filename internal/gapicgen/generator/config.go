@@ -570,6 +570,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/logging/v2/logging.yaml",
 		releaseLevel:          "alpha",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/talent/v4beta1",
+		pkg:                   "talent",
+		importPath:            "cloud.google.com/go/talent/apiv4beta1",
+		gRPCServiceConfigPath: "google/cloud/talent/v4beta1/talent_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/talent/v4beta1/jobs_v4beta1.yaml",
+		releaseLevel:          "beta",
+	},
 }
 
 // Relative to gocloud dir.
@@ -588,7 +596,6 @@ var gapicsWithManual = []string{
 var artmanGapicConfigPaths = []string{
 	"google/cloud/automl/artman_automl_v1.yaml",
 	"google/cloud/automl/artman_automl_v1beta1.yaml",
-	"google/cloud/talent/artman_talent_v4beta1.yaml",
 	"google/pubsub/artman_pubsub.yaml",
 }
 
@@ -607,14 +614,6 @@ var artmanGapicManifestEntries = []manifestEntry{
 		Language:          "Go",
 		ClientLibraryType: "generated",
 		DocsURL:           "https://pkg.go.dev/loud.google.com/go/automl/apiv1beta1",
-		ReleaseLevel:      "beta",
-	},
-	{
-		DistributionName:  "cloud.google.com/go/talent/apiv4beta1",
-		Description:       "Cloud Talent Solution API",
-		Language:          "Go",
-		ClientLibraryType: "generated",
-		DocsURL:           "https://pkg.go.dev/loud.google.com/go/talent/apiv4beta1",
 		ReleaseLevel:      "beta",
 	},
 	// Logging and Pubsub are defined in manualEntries.
