@@ -41,9 +41,9 @@ func main() {
 		log.Fatalf("usage: %s --port=8081", os.Args[0])
 	}
 
-	if os.Getenv("STORAGE_EMULATOR_HOST") == "" {
-		log.Fatal("This benchmarking server only works when connected to an emulator. Please set STORAGE_EMULATOR_HOST.")
-	}
+	// if os.Getenv("STORAGE_EMULATOR_HOST") == "" {
+	// 	log.Fatal("This benchmarking server only works when connected to an emulator. Please set STORAGE_EMULATOR_HOST.")
+	// }
 
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
