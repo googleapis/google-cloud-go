@@ -369,7 +369,11 @@ func TestParseDDL(t *testing.T) {
 	}
 
 	// Check the comment discovey helpers on the first DDL.
-	ddl := tests[0].want
+	// Reparse it first so we get full position information.
+	ddl, err := ParseDDL("filename", tests[0].in)
+	if err != nil {
+		t.Fatal(err)
+	}
 	// The CreateTable for NonScalars has a leading comment.
 	found := false
 	for _, stmt := range ddl.List {

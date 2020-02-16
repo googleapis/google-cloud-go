@@ -719,14 +719,14 @@ func (p *parser) skipSpace() bool {
 		}
 		c.end = Position{
 			Line:   p.line + strings.Count(c.text, "\n"),
-			Offset: i + ti,
+			Offset: c.start.Offset + ti,
 		}
 		p.comments = append(p.comments, c)
 		p.line = c.end.Line
 		if term == "\n" {
 			p.line++
 		}
-		i = c.end.Offset + len(term)
+		i += ti + len(term)
 	}
 	p.s = p.s[i:]
 	p.offset += i
