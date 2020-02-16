@@ -124,3 +124,19 @@ var keywords = map[string]bool{
 	"WITH":                 true,
 	"WITHIN":               true,
 }
+
+// funcs is the set of reserved keywords that are functions.
+// https://cloud.google.com/spanner/docs/functions-and-operators
+var funcs = map[string]bool{
+	// Aggregate functions.
+	"BIT_XOR": true,
+	"COUNT":   true,
+
+	// Mathematical functions.
+	"ABS": true,
+
+	// Hash functions.
+	"SHA1": true,
+
+	// TODO: many more
+}

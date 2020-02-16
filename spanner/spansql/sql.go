@@ -221,6 +221,36 @@ func (o Order) SQL() string {
 	return str
 }
 
+var arithOps = map[ArithOperator]string{
+	// Binary operators only; unary operators are handled first.
+	Mul:    "*",
+	Div:    "/",
+	Concat: "||",
+	Add:    "+",
+	Sub:    "-",
+	BitShl: "<<",
+	BitShr: ">>",
+	BitAnd: "&",
+	BitXor: "^",
+	BitOr:  "|",
+}
+
+func (ao ArithOp) SQL() string {
+	// Extra parens inserted to ensure the correct precedence.
+
+	switch ao.Op {
+	case Neg:
+		return "-(" + ao.RHS.SQL() + ")"
+	case BitNot:
+		return "~(" + ao.RHS.SQL() + ")"
+	}
+	op, ok := arithOps[ao.Op]
+	if !ok {
+		panic("unknown ArithOp")
+	}
+	return "(" + ao.LHS.SQL() + ")" + op + "(" + ao.RHS.SQL() + ")"
+}
+
 func (lo LogicalOp) SQL() string {
 	switch lo.Op {
 	default:
