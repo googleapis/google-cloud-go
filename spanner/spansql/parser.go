@@ -98,26 +98,13 @@ func ParseDDL(filename, s string) (*DDL, error) {
 	}
 
 	// Handle comments.
-	for len(p.comments) > 0 {
-		// Build up a single Comment covering adjacent comments.
-		n := 1
-		for ; n < len(p.comments); n++ {
-			if p.comments[n].start.Line != p.comments[n-1].end.Line+1 {
-				break
-			}
-			if p.comments[n].marker != p.comments[n-1].marker {
-				break
-			}
-		}
+	for _, com := range p.comments {
 		c := &Comment{
-			Marker: p.comments[0].marker,
-			Start:  p.comments[0].start,
-			End:    p.comments[n-1].end,
+			Marker: com.marker,
+			Start:  com.start,
+			End:    com.end,
+			Text:   com.text,
 		}
-		for _, comm := range p.comments[:n] {
-			c.Text = append(c.Text, strings.Split(comm.text, "\n")...)
-		}
-		p.comments = p.comments[n:]
 
 		// Strip common whitespace prefix and any whitespace suffix.
 		// TODO: This is a bodgy implementation of Longest Common Prefix,
@@ -252,8 +239,8 @@ type parser struct {
 
 type comment struct {
 	marker     string // "#" or "--" or "/*"
-	text       string // may have \n chars
 	start, end Position
+	text       []string
 }
 
 // Pos reports the position of the current token.
@@ -683,6 +670,11 @@ func isSpace(c byte) bool {
 
 // skipSpace skips past any space or comments.
 func (p *parser) skipSpace() bool {
+	// If we start capturing a comment in this method,
+	// this is set to its comment value. Multi-line comments
+	// are only joined during a single skipSpace invocation.
+	var com *comment
+
 	i := 0
 	for i < len(p.s) {
 		if isSpace(p.s[i]) {
@@ -709,20 +701,30 @@ func (p *parser) skipSpace() bool {
 			p.errorf("unterminated comment")
 			return false
 		}
-		c := comment{
-			marker: marker,
-			text:   p.s[i+len(marker) : i+ti],
-			start: Position{
-				Line:   p.line,
-				Offset: p.offset + i,
-			},
+		if com != nil && (com.end.Line+1 < p.line || com.marker != marker) {
+			// There's a previous comment, but there's an
+			// intervening blank line, or the marker changed.
+			// Terminate the previous comment.
+			com = nil
 		}
-		c.end = Position{
-			Line:   p.line + strings.Count(c.text, "\n"),
-			Offset: c.start.Offset + ti,
+		if com == nil {
+			// New comment.
+			p.comments = append(p.comments, comment{
+				marker: marker,
+				start: Position{
+					Line:   p.line,
+					Offset: p.offset + i,
+				},
+			})
+			com = &p.comments[len(p.comments)-1]
 		}
-		p.comments = append(p.comments, c)
-		p.line = c.end.Line
+		textLines := strings.Split(p.s[i+len(marker):i+ti], "\n")
+		com.text = append(com.text, textLines...)
+		com.end = Position{
+			Line:   p.line + len(textLines) - 1,
+			Offset: p.offset + i + ti,
+		}
+		p.line = com.end.Line
 		if term == "\n" {
 			p.line++
 		}

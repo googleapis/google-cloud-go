@@ -248,8 +248,8 @@ func TestParseDDL(t *testing.T) {
 		-- This table has some commentary
 		-- that spans multiple lines.
 		CREATE TABLE NonScalars (
-			Dummy INT64 NOT NULL,
-			Ids ARRAY<INT64>,
+			Dummy INT64 NOT NULL, -- dummy comment
+			Ids ARRAY<INT64>, -- comment on ids
 			Names ARRAY<STRING(MAX)>,
 		) PRIMARY KEY (Dummy);
 		`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -330,6 +330,9 @@ func TestParseDDL(t *testing.T) {
 				Text: []string{" This is a", "\t\t\t\t\t\t  * multiline comment."}},
 			{Marker: "--", Start: line(25), End: line(26),
 				Text: []string{"This table has some commentary", "that spans multiple lines."}},
+			// These comments shouldn't get combined:
+			{Marker: "--", Start: line(28), End: line(28), Text: []string{"dummy comment"}},
+			{Marker: "--", Start: line(29), End: line(29), Text: []string{"comment on ids"}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -375,30 +378,39 @@ func TestParseDDL(t *testing.T) {
 		t.Fatal(err)
 	}
 	// The CreateTable for NonScalars has a leading comment.
-	found := false
-	for _, stmt := range ddl.List {
-		ct, ok := stmt.(*CreateTable)
-		if !ok || ct.Name != "NonScalars" {
-			continue
-		}
-		found = true
-		com := ddl.LeadingComment(ct)
-		if com == nil {
-			t.Errorf("No leading comment found for NonScalars")
-		} else if com.Text[0] != "This table has some commentary" {
-			t.Errorf("LeadingComment returned the wrong comment for NonScalars")
-		}
-	}
-	if !found {
-		t.Errorf("Test error: didn't find NonScalars node in DDL")
+	com := ddl.LeadingComment(tableByName(t, ddl, "NonScalars"))
+	if com == nil {
+		t.Errorf("No leading comment found for NonScalars")
+	} else if com.Text[0] != "This table has some commentary" {
+		t.Errorf("LeadingComment returned the wrong comment for NonScalars")
 	}
 	// Second field of FooBar (RepoPath) has an inline comment.
-	cd := tests[0].want.List[0].(*CreateTable).Columns[1]
+	cd := tableByName(t, ddl, "FooBar").Columns[1]
 	if com := ddl.InlineComment(cd); com == nil {
 		t.Errorf("No inline comment found for FooBar.RepoPath")
 	} else if com.Text[0] != "This is another comment." {
 		t.Errorf("InlineComment returned the wrong comment (%q) for FooBar.RepoPath", com.Text[0])
 	}
+	// There are no leading comments on the columns of NonScalars,
+	// even though there's often a comment on the previous line.
+	/* TODO: This is broken; LeadingComment needs fixing.
+	for _, cd := range tableByName(t, ddl, "NonScalars").Columns {
+		if com := ddl.LeadingComment(cd); com != nil {
+			t.Errorf("Leading comment found for NonScalars.%s: %v", cd.Name, com)
+		}
+	}
+	*/
+}
+
+func tableByName(t *testing.T, ddl *DDL, name string) *CreateTable {
+	t.Helper()
+	for _, stmt := range ddl.List {
+		if ct, ok := stmt.(*CreateTable); ok && ct.Name == name {
+			return ct
+		}
+	}
+	t.Fatalf("no table with name %q", name)
+	panic("unreachable")
 }
 
 func TestParseFailures(t *testing.T) {
