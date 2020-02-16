@@ -274,6 +274,30 @@ type Limit interface {
 	SQL() string
 }
 
+type ArithOp struct {
+	Op       ArithOperator
+	LHS, RHS Expr // only RHS is set for Neg, BitNot
+}
+
+func (ArithOp) isExpr() {}
+
+type ArithOperator int
+
+const (
+	Neg    ArithOperator = iota // unary -
+	BitNot                      // unary ~
+	Mul                         // *
+	Div                         // /
+	Concat                      // ||
+	Add                         // +
+	Sub                         // -
+	BitShl                      // <<
+	BitShr                      // >>
+	BitAnd                      // &
+	BitXor                      // ^
+	BitOr                       // |
+)
+
 type LogicalOp struct {
 	Op       LogicalOperator
 	LHS, RHS BoolExpr // only RHS is set for Not

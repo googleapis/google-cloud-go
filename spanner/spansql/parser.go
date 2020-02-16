@@ -648,8 +648,20 @@ func (p *parser) consumeStringContent(delim string, raw, unicode bool, name stri
 }
 
 var operators = map[string]bool{
-	// TODO: There's duplication here with symbolicOperators,
-	// but this should go away with more bespoke handling inside parser.advance.
+	// Arithmetic operators.
+	"-":  true, // both unary and binary
+	"~":  true,
+	"*":  true,
+	"/":  true,
+	"||": true,
+	"+":  true,
+	"<<": true,
+	">>": true,
+	"&":  true,
+	"^":  true,
+	"|":  true,
+
+	// Comparison operators.
 	"<":  true,
 	"<=": true,
 	">":  true,
@@ -790,14 +802,6 @@ func (p *parser) advance() {
 	}
 	if '0' <= p.s[0] && p.s[0] <= '9' {
 		p.consumeNumber()
-		return
-	}
-	// More single character symbols.
-	// These are deliberately below the numeric literal parsing.
-	switch p.s[0] {
-	case '-', '+':
-		p.cur.value, p.s = p.s[:1], p.s[1:]
-		p.offset++
 		return
 	}
 
@@ -1642,10 +1646,9 @@ ascending order of precedence:
 	andParser
 	parseIsOp
 	parseComparisonOp
-	parseArithOp
+	parseArithOp: |, ^, &, << and >>, + and -, * and / and ||
+	parseUnaryArithOp: - and ~
 	parseLit
-
-TODO: there are more levels to break out, esp. in parseArithOp
 */
 
 func (p *parser) parseExpr() (Expr, *parseError) {
@@ -1721,7 +1724,30 @@ var (
 			return LogicalOp{LHS: lhs.(BoolExpr), Op: And, RHS: rhs.(BoolExpr)}
 		},
 	}
+
+	bitOrParser  = newBinArithParser("|", BitOr, bitXorParser.parse)
+	bitXorParser = newBinArithParser("^", BitXor, bitAndParser.parse)
+	bitAndParser = newBinArithParser("&", BitAnd, bitShrParser.parse)
+	bitShrParser = newBinArithParser(">>", BitShr, bitShlParser.parse)
+	bitShlParser = newBinArithParser("<<", BitShl, subParser.parse)
+	subParser    = newBinArithParser("-", Sub, addParser.parse)
+	addParser    = newBinArithParser("+", Add, concatParser.parse)
+	concatParser = newBinArithParser("||", Concat, divParser.parse)
+	divParser    = newBinArithParser("/", Div, mulParser.parse)
+	mulParser    = newBinArithParser("*", Mul, (*parser).parseUnaryArithOp)
 )
+
+func newBinArithParser(opStr string, op ArithOperator, nextPrec func(*parser) (Expr, *parseError)) binOpParser {
+	return binOpParser{
+		LHS: nextPrec,
+		RHS: nextPrec,
+		Op:  opStr,
+		// TODO: ArgCheck? numeric inputs only, except for ||.
+		Combiner: func(lhs, rhs Expr) Expr {
+			return ArithOp{LHS: lhs, Op: op, RHS: rhs}
+		},
+	}
+}
 
 func (p *parser) parseLogicalNot() (Expr, *parseError) {
 	if !p.eat("NOT") {
@@ -1846,38 +1872,29 @@ func (p *parser) parseComparisonOp() (Expr, *parseError) {
 }
 
 func (p *parser) parseArithOp() (Expr, *parseError) {
-	// TODO: actually parse arithmetic operations.
+	return bitOrParser.parse(p)
+}
 
-	if p.eat("(") {
-		e, err := p.parseExpr()
+var unaryArithOperators = map[string]ArithOperator{
+	"-": Neg,
+	"~": BitNot,
+}
+
+func (p *parser) parseUnaryArithOp() (Expr, *parseError) {
+	tok := p.next()
+	if tok.err != nil {
+		return nil, tok.err
+	}
+	if op, ok := unaryArithOperators[tok.value]; ok {
+		e, err := p.parseLit()
 		if err != nil {
 			return nil, err
 		}
-		if err := p.expect(")"); err != nil {
-			return nil, err
-		}
-		return Paren{Expr: e}, nil
+		return ArithOp{Op: op, RHS: e}, nil
 	}
+	p.back()
 
-	lit, err := p.parseLit()
-	if err != nil {
-		return nil, err
-	}
-
-	// If the literal was an identifier, and there's an open paren next,
-	// this is a function invocation.
-	if id, ok := lit.(ID); ok && p.sniff("(") {
-		list, err := p.parseExprList()
-		if err != nil {
-			return nil, err
-		}
-		return Func{
-			Name: string(id),
-			Args: list,
-		}, nil
-	}
-
-	return lit, nil
+	return p.parseLit()
 }
 
 func (p *parser) parseLit() (Expr, *parseError) {
@@ -1897,6 +1914,32 @@ func (p *parser) parseLit() (Expr, *parseError) {
 		return BytesLiteral(tok.string), nil
 	case quotedID: // Unquoted identifers are handled below.
 		return ID(tok.string), nil
+	}
+
+	// Handle parenthesized expressions.
+	if tok.value == "(" {
+		e, err := p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+		if err := p.expect(")"); err != nil {
+			return nil, err
+		}
+		return Paren{Expr: e}, nil
+	}
+
+	// If the literal was an identifier, and there's an open paren next,
+	// this is a function invocation.
+	// TODO: Case-insensitivity.
+	if name := tok.value; funcs[name] && p.sniff("(") {
+		list, err := p.parseExprList()
+		if err != nil {
+			return nil, err
+		}
+		return Func{
+			Name: name,
+			Args: list,
+		}, nil
 	}
 
 	// Handle some reserved keywords and special tokens that become specific values.
