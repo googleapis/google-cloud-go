@@ -543,7 +543,7 @@ func (ddl *DDL) InlineComment(n Node) *Comment {
 	if c.Start.Line != pos.Line {
 		return nil
 	}
-	if c.Start != c.End || len(c.Text) != 1 {
+	if c.Start.Line != c.End.Line || len(c.Text) != 1 {
 		// Multi-line comment; don't return it.
 		return nil
 	}
