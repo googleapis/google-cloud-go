@@ -268,9 +268,14 @@ type Client struct {
 	hc *http.Client
 }
 
-// NewClient returns a Client that can be used to fetch metadata. All HTTP requests
-// will use the given http.Client instead of the default client.
+// NewClient returns a Client that can be used to fetch metadata.
+// Returns the client that uses the specified http.Client for HTTP requests.
+// If nil is specified, returns the default client.
 func NewClient(c *http.Client) *Client {
+	if c == nil {
+		return defaultClient
+	}
+
 	return &Client{hc: c}
 }
 
