@@ -147,7 +147,7 @@ func defaultSubscriberCallOptions() *SubscriberCallOptions {
 	}
 }
 
-// SubscriberClient is a client for interacting with Google Cloud Pub/Sub API.
+// SubscriberClient is a client for interacting with Cloud Pub/Sub API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type SubscriberClient struct {
