@@ -316,6 +316,84 @@ func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (bool, error) {
 	}
 }
 
+func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
+	switch e.Op {
+	case spansql.Div:
+		lhs, err := ec.evalFloat64(e.LHS)
+		if err != nil {
+			return nil, err
+		}
+		rhs, err := ec.evalFloat64(e.RHS)
+		if err != nil {
+			return nil, err
+		}
+		if rhs == 0 {
+			// TODO: Does real Spanner use a specific error code here?
+			return nil, fmt.Errorf("divide by zero")
+		}
+		return lhs / rhs, nil
+	case spansql.Add, spansql.Sub, spansql.Mul:
+		lhs, err := ec.evalExpr(e.LHS)
+		if err != nil {
+			return nil, err
+		}
+		rhs, err := ec.evalExpr(e.RHS)
+		if err != nil {
+			return nil, err
+		}
+		i1, ok1 := lhs.(int64)
+		i2, ok2 := rhs.(int64)
+		if ok1 && ok2 {
+			switch e.Op {
+			case spansql.Add:
+				return i1 + i2, nil
+			case spansql.Sub:
+				return i1 - i2, nil
+			case spansql.Mul:
+				return i1 * i2, nil
+			}
+		}
+		f1, err := asFloat64(e.LHS, lhs)
+		if err != nil {
+			return nil, err
+		}
+		f2, err := asFloat64(e.RHS, rhs)
+		if err != nil {
+			return nil, err
+		}
+		switch e.Op {
+		case spansql.Add:
+			return f1 + f2, nil
+		case spansql.Sub:
+			return f1 - f2, nil
+		case spansql.Mul:
+			return f1 * f2, nil
+		}
+	}
+	return nil, fmt.Errorf("TODO: evalArithOp(%s %v)", e.SQL(), e.Op)
+}
+
+// evalFloat64 evaluates an expression and returns its FLOAT64 value.
+// If the expression does not yield a FLOAT64 or INT64 it returns an error.
+func (ec evalContext) evalFloat64(e spansql.Expr) (float64, error) {
+	v, err := ec.evalExpr(e)
+	if err != nil {
+		return 0, err
+	}
+	return asFloat64(e, v)
+}
+
+func asFloat64(e spansql.Expr, v interface{}) (float64, error) {
+	switch v := v.(type) {
+	default:
+		return 0, fmt.Errorf("expression %s evaluates to %T, want FLOAT64 or INT64", e.SQL(), v)
+	case float64:
+		return v, nil
+	case int64:
+		return float64(v), nil
+	}
+}
+
 func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 	switch e := e.(type) {
 	default:
@@ -342,6 +420,8 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 		return bool(e), nil
 	case spansql.Paren:
 		return ec.evalExpr(e.Expr)
+	case spansql.ArithOp:
+		return ec.evalArithOp(e)
 	case spansql.LogicalOp:
 		return ec.evalBoolExpr(e)
 	case spansql.ComparisonOp:
@@ -403,7 +483,7 @@ func compareVals(x, y interface{}) int {
 		return 1
 	}
 
-	// TODO: coerce between comparable types (e.g. int64/float64).
+	// TODO: coerce between more comparable types? factor this out for expressions other than comparisons.
 
 	switch x := x.(type) {
 	default:
@@ -425,6 +505,10 @@ func compareVals(x, y interface{}) int {
 				panic(fmt.Sprintf("bad int64 string %q: %v", s, err))
 			}
 		}
+		if f, ok := y.(float64); ok {
+			// Coersion from INT64 to FLOAT64 is allowed.
+			return compareVals(x, f)
+		}
 		y := y.(int64)
 		if x < y {
 			return -1
@@ -433,6 +517,10 @@ func compareVals(x, y interface{}) int {
 		}
 		return 0
 	case float64:
+		// Coersion from INT64 to FLOAT64 is allowed.
+		if i, ok := y.(int64); ok {
+			y = float64(i)
+		}
 		y := y.(float64)
 		if x < y {
 			return -1
@@ -446,15 +534,26 @@ func compareVals(x, y interface{}) int {
 	}
 }
 
+var (
+	int64Type   = spansql.Type{Base: spansql.Int64}
+	float64Type = spansql.Type{Base: spansql.Float64}
+)
+
 func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 	// TODO: more types
 	switch e := e.(type) {
 	case spansql.IntegerLiteral:
-		return colInfo{Type: spansql.Type{Base: spansql.Int64}}, nil
+		return colInfo{Type: int64Type}, nil
 	case spansql.StringLiteral:
 		return colInfo{Type: spansql.Type{Base: spansql.String}}, nil
 	case spansql.BytesLiteral:
 		return colInfo{Type: spansql.Type{Base: spansql.Bytes}}, nil
+	case spansql.ArithOp:
+		t, err := ec.arithColType(e)
+		if err != nil {
+			return colInfo{}, err
+		}
+		return colInfo{Type: t}, nil
 	case spansql.LogicalOp, spansql.ComparisonOp, spansql.IsOp:
 		return colInfo{Type: spansql.Type{Base: spansql.Bool}}, nil
 	case spansql.ID:
@@ -470,9 +569,42 @@ func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 	case spansql.NullLiteral:
 		// There isn't necessarily something sensible here.
 		// Empirically, though, the real Spanner returns Int64.
-		return colInfo{Type: spansql.Type{Base: spansql.Int64}}, nil
+		return colInfo{Type: int64Type}, nil
 	}
 	return colInfo{}, fmt.Errorf("can't deduce column type from expression [%s]", e.SQL())
+}
+
+func (ec evalContext) arithColType(ao spansql.ArithOp) (spansql.Type, error) {
+	// The type depends on the particular operator and the argument types.
+	// https://cloud.google.com/spanner/docs/functions-and-operators#arithmetic_operators
+
+	var lhs, rhs spansql.Type
+	var err error
+	if ao.LHS != nil {
+		ci, err := ec.colInfo(ao.LHS)
+		if err != nil {
+			return spansql.Type{}, err
+		}
+		lhs = ci.Type
+	}
+	ci, err := ec.colInfo(ao.RHS)
+	if err != nil {
+		return spansql.Type{}, err
+	}
+	rhs = ci.Type
+
+	switch ao.Op {
+	default:
+		return spansql.Type{}, fmt.Errorf("can't deduce column type from ArithOp [%s]", ao.SQL())
+	case spansql.Add, spansql.Sub, spansql.Mul:
+		if lhs == int64Type && rhs == int64Type {
+			return int64Type, nil
+		}
+		return float64Type, nil
+	case spansql.Div:
+		return float64Type, nil
+	}
+	// TODO: more operators
 }
 
 func evalLike(str, pat string) bool {

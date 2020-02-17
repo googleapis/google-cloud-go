@@ -334,16 +334,16 @@ func TestTableData(t *testing.T) {
 			},
 		},
 		{
-			`SELECT Name, ID FROM Staff WHERE @min <= Tenure AND Tenure < @lim ORDER BY Cool, Name DESC LIMIT @numResults`,
+			`SELECT Name, ID + 100 FROM Staff WHERE @min <= Tenure AND Tenure < @lim ORDER BY Cool, Name DESC LIMIT @numResults`,
 			queryParams{"min": int64(9), "lim": int64(11), "numResults": "100"},
 			[][]interface{}{
-				{"Jack", int64(1)},
-				{"Sam", int64(3)},
+				{"Jack", int64(101)},
+				{"Sam", int64(103)},
 			},
 		},
 		{
 			// Expression in SELECT list.
-			`SELECT Name, Cool IS NOT NULL FROM Staff WHERE Tenure > 8 ORDER BY NOT Cool, Name`,
+			`SELECT Name, Cool IS NOT NULL FROM Staff WHERE Tenure/2 > 4 ORDER BY NOT Cool, Name`,
 			nil,
 			[][]interface{}{
 				{"Daniel", true}, // Daniel has Cool==true
