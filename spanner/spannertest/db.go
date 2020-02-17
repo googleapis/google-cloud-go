@@ -54,6 +54,7 @@ type table struct {
 	cols     []colInfo
 	colIndex map[string]int // col name to index
 	pkCols   int            // number of primary key columns (may be 0)
+	pkDesc   []bool         // whether each primary key column is in descending order
 
 	// Rows are stored in primary key order.
 	rows []row
@@ -162,8 +163,10 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 
 		// Move primary keys first, preserving their order.
 		pk := make(map[string]int)
+		var pkDesc []bool
 		for i, kp := range stmt.PrimaryKey {
 			pk[kp.Column] = -1000 + i
+			pkDesc = append(pkDesc, kp.Desc)
 		}
 		sort.SliceStable(stmt.Columns, func(i, j int) bool {
 			a, b := pk[stmt.Columns[i].Name], pk[stmt.Columns[j].Name]
@@ -173,6 +176,7 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 		t := &table{
 			colIndex: make(map[string]int),
 			pkCols:   len(pk),
+			pkDesc:   pkDesc,
 		}
 		for _, cd := range stmt.Columns {
 			if st := t.addColumn(cd); st.Code() != codes.OK {
@@ -598,25 +602,22 @@ func (t *table) insertRow(rowNum int, r row) {
 // reporting it as a half-open interval.
 // r.startKey and r.endKey should be populated.
 func (t *table) findRange(r *keyRange) (int, int) {
-	// TODO: This is incorrect for primary keys with descending order.
-	// It might be sufficient for the caller to switch start/end in that case.
-
 	// startRow is the first row matching the range.
 	startRow := sort.Search(len(t.rows), func(i int) bool {
-		return rowCmp(r.startKey, t.rows[i][:t.pkCols]) <= 0
+		return rowCmp(r.startKey, t.rows[i][:t.pkCols], t.pkDesc) <= 0
 	})
 	if startRow == len(t.rows) {
 		return startRow, startRow
 	}
-	if !r.startClosed && rowCmp(r.startKey, t.rows[startRow][:t.pkCols]) == 0 {
+	if !r.startClosed && rowCmp(r.startKey, t.rows[startRow][:t.pkCols], t.pkDesc) == 0 {
 		startRow++
 	}
 
 	// endRow is one more than the last row matching the range.
 	endRow := sort.Search(len(t.rows), func(i int) bool {
-		return rowCmp(r.endKey, t.rows[i][:t.pkCols]) < 0
+		return rowCmp(r.endKey, t.rows[i][:t.pkCols], t.pkDesc) < 0
 	})
-	if !r.endClosed && rowCmp(r.endKey, t.rows[endRow-1][:t.pkCols]) == 0 {
+	if !r.endClosed && rowCmp(r.endKey, t.rows[endRow-1][:t.pkCols], t.pkDesc) == 0 {
 		endRow--
 	}
 
@@ -670,24 +671,39 @@ func (t *table) rowForPK(pk []interface{}) (row int, found bool) {
 	}
 
 	i := sort.Search(len(t.rows), func(i int) bool {
-		return rowCmp(pk, t.rows[i][:t.pkCols]) <= 0
+		return rowCmp(pk, t.rows[i][:t.pkCols], t.pkDesc) <= 0
 	})
 	if i == len(t.rows) {
 		return i, false
 	}
-	return i, rowCmp(pk, t.rows[i][:t.pkCols]) == 0
+	return i, rowEqual(pk, t.rows[i][:t.pkCols])
 }
 
 // rowCmp compares two rows, returning -1/0/+1.
+// The desc arg indicates whether each column is in a descending order.
 // This is used for primary key matching and so doesn't support array/struct types.
 // a is permitted to be shorter than b.
-func rowCmp(a, b []interface{}) int {
+func rowCmp(a, b []interface{}, desc []bool) int {
 	for i := 0; i < len(a); i++ {
 		if cmp := compareVals(a[i], b[i]); cmp != 0 {
+			if desc[i] {
+				cmp = -cmp
+			}
 			return cmp
 		}
 	}
 	return 0
+}
+
+// rowEqual reports whether two rows are equal.
+// This doesn't support array/struct types.
+func rowEqual(a, b []interface{}) bool {
+	for i := 0; i < len(a); i++ {
+		if compareVals(a[i], b[i]) != 0 {
+			return false
+		}
+	}
+	return true
 }
 
 func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {

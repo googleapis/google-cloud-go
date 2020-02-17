@@ -83,7 +83,7 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams, aux []span
 			// This also breaks on array/struct types.
 			for i := 0; i < len(ri.rows); i++ {
 				for j := i + 1; j < len(ri.rows); {
-					if rowCmp(ri.rows[i].data, ri.rows[j].data) != 0 {
+					if !rowEqual(ri.rows[i].data, ri.rows[j].data) {
 						// Distinct rows.
 						j++
 						continue
