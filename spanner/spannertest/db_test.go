@@ -445,6 +445,64 @@ func TestTableData(t *testing.T) {
 	}
 }
 
+func TestTableDescendingKey(t *testing.T) {
+	var descTestTable = &spansql.CreateTable{
+		Name: "Timeseries",
+		Columns: []spansql.ColumnDef{
+			{Name: "Name", Type: spansql.Type{Base: spansql.String}},
+			{Name: "Observed", Type: spansql.Type{Base: spansql.Int64}},
+			{Name: "Value", Type: spansql.Type{Base: spansql.Float64}},
+		},
+		PrimaryKey: []spansql.KeyPart{{Column: "Name"}, {Column: "Observed", Desc: true}},
+	}
+
+	var db database
+	if st := db.ApplyDDL(descTestTable); st.Code() != codes.OK {
+		t.Fatalf("Creating table: %v", st.Err())
+	}
+
+	tx := db.startTransaction()
+	err := db.Insert(tx, "Timeseries", []string{"Name", "Observed", "Value"}, []*structpb.ListValue{
+		listV(stringV("box"), stringV("1"), floatV(1.1)),
+		listV(stringV("cupcake"), stringV("1"), floatV(6)),
+		listV(stringV("box"), stringV("2"), floatV(1.2)),
+		listV(stringV("cupcake"), stringV("2"), floatV(7)),
+		listV(stringV("box"), stringV("3"), floatV(1.3)),
+		listV(stringV("cupcake"), stringV("3"), floatV(8)),
+	})
+	if err != nil {
+		t.Fatalf("Inserting data: %v", err)
+	}
+	if _, err := tx.Commit(); err != nil {
+		t.Fatalf("Commiting changes: %v", err)
+	}
+
+	// Querying the entire table should return values in key order,
+	// noting that the second key part here is in descending order.
+	q, err := spansql.ParseQuery(`SELECT * FROM Timeseries`)
+	if err != nil {
+		t.Fatalf("ParseQuery: %v", err)
+	}
+	ri, err := db.Query(q, nil)
+	if err != nil {
+		t.Fatalf("Query: %v", err)
+	}
+	got := slurp(ri)
+	want := [][]interface{}{
+		{"box", int64(3), 1.3},
+		{"box", int64(2), 1.2},
+		{"box", int64(1), 1.1},
+		{"cupcake", int64(3), 8.0},
+		{"cupcake", int64(2), 7.0},
+		{"cupcake", int64(1), 6.0},
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("Results from Query are wrong.\n got %v\nwant %v", got, want)
+	}
+
+	// TestKeyRange exercises the edge cases for key range reading.
+}
+
 func slurp(ri *resultIter) (all [][]interface{}) {
 	for {
 		row, ok := ri.Next()
@@ -465,17 +523,24 @@ func TestRowCmp(t *testing.T) {
 	r := func(x ...interface{}) []interface{} { return x }
 	tests := []struct {
 		a, b []interface{}
+		desc []bool
 		want int
 	}{
-		{r(int64(1), "foo", 1.6), r(int64(1), "foo", 1.6), 0},
-		{r(int64(1), "foo"), r(int64(1), "foo", 1.6), 0}, // first is shorter
+		{r(int64(1), "foo", 1.6), r(int64(1), "foo", 1.6), []bool{false, false, false}, 0},
+		{r(int64(1), "foo"), r(int64(1), "foo", 1.6), []bool{false, false, false}, 0}, // first is shorter
 
-		{r(int64(1), "bar", 1.8), r(int64(1), "foo", 1.6), -1},
-		{r(int64(1), "foo", 1.6), r(int64(1), "bar", 1.8), 1},
+		{r(int64(1), "bar", 1.8), r(int64(1), "foo", 1.6), []bool{false, false, false}, -1},
+		{r(int64(1), "bar", 1.8), r(int64(1), "foo", 1.6), []bool{false, false, true}, -1},
+		{r(int64(1), "bar", 1.8), r(int64(1), "foo", 1.6), []bool{false, true, false}, 1},
+
+		{r(int64(1), "foo", 1.6), r(int64(1), "bar", 1.8), []bool{false, false, false}, 1},
+		{r(int64(1), "foo", 1.6), r(int64(1), "bar", 1.8), []bool{false, false, true}, 1},
+		{r(int64(1), "foo", 1.6), r(int64(1), "bar", 1.8), []bool{false, true, false}, -1},
+		{r(int64(1), "foo", 1.6), r(int64(1), "bar", 1.8), []bool{false, true, true}, -1},
 	}
 	for _, test := range tests {
-		if got := rowCmp(test.a, test.b); got != test.want {
-			t.Errorf("rowCmp(%v, %v) = %d, want %d", test.a, test.b, got, test.want)
+		if got := rowCmp(test.a, test.b, test.desc); got != test.want {
+			t.Errorf("rowCmp(%v, %v, %v) = %d, want %d", test.a, test.b, test.desc, got, test.want)
 		}
 	}
 }
@@ -505,6 +570,7 @@ func TestKeyRange(t *testing.T) {
 	}
 	tests := []struct {
 		kr      *keyRange
+		desc    []bool
 		include [][]interface{}
 		exclude [][]interface{}
 	}{
@@ -588,10 +654,40 @@ func TestKeyRange(t *testing.T) {
 				r("Doris", "1999-11-07"),
 			},
 		},
+		// Exercise descending primary key ordering.
+		{
+			kr:   halfOpen(r("Alpha"), r("Charlie")),
+			desc: []bool{true, false},
+			// Key range is backwards, so nothing should be returned.
+			exclude: [][]interface{}{
+				r("Alice", "1999-11-07"),
+				r("Bob", "1999-11-07"),
+				r("Doris", "1999-11-07"),
+			},
+		},
+		{
+			kr:   halfOpen(r("Alice", "1999-11-07"), r("Charlie")),
+			desc: []bool{false, true},
+			// The second primary key column is descending.
+			include: [][]interface{}{
+				r("Alice", "1999-09-09"),
+				r("Alice", "1999-11-07"),
+				r("Bob", "2000-01-01"),
+			},
+			exclude: [][]interface{}{
+				r("Alice", "2000-01-01"),
+				r("Doris", "1999-11-07"),
+			},
+		},
 	}
 	for _, test := range tests {
+		desc := test.desc
+		if desc == nil {
+			desc = []bool{false, false} // default
+		}
 		tbl := &table{
 			pkCols: 2,
+			pkDesc: desc,
 		}
 		for _, pk := range append(test.include, test.exclude...) {
 			rowNum, _ := tbl.rowForPK(pk)
