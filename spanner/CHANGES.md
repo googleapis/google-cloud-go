@@ -1,5 +1,16 @@
 # Changes
 
+## v1.2.1
+
+- Fix session leakage for ApplyAtLeastOnce. Previously session handles where
+  leaked whenever Commit() returned a non-abort, non-session-not-found error,
+  due to a missing recycle() call.
+- Fix error for WriteStruct with pointers. This fixes a specific check for
+  encoding and decoding to pointer types.
+- Fix a GRPCStatus issue that returns a Status that has Unknown code if the
+  base error is nil. Now, it always returns a Status based on Code field of
+  current error.
+
 ## v1.2.0
 
 - Support tracking stacktrace of sessionPool.take() that allows the user
