@@ -74,6 +74,6 @@ trap create_junit_xml EXIT ERR
 for i in `find . -name go.mod`; do
   pushd `dirname $i`;
     go test -race -v -timeout 30m ./... 2>&1 \
-      | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt
+      | tee -a $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt
   popd;
 done
