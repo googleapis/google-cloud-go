@@ -6,7 +6,7 @@ require (
 	github.com/andygrunwald/go-gerrit v0.0.0-20191101112536-3f5e365ccf57
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-querystring v1.0.0 // indirect
-	github.com/googleapis/gapic-generator-go v0.11.0
+	github.com/googleapis/gapic-generator-go v0.11.1
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/stretchr/testify v1.4.0 // indirect
