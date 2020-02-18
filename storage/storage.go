@@ -47,11 +47,16 @@ import (
 	htransport "google.golang.org/api/transport/http"
 )
 
+// Methods which can be used in signed URLs.
+var signedURLMethods = map[string]bool{"DELETE": true, "GET": true, "HEAD": true, "POST": true, "PUT": true}
+
 var (
 	// ErrBucketNotExist indicates that the bucket does not exist.
 	ErrBucketNotExist = errors.New("storage: bucket doesn't exist")
 	// ErrObjectNotExist indicates that the object does not exist.
 	ErrObjectNotExist = errors.New("storage: object doesn't exist")
+	// errMethodNotValid indicates that given HTTP method is not valid.
+	errMethodNotValid = fmt.Errorf("storage: HTTP method should be one of %v", reflect.ValueOf(signedURLMethods).MapKeys())
 )
 
 var userAgent = fmt.Sprintf("gcloud-golang-storage/%s", version.Repo)
@@ -382,8 +387,9 @@ func validateOptions(opts *SignedURLOptions, now time.Time) error {
 	if (opts.PrivateKey == nil) == (opts.SignBytes == nil) {
 		return errors.New("storage: exactly one of PrivateKey or SignedBytes must be set")
 	}
-	if opts.Method == "" {
-		return errors.New("storage: missing required method option")
+	opts.Method = strings.ToUpper(opts.Method)
+	if _, ok := signedURLMethods[opts.Method]; !ok {
+		return errMethodNotValid
 	}
 	if opts.Expires.IsZero() {
 		return errors.New("storage: missing required expires option")
