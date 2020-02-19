@@ -1311,6 +1311,7 @@ func TestStressSessionPool(t *testing.T) {
 		sp.hc.close()
 		// Here the states of healthchecker, session pool and mockclient are
 		// stable.
+		sp.mu.Lock()
 		idleSessions := map[string]bool{}
 		hcSessions := map[string]bool{}
 		mockSessions := server.TestSpanner.DumpSessions()
@@ -1329,7 +1330,6 @@ func TestStressSessionPool(t *testing.T) {
 			}
 			idleSessions[s.getID()] = true
 		}
-		sp.mu.Lock()
 		if int(sp.numOpened) != len(idleSessions) {
 			t.Fatalf("%v: number of opened sessions (%v) != number of idle sessions (%v)", ti, sp.numOpened, len(idleSessions))
 		}
