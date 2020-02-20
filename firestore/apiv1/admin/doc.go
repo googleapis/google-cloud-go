@@ -20,8 +20,6 @@
 // Accesses the NoSQL document database built for automatic scaling, high
 // performance, and ease of application development.
 //
-//   NOTE: This package is in alpha. It is not stable, and is likely to change.
-//
 // Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and

@@ -23,8 +23,6 @@
 // read the <a href=https://cloud.google.com/logging/docs>Stackdriver Logging
 // documentation</a>.
 //
-//   NOTE: This package is in alpha. It is not stable, and is likely to change.
-//
 // Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and
