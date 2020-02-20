@@ -17,8 +17,6 @@
 // Package instance is an auto-generated package for the
 // Cloud Spanner Instance Admin API.
 //
-//   NOTE: This package is in alpha. It is not stable, and is likely to change.
-//
 // Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and

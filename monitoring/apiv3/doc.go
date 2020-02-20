@@ -24,8 +24,6 @@
 // explanations of the concepts found in the table entries, read the
 // [Stackdriver Monitoring documentation](/monitoring/docs).
 //
-//   NOTE: This package is in alpha. It is not stable, and is likely to change.
-//
 // Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and

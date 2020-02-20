@@ -20,8 +20,6 @@
 // Cloud Security Command Center API provides access to temporal views of
 // assets and findings within an organization.
 //
-//   NOTE: This package is in alpha. It is not stable, and is likely to change.
-//
 // Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and
