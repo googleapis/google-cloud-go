@@ -65,6 +65,11 @@ create_junit_xml() {
   cat $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt \
     | go-junit-report > $KOKORO_ARTIFACTS_DIR/tests/sponge_log.xml
 
+  if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]]; then
+    chmod +x $KOKORO_GFILE_DIR/buildcop.sh
+    $KOKORO_GFILE_DIR/buildcop.sh
+  fi
+
   exit $last_status_code
 }
 
