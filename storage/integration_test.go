@@ -2714,8 +2714,6 @@ func TestIntegration_LockBucket_MetagenerationRequired(t *testing.T) {
 }
 
 func TestIntegration_KMS(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1787")
-
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
