@@ -38,11 +38,11 @@ func TestPutMultiErrorString(t *testing.T) {
 		},
 		{
 			errs: PutMultiError{rowInsertionError("a")},
-			want: "1 row insertion failed",
+			want: "1 row insertion failed (insertion of row [insertID: \"\"; insertIndex: 0] failed with error: a)",
 		},
 		{
 			errs: PutMultiError{rowInsertionError("a"), rowInsertionError("b")},
-			want: "2 row insertions failed",
+			want: "2 row insertions failed (insertion of row [insertID: \"\"; insertIndex: 0] failed with error: a, insertion of row [insertID: \"\"; insertIndex: 0] failed with error: b)",
 		},
 	}
 

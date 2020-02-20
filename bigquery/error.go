@@ -16,6 +16,7 @@ package bigquery
 
 import (
 	"fmt"
+	"strings"
 
 	bq "google.golang.org/api/bigquery/v2"
 )
@@ -79,5 +80,15 @@ func (pme PutMultiError) Error() string {
 		plural = ""
 	}
 
-	return fmt.Sprintf("%v row insertion%s failed", len(pme), plural)
+	es := make([]string, len(pme))
+	for i, e := range pme {
+		es[i] = e.Error()
+	}
+
+	details := ""
+	if len(es) > 0 {
+		details = fmt.Sprintf(" (%s)", strings.Join(es, ", "))
+	}
+
+	return fmt.Sprintf("%v row insertion%s failed%s", len(pme), plural, details)
 }
