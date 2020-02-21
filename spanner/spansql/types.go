@@ -300,7 +300,7 @@ const (
 
 type LogicalOp struct {
 	Op       LogicalOperator
-	LHS, RHS BoolExpr // only RHS is set for Not
+	LHS, RHS BoolExpr // only RHS is set for Neg, BitNot
 }
 
 func (LogicalOp) isBoolExpr() {}
