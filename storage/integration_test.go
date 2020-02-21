@@ -3059,17 +3059,15 @@ func TestIntegration_HMACKey(t *testing.T) {
 	}
 
 	hk, err := hkh.Get(ctx)
-	switch {
-	case err == nil:
+	if err == nil {
 		// If the err == nil, then the returned HMACKey's state MUST be Deleted.
 		if hk == nil || hk.State != Deleted {
 			t.Fatalf("After deletion\nGot %#v\nWanted state %q", hk, Deleted)
 		}
-
-	case err.Error() != "foo":
+	} else if !strings.Contains(err.Error(), "404") {
+		// If the deleted key has already been garbage collected, a 404 is expected.
 		t.Fatalf("Unexpected error: %v", err)
 	}
-
 }
 
 // Verify that custom scopes passed in by the user are applied correctly.
