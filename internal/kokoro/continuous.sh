@@ -66,8 +66,8 @@ create_junit_xml() {
     | go-junit-report > $KOKORO_ARTIFACTS_DIR/tests/sponge_log.xml
 
   if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]]; then
-    chmod +x $KOKORO_GFILE_DIR/buildcop.sh
-    $KOKORO_GFILE_DIR/buildcop.sh
+    chmod +x $KOKORO_GFILE_DIR/linux_amd64/buildcop
+    $KOKORO_GFILE_DIR/linux_amd64/buildcop -logs_dir=$KOKORO_ARTIFACTS_DIR
   fi
 
   exit $last_status_code
