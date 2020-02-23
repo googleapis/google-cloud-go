@@ -61,24 +61,14 @@ var (
 	instID  = &cachedValue{k: "instance/id", trim: true}
 )
 
-var (
-	defaultClient = &Client{hc: &http.Client{
-		Transport: &http.Transport{
-			Dial: (&net.Dialer{
-				Timeout:   2 * time.Second,
-				KeepAlive: 30 * time.Second,
-			}).Dial,
-		},
-	}}
-	subscribeClient = &Client{hc: &http.Client{
-		Transport: &http.Transport{
-			Dial: (&net.Dialer{
-				Timeout:   2 * time.Second,
-				KeepAlive: 30 * time.Second,
-			}).Dial,
-		},
-	}}
-)
+var defaultClient = &Client{hc: &http.Client{
+	Transport: &http.Transport{
+		Dial: (&net.Dialer{
+			Timeout:   2 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).Dial,
+	},
+}}
 
 // NotDefinedError is returned when requested metadata is not defined.
 //
@@ -205,10 +195,9 @@ func systemInfoSuggestsGCE() bool {
 	return name == "Google" || name == "Google Compute Engine"
 }
 
-// Subscribe calls Client.Subscribe on a client designed for subscribing (one with no
-// ResponseHeaderTimeout).
+// Subscribe calls Client.Subscribe on the default client.
 func Subscribe(suffix string, fn func(v string, ok bool) error) error {
-	return subscribeClient.Subscribe(suffix, fn)
+	return defaultClient.Subscribe(suffix, fn)
 }
 
 // Get calls Client.Get on the default client.
