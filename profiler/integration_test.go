@@ -189,7 +189,7 @@ func TestAgentIntegration(t *testing.T) {
 				Name:        fmt.Sprintf("profiler-test-gomaster-%s", runID),
 				MachineType: "n1-standard-1",
 			},
-			name:             fmt.Sprintf("profiler-test-gomaster"),
+			name:             "profiler-test-gomaster",
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
 			goVersion:        "master",
 			mutexProfiling:   true,
