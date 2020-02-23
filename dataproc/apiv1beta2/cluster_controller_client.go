@@ -206,7 +206,7 @@ func (c *ClusterControllerClient) setGoogleClientInfo(keyval ...string) {
 
 // CreateCluster creates a cluster in a project. The returned
 // [Operation.metadata][google.longrunning.Operation.metadata] will be
-// ClusterOperationMetadata (at /dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
+// ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
 func (c *ClusterControllerClient) CreateCluster(ctx context.Context, req *dataprocpb.CreateClusterRequest, opts ...gax.CallOption) (*CreateClusterOperation, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.CreateCluster[0:len(c.CallOptions.CreateCluster):len(c.CallOptions.CreateCluster)], opts...)
@@ -226,7 +226,7 @@ func (c *ClusterControllerClient) CreateCluster(ctx context.Context, req *datapr
 
 // UpdateCluster updates a cluster in a project. The returned
 // [Operation.metadata][google.longrunning.Operation.metadata] will be
-// ClusterOperationMetadata (at /dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
+// ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
 func (c *ClusterControllerClient) UpdateCluster(ctx context.Context, req *dataprocpb.UpdateClusterRequest, opts ...gax.CallOption) (*UpdateClusterOperation, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.UpdateCluster[0:len(c.CallOptions.UpdateCluster):len(c.CallOptions.UpdateCluster)], opts...)
@@ -246,7 +246,7 @@ func (c *ClusterControllerClient) UpdateCluster(ctx context.Context, req *datapr
 
 // DeleteCluster deletes a cluster in a project. The returned
 // [Operation.metadata][google.longrunning.Operation.metadata] will be
-// ClusterOperationMetadata (at /dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
+// ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
 func (c *ClusterControllerClient) DeleteCluster(ctx context.Context, req *dataprocpb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.DeleteCluster[0:len(c.CallOptions.DeleteCluster):len(c.CallOptions.DeleteCluster)], opts...)
@@ -322,7 +322,7 @@ func (c *ClusterControllerClient) ListClusters(ctx context.Context, req *datapro
 
 // DiagnoseCluster gets cluster diagnostic information. The returned
 // [Operation.metadata][google.longrunning.Operation.metadata] will be
-// ClusterOperationMetadata (at /dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
+// ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
 // After the operation completes,
 // [Operation.response][google.longrunning.Operation.response]
 // contains

@@ -268,9 +268,9 @@ func (c *WorkflowTemplateClient) GetWorkflowTemplate(ctx context.Context, req *d
 // clusters to be deleted.
 //
 // The [Operation.metadata][google.longrunning.Operation.metadata] will be
-// WorkflowMetadata (at /dataproc/docs/reference/rpc/google.cloud.dataproc.v1#workflowmetadata).
+// WorkflowMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#workflowmetadata).
 // Also see Using
-// WorkflowMetadata (at /dataproc/docs/concepts/workflows/debugging#using_workflowmetadata).
+// WorkflowMetadata (at https://cloud.google.com/dataproc/docs/concepts/workflows/debugging#using_workflowmetadata).
 //
 // On successful completion,
 // [Operation.response][google.longrunning.Operation.response] will be
@@ -310,9 +310,9 @@ func (c *WorkflowTemplateClient) InstantiateWorkflowTemplate(ctx context.Context
 // clusters to be deleted.
 //
 // The [Operation.metadata][google.longrunning.Operation.metadata] will be
-// WorkflowMetadata (at /dataproc/docs/reference/rpc/google.cloud.dataproc.v1#workflowmetadata).
+// WorkflowMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#workflowmetadata).
 // Also see Using
-// WorkflowMetadata (at /dataproc/docs/concepts/workflows/debugging#using_workflowmetadata).
+// WorkflowMetadata (at https://cloud.google.com/dataproc/docs/concepts/workflows/debugging#using_workflowmetadata).
 //
 // On successful completion,
 // [Operation.response][google.longrunning.Operation.response] will be

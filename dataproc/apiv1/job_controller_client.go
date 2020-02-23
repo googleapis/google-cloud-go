@@ -277,9 +277,9 @@ func (c *JobControllerClient) UpdateJob(ctx context.Context, req *dataprocpb.Upd
 
 // CancelJob starts a job cancellation request. To access the job resource
 // after cancellation, call
-// regions/{region}/jobs.list (at /dataproc/docs/reference/rest/v1/projects.regions.jobs/list)
+// regions/{region}/jobs.list (at https://cloud.google.com/dataproc/docs/reference/rest/v1/projects.regions.jobs/list)
 // or
-// regions/{region}/jobs.get (at /dataproc/docs/reference/rest/v1/projects.regions.jobs/get).
+// regions/{region}/jobs.get (at https://cloud.google.com/dataproc/docs/reference/rest/v1/projects.regions.jobs/get).
 func (c *JobControllerClient) CancelJob(ctx context.Context, req *dataprocpb.CancelJobRequest, opts ...gax.CallOption) (*dataprocpb.Job, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.CancelJob[0:len(c.CallOptions.CancelJob):len(c.CallOptions.CancelJob)], opts...)
