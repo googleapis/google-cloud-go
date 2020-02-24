@@ -36,7 +36,7 @@ func TestRetryInfo(t *testing.T) {
 	trailers := map[string]string{
 		retryInfoKey: string(b),
 	}
-	gotDelay, ok := extractRetryDelay(toSpannerErrorWithMetadata(status.Errorf(codes.Aborted, ""), metadata.New(trailers)))
+	gotDelay, ok := extractRetryDelay(toSpannerErrorWithMetadata(status.Errorf(codes.Aborted, ""), metadata.New(trailers), true))
 	if !ok || !testEqual(time.Second, gotDelay) {
 		t.Errorf("<ok, retryDelay> = <%t, %v>, want <true, %v>", ok, gotDelay, time.Second)
 	}
@@ -52,7 +52,7 @@ func TestRetryerRespectsServerDelay(t *testing.T) {
 		retryInfoKey: string(b),
 	}
 	retryer := onCodes(gax.Backoff{}, codes.Aborted)
-	err := toSpannerErrorWithMetadata(status.Errorf(codes.Aborted, "transaction was aborted"), metadata.New(trailers))
+	err := toSpannerErrorWithMetadata(status.Errorf(codes.Aborted, "transaction was aborted"), metadata.New(trailers), true)
 	maxSeenDelay, shouldRetry := retryer.Retry(err)
 	if !shouldRetry {
 		t.Fatalf("expected shouldRetry to be true")

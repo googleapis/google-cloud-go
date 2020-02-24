@@ -918,7 +918,7 @@ func (t *ReadWriteTransaction) commit(ctx context.Context) (time.Time, error) {
 		Mutations: mPb,
 	}, gax.WithGRPCOptions(grpc.Trailer(&trailer)))
 	if e != nil {
-		return ts, toSpannerErrorWithMetadata(e, trailer)
+		return ts, toSpannerErrorWithMetadata(e, trailer, true)
 	}
 	if tstamp := res.GetCommitTimestamp(); tstamp != nil {
 		ts = time.Unix(tstamp.Seconds, int64(tstamp.Nanos))
@@ -1036,7 +1036,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 				// Discard the bad session.
 				sh.destroy()
 			}
-			return ts, toSpannerError(err)
+			return ts, toSpannerErrorWithMetadata(err, trailers, true)
 		} else if err == nil {
 			if tstamp := res.GetCommitTimestamp(); tstamp != nil {
 				ts = time.Unix(tstamp.Seconds, int64(tstamp.Nanos))

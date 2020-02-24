@@ -239,7 +239,11 @@ func TestTransaction_SessionNotFound(t *testing.T) {
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
 	}
-	if _, got := client.Apply(ctx, ms, ApplyAtLeastOnce()); !testEqual(wantErr, got) {
+	_, got := client.Apply(ctx, ms, ApplyAtLeastOnce())
+	// Remove any trailers sent by the mock server to prevent the comparison to
+	// fail on that.
+	got.(*Error).trailers = nil
+	if !testEqual(wantErr, got) {
 		t.Fatalf("Expect Apply to fail, got %v, want %v.", got, wantErr)
 	}
 }
