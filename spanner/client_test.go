@@ -1449,3 +1449,35 @@ func TestClient_WriteStructWithPointers(t *testing.T) {
 		}
 	}
 }
+
+func TestReadWriteTransaction_ContextTimeoutDuringDuringCommit(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
+			MinimumExecutionTime: time.Minute,
+		})
+	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+	defer cancel()
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		tx.BufferWrite([]*Mutation{Insert("FOO", []string{"ID", "NAME"}, []interface{}{int64(1), "bar"})})
+		return nil
+	})
+	errContext, _ := context.WithTimeout(context.Background(), -time.Second)
+	w := toSpannerErrorWithMetadata(errContext.Err(), nil, true).(*Error)
+	var se *Error
+	if !errorAs(err, &se) {
+		t.Fatalf("Error mismatch\nGot: %v\nWant: %v", err, w)
+	}
+	if se.GRPCStatus().Code() != w.GRPCStatus().Code() {
+		t.Fatalf("Error status mismatch:\nGot: %v\nWant: %v", se.GRPCStatus(), w.GRPCStatus())
+	}
+	if se.Error() != w.Error() {
+		t.Fatalf("Error message mismatch:\nGot %s\nWant: %s", se.Error(), w.Error())
+	}
+	var outcome *TransactionOutcomeUnknownError
+	if !errorAs(err, &outcome) {
+		t.Fatalf("Missing wrapped TransactionOutcomeUnknownError error")
+	}
+}

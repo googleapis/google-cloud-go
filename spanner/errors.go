@@ -46,6 +46,25 @@ type Error struct {
 	additionalInformation string
 }
 
+// TransactionOutcomeUnknownError is wrapped in a Spanner error when the error
+// occurred during a transaction, and the outcome of the transaction is
+// unknown as a result of the error. This could be the case if a timeout or
+// canceled error occurs after a Commit request has been sent, but before the
+// client has received a response from the server.
+type TransactionOutcomeUnknownError struct {
+	// err is the wrapped error that caused this TransactionOutcomeUnknownError
+	// error. The wrapped error can be read with the Unwrap method.
+	err error
+}
+
+const transactionOutcomeUnknownMsg = "transaction outcome unknown"
+
+// Error implements error.Error.
+func (*TransactionOutcomeUnknownError) Error() string { return transactionOutcomeUnknownMsg }
+
+// Unwrap returns the wrapped error (if any).
+func (e *TransactionOutcomeUnknownError) Unwrap() error { return e.err }
+
 // Error implements error.Error.
 func (e *Error) Error() string {
 	if e == nil {
@@ -100,14 +119,14 @@ func spannerErrorf(code codes.Code, format string, args ...interface{}) error {
 
 // toSpannerError converts general Go error to *spanner.Error.
 func toSpannerError(err error) error {
-	return toSpannerErrorWithMetadata(err, nil)
+	return toSpannerErrorWithMetadata(err, nil, false)
 }
 
 // toSpannerErrorWithMetadata converts general Go error and grpc trailers to
 // *spanner.Error.
 //
 // Note: modifies original error if trailers aren't nil.
-func toSpannerErrorWithMetadata(err error, trailers metadata.MD) error {
+func toSpannerErrorWithMetadata(err error, trailers metadata.MD, errorDuringCommit bool) error {
 	if err == nil {
 		return nil
 	}
@@ -120,11 +139,24 @@ func toSpannerErrorWithMetadata(err error, trailers metadata.MD) error {
 	}
 	switch {
 	case err == context.DeadlineExceeded || err == context.Canceled:
-		return &Error{status.FromContextError(err).Code(), status.FromContextError(err).Err(), err.Error(), trailers, ""}
+		desc := err.Error()
+		wrapped := status.FromContextError(err).Err()
+		if errorDuringCommit {
+			desc = fmt.Sprintf("%s, %s", desc, transactionOutcomeUnknownMsg)
+			wrapped = &TransactionOutcomeUnknownError{err: wrapped}
+		}
+		return &Error{status.FromContextError(err).Code(), wrapped, desc, trailers, ""}
 	case status.Code(err) == codes.Unknown:
 		return &Error{codes.Unknown, err, err.Error(), trailers, ""}
 	default:
-		return &Error{status.Convert(err).Code(), err, status.Convert(err).Message(), trailers, ""}
+		statusErr := status.Convert(err)
+		code, desc := statusErr.Code(), statusErr.Message()
+		wrapped := err
+		if errorDuringCommit && (code == codes.DeadlineExceeded || code == codes.Canceled) {
+			desc = fmt.Sprintf("%s, %s", desc, transactionOutcomeUnknownMsg)
+			wrapped = &TransactionOutcomeUnknownError{err: wrapped}
+		}
+		return &Error{code, wrapped, desc, trailers, ""}
 	}
 }
 
