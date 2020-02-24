@@ -81,6 +81,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "beta",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/memcache/v1beta2",
+		pkg:                   "memcache",
+		importPath:            "cloud.google.com/go/memcache/apiv1beta2",
+		gRPCServiceConfigPath: "google/cloud/memcache/v1beta2/memcache_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/memcache/v1beta2/memcache_v1beta2.yaml",
+		releaseLevel:          "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/phishingprotection/v1beta1",
 		pkg:                   "phishingprotection",
 		importPath:            "cloud.google.com/go/phishingprotection/apiv1beta1",
