@@ -60,8 +60,6 @@ mkdir $KOKORO_ARTIFACTS_DIR/tests
 # Takes the kokoro output log (raw stdout) and creates a machine-parseable xml
 # file (xUnit). Then it exits with whatever exit code the last command had.
 create_junit_xml() {
-  last_status_code=$?
-
   cat $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt \
     | go-junit-report > $KOKORO_ARTIFACTS_DIR/tests/sponge_log.xml
 
@@ -69,16 +67,18 @@ create_junit_xml() {
     chmod +x $KOKORO_GFILE_DIR/linux_amd64/buildcop
     $KOKORO_GFILE_DIR/linux_amd64/buildcop -logs_dir=$KOKORO_ARTIFACTS_DIR
   fi
-
-  exit $last_status_code
 }
 
 trap create_junit_xml EXIT ERR
 
+exit_code=0
 # Run tests and tee output to log file, to be pushed to GCS as artifact.
 for i in `find . -name go.mod`; do
   pushd `dirname $i`;
     go test -race -v -timeout 30m ./... 2>&1 \
       | tee -a $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt
+    exit_code=$(($exit_code + $?))
   popd;
 done
+
+exit $exit_code
