@@ -17,6 +17,7 @@ limitations under the License.
 package spannertest
 
 import (
+	"io"
 	"reflect"
 	"testing"
 
@@ -130,7 +131,7 @@ func TestTableData(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Reading keys: %v", err)
 	}
-	all := slurp(ri)
+	all := slurp(t, ri)
 	wantAll := [][]interface{}{
 		{"George", int64(6)},
 		{"Sam", int64(9)},
@@ -152,7 +153,7 @@ func TestTableData(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Reading key ranges: %v", err)
 	}
-	all = slurp(ri)
+	all = slurp(t, ri)
 	if !reflect.DeepEqual(all, wantAll) {
 		t.Errorf("Read data by key ranges wrong.\n got %v\nwant %v", all, wantAll)
 	}
@@ -167,10 +168,10 @@ func TestTableData(t *testing.T) {
 		{Name: "Name", Type: spansql.Type{Base: spansql.String}},
 		{Name: "Height", Type: spansql.Type{Base: spansql.Float64}},
 	}
-	if !reflect.DeepEqual(ri.Cols, wantCols) {
-		t.Errorf("ReadAll cols wrong.\n got %v\nwant %v", ri.Cols, wantCols)
+	if !reflect.DeepEqual(ri.Cols(), wantCols) {
+		t.Errorf("ReadAll cols wrong.\n got %v\nwant %v", ri.Cols(), wantCols)
 	}
-	all = slurp(ri)
+	all = slurp(t, ri)
 	wantAll = [][]interface{}{
 		// Primary key is (Name, ID), so results should come back sorted by Name then ID.
 		{int64(11), "Daniel", 1.83},
@@ -442,7 +443,7 @@ func TestTableData(t *testing.T) {
 			t.Errorf("Query(%q, %v): %v", test.q, test.params, err)
 			continue
 		}
-		all := slurp(ri)
+		all := slurp(t, ri)
 		if !reflect.DeepEqual(all, test.want) {
 			t.Errorf("Results from Query(%q, %v) are wrong.\n got %v\nwant %v", test.q, test.params, all, test.want)
 		}
@@ -492,7 +493,7 @@ func TestTableDescendingKey(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Query: %v", err)
 	}
-	got := slurp(ri)
+	got := slurp(t, ri)
 	want := [][]interface{}{
 		{"box", int64(3), 1.3},
 		{"box", int64(2), 1.2},
@@ -508,11 +509,14 @@ func TestTableDescendingKey(t *testing.T) {
 	// TestKeyRange exercises the edge cases for key range reading.
 }
 
-func slurp(ri *resultIter) (all [][]interface{}) {
+func slurp(t *testing.T, ri rowIter) (all [][]interface{}) {
+	t.Helper()
 	for {
-		row, ok := ri.Next()
-		if !ok {
+		row, err := ri.Next()
+		if err == io.EOF {
 			return
+		} else if err != nil {
+			t.Fatalf("Reading rows: %v", err)
 		}
 		all = append(all, row)
 	}

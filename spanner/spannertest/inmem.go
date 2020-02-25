@@ -48,6 +48,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"io"
 	"log"
 	"math/rand"
 	"net"
@@ -522,7 +523,7 @@ func (s *server) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Span
 		return fmt.Errorf("partition restrictions not supported")
 	}
 
-	var ri *resultIter
+	var ri rowIter
 	if req.KeySet.All {
 		s.logf("Reading all from %s (cols: %v)", req.Table, req.Columns)
 		ri, err = s.db.ReadAll(req.Table, req.Columns, req.Limit)
@@ -541,13 +542,13 @@ func (s *server) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Span
 	return s.readStream(stream.Context(), tx, stream.Send, ri)
 }
 
-func (s *server) readStream(ctx context.Context, tx *transaction, send func(*spannerpb.PartialResultSet) error, ri *resultIter) error {
+func (s *server) readStream(ctx context.Context, tx *transaction, send func(*spannerpb.PartialResultSet) error, ri rowIter) error {
 	// Build the result set metadata.
 	rsm := &spannerpb.ResultSetMetadata{
 		RowType: &spannerpb.StructType{},
 		// TODO: transaction info?
 	}
-	for _, ci := range ri.Cols {
+	for _, ci := range ri.Cols() {
 		st, err := spannerTypeFromType(ci.Type)
 		if err != nil {
 			return err
@@ -559,9 +560,11 @@ func (s *server) readStream(ctx context.Context, tx *transaction, send func(*spa
 	}
 
 	for {
-		row, ok := ri.Next()
-		if !ok {
+		row, err := ri.Next()
+		if err == io.EOF {
 			break
+		} else if err != nil {
+			return err
 		}
 
 		values := make([]*structpb.Value, len(row))

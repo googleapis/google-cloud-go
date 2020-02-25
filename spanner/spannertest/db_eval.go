@@ -34,66 +34,45 @@ type evalContext struct {
 	params queryParams
 }
 
-func (d *database) evalSelect(sel spansql.Select, params queryParams, aux []spansql.Expr) (ri *resultIter, evalErr error) {
-	// TODO: weave this in below.
-	if len(sel.From) == 0 && sel.Where == nil {
-		// Simple expressions.
-		ri := &resultIter{}
-		ec := evalContext{
-			params: params,
+func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIter, evalErr error) {
+	ri = &nullIter{}
+	ec := evalContext{
+		params: params,
+	}
+
+	// First stage is to identify the data source.
+	// If there's a FROM then that names a table to use.
+	if len(sel.From) > 1 {
+		return nil, fmt.Errorf("selecting from more than one table not yet supported")
+	}
+	if len(sel.From) == 1 {
+		tableName := sel.From[0].Table
+		t, err := d.table(tableName)
+		if err != nil {
+			return nil, err
 		}
-		var r row
-		for _, e := range sel.List {
-			ci, err := ec.colInfo(e)
-			if err != nil {
-				return nil, err
+		t.mu.Lock()
+		defer t.mu.Unlock()
+		ri = &tableIter{t: t}
+		ec.table = t
+	}
+	defer func() {
+		// If we're about to return a tableIter, convert it to a rawIter
+		// so that the table may be safely unlocked.
+		if evalErr == nil {
+			if ti, ok := ri.(*tableIter); ok {
+				ri, evalErr = toRawIter(ti)
 			}
-			// TODO: set column names?
-			ri.Cols = append(ri.Cols, ci)
-
-			x, err := ec.evalExpr(e)
-			if err != nil {
-				return nil, err
-			}
-			r = append(r, x)
 		}
-		ri.rows = []resultRow{{data: r}}
-		return ri, nil
-	}
+	}()
 
-	if len(sel.From) != 1 {
-		return nil, fmt.Errorf("selecting from more than one table not supported")
-	}
-	tableName := sel.From[0].Table
-	t, err := d.table(tableName)
-	if err != nil {
-		return nil, err
-	}
-
-	ri = &resultIter{}
-
-	// Handle SELECT DISTINCT on the way out.
-	if sel.Distinct {
-		defer func() {
-			if evalErr != nil {
-				return
-			}
-			// This is hilariously inefficient; O(N^2) in the number of returned rows.
-			// Some sort of hashing could be done to deduplicate instead.
-			// This also breaks on array/struct types.
-			for i := 0; i < len(ri.rows); i++ {
-				for j := i + 1; j < len(ri.rows); {
-					if !rowEqual(ri.rows[i].data, ri.rows[j].data) {
-						// Distinct rows.
-						j++
-						continue
-					}
-					// Non-distinct rows.
-					copy(ri.rows[j:], ri.rows[j+1:])
-					ri.rows = ri.rows[:len(ri.rows)-1]
-				}
-			}
-		}()
+	// Apply WHERE.
+	if sel.Where != nil {
+		ri = whereIter{
+			ri:    ri,
+			ec:    ec,
+			where: sel.Where,
+		}
 	}
 
 	// Handle COUNT(*) specially.
@@ -105,28 +84,25 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams, aux []span
 			if evalErr != nil {
 				return
 			}
-			count := int64(len(ri.rows))
-			ri.rows = []resultRow{
-				{data: []interface{}{count}},
+			raw, err := toRawIter(ri)
+			if err != nil {
+				ri, evalErr = nil, err
 			}
+			count := int64(len(raw.rows))
+			raw.rows = []row{{count}}
+			ri, evalErr = raw, nil
 		}()
 	}
 
 	// TODO: Support table sampling.
 
-	t.mu.Lock()
-	defer t.mu.Unlock()
-	ec := evalContext{
-		table:  t,
-		params: params,
-	}
-
+	// Apply SELECT list.
+	var colInfos []colInfo
 	// Is this a `SELECT *` query?
 	selectStar := len(sel.List) == 1 && sel.List[0] == spansql.Star
-
 	if selectStar {
 		// Every column will appear in the output.
-		ri.Cols = append([]colInfo(nil), ec.table.cols...)
+		colInfos = append([]colInfo(nil), ec.table.cols...)
 	} else {
 		for _, e := range sel.List {
 			ci, err := ec.colInfo(e)
@@ -134,45 +110,19 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams, aux []span
 				return nil, err
 			}
 			// TODO: deal with ci.Name == ""?
-			ri.Cols = append(ri.Cols, ci)
+			colInfos = append(colInfos, ci)
 		}
 	}
-	for _, r := range t.rows {
-		ec.row = r
+	ri = selIter{
+		ri:   ri,
+		ec:   ec,
+		cis:  colInfos,
+		list: sel.List,
+	}
 
-		// See if we want this row.
-		if sel.Where != nil {
-			b, err := ec.evalBoolExpr(sel.Where)
-			if err != nil {
-				return nil, err
-			}
-			if !b {
-				continue
-			}
-		}
-
-		// Evaluate SELECT expression list on the row.
-		var res resultRow
-		if selectStar {
-			var out []interface{}
-			for i := range r {
-				out = append(out, r.copyDataElem(i))
-			}
-			res.data = out
-		} else {
-			out, err := ec.evalExprList(sel.List)
-			if err != nil {
-				return nil, err
-			}
-			res.data = out
-		}
-		a, err := ec.evalExprList(aux)
-		if err != nil {
-			return nil, err
-		}
-		res.aux = a
-
-		ri.rows = append(ri.rows, res)
+	// Apply DISTINCT.
+	if sel.Distinct {
+		ri = &distinctIter{ri: ri}
 	}
 
 	return ri, nil

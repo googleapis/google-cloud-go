@@ -452,41 +452,8 @@ func (d *database) Delete(tx *transaction, table string, keys []*structpb.ListVa
 	return nil
 }
 
-// resultIter is returned by reads and queries.
-// Use its Next method to iterate over the result rows.
-type resultIter struct {
-	// Cols is the metadata about the returned data.
-	Cols []colInfo
-
-	// rows holds the result data itself.
-	rows []resultRow
-}
-
-type resultRow struct {
-	data []interface{}
-
-	// aux is any auxiliary values evaluated for the row.
-	// When a query has an ORDER BY clause, this will contain the values for those expressions.
-	aux []interface{}
-}
-
-func (ri *resultIter) Next() ([]interface{}, bool) {
-	if len(ri.rows) == 0 {
-		return nil, false
-	}
-	res := ri.rows[0]
-	ri.rows = ri.rows[1:]
-	return res.data, true
-}
-
-func (ri *resultIter) add(src row, colIndexes []int) {
-	ri.rows = append(ri.rows, resultRow{
-		data: src.copyData(colIndexes),
-	})
-}
-
 // readTable executes a read option (Read, ReadAll).
-func (d *database) readTable(table string, cols []string, f func(*table, *resultIter, []int) error) (*resultIter, error) {
+func (d *database) readTable(table string, cols []string, f func(*table, *rawIter, []int) error) (*rawIter, error) {
 	t, err := d.table(table)
 	if err != nil {
 		return nil, err
@@ -500,15 +467,15 @@ func (d *database) readTable(table string, cols []string, f func(*table, *result
 		return nil, err
 	}
 
-	ri := &resultIter{}
+	ri := &rawIter{}
 	for _, i := range colIndexes {
-		ri.Cols = append(ri.Cols, t.cols[i])
+		ri.cols = append(ri.cols, t.cols[i])
 	}
 	return ri, f(t, ri, colIndexes)
 }
 
-func (d *database) Read(tbl string, cols []string, keys []*structpb.ListValue, keyRanges keyRangeList, limit int64) (*resultIter, error) {
-	return d.readTable(tbl, cols, func(t *table, ri *resultIter, colIndexes []int) error {
+func (d *database) Read(tbl string, cols []string, keys []*structpb.ListValue, keyRanges keyRangeList, limit int64) (rowIter, error) {
+	return d.readTable(tbl, cols, func(t *table, ri *rawIter, colIndexes []int) error {
 		// "If the same key is specified multiple times in the set (for
 		// example if two ranges, two keys, or a key and a range
 		// overlap), Cloud Spanner behaves as if the key were only
@@ -564,8 +531,8 @@ func (d *database) Read(tbl string, cols []string, keys []*structpb.ListValue, k
 	})
 }
 
-func (d *database) ReadAll(tbl string, cols []string, limit int64) (*resultIter, error) {
-	return d.readTable(tbl, cols, func(t *table, ri *resultIter, colIndexes []int) error {
+func (d *database) ReadAll(tbl string, cols []string, limit int64) (*rawIter, error) {
+	return d.readTable(tbl, cols, func(t *table, ri *rawIter, colIndexes []int) error {
 		for _, r := range t.rows {
 			ri.add(r, colIndexes)
 			if limit > 0 && len(ri.rows) >= int(limit) {
@@ -574,56 +541,6 @@ func (d *database) ReadAll(tbl string, cols []string, limit int64) (*resultIter,
 		}
 		return nil
 	})
-}
-
-type queryParams map[string]interface{}
-
-func (d *database) Query(q spansql.Query, params queryParams) (*resultIter, error) {
-	// If there's an ORDER BY clause, prepare the list of auxiliary data we need.
-	// This is provided to evalSelect to evaluate with each row.
-	var aux []spansql.Expr
-	var desc []bool
-	if len(q.Order) > 0 {
-		if len(q.Select.From) == 0 {
-			return nil, fmt.Errorf("ORDER BY doesn't work without a table")
-		}
-
-		for _, o := range q.Order {
-			aux = append(aux, o.Expr)
-			desc = append(desc, o.Desc)
-		}
-	}
-
-	ri, err := d.evalSelect(q.Select, params, aux)
-	if err != nil {
-		return nil, err
-	}
-	if len(q.Order) > 0 {
-		sort.Slice(ri.rows, func(one, two int) bool {
-			r1, r2 := ri.rows[one], ri.rows[two]
-			for i := range r1.aux {
-				cmp := compareVals(r1.aux[i], r2.aux[i])
-				if desc[i] {
-					cmp = -cmp
-				}
-				if cmp == 0 {
-					continue
-				}
-				return cmp < 0
-			}
-			return false
-		})
-	}
-	if q.Limit != nil {
-		lim, err := evalLimit(q.Limit, params)
-		if err != nil {
-			return nil, err
-		}
-		if n := int(lim); n < len(ri.rows) {
-			ri.rows = ri.rows[:n]
-		}
-	}
-	return ri, nil
 }
 
 func (t *table) addColumn(cd spansql.ColumnDef) *status.Status {
