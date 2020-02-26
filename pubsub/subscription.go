@@ -419,7 +419,7 @@ var minAckDeadline = 10 * time.Second
 // DefaultReceiveSettings holds the default values for ReceiveSettings.
 var DefaultReceiveSettings = ReceiveSettings{
 	MaxExtension:           60 * time.Minute,
-	MaxExtensionPeriod:     -1,
+	MaxExtensionPeriod:     0,
 	MaxOutstandingMessages: 1000,
 	MaxOutstandingBytes:    1e9, // 1G
 	NumGoroutines:          1,
