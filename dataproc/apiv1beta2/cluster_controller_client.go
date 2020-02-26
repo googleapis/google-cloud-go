@@ -326,7 +326,7 @@ func (c *ClusterControllerClient) ListClusters(ctx context.Context, req *datapro
 // After the operation completes,
 // [Operation.response][google.longrunning.Operation.response]
 // contains
-// Empty (at google.protobuf.Empty).
+// [Empty][google.protobuf.Empty].
 func (c *ClusterControllerClient) DiagnoseCluster(ctx context.Context, req *dataprocpb.DiagnoseClusterRequest, opts ...gax.CallOption) (*DiagnoseClusterOperation, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.DiagnoseCluster[0:len(c.CallOptions.DiagnoseCluster):len(c.CallOptions.DiagnoseCluster)], opts...)
