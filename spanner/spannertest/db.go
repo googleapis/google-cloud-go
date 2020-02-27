@@ -182,6 +182,12 @@ func (r row) copyData(indexes []int) row {
 	return dst
 }
 
+func (d *database) LastCommitTimestamp() time.Time {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	return d.lastTS
+}
+
 func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 	d.mu.Lock()
 	defer d.mu.Unlock()

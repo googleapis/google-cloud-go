@@ -607,7 +607,15 @@ func (s *server) BeginTransaction(ctx context.Context, req *spannerpb.BeginTrans
 	sess.transactions[id] = tx
 	sess.mu.Unlock()
 
-	return &spannerpb.Transaction{Id: []byte(id)}, nil
+	tr := &spannerpb.Transaction{Id: []byte(id)}
+
+	if req.GetOptions().GetReadOnly().GetReturnReadTimestamp() {
+		// Return the last commit timestamp.
+		// This isn't wholly accurate, but may be good enough for simple use cases.
+		tr.ReadTimestamp = timestampProto(s.db.LastCommitTimestamp())
+	}
+
+	return tr, nil
 }
 
 func (s *server) Commit(ctx context.Context, req *spannerpb.CommitRequest) (resp *spannerpb.CommitResponse, err error) {
