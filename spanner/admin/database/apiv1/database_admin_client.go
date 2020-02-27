@@ -264,8 +264,8 @@ func (c *DatabaseAdminClient) ListDatabases(ctx context.Context, req *databasepb
 // have a name of the format <database_name>/operations/<operation_id> and
 // can be used to track preparation of the database. The
 // [metadata][google.longrunning.Operation.metadata] field type is
-// [CreateDatabaseMetadata][google.spanner.admin.database.v1.CreateDatabaseMetadata].
-// The [response][google.longrunning.Operation.response] field type is
+// [CreateDatabaseMetadata][google.spanner.admin.database.v1.CreateDatabaseMetadata]. The
+// [response][google.longrunning.Operation.response] field type is
 // [Database][google.spanner.admin.database.v1.Database], if successful.
 func (c *DatabaseAdminClient) CreateDatabase(ctx context.Context, req *databasepb.CreateDatabaseRequest, opts ...gax.CallOption) (*CreateDatabaseOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -308,8 +308,7 @@ func (c *DatabaseAdminClient) GetDatabase(ctx context.Context, req *databasepb.G
 // the format <database_name>/operations/<operation_id> and can be used to
 // track execution of the schema change(s). The
 // [metadata][google.longrunning.Operation.metadata] field type is
-// [UpdateDatabaseDdlMetadata][google.spanner.admin.database.v1.UpdateDatabaseDdlMetadata].
-// The operation has no response.
+// [UpdateDatabaseDdlMetadata][google.spanner.admin.database.v1.UpdateDatabaseDdlMetadata].  The operation has no response.
 func (c *DatabaseAdminClient) UpdateDatabaseDdl(ctx context.Context, req *databasepb.UpdateDatabaseDdlRequest, opts ...gax.CallOption) (*UpdateDatabaseDdlOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

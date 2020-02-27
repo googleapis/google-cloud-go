@@ -407,6 +407,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/pubsub",
     "release_level": "ga"
   },
+  "cloud.google.com/go/pubsub/apiv1": {
+    "distribution_name": "cloud.google.com/go/pubsub/apiv1",
+    "description": "Cloud Pub/Sub API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1",
+    "release_level": "ga"
+  },
   "cloud.google.com/go/recaptchaenterprise/apiv1beta1": {
     "distribution_name": "cloud.google.com/go/recaptchaenterprise/apiv1beta1",
     "description": "reCAPTCHA Enterprise API",
@@ -461,6 +469,14 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/scheduler/apiv1beta1",
+    "release_level": "beta"
+  },
+  "cloud.google.com/go/secretmanager/apiv1": {
+    "distribution_name": "cloud.google.com/go/secretmanager/apiv1",
+    "description": "Secret Manager API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/secretmanager/apiv1",
     "release_level": "beta"
   },
   "cloud.google.com/go/secretmanager/apiv1beta1": {
