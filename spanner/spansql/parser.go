@@ -1159,8 +1159,17 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 		}
 		a.Alteration = SetOnDelete{Action: od}
 		return a, nil
+	case "ALTER":
+		if err := p.expect("COLUMN"); err != nil {
+			return nil, err
+		}
+		cd, err := p.parseColumnDef()
+		if err != nil {
+			return nil, err
+		}
+		a.Alteration = AlterColumn{Def: cd}
+		return a, nil
 	}
-	// TODO: "ALTER"
 }
 
 func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {

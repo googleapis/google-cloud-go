@@ -114,9 +114,13 @@ func (at *AlterTable) String() string { return fmt.Sprintf("%#v", at) }
 func (*AlterTable) isDDLStmt()        {}
 func (at *AlterTable) Pos() Position  { return at.Position }
 func (at *AlterTable) clearOffset() {
-	if ac, ok := at.Alteration.(AddColumn); ok {
-		ac.Def.clearOffset()
-		at.Alteration = ac
+	switch alt := at.Alteration.(type) {
+	case AddColumn:
+		alt.Def.clearOffset()
+		at.Alteration = alt
+	case AlterColumn:
+		alt.Def.clearOffset()
+		at.Alteration = alt
 	}
 	at.Position.Offset = 0
 }
@@ -130,12 +134,12 @@ type TableAlteration interface {
 func (AddColumn) isTableAlteration()   {}
 func (DropColumn) isTableAlteration()  {}
 func (SetOnDelete) isTableAlteration() {}
-
-//func (AlterColumn) isTableAlteration() {}
+func (AlterColumn) isTableAlteration() {}
 
 type AddColumn struct{ Def ColumnDef }
 type DropColumn struct{ Name string }
 type SetOnDelete struct{ Action OnDelete }
+type AlterColumn struct{ Def ColumnDef }
 
 type OnDelete int
 
@@ -143,11 +147,6 @@ const (
 	NoActionOnDelete OnDelete = iota
 	CascadeOnDelete
 )
-
-/* TODO
-type AlterColumn struct {
-}
-*/
 
 // Delete represents a DELETE statement.
 // https://cloud.google.com/spanner/docs/dml-syntax#delete-statement
