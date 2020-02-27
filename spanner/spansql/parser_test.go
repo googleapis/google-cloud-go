@@ -241,6 +241,7 @@ func TestParseDDL(t *testing.T) {
 		ALTER TABLE FooBar ADD COLUMN TZ BYTES(20);
 		ALTER TABLE FooBar DROP COLUMN TZ;
 		ALTER TABLE FooBar SET ON DELETE NO ACTION;
+		ALTER TABLE FooBar ALTER COLUMN Author STRING(MAX) NOT NULL;
 
 		DROP INDEX MyFirstIndex;
 		DROP TABLE FooBar;
@@ -309,17 +310,27 @@ func TestParseDDL(t *testing.T) {
 				Alteration: SetOnDelete{Action: NoActionOnDelete},
 				Position:   line(20),
 			},
-			&DropIndex{Name: "MyFirstIndex", Position: line(22)},
-			&DropTable{Name: "FooBar", Position: line(23)},
+			&AlterTable{
+				Name: "FooBar",
+				Alteration: AlterColumn{Def: ColumnDef{
+					Name:     "Author",
+					Type:     Type{Base: String, Len: MaxLen},
+					NotNull:  true,
+					Position: line(21),
+				}},
+				Position: line(21),
+			},
+			&DropIndex{Name: "MyFirstIndex", Position: line(23)},
+			&DropTable{Name: "FooBar", Position: line(24)},
 			&CreateTable{
 				Name: "NonScalars",
 				Columns: []ColumnDef{
-					{Name: "Dummy", Type: Type{Base: Int64}, NotNull: true, Position: line(28)},
-					{Name: "Ids", Type: Type{Array: true, Base: Int64}, Position: line(29)},
-					{Name: "Names", Type: Type{Array: true, Base: String, Len: MaxLen}, Position: line(30)},
+					{Name: "Dummy", Type: Type{Base: Int64}, NotNull: true, Position: line(29)},
+					{Name: "Ids", Type: Type{Array: true, Base: Int64}, Position: line(30)},
+					{Name: "Names", Type: Type{Array: true, Base: String, Len: MaxLen}, Position: line(31)},
 				},
 				PrimaryKey: []KeyPart{{Column: "Dummy"}},
-				Position:   line(27),
+				Position:   line(28),
 			},
 		}, Comments: []*Comment{
 			{Marker: "#", Start: line(2), End: line(2),
@@ -328,11 +339,11 @@ func TestParseDDL(t *testing.T) {
 				Text: []string{"This is another comment."}},
 			{Marker: "/*", Start: line(4), End: line(5),
 				Text: []string{" This is a", "\t\t\t\t\t\t  * multiline comment."}},
-			{Marker: "--", Start: line(25), End: line(26),
+			{Marker: "--", Start: line(26), End: line(27),
 				Text: []string{"This table has some commentary", "that spans multiple lines."}},
 			// These comments shouldn't get combined:
-			{Marker: "--", Start: line(28), End: line(28), Text: []string{"dummy comment"}},
-			{Marker: "--", Start: line(29), End: line(29), Text: []string{"comment on ids"}},
+			{Marker: "--", Start: line(29), End: line(29), Text: []string{"dummy comment"}},
+			{Marker: "--", Start: line(30), End: line(30), Text: []string{"comment on ids"}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -368,6 +379,19 @@ func TestParseDDL(t *testing.T) {
 		got.clearOffset()
 		if !reflect.DeepEqual(got, test.want) {
 			t.Errorf("ParseDDL(%q) incorrect.\n got %v\nwant %v", test.in, got, test.want)
+
+			// Also log the specific elements that don't match to make it easier to debug
+			// especially the large DDLs.
+			for i := range got.List {
+				if !reflect.DeepEqual(got.List[i], test.want.List[i]) {
+					t.Errorf("\tstatement %d mismatch:\n\t got %v\n\twant %v", i, got.List[i], test.want.List[i])
+				}
+			}
+			for i := range got.Comments {
+				if !reflect.DeepEqual(got.Comments[i], test.want.Comments[i]) {
+					t.Errorf("\tcomment %d mismatch:\n\t got %v\n\twant %v", i, got.Comments[i], test.want.Comments[i])
+				}
+			}
 		}
 	}
 

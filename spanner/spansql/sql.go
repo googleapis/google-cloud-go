@@ -104,7 +104,9 @@ func (od OnDelete) SQL() string {
 	panic("unknown OnDelete")
 }
 
-// TODO func (ac AlterColumn) SQL() string { }
+func (ac AlterColumn) SQL() string {
+	return "ALTER COLUMN " + ac.Def.SQL()
+}
 
 func (d *Delete) SQL() string {
 	return "DELETE FROM " + d.Table + " WHERE " + d.Where.SQL()
