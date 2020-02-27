@@ -118,7 +118,7 @@ func TestTableData(t *testing.T) {
 		t.Fatalf("Updating a row: %v", err)
 	}
 	if _, err := tx.Commit(); err != nil {
-		t.Fatalf("Commiting changes: %v", err)
+		t.Fatalf("Committing changes: %v", err)
 	}
 
 	// Read some specific keys.
@@ -215,7 +215,7 @@ func TestTableData(t *testing.T) {
 		t.Fatalf("Updating rows: %v", err)
 	}
 	if _, err := tx.Commit(); err != nil {
-		t.Fatalf("Commiting changes: %v", err)
+		t.Fatalf("Committing changes: %v", err)
 	}
 
 	// Add some more data, then delete it with a KeyRange.
@@ -239,7 +239,7 @@ func TestTableData(t *testing.T) {
 		t.Fatalf("Deleting key range: %v", err)
 	}
 	if _, err := tx.Commit(); err != nil {
-		t.Fatalf("Commiting changes: %v", err)
+		t.Fatalf("Committing changes: %v", err)
 	}
 	// Re-add the data and delete with DML.
 	err = db.Insert(tx, "Staff", []string{"Name", "ID"}, []*structpb.ListValue{
@@ -297,7 +297,7 @@ func TestTableData(t *testing.T) {
 		t.Fatalf("Updating rows: %v", err)
 	}
 	if _, err := tx.Commit(); err != nil {
-		t.Fatalf("Commiting changes: %v", err)
+		t.Fatalf("Committing changes: %v", err)
 	}
 
 	// Do some complex queries.
@@ -480,7 +480,7 @@ func TestTableDescendingKey(t *testing.T) {
 		t.Fatalf("Inserting data: %v", err)
 	}
 	if _, err := tx.Commit(); err != nil {
-		t.Fatalf("Commiting changes: %v", err)
+		t.Fatalf("Committing changes: %v", err)
 	}
 
 	// Querying the entire table should return values in key order,
@@ -507,6 +507,152 @@ func TestTableDescendingKey(t *testing.T) {
 	}
 
 	// TestKeyRange exercises the edge cases for key range reading.
+}
+
+func TestTableSchemaConvertNull(t *testing.T) {
+	var db database
+	st := db.ApplyDDL(&spansql.CreateTable{
+		Name: "Songwriters",
+		Columns: []spansql.ColumnDef{
+			{Name: "ID", Type: spansql.Type{Base: spansql.Int64}, NotNull: true},
+			{Name: "Nickname", Type: spansql.Type{Base: spansql.String}},
+		},
+		PrimaryKey: []spansql.KeyPart{{Column: "ID"}},
+	})
+	if err := st.Err(); err != nil {
+		t.Fatal(err)
+	}
+
+	// Populate with data including a NULL for the STRING field.
+	tx := db.NewTransaction()
+	tx.Start()
+	err := db.Insert(tx, "Songwriters", []string{"ID", "Nickname"}, []*structpb.ListValue{
+		listV(stringV("6"), stringV("Tiger")),
+		listV(stringV("7"), nullV()),
+	})
+	if err != nil {
+		t.Fatalf("Inserting data: %v", err)
+	}
+	if _, err := tx.Commit(); err != nil {
+		t.Fatalf("Committing changes: %v", err)
+	}
+
+	// Convert the STRING field to a BYTES and back.
+	st = db.ApplyDDL(&spansql.AlterTable{
+		Name: "Songwriters",
+		Alteration: spansql.AlterColumn{
+			Def: spansql.ColumnDef{Name: "Nickname", Type: spansql.Type{Base: spansql.Bytes}},
+		},
+	})
+	if err := st.Err(); err != nil {
+		t.Fatalf("Converting STRING -> BYTES: %v", err)
+	}
+	st = db.ApplyDDL(&spansql.AlterTable{
+		Name: "Songwriters",
+		Alteration: spansql.AlterColumn{
+			Def: spansql.ColumnDef{Name: "Nickname", Type: spansql.Type{Base: spansql.String}},
+		},
+	})
+	if err := st.Err(); err != nil {
+		t.Fatalf("Converting BYTES -> STRING: %v", err)
+	}
+
+	// Check that the data is maintained.
+	q, err := spansql.ParseQuery(`SELECT * FROM Songwriters`)
+	if err != nil {
+		t.Fatalf("ParseQuery: %v", err)
+	}
+	ri, err := db.Query(q, nil)
+	if err != nil {
+		t.Fatalf("Query: %v", err)
+	}
+	got := slurp(t, ri)
+	want := [][]interface{}{
+		{int64(6), "Tiger"},
+		{int64(7), nil},
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("Results from Query are wrong.\n got %v\nwant %v", got, want)
+	}
+}
+
+func TestTableSchemaUpdates(t *testing.T) {
+	tests := []struct {
+		desc     string
+		ddl      string
+		wantCode codes.Code
+	}{
+		// TODO: add more cases, including interactions with the primary key and dropping columns.
+
+		{
+			"Add new column",
+			`CREATE TABLE Songwriters (
+				Id INT64 NOT NULL,
+			) PRIMARY KEY (Id);
+			ALTER TABLE Songwriters ADD COLUMN Nickname STRING(MAX);`,
+			codes.OK,
+		},
+		{
+			"Add new column with NOT NULL",
+			`CREATE TABLE Songwriters (
+				Id INT64 NOT NULL,
+			) PRIMARY KEY (Id);
+			ALTER TABLE Songwriters ADD COLUMN Nickname STRING(MAX) NOT NULL;`,
+			codes.InvalidArgument,
+		},
+
+		// Examples from https://cloud.google.com/spanner/docs/schema-updates:
+
+		{
+			"Add NOT NULL to a non-key column",
+			`CREATE TABLE Songwriters (
+				Id INT64 NOT NULL,
+				Nickname STRING(MAX),
+			) PRIMARY KEY (Id);
+			ALTER TABLE Songwriters ALTER COLUMN Nickname STRING(MAX) NOT NULL;`,
+			codes.OK,
+		},
+		{
+			"Remove NOT NULL from a non-key column",
+			`CREATE TABLE Songwriters (
+				Id INT64 NOT NULL,
+				Nickname STRING(MAX) NOT NULL,
+			) PRIMARY KEY (Id);
+			ALTER TABLE Songwriters ALTER COLUMN Nickname STRING(MAX);`,
+			codes.OK,
+		},
+		{
+			"Change a STRING column to a BYTES column",
+			`CREATE TABLE Songwriters (
+				Id INT64 NOT NULL,
+				Nickname STRING(MAX),
+			) PRIMARY KEY (Id);
+			ALTER TABLE Songwriters ALTER COLUMN Nickname BYTES(MAX);`,
+			codes.OK,
+		},
+		// TODO: Increase or decrease the length limit for a STRING or BYTES type (including to MAX)
+		// TODO: Enable or disable commit timestamps in value and primary key columns
+	}
+testLoop:
+	for _, test := range tests {
+		var db database
+
+		ddl, err := spansql.ParseDDL("filename", test.ddl)
+		if err != nil {
+			t.Fatalf("%s: Bad DDL: %v", test.desc, err)
+		}
+		for _, stmt := range ddl.List {
+			if st := db.ApplyDDL(stmt); st.Code() != codes.OK {
+				if st.Code() != test.wantCode {
+					t.Errorf("%s: Applying statement %q: %v", test.desc, stmt.SQL(), st.Err())
+				}
+				continue testLoop
+			}
+		}
+		if test.wantCode != codes.OK {
+			t.Errorf("%s: Finished with OK, want %v", test.desc, test.wantCode)
+		}
+	}
 }
 
 func slurp(t *testing.T, ri rowIter) (all [][]interface{}) {
