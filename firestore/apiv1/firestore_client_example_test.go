@@ -82,26 +82,6 @@ func ExampleClient_ListDocuments() {
 	}
 }
 
-func ExampleClient_CreateDocument() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
-	ctx := context.Background()
-	c, err := firestore.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &firestorepb.CreateDocumentRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.CreateDocument(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleClient_UpdateDocument() {
 	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
 
@@ -291,4 +271,24 @@ func ExampleClient_ListCollectionIds() {
 		// TODO: Use resp.
 		_ = resp
 	}
+}
+
+func ExampleClient_CreateDocument() {
+	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
+
+	ctx := context.Background()
+	c, err := firestore.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &firestorepb.CreateDocumentRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.CreateDocument(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }

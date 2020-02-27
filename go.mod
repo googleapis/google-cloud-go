@@ -7,7 +7,7 @@ require (
 	cloud.google.com/go/datastore v1.1.0
 	cloud.google.com/go/pubsub v1.2.0
 	cloud.google.com/go/storage v1.6.0
-	github.com/golang/mock v1.4.0
+	github.com/golang/mock v1.4.1
 	github.com/golang/protobuf v1.3.4
 	github.com/google/go-cmp v0.4.0
 	github.com/google/martian v2.1.0+incompatible
@@ -22,7 +22,7 @@ require (
 	golang.org/x/text v0.3.2
 	golang.org/x/tools v0.0.0-20200226224502-204d844ad48d
 	google.golang.org/api v0.19.0
-	google.golang.org/genproto v0.0.0-20200226201735-46b91f19d98c
+	google.golang.org/genproto v0.0.0-20200227132054-3f1135a288c9
 	google.golang.org/grpc v1.27.1
 	honnef.co/go/tools v0.0.1-2020.1.3
 )

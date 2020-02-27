@@ -38,7 +38,6 @@ import (
 type CallOptions struct {
 	GetDocument       []gax.CallOption
 	ListDocuments     []gax.CallOption
-	CreateDocument    []gax.CallOption
 	UpdateDocument    []gax.CallOption
 	DeleteDocument    []gax.CallOption
 	BatchGetDocuments []gax.CallOption
@@ -49,6 +48,7 @@ type CallOptions struct {
 	Write             []gax.CallOption
 	Listen            []gax.CallOption
 	ListCollectionIds []gax.CallOption
+	CreateDocument    []gax.CallOption
 }
 
 func defaultClientOptions() []option.ClientOption {
@@ -89,7 +89,6 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateDocument: []gax.CallOption{},
 		UpdateDocument: []gax.CallOption{},
 		DeleteDocument: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
@@ -184,6 +183,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		CreateDocument: []gax.CallOption{},
 	}
 }
 
@@ -308,23 +308,6 @@ func (c *Client) ListDocuments(ctx context.Context, req *firestorepb.ListDocumen
 	it.pageInfo.MaxSize = int(req.PageSize)
 	it.pageInfo.Token = req.PageToken
 	return it
-}
-
-// CreateDocument creates a new document.
-func (c *Client) CreateDocument(ctx context.Context, req *firestorepb.CreateDocumentRequest, opts ...gax.CallOption) (*firestorepb.Document, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateDocument[0:len(c.CallOptions.CreateDocument):len(c.CallOptions.CreateDocument)], opts...)
-	var resp *firestorepb.Document
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.CreateDocument(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
 }
 
 // UpdateDocument updates or inserts a document.
@@ -512,6 +495,23 @@ func (c *Client) ListCollectionIds(ctx context.Context, req *firestorepb.ListCol
 	it.pageInfo.MaxSize = int(req.PageSize)
 	it.pageInfo.Token = req.PageToken
 	return it
+}
+
+// CreateDocument creates a new document.
+func (c *Client) CreateDocument(ctx context.Context, req *firestorepb.CreateDocumentRequest, opts ...gax.CallOption) (*firestorepb.Document, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.CreateDocument[0:len(c.CallOptions.CreateDocument):len(c.CallOptions.CreateDocument)], opts...)
+	var resp *firestorepb.Document
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateDocument(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // DocumentIterator manages a stream of *firestorepb.Document.
