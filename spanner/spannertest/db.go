@@ -228,7 +228,7 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 			pkDesc:   pkDesc,
 		}
 		for _, cd := range stmt.Columns {
-			if st := t.addColumn(cd); st.Code() != codes.OK {
+			if st := t.addColumn(cd, true); st.Code() != codes.OK {
 				return st
 			}
 		}
@@ -267,10 +267,12 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 		default:
 			return status.Newf(codes.Unimplemented, "unhandled DDL table alteration type %T", alt)
 		case spansql.AddColumn:
-			if alt.Def.NotNull {
-				return status.Newf(codes.InvalidArgument, "new non-key columns cannot be NOT NULL")
+			if st := t.addColumn(alt.Def, false); st.Code() != codes.OK {
+				return st
 			}
-			if st := t.addColumn(alt.Def); st.Code() != codes.OK {
+			return nil
+		case spansql.AlterColumn:
+			if st := t.alterColumn(alt.Def); st.Code() != codes.OK {
 				return st
 			}
 			return nil
@@ -543,7 +545,11 @@ func (d *database) ReadAll(tbl string, cols []string, limit int64) (*rawIter, er
 	})
 }
 
-func (t *table) addColumn(cd spansql.ColumnDef) *status.Status {
+func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
+	if !newTable && cd.NotNull {
+		return status.Newf(codes.InvalidArgument, "new non-key columns cannot be NOT NULL")
+	}
+
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
@@ -564,6 +570,58 @@ func (t *table) addColumn(cd spansql.ColumnDef) *status.Status {
 	t.colIndex[cd.Name] = len(t.cols) - 1
 
 	return nil
+}
+
+func (t *table) alterColumn(cd spansql.ColumnDef) *status.Status {
+	// Supported changes here are:
+	//	Add NOT NULL to a non-key column, excluding ARRAY columns.
+	//	Remove NOT NULL from a non-key column.
+	//	Change a STRING column to a BYTES column or a BYTES column to a STRING column.
+	//	Increase or decrease the length limit for a STRING or BYTES type (including to MAX).
+	//	Enable or disable commit timestamps in value and primary key columns.
+	// https://cloud.google.com/spanner/docs/schema-updates#supported-updates
+
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	ci, ok := t.colIndex[cd.Name]
+	if !ok {
+		// TODO: What's the right response code?
+		return status.Newf(codes.InvalidArgument, "unknown column %q", cd.Name)
+	}
+
+	// Check and make type transformations.
+	oldT, newT := t.cols[ci].Type, cd.Type
+	stringOrBytes := func(bt spansql.TypeBase) bool { return bt == spansql.String || bt == spansql.Bytes }
+
+	// If the only change is adding NOT NULL, this is okay except for primary key columns and array types.
+	// We don't track whether commit timestamps are permitted on a per-column basis, so that's ignored.
+	// TODO: Do this when we track NOT NULL-ness.
+
+	// Change between STRING and BYTES is fine, as is increasing/decreasing the length limit.
+	// TODO: This should permit array conversions too.
+	if stringOrBytes(oldT.Base) && stringOrBytes(newT.Base) && !oldT.Array && !newT.Array {
+		// TODO: Validate data; length limit changes should be rejected if they'd lead to data loss, for instance.
+		var conv func(x interface{}) interface{}
+		if oldT.Base == spansql.Bytes && newT.Base == spansql.String {
+			conv = func(x interface{}) interface{} { return string(x.([]byte)) }
+		} else if oldT.Base == spansql.String && newT.Base == spansql.Bytes {
+			conv = func(x interface{}) interface{} { return []byte(x.(string)) }
+		}
+		if conv != nil {
+			for _, row := range t.rows {
+				if row[ci] != nil { // NULL stays as NULL.
+					row[ci] = conv(row[ci])
+				}
+			}
+		}
+		t.cols[ci].Type = newT
+		return nil
+	}
+
+	// TODO: Support other alterations.
+
+	return status.Newf(codes.InvalidArgument, "unsupported ALTER COLUMN %s", cd.SQL())
 }
 
 func (t *table) insertRow(rowNum int, r row) {
