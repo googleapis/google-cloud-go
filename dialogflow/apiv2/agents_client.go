@@ -40,14 +40,15 @@ import (
 
 // AgentsCallOptions contains the retry settings for each method of AgentsClient.
 type AgentsCallOptions struct {
-	GetAgent     []gax.CallOption
-	SetAgent     []gax.CallOption
-	DeleteAgent  []gax.CallOption
-	SearchAgents []gax.CallOption
-	TrainAgent   []gax.CallOption
-	ExportAgent  []gax.CallOption
-	ImportAgent  []gax.CallOption
-	RestoreAgent []gax.CallOption
+	GetAgent            []gax.CallOption
+	SetAgent            []gax.CallOption
+	DeleteAgent         []gax.CallOption
+	SearchAgents        []gax.CallOption
+	TrainAgent          []gax.CallOption
+	ExportAgent         []gax.CallOption
+	ImportAgent         []gax.CallOption
+	RestoreAgent        []gax.CallOption
+	GetValidationResult []gax.CallOption
 }
 
 func defaultAgentsClientOptions() []option.ClientOption {
@@ -147,6 +148,7 @@ func defaultAgentsCallOptions() *AgentsCallOptions {
 				})
 			}),
 		},
+		GetValidationResult: []gax.CallOption{},
 	}
 }
 
@@ -433,6 +435,24 @@ func (c *AgentsClient) RestoreAgent(ctx context.Context, req *dialogflowpb.Resto
 	return &RestoreAgentOperation{
 		lro: longrunning.InternalNewOperation(c.LROClient, resp),
 	}, nil
+}
+
+// GetValidationResult gets agent validation result. Agent validation is performed during
+// training time and is updated automatically when training is completed.
+func (c *AgentsClient) GetValidationResult(ctx context.Context, req *dialogflowpb.GetValidationResultRequest, opts ...gax.CallOption) (*dialogflowpb.ValidationResult, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetValidationResult[0:len(c.CallOptions.GetValidationResult):len(c.CallOptions.GetValidationResult)], opts...)
+	var resp *dialogflowpb.ValidationResult
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.agentsClient.GetValidationResult(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // ExportAgentOperation manages a long-running operation from ExportAgent.

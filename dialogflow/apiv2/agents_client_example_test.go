@@ -210,3 +210,23 @@ func ExampleAgentsClient_RestoreAgent() {
 		// TODO: Handle error.
 	}
 }
+
+func ExampleAgentsClient_GetValidationResult() {
+	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+
+	ctx := context.Background()
+	c, err := dialogflow.NewAgentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &dialogflowpb.GetValidationResultRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetValidationResult(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
