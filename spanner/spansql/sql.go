@@ -212,6 +212,15 @@ func (sel Select) SQL() string {
 	if sel.Where != nil {
 		str += " WHERE " + sel.Where.SQL()
 	}
+	if len(sel.GroupBy) > 0 {
+		str += " GROUP BY "
+		for i, gb := range sel.GroupBy {
+			if i > 0 {
+				str += ", "
+			}
+			str += gb.SQL()
+		}
+	}
 	return str
 }
 
