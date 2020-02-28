@@ -131,6 +131,7 @@ var funcs = map[string]bool{
 	// Aggregate functions.
 	"BIT_XOR": true,
 	"COUNT":   true,
+	"SUM":     true,
 
 	// Mathematical functions.
 	"ABS": true,

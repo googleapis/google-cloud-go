@@ -78,6 +78,19 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
+		{`SELECT SUM(PointsScored), FirstName, LastName FROM PlayerStats GROUP BY FirstName, LastName`,
+			Query{
+				Select: Select{
+					List: []Expr{
+						Func{Name: "SUM", Args: []Expr{ID("PointsScored")}},
+						ID("FirstName"),
+						ID("LastName"),
+					},
+					From:    []SelectFrom{{Table: "PlayerStats"}},
+					GroupBy: []Expr{ID("FirstName"), ID("LastName")},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseQuery(test.in)

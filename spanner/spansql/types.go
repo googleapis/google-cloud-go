@@ -224,7 +224,8 @@ type Select struct {
 	List     []Expr
 	From     []SelectFrom
 	Where    BoolExpr
-	// TODO: GroupBy, Having
+	GroupBy  []Expr
+	// TODO: Having
 }
 
 type SelectFrom struct {

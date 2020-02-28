@@ -1484,18 +1484,11 @@ func (p *parser) parseSelect() (Select, *parseError) {
 	}
 
 	// Read expressions for the SELECT list.
-	for {
-		expr, err := p.parseExpr()
-		if err != nil {
-			return Select{}, err
-		}
-		sel.List = append(sel.List, expr)
-
-		if p.eat(",") {
-			continue
-		}
-		break
+	list, err := p.parseExprList()
+	if err != nil {
+		return Select{}, err
 	}
+	sel.List = list
 
 	if p.eat("FROM") {
 		for {
@@ -1527,7 +1520,15 @@ func (p *parser) parseSelect() (Select, *parseError) {
 		sel.Where = where
 	}
 
-	// TODO: GROUP BY, HAVING
+	if p.eat("GROUP", "BY") {
+		list, err := p.parseExprList()
+		if err != nil {
+			return Select{}, err
+		}
+		sel.GroupBy = list
+	}
+
+	// TODO: HAVING
 
 	return sel, nil
 }
@@ -1630,6 +1631,23 @@ func (p *parser) parseLimitCount() (Limit, *parseError) {
 }
 
 func (p *parser) parseExprList() ([]Expr, *parseError) {
+	var list []Expr
+	for {
+		expr, err := p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+		list = append(list, expr)
+
+		if p.eat(",") {
+			continue
+		}
+		break
+	}
+	return list, nil
+}
+
+func (p *parser) parseParenExprList() ([]Expr, *parseError) {
 	var list []Expr
 	err := p.parseCommaList(func(p *parser) *parseError {
 		e, err := p.parseExpr()
@@ -1943,7 +1961,7 @@ func (p *parser) parseLit() (Expr, *parseError) {
 	// this is a function invocation.
 	// TODO: Case-insensitivity.
 	if name := tok.value; funcs[name] && p.sniff("(") {
-		list, err := p.parseExprList()
+		list, err := p.parseParenExprList()
 		if err != nil {
 			return nil, err
 		}
