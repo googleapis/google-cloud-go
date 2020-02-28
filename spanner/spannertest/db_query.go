@@ -208,6 +208,25 @@ func (di *distinctIter) Next() (row, error) {
 	}
 }
 
+// limitIter applies a LIMIT clause.
+type limitIter struct {
+	ri  rowIter
+	rem int64
+}
+
+func (li *limitIter) Cols() []colInfo { return li.ri.Cols() }
+func (li *limitIter) Next() (row, error) {
+	if li.rem <= 0 {
+		return nil, io.EOF
+	}
+	row, err := li.ri.Next()
+	if err != nil {
+		return nil, err
+	}
+	li.rem--
+	return row, nil
+}
+
 type queryParams map[string]interface{}
 
 func (d *database) Query(q spansql.Query, params queryParams) (rowIter, error) {
@@ -258,20 +277,12 @@ func (d *database) Query(q spansql.Query, params queryParams) (rowIter, error) {
 	// TODO: OFFSET
 
 	// Apply LIMIT.
-	// TODO: this can be an iter too.
 	if q.Limit != nil {
 		lim, err := evalLimit(q.Limit, params)
 		if err != nil {
 			return nil, err
 		}
-		raw, err := toRawIter(ri)
-		if err != nil {
-			return nil, err
-		}
-		if n := int(lim); n < len(raw.rows) {
-			raw.rows = raw.rows[:n]
-		}
-		ri = raw
+		ri = &limitIter{ri: ri, rem: lim}
 	}
 
 	return ri, nil
