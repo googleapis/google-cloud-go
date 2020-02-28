@@ -401,6 +401,22 @@ func paramAsInteger(p spansql.Param, params queryParams) (int64, error) {
 	}
 }
 
+// compareValLists compares pair-wise elements of a and b.
+// If desc is not nil, it indicates which comparisons should be reversed.
+func compareValLists(a, b []interface{}, desc []bool) int {
+	for i := range a {
+		cmp := compareVals(a[i], b[i])
+		if cmp == 0 {
+			continue
+		}
+		if desc != nil && desc[i] {
+			cmp = -cmp
+		}
+		return cmp
+	}
+	return 0
+}
+
 func compareVals(x, y interface{}) int {
 	// NULL is always the minimum possible value.
 	if x == nil && y == nil {
