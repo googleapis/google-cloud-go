@@ -34,100 +34,6 @@ type evalContext struct {
 	params queryParams
 }
 
-func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIter, evalErr error) {
-	ri = &nullIter{}
-	ec := evalContext{
-		params: params,
-	}
-
-	// First stage is to identify the data source.
-	// If there's a FROM then that names a table to use.
-	if len(sel.From) > 1 {
-		return nil, fmt.Errorf("selecting from more than one table not yet supported")
-	}
-	if len(sel.From) == 1 {
-		tableName := sel.From[0].Table
-		t, err := d.table(tableName)
-		if err != nil {
-			return nil, err
-		}
-		t.mu.Lock()
-		defer t.mu.Unlock()
-		ri = &tableIter{t: t}
-		ec.table = t
-	}
-	defer func() {
-		// If we're about to return a tableIter, convert it to a rawIter
-		// so that the table may be safely unlocked.
-		if evalErr == nil {
-			if ti, ok := ri.(*tableIter); ok {
-				ri, evalErr = toRawIter(ti)
-			}
-		}
-	}()
-
-	// Apply WHERE.
-	if sel.Where != nil {
-		ri = whereIter{
-			ri:    ri,
-			ec:    ec,
-			where: sel.Where,
-		}
-	}
-
-	// Handle COUNT(*) specially.
-	// TODO: Handle aggregation more generally.
-	if len(sel.List) == 1 && isCountStar(sel.List[0]) {
-		// Replace the `COUNT(*)` with `1`, then aggregate on the way out.
-		sel.List[0] = spansql.IntegerLiteral(1)
-		defer func() {
-			if evalErr != nil {
-				return
-			}
-			raw, err := toRawIter(ri)
-			if err != nil {
-				ri, evalErr = nil, err
-			}
-			count := int64(len(raw.rows))
-			raw.rows = []row{{count}}
-			ri, evalErr = raw, nil
-		}()
-	}
-
-	// TODO: Support table sampling.
-
-	// Apply SELECT list.
-	var colInfos []colInfo
-	// Is this a `SELECT *` query?
-	selectStar := len(sel.List) == 1 && sel.List[0] == spansql.Star
-	if selectStar {
-		// Every column will appear in the output.
-		colInfos = append([]colInfo(nil), ec.table.cols...)
-	} else {
-		for _, e := range sel.List {
-			ci, err := ec.colInfo(e)
-			if err != nil {
-				return nil, err
-			}
-			// TODO: deal with ci.Name == ""?
-			colInfos = append(colInfos, ci)
-		}
-	}
-	ri = selIter{
-		ri:   ri,
-		ec:   ec,
-		cis:  colInfos,
-		list: sel.List,
-	}
-
-	// Apply DISTINCT.
-	if sel.Distinct {
-		ri = &distinctIter{ri: ri}
-	}
-
-	return ri, nil
-}
-
 func (ec evalContext) evalExprList(list []spansql.Expr) ([]interface{}, error) {
 	var out []interface{}
 	for _, e := range list {
@@ -655,15 +561,4 @@ func evalLike(str, pat string) bool {
 		panic(fmt.Sprintf("internal error: constructed bad regexp /%s/: %v", pat, err))
 	}
 	return match
-}
-
-func isCountStar(e spansql.Expr) bool {
-	f, ok := e.(spansql.Func)
-	if !ok {
-		return false
-	}
-	if f.Name != "COUNT" || len(f.Args) != 1 {
-		return false
-	}
-	return f.Args[0] == spansql.Star
 }
