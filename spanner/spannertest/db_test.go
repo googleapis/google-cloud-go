@@ -300,6 +300,41 @@ func TestTableData(t *testing.T) {
 		t.Fatalf("Committing changes: %v", err)
 	}
 
+	// Prepare the sample tables from the Cloud Spanner docs.
+	// https://cloud.google.com/spanner/docs/query-syntax#appendix-a-examples-with-sample-data
+	for _, ct := range []*spansql.CreateTable{
+		// TODO: Roster, TeamMascot when we implement JOINs.
+		{
+			Name: "PlayerStats",
+			Columns: []spansql.ColumnDef{
+				{Name: "LastName", Type: spansql.Type{Base: spansql.String}},
+				{Name: "OpponentID", Type: spansql.Type{Base: spansql.Int64}},
+				{Name: "PointsScored", Type: spansql.Type{Base: spansql.Int64}},
+			},
+			PrimaryKey: []spansql.KeyPart{{Column: "LastName"}, {Column: "OpponentID"}}, // TODO: is this right?
+		},
+	} {
+		st := db.ApplyDDL(ct)
+		if st.Code() != codes.OK {
+			t.Fatalf("Creating table: %v", st.Err())
+		}
+	}
+	tx = db.NewTransaction()
+	tx.Start()
+	err = db.Insert(tx, "PlayerStats", []string{"LastName", "OpponentID", "PointsScored"}, []*structpb.ListValue{
+		listV(stringV("Adams"), stringV("51"), stringV("3")),
+		listV(stringV("Buchanan"), stringV("77"), stringV("0")),
+		listV(stringV("Coolidge"), stringV("77"), stringV("1")),
+		listV(stringV("Adams"), stringV("52"), stringV("4")),
+		listV(stringV("Buchanan"), stringV("50"), stringV("13")),
+	})
+	if err != nil {
+		t.Fatalf("Inserting data: %v", err)
+	}
+	if _, err := tx.Commit(); err != nil {
+		t.Fatalf("Commiting changes: %v", err)
+	}
+
 	// Do some complex queries.
 	tests := []struct {
 		q      string
@@ -429,6 +464,18 @@ func TestTableData(t *testing.T) {
 				{nil, false},
 				{nil, true},
 				{true, false},
+			},
+		},
+		// From https://cloud.google.com/spanner/docs/query-syntax#group-by-clause_1:
+		{
+			// TODO: Ordering matters? Our implementation sorts by the GROUP BY key,
+			// but nothing documented seems to guarantee that.
+			`SELECT LastName, SUM(PointsScored) FROM PlayerStats GROUP BY LastName`,
+			nil,
+			[][]interface{}{
+				{"Adams", int64(7)},
+				{"Buchanan", int64(13)},
+				{"Coolidge", int64(1)},
 			},
 		},
 	}

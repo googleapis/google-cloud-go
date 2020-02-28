@@ -207,6 +207,9 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 		if _, ok := d.tables[stmt.Name]; ok {
 			return status.Newf(codes.AlreadyExists, "table %s already exists", stmt.Name)
 		}
+		if len(stmt.PrimaryKey) == 0 {
+			return status.Newf(codes.InvalidArgument, "table %s has no primary key", stmt.Name)
+		}
 
 		// TODO: check stmt.Interleave details.
 

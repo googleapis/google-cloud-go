@@ -356,6 +356,10 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 		return ec.evalBoolExpr(e)
 	case spansql.IsOp:
 		return ec.evalBoolExpr(e)
+	case aggSentinel:
+		// Aggregate value is always last in the row.
+		// TODO: This could be tightened up by including colInfo in evalContext.
+		return ec.row[len(ec.row)-1], nil
 	}
 }
 
@@ -515,6 +519,8 @@ func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 		// There isn't necessarily something sensible here.
 		// Empirically, though, the real Spanner returns Int64.
 		return colInfo{Type: int64Type}, nil
+	case aggSentinel:
+		return colInfo{Type: e.Type}, nil
 	}
 	return colInfo{}, fmt.Errorf("can't deduce column type from expression [%s]", e.SQL())
 }
