@@ -33,8 +33,8 @@ or other transformations.
 The order of operations among those supported by Cloud Spanner is
 	FROM + JOIN + set ops [TODO: JOIN and set ops]
 	WHERE
-	GROUP BY [TODO]
-	aggregation [TODO]
+	GROUP BY
+	aggregation
 	HAVING [TODO]
 	SELECT
 	DISTINCT
@@ -52,6 +52,13 @@ type rowIter interface {
 	// Next returns the next row.
 	// If done, it returns (nil, io.EOF).
 	Next() (row, error)
+}
+
+// aggSentinel is a synthetic expression that refers to an aggregated value.
+// It is transient only; it is never stored and only used during evaluation.
+type aggSentinel struct {
+	spansql.Expr
+	Type spansql.Type
 }
 
 // nullIter is a rowIter that returns one empty row only.
@@ -319,23 +326,144 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 		}
 	}
 
-	// Handle COUNT(*) specially.
-	// TODO: Handle aggregation more generally.
-	if len(sel.List) == 1 && isCountStar(sel.List[0]) {
-		// Replace the `COUNT(*)` with `1`, then aggregate on the way out.
-		sel.List[0] = spansql.IntegerLiteral(1)
-		defer func() {
-			if evalErr != nil {
-				return
-			}
-			raw, err := toRawIter(ri)
+	// Apply GROUP BY.
+	// This only reorders rows to group rows together;
+	// aggregation happens next.
+	var rowGroups [][2]int // Sequence of half-open intervals of row numbers.
+	if len(sel.GroupBy) > 0 {
+		raw, err := toRawIter(ri)
+		if err != nil {
+			return nil, err
+		}
+		keys := make([][]interface{}, 0, len(raw.rows))
+		for _, row := range raw.rows {
+			// Evaluate sort key for this row.
+			// TODO: Support referring to expression names in the SELECT list;
+			// this may require passing through sel.List, or maybe mutating
+			// sel.GroupBy to copy the referenced values. This will also be
+			// required to support grouping by aliases.
+			ec.row = row
+			key, err := ec.evalExprList(sel.GroupBy)
 			if err != nil {
-				ri, evalErr = nil, err
+				return nil, err
 			}
-			count := int64(len(raw.rows))
-			raw.rows = []row{{count}}
-			ri, evalErr = raw, nil
-		}()
+			keys = append(keys, key)
+		}
+
+		// Reorder rows base on the evaluated keys.
+		ers := externalRowSorter{rows: raw.rows, keys: keys}
+		sort.Sort(ers)
+		raw.rows = ers.rows
+
+		// Record groups as a sequence of row intervals.
+		// Each group is a run of the same keys.
+		start := 0
+		for i := 1; i < len(keys); i++ {
+			if compareValLists(keys[i-1], keys[i], nil) == 0 {
+				continue
+			}
+			rowGroups = append(rowGroups, [2]int{start, i})
+			start = i
+		}
+		if len(keys) > 0 {
+			rowGroups = append(rowGroups, [2]int{start, len(keys)})
+		}
+
+		ri = raw
+	}
+
+	// Handle aggregation.
+	// TODO: Support more than one aggregation function; does Spanner support that?
+	aggI := -1
+	for i, e := range sel.List {
+		// Supported aggregate funcs have exactly one arg.
+		f, ok := e.(spansql.Func)
+		if !ok || len(f.Args) != 1 {
+			continue
+		}
+		_, ok = aggregateFuncs[f.Name]
+		if !ok {
+			continue
+		}
+		if aggI > -1 {
+			return nil, fmt.Errorf("only one aggregate function is supported")
+		}
+		aggI = i
+	}
+	if aggI > -1 {
+		raw, err := toRawIter(ri)
+		if err != nil {
+			return nil, err
+		}
+		if len(rowGroups) == 0 {
+			// No grouping, so aggregation applies to the entire table (e.g. COUNT(*)).
+			rowGroups = [][2]int{{0, len(raw.rows)}}
+		}
+		fexpr := sel.List[aggI].(spansql.Func)
+		fn := aggregateFuncs[fexpr.Name]
+		starArg := fexpr.Args[0] == spansql.Star
+		if starArg && !fn.AcceptStar {
+			return nil, fmt.Errorf("aggregate function %s does not accept * as an argument", fexpr.Name)
+		}
+
+		// Prepare output.
+		rawOut := &rawIter{
+			// Same as input columns, but also the aggregate value.
+			// Add the colInfo for the aggregate at the end
+			// so we know the type.
+			// Make a copy for safety.
+			cols: append([]colInfo(nil), raw.cols...),
+		}
+
+		var aggType spansql.Type
+		for _, rg := range rowGroups {
+			// Compute aggregate value across this group.
+			var values []interface{}
+			for i := rg[0]; i < rg[1]; i++ {
+				ec.row = raw.rows[i]
+				if starArg {
+					// A non-NULL placeholder is sufficient for aggregation.
+					values = append(values, 1)
+				} else {
+					x, err := ec.evalExpr(fexpr.Args[0])
+					if err != nil {
+						return nil, err
+					}
+					values = append(values, x)
+				}
+			}
+			x, typ, err := fn.Eval(values)
+			if err != nil {
+				return nil, err
+			}
+			aggType = typ
+			// Output for the row group is the first row of the group (arbitrary,
+			// but it should be representative), and the aggregate value.
+			// TODO: Should this exclude the aggregated expressions so they can't be selected?
+			repRow := raw.rows[rg[0]]
+			var outRow row
+			for i := range repRow {
+				outRow = append(outRow, repRow.copyDataElem(i))
+			}
+			outRow = append(outRow, x)
+			rawOut.rows = append(rawOut.rows, outRow)
+		}
+
+		if aggType == (spansql.Type{}) {
+			// Fallback; there might not be any groups.
+			// TODO: Should this be in aggregateFunc?
+			aggType = int64Type
+		}
+		rawOut.cols = append(raw.cols, colInfo{
+			// TODO: Generate more interesting colInfo?
+			Name: fexpr.SQL(),
+			Type: aggType,
+		})
+
+		ri = rawOut
+		sel.List[aggI] = aggSentinel{ // Mutate query so evalExpr in selIter picks out the new value.
+			Type: aggType,
+		}
 	}
 
 	// TODO: Support table sampling.
@@ -372,13 +500,18 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 	return ri, nil
 }
 
-func isCountStar(e spansql.Expr) bool {
-	f, ok := e.(spansql.Func)
-	if !ok {
-		return false
-	}
-	if f.Name != "COUNT" || len(f.Args) != 1 {
-		return false
-	}
-	return f.Args[0] == spansql.Star
+// externalRowSorter implements sort.Interface for a slice of rows
+// with an external sort key.
+type externalRowSorter struct {
+	rows []row
+	keys [][]interface{}
+}
+
+func (ers externalRowSorter) Len() int { return len(ers.rows) }
+func (ers externalRowSorter) Less(i, j int) bool {
+	return compareValLists(ers.keys[i], ers.keys[j], nil) < 0
+}
+func (ers externalRowSorter) Swap(i, j int) {
+	ers.rows[i], ers.rows[j] = ers.rows[j], ers.rows[i]
+	ers.keys[i], ers.keys[j] = ers.keys[j], ers.keys[i]
 }
