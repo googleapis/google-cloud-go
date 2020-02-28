@@ -254,17 +254,7 @@ func (d *database) Query(q spansql.Query, params queryParams) (rowIter, error) {
 		sort.Slice(raw.rows, func(one, two int) bool {
 			r1, r2 := raw.rows[one], raw.rows[two]
 			aux1, aux2 := r1[len(r1)-len(aux):], r2[len(r2)-len(aux):] // sort keys
-			for i := range aux1 {
-				cmp := compareVals(aux1[i], aux2[i])
-				if desc[i] {
-					cmp = -cmp
-				}
-				if cmp == 0 {
-					continue
-				}
-				return cmp < 0
-			}
-			return false
+			return compareValLists(aux1, aux2, desc) < 0
 		})
 		// Remove ORDER BY values.
 		raw.cols = raw.cols[:len(raw.cols)-len(aux)]
