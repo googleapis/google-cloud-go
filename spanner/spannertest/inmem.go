@@ -513,7 +513,8 @@ func (s *server) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Span
 
 	// Bail out if various advanced features are being used.
 	if req.Index != "" {
-		return fmt.Errorf("index reads (%q) not supported", req.Index)
+		// This is okay; we can still return results.
+		s.logf("Warning: index reads (%q) not supported", req.Index)
 	}
 	if len(req.ResumeToken) > 0 {
 		// This should only happen if we send resume_token ourselves.
