@@ -954,12 +954,14 @@ func (t *ReadWriteTransaction) rollback(ctx context.Context) {
 // runInTransaction executes f under a read-write transaction context.
 func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error) (time.Time, error) {
 	var (
-		ts  time.Time
-		err error
+		ts              time.Time
+		err             error
+		errDuringCommit bool
 	)
 	if err = f(context.WithValue(ctx, transactionInProgressKey{}, 1), t); err == nil {
 		// Try to commit if transaction body returns no error.
 		ts, err = t.commit(ctx)
+		errDuringCommit = err != nil
 	}
 	if err != nil {
 		if isAbortErr(err) {
@@ -972,9 +974,15 @@ func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(cont
 			t.sh.destroy()
 			return ts, err
 		}
-		// Not going to commit, according to API spec, should rollback the
-		// transaction.
-		t.rollback(ctx)
+		// Rollback the transaction unless the error occurred during the
+		// commit. Executing a rollback after a commit has failed will
+		// otherwise cause an error. Note that transient errors, such as
+		// UNAVAILABLE, are already handled in the gRPC layer and do not show
+		// up here. Context errors (deadline exceeded / canceled) during
+		// commits are also not rolled back.
+		if !errDuringCommit {
+			t.rollback(ctx)
+		}
 		return ts, err
 	}
 	// err == nil, return commit timestamp.

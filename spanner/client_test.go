@@ -1481,3 +1481,65 @@ func TestReadWriteTransaction_ContextTimeoutDuringDuringCommit(t *testing.T) {
 		t.Fatalf("Missing wrapped TransactionOutcomeUnknownError error")
 	}
 }
+
+func TestFailedCommit_NoRollback(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:     0,
+			MaxOpened:     1,
+			WriteSessions: 0,
+		},
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
+			Errors: []error{status.Errorf(codes.InvalidArgument, "Invalid mutations")},
+		})
+	_, err := client.Apply(context.Background(), []*Mutation{
+		Insert("FOO", []string{"ID", "BAR"}, []interface{}{1, "value"}),
+	})
+	if got, want := status.Convert(err).Code(), codes.InvalidArgument; got != want {
+		t.Fatalf("Error mismatch\nGot: %v\nWant: %v", got, want)
+	}
+	// The failed commit should not trigger a rollback after the commit.
+	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
+		&sppb.CreateSessionRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.CommitRequest{},
+	}); err != nil {
+		t.Fatalf("Received RPCs mismatch: %v", err)
+	}
+}
+
+func TestFailedUpdate_ShouldRollback(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:     0,
+			MaxOpened:     1,
+			WriteSessions: 0,
+		},
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodExecuteSql,
+		SimulatedExecutionTime{
+			Errors: []error{status.Errorf(codes.InvalidArgument, "Invalid update")},
+		})
+	_, err := client.ReadWriteTransaction(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
+		_, err := tx.Update(ctx, NewStatement("UPDATE FOO SET BAR='value' WHERE ID=1"))
+		return err
+	})
+	if got, want := status.Convert(err).Code(), codes.InvalidArgument; got != want {
+		t.Fatalf("Error mismatch\nGot: %v\nWant: %v", got, want)
+	}
+	// The failed update should trigger a rollback.
+	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
+		&sppb.CreateSessionRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.RollbackRequest{},
+	}); err != nil {
+		t.Fatalf("Received RPCs mismatch: %v", err)
+	}
+}
