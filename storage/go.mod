@@ -4,17 +4,16 @@ go 1.11
 
 require (
 	cloud.google.com/go v0.53.0
-	cloud.google.com/go/datastore v1.1.0 // indirect
+	cloud.google.com/go/bigquery v1.5.0 // indirect
 	github.com/golang/protobuf v1.3.4
 	github.com/google/go-cmp v0.4.0
 	github.com/googleapis/gax-go/v2 v2.0.5
-	golang.org/x/exp v0.0.0-20200224162631-6cc2880d07d6 // indirect
-	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b // indirect
+	golang.org/x/exp v0.0.0-20200228211341-fcea875c7e85 // indirect
+	golang.org/x/net v0.0.0-20200301022130-244492dfa37a // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae // indirect
-	golang.org/x/tools v0.0.0-20200227222343-706bc42d1f0d // indirect
+	golang.org/x/sys v0.0.0-20200302083256-062a44052db1 // indirect
+	golang.org/x/tools v0.0.0-20200301222351-066e0c02454c // indirect
 	google.golang.org/api v0.19.0
-	google.golang.org/genproto v0.0.0-20200228133532-8c2c7df3a383
+	google.golang.org/genproto v0.0.0-20200302123026-7795fca6ccb1
 	google.golang.org/grpc v1.27.1
-	honnef.co/go/tools v0.0.1-2020.1.3 // indirect
 )
