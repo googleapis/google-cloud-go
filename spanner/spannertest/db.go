@@ -64,8 +64,9 @@ type table struct {
 
 // colInfo represents information about a column in a table or result set.
 type colInfo struct {
-	Name string
-	Type spansql.Type
+	Name     string
+	Type     spansql.Type
+	AggIndex int // Index+1 of SELECT list for which this is an aggregate value.
 }
 
 // commitTimestampSentinel is a sentinel value for TIMESTAMP fields with allow_commit_timestamp=true.
@@ -869,7 +870,7 @@ func (d *database) Execute(stmt spansql.DMLStmt, params queryParams) (int, error
 		n := 0
 		for i := 0; i < len(t.rows); {
 			ec := evalContext{
-				table:  t,
+				cols:   t.cols,
 				row:    t.rows[i],
 				params: params,
 			}
