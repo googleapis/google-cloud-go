@@ -58,7 +58,8 @@ type rowIter interface {
 // It is transient only; it is never stored and only used during evaluation.
 type aggSentinel struct {
 	spansql.Expr
-	Type spansql.Type
+	Type     spansql.Type
+	AggIndex int // Index+1 of SELECT list.
 }
 
 // nullIter is a rowIter that returns one empty row only.
@@ -305,7 +306,7 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 		t.mu.Lock()
 		defer t.mu.Unlock()
 		ri = &tableIter{t: t}
-		ec.table = t
+		ec.cols = t.cols
 	}
 	defer func() {
 		// If we're about to return a tableIter, convert it to a rawIter
@@ -455,14 +456,16 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 			aggType = int64Type
 		}
 		rawOut.cols = append(raw.cols, colInfo{
-			// TODO: Generate more interesting colInfo?
-			Name: fexpr.SQL(),
-			Type: aggType,
+			Name:     fexpr.SQL(),
+			Type:     aggType,
+			AggIndex: aggI + 1,
 		})
 
 		ri = rawOut
+		ec.cols = rawOut.cols
 		sel.List[aggI] = aggSentinel{ // Mutate query so evalExpr in selIter picks out the new value.
-			Type: aggType,
+			Type:     aggType,
+			AggIndex: aggI + 1,
 		}
 	}
 
@@ -474,7 +477,7 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 	selectStar := len(sel.List) == 1 && sel.List[0] == spansql.Star
 	if selectStar {
 		// Every column will appear in the output.
-		colInfos = append([]colInfo(nil), ec.table.cols...)
+		colInfos = ec.cols
 	} else {
 		for _, e := range sel.List {
 			ci, err := ec.colInfo(e)

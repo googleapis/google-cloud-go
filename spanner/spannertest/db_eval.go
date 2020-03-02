@@ -29,8 +29,10 @@ import (
 
 // evalContext represents the context for evaluating an expression.
 type evalContext struct {
-	table  *table // may be nil
-	row    row    // set if table is set, only during expr evaluation
+	// cols and row are set during expr evaluation.
+	cols []colInfo
+	row  row
+
 	params queryParams
 }
 
@@ -357,22 +359,30 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 	case spansql.IsOp:
 		return ec.evalBoolExpr(e)
 	case aggSentinel:
-		// Aggregate value is always last in the row.
-		// TODO: This could be tightened up by including colInfo in evalContext.
-		return ec.row[len(ec.row)-1], nil
+		// Match up e.AggIndex with the column.
+		// They might have been reordered.
+		ci := -1
+		for i, col := range ec.cols {
+			if col.AggIndex == e.AggIndex {
+				ci = i
+				break
+			}
+		}
+		if ci < 0 {
+			return 0, fmt.Errorf("internal error: did not find aggregate column %d", e.AggIndex)
+		}
+		return ec.row[ci], nil
 	}
 }
 
 func (ec evalContext) evalID(id spansql.ID) (interface{}, error) {
 	// TODO: look beyond column names.
-	if ec.table == nil {
-		return nil, fmt.Errorf("identifier %s when not SELECTing on a table is not supported", string(id))
+	for i, col := range ec.cols {
+		if col.Name == string(id) {
+			return ec.row.copyDataElem(i), nil
+		}
 	}
-	i, ok := ec.table.colIndex[string(id)]
-	if !ok {
-		return nil, fmt.Errorf("couldn't resolve identifier %s", string(id))
-	}
-	return ec.row.copyDataElem(i), nil
+	return nil, fmt.Errorf("couldn't resolve identifier %s", string(id))
 }
 
 func evalLimit(lim spansql.Limit, params queryParams) (int64, error) {
@@ -507,10 +517,9 @@ func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 		return colInfo{Type: spansql.Type{Base: spansql.Bool}}, nil
 	case spansql.ID:
 		// TODO: support more than only naming a table column.
-		name := string(e)
-		if ec.table != nil {
-			if i, ok := ec.table.colIndex[name]; ok {
-				return ec.table.cols[i], nil
+		for _, col := range ec.cols {
+			if col.Name == string(e) {
+				return col, nil
 			}
 		}
 	case spansql.Paren:
@@ -520,7 +529,7 @@ func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 		// Empirically, though, the real Spanner returns Int64.
 		return colInfo{Type: int64Type}, nil
 	case aggSentinel:
-		return colInfo{Type: e.Type}, nil
+		return colInfo{Type: e.Type, AggIndex: e.AggIndex}, nil
 	}
 	return colInfo{}, fmt.Errorf("can't deduce column type from expression [%s]", e.SQL())
 }
