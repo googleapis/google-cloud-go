@@ -472,7 +472,8 @@ func (c *Client) DeleteModel(ctx context.Context, req *automlpb.DeleteModelReque
 // [node_number][google.cloud.automl.v1beta1.ImageObjectDetectionModelDeploymentMetadata.node_number])
 // will reset the deployment state without pausing the model's availability.
 //
-// Only applicable for Text Classification, Image Object Detection and Tables; all other domains manage deployment automatically.
+// Only applicable for Text Classification, Image Object Detection , Tables, and Image Segmentation; all other domains manage
+// deployment automatically.
 //
 // Returns an empty response in the
 // [response][google.longrunning.Operation.response] field when it completes.
