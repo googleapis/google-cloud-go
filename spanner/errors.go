@@ -21,7 +21,6 @@ import (
 	"fmt"
 
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -39,8 +38,6 @@ type Error struct {
 	err error
 	// Desc explains more details of the error.
 	Desc string
-	// trailers are the trailers returned in the response, if any.
-	trailers metadata.MD
 	// additionalInformation optionally contains any additional information
 	// about the error.
 	additionalInformation string
@@ -119,22 +116,19 @@ func spannerErrorf(code codes.Code, format string, args ...interface{}) error {
 
 // toSpannerError converts general Go error to *spanner.Error.
 func toSpannerError(err error) error {
-	return toSpannerErrorWithMetadata(err, nil, false)
+	return toSpannerErrorWithCommitInfo(err, false)
 }
 
-// toSpannerErrorWithMetadata converts general Go error and grpc trailers to
-// *spanner.Error.
+// toSpannerErrorWithCommitInfo converts general Go error to *spanner.Error
+// with additional information if the error occurred during a Commit request.
 //
-// Note: modifies original error if trailers aren't nil.
-func toSpannerErrorWithMetadata(err error, trailers metadata.MD, errorDuringCommit bool) error {
+// If err is already a *spanner.Error, err is returned unmodified.
+func toSpannerErrorWithCommitInfo(err error, errorDuringCommit bool) error {
 	if err == nil {
 		return nil
 	}
 	var se *Error
 	if errorAs(err, &se) {
-		if trailers != nil {
-			se.trailers = metadata.Join(se.trailers, trailers)
-		}
 		return se
 	}
 	switch {
@@ -145,9 +139,9 @@ func toSpannerErrorWithMetadata(err error, trailers metadata.MD, errorDuringComm
 			desc = fmt.Sprintf("%s, %s", desc, transactionOutcomeUnknownMsg)
 			wrapped = &TransactionOutcomeUnknownError{err: wrapped}
 		}
-		return &Error{status.FromContextError(err).Code(), wrapped, desc, trailers, ""}
+		return &Error{status.FromContextError(err).Code(), wrapped, desc, ""}
 	case status.Code(err) == codes.Unknown:
-		return &Error{codes.Unknown, err, err.Error(), trailers, ""}
+		return &Error{codes.Unknown, err, err.Error(), ""}
 	default:
 		statusErr := status.Convert(err)
 		code, desc := statusErr.Code(), statusErr.Message()
@@ -156,7 +150,7 @@ func toSpannerErrorWithMetadata(err error, trailers metadata.MD, errorDuringComm
 			desc = fmt.Sprintf("%s, %s", desc, transactionOutcomeUnknownMsg)
 			wrapped = &TransactionOutcomeUnknownError{err: wrapped}
 		}
-		return &Error{code, wrapped, desc, trailers, ""}
+		return &Error{code, wrapped, desc, ""}
 	}
 }
 
@@ -176,13 +170,4 @@ func ErrDesc(err error) string {
 		return err.Error()
 	}
 	return se.Desc
-}
-
-// errTrailers extracts the grpc trailers if present from a Go error.
-func errTrailers(err error) metadata.MD {
-	var se *Error
-	if !errorAs(err, &se) {
-		return nil
-	}
-	return se.trailers
 }

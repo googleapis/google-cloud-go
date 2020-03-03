@@ -1635,6 +1635,11 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 			if expectAbort && !isAbortErr(e) {
 				t.Errorf("ReadRow got %v, want Abort error.", e)
 			}
+			// Verify that we received and are able to extract retry info from
+			// the aborted error.
+			if _, hasRetryInfo := extractRetryDelay(e); !hasRetryInfo {
+				t.Errorf("Got Abort error without RetryInfo\nGot: %v", e)
+			}
 			return b, e
 		}
 		if ce := r.Column(0, &b); ce != nil {

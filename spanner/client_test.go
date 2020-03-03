@@ -1465,7 +1465,7 @@ func TestReadWriteTransaction_ContextTimeoutDuringDuringCommit(t *testing.T) {
 		return nil
 	})
 	errContext, _ := context.WithTimeout(context.Background(), -time.Second)
-	w := toSpannerErrorWithMetadata(errContext.Err(), nil, true).(*Error)
+	w := toSpannerErrorWithCommitInfo(errContext.Err(), true).(*Error)
 	var se *Error
 	if !errorAs(err, &se) {
 		t.Fatalf("Error mismatch\nGot: %v\nWant: %v", err, w)

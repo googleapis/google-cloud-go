@@ -26,6 +26,8 @@ import (
 	"time"
 
 	. "cloud.google.com/go/spanner/internal/testutil"
+	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	gstatus "google.golang.org/grpc/status"
@@ -170,10 +172,9 @@ func TestApply_RetryOnAbort(t *testing.T) {
 	defer teardown()
 
 	// First commit will fail, and the retry will begin a new transaction.
-	errAbrt := gstatus.Errorf(codes.Aborted, "")
 	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
 		SimulatedExecutionTime{
-			Errors: []error{errAbrt},
+			Errors: []error{newAbortedErrorWithMinimalRetryDelay()},
 		})
 
 	ms := []*Mutation{
@@ -240,9 +241,6 @@ func TestTransaction_SessionNotFound(t *testing.T) {
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
 	}
 	_, got := client.Apply(ctx, ms, ApplyAtLeastOnce())
-	// Remove any trailers sent by the mock server to prevent the comparison to
-	// fail on that.
-	got.(*Error).trailers = nil
 	if !testEqual(wantErr, got) {
 		t.Fatalf("Expect Apply to fail, got %v, want %v.", got, wantErr)
 	}
@@ -380,4 +378,13 @@ loop:
 		}
 	}
 	return reqs
+}
+
+func newAbortedErrorWithMinimalRetryDelay() error {
+	st := gstatus.New(codes.Aborted, "Transaction has been aborted")
+	retry := &errdetails.RetryInfo{
+		RetryDelay: ptypes.DurationProto(time.Nanosecond),
+	}
+	st, _ = st.WithDetails(retry)
+	return st.Err()
 }

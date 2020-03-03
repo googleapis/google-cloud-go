@@ -21,12 +21,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/trace"
-	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/googleapis/gax-go/v2"
-	edpb "google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -118,27 +116,27 @@ func runWithRetryOnAbortedOrSessionNotFound(ctx context.Context, f func(context.
 	return funcWithRetry(ctx)
 }
 
-// extractRetryDelay extracts retry backoff if present.
+// extractRetryDelay extracts retry backoff from a *spanner.Error if present.
 func extractRetryDelay(err error) (time.Duration, bool) {
-	trailers := errTrailers(err)
-	if trailers == nil {
+	var se *Error
+	var s *status.Status
+	// Unwrap status error.
+	if errorAs(err, &se) {
+		s = status.Convert(se.Unwrap())
+	} else {
+		s = status.Convert(err)
+	}
+	if s == nil {
 		return 0, false
 	}
-	elem, ok := trailers[retryInfoKey]
-	if !ok || len(elem) <= 0 {
-		return 0, false
+	for _, detail := range s.Details() {
+		if retryInfo, ok := detail.(*errdetails.RetryInfo); ok {
+			delay, err := ptypes.Duration(retryInfo.RetryDelay)
+			if err != nil {
+				return 0, false
+			}
+			return delay, true
+		}
 	}
-	_, b, err := metadata.DecodeKeyValue(retryInfoKey, elem[0])
-	if err != nil {
-		return 0, false
-	}
-	var retryInfo edpb.RetryInfo
-	if proto.Unmarshal([]byte(b), &retryInfo) != nil {
-		return 0, false
-	}
-	delay, err := ptypes.Duration(retryInfo.RetryDelay)
-	if err != nil {
-		return 0, false
-	}
-	return delay, true
+	return 0, false
 }

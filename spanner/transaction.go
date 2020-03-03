@@ -24,12 +24,9 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	vkit "cloud.google.com/go/spanner/apiv1"
-	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 )
 
 // transactionID stores a transaction ID which uniquely identifies a transaction
@@ -909,16 +906,15 @@ func (t *ReadWriteTransaction) commit(ctx context.Context) (time.Time, error) {
 		return ts, errSessionClosed(t.sh)
 	}
 
-	var trailer metadata.MD
 	res, e := client.Commit(contextWithOutgoingMetadata(ctx, t.sh.getMetadata()), &sppb.CommitRequest{
 		Session: sid,
 		Transaction: &sppb.CommitRequest_TransactionId{
 			TransactionId: t.tx,
 		},
 		Mutations: mPb,
-	}, gax.WithGRPCOptions(grpc.Trailer(&trailer)))
+	})
 	if e != nil {
-		return ts, toSpannerErrorWithMetadata(e, trailer, true)
+		return ts, toSpannerErrorWithCommitInfo(e, true)
 	}
 	if tstamp := res.GetCommitTimestamp(); tstamp != nil {
 		ts = time.Unix(tstamp.Seconds, int64(tstamp.Nanos))
@@ -1014,7 +1010,6 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 		return ts, err
 	}
 
-	var trailers metadata.MD
 	// Retry-loop for aborted transactions.
 	// TODO: Replace with generic retryer.
 	for {
@@ -1038,13 +1033,13 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 				},
 			},
 			Mutations: mPb,
-		}, gax.WithGRPCOptions(grpc.Trailer(&trailers)))
+		})
 		if err != nil && !isAbortErr(err) {
 			if isSessionNotFoundError(err) {
 				// Discard the bad session.
 				sh.destroy()
 			}
-			return ts, toSpannerErrorWithMetadata(err, trailers, true)
+			return ts, toSpannerErrorWithCommitInfo(err, true)
 		} else if err == nil {
 			if tstamp := res.GetCommitTimestamp(); tstamp != nil {
 				ts = time.Unix(tstamp.Seconds, int64(tstamp.Nanos))
