@@ -114,7 +114,7 @@ func (m *MockCloudSpannerClient) GetSession(ctx context.Context, r *sppb.GetSess
 	defer m.mu.Unlock()
 	m.pings = append(m.pings, r.Name)
 	if _, ok := m.sessions[r.Name]; !ok {
-		return nil, status.Errorf(codes.NotFound, fmt.Sprintf("Session not found: %v", r.Name))
+		return nil, newSessionNotFoundError(r.Name)
 	}
 	return &sppb.Session{Name: r.Name}, nil
 }
@@ -128,7 +128,7 @@ func (m *MockCloudSpannerClient) DeleteSession(ctx context.Context, r *sppb.Dele
 	defer m.mu.Unlock()
 	if _, ok := m.sessions[r.Name]; !ok {
 		// Session not found.
-		return &empty.Empty{}, status.Errorf(codes.NotFound, fmt.Sprintf("Session not found: %v", r.Name))
+		return &empty.Empty{}, newSessionNotFoundError(r.Name)
 	}
 	// Delete session from in-memory table.
 	delete(m.sessions, r.Name)

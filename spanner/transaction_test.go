@@ -21,12 +21,14 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 	"sync"
 	"testing"
 	"time"
 
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/golang/protobuf/ptypes"
+	"github.com/google/go-cmp/cmp"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
@@ -203,7 +205,7 @@ func TestTransaction_SessionNotFound(t *testing.T) {
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
 
-	serverErr := gstatus.Errorf(codes.NotFound, "Session not found")
+	serverErr := newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")
 	server.TestSpanner.PutExecutionTime(MethodBeginTransaction,
 		SimulatedExecutionTime{
 			Errors: []error{serverErr, serverErr, serverErr},
@@ -235,14 +237,24 @@ func TestTransaction_SessionNotFound(t *testing.T) {
 		t.Fatalf("Expect Read to succeed, got %v, want %v.", got.err, wantErr)
 	}
 
-	wantErr = toSpannerError(serverErr)
+	wantErr = toSpannerError(newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s"))
 	ms := []*Mutation{
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
 	}
 	_, got := client.Apply(ctx, ms, ApplyAtLeastOnce())
-	if !testEqual(wantErr, got) {
-		t.Fatalf("Expect Apply to fail, got %v, want %v.", got, wantErr)
+	if !cmp.Equal(wantErr, got,
+		cmp.AllowUnexported(Error{}), cmp.FilterPath(func(path cmp.Path) bool {
+			// Ignore statusError Details and Error.trailers.
+			if strings.Contains(path.GoString(), "{*spanner.Error}.err.(*status.statusError).Details") {
+				return true
+			}
+			if strings.Contains(path.GoString(), "{*spanner.Error}.trailers") {
+				return true
+			}
+			return false
+		}, cmp.Ignore())) {
+		t.Fatalf("Expect Apply to fail\nGot:  %v\nWant: %v\n", got, wantErr)
 	}
 }
 

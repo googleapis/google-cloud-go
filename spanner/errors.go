@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -170,4 +171,26 @@ func ErrDesc(err error) string {
 		return err.Error()
 	}
 	return se.Desc
+}
+
+// extractResourceType extracts the resource type from any ResourceInfo detail
+// included in the error.
+func extractResourceType(err error) (string, bool) {
+	var s *status.Status
+	var se *Error
+	if errorAs(err, &se) {
+		// Unwrap statusError.
+		s = status.Convert(se.Unwrap())
+	} else {
+		s = status.Convert(err)
+	}
+	if s == nil {
+		return "", false
+	}
+	for _, detail := range s.Details() {
+		if resourceInfo, ok := detail.(*errdetails.ResourceInfo); ok {
+			return resourceInfo.ResourceType, true
+		}
+	}
+	return "", false
 }

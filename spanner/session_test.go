@@ -31,10 +31,17 @@ import (
 
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"google.golang.org/api/iterator"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+
+func newSessionNotFoundError(name string) error {
+	s := status.Newf(codes.NotFound, "Session not found: Session with id %s not found", name)
+	s, _ = s.WithDetails(&errdetails.ResourceInfo{ResourceType: sessionResourceType, ResourceName: name})
+	return s.Err()
+}
 
 // TestSessionPoolConfigValidation tests session pool config validation.
 func TestSessionPoolConfigValidation(t *testing.T) {
@@ -366,7 +373,7 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 	// will create a new session.
 	server.TestSpanner.PutExecutionTime(MethodGetSession,
 		SimulatedExecutionTime{
-			Errors: []error{status.Errorf(codes.NotFound, "Session not found")},
+			Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
 		})
 
 	// Force ping by setting check time in the past.
@@ -446,7 +453,7 @@ func TestTakeFromIdleWriteListChecked(t *testing.T) {
 	// will create a new session.
 	server.TestSpanner.PutExecutionTime(MethodGetSession,
 		SimulatedExecutionTime{
-			Errors: []error{status.Errorf(codes.NotFound, "Session not found")},
+			Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
 		})
 
 	// Force ping by setting check time in the past.
@@ -1131,7 +1138,7 @@ func TestSessionNotFoundOnPrepareSession(t *testing.T) {
 
 	// The server will return 'Session not found' for the first 8
 	// BeginTransaction calls.
-	sessionNotFoundErr := status.Errorf(codes.NotFound, `Session not found: projects/<project>/instances/<instance>/databases/<database>/sessions/<session> resource_type: "Session" resource_name: "projects/<project>/instances/<instance>/databases/<database>/sessions/<session>" description: "Session does not exist."`)
+	sessionNotFoundErr := newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")
 	serverErrors := make([]error, 8)
 	for i := range serverErrors {
 		serverErrors[i] = sessionNotFoundErr
@@ -1239,7 +1246,7 @@ func TestSessionHealthCheck(t *testing.T) {
 	server.TestSpanner.Freeze()
 	server.TestSpanner.PutExecutionTime(MethodGetSession,
 		SimulatedExecutionTime{
-			Errors:    []error{status.Errorf(codes.NotFound, "Session not found")},
+			Errors:    []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
 			KeepError: true,
 		})
 	server.TestSpanner.Unfreeze()

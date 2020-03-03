@@ -168,7 +168,7 @@ func TestClient_Single_SessionNotFound(t *testing.T) {
 	defer teardown()
 	server.TestSpanner.PutExecutionTime(
 		MethodExecuteStreamingSql,
-		SimulatedExecutionTime{Errors: []error{status.Errorf(codes.NotFound, "Session not found")}},
+		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
 	)
 	ctx := context.Background()
 	iter := client.Single().Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
@@ -250,7 +250,7 @@ func TestClient_Single_NonRetryableErrorOnPartialResultSet(t *testing.T) {
 		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 		PartialResultSetExecutionTime{
 			ResumeToken: EncodeResumeToken(3),
-			Err:         status.Errorf(codes.NotFound, "Session not found"),
+			Err:         newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s"),
 		},
 	)
 	ctx := context.Background()
@@ -593,9 +593,9 @@ func TestClient_ReadOnlyTransaction_SessionNotFoundOnExecuteStreamingSql(t *test
 	// transaction, as we would need to start a new transaction on a new
 	// session.
 	err := testReadOnlyTransaction(t, map[string]SimulatedExecutionTime{
-		MethodExecuteStreamingSql: {Errors: []error{status.Errorf(codes.NotFound, "Session not found")}},
+		MethodExecuteStreamingSql: {Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
 	})
-	want := spannerErrorf(codes.NotFound, "Session not found")
+	want := toSpannerError(newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s"))
 	if err == nil {
 		t.Fatalf("missing expected error\nGot: nil\nWant: %v", want)
 	}
@@ -633,7 +633,7 @@ func TestClient_ReadOnlyTransaction_SessionNotFoundOnBeginTransaction(t *testing
 	if err := testReadOnlyTransaction(
 		t,
 		map[string]SimulatedExecutionTime{
-			MethodBeginTransaction: {Errors: []error{status.Error(codes.NotFound, "Session not found")}},
+			MethodBeginTransaction: {Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
 		},
 	); err != nil {
 		t.Fatal(err)
@@ -653,7 +653,7 @@ func TestClient_ReadOnlyTransaction_SessionNotFoundOnBeginTransaction_WithMaxOne
 	defer teardown()
 	server.TestSpanner.PutExecutionTime(
 		MethodBeginTransaction,
-		SimulatedExecutionTime{Errors: []error{status.Error(codes.NotFound, "Session not found")}},
+		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
 	)
 	tx := client.ReadOnlyTransaction()
 	defer tx.Close()
@@ -694,7 +694,7 @@ func TestClient_ReadWriteTransactionCommitAborted(t *testing.T) {
 func TestClient_ReadWriteTransaction_SessionNotFoundOnCommit(t *testing.T) {
 	t.Parallel()
 	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
-		MethodCommitTransaction: {Errors: []error{status.Error(codes.NotFound, "Session not found")}},
+		MethodCommitTransaction: {Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
 	}, 2); err != nil {
 		t.Fatal(err)
 	}
@@ -705,7 +705,7 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnBeginTransaction(t *testin
 	// We expect only 1 attempt, as the 'Session not found' error is already
 	//handled in the session pool where the session is prepared.
 	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
-		MethodBeginTransaction: {Errors: []error{status.Error(codes.NotFound, "Session not found")}},
+		MethodBeginTransaction: {Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
 	}, 1); err != nil {
 		t.Fatal(err)
 	}
@@ -720,7 +720,7 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnBeginTransactionWithEmptyS
 	if err := testReadWriteTransactionWithConfig(t, ClientConfig{
 		SessionPoolConfig: SessionPoolConfig{WriteSessions: 0.0},
 	}, map[string]SimulatedExecutionTime{
-		MethodBeginTransaction: {Errors: []error{status.Error(codes.NotFound, "Session not found")}},
+		MethodBeginTransaction: {Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
 	}, 1); err != nil {
 		t.Fatal(err)
 	}
@@ -729,7 +729,7 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnBeginTransactionWithEmptyS
 func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteStreamingSql(t *testing.T) {
 	t.Parallel()
 	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
-		MethodExecuteStreamingSql: {Errors: []error{status.Error(codes.NotFound, "Session not found")}},
+		MethodExecuteStreamingSql: {Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
 	}, 2); err != nil {
 		t.Fatal(err)
 	}
@@ -742,7 +742,7 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteUpdate(t *testing.T
 	defer teardown()
 	server.TestSpanner.PutExecutionTime(
 		MethodExecuteSql,
-		SimulatedExecutionTime{Errors: []error{status.Error(codes.NotFound, "Session not found")}},
+		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
 	)
 	ctx := context.Background()
 	var attempts int
@@ -772,7 +772,7 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteBatchUpdate(t *test
 	defer teardown()
 	server.TestSpanner.PutExecutionTime(
 		MethodExecuteBatchDml,
-		SimulatedExecutionTime{Errors: []error{status.Error(codes.NotFound, "Session not found")}},
+		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
 	)
 	ctx := context.Background()
 	var attempts int
@@ -1292,15 +1292,15 @@ func TestReadWriteTransaction_WrapSessionNotFoundError(t *testing.T) {
 	defer teardown()
 	server.TestSpanner.PutExecutionTime(MethodBeginTransaction,
 		SimulatedExecutionTime{
-			Errors: []error{status.Error(codes.NotFound, "Session not found")},
+			Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
 		})
 	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
 		SimulatedExecutionTime{
-			Errors: []error{status.Error(codes.NotFound, "Session not found")},
+			Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
 		})
 	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
 		SimulatedExecutionTime{
-			Errors: []error{status.Error(codes.NotFound, "Session not found")},
+			Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
 		})
 	msg := "query failed"
 	numAttempts := 0
