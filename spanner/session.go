@@ -25,7 +25,6 @@ import (
 	"math"
 	"math/rand"
 	"runtime/debug"
-	"strings"
 	"sync"
 	"time"
 
@@ -1522,16 +1521,19 @@ func minUint64(a, b uint64) uint64 {
 	return a
 }
 
+// sessionResourceType is the type name of Spanner sessions.
+const sessionResourceType = "type.googleapis.com/google.spanner.v1.Session"
+
 // isSessionNotFoundError returns true if the given error is a
 // `Session not found` error.
 func isSessionNotFoundError(err error) bool {
 	if err == nil {
 		return false
 	}
-	// We are checking specifically for the error message `Session not found`,
-	// as the error could also be a `Database not found`. The latter should
-	// cause the session pool to stop preparing sessions for read/write
-	// transactions, while the former should not.
-	// TODO: once gRPC can return auxiliary error information, stop parsing the error message.
-	return ErrCode(err) == codes.NotFound && strings.Contains(err.Error(), "Session not found")
+	if ErrCode(err) == codes.NotFound {
+		if rt, ok := extractResourceType(err); ok {
+			return rt == sessionResourceType
+		}
+	}
+	return false
 }

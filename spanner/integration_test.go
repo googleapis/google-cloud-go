@@ -231,14 +231,15 @@ func initIntegrationTests() (cleanup func()) {
 func TestIntegration_InitSessionPool(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	// Set up testing environment.
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	// Set up an empty testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, []string{})
 	defer cleanup()
 	sp := client.idleSessions
 	sp.mu.Lock()
 	want := sp.MinOpened
 	sp.mu.Unlock()
 	var numOpened int
+loop:
 	for {
 		select {
 		case <-ctx.Done():
@@ -248,9 +249,41 @@ func TestIntegration_InitSessionPool(t *testing.T) {
 			numOpened = sp.idleList.Len() + sp.idleWriteList.Len()
 			sp.mu.Unlock()
 			if uint64(numOpened) == want {
-				return
+				break loop
 			}
 		}
+	}
+	// Delete all sessions in the pool on the backend and then try to execute a
+	// simple query. The 'Session not found' error should cause an automatic
+	// retry of the read-only transaction.
+	sp.mu.Lock()
+	s := sp.idleList.Front()
+	for {
+		if s == nil {
+			break
+		}
+		// This will delete the session on the backend without removing it
+		// from the pool.
+		s.Value.(*session).delete(context.Background())
+		s = s.Next()
+	}
+	sp.mu.Unlock()
+	sql := "SELECT 1, 'FOO', 'BAR'"
+	tx := client.ReadOnlyTransaction()
+	defer tx.Close()
+	iter := tx.Query(context.Background(), NewStatement(sql))
+	rows, err := readAll(iter)
+	if err != nil {
+		t.Fatalf("Unexpected error for query %q: %v", sql, err)
+	}
+	if got, want := len(rows), 1; got != want {
+		t.Fatalf("Row count mismatch for query %q\nGot: %v\nWant: %v", sql, got, want)
+	}
+	if got, want := len(rows[0]), 3; got != want {
+		t.Fatalf("Column count mismatch for query %q\nGot: %v\nWant: %v", sql, got, want)
+	}
+	if got, want := rows[0][0].(int64), int64(1); got != want {
+		t.Fatalf("Column value mismatch for query %q\nGot: %v\nWant: %v", sql, got, want)
 	}
 }
 
