@@ -455,6 +455,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1",
     "release_level": "beta"
   },
+  "cloud.google.com/go/rpcreplay": {
+    "distribution_name": "cloud.google.com/go/rpcreplay",
+    "description": "RPC Replay",
+    "language": "Go",
+    "client_library_type": "manual",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/rpcreplay",
+    "release_level": "ga"
+  },
   "cloud.google.com/go/scheduler/apiv1": {
     "distribution_name": "cloud.google.com/go/scheduler/apiv1",
     "description": "Cloud Scheduler API",

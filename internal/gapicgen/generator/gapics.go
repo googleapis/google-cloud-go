@@ -321,6 +321,14 @@ var manualEntries = []manifestEntry{
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/storage",
 		ReleaseLevel:      "ga",
 	},
+	{
+		DistributionName:  "cloud.google.com/go/rpcreplay",
+		Description:       "RPC Replay",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/rpcreplay",
+		ReleaseLevel:      "ga",
+	},
 	// Manuals with a GAPIC.
 	{
 		DistributionName:  "cloud.google.com/go/errorreporting",
