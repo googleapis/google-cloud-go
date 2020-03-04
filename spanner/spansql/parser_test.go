@@ -29,7 +29,7 @@ func TestParseQuery(t *testing.T) {
 		want Query
 	}{
 		{`SELECT 17`, Query{Select: Select{List: []Expr{IntegerLiteral(17)}}}},
-		{`SELECT Alias FROM Characters WHERE Age < @ageLimit AND Alias IS NOT NULL ORDER BY Age DESC LIMIT @limit` + "\n\t",
+		{`SELECT Alias AS aka FROM Characters WHERE Age < @ageLimit AND Alias IS NOT NULL ORDER BY Age DESC LIMIT @limit` + "\n\t",
 			Query{
 				Select: Select{
 					List: []Expr{ID("Alias")},
@@ -49,6 +49,7 @@ func TestParseQuery(t *testing.T) {
 							RHS: Null,
 						},
 					},
+					ListAliases: []string{"aka"},
 				},
 				Order: []Order{{
 					Expr: ID("Age"),
@@ -78,7 +79,7 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT SUM(PointsScored), FirstName, LastName FROM PlayerStats GROUP BY FirstName, LastName`,
+		{`SELECT SUM(PointsScored) AS total_points, FirstName, LastName AS surname FROM PlayerStats GROUP BY FirstName, LastName`,
 			Query{
 				Select: Select{
 					List: []Expr{
@@ -86,8 +87,9 @@ func TestParseQuery(t *testing.T) {
 						ID("FirstName"),
 						ID("LastName"),
 					},
-					From:    []SelectFrom{{Table: "PlayerStats"}},
-					GroupBy: []Expr{ID("FirstName"), ID("LastName")},
+					From:        []SelectFrom{{Table: "PlayerStats"}},
+					GroupBy:     []Expr{ID("FirstName"), ID("LastName")},
+					ListAliases: []string{"total_points", "", "surname"},
 				},
 			},
 		},

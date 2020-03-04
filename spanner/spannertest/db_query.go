@@ -332,6 +332,13 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 	// aggregation happens next.
 	var rowGroups [][2]int // Sequence of half-open intervals of row numbers.
 	if len(sel.GroupBy) > 0 {
+		// Load aliases visible to this GROUP BY.
+		ec.aliases = make(map[string]spansql.Expr)
+		for i, alias := range sel.ListAliases {
+			ec.aliases[alias] = sel.List[i]
+		}
+		// TODO: Add aliases for "1", "2", etc.
+
 		raw, err := toRawIter(ri)
 		if err != nil {
 			return nil, err
@@ -339,10 +346,6 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 		keys := make([][]interface{}, 0, len(raw.rows))
 		for _, row := range raw.rows {
 			// Evaluate sort key for this row.
-			// TODO: Support referring to expression names in the SELECT list;
-			// this may require passing through sel.List, or maybe mutating
-			// sel.GroupBy to copy the referenced values. This will also be
-			// required to support grouping by aliases.
 			ec.row = row
 			key, err := ec.evalExprList(sel.GroupBy)
 			if err != nil {
@@ -369,6 +372,9 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 		if len(keys) > 0 {
 			rowGroups = append(rowGroups, [2]int{start, len(keys)})
 		}
+
+		// Clear aliases, since they aren't visible elsewhere.
+		ec.aliases = nil
 
 		ri = raw
 	}
@@ -479,10 +485,16 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 		// Every column will appear in the output.
 		colInfos = ec.cols
 	} else {
-		for _, e := range sel.List {
+		for i, e := range sel.List {
 			ci, err := ec.colInfo(e)
 			if err != nil {
 				return nil, err
+			}
+			if len(sel.ListAliases) > 0 {
+				alias := sel.ListAliases[i]
+				if alias != "" {
+					ci.Name = alias
+				}
 			}
 			// TODO: deal with ci.Name == ""?
 			colInfos = append(colInfos, ci)

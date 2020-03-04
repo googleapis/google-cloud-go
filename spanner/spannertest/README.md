@@ -26,7 +26,7 @@ by ascending esotericism:
 - transaction simulation
 - expression type casting, coercion
 - query offset
-- SELECT aliases
+- SELECT aliases in FROM clause, ORDER BY
 - subselects
 - set operations (UNION, INTERSECT, EXCEPT)
 - partition support

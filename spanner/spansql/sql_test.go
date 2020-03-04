@@ -217,11 +217,12 @@ func TestSQL(t *testing.T) {
 							RHS: Null,
 						},
 					},
+					ListAliases: []string{"", "banana"},
 				},
 				Order: []Order{{Expr: ID("OCol"), Desc: true}},
 				Limit: IntegerLiteral(1000),
 			},
-			`SELECT A, B FROM Table WHERE C < "whelp" AND D IS NOT NULL ORDER BY OCol DESC LIMIT 1000`,
+			`SELECT A, B AS banana FROM Table WHERE C < "whelp" AND D IS NOT NULL ORDER BY OCol DESC LIMIT 1000`,
 			reparseQuery,
 		},
 		{

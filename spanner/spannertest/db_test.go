@@ -478,6 +478,16 @@ func TestTableData(t *testing.T) {
 				{"Coolidge", int64(1)},
 			},
 		},
+		{
+			// Another GROUP BY, but referring to an alias.
+			// Group by ID oddness, SUM over Tenure.
+			`SELECT ID&0x01 AS odd, SUM(Tenure) FROM Staff GROUP BY odd`,
+			nil,
+			[][]interface{}{
+				{int64(0), int64(19)}, // Daniel(ID=2, Tenure=11), Teal'c(ID=4, Tenure=8)
+				{int64(1), int64(25)}, // Jack(ID=1, Tenure=10), Sam(ID=3, Tenure=9), George(ID=5, Tenure=6)
+			},
+		},
 	}
 	for _, test := range tests {
 		q, err := spansql.ParseQuery(test.q)

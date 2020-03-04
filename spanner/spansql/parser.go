@@ -1488,11 +1488,11 @@ func (p *parser) parseSelect() (Select, *parseError) {
 	}
 
 	// Read expressions for the SELECT list.
-	list, err := p.parseExprList()
+	list, aliases, err := p.parseSelectList()
 	if err != nil {
 		return Select{}, err
 	}
-	sel.List = list
+	sel.List, sel.ListAliases = list, aliases
 
 	if p.eat("FROM") {
 		for {
@@ -1535,6 +1535,46 @@ func (p *parser) parseSelect() (Select, *parseError) {
 	// TODO: HAVING
 
 	return sel, nil
+}
+
+func (p *parser) parseSelectList() ([]Expr, []string, *parseError) {
+	var list []Expr
+	var aliases []string // Only set if any aliases are seen.
+	padAliases := func() {
+		for len(aliases) < len(list) {
+			aliases = append(aliases, "")
+		}
+	}
+
+	for {
+		expr, err := p.parseExpr()
+		if err != nil {
+			return nil, nil, err
+		}
+		list = append(list, expr)
+
+		// TODO: The "AS" keyword is optional.
+		if p.eat("AS") {
+			// The docs don't seem to indicate the valid lexical element for aliases,
+			// but it seems likely that identifiers are suitable.
+			alias, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return nil, nil, err
+			}
+
+			padAliases()
+			aliases[len(aliases)-1] = alias
+		}
+
+		if p.eat(",") {
+			continue
+		}
+		break
+	}
+	if aliases != nil {
+		padAliases()
+	}
+	return list, aliases, nil
 }
 
 func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {

@@ -199,6 +199,12 @@ func (sel Select) SQL() string {
 			str += ", "
 		}
 		str += e.SQL()
+		if len(sel.ListAliases) > 0 {
+			alias := sel.ListAliases[i]
+			if alias != "" {
+				str += " AS " + alias
+			}
+		}
 	}
 	if len(sel.From) > 0 {
 		str += " FROM "
