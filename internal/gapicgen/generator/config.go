@@ -602,6 +602,22 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/pubsub/v1/pubsub_v1.yaml",
 		releaseLevel:          "ga",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/automl/v1",
+		pkg:                   "automl",
+		importPath:            "cloud.google.com/go/automl/apiv1",
+		gRPCServiceConfigPath: "google/cloud/automl/v1/automl_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/automl/v1/automl_v1.yaml",
+		releaseLevel:          "ga",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/automl/v1beta1",
+		pkg:                   "automl",
+		importPath:            "cloud.google.com/go/automl/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/automl/v1beta1/automl_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/automl/v1beta1/automl_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
 }
 
 // Relative to gocloud dir.
@@ -617,27 +633,6 @@ var gapicsWithManual = []string{
 }
 
 // Relative to googleapis dir.
-var artmanGapicConfigPaths = []string{
-	"google/cloud/automl/artman_automl_v1.yaml",
-	"google/cloud/automl/artman_automl_v1beta1.yaml",
-}
+var artmanGapicConfigPaths = []string{}
 
-var artmanGapicManifestEntries = []manifestEntry{
-	{
-		DistributionName:  "cloud.google.com/go/automl/apiv1",
-		Description:       "Cloud AutoML API",
-		Language:          "Go",
-		ClientLibraryType: "generated",
-		DocsURL:           "https://pkg.go.dev/loud.google.com/go/automl/apiv1",
-		ReleaseLevel:      "ga",
-	},
-	{
-		DistributionName:  "cloud.google.com/go/automl/apiv1beta1",
-		Description:       "Cloud AutoML API",
-		Language:          "Go",
-		ClientLibraryType: "generated",
-		DocsURL:           "https://pkg.go.dev/loud.google.com/go/automl/apiv1beta1",
-		ReleaseLevel:      "beta",
-	},
-	// Logging and Pubsub are defined in manualEntries.
-}
+var artmanGapicManifestEntries = []manifestEntry{}
