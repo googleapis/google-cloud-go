@@ -33,6 +33,9 @@ type evalContext struct {
 	cols []colInfo
 	row  row
 
+	// If there are visible aliases, they are populated here.
+	aliases map[string]spansql.Expr
+
 	params queryParams
 }
 
@@ -376,11 +379,22 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 }
 
 func (ec evalContext) evalID(id spansql.ID) (interface{}, error) {
-	// TODO: look beyond column names.
 	for i, col := range ec.cols {
 		if col.Name == string(id) {
 			return ec.row.copyDataElem(i), nil
 		}
+	}
+	if e, ok := ec.aliases[string(id)]; ok {
+		// Make a copy of the context without this alias
+		// to prevent an evaluation cycle.
+		innerEC := ec
+		innerEC.aliases = make(map[string]spansql.Expr)
+		for alias, e := range ec.aliases {
+			if alias != string(id) {
+				innerEC.aliases[alias] = e
+			}
+		}
+		return innerEC.evalExpr(e)
 	}
 	return nil, fmt.Errorf("couldn't resolve identifier %s", string(id))
 }

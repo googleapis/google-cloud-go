@@ -226,6 +226,11 @@ type Select struct {
 	Where    BoolExpr
 	GroupBy  []Expr
 	// TODO: Having
+
+	// If the SELECT list has explicit aliases ("AS alias"),
+	// ListAliases will be populated 1:1 with List;
+	// aliases that are present will be non-empty.
+	ListAliases []string
 }
 
 type SelectFrom struct {
