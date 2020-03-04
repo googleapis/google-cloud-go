@@ -29,16 +29,30 @@ type aggregateFunc struct {
 	AcceptStar bool
 
 	// Every aggregate func takes one expression.
-	Eval func(values []interface{}) (interface{}, spansql.Type, error)
+	Eval func(values []interface{}, typ spansql.Type) (interface{}, spansql.Type, error)
 
 	// TODO: Handle qualifiers such as DISTINCT.
 }
 
 // TODO: more aggregate funcs.
 var aggregateFuncs = map[string]aggregateFunc{
+	"ARRAY_AGG": {
+		// https://cloud.google.com/spanner/docs/aggregate_functions#array_agg
+		Eval: func(values []interface{}, typ spansql.Type) (interface{}, spansql.Type, error) {
+			if typ.Array {
+				return nil, spansql.Type{}, fmt.Errorf("ARRAY_AGG unsupported on values of type %v", typ.SQL())
+			}
+			typ.Array = true // use as return type
+			if len(values) == 0 {
+				// "If there are zero input rows, this function returns NULL."
+				return nil, typ, nil
+			}
+			return values, typ, nil
+		},
+	},
 	"COUNT": {
 		AcceptStar: true,
-		Eval: func(values []interface{}) (interface{}, spansql.Type, error) {
+		Eval: func(values []interface{}, typ spansql.Type) (interface{}, spansql.Type, error) {
 			// Count the number of non-NULL values.
 			// COUNT(*) receives a list of non-NULL placeholders rather than values,
 			// so every value will be non-NULL.
@@ -52,35 +66,40 @@ var aggregateFuncs = map[string]aggregateFunc{
 		},
 	},
 	"SUM": {
-		Eval: func(values []interface{}) (interface{}, spansql.Type, error) {
-			// Ignoring NULL values, there may only be one type, either INT64 or FLOAT64.
-			var seenInt, seenFloat bool
-			var sumInt int64
-			var sumFloat float64
-			for _, v := range values {
-				switch v := v.(type) {
-				default:
-					return nil, spansql.Type{}, fmt.Errorf("SUM only supports arguments of INT64 or FLOAT64 type, not %T", v)
-				case nil:
-					continue
-				case int64:
-					seenInt = true
-					sumInt += v
-				case float64:
-					seenFloat = true
-					sumFloat += v
+		Eval: func(values []interface{}, typ spansql.Type) (interface{}, spansql.Type, error) {
+			if typ.Array || !(typ.Base == spansql.Int64 || typ.Base == spansql.Float64) {
+				return nil, spansql.Type{}, fmt.Errorf("SUM only supports arguments of INT64 or FLOAT64 type, not %s", typ.SQL())
+			}
+			if typ.Base == spansql.Int64 {
+				var seen bool
+				var sum int64
+				for _, v := range values {
+					if v == nil {
+						continue
+					}
+					seen = true
+					sum += v.(int64)
 				}
+				if !seen {
+					// "Returns NULL if the input contains only NULLs".
+					return nil, typ, nil
+				}
+				return sum, typ, nil
 			}
-			if !seenInt && !seenFloat {
+			var seen bool
+			var sum float64
+			for _, v := range values {
+				if v == nil {
+					continue
+				}
+				seen = true
+				sum += v.(float64)
+			}
+			if !seen {
 				// "Returns NULL if the input contains only NULLs".
-				return nil, int64Type, nil
-			} else if seenInt && seenFloat {
-				// This shouldn't happen.
-				return nil, spansql.Type{}, fmt.Errorf("internal error: SUM saw mix of INT64 and FLOAT64")
-			} else if seenInt {
-				return sumInt, int64Type, nil
+				return nil, typ, nil
 			}
-			return sumFloat, float64Type, nil
+			return sum, typ, nil
 		},
 	},
 }
