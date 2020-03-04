@@ -157,7 +157,7 @@ The mapping between Spanner types and Go types internal to this package are:
 	BYTES		[]byte
 	DATE		string (RFC 3339 date; "YYYY-MM-DD")
 	TIMESTAMP	string (RFC 3339 timestamp with zone; "YYYY-MM-DDTHH:MM:SSZ")
-	ARRAY<T>	[]T
+	ARRAY<T>	[]interface{}
 	STRUCT		TODO
 */
 type row []interface{}

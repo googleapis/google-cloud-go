@@ -129,9 +129,10 @@ var keywords = map[string]bool{
 // https://cloud.google.com/spanner/docs/functions-and-operators
 var funcs = map[string]bool{
 	// Aggregate functions.
-	"BIT_XOR": true,
-	"COUNT":   true,
-	"SUM":     true,
+	"ARRAY_AGG": true,
+	"BIT_XOR":   true,
+	"COUNT":     true,
+	"SUM":       true,
 
 	// Mathematical functions.
 	"ABS": true,

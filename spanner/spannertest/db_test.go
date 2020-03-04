@@ -488,6 +488,14 @@ func TestTableData(t *testing.T) {
 				{int64(1), int64(25)}, // Jack(ID=1, Tenure=10), Sam(ID=3, Tenure=9), George(ID=5, Tenure=6)
 			},
 		},
+		{
+			`SELECT ARRAY_AGG(Cool) FROM Staff ORDER BY Name`,
+			nil,
+			[][]interface{}{
+				// Daniel, George (NULL), Jack (NULL), Sam, Teal'c
+				{[]interface{}{false, nil, nil, false, true}},
+			},
+		},
 	}
 	for _, test := range tests {
 		q, err := spansql.ParseQuery(test.q)

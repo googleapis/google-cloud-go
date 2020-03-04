@@ -412,6 +412,14 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 		if starArg && !fn.AcceptStar {
 			return nil, fmt.Errorf("aggregate function %s does not accept * as an argument", fexpr.Name)
 		}
+		var argType spansql.Type
+		if !starArg {
+			ci, err := ec.colInfo(fexpr.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			argType = ci.Type
+		}
 
 		// Prepare output.
 		rawOut := &rawIter{
@@ -439,7 +447,7 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 					values = append(values, x)
 				}
 			}
-			x, typ, err := fn.Eval(values)
+			x, typ, err := fn.Eval(values, argType)
 			if err != nil {
 				return nil, err
 			}
