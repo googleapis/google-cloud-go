@@ -435,7 +435,7 @@ var DefaultSessionPoolConfig = SessionPoolConfig{
 	MaxBurst:            10,
 	WriteSessions:       0.2,
 	HealthCheckWorkers:  10,
-	HealthCheckInterval: 5 * time.Minute,
+	HealthCheckInterval: 30 * time.Minute,
 }
 
 // errMinOpenedGTMapOpened returns error for SessionPoolConfig.MaxOpened < SessionPoolConfig.MinOpened when SessionPoolConfig.MaxOpened is set.
