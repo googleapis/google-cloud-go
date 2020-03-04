@@ -189,6 +189,40 @@ func (d *database) LastCommitTimestamp() time.Time {
 	return d.lastTS
 }
 
+func (d *database) GetDDL() []spansql.DDLStmt {
+	// This lacks fidelity, but captures the details we support.
+	d.mu.Lock()
+	defer d.mu.Unlock()
+
+	var stmts []spansql.DDLStmt
+
+	for name, t := range d.tables {
+		ct := &spansql.CreateTable{
+			Name: name,
+		}
+
+		t.mu.Lock()
+		for i, col := range t.cols {
+			ct.Columns = append(ct.Columns, spansql.ColumnDef{
+				Name: col.Name,
+				Type: col.Type,
+				// TODO: NotNull, AllowCommitTimestamp
+			})
+			if i < t.pkCols {
+				ct.PrimaryKey = append(ct.PrimaryKey, spansql.KeyPart{
+					Column: col.Name,
+					Desc:   t.pkDesc[i],
+				})
+			}
+		}
+		t.mu.Unlock()
+
+		stmts = append(stmts, ct)
+	}
+
+	return stmts
+}
+
 func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 	d.mu.Lock()
 	defer d.mu.Unlock()

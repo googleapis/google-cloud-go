@@ -292,6 +292,16 @@ func (s *server) runOneDDL(ctx context.Context, stmt spansql.DDLStmt) *status.St
 	return s.db.ApplyDDL(stmt)
 }
 
+func (s *server) GetDatabaseDdl(ctx context.Context, req *adminpb.GetDatabaseDdlRequest) (*adminpb.GetDatabaseDdlResponse, error) {
+	s.logf("GetDatabaseDdl(%q)", req.Database)
+
+	var resp adminpb.GetDatabaseDdlResponse
+	for _, stmt := range s.db.GetDDL() {
+		resp.Statements = append(resp.Statements, stmt.SQL())
+	}
+	return &resp, nil
+}
+
 func (s *server) CreateSession(ctx context.Context, req *spannerpb.CreateSessionRequest) (*spannerpb.Session, error) {
 	//s.logf("CreateSession(%q)", req.Database)
 	return s.newSession(), nil
