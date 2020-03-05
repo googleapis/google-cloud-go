@@ -352,7 +352,7 @@ func TestParseDDL(t *testing.T) {
 				Text: []string{"This is another comment."}},
 			{Marker: "/*", Start: line(4), End: line(5),
 				Text: []string{" This is a", "\t\t\t\t\t\t  * multiline comment."}},
-			{Marker: "--", Start: line(26), End: line(27),
+			{Marker: "--", Isolated: true, Start: line(26), End: line(27),
 				Text: []string{"This table has some commentary", "that spans multiple lines."}},
 			// These comments shouldn't get combined:
 			{Marker: "--", Start: line(29), End: line(29), Text: []string{"dummy comment"}},
@@ -430,13 +430,11 @@ func TestParseDDL(t *testing.T) {
 	}
 	// There are no leading comments on the columns of NonScalars,
 	// even though there's often a comment on the previous line.
-	/* TODO: This is broken; LeadingComment needs fixing.
 	for _, cd := range tableByName(t, ddl, "NonScalars").Columns {
 		if com := ddl.LeadingComment(cd); com != nil {
 			t.Errorf("Leading comment found for NonScalars.%s: %v", cd.Name, com)
 		}
 	}
-	*/
 }
 
 func tableByName(t *testing.T, ddl *DDL, name string) *CreateTable {

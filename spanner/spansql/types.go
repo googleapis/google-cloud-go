@@ -475,7 +475,8 @@ type DMLStmt interface {
 
 // Comment represents a comment.
 type Comment struct {
-	Marker string // opening marker; one of "#", "--", "/*"
+	Marker   string // Opening marker; one of "#", "--", "/*".
+	Isolated bool   // Whether this comment is on its own line.
 	// Start and End are the position of the opening and terminating marker.
 	Start, End Position
 	Text       []string
@@ -519,6 +520,10 @@ func (ddl *DDL) LeadingComment(n Node) *Comment {
 		return ddl.Comments[i].End.Line >= lineEnd
 	})
 	if ci >= len(ddl.Comments) || ddl.Comments[ci].End.Line != lineEnd {
+		return nil
+	}
+	if !ddl.Comments[ci].Isolated {
+		// This is an inline comment for a previous node.
 		return nil
 	}
 	return ddl.Comments[ci]

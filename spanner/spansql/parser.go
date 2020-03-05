@@ -100,10 +100,11 @@ func ParseDDL(filename, s string) (*DDL, error) {
 	// Handle comments.
 	for _, com := range p.comments {
 		c := &Comment{
-			Marker: com.marker,
-			Start:  com.start,
-			End:    com.end,
-			Text:   com.text,
+			Marker:   com.marker,
+			Isolated: com.isolated,
+			Start:    com.start,
+			End:      com.end,
+			Text:     com.text,
 		}
 
 		// Strip common whitespace prefix and any whitespace suffix.
@@ -239,6 +240,7 @@ type parser struct {
 
 type comment struct {
 	marker     string // "#" or "--" or "/*"
+	isolated   bool   // if it starts on its own line
 	start, end Position
 	text       []string
 }
@@ -670,6 +672,7 @@ func isSpace(c byte) bool {
 
 // skipSpace skips past any space or comments.
 func (p *parser) skipSpace() bool {
+	initLine := p.line
 	// If we start capturing a comment in this method,
 	// this is set to its comment value. Multi-line comments
 	// are only joined during a single skipSpace invocation.
@@ -710,7 +713,8 @@ func (p *parser) skipSpace() bool {
 		if com == nil {
 			// New comment.
 			p.comments = append(p.comments, comment{
-				marker: marker,
+				marker:   marker,
+				isolated: (p.line != initLine) || p.line == 1,
 				start: Position{
 					Line:   p.line,
 					Offset: p.offset + i,
