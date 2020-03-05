@@ -15,7 +15,6 @@ require (
 	github.com/googleapis/gax-go/v2 v2.0.5
 	github.com/jstemmer/go-junit-report v0.9.1
 	go.opencensus.io v0.22.3
-	golang.org/x/exp v0.0.0-20200228211341-fcea875c7e85
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b
 	golang.org/x/net v0.0.0-20200301022130-244492dfa37a
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
