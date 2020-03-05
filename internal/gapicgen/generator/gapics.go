@@ -336,7 +336,7 @@ var manualEntries = []manifestEntry{
 		Language:          "Go",
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/errorreporting",
-		ReleaseLevel:      "ga",
+		ReleaseLevel:      "beta",
 	},
 	{
 		DistributionName:  "cloud.google.com/go/firestore",
