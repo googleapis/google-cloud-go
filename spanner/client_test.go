@@ -504,6 +504,60 @@ func TestClient_ResourceBasedRouting_WithInvalidArgumentError(t *testing.T) {
 	}
 }
 
+func TestClient_Single_QueryOptions(t *testing.T) {
+	for _, tt := range queryOptionsTestCases() {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.env.Options != nil {
+				os.Setenv("SPANNER_OPTIMIZER_VERSION", tt.env.Options.OptimizerVersion)
+				defer os.Setenv("SPANNER_OPTIMIZER_VERSION", "")
+			}
+
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: tt.client})
+			defer teardown()
+
+			var iter *RowIterator
+			if tt.query.Options == nil {
+				iter = client.Single().Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+			} else {
+				iter = client.Single().QueryWithOptions(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), tt.query)
+			}
+			testQueryOptions(t, iter, server.TestSpanner, tt.want)
+		})
+	}
+}
+
+func testQueryOptions(t *testing.T, iter *RowIterator, server InMemSpannerServer, qo QueryOptions) {
+	defer iter.Stop()
+
+	_, err := iter.Next()
+	if err != nil {
+		t.Fatalf("Failed to read from the iterator: %v", err)
+	}
+
+	checkReqsForQueryOptions(t, server, qo)
+}
+
+func checkReqsForQueryOptions(t *testing.T, server InMemSpannerServer, qo QueryOptions) {
+	reqs := drainRequestsFromServer(server)
+	sqlReqs := []*sppb.ExecuteSqlRequest{}
+
+	for _, req := range reqs {
+		if sqlReq, ok := req.(*sppb.ExecuteSqlRequest); ok {
+			sqlReqs = append(sqlReqs, sqlReq)
+		}
+	}
+
+	if got, want := len(sqlReqs), 1; got != want {
+		t.Fatalf("Length mismatch, got %v, want %v", got, want)
+	}
+
+	reqQueryOptions := sqlReqs[0].QueryOptions
+	if got, want := reqQueryOptions.OptimizerVersion, qo.Options.OptimizerVersion; got != want {
+		t.Fatalf("Optimizer version mismatch, got %v, want %v", got, want)
+	}
+}
+
 func testSingleQuery(t *testing.T, serverError error) error {
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServer(t)
@@ -663,6 +717,32 @@ func TestClient_ReadOnlyTransaction_SessionNotFoundOnBeginTransaction_WithMaxOne
 	}
 }
 
+func TestClient_ReadOnlyTransaction_QueryOptions(t *testing.T) {
+	for _, tt := range queryOptionsTestCases() {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.env.Options != nil {
+				os.Setenv("SPANNER_OPTIMIZER_VERSION", tt.env.Options.OptimizerVersion)
+				defer os.Setenv("SPANNER_OPTIMIZER_VERSION", "")
+			}
+
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: tt.client})
+			defer teardown()
+
+			tx := client.ReadOnlyTransaction()
+			defer tx.Close()
+
+			var iter *RowIterator
+			if tt.query.Options == nil {
+				iter = tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+			} else {
+				iter = tx.QueryWithOptions(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), tt.query)
+			}
+			testQueryOptions(t, iter, server.TestSpanner, tt.want)
+		})
+	}
+}
+
 func testReadOnlyTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime) error {
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
@@ -795,6 +875,68 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteBatchUpdate(t *test
 	}
 	if g, w := attempts, 2; g != w {
 		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+	}
+}
+
+func TestClient_ReadWriteTransaction_Query_QueryOptions(t *testing.T) {
+	for _, tt := range queryOptionsTestCases() {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.env.Options != nil {
+				os.Setenv("SPANNER_OPTIMIZER_VERSION", tt.env.Options.OptimizerVersion)
+				defer os.Setenv("SPANNER_OPTIMIZER_VERSION", "")
+			}
+
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: tt.client})
+			defer teardown()
+
+			_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+				var iter *RowIterator
+				if tt.query.Options == nil {
+					iter = tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+				} else {
+					iter = tx.QueryWithOptions(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), tt.query)
+				}
+				testQueryOptions(t, iter, server.TestSpanner, tt.want)
+				return nil
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+}
+
+func TestClient_ReadWriteTransaction_Update_QueryOptions(t *testing.T) {
+	for _, tt := range queryOptionsTestCases() {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.env.Options != nil {
+				os.Setenv("SPANNER_OPTIMIZER_VERSION", tt.env.Options.OptimizerVersion)
+				defer os.Setenv("SPANNER_OPTIMIZER_VERSION", "")
+			}
+
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: tt.client})
+			defer teardown()
+
+			_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+				var rowCount int64
+				var err error
+				if tt.query.Options == nil {
+					rowCount, err = tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+				} else {
+					rowCount, err = tx.UpdateWithOptions(ctx, NewStatement(UpdateBarSetFoo), tt.query)
+				}
+				if got, want := rowCount, int64(5); got != want {
+					t.Fatalf("Incorrect updated row count: got %v, want %v", got, want)
+				}
+				return err
+			})
+			if err != nil {
+				t.Fatalf("Failed to update rows: %v", err)
+			}
+			checkReqsForQueryOptions(t, server.TestSpanner, tt.want)
+		})
 	}
 }
 
@@ -1614,5 +1756,89 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 	}
 	if !strings.Contains(se.Error(), msg) {
 		t.Fatalf("Error message mismatch\nGot: %s\nWant: %s", se.Error(), msg)
+	}
+}
+
+func TestBatchReadOnlyTransaction_QueryOptions(t *testing.T) {
+	ctx := context.Background()
+	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}}
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: qo})
+	defer teardown()
+
+	txn, err := client.BatchReadOnlyTransaction(ctx, StrongRead())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer txn.Cleanup(ctx)
+
+	if txn.qo != qo {
+		t.Fatalf("Query options are mismatched: got %v, want %v", txn.qo, qo)
+	}
+}
+
+func TestBatchReadOnlyTransactionFromID_QueryOptions(t *testing.T) {
+	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}}
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: qo})
+	defer teardown()
+
+	txn := client.BatchReadOnlyTransactionFromID(BatchReadOnlyTransactionID{})
+
+	if txn.qo != qo {
+		t.Fatalf("Query options are mismatched: got %v, want %v", txn.qo, qo)
+	}
+}
+
+type QueryOptionsTestCase struct {
+	name   string
+	client QueryOptions
+	env    QueryOptions
+	query  QueryOptions
+	want   QueryOptions
+}
+
+func queryOptionsTestCases() []QueryOptionsTestCase {
+	return []QueryOptionsTestCase{
+		{
+			"Client level",
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}},
+			QueryOptions{Options: nil},
+			QueryOptions{Options: nil},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}},
+		},
+		{
+			"Environment level",
+			QueryOptions{Options: nil},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}},
+			QueryOptions{Options: nil},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}},
+		},
+		{
+			"Query level",
+			QueryOptions{Options: nil},
+			QueryOptions{Options: nil},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}},
+		},
+		{
+			"Environment level has precedence",
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "2"}},
+			QueryOptions{Options: nil},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "2"}},
+		},
+		{
+			"Query level has precedence than client level",
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}},
+			QueryOptions{Options: nil},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3"}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3"}},
+		},
+		{
+			"Query level has highest precedence",
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "2"}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3"}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3"}},
+		},
 	}
 }

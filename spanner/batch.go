@@ -143,6 +143,17 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndex(ctx context.Context, 
 // PartitionQuery returns a list of Partitions that can be used to execute a
 // query against the database.
 func (t *BatchReadOnlyTransaction) PartitionQuery(ctx context.Context, statement Statement, opt PartitionOptions) ([]*Partition, error) {
+	return t.partitionQuery(ctx, statement, opt, t.ReadOnlyTransaction.txReadOnly.qo)
+}
+
+// PartitionQueryWithOptions returns a list of Partitions that can be used to
+// execute a query against the database. The sql query execution will be
+// optimized based on the given query options.
+func (t *BatchReadOnlyTransaction) PartitionQueryWithOptions(ctx context.Context, statement Statement, opt PartitionOptions, qOpts QueryOptions) ([]*Partition, error) {
+	return t.partitionQuery(ctx, statement, opt, t.ReadOnlyTransaction.txReadOnly.qo.merge(qOpts))
+}
+
+func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement Statement, opt PartitionOptions, qOpts QueryOptions) ([]*Partition, error) {
 	sh, ts, err := t.acquire(ctx)
 	if err != nil {
 		return nil, err
@@ -166,11 +177,12 @@ func (t *BatchReadOnlyTransaction) PartitionQuery(ctx context.Context, statement
 
 	// prepare ExecuteSqlRequest
 	r := &sppb.ExecuteSqlRequest{
-		Session:     sid,
-		Transaction: ts,
-		Sql:         statement.SQL,
-		Params:      params,
-		ParamTypes:  paramTypes,
+		Session:      sid,
+		Transaction:  ts,
+		Sql:          statement.SQL,
+		Params:       params,
+		ParamTypes:   paramTypes,
+		QueryOptions: qOpts.Options,
 	}
 
 	// generate Partitions
