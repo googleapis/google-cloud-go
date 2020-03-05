@@ -424,6 +424,14 @@ func TestTableData(t *testing.T) {
 			},
 		},
 		{
+			// Check that aggregation still works for the empty set.
+			`SELECT COUNT(*) FROM Staff WHERE Name = "Nobody"`,
+			nil,
+			[][]interface{}{
+				{int64(0)},
+			},
+		},
+		{
 			`SELECT * FROM Staff WHERE Name LIKE "S%"`,
 			nil,
 			[][]interface{}{

@@ -416,6 +416,7 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 		}
 		if len(rowGroups) == 0 {
 			// No grouping, so aggregation applies to the entire table (e.g. COUNT(*)).
+			// This may result in a [0,0) entry for empty inputs.
 			rowGroups = [][2]int{{0, len(raw.rows)}}
 		}
 		fexpr := sel.List[aggI].(spansql.Func)
@@ -464,13 +465,23 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 				return nil, err
 			}
 			aggType = typ
+
+			var outRow row
 			// Output for the row group is the first row of the group (arbitrary,
 			// but it should be representative), and the aggregate value.
 			// TODO: Should this exclude the aggregated expressions so they can't be selected?
-			repRow := raw.rows[rg[0]]
-			var outRow row
-			for i := range repRow {
-				outRow = append(outRow, repRow.copyDataElem(i))
+			// If the row group is empty then only the aggregation value is used;
+			// this covers things like COUNT(*) with no matching rows.
+			if rg[0] < len(raw.rows) {
+				repRow := raw.rows[rg[0]]
+				for i := range repRow {
+					outRow = append(outRow, repRow.copyDataElem(i))
+				}
+			} else {
+				// Fill with NULLs to keep the rows and colInfo aligned.
+				for i := 0; i < len(rawOut.cols); i++ {
+					outRow = append(outRow, nil)
+				}
 			}
 			outRow = append(outRow, x)
 			rawOut.rows = append(rawOut.rows, outRow)
