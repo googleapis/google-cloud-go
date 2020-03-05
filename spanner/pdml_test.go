@@ -136,3 +136,29 @@ func TestPartitionedUpdate_WithDeadline(t *testing.T) {
 		t.Fatalf("got error %v, want code %s", err, wantCode)
 	}
 }
+
+func TestPartitionedUpdate_QueryOptions(t *testing.T) {
+	for _, tt := range queryOptionsTestCases() {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.env.Options != nil {
+				os.Setenv("SPANNER_OPTIMIZER_VERSION", tt.env.Options.OptimizerVersion)
+				defer os.Setenv("SPANNER_OPTIMIZER_VERSION", "")
+			}
+
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: tt.client})
+			defer teardown()
+
+			var err error
+			if tt.query.Options == nil {
+				_, err = client.PartitionedUpdate(ctx, NewStatement(UpdateBarSetFoo))
+			} else {
+				_, err = client.PartitionedUpdateWithOptions(ctx, NewStatement(UpdateBarSetFoo), tt.query)
+			}
+			if err != nil {
+				t.Fatalf("expect no errors, but got %v", err)
+			}
+			checkReqsForQueryOptions(t, server.TestSpanner, tt.want)
+		})
+	}
+}

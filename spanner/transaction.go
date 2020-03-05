@@ -67,6 +67,9 @@ type txReadOnly struct {
 	sp *sessionPool
 	// sh is the sessionHandle allocated from sp.
 	sh *sessionHandle
+
+	// qo provides options for executing a sql query.
+	qo QueryOptions
 }
 
 // errSessionClosed returns error for using a recycled/destroyed session
@@ -213,6 +216,27 @@ func (t *txReadOnly) ReadRowUsingIndex(ctx context.Context, table string, index 
 	}
 }
 
+// QueryOptions provides options for executing a sql query from a database.
+type QueryOptions struct {
+	Mode    *sppb.ExecuteSqlRequest_QueryMode
+	Options *sppb.ExecuteSqlRequest_QueryOptions
+}
+
+// merge combines two QueryOptions that the input parameter will have higher
+// order of precedence.
+func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
+	merged := QueryOptions{
+		Mode:    qo.Mode,
+		Options: &sppb.ExecuteSqlRequest_QueryOptions{},
+	}
+	if opts.Mode != nil {
+		merged.Mode = opts.Mode
+	}
+	merged.Options.XXX_Merge(qo.Options)
+	merged.Options.XXX_Merge(opts.Options)
+	return merged
+}
+
 // Query executes a query against the database. It returns a RowIterator for
 // retrieving the resulting rows.
 //
@@ -220,19 +244,38 @@ func (t *txReadOnly) ReadRowUsingIndex(ctx context.Context, table string, index 
 // Use QueryWithStats to get rows along with the plan and statistics. Use
 // AnalyzeQuery to get just the plan.
 func (t *txReadOnly) Query(ctx context.Context, statement Statement) *RowIterator {
-	return t.query(ctx, statement, sppb.ExecuteSqlRequest_NORMAL)
+	mode := sppb.ExecuteSqlRequest_NORMAL
+	return t.query(ctx, statement, QueryOptions{
+		Mode:    &mode,
+		Options: t.qo.Options,
+	})
 }
 
-// Query executes a SQL statement against the database. It returns a RowIterator
-// for retrieving the resulting rows. The RowIterator will also be populated
-// with a query plan and execution statistics.
+// QueryWithOptions executes a SQL statment against the database. It returns
+// a RowIterator for retrieving the resulting rows. The sql query execution
+// will be optimized based on the given query options.
+func (t *txReadOnly) QueryWithOptions(ctx context.Context, statement Statement, opts QueryOptions) *RowIterator {
+	return t.query(ctx, statement, t.qo.merge(opts))
+}
+
+// QueryWithStats executes a SQL statement against the database. It returns
+// a RowIterator for retrieving the resulting rows. The RowIterator will also
+// be populated with a query plan and execution statistics.
 func (t *txReadOnly) QueryWithStats(ctx context.Context, statement Statement) *RowIterator {
-	return t.query(ctx, statement, sppb.ExecuteSqlRequest_PROFILE)
+	mode := sppb.ExecuteSqlRequest_PROFILE
+	return t.query(ctx, statement, QueryOptions{
+		Mode:    &mode,
+		Options: t.qo.Options,
+	})
 }
 
 // AnalyzeQuery returns the query plan for statement.
 func (t *txReadOnly) AnalyzeQuery(ctx context.Context, statement Statement) (*sppb.QueryPlan, error) {
-	iter := t.query(ctx, statement, sppb.ExecuteSqlRequest_PLAN)
+	mode := sppb.ExecuteSqlRequest_PLAN
+	iter := t.query(ctx, statement, QueryOptions{
+		Mode:    &mode,
+		Options: t.qo.Options,
+	})
 	defer iter.Stop()
 	for {
 		_, err := iter.Next()
@@ -249,10 +292,10 @@ func (t *txReadOnly) AnalyzeQuery(ctx context.Context, statement Statement) (*sp
 	return iter.QueryPlan, nil
 }
 
-func (t *txReadOnly) query(ctx context.Context, statement Statement, mode sppb.ExecuteSqlRequest_QueryMode) (ri *RowIterator) {
+func (t *txReadOnly) query(ctx context.Context, statement Statement, options QueryOptions) (ri *RowIterator) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.Query")
 	defer func() { trace.EndSpan(ctx, ri.err) }()
-	req, sh, err := t.prepareExecuteSQL(ctx, statement, mode)
+	req, sh, err := t.prepareExecuteSQL(ctx, statement, options)
 	if err != nil {
 		return &RowIterator{err: err}
 	}
@@ -270,7 +313,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, mode sppb.E
 		t.release)
 }
 
-func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, mode sppb.ExecuteSqlRequest_QueryMode) (*sppb.ExecuteSqlRequest, *sessionHandle, error) {
+func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, options QueryOptions) (*sppb.ExecuteSqlRequest, *sessionHandle, error) {
 	sh, ts, err := t.acquire(ctx)
 	if err != nil {
 		return nil, nil, err
@@ -285,14 +328,19 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, mode
 	if err != nil {
 		return nil, nil, err
 	}
+	mode := sppb.ExecuteSqlRequest_NORMAL
+	if options.Mode != nil {
+		mode = *options.Mode
+	}
 	req := &sppb.ExecuteSqlRequest{
-		Session:     sid,
-		Transaction: ts,
-		Sql:         stmt.SQL,
-		QueryMode:   mode,
-		Seqno:       atomic.AddInt64(&t.sequenceNumber, 1),
-		Params:      params,
-		ParamTypes:  paramTypes,
+		Session:      sid,
+		Transaction:  ts,
+		Sql:          stmt.SQL,
+		QueryMode:    mode,
+		Seqno:        atomic.AddInt64(&t.sequenceNumber, 1),
+		Params:       params,
+		ParamTypes:   paramTypes,
+		QueryOptions: options.Options,
 	}
 	return req, sh, nil
 }
@@ -749,9 +797,24 @@ func (t *ReadWriteTransaction) BufferWrite(ms []*Mutation) error {
 // However, the query is executed, and any data read will be validated upon
 // commit.
 func (t *ReadWriteTransaction) Update(ctx context.Context, stmt Statement) (rowCount int64, err error) {
+	mode := sppb.ExecuteSqlRequest_NORMAL
+	return t.update(ctx, stmt, QueryOptions{
+		Mode:    &mode,
+		Options: t.qo.Options,
+	})
+}
+
+// UpdateWithOptions executes a DML statement against the database. It returns
+// the number of affected rows. The sql query execution will be optimized
+// based on the given query options.
+func (t *ReadWriteTransaction) UpdateWithOptions(ctx context.Context, stmt Statement, opts QueryOptions) (rowCount int64, err error) {
+	return t.update(ctx, stmt, t.qo.merge(opts))
+}
+
+func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts QueryOptions) (rowCount int64, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.Update")
 	defer func() { trace.EndSpan(ctx, err) }()
-	req, sh, err := t.prepareExecuteSQL(ctx, stmt, sppb.ExecuteSqlRequest_NORMAL)
+	req, sh, err := t.prepareExecuteSQL(ctx, stmt, opts)
 	if err != nil {
 		return 0, err
 	}

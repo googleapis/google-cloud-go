@@ -81,6 +81,7 @@ type Client struct {
 	sc           *sessionClient
 	idleSessions *sessionPool
 	logger       *log.Logger
+	qo           QueryOptions
 }
 
 // ClientConfig has configurations for the client.
@@ -101,6 +102,9 @@ type ClientConfig struct {
 	// See https://cloud.google.com/spanner/docs/reference/rpc/google.spanner.v1#session
 	// for more info.
 	SessionLabels map[string]string
+
+	// QueryOptions is the configuration for executing a sql query.
+	QueryOptions QueryOptions
 
 	// logger is the logger to use for this client. If it is nil, all logging
 	// will be directed to the standard logger.
@@ -266,8 +270,24 @@ get an instance-specific endpoint and efficiently route requests.
 		sc:           sc,
 		idleSessions: sp,
 		logger:       config.logger,
+		qo:           getQueryOptions(config.QueryOptions),
 	}
 	return c, nil
+}
+
+// getQueryOptions returns the query options overwritten by the environment
+// variables if exist. The input parameter is the query options set by users
+// via application-level configuration. If the environment variables are set,
+// this will return the overwritten query options.
+func getQueryOptions(opts QueryOptions) QueryOptions {
+	opv := os.Getenv("SPANNER_OPTIMIZER_VERSION")
+	if opv != "" {
+		if opts.Options == nil {
+			opts.Options = &sppb.ExecuteSqlRequest_QueryOptions{}
+		}
+		opts.Options.OptimizerVersion = opv
+	}
+	return opts
 }
 
 // Close closes the client.
@@ -291,6 +311,7 @@ func (c *Client) Single() *ReadOnlyTransaction {
 	t := &ReadOnlyTransaction{singleUse: true}
 	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.txReadEnv = t
+	t.txReadOnly.qo = c.qo
 	t.txReadOnly.replaceSessionFunc = func(ctx context.Context) error {
 		if t.sh == nil {
 			return spannerErrorf(codes.InvalidArgument, "missing session handle on transaction")
@@ -325,6 +346,7 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	}
 	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.txReadEnv = t
+	t.txReadOnly.qo = c.qo
 	return t
 }
 
@@ -392,6 +414,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	}
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
+	t.txReadOnly.qo = c.qo
 	return t, nil
 }
 
@@ -418,6 +441,7 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	}
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
+	t.txReadOnly.qo = c.qo
 	return t
 }
 
@@ -478,6 +502,7 @@ func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Contex
 		}
 		t.txReadOnly.sh = sh
 		t.txReadOnly.txReadEnv = t
+		t.txReadOnly.qo = c.qo
 		trace.TracePrintf(ctx, map[string]interface{}{"transactionID": string(sh.getTransactionID())},
 			"Starting transaction attempt")
 		if err = t.begin(ctx); err != nil {

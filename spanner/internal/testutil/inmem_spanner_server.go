@@ -932,7 +932,35 @@ func (s *inMemSpannerServer) PartitionQuery(ctx context.Context, req *spannerpb.
 	}
 	s.receivedRequests <- req
 	s.mu.Unlock()
-	return nil, gstatus.Error(codes.Unimplemented, "Method not yet implemented")
+	if req.Session == "" {
+		return nil, gstatus.Error(codes.InvalidArgument, "Missing session name")
+	}
+	session, err := s.findSession(req.Session)
+	if err != nil {
+		return nil, err
+	}
+	var id []byte
+	var tx *spannerpb.Transaction
+	s.updateSessionLastUseTime(session.Name)
+	if id = s.getTransactionID(session, req.Transaction); id != nil {
+		tx, err = s.getTransactionByID(id)
+		if err != nil {
+			return nil, err
+		}
+	}
+	var partitions []*spannerpb.Partition
+	for i := int64(0); i < req.PartitionOptions.MaxPartitions; i++ {
+		token := make([]byte, 10)
+		_, err := rand.Read(token)
+		if err != nil {
+			return nil, gstatus.Error(codes.Internal, "failed to generate random partition token")
+		}
+		partitions = append(partitions, &spannerpb.Partition{PartitionToken: token})
+	}
+	return &spannerpb.PartitionResponse{
+		Partitions:  partitions,
+		Transaction: tx,
+	}, nil
 }
 
 func (s *inMemSpannerServer) PartitionRead(ctx context.Context, req *spannerpb.PartitionReadRequest) (*spannerpb.PartitionResponse, error) {
