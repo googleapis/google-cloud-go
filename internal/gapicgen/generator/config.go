@@ -631,8 +631,3 @@ var gapicsWithManual = []string{
 	"spanner/apiv1",
 	"trace/apiv1",
 }
-
-// Relative to googleapis dir.
-var artmanGapicConfigPaths = []string{}
-
-var artmanGapicManifestEntries = []manifestEntry{}

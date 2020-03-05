@@ -15,32 +15,19 @@
 package generator
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"gopkg.in/yaml.v2"
 )
 
-var dockerPullRegex = regexp.MustCompile("(googleapis/artman:[0-9]+.[0-9]+.[0-9]+)")
-
 // generateGapics generates gapics.
 func generateGapics(ctx context.Context, googleapisDir, protoDir, gocloudDir, genprotoDir string) error {
-	if err := artman(artmanGapicConfigPaths, googleapisDir); err != nil {
-		return err
-	}
-
-	if err := copyArtmanFiles(googleapisDir, gocloudDir); err != nil {
-		return err
-	}
-
 	for _, c := range microgenGapicConfigs {
 		if err := microgen(c, googleapisDir, protoDir, gocloudDir); err != nil {
 			return err
@@ -158,82 +145,6 @@ find . -name '*.backup' -delete
 	c.Stderr = os.Stderr
 	c.Dir = gocloudDir
 	return c.Run()
-}
-
-// artman runs artman on a single artman gapic config path.
-func artman(gapicConfigPaths []string, googleapisDir string) error {
-	// Prepare virtualenv.
-	//
-	// TODO(deklerk): Why do we have to install cachetools at a specific
-	// version - doesn't virtualenv solve the diamond dependency issues?
-	//
-	// TODO(deklerk): Why do we have to create artman-genfiles?
-	// (pip install googleapis-artman fails with an "lstat file not found"
-	// without doing so)
-	c := command("bash", "-c", `
-set -ex
-
-python3 -m venv artman-venv
-source ./artman-venv/bin/activate
-mkdir artman-genfiles
-pip3 install cachetools==2.0.0
-pip3 install googleapis-artman`)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
-	c.Dir = googleapisDir
-	if err := c.Run(); err != nil {
-		return nil
-	}
-
-	for _, config := range gapicConfigPaths {
-		log.Println("artman generating", config)
-
-		// Write command output to both os.Stderr and local, so that we can check
-		// for `Cannot find artman Docker image. Run `docker pull googleapis/artman:0.41.0` to pull the image.`.
-		inmem := bytes.NewBuffer([]byte{})
-		w := io.MultiWriter(os.Stderr, inmem)
-
-		c := command("bash", "-c", "./artman-venv/bin/artman --config "+config+" generate go_gapic")
-		c.Stdout = os.Stdout
-		c.Stderr = w
-		c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
-		c.Dir = googleapisDir
-		err := c.Run()
-		if err == nil {
-			continue
-		}
-
-		// We got an error. Check if it's a need-to-docker-pull error (which we
-		// can fix here), or something else (which we'll need to panic on).
-		stderr := inmem.Bytes()
-		if dockerPullRegex.Match(stderr) {
-			artmanImg := dockerPullRegex.FindString(string(stderr))
-			c := command("docker", "pull", artmanImg)
-			c.Stdout = os.Stdout
-			c.Stderr = os.Stderr
-			c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
-			if err := c.Run(); err != nil {
-				return err
-			}
-		} else {
-			return err
-		}
-
-		// If the last command failed, and we were able to fix it with `docker pull`,
-		// then let's try regenerating. When https://github.com/googleapis/artman/issues/732
-		// is solved, we won't have to do this.
-		c = command("bash", "-c", "./artman-venv/bin/artman --config "+config+" generate go_gapic")
-		c.Stdout = os.Stdout
-		c.Stderr = os.Stderr
-		c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
-		c.Dir = googleapisDir
-		if err := c.Run(); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 // microgen runs the microgenerator on a single microgen config.
@@ -391,9 +302,6 @@ func manifest(confs []*microgenConfig, googleapisDir, gocloudDir string) error {
 	for _, manual := range manualEntries {
 		entries[manual.DistributionName] = manual
 	}
-	for _, artman := range artmanGapicManifestEntries {
-		entries[artman.DistributionName] = artman
-	}
 	for _, conf := range confs {
 		yamlPath := filepath.Join(googleapisDir, conf.apiServiceConfigPath)
 		yamlFile, err := os.Open(yamlPath)
@@ -438,46 +346,4 @@ func copyMicrogenFiles(gocloudDir string) error {
 	c.Stderr = os.Stderr
 	c.Dir = gocloudDir
 	return c.Run()
-}
-
-// gapiFolderRegex finds gapi folders, such as gapi-cloud-cel-go/cloud.google.com/go
-// in paths like [...]/artman-genfiles/gapi-cloud-cel-go/cloud.google.com/go/expr/apiv1alpha1/cel_client.go.
-var gapiFolderRegex = regexp.MustCompile("gapi-.+/cloud.google.com/go/")
-
-// copyArtmanFiles copies artman files from the generated googleapisDir location
-// to their appropriate spots in gocloudDir.
-func copyArtmanFiles(googleapisDir, gocloudDir string) error {
-	// For some reason os.Exec doesn't like to cp globs, so we can't do the
-	// much simpler cp -r <googleapisDir>/artman-genfiles/gapi-*/cloud.google.com/go/* <gocloudDir>.
-	//
-	// (Possibly only specific to /var/folders (os.Tmpdir()) on darwin?)
-	gapiFolders := make(map[string]struct{})
-	root := googleapisDir + "/artman-genfiles"
-	if err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		// Things like [...]/artman-genfiles/gapi-cloud-cel-go/cloud.google.com/go/expr/apiv1alpha1/cel_client.go
-		// become gapi-cloud-cel-go/cloud.google.com/go/.
-		//
-		// The period at the end is analagous to * (copy everything in this dir).
-		if gapiFolderRegex.MatchString(path) {
-			gapiFolders[root+"/"+gapiFolderRegex.FindString(path)+"."] = struct{}{}
-		}
-		return nil
-	}); err != nil {
-		return err
-	}
-
-	for f := range gapiFolders {
-		c := command("cp", "-R", f, gocloudDir)
-		c.Stdout = os.Stdout
-		c.Stderr = os.Stderr
-		c.Dir = googleapisDir
-		if err := c.Run(); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }

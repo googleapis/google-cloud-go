@@ -5,9 +5,6 @@ RUN apk update && \
 # Install bash and ssh tools (needed to run regen.sh etc).
 RUN apk add bash openssh openssh-client
 RUN which bash
-# Install tools necessary for artman.
-RUN apk add alpine-sdk build-base openssl-dev
-RUN which gcc
 # Install protoc and protobuf-dev (common protos).
 RUN apk add protoc protobuf-dev
 RUN protoc --version
@@ -20,14 +17,6 @@ RUN wget -O /tmp/go.tgz https://dl.google.com/go/go1.13.4.linux-amd64.tar.gz && 
     rm /tmp/go.tgz
 ENV PATH /usr/local/go/bin:$PATH
 RUN go version
-
-# Install python and pip.
-RUN apk add python python3 py-pip py3-pip py-virtualenv py3-virtualenv python2-dev python3-dev libffi-dev
-RUN python --version
-RUN python3 --version
-RUN pip --version
-RUN pip3 --version
-RUN virtualenv --version
 
 # Install Go tools.
 RUN go get \
@@ -45,12 +34,7 @@ RUN mkdir /root/.ssh && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" 
 RUN echo -e '#!/bin/bash\n\
 set -ex\n\
 echo "https://$GITHUB_USERNAME:$GITHUB_ACCESS_TOKEN@github.com" > ~/.git-credentials \n\
-dockerd-entrypoint.sh &\n\
-unset DOCKER_HOST\n\
-go mod download & # download deps whilst we wait for dockerd to start \n\
-until docker ps; do sleep 1; done # wait for docker to start\n\
-docker ps\n\
-docker pull googleapis/artman:latest & # download latest artman whilst we wait for genbot to start \n\
+go mod download \n\
 go run cloud.google.com/go/internal/gapicgen/cmd/genbot \
     --githubAccessToken=$GITHUB_ACCESS_TOKEN \
     --githubUsername=$GITHUB_USERNAME \
