@@ -266,8 +266,8 @@ func TestTableData(t *testing.T) {
 			},
 		},
 	}, queryParams{
-		"min": "01",
-		"max": "07",
+		"min": stringParam("01"),
+		"max": stringParam("07"),
 	})
 	if err != nil {
 		t.Fatalf("Deleting with DML: %v", err)
@@ -350,7 +350,7 @@ func TestTableData(t *testing.T) {
 		// There was a bug that returned errors for some of these cases.
 		{
 			`SELECT @x IS TRUE, @x IS NOT TRUE, @x IS FALSE, @x IS NOT FALSE, @x IS NULL, @x IS NOT NULL`,
-			queryParams{"x": nil},
+			queryParams{"x": nullParam()},
 			[][]interface{}{
 				{false, true, false, true, true, false},
 			},
@@ -375,7 +375,7 @@ func TestTableData(t *testing.T) {
 		},
 		{
 			`SELECT Name, ID + 100 FROM Staff WHERE @min <= Tenure AND Tenure < @lim ORDER BY Cool, Name DESC LIMIT @numResults`,
-			queryParams{"min": int64(9), "lim": int64(11), "numResults": "100"},
+			queryParams{"min": intParam(9), "lim": intParam(11), "numResults": intParam(100)},
 			[][]interface{}{
 				{"Jack", int64(101)},
 				{"Sam", int64(103)},
@@ -409,7 +409,7 @@ func TestTableData(t *testing.T) {
 		},
 		{
 			`SELECT Name, Height FROM Staff WHERE Height BETWEEN @min AND @max ORDER BY Height DESC`,
-			queryParams{"min": 1.75, "max": 1.85},
+			queryParams{"min": floatParam(1.75), "max": floatParam(1.85)},
 			[][]interface{}{
 				{"Jack", 1.85},
 				{"Daniel", 1.83},
@@ -434,7 +434,7 @@ func TestTableData(t *testing.T) {
 		},
 		{
 			`SELECT Name FROM Staff WHERE FirstSeen >= @min`,
-			queryParams{"min": "1996-01-01"},
+			queryParams{"min": queryParam{Value: "1996-01-01", Type: spansql.Type{Base: spansql.Date}}},
 			[][]interface{}{
 				{"George"},
 			},
@@ -738,6 +738,11 @@ func stringV(s string) *structpb.Value                { return &structpb.Value{K
 func floatV(f float64) *structpb.Value                { return &structpb.Value{Kind: &structpb.Value_NumberValue{f}} }
 func boolV(b bool) *structpb.Value                    { return &structpb.Value{Kind: &structpb.Value_BoolValue{b}} }
 func nullV() *structpb.Value                          { return &structpb.Value{Kind: &structpb.Value_NullValue{}} }
+
+func stringParam(s string) queryParam { return queryParam{Value: s, Type: stringType} }
+func intParam(i int64) queryParam     { return queryParam{Value: i, Type: int64Type} }
+func floatParam(f float64) queryParam { return queryParam{Value: f, Type: float64Type} }
+func nullParam() queryParam           { return queryParam{Value: nil} }
 
 func TestRowCmp(t *testing.T) {
 	r := func(x ...interface{}) []interface{} { return x }

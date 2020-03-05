@@ -461,7 +461,7 @@ func (s *server) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlReques
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "bad DML: %v", err)
 	}
-	params, err := parseQueryParams(req.GetParams())
+	params, err := parseQueryParams(req.GetParams(), req.ParamTypes)
 	if err != nil {
 		return nil, err
 	}
@@ -495,7 +495,7 @@ func (s *server) ExecuteStreamingSql(req *spannerpb.ExecuteSqlRequest, stream sp
 		return status.Errorf(codes.InvalidArgument, "bad query: %v", err)
 	}
 
-	params, err := parseQueryParams(req.GetParams())
+	params, err := parseQueryParams(req.GetParams(), req.ParamTypes)
 	if err != nil {
 		return err
 	}
@@ -711,18 +711,35 @@ func (s *server) Rollback(ctx context.Context, req *spannerpb.RollbackRequest) (
 
 // TODO: PartitionQuery, PartitionRead
 
-func parseQueryParams(p *structpb.Struct) (queryParams, error) {
+func parseQueryParams(p *structpb.Struct, types map[string]*spannerpb.Type) (queryParams, error) {
 	params := make(queryParams)
 	for k, v := range p.GetFields() {
 		switch v := v.Kind.(type) {
 		default:
 			return nil, fmt.Errorf("unsupported well-known type value kind %T", v)
 		case *structpb.Value_NullValue:
-			params[k] = nil
+			params[k] = queryParam{Value: nil} // TODO: set a type?
 		case *structpb.Value_NumberValue:
-			params[k] = v.NumberValue
+			params[k] = queryParam{Value: v.NumberValue, Type: float64Type}
 		case *structpb.Value_StringValue:
-			params[k] = v.StringValue
+			switch types[k].Code {
+			case spannerpb.TypeCode_INT64:
+				params[k] = queryParam{Value: v.StringValue, Type: int64Type}
+			case spannerpb.TypeCode_TIMESTAMP:
+				params[k] = queryParam{Value: v.StringValue, Type: spansql.Type{Base: spansql.Timestamp}}
+			case spannerpb.TypeCode_DATE:
+				params[k] = queryParam{Value: v.StringValue, Type: spansql.Type{Base: spansql.Date}}
+			case spannerpb.TypeCode_BYTES:
+				b, err := base64.StdEncoding.DecodeString(v.StringValue)
+				if err != nil {
+					return nil, err
+				}
+				params[k] = queryParam{Value: b, Type: spansql.Type{Base: spansql.Bytes, Len: spansql.MaxLen}}
+			default:
+				// All other types represented on the wire as a string are stored internally as strings.
+				// We don't often get a type hint unfortunately, so ths type code here may be wrong.
+				params[k] = queryParam{Value: v.StringValue, Type: stringType}
+			}
 		}
 	}
 	return params, nil

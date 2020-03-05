@@ -235,7 +235,12 @@ func (li *limitIter) Next() (row, error) {
 	return row, nil
 }
 
-type queryParams map[string]interface{}
+type queryParam struct {
+	Value interface{}
+	Type  spansql.Type
+}
+
+type queryParams map[string]queryParam
 
 func (d *database) Query(q spansql.Query, params queryParams) (rowIter, error) {
 	// If there's an ORDER BY clause, extend the query to include the expressions we need
