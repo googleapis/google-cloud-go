@@ -1,5 +1,9 @@
 # Changes
 
+## v1.3.0
+
+- Update cloud.google.com/go to v0.54.0
+
 ## v1.2.0
 
 - Add support for upcoming dead letter topics feature
