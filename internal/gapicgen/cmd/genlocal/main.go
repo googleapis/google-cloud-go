@@ -33,7 +33,7 @@ import (
 )
 
 var (
-	toolsNeeded = []string{"pip3", "virtualenv", "python3", "go", "protoc", "docker"}
+	toolsNeeded = []string{"go", "protoc"}
 
 	usage = func() {
 		fmt.Fprintln(os.Stderr, "genlocal")
