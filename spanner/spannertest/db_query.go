@@ -171,18 +171,25 @@ type selIter struct {
 
 func (si selIter) Cols() []colInfo { return si.cis }
 func (si selIter) Next() (row, error) {
-	row, err := si.ri.Next()
+	r, err := si.ri.Next()
 	if err != nil {
 		return nil, err
 	}
-	si.ec.row = row
+	si.ec.row = r
 
-	selectStar := len(si.list) == 1 && si.list[0] == spansql.Star
-	if selectStar {
-		return row, nil
+	var out row
+	for _, e := range si.list {
+		if e == spansql.Star {
+			out = append(out, r...)
+		} else {
+			v, err := si.ec.evalExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, v)
+		}
 	}
-
-	return si.ec.evalExprList(si.list)
+	return out, nil
 }
 
 // distinctIter applies a DISTINCT filter.
@@ -492,13 +499,10 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 
 	// Apply SELECT list.
 	var colInfos []colInfo
-	// Is this a `SELECT *` query?
-	selectStar := len(sel.List) == 1 && sel.List[0] == spansql.Star
-	if selectStar {
-		// Every column will appear in the output.
-		colInfos = ec.cols
-	} else {
-		for i, e := range sel.List {
+	for i, e := range sel.List {
+		if e == spansql.Star {
+			colInfos = append(colInfos, ec.cols...)
+		} else {
 			ci, err := ec.colInfo(e)
 			if err != nil {
 				return nil, err
