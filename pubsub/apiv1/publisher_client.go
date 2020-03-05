@@ -136,7 +136,19 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 				})
 			}),
 		},
-		ListTopicSnapshots: []gax.CallOption{},
+		ListTopicSnapshots: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unknown,
+					codes.Aborted,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		DeleteTopic: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{

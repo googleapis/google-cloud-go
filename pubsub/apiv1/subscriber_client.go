@@ -188,7 +188,19 @@ func defaultSubscriberCallOptions() *SubscriberCallOptions {
 				})
 			}),
 		},
-		GetSnapshot: []gax.CallOption{},
+		GetSnapshot: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unknown,
+					codes.Aborted,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ListSnapshots: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
