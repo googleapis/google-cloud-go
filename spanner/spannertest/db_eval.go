@@ -335,11 +335,11 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 	case spansql.ID:
 		return ec.evalID(e)
 	case spansql.Param:
-		v, ok := ec.params[string(e)]
+		qp, ok := ec.params[string(e)]
 		if !ok {
 			return 0, fmt.Errorf("unbound param %s", e.SQL())
 		}
-		return v, nil
+		return qp.Value, nil
 	case spansql.IntegerLiteral:
 		return int64(e), nil
 	case spansql.FloatLiteral:
@@ -412,13 +412,13 @@ func evalLimit(lim spansql.Limit, params queryParams) (int64, error) {
 }
 
 func paramAsInteger(p spansql.Param, params queryParams) (int64, error) {
-	v, ok := params[string(p)]
+	qp, ok := params[string(p)]
 	if !ok {
 		return 0, fmt.Errorf("unbound param %s", p.SQL())
 	}
-	switch v := v.(type) {
+	switch v := qp.Value.(type) {
 	default:
-		return 0, fmt.Errorf("can't interpret parameter %s value of type %T as integer", p.SQL(), v)
+		return 0, fmt.Errorf("can't interpret parameter %s (%s) value of type %T as integer", p.SQL(), qp.Type.SQL(), v)
 	case int64:
 		return v, nil
 	case string:
@@ -539,6 +539,12 @@ func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 				return col, nil
 			}
 		}
+	case spansql.Param:
+		qp, ok := ec.params[string(e)]
+		if !ok {
+			return colInfo{}, fmt.Errorf("unbound param %s", e.SQL())
+		}
+		return colInfo{Type: qp.Type}, nil
 	case spansql.Paren:
 		return ec.colInfo(e.Expr)
 	case spansql.NullLiteral:
