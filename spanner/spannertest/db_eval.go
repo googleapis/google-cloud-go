@@ -19,6 +19,7 @@ package spannertest
 // This file contains the part of the Spanner fake that evaluates expressions.
 
 import (
+	"bytes"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -503,6 +504,8 @@ func compareVals(x, y interface{}) int {
 	case string:
 		// This handles DATE and TIMESTAMP too.
 		return strings.Compare(x, y.(string))
+	case []byte:
+		return bytes.Compare(x, y.([]byte))
 	}
 }
 
