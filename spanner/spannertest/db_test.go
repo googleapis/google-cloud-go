@@ -433,6 +433,14 @@ func TestTableData(t *testing.T) {
 			},
 		},
 		{
+			// Exactly the same as the previous, except with a redundant ORDER BY clause.
+			`SELECT * FROM Staff WHERE Name LIKE "S%" ORDER BY Name`,
+			nil,
+			[][]interface{}{
+				{"Sam", int64(3), int64(9), false, 1.75, nil, nil, nil},
+			},
+		},
+		{
 			`SELECT Name FROM Staff WHERE FirstSeen >= @min`,
 			queryParams{"min": queryParam{Value: "1996-01-01", Type: spansql.Type{Base: spansql.Date}}},
 			[][]interface{}{
