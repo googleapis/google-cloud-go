@@ -947,7 +947,7 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 
 	/*
 		CREATE TABLE table_name(
-			[column_def, ...] )
+			[column_def, ...] [ table_constraint, ...] )
 			primary_key [, cluster]
 
 		primary_key:
@@ -971,6 +971,15 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 
 	ct := &CreateTable{Name: tname, Position: pos}
 	err = p.parseCommaList(func(p *parser) *parseError {
+		if p.sniff("CONSTRAINT") || p.sniff("FOREIGN") {
+			tc, err := p.parseTableConstraint()
+			if err != nil {
+				return err
+			}
+			ct.Constraints = append(ct.Constraints, tc)
+			return nil
+		}
+
 		cd, err := p.parseColumnDef()
 		if err != nil {
 			return err
@@ -1320,6 +1329,78 @@ func (p *parser) parseKeyPart() (KeyPart, *parseError) {
 	}
 
 	return kp, nil
+}
+
+func (p *parser) parseTableConstraint() (TableConstraint, *parseError) {
+	debugf("parseTableConstraint: %v", p)
+
+	/*
+		table_constraint:
+			[ CONSTRAINT constraint_name ]
+			foreign_key
+	*/
+
+	if p.eat("CONSTRAINT") {
+		pos := p.Pos()
+		// Named foreign key.
+		cname, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return TableConstraint{}, err
+		}
+		fk, err := p.parseForeignKey()
+		if err != nil {
+			return TableConstraint{}, err
+		}
+		return TableConstraint{
+			Name:       cname,
+			ForeignKey: fk,
+			Position:   pos,
+		}, nil
+	}
+
+	// Unnamed foreign key.
+	fk, err := p.parseForeignKey()
+	if err != nil {
+		return TableConstraint{}, err
+	}
+	return TableConstraint{
+		ForeignKey: fk,
+		Position:   fk.Position,
+	}, nil
+}
+
+func (p *parser) parseForeignKey() (ForeignKey, *parseError) {
+	debugf("parseForeignKey: %v", p)
+
+	/*
+		foreign_key:
+			FOREIGN KEY ( column_name [, ... ] ) REFERENCES ref_table ( ref_column [, ... ] )
+	*/
+
+	if err := p.expect("FOREIGN"); err != nil {
+		return ForeignKey{}, err
+	}
+	fk := ForeignKey{Position: p.Pos()}
+	if err := p.expect("KEY"); err != nil {
+		return ForeignKey{}, err
+	}
+	var err *parseError
+	fk.Columns, err = p.parseColumnNameList()
+	if err != nil {
+		return ForeignKey{}, err
+	}
+	if err := p.expect("REFERENCES"); err != nil {
+		return ForeignKey{}, err
+	}
+	fk.RefTable, err = p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return ForeignKey{}, err
+	}
+	fk.RefColumns, err = p.parseColumnNameList()
+	if err != nil {
+		return ForeignKey{}, err
+	}
+	return fk, nil
 }
 
 func (p *parser) parseColumnNameList() ([]string, *parseError) {

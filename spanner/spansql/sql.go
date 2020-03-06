@@ -29,6 +29,9 @@ func (ct CreateTable) SQL() string {
 	for _, c := range ct.Columns {
 		str += "  " + c.SQL() + ",\n"
 	}
+	for _, tc := range ct.Constraints {
+		str += "  " + tc.SQL() + ",\n"
+	}
 	str += ") PRIMARY KEY("
 	for i, c := range ct.PrimaryKey {
 		if i > 0 {
@@ -124,6 +127,24 @@ func (cd ColumnDef) SQL() string {
 			str += " OPTIONS (allow_commit_timestamp = null)"
 		}
 	}
+	return str
+}
+
+func (tc TableConstraint) SQL() string {
+	var str string
+	if tc.Name != "" {
+		str += "CONSTRAINT " + tc.Name
+	}
+	str += tc.ForeignKey.SQL()
+	return str
+}
+
+func (fk ForeignKey) SQL() string {
+	str := "FOREIGN KEY ("
+	str += strings.Join(fk.Columns, ", ")
+	str += ") REFERENCES " + fk.RefTable + " ("
+	str += strings.Join(fk.RefColumns, ", ")
+	str += ")"
 	return str
 }
 
