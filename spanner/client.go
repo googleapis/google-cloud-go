@@ -54,8 +54,8 @@ const (
 )
 
 var (
-	validDBPattern       = regexp.MustCompile("^projects/[^/]+/instances/[^/]+/databases/[^/]+$")
-	validInstancePattern = regexp.MustCompile("^projects/[^/]+/instances/[^/]+")
+	validDBPattern       = regexp.MustCompile("^projects/(?P<project>[^/]+)/instances/(?P<instance>[^/]+)/databases/(?P<database>[^/]+)$")
+	validInstancePattern = regexp.MustCompile("^projects/(?P<project>[^/]+)/instances/(?P<instance>[^/]+)")
 )
 
 func validDatabaseName(db string) error {
@@ -73,6 +73,15 @@ func getInstanceName(db string) (string, error) {
 			db, validInstancePattern.String())
 	}
 	return matches[0], nil
+}
+
+func parseDatabaseName(db string) (project, instance, database string, err error) {
+	matches := validDBPattern.FindStringSubmatch(db)
+	if len(matches) == 0 {
+		return "", "", "", fmt.Errorf("Failed to parse database name from %q according to pattern %q",
+			db, validDBPattern.String())
+	}
+	return matches[1], matches[2], matches[3], nil
 }
 
 // Client is a client for reading and writing data to a Cloud Spanner database.

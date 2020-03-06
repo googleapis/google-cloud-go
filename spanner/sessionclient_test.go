@@ -357,3 +357,19 @@ func TestBatchCreateSessions_WithTimeout(t *testing.T) {
 	}
 	client.Close()
 }
+
+func TestClientIDGenerator(t *testing.T) {
+	cidGen = newClientIDGenerator()
+	for _, tt := range []struct {
+		database string
+		clientID string
+	}{
+		{"db", "client-1"},
+		{"db-new", "client-1"},
+		{"db", "client-2"},
+	} {
+		if got, want := cidGen.nextID(tt.database), tt.clientID; got != want {
+			t.Fatalf("Generate wrong client ID: got %v, want %v", got, want)
+		}
+	}
+}
