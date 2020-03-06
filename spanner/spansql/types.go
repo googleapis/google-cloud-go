@@ -29,10 +29,11 @@ import (
 // CreateTable represents a CREATE TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#create_table
 type CreateTable struct {
-	Name       string
-	Columns    []ColumnDef
-	PrimaryKey []KeyPart
-	Interleave *Interleave
+	Name        string
+	Columns     []ColumnDef
+	Constraints []TableConstraint
+	PrimaryKey  []KeyPart
+	Interleave  *Interleave
 
 	Position Position // position of the "CREATE" token
 }
@@ -45,7 +46,25 @@ func (ct *CreateTable) clearOffset() {
 		// Mutate in place.
 		ct.Columns[i].clearOffset()
 	}
+	for i := range ct.Constraints {
+		// Mutate in place.
+		ct.Constraints[i].clearOffset()
+	}
 	ct.Position.Offset = 0
+}
+
+// TableConstraint represents a constraint on a table.
+type TableConstraint struct {
+	Name       string // may be empty
+	ForeignKey ForeignKey
+
+	Position Position // position of the "CONSTRAINT" or "FOREIGN" token
+}
+
+func (tc TableConstraint) Pos() Position { return tc.Position }
+func (tc *TableConstraint) clearOffset() {
+	tc.Position.Offset = 0
+	tc.ForeignKey.clearOffset()
 }
 
 // Interleave represents an interleave clause of a CREATE TABLE statement.
@@ -180,6 +199,19 @@ type ColumnDef struct {
 
 func (cd ColumnDef) Pos() Position { return cd.Position }
 func (cd *ColumnDef) clearOffset() { cd.Position.Offset = 0 }
+
+// ForeignKey represents a foreign key definition as part of a CREATE TABLE
+// or ALTER TABLE statement.
+type ForeignKey struct {
+	Columns    []string
+	RefTable   string
+	RefColumns []string
+
+	Position Position // position of the "FOREIGN" token
+}
+
+func (fk ForeignKey) Pos() Position { return fk.Position }
+func (fk *ForeignKey) clearOffset() { fk.Position.Offset = 0 }
 
 // Type represents a column type.
 type Type struct {
