@@ -1112,11 +1112,14 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 			ALTER TABLE table_name { table_alteration | table_column_alteration }
 
 		table_alteration:
-			{ ADD COLUMN column_def | DROP COLUMN column_name |
-				SET ON DELETE { CASCADE | NO ACTION } }
+			{ ADD [ COLUMN ] column_def
+			| DROP [ COLUMN ] column_name
+			| ADD table_constraint
+			| DROP CONSTRAINT constraint_name
+			| SET ON DELETE { CASCADE | NO ACTION } }
 
 		table_column_alteration:
-			ALTER COLUMN column_name { { scalar_type | array_type } [NOT NULL] | SET options_def }
+			ALTER [ COLUMN ] column_name { { scalar_type | array_type } [NOT NULL] | SET options_def }
 	*/
 
 	if err := p.expect("ALTER"); err != nil {
@@ -1140,6 +1143,16 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 	default:
 		return nil, p.errorf("got %q, expected ADD or DROP or SET or ALTER", tok.value)
 	case "ADD":
+		if p.sniff("CONSTRAINT") || p.sniff("FOREIGN") {
+			tc, err := p.parseTableConstraint()
+			if err != nil {
+				return nil, err
+			}
+			a.Alteration = AddConstraint{Constraint: tc}
+			return a, nil
+		}
+
+		// TODO: "COLUMN" is optional.
 		if err := p.expect("COLUMN"); err != nil {
 			return nil, err
 		}
@@ -1150,6 +1163,16 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 		a.Alteration = AddColumn{Def: cd}
 		return a, nil
 	case "DROP":
+		if p.eat("CONSTRAINT") {
+			name, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return nil, err
+			}
+			a.Alteration = DropConstraint{Name: name}
+			return a, nil
+		}
+
+		// TODO: "COLUMN" is optional.
 		if err := p.expect("COLUMN"); err != nil {
 			return nil, err
 		}
@@ -1173,6 +1196,7 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 		a.Alteration = SetOnDelete{Action: od}
 		return a, nil
 	case "ALTER":
+		// TODO: "COLUMN" is optional.
 		if err := p.expect("COLUMN"); err != nil {
 			return nil, err
 		}
