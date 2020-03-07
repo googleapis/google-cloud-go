@@ -137,6 +137,9 @@ func (at *AlterTable) clearOffset() {
 	case AddColumn:
 		alt.Def.clearOffset()
 		at.Alteration = alt
+	case AddConstraint:
+		alt.Constraint.clearOffset()
+		at.Alteration = alt
 	case AlterColumn:
 		alt.Def.clearOffset()
 		at.Alteration = alt
@@ -150,13 +153,17 @@ type TableAlteration interface {
 	SQL() string
 }
 
-func (AddColumn) isTableAlteration()   {}
-func (DropColumn) isTableAlteration()  {}
-func (SetOnDelete) isTableAlteration() {}
-func (AlterColumn) isTableAlteration() {}
+func (AddColumn) isTableAlteration()      {}
+func (DropColumn) isTableAlteration()     {}
+func (AddConstraint) isTableAlteration()  {}
+func (DropConstraint) isTableAlteration() {}
+func (SetOnDelete) isTableAlteration()    {}
+func (AlterColumn) isTableAlteration()    {}
 
 type AddColumn struct{ Def ColumnDef }
 type DropColumn struct{ Name string }
+type AddConstraint struct{ Constraint TableConstraint }
+type DropConstraint struct{ Name string }
 type SetOnDelete struct{ Action OnDelete }
 type AlterColumn struct{ Def ColumnDef }
 

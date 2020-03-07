@@ -93,6 +93,14 @@ func (dc DropColumn) SQL() string {
 	return "DROP COLUMN " + dc.Name
 }
 
+func (ac AddConstraint) SQL() string {
+	return "ADD " + ac.Constraint.SQL()
+}
+
+func (dc DropConstraint) SQL() string {
+	return "DROP CONSTRAINT " + dc.Name
+}
+
 func (sod SetOnDelete) SQL() string {
 	return "SET ON DELETE " + sod.Action.SQL()
 }
