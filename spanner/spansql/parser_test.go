@@ -29,7 +29,7 @@ func TestParseQuery(t *testing.T) {
 		want Query
 	}{
 		{`SELECT 17`, Query{Select: Select{List: []Expr{IntegerLiteral(17)}}}},
-		{`SELECT Alias AS aka FROM Characters WHERE Age < @ageLimit AND Alias IS NOT NULL ORDER BY Age DESC LIMIT @limit` + "\n\t",
+		{`SELECT Alias AS aka FROM Characters WHERE Age < @ageLimit AND Alias IS NOT NULL ORDER BY Age DESC LIMIT @limit OFFSET 3` + "\n\t",
 			Query{
 				Select: Select{
 					List: []Expr{ID("Alias")},
@@ -55,7 +55,8 @@ func TestParseQuery(t *testing.T) {
 					Expr: ID("Age"),
 					Desc: true,
 				}},
-				Limit: Param("limit"),
+				Limit:  Param("limit"),
+				Offset: IntegerLiteral(3),
 			},
 		},
 		{`SELECT COUNT(*) FROM Packages`,

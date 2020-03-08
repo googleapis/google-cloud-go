@@ -400,14 +400,14 @@ func (ec evalContext) evalID(id spansql.ID) (interface{}, error) {
 	return nil, fmt.Errorf("couldn't resolve identifier %s", string(id))
 }
 
-func evalLimit(lim spansql.Limit, params queryParams) (int64, error) {
-	switch lim := lim.(type) {
+func evalLiteralOrParam(lop spansql.LiteralOrParam, params queryParams) (int64, error) {
+	switch v := lop.(type) {
 	case spansql.IntegerLiteral:
-		return int64(lim), nil
+		return int64(v), nil
 	case spansql.Param:
-		return paramAsInteger(lim, params)
+		return paramAsInteger(v, params)
 	default:
-		return 0, fmt.Errorf("LIMIT with %T not supported", lim)
+		return 0, fmt.Errorf("LiteralOrParam with %T not supported", v)
 	}
 }
 

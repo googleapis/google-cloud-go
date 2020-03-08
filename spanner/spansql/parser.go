@@ -1558,11 +1558,22 @@ func (p *parser) parseQuery() (Query, *parseError) {
 	}
 
 	if p.eat("LIMIT") {
-		lim, err := p.parseLimitCount()
+		// "only literal or parameter values"
+		// https://cloud.google.com/spanner/docs/query-syntax#limit-clause-and-offset-clause
+
+		lim, err := p.parseLiteralOrParam()
 		if err != nil {
 			return Query{}, err
 		}
 		q.Limit = lim
+
+		if p.eat("OFFSET") {
+			off, err := p.parseLiteralOrParam()
+			if err != nil {
+				return Query{}, err
+			}
+			q.Offset = off
+		}
 	}
 
 	return q, nil
@@ -1761,10 +1772,7 @@ func (p *parser) parseOrder() (Order, *parseError) {
 	return o, nil
 }
 
-func (p *parser) parseLimitCount() (Limit, *parseError) {
-	// "only literal or parameter values"
-	// https://cloud.google.com/spanner/docs/query-syntax#limit-clause-and-offset-clause
-
+func (p *parser) parseLiteralOrParam() (LiteralOrParam, *parseError) {
 	tok := p.next()
 	if tok.err != nil {
 		return nil, tok.err
