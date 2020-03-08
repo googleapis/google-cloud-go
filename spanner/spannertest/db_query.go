@@ -39,7 +39,7 @@ The order of operations among those supported by Cloud Spanner is
 	SELECT
 	DISTINCT
 	ORDER BY
-	OFFSET [TODO]
+	OFFSET
 	LIMIT
 */
 
@@ -223,6 +223,28 @@ func (di *distinctIter) Next() (row, error) {
 	}
 }
 
+// offsetIter applies an OFFSET clause.
+type offsetIter struct {
+	ri   rowIter
+	skip int64
+}
+
+func (oi *offsetIter) Cols() []colInfo { return oi.ri.Cols() }
+func (oi *offsetIter) Next() (row, error) {
+	for oi.skip > 0 {
+		_, err := oi.ri.Next()
+		if err != nil {
+			return nil, err
+		}
+		oi.skip--
+	}
+	row, err := oi.ri.Next()
+	if err != nil {
+		return nil, err
+	}
+	return row, nil
+}
+
 // limitIter applies a LIMIT clause.
 type limitIter struct {
 	ri  rowIter
@@ -284,11 +306,17 @@ func (d *database) Query(q spansql.Query, params queryParams) (rowIter, error) {
 		ri = raw
 	}
 
-	// TODO: OFFSET
-
-	// Apply LIMIT.
+	// Apply LIMIT, OFFSET.
 	if q.Limit != nil {
-		lim, err := evalLimit(q.Limit, params)
+		if q.Offset != nil {
+			off, err := evalLiteralOrParam(q.Offset, params)
+			if err != nil {
+				return nil, err
+			}
+			ri = &offsetIter{ri: ri, skip: off}
+		}
+
+		lim, err := evalLiteralOrParam(q.Limit, params)
 		if err != nil {
 			return nil, err
 		}

@@ -214,6 +214,9 @@ func (q Query) SQL() string {
 	}
 	if q.Limit != nil {
 		str += " LIMIT " + q.Limit.SQL()
+		if q.Offset != nil {
+			str += " OFFSET " + q.Offset.SQL()
+		}
 	}
 	return str
 }

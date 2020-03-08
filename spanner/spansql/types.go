@@ -253,7 +253,8 @@ type KeyPart struct {
 type Query struct {
 	Select Select
 	Order  []Order
-	Limit  Limit
+
+	Limit, Offset LiteralOrParam
 }
 
 // Select represents a SELECT statement.
@@ -313,8 +314,9 @@ type Expr interface {
 	SQL() string
 }
 
-type Limit interface {
-	isLimit()
+// LiteralOrParam is implemented by integer literal and parameter values.
+type LiteralOrParam interface {
+	isLiteralOrParam()
 	SQL() string
 }
 
@@ -428,9 +430,9 @@ func (ID) isExpr()     {}
 // Param represents a query parameter.
 type Param string
 
-func (Param) isBoolExpr() {} // possibly bool
-func (Param) isExpr()     {}
-func (Param) isLimit()    {}
+func (Param) isBoolExpr()       {} // possibly bool
+func (Param) isExpr()           {}
+func (Param) isLiteralOrParam() {}
 
 type BoolLiteral bool
 
@@ -454,8 +456,8 @@ func (NullLiteral) isExpr()   {}
 // https://cloud.google.com/spanner/docs/lexical#integer-literals
 type IntegerLiteral int64
 
-func (IntegerLiteral) isLimit() {}
-func (IntegerLiteral) isExpr()  {}
+func (IntegerLiteral) isLiteralOrParam() {}
+func (IntegerLiteral) isExpr()           {}
 
 // FloatLiteral represents a floating point literal.
 // https://cloud.google.com/spanner/docs/lexical#floating-point-literals
