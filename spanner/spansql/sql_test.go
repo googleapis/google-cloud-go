@@ -104,6 +104,8 @@ func TestSQL(t *testing.T) {
 				Columns: []ColumnDef{
 					{Name: "SomeId", Type: Type{Base: Int64}, NotNull: true, Position: line(2)},
 					{Name: "OtherId", Type: Type{Base: Int64}, NotNull: true, Position: line(3)},
+					// This column name uses a reserved keyword.
+					{Name: "Hash", Type: Type{Base: Bytes, Len: 32}, Position: line(4)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "SomeId"},
@@ -118,6 +120,7 @@ func TestSQL(t *testing.T) {
 			`CREATE TABLE Tsub (
   SomeId INT64 NOT NULL,
   OtherId INT64 NOT NULL,
+  ` + "`Hash`" + ` BYTES(32),
 ) PRIMARY KEY(SomeId, OtherId),
   INTERLEAVE IN PARENT Ta ON DELETE CASCADE`,
 			reparseDDL,
