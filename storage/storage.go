@@ -170,6 +170,80 @@ const (
 	SigningSchemeV4
 )
 
+// URLStyle determines the style to use for the signed URL. pathStyle is the
+// default. All non-default options work with V4 scheme only. See
+// https://cloud.google.com/storage/docs/request-endpoints for details.
+type URLStyle interface {
+	// host should return the host portion of the signed URL, not including
+	// the scheme (e.g. storage.googleapis.com).
+	host(bucket string) string
+
+	// path should return the path portion of the signed URL, which may include
+	// both the bucket and object name or only the object name depending on the
+	// style.
+	path(bucket, object string) string
+}
+
+type pathStyle struct{}
+
+type virtualHostedStyle struct{}
+
+type bucketBoundHostname struct {
+	hostname string
+}
+
+func (s pathStyle) host(bucket string) string {
+	return "storage.googleapis.com"
+}
+
+func (s virtualHostedStyle) host(bucket string) string {
+	return bucket + ".storage.googleapis.com"
+}
+
+func (s bucketBoundHostname) host(bucket string) string {
+	return s.hostname
+}
+
+func (s pathStyle) path(bucket, object string) string {
+	p := bucket
+	if object != "" {
+		p += "/" + object
+	}
+	return p
+}
+
+func (s virtualHostedStyle) path(bucket, object string) string {
+	return object
+}
+
+func (s bucketBoundHostname) path(bucket, object string) string {
+	return object
+}
+
+// PathStyle is the default style, and will generate a URL of the form
+// "storage.googleapis.com/<bucket-name>/<object-name>".
+func PathStyle() URLStyle {
+	return pathStyle{}
+}
+
+// VirtualHostedStyle generates a URL relative to the bucket's virtual
+// hostname, e.g. "<bucket-name>.storage.googleapis.com/<object-name>".
+func VirtualHostedStyle() URLStyle {
+	return virtualHostedStyle{}
+}
+
+// BucketBoundHostname generates a URL with a custom hostname tied to a
+// specific GCS bucket. The desired hostname should be passed in using the
+// hostname argument. Generated urls will be of the form
+// "<bucket-bound-hostname>/<object-name>". See
+// https://cloud.google.com/storage/docs/request-endpoints#cname and
+// https://cloud.google.com/load-balancing/docs/https/adding-backend-buckets-to-load-balancers
+// for details. Note that for CNAMEs, only HTTP is supported, so Insecure must
+// be set to true.
+func BucketBoundHostname(hostname string) URLStyle {
+	return bucketBoundHostname{hostname: hostname}
+}
+
 // SignedURLOptions allows you to restrict the access to the signed URL.
 type SignedURLOptions struct {
 	// GoogleAccessID represents the authorizer of the signed URL generation.
@@ -243,6 +317,19 @@ type SignedURLOptions struct {
 	// header in order to use the signed URL.
 	// Optional.
 	MD5 string
+
+	// Style provides options for the type of URL to use. Options are
+	// PathStyle (default), BucketBoundHostname, and VirtualHostedStyle. See
+	// https://cloud.google.com/storage/docs/request-endpoints for details.
+	// Only supported for V4 signing.
+	// Optional.
+	Style URLStyle
+
+	// Insecure determines whether the signed URL should use HTTPS (default) or
+	// HTTP.
+	// Only supported for V4 signing.
+	// Optional.
+	Insecure bool
 
 	// Scheme determines the version of URL signing to use. Default is
 	// SigningSchemeV2.
@@ -408,6 +495,12 @@ func validateOptions(opts *SignedURLOptions, now time.Time) error {
 			return errors.New("storage: invalid MD5 checksum")
 		}
 	}
+	if opts.Style == nil {
+		opts.Style = PathStyle()
+	}
+	if _, ok := opts.Style.(pathStyle); !ok && opts.Scheme == SigningSchemeV2 {
+		return errors.New("storage: only path-style URLs are permitted with SigningSchemeV2")
+	}
 	if opts.Scheme == SigningSchemeV4 {
 		cutoff := now.Add(604801 * time.Second) // 7 days + 1 second
 		if !opts.Expires.Before(cutoff) {
@@ -458,10 +551,8 @@ func pathEncodeV4(path string) string {
 func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (string, error) {
 	buf := &bytes.Buffer{}
 	fmt.Fprintf(buf, "%s\n", opts.Method)
-	u := &url.URL{Path: bucket}
-	if name != "" {
-		u.Path += "/" + name
-	}
+
+	u := &url.URL{Path: opts.Style.path(bucket, name)}
 	u.RawPath = pathEncodeV4(u.Path)
 
 	// Note: we have to add a / here because GCS does so auto-magically, despite
@@ -495,7 +586,15 @@ func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (st
 
 	fmt.Fprintf(buf, "%s\n", canonicalQueryString.Encode())
 
-	u.Host = "storage.googleapis.com"
+	// Fill in the hostname based on the desired URL style.
+	u.Host = opts.Style.host(bucket)
+
+	// Fill in the URL scheme.
+	if opts.Insecure {
+		u.Scheme = "http"
+	} else {
+		u.Scheme = "https"
+	}
 
 	var headersWithValue []string
 	headersWithValue = append(headersWithValue, "host:"+u.Host)
@@ -559,7 +658,6 @@ func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (st
 	}
 	signature := hex.EncodeToString(b)
 	canonicalQueryString.Set("X-Goog-Signature", string(signature))
-	u.Scheme = "https"
 	u.RawQuery = canonicalQueryString.Encode()
 	return u.String(), nil
 }

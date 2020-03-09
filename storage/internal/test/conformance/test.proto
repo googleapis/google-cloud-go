@@ -27,6 +27,12 @@ message TestFile {
   repeated PostPolicyV4Test post_policy_v4_tests = 2;
 }
 
+enum UrlStyle {
+  PATH_STYLE = 0;
+  VIRTUAL_HOSTED_STYLE = 1;
+  BUCKET_BOUND_HOSTNAME = 2;
+}
+
 message SigningV4Test {
   string fileName = 1;
   string description = 2;
@@ -39,13 +45,8 @@ message SigningV4Test {
   map<string, string> headers = 9;
   map<string, string> query_parameters = 10;
   string scheme = 11;
-  enum UrlStyle {
-    PATH_STYLE = 0;
-    VIRTUAL_HOSTED_STYLE = 1;
-    BUCKET_BOUND_DOMAIN = 2;
-  }
   UrlStyle urlStyle = 12;
-  string bucketBoundDomain = 13;
+  string bucketBoundHostname = 13;
   string expectedCanonicalRequest = 14;
   string expectedStringToSign = 15;
 }
@@ -55,26 +56,26 @@ message ConditionalMatches {
 }
 
 message PolicyConditions {
-  string successActionStatus = 1;
-  string successActionRedirect = 2;
-  repeated ConditionalMatches matches = 3;
+  repeated int32 contentLengthRange = 1;
+  repeated string startsWith = 2;
 }
 
 message PolicyInput {
   string scheme = 1;
-  string bucket = 2;
-  string object = 3;
-  int64 expiration = 4;
-  google.protobuf.Timestamp timestamp = 5;
-  map<string, string> headers = 6;
-  PolicyConditions conditions = 7;
+  UrlStyle urlStyle = 2;
+  string bucketBoundHostname = 3;
+  string bucket = 4;
+  string object = 5;
+  int32 expiration = 6;
+  google.protobuf.Timestamp timestamp = 7;
+  map<string, string> fields = 8;
+  PolicyConditions conditions = 9;
 }
 
 message PolicyOutput {
   string url = 1;
-  string key = 2;
-  map<string, string> fields = 3;
-  string expectedDecodedPolicy = 4;
+  map<string, string> fields = 2;
+  string expectedDecodedPolicy = 3;
 }
 
 message PostPolicyV4Test {

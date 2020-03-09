@@ -9,8 +9,8 @@
       "timestamp": "2019-02-01T09:00:00Z",
       "expectedUrl": "https://storage.googleapis.com/test-bucket/test-object?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190201%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190201T090000Z&X-Goog-Expires=10&X-Goog-SignedHeaders=host&X-Goog-Signature=95e6a13d43a1d1962e667f17397f2b80ac9bdd1669210d5e08e0135df9dff4e56113485dbe429ca2266487b9d1796ebdee2d7cf682a6ef3bb9fbb4c351686fba90d7b621cf1c4eb1fdf126460dd25fa0837dfdde0a9fd98662ce60844c458448fb2b352c203d9969cb74efa4bdb742287744a4f2308afa4af0e0773f55e32e92973619249214b97283b2daa14195244444e33f938138d1e5f561088ce8011f4986dda33a556412594db7c12fc40e1ff3f1bedeb7a42f5bcda0b9567f17f65855f65071fabb88ea12371877f3f77f10e1466fff6ff6973b74a933322ff0949ce357e20abe96c3dd5cfab42c9c83e740a4d32b9e11e146f0eb3404d2e975896f74",
       "scheme": "https",
-      "expectedCanonicalRequest": "GOOG4-RSA-SHA256\n20190201T090000Z\n20190201/auto/storage/goog4_request\n00e2fb794ea93d7adb703edaebdd509821fcc7d4f1a79ac5c8d2b394df109320",
-      "expectedStringToSign": "GET\n/test-bucket/test-object\nX-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190201%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190201T090000Z&X-Goog-Expires=10&X-Goog-SignedHeaders=host\nhost:storage.googleapis.com\n\nhost\nUNSIGNED-PAYLOAD"
+      "expectedCanonicalRequest": "GET\n/test-bucket/test-object\nX-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190201%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190201T090000Z&X-Goog-Expires=10&X-Goog-SignedHeaders=host\nhost:storage.googleapis.com\n\nhost\nUNSIGNED-PAYLOAD",
+      "expectedStringToSign": "GOOG4-RSA-SHA256\n20190201T090000Z\n20190201/auto/storage/goog4_request\n00e2fb794ea93d7adb703edaebdd509821fcc7d4f1a79ac5c8d2b394df109320"
     },
     {
       "description": "Simple PUT",
@@ -48,7 +48,7 @@
       "timestamp": "2019-03-01T09:00:00Z",
       "expectedUrl": "https://storage.googleapis.com/test-bucket/test-object?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190301%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190301T090000Z&X-Goog-Expires=20&X-Goog-SignedHeaders=host&X-Goog-Signature=9669ed5b10664dc594c758296580662912cf4bcc5a4ba0b6bf055bcbf6f34eed7bdad664f534962174a924741a0c273a4f67bc1847cef20192a6beab44223bd9d4fbbd749c407b79997598c30f82ddc269ff47ec09fa3afe74e00616d438df0d96a7d8ad0adacfad1dc3286f864d924fe919fb0dce45d3d975c5afe8e13af2db9cc37ba77835f92f7669b61e94c6d562196c1274529e76cfff1564cc2cad7d5387dc8e12f7a5dfd925685fe92c30b43709eee29fa2f66067472cee5423d1a3a4182fe8cea75c9329d181dc6acad7c393cd04f8bf5bc0515127d8ebd65d80c08e19ad03316053ea60033fd1b1fd85a69c576415da3bf0a3718d9ea6d03e0d66f0",
       "scheme": "https",
-      "expectedCanonicalRequest": "GET\n/test-bucket/test-object\nX-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190301%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190301T090000Z&X-Goog-Expires=20&X-Goog-SignedHeaders=host\nhost:storage.googleapis.com\nhost\nUNSIGNED-PAYLOAD",
+      "expectedCanonicalRequest": "GET\n/test-bucket/test-object\nX-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190301%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190301T090000Z&X-Goog-Expires=20&X-Goog-SignedHeaders=host\nhost:storage.googleapis.com\n\nhost\nUNSIGNED-PAYLOAD",
       "expectedStringToSign": "GOOG4-RSA-SHA256\n20190301T090000Z\n20190301/auto/storage/goog4_request\n779f19fdb6fd381390e2d5af04947cf21750277ee3c20e0c97b7e46a1dff8907"
     },
     {
@@ -228,6 +228,47 @@
       "scheme": "https",
       "expectedCanonicalRequest": "PUT\n/test-bucket/test-object\nX-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190201%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190201T090000Z&X-Goog-Expires=10&X-Goog-SignedHeaders=host%3Bx-goog-content-sha256%3Bx-testcasemetadata-payload-value\nhost:storage.googleapis.com\nx-goog-content-sha256:2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b982\nx-testcasemetadata-payload-value:hello\n\nhost;x-goog-content-sha256;x-testcasemetadata-payload-value\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b982",
       "expectedStringToSign": "GOOG4-RSA-SHA256\n20190201T090000Z\n20190201/auto/storage/goog4_request\nbe21a0841a897930ff5cf72e6e74ec5274efd76c3fe4cde6678f24a0a3d6dbec"
+    },
+    {
+      "description": "Virtual Hosted Style",
+      "bucket": "test-bucket",
+      "object": "test-object",
+      "method": "GET",
+      "expiration": "10",
+      "timestamp": "2019-02-01T09:00:00Z",
+      "expectedUrl": "https://test-bucket.storage.googleapis.com/test-object?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190201%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190201T090000Z&X-Goog-Expires=10&X-Goog-SignedHeaders=host&X-Goog-Signature=06c633ea060b0eda81ee58dd3337b01b0d243a44f18cb03ec948861f533a129e579c7fd4c856d187f1c7b86e5715ea0abf6a1c6ba32b69274d22b1b0406df6847dc87f0d289fe8dc0682351574849b8b13e4b66922f39441af96becb73ea4c56cd5e3eeb30bc91fe84e8bd205adca8639253bdb65b2fcaf2598a230c6d8f6d8177c9e58a61b6e826767f594056b490184d676897c4bbedc15d6fbf08c3fa82a406c62e74db661e6c5d7d3ced29e0619ee719dce4b8136360345b8dce120b9f1debd511c8dac3e6d874ee05bfda8c8f1c4fedd0c07fc6d98f5f18a349bb204d8ff401402a025194e2792df8a09282141157e4ca51d26a8d0d142a01c805321911",
+      "scheme": "https",
+      "urlStyle": "VIRTUAL_HOSTED_STYLE",
+      "expectedCanonicalRequest": "GET\n/test-object\nX-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190201%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190201T090000Z&X-Goog-Expires=10&X-Goog-SignedHeaders=host\nhost:test-bucket.storage.googleapis.com\n\nhost\nUNSIGNED-PAYLOAD",
+      "expectedStringToSign": "GOOG4-RSA-SHA256\n20190201T090000Z\n20190201/auto/storage/goog4_request\n89eeae48258eccdcb1f592fb908008e3f5d36a949c002c1e614c94356dc18fc6"
+    },
+    {
+      "description": "HTTP Bucket Bound Hostname Support",
+      "bucket": "test-bucket",
+      "object": "test-object",
+      "method": "GET",
+      "expiration": "10",
+      "timestamp": "2019-02-01T09:00:00Z",
+      "expectedUrl": "http://mydomain.tld/test-object?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190201%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190201T090000Z&X-Goog-Expires=10&X-Goog-SignedHeaders=host&X-Goog-Signature=7115a77f8c7ed1a8b74bca8b520904fca7f3bab90d69ea052687a94efd9b3a4e2a7fb7135d40e295e0a21958194c55da7e106227957c22ed6edc9d8b3d2a8133bc8af84fc9695dda8081d53f0db5ea9f28e5bfc225d78f873e9f571fd287bb7a95330e726aebd8eb4623cdb0b1a7ceb210b2ce1351b6be0191c2ad7b38f7ceb6c5ce2f98dbfb5a5a649050585e46e97f72f1f5407de657a56e34a3fdc80cdaa0598bd47f3e8af5ff22d0916b19b106890bff8c3f6587f1d3b076b16cd0ba0508607a672be33b9c75d537e15258450b43d22a21c4d528090acbb8e5bae7b31fc394e61394106ef1d6a8ed43074ab05bcec65674cd8113fb3de388da4d97e62f56",
+      "scheme": "http",
+      "urlStyle": "BUCKET_BOUND_HOSTNAME",
+      "bucketBoundHostname": "mydomain.tld",
+      "expectedCanonicalRequest": "GET\n/test-object\nX-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190201%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190201T090000Z&X-Goog-Expires=10&X-Goog-SignedHeaders=host\nhost:mydomain.tld\n\nhost\nUNSIGNED-PAYLOAD",
+      "expectedStringToSign": "GOOG4-RSA-SHA256\n20190201T090000Z\n20190201/auto/storage/goog4_request\nd6c309924b51a5abbe4d6356f7bf29c2120c6b14649b1e97b3bc9309adca7d4b"
+    },
+    {
+      "description": "HTTPS Bucket Bound Hostname Support",
+      "bucket": "test-bucket",
+      "object": "test-object",
+      "method": "GET",
+      "expiration": "10",
+      "timestamp": "2019-02-01T09:00:00Z",
+      "expectedUrl": "https://mydomain.tld/test-object?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190201%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190201T090000Z&X-Goog-Expires=10&X-Goog-SignedHeaders=host&X-Goog-Signature=7115a77f8c7ed1a8b74bca8b520904fca7f3bab90d69ea052687a94efd9b3a4e2a7fb7135d40e295e0a21958194c55da7e106227957c22ed6edc9d8b3d2a8133bc8af84fc9695dda8081d53f0db5ea9f28e5bfc225d78f873e9f571fd287bb7a95330e726aebd8eb4623cdb0b1a7ceb210b2ce1351b6be0191c2ad7b38f7ceb6c5ce2f98dbfb5a5a649050585e46e97f72f1f5407de657a56e34a3fdc80cdaa0598bd47f3e8af5ff22d0916b19b106890bff8c3f6587f1d3b076b16cd0ba0508607a672be33b9c75d537e15258450b43d22a21c4d528090acbb8e5bae7b31fc394e61394106ef1d6a8ed43074ab05bcec65674cd8113fb3de388da4d97e62f56",
+      "scheme": "https",
+      "urlStyle": "BUCKET_BOUND_HOSTNAME",
+      "bucketBoundHostname": "mydomain.tld",
+      "expectedCanonicalRequest": "GET\n/test-object\nX-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190201%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190201T090000Z&X-Goog-Expires=10&X-Goog-SignedHeaders=host\nhost:mydomain.tld\n\nhost\nUNSIGNED-PAYLOAD",
+      "expectedStringToSign": "GOOG4-RSA-SHA256\n20190201T090000Z\n20190201/auto/storage/goog4_request\nd6c309924b51a5abbe4d6356f7bf29c2120c6b14649b1e97b3bc9309adca7d4b"
     }
   ]
 }

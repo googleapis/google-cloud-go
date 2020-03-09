@@ -470,6 +470,17 @@ func TestSignedURL_MissingOptions(t *testing.T) {
 			},
 			"expires must be within seven days from now",
 		},
+		{
+			&SignedURLOptions{
+				GoogleAccessID: "access_id",
+				PrivateKey:     pk,
+				Method:         "GET",
+				Expires:        now.Add(time.Hour),
+				Scheme:         SigningSchemeV2,
+				Style:          VirtualHostedStyle(),
+			},
+			"are permitted with SigningSchemeV2",
+		},
 	}
 	oldUTCNow := utcNow
 	defer func() {

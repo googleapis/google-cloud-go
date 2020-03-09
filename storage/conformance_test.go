@@ -80,6 +80,16 @@ func TestSigningV4Conformance(t *testing.T) {
 					}
 				}
 
+				var style URLStyle
+				switch tc.UrlStyle {
+				case storage_v1_tests.UrlStyle_PATH_STYLE:
+					style = PathStyle()
+				case storage_v1_tests.UrlStyle_VIRTUAL_HOSTED_STYLE:
+					style = VirtualHostedStyle()
+				case storage_v1_tests.UrlStyle_BUCKET_BOUND_HOSTNAME:
+					style = BucketBoundHostname(tc.BucketBoundHostname)
+				}
+
 				gotURL, err := SignedURL(tc.Bucket, tc.Object, &SignedURLOptions{
 					GoogleAccessID:  googleAccessID,
 					PrivateKey:      []byte(privateKey),
@@ -88,6 +98,8 @@ func TestSigningV4Conformance(t *testing.T) {
 					Scheme:          SigningSchemeV4,
 					Headers:         headersAsSlice(tc.Headers),
 					QueryParameters: qp,
+					Style:           style,
+					Insecure:        tc.Scheme == "http",
 				})
 				if err != nil {
 					t.Fatal(err)
