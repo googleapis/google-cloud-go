@@ -44,11 +44,16 @@ type CallOptions struct {
 	ListCapacityCommitments  []gax.CallOption
 	GetCapacityCommitment    []gax.CallOption
 	DeleteCapacityCommitment []gax.CallOption
+	UpdateCapacityCommitment []gax.CallOption
+	SplitCapacityCommitment  []gax.CallOption
+	MergeCapacityCommitments []gax.CallOption
 	CreateAssignment         []gax.CallOption
 	ListAssignments          []gax.CallOption
 	DeleteAssignment         []gax.CallOption
 	SearchAssignments        []gax.CallOption
 	MoveAssignment           []gax.CallOption
+	GetBiReservation         []gax.CallOption
+	UpdateBiReservation      []gax.CallOption
 }
 
 func defaultClientOptions() []option.ClientOption {
@@ -137,7 +142,10 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateAssignment: []gax.CallOption{},
+		UpdateCapacityCommitment: []gax.CallOption{},
+		SplitCapacityCommitment:  []gax.CallOption{},
+		MergeCapacityCommitments: []gax.CallOption{},
+		CreateAssignment:         []gax.CallOption{},
 		ListAssignments: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -175,6 +183,19 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		MoveAssignment: []gax.CallOption{},
+		GetBiReservation: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateBiReservation: []gax.CallOption{},
 	}
 }
 
@@ -208,9 +229,9 @@ type Client struct {
 // projects/myproject/locations/US/reservations/reservationName.
 //
 // A capacity commitment is a way to purchase compute capacity for BigQuery jobs
-// (in the form of slots) with some minimum committed period of usage. A
-// capacity commitment resource exists as a child resource of the admin project
-// and location, e.g.:
+// (in the form of slots) with some committed period of usage. A capacity
+// commitment resource exists as a child resource of the admin project and
+// location, e.g.:
 // projects/myproject/locations/US/capacityCommitments/id.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	connPool, err := gtransport.DialPool(ctx, append(defaultClientOptions(), opts...)...)
@@ -430,6 +451,66 @@ func (c *Client) DeleteCapacityCommitment(ctx context.Context, req *reservationp
 	return err
 }
 
+// UpdateCapacityCommitment updates an existing capacity commitment.
+//
+// Only renewal_plan field can be updated.
+func (c *Client) UpdateCapacityCommitment(ctx context.Context, req *reservationpb.UpdateCapacityCommitmentRequest, opts ...gax.CallOption) (*reservationpb.CapacityCommitment, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "capacity_commitment.name", url.QueryEscape(req.GetCapacityCommitment().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UpdateCapacityCommitment[0:len(c.CallOptions.UpdateCapacityCommitment):len(c.CallOptions.UpdateCapacityCommitment)], opts...)
+	var resp *reservationpb.CapacityCommitment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateCapacityCommitment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// SplitCapacityCommitment splits capacity commitment to two commitments of the same plan and
+// commitment_end_time. A common use case to do that is to perform a downgrade
+// e.g., in order to downgrade from 10000 slots to 8000, one might split 10000
+// capacity commitment to 2000 and 8000, change the plan of the first one to
+// flex and then delete it.
+func (c *Client) SplitCapacityCommitment(ctx context.Context, req *reservationpb.SplitCapacityCommitmentRequest, opts ...gax.CallOption) (*reservationpb.SplitCapacityCommitmentResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.SplitCapacityCommitment[0:len(c.CallOptions.SplitCapacityCommitment):len(c.CallOptions.SplitCapacityCommitment)], opts...)
+	var resp *reservationpb.SplitCapacityCommitmentResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.SplitCapacityCommitment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// MergeCapacityCommitments merges capacity commitments of the same plan into one. Resulting capacity
+// commitment has the longer commitment_end_time out of the two. Attempting to
+// merge capacity commitments of different plan will fail with the error code
+// google.rpc.Code.FAILED_PRECONDITION.
+func (c *Client) MergeCapacityCommitments(ctx context.Context, req *reservationpb.MergeCapacityCommitmentsRequest, opts ...gax.CallOption) (*reservationpb.CapacityCommitment, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.MergeCapacityCommitments[0:len(c.CallOptions.MergeCapacityCommitments):len(c.CallOptions.MergeCapacityCommitments)], opts...)
+	var resp *reservationpb.CapacityCommitment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.MergeCapacityCommitments(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // CreateAssignment returns google.rpc.Code.PERMISSION_DENIED if user does not have
 // ‘bigquery.admin’ permissions on the project using the reservation
 // and the project that owns this reservation.
@@ -600,6 +681,45 @@ func (c *Client) MoveAssignment(ctx context.Context, req *reservationpb.MoveAssi
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.MoveAssignment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetBiReservation retrieves a BI reservation.
+func (c *Client) GetBiReservation(ctx context.Context, req *reservationpb.GetBiReservationRequest, opts ...gax.CallOption) (*reservationpb.BiReservation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetBiReservation[0:len(c.CallOptions.GetBiReservation):len(c.CallOptions.GetBiReservation)], opts...)
+	var resp *reservationpb.BiReservation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetBiReservation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// UpdateBiReservation updates a BI reservation.
+// Only fields specified in the field_mask are updated.
+// Singleton BI reservation always exists with default size 0.
+// In order to reserve BI capacity it needs to be updated to an amount
+// greater than 0. In order to release BI capacity reservation size
+// must be set to 0.
+func (c *Client) UpdateBiReservation(ctx context.Context, req *reservationpb.UpdateBiReservationRequest, opts ...gax.CallOption) (*reservationpb.BiReservation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "reservation.name", url.QueryEscape(req.GetReservation().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UpdateBiReservation[0:len(c.CallOptions.UpdateBiReservation):len(c.CallOptions.UpdateBiReservation)], opts...)
+	var resp *reservationpb.BiReservation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateBiReservation(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

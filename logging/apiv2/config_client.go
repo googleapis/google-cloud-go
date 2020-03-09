@@ -36,6 +36,9 @@ import (
 
 // ConfigCallOptions contains the retry settings for each method of ConfigClient.
 type ConfigCallOptions struct {
+	ListBuckets        []gax.CallOption
+	GetBucket          []gax.CallOption
+	UpdateBucket       []gax.CallOption
 	ListSinks          []gax.CallOption
 	GetSink            []gax.CallOption
 	CreateSink         []gax.CallOption
@@ -62,6 +65,9 @@ func defaultConfigClientOptions() []option.ClientOption {
 
 func defaultConfigCallOptions() *ConfigCallOptions {
 	return &ConfigCallOptions{
+		ListBuckets:  []gax.CallOption{},
+		GetBucket:    []gax.CallOption{},
+		UpdateBucket: []gax.CallOption{},
 		ListSinks: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -210,6 +216,91 @@ func (c *ConfigClient) SetGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// ListBuckets lists buckets (Beta).
+func (c *ConfigClient) ListBuckets(ctx context.Context, req *loggingpb.ListBucketsRequest, opts ...gax.CallOption) *LogBucketIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ListBuckets[0:len(c.CallOptions.ListBuckets):len(c.CallOptions.ListBuckets)], opts...)
+	it := &LogBucketIterator{}
+	req = proto.Clone(req).(*loggingpb.ListBucketsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*loggingpb.LogBucket, string, error) {
+		var resp *loggingpb.ListBucketsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.configClient.ListBuckets(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.Buckets, resp.NextPageToken, nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
+	return it
+}
+
+// GetBucket gets a bucket (Beta).
+func (c *ConfigClient) GetBucket(ctx context.Context, req *loggingpb.GetBucketRequest, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetBucket[0:len(c.CallOptions.GetBucket):len(c.CallOptions.GetBucket)], opts...)
+	var resp *loggingpb.LogBucket
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.configClient.GetBucket(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// UpdateBucket updates a bucket. This method replaces the following fields in the
+// existing bucket with values from the new bucket: retention_period
+//
+// If the retention period is decreased and the bucket is locked,
+// FAILED_PRECONDITION will be returned.
+//
+// If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION
+// will be returned.
+//
+// A buckets region may not be modified after it is created.
+// This method is in Beta.
+func (c *ConfigClient) UpdateBucket(ctx context.Context, req *loggingpb.UpdateBucketRequest, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UpdateBucket[0:len(c.CallOptions.UpdateBucket):len(c.CallOptions.UpdateBucket)], opts...)
+	var resp *loggingpb.LogBucket
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.configClient.UpdateBucket(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // ListSinks lists sinks.
@@ -484,6 +575,53 @@ func (c *ConfigClient) UpdateCmekSettings(ctx context.Context, req *loggingpb.Up
 		return nil, err
 	}
 	return resp, nil
+}
+
+// LogBucketIterator manages a stream of *loggingpb.LogBucket.
+type LogBucketIterator struct {
+	items    []*loggingpb.LogBucket
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*loggingpb.LogBucket, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *LogBucketIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *LogBucketIterator) Next() (*loggingpb.LogBucket, error) {
+	var item *loggingpb.LogBucket
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *LogBucketIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *LogBucketIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // LogExclusionIterator manages a stream of *loggingpb.LogExclusion.
