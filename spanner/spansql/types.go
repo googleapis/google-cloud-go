@@ -25,6 +25,7 @@ import (
 )
 
 // TODO: More Position fields throughout; maybe in Query/Select.
+// TODO: Perhaps identifiers in the AST should be ID-typed.
 
 // CreateTable represents a CREATE TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#create_table
