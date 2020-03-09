@@ -143,6 +143,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3",
     "release_level": "beta"
   },
+  "cloud.google.com/go/container/apiv1": {
+    "distribution_name": "cloud.google.com/go/container/apiv1",
+    "description": "Kubernetes Engine API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/container/apiv1",
+    "release_level": "ga"
+  },
   "cloud.google.com/go/containeranalysis/apiv1beta1": {
     "distribution_name": "cloud.google.com/go/containeranalysis/apiv1beta1",
     "description": "Container Analysis API",

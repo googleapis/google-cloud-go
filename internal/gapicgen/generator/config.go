@@ -618,6 +618,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/automl/v1beta1/automl_v1beta1.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:    "google/container/v1",
+		pkg:                   "container",
+		importPath:            "cloud.google.com/go/container/apiv1",
+		gRPCServiceConfigPath: "google/container/v1/container_grpc_service_config.json",
+		apiServiceConfigPath:  "google/container/v1/container_v1.yaml",
+		releaseLevel:          "ga",
+	},
 }
 
 // Relative to gocloud dir.
