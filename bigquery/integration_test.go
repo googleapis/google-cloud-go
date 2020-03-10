@@ -2477,6 +2477,22 @@ func TestIntegration_ModelLifecycle(t *testing.T) {
 		t.Fatal("model not listed in dataset")
 	}
 
+	// Extract the model to GCS.
+	bucketName := testutil.ProjID()
+	objectName := fmt.Sprintf("bq-model-extract-%s", modelID)
+	uri := fmt.Sprintf("gs://%s/%s", bucketName, objectName)
+	defer storageClient.Bucket(bucketName).Object(objectName).Delete(ctx)
+	gr := NewGCSReference(uri)
+	gr.DestinationFormat = TFSavedModel
+	extractor := model.ExtractorTo(gr)
+	job, err := extractor.Run(ctx)
+	if err != nil {
+		t.Fatalf("failed to extract model to GCS: %v", err)
+	}
+	if _, err := job.Wait(ctx); err != nil {
+		t.Errorf("failed to complete extract job (%s): %v", job.ID(), err)
+	}
+
 	// Delete the model.
 	if err := model.Delete(ctx); err != nil {
 		t.Fatalf("failed to delete model: %v", err)
