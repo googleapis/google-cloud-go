@@ -129,7 +129,7 @@ func toRawIter(ri rowIter) (*rawIter, error) {
 		} else if err != nil {
 			return nil, err
 		}
-		raw.rows = append(raw.rows, row)
+		raw.rows = append(raw.rows, row.copyAllData())
 	}
 	return raw, nil
 }
@@ -347,16 +347,15 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 		defer t.mu.Unlock()
 		ri = &tableIter{t: t}
 		ec.cols = t.cols
-	}
-	defer func() {
-		// If we're about to return a tableIter, convert it to a rawIter
+
+		// On the way out, convert the result to a rawIter
 		// so that the table may be safely unlocked.
-		if evalErr == nil {
-			if ti, ok := ri.(*tableIter); ok {
-				ri, evalErr = toRawIter(ti)
+		defer func() {
+			if evalErr == nil {
+				ri, evalErr = toRawIter(ri)
 			}
-		}
-	}()
+		}()
+	}
 
 	// Apply WHERE.
 	if sel.Where != nil {
