@@ -171,6 +171,15 @@ func (r row) copyDataElem(index int) interface{} {
 	return v
 }
 
+// copyData returns a copy of the row.
+func (r row) copyAllData() row {
+	dst := make(row, 0, len(r))
+	for i := range r {
+		dst = append(dst, r.copyDataElem(i))
+	}
+	return dst
+}
+
 // copyData returns a copy of a subset of a row.
 func (r row) copyData(indexes []int) row {
 	if len(indexes) == 0 {

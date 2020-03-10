@@ -19,6 +19,7 @@ package spannertest
 import (
 	"io"
 	"reflect"
+	"sync"
 	"testing"
 
 	"google.golang.org/grpc/codes"
@@ -733,6 +734,79 @@ testLoop:
 		if test.wantCode != codes.OK {
 			t.Errorf("%s: Finished with OK, want %v", test.desc, test.wantCode)
 		}
+	}
+}
+
+func TestConcurrentReadInsert(t *testing.T) {
+	// Check that data is safely copied during a query.
+	tbl := &spansql.CreateTable{
+		Name: "Tablino",
+		Columns: []spansql.ColumnDef{
+			{Name: "A", Type: spansql.Type{Base: spansql.Int64}},
+		},
+		PrimaryKey: []spansql.KeyPart{{Column: "A"}},
+	}
+
+	var db database
+	if st := db.ApplyDDL(tbl); st.Code() != codes.OK {
+		t.Fatalf("Creating table: %v", st.Err())
+	}
+
+	// Insert some initial data.
+	tx := db.NewTransaction()
+	tx.Start()
+	err := db.Insert(tx, "Tablino", []string{"A"}, []*structpb.ListValue{
+		listV(stringV("1")),
+		listV(stringV("2")),
+		listV(stringV("4")),
+	})
+	if err != nil {
+		t.Fatalf("Inserting data: %v", err)
+	}
+	if _, err := tx.Commit(); err != nil {
+		t.Fatalf("Committing changes: %v", err)
+	}
+
+	// Now insert "3", and query concurrently.
+	q, err := spansql.ParseQuery(`SELECT * FROM Tablino WHERE A > 2`)
+	if err != nil {
+		t.Fatalf("ParseQuery: %v", err)
+	}
+	var out [][]interface{}
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+
+		ri, err := db.Query(q, nil)
+		if err != nil {
+			t.Errorf("Query: %v", err)
+			return
+		}
+		out = slurp(t, ri)
+	}()
+	go func() {
+		defer wg.Done()
+
+		tx := db.NewTransaction()
+		tx.Start()
+		err := db.Insert(tx, "Tablino", []string{"A"}, []*structpb.ListValue{
+			listV(stringV("3")),
+		})
+		if err != nil {
+			t.Errorf("Inserting data: %v", err)
+			return
+		}
+		if _, err := tx.Commit(); err != nil {
+			t.Errorf("Committing changes: %v", err)
+		}
+	}()
+	wg.Wait()
+
+	// We should get either 1 or 2 rows (value 4 should be included, and value 3 might).
+	if n := len(out); n != 1 && n != 2 {
+		t.Fatalf("Concurrent read returned %d rows, want 1 or 2", n)
 	}
 }
 
