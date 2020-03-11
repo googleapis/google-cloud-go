@@ -1986,10 +1986,10 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	}
 
 	// Call f under various conditions.
-	// Here b and ob refer to the same bucket, but b is bound to client,
-	// while ob is bound to otherClient. The clients differ in their credentials,
-	// i.e. the identity of the user making the RPC: b's user is an Owner on the
-	// bucket's containing project, ob's is not.
+	// Here b1 and b2 refer to the same bucket, but b1 is bound to client,
+	// while b2 is bound to otherClient. The clients differ in their credentials,
+	// i.e. the identity of the user making the RPC: b1's user is an Owner on the
+	// bucket's containing project, b2's is not.
 	call := func(msg string, f func(*BucketHandle) error) {
 		// user: an Owner on the containing project
 		// userProject: absent
