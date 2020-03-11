@@ -20,9 +20,9 @@ require (
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sys v0.0.0-20200302150141-5c8b2ff67527 // indirect
 	golang.org/x/text v0.3.2
-	golang.org/x/tools v0.0.0-20200309202150-20ab64c0d93f
+	golang.org/x/tools v0.0.0-20200311090712-aafaee8bce8c
 	google.golang.org/api v0.20.0
-	google.golang.org/genproto v0.0.0-20200310143817-43be25429f5a
-	google.golang.org/grpc v1.27.1
+	google.golang.org/genproto v0.0.0-20200311144346-b662892dd51b
+	google.golang.org/grpc v1.28.0
 	honnef.co/go/tools v0.0.1-2020.1.3
 )

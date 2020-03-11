@@ -17,8 +17,8 @@ require (
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 	golang.org/x/sys v0.0.0-20200302150141-5c8b2ff67527 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
-	google.golang.org/genproto v0.0.0-20200310143817-43be25429f5a // indirect
-	google.golang.org/grpc v1.27.1 // indirect
+	google.golang.org/genproto v0.0.0-20200311144346-b662892dd51b // indirect
+	google.golang.org/grpc v1.28.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/src-d/go-git.v4 v4.13.1
 	gopkg.in/yaml.v2 v2.2.8
