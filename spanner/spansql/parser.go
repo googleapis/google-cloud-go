@@ -971,7 +971,7 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 
 	ct := &CreateTable{Name: tname, Position: pos}
 	err = p.parseCommaList(func(p *parser) *parseError {
-		if p.sniff("CONSTRAINT") || p.sniff("FOREIGN") {
+		if p.sniffTableConstraint() {
 			tc, err := p.parseTableConstraint()
 			if err != nil {
 				return err
@@ -1028,6 +1028,34 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 	}
 
 	return ct, nil
+}
+
+func (p *parser) sniffTableConstraint() bool {
+	// Unfortunately the Cloud Spanner grammar is LL(3) because
+	//	CONSTRAINT BOOL
+	// could be the start of a declaration of a column called "CONSTRAINT" of boolean type,
+	// or it could be the start of a foreign key constraint called "BOOL".
+	// We have to sniff up to the third token to see what production it is.
+	// If we have "FOREIGN" and "KEY", this is an unnamed table constraint.
+	// If we have "CONSTRAINT", an identifier and "FOREIGN", this is a table constraint.
+	// Otherwise, this is a column definition.
+
+	if p.sniff("FOREIGN", "KEY") {
+		return true
+	}
+
+	// Store parser state, and peek ahead.
+	// Restore on the way out.
+	orig := *p
+	defer func() { *p = orig }()
+
+	if !p.eat("CONSTRAINT") {
+		return false
+	}
+	if _, err := p.parseTableOrIndexOrColumnName(); err != nil {
+		return false
+	}
+	return p.eat("FOREIGN")
 }
 
 func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {

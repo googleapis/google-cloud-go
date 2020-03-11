@@ -253,6 +253,7 @@ func TestParseDDL(t *testing.T) {
 			RepoPath STRING(MAX) NOT NULL,
 			FOREIGN KEY (System, RepoPath) REFERENCES Stranger (Sys, RPath), -- unnamed foreign key
 			Author STRING(MAX) NOT NULL,
+			CONSTRAINT BOOL,  -- not a constraint
 		) PRIMARY KEY(System, RepoPath, Author),
 		  INTERLEAVE IN PARENT FooBar ON DELETE CASCADE;
 
@@ -303,6 +304,7 @@ func TestParseDDL(t *testing.T) {
 					{Name: "System", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(12)},
 					{Name: "RepoPath", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(14)},
 					{Name: "Author", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(16)},
+					{Name: "CONSTRAINT", Type: Type{Base: Bool}, Position: line(17)},
 				},
 				Constraints: []TableConstraint{
 					{
@@ -338,13 +340,13 @@ func TestParseDDL(t *testing.T) {
 			},
 			&AlterTable{
 				Name:       "FooBar",
-				Alteration: AddColumn{Def: ColumnDef{Name: "TZ", Type: Type{Base: Bytes, Len: 20}, Position: line(20)}},
-				Position:   line(20),
+				Alteration: AddColumn{Def: ColumnDef{Name: "TZ", Type: Type{Base: Bytes, Len: 20}, Position: line(21)}},
+				Position:   line(21),
 			},
 			&AlterTable{
 				Name:       "FooBar",
 				Alteration: DropColumn{Name: "TZ"},
-				Position:   line(21),
+				Position:   line(22),
 			},
 			&AlterTable{
 				Name: "FooBar",
@@ -354,21 +356,21 @@ func TestParseDDL(t *testing.T) {
 						Columns:    []string{"RepoPath"},
 						RefTable:   "Repos",
 						RefColumns: []string{"RPath"},
-						Position:   line(22),
+						Position:   line(23),
 					},
-					Position: line(22),
+					Position: line(23),
 				}},
-				Position: line(22),
+				Position: line(23),
 			},
 			&AlterTable{
 				Name:       "FooBar",
 				Alteration: DropConstraint{Name: "Con3"},
-				Position:   line(23),
+				Position:   line(24),
 			},
 			&AlterTable{
 				Name:       "FooBar",
 				Alteration: SetOnDelete{Action: NoActionOnDelete},
-				Position:   line(24),
+				Position:   line(25),
 			},
 			&AlterTable{
 				Name: "FooBar",
@@ -376,21 +378,21 @@ func TestParseDDL(t *testing.T) {
 					Name:     "Author",
 					Type:     Type{Base: String, Len: MaxLen},
 					NotNull:  true,
-					Position: line(25),
+					Position: line(26),
 				}},
-				Position: line(25),
+				Position: line(26),
 			},
-			&DropIndex{Name: "MyFirstIndex", Position: line(27)},
-			&DropTable{Name: "FooBar", Position: line(28)},
+			&DropIndex{Name: "MyFirstIndex", Position: line(28)},
+			&DropTable{Name: "FooBar", Position: line(29)},
 			&CreateTable{
 				Name: "NonScalars",
 				Columns: []ColumnDef{
-					{Name: "Dummy", Type: Type{Base: Int64}, NotNull: true, Position: line(33)},
-					{Name: "Ids", Type: Type{Array: true, Base: Int64}, Position: line(34)},
-					{Name: "Names", Type: Type{Array: true, Base: String, Len: MaxLen}, Position: line(35)},
+					{Name: "Dummy", Type: Type{Base: Int64}, NotNull: true, Position: line(34)},
+					{Name: "Ids", Type: Type{Array: true, Base: Int64}, Position: line(35)},
+					{Name: "Names", Type: Type{Array: true, Base: String, Len: MaxLen}, Position: line(36)},
 				},
 				PrimaryKey: []KeyPart{{Column: "Dummy"}},
-				Position:   line(32),
+				Position:   line(33),
 			},
 		}, Comments: []*Comment{
 			{Marker: "#", Start: line(2), End: line(2),
@@ -401,11 +403,13 @@ func TestParseDDL(t *testing.T) {
 				Text: []string{" This is a", "\t\t\t\t\t\t  * multiline comment."}},
 			{Marker: "--", Start: line(15), End: line(15),
 				Text: []string{"unnamed foreign key"}},
-			{Marker: "--", Isolated: true, Start: line(30), End: line(31),
+			{Marker: "--", Start: line(17), End: line(17),
+				Text: []string{"not a constraint"}},
+			{Marker: "--", Isolated: true, Start: line(31), End: line(32),
 				Text: []string{"This table has some commentary", "that spans multiple lines."}},
 			// These comments shouldn't get combined:
-			{Marker: "--", Start: line(33), End: line(33), Text: []string{"dummy comment"}},
-			{Marker: "--", Start: line(34), End: line(34), Text: []string{"comment on ids"}},
+			{Marker: "--", Start: line(34), End: line(34), Text: []string{"dummy comment"}},
+			{Marker: "--", Start: line(35), End: line(35), Text: []string{"comment on ids"}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
