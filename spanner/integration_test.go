@@ -147,28 +147,29 @@ func initIntegrationTests() (cleanup func()) {
 		return noop
 	}
 
-	ts := testutil.TokenSource(ctx, AdminScope, Scope)
-	if ts == nil {
-		log.Printf("Integration test skipped: cannot get service account credential from environment variable %v", "GCLOUD_TESTS_GOLANG_KEY")
-		return noop
-	}
-	var err error
-
-	opts := append(grpcHeaderChecker.CallOptions(), option.WithTokenSource(ts), option.WithEndpoint(endpoint))
-
+	opts := grpcHeaderChecker.CallOptions()
 	// Run integration tests against the given emulator. Currently, the database and
 	// instance admin clients are auto-generated, which do not support to configure
 	// SPANNER_EMULATOR_HOST.
 	emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST")
 	if emulatorAddr != "" {
 		opts = append(
-			grpcHeaderChecker.CallOptions(),
+			opts,
 			option.WithEndpoint(emulatorAddr),
 			option.WithGRPCDialOption(grpc.WithInsecure()),
 			option.WithoutAuthentication(),
 		)
+	} else {
+		ts := testutil.TokenSource(ctx, AdminScope, Scope)
+		if ts == nil {
+			log.Printf("Integration test skipped: cannot get service account credential from environment variable %v", "GCLOUD_TESTS_GOLANG_KEY")
+			return noop
+		}
+
+		opts = append(opts, option.WithTokenSource(ts), option.WithEndpoint(endpoint))
 	}
 
+	var err error
 	// Create InstanceAdmin and DatabaseAdmin clients.
 	instanceAdmin, err = instance.NewInstanceAdminClient(ctx, opts...)
 	if err != nil {
