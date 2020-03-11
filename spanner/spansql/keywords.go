@@ -123,12 +123,6 @@ var keywords = map[string]bool{
 	"WINDOW":               true,
 	"WITH":                 true,
 	"WITHIN":               true,
-
-	// For new foreign key support; these aren't officially listed yet.
-	"CONSTRAINT": true,
-	"FOREIGN":    true,
-	"KEY":        true,
-	"REFERENCES": true,
 }
 
 // funcs is the set of reserved keywords that are functions.
