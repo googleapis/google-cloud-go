@@ -1859,6 +1859,7 @@ ascending order of precedence:
 	orParser
 	andParser
 	parseIsOp
+	parseInOp
 	parseComparisonOp
 	parseArithOp: |, ^, &, << and >>, + and -, * and / and ||
 	parseUnaryArithOp: - and ~
@@ -1977,7 +1978,7 @@ func (p *parser) parseLogicalNot() (Expr, *parseError) {
 func (p *parser) parseIsOp() (Expr, *parseError) {
 	debugf("parseIsOp: %v", p)
 
-	expr, err := p.parseComparisonOp()
+	expr, err := p.parseInOp()
 	if err != nil {
 		return nil, err
 	}
@@ -2009,6 +2010,37 @@ func (p *parser) parseIsOp() (Expr, *parseError) {
 	}
 
 	return isOp, nil
+}
+
+func (p *parser) parseInOp() (Expr, *parseError) {
+	debugf("parseInOp: %v", p)
+
+	expr, err := p.parseComparisonOp()
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO: do we need to do lookahead?
+
+	inOp := InOp{LHS: expr}
+	if p.eat("NOT") {
+		inOp.Neg = true
+	}
+
+	if !p.eat("IN") {
+		// TODO: push back the "NOT"?
+		return expr, nil
+	}
+
+	if p.eat("UNNEST") {
+		inOp.Unnest = true
+	}
+
+	inOp.RHS, err = p.parseParenExprList()
+	if err != nil {
+		return nil, err
+	}
+	return inOp, nil
 }
 
 var symbolicOperators = map[string]ComparisonOperator{
