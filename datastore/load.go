@@ -432,7 +432,7 @@ func loadEntityProto(dst interface{}, src *pb.Entity) error {
 func loadEntity(dst interface{}, ent *Entity) error {
 	if pls, ok := dst.(PropertyLoadSaver); ok {
 		// Load both key and properties. Try to load as much as possible, even
-		// if an error occurs during loading loading either the key or the
+		// if an error occurs during loading either the key or the
 		// properties.
 		var keyLoadErr error
 		if e, ok := dst.(KeyLoader); ok {
