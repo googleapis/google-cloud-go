@@ -388,6 +388,18 @@ const (
 	NotBetween
 )
 
+type InOp struct {
+	LHS    Expr
+	Neg    bool
+	RHS    []Expr
+	Unnest bool
+
+	// TODO: support subquery form
+}
+
+func (InOp) isBoolExpr() {} // usually
+func (InOp) isExpr()     {}
+
 type IsOp struct {
 	LHS Expr
 	Neg bool

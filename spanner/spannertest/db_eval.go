@@ -58,7 +58,7 @@ func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (bool, error) {
 		return false, fmt.Errorf("unhandled BoolExpr %T", be)
 	case spansql.BoolLiteral:
 		return bool(be), nil
-	case spansql.ID, spansql.Paren:
+	case spansql.ID, spansql.Paren, spansql.InOp: // InOp is a bit weird.
 		e, err := ec.evalExpr(be)
 		if err != nil {
 			return false, err
@@ -360,6 +360,53 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 		return ec.evalBoolExpr(e)
 	case spansql.ComparisonOp:
 		return ec.evalBoolExpr(e)
+	case spansql.InOp:
+		// This is implemented here in evalExpr instead of evalBoolExpr
+		// because it can return FALSE/TRUE/NULL.
+		// The docs are a bit confusing here, so there's probably some bugs here around NULL handling.
+
+		if len(e.RHS) == 0 {
+			// "IN with an empty right side expression is always FALSE".
+			return e.Neg, nil
+		}
+		lhs, err := ec.evalExpr(e.LHS)
+		if err != nil {
+			return false, err
+		}
+		if lhs == nil {
+			// "IN with a NULL left side expression and a non-empty right side expression is always NULL".
+			return nil, nil
+		}
+		var b bool
+		for _, rhse := range e.RHS {
+			rhs, err := ec.evalExpr(rhse)
+			if err != nil {
+				return false, err
+			}
+			if !e.Unnest {
+				if lhs == rhs {
+					b = true
+				}
+			} else {
+				if rhs == nil {
+					// "IN UNNEST(<NULL array>) returns FALSE (not NULL)".
+					return e.Neg, nil
+				}
+				arr, ok := rhs.([]interface{})
+				if !ok {
+					return nil, fmt.Errorf("UNNEST argument evaluated as %T, want array", rhs)
+				}
+				for _, rhs := range arr {
+					if lhs == rhs {
+						b = true
+					}
+				}
+			}
+		}
+		if e.Neg {
+			b = !b
+		}
+		return b, nil
 	case spansql.IsOp:
 		return ec.evalBoolExpr(e)
 	case aggSentinel:

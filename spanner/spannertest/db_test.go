@@ -483,6 +483,17 @@ func TestTableData(t *testing.T) {
 				{true, false},
 			},
 		},
+		{
+			`SELECT Name FROM Staff WHERE ID IN UNNEST(@ids)`,
+			queryParams{"ids": queryParam{
+				Value: []interface{}{int64(3), int64(1)},
+				Type:  spansql.Type{Base: spansql.Int64, Array: true},
+			}},
+			[][]interface{}{
+				{"Jack"},
+				{"Sam"},
+			},
+		},
 		// From https://cloud.google.com/spanner/docs/query-syntax#group-by-clause_1:
 		{
 			// TODO: Ordering matters? Our implementation sorts by the GROUP BY key,

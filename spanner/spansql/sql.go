@@ -334,6 +334,26 @@ func (co ComparisonOp) SQL() string {
 	return s
 }
 
+func (io InOp) SQL() string {
+	str := io.LHS.SQL()
+	if io.Neg {
+		str += " NOT"
+	}
+	str += " IN "
+	if io.Unnest {
+		str += "UNNEST"
+	}
+	str += "("
+	for i, e := range io.RHS {
+		if i > 0 {
+			str += ", "
+		}
+		str += e.SQL()
+	}
+	str += ")"
+	return str
+}
+
 func (io IsOp) SQL() string {
 	str := io.LHS.SQL() + " IS "
 	if io.Neg {
