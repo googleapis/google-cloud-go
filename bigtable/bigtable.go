@@ -813,7 +813,7 @@ func Time(t time.Time) Timestamp { return Timestamp(t.UnixNano() / 1e3) }
 func Now() Timestamp { return Time(time.Now()) }
 
 // Time converts a Timestamp into a time.Time.
-func (ts Timestamp) Time() time.Time { return time.Unix(0, int64(ts)*1e3) }
+func (ts Timestamp) Time() time.Time { return time.Unix(int64(ts)/1e6, int64(ts)%1e6*1e3) }
 
 // TruncateToMilliseconds truncates a Timestamp to millisecond granularity,
 // which is currently the only granularity supported.
