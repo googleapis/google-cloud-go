@@ -142,8 +142,9 @@ func timestampProto(t time.Time) *timestamppb.Timestamp {
 
 // lro represents a Long-Running Operation, generally a schema change.
 type lro struct {
-	mu    sync.Mutex
-	state *lropb.Operation
+	mu      sync.Mutex
+	state   *lropb.Operation
+	waiters bool // Whether anyone appears to be waiting.
 }
 
 func (l *lro) State() *lropb.Operation {
@@ -222,6 +223,12 @@ func (s *server) GetOperation(ctx context.Context, req *lropb.GetOperationReques
 	if !ok {
 		return nil, status.Errorf(codes.NotFound, "unknown LRO %q", req.Name)
 	}
+
+	// Someone is waiting on this LRO. Disable sleeping in its Run method.
+	lro.mu.Lock()
+	lro.waiters = true
+	lro.mu.Unlock()
+
 	return lro.State(), nil
 }
 
@@ -272,7 +279,14 @@ func (l *lro) Run(s *server, stmts []spansql.DDLStmt) {
 	ctx := context.Background()
 
 	for _, stmt := range stmts {
-		time.Sleep(100 * time.Millisecond)
+		l.mu.Lock()
+		waiters := l.waiters
+		l.mu.Unlock()
+		if !waiters {
+			// Simulate delayed DDL application, but only if nobody is waiting.
+			time.Sleep(100 * time.Millisecond)
+		}
+
 		if st := s.runOneDDL(ctx, stmt); st.Code() != codes.OK {
 			l.mu.Lock()
 			l.state.Done = true
