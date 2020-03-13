@@ -880,6 +880,65 @@ func TestHealthCheckScheduler(t *testing.T) {
 	})
 }
 
+// TestHealthCheck_FirstHealthCheck tests if the first healthcheck scheduling
+// works properly.
+func TestHealthCheck_FirstHealthCheck(t *testing.T) {
+	t.Parallel()
+	_, client, teardown := setupMockedTestServerWithConfig(t,
+		ClientConfig{
+			SessionPoolConfig: SessionPoolConfig{
+				MaxOpened:           0,
+				MinOpened:           0,
+				HealthCheckInterval: 50 * time.Minute,
+			},
+		})
+	defer teardown()
+	sp := client.idleSessions
+
+	now := time.Now()
+	start := now.Add(time.Duration(float64(sp.hc.interval) * 0.2))
+	// A second is added to avoid the edge case.
+	end := now.Add(time.Duration(float64(sp.hc.interval)*1.1) + time.Second)
+
+	s := &session{}
+	sp.hc.scheduledHCLocked(s)
+
+	if s.nextCheck.Before(start) || s.nextCheck.After(end) {
+		t.Fatalf("The first healthcheck schedule is not in the correct range: %v", s.nextCheck)
+	}
+	if !s.firstHCDone {
+		t.Fatal("The flag 'firstHCDone' should be set to true after the first healthcheck.")
+	}
+}
+
+// TestHealthCheck_NonFirstHealthCheck tests if the scheduling after the first
+// health check works properly.
+func TestHealthCheck_NonFirstHealthCheck(t *testing.T) {
+	t.Parallel()
+	_, client, teardown := setupMockedTestServerWithConfig(t,
+		ClientConfig{
+			SessionPoolConfig: SessionPoolConfig{
+				MaxOpened:           0,
+				MinOpened:           0,
+				HealthCheckInterval: 50 * time.Minute,
+			},
+		})
+	defer teardown()
+	sp := client.idleSessions
+
+	now := time.Now()
+	start := now.Add(time.Duration(float64(sp.hc.interval) * 0.9))
+	// A second is added to avoid the edge case.
+	end := now.Add(time.Duration(float64(sp.hc.interval)*1.1) + time.Second)
+
+	s := &session{firstHCDone: true}
+	sp.hc.scheduledHCLocked(s)
+
+	if s.nextCheck.Before(start) || s.nextCheck.After(end) {
+		t.Fatalf("The non-first healthcheck schedule is not in the correct range: %v", s.nextCheck)
+	}
+}
+
 // Tests that a fractions of sessions are prepared for write by health checker.
 func TestWriteSessionsPrepared(t *testing.T) {
 	t.Parallel()
