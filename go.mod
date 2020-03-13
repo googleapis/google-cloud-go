@@ -8,7 +8,7 @@ require (
 	cloud.google.com/go/pubsub v1.2.0
 	cloud.google.com/go/storage v1.6.0
 	github.com/golang/mock v1.4.1
-	github.com/golang/protobuf v1.3.4
+	github.com/golang/protobuf v1.3.5
 	github.com/google/go-cmp v0.4.0
 	github.com/google/martian v2.1.0+incompatible
 	github.com/google/pprof v0.0.0-20200229191704-1ebb73c60ed3
@@ -20,9 +20,9 @@ require (
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sys v0.0.0-20200302150141-5c8b2ff67527 // indirect
 	golang.org/x/text v0.3.2
-	golang.org/x/tools v0.0.0-20200312045724-11d5b4c81c7d
+	golang.org/x/tools v0.0.0-20200312194400-c312e98713c2
 	google.golang.org/api v0.20.0
-	google.golang.org/genproto v0.0.0-20200312145019-da6875a35672
+	google.golang.org/genproto v0.0.0-20200313141609-30c55424f95d
 	google.golang.org/grpc v1.28.0
 	honnef.co/go/tools v0.0.1-2020.1.3
 )
