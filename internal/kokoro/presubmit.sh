@@ -44,16 +44,18 @@ go install github.com/jstemmer/go-junit-report
 ./internal/kokoro/vet.sh
 ./internal/kokoro/check_incompat_changes.sh
 
+set +e # Run all tests, don't stop after the first failure.
 exit_code=0
 # Run tests and tee output to log file, to be pushed to GCS as artifact.
 for i in `find . -name go.mod`; do
   pushd `dirname $i`;
     go test -race -v -timeout 15m -short ./... 2>&1 \
       | tee sponge_log.log
-    # Takes the kokoro output log (raw stdout) and creates a machine-parseable xml
-    # file (xUnit). Then it exits with whatever exit code the last command had.
+    # Takes the kokoro output log (raw stdout) and creates a machine-parseable
+    # xUnit XML file.
     cat sponge_log.log \
       | go-junit-report -set-exit-code > sponge_log.xml
+    # Add the exit codes together so we exit non-zero if any module fails.
     exit_code=$(($exit_code + $?))
   popd;
 done
