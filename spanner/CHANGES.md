@@ -1,5 +1,52 @@
 # Changes
 
+## v1.3.0
+
+* Query options:
+  - Adds the support of providing query options (optimizer version) via
+    three ways (precedence follows the order):
+    `client-level < environment variables < query-level`. The environment
+    variable is set by "SPANNER_OPTIMIZER_VERSION".
+* Connection pooling:
+  - Use the new connection pooling in gRPC. This change deprecates
+    `ClientConfig.numChannels` and users should move to
+    `WithGRPCConnectionPool(numChannels)` at their earliest convenience.
+    Example:
+    ```go
+    // numChannels (deprecated):
+    err, client := NewClientWithConfig(ctx, database, ClientConfig{NumChannels: 8})
+
+    // gRPC connection pool:
+    err, client := NewClientWithConfig(ctx, database, ClientConfig{}, option.WithGRPCConnectionPool(8))
+    ```
+* Error handling:
+  - Do not rollback after failed commit.
+  - Return TransactionOutcomeUnknownError if a DEADLINE_EXCEEDED or CANCELED
+    error occurs while a COMMIT request is in flight.
+* spansql:
+  - Added support for IN expressions and OFFSET clauses.
+  - Fixed parsing of table constraints.
+  - Added support for foreign key constraints in ALTER TABLE and CREATE TABLE.
+  - Added support for GROUP BY clauses.
+* spannertest:
+  - Added support for IN expressions and OFFSET clauses.
+  - Added support for GROUP BY clauses.
+  - Fixed data race in query execution.
+  - No longer rejects reads specifying an index to use.
+  - Return last commit timestamp as read timestamp when requested.
+  - Evaluate add, subtract, multiply, divide, unary
+    negation, unary not, bitwise and/xor/or operations, as well as reporting
+    column types for expressions involving any possible arithmetic
+    operator.arithmetic expressions.
+  - Fixed handling of descending primary keys.
+* Misc:
+  - Change default healthcheck interval to 30 mins to reduce the GetSession
+    calls made to the backend.
+  - Add marshal/unmarshal json for nullable types to support NullString,
+    NullInt64, NullFloat64, NullBool, NullTime, NullDate.
+  - Use ResourceInfo to extract error.
+  - Extract retry info from status.
+
 ## v1.2.1
 
 - Fix session leakage for ApplyAtLeastOnce. Previously session handles where
