@@ -324,7 +324,6 @@ func (c *SubscriberClient) SetGoogleClientInfo(keyval ...string) {
 }
 
 // CreateSubscription creates a subscription to a given topic. See the
-//
 // resource name rules (at https://cloud.google.com/pubsub/docs/admin#resource_names).
 // If the subscription already exists, returns ALREADY_EXISTS.
 // If the corresponding topic doesn’t exist, returns NOT_FOUND.
