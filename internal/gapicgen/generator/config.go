@@ -241,6 +241,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/webrisk/v1",
+		pkg:                   "webrisk",
+		importPath:            "cloud.google.com/go/webrisk/apiv1",
+		gRPCServiceConfigPath: "google/cloud/webrisk/v1/webrisk_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/webrisk/v1/webrisk_v1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/webrisk/v1beta1",
 		pkg:                   "webrisk",
 		importPath:            "cloud.google.com/go/webrisk/apiv1beta1",
