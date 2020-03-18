@@ -1,5 +1,15 @@
 # Changes
 
+## v1.4.0
+
+- Support managed backups. This includes the API methods for CreateBackup,
+  GetBackup, UpdateBackup, DeleteBackup and others. Also includes a simple
+  wrapper in DatabaseAdminClient to create a backup.
+- Update the healthcheck interval. The default interval is updated to 50 mins.
+  By default, the first healthcheck is scheduled between 10 and 55 mins and
+  the subsequent healthchecks are between 45 and 55 mins. This update avoids
+  overloading the backend service with frequent healthchecking.
+
 ## v1.3.0
 
 * Query options:
