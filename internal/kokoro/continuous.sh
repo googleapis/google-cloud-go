@@ -71,7 +71,9 @@ done
 
 if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]]; then
   chmod +x $KOKORO_GFILE_DIR/linux_amd64/buildcop
-  $KOKORO_GFILE_DIR/linux_amd64/buildcop -logs_dir=$GOCLOUD_HOME
+  $KOKORO_GFILE_DIR/linux_amd64/buildcop -logs_dir=$GOCLOUD_HOME \
+    -repo=googleapis/google-cloud-go \
+    -commit_hash=$KOKORO_GITHUB_COMMIT_URL_google_cloud_go
 fi
 
 exit $exit_code
