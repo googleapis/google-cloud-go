@@ -709,7 +709,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	}
 	fc := newFlowController(maxCount, maxBytes)
 
-	sched := scheduler.NewReceiveScheduler(numGoroutines)
+	sched := scheduler.NewReceiveScheduler(maxCount)
 
 	// Wait for all goroutines started by Receive to return, so instead of an
 	// obscure goroutine leak we have an obvious blocked call to Receive.

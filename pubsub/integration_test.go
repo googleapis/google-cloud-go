@@ -1168,10 +1168,7 @@ func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 }
 
 func TestIntegration_OrderedKeys_JSON(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Integration tests skipped in short mode")
-	}
-
+	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -1260,8 +1257,8 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 
 	select {
 	case <-done:
-	case <-time.After(15 * time.Second):
-		t.Fatal("timed out after 15s waiting for all messages to be received")
+	case <-time.After(30 * time.Second):
+		t.Fatal("timed out after 30s waiting for all messages to be received")
 	}
 
 	mu.Lock()
@@ -1295,7 +1292,7 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 	topic.PublishSettings.DelayThreshold = time.Second
 	topic.EnableMessageOrdering = true
 
-	orderingKey := "some-ordering-key"
+	orderingKey := "some-ordering-key2"
 	// Publish a message that is too large so we'll get an error that
 	// pauses publishing for this ordering key.
 	r := topic.Publish(ctx, &Message{
@@ -1340,74 +1337,75 @@ func TestIntegration_CreateSubscription_DeadLetterPolicy(t *testing.T) {
 
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
 	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
 
-		defer topic.Delete(ctx)
-		defer topic.Stop()
+	defer topic.Delete(ctx)
+	defer topic.Stop()
 
-		deadLetterTopic, err := client.CreateTopic(ctx, topicIDs.New())
-		if err != nil {
-			t.Fatalf("CreateTopic error: %v", err)
-		}
-		defer deadLetterTopic.Delete(ctx)
-		defer deadLetterTopic.Stop()
+	deadLetterTopic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer deadLetterTopic.Delete(ctx)
+	defer deadLetterTopic.Stop()
 
-		// We don't set MaxDeliveryAttempts in DeadLetterPolicy so that we can test
-		// that MaxDeliveryAttempts defaults properly to 5 if not set.
-		cfg := SubscriptionConfig{
-			Topic: topic,
-			DeadLetterPolicy: &DeadLetterPolicy{
-				DeadLetterTopic: deadLetterTopic.String(),
-			},
-		}
-		var sub *Subscription
-		if sub, err = client.CreateSubscription(ctx, subIDs.New(), cfg); err != nil {
-			t.Fatalf("CreateSub error: %v", err)
-		}
-		defer sub.Delete(ctx)
+	// We don't set MaxDeliveryAttempts in DeadLetterPolicy so that we can test
+	// that MaxDeliveryAttempts defaults properly to 5 if not set.
+	cfg := SubscriptionConfig{
+		Topic: topic,
+		DeadLetterPolicy: &DeadLetterPolicy{
+			DeadLetterTopic: deadLetterTopic.String(),
+		},
+	}
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), cfg); err != nil {
+		t.Fatalf("CreateSub error: %v", err)
+	}
+	defer sub.Delete(ctx)
 
-		got, err := sub.Config(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-		want := SubscriptionConfig{
-			Topic:               topic,
-			AckDeadline:         10 * time.Second,
-			RetainAckedMessages: false,
-			RetentionDuration:   defaultRetentionDuration,
-			ExpirationPolicy:    defaultExpirationPolicy,
-			DeadLetterPolicy: &DeadLetterPolicy{
-				DeadLetterTopic:     deadLetterTopic.String(),
-				MaxDeliveryAttempts: 5,
-			},
-		}
-		if diff := testutil.Diff(got, want); diff != "" {
-			t.Fatalf("\ngot: - want: +\n%s", diff)
-		}
+	got, err := sub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := SubscriptionConfig{
+		Topic:               topic,
+		AckDeadline:         10 * time.Second,
+		RetainAckedMessages: false,
+		RetentionDuration:   defaultRetentionDuration,
+		ExpirationPolicy:    defaultExpirationPolicy,
+		DeadLetterPolicy: &DeadLetterPolicy{
+			DeadLetterTopic:     deadLetterTopic.String(),
+			MaxDeliveryAttempts: 5,
+		},
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("\ngot: - want: +\n%s", diff)
+	}
 
-		res := topic.Publish(ctx, &Message{
-			Data: []byte("failed message"),
-		})
-		if _, err := res.Get(ctx); err != nil {
-			t.Fatalf("Publish message error: %v", err)
-		}
+	res := topic.Publish(ctx, &Message{
+		Data: []byte("failed message"),
+	})
+	if _, err := res.Get(ctx); err != nil {
+		t.Fatalf("Publish message error: %v", err)
+	}
 
-		ctx2, cancel := context.WithCancel(ctx)
-		numAttempts := 1
-		err = sub.Receive(ctx2, func(_ context.Context, m *Message) {
-			if numAttempts >= 5 {
-				cancel()
-				m.Ack()
-				return
-			}
-			if *m.DeliveryAttempt != numAttempts {
-				t.Fatalf("Message delivery attempt: %d does not match numAttempts: %d\n", m.DeliveryAttempt, numAttempts)
-			}
-			numAttempts++
-			m.Nack()
-		})
-		if err != nil {
-			t.Fatalf("Streaming pull error: %v\n", err)
+	ctx2, cancel := context.WithCancel(ctx)
+	numAttempts := 1
+	err = sub.Receive(ctx2, func(_ context.Context, m *Message) {
+		if numAttempts >= 5 {
+			cancel()
+			m.Ack()
+			return
 		}
+		if *m.DeliveryAttempt != numAttempts {
+			t.Fatalf("Message delivery attempt: %d does not match numAttempts: %d\n", m.DeliveryAttempt, numAttempts)
+		}
+		numAttempts++
+		m.Nack()
+	})
+	if err != nil {
+		t.Fatalf("Streaming pull error: %v\n", err)
 	}
 }
 
