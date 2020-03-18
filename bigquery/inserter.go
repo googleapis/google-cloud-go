@@ -206,6 +206,7 @@ func (u *Inserter) newInsertRequest(savers []ValueSaver) (*bq.TableDataInsertAll
 			return nil, err
 		}
 		if insertID == NoDedupeID {
+			// User wants to opt-out of sending deduplication ID.
 			insertID = ""
 		} else if insertID == "" {
 			insertID = randomIDFn()
