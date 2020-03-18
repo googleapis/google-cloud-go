@@ -58,7 +58,7 @@ exit_code=0
 # Run tests and tee output to log file, to be pushed to GCS as artifact.
 for i in `find . -name go.mod`; do
   pushd `dirname $i`;
-    go test -race -v -timeout 30m ./... 2>&1 \
+    go test -race -v -timeout 45m ./... 2>&1 \
       | tee sponge_log.log
     # Takes the kokoro output log (raw stdout) and creates a machine-parseable
     # xUnit XML file.
