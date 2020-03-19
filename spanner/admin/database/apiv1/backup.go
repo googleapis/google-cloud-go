@@ -19,12 +19,15 @@ import (
 	"context"
 	"fmt"
 	"regexp"
-	"strings"
 	"time"
 
 	pbt "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/googleapis/gax-go/v2"
 	databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
+)
+
+var (
+	validDBPattern = regexp.MustCompile("^projects/(?P<project>[^/]+)/instances/(?P<instance>[^/]+)/databases/(?P<database>[^/]+)$")
 )
 
 // StartBackupOperation creates a backup of the given database. It will be stored
@@ -39,17 +42,15 @@ import (
 // databasePath must have the form
 // projects/<project>/instances/<instance>/databases/<database>.
 func (c *DatabaseAdminClient) StartBackupOperation(ctx context.Context, backupID string, databasePath string, expireTime time.Time, opts ...gax.CallOption) (*CreateBackupOperation, error) {
-	// Validate database path.
-	pattern := regexp.MustCompile("^projects/(?P<project>[^/]+)/instances/(?P<instance>[^/]+)/databases/(?P<database>[^/]+)$")
-	if matched := pattern.MatchString(databasePath); !matched {
+	m := validDBPattern.FindStringSubmatch(databasePath)
+	if m == nil {
 		return nil, fmt.Errorf("database name %q should conform to pattern %q",
-			databasePath, pattern.String())
+			databasePath, validDBPattern)
 	}
 	ts := &pbt.Timestamp{Seconds: expireTime.Unix(), Nanos: int32(expireTime.Nanosecond())}
-	parts := strings.Split(databasePath, "/")
 	// Create request from parameters.
 	req := &databasepb.CreateBackupRequest{
-		Parent:   fmt.Sprintf("projects/%s/instances/%s", parts[1], parts[3]),
+		Parent:   fmt.Sprintf("projects/%s/instances/%s", m[1], m[2]),
 		BackupId: backupID,
 		Backup: &databasepb.Backup{
 			Database:   databasePath,
