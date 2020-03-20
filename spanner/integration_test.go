@@ -560,6 +560,7 @@ func TestIntegration_SingleUse_WithResourceBasedRouting(t *testing.T) {
 
 // Test custom query options provided on query-level configuration.
 func TestIntegration_SingleUse_WithQueryOptions(t *testing.T) {
+	skipEmulatorTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2474,7 +2475,8 @@ func TestIntegration_PDML(t *testing.T) {
 	}
 }
 
-func TestBatchDML(t *testing.T) {
+func TestIntegration_BatchDML(t *testing.T) {
+	skipEmulatorTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2527,7 +2529,7 @@ func TestBatchDML(t *testing.T) {
 	}
 }
 
-func TestBatchDML_NoStatements(t *testing.T) {
+func TestIntegration_BatchDML_NoStatements(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2551,7 +2553,8 @@ func TestBatchDML_NoStatements(t *testing.T) {
 	}
 }
 
-func TestBatchDML_TwoStatements(t *testing.T) {
+func TestIntegration_BatchDML_TwoStatements(t *testing.T) {
+	skipEmulatorTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2602,7 +2605,7 @@ func TestBatchDML_TwoStatements(t *testing.T) {
 
 // TODO(deklerk): this currently does not work because the transaction appears to
 // get rolled back after a single statement fails. b/120158761
-func TestBatchDML_Error(t *testing.T) {
+func TestIntegration_BatchDML_Error(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
