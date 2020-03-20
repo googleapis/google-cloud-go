@@ -1168,7 +1168,6 @@ func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 }
 
 func TestIntegration_OrderedKeys_JSON(t *testing.T) {
-	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -1270,7 +1269,7 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 }
 
 func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
-	t.Parallel()
+	t.Skip("kokoro failing in https://github.com/googleapis/google-cloud-go/issues/1850")
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -1319,7 +1318,7 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 	// Lastly, call ResumePublish and make sure subsequent publishes succeed.
 	topic.ResumePublish(orderingKey)
 	r = topic.Publish(ctx, &Message{
-		ID:          "3",
+		ID:          "4",
 		Data:        []byte("normal message"),
 		OrderingKey: orderingKey,
 	})
