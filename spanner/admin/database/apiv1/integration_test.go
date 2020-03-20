@@ -253,7 +253,8 @@ func cleanupInstances(t *testing.T) {
 	}
 }
 
-func TestIntegrationStartBackupOperation(t *testing.T) {
+func TestIntegration_StartBackupOperation(t *testing.T) {
+	skipEmulatorTest(t)
 	ctx := context.Background()
 	instanceCleanup := initIntegrationTests(t)
 	defer instanceCleanup()
@@ -303,5 +304,11 @@ func TestIntegrationStartBackupOperation(t *testing.T) {
 	}
 	if respCheck.SizeBytes == 0 {
 		t.Fatalf("backup size, got %d, want non-zero", respCheck.SizeBytes)
+	}
+}
+
+func skipEmulatorTest(t *testing.T) {
+	if os.Getenv("SPANNER_EMULATOR_HOST") != "" {
+		t.Skip("Skipping testing against the emulator.")
 	}
 }
