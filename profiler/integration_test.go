@@ -128,10 +128,8 @@ func TestAgentIntegration(t *testing.T) {
 		t.Skip("skipping profiler integration test when GCLOUD_TESTS_GOLANG_PROJECT_ID variable is not set")
 	}
 
-	zone := os.Getenv("GCLOUD_TESTS_GOLANG_PROFILER_ZONE")
-	if zone == "" {
-		t.Fatalf("GCLOUD_TESTS_GOLANG_PROFILER_ZONE environment variable must be set when integration test is requested")
-	}
+	// all us-west1 zones
+	zones := []string{"us-west1-a", "us-west1-b", "us-west1-c"}
 
 	// Figure out the Git commit of the current directory. The source checkout in
 	// the test VM will run in the same commit. Note that any local changes to
@@ -185,7 +183,6 @@ func TestAgentIntegration(t *testing.T) {
 		{
 			InstanceConfig: proftest.InstanceConfig{
 				ProjectID:   projectID,
-				Zone:        zone,
 				Name:        fmt.Sprintf("profiler-test-gomaster-%s", runID),
 				MachineType: "n1-standard-1",
 			},
@@ -197,7 +194,6 @@ func TestAgentIntegration(t *testing.T) {
 		{
 			InstanceConfig: proftest.InstanceConfig{
 				ProjectID:   projectID,
-				Zone:        zone,
 				Name:        fmt.Sprintf("profiler-test-go%s-%s", goVersionName, runID),
 				MachineType: "n1-standard-1",
 			},
@@ -217,8 +213,16 @@ func TestAgentIntegration(t *testing.T) {
 				t.Fatalf("failed to initialize startup script")
 			}
 
-			if err := gceTr.StartInstance(ctx, &tc.InstanceConfig); err != nil {
-				t.Fatal(err)
+			for i := range zones {
+				tc.InstanceConfig.Zone = zones[i]
+				if err := gceTr.StartInstance(ctx, &tc.InstanceConfig); err != nil {
+					if strings.Contains(err.Error(), "failed to create instance") && i < (len(zones)-1) {
+						// try other zones if instance failed to create
+						continue
+					}
+					t.Fatal(err)
+				}
+				break
 			}
 			defer func() {
 				if gceTr.DeleteInstance(ctx, &tc.InstanceConfig); err != nil {
