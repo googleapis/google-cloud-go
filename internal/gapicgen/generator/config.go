@@ -345,6 +345,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "beta",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/recaptchaenterprise/v1",
+		pkg:                   "recaptchaenterprise",
+		importPath:            "cloud.google.com/go/recaptchaenterprise/apiv1",
+		gRPCServiceConfigPath: "google/cloud/recaptchaenterprise/v1/recaptchaenterprise_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/recaptchaenterprise/v1/recaptchaenterprise_v1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/recaptchaenterprise/v1beta1",
 		pkg:                   "recaptchaenterprise",
 		importPath:            "cloud.google.com/go/recaptchaenterprise/apiv1beta1",
