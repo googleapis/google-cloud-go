@@ -394,7 +394,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 			got, err := readAll(su.Query(
 				ctx,
 				Statement{
-					"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4)",
+					"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4) ORDER BY SingerId",
 					map[string]interface{}{"id1": int64(1), "id3": int64(3), "id4": int64(4)},
 				}))
 			if err != nil {
@@ -728,7 +728,7 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 		got, err := readAll(ro.Query(
 			ctx,
 			Statement{
-				"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4)",
+				"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4) ORDER BY SingerId",
 				map[string]interface{}{"id1": int64(1), "id3": int64(3), "id4": int64(4)},
 			}))
 		if err != nil {
