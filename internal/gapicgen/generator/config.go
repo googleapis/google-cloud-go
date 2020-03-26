@@ -481,14 +481,6 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
-		inputDirectoryPath:    "google/firestore/v1beta1",
-		pkg:                   "firestore",
-		importPath:            "cloud.google.com/go/firestore/apiv1beta1",
-		gRPCServiceConfigPath: "google/firestore/v1beta1/firestore_grpc_service_config.json",
-		apiServiceConfigPath:  "google/firestore/v1beta1/firestore_v1beta1.yaml",
-		releaseLevel:          "beta",
-	},
-	{
 		inputDirectoryPath:    "google/devtools/cloudbuild/v1",
 		pkg:                   "cloudbuild",
 		importPath:            "cloud.google.com/go/cloudbuild/apiv1/v2",
