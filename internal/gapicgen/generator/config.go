@@ -289,6 +289,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "beta",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/datacatalog/v1",
+		pkg:                   "datacatalog",
+		importPath:            "cloud.google.com/go/datacatalog/apiv1",
+		gRPCServiceConfigPath: "google/cloud/datacatalog/v1/datacatalog_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/datacatalog/v1/datacatalog_v1.yaml",
+		releaseLevel:          "ga",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/datacatalog/v1beta1",
 		pkg:                   "datacatalog",
 		importPath:            "cloud.google.com/go/datacatalog/apiv1beta1",
