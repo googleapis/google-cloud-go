@@ -449,6 +449,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/securitycenter/settings/v1beta1",
+		pkg:                   "settings",
+		importPath:            "cloud.google.com/go/securitycenter/settings/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/securitycenter/settings/v1beta1/securitycenter_settings_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/securitycenter/settings/v1beta1/securitycenter_settings.yaml",
+		releaseLevel:          "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/securitycenter/v1",
 		pkg:                   "securitycenter",
 		importPath:            "cloud.google.com/go/securitycenter/apiv1",
