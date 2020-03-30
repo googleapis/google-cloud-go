@@ -281,6 +281,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "beta",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/osconfig/agentendpoint/v1",
+		pkg:                   "agentendpoint",
+		importPath:            "cloud.google.com/go/osconfig/agentendpoint/apiv1",
+		gRPCServiceConfigPath: "google/cloud/osconfig/agentendpoint/v1/agentendpoint_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/osconfig/agentendpoint/v1/osconfig_v1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/osconfig/agentendpoint/v1beta",
 		pkg:                   "agentendpoint",
 		importPath:            "cloud.google.com/go/osconfig/agentendpoint/apiv1beta",
