@@ -403,9 +403,9 @@ func (c *Client) PurgeQueue(ctx context.Context, req *taskspb.PurgeQueueRequest,
 //
 // If a queue is paused then the system will stop dispatching tasks
 // until the queue is resumed via
-// [ResumeQueue][google.cloud.tasks.v2.CloudTasks.ResumeQueue]. Tasks can still be added
+// ResumeQueue. Tasks can still be added
 // when the queue is paused. A queue is paused if its
-// [state][google.cloud.tasks.v2.Queue.state] is [PAUSED][google.cloud.tasks.v2.Queue.State.PAUSED].
+// state is PAUSED.
 func (c *Client) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -425,10 +425,10 @@ func (c *Client) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequest,
 // ResumeQueue resume a queue.
 //
 // This method resumes a queue after it has been
-// [PAUSED][google.cloud.tasks.v2.Queue.State.PAUSED] or
-// [DISABLED][google.cloud.tasks.v2.Queue.State.DISABLED]. The state of a queue is stored
-// in the queue’s [state][google.cloud.tasks.v2.Queue.state]; after calling this method it
-// will be set to [RUNNING][google.cloud.tasks.v2.Queue.State.RUNNING].
+// PAUSED or
+// DISABLED. The state of a queue is stored
+// in the queue’s state; after calling this method it
+// will be set to RUNNING.
 //
 // WARNING: Resuming many high-QPS queues at the same time can
 // lead to target overloading. If you are resuming high-QPS
@@ -451,7 +451,7 @@ func (c *Client) ResumeQueue(ctx context.Context, req *taskspb.ResumeQueueReques
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a [Queue][google.cloud.tasks.v2.Queue].
+// GetIamPolicy gets the access control policy for a Queue.
 // Returns an empty policy if the resource exists and does not have a policy
 // set.
 //
@@ -476,7 +476,7 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 	return resp, nil
 }
 
-// SetIamPolicy sets the access control policy for a [Queue][google.cloud.tasks.v2.Queue]. Replaces any existing
+// SetIamPolicy sets the access control policy for a Queue. Replaces any existing
 // policy.
 //
 // Note: The Cloud Console does not check queue-level IAM permissions yet.
@@ -503,9 +503,9 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 	return resp, nil
 }
 
-// TestIamPermissions returns permissions that a caller has on a [Queue][google.cloud.tasks.v2.Queue].
+// TestIamPermissions returns permissions that a caller has on a Queue.
 // If the resource does not exist, this will return an empty set of
-// permissions, not a [NOT_FOUND][google.rpc.Code.NOT_FOUND] error.
+// permissions, not a NOT_FOUND error.
 //
 // Note: This operation is designed to be used for building permission-aware
 // UIs and command-line tools, not for authorization checking. This operation
@@ -528,9 +528,9 @@ func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermi
 
 // ListTasks lists the tasks in a queue.
 //
-// By default, only the [BASIC][google.cloud.tasks.v2.Task.View.BASIC] view is retrieved
+// By default, only the BASIC view is retrieved
 // due to performance considerations;
-// [response_view][google.cloud.tasks.v2.ListTasksRequest.response_view] controls the
+// response_view controls the
 // subset of information which is returned.
 //
 // The tasks may be returned in any order. The ordering may change at any
@@ -633,26 +633,26 @@ func (c *Client) DeleteTask(ctx context.Context, req *taskspb.DeleteTaskRequest,
 // RunTask forces a task to run now.
 //
 // When this method is called, Cloud Tasks will dispatch the task, even if
-// the task is already running, the queue has reached its [RateLimits][google.cloud.tasks.v2.RateLimits] or
-// is [PAUSED][google.cloud.tasks.v2.Queue.State.PAUSED].
+// the task is already running, the queue has reached its RateLimits or
+// is PAUSED.
 //
 // This command is meant to be used for manual debugging. For
-// example, [RunTask][google.cloud.tasks.v2.CloudTasks.RunTask] can be used to retry a failed
+// example, RunTask can be used to retry a failed
 // task after a fix has been made or to manually force a task to be
 // dispatched now.
 //
 // The dispatched task is returned. That is, the task that is returned
-// contains the [status][Task.status] after the task is dispatched but
+// contains the status after the task is dispatched but
 // before the task is received by its target.
 //
 // If Cloud Tasks receives a successful response from the task’s
 // target, then the task will be deleted; otherwise the task’s
-// [schedule_time][google.cloud.tasks.v2.Task.schedule_time] will be reset to the time that
-// [RunTask][google.cloud.tasks.v2.CloudTasks.RunTask] was called plus the retry delay specified
-// in the queue’s [RetryConfig][google.cloud.tasks.v2.RetryConfig].
+// schedule_time will be reset to the time that
+// RunTask was called plus the retry delay specified
+// in the queue’s RetryConfig.
 //
-// [RunTask][google.cloud.tasks.v2.CloudTasks.RunTask] returns
-// [NOT_FOUND][google.rpc.Code.NOT_FOUND] when it is called on a
+// RunTask returns
+// NOT_FOUND when it is called on a
 // task that has already succeeded or permanently failed.
 func (c *Client) RunTask(ctx context.Context, req *taskspb.RunTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))

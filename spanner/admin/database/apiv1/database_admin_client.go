@@ -357,10 +357,10 @@ func (c *DatabaseAdminClient) ListDatabases(ctx context.Context, req *databasepb
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format <database_name>/operations/<operation_id> and
 // can be used to track preparation of the database. The
-// [metadata][google.longrunning.Operation.metadata] field type is
-// [CreateDatabaseMetadata][google.spanner.admin.database.v1.CreateDatabaseMetadata]. The
-// [response][google.longrunning.Operation.response] field type is
-// [Database][google.spanner.admin.database.v1.Database], if successful.
+// metadata field type is
+// CreateDatabaseMetadata. The
+// response field type is
+// Database, if successful.
 func (c *DatabaseAdminClient) CreateDatabase(ctx context.Context, req *databasepb.CreateDatabaseRequest, opts ...gax.CallOption) (*CreateDatabaseOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -401,8 +401,8 @@ func (c *DatabaseAdminClient) GetDatabase(ctx context.Context, req *databasepb.G
 // [long-running operation][google.longrunning.Operation] will have a name of
 // the format <database_name>/operations/<operation_id> and can be used to
 // track execution of the schema change(s). The
-// [metadata][google.longrunning.Operation.metadata] field type is
-// [UpdateDatabaseDdlMetadata][google.spanner.admin.database.v1.UpdateDatabaseDdlMetadata].  The operation has no response.
+// metadata field type is
+// UpdateDatabaseDdlMetadata.  The operation has no response.
 func (c *DatabaseAdminClient) UpdateDatabaseDdl(ctx context.Context, req *databasepb.UpdateDatabaseDdlRequest, opts ...gax.CallOption) (*UpdateDatabaseDdlOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -438,7 +438,7 @@ func (c *DatabaseAdminClient) DropDatabase(ctx context.Context, req *databasepb.
 
 // GetDatabaseDdl returns the schema of a Cloud Spanner database as a list of formatted
 // DDL statements. This method does not show pending schema updates, those may
-// be queried using the [Operations][google.longrunning.Operations] API.
+// be queried using the Operations API.
 func (c *DatabaseAdminClient) GetDatabaseDdl(ctx context.Context, req *databasepb.GetDatabaseDdlRequest, opts ...gax.CallOption) (*databasepb.GetDatabaseDdlResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -459,9 +459,9 @@ func (c *DatabaseAdminClient) GetDatabaseDdl(ctx context.Context, req *databasep
 // Replaces any existing policy.
 //
 // Authorization requires spanner.databases.setIamPolicy
-// permission on [resource][google.iam.v1.SetIamPolicyRequest.resource].
+// permission on resource.
 // For backups, authorization requires spanner.backups.setIamPolicy
-// permission on [resource][google.iam.v1.SetIamPolicyRequest.resource].
+// permission on resource.
 func (c *DatabaseAdminClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -483,9 +483,9 @@ func (c *DatabaseAdminClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 // policy set.
 //
 // Authorization requires spanner.databases.getIamPolicy permission on
-// [resource][google.iam.v1.GetIamPolicyRequest.resource].
+// resource.
 // For backups, authorization requires spanner.backups.getIamPolicy
-// permission on [resource][google.iam.v1.GetIamPolicyRequest.resource].
+// permission on resource.
 func (c *DatabaseAdminClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -533,10 +533,10 @@ func (c *DatabaseAdminClient) TestIamPermissions(ctx context.Context, req *iampb
 // will have a name of the format
 // projects/<project>/instances/<instance>/backups/<backup>/operations/<operation_id>
 // and can be used to track creation of the backup. The
-// [metadata][google.longrunning.Operation.metadata] field type is
-// [CreateBackupMetadata][google.spanner.admin.database.v1.CreateBackupMetadata]. The
-// [response][google.longrunning.Operation.response] field type is
-// [Backup][google.spanner.admin.database.v1.Backup], if successful. Cancelling the returned operation will stop the
+// metadata field type is
+// CreateBackupMetadata. The
+// response field type is
+// Backup, if successful. Cancelling the returned operation will stop the
 // creation and delete the backup.
 // There can be only one pending backup creation per database. Backup creation
 // of different databases can run concurrently.
@@ -558,7 +558,7 @@ func (c *DatabaseAdminClient) CreateBackup(ctx context.Context, req *databasepb.
 	}, nil
 }
 
-// GetBackup gets metadata on a pending or completed [Backup][google.spanner.admin.database.v1.Backup].
+// GetBackup gets metadata on a pending or completed Backup.
 func (c *DatabaseAdminClient) GetBackup(ctx context.Context, req *databasepb.GetBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -575,7 +575,7 @@ func (c *DatabaseAdminClient) GetBackup(ctx context.Context, req *databasepb.Get
 	return resp, nil
 }
 
-// UpdateBackup updates a pending or completed [Backup][google.spanner.admin.database.v1.Backup].
+// UpdateBackup updates a pending or completed Backup.
 func (c *DatabaseAdminClient) UpdateBackup(ctx context.Context, req *databasepb.UpdateBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "backup.name", url.QueryEscape(req.GetBackup().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -592,7 +592,7 @@ func (c *DatabaseAdminClient) UpdateBackup(ctx context.Context, req *databasepb.
 	return resp, nil
 }
 
-// DeleteBackup deletes a pending or completed [Backup][google.spanner.admin.database.v1.Backup].
+// DeleteBackup deletes a pending or completed Backup.
 func (c *DatabaseAdminClient) DeleteBackup(ctx context.Context, req *databasepb.DeleteBackupRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -655,10 +655,10 @@ func (c *DatabaseAdminClient) ListBackups(ctx context.Context, req *databasepb.L
 // operation][google.longrunning.Operation] has a name of the format
 // projects/<project>/instances/<instance>/databases/<database>/operations/<operation_id>,
 // and can be used to track the progress of the operation, and to cancel it.
-// The [metadata][google.longrunning.Operation.metadata] field type is
-// [RestoreDatabaseMetadata][google.spanner.admin.database.v1.RestoreDatabaseMetadata].
-// The [response][google.longrunning.Operation.response] type
-// is [Database][google.spanner.admin.database.v1.Database], if
+// The metadata field type is
+// RestoreDatabaseMetadata.
+// The response type
+// is Database, if
 // successful. Cancelling the returned operation will stop the restore and
 // delete the database.
 // There can be only one database being restored into an instance at a time.
@@ -687,7 +687,7 @@ func (c *DatabaseAdminClient) RestoreDatabase(ctx context.Context, req *database
 // A database operation has a name of the form
 // projects/<project>/instances/<instance>/databases/<database>/operations/<operation>.
 // The long-running operation
-// [metadata][google.longrunning.Operation.metadata] field type
+// metadata field type
 // metadata.type_url describes the type of the metadata. Operations returned
 // include those that have completed/failed/canceled within the last 7 days,
 // and pending operations.
@@ -735,7 +735,7 @@ func (c *DatabaseAdminClient) ListDatabaseOperations(ctx context.Context, req *d
 // the given instance. A backup operation has a name of the form
 // projects/<project>/instances/<instance>/backups/<backup>/operations/<operation>.
 // The long-running operation
-// [metadata][google.longrunning.Operation.metadata] field type
+// metadata field type
 // metadata.type_url describes the type of the metadata. Operations returned
 // include those that have completed/failed/canceled within the last 7 days,
 // and pending operations. Operations returned are ordered by

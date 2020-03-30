@@ -122,7 +122,7 @@ func (c *LookupClient) setGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ResolveService returns a [service][google.cloud.servicedirectory.v1beta1.Service] and its
+// ResolveService returns a service and its
 // associated endpoints.
 // Resolving a service is not considered an active developer method.
 func (c *LookupClient) ResolveService(ctx context.Context, req *servicedirectorypb.ResolveServiceRequest, opts ...gax.CallOption) (*servicedirectorypb.ResolveServiceResponse, error) {

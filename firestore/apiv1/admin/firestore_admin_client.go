@@ -208,9 +208,9 @@ func (c *FirestoreAdminClient) SetGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateIndex creates a composite index. This returns a [google.longrunning.Operation][google.longrunning.Operation]
+// CreateIndex creates a composite index. This returns a google.longrunning.Operation
 // which may be used to track the status of the creation. The metadata for
-// the operation will be the type [IndexOperationMetadata][google.firestore.admin.v1.IndexOperationMetadata].
+// the operation will be the type IndexOperationMetadata.
 func (c *FirestoreAdminClient) CreateIndex(ctx context.Context, req *adminpb.CreateIndexRequest, opts ...gax.CallOption) (*CreateIndexOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -319,13 +319,13 @@ func (c *FirestoreAdminClient) GetField(ctx context.Context, req *adminpb.GetFie
 
 // UpdateField updates a field configuration. Currently, field updates apply only to
 // single field index configuration. However, calls to
-// [FirestoreAdmin.UpdateField][google.firestore.admin.v1.FirestoreAdmin.UpdateField] should provide a field mask to avoid
+// FirestoreAdmin.UpdateField should provide a field mask to avoid
 // changing any configuration that the caller isn’t aware of. The field mask
 // should be specified as: { paths: "index_config" }.
 //
-// This call returns a [google.longrunning.Operation][google.longrunning.Operation] which may be used to
+// This call returns a google.longrunning.Operation which may be used to
 // track the status of the field update. The metadata for
-// the operation will be the type [FieldOperationMetadata][google.firestore.admin.v1.FieldOperationMetadata].
+// the operation will be the type FieldOperationMetadata.
 //
 // To configure the default field settings for the database, use
 // the special Field with resource name:
@@ -350,9 +350,9 @@ func (c *FirestoreAdminClient) UpdateField(ctx context.Context, req *adminpb.Upd
 
 // ListFields lists the field configuration and metadata for this database.
 //
-// Currently, [FirestoreAdmin.ListFields][google.firestore.admin.v1.FirestoreAdmin.ListFields] only supports listing fields
+// Currently, FirestoreAdmin.ListFields only supports listing fields
 // that have been explicitly overridden. To issue this query, call
-// [FirestoreAdmin.ListFields][google.firestore.admin.v1.FirestoreAdmin.ListFields] with the filter set to
+// FirestoreAdmin.ListFields with the filter set to
 // indexConfig.usesAncestorConfig:false.
 func (c *FirestoreAdminClient) ListFields(ctx context.Context, req *adminpb.ListFieldsRequest, opts ...gax.CallOption) *FieldIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))

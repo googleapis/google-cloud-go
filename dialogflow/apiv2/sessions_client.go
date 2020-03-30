@@ -73,8 +73,8 @@ type SessionsClient struct {
 // NewSessionsClient creates a new sessions client.
 //
 // A session represents an interaction with a user. You retrieve user input
-// and pass it to the [DetectIntent][google.cloud.dialogflow.v2.Sessions.DetectIntent] (or
-// [StreamingDetectIntent][google.cloud.dialogflow.v2.Sessions.StreamingDetectIntent]) method to determine
+// and pass it to the DetectIntent (or
+// StreamingDetectIntent) method to determine
 // user intent and respond.
 func NewSessionsClient(ctx context.Context, opts ...option.ClientOption) (*SessionsClient, error) {
 	connPool, err := gtransport.DialPool(ctx, append(defaultSessionsClientOptions(), opts...)...)

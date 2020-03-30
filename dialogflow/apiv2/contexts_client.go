@@ -136,8 +136,8 @@ type ContextsClient struct {
 // geographic location, and so on.
 //
 // You can include contexts as input parameters of a
-// [DetectIntent][google.cloud.dialogflow.v2.Sessions.DetectIntent] (or
-// [StreamingDetectIntent][google.cloud.dialogflow.v2.Sessions.StreamingDetectIntent]) request,
+// DetectIntent (or
+// StreamingDetectIntent) request,
 // or as output contexts included in the returned intent.
 // Contexts expire when an intent is matched, after the number of DetectIntent
 // requests specified by the lifespan_count parameter, or after 20 minutes

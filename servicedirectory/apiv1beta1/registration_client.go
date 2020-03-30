@@ -311,15 +311,15 @@ type RegistrationClient struct {
 // resource model:
 //
 //   The API has a collection of
-//   [Namespace][google.cloud.servicedirectory.v1beta1.Namespace]
+//   Namespace
 //   resources, named projects/*/locations/*/namespaces/*.
 //
 //   Each Namespace has a collection of
-//   [Service][google.cloud.servicedirectory.v1beta1.Service] resources, named
+//   Service resources, named
 //   projects/*/locations/*/namespaces/*/services/*.
 //
 //   Each Service has a collection of
-//   [Endpoint][google.cloud.servicedirectory.v1beta1.Endpoint]
+//   Endpoint
 //   resources, named
 //   projects/*/locations/*/namespaces/*/services/*/endpoints/*.
 func NewRegistrationClient(ctx context.Context, opts ...option.ClientOption) (*RegistrationClient, error) {

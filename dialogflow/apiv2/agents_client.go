@@ -181,8 +181,8 @@ type AgentsClient struct {
 // in your app, product, or service to determine user intent and respond to the
 // user in a natural way.
 //
-// After you create an agent, you can add [Intents][google.cloud.dialogflow.v2.Intents], [Contexts][google.cloud.dialogflow.v2.Contexts],
-// [Entity Types][google.cloud.dialogflow.v2.EntityTypes], [Webhooks][google.cloud.dialogflow.v2.WebhookRequest], and so on to
+// After you create an agent, you can add Intents, Contexts,
+// [Entity Types][google.cloud.dialogflow.v2.EntityTypes], Webhooks, and so on to
 // manage the flow of a conversation and match user input to predefined intents
 // and actions.
 //
@@ -192,8 +192,8 @@ type AgentsClient struct {
 // Editions (at https://cloud.google.com/dialogflow/docs/editions).
 //
 // You can save your agent for backup or versioning by exporting the agent by
-// using the [ExportAgent][google.cloud.dialogflow.v2.Agents.ExportAgent] method. You can import a saved
-// agent by using the [ImportAgent][google.cloud.dialogflow.v2.Agents.ImportAgent] method.
+// using the ExportAgent method. You can import a saved
+// agent by using the ImportAgent method.
 //
 // Dialogflow provides several
 // prebuilt
@@ -348,7 +348,7 @@ func (c *AgentsClient) SearchAgents(ctx context.Context, req *dialogflowpb.Searc
 
 // TrainAgent trains the specified agent.
 //
-// Operation <response: [google.protobuf.Empty][google.protobuf.Empty]>
+// Operation <response: google.protobuf.Empty>
 func (c *AgentsClient) TrainAgent(ctx context.Context, req *dialogflowpb.TrainAgentRequest, opts ...gax.CallOption) (*TrainAgentOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -369,7 +369,7 @@ func (c *AgentsClient) TrainAgent(ctx context.Context, req *dialogflowpb.TrainAg
 
 // ExportAgent exports the specified agent to a ZIP file.
 //
-// Operation <response: [ExportAgentResponse][google.cloud.dialogflow.v2.ExportAgentResponse]>
+// Operation <response: ExportAgentResponse>
 func (c *AgentsClient) ExportAgent(ctx context.Context, req *dialogflowpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -394,7 +394,7 @@ func (c *AgentsClient) ExportAgent(ctx context.Context, req *dialogflowpb.Export
 // Intents and entity types with the same name are replaced with the new
 // versions from ImportAgentRequest.
 //
-// Operation <response: [google.protobuf.Empty][google.protobuf.Empty]>
+// Operation <response: google.protobuf.Empty>
 func (c *AgentsClient) ImportAgent(ctx context.Context, req *dialogflowpb.ImportAgentRequest, opts ...gax.CallOption) (*ImportAgentOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -418,7 +418,7 @@ func (c *AgentsClient) ImportAgent(ctx context.Context, req *dialogflowpb.Import
 // Replaces the current agent version with a new one. All the intents and
 // entity types in the older version are deleted.
 //
-// Operation <response: [google.protobuf.Empty][google.protobuf.Empty]>
+// Operation <response: google.protobuf.Empty>
 func (c *AgentsClient) RestoreAgent(ctx context.Context, req *dialogflowpb.RestoreAgentRequest, opts ...gax.CallOption) (*RestoreAgentOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
