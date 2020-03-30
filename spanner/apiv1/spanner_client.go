@@ -411,10 +411,10 @@ func (c *Client) DeleteSession(ctx context.Context, req *spannerpb.DeleteSession
 //
 // Operations inside read-write transactions might return ABORTED. If
 // this occurs, the application should restart the transaction from
-// the beginning. See [Transaction][google.spanner.v1.Transaction] for more details.
+// the beginning. See Transaction for more details.
 //
 // Larger result sets can be fetched in streaming fashion by calling
-// [ExecuteStreamingSql][google.spanner.v1.Spanner.ExecuteStreamingSql] instead.
+// ExecuteStreamingSql instead.
 func (c *Client) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -431,8 +431,8 @@ func (c *Client) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlReques
 	return resp, nil
 }
 
-// ExecuteStreamingSql like [ExecuteSql][google.spanner.v1.Spanner.ExecuteSql], except returns the result
-// set as a stream. Unlike [ExecuteSql][google.spanner.v1.Spanner.ExecuteSql], there
+// ExecuteStreamingSql like ExecuteSql, except returns the result
+// set as a stream. Unlike ExecuteSql, there
 // is no limit on the size of the returned result set. However, no
 // individual row in the result set can exceed 100 MiB, and no
 // column value can exceed 10 MiB.
@@ -454,10 +454,10 @@ func (c *Client) ExecuteStreamingSql(ctx context.Context, req *spannerpb.Execute
 
 // ExecuteBatchDml executes a batch of SQL DML statements. This method allows many statements
 // to be run with lower latency than submitting them sequentially with
-// [ExecuteSql][google.spanner.v1.Spanner.ExecuteSql].
+// ExecuteSql.
 //
 // Statements are executed in sequential order. A request can succeed even if
-// a statement fails. The [ExecuteBatchDmlResponse.status][google.spanner.v1.ExecuteBatchDmlResponse.status] field in the
+// a statement fails. The ExecuteBatchDmlResponse.status field in the
 // response provides information about the statement that failed. Clients must
 // inspect this field to determine whether an error occurred.
 //
@@ -481,17 +481,17 @@ func (c *Client) ExecuteBatchDml(ctx context.Context, req *spannerpb.ExecuteBatc
 
 // Read reads rows from the database using key lookups and scans, as a
 // simple key/value style alternative to
-// [ExecuteSql][google.spanner.v1.Spanner.ExecuteSql].  This method cannot be used to
+// ExecuteSql.  This method cannot be used to
 // return a result set larger than 10 MiB; if the read matches more
 // data than that, the read fails with a FAILED_PRECONDITION
 // error.
 //
 // Reads inside read-write transactions might return ABORTED. If
 // this occurs, the application should restart the transaction from
-// the beginning. See [Transaction][google.spanner.v1.Transaction] for more details.
+// the beginning. See Transaction for more details.
 //
 // Larger result sets can be yielded in streaming fashion by calling
-// [StreamingRead][google.spanner.v1.Spanner.StreamingRead] instead.
+// StreamingRead instead.
 func (c *Client) Read(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -508,8 +508,8 @@ func (c *Client) Read(ctx context.Context, req *spannerpb.ReadRequest, opts ...g
 	return resp, nil
 }
 
-// StreamingRead like [Read][google.spanner.v1.Spanner.Read], except returns the result set as a
-// stream. Unlike [Read][google.spanner.v1.Spanner.Read], there is no limit on the
+// StreamingRead like Read, except returns the result set as a
+// stream. Unlike Read, there is no limit on the
 // size of the returned result set. However, no individual row in
 // the result set can exceed 100 MiB, and no column value can exceed
 // 10 MiB.
@@ -530,8 +530,8 @@ func (c *Client) StreamingRead(ctx context.Context, req *spannerpb.ReadRequest, 
 }
 
 // BeginTransaction begins a new transaction. This step can often be skipped:
-// [Read][google.spanner.v1.Spanner.Read], [ExecuteSql][google.spanner.v1.Spanner.ExecuteSql] and
-// [Commit][google.spanner.v1.Spanner.Commit] can begin a new transaction as a
+// Read, ExecuteSql and
+// Commit can begin a new transaction as a
 // side-effect.
 func (c *Client) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
@@ -575,7 +575,7 @@ func (c *Client) Commit(ctx context.Context, req *spannerpb.CommitRequest, opts 
 
 // Rollback rolls back a transaction, releasing any locks it holds. It is a good
 // idea to call this for any transaction that includes one or more
-// [Read][google.spanner.v1.Spanner.Read] or [ExecuteSql][google.spanner.v1.Spanner.ExecuteSql] requests and
+// Read or ExecuteSql requests and
 // ultimately decides not to commit.
 //
 // Rollback returns OK if it successfully aborts the transaction, the
@@ -595,7 +595,7 @@ func (c *Client) Rollback(ctx context.Context, req *spannerpb.RollbackRequest, o
 
 // PartitionQuery creates a set of partition tokens that can be used to execute a query
 // operation in parallel.  Each of the returned partition tokens can be used
-// by [ExecuteStreamingSql][google.spanner.v1.Spanner.ExecuteStreamingSql] to specify a subset
+// by ExecuteStreamingSql to specify a subset
 // of the query result to read.  The same session and read-only transaction
 // must be used by the PartitionQueryRequest used to create the
 // partition tokens and the ExecuteSqlRequests that use the partition tokens.
@@ -622,7 +622,7 @@ func (c *Client) PartitionQuery(ctx context.Context, req *spannerpb.PartitionQue
 
 // PartitionRead creates a set of partition tokens that can be used to execute a read
 // operation in parallel.  Each of the returned partition tokens can be used
-// by [StreamingRead][google.spanner.v1.Spanner.StreamingRead] to specify a subset of the read
+// by StreamingRead to specify a subset of the read
 // result to read.  The same session and read-only transaction must be used by
 // the PartitionReadRequest used to create the partition tokens and the
 // ReadRequests that use the partition tokens.  There are no ordering

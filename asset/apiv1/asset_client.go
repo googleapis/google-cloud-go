@@ -154,7 +154,7 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // ExportAssets exports assets with time and resource types to a given Cloud Storage
 // location. The output format is newline-delimited JSON.
-// This API implements the [google.longrunning.Operation][google.longrunning.Operation] API allowing you
+// This API implements the google.longrunning.Operation API allowing you
 // to keep track of the export.
 func (c *Client) ExportAssets(ctx context.Context, req *assetpb.ExportAssetsRequest, opts ...gax.CallOption) (*ExportAssetsOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))

@@ -159,6 +159,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1",
     "release_level": "beta"
   },
+  "cloud.google.com/go/datacatalog/apiv1": {
+    "distribution_name": "cloud.google.com/go/datacatalog/apiv1",
+    "description": "Google Cloud Data Catalog API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1",
+    "release_level": "ga"
+  },
   "cloud.google.com/go/datacatalog/apiv1beta1": {
     "distribution_name": "cloud.google.com/go/datacatalog/apiv1beta1",
     "description": "Google Cloud Data Catalog API",
@@ -262,14 +270,6 @@
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/admin",
     "release_level": "ga"
-  },
-  "cloud.google.com/go/firestore/apiv1beta1": {
-    "distribution_name": "cloud.google.com/go/firestore/apiv1beta1",
-    "description": "Cloud Firestore API",
-    "language": "Go",
-    "client_library_type": "generated",
-    "docs_url": "https://pkg.go.dev/cloud.google.com/go/firestore/apiv1beta1",
-    "release_level": "beta"
   },
   "cloud.google.com/go/iam": {
     "distribution_name": "cloud.google.com/go/iam",

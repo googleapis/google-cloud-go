@@ -179,7 +179,7 @@ type EntityTypesClient struct {
 //
 //   User - entities that are built for an individual user such as
 //   favorites, preferences, playlists, and so on. A user entity is
-//   represented by the [SessionEntityType][google.cloud.dialogflow.v2.SessionEntityType] type.
+//   represented by the SessionEntityType type.
 //
 // For more information about entity types, see the
 // Dialogflow
@@ -339,7 +339,7 @@ func (c *EntityTypesClient) DeleteEntityType(ctx context.Context, req *dialogflo
 
 // BatchUpdateEntityTypes updates/Creates multiple entity types in the specified agent.
 //
-// Operation <response: [BatchUpdateEntityTypesResponse][google.cloud.dialogflow.v2.BatchUpdateEntityTypesResponse]>
+// Operation <response: BatchUpdateEntityTypesResponse>
 func (c *EntityTypesClient) BatchUpdateEntityTypes(ctx context.Context, req *dialogflowpb.BatchUpdateEntityTypesRequest, opts ...gax.CallOption) (*BatchUpdateEntityTypesOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -360,7 +360,7 @@ func (c *EntityTypesClient) BatchUpdateEntityTypes(ctx context.Context, req *dia
 
 // BatchDeleteEntityTypes deletes entity types in the specified agent.
 //
-// Operation <response: [google.protobuf.Empty][google.protobuf.Empty]>
+// Operation <response: google.protobuf.Empty>
 func (c *EntityTypesClient) BatchDeleteEntityTypes(ctx context.Context, req *dialogflowpb.BatchDeleteEntityTypesRequest, opts ...gax.CallOption) (*BatchDeleteEntityTypesOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -381,7 +381,7 @@ func (c *EntityTypesClient) BatchDeleteEntityTypes(ctx context.Context, req *dia
 
 // BatchCreateEntities creates multiple new entities in the specified entity type.
 //
-// Operation <response: [google.protobuf.Empty][google.protobuf.Empty]>
+// Operation <response: google.protobuf.Empty>
 func (c *EntityTypesClient) BatchCreateEntities(ctx context.Context, req *dialogflowpb.BatchCreateEntitiesRequest, opts ...gax.CallOption) (*BatchCreateEntitiesOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -404,7 +404,7 @@ func (c *EntityTypesClient) BatchCreateEntities(ctx context.Context, req *dialog
 // method does not affect entities in the entity type that aren’t explicitly
 // specified in the request.
 //
-// Operation <response: [google.protobuf.Empty][google.protobuf.Empty]>
+// Operation <response: google.protobuf.Empty>
 func (c *EntityTypesClient) BatchUpdateEntities(ctx context.Context, req *dialogflowpb.BatchUpdateEntitiesRequest, opts ...gax.CallOption) (*BatchUpdateEntitiesOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -425,7 +425,7 @@ func (c *EntityTypesClient) BatchUpdateEntities(ctx context.Context, req *dialog
 
 // BatchDeleteEntities deletes entities in the specified entity type.
 //
-// Operation <response: [google.protobuf.Empty][google.protobuf.Empty]>
+// Operation <response: google.protobuf.Empty>
 func (c *EntityTypesClient) BatchDeleteEntities(ctx context.Context, req *dialogflowpb.BatchDeleteEntitiesRequest, opts ...gax.CallOption) (*BatchDeleteEntitiesOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

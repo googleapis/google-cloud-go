@@ -259,22 +259,22 @@ func (c *WorkflowTemplateClient) GetWorkflowTemplate(ctx context.Context, req *d
 //
 // The returned Operation can be used to track execution of
 // workflow by polling
-// [operations.get][google.longrunning.Operations.GetOperation].
+// operations.get.
 // The Operation will complete when entire workflow is finished.
 //
 // The running workflow can be aborted via
-// [operations.cancel][google.longrunning.Operations.CancelOperation].
+// operations.cancel.
 // This will cause any inflight jobs to be cancelled and workflow-owned
 // clusters to be deleted.
 //
-// The [Operation.metadata][google.longrunning.Operation.metadata] will be
+// The Operation.metadata will be
 // WorkflowMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#workflowmetadata).
 // Also see Using
 // WorkflowMetadata (at https://cloud.google.com/dataproc/docs/concepts/workflows/debugging#using_workflowmetadata).
 //
 // On successful completion,
-// [Operation.response][google.longrunning.Operation.response] will be
-// [Empty][google.protobuf.Empty].
+// Operation.response will be
+// Empty.
 func (c *WorkflowTemplateClient) InstantiateWorkflowTemplate(ctx context.Context, req *dataprocpb.InstantiateWorkflowTemplateRequest, opts ...gax.CallOption) (*InstantiateWorkflowTemplateOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -296,27 +296,27 @@ func (c *WorkflowTemplateClient) InstantiateWorkflowTemplate(ctx context.Context
 // InstantiateInlineWorkflowTemplate instantiates a template and begins execution.
 //
 // This method is equivalent to executing the sequence
-// [CreateWorkflowTemplate][google.cloud.dataproc.v1.WorkflowTemplateService.CreateWorkflowTemplate], [InstantiateWorkflowTemplate][google.cloud.dataproc.v1.WorkflowTemplateService.InstantiateWorkflowTemplate],
-// [DeleteWorkflowTemplate][google.cloud.dataproc.v1.WorkflowTemplateService.DeleteWorkflowTemplate].
+// CreateWorkflowTemplate, InstantiateWorkflowTemplate,
+// DeleteWorkflowTemplate.
 //
 // The returned Operation can be used to track execution of
 // workflow by polling
-// [operations.get][google.longrunning.Operations.GetOperation].
+// operations.get.
 // The Operation will complete when entire workflow is finished.
 //
 // The running workflow can be aborted via
-// [operations.cancel][google.longrunning.Operations.CancelOperation].
+// operations.cancel.
 // This will cause any inflight jobs to be cancelled and workflow-owned
 // clusters to be deleted.
 //
-// The [Operation.metadata][google.longrunning.Operation.metadata] will be
+// The Operation.metadata will be
 // WorkflowMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#workflowmetadata).
 // Also see Using
 // WorkflowMetadata (at https://cloud.google.com/dataproc/docs/concepts/workflows/debugging#using_workflowmetadata).
 //
 // On successful completion,
-// [Operation.response][google.longrunning.Operation.response] will be
-// [Empty][google.protobuf.Empty].
+// Operation.response will be
+// Empty.
 func (c *WorkflowTemplateClient) InstantiateInlineWorkflowTemplate(ctx context.Context, req *dataprocpb.InstantiateInlineWorkflowTemplateRequest, opts ...gax.CallOption) (*InstantiateInlineWorkflowTemplateOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

@@ -28,7 +28,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
-	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
+	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -39,8 +39,8 @@ import (
 type CallOptions struct {
 	SearchCatalog          []gax.CallOption
 	CreateEntryGroup       []gax.CallOption
-	UpdateEntryGroup       []gax.CallOption
 	GetEntryGroup          []gax.CallOption
+	UpdateEntryGroup       []gax.CallOption
 	DeleteEntryGroup       []gax.CallOption
 	ListEntryGroups        []gax.CallOption
 	CreateEntry            []gax.CallOption
@@ -78,13 +78,21 @@ func defaultClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		SearchCatalog:    []gax.CallOption{},
+		SearchCatalog: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		CreateEntryGroup: []gax.CallOption{},
-		UpdateEntryGroup: []gax.CallOption{},
 		GetEntryGroup: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -93,10 +101,11 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		DeleteEntryGroup: []gax.CallOption{
+		UpdateEntryGroup: []gax.CallOption{},
+		DeleteEntryGroup: []gax.CallOption{},
+		ListEntryGroups: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -105,25 +114,12 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		ListEntryGroups: []gax.CallOption{},
-		CreateEntry:     []gax.CallOption{},
-		UpdateEntry:     []gax.CallOption{},
-		DeleteEntry: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
+		CreateEntry: []gax.CallOption{},
+		UpdateEntry: []gax.CallOption{},
+		DeleteEntry: []gax.CallOption{},
 		GetEntry: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -135,7 +131,6 @@ func defaultCallOptions() *CallOptions {
 		LookupEntry: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -144,12 +139,9 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		ListEntries:       []gax.CallOption{},
-		CreateTagTemplate: []gax.CallOption{},
-		GetTagTemplate: []gax.CallOption{
+		ListEntries: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -158,52 +150,20 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		UpdateTagTemplate: []gax.CallOption{},
-		DeleteTagTemplate: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
+		CreateTagTemplate:      []gax.CallOption{},
+		GetTagTemplate:         []gax.CallOption{},
+		UpdateTagTemplate:      []gax.CallOption{},
+		DeleteTagTemplate:      []gax.CallOption{},
 		CreateTagTemplateField: []gax.CallOption{},
 		UpdateTagTemplateField: []gax.CallOption{},
 		RenameTagTemplateField: []gax.CallOption{},
-		DeleteTagTemplateField: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		CreateTag: []gax.CallOption{},
-		UpdateTag: []gax.CallOption{},
-		DeleteTag: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
+		DeleteTagTemplateField: []gax.CallOption{},
+		CreateTag:              []gax.CallOption{},
+		UpdateTag:              []gax.CallOption{},
+		DeleteTag:              []gax.CallOption{},
 		ListTags: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -212,8 +172,18 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		SetIamPolicy:       []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		TestIamPermissions: []gax.CallOption{},
 	}
 }
@@ -365,6 +335,23 @@ func (c *Client) CreateEntryGroup(ctx context.Context, req *datacatalogpb.Create
 	return resp, nil
 }
 
+// GetEntryGroup gets an EntryGroup.
+func (c *Client) GetEntryGroup(ctx context.Context, req *datacatalogpb.GetEntryGroupRequest, opts ...gax.CallOption) (*datacatalogpb.EntryGroup, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetEntryGroup[0:len(c.CallOptions.GetEntryGroup):len(c.CallOptions.GetEntryGroup)], opts...)
+	var resp *datacatalogpb.EntryGroup
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetEntryGroup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // UpdateEntryGroup updates an EntryGroup. The user should enable the Data Catalog API in the
 // project identified by the entry_group.name parameter (see [Data Catalog
 // Resource Project] (/data-catalog/docs/concepts/resource-project) for more
@@ -377,23 +364,6 @@ func (c *Client) UpdateEntryGroup(ctx context.Context, req *datacatalogpb.Update
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.UpdateEntryGroup(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// GetEntryGroup gets an EntryGroup.
-func (c *Client) GetEntryGroup(ctx context.Context, req *datacatalogpb.GetEntryGroupRequest, opts ...gax.CallOption) (*datacatalogpb.EntryGroup, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetEntryGroup[0:len(c.CallOptions.GetEntryGroup):len(c.CallOptions.GetEntryGroup)], opts...)
-	var resp *datacatalogpb.EntryGroup
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.GetEntryGroup(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -751,10 +721,10 @@ func (c *Client) DeleteTagTemplateField(ctx context.Context, req *datacatalogpb.
 
 // CreateTag creates a tag on an Entry.
 // Note: The project identified by the parent parameter for the
-// tag (at /data-catalog/docs/reference/rest/v1beta1/projects.locations.entryGroups.entries.tags/create#path-parameters)
+// tag (at /data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters)
 // and the
 // tag
-// template (at /data-catalog/docs/reference/rest/v1beta1/projects.locations.tagTemplates/create#path-parameters)
+// template (at /data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters)
 // used to create the tag must be from the same organization.
 func (c *Client) CreateTag(ctx context.Context, req *datacatalogpb.CreateTagRequest, opts ...gax.CallOption) (*datacatalogpb.Tag, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -852,9 +822,8 @@ func (c *Client) ListTags(ctx context.Context, req *datacatalogpb.ListTagsReques
 //   Entries.
 //
 //   Entry groups.
-//   Note, this method cannot be used to manage policies for BigQuery, Cloud
-//   Pub/Sub and any external Google Cloud Platform resources synced to Cloud
-//   Data Catalog.
+//   Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+//   and any external Google Cloud Platform resources synced to Data Catalog.
 //
 // Callers must have following Google IAM permission
 //
@@ -891,9 +860,8 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 //   Entries.
 //
 //   Entry groups.
-//   Note, this method cannot be used to manage policies for BigQuery, Cloud
-//   Pub/Sub and any external Google Cloud Platform resources synced to Cloud
-//   Data Catalog.
+//   Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+//   and any external Google Cloud Platform resources synced to Data Catalog.
 //
 // Callers must have following Google IAM permission
 //
@@ -930,9 +898,8 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 //   Entries.
 //
 //   Entry groups.
-//   Note, this method cannot be used to manage policies for BigQuery, Cloud
-//   Pub/Sub and any external Google Cloud Platform resources synced to Cloud
-//   Data Catalog.
+//   Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+//   and any external Google Cloud Platform resources synced to Data Catalog.
 //
 // A caller is not required to have Google IAM permission to make this
 // request.

@@ -119,9 +119,9 @@ type Client struct {
 // Manages secrets and operations using those secrets. Implements a REST
 // model with the following objects:
 //
-//   [Secret][google.cloud.secretmanager.v1.Secret]
+//   Secret
 //
-//   [SecretVersion][google.cloud.secretmanager.v1.SecretVersion]
+//   SecretVersion
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	connPool, err := gtransport.DialPool(ctx, append(defaultClientOptions(), opts...)...)
 	if err != nil {
@@ -160,7 +160,7 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListSecrets lists [Secrets][google.cloud.secretmanager.v1.Secret].
+// ListSecrets lists Secrets.
 func (c *Client) ListSecrets(ctx context.Context, req *secretmanagerpb.ListSecretsRequest, opts ...gax.CallOption) *SecretIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -201,7 +201,7 @@ func (c *Client) ListSecrets(ctx context.Context, req *secretmanagerpb.ListSecre
 	return it
 }
 
-// CreateSecret creates a new [Secret][google.cloud.secretmanager.v1.Secret] containing no [SecretVersions][google.cloud.secretmanager.v1.SecretVersion].
+// CreateSecret creates a new Secret containing no SecretVersions.
 func (c *Client) CreateSecret(ctx context.Context, req *secretmanagerpb.CreateSecretRequest, opts ...gax.CallOption) (*secretmanagerpb.Secret, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -218,8 +218,8 @@ func (c *Client) CreateSecret(ctx context.Context, req *secretmanagerpb.CreateSe
 	return resp, nil
 }
 
-// AddSecretVersion creates a new [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] containing secret data and attaches
-// it to an existing [Secret][google.cloud.secretmanager.v1.Secret].
+// AddSecretVersion creates a new SecretVersion containing secret data and attaches
+// it to an existing Secret.
 func (c *Client) AddSecretVersion(ctx context.Context, req *secretmanagerpb.AddSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -236,7 +236,7 @@ func (c *Client) AddSecretVersion(ctx context.Context, req *secretmanagerpb.AddS
 	return resp, nil
 }
 
-// GetSecret gets metadata for a given [Secret][google.cloud.secretmanager.v1.Secret].
+// GetSecret gets metadata for a given Secret.
 func (c *Client) GetSecret(ctx context.Context, req *secretmanagerpb.GetSecretRequest, opts ...gax.CallOption) (*secretmanagerpb.Secret, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -253,7 +253,7 @@ func (c *Client) GetSecret(ctx context.Context, req *secretmanagerpb.GetSecretRe
 	return resp, nil
 }
 
-// UpdateSecret updates metadata of an existing [Secret][google.cloud.secretmanager.v1.Secret].
+// UpdateSecret updates metadata of an existing Secret.
 func (c *Client) UpdateSecret(ctx context.Context, req *secretmanagerpb.UpdateSecretRequest, opts ...gax.CallOption) (*secretmanagerpb.Secret, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "secret.name", url.QueryEscape(req.GetSecret().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -270,7 +270,7 @@ func (c *Client) UpdateSecret(ctx context.Context, req *secretmanagerpb.UpdateSe
 	return resp, nil
 }
 
-// DeleteSecret deletes a [Secret][google.cloud.secretmanager.v1.Secret].
+// DeleteSecret deletes a Secret.
 func (c *Client) DeleteSecret(ctx context.Context, req *secretmanagerpb.DeleteSecretRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -283,7 +283,7 @@ func (c *Client) DeleteSecret(ctx context.Context, req *secretmanagerpb.DeleteSe
 	return err
 }
 
-// ListSecretVersions lists [SecretVersions][google.cloud.secretmanager.v1.SecretVersion]. This call does not return secret
+// ListSecretVersions lists SecretVersions. This call does not return secret
 // data.
 func (c *Client) ListSecretVersions(ctx context.Context, req *secretmanagerpb.ListSecretVersionsRequest, opts ...gax.CallOption) *SecretVersionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -325,10 +325,10 @@ func (c *Client) ListSecretVersions(ctx context.Context, req *secretmanagerpb.Li
 	return it
 }
 
-// GetSecretVersion gets metadata for a [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
+// GetSecretVersion gets metadata for a SecretVersion.
 //
 // projects/*/secrets/*/versions/latest is an alias to the latest
-// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
+// SecretVersion.
 func (c *Client) GetSecretVersion(ctx context.Context, req *secretmanagerpb.GetSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -345,10 +345,10 @@ func (c *Client) GetSecretVersion(ctx context.Context, req *secretmanagerpb.GetS
 	return resp, nil
 }
 
-// AccessSecretVersion accesses a [SecretVersion][google.cloud.secretmanager.v1.SecretVersion]. This call returns the secret data.
+// AccessSecretVersion accesses a SecretVersion. This call returns the secret data.
 //
 // projects/*/secrets/*/versions/latest is an alias to the latest
-// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
+// SecretVersion.
 func (c *Client) AccessSecretVersion(ctx context.Context, req *secretmanagerpb.AccessSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.AccessSecretVersionResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -365,10 +365,10 @@ func (c *Client) AccessSecretVersion(ctx context.Context, req *secretmanagerpb.A
 	return resp, nil
 }
 
-// DisableSecretVersion disables a [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
+// DisableSecretVersion disables a SecretVersion.
 //
-// Sets the [state][google.cloud.secretmanager.v1.SecretVersion.state] of the [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to
-// [DISABLED][google.cloud.secretmanager.v1.SecretVersion.State.DISABLED].
+// Sets the state of the SecretVersion to
+// DISABLED.
 func (c *Client) DisableSecretVersion(ctx context.Context, req *secretmanagerpb.DisableSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -385,10 +385,10 @@ func (c *Client) DisableSecretVersion(ctx context.Context, req *secretmanagerpb.
 	return resp, nil
 }
 
-// EnableSecretVersion enables a [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
+// EnableSecretVersion enables a SecretVersion.
 //
-// Sets the [state][google.cloud.secretmanager.v1.SecretVersion.state] of the [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to
-// [ENABLED][google.cloud.secretmanager.v1.SecretVersion.State.ENABLED].
+// Sets the state of the SecretVersion to
+// ENABLED.
 func (c *Client) EnableSecretVersion(ctx context.Context, req *secretmanagerpb.EnableSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -405,10 +405,10 @@ func (c *Client) EnableSecretVersion(ctx context.Context, req *secretmanagerpb.E
 	return resp, nil
 }
 
-// DestroySecretVersion destroys a [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
+// DestroySecretVersion destroys a SecretVersion.
 //
-// Sets the [state][google.cloud.secretmanager.v1.SecretVersion.state] of the [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to
-// [DESTROYED][google.cloud.secretmanager.v1.SecretVersion.State.DESTROYED] and irrevocably destroys the
+// Sets the state of the SecretVersion to
+// DESTROYED and irrevocably destroys the
 // secret data.
 func (c *Client) DestroySecretVersion(ctx context.Context, req *secretmanagerpb.DestroySecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -429,8 +429,8 @@ func (c *Client) DestroySecretVersion(ctx context.Context, req *secretmanagerpb.
 // SetIamPolicy sets the access control policy on the specified secret. Replaces any
 // existing policy.
 //
-// Permissions on [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] are enforced according
-// to the policy set on the associated [Secret][google.cloud.secretmanager.v1.Secret].
+// Permissions on SecretVersions are enforced according
+// to the policy set on the associated Secret.
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

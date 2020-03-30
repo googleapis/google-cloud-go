@@ -411,9 +411,9 @@ func (c *Client) PurgeQueue(ctx context.Context, req *taskspb.PurgeQueueRequest,
 //
 // If a queue is paused then the system will stop dispatching tasks
 // until the queue is resumed via
-// [ResumeQueue][google.cloud.tasks.v2beta2.CloudTasks.ResumeQueue]. Tasks can still be added
+// ResumeQueue. Tasks can still be added
 // when the queue is paused. A queue is paused if its
-// [state][google.cloud.tasks.v2beta2.Queue.state] is [PAUSED][google.cloud.tasks.v2beta2.Queue.State.PAUSED].
+// state is PAUSED.
 func (c *Client) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -433,10 +433,10 @@ func (c *Client) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequest,
 // ResumeQueue resume a queue.
 //
 // This method resumes a queue after it has been
-// [PAUSED][google.cloud.tasks.v2beta2.Queue.State.PAUSED] or
-// [DISABLED][google.cloud.tasks.v2beta2.Queue.State.DISABLED]. The state of a queue is stored
-// in the queue’s [state][google.cloud.tasks.v2beta2.Queue.state]; after calling this method it
-// will be set to [RUNNING][google.cloud.tasks.v2beta2.Queue.State.RUNNING].
+// PAUSED or
+// DISABLED. The state of a queue is stored
+// in the queue’s state; after calling this method it
+// will be set to RUNNING.
 //
 // WARNING: Resuming many high-QPS queues at the same time can
 // lead to target overloading. If you are resuming high-QPS
@@ -459,7 +459,7 @@ func (c *Client) ResumeQueue(ctx context.Context, req *taskspb.ResumeQueueReques
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a [Queue][google.cloud.tasks.v2beta2.Queue].
+// GetIamPolicy gets the access control policy for a Queue.
 // Returns an empty policy if the resource exists and does not have a policy
 // set.
 //
@@ -484,7 +484,7 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 	return resp, nil
 }
 
-// SetIamPolicy sets the access control policy for a [Queue][google.cloud.tasks.v2beta2.Queue]. Replaces any existing
+// SetIamPolicy sets the access control policy for a Queue. Replaces any existing
 // policy.
 //
 // Note: The Cloud Console does not check queue-level IAM permissions yet.
@@ -511,9 +511,9 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 	return resp, nil
 }
 
-// TestIamPermissions returns permissions that a caller has on a [Queue][google.cloud.tasks.v2beta2.Queue].
+// TestIamPermissions returns permissions that a caller has on a Queue.
 // If the resource does not exist, this will return an empty set of
-// permissions, not a [NOT_FOUND][google.rpc.Code.NOT_FOUND] error.
+// permissions, not a NOT_FOUND error.
 //
 // Note: This operation is designed to be used for building permission-aware
 // UIs and command-line tools, not for authorization checking. This operation
@@ -536,9 +536,9 @@ func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermi
 
 // ListTasks lists the tasks in a queue.
 //
-// By default, only the [BASIC][google.cloud.tasks.v2beta2.Task.View.BASIC] view is retrieved
+// By default, only the BASIC view is retrieved
 // due to performance considerations;
-// [response_view][google.cloud.tasks.v2beta2.ListTasksRequest.response_view] controls the
+// response_view controls the
 // subset of information which is returned.
 //
 // The tasks may be returned in any order. The ordering may change at any
@@ -642,26 +642,26 @@ func (c *Client) DeleteTask(ctx context.Context, req *taskspb.DeleteTaskRequest,
 }
 
 // LeaseTasks leases tasks from a pull queue for
-// [lease_duration][google.cloud.tasks.v2beta2.LeaseTasksRequest.lease_duration].
+// lease_duration.
 //
 // This method is invoked by the worker to obtain a lease. The
 // worker must acknowledge the task via
-// [AcknowledgeTask][google.cloud.tasks.v2beta2.CloudTasks.AcknowledgeTask] after they have
+// AcknowledgeTask after they have
 // performed the work associated with the task.
 //
-// The [payload][google.cloud.tasks.v2beta2.PullMessage.payload] is intended to store data that
+// The payload is intended to store data that
 // the worker needs to perform the work associated with the task. To
-// return the payloads in the [response][google.cloud.tasks.v2beta2.LeaseTasksResponse], set
-// [response_view][google.cloud.tasks.v2beta2.LeaseTasksRequest.response_view] to
-// [FULL][google.cloud.tasks.v2beta2.Task.View.FULL].
+// return the payloads in the response, set
+// response_view to
+// FULL.
 //
-// A maximum of 10 qps of [LeaseTasks][google.cloud.tasks.v2beta2.CloudTasks.LeaseTasks]
+// A maximum of 10 qps of LeaseTasks
 // requests are allowed per
-// queue. [RESOURCE_EXHAUSTED][google.rpc.Code.RESOURCE_EXHAUSTED]
+// queue. RESOURCE_EXHAUSTED
 // is returned when this limit is
-// exceeded. [RESOURCE_EXHAUSTED][google.rpc.Code.RESOURCE_EXHAUSTED]
+// exceeded. RESOURCE_EXHAUSTED
 // is also returned when
-// [max_tasks_dispatched_per_second][google.cloud.tasks.v2beta2.RateLimits.max_tasks_dispatched_per_second]
+// max_tasks_dispatched_per_second
 // is exceeded.
 func (c *Client) LeaseTasks(ctx context.Context, req *taskspb.LeaseTasksRequest, opts ...gax.CallOption) (*taskspb.LeaseTasksResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -682,16 +682,16 @@ func (c *Client) LeaseTasks(ctx context.Context, req *taskspb.LeaseTasksRequest,
 // AcknowledgeTask acknowledges a pull task.
 //
 // The worker, that is, the entity that
-// [leased][google.cloud.tasks.v2beta2.CloudTasks.LeaseTasks] this task must call this method
+// leased this task must call this method
 // to indicate that the work associated with the task has finished.
 //
 // The worker must acknowledge a task within the
-// [lease_duration][google.cloud.tasks.v2beta2.LeaseTasksRequest.lease_duration] or the lease
+// lease_duration or the lease
 // will expire and the task will become available to be leased
 // again. After the task is acknowledged, it will not be returned
-// by a later [LeaseTasks][google.cloud.tasks.v2beta2.CloudTasks.LeaseTasks],
-// [GetTask][google.cloud.tasks.v2beta2.CloudTasks.GetTask], or
-// [ListTasks][google.cloud.tasks.v2beta2.CloudTasks.ListTasks].
+// by a later LeaseTasks,
+// GetTask, or
+// ListTasks.
 func (c *Client) AcknowledgeTask(ctx context.Context, req *taskspb.AcknowledgeTaskRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -708,7 +708,7 @@ func (c *Client) AcknowledgeTask(ctx context.Context, req *taskspb.AcknowledgeTa
 //
 // The worker can use this method to extend the lease by a new
 // duration, starting from now. The new task lease will be
-// returned in the task’s [schedule_time][google.cloud.tasks.v2beta2.Task.schedule_time].
+// returned in the task’s schedule_time.
 func (c *Client) RenewLease(ctx context.Context, req *taskspb.RenewLeaseRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -728,9 +728,9 @@ func (c *Client) RenewLease(ctx context.Context, req *taskspb.RenewLeaseRequest,
 // CancelLease cancel a pull task’s lease.
 //
 // The worker can use this method to cancel a task’s lease by
-// setting its [schedule_time][google.cloud.tasks.v2beta2.Task.schedule_time] to now. This will
+// setting its schedule_time to now. This will
 // make the task available to be leased to the next caller of
-// [LeaseTasks][google.cloud.tasks.v2beta2.CloudTasks.LeaseTasks].
+// LeaseTasks.
 func (c *Client) CancelLease(ctx context.Context, req *taskspb.CancelLeaseRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -750,29 +750,29 @@ func (c *Client) CancelLease(ctx context.Context, req *taskspb.CancelLeaseReques
 // RunTask forces a task to run now.
 //
 // When this method is called, Cloud Tasks will dispatch the task, even if
-// the task is already running, the queue has reached its [RateLimits][google.cloud.tasks.v2beta2.RateLimits] or
-// is [PAUSED][google.cloud.tasks.v2beta2.Queue.State.PAUSED].
+// the task is already running, the queue has reached its RateLimits or
+// is PAUSED.
 //
 // This command is meant to be used for manual debugging. For
-// example, [RunTask][google.cloud.tasks.v2beta2.CloudTasks.RunTask] can be used to retry a failed
+// example, RunTask can be used to retry a failed
 // task after a fix has been made or to manually force a task to be
 // dispatched now.
 //
 // The dispatched task is returned. That is, the task that is returned
-// contains the [status][google.cloud.tasks.v2beta2.Task.status] after the task is dispatched but
+// contains the status after the task is dispatched but
 // before the task is received by its target.
 //
 // If Cloud Tasks receives a successful response from the task’s
 // target, then the task will be deleted; otherwise the task’s
-// [schedule_time][google.cloud.tasks.v2beta2.Task.schedule_time] will be reset to the time that
-// [RunTask][google.cloud.tasks.v2beta2.CloudTasks.RunTask] was called plus the retry delay specified
-// in the queue’s [RetryConfig][google.cloud.tasks.v2beta2.RetryConfig].
+// schedule_time will be reset to the time that
+// RunTask was called plus the retry delay specified
+// in the queue’s RetryConfig.
 //
-// [RunTask][google.cloud.tasks.v2beta2.CloudTasks.RunTask] returns
-// [NOT_FOUND][google.rpc.Code.NOT_FOUND] when it is called on a
+// RunTask returns
+// NOT_FOUND when it is called on a
 // task that has already succeeded or permanently failed.
 //
-// [RunTask][google.cloud.tasks.v2beta2.CloudTasks.RunTask] cannot be called on a
+// RunTask cannot be called on a
 // [pull task][google.cloud.tasks.v2beta2.PullMessage].
 func (c *Client) RunTask(ctx context.Context, req *taskspb.RunTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))

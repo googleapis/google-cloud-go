@@ -553,7 +553,7 @@ func (c *ConfigClient) GetCmekSettings(ctx context.Context, req *loggingpb.GetCm
 // organizations. Once configured, it applies to all projects and folders in
 // the GCP organization.
 //
-// [UpdateCmekSettings][google.logging.v2.ConfigServiceV2.UpdateCmekSettings]
+// UpdateCmekSettings
 // will fail if 1) kms_key_name is invalid, or 2) the associated service
 // account does not have the required
 // roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or
