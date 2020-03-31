@@ -130,6 +130,7 @@ func testOnGCE() bool {
 	go func() {
 		req, _ := http.NewRequest("GET", "http://"+metadataIP, nil)
 		req.Header.Set("User-Agent", userAgent)
+		req.Header.Set("Metadata-Flavor", "Google")
 		res, err := defaultClient.hc.Do(req.WithContext(ctx))
 		if err != nil {
 			resc <- false
