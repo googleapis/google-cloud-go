@@ -699,12 +699,7 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 			t.Log("could not restore dataset access list")
 		}
 	}()
-	for _, v := range md.Access {
-		fmt.Printf("md %+v\n", v)
-	}
-	for _, v := range newAccess {
-		fmt.Printf("newAccess %+v\n", v)
-	}
+
 	if diff := testutil.Diff(md.Access, newAccess, cmpopts.SortSlices(lessAccessEntries)); diff != "" {
 		t.Fatalf("got=-, want=+:\n%s", diff)
 	}
