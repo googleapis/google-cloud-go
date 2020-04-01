@@ -125,7 +125,7 @@ func TestBQToTableMetadata(t *testing.T) {
 func TestTableMetadataToBQ(t *testing.T) {
 	aTime := time.Date(2017, 1, 26, 0, 0, 0, 0, time.Local)
 	aTimeMillis := aTime.UnixNano() / 1e6
-	sc := Schema{fieldSchema("desc", "name", "STRING", false, true)}
+	sc := Schema{fieldSchema("desc", "name", "STRING", false, true, nil)}
 
 	for _, test := range []struct {
 		in   *TableMetadata
@@ -148,7 +148,7 @@ func TestTableMetadataToBQ(t *testing.T) {
 				Description:  "d",
 				Schema: &bq.TableSchema{
 					Fields: []*bq.TableFieldSchema{
-						bqTableFieldSchema("desc", "name", "STRING", "REQUIRED"),
+						bqTableFieldSchema("desc", "name", "STRING", "REQUIRED", nil),
 					},
 				},
 				ExpirationTime:            aTimeMillis,
@@ -307,13 +307,13 @@ func TestTableMetadataToUpdateToBQ(t *testing.T) {
 		},
 		{
 			tm: TableMetadataToUpdate{
-				Schema:         Schema{fieldSchema("desc", "name", "STRING", false, true)},
+				Schema:         Schema{fieldSchema("desc", "name", "STRING", false, true, nil)},
 				ExpirationTime: aTime,
 			},
 			want: &bq.Table{
 				Schema: &bq.TableSchema{
 					Fields: []*bq.TableFieldSchema{
-						bqTableFieldSchema("desc", "name", "STRING", "REQUIRED"),
+						bqTableFieldSchema("desc", "name", "STRING", "REQUIRED", nil),
 					},
 				},
 				ExpirationTime:  aTime.UnixNano() / 1e6,
