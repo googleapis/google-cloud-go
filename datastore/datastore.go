@@ -59,8 +59,7 @@ type Client struct {
 }
 
 // NewClient creates a new Client for a given dataset.  If the project ID is
-// empty, it is derived from the DATASTORE_PROJECT_ID or GOOGLE_CLOUD_PROJECT
-// environment variable (in order of preference).
+// empty, it is derived from the DATASTORE_PROJECT_ID environment variable.
 // If the DATASTORE_EMULATOR_HOST environment variable is set, client will use
 // its value to connect to a locally-running datastore emulator.
 // DetectProjectID can be passed as the projectID argument to instruct
@@ -92,9 +91,6 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	}
 	if projectID == "" {
 		projectID = os.Getenv("DATASTORE_PROJECT_ID")
-	}
-	if projectID == "" {
-		projectID = os.Getenv("GOOGLE_CLOUD_PROJECT")
 	}
 
 	o = append(o, opts...)
