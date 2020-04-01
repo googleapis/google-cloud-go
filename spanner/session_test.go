@@ -371,7 +371,7 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 	// Inject session error to server stub, and take the session from the
 	// session pool, the old session should be destroyed and the session pool
 	// will create a new session.
-	server.TestSpanner.PutExecutionTime(MethodGetSession,
+	server.TestSpanner.PutExecutionTime(MethodExecuteSql,
 		SimulatedExecutionTime{
 			Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
 		})
@@ -451,7 +451,7 @@ func TestTakeFromIdleWriteListChecked(t *testing.T) {
 	// Inject session error to mockclient, and take the session from the
 	// session pool, the old session should be destroyed and the session pool
 	// will create a new session.
-	server.TestSpanner.PutExecutionTime(MethodGetSession,
+	server.TestSpanner.PutExecutionTime(MethodExecuteSql,
 		SimulatedExecutionTime{
 			Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
 		})
@@ -1303,7 +1303,7 @@ func TestSessionHealthCheck(t *testing.T) {
 	}
 
 	server.TestSpanner.Freeze()
-	server.TestSpanner.PutExecutionTime(MethodGetSession,
+	server.TestSpanner.PutExecutionTime(MethodExecuteSql,
 		SimulatedExecutionTime{
 			Errors:    []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
 			KeepError: true,
@@ -1319,7 +1319,7 @@ func TestSessionHealthCheck(t *testing.T) {
 	})
 
 	server.TestSpanner.Freeze()
-	server.TestSpanner.PutExecutionTime(MethodGetSession, SimulatedExecutionTime{})
+	server.TestSpanner.PutExecutionTime(MethodExecuteSql, SimulatedExecutionTime{})
 	server.TestSpanner.Unfreeze()
 
 	// Test garbage collection.
