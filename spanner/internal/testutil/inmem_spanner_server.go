@@ -633,9 +633,6 @@ func (s *inMemSpannerServer) GetSession(ctx context.Context, req *spannerpb.GetS
 	if err := s.simulateExecutionTime(MethodGetSession, req); err != nil {
 		return nil, err
 	}
-	s.mu.Lock()
-	s.pings = append(s.pings, req.Name)
-	s.mu.Unlock()
 	if req.Name == "" {
 		return nil, gstatus.Error(codes.InvalidArgument, "Missing session name")
 	}
@@ -693,6 +690,11 @@ func (s *inMemSpannerServer) DeleteSession(ctx context.Context, req *spannerpb.D
 func (s *inMemSpannerServer) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest) (*spannerpb.ResultSet, error) {
 	if err := s.simulateExecutionTime(MethodExecuteSql, req); err != nil {
 		return nil, err
+	}
+	if req.Sql == "SELECT 1" {
+		s.mu.Lock()
+		s.pings = append(s.pings, req.Session)
+		s.mu.Unlock()
 	}
 	if req.Session == "" {
 		return nil, gstatus.Error(codes.InvalidArgument, "Missing session name")

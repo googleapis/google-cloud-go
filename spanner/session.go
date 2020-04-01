@@ -228,7 +228,10 @@ func (s *session) ping() error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	// s.getID is safe even when s is invalid.
-	_, err := s.client.GetSession(contextWithOutgoingMetadata(ctx, s.md), &sppb.GetSessionRequest{Name: s.getID()})
+	_, err := s.client.ExecuteSql(contextWithOutgoingMetadata(ctx, s.md), &sppb.ExecuteSqlRequest{
+		Session: s.getID(),
+		Sql:     "SELECT 1",
+	})
 	return err
 }
 
