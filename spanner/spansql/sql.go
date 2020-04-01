@@ -139,7 +139,7 @@ func (cd ColumnDef) SQL() string {
 func (tc TableConstraint) SQL() string {
 	var str string
 	if tc.Name != "" {
-		str += "CONSTRAINT " + ID(tc.Name).SQL()
+		str += "CONSTRAINT " + ID(tc.Name).SQL() + " "
 	}
 	str += tc.ForeignKey.SQL()
 	return str
