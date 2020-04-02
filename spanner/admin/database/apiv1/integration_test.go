@@ -245,6 +245,23 @@ func cleanupInstances(t *testing.T) {
 		if instanceIDSpace.Older(inst.Name, expireAge) {
 			t.Logf("Deleting instance %s", inst.Name)
 
+			// First delete any lingering backups that might have been left on
+			// the instance.
+			backups := databaseAdmin.ListBackups(ctx, &databasepb.ListBackupsRequest{Parent: inst.Name})
+			for {
+				backup, err := backups.Next()
+				if err == iterator.Done {
+					break
+				}
+				if err != nil {
+					t.Logf("failed to retrieve backups from instance %s because of error %v", inst.Name, err)
+					break
+				}
+				if err := databaseAdmin.DeleteBackup(ctx, &databasepb.DeleteBackupRequest{Name: backup.Name}); err != nil {
+					t.Logf("failed to delete backup %s (error %v)", backup.Name, err)
+				}
+			}
+
 			if err := instanceAdmin.DeleteInstance(ctx, &instancepb.DeleteInstanceRequest{Name: inst.Name}); err != nil {
 				t.Logf("failed to delete instance %s (error %v), might need a manual removal",
 					inst.Name, err)
