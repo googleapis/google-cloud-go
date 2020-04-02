@@ -190,6 +190,11 @@ type InMemSpannerServer interface {
 	// expect a SQL statement, including (batch) DML methods.
 	PutStatementResult(sql string, result *StatementResult) error
 
+	// Puts a mocked result on the server for a specific partition token. The
+	// result will only be used for query requests that specify a partition
+	// token.
+	PutPartitionResult(partitionToken []byte, result *StatementResult) error
+
 	// Adds a PartialResultSetExecutionTime to the server that should be returned
 	// for the specified SQL string.
 	AddPartialResultSetError(sql string, err PartialResultSetExecutionTime)
@@ -248,6 +253,7 @@ type inMemSpannerServer struct {
 	partitionedDmlTransactions map[string]bool
 	// The mocked results for this server.
 	statementResults map[string]*StatementResult
+	partitionResults map[string]*StatementResult
 	// The simulated execution times per method.
 	executionTimes map[string]*SimulatedExecutionTime
 	// The simulated errors for partial result sets
@@ -271,6 +277,7 @@ func NewInMemSpannerServer() InMemSpannerServer {
 	res := &inMemSpannerServer{}
 	res.initDefaults()
 	res.statementResults = make(map[string]*StatementResult)
+	res.partitionResults = make(map[string]*StatementResult)
 	res.executionTimes = make(map[string]*SimulatedExecutionTime)
 	res.partialResultSetErrors = make(map[string][]*PartialResultSetExecutionTime)
 	res.receivedRequests = make(chan interface{}, 1000000)
@@ -316,6 +323,15 @@ func (s *inMemSpannerServer) RemoveStatementResult(sql string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.statementResults, sql)
+}
+
+// Registers a mocked result for a partition token on the server.
+func (s *inMemSpannerServer) PutPartitionResult(partitionToken []byte, result *StatementResult) error {
+	tokenString := string(partitionToken)
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.partitionResults[tokenString] = result
+	return nil
 }
 
 func (s *inMemSpannerServer) AbortTransaction(id []byte) {
@@ -527,6 +543,17 @@ func (s *inMemSpannerServer) removeTransaction(tx *spannerpb.Transaction) {
 	delete(s.partitionedDmlTransactions, string(tx.Id))
 }
 
+func (s *inMemSpannerServer) getPartitionResult(partitionToken []byte) (*StatementResult, error) {
+	tokenString := string(partitionToken)
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	result, ok := s.partitionResults[tokenString]
+	if !ok {
+		return nil, gstatus.Error(codes.Internal, fmt.Sprintf("No result found for partition token %v", tokenString))
+	}
+	return result, nil
+}
+
 func (s *inMemSpannerServer) getStatementResult(sql string) (*StatementResult, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -711,7 +738,12 @@ func (s *inMemSpannerServer) ExecuteSql(ctx context.Context, req *spannerpb.Exec
 			return nil, err
 		}
 	}
-	statementResult, err := s.getStatementResult(req.Sql)
+	var statementResult *StatementResult
+	if req.PartitionToken != nil {
+		statementResult, err = s.getPartitionResult(req.PartitionToken)
+	} else {
+		statementResult, err = s.getStatementResult(req.Sql)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -748,7 +780,12 @@ func (s *inMemSpannerServer) ExecuteStreamingSql(req *spannerpb.ExecuteSqlReques
 			return err
 		}
 	}
-	statementResult, err := s.getStatementResult(req.Sql)
+	var statementResult *StatementResult
+	if req.PartitionToken != nil {
+		statementResult, err = s.getPartitionResult(req.PartitionToken)
+	} else {
+		statementResult, err = s.getStatementResult(req.Sql)
+	}
 	if err != nil {
 		return err
 	}

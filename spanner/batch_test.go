@@ -19,6 +19,7 @@ package spanner
 import (
 	"context"
 	"os"
+	"sync"
 	"testing"
 	"time"
 
@@ -114,5 +115,56 @@ func TestPartitionQuery_QueryOptions(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestPartitionQuery_Parallel(t *testing.T) {
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	txn, err := client.BatchReadOnlyTransaction(ctx, StrongRead())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer txn.Cleanup(ctx)
+	ps, err := txn.PartitionQuery(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), PartitionOptions{0, 10})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i, p := range ps {
+		server.TestSpanner.PutPartitionResult(p.pt, server.CreateSingleRowSingersResult(int64(i)))
+	}
+
+	wg := &sync.WaitGroup{}
+	mu := sync.Mutex{}
+	var total int64
+
+	for _, p := range ps {
+		p := p
+		go func() {
+			iter := txn.Execute(context.Background(), p)
+			defer iter.Stop()
+
+			var count int64
+			err := iter.Do(func(row *Row) error {
+				count++
+				return nil
+			})
+			if err != nil {
+				return
+			}
+
+			mu.Lock()
+			total += count
+			mu.Unlock()
+			wg.Done()
+		}()
+		wg.Add(1)
+	}
+
+	wg.Wait()
+	if g, w := total, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount; g != w {
+		t.Errorf("Row count mismatch\nGot: %d\nWant: %d", g, w)
 	}
 }
