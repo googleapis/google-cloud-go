@@ -2247,6 +2247,7 @@ func TestIntegration_QueryErrors(t *testing.T) {
 }
 
 func TestIntegration_MaterializedViewLifecycle(t *testing.T) {
+	t.Skip("awaiting full rollout, internal issue 152932296")
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
