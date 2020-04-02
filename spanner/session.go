@@ -313,6 +313,7 @@ func (s *session) recycle() {
 		// session pool currently has enough open sessions.
 		s.destroy(false)
 	}
+	s.pool.decNumInUse(context.Background())
 }
 
 // destroy removes the session from its home session pool, healthcheck queue
@@ -533,6 +534,10 @@ type sessionPool struct {
 	maxNumInUse uint64
 	// lastResetTime is the start time of the window for recording maxNumInUse.
 	lastResetTime time.Time
+	// numReads is the number of sessions that are idle for reads.
+	numReads uint64
+	// numWrites is the number of sessions that are idle for writes.
+	numWrites uint64
 
 	// mw is the maintenance window containing statistics for the max number of
 	// sessions checked out of the pool during the last 10 minutes.
@@ -577,10 +582,10 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 	}
 	// Errors should not prevent initializing the session pool.
 	ctx, err := tag.New(context.Background(),
-		tag.Upsert(tagClientID, sc.id),
-		tag.Upsert(tagDatabase, database),
-		tag.Upsert(tagInstance, instance),
-		tag.Upsert(tagLibVersion, version.Repo),
+		tag.Upsert(tagKeyClientID, sc.id),
+		tag.Upsert(tagKeyDatabase, database),
+		tag.Upsert(tagKeyInstance, instance),
+		tag.Upsert(tagKeyLibVersion, version.Repo),
 	)
 	if err != nil {
 		logf(pool.sc.logger, "Failed to create tag map, error: %v", err)
@@ -608,8 +613,16 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 	return pool, nil
 }
 
-func (p *sessionPool) recordStat(ctx context.Context, m *stats.Int64Measure, n int64) {
+func (p *sessionPool) recordStat(ctx context.Context, m *stats.Int64Measure, n int64, tags ...tag.Tag) {
 	ctx = tag.NewContext(ctx, p.tagMap)
+	mutators := make([]tag.Mutator, len(tags))
+	for i, t := range tags {
+		mutators[i] = tag.Upsert(t.Key, t.Value)
+	}
+	ctx, err := tag.New(ctx, mutators...)
+	if err != nil {
+		logf(p.sc.logger, "Failed to tag metrics, error: %v", err)
+	}
 	recordStat(ctx, m, n)
 }
 
@@ -648,6 +661,7 @@ func (p *sessionPool) sessionReady(s *session) {
 	} else {
 		s.setIdleList(p.idleList.PushBack(s))
 	}
+	p.incNumReadsLocked(context.Background())
 	// Notify other waiters blocking on session creation.
 	close(p.mayGetSession)
 	p.mayGetSession = make(chan struct{})
@@ -841,10 +855,12 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 			s = p.idleList.Remove(p.idleList.Front()).(*session)
 			trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
 				"Acquired read-only session")
+			p.decNumReadsLocked(ctx)
 		} else if p.idleWriteList.Len() > 0 {
 			s = p.idleWriteList.Remove(p.idleWriteList.Front()).(*session)
 			trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
 				"Acquired read-write session")
+			p.decNumWritesLocked(ctx)
 		}
 		if s != nil {
 			s.setIdleList(nil)
@@ -920,9 +936,11 @@ func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, err
 			// list.
 			s = p.idleWriteList.Remove(p.idleWriteList.Front()).(*session)
 			trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()}, "Acquired read-write session")
+			p.decNumWritesLocked(ctx)
 		} else if p.idleList.Len() > 0 {
 			s = p.idleList.Remove(p.idleList.Front()).(*session)
 			trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()}, "Acquired read-only session")
+			p.decNumReadsLocked(ctx)
 		}
 		if s != nil {
 			s.setIdleList(nil)
@@ -971,6 +989,8 @@ func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, err
 				"Created session")
 		}
 		if !s.isWritePrepared() {
+			p.incNumBeingPrepared(ctx)
+			defer p.decNumBeingPrepared(ctx)
 			if err = s.prepareForWrite(ctx); err != nil {
 				if isSessionNotFoundError(err) {
 					s.destroy(false)
@@ -999,19 +1019,19 @@ func (p *sessionPool) recycle(s *session) bool {
 		// Reject the session if session is invalid or pool itself is invalid.
 		return false
 	}
+	ctx := context.Background()
 	// Put session at the top of the list to be handed out in LIFO order for load balancing
 	// across channels.
 	if s.isWritePrepared() {
 		s.setIdleList(p.idleWriteList.PushFront(s))
+		p.incNumWritesLocked(ctx)
 	} else {
 		s.setIdleList(p.idleList.PushFront(s))
+		p.incNumReadsLocked(ctx)
 	}
 	// Broadcast that a session has been returned to idle list.
 	close(p.mayGetSession)
 	p.mayGetSession = make(chan struct{})
-	p.numInUse--
-	p.recordStat(context.Background(), InUseSessionsCount, int64(p.numInUse))
-	p.recordStat(context.Background(), ReleasedSessionsCount, 1)
 	return true
 }
 
@@ -1027,16 +1047,24 @@ func (p *sessionPool) remove(s *session, isExpire bool) bool {
 		return false
 	}
 	ol := s.setIdleList(nil)
+	ctx := context.Background()
 	// If the session is in the idlelist, remove it.
 	if ol != nil {
 		// Remove from whichever list it is in.
-		p.idleList.Remove(ol)
-		p.idleWriteList.Remove(ol)
+		var elem interface{}
+		elem = p.idleList.Remove(ol)
+		if elem != nil {
+			p.decNumReadsLocked(ctx)
+		}
+		elem = p.idleWriteList.Remove(ol)
+		if elem != nil {
+			p.decNumWritesLocked(ctx)
+		}
 	}
 	if s.invalidate() {
 		// Decrease the number of opened sessions.
 		p.numOpened--
-		p.recordStat(context.Background(), OpenSessionCount, int64(p.numOpened))
+		p.recordStat(ctx, OpenSessionCount, int64(p.numOpened))
 		// Broadcast that a session has been destroyed.
 		close(p.mayGetSession)
 		p.mayGetSession = make(chan struct{})
@@ -1057,12 +1085,66 @@ func (p *sessionPool) incNumInUse(ctx context.Context) {
 
 func (p *sessionPool) incNumInUseLocked(ctx context.Context) {
 	p.numInUse++
-	p.recordStat(ctx, InUseSessionsCount, int64(p.numInUse))
+	p.recordStat(ctx, SessionsCount, int64(p.numInUse), tagNumInUseSessions)
 	p.recordStat(ctx, AcquiredSessionsCount, 1)
 	if p.numInUse > p.maxNumInUse {
 		p.maxNumInUse = p.numInUse
 		p.recordStat(ctx, MaxInUseSessionsCount, int64(p.maxNumInUse))
 	}
+}
+
+func (p *sessionPool) decNumInUse(ctx context.Context) {
+	p.mu.Lock()
+	p.decNumInUseLocked(ctx)
+	p.mu.Unlock()
+}
+
+func (p *sessionPool) decNumInUseLocked(ctx context.Context) {
+	p.numInUse--
+	p.recordStat(ctx, SessionsCount, int64(p.numInUse), tagNumInUseSessions)
+	p.recordStat(ctx, ReleasedSessionsCount, 1)
+}
+
+func (p *sessionPool) incNumReadsLocked(ctx context.Context) {
+	p.numReads++
+	p.recordStat(ctx, SessionsCount, int64(p.numReads), tagNumReadSessions)
+}
+
+func (p *sessionPool) decNumReadsLocked(ctx context.Context) {
+	p.numReads--
+	p.recordStat(ctx, SessionsCount, int64(p.numReads), tagNumReadSessions)
+}
+
+func (p *sessionPool) incNumWritesLocked(ctx context.Context) {
+	p.numWrites++
+	p.recordStat(ctx, SessionsCount, int64(p.numWrites), tagNumWriteSessions)
+}
+
+func (p *sessionPool) decNumWritesLocked(ctx context.Context) {
+	p.numWrites--
+	p.recordStat(ctx, SessionsCount, int64(p.numWrites), tagNumWriteSessions)
+}
+
+func (p *sessionPool) incNumBeingPrepared(ctx context.Context) {
+	p.mu.Lock()
+	p.incNumBeingPreparedLocked(ctx)
+	p.mu.Unlock()
+}
+
+func (p *sessionPool) incNumBeingPreparedLocked(ctx context.Context) {
+	p.prepareReqs++
+	p.recordStat(ctx, SessionsCount, int64(p.prepareReqs), tagNumBeingPrepared)
+}
+
+func (p *sessionPool) decNumBeingPrepared(ctx context.Context) {
+	p.mu.Lock()
+	p.decNumBeingPreparedLocked(ctx)
+	p.mu.Unlock()
+}
+
+func (p *sessionPool) decNumBeingPreparedLocked(ctx context.Context) {
+	p.prepareReqs--
+	p.recordStat(ctx, SessionsCount, int64(p.prepareReqs), tagNumBeingPrepared)
 }
 
 // hcHeap implements heap.Interface. It is used to create the priority queue for
@@ -1363,9 +1445,10 @@ func (hc *healthChecker) worker(i int) {
 					return nil
 				}
 				session := hc.pool.idleList.Remove(hc.pool.idleList.Front()).(*session)
+				ctx := context.Background()
+				hc.pool.decNumReadsLocked(ctx)
 				session.checkingHealth = true
-				hc.pool.prepareReqs++
-				hc.pool.incNumInUseLocked(context.Background())
+				hc.pool.incNumBeingPreparedLocked(ctx)
 				return session
 			}
 		}
@@ -1396,7 +1479,7 @@ func (hc *healthChecker) worker(i int) {
 			}
 			hc.pool.recycle(ws)
 			hc.pool.mu.Lock()
-			hc.pool.prepareReqs--
+			hc.pool.decNumBeingPreparedLocked(ctx)
 			hc.pool.mu.Unlock()
 			hc.markDone(ws)
 		}

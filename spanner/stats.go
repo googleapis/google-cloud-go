@@ -25,11 +25,17 @@ import (
 const statsPrefix = "cloud.google.com/go/spanner/"
 
 var (
-	tagClientID   = tag.MustNewKey("client_id")
-	tagDatabase   = tag.MustNewKey("database")
-	tagInstance   = tag.MustNewKey("instance_id")
-	tagLibVersion = tag.MustNewKey("library_version")
-	tagAllKeys    = []tag.Key{tagClientID, tagDatabase, tagInstance, tagLibVersion}
+	tagKeyClientID   = tag.MustNewKey("client_id")
+	tagKeyDatabase   = tag.MustNewKey("database")
+	tagKeyInstance   = tag.MustNewKey("instance_id")
+	tagKeyLibVersion = tag.MustNewKey("library_version")
+	tagKeyType       = tag.MustNewKey("type")
+	tagCommonKeys    = []tag.Key{tagKeyClientID, tagKeyDatabase, tagKeyInstance, tagKeyLibVersion}
+
+	tagNumInUseSessions = tag.Tag{Key: tagKeyType, Value: "num_in_use_sessions"}
+	tagNumBeingPrepared = tag.Tag{Key: tagKeyType, Value: "num_sessions_being_prepared"}
+	tagNumReadSessions  = tag.Tag{Key: tagKeyType, Value: "num_read_sessions"}
+	tagNumWriteSessions = tag.Tag{Key: tagKeyType, Value: "num_write_prepared_sessions"}
 )
 
 func recordStat(ctx context.Context, m *stats.Int64Measure, n int64) {
@@ -50,7 +56,7 @@ var (
 	OpenSessionCountView = &view.View{
 		Measure:     OpenSessionCount,
 		Aggregation: view.LastValue(),
-		TagKeys:     tagAllKeys,
+		TagKeys:     tagCommonKeys,
 	}
 
 	// MaxAllowedSessionsCount is a measure of the maximum number of sessions
@@ -66,23 +72,22 @@ var (
 	MaxAllowedSessionsCountView = &view.View{
 		Measure:     MaxAllowedSessionsCount,
 		Aggregation: view.LastValue(),
-		TagKeys:     tagAllKeys,
+		TagKeys:     tagCommonKeys,
 	}
 
-	// InUseSessionsCount is a measure of the number of sessions currently
-	// opened.
-	InUseSessionsCount = stats.Int64(
-		statsPrefix+"in_use_sessions",
+	// SessionsCount is a measure of the number of sessions in the pool
+	// including both in-use, idle, and being prepared.
+	SessionsCount = stats.Int64(
+		statsPrefix+"num_sessions_in_pool",
 		"The number of sessions currently in use.",
 		stats.UnitDimensionless,
 	)
 
-	// InUseSessionsCountView is a view of the last value of
-	// InUseSessionsCount.
-	InUseSessionsCountView = &view.View{
-		Measure:     InUseSessionsCount,
+	// SessionsCountView is a view of the last value of SessionsCount.
+	SessionsCountView = &view.View{
+		Measure:     SessionsCount,
 		Aggregation: view.LastValue(),
-		TagKeys:     tagAllKeys,
+		TagKeys:     append(tagCommonKeys, tagKeyType),
 	}
 
 	// MaxInUseSessionsCount is a measure of the maximum number of sessions
@@ -98,7 +103,7 @@ var (
 	MaxInUseSessionsCountView = &view.View{
 		Measure:     MaxInUseSessionsCount,
 		Aggregation: view.LastValue(),
-		TagKeys:     tagAllKeys,
+		TagKeys:     tagCommonKeys,
 	}
 
 	// GetSessionTimeoutsCount is a measure of the number of get sessions
@@ -114,7 +119,7 @@ var (
 	GetSessionTimeoutsCountView = &view.View{
 		Measure:     GetSessionTimeoutsCount,
 		Aggregation: view.Count(),
-		TagKeys:     tagAllKeys,
+		TagKeys:     tagCommonKeys,
 	}
 
 	// AcquiredSessionsCount is the number of sessions acquired from
@@ -130,7 +135,7 @@ var (
 	AcquiredSessionsCountView = &view.View{
 		Measure:     AcquiredSessionsCount,
 		Aggregation: view.Count(),
-		TagKeys:     tagAllKeys,
+		TagKeys:     tagCommonKeys,
 	}
 
 	// ReleasedSessionsCount is the number of sessions released by the user
@@ -146,7 +151,7 @@ var (
 	ReleasedSessionsCountView = &view.View{
 		Measure:     ReleasedSessionsCount,
 		Aggregation: view.Count(),
-		TagKeys:     tagAllKeys,
+		TagKeys:     tagCommonKeys,
 	}
 )
 
@@ -155,7 +160,7 @@ func EnableStatViews() error {
 	return view.Register(
 		OpenSessionCountView,
 		MaxAllowedSessionsCountView,
-		InUseSessionsCountView,
+		SessionsCountView,
 		MaxInUseSessionsCountView,
 		GetSessionTimeoutsCountView,
 		AcquiredSessionsCountView,
