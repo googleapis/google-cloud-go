@@ -1517,3 +1517,20 @@ func TestIntegration_DeadLetterPolicy_ClearDeadLetter(t *testing.T) {
 		t.Fatalf("SubsciptionConfig; got: - want: +\n%s", diff)
 	}
 }
+
+// TestIntegration_BadEndpoint tests that specifying a bad
+// endpoint will cause an error in RPCs.
+func TestIntegration_BadEndpoint(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	opts := withGRPCHeadersAssertion(t,
+		option.WithEndpoint("example.googleapis.com:443"),
+	)
+	client, err := NewClient(ctx, testutil.ProjID(), opts...)
+	if err != nil {
+		t.Fatalf("Creating client error: %v", err)
+	}
+	if _, err = client.CreateTopic(ctx, topicIDs.New()); err == nil {
+		t.Fatalf("CreateTopic should fail with fake endpoint, got nil err")
+	}
+}
