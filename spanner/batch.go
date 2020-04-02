@@ -261,16 +261,18 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 	}
 	// Read or query partition.
 	if p.rreq != nil {
-		p.rreq.PartitionToken = p.pt
+		req := *p.rreq
+		req.PartitionToken = p.pt
 		rpc = func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
-			p.rreq.ResumeToken = resumeToken
-			return client.StreamingRead(ctx, p.rreq)
+			req.ResumeToken = resumeToken
+			return client.StreamingRead(ctx, &req)
 		}
 	} else {
-		p.qreq.PartitionToken = p.pt
+		req := *p.qreq
+		req.PartitionToken = p.pt
 		rpc = func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
-			p.qreq.ResumeToken = resumeToken
-			return client.ExecuteStreamingSql(ctx, p.qreq)
+			req.ResumeToken = resumeToken
+			return client.ExecuteStreamingSql(ctx, &req)
 		}
 	}
 	return stream(
