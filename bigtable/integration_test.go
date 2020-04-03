@@ -29,17 +29,22 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/internal/uid"
 	"github.com/golang/protobuf/proto"
 	"google.golang.org/api/iterator"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 )
 
-var presidentsSocialGraph = map[string][]string{
-	"wmckinley":   {"tjefferson"},
-	"gwashington": {"jadams"},
-	"tjefferson":  {"gwashington", "jadams"},
-	"jadams":      {"gwashington", "tjefferson"},
-}
+var (
+	presidentsSocialGraph = map[string][]string{
+		"wmckinley":   {"tjefferson"},
+		"gwashington": {"jadams"},
+		"tjefferson":  {"gwashington", "jadams"},
+		"jadams":      {"gwashington", "tjefferson"},
+	}
+
+	tableNameSpace = uid.NewSpace("cbt-test", &uid.Options{Short: true})
+)
 
 func populatePresidentsGraph(table *Table) error {
 	ctx := context.Background()
@@ -1886,7 +1891,14 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ *Client, _ *AdminCli
 		return nil, nil, nil, "", nil, err
 	}
 
-	tableName = testEnv.Config().Table
+	if testEnv.Config().UseProd {
+		// TODO: tables may not be successfully deleted in some cases, and will
+		// become obsolete. We may need a way to automatically delete them.
+		tableName = tableNameSpace.New()
+	} else {
+		tableName = testEnv.Config().Table
+	}
+
 	if err := adminClient.CreateTable(ctx, tableName); err != nil {
 		cancel()
 		return nil, nil, nil, "", nil, err
