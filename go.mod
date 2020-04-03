@@ -22,7 +22,7 @@ require (
 	golang.org/x/sys v0.0.0-20200331124033-c3d80250170d // indirect
 	golang.org/x/text v0.3.2
 	golang.org/x/tools v0.0.0-20200402223321-bcf690261a44
-	google.golang.org/api v0.20.0
+	google.golang.org/api v0.21.0
 	google.golang.org/genproto v0.0.0-20200403120447-c50568487044
 	google.golang.org/grpc v1.28.0
 	honnef.co/go/tools v0.0.1-2020.1.3
