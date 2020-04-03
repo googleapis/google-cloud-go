@@ -22,7 +22,7 @@
 // individual method pages. The table entries below are presented in
 // alphabetical order, not in order of common use. For explanations of the
 // concepts found in the table entries, read the [Cloud Monitoring
-// documentation](/monitoring/docs).
+// documentation](https://cloud.google.com/monitoring/docs).
 //
 // Use of Context
 //
@@ -45,7 +45,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-const versionClient = "20200402"
+const versionClient = "20200403"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
