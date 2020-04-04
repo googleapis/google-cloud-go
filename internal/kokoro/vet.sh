@@ -60,7 +60,7 @@ golint ./... 2>&1 | ( \
   grep -vE "receiver name [a-zA-Z]+[0-9]* should be consistent with previous receiver name" | \
   grep -vE "exported const AllUsers|AllAuthenticatedUsers|RoleOwner|SSD|HDD|PRODUCTION|DEVELOPMENT should have comment" | \
   grep -v "exported func Value returns unexported type pretty.val, which can be annoying to use" | \
-  grep -v "exported func Increment returns unexported type firestore.increment, which can be annoying to use" | \
+  grep -vE "exported func (Increment|FieldTransformIncrement|FieldTransformMinimum|FieldTransformMaximum) returns unexported type firestore.transform, which can be annoying to use" | \
   grep -v "ExecuteStreamingSql" | \
   grep -v "MethodExecuteSql should be MethodExecuteSQL" | \
   grep -vE " executeStreamingSql(Min|Rnd)Time" | \
