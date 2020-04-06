@@ -54,6 +54,31 @@ func ExampleJobControllerClient_SubmitJob() {
 	_ = resp
 }
 
+func ExampleJobControllerClient_SubmitJobAsOperation() {
+	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1beta2"
+
+	ctx := context.Background()
+	c, err := dataproc.NewJobControllerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &dataprocpb.SubmitJobRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.SubmitJobAsOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleJobControllerClient_GetJob() {
 	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1beta2"
 
