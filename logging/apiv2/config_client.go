@@ -530,7 +530,7 @@ func (c *ConfigClient) DeleteExclusion(ctx context.Context, req *loggingpb.Delet
 // the GCP organization.
 //
 // See Enabling CMEK for Logs
-// Router (at /logging/docs/routing/managed-encryption) for more information.
+// Router (at https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 func (c *ConfigClient) GetCmekSettings(ctx context.Context, req *loggingpb.GetCmekSettingsRequest, opts ...gax.CallOption) (*loggingpb.CmekSettings, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -560,7 +560,7 @@ func (c *ConfigClient) GetCmekSettings(ctx context.Context, req *loggingpb.GetCm
 // 3) access to the key is disabled.
 //
 // See Enabling CMEK for Logs
-// Router (at /logging/docs/routing/managed-encryption) for more information.
+// Router (at https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 func (c *ConfigClient) UpdateCmekSettings(ctx context.Context, req *loggingpb.UpdateCmekSettingsRequest, opts ...gax.CallOption) (*loggingpb.CmekSettings, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

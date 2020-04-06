@@ -21,12 +21,15 @@ import (
 	"math"
 	"time"
 
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
 	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1beta2"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -34,12 +37,13 @@ import (
 
 // JobControllerCallOptions contains the retry settings for each method of JobControllerClient.
 type JobControllerCallOptions struct {
-	SubmitJob []gax.CallOption
-	GetJob    []gax.CallOption
-	ListJobs  []gax.CallOption
-	UpdateJob []gax.CallOption
-	CancelJob []gax.CallOption
-	DeleteJob []gax.CallOption
+	SubmitJob            []gax.CallOption
+	SubmitJobAsOperation []gax.CallOption
+	GetJob               []gax.CallOption
+	ListJobs             []gax.CallOption
+	UpdateJob            []gax.CallOption
+	CancelJob            []gax.CallOption
+	DeleteJob            []gax.CallOption
 }
 
 func defaultJobControllerClientOptions() []option.ClientOption {
@@ -55,6 +59,17 @@ func defaultJobControllerClientOptions() []option.ClientOption {
 func defaultJobControllerCallOptions() *JobControllerCallOptions {
 	return &JobControllerCallOptions{
 		SubmitJob: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		SubmitJobAsOperation: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -139,6 +154,11 @@ type JobControllerClient struct {
 	// The gRPC API client.
 	jobControllerClient dataprocpb.JobControllerClient
 
+	// LROClient is used internally to handle longrunning operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+
 	// The call options for this service.
 	CallOptions *JobControllerCallOptions
 
@@ -162,6 +182,16 @@ func NewJobControllerClient(ctx context.Context, opts ...option.ClientOption) (*
 	}
 	c.setGoogleClientInfo()
 
+	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
 	return c, nil
 }
 
@@ -201,6 +231,24 @@ func (c *JobControllerClient) SubmitJob(ctx context.Context, req *dataprocpb.Sub
 		return nil, err
 	}
 	return resp, nil
+}
+
+// SubmitJobAsOperation submits job to a cluster.
+func (c *JobControllerClient) SubmitJobAsOperation(ctx context.Context, req *dataprocpb.SubmitJobRequest, opts ...gax.CallOption) (*SubmitJobAsOperationOperation, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.SubmitJobAsOperation[0:len(c.CallOptions.SubmitJobAsOperation):len(c.CallOptions.SubmitJobAsOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.jobControllerClient.SubmitJobAsOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &SubmitJobAsOperationOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
 }
 
 // GetJob gets the resource representation for a job in a project.
@@ -306,6 +354,75 @@ func (c *JobControllerClient) DeleteJob(ctx context.Context, req *dataprocpb.Del
 		return err
 	}, opts...)
 	return err
+}
+
+// SubmitJobAsOperationOperation manages a long-running operation from SubmitJobAsOperation.
+type SubmitJobAsOperationOperation struct {
+	lro *longrunning.Operation
+}
+
+// SubmitJobAsOperationOperation returns a new SubmitJobAsOperationOperation from a given name.
+// The name must be that of a previously created SubmitJobAsOperationOperation, possibly from a different process.
+func (c *JobControllerClient) SubmitJobAsOperationOperation(name string) *SubmitJobAsOperationOperation {
+	return &SubmitJobAsOperationOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *SubmitJobAsOperationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dataprocpb.Job, error) {
+	var resp dataprocpb.Job
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *SubmitJobAsOperationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dataprocpb.Job, error) {
+	var resp dataprocpb.Job
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *SubmitJobAsOperationOperation) Metadata() (*dataprocpb.JobMetadata, error) {
+	var meta dataprocpb.JobMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *SubmitJobAsOperationOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *SubmitJobAsOperationOperation) Name() string {
+	return op.lro.Name()
 }
 
 // JobIterator manages a stream of *dataprocpb.Job.
