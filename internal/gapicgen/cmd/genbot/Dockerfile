@@ -1,5 +1,7 @@
 FROM docker:stable-dind
 
+ENV GO111MODULE on
+
 RUN apk update && \
     apk add ca-certificates wget git unzip
 # Install bash and ssh tools (needed to run regen.sh etc).
