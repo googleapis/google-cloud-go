@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newErrorStatsClientHook clientHook
+
 // ErrorStatsCallOptions contains the retry settings for each method of ErrorStatsClient.
 type ErrorStatsCallOptions struct {
 	ListGroupStats []gax.CallOption
@@ -114,7 +116,17 @@ type ErrorStatsClient struct {
 // An API for retrieving and managing error statistics as well as data for
 // individual events.
 func NewErrorStatsClient(ctx context.Context, opts ...option.ClientOption) (*ErrorStatsClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultErrorStatsClientOptions(), opts...)...)
+	clientOpts := defaultErrorStatsClientOptions()
+
+	if newErrorStatsClientHook != nil {
+		hookOpts, err := newErrorStatsClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

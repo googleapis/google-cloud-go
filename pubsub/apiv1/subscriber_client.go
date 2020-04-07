@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newSubscriberClientHook clientHook
+
 // SubscriberCallOptions contains the retry settings for each method of SubscriberClient.
 type SubscriberCallOptions struct {
 	CreateSubscription []gax.CallOption
@@ -286,7 +288,17 @@ type SubscriberClient struct {
 // consume messages from a subscription via the Pull method or by
 // establishing a bi-directional stream using the StreamingPull method.
 func NewSubscriberClient(ctx context.Context, opts ...option.ClientOption) (*SubscriberClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultSubscriberClientOptions(), opts...)...)
+	clientOpts := defaultSubscriberClientOptions()
+
+	if newSubscriberClientHook != nil {
+		hookOpts, err := newSubscriberClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

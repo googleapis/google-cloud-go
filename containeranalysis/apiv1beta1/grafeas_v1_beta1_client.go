@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newGrafeasV1Beta1ClientHook clientHook
+
 // GrafeasV1Beta1CallOptions contains the retry settings for each method of GrafeasV1Beta1Client.
 type GrafeasV1Beta1CallOptions struct {
 	GetOccurrence                      []gax.CallOption
@@ -216,7 +218,17 @@ type GrafeasV1Beta1Client struct {
 // there would be one note for the vulnerability and an occurrence for each
 // image with the vulnerability referring to that note.
 func NewGrafeasV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (*GrafeasV1Beta1Client, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultGrafeasV1Beta1ClientOptions(), opts...)...)
+	clientOpts := defaultGrafeasV1Beta1ClientOptions()
+
+	if newGrafeasV1Beta1ClientHook != nil {
+		hookOpts, err := newGrafeasV1Beta1ClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

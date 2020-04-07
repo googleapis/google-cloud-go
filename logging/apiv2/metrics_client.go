@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newMetricsClientHook clientHook
+
 // MetricsCallOptions contains the retry settings for each method of MetricsClient.
 type MetricsCallOptions struct {
 	ListLogMetrics  []gax.CallOption
@@ -128,7 +130,17 @@ type MetricsClient struct {
 //
 // Service for configuring logs-based metrics.
 func NewMetricsClient(ctx context.Context, opts ...option.ClientOption) (*MetricsClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultMetricsClientOptions(), opts...)...)
+	clientOpts := defaultMetricsClientOptions()
+
+	if newMetricsClientHook != nil {
+		hookOpts, err := newMetricsClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

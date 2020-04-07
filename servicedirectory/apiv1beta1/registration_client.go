@@ -35,6 +35,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newRegistrationClientHook clientHook
+
 // RegistrationCallOptions contains the retry settings for each method of RegistrationClient.
 type RegistrationCallOptions struct {
 	CreateNamespace    []gax.CallOption
@@ -323,7 +325,17 @@ type RegistrationClient struct {
 //   resources, named
 //   projects/*/locations/*/namespaces/*/services/*/endpoints/*.
 func NewRegistrationClient(ctx context.Context, opts ...option.ClientOption) (*RegistrationClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultRegistrationClientOptions(), opts...)...)
+	clientOpts := defaultRegistrationClientOptions()
+
+	if newRegistrationClientHook != nil {
+		hookOpts, err := newRegistrationClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

@@ -35,6 +35,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newJobControllerClientHook clientHook
+
 // JobControllerCallOptions contains the retry settings for each method of JobControllerClient.
 type JobControllerCallOptions struct {
 	SubmitJob            []gax.CallOption
@@ -170,7 +172,17 @@ type JobControllerClient struct {
 //
 // The JobController provides methods to manage jobs.
 func NewJobControllerClient(ctx context.Context, opts ...option.ClientOption) (*JobControllerClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultJobControllerClientOptions(), opts...)...)
+	clientOpts := defaultJobControllerClientOptions()
+
+	if newJobControllerClientHook != nil {
+		hookOpts, err := newJobControllerClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

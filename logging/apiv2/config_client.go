@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newConfigClientHook clientHook
+
 // ConfigCallOptions contains the retry settings for each method of ConfigClient.
 type ConfigCallOptions struct {
 	ListBuckets        []gax.CallOption
@@ -181,7 +183,17 @@ type ConfigClient struct {
 //
 // Service for configuring sinks used to route log entries.
 func NewConfigClient(ctx context.Context, opts ...option.ClientOption) (*ConfigClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultConfigClientOptions(), opts...)...)
+	clientOpts := defaultConfigClientOptions()
+
+	if newConfigClientHook != nil {
+		hookOpts, err := newConfigClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

@@ -32,6 +32,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newClientHook clientHook
+
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
 	ListTraces  []gax.CallOption
@@ -115,7 +117,17 @@ type Client struct {
 // timed event which forms a node of the trace tree. Spans for a single trace
 // may span multiple services.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultClientOptions(), opts...)...)
+	clientOpts := defaultClientOptions()
+
+	if newClientHook != nil {
+		hookOpts, err := newClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

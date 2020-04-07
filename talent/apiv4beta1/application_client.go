@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newApplicationClientHook clientHook
+
 // ApplicationCallOptions contains the retry settings for each method of ApplicationClient.
 type ApplicationCallOptions struct {
 	CreateApplication []gax.CallOption
@@ -118,7 +120,17 @@ type ApplicationClient struct {
 // A service that handles application management, including CRUD and
 // enumeration.
 func NewApplicationClient(ctx context.Context, opts ...option.ClientOption) (*ApplicationClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultApplicationClientOptions(), opts...)...)
+	clientOpts := defaultApplicationClientOptions()
+
+	if newApplicationClientHook != nil {
+		hookOpts, err := newApplicationClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

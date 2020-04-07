@@ -30,6 +30,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newImageAnnotatorClientHook clientHook
+
 // ImageAnnotatorCallOptions contains the retry settings for each method of ImageAnnotatorClient.
 type ImageAnnotatorCallOptions struct {
 	BatchAnnotateImages []gax.CallOption
@@ -85,7 +87,17 @@ type ImageAnnotatorClient struct {
 // images, such as face, landmark, logo, label, and text detection. The
 // ImageAnnotator service returns detected entities from the images.
 func NewImageAnnotatorClient(ctx context.Context, opts ...option.ClientOption) (*ImageAnnotatorClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultImageAnnotatorClientOptions(), opts...)...)
+	clientOpts := defaultImageAnnotatorClientOptions()
+
+	if newImageAnnotatorClientHook != nil {
+		hookOpts, err := newImageAnnotatorClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

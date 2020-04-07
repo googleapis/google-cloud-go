@@ -35,6 +35,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newClusterControllerClientHook clientHook
+
 // ClusterControllerCallOptions contains the retry settings for each method of ClusterControllerClient.
 type ClusterControllerCallOptions struct {
 	CreateCluster   []gax.CallOption
@@ -157,7 +159,17 @@ type ClusterControllerClient struct {
 // The ClusterControllerService provides methods to manage clusters
 // of Compute Engine instances.
 func NewClusterControllerClient(ctx context.Context, opts ...option.ClientOption) (*ClusterControllerClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultClusterControllerClientOptions(), opts...)...)
+	clientOpts := defaultClusterControllerClientOptions()
+
+	if newClusterControllerClientHook != nil {
+		hookOpts, err := newClusterControllerClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
@@ -280,7 +292,7 @@ func (c *ClusterControllerClient) GetCluster(ctx context.Context, req *dataprocp
 	return resp, nil
 }
 
-// ListClusters lists all regions/{region}/clusters in a project.
+// ListClusters lists all regions/{region}/clusters in a project alphabetically.
 func (c *ClusterControllerClient) ListClusters(ctx context.Context, req *dataprocpb.ListClustersRequest, opts ...gax.CallOption) *ClusterIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListClusters[0:len(c.CallOptions.ListClusters):len(c.CallOptions.ListClusters)], opts...)

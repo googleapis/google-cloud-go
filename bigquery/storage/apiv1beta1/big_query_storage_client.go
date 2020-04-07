@@ -32,6 +32,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newBigQueryStorageClientHook clientHook
+
 // BigQueryStorageCallOptions contains the retry settings for each method of BigQueryStorageClient.
 type BigQueryStorageCallOptions struct {
 	CreateReadSession             []gax.CallOption
@@ -138,7 +140,17 @@ type BigQueryStorageClient struct {
 //
 // The BigQuery storage API can be used to read data stored in BigQuery.
 func NewBigQueryStorageClient(ctx context.Context, opts ...option.ClientOption) (*BigQueryStorageClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultBigQueryStorageClientOptions(), opts...)...)
+	clientOpts := defaultBigQueryStorageClientOptions()
+
+	if newBigQueryStorageClientHook != nil {
+		hookOpts, err := newBigQueryStorageClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

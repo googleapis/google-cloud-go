@@ -28,6 +28,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newConformanceClientHook clientHook
+
 // ConformanceCallOptions contains the retry settings for each method of ConformanceClient.
 type ConformanceCallOptions struct {
 	Parse []gax.CallOption
@@ -78,7 +80,17 @@ type ConformanceClient struct {
 // a server for this API.  The API will be used for conformance testing
 // and other utilities.
 func NewConformanceClient(ctx context.Context, opts ...option.ClientOption) (*ConformanceClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultConformanceClientOptions(), opts...)...)
+	clientOpts := defaultConformanceClientOptions()
+
+	if newConformanceClientHook != nil {
+		hookOpts, err := newConformanceClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

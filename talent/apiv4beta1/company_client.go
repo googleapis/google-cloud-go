@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newCompanyClientHook clientHook
+
 // CompanyCallOptions contains the retry settings for each method of CompanyClient.
 type CompanyCallOptions struct {
 	CreateCompany []gax.CallOption
@@ -117,7 +119,17 @@ type CompanyClient struct {
 //
 // A service that handles company management, including CRUD and enumeration.
 func NewCompanyClient(ctx context.Context, opts ...option.ClientOption) (*CompanyClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultCompanyClientOptions(), opts...)...)
+	clientOpts := defaultCompanyClientOptions()
+
+	if newCompanyClientHook != nil {
+		hookOpts, err := newCompanyClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

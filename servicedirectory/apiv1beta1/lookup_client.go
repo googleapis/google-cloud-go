@@ -32,6 +32,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newLookupClientHook clientHook
+
 // LookupCallOptions contains the retry settings for each method of LookupClient.
 type LookupCallOptions struct {
 	ResolveService []gax.CallOption
@@ -85,7 +87,17 @@ type LookupClient struct {
 //
 // Service Directory API for looking up service data at runtime.
 func NewLookupClient(ctx context.Context, opts ...option.ClientOption) (*LookupClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultLookupClientOptions(), opts...)...)
+	clientOpts := defaultLookupClientOptions()
+
+	if newLookupClientHook != nil {
+		hookOpts, err := newLookupClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

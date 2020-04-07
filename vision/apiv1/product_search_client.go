@@ -37,6 +37,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newProductSearchClientHook clientHook
+
 // ProductSearchCallOptions contains the retry settings for each method of ProductSearchClient.
 type ProductSearchCallOptions struct {
 	CreateProductSet            []gax.CallOption
@@ -327,7 +329,17 @@ type ProductSearchClient struct {
 //   Each Product has a collection of ReferenceImage resources, named
 //   projects/*/locations/*/products/*/referenceImages/*
 func NewProductSearchClient(ctx context.Context, opts ...option.ClientOption) (*ProductSearchClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultProductSearchClientOptions(), opts...)...)
+	clientOpts := defaultProductSearchClientOptions()
+
+	if newProductSearchClientHook != nil {
+		hookOpts, err := newProductSearchClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

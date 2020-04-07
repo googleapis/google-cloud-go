@@ -37,6 +37,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newTranslationClientHook clientHook
+
 // TranslationCallOptions contains the retry settings for each method of TranslationClient.
 type TranslationCallOptions struct {
 	TranslateText         []gax.CallOption
@@ -142,7 +144,17 @@ type TranslationClient struct {
 //
 // Provides natural language translation operations.
 func NewTranslationClient(ctx context.Context, opts ...option.ClientOption) (*TranslationClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultTranslationClientOptions(), opts...)...)
+	clientOpts := defaultTranslationClientOptions()
+
+	if newTranslationClientHook != nil {
+		hookOpts, err := newTranslationClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

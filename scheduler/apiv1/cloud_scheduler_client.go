@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newCloudSchedulerClientHook clientHook
+
 // CloudSchedulerCallOptions contains the retry settings for each method of CloudSchedulerClient.
 type CloudSchedulerCallOptions struct {
 	ListJobs  []gax.CallOption
@@ -124,7 +126,17 @@ type CloudSchedulerClient struct {
 // The Cloud Scheduler API allows external entities to reliably
 // schedule asynchronous jobs.
 func NewCloudSchedulerClient(ctx context.Context, opts ...option.ClientOption) (*CloudSchedulerClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultCloudSchedulerClientOptions(), opts...)...)
+	clientOpts := defaultCloudSchedulerClientOptions()
+
+	if newCloudSchedulerClientHook != nil {
+		hookOpts, err := newCloudSchedulerClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

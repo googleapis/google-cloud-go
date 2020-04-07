@@ -32,6 +32,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newIamCredentialsClientHook clientHook
+
 // IamCredentialsCallOptions contains the retry settings for each method of IamCredentialsClient.
 type IamCredentialsCallOptions struct {
 	GenerateAccessToken []gax.CallOption
@@ -132,7 +134,17 @@ type IamCredentialsClient struct {
 // tokens, OpenID Connect ID tokens, self-signed JSON Web Tokens (JWTs), and
 // more.
 func NewIamCredentialsClient(ctx context.Context, opts ...option.ClientOption) (*IamCredentialsClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultIamCredentialsClientOptions(), opts...)...)
+	clientOpts := defaultIamCredentialsClientOptions()
+
+	if newIamCredentialsClientHook != nil {
+		hookOpts, err := newIamCredentialsClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

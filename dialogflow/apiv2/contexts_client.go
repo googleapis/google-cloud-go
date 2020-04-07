@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newContextsClientHook clientHook
+
 // ContextsCallOptions contains the retry settings for each method of ContextsClient.
 type ContextsCallOptions struct {
 	ListContexts      []gax.CallOption
@@ -147,7 +149,17 @@ type ContextsClient struct {
 // Dialogflow
 // documentation (at https://cloud.google.com/dialogflow/docs/contexts-overview).
 func NewContextsClient(ctx context.Context, opts ...option.ClientOption) (*ContextsClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultContextsClientOptions(), opts...)...)
+	clientOpts := defaultContextsClientOptions()
+
+	if newContextsClientHook != nil {
+		hookOpts, err := newContextsClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

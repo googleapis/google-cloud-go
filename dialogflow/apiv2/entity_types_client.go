@@ -38,6 +38,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newEntityTypesClientHook clientHook
+
 // EntityTypesCallOptions contains the retry settings for each method of EntityTypesClient.
 type EntityTypesCallOptions struct {
 	ListEntityTypes        []gax.CallOption
@@ -185,7 +187,17 @@ type EntityTypesClient struct {
 // Dialogflow
 // documentation (at https://cloud.google.com/dialogflow/docs/entities-overview).
 func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*EntityTypesClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultEntityTypesClientOptions(), opts...)...)
+	clientOpts := defaultEntityTypesClientOptions()
+
+	if newEntityTypesClientHook != nil {
+		hookOpts, err := newEntityTypesClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

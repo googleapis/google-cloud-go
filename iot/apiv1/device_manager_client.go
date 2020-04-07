@@ -35,6 +35,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newDeviceManagerClientHook clientHook
+
 // DeviceManagerCallOptions contains the retry settings for each method of DeviceManagerClient.
 type DeviceManagerCallOptions struct {
 	CreateDeviceRegistry      []gax.CallOption
@@ -225,7 +227,17 @@ type DeviceManagerClient struct {
 //
 // Internet of Things (IoT) service. Securely connect and manage IoT devices.
 func NewDeviceManagerClient(ctx context.Context, opts ...option.ClientOption) (*DeviceManagerClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultDeviceManagerClientOptions(), opts...)...)
+	clientOpts := defaultDeviceManagerClientOptions()
+
+	if newDeviceManagerClientHook != nil {
+		hookOpts, err := newDeviceManagerClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

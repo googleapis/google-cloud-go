@@ -30,6 +30,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newWebRiskServiceV1Beta1ClientHook clientHook
+
 // WebRiskServiceV1Beta1CallOptions contains the retry settings for each method of WebRiskServiceV1Beta1Client.
 type WebRiskServiceV1Beta1CallOptions struct {
 	ComputeThreatListDiff []gax.CallOption
@@ -110,7 +112,17 @@ type WebRiskServiceV1Beta1Client struct {
 // Web Risk v1beta1 API defines an interface to detect malicious URLs on your
 // website and in client applications.
 func NewWebRiskServiceV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (*WebRiskServiceV1Beta1Client, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultWebRiskServiceV1Beta1ClientOptions(), opts...)...)
+	clientOpts := defaultWebRiskServiceV1Beta1ClientOptions()
+
+	if newWebRiskServiceV1Beta1ClientHook != nil {
+		hookOpts, err := newWebRiskServiceV1Beta1ClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

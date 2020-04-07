@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newClusterManagerClientHook clientHook
+
 // ClusterManagerCallOptions contains the retry settings for each method of ClusterManagerClient.
 type ClusterManagerCallOptions struct {
 	ListClusters            []gax.CallOption
@@ -235,7 +237,17 @@ type ClusterManagerClient struct {
 //
 // Google Kubernetes Engine Cluster Manager v1
 func NewClusterManagerClient(ctx context.Context, opts ...option.ClientOption) (*ClusterManagerClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultClusterManagerClientOptions(), opts...)...)
+	clientOpts := defaultClusterManagerClientOptions()
+
+	if newClusterManagerClientHook != nil {
+		hookOpts, err := newClusterManagerClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

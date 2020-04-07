@@ -37,6 +37,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newFirestoreAdminClientHook clientHook
+
 // FirestoreAdminCallOptions contains the retry settings for each method of FirestoreAdminClient.
 type FirestoreAdminCallOptions struct {
 	CreateIndex     []gax.CallOption
@@ -161,7 +163,17 @@ type FirestoreAdminClient struct {
 // Operations are created by service FirestoreAdmin, but are accessed via
 // service google.longrunning.Operations.
 func NewFirestoreAdminClient(ctx context.Context, opts ...option.ClientOption) (*FirestoreAdminClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultFirestoreAdminClientOptions(), opts...)...)
+	clientOpts := defaultFirestoreAdminClientOptions()
+
+	if newFirestoreAdminClientHook != nil {
+		hookOpts, err := newFirestoreAdminClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

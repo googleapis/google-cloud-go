@@ -35,6 +35,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newContainerAnalysisV1Beta1ClientHook clientHook
+
 // ContainerAnalysisV1Beta1CallOptions contains the retry settings for each method of ContainerAnalysisV1Beta1Client.
 type ContainerAnalysisV1Beta1CallOptions struct {
 	SetIamPolicy       []gax.CallOption
@@ -121,7 +123,17 @@ type ContainerAnalysisV1Beta1Client struct {
 // there would be one note for the vulnerability and an occurrence for each
 // image with the vulnerability referring to that note.
 func NewContainerAnalysisV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (*ContainerAnalysisV1Beta1Client, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultContainerAnalysisV1Beta1ClientOptions(), opts...)...)
+	clientOpts := defaultContainerAnalysisV1Beta1ClientOptions()
+
+	if newContainerAnalysisV1Beta1ClientHook != nil {
+		hookOpts, err := newContainerAnalysisV1Beta1ClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

@@ -35,6 +35,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newCloudBillingClientHook clientHook
+
 // CloudBillingCallOptions contains the retry settings for each method of CloudBillingClient.
 type CloudBillingCallOptions struct {
 	GetBillingAccount        []gax.CallOption
@@ -194,7 +196,17 @@ type CloudBillingClient struct {
 //
 // Retrieves GCP Console billing accounts and associates them with projects.
 func NewCloudBillingClient(ctx context.Context, opts ...option.ClientOption) (*CloudBillingClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultCloudBillingClientOptions(), opts...)...)
+	clientOpts := defaultCloudBillingClientOptions()
+
+	if newCloudBillingClientHook != nil {
+		hookOpts, err := newCloudBillingClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

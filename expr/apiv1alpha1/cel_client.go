@@ -28,6 +28,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newCelClientHook clientHook
+
 // CelCallOptions contains the retry settings for each method of CelClient.
 type CelCallOptions struct {
 	Parse []gax.CallOption
@@ -78,7 +80,17 @@ type CelClient struct {
 // a server for this API.  The API will be used for conformance testing,
 // utilities, and execution as a service.
 func NewCelClient(ctx context.Context, opts ...option.ClientOption) (*CelClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultCelClientOptions(), opts...)...)
+	clientOpts := defaultCelClientOptions()
+
+	if newCelClientHook != nil {
+		hookOpts, err := newCelClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

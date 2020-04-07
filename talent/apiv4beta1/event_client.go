@@ -30,6 +30,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newEventClientHook clientHook
+
 // EventCallOptions contains the retry settings for each method of EventClient.
 type EventCallOptions struct {
 	CreateClientEvent []gax.CallOption
@@ -72,7 +74,17 @@ type EventClient struct {
 //
 // A service handles client event report.
 func NewEventClient(ctx context.Context, opts ...option.ClientOption) (*EventClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultEventClientOptions(), opts...)...)
+	clientOpts := defaultEventClientOptions()
+
+	if newEventClientHook != nil {
+		hookOpts, err := newEventClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

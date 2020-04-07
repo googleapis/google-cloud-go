@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newOperationsClientHook clientHook
+
 // OperationsCallOptions contains the retry settings for each method of OperationsClient.
 type OperationsCallOptions struct {
 	ListOperations  []gax.CallOption
@@ -132,7 +134,17 @@ type OperationsClient struct {
 // returns long-running operations should implement the Operations interface
 // so developers can have a consistent client experience.
 func NewOperationsClient(ctx context.Context, opts ...option.ClientOption) (*OperationsClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultOperationsClientOptions(), opts...)...)
+	clientOpts := defaultOperationsClientOptions()
+
+	if newOperationsClientHook != nil {
+		hookOpts, err := newOperationsClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

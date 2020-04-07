@@ -30,6 +30,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newDebugger2ClientHook clientHook
+
 // Debugger2CallOptions contains the retry settings for each method of Debugger2Client.
 type Debugger2CallOptions struct {
 	SetBreakpoint    []gax.CallOption
@@ -135,7 +137,17 @@ type Debugger2Client struct {
 // The Debugger service enables the client to set one or more Breakpoints on a
 // Debuggee and collect the results of the set Breakpoints.
 func NewDebugger2Client(ctx context.Context, opts ...option.ClientOption) (*Debugger2Client, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultDebugger2ClientOptions(), opts...)...)
+	clientOpts := defaultDebugger2ClientOptions()
+
+	if newDebugger2ClientHook != nil {
+		hookOpts, err := newDebugger2ClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

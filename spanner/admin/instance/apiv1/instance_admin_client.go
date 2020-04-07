@@ -38,6 +38,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newInstanceAdminClientHook clientHook
+
 // InstanceAdminCallOptions contains the retry settings for each method of InstanceAdminClient.
 type InstanceAdminCallOptions struct {
 	ListInstanceConfigs []gax.CallOption
@@ -189,7 +191,17 @@ type InstanceAdminClient struct {
 // instance resources, fewer resources are available for other
 // databases in that instance, and their performance may suffer.
 func NewInstanceAdminClient(ctx context.Context, opts ...option.ClientOption) (*InstanceAdminClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultInstanceAdminClientOptions(), opts...)...)
+	clientOpts := defaultInstanceAdminClientOptions()
+
+	if newInstanceAdminClientHook != nil {
+		hookOpts, err := newInstanceAdminClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

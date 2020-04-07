@@ -30,6 +30,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newSessionsClientHook clientHook
+
 // SessionsCallOptions contains the retry settings for each method of SessionsClient.
 type SessionsCallOptions struct {
 	DetectIntent          []gax.CallOption
@@ -77,7 +79,17 @@ type SessionsClient struct {
 // StreamingDetectIntent) method to determine
 // user intent and respond.
 func NewSessionsClient(ctx context.Context, opts ...option.ClientOption) (*SessionsClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultSessionsClientOptions(), opts...)...)
+	clientOpts := defaultSessionsClientOptions()
+
+	if newSessionsClientHook != nil {
+		hookOpts, err := newSessionsClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newClientHook clientHook
+
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
 	GetDataSource           []gax.CallOption
@@ -215,7 +217,17 @@ type Client struct {
 // BigQuery. This service contains methods that are end user exposed. It backs
 // up the frontend.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultClientOptions(), opts...)...)
+	clientOpts := defaultClientOptions()
+
+	if newClientHook != nil {
+		hookOpts, err := newClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

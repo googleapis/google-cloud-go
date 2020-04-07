@@ -33,6 +33,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newPolicyTagManagerClientHook clientHook
+
 // PolicyTagManagerCallOptions contains the retry settings for each method of PolicyTagManagerClient.
 type PolicyTagManagerCallOptions struct {
 	CreateTaxonomy     []gax.CallOption
@@ -100,7 +102,17 @@ type PolicyTagManagerClient struct {
 // The policy tag manager API service allows clients to manage their taxonomies
 // and policy tags.
 func NewPolicyTagManagerClient(ctx context.Context, opts ...option.ClientOption) (*PolicyTagManagerClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultPolicyTagManagerClientOptions(), opts...)...)
+	clientOpts := defaultPolicyTagManagerClientOptions()
+
+	if newPolicyTagManagerClientHook != nil {
+		hookOpts, err := newPolicyTagManagerClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

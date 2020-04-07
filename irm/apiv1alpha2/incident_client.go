@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newIncidentClientHook clientHook
+
 // IncidentCallOptions contains the retry settings for each method of IncidentClient.
 type IncidentCallOptions struct {
 	CreateIncident               []gax.CallOption
@@ -303,7 +305,17 @@ type IncidentClient struct {
 //
 // The Incident API for Incident Response & Management.
 func NewIncidentClient(ctx context.Context, opts ...option.ClientOption) (*IncidentClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultIncidentClientOptions(), opts...)...)
+	clientOpts := defaultIncidentClientOptions()
+
+	if newIncidentClientHook != nil {
+		hookOpts, err := newIncidentClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
