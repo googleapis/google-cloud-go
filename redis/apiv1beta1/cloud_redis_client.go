@@ -37,6 +37,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newCloudRedisClientHook clientHook
+
 // CloudRedisCallOptions contains the retry settings for each method of CloudRedisClient.
 type CloudRedisCallOptions struct {
 	ListInstances    []gax.CallOption
@@ -119,7 +121,17 @@ type CloudRedisClient struct {
 //
 //   projects/redpepper-1290/locations/us-central1/instances/my-redis
 func NewCloudRedisClient(ctx context.Context, opts ...option.ClientOption) (*CloudRedisClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultCloudRedisClientOptions(), opts...)...)
+	clientOpts := defaultCloudRedisClientOptions()
+
+	if newCloudRedisClientHook != nil {
+		hookOpts, err := newCloudRedisClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

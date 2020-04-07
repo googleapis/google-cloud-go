@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newPublisherClientHook clientHook
+
 // PublisherCallOptions contains the retry settings for each method of PublisherClient.
 type PublisherCallOptions struct {
 	CreateTopic            []gax.CallOption
@@ -185,7 +187,17 @@ type PublisherClient struct {
 // The service that an application uses to manipulate topics, and to send
 // messages to a topic.
 func NewPublisherClient(ctx context.Context, opts ...option.ClientOption) (*PublisherClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultPublisherClientOptions(), opts...)...)
+	clientOpts := defaultPublisherClientOptions()
+
+	if newPublisherClientHook != nil {
+		hookOpts, err := newPublisherClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

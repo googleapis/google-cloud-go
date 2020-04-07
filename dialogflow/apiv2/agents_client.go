@@ -38,6 +38,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newAgentsClientHook clientHook
+
 // AgentsCallOptions contains the retry settings for each method of AgentsClient.
 type AgentsCallOptions struct {
 	GetAgent            []gax.CallOption
@@ -205,7 +207,17 @@ type AgentsClient struct {
 // Dialogflow
 // documentation (at https://cloud.google.com/dialogflow/docs/agents-overview).
 func NewAgentsClient(ctx context.Context, opts ...option.ClientOption) (*AgentsClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultAgentsClientOptions(), opts...)...)
+	clientOpts := defaultAgentsClientOptions()
+
+	if newAgentsClientHook != nil {
+		hookOpts, err := newAgentsClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

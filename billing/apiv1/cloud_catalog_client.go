@@ -32,6 +32,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newCloudCatalogClientHook clientHook
+
 // CloudCatalogCallOptions contains the retry settings for each method of CloudCatalogClient.
 type CloudCatalogCallOptions struct {
 	ListServices []gax.CallOption
@@ -78,7 +80,17 @@ type CloudCatalogClient struct {
 // Provides pricing information and metadata on Google Cloud Platform services
 // and SKUs.
 func NewCloudCatalogClient(ctx context.Context, opts ...option.ClientOption) (*CloudCatalogClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultCloudCatalogClientOptions(), opts...)...)
+	clientOpts := defaultCloudCatalogClientOptions()
+
+	if newCloudCatalogClientHook != nil {
+		hookOpts, err := newCloudCatalogClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

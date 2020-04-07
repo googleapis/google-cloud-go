@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newSecurityCenterSettingsClientHook clientHook
+
 // SecurityCenterSettingsCallOptions contains the retry settings for each method of SecurityCenterSettingsClient.
 type SecurityCenterSettingsCallOptions struct {
 	GetServiceAccount                   []gax.CallOption
@@ -246,7 +248,17 @@ type SecurityCenterSettingsClient struct {
 // Security Center Settings, and Component Settings for GCP organizations,
 // folders, projects, and clusters.
 func NewSecurityCenterSettingsClient(ctx context.Context, opts ...option.ClientOption) (*SecurityCenterSettingsClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultSecurityCenterSettingsClientOptions(), opts...)...)
+	clientOpts := defaultSecurityCenterSettingsClientOptions()
+
+	if newSecurityCenterSettingsClientHook != nil {
+		hookOpts, err := newSecurityCenterSettingsClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

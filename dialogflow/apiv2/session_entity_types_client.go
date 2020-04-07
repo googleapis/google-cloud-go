@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newSessionEntityTypesClientHook clientHook
+
 // SessionEntityTypesCallOptions contains the retry settings for each method of SessionEntityTypesClient.
 type SessionEntityTypesCallOptions struct {
 	ListSessionEntityTypes  []gax.CallOption
@@ -133,7 +135,17 @@ type SessionEntityTypesClient struct {
 // Dialogflow
 // documentation (at https://cloud.google.com/dialogflow/docs/entities-overview).
 func NewSessionEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*SessionEntityTypesClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultSessionEntityTypesClientOptions(), opts...)...)
+	clientOpts := defaultSessionEntityTypesClientOptions()
+
+	if newSessionEntityTypesClientHook != nil {
+		hookOpts, err := newSessionEntityTypesClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

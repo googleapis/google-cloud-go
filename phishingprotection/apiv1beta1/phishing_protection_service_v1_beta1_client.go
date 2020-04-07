@@ -30,6 +30,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newPhishingProtectionServiceV1Beta1ClientHook clientHook
+
 // PhishingProtectionServiceV1Beta1CallOptions contains the retry settings for each method of PhishingProtectionServiceV1Beta1Client.
 type PhishingProtectionServiceV1Beta1CallOptions struct {
 	ReportPhishing []gax.CallOption
@@ -72,7 +74,17 @@ type PhishingProtectionServiceV1Beta1Client struct {
 //
 // Service to report phishing URIs.
 func NewPhishingProtectionServiceV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (*PhishingProtectionServiceV1Beta1Client, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultPhishingProtectionServiceV1Beta1ClientOptions(), opts...)...)
+	clientOpts := defaultPhishingProtectionServiceV1Beta1ClientOptions()
+
+	if newPhishingProtectionServiceV1Beta1ClientHook != nil {
+		hookOpts, err := newPhishingProtectionServiceV1Beta1ClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

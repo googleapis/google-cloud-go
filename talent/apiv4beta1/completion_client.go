@@ -32,6 +32,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newCompletionClientHook clientHook
+
 // CompletionCallOptions contains the retry settings for each method of CompletionClient.
 type CompletionCallOptions struct {
 	CompleteQuery []gax.CallOption
@@ -85,7 +87,17 @@ type CompletionClient struct {
 //
 // A service handles auto completion.
 func NewCompletionClient(ctx context.Context, opts ...option.ClientOption) (*CompletionClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultCompletionClientOptions(), opts...)...)
+	clientOpts := defaultCompletionClientOptions()
+
+	if newCompletionClientHook != nil {
+		hookOpts, err := newCompletionClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

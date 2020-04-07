@@ -32,6 +32,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newRecaptchaEnterpriseServiceV1Beta1ClientHook clientHook
+
 // RecaptchaEnterpriseServiceV1Beta1CallOptions contains the retry settings for each method of RecaptchaEnterpriseServiceV1Beta1Client.
 type RecaptchaEnterpriseServiceV1Beta1CallOptions struct {
 	CreateAssessment   []gax.CallOption
@@ -86,7 +88,17 @@ type RecaptchaEnterpriseServiceV1Beta1Client struct {
 //
 // Service to determine the likelihood an event is legitimate.
 func NewRecaptchaEnterpriseServiceV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (*RecaptchaEnterpriseServiceV1Beta1Client, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultRecaptchaEnterpriseServiceV1Beta1ClientOptions(), opts...)...)
+	clientOpts := defaultRecaptchaEnterpriseServiceV1Beta1ClientOptions()
+
+	if newRecaptchaEnterpriseServiceV1Beta1ClientHook != nil {
+		hookOpts, err := newRecaptchaEnterpriseServiceV1Beta1ClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

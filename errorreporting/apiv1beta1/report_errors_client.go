@@ -30,6 +30,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newReportErrorsClientHook clientHook
+
 // ReportErrorsCallOptions contains the retry settings for each method of ReportErrorsClient.
 type ReportErrorsCallOptions struct {
 	ReportErrorEvent []gax.CallOption
@@ -72,7 +74,17 @@ type ReportErrorsClient struct {
 //
 // An API for reporting error events.
 func NewReportErrorsClient(ctx context.Context, opts ...option.ClientOption) (*ReportErrorsClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultReportErrorsClientOptions(), opts...)...)
+	clientOpts := defaultReportErrorsClientOptions()
+
+	if newReportErrorsClientHook != nil {
+		hookOpts, err := newReportErrorsClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

@@ -32,6 +32,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newBigQueryWriteClientHook clientHook
+
 // BigQueryWriteCallOptions contains the retry settings for each method of BigQueryWriteClient.
 type BigQueryWriteCallOptions struct {
 	CreateWriteStream       []gax.CallOption
@@ -138,7 +140,17 @@ type BigQueryWriteClient struct {
 //
 // The Write API can be used to write data to BigQuery.
 func NewBigQueryWriteClient(ctx context.Context, opts ...option.ClientOption) (*BigQueryWriteClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultBigQueryWriteClientOptions(), opts...)...)
+	clientOpts := defaultBigQueryWriteClientOptions()
+
+	if newBigQueryWriteClientHook != nil {
+		hookOpts, err := newBigQueryWriteClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

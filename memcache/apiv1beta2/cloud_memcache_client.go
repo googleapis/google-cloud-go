@@ -36,6 +36,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newCloudMemcacheClientHook clientHook
+
 // CloudMemcacheCallOptions contains the retry settings for each method of CloudMemcacheClient.
 type CloudMemcacheCallOptions struct {
 	ListInstances    []gax.CallOption
@@ -113,7 +115,17 @@ type CloudMemcacheClient struct {
 //
 //   projects/my-memcached-project/locations/us-central1/instances/my-memcached
 func NewCloudMemcacheClient(ctx context.Context, opts ...option.ClientOption) (*CloudMemcacheClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultCloudMemcacheClientOptions(), opts...)...)
+	clientOpts := defaultCloudMemcacheClientOptions()
+
+	if newCloudMemcacheClientHook != nil {
+		hookOpts, err := newCloudMemcacheClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

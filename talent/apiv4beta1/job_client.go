@@ -37,6 +37,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newJobClientHook clientHook
+
 // JobCallOptions contains the retry settings for each method of JobClient.
 type JobCallOptions struct {
 	CreateJob          []gax.CallOption
@@ -135,7 +137,17 @@ type JobClient struct {
 //
 // A service handles job management, including job CRUD, enumeration and search.
 func NewJobClient(ctx context.Context, opts ...option.ClientOption) (*JobClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultJobClientOptions(), opts...)...)
+	clientOpts := defaultJobClientOptions()
+
+	if newJobClientHook != nil {
+		hookOpts, err := newJobClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

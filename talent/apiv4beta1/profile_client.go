@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newProfileClientHook clientHook
+
 // ProfileCallOptions contains the retry settings for each method of ProfileClient.
 type ProfileCallOptions struct {
 	ListProfiles   []gax.CallOption
@@ -120,7 +122,17 @@ type ProfileClient struct {
 // A service that handles profile management, including profile CRUD,
 // enumeration and search.
 func NewProfileClient(ctx context.Context, opts ...option.ClientOption) (*ProfileClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultProfileClientOptions(), opts...)...)
+	clientOpts := defaultProfileClientOptions()
+
+	if newProfileClientHook != nil {
+		hookOpts, err := newProfileClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newTenantClientHook clientHook
+
 // TenantCallOptions contains the retry settings for each method of TenantClient.
 type TenantCallOptions struct {
 	CreateTenant []gax.CallOption
@@ -117,7 +119,17 @@ type TenantClient struct {
 //
 // A service that handles tenant management, including CRUD and enumeration.
 func NewTenantClient(ctx context.Context, opts ...option.ClientOption) (*TenantClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultTenantClientOptions(), opts...)...)
+	clientOpts := defaultTenantClientOptions()
+
+	if newTenantClientHook != nil {
+		hookOpts, err := newTenantClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

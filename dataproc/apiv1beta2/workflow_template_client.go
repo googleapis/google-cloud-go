@@ -37,6 +37,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newWorkflowTemplateClientHook clientHook
+
 // WorkflowTemplateCallOptions contains the retry settings for each method of WorkflowTemplateClient.
 type WorkflowTemplateCallOptions struct {
 	CreateWorkflowTemplate            []gax.CallOption
@@ -171,7 +173,17 @@ type WorkflowTemplateClient struct {
 // The API interface for managing Workflow Templates in the
 // Dataproc API.
 func NewWorkflowTemplateClient(ctx context.Context, opts ...option.ClientOption) (*WorkflowTemplateClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultWorkflowTemplateClientOptions(), opts...)...)
+	clientOpts := defaultWorkflowTemplateClientOptions()
+
+	if newWorkflowTemplateClientHook != nil {
+		hookOpts, err := newWorkflowTemplateClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
@@ -296,8 +308,7 @@ func (c *WorkflowTemplateClient) InstantiateWorkflowTemplate(ctx context.Context
 // InstantiateInlineWorkflowTemplate instantiates a template and begins execution.
 //
 // This method is equivalent to executing the sequence
-// CreateWorkflowTemplate,
-// InstantiateWorkflowTemplate,
+// CreateWorkflowTemplate, InstantiateWorkflowTemplate,
 // DeleteWorkflowTemplate.
 //
 // The returned Operation can be used to track execution of

@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newAutoscalingPolicyClientHook clientHook
+
 // AutoscalingPolicyCallOptions contains the retry settings for each method of AutoscalingPolicyClient.
 type AutoscalingPolicyCallOptions struct {
 	CreateAutoscalingPolicy []gax.CallOption
@@ -118,7 +120,17 @@ type AutoscalingPolicyClient struct {
 // The API interface for managing autoscaling policies in the
 // Dataproc API.
 func NewAutoscalingPolicyClient(ctx context.Context, opts ...option.ClientOption) (*AutoscalingPolicyClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultAutoscalingPolicyClientOptions(), opts...)...)
+	clientOpts := defaultAutoscalingPolicyClientOptions()
+
+	if newAutoscalingPolicyClientHook != nil {
+		hookOpts, err := newAutoscalingPolicyClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

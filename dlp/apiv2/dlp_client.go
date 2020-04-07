@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newClientHook clientHook
+
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
 	InspectContent           []gax.CallOption
@@ -403,7 +405,17 @@ type Client struct {
 // To learn more about concepts and find how-to guides see
 // https://cloud.google.com/dlp/docs/ (at https://cloud.google.com/dlp/docs/).
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultClientOptions(), opts...)...)
+	clientOpts := defaultClientOptions()
+
+	if newClientHook != nil {
+		hookOpts, err := newClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

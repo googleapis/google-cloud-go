@@ -34,6 +34,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newPredictionClientHook clientHook
+
 // PredictionCallOptions contains the retry settings for each method of PredictionClient.
 type PredictionCallOptions struct {
 	Predict      []gax.CallOption
@@ -86,7 +88,17 @@ type PredictionClient struct {
 // On any input that is documented to expect a string parameter in
 // snake_case or kebab-case, either of those cases is accepted.
 func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*PredictionClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultPredictionClientOptions(), opts...)...)
+	clientOpts := defaultPredictionClientOptions()
+
+	if newPredictionClientHook != nil {
+		hookOpts, err := newPredictionClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

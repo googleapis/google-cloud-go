@@ -32,6 +32,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newErrorGroupClientHook clientHook
+
 // ErrorGroupCallOptions contains the retry settings for each method of ErrorGroupClient.
 type ErrorGroupCallOptions struct {
 	GetGroup    []gax.CallOption
@@ -98,7 +100,17 @@ type ErrorGroupClient struct {
 //
 // Service for retrieving and updating individual error groups.
 func NewErrorGroupClient(ctx context.Context, opts ...option.ClientOption) (*ErrorGroupClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultErrorGroupClientOptions(), opts...)...)
+	clientOpts := defaultErrorGroupClientOptions()
+
+	if newErrorGroupClientHook != nil {
+		hookOpts, err := newErrorGroupClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

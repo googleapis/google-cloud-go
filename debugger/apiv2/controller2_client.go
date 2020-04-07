@@ -30,6 +30,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newController2ClientHook clientHook
+
 // Controller2CallOptions contains the retry settings for each method of Controller2Client.
 type Controller2CallOptions struct {
 	RegisterDebuggee       []gax.CallOption
@@ -117,7 +119,17 @@ type Controller2Client struct {
 // a completed breakpoint. This functionality is available using the Debugger
 // service.
 func NewController2Client(ctx context.Context, opts ...option.ClientOption) (*Controller2Client, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultController2ClientOptions(), opts...)...)
+	clientOpts := defaultController2ClientOptions()
+
+	if newController2ClientHook != nil {
+		hookOpts, err := newController2ClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

@@ -38,6 +38,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newDatabaseAdminClientHook clientHook
+
 // DatabaseAdminCallOptions contains the retry settings for each method of DatabaseAdminClient.
 type DatabaseAdminCallOptions struct {
 	ListDatabases          []gax.CallOption
@@ -265,7 +267,17 @@ type DatabaseAdminClient struct {
 // databases. It can be also used to create, delete and list backups for a
 // database and to restore from an existing backup.
 func NewDatabaseAdminClient(ctx context.Context, opts ...option.ClientOption) (*DatabaseAdminClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultDatabaseAdminClientOptions(), opts...)...)
+	clientOpts := defaultDatabaseAdminClientOptions()
+
+	if newDatabaseAdminClientHook != nil {
+		hookOpts, err := newDatabaseAdminClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

@@ -38,6 +38,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newIntentsClientHook clientHook
+
 // IntentsCallOptions contains the retry settings for each method of IntentsClient.
 type IntentsCallOptions struct {
 	ListIntents        []gax.CallOption
@@ -172,7 +174,17 @@ type IntentsClient struct {
 // Dialogflow
 // documentation (at https://cloud.google.com/dialogflow/docs/intents-overview).
 func NewIntentsClient(ctx context.Context, opts ...option.ClientOption) (*IntentsClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultIntentsClientOptions(), opts...)...)
+	clientOpts := defaultIntentsClientOptions()
+
+	if newIntentsClientHook != nil {
+		hookOpts, err := newIntentsClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}

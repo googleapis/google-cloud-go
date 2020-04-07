@@ -30,6 +30,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newPolicyTagManagerSerializationClientHook clientHook
+
 // PolicyTagManagerSerializationCallOptions contains the retry settings for each method of PolicyTagManagerSerializationClient.
 type PolicyTagManagerSerializationCallOptions struct {
 	ImportTaxonomies []gax.CallOption
@@ -75,7 +77,17 @@ type PolicyTagManagerSerializationClient struct {
 // Policy tag manager serialization API service allows clients to manipulate
 // their taxonomies and policy tags data with serialized format.
 func NewPolicyTagManagerSerializationClient(ctx context.Context, opts ...option.ClientOption) (*PolicyTagManagerSerializationClient, error) {
-	connPool, err := gtransport.DialPool(ctx, append(defaultPolicyTagManagerSerializationClientOptions(), opts...)...)
+	clientOpts := defaultPolicyTagManagerSerializationClientOptions()
+
+	if newPolicyTagManagerSerializationClientHook != nil {
+		hookOpts, err := newPolicyTagManagerSerializationClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
