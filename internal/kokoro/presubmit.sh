@@ -49,6 +49,13 @@ exit_code=0
 # Run tests and tee output to log file, to be pushed to GCS as artifact.
 for i in `find . -name go.mod`; do
   pushd `dirname $i`;
+    if [ -z ${RUN_INTEGRATION_TESTS} ]; then
+      go test -race -v -timeout 15m -short ./... 2>&1 \
+      | tee sponge_log.log
+    else
+      go test -race -v -timeout 45m ./... 2>&1 \
+      | tee sponge_log.log
+    fi
     go test -race -v -timeout 15m -short ./... 2>&1 \
       | tee sponge_log.log
     # Takes the kokoro output log (raw stdout) and creates a machine-parseable
