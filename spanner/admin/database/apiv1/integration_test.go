@@ -34,10 +34,8 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
-	"cloud.google.com/go/spanner"
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
 	"google.golang.org/api/iterator"
-	"google.golang.org/api/option"
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 	databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
@@ -49,7 +47,6 @@ var (
 	testProjectID    = testutil.ProjID()
 	testInstanceID   = os.Getenv("GCLOUD_TESTS_GOLANG_INSTANCE_ID")
 	testInstanceName = fmt.Sprintf("projects/%s/instances/%s", testProjectID, testInstanceID)
-	testEndpoint     = os.Getenv("GCLOUD_TESTS_GOLANG_ENDPOINT")
 
 	dbNameSpace     = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	instanceIDSpace = uid.NewSpace("gotest", &uid.Options{Sep: '-', Short: true})
@@ -75,20 +72,8 @@ func initIntegrationTests(t *testing.T) (cleanup func()) {
 		return func() {}
 	}
 
-	ts := testutil.TokenSource(ctx, spanner.AdminScope, spanner.Scope)
-	if ts == nil {
-		t.Logf("Integration test skipped: cannot get service account credential from environment variable %v", "GCLOUD_TESTS_GOLANG_KEY")
-		return func() {}
-	}
 	var err error
-
-	// Check if a specific endpoint is set for the integration test
-	opts := append(grpcHeaderChecker.CallOptions(), option.WithTokenSource(ts))
-	if testEndpoint != "" {
-		t.Logf("Running integration test with endpoint %s", testEndpoint)
-		opts = append(opts, option.WithEndpoint(testEndpoint))
-	}
-
+	opts := append(grpcHeaderChecker.CallOptions())
 	// Create InstanceAdmin and DatabaseAdmin clients.
 	instanceAdmin, err = instance.NewInstanceAdminClient(ctx, opts...)
 	if err != nil {
