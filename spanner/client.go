@@ -246,6 +246,9 @@ get an instance-specific endpoint and efficiently route requests.
 	// applied after the values in allOpts.
 	allOpts = append(allOpts, opts...)
 	pool, err := gtransport.DialPool(ctx, allOpts...)
+	if err != nil {
+		return nil, err
+	}
 	if configuredNumChannels > 0 && pool.Num() != config.NumChannels {
 		pool.Close()
 		return nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, WithGRPCConnectionPool=%v. Only set one of these options, or set both to the same value.", config.NumChannels, pool.Num())
