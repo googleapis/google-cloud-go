@@ -36,11 +36,9 @@ import (
 	database "cloud.google.com/go/spanner/admin/database/apiv1"
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
 	"google.golang.org/api/iterator"
-	"google.golang.org/api/option"
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -149,27 +147,6 @@ func initIntegrationTests() (cleanup func()) {
 	}
 
 	opts := grpcHeaderChecker.CallOptions()
-	// Run integration tests against the given emulator. Currently, the database and
-	// instance admin clients are auto-generated, which do not support to configure
-	// SPANNER_EMULATOR_HOST.
-	emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST")
-	if emulatorAddr != "" {
-		opts = append(
-			opts,
-			option.WithEndpoint(emulatorAddr),
-			option.WithGRPCDialOption(grpc.WithInsecure()),
-			option.WithoutAuthentication(),
-		)
-	} else {
-		ts := testutil.TokenSource(ctx, AdminScope, Scope)
-		if ts == nil {
-			log.Printf("Integration test skipped: cannot get service account credential from environment variable %v", "GCLOUD_TESTS_GOLANG_KEY")
-			return noop
-		}
-
-		opts = append(opts, option.WithTokenSource(ts), option.WithEndpoint(endpoint))
-	}
-
 	var err error
 	// Create InstanceAdmin and DatabaseAdmin clients.
 	instanceAdmin, err = instance.NewInstanceAdminClient(ctx, opts...)
@@ -2844,17 +2821,7 @@ func isNaN(x interface{}) bool {
 
 // createClient creates Cloud Spanner data client.
 func createClient(ctx context.Context, dbPath string, spc SessionPoolConfig) (client *Client, err error) {
-	if os.Getenv("SPANNER_EMULATOR_HOST") == "" {
-		client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{
-			SessionPoolConfig: spc,
-		}, option.WithTokenSource(testutil.TokenSource(ctx, Scope, AdminScope)), option.WithEndpoint(endpoint))
-	} else {
-		// When the emulator is enabled, option.WithoutAuthentication()
-		// will be added automatically which is incompatible with
-		// option.WithTokenSource(testutil.TokenSource(ctx, Scope)).
-		client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc})
-	}
-
+	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc})
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
 	}

@@ -196,7 +196,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 			option.WithGRPCDialOption(grpc.WithInsecure()),
 			option.WithoutAuthentication(),
 		}
-		opts = append(opts, emulatorOpts...)
+		opts = append(emulatorOpts, opts...)
 	} else if os.Getenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING") == "true" {
 		// Fetch the instance-specific endpoint.
 		reqOpts := []option.ClientOption{option.WithEndpoint(endpoint)}
