@@ -1212,6 +1212,8 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 	mu := sync.Mutex{}
 	var publishData []testutil2.OrderedKeyMsg
 	var receiveData []testutil2.OrderedKeyMsg
+	// Keep track of duplicate messages to avoid negative waitgroup counter.
+	receiveSet := make(map[string]struct{})
 
 	wg := sync.WaitGroup{}
 	scanner := bufio.NewScanner(inFile)
@@ -1238,8 +1240,12 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 		if err := sub.Receive(ctx, func(ctx context.Context, msg *Message) {
 			defer msg.Ack()
 			mu.Lock()
+			defer mu.Unlock()
+			if _, ok := receiveSet[msg.ID]; ok {
+				return
+			}
+			receiveSet[msg.ID] = struct{}{}
 			receiveData = append(receiveData, testutil2.OrderedKeyMsg{Key: msg.OrderingKey, Data: string(msg.Data)})
-			mu.Unlock()
 			wg.Done()
 		}); err != nil {
 			if c := status.Code(err); c != codes.Canceled {
