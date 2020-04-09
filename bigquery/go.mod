@@ -9,9 +9,9 @@ require (
 	github.com/golang/protobuf v1.3.5
 	github.com/google/go-cmp v0.4.0
 	github.com/googleapis/gax-go/v2 v2.0.5
-	golang.org/x/sys v0.0.0-20200408040146-ea54a3c99b9b // indirect
-	golang.org/x/tools v0.0.0-20200408132156-9ee5ef7a2c0d // indirect
+	golang.org/x/sys v0.0.0-20200409092240-59c9f1ba88fa // indirect
+	golang.org/x/tools v0.0.0-20200409170454-77362c5149f0 // indirect
 	google.golang.org/api v0.21.0
-	google.golang.org/genproto v0.0.0-20200408120641-fbb3ad325eb7
+	google.golang.org/genproto v0.0.0-20200409111301-baae70f3302d
 	google.golang.org/grpc v1.28.1
 )
