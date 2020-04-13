@@ -36,6 +36,7 @@ type CallOptions struct {
 	StartNextTask           []gax.CallOption
 	ReportTaskProgress      []gax.CallOption
 	ReportTaskComplete      []gax.CallOption
+	RegisterAgent           []gax.CallOption
 }
 
 func defaultClientOptions() []option.ClientOption {
@@ -54,6 +55,7 @@ func defaultCallOptions() *CallOptions {
 		StartNextTask:           []gax.CallOption{},
 		ReportTaskProgress:      []gax.CallOption{},
 		ReportTaskComplete:      []gax.CallOption{},
+		RegisterAgent:           []gax.CallOption{},
 	}
 }
 
@@ -182,6 +184,22 @@ func (c *Client) ReportTaskComplete(ctx context.Context, req *agentendpointpb.Re
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.ReportTaskComplete(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// RegisterAgent registers the agent running on the VM.
+func (c *Client) RegisterAgent(ctx context.Context, req *agentendpointpb.RegisterAgentRequest, opts ...gax.CallOption) (*agentendpointpb.RegisterAgentResponse, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.RegisterAgent[0:len(c.CallOptions.RegisterAgent):len(c.CallOptions.RegisterAgent)], opts...)
+	var resp *agentendpointpb.RegisterAgentResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RegisterAgent(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
