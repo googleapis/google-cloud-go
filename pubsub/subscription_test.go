@@ -22,6 +22,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub/pstest"
+	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
@@ -311,5 +312,51 @@ func TestPushConfigAuthenticationMethod_toProto(t *testing.T) {
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Errorf("Roundtrip to Proto failed\ngot: - want: +\n%s", diff)
+	}
+}
+
+func TestDeadLettering_toProto(t *testing.T) {
+	in := &DeadLetterPolicy{
+		MaxDeliveryAttempts: 10,
+		DeadLetterTopic:     "projects/p/topics/t",
+	}
+	got := in.toProto()
+	want := &pb.DeadLetterPolicy{
+		DeadLetterTopic:     "projects/p/topics/t",
+		MaxDeliveryAttempts: 10,
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("Roundtrip to Proto failed\ngot: - want: +\n%s", diff)
+	}
+}
+
+// Check if incoming ReceivedMessages are properly converted to Message structs
+// that expose the DeliveryAttempt field when dead lettering is enabled/disabled.
+func TestDeadLettering_toMessage(t *testing.T) {
+	// If dead lettering is disabled, DeliveryAttempt should default to 0.
+	receivedMsg := &pb.ReceivedMessage{
+		AckId: "1234",
+		Message: &pb.PubsubMessage{
+			Data:        []byte("some message"),
+			MessageId:   "id-1234",
+			PublishTime: ptypes.TimestampNow(),
+		},
+	}
+	got, err := toMessage(receivedMsg)
+	if err != nil {
+		t.Errorf("toMessage failed: %v", err)
+	}
+	if got.DeliveryAttempt != nil {
+		t.Errorf("toMessage with dead-lettering disabled failed\ngot: %d, want nil", *got.DeliveryAttempt)
+	}
+
+	// If dead lettering is enabled, toMessage should properly pass through the DeliveryAttempt field.
+	receivedMsg.DeliveryAttempt = 10
+	got, err = toMessage(receivedMsg)
+	if err != nil {
+		t.Errorf("toMessage failed: %v", err)
+	}
+	if *got.DeliveryAttempt != int(receivedMsg.DeliveryAttempt) {
+		t.Errorf("toMessage with dead-lettered enabled failed\ngot: %d, want %d", *got.DeliveryAttempt, receivedMsg.DeliveryAttempt)
 	}
 }

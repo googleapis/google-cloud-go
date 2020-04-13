@@ -25,6 +25,7 @@ import (
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/optional"
+	"cloud.google.com/go/pubsub/internal/scheduler"
 	"github.com/golang/protobuf/ptypes"
 	durpb "github.com/golang/protobuf/ptypes/duration"
 	gax "github.com/googleapis/gax-go/v2"
@@ -123,10 +124,6 @@ type PushConfig struct {
 	// allow requests only from the Cloud Pub/Sub system, for example.
 	// This field is optional and should be set only by users interested in
 	// authenticated push.
-	//
-	// It is EXPERIMENTAL and a part of a closed alpha that may not be
-	// accessible to all users. This field is subject to change or removal
-	// without notice.
 	AuthenticationMethod AuthenticationMethod
 }
 
@@ -221,12 +218,25 @@ type SubscriptionConfig struct {
 	// value for `expiration_policy.ttl` is 1 day.
 	//
 	// Use time.Duration(0) to indicate that the subscription should never expire.
-	//
-	// It is EXPERIMENTAL and subject to change or removal without notice.
 	ExpirationPolicy optional.Duration
 
 	// The set of labels for the subscription.
 	Labels map[string]string
+
+	// EnableMessageOrdering enables message ordering.
+	//
+	// It is EXPERIMENTAL and a part of a closed alpha that may not be
+	// accessible to all users. This field is subject to change or removal
+	// without notice.
+	EnableMessageOrdering bool
+
+	// DeadLetterPolicy specifies the conditions for dead lettering messages in
+	// a subscription. If not set, dead lettering is disabled.
+	//
+	// It is EXPERIMENTAL and a part of a closed alpha that may not be
+	// accessible to all users. This field is subject to change or removal
+	// without notice.
+	DeadLetterPolicy *DeadLetterPolicy
 }
 
 func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
@@ -238,6 +248,10 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 	if cfg.RetentionDuration != 0 {
 		retentionDuration = ptypes.DurationProto(cfg.RetentionDuration)
 	}
+	var pbDeadLetter *pb.DeadLetterPolicy
+	if cfg.DeadLetterPolicy != nil {
+		pbDeadLetter = cfg.DeadLetterPolicy.toProto()
+	}
 	return &pb.Subscription{
 		Name:                     name,
 		Topic:                    cfg.Topic.name,
@@ -247,6 +261,8 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		MessageRetentionDuration: retentionDuration,
 		Labels:                   cfg.Labels,
 		ExpirationPolicy:         expirationPolicyToProto(cfg.ExpirationPolicy),
+		EnableMessageOrdering:    cfg.EnableMessageOrdering,
+		DeadLetterPolicy:         pbDeadLetter,
 	}
 }
 
@@ -266,6 +282,7 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 			return SubscriptionConfig{}, err
 		}
 	}
+	dlp := protoToDLP(pbSub.DeadLetterPolicy)
 	subC := SubscriptionConfig{
 		Topic:               newTopic(c, pbSub.Topic),
 		AckDeadline:         time.Second * time.Duration(pbSub.AckDeadlineSeconds),
@@ -273,6 +290,7 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 		RetentionDuration:   rd,
 		Labels:              pbSub.Labels,
 		ExpirationPolicy:    expirationPolicy,
+		DeadLetterPolicy:    dlp,
 	}
 	pc := protoToPushConfig(pbSub.PushConfig)
 	if pc != nil {
@@ -300,6 +318,35 @@ func protoToPushConfig(pbPc *pb.PushConfig) *PushConfig {
 	return pc
 }
 
+// DeadLetterPolicy specifies the conditions for dead lettering messages in
+// a subscription.
+//
+// It is EXPERIMENTAL and a part of a closed alpha that may not be
+// accessible to all users.
+type DeadLetterPolicy struct {
+	DeadLetterTopic     string
+	MaxDeliveryAttempts int
+}
+
+func (dlp *DeadLetterPolicy) toProto() *pb.DeadLetterPolicy {
+	if dlp == nil || dlp.DeadLetterTopic == "" {
+		return nil
+	}
+	return &pb.DeadLetterPolicy{
+		DeadLetterTopic:     dlp.DeadLetterTopic,
+		MaxDeliveryAttempts: int32(dlp.MaxDeliveryAttempts),
+	}
+}
+func protoToDLP(pbDLP *pb.DeadLetterPolicy) *DeadLetterPolicy {
+	if pbDLP == nil {
+		return nil
+	}
+	return &DeadLetterPolicy{
+		DeadLetterTopic:     pbDLP.GetDeadLetterTopic(),
+		MaxDeliveryAttempts: int(pbDLP.MaxDeliveryAttempts),
+	}
+}
+
 // ReceiveSettings configure the Receive method.
 // A zero ReceiveSettings will result in values equivalent to DefaultReceiveSettings.
 type ReceiveSettings struct {
@@ -311,6 +358,16 @@ type ReceiveSettings struct {
 	// extension beyond the initial receipt may be disabled by specifying a
 	// duration less than 0.
 	MaxExtension time.Duration
+
+	// MaxExtensionPeriod is the maximum duration by which to extend the ack
+	// deadline at a time. The ack deadline will continue to be extended by up
+	// to this duration until MaxExtension is reached. Setting MaxExtensionPeriod
+	// bounds the maximum amount of time before a message redelivery in the
+	// event the subscriber fails to extend the deadline.
+	//
+	// MaxExtensionPeriod configuration can be disabled by specifying a
+	// duration less than (or equal to) 0.
+	MaxExtensionPeriod time.Duration
 
 	// MaxOutstandingMessages is the maximum number of unprocessed messages
 	// (unacknowledged but not yet expired). If MaxOutstandingMessages is 0, it
@@ -326,9 +383,11 @@ type ReceiveSettings struct {
 	// for unprocessed messages.
 	MaxOutstandingBytes int
 
-	// NumGoroutines is the number of goroutines Receive will spawn to pull
-	// messages concurrently. If NumGoroutines is less than 1, it will be treated
-	// as if it were DefaultReceiveSettings.NumGoroutines.
+	// NumGoroutines is the number of goroutines that each datastructure along
+	// the Receive path will spawn. Adjusting this value adjusts concurrency
+	// along the receive path.
+	//
+	// NumGoroutines defaults to DefaultReceiveSettings.NumGoroutines.
 	//
 	// NumGoroutines does not limit the number of messages that can be processed
 	// concurrently. Even with one goroutine, many messages might be processed at
@@ -370,10 +429,11 @@ var minAckDeadline = 10 * time.Second
 
 // DefaultReceiveSettings holds the default values for ReceiveSettings.
 var DefaultReceiveSettings = ReceiveSettings{
-	MaxExtension:           10 * time.Minute,
+	MaxExtension:           60 * time.Minute,
+	MaxExtensionPeriod:     0,
 	MaxOutstandingMessages: 1000,
 	MaxOutstandingBytes:    1e9, // 1G
-	NumGoroutines:          1,
+	NumGoroutines:          10,
 }
 
 // Delete deletes the subscription.
@@ -423,6 +483,13 @@ type SubscriptionConfigToUpdate struct {
 	// If non-zero, Expiration is changed.
 	ExpirationPolicy optional.Duration
 
+	// If non-nil, DeadLetterPolicy is changed. To remove dead lettering from
+	// a subscription, use the zero value for this struct.
+	//
+	// It is EXPERIMENTAL and a part of a closed alpha that may not be
+	// accessible to all users.
+	DeadLetterPolicy *DeadLetterPolicy
+
 	// If non-nil, the current set of labels is completely
 	// replaced by the new set.
 	// This field has beta status. It is not subject to the stability guarantee
@@ -471,6 +538,10 @@ func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.Update
 	if cfg.ExpirationPolicy != nil {
 		psub.ExpirationPolicy = expirationPolicyToProto(cfg.ExpirationPolicy)
 		paths = append(paths, "expiration_policy")
+	}
+	if cfg.DeadLetterPolicy != nil {
+		psub.DeadLetterPolicy = cfg.DeadLetterPolicy.toProto()
+		paths = append(paths, "dead_letter_policy")
 	}
 	if cfg.Labels != nil {
 		psub.Labels = cfg.Labels
@@ -638,98 +709,123 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	}
 	fc := newFlowController(maxCount, maxBytes)
 
+	sched := scheduler.NewReceiveScheduler(maxCount)
+
 	// Wait for all goroutines started by Receive to return, so instead of an
 	// obscure goroutine leak we have an obvious blocked call to Receive.
 	group, gctx := errgroup.WithContext(ctx)
-	for i := 0; i < numGoroutines; i++ {
-		group.Go(func() error {
-			return s.receive(gctx, po, fc, f)
-		})
+
+	type closeablePair struct {
+		wg   *sync.WaitGroup
+		iter *messageIterator
 	}
-	return group.Wait()
-}
 
-func (s *Subscription) receive(ctx context.Context, po *pullOptions, fc *flowController, f func(context.Context, *Message)) error {
-	// Cancel a sub-context when we return, to kick the context-aware callbacks
-	// and the goroutine below.
-	ctx2, cancel := context.WithCancel(ctx)
-	// The iterator does not use the context passed to Receive. If it did, canceling
-	// that context would immediately stop the iterator without waiting for unacked
-	// messages.
-	iter := newMessageIterator(s.c.subc, s.name, po)
+	var pairs []closeablePair
 
-	// We cannot use errgroup from Receive here. Receive might already be calling group.Wait,
-	// and group.Wait cannot be called concurrently with group.Go. We give each receive() its
-	// own WaitGroup instead.
-	// Since wg.Add is only called from the main goroutine, wg.Wait is guaranteed
-	// to be called after all Adds.
-	var wg sync.WaitGroup
-	wg.Add(1)
-	go func() {
-		<-ctx2.Done()
-		// Call stop when Receive's context is done.
-		// Stop will block until all outstanding messages have been acknowledged
-		// or there was a fatal service error.
-		iter.stop()
-		wg.Done()
-	}()
-	defer wg.Wait()
+	// Cancel a sub-context which, when we finish a single receiver, will kick
+	// off the context-aware callbacks and the goroutine below (which stops
+	// all receivers, iterators, and the scheduler).
+	ctx2, cancel2 := context.WithCancel(gctx)
+	defer cancel2()
 
-	defer cancel()
-	for {
-		var maxToPull int32 // maximum number of messages to pull
-		if po.synchronous {
-			if po.maxPrefetch < 0 {
-				// If there is no limit on the number of messages to pull, use a reasonable default.
-				maxToPull = 1000
-			} else {
-				// Limit the number of messages in memory to MaxOutstandingMessages
-				// (here, po.maxPrefetch). For each message currently in memory, we have
-				// called fc.acquire but not fc.release: this is fc.count(). The next
-				// call to Pull should fetch no more than the difference between these
-				// values.
-				maxToPull = po.maxPrefetch - int32(fc.count())
-				if maxToPull <= 0 {
-					// Wait for some callbacks to finish.
-					if err := gax.Sleep(ctx, synchronousWaitTime); err != nil {
+	for i := 0; i < numGoroutines; i++ {
+		// The iterator does not use the context passed to Receive. If it did,
+		// canceling that context would immediately stop the iterator without
+		// waiting for unacked messages.
+		iter := newMessageIterator(s.c.subc, s.name, &s.ReceiveSettings.MaxExtension, po)
+
+		// We cannot use errgroup from Receive here. Receive might already be
+		// calling group.Wait, and group.Wait cannot be called concurrently with
+		// group.Go. We give each receive() its own WaitGroup instead.
+		//
+		// Since wg.Add is only called from the main goroutine, wg.Wait is
+		// guaranteed to be called after all Adds.
+		var wg sync.WaitGroup
+		wg.Add(1)
+		pairs = append(pairs, closeablePair{wg: &wg, iter: iter})
+
+		group.Go(func() error {
+			defer wg.Wait()
+			defer cancel2()
+			for {
+				var maxToPull int32 // maximum number of messages to pull
+				if po.synchronous {
+					if po.maxPrefetch < 0 {
+						// If there is no limit on the number of messages to
+						// pull, use a reasonable default.
+						maxToPull = 1000
+					} else {
+						// Limit the number of messages in memory to MaxOutstandingMessages
+						// (here, po.maxPrefetch). For each message currently in memory, we have
+						// called fc.acquire but not fc.release: this is fc.count(). The next
+						// call to Pull should fetch no more than the difference between these
+						// values.
+						maxToPull = po.maxPrefetch - int32(fc.count())
+						if maxToPull <= 0 {
+							// Wait for some callbacks to finish.
+							if err := gax.Sleep(ctx, synchronousWaitTime); err != nil {
+								// Return nil if the context is done, not err.
+								return nil
+							}
+							continue
+						}
+					}
+				}
+				msgs, err := iter.receive(maxToPull)
+				if err == io.EOF {
+					return nil
+				}
+				if err != nil {
+					return err
+				}
+				for i, msg := range msgs {
+					msg := msg
+					// TODO(jba): call acquire closer to when the message is allocated.
+					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
+						// TODO(jba): test that these "orphaned" messages are nacked immediately when ctx is done.
+						for _, m := range msgs[i:] {
+							m.Nack()
+						}
 						// Return nil if the context is done, not err.
 						return nil
 					}
-					continue
+					old := msg.doneFunc
+					msgLen := len(msg.Data)
+					msg.doneFunc = func(ackID string, ack bool, receiveTime time.Time) {
+						defer fc.release(msgLen)
+						old(ackID, ack, receiveTime)
+					}
+					wg.Add(1)
+					// TODO(deklerk): Can we have a generic handler at the
+					// constructor level?
+					if err := sched.Add(msg.OrderingKey, msg, func(msg interface{}) {
+						defer wg.Done()
+						f(ctx2, msg.(*Message))
+					}); err != nil {
+						wg.Done()
+						return err
+					}
 				}
 			}
-		}
-		msgs, err := iter.receive(maxToPull)
-		if err == io.EOF {
-			return nil
-		}
-		if err != nil {
-			return err
-		}
-		for i, msg := range msgs {
-			msg := msg
-			// TODO(jba): call acquire closer to when the message is allocated.
-			if err := fc.acquire(ctx, len(msg.Data)); err != nil {
-				// TODO(jba): test that these "orphaned" messages are nacked immediately when ctx is done.
-				for _, m := range msgs[i:] {
-					m.Nack()
-				}
-				// Return nil if the context is done, not err.
-				return nil
-			}
-			old := msg.doneFunc
-			msgLen := len(msg.Data)
-			msg.doneFunc = func(ackID string, ack bool, receiveTime time.Time) {
-				defer fc.release(msgLen)
-				old(ackID, ack, receiveTime)
-			}
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
-				f(ctx2, msg)
-			}()
-		}
+		})
 	}
+
+	go func() {
+		<-ctx2.Done()
+
+		// Wait for all iterators to stop.
+		for _, p := range pairs {
+			p.iter.stop()
+			p.wg.Done()
+		}
+
+		// This _must_ happen after every iterator has stopped, or some
+		// iterator will still have undelivered messages but the scheduler will
+		// already be shut down.
+		sched.Shutdown()
+	}()
+
+	return group.Wait()
 }
 
 type pullOptions struct {

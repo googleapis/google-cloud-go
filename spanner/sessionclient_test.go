@@ -24,6 +24,7 @@ import (
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	. "cloud.google.com/go/spanner/internal/testutil"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -72,6 +73,49 @@ func newTestConsumer(numExpected int32) *testConsumer {
 	return &testConsumer{
 		numExpected: numExpected,
 		receivedAll: make(chan struct{}),
+	}
+}
+
+func TestNextClient(t *testing.T) {
+	t.Parallel()
+
+	n := 4
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		NumChannels: n,
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 0,
+			MaxOpened: 100,
+		},
+	})
+	defer teardown()
+	sc := client.idleSessions.sc
+	connections := make(map[*grpc.ClientConn]int)
+	for i := 0; i < n; i++ {
+		client, err := sc.nextClient()
+		if err != nil {
+			t.Fatalf("Error getting a gapic client from the session client\nGot: %v", err)
+		}
+		conn1 := client.Connection()
+		conn2 := client.Connection()
+		if conn1 != conn2 {
+			t.Fatalf("Client connection mismatch. Expected to get two equal connections.\nGot: %v and %v", conn1, conn2)
+		}
+		if index, ok := connections[conn1]; ok {
+			t.Fatalf("Same connection used multiple times for different clients.\nClient 1: %v\nClient 2: %v", index, i)
+		}
+		connections[conn1] = i
+	}
+	// Pass through all the clients once more. This time the exact same
+	// connections should be found.
+	for i := 0; i < n; i++ {
+		client, err := sc.nextClient()
+		if err != nil {
+			t.Fatalf("Error getting a gapic client from the session client\nGot: %v", err)
+		}
+		conn := client.Connection()
+		if _, ok := connections[conn]; !ok {
+			t.Fatalf("Connection not found for index %v", i)
+		}
 	}
 }
 
@@ -178,7 +222,7 @@ func TestBatchCreateSessionsWithExceptions(t *testing.T) {
 			// Register the errors on the server.
 			errors := make([]error, numErrors+firstErrorAt)
 			for i := firstErrorAt; i < numErrors+firstErrorAt; i++ {
-				errors[i] = spannerErrorf(codes.FailedPrecondition, "session creation failed")
+				errors[i] = status.Errorf(codes.FailedPrecondition, "session creation failed")
 			}
 			server.TestSpanner.PutExecutionTime(MethodBatchCreateSession, SimulatedExecutionTime{
 				Errors: errors,
@@ -308,8 +352,24 @@ func TestBatchCreateSessions_WithTimeout(t *testing.T) {
 	}
 	for _, e := range consumer.errors {
 		if g, w := status.Code(e.err), codes.DeadlineExceeded; g != w {
-			t.Fatalf("Error code mismatch\ngot: %v\nwant: %v", g, w)
+			t.Fatalf("Error code mismatch\ngot: %v (%s)\nwant: %v", g, e.err, w)
 		}
 	}
 	client.Close()
+}
+
+func TestClientIDGenerator(t *testing.T) {
+	cidGen = newClientIDGenerator()
+	for _, tt := range []struct {
+		database string
+		clientID string
+	}{
+		{"db", "client-1"},
+		{"db-new", "client-1"},
+		{"db", "client-2"},
+	} {
+		if got, want := cidGen.nextID(tt.database), tt.clientID; got != want {
+			t.Fatalf("Generate wrong client ID: got %v, want %v", got, want)
+		}
+	}
 }

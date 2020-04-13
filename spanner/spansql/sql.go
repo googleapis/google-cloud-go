@@ -25,9 +25,12 @@ import (
 )
 
 func (ct CreateTable) SQL() string {
-	str := "CREATE TABLE " + ct.Name + " (\n"
+	str := "CREATE TABLE " + ID(ct.Name).SQL() + " (\n"
 	for _, c := range ct.Columns {
 		str += "  " + c.SQL() + ",\n"
+	}
+	for _, tc := range ct.Constraints {
+		str += "  " + tc.SQL() + ",\n"
 	}
 	str += ") PRIMARY KEY("
 	for i, c := range ct.PrimaryKey {
@@ -38,7 +41,7 @@ func (ct CreateTable) SQL() string {
 	}
 	str += ")"
 	if il := ct.Interleave; il != nil {
-		str += ",\n  INTERLEAVE IN PARENT " + il.Parent + " ON DELETE " + il.OnDelete.SQL()
+		str += ",\n  INTERLEAVE IN PARENT " + ID(il.Parent).SQL() + " ON DELETE " + il.OnDelete.SQL()
 	}
 	return str
 }
@@ -51,7 +54,7 @@ func (ci CreateIndex) SQL() string {
 	if ci.NullFiltered {
 		str += " NULL_FILTERED"
 	}
-	str += " INDEX " + ci.Name + " ON " + ci.Table + "("
+	str += " INDEX " + ID(ci.Name).SQL() + " ON " + ID(ci.Table).SQL() + "("
 	for i, c := range ci.Columns {
 		if i > 0 {
 			str += ", "
@@ -60,26 +63,24 @@ func (ci CreateIndex) SQL() string {
 	}
 	str += ")"
 	if len(ci.Storing) > 0 {
-		str += " STORING ("
-		str += strings.Join(ci.Storing, ", ")
-		str += ")"
+		str += " STORING (" + idList(ci.Storing) + ")"
 	}
 	if ci.Interleave != "" {
-		str += ", INTERLEAVE IN " + ci.Interleave
+		str += ", INTERLEAVE IN " + ID(ci.Interleave).SQL()
 	}
 	return str
 }
 
 func (dt DropTable) SQL() string {
-	return "DROP TABLE " + dt.Name
+	return "DROP TABLE " + ID(dt.Name).SQL()
 }
 
 func (di DropIndex) SQL() string {
-	return "DROP INDEX " + di.Name
+	return "DROP INDEX " + ID(di.Name).SQL()
 }
 
 func (at AlterTable) SQL() string {
-	return "ALTER TABLE " + at.Name + " " + at.Alteration.SQL()
+	return "ALTER TABLE " + ID(at.Name).SQL() + " " + at.Alteration.SQL()
 }
 
 func (ac AddColumn) SQL() string {
@@ -87,7 +88,15 @@ func (ac AddColumn) SQL() string {
 }
 
 func (dc DropColumn) SQL() string {
-	return "DROP COLUMN " + dc.Name
+	return "DROP COLUMN " + ID(dc.Name).SQL()
+}
+
+func (ac AddConstraint) SQL() string {
+	return "ADD " + ac.Constraint.SQL()
+}
+
+func (dc DropConstraint) SQL() string {
+	return "DROP CONSTRAINT " + ID(dc.Name).SQL()
 }
 
 func (sod SetOnDelete) SQL() string {
@@ -104,13 +113,42 @@ func (od OnDelete) SQL() string {
 	panic("unknown OnDelete")
 }
 
-// TODO func (ac AlterColumn) SQL() string { }
+func (ac AlterColumn) SQL() string {
+	return "ALTER COLUMN " + ac.Def.SQL()
+}
+
+func (d *Delete) SQL() string {
+	return "DELETE FROM " + ID(d.Table).SQL() + " WHERE " + d.Where.SQL()
+}
 
 func (cd ColumnDef) SQL() string {
-	str := cd.Name + " " + cd.Type.SQL()
+	str := ID(cd.Name).SQL() + " " + cd.Type.SQL()
 	if cd.NotNull {
 		str += " NOT NULL"
 	}
+	if cd.Type.Base == Timestamp && cd.AllowCommitTimestamp != nil {
+		if *cd.AllowCommitTimestamp {
+			str += " OPTIONS (allow_commit_timestamp = true)"
+		} else {
+			str += " OPTIONS (allow_commit_timestamp = null)"
+		}
+	}
+	return str
+}
+
+func (tc TableConstraint) SQL() string {
+	var str string
+	if tc.Name != "" {
+		str += "CONSTRAINT " + ID(tc.Name).SQL() + " "
+	}
+	str += tc.ForeignKey.SQL()
+	return str
+}
+
+func (fk ForeignKey) SQL() string {
+	str := "FOREIGN KEY (" + idList(fk.Columns)
+	str += ") REFERENCES " + ID(fk.RefTable).SQL() + " ("
+	str += idList(fk.RefColumns) + ")"
 	return str
 }
 
@@ -152,7 +190,7 @@ func (tb TypeBase) SQL() string {
 }
 
 func (kp KeyPart) SQL() string {
-	str := kp.Column
+	str := ID(kp.Column).SQL()
 	if kp.Desc {
 		str += " DESC"
 	}
@@ -172,17 +210,29 @@ func (q Query) SQL() string {
 	}
 	if q.Limit != nil {
 		str += " LIMIT " + q.Limit.SQL()
+		if q.Offset != nil {
+			str += " OFFSET " + q.Offset.SQL()
+		}
 	}
 	return str
 }
 
 func (sel Select) SQL() string {
 	str := "SELECT "
+	if sel.Distinct {
+		str += "DISTINCT "
+	}
 	for i, e := range sel.List {
 		if i > 0 {
 			str += ", "
 		}
 		str += e.SQL()
+		if len(sel.ListAliases) > 0 {
+			alias := sel.ListAliases[i]
+			if alias != "" {
+				str += " AS " + ID(alias).SQL()
+			}
+		}
 	}
 	if len(sel.From) > 0 {
 		str += " FROM "
@@ -190,11 +240,20 @@ func (sel Select) SQL() string {
 			if i > 0 {
 				str += ", "
 			}
-			str += f.Table
+			str += ID(f.Table).SQL()
 		}
 	}
 	if sel.Where != nil {
 		str += " WHERE " + sel.Where.SQL()
+	}
+	if len(sel.GroupBy) > 0 {
+		str += " GROUP BY "
+		for i, gb := range sel.GroupBy {
+			if i > 0 {
+				str += ", "
+			}
+			str += gb.SQL()
+		}
 	}
 	return str
 }
@@ -205,6 +264,36 @@ func (o Order) SQL() string {
 		str += " DESC"
 	}
 	return str
+}
+
+var arithOps = map[ArithOperator]string{
+	// Binary operators only; unary operators are handled first.
+	Mul:    "*",
+	Div:    "/",
+	Concat: "||",
+	Add:    "+",
+	Sub:    "-",
+	BitShl: "<<",
+	BitShr: ">>",
+	BitAnd: "&",
+	BitXor: "^",
+	BitOr:  "|",
+}
+
+func (ao ArithOp) SQL() string {
+	// Extra parens inserted to ensure the correct precedence.
+
+	switch ao.Op {
+	case Neg:
+		return "-(" + ao.RHS.SQL() + ")"
+	case BitNot:
+		return "~(" + ao.RHS.SQL() + ")"
+	}
+	op, ok := arithOps[ao.Op]
+	if !ok {
+		panic("unknown ArithOp")
+	}
+	return "(" + ao.LHS.SQL() + ")" + op + "(" + ao.RHS.SQL() + ")"
 }
 
 func (lo LogicalOp) SQL() string {
@@ -245,6 +334,26 @@ func (co ComparisonOp) SQL() string {
 	return s
 }
 
+func (io InOp) SQL() string {
+	str := io.LHS.SQL()
+	if io.Neg {
+		str += " NOT"
+	}
+	str += " IN "
+	if io.Unnest {
+		str += "UNNEST"
+	}
+	str += "("
+	for i, e := range io.RHS {
+		if i > 0 {
+			str += ", "
+		}
+		str += e.SQL()
+	}
+	str += ")"
+	return str
+}
+
 func (io IsOp) SQL() string {
 	str := io.LHS.SQL() + " IS "
 	if io.Neg {
@@ -266,9 +375,29 @@ func (f Func) SQL() string {
 	return str
 }
 
+func idList(l []string) string {
+	var ss []string
+	for _, s := range l {
+		ss = append(ss, ID(s).SQL())
+	}
+	return strings.Join(ss, ", ")
+}
+
 func (p Paren) SQL() string { return "(" + p.Expr.SQL() + ")" }
 
-func (id ID) SQL() string   { return string(id) }
+func (id ID) SQL() string {
+	// https://cloud.google.com/spanner/docs/lexical#identifiers
+
+	// TODO: If there are non-letters/numbers/underscores then this also needs quoting.
+
+	if IsKeyword(string(id)) {
+		// TODO: Escaping may be needed here.
+		return "`" + string(id) + "`"
+	}
+
+	return string(id)
+}
+
 func (p Param) SQL() string { return "@" + string(p) }
 
 func (b BoolLiteral) SQL() string {

@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -180,6 +180,30 @@ func (s *mockConfigServer) DeleteExclusion(ctx context.Context, req *loggingpb.D
 		return nil, s.err
 	}
 	return s.resps[0].(*emptypb.Empty), nil
+}
+
+func (s *mockConfigServer) GetCmekSettings(ctx context.Context, req *loggingpb.GetCmekSettingsRequest) (*loggingpb.CmekSettings, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*loggingpb.CmekSettings), nil
+}
+
+func (s *mockConfigServer) UpdateCmekSettings(ctx context.Context, req *loggingpb.UpdateCmekSettingsRequest) (*loggingpb.CmekSettings, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*loggingpb.CmekSettings), nil
 }
 
 type mockLoggingServer struct {
@@ -441,12 +465,16 @@ func TestConfigServiceV2GetSink(t *testing.T) {
 	var name string = "name3373707"
 	var destination string = "destination-1429847026"
 	var filter string = "filter-1274492040"
+	var description string = "description-1724546052"
+	var disabled bool = true
 	var writerIdentity string = "writerIdentity775638794"
 	var includeChildren bool = true
 	var expectedResponse = &loggingpb.LogSink{
 		Name:            name,
 		Destination:     destination,
 		Filter:          filter,
+		Description:     description,
+		Disabled:        disabled,
 		WriterIdentity:  writerIdentity,
 		IncludeChildren: includeChildren,
 	}
@@ -508,12 +536,16 @@ func TestConfigServiceV2CreateSink(t *testing.T) {
 	var name string = "name3373707"
 	var destination string = "destination-1429847026"
 	var filter string = "filter-1274492040"
+	var description string = "description-1724546052"
+	var disabled bool = true
 	var writerIdentity string = "writerIdentity775638794"
 	var includeChildren bool = true
 	var expectedResponse = &loggingpb.LogSink{
 		Name:            name,
 		Destination:     destination,
 		Filter:          filter,
+		Description:     description,
+		Disabled:        disabled,
 		WriterIdentity:  writerIdentity,
 		IncludeChildren: includeChildren,
 	}
@@ -579,12 +611,16 @@ func TestConfigServiceV2UpdateSink(t *testing.T) {
 	var name string = "name3373707"
 	var destination string = "destination-1429847026"
 	var filter string = "filter-1274492040"
+	var description string = "description-1724546052"
+	var disabled bool = true
 	var writerIdentity string = "writerIdentity775638794"
 	var includeChildren bool = true
 	var expectedResponse = &loggingpb.LogSink{
 		Name:            name,
 		Destination:     destination,
 		Filter:          filter,
+		Description:     description,
+		Disabled:        disabled,
 		WriterIdentity:  writerIdentity,
 		IncludeChildren: includeChildren,
 	}
@@ -1028,6 +1064,120 @@ func TestConfigServiceV2DeleteExclusionError(t *testing.T) {
 	} else if c := st.Code(); c != errCode {
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
+}
+func TestConfigServiceV2GetCmekSettings(t *testing.T) {
+	var name string = "name3373707"
+	var kmsKeyName string = "kmsKeyName2094986649"
+	var serviceAccountId string = "serviceAccountId-111486921"
+	var expectedResponse = &loggingpb.CmekSettings{
+		Name:             name,
+		KmsKeyName:       kmsKeyName,
+		ServiceAccountId: serviceAccountId,
+	}
+
+	mockConfig.err = nil
+	mockConfig.reqs = nil
+
+	mockConfig.resps = append(mockConfig.resps[:0], expectedResponse)
+
+	var request *loggingpb.GetCmekSettingsRequest = &loggingpb.GetCmekSettingsRequest{}
+
+	c, err := NewConfigClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetCmekSettings(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockConfig.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestConfigServiceV2GetCmekSettingsError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockConfig.err = gstatus.Error(errCode, "test error")
+
+	var request *loggingpb.GetCmekSettingsRequest = &loggingpb.GetCmekSettingsRequest{}
+
+	c, err := NewConfigClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetCmekSettings(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestConfigServiceV2UpdateCmekSettings(t *testing.T) {
+	var name string = "name3373707"
+	var kmsKeyName string = "kmsKeyName2094986649"
+	var serviceAccountId string = "serviceAccountId-111486921"
+	var expectedResponse = &loggingpb.CmekSettings{
+		Name:             name,
+		KmsKeyName:       kmsKeyName,
+		ServiceAccountId: serviceAccountId,
+	}
+
+	mockConfig.err = nil
+	mockConfig.reqs = nil
+
+	mockConfig.resps = append(mockConfig.resps[:0], expectedResponse)
+
+	var request *loggingpb.UpdateCmekSettingsRequest = &loggingpb.UpdateCmekSettingsRequest{}
+
+	c, err := NewConfigClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateCmekSettings(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockConfig.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestConfigServiceV2UpdateCmekSettingsError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockConfig.err = gstatus.Error(errCode, "test error")
+
+	var request *loggingpb.UpdateCmekSettingsRequest = &loggingpb.UpdateCmekSettingsRequest{}
+
+	c, err := NewConfigClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateCmekSettings(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
 }
 func TestLoggingServiceV2DeleteLog(t *testing.T) {
 	var expectedResponse *emptypb.Empty = &emptypb.Empty{}

@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@
 //
 // For information about setting deadlines, reusing contexts, and more
 // please visit godoc.org/cloud.google.com/go.
-
 package phishingprotection // import "cloud.google.com/go/phishingprotection/apiv1beta1"
 
 import (
@@ -38,10 +37,16 @@ import (
 	"strings"
 	"unicode"
 
+	"google.golang.org/api/option"
 	"google.golang.org/grpc/metadata"
 )
 
-const versionClient = "20191028"
+// For more information on implementing a client constructor hook, see
+// https://github.com/googleapis/google-cloud-go/wiki/Customizing-constructors.
+type clientHookParams struct{}
+type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
+
+const versionClient = "20200413"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

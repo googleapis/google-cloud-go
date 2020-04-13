@@ -36,9 +36,9 @@ import (
 	database "cloud.google.com/go/spanner/admin/database/apiv1"
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
 	"google.golang.org/api/iterator"
-	"google.golang.org/api/option"
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
+	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -146,14 +146,8 @@ func initIntegrationTests() (cleanup func()) {
 		return noop
 	}
 
-	ts := testutil.TokenSource(ctx, AdminScope, Scope)
-	if ts == nil {
-		log.Printf("Integration test skipped: cannot get service account credential from environment variable %v", "GCLOUD_TESTS_GOLANG_KEY")
-		return noop
-	}
+	opts := grpcHeaderChecker.CallOptions()
 	var err error
-
-	opts := append(grpcHeaderChecker.CallOptions(), option.WithTokenSource(ts), option.WithEndpoint(endpoint))
 	// Create InstanceAdmin and DatabaseAdmin clients.
 	instanceAdmin, err = instance.NewInstanceAdminClient(ctx, opts...)
 	if err != nil {
@@ -216,14 +210,15 @@ func initIntegrationTests() (cleanup func()) {
 func TestIntegration_InitSessionPool(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	// Set up testing environment.
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	// Set up an empty testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, []string{})
 	defer cleanup()
 	sp := client.idleSessions
 	sp.mu.Lock()
 	want := sp.MinOpened
 	sp.mu.Unlock()
 	var numOpened int
+loop:
 	for {
 		select {
 		case <-ctx.Done():
@@ -233,9 +228,41 @@ func TestIntegration_InitSessionPool(t *testing.T) {
 			numOpened = sp.idleList.Len() + sp.idleWriteList.Len()
 			sp.mu.Unlock()
 			if uint64(numOpened) == want {
-				return
+				break loop
 			}
 		}
+	}
+	// Delete all sessions in the pool on the backend and then try to execute a
+	// simple query. The 'Session not found' error should cause an automatic
+	// retry of the read-only transaction.
+	sp.mu.Lock()
+	s := sp.idleList.Front()
+	for {
+		if s == nil {
+			break
+		}
+		// This will delete the session on the backend without removing it
+		// from the pool.
+		s.Value.(*session).delete(context.Background())
+		s = s.Next()
+	}
+	sp.mu.Unlock()
+	sql := "SELECT 1, 'FOO', 'BAR'"
+	tx := client.ReadOnlyTransaction()
+	defer tx.Close()
+	iter := tx.Query(context.Background(), NewStatement(sql))
+	rows, err := readAll(iter)
+	if err != nil {
+		t.Fatalf("Unexpected error for query %q: %v", sql, err)
+	}
+	if got, want := len(rows), 1; got != want {
+		t.Fatalf("Row count mismatch for query %q\nGot: %v\nWant: %v", sql, got, want)
+	}
+	if got, want := len(rows[0]), 3; got != want {
+		t.Fatalf("Column count mismatch for query %q\nGot: %v\nWant: %v", sql, got, want)
+	}
+	if got, want := rows[0][0].(int64), int64(1); got != want {
+		t.Fatalf("Column value mismatch for query %q\nGot: %v\nWant: %v", sql, got, want)
 	}
 }
 
@@ -287,7 +314,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 				// writes[3] is the last write, all subsequent strong read
 				// should have a timestamp larger than that.
 				if ts.Before(writes[3].ts) {
-					return fmt.Errorf("read got timestamp %v, want it to be no later than %v", ts, writes[3].ts)
+					return fmt.Errorf("read got timestamp %v, want it to be no earlier than %v", ts, writes[3].ts)
 				}
 				return nil
 			},
@@ -298,7 +325,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 			tb:   MinReadTimestamp(writes[3].ts),
 			checkTs: func(ts time.Time) error {
 				if ts.Before(writes[3].ts) {
-					return fmt.Errorf("read got timestamp %v, want it to be no later than %v", ts, writes[3].ts)
+					return fmt.Errorf("read got timestamp %v, want it to be no earlier than %v", ts, writes[3].ts)
 				}
 				return nil
 			},
@@ -309,7 +336,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 			tb:   MaxStaleness(time.Second),
 			checkTs: func(ts time.Time) error {
 				if ts.Before(writes[3].ts) {
-					return fmt.Errorf("read got timestamp %v, want it to be no later than %v", ts, writes[3].ts)
+					return fmt.Errorf("read got timestamp %v, want it to be no earlier than %v", ts, writes[3].ts)
 				}
 				return nil
 			},
@@ -344,7 +371,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 			got, err := readAll(su.Query(
 				ctx,
 				Statement{
-					"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4)",
+					"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4) ORDER BY SingerId",
 					map[string]interface{}{"id1": int64(1), "id3": int64(3), "id4": int64(4)},
 				}))
 			if err != nil {
@@ -436,7 +463,121 @@ func TestIntegration_SingleUse(t *testing.T) {
 			if err := test.checkTs(rts); err != nil {
 				t.Fatalf("%d: SingleUse.ReadUsingIndex doesn't return expected timestamp: %v", i, err)
 			}
+			// SingleUse.ReadRowUsingIndex
+			got = nil
+			for _, k := range []Key{{"Marc", "Foo"}, {"Alpha", "Beta"}, {"Last", "End"}} {
+				su = client.Single().WithTimestampBound(test.tb)
+				r, err := su.ReadRowUsingIndex(ctx, "Singers", "SingerByName", k, []string{"SingerId", "FirstName", "LastName"})
+				if err != nil {
+					continue
+				}
+				v, err := rowToValues(r)
+				if err != nil {
+					continue
+				}
+				got = append(got, v)
+				rts, err = su.Timestamp()
+				if err != nil {
+					t.Fatalf("%d: SingleUse.ReadRowUsingIndex(%v) doesn't return a timestamp, error: %v", i, k, err)
+				}
+				if err := test.checkTs(rts); err != nil {
+					t.Fatalf("%d: SingleUse.ReadRowUsingIndex(%v) doesn't return expected timestamp: %v", i, k, err)
+				}
+			}
+			if !testEqual(got, test.want) {
+				t.Fatalf("%d: got unexpected results from SingleUse.ReadRowUsingIndex: %v, want %v", i, got, test.want)
+			}
 		})
+	}
+}
+
+// Test resource-based routing enabled.
+func TestIntegration_SingleUse_WithResourceBasedRouting(t *testing.T) {
+	os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "true")
+	defer os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	// Set up testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	defer cleanup()
+
+	writes := []struct {
+		row []interface{}
+		ts  time.Time
+	}{
+		{row: []interface{}{1, "Marc", "Foo"}},
+		{row: []interface{}{2, "Tars", "Bar"}},
+		{row: []interface{}{3, "Alpha", "Beta"}},
+		{row: []interface{}{4, "Last", "End"}},
+	}
+	// Try to write four rows through the Apply API.
+	for i, w := range writes {
+		var err error
+		m := InsertOrUpdate("Singers",
+			[]string{"SingerId", "FirstName", "LastName"},
+			w.row)
+		if writes[i].ts, err = client.Apply(ctx, []*Mutation{m}, ApplyAtLeastOnce()); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	row, err := client.Single().ReadRow(ctx, "Singers", Key{3}, []string{"FirstName"})
+	if err != nil {
+		t.Errorf("SingleUse.ReadRow returns error %v, want nil", err)
+	}
+	var got string
+	if err := row.Column(0, &got); err != nil {
+		t.Errorf("row.Column returns error %v, want nil", err)
+	}
+	if want := "Alpha"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// Test custom query options provided on query-level configuration.
+func TestIntegration_SingleUse_WithQueryOptions(t *testing.T) {
+	skipEmulatorTest(t)
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	// Set up testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	defer cleanup()
+
+	writes := []struct {
+		row []interface{}
+		ts  time.Time
+	}{
+		{row: []interface{}{1, "Marc", "Foo"}},
+		{row: []interface{}{2, "Tars", "Bar"}},
+		{row: []interface{}{3, "Alpha", "Beta"}},
+		{row: []interface{}{4, "Last", "End"}},
+	}
+	// Try to write four rows through the Apply API.
+	for i, w := range writes {
+		var err error
+		m := InsertOrUpdate("Singers",
+			[]string{"SingerId", "FirstName", "LastName"},
+			w.row)
+		if writes[i].ts, err = client.Apply(ctx, []*Mutation{m}, ApplyAtLeastOnce()); err != nil {
+			t.Fatal(err)
+		}
+	}
+	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}}
+	got, err := readAll(client.Single().QueryWithOptions(ctx, Statement{
+		"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4)",
+		map[string]interface{}{"id1": int64(1), "id3": int64(3), "id4": int64(4)},
+	}, qo))
+
+	if err != nil {
+		t.Errorf("ReadOnlyTransaction.QueryWithOptions returns error %v, want nil", err)
+	}
+
+	want := [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}}
+	if !testEqual(got, want) {
+		t.Errorf("got unexpected result from ReadOnlyTransaction.QueryWithOptions: %v, want %v", got, want)
 	}
 }
 
@@ -564,7 +705,7 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 		got, err := readAll(ro.Query(
 			ctx,
 			Statement{
-				"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4)",
+				"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4) ORDER BY SingerId",
 				map[string]interface{}{"id1": int64(1), "id3": int64(3), "id4": int64(4)},
 			}))
 		if err != nil {
@@ -663,6 +804,32 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 		}
 		if roTs != rts {
 			t.Errorf("%d: got two read timestamps: %v, %v, want ReadOnlyTransaction to return always the same read timestamp", i, roTs, rts)
+		}
+		// ReadOnlyTransaction.ReadRowUsingIndex
+		got = nil
+		for _, k := range []Key{{"Marc", "Foo"}, {"Alpha", "Beta"}, {"Last", "End"}} {
+			r, err := ro.ReadRowUsingIndex(ctx, "Singers", "SingerByName", k, []string{"SingerId", "FirstName", "LastName"})
+			if err != nil {
+				continue
+			}
+			v, err := rowToValues(r)
+			if err != nil {
+				continue
+			}
+			got = append(got, v)
+			rts, err = ro.Timestamp()
+			if err != nil {
+				t.Errorf("%d: ReadOnlyTransaction.ReadRowUsingIndex(%v) doesn't return a timestamp, error: %v", i, k, err)
+			}
+			if err := test.checkTs(rts); err != nil {
+				t.Errorf("%d: ReadOnlyTransaction.ReadRowUsingIndex(%v) doesn't return expected timestamp: %v", i, k, err)
+			}
+			if roTs != rts {
+				t.Errorf("%d: got two read timestamps: %v, %v, want ReadOnlyTransaction to return always the same read timestamp", i, roTs, rts)
+			}
+		}
+		if !testEqual(got, test.want) {
+			t.Errorf("%d: got unexpected results from ReadOnlyTransaction.ReadRowUsingIndex: %v, want %v", i, got, test.want)
 		}
 		ro.Close()
 	}
@@ -853,8 +1020,23 @@ func TestIntegration_Reads(t *testing.T) {
 		t.Fatalf("got %v, want NotFound", err)
 	}
 
-	// No index point read not found, because Go does not have ReadRowUsingIndex.
-
+	// Index point read.
+	rowIndex, err := client.Single().ReadRowUsingIndex(ctx, testTable, testTableIndex, Key{"v1"}, testTableColumns)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var gotIndex testTableRow
+	if err := rowIndex.ToStruct(&gotIndex); err != nil {
+		t.Fatal(err)
+	}
+	if wantIndex := (testTableRow{"k1", "v1"}); gotIndex != wantIndex {
+		t.Errorf("got %v, want %v", gotIndex, wantIndex)
+	}
+	// Index point read not found.
+	_, err = client.Single().ReadRowUsingIndex(ctx, testTable, testTableIndex, Key{"v999"}, testTableColumns)
+	if ErrCode(err) != codes.NotFound {
+		t.Fatalf("got %v, want NotFound", err)
+	}
 	rangeReads(ctx, t, client)
 	indexRangeReads(ctx, t, client)
 }
@@ -1229,6 +1411,7 @@ func TestIntegration_StructTypes(t *testing.T) {
 }
 
 func TestIntegration_StructParametersUnsupported(t *testing.T) {
+	skipEmulatorTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -1330,6 +1513,7 @@ func TestIntegration_QueryExpressions(t *testing.T) {
 }
 
 func TestIntegration_QueryStats(t *testing.T) {
+	skipEmulatorTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -1400,6 +1584,16 @@ func TestIntegration_ReadErrors(t *testing.T) {
 	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, readDBStatements)
 	defer cleanup()
 
+	var ms []*Mutation
+	for i := 0; i < 2; i++ {
+		ms = append(ms, InsertOrUpdate(testTable,
+			testTableColumns,
+			[]interface{}{fmt.Sprintf("k%d", i), fmt.Sprintf("v")}))
+	}
+	if _, err := client.Apply(ctx, ms); err != nil {
+		t.Fatal(err)
+	}
+
 	// Read over invalid table fails
 	_, err := client.Single().ReadRow(ctx, "badTable", Key{1}, []string{"StringValue"})
 	if msg, ok := matchError(err, codes.NotFound, "badTable"); !ok {
@@ -1434,11 +1628,18 @@ func TestIntegration_ReadErrors(t *testing.T) {
 	if msg, ok := matchError(err, codes.DeadlineExceeded, ""); !ok {
 		t.Error(msg)
 	}
+	// Read should fail if there are multiple rows returned.
+	_, err = client.Single().ReadRowUsingIndex(ctx, testTable, testTableIndex, Key{"v"}, testTableColumns)
+	wantMsgPart := fmt.Sprintf("more than one row found by index(Table: %v, IndexKey: %v, Index: %v)", testTable, Key{"v"}, testTableIndex)
+	if msg, ok := matchError(err, codes.FailedPrecondition, wantMsgPart); !ok {
+		t.Error(msg)
+	}
 }
 
 // Test TransactionRunner. Test that transactions are aborted and retried as
 // expected.
 func TestIntegration_TransactionRunner(t *testing.T) {
+	skipEmulatorTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -1491,6 +1692,11 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 		if e != nil {
 			if expectAbort && !isAbortErr(e) {
 				t.Errorf("ReadRow got %v, want Abort error.", e)
+			}
+			// Verify that we received and are able to extract retry info from
+			// the aborted error.
+			if _, hasRetryInfo := extractRetryDelay(e); !hasRetryInfo {
+				t.Errorf("Got Abort error without RetryInfo\nGot: %v", e)
 			}
 			return b, e
 		}
@@ -1575,6 +1781,7 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 // serialize and deserialize both transaction and partition to be used in
 // execution on another client, and compare results.
 func TestIntegration_BatchQuery(t *testing.T) {
+	skipEmulatorTest(t)
 	t.Parallel()
 
 	// Set up testing environment.
@@ -1661,6 +1868,7 @@ func TestIntegration_BatchQuery(t *testing.T) {
 
 // Test PartitionRead of BatchReadOnlyTransaction, similar to TestBatchQuery
 func TestIntegration_BatchRead(t *testing.T) {
+	skipEmulatorTest(t)
 	t.Parallel()
 
 	// Set up testing environment.
@@ -1746,6 +1954,7 @@ func TestIntegration_BatchRead(t *testing.T) {
 
 // Test normal txReadEnv method on BatchReadOnlyTransaction.
 func TestIntegration_BROTNormal(t *testing.T) {
+	skipEmulatorTest(t)
 	t.Parallel()
 
 	// Set up testing environment and create txn.
@@ -2189,6 +2398,7 @@ func TestIntegration_StructParametersBind(t *testing.T) {
 }
 
 func TestIntegration_PDML(t *testing.T) {
+	skipEmulatorTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2242,7 +2452,8 @@ func TestIntegration_PDML(t *testing.T) {
 	}
 }
 
-func TestBatchDML(t *testing.T) {
+func TestIntegration_BatchDML(t *testing.T) {
+	skipEmulatorTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2295,7 +2506,7 @@ func TestBatchDML(t *testing.T) {
 	}
 }
 
-func TestBatchDML_NoStatements(t *testing.T) {
+func TestIntegration_BatchDML_NoStatements(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2319,7 +2530,8 @@ func TestBatchDML_NoStatements(t *testing.T) {
 	}
 }
 
-func TestBatchDML_TwoStatements(t *testing.T) {
+func TestIntegration_BatchDML_TwoStatements(t *testing.T) {
+	skipEmulatorTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2370,7 +2582,7 @@ func TestBatchDML_TwoStatements(t *testing.T) {
 
 // TODO(deklerk): this currently does not work because the transaction appears to
 // get rolled back after a single statement fails. b/120158761
-func TestBatchDML_Error(t *testing.T) {
+func TestIntegration_BatchDML_Error(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2480,6 +2692,23 @@ func cleanupInstances() {
 		}
 		if instanceNameSpace.Older(inst.Name, expireAge) {
 			log.Printf("Deleting instance %s", inst.Name)
+
+			// First delete any lingering backups that might have been left on
+			// the instance.
+			backups := databaseAdmin.ListBackups(ctx, &adminpb.ListBackupsRequest{Parent: inst.Name})
+			for {
+				backup, err := backups.Next()
+				if err == iterator.Done {
+					break
+				}
+				if err != nil {
+					log.Printf("failed to retrieve backups from instance %s because of error %v", inst.Name, err)
+					break
+				}
+				if err := databaseAdmin.DeleteBackup(ctx, &adminpb.DeleteBackupRequest{Name: backup.Name}); err != nil {
+					log.Printf("failed to delete backup %s (error %v)", backup.Name, err)
+				}
+			}
 
 			if err := instanceAdmin.DeleteInstance(ctx, &instancepb.DeleteInstanceRequest{Name: inst.Name}); err != nil {
 				log.Printf("failed to delete instance %s (error %v), might need a manual removal",
@@ -2592,9 +2821,7 @@ func isNaN(x interface{}) bool {
 
 // createClient creates Cloud Spanner data client.
 func createClient(ctx context.Context, dbPath string, spc SessionPoolConfig) (client *Client, err error) {
-	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{
-		SessionPoolConfig: spc,
-	}, option.WithTokenSource(testutil.TokenSource(ctx, Scope)), option.WithEndpoint(endpoint))
+	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc})
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
 	}
@@ -2678,4 +2905,10 @@ func maxDuration(a, b time.Duration) time.Duration {
 		return a
 	}
 	return b
+}
+
+func skipEmulatorTest(t *testing.T) {
+	if os.Getenv("SPANNER_EMULATOR_HOST") != "" {
+		t.Skip("Skipping testing against the emulator.")
+	}
 }

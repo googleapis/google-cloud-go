@@ -73,13 +73,21 @@ func TestSigningV4Conformance(t *testing.T) {
 					return time.Unix(tc.Timestamp.Seconds, 0).UTC()
 				}
 
+				qp := url.Values{}
+				if tc.QueryParameters != nil {
+					for k, v := range tc.QueryParameters {
+						qp.Add(k, v)
+					}
+				}
+
 				gotURL, err := SignedURL(tc.Bucket, tc.Object, &SignedURLOptions{
-					GoogleAccessID: googleAccessID,
-					PrivateKey:     []byte(privateKey),
-					Method:         tc.Method,
-					Expires:        utcNow().Add(time.Duration(tc.Expiration) * time.Second),
-					Scheme:         SigningSchemeV4,
-					Headers:        headersAsSlice(tc.Headers),
+					GoogleAccessID:  googleAccessID,
+					PrivateKey:      []byte(privateKey),
+					Method:          tc.Method,
+					Expires:         utcNow().Add(time.Duration(tc.Expiration) * time.Second),
+					Scheme:          SigningSchemeV4,
+					Headers:         headersAsSlice(tc.Headers),
+					QueryParameters: qp,
 				})
 				if err != nil {
 					t.Fatal(err)

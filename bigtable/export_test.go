@@ -25,8 +25,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigtable/bttest"
+	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/option"
+	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 )
 
@@ -136,18 +138,29 @@ var headersInterceptor = testutil.DefaultHeadersEnforcer()
 
 // NewAdminClient builds a new connected admin client for this environment
 func (e *EmulatedEnv) NewAdminClient() (*AdminClient, error) {
+	o, err := btopt.DefaultClientOptions(e.server.Addr, AdminScope, clientUserAgent)
+	if err != nil {
+		return nil, err
+	}
+	// Add gRPC client interceptors to supply Google client information.
+	//
+	// Inject interceptors from headersInterceptor, since they are used to verify
+	// client requests under test.
+	o = append(o, btopt.ClientInterceptorOptions(
+		headersInterceptor.StreamInterceptors(),
+		headersInterceptor.UnaryInterceptors())...)
+
 	timeout := 20 * time.Second
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
-	dopts := append(headersInterceptor.DialOptions(), grpc.WithInsecure(), grpc.WithBlock())
 
-	conn, err := grpc.Dial(e.server.Addr, dopts...)
+	o = append(o, option.WithGRPCDialOption(grpc.WithBlock()))
+	conn, err := gtransport.DialInsecure(ctx, o...)
 	if err != nil {
 		return nil, err
 	}
 
 	return NewAdminClient(ctx, e.config.Project, e.config.Instance,
 		option.WithGRPCConn(conn))
-
 }
 
 // NewInstanceAdminClient returns nil for the emulated environment since the API is not implemented.
@@ -157,13 +170,25 @@ func (e *EmulatedEnv) NewInstanceAdminClient() (*InstanceAdminClient, error) {
 
 // NewClient builds a new connected data client for this environment
 func (e *EmulatedEnv) NewClient() (*Client, error) {
+	o, err := btopt.DefaultClientOptions(e.server.Addr, Scope, clientUserAgent)
+	if err != nil {
+		return nil, err
+	}
+	// Add gRPC client interceptors to supply Google client information.
+	//
+	// Inject interceptors from headersInterceptor, since they are used to verify
+	// client requests under test.
+	o = append(o, btopt.ClientInterceptorOptions(
+		headersInterceptor.StreamInterceptors(),
+		headersInterceptor.UnaryInterceptors())...)
+
 	timeout := 20 * time.Second
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
 
-	dopts := append(headersInterceptor.DialOptions(),
-		grpc.WithInsecure(), grpc.WithBlock(),
-		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)))
-	conn, err := grpc.Dial(e.server.Addr, dopts...)
+	o = append(o, option.WithGRPCDialOption(grpc.WithBlock()))
+	o = append(o, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+		grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20))))
+	conn, err := gtransport.DialInsecure(ctx, o...)
 	if err != nil {
 		return nil, err
 	}

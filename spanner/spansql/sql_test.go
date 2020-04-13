@@ -21,45 +21,66 @@ import (
 	"testing"
 )
 
+func boolAddr(b bool) *bool {
+	return &b
+}
+
 func TestSQL(t *testing.T) {
 	reparseDDL := func(s string) (interface{}, error) {
 		ddl, err := ParseDDLStmt(s)
-		return ddl, err
+		if err != nil {
+			return nil, err
+		}
+		ddl.clearOffset()
+		return ddl, nil
+	}
+	reparseDML := func(s string) (interface{}, error) {
+		dml, err := ParseDMLStmt(s)
+		if err != nil {
+			return nil, err
+		}
+		return dml, nil
 	}
 	reparseQuery := func(s string) (interface{}, error) {
 		q, err := ParseQuery(s)
 		return q, err
 	}
 	reparseExpr := func(s string) (interface{}, error) {
-		e, err := newParser(s).parseExpr()
-		return e, err
+		e, pe := newParser("f-expr", s).parseExpr()
+		if pe != nil {
+			return nil, pe
+		}
+		return e, nil
 	}
 
+	line := func(n int) Position { return Position{Line: n} }
 	tests := []struct {
 		data    interface{ SQL() string }
 		sql     string
 		reparse func(string) (interface{}, error)
 	}{
 		{
-			CreateTable{
+			&CreateTable{
 				Name: "Ta",
 				Columns: []ColumnDef{
-					{Name: "Ca", Type: Type{Base: Bool}, NotNull: true},
-					{Name: "Cb", Type: Type{Base: Int64}},
-					{Name: "Cc", Type: Type{Base: Float64}},
-					{Name: "Cd", Type: Type{Base: String, Len: 17}},
-					{Name: "Ce", Type: Type{Base: String, Len: MaxLen}},
-					{Name: "Cf", Type: Type{Base: Bytes, Len: 4711}},
-					{Name: "Cg", Type: Type{Base: Bytes, Len: MaxLen}},
-					{Name: "Ch", Type: Type{Base: Date}},
-					{Name: "Ci", Type: Type{Base: Timestamp}},
-					{Name: "Cj", Type: Type{Array: true, Base: Int64}},
-					{Name: "Ck", Type: Type{Array: true, Base: String, Len: MaxLen}},
+					{Name: "Ca", Type: Type{Base: Bool}, NotNull: true, Position: line(2)},
+					{Name: "Cb", Type: Type{Base: Int64}, Position: line(3)},
+					{Name: "Cc", Type: Type{Base: Float64}, Position: line(4)},
+					{Name: "Cd", Type: Type{Base: String, Len: 17}, Position: line(5)},
+					{Name: "Ce", Type: Type{Base: String, Len: MaxLen}, Position: line(6)},
+					{Name: "Cf", Type: Type{Base: Bytes, Len: 4711}, Position: line(7)},
+					{Name: "Cg", Type: Type{Base: Bytes, Len: MaxLen}, Position: line(8)},
+					{Name: "Ch", Type: Type{Base: Date}, Position: line(9)},
+					{Name: "Ci", Type: Type{Base: Timestamp}, AllowCommitTimestamp: boolAddr(true), Position: line(10)},
+					{Name: "Cj", Type: Type{Array: true, Base: Int64}, Position: line(11)},
+					{Name: "Ck", Type: Type{Array: true, Base: String, Len: MaxLen}, Position: line(12)},
+					{Name: "Cl", Type: Type{Base: Timestamp}, AllowCommitTimestamp: boolAddr(false), Position: line(13)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "Ca"},
 					{Column: "Cb", Desc: true},
 				},
+				Position: line(1),
 			},
 			`CREATE TABLE Ta (
   Ca BOOL NOT NULL,
@@ -70,18 +91,21 @@ func TestSQL(t *testing.T) {
   Cf BYTES(4711),
   Cg BYTES(MAX),
   Ch DATE,
-  Ci TIMESTAMP,
+  Ci TIMESTAMP OPTIONS (allow_commit_timestamp = true),
   Cj ARRAY<INT64>,
   Ck ARRAY<STRING(MAX)>,
+  Cl TIMESTAMP OPTIONS (allow_commit_timestamp = null),
 ) PRIMARY KEY(Ca, Cb DESC)`,
 			reparseDDL,
 		},
 		{
-			CreateTable{
+			&CreateTable{
 				Name: "Tsub",
 				Columns: []ColumnDef{
-					{Name: "SomeId", Type: Type{Base: Int64}, NotNull: true},
-					{Name: "OtherId", Type: Type{Base: Int64}, NotNull: true},
+					{Name: "SomeId", Type: Type{Base: Int64}, NotNull: true, Position: line(2)},
+					{Name: "OtherId", Type: Type{Base: Int64}, NotNull: true, Position: line(3)},
+					// This column name uses a reserved keyword.
+					{Name: "Hash", Type: Type{Base: Bytes, Len: 32}, Position: line(4)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "SomeId"},
@@ -91,71 +115,92 @@ func TestSQL(t *testing.T) {
 					Parent:   "Ta",
 					OnDelete: CascadeOnDelete,
 				},
+				Position: line(1),
 			},
 			`CREATE TABLE Tsub (
   SomeId INT64 NOT NULL,
   OtherId INT64 NOT NULL,
+  ` + "`Hash`" + ` BYTES(32),
 ) PRIMARY KEY(SomeId, OtherId),
   INTERLEAVE IN PARENT Ta ON DELETE CASCADE`,
 			reparseDDL,
 		},
 		{
-			DropTable{
-				Name: "Ta",
+			&DropTable{
+				Name:     "Ta",
+				Position: line(1),
 			},
 			"DROP TABLE Ta",
 			reparseDDL,
 		},
 		{
-			CreateIndex{
+			&CreateIndex{
 				Name:  "Ia",
 				Table: "Ta",
 				Columns: []KeyPart{
 					{Column: "Ca"},
 					{Column: "Cb", Desc: true},
 				},
+				Position: line(1),
 			},
 			"CREATE INDEX Ia ON Ta(Ca, Cb DESC)",
 			reparseDDL,
 		},
 		{
-			DropIndex{
-				Name: "Ia",
+			&DropIndex{
+				Name:     "Ia",
+				Position: line(1),
 			},
 			"DROP INDEX Ia",
 			reparseDDL,
 		},
 		{
-			AlterTable{
+			&AlterTable{
 				Name:       "Ta",
-				Alteration: AddColumn{Def: ColumnDef{Name: "Ca", Type: Type{Base: Bool}}},
+				Alteration: AddColumn{Def: ColumnDef{Name: "Ca", Type: Type{Base: Bool}, Position: line(1)}},
+				Position:   line(1),
 			},
 			"ALTER TABLE Ta ADD COLUMN Ca BOOL",
 			reparseDDL,
 		},
 		{
-			AlterTable{
+			&AlterTable{
 				Name:       "Ta",
 				Alteration: DropColumn{Name: "Ca"},
+				Position:   line(1),
 			},
 			"ALTER TABLE Ta DROP COLUMN Ca",
 			reparseDDL,
 		},
 		{
-			AlterTable{
+			&AlterTable{
 				Name:       "Ta",
 				Alteration: SetOnDelete{Action: NoActionOnDelete},
+				Position:   line(1),
 			},
 			"ALTER TABLE Ta SET ON DELETE NO ACTION",
 			reparseDDL,
 		},
 		{
-			AlterTable{
+			&AlterTable{
 				Name:       "Ta",
 				Alteration: SetOnDelete{Action: CascadeOnDelete},
+				Position:   line(1),
 			},
 			"ALTER TABLE Ta SET ON DELETE CASCADE",
 			reparseDDL,
+		},
+		{
+			&Delete{
+				Table: "Ta",
+				Where: ComparisonOp{
+					LHS: ID("C"),
+					Op:  Gt,
+					RHS: IntegerLiteral(2),
+				},
+			},
+			"DELETE FROM Ta WHERE C > 2",
+			reparseDML,
 		},
 		{
 			Query{
@@ -175,11 +220,12 @@ func TestSQL(t *testing.T) {
 							RHS: Null,
 						},
 					},
+					ListAliases: []string{"", "banana"},
 				},
 				Order: []Order{{Expr: ID("OCol"), Desc: true}},
 				Limit: IntegerLiteral(1000),
 			},
-			`SELECT A, B FROM Table WHERE C < "whelp" AND D IS NOT NULL ORDER BY OCol DESC LIMIT 1000`,
+			`SELECT A, B AS banana FROM Table WHERE C < "whelp" AND D IS NOT NULL ORDER BY OCol DESC LIMIT 1000`,
 			reparseQuery,
 		},
 		{
@@ -195,6 +241,17 @@ func TestSQL(t *testing.T) {
 			ComparisonOp{LHS: ID("X"), Op: NotBetween, RHS: ID("Y"), RHS2: ID("Z")},
 			`X NOT BETWEEN Y AND Z`,
 			reparseExpr,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						ID("Desc"),
+					},
+				},
+			},
+			"SELECT `Desc`",
+			reparseQuery,
 		},
 	}
 	for _, test := range tests {

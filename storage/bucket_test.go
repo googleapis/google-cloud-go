@@ -15,6 +15,7 @@
 package storage
 
 import (
+	"context"
 	"net/http"
 	"reflect"
 	"testing"
@@ -39,8 +40,9 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		RetentionPolicy: &RetentionPolicy{
 			RetentionPeriod: 3 * time.Second,
 		},
-		BucketPolicyOnly:  BucketPolicyOnly{Enabled: true},
-		VersioningEnabled: false,
+		BucketPolicyOnly:         BucketPolicyOnly{Enabled: true},
+		UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true},
+		VersioningEnabled:        false,
 		// should be ignored:
 		MetaGeneration: 39,
 		Created:        time.Now(),
@@ -105,7 +107,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 			RetentionPeriod: 3,
 		},
 		IamConfiguration: &raw.BucketIamConfiguration{
-			BucketPolicyOnly: &raw.BucketIamConfigurationBucketPolicyOnly{
+			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
 				Enabled: true,
 			},
 		},
@@ -168,17 +170,72 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
 	}
+
+	// Test that setting either of BucketPolicyOnly or UniformBucketLevelAccess
+	// will enable UniformBucketLevelAccess.
+	// Set UBLA.Enabled = true --> UBLA should be set to enabled in the proto.
+	attrs.BucketPolicyOnly = BucketPolicyOnly{}
+	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{Enabled: true}
+	got = attrs.toRawBucket()
+	want.IamConfiguration = &raw.BucketIamConfiguration{
+		UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
+			Enabled: true,
+		},
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Set BucketPolicyOnly.Enabled = true --> UBLA should be set to enabled in
+	// the proto.
+	attrs.BucketPolicyOnly = BucketPolicyOnly{Enabled: true}
+	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{}
+	got = attrs.toRawBucket()
+	want.IamConfiguration = &raw.BucketIamConfiguration{
+		UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
+			Enabled: true,
+		},
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Set both BucketPolicyOnly.Enabled = true and
+	// UniformBucketLevelAccess.Enabled=true --> UBLA should be set to enabled
+	// in the proto.
+	attrs.BucketPolicyOnly = BucketPolicyOnly{Enabled: true}
+	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{Enabled: true}
+	got = attrs.toRawBucket()
+	want.IamConfiguration = &raw.BucketIamConfiguration{
+		UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
+			Enabled: true,
+		},
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Set UBLA.Enabled=false and BucketPolicyOnly.Enabled=false --> UBLA
+	// should be disabled in the proto.
+	attrs.BucketPolicyOnly = BucketPolicyOnly{}
+	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{}
+	got = attrs.toRawBucket()
+	want.IamConfiguration = nil
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
 }
 
 func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	t.Parallel()
 	au := &BucketAttrsToUpdate{
-		VersioningEnabled:     false,
-		RequesterPays:         false,
-		BucketPolicyOnly:      &BucketPolicyOnly{Enabled: false},
-		DefaultEventBasedHold: false,
-		RetentionPolicy:       &RetentionPolicy{RetentionPeriod: time.Hour},
-		Encryption:            &BucketEncryption{DefaultKMSKeyName: "key2"},
+		VersioningEnabled:        false,
+		RequesterPays:            false,
+		BucketPolicyOnly:         &BucketPolicyOnly{Enabled: false},
+		UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: false},
+		DefaultEventBasedHold:    false,
+		RetentionPolicy:          &RetentionPolicy{RetentionPeriod: time.Hour},
+		Encryption:               &BucketEncryption{DefaultKMSKeyName: "key2"},
 		Lifecycle: &Lifecycle{
 			Rules: []LifecycleRule{
 				{
@@ -210,7 +267,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		DefaultEventBasedHold: false,
 		RetentionPolicy:       &raw.BucketRetentionPolicy{RetentionPeriod: 3600},
 		IamConfiguration: &raw.BucketIamConfiguration{
-			BucketPolicyOnly: &raw.BucketIamConfigurationBucketPolicyOnly{
+			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
 				Enabled:         false,
 				ForceSendFields: []string{"Enabled"},
 			},
@@ -259,10 +316,105 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
 	}
+
+	// Test that setting either of BucketPolicyOnly or UniformBucketLevelAccess
+	// will enable UniformBucketLevelAccess.
+	// Set UBLA.Enabled = true --> UBLA should be set to enabled in the proto.
+	au4 := &BucketAttrsToUpdate{
+		UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true},
+	}
+	got = au4.toRawBucket()
+	want = &raw.Bucket{
+		IamConfiguration: &raw.BucketIamConfiguration{
+			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
+				Enabled:         true,
+				ForceSendFields: []string{"Enabled"},
+			},
+		},
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Set BucketPolicyOnly.Enabled = true --> UBLA should be set to enabled in
+	// the proto.
+	au5 := &BucketAttrsToUpdate{
+		BucketPolicyOnly: &BucketPolicyOnly{Enabled: true},
+	}
+	got = au5.toRawBucket()
+	want = &raw.Bucket{
+		IamConfiguration: &raw.BucketIamConfiguration{
+			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
+				Enabled:         true,
+				ForceSendFields: []string{"Enabled"},
+			},
+		},
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Set both BucketPolicyOnly.Enabled = true and
+	// UniformBucketLevelAccess.Enabled=true --> UBLA should be set to enabled
+	// in the proto.
+	au6 := &BucketAttrsToUpdate{
+		BucketPolicyOnly:         &BucketPolicyOnly{Enabled: true},
+		UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true},
+	}
+	got = au6.toRawBucket()
+	want = &raw.Bucket{
+		IamConfiguration: &raw.BucketIamConfiguration{
+			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
+				Enabled:         true,
+				ForceSendFields: []string{"Enabled"},
+			},
+		},
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Set UBLA.Enabled=false and BucketPolicyOnly.Enabled=false --> UBLA
+	// should be disabled in the proto.
+	au7 := &BucketAttrsToUpdate{
+		BucketPolicyOnly:         &BucketPolicyOnly{Enabled: false},
+		UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: false},
+	}
+	got = au7.toRawBucket()
+	want = &raw.Bucket{
+		IamConfiguration: &raw.BucketIamConfiguration{
+			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
+				Enabled:         false,
+				ForceSendFields: []string{"Enabled"},
+			},
+		},
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// UBLA.Enabled will have precedence above BucketPolicyOnly.Enabled if both
+	// are set with different values.
+	au8 := &BucketAttrsToUpdate{
+		BucketPolicyOnly:         &BucketPolicyOnly{Enabled: true},
+		UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: false},
+	}
+	got = au8.toRawBucket()
+	want = &raw.Bucket{
+		IamConfiguration: &raw.BucketIamConfiguration{
+			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
+				Enabled:         false,
+				ForceSendFields: []string{"Enabled"},
+			},
+		},
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
 }
 
 func TestCallBuilders(t *testing.T) {
-	rc, err := raw.New(&http.Client{})
+	rc, err := raw.NewService(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -392,6 +544,10 @@ func TestNewBucket(t *testing.T) {
 				Enabled:    true,
 				LockedTime: aTime.Format(time.RFC3339),
 			},
+			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
+				Enabled:    true,
+				LockedTime: aTime.Format(time.RFC3339),
+			},
 		},
 		Cors: []*raw.BucketCors{
 			{
@@ -441,7 +597,8 @@ func TestNewBucket(t *testing.T) {
 			EffectiveTime:   aTime,
 			RetentionPeriod: 3 * time.Second,
 		},
-		BucketPolicyOnly: BucketPolicyOnly{Enabled: true, LockedTime: aTime},
+		BucketPolicyOnly:         BucketPolicyOnly{Enabled: true, LockedTime: aTime},
+		UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true, LockedTime: aTime},
 		CORS: []CORS{
 			{
 				MaxAge:          time.Hour,

@@ -15,10 +15,13 @@
 package pubsub
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"fmt"
+	"os"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -28,6 +31,7 @@ import (
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/internal/version"
 	kms "cloud.google.com/go/kms/apiv1"
+	testutil2 "cloud.google.com/go/pubsub/internal/testutil"
 	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
@@ -93,7 +97,6 @@ func integrationTestClient(ctx context.Context, t *testing.T) *Client {
 }
 
 func TestIntegration_All(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1633")
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
@@ -346,7 +349,6 @@ func testIAM(ctx context.Context, h *iam.Handle, permission string) (msg string,
 }
 
 func TestIntegration_LargePublishSize(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1636")
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -946,6 +948,7 @@ func TestIntegration_MessageStoragePolicy_ProjectLevel(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
+	t.Parallel()
 	ctx := context.Background()
 	// If a message storage policy is not set on a topic, the policy depends on the Resource Location
 	// Restriction which is specified on an organization level. The usual testing project is in the
@@ -1081,5 +1084,459 @@ func TestIntegration_CreateTopic_MessageStoragePolicy(t *testing.T) {
 	want := tc
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Fatalf("\ngot: - want: +\n%s", diff)
+	}
+}
+
+func TestIntegration_OrderedKeys_Basic(t *testing.T) {
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer topic.Stop()
+	exists, err := topic.Exists(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !exists {
+		t.Fatalf("topic %v should exist, but it doesn't", topic)
+	}
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{
+		Topic:                 topic,
+		EnableMessageOrdering: true,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	_ = sub
+	exists, err = sub.Exists(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !exists {
+		t.Fatalf("subscription %s should exist, but it doesn't", sub.ID())
+	}
+
+	topic.PublishSettings.DelayThreshold = time.Second
+	topic.EnableMessageOrdering = true
+
+	orderingKey := "some-ordering-key"
+	numItems := 1000
+	for i := 0; i < numItems; i++ {
+		r := topic.Publish(ctx, &Message{
+			ID:          fmt.Sprintf("id-%d", i),
+			Data:        []byte(fmt.Sprintf("item-%d", i)),
+			OrderingKey: orderingKey,
+		})
+		go func() {
+			<-r.ready
+			if r.err != nil {
+				t.Error(r.err)
+			}
+		}()
+	}
+
+	received := make(chan string, numItems)
+	go func() {
+		if err := sub.Receive(ctx, func(ctx context.Context, msg *Message) {
+			defer msg.Ack()
+			if msg.OrderingKey != orderingKey {
+				t.Errorf("got ordering key %s, expected %s", msg.OrderingKey, orderingKey)
+			}
+
+			received <- string(msg.Data)
+		}); err != nil {
+			if c := status.Code(err); c != codes.Canceled {
+				t.Error(err)
+			}
+		}
+	}()
+
+	for i := 0; i < numItems; i++ {
+		select {
+		case r := <-received:
+			if got, want := r, fmt.Sprintf("item-%d", i); got != want {
+				t.Fatalf("%d: got %s, want %s", i, got, want)
+			}
+		case <-time.After(5 * time.Second):
+			t.Fatalf("timed out after 5s waiting for item %d", i)
+		}
+	}
+}
+
+func TestIntegration_OrderedKeys_JSON(t *testing.T) {
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer topic.Stop()
+	exists, err := topic.Exists(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !exists {
+		t.Fatalf("topic %v should exist, but it doesn't", topic)
+	}
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{
+		Topic:                 topic,
+		EnableMessageOrdering: true,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	_ = sub
+	exists, err = sub.Exists(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !exists {
+		t.Fatalf("subscription %s should exist, but it doesn't", sub.ID())
+	}
+
+	topic.PublishSettings.DelayThreshold = time.Second
+	topic.EnableMessageOrdering = true
+
+	inFile, err := os.Open("testdata/publish.csv")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer inFile.Close()
+
+	mu := sync.Mutex{}
+	var publishData []testutil2.OrderedKeyMsg
+	var receiveData []testutil2.OrderedKeyMsg
+	// Keep track of duplicate messages to avoid negative waitgroup counter.
+	receiveSet := make(map[string]struct{})
+
+	wg := sync.WaitGroup{}
+	scanner := bufio.NewScanner(inFile)
+	for scanner.Scan() {
+		line := scanner.Text()
+		// TODO: use strings.ReplaceAll once we only support 1.11+.
+		line = strings.Replace(line, "\"", "", -1)
+		parts := strings.Split(line, ",")
+		key := parts[0]
+		msg := parts[1]
+		publishData = append(publishData, testutil2.OrderedKeyMsg{Key: key, Data: msg})
+		topic.Publish(ctx, &Message{
+			ID:          msg,
+			Data:        []byte(msg),
+			OrderingKey: key,
+		})
+		wg.Add(1)
+	}
+	if err := scanner.Err(); err != nil {
+		t.Fatal(err)
+	}
+
+	go func() {
+		if err := sub.Receive(ctx, func(ctx context.Context, msg *Message) {
+			defer msg.Ack()
+			mu.Lock()
+			defer mu.Unlock()
+			if _, ok := receiveSet[msg.ID]; ok {
+				return
+			}
+			receiveSet[msg.ID] = struct{}{}
+			receiveData = append(receiveData, testutil2.OrderedKeyMsg{Key: msg.OrderingKey, Data: string(msg.Data)})
+			wg.Done()
+		}); err != nil {
+			if c := status.Code(err); c != codes.Canceled {
+				t.Error(err)
+			}
+		}
+	}()
+
+	done := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+	case <-time.After(30 * time.Second):
+		t.Fatal("timed out after 30s waiting for all messages to be received")
+	}
+
+	mu.Lock()
+	defer mu.Unlock()
+	if err := testutil2.VerifyKeyOrdering(publishData, receiveData); err != nil {
+		t.Fatal(err)
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+}
+
+func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
+	t.Skip("kokoro failing in https://github.com/googleapis/google-cloud-go/issues/1850")
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+	exists, err := topic.Exists(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !exists {
+		t.Fatalf("topic %v should exist, but it doesn't", topic)
+	}
+
+	topic.PublishSettings.DelayThreshold = time.Second
+	topic.EnableMessageOrdering = true
+
+	orderingKey := "some-ordering-key2"
+	// Publish a message that is too large so we'll get an error that
+	// pauses publishing for this ordering key.
+	r := topic.Publish(ctx, &Message{
+		ID:          "1",
+		Data:        bytes.Repeat([]byte("A"), 1e10),
+		OrderingKey: orderingKey,
+	})
+	<-r.ready
+	if r.err == nil {
+		t.Fatalf("expected bundle byte limit error, got nil")
+	}
+	// Publish a normal sized message now, which should fail
+	// since publishing on this ordering key is paused.
+	r = topic.Publish(ctx, &Message{
+		ID:          "2",
+		Data:        []byte("failed message"),
+		OrderingKey: orderingKey,
+	})
+	<-r.ready
+	if r.err == nil || !strings.Contains(r.err.Error(), "pubsub: Publishing for ordering key") {
+		t.Fatalf("expected ordering keys publish error, got %v", r.err)
+	}
+
+	// Lastly, call ResumePublish and make sure subsequent publishes succeed.
+	topic.ResumePublish(orderingKey)
+	r = topic.Publish(ctx, &Message{
+		ID:          "4",
+		Data:        []byte("normal message"),
+		OrderingKey: orderingKey,
+	})
+	<-r.ready
+	if r.err != nil {
+		t.Fatalf("got error while publishing message: %v", r.err)
+	}
+}
+
+func TestIntegration_CreateSubscription_DeadLetterPolicy(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	deadLetterTopic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer deadLetterTopic.Delete(ctx)
+	defer deadLetterTopic.Stop()
+
+	// We don't set MaxDeliveryAttempts in DeadLetterPolicy so that we can test
+	// that MaxDeliveryAttempts defaults properly to 5 if not set.
+	cfg := SubscriptionConfig{
+		Topic: topic,
+		DeadLetterPolicy: &DeadLetterPolicy{
+			DeadLetterTopic: deadLetterTopic.String(),
+		},
+	}
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), cfg); err != nil {
+		t.Fatalf("CreateSub error: %v", err)
+	}
+	defer sub.Delete(ctx)
+
+	got, err := sub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := SubscriptionConfig{
+		Topic:               topic,
+		AckDeadline:         10 * time.Second,
+		RetainAckedMessages: false,
+		RetentionDuration:   defaultRetentionDuration,
+		ExpirationPolicy:    defaultExpirationPolicy,
+		DeadLetterPolicy: &DeadLetterPolicy{
+			DeadLetterTopic:     deadLetterTopic.String(),
+			MaxDeliveryAttempts: 5,
+		},
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("\ngot: - want: +\n%s", diff)
+	}
+
+	res := topic.Publish(ctx, &Message{
+		Data: []byte("failed message"),
+	})
+	if _, err := res.Get(ctx); err != nil {
+		t.Fatalf("Publish message error: %v", err)
+	}
+
+	ctx2, cancel := context.WithCancel(ctx)
+	numAttempts := 1
+	err = sub.Receive(ctx2, func(_ context.Context, m *Message) {
+		if numAttempts >= 5 {
+			cancel()
+			m.Ack()
+			return
+		}
+		if *m.DeliveryAttempt != numAttempts {
+			t.Fatalf("Message delivery attempt: %d does not match numAttempts: %d\n", m.DeliveryAttempt, numAttempts)
+		}
+		numAttempts++
+		m.Nack()
+	})
+	if err != nil {
+		t.Fatalf("Streaming pull error: %v\n", err)
+	}
+}
+
+// Test that the DeliveryAttempt field is nil when dead lettering is not enabled.
+func TestIntegration_DeadLetterPolicy_DeliveryAttempt(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	cfg := SubscriptionConfig{
+		Topic: topic,
+	}
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), cfg); err != nil {
+		t.Fatalf("CreateSub error: %v", err)
+	}
+	defer sub.Delete(ctx)
+
+	got, err := sub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := SubscriptionConfig{
+		Topic:               topic,
+		AckDeadline:         10 * time.Second,
+		RetainAckedMessages: false,
+		RetentionDuration:   defaultRetentionDuration,
+		ExpirationPolicy:    defaultExpirationPolicy,
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("SubsciptionConfig; got: - want: +\n%s", diff)
+	}
+
+	res := topic.Publish(ctx, &Message{
+		Data: []byte("failed message"),
+	})
+	if _, err := res.Get(ctx); err != nil {
+		t.Fatalf("Publish message error: %v", err)
+	}
+
+	ctx2, cancel := context.WithCancel(ctx)
+	err = sub.Receive(ctx2, func(_ context.Context, m *Message) {
+		defer m.Ack()
+		defer cancel()
+		if m.DeliveryAttempt != nil {
+			t.Fatalf("DeliveryAttempt should be nil when dead lettering is disabled")
+		}
+	})
+	if err != nil {
+		t.Fatalf("Streaming pull error: %v\n", err)
+	}
+}
+
+func TestIntegration_DeadLetterPolicy_ClearDeadLetter(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	deadLetterTopic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer deadLetterTopic.Delete(ctx)
+	defer deadLetterTopic.Stop()
+
+	cfg := SubscriptionConfig{
+		Topic: topic,
+		DeadLetterPolicy: &DeadLetterPolicy{
+			DeadLetterTopic: deadLetterTopic.String(),
+		},
+	}
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), cfg); err != nil {
+		t.Fatalf("CreateSub error: %v", err)
+	}
+	defer sub.Delete(ctx)
+
+	sub.Update(ctx, SubscriptionConfigToUpdate{
+		DeadLetterPolicy: &DeadLetterPolicy{},
+	})
+
+	got, err := sub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := SubscriptionConfig{
+		Topic:               topic,
+		AckDeadline:         10 * time.Second,
+		RetainAckedMessages: false,
+		RetentionDuration:   defaultRetentionDuration,
+		ExpirationPolicy:    defaultExpirationPolicy,
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("SubsciptionConfig; got: - want: +\n%s", diff)
+	}
+}
+
+// TestIntegration_BadEndpoint tests that specifying a bad
+// endpoint will cause an error in RPCs.
+func TestIntegration_BadEndpoint(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	opts := withGRPCHeadersAssertion(t,
+		option.WithEndpoint("example.googleapis.com:443"),
+	)
+	client, err := NewClient(ctx, testutil.ProjID(), opts...)
+	if err != nil {
+		t.Fatalf("Creating client error: %v", err)
+	}
+	if _, err = client.CreateTopic(ctx, topicIDs.New()); err == nil {
+		t.Fatalf("CreateTopic should fail with fake endpoint, got nil err")
 	}
 }

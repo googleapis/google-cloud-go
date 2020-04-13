@@ -39,22 +39,24 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/pprof/profile"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/devtools/cloudprofiler/v2"
 	edpb "google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	grpcmd "google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
 const (
-	testProjectID       = "test-project-ID"
-	testInstance        = "test-instance"
-	testZone            = "test-zone"
-	testService         = "test-service"
-	testSvcVersion      = "test-service-version"
-	testProfileDuration = time.Second * 10
-	testServerTimeout   = time.Second * 15
+	testProjectID                = "test-project-ID"
+	testInstance                 = "test-instance"
+	testZone                     = "test-zone"
+	testService                  = "test-service"
+	testSvcVersion               = "test-service-version"
+	testProfileDuration          = time.Second * 10
+	testProfileCollectionTimeout = time.Second * 15
 )
 
 func createTestDeployment() *pb.Deployment {
@@ -370,6 +372,7 @@ func TestInitializeAgent(t *testing.T) {
 	for _, tt := range []struct {
 		config               Config
 		enableMutex          bool
+		wantErr              bool
 		wantProfileTypes     []pb.ProfileType
 		wantDeploymentLabels map[string]string
 		wantProfileLabels    map[string]string
@@ -417,13 +420,29 @@ func TestInitializeAgent(t *testing.T) {
 			wantDeploymentLabels: map[string]string{languageLabel: "go"},
 			wantProfileLabels:    map[string]string{},
 		},
+		{
+			config:               Config{NoCPUProfiling: true},
+			wantProfileTypes:     []pb.ProfileType{pb.ProfileType_HEAP, pb.ProfileType_THREADS, pb.ProfileType_HEAP_ALLOC},
+			wantDeploymentLabels: map[string]string{languageLabel: "go"},
+			wantProfileLabels:    map[string]string{},
+		},
+		{
+			config:  Config{NoCPUProfiling: true, NoHeapProfiling: true, NoGoroutineProfiling: true, NoAllocProfiling: true},
+			wantErr: true,
+		},
 	} {
 
 		config = tt.config
 		config.ProjectID = testProjectID
 		config.Service = testService
 		mutexEnabled = tt.enableMutex
-		a := initializeAgent(nil)
+		a, err := initializeAgent(nil)
+		if err != nil {
+			if !tt.wantErr {
+				t.Fatalf("initializeAgent() got error: %v, want no error", err)
+			}
+			continue
+		}
 
 		wantDeployment := &pb.Deployment{
 			ProjectId: testProjectID,
@@ -738,18 +757,15 @@ func TestInitializeConfig(t *testing.T) {
 type fakeProfilerServer struct {
 	count       int
 	gotProfiles map[string][]byte
-	done        chan bool
 }
 
 func (fs *fakeProfilerServer) CreateProfile(ctx context.Context, in *pb.CreateProfileRequest) (*pb.Profile, error) {
 	fs.count++
-	switch fs.count {
+	switch fs.count % 2 {
 	case 1:
 		return &pb.Profile{Name: "testCPU", ProfileType: pb.ProfileType_CPU, Duration: ptypes.DurationProto(testProfileDuration)}, nil
-	case 2:
-		return &pb.Profile{Name: "testHeap", ProfileType: pb.ProfileType_HEAP}, nil
 	default:
-		select {}
+		return &pb.Profile{Name: "testHeap", ProfileType: pb.ProfileType_HEAP}, nil
 	}
 }
 
@@ -759,7 +775,6 @@ func (fs *fakeProfilerServer) UpdateProfile(ctx context.Context, in *pb.UpdatePr
 		fs.gotProfiles["CPU"] = in.Profile.ProfileBytes
 	case pb.ProfileType_HEAP:
 		fs.gotProfiles["HEAP"] = in.Profile.ProfileBytes
-		fs.done <- true
 	}
 	return in.Profile, nil
 }
@@ -918,27 +933,35 @@ func hog(dt time.Duration, hogger func(mu1, mu2 *sync.Mutex, start time.Time, dt
 }
 
 func TestAgentWithServer(t *testing.T) {
-	oldDialGRPC, oldConfig := dialGRPC, config
+	oldDialGRPC, oldConfig, oldProfilingDone := dialGRPC, config, profilingDone
 	defer func() {
-		dialGRPC, config = oldDialGRPC, oldConfig
+		dialGRPC, config, profilingDone = oldDialGRPC, oldConfig, oldProfilingDone
 	}()
+
+	profilingDone = make(chan bool)
 
 	srv, err := testutil.NewServer()
 	if err != nil {
 		t.Fatalf("testutil.NewServer(): %v", err)
 	}
-	fakeServer := &fakeProfilerServer{gotProfiles: map[string][]byte{}, done: make(chan bool)}
+	fakeServer := &fakeProfilerServer{gotProfiles: map[string][]byte{}}
 	pb.RegisterProfilerServiceServer(srv.Gsrv, fakeServer)
-
 	srv.Start()
 
-	dialGRPC = gtransport.DialInsecure
+	dialGRPC = func(ctx context.Context, opts ...option.ClientOption) (gtransport.ConnPool, error) {
+		conn, err := gtransport.DialInsecure(ctx, opts...)
+		if err != nil {
+			return nil, err
+		}
+		return testConnPool{conn}, nil
+	}
 	if err := Start(Config{
-		Service:   testService,
-		ProjectID: testProjectID,
-		APIAddr:   srv.Addr,
-		Instance:  testInstance,
-		Zone:      testZone,
+		Service:     testService,
+		ProjectID:   testProjectID,
+		APIAddr:     srv.Addr,
+		Instance:    testInstance,
+		Zone:        testZone,
+		numProfiles: 2,
 	}); err != nil {
 		t.Fatalf("Start(): %v", err)
 	}
@@ -947,9 +970,9 @@ func TestAgentWithServer(t *testing.T) {
 	go profileeLoop(quitProfilee)
 
 	select {
-	case <-fakeServer.done:
-	case <-time.After(testServerTimeout):
-		t.Errorf("got timeout after %v, want fake server done", testServerTimeout)
+	case <-profilingDone:
+	case <-time.After(testProfileCollectionTimeout):
+		t.Errorf("got timeout after %v, want profile collection done", testProfileCollectionTimeout)
 	}
 	quitProfilee <- true
 
@@ -961,3 +984,9 @@ func TestAgentWithServer(t *testing.T) {
 		}
 	}
 }
+
+// testConnPool is a gtransport.ConnPool used for testing.
+type testConnPool struct{ *grpc.ClientConn }
+
+func (p testConnPool) Num() int               { return 1 }
+func (p testConnPool) Conn() *grpc.ClientConn { return p.ClientConn }

@@ -45,13 +45,19 @@ type TableMetadata struct {
 	// The user-friendly name for the table.
 	Name string
 
+	// Output-only location of the table, based on the encapsulating dataset.
+	Location string
+
 	// The user-friendly description of the table.
 	Description string
 
 	// The table schema. If provided on create, ViewQuery must be empty.
 	Schema Schema
 
-	// The query to use for a view. If provided on create, Schema must be nil.
+	// If non-nil, this table is a materialized view.
+	MaterializedView *MaterializedViewDefinition
+
+	// The query to use for a logical view. If provided on create, Schema must be nil.
 	ViewQuery string
 
 	// Use Legacy SQL for the view query.
@@ -63,8 +69,13 @@ type TableMetadata struct {
 	// Deprecated: use UseLegacySQL.
 	UseStandardSQL bool
 
-	// If non-nil, the table is partitioned by time.
+	// If non-nil, the table is partitioned by time. Only one of
+	// time partitioning or range partitioning can be specified.
 	TimePartitioning *TimePartitioning
+
+	// It non-nil, the table is partitioned by integer range.  Only one of
+	// time partitioning or range partitioning can be specified.
+	RangePartitioning *RangePartitioning
 
 	// If set to true, queries that reference this table must specify a
 	// partition filter (e.g. a WHERE clause) that can be used to eliminate
@@ -156,14 +167,61 @@ type TableType string
 const (
 	// RegularTable is a regular table.
 	RegularTable TableType = "TABLE"
-	// ViewTable is a table type describing that the table is view. See more
-	// information at https://cloud.google.com/bigquery/docs/views.
+	// ViewTable is a table type describing that the table is a logical view.
+	// See more information at https://cloud.google.com/bigquery/docs/views.
 	ViewTable TableType = "VIEW"
 	// ExternalTable is a table type describing that the table is an external
 	// table (also known as a federated data source). See more information at
 	// https://cloud.google.com/bigquery/external-data-sources.
 	ExternalTable TableType = "EXTERNAL"
+	// MaterializedView represents a managed storage table that's derived from
+	// a base table.
+	MaterializedView TableType = "MATERIALIZED_VIEW"
 )
+
+// MaterializedViewDefinition contains information for materialized views.
+type MaterializedViewDefinition struct {
+	// EnableRefresh governs whether the derived view is updated to reflect
+	// changes in the base table.
+	EnableRefresh bool
+
+	// LastRefreshTime reports the time, in millisecond precision, that the
+	// materialized view was last updated.
+	LastRefreshTime time.Time
+
+	// Query contains the SQL query used to define the materialized view.
+	Query string
+
+	// RefreshInterval defines the maximum frequency, in millisecond precision,
+	// at which this this materialized view will be refreshed.
+	RefreshInterval time.Duration
+}
+
+func (mvd *MaterializedViewDefinition) toBQ() *bq.MaterializedViewDefinition {
+	if mvd == nil {
+		return nil
+	}
+	return &bq.MaterializedViewDefinition{
+		EnableRefresh:     mvd.EnableRefresh,
+		Query:             mvd.Query,
+		LastRefreshTime:   mvd.LastRefreshTime.UnixNano() / 1e6,
+		RefreshIntervalMs: int64(mvd.RefreshInterval) / 1e6,
+		// force sending the bool in all cases due to how Go handles false.
+		ForceSendFields: []string{"EnableRefresh"},
+	}
+}
+
+func bqToMaterializedViewDefinition(q *bq.MaterializedViewDefinition) *MaterializedViewDefinition {
+	if q == nil {
+		return nil
+	}
+	return &MaterializedViewDefinition{
+		EnableRefresh:   q.EnableRefresh,
+		Query:           q.Query,
+		LastRefreshTime: unixMillisToTime(q.LastRefreshTime),
+		RefreshInterval: time.Duration(q.RefreshIntervalMs) * time.Millisecond,
+	}
+}
 
 // TimePartitioning describes the time-based date partitioning on a table.
 // For more information see: https://cloud.google.com/bigquery/docs/creating-partitioned-tables.
@@ -205,6 +263,68 @@ func bqToTimePartitioning(q *bq.TimePartitioning) *TimePartitioning {
 		Expiration:             time.Duration(q.ExpirationMs) * time.Millisecond,
 		Field:                  q.Field,
 		RequirePartitionFilter: q.RequirePartitionFilter,
+	}
+}
+
+// RangePartitioning indicates an integer-range based storage organization strategy.
+type RangePartitioning struct {
+	// The field by which the table is partitioned.
+	// This field must be a top-level field, and must be typed as an
+	// INTEGER/INT64.
+	Field string
+	// The details of how partitions are mapped onto the integer range.
+	Range *RangePartitioningRange
+}
+
+// RangePartitioningRange defines the boundaries and width of partitioned values.
+type RangePartitioningRange struct {
+	// The start value of defined range of values, inclusive of the specified value.
+	Start int64
+	// The end of the defined range of values, exclusive of the defined value.
+	End int64
+	// The width of each interval range.
+	Interval int64
+}
+
+func (rp *RangePartitioning) toBQ() *bq.RangePartitioning {
+	if rp == nil {
+		return nil
+	}
+	return &bq.RangePartitioning{
+		Field: rp.Field,
+		Range: rp.Range.toBQ(),
+	}
+}
+
+func bqToRangePartitioning(q *bq.RangePartitioning) *RangePartitioning {
+	if q == nil {
+		return nil
+	}
+	return &RangePartitioning{
+		Field: q.Field,
+		Range: bqToRangePartitioningRange(q.Range),
+	}
+}
+
+func bqToRangePartitioningRange(br *bq.RangePartitioningRange) *RangePartitioningRange {
+	if br == nil {
+		return nil
+	}
+	return &RangePartitioningRange{
+		Start:    br.Start,
+		End:      br.End,
+		Interval: br.Interval,
+	}
+}
+
+func (rpr *RangePartitioningRange) toBQ() *bq.RangePartitioningRange {
+	if rpr == nil {
+		return nil
+	}
+	return &bq.RangePartitioningRange{
+		Start:    rpr.Start,
+		End:      rpr.End,
+		Interval: rpr.Interval,
 	}
 }
 
@@ -343,7 +463,9 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	} else if tm.UseLegacySQL || tm.UseStandardSQL {
 		return nil, errors.New("bigquery: UseLegacy/StandardSQL requires ViewQuery")
 	}
+	t.MaterializedView = tm.MaterializedView.toBQ()
 	t.TimePartitioning = tm.TimePartitioning.toBQ()
+	t.RangePartitioning = tm.RangePartitioning.toBQ()
 	t.Clustering = tm.Clustering.toBQ()
 	t.RequirePartitionFilter = tm.RequirePartitionFilter
 
@@ -411,6 +533,7 @@ func bqToTableMetadata(t *bq.Table) (*TableMetadata, error) {
 	md := &TableMetadata{
 		Description:            t.Description,
 		Name:                   t.FriendlyName,
+		Location:               t.Location,
 		Type:                   TableType(t.Type),
 		FullID:                 t.Id,
 		Labels:                 t.Labels,
@@ -424,6 +547,9 @@ func bqToTableMetadata(t *bq.Table) (*TableMetadata, error) {
 		EncryptionConfig:       bqToEncryptionConfig(t.EncryptionConfiguration),
 		RequirePartitionFilter: t.RequirePartitionFilter,
 	}
+	if t.MaterializedView != nil {
+		md.MaterializedView = bqToMaterializedViewDefinition(t.MaterializedView)
+	}
 	if t.Schema != nil {
 		md.Schema = bqToSchema(t.Schema)
 	}
@@ -432,6 +558,7 @@ func bqToTableMetadata(t *bq.Table) (*TableMetadata, error) {
 		md.UseLegacySQL = t.View.UseLegacySql
 	}
 	md.TimePartitioning = bqToTimePartitioning(t.TimePartitioning)
+	md.RangePartitioning = bqToRangePartitioning(t.RangePartitioning)
 	md.Clustering = bqToClustering(t.Clustering)
 	if t.StreamingBuffer != nil {
 		md.StreamingBuffer = &StreamingBuffer{
@@ -509,6 +636,10 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 	if tm.Name != nil {
 		t.FriendlyName = optional.ToString(tm.Name)
 		forceSend("FriendlyName")
+	}
+	if tm.MaterializedView != nil {
+		t.MaterializedView = tm.MaterializedView.toBQ()
+		forceSend("MaterializedView")
 	}
 	if tm.Schema != nil {
 		t.Schema = tm.Schema.toBQ()
@@ -599,6 +730,11 @@ type TableMetadataToUpdate struct {
 
 	// Use Legacy SQL for the view query.
 	UseLegacySQL optional.Bool
+
+	// MaterializedView allows changes to the underlying materialized view
+	// definition. When calling Update, ensure that all mutable fields of
+	// MaterializedViewDefinition are populated.
+	MaterializedView *MaterializedViewDefinition
 
 	// TimePartitioning allows modification of certain aspects of partition
 	// configuration such as partition expiration and whether partition

@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ func TestImageAnnotatorSmoke(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var gcsImageUri string = "gs://gapic-toolkit/President_Barack_Obama.jpg"
+	var gcsImageUri string = "gs://cloud-samples-data/vision/face_detection/celebrity_recognition/sergey.jpg"
 	var source = &visionpb.ImageSource{
 		GcsImageUri: gcsImageUri,
 	}

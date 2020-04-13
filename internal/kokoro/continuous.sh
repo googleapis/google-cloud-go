@@ -22,7 +22,7 @@ export GCLOUD_TESTS_GOLANG_KEY=$GOOGLE_APPLICATION_CREDENTIALS
 export GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID=gcloud-golang-firestore-tests
 export GCLOUD_TESTS_GOLANG_FIRESTORE_KEY=$KOKORO_KEYSTORE_DIR/72523_go_firestore_integration_service_account
 export GCLOUD_TESTS_API_KEY=`cat $KOKORO_KEYSTORE_DIR/72523_go_gcloud_tests_api_key`
-export GCLOUD_TESTS_GOLANG_KEYRING=projects/dulcet-port-762/locations/global/keyRings/go-integration-test
+export GCLOUD_TESTS_GOLANG_KEYRING=projects/dulcet-port-762/locations/us/keyRings/go-integration-test
 export GCLOUD_TESTS_GOLANG_PROFILER_ZONE="us-west1-b"
 
 # Fail on any error
@@ -36,14 +36,12 @@ cd git/gocloud
 
 go version
 
-# Set $GOPATH
-export GOPATH="$HOME/go"
-export GOCLOUD_HOME=$GOPATH/src/cloud.google.com/go/
+export GOCLOUD_HOME=$KOKORO_ARTIFACTS_DIR/google-cloud-go/
 export PATH="$GOPATH/bin:$PATH"
 export GO111MODULE=on
+export GOPROXY=https://proxy.golang.org
 
-
-# Move code into $GOPATH and get dependencies
+# Move code into artifacts dir
 mkdir -p $GOCLOUD_HOME
 git clone . $GOCLOUD_HOME
 cd $GOCLOUD_HOME
@@ -55,25 +53,27 @@ try3 go mod download
 go install github.com/jstemmer/go-junit-report
 ./internal/kokoro/vet.sh
 
-mkdir $KOKORO_ARTIFACTS_DIR/tests
-
-# Takes the kokoro output log (raw stdout) and creates a machine-parseable xml
-# file (xUnit). Then it exits with whatever exit code the last command had.
-create_junit_xml() {
-  last_status_code=$?
-
-  cat $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt \
-    | go-junit-report > $KOKORO_ARTIFACTS_DIR/tests/sponge_log.xml
-
-  exit $last_status_code
-}
-
-trap create_junit_xml EXIT ERR
-
+set +e # Run all tests, don't stop after the first failure.
+exit_code=0
 # Run tests and tee output to log file, to be pushed to GCS as artifact.
 for i in `find . -name go.mod`; do
   pushd `dirname $i`;
-    go test -race -v -timeout 30m ./... 2>&1 \
-      | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt
+    go test -race -v -timeout 45m ./... 2>&1 \
+      | tee sponge_log.log
+    # Takes the kokoro output log (raw stdout) and creates a machine-parseable
+    # xUnit XML file.
+    cat sponge_log.log \
+      | go-junit-report -set-exit-code > sponge_log.xml
+    # Add the exit codes together so we exit non-zero if any module fails.
+    exit_code=$(($exit_code + $?))
   popd;
 done
+
+if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]]; then
+  chmod +x $KOKORO_GFILE_DIR/linux_amd64/buildcop
+  $KOKORO_GFILE_DIR/linux_amd64/buildcop -logs_dir=$GOCLOUD_HOME \
+    -repo=googleapis/google-cloud-go \
+    -commit_hash=$KOKORO_GITHUB_COMMIT_URL_google_cloud_go
+fi
+
+exit $exit_code

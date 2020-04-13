@@ -17,6 +17,9 @@ package spanner
 import (
 	"bytes"
 	"context"
+	"io/ioutil"
+	"log"
+	"os"
 	"testing"
 	"time"
 
@@ -52,8 +55,12 @@ func TestMockPartitionedUpdateWithQuery(t *testing.T) {
 	stmt := NewStatement(SelectFooFromBar)
 	_, err := client.PartitionedUpdate(ctx, stmt)
 	wantCode := codes.InvalidArgument
-	if serr, ok := err.(*Error); !ok || serr.Code != wantCode {
-		t.Errorf("got error %v, want code %s", err, wantCode)
+	var serr *Error
+	if !errorAs(err, &serr) {
+		t.Errorf("got error %v, want spanner.Error", err)
+	}
+	if ErrCode(serr) != wantCode {
+		t.Errorf("got error %v, want code %s", serr, wantCode)
 	}
 }
 
@@ -100,7 +107,11 @@ func TestPartitionedUpdate_Aborted(t *testing.T) {
 // created is also deleted, even though the update timed out.
 func TestPartitionedUpdate_WithDeadline(t *testing.T) {
 	t.Parallel()
-	server, client, teardown := setupMockedTestServer(t)
+	logger := log.New(os.Stderr, "", log.LstdFlags)
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: DefaultSessionPoolConfig,
+		logger:            logger,
+	})
 	defer teardown()
 
 	ctx := context.Background()
@@ -112,15 +123,42 @@ func TestPartitionedUpdate_WithDeadline(t *testing.T) {
 		})
 	stmt := NewStatement(UpdateBarSetFoo)
 	// The following update will cause a 'Failed to delete session' warning to
-	// be logged. This is expected. Once each client has its own logger, we
-	// should temporarily turn off logging to prevent this warning to be
-	// logged.
+	// be logged. This is expected. To avoid spamming the log, we temporarily
+	// set the output to be discarded.
+	logger.SetOutput(ioutil.Discard)
 	_, err := client.PartitionedUpdate(ctx, stmt)
+	logger.SetOutput(os.Stderr)
 	if err == nil {
 		t.Fatalf("missing expected error")
 	}
 	wantCode := codes.DeadlineExceeded
 	if status.Code(err) != wantCode {
 		t.Fatalf("got error %v, want code %s", err, wantCode)
+	}
+}
+
+func TestPartitionedUpdate_QueryOptions(t *testing.T) {
+	for _, tt := range queryOptionsTestCases() {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.env.Options != nil {
+				os.Setenv("SPANNER_OPTIMIZER_VERSION", tt.env.Options.OptimizerVersion)
+				defer os.Setenv("SPANNER_OPTIMIZER_VERSION", "")
+			}
+
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: tt.client})
+			defer teardown()
+
+			var err error
+			if tt.query.Options == nil {
+				_, err = client.PartitionedUpdate(ctx, NewStatement(UpdateBarSetFoo))
+			} else {
+				_, err = client.PartitionedUpdateWithOptions(ctx, NewStatement(UpdateBarSetFoo), tt.query)
+			}
+			if err != nil {
+				t.Fatalf("expect no errors, but got %v", err)
+			}
+			checkReqsForQueryOptions(t, server.TestSpanner, tt.want)
+		})
 	}
 }

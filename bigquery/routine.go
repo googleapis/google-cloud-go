@@ -127,6 +127,7 @@ type RoutineMetadata struct {
 	// Type indicates the type of routine, such as SCALAR_FUNCTION or PROCEDURE.
 	Type             string
 	CreationTime     time.Time
+	Description      string
 	LastModifiedTime time.Time
 	// Language of the routine, such as SQL or JAVASCRIPT.
 	Language string
@@ -151,6 +152,7 @@ func (rm *RoutineMetadata) toBQ() (*bq.Routine, error) {
 	if rm == nil {
 		return r, nil
 	}
+	r.Description = rm.Description
 	r.Language = rm.Language
 	r.RoutineType = rm.Type
 	r.DefinitionBody = rm.Body
@@ -264,6 +266,7 @@ func routineArgumentsToBQ(in []*RoutineArgument) ([]*bq.Argument, error) {
 // RoutineMetadataToUpdate governs updating a routine.
 type RoutineMetadataToUpdate struct {
 	Arguments         []*RoutineArgument
+	Description       optional.String
 	Type              optional.String
 	Language          optional.String
 	Body              optional.String
@@ -278,6 +281,10 @@ func (rm *RoutineMetadataToUpdate) toBQ() (*bq.Routine, error) {
 	}
 	nullField := func(field string) {
 		r.NullFields = append(r.NullFields, field)
+	}
+	if rm.Description != nil {
+		r.Description = optional.ToString(rm.Description)
+		forceSend("Description")
 	}
 	if rm.Arguments != nil {
 		if len(rm.Arguments) == 0 {
@@ -327,6 +334,7 @@ func bqToRoutineMetadata(r *bq.Routine) (*RoutineMetadata, error) {
 		ETag:              r.Etag,
 		Type:              r.RoutineType,
 		CreationTime:      unixMillisToTime(r.CreationTime),
+		Description:       r.Description,
 		LastModifiedTime:  unixMillisToTime(r.LastModifiedTime),
 		Language:          r.Language,
 		ImportedLibraries: r.ImportedLibraries,

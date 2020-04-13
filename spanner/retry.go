@@ -21,12 +21,11 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/trace"
-	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/googleapis/gax-go/v2"
-	edpb "google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -68,11 +67,13 @@ func (r *spannerRetryer) Retry(err error) (time.Duration, bool) {
 	return delay, true
 }
 
-// runWithRetryOnAborted executes the given function and retries it if it
-// returns an Aborted error. The delay between retries is the delay returned
-// by Cloud Spanner, and if none is returned, the calculated delay with a
-// minimum of 10ms and maximum of 32s.
-func runWithRetryOnAborted(ctx context.Context, f func(context.Context) error) error {
+// runWithRetryOnAbortedOrSessionNotFound executes the given function and
+// retries it if it returns an Aborted or Session not found error. The retry
+// is delayed if the error was Aborted. The delay between retries is the delay
+// returned by Cloud Spanner, or if none is returned, the calculated delay with
+// a minimum of 10ms and maximum of 32s. There is no delay before the retry if
+// the error was Session not found.
+func runWithRetryOnAbortedOrSessionNotFound(ctx context.Context, f func(context.Context) error) error {
 	retryer := onCodes(DefaultRetryBackoff, codes.Aborted)
 	funcWithRetry := func(ctx context.Context) error {
 		for {
@@ -80,7 +81,29 @@ func runWithRetryOnAborted(ctx context.Context, f func(context.Context) error) e
 			if err == nil {
 				return nil
 			}
-			delay, shouldRetry := retryer.Retry(err)
+			// Get Spanner or GRPC status error.
+			// TODO(loite): Refactor to unwrap Status error instead of Spanner
+			// error when statusError implements the (errors|xerrors).Wrapper
+			// interface.
+			var retryErr error
+			var se *Error
+			if errorAs(err, &se) {
+				// It is a (wrapped) Spanner error. Use that to check whether
+				// we should retry.
+				retryErr = se
+			} else {
+				// It's not a Spanner error, check if it is a status error.
+				_, ok := status.FromError(err)
+				if !ok {
+					return err
+				}
+				retryErr = err
+			}
+			if isSessionNotFoundError(retryErr) {
+				trace.TracePrintf(ctx, nil, "Retrying after Session not found")
+				continue
+			}
+			delay, shouldRetry := retryer.Retry(retryErr)
 			if !shouldRetry {
 				return err
 			}
@@ -93,27 +116,27 @@ func runWithRetryOnAborted(ctx context.Context, f func(context.Context) error) e
 	return funcWithRetry(ctx)
 }
 
-// extractRetryDelay extracts retry backoff if present.
+// extractRetryDelay extracts retry backoff from a *spanner.Error if present.
 func extractRetryDelay(err error) (time.Duration, bool) {
-	trailers := errTrailers(err)
-	if trailers == nil {
+	var se *Error
+	var s *status.Status
+	// Unwrap status error.
+	if errorAs(err, &se) {
+		s = status.Convert(se.Unwrap())
+	} else {
+		s = status.Convert(err)
+	}
+	if s == nil {
 		return 0, false
 	}
-	elem, ok := trailers[retryInfoKey]
-	if !ok || len(elem) <= 0 {
-		return 0, false
+	for _, detail := range s.Details() {
+		if retryInfo, ok := detail.(*errdetails.RetryInfo); ok {
+			delay, err := ptypes.Duration(retryInfo.RetryDelay)
+			if err != nil {
+				return 0, false
+			}
+			return delay, true
+		}
 	}
-	_, b, err := metadata.DecodeKeyValue(retryInfoKey, elem[0])
-	if err != nil {
-		return 0, false
-	}
-	var retryInfo edpb.RetryInfo
-	if proto.Unmarshal([]byte(b), &retryInfo) != nil {
-		return 0, false
-	}
-	delay, err := ptypes.Duration(retryInfo.RetryDelay)
-	if err != nil {
-		return 0, false
-	}
-	return delay, true
+	return 0, false
 }

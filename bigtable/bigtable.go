@@ -26,7 +26,6 @@ import (
 
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/internal/trace"
-	"cloud.google.com/go/internal/version"
 	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
@@ -44,7 +43,7 @@ const prodAddr = "bigtable.googleapis.com:443"
 //
 // A Client is safe to use concurrently, except for its Close method.
 type Client struct {
-	conn              *grpc.ClientConn
+	connPool          gtransport.ConnPool
 	client            btpb.BigtableClient
 	project, instance string
 	appProfile        string
@@ -69,6 +68,9 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	if err != nil {
 		return nil, err
 	}
+	// Add gRPC client interceptors to supply Google client information. No external interceptors are passed.
+	o = append(o, btopt.ClientInterceptorOptions(nil, nil)...)
+
 	// Default to a small connection pool that can be overridden.
 	o = append(o,
 		option.WithGRPCConnectionPool(4),
@@ -78,14 +80,14 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		// can cause RPCs to fail randomly. We can delete this after the issue is fixed.
 		option.WithGRPCDialOption(grpc.WithBlock()))
 	o = append(o, opts...)
-	conn, err := gtransport.Dial(ctx, o...)
+	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
 
 	return &Client{
-		conn:       conn,
-		client:     btpb.NewBigtableClient(conn),
+		connPool:   connPool,
+		client:     btpb.NewBigtableClient(connPool),
 		project:    project,
 		instance:   instance,
 		appProfile: config.AppProfile,
@@ -94,7 +96,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 
 // Close closes the Client.
 func (c *Client) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 var (
@@ -130,21 +132,6 @@ func mergeOutgoingMetadata(ctx context.Context, mds ...metadata.MD) context.Cont
 	return metadata.NewOutgoingContext(ctx, metadata.Join(allMDs...))
 }
 
-// withGoogleClientInfo sets the name and version of the application in
-// the `x-goog-api-client` header passed on each request. Intended for
-// use by Google-written clients.
-func withGoogleClientInfo() metadata.MD {
-	kv := []string{
-		"gl-go",
-		version.Go(),
-		"gax",
-		gax.Version,
-		"grpc",
-		grpc.Version,
-	}
-	return metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
-}
-
 // A Table refers to a table.
 //
 // A Table is safe to use concurrently.
@@ -174,7 +161,7 @@ func (c *Client) Open(table string) *Table {
 // By default, the yielded rows will contain all values in all cells.
 // Use RowFilter to limit the cells returned.
 func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) (err error) {
-	ctx = mergeOutgoingMetadata(ctx, withGoogleClientInfo(), t.md)
+	ctx = mergeOutgoingMetadata(ctx, t.md)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable.ReadRows")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -499,7 +486,7 @@ const maxMutations = 100000
 // Apply mutates a row atomically. A mutation must contain at least one
 // operation and at most 100000 operations.
 func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) (err error) {
-	ctx = mergeOutgoingMetadata(ctx, withGoogleClientInfo(), t.md)
+	ctx = mergeOutgoingMetadata(ctx, t.md)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable/Apply")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -675,7 +662,7 @@ type entryErr struct {
 //
 // Conditional mutations cannot be applied in bulk and providing one will result in an error.
 func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutation, opts ...ApplyOption) (errs []error, err error) {
-	ctx = mergeOutgoingMetadata(ctx, withGoogleClientInfo(), t.md)
+	ctx = mergeOutgoingMetadata(ctx, t.md)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable/ApplyBulk")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -826,7 +813,7 @@ func Time(t time.Time) Timestamp { return Timestamp(t.UnixNano() / 1e3) }
 func Now() Timestamp { return Time(time.Now()) }
 
 // Time converts a Timestamp into a time.Time.
-func (ts Timestamp) Time() time.Time { return time.Unix(0, int64(ts)*1e3) }
+func (ts Timestamp) Time() time.Time { return time.Unix(int64(ts)/1e6, int64(ts)%1e6*1e3) }
 
 // TruncateToMilliseconds truncates a Timestamp to millisecond granularity,
 // which is currently the only granularity supported.
@@ -840,7 +827,7 @@ func (ts Timestamp) TruncateToMilliseconds() Timestamp {
 // ApplyReadModifyWrite applies a ReadModifyWrite to a specific row.
 // It returns the newly written cells.
 func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
-	ctx = mergeOutgoingMetadata(ctx, withGoogleClientInfo(), t.md)
+	ctx = mergeOutgoingMetadata(ctx, t.md)
 	req := &btpb.ReadModifyWriteRowRequest{
 		TableName:    t.c.fullTableName(t.table),
 		AppProfileId: t.c.appProfile,
@@ -901,7 +888,7 @@ func (m *ReadModifyWrite) Increment(family, column string, delta int64) {
 // SampleRowKeys returns a sample of row keys in the table. The returned row keys will delimit contiguous sections of
 // the table of approximately equal size, which can be used to break up the data for distributed tasks like mapreduces.
 func (t *Table) SampleRowKeys(ctx context.Context) ([]string, error) {
-	ctx = mergeOutgoingMetadata(ctx, withGoogleClientInfo(), t.md)
+	ctx = mergeOutgoingMetadata(ctx, t.md)
 	var sampledRowKeys []string
 	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 		sampledRowKeys = nil

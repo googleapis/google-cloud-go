@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
@@ -35,10 +35,17 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var newClientHook clientHook
+
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
 	ExportAssets          []gax.CallOption
 	BatchGetAssetsHistory []gax.CallOption
+	CreateFeed            []gax.CallOption
+	GetFeed               []gax.CallOption
+	ListFeeds             []gax.CallOption
+	UpdateFeed            []gax.CallOption
+	DeleteFeed            []gax.CallOption
 }
 
 func defaultClientOptions() []option.ClientOption {
@@ -66,6 +73,11 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		CreateFeed: []gax.CallOption{},
+		GetFeed:    []gax.CallOption{},
+		ListFeeds:  []gax.CallOption{},
+		UpdateFeed: []gax.CallOption{},
+		DeleteFeed: []gax.CallOption{},
 	}
 }
 
@@ -73,8 +85,8 @@ func defaultCallOptions() *CallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type Client struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	client assetpb.AssetServiceClient
@@ -95,40 +107,52 @@ type Client struct {
 //
 // Asset service definition.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultClientOptions(), opts...)...)
+	clientOpts := defaultClientOptions()
+
+	if newClientHook != nil {
+		hookOpts, err := newClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultCallOptions(),
 
-		client: assetpb.NewAssetServiceClient(conn),
+		client: assetpb.NewAssetServiceClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, option.WithGRPCConn(conn))
+	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
-		// This error "should not happen", since we are just reusing old connection
+		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
-		// If this does happen, we could leak conn. However, we cannot close conn:
-		// If the user invoked the function with option.WithGRPCConn,
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
 		// we would close a connection that's still in use.
-		// TODO(pongad): investigate error conditions.
+		// TODO: investigate error conditions.
 		return nil, err
 	}
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *Client) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *Client) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
@@ -142,7 +166,7 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // ExportAssets exports assets with time and resource types to a given Cloud Storage
 // location. The output format is newline-delimited JSON.
-// This API implements the [google.longrunning.Operation][google.longrunning.Operation] API allowing you
+// This API implements the google.longrunning.Operation API allowing you
 // to keep track of the export.
 func (c *Client) ExportAssets(ctx context.Context, req *assetpb.ExportAssetsRequest, opts ...gax.CallOption) (*ExportAssetsOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -183,6 +207,88 @@ func (c *Client) BatchGetAssetsHistory(ctx context.Context, req *assetpb.BatchGe
 		return nil, err
 	}
 	return resp, nil
+}
+
+// CreateFeed creates a feed in a parent project/folder/organization to listen to its
+// asset updates.
+func (c *Client) CreateFeed(ctx context.Context, req *assetpb.CreateFeedRequest, opts ...gax.CallOption) (*assetpb.Feed, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.CreateFeed[0:len(c.CallOptions.CreateFeed):len(c.CallOptions.CreateFeed)], opts...)
+	var resp *assetpb.Feed
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateFeed(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetFeed gets details about an asset feed.
+func (c *Client) GetFeed(ctx context.Context, req *assetpb.GetFeedRequest, opts ...gax.CallOption) (*assetpb.Feed, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetFeed[0:len(c.CallOptions.GetFeed):len(c.CallOptions.GetFeed)], opts...)
+	var resp *assetpb.Feed
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetFeed(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// ListFeeds lists all asset feeds in a parent project/folder/organization.
+func (c *Client) ListFeeds(ctx context.Context, req *assetpb.ListFeedsRequest, opts ...gax.CallOption) (*assetpb.ListFeedsResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ListFeeds[0:len(c.CallOptions.ListFeeds):len(c.CallOptions.ListFeeds)], opts...)
+	var resp *assetpb.ListFeedsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ListFeeds(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// UpdateFeed updates an asset feed configuration.
+func (c *Client) UpdateFeed(ctx context.Context, req *assetpb.UpdateFeedRequest, opts ...gax.CallOption) (*assetpb.Feed, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "feed.name", url.QueryEscape(req.GetFeed().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UpdateFeed[0:len(c.CallOptions.UpdateFeed):len(c.CallOptions.UpdateFeed)], opts...)
+	var resp *assetpb.Feed
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateFeed(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// DeleteFeed deletes an asset feed.
+func (c *Client) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.DeleteFeed[0:len(c.CallOptions.DeleteFeed):len(c.CallOptions.DeleteFeed)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteFeed(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
 }
 
 // ExportAssetsOperation manages a long-running operation from ExportAssets.

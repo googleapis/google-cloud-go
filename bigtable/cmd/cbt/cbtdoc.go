@@ -291,7 +291,7 @@ Read from a single row
 
 Usage:
 	cbt lookup <table-id> <row-key> [columns=<family>:<qualifier>,...] [cells-per-column=<n>]  [app-profile=<app profile id>]
-	  row-key                             String value of key, raw bytes are supported but need to be prefixed with a dollar sign and use single quotes
+	  row-key                             String or raw bytes. Raw bytes must be enclosed in single quotes and have a dollar-sign prefix
 	  columns=<family>:<qualifier>,...    Read only these columns, comma-separated
 	  cells-per-column=<n>                Read only this number of cells per column
 	  app-profile=<app-profile-id>        The app profile ID to use for the request
@@ -374,7 +374,7 @@ Usage:
 
 	    Examples:
 	      cbt setgcpolicy mobile-time-series stats_detail maxage=10d
-	      cbt setgcpolicy mobile-time-series stats_summary maxage=10d or maxversion=1
+	      cbt setgcpolicy mobile-time-series stats_summary maxage=10d or maxversions=1
 
 
 
