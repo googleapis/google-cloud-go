@@ -158,7 +158,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/bigquery/reservation/apiv1beta1",
 		gRPCServiceConfigPath: "google/cloud/bigquery/reservation/v1beta1/bigqueryreservation_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/bigquery/reservation/v1beta1/bigqueryreservation_v1beta1.yaml",
-		releaseLevel:          "alpha",
+		releaseLevel:          "beta",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/bigquery/storage/v1alpha2",
@@ -190,7 +190,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/bigquery/storage/apiv1",
 		gRPCServiceConfigPath: "google/cloud/bigquery/storage/v1/bigquerystorage_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/bigquery/storage/v1/bigquerystorage_v1.yaml",
-		releaseLevel:          "alpha",
+		releaseLevel:          "ga",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/iot/v1",
