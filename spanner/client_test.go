@@ -390,7 +390,7 @@ func TestClient_ResourceBasedRouting_WithEndpointsReturned(t *testing.T) {
 
 	// The target server should receive requests.
 	if _, err = shouldHaveReceived(serverTarget.TestSpanner, []interface{}{
-		&sppb.CreateSessionRequest{},
+		&sppb.BatchCreateSessionsRequest{},
 		&sppb.ExecuteSqlRequest{},
 	}); err != nil {
 		t.Fatal(err)
@@ -423,7 +423,7 @@ func TestClient_ResourceBasedRouting_WithoutEndpointsReturned(t *testing.T) {
 
 	// Check if the request goes to the default endpoint.
 	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.CreateSessionRequest{},
+		&sppb.BatchCreateSessionsRequest{},
 		&sppb.ExecuteSqlRequest{},
 	}); err != nil {
 		t.Fatal(err)
@@ -456,7 +456,7 @@ func TestClient_ResourceBasedRouting_WithPermissionDeniedError(t *testing.T) {
 	// Fallback to use the default endpoint when calling GetInstance() returns
 	// a PermissionDenied error.
 	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.CreateSessionRequest{},
+		&sppb.BatchCreateSessionsRequest{},
 		&sppb.ExecuteSqlRequest{},
 	}); err != nil {
 		t.Fatal(err)
@@ -1257,6 +1257,7 @@ func TestClient_ApplyAtLeastOnceReuseSession(t *testing.T) {
 		},
 	})
 	defer teardown()
+	sp := client.idleSessions
 	ms := []*Mutation{
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
@@ -1266,17 +1267,19 @@ func TestClient_ApplyAtLeastOnceReuseSession(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if g, w := client.idleSessions.idleList.Len(), 1; g != w {
+		sp.mu.Lock()
+		if g, w := uint64(sp.idleList.Len())+sp.createReqs, sp.incStep; g != w {
 			t.Fatalf("idle session count mismatch:\nGot: %v\nWant: %v", g, w)
 		}
-		if g, w := len(server.TestSpanner.DumpSessions()), 1; g != w {
+		if g, w := uint64(len(server.TestSpanner.DumpSessions())), sp.incStep; g != w {
 			t.Fatalf("server session count mismatch:\nGot: %v\nWant: %v", g, w)
 		}
+		sp.mu.Unlock()
 	}
 	// There should be no sessions marked as checked out.
-	client.idleSessions.mu.Lock()
-	g, w := client.idleSessions.trackedSessionHandles.Len(), 0
-	client.idleSessions.mu.Unlock()
+	sp.mu.Lock()
+	g, w := sp.trackedSessionHandles.Len(), 0
+	sp.mu.Unlock()
 	if g != w {
 		t.Fatalf("checked out sessions count mismatch:\nGot: %v\nWant: %v", g, w)
 	}
@@ -1292,6 +1295,7 @@ func TestClient_ApplyAtLeastOnceInvalidArgument(t *testing.T) {
 		},
 	})
 	defer teardown()
+	sp := client.idleSessions
 	ms := []*Mutation{
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
@@ -1305,12 +1309,14 @@ func TestClient_ApplyAtLeastOnceInvalidArgument(t *testing.T) {
 		if status.Code(err) != codes.InvalidArgument {
 			t.Fatal(err)
 		}
-		if g, w := client.idleSessions.idleList.Len(), 1; g != w {
+		sp.mu.Lock()
+		if g, w := uint64(sp.idleList.Len())+sp.createReqs, sp.incStep; g != w {
 			t.Fatalf("idle session count mismatch:\nGot: %v\nWant: %v", g, w)
 		}
-		if g, w := len(server.TestSpanner.DumpSessions()), 1; g != w {
+		if g, w := uint64(len(server.TestSpanner.DumpSessions())), sp.incStep; g != w {
 			t.Fatalf("server session count mismatch:\nGot: %v\nWant: %v", g, w)
 		}
+		sp.mu.Unlock()
 	}
 	// There should be no sessions marked as checked out.
 	client.idleSessions.mu.Lock()
@@ -1646,7 +1652,7 @@ func TestFailedCommit_NoRollback(t *testing.T) {
 	}
 	// The failed commit should not trigger a rollback after the commit.
 	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.CreateSessionRequest{},
+		&sppb.BatchCreateSessionsRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{},
 	}); err != nil {
@@ -1677,7 +1683,7 @@ func TestFailedUpdate_ShouldRollback(t *testing.T) {
 	}
 	// The failed update should trigger a rollback.
 	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.CreateSessionRequest{},
+		&sppb.BatchCreateSessionsRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.RollbackRequest{},

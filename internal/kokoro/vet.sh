@@ -63,6 +63,8 @@ golint ./... 2>&1 | ( \
   grep -v "exported func Increment returns unexported type firestore.increment, which can be annoying to use" | \
   grep -v "ExecuteStreamingSql" | \
   grep -v "MethodExecuteSql should be MethodExecuteSQL" | \
+  grep -vE " executeStreamingSql(Min|Rnd)Time" | \
+  grep -vE " executeSql(Min|Rnd)Time" | \
   grep -vE "pubsub\/pstest\/fake\.go.+should have comment or be unexported" | \
   grep -v "ClusterId" | \
   grep -v "InstanceId" | \

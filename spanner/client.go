@@ -269,6 +269,9 @@ get an instance-specific endpoint and efficiently route requests.
 	if config.MaxBurst == 0 {
 		config.MaxBurst = DefaultSessionPoolConfig.MaxBurst
 	}
+	if config.incStep == 0 {
+		config.incStep = DefaultSessionPoolConfig.incStep
+	}
 	// Create a session client.
 	sc := newSessionClient(pool, database, sessionLabels, metadata.Pairs(resourcePrefixHeader, database), config.logger)
 	// Create a session pool.

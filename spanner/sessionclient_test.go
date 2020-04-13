@@ -165,7 +165,7 @@ func TestBatchCreateAndCloseSession(t *testing.T) {
 			t.Fatal(err)
 		}
 		consumer := newTestConsumer(numSessions)
-		client.sc.batchCreateSessions(numSessions, consumer)
+		client.sc.batchCreateSessions(numSessions, true, consumer)
 		<-consumer.receivedAll
 		if len(consumer.sessions) != int(numSessions) {
 			t.Fatalf("returned number of sessions mismatch\ngot: %v\nwant: %v", len(consumer.sessions), numSessions)
@@ -228,7 +228,7 @@ func TestBatchCreateSessionsWithExceptions(t *testing.T) {
 				Errors: errors,
 			})
 			consumer := newTestConsumer(numSessions)
-			client.sc.batchCreateSessions(numSessions, consumer)
+			client.sc.batchCreateSessions(numSessions, true, consumer)
 			<-consumer.receivedAll
 
 			sessionsReturned := int32(len(consumer.sessions))
@@ -272,7 +272,7 @@ func TestBatchCreateSessions_ServerReturnsLessThanRequestedSessions(t *testing.T
 	// channels that are available, i.e. do requests for 25 sessions in each
 	// request. The batch should still return 100 sessions.
 	consumer := newTestConsumer(numSessions)
-	client.sc.batchCreateSessions(numSessions, consumer)
+	client.sc.batchCreateSessions(numSessions, true, consumer)
 	<-consumer.receivedAll
 	if len(consumer.errors) > 0 {
 		t.Fatalf("Error count mismatch\nGot: %d\nWant: %d", len(consumer.errors), 0)
@@ -300,7 +300,7 @@ func TestBatchCreateSessions_ServerExhausted(t *testing.T) {
 	// Ensure that the server will never return more than 50 sessions in total.
 	server.TestSpanner.SetMaxSessionsReturnedByServerInTotal(maxSessions)
 	consumer := newTestConsumer(numSessions)
-	client.sc.batchCreateSessions(numSessions, consumer)
+	client.sc.batchCreateSessions(numSessions, true, consumer)
 	<-consumer.receivedAll
 	// Session creation should end with at least one RESOURCE_EXHAUSTED error.
 	if len(consumer.errors) == 0 {
@@ -342,7 +342,7 @@ func TestBatchCreateSessions_WithTimeout(t *testing.T) {
 
 	client.sc.batchTimeout = 10 * time.Millisecond
 	consumer := newTestConsumer(numSessions)
-	client.sc.batchCreateSessions(numSessions, consumer)
+	client.sc.batchCreateSessions(numSessions, true, consumer)
 	<-consumer.receivedAll
 	if len(consumer.sessions) > 0 {
 		t.Fatalf("Returned number of sessions mismatch\ngot: %v\nwant: %v", len(consumer.sessions), 0)
