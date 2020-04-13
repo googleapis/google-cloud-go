@@ -27,6 +27,8 @@ import (
 
 // Check that stats are being exported.
 func TestOCStats(t *testing.T) {
+	// TestExporter is currently not thread safe, but that is being fixed.
+	t.Skip("TestExporter is not thread safe")
 	te := testutil.NewTestExporter()
 	defer te.Unregister()
 
