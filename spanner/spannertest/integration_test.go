@@ -28,6 +28,7 @@ import (
 	"context"
 	"flag"
 	"reflect"
+	"sort"
 	"testing"
 	"time"
 
@@ -372,6 +373,30 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 	}
 	if !gotUpdated.Equal(cts) {
 		t.Errorf("After updating Iron Man, updated = %v, want %v", gotUpdated, cts)
+	}
+
+	// Check if IN UNNEST works.
+	stmt = spanner.NewStatement(`SELECT Age FROM ` + tableName + ` WHERE FirstName IN UNNEST(@list)`)
+	stmt.Params = map[string]interface{}{
+		"list": []string{"Peter", "Steve"},
+	}
+	rows = client.Single().Query(ctx, stmt)
+	var ages []int64
+	err = rows.Do(func(row *spanner.Row) error {
+		var age spanner.NullInt64
+		if err := row.Column(0, &age); err != nil {
+			return err
+		}
+		ages = append(ages, age.Int64) // zero for NULL
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("Getting ages using IN UNNEST: %v", err)
+	}
+	sort.Slice(ages, func(i, j int) bool { return ages[i] < ages[j] })
+	wantAges := []int64{0, 0, 102} // Peter Parker, Peter Quill, Steve Rogers (modified)
+	if !reflect.DeepEqual(ages, wantAges) {
+		t.Errorf("Query with IN UNNEST gave wrong ages: got %+v, want %+v", ages, wantAges)
 	}
 }
 
