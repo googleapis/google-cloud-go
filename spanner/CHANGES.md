@@ -1,5 +1,27 @@
 # Changes
 
+## v1.5.0
+
+* Metrics
+  - Instrument client library with adding OpenCensus metrics. This allows for
+    better monitoring of the session pool.
+* Session management
+  - Switch the session keepalive method from GetSession to SELECT 1.
+* Emulator
+  - Use client hooks for admin clients running against an emulator. With
+    this change, users can use SPANNER_EMULATOR_HOST for initializing admin
+    clients when running against an emulator.
+* spansql
+  - Add space between constraint name and foreign key def.
+* Misc
+  - Fix segfault when a non-existent credentials file had been specified.
+  - Fix cleaning up instances in integration tests.
+  - Fix race condition in batch read-only transaction.
+  - Fix the flaky TestLIFOTakeWriteSessionOrder test.
+  - Fix ITs to order results in SELECT queries.
+  - Fix the documentation of timestamp bounds.
+  - Fix the regex issue in managing backups.
+
 ## v1.4.0
 
 - Support managed backups. This includes the API methods for CreateBackup,
