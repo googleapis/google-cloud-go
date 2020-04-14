@@ -6,11 +6,11 @@ RUN apk update && \
 RUN go version
 
 # Install Go tools.
-RUN go get \
-  golang.org/x/lint/golint \
-  golang.org/x/tools/cmd/goimports \
-  honnef.co/go/tools/cmd/staticcheck \
-  golang.org/x/review/git-codereview
+RUN GO111MODULE=on go get \
+  golang.org/x/lint/golint@latest \
+  golang.org/x/tools/cmd/goimports@latest \
+  honnef.co/go/tools/cmd/staticcheck@latest \
+  golang.org/x/review/git-codereview@latest
 ENV PATH="${PATH}:/root/go/bin"
 
 RUN echo -e '#!/bin/bash\n\

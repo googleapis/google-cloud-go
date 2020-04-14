@@ -21,13 +21,13 @@ ENV PATH /usr/local/go/bin:$PATH
 RUN go version
 
 # Install Go tools.
-RUN go get \
-  github.com/golang/protobuf/protoc-gen-go \
-  golang.org/x/lint/golint \
-  golang.org/x/tools/cmd/goimports \
-  honnef.co/go/tools/cmd/staticcheck \
-  github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic \
-  golang.org/x/review/git-codereview
+RUN GO111MODULE=on go get \
+  github.com/golang/protobuf/protoc-gen-go@v1.3.5 \
+  golang.org/x/lint/golint@latest \
+  golang.org/x/tools/cmd/goimports@latest \
+  honnef.co/go/tools/cmd/staticcheck@latest \
+  github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v0.13.3 \
+  golang.org/x/review/git-codereview@latest
 ENV PATH="${PATH}:/root/go/bin"
 
 # Source: http://debuggable.com/posts/disable-strict-host-checking-for-git-clone:49896ff3-0ac0-4263-9703-1eae4834cda3
