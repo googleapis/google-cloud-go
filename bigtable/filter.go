@@ -347,6 +347,6 @@ type blockAllFilter struct{}
 
 func (baf blockAllFilter) String() string { return "blockAllFilter()" }
 
-func (baf blockAllFilter) proto() *btpb.RowFilter {
+func (baf blockAllFilter) Proto() *btpb.RowFilter {
 	return &btpb.RowFilter{Filter: &btpb.RowFilter_BlockAllFilter{BlockAllFilter: true}}
 }
