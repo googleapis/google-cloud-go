@@ -692,5 +692,4 @@ var gapicsWithManual = []string{
 	"logging/apiv2",
 	"longrunning/autogen",
 	"pubsub/apiv1",
-	"trace/apiv1",
 }
