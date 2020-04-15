@@ -233,6 +233,16 @@ type SubscriptionConfig struct {
 	// DeadLetterPolicy specifies the conditions for dead lettering messages in
 	// a subscription. If not set, dead lettering is disabled.
 	DeadLetterPolicy *DeadLetterPolicy
+
+	// Filter is an expression written in the Cloud Pub/Sub filter language. If
+	// non-empty, then only `PubsubMessage`s whose `attributes` field matches the
+	// filter are delivered on this subscription. If empty, then no messages are
+	// filtered out. Cannot be changed after the subscription is created.
+	//
+	// It is EXPERIMENTAL and a part of a closed alpha that may not be
+	// accessible to all users. This field is subject to change or removal
+	// without notice.
+	Filter string
 }
 
 func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
@@ -259,6 +269,7 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		ExpirationPolicy:         expirationPolicyToProto(cfg.ExpirationPolicy),
 		EnableMessageOrdering:    cfg.EnableMessageOrdering,
 		DeadLetterPolicy:         pbDeadLetter,
+		Filter:                   cfg.Filter,
 	}
 }
 
@@ -287,6 +298,7 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 		Labels:              pbSub.Labels,
 		ExpirationPolicy:    expirationPolicy,
 		DeadLetterPolicy:    dlp,
+		Filter:              pbSub.Filter,
 	}
 	pc := protoToPushConfig(pbSub.PushConfig)
 	if pc != nil {
