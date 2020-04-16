@@ -1054,14 +1054,12 @@ func (p *sessionPool) remove(s *session, isExpire bool) bool {
 	// If the session is in the idlelist, remove it.
 	if ol != nil {
 		// Remove from whichever list it is in.
-		var elem interface{}
-		elem = p.idleList.Remove(ol)
-		if elem != nil {
-			p.decNumReadsLocked(ctx)
-		}
-		elem = p.idleWriteList.Remove(ol)
-		if elem != nil {
+		p.idleList.Remove(ol)
+		p.idleWriteList.Remove(ol)
+		if s.isWritePrepared() {
 			p.decNumWritesLocked(ctx)
+		} else {
+			p.decNumReadsLocked(ctx)
 		}
 	}
 	if s.invalidate() {
