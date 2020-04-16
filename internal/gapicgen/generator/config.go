@@ -687,7 +687,6 @@ var microgenGapicConfigs = []*microgenConfig{
 // Relative to gocloud dir.
 var gapicsWithManual = []string{
 	"errorreporting/apiv1beta1",
-	"firestore/apiv1beta1",
 	"firestore/apiv1",
 	"logging/apiv2",
 	"pubsub/apiv1",
