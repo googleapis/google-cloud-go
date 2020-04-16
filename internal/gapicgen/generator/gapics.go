@@ -29,6 +29,9 @@ import (
 // generateGapics generates gapics.
 func generateGapics(ctx context.Context, googleapisDir, protoDir, gocloudDir, genprotoDir string) error {
 	for _, c := range microgenGapicConfigs {
+		if c.stopGeneration {
+			continue
+		}
 		if err := microgen(c, googleapisDir, protoDir, gocloudDir); err != nil {
 			return err
 		}

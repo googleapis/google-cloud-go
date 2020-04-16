@@ -37,6 +37,11 @@ type microgenConfig struct {
 	// releaseLevel is the release level of this target. Values incl ga,
 	// beta, alpha.
 	releaseLevel string
+
+	// stopGeneration is used to stop generating a given client. This might be
+	// useful if a client needs to be deprecated, but retained in the repo
+	// metadata.
+	stopGeneration bool
 }
 
 var microgenGapicConfigs = []*microgenConfig{
@@ -625,6 +630,8 @@ var microgenGapicConfigs = []*microgenConfig{
 		gRPCServiceConfigPath: "google/monitoring/v3/monitoring_grpc_service_config.json",
 		apiServiceConfigPath:  "google/monitoring/v3/monitoring.yaml",
 		releaseLevel:          "ga",
+		//TODO(codyoss): re-enable generation under v2 -- https://github.com/googleapis/google-cloud-go/issues/1930
+		stopGeneration: true,
 	},
 	{
 		inputDirectoryPath:    "google/cloud/vision/v1p1beta1",
