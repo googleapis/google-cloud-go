@@ -19,7 +19,7 @@
 //
 // A service to modify your BigQuery flat-rate reservations.
 //
-//   NOTE: This package is in alpha. It is not stable, and is likely to change.
+//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // Use of Context
 //
@@ -48,7 +48,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20200413"
+const versionClient = "20200416"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
