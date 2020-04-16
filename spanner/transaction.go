@@ -24,6 +24,7 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	vkit "cloud.google.com/go/spanner/apiv1"
+	"github.com/golang/protobuf/proto"
 	"google.golang.org/api/iterator"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
@@ -232,8 +233,8 @@ func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
 	}
-	merged.Options.XXX_Merge(qo.Options)
-	merged.Options.XXX_Merge(opts.Options)
+	proto.Merge(merged.Options, qo.Options)
+	proto.Merge(merged.Options, opts.Options)
 	return merged
 }
 
