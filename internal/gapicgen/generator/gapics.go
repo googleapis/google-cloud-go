@@ -49,12 +49,6 @@ func generateGapics(ctx context.Context, googleapisDir, protoDir, gocloudDir, ge
 		return err
 	}
 
-	for _, m := range gapicsWithManual {
-		if err := setGoogleClientInfo(gocloudDir + "/" + m); err != nil {
-			return err
-		}
-	}
-
 	if err := addModReplaceGenproto(gocloudDir, genprotoDir); err != nil {
 		return err
 	}
@@ -111,22 +105,6 @@ go mod edit -dropreplace "google.golang.org/genproto@$GENPROTO_VERSION"
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 	}
-	return c.Run()
-}
-
-// setGoogleClientInfo enters a directory and updates setGoogleClientInfo
-// to be public. It is used for gapics which have manuals that use them, since
-// the manual needs to call this function.
-func setGoogleClientInfo(manualDir string) error {
-	// TODO(deklerk): Migrate this all to Go instead of using bash.
-
-	c := command("bash", "-c", `
-find . -name '*.go' -exec sed -i.backup -e 's/setGoogleClientInfo/SetGoogleClientInfo/g' '{}' '+'
-find . -name '*.backup' -delete
-`)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Dir = manualDir
 	return c.Run()
 }
 

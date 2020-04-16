@@ -698,6 +698,3 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "beta",
 	},
 }
-
-// Relative to gocloud dir.
-var gapicsWithManual = []string{}
