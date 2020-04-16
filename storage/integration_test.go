@@ -2952,6 +2952,88 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 	}
 }
 
+// Ensures that a file stored with a:
+// * Content-Encoding of "gzip"
+// * Content-Type of "text/plain"
+// will be properly served back.
+// See:
+//  * https://cloud.google.com/storage/docs/transcoding#transcoding_and_gzip
+//  * https://github.com/googleapis/google-cloud-go/issues/1800
+func TestIntegration_NewReaderWithContentEncodingGzip(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+
+	h := testHelper{t}
+
+	projectID := testutil.ProjID()
+	bkt := client.Bucket(uidSpace.New())
+	h.mustCreate(bkt, projectID, nil)
+	defer h.mustDeleteBucket(bkt)
+
+	obj := bkt.Object("decompressive-transcoding")
+	// Firstly upload the gzip compressed file.
+	w := obj.NewWriter(ctx)
+	original := bytes.Repeat([]byte("a"), 4<<10)
+	// Compress and upload the content.
+	gzw := gzip.NewWriter(w)
+	if _, err := gzw.Write(original); err != nil {
+		t.Fatalf("Failed to compress content: %v", err)
+	}
+	if err := gzw.Close(); err != nil {
+		t.Fatalf("Failed to compress content: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatalf("Failed to finish uploading the file: %v", err)
+	}
+	defer h.mustDeleteObject(obj)
+
+	// Now update the Content-Encoding and Content-Type to enable
+	// decompressive transcoding.
+	updatedAttrs, err := obj.Update(ctx, ObjectAttrsToUpdate{
+		ContentEncoding: "gzip",
+		ContentType:     "text/plain",
+	})
+	if err != nil {
+		t.Fatalf("Attribute update failure: %v", err)
+	}
+	if g, w := updatedAttrs.ContentEncoding, "gzip"; g != w {
+		t.Fatalf("ContentEncoding mismtach:\nGot:  %q\nWant: %q", g, w)
+	}
+	if g, w := updatedAttrs.ContentType, "text/plain"; g != w {
+		t.Fatalf("ContentType mismtach:\nGot:  %q\nWant: %q", g, w)
+	}
+
+	rWhole, err := obj.NewReader(ctx)
+	if err != nil {
+		t.Fatalf("Failed to create wholesome reader: %v", err)
+	}
+	blobWhole, err := ioutil.ReadAll(rWhole)
+	rWhole.Close()
+	if err != nil {
+		t.Fatalf("Failed to read the whole body: %v", err)
+	}
+	if g, w := blobWhole, original; !bytes.Equal(g, w) {
+		t.Fatalf("Body mismatch\nGot:\n%s\n\nWant:\n%s", g, w)
+	}
+
+	// Now try a range read, which should return the whole body anyways since
+	// for decompressive transcoding, range requests ARE IGNORED by Cloud Storage.
+	r2kBTo3kB, err := obj.NewRangeReader(ctx, 2<<10, 3<<10)
+	if err != nil {
+		t.Fatalf("Failed to create range reader: %v", err)
+	}
+	blob2kBTo3kB, err := ioutil.ReadAll(r2kBTo3kB)
+	r2kBTo3kB.Close()
+	if err != nil {
+		t.Fatalf("Failed to read with the 2kB to 3kB range request: %v", err)
+	}
+	// The ENTIRE body MUST be served back regardless of the requested range.
+	if g, w := blob2kBTo3kB, original; !bytes.Equal(g, w) {
+		t.Fatalf("Body mismatch\nGot:\n%s\n\nWant:\n%s", g, w)
+	}
+}
+
 func TestIntegration_HMACKey(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
