@@ -696,5 +696,4 @@ var microgenGapicConfigs = []*microgenConfig{
 var gapicsWithManual = []string{
 	"errorreporting/apiv1beta1",
 	"logging/apiv2",
-	"pubsub/apiv1",
 }
