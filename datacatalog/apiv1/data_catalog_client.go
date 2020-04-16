@@ -273,7 +273,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 // across repeated search queries.
 //
 // See Data Catalog Search
-// Syntax (at /data-catalog/docs/how-to/search-reference) for more information.
+// Syntax (at https://cloud.google.com/data-catalog/docs/how-to/search-reference)
+// for more information.
 func (c *Client) SearchCatalog(ctx context.Context, req *datacatalogpb.SearchCatalogRequest, opts ...gax.CallOption) *SearchCatalogResultIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.SearchCatalog[0:len(c.CallOptions.SearchCatalog):len(c.CallOptions.SearchCatalog)], opts...)
@@ -330,7 +331,8 @@ func (c *Client) SearchCatalog(ctx context.Context, req *datacatalogpb.SearchCat
 //
 // Users should enable the Data Catalog API in the project identified by
 // the parent parameter (see [Data Catalog Resource Project]
-// (/data-catalog/docs/concepts/resource-project) for more information).
+// (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)) for
+// more information).
 func (c *Client) CreateEntryGroup(ctx context.Context, req *datacatalogpb.CreateEntryGroupRequest, opts ...gax.CallOption) (*datacatalogpb.EntryGroup, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -366,8 +368,9 @@ func (c *Client) GetEntryGroup(ctx context.Context, req *datacatalogpb.GetEntryG
 
 // UpdateEntryGroup updates an EntryGroup. The user should enable the Data Catalog API in the
 // project identified by the entry_group.name parameter (see [Data Catalog
-// Resource Project] (/data-catalog/docs/concepts/resource-project) for more
-// information).
+// Resource Project]
+// (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)) for
+// more information).
 func (c *Client) UpdateEntryGroup(ctx context.Context, req *datacatalogpb.UpdateEntryGroupRequest, opts ...gax.CallOption) (*datacatalogpb.EntryGroup, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entry_group.name", url.QueryEscape(req.GetEntryGroup().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -387,7 +390,8 @@ func (c *Client) UpdateEntryGroup(ctx context.Context, req *datacatalogpb.Update
 // DeleteEntryGroup deletes an EntryGroup. Only entry groups that do not contain entries can be
 // deleted. Users should enable the Data Catalog API in the project
 // identified by the name parameter (see [Data Catalog Resource Project]
-// (/data-catalog/docs/concepts/resource-project) for more information).
+// (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)) for
+// more information).
 func (c *Client) DeleteEntryGroup(ctx context.Context, req *datacatalogpb.DeleteEntryGroupRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -446,7 +450,8 @@ func (c *Client) ListEntryGroups(ctx context.Context, req *datacatalogpb.ListEnt
 //
 // Users should enable the Data Catalog API in the project identified by
 // the parent parameter (see [Data Catalog Resource Project]
-// (/data-catalog/docs/concepts/resource-project) for more information).
+// (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)) for
+// more information).
 //
 // A maximum of 100,000 entries may be created per entry group.
 func (c *Client) CreateEntry(ctx context.Context, req *datacatalogpb.CreateEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
@@ -468,7 +473,8 @@ func (c *Client) CreateEntry(ctx context.Context, req *datacatalogpb.CreateEntry
 // UpdateEntry updates an existing entry.
 // Users should enable the Data Catalog API in the project identified by
 // the entry.name parameter (see [Data Catalog Resource Project]
-// (/data-catalog/docs/concepts/resource-project) for more information).
+// (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)) for
+// more information).
 func (c *Client) UpdateEntry(ctx context.Context, req *datacatalogpb.UpdateEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entry.name", url.QueryEscape(req.GetEntry().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -490,7 +496,8 @@ func (c *Client) UpdateEntry(ctx context.Context, req *datacatalogpb.UpdateEntry
 // method can be deleted.
 // Users should enable the Data Catalog API in the project identified by
 // the name parameter (see [Data Catalog Resource Project]
-// (/data-catalog/docs/concepts/resource-project) for more information).
+// (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)) for
+// more information).
 func (c *Client) DeleteEntry(ctx context.Context, req *datacatalogpb.DeleteEntryRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -581,8 +588,9 @@ func (c *Client) ListEntries(ctx context.Context, req *datacatalogpb.ListEntries
 
 // CreateTagTemplate creates a tag template. The user should enable the Data Catalog API in
 // the project identified by the parent parameter (see Data Catalog
-// Resource Project (at /data-catalog/docs/concepts/resource-project) for more
-// information).
+// Resource
+// Project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)
+// for more information).
 func (c *Client) CreateTagTemplate(ctx context.Context, req *datacatalogpb.CreateTagTemplateRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplate, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -621,7 +629,8 @@ func (c *Client) GetTagTemplate(ctx context.Context, req *datacatalogpb.GetTagTe
 // and should be updated using their own create/update/delete methods.
 // Users should enable the Data Catalog API in the project identified by
 // the tag_template.name parameter (see [Data Catalog Resource Project]
-// (/data-catalog/docs/concepts/resource-project) for more information).
+// (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)) for
+// more information).
 func (c *Client) UpdateTagTemplate(ctx context.Context, req *datacatalogpb.UpdateTagTemplateRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplate, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tag_template.name", url.QueryEscape(req.GetTagTemplate().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -641,7 +650,8 @@ func (c *Client) UpdateTagTemplate(ctx context.Context, req *datacatalogpb.Updat
 // DeleteTagTemplate deletes a tag template and all tags using the template.
 // Users should enable the Data Catalog API in the project identified by
 // the name parameter (see [Data Catalog Resource Project]
-// (/data-catalog/docs/concepts/resource-project) for more information).
+// (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)) for
+// more information).
 func (c *Client) DeleteTagTemplate(ctx context.Context, req *datacatalogpb.DeleteTagTemplateRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -657,8 +667,8 @@ func (c *Client) DeleteTagTemplate(ctx context.Context, req *datacatalogpb.Delet
 // CreateTagTemplateField creates a field in a tag template. The user should enable the Data Catalog
 // API in the project identified by the parent parameter (see
 // Data Catalog Resource
-// Project (at /data-catalog/docs/concepts/resource-project) for more
-// information).
+// Project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)
+// for more information).
 func (c *Client) CreateTagTemplateField(ctx context.Context, req *datacatalogpb.CreateTagTemplateFieldRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -678,7 +688,8 @@ func (c *Client) CreateTagTemplateField(ctx context.Context, req *datacatalogpb.
 // UpdateTagTemplateField updates a field in a tag template. This method cannot be used to update the
 // field type. Users should enable the Data Catalog API in the project
 // identified by the name parameter (see [Data Catalog Resource Project]
-// (/data-catalog/docs/concepts/resource-project) for more information).
+// (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)) for
+// more information).
 func (c *Client) UpdateTagTemplateField(ctx context.Context, req *datacatalogpb.UpdateTagTemplateFieldRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -697,8 +708,9 @@ func (c *Client) UpdateTagTemplateField(ctx context.Context, req *datacatalogpb.
 
 // RenameTagTemplateField renames a field in a tag template. The user should enable the Data Catalog
 // API in the project identified by the name parameter (see Data Catalog
-// Resource Project (at /data-catalog/docs/concepts/resource-project) for more
-// information).
+// Resource
+// Project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)
+// for more information).
 func (c *Client) RenameTagTemplateField(ctx context.Context, req *datacatalogpb.RenameTagTemplateFieldRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -718,7 +730,8 @@ func (c *Client) RenameTagTemplateField(ctx context.Context, req *datacatalogpb.
 // DeleteTagTemplateField deletes a field in a tag template and all uses of that field.
 // Users should enable the Data Catalog API in the project identified by
 // the name parameter (see [Data Catalog Resource Project]
-// (/data-catalog/docs/concepts/resource-project) for more information).
+// (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)) for
+// more information).
 func (c *Client) DeleteTagTemplateField(ctx context.Context, req *datacatalogpb.DeleteTagTemplateFieldRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -733,10 +746,10 @@ func (c *Client) DeleteTagTemplateField(ctx context.Context, req *datacatalogpb.
 
 // CreateTag creates a tag on an Entry.
 // Note: The project identified by the parent parameter for the
-// tag (at /data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters)
+// tag (at https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters)
 // and the
 // tag
-// template (at /data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters)
+// template (at https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters)
 // used to create the tag must be from the same organization.
 func (c *Client) CreateTag(ctx context.Context, req *datacatalogpb.CreateTagRequest, opts ...gax.CallOption) (*datacatalogpb.Tag, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
