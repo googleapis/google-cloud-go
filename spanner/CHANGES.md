@@ -1,5 +1,13 @@
 # Changes
 
+## v1.5.1
+
+* Fix incorrect decreasing metrics, numReads and numWrites.
+* Fix an issue that XXX fields/methods are internal to proto and may change
+  at any time. XXX_Merge panics in proto v1.4.0. Use proto.Merge instead of
+  XXX_Merge.
+* spannertest: handle list parameters in RPC interfacea.
+
 ## v1.5.0
 
 * Metrics
