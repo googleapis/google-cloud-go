@@ -47,6 +47,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/bigquery",
     "release_level": "ga"
   },
+  "cloud.google.com/go/bigquery/connection/apiv1": {
+    "distribution_name": "cloud.google.com/go/bigquery/connection/apiv1",
+    "description": "BigQuery Connection API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/bigquery/connection/apiv1",
+    "release_level": "beta"
+  },
   "cloud.google.com/go/bigquery/connection/apiv1beta1": {
     "distribution_name": "cloud.google.com/go/bigquery/connection/apiv1beta1",
     "description": "BigQuery Connection API",
