@@ -16,6 +16,7 @@ package testutil
 
 import (
 	"log"
+	"sync"
 	"time"
 
 	"go.opencensus.io/plugin/ocgrpc"
@@ -25,7 +26,9 @@ import (
 
 // TestExporter is a test utility exporter. It should be created with NewtestExporter.
 type TestExporter struct {
+	mu    sync.Mutex
 	Spans []*trace.SpanData
+
 	Stats chan *view.Data
 }
 
@@ -47,6 +50,8 @@ func NewTestExporter() *TestExporter {
 
 // ExportSpan exports a span.
 func (te *TestExporter) ExportSpan(s *trace.SpanData) {
+	te.mu.Lock()
+	defer te.mu.Unlock()
 	te.Spans = append(te.Spans, s)
 }
 
