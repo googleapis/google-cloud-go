@@ -31,6 +31,8 @@
 //
 // For information about setting deadlines, reusing contexts, and more
 // please visit godoc.org/cloud.google.com/go.
+//
+// Deprecated. This package will be removed in a later release.
 package expr // import "cloud.google.com/go/expr/apiv1alpha1"
 
 import (
