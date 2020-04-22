@@ -232,10 +232,6 @@ type SubscriptionConfig struct {
 
 	// DeadLetterPolicy specifies the conditions for dead lettering messages in
 	// a subscription. If not set, dead lettering is disabled.
-	//
-	// It is EXPERIMENTAL and a part of a closed alpha that may not be
-	// accessible to all users. This field is subject to change or removal
-	// without notice.
 	DeadLetterPolicy *DeadLetterPolicy
 }
 
@@ -320,9 +316,6 @@ func protoToPushConfig(pbPc *pb.PushConfig) *PushConfig {
 
 // DeadLetterPolicy specifies the conditions for dead lettering messages in
 // a subscription.
-//
-// It is EXPERIMENTAL and a part of a closed alpha that may not be
-// accessible to all users.
 type DeadLetterPolicy struct {
 	DeadLetterTopic     string
 	MaxDeliveryAttempts int
@@ -485,9 +478,6 @@ type SubscriptionConfigToUpdate struct {
 
 	// If non-nil, DeadLetterPolicy is changed. To remove dead lettering from
 	// a subscription, use the zero value for this struct.
-	//
-	// It is EXPERIMENTAL and a part of a closed alpha that may not be
-	// accessible to all users.
 	DeadLetterPolicy *DeadLetterPolicy
 
 	// If non-nil, the current set of labels is completely

@@ -54,10 +54,6 @@ type Message struct {
 	// If dead lettering is enabled, this will be set on all attempts, starting
 	// with value 1. Otherwise, the value will be nil.
 	// This field is read-only.
-	//
-	// It is EXPERIMENTAL and a part of a closed alpha that may not be
-	// accessible to all users. This field is subject to change or removal
-	// without notice.
 	DeliveryAttempt *int
 
 	// size is the approximate size of the message's data and attributes.
