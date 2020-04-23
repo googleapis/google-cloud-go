@@ -16,14 +16,15 @@ require (
 	github.com/jstemmer/go-junit-report v0.9.1
 	go.opencensus.io v0.22.3
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b
-	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
+	golang.org/x/net v0.0.0-20200421231249-e086a090c8fd
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a // indirect
 	golang.org/x/sys v0.0.0-20200420163511-1957bb5e6d1f // indirect
 	golang.org/x/text v0.3.2
-	golang.org/x/tools v0.0.0-20200421134321-4b6a508a9cc0
-	google.golang.org/api v0.21.0
-	google.golang.org/genproto v0.0.0-20200420144010-e5e8543f8aeb
-	google.golang.org/grpc v1.28.1
+	golang.org/x/tools v0.0.0-20200423205358-59e73619c742
+	google.golang.org/api v0.22.0
+	google.golang.org/appengine v1.6.6 // indirect
+	google.golang.org/genproto v0.0.0-20200423170343-7949de9c1215
+	google.golang.org/grpc v1.29.1
 	honnef.co/go/tools v0.0.1-2020.1.3
 )
