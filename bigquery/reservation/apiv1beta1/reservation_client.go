@@ -725,7 +725,7 @@ func (c *Client) GetBiReservation(ctx context.Context, req *reservationpb.GetBiR
 // greater than 0. In order to release BI capacity reservation size
 // must be set to 0.
 func (c *Client) UpdateBiReservation(ctx context.Context, req *reservationpb.UpdateBiReservationRequest, opts ...gax.CallOption) (*reservationpb.BiReservation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "reservation.name", url.QueryEscape(req.GetReservation().GetName())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "bi_reservation.name", url.QueryEscape(req.GetBiReservation().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateBiReservation[0:len(c.CallOptions.UpdateBiReservation):len(c.CallOptions.UpdateBiReservation)], opts...)
 	var resp *reservationpb.BiReservation

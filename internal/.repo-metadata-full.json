@@ -255,14 +255,6 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/errorreporting/apiv1beta1",
     "release_level": "beta"
   },
-  "cloud.google.com/go/expr/apiv1alpha1": {
-    "distribution_name": "cloud.google.com/go/expr/apiv1alpha1",
-    "description": "Common Expression Language",
-    "language": "Go",
-    "client_library_type": "generated",
-    "docs_url": "https://pkg.go.dev/cloud.google.com/go/expr/apiv1alpha1",
-    "release_level": "alpha"
-  },
   "cloud.google.com/go/firestore": {
     "distribution_name": "cloud.google.com/go/firestore",
     "description": "Cloud Firestore API",
