@@ -566,15 +566,6 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "alpha",
 	},
 	{
-		inputDirectoryPath:    "google/api/expr/v1alpha1",
-		pkg:                   "expr",
-		importPath:            "cloud.google.com/go/expr/apiv1alpha1",
-		gRPCServiceConfigPath: "google/api/expr/v1alpha1/cel_grpc_service_config.json",
-		apiServiceConfigPath:  "google/api/expr/v1alpha1/cel.yaml",
-		releaseLevel:          "alpha",
-		stopGeneration:        true,
-	},
-	{
 		inputDirectoryPath:    "google/devtools/containeranalysis/v1beta1",
 		pkg:                   "containeranalysis",
 		importPath:            "cloud.google.com/go/containeranalysis/apiv1beta1",
