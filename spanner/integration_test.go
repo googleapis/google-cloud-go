@@ -492,50 +492,6 @@ func TestIntegration_SingleUse(t *testing.T) {
 	}
 }
 
-// Test resource-based routing enabled.
-func TestIntegration_SingleUse_WithResourceBasedRouting(t *testing.T) {
-	os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "true")
-	defer os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
-	defer cancel()
-	// Set up testing environment.
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
-	defer cleanup()
-
-	writes := []struct {
-		row []interface{}
-		ts  time.Time
-	}{
-		{row: []interface{}{1, "Marc", "Foo"}},
-		{row: []interface{}{2, "Tars", "Bar"}},
-		{row: []interface{}{3, "Alpha", "Beta"}},
-		{row: []interface{}{4, "Last", "End"}},
-	}
-	// Try to write four rows through the Apply API.
-	for i, w := range writes {
-		var err error
-		m := InsertOrUpdate("Singers",
-			[]string{"SingerId", "FirstName", "LastName"},
-			w.row)
-		if writes[i].ts, err = client.Apply(ctx, []*Mutation{m}, ApplyAtLeastOnce()); err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	row, err := client.Single().ReadRow(ctx, "Singers", Key{3}, []string{"FirstName"})
-	if err != nil {
-		t.Errorf("SingleUse.ReadRow returns error %v, want nil", err)
-	}
-	var got string
-	if err := row.Column(0, &got); err != nil {
-		t.Errorf("row.Column returns error %v, want nil", err)
-	}
-	if want := "Alpha"; got != want {
-		t.Errorf("got %q, want %q", got, want)
-	}
-}
-
 // Test custom query options provided on query-level configuration.
 func TestIntegration_SingleUse_WithQueryOptions(t *testing.T) {
 	skipEmulatorTest(t)

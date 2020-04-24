@@ -20,8 +20,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"log"
 	"os"
 	"strings"
 	"testing"
@@ -30,11 +28,9 @@ import (
 	"cloud.google.com/go/civil"
 	itestutil "cloud.google.com/go/internal/testutil"
 	. "cloud.google.com/go/spanner/internal/testutil"
-	"github.com/golang/protobuf/proto"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -98,34 +94,6 @@ func TestValidDatabaseName(t *testing.T) {
 	for _, d := range invalidDbUris {
 		if err, wantErr := validDatabaseName(d), "should conform to pattern"; !strings.Contains(err.Error(), wantErr) {
 			t.Errorf("validateDatabaseName(%q) = %q, want error pattern %q", validDbURI, err, wantErr)
-		}
-	}
-}
-
-// Test getInstanceName()
-func TestGetInstanceName(t *testing.T) {
-	validDbURI := "projects/spanner-cloud-test/instances/foo/databases/foodb"
-	invalidDbUris := []string{
-		// Completely wrong DB URI.
-		"foobarDB",
-		// Project ID contains "/".
-		"projects/spanner-cloud/test/instances/foo/databases/foodb",
-		// No instance ID.
-		"projects/spanner-cloud-test/instances//databases/foodb",
-	}
-	want := "projects/spanner-cloud-test/instances/foo"
-	got, err := getInstanceName(validDbURI)
-	if err != nil {
-		t.Errorf("getInstanceName(%q) has an error: %q, want nil", validDbURI, err)
-	}
-	if got != want {
-		t.Errorf("getInstanceName(%q) = %q, want %q", validDbURI, got, want)
-	}
-	for _, d := range invalidDbUris {
-		wantErr := "Failed to retrieve instance name"
-		_, err = getInstanceName(d)
-		if !strings.Contains(err.Error(), wantErr) {
-			t.Errorf("getInstanceName(%q) has an error: %q, want error pattern %q", validDbURI, err, wantErr)
 		}
 	}
 }
@@ -350,157 +318,6 @@ func TestClient_Single_ContextCanceled_withDeclaredServerErrors(t *testing.T) {
 	err := executeSingerQueryWithRowFunc(ctx, client.Single(), f)
 	if status.Code(err) != codes.Canceled {
 		t.Fatalf("got unexpected error %v, expected Canceled", err)
-	}
-}
-
-func TestClient_ResourceBasedRouting_WithEndpointsReturned(t *testing.T) {
-	os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "true")
-	defer os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "")
-
-	// Create two servers. The base server receives the GetInstance request and
-	// returns the instance endpoint of the target server. The client should contact
-	// the target server after getting the instance endpoint.
-	serverBase, optsBase, serverTeardownBase := NewMockedSpannerInMemTestServerWithAddr(t, "localhost:8081")
-	defer serverTeardownBase()
-	serverTarget, optsTarget, serverTeardownTarget := NewMockedSpannerInMemTestServerWithAddr(t, "localhost:8082")
-	defer serverTeardownTarget()
-
-	// Return the instance endpoint.
-	instanceEndpoint := fmt.Sprintf("%s", optsTarget[0])
-	resps := []proto.Message{&instancepb.Instance{
-		EndpointUris: []string{instanceEndpoint},
-	}}
-	serverBase.TestInstanceAdmin.SetResps(resps)
-
-	ctx := context.Background()
-	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "some-project", "some-instance", "some-database")
-	client, err := NewClientWithConfig(ctx, formattedDatabase, ClientConfig{}, optsBase...)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err := executeSingerQuery(ctx, client.Single()); err != nil {
-		t.Fatal(err)
-	}
-
-	// The base server should not receive any requests.
-	if _, err := shouldHaveReceived(serverBase.TestSpanner, []interface{}{}); err != nil {
-		t.Fatal(err)
-	}
-
-	// The target server should receive requests.
-	if _, err = shouldHaveReceived(serverTarget.TestSpanner, []interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.ExecuteSqlRequest{},
-	}); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestClient_ResourceBasedRouting_WithoutEndpointsReturned(t *testing.T) {
-	os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "true")
-	defer os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "")
-
-	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
-	defer serverTeardown()
-
-	// Return an empty list of endpoints.
-	resps := []proto.Message{&instancepb.Instance{
-		EndpointUris: []string{},
-	}}
-	server.TestInstanceAdmin.SetResps(resps)
-
-	ctx := context.Background()
-	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "some-project", "some-instance", "some-database")
-	client, err := NewClientWithConfig(ctx, formattedDatabase, ClientConfig{}, opts...)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err := executeSingerQuery(ctx, client.Single()); err != nil {
-		t.Fatal(err)
-	}
-
-	// Check if the request goes to the default endpoint.
-	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.ExecuteSqlRequest{},
-	}); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestClient_ResourceBasedRouting_WithPermissionDeniedError(t *testing.T) {
-	os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "true")
-	defer os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "")
-
-	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
-	defer serverTeardown()
-
-	server.TestInstanceAdmin.SetErr(status.Error(codes.PermissionDenied, "Permission Denied"))
-
-	ctx := context.Background()
-	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "some-project", "some-instance", "some-database")
-	// `PermissionDeniedError` causes a warning message to be logged, which is expected.
-	// We set the output to be discarded to avoid spamming the log.
-	logger := log.New(ioutil.Discard, "", log.LstdFlags)
-	client, err := NewClientWithConfig(ctx, formattedDatabase, ClientConfig{logger: logger}, opts...)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err := executeSingerQuery(ctx, client.Single()); err != nil {
-		t.Fatal(err)
-	}
-
-	// Fallback to use the default endpoint when calling GetInstance() returns
-	// a PermissionDenied error.
-	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.ExecuteSqlRequest{},
-	}); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestClient_ResourceBasedRouting_WithUnavailableError(t *testing.T) {
-	os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "true")
-	defer os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "")
-
-	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
-	defer serverTeardown()
-
-	resps := []proto.Message{&instancepb.Instance{
-		EndpointUris: []string{},
-	}}
-	server.TestInstanceAdmin.SetResps(resps)
-	server.TestInstanceAdmin.SetErr(status.Error(codes.Unavailable, "Temporary unavailable"))
-
-	ctx := context.Background()
-	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "some-project", "some-instance", "some-database")
-	_, err := NewClientWithConfig(ctx, formattedDatabase, ClientConfig{}, opts...)
-	// The first request will get an error and the server resets the error to nil,
-	// so the next request will be fine. Due to retrying, there is no errors.
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestClient_ResourceBasedRouting_WithInvalidArgumentError(t *testing.T) {
-	os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "true")
-	defer os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "")
-
-	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
-	defer serverTeardown()
-
-	server.TestInstanceAdmin.SetErr(status.Error(codes.InvalidArgument, "Invalid argument"))
-
-	ctx := context.Background()
-	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "some-project", "some-instance", "some-database")
-	_, err := NewClientWithConfig(ctx, formattedDatabase, ClientConfig{}, opts...)
-
-	if status.Code(err) != codes.InvalidArgument {
-		t.Fatalf("got unexpected exception %v, expected InvalidArgument", err)
 	}
 }
 
