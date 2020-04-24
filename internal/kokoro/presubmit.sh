@@ -56,8 +56,10 @@ for i in `find . -name go.mod`; do
       go test -race -v -timeout 45m ./... 2>&1 \
       | tee sponge_log.log
     fi
-    go test -race -v -timeout 15m -short ./... 2>&1 \
-      | tee sponge_log.log
+    # Run integration tests against an emulator.
+    if [ -f "emulator_test.sh" ]; then
+      ./emulator_test.sh
+    fi
     # Takes the kokoro output log (raw stdout) and creates a machine-parseable
     # xUnit XML file.
     cat sponge_log.log \
