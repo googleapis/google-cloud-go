@@ -200,7 +200,6 @@ func TestApply_RetryOnAbort(t *testing.T) {
 
 // Tests that SessionNotFound errors are retried.
 func TestTransaction_SessionNotFound(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1949")
 	t.Parallel()
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServer(t)
@@ -246,8 +245,8 @@ func TestTransaction_SessionNotFound(t *testing.T) {
 	_, got := client.Apply(ctx, ms, ApplyAtLeastOnce())
 	if !cmp.Equal(wantErr, got,
 		cmp.AllowUnexported(Error{}), cmp.FilterPath(func(path cmp.Path) bool {
-			// Ignore statusError Details and Error.trailers.
-			if strings.Contains(path.GoString(), "{*spanner.Error}.err.(*status.statusError).Details") {
+			// Ignore Error Details and Error.trailers.
+			if strings.Contains(path.GoString(), "{*spanner.Error}.err.(*status.Error).Details") {
 				return true
 			}
 			if strings.Contains(path.GoString(), "{*spanner.Error}.trailers") {
