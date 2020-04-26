@@ -29,7 +29,9 @@ import (
 	"io/ioutil"
 	"log"
 	"math/rand"
+	"mime/multipart"
 	"net/http"
+	"net/http/httputil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -3157,6 +3159,121 @@ func TestIntegration_HMACKey(t *testing.T) {
 	} else if !strings.Contains(err.Error(), "404") {
 		// If the deleted key has already been garbage collected, a 404 is expected.
 		t.Fatalf("Unexpected error: %v", err)
+	}
+}
+
+func TestIntegration_PostPolicyV4(t *testing.T) {
+	jwtConf, err := testutil.JWTConfig()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if jwtConf == nil {
+		t.Skip("JSON key file is not present")
+	}
+
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+
+	projectID := testutil.ProjID()
+	newBucketName := uidSpace.New()
+	b := client.Bucket(newBucketName)
+	h := testHelper{t}
+	h.mustCreate(b, projectID, nil)
+	defer h.mustDeleteBucket(b)
+
+	statusCodeToRespond := 200
+	opts := &PostPolicyV4Options{
+		GoogleAccessID: jwtConf.Email,
+		PrivateKey:     jwtConf.PrivateKey,
+
+		Expires: time.Now().Add(30 * time.Minute),
+
+		Fields: &PolicyV4Fields{
+			StatusCodeOnSuccess: statusCodeToRespond,
+			ContentType:         "text/plain",
+			ACL:                 "public-read",
+		},
+
+		// The conditions that the uploaded file will be expected to conform to.
+		Conditions: []PostPolicyV4Condition{
+			// Make the file a maximum of 10mB.
+			ConditionContentLengthRange(0, 10<<20),
+			ConditionStartsWith("$acl", "public"),
+		},
+	}
+
+	objectName := "my-object.txt"
+	pv4, err := GenerateSignedPostPolicyV4(newBucketName, objectName, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	formBuf := new(bytes.Buffer)
+	mw := multipart.NewWriter(formBuf)
+	for fieldName, value := range pv4.Fields {
+		if err := mw.WriteField(fieldName, value); err != nil {
+			t.Fatalf("Failed to write form field: %q: %v", fieldName, err)
+		}
+	}
+
+	// Now let's perform the upload.
+	fileBody := bytes.Repeat([]byte("a"), 25)
+	mf, err := mw.CreateFormFile("file", "myfile.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := mf.Write(fileBody); err != nil {
+		t.Fatal(err)
+	}
+	if err := mw.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	// Compose the HTTP request.
+	req, err := http.NewRequest("POST", pv4.URL, formBuf)
+	if err != nil {
+		t.Fatalf("Failed to compose HTTP request: %v", err)
+	}
+	// Ensure the Content-Type is derived from the writer.
+	req.Header.Set("Content-Type", mw.FormDataContentType())
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := res.StatusCode, statusCodeToRespond; g != w {
+		blob, _ := httputil.DumpResponse(res, true)
+		t.Errorf("Status code in response mismatch: got %d want %d\nBody: %s", g, w, blob)
+	}
+	io.Copy(ioutil.Discard, res.Body)
+
+	// Verify that the file was properly uploaded, by
+	// reading back its attributes and content!
+	obj := b.Object(objectName)
+	defer h.mustDeleteObject(obj)
+
+	attrs, err := obj.Attrs(ctx)
+	if err != nil {
+		t.Fatalf("Failed to retrieve attributes: %v", err)
+	}
+	if g, w := attrs.Size, int64(len(fileBody)); g != w {
+		t.Errorf("ContentLength mismatch: got %d want %d", g, w)
+	}
+	if g, w := attrs.MD5, md5.Sum(fileBody); !bytes.Equal(g, w[:]) {
+		t.Errorf("MD5Checksum mismatch\nGot:  %x\nWant: %x", g, w)
+	}
+
+	// Compare the uploaded body with the expected.
+	rd, err := obj.NewReader(ctx)
+	if err != nil {
+		t.Fatalf("Failed to create a reader: %v", err)
+	}
+	gotBody, err := ioutil.ReadAll(rd)
+	if err != nil {
+		t.Fatalf("Failed to read the body: %v", err)
+	}
+	if diff := testutil.Diff(string(gotBody), string(fileBody)); diff != "" {
+		t.Fatalf("Body mismatch: got - want +\n%s", diff)
 	}
 }
 
