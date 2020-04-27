@@ -409,7 +409,7 @@ func TestIntegration_RangePartitioning(t *testing.T) {
 	}
 
 	wantedRange := &RangePartitioningRange{
-		Start:    10,
+		Start:    0,
 		End:      135,
 		Interval: 25,
 	}
