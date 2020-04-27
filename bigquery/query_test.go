@@ -313,9 +313,10 @@ func TestQuery(t *testing.T) {
 				j.Configuration.Query.RangePartitioning = &bq.RangePartitioning{
 					Field: "foo",
 					Range: &bq.RangePartitioningRange{
-						Start:    1,
-						End:      2,
-						Interval: 3,
+						Start:           1,
+						End:             2,
+						Interval:        3,
+						ForceSendFields: []string{"Start", "End", "Interval"},
 					},
 				}
 				return j

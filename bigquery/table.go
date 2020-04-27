@@ -322,9 +322,10 @@ func (rpr *RangePartitioningRange) toBQ() *bq.RangePartitioningRange {
 		return nil
 	}
 	return &bq.RangePartitioningRange{
-		Start:    rpr.Start,
-		End:      rpr.End,
-		Interval: rpr.Interval,
+		Start:           rpr.Start,
+		End:             rpr.End,
+		Interval:        rpr.Interval,
+		ForceSendFields: []string{"Start", "End", "Interval"},
 	}
 }
 

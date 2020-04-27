@@ -233,9 +233,10 @@ func TestTableMetadataToBQ(t *testing.T) {
 				RangePartitioning: &bq.RangePartitioning{
 					Field: "ofNumbers",
 					Range: &bq.RangePartitioningRange{
-						Start:    1,
-						End:      100,
-						Interval: 5,
+						Start:           1,
+						End:             100,
+						Interval:        5,
+						ForceSendFields: []string{"Start", "End", "Interval"},
 					},
 				},
 				Clustering: &bq.Clustering{

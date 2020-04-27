@@ -315,9 +315,10 @@ func TestLoad(t *testing.T) {
 				j.Configuration.Load.RangePartitioning = &bq.RangePartitioning{
 					Field: "somefield",
 					Range: &bq.RangePartitioningRange{
-						Start:    1,
-						End:      2,
-						Interval: 3,
+						Start:           1,
+						End:             2,
+						Interval:        3,
+						ForceSendFields: []string{"Start", "End", "Interval"},
 					},
 				}
 				return j
