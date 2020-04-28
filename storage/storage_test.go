@@ -695,7 +695,7 @@ func TestCondition(t *testing.T) {
 				w.ContentType = "text/plain"
 				return w.Close()
 			},
-			"POST /upload/storage/v1/b/buck/o?alt=json&ifGenerationMatch=1234&prettyPrint=false&projection=full&uploadType=multipart",
+			"POST /upload/storage/v1/b/buck/o?alt=json&ifGenerationMatch=1234&name=obj&prettyPrint=false&projection=full&uploadType=multipart",
 		},
 		{
 			func() error {
@@ -703,7 +703,7 @@ func TestCondition(t *testing.T) {
 				w.ContentType = "text/plain"
 				return w.Close()
 			},
-			"POST /upload/storage/v1/b/buck/o?alt=json&ifGenerationMatch=0&prettyPrint=false&projection=full&uploadType=multipart",
+			"POST /upload/storage/v1/b/buck/o?alt=json&ifGenerationMatch=0&name=obj&prettyPrint=false&projection=full&uploadType=multipart",
 		},
 		{
 			func() error {
