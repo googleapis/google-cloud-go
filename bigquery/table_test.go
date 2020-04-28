@@ -95,6 +95,7 @@ func TestBQToTableMetadata(t *testing.T) {
 					RefreshInterval: aDuration,
 				},
 				TimePartitioning: &TimePartitioning{
+					Type:       DayPartitioningType,
 					Expiration: 7890 * time.Millisecond,
 					Field:      "pfield",
 				},
@@ -191,6 +192,7 @@ func TestTableMetadataToBQ(t *testing.T) {
 				ViewQuery:      "q",
 				UseStandardSQL: true,
 				TimePartitioning: &TimePartitioning{
+					Type:       HourPartitioningType,
 					Expiration: time.Second,
 					Field:      "ofDreams",
 				},
@@ -205,7 +207,7 @@ func TestTableMetadataToBQ(t *testing.T) {
 					ForceSendFields: []string{"UseLegacySql"},
 				},
 				TimePartitioning: &bq.TimePartitioning{
-					Type:         "DAY",
+					Type:         "HOUR",
 					ExpirationMs: 1000,
 					Field:        "ofDreams",
 				},

@@ -223,9 +223,23 @@ func bqToMaterializedViewDefinition(q *bq.MaterializedViewDefinition) *Materiali
 	}
 }
 
+// TimePartitioningType defines the interval used to partition managed data.
+type TimePartitioningType string
+
+const (
+	// DayPartitioningType uses a day-based interval for time partitioning.
+	DayPartitioningType TimePartitioningType = "DAY"
+
+	// HourPartitioningType uses an hour-based interval for time partitioning.
+	HourPartitioningType TimePartitioningType = "HOUR"
+)
+
 // TimePartitioning describes the time-based date partitioning on a table.
 // For more information see: https://cloud.google.com/bigquery/docs/creating-partitioned-tables.
 type TimePartitioning struct {
+	// Defines the partition interval type.  Supported values are "DAY" or "HOUR".
+	Type TimePartitioningType
+
 	// The amount of time to keep the storage for a partition.
 	// If the duration is empty (0), the data in the partitions do not expire.
 	Expiration time.Duration
@@ -247,8 +261,13 @@ func (p *TimePartitioning) toBQ() *bq.TimePartitioning {
 	if p == nil {
 		return nil
 	}
+	// Treat unspecified values as DAY-based partitioning.
+	intervalType := DayPartitioningType
+	if p.Type != "" {
+		intervalType = p.Type
+	}
 	return &bq.TimePartitioning{
-		Type:                   "DAY",
+		Type:                   string(intervalType),
 		ExpirationMs:           int64(p.Expiration / time.Millisecond),
 		Field:                  p.Field,
 		RequirePartitionFilter: p.RequirePartitionFilter,
@@ -260,6 +279,7 @@ func bqToTimePartitioning(q *bq.TimePartitioning) *TimePartitioning {
 		return nil
 	}
 	return &TimePartitioning{
+		Type:                   TimePartitioningType(q.Type),
 		Expiration:             time.Duration(q.ExpirationMs) * time.Millisecond,
 		Field:                  q.Field,
 		RequirePartitionFilter: q.RequirePartitionFilter,
