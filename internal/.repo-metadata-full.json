@@ -71,6 +71,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/bigquery/datatransfer/apiv1",
     "release_level": "ga"
   },
+  "cloud.google.com/go/bigquery/reservation/apiv1": {
+    "distribution_name": "cloud.google.com/go/bigquery/reservation/apiv1",
+    "description": "BigQuery Reservation API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1",
+    "release_level": "ga"
+  },
   "cloud.google.com/go/bigquery/reservation/apiv1beta1": {
     "distribution_name": "cloud.google.com/go/bigquery/reservation/apiv1beta1",
     "description": "BigQuery Reservation API",
