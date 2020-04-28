@@ -18,6 +18,7 @@ package logging_test
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -629,5 +630,17 @@ func BenchmarkConcurrentWrites(b *testing.B) {
 				}
 			}
 		})
+	}
+}
+
+func TestSeverityUnmarshal(t *testing.T) {
+	j := []byte(`{"logName": "test-log","severity": "ERROR","payload": "test"}`)
+	var entry logging.Entry
+	err := json.Unmarshal(j, &entry)
+	if err != nil {
+		t.Fatalf("en.Unmarshal: %v", err)
+	}
+	if entry.Severity != logging.Error {
+		t.Fatalf("Severity: got %v, want %v", entry.Severity, logging.Error)
 	}
 }
