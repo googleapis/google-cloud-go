@@ -2596,15 +2596,13 @@ func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
 }
 
 func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1632")
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
-
 	h := testHelper{t}
-	bkt := client.Bucket(uidSpace.New())
+
 	initial := &RetentionPolicy{RetentionPeriod: time.Minute}
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: initial})
-	defer h.mustDeleteBucket(bkt)
 
 	for _, test := range []struct {
 		input *RetentionPolicy
@@ -2631,6 +2629,9 @@ func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
 			want:  initial,
 		},
 	} {
+		bkt := client.Bucket(uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: initial})
+		defer h.mustDeleteBucket(bkt)
 		h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: test.input})
 		attrs := h.mustBucketAttrs(bkt)
 		if attrs.RetentionPolicy != nil && attrs.RetentionPolicy.EffectiveTime.Unix() == 0 {
@@ -2640,8 +2641,6 @@ func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
 		if diff := testutil.Diff(attrs.RetentionPolicy, test.want, cmpopts.IgnoreTypes(time.Time{})); diff != "" {
 			t.Errorf("input: %v\ngot=-, want=+:\n%s", test.input, diff)
 		}
-		// The update quota limit is 1 per second so induce a sleep here for at least 1 second.
-		time.Sleep(1237 * time.Millisecond)
 	}
 }
 
