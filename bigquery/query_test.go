@@ -281,7 +281,7 @@ func TestQuery(t *testing.T) {
 				Q:                "query string",
 				DefaultProjectID: "def-project-id",
 				DefaultDatasetID: "def-dataset-id",
-				TimePartitioning: &TimePartitioning{},
+				TimePartitioning: &TimePartitioning{Type: DayPartitioningType},
 			},
 			want: func() *bq.Job {
 				j := defaultQueryJob()

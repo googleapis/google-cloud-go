@@ -356,6 +356,7 @@ func TestIntegration_TableMetadata(t *testing.T) {
 		for _, v := range []*TableMetadata{md, clusterMD} {
 			got := v.TimePartitioning
 			want := &TimePartitioning{
+				Type:                   DayPartitioningType,
 				Expiration:             c.wantExpiration,
 				Field:                  c.wantField,
 				RequirePartitionFilter: c.wantPruneFilter,
@@ -394,6 +395,47 @@ func TestIntegration_TableMetadata(t *testing.T) {
 		}
 	}
 
+}
+
+func TestIntegration_HourTimePartitioning(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := dataset.Table(tableIDs.New())
+
+	schema := Schema{
+		{Name: "name", Type: StringFieldType},
+		{Name: "somevalue", Type: IntegerFieldType},
+	}
+
+	// define hourly ingestion-based partitioning.
+	wantedTimePartitioning := &TimePartitioning{
+		Type: HourPartitioningType,
+	}
+
+	err := table.Create(context.Background(), &TableMetadata{
+		Schema:           schema,
+		TimePartitioning: wantedTimePartitioning,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer table.Delete(ctx)
+	md, err := table.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if md.TimePartitioning == nil {
+		t.Fatal("expected time partitioning, got nil")
+	}
+	if diff := testutil.Diff(md.TimePartitioning, wantedTimePartitioning); diff != "" {
+		t.Fatalf("got=-, want=+:\n%s", diff)
+	}
+	if md.TimePartitioning.Type != wantedTimePartitioning.Type {
+		t.Errorf("TimePartitioning interval mismatch: got %v, wanted %v", md.TimePartitioning.Type, wantedTimePartitioning.Type)
+	}
 }
 
 func TestIntegration_RangePartitioning(t *testing.T) {
@@ -478,7 +520,7 @@ func TestIntegration_RemoveTimePartitioning(t *testing.T) {
 		t.Fatal(err)
 	}
 	if got := md.TimePartitioning.Expiration; got != want {
-		t.Fatalf("TimeParitioning expiration want = %v, got = %v", want, got)
+		t.Fatalf("TimePartitioning expiration want = %v, got = %v", want, got)
 	}
 
 	// Remove time partitioning expiration

@@ -102,7 +102,7 @@ func TestLoad(t *testing.T) {
 				CreateDisposition:           CreateNever,
 				WriteDisposition:            WriteTruncate,
 				Labels:                      map[string]string{"a": "b"},
-				TimePartitioning:            &TimePartitioning{Expiration: 1234 * time.Millisecond},
+				TimePartitioning:            &TimePartitioning{Type: DayPartitioningType, Expiration: 1234 * time.Millisecond},
 				Clustering:                  &Clustering{Fields: []string{"cfield1"}},
 				DestinationEncryptionConfig: &EncryptionConfig{KMSKeyName: "keyName"},
 				SchemaUpdateOptions:         []string{"ALLOW_FIELD_ADDITION"},
@@ -280,6 +280,7 @@ func TestLoad(t *testing.T) {
 			}(),
 			config: LoadConfig{
 				TimePartitioning: &TimePartitioning{
+					Type:  HourPartitioningType,
 					Field: "somefield",
 				},
 			},
@@ -288,7 +289,7 @@ func TestLoad(t *testing.T) {
 				j.Configuration.Load.SourceUris = nil
 				j.Configuration.Load.TimePartitioning = &bq.TimePartitioning{
 					Field: "somefield",
-					Type:  "DAY",
+					Type:  "HOUR",
 				}
 				return j
 			}(),
