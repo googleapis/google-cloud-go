@@ -566,6 +566,17 @@ func (v Severity) String() string {
 	return strconv.Itoa(int(v))
 }
 
+// UnmarshalJSON turns a string representation of severity into the type
+// Severity.
+func (v *Severity) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	*v = ParseSeverity(s)
+	return nil
+}
+
 // ParseSeverity returns the Severity whose name equals s, ignoring case. It
 // returns Default if no Severity matches.
 func ParseSeverity(s string) Severity {
