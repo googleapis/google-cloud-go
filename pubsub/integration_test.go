@@ -1538,6 +1538,73 @@ func TestIntegration_Filter_CreateSubscription(t *testing.T) {
 	opts := withGRPCHeadersAssertion(t, option.WithEndpoint("staging-pubsub.sandbox.googleapis.com:443"))
 	client := integrationTestClient(ctx, t, opts...)
 	defer client.Close()
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+	cfg := SubscriptionConfig{
+		Topic:  topic,
+		Filter: "attributes.event_type = \"1\"",
+	}
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), cfg); err != nil {
+		t.Fatalf("CreateSub error: %v", err)
+	}
+	defer sub.Delete(ctx)
+	got, err := sub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := SubscriptionConfig{
+		Topic:               topic,
+		AckDeadline:         10 * time.Second,
+		RetainAckedMessages: false,
+		RetentionDuration:   defaultRetentionDuration,
+		ExpirationPolicy:    defaultExpirationPolicy,
+		Filter:              "attributes.event_type = \"1\"",
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("SubsciptionConfig; got: - want: +\n%s", diff)
+	}
+	attrs := make(map[string]string)
+	attrs["event_type"] = "1"
+	res := topic.Publish(ctx, &Message{
+		Data:       []byte("hello world"),
+		Attributes: attrs,
+	})
+	if _, err := res.Get(ctx); err != nil {
+		t.Fatalf("Publish message error: %v", err)
+	}
+	// Publish the same message with a different event_type
+	// and check it is filtered out.
+	attrs["event_type"] = "2"
+	res = topic.Publish(ctx, &Message{
+		Data:       []byte("hello world"),
+		Attributes: attrs,
+	})
+	if _, err := res.Get(ctx); err != nil {
+		t.Fatalf("Publish message error: %v", err)
+	}
+	ctx2, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+	err = sub.Receive(ctx2, func(_ context.Context, m *Message) {
+		defer m.Ack()
+		if m.Attributes["event_type"] != "1" {
+			t.Fatalf("Got message with attributes that should be filtered out: %v", m.Attributes)
+		}
+	})
+	if err != nil {
+		t.Fatalf("Streaming pull error: %v\n", err)
+	}
+}
+
+func TestIntegration_RetryPolicy(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
 
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
 	if err != nil {
@@ -1547,10 +1614,12 @@ func TestIntegration_Filter_CreateSubscription(t *testing.T) {
 	defer topic.Stop()
 
 	cfg := SubscriptionConfig{
-		Topic:  topic,
-		Filter: "attributes.event_type = \"1\"",
+		Topic: topic,
+		RetryPolicy: &RetryPolicy{
+			MinimumBackoff: 20 * time.Second,
+			MaximumBackoff: 500 * time.Second,
+		},
 	}
-
 	var sub *Subscription
 	if sub, err = client.CreateSubscription(ctx, subIDs.New(), cfg); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
@@ -1567,42 +1636,30 @@ func TestIntegration_Filter_CreateSubscription(t *testing.T) {
 		RetainAckedMessages: false,
 		RetentionDuration:   defaultRetentionDuration,
 		ExpirationPolicy:    defaultExpirationPolicy,
-		Filter:              "attributes.event_type = \"1\"",
+		RetryPolicy: &RetryPolicy{
+			MinimumBackoff: 20 * time.Second,
+			MaximumBackoff: 500 * time.Second,
+		},
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
-		t.Fatalf("SubsciptionConfig; got: - want: +\n%s", diff)
+		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 
-	attrs := make(map[string]string)
-	attrs["event_type"] = "1"
-	res := topic.Publish(ctx, &Message{
-		Data:       []byte("hello world"),
-		Attributes: attrs,
-	})
-	if _, err := res.Get(ctx); err != nil {
-		t.Fatalf("Publish message error: %v", err)
+	// Test clearing the RetryPolicy
+	cfgToUpdate := SubscriptionConfigToUpdate{
+		RetryPolicy: &RetryPolicy{},
 	}
-
-	// Publish the same message with a different event_type
-	// and check it is filtered out.
-	attrs["event_type"] = "2"
-	res = topic.Publish(ctx, &Message{
-		Data:       []byte("hello world"),
-		Attributes: attrs,
-	})
-	if _, err := res.Get(ctx); err != nil {
-		t.Fatalf("Publish message error: %v", err)
-	}
-
-	ctx2, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
-	err = sub.Receive(ctx2, func(_ context.Context, m *Message) {
-		defer m.Ack()
-		if m.Attributes["event_type"] != "1" {
-			t.Fatalf("Got message with attributes that should be filtered out: %v", m.Attributes)
-		}
-	})
+	_, err = sub.Update(ctx, cfgToUpdate)
 	if err != nil {
-		t.Fatalf("Streaming pull error: %v\n", err)
+		t.Fatalf("got error while updating sub: %v", err)
+	}
+
+	got, err = sub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want.RetryPolicy = nil
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 }

@@ -360,3 +360,18 @@ func TestDeadLettering_toMessage(t *testing.T) {
 		t.Errorf("toMessage with dead-lettered enabled failed\ngot: %d, want %d", *got.DeliveryAttempt, receivedMsg.DeliveryAttempt)
 	}
 }
+
+func TestRetryPolicy_toProto(t *testing.T) {
+	in := &RetryPolicy{
+		MinimumBackoff: 20 * time.Second,
+		MaximumBackoff: 300 * time.Second,
+	}
+	got := in.toProto()
+	want := &pb.RetryPolicy{
+		MinimumBackoff: ptypes.DurationProto(20 * time.Second),
+		MaximumBackoff: ptypes.DurationProto(300 * time.Second),
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("Roundtrip to Proto failed\ngot: - want: +\n%s", diff)
+	}
+}
