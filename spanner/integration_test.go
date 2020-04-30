@@ -37,9 +37,11 @@ import (
 	database "cloud.google.com/go/spanner/admin/database/apiv1"
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -1123,6 +1125,49 @@ func TestIntegration_NestedTransaction(t *testing.T) {
 	}
 }
 
+func TestIntegration_CreateDBRetry(t *testing.T) {
+	t.Parallel()
+
+	if databaseAdmin == nil {
+		t.Skip("Integration tests skipped")
+	}
+	skipEmulatorTest(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	dbName := dbNameSpace.New()
+
+	// Simulate an Unavailable error on the CreateDatabase RPC.
+	hasReturnedUnavailable := false
+	interceptor := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		err := invoker(ctx, method, req, reply, cc, opts...)
+		if !hasReturnedUnavailable && err == nil {
+			hasReturnedUnavailable = true
+			return status.Error(codes.Unavailable, "Injected unavailable error")
+		}
+		return err
+	}
+
+	dbAdmin, err := database.NewDatabaseAdminClient(ctx, option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptor)))
+	if err != nil {
+		log.Fatalf("cannot create dbAdmin client: %v", err)
+	}
+	op, err := dbAdmin.CreateDatabaseWithRetry(ctx, &adminpb.CreateDatabaseRequest{
+		Parent:          fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID),
+		CreateStatement: "CREATE DATABASE " + dbName,
+	})
+	if err != nil {
+		t.Fatalf("failed to create database: %v", err)
+	}
+	_, err = op.Wait(ctx)
+	if err != nil {
+		t.Fatalf("failed to create database: %v", err)
+	}
+	if !hasReturnedUnavailable {
+		t.Fatalf("interceptor did not return Unavailable")
+	}
+}
+
 // Test client recovery on database recreation.
 func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	t.Parallel()
@@ -1148,7 +1193,7 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 
 	// Recreate database and table.
 	dbName := dbPath[strings.LastIndex(dbPath, "/")+1:]
-	op, err := databaseAdmin.CreateDatabase(ctx, &adminpb.CreateDatabaseRequest{
+	op, err := databaseAdmin.CreateDatabaseWithRetry(ctx, &adminpb.CreateDatabaseRequest{
 		Parent:          fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID),
 		CreateStatement: "CREATE DATABASE " + dbName,
 		ExtraStatements: []string{
@@ -2698,7 +2743,7 @@ func prepareIntegrationTest(ctx context.Context, t *testing.T, spc SessionPoolCo
 
 	dbPath := fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectID, testInstanceID, dbName)
 	// Create database and tables.
-	op, err := databaseAdmin.CreateDatabase(ctx, &adminpb.CreateDatabaseRequest{
+	op, err := databaseAdmin.CreateDatabaseWithRetry(ctx, &adminpb.CreateDatabaseRequest{
 		Parent:          fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID),
 		CreateStatement: "CREATE DATABASE " + dbName,
 		ExtraStatements: statements,
