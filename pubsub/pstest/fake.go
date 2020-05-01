@@ -533,7 +533,6 @@ func newTopic(pt *pb.Topic) *topic {
 func (t *topic) stop() {
 	for _, sub := range t.subs {
 		sub.proto.Topic = "_deleted-topic_"
-		sub.stop()
 	}
 }
 
