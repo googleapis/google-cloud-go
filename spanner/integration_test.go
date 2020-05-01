@@ -584,7 +584,8 @@ func TestIntegration_SingleUse_ReadingWithLimit(t *testing.T) {
 func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	ctxTimeout := 30 * time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 	defer cancel()
 	// Set up testing environment.
 	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
@@ -646,9 +647,8 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 		{
 			// exact_staleness
 			nil,
-			// Specify a staleness which should be already before this test
-			// because context timeout is set to be 10s.
-			ExactStaleness(11 * time.Second),
+			// Specify a staleness which should be already before this test.
+			ExactStaleness(ctxTimeout + 1),
 			func(ts time.Time) error {
 				if ts.After(writes[0].ts) {
 					return fmt.Errorf("read got timestamp %v, want it to be no earlier than %v", ts, writes[0].ts)
