@@ -324,6 +324,23 @@ func TestLoad(t *testing.T) {
 				return j
 			}(),
 		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *GCSReference {
+				g := NewGCSReference("uri")
+				g.SourceFormat = DatastoreBackup
+				return g
+			}(),
+			config: LoadConfig{
+				ProjectionFields: []string{"foo", "bar", "baz"},
+			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.SourceFormat = "DATASTORE_BACKUP"
+				j.Configuration.Load.ProjectionFields = []string{"foo", "bar", "baz"}
+				return j
+			}(),
+		},
 	}
 
 	for i, tc := range testCases {
