@@ -339,6 +339,7 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
+				WriteSessions:             0.0,
 				MaxIdle:                   1,
 				HealthCheckInterval:       50 * time.Millisecond,
 				healthCheckSampleInterval: 10 * time.Millisecond,
@@ -356,8 +357,22 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 		t.Fatalf("failed to get session: %v", err)
 	}
 
+	// Wait until all session creation has finished.
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		// WriteSessions = 0, so we only have to check for read sessions.
+		numOpened := uint64(sp.idleList.Len())
+		sp.mu.Unlock()
+		if numOpened < sp.SessionPoolConfig.incStep-1 {
+			return fmt.Errorf("creation not yet finished")
+		}
+		return nil
+	})
+
 	// Force ping during the first take() by setting check time to the past.
+	sp.hc.mu.Lock()
 	sh.session.nextCheck = time.Now().Add(-time.Minute)
+	sp.hc.mu.Unlock()
 	wantSid := sh.getID()
 	sh.recycle()
 
