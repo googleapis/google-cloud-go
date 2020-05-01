@@ -1647,7 +1647,7 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 		var b int64
 		r, e := tx.ReadRow(ctx, "Accounts", Key{int64(key)}, []string{"Balance"})
 		if e != nil {
-			if expectAbort && !isAbortErr(e) {
+			if expectAbort && !isAbortedErr(e) {
 				t.Errorf("ReadRow got %v, want Abort error.", e)
 			}
 			// Verify that we received and are able to extract retry info from
