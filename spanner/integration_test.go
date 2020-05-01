@@ -50,6 +50,7 @@ var (
 
 	dbNameSpace       = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	instanceNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '-', Short: true})
+	backupIDSpace     = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	testInstanceID    = instanceNameSpace.New()
 
 	testTable        = "TestTable"
@@ -115,6 +116,38 @@ var (
 		    Ts   TIMESTAMP OPTIONS (allow_commit_timestamp = true),
 	    ) PRIMARY KEY (Key)`,
 	}
+	backuDBStatements = []string{
+		`CREATE TABLE Singers (
+						SingerId	INT64 NOT NULL,
+						FirstName	STRING(1024),
+						LastName	STRING(1024),
+						SingerInfo	BYTES(MAX)
+					) PRIMARY KEY (SingerId)`,
+		`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
+		`CREATE TABLE Accounts (
+						AccountId	INT64 NOT NULL,
+						Nickname	STRING(100),
+						Balance		INT64 NOT NULL,
+					) PRIMARY KEY (AccountId)`,
+		`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
+		`CREATE TABLE Types (
+						RowID		INT64 NOT NULL,
+						String		STRING(MAX),
+						StringArray	ARRAY<STRING(MAX)>,
+						Bytes		BYTES(MAX),
+						BytesArray	ARRAY<BYTES(MAX)>,
+						Int64a		INT64,
+						Int64Array	ARRAY<INT64>,
+						Bool		BOOL,
+						BoolArray	ARRAY<BOOL>,
+						Float64		FLOAT64,
+						Float64Array	ARRAY<FLOAT64>,
+						Date		DATE,
+						DateArray	ARRAY<DATE>,
+						Timestamp	TIMESTAMP,
+						TimestampArray	ARRAY<TIMESTAMP>,
+					) PRIMARY KEY (RowID)`,
+	}
 )
 
 const (
@@ -169,6 +202,11 @@ func initIntegrationTests() (cleanup func()) {
 	if err != nil {
 		log.Fatalf("Cannot get any instance configurations.\nPlease make sure the Cloud Spanner API is enabled for the test project.\nGet error: %v", err)
 	}
+
+	// First clean up any old test instances before we start the actual testing
+	// as these might cause this test run to fail.
+	cleanupInstances()
+
 	// Create a test instance to use for this test run.
 	op, err := instanceAdmin.CreateInstance(ctx, &instancepb.CreateInstanceRequest{
 		Parent:     fmt.Sprintf("projects/%s", testProjectID),
@@ -194,12 +232,7 @@ func initIntegrationTests() (cleanup func()) {
 	return func() {
 		// Delete this test instance.
 		instanceName := fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID)
-		if err = instanceAdmin.DeleteInstance(ctx, &instancepb.DeleteInstanceRequest{
-			Name: instanceName,
-		}); err != nil {
-			log.Printf("failed to drop instance %s (error %v), might need a manual removal",
-				instanceName, err)
-		}
+		deleteInstanceAndBackups(ctx, instanceName)
 		// Delete other test instances that may be lingering around.
 		cleanupInstances()
 		databaseAdmin.Close()
@@ -2595,6 +2628,54 @@ func TestIntegration_BatchDML_Error(t *testing.T) {
 	}
 }
 
+func TestIntegration_StartBackupOperation(t *testing.T) {
+	skipEmulatorTest(t)
+	t.Parallel()
+
+	// Backups can be slow, so use a 15 minute timeout.
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
+	defer cancel()
+	_, testDatabaseName, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, backuDBStatements)
+	defer cleanup()
+
+	backupID := backupIDSpace.New()
+	backupName := fmt.Sprintf("projects/%s/instances/%s/backups/%s", testProjectID, testInstanceID, backupID)
+	// Minimum expiry time is 6 hours
+	expires := time.Now().Add(time.Hour * 7)
+	respLRO, err := databaseAdmin.StartBackupOperation(ctx, backupID, testDatabaseName, expires)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = respLRO.Wait(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	respMetadata, err := respLRO.Metadata()
+	if err != nil {
+		t.Fatalf("backup response metadata, got error %v, want nil", err)
+	}
+	if respMetadata.Database != testDatabaseName {
+		t.Fatalf("backup database name, got %s, want %s", respMetadata.Database, testDatabaseName)
+	}
+	if respMetadata.Progress.ProgressPercent != 100 {
+		t.Fatalf("backup progress percent, got %d, want 100", respMetadata.Progress.ProgressPercent)
+	}
+	respCheck, err := databaseAdmin.GetBackup(ctx, &adminpb.GetBackupRequest{Name: backupName})
+	if err != nil {
+		t.Fatalf("backup metadata, got error %v, want nil", err)
+	}
+	if respCheck.CreateTime == nil {
+		t.Fatal("backup create time, got nil, want non-nil")
+	}
+	if respCheck.State != adminpb.Backup_READY {
+		t.Fatalf("backup state, got %v, want %v", respCheck.State, adminpb.Backup_READY)
+	}
+	if respCheck.SizeBytes == 0 {
+		t.Fatalf("backup size, got %d, want non-zero", respCheck.SizeBytes)
+	}
+}
+
 // Prepare initializes Cloud Spanner testing DB and clients.
 func prepareIntegrationTest(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string) (*Client, string, func()) {
 	if databaseAdmin == nil {
@@ -2649,29 +2730,32 @@ func cleanupInstances() {
 		}
 		if instanceNameSpace.Older(inst.Name, expireAge) {
 			log.Printf("Deleting instance %s", inst.Name)
-
-			// First delete any lingering backups that might have been left on
-			// the instance.
-			backups := databaseAdmin.ListBackups(ctx, &adminpb.ListBackupsRequest{Parent: inst.Name})
-			for {
-				backup, err := backups.Next()
-				if err == iterator.Done {
-					break
-				}
-				if err != nil {
-					log.Printf("failed to retrieve backups from instance %s because of error %v", inst.Name, err)
-					break
-				}
-				if err := databaseAdmin.DeleteBackup(ctx, &adminpb.DeleteBackupRequest{Name: backup.Name}); err != nil {
-					log.Printf("failed to delete backup %s (error %v)", backup.Name, err)
-				}
-			}
-
-			if err := instanceAdmin.DeleteInstance(ctx, &instancepb.DeleteInstanceRequest{Name: inst.Name}); err != nil {
-				log.Printf("failed to delete instance %s (error %v), might need a manual removal",
-					inst.Name, err)
-			}
+			deleteInstanceAndBackups(ctx, inst.Name)
 		}
+	}
+}
+
+func deleteInstanceAndBackups(ctx context.Context, instanceName string) {
+	// First delete any lingering backups that might have been left on
+	// the instance.
+	backups := databaseAdmin.ListBackups(ctx, &adminpb.ListBackupsRequest{Parent: instanceName})
+	for {
+		backup, err := backups.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Printf("failed to retrieve backups from instance %s because of error %v", instanceName, err)
+			break
+		}
+		if err := databaseAdmin.DeleteBackup(ctx, &adminpb.DeleteBackupRequest{Name: backup.Name}); err != nil {
+			log.Printf("failed to delete backup %s (error %v)", backup.Name, err)
+		}
+	}
+
+	if err := instanceAdmin.DeleteInstance(ctx, &instancepb.DeleteInstanceRequest{Name: instanceName}); err != nil {
+		log.Printf("failed to delete instance %s (error %v), might need a manual removal",
+			instanceName, err)
 	}
 }
 
