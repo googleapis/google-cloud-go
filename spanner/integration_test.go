@@ -629,7 +629,7 @@ func TestIntegration_SingleUse_ReadingWithLimit(t *testing.T) {
 func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 	t.Parallel()
 
-	ctxTimeout := 30 * time.Second
+	ctxTimeout := 5 * time.Minute
 	ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 	defer cancel()
 	// Set up testing environment.
