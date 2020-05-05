@@ -788,7 +788,6 @@ func TestIntegration_UpdateTopicLabels(t *testing.T) {
 }
 
 func TestIntegration_PublicTopic(t *testing.T) {
-	t.Skip("Flaky, see https://github.com/googleapis/google-cloud-go/issues/1967")
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
@@ -800,17 +799,7 @@ func TestIntegration_PublicTopic(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer sub.Delete(ctx)
-	// Confirm that Receive works. It doesn't matter if we actually get any
-	// messages.
-	ctxt, cancel := context.WithTimeout(ctx, 5*time.Second)
-	err = sub.Receive(ctxt, func(_ context.Context, msg *Message) {
-		msg.Ack()
-		cancel()
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
+	sub.Delete(ctx)
 }
 
 func TestIntegration_Errors(t *testing.T) {
