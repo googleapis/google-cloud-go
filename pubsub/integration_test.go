@@ -1168,6 +1168,7 @@ func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 }
 
 func TestIntegration_OrderedKeys_JSON(t *testing.T) {
+	t.Skip("Flaky, see https://github.com/googleapis/google-cloud-go/issues/1872")
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
