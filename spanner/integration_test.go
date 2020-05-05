@@ -25,6 +25,7 @@ import (
 	"math"
 	"os"
 	"reflect"
+	"regexp"
 	"strings"
 	"sync"
 	"testing"
@@ -148,7 +149,18 @@ var (
 						TimestampArray	ARRAY<TIMESTAMP>,
 					) PRIMARY KEY (RowID)`,
 	}
+
+	validInstancePattern = regexp.MustCompile("^projects/(?P<project>[^/]+)/instances/(?P<instance>[^/]+)$")
 )
+
+func parseInstanceName(inst string) (project, instance string, err error) {
+	matches := validInstancePattern.FindStringSubmatch(inst)
+	if len(matches) == 0 {
+		return "", "", fmt.Errorf("Failed to parse instance name from %q according to pattern %q",
+			inst, validInstancePattern.String())
+	}
+	return matches[1], matches[2], nil
+}
 
 const (
 	str1 = "alice"
@@ -2728,7 +2740,13 @@ func cleanupInstances() {
 		if err != nil {
 			panic(err)
 		}
-		if instanceNameSpace.Older(inst.Name, expireAge) {
+
+		_, instID, err := parseInstanceName(inst.Name)
+		if err != nil {
+			log.Printf("Error: %v\n", err)
+			continue
+		}
+		if instanceNameSpace.Older(instID, expireAge) {
 			log.Printf("Deleting instance %s", inst.Name)
 			deleteInstanceAndBackups(ctx, inst.Name)
 		}
