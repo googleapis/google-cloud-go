@@ -788,6 +788,7 @@ func TestIntegration_UpdateTopicLabels(t *testing.T) {
 }
 
 func TestIntegration_PublicTopic(t *testing.T) {
+	t.Skip("Flaky, see https://github.com/googleapis/google-cloud-go/issues/1967")
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
