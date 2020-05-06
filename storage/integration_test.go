@@ -2970,22 +2970,30 @@ func TestIntegration_NewReaderWithContentEncodingGzip(t *testing.T) {
 	bkt := client.Bucket(uidSpace.New())
 	h.mustCreate(bkt, projectID, nil)
 	defer h.mustDeleteBucket(bkt)
-
 	obj := bkt.Object("decompressive-transcoding")
-	// Firstly upload the gzip compressed file.
-	w := obj.NewWriter(ctx)
 	original := bytes.Repeat([]byte("a"), 4<<10)
-	// Compress and upload the content.
-	gzw := gzip.NewWriter(w)
-	if _, err := gzw.Write(original); err != nil {
-		t.Fatalf("Failed to compress content: %v", err)
-	}
-	if err := gzw.Close(); err != nil {
-		t.Fatalf("Failed to compress content: %v", err)
-	}
-	if err := w.Close(); err != nil {
-		t.Fatalf("Failed to finish uploading the file: %v", err)
-	}
+
+	// Wrap the file upload in a retry.
+	// TODO: Investigate removing retry after resolving
+	// https://github.com/googleapis/google-api-go-client/issues/392.
+	err := retry(ctx, func() error {
+		// Firstly upload the gzip compressed file.
+		w := obj.NewWriter(ctx)
+		// Compress and upload the content.
+		gzw := gzip.NewWriter(w)
+		if _, err := gzw.Write(original); err != nil {
+			return fmt.Errorf("Failed to compress content: %v", err)
+		}
+		if err := gzw.Close(); err != nil {
+			return fmt.Errorf("Failed to compress content: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			return fmt.Errorf("Failed to finish uploading the file: %v", err)
+		}
+		return nil
+	},
+		nil)
+
 	defer h.mustDeleteObject(obj)
 
 	// Now update the Content-Encoding and Content-Type to enable
