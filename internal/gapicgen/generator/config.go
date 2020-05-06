@@ -468,6 +468,8 @@ var microgenGapicConfigs = []*microgenConfig{
 		gRPCServiceConfigPath: "google/privacy/dlp/v2/dlp_grpc_service_config.json",
 		apiServiceConfigPath:  "google/privacy/dlp/v2/dlp_v2.yaml",
 		releaseLevel:          "ga",
+		// TODO(codyoss): re-enable generation under v2 -- https://github.com/googleapis/google-cloud-go/issues/1969
+		stopGeneration: true,
 	},
 	{
 		inputDirectoryPath:    "google/spanner/admin/database/v1",
