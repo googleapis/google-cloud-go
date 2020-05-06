@@ -31,6 +31,12 @@ import (
 
 var goPkgOptRe = regexp.MustCompile(`(?m)^option go_package = (.*);`)
 
+// denylist is a set of clients to NOT generate.
+var denylist = map[string]bool{
+	// TODO(codyoss): re-enable after issue is resolve -- https://github.com/googleapis/go-genproto/issues/357
+	"google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1": true,
+}
+
 // regenGenproto regenerates the genproto repository.
 //
 // regenGenproto recursively walks through each directory named by given
@@ -99,7 +105,7 @@ func regenGenproto(ctx context.Context, genprotoDir, googleapisDir, protoDir str
 	// Run protoc on all protos of all packages.
 	grp, _ := errgroup.WithContext(ctx)
 	for pkg, fnames := range pkgFiles {
-		if !strings.HasPrefix(pkg, "google.golang.org/genproto") {
+		if !strings.HasPrefix(pkg, "google.golang.org/genproto") || denylist[pkg] {
 			continue
 		}
 		pk := pkg
