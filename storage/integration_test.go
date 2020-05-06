@@ -3478,7 +3478,7 @@ func retry(ctx context.Context, call func() error, check func() error) error {
 		}
 		err = call()
 		if err == nil {
-			if check() == nil {
+			if check == nil || check() == nil {
 				return nil
 			}
 			err = check()
