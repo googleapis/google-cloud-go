@@ -33,12 +33,15 @@ type TestExporter struct {
 }
 
 // NewTestExporter creates a TestExporter and registers it with OpenCensus.
-func NewTestExporter() *TestExporter {
+func NewTestExporter(views ...*view.View) *TestExporter {
 	te := &TestExporter{Stats: make(chan *view.Data)}
 
 	view.RegisterExporter(te)
 	view.SetReportingPeriod(time.Millisecond)
-	if err := view.Register(ocgrpc.DefaultClientViews...); err != nil {
+	if len(views) == 0 {
+		views = ocgrpc.DefaultClientViews
+	}
+	if err := view.Register(views...); err != nil {
 		log.Fatal(err)
 	}
 
