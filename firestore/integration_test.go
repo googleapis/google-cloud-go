@@ -1183,7 +1183,7 @@ func TestIntegration_FieldTransforms_Update(t *testing.T) {
 		{start: uint16(7), val: uint16(4), inc: uint16(11), max: int16(7), min: int16(4)},
 		{start: uint32(7), val: uint32(4), inc: uint32(11), max: int32(7), min: int32(4)},
 		{start: float32(7.7), val: float32(4.1), inc: float32(11.8), max: float32(7.7), min: float32(4.1)},
-		{start: float64(2.2), val: float64(4.1), inc: float64(11.8), max: float64(4.1), min: float64(2.2)},
+		{start: float64(2.2), val: float64(4.1), inc: float64(6.3), max: float64(4.1), min: float64(2.2)},
 		{start: MyInt(7), val: MyInt(4), inc: MyInt(11), max: MyInt(7), min: MyInt(4)},
 		{start: 7, val: "strings are not allowed", wantErr: true},
 		{start: 7, val: uint(3), wantErr: true},
