@@ -30,17 +30,18 @@ type TestExporter struct {
 	Spans []*trace.SpanData
 
 	Stats chan *view.Data
+	Views []*view.View
 }
 
 // NewTestExporter creates a TestExporter and registers it with OpenCensus.
 func NewTestExporter(views ...*view.View) *TestExporter {
-	te := &TestExporter{Stats: make(chan *view.Data)}
-
-	view.RegisterExporter(te)
-	view.SetReportingPeriod(time.Millisecond)
 	if len(views) == 0 {
 		views = ocgrpc.DefaultClientViews
 	}
+	te := &TestExporter{Stats: make(chan *view.Data), Views: views}
+
+	view.RegisterExporter(te)
+	view.SetReportingPeriod(time.Millisecond)
 	if err := view.Register(views...); err != nil {
 		log.Fatal(err)
 	}
@@ -70,6 +71,7 @@ func (te *TestExporter) ExportView(vd *view.Data) {
 
 // Unregister unregisters the exporter from OpenCensus.
 func (te *TestExporter) Unregister() {
+	view.Unregister(te.Views...)
 	view.UnregisterExporter(te)
 	trace.UnregisterExporter(te)
 	view.SetReportingPeriod(0) // reset to default value
