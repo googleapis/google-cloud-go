@@ -94,6 +94,25 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
+		// https://github.com/googleapis/google-cloud-go/issues/1973
+		// except that "l.user_id" is replaced with "l_user_id" since we don't support
+		// the dot operator yet.
+		{`SELECT COUNT(*) AS count FROM Lists AS l WHERE l_user_id=@userID`,
+			Query{
+				Select: Select{
+					List: []Expr{
+						Func{Name: "COUNT", Args: []Expr{Star}},
+					},
+					From: []SelectFrom{{Table: "Lists", Alias: "l"}},
+					Where: ComparisonOp{
+						Op:  Eq,
+						LHS: ID("l_user_id"),
+						RHS: Param("userID"),
+					},
+					ListAliases: []string{"count"},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseQuery(test.in)
