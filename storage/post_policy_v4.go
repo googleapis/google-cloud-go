@@ -77,7 +77,6 @@ type PostPolicyV4Options struct {
 	// Style provides options for the type of URL to use. Options are
 	// PathStyle (default), BucketBoundHostname, and VirtualHostedStyle. See
 	// https://cloud.google.com/storage/docs/request-endpoints for details.
-	// Only supported for V4 signing.
 	// Optional.
 	Style URLStyle
 
